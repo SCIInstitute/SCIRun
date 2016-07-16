@@ -7,12 +7,12 @@
     "header": "Modules/Legacy/Fields/FairMesh.h"
   },
   "algorithm": {
-    "name": "N/A",
-    "namespace": "N/A",
-    "header": "N/A"
+    "name": "FairMeshAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/SmoothMesh/FairMesh.h"
   },
   "UI": {
-    "name": "N/A",
-    "header": "N/A"
+    "name": "FairMeshDialog",
+    "header": "Interface/Modules/Fields/FairMeshDialog.h"
   }
 }

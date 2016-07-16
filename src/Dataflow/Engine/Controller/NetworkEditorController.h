@@ -110,7 +110,7 @@ namespace Engine {
     void removeConnection(const Networks::ConnectionId& id);
 
     void executeAll(const Networks::ExecutableLookup* lookup);
-    void executeModule(const Networks::ModuleHandle& module, const Networks::ExecutableLookup* lookup);
+    void executeModule(const Networks::ModuleHandle& module, const Networks::ExecutableLookup* lookup, bool executeUpstream);
 
     virtual Networks::NetworkFileHandle saveNetwork() const override;
     virtual void loadNetwork(const Networks::NetworkFileHandle& xml) override;

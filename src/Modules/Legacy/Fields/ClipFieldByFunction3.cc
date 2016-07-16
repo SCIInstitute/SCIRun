@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -45,11 +45,12 @@ using namespace SCIRun::Modules::Fields;
 
 /// @class ClipFieldByFunction3
 /// @brief This module selects a subset of one or more (up to three) fields
-/// using a function. 
+/// using a function.
 
-const ModuleLookupInfo ClipFieldByFunction::staticInfo_("ClipFieldByFunction", "NewField", "SCIRun");
+MODULE_INFO_DEF(ClipFieldByFunction, NewField, SCIRun)
+
 const AlgorithmParameterName ClipFieldByFunction::FunctionString("FunctionString");
-  
+
 ClipFieldByFunction::ClipFieldByFunction()
   : Module(staticInfo_)
 {
@@ -73,7 +74,7 @@ void ClipFieldByFunction::execute()
   auto func = getOptionalInput(Function);
   auto state = get_state();
   auto matrices = getOptionalDynamicInputs(InputArrays);
-  
+
   if (needToExecute())
   {
     if (func && *func)
@@ -89,10 +90,10 @@ void ClipFieldByFunction::execute()
       error("This module cannot handle more than 23 input matrices.");
       return;
     }
-  
+
     auto field = fields[0];
     std::string method;
-    if (field->vmesh()->is_pointcloudmesh()) 
+    if (field->vmesh()->is_pointcloudmesh())
       method = "Element Center";
     else
       method = state->getValue(Parameters::ClipMethod).toString();
@@ -106,7 +107,7 @@ void ClipFieldByFunction::execute()
       sendOutput(Mapping, MatrixHandle());
       return;
     }
-  
+
     const int field_basis_order = field->vfield()->basis_order();
 
     NewArrayMathEngine engine;
@@ -132,7 +133,7 @@ void ClipFieldByFunction::execute()
       oss << ") does not match basis order supported by method '" << method << "'. Using DATA variables will not be supported.";
       warning(oss.str());
     }
-    
+
     // Create the POS, X,Y,Z, data location objects.
     if(!(engine.add_input_fielddata_location("POS",field,basis_order))) return;
     if(!(engine.add_input_fielddata_coordinates("X","Y","Z",field,basis_order))) return;
@@ -153,19 +154,19 @@ void ClipFieldByFunction::execute()
     // Loop through all matrices and add them to the engine as well
     char mname = 'A';
     std::string matrixname("A");
-    
+
     for (size_t p = 0; p < numinputs; p++)
     {
       if (!matrices[p])
       {
         error("No matrix was found on input port.");
-        return;      
+        return;
       }
 
       matrixname[0] = mname++;
       if (!(engine.add_input_matrix(matrixname,matrices[p]))) return;
     }
-    
+
     if(!(engine.add_output_fielddata("RESULT",field,basis_order,"char"))) return;
 
     // Add an object for getting the index and size of the array.
@@ -181,15 +182,15 @@ void ClipFieldByFunction::execute()
     if (!engine.add_expressions(function)) return;
 
     // Actual engine call, which does the dynamic compilation, the creation of the
-    // code for all the objects, as well as inserting the function and looping 
+    // code for all the objects, as well as inserting the function and looping
     // over every data point
 
     if (!engine.run()) return;
 
     // Get the result from the engine
     FieldHandle sfield;
-    engine.get_field("RESULT",sfield);    
-    
+    engine.get_field("RESULT",sfield);
+
     algo().setOption(Parameters::ClipMethod, method);
     auto output = algo().run(withInputData((Variables::InputField, field)(ClipMeshBySelectionAlgo::SelectionField, sfield)));
 
@@ -207,7 +208,7 @@ bool ClipFieldByFunction::addFieldVariableIfPresent(const FieldList& fields, New
     {
       auto indexStr = boost::lexical_cast<std::string>(index);
       auto vStr = boost::lexical_cast<std::string>(index - 1);
-    
+
       int field_basis_order = field->vfield()->basis_order();
       if (basis_order == field_basis_order)
       {
@@ -217,12 +218,12 @@ bool ClipFieldByFunction::addFieldVariableIfPresent(const FieldList& fields, New
           return false;
       }
       // Create the POS, X,Y,Z, data location objects.
-      
+
       if(!engine.add_input_fielddata_location("POS" + indexStr, field, basis_order))
         return false;
       if(!engine.add_input_fielddata_coordinates("X" + indexStr,"Y" + indexStr,"Z" + indexStr,field, basis_order))
         return false;
-      
+
       // Create the ELEMENT object describing element properties
       if(!engine.add_input_fielddata_element("ELEMENT" + indexStr, field, basis_order))
         return false;

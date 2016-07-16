@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
- 
+
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <gtest/gtest.h>
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
@@ -44,7 +44,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::TestUtils;
 
-namespace 
+namespace
 {
 	// x vector [3; 4; 5;]
 	DenseMatrixHandle x_num ()
@@ -82,9 +82,9 @@ namespace
 		(*m)(2, 0) = std::numeric_limits<double>::quiet_NaN();
 		return m;
 	}
-	
+
 	// symmetric LHS (stiff) matrix
-	SparseRowMatrixHandle LHS() 
+	SparseRowMatrixHandle LHS()
 	{
 		SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
 		m->insert(0,0) = 1;
@@ -100,7 +100,7 @@ namespace
 		return m;
 	}
 	// non symmetric LHS (stiff) matrix
-	SparseRowMatrixHandle LHS_not_sym() 
+	SparseRowMatrixHandle LHS_not_sym()
 	{
 		SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
 		m->insert(0,0) = 1;
@@ -116,14 +116,14 @@ namespace
 		return m;
 	}
 	// non square LHS (Stiff) matrix
-	SparseRowMatrixHandle LHS_non_sqr() 
+	SparseRowMatrixHandle LHS_non_sqr()
 	{
 		SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,5));
 		m->setZero();
 		m->makeCompressed();
 		return m;
 	}
-	
+
 	// RHS vector of zeros
 	DenseMatrixHandle rhs_zero(int rows)
 	{
@@ -148,16 +148,7 @@ namespace
 		(*m)(1,0) = std::numeric_limits<double>::quiet_NaN();
 		(*m)(2,0) = 3;
 		return m;
-	}		
-}
-
-// this test makes sure an exception is thrown for non symmetrical, but square, LHS matrix
-TEST (AddKnownsToLinearSystemTests, Non_Symmetrical_but_Square_LHS)
-{	
-	SparseRowMatrixHandle output_stiff;
-	DenseColumnMatrixHandle output_rhs;
-	AddKnownsToLinearSystemAlgo algo;
-	EXPECT_THROW (algo.run(LHS_not_sym(),rhs_zero(3),x_num(),output_stiff,output_rhs), AlgorithmInputException);
+	}
 }
 
 // this test makes sure an exception is thrown for a non square matrix
@@ -171,7 +162,7 @@ TEST (AddKnownsToLinearSystemTests, Non_Square_LHS)
 
 // this test makes sure no exceptions are thrown when a symmetric matric is used for the LHS
 TEST (AddKnownsToLinearSystemTests, Square_and_Symmetric_LHS)
-{	
+{
 	SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
 	AddKnownsToLinearSystemAlgo algo;
@@ -280,7 +271,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_one_NaN_and_RHS_contains_numbers)
   (*ro)(0,0) = 1;
   (*ro)(1,0) = 5;
   (*ro)(2,0) = 2;
-  
+
   SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
 	AddKnownsToLinearSystemAlgo algo;
@@ -317,7 +308,7 @@ TEST (AddKnownsToLinearSystemTests, X_contains_two_NaN_and_RHS_contains_numbers)
   (*ro)(0,0) = 3;
   (*ro)(1,0) = -19;
   (*ro)(2,0) = -6;
-  
+
   SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
 	AddKnownsToLinearSystemAlgo algo;
@@ -341,12 +332,12 @@ TEST (AddKnownsToLinearSystemTests, X_is_NaN)
   // this is what is expected to be returned (the input)
   SparseRowMatrixHandle m = LHS();
   DenseMatrixHandle ro = rhs_zero(3);
-  
+
   SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
 	AddKnownsToLinearSystemAlgo algo;
   algo.run(LHS(),rhs_zero(3),x_all_nan(),output_stiff,output_rhs);
-  
+
   // making sure each element of LHS are equal
   for (int r=0; r < m->rows(); r++)
   {

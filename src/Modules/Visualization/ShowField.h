@@ -55,13 +55,13 @@ namespace SCIRun {
         class GeometryBuilder;
       }
 
-      class SCISHARE ShowFieldModule : public Dataflow::Networks::GeometryGeneratingModule,
+      class SCISHARE ShowField : public Dataflow::Networks::GeometryGeneratingModule,
         public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
         public Has1OutputPort<GeometryPortTag>,
         public Core::Thread::Interruptible
       {
       public:
-        ShowFieldModule();
+        ShowField();
         virtual void execute() override;
 
         static const Core::Algorithms::AlgorithmParameterName FieldName;
@@ -110,7 +110,7 @@ namespace SCIRun {
         INPUT_PORT(1, ColorMapObject, ColorMap);
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
         virtual void setStateDefaults() override;
       private:

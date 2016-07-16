@@ -37,7 +37,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Visualization;
 
-const ModuleLookupInfo CreateStandardColorMap::staticInfo_("CreateStandardColorMap", "Visualization", "SCIRun");
+MODULE_INFO_DEF(CreateStandardColorMap, Visualization, SCIRun)
 
 CreateStandardColorMap::CreateStandardColorMap() : Module(staticInfo_)
 {

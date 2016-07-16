@@ -37,7 +37,8 @@ using namespace SCIRun::Modules::Bundles;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-const ModuleLookupInfo InsertFieldsIntoBundle::staticInfo_("InsertFieldsIntoBundle", "Bundle", "SCIRun");
+MODULE_INFO_DEF(InsertFieldsIntoBundle, Bundle, SCIRun)
+
 const AlgorithmParameterName InsertFieldsIntoBundle::NumFields("NumFields");
 const AlgorithmParameterName InsertFieldsIntoBundle::FieldNames("FieldNames");
 const AlgorithmParameterName InsertFieldsIntoBundle::FieldReplace("FieldReplace");

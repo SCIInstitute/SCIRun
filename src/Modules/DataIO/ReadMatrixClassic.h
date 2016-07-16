@@ -50,6 +50,9 @@ namespace DataIO {
     OUTPUT_PORT(0, Matrix, Matrix);
 
     static std::string fileTypeList();
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+
   protected:
     virtual std::string defaultFileTypeName() const override;
   };

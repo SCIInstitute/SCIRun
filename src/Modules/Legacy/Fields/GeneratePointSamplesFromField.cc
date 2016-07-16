@@ -59,7 +59,7 @@ using namespace Graphics::Datatypes;
 ALGORITHM_PARAMETER_DEF(Fields, NumSeeds);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeScale);
 
-const ModuleLookupInfo GeneratePointSamplesFromField::staticInfo_("GeneratePointSamplesFromField", "NewField", "SCIRun");
+MODULE_INFO_DEF(GeneratePointSamplesFromField, NewField, SCIRun)
 
 #if SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: include real PointWidget header here
 #include <Core/Thread/CrowdMonitor.h>
@@ -299,7 +299,7 @@ GeometryHandle GeneratePointSamplesFromFieldImpl::buildWidgetObject(FieldHandle 
   VMesh*  mesh = field->vmesh();
 
   ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
-  ColorRGB node_color;  
+  ColorRGB node_color;
 
   mesh->synchronize(Mesh::NODES_E);
 

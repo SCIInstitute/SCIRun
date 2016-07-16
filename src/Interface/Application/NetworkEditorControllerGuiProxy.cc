@@ -109,9 +109,9 @@ void NetworkEditorControllerGuiProxy::executeAll(const ExecutableLookup& lookup)
   controller_->executeAll(&lookup);
 }
 
-void NetworkEditorControllerGuiProxy::executeModule(const ModuleHandle& module, const ExecutableLookup& lookup)
+void NetworkEditorControllerGuiProxy::executeModule(const ModuleHandle& module, const ExecutableLookup& lookup, bool executeUpstream)
 {
-  controller_->executeModule(module, &lookup);
+  controller_->executeModule(module, &lookup, executeUpstream);
 }
 
 size_t NetworkEditorControllerGuiProxy::numModules() const

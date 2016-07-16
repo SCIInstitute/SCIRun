@@ -46,7 +46,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-const ModuleLookupInfo CalculateDistanceToFieldBoundary::staticInfo_("CalculateDistanceToFieldBoundary", "ChangeFieldData", "SCIRun");
+MODULE_INFO_DEF(CalculateDistanceToFieldBoundary, ChangeFieldData, SCIRun)
 
 CalculateDistanceToFieldBoundary::CalculateDistanceToFieldBoundary()
   : Module(staticInfo_)

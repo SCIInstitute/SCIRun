@@ -55,6 +55,7 @@ namespace Engine {
     int minGroup() const;
     int maxGroup() const;
     std::pair<const_iterator,const_iterator> getGroup(int order) const;
+    int groupOf(const Networks::ModuleId& id) const;
   private:
     ModulesByGroup map_;
   };

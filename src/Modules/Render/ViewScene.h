@@ -76,7 +76,6 @@ namespace Render {
     virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
     virtual void setStateDefaults() override;
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
     static const Core::Algorithms::AlgorithmParameterName BackgroundColor;
     static const Core::Algorithms::AlgorithmParameterName Ambient;
     static const Core::Algorithms::AlgorithmParameterName Diffuse;
@@ -122,6 +121,8 @@ namespace Render {
     OUTPUT_PORT(1, ScreenshotDataGreen, DenseMatrix);
     OUTPUT_PORT(2, ScreenshotDataBlue, DenseMatrix);
     virtual void execute() override;
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
     static Core::Thread::Mutex mutex_;
 

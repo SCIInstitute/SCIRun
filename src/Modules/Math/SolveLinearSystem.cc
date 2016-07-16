@@ -43,23 +43,22 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
 
-SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("SolveLinearSystem", "Math", "SCIRun"))
+SolveLinearSystem::SolveLinearSystem() : Module(ModuleLookupInfo("SolveLinearSystem", "Math", "SCIRun"))
 {
   INITIALIZE_PORT(LHS);
   INITIALIZE_PORT(RHS);
   INITIALIZE_PORT(Solution);
 }
 
-void SolveLinearSystemModule::setStateDefaults()
+void SolveLinearSystem::setStateDefaults()
 {
-  auto state = get_state();
   setStateDoubleFromAlgo(Variables::TargetError);
   setStateIntFromAlgo(Variables::MaxIterations);
   setStateStringFromAlgoOption(Variables::Method);
   setStateStringFromAlgoOption(Variables::Preconditioner);
 }
 
-void SolveLinearSystemModule::execute()
+void SolveLinearSystem::execute()
 {
   auto A = getRequiredInput(LHS);
   auto rhs = getRequiredInput(RHS);

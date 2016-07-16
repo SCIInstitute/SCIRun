@@ -57,7 +57,7 @@ namespace Gui {
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
     void appendToNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
     void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
-    void executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module, const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
+    void executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module, const SCIRun::Dataflow::Networks::ExecutableLookup& lookup, bool executeUpstream);
     size_t numModules() const;
     int errorCode() const;
     void setExecutorType(int type);

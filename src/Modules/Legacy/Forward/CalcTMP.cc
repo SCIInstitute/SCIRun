@@ -36,10 +36,9 @@ using namespace SCIRun::Modules::Forward;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Forward;
 
-const ModuleLookupInfo CalcTMP::staticInfo_("CalcTMP", "Forward", "SCIRun");
+MODULE_INFO_DEF(CalcTMP, Forward, SCIRun)
 
-CalcTMP::CalcTMP()
-  : Module(staticInfo_, false)
+CalcTMP::CalcTMP() : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(Amplitude);
   INITIALIZE_PORT(Depolarization_Time);

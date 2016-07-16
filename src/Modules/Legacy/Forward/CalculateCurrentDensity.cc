@@ -39,7 +39,7 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Modules::Forward;
 using namespace SCIRun::Dataflow::Networks;
 
-const ModuleLookupInfo CalculateCurrentDensity::staticInfo_("CalculateCurrentDensity", "Forward", "SCIRun");
+MODULE_INFO_DEF(CalculateCurrentDensity, Forward, SCIRun)
 
 CalculateCurrentDensity::CalculateCurrentDensity() : Module(staticInfo_,false)
 {
@@ -51,6 +51,7 @@ CalculateCurrentDensity::CalculateCurrentDensity() : Module(staticInfo_,false)
 void CalculateCurrentDensity::execute()
 {
   auto efieldH = getRequiredInput(TetMesh_EField);
+  //TODO: wrong port is grabbed. Changing the port might lead to errors from line 57 below.
   auto sigmasH = getRequiredInput(TetMesh_EField);
 
   if (efieldH->mesh() != sigmasH->mesh())

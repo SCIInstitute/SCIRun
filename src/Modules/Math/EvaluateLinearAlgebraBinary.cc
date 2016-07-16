@@ -36,7 +36,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-EvaluateLinearAlgebraBinaryModule::EvaluateLinearAlgebraBinaryModule() :
+EvaluateLinearAlgebraBinary::EvaluateLinearAlgebraBinary() :
 Module(ModuleLookupInfo("EvaluateLinearAlgebraBinary", "Math", "SCIRun"))
 {
   INITIALIZE_PORT(LHS);
@@ -44,14 +44,14 @@ Module(ModuleLookupInfo("EvaluateLinearAlgebraBinary", "Math", "SCIRun"))
   INITIALIZE_PORT(Result);
 }
 
-void EvaluateLinearAlgebraBinaryModule::setStateDefaults()
+void EvaluateLinearAlgebraBinary::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(Variables::Operator, 0);
 	state->setValue(Variables::FunctionString, std::string("x+y"));
 }
 
-void EvaluateLinearAlgebraBinaryModule::execute()
+void EvaluateLinearAlgebraBinary::execute()
 {
   auto lhs = getRequiredInput(LHS);
   auto rhs = getRequiredInput(RHS);

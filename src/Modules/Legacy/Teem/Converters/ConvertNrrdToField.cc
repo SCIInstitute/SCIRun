@@ -55,7 +55,7 @@ ALGORITHM_PARAMETER_DEF(Teem, DataLocation);
 ALGORITHM_PARAMETER_DEF(Teem, FieldType);
 ALGORITHM_PARAMETER_DEF(Teem, ConvertParity);
 
-const ModuleLookupInfo ConvertNrrdToField::staticInfo_("ConvertNrrdToField", "Converters", "Teem");
+MODULE_INFO_DEF(ConvertNrrdToField, Converters, Teem)
 
 ConvertNrrdToField::ConvertNrrdToField() : Module(staticInfo_)
 {

@@ -39,7 +39,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Dataflow::Networks;
 
-GenerateROIStatisticsModule::GenerateROIStatisticsModule() : Module(ModuleLookupInfo("GenerateROIStatistics", "BrainStimulator", "SCIRun"))
+GenerateROIStatistics::GenerateROIStatistics() : Module(ModuleLookupInfo("GenerateROIStatistics", "BrainStimulator", "SCIRun"))
 {
  INITIALIZE_PORT(MeshDataOnElements);
  INITIALIZE_PORT(PhysicalUnit);
@@ -50,13 +50,13 @@ GenerateROIStatisticsModule::GenerateROIStatisticsModule() : Module(ModuleLookup
  INITIALIZE_PORT(CoordinateSpaceLabel);
 }
 
-void GenerateROIStatisticsModule::setStateDefaults()
+void GenerateROIStatistics::setStateDefaults()
 {
   setStateStringFromAlgoOption(Parameters::PhysicalUnitStr);
   get_state()->setValue(Parameters::StatisticsTableValues, VariableList());
 }
 
-void GenerateROIStatisticsModule::execute()
+void GenerateROIStatistics::execute()
 {
   auto meshData_ = getRequiredInput(MeshDataOnElements); /// get all the inputs
   auto physicalUnit_ = getOptionalInput(PhysicalUnit);

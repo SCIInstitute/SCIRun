@@ -50,7 +50,7 @@ namespace Teem {
     OUTPUT_PORT(1, Points, NrrdDataType);
     OUTPUT_PORT(2, Connections, NrrdDataType);
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };
 
 }}}

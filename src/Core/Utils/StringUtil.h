@@ -35,6 +35,7 @@
 #include <fstream>
 #include <vector>
 #include <iterator>
+#include <type_traits>
 #include <boost/shared_ptr.hpp>
 #include <boost/atomic.hpp>
 #ifndef Q_MOC_RUN
@@ -119,6 +120,26 @@ auto zip(const T&... containers) -> boost::iterator_range<boost::zip_iterator<de
   auto zip_end = boost::make_zip_iterator(boost::make_tuple(std::end(containers)...));
   return boost::make_iterator_range(zip_begin, zip_end);
 }
+
+//template<typename T, typename = void>
+//struct has_id : std::false_type { };
+//
+//template<typename T>
+//struct has_id<T, decltype(std::declval<T>().id, void())> : std::true_type{};
+
+#define DEFINE_MEMBER_CHECKER(member) \
+    template<typename T, typename V = bool> \
+    struct has_ ## member : std::false_type { }; \
+    template<typename T> \
+    struct has_ ## member<T, \
+        typename std::enable_if< \
+            !std::is_same<decltype(std::declval<T>().member), void>::value, \
+            bool \
+                    >::type \
+                > : std::true_type { };
+
+#define HAS_MEMBER(C, member) \
+    has_ ## member<C>::value
 
 }}
 

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -39,9 +39,10 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
+MODULE_INFO_DEF(BuildTDCSMatrix, FiniteElements, SCIRun)
 
 BuildTDCSMatrix::BuildTDCSMatrix()
-  : Module(ModuleLookupInfo("BuildTDCSMatrix","FiniteElements", "SCIRun"), false)
+  : Module(staticInfo_, HasUI<BuildTDCSMatrix>::value)
 {
  INITIALIZE_PORT(FEM_Stiffness_Matrix);
  INITIALIZE_PORT(FEM_Mesh);
@@ -51,7 +52,6 @@ BuildTDCSMatrix::BuildTDCSMatrix()
  INITIALIZE_PORT(Contact_Impedance);
  INITIALIZE_PORT(TDCSMatrix);
 }
-
 
 void BuildTDCSMatrix::execute()
 {
@@ -69,7 +69,3 @@ void BuildTDCSMatrix::execute()
     sendOutputFromAlgorithm(TDCSMatrix,output);
   }
 }
-
-
-
-

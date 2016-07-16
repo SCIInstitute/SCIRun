@@ -73,6 +73,16 @@ std::pair<ParallelModuleExecutionOrder::const_iterator, ParallelModuleExecutionO
   return map_.equal_range(order);
 }
 
+int ParallelModuleExecutionOrder::groupOf(const ModuleId& id) const
+{
+  for (const auto& p : map_)
+  {
+    if (p.second == id)
+      return p.first;
+  }
+  return -1;
+}
+
 std::ostream& SCIRun::Dataflow::Engine::operator<<(std::ostream& out, const ParallelModuleExecutionOrder& order)
 {
   // platform-independent sorting for verification purposes.

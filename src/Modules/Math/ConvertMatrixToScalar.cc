@@ -28,9 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Modules/Math/ConvertMatrixToScalar.h>
 
-//#include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-//#include <Core/Math/MiscMath.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/Scalar.h>
 
@@ -40,14 +38,13 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-const ModuleLookupInfo ConvertMatrixToScalar::staticInfo_("ConvertMatrixToScalar", "Converters", "SCIRun");
+MODULE_INFO_DEF(ConvertMatrixToScalar, Converters, SCIRun)
 
-ConvertMatrixToScalar::ConvertMatrixToScalar() : Module(staticInfo_,false)
+ConvertMatrixToScalar::ConvertMatrixToScalar() : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(Input);
   INITIALIZE_PORT(Output);
 }
-
 
 void ConvertMatrixToScalar::execute()
 {
@@ -56,25 +53,25 @@ void ConvertMatrixToScalar::execute()
   if (needToExecute())
   {
     update_state(Executing);
-    
+
     if (!matrixIs::dense(input_matrix))
     {
       //TODO implement something with sparse
       error("Currently only works with dense matrices");
       return;
     }
-    
+
     auto dense = castMatrix::toDense (input_matrix);
-    
+
     if (dense->get_dense_size()!=1)
     {
       error("matrix must be size 1x1");
     }
-    
+
     double* dataptr = 0;
     dataptr = dense->data();
     int datavalue= dataptr[0];
-    
+
     boost::shared_ptr<SCIRun::Core::Datatypes::Int32> out(new SCIRun::Core::Datatypes::Int32(datavalue));
 
     sendOutput(Output,out);

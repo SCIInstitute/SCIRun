@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -42,9 +42,9 @@ using namespace SCIRun::Modules::Fields;
 
 /// @class RegisterWithCorrespondences
 /// @brief This module allows you to morph using a thin plate spline algorithm
-/// one point set or mesh to another point set or mesh. 
+/// one point set or mesh to another point set or mesh.
 
-const ModuleLookupInfo RegisterWithCorrespondences::staticInfo_("RegisterWithCorrespondences","ChangeFieldData","SCIRun");
+MODULE_INFO_DEF(RegisterWithCorrespondences, ChangeFieldData, SCIRun)
 
 RegisterWithCorrespondences::RegisterWithCorrespondences() : Module(staticInfo_)
 {
@@ -54,7 +54,8 @@ RegisterWithCorrespondences::RegisterWithCorrespondences() : Module(staticInfo_)
 	INITIALIZE_PORT(OutputField);
 }
 
-void RegisterWithCorrespondences::setStateDefaults() {
+void RegisterWithCorrespondences::setStateDefaults()
+{
 	setStateIntFromAlgo(Variables::Operator);
 }
 
@@ -70,4 +71,3 @@ void RegisterWithCorrespondences::execute()
     sendOutputFromAlgorithm(OutputField, output);
   }
 }
-

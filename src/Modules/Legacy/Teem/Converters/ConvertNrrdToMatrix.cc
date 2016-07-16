@@ -54,7 +54,7 @@ using namespace Core::Datatypes;
 ALGORITHM_PARAMETER_DEF(Teem, MatrixType);
 ALGORITHM_PARAMETER_DEF(Teem, SparseColumns);
 
-const ModuleLookupInfo ConvertNrrdToMatrix::staticInfo_("ConvertNrrdToMatrix", "Converters", "Teem");
+MODULE_INFO_DEF(ConvertNrrdToMatrix, Converters, Teem)
 
 ConvertNrrdToMatrix::ConvertNrrdToMatrix() : Module(staticInfo_)
 {

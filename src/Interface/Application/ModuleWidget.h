@@ -193,7 +193,7 @@ Q_SIGNALS:
   void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void moduleExecuted();
-  void executedManually(const SCIRun::Dataflow::Networks::ModuleHandle& module);
+  void executedManually(const SCIRun::Dataflow::Networks::ModuleHandle& module, bool fromButton);
   void updateProgressBarSignal(double percent);
   void cancelConnectionsInProgress();
   void noteUpdated(const Note& note);
@@ -218,6 +218,7 @@ private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
   void executeButtonPushed();
+  void executeTriggeredViaStateChange();
   void stopButtonPushed();
   void colorOptionsButton(bool visible);
   void fillReplaceWithMenu();
