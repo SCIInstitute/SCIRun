@@ -87,7 +87,7 @@ void ExtractSimpleIsosurface::execute()
     {
       auto isoList = state->getValue(Parameters::ListOfIsovalues).toString();
       std::vector<std::string> tokens;
-      boost::split(tokens, isoList, boost::is_any_of(","));
+      boost::split(tokens, isoList, boost::is_any_of(", "));
 
       std::transform(tokens.begin(), tokens.end(), std::back_inserter(isoDoubles), [](const std::string& s)
       {
@@ -101,11 +101,19 @@ void ExtractSimpleIsosurface::execute()
       field->vfield()->minmax(qmin, qmax);
       std::ostringstream ostr;
       int num = state->getValue(Parameters::QuantityOfIsovalues).toInt();
-      double di = (qmax - qmin) / (double)(num - 1.0);
-      for (int i = 0; i < num; i++)
+      if (num > 1)
       {
-        isoDoubles.push_back(qmin + ((double)i*di));
-        ostr << isoDoubles[i] << "\n";
+        double di = (qmax - qmin) / (double)(num - 1.0);
+        for (int i = 0; i < num; i++)
+        {
+          isoDoubles.push_back(qmin + ((double)i*di));
+          ostr << isoDoubles[i] << "\n";
+        }
+      }
+      else if (num == 1)
+      {
+        isoDoubles.push_back((qmin + qmax)/2);
+        ostr << isoDoubles[0] << "\n";
       }
       state->setValue(Parameters::IsovalueListString, ostr.str());
     }
