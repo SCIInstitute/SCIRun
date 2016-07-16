@@ -302,7 +302,13 @@ void PythonConsoleEdit::issue_command()
   c.insertText("\n");
 
   this->interactive_position_ = this->document_end();
-  PythonInterpreter::Instance().run_string(command.toStdString());
+
+  auto lines = command.split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
+  for (const auto& line : lines)
+  {
+    if (!line.isEmpty())
+      PythonInterpreter::Instance().run_string(line.toStdString());
+  }
 }
 
 void PythonConsoleEdit::promptImpl(const QString& text)
