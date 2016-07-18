@@ -31,6 +31,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Render;
 
@@ -63,8 +65,12 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   updateZoomOptionVisibility();
 
   //-----------Objects Tab-----------------//
-  connect(selectAllPushButton_, SIGNAL(clicked()), parent, SLOT(selectAllClicked()));
-  connect(deselectAllPushButton_, SIGNAL(clicked()), parent, SLOT(deselectAllClicked()));
+  visibleItems_ = std::make_unique<VisibleItemManager>(objectListWidget_);
+  connect(selectAllPushButton_, SIGNAL(clicked()), visibleItems_.get(), SLOT(selectAllClicked()));
+  connect(deselectAllPushButton_, SIGNAL(clicked()), visibleItems_.get(), SLOT(deselectAllClicked()));
+  connect(objectListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), visibleItems_.get(), SLOT(slotChanged(QListWidgetItem*)));
+  connect(visibleItems_.get(), SIGNAL(visibleItemChange()), parent, SIGNAL(newGeometryValueForwarder()));
+
   //-----------Render Tab-----------------//
   connect(setBackgroundColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignBackgroundColor()));
   connect(lightingCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(lightingChecked(bool)));
@@ -124,11 +130,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(listSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeLists(bool)));
   connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
   connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
-
-  connect(objectListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(slotChanged(QListWidgetItem*)));
-  connect(this, SIGNAL(itemUnselected(const QString&)), parent, SLOT(handleUnselectedItem(const QString&)));
-  connect(this, SIGNAL(itemSelected(const QString&)), parent, SLOT(handleSelectedItem(const QString&)));
-
 
   setSampleColor(Qt::black);
 
@@ -323,53 +324,109 @@ QColor ViewSceneControlsDock::getLightColor(int index) const
   return lightControls_[index]->getColor();
 }
 
-void ViewSceneControlsDock::addItem(const QString& name, bool checked)
+bool VisibleItemManager::isVisible(const QString& name) const
 {
-  auto items = objectListWidget_->findItems(name, Qt::MatchExactly);
+  auto itemMatch = itemList_->findItems(name, Qt::MatchExactly);
+  auto ret = itemMatch.size() == 1 && (itemMatch[0]->checkState() == Qt::Checked);
+  qDebug() << "isVisible: " << name << ret;
+  return ret;
+}
+
+bool VisibleItemManager::containsItem(const QString& name) const
+{
+  auto itemMatch = itemList_->findItems(name, Qt::MatchExactly);
+  return itemMatch.size() == 1;
+}
+
+std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryBaseHandle>& geomList)
+{
+  std::vector<QString> displayNames;
+  std::transform(geomList.begin(), geomList.end(), std::back_inserter(displayNames),
+    [](const GeometryBaseHandle& geom) { return QString::fromStdString(geom->uniqueID()).split('_').at(1); });
+  for (int i = 0; i < itemList_->count(); ++i)
+  {
+    if (std::find(displayNames.begin(), displayNames.end(), itemList_->item(i)->text()) == displayNames.end())
+      delete itemList_->takeItem(i);
+  }
+  for (const auto& name : displayNames)
+  {
+    if (!containsItem(name))
+      addRenderItem(name, true);
+  }
+  itemList_->sortItems();
+  return displayNames;
+}
+
+void VisibleItemManager::addRenderItem(const QString& name, bool checked)
+{
+  auto items = itemList_->findItems(name, Qt::MatchExactly);
   if (items.count() > 0)
   {
     return;
   }
 
-  QListWidgetItem* item = new QListWidgetItem(name, objectListWidget_);
+  auto item = new QListWidgetItem(name, itemList_);
 
   if (checked) 
     item->setCheckState(Qt::Checked);
   else 
     item->setCheckState(Qt::Unchecked);
 
-  objectListWidget_->addItem(item);
+  itemList_->addItem(item);
 }
 
-void ViewSceneControlsDock::removeItem(const QString& name)
+void VisibleItemManager::removeRenderItem(const QString& name)
 {
-  auto items = objectListWidget_->findItems(name, Qt::MatchExactly);
+  auto items = itemList_->findItems(name, Qt::MatchExactly);
   Q_FOREACH(QListWidgetItem* item, items)
   {
-    objectListWidget_->removeItemWidget(item);
+    itemList_->removeItemWidget(item);
   }
 }
 
-void ViewSceneControlsDock::removeAllItems()
+void VisibleItemManager::clear()
 {
-  if (objectListWidget_->count() > 0)
+  if (itemList_->count() > 0)
   {
     LOG_DEBUG("ViewScene items cleared" << std::endl);
-    objectListWidget_->clear();
+    itemList_->clear();
   }
 }
 
-void ViewSceneControlsDock::slotChanged(QListWidgetItem* item)
+void VisibleItemManager::selectAllClicked()
+{
+  itemList_->blockSignals(true);
+  for (int i = 0; i < itemList_->count(); ++i)
+  {
+    itemList_->item(i)->setCheckState(Qt::Checked);
+  }
+  itemList_->blockSignals(false);
+  Q_EMIT visibleItemChange();
+}
+
+void VisibleItemManager::deselectAllClicked()
+{
+  itemList_->blockSignals(true);
+  for (int i = 0; i < itemList_->count(); ++i)
+  {
+    itemList_->item(i)->setCheckState(Qt::Unchecked);
+  }
+  itemList_->blockSignals(false);
+  Q_EMIT visibleItemChange();
+}
+
+void VisibleItemManager::slotChanged(QListWidgetItem* item)
 {
   if (item->checkState() == Qt::Unchecked)
   {
-    LOG_DEBUG("Item " << item->text().toStdString() << " Unchecked!" << std::endl);
-    Q_EMIT itemUnselected(item->text());
+    qDebug() << "Item " << item->text() << " Unchecked!";
+    Q_EMIT visibleItemChange();
   }
   else if (item->checkState() == Qt::Checked)
   {
+    qDebug() << "Item " << item->text() << " checked!";
     LOG_DEBUG("Item " << item->text().toStdString() << " Checked!" << std::endl);
-    Q_EMIT itemSelected(item->text());
+    Q_EMIT visibleItemChange();
   }
 }
 
