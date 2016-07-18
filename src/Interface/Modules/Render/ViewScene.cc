@@ -690,8 +690,7 @@ void ViewSceneDialog::lookDownAxisZ(int upIndex, glm::vec3& up)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::configurationButtonClicked()
 {
-  mConfigurationDock->setEnabled(true);
-  mConfigurationDock->setVisible(true);
+  mConfigurationDock->setVisible(!mConfigurationDock->isVisible());
 }
 
 //------------------------------------------------------------------------------
@@ -1407,7 +1406,7 @@ void ViewSceneDialog::toggleLightOnOff(int index, bool value)
 void ViewSceneDialog::addToolBar()
 {
   mToolBar = new QToolBar(this);
-  mToolBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }");
+  WidgetStyleMixin::toolbarStyle(mToolBar);
 
   addConfigurationButton();
   addConfigurationDock();
