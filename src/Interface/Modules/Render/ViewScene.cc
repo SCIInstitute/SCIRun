@@ -257,7 +257,6 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
     selected_ = false;
     auto selName = restoreObjColor();
     newGeometryValue();
-    //std::cout << "mousePressSignalForTestingGeometryObjectFeedback\n";
     Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y(), selName);
   }
 }
@@ -296,9 +295,9 @@ void ViewSceneDialog::keyReleaseEvent(QKeyEvent* event)
   }
 }
 
+//TODO: refactor duplication!!!
 void ViewSceneDialog::selectObject(const int x, const int y)
 {
-  //newGeometryValue
   LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
 
   Guard lock(Modules::Render::ViewScene::mutex_.get());
@@ -402,7 +401,6 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 
 void ViewSceneDialog::newGeometryValue()
 {
-  qDebug() << "newGeom";
   LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
 
   Guard lock(Modules::Render::ViewScene::mutex_.get());
@@ -413,7 +411,6 @@ void ViewSceneDialog::newGeometryValue()
   if (!spire)
     return;
   spire->removeAllGeomObjects();
-
   
   std::vector<QString> displayNames;
   std::vector<std::string> validObjects;
@@ -443,29 +440,23 @@ void ViewSceneDialog::newGeometryValue()
   }
 
   displayNames = mConfigurationDock->visibleItems().synchronize(allGeoms);
-  qDebug() << displayNames.size() << allGeoms.size();
 
   int port = 0;
   for (auto it = allGeoms.begin(); it != allGeoms.end(); ++it, ++port)
   {
     auto obj = *it;
     auto name = displayNames[port];
-    qDebug() << name;
     if (mConfigurationDock->visibleItems().isVisible(name))
     {
       auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
       if (realObj)
       {
-        qDebug() << "\thandled";
         spire->handleGeomObject(realObj, port);
         validObjects.push_back(obj->uniqueID());
       }
     }
   }
   
-  //add objects of its own
-  //scale bar
-
   if (!validObjects.empty())
     spire->gcInvalidObjects(validObjects);
 
@@ -531,7 +522,6 @@ void ViewSceneDialog::showAxisChecked(bool value)
 {
   //TODO: Add to SRInterface
 }
-
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::viewBarButtonClicked()
@@ -700,9 +690,6 @@ void ViewSceneDialog::lookDownAxisZ(int upIndex, glm::vec3& up)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::configurationButtonClicked()
 {
-
-
-  //showConfiguration_ = !mConfigurationDock->isVisible();
   mConfigurationDock->setEnabled(true);
   mConfigurationDock->setVisible(true);
 }
@@ -751,38 +738,6 @@ void ViewSceneDialog::setTransparencySortTypeLists(bool index)
   spire->setTransparencyRendertype(RenderState::TransparencySortType::LISTS_SORT);
   newGeometryValue();
 }
-
-////------------------------------------------------------------------------------
-//void ViewSceneDialog::handleUnselectedItem(const QString& name)
-//{
-//  itemValueChanged_ = true;
-//  //unselectedObjectNames_.push_back(name.toStdString());
-//  newGeometryValue();
-//}
-//
-////------------------------------------------------------------------------------
-//void ViewSceneDialog::handleSelectedItem(const QString& name)
-//{
-//  itemValueChanged_ = true;
-//  //unselectedObjectNames_.erase(remove(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name.toStdString()), unselectedObjectNames_.end());
-//  newGeometryValue();
-//}
-
-//------------------------------------------------------------------------------
-//void ViewSceneDialog::selectAllClicked()
-//{
-//  itemValueChanged_ = true;
-//  //unselectedObjectNames_.clear();
-//  newGeometryValue();
-//}
-//
-////------------------------------------------------------------------------------
-//void ViewSceneDialog::deselectAllClicked()
-//{
-//  itemValueChanged_ = true;
-//  //unselectedObjectNames_ = previousObjectNames_;
-//  newGeometryValue();
-//}
 
 //------------------------------------------------------------------------------
 void ViewSceneDialog::adjustZoomSpeed(int value)
@@ -1122,8 +1077,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   }
 
   ss.str("");
-  ss << "scale_bar" << scaleBar_.fontSize << scaleBar_.length <<
-    scaleBar_.height << scaleBar_.numTicks << scaleBar_.projLength;
+  ss << "_scaleBar::" << scaleBar_.fontSize << scaleBar_.length << scaleBar_.height << scaleBar_.numTicks << scaleBar_.projLength;
   std::string uniqueNodeID = ss.str();
   std::string vboName = uniqueNodeID + "VBO";
   std::string iboName = uniqueNodeID + "IBO";
@@ -1200,9 +1154,6 @@ void ViewSceneDialog::updateScaleBarLength()
     glm::vec2 pp(p.x*width / 2.0,
       p.y*height / 2.0);
     scaleBar_.projLength = glm::length(pp);
-    //std::cout << "p1:\t" << p1.x << "\t" << p1.y << "\t" << p1.z << "\t" << p1.w << "\n";
-    //std::cout << "p2:\t" << p2.x << "\t" << p2.y << "\t" << p2.z << "\t" << p2.w << "\n";
-    //std::cout << "pp:\t" << pp.x << "\t" << pp.y << "\n";
   }
 }
 
@@ -1453,13 +1404,6 @@ void ViewSceneDialog::toggleLightOnOff(int index, bool value)
     spire->setLightOn(index, value);
 }
 
-//------------------------------------------------------------------------------
-//bool ViewSceneDialog::isObjectUnselected(const std::string& name)
-//{
-//  return 
-//  return std::find(unselectedObjectNames_.begin(), unselectedObjectNames_.end(), name) != unselectedObjectNames_.end();
-//}
-
 void ViewSceneDialog::addToolBar()
 {
   mToolBar = new QToolBar(this);
@@ -1585,7 +1529,6 @@ void ViewSceneDialog::addConfigurationDock()
     mConfigurationDock->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
       scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
     setupMaterials();
- //   newGeometryValue();
 }
 
 void ViewSceneDialog::setupClippingPlanes()
@@ -1682,18 +1625,6 @@ void ViewSceneDialog::setupRenderTabValues()
   {
     mConfigurationDock->setRenderTabValues(true, false, true, false, false, false, 0.4, 0.0, 0.0, 20);
   }
-}
-
-void ViewSceneDialog::hideConfigurationDock()
-{
-  /*if (mConfigurationDock)
-  {
-    showConfiguration_ = mConfigurationDock->isVisible();
-    if (showConfiguration_)
-    {
-      configurationButtonClicked();
-    }
-  }*/
 }
 
 void ViewSceneDialog::showEvent(QShowEvent* evt)

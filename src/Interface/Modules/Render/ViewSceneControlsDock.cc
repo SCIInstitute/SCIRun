@@ -327,9 +327,7 @@ QColor ViewSceneControlsDock::getLightColor(int index) const
 bool VisibleItemManager::isVisible(const QString& name) const
 {
   auto itemMatch = itemList_->findItems(name, Qt::MatchExactly);
-  auto ret = itemMatch.size() == 1 && (itemMatch[0]->checkState() == Qt::Checked);
-  qDebug() << "isVisible: " << name << ret;
-  return ret;
+  return itemMatch.size() == 1 && (itemMatch[0]->checkState() == Qt::Checked);
 }
 
 bool VisibleItemManager::containsItem(const QString& name) const
@@ -419,13 +417,10 @@ void VisibleItemManager::slotChanged(QListWidgetItem* item)
 {
   if (item->checkState() == Qt::Unchecked)
   {
-    qDebug() << "Item " << item->text() << " Unchecked!";
     Q_EMIT visibleItemChange();
   }
   else if (item->checkState() == Qt::Checked)
   {
-    qDebug() << "Item " << item->text() << " checked!";
-    LOG_DEBUG("Item " << item->text().toStdString() << " Checked!" << std::endl);
     Q_EMIT visibleItemChange();
   }
 }

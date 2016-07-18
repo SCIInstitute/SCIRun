@@ -51,7 +51,6 @@ namespace SCIRun {
         QWidget* parent = nullptr);
 
       void setMovable(bool canMove);
-      void connectSignals(ViewSceneDialog* parent);
       QPointF getLightPosition() const;
       QColor getColor() const;
 
