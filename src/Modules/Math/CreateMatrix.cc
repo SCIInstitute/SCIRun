@@ -35,21 +35,22 @@ using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-const ModuleLookupInfo CreateMatrixModule::staticInfo_("CreateMatrix", "Math", "SCIRun");
-const SCIRun::Core::Algorithms::AlgorithmParameterName CreateMatrixModule::TextEntry("TextEntry");
+MODULE_INFO_DEF(CreateMatrix, Math, SCIRun)
 
-CreateMatrixModule::CreateMatrixModule() : Module(staticInfo_)
+const SCIRun::Core::Algorithms::AlgorithmParameterName CreateMatrix::TextEntry("TextEntry");
+
+CreateMatrix::CreateMatrix() : Module(staticInfo_)
 {
   INITIALIZE_PORT(EnteredMatrix);
 }
 
-void CreateMatrixModule::setStateDefaults()
+void CreateMatrix::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(TextEntry, std::string());
 }
 
-void CreateMatrixModule::execute()
+void CreateMatrix::execute()
 {
   if (needToExecute())
   {

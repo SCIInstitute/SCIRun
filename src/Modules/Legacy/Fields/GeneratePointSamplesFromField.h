@@ -64,7 +64,7 @@ namespace SCIRun {
         OUTPUT_PORT(0, GeneratedWidget, GeometryObject);
         OUTPUT_PORT(1, GeneratedPoints, LegacyField);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       private:
         boost::shared_ptr<class GeneratePointSamplesFromFieldImpl> impl_;
         FieldHandle GenerateOutputField();

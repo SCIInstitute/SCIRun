@@ -69,7 +69,7 @@ IF(GENERATE_MODULE_FACTORY_CODE AND REGENERATE_MODULE_FACTORY_CODE)
     TARGET Interface_Modules_Factory
        POST_BUILD
        COMMAND ${CMAKE_COMMAND} -E remove -f ${ModuleDialogFactory_Generated}
-       COMMENT " Running POST BUILD action "
+       COMMENT "Removed generated Module Dialog Factory code--it will be regenerated next build. Turn off CMake flag REGENERATE_MODULE_FACTORY_CODE if new modules are not being added."
   )
 ENDIF()
 
@@ -87,7 +87,6 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Factory
   Interface_Modules_String
   Interface_Modules_Matlab
   Interface_Modules_Teem
-  Interface_Modules_Testing
   Interface_Modules_Visualization
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
@@ -104,3 +103,5 @@ IF(BUILD_SHARED_LIBS)
 ENDIF()
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+
+SCIRUN_ADD_TEST_DIR(Tests)

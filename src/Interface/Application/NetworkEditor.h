@@ -260,7 +260,7 @@ namespace Gui {
     void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
     void replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToReplace, const std::string& newModuleName);
     void executeAll();
-    void executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
+    void executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module, bool fromButton);
     void removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId& id);
     virtual void clear() override;
     void setConnectionPipelineType(int type);

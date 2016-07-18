@@ -53,7 +53,7 @@ using namespace SCIRun::Modules::Math;
 /// @class ReportColumnMatrixMisfit
 /// @brief This module computes and visualizes the error between two vectors.
 
-const ModuleLookupInfo ReportColumnMatrixMisfit::staticInfo_("ReportColumnMatrixMisfit", "Math", "SCIRun");
+MODULE_INFO_DEF(ReportColumnMatrixMisfit, Math, SCIRun)
 
 ReportColumnMatrixMisfit::ReportColumnMatrixMisfit() : Module(staticInfo_)
 {

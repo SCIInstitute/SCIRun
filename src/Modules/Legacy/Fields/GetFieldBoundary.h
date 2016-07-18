@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -38,7 +38,7 @@ namespace SCIRun {
     namespace Fields {
 
 	/// @class GetFieldBoundary
-	/// @brief This module extracts a boundary surface from a volume field. 
+	/// @brief This module extracts a boundary surface from a volume field.
 
       class SCISHARE GetFieldBoundary : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,
@@ -54,6 +54,8 @@ namespace SCIRun {
         INPUT_PORT(0, InputField, LegacyField);
         OUTPUT_PORT(0, BoundaryField, LegacyField);
         OUTPUT_PORT(1, Mapping, Matrix);
+
+        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
       };
 
     }

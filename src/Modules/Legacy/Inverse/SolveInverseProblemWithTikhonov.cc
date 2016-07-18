@@ -42,8 +42,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 ALGORITHM_PARAMETER_DEF(Inverse, TikhonovSolutionSubcase);
 ALGORITHM_PARAMETER_DEF(Inverse, TikhonovResidualSubcase);
 
-
-const ModuleLookupInfo SolveInverseProblemWithTikhonov::staticInfo_("SolveInverseProblemWithTikhonov", "Inverse", "SCIRun");
+MODULE_INFO_DEF(SolveInverseProblemWithTikhonov, Inverse, SCIRun)
 
 SolveInverseProblemWithTikhonov::SolveInverseProblemWithTikhonov() : Module(staticInfo_)
 {
@@ -90,7 +89,7 @@ void SolveInverseProblemWithTikhonov::execute()
     auto gui_tikhonov_case = static_cast<TikhonovAlgorithmImpl::AlgorithmChoice>(state->getValue(TikhonovCase).toInt());
     auto gui_tikhonov_solution_subcase = static_cast<TikhonovAlgorithmImpl::AlgorithmSolutionSubcase>(state->getValue(Parameters::TikhonovSolutionSubcase).toInt());
     auto gui_tikhonov_residual_subcase = static_cast<TikhonovAlgorithmImpl::AlgorithmResidualSubcase>(state->getValue(Parameters::TikhonovResidualSubcase).toInt());
-    
+
     auto denseForward = castMatrix::toDense(forward_matrix_h);
     auto measuredDense = convertMatrix::toDense(hMatrixMeasDat);
     auto regMatDense = castMatrix::toDense(hMatrixRegMat.get_value_or(nullptr));

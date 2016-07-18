@@ -28,7 +28,6 @@
 
 SET(Modules_Visualization_SRCS
   CreateStandardColorMap.cc
-  MatrixAsVectorField.cc
   ShowField.cc
   ShowFieldGlyphs.cc
   ShowString.cc
@@ -39,7 +38,6 @@ SET(Modules_Visualization_SRCS
 
 SET(Modules_Visualization_HEADERS
   CreateStandardColorMap.h
-  MatrixAsVectorField.h
   ShowField.h
   ShowFieldGlyphs.h
   ShowString.h

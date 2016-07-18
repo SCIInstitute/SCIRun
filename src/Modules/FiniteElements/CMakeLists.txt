@@ -27,11 +27,9 @@
 #
 
 SET(Modules_FiniteElements_SRCS
-  TDCSSimulator.cc
 )
 
 SET(Modules_FiniteElements_HEADERS
-  TDCSSimulator.h
   share.h
 )
 

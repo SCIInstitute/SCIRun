@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -37,11 +37,11 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-const ModuleLookupInfo BuildMappingMatrix::staticInfo_("BuildMappingMatrix", "MiscField", "SCIRun");
+MODULE_INFO_DEF(BuildMappingMatrix, MiscField, SCIRun)
 
 /// @class BuildMappingMatrix
 /// @brief Build a mapping matrix -- a matrix that says how to project the data
-/// from one field onto the data of a second field. 
+/// from one field onto the data of a second field.
 
 BuildMappingMatrix::BuildMappingMatrix() : Module(staticInfo_)
 {
@@ -61,7 +61,7 @@ BuildMappingMatrix::execute()
 {
   auto source = getRequiredInput(Source);
   auto destination = getRequiredInput(Destination);
-  
+
   if (needToExecute())
   {
     update_state(Executing);

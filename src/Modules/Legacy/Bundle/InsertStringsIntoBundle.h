@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -35,10 +35,10 @@
 namespace SCIRun {
   namespace Modules {
     namespace Bundles {
-      
+
       /// @class InsertStringsIntoBundle
       /// @brief This module inserts a string object into a bundle.
-      
+
       class SCISHARE InsertStringsIntoBundle : public Dataflow::Networks::Module,
         public Has2InputPorts<BundlePortTag, DynamicPortTag<StringPortTag>>,
         public Has1OutputPort<BundlePortTag>
@@ -47,7 +47,7 @@ namespace SCIRun {
         InsertStringsIntoBundle();
         virtual void setStateDefaults() override;
         virtual void execute() override;
-        virtual bool hasDynamicPorts() const override { return true; }
+        HAS_DYNAMIC_PORTS
 
         INPUT_PORT(0, InputBundle, Bundle);
         INPUT_PORT_DYNAMIC(1, InputStrings, String);
@@ -58,7 +58,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName StringNames;
         static const Core::Algorithms::AlgorithmParameterName StringReplace;
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
 
     }

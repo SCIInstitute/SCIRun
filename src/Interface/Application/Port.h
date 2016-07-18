@@ -146,6 +146,8 @@ public:
 
   virtual boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override;
 
+  QGraphicsTextItem* makeNameLabel() const;
+
 protected:
   virtual void moveEvent(QMoveEvent * event) override;
 
@@ -204,6 +206,7 @@ private:
   typedef std::map<PortWidget*, std::map<PortWidget*, bool>> PotentialConnectionMap;
   static PotentialConnectionMap potentialConnectionsMap_;
   std::set<ConnectionInProgress*> potentialConnections_;
+  std::set<QGraphicsTextItem*> potentialConnectionPortNames_;
 };
 
 // To fill the layout

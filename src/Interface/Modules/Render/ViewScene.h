@@ -35,8 +35,6 @@ DEALINGS IN THE SOFTWARE.
 #include "Interface/Modules/Render/ui_ViewScene.h"
 
 #include <boost/shared_ptr.hpp>
-
-#include <Modules/Basic/SendScalarModuleState.h>
 #include <Modules/Visualization/TextBuilder.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>

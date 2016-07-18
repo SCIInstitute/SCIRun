@@ -47,7 +47,8 @@ namespace SCIRun {
         INPUT_PORT(0, Vec1, Matrix);
         INPUT_PORT(1, Vec2, Matrix);
         OUTPUT_PORT(0, Error_Out, Double);
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       private:
         void showGraph(const Core::Datatypes::DenseColumnMatrix& v1, const Core::Datatypes::DenseColumnMatrix& v2, double ccInv, double rmsRel) const;
         bool containsInfiniteComponent(const Core::Datatypes::DenseColumnMatrix& v) const;

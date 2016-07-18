@@ -37,14 +37,14 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 
-SendComplexScalarModule::SendComplexScalarModule()
+SendComplexScalar::SendComplexScalar()
   : Module(ModuleLookupInfo("SendComplexMatrix", "Math", "SCIRun"), false),
   data_(-1)
 {
   INITIALIZE_PORT(Scalar);
 }
 
-void SendComplexScalarModule::execute()
+void SendComplexScalar::execute()
 {
   if (needToExecute())
   {

@@ -73,8 +73,6 @@ namespace SCIRun {
         OUTPUT_PORT(1, RegularizationParameter, Matrix);
         OUTPUT_PORT(2, RegInverse, Matrix);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-
         static const Core::Algorithms::AlgorithmParameterName LambdaFromDirectEntry;
         static const Core::Algorithms::AlgorithmParameterName RegularizationMethod;
         static const Core::Algorithms::AlgorithmParameterName LambdaMin;
@@ -86,7 +84,9 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName LambdaCorner;
         static const Core::Algorithms::AlgorithmParameterName LCurveText;
 
-      LEGACY_BIOPSE_MODULE
+        LEGACY_BIOPSE_MODULE
+
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
       private:
         void update_lcurve_gui(const double lambda, const BioPSE::TikhonovAlgorithm::LCurveInput& input, const int lambda_index);

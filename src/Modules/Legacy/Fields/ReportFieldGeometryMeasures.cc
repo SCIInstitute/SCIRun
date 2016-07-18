@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///@file  ReportFieldGeometryMeasures.cc 
+///@file  ReportFieldGeometryMeasures.cc
 ///
 ///@author
 ///   David Weinstein
@@ -37,7 +37,6 @@
 #include <Modules/Legacy/Fields/ReportFieldGeometryMeasures.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-//#include <Core/Datatypes/MatrixTypeConverter.h>
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -56,9 +55,9 @@ using namespace SCIRun::Modules::Fields;
 
 /// @class ReportFieldGeometryMeasures
 /// @brief Build a densematrix, where each row is a particular measure of the
-/// input Field (e.g. the x-values, or the element size). 
+/// input Field (e.g. the x-values, or the element size).
 
-const ModuleLookupInfo ReportFieldGeometryMeasures::staticInfo_("ReportFieldGeometryMeasures", "MiscField", "SCIRun");
+MODULE_INFO_DEF(ReportFieldGeometryMeasures, MiscField, SCIRun)
 
 ALGORITHM_PARAMETER_DEF(Fields, MeasureLocation);
 ALGORITHM_PARAMETER_DEF(Fields, XPositionFlag);
@@ -92,11 +91,11 @@ void ReportFieldGeometryMeasures::execute()
 
   auto state = get_state();
   VMesh* mesh = fieldhandle->vmesh();
-  
+
   /// This is a hack for now, it is definitely not an optimal way
   int syncflag = 0;
   std::string simplex = state->getValue(Parameters::MeasureLocation).toString();
-  
+
   if (simplex == "Elements")
   {
     if (mesh->dimensionality() == 0) simplex = "Node";
@@ -134,7 +133,7 @@ void ReportFieldGeometryMeasures::execute()
   {
     warning("Cannot compute normals at that simplex location, skipping.");
   }
-  
+
   if (nnormals || fnormals)
   {
     mesh->synchronize(Mesh::NORMALS_E);
@@ -155,7 +154,7 @@ void ReportFieldGeometryMeasures::execute()
   if (nnormals) ncols+=3;
   if (fnormals) ncols+=3;
 
-  if (ncols==0) 
+  if (ncols==0)
   {
     error("No measures selected.");
     return;
@@ -171,8 +170,8 @@ void ReportFieldGeometryMeasures::execute()
     mesh->size(nrows);
     output.reset(new DenseMatrix(nrows,ncols));
     double* dataptr = output->data();
-  
-    Point p; double vol; 
+
+    Point p; double vol;
     for(VMesh::Node::index_type idx=0; idx<nrows; idx++)
     {
       mesh->get_center(p,idx);
@@ -182,10 +181,10 @@ void ReportFieldGeometryMeasures::execute()
       if (z) { *dataptr = p.z(); dataptr++; }
       if (eidx) { *dataptr = static_cast<double>(idx); dataptr++; }
       if (size) { *dataptr = vol; dataptr++; }
-      if (nnormals) 
-      { 
-        Vector v; mesh->get_normal(v,idx); 
-        dataptr[0] = v.x(); dataptr[1] = v.y(); 
+      if (nnormals)
+      {
+        Vector v; mesh->get_normal(v,idx);
+        dataptr[0] = v.x(); dataptr[1] = v.y();
         dataptr[2] = v.z(); dataptr += 3;
       }
     }
@@ -196,8 +195,8 @@ void ReportFieldGeometryMeasures::execute()
     mesh->size(nrows);
     output.reset(new DenseMatrix(nrows, ncols));
     double* dataptr = output->data();
-  
-    Point p; double vol; 
+
+    Point p; double vol;
     for(VMesh::Edge::index_type idx=0; idx<nrows; idx++)
     {
       mesh->get_center(p,idx);
@@ -208,18 +207,18 @@ void ReportFieldGeometryMeasures::execute()
       if (eidx) { *dataptr = static_cast<double>(idx); dataptr++; }
       if (size) { *dataptr = vol; dataptr++; }
     }
-  }  
+  }
   else if (state->getValue(Parameters::MeasureLocation).toString() == "Faces")
   {
     VMesh::Face::size_type nrows;
     mesh->size(nrows);
     output.reset(new DenseMatrix(nrows, ncols));
     double* dataptr = output->data();
-  
-    Point p; double vol; 
+
+    Point p; double vol;
     VMesh::coords_type center;
     mesh->get_element_center(center);
-    
+
     for(VMesh::Face::index_type idx=0; idx<nrows; idx++)
     {
       mesh->get_center(p,idx);
@@ -229,10 +228,10 @@ void ReportFieldGeometryMeasures::execute()
       if (z) { *dataptr = p.z(); dataptr++; }
       if (eidx) { *dataptr = static_cast<double>(idx); dataptr++; }
       if (size) { *dataptr = vol; dataptr++; }
-      if (fnormals) 
-      { 
-        Vector v; mesh->get_normal(v,center,VMesh::Elem::index_type(idx)); 
-        dataptr[0] = v.x(); dataptr[1] = v.y(); 
+      if (fnormals)
+      {
+        Vector v; mesh->get_normal(v,center,VMesh::Elem::index_type(idx));
+        dataptr[0] = v.x(); dataptr[1] = v.y();
         dataptr[2] =v.z(); dataptr += 3;
       }
     }
@@ -243,8 +242,8 @@ void ReportFieldGeometryMeasures::execute()
     mesh->size(nrows);
     output.reset(new DenseMatrix(nrows, ncols));
     double* dataptr = output->data();
-  
-    Point p; double vol; 
+
+    Point p; double vol;
     for(VMesh::Cell::index_type idx=0; idx<nrows; idx++)
     {
       mesh->get_center(p,idx);

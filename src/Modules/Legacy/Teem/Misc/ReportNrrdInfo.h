@@ -47,7 +47,7 @@ namespace Teem {
 
     INPUT_PORT(0, Query_Nrrd, NrrdDataType);
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
   private:
     void update_input_attributes(NrrdDataHandle nrrd);
     template <typename T>

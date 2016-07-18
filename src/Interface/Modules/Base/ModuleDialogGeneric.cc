@@ -154,12 +154,12 @@ void ModuleDialogGeneric::executeInteractivelyToggled(bool toggle)
 
 void ModuleDialogGeneric::connectStateChangeToExecute()
 {
-  connect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggered()));
+  connect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggeredViaStateChange()));
 }
 
 void ModuleDialogGeneric::disconnectStateChangeToExecute()
 {
-  disconnect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggered()));
+  disconnect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggeredViaStateChange()));
 }
 
 void ModuleDialogGeneric::toggleCollapse()

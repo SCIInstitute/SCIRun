@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -38,10 +38,11 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
-ModuleLookupInfo CreateFieldData::staticInfo_("CreateFieldData", "ChangeFieldData", "SCIRun");
-AlgorithmParameterName CreateFieldData::FunctionString("FunctionString");
-AlgorithmParameterName CreateFieldData::FormatString("FormatString");
-AlgorithmParameterName CreateFieldData::BasisString("BasisString");
+MODULE_INFO_DEF(CreateFieldData, ChangeFieldData, SCIRun)
+
+const AlgorithmParameterName CreateFieldData::FunctionString("FunctionString");
+const AlgorithmParameterName CreateFieldData::FormatString("FormatString");
+const AlgorithmParameterName CreateFieldData::BasisString("BasisString");
 
 CreateFieldData::CreateFieldData() : Module(staticInfo_)
 {
@@ -68,7 +69,7 @@ void CreateFieldData::setStateDefaults()
     GuiString guibasis_;       // constant, linear, quadratic, ....
 
     guifunction_(get_ctx()->subVar("function")),
-  guiformat_(get_ctx()->subVar("format")),  
+  guiformat_(get_ctx()->subVar("format")),
   guibasis_(get_ctx()->subVar("basis"))
 #endif
 
@@ -77,7 +78,7 @@ CreateFieldData::execute()
 {
   auto field = getRequiredInput(InputField);
   auto func = getOptionalInput(Function);
-  
+
   if (func && *func)
   {
     get_state()->setValue(FunctionString, (*func)->value());
@@ -87,11 +88,11 @@ CreateFieldData::execute()
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   TCLInterface::eval(get_id()+" update_text");
 #endif
-  
+
   if (needToExecute())
   {
     update_state(Executing);
-    
+
     // Get number of matrix ports with data (the last one is always empty)
     size_t numinputs = matrices.size();
     if (numinputs > 23)
@@ -103,7 +104,7 @@ CreateFieldData::execute()
 
     NewArrayMathEngine engine;
     engine.setLogger(this);
-    
+
     std::string format = state->getValue(FormatString).toString();
     if (format.empty()) format = "double";
     std::string basis = state->getValue(BasisString).toString();
@@ -122,13 +123,13 @@ CreateFieldData::execute()
     // Loop through all matrices and add them to the engine as well
     char mname = 'A';
     std::string matrixname("A");
-  
+
     for (size_t p = 0; p < matrices.size(); p++)
     {
       if (!matrices[p])
       {
         error("No matrix was found on input port.");
-        return;      
+        return;
       }
 
       matrixname[0] = mname++;
@@ -144,18 +145,18 @@ CreateFieldData::execute()
 
     std::string function = state->getValue(FunctionString).toString();
     if(!(engine.add_expressions(function))) return;
-    
+
     // Actual engine call, which does the dynamic compilation, the creation of the
-    // code for all the objects, as well as inserting the function and looping 
+    // code for all the objects, as well as inserting the function and looping
     // over every data point
 
     if (!(engine.run())) return;
 
     // Get the result from the engine
-    FieldHandle ofield;    
+    FieldHandle ofield;
     engine.get_field("RESULT",ofield);
 
-    // send new output if there is any: 
+    // send new output if there is any:
     sendOutput(OutputField, ofield);
   }
 }

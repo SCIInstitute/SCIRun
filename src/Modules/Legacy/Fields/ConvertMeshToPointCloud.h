@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -37,7 +37,7 @@ namespace SCIRun {
     namespace Fields {
 
 	/// @class ConvertMeshToPointCloud
-	/// @brief Convert a Hexahedra- or a LatVol-Field into a TetVolField. 
+	/// @brief Convert a Hexahedra- or a LatVol-Field into a TetVolField.
 
       class SCISHARE ConvertMeshToPointCloud : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,
@@ -51,9 +51,8 @@ namespace SCIRun {
 
         INPUT_PORT(0, Mesh, LegacyField);
         OUTPUT_PORT(0, PointCloud, LegacyField);
-        
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
-        //static Core::Algorithms::AlgorithmParameterName ConvertMeshToPointCloud::Location;
+
+        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       };
     }
   }

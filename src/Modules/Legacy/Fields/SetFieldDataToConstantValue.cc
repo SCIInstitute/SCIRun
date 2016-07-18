@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -37,11 +37,11 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-const ModuleLookupInfo SetFieldDataToConstantValue::staticInfo_("SetFieldDataToConstantValue", "ChangeFieldData", "SCIRun");
+MODULE_INFO_DEF(SetFieldDataToConstantValue, ChangeFieldData, SCIRun)
 
 /// @class SetFieldDataToConstantValue
 /// @brief Sets field data to a given scalar value on a new output field based
-/// on the input field geometry. 
+/// on the input field geometry.
 //
 //class SetFieldDataToConstantValue : public Module {
 //  public:
@@ -54,7 +54,7 @@ const ModuleLookupInfo SetFieldDataToConstantValue::staticInfo_("SetFieldDataToC
 //    GuiString gui_data_type_;
 //    GuiString gui_basis_order_;
 //    GuiDouble gui_value_;
-//    
+//
 //    SCIRunAlgo::SetFieldDataToConstantValueAlgo algo_;
 //};
 
@@ -76,7 +76,7 @@ void
 SetFieldDataToConstantValue::execute()
 {
   auto input = getRequiredInput(InputField);
-  
+
   if (needToExecute())
   {
     update_state(Executing);

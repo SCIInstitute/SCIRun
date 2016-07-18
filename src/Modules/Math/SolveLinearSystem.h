@@ -36,20 +36,21 @@
 namespace SCIRun {
 namespace Modules {
 namespace Math {
-  
-  class SCISHARE SolveLinearSystemModule : public SCIRun::Dataflow::Networks::Module,
+
+  class SCISHARE SolveLinearSystem : public SCIRun::Dataflow::Networks::Module,
     public Has2InputPorts<MatrixPortTag, MatrixPortTag>,
     public Has1OutputPort<MatrixPortTag>
   {
   public:
-    SolveLinearSystemModule();
+    SolveLinearSystem();
     virtual void execute();
     virtual void setStateDefaults();
 
     INPUT_PORT(0, LHS, Matrix);
     INPUT_PORT(1, RHS, Matrix);
     OUTPUT_PORT(0, Solution, Matrix);
-    
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };
 
 }}}

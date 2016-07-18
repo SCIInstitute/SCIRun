@@ -52,7 +52,7 @@ using namespace SCIRun::Core::Algorithms::Matlab;
 ALGORITHM_PARAMETER_DEF(Matlab, FieldNames);
 ALGORITHM_PARAMETER_DEF(Matlab, FieldFormats);
 
-const ModuleLookupInfo ExportFieldsToMatlab::staticInfo_("ExportFieldsToMatlab", "Matlab", "SCIRun");
+MODULE_INFO_DEF(ExportFieldsToMatlab, Matlab, SCIRun)
 
 ExportFieldsToMatlab::ExportFieldsToMatlab() : Module(staticInfo_)
 {

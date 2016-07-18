@@ -40,7 +40,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::DataIO;
 
-WriteMatrixModule::WriteMatrixModule()
+WriteMatrix::WriteMatrix()
   : my_base("WriteMatrix", "DataIO", "SCIRun", "Filename")
   //gui_increment_(get_ctx()->subVar("increment"), 0),
   //gui_current_(get_ctx()->subVar("current"), 0)
@@ -54,7 +54,7 @@ WriteMatrixModule::WriteMatrixModule()
   get_state()->setValue(Variables::FileTypeList, types);
 }
 
-bool WriteMatrixModule::call_exporter(const std::string& filename)
+bool WriteMatrix::call_exporter(const std::string& filename)
 {
   ///@todo: how will this work via python? need more code to set the filetype based on the extension...
   MatrixIEPluginManager mgr;
@@ -66,19 +66,19 @@ bool WriteMatrixModule::call_exporter(const std::string& filename)
   return false;
 }
 
-void WriteMatrixModule::execute()
+void WriteMatrix::execute()
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //get the current file name
   const std::string oldfilename=filename_.get();
 
   //determine if we should increment an index in the file name
-  if (gui_increment_.get()) 
+  if (gui_increment_.get())
   {
 
-    //warn the user if they try to use 'Increment' incorrectly	
+    //warn the user if they try to use 'Increment' incorrectly
     const std::string::size_type loc2 = oldfilename.find("%d");
-    if(loc2 == std::string::npos) 
+    if(loc2 == std::string::npos)
     {
       remark("To use the increment function, there must be a '%d' in the file name.");
     }
@@ -102,7 +102,7 @@ void WriteMatrixModule::execute()
 
 }
 
-bool WriteMatrixModule::useCustomExporter(const std::string& filename) const 
+bool WriteMatrix::useCustomExporter(const std::string& filename) const
 {
   auto ft = get_state()->getValue(Variables::FileTypeName).toString();
   LOG_DEBUG("WriteMatrix with filetype " << ft);
@@ -115,7 +115,7 @@ bool WriteMatrixModule::useCustomExporter(const std::string& filename) const
     ft == defaultFileTypeName());
 }
 
-std::string WriteMatrixModule::defaultFileTypeName() const
+std::string WriteMatrix::defaultFileTypeName() const
 {
   MatrixIEPluginManager mgr;
   return defaultExportTypeForFile(&mgr);

@@ -38,16 +38,19 @@ namespace SCIRun {
   namespace Modules {
     namespace DataIO {
 
-      class SCISHARE WriteMatrixModule : public GenericWriter<Core::Datatypes::MatrixHandle, MatrixPortTag>
+      class SCISHARE WriteMatrix : public GenericWriter<Core::Datatypes::MatrixHandle, MatrixPortTag>
       {
       public:
         typedef GenericWriter<Core::Datatypes::MatrixHandle, MatrixPortTag> my_base;
-        WriteMatrixModule();
+        WriteMatrix();
         virtual void execute() override;
         virtual bool useCustomExporter(const std::string& filename) const override;
         virtual bool call_exporter(const std::string& filename) override;
 
         INPUT_PORT(0, MatrixToWrite, Matrix);
+
+        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+
       protected:
         virtual std::string defaultFileTypeName() const override;
       };

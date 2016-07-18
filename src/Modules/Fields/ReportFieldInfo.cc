@@ -38,12 +38,11 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-const ModuleLookupInfo ReportFieldInfoModule::staticInfo_("ReportFieldInfo", "MiscField", "SCIRun");
+MODULE_INFO_DEF(ReportFieldInfo, MiscField, SCIRun)
 
-ReportFieldInfoModule::ReportFieldInfoModule() : Module(staticInfo_)
+ReportFieldInfo::ReportFieldInfo() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
-  //INITIALIZE_PORT(FieldType);
   INITIALIZE_PORT(NumNodes);
   INITIALIZE_PORT(NumElements);
   INITIALIZE_PORT(NumData);
@@ -55,7 +54,7 @@ ReportFieldInfoModule::ReportFieldInfoModule() : Module(staticInfo_)
   INITIALIZE_PORT(GeomSize);
 }
 
-void ReportFieldInfoModule::execute()
+void ReportFieldInfo::execute()
 {
   auto field = getRequiredInput(InputField);
 
@@ -65,7 +64,7 @@ void ReportFieldInfoModule::execute()
 
   auto info = transient_value_cast<SCIRun::Core::Algorithms::Fields::ReportFieldInfoAlgorithm::Outputs>(output.getTransient());
   /// @todo: requires knowledge of algorithm type
-  //sendOutput(FieldType, boost::make_shared<String>(info.type));
+
   sendOutput(NumNodes, boost::make_shared<Int32>(info.numnodes_));
   sendOutput(NumElements, boost::make_shared<Int32>(info.numelements_));
   sendOutput(NumData, boost::make_shared<Int32>(info.numdata_));

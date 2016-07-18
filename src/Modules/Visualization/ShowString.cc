@@ -36,9 +36,9 @@ using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-ShowStringModule::ShowStringModule() : Module(ModuleLookupInfo("ShowString", "Visualization", "SCIRun")) {}
+ShowString::ShowString() : Module(ModuleLookupInfo("ShowString", "Visualization", "SCIRun")) {}
 
-void ShowStringModule::execute()
+void ShowString::execute()
 {
   //TODO: doit
   #if 0

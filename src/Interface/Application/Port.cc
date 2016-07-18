@@ -439,20 +439,7 @@ void PortWidget::makeConnection(const QPointF& pos)
   {
     tryConnectPort(pos, (*connection)->receiver(), std::numeric_limits<double>::max());
   }
-  else
-  {
-    //qDebug() << "no highlighted port found";
-  }
   clearPotentialConnections();
-
-#if 0 // clean up later, might reuse closestPortFinder
-  else //old way
-  {
-    auto port = closestPortFinder_->closestPort(pos);  //GUI concern: needs unit test
-    if (port)
-      tryConnectPort(pos, port, PORT_CONNECTION_THRESHOLD);
-  }
-#endif
 }
 
 void PortWidget::clearPotentialConnections()
@@ -461,6 +448,9 @@ void PortWidget::clearPotentialConnections()
   for (auto& c : potentialConnections_)
     delete c;
   potentialConnections_.clear();
+  for (auto& t : potentialConnectionPortNames_)
+    delete t;
+  potentialConnectionPortNames_.clear();
 }
 
 void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port, double threshold)
@@ -593,8 +583,30 @@ void PortWidget::makePotentialConnectionLine(PortWidget* other)
     auto potential = connectionFactory_->makePotentialConnection(this);
     potential->update(other->position());
     potential->setReceiver(other);
+    auto label = other->makeNameLabel();
+    potential->setLabel(label);
     potentialConnections_.insert(potential);
+    potentialConnectionPortNames_.insert(label);
   }
+}
+
+QGraphicsTextItem* PortWidget::makeNameLabel() const
+{
+  auto portNameTextItem = new QGraphicsTextItem(name());
+  portNameTextItem->setDefaultTextColor(color());
+  portNameTextItem->setFont(QFont("Arial", 10));
+  if (isInput())
+  {
+    portNameTextItem->setRotation(-45);
+    portNameTextItem->setPos(getPositionObject()->currentPosition() + QPointF{ -10, -20 });
+  }
+  else
+  {
+    portNameTextItem->setRotation(45);
+    portNameTextItem->setPos(getPositionObject()->currentPosition());
+  }
+  connectionFactory_->activate(portNameTextItem);
+  return portNameTextItem;
 }
 
 void PortWidget::addConnection(ConnectionLine* c)
@@ -760,6 +772,8 @@ QColor SCIRun::Gui::to_color(const std::string& str, int alpha)
       result = Qt::red;
     else if (str == "blue")
       result = QColor(14, 139, 255);
+    else if (str == "lightblue")
+      result = QColor(153, 204, 255);
     else if (str == "darkBlue")
       result = Qt::darkBlue;
     else if (str == "cyan")

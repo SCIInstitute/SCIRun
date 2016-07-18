@@ -50,9 +50,9 @@ void PortColorLookup::init()
 {
   insert(portColorMap_)
     ("Matrix", "blue")
-    ("Scalar", "white")
-    ("Double", "white")
-    ("Int32", "white")
+    ("Scalar", "lightblue")
+    ("Double", "lightblue")
+    ("Int32", "lightblue")
     ("String", "darkGreen")
     ("Field", "yellow")
     ("Geometry", "magenta")
@@ -60,17 +60,7 @@ void PortColorLookup::init()
     ("Bundle", "orange")
     ("Nrrd", "cyan") // not quite right, it's bluer than the highlight cyan
     ("ComplexMatrix", "brown")
-    ("Datatype", "black");
-}
-
-
-
-ModuleDescription::ModuleDescription()
-{
-}
-
-ModuleDescription::~ModuleDescription()
-{
+    ("Datatype", "white");
 }
 
 ModuleLookupInfo::ModuleLookupInfo() {}
@@ -174,7 +164,9 @@ std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const Modu
 
 std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const ModuleDescription& desc)
 {
-  return o << "Description: TODO " << desc.lookupInfo_;
+  return o << desc.lookupInfo_ << " status: " << desc.moduleStatus_ << " info: " << desc.moduleInfo_
+    << " num inputs: " << desc.input_ports_.size() << " num outputs: " << desc.output_ports_.size()
+    << " has ui: " << desc.hasUI_ << " has algo: " << desc.hasAlgo_;
 }
 
 bool ModuleLookupInfoLess::operator()(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs) const
