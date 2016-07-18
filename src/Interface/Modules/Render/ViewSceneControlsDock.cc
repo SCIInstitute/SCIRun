@@ -42,7 +42,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   setHidden(true);
   setVisible(false);
-  setEnabled(false);
   setWindowTitle(name);
   setAllowedAreas(Qt::BottomDockWidgetArea);
   setFloating(true);
