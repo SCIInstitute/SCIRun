@@ -36,7 +36,6 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Render;
 
-
 ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent) : QDockWidget(parent)
 {
   setupUi(this);
@@ -48,7 +47,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   setAllowedAreas(Qt::BottomDockWidgetArea);
   setFloating(true);
   setStyleSheet(parent->styleSheet());
-  
+
   setupObjectListWidget();
 
   if (SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls)
@@ -59,13 +58,13 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   {
     mouseControlComboBox_->setCurrentIndex(0);
   }
-  
+
   invertZoomCheckBox_->setChecked(SCIRun::Core::Preferences::Instance().invertMouseZoom);
 
   updateZoomOptionVisibility();
 
   //-----------Objects Tab-----------------//
-  visibleItems_ = std::make_unique<VisibleItemManager>(objectListWidget_);
+  visibleItems_.reset(new VisibleItemManager(objectListWidget_));
   connect(selectAllPushButton_, SIGNAL(clicked()), visibleItems_.get(), SLOT(selectAllClicked()));
   connect(deselectAllPushButton_, SIGNAL(clicked()), visibleItems_.get(), SLOT(deselectAllClicked()));
   connect(objectListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), visibleItems_.get(), SLOT(slotChanged(QListWidgetItem*)));
@@ -82,7 +81,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(stereoFusionHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setStereoFusion(int)));
   connect(polygonOffsetHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setPolygonOffset(int)));
   connect(textOffsetHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setTextOffset(int)));
-  connect(fieldOfViewHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setFieldOfView(int)));  
+  connect(fieldOfViewHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setFieldOfView(int)));
   //-----------Clipping Tab-----------------//
   connect(planeButtonGroup_, SIGNAL(buttonPressed(int)), parent, SLOT(setClippingPlaneIndex(int)));
   connect(planeVisibleCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneVisible(bool)));
@@ -365,9 +364,9 @@ void VisibleItemManager::addRenderItem(const QString& name, bool checked)
 
   auto item = new QListWidgetItem(name, itemList_);
 
-  if (checked) 
+  if (checked)
     item->setCheckState(Qt::Checked);
-  else 
+  else
     item->setCheckState(Qt::Unchecked);
 
   itemList_->addItem(item);
@@ -453,8 +452,8 @@ void ViewSceneControlsDock::setupLightControlCircle(QFrame* frame, int index, co
 LightControlCircle::LightControlCircle(QGraphicsScene* scene,  int index,
   const boost::atomic<bool>& pulling, QRectF sceneRect,
   QWidget* parent)
-  : QGraphicsView(scene, parent), 
-  dialogPulling_(pulling), index_(index), lightColor_(Qt::white)
+  : QGraphicsView(scene, parent),
+   index_(index), dialogPulling_(pulling), lightColor_(Qt::white)
 {
   setSceneRect(sceneRect);
   static QPen pointPen(Qt::white, 1);
@@ -505,7 +504,7 @@ void LightControlCircle::mousePressEvent(QMouseEvent* event)
     }
     else if (boundingCircle_->isUnderMouse())
     {
-      //std::cout << "bounding circle clicked!" << std::endl; 
+      //std::cout << "bounding circle clicked!" << std::endl;
       selectLightColor();
     }
   }
@@ -532,10 +531,10 @@ void LightControlCircle::mouseMoveEvent(QMouseEvent* event)
 void LightControlCircle::selectLightColor()
 {
   QString title = index_<1 ? windowTitle() + " Choose color for Headlight" : windowTitle() + " Choose color for Light" + QString::number(index_);
- 
+
   auto newColor = QColorDialog::getColor(lightColor_, this, title);
   if (newColor.isValid())
   {
-    setColor(newColor);  
+    setColor(newColor);
   }
 }
