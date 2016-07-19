@@ -38,7 +38,7 @@ using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Math;
 
-const ModuleLookupInfo AddLinkedNodesToLinearSystem::staticInfo_("AddLinkedNodesToLinearSystem", "Math", "SCIRun");
+MODULE_INFO_DEF(AddLinkedNodesToLinearSystem, Math, SCIRun)
 
 AddLinkedNodesToLinearSystem::AddLinkedNodesToLinearSystem() : Module(staticInfo_, false)
 {

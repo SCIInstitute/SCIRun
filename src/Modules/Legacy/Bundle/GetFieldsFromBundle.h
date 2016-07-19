@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -35,7 +35,7 @@
 namespace SCIRun {
   namespace Modules {
     namespace Bundles {
-      
+
       /// @class GetFieldsFromBundle
       /// @brief This module retrieves a field object from a bundle.
 
@@ -57,11 +57,11 @@ namespace SCIRun {
         OUTPUT_PORT(5, field5, LegacyField);
         OUTPUT_PORT(6, field6, LegacyField);
 
-        static Core::Algorithms::AlgorithmParameterName FieldNameList;
+        static const Core::Algorithms::AlgorithmParameterName FieldNameList;
         static const Core::Algorithms::AlgorithmParameterName FieldNames[];
         static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       private:
         std::string makeFieldNameList(const Core::Datatypes::Bundle& bundle) const;
       };

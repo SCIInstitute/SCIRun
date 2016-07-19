@@ -35,7 +35,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-const ModuleLookupInfo @ModuleName@::staticInfo_("@ModuleName@", "NewField", "SCIRun");
+MODULE_INFO_DEF(@ModuleName@, NewField, SCIRun)
 
 @ModuleName@::@ModuleName@() : Module(staticInfo_)
 {

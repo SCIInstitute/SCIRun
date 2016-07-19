@@ -28,8 +28,6 @@
 
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Modules/Base/ModuleDialogBasic.h>
-#include <Interface/Modules/Testing/SendScalarDialog.h>
-#include <Interface/Modules/Testing/ReceiveScalarDialog.h>
 #include <Interface/Modules/DataIO/ReadMatrixClassicDialog.h>
 #include <Interface/Modules/DataIO/ReadBundleDialog.h>
 #include <Interface/Modules/DataIO/WriteMatrixDialog.h>
@@ -91,7 +89,6 @@
 #include <Interface/Modules/Forward/BuildBEMatrixDialog.h>
 #include <Interface/Modules/Inverse/SolveInverseProblemWithTikhonovDialog.h>
 #include <Interface/Modules/FiniteElements/ApplyFEMCurrentSourceDialog.h>
-#include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldGlyphsDialog.h>
@@ -130,8 +127,6 @@ ModuleDialogFactory::ModuleDialogFactory(QWidget* parentToUse,
 void ModuleDialogFactory::addDialogsToMakerMap1()
 {
   insert(dialogMakerMap_)
-    ADD_MODULE_DIALOG(SendScalar, SendScalarDialog)
-    ADD_MODULE_DIALOG(ReceiveScalar, ReceiveScalarDialog)
     ADD_MODULE_DIALOG(ReadMatrix, ReadMatrixClassicDialog)
     ADD_MODULE_DIALOG(WriteMatrix, WriteMatrixDialog)
     ADD_MODULE_DIALOG(ReadField, ReadFieldDialog)
@@ -139,8 +134,8 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ReadBundle, ReadBundleDialog)
     ADD_MODULE_DIALOG(EvaluateLinearAlgebraUnary, EvaluateLinearAlgebraUnaryDialog)
     ADD_MODULE_DIALOG(EvaluateLinearAlgebraBinary, EvaluateLinearAlgebraBinaryDialog)
-    ADD_MODULE_DIALOG(EvaluateLinearAlgebraGeneral, EvaluateLinearAlgebraGeneralDialog)
-    ADD_MODULE_DIALOG(ShowString, ShowStringDialog)
+    //ADD_MODULE_DIALOG(EvaluateLinearAlgebraGeneral, EvaluateLinearAlgebraGeneralDialog)
+    //ADD_MODULE_DIALOG(ShowString, ShowStringDialog)
     ADD_MODULE_DIALOG(ShowField, ShowFieldDialog)
     ADD_MODULE_DIALOG(ShowFieldGlyphs, ShowFieldGlyphsDialog)
     ADD_MODULE_DIALOG(AppendMatrix, AppendMatrixDialog)
@@ -151,7 +146,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ReportMatrixInfo, ReportMatrixInfoDialog)
     ADD_MODULE_DIALOG(ReportFieldInfo, ReportFieldInfoDialog)
     ADD_MODULE_DIALOG(ReportBundleInfo, ReportBundleInfoDialog)
-    ADD_MODULE_DIALOG(MatrixAsVectorField, MatrixAsVectorFieldDialog)
     ADD_MODULE_DIALOG(ViewScene, ViewSceneDialog)
     ADD_MODULE_DIALOG(SolveLinearSystem, SolveLinearSystemDialog)
     ADD_MODULE_DIALOG(CreateStandardColorMap, CreateStandardColorMapDialog)
@@ -183,7 +177,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationDialog)
     ADD_MODULE_DIALOG(SplitFieldByConnectedRegion, SplitFieldByConnectedRegionDialog)
     ADD_MODULE_DIALOG(ClipFieldByFunction, ClipFieldByFunctionDialog)
-    ADD_MODULE_DIALOG(ImportDatatypesFromMatlab, ImportDatatypesFromMatlabDialog)
+    //ADD_MODULE_DIALOG(ImportDatatypesFromMatlab, ImportDatatypesFromMatlabDialog)
     ADD_MODULE_DIALOG(RefineMesh, RefineMeshDialog)
     ADD_MODULE_DIALOG(ReportColumnMatrixMisfit, ReportColumnMatrixMisfitDialog)
     ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)

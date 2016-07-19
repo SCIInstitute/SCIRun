@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
    */
-   
+
 #include <Modules/Legacy/Fields/SwapFieldDataWithMatrixEntries.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SwapFieldDataWithMatrixEntriesAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -38,7 +38,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-const ModuleLookupInfo SwapFieldDataWithMatrixEntries::staticInfo_("SwapFieldDataWithMatrixEntries", "ChangeFieldData", "SCIRun");
+MODULE_INFO_DEF(SwapFieldDataWithMatrixEntries, ChangeFieldData, SCIRun)
 
 SwapFieldDataWithMatrixEntries::SwapFieldDataWithMatrixEntries()
   : Module(staticInfo_)

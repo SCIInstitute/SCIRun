@@ -112,6 +112,7 @@ public:
   virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber) override;
   virtual void resendNewDataSignal() override;
 private:
+  bool shouldTriggerDataChange() const;
   DatatypeSinkInterfaceHandle sink_;
   bool isDynamic_;
 };

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -39,7 +39,7 @@ namespace SCIRun {
       /// @class CreateFieldData
       /// @brief This module assigns a value to each element or node of the mesh
       /// based on a given function, that is based on the location of nodes and
-      /// elements and properties of the elements. 
+      /// elements and properties of the elements.
 
       class SCISHARE CreateFieldData : public Dataflow::Networks::Module,
         public Has3InputPorts<FieldPortTag, StringPortTag, DynamicPortTag<MatrixPortTag>>,
@@ -50,17 +50,18 @@ namespace SCIRun {
 
         virtual void execute() override;
         virtual void setStateDefaults() override;
-        virtual bool hasDynamicPorts() const override { return true; }
+        HAS_DYNAMIC_PORTS
 
         INPUT_PORT(0, InputField, LegacyField);
         INPUT_PORT(1, Function, String);
         INPUT_PORT_DYNAMIC(2, DataArray, Matrix);
         OUTPUT_PORT(0, OutputField, LegacyField);
 
-        static Core::Algorithms::AlgorithmParameterName FunctionString;
-        static Core::Algorithms::AlgorithmParameterName FormatString;
-        static Core::Algorithms::AlgorithmParameterName BasisString;
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+
+        static const Core::Algorithms::AlgorithmParameterName FunctionString;
+        static const Core::Algorithms::AlgorithmParameterName FormatString;
+        static const Core::Algorithms::AlgorithmParameterName BasisString;
       };
 
     }

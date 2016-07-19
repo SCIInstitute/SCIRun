@@ -40,9 +40,9 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-const ModuleLookupInfo SetFieldDataModule::staticInfo_("SetFieldData", "ChangeFieldData", "SCIRun");
+MODULE_INFO_DEF(SetFieldData, ChangeFieldData, SCIRun)
 
-SetFieldDataModule::SetFieldDataModule() :  Module(staticInfo_)
+SetFieldData::SetFieldData() :  Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(InputMatrix);
@@ -51,12 +51,12 @@ SetFieldDataModule::SetFieldDataModule() :  Module(staticInfo_)
   INITIALIZE_PORT(OutputField);
 }
 
-void SetFieldDataModule::setStateDefaults()
+void SetFieldData::setStateDefaults()
 {
   setStateBoolFromAlgo(Parameters::keepTypeCheckBox);
 }
 
-void SetFieldDataModule::execute()
+void SetFieldData::execute()
 {
   auto input_field = getRequiredInput(InputField);
   auto input_matrix = getOptionalInput(InputMatrix);

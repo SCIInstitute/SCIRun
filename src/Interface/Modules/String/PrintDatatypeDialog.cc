@@ -31,7 +31,7 @@
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
-using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Modules;
 using namespace SCIRun::Dataflow::Networks;
 
 
@@ -42,16 +42,14 @@ PrintDatatypeDialog::PrintDatatypeDialog(const std::string& name, ModuleStateHan
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-
-  buttonBox->setVisible(false);
 }
 
 void PrintDatatypeDialog::pullAndDisplayInfo()
 {
-  auto data = state_->getValue(PrintDatatypeModule::ReceivedValue);
+  auto data = state_->getValue(Basic::PrintDatatype::ReceivedValue);
 
   std::ostringstream ostr;
   ostr << "Value: " << data.value() << std::endl;
- 
+
   datatypeTextEdit_->setPlainText(QString::fromStdString(ostr.str()));
 }

@@ -165,7 +165,7 @@ PortManager<T>::checkDynamicPortInvariant(const std::string& name)
   }
   int lastRemovedIndex = -1;
   for (const auto& id : toRemove)
-    lastRemovedIndex = remove(id);
+    lastRemovedIndex = static_cast<int>(remove(id));
   return lastRemovedIndex;
 }
 

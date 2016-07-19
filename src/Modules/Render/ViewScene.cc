@@ -45,7 +45,8 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 
-const ModuleLookupInfo ViewScene::staticInfo_("ViewScene", "Render", "SCIRun");
+MODULE_INFO_DEF(ViewScene, Render, SCIRun)
+
 Mutex ViewScene::mutex_("ViewScene");
 
 ALGORITHM_PARAMETER_DEF(Render, GeomData);
@@ -154,6 +155,8 @@ void ViewScene::updateTransientList()
 
 void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
+  if (!data)
+    return;
   //lock for state modification
   {
     LOG_DEBUG("ViewScene::asyncExecute before locking");

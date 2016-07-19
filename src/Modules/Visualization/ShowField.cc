@@ -52,7 +52,7 @@ using namespace Graphics::Datatypes;
 
 ALGORITHM_PARAMETER_DEF(Visualization, CylinderRadius);
 
-const ModuleLookupInfo ShowFieldModule::staticInfo_("ShowField", "Visualization", "SCIRun");
+MODULE_INFO_DEF(ShowField, Visualization, SCIRun)
 
 namespace SCIRun {
   namespace Modules {
@@ -140,7 +140,7 @@ private:
 
 using namespace detail;
 
-ShowFieldModule::ShowFieldModule() : GeometryGeneratingModule(staticInfo_),
+ShowField::ShowField() : GeometryGeneratingModule(staticInfo_),
   builder_(new GeometryBuilder)
 {
   INITIALIZE_PORT(Field);
@@ -148,7 +148,7 @@ ShowFieldModule::ShowFieldModule() : GeometryGeneratingModule(staticInfo_),
   INITIALIZE_PORT(SceneGraph);
 }
 
-void ShowFieldModule::setStateDefaults()
+void ShowField::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(NodesAvailable, true);
@@ -202,7 +202,7 @@ void ShowFieldModule::setStateDefaults()
   // is more up in the air.
 }
 
-void ShowFieldModule::execute()
+void ShowField::execute()
 {
   auto field = getRequiredInput(Field);
   auto colorMap = getOptionalInput(ColorMapObject);
@@ -221,14 +221,14 @@ RenderState GeometryBuilder::getNodeRenderState(
 {
   RenderState renState;
 
-  bool useColorMap = state->getValue(ShowFieldModule::NodesColoring).toInt() == 1;
-  bool rgbConversion = state->getValue(ShowFieldModule::NodesColoring).toInt() == 2;
-  renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowNodes).toBool());
-  renState.set(RenderState::USE_TRANSPARENT_NODES, state->getValue(ShowFieldModule::NodeTransparency).toBool());
+  bool useColorMap = state->getValue(ShowField::NodesColoring).toInt() == 1;
+  bool rgbConversion = state->getValue(ShowField::NodesColoring).toInt() == 2;
+  renState.set(RenderState::IS_ON, state->getValue(ShowField::ShowNodes).toBool());
+  renState.set(RenderState::USE_TRANSPARENT_NODES, state->getValue(ShowField::NodeTransparency).toBool());
 
-  renState.set(RenderState::USE_SPHERE, state->getValue(ShowFieldModule::NodeAsSpheres).toInt() == 1);
+  renState.set(RenderState::USE_SPHERE, state->getValue(ShowField::NodeAsSpheres).toInt() == 1);
 
-  renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
+  renState.defaultColor = ColorRGB(state->getValue(ShowField::DefaultMeshColor).toString());
   renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
                            renState.defaultColor.g() > 1.0 ||
                            renState.defaultColor.b() > 1.0)?
@@ -249,7 +249,7 @@ RenderState GeometryBuilder::getNodeRenderState(
   else
   {
     renState.set(RenderState::USE_DEFAULT_COLOR_NODES, true);
-    state->setValue(ShowFieldModule::NodesColoring, 0);
+    state->setValue(ShowField::NodesColoring, 0);
   }
 
   return renState;
@@ -261,13 +261,13 @@ RenderState GeometryBuilder::getEdgeRenderState(
 {
   RenderState renState;
 
-  bool useColorMap = state->getValue(ShowFieldModule::EdgesColoring).toInt() == 1;
-  bool rgbConversion = state->getValue(ShowFieldModule::EdgesColoring).toInt() == 2;
-  renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowEdges).toBool());
-  renState.set(RenderState::USE_TRANSPARENT_EDGES, state->getValue(ShowFieldModule::EdgeTransparency).toBool());
-  renState.set(RenderState::USE_CYLINDER, state->getValue(ShowFieldModule::EdgesAsCylinders).toInt() == 1);
+  bool useColorMap = state->getValue(ShowField::EdgesColoring).toInt() == 1;
+  bool rgbConversion = state->getValue(ShowField::EdgesColoring).toInt() == 2;
+  renState.set(RenderState::IS_ON, state->getValue(ShowField::ShowEdges).toBool());
+  renState.set(RenderState::USE_TRANSPARENT_EDGES, state->getValue(ShowField::EdgeTransparency).toBool());
+  renState.set(RenderState::USE_CYLINDER, state->getValue(ShowField::EdgesAsCylinders).toInt() == 1);
 
-  renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
+  renState.defaultColor = ColorRGB(state->getValue(ShowField::DefaultMeshColor).toString());
   renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
                            renState.defaultColor.g() > 1.0 ||
                            renState.defaultColor.b() > 1.0)?
@@ -277,7 +277,7 @@ RenderState GeometryBuilder::getEdgeRenderState(
                                 renState.defaultColor.b() / 255.)
                             :   renState.defaultColor;
 
-  edgeTransparencyValue_ = static_cast<float>(state->getValue(ShowFieldModule::EdgeTransparencyValue).toDouble());
+  edgeTransparencyValue_ = static_cast<float>(state->getValue(ShowField::EdgeTransparencyValue).toDouble());
 
   if (colorMap && useColorMap)
   {
@@ -290,7 +290,7 @@ RenderState GeometryBuilder::getEdgeRenderState(
   else
   {
     renState.set(RenderState::USE_DEFAULT_COLOR_EDGES, true);
-    state->setValue(ShowFieldModule::EdgesColoring, 0);
+    state->setValue(ShowField::EdgesColoring, 0);
   }
 
   return renState;
@@ -302,13 +302,13 @@ RenderState GeometryBuilder::getFaceRenderState(
 {
   RenderState renState;
 
-  bool useColorMap = state->getValue(ShowFieldModule::FacesColoring).toInt() == 1;
-  bool rgbConversion = state->getValue(ShowFieldModule::FacesColoring).toInt() == 2;
-  renState.set(RenderState::IS_ON, state->getValue(ShowFieldModule::ShowFaces).toBool());
-  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowFieldModule::FaceTransparency).toBool()); 
-  renState.set(RenderState::USE_FACE_NORMALS, state->getValue(ShowFieldModule::UseFaceNormals).toBool());
+  bool useColorMap = state->getValue(ShowField::FacesColoring).toInt() == 1;
+  bool rgbConversion = state->getValue(ShowField::FacesColoring).toInt() == 2;
+  renState.set(RenderState::IS_ON, state->getValue(ShowField::ShowFaces).toBool());
+  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowField::FaceTransparency).toBool());
+  renState.set(RenderState::USE_FACE_NORMALS, state->getValue(ShowField::UseFaceNormals).toBool());
 
-  renState.defaultColor = ColorRGB(state->getValue(ShowFieldModule::DefaultMeshColor).toString());
+  renState.defaultColor = ColorRGB(state->getValue(ShowField::DefaultMeshColor).toString());
   renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
                            renState.defaultColor.g() > 1.0 ||
                            renState.defaultColor.b() > 1.0)?
@@ -318,7 +318,7 @@ RenderState GeometryBuilder::getFaceRenderState(
                                 renState.defaultColor.b() / 255.)
                             :   renState.defaultColor;
 
-  faceTransparencyValue_ = static_cast<float>(state->getValue(ShowFieldModule::FaceTransparencyValue).toDouble());
+  faceTransparencyValue_ = static_cast<float>(state->getValue(ShowField::FaceTransparencyValue).toDouble());
 
   if (colorMap && useColorMap)
   {
@@ -331,7 +331,7 @@ RenderState GeometryBuilder::getFaceRenderState(
   else
   {
     renState.set(RenderState::USE_DEFAULT_COLOR, true);
-    state->setValue(ShowFieldModule::FacesColoring, 0);
+    state->setValue(ShowField::FacesColoring, 0);
   }
 
   return renState;
@@ -346,15 +346,15 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
   //auto progressFunc = getUpdaterFunc();
 
   /// \todo Determine a better way of handling all of the various object state.
-  bool showNodes = state->getValue(ShowFieldModule::ShowNodes).toBool();
-  bool showEdges = state->getValue(ShowFieldModule::ShowEdges).toBool();
-  bool showFaces = state->getValue(ShowFieldModule::ShowFaces).toBool();
+  bool showNodes = state->getValue(ShowField::ShowNodes).toBool();
+  bool showEdges = state->getValue(ShowField::ShowEdges).toBool();
+  bool showFaces = state->getValue(ShowField::ShowFaces).toBool();
   // Resultant geometry type (representing a spire object and a number of passes).
 
   std::string idname = "EntireField";
-  if (state->getValue(ShowFieldModule::FieldName).toString() != "")
+  if (state->getValue(ShowField::FieldName).toString() != "")
   {
-    idname = idname + "_" + state->getValue(ShowFieldModule::FieldName).toString();
+    idname = idname + "_" + state->getValue(ShowField::FieldName).toString();
   }
 
   GeometryHandle geom(new GeometryObjectSpire(gid, idname, true));
@@ -452,7 +452,7 @@ void GeometryBuilder::renderFacesLinear(
   bool withNormals = (state.get(RenderState::USE_NORMALS));
   if (withNormals) { mesh->synchronize(Mesh::NORMALS_E); }
 
-  bool invertNormals = moduleState->getValue(ShowFieldModule::FaceInvertNormals).toBool();
+  bool invertNormals = moduleState->getValue(ShowField::FaceInvertNormals).toBool();
   ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
   std::vector<double> svals;
   std::vector<Vector> vvals;
@@ -1235,8 +1235,8 @@ void GeometryBuilder::renderNodes(
   mesh->begin(eiter);
   mesh->end(eiter_end);
 
-  double radius = moduleState->getValue(ShowFieldModule::SphereScaleValue).toDouble();
-  double num_strips = static_cast<double>(moduleState->getValue(ShowFieldModule::SphereResolution).toInt());
+  double radius = moduleState->getValue(ShowField::SphereScaleValue).toDouble();
+  double num_strips = static_cast<double>(moduleState->getValue(ShowField::SphereResolution).toInt());
   if (radius < 0) radius = 1.;
   if (num_strips < 0) num_strips = 10.;
   std::stringstream ss;
@@ -1244,7 +1244,7 @@ void GeometryBuilder::renderNodes(
 
   std::string uniqueNodeID = id + "node" + ss.str();
 
-  nodeTransparencyValue_ = static_cast<float>(moduleState->getValue(ShowFieldModule::NodeTransparencyValue).toDouble());
+  nodeTransparencyValue_ = static_cast<float>(moduleState->getValue(ShowField::NodeTransparencyValue).toDouble());
 
   SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::POINTS;
   // Use spheres...
@@ -1330,8 +1330,8 @@ void GeometryBuilder::renderEdges(
   mesh->begin(eiter);
   mesh->end(eiter_end);
 
-  double num_strips = static_cast<double>(moduleState->getValue(ShowFieldModule::CylinderResolution).toInt());
-  double radius = moduleState->getValue(ShowFieldModule::CylinderRadius).toDouble();
+  double num_strips = static_cast<double>(moduleState->getValue(ShowField::CylinderResolution).toInt());
+  double radius = moduleState->getValue(ShowField::CylinderRadius).toDouble();
   if (num_strips < 0) num_strips = 50.;
   if (radius < 0) radius = 1.;
 
@@ -1428,7 +1428,7 @@ void GeometryBuilder::renderEdges(
     colorScheme, state, primIn, mesh->get_bounding_box());
 }
 
-void ShowFieldModule::updateAvailableRenderOptions(FieldHandle field)
+void ShowField::updateAvailableRenderOptions(FieldHandle field)
 {
   if (!field)
     return;
@@ -1460,43 +1460,43 @@ void ShowFieldModule::updateAvailableRenderOptions(FieldHandle field)
   }
 }
 
-const AlgorithmParameterName ShowFieldModule::FieldName("FieldName");
-const AlgorithmParameterName ShowFieldModule::ShowNodes("ShowNodes");
-const AlgorithmParameterName ShowFieldModule::ShowEdges("ShowEdges");
-const AlgorithmParameterName ShowFieldModule::ShowFaces("ShowFaces");
-const AlgorithmParameterName ShowFieldModule::NodesAvailable("NodesAvailable");
-const AlgorithmParameterName ShowFieldModule::EdgesAvailable("EdgesAvailable");
-const AlgorithmParameterName ShowFieldModule::FacesAvailable("FacesAvailable");
-const AlgorithmParameterName ShowFieldModule::NodeTransparency("NodeTransparency");
-const AlgorithmParameterName ShowFieldModule::EdgeTransparency("EdgeTransparency");
-const AlgorithmParameterName ShowFieldModule::FaceTransparency("FaceTransparency");
-const AlgorithmParameterName ShowFieldModule::FaceInvertNormals("FaceInvertNormals");
-const AlgorithmParameterName ShowFieldModule::NodeAsPoints("NodeAsPoints");
-const AlgorithmParameterName ShowFieldModule::NodeAsSpheres("NodeAsSpheres");
-const AlgorithmParameterName ShowFieldModule::EdgesAsLines("EdgesAsLines");
-const AlgorithmParameterName ShowFieldModule::EdgesAsCylinders("EdgesAsCylinders");
-const AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor");
-const AlgorithmParameterName ShowFieldModule::FaceTransparencyValue("FaceTransparencyValue");
-const AlgorithmParameterName ShowFieldModule::EdgeTransparencyValue("EdgeTransparencyValue");
-const AlgorithmParameterName ShowFieldModule::NodeTransparencyValue("NodeTransparencyValue");
-const AlgorithmParameterName ShowFieldModule::FacesColoring("FacesColoring");
-const AlgorithmParameterName ShowFieldModule::NodesColoring("NodesColoring");
-const AlgorithmParameterName ShowFieldModule::EdgesColoring("EdgesColoring");
-const AlgorithmParameterName ShowFieldModule::SphereScaleValue("SphereScaleValue");
-const AlgorithmParameterName ShowFieldModule::CylinderRadius("CylinderRadius");
-const AlgorithmParameterName ShowFieldModule::CylinderResolution("CylinderResolution");
-const AlgorithmParameterName ShowFieldModule::SphereResolution("SphereResolution");
-const AlgorithmParameterName ShowFieldModule::DefaultTextColor("DefaultTextColor");
-const AlgorithmParameterName ShowFieldModule::ShowText("ShowText");
-const AlgorithmParameterName ShowFieldModule::ShowDataValues("ShowDataValues");
-const AlgorithmParameterName ShowFieldModule::ShowNodeIndices("ShowNodeIndices");
-const AlgorithmParameterName ShowFieldModule::ShowEdgeIndices("ShowEdgeIndices");
-const AlgorithmParameterName ShowFieldModule::ShowFaceIndices("ShowFaceIndices");
-const AlgorithmParameterName ShowFieldModule::ShowCellIndices("ShowCellIndices");
-const AlgorithmParameterName ShowFieldModule::CullBackfacingText("CullBackfacingText");
-const AlgorithmParameterName ShowFieldModule::TextAlwaysVisible("TextAlwaysVisible");
-const AlgorithmParameterName ShowFieldModule::RenderAsLocation("RenderAsLocation");
-const AlgorithmParameterName ShowFieldModule::TextSize("TextSize");
-const AlgorithmParameterName ShowFieldModule::TextPrecision("TextPrecision");
-const AlgorithmParameterName ShowFieldModule::TextColoring("TextColoring");
-const AlgorithmParameterName ShowFieldModule::UseFaceNormals("UseFaceNormals");
+const AlgorithmParameterName ShowField::FieldName("FieldName");
+const AlgorithmParameterName ShowField::ShowNodes("ShowNodes");
+const AlgorithmParameterName ShowField::ShowEdges("ShowEdges");
+const AlgorithmParameterName ShowField::ShowFaces("ShowFaces");
+const AlgorithmParameterName ShowField::NodesAvailable("NodesAvailable");
+const AlgorithmParameterName ShowField::EdgesAvailable("EdgesAvailable");
+const AlgorithmParameterName ShowField::FacesAvailable("FacesAvailable");
+const AlgorithmParameterName ShowField::NodeTransparency("NodeTransparency");
+const AlgorithmParameterName ShowField::EdgeTransparency("EdgeTransparency");
+const AlgorithmParameterName ShowField::FaceTransparency("FaceTransparency");
+const AlgorithmParameterName ShowField::FaceInvertNormals("FaceInvertNormals");
+const AlgorithmParameterName ShowField::NodeAsPoints("NodeAsPoints");
+const AlgorithmParameterName ShowField::NodeAsSpheres("NodeAsSpheres");
+const AlgorithmParameterName ShowField::EdgesAsLines("EdgesAsLines");
+const AlgorithmParameterName ShowField::EdgesAsCylinders("EdgesAsCylinders");
+const AlgorithmParameterName ShowField::DefaultMeshColor("DefaultMeshColor");
+const AlgorithmParameterName ShowField::FaceTransparencyValue("FaceTransparencyValue");
+const AlgorithmParameterName ShowField::EdgeTransparencyValue("EdgeTransparencyValue");
+const AlgorithmParameterName ShowField::NodeTransparencyValue("NodeTransparencyValue");
+const AlgorithmParameterName ShowField::FacesColoring("FacesColoring");
+const AlgorithmParameterName ShowField::NodesColoring("NodesColoring");
+const AlgorithmParameterName ShowField::EdgesColoring("EdgesColoring");
+const AlgorithmParameterName ShowField::SphereScaleValue("SphereScaleValue");
+const AlgorithmParameterName ShowField::CylinderRadius("CylinderRadius");
+const AlgorithmParameterName ShowField::CylinderResolution("CylinderResolution");
+const AlgorithmParameterName ShowField::SphereResolution("SphereResolution");
+const AlgorithmParameterName ShowField::DefaultTextColor("DefaultTextColor");
+const AlgorithmParameterName ShowField::ShowText("ShowText");
+const AlgorithmParameterName ShowField::ShowDataValues("ShowDataValues");
+const AlgorithmParameterName ShowField::ShowNodeIndices("ShowNodeIndices");
+const AlgorithmParameterName ShowField::ShowEdgeIndices("ShowEdgeIndices");
+const AlgorithmParameterName ShowField::ShowFaceIndices("ShowFaceIndices");
+const AlgorithmParameterName ShowField::ShowCellIndices("ShowCellIndices");
+const AlgorithmParameterName ShowField::CullBackfacingText("CullBackfacingText");
+const AlgorithmParameterName ShowField::TextAlwaysVisible("TextAlwaysVisible");
+const AlgorithmParameterName ShowField::RenderAsLocation("RenderAsLocation");
+const AlgorithmParameterName ShowField::TextSize("TextSize");
+const AlgorithmParameterName ShowField::TextPrecision("TextPrecision");
+const AlgorithmParameterName ShowField::TextColoring("TextColoring");
+const AlgorithmParameterName ShowField::UseFaceNormals("UseFaceNormals");

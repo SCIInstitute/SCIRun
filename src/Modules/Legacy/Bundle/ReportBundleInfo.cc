@@ -36,7 +36,7 @@ using namespace SCIRun::Modules::Bundles;
 /// @class ReportBundleInfo
 /// @brief This module lists all the objects stored in a bundle.
 
-const Dataflow::Networks::ModuleLookupInfo ReportBundleInfo::staticInfo_("ReportBundleInfo", "Bundle", "SCIRun");
+MODULE_INFO_DEF(ReportBundleInfo, Bundle, SCIRun)
 
 ReportBundleInfo::ReportBundleInfo() : Module(staticInfo_)
 {

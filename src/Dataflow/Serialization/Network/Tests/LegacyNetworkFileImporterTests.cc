@@ -34,7 +34,6 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Basic/SendTestMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
@@ -42,8 +41,7 @@
 #include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Dataflow::Engine; 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Core::Datatypes;

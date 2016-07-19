@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -53,7 +53,8 @@ using namespace Geometry;
 ///   University of Utah
 ///@date  March 1999
 
-const ModuleLookupInfo CreateGeometricTransform::staticInfo_("CreateGeometricTransform", "Math", "SCIRun");
+MODULE_INFO_DEF(CreateGeometricTransform, Math, SCIRun)
+
 ALGORITHM_PARAMETER_DEF(Math, TransformType);
 ALGORITHM_PARAMETER_DEF(Math, MultiplyRadioButton);
 ALGORITHM_PARAMETER_DEF(Math, TranslateVectorX);
@@ -132,7 +133,7 @@ void CreateGeometricTransform::setStateDefaults()
   std::string z = "z+";
   state->setValue(FieldMapX, x);
   state->setValue(FieldMapY, y);
-  state->setValue(FieldMapZ, z); 
+  state->setValue(FieldMapZ, z);
   state->setValue(PermuteX, 1);
   state->setValue(PermuteY, 2);
   state->setValue(PermuteZ, 3);
@@ -144,8 +145,8 @@ void CreateGeometricTransform::setStateDefaults()
 void CreateGeometricTransform::execute()
 {
   auto input_matrix_H = getOptionalInput(InputMatrix);
-  
-  
+
+
   if (needToExecute())
   {
     auto state = get_state();
@@ -260,7 +261,7 @@ void CreateGeometricTransform::execute()
       widget_pose_inv_trans_.invert();
       */
     }
-    
+
     omatrixH_.reset(new DenseMatrix(4, 4));
 
     // now either pre- or post-multiply the transforms and store in matrix

@@ -30,8 +30,6 @@
 #define INTERFACE_MODULES_READ_FIELD_H
 
 #include "Interface/Modules/DataIO/ui_ReadFieldDialog.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/DataIO/share.h>
@@ -47,7 +45,7 @@ class SCISHARE ReadFieldDialog : public ModuleDialogGeneric,
 public:
   ReadFieldDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 protected:
   virtual void pullSpecial() override;
 

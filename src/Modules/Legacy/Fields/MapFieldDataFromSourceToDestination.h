@@ -52,7 +52,7 @@ namespace Fields {
     INPUT_PORT(1, Destination, LegacyField);
     OUTPUT_PORT(0, Remapped_Destination, LegacyField);
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };
 
 }}}

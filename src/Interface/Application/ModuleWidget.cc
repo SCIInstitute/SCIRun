@@ -296,7 +296,6 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   dialogErrorControl_(dialogErrorControl),
   inputPortLayout_(nullptr),
   outputPortLayout_(nullptr),
-  editor_(ed),
   deleting_(false),
   defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(99,99,104) : moduleRGBA(192,192,192)),
   isViewScene_(name == "ViewScene")
@@ -304,7 +303,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   fillColorStateLookup(defaultBackgroundColor_);
 
   setupModuleActions();
-  setupLogging();
+  setupLogging(ed);
 
   setCurrentIndex(buildDisplay(fullWidgetDisplay_.get(), name));
 
@@ -351,9 +350,9 @@ int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& 
   return 0;
 }
 
-void ModuleWidget::setupLogging()
+void ModuleWidget::setupLogging(ModuleErrorDisplayer* displayer)
 {
-  logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), editor_, dialogErrorControl_, SCIRunMainWindow::Instance());
+  logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), displayer, dialogErrorControl_, SCIRunMainWindow::Instance());
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(show()));
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(raise()));
   connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
@@ -1050,6 +1049,7 @@ void ModuleWidget::makeOptionsDialog()
       dialog_ = dialogFactory_->makeDialog(moduleId_, theModule_->get_state());
       addWidgetToExecutionDisableList(dialog_->getExecuteAction());
       connect(dialog_, SIGNAL(executeActionTriggered()), this, SLOT(executeButtonPushed()));
+      connect(dialog_, SIGNAL(executeActionTriggeredViaStateChange()), this, SLOT(executeTriggeredViaStateChange()));
       connect(this, SIGNAL(moduleExecuted()), dialog_, SLOT(moduleExecuted()));
       connect(this, SIGNAL(moduleSelected(bool)), dialog_, SLOT(moduleSelected(bool)));
       connect(this, SIGNAL(dynamicPortChanged(const std::string&, bool)), this, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
@@ -1252,7 +1252,13 @@ void ModuleWidget::showUI()
 void ModuleWidget::executeButtonPushed()
 {
   LOG_DEBUG("Execute button pushed on module " << moduleId_ << std::endl);
-  Q_EMIT executedManually(theModule_);
+  Q_EMIT executedManually(theModule_, true);
+  changeExecuteButtonToStop();
+}
+
+void ModuleWidget::executeTriggeredViaStateChange()
+{
+  Q_EMIT executedManually(theModule_, false);
   changeExecuteButtonToStop();
 }
 
@@ -1311,7 +1317,7 @@ void ModuleWidget::handleDialogFatalError(const QString& message)
   fullWidgetDisplay_->getOptionsButton()->setText("");
   fullWidgetDisplay_->getOptionsButton()->setIcon(style()->standardIcon(QStyle::SP_BrowserReload));
   connect(fullWidgetDisplay_->getOptionsButton(), SIGNAL(clicked()), this, SLOT(replaceMe()));
-  
+
   auto id = QString::fromStdString(getModuleId());
   QMessageBox::critical(nullptr, "Critical module error: " + id,
     "Please note the broken module, " + id + ", and replace it with a new instance. This is most likely due to this known bug: https://github.com/SCIInstitute/SCIRun/issues/881");
@@ -1381,7 +1387,7 @@ QString ModuleWidget::metadataToString() const
 
 void ModuleWidget::updateMetadata(bool active)
 {
-  setToolTip(active ? "Metadata:\n" + metadataToString() : "");
+  setToolTip(active ? "    ~ " + QString::fromStdString(moduleId_) + " Metadata ~\n\n" + metadataToString() : "");
 }
 
 void ModuleWidget::setExecutionDisabled(bool disabled)

@@ -73,7 +73,7 @@ void ReadFieldDialog::pushFileNameToState()
 
 void ReadFieldDialog::openFile()
 {
-  auto types = Modules::DataIO::ReadFieldModule::fileTypeList();
+  auto types = Modules::DataIO::ReadField::fileTypeList();
   QString typesQ(QString::fromStdString(types));
   auto file = QFileDialog::getOpenFileName(this, "Open Field File", dialogDirectory(), typesQ, &selectedFilter_);
   if (file.length() > 0)

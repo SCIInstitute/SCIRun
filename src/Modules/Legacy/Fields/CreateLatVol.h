@@ -70,12 +70,11 @@ namespace SCIRun {
         enum DataLocation { NODES, CELLS, NONE };
         enum MeshDimensions { ELEMENTS_NORMALIZED, ELEMENT_SIZE_ONE };
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
       private:
         enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
       };
-
     }
   }
 }

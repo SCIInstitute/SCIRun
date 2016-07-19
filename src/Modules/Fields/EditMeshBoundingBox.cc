@@ -43,7 +43,7 @@ using namespace Core::Geometry;
 using namespace Graphics;
 using namespace Datatypes;
 
-const ModuleLookupInfo EditMeshBoundingBox::staticInfo_("EditMeshBoundingBox", "ChangeMesh", "SCIRun");
+MODULE_INFO_DEF(EditMeshBoundingBox, ChangeMesh, SCIRun)
 
 class BoxWidgetNull : public BoxWidgetInterface
 {

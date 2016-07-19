@@ -47,7 +47,7 @@
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
-#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
+//#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
@@ -112,7 +112,6 @@ using namespace boost::assign;
 HardCodedAlgorithmFactory::HardCodedAlgorithmFactory()
 {
   addToMakerMap();
-  addToMakerMap2();
   addToMakerMapGenerated();
 }
 
@@ -141,8 +140,6 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(WriteMatrix, WriteMatrixAlgorithm)
       ADD_MODULE_ALGORITHM(EvaluateLinearAlgebraUnary, EvaluateLinearAlgebraUnaryAlgorithm)
       ADD_MODULE_ALGORITHM(EvaluateLinearAlgebraBinary, EvaluateLinearAlgebraBinaryAlgorithm)
-      ADD_MODULE_ALGORITHM(ConvertMeshToIrregularMesh, ConvertMeshToIrregularMeshAlgo)
-      ADD_MODULE_ALGORITHM(ReadMesh, TextToTriSurfFieldAlgorithm)
       ADD_MODULE_ALGORITHM(AddKnownsToLinearSystem, AddKnownsToLinearSystemAlgo)
       ADD_MODULE_ALGORITHM(CalculateVectorMagnitudes, CalculateVectorMagnitudesAlgo)
       ADD_MODULE_ALGORITHM(BuildFEMatrix, BuildFEMatrixAlgo)
@@ -169,7 +166,7 @@ void HardCodedAlgorithmFactory::addToMakerMap()
       ADD_MODULE_ALGORITHM(MapFieldDataOntoElements, MapFieldDataOntoElemsAlgo)
       ADD_MODULE_ALGORITHM(ClipFieldByFunction, ClipMeshBySelectionAlgo)
       ADD_MODULE_ALGORITHM(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationAlgo)
-      ADD_MODULE_ALGORITHM(SimulateForwardMagneticField, SimulateForwardMagneticFieldAlgo)
+      //ADD_MODULE_ALGORITHM(SimulateForwardMagneticField, SimulateForwardMagneticFieldAlgo)
       ADD_MODULE_ALGORITHM(BuildFEVolRHS, BuildFEVolRHSAlgo)
 			ADD_MODULE_ALGORITHM(RefineMesh, RefineMeshAlgo)
       ADD_MODULE_ALGORITHM(SetFieldDataToConstantValue, SetFieldDataToConstantValueAlgo)
@@ -199,7 +196,7 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
 
   auto func = factoryMap_.find(moduleName);
   if (func != factoryMap_.end())
-    h.reset((func->second)());
+    h.reset((func->second.second)());
 
   //TODO: make a convenience function to copy these for "sub-algorithms"
   if (h && algoCollaborator)

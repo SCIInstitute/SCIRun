@@ -35,7 +35,7 @@ using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-const ModuleLookupInfo CreateComplexMatrix::staticInfo_("CreateComplexMatrix", "Math", "SCIRun");
+MODULE_INFO_DEF(CreateComplexMatrix, Math, SCIRun)
 
 CreateComplexMatrix::CreateComplexMatrix() : Module(staticInfo_)
 {
@@ -45,7 +45,7 @@ CreateComplexMatrix::CreateComplexMatrix() : Module(staticInfo_)
 void CreateComplexMatrix::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(CreateMatrixModule::TextEntry, std::string());
+  state->setValue(CreateMatrix::TextEntry, std::string());
 }
 
 void CreateComplexMatrix::execute()
@@ -55,7 +55,7 @@ void CreateComplexMatrix::execute()
     auto matrix(boost::make_shared<ComplexDenseMatrix>());
     try
     {
-      auto matrixString = get_state()->getValue(CreateMatrixModule::TextEntry).toString();
+      auto matrixString = get_state()->getValue(CreateMatrix::TextEntry).toString();
 
       if (!matrixString.empty())
       {

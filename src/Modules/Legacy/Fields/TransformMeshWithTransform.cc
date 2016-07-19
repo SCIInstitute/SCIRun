@@ -39,7 +39,7 @@ using namespace SCIRun;
 /// @class TransformMeshWithTransform
 /// @brief Non-interactive geometric transform of a field.
 
-const ModuleLookupInfo TransformMeshWithTransform::staticInfo_("TransformMeshWithTransform", "ChangeMesh", "SCIRun");
+MODULE_INFO_DEF(TransformMeshWithTransform, ChangeMesh, SCIRun)
 
 TransformMeshWithTransform::TransformMeshWithTransform()
   : Module(staticInfo_, false)

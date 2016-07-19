@@ -37,16 +37,15 @@ namespace SCIRun {
 namespace Modules {
 namespace Fields {
 
-  class SCISHARE ReportFieldInfoModule : public Dataflow::Networks::Module,
+  class SCISHARE ReportFieldInfo : public Dataflow::Networks::Module,
     public Has1InputPort<FieldPortTag>,
     public Has9OutputPorts<ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, ScalarPortTag>
   {
   public:
-    ReportFieldInfoModule();
+    ReportFieldInfo();
     virtual void execute() override;
     virtual void setStateDefaults() override {}
     INPUT_PORT(0, InputField, LegacyField);
-    //OUTPUT_PORT(0, FieldType, String);
     OUTPUT_PORT(0, NumNodes, Int32);
     OUTPUT_PORT(1, NumElements, Int32);
     OUTPUT_PORT(2, NumData, Int32);
@@ -57,7 +56,7 @@ namespace Fields {
     OUTPUT_PORT(7, Dimensions, DenseMatrix);
     OUTPUT_PORT(8, GeomSize, Double);
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };
 }}}
 

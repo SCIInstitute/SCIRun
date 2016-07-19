@@ -46,7 +46,6 @@ AppendMatrixDialog::AppendMatrixDialog(const std::string& name, ModuleStateHandl
 
   connect(appendRowsButton_, SIGNAL(clicked()), this, SLOT(isRows()));
   connect(appendColumnsButton_, SIGNAL(clicked()), this, SLOT(isCols()));
-  buttonBox->setVisible(false);
 }
 
 void AppendMatrixDialog::isRows()
