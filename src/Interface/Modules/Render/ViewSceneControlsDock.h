@@ -31,10 +31,11 @@ DEALINGS IN THE SOFTWARE.
 
 #include "Interface/Modules/Render/ui_ViewSceneControls.h"
 
-#include <boost/shared_ptr.hpp>
-
-#include <Interface/Modules/Render/ViewScene.h>
-#include <Interface/Modules/Render/namespaces.h>
+#ifndef Q_MOC_RUN
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <boost/atomic.hpp>
+#endif
+#include <QGraphicsView>
 #include <Interface/Modules/Render/share.h>
 
 namespace SCIRun {
@@ -50,7 +51,6 @@ namespace SCIRun {
         QWidget* parent = nullptr);
 
       void setMovable(bool canMove);
-      void connectSignals(ViewSceneDialog* parent);
       QPointF getLightPosition() const;
       QColor getColor() const;
 
@@ -74,6 +74,28 @@ namespace SCIRun {
 
     };
 
+    class VisibleItemManager : public QObject
+    {
+      Q_OBJECT
+    public:
+      explicit VisibleItemManager(QListWidget* itemList) : itemList_(itemList) {}
+      std::vector<QString> synchronize(const std::vector<Core::Datatypes::GeometryBaseHandle>& geomList);
+      bool isVisible(const QString& name) const;
+      bool containsItem(const QString& name) const;
+    public Q_SLOTS:
+      void addRenderItem(const QString& name, bool checked);
+      void removeRenderItem(const QString& name);
+      void clear();
+    Q_SIGNALS:
+      void visibleItemChange();
+    private Q_SLOTS:
+      void slotChanged(QListWidgetItem* item);
+      void selectAllClicked();
+      void deselectAllClicked();
+    private:
+      QListWidget* itemList_;
+    };
+
     class SCISHARE ViewSceneControlsDock : public QDockWidget, public Ui::ViewSceneControls
     {
       Q_OBJECT
@@ -91,26 +113,17 @@ namespace SCIRun {
       void updateZoomOptionVisibility();
       void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
       void updatePlaneControlDisplay(double x, double y, double z, double d);
-      void setLightValues(int index, QColor color, QPointF position, bool on);
       QPointF getLightPosition(int index) const;
       QColor getLightColor(int index) const;
 
-    public Q_SLOTS:
-      void addItem(const QString& name, bool checked);
-      void removeItem(const QString& name);
-      void removeAllItems();
-    Q_SIGNALS:
-      void itemSelected(const QString& name);
-      void itemUnselected(const QString& name);
-    private Q_SLOTS:
-      void slotChanged(QListWidgetItem* item);
+      VisibleItemManager& visibleItems() { return *visibleItems_; }
 
     private:
       void setupObjectListWidget();
       void setupLightControlCircle(QFrame* frame, int index, const boost::atomic<bool>& pulling, bool moveable);
 
-      std::vector<QListWidgetItem*> items_;
       std::vector<LightControlCircle*> lightControls_;
+      std::unique_ptr<VisibleItemManager> visibleItems_;
     };
   }
 }
