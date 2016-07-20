@@ -1695,6 +1695,35 @@ void NetworkEditor::renameTagGroupInFile()
   Q_EMIT modified();
 }
 
+void NetworkEditor::makeSubnetwork()
+{
+  QRectF rect;
+  QPointF position;
+
+  Q_FOREACH(QGraphicsItem* item, scene_->selectedItems())
+  {
+    auto r = item->boundingRect();
+    position = item->pos();
+    r = item->mapRectToParent(r);
+
+    if (rect.isEmpty())
+      rect = r;
+    else
+      rect = rect.united(r);
+  }
+  auto pic = QPixmap::grabWidget(this, mapFromScene(rect).boundingRect());
+
+  auto picItem = new QGraphicsPixmapItem(pic);
+  scene_->addItem(picItem);
+  picItem->setFlags(QGraphicsItem::ItemIsMovable);
+
+  while (!scene_->items(position.x() - 20, position.y() - 20, 40, 40).isEmpty())
+  {
+    position += QPointF(100, 0);
+  }
+  picItem->setPos(position);
+}
+
 void NetworkEditor::drawTagGroups()
 {
   if (tagGroupsActive_)
