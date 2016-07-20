@@ -320,7 +320,7 @@ namespace Gui {
 
   private:
     typedef QPair<ModuleWidget*, ModuleWidget*> ModulePair;
-    void setupModuleWidget(ModuleWidget* node);
+    ModuleProxyWidget* setupModuleWidget(ModuleWidget* node);
     ModuleWidget* selectedModule() const;
     ConnectionLine* selectedLink() const;
     ModulePair selectedModulePair() const;
