@@ -48,10 +48,15 @@ namespace SCIRun {
         virtual bool call_exporter(const std::string& filename) override;
 
         INPUT_PORT(0, FieldToWrite, LegacyField);
+        INPUT_PORT(1, ColorMapObject, ColorMap);
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       protected:
         virtual std::string defaultFileTypeName() const override;
+
+      private:
+        bool write(const std::string& filename, const FieldHandle& field);
+        //void calculateColors()
       };
 
     }}}

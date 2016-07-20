@@ -31,7 +31,7 @@
 
 #include "Interface/Modules/DataIO/ui_WriteG3DDialog.h"
 #include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
+//#include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/DataIO/share.h>
