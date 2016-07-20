@@ -296,7 +296,6 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   dialogErrorControl_(dialogErrorControl),
   inputPortLayout_(nullptr),
   outputPortLayout_(nullptr),
-  editor_(ed),
   deleting_(false),
   defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(99,99,104) : moduleRGBA(192,192,192)),
   isViewScene_(name == "ViewScene")
@@ -304,7 +303,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   fillColorStateLookup(defaultBackgroundColor_);
 
   setupModuleActions();
-  setupLogging();
+  setupLogging(ed);
 
   setCurrentIndex(buildDisplay(fullWidgetDisplay_.get(), name));
 
@@ -351,9 +350,9 @@ int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& 
   return 0;
 }
 
-void ModuleWidget::setupLogging()
+void ModuleWidget::setupLogging(ModuleErrorDisplayer* displayer)
 {
-  logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), editor_, dialogErrorControl_, SCIRunMainWindow::Instance());
+  logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), displayer, dialogErrorControl_, SCIRunMainWindow::Instance());
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(show()));
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(raise()));
   connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
@@ -1388,7 +1387,7 @@ QString ModuleWidget::metadataToString() const
 
 void ModuleWidget::updateMetadata(bool active)
 {
-  setToolTip(active ? "Metadata:\n" + metadataToString() : "");
+  setToolTip(active ? "    ~ " + QString::fromStdString(moduleId_) + " Metadata ~\n\n" + metadataToString() : "");
 }
 
 void ModuleWidget::setExecutionDisabled(bool disabled)

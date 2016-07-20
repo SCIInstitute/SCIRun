@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -46,9 +46,9 @@ namespace SCIRun {
   namespace Modules {
     namespace DataIO {
 
-template <class HType, class PortTag>
+template <class HType, class PortTag, class PortDescriber = Has2InputPorts<PortTag, StringPortTag>>
 class GenericWriter : public Dataflow::Networks::Module,
-  public Has2InputPorts<PortTag, StringPortTag>,
+  public PortDescriber,
   public HasNoOutputPorts
 {
 public:
@@ -70,7 +70,7 @@ protected:
 
   //GuiInt      confirm_;
   //GuiInt			confirm_once_;
-  
+
   virtual bool useCustomExporter(const std::string& filename) const = 0;
   virtual bool call_exporter(const std::string &filename) { return false; }
 
@@ -78,8 +78,8 @@ protected:
 };
 
 
-template <class HType, class PortTag>
-GenericWriter<HType, PortTag>::GenericWriter(const std::string &name, const std::string &cat, const std::string &pack, const std::string& stateFilename)
+template <class HType, class PortTag, class PortDescriber>
+GenericWriter<HType, PortTag, PortDescriber>::GenericWriter(const std::string &name, const std::string &cat, const std::string &pack, const std::string& stateFilename)
   : SCIRun::Dataflow::Networks::Module(SCIRun::Dataflow::Networks::ModuleLookupInfo(name, cat, pack)),
     //confirm_(get_ctx()->subVar("confirm"), sci_getenv_p("SCIRUN_CONFIRM_OVERWRITE")),
 		//confirm_once_(get_ctx()->subVar("confirm-once"),0),
@@ -89,8 +89,8 @@ GenericWriter<HType, PortTag>::GenericWriter(const std::string &name, const std:
   INITIALIZE_PORT(Filename);
 }
 
-template <class HType, class PortTag>
-void GenericWriter<HType, PortTag>::setStateDefaults()
+template <class HType, class PortTag, class PortDescriber>
+void GenericWriter<HType, PortTag, PortDescriber>::setStateDefaults()
 {
   get_state()->setValue(stateFilename_, std::string());
   get_state()->setValue(SCIRun::Core::Algorithms::Variables::FileTypeName, defaultFileTypeName());
@@ -112,9 +112,8 @@ GenericWriter<HType, PortTag>::overwrite()
 }
 #endif
 
-template <class HType, class PortTag>
-void
-GenericWriter<HType, PortTag>::execute()
+template <class HType, class PortTag, class PortDescriber>
+void GenericWriter<HType, PortTag, PortDescriber>::execute()
 {
   // If there is an optional input string set the filename to it in the GUI.
   /// @todo: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
@@ -143,7 +142,7 @@ GenericWriter<HType, PortTag>::execute()
     return;
   }
   handle_ = getRequiredInput(*objectPortName_);
-  
+
   if (filename_.empty())
   {
     error("No filename specified.");
@@ -152,7 +151,7 @@ GenericWriter<HType, PortTag>::execute()
   if (needToExecute())
   {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    update_state(Executing);  
+    update_state(Executing);
 #endif
     remark("saving file " + filename_);
 
@@ -185,7 +184,7 @@ GenericWriter<HType, PortTag>::execute()
       else
       {
         Pio(*stream, handle_);
-      } 
+      }
     }
   }
 }

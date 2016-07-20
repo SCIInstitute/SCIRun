@@ -326,7 +326,7 @@ bool Module::executeWithSignals() NOEXCEPT
   {
     std::ostringstream ostr;
     ostr << executionTime;
-    metadata_.setMetadata("last execution duration (seconds)", ostr.str());
+    metadata_.setMetadata("Last execution duration (seconds)", ostr.str());
   }
 
   status("MODULE FINISHED: " + id_.id_);

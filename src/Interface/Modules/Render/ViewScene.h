@@ -75,7 +75,6 @@ namespace SCIRun {
       void menuMouseControlChanged(int index);
       void autoViewClicked();
       void newGeometryValue();
-      void newOwnGeometryValue();
       void autoViewOnLoadChecked(bool value);
       void useOrthoViewChecked(bool value);
       void showOrientationChecked(bool value);
@@ -88,10 +87,6 @@ namespace SCIRun {
       void setTransparencySortTypeContinuous(bool index);
       void setTransparencySortTypeUpdate(bool index);
       void setTransparencySortTypeLists(bool index);
-      void handleUnselectedItem(const QString& name);
-      void handleSelectedItem(const QString& name);
-      void selectAllClicked();
-      void deselectAllClicked();
       void adjustZoomSpeed(int value);
       void invertZoomClicked(bool value);
       void screenshotClicked();
@@ -176,7 +171,6 @@ namespace SCIRun {
       void selectObject(const int x, const int y);
       std::string restoreObjColor();
       void updatClippingPlaneDisplay();
-      bool isObjectUnselected(const std::string& name);
       void addToolBar();
       void addAutoViewButton();
       void addScreenshotButton();
@@ -184,12 +178,11 @@ namespace SCIRun {
       void addViewBar();
       void addViewOptions();
       void addConfigurationButton();
-      void addConfigurationDock(const QString& viewName);
+      void addConfigurationDock();
       void setupClippingPlanes();
       void setupMaterials();
       void setupScaleBar();
       void setupRenderTabValues();
-      void hideConfigurationDock();
       void takeScreenshot();
       void sendScreenshotDownstreamForTesting();
 
@@ -225,8 +218,6 @@ namespace SCIRun {
       int counter_;
       bool shown_;
       bool hideViewBar_;
-      bool showConfiguration_;
-      bool itemValueChanged_;
       bool invertZoom_;
       bool shiftdown_;
       bool selected_;
@@ -235,8 +226,6 @@ namespace SCIRun {
       QColor fogColor_;
       ScaleBar scaleBar_;
       std::vector<ClippingPlane> clippingPlanes_;
-      std::vector<std::string> unselectedObjectNames_;
-      std::vector<std::string> previousObjectNames_;
       class Screenshot* screenshotTaker_;
       bool saveScreenshotOnNewGeometry_;
 
