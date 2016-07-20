@@ -1714,8 +1714,13 @@ void NetworkEditor::makeSubnetwork()
   auto pic = QPixmap::grabWidget(this, mapFromScene(rect).boundingRect());
 
   auto picItem = new QGraphicsPixmapItem(pic);
-  scene_->addItem(picItem);
   picItem->setFlags(QGraphicsItem::ItemIsMovable);
+
+  auto picRect = picItem->boundingRect();
+  auto longEdge = std::max(picRect.height(), picRect.width());
+  picItem->setScale(100.0 / longEdge);
+
+  scene_->addItem(picItem);
 
   while (!scene_->items(position.x() - 20, position.y() - 20, 40, 40).isEmpty())
   {
