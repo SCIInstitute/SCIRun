@@ -158,7 +158,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
     standardBar->addAction(actionSelectMode_);
     standardBar->addAction(actionToggleMetadataLayer_);
     standardBar->addAction(actionToggleTagLayer_);
-    standardBar->addAction(actionMakeSubnetwork_);
+    //standardBar->addAction(actionMakeSubnetwork_);  //TODO: work in progress
     connect(actionNetworkBar_, SIGNAL(toggled(bool)), standardBar, SLOT(setVisible(bool)));
     connect(standardBar, SIGNAL(visibilityChanged(bool)), actionNetworkBar_, SLOT(setChecked(bool)));
     //setUnifiedTitleAndToolBarOnMac(true);
@@ -1866,6 +1866,11 @@ void SCIRunMainWindow::showStatusMessage(const QString& str)
 void SCIRunMainWindow::showStatusMessage(const QString& str, int timeInMsec)
 {
 	statusBar()->showMessage(str, timeInMsec);
+}
+
+void SCIRunMainWindow::showExtendedDataInfo()
+{
+  qDebug() << "showExtendedDataInfo";
 }
 
 void SCIRunMainWindow::toggleMetadataLayer(bool toggle)
