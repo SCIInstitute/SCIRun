@@ -1711,10 +1711,21 @@ void NetworkEditor::makeSubnetwork()
     else
       rect = rect.united(r);
   }
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (dynamic_cast<QGraphicsPixmapItem*>(item))
+      item->setVisible(false);
+  }
+
   auto pic = QPixmap::grabWidget(this, mapFromScene(rect).boundingRect());
 
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (dynamic_cast<QGraphicsPixmapItem*>(item))
+      item->setVisible(true);
+  }
   auto picItem = new QGraphicsPixmapItem(pic);
-  picItem->setFlags(QGraphicsItem::ItemIsMovable);
+  picItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
 
   auto picRect = picItem->boundingRect();
   auto longEdge = std::max(picRect.height(), picRect.width());
@@ -1727,6 +1738,8 @@ void NetworkEditor::makeSubnetwork()
     position += QPointF(100, 0);
   }
   picItem->setPos(position);
+  scene_->clearSelection();
+  picItem->setSelected(true);
 }
 
 void NetworkEditor::drawTagGroups()
