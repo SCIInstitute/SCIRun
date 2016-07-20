@@ -32,9 +32,13 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/Color.h>
+#include <Core/Datatypes/ColorMap.h>
 #include <Core/Logging/Log.h>
 
 
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 
@@ -48,18 +52,28 @@ const Dataflow::Networks::ModuleLookupInfo WriteG3D::staticInfo_("WriteG3D", "Da
 
 WriteG3D::WriteG3D()
   : my_base(staticInfo_.module_name_, staticInfo_.category_name_, staticInfo_.package_name_, "Filename")
-    //gui_increment_(get_ctx()->subVar("increment"), 0),
-    //gui_current_(get_ctx()->subVar("current"), 0)
 {
   INITIALIZE_PORT(FieldToWrite);
   filetype_ = "Binary";
   objectPortName_ = &FieldToWrite;
-
+  
   FieldIEPluginManager mgr;
   //TODO: change from hard coded types to getting the correct group from the list exporter
   auto types = makeGuiTypesListForExport(mgr);
   types = "IV3D (*.g3d);;ObjToField (*.obj)";
   get_state()->setValue(Variables::FileTypeList, types);
+}
+
+void WriteG3D::setStateDefaults()
+{
+  auto  state = get_state();
+  state->setValue(EnableTransparency, false);
+  state->setValue(TransparencyValue, 0.65f);
+  state->setValue(Coloring, 0);
+  state->setValue(DefaultColor, ColorRGB(0.5, 0.5, 0.5).toString());
+
+  //Call base class to ensure the inherited defaults are set
+  my_base::setStateDefaults();
 }
 
 bool WriteG3D::call_exporter(const std::string& filename)
@@ -77,12 +91,7 @@ bool WriteG3D::call_exporter(const std::string& filename)
 
 void WriteG3D::execute()
 {
-  auto field = getRequiredInput(FieldToWrite);
-  //auto colorMap = getOptionalInput(ColorMapObject);
-
-  if (needToExecute())
-  {
-  }
+  calculateColors();
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //get the current file name
@@ -133,95 +142,99 @@ std::string WriteG3D::defaultFileTypeName() const
   FieldIEPluginManager mgr;
   return defaultImportTypeForFile(&mgr);
 }
-/*
-void WriteG3D::calculateColors(
-  boost::shared_ptr<Field> field,
-  boost::optional<boost::shared_ptr<ColorMap>> colorMap)
+
+void WriteG3D::calculateColors()
 {
+  auto field = getRequiredInput(FieldToWrite);
+  auto colorMap = getOptionalInput(ColorMapObject);
 
-  VField* fld = field->vfield();
-  VMesh*  mesh = field->vmesh();
-
-  double sval;
-  Vector vval;
-  Tensor tval;
-
-  ColorScheme colorScheme;
-  ColorRGB node_color;
-
-  if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR_NODES))
-    colorScheme = ColorScheme::COLOR_UNIFORM;
-  else if (state.get(RenderState::USE_COLORMAP_ON_NODES))
-    colorScheme = ColorScheme::COLOR_MAP;
-  else
-    colorScheme = ColorScheme::COLOR_IN_SITU;
-
-  mesh->synchronize(Mesh::NODES_E);
-
-  VMesh::Node::iterator eiter, eiter_end;
-  mesh->begin(eiter);
-  mesh->end(eiter_end);
-
-  double radius = moduleState->getValue(ShowField::SphereScaleValue).toDouble();
-  double num_strips = static_cast<double>(moduleState->getValue(ShowField::SphereResolution).toInt());
-  if (radius < 0) radius = 1.;
-  if (num_strips < 0) num_strips = 10.;
-  std::stringstream ss;
-  ss << state.get(RenderState::USE_SPHERE) << radius << num_strips << static_cast<int>(colorScheme);
-
-  std::string uniqueNodeID = id + "node" + ss.str();
-
-  nodeTransparencyValue_ = static_cast<float>(moduleState->getValue(ShowField::NodeTransparencyValue).toDouble());
-
-  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::POINTS;
-  // Use spheres...
-  if (state.get(RenderState::USE_SPHERE))
-    primIn = SpireIBO::PRIMITIVE::TRIANGLES;
-
-  GlyphGeom glyphs;
-  while (eiter != eiter_end)
+  if (needToExecute())
   {
-    interruptible->checkForInterruption();
+    VField* fld = field->vfield();
+    VMesh*  mesh = field->vmesh();
 
-    Point p;
-    mesh->get_point(p, *eiter);
-    //coloring options
-    if (colorScheme != ColorScheme::COLOR_UNIFORM)
+    double sval;
+    Vector vval;
+    Tensor tval;
+
+    float transparency = 1.0f;
+    auto state = get_state();
+    if (state->getValue(EnableTransparency).toBool())
     {
-      ColorMapHandle map = colorMap.get();
-      if (fld->is_scalar())
-      {
-        fld->get_value(sval, *eiter);
-        node_color = map->valueToColor(sval);
-      }
-      else if (fld->is_vector())
-      {
-        fld->get_value(vval, *eiter);
-        node_color = map->valueToColor(vval);
-      }
-      else if (fld->is_tensor())
-      {
-        fld->get_value(tval, *eiter);
-        node_color = map->valueToColor(tval);
-      }
-    }
-    //accumulate VBO or IBO data
-    if (state.get(RenderState::USE_SPHERE))
-    {
-      glyphs.addSphere(p, radius, num_strips, node_color);
-    }
-    else
-    {
-      glyphs.addPoint(p, node_color);
+      transparency = static_cast<float>(state->getValue(TransparencyValue).toDouble());
     }
 
-    ++eiter;
+    ColorRGB node_color;
+
+    mesh->synchronize(Mesh::NODES_E);
+
+    VMesh::Node::iterator eiter, eiter_end;
+    mesh->begin(eiter);
+    mesh->end(eiter_end);
+
+    while (eiter != eiter_end)
+    {
+      checkForInterruption();
+
+      Point p;
+      mesh->get_point(p, *eiter);
+
+      //coloring options
+      //Default color
+      if (state->getValue(Coloring).toInt() == 0)
+      {
+        ColorRGB defaultColor = ColorRGB(state->getValue(DefaultColor).toString());
+        defaultColor = (defaultColor.r() > 1.0 || defaultColor.g() > 1.0 || defaultColor.b() > 1.0) ?
+          ColorRGB(defaultColor.r() / 255., defaultColor.g() / 255., defaultColor.b() / 255.) : defaultColor;
+        node_color = defaultColor;
+      }
+      // Color map lookup
+      else if (state->getValue(Coloring).toInt() == 1)
+      {
+        ColorMapHandle map = colorMap.get();
+        if (fld->is_scalar())
+        {
+          fld->get_value(sval, *eiter);
+          node_color = map->valueToColor(sval);
+        }
+        else if (fld->is_vector())
+        {
+          fld->get_value(vval, *eiter);
+          node_color = map->valueToColor(vval);
+        }
+        else if (fld->is_tensor())
+        {
+          fld->get_value(tval, *eiter);
+          node_color = map->valueToColor(tval);
+        }
+      }
+      // RGB conversion
+      else
+      {
+        if (fld->is_scalar())
+        {
+          Vector colorVector = Vector(p.x(), p.y(), p.z()).normal();
+          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
+        }
+        else if (fld->is_vector())
+        {
+          fld->get_value(vval, *eiter);
+          Vector colorVector = vval.normal();
+          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
+        }
+        else if (fld->is_tensor())
+        {
+          fld->get_value(tval, *eiter);
+          Vector colorVector = tval.get_eigenvector1().normal();
+          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
+        }
+      }
+      colors_.push_back(ColorRGB(node_color.r(), node_color.g(), node_color.b(), transparency));
+      ++eiter;
+    }
   }
-
-  glyphs.buildObject(geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_NODES), nodeTransparencyValue_,
-    colorScheme, state, primIn, mesh->get_bounding_box());
 }
-*/
+
 //TODO: below method is to test functionality. Needs to be moved to Core\Algorithms\Legacy\DataIO\ObjToFieldReader.cc
 bool WriteG3D::write(const std::string& filename, const FieldHandle& field)
 {
@@ -263,3 +276,8 @@ bool WriteG3D::write(const std::string& filename, const FieldHandle& field)
 
   return true;
 }
+
+const AlgorithmParameterName WriteG3D::EnableTransparency("EnableTransparency");
+const AlgorithmParameterName WriteG3D::TransparencyValue("TransparencyValue");
+const AlgorithmParameterName WriteG3D::Coloring("Coloring");
+const AlgorithmParameterName WriteG3D::DefaultColor("DefaultColor");
