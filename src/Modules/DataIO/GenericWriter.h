@@ -54,7 +54,7 @@ class GenericWriter : public Dataflow::Networks::Module,
 public:
   GenericWriter(const std::string &name, const std::string &category, const std::string &package, const std::string& stateFilename);
 
-  virtual void setStateDefaults() override final;
+  virtual void setStateDefaults() override;
   virtual void execute() override;
 
   INPUT_PORT(1, Filename, String);
