@@ -33,17 +33,20 @@
 #include <Core/Datatypes/Mesh/FieldFwd.h>
 #include <Modules/DataIO/GenericWriter.h>
 #include <Core/Thread/Interruptible.h>
+#include <Core/Datatypes/Color.h>
 #include <Modules/DataIO/share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace DataIO {
 
-      class SCISHARE WriteG3D : public GenericWriter<FieldHandle, FieldPortTag, Has2InputPorts<FieldPortTag, ColorMapPortTag>>,
+      class SCISHARE WriteG3D : public GenericWriter<FieldHandle, FieldPortTag>,
+        //public GenericWriter<FieldHandle, FieldPortTag, Has2InputPorts<FieldPortTag, ColorMapPortTag>>,
         public Core::Thread::Interruptible
       {
       public:
-        typedef GenericWriter<FieldHandle, FieldPortTag, Has2InputPorts<FieldPortTag, ColorMapPortTag>> my_base;
+        typedef GenericWriter<FieldHandle, FieldPortTag> my_base;
+        //typedef GenericWriter<FieldHandle, FieldPortTag, Has2InputPorts<FieldPortTag, ColorMapPortTag>> my_base;
         WriteG3D();
         virtual void execute() override;
         virtual bool useCustomExporter(const std::string& filename) const override;
@@ -55,7 +58,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName DefaultColor;
 
         INPUT_PORT(0, FieldToWrite, LegacyField);
-        INPUT_PORT(1, ColorMapObject, ColorMap);
+        //INPUT_PORT(1, ColorMapObject, ColorMap);
 
         virtual void setStateDefaults() override;
 
@@ -67,7 +70,7 @@ namespace SCIRun {
         bool write(const std::string& filename, const FieldHandle& field);
         void calculateColors();
 
-        std::vector<ColorRGB> colors_;
+        std::vector<Core::Datatypes::ColorRGB> colors_;
       };
 
     }}}

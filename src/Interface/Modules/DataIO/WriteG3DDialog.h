@@ -54,6 +54,9 @@ protected:
 private Q_SLOTS:
   void pushFileNameToState();
   void saveFile();
+  void assignDefaultColor();
+private:
+  QColor defaultColor_;
 };
 
 }

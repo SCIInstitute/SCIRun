@@ -32,7 +32,6 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Logging/Log.h>
 
@@ -54,6 +53,7 @@ WriteG3D::WriteG3D()
   : my_base(staticInfo_.module_name_, staticInfo_.category_name_, staticInfo_.package_name_, "Filename")
 {
   INITIALIZE_PORT(FieldToWrite);
+  //INITIALIZE_PORT(ColorMapObject);
   filetype_ = "Binary";
   objectPortName_ = &FieldToWrite;
   
@@ -146,7 +146,7 @@ std::string WriteG3D::defaultFileTypeName() const
 void WriteG3D::calculateColors()
 {
   auto field = getRequiredInput(FieldToWrite);
-  auto colorMap = getOptionalInput(ColorMapObject);
+  //auto colorMap = getOptionalInput(ColorMapObject);
 
   if (needToExecute())
   {
@@ -190,7 +190,7 @@ void WriteG3D::calculateColors()
       }
       // Color map lookup
       else if (state->getValue(Coloring).toInt() == 1)
-      {
+      {/*
         ColorMapHandle map = colorMap.get();
         if (fld->is_scalar())
         {
@@ -206,7 +206,7 @@ void WriteG3D::calculateColors()
         {
           fld->get_value(tval, *eiter);
           node_color = map->valueToColor(tval);
-        }
+        }*/
       }
       // RGB conversion
       else
@@ -254,8 +254,10 @@ bool WriteG3D::write(const std::string& filename, const FieldHandle& field)
     for (iter = 0; iter != end; ++iter)
     {
       Point p;
+      ColorRGB c;
       mesh->get_point(p, iter);
-      os << "v " << p.x() << " " << p.y() << " " << p.z() << "\n";
+      c = colors_[iter];
+      os << "v " << p.x() << " " << p.y() << " " << p.z() << " " << c.r() << " " << c.g() << " " << c.b() << " " << c.a() << "\n";
     }
   }
 
