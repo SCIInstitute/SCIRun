@@ -189,8 +189,8 @@ void WriteG3D::calculateColors()
         node_color = defaultColor;
       }
       // Color map lookup
-      else if (state->getValue(Coloring).toInt() == 1)
-      {/*
+      /*else if (state->getValue(Coloring).toInt() == 1)
+      {
         ColorMapHandle map = colorMap.get();
         if (fld->is_scalar())
         {
@@ -206,8 +206,8 @@ void WriteG3D::calculateColors()
         {
           fld->get_value(tval, *eiter);
           node_color = map->valueToColor(tval);
-        }*/
-      }
+        }
+      }*/
       // RGB conversion
       else
       {
