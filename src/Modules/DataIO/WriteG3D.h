@@ -32,26 +32,45 @@
 
 #include <Core/Datatypes/Mesh/FieldFwd.h>
 #include <Modules/DataIO/GenericWriter.h>
+#include <Core/Thread/Interruptible.h>
+#include <Core/Datatypes/Color.h>
 #include <Modules/DataIO/share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace DataIO {
 
-      class SCISHARE WriteG3D : public GenericWriter<FieldHandle, FieldPortTag>
+      class SCISHARE WriteG3D : public GenericWriter<FieldHandle, FieldPortTag>,
+        //public GenericWriter<FieldHandle, FieldPortTag, Has2InputPorts<FieldPortTag, ColorMapPortTag>>,
+        public Core::Thread::Interruptible
       {
       public:
         typedef GenericWriter<FieldHandle, FieldPortTag> my_base;
+        //typedef GenericWriter<FieldHandle, FieldPortTag, Has2InputPorts<FieldPortTag, ColorMapPortTag>> my_base;
         WriteG3D();
         virtual void execute() override;
         virtual bool useCustomExporter(const std::string& filename) const override;
         virtual bool call_exporter(const std::string& filename) override;
 
+        static const Core::Algorithms::AlgorithmParameterName EnableTransparency;
+        static const Core::Algorithms::AlgorithmParameterName TransparencyValue;
+        static const Core::Algorithms::AlgorithmParameterName Coloring;
+        static const Core::Algorithms::AlgorithmParameterName DefaultColor;
+
         INPUT_PORT(0, FieldToWrite, LegacyField);
+        //INPUT_PORT(1, ColorMapObject, ColorMap);
+
+        virtual void setStateDefaults() override;
 
         static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
       protected:
         virtual std::string defaultFileTypeName() const override;
+
+      private:
+        bool write(const std::string& filename, const FieldHandle& field);
+        void calculateColors();
+
+        std::vector<Core::Datatypes::ColorRGB> colors_;
       };
 
     }}}

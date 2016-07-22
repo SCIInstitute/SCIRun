@@ -32,27 +32,48 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/ColorMap.h>
 #include <Core/Logging/Log.h>
+
+
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
 const Dataflow::Networks::ModuleLookupInfo WriteG3D::staticInfo_("WriteG3D", "DataIO", "SCIRun");
 
 WriteG3D::WriteG3D()
   : my_base(staticInfo_.module_name_, staticInfo_.category_name_, staticInfo_.package_name_, "Filename")
-    //gui_increment_(get_ctx()->subVar("increment"), 0),
-    //gui_current_(get_ctx()->subVar("current"), 0)
 {
   INITIALIZE_PORT(FieldToWrite);
+  //INITIALIZE_PORT(ColorMapObject);
   filetype_ = "Binary";
   objectPortName_ = &FieldToWrite;
-
+  
   FieldIEPluginManager mgr;
+  //TODO: change from hard coded types to getting the correct group from the list exporter
   auto types = makeGuiTypesListForExport(mgr);
+  types = "IV3D (*.g3d);;ObjToField (*.obj)";
   get_state()->setValue(Variables::FileTypeList, types);
+}
+
+void WriteG3D::setStateDefaults()
+{
+  auto  state = get_state();
+  state->setValue(EnableTransparency, false);
+  state->setValue(TransparencyValue, 0.65f);
+  state->setValue(Coloring, 0);
+  state->setValue(DefaultColor, ColorRGB(0.5, 0.5, 0.5).toString());
+
+  //Call base class to ensure the inherited defaults are set
+  my_base::setStateDefaults();
 }
 
 bool WriteG3D::call_exporter(const std::string& filename)
@@ -62,13 +83,16 @@ bool WriteG3D::call_exporter(const std::string& filename)
   auto pl = mgr.get_plugin(get_state()->getValue(Variables::FileTypeName).toString());
   if (pl)
   {
-    return pl->writeFile(handle_, filename, getLogger());
+    //return pl->writeFile(handle_, filename, getLogger());
+    return write(filename, handle_);
   }
   return false;
 }
 
 void WriteG3D::execute()
 {
+  calculateColors();
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //get the current file name
   const std::string oldfilename=filename_.get();
@@ -118,3 +142,144 @@ std::string WriteG3D::defaultFileTypeName() const
   FieldIEPluginManager mgr;
   return defaultImportTypeForFile(&mgr);
 }
+
+void WriteG3D::calculateColors()
+{
+  auto field = getRequiredInput(FieldToWrite);
+  //auto colorMap = getOptionalInput(ColorMapObject);
+
+  if (needToExecute())
+  {
+    VField* fld = field->vfield();
+    VMesh*  mesh = field->vmesh();
+
+    double sval;
+    Vector vval;
+    Tensor tval;
+
+    float transparency = 1.0f;
+    auto state = get_state();
+    if (state->getValue(EnableTransparency).toBool())
+    {
+      transparency = static_cast<float>(state->getValue(TransparencyValue).toDouble());
+    }
+
+    ColorRGB node_color;
+
+    mesh->synchronize(Mesh::NODES_E);
+
+    VMesh::Node::iterator eiter, eiter_end;
+    mesh->begin(eiter);
+    mesh->end(eiter_end);
+
+    while (eiter != eiter_end)
+    {
+      checkForInterruption();
+
+      Point p;
+      mesh->get_point(p, *eiter);
+
+      //coloring options
+      //Default color
+      if (state->getValue(Coloring).toInt() == 0)
+      {
+        ColorRGB defaultColor = ColorRGB(state->getValue(DefaultColor).toString());
+        defaultColor = (defaultColor.r() > 1.0 || defaultColor.g() > 1.0 || defaultColor.b() > 1.0) ?
+          ColorRGB(defaultColor.r() / 255., defaultColor.g() / 255., defaultColor.b() / 255.) : defaultColor;
+        node_color = defaultColor;
+      }
+      // Color map lookup
+      /*else if (state->getValue(Coloring).toInt() == 1)
+      {
+        ColorMapHandle map = colorMap.get();
+        if (fld->is_scalar())
+        {
+          fld->get_value(sval, *eiter);
+          node_color = map->valueToColor(sval);
+        }
+        else if (fld->is_vector())
+        {
+          fld->get_value(vval, *eiter);
+          node_color = map->valueToColor(vval);
+        }
+        else if (fld->is_tensor())
+        {
+          fld->get_value(tval, *eiter);
+          node_color = map->valueToColor(tval);
+        }
+      }*/
+      // RGB conversion
+      else
+      {
+        if (fld->is_scalar())
+        {
+          Vector colorVector = Vector(p.x(), p.y(), p.z()).normal();
+          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
+        }
+        else if (fld->is_vector())
+        {
+          fld->get_value(vval, *eiter);
+          Vector colorVector = vval.normal();
+          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
+        }
+        else if (fld->is_tensor())
+        {
+          fld->get_value(tval, *eiter);
+          Vector colorVector = tval.get_eigenvector1().normal();
+          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
+        }
+      }
+      colors_.push_back(ColorRGB(node_color.r(), node_color.g(), node_color.b(), transparency));
+      ++eiter;
+    }
+  }
+}
+
+//TODO: below method is to test functionality. Needs to be moved to Core\Algorithms\Legacy\DataIO\ObjToFieldReader.cc
+bool WriteG3D::write(const std::string& filename, const FieldHandle& field)
+{
+  std::ofstream os;
+  const VMesh* mesh = field->vmesh();
+
+  if (mesh->num_nodes() == 0) { return false; }
+
+  os.open(filename.c_str(), std::ios::out);
+  if (!os) { return false; }
+
+  os << "# written by SCIRun\n";
+
+  {
+    VMesh::Node::size_type iter;
+    VMesh::Node::size_type end = mesh->num_nodes();
+    for (iter = 0; iter != end; ++iter)
+    {
+      Point p;
+      ColorRGB c;
+      mesh->get_point(p, iter);
+      c = colors_[iter];
+      os << "v " << p.x() << " " << p.y() << " " << p.z() << " " << c.r() << " " << c.g() << " " << c.b() << " " << c.a() << "\n";
+    }
+  }
+
+  {
+    VMesh::Face::iterator iter;
+    VMesh::Face::iterator end;
+    VMesh::Node::array_type faceNodes(4);
+    mesh->end(end);
+    for (mesh->begin(iter); iter != end; ++iter)
+    {
+      mesh->get_nodes(faceNodes, *iter);
+      // OBJ face indices are 1-based.  Seriously.
+      os << "f " << faceNodes[0] + 1 << " " << faceNodes[1] + 1 << " "
+        << faceNodes[2] + 1 << "\n";
+    }
+  }
+  os.close();
+
+  return true;
+}
+
+const AlgorithmParameterName WriteG3D::EnableTransparency("EnableTransparency");
+const AlgorithmParameterName WriteG3D::TransparencyValue("TransparencyValue");
+const AlgorithmParameterName WriteG3D::Coloring("Coloring");
+const AlgorithmParameterName WriteG3D::DefaultColor("DefaultColor");

@@ -40,6 +40,12 @@
        <property name="minimum">
         <double>0.010000000000000</double>
        </property>
+       <property name="maximum">
+        <double>1.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.010000000000000</double>
+       </property>
        <property name="value">
         <double>0.650000000000000</double>
        </property>
@@ -80,9 +86,9 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QPushButton" name="colorPushButton_">
        <property name="text">
-        <string>Default Color:</string>
+        <string>Default Color</string>
        </property>
       </widget>
      </item>
@@ -151,10 +157,7 @@
    </item>
   </layout>
   <zorder>saveGroupBox_</zorder>
-  <zorder>horizontalLayoutWidget</zorder>
   <zorder>coloringGroupBox_</zorder>
-  <zorder>horizontalLayoutWidget_2</zorder>
-  <zorder>label</zorder>
   <zorder>verticalSpacer</zorder>
  </widget>
  <resources/>

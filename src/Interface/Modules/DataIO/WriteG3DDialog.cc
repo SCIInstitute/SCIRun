@@ -27,17 +27,20 @@
 */
 
 #include <Interface/Modules/DataIO/WriteG3DDialog.h>
-#include <Modules/DataIO/WriteField.h>
+#include <Modules/DataIO/WriteG3D.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <Core/ImportExport/GenericIEPlugin.h>
+#include <Core/Datatypes/Color.h>
 #include <iostream>
 #include <QFileDialog>
+#include <QColorDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 
 WriteG3DDialog::WriteG3DDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -47,6 +50,11 @@ WriteG3DDialog::WriteG3DDialog(const std::string& name, ModuleStateHandle state,
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
+  addCheckBoxManager(transparentCheckBox_, WriteG3D::EnableTransparency);
+  addDoubleSpinBoxManager(transparencyDoubleSpinBox_, WriteG3D::TransparencyValue);
+  addRadioButtonGroupManager({ defaultColorRadioButton_, colorMapRadioButton_, rgbConversionRadioButton_ }, WriteG3D::Coloring);
+
+  connect(colorPushButton_, SIGNAL(clicked()), this, SLOT(assignDefaultColor()));
   connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
@@ -58,6 +66,17 @@ WriteG3DDialog::WriteG3DDialog(const std::string& name, ModuleStateHandle state,
 void WriteG3DDialog::pullSpecial()
 {
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
+
+  ColorRGB color(state_->getValue(WriteG3D::DefaultColor).toString());
+  // check for old saved color format: integers 0-255.
+  defaultColor_ = QColor(
+    static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
+    static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
+    static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+  
+  QString styleSheet = "QLabel{ background: rgb(" + QString::number(defaultColor_.red()) + "," +
+    QString::number(defaultColor_.green()) + "," + QString::number(defaultColor_.blue()) + "); }";
+  defaultColorDisplayLabel_->setStyleSheet(styleSheet);
 }
 
 void WriteG3DDialog::pushFileNameToState()
@@ -76,5 +95,14 @@ void WriteG3DDialog::saveFile()
     fileNameLineEdit_->setText(file);
     updateRecentFile(file);
     pushFileNameToState();
+  }
+}
+
+void WriteG3DDialog::assignDefaultColor()
+{
+  auto newColor = QColorDialog::getColor(defaultColor_, this, "Choose default color");
+  if (newColor.isValid())
+  {
+    state_->setValue(WriteG3D::DefaultColor, ColorRGB(newColor.redF(), newColor.greenF(), newColor.blueF()).toString());
   }
 }
