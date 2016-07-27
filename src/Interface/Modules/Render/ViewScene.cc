@@ -70,7 +70,7 @@ namespace
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent), mConfigurationDock(nullptr), shown_(false), 
+  : ModuleDialogGeneric(state, parent), mConfigurationDock(nullptr), shown_(false),
   shiftdown_(false), selected_(false),
   clippingPlaneIndex_(0),screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false),
   gid_(new DialogIdGenerator(name))
@@ -130,7 +130,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     //Set background Color
     auto colorStr = state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString();
     bgColor_ = checkColorSetting(colorStr, Qt::black);
-    
+
     auto spire = mSpire.lock();
     spire->setBackgroundColor(bgColor_);
   }
@@ -154,13 +154,13 @@ void ViewSceneDialog::setInitialLightValues()
 
   auto light1str = state_->getValue(Modules::Render::ViewScene::Light1Color).toString();
   QColor light1 = checkColorSetting(light1str, Qt::white);
-  
+
   auto light2str = state_->getValue(Modules::Render::ViewScene::Light2Color).toString();
   QColor light2 = checkColorSetting(light2str, Qt::white);
-  
+
   auto light3str = state_->getValue(Modules::Render::ViewScene::Light3Color).toString();
   QColor light3 = checkColorSetting(light3str, Qt::white);
-  
+
   auto spire = mSpire.lock();
   if (spire)
   {
@@ -401,33 +401,29 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 
 void ViewSceneDialog::newGeometryValue()
 {
-  LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
-
   Guard lock(Modules::Render::ViewScene::mutex_.get());
-
-  LOG_DEBUG("ViewSceneDialog::asyncExecute after locking");
 
   auto spire = mSpire.lock();
   if (!spire)
     return;
   spire->removeAllGeomObjects();
-  
+
   std::vector<QString> displayNames;
   std::vector<std::string> validObjects;
-  Modules::Render::ViewScene::GeomListPtr portGeometries;
+  std::vector<GeometryBaseHandle> allGeoms;
+
   // Grab the geomData transient value.
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
   if (geomDataTransient && !geomDataTransient->empty())
   {
-    portGeometries = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
+    auto portGeometries = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
     if (!portGeometries)
     {
       LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
       return;
     }
+    std::copy(portGeometries->begin(), portGeometries->end(), std::back_inserter(allGeoms));
   }
-
-  std::vector<GeometryBaseHandle> allGeoms(portGeometries->begin(), portGeometries->end());
 
   if (scaleBarGeom_ && scaleBar_.visible)
   {
@@ -440,7 +436,6 @@ void ViewSceneDialog::newGeometryValue()
   }
 
   displayNames = mConfigurationDock->visibleItems().synchronize(allGeoms);
-
   int port = 0;
   for (auto it = allGeoms.begin(); it != allGeoms.end(); ++it, ++port)
   {
@@ -456,7 +451,6 @@ void ViewSceneDialog::newGeometryValue()
       }
     }
   }
-  
   if (!validObjects.empty())
     spire->gcInvalidObjects(validObjects);
 
