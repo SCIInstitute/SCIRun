@@ -1,21 +1,21 @@
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
+#
 #  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
-# 
+#  in all copies or substantial portions of the Software.
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -122,6 +122,11 @@ OPTION(REGENERATE_MODULE_FACTORY_CODE "Delete generated module factory code file
 MARK_AS_ADVANCED(REGENERATE_MODULE_FACTORY_CODE)
 
 ###########################################
+# Travis CI build needs to be as slim as possible
+OPTION(TRAVIS_BUILD "Slim build for Travis CI" OFF)
+MARK_AS_ADVANCED(TRAVIS_BUILD)
+
+###########################################
 # Configure externals
 
 SET( SCIRun_DEPENDENCIES )
@@ -166,6 +171,26 @@ IF(DOWNLOAD_TOOLKITS)
   EXTERNAL_TOOLKIT(FwdInvToolkit)
 ENDIF()
 
+IF(TRAVIS_BUILD)
+SET(SCIRUN_CACHE_ARGS
+    "-DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF"
+    "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
+    "-DSCIRUN_BINARY_DIR:PATH=${SCIRUN_BINARY_DIR}"
+    "-DSCIRUN_BITS:STRING=${SCIRUN_BITS}"
+    "-DBUILD_TESTING:BOOL=OFF"
+    "-DBUILD_DOCUMENTATION:BOOL=OFF"
+    "-DDOWNLOAD_TOOLKITS:BOOL=OFF"
+    "-DBUILD_HEADLESS:BOOL=ON"
+    "-DBUILD_WITH_PYTHON:BOOL=OFF"
+    "-DWITH_TETGEN:BOOL=OFF"
+    "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=OFF"
+    "-DGENERATE_MODULE_FACTORY_CODE:BOOL=OFF"
+    "-DZlib_DIR:PATH=${Zlib_DIR}"
+    "-DSQLite_DIR:PATH=${SQLite_DIR}"
+    "-DBoost_DIR:PATH=${Boost_DIR}"
+    "-DTeem_DIR:PATH=${Teem_DIR}"
+)
+ELSE(TRAVIS_BUILD)
 SET(SCIRUN_CACHE_ARGS
     "-DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}"
     "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
@@ -187,6 +212,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DTetgen_DIR:PATH=${Tetgen_DIR}"
     "-DFreetype_DIR:PATH=${Freetype_DIR}"
 )
+ENDIF(TRAVIS_BUILD)
 
 IF(BUILD_WITH_PYTHON)
   LIST(APPEND SCIRUN_CACHE_ARGS
