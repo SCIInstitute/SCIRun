@@ -51,7 +51,7 @@ using namespace SCIRun::Modules::Teem;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Converters;
 
-const ModuleLookupInfo SplitFieldIntoNrrdData::staticInfo_("SplitFieldIntoNrrdData", "Converters", "Teem");
+MODULE_INFO_DEF(SplitFieldIntoNrrdData, Converters, Teem)
 
 SplitFieldIntoNrrdData::SplitFieldIntoNrrdData():
   Module(staticInfo_)

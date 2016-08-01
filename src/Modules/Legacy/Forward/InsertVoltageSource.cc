@@ -51,7 +51,7 @@ using namespace SCIRun::Modules::Forward;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Forward;
 
-const ModuleLookupInfo InsertVoltageSource::staticInfo_("InsertVoltageSource", "Forward", "SCIRun");
+MODULE_INFO_DEF(InsertVoltageSource, Forward, SCIRun)
 
 InsertVoltageSource::InsertVoltageSource() : Module(staticInfo_)
 {

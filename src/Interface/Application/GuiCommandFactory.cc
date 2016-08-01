@@ -62,6 +62,8 @@ CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type) const
     return boost::make_shared<SetupDataDirectoryCommandGui>();
   case GlobalCommands::ExecuteCurrentNetwork:
     return boost::make_shared<ExecuteCurrentNetworkCommandGui>();
+  case GlobalCommands::DisableViewScenes:
+    return boost::make_shared<DisableViewScenesCommandGui>();
   case GlobalCommands::InteractiveMode:
     return boost::make_shared<InteractiveModeCommandConsole>();
   case GlobalCommands::SetupQuitAfterExecute:

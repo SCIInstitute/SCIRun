@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -62,17 +62,18 @@ ExtractSimpleIsosurfaceAlgo::ExtractSimpleIsosurfaceAlgo()
   addOption(Parameters::IsovalueChoice, "Single", "Single|List|Quantity");
 }
 
-bool ExtractSimpleIsosurfaceAlgo::run(FieldHandle input, std::vector<double>& isovalues, FieldHandle& output) const
+bool ExtractSimpleIsosurfaceAlgo::run(FieldHandle input, const std::vector<double>& isovalues, FieldHandle& output) const
 {
   if (isovalues.empty())
-  {  
+  {
     THROW_ALGORITHM_INPUT_ERROR("Error in ExtractIsosurface algorithm: No Isovalue available.");
   }
-    
-  MarchingCubesAlgo marching_;   
+
+  MarchingCubesAlgo marching_;
   marching_.set(MarchingCubesAlgo::build_field, true);
+
   marching_.run(input, isovalues, output);
-  
+
   return (true);
 }
 

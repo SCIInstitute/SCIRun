@@ -29,12 +29,14 @@
 #include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
+#include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
 #include <Core/Logging/Log.h>
 
 #include <boost/utility.hpp>
 #include <boost/graph/topological_sort.hpp>
 #include <boost/graph/copy.hpp>
 #include <boost/graph/connected_components.hpp>
+#include <boost/lambda/lambda.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Engine::NetworkGraph;
@@ -135,7 +137,9 @@ ComponentMap NetworkGraphAnalyzer::connectedComponents()
   return componentMap;
 }
 
-ExecuteSingleModule::ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod, const SCIRun::Dataflow::Networks::NetworkInterface& network) : module_(mod)
+ExecuteSingleModule::ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod,
+  const SCIRun::Dataflow::Networks::NetworkInterface& network,
+  bool executeUpstream) : module_(mod), network_(network), executeUpstream_(executeUpstream)
 {
   //TODO: composite with which filter?
   NetworkGraphAnalyzer analyze(network, ExecuteAllModules::Instance(), false);
@@ -144,13 +148,28 @@ ExecuteSingleModule::ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandl
 
 bool ExecuteSingleModule::operator()(SCIRun::Dataflow::Networks::ModuleHandle mod) const
 {
-  auto modIdIter = components_.find(mod->get_id());
+  auto toCheckId = mod->get_id();
+  auto modIdIter = components_.find(toCheckId);
   if (modIdIter == components_.end())
     THROW_INVALID_ARGUMENT("Module not found in component map");
-  auto thisIdIter = components_.find(module_->get_id());
-  if (thisIdIter == components_.end())
+
+  auto rootId = module_->get_id();
+  auto rootIdIter = components_.find(rootId);
+  if (rootIdIter == components_.end())
     THROW_INVALID_ARGUMENT("Current module not found in component map");
 
-  // should execute if in same connected component
-  return modIdIter->second == thisIdIter->second;
+  if (executeUpstream_)
+  {
+    // should execute if in same connected component
+    return modIdIter->second == rootIdIter->second;
+  }
+  else
+  {
+    auto all = boost::lambda::constant(true);
+    BoostGraphParallelScheduler scheduleAll(all);
+    auto order = scheduleAll.schedule(network_);
+
+    // should execute if in same connected component, and downstream only
+    return modIdIter->second == rootIdIter->second && order.groupOf(toCheckId) >= order.groupOf(rootId);
+  }
 }

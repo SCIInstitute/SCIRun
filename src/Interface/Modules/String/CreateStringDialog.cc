@@ -31,7 +31,6 @@
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::StringProcessing;
 
 CreateStringDialog::CreateStringDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -41,6 +40,5 @@ CreateStringDialog::CreateStringDialog(const std::string& name, ModuleStateHandl
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  buttonBox->setVisible(false);
-  addLineEditManager(stringInput_, CreateStringModule::InputString);
+  addLineEditManager(stringInput_, SCIRun::Modules::StringProcessing::CreateString::InputString);
 }

@@ -37,22 +37,23 @@ namespace Modules {
 namespace Math {
 
   /// @class AppendMatrixModule
-  /// @brief Append the rows or columns of a matrix to a base matrix. 
+  /// @brief Append the rows or columns of a matrix to a base matrix.
 
-  class SCISHARE AppendMatrixModule : public SCIRun::Dataflow::Networks::Module,
+  class SCISHARE AppendMatrix : public SCIRun::Dataflow::Networks::Module,
     public Has3InputPorts<MatrixPortTag, MatrixPortTag, DynamicPortTag<MatrixPortTag>>,
     public Has1OutputPort<MatrixPortTag>
   {
   public:
-    AppendMatrixModule();
+    AppendMatrix();
     virtual void execute();
     virtual void setStateDefaults();
-    virtual bool hasDynamicPorts() const { return true; }
+    HAS_DYNAMIC_PORTS
 
     INPUT_PORT(0, FirstMatrix, DenseMatrix);
     INPUT_PORT(1, SecondMatrix, DenseMatrix);
     INPUT_PORT_DYNAMIC(2, NextMatrix, DenseMatrix);
     OUTPUT_PORT(0, ResultMatrix, DenseMatrix);
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };
 }}}
 

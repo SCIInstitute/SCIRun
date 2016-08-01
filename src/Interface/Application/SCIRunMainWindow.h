@@ -99,6 +99,7 @@ public Q_SLOTS:
   void showZoomStatusMessage(int zoomLevel);
   void setDataDirectoryFromGUI();
   void setConnectionPipelineType(int type);
+  void setSaveBeforeExecute(int state);
 protected:
   virtual void closeEvent(QCloseEvent* event) override;
   virtual void keyPressEvent(QKeyEvent *event) override;
@@ -230,6 +231,7 @@ private Q_SLOTS:
   void toggleTagLayer(bool toggle);
   void toggleMetadataLayer(bool toggle);
   void adjustModuleDock(int state);
+  void reportIssue();
   void exitApplication(int code);
 };
 

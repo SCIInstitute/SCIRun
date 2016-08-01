@@ -59,9 +59,9 @@ namespace Matlab {
     virtual void setStateDefaults() override;
     INPUT_PORT_DYNAMIC(0, InputField, LegacyField);
     INPUT_PORT(1, Filename, String);
-    virtual bool hasDynamicPorts() const override { return true; }
+    HAS_DYNAMIC_PORTS
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
     LEGACY_MATLAB_MODULE
   };

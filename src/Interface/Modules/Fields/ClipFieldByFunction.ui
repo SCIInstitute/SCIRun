@@ -51,7 +51,7 @@
             <item>
              <widget class="QLabel" name="label_2">
               <property name="text">
-               <string>Input array: DATA (scalar/vector/tensor: data from field port)</string>
+               <string>Input array: DATA1, DATA2, ... (scalar/vector/tensor: data from field ports)</string>
               </property>
              </widget>
             </item>

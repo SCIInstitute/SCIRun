@@ -126,6 +126,7 @@ public:
   virtual QPointF endpoint() const = 0;
   virtual PortWidget* receiver() const = 0;
   virtual void setReceiver(PortWidget* rec) = 0;
+  virtual void setLabel(QGraphicsTextItem* label) = 0;
 };
 
 template <class Base>
@@ -133,7 +134,7 @@ class ConnectionInProgressGraphicsItem : public Base, public ConnectionInProgres
 {
 public:
   ConnectionInProgressGraphicsItem(PortWidget* port, ConnectionDrawStrategyPtr drawer) :
-    fromPort_(port), receiver_(0), drawStrategy_(drawer), isHighlighted_(false)
+    fromPort_(port), receiver_(nullptr), drawStrategy_(drawer), isHighlighted_(false)
   {
     Base::setZValue(1000); //TODO
     setColor(fromPort_->color());
@@ -158,9 +159,17 @@ public:
   virtual void highlight(bool on) override
   {
     if (on)
+    {
       Base::setPen(QPen(Qt::red, 7.0, Qt::SolidLine));
+      if (label_)
+        label_->setDefaultTextColor(Qt::red);
+    }
     else
-      Base::setPen(QPen(fromPort_->color(), 3.0, Qt::DotLine));
+    {
+      Base::setPen(QPen(receiver_->color(), 3.0, Qt::DotLine));
+      if (label_)
+        label_->setDefaultTextColor(receiver_->color());
+    }
     isHighlighted_ = on;
   }
 
@@ -181,12 +190,18 @@ public:
     receiver_ = rec;
   }
 
+  virtual void setLabel(QGraphicsTextItem* label) override
+  {
+    label_ = label;
+  }
+
 protected:
   PortWidget* fromPort_;
   PortWidget* receiver_;
   ConnectionDrawStrategyPtr drawStrategy_;
   QPointF lastEnd_;
   bool isHighlighted_;
+  QGraphicsTextItem* label_ {nullptr};
 };
 
 class ConnectionInProgressStraight : public ConnectionInProgressGraphicsItem<QGraphicsLineItem>
@@ -221,12 +236,12 @@ public:
   void setType(ConnectionDrawType type);
   ConnectionDrawType getType() const;
   void setVisibility(bool visible) { visible_ = visible; }
+  void activate(QGraphicsItem* item) const;
 Q_SIGNALS:
   void typeChanged(ConnectionDrawStrategyPtr drawerMaker);
 private:
   ConnectionDrawType currentType_;
   bool visible_;
-  void activate(QGraphicsItem* item) const;
   QGraphicsScene* scene_;
   ConnectionDrawStrategyPtr euclidean_;
   ConnectionDrawStrategyPtr cubic_;

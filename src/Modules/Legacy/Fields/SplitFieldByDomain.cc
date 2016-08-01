@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -40,7 +40,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
-const ModuleLookupInfo SplitFieldByDomain::staticInfo_("SplitFieldByDomain", "NewField", "SCIRun");
+MODULE_INFO_DEF(SplitFieldByDomain, NewField, SCIRun)
 
 SplitFieldByDomain::SplitFieldByDomain() : Module(staticInfo_)
 {
@@ -75,7 +75,7 @@ void SplitFieldByDomain::execute()
     setAlgoBoolFromState(SplitFieldByDomainAlgo::SortAscending);
 
     auto algoOutput = algo().run(withInputData((InputField, input)));
-    
+
     auto output = algoOutput.getList<Field>(Variables::ListOfOutputFields);
 
     BundleHandle boutput(new Bundle);
@@ -87,7 +87,7 @@ void SplitFieldByDomain::execute()
     }
 
     FieldHandle nofield;
-    
+
     sendOutput(All_Fields, boutput);
 
     //TODO: make array of output ports, somehow

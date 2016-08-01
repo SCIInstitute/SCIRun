@@ -40,13 +40,13 @@ using namespace Core::Algorithms;
 using namespace Core::Geometry;
 using namespace Graphics::Datatypes;
 
-ShowColorMapModule::ShowColorMapModule() : GeometryGeneratingModule(ModuleLookupInfo("ShowColorMap", "Visualization", "SCIRun"))
+ShowColorMap::ShowColorMap() : GeometryGeneratingModule(ModuleLookupInfo("ShowColorMap", "Visualization", "SCIRun"))
 {
   INITIALIZE_PORT(ColorMapObject);
   INITIALIZE_PORT(GeometryOutput);
 }
 
-void ShowColorMapModule::setStateDefaults()
+void ShowColorMap::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(DisplaySide, 0);
@@ -64,7 +64,7 @@ void ShowColorMapModule::setStateDefaults()
   state->setValue(YTranslation, 0);
 }
 
-void ShowColorMapModule::execute()
+void ShowColorMap::execute()
 {
   auto colorMap = getRequiredInput(ColorMapObject);
   if (needToExecute())
@@ -79,8 +79,7 @@ void ShowColorMapModule::execute()
   }
 }
 
-GeometryBaseHandle
-ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle state, const std::string& id)
+GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle state, const std::string& id)
 {
   std::vector<Vector> points;
   std::vector<ColorRGB> colors;
@@ -180,7 +179,7 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   RenderState renState;
   renState.set(RenderState::IS_ON, true);
   renState.set(RenderState::HAS_DATA, true);
-  
+
   SpireText text;
 
   SpireSubPass pass(passName, vboName, iboName, shader,
@@ -244,17 +243,17 @@ ShowColorMapModule::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle sta
   return geom;
 }
 
-const AlgorithmParameterName ShowColorMapModule::DisplaySide("DisplaySide");
-const AlgorithmParameterName ShowColorMapModule::DisplayLength("DisplayLength");
-const AlgorithmParameterName ShowColorMapModule::TextSize("TextSize");
-const AlgorithmParameterName ShowColorMapModule::TextColor("TextColor");
-const AlgorithmParameterName ShowColorMapModule::Labels("Labels");
-const AlgorithmParameterName ShowColorMapModule::Scale("Scale");
-const AlgorithmParameterName ShowColorMapModule::Units("Units");
-const AlgorithmParameterName ShowColorMapModule::SignificantDigits("SignificantDigits");
-const AlgorithmParameterName ShowColorMapModule::AddExtraSpace("AddExtraSpace");
-const AlgorithmParameterName ShowColorMapModule::TextRed("TextRed");
-const AlgorithmParameterName ShowColorMapModule::TextGreen("TextGreen");
-const AlgorithmParameterName ShowColorMapModule::TextBlue("TextBlue");
-const AlgorithmParameterName ShowColorMapModule::XTranslation("XTranslation");
-const AlgorithmParameterName ShowColorMapModule::YTranslation("YTranslation");
+const AlgorithmParameterName ShowColorMap::DisplaySide("DisplaySide");
+const AlgorithmParameterName ShowColorMap::DisplayLength("DisplayLength");
+const AlgorithmParameterName ShowColorMap::TextSize("TextSize");
+const AlgorithmParameterName ShowColorMap::TextColor("TextColor");
+const AlgorithmParameterName ShowColorMap::Labels("Labels");
+const AlgorithmParameterName ShowColorMap::Scale("Scale");
+const AlgorithmParameterName ShowColorMap::Units("Units");
+const AlgorithmParameterName ShowColorMap::SignificantDigits("SignificantDigits");
+const AlgorithmParameterName ShowColorMap::AddExtraSpace("AddExtraSpace");
+const AlgorithmParameterName ShowColorMap::TextRed("TextRed");
+const AlgorithmParameterName ShowColorMap::TextGreen("TextGreen");
+const AlgorithmParameterName ShowColorMap::TextBlue("TextBlue");
+const AlgorithmParameterName ShowColorMap::XTranslation("XTranslation");
+const AlgorithmParameterName ShowColorMap::YTranslation("YTranslation");

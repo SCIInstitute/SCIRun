@@ -56,10 +56,11 @@ ALGORITHM_PARAMETER_DEF(Python, PythonOutputField1Name);
 ALGORITHM_PARAMETER_DEF(Python, PythonOutputField2Name);
 ALGORITHM_PARAMETER_DEF(Python, PythonOutputField3Name);
 
-const ModuleLookupInfo InterfaceWithPython::staticInfo_("InterfaceWithPython", "Python", "SCIRun");
+MODULE_INFO_DEF(InterfaceWithPython, Python, SCIRun)
+
 Mutex InterfaceWithPython::lock_("InterfaceWithPython");
 
-InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_) 
+InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(InputField);
@@ -85,11 +86,11 @@ void InterfaceWithPython::setStateDefaults()
   state->setValue(Parameters::PythonOutputField1Name, std::string("fieldOutput1"));
   state->setValue(Parameters::PythonOutputField2Name, std::string("fieldOutput2"));
   state->setValue(Parameters::PythonOutputField3Name, std::string("fieldOutput3"));
-                                    
+
   state->setValue(Parameters::PythonOutputString1Name, std::string("stringOutput1"));
   state->setValue(Parameters::PythonOutputString2Name, std::string("stringOutput2"));
   state->setValue(Parameters::PythonOutputString3Name, std::string("stringOutput3"));
-                                    
+
   state->setValue(Parameters::PythonOutputMatrix1Name, std::string("matrixOutput1"));
   state->setValue(Parameters::PythonOutputMatrix2Name, std::string("matrixOutput2"));
   state->setValue(Parameters::PythonOutputMatrix3Name, std::string("matrixOutput3"));
@@ -195,4 +196,3 @@ void InterfaceWithPython::execute()
       impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField3Name).toString(), PythonString1, PythonMatrix1, PythonField3);
   }
 }
-

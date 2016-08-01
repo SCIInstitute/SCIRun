@@ -300,6 +300,8 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   connect(actionSelectModule_, SIGNAL(triggered()), this, SLOT(selectModuleKeyboardAction()));
   actionSelectModule_->setVisible(false);
 
+  connect(actionReportIssue_, SIGNAL(triggered()), this, SLOT(reportIssue()));
+
   connect(actionSelectMode_, SIGNAL(toggled(bool)), this, SLOT(setSelectMode(bool)));
   connect(actionDragMode_, SIGNAL(toggled(bool)), this, SLOT(setDragMode(bool)));
 
@@ -885,6 +887,11 @@ void SCIRunMainWindow::setConnectionPipelineType(int type)
 		prefsWindow_->euclideanPipesRadioButton_->setChecked(true);
 		break;
 	}
+}
+
+void SCIRunMainWindow::setSaveBeforeExecute(int state)
+{
+  prefsWindow_->setSaveBeforeExecute(state != 0);
 }
 
 void SCIRunMainWindow::chooseBackgroundColor()
@@ -1503,7 +1510,7 @@ void SCIRunMainWindow::addToDataDirectory(const QString& dir)
 
 void SCIRunMainWindow::setDataDirectoryFromGUI()
 {
-  auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), ".");
+  auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), QString::fromStdString(Core::Preferences::Instance().dataDirectory().parent_path().string()));
   setDataDirectory(dir);
 }
 
@@ -1511,6 +1518,15 @@ void SCIRunMainWindow::addToPathFromGUI()
 {
   auto dir = QFileDialog::getExistingDirectory(this, tr("Add Directory to Data Path"), ".");
 	addToDataDirectory(dir);
+}
+
+void SCIRunMainWindow::reportIssue()
+{
+  if (QMessageBox::Ok == QMessageBox::information(this, "Report Issue",
+    "Click OK to be taken to SCIRun's Github issue reporting page.\n\nFor bug reports, please follow the template.", QMessageBox::Ok|QMessageBox::Cancel))
+  {
+    QDesktopServices::openUrl(QUrl("https://github.com/SCIInstitute/SCIRun/issues/new", QUrl::TolerantMode));
+  }
 }
 
 bool SCIRunMainWindow::newInterface() const

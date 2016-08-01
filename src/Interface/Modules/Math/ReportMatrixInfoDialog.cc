@@ -41,11 +41,9 @@ ReportMatrixInfoDialog::ReportMatrixInfoDialog(const std::string& name, ModuleSt
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
-  buttonBox->setVisible(false);
 }
 
-void ReportMatrixInfoDialog::pullAndDisplayInfo() 
+void ReportMatrixInfoDialog::pullAndDisplayInfo()
 {
   auto info = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
   auto str = ReportMatrixInfoAlgorithm::summarize(info);

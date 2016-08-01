@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "BuildTDCSMatrix",
+    "namespace": "FiniteElements",
+    "status": "In progress: needs a few consistency checks",
+    "description": "Generates tDCS Forward Matrix",
+    "header": "Modules/Legacy/FiniteElements/BuildTDCSMatrix.h"
+  },
+  "algorithm": {
+    "name": "BuildTDCSMatrixAlgo",
+    "namespace": "FiniteElements",
+    "header": "Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

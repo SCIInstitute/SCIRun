@@ -49,7 +49,8 @@ using namespace Geometry;
 using namespace Algorithms::Fields;
 using namespace Graphics::Datatypes;
 
-const ModuleLookupInfo GenerateSinglePointProbeFromField::staticInfo_("GenerateSinglePointProbeFromField", "NewField", "SCIRun");
+MODULE_INFO_DEF(GenerateSinglePointProbeFromField, NewField, SCIRun)
+
 ALGORITHM_PARAMETER_DEF(Fields, XLocation);
 ALGORITHM_PARAMETER_DEF(Fields, YLocation);
 ALGORITHM_PARAMETER_DEF(Fields, ZLocation);

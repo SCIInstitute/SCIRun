@@ -31,7 +31,7 @@
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::StringProcessing;
+using namespace SCIRun::Modules;
 
 NetworkNotesDialog::NetworkNotesDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -41,5 +41,5 @@ NetworkNotesDialog::NetworkNotesDialog(const std::string& name, ModuleStateHandl
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-	addTextEditManager(networkNotesTextEdit_, NetworkNotesModule::InputString);
+	addTextEditManager(networkNotesTextEdit_, StringProcessing::NetworkNotes::InputString);
 }

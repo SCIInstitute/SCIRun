@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,7 +30,7 @@
 ///
 ///@file  SolveMinNormLeastSqSystem
 ///@brief This module computes the minimal norm, least squared solution to a nx3
-/// linear system.  
+/// linear system.
 ///
 ///@author
 ///   David Weinstein
@@ -74,6 +74,7 @@ namespace SCIRun {
         INPUT_PORT(3, TargetVector, DenseColumnMatrix);
         OUTPUT_PORT(0, WeightVector, DenseColumnMatrix);
         OUTPUT_PORT(1, ResultVector, DenseColumnMatrix);
+        MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
       };
 }}}
 

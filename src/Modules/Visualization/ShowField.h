@@ -55,13 +55,13 @@ namespace SCIRun {
         class GeometryBuilder;
       }
 
-      class SCISHARE ShowFieldModule : public Dataflow::Networks::GeometryGeneratingModule,
+      class SCISHARE ShowField : public Dataflow::Networks::GeometryGeneratingModule,
         public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
         public Has1OutputPort<GeometryPortTag>,
         public Core::Thread::Interruptible
       {
       public:
-        ShowFieldModule();
+        ShowField();
         virtual void execute() override;
 
         static const Core::Algorithms::AlgorithmParameterName FieldName;
@@ -83,6 +83,9 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName FaceTransparencyValue;
         static const Core::Algorithms::AlgorithmParameterName EdgeTransparencyValue;
         static const Core::Algorithms::AlgorithmParameterName NodeTransparencyValue;
+        static const Core::Algorithms::AlgorithmParameterName FacesColoring;
+        static const Core::Algorithms::AlgorithmParameterName NodesColoring;
+        static const Core::Algorithms::AlgorithmParameterName EdgesColoring;
         static const Core::Algorithms::AlgorithmParameterName SphereScaleValue;
         static const Core::Algorithms::AlgorithmParameterName CylinderResolution;
         static const Core::Algorithms::AlgorithmParameterName SphereResolution;
@@ -107,7 +110,7 @@ namespace SCIRun {
         INPUT_PORT(1, ColorMapObject, ColorMap);
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
         virtual void setStateDefaults() override;
       private:

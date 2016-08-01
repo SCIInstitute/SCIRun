@@ -41,7 +41,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun;
 
-const ModuleLookupInfo GenerateStreamLines::staticInfo_("GenerateStreamLines", "Visualization", "SCIRun");
+MODULE_INFO_DEF(GenerateStreamLines, Visualization, SCIRun)
 
 GenerateStreamLines::GenerateStreamLines() : Module(staticInfo_)
 {

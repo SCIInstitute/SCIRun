@@ -42,21 +42,21 @@ using namespace SCIRun;
 /// @brief This module contains several filters for converting data that is
 /// stored in the nodes to data that is stored in the elements.
 
-MapFieldDataFromNodeToElemModule::MapFieldDataFromNodeToElemModule()
+MapFieldDataFromNodeToElem::MapFieldDataFromNodeToElem()
   : Module(ModuleLookupInfo("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun"), true)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);
 }
 
-void MapFieldDataFromNodeToElemModule::setStateDefaults()
+void MapFieldDataFromNodeToElem::setStateDefaults()
 {
   setStateStringFromAlgoOption(MapFieldDataFromNodeToElemAlgo::Method);
 }
 
-void MapFieldDataFromNodeToElemModule::execute()
+void MapFieldDataFromNodeToElem::execute()
 {
-  FieldHandle input = getRequiredInput(InputField);
+  auto input = getRequiredInput(InputField);
 
   if (needToExecute())
   {

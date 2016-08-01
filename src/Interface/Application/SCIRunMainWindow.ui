@@ -164,6 +164,7 @@
     <addaction name="actionKeyboardShortcuts_"/>
     <addaction name="helpActionNewUserWizard_"/>
     <addaction name="menuNew_Features"/>
+    <addaction name="actionReportIssue_"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -1083,6 +1084,11 @@
    </property>
    <property name="text">
     <string>Execute</string>
+   </property>
+  </action>
+  <action name="actionReportIssue_">
+   <property name="text">
+    <string>Report Issue...</string>
    </property>
   </action>
  </widget>

@@ -43,11 +43,12 @@ namespace Math {
   public:
     ConvertScalarToMatrix();
     virtual void execute();
-    virtual void setStateDefaults() {};
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    virtual void setStateDefaults() {}
 
     INPUT_PORT(0, Input, Int32);
     OUTPUT_PORT(0, Output, Matrix);
+
+    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
   };
 }}}
 
