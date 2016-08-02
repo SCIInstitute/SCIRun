@@ -25,9 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-#ifdef BUILD_WITH_PYTHON
-#include <Modules/Python/PythonObjectForwarder.h>
 
+#include <Modules/Python/PythonObjectForwarder.h>
 
 using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Core::Datatypes;
@@ -57,8 +56,10 @@ void PythonObjectForwarder::setStateDefaults()
 
 void PythonObjectForwarder::execute()
 {
+#ifdef BUILD_WITH_PYTHON
   PythonObjectForwarderImpl<PythonObjectForwarder> impl(*this);
   impl.waitForOutputFromTransientState(Parameters::PythonObject.name(), PythonString, PythonMatrix, PythonField);
-}
-
+#else
+  error("Build with Python is turned off, this module does nothing.");
 #endif
+}

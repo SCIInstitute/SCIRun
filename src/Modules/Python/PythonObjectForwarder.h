@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
    */
 
-#ifdef BUILD_WITH_PYTHON
 #ifndef MODULES_PYTHON_PYTHONOBJECTFORWARDER_H
 #define MODULES_PYTHON_PYTHONOBJECTFORWARDER_H
 
@@ -51,7 +50,7 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(NumberOfRetries);
         ALGORITHM_PARAMETER_DECL(PythonObject);
 
-
+#ifdef BUILD_WITH_PYTHON
         template <class PythonModule>
         class PythonObjectForwarderImpl
         {
@@ -118,9 +117,11 @@ namespace SCIRun
           PythonModule& module_;
           int maxTries_, waitTime_;
         };
+        #endif
       }
     }
   }
+
 
   namespace Modules
   {
@@ -145,5 +146,4 @@ namespace SCIRun
   }
 }
 
-#endif
 #endif
