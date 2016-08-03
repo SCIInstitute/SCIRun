@@ -82,6 +82,8 @@ namespace Networks {
   typedef std::map<std::string, ModuleWithState> ModuleMapXML;
   typedef std::map<std::string, NoteXML> NotesMapXML;
   typedef std::map<std::string, int> ModuleTagsMapXML;
+  typedef std::map<int, std::string> ModuleTagLabelOverridesMapXML;
+  typedef std::vector<std::string> DisabledComponentListXML;
 
   struct SCISHARE ModuleNotes
   {
@@ -96,6 +98,14 @@ namespace Networks {
   struct SCISHARE ModuleTags
   {
     ModuleTagsMapXML tags;
+    ModuleTagLabelOverridesMapXML labels;
+    bool showTagGroupsOnLoad { false };
+  };
+
+  struct SCISHARE DisabledComponents
+  {
+    DisabledComponentListXML disabledModules;
+    DisabledComponentListXML disabledConnections;
   };
 
   class SCISHARE NetworkXML
@@ -120,6 +130,7 @@ namespace Networks {
     ModuleNotes moduleNotes;
     ConnectionNotes connectionNotes;
     ModuleTags moduleTags;
+    DisabledComponents disabledComponents;
   private:
     friend class boost::serialization::access;
     template <class Archive>
@@ -133,11 +144,34 @@ namespace Networks {
         ar & boost::serialization::make_nvp("connectionNotes", connectionNotes.notes);
       if (version > 2)
         ar & boost::serialization::make_nvp("moduleTags", moduleTags.tags);
+      if (version > 3)
+      {
+        ar & boost::serialization::make_nvp("disabledModules", disabledComponents.disabledModules);
+        ar & boost::serialization::make_nvp("disabledConnections", disabledComponents.disabledConnections);
+      }
+      if (version > 4)
+      {
+        ar & boost::serialization::make_nvp("moduleTagLabels", moduleTags.labels);
+        ar & boost::serialization::make_nvp("loadTagGroups", moduleTags.showTagGroupsOnLoad);
+      }
     }
   };
 
+  template <class Value>
+  std::map<std::string, Value> remapIdBasedContainer(const std::map<std::string, Value>& keyedByOriginalId, const std::map<std::string, std::string>& idMapping)
+  {
+    std::map<std::string, Value> remapped;
+    for (const auto& pair : keyedByOriginalId)
+    {
+      auto newKeyIter = idMapping.find(pair.first);
+      std::string newKey = newKeyIter != idMapping.end() ? newKeyIter->second : pair.first;
+      remapped[newKey] = pair.second;
+    }
+    return remapped;
+  }
+
 }}}
 
-BOOST_CLASS_VERSION(SCIRun::Dataflow::Networks::NetworkFile, 3)
+BOOST_CLASS_VERSION(SCIRun::Dataflow::Networks::NetworkFile, 5)
 
 #endif

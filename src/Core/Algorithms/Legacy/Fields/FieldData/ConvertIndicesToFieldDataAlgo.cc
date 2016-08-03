@@ -50,7 +50,7 @@ ALGORITHM_PARAMETER_DEF(Fields, OutputFieldDataType);
 
 ConvertIndicesToFieldDataAlgo::ConvertIndicesToFieldDataAlgo()
 {
-  add_option(Parameters::OutputFieldDataType, "double","double|float|char|unsigned char|short|unsigned short|int|unsigned int");
+  addOption(Parameters::OutputFieldDataType, "double","double|float|char|unsigned char|short|unsigned short|int|unsigned int");
 }
 
 bool
@@ -127,8 +127,8 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, DenseMatrixHandl
 	if (algotype == "Scalar")
 	{
 		std::string datatype;
-		get_option(Parameters::OutputFieldDataType);
-		fo.set_data_type(get_option(Parameters::OutputFieldDataType));
+		getOption(Parameters::OutputFieldDataType);
+		fo.set_data_type(getOption(Parameters::OutputFieldDataType));
 	}
 	if (algotype == "Vector") fo.make_vector();
 	if (algotype == "Tensor") fo.make_tensor();
@@ -223,7 +223,7 @@ ConvertIndicesToFieldDataAlgo::runImpl(FieldHandle input_field, DenseMatrixHandl
 	return (false);
 }
 
-AlgorithmOutput ConvertIndicesToFieldDataAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConvertIndicesToFieldDataAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
   auto inputmatrix = input.get<DenseMatrix>(Variables::InputMatrix);

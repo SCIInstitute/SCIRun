@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -45,24 +45,20 @@ namespace SCIRun {
       {
       public:
         InsertFieldsIntoBundle();
-        virtual void setStateDefaults();
-        virtual void execute();
-        virtual bool hasDynamicPorts() const { return true; }
-        virtual void portAddedSlot(const Dataflow::Networks::ModuleId& mid, const Dataflow::Networks::PortId& pid) override;
-        virtual void portRemovedSlot(const Dataflow::Networks::ModuleId& mid, const Dataflow::Networks::PortId& pid) override;
+        virtual void setStateDefaults() override;
+        virtual void execute() override;
+        HAS_DYNAMIC_PORTS
 
         INPUT_PORT(0, InputBundle, Bundle);
         INPUT_PORT_DYNAMIC(1, InputFields, LegacyField);
         OUTPUT_PORT(0, OutputBundle, Bundle);
 
-        static Core::Algorithms::AlgorithmParameterName BundleName;
-        static Core::Algorithms::AlgorithmParameterName NumFields;
-        static Core::Algorithms::AlgorithmParameterName FieldNames;
-        static Core::Algorithms::AlgorithmParameterName FieldReplace;
+        static const Core::Algorithms::AlgorithmParameterName BundleName;
+        static const Core::Algorithms::AlgorithmParameterName NumFields;
+        static const Core::Algorithms::AlgorithmParameterName FieldNames;
+        static const Core::Algorithms::AlgorithmParameterName FieldReplace;
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-
-      private:
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
 
     }

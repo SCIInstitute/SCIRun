@@ -45,6 +45,7 @@
 #include <Core/Utils/ProgressReporter.h>
 #include <Core/Utils/StringUtil.h>
 #include <Core/Thread/Mutex.h>
+#include <Core/Algorithms/Base/AlgorithmInterfaces.h>
 #include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
@@ -56,19 +57,19 @@ namespace Algorithms {
   {
   public:
     AlgorithmParameterList();
-    bool set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value);
-    const AlgorithmParameter& get(const AlgorithmParameterName& key) const;
+    bool set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value) override;
+    const AlgorithmParameter& get(const AlgorithmParameterName& key) const override;
 
-    bool set_option(const AlgorithmParameterName& key, const std::string& value);
-    bool get_option(const AlgorithmParameterName& key, std::string& value) const;
-    std::string get_option(const AlgorithmParameterName& key) const;
-    bool check_option(const AlgorithmParameterName& key, const std::string& value) const;
+    bool setOption(const AlgorithmParameterName& key, const std::string& value);
+    bool getOption(const AlgorithmParameterName& key, std::string& value) const;
+    std::string getOption(const AlgorithmParameterName& key) const;
+    bool checkOption(const AlgorithmParameterName& key, const std::string& value) const;
 
     virtual bool keyNotFoundPolicy(const AlgorithmParameterName& key) const;
 
   protected:
     void addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue);
-    void add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options);
+    void addOption(const AlgorithmParameterName& key, const std::string& defval, const std::string& options);
     typedef std::map<AlgorithmParameterName, AlgorithmParameter> ParameterMap;
     ParameterMap::const_iterator paramsBegin() const { return parameters_.begin(); }
     ParameterMap::const_iterator paramsEnd() const { return parameters_.end(); }

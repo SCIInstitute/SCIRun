@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "SimulateForwardMagneticField",
+    "namespace": "BrainStimulator",
+    "status": "Converted",
+    "description": "...",
+    "header": "Modules/BrainStimulator/SimulateForwardMagneticField.h"
+  },
+  "algorithm": {
+    "name": "SimulateForwardMagneticFieldAlgo",
+    "namespace": "BrainStimulator",
+    "header": "Core/Algorithms/BrainStimulator/SimulateForwardMagneticFieldAlgorithm.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

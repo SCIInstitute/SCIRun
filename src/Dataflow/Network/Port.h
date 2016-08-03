@@ -58,21 +58,23 @@ public:
   Port(ModuleInterface* module, const ConstructionParams& params);
   virtual ~Port();
 
-  size_t nconnections() const;
-  const Connection* connection(size_t) const;
+  size_t nconnections() const override;
+  Connection* connection(size_t) const override;
 
-  virtual PortId id() const { return id_; }
-  virtual void setId(const PortId& id) { id_ = id; }
-  std::string get_typename() const { return typeName_; }
+  virtual PortId id() const override { return id_; }
+  virtual void setId(const PortId& id) override { id_ = id; }
+  std::string get_typename() const override { return typeName_; }
   std::string get_colorname() const { return colorName_; }
-  std::string get_portname() const { return portName_; }
+  std::string get_portname() const override { return portName_; }
 
-  virtual void attach(Connection* conn);
-  virtual void detach(Connection* conn);
+  virtual void attach(Connection* conn) override;
+  virtual void detach(Connection* conn) override;
 
-  virtual ModuleId getUnderlyingModuleId() const;
-  virtual size_t getIndex() const;
-  virtual void setIndex(size_t index);
+  virtual ModuleId getUnderlyingModuleId() const override;
+  virtual size_t getIndex() const override;
+  virtual void setIndex(size_t index) override;
+
+  virtual boost::optional<ConnectionId> firstConnectionId() const override;
 
   /// @todo:
   // light interface
@@ -101,14 +103,16 @@ public:
   virtual ~InputPort();
   virtual void attach(Connection* conn) override;
   virtual void detach(Connection* conn) override;
-  virtual DatatypeSinkInterfaceHandle sink() const;
-  virtual Core::Datatypes::DatatypeHandleOption getData() const;
-  virtual bool isInput() const { return true; } //boo
-  virtual bool isDynamic() const { return isDynamic_; }
-  virtual InputPortInterface* clone() const;
-  virtual bool hasChanged() const;
-  virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber);
+  virtual DatatypeSinkInterfaceHandle sink() const override;
+  virtual Core::Datatypes::DatatypeHandleOption getData() const override;
+  virtual bool isInput() const override { return true; } //boo
+  virtual bool isDynamic() const override { return isDynamic_; }
+  virtual InputPortInterface* clone() const override;
+  virtual bool hasChanged() const override;
+  virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber) override;
+  virtual void resendNewDataSignal() override;
 private:
+  bool shouldTriggerDataChange() const;
   DatatypeSinkInterfaceHandle sink_;
   bool isDynamic_;
 };
@@ -119,14 +123,15 @@ class SCISHARE OutputPort : public Port, public OutputPortInterface
 public:
   OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source);
   virtual ~OutputPort();
-  virtual void sendData(Core::Datatypes::DatatypeHandle data);
-  virtual bool isInput() const { return false; } //boo
-  virtual bool isDynamic() const { return false; } /// @todo: design dynamic output ports
+  virtual DatatypeSourceInterfaceHandle source() const override { return source_; }
+  virtual void sendData(Core::Datatypes::DatatypeHandle data) override;
+  virtual bool isInput() const override { return false; } //boo
+  virtual bool isDynamic() const override { return false; } /// @todo: design dynamic output ports
   virtual bool hasData() const override;
   virtual void attach(Connection* conn) override;
   virtual PortDataDescriber getPortDataDescriber() const override;
   virtual boost::signals2::connection connectConnectionFeedbackListener(const ConnectionFeedbackSignalType::slot_type& subscriber) override;
-  virtual void sendConnectionFeedback(SCIRun::Core::Algorithms::VariableHandle info) override;
+  virtual void sendConnectionFeedback(const Core::Datatypes::ModuleFeedback& info) override;
 private:
   DatatypeSourceInterfaceHandle source_;
   ConnectionFeedbackSignalType cxnFeedback_;

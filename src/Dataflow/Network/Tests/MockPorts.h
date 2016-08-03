@@ -31,6 +31,7 @@
 
 #include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Network/DataflowInterfaces.h>
+#include <Dataflow/Network/ConnectionId.h>
 #include <boost/optional/optional_io.hpp>
 #include <gmock/gmock.h>
 
@@ -50,6 +51,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
           MOCK_CONST_METHOD0(id, PortId());
+          MOCK_CONST_METHOD0(firstConnectionId, boost::optional<ConnectionId>());
         };
 
         typedef boost::shared_ptr<MockPortDescription> MockPortDescriptionPtr;
@@ -60,7 +62,7 @@ namespace SCIRun {
           MOCK_METHOD1(attach, void(Connection*));
           MOCK_METHOD1(detach, void(Connection*));
           MOCK_CONST_METHOD0(nconnections, size_t());
-          MOCK_CONST_METHOD1(connection, const Connection*(size_t));
+          MOCK_CONST_METHOD1(connection, Connection*(size_t));
           MOCK_CONST_METHOD0(get_typename, std::string());
           MOCK_CONST_METHOD0(get_portname, std::string());
           MOCK_CONST_METHOD0(getData, Core::Datatypes::DatatypeHandleOption());
@@ -75,6 +77,8 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(hasChanged, bool());
           MOCK_METHOD1(setIndex, void(size_t));
           MOCK_METHOD1(connectDataOnPortHasChanged, boost::signals2::connection(const DataOnPortHasChangedSignalType::slot_type&));
+          MOCK_CONST_METHOD0(firstConnectionId, boost::optional<ConnectionId>());
+          MOCK_METHOD0(resendNewDataSignal, void());
         };
 
         typedef boost::shared_ptr<MockInputPort> MockInputPortPtr;
@@ -85,7 +89,7 @@ namespace SCIRun {
           MOCK_METHOD1(attach, void(Connection*));
           MOCK_METHOD1(detach, void(Connection*));
           MOCK_CONST_METHOD0(nconnections, size_t());
-          MOCK_CONST_METHOD1(connection, const Connection*(size_t));
+          MOCK_CONST_METHOD1(connection, Connection*(size_t));
           MOCK_CONST_METHOD0(get_typename, std::string());
           MOCK_CONST_METHOD0(get_portname, std::string());
           MOCK_METHOD1(sendData, void(Core::Datatypes::DatatypeHandle));
@@ -97,9 +101,11 @@ namespace SCIRun {
           MOCK_METHOD1(setId, void(const PortId&));
           MOCK_METHOD1(setIndex, void(size_t));
           MOCK_CONST_METHOD0(hasData, bool());
+          MOCK_CONST_METHOD0(source, DatatypeSourceInterfaceHandle());
           MOCK_CONST_METHOD0(getPortDataDescriber, PortDataDescriber());
           MOCK_METHOD1(connectConnectionFeedbackListener, boost::signals2::connection(const ConnectionFeedbackSignalType::slot_type&));
-          MOCK_METHOD1(sendConnectionFeedback, void(SCIRun::Core::Algorithms::VariableHandle));
+          MOCK_METHOD1(sendConnectionFeedback, void(const Core::Datatypes::ModuleFeedback&));
+          MOCK_CONST_METHOD0(firstConnectionId, boost::optional<ConnectionId>());
         };
 
         typedef boost::shared_ptr<MockOutputPort> MockOutputPortPtr;
@@ -113,6 +119,7 @@ namespace SCIRun {
           MOCK_METHOD0(receive, Core::Datatypes::DatatypeHandleOption());
           MOCK_CONST_METHOD0(hasChanged, bool());
           MOCK_METHOD1(connectDataHasChanged, boost::signals2::connection(const DataHasChangedSignalType::slot_type&));
+          MOCK_METHOD0(forceFireDataHasChanged, void());
         };
 
         typedef boost::shared_ptr<MockDatatypeSink> MockDatatypeSinkPtr;

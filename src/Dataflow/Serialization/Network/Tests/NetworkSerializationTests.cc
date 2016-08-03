@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -40,8 +40,6 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixIO.h>
-#include <Modules/Basic/SendTestMatrix.h>
-#include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
@@ -56,7 +54,6 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Core::Datatypes;
@@ -95,17 +92,17 @@ namespace
   NetworkXML exampleNet()
   {
     ModuleLookupInfoXML info1;
-    info1.module_name_ = "EvaluateLinearAlgebraUnary";  
+    info1.module_name_ = "EvaluateLinearAlgebraUnary";
     info1.category_name_ = "Math";
     info1.package_name_ = "SCIRun";
 
     ModuleLookupInfoXML info2;
-    info2.module_name_ = "ReadMatrix";  
+    info2.module_name_ = "ReadMatrix";
     info2.category_name_ = "DataIO";
     info2.package_name_ = "SCIRun";
 
     ModuleLookupInfoXML info3;
-    info3.module_name_ = "WriteMatrix";  
+    info3.module_name_ = "WriteMatrix";
     info3.category_name_ = "DataIO";
     info3.package_name_ = "SCIRun";
 
@@ -165,8 +162,8 @@ TEST(SerializeNetworkTest, RoundTripObject)
   serializer.save_xml(networkXML, ostr1);
 
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  NetworkEditorController controller(mf, ModuleStateFactoryHandle(), ExecutionStrategyFactoryHandle(), AlgorithmFactoryHandle(), ReexecuteStrategyFactoryHandle());
-  NetworkXMLConverter converter(mf, ModuleStateFactoryHandle(), AlgorithmFactoryHandle(), ReexecuteStrategyFactoryHandle(), &controller);
+  NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+  NetworkXMLConverter converter(mf, nullptr, nullptr, nullptr, &controller);
   NetworkHandle network = converter.from_xml_data(networkXML);
   ASSERT_TRUE(network.get() != nullptr);
   auto xml2 = converter.to_xml_data(network);
@@ -185,8 +182,8 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(boost::optional<std::string>()));
-  NetworkEditorController controller(mf, sf, exe, AlgorithmFactoryHandle(), ReexecuteStrategyFactoryHandle());
-  
+  NetworkEditorController controller(mf, sf, exe, nullptr, nullptr, nullptr, nullptr);
+
   ModuleHandle matrix1Send = controller.addModule("SendTestMatrix");
   ModuleHandle matrix2Send = controller.addModule("SendTestMatrix");
 
@@ -231,7 +228,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   XMLSerializer::save_xml(*xml, ostr, "network");
   std::cout << ostr.str() << std::endl;
 
-  NetworkEditorController controller2(mf, sf, exe, AlgorithmFactoryHandle(), ReexecuteStrategyFactoryHandle());
+  NetworkEditorController controller2(mf, sf, exe, nullptr, nullptr, nullptr, nullptr);
   controller2.loadNetwork(xml);
 
   NetworkHandle deserialized = controller2.getNetwork();
@@ -251,7 +248,7 @@ TEST(SerializeNetworkTest, FullTestWithDynamicPorts)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), AlgorithmFactoryHandle(), ReexecuteStrategyFactoryHandle());
+  NetworkEditorController controller(mf, sf, nullptr, nullptr, nullptr, nullptr, nullptr);
 
   std::vector<ModuleHandle> showFields;
   showFields.push_back(controller.addModule("ShowField"));
@@ -267,7 +264,7 @@ TEST(SerializeNetworkTest, FullTestWithDynamicPorts)
 
   EXPECT_EQ(0, net->nconnections());
   size_t port = 0;
-  BOOST_FOREACH(ModuleHandle show, showFields)
+  for (ModuleHandle show : showFields)
   {
     std::cout << "Attempting to connect to view scene on " << port << std::endl;
     controller.requestConnection(show->outputPorts()[0].get(), view->inputPorts()[port++].get());
@@ -280,9 +277,8 @@ TEST(SerializeNetworkTest, FullTestWithDynamicPorts)
 
   std::ostringstream ostr;
   XMLSerializer::save_xml(*xml, ostr, "network");
-  //std::cout << ostr.str() << std::endl;
 
-  NetworkEditorController controller2(mf, sf, ExecutionStrategyFactoryHandle(), AlgorithmFactoryHandle(), ReexecuteStrategyFactoryHandle());
+  NetworkEditorController controller2(mf, sf, nullptr, nullptr, nullptr, nullptr, nullptr);
   controller2.loadNetwork(xml);
 
   NetworkHandle deserialized = controller2.getNetwork();

@@ -30,9 +30,9 @@
 #define INTERFACE_APPLICATION_NETWORKEDITORCONTROLLERGUIPROXY_H
 
 #include <QObject>
-#include <vector>
-#include <boost/atomic.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Network/ConnectionId.h>
+#include <boost/optional/optional.hpp>
 
 namespace SCIRun {
   namespace Dataflow { namespace Engine { class NetworkEditorController; struct DisableDynamicPortSwitch; struct ModuleCounter; }}
@@ -48,17 +48,20 @@ namespace Gui {
     void addModule(const std::string& moduleName);
     void removeModule(const SCIRun::Dataflow::Networks::ModuleId& id);
     void interrupt(const SCIRun::Dataflow::Networks::ModuleId& id);
-    void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
+    boost::optional<SCIRun::Dataflow::Networks::ConnectionId> requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id);
     void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
-    void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+    void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnectUponInsertion);
     SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
+    SCIRun::Dataflow::Networks::NetworkFileHandle serializeNetworkFragment(SCIRun::Dataflow::Networks::ModuleFilter modFilter, SCIRun::Dataflow::Networks::ConnectionFilter connFilter) const;
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
+    void appendToNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
     void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
-    void executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module, const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
+    void executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module, const SCIRun::Dataflow::Networks::ExecutableLookup& lookup, bool executeUpstream);
     size_t numModules() const;
     int errorCode() const;
     void setExecutorType(int type);
+    void cleanUpNetwork();
   public:
     const SCIRun::Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
     SCIRun::Dataflow::Networks::NetworkGlobalSettings& getSettings();
@@ -73,6 +76,7 @@ namespace Gui {
     void executionStarted();
     void executionFinished(int returnCode);
     void networkDoneLoading(int nMod);
+    void snippetNeedsMoving(const std::string& name);
   private:
     boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller_;
   };

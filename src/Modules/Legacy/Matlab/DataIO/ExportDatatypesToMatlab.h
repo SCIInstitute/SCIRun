@@ -31,18 +31,18 @@
 #define MODULES_FIELDS_REPORTFIELDINFO_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+#include <Modules/Legacy/Matlab/DataIO/share.h>
 
 namespace SCIRun {
 namespace Modules {
-namespace Fields {
-  
-  class SCISHARE ReportFieldInfoModule : public SCIRun::Dataflow::Networks::Module,
+namespace Matlab {
+
+  class SCISHARE ReportFieldInfo : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<FieldPortTag>,
     public Has6OutputPorts<StringPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag>
   {
   public:
-    ReportFieldInfoModule();
+    ReportFieldInfo();
     virtual void execute();
     virtual void setStateDefaults() {}
     INPUT_PORT(0, InputField, LegacyField);
@@ -52,6 +52,7 @@ namespace Fields {
     OUTPUT_PORT(3, NumData, Int32);
     OUTPUT_PORT(4, DataMin, Double);
     OUTPUT_PORT(5, DataMax, Double);
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
   };
 }}}
 

@@ -51,7 +51,7 @@ bool isnan_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -75,7 +75,7 @@ bool isfinite_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -97,7 +97,7 @@ bool isinfinite_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -121,7 +121,7 @@ bool sign_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -145,7 +145,7 @@ bool inv_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -167,7 +167,7 @@ bool boolean_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -189,7 +189,7 @@ bool abs_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -211,7 +211,7 @@ bool norm_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -233,7 +233,7 @@ bool round_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -255,7 +255,7 @@ bool floor_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -277,7 +277,7 @@ bool ceil_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -299,7 +299,7 @@ bool exp_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -321,7 +321,7 @@ bool sqrt_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -343,7 +343,7 @@ bool log_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -365,7 +365,7 @@ bool ln_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -387,7 +387,7 @@ bool log2_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -410,7 +410,7 @@ bool log10_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -433,7 +433,7 @@ bool cbrt_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -455,7 +455,7 @@ bool sin_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -477,7 +477,7 @@ bool cos_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -499,7 +499,7 @@ bool tan_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -521,7 +521,7 @@ bool sinh_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -543,7 +543,7 @@ bool cosh_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -565,7 +565,7 @@ bool asin_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -587,7 +587,7 @@ bool acos_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -609,7 +609,7 @@ bool atan_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -631,7 +631,7 @@ bool asinh_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -654,7 +654,7 @@ bool acosh_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
 
   if (!(*data1)) return (false);
   data0->reset((*data1)->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   size_type size = data0h->size();
@@ -693,11 +693,11 @@ bool or_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   }
 
   // Convert non-dense matrices to dense for this operation
-  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
-  DenseMatrixHandle data2h = matrix_convert::to_dense(*data2);
+  DenseMatrixHandle data1h = convertMatrix::toDense(*data1);
+  DenseMatrixHandle data2h = convertMatrix::toDense(*data2);
 
   data0->reset(data1h->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
 
@@ -739,11 +739,11 @@ bool and_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   }
 
   // Convert non-dense matrices to dense for this operation
-  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
-  DenseMatrixHandle data2h = matrix_convert::to_dense(*data2);
+  DenseMatrixHandle data1h = convertMatrix::toDense(*data1);
+  DenseMatrixHandle data2h = convertMatrix::toDense(*data2);
 
   data0->reset(data1h->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
 
@@ -784,11 +784,11 @@ bool eq_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   }
 
   // Convert non-dense matrices to dense for this operation
-  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
-  DenseMatrixHandle data2h = matrix_convert::to_dense(*data2);
+  DenseMatrixHandle data1h = convertMatrix::toDense(*data1);
+  DenseMatrixHandle data2h = convertMatrix::toDense(*data2);
 
   data0->reset(data1h->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
 
@@ -829,11 +829,11 @@ bool neq_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   }
 
   // Convert non-dense matrices to dense for this operation
-  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
-  DenseMatrixHandle data2h = matrix_convert::to_dense(*data2);
+  DenseMatrixHandle data1h = convertMatrix::toDense(*data1);
+  DenseMatrixHandle data2h = convertMatrix::toDense(*data2);
 
   data0->reset(data1h->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
 
@@ -874,11 +874,11 @@ bool le_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   }
 
   // Convert non-dense matrices to dense for this operation
-  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
-  DenseMatrixHandle data2h = matrix_convert::to_dense(*data2);
+  DenseMatrixHandle data1h = convertMatrix::toDense(*data1);
+  DenseMatrixHandle data2h = convertMatrix::toDense(*data2);
 
   data0->reset(data1h->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
 
@@ -920,11 +920,11 @@ bool ge_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   }
 
   // Convert non-dense matrices to dense for this operation
-  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
-  DenseMatrixHandle data2h = matrix_convert::to_dense(*data2);
+  DenseMatrixHandle data1h = convertMatrix::toDense(*data1);
+  DenseMatrixHandle data2h = convertMatrix::toDense(*data2);
 
   data0->reset(data1h->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
 
@@ -965,11 +965,11 @@ bool ls_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   }
 
   // Convert non-dense matrices to dense for this operation
-  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
-  DenseMatrixHandle data2h = matrix_convert::to_dense(*data2);
+  DenseMatrixHandle data1h = convertMatrix::toDense(*data1);
+  DenseMatrixHandle data2h = convertMatrix::toDense(*data2);
 
   data0->reset(data1h->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
 
@@ -1010,11 +1010,11 @@ bool gt_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   }
 
   // Convert non-dense matrices to dense for this operation
-  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
-  DenseMatrixHandle data2h = matrix_convert::to_dense(*data2);
+  DenseMatrixHandle data1h = convertMatrix::toDense(*data1);
+  DenseMatrixHandle data2h = convertMatrix::toDense(*data2);
 
   data0->reset(data1h->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
 
@@ -1042,10 +1042,10 @@ bool not_s(SCIRun::LinAlgProgramCode& pc, std::string& err)
   if (!(*data1)) return (false);
 
   // Convert non-dense matrices to dense for this operation
-  DenseMatrixHandle data1h = matrix_convert::to_dense(*data1);
+  DenseMatrixHandle data1h = convertMatrix::toDense(*data1);
 
   data0->reset(data1h->clone());
-  auto data0h = matrix_cast::as_dense(*data0);
+  auto data0h = castMatrix::toDense(*data0);
 
   double* data = data0h->data();
   double* d1 = data1h->data();

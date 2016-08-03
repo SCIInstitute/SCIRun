@@ -36,12 +36,13 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-      class SCISHARE ExtractSimpleIsosurfaceModule : public Dataflow::Networks::Module,
+      class SCISHARE ExtractSimpleIsosurface : public Dataflow::Networks::Module,
         public Has2InputPorts<FieldPortTag, MatrixPortTag>,
         public Has1OutputPort<FieldPortTag>
       {
+        CONVERTED_VERSION_OF_MODULE(ExtractIsosurface)
       public:
-        ExtractSimpleIsosurfaceModule();
+        ExtractSimpleIsosurface();
 
         virtual void execute();
         virtual void setStateDefaults();
@@ -49,8 +50,9 @@ namespace SCIRun {
         INPUT_PORT(0, InputField, LegacyField);
         INPUT_PORT(1, Isovalue, Matrix);
         OUTPUT_PORT(0, OutputField, LegacyField);
-      };
 
+        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+      };
     }
   }
 }

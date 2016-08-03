@@ -27,7 +27,6 @@
 #
 
 SET(Modules_FiniteElements_Tests_SRCS
-  TDCSSimulatorTests.cc
   BuildTDCSMatrixTests.cc
 )
 

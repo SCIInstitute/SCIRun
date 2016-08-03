@@ -82,6 +82,7 @@
     <addaction name="actionLoad_"/>
     <addaction name="recentNetworksMenu_"/>
     <addaction name="actionInsert_"/>
+    <addaction name="actionImportNetwork_"/>
     <addaction name="actionRunScript_"/>
     <addaction name="separator"/>
     <addaction name="actionSave_"/>
@@ -89,7 +90,7 @@
     <addaction name="separator"/>
     <addaction name="actionExecute_All_"/>
     <addaction name="separator"/>
-    <addaction name="actionCreate_Module_Skeleton_"/>
+    <addaction name="actionRunNewModuleWizard_"/>
     <addaction name="separator"/>
     <addaction name="actionQuit_"/>
    </widget>
@@ -108,8 +109,15 @@
      <addaction name="actionAddModule_"/>
      <addaction name="actionSelectModule_"/>
     </widget>
+    <widget class="QMenu" name="menuCurrent_">
+     <property name="title">
+      <string>Current</string>
+     </property>
+    </widget>
     <addaction name="menuActions"/>
     <addaction name="actionTagManager_"/>
+    <addaction name="separator"/>
+    <addaction name="menuCurrent_"/>
    </widget>
    <widget class="QMenu" name="menuSubnets_">
     <property name="enabled">
@@ -133,22 +141,52 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <widget class="QMenu" name="menuNew_Features">
+     <property name="title">
+      <string>Learn About New Features</string>
+     </property>
+     <addaction name="helpActionSnippets_"/>
+     <addaction name="helpActionMetadataLayer_"/>
+     <addaction name="helpActionTagLayer_"/>
+     <addaction name="helpActionPythonInterpreter_"/>
+     <addaction name="helpActionPythonAPI_"/>
+     <addaction name="helpActionProvenance_"/>
+     <addaction name="helpActionToolkitDownloads_"/>
+     <addaction name="helpActionNetworkFileImport_"/>
+     <addaction name="helpActionNetworkEditorGUI_"/>
+     <addaction name="helpActionClipboard_"/>
+     <addaction name="helpActionTriggeredScripts_"/>
+    </widget>
     <addaction name="actionShow_Tooltips_"/>
     <addaction name="actionAbout_"/>
     <addaction name="actionCredits_"/>
     <addaction name="actionLicense_"/>
+    <addaction name="actionKeyboardShortcuts_"/>
+    <addaction name="helpActionNewUserWizard_"/>
+    <addaction name="menuNew_Features"/>
+    <addaction name="actionReportIssue_"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
      <string>Window</string>
     </property>
+    <widget class="QMenu" name="menuToolbars">
+     <property name="title">
+      <string>Toolbars</string>
+     </property>
+     <addaction name="actionSearchBar_"/>
+     <addaction name="actionNetworkBar_"/>
+     <addaction name="actionExecuteBar_"/>
+    </widget>
     <addaction name="actionConfiguration_"/>
     <addaction name="actionModule_Selector"/>
     <addaction name="actionProvenance_"/>
     <addaction name="separator"/>
     <addaction name="actionPythonConsole_"/>
     <addaction name="actionDevConsole_"/>
+    <addaction name="actionTriggeredEvents_"/>
     <addaction name="actionPreferences_"/>
+    <addaction name="menuToolbars"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Window_Layout"/>
    </widget>
@@ -184,6 +222,10 @@
     <addaction name="separator"/>
     <addaction name="actionToggleMetadataLayer_"/>
     <addaction name="actionToggleTagLayer_"/>
+    <addaction name="separator"/>
+    <addaction name="actionCleanUpNetwork_"/>
+    <addaction name="separator"/>
+    <addaction name="actionMakeSubnetwork_"/>
    </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuEdit"/>
@@ -503,6 +545,9 @@
    <property name="text">
     <string>Save As...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
   </action>
   <action name="actionExecute_All_">
    <property name="text">
@@ -512,12 +557,12 @@
     <string>Ctrl+E</string>
    </property>
   </action>
-  <action name="actionCreate_Module_Skeleton_">
+  <action name="actionRunNewModuleWizard_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
-    <string>Create Module Skeleton...</string>
+    <string>Run New Module Wizard...</string>
    </property>
   </action>
   <action name="actionQuit_">
@@ -652,26 +697,35 @@
   </action>
   <action name="actionCut_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Cut</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
   </action>
   <action name="actionCopy_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Copy</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
   </action>
   <action name="actionPaste_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
    </property>
   </action>
   <action name="actionDelete_">
@@ -799,10 +853,16 @@
    <property name="text">
     <string>Center Network View</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+9</string>
+   </property>
   </action>
   <action name="actionResetNetworkZoom_">
    <property name="text">
     <string>Reset Network Zoom</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+0</string>
    </property>
   </action>
   <action name="actionDragMode_">
@@ -828,10 +888,16 @@
    <property name="text">
     <string>Zoom In</string>
    </property>
+   <property name="shortcut">
+    <string>+</string>
+   </property>
   </action>
   <action name="actionZoomOut_">
    <property name="text">
     <string>Zoom Out</string>
+   </property>
+   <property name="shortcut">
+    <string>-</string>
    </property>
   </action>
   <action name="actionZoomBestFit_">
@@ -871,6 +937,164 @@
    </property>
    <property name="text">
     <string>Tag Layer</string>
+   </property>
+  </action>
+  <action name="actionKeyboardShortcuts_">
+   <property name="text">
+    <string>Keyboard Shortcuts...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+Shift+K</string>
+   </property>
+  </action>
+  <action name="actionDummy">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </action>
+  <action name="actionCleanUpNetwork_">
+   <property name="text">
+    <string>Clean Up Network</string>
+   </property>
+  </action>
+  <action name="actionImportNetwork_">
+   <property name="text">
+    <string>*Import 4.x network file...</string>
+   </property>
+  </action>
+  <action name="helpActionSnippets_">
+   <property name="text">
+    <string>Snippets</string>
+   </property>
+  </action>
+  <action name="helpActionMetadataLayer_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Metadata Layer*</string>
+   </property>
+  </action>
+  <action name="helpActionTagLayer_">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Tag Layer</string>
+   </property>
+  </action>
+  <action name="helpActionPythonInterpreter_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Python Interpreter*</string>
+   </property>
+  </action>
+  <action name="helpActionPythonAPI_">
+   <property name="text">
+    <string>Python API</string>
+   </property>
+  </action>
+  <action name="helpActionProvenance_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Provenance*</string>
+   </property>
+  </action>
+  <action name="helpActionToolkitDownloads_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Toolkit Downloads*</string>
+   </property>
+  </action>
+  <action name="helpActionNetworkFileImport_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Network File Import*</string>
+   </property>
+  </action>
+  <action name="helpActionNetworkEditorGUI_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Network Editor GUI*</string>
+   </property>
+  </action>
+  <action name="actionTriggeredEvents_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Triggered Events</string>
+   </property>
+  </action>
+  <action name="helpActionClipboard_">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Clipboard</string>
+   </property>
+  </action>
+  <action name="helpActionTriggeredScripts_">
+   <property name="text">
+    <string>Triggered Scripts</string>
+   </property>
+  </action>
+  <action name="helpActionNewUserWizard_">
+   <property name="text">
+    <string>New User Wizard...</string>
+   </property>
+  </action>
+  <action name="actionSearchBar_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Search</string>
+   </property>
+  </action>
+  <action name="actionNetworkBar_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Network</string>
+   </property>
+  </action>
+  <action name="actionExecuteBar_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Execute</string>
+   </property>
+  </action>
+  <action name="actionReportIssue_">
+   <property name="text">
+    <string>Report Issue...</string>
+   </property>
+  </action>
+  <action name="actionMakeSubnetwork_">
+   <property name="text">
+    <string>Make subnetwork...</string>
    </property>
   </action>
  </widget>

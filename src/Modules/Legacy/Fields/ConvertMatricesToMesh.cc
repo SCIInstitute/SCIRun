@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -34,65 +34,54 @@
 ///@date  February 2001
 ///
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
+#include <Modules/Legacy/Fields/ConvertMatricesToMesh.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
 
-namespace SCIRun {
+MODULE_INFO_DEF(ConvertMatricesToMesh, NewField, SCIRun)
 
-/// @class ConvertMatricesToMesh
-/// @brief This module constructs a mesh from raw matrix data. 
- 
-class ConvertMatricesToMesh : public Module
+ConvertMatricesToMesh::ConvertMatricesToMesh() : Module(staticInfo_)
 {
-private:
-  GuiString gui_fieldname_;
-  GuiString gui_meshname_;
-  GuiString gui_fieldbasetype_;
-  GuiString gui_datatype_;
-  void process_elements(VMesh* mesh, size_type positionRows, bool required);
-
-public:
-  ConvertMatricesToMesh(GuiContext* ctx);
-  virtual ~ConvertMatricesToMesh() {}
-
-  virtual void execute();
-};
-
-
-DECLARE_MAKER(ConvertMatricesToMesh)
-ConvertMatricesToMesh::ConvertMatricesToMesh(GuiContext* ctx)
-  : Module("ConvertMatricesToMesh", ctx, Filter, "NewField", "SCIRun"),
-    gui_fieldname_(get_ctx()->subVar("fieldname"), "Created Field"),
-    gui_meshname_(get_ctx()->subVar("meshname"), "Created Mesh"),
-    gui_fieldbasetype_(get_ctx()->subVar("fieldbasetype"), "TetVol"),
-    gui_datatype_(get_ctx()->subVar("datatype"), "double")
-{
+  INITIALIZE_PORT(MeshElements);
+  INITIALIZE_PORT(MeshPositions);
+  INITIALIZE_PORT(MeshNormals);
+  INITIALIZE_PORT(OutputField);
 }
 
-
-void
-ConvertMatricesToMesh::execute()
+void ConvertMatricesToMesh::setStateDefaults()
 {
-  MatrixHandle positionshandle;
-  MatrixHandle normalshandle;
-  
-  get_input_handle("Mesh Positions", positionshandle,true);
-  if (!get_input_handle("Mesh Normals", normalshandle, false))
+  auto state = get_state();
+  state->setValue(FieldBaseType, std::string("TetVol"));
+  state->setValue(DataType, std::string("double"));
+
+  state->setValue(InputFieldName, std::string("[Field Name]"));
+  state->setValue(InputFieldTypeName, std::string("[Field Type]"));
+}
+
+void ConvertMatricesToMesh::execute()
+{
+  auto positionshandle = getRequiredInput(MeshPositions);
+  auto normalshandle = getOptionalInput(MeshNormals);
+
+  if (!normalshandle)
   {
     remark("No input normals connected, not used.");
   }
 
-  if (inputs_changed_ || gui_fieldbasetype_.changed() ||
-      gui_datatype_.changed() || !oport_cached("Output Field"))
+  if (needToExecute())
   {
-    update_state(Executing);
-    
     if (positionshandle->ncols() < 3)
     {
       error("Mesh Positions must contain at least 3 columns for position data.");
@@ -103,8 +92,9 @@ ConvertMatricesToMesh::execute()
       remark("Mesh Positions contains unused columns, only first three are used.");
     }
 
-    std::string basename = gui_fieldbasetype_.get();
-    std::string datatype = gui_datatype_.get();
+    auto state = get_state();
+    std::string basename = state->getValue(FieldBaseType).toString();
+    std::string datatype = state->getValue(DataType).toString();
 
     FieldInformation fi("CurveMesh",1,datatype);
     if (basename == "Curve") fi.make_curvemesh();
@@ -114,7 +104,7 @@ ConvertMatricesToMesh::execute()
     else if (basename == "QuadSurf") fi.make_quadsurfmesh();
     else if (basename == "TetVol") fi.make_tetvolmesh();
     else if (basename == "TriSurf") fi.make_trisurfmesh();
-    
+
     FieldHandle result_field = CreateField(fi);
     VMesh* mesh = result_field->vmesh();
 
@@ -127,50 +117,53 @@ ConvertMatricesToMesh::execute()
         positionshandle->get(i, 2));
       mesh->add_point(p);
     }
-    
-    process_elements(mesh, pnrows, basename != "PointCloud");
-    
+
+    bool meshElementsRequired = basename != "PointCloud";
+    if (meshElementsRequired)
+    {
+      process_elements(mesh, pnrows);
+    }
+
     result_field->vfield()->resize_values();
-    send_output_handle("Output Field", result_field);
+    sendOutput(OutputField, result_field);
   }
 }
 
-void 
-ConvertMatricesToMesh::process_elements(VMesh* mesh, size_type positionRows, bool required)
+void ConvertMatricesToMesh::process_elements(VMesh* mesh, size_type positionRows)
 {
-  MatrixHandle elementshandle;
-  if (get_input_handle("Mesh Elements", elementshandle, required))
-  {
-    index_type ecount = 0;
-    const size_type enrows = elementshandle->nrows();
-    const size_type encols = elementshandle->ncols();
-    VMesh::Node::array_type nodes;
+  auto elementshandle = getRequiredInput(MeshElements);
 
-    for (index_type i = 0; i < enrows; i++)
+  index_type ecount = 0;
+  const size_type enrows = elementshandle->nrows();
+  const size_type encols = elementshandle->ncols();
+  VMesh::Node::array_type nodes;
+
+  for (index_type i = 0; i < enrows; i++)
+  {
+    nodes.clear();
+    for (index_type j = 0; j < encols; j++)
     {
-      nodes.clear();
-      for (index_type j = 0; j < encols; j++)
+      VMesh::Node::index_type index = static_cast<index_type>(elementshandle->get(i, j));
+      if (index < 0 || index >= positionRows)
       {
-        VMesh::Node::index_type index = static_cast<index_type>(elementshandle->get(i, j));
-        if (index < 0 || index >= positionRows)
+        if (ecount < 10)
         {
-          if (ecount < 10)
-          {
-            error("Bad index found at " + to_string(i) + ", "+ to_string(j));
-          }
-          index = 0;
-          ecount++;
+          error("Bad index found at " + std::to_string(i) + ", " + std::to_string(j));
         }
-        nodes.push_back(index);
+        index = 0;
+        ecount++;
       }
-      mesh->add_elem(nodes);
+      nodes.push_back(index);
     }
-    if (ecount >= 10)
-    {
-      error("..." + to_string(ecount-9) + " additional bad indices found.");
-    }
+    mesh->add_elem(nodes);
+  }
+  if (ecount >= 10)
+  {
+    error("..." + std::to_string(ecount - 9) + " additional bad indices found.");
   }
 }
 
-} // End namespace SCIRun
-
+const AlgorithmParameterName ConvertMatricesToMesh::InputFieldName("InputFieldName");
+const AlgorithmParameterName ConvertMatricesToMesh::InputFieldTypeName("InputFieldTypeName");
+const AlgorithmParameterName ConvertMatricesToMesh::FieldBaseType("FieldBaseType");
+const AlgorithmParameterName ConvertMatricesToMesh::DataType("DataType");

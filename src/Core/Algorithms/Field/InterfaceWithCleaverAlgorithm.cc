@@ -72,7 +72,7 @@ InterfaceWithCleaverAlgorithm::InterfaceWithCleaverAlgorithm()
 {
   addParameter(Verbose,true);
   addParameter(Padding,true);
-  add_option(VolumeScalingOption, "Relative size", "Absolute size|Relative size|None");
+  addOption(VolumeScalingOption, "Relative size", "Absolute size|Relative size|None");
   addParameter(VolumeScalingX,1.0);
   addParameter(VolumeScalingY,1.0);  
   addParameter(VolumeScalingZ,1.0);  
@@ -203,7 +203,7 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
 
   if (xScale > 0 && yScale > 0 && zScale > 0)
   {
-    const std::string scaling = get_option(VolumeScalingOption);
+    const std::string scaling = getOption(VolumeScalingOption);
     if ("Absolute size" == scaling) 
     {
       volume->setSize(xScale, yScale, zScale);
@@ -299,7 +299,7 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
   return output;
 }
 
-AlgorithmOutput InterfaceWithCleaverAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput InterfaceWithCleaverAlgorithm::run(const AlgorithmInput& input) const
 { 
   auto inputfields = input.getList<Field>(Variables::InputFields);
 

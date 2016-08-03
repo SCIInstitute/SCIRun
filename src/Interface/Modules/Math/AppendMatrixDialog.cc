@@ -46,7 +46,6 @@ AppendMatrixDialog::AppendMatrixDialog(const std::string& name, ModuleStateHandl
 
   connect(appendRowsButton_, SIGNAL(clicked()), this, SLOT(isRows()));
   connect(appendColumnsButton_, SIGNAL(clicked()), this, SLOT(isCols()));
-  buttonBox->setVisible(false);
 }
 
 void AppendMatrixDialog::isRows()
@@ -59,7 +58,7 @@ void AppendMatrixDialog::isCols()
   state_->setValue(Variables::RowsOrColumns, AppendMatrixAlgorithm::COLUMNS);
 }
 
-void AppendMatrixDialog::pullSpecial()
+void AppendMatrixDialog::pullSpecial() //TODO refactor away
 {
   //TODO convert to new widget managers
   if (AppendMatrixAlgorithm::ROWS == state_->getValue(Variables::RowsOrColumns).toInt())

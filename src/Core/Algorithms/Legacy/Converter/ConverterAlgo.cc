@@ -38,7 +38,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/String.h>
-#include <Core/Datatypes/MatrixTypeConversions.h> 
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Legacy/Converter/NrrdToField.h>
 #include <Core/Algorithms/Legacy/Converter/FieldToNrrd.h>
 //#include <Core/Algorithms/Converter/MatrixToField.h>
@@ -55,7 +55,7 @@ pr_(pr)
 {
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_CONVERTER_LATER
+#ifdef SCIRUN4_CODE_TO_BE_CONVERTED_LATER
 bool ConverterAlgo::MatrixToDoubleVector(MatrixHandle matrix, std::vector<double> &val)
 {
   if (matrix.get_rep() == 0)
@@ -638,7 +638,7 @@ bool ConverterAlgo::fieldToNrrd(FieldHandle input, NrrdDataHandle& output)
   return(algo.fieldToNrrd(pr_, input, output));
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_CONVERTER_LATER
+#ifdef SCIRUN4_CODE_TO_BE_CONVERTED_LATER
 bool ConverterAlgo::NrrdToMatrix(NrrdDataHandle input, MatrixHandle& output)
 {
   if (!(input.get_rep()))
@@ -751,9 +751,9 @@ bool ConverterAlgo::MatrixToString(Datatypes::MatrixHandle input, Datatypes::Str
 {
   std::ostringstream oss;
 
-  if (matrix_is::sparse(input))
+  if (matrixIs::sparse(input))
   {
-    SparseRowMatrixHandle sparse = matrix_convert::to_sparse(input);
+    SparseRowMatrixHandle sparse = convertMatrix::toSparse(input);
     SparseRowMatrixGeneric<double>::RowsPtr rowData = sparse->get_rows();
     SparseRowMatrixGeneric<double>::ColumnsPtr columnData = sparse->get_cols();
     size_type numRows = sparse->nrows();
@@ -771,7 +771,7 @@ bool ConverterAlgo::MatrixToString(Datatypes::MatrixHandle input, Datatypes::Str
 
   else
   {
-    input = matrix_convert::to_dense(input);
+    input = convertMatrix::toDense(input);
     size_type numRows = input->nrows();
     size_type numCols = input->ncols();
     oss << "Dense Matrix (" << numRows << "x" << numCols << "):\n";
@@ -792,7 +792,7 @@ bool ConverterAlgo::MatrixToString(Datatypes::MatrixHandle input, Datatypes::Str
 }
 
 
-AlgorithmOutput ConverterAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput ConverterAlgo::run(const AlgorithmInput& input) const
 {
   throw "not implemented";
 }

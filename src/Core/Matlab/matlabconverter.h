@@ -90,7 +90,11 @@ class SCISHARE matlabconverter : public matfilebase
 
     // Exception class indicating an error in the converter
     // class itself.
-    class matlabconverter_error : public matfileerror {};
+    class error_type : public matfileerror
+    {
+    public:
+      explicit error_type(const std::string& msg = "") : matfileerror(msg) {}
+    };
 
     // Functions for converting back and forward of 
     // Compatible function:

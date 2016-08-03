@@ -27,7 +27,6 @@
 */
 
 #include <QtGui>
-#include <iostream>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/ModuleWidget.h>
@@ -35,6 +34,7 @@
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/PortWidgetManager.h>
+#include <Interface/Application/NetworkEditor.h>
 #include <Core/Logging/Log.h>
 #include <Core/Math/MiscMath2.h>
 #include <Core/Application/Preferences/Preferences.h>
@@ -51,7 +51,7 @@ namespace SCIRun
     class ModuleWidgetNoteDisplayStrategy : public NoteDisplayStrategy
     {
     public:
-      virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const
+      virtual QPointF relativeNotePosition(QGraphicsItem* item, const QGraphicsTextItem* note, NotePosition position) const override
       {
         const int noteMargin = 2;
         auto noteRect = note->boundingRect();
@@ -117,20 +117,86 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   module_(module),
   grabbedByWidget_(false),
   isSelected_(false),
-  pressedSubWidget_(0),
+  pressedSubWidget_(nullptr),
   doHighlight_(false)
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
   setAcceptDrops(true);
+  setData(TagDataKey, NoTag);
 
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
-  connect(module, SIGNAL(requestModuleVisible()), this, SLOT(ensureVisible()));
+  connect(module, SIGNAL(requestModuleVisible()), this, SLOT(ensureThisVisible()));
   connect(module, SIGNAL(deleteMeLater()), this, SLOT(deleteLater()));
+  connect(module, SIGNAL(executionDisabled(bool)), this, SLOT(disableModuleGUI(bool)));
+
+  stackDepth_ = 0;
+
+  originalSize_ = size();
+
+  // {
+  //   const int fadeInSeconds = 1;
+  //   timeLine_ = new QTimeLine(fadeInSeconds * 1000, this);
+  //   connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(loadAnimate(qreal)));
+  //   timeLine_->start();
+  // }
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
 {
+}
+
+void ModuleProxyWidget::showAndColor(const QColor& color)
+{
+  animateColor_ = color;
+  timeLine_ = new QTimeLine(4000, this);
+  connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(colorAnimate(qreal)));
+  timeLine_->start();
+  ensureThisVisible();
+}
+
+void ModuleProxyWidget::loadAnimate(qreal val)
+{
+  setOpacity(val);
+  setScale(val);
+}
+
+void ModuleProxyWidget::colorAnimate(qreal val)
+{
+  if (val < 1)
+  {
+    auto effect = graphicsEffect();
+    if (!effect)
+    {
+      auto colorize = new QGraphicsColorizeEffect;
+      colorize->setColor(animateColor_);
+      setGraphicsEffect(colorize);
+    }
+    else if (auto c = dynamic_cast<QGraphicsColorizeEffect*>(effect))
+    {
+      auto newColor = c->color();
+      newColor.setAlphaF(1 - val);
+      c->setColor(newColor);
+    }
+  }
+  else // 1 = done coloring
+    setGraphicsEffect(nullptr);
+}
+
+void ModuleProxyWidget::adjustHeight(int delta)
+{
+  auto p = pos();
+  module_->setFixedHeight(originalSize_.height() + delta);
+  setMaximumHeight(originalSize_.height() + delta);
+  setPos(p);
+}
+
+void ModuleProxyWidget::adjustWidth(int delta)
+{
+  auto p = pos();
+  module_->setFixedWidth(originalSize_.width() + delta);
+  setMaximumWidth(originalSize_.width() + delta);
+  setPos(p);
 }
 
 void ModuleProxyWidget::createStartupNote()
@@ -138,11 +204,23 @@ void ModuleProxyWidget::createStartupNote()
   module_->createStartupNote();
 }
 
-void ModuleProxyWidget::ensureVisible()
+void ModuleProxyWidget::ensureThisVisible()
 {
-  auto views = scene()->views();
+  ensureItemVisible(this);
+}
+
+void ModuleProxyWidget::ensureItemVisible(QGraphicsItem* item)
+{
+  auto views = item->scene()->views();
   if (!views.isEmpty())
-    views[0]->ensureVisible(this);
+  {
+    auto netEd = qobject_cast<NetworkEditor*>(views[0]);
+    if (netEd && netEd->currentZoomPercentage() > 200)
+    {
+      return; // the call below led to a crash when too zoomed in to fit a module.
+    }
+    views[0]->ensureVisible(item);
+  }
 }
 
 void ModuleProxyWidget::updatePressedSubWidget(QGraphicsSceneMouseEvent* event)
@@ -155,8 +233,17 @@ ModuleWidget* ModuleProxyWidget::getModuleWidget()
   return module_;
 }
 
+void ModuleProxyWidget::disableModuleGUI(bool disabled)
+{
+  if (disabled)
+    setGraphicsEffect(blurEffect(3));
+  else
+    setGraphicsEffect(nullptr);
+}
+
 void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
+  clearNoteCursor();
   auto taggingOn = data(TagLayerKey).toBool();
   auto currentTag = data(CurrentTagKey).toInt();
   if (taggingOn && currentTag > NoTag)
@@ -170,7 +257,7 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
   updatePressedSubWidget(event);
 
-  if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
+  if (auto p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
     p->doMousePress(event->button(), mapToScene(event->pos()));
     return;
@@ -194,7 +281,7 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 static int snapTo(int oldPos)
 {
-  using namespace SCIRun::Core::Math;
+  using namespace Math;
   const int strip = 76; // size of new background grid png
   const int shift = oldPos % strip;
 
@@ -203,11 +290,12 @@ static int snapTo(int oldPos)
 
 void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
+  stackDepth_ = 0;
   auto taggingOn = data(TagLayerKey).toBool();
   if (taggingOn)
     return;
 
-  if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
+  if (auto p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
     p->doMouseRelease(event->button(), mapToScene(event->pos()), event->modifiers());
     return;
@@ -236,17 +324,29 @@ void ModuleProxyWidget::snapToGrid()
 
 void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-  if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
+  stackDepth_++;
+  if (auto p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
-    p->doMouseMove(event->buttons(), mapToScene(event->pos()));
+    auto conn = p->doMouseMove(event->buttons(), mapToScene(event->pos()));
+    if (conn)
+    {
+      if (stackDepth_ > 1)
+        return;
+      ensureItemVisible(conn);
+    }
+    stackDepth_ = 0;
     return;
   }
   if (grabbedByWidget_)
   {
     return;
   }
-  ensureVisible();
+  if (stackDepth_ > 1)
+    return;
+  if (stackDepth_ == 0)
+    ensureThisVisible();
   QGraphicsItem::mouseMoveEvent(event);
+  stackDepth_ = 0;
 }
 
 bool ModuleProxyWidget::isSubwidget(QWidget* alienWidget) const
@@ -286,15 +386,17 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
 
 void ModuleProxyWidget::createPortPositionProviders()
 {
-  //std::cout << "create PPPs" << std::endl;
   const int firstPortXPos = 5;
   Q_FOREACH(PortWidget* p, module_->ports().getAllPorts())
   {
-    //qDebug() << "Setting position provider for port " << QString::fromStdString(p->id().toString()) << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (p->width() + getModuleWidget()->portSpacing())) << "," << p->pos().y();
-    QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (p->width() + getModuleWidget()->portSpacing())), p->pos().y());
+    //qDebug() << "Setting position provider for port " << QString::fromStdString(p->id().toString()) << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (p->properWidth() + getModuleWidget()->portSpacing())) << "," << p->pos().y();
+    //qDebug() << firstPortXPos << static_cast<int>(p->getIndex()) << p->properWidth() << getModuleWidget()->portSpacing();
+
+    QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (p->properWidth() + getModuleWidget()->portSpacing())), p->pos().y());
 
     int extraPadding = p->isHighlighted() ? 4 : 0;
-    boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(p->width() / 2 + extraPadding, 5)));
+    boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5)));
+    //qDebug() << "PWP real " << realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5);
     p->setPositionObject(pp);
   }
   if (pos() == QPointF(0, 0) && cachedPosition_ != pos())
@@ -350,4 +452,13 @@ void ModuleProxyWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 void ModuleProxyWidget::highlightPorts(int state)
 {
   doHighlight_ = state != 0;
+}
+
+ProxyWidgetPosition::ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPointF& offset/* = QPointF()*/) : widget_(widget), offset_(offset)
+{
+}
+
+QPointF ProxyWidgetPosition::currentPosition() const
+{
+  return widget_->pos() + offset_;
 }

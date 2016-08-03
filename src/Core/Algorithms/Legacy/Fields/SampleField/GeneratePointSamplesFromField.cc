@@ -51,7 +51,7 @@ GeneratePointSamplesFromFieldAlgo::GeneratePointSamplesFromFieldAlgo()
 {
   addParameter(Parameters::NumSamples, 10);
   addParameter(Parameters::RNGSeed, 1);
-  add_option(Parameters::DistributionType,"uniuni","impscat|impuni|uniuni|uniscat");
+  addOption(Parameters::DistributionType,"uniuni","impscat|impuni|uniuni|uniscat");
   addParameter(Parameters::ClampToNodes,true);
 }
 
@@ -158,7 +158,7 @@ GeneratePointSamplesFromFieldAlgo::runImpl(FieldHandle input, FieldHandle& outpu
 
   VField::size_type num_seeds = get(Parameters::NumSamples).toInt();
   int               rng_seeds = get(Parameters::RNGSeed).toInt();
-  std::string method          = get_option(Parameters::DistributionType);
+  std::string method          = getOption(Parameters::DistributionType);
   bool              clamp     = get(Parameters::ClampToNodes).toBool();
 
   if (!input)
@@ -232,7 +232,8 @@ GeneratePointSamplesFromFieldAlgo::runImpl(FieldHandle input, FieldHandle& outpu
       // Find a random node in that cell.
       VMesh::Node::array_type ra;
       mesh->get_nodes(ra, (*loc).second);
-      mesh->get_center(p,ra[(int)(rng()*ra.size()+0.5)]);
+      auto index = static_cast<size_t>(rng()*ra.size());
+      mesh->get_center(p, ra[index]);
     }
     else
     {
@@ -247,7 +248,7 @@ GeneratePointSamplesFromFieldAlgo::runImpl(FieldHandle input, FieldHandle& outpu
   return (true);
 }
 
-AlgorithmOutput GeneratePointSamplesFromFieldAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput GeneratePointSamplesFromFieldAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
 

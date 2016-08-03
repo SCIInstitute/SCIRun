@@ -30,17 +30,17 @@
 
 #include <iostream>
 #include <boost/assign.hpp>
-#include <boost/foreach.hpp>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
-using namespace SCIRun::Modules::Factory;
-//
+using namespace Factory;
+
 using namespace boost::assign;
 
 ModuleDescriptionLookup::ModuleDescriptionLookup() : includeTestingModules_(false)
@@ -54,8 +54,6 @@ ModuleDescriptionLookup::ModuleDescriptionLookup() : includeTestingModules_(fals
 
   addEssentialModules();
 
-  addBundleModules();
-
   /// @todo: possibly use different build setting for these.
   if (includeTestingModules_)
   {
@@ -64,6 +62,7 @@ ModuleDescriptionLookup::ModuleDescriptionLookup() : includeTestingModules_(fals
 
   addBrainSpecificModules();
   addMoreModules();
+  addGeneratedModules();
 }
 
 
@@ -98,18 +97,17 @@ HardCodedModuleFactory::HardCodedModuleFactory() : impl_(new HardCodedModuleFact
   Module::Builder::use_source_type(boost::factory<SimpleSource*>());
 }
 
-void HardCodedModuleFactory::setStateFactory(SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory)
+void HardCodedModuleFactory::setStateFactory(ModuleStateFactoryHandle stateFactory)
 {
-  stateFactory_ = stateFactory;
-  Module::defaultStateFactory_ = stateFactory_;
+  Module::defaultStateFactory_ = stateFactory_ = stateFactory;
 }
 
-void HardCodedModuleFactory::setAlgorithmFactory(SCIRun::Core::Algorithms::AlgorithmFactoryHandle algoFactory)
+void HardCodedModuleFactory::setAlgorithmFactory(AlgorithmFactoryHandle algoFactory)
 {
   Module::defaultAlgoFactory_ = algoFactory;
 }
 
-void HardCodedModuleFactory::setReexecutionFactory(SCIRun::Dataflow::Networks::ReexecuteStrategyFactoryHandle reexFactory)
+void HardCodedModuleFactory::setReexecutionFactory(ReexecuteStrategyFactoryHandle reexFactory)
 {
   Module::defaultReexFactory_ = reexFactory;
 }
@@ -123,21 +121,19 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
   else
     builder.with_name(desc.lookupInfo_.module_name_);
 
-  BOOST_FOREACH(const InputPortDescription& input, desc.input_ports_)
+  for (const auto& input : desc.input_ports_)
   {
     builder.add_input_port(Port::ConstructionParams(input.id, input.datatype, input.isDynamic));
   }
-  BOOST_FOREACH(const OutputPortDescription& output, desc.output_ports_)
+  for (const auto& output : desc.output_ports_)
   {
     builder.add_output_port(Port::ConstructionParams(output.id, output.datatype, output.isDynamic));
   }
 
-  ModuleHandle module = builder.setStateDefaults().build();
-
-  return module;
+  return builder.setStateDefaults().build();
 }
 
-ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupInfo& info)
+ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupInfo& info) const
 {
   return impl_->lookup.lookupDescription(info);
 }

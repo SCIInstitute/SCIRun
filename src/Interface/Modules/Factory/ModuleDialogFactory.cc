@@ -28,12 +28,11 @@
 
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Modules/Base/ModuleDialogBasic.h>
-#include <Interface/Modules/Testing/SendScalarDialog.h>
-#include <Interface/Modules/Testing/ReceiveScalarDialog.h>
 #include <Interface/Modules/DataIO/ReadMatrixClassicDialog.h>
 #include <Interface/Modules/DataIO/ReadBundleDialog.h>
 #include <Interface/Modules/DataIO/WriteMatrixDialog.h>
 #include <Interface/Modules/DataIO/ReadFieldDialog.h>
+#include <Interface/Modules/DataIO/ReadNrrdDialog.h>
 #include <Interface/Modules/DataIO/WriteFieldDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraUnaryDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraBinaryDialog.h>
@@ -47,9 +46,11 @@
 #include <Interface/Modules/Math/ConvertMatrixTypeDialog.h>
 #include <Interface/Modules/Math/GetMatrixSliceDialog.h>
 #include <Interface/Modules/Math/BuildNoiseColumnMatrixDialog.h>
+#include <Interface/Modules/Math/CollectMatricesDialog.h>
 #include <Interface/Modules/String/CreateStringDialog.h>
 #include <Interface/Modules/String/NetworkNotesDialog.h>
 #include <Interface/Modules/String/PrintDatatypeDialog.h>
+#include <Interface/Modules/Fields/RefineTetMeshLocallyDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
 #include <Interface/Modules/Fields/EditMeshBoundingBoxDialog.h>
 #include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
@@ -65,7 +66,6 @@
 #include <Interface/Modules/Fields/GenerateSinglePointProbeFromFieldDialog.h>
 #include <Interface/Modules/Fields/GeneratePointSamplesFromFieldDialog.h>
 #include <Interface/Modules/Fields/GeneratePointSamplesFromFieldOrWidgetDialog.h>
-#include <Interface/Modules/Fields/CreateFieldDataDialog.h>
 #include <Interface/Modules/Fields/CalculateFieldDataDialog.h>
 #include <Interface/Modules/Fields/ResampleRegularMeshDialog.h>
 #include <Interface/Modules/Fields/FairMeshDialog.h>
@@ -84,13 +84,11 @@
 #include <Interface/Modules/Fields/SetFieldDataToConstantValueDialog.h>
 #include <Interface/Modules/Fields/ConvertFieldBasisDialog.h>
 #include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h>
-#include <Interface/Modules/Fields/ConvertFieldBasisDialog.h>
 #include <Interface/Modules/Fields/ConvertIndicesToFieldDataDialog.h>
 #include <Interface/Modules/Fields/RegisterWithCorrespondencesDialog.h>
 #include <Interface/Modules/Forward/BuildBEMatrixDialog.h>
 #include <Interface/Modules/Inverse/SolveInverseProblemWithTikhonovDialog.h>
 #include <Interface/Modules/FiniteElements/ApplyFEMCurrentSourceDialog.h>
-#include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldGlyphsDialog.h>
@@ -102,11 +100,12 @@
 #include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
 #include <Interface/Modules/Bundle/GetFieldsFromBundleDialog.h>
 #include <Interface/Modules/Bundle/ReportBundleInfoDialog.h>
+#include <Interface/Modules/Teem/ReportNrrdInfoDialog.h>
+#include <Interface/Modules/Teem/ConvertNrrdToFieldDialog.h>
+#include <Interface/Modules/Teem/ConvertNrrdToMatrixDialog.h>
 #include <Interface/Modules/Fields/ExtractSimpleIsosurfaceDialog.h>
 #include <Interface/Modules/Fields/ClipVolumeByIsovalueDialog.h>
 #include <boost/assign.hpp>
-#include <boost/functional/factory.hpp>
-#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -117,8 +116,10 @@ ModuleDialogFactory::ModuleDialogFactory(QWidget* parentToUse,
   ExecutionDisablingServiceFunction disablerRemove) :
   parentToUse_(parentToUse)
 {
+  addDialogsToMakerMapGenerated();
   addDialogsToMakerMap1();
   addDialogsToMakerMap2();
+
   ModuleDialogGeneric::setExecutionDisablingServiceFunctionAdd(disablerAdd);
   ModuleDialogGeneric::setExecutionDisablingServiceFunctionRemove(disablerRemove);
 }
@@ -126,8 +127,6 @@ ModuleDialogFactory::ModuleDialogFactory(QWidget* parentToUse,
 void ModuleDialogFactory::addDialogsToMakerMap1()
 {
   insert(dialogMakerMap_)
-    ADD_MODULE_DIALOG(SendScalar, SendScalarDialog)
-    ADD_MODULE_DIALOG(ReceiveScalar, ReceiveScalarDialog)
     ADD_MODULE_DIALOG(ReadMatrix, ReadMatrixClassicDialog)
     ADD_MODULE_DIALOG(WriteMatrix, WriteMatrixDialog)
     ADD_MODULE_DIALOG(ReadField, ReadFieldDialog)
@@ -135,8 +134,8 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ReadBundle, ReadBundleDialog)
     ADD_MODULE_DIALOG(EvaluateLinearAlgebraUnary, EvaluateLinearAlgebraUnaryDialog)
     ADD_MODULE_DIALOG(EvaluateLinearAlgebraBinary, EvaluateLinearAlgebraBinaryDialog)
-    ADD_MODULE_DIALOG(EvaluateLinearAlgebraGeneral, EvaluateLinearAlgebraGeneralDialog)
-    ADD_MODULE_DIALOG(ShowString, ShowStringDialog)
+    //ADD_MODULE_DIALOG(EvaluateLinearAlgebraGeneral, EvaluateLinearAlgebraGeneralDialog)
+    //ADD_MODULE_DIALOG(ShowString, ShowStringDialog)
     ADD_MODULE_DIALOG(ShowField, ShowFieldDialog)
     ADD_MODULE_DIALOG(ShowFieldGlyphs, ShowFieldGlyphsDialog)
     ADD_MODULE_DIALOG(AppendMatrix, AppendMatrixDialog)
@@ -147,24 +146,18 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ReportMatrixInfo, ReportMatrixInfoDialog)
     ADD_MODULE_DIALOG(ReportFieldInfo, ReportFieldInfoDialog)
     ADD_MODULE_DIALOG(ReportBundleInfo, ReportBundleInfoDialog)
-    ADD_MODULE_DIALOG(MatrixAsVectorField, MatrixAsVectorFieldDialog)
     ADD_MODULE_DIALOG(ViewScene, ViewSceneDialog)
     ADD_MODULE_DIALOG(SolveLinearSystem, SolveLinearSystemDialog)
-    ADD_MODULE_DIALOG(CreateLatVol, CreateLatVolDialog)
     ADD_MODULE_DIALOG(CreateStandardColorMap, CreateStandardColorMapDialog)
-    ADD_MODULE_DIALOG(GetDomainBoundary, GetDomainBoundaryDialog)
     ADD_MODULE_DIALOG(JoinFields, JoinFieldsDialog)
-    ADD_MODULE_DIALOG(InsertFieldsIntoBundle, InsertFieldsIntoBundleDialog)
     ADD_MODULE_DIALOG(GetFieldsFromBundle, GetFieldsFromBundleDialog)
     ADD_MODULE_DIALOG(SplitFieldByDomain, SplitFieldByDomainDialog)
-    ADD_MODULE_DIALOG(CreateFieldData, CreateFieldDataDialog)
     ADD_MODULE_DIALOG(CalculateFieldData, CalculateFieldDataDialog)
     ADD_MODULE_DIALOG(SetFieldData, SetFieldDataDialog)
     ADD_MODULE_DIALOG(InterfaceWithCleaver, InterfaceWithCleaverDialog)
     ADD_MODULE_DIALOG(SelectSubMatrix, SelectSubMatrixDialog)
     ADD_MODULE_DIALOG(GetMatrixSlice, GetMatrixSliceDialog)
     ADD_MODULE_DIALOG(MapFieldDataFromElemToNode, MapFieldDataFromElemToNodeDialog)
-    ADD_MODULE_DIALOG(InsertFieldsIntoBundle, InsertFieldsIntoBundleDialog)
     ADD_MODULE_DIALOG(GetFieldsFromBundle, GetFieldsFromBundleDialog)
     ADD_MODULE_DIALOG(SplitFieldByDomain, SplitFieldByDomainDialog)
     ADD_MODULE_DIALOG(ConvertMatrixType, ConvertMatrixTypeDialog)
@@ -184,7 +177,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(MapFieldDataFromSourceToDestination, MapFieldDataFromSourceToDestinationDialog)
     ADD_MODULE_DIALOG(SplitFieldByConnectedRegion, SplitFieldByConnectedRegionDialog)
     ADD_MODULE_DIALOG(ClipFieldByFunction, ClipFieldByFunctionDialog)
-    ADD_MODULE_DIALOG(ImportDatatypesFromMatlab, ImportDatatypesFromMatlabDialog)
+    //ADD_MODULE_DIALOG(ImportDatatypesFromMatlab, ImportDatatypesFromMatlabDialog)
     ADD_MODULE_DIALOG(RefineMesh, RefineMeshDialog)
     ADD_MODULE_DIALOG(ReportColumnMatrixMisfit, ReportColumnMatrixMisfitDialog)
     ADD_MODULE_DIALOG(SetFieldDataToConstantValue, SetFieldDataToConstantValueDialog)
@@ -192,6 +185,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(BuildNoiseColumnMatrix, BuildNoiseColumnMatrixDialog)
     ADD_MODULE_DIALOG(SwapFieldDataWithMatrixEntries, SwapFieldDataWithMatrixEntriesDialog)
     ADD_MODULE_DIALOG(BuildMappingMatrix, BuildMappingMatrixDialog)
+    ADD_MODULE_DIALOG(CollectMatrices, CollectMatricesDialog)
     ADD_MODULE_DIALOG(EditMeshBoundingBox, EditMeshBoundingBoxDialog)
     ADD_MODULE_DIALOG(GenerateSinglePointProbeFromField, GenerateSinglePointProbeFromFieldDialog)
     ADD_MODULE_DIALOG(GeneratePointSamplesFromField, GeneratePointSamplesFromFieldDialog)
@@ -204,6 +198,7 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(ExtractSimpleIsosurface, ExtractSimpleIsosurfaceDialog)
     ADD_MODULE_DIALOG(RegisterWithCorrespondences, RegisterWithCorrespondencesDialog)
     ADD_MODULE_DIALOG(ClipVolumeByIsovalue, ClipVolumeByIsovalueDialog)
+    ADD_MODULE_DIALOG(RefineTetMeshLocally, RefineTetMeshLocallyDialog)
   ;
 }
 
@@ -217,5 +212,7 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
       return makerPair.second(moduleId, state, parentToUse_);
   }
 
+  QMessageBox::critical(nullptr, "Module/Dialog Inconsistency", "The module with ID \"" +
+    QString::fromStdString(moduleId) + "\" cannot find its dialog implementation. SCIRun is constructing a basic dialog so your network still is functional. Please update your network file by hand.");
   return new ModuleDialogBasic(moduleId, parentToUse_);
 }

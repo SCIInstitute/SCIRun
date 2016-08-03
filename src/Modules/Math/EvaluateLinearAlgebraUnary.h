@@ -37,16 +37,18 @@ namespace SCIRun {
 namespace Modules {
 namespace Math {
 
-  class SCISHARE EvaluateLinearAlgebraUnaryModule : public SCIRun::Dataflow::Networks::Module,
+  class SCISHARE EvaluateLinearAlgebraUnary : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<MatrixPortTag>,
     public Has1OutputPort<MatrixPortTag>
   {
+    CONVERTED_VERSION_OF_MODULE(EvaluateLinAlgUnary)
   public:
-    EvaluateLinearAlgebraUnaryModule();
+    EvaluateLinearAlgebraUnary();
     virtual void execute();
     virtual void setStateDefaults();
     INPUT_PORT(0, InputMatrix, Matrix);
     OUTPUT_PORT(0, Result, Matrix);
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };
 
 }}}

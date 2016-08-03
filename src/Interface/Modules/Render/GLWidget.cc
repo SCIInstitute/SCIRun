@@ -60,17 +60,14 @@ GLWidget::GLWidget(QtGLContext* context, QWidget* parent) :
   // Call gl platform init.
   CPM_GL_PLATFORM_NS::glPlatformInit();
 
-  auto shadersInBinDirectory = SCIRun::Core::Application::Instance().executablePath() / "Shaders";
-  shaderSearchDirs.push_back(shadersInBinDirectory.string());
-
-  auto frameInitLimitFromCommandLine = Core::Application::Instance().parameters()->frameInitLimit();
+  auto frameInitLimitFromCommandLine = Core::Application::Instance().parameters()->developerParameters()->frameInitLimit();
   if (frameInitLimitFromCommandLine)
   {
     std::cout << "Renderer frame init limit changed to " << *frameInitLimitFromCommandLine << std::endl;
   }
   const int frameInitLimit = frameInitLimitFromCommandLine.get_value_or(100);
 
-  mGraphics.reset(new Render::SRInterface(mContext, shaderSearchDirs, frameInitLimit));
+  mGraphics.reset(new Render::SRInterface(mContext, frameInitLimit));
 
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
@@ -116,14 +113,16 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
   // Extract appropriate key.
   SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseMove(glm::ivec2(event->x(), event->y()), btn);
+  event->ignore();
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
-  Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y());
+
   SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseDown(glm::ivec2(event->x(), event->y()), btn);
+  event->ignore();
 }
 
 //------------------------------------------------------------------------------
@@ -131,12 +130,29 @@ void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
   SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseUp(glm::ivec2(event->x(), event->y()), btn);
+  event->ignore();
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::wheelEvent(QWheelEvent * event)
 {
   mGraphics->inputMouseWheel(event->delta());
+  event->ignore();
+}
+
+//------------------------------------------------------------------------------
+void GLWidget::keyPressEvent(QKeyEvent* event)
+{
+  std::cout << "key down" << std::endl;
+  mGraphics->inputShiftKeyDown(event->key() == Qt::Key_Shift);
+  event->ignore();
+}
+
+//------------------------------------------------------------------------------
+void GLWidget::keyReleaseEvent(QKeyEvent* event)
+{
+  mGraphics->inputShiftKeyDown(false);
+  event->ignore();
 }
 
 //------------------------------------------------------------------------------

@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 #include <Modules/Fields/InterfaceWithCleaver.h>
+#include <Modules/Fields/RefineTetMeshLocally.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromElemToNode.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
 #include <Modules/Legacy/Fields/CalculateVectorMagnitudes.h>
@@ -39,7 +40,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
 #include <Modules/Legacy/Math/SelectSubMatrix.h>
 #include <Modules/Legacy/Math/ConvertMatrixType.h>
-#include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
 #include <Modules/BrainStimulator/SetConductivitiesToTetMesh.h>
 #include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
@@ -53,7 +53,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/ConvertHexVolToTetVol.h>
 #include <Modules/Legacy/Fields/ExtractSimpleIsosurface.h>
 #include <Modules/Legacy/Fields/ClipVolumeByIsovalue.h>
-#include <Modules/Legacy/Math/EvaluateLinAlgGeneral.h>
+#include <Modules/Math/ComputePCA.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
@@ -67,34 +67,32 @@ using namespace SCIRun::Modules::Inverse;
 
 void ModuleDescriptionLookup::addBrainSpecificModules()
 {
-  addModuleDesc<BuildTDCSMatrix>("BuildTDCSMatrix", "FiniteElements", "SCIRun", "In progress: needs a few consistency checks", "Generates tDCS Forward Matrix ");
-  addModuleDesc<ElectrodeCoilSetupModule>("ElectrodeCoilSetup", "BrainStimulator", "SCIRun", " in progress ", " Place tDCS electrodes and TMS coils ");
+  addModuleDesc<ElectrodeCoilSetup>("ElectrodeCoilSetup", "BrainStimulator", "SCIRun", " in progress ", " Place tDCS electrodes and TMS coils ");
   addModuleDesc<SetConductivitiesToMesh>("SetConductivitiesToMesh", "BrainStimulator", "SCIRun", "New module", " Sets conveniently conductivity profile for tetrahedral mesh ");
-  addModuleDesc<GenerateROIStatisticsModule>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");
+  addModuleDesc<GenerateROIStatistics>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");
   addModuleDesc<SetupTDCS>("SetupTDCS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");
-  addModuleDesc<SimulateForwardMagneticFieldModule>("SimulateForwardMagneticField", "BrainStimulator", "SCIRun", "Real ported module", "...");
 }
 
 void ModuleDescriptionLookup::addMoreModules()
 {
   addModuleDesc<AddKnownsToLinearSystem>("AddKnownsToLinearSystem", "Math", "SCIRun", "Real ported module", "...");
-  addModuleDesc<CalculateVectorMagnitudesModule>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+  addModuleDesc<CalculateVectorMagnitudes>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<CalculateGradients >("CalculateGradients", "ChangeFieldData", "SCIRun", "Real ported module", "...");
 	addModuleDesc<ConvertFieldBasis>("ConvertFieldBasis", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-  addModuleDesc<GetFieldDataModule>("GetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-  addModuleDesc<InterfaceWithCleaverModule>("InterfaceWithCleaver", "NewField", "SCIRun", "New module", "...");
-  addModuleDesc<SetFieldDataModule>("SetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-  addModuleDesc<SelectSubMatrixModule>("SelectSubMatrix", "Math", "SCIRun", "Real ported module", "...");
-  addModuleDesc<MapFieldDataFromElemToNodeModule>("MapFieldDataFromElemToNode", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-  addModuleDesc<ApplyMappingMatrixModule>("ApplyMappingMatrix", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-  addModuleDesc<ConvertMatrixTypeModule>("ConvertMatrixType", "Math", "SCIRun", "Real ported module", "...");
-  addModuleDesc<MapFieldDataFromNodeToElemModule>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-  addModuleDesc<SplitFieldByConnectedRegion>("SplitFieldByConnectedRegion", "NewField", "SCIRun", "Real ported module", "...");
+  addModuleDesc<GetFieldData>("GetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+  addModuleDesc<InterfaceWithCleaver>("InterfaceWithCleaver", "NewField", "SCIRun", "New module", "...");
+  addModuleDesc<SetFieldData>("SetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+  addModuleDesc<SelectSubMatrix>("SelectSubMatrix", "Math", "SCIRun", "Real ported module", "...");
+  addModuleDesc<MapFieldDataFromElemToNode>("MapFieldDataFromElemToNode", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+  addModuleDesc<ApplyMappingMatrix>("ApplyMappingMatrix", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+  addModuleDesc<ConvertMatrixType>("ConvertMatrixType", "Math", "SCIRun", "Real ported module", "...");
+  addModuleDesc<MapFieldDataFromNodeToElem>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "Real ported module", "...");
   addModuleDesc<BuildFEVolRHS>("BuildFEVolRHS", "FiniteElements", "SCIRun", "Real ported module", "...");
   addModuleDesc<GenerateStreamLines>("in progress--needs testing", "...");
   addModuleDesc<ConvertHexVolToTetVol>("ConvertHexVolToTetVol", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<BuildSurfaceLaplacianMatrix>("BuildSurfaceLaplacianMatrix","Inverse","SCIRun","...","...");
-  addModuleDesc<ExtractSimpleIsosurfaceModule>("ExtractSimpleIsosurface","NewField","SCIRun","...","...");
-  addModuleDesc<EvaluateLinearAlgebraGeneral>("Real ported module", "BUGGY--DO NOT USE");
-  addModuleDesc<ClipVolumeByIsovalueModule>("ClipVolumeByIsovalue","NewField","SCIRun","...","...");
+  addModuleDesc<ExtractSimpleIsosurface>("ExtractSimpleIsosurface","NewField","SCIRun","...","...");
+  addModuleDesc<ComputePCA>("ComputePCA","Math","SCIRun","...","...");
+  addModuleDesc<ClipVolumeByIsovalue>("ClipVolumeByIsovalue","NewField","SCIRun","...","...");
+  addModuleDesc<RefineTetMeshLocally>("RefineTetMeshLocally","ChangeMesh","SCIRun","...","...");
 }

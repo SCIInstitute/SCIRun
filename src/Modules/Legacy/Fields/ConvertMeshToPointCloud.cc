@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,74 +26,50 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-// Include the algorithm
-#include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToPointCloudMesh.h>
-
-// Base class for the module
-#include <Dataflow/Network/Module.h>
-
-// Ports included in the module
-#include <Dataflow/Network/Ports/FieldPort.h>
-
-// For Windows support
-#include <Dataflow/Modules/Fields/share.h>
-
-namespace SCIRun {
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Modules/Legacy/Fields/ConvertMeshToPointCloud.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 /// @class ConvertMeshToPointCloud
-/// @brief Convert a structured field into an unstructured field for editing. 
+/// @brief Convert a structured field into an unstructured field for editing.
 
-class ConvertMeshToPointCloud : public Module
-{
-  public:
-    ConvertMeshToPointCloud(GuiContext* ctx);
-    virtual ~ConvertMeshToPointCloud() {}
-    virtual void execute();
-  
-  private:
-    SCIRunAlgo::ConvertMeshToPointCloudMeshAlgo algo_;
-      
-  private:
-      GuiInt datalocation_;
-};
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 
-DECLARE_MAKER(ConvertMeshToPointCloud)
-ConvertMeshToPointCloud::ConvertMeshToPointCloud(GuiContext* ctx)
-  : Module("ConvertMeshToPointCloud", ctx, Filter, "ChangeMesh", "SCIRun"),
-    datalocation_(get_ctx()->subVar("datalocation"))
+MODULE_INFO_DEF(ConvertMeshToPointCloud, ChangeMesh, SCIRun)
+
+ConvertMeshToPointCloud::ConvertMeshToPointCloud(): Module(staticInfo_)
 {
-  /// Forward errors to the module
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(Mesh);
+  INITIALIZE_PORT(PointCloud);
+}
+
+void ConvertMeshToPointCloud::setStateDefaults()
+{
+  setStateStringFromAlgoOption(ConvertMeshToPointCloudMeshAlgo::Location);
 }
 
 void
 ConvertMeshToPointCloud::execute()
 {
-  // Define fieldhandles
-  FieldHandle ifield, ofield;
-  
-  // Get data from input port
-  get_input_handle("Field",ifield,true);
+  auto imesh = getRequiredInput(Mesh);
 
-  // We only execute if something changed
-  if (inputs_changed_ || datalocation_.changed() || !oport_cached("Field"))
+  AlgorithmInput input;
+  input[Variables::InputField] = imesh;
+
+  if (needToExecute())
   {
     update_state(Executing);
-    
-    if(datalocation_.get()) 
-    {
-      algo_.set_option("location","data");
-    }
-    else
-    {
-      algo_.set_option("location","node");
-    }
-    // Run the algorithm
-    if (!(algo_.run(ifield,ofield))) return;
-    // Send to output to the output port
-    send_output_handle("Field", ofield);
+
+    setAlgoOptionFromState(ConvertMeshToPointCloudMeshAlgo::Location);
+
+    auto output = algo().run(input);
+
+    auto pointcloud = output.get<Field>(Variables::OutputField);
+    sendOutput(PointCloud,pointcloud);
   }
 }
-
-} // End namespace SCIRun
-

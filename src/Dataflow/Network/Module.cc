@@ -32,15 +32,16 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/algorithm/string/join.hpp>
 #include <boost/timer.hpp>
 #include <atomic>
 
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Dataflow/Network/PortManager.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
-#include <Dataflow/Network/DataflowInterfaces.h>
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/NullModuleState.h>
+// ReSharper disable once CppUnusedIncludeDirective
+#include <Dataflow/Network/DataflowInterfaces.h>
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Logging/Log.h>
 #include <Core/Thread/Mutex.h>
@@ -146,6 +147,8 @@ namespace detail
 
 /*static*/ void Module::resetIdGenerator() { idGenerator_->reset(); }
 
+const int Module::TraitFlags = SCIRun::Modules::UNDEFINED_MODULE_FLAG;
+
 Module::Module(const ModuleLookupInfo& info,
   bool hasUi,
   AlgorithmFactoryHandle algoFactory,
@@ -154,11 +157,9 @@ Module::Module(const ModuleLookupInfo& info,
   const std::string& version)
   : info_(info),
   id_(info.module_name_, idGenerator_->makeId(info.module_name_)),
-  inputsChanged_(false),
   has_ui_(hasUi),
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
   metadata_(state_),
-  threadStopped_(false),
   executionState_(new detail::ModuleExecutionStateImpl)
 {
   iports_.set_module(this);
@@ -223,29 +224,32 @@ size_t Module::num_output_ports() const
   return oports_.size();
 }
 
-namespace //TODO requirements for state metadata reporting
+//TODO requirements for state metadata reporting
+std::string Module::stateMetaInfo() const
 {
-  std::string stateMetaInfo(ModuleStateHandle state)
+  if (!state_)
+    return "Null state map.";
+  auto keys = state_->getKeys();
+  size_t i = 0;
+  std::ostringstream ostr;
+  ostr << "\n\t{";
+  for (const auto& key : keys)
   {
-    if (!state)
-      return "Null state map.";
-    auto keys = state->getKeys();
-    size_t i = 0;
-    std::ostringstream ostr;
-    ostr << "\n\t{";
-    for (const auto& key : keys)
-    {
-      ostr << "[" << key.name() << ", " << state->getValue(key).value() << "]";
-      i++;
-      if (i < keys.size())
-        ostr << ",\n\t";
-    }
-    ostr << "}";
-    return ostr.str();
+    ostr << "[" << key.name() << ", " << state_->getValue(key).value() << "]";
+    i++;
+    if (i < keys.size())
+      ostr << ",\n\t";
   }
+  ostr << "}";
+  return ostr.str();
 }
 
-bool Module::do_execute() throw()
+void Module::copyStateToMetadata()
+{
+  metadata_.setMetadata("Module state", stateMetaInfo());
+}
+
+bool Module::executeWithSignals() NOEXCEPT
 {
   //Log::get() << INFO << "executing module: " << id_ << std::endl;
   //std::cout << "executing module: " << id_ << std::endl;
@@ -254,7 +258,7 @@ bool Module::do_execute() throw()
   {
     std::string isoString = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::universal_time());
     metadata_.setMetadata("Last execution timestamp", isoString);
-    metadata_.setMetadata("Module state", stateMetaInfo(get_state()));
+    copyStateToMetadata();
   }
   /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
   status("STARTING MODULE: " + id_.id_);
@@ -266,25 +270,37 @@ bool Module::do_execute() throw()
 
   try
   {
-    //TODO: could we call needToExecute() here?
-    execute();
+    if (!executionDisabled())
+      execute();
     returnCode = true;
   }
   catch (const std::bad_alloc&)
   {
     error("MODULE ERROR: bad_alloc caught");
   }
+  catch (PortNotFoundException& e)
+  {
+    std::ostringstream ostr;
+    ostr << "Port not found, it may need initializing the module constructor. " << std::endl << "Message: " << e.what() << std::endl;
+    error(ostr.str());
+  }
+  catch (AlgorithmParameterNotFound& e)
+  {
+    std::ostringstream ostr;
+    ostr << "State key not found, it may need initializing in ModuleClass::setStateDefaults(). " << std::endl << "Message: " << e.what() << std::endl;
+    error(ostr.str());
+  }
   catch (Core::ExceptionBase& e)
   {
     /// @todo: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
-    if (Core::Logging::Log::get().verbose())
+    if (Log::get().verbose())
     {
       std::ostringstream ostr;
       ostr << "Caught exception: " << e.typeName() << std::endl << "Message: " << e.what() << std::endl;
       error(ostr.str());
     }
 
-    if (Core::Logging::Log::get().verbose())
+    if (Log::get().verbose())
     {
       std::ostringstream ostrExtra;
       ostrExtra << boost::diagnostic_information(e) << std::endl;
@@ -306,11 +322,11 @@ bool Module::do_execute() throw()
   }
   threadStopped_ = threadStopValue;
 
+  auto executionTime = executionTimer.elapsed();
   {
-    double executionTime = executionTimer.elapsed();
     std::ostringstream ostr;
     ostr << executionTime;
-    metadata_.setMetadata("last execution duration (seconds)", ostr.str());
+    metadata_.setMetadata("Last execution duration (seconds)", ostr.str());
   }
 
   status("MODULE FINISHED: " + id_.id_);
@@ -320,9 +336,14 @@ bool Module::do_execute() throw()
   //auto endState = returnCode ? ModuleExecutionState::Completed : ModuleExecutionState::Errored;
   auto endState = ModuleExecutionState::Completed;
   executionState_->transitionTo(endState);
-  resetStateChanged();
-  inputsChanged_ = false;
-  executeEnds_(id_);
+
+  if (!executionDisabled())
+  {
+    resetStateChanged();
+    inputsChanged_ = false;
+  }
+
+  executeEnds_(executionTime, id_);
   return returnCode;
 }
 
@@ -338,9 +359,15 @@ const ModuleStateHandle Module::get_state() const
 
 void Module::set_state(ModuleStateHandle state)
 {
-  state_ = state;
+  if (!state_)
+    state_ = state;
+  else if (state) // merge/overwrite
+  {
+    state_->overwriteWith(*state);
+  }
   initStateObserver(state_.get());
   postStateChangeInternalSignalHookup();
+  copyStateToMetadata();
 }
 
 AlgorithmBase& Module::algo()
@@ -476,20 +503,21 @@ Module::Builder::Builder()
 Module::Builder::SinkMaker Module::Builder::sink_maker_;
 Module::Builder::SourceMaker Module::Builder::source_maker_;
 
-/*static*/ void Module::Builder::use_sink_type(Module::Builder::SinkMaker func) { sink_maker_ = func; }
-/*static*/ void Module::Builder::use_source_type(Module::Builder::SourceMaker func) { source_maker_ = func; }
+/*static*/ void Module::Builder::use_sink_type(SinkMaker func) { sink_maker_ = func; }
+/*static*/ void Module::Builder::use_source_type(SourceMaker func) { source_maker_ = func; }
 
 class DummyModule : public Module
 {
 public:
   explicit DummyModule(const ModuleLookupInfo& info) : Module(info) {}
-  virtual void execute()
+  virtual void execute() override
   {
     std::ostringstream ostr;
     ostr << "Module " << get_module_name() << " executing for " << 3.14 << " seconds." << std::endl;
     status(ostr.str());
   }
-  virtual void setStateDefaults() {}
+  virtual void setStateDefaults() override
+  {}
 };
 
 Module::Builder& Module::Builder::with_name(const std::string& name)
@@ -515,6 +543,7 @@ Module::Builder& Module::Builder::setStateDefaults()
   if (module_)
   {
     module_->setStateDefaults();
+    module_->copyStateToMetadata();
   }
   return *this;
 }
@@ -530,8 +559,8 @@ Module::Builder& Module::Builder::add_input_port(const Port::ConstructionParams&
 
 void Module::Builder::addInputPortImpl(Module& module, const Port::ConstructionParams& params)
 {
-  DatatypeSinkInterfaceHandle sink(sink_maker_ ? sink_maker_() : 0);
-  InputPortHandle port(boost::make_shared<InputPort>(module_.get(), params, sink));
+  DatatypeSinkInterfaceHandle sink(sink_maker_ ? sink_maker_() : nullptr);
+  auto port(boost::make_shared<InputPort>(module_.get(), params, sink));
   port->setIndex(module_->add_input_port(port));
 }
 
@@ -539,8 +568,8 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
 {
   if (module_)
   {
-    DatatypeSourceInterfaceHandle source(source_maker_ ? source_maker_() : 0);
-    OutputPortHandle port(boost::make_shared<OutputPort>(module_.get(), params, source));
+    DatatypeSourceInterfaceHandle source(source_maker_ ? source_maker_() : nullptr);
+    auto port(boost::make_shared<OutputPort>(module_.get(), params, source));
     port->setIndex(module_->add_output_port(port));
   }
   return *this;
@@ -548,7 +577,7 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
 
 PortId Module::Builder::cloneInputPort(ModuleHandle module, const PortId& id)
 {
-  Module* m = dynamic_cast<Module*>(module.get());
+  auto m = dynamic_cast<Module*>(module.get());
   if (m)
   {
     InputPortHandle newPort(m->getInputPort(id)->clone());
@@ -560,7 +589,7 @@ PortId Module::Builder::cloneInputPort(ModuleHandle module, const PortId& id)
 
 void Module::Builder::removeInputPort(ModuleHandle module, const PortId& id)
 {
-  Module* m = dynamic_cast<Module*>(module.get());
+  auto m = dynamic_cast<Module*>(module.get());
   if (m)
   {
     m->removeInputPort(id);
@@ -593,14 +622,14 @@ void Module::setUiVisible(bool visible)
     uiToggleFunc_(visible);
 }
 
-void Module::setLogger(SCIRun::Core::Logging::LoggerHandle log)
+void Module::setLogger(LoggerHandle log)
 {
   log_ = log;
   if (algo_)
     algo_->setLogger(log);
 }
 
-void Module::setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func)
+void Module::setUpdaterFunc(AlgorithmStatusReporter::UpdaterFunc func)
 {
   updaterFunc_ = func;
   if (algo_)
@@ -661,14 +690,19 @@ void Module::setAlgoDoubleFromState(const AlgorithmParameterName& name)
   algo().set(name, get_state()->getValue(name).toDouble());
 }
 
+void Module::setAlgoStringFromState(const AlgorithmParameterName& name)
+{
+  algo().set(name, get_state()->getValue(name).toString());
+}
+
 void Module::setAlgoOptionFromState(const AlgorithmParameterName& name)
 {
-	algo().set_option(name, get_state()->getValue(name).toString());
+	algo().setOption(name, get_state()->getValue(name).toString());
 }
 
 void Module::setStateStringFromAlgoOption(const AlgorithmParameterName& name)
 {
-  get_state()->setValue(name, algo().get_option(name));
+  get_state()->setValue(name, algo().getOption(name));
 }
 
 void Module::setAlgoListFromState(const AlgorithmParameterName& name)
@@ -723,7 +757,7 @@ void Module::addPortConnection(const boost::signals2::connection& con)
   portConnections_.emplace_back(new boost::signals2::scoped_connection(con));
 }
 
-ModuleWithAsyncDynamicPorts::ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info) : Module(info)
+ModuleWithAsyncDynamicPorts::ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info, bool hasUI) : Module(info, hasUI)
 {
 }
 
@@ -834,7 +868,7 @@ bool SCIRun::Dataflow::Networks::canReplaceWith(ModuleHandle module, const Modul
         if (i >= potentialReplacement.input_ports_.size())
           return false;
 
-        const InputPortDescription& input = potentialReplacement.input_ports_[i];
+        const auto& input = potentialReplacement.input_ports_[i];
         if (input.datatype != toMatch->get_typename())
           return false;
       }
@@ -850,7 +884,7 @@ bool SCIRun::Dataflow::Networks::canReplaceWith(ModuleHandle module, const Modul
         if (i >= potentialReplacement.output_ports_.size())
           return false;
 
-        const OutputPortDescription& output = potentialReplacement.output_ports_[i];
+        const auto& output = potentialReplacement.output_ports_[i];
         if (output.datatype != toMatch->get_typename())
           return false;
       }
@@ -921,19 +955,25 @@ std::string GeometryGeneratingModule::generateGeometryID(const std::string& tag)
 
 bool Module::isStoppable() const
 {
-  return dynamic_cast<const Core::Thread::Interruptible*>(this) != nullptr;
+  return dynamic_cast<const Interruptible*>(this) != nullptr;
 }
 
-void Module::sendFeedbackUpstreamAlongIncomingConnections(const Variable::Value& info)
+void Module::sendFeedbackUpstreamAlongIncomingConnections(const ModuleFeedback& feedback) const
 {
-  for (auto& inputPort : inputPorts())
+  for (const auto& inputPort : inputPorts())
   {
     if (inputPort->nconnections() > 0)
     {
       auto connection = inputPort->connection(0); // only one incoming connection for input ports
-      VariableHandle feedback(new Variable(Name(inputPort->id().toString()), info));
       //TODO: extract port method
       connection->oport_->sendConnectionFeedback(feedback);
     }
   }
+}
+
+std::string Module::helpPageUrl() const
+{
+  auto url = "http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Reference:"
+    + legacyPackageName() + ":" + legacyModuleName();
+  return url;
 }

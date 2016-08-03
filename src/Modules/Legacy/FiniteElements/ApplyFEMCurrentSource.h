@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -40,6 +40,7 @@ namespace SCIRun {
         public Has4InputPorts<FieldPortTag, FieldPortTag, MatrixPortTag, MatrixPortTag>,
         public Has2OutputPorts<MatrixPortTag, MatrixPortTag>
       {
+        LEGACY_BIOPSE_MODULE
       public:
         ApplyFEMCurrentSource();
         virtual void setStateDefaults();
@@ -56,7 +57,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName SinkNode;
         static const Core::Algorithms::AlgorithmParameterName ModelType;
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
 
     }

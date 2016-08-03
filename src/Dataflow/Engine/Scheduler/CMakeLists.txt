@@ -76,8 +76,6 @@ TARGET_LINK_LIBRARIES(Engine_Scheduler
   Core_Thread
 )
 
-ADD_DEPENDENCIES(Engine_Scheduler Boost_external)
-
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Engine_Scheduler)
 ENDIF(BUILD_SHARED_LIBS)

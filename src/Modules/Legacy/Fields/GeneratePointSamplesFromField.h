@@ -30,6 +30,7 @@
 #define MODULES_LEGACY_FIELDS_GeneratePointSamplesFromField_H__
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/Geometry.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -49,7 +50,7 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-      class SCISHARE GeneratePointSamplesFromField : public Dataflow::Networks::Module,
+      class SCISHARE GeneratePointSamplesFromField : public Dataflow::Networks::GeometryGeneratingModule,
         public Has1InputPort<FieldPortTag>,
         public Has2OutputPorts<GeometryPortTag, FieldPortTag>
       {
@@ -63,9 +64,10 @@ namespace SCIRun {
         OUTPUT_PORT(0, GeneratedWidget, GeometryObject);
         OUTPUT_PORT(1, GeneratedPoints, LegacyField);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       private:
         boost::shared_ptr<class GeneratePointSamplesFromFieldImpl> impl_;
+        FieldHandle GenerateOutputField();
       };
 
     }

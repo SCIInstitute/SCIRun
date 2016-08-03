@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "SplitFieldByConnectedRegion",
+    "namespace": "Fields",
+    "status": "Ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/SplitFieldByConnectedRegion.h"
+  },
+  "algorithm": {
+    "name": "SplitFieldByConnectedRegionAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h"
+  },
+  "UI": {
+    "name": "SplitFieldByConnectedRegionDialog",
+    "header": "Interface/Modules/Fields/SplitFieldByConnectedRegionDialog.h"
+  }
+}

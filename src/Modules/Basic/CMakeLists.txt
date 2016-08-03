@@ -30,26 +30,22 @@ SET(Modules_Basic_SRCS
   AsyncPortTestModule.cc
   DynamicPortTester.cc
   NeedToExecuteTester.cc
-  ReceiveScalar.cc
-  ReceiveTestMatrix.cc
-  ReceiveScalarModuleState.cc
+  ReceiveComplexScalar.cc
   PrintDatatype.cc
-  SendScalar.cc
-  SendTestMatrix.cc
-  SendScalarModuleState.cc
+  SendComplexScalar.cc
+  ChooseInput.cc
+  PortFeedbackTestModules.cc
 )
 
 SET(Modules_Basic_HEADERS
   AsyncPortTestModule.h
   DynamicPortTester.h
   NeedToExecuteTester.h
-  ReceiveScalar.h
-  ReceiveScalarModuleState.h
-  ReceiveTestMatrix.h
+  ReceiveComplexScalar.h
   PrintDatatype.h
-  SendScalar.h
-  SendScalarModuleState.h
-  SendTestMatrix.h
+  SendComplexScalar.h
+  ChooseInput.h
+  PortFeedbackTestModules.h
   share.h
 )
 

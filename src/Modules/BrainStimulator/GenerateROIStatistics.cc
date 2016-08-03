@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -39,7 +39,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Dataflow::Networks;
 
-GenerateROIStatisticsModule::GenerateROIStatisticsModule() : Module(ModuleLookupInfo("GenerateROIStatistics", "BrainStimulator", "SCIRun"))
+GenerateROIStatistics::GenerateROIStatistics() : Module(ModuleLookupInfo("GenerateROIStatistics", "BrainStimulator", "SCIRun"))
 {
  INITIALIZE_PORT(MeshDataOnElements);
  INITIALIZE_PORT(PhysicalUnit);
@@ -50,12 +50,13 @@ GenerateROIStatisticsModule::GenerateROIStatisticsModule() : Module(ModuleLookup
  INITIALIZE_PORT(CoordinateSpaceLabel);
 }
 
-void GenerateROIStatisticsModule::setStateDefaults()
+void GenerateROIStatistics::setStateDefaults()
 {
-  setStateStringFromAlgoOption(Parameters::PhysicalUnitStr);  
+  setStateStringFromAlgoOption(Parameters::PhysicalUnitStr);
+  get_state()->setValue(Parameters::StatisticsTableValues, VariableList());
 }
 
-void GenerateROIStatisticsModule::execute()
+void GenerateROIStatistics::execute()
 {
   auto meshData_ = getRequiredInput(MeshDataOnElements); /// get all the inputs
   auto physicalUnit_ = getOptionalInput(PhysicalUnit);
@@ -63,29 +64,29 @@ void GenerateROIStatisticsModule::execute()
   auto atlasMeshLabels_ = getOptionalInput(AtlasMeshLabels);
   auto coordinateSpace_ = getOptionalInput(CoordinateSpace);
   auto coordinateSpaceLabel_ = getOptionalInput(CoordinateSpaceLabel);
-  
-  setAlgoListFromState(Parameters::StatisticsTableValues); /// to transfer data between algo and dialog use the state variable 
-  
-  auto roiSpec = optional_any_cast_or_default<DenseMatrixHandle>(get_state()->getTransientValue(GenerateROIStatisticsAlgorithm::SpecifyROI)); /// transfer the ROI specification from GUI dialog as additional input
+
+  setAlgoListFromState(Parameters::StatisticsTableValues); /// to transfer data between algo and dialog use the state variable
+
+  auto roiSpec = transient_value_cast<DenseMatrixHandle>(get_state()->getTransientValue(GenerateROIStatisticsAlgorithm::SpecifyROI)); /// transfer the ROI specification from GUI dialog as additional input
   //algorithm input and run
   auto input = make_input((MeshDataOnElements, meshData_)(PhysicalUnit, optionalAlgoInput(physicalUnit_))(AtlasMesh, atlasMesh_)(AtlasMeshLabels,
   optionalAlgoInput(atlasMeshLabels_))(CoordinateSpace, optionalAlgoInput(coordinateSpace_))(CoordinateSpaceLabel,
   optionalAlgoInput(coordinateSpaceLabel_)));
-  
+
   if (roiSpec)
     input[GenerateROIStatisticsAlgorithm::SpecifyROI] = roiSpec;
-  
-  auto output = algo().run_generic(input); /// call run generic 
 
-  auto table = output.additionalAlgoOutput(); /// get the two outputs, the upper table (as DenseMatrix) and the container that establishes data transfer between GUI/Algo via state  
+  auto output = algo().run(input); /// call run generic
+
+  auto table = output.additionalAlgoOutput(); /// get the two outputs, the upper table (as DenseMatrix) and the container that establishes data transfer between GUI/Algo via state
   get_state()->setTransientValue(Parameters::StatisticsTableValues, table);
-  
+
   if (physicalUnit_ && *physicalUnit_) /// set physicalUnit string immediately to state, and then to dialog
      get_state()->setTransientValue(Parameters::PhysicalUnitStr,(*physicalUnit_)->value());
-  
+
   if (coordinateSpaceLabel_ && *coordinateSpaceLabel_)/// set coordinateSpaceLabel string immediately to state, and then to dialog
-     get_state()->setTransientValue(Parameters::CoordinateSpaceLabelStr,(*coordinateSpaceLabel_)->value()); 
-  
+     get_state()->setTransientValue(Parameters::CoordinateSpaceLabelStr,(*coordinateSpaceLabel_)->value());
+
   //algorithm output
   sendOutputFromAlgorithm(StatisticalResults, output); /// set the upper table (DenseMatrix) as only output of the module
 }

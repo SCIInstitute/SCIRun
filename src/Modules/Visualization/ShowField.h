@@ -31,10 +31,6 @@ DEALINGS IN THE SOFTWARE.
 #define MODULES_VISUALIZATION_SHOW_FIELD_H
 
 #include <Dataflow/Network/Module.h>
-#include <Core/Datatypes/Geometry.h>
-#include <Core/Datatypes/ColorMap.h>
-#include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Core/Thread/Interruptible.h>
 #include <Modules/Visualization/share.h>
 
@@ -51,20 +47,24 @@ namespace SCIRun {
     }
   }
 
-
-
   namespace Modules {
     namespace Visualization {
 
-      class SCISHARE ShowFieldModule : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
+      namespace detail
+      {
+        class GeometryBuilder;
+      }
+
+      class SCISHARE ShowField : public Dataflow::Networks::GeometryGeneratingModule,
         public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
         public Has1OutputPort<GeometryPortTag>,
         public Core::Thread::Interruptible
       {
       public:
-        ShowFieldModule();
-        virtual void execute();
+        ShowField();
+        virtual void execute() override;
 
+        static const Core::Algorithms::AlgorithmParameterName FieldName;
         static const Core::Algorithms::AlgorithmParameterName NodesAvailable;
         static const Core::Algorithms::AlgorithmParameterName EdgesAvailable;
         static const Core::Algorithms::AlgorithmParameterName FacesAvailable;
@@ -83,92 +83,43 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName FaceTransparencyValue;
         static const Core::Algorithms::AlgorithmParameterName EdgeTransparencyValue;
         static const Core::Algorithms::AlgorithmParameterName NodeTransparencyValue;
+        static const Core::Algorithms::AlgorithmParameterName FacesColoring;
+        static const Core::Algorithms::AlgorithmParameterName NodesColoring;
+        static const Core::Algorithms::AlgorithmParameterName EdgesColoring;
         static const Core::Algorithms::AlgorithmParameterName SphereScaleValue;
         static const Core::Algorithms::AlgorithmParameterName CylinderResolution;
         static const Core::Algorithms::AlgorithmParameterName SphereResolution;
         static const Core::Algorithms::AlgorithmParameterName CylinderRadius;
+        static const Core::Algorithms::AlgorithmParameterName DefaultTextColor;
+        static const Core::Algorithms::AlgorithmParameterName ShowText;
+        static const Core::Algorithms::AlgorithmParameterName ShowDataValues;
+        static const Core::Algorithms::AlgorithmParameterName ShowNodeIndices;
+        static const Core::Algorithms::AlgorithmParameterName ShowEdgeIndices;
+        static const Core::Algorithms::AlgorithmParameterName ShowFaceIndices;
+        static const Core::Algorithms::AlgorithmParameterName ShowCellIndices;
+        static const Core::Algorithms::AlgorithmParameterName CullBackfacingText;
+        static const Core::Algorithms::AlgorithmParameterName TextAlwaysVisible;
+        static const Core::Algorithms::AlgorithmParameterName RenderAsLocation;
+        static const Core::Algorithms::AlgorithmParameterName TextSize;
+        static const Core::Algorithms::AlgorithmParameterName TextPrecision;
+        static const Core::Algorithms::AlgorithmParameterName TextColoring;
+        static const Core::Algorithms::AlgorithmParameterName UseFaceNormals;
+
 
         INPUT_PORT(0, Field, LegacyField);
         INPUT_PORT(1, ColorMapObject, ColorMap);
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
-        virtual void setStateDefaults();
+        virtual void setStateDefaults() override;
       private:
-        void updateAvailableRenderOptions(SCIRun::FieldHandle field);
-        /// Constructs a geometry object (essentially a spire object) from the given
-        /// field data.
-        /// \param field    Field from which to construct geometry.
-        /// \param state
-        /// \param id       Ends up becoming the name of the spire object.
-        Core::Datatypes::GeometryHandle buildGeometryObject(
-          SCIRun::FieldHandle field,
-          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
-          Dataflow::Networks::ModuleStateHandle state);
+        void updateAvailableRenderOptions(FieldHandle field);
 
-        /// Mesh construction. Any of the functions below can modify the renderState.
-        /// This modified render state will be passed onto the renderer.
-        /// @{
-        void renderNodes(
-          SCIRun::FieldHandle field,
-          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
-          RenderState state, Core::Datatypes::GeometryHandle geom,
-          const std::string& id);
-
-        void renderFaces(
-          SCIRun::FieldHandle field,
-          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
-          RenderState state, Core::Datatypes::GeometryHandle geom,
-          unsigned int approx_div,
-          const std::string& id);
-
-        void renderFacesLinear(
-          SCIRun::FieldHandle field,
-          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
-          RenderState state, Core::Datatypes::GeometryHandle geom,
-          unsigned int approxDiv,
-          const std::string& id);
-
-        void addFaceGeom(
-          const std::vector<Core::Geometry::Point>  &points,
-          const std::vector<Core::Geometry::Vector> &normals,
-          bool withNormals,
-          uint32_t& iboBufferIndex,
-          CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
-          CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
-          Core::Datatypes::GeometryObject::ColorScheme colorScheme,
-          const std::vector<SCIRun::Core::Datatypes::ColorRGB> &face_colors,
-          const RenderState& state);
-
-        void renderEdges(
-          SCIRun::FieldHandle field,
-          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap,
-          RenderState state,
-          Core::Datatypes::GeometryHandle geom,
-          const std::string& id);
-        /// @}
-
-        /// State evaluation
-        /// @{
-        RenderState getNodeRenderState(
-          Dataflow::Networks::ModuleStateHandle state,
-          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap);
-
-        RenderState getEdgeRenderState(
-          Dataflow::Networks::ModuleStateHandle state,
-          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap);
-
-        RenderState getFaceRenderState(
-          Dataflow::Networks::ModuleStateHandle state,
-          boost::optional<SCIRun::Core::Datatypes::ColorMapHandle> colorMap);
-        /// @}
-
-        float faceTransparencyValue_;
-        float edgeTransparencyValue_;
-        float nodeTransparencyValue_;
-
+        boost::shared_ptr<detail::GeometryBuilder> builder_;
       };
+
+
 
     } // Visualization
   } // Modules

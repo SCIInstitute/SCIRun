@@ -30,6 +30,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   ClipMesh/ClipMeshBySelection.h
   ClipMesh/ClipMeshByIsovalue.h
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h
+  ConvertMeshType/ConvertMeshToUnstructuredMesh.h
   DistanceField/CalculateSignedDistanceField.h
   DistanceField/CalculateDistanceField.h
   Mapping/ApplyMappingMatrix.h
@@ -40,7 +41,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/CalculateGradientsAlgo.h
   FieldData/CalculateVectorMagnitudesAlgo.h
   #FieldData/ConvertMappingMatrixToFieldData.h
-  #FieldData/ConvertFieldDataType.h
+  FieldData/ConvertFieldDataType.h
   #FieldData/CalculateLatVolGradientsAtNodes.h
   #FieldData/GetFieldData.h
   FieldData/SetFieldData.h
@@ -74,6 +75,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/ConvertFieldBasisType.h
   TransformMesh/ScaleFieldMeshAndData.h
   TransformMesh/ProjectPointsOntoMesh.h
+  TransformMesh/TransformMeshWithTransform.h
   MeshData/FlipSurfaceNormals.h
   RefineMesh/RefineMesh.h
   MarchingCubes/BaseMC.h
@@ -96,6 +98,8 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   StreamLines/GenerateStreamLines.h
   RegisterWithCorrespondences.h
   SampleField/GeneratePointSamplesFromField.h
+  DistanceField/CalculateIsInsideField.h
+  MeshData/GetMeshQualityFieldAlgo.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -110,7 +114,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.cc
   ConvertMeshType/ConvertMeshToTetVolMesh.cc
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.cc
-  #ConvertMeshType/ConvertMeshToUnstructuredMesh.cc
+  ConvertMeshType/ConvertMeshToUnstructuredMesh.cc
   ConvertMeshType/ConvertMeshToIrregularMesh.cc
   #ConvertMeshType/ConvertLatVolDataFromElemToNode.cc
   #ConvertMeshType/ConvertLatVolDataFromNodeToElem.cc
@@ -119,7 +123,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #CreateMesh/CreateMeshFromNrrd.cc
 
   DistanceField/CalculateDistanceField.cc
-  #DistanceField/CalculateIsInsideField.cc
+  DistanceField/CalculateIsInsideField.cc
   #DistanceField/CalculateInsideWhichField.cc
   DistanceField/CalculateSignedDistanceField.cc
   DomainFields/GetDomainBoundaryAlgo.cc
@@ -131,7 +135,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FieldData/CalculateLatVolGradientsAtNodes.cc
   FieldData/CalculateVectorMagnitudesAlgo.cc
   #FieldData/CalculateFieldDataMetric.cc
-#FieldData/ConvertFieldDataType.cc
+  FieldData/ConvertFieldDataType.cc
   FieldData/ConvertFieldBasisType.cc
   FieldData/SwapFieldDataWithMatrixEntriesAlgo.cc
   FieldData/ConvertIndicesToFieldDataAlgo.cc
@@ -177,7 +181,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   Mapping/ApplyMappingMatrix.cc
   #MeshData/GetSurfaceNodeNormals.cc
   #MeshData/GetSurfaceElemNormals.cc
-  #MeshData/GetMeshQualityField.cc
+  MeshData/GetMeshQualityFieldAlgo.cc
   #MeshDerivatives/CalculateMeshConnector.cc
   #MeshDerivatives/CalculateMeshCenter.cc
   #MeshDerivatives/GetCentroids.cc
@@ -198,7 +202,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   StreamLines/StreamLineIntegrators.cc
   StreamLines/GenerateStreamLines.cc
   TransformMesh/AlignMeshBoundingBoxes.cc
-  #TransformMesh/TransformMeshWithTransform.cc
+  TransformMesh/TransformMeshWithTransform.cc
   #TransformMesh/ConvertMeshCoordinateSystem.cc
   TransformMesh/ScaleFieldMeshAndData.cc
   #TransformMesh/TransformPlanarMesh.cc
@@ -217,25 +221,23 @@ SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Fields
 TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
   Core_Datatypes
   Core_Datatypes_Legacy_Field
+  Core_Datatypes_Legacy_Nrrd
   Algorithms_Base
   Core_Exceptions_Legacy
   Core_Thread
   Core_Geometry_Primitives
   Core_Basis
   Algorithms_Math
-  #${SCI_TEEM_LIBRARY}
 )
 
 IF(FALSE)
-IF(WITH_TETGEN)
-  TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
-     ${SCI_TETGEN_LIBRARY}
-  )
-ENDIF(WITH_TETGEN)
+  IF(WITH_TETGEN)
+    TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
+      ${TETGEN_LIBRARY}
+    )
+  ENDIF()
 ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_Fields)
 ENDIF(BUILD_SHARED_LIBS)
-
-ADD_DEPENDENCIES(Core_Algorithms_Legacy_Fields Boost_external)

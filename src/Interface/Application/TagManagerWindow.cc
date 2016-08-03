@@ -35,7 +35,7 @@
 
 using namespace SCIRun::Gui;
 
-namespace 
+namespace
 {
   const char* tagIndexProperty = "tagIndex";
 }
@@ -68,10 +68,11 @@ TagManagerWindow::TagManagerWindow(QWidget* parent /* = 0 */) : QDockWidget(pare
 void TagManagerWindow::editTagColor()
 {
   auto tag = sender()->property(tagIndexProperty).toInt();
-  auto newColor = QColorDialog::getColor(tagColors_[tag], this, "Choose tag " + QString::number(tag) + " color");
+  auto color = QString::fromStdString(tagColors_[tag]);
+  auto newColor = QColorDialog::getColor(color, this, "Choose tag " + QString::number(tag) + " color");
   auto colorStr = colorToString(newColor);
   qobject_cast<QPushButton*>(sender())->setStyleSheet("background-color : " + colorStr + ";");
-  tagColors_[tag] = colorStr;
+  tagColors_[tag] = colorStr.toStdString();
 }
 
 void TagManagerWindow::setTagNames(const QVector<QString>& names)
@@ -89,46 +90,70 @@ void TagManagerWindow::updateTagName(const QString& name)
 }
 
 void TagManagerWindow::setTagColors(const QVector<QString>& colors)
-{ 
+{
   for (int i = 0; i < NumberOfTags; ++i)
   {
     if (i >= colors.size() || colors[i].isEmpty())
-      tagColors_[i] = colorToString(defaultTagColor(i));
+      tagColors_[i] = colorToString(defaultTagColor(i)).toStdString();
     else
-      tagColors_[i] = colors[i];
-    tagButtons_[i]->setStyleSheet("background-color : " + tagColors_[i] + ";");
+      tagColors_[i] = colors[i].toStdString();
+    tagButtons_[i]->setStyleSheet("background-color : " + QString::fromStdString(tagColors_[i]) + ";");
   }
+}
+
+QStringList TagManagerWindow::getTagColors() const
+{
+  QStringList qsl;
+  std::for_each(tagColors_.cbegin(), tagColors_.cend(), [&qsl](const std::string& str) { qsl.append(QString::fromStdString(str)); });
+  return qsl;
 }
 
 QColor TagManagerWindow::tagColor(int tag) const
 {
-  //rgb(128, 128, 0)
-  auto colorStr = tagColors_[tag];
   int r, g, b;
-  try
+  r = g = b = 155;
+  if (validTag(tag))
   {
-    static boost::regex reg("rgb\\((.+), (.+), (.+)\\)");
-    boost::smatch what;
-    regex_match(colorStr.toStdString(), what, reg);
-    r = boost::lexical_cast<int>(what[1]);
-    g = boost::lexical_cast<int>(what[2]);
-    b = boost::lexical_cast<int>(what[3]);
-  }
-  catch (...)
-  {
-    //error results in gray 
-    r = g = b = 155;
+    auto colorStr = tagColors_[tag];
+    try
+    {
+      static boost::regex reg("rgb\\((.+), (.+), (.+)\\)");
+      boost::smatch what;
+      regex_match(colorStr, what, reg);
+      r = boost::lexical_cast<int>(what[1]);
+      g = boost::lexical_cast<int>(what[2]);
+      b = boost::lexical_cast<int>(what[3]);
+    }
+    catch (...)
+    {
+      //error results in gray
+    }
   }
   return QColor(r, g, b);
 }
 
-void TagManagerWindow::helpButtonClicked()
+QString TagManagerWindow::tagName(int tag) const
 {
-  QMessageBox::information(this, 
-    "Module Tag Layer Guide", 
+  auto name = validTag(tag) ? tagNames_[tag] : "[No tag]";
+  return name;
+}
+
+void TagManagerWindow::showHelp(QWidget* parent)
+{
+  QMessageBox::information(parent,
+    "Module Tag Layer Guide",
     "This layer allows the user to group modules in a network file by tag number. Ten tags are available, labeled 0 - 9. "
     "Each tag's color can be chosen in the Tag Manager window, as well as a descriptive label. Tag colors are a global setting, while module tags are saved in the network file. \n\n"
     "To use, while in the Network Editor, hold down the Alt / Option key. Then press A to see all module tag groups(each module will be colorized "
     "according to the chosen colors). Or press 0 - 9 keys to see each tag group individually; other modules will be slightly blurred out. While in "
-    "the single - tag view, you can click a module to toggle it as tagged. There is also a button in the toolbar to view all tagged modules.");
+    "the single - tag view, you can click a module to toggle it as tagged. There is also a button in the toolbar to view all tagged modules."
+    "\n\nOnce tags are being used, tag groups can be toggled using Alt-G (show) and Alt-Shift-G (hide). Boxes of the tag color, labelled with the tag's text, will be displayed overlaying the network. "
+    "To display tag groups on network load, double-click on a tag group box and select the display option in the menu. "
+    "\n\nTag names saved in the network file can override application-level names--double-click a displayed tag group box and select the rename option."
+    );
+}
+
+void TagManagerWindow::helpButtonClicked()
+{
+  showHelp(this);
 }

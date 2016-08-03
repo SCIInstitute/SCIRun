@@ -28,6 +28,9 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QToolBox" name="toolBox">
+     <property name="currentIndex">
+      <number>2</number>
+     </property>
      <widget class="QWidget" name="toolBoxPage1">
       <property name="geometry">
        <rect>
@@ -68,7 +71,7 @@
          <x>0</x>
          <y>0</y>
          <width>531</width>
-         <height>231</height>
+         <height>291</height>
         </rect>
        </property>
        <property name="minimumSize">
@@ -84,53 +87,6 @@
         <set>Qt::AlignCenter</set>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <layout class="QHBoxLayout" name="moduleSizeHorizontalLayout_">
-          <item>
-           <widget class="QLabel" name="moduleSizeLabel_">
-            <property name="text">
-             <string>Module Size:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QToolButton" name="largeModuleSizeToolButton_">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="text">
-             <string>All Large</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="smallModuleSizeToolButton_">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="text">
-             <string>All Small</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
         <item>
          <layout class="QHBoxLayout" name="dataflowPipelinesHorizontalLayout_">
           <item>
@@ -253,49 +209,11 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QLabel" name="backgroundColorLabel_">
-            <property name="text">
-             <string>Background color:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="chooseBackgroundColorButton_">
-            <property name="text">
-             <string>Choose...</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="resetBackgroundColorButton_">
-            <property name="text">
-             <string>Revert to Default</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
          <layout class="QGridLayout" name="gridLayout_6">
           <item row="0" column="1">
            <widget class="QCheckBox" name="dockableModulesCheckBox_">
             <property name="text">
-             <string>Enable Module Dock</string>
+             <string>Enable module dock</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -311,7 +229,7 @@
              </size>
             </property>
             <property name="text">
-             <string>Modules Snap To Grid</string>
+             <string>Modules snap to grid</string>
             </property>
             <property name="checked">
              <bool>true</bool>
@@ -321,7 +239,7 @@
           <item row="1" column="0">
            <widget class="QCheckBox" name="portSizeEffectsCheckBox_">
             <property name="text">
-             <string>Highlight Ports on Hover</string>
+             <string>Highlight ports on hover</string>
             </property>
            </widget>
           </item>
@@ -334,6 +252,16 @@
              <bool>false</bool>
             </property>
             <property name="tristate">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="errorGraphicItemsCheckBox_">
+            <property name="text">
+             <string>Display errors inline</string>
+            </property>
+            <property name="checked">
              <bool>true</bool>
             </property>
            </widget>

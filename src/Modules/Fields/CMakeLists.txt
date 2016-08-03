@@ -27,18 +27,20 @@
 #
 
 SET(Modules_Fields_SRCS
-  CreateScalarFieldDataBasic.cc
   ReportFieldInfo.cc
   InterfaceWithCleaver.cc
   EditMeshBoundingBox.cc
+  CalculateNodeLocationFrequency.cc
+  RefineTetMeshLocally.cc
 )
 
 SET(Modules_Fields_HEADERS
   InterfaceWithCleaver.h
-  CreateScalarFieldDataBasic.h
   ReportFieldInfo.h
   EditMeshBoundingBox.h
   BoxWidgetTypes.h
+  CalculateNodeLocationFrequency.h
+  RefineTetMeshLocally.h
   share.h
 )
 
@@ -54,6 +56,7 @@ TARGET_LINK_LIBRARIES(Modules_Fields
   Algorithms_Field
   Core_Datatypes_Legacy_Field
   Graphics_Glyphs
+  Graphics_Datatypes
   ${OPENGL_LIBRARIES}
   ${CPM_LIBRARIES}
 )

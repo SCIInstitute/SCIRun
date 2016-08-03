@@ -31,10 +31,10 @@ DEALINGS IN THE SOFTWARE.
 
 #include "Interface/Modules/Visualization/ui_ShowFieldGlyphs.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Visualization/share.h>
 #include <Interface/Modules/Visualization/ShowFieldGlyphsVectorTabDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldGlyphsScalarTabDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldGlyphsTensorTabDialog.h>
+#include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
   namespace Gui {

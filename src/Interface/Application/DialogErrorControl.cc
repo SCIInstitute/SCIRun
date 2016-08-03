@@ -37,10 +37,7 @@ DialogErrorControl::DialogErrorControl(QWidget*parent) : counter_(0)
 }
 bool DialogErrorControl::showDialog()
 {
-	if (SCIRun::Core::Preferences::Instance().showModuleErrorDialogs && counter_ <= MAX_DIALOGS_SHOWN)
-			return true;
-	else 
-			return false; 
+  return Core::Preferences::Instance().showModuleErrorDialogs && counter_ <= MAX_DIALOGS_SHOWN;
 }
 void DialogErrorControl::resetCounter()
 { 

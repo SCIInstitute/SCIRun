@@ -47,9 +47,14 @@ namespace Gui
   QColor to_color(const std::string& str, int alpha = 255);
 
   QColor defaultTagColor(int tag);
-  typedef std::function<QColor(int)> TagColorFunc;
+
+  using TagColorFunc = std::function<QColor(int)>;
+  using PreexecuteFunc = std::function<void()>;
+  using TagNameFunc = std::function<QString(int)>;
 
   QString colorToString(const QColor& color);
+
+  QGraphicsEffect* blurEffect(double radius = 2);
 
   inline QAction* separatorAction(QWidget* parent)
   {
@@ -71,8 +76,32 @@ namespace Gui
 
   typedef boost::function<bool(const Dataflow::Networks::ModuleDescription&)> ModulePredicate;
   typedef boost::function<void(QAction*)> QActionHookup;
-  QList<QAction*> fillMenuWithFilteredModuleActions(QMenu* menu, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup);
+  QList<QAction*> fillMenuWithFilteredModuleActions(QMenu* menu, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, ModulePredicate modulePred, QActionHookup hookup, QWidget* parent);
+  bool portTypeMatches(const std::string& portTypeToMatch, bool isInput, const Dataflow::Networks::ModuleDescription& module);
   QPointF findCenterOfNetwork(const Dataflow::Networks::ModulePositions& positions);
+
+  const char* addNewModuleActionTypePropertyName();
+  const char* insertNewModuleActionTypePropertyName();
+
+  const Qt::GlobalColor CLIPBOARD_COLOR = Qt::cyan;
+
+  // arbitrary values
+  enum TagValues
+  {
+    MinTag = 0,
+    MaxTag = 9,
+    NumberOfTags = 10,
+    TagDataKey = 123,
+    TagLayerKey = 100,
+    CurrentTagKey = 101,
+    NoTag = -1,
+    AllTags = -50,
+    ClearTags = -77,
+    ShowGroups = -100,
+    HideGroups = -101
+  };
+
+  inline bool validTag(int tag) { return MinTag <= tag && tag <= MaxTag; }
 }
 
 }

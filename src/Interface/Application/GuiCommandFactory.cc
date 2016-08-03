@@ -36,33 +36,42 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Console;
 
-CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type, int param) const
+CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type) const
 {
   switch (type)
   {
-  case ShowMainWindow:
+  case GlobalCommands::ShowMainWindow:
     return boost::make_shared<ShowMainWindowGui>();
-  case ShowSplashScreen:
+  case GlobalCommands::ShowSplashScreen:
     return boost::make_shared<ShowSplashScreenGui>();
-  case PrintHelp:
+  case GlobalCommands::PrintHelp:
     return boost::make_shared<PrintHelpCommand>();
-  case PrintVersion:
+  case GlobalCommands::PrintVersion:
     return boost::make_shared<PrintVersionCommand>();
-  case PrintModules:
+  case GlobalCommands::PrintModules:
     return boost::make_shared<PrintModulesCommand>();
-  case LoadNetworkFile:
-    return boost::make_shared<LoadFileCommandGui>(param);
-  case RunPythonScript:
+  case GlobalCommands::LoadNetworkFile:
+    return boost::make_shared<LoadFileCommandGui>();
+  case GlobalCommands::SaveNetworkFile:
+    return boost::make_shared<NetworkSaveCommand>();
+  case GlobalCommands::ImportNetworkFile:
+    return boost::make_shared<FileImportCommand>();
+  case GlobalCommands::RunPythonScript:
     return boost::make_shared<RunPythonScriptCommandGui>();
-  case SetupDataDirectory:
+  case GlobalCommands::SetupDataDirectory:
     return boost::make_shared<SetupDataDirectoryCommandGui>();
-  case ExecuteCurrentNetwork:
+  case GlobalCommands::ExecuteCurrentNetwork:
     return boost::make_shared<ExecuteCurrentNetworkCommandGui>();
-  case SetupQuitAfterExecute:
+  case GlobalCommands::DisableViewScenes:
+    return boost::make_shared<DisableViewScenesCommandGui>();
+  case GlobalCommands::InteractiveMode:
+    return boost::make_shared<InteractiveModeCommandConsole>();
+  case GlobalCommands::SetupQuitAfterExecute:
     return boost::make_shared<QuitAfterExecuteCommandGui>();
-  case QuitCommand:
+  case GlobalCommands::QuitCommand:
     return boost::make_shared<QuitCommandGui>();
   default:
     THROW_INVALID_ARGUMENT("Unknown global command type.");
   }
+  return {};
 }

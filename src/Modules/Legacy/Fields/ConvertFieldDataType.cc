@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,91 +25,57 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-	
+
 #include <Modules/Legacy/Fields/ConvertFieldDataType.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldDataType.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
-// Include the algorithm
-#include <Core/Algorithms/Fields/FieldData/ConvertFieldDataType.h>
-
-// The module class
-#include <Dataflow/Network/Module.h>
-
-// We need to define the ports used
-#include <Dataflow/Network/Ports/FieldPort.h>
-
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace Core::Algorithms::Fields;
 
 /// @class ConvertFieldDataType
 /// @brief ConvertFieldDataType is used to change the type of data associated
-/// with the field elements. 
+/// with the field elements.
 
-class ConvertFieldDataType : public Module {
-  public:
-    ConvertFieldDataType(GuiContext* ctx);
+MODULE_INFO_DEF(ConvertFieldDataType, ChangeFieldData, SCIRun)
 
-    virtual ~ConvertFieldDataType();
-    virtual void		execute();
-
-  private:
-    SCIRunAlgo::ConvertFieldDataTypeAlgo algo_;
-
-  private:
-    GuiString		outputdatatype_;   // the out field type
-    GuiString		inputdatatype_;    // the input field type
-    GuiString		fldname_;          // the input field name
-  
-};
-
-DECLARE_MAKER(ConvertFieldDataType)
-
-ConvertFieldDataType::ConvertFieldDataType(GuiContext* ctx)
-  : Module("ConvertFieldDataType", ctx, Filter, "ChangeFieldData", "SCIRun"),
-    outputdatatype_(get_ctx()->subVar("outputdatatype"), "double"),
-    inputdatatype_(get_ctx()->subVar("inputdatatype", false), "---"),
-    fldname_(get_ctx()->subVar("fldname", false), "---")
+ConvertFieldDataType::ConvertFieldDataType() : Module(staticInfo_)
 {
-  /// Forward errors to the module
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
 }
 
-ConvertFieldDataType::~ConvertFieldDataType()
+void ConvertFieldDataType::setStateDefaults()
 {
-  fldname_.set("---");
-  inputdatatype_.set("---");
+  setStateStringFromAlgoOption(Parameters::FieldDatatype);
+  get_state()->setValue(Parameters::InputFieldName, std::string());
+  get_state()->setValue(Parameters::InputType, std::string());
 }
 
-void
-ConvertFieldDataType::execute()
+void ConvertFieldDataType::execute()
 {
-  /// define input/output handles:
-  FieldHandle input;
-  FieldHandle output;
-  get_input_handle("Input Field",input,true);
+  auto input = getRequiredInput(InputField);
 
-
-  // Only do work if needed:
-  if (inputs_changed_ || outputdatatype_.changed() || 
-      !oport_cached("Output Field"))
-  {    
+  if (needToExecute())
+  {
     update_state(Executing);
-    /// Set the method to use
-    algo_.set_option("datatype",outputdatatype_.get());
+    setAlgoOptionFromState(Parameters::FieldDatatype);
 
-    if(!(algo_.run(input,output))) return;
-    
-    inputdatatype_.set(input->vfield()->get_data_type());
+    auto output = algo().run(withInputData((InputField, input)));
+
+    auto state = get_state();
+    state->setValue(Parameters::InputType, input->vfield()->get_data_type());
 
     /// Relay some information to user
-    std::string name = input->get_name();
-    if (name == "") name = "--- no name ---";
-    fldname_.set(name);
+    std::string name = input->properties().get_name();
+    if (name.empty())
+      name = "--- no name ---";
+    state->setValue(Parameters::InputFieldName, name);
 
-    /// send data downstream:
-    send_output_handle("Output Field", output, true);    
+    sendOutputFromAlgorithm(OutputField, output);
   }
 }
-
-} // End namespace SCIRun
-#endif

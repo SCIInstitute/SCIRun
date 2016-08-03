@@ -49,7 +49,7 @@ namespace SCIRun {
         OUTPUT_PORT(0, DipoleOutputField, LegacyField);
         OUTPUT_PORT(1, DipoleWidget, GeometryObject);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
     }
   }

@@ -60,7 +60,7 @@ class SCISHARE ClipMeshByIsovalueAlgo : public AlgorithmBase
     /// run the algorithm
     bool run(FieldHandle input, FieldHandle& output, Datatypes::MatrixHandle& mapping) const;
     bool run(FieldHandle input, FieldHandle& output) const;
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const;
     static AlgorithmInputName InputField;
     static AlgorithmOutputName OutputField;
     static AlgorithmParameterName LessThanIsoValue;

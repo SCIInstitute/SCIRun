@@ -38,28 +38,28 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-const ModuleLookupInfo InterfaceWithCleaverModule::staticInfo_("InterfaceWithCleaver", "NewField", "SCIRun");
+MODULE_INFO_DEF(InterfaceWithCleaver, NewField, SCIRun)
 
-InterfaceWithCleaverModule::InterfaceWithCleaverModule() : Module(staticInfo_)
+InterfaceWithCleaver::InterfaceWithCleaver() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputFields);
   INITIALIZE_PORT(OutputField);
 }
 
-void InterfaceWithCleaverModule::setStateDefaults()
+void InterfaceWithCleaver::setStateDefaults()
 {
   setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::Verbose);
   setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::Padding);
   setStateStringFromAlgoOption(InterfaceWithCleaverAlgorithm::VolumeScalingOption);
   setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingX);
-  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingY); 
-  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingZ);  
+  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingY);
+  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingZ);
 }
 
-void InterfaceWithCleaverModule::execute()
+void InterfaceWithCleaver::execute()
 {
   auto fields = getRequiredDynamicInputs(InputFields);
-  
+
   if (needToExecute())
   {
     setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::Verbose);
@@ -69,7 +69,7 @@ void InterfaceWithCleaverModule::execute()
     setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingY);
     setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingZ);
 
-    auto output = algo().run_generic(withInputData((InputFields, fields)));
+    auto output = algo().run(withInputData((InputFields, fields)));
 
     sendOutputFromAlgorithm(OutputField,output);
   }

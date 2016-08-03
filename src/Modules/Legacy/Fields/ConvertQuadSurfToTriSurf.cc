@@ -48,7 +48,7 @@ void ConvertQuadSurfToTriSurf::execute()
   {
     update_state(Executing);
     
-    auto output = algo().run_generic(withInputData((QuadSurf, ifield)));
+    auto output = algo().run(withInputData((QuadSurf, ifield)));
 
     sendOutputFromAlgorithm(TriSurf, output);
   }

@@ -37,7 +37,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Math;
 
-SelectSubMatrixModule::SelectSubMatrixModule() : Module(ModuleLookupInfo("SelectSubMatrix", "Math", "SCIRun")) 
+SelectSubMatrix::SelectSubMatrix() : Module(ModuleLookupInfo("SelectSubMatrix", "Math", "SCIRun"))
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(RowIndicies);
@@ -45,25 +45,25 @@ SelectSubMatrixModule::SelectSubMatrixModule() : Module(ModuleLookupInfo("Select
   INITIALIZE_PORT(ResultMatrix);
 }
 
-void SelectSubMatrixModule::setStateDefaults()
+void SelectSubMatrix::setStateDefaults()
 {
  setStateBoolFromAlgo(SelectSubMatrixAlgorithm::rowCheckBox());
- setStateBoolFromAlgo(SelectSubMatrixAlgorithm::columnCheckBox()); 
+ setStateBoolFromAlgo(SelectSubMatrixAlgorithm::columnCheckBox());
  setStateIntFromAlgo(SelectSubMatrixAlgorithm::rowStartSpinBox());
  setStateIntFromAlgo(SelectSubMatrixAlgorithm::columnStartSpinBox());
  setStateIntFromAlgo(SelectSubMatrixAlgorithm::columnEndSpinBox());
  setStateIntFromAlgo(SelectSubMatrixAlgorithm::rowEndSpinBox());
 }
 
-void SelectSubMatrixModule::execute()
+void SelectSubMatrix::execute()
 {
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   MatrixHandle matrix, row_indices, column_indices, sub_matrix;
-  
+
   get_input_handle("Matrix",matrix,true);
   get_input_handle("RowIndices",row_indices,false);
   get_input_handle("ColumnIndices",column_indices,false);
-  
+
   if (inputs_changed_ ||
       row_select_.changed() ||
       row_start_.changed() ||
@@ -79,7 +79,7 @@ void SelectSubMatrixModule::execute()
     index_type row_end = row_end_.get();
     index_type col_start = col_start_.get();
     index_type col_end = col_end_.get();
-    
+
     if (row_indices.get_rep() || column_indices.get_rep())
     {
       if (row_select || col_select)
@@ -87,7 +87,7 @@ void SelectSubMatrixModule::execute()
         remark("Index matrices detected on inputs, ignoring UI settings");
       }
     }
-    
+
     if (row_select)
     {
       if (row_start < 0) row_start = 0;
@@ -99,7 +99,7 @@ void SelectSubMatrixModule::execute()
       if (col_start < 0) col_start = 0;
       if (col_end < 0) col_end = matrix->ncols()-1;
     }
-    
+
     if (row_indices.get_rep() && column_indices.get_rep())
     {
       if(!(sub_algo_.run(matrix,sub_matrix,row_indices,column_indices))) return;
@@ -113,26 +113,26 @@ void SelectSubMatrixModule::execute()
       if(!(rows_algo_.run(matrix,sub_matrix,row_indices))) return;
     }
     else
-    {          
+    {
       std::vector<index_type> rows;
       std::vector<index_type> cols;
-      
+
       if (row_select)
       {
         rows.resize(row_end-row_start+1);
         for (index_type r = row_start; r <= row_end; r++) rows[r-row_start] = r;
       }
-      
+
       if (col_select)
       {
         cols.resize(col_end-col_start+1);
         for (index_type r = col_start; r <= col_end; r++) cols[r-col_start] = r;
       }
-      
+
       if (row_select && col_select)
       {
         if(!(sub_algo_.run(matrix,sub_matrix,rows,cols))) return;
-      }  
+      }
       else if (row_select && !col_select)
       {
         if(!(rows_algo_.run(matrix,sub_matrix,rows))) return;
@@ -148,26 +148,26 @@ void SelectSubMatrixModule::execute()
         sub_matrix = matrix;
       }
     }
-        
+
     send_output_handle("SubMatrix",sub_matrix,true);
   }
   #endif
- 
+
   auto input_matrix = getRequiredInput(InputMatrix);
   auto rowindicies = getOptionalInput(RowIndicies);
   auto columnindicies = getOptionalInput(ColumnIndicies);
-  
+
   if (needToExecute())
   {
    update_state(Executing);
    algo().set(SelectSubMatrixAlgorithm::rowCheckBox(), get_state()->getValue(SelectSubMatrixAlgorithm::rowCheckBox()).toBool());
    algo().set(SelectSubMatrixAlgorithm::columnCheckBox(), get_state()->getValue(SelectSubMatrixAlgorithm::columnCheckBox()).toBool());
    algo().set(SelectSubMatrixAlgorithm::rowStartSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::rowStartSpinBox()).toInt());
-   algo().set(SelectSubMatrixAlgorithm::rowEndSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::rowEndSpinBox()).toInt());  
+   algo().set(SelectSubMatrixAlgorithm::rowEndSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::rowEndSpinBox()).toInt());
    algo().set(SelectSubMatrixAlgorithm::columnStartSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::columnStartSpinBox()).toInt());
-   algo().set(SelectSubMatrixAlgorithm::columnEndSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::columnEndSpinBox()).toInt());  
-  
-   auto output = algo().run_generic(withInputData((InputMatrix, input_matrix)(RowIndicies, optionalAlgoInput(rowindicies))(ColumnIndicies, optionalAlgoInput(columnindicies))));
+   algo().set(SelectSubMatrixAlgorithm::columnEndSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::columnEndSpinBox()).toInt());
+
+   auto output = algo().run(withInputData((InputMatrix, input_matrix)(RowIndicies, optionalAlgoInput(rowindicies))(ColumnIndicies, optionalAlgoInput(columnindicies))));
 
    sendOutputFromAlgorithm(ResultMatrix, output);
   }

@@ -38,17 +38,21 @@ namespace SCIRun {
   namespace Modules {
     namespace DataIO {
 
-      class SCISHARE WriteFieldModule : public GenericWriter<FieldHandle, FieldPortTag>
+      class SCISHARE WriteField : public GenericWriter<FieldHandle, FieldPortTag>
       {
       public:
         typedef GenericWriter<FieldHandle, FieldPortTag> my_base;
-        WriteFieldModule();
-        virtual void execute();
-        virtual void setStateDefaults() {}
+        WriteField();
+        virtual void execute() override;
         virtual bool useCustomExporter(const std::string& filename) const override;
         virtual bool call_exporter(const std::string& filename) override;
 
         INPUT_PORT(0, FieldToWrite, LegacyField);
+
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+
+      protected:
+        virtual std::string defaultFileTypeName() const override;
       };
 
     }}}

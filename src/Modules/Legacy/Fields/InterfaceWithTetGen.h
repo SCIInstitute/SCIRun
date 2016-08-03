@@ -64,6 +64,7 @@ namespace SCIRun {
 
         virtual void execute();
         virtual void setStateDefaults();
+        virtual bool hasDynamicPorts() const override { return true; }
 
         INPUT_PORT(0, Main, LegacyField);
         INPUT_PORT(1, Points, LegacyField);
@@ -71,7 +72,7 @@ namespace SCIRun {
         INPUT_PORT_DYNAMIC(3, Regions, LegacyField);
         OUTPUT_PORT(0, TetVol, LegacyField);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
     }
   }

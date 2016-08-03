@@ -30,7 +30,6 @@
 SET(Interface_Modules_Visualization_FORMS
   CreateStandardColorMap.ui
   GenerateStreamLines.ui
-  MatrixAsVectorField.ui
   ShowField.ui
   ShowFieldGlyphs.ui
   ShowFieldGlyphsScalarTab.ui
@@ -45,7 +44,6 @@ SET(Interface_Modules_Visualization_FORMS
 SET(Interface_Modules_Visualization_HEADERS
   CreateStandardColorMapDialog.h
   GenerateStreamLinesDialog.h
-  MatrixAsVectorFieldDialog.h
   share.h
   ShowFieldDialog.h  
   ShowFieldGlyphsDialog.h
@@ -60,7 +58,6 @@ SET(Interface_Modules_Visualization_HEADERS
 SET(Interface_Modules_Visualization_SOURCES 
   CreateStandardColorMapDialog.cc
   GenerateStreamLinesDialog.cc
-  MatrixAsVectorFieldDialog.cc
   ShowFieldDialog.cc
   ShowFieldGlyphsDialog.cc
   ShowFieldGlyphsScalarTabDialog.cc

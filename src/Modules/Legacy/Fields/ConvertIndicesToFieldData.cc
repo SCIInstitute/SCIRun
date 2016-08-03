@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,54 +27,52 @@
 */
 
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertIndicesToFieldDataAlgo.h>
-#include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h> 
-#include <Core/Datatypes/Legacy/Field/Field.h> 
+#include <Modules/Legacy/Fields/ConvertIndicesToFieldData.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 #include <Dataflow/Network/Module.h>
 
-using namespace SCIRun; 
+using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Modules::Fields; 
+using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Fields; 
-using namespace SCIRun::Core::Algorithms; 
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms;
 
 /// @class ConvertIndicesToFieldData
 /// @brief Convert a field with indices as data values into a field with values
 /// assigned to each index using a lookup table.
 
-const ModuleLookupInfo ConvertIndicesToFieldData::staticInfo_("ConvertIndicesToFieldData", "ChangeFieldData", "SCIRun"); 
+MODULE_INFO_DEF(ConvertIndicesToFieldData, ChangeFieldData, SCIRun)
 
 ConvertIndicesToFieldData::ConvertIndicesToFieldData() : Module(staticInfo_)
 {
-	INITIALIZE_PORT(InputField); 
+	INITIALIZE_PORT(InputField);
 	INITIALIZE_PORT(InputMatrix);
-	INITIALIZE_PORT(OutputField); 
+	INITIALIZE_PORT(OutputField);
 }
 
 void ConvertIndicesToFieldData::setStateDefaults()
 {
-	setStateStringFromAlgoOption(Parameters::OutputFieldDataType); 
+	setStateStringFromAlgoOption(Parameters::OutputFieldDataType);
 }
 
 void
 ConvertIndicesToFieldData::execute()
 {
-	auto input_field = getRequiredInput(InputField); 
-	auto input_matrix = getRequiredInput(InputMatrix); 
+	auto input_field = getRequiredInput(InputField);
+	auto input_matrix = getRequiredInput(InputMatrix);
 
 	if (needToExecute())
-	{ 
+	{
 		update_state(Executing);
-		setAlgoOptionFromState(Parameters::OutputFieldDataType); 
-		
-		auto output = algo().run_generic(withInputData((InputField, input_field)(InputMatrix, input_matrix)));
-	
+		setAlgoOptionFromState(Parameters::OutputFieldDataType);
+
+		auto output = algo().run(withInputData((InputField, input_field)(InputMatrix, input_matrix)));
+
 		sendOutputFromAlgorithm(OutputField, output);
   }
 }
-
-

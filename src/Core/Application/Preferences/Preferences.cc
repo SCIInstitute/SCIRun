@@ -43,12 +43,18 @@ CORE_SINGLETON_IMPLEMENTATION( Preferences );
 Preferences::Preferences() :
   showModuleErrorDialogs("showModuleErrorDialogs", true),
   saveBeforeExecute("saveBeforeExecute", false),
-  useNewViewSceneMouseControls("useNewViewSceneMouseControls", false),
+  showModuleErrorInlineMessages("showModuleErrorInlineMessages", true),
+  useNewViewSceneMouseControls("useNewViewSceneMouseControls", true),
+  invertMouseZoom("invertMouseZoom", false),
   modulesSnapToGrid("modulesSnapToGrid", true),
   highlightPorts("highlightPorts", false),
   autoNotes("autoNotes", false),
   modulesAreDockable("modulesAreDockable", true),
-  networkBackgroundColor("backgroundColor", "#808080")
+  networkBackgroundColor("backgroundColor", "#808080"),
+  postModuleAddScript_temporarySolution("postModuleAddScript_temporarySolution", ""),
+  postModuleAddScriptEnabled_temporarySolution("postModuleAddScriptEnabled_temporarySolution", false),
+  onNetworkLoadScript_temporarySolution("onNetworkLoadScript_temporarySolution", ""),
+  onNetworkLoadScriptEnabled_temporarySolution("onNetworkLoadScriptEnabled_temporarySolution", false)
 {
 }
 

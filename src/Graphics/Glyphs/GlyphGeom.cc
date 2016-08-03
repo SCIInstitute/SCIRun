@@ -28,11 +28,13 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Core/Math/MiscMath.h>
+#include <Core/GeometryPrimitives/Transform.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Graphics;
-using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Core::Datatypes;
+using namespace Graphics;
+using namespace Datatypes;
+using namespace Core::Geometry;
+using namespace Core::Datatypes;
 
 GlyphGeom::GlyphGeom() : numVBOElements_(0), lineIndex_(0)
 {
@@ -49,91 +51,94 @@ void GlyphGeom::getBufferInfo(int64_t& numVBOElements, std::vector<Vector>& poin
   indices = indices_;
 }
 
-void GlyphGeom::buildObject(GeometryHandle geom, const std::string uniqueNodeID, const bool isTransparent, const double transparencyValue,
-  const GeometryObject::ColorScheme& colorScheme, RenderState state, const GeometryObject::SpireIBO::PRIMITIVE& primIn, const BBox& bbox)
+void GlyphGeom::buildObject(GeometryHandle geom, const std::string& uniqueNodeID, const bool isTransparent, const double transparencyValue,
+  const ColorScheme& colorScheme, RenderState state, const SpireIBO::PRIMITIVE& primIn, const BBox& bbox)
 {
   std::string vboName = uniqueNodeID + "VBO";
   std::string iboName = uniqueNodeID + "IBO";
   std::string passName = uniqueNodeID + "Pass";
 
-  bool useTriangles = primIn == GeometryObject::SpireIBO::TRIANGLES;
+  bool useTriangles = primIn == SpireIBO::PRIMITIVE::TRIANGLES;
 
   // Construct VBO.
   std::string shader = "Shaders/UniformColor";
-  std::vector<GeometryObject::SpireVBO::AttributeData> attribs;
-  attribs.push_back(GeometryObject::SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+  std::vector<SpireVBO::AttributeData> attribs;
+  attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
   if (useTriangles)
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
-  GeometryObject::RenderType renderType = GeometryObject::RENDER_VBO_IBO;
+    attribs.push_back(SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
+  RenderType renderType = RenderType::RENDER_VBO_IBO;
 
-  //GeometryObject::ColorScheme colorScheme = GeometryObject::COLOR_UNIFORM;
+  //ColorScheme colorScheme = COLOR_UNIFORM;
 
-  std::vector<GeometryObject::SpireSubPass::Uniform> uniforms;
+  std::vector<SpireSubPass::Uniform> uniforms;
   if (isTransparent)
-    uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uTransparency", (float)(transparencyValue)));
+    uniforms.push_back(SpireSubPass::Uniform("uTransparency", static_cast<float>(transparencyValue)));
   // TODO: add colormapping options
-  if (colorScheme == GeometryObject::COLOR_MAP)
+  if (colorScheme == ColorScheme::COLOR_MAP)
   {
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
+    attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
     if (useTriangles)
     {
       shader = "Shaders/DirPhongCMap";
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+      uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+      uniforms.push_back(SpireSubPass::Uniform("uSpecularColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+      uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
     }
     else
     {
       shader = "Shaders/ColorMap";
     }
   }
-  else if (colorScheme == GeometryObject::COLOR_IN_SITU)
+  else if (colorScheme == ColorScheme::COLOR_IN_SITU)
   {
-    attribs.push_back(GeometryObject::SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
+    attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
     if (useTriangles)
     {
       shader = "Shaders/DirPhongInSitu";
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+      uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+      uniforms.push_back(SpireSubPass::Uniform("uSpecularColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+      uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
     }
     else
     {
       shader = "Shaders/InSituColor";
     }
   }
-  else if (colorScheme == GeometryObject::COLOR_UNIFORM)
+  else if (colorScheme == ColorScheme::COLOR_UNIFORM)
   {
     ColorRGB dft = state.defaultColor;
     if (useTriangles)
     {
-      shader = "Shaders/DirPhong";
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uAmbientColor",
+      if (geom->isClippable())
+        shader = "Shaders/DirPhong";
+      else
+        shader = "Shaders/DirPhongNoClipping";
+      uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uDiffuseColor",
-        glm::vec4(dft.r(), dft.g(), dft.b(), (float)transparencyValue)));
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularColor",
+      uniforms.push_back(SpireSubPass::Uniform("uDiffuseColor",
+        glm::vec4(dft.r(), dft.g(), dft.b(), static_cast<float>(transparencyValue))));
+      uniforms.push_back(SpireSubPass::Uniform("uSpecularColor",
         glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-      uniforms.push_back(GeometryObject::SpireSubPass::Uniform("uSpecularPower", 32.0f));
+      uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
     }
     else
     {
-      uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), (float)transparencyValue));
+      uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), static_cast<float>(transparencyValue)));
     }
   }
 
   uint32_t iboSize = 0;
   uint32_t vboSize = 0;
 
-  vboSize = (uint32_t)points_.size() * 3 * sizeof(float);
-  vboSize += (uint32_t)normals_.size() * 3 * sizeof(float);
-  if (colorScheme == GeometryObject::COLOR_IN_SITU || colorScheme == GeometryObject::COLOR_MAP)
-    vboSize += (uint32_t)colors_.size() * 4 * sizeof(float); //RGBA
-  iboSize = (uint32_t)indices_.size() * sizeof(uint32_t);
+  vboSize = static_cast<uint32_t>(points_.size()) * 3 * sizeof(float);
+  vboSize += static_cast<uint32_t>(normals_.size()) * 3 * sizeof(float);
+  if (colorScheme == ColorScheme::COLOR_IN_SITU || colorScheme == ColorScheme::COLOR_MAP)
+    vboSize += static_cast<uint32_t>(colors_.size()) * 4 * sizeof(float); //RGBA
+  iboSize = static_cast<uint32_t>(indices_.size()) * sizeof(uint32_t);
   /// \todo To reduce memory requirements, we can use a 16bit index buffer.
 
   /// \todo To further reduce a large amount of memory, get rid of the index
@@ -168,7 +173,7 @@ void GlyphGeom::buildObject(GeometryHandle geom, const std::string uniqueNodeID,
       vboBuffer->write(static_cast<float>(normals_.at(i).y()));
       vboBuffer->write(static_cast<float>(normals_.at(i).z()));
     }
-    if (colorScheme == GeometryObject::COLOR_MAP || colorScheme == GeometryObject::COLOR_IN_SITU)
+    if (colorScheme == ColorScheme::COLOR_MAP || colorScheme == ColorScheme::COLOR_IN_SITU)
     {
       vboBuffer->write(static_cast<float>(colors_.at(i).r()));
       vboBuffer->write(static_cast<float>(colors_.at(i).g()));
@@ -180,16 +185,18 @@ void GlyphGeom::buildObject(GeometryHandle geom, const std::string uniqueNodeID,
 
   // If true, then the VBO will be placed on the GPU. We don't want to place
   // VBOs on the GPU when we are generating rendering lists.
-  GeometryObject::SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements_, bbox, true);
+  SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements_, bbox, true);
 
   // Construct IBO.
-  GeometryObject::SpireIBO geomIBO(iboName, primIn, sizeof(uint32_t), iboBufferSPtr);
+  SpireIBO geomIBO(iboName, primIn, sizeof(uint32_t), iboBufferSPtr);
 
   state.set(RenderState::IS_ON, true);
   state.set(RenderState::HAS_DATA, true);
 
+  SpireText text;
+
   // Construct Pass.
-  GeometryObject::SpireSubPass pass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO);
+  SpireSubPass pass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO, text);
 
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
@@ -220,19 +227,46 @@ void GlyphGeom::addEllipsoid(const Point& p, double radius1, double radius2, dou
   generateEllipsoid(p, radius1, radius2, resolution, color, numVBOElements_, points_, normals_, indices_, colors_);
 }
 
-void GlyphGeom::addCylinder(const Point p1, const Point& p2, double radius, double resolution,
+void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, double resolution,
                             const ColorRGB& color1, const ColorRGB& color2)
-{
+{  
   generateCylinder(p1, p2, radius, radius, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
 }
 
-void GlyphGeom::addCone(const Point p1, const Point& p2, double radius, double resolution,
+void GlyphGeom::addCone(const Point& p1, const Point& p2, double radius, double resolution,
   const ColorRGB& color1, const ColorRGB& color2)
 {
+  //std::cout << "p1: " << p1 << " p2 " << p2 << " radius: " << radius << " resolution: " << resolution << " color1: " << color1 << " color2: " << color2 << std::endl;
   generateCylinder(p1, p2, radius, 0.0, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
 }
 
-void GlyphGeom::addNeedle(Point p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
+void GlyphGeom::addClippingPlane(const Point& p1, const Point& p2,
+  const Point& p3, const Point& p4, double radius, double resolution,
+  const ColorRGB& color1, const ColorRGB& color2)
+{
+  addSphere(p1, radius, resolution, color1);
+  addSphere(p2, radius, resolution, color1);
+  addSphere(p3, radius, resolution, color1);
+  addSphere(p4, radius, resolution, color1);
+  addCylinder(p1, p2, radius, resolution, color1, color2);
+  addCylinder(p2, p3, radius, resolution, color1, color2);
+  addCylinder(p3, p4, radius, resolution, color1, color2);
+  addCylinder(p4, p1, radius, resolution, color1, color2);
+}
+
+void GlyphGeom::addPlane(const Point& p1, const Point& p2,
+  const Point& p3, const Point& p4,
+  const ColorRGB& color1)
+{
+  generatePlane(p1, p2, p3, p4, color1, numVBOElements_, points_, normals_, indices_, colors_);
+}
+
+void GlyphGeom::addLine(const Point& p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
+{
+  generateLine(p1, p2, color1, color2, numVBOElements_, points_, indices_, colors_);
+}
+
+void GlyphGeom::addNeedle(const Point& p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
 {
   Point mid(0.5 * (p1.x() + p2.x()), 0.5 * (p1.y() + p2.y()), 0.5 * (p1.z() + p2.z()));
   ColorRGB endColor(color2.r(), color2.g(), color2.b(), 0.5);
@@ -262,7 +296,7 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
   Vector p;
   for (double strips = 0.; strips <= num_strips; strips += 1.)
   {
-    uint32_t offset = (uint32_t)numVBOElements;
+    uint32_t offset = static_cast<uint32_t>(numVBOElements);
     p = std::cos(2. * M_PI * strips / num_strips) * u +
       std::sin(2. * M_PI * strips / num_strips) * crx;
     p.normalize();
@@ -300,7 +334,7 @@ void GlyphGeom::generateSphere(const Point& center, double radius1, double radiu
   {
     for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc)
     {
-      uint32_t offset = (uint32_t)numVBOElements;
+      uint32_t offset = static_cast<uint32_t>(numVBOElements);
       pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
       pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
       points.push_back(r1 * pp1 + Vector(center));
@@ -339,7 +373,7 @@ void GlyphGeom::generateEllipsoid(const Point& center, double radius1, double ra
   {
     for (double theta = 0.; theta <= /*2. */ M_PI; theta += theta_inc)
     {
-      uint32_t offset = (uint32_t)numVBOElements;
+      uint32_t offset = static_cast<uint32_t>(numVBOElements);
       pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
       pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
       points.push_back(r1 * pp1 + Vector(center));
@@ -398,7 +432,7 @@ void GlyphGeom::generateEllipsoid(const Point& center, double radius1, double ra
   }
 }
 
-void GlyphGeom::generateLine(const Point p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2,
+void GlyphGeom::generateLine(const Point& p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2,
   int64_t& numVBOElements, std::vector<Vector>& points, std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
 {
   points.push_back(Vector(p1));
@@ -412,7 +446,7 @@ void GlyphGeom::generateLine(const Point p1, const Point& p2, const ColorRGB& co
   ++numVBOElements;
 }
 
-void GlyphGeom::generatePoint(const Point p, const ColorRGB& color,
+void GlyphGeom::generatePoint(const Point& p, const ColorRGB& color,
   int64_t& numVBOElements, std::vector<Vector>& points, std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
 {
   points.push_back(Vector(p));
@@ -422,7 +456,36 @@ void GlyphGeom::generatePoint(const Point p, const ColorRGB& color,
   ++numVBOElements;
 }
 
-
+void GlyphGeom::generatePlane(const Point& p1, const Point& p2,
+  const Point& p3, const Point& p4, const ColorRGB& color,
+  int64_t& numVBOElements, std::vector<Vector>& points, std::vector<Vector>& normals,
+  std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
+{
+  points.push_back(Vector(p1));
+  points.push_back(Vector(p2));
+  points.push_back(Vector(p3));
+  points.push_back(Vector(p4));
+  colors.push_back(color);
+  colors.push_back(color);
+  colors.push_back(color);
+  colors.push_back(color);
+  Vector n;
+  n = Cross(p2 - p1, p4 - p1).normal();
+  normals.push_back(n);
+  n = Cross(p3 - p2, p1 - p2).normal();
+  normals.push_back(n);
+  n = Cross(p4 - p3, p2 - p3).normal();
+  normals.push_back(n);
+  n = Cross(p1 - p4, p3 - p4).normal();
+  normals.push_back(n);
+  indices.push_back(0 + numVBOElements);
+  indices.push_back(1 + numVBOElements);
+  indices.push_back(2 + numVBOElements);
+  indices.push_back(2 + numVBOElements);
+  indices.push_back(3 + numVBOElements);
+  indices.push_back(0 + numVBOElements);
+  numVBOElements += 4;
+}
 
 // Addarrow from SCIRun 4
 void GlyphGeom::addArrow(const Point& center, const Vector& t,
@@ -491,15 +554,15 @@ void GlyphGeom::generateCylinder(const Point& center, const Vector& t, double ra
   generateTransforms(center, t, trans, rotate);
 
   // Draw the cylinder
-  double dz = length / (float)nv;
-  double dr = (radius2 - radius1) / (float)nv;
+  double dz = length / static_cast<float>(nv);
+  double dr = (radius2 - radius1) / static_cast<float>(nv);
 
   for (int v = 0; v<nv; v++)
   {
-    double z1 = dz * (float)v;
+    double z1 = dz * static_cast<float>(v);
     double z2 = z1 + dz;
 
-    double r1 = radius1 + dr * (float)v;
+    double r1 = radius1 + dr * static_cast<float>(v);
     double r2 = r1 + dr;
 
     QuadStrip quadstrip;

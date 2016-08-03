@@ -35,8 +35,13 @@
 #include <fstream>
 #include <vector>
 #include <iterator>
+#include <type_traits>
 #include <boost/shared_ptr.hpp>
 #include <boost/atomic.hpp>
+#ifndef Q_MOC_RUN
+#include <boost/iterator/zip_iterator.hpp>
+#include <boost/range.hpp>
+#endif
 #include <Core/Utils/share.h>
 
 namespace SCIRun
@@ -108,7 +113,39 @@ private:
 
 SCISHARE bool replaceSubstring(std::string& str, const std::string& from, const std::string& to);
 
+template <typename... T>
+auto zip(const T&... containers) -> boost::iterator_range<boost::zip_iterator<decltype(boost::make_tuple(std::begin(containers)...))>>
+{
+  auto zip_begin = boost::make_zip_iterator(boost::make_tuple(std::begin(containers)...));
+  auto zip_end = boost::make_zip_iterator(boost::make_tuple(std::end(containers)...));
+  return boost::make_iterator_range(zip_begin, zip_end);
+}
+
+//template<typename T, typename = void>
+//struct has_id : std::false_type { };
+//
+//template<typename T>
+//struct has_id<T, decltype(std::declval<T>().id, void())> : std::true_type{};
+
+#define DEFINE_MEMBER_CHECKER(member) \
+    template<typename T, typename V = bool> \
+    struct has_ ## member : std::false_type { }; \
+    template<typename T> \
+    struct has_ ## member<T, \
+        typename std::enable_if< \
+            !std::is_same<decltype(std::declval<T>().member), void>::value, \
+            bool \
+                    >::type \
+                > : std::true_type { };
+
+#define HAS_MEMBER(C, member) \
+    has_ ## member<C>::value
+
 }}
+
+
+template <typename T>
+class TypeDeterminer;
 
 namespace std
 {

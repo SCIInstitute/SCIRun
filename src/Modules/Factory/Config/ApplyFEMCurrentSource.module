@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ApplyFEMCurrentSource",
+    "namespace": "FiniteElements",
+    "status": "Converted",
+    "description": "...",
+    "header": "Modules/Legacy/FiniteElements/ApplyFEMCurrentSource.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ApplyFEMCurrentSourceDialog",
+    "header": "Interface/Modules/FiniteElements/ApplyFEMCurrentSourceDialog.h"
+  }
+}

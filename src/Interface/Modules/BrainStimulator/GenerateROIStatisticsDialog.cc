@@ -29,7 +29,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
 #include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <boost/foreach.hpp>
 #include <boost/assign/std/vector.hpp>
 
 using namespace SCIRun::Gui;
@@ -98,7 +97,7 @@ void GenerateROIStatisticsDialog::push()
 
 void GenerateROIStatisticsDialog::pullSpecial()
 {
-  auto tableHandle = optional_any_cast_or_default<VariableHandle>(state_->getTransientValue(Parameters::StatisticsTableValues));
+  auto tableHandle = transient_value_cast<VariableHandle>(state_->getTransientValue(Parameters::StatisticsTableValues));
 
   if (tableHandle)
   {
@@ -110,14 +109,12 @@ void GenerateROIStatisticsDialog::pullSpecial()
     /// get the result data from the algorithm and put it in the GUI table
     for (int i=0; i<all_elc_values.size(); i++)
     {
-      auto col = (all_elc_values[i]).toVector();
+      auto row = (all_elc_values[i]).toVector();
 
       int j = 0;
-      BOOST_FOREACH(const AlgorithmParameter& ap, col)
+      for (const auto& ap : row)
       {
-        auto tmpstr = ap.toString();
-
-        auto item = new QTableWidgetItem(QString::fromStdString(tmpstr));
+        auto item = new QTableWidgetItem(QString::fromStdString(ap.toString()));
         item->setFlags(item->flags() & ~Qt::ItemIsEditable);
         StatisticsOutput_tableWidget->setItem(i, j, item);
         ++j;
@@ -130,13 +127,13 @@ void GenerateROIStatisticsDialog::pullSpecial()
   }
 
   /// get the strings PhysicalUnit / CoordinateSpaceLabel from state (directly from module level) and show it above GUI tables
-  std::string PhysicalUnitString = optional_any_cast_or_default<std::string>(state_->getTransientValue(Parameters::PhysicalUnitStr));  /// change GUI Labels due to physical unit and used coordinate space
+  std::string PhysicalUnitString = transient_value_cast<std::string>(state_->getTransientValue(Parameters::PhysicalUnitStr));  /// change GUI Labels due to physical unit and used coordinate space
   if (!PhysicalUnitString.empty())
   {
     StatisticsTableGroupBox->setTitle("Statistics for ROIs: " + QString::fromStdString(PhysicalUnitString));
   }
 
-  std::string CoordinateSpaceLabelStr = optional_any_cast_or_default<std::string>(state_->getTransientValue(Parameters::CoordinateSpaceLabelStr));  /// change GUI Labels due to physical unit and used coordinate space
+  std::string CoordinateSpaceLabelStr = transient_value_cast<std::string>(state_->getTransientValue(Parameters::CoordinateSpaceLabelStr));  /// change GUI Labels due to physical unit and used coordinate space
   if (!CoordinateSpaceLabelStr.empty())
   {
     ROITableGroupBox->setTitle("Specify ROI: " + QString::fromStdString(CoordinateSpaceLabelStr));

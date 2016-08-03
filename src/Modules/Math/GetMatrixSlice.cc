@@ -38,9 +38,9 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 
-const ModuleLookupInfo GetMatrixSlice::staticInfo_("GetMatrixSlice", "Math", "SCIRun");
+MODULE_INFO_DEF(GetMatrixSlice, Math, SCIRun)
 
-GetMatrixSlice::GetMatrixSlice() : Module(staticInfo_)
+GetMatrixSlice::GetMatrixSlice() : Module(staticInfo_), playing_(false)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(OutputMatrix);
@@ -52,6 +52,7 @@ void GetMatrixSlice::setStateDefaults()
 {
   setStateBoolFromAlgo(Parameters::IsSliceColumn);
   setStateIntFromAlgo(Parameters::SliceIndex);
+  setStateIntFromAlgo(Parameters::MaxIndex);
   setStateIntFromAlgo(Parameters::SliceIncrement);
   setStateIntFromAlgo(Parameters::PlayModeDelay);
   setStateStringFromAlgoOption(Parameters::PlayModeType);
@@ -84,9 +85,8 @@ void GetMatrixSlice::execute()
       state->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PAUSE));
       throw;
     }
-    
 
-    auto playMode = optional_any_cast_or_default<int>(state->getTransientValue(Parameters::PlayModeActive));
+    auto playMode = transient_value_cast_with_variable_check<int>(state->getTransientValue(Parameters::PlayModeActive));
     if (playMode == GetMatrixSliceAlgo::PLAY)
     {
       auto sliceIncrement = state->getValue(Parameters::SliceIncrement).toInt();

@@ -29,13 +29,12 @@
 #ifndef CORE_ALGORITHMS_VISUALIZATION_RENDER_FIELD_STATE_H
 #define CORE_ALGORITHMS_VISUALIZATION_RENDER_FIELD_STATE_H
 
-#include <Core/Datatypes/Material.h>
 #include <Core/Datatypes/Color.h>
+#include <Core/Algorithms/Visualization/share.h>
 
 namespace SCIRun {
 
-// Add render state information here.
-class RenderState
+class SCISHARE RenderState
 {
 public:
 
@@ -45,6 +44,7 @@ public:
     HAS_DATA,
     USE_TRANSPARENCY,
     NORMALIZE_DATA,
+    IS_TEXT,
 
     USE_DEFAULT_COLOR,
     USE_COLORMAP,
@@ -54,16 +54,26 @@ public:
 
     DIRTY,
 
+    // Widget
+    IS_WIDGET,
+
     // Node flags
     USE_SPHERE,
     USE_TRANSPARENT_NODES,
+    USE_DEFAULT_COLOR_NODES,
+    USE_COLORMAP_ON_NODES,
+    USE_COLOR_CONVERT_ON_NODES,
 
     // Edge flags
     USE_CYLINDER,
     USE_TRANSPARENT_EDGES,
+    USE_DEFAULT_COLOR_EDGES,
+    USE_COLORMAP_ON_EDGES,
+    USE_COLOR_CONVERT_ON_EDGES,
 
     // Face flags
     USE_NORMALS,
+    USE_FACE_NORMALS,
     USE_TEXTURE,
     IS_DOUBLE_SIDED,
 
@@ -85,6 +95,9 @@ public:
     USE_MAJOR_RADIUS,
     USE_MINOR_RADIUS,
     USE_PITCH,
+
+    // Rendering Options
+    USE_BLEND,
 
     MAX_ACTION_FLAGS
   };
@@ -112,26 +125,10 @@ public:
     LISTS_SORT
   };
 
-  RenderState()
-  {
-    for (int i = 0; i < MAX_ACTION_FLAGS; ++i)
-    {
-      mFlags[i] = false;
-    }
+  RenderState();
 
-    // Default settings.
-    mFlags[USE_NORMALS] = true;
-  }
-
-  void set(ActionFlags flag, bool truth)
-  {
-    mFlags[flag] = truth;
-  }
-
-  bool get(ActionFlags flag) const
-  {
-    return mFlags[flag];
-  }
+  void set(ActionFlags flag, bool truth);
+  bool get(ActionFlags flag) const;
 
   // Render state flags.
   bool mFlags[MAX_ACTION_FLAGS];

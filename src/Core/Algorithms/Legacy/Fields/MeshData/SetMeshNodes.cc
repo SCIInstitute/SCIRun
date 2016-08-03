@@ -75,7 +75,7 @@ SetMeshNodesAlgo::run(FieldHandle input, DenseMatrixHandle matrix, FieldHandle& 
     /// @todo: worth separating out into factory call for mocking purposes? probably not, just keep the concrete dependence
     ConvertMeshToIrregularMeshAlgo algo;
 
-    if (!algo.run(input,output))
+    if (!algo.runImpl(input,output))
       return (false);
   }
   else
@@ -106,7 +106,7 @@ SetMeshNodesAlgo::run(FieldHandle input, DenseMatrixHandle matrix, FieldHandle& 
 AlgorithmInputName SetMeshNodesAlgo::MatrixNodes("MatrixNodes");
 AlgorithmOutputName SetMeshNodesAlgo::OutputField("OutputField");
 
-AlgorithmOutput SetMeshNodesAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SetMeshNodesAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
   auto nodes = input.get<DenseMatrix>(MatrixNodes);

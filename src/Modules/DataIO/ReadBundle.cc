@@ -28,6 +28,7 @@
 
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Modules/DataIO/ReadBundle.h>
+#include <Core/ImportExport/Field/FieldIEPlugin.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::DataIO;
@@ -36,25 +37,25 @@ using namespace SCIRun::Core::Datatypes;
 /// @class ReadBundle
 /// @brief This module reads a bundle from file (a SCIRun .bdl file).
 
-const Dataflow::Networks::ModuleLookupInfo ReadBundleModule::staticInfo_("ReadBundle", "DataIO", "SCIRun");
+MODULE_INFO_DEF(ReadBundle, DataIO, SCIRun)
 
-ReadBundleModule::ReadBundleModule()
+ReadBundle::ReadBundle()
     : my_base(staticInfo_.module_name_, staticInfo_.category_name_, staticInfo_.package_name_, "Bundle")
 {
   INITIALIZE_PORT(Bundle);
 }
 
-void ReadBundleModule::execute()
+void ReadBundle::execute()
 {
-  /*
-  const std::string ftpre = guiFileType_.get();
-  const std::string::size_type loc = ftpre.find(" (");
-  const std::string ft = ftpre.substr(0, loc);
-*/
   my_base::execute();
 }
 
-std::string ReadBundleModule::fileTypeList()
+std::string ReadBundle::fileTypeList()
 {
   return "SCIRun Bundle File (*.bdl)";
+}
+
+std::string ReadBundle::defaultFileTypeName() const
+{
+  return fileTypeList();
 }

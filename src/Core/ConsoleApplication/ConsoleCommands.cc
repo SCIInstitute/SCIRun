@@ -27,27 +27,58 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Core/ConsoleApplication/ConsoleCommands.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Network/Module.h>
+#include <Core/Logging/ConsoleLogger.h>
 #include <Core/Python/PythonInterpreter.h>
 
 using namespace SCIRun::Core;
-using namespace SCIRun::Core::Commands;
-using namespace SCIRun::Core::Console;
+using namespace Commands;
+using namespace Console;
 using namespace SCIRun::Dataflow::Networks;
+using namespace Algorithms;
+
+LoadFileCommandConsole::LoadFileCommandConsole()
+{
+  addParameter(Name("FileNum"), 0);
+  addParameter(Variables::Filename, std::string());
+}
+
+//TODO: find a better place for this function
+namespace
+{
+  void quietModulesIfNotVerbose()
+  {
+    if (!Application::Instance().parameters()->verboseMode())
+      SCIRun::Dataflow::Networks::Module::defaultLogger_.reset(new SCIRun::Core::Logging::NullLogger);
+  }
+}
 
 bool LoadFileCommandConsole::execute()
 {
+  quietModulesIfNotVerbose();
+
   auto inputFiles = Application::Instance().parameters()->inputFiles();
+  std::string filename;
   if (!inputFiles.empty())
+    filename = inputFiles[0];
+  else
   {
-    auto filename = inputFiles[index_];
+    filename = get(Variables::Filename).toFilename().string();
+  }
 
+  {
     /// @todo: real logger
-    std::cout << "Attempting load of " + filename << std::endl;
-
+    std::cout << "Attempting load of " << filename << std::endl;
+    if (!boost::filesystem::exists(filename))
+    {
+      std::cout << "File does not exist: " << filename << std::endl;
+      return false;
+    }
     try
     {
       auto openedFile = XMLSerializer::load_xml<NetworkFile>(filename);
@@ -57,16 +88,16 @@ bool LoadFileCommandConsole::execute()
         Application::Instance().controller()->clear();
         Application::Instance().controller()->loadNetwork(openedFile);
         /// @todo: real logger
-        std::cout << "File load done." << std::endl;
+        std::cout << "File load done: " << filename << std::endl;
         return true;
       }
-      else /// @todo: real logger
-        std::cout << "File load failed." << std::endl;
+      /// @todo: real logger
+      std::cout << "File load failed: " << filename << std::endl;
     }
     catch (...)
     {
       /// @todo: real logger
-      std::cout << "File load failed." << std::endl;
+      std::cout << "File load failed: " << filename << std::endl;
     }
     return false;
   }
@@ -74,23 +105,38 @@ bool LoadFileCommandConsole::execute()
   return true;
 }
 
+bool SaveFileCommandConsole::execute()
+{
+  throw "todo";
+}
+
 bool ExecuteCurrentNetworkCommandConsole::execute()
 {
-  std::cout << "ExecuteCurrentNetworkCommandConsole::execute()" << std::endl;
-  Application::Instance().controller()->executeAll(0);
-  std::cout << "execution done" << std::endl;
+  Application::Instance().controller()->executeAll(nullptr);
   return true;
+}
+
+QuitAfterExecuteCommandConsole::QuitAfterExecuteCommandConsole()
+{
+  addParameter(Name("RunningPython"), false);
 }
 
 bool QuitAfterExecuteCommandConsole::execute()
 {
   std::cout << "Goodbye!" << std::endl;
+  Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ exit(code); });
   //SCIRunMainWindow::Instance()->setupQuitAfterExecute();
   return true;
 }
 
+QuitCommandConsole::QuitCommandConsole()
+{
+  addParameter(Name("RunningPython"), false);
+}
+
 bool QuitCommandConsole::execute()
 {
+  std::cout << "Exiting!" << std::endl;
   exit(0);
   return true;
 }
@@ -113,8 +159,30 @@ bool PrintModulesCommand::execute()
   return true;
 }
 
+bool InteractiveModeCommandConsole::execute()
+{
+#ifdef BUILD_WITH_PYTHON
+  quietModulesIfNotVerbose();
+  PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+  std::string line;
+  while (true)
+  {
+    std::cout << "scirun5> " << std::flush;
+    std::getline(std::cin, line);
+    if (line.find("quit") != std::string::npos) // TODO: need fix for ^D entry || (!x.empty() && x[0] == '\004'))
+      break;
+
+    PythonInterpreter::Instance().run_string(line);
+  }
+  exit(0);
+#endif
+  return true;
+}
+
 bool RunPythonScriptCommandConsole::execute()
 {
+  quietModulesIfNotVerbose();
+
   auto script = Application::Instance().parameters()->pythonScriptFile();
   if (script)
   {
@@ -122,8 +190,18 @@ bool RunPythonScriptCommandConsole::execute()
     std::cout << "RUNNING PYTHON SCRIPT: " << *script << std::endl;;
 
     Application::Instance().controller()->clear();
-    SCIRun::Core::PythonInterpreter::Instance().run_file(script->string());
+    PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+    PythonInterpreter::Instance().run_file(script->string());
 
+    //TODO: not sure what else to do here. Probably wait on a condition variable, or just loop forever
+    if (!Application::Instance().parameters()->interactiveMode())
+    {
+      while (true)
+      {
+        std::cout << "Running Python script." << std::endl;
+        boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+      }
+    }
     std::cout << "Done running Python script." << std::endl;
     return true;
 #else

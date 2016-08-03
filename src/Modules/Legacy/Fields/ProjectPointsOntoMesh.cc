@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -36,10 +36,9 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-ModuleLookupInfo ProjectPointsOntoMesh::staticInfo_("ProjectPointsOntoMesh", "ChangeMesh", "SCIRun");
+MODULE_INFO_DEF(ProjectPointsOntoMesh, ChangeMesh, SCIRun)
 
-ProjectPointsOntoMesh::ProjectPointsOntoMesh() :
-  Module(staticInfo_)
+ProjectPointsOntoMesh::ProjectPointsOntoMesh() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(ObjectField);
@@ -48,7 +47,6 @@ ProjectPointsOntoMesh::ProjectPointsOntoMesh() :
 
 void ProjectPointsOntoMesh::setStateDefaults()
 {
-  auto state = get_state();
   setStateStringFromAlgoOption(Parameters::ProjectMethod);
 }
 
@@ -57,15 +55,14 @@ void ProjectPointsOntoMesh::execute()
   auto input = getRequiredInput(InputField);
   auto object = getRequiredInput(ObjectField);
 
-  //if (inputs_changed_ || guimethod_.changed() || !oport_cached("Field"))
   if (needToExecute())
   {
     update_state(Executing);
 
     setAlgoOptionFromState(Parameters::ProjectMethod);
 
-    auto output = algo().run_generic(withInputData((InputField, input)(ObjectField, object)));
-    
+    auto output = algo().run(withInputData((InputField, input)(ObjectField, object)));
+
     sendOutputFromAlgorithm(OutputField, output);
   }
 }

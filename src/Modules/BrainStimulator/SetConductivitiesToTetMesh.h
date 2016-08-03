@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -35,7 +35,7 @@
 /// Moritz Dannhauer
 ///@details
 /// The SetConductivitiesToTetMesh module uses a single field input and assigns conductivities to output field that are provided by the GUI elements to work in the BrainStimulator environment (uses SI units).
-/// The module looks for the numbers in round brackets (range visible in GUI) of the input field and sends them to the algorithm to be converted to the conductivities (specified in GUI). 
+/// The module looks for the numbers in round brackets (range visible in GUI) of the input field and sends them to the algorithm to be converted to the conductivities (specified in GUI).
 ///
 
 #ifndef MODULES_BRAINSTIMULATOR_SetConductivitiesToTetMesh_H
@@ -60,6 +60,10 @@ class SCISHARE SetConductivitiesToMesh : public SCIRun::Dataflow::Networks::Modu
 
     INPUT_PORT(0, InputField, LegacyField);
     OUTPUT_PORT(0, OutputField, LegacyField);
+
+    NEW_BRAIN_STIMULATOR_MODULE
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 };
 
 }}}

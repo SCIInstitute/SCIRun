@@ -38,38 +38,39 @@ namespace SCIRun {
   namespace Modules {
     namespace Visualization {
 
-      class SCISHARE ShowColorMapModule : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
+      class SCISHARE ShowColorMap : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
         public Has1InputPort<ColorMapPortTag>,
         public Has1OutputPort<GeometryPortTag>
       {
-      private:
-        SCIRun::Modules::Visualization::TextBuilder text_;
       public:
-        ShowColorMapModule();
-        virtual void execute();
-        Core::Datatypes::GeometryHandle buildGeometryObject(Core::Datatypes::ColorMapHandle cm,
+        ShowColorMap();
+        virtual void execute() override;
+        Core::Datatypes::GeometryBaseHandle buildGeometryObject(Core::Datatypes::ColorMapHandle cm,
           Dataflow::Networks::ModuleStateHandle state,
           const std::string& id);
 
-        static Core::Algorithms::AlgorithmParameterName DisplaySide;
-        static Core::Algorithms::AlgorithmParameterName DisplayLength;
-        static Core::Algorithms::AlgorithmParameterName TextSize;
-        static Core::Algorithms::AlgorithmParameterName TextColor;
-        static Core::Algorithms::AlgorithmParameterName Labels;
-        static Core::Algorithms::AlgorithmParameterName Scale;
-        static Core::Algorithms::AlgorithmParameterName Units;
-        static Core::Algorithms::AlgorithmParameterName SignificantDigits;
-        static Core::Algorithms::AlgorithmParameterName AddExtraSpace;
-        static Core::Algorithms::AlgorithmParameterName TextRed;
-        static Core::Algorithms::AlgorithmParameterName TextGreen;
-        static Core::Algorithms::AlgorithmParameterName TextBlue;
-        static Core::Algorithms::AlgorithmParameterName XTranslation;
-        static Core::Algorithms::AlgorithmParameterName YTranslation;
+        static const Core::Algorithms::AlgorithmParameterName DisplaySide;
+        static const Core::Algorithms::AlgorithmParameterName DisplayLength;
+        static const Core::Algorithms::AlgorithmParameterName TextSize;
+        static const Core::Algorithms::AlgorithmParameterName TextColor;
+        static const Core::Algorithms::AlgorithmParameterName Labels;
+        static const Core::Algorithms::AlgorithmParameterName Scale;
+        static const Core::Algorithms::AlgorithmParameterName Units;
+        static const Core::Algorithms::AlgorithmParameterName SignificantDigits;
+        static const Core::Algorithms::AlgorithmParameterName AddExtraSpace;
+        static const Core::Algorithms::AlgorithmParameterName TextRed;
+        static const Core::Algorithms::AlgorithmParameterName TextGreen;
+        static const Core::Algorithms::AlgorithmParameterName TextBlue;
+        static const Core::Algorithms::AlgorithmParameterName XTranslation;
+        static const Core::Algorithms::AlgorithmParameterName YTranslation;
 
-        virtual void setStateDefaults();
+        virtual void setStateDefaults() override;
         INPUT_PORT(0, ColorMapObject, ColorMap);
         OUTPUT_PORT(0, GeometryOutput, GeometryObject);
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
+      private:
+        TextBuilder textBuilder_;
       };
     }
   }

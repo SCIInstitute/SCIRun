@@ -37,22 +37,31 @@
 namespace SCIRun {
   namespace Core {
     namespace Algorithms {
-      
+
       class SCISHARE HardCodedAlgorithmFactory : public SCIRun::Core::Algorithms::AlgorithmFactory
       {
       public:
+        using AlgoMaker = boost::function<AlgorithmBase*()>;
+        using NamedAlgoMaker = std::pair<std::string, AlgoMaker>;
+        using AlgoMakerMap = std::map<std::string, NamedAlgoMaker>;
+
         HardCodedAlgorithmFactory();
         virtual SCIRun::Core::Algorithms::AlgorithmHandle create(const std::string& moduleName, const AlgorithmCollaborator* algoCollaborator) const;
+        size_t numAlgorithms() const { return factoryMap_.size(); }
+        AlgoMakerMap::const_iterator begin() const { return factoryMap_.cbegin(); }
+        AlgoMakerMap::const_iterator end() const { return factoryMap_.cend(); }
       private:
-        typedef boost::function<AlgorithmBase*()> AlgoMaker;
-        typedef std::map<std::string, AlgoMaker> AlgoMakerMap;
+
         AlgoMakerMap factoryMap_;
         void addToMakerMap();
         void addToMakerMap2(); // @todo: temporary
+        void addToMakerMapGenerated();
       };
-
     }
   }
 }
+
+#define ADD_MODULE_ALGORITHM(module, algorithm) (#module, std::make_pair(#algorithm, boost::factory<algorithm*>()))
+#define ADD_MODULE_ALGORITHM_GENERATED(module, algorithm) factoryMap_[#module] = std::make_pair(#algorithm, boost::factory<algorithm*>())
 
 #endif

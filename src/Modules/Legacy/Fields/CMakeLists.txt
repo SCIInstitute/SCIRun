@@ -51,7 +51,11 @@ SET(Modules_Legacy_Fields_HEADERS
   CalculateVectorMagnitudes.h
   CalculateSignedDistanceToField.h
   ClipFieldByFunction3.h
+  ClipFieldByMesh.h
+  ConvertMatricesToMesh.h
   ConvertQuadSurfToTriSurf.h
+  ConvertMeshToPointCloud.h
+  ConvertMeshToUnstructuredMesh.h
   AlignMeshBoundingBoxes.h
   SetFieldNodes.h
   SetFieldData.h
@@ -70,6 +74,7 @@ SET(Modules_Legacy_Fields_HEADERS
   MapFieldDataOntoElems.h
   MapFieldDataOntoNodes.h
   MapFieldDataFromSourceToDestination.h
+  ReportFieldGeometryMeasures.h
   FlipSurfaceNormals.h
   SwapFieldDataWithMatrixEntries.h
   ConvertIndicesToFieldData.h
@@ -79,6 +84,8 @@ SET(Modules_Legacy_Fields_HEADERS
   GenerateSinglePointProbeFromField.h
   GeneratePointSamplesFromField.h
   GeneratePointSamplesFromFieldOrWidget.h
+  TransformMeshWithTransform.h
+  GetMeshQualityField.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -101,7 +108,7 @@ SET(Modules_Legacy_Fields_SRCS
   SplitFieldByDomain.cc
   AlignMeshBoundingBoxes.cc
   ProjectPointsOntoMesh.cc
-  #GetMeshQualityField.cc
+  GetMeshQualityField.cc
   #ApplyFilterToFieldData.cc
   ApplyMappingMatrix.cc
   #CalculateNodeNormals.cc
@@ -112,13 +119,11 @@ SET(Modules_Legacy_Fields_SRCS
   ConvertFieldBasis.cc
   ConvertFieldDataType.cc
   #ChooseField.cc
-  #ClipFieldByFunction.cc
-  #ClipFieldByFunction2.cc
   ClipFieldByFunction3.cc
-  #ClipFieldByMesh.cc
+  ClipFieldByMesh.cc
   #ClipFieldToFieldOrWidget.cc
   #ClipLatVolByIndicesOrWidget.cc
-  #ConvertMatricesToMesh.cc
+  ConvertMatricesToMesh.cc
   #CollectPointClouds.cc
   #CoregisterPointClouds.cc
   #EditMeshBoundingBox.cc
@@ -130,8 +135,7 @@ SET(Modules_Legacy_Fields_SRCS
   FairMesh.cc
   #GetAllSegmentationBoundaries.cc
   GetFieldBoundary.cc
-  #ReportFieldInfo.cc
-  #ReportFieldGeometryMeasures.cc
+  ReportFieldGeometryMeasures.cc
   #SetFieldProperty.cc
   GetSliceFromStructuredFieldByIndices.cc
   #SubsampleStructuredFieldByIndices.cc
@@ -160,18 +164,14 @@ SET(Modules_Legacy_Fields_SRCS
   GeneratePointSamplesFromField.cc
   #SelectFieldROIWithBoxWidget.cc
   SetFieldOrMeshStringProperty.cc
-  #ConvertMeshToPointCloud.cc
+  ConvertMeshToPointCloud.cc
   #ConvertMeshToIrregularMesh.cc
-  #ConvertMeshToUnstructuredMesh.cc
-  #CalculateFieldData.cc
-  #CalculateFieldData2.cc
-  #CalculateFieldData3.cc
-  #CalculateFieldData4.cc
+  ConvertMeshToUnstructuredMesh.cc
   CalculateFieldData5.cc
   #CalculateFieldDataMetric.cc
   #CalculateMeshNodes.cc
   #QueryFieldData.cc
-  #TransformMeshWithTransform.cc
+  TransformMeshWithTransform.cc
   CalculateVectorMagnitudes.cc
   #GenerateLinearSegments.cc
   CalculateDistanceToField.cc
@@ -181,15 +181,10 @@ SET(Modules_Legacy_Fields_SRCS
   #CalculateInsideWhichField.cc
   ConvertIndicesToFieldData.cc
   CreateFieldData.cc
-  #GetFieldData.cc
-  #SetFieldData.cc
-  #CreateFieldData.cc
   GetFieldData.cc
   SetFieldData.cc
   GetFieldNodes.cc
   SetFieldNodes.cc
-  #MapFieldDataFromElemToNode.cc
-  #MapFieldDataFromNodeToElem.cc
   #MapFieldDataOntoNodesRadialbasis.cc
   #SelectAndSetFieldData.cc
   #SelectAndSetFieldData3.cc
@@ -207,13 +202,13 @@ SET(Modules_Legacy_Fields_SRCS
 IF(WITH_TETGEN)
   SET(Modules_Legacy_Fields_SRCS ${Modules_Legacy_Fields_SRCS}
     InterfaceWithTetGen.cc
-	InterfaceWithTetGenImpl.cc
-	)
+    InterfaceWithTetGenImpl.cc
+  )
   SET(Modules_Legacy_Fields_HEADERS ${Modules_Legacy_Fields_HEADERS}
-	InterfaceWithTetGen.h
+    InterfaceWithTetGen.h
     InterfaceWithTetGenImpl.h
-	)
-ENDIF(WITH_TETGEN)
+  )
+ENDIF()
 
 SCIRUN_ADD_LIBRARY(Modules_Legacy_Fields
   ${Modules_Legacy_Fields_HEADERS}
@@ -222,41 +217,24 @@ SCIRUN_ADD_LIBRARY(Modules_Legacy_Fields
 
 TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
   Dataflow_Network
-  #Dataflow_Widgets
-  #Dataflow_GuiInterface
-  #Dataflow_TkExtensions
   Core_Algorithms_Legacy_Fields
   Algorithms_Base
-  #Core_Algorithms_Visualization
-  #Core_Algorithms_Geometry
-  #Core_Algorithms_Converter
   Core_Basis
   Core_Datatypes
   Core_Datatypes_Legacy_Bundle
   Core_Exceptions_Legacy
-  #Core_Geom
   Core_Geometry_Primitives
-  #Core_GeomInterface
-  #Core_ImportExport
   Core_Math
   Core_Parser
-  #Core_Persistent
-  #Core_Thread
   Core_Util_Legacy
-  #${TK_LIBRARY}
-  #${GL_LIBRARY}
-  #${LEX_LIBRARY}
-  #${M_LIBRARY}
-  #${THREAD_LIBRARY}
-  #${SCI_TEEM_LIBRARY}
-  #${SLIVR_LIBRARY}
+  Graphics_Glyphs
+  Graphics_Datatypes
 )
 
 IF(WITH_TETGEN)
-  TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
-    ${SCI_TETGEN_LIBRARY})
-ENDIF(WITH_TETGEN)
+  TARGET_LINK_LIBRARIES(Modules_Legacy_Fields ${TETGEN_LIBRARY})
+ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Legacy_Fields)
-ENDIF(BUILD_SHARED_LIBS)
+ENDIF()

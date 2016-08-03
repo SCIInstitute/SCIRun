@@ -31,7 +31,6 @@
 
 #include "Interface/Modules/DataIO/ui_WriteFieldDialog.h"
 #include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/DataIO/share.h>
@@ -40,7 +39,6 @@ namespace SCIRun {
 namespace Gui {
 
 class SCISHARE WriteFieldDialog : public ModuleDialogGeneric,
-  //public SCIRun::State::SendScalarState,
   public Ui::WriteFieldDialog, public RemembersFileDialogDirectory
 {
 	Q_OBJECT
@@ -48,7 +46,7 @@ class SCISHARE WriteFieldDialog : public ModuleDialogGeneric,
 public:
   WriteFieldDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 protected:
   virtual void pullSpecial() override;
 

@@ -61,7 +61,7 @@ BuildNodeLinkAlgo::run(MatrixHandle nodeDomain, MatrixHandle& nodeLink) const
     return (false);
   }
 
-  DenseColumnMatrixHandle nodeDomainCol = matrix_convert::to_column(nodeDomain);
+  DenseColumnMatrixHandle nodeDomainCol = convertMatrix::toColumn(nodeDomain);
 
   size_type num_values = nodeDomainCol->nrows();
 
@@ -146,7 +146,7 @@ BuildNodeLinkAlgo::run(MatrixHandle nodeDomain, MatrixHandle& nodeLink) const
   return (true);
 }
 
-AlgorithmOutput BuildNodeLinkAlgo::run_generic(const AlgorithmInput &) const
+AlgorithmOutput BuildNodeLinkAlgo::run(const AlgorithmInput &) const
 {
   throw "not implemented";
 }

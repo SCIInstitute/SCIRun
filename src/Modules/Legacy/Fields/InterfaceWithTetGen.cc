@@ -28,12 +28,13 @@
 
 #include <Modules/Legacy/Fields/InterfaceWithTetGen.h>
 #include <Modules/Legacy/Fields/InterfaceWithTetGenImpl.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
+using namespace Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
@@ -52,7 +53,7 @@ ALGORITHM_PARAMETER_DEF(Fields, MaxVolConstraint);
 ALGORITHM_PARAMETER_DEF(Fields, DetectIntersectionsFlag);
 ALGORITHM_PARAMETER_DEF(Fields, MoreSwitches);
 
-const ModuleLookupInfo InterfaceWithTetGen::staticInfo_("InterfaceWithTetGen", "NewField", "SCIRun");
+MODULE_INFO_DEF(InterfaceWithTetGen, NewField, SCIRun)
 
 InterfaceWithTetGen::InterfaceWithTetGen()
   : Module(staticInfo_)

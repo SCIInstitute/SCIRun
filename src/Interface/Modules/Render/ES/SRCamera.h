@@ -72,13 +72,16 @@ public:
   void mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton btn);
 
   /// Handle mouse wheel event.
-  void mouseWheelEvent(int32_t delta);
+  void mouseWheelEvent(int32_t delta, int zoomSpeed);
 
   /// Perform autoview.
   void doAutoView(const Core::Geometry::BBox& bbox);
 
   /// Sets the selected View of the window to given up axis and view axis
   void setView(const glm::vec3& view, const glm::vec3& up);
+
+  /// Toggles the zoom controls on New Mouse Controls Inverted/Not Inverted
+  void setZoomInverted(bool value);
 
   /// Default camera settings
   /// @{
@@ -101,6 +104,7 @@ private:
 
   bool                  mPerspective; ///< True if we are using a perspective 
                                       ///< transformation. 
+  int                   mInvertVal;   ///< Invert multiplier
   float                 mFOV;         ///< Field of view.
   float                 mZNear;       ///< Position of near plane along view vec.
   float                 mZFar;        ///< Position of far plane along view vec.

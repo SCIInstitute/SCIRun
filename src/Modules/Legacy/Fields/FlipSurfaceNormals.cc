@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,8 +30,6 @@
 #include <Core/Algorithms/Legacy/Fields/MeshData/FlipSurfaceNormals.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-//#include <Dataflow/Network/Module.h>
-
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
@@ -39,25 +37,24 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
+MODULE_INFO_DEF(FlipSurfaceNormals, ChangeMesh, SCIRun)
 
-//const  ModuleLookupInfo FlipSurfaceNormals::staticInfo_("FlipSurfaceNormals","ChangeMesh","SCIRun");
-
-FlipSurfaceNormals::FlipSurfaceNormals()  : Module(ModuleLookupInfo("FlipSurfaceNormals","ChangeMesh","SCIRun"),false)
+FlipSurfaceNormals::FlipSurfaceNormals() : Module(staticInfo_, false)
 {
 	INITIALIZE_PORT(InputField);
 	INITIALIZE_PORT(OutputField);
 }
 
-void  FlipSurfaceNormals::execute() 
+void  FlipSurfaceNormals::execute()
 {
-	FieldHandle ifield = getRequiredInput(InputField);
-	
+	auto ifield = getRequiredInput(InputField);
+
 	if(needToExecute())
 	{
 		update_state(Executing);
-	
-		auto output = algo().run_generic(withInputData((InputField,ifield)));
-	
+
+		auto output = algo().run(withInputData((InputField,ifield)));
+
 		sendOutputFromAlgorithm(OutputField,output);
 	}
 }

@@ -271,7 +271,7 @@ TEST(SparseMatrixReadTest, DISABLED_RegexOfScirun4Format)
   a << 1, 0, 3.5,
     -1, 2, 0;
 
-  EXPECT_EQ(a, *matrix_convert::to_dense(mat));
+  EXPECT_EQ(a, *convertMatrix::toDense(mat));
 #if !DEBUG
   EXPECT_EQ(to_string(a), to_string(mat->castForPrinting()));
 #endif
@@ -337,7 +337,7 @@ TEST(EigenSparseSolverTest, DISABLED_CanSolveBigSystem)
   auto b = converter.make(rhsFile.string());
   ASSERT_TRUE(b.get() != nullptr);
   std::cout << b->nrows() << " x " << b->ncols() << std::endl;
-  auto bCol = matrix_convert::to_column(b);
+  auto bCol = convertMatrix::toColumn(b);
 
   SolveLinearSystemAlgorithm::Outputs x;
   {

@@ -30,7 +30,7 @@
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Core/Utils/StringUtil.h>
 #include <Core/Logging/Log.h>
-#include <boost/foreach.hpp>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <boost/lexical_cast.hpp>
 
 using namespace SCIRun::Dataflow::State;
@@ -83,7 +83,9 @@ ModuleStateHandle SimpleMapModuleState::clone() const
 const ModuleStateInterface::Value SimpleMapModuleState::getValue(const Name& parameterName) const
 {
   StateMap::const_iterator i = stateMap_.find(parameterName);
-  return i != stateMap_.end() ? i->second : Value(AlgorithmParameterName(""), -1);
+  if (i != stateMap_.end())
+    return i->second;
+  BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("Module has no state value with name " + parameterName.name_));
 }
 
 bool SimpleMapModuleState::containsKey(const Name& name) const
@@ -102,20 +104,28 @@ void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Cor
   {
     LOG_DEBUG("----signaling from state map: (" << parameterName.name_ << ", " << SCIRun::Core::to_string(value) << "), num_slots = " << stateChangedSignal_.num_slots() << std::endl);
     stateChangedSignal_();
+    auto specSig = specificStateChangeSignalMap_.find(parameterName);
+    if (specSig != specificStateChangeSignalMap_.end())
+      specSig->second();
   }
 }
 
-boost::signals2::connection SimpleMapModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
+boost::signals2::connection SimpleMapModuleState::connectStateChanged(state_changed_sig_t::slot_function_type subscriber)
 {
   auto conn = stateChangedSignal_.connect(subscriber);
-  LOG_DEBUG("SimpleMapModuleState::connect_state_changed, num_slots = " << stateChangedSignal_.num_slots() << std::endl);
+  LOG_DEBUG("SimpleMapModuleState::connectStateChanged, num_slots = " << stateChangedSignal_.num_slots() << std::endl);
   return conn;
+}
+
+boost::signals2::connection SimpleMapModuleState::connectSpecificStateChanged(const Name& stateKeyToObserve, state_changed_sig_t::slot_function_type subscriber)
+{
+  return specificStateChangeSignalMap_[stateKeyToObserve].connect(subscriber);
 }
 
 ModuleStateInterface::Keys SimpleMapModuleState::getKeys() const
 {
   Keys keys;
-  BOOST_FOREACH(const StateMap::value_type& p, stateMap_)
+  for (const auto& p : stateMap_)
     keys.push_back(p.first);
   return keys;
 }
@@ -134,7 +144,7 @@ SimpleMapModuleState::TransientValueOption SimpleMapModuleState::getTransientVal
 {
   //print();
   auto i = transientStateMap_.find(name.name());
-  return i != transientStateMap_.end() ? boost::make_optional(i->second) : TransientValueOption();
+  return i != transientStateMap_.end() && !i->second.empty() ? boost::make_optional(i->second) : TransientValueOption();
 }
 
 void SimpleMapModuleState::setTransientValue(const Name& name, const TransientValue& value, bool fireSignal)
@@ -143,7 +153,12 @@ void SimpleMapModuleState::setTransientValue(const Name& name, const TransientVa
   //print();
 
   if (fireSignal)
+  {
     fireTransientStateChangeSignal();
+    auto specSig = specificStateChangeSignalMap_.find(name);
+    if (specSig != specificStateChangeSignalMap_.end())
+      specSig->second();
+  }
 }
 
 void SimpleMapModuleState::fireTransientStateChangeSignal()

@@ -54,11 +54,14 @@ SET(Interface_Application_SOURCES
   PreferencesWindow.cc
   PythonConsoleWidget.cc
   Settings.cc
+  ShortcutsInterface.cc
   TagManagerWindow.cc
   Connection.cc
   NetworkEditor.cc
   NetworkEditorControllerGuiProxy.cc
   TreeViewCollaborators.cc
+  ModuleWizard/ModuleWizard.cc
+  TriggeredEventsWindow.cc
 )
 
 SET(Interface_Application_HEADERS
@@ -78,11 +81,13 @@ SET(Interface_Application_HEADERS
   PortWidgetManager.h
   ProvenanceWindow.h
   SCIRunMainWindow.h
+  ShortcutsInterface.h
   Node.h
   Note.h
   NoteEditor.h
   Connection.h
   Port.h
+  PositionProvider.h
   PreferencesWindow.h
   PythonConsoleWidget.h
   TagManagerWindow.h
@@ -90,19 +95,25 @@ SET(Interface_Application_HEADERS
   NetworkEditorControllerGuiProxy.h
   TreeViewCollaborators.h
   Utility.h
+  ModuleWizard/ModuleWizard.h
+  TriggeredEventsWindow.h
 )
 
 SET(Interface_Application_FORMS
   DeveloperConsole.ui
   Module.ui
-  ModuleMini.ui
   ModuleLogWindow.ui
+  ConnectionStyleWizardPage.ui
+  OtherSettingsWizardPage.ui
+  NetworkSearch.ui
   NoteEditor.ui
   Preferences.ui
   ProvenanceWindow.ui
   SCIRunMainWindow.ui
+  ShortcutsInterface.ui
   RenderWindow.ui
   TagManager.ui
+  TriggeredEventsWindow.ui
 )
 
 SET(Interface_Application_RESOURCES
@@ -123,6 +134,7 @@ SCIRUN_ADD_LIBRARY(Interface_Application
 
 SET(NonPythonInterface_ApplicationLinkLibraries
   Dataflow_Network
+  Core_Serialization_Network_Importer
   Core_Application
   Core_Logging
   Core_Command

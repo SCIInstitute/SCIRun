@@ -43,11 +43,8 @@ class SCISHARE ExtractSimpleIsosurfaceDialog : public ModuleDialogGeneric,
 
 public:
   ExtractSimpleIsosurfaceDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pullSpecial() override;
-private Q_SLOTS:
-  void updateIsoMethod(int tab);
+    Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
 };
 
 }

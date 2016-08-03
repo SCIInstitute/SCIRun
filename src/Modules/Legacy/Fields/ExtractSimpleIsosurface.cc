@@ -42,7 +42,7 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-ExtractSimpleIsosurfaceModule::ExtractSimpleIsosurfaceModule()
+ExtractSimpleIsosurface::ExtractSimpleIsosurface()
   : Module(ModuleLookupInfo("ExtractSimpleIsosurface", "NewField", "SCIRun"))
 {
   INITIALIZE_PORT(InputField);
@@ -50,16 +50,18 @@ ExtractSimpleIsosurfaceModule::ExtractSimpleIsosurfaceModule()
   INITIALIZE_PORT(OutputField);
 }
 
-void ExtractSimpleIsosurfaceModule::setStateDefaults()
+void ExtractSimpleIsosurface::setStateDefaults()
 {
   setStateDoubleFromAlgo(Parameters::SingleIsoValue);
   setStateStringFromAlgo(Parameters::ListOfIsovalues);
   setStateIntFromAlgo(Parameters::QuantityOfIsovalues);
+  get_state()->setValue(Parameters::IsovalueListString, std::string());
+  get_state()->setValue(Parameters::IsovalueChoice, std::string("Single"));
 }
 
-void ExtractSimpleIsosurfaceModule::execute()
+void ExtractSimpleIsosurface::execute()
 {
-  FieldHandle field = getRequiredInput(InputField);
+  auto field = getRequiredInput(InputField);
   auto isovalueOption = getOptionalInput(Isovalue);
 
   if (needToExecute())
@@ -85,26 +87,33 @@ void ExtractSimpleIsosurfaceModule::execute()
     {
       auto isoList = state->getValue(Parameters::ListOfIsovalues).toString();
       std::vector<std::string> tokens;
-      boost::split(tokens, isoList, boost::is_any_of(","));
-      
+      boost::split(tokens, isoList, boost::is_any_of(", "));
+
       std::transform(tokens.begin(), tokens.end(), std::back_inserter(isoDoubles), [](const std::string& s)
       {
         try { return boost::lexical_cast<double>(s); } catch (boost::bad_lexical_cast&) { return 0.0; }
       });
-      
     }
-    if (state->getValue(Parameters::IsovalueChoice).toString() == "Quantity")
+    else if (state->getValue(Parameters::IsovalueChoice).toString() == "Quantity")
     {
       //TODO: add exclusive/inclusive option; move to algo level
       double qmin, qmax;
       field->vfield()->minmax(qmin, qmax);
       std::ostringstream ostr;
       int num = state->getValue(Parameters::QuantityOfIsovalues).toInt();
-      double di = (qmax - qmin) / (double)(num - 1.0);
-      for (int i = 0; i < num; i++)
+      if (num > 1)
       {
-        isoDoubles.push_back(qmin + ((double)i*di));
-        ostr << isoDoubles[i] << "\n";
+        double di = (qmax - qmin) / (double)(num - 1.0);
+        for (int i = 0; i < num; i++)
+        {
+          isoDoubles.push_back(qmin + ((double)i*di));
+          ostr << isoDoubles[i] << "\n";
+        }
+      }
+      else if (num == 1)
+      {
+        isoDoubles.push_back((qmin + qmax)/2);
+        ostr << isoDoubles[0] << "\n";
       }
       state->setValue(Parameters::IsovalueListString, ostr.str());
     }
@@ -113,7 +122,7 @@ void ExtractSimpleIsosurfaceModule::execute()
     std::transform(isoDoubles.begin(), isoDoubles.end(), std::back_inserter(isos), [](double x) { return makeVariable("iso", x); });
     algo().set(Parameters::Isovalues, isos);
 
-    auto output = algo().run_generic(withInputData((InputField, field)));
+    auto output = algo().run(withInputData((InputField, field)));
     sendOutputFromAlgorithm(OutputField, output);
   }
 }

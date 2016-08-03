@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ReportComplexMatrixInfo",
+    "namespace": "Math",
+    "status": "...",
+    "description": "",
+    "header": "Modules/Math/ReportComplexMatrixInfo.h"
+  },
+  "algorithm": {
+    "name": "ReportComplexMatrixInfoAlgo",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/ReportComplexMatrixInfo.h"
+  },
+  "UI": {
+    "name": "ReportComplexMatrixInfoDialog",
+    "header": "Interface/Modules/Math/ReportComplexMatrixInfoDialog.h"
+  }
+}

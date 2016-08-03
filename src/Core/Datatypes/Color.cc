@@ -52,19 +52,22 @@ ColorRGB::ColorRGB(double r, double g, double b, double a)
 
 ColorRGB::ColorRGB(const std::string& rgb) : r_(1.0), g_(1.0), b_(1.0), a_(1.0)
 {
-  try
+  if (!rgb.empty())
   {
-    static boost::regex r("Color\\((.+),(.+),(.+)\\)");
-    boost::smatch what;
-    regex_match(rgb, what, r);
-    r_ = boost::lexical_cast<double>(what[1]);
-    g_ = boost::lexical_cast<double>(what[2]);
-    b_ = boost::lexical_cast<double>(what[3]);
-  }
-  catch (...)
-  {
-    //error results in white (so you can see things in viewer):
-    r_ = g_ = b_ = 1.0f;
+    try
+    {
+      static boost::regex r("Color\\((.+),(.+),(.+)\\)");
+      boost::smatch what;
+      regex_match(rgb, what, r);
+      r_ = boost::lexical_cast<double>(what[1]);
+      g_ = boost::lexical_cast<double>(what[2]);
+      b_ = boost::lexical_cast<double>(what[3]);
+    }
+    catch (...)
+    {
+      //error results in white (so you can see things in viewer):
+      r_ = g_ = b_ = 1.0f;
+    }
   }
 }
 

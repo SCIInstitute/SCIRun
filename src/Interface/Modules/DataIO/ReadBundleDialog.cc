@@ -49,6 +49,11 @@ ReadBundleDialog::ReadBundleDialog(const std::string& name, ModuleStateHandle st
   connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
+  WidgetStyleMixin::setStateVarTooltipWithStyle(fileNameLineEdit_, Variables::Filename.name());
+  WidgetStyleMixin::setStateVarTooltipWithStyle(this, Variables::FileTypeName.name());
+  WidgetStyleMixin::setStateVarTooltipWithStyle(openFileButton_, Variables::FileTypeName.name());
+  WidgetStyleMixin::tabStyle(tabWidget);
+  addLineEditManager(scriptInputLineEdit_, Variables::ScriptEnvironmentVariable);
 }
 
 void ReadBundleDialog::pullSpecial()
@@ -64,7 +69,7 @@ void ReadBundleDialog::pushFileNameToState()
 
 void ReadBundleDialog::openFile()
 {
-  auto types = Modules::DataIO::ReadBundleModule::fileTypeList();
+  auto types = Modules::DataIO::ReadBundle::fileTypeList();
   QString typesQ(QString::fromStdString(types));
   auto file = QFileDialog::getOpenFileName(this, "Open Bundle File", dialogDirectory(), typesQ, &selectedFilter_);
   if (file.length() > 0)

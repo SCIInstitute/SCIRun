@@ -43,7 +43,7 @@ using namespace SCIRun::Core::Geometry;
 
 FieldHandle SCIRun::TextToPointCloudField_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle result = 0;
+  FieldHandle result;
   std::string pts_fn(filename);
 	
 	// Check whether the .pts file exists
@@ -242,10 +242,10 @@ bool SCIRun::PointCloudFieldToText_writer(LoggerHandle pr, FieldHandle fh, const
     outputfile.open(pts_fn.c_str());						
 
     // these appear to be reasonable formatting flags for output
-    std::ios_base::fmtflags ff;
-    ff = outputfile.flags();
+    auto ff = outputfile.flags();
     ff |= outputfile.showpoint; // write floating-point values including always the decimal point
     ff |= outputfile.fixed; // write floating point values in fixed-point notation
+    outputfile.precision(15);
     outputfile.flags(ff);
     
     VMesh::Node::iterator nodeIter;

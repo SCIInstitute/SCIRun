@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "PrintStringIntoString",
+    "namespace": "StringManip",
+    "status": "Module ui working.  Module functioning as expected.  No algorithm.",
+    "description": "This module allows for strings to be inserted into other strings, similar to sprintf, thus allowing for some string manipulation.",
+    "header": "Modules/Legacy/String/PrintStringIntoString.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "PrintStringIntoStringDialog",
+    "header": "Interface/Modules/String/PrintStringIntoStringDialog.h"
+  }
+}

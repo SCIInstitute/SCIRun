@@ -54,8 +54,8 @@ using namespace SCIRun;
 MapFieldDataOntoNodesAlgo::MapFieldDataOntoNodesAlgo()
 {
   using namespace Parameters;
-  add_option(Quantity, "value", "value|gradient|gradientnorm|flux");
-  add_option(InterpolationModel, "interpolateddata", "interpolateddata|closestnodedata|closestinterpolateddata");
+  addOption(Quantity, "value", "value|gradient|gradientnorm|flux");
+  addOption(InterpolationModel, "interpolateddata", "interpolateddata|closestnodedata|closestinterpolateddata");
   addParameter(OutsideValue, 0.0);
   addParameter(MaxDistance, std::numeric_limits<double>::max());
 }
@@ -200,8 +200,8 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle weights,
   FieldInformation fo(destination);
   fo.make_lineardata();
 
-  std::string quantity = get_option(Parameters::Quantity);
-  std::string value = get_option(Parameters::InterpolationModel);
+  std::string quantity = getOption(Parameters::Quantity);
+  std::string value = getOption(Parameters::InterpolationModel);
 
   if (value == "closestnodedata")
   {
@@ -366,8 +366,8 @@ MapFieldDataOntoNodesAlgo::runImpl(FieldHandle source, FieldHandle destination, 
   FieldInformation fo(destination);
   fo.make_lineardata();
 
-  std::string quantity = get_option(Parameters::Quantity);
-  std::string value = get_option(Parameters::InterpolationModel);
+  std::string quantity = getOption(Parameters::Quantity);
+  std::string value = getOption(Parameters::InterpolationModel);
 
   if (value == "closestnodedata")
   {
@@ -473,7 +473,7 @@ const AlgorithmInputName MapFieldDataOntoNodesAlgo::Source("Source");
 const AlgorithmInputName MapFieldDataOntoNodesAlgo::Destination("Destination");
 const AlgorithmInputName MapFieldDataOntoNodesAlgo::Weights("Weights");
 
-AlgorithmOutput MapFieldDataOntoNodesAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput MapFieldDataOntoNodesAlgo::run(const AlgorithmInput& input) const
 {
   dumpAlgoState();
   auto source = input.get<Field>(Source);

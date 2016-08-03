@@ -41,7 +41,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun;
 
-const ModuleLookupInfo GenerateStreamLines::staticInfo_("GenerateStreamLines", "Visualization", "SCIRun");
+MODULE_INFO_DEF(GenerateStreamLines, Visualization, SCIRun)
 
 GenerateStreamLines::GenerateStreamLines() : Module(staticInfo_)
 {
@@ -81,7 +81,7 @@ void GenerateStreamLines::execute()
     setAlgoBoolFromState(Parameters::AutoParameters);
     setAlgoOptionFromState(Parameters::StreamlineMethod);
 
-    auto output = algo().run_generic(withInputData((Vector_Field, input)(Seed_Points, seeds)));
+    auto output = algo().run(withInputData((Vector_Field, input)(Seed_Points, seeds)));
 
     #ifdef NEED_ALGO_OUTPUT
     gui_tolerance_.set(algo_.get_scalar("tolerance"));

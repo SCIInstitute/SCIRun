@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "RescaleColorMap",
+    "namespace": "Visualization",
+    "status": "Converted",
+    "description": "...",
+    "header": "Modules/Visualization/RescaleColorMap.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "RescaleColorMapDialog",
+    "header": "Interface/Modules/Visualization/RescaleColorMapDialog.h"
+  }
+}

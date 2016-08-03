@@ -36,18 +36,18 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-ConvertMatrixTypeModule::ConvertMatrixTypeModule() : Module(ModuleLookupInfo("ConvertMatrixType", "Math", "SCIRun")) 
+ConvertMatrixType::ConvertMatrixType() : Module(ModuleLookupInfo("ConvertMatrixType", "Math", "SCIRun"))
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(ResultMatrix);
 }
 
-void ConvertMatrixTypeModule::setStateDefaults()
+void ConvertMatrixType::setStateDefaults()
 {
   setStateStringFromAlgoOption(Parameters::OutputMatrixType);
 }
 
-void ConvertMatrixTypeModule::execute()
+void ConvertMatrixType::execute()
 {
   auto input_matrix = getRequiredInput(InputMatrix);
 
@@ -56,7 +56,7 @@ void ConvertMatrixTypeModule::execute()
     update_state(Executing);
     setAlgoOptionFromState(Parameters::OutputMatrixType);
 
-    auto output = algo().run_generic(withInputData((InputMatrix, input_matrix)));
+    auto output = algo().run(withInputData((InputMatrix, input_matrix)));
 
     sendOutputFromAlgorithm(ResultMatrix, output);
   }

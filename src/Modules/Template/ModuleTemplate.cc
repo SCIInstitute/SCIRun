@@ -35,14 +35,16 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-const ModuleLookupInfo @ModuleName@::staticInfo_("@ModuleName@", "NewField", "SCIRun");
+MODULE_INFO_DEF(@ModuleName@, NewField, SCIRun)
 
 @ModuleName@::@ModuleName@() : Module(staticInfo_)
 {
+  //initialize all ports.
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);
 }
 
+//This function should be blank if there is no UI for the module.
 void @ModuleName@::setStateDefaults()
 {
   auto state = get_state();

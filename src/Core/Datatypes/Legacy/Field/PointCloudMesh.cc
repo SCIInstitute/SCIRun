@@ -69,8 +69,8 @@ public:
   virtual void get_center(Point &point, VMesh::Node::index_type i) const;
   virtual void get_center(Point &point, VMesh::Elem::index_type i) const;
 
-  virtual void get_centers(Point* points, VMesh::Node::array_type& array) const;
-  virtual void get_centers(Point* points, VMesh::Elem::array_type& array) const;
+  virtual void get_centers(Point* points, const VMesh::Node::array_type& array) const;
+  virtual void get_centers(Point* points, const VMesh::Elem::array_type& array) const;
 
   virtual double get_size(VMesh::Node::index_type i) const;
   virtual double get_size(VMesh::Elem::index_type i) const;
@@ -263,9 +263,7 @@ VPointCloudMesh<MESH>::get_center(Point &p, VMesh::Elem::index_type idx) const
 
 template <class MESH>
 void
-VPointCloudMesh<MESH>::
-get_centers(Point* points,
-            VMesh::Node::array_type& array) const
+VPointCloudMesh<MESH>::get_centers(Point* points, const VMesh::Node::array_type& array) const
 {
   for (size_t j=0; j <array.size(); j++)
   {
@@ -275,9 +273,7 @@ get_centers(Point* points,
 
 template <class MESH>
 void
-VPointCloudMesh<MESH>::
-get_centers(Point* points,
-            VMesh::Elem::array_type& array) const
+VPointCloudMesh<MESH>::get_centers(Point* points, const VMesh::Elem::array_type& array) const
 {
   for (size_t j=0; j <array.size(); j++)
   {

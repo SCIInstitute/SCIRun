@@ -53,7 +53,7 @@ using namespace SCIRun::Modules::Math;
 /// @class ReportColumnMatrixMisfit
 /// @brief This module computes and visualizes the error between two vectors.
 
-const ModuleLookupInfo ReportColumnMatrixMisfit::staticInfo_("ReportColumnMatrixMisfit", "Math", "SCIRun");
+MODULE_INFO_DEF(ReportColumnMatrixMisfit, Math, SCIRun)
 
 ReportColumnMatrixMisfit::ReportColumnMatrixMisfit() : Module(staticInfo_)
 {
@@ -99,8 +99,8 @@ void ReportColumnMatrixMisfit::execute()
     auto state = get_state();
     const double pp = state->getValue(Parameters::PValue).toDouble();
 
-    auto ivec1Col = matrix_convert::to_column(ivec1);
-    auto ivec2Col = matrix_convert::to_column(ivec2);
+    auto ivec1Col = convertMatrix::toColumn(ivec1);
+    auto ivec2Col = convertMatrix::toColumn(ivec2);
 
     ColumnMatrixMisfitCalculator calc(*ivec1Col, *ivec2Col, pp);
 

@@ -61,6 +61,9 @@ namespace Networks {
     virtual bool containsKey(const Name& name) const = 0;
     virtual Keys getKeys() const = 0;
     virtual ModuleStateHandle clone() const = 0;
+    
+    // this function preserves key/value pairs not in other
+    void overwriteWith(const ModuleStateInterface& other);
 
     //non-serialized state: algorithm output needing to be pushed, for instance--TODO: make classes instead of raw string/any
     typedef boost::any TransientValue;
@@ -74,7 +77,8 @@ namespace Networks {
 
     typedef boost::signals2::signal<void()> state_changed_sig_t;
 
-    virtual boost::signals2::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber) = 0;
+    virtual boost::signals2::connection connectStateChanged(state_changed_sig_t::slot_function_type subscriber) = 0;
+    virtual boost::signals2::connection connectSpecificStateChanged(const Name& stateKeyToObserve, state_changed_sig_t::slot_function_type subscriber) = 0;
   };
 
   class SCISHARE ModuleStateInterfaceFactory
@@ -101,16 +105,60 @@ namespace Networks {
   }
 
   template <class T>
-  T optional_any_cast_or_default(const boost::optional<boost::any>& x)
+  T transient_value_cast(const ModuleStateInterface::TransientValueOption& x)
   {
     return x ? any_cast_or_default_<T>(*x) : T();
+  }
+
+  template <class T>
+  bool transient_value_check(const ModuleStateInterface::TransientValueOption& x)
+  {
+    if (!x)
+      return false;
+
+    try
+    {
+      boost::any_cast<T>(*x);
+      return true;
+    }
+    catch (boost::bad_any_cast&)
+    {
+      return false;
+    }
+  }
+
+  template <class T>
+  T convertVariable(const Core::Algorithms::Variable&)
+  {
+    return {};
+  }
+
+  template <>
+  inline int convertVariable<int>(const Core::Algorithms::Variable& var)
+  {
+    return var.toInt();
+  }
+
+  template <class T>
+  T transient_value_cast_with_variable_check(const ModuleStateInterface::TransientValueOption& x)
+  {
+    if (!x)
+      return{};
+
+    if (transient_value_check<T>(x))
+      return any_cast_or_default_<T>(*x);
+
+    if (transient_value_check<Core::Algorithms::Variable>(x))
+      return convertVariable<T>(any_cast_or_default_<Core::Algorithms::Variable>(*x));
+
+    return {};
   }
 
   class SCISHARE StateChangeObserver
   {
   public:
     StateChangeObserver();
-    ~StateChangeObserver();
+    virtual ~StateChangeObserver();
     void initStateObserver(ModuleStateInterface* state);
     void stateChanged();
     void resetStateChanged();

@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>28</count>
+			<count>29</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>ApplyFEMCurrentSource:0</first>
@@ -126,6 +126,58 @@
 						<stateMap>
 							<count>0</count>
 							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateFieldData:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>CreateFieldData</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>3</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>BasisString</name>
+								</first>
+								<second>
+									<name>BasisString</name>
+									<value>
+										<which>2</which>
+										<value>Linear</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FormatString</name>
+								</first>
+								<second>
+									<name>FormatString</name>
+									<value>
+										<which>2</which>
+										<value>Vector</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>RESULT = vector(1,1,1);</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -593,7 +645,7 @@
 									<name>NumSamples</name>
 									<value>
 										<which>0</which>
-										<value>50</value>
+										<value>100</value>
 									</value>
 								</second>
 							</item>
@@ -605,7 +657,179 @@
 									<name>RNGSeed</name>
 									<value>
 										<which>0</which>
-										<value>3</value>
+										<value>5</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>GenerateSinglePointProbeFromField:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>GenerateSinglePointProbeFromField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>13</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>DisplayElem</name>
+								</first>
+								<second>
+									<name>DisplayElem</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DisplayNode</name>
+								</first>
+								<second>
+									<name>DisplayNode</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DisplayValue</name>
+								</first>
+								<second>
+									<name>DisplayValue</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FieldElem</name>
+								</first>
+								<second>
+									<name>FieldElem</name>
+									<value>
+										<which>0</which>
+										<value>13469374</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FieldNode</name>
+								</first>
+								<second>
+									<name>FieldNode</name>
+									<value>
+										<which>0</which>
+										<value>5631534</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FieldValue</name>
+								</first>
+								<second>
+									<name>FieldValue</name>
+									<value>
+										<which>2</which>
+										<value>10</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MoveMethod</name>
+								</first>
+								<second>
+									<name>MoveMethod</name>
+									<value>
+										<which>2</which>
+										<value>Location</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProbeColor</name>
+								</first>
+								<second>
+									<name>ProbeColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(1,1,1)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProbeLabel</name>
+								</first>
+								<second>
+									<name>ProbeLabel</name>
+									<value>
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProbeSize</name>
+								</first>
+								<second>
+									<name>ProbeSize</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>XLocation</name>
+								</first>
+								<second>
+									<name>XLocation</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>YLocation</name>
+								</first>
+								<second>
+									<name>YLocation</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ZLocation</name>
+								</first>
+								<second>
+									<name>ZLocation</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1110,46 +1334,6 @@
 				</second>
 			</item>
 			<item>
-				<first>ReadField:1</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>ReadField</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>2</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Field File</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>%SCIRUNDATADIR%/ToolKits/FwdInvToolbox/pot_based_FEM_forward/dipole_source.fld</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
 				<first>RescaleColorMap:0</first>
 				<second>
 					<module>
@@ -1181,7 +1365,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>1.14063025155221583e-04</value>
+										<value>7.82459218808471122e-05</value>
 									</value>
 								</second>
 							</item>
@@ -1193,7 +1377,7 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>-3.39059195908702029e-05</value>
+										<value>-1.07420454379508586e-04</value>
 									</value>
 								</second>
 							</item>
@@ -1245,7 +1429,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>2.08963517382261934e-03</value>
+										<value>2.62431550185785144e-02</value>
 									</value>
 								</second>
 							</item>
@@ -1257,7 +1441,7 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>4.12216457948757680e-09</value>
+										<value>9.78094303108830622e-09</value>
 									</value>
 								</second>
 							</item>
@@ -2041,7 +2225,7 @@
 									<name>VectorsColoring</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -2065,7 +2249,7 @@
 									<name>VectorsResolution</name>
 									<value>
 										<which>0</which>
-										<value>4</value>
+										<value>10</value>
 									</value>
 								</second>
 							</item>
@@ -2077,7 +2261,7 @@
 									<name>VectorsScale</name>
 									<value>
 										<which>1</which>
-										<value>9.90000000000000000e+01</value>
+										<value>1.00000000000000000e+01</value>
 									</value>
 								</second>
 							</item>
@@ -2212,14 +2396,14 @@
 												<name>x</name>
 												<value>
 													<which>0</which>
-													<value>511</value>
+													<value>107</value>
 												</value>
 											</item>
 											<item>
 												<name>y</name>
 												<value>
 													<which>0</which>
-													<value>131</value>
+													<value>244</value>
 												</value>
 											</item>
 										</value>
@@ -2240,7 +2424,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>2</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -2254,13 +2438,42 @@
 									</value>
 								</second>
 							</item>
+							<item>
+								<first>
+									<name>GeometryFeedbackInfo</name>
+								</first>
+								<second>
+									<name>GeometryFeedbackInfo</name>
+									<value>
+										<which>5</which>
+										<value>
+											<count>2</count>
+											<item_version>0</item_version>
+											<item>
+												<name>x</name>
+												<value>
+													<which>0</which>
+													<value>262</value>
+												</value>
+											</item>
+											<item>
+												<name>y</name>
+												<value>
+													<which>0</which>
+													<value>155</value>
+												</value>
+											</item>
+										</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>37</count>
+			<count>41</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>ApplyFEMCurrentSource:0</moduleId1_>
@@ -2331,6 +2544,30 @@
 				<moduleId2_>SetFieldData:0</moduleId2_>
 				<port2_>
 					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateFieldData:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ApplyFEMCurrentSource:0</moduleId2_>
+				<port2_>
+					<name>Sources</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateFieldData:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowFieldGlyphs:0</moduleId2_>
+				<port2_>
+					<name>PrimaryData</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2416,6 +2653,42 @@
 				<port2_>
 					<name>Seed_Points</name>
 					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GenerateSinglePointProbeFromField:0</moduleId1_>
+				<port1_>
+					<name>GeneratedPoint</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CreateFieldData:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GenerateSinglePointProbeFromField:0</moduleId1_>
+				<port1_>
+					<name>GeneratedWidget</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:0</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>3</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GenerateSinglePointProbeFromField:0</moduleId1_>
+				<port1_>
+					<name>GeneratedWidget</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:2</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>3</id>
 				</port2_>
 			</item>
 			<item>
@@ -2544,33 +2817,21 @@
 					<name>Field</name>
 					<id>0</id>
 				</port1_>
+				<moduleId2_>GenerateSinglePointProbeFromField:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadField:0</moduleId1_>
+				<port1_>
+					<name>Field</name>
+					<id>0</id>
+				</port1_>
 				<moduleId2_>MapFieldDataOntoElements:0</moduleId2_>
 				<port2_>
 					<name>Source</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadField:1</moduleId1_>
-				<port1_>
-					<name>Field</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ApplyFEMCurrentSource:0</moduleId2_>
-				<port2_>
-					<name>Sources</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadField:1</moduleId1_>
-				<port1_>
-					<name>Field</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ShowFieldGlyphs:0</moduleId2_>
-				<port2_>
-					<name>PrimaryData</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2679,7 +2940,7 @@
 				<moduleId2_>ViewScene:0</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
-					<id>1</id>
+					<id>4</id>
 				</port2_>
 			</item>
 			<item>
@@ -2691,7 +2952,7 @@
 				<moduleId2_>ViewScene:2</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
-					<id>0</id>
+					<id>2</id>
 				</port2_>
 			</item>
 			<item>
@@ -2709,7 +2970,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>28</count>
+		<count>29</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>ApplyFEMCurrentSource:0</first>
@@ -2737,6 +2998,13 @@
 			<second>
 				<first>-9.23000000000000000e+02</first>
 				<second>-2.96000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateFieldData:0</first>
+			<second>
+				<first>-4.11297499999999900e+02</first>
+				<second>-5.73964999999999918e+02</second>
 			</second>
 		</item>
 		<item>
@@ -2784,8 +3052,15 @@
 		<item>
 			<first>GeneratePointSamplesFromFieldOrWidget:0</first>
 			<second>
-				<first>-2.25000000000000000e+02</first>
-				<second>-6.30000000000000000e+01</second>
+				<first>-2.38224999999999994e+02</first>
+				<second>-5.77100000000000009e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>GenerateSinglePointProbeFromField:0</first>
+			<second>
+				<first>-2.39372499999999945e+02</first>
+				<second>-7.23407499999999800e+02</second>
 			</second>
 		</item>
 		<item>
@@ -2798,8 +3073,8 @@
 		<item>
 			<first>GetDomainBoundary:0</first>
 			<second>
-				<first>-2.46000000000000000e+02</first>
-				<second>-4.02000000000000000e+02</second>
+				<first>-3.59735000000000014e+02</first>
+				<second>-3.98032499999999857e+02</second>
 			</second>
 		</item>
 		<item>
@@ -2833,15 +3108,8 @@
 		<item>
 			<first>ReadField:0</first>
 			<second>
-				<first>-8.26000000000000000e+02</first>
-				<second>-8.14000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ReadField:1</first>
-			<second>
-				<first>-4.90000000000000000e+02</first>
-				<second>-7.94000000000000000e+02</second>
+				<first>-8.43192499999999882e+02</first>
+				<second>-9.68732499999999845e+02</second>
 			</second>
 		</item>
 		<item>
@@ -2882,8 +3150,8 @@
 		<item>
 			<first>ShowFieldGlyphs:0</first>
 			<second>
-				<first>-6.92000000000000000e+02</first>
-				<second>2.65000000000000000e+02</second>
+				<first>1.39852499999999907e+02</first>
+				<second>-3.84347500000000025e+02</second>
 			</second>
 		</item>
 		<item>
@@ -2903,8 +3171,8 @@
 		<item>
 			<first>ViewScene:2</first>
 			<second>
-				<first>-7.87000000000000000e+02</first>
-				<second>4.66000000000000000e+02</second>
+				<first>-9.40100000000002183e+01</first>
+				<second>1.51244999999999948e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -2956,7 +3224,7 @@ p, li { white-space: pre-wrap; }
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="22" tracking_level="0" version="0">
-		<count>28</count>
+		<count>29</count>
 		<item_version>0</item_version>
 		<item class_id="23" tracking_level="0" version="0">
 			<first>ApplyFEMCurrentSource:0</first>
@@ -2972,6 +3240,10 @@ p, li { white-space: pre-wrap; }
 		</item>
 		<item>
 			<first>ConvertHexVolToTetVol:0</first>
+			<second>0</second>
+		</item>
+		<item>
+			<first>CreateFieldData:0</first>
 			<second>0</second>
 		</item>
 		<item>
@@ -3003,6 +3275,10 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 		<item>
+			<first>GenerateSinglePointProbeFromField:0</first>
+			<second>0</second>
+		</item>
+		<item>
 			<first>GenerateStreamLines:0</first>
 			<second>0</second>
 		</item>
@@ -3028,10 +3304,6 @@ p, li { white-space: pre-wrap; }
 		</item>
 		<item>
 			<first>ReadField:0</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>ReadField:1</first>
 			<second>0</second>
 		</item>
 		<item>

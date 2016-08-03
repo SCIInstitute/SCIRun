@@ -1,22 +1,22 @@
 #
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
+#
 #  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
-# 
+#  in all copies or substantial portions of the Software.
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -50,7 +50,7 @@ SET(Engine_Network_HEADERS
   share.h
 )
 
-SCIRUN_ADD_LIBRARY(Engine_Network 
+SCIRUN_ADD_LIBRARY(Engine_Network
   ${Engine_Network_HEADERS}
   ${Engine_Network_SRCS}
 )
@@ -61,6 +61,7 @@ SET(Engine_Network_NonPythonDependentLibs
   Core_Command
   Engine_Scheduler
   Core_Thread
+  Core_Matlab
 )
 
 IF(BUILD_WITH_PYTHON)
@@ -68,13 +69,12 @@ IF(BUILD_WITH_PYTHON)
   TARGET_LINK_LIBRARIES(Engine_Network
     ${Engine_Network_NonPythonDependentLibs}
     SCIRunPythonAPI
+	Core_Python
   )
 
   INCLUDE_DIRECTORIES(
     ${PYTHON_INCLUDE_DIR}
   )
-
-  ADD_DEPENDENCIES(Engine_Network Python_external)
 
 ELSE()
 
@@ -88,7 +88,4 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Engine_Network)
 ENDIF(BUILD_SHARED_LIBS)
 
-ADD_DEPENDENCIES(Engine_Network Boost_external)
-
 SCIRUN_ADD_TEST_DIR(Tests)
-

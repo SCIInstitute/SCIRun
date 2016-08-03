@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -51,26 +51,18 @@ AddKnownsToLinearSystem::AddKnownsToLinearSystem()
  INITIALIZE_PORT(OutPutRHSVector);
 }
 
-
 void AddKnownsToLinearSystem::execute()
 {
-  SparseRowMatrixHandle lhs;
-  DenseMatrixHandle x;
-   
-  lhs=getRequiredInput(LHS_Matrix);
-  auto rhs = getOptionalInput(RHS_Vector);
-  x=getRequiredInput(X_Vector);
- 
+  auto lhs = getRequiredInput(LHS_Matrix);;
+  auto rhs = getOptionalInput(RHS_Vector);;
+  auto x = getRequiredInput(X_Vector);
+
   if (needToExecute())
   {
    update_state(Executing);
-   auto output = algo().run_generic(withInputData((LHS_Matrix,lhs)(RHS_Vector, optionalAlgoInput(rhs))(X_Vector,x)));
+   auto output = algo().run(withInputData((LHS_Matrix,lhs)(RHS_Vector, optionalAlgoInput(rhs))(X_Vector,x)));
 
    sendOutputFromAlgorithm(OutPutLHSMatrix,output);
    sendOutputFromAlgorithm(OutPutRHSVector,output);
   }
 }
-
-
-
-

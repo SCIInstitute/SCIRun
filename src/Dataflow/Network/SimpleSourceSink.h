@@ -56,6 +56,7 @@ namespace SCIRun
         void setData(Core::Datatypes::DatatypeHandle data);
         virtual void invalidateProvider() { /*TODO*/ }
         virtual boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber);
+        virtual void forceFireDataHasChanged() override;
 
         static bool globalPortCachingFlag();
         static void setGlobalPortCachingFlag(bool value);
@@ -95,7 +96,7 @@ namespace SCIRun
         virtual std::string describeData() const override;
 
         static void clearAllSources();
-      private:
+      protected:
         SCIRun::Core::Datatypes::DatatypeHandle data_;
         static std::set<SimpleSource*> instances_;
       };

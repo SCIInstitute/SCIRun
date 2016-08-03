@@ -35,6 +35,14 @@ ModuleStateInterface::~ModuleStateInterface()
 {
 }
 
+void ModuleStateInterface::overwriteWith(const ModuleStateInterface& other)
+{
+  for (const auto& otherKey : other.getKeys())
+  {
+    setValue(otherKey, other.getValue(otherKey).value());
+  }
+}
+
 ModuleStateInterfaceFactory::~ModuleStateInterfaceFactory()
 {
 }
@@ -52,7 +60,7 @@ void StateChangeObserver::initStateObserver(ModuleStateInterface* state)
   if (state)
   {
     //LOG_DEBUG("StateChangeObserver::initStateObserver(), connecting to state" << std::endl);
-    conn_ = state->connect_state_changed(boost::bind(&StateChangeObserver::stateChanged, this));
+    conn_ = state->connectStateChanged(boost::bind(&StateChangeObserver::stateChanged, this));
   }
 }
 
@@ -83,19 +91,19 @@ MetadataMap::MetadataMap(ModuleStateHandle& state) : state_(state)
 
 std::string MetadataMap::getMetadata(const std::string& key) const
 {
-  auto map = optional_any_cast_or_default<StringMap>(state_->getTransientValue(metadataKey));
+  auto map = transient_value_cast<StringMap>(state_->getTransientValue(metadataKey));
   auto iter = map.find(key);
   return iter != map.end() ? iter->second : ("[key not found : " + key + "]");
 }
 
 void MetadataMap::setMetadata(const std::string& key, const std::string& value)
 {
-  auto map = optional_any_cast_or_default<StringMap>(state_->getTransientValue(metadataKey));
+  auto map = transient_value_cast<StringMap>(state_->getTransientValue(metadataKey));
   map[key] = value;
   state_->setTransientValue(metadataKey, map, false);
 }
 
 StringMap MetadataMap::getFullMap() const
 {
-  return optional_any_cast_or_default<StringMap>(state_->getTransientValue(metadataKey));
+  return transient_value_cast<StringMap>(state_->getTransientValue(metadataKey));
 }

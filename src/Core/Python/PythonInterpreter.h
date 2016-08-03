@@ -24,12 +24,14 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
- */
+*/
 
+#ifdef BUILD_WITH_PYTHON
 #ifndef CORE_PYTHON_PYTHONINTERPRETER_H
 #define CORE_PYTHON_PYTHONINTERPRETER_H
 
-//#include <boost/python.hpp>
+#include <boost/python.hpp>
+#include <boost/filesystem/path.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/signals2/signal.hpp>
 
@@ -55,9 +57,10 @@ typedef boost::shared_ptr< PythonInterpreterPrivate > PythonInterpreterPrivateHa
 class SCISHARE PythonInterpreter /*: private Core::EventHandler*/
 {
 	CORE_SINGLETON( PythonInterpreter );
-	
+
 public:
-	
+  typedef std::pair< std::string, PyObject* ( * )( void ) > module_entry_type;
+  typedef std::list< module_entry_type > module_list_type;
 
 private:
 	PythonInterpreter();
@@ -68,10 +71,14 @@ private:
 	// INITIALIZE_EVENTHANDLER:
 	/// This function initializes the event handler associated with the singleton
 	/// class. It initializes the python interpreter.
-	void initialize_eventhandler();
+  void initialize_eventhandler(const std::string& commandLine, const boost::filesystem::path& libPath);
 
 public:
-	// PRINT_BANNER:
+  // INITIALIZE:
+  /// Initialize the python interpreter with extra modules.
+  void initialize(bool needProgramName, const std::string& commandLine, const boost::filesystem::path& libPath);
+
+  // PRINT_BANNER:
 	/// Print the basic information about the python interpreter to output_signal_.
 	void print_banner();
 
@@ -118,4 +125,5 @@ public:
 
 }}
 
+#endif
 #endif

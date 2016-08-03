@@ -30,81 +30,128 @@
 
 
 #ifndef DATAFLOW_NETWORK_PORTMANAGER_H
-#define DATAFLOW_NETWORK_PORTMANAGER_H 
+#define DATAFLOW_NETWORK_PORTMANAGER_H
 
 #include <Dataflow/Network/Port.h>
 #include <Core/Utils/Exception.h>
 
-#include <boost/foreach.hpp>
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
 #include <string>
 #include <map>
+
+#ifdef LOG_DYNAMIC_PORT_CREATION
+#include <iostream>
+#define DYNAMIC_PORT_LOG(x) x
+#else
+#define DYNAMIC_PORT_LOG(x)
+#endif
+
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
-template<class T> 
+template<class T>
 class PortManager : boost::noncopyable
 {
-private:
-  typedef std::map<PortId, T> PortMap;
-  typedef std::map<std::string, bool> DynamicMap;
-  PortMap ports_;
-  DynamicMap isDynamic_;
-  ModuleInterface* module_;
-  void checkDynamicPortInvariant(const std::string& name);
-  void throwForPortNotFound(const PortId& id) const;
-  std::vector<T> findAllByName(const std::string& name) const;
-
 public:
   PortManager();
   size_t size() const;
   size_t add(const T& item);
-  void remove(const PortId& id);
+  size_t remove(const PortId& id);
   T operator[](const PortId& id);
   T operator[](const PortId& id) const;
   std::vector<T> operator[](const std::string& name) const;
   bool hasPort(const PortId& id) const;
   void set_module(ModuleInterface* mod) { module_ = mod; }
   std::vector<T> view() const;
+private:
+  int checkDynamicPortInvariant(const std::string& name);
+  void throwForPortNotFound(const PortId& id) const;
+  std::vector<T> findAllByName(const std::string& name) const;
+  int lastIndexByName(const std::string& name) const;
+  std::vector<T> findAllByNameImpl(const std::string& name) const;
+
+  typedef std::map<PortId, T> PortMap;
+  typedef std::map<std::string, bool> DynamicMap;
+  PortMap ports_;
+  DynamicMap isDynamic_;
+  ModuleInterface* module_;
 };
 
-struct PortOutOfBoundsException : virtual Core::ExceptionBase {};
+struct SCISHARE PortOutOfBoundsException : virtual Core::ExceptionBase {};
 
 template<class T>
 PortManager<T>::PortManager() :
-  module_(0)
+  module_(nullptr)
 {
 }
 
 template<class T>
 size_t
 PortManager<T>::size() const
-{ 
+{
   return ports_.size();
 }
 
 template<class T>
 size_t
 PortManager<T>::add(const T& item)
-{ 
+{
+  auto lastIndexWithSameName = lastIndexByName(item->id().name);
+
   ports_[item->id()] = item;
   isDynamic_[item->id().name] = item->isDynamic();
 
   if (item->isDynamic())
-    checkDynamicPortInvariant(item->id().name);
+  {
+    auto availableIndex = checkDynamicPortInvariant(item->id().name);
 
-  /// @todo: who should manage port indexes?
-  //item->setIndex(size() - 1);
-  auto index = size() - 1;
-  return index;
+    if (lastIndexWithSameName >= 0)
+    {
+      const auto newPortIndex = availableIndex >= 0 ? availableIndex : lastIndexWithSameName + 1;
+      DYNAMIC_PORT_LOG(std::cout << "cloned port: " << item->id().toString() << " newIndex: " << newPortIndex << std::endl);
+
+      for (auto& portPair : ports_)
+      {
+        DYNAMIC_PORT_LOG(std::cout << "\t id " << portPair.second->id().toString() << " index before setting " << portPair.second->getIndex() << std::endl);
+
+        if (portPair.second->getIndex() >= newPortIndex)
+          portPair.second->incrementIndex();
+      }
+
+
+      DYNAMIC_PORT_LOG(for (const auto& portPair : ports_) std::cout << "\t id " << portPair.second->id().toString() << " index after setting " << portPair.second->getIndex() << std::endl;);
+
+      return newPortIndex;
+    }
+  }
+
+
+  DYNAMIC_PORT_LOG(if (item->isDynamic()) std::cout << "original port: " << item->id().toString() << " newIndex: " << size() - 1 << std::endl;);
+
+  return size() - 1;
 }
 
 template<class T>
-void
+int
+PortManager<T>::lastIndexByName(const std::string& name) const
+{
+  auto matches = findAllByNameImpl(name);
+
+  if (matches.empty())
+    return -1;
+
+  DYNAMIC_PORT_LOG(std::cout << name << "  Input port object indexes:\n");
+  DYNAMIC_PORT_LOG(for (const auto& input : matches) std::cout << input->id() << " " << input->id().name << " " << input->getIndex() << std::endl;);
+
+  return static_cast<int>((*std::max_element(matches.begin(), matches.end(), [](const T& port1, const T& port2) { return port1->getIndex() < port2->getIndex(); }))->getIndex());
+}
+
+template<class T>
+int
 PortManager<T>::checkDynamicPortInvariant(const std::string& name)
 {
   auto byName = findAllByName(name);
@@ -116,12 +163,14 @@ PortManager<T>::checkDynamicPortInvariant(const std::string& name)
     if (0 == port->nconnections() && i != lastIndex)
       toRemove.push_back(port->id());
   }
-  BOOST_FOREACH(const PortId& id, toRemove)
-    remove(id);
+  int lastRemovedIndex = -1;
+  for (const auto& id : toRemove)
+    lastRemovedIndex = static_cast<int>(remove(id));
+  return lastRemovedIndex;
 }
 
 template<class T>
-void
+size_t
 PortManager<T>::remove(const PortId& id)
 {
   auto it = ports_.find(id);
@@ -131,10 +180,18 @@ PortManager<T>::remove(const PortId& id)
     ostr << "PortManager tried to remove a port that does not exist: " << id;
     BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage(ostr.str()));
   }
+  auto removedIndex = it->second->getIndex();
+  DYNAMIC_PORT_LOG(std::cout << "~~~removing port " << id.toString() << " index " << removedIndex << std::endl);
   ports_.erase(it);
-  size_t i = 0;
-  BOOST_FOREACH(typename PortMap::value_type& portPair, ports_)
-    portPair.second->setIndex(i++);
+  for (auto& portPair : ports_)
+  {
+    if (portPair.second->getIndex() > removedIndex)
+    {
+      DYNAMIC_PORT_LOG(std::cout << "\t resetting index " << portPair.second->id().toString() << " " << portPair.second->getIndex() - 1 << std::endl);
+      portPair.second->decrementIndex();
+    }
+  }
+  return removedIndex;
 }
 
 template<class T>
@@ -192,16 +249,24 @@ std::vector<T> PortManager<T>::operator[](const std::string& name) const
 template<class T>
 std::vector<T> PortManager<T>::findAllByName(const std::string& name) const
 {
-  std::vector<T> portsWithName;
-
-  boost::copy(
-    ports_ | boost::adaptors::map_values 
-    | boost::adaptors::filtered([&](const T& port) { return port->get_portname() == name; }), std::back_inserter(portsWithName));
+  auto portsWithName = findAllByNameImpl(name);
 
   if (portsWithName.empty())
   {
     BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager does not contain a port by name: " + name));
   }
+
+  return portsWithName;
+}
+
+template<class T>
+std::vector<T> PortManager<T>::findAllByNameImpl(const std::string& name) const
+{
+  std::vector<T> portsWithName;
+
+  boost::copy(
+    ports_ | boost::adaptors::map_values
+    | boost::adaptors::filtered([&](const T& port) { return port->get_portname() == name; }), std::back_inserter(portsWithName));
 
   return portsWithName;
 }

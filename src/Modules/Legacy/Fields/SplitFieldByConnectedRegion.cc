@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -29,8 +29,6 @@
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Scalar.h>
-//#include <Core/Datatypes/SparseRowMatrix.h>
-//#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -39,9 +37,9 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
-ModuleLookupInfo SplitFieldByConnectedRegion::staticInfo_("SplitFieldByConnectedRegion", "NewField", "SCIRun");
+MODULE_INFO_DEF(SplitFieldByConnectedRegion, NewField, SCIRun)
 
-SplitFieldByConnectedRegion::SplitFieldByConnectedRegion() 
+SplitFieldByConnectedRegion::SplitFieldByConnectedRegion()
   : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
@@ -64,14 +62,14 @@ void SplitFieldByConnectedRegion::setStateDefaults()
 void SplitFieldByConnectedRegion::execute()
 {
  auto input_field = getRequiredInput(InputField);
- 
+
  if (needToExecute())
   {
     update_state(Executing);
     setAlgoBoolFromState(SplitFieldByConnectedRegionAlgo::SortDomainBySize());
     setAlgoBoolFromState(SplitFieldByConnectedRegionAlgo::SortAscending());
- 
-    auto output = algo().run_generic(make_input((InputField, input_field)));
+
+    auto output = algo().run(make_input((InputField, input_field)));
 
     sendOutputFromAlgorithm(OutputField1, output);
     sendOutputFromAlgorithm(OutputField2, output);
@@ -81,7 +79,7 @@ void SplitFieldByConnectedRegion::execute()
     sendOutputFromAlgorithm(OutputField6, output);
     sendOutputFromAlgorithm(OutputField7, output);
     sendOutputFromAlgorithm(OutputField8, output);
-    
+
     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     boutput = new Bundle;
     for (size_t j=0; j< output.size(); j++)
@@ -90,6 +88,6 @@ void SplitFieldByConnectedRegion::execute()
       oss << "Field" << j;
       boutput->setField(oss.str(),output[j]);
     }
-    #endif    
+    #endif
   }
 }

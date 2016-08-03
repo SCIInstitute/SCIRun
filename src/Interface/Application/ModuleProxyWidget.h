@@ -33,6 +33,8 @@
 #include <Interface/Application/Note.h>
 #include <QGraphicsProxyWidget>
 
+class QTimeLine;
+
 namespace SCIRun
 {
   namespace Gui
@@ -44,10 +46,15 @@ namespace SCIRun
 	    Q_OBJECT
 
     public:
-      explicit ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent = 0);
+      explicit ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent = nullptr);
       ~ModuleProxyWidget();
       ModuleWidget* getModuleWidget();
       void createStartupNote();
+      void adjustHeight(int delta);
+      void adjustWidth(int delta);
+
+      //TODO: move to utility
+      static void ensureItemVisible(QGraphicsItem* item);
 
     public Q_SLOTS:
       void highlightIfSelected();
@@ -55,6 +62,8 @@ namespace SCIRun
       void createPortPositionProviders();
       void snapToGrid();
       void highlightPorts(int state);
+      void ensureThisVisible();
+      void showAndColor(const QColor& color);
 
     Q_SIGNALS:
       void selected();
@@ -66,30 +75,28 @@ namespace SCIRun
       void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
       void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
       void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
-      QVariant itemChange(GraphicsItemChange change, const QVariant& value);
+      QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
       virtual void setNoteGraphicsContext() override;
     private Q_SLOTS:
       void updateNote(const Note& note);
-      void ensureVisible();
+      void disableModuleGUI(bool disabled);
+      void loadAnimate(qreal val);
+      void colorAnimate(qreal val);
     private:
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
-      void addPort();
 
       ModuleWidget* module_;
+      QColor animateColor_;
       bool grabbedByWidget_, isSelected_;
       QWidget* pressedSubWidget_;
       QPointF position_;
       QPointF cachedPosition_;
       bool doHighlight_;
+      int stackDepth_;
+      QSizeF originalSize_;
+      QTimeLine* timeLine_;
     };
-
-    // arbitrary values
-    static const int TagDataKey = 123;
-    static const int TagLayerKey = 100;
-    static const int CurrentTagKey = 101;
-    static const int NoTag = -1;
-    static const int AllTags = -50;
   }
 }
 

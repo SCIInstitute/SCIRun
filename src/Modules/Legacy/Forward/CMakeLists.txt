@@ -31,11 +31,19 @@
 SET(Modules_Legacy_Forward_HEADERS
   BuildBEMatrix.h
   BuildBEMatrixImpl.h
+  CalcTMP.h
+  CalcTMPAlgo.h
+  CalculateCurrentDensity.h
+  InsertVoltageSource.h
 )
 
 SET(Modules_Legacy_Forward_SRCS
   BuildBEMatrix.cc
   BuildBEMatrixImpl.cc
+  CalcTMP.cc
+  CalcTMPAlgo.cc
+  CalculateCurrentDensity.cc
+  InsertVoltageSource.cc
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Legacy_Forward

@@ -35,13 +35,13 @@
 
 using namespace SCIRun::Gui;
 
-PreferencesWindow::PreferencesWindow(NetworkEditor* editor, QWidget* parent /* = 0 */) : QDialog(parent), networkEditor_(editor),
-  regressionMode_(false)
+PreferencesWindow::PreferencesWindow(NetworkEditor* editor, QWidget* parent /* = 0 */) : QDialog(parent), networkEditor_(editor)
 {
   setupUi(this);
   connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateSaveBeforeExecuteOption(int)));
   connect(moduleErrorDialogDisableCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorDialogOption(int)));
   connect(autoModuleNoteCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateAutoNotesState(int)));
+  connect(errorGraphicItemsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorInlineMessagesOption(int)));
 }
 
 void PreferencesWindow::updateModuleErrorDialogOption(int state)
@@ -72,6 +72,18 @@ void PreferencesWindow::setDisableModuleErrorDialogs(bool mode)
 {
   updateModuleErrorDialogOption(mode ? 1 : 0);
   moduleErrorDialogDisableCheckbox_->setChecked(mode);
+}
+
+void PreferencesWindow::updateModuleErrorInlineMessagesOption(int state)
+{
+  SCIRun::Core::Preferences::Instance().showModuleErrorInlineMessages.setValue(state != 0);
+  LOG_DEBUG("showModuleErrorInlineMessages is " << (state != 0));
+}
+
+void PreferencesWindow::setModuleErrorInlineMessages(bool mode)
+{
+  updateModuleErrorInlineMessagesOption(mode ? 1 : 0);
+  errorGraphicItemsCheckBox_->setChecked(mode);
 }
 
 bool PreferencesWindow::disableModuleErrorDialogs() const

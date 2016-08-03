@@ -47,30 +47,53 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   WidgetStyleMixin::tabStyle(this->displayOptionsTabs_);
-  addCheckBoxManager(showNodesCheckBox_, ShowFieldModule::ShowNodes);
-  addCheckBoxManager(showEdgesCheckBox_, ShowFieldModule::ShowEdges);
-  addCheckBoxManager(showFacesCheckBox_, ShowFieldModule::ShowFaces);
-  addCheckBoxManager(enableTransparencyNodesCheckBox_, ShowFieldModule::NodeTransparency);
-  addCheckBoxManager(enableTransparencyEdgesCheckBox_, ShowFieldModule::EdgeTransparency);
-  addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowFieldModule::FaceTransparency);
-  addCheckBoxManager(invertNormalsCheckBox, ShowFieldModule::FaceInvertNormals);
-  addDoubleSpinBoxManager(transparencyDoubleSpinBox_, ShowFieldModule::FaceTransparencyValue);
-  addDoubleSpinBoxManager(nodeTransparencyDoubleSpinBox_, ShowFieldModule::NodeTransparencyValue);
-  addDoubleSpinBoxManager(edgeTransparencyDoubleSpinBox_, ShowFieldModule::EdgeTransparencyValue);
-  addDoubleSpinBoxManager(scaleSphereDoubleSpinBox_, ShowFieldModule::SphereScaleValue);
+  addLineEditManager(fieldNameLineEdit_, ShowField::FieldName);
+  addCheckBoxManager(showNodesCheckBox_, ShowField::ShowNodes);
+  addCheckBoxManager(showEdgesCheckBox_, ShowField::ShowEdges);
+  addCheckBoxManager(showFacesCheckBox_, ShowField::ShowFaces);
+  addCheckBoxManager(enableTransparencyNodesCheckBox_, ShowField::NodeTransparency);
+  addCheckBoxManager(enableTransparencyEdgesCheckBox_, ShowField::EdgeTransparency);
+  addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowField::FaceTransparency);
+  addCheckBoxManager(invertNormalsCheckBox, ShowField::FaceInvertNormals);
+  addCheckBoxManager(showTextCheckBox_, ShowField::ShowText);
+  addCheckBoxManager(showDataValuesCheckBox_, ShowField::ShowDataValues);
+  addCheckBoxManager(showNodeIndicesCheckBox_, ShowField::ShowNodeIndices);
+  addCheckBoxManager(showEdgeIndicesCheckBox_, ShowField::ShowEdgeIndices);
+  addCheckBoxManager(showFaceIndicesCheckBox_, ShowField::ShowFaceIndices);
+  addCheckBoxManager(showCellIndicesCheckBox_, ShowField::ShowCellIndices);
+  addCheckBoxManager(cullTextCheckBox_, ShowField::CullBackfacingText);
+  addCheckBoxManager(textAlwaysVisibleCheckBox_, ShowField::TextAlwaysVisible);
+  addCheckBoxManager(renderIndicesLocationsCheckBox_, ShowField::RenderAsLocation);
+  addCheckBoxManager(useFaceNormalsCheckBox_, ShowField::UseFaceNormals);
+  addDoubleSpinBoxManager(transparencyDoubleSpinBox_, ShowField::FaceTransparencyValue);
+  addDoubleSpinBoxManager(nodeTransparencyDoubleSpinBox_, ShowField::NodeTransparencyValue);
+  addDoubleSpinBoxManager(edgeTransparencyDoubleSpinBox_, ShowField::EdgeTransparencyValue);
+  addDoubleSpinBoxManager(scaleSphereDoubleSpinBox_, ShowField::SphereScaleValue);
   addDoubleSpinBoxManager(cylinder_rad_spin, Parameters::CylinderRadius);
-  addSpinBoxManager(cylinder_res_spin, ShowFieldModule::CylinderResolution);
-  addSpinBoxManager(sphereResolutionSpinBox, ShowFieldModule::SphereResolution);
-  addRadioButtonGroupManager({ edgesAsLinesButton_, edgesAsCylindersButton_ }, ShowFieldModule::EdgesAsCylinders);
-  addRadioButtonGroupManager({ nodesAsPointsButton_, nodesAsSpheresButton_ }, ShowFieldModule::NodeAsSpheres);
+  addSpinBoxManager(cylinder_res_spin, ShowField::CylinderResolution);
+  addSpinBoxManager(sphereResolutionSpinBox, ShowField::SphereResolution);
+  addSpinBoxManager(textSizeSpinBox_, ShowField::TextSize);
+  addSpinBoxManager(textPrecisionSpinBox_, ShowField::TextPrecision);
+  addRadioButtonGroupManager({ edgesAsLinesButton_, edgesAsCylindersButton_ }, ShowField::EdgesAsCylinders);
+  addRadioButtonGroupManager({ nodesAsPointsButton_, nodesAsSpheresButton_ }, ShowField::NodeAsSpheres);
+  addRadioButtonGroupManager({ defaultNodeColoringButton_, colormapLookupNodeColoringButton_/*, conversionRGBNodeColoringButton_*/ }, ShowField::NodesColoring);
+  addRadioButtonGroupManager({ defaultEdgeColoringButton_, colormapLookupEdgeColoringButton_/*, conversionRGBEdgeColoringButton_*/ }, ShowField::EdgesColoring);
+  addRadioButtonGroupManager({ defaultFaceColoringButton_, colormapLookupFaceColoringButton_/*, conversionRGBFaceColoringButton_*/ }, ShowField::FacesColoring);
+  addRadioButtonGroupManager({ textColoringRadioButton_, colormapLookupTextRadioButton_, conversionRGBTextRadioButton_ }, ShowField::TextColoring);
 
   connectButtonsToExecuteSignal({ showNodesCheckBox_, showEdgesCheckBox_, showFacesCheckBox_, enableTransparencyNodesCheckBox_,
     enableTransparencyEdgesCheckBox_, enableTransparencyFacesCheckBox_, invertNormalsCheckBox, edgesAsLinesButton_,
-    edgesAsCylindersButton_, nodesAsPointsButton_, nodesAsSpheresButton_ });
+    edgesAsCylindersButton_, nodesAsPointsButton_, nodesAsSpheresButton_ ,
+    defaultNodeColoringButton_, colormapLookupNodeColoringButton_, //conversionRGBNodeColoringButton_,
+    defaultEdgeColoringButton_, colormapLookupEdgeColoringButton_, //conversionRGBEdgeColoringButton_,
+    defaultFaceColoringButton_, colormapLookupFaceColoringButton_, /*conversionRGBFaceColoringButton_*/ });
+
+  connectButtonToExecuteSignal(useFaceNormalsCheckBox_);
 
   createExecuteInteractivelyToggleAction();
 
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
+  connect(textColorPushButton_, SIGNAL(clicked()), this, SLOT(assignDefaultTextColor()));
 
   /////Set unused widgets to be not visible
   //Nodes Tab
@@ -93,6 +116,10 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   //groupBox_5->setVisible(false); //face coloring
   //checkBox->setVisible(false); //Use Face Normal box
   //checkBox_2->setVisible(false); //Images as texture box
+
+  //Text Tab
+  textOptionsFrame_->setEnabled(false);
+  textColoringGroupBox_->setEnabled(false);
 }
 
 void ShowFieldDialog::push()
@@ -111,7 +138,7 @@ void ShowFieldDialog::createStartupNote()
 
 void ShowFieldDialog::pullSpecial()
 {
-  ColorRGB color(state_->getValue(ShowFieldModule::DefaultMeshColor).toString());
+  ColorRGB color(state_->getValue(ShowField::DefaultMeshColor).toString());
   //std::cout << "pull color: " << color.r() << " " << color.g() << " " << color.b() << std::endl;
   // check for old saved color format: integers 0-255.
   defaultMeshColor_ = QColor(
@@ -119,11 +146,21 @@ void ShowFieldDialog::pullSpecial()
     static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
     static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
 
-  nodesTab_->setEnabled(state_->getValue(ShowFieldModule::NodesAvailable).toBool());
+  ColorRGB textColor(state_->getValue(ShowField::DefaultTextColor).toString());
+  defaultTextColor_ = QColor(
+    static_cast<int>(textColor.r() > 1 ? textColor.r() : textColor.r() * 255.0),
+    static_cast<int>(textColor.g() > 1 ? textColor.g() : textColor.g() * 255.0),
+    static_cast<int>(textColor.b() > 1 ? textColor.b() : textColor.b() * 255.0));
+
+  QString styleSheet = "QLabel{ background: rgb(" + QString::number(defaultTextColor_.red()) + "," +
+    QString::number(defaultTextColor_.green()) + "," + QString::number(defaultTextColor_.blue()) + "); }";
+  textColorLabel_->setStyleSheet(styleSheet);
+
+  nodesTab_->setEnabled(state_->getValue(ShowField::NodesAvailable).toBool());
   displayOptionsTabs_->setTabText(0, nodesTab_->isEnabled() ? "Nodes" : "NO NODES");
-  edgesTab_->setEnabled(state_->getValue(ShowFieldModule::EdgesAvailable).toBool());
+  edgesTab_->setEnabled(state_->getValue(ShowField::EdgesAvailable).toBool());
   displayOptionsTabs_->setTabText(1, edgesTab_->isEnabled() ? "Edges" : "NO EDGES");
-  facesTab_->setEnabled(state_->getValue(ShowFieldModule::FacesAvailable).toBool());
+  facesTab_->setEnabled(state_->getValue(ShowField::FacesAvailable).toBool());
   displayOptionsTabs_->setTabText(2, facesTab_->isEnabled() ? "Faces" : "NO FACES");
 }
 
@@ -139,9 +176,26 @@ void ShowFieldDialog::assignDefaultMeshColor()
   }
 }
 
+void ShowFieldDialog::assignDefaultTextColor()
+{
+  auto newColor = QColorDialog::getColor(defaultTextColor_, this, "Choose default text color");
+  if (newColor.isValid())
+  {
+    defaultTextColor_ = newColor;
+    //TODO: set color of button to this color
+    //defaultMeshColorButton_->set
+    pushColor();
+  }
+}
+
 void ShowFieldDialog::pushColor()
 {
-  //std::cout << "push color: " << defaultMeshColor_.redF() << " " << defaultMeshColor_.greenF() << " " << defaultMeshColor_.blueF() << std::endl;
-  state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
+  state_->setValue(ShowField::DefaultTextColor, ColorRGB(defaultTextColor_.redF(), defaultTextColor_.greenF(), defaultTextColor_.blueF()).toString());
+  state_->setValue(ShowField::DefaultMeshColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
+
+  QString styleSheet = "QLabel{ background: rgb(" + QString::number(defaultTextColor_.red()) + "," +
+    QString::number(defaultTextColor_.green()) + "," + QString::number(defaultTextColor_.blue()) + "); }";
+  textColorLabel_->setStyleSheet(styleSheet);
+
   Q_EMIT executeActionTriggered();
 }

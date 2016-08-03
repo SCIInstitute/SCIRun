@@ -40,6 +40,9 @@ namespace SCIRun {
   namespace Core {
     namespace CommandLine {
 
+      class DeveloperParameters;
+      using DeveloperParametersPtr = boost::shared_ptr<DeveloperParameters>;
+
       class SCISHARE ApplicationParameters : boost::noncopyable
       {
       public:
@@ -54,12 +57,23 @@ namespace SCIRun {
         virtual bool disableGui() const = 0;
         virtual bool disableSplash() const = 0;
         virtual bool isRegressionMode() const = 0;
+        virtual bool interactiveMode() const = 0;
+        virtual bool loadMostRecentFile() const = 0;
+        virtual DeveloperParametersPtr developerParameters() const = 0;
         virtual bool verboseMode() const = 0;
+        virtual bool printModuleList() const = 0;
+        virtual const std::string& entireCommandLine() const = 0;
+      };
+
+      class SCISHARE DeveloperParameters : boost::noncopyable
+      {
+      public:
+        virtual ~DeveloperParameters() {}
+        virtual boost::optional<int> regressionTimeoutSeconds() const = 0;
         virtual boost::optional<std::string> threadMode() const = 0;
         virtual boost::optional<std::string> reexecuteMode() const = 0;
         virtual boost::optional<int> frameInitLimit() const = 0;
-        virtual bool printModuleList() const = 0;
-        virtual const std::string& entireCommandLine() const = 0;
+        virtual boost::optional<double> guiExpandFactor() const = 0;
       };
 
       typedef boost::shared_ptr<ApplicationParameters> ApplicationParametersHandle;
@@ -70,7 +84,7 @@ namespace SCIRun {
       {
       public:
         CommandLineParser();
-        ApplicationParametersHandle parse(int argc, const char* argv[]);
+        ApplicationParametersHandle parse(int argc, const char* argv[]) const;
         std::string describe() const;
       private:
         boost::shared_ptr<CommandLineParserInternal> impl_;

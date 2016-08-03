@@ -37,11 +37,10 @@
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Math/MiscMath2.h>
-#include <Core/GeometryPrimitives/Tensor.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Core::Math;
+using namespace Core::Geometry;
+using namespace Core::Math;
 
 
 Persistent* transform_maker() {
@@ -49,8 +48,7 @@ Persistent* transform_maker() {
 }
 
 // initialize the static member type_id
-PersistentTypeID Transform::type_id("Transform", "Persistent", 
-                                    transform_maker);
+PersistentTypeID Transform::type_id("Transform", "Persistent", transform_maker);
 
 
 Transform::Transform()
@@ -78,8 +76,10 @@ Transform::Transform(const Point& p, const Vector& i,
   load_basis(p, i, j, k);
 }
 
-Transform::~Transform()
+const Transform& Transform::Identity()
 {
+  static Transform id;
+  return id;
 }
 
 void
@@ -971,10 +971,9 @@ namespace
 const TypeDescription*
 get_type_description(Transform*)
 {
-  static TypeDescription* td = 0;
+  static TypeDescription* td = nullptr;
   if(!td){
-    td = new TypeDescription("Transform", get_Transform_h_file_path(), 
-                                "SCIRun");
+    td = new TypeDescription("Transform", get_Transform_h_file_path(), "SCIRun");
   }
   return td;
 }
@@ -996,12 +995,12 @@ SCIRun::Core::Geometry::operator*(const Transform &t, const Tensor &d)
     {
       for(int j=0;j<3;j++) 
       {
-        result[i+3*k] += mat[4*i + j] * d.mat_[j][k];
+        result[i + 3 * k] += mat[4 * i + j] * d.val(j,k);
       }
     }
   }
 
-  return (Tensor(result[0],result[1],result[2],result[4],result[5],result[8]));
+  return Tensor(result[0],result[1],result[2],result[4],result[5],result[8]);
 }
 
 
@@ -1021,11 +1020,29 @@ SCIRun::Core::Geometry::operator*(const Tensor &d, const Transform &t)
     {
       for(int j=0;j<3;j++) 
       {
-        result[i+3*k] += mat[4*j + i] * d.mat_[j][k];
+        result[i + 3 * k] += mat[4 * j + i] * d.val(j, k);
       }
     }
   }
   
-  return (Tensor(result[0],result[1],result[2],result[4],result[5],result[8]));
+  return Tensor(result[0],result[1],result[2],result[4],result[5],result[8]);
 }
 
+
+bool SCIRun::Core::Geometry::operator==(const Transform& lhs, const Transform& rhs)
+{
+  for (int i = 0; i < 4; i++)
+  {
+    for (int j = 0; j < 4; j++)
+    {
+      if (lhs.get_mat_val(i, j) != rhs.get_mat_val(i, j))
+        return false;
+    }
+  }
+  return true;
+}
+
+bool SCIRun::Core::Geometry::operator!=(const Transform& lhs, const Transform& rhs)
+{
+  return !(lhs == rhs);
+}

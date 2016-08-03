@@ -1,22 +1,22 @@
-/*  
+/*
  *  For more information, please see: http://software.sci.utah.edu
- *  
+ *
  *  The MIT License
- *  
+ *
  *  Copyright (c) 2015 Scientific Computing and Imaging Institute,
  *  University of Utah.
- *  
- *  
+ *
+ *
  *  Permission is hereby granted, free of charge, to any person obtaining a
  *  copy of this software and associated documentation files (the "Software"),
  *  to deal in the Software without restriction, including without limitation
  *  the rights to use, copy, modify, merge, publish, distribute, sublicense,
  *  and/or sell copies of the Software, and to permit persons to whom the
  *  Software is furnished to do so, subject to the following conditions:
- *  
+ *
  *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
- *  
+ *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  *  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -25,57 +25,35 @@
  *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  *  DEALINGS IN THE SOFTWARE.
  */
- 
+
+#include <Modules/Legacy/String/JoinStrings.h>
 #include <Core/Datatypes/String.h>
 
-#include <Dataflow/Network/Ports/StringPort.h>
-#include <Dataflow/Network/Module.h>
-
-#include <sstream>
-#include <vector>
-
-namespace SCIRun {
-
 using namespace SCIRun;
+using namespace Core::Datatypes;
+using namespace Modules::StringManip;
+using namespace Dataflow::Networks;
 
-/// @class JoinStrings
-/// This module merges multiple strings into one string. 
+MODULE_INFO_DEF(JoinStrings, String, SCIRun)
 
-class JoinStrings : public Module {
-  public:
-    JoinStrings(GuiContext*);
-    virtual ~JoinStrings() {}
-
-    virtual void execute();
-};
-
-
-DECLARE_MAKER(JoinStrings)
-JoinStrings::JoinStrings(GuiContext* ctx)
-  : Module("JoinStrings", ctx, Source, "String", "SCIRun")
+JoinStrings::JoinStrings() : Module(staticInfo_, false)
 {
+  INITIALIZE_PORT(Input);
+  INITIALIZE_PORT(Output);
 }
 
-
-void
-JoinStrings::execute()
+void JoinStrings::execute()
 {
-  std::vector<StringHandle> strings;
+  auto strings = getRequiredDynamicInputs(Input);
 
-  get_dynamic_input_handles("Input", strings, true);
-  
-  if (strings.size())
+  if (!strings.empty())
   {
     std::ostringstream ostr;
     for (size_t i = 0; i < strings.size(); ++i)
     {
-      ostr << strings[i]->get();
+      ostr << strings[i]->value();
     }
     StringHandle output(new String(ostr.str()));
-    send_output_handle("Output", output);
+    sendOutput(Output, output);
   }
 }
-
-} // End namespace SCIRun
-
-

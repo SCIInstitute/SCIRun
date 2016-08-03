@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -40,7 +40,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
-ModuleLookupInfo SplitFieldByDomain::staticInfo_("SplitFieldByDomain", "NewField", "SCIRun");
+MODULE_INFO_DEF(SplitFieldByDomain, NewField, SCIRun)
 
 SplitFieldByDomain::SplitFieldByDomain() : Module(staticInfo_)
 {
@@ -67,13 +67,6 @@ void SplitFieldByDomain::execute()
 {
   auto input = getRequiredInput(InputField);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  if (inputs_changed_ || !oport_cached("All Fields") || !oport_cached("Field1")
-    || !oport_cached("Field2") || !oport_cached("Field3") || !oport_cached("Field4")
-    || !oport_cached("Field5") || !oport_cached("Field6") || !oport_cached("Field7") 
-    || !oport_cached("Field8")  ||gui_sort_by_size_.changed()
-    || gui_sort_ascending_.changed())
-#endif
   if (needToExecute())
   {
     update_state(Executing);
@@ -81,8 +74,8 @@ void SplitFieldByDomain::execute()
     setAlgoBoolFromState(SplitFieldByDomainAlgo::SortBySize);
     setAlgoBoolFromState(SplitFieldByDomainAlgo::SortAscending);
 
-    auto algoOutput = algo().run_generic(withInputData((InputField, input)));
-    
+    auto algoOutput = algo().run(withInputData((InputField, input)));
+
     auto output = algoOutput.getList<Field>(Variables::ListOfOutputFields);
 
     BundleHandle boutput(new Bundle);
@@ -94,7 +87,7 @@ void SplitFieldByDomain::execute()
     }
 
     FieldHandle nofield;
-    
+
     sendOutput(All_Fields, boutput);
 
     //TODO: make array of output ports, somehow

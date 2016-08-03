@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -39,7 +39,9 @@ using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 
-SimulateForwardMagneticFieldModule::SimulateForwardMagneticFieldModule() : Module(ModuleLookupInfo("SimulateForwardMagneticField", "BrainStimulator", "SCIRun"),false)
+MODULE_INFO_DEF(SimulateForwardMagneticField, BrainStimulator, SCIRun)
+
+SimulateForwardMagneticField::SimulateForwardMagneticField() : Module(staticInfo_, false)
 {
  INITIALIZE_PORT(ElectricField);
  INITIALIZE_PORT(ConductivityTensor);
@@ -49,21 +51,20 @@ SimulateForwardMagneticFieldModule::SimulateForwardMagneticFieldModule() : Modul
  INITIALIZE_PORT(MagneticFieldMagnitudes);
 }
 
-void SimulateForwardMagneticFieldModule::setStateDefaults()
+void SimulateForwardMagneticField::setStateDefaults()
 {
-
 }
 
-void SimulateForwardMagneticFieldModule::execute()
-{ 
+void SimulateForwardMagneticField::execute()
+{
   auto EField = getRequiredInput(ElectricField);
   auto CondTensor = getRequiredInput(ConductivityTensor);
   auto Dipoles = getRequiredInput(DipoleSources);
   auto Detectors = getRequiredInput(DetectorLocations);
-  
+
   if (needToExecute())
   {
-     auto output = algo().run_generic(make_input((ElectricField, EField)(ConductivityTensor, CondTensor)(DipoleSources, Dipoles)(DetectorLocations, Detectors)));
+     auto output = algo().run(make_input((ElectricField, EField)(ConductivityTensor, CondTensor)(DipoleSources, Dipoles)(DetectorLocations, Detectors)));
     sendOutputFromAlgorithm(MagneticField, output);
     sendOutputFromAlgorithm(MagneticFieldMagnitudes, output);
   }

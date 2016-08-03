@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="3">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>43</count>
+			<count>40</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>AppendMatrix:0</first>
@@ -187,62 +187,6 @@
 				</second>
 			</item>
 			<item>
-				<first>CreateString:0</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>String</category_name_>
-						<module_name_>CreateString</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>1</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>InputString</name>
-								</first>
-								<second>
-									<name>InputString</name>
-									<value>
-										<which>2</which>
-										<value>[AU]</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>CreateString:1</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>String</category_name_>
-						<module_name_>CreateString</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>1</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>InputString</name>
-								</first>
-								<second>
-									<name>InputString</name>
-									<value>
-										<which>2</which>
-										<value>scalp;skull;CSF;WM;GM</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
 				<first>EvaluateLinearAlgebraUnary:0</first>
 				<second>
 					<module>
@@ -339,34 +283,6 @@
 									<value>
 										<which>0</which>
 										<value>0</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>GenerateROIStatistics:0</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>BrainStimulator</category_name_>
-						<module_name_>GenerateROIStatistics</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>1</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>PhysicalUnitStr</name>
-								</first>
-								<second>
-									<name>PhysicalUnitStr</name>
-									<value>
-										<which>2</which>
-										<value></value>
 									</value>
 								</second>
 							</item>
@@ -4568,14 +4484,14 @@
 												<name>x</name>
 												<value>
 													<which>0</which>
-													<value>151</value>
+													<value>156</value>
 												</value>
 											</item>
 											<item>
 												<name>y</name>
 												<value>
 													<which>0</which>
-													<value>494</value>
+													<value>377</value>
 												</value>
 											</item>
 										</value>
@@ -4625,14 +4541,14 @@
 												<name>x</name>
 												<value>
 													<which>0</which>
-													<value>110</value>
+													<value>210</value>
 												</value>
 											</item>
 											<item>
 												<name>y</name>
 												<value>
 													<which>0</which>
-													<value>493</value>
+													<value>343</value>
 												</value>
 											</item>
 										</value>
@@ -4682,14 +4598,14 @@
 												<name>x</name>
 												<value>
 													<which>0</which>
-													<value>156</value>
+													<value>225</value>
 												</value>
 											</item>
 											<item>
 												<name>y</name>
 												<value>
 													<which>0</which>
-													<value>275</value>
+													<value>516</value>
 												</value>
 											</item>
 										</value>
@@ -4739,14 +4655,14 @@
 												<name>x</name>
 												<value>
 													<which>0</which>
-													<value>197</value>
+													<value>215</value>
 												</value>
 											</item>
 											<item>
 												<name>y</name>
 												<value>
 													<which>0</which>
-													<value>376</value>
+													<value>405</value>
 												</value>
 											</item>
 										</value>
@@ -4796,14 +4712,14 @@
 												<name>x</name>
 												<value>
 													<which>0</which>
-													<value>115</value>
+													<value>246</value>
 												</value>
 											</item>
 											<item>
 												<name>y</name>
 												<value>
 													<which>0</which>
-													<value>261</value>
+													<value>353</value>
 												</value>
 											</item>
 										</value>
@@ -4816,7 +4732,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>59</count>
+			<count>55</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>AppendMatrix:0</moduleId1_>
@@ -4863,18 +4779,6 @@
 				<moduleId2_>CalculateVectorMagnitudes:0</moduleId2_>
 				<port2_>
 					<name>VectorField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>CalculateVectorMagnitudes:0</moduleId1_>
-				<port1_>
-					<name>ScalarField</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>GenerateROIStatistics:0</moduleId2_>
-				<port2_>
-					<name>MeshDataOnElements</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -4935,30 +4839,6 @@
 				<moduleId2_>RescaleColorMap:3</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>CreateString:0</moduleId1_>
-				<port1_>
-					<name>NewString</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>GenerateROIStatistics:0</moduleId2_>
-				<port2_>
-					<name>PhysicalUnit</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>CreateString:1</moduleId1_>
-				<port1_>
-					<name>NewString</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>GenerateROIStatistics:0</moduleId2_>
-				<port2_>
-					<name>AtlasMeshLabels</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -5151,18 +5031,6 @@
 				<moduleId2_>CalculateFieldData:0</moduleId2_>
 				<port2_>
 					<name>InputFields</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadField:0</moduleId1_>
-				<port1_>
-					<name>Field</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>GenerateROIStatistics:0</moduleId2_>
-				<port2_>
-					<name>AtlasMesh</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -5529,7 +5397,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>43</count>
+		<count>40</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>AppendMatrix:0</first>
@@ -5574,20 +5442,6 @@
 			</second>
 		</item>
 		<item>
-			<first>CreateString:0</first>
-			<second>
-				<first>-4.56000000000000000e+02</first>
-				<second>1.59600000000000000e+03</second>
-			</second>
-		</item>
-		<item>
-			<first>CreateString:1</first>
-			<second>
-				<first>-4.56000000000000000e+02</first>
-				<second>1.74800000000000000e+03</second>
-			</second>
-		</item>
-		<item>
 			<first>EvaluateLinearAlgebraUnary:0</first>
 			<second>
 				<first>-5.32000000000000000e+02</first>
@@ -5599,13 +5453,6 @@
 			<second>
 				<first>1.10000000000000000e+01</first>
 				<second>-5.65000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>GenerateROIStatistics:0</first>
-			<second>
-				<first>-4.56000000000000000e+02</first>
-				<second>2.05200000000000000e+03</second>
 			</second>
 		</item>
 		<item>
@@ -5834,26 +5681,11 @@
 		</item>
 	</modulePositions>
 	<moduleNotes class_id="19" tracking_level="0" version="0">
-		<count>10</count>
+		<count>9</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
-			<first>GenerateROIStatistics:0</first>
-			<second class_id="21" tracking_level="0" version="0">
-				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Lucida Grande&apos;; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;ELECTRICAL FIELD&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;STATISTICS&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
-				<noteText>ELECTRICAL FIELD
-STATISTICS</noteText>
-				<position>6</position>
-				<fontSize>13</fontSize>
-			</second>
-		</item>
-		<item>
 			<first>ReadField:0</first>
-			<second>
+			<second class_id="21" tracking_level="0" version="0">
 				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -5982,7 +5814,7 @@ p, li { white-space: pre-wrap; }
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="22" tracking_level="0" version="0">
-		<count>43</count>
+		<count>40</count>
 		<item_version>0</item_version>
 		<item class_id="23" tracking_level="0" version="0">
 			<first>AppendMatrix:0</first>
@@ -6009,23 +5841,11 @@ p, li { white-space: pre-wrap; }
 			<second>0</second>
 		</item>
 		<item>
-			<first>CreateString:0</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>CreateString:1</first>
-			<second>0</second>
-		</item>
-		<item>
 			<first>EvaluateLinearAlgebraUnary:0</first>
 			<second>0</second>
 		</item>
 		<item>
 			<first>EvaluateLinearAlgebraUnary:1</first>
-			<second>0</second>
-		</item>
-		<item>
-			<first>GenerateROIStatistics:0</first>
 			<second>0</second>
 		</item>
 		<item>

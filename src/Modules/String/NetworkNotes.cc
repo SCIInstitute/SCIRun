@@ -37,20 +37,20 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-AlgorithmParameterName NetworkNotesModule::InputString("InputString");
+const AlgorithmParameterName NetworkNotes::InputString("InputString");
 
-NetworkNotesModule::NetworkNotesModule() : Module(ModuleLookupInfo("NetworkNotes", "String", "SCIRun")) 
+NetworkNotes::NetworkNotes() : Module(ModuleLookupInfo("NetworkNotes", "String", "SCIRun"))
 {
   INITIALIZE_PORT(NewString);
 }
 
-void NetworkNotesModule::setStateDefaults()
+void NetworkNotes::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(InputString, std::string());
 }
 
-void NetworkNotesModule::execute()
+void NetworkNotes::execute()
 {
   stringValue_ = get_state()->getValue(InputString).toString();
 

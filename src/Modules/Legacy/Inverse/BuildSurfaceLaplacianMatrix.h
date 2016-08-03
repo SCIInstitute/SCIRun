@@ -48,7 +48,9 @@ namespace SCIRun {
         INPUT_PORT(0, Source, LegacyField);
         OUTPUT_PORT(0, ResultMatrix, Matrix);
 
-        const static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        LEGACY_BIOPSE_MODULE
+
+        MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
       };
     }
   }

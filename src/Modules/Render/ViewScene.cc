@@ -27,9 +27,10 @@
 */
 
 #include <Modules/Render/ViewScene.h>
-#include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Logging/Log.h>
+#include <Core/Datatypes/Color.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 // Needed to fix conflict between define in X11 header
 // and eigen enum member.
@@ -37,36 +38,77 @@
 #  undef Success
 #endif
 
-#include <Core/Datatypes/DenseMatrix.h>
-
 using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Render;
+using namespace Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 
-ModuleLookupInfo ViewScene::staticInfo_("ViewScene", "Render", "SCIRun");
+MODULE_INFO_DEF(ViewScene, Render, SCIRun)
+
 Mutex ViewScene::mutex_("ViewScene");
 
 ALGORITHM_PARAMETER_DEF(Render, GeomData);
 ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
+ALGORITHM_PARAMETER_DEF(Render, ScreenshotData);
 
-ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_)
+ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true), asyncUpdates_(0)
 {
   INITIALIZE_PORT(GeneralGeom);
+  INITIALIZE_PORT(ScreenshotDataRed);
+  INITIALIZE_PORT(ScreenshotDataGreen);
+  INITIALIZE_PORT(ScreenshotDataBlue);
 }
 
 void ViewScene::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Ambient, 0.2);
+  state->setValue(Diffuse, 1.0);
+  state->setValue(Specular, 0.4);
+  state->setValue(Shine, 1.0);
+  state->setValue(Emission, 1.0);
+  state->setValue(FogOn, false);
+  state->setValue(ObjectsOnly, true);
+  state->setValue(UseBGColor, true);
+  state->setValue(FogStart, 0.0);
+  state->setValue(FogEnd, 0.71);
+  state->setValue(FogColor, ColorRGB(0.0, 0.0, 1.0).toString());
+  state->setValue(ShowScaleBar, false);
+  state->setValue(ScaleBarUnitValue, "mm");
+  state->setValue(ScaleBarLength, 1.0);
+  state->setValue(ScaleBarHeight, 1.0);
+  state->setValue(ScaleBarMultiplier, 1.0);
+  state->setValue(ScaleBarNumTicks, 11);
+  state->setValue(ScaleBarLineWidth, 1.0);
+  state->setValue(ScaleBarFontSize, 8);
+  state->setValue(Lighting, true);
+  state->setValue(ShowBBox, false);
+  state->setValue(UseClip, true);
+  state->setValue(BackCull, false);
+  state->setValue(DisplayList, false);
+  state->setValue(Stereo, false);
+  state->setValue(StereoFusion, 0.4);
+  state->setValue(PolygonOffset, 0.0);
+  state->setValue(TextOffset, 0.0);
+  state->setValue(FieldOfView, 20);
+  state->setValue(HeadLightOn, true);
+  state->setValue(Light1On, false);
+  state->setValue(Light2On, false);
+  state->setValue(Light3On, false);
+  state->setValue(HeadLightColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Light1Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Light2Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Light3Color, ColorRGB(0.0, 0.0, 0.0).toString());
+
   postStateChangeInternalSignalHookup();
 }
 
 void ViewScene::postStateChangeInternalSignalHookup()
 {
-  get_state()->connect_state_changed([this]() { processViewSceneObjectFeedback(); });
+  get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
 }
 
 void ViewScene::portRemovedSlotImpl(const PortId& pid)
@@ -86,7 +128,7 @@ void ViewScene::updateTransientList()
 {
   auto transient = get_state()->getTransientValue(Parameters::GeomData);
 
-  auto geoms = optional_any_cast_or_default<GeomListPtr>(transient);
+  auto geoms = transient_value_cast<GeomListPtr>(transient);
   if (!geoms)
   {
     geoms.reset(new GeomList());
@@ -113,14 +155,17 @@ void ViewScene::updateTransientList()
 
 void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
+  if (!data)
+    return;
   //lock for state modification
   {
     LOG_DEBUG("ViewScene::asyncExecute before locking");
     Guard lock(mutex_.get());
+    get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
 
     LOG_DEBUG("ViewScene::asyncExecute after locking");
 
-    GeometryHandle geom = boost::dynamic_pointer_cast<GeometryObject>(data);
+    auto geom = boost::dynamic_pointer_cast<GeometryObject>(data);
     if (!geom)
     {
       error("Logical error: not a geometry object on ViewScene");
@@ -131,22 +176,109 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     updateTransientList();
   }
   get_state()->fireTransientStateChangeSignal();
+  asyncUpdates_.fetch_add(1);
+  //std::cout << "asyncExecute " << asyncUpdates_ << std::endl;
+}
+
+void ViewScene::execute()
+{
+  if (needToExecute())
+  {
+    //std::cout << "1execute " << asyncUpdates_ << std::endl;
+    const int maxAsyncWaitTries = 100; //TODO: make configurable for longer-running networks
+    auto asyncWaitTries = 0;
+    if (inputPorts().size() > 1) // only send screenshot if input is present
+    {
+      while (asyncUpdates_ < inputPorts().size() - 1)
+      {
+        //std::cout << "2execute " << asyncUpdates_ << std::endl;
+        asyncWaitTries++;
+        if (asyncWaitTries == maxAsyncWaitTries)
+          return; // nothing coming down the ports
+        //wait until all asyncExecutes are done.
+      }
+
+      ModuleStateInterface::TransientValueOption screenshotDataOption;
+      auto state = get_state();
+      do
+      {
+        //std::cout << "3execute " << asyncUpdates_ << std::endl;
+        screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
+        if (screenshotDataOption)
+        {
+          //std::cout << "4execute found a non-empty" << asyncUpdates_ << std::endl;
+          auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
+          if (screenshotData.red)
+          {
+            sendOutput(ScreenshotDataRed, screenshotData.red);
+          }
+          if (screenshotData.green)
+          {
+            sendOutput(ScreenshotDataGreen, screenshotData.green);
+          }
+          if (screenshotData.blue)
+          {
+            sendOutput(ScreenshotDataBlue, screenshotData.blue);
+          }
+        }
+      } while (!screenshotDataOption);
+    }
+    asyncUpdates_ = 0;
+
+    //std::cout << "999execute " << asyncUpdates_ << std::endl;
+    //std::cout << "execute setting none " << asyncUpdates_ << std::endl;
+    get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
+  }
 }
 
 void ViewScene::processViewSceneObjectFeedback()
 {
-  //TODO: match ID of touched geom object with port id, and send that info back too. 
-  //std::cout << "slot for state change in VS module" << std::endl;
+  //TODO: match ID of touched geom object with port id, and send that info back too.
   auto state = get_state();
-  auto newInfo = state->getValue(Parameters::GeometryFeedbackInfo).toVector();
-  //std::cout << "feedback info: " << newInfo << std::endl;
-  if (feedbackInfo_ != newInfo)
+  auto newInfo = state->getTransientValue(Parameters::GeometryFeedbackInfo);
+  //TODO: lost equality test here due to change to boost::any. Would be nice to form a data class with equality to avoid repetitive signalling.
+  if (newInfo)
   {
-    //std::cout << "new feedback info: " << newInfo << std::endl;
-    feedbackInfo_ = newInfo;
-
-    sendFeedbackUpstreamAlongIncomingConnections(feedbackInfo_);
+    auto vsInfo = transient_value_cast<ViewSceneFeedback>(newInfo);
+    sendFeedbackUpstreamAlongIncomingConnections(vsInfo);
   }
 }
 
-AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
+const AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
+const AlgorithmParameterName ViewScene::Ambient("Ambient");
+const AlgorithmParameterName ViewScene::Diffuse("Diffuse");
+const AlgorithmParameterName ViewScene::Specular("Specular");
+const AlgorithmParameterName ViewScene::Shine("Shine");
+const AlgorithmParameterName ViewScene::Emission("Emission");
+const AlgorithmParameterName ViewScene::FogOn("FogOn");
+const AlgorithmParameterName ViewScene::ObjectsOnly("ObjectsOnly");
+const AlgorithmParameterName ViewScene::UseBGColor("UseBGColor");
+const AlgorithmParameterName ViewScene::FogStart("FogStart");
+const AlgorithmParameterName ViewScene::FogEnd("FogEnd");
+const AlgorithmParameterName ViewScene::FogColor("FogColor");
+const AlgorithmParameterName ViewScene::ShowScaleBar("ShowScaleBar");
+const AlgorithmParameterName ViewScene::ScaleBarUnitValue("ScaleBarUnitValue");
+const AlgorithmParameterName ViewScene::ScaleBarLength("ScaleBarLength");
+const AlgorithmParameterName ViewScene::ScaleBarHeight("ScaleBarHeight");
+const AlgorithmParameterName ViewScene::ScaleBarMultiplier("ScaleBarMultiplier");
+const AlgorithmParameterName ViewScene::ScaleBarNumTicks("ScaleBarNumTicks");
+const AlgorithmParameterName ViewScene::ScaleBarLineWidth("ScaleBarLineWidth");
+const AlgorithmParameterName ViewScene::ScaleBarFontSize("ScaleBarFontSize");
+const AlgorithmParameterName ViewScene::Lighting("Lighting");
+const AlgorithmParameterName ViewScene::ShowBBox("ShowBBox");
+const AlgorithmParameterName ViewScene::UseClip("UseClip");
+const AlgorithmParameterName ViewScene::Stereo("Stereo");
+const AlgorithmParameterName ViewScene::BackCull("BackCull");
+const AlgorithmParameterName ViewScene::DisplayList("DisplayList");
+const AlgorithmParameterName ViewScene::StereoFusion("StereoFusion");
+const AlgorithmParameterName ViewScene::PolygonOffset("PolygonOffset");
+const AlgorithmParameterName ViewScene::TextOffset("TextOffset");
+const AlgorithmParameterName ViewScene::FieldOfView("FieldOfView");
+const AlgorithmParameterName ViewScene::HeadLightOn("HeadLightOn");
+const AlgorithmParameterName ViewScene::Light1On("Light1On");
+const AlgorithmParameterName ViewScene::Light2On("Light2On");
+const AlgorithmParameterName ViewScene::Light3On("Light3On");
+const AlgorithmParameterName ViewScene::HeadLightColor("HeadLightColor");
+const AlgorithmParameterName ViewScene::Light1Color("Light1Color");
+const AlgorithmParameterName ViewScene::Light2Color("Light2Color");
+const AlgorithmParameterName ViewScene::Light3Color("Light3Color");

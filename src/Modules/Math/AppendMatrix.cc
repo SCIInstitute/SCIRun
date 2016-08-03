@@ -35,7 +35,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 
-AppendMatrixModule::AppendMatrixModule() : Module(ModuleLookupInfo("AppendMatrix", "Math", "SCIRun")) 
+AppendMatrix::AppendMatrix() : Module(ModuleLookupInfo("AppendMatrix", "Math", "SCIRun"))
 {
   INITIALIZE_PORT(FirstMatrix);
   INITIALIZE_PORT(SecondMatrix);
@@ -43,20 +43,20 @@ AppendMatrixModule::AppendMatrixModule() : Module(ModuleLookupInfo("AppendMatrix
   INITIALIZE_PORT(ResultMatrix);
 }
 
-void AppendMatrixModule::setStateDefaults()
+void AppendMatrix::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(Variables::RowsOrColumns, 0);
 }
 
-void AppendMatrixModule::execute()
+void AppendMatrix::execute()
 {
   auto matrixLHS = getRequiredInput(FirstMatrix);
   auto matrixRHS = getRequiredInput(SecondMatrix);
   auto param = get_state()->getValue(Variables::RowsOrColumns).toInt();
 
   algo().set(Variables::RowsOrColumns, param);
-  auto output = algo().run_generic(withInputData((FirstMatrix, matrixLHS)(SecondMatrix, matrixRHS)));
+  auto output = algo().run(withInputData((FirstMatrix, matrixLHS)(SecondMatrix, matrixRHS)));
 
   sendOutputFromAlgorithm(ResultMatrix, output);
 }

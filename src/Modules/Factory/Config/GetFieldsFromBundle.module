@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GetFieldsFromBundle",
+    "namespace": "Bundles",
+    "status": "Ported module: improved UI",
+    "description": "...",
+    "header": "Modules/Legacy/Bundle/GetFieldsFromBundle.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "GetFieldsFromBundleDialog",
+    "header": "Interface/Modules/Bundle/GetFieldsFromBundleDialog.h"
+  }
+}

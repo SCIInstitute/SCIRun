@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -48,43 +48,43 @@
 namespace SCIRun {
  namespace Core {
   namespace Algorithms {
-  
-   class SCISHARE MarchingCubesAlgo : public AlgorithmBase 
+
+   class SCISHARE MarchingCubesAlgo : public AlgorithmBase
    {
 
     public:
 
     MarchingCubesAlgo();
-    
+
     static AlgorithmParameterName transparency;
     static AlgorithmParameterName build_geometry;
     static AlgorithmParameterName build_field;
     static AlgorithmParameterName build_node_interpolant;
     static AlgorithmParameterName build_elem_interpolant;
     static AlgorithmParameterName num_threads;
-   
+
    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-   {  
+   {
       add_color("color",Color(0.5,0.5,0.5));
       add_colormap("colormap",0);
     };
     #endif
-    
-    bool run(FieldHandle input, std::vector<double>& isovalues);
-   
-    bool run(FieldHandle input, std::vector<double>& isovalues, FieldHandle& field);
-     
-    bool run(FieldHandle input, std::vector<double>& isovalues, 
+
+    bool run(FieldHandle input, const std::vector<double>& isovalues);
+
+    bool run(FieldHandle input, const std::vector<double>& isovalues, FieldHandle& field);
+
+    bool run(FieldHandle input, const std::vector<double>& isovalues,
              FieldHandle& field, Datatypes::MatrixHandle& interpolant );
-	     
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-    
-    bool run(FieldHandle input, std::vector<double>& isovalues, 
+
+    AlgorithmOutput run(const AlgorithmInput& input) const;
+
+    bool run(FieldHandle input, const std::vector<double>& isovalues,
              FieldHandle& field,
              Datatypes::MatrixHandle& node_interpolant,
              Datatypes::MatrixHandle& elem_interpolant ) const;
    };
-  
+
   }
  } // End namespace SCIRun
 }

@@ -35,8 +35,6 @@
 #include <es-general/comp/Transform.hpp>
 #include <es-general/comp/StaticGlobalTime.hpp>
 #include <es-general/comp/StaticCamera.hpp>
-#include <es-general/comp/StaticOrthoCamera.hpp>
-#include <es-general/comp/CameraSelect.hpp>
 
 #include <es-render/comp/VBO.hpp>
 #include <es-render/comp/IBO.hpp>
@@ -49,19 +47,21 @@
 #include <es-render/comp/StaticGLState.hpp>
 #include <es-render/comp/StaticVBOMan.hpp>
 #include <es-render/comp/StaticIBOMan.hpp>
+#include <es-render/comp/StaticTextureMan.hpp>
 
 #include <bserialize/BSerialize.hpp>
-
-#include <Core/Datatypes/Geometry.h>
 
 #include "../comp/RenderBasicGeom.h"
 #include "../comp/SRRenderState.h"
 #include "../comp/RenderList.h"
 #include "../comp/StaticWorldLight.h"
+#include "../comp/StaticClippingPlanes.h"
 #include "../comp/LightingUniforms.h"
+#include "../comp/ClippingPlaneUniforms.h"
 
 namespace es = CPM_ES_NS;
 namespace shaders = CPM_GL_SHADERS_NS;
+using namespace SCIRun::Graphics::Datatypes;
 
 // Every component is self contained. It only accesses the systems and
 // components that it specifies in it's component list.
@@ -75,21 +75,25 @@ class RenderBasicSysTrans :
                              SRRenderState,
                              RenderList,
                              LightingUniforms,
+                             ClippingPlaneUniforms,
                              gen::Transform,
                              gen::StaticGlobalTime,
                              ren::VBO,
                              ren::IBO,
+                             ren::Texture,
                              ren::CommonUniforms,
                              ren::VecUniform,
                              ren::MatUniform,
                              ren::Shader,
-														 ren::GLState,
-														 Core::Datatypes::GeometryObject::SpireSubPass,
+                             ren::GLState,
+                             SpireSubPass,
                              StaticWorldLight,
+                             StaticClippingPlanes,
                              gen::StaticCamera,
                              ren::StaticGLState,
                              ren::StaticVBOMan,
-														 ren::StaticIBOMan>
+                             ren::StaticIBOMan,
+                             ren::StaticTextureMan>
 {
 public:
 
@@ -101,8 +105,12 @@ public:
                                   ren::GLState,
                                   ren::StaticGLState,
                                   ren::CommonUniforms,
+                                  LightingUniforms,
+                                  ClippingPlaneUniforms,
                                   ren::VecUniform,
-                                  ren::MatUniform>(type);
+                                  ren::MatUniform,
+                                  ren::Texture,
+                                  ren::StaticTextureMan>(type);
   }
 
 private:
@@ -149,7 +157,7 @@ private:
 
   GLuint sortObjects(const Core::Geometry::Vector& dir,
     const es::ComponentGroup<ren::IBO>& ibo,
-    const es::ComponentGroup<Core::Datatypes::GeometryObject::SpireSubPass>& pass,
+    const es::ComponentGroup<SpireSubPass>& pass,
     const es::ComponentGroup<ren::StaticIBOMan>& iboMan)
   {
     char* vbo_buffer = reinterpret_cast<char*>(pass.front().vbo.data->getBuffer());
@@ -210,21 +218,25 @@ private:
       const es::ComponentGroup<SRRenderState>& srstate,
       const es::ComponentGroup<RenderList>& rlist,
       const es::ComponentGroup<LightingUniforms>& lightUniforms,
+      const es::ComponentGroup<ClippingPlaneUniforms>& clippingPlaneUniforms,
       const es::ComponentGroup<gen::Transform>& trafo,
       const es::ComponentGroup<gen::StaticGlobalTime>& time,
       const es::ComponentGroup<ren::VBO>& vbo,
       const es::ComponentGroup<ren::IBO>& ibo,
+      const es::ComponentGroup<ren::Texture>& textures,
       const es::ComponentGroup<ren::CommonUniforms>& commonUniforms,
       const es::ComponentGroup<ren::VecUniform>& vecUniforms,
       const es::ComponentGroup<ren::MatUniform>& matUniforms,
       const es::ComponentGroup<ren::Shader>& shader,
-			const es::ComponentGroup<ren::GLState>& state,
-			const es::ComponentGroup<Core::Datatypes::GeometryObject::SpireSubPass>& pass,
+      const es::ComponentGroup<ren::GLState>& state,
+      const es::ComponentGroup<SpireSubPass>& pass,
       const es::ComponentGroup<StaticWorldLight>& worldLight,
+      const es::ComponentGroup<StaticClippingPlanes>& clippingPlanes,
       const es::ComponentGroup<gen::StaticCamera>& camera,
       const es::ComponentGroup<ren::StaticGLState>& defaultGLState,
       const es::ComponentGroup<ren::StaticVBOMan>& vboMan,
-			const es::ComponentGroup<ren::StaticIBOMan>& iboMan) override
+      const es::ComponentGroup<ren::StaticIBOMan>& iboMan,
+      const es::ComponentGroup<ren::StaticTextureMan>& texMan) override
   {
     /// \todo This needs to be moved to pre-execute.
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -232,14 +244,21 @@ private:
       return;
     }
 
-    if (!srstate.front().state.get(RenderState::USE_TRANSPARENCY) &&
-        !srstate.front().state.get(RenderState::USE_TRANSPARENT_EDGES) &&
-        !srstate.front().state.get(RenderState::USE_TRANSPARENT_NODES))
+    if (srstate.front().state.get(RenderState::IS_TEXT))
     {
       return;
     }
 
-    bool drawLines = (ibo.front().primMode == Core::Datatypes::GeometryObject::SpireIBO::LINES);
+    bool doRender = srstate.front().state.get(RenderState::USE_TRANSPARENCY) ||
+      srstate.front().state.get(RenderState::USE_TRANSPARENT_EDGES) ||
+      srstate.front().state.get(RenderState::USE_TRANSPARENT_NODES);
+
+    if (!doRender)
+    {
+      return;
+    }
+
+    bool drawLines = (ibo.front().primMode == static_cast<int>(SpireIBO::PRIMITIVE::LINES));
     GLuint iboID = ibo.front().glid;
 
     Core::Geometry::Vector dir(camera.front().data.worldToView[0][2],
@@ -274,7 +293,7 @@ private:
           }
 
           Core::Geometry::Vector diff = sortedObjects[index].prevDir - dir;
-          double distance = sqrtf(Core::Geometry::Dot(diff, diff));
+          double distance = sqrtf(Dot(diff, diff));
           if (distance >= 1.23 || sortedObjects[index].mSortedID == 0)
           {
             if (sortedObjects[index].mSortedID != 0)
@@ -373,7 +392,11 @@ private:
         }
       }
 
-      const_cast<LightingUniforms&>(lightUniforms.front()).checkUniformArray(shader.front().glid);
+      if (lightUniforms.size() > 0)
+        const_cast<LightingUniforms&>(lightUniforms.front()).checkUniformArray(shader.front().glid);
+
+      if (clippingPlaneUniforms.size() > 0)
+        const_cast<ClippingPlaneUniforms&>(clippingPlaneUniforms.front()).checkUniformArray(shader.front().glid);
     }
 
     // Check to see if we have GLState. If so, apply it relative to the
@@ -403,10 +426,30 @@ private:
 
     // Apply vector uniforms (if any).
     for (const ren::VecUniform& unif : vecUniforms) {unif.applyUniform();}
-    lightUniforms.front().applyUniform(worldLight.front().lightDir);
+    if (lightUniforms.size() > 0)
+    {
+      std::vector<glm::vec3> lightDir(worldLight.front().lightDir,
+        worldLight.front().lightDir + LIGHT_NUM);
+      std::vector<glm::vec3> lightColor(worldLight.front().lightColor,
+        worldLight.front().lightColor + LIGHT_NUM);
+      lightUniforms.front().applyUniform(lightDir, lightColor);
+    }
+    if (clippingPlaneUniforms.size() > 0)
+    {
+      glm::mat4 transform = trafo.front().transform;
+      clippingPlaneUniforms.front().applyUniforms(transform, clippingPlanes.front().clippingPlanes,
+        clippingPlanes.front().clippingPlaneCtrls);
+    }
 
     // Apply matrix uniforms (if any).
     for (const ren::MatUniform& unif : matUniforms) {unif.applyUniform();}
+
+    // bind textures
+    for (const ren::Texture& tex : textures)
+    {
+      GL(glActiveTexture(GL_TEXTURE0 + tex.textureUnit));
+      GL(glBindTexture(tex.textureType, tex.glid));
+    }
 
     geom.front().attribs.bind();
 
@@ -555,6 +598,13 @@ private:
     if (!blend)
     {
       GL(glDisable(GL_BLEND));
+    }
+
+    // unbind textures
+    for (const ren::Texture& tex : textures)
+    {
+      GL(glActiveTexture(GL_TEXTURE0 + tex.textureUnit));
+      GL(glBindTexture(tex.textureType, 0));
     }
 
     geom.front().attribs.unbind();

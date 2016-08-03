@@ -60,7 +60,7 @@ MapFieldDataFromSourceToDestinationAlgo::MapFieldDataFromSourceToDestinationAlgo
   using namespace Parameters;
   addParameter(DefaultValue, 0.0);
   addParameter(MaxDistance, -1.0);
-  add_option(MappingMethod, "interpolateddata", "interpolateddata|closestdata|singledestination");
+  addOption(MappingMethod, "interpolateddata", "interpolateddata|closestdata|singledestination");
 }
 
 namespace detail
@@ -498,7 +498,7 @@ MapFieldDataFromSourceToDestinationAlgo::runImpl(FieldHandle source, FieldHandle
   dfield->clear_all_values();
   dfield->set_all_values(get(DefaultValue).toDouble());
 
-  std::string method = get_option(MappingMethod);
+  std::string method = getOption(MappingMethod);
   int sbasis_order = sfield->basis_order();
   int dbasis_order = dfield->basis_order();
 
@@ -574,7 +574,7 @@ MapFieldDataFromSourceToDestinationAlgo::runImpl(FieldHandle source, FieldHandle
   return (true);
 }
 
-AlgorithmOutput MapFieldDataFromSourceToDestinationAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput MapFieldDataFromSourceToDestinationAlgo::run(const AlgorithmInput& input) const
 {
   auto source = input.get<Field>(Variables::Source);
   auto destination = input.get<Field>(Variables::Destination);

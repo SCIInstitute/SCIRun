@@ -42,7 +42,9 @@ int ConsoleApplication::run(int argc, const char* argv[])
 {
   try
   {
-    Application::Instance().executeCommandLineRequests(boost::make_shared<ConsoleGlobalCommandFactory>());
+    Application::Instance().setCommandFactory(boost::make_shared<ConsoleGlobalCommandFactory>());
+    auto c = Application::Instance().controller();
+    Application::Instance().executeCommandLineRequests();
   }
   catch (std::exception& e)
   {

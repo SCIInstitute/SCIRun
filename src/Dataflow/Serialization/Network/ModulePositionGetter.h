@@ -47,17 +47,20 @@ namespace Networks {
   {
   public:
     virtual ~NetworkEditorSerializationManager() {}
-    virtual SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions() const = 0;
-    virtual void updateModulePositions(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions) = 0;
+    virtual ModulePositionsHandle dumpModulePositions(ModuleFilter filter) const = 0;
+    virtual void updateModulePositions(const ModulePositions& modulePositions, bool selectAll) = 0;
 
     //TODO: refactor into dump/updateNotes, shouldn't need to distinguish parent.
-    virtual SCIRun::Dataflow::Networks::ModuleNotesHandle dumpModuleNotes() const = 0;
-    virtual void updateModuleNotes(const SCIRun::Dataflow::Networks::ModuleNotes& notes) = 0;
-    virtual SCIRun::Dataflow::Networks::ConnectionNotesHandle dumpConnectionNotes() const = 0;
-    virtual void updateConnectionNotes(const SCIRun::Dataflow::Networks::ConnectionNotes& notes) = 0;
+    virtual ModuleNotesHandle dumpModuleNotes(ModuleFilter filter) const = 0;
+    virtual void updateModuleNotes(const ModuleNotes& notes) = 0;
+    virtual ConnectionNotesHandle dumpConnectionNotes(ConnectionFilter filter) const = 0;
+    virtual void updateConnectionNotes(const ConnectionNotes& notes) = 0;
 
-    virtual SCIRun::Dataflow::Networks::ModuleTagsHandle dumpModuleTags() const = 0;
-    virtual void updateModuleTags(const SCIRun::Dataflow::Networks::ModuleTags& notes) = 0;
+    virtual ModuleTagsHandle dumpModuleTags(ModuleFilter filter) const = 0;
+    virtual void updateModuleTags(const ModuleTags& notes) = 0;
+
+    virtual DisabledComponentsHandle dumpDisabledComponents(ModuleFilter modFilter, ConnectionFilter connFilter) const = 0;
+    virtual void updateDisabledComponents(const DisabledComponents& disabled) = 0;
   };
 
 }}}

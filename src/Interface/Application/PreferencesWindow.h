@@ -43,23 +43,22 @@ class PreferencesWindow : public QDialog, public Ui::PreferencesDialog
 public:
   explicit PreferencesWindow(NetworkEditor* editor, QWidget* parent = 0);
   
-  bool isRegression() const { return regressionMode_; }
-  void setRegressionMode(bool mode) { regressionMode_ = mode; }
-
   bool saveBeforeExecute() const;
   void setSaveBeforeExecute(bool mode);
 
   void setDisableModuleErrorDialogs(bool disableModuleErrorDialogs);
   bool disableModuleErrorDialogs() const;
 
+  void setModuleErrorInlineMessages(bool showInlineErrors);
+
 public Q_SLOTS:
   void updateModuleErrorDialogOption(int state);
+  void updateModuleErrorInlineMessagesOption(int state);
   void updateSaveBeforeExecuteOption(int state);
   void updateAutoNotesState(int state);
 
 private:
   NetworkEditor* networkEditor_;
-  bool regressionMode_;
 };
 
 }

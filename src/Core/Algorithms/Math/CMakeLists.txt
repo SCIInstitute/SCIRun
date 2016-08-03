@@ -33,6 +33,7 @@ SET(Algorithms_Math_SRCS
   EvaluateLinearAlgebraUnaryAlgo.cc
   EvaluateLinearAlgebraBinaryAlgo.cc
   ReportMatrixInfo.cc
+  ReportComplexMatrixInfo.cc
   GetMatrixSliceAlgo.cc
   SolveLinearSystemWithEigen.cc
   LinearSystem/SolveLinearSystemAlgo.cc
@@ -41,6 +42,9 @@ SET(Algorithms_Math_SRCS
   BuildNoiseColumnMatrix.cc
   ComputeSVD.cc
   ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.cc
+  ComputePCA.cc
+  CollectMatrices/CollectMatricesAlgorithm.cc
+  ReportMatrixSliceMeasureAlgo.cc
 )
 
 SET(Algorithms_Math_HEADERS
@@ -50,6 +54,7 @@ SET(Algorithms_Math_HEADERS
   EvaluateLinearAlgebraUnaryAlgo.h
   EvaluateLinearAlgebraBinaryAlgo.h
   ReportMatrixInfo.h
+  ReportComplexMatrixInfo.h
   GetMatrixSliceAlgo.h
   share.h
   SolveLinearSystemWithEigen.h
@@ -59,6 +64,9 @@ SET(Algorithms_Math_HEADERS
   BuildNoiseColumnMatrix.h
   ComputeSVD.h
   ColumnMisfitCalculator/ColumnMatrixMisfitCalculator.h
+  ComputePCA.h
+  CollectMatrices/CollectMatricesAlgorithm.h
+  ReportMatrixSliceMeasureAlgo.h
 )
 
 SCIRUN_ADD_LIBRARY(Algorithms_Math 

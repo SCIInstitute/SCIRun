@@ -131,7 +131,7 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
 
 bool Network::disconnect(const ConnectionId& id)
 {
-  Connections::iterator loc = connections_.find(id);
+  auto loc = connections_.find(id);
   if (loc != connections_.end())
   {
     connections_.erase(loc);
@@ -161,7 +161,7 @@ ModuleHandle Network::module(size_t i) const
 ModuleHandle Network::lookupModule(const ModuleId& id) const
 {
   Modules::const_iterator i = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *boost::lambda::_1) == id);
-  return i == modules_.end() ? ModuleHandle() : *i;
+  return i == modules_.end() ? nullptr : *i;
 }
 
 ExecutableObject* Network::lookupExecutable(const ModuleId& id) const
@@ -227,7 +227,7 @@ NetworkGlobalSettings& Network::settings()
 
 void Network::setModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter)
 {
-  BOOST_FOREACH(ModuleHandle module, modules_ | boost::adaptors::filtered(filter))
+  for (ModuleHandle module : modules_ | boost::adaptors::filtered(filter))
   {
     module->executionState().transitionTo(state);
   }

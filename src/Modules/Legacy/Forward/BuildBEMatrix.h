@@ -1,4 +1,4 @@
- 
+
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -7,7 +7,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -45,12 +45,14 @@ namespace SCIRun {
         BuildBEMatrix();
         virtual void setStateDefaults();
         virtual void execute();
-        virtual bool hasDynamicPorts() const override { return true; }
+        HAS_DYNAMIC_PORTS
 
         INPUT_PORT_DYNAMIC(0, Surface, LegacyField);
         OUTPUT_PORT(0, BEM_Forward_Matrix, Matrix);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        LEGACY_BIOPSE_MODULE
+
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
 
     }

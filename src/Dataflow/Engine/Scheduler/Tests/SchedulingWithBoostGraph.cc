@@ -33,8 +33,6 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Modules/Basic/SendTestMatrix.h>
-#include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
@@ -67,11 +65,9 @@
 #include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/graph/visitors.hpp>
-#include <boost/foreach.hpp>
 #include <boost/thread.hpp>
 
 using namespace SCIRun;
-using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Core::Datatypes;
@@ -229,8 +225,8 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
   boost::this_thread::sleep(boost::posix_time::milliseconds(800));
 
   //grab reporting module state
-  ReportMatrixInfoAlgorithm::Outputs reportOutput = optional_any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
-  DenseMatrixHandle receivedMatrix = optional_any_cast_or_default<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
+  ReportMatrixInfoAlgorithm::Outputs reportOutput = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
+  DenseMatrixHandle receivedMatrix = transient_value_cast<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
 
   ASSERT_TRUE(receivedMatrix.get() != nullptr);
   //verify results
@@ -282,8 +278,8 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
   boost::this_thread::sleep(boost::posix_time::milliseconds(800));
 
   //grab reporting module state
-  ReportMatrixInfoAlgorithm::Outputs reportOutput = optional_any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
-  DenseMatrixHandle receivedMatrix = optional_any_cast_or_default<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
+  ReportMatrixInfoAlgorithm::Outputs reportOutput = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
+  DenseMatrixHandle receivedMatrix = transient_value_cast<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
 
   ASSERT_TRUE(receivedMatrix.get() != nullptr);
   //verify results
@@ -393,7 +389,7 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderExecutedFromAModuleInADisjo
   }
 
   {
-    ExecuteSingleModule filterByCreate(create2, matrixMathNetwork);
+    ExecuteSingleModule filterByCreate(create2, matrixMathNetwork, true);
     BoostGraphParallelScheduler scheduler(filterByCreate);
     auto order = scheduler.schedule(matrixMathNetwork);
     std::ostringstream ostr;
@@ -407,7 +403,7 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderExecutedFromAModuleInADisjo
   }
 
   {
-    ExecuteSingleModule filterByReceive(receive, matrixMathNetwork);
+    ExecuteSingleModule filterByReceive(receive, matrixMathNetwork, true);
     BoostGraphParallelScheduler scheduler(filterByReceive);
     auto order = scheduler.schedule(matrixMathNetwork);
     std::ostringstream ostr;
@@ -650,7 +646,7 @@ namespace ThreadingPrototype
     auto end = done.begin();
     std::advance(end, 10);
     std::copy(done.begin(), end, std::ostream_iterator<UnitPtr>(std::cout, "\n"));
-    BOOST_FOREACH(const UnitPtr& u, done)
+    for (const UnitPtr& u : done)
     {
       EXPECT_TRUE(u->done);
     }
@@ -794,7 +790,7 @@ namespace ThreadingPrototype
     auto end = done.begin();
     std::advance(end, 10);
     std::copy(done.begin(), end, std::ostream_iterator<UnitPtr>(std::cout, "\n"));
-    BOOST_FOREACH(const UnitPtr& u, done)
+    for (const UnitPtr& u : done)
     {
       EXPECT_TRUE(u->done);
     }

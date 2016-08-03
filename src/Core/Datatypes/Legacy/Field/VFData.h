@@ -106,6 +106,7 @@ public:
   VFDATA_ACCESS_DECLARATION(unsigned long long)
   VFDATA_ACCESS_DECLARATION(float)
   VFDATA_ACCESS_DECLARATION(double)
+  VFDATA_ACCESS_DECLARATION(std::complex<double>)
   VFDATA_ACCESS_DECLARATION(Core::Geometry::Vector)
   VFDATA_ACCESS_DECLARATION(Core::Geometry::Tensor)
 
@@ -114,6 +115,7 @@ public:
   VFDATA_ACCESS_DECLARATION2(int)
   VFDATA_ACCESS_DECLARATION2(float)
   VFDATA_ACCESS_DECLARATION2(double)
+  VFDATA_ACCESS_DECLARATION2(std::complex<double>)
   VFDATA_ACCESS_DECLARATION2(Core::Geometry::Vector)
   VFDATA_ACCESS_DECLARATION2(Core::Geometry::Tensor)
 
@@ -177,7 +179,7 @@ public:
 template<class FDATA, class LFDATA, class HFDATA>
 inline VFData* CreateVFData(FDATA& /*fdata*/, LFDATA& /*lfdata*/, HFDATA& /*hfdata*/)
 {
-  return (0);
+  return nullptr;
 }
 
 /// Pre instantiated versions, these should cover most of SCIRun needs
@@ -197,6 +199,7 @@ VFDATA_FUNCTION_DECLARATION(long long)
 VFDATA_FUNCTION_DECLARATION(unsigned long long)
 VFDATA_FUNCTION_DECLARATION(float)
 VFDATA_FUNCTION_DECLARATION(double)
+VFDATA_FUNCTION_DECLARATION(std::complex<double>)
 VFDATA_FUNCTION_DECLARATION(Core::Geometry::Vector)
 VFDATA_FUNCTION_DECLARATION(Core::Geometry::Tensor)
 

@@ -29,8 +29,9 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Core/Logging/Log.h>
-#include <boost/foreach.hpp>
 #include <Core/Utils/Exception.h>
+#include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -40,14 +41,14 @@ using namespace SCIRun::Core::Logging;
 ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerAdd_;
 ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerRemove_;
 
-ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent) : QDialog(parent),
+ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
   pulling_(false),
-  executeAction_(0),
-  shrinkAction_(0),
-  executeInteractivelyToggleAction_(0),
+  executeAction_(nullptr),
+  shrinkAction_(nullptr),
+  executeInteractivelyToggleAction_(nullptr),
   collapsed_(false),
-  dock_(0)
+  dock_(nullptr)
 {
   setModal(false);
   setAttribute(Qt::WA_MacAlwaysShowToolWindow, true);
@@ -55,7 +56,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   if (state_)
   {
     LOG_DEBUG("ModuleDialogGeneric connecting to state" << std::endl);
-    stateConnection_ = state_->connect_state_changed([this]() { pullSignal(); });
+    stateConnection_ = state_->connectStateChanged([this]() { pullSignal(); });
   }
   connect(this, SIGNAL(pullSignal()), this, SLOT(pull()));
   createExecuteAction();
@@ -153,12 +154,12 @@ void ModuleDialogGeneric::executeInteractivelyToggled(bool toggle)
 
 void ModuleDialogGeneric::connectStateChangeToExecute()
 {
-  connect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggered()));
+  connect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggeredViaStateChange()));
 }
 
 void ModuleDialogGeneric::disconnectStateChangeToExecute()
 {
-  disconnect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggered()));
+  disconnect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggeredViaStateChange()));
 }
 
 void ModuleDialogGeneric::toggleCollapse()
@@ -209,10 +210,15 @@ void ModuleDialogGeneric::addWidgetSlotManager(WidgetSlotManagerPtr ptr)
   slotManagers_.push_back(ptr);
 }
 
+void ModuleDialogGeneric::removeManager(const AlgorithmParameterName& stateKey)
+{
+  slotManagers_.erase(std::remove_if(slotManagers_.begin(), slotManagers_.end(), [&](WidgetSlotManagerPtr wsm) { return wsm->name() == stateKey; } ));
+}
+
 void ModuleDialogGeneric::pullManagedWidgets()
 {
   Pulling p(this);
-  BOOST_FOREACH(WidgetSlotManagerPtr wsm, slotManagers_)
+  for (auto& wsm : slotManagers_)
     wsm->pull();
 }
 
@@ -246,13 +252,13 @@ public:
   ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
     FromQStringConverter fromLabelConverter = boost::bind(&QString::toStdString, _1),
     ToQStringConverter toLabelConverter = &QString::fromStdString) :
-  WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox), fromLabelConverter_(fromLabelConverter), toLabelConverter_(toLabelConverter)
+  WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox), fromLabelConverter_(fromLabelConverter), toLabelConverter_(toLabelConverter)
   {
     connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
   }
   ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox,
     const GuiStringTranslationMap& stringMap) :
-  WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox), stringMap_(stringMap)
+    WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox), stringMap_(stringMap)
   {
     if (stringMap_.empty())
     {
@@ -333,7 +339,7 @@ class TwoChoiceBooleanComboBoxSlotManager : public WidgetSlotManager
 {
 public:
   TwoChoiceBooleanComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox) :
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox)
+    WidgetSlotManager(state, dialog, comboBox, stateKey), stateKey_(stateKey), comboBox_(comboBox)
   {
     connect(comboBox, SIGNAL(activated(int)), this, SLOT(push()));
   }
@@ -370,7 +376,7 @@ class TextEditSlotManager : public WidgetSlotManager
 {
 public:
   TextEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QTextEdit* textEdit) :
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), textEdit_(textEdit)
+    WidgetSlotManager(state, dialog, textEdit, stateKey), stateKey_(stateKey), textEdit_(textEdit)
   {
     connect(textEdit, SIGNAL(textChanged()), this, SLOT(push()));
   }
@@ -398,11 +404,43 @@ void ModuleDialogGeneric::addTextEditManager(QTextEdit* textEdit, const Algorith
   addWidgetSlotManager(boost::make_shared<TextEditSlotManager>(state_, *this, stateKey, textEdit));
 }
 
+class PlainTextEditSlotManager : public WidgetSlotManager
+{
+public:
+  PlainTextEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QPlainTextEdit* textEdit) :
+    WidgetSlotManager(state, dialog, textEdit, stateKey), stateKey_(stateKey), textEdit_(textEdit)
+  {
+    connect(textEdit, SIGNAL(textChanged()), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto newValue = QString::fromStdString(state_->getValue(stateKey_).toString());
+    if (newValue != textEdit_->toPlainText())
+    {
+      textEdit_->setPlainText(newValue);
+      LOG_DEBUG("In new version of pull code for PlainTextEdit: " << newValue.toStdString());
+    }
+  }
+  virtual void pushImpl() override
+  {
+    LOG_DEBUG("In new version of push code for PlainTextEdit: " << textEdit_->toPlainText().toStdString());
+    state_->setValue(stateKey_, textEdit_->toPlainText().toStdString());
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QPlainTextEdit* textEdit_;
+};
+
+void ModuleDialogGeneric::addPlainTextEditManager(QPlainTextEdit* plainTextEdit, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<PlainTextEditSlotManager>(state_, *this, stateKey, plainTextEdit));
+}
+
 class LineEditSlotManager : public WidgetSlotManager
 {
 public:
   LineEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLineEdit* lineEdit) :
-      WidgetSlotManager(state, dialog), stateKey_(stateKey), lineEdit_(lineEdit)
+    WidgetSlotManager(state, dialog, lineEdit, stateKey), stateKey_(stateKey), lineEdit_(lineEdit)
   {
     connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(push()));
   }
@@ -430,13 +468,53 @@ void ModuleDialogGeneric::addLineEditManager(QLineEdit* lineEdit, const Algorith
   addWidgetSlotManager(boost::make_shared<LineEditSlotManager>(state_, *this, stateKey, lineEdit));
 }
 
+class TabSlotManager : public WidgetSlotManager
+{
+public:
+  TabSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QTabWidget* tabWidget) :
+    WidgetSlotManager(state, dialog, tabWidget, stateKey), stateKey_(stateKey), tabWidget_(tabWidget)
+  {
+    connect(tabWidget_, SIGNAL(currentChanged(int)), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto newValue = QString::fromStdString(state_->getValue(stateKey_).toString());
+    if (newValue != tabWidget_->tabText(tabWidget_->currentIndex()))
+    {
+      for (int i = 0; i < tabWidget_->count(); ++i)
+      {
+        if (tabWidget_->tabText(i) == newValue)
+        {
+          tabWidget_->setCurrentIndex(i);
+          LOG_DEBUG("In new version of pull code for LineEdit: " << newValue.toStdString());
+          return;
+        }
+      }
+    }
+  }
+  virtual void pushImpl() override
+  {
+    LOG_DEBUG("In new version of push code for QTabWidget: " << tabWidget_->tabText(tabWidget_->currentIndex()).toStdString());
+    state_->setValue(stateKey_, tabWidget_->tabText(tabWidget_->currentIndex()).toStdString());
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QTabWidget* tabWidget_;
+};
+
+void ModuleDialogGeneric::addTabManager(QTabWidget* tab, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<TabSlotManager>(state_, *this, stateKey, tab));
+}
+
 class DoubleLineEditSlotManager : public WidgetSlotManager
 {
 public:
   DoubleLineEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLineEdit* lineEdit) :
-      WidgetSlotManager(state, dialog), stateKey_(stateKey), lineEdit_(lineEdit)
+    WidgetSlotManager(state, dialog, lineEdit, stateKey), stateKey_(stateKey), lineEdit_(lineEdit)
       {
         connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(push()));
+        lineEdit_->setValidator(new QDoubleValidator(lineEdit_));
       }
       virtual void pull() override
       {
@@ -450,15 +528,10 @@ public:
       virtual void pushImpl() override
       {
         LOG_DEBUG("In new version of push code for LineEdit: " << lineEdit_->text().toStdString());
-        try
-        {
-          auto value = boost::lexical_cast<double>(lineEdit_->text().toStdString());
+        bool ok;
+        auto value = lineEdit_->text().toDouble(&ok);
+        if (ok)
           state_->setValue(stateKey_, value);
-        }
-        catch (boost::bad_lexical_cast&)
-        {
-          // ignore for now
-        }
       }
 private:
   AlgorithmParameterName stateKey_;
@@ -474,7 +547,7 @@ class SpinBoxSlotManager : public WidgetSlotManager
 {
 public:
   SpinBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QSpinBox* spinBox) :
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), spinBox_(spinBox)
+    WidgetSlotManager(state, dialog, spinBox, stateKey), stateKey_(stateKey), spinBox_(spinBox)
   {
     connect(spinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
   }
@@ -506,7 +579,7 @@ class DoubleSpinBoxSlotManager : public WidgetSlotManager
 {
 public:
   DoubleSpinBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QDoubleSpinBox* spinBox) :
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), spinBox_(spinBox)
+    WidgetSlotManager(state, dialog, spinBox, stateKey), stateKey_(stateKey), spinBox_(spinBox)
   {
     connect(spinBox_, SIGNAL(valueChanged(double)), this, SLOT(push()));
   }
@@ -538,7 +611,7 @@ class CheckBoxSlotManager : public WidgetSlotManager
 {
 public:
   CheckBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QCheckBox* checkBox) :
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), checkBox_(checkBox)
+    WidgetSlotManager(state, dialog, checkBox, stateKey), stateKey_(stateKey), checkBox_(checkBox)
   {
     connect(checkBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
   }
@@ -570,7 +643,7 @@ class CheckableButtonSlotManager : public WidgetSlotManager
 {
 public:
   CheckableButtonSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QAbstractButton* checkable) :
-      WidgetSlotManager(state, dialog), stateKey_(stateKey), checkable_(checkable)
+    WidgetSlotManager(state, dialog, checkable, stateKey), stateKey_(stateKey), checkable_(checkable)
       {
         connect(checkable_, SIGNAL(clicked()), this, SLOT(push()));
       }
@@ -602,7 +675,7 @@ class DynamicLabelSlotManager : public WidgetSlotManager
 {
 public:
   DynamicLabelSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLabel* label) :
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), label_(label)
+    WidgetSlotManager(state, dialog, label, stateKey), stateKey_(stateKey), label_(label)
   {
   }
   virtual void pull() override
@@ -610,7 +683,7 @@ public:
     auto newValue = state_->getValue(stateKey_).toString();
     if (newValue != label_->text().toStdString())
     {
-      LOG_DEBUG("In new version of pull code for checkable QAbstractButton: " << newValue);
+      LOG_DEBUG("In new version of pull code for dynamic label: " << newValue);
       label_->setText(QString::fromStdString(newValue));
     }
   }
@@ -626,12 +699,12 @@ void ModuleDialogGeneric::addDynamicLabelManager(QLabel* label, const AlgorithmP
 {
   addWidgetSlotManager(boost::make_shared<DynamicLabelSlotManager>(state_, *this, stateKey, label));
 }
-/*
+
 class SliderSlotManager : public WidgetSlotManager
 {
 public:
   SliderSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QSlider* slider) :
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), slider_(slider)
+    WidgetSlotManager(state, dialog, slider, stateKey), stateKey_(stateKey), slider_(slider)
   {
   }
   virtual void pull() override
@@ -653,17 +726,20 @@ private:
 
 void ModuleDialogGeneric::addSliderManager(QSlider* slider, const AlgorithmParameterName& stateKey)
 {
-  addWidgetSlotManager(boost::make_shared<DynamicLabelSlotManager>(state_, *this, stateKey, slider));
+  addWidgetSlotManager(boost::make_shared<SliderSlotManager>(state_, *this, stateKey, slider));
 }
-*/
+
 class RadioButtonGroupSlotManager : public WidgetSlotManager
 {
 public:
   RadioButtonGroupSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, std::initializer_list<QRadioButton*> radioButtons) :
-    WidgetSlotManager(state, dialog), stateKey_(stateKey), radioButtons_(radioButtons)
+    WidgetSlotManager(state, dialog, nullptr, stateKey), stateKey_(stateKey), radioButtons_(radioButtons) //TODO: need to pass all of them...
   {
     for (auto button : radioButtons_)
+    {
       connect(button, SIGNAL(clicked()), this, SLOT(push()));
+      WidgetStyleMixin::setStateVarTooltipWithStyle(button, stateKey.name_);
+    }
   }
   virtual void pull() override
   {
@@ -713,4 +789,131 @@ void WidgetStyleMixin::toolbarStyle(QToolBar* toolbar)
 {
   toolbar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
     "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+}
+
+void WidgetStyleMixin::setStateVarTooltipWithStyle(QWidget* widget, const std::string& stateVarName)
+{
+  widget->setToolTip("State key: " + QString::fromStdString(stateVarName));
+  widget->setStyleSheet(widget->styleSheet() + " QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+}
+
+std::tuple<std::string, int> ModuleDialogGeneric::getConnectedDynamicPortId(const std::string& portId, const std::string& type, bool isLoadingFile)
+{
+  //note: the incoming portId is the port that was just added, not connected to. we assume the connected port
+  // is one index less.
+  // UNLESS we are loading a file, in which case this function is called when the connected port is the same as portId.
+  //std::cout << "REGEX: " << "Input" + type + "\\:(.+)" << std::endl;
+  boost::regex portIdRegex("Input" + type + "\\:(.+)");
+  boost::smatch what;
+  //std::cout << "MATCHING WITH: " << portId << std::endl;
+  regex_match(portId, what, portIdRegex);
+  const int connectedPortNumber = boost::lexical_cast<int>(what[1]) - (isLoadingFile ? 0 : 1);
+  return std::make_tuple("Input" + type + ":" + boost::lexical_cast<std::string>(connectedPortNumber), connectedPortNumber);
+}
+
+void ModuleDialogGeneric::syncTableRowsWithDynamicPort(const std::string& portId, const std::string& type,
+  QTableWidget* table, int lineEditIndex, DynamicPortChange portChangeType, const TableItemMakerMap& tableItems, const WidgetItemMakerMap& widgetItems)
+{
+  ScopedWidgetSignalBlocker swsb(table);
+  if (portId.find(type) != std::string::npos)
+  {
+    //qDebug() << "adjust input table: " << portId.c_str() << portChangeType;
+
+    if (portChangeType == DynamicPortChange::USER_ADDED_PORT || portChangeType == DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD)
+    {
+      //qDebug() << "trying to add row via port added, id: " << portId.c_str();
+
+      int connectedPortNumber;
+      std::string connectedPortId;
+      std::tie(connectedPortId, connectedPortNumber) = getConnectedDynamicPortId(portId, type, portChangeType == DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD);
+
+      Name name(connectedPortId);
+      QString lineEditText;
+
+      if (state_->containsKey(name))
+        lineEditText = QString::fromStdString(state_->getValue(name).toString());
+      else
+      {
+        lineEditText = QString::fromStdString(type).toLower() + "Input" + QString::number(connectedPortNumber + 1);
+      }
+
+      {
+        table->insertRow(table->rowCount());
+        auto newRowIndex = table->rowCount() - 1;
+
+        table->setItem(newRowIndex, 0, new QTableWidgetItem(QString::fromStdString(connectedPortId)));
+
+        auto lineEdit = new QLineEdit;
+
+        lineEdit->setText(lineEditText);
+        if (!state_->containsKey(name))
+        {
+          state_->setValue(name, lineEditText.toStdString());
+        }
+
+        addLineEditManager(lineEdit, name);
+        table->setCellWidget(newRowIndex, lineEditIndex, lineEdit);
+        //qDebug() << "row added with " << lineEditText;
+
+        for (int i = 1; i < table->columnCount(); ++i)
+        {
+          if (i != lineEditIndex)
+          {
+            auto itemMakerIter = tableItems.find(i);
+            if (itemMakerIter != tableItems.end())
+            {
+              table->setItem(newRowIndex, i, itemMakerIter->second());
+            }
+            else
+            {
+              auto widgetItemMaker = widgetItems.find(i);
+              if (widgetItemMaker != widgetItems.end())
+              {
+                table->setCellWidget(newRowIndex, i, widgetItemMaker->second());
+              }
+            }
+          }
+        }
+      }
+    }
+    else
+    {
+      //qDebug() << "trying to remove row with " << portId.c_str();
+      auto items = table->findItems(QString::fromStdString(portId), Qt::MatchFixedString);
+      if (!items.empty())
+      {
+        auto item = items[0];
+        int row = table->row(item);
+        table->removeRow(row);
+        //qDebug() << "row removed" << QString::fromStdString(portId);
+        removeManager(Name(portId));
+      }
+      else
+        qDebug() << "Inconsistent rows versus dynamic ports!";
+    }
+    table->resizeColumnsToContents();
+  }
+}
+
+ScopedWidgetSignalBlocker::ScopedWidgetSignalBlocker(QWidget* widget) : widget_(widget)
+{
+  if (widget_)
+    widget_->blockSignals(true);
+}
+
+ScopedWidgetSignalBlocker::~ScopedWidgetSignalBlocker()
+{
+  if (widget_)
+    widget_->blockSignals(false);
+}
+
+void SCIRun::Gui::openUrl(const QString& url, const std::string& name)
+{
+  if (!QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode)))
+    Log::get() << ERROR_LOG << "Failed to open " << name;
+}
+
+void SCIRun::Gui::openPythonAPIDoc()
+{
+  openUrl("https://github.com/SCIInstitute/SCIRun/wiki/SCIRun-Python-API-0.2", "SCIRun Python API page");
 }

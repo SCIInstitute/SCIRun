@@ -37,32 +37,41 @@ using namespace SCIRun::Core::Console;
 class NothingCommand : public ConsoleCommand
 {
 public:
-  virtual bool execute() { return true; }
+  virtual bool execute() override { return true; }
 };
 
-CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type, int param) const
+CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type) const
 {
   switch (type)
   {
-  case ShowMainWindow:
+  case GlobalCommands::ShowMainWindow:
     return boost::make_shared<NothingCommand>();
-  case ShowSplashScreen:
+  case GlobalCommands::ShowSplashScreen:
     return boost::make_shared<NothingCommand>();
-  case PrintHelp:
+  case GlobalCommands::PrintHelp:
     return boost::make_shared<PrintHelpCommand>();
-  case PrintVersion:
+  case GlobalCommands::PrintVersion:
     return boost::make_shared<PrintVersionCommand>();
-  case LoadNetworkFile:
-    return boost::make_shared<LoadFileCommandConsole>(param);
-  case RunPythonScript:
+  case GlobalCommands::LoadNetworkFile:
+    return boost::make_shared<LoadFileCommandConsole>();
+  case GlobalCommands::PrintModules:
+    return boost::make_shared<PrintModulesCommand>();
+  case GlobalCommands::SaveNetworkFile:
+    return boost::make_shared<SaveFileCommandConsole>();
+  case GlobalCommands::RunPythonScript:
     return boost::make_shared<RunPythonScriptCommandConsole>();
-  case ExecuteCurrentNetwork:
+  case GlobalCommands::ExecuteCurrentNetwork:
     return boost::make_shared<ExecuteCurrentNetworkCommandConsole>();
-  case SetupQuitAfterExecute:
+  case GlobalCommands::InteractiveMode:
+    return boost::make_shared<InteractiveModeCommandConsole>();
+  case GlobalCommands::SetupQuitAfterExecute:
     return boost::make_shared<QuitAfterExecuteCommandConsole>();
-  case QuitCommand:
+  case GlobalCommands::QuitCommand:
     return boost::make_shared<QuitCommandConsole>();
+  case GlobalCommands::DisableViewScenes:
+    return boost::make_shared<NothingCommand>();
   default:
     THROW_INVALID_ARGUMENT("Unknown global command type.");
   }
+  return {};
 }

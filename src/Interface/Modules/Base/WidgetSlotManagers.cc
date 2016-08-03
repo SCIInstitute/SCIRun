@@ -30,12 +30,18 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Core::Algorithms;
 
-WidgetSlotManager::WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog) : state_(state), dialog_(dialog)
+WidgetSlotManager::WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog, QWidget* widget, const AlgorithmParameterName& name)
+  : state_(state), dialog_(dialog), name_(name)
 {
+  if (widget)
+  {
+    WidgetStyleMixin::setStateVarTooltipWithStyle(widget, name.name());
+  }
 }
 
-WidgetSlotManager::~WidgetSlotManager() 
+WidgetSlotManager::~WidgetSlotManager()
 {
 }
 

@@ -42,9 +42,8 @@
 #include <Core/Utils/Exception.h>
 #include <Core/Application/Session/Session.h>
 #include <Core/Application/Version.h>
-#include <Core/Services/ServiceLog.h>
-#include <Core/Services/ServiceDB.h>
-#include <Core/Services/ServiceManager.h>
+#include <Core/Python/PythonInterpreter.h>
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
@@ -68,7 +67,8 @@ namespace SCIRun
       boost::filesystem::path app_filename_;
       ApplicationParametersHandle parameters_;
       NetworkEditorControllerHandle controller_;
-      void start_eai();
+      GlobalCommandFactoryHandle cmdFactory_;
+      //void start_eai();
     };
   }
 }
@@ -116,6 +116,12 @@ std::string Application::applicationName() const
   return applicationHelper.applicationName();
 }
 
+void Application::setCommandFactory(GlobalCommandFactoryHandle cmdFactory)
+{
+  ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
+  private_->cmdFactory_ = cmdFactory;
+}
+
 ApplicationParametersHandle Application::parameters() const
 {
   ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
@@ -148,19 +154,77 @@ void Application::readCommandLine(int argc, const char* argv[])
   Logging::Log::get().setVerbose(parameters()->verboseMode());
 }
 
+namespace
+{
+#ifdef BUILD_WITH_PYTHON
+
+  //TODO: obviously will need a better way to communicate the user-entered script string.
+  class HardCodedPythonTestCommand : public ParameterizedCommand
+  {
+  public:
+    HardCodedPythonTestCommand(const std::string& script, bool enabled) : script_(script), enabled_(enabled) {}
+    virtual bool execute() override
+    {
+      if (!enabled_)
+        return false;
+
+      if (!script_.empty())
+      {
+        PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+        PythonInterpreter::Instance().run_string(script_);
+      }
+      return true;
+    }
+  private:
+    std::string script_;
+    bool enabled_;
+  };
+
+  class HardCodedPythonFactory : public NetworkEventCommandFactory
+  {
+  public:
+    virtual CommandHandle create(NetworkEventCommands type) const override
+    {
+      const auto& prefs = Preferences::Instance();
+      switch (type)
+      {
+      case NetworkEventCommands::PostModuleAdd:
+        return boost::make_shared<HardCodedPythonTestCommand>(prefs.postModuleAddScript_temporarySolution.val(), prefs.postModuleAddScriptEnabled_temporarySolution.val());
+      case NetworkEventCommands::OnNetworkLoad:
+        return boost::make_shared<HardCodedPythonTestCommand>(prefs.onNetworkLoadScript_temporarySolution.val(), prefs.onNetworkLoadScriptEnabled_temporarySolution.val());
+      }
+      return nullptr;
+    }
+  };
+
+
+#endif
+
+  NetworkEventCommandFactoryHandle makeNetworkEventCommandFactory()
+  {
+#ifdef BUILD_WITH_PYTHON
+    return boost::make_shared<HardCodedPythonFactory>();
+#else
+    return boost::make_shared<NullCommandFactory>();
+#endif
+  }
+}
+
 NetworkEditorControllerHandle Application::controller()
 {
   ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
+  ENSURE_NOT_NULL(private_->cmdFactory_, "Application internals are uninitialized!");
 
   if (!private_->controller_)
   {
     /// @todo: these all get configured
     ModuleFactoryHandle moduleFactory(new HardCodedModuleFactory);
     ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-    ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(parameters()->threadMode()));
+    ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(parameters()->developerParameters()->threadMode()));
     AlgorithmFactoryHandle algoFactory(new HardCodedAlgorithmFactory);
-    ReexecuteStrategyFactoryHandle reexFactory(new DynamicReexecutionStrategyFactory(parameters()->reexecuteMode()));
-    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory, reexFactory));
+    ReexecuteStrategyFactoryHandle reexFactory(new DynamicReexecutionStrategyFactory(parameters()->developerParameters()->reexecuteMode()));
+    auto eventCmdFactory(makeNetworkEventCommandFactory());
+    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory, reexFactory, private_->cmdFactory_, eventCmdFactory));
 
     /// @todo: sloppy way to initialize this but similar to v4, oh well
     IEPluginManager::Initialize();
@@ -172,11 +236,12 @@ NetworkEditorControllerHandle Application::controller()
   return private_->controller_;
 }
 
-void Application::executeCommandLineRequests(Commands::GlobalCommandFactoryHandle cmdFactory)
+void Application::executeCommandLineRequests()
 {
   ENSURE_NOT_NULL(private_, "Application internals are uninitialized!");
+  ENSURE_NOT_NULL(private_->cmdFactory_, "Application internals (command factory) are uninitialized!");
 
-  GlobalCommandBuilderFromCommandLine builder(cmdFactory);
+  GlobalCommandBuilderFromCommandLine builder(private_->cmdFactory_);
   auto queue = builder.build(parameters());
   queue->runAll();
 }
@@ -197,7 +262,12 @@ std::string Application::commandHelpString() const
 
 std::string Application::version() const
 {
-  return VersionInfo::GIT_VERSION_TAG.empty() ? "5.0.0 developer version" : VersionInfo::GIT_VERSION_TAG;
+  auto version = VersionInfo::GIT_VERSION_TAG;
+  if (version.empty())
+    return "5.0.0 developer version";
+  if (version.find("NOTFOUND") != std::string::npos) // source zip build most likely
+    return "TODO";
+  return version;
 }
 
 std::string Application::moduleList()
@@ -235,141 +305,4 @@ bool Application::get_config_directory( boost::filesystem::path& config_dir ) co
 bool Application::get_user_name( std::string& user_name ) const
 {
   return applicationHelper.get_user_name(user_name);
-}
-
-/*
-int Application::GetMajorVersion()
-{
-	return CORE_APPLICATION_MAJOR_VERSION;
-}
-
-int Application::GetMinorVersion()
-{
-	return CORE_APPLICATION_MINOR_VERSION;
-}
-
-int Application::GetPatchVersion()
-{
-	return CORE_APPLICATION_PATCH_VERSION;
-}
-
-bool Application::Is64Bit()
-{
-	return ( sizeof(void *) == 8 );
-}
-
-bool Application::Is32Bit()
-{
-	return ( sizeof(void *) == 4 );
-}
-
-std::string Application::GetApplicationName()
-{
-	return CORE_APPLICATION_NAME;
-}
-
-std::string Application::GetReleaseName()
-{
-	return CORE_APPLICATION_RELEASE;
-}
-
-std::string Application::GetApplicationNameAndVersion()
-{
-	return GetApplicationName() + " " + GetReleaseName() + " " + GetVersion();
-}
-
-std::string Application::GetAbout()
-{
-	return CORE_APPLICATION_ABOUT;
-}
-*/
-
-
-// Services start up...
-void ApplicationPrivate::start_eai()
-{
-  // Create a database of all available services. The next piece of code
-  // scans both the SCIRun as well as the Packages directories to find
-  // services that need to be started. Services allow communication with
-  // thirdparty software and are Threads that run asychronously with
-  // with the rest of SCIRun. Since the thirdparty software may be running
-  // on a different platform it allows for connecting to remote machines
-  // and running the service on a different machine
-  ServiceDBHandle servicedb(new ServiceDB);
-  // load all services and find all makers
-  servicedb->loadpackages();
-  // activate all services
-  servicedb->activateall();
-
-  // Services are started and created by the ServiceManager,
-  // which will be launched here
-  // Two competing managers will be started,
-  // one for purely internal usage and one that
-  // communicates over a socket.
-  // The latter will only be created if a port is set.
-  // If the current instance of SCIRun should not provide any services
-  // to other instances of SCIRun over the internet,
-  // the second manager will not be launched
-
-  IComAddressHandle internaladdress(new IComAddress("internal","servicemanager"));
-
-// Only build log file if needed for debugging
-#ifdef DEBUG
-  const char *chome = sci_getenv("HOME");
-  std::string scidir("");
-  if (chome)
-    scidir = chome+std::string("/SCIRun/");
-
-  // A log file is not necessary but handy for debugging purposes
-  ServiceLogHandle internallogfile(new ServiceLog(scidir+"scirun_internal_servicemanager.log"));
-
-  ServiceManagerHandle internal_service_manager(new ServiceManager(servicedb, internaladdress, internallogfile));
-#else
-  ServiceManager internal_service_manager(servicedb, internaladdress);
-#endif
-
-  boost::thread t_int(internal_service_manager);
-  t_int.detach();
-
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  // Use the following environment setting to switch on IPv6 support
-  // Most machines should be running a dual-host stack for the internet
-  // connections, so it should not hurt to run in IPv6 mode. In most case
-  // ipv4 address will work as well.
-  // It might be useful
-  std::string ipstr(sci_getenv_p("SCIRUN_SERVICE_IPV6")?"ipv6":"");
-
-  // Start an external service as well
-  const char *serviceport_str = sci_getenv("SCIRUN_SERVICE_PORT");
-  // If its not set in the env, we're done
-  if (!serviceport_str) return;
-
-  // The protocol for conencting has been called "scirun"
-  // In the near future this should be replaced with "sciruns" for
-  // a secure version which will run over ssl.
-
-  // A log file is not necessary but handy for debugging purposes
-
-  IComAddress externaladdress("scirun","",serviceport_str,ipstr);
-
-#ifdef DEBUG
-  ServiceLogHandle externallogfile =
-    new ServiceLog(scidir+"scirun_external_servicemanager.log");
-
-  ServiceManager* external_service_manager =
-    new ServiceManager(servicedb,externaladdress,externallogfile);
-#else
-  ServiceManager* external_service_manager =
-    new ServiceManager(servicedb,externaladdress);
-
-#endif
-
-  Thread* t_ext =
-    new Thread(external_service_manager,"external service manager",
-		  0, Thread::NotActivated);
-  t_ext->setStackSize(1024*20);
-  t_ext->activate(false);
-  t_ext->detach();
-#endif
 }

@@ -27,30 +27,53 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <QtGui>
-#include <QtConcurrentRun>
 #include <numeric>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/GuiCommands.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/NetworkEditor.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Interface/Application/Utility.h>
 #include <Core/Logging/Log.h>
 #include <boost/range/adaptors.hpp>
+#include <boost/algorithm/string.hpp>
+#include <Core/Utils/CurrentFileName.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
-using namespace SCIRun::Core::Commands;
+using namespace Commands;
 using namespace SCIRun::Dataflow::Networks;
+using namespace Algorithms;
+
+LoadFileCommandGui::LoadFileCommandGui()
+{
+  addParameter(Name("FileNum"), 0);
+  addParameter(Variables::Filename, std::string());
+}
 
 bool LoadFileCommandGui::execute()
 {
-  auto inputFiles = Application::Instance().parameters()->inputFiles();
-  return SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFiles[index_]));
+  std::string inputFile;
+  auto inputFilesFromCommandLine = Application::Instance().parameters()->inputFiles();
+
+  if (!inputFilesFromCommandLine.empty())
+    inputFile = inputFilesFromCommandLine[0];
+  else
+  {
+    inputFile = get(Variables::Filename).toFilename().string();
+    if (mostRecentFileCode() == inputFile)
+      inputFile = SCIRunMainWindow::Instance()->mostRecentFile().toStdString();
+  }
+
+  return SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFile));
 }
 
 bool ExecuteCurrentNetworkCommandGui::execute()
@@ -59,14 +82,30 @@ bool ExecuteCurrentNetworkCommandGui::execute()
   return true;
 }
 
+static const AlgorithmParameterName RunningPython("RunningPython");
+
+QuitAfterExecuteCommandGui::QuitAfterExecuteCommandGui()
+{
+  addParameter(RunningPython, false);
+}
+
 bool QuitAfterExecuteCommandGui::execute()
 {
+  if (get(RunningPython).toBool())
+    SCIRunMainWindow::Instance()->skipSaveCheck();
   SCIRunMainWindow::Instance()->setupQuitAfterExecute();
   return true;
 }
 
+QuitCommandGui::QuitCommandGui()
+{
+  addParameter(RunningPython, false);
+}
+
 bool QuitCommandGui::execute()
 {
+  if (get(RunningPython).toBool())
+    SCIRunMainWindow::Instance()->skipSaveCheck();
   SCIRunMainWindow::Instance()->quit();
   exit(0);
   return true;
@@ -100,7 +139,7 @@ bool ShowSplashScreenGui::execute()
 
 void ShowSplashScreenGui::initSplashScreen()
 {
-  splash_ = new QSplashScreen(0, QPixmap(":/general/Resources/scirun_5_0_alpha.png"), Qt::WindowStaysOnTopHint);
+  splash_ = new QSplashScreen(nullptr, QPixmap(":/general/Resources/scirun_5_0_alpha.png"), Qt::WindowStaysOnTopHint);
   splashTimer_ = new QTimer;
   splashTimer_->setSingleShot( true );
   splashTimer_->setInterval( 5000 );
@@ -132,6 +171,16 @@ QPointF SCIRun::Gui::findCenterOfNetwork(const ModulePositions& positions)
   return centroidOfPointRange(pointRange.begin(), pointRange.end());
 }
 
+const char* SCIRun::Gui::addNewModuleActionTypePropertyName()
+{
+  return "connectNewModuleSource";
+}
+
+const char* SCIRun::Gui::insertNewModuleActionTypePropertyName()
+{
+  return "inputPortToConnectPid";
+}
+
 namespace std
 {
 template <typename T1, typename T2>
@@ -141,26 +190,26 @@ std::ostream& operator<<(std::ostream& o, const std::pair<T1,T2>& p)
 }
 }
 
-bool FileOpenCommand::execute()
+bool NetworkFileProcessCommand::execute()
 {
-  if (!filename_.empty())
-    GuiLogger::Instance().logInfo("Attempting load of " + QString::fromStdString(filename_));
+  auto filename = get(Variables::Filename).toFilename().string();
+  GuiLogger::Instance().logInfo("Attempting load of " + QString::fromStdString(filename));
 
   try
   {
-    auto openedFile = XMLSerializer::load_xml<NetworkFile>(filename_);
+    auto file = processXmlFile(filename);
 
-    if (openedFile)
+    if (file)
     {
-      auto load = boost::bind(&FileOpenCommand::loadImpl, this, openedFile);
+      auto load = boost::bind(&NetworkFileProcessCommand::guiProcess, this, file);
       if (Core::Application::Instance().parameters()->isRegressionMode())
       {
         load();
       }
       else
       {
-        int numModules = static_cast<int>(openedFile->network.modules.size());
-        QProgressDialog progress("Loading network " + QString::fromStdString(filename_), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
+        int numModules = static_cast<int>(file->network.modules.size());
+        QProgressDialog progress("Loading network " + QString::fromStdString(filename), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
         progress.connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(networkDoneLoading(int)), SLOT(setValue(int)));
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
@@ -174,45 +223,50 @@ bool FileOpenCommand::execute()
         progress.setValue(load());
         networkEditor_->setVisibility(true);
       }
-      openedFile_ = openedFile;
+      file_ = file;
 
-      QPointF center = findCenterOfNetworkFile(*openedFile_);
+      QPointF center = findCenterOfNetworkFile(*file);
       networkEditor_->centerOn(center);
 
-      GuiLogger::Instance().logInfo("File load done.");
+      GuiLogger::Instance().logInfoStd("File load done (" + filename + ").");
+      SCIRun::Core::setCurrentFileName(filename);
       return true;
     }
-    else
-    {
-      if (!filename_.empty())
-      {
-        GuiLogger::Instance().logErrorStd("File load failed (" + filename_ + "): null xml returned.");
-      }
-    }
+    GuiLogger::Instance().logErrorStd("File load failed (" + filename + "): null xml returned.");
   }
   catch (ExceptionBase& e)
   {
-    if (!filename_.empty())
-      GuiLogger::Instance().logError("File load failed: exception in load_xml, " + QString(e.what()));
+    GuiLogger::Instance().logErrorStd("File load failed (" + filename + "): exception in load_xml, " + e.what());
   }
   catch (std::exception& ex)
   {
-    if (!filename_.empty())
-      GuiLogger::Instance().logError("File load failed: exception in load_xml, " + QString(ex.what()));
+    GuiLogger::Instance().logErrorStd("File load failed(" + filename + "): exception in load_xml, " + ex.what());
   }
   catch (...)
   {
-    if (!filename_.empty())
-      GuiLogger::Instance().logError("File load failed: Unknown exception in load_xml.");
+    GuiLogger::Instance().logErrorStd("File load failed(" + filename + "): Unknown exception in load_xml.");
   }
   return false;
 }
 
-int FileOpenCommand::loadImpl(const NetworkFileHandle& file)
+int NetworkFileProcessCommand::guiProcess(const NetworkFileHandle& file)
 {
   networkEditor_->clear();
   networkEditor_->loadNetwork(file);
   return static_cast<int>(file->network.modules.size()) + 1;
+}
+
+NetworkFileHandle FileOpenCommand::processXmlFile(const std::string& filename)
+{
+  return XMLSerializer::load_xml<NetworkFile>(filename);
+}
+
+NetworkFileHandle FileImportCommand::processXmlFile(const std::string& filename)
+{
+  auto dtdpath = Core::Application::Instance().executablePath();
+  const auto& modFactory = Core::Application::Instance().controller()->moduleFactory();
+  LegacyNetworkIO lnio(dtdpath.string(), modFactory, logContents_);
+  return lnio.load_net(filename);
 }
 
 bool RunPythonScriptCommandGui::execute()
@@ -229,5 +283,44 @@ bool SetupDataDirectoryCommandGui::execute()
 
   SCIRunMainWindow::Instance()->setDataDirectory(QString::fromStdString(dir.string()));
 
+  return true;
+}
+
+NetworkSaveCommand::NetworkSaveCommand()
+{
+  addParameter(Variables::Filename, std::string());
+}
+
+bool NetworkSaveCommand::execute()
+{
+  auto filename = get(Variables::Filename).toFilename().string();
+  auto fileNameWithExtension = filename;
+  if (!boost::algorithm::ends_with(fileNameWithExtension, ".srn5"))
+    fileNameWithExtension += ".srn5";
+
+  auto file = Application::Instance().controller()->saveNetwork();
+
+  if (!XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile"))
+    return false;
+  SCIRunMainWindow::Instance()->setCurrentFile(QString::fromStdString(fileNameWithExtension));
+
+  SCIRunMainWindow::Instance()->statusBar()->showMessage("File saved: " + QString::fromStdString(filename), 2000);
+  GuiLogger::Instance().logInfo("File save done: " + QString::fromStdString(filename));
+  SCIRunMainWindow::Instance()->setWindowModified(false);
+
+  SCIRun::Core::setCurrentFileName(filename);
+
+  return true;
+}
+
+NetworkFileProcessCommand::NetworkFileProcessCommand() : networkEditor_(SCIRunMainWindow::Instance()->networkEditor())
+{
+  addParameter(Variables::Filename, std::string());
+}
+
+bool DisableViewScenesCommandGui::execute()
+{
+  SCIRunMainWindow::Instance()->networkEditor()->disableViewScenes();
+  //TODO: hook up enableViewScenes to execution finished
   return true;
 }

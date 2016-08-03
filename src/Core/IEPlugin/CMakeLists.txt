@@ -29,9 +29,10 @@
 SET(Core_IEPlugin_SRCS
   #BYUSurfField_Plugin.cc
   #CVRTIFileToMatrix_Plugin.cc
-  #CurveField_Plugin.cc
+  CurveField_Plugin.cc
   #DIF_Plugin.cc
-  #EcgsimFileToMatrix_Plugin.cc
+  EcgsimFileToMatrix_Plugin.cc
+  IgbFileToMatrix_Plugin.cc
   #EcgsimFileToTriSurf_Plugin.cc
   #HexVolField_Plugin.cc
   IEPluginInit.cc
@@ -48,8 +49,8 @@ SET(Core_IEPlugin_SRCS
   #StructCurveField_Plugin.cc
   #StructHexVolField_Plugin.cc
   #StructQuadSurfField_Plugin.cc
-  #TriSurfField_Plugin.cc
-  #TetVolField_Plugin.cc
+  TriSurfField_Plugin.cc
+  TetVolField_Plugin.cc
 )
 
 SET(Core_IEPlugin_HEADERS
@@ -57,9 +58,10 @@ SET(Core_IEPlugin_HEADERS
   IEPluginInit.h
   #BYUSurfField_Plugin.h
   #CVRTIFileToMatrix_Plugin.h
-  #CurveField_Plugin.h
+  CurveField_Plugin.h
   #DIF_Plugin.h
-  #EcgsimFileToMatrix_Plugin.h
+  EcgsimFileToMatrix_Plugin.h
+  IgbFileToMatrix_Plugin.h
   #EcgsimFileToTriSurf_Plugin.h
   #HexVolField_Plugin.h
   #MRC_Plugin.h
@@ -75,8 +77,8 @@ SET(Core_IEPlugin_HEADERS
   #StructCurveField_Plugin.h
   #StructHexVolField_Plugin.h
   #StructQuadSurfField_Plugin.h
-  #TriSurfField_Plugin.h
-  #TetVolField_Plugin.h
+  TriSurfField_Plugin.h
+  TetVolField_Plugin.h
 )
 
 SCIRUN_ADD_LIBRARY(Core_IEPlugin
@@ -104,7 +106,5 @@ TARGET_LINK_LIBRARIES(Core_IEPlugin
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_IEPlugin)
 ENDIF(BUILD_SHARED_LIBS)
-
-ADD_DEPENDENCIES(Core_IEPlugin Boost_external)
 
 SCIRUN_ADD_TEST_DIR(Tests)

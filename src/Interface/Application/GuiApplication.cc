@@ -29,8 +29,10 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <Interface/Application/GuiApplication.h>
+#include <Interface/Application/GuiCommandFactory.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Core/Application/Application.h>
+#include <boost/make_shared.hpp>
 
 using namespace SCIRun::Gui;
 
@@ -40,8 +42,9 @@ int GuiApplication::run(int argc, const char* argv[])
 
   try
   {
-    SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
+    auto mainWin = SCIRunMainWindow::Instance();
 
+    Core::Application::Instance().setCommandFactory(boost::make_shared<GuiGlobalCommandFactory>());
     mainWin->setController(Core::Application::Instance().controller());
     mainWin->initialize();
 

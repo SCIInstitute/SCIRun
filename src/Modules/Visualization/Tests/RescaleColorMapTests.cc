@@ -35,6 +35,7 @@
 #include <Core/Datatypes/ColorMap.h>
 
 using namespace SCIRun::Testing;
+using namespace SCIRun::TestUtils;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
@@ -93,7 +94,7 @@ protected:
     Log::get().setVerbose(false);
     rescaleColorMap = makeModule("RescaleColorMap");
     rescaleColorMap->setStateDefaults();
-    colorMap.reset(new ColorMap());
+    colorMap = StandardColorMapFactory::create();
     stubPortNWithThisData(rescaleColorMap, 0, colorMap);
     auto size = 2;
     latVol = CreateEmptyLatVol(size, size, size);

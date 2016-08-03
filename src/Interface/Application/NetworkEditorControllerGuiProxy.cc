@@ -30,7 +30,8 @@
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/NetworkSettings.h>
-#include <Dataflow/Network/Network.h>
+#include <QDebug>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Gui;
@@ -52,7 +53,15 @@ NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_p
 
 void NetworkEditorControllerGuiProxy::addModule(const std::string& moduleName)
 {
-  controller_->addModule(moduleName);
+  try
+  {
+    controller_->addModule(moduleName);
+  }
+  catch (SCIRun::Core::InvalidArgumentException& e)
+  {
+    qDebug() << "CAUGHT EXCEPTION";
+    Core::Logging::Log::get() << Core::Logging::ERROR_LOG << e.what() << std::endl;
+  }
 }
 
 void NetworkEditorControllerGuiProxy::removeModule(const ModuleId& id)
@@ -65,9 +74,9 @@ void NetworkEditorControllerGuiProxy::interrupt(const ModuleId& id)
   controller_->interruptModule(id);
 }
 
-void NetworkEditorControllerGuiProxy::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
+boost::optional<ConnectionId> NetworkEditorControllerGuiProxy::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
 {
-  controller_->requestConnection(from, to);
+  return controller_->requestConnection(from, to);
 }
 
 void NetworkEditorControllerGuiProxy::removeConnection(const ConnectionId& id)
@@ -80,9 +89,19 @@ NetworkFileHandle NetworkEditorControllerGuiProxy::saveNetwork() const
   return controller_->saveNetwork();
 }
 
+NetworkFileHandle NetworkEditorControllerGuiProxy::serializeNetworkFragment(ModuleFilter modFilter, ConnectionFilter connFilter) const
+{
+  return controller_->serializeNetworkFragment(modFilter, connFilter);
+}
+
 void NetworkEditorControllerGuiProxy::loadNetwork(const NetworkFileHandle& xml)
 {
   controller_->loadNetwork(xml);
+}
+
+void NetworkEditorControllerGuiProxy::appendToNetwork(const NetworkFileHandle& xml)
+{
+  controller_->appendToNetwork(xml);
 }
 
 void NetworkEditorControllerGuiProxy::executeAll(const ExecutableLookup& lookup)
@@ -90,9 +109,9 @@ void NetworkEditorControllerGuiProxy::executeAll(const ExecutableLookup& lookup)
   controller_->executeAll(&lookup);
 }
 
-void NetworkEditorControllerGuiProxy::executeModule(const ModuleHandle& module, const ExecutableLookup& lookup)
+void NetworkEditorControllerGuiProxy::executeModule(const ModuleHandle& module, const ExecutableLookup& lookup, bool executeUpstream)
 {
-  controller_->executeModule(module, &lookup);
+  controller_->executeModule(module, &lookup, executeUpstream);
 }
 
 size_t NetworkEditorControllerGuiProxy::numModules() const
@@ -115,14 +134,14 @@ void NetworkEditorControllerGuiProxy::setExecutorType(int type)
   controller_->setExecutorType(type);
 }
 
-void NetworkEditorControllerGuiProxy::duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module)
+void NetworkEditorControllerGuiProxy::duplicateModule(const ModuleHandle& module)
 {
   controller_->duplicateModule(module);
 }
 
-void NetworkEditorControllerGuiProxy::connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+void NetworkEditorControllerGuiProxy::connectNewModule(const PortDescriptionInterface* portToConnect, const std::string& newModuleName, const PortDescriptionInterface* portToConnectUponInsertion)
 {
-  controller_->connectNewModule(moduleToConnectTo, portToConnect, newModuleName);
+  controller_->connectNewModule(portToConnect, newModuleName, portToConnectUponInsertion);
 }
 
 const ModuleDescriptionMap& NetworkEditorControllerGuiProxy::getAllAvailableModuleDescriptions() const
@@ -133,4 +152,9 @@ const ModuleDescriptionMap& NetworkEditorControllerGuiProxy::getAllAvailableModu
 boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditorControllerGuiProxy::createDynamicPortSwitch()
 {
   return controller_->createDynamicPortSwitch();
+}
+
+void NetworkEditorControllerGuiProxy::cleanUpNetwork()
+{
+  controller_->cleanUpNetwork();
 }

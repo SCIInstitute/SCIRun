@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertNrrdToField",
+    "namespace": "Teem",
+    "status": "Ported module",
+    "description": "Converts Nrrd objects to SCIRun Fields",
+    "header": "Modules/Legacy/Teem/Converters/ConvertNrrdToField.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ConvertNrrdToFieldDialog",
+    "header": "Interface/Modules/Teem/ConvertNrrdToFieldDialog.h"
+  }
+}

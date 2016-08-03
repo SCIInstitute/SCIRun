@@ -28,8 +28,6 @@
 
 #include <Modules/Legacy/Bundle/InsertFieldsIntoBundle.h>
 #include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -42,23 +40,26 @@ InsertFieldsIntoBundleDialog::InsertFieldsIntoBundleDialog(const std::string& na
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+  WidgetStyleMixin::tableHeaderStyle(tableWidget);
 }
 
-void InsertFieldsIntoBundleDialog::pullSpecial()
+void InsertFieldsIntoBundleDialog::updateFromPortChange(int numPorts, const std::string& portId, DynamicPortChange type)
 {
-  auto numFields = optional_any_cast_or_default<int>(state_->getTransientValue(SCIRun::Modules::Bundles::InsertFieldsIntoBundle::NumFields.name()));
-  tableWidget->setRowCount(numFields);
-  for (int i = 0; i < numFields; ++i)
-  {
-    auto name = new QTableWidgetItem(tr("Field %1").arg(i+1));
-    tableWidget->setItem(i, 0, name);
-    auto check = new QTableWidgetItem();
-    check->setCheckState(Qt::Checked);
-    check->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
-    tableWidget->setItem(i, 1, check);
-    auto info = new QTableWidgetItem("[unknown, populated upon execute]");
-    //info->setFlags(Qt::NoItemFlags);
-    tableWidget->setItem(i, 2, info);
-  }
-  tableWidget->resizeColumnsToContents();
+  //qDebug() << "updateFromPortChange" << portId.c_str() << type;
+  if (type == DynamicPortChange::INITIAL_PORT_CONSTRUCTION)
+    return;
+
+  static const std::string typeName = "Fields";
+  const int lineEditColumn = 1;
+  syncTableRowsWithDynamicPort(portId, typeName, tableWidget, lineEditColumn, type, 
+  { { 2,
+      [&]()
+      {
+        auto check = new QTableWidgetItem();
+        check->setCheckState(Qt::Checked);
+        check->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
+        return check;
+      } },
+    { 3, 
+      [&](){ return new QTableWidgetItem("[unknown, populated upon execute]"); } } });
 }

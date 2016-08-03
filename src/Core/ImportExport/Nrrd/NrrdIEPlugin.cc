@@ -6,7 +6,7 @@
   Copyright (c) 2015 Scientific Computing and Imaging Institute,
   University of Utah.
 
-  
+
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
   to deal in the Software without restriction, including without limitation
@@ -27,7 +27,9 @@
 */
 
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
+#include <Core/ImportExport/Nrrd/NrrdIEPlugin.h>
 #include <boost/regex.hpp>
 #include <Core/Logging/Log.h>
 
@@ -37,7 +39,8 @@ using namespace SCIRun::Core::Datatypes;
 namespace SCIRun
 {
   template class GenericIEPluginManager<Field>;
-  template class GenericIEPluginManager<Core::Datatypes::Matrix>;
+  template class GenericIEPluginManager<Matrix>;
+  template class GenericIEPluginManager<NrrdData>;
 }
 
 IEPluginManagerManager::IEPluginManagerManager() {}
@@ -53,30 +56,36 @@ std::string SCIRun::fileTypeDescriptionFromDialogBoxFilter(const std::string& fi
 }
 
 template <>
-std::string SCIRun::defaultImportTypeForFile(const GenericIEPluginManager<Field>* mgr)
+std::string SCIRun::defaultImportTypeForFile(const GenericIEPluginManager<Field>*)
 {
   return "SCIRun Field File (*.fld)";
 }
 
 template <>
-std::string SCIRun::defaultImportTypeForFile(const GenericIEPluginManager<Matrix>* mgr)
+std::string SCIRun::defaultImportTypeForFile(const GenericIEPluginManager<Matrix>*)
 {
   return "SCIRun Matrix File (*.mat)";
 }
 
 template <>
-std::string SCIRun::defaultExportTypeForFile(const GenericIEPluginManager<Field>* mgr)
+std::string SCIRun::defaultImportTypeForFile(const GenericIEPluginManager<NrrdData>*)
+{
+  return "Nrrd Files (*.nhdr *.nrrd *.png *.txt *.vtk)";
+}
+
+template <>
+std::string SCIRun::defaultExportTypeForFile(const GenericIEPluginManager<Field>*)
 {
   return "SCIRun Field Binary (*.fld);;SCIRun Field ASCII (*.fld)";
 }
 
 template <>
-std::string SCIRun::defaultExportTypeForFile(const GenericIEPluginManager<Matrix>* mgr)
+std::string SCIRun::defaultExportTypeForFile(const GenericIEPluginManager<Matrix>*)
 {
   return "SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat)";
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 #include <Core/Thread/Mutex.h>
 #include <Core/Utils/Legacy/StringUtil.h>
@@ -159,7 +168,7 @@ NrrdIEPlugin::~NrrdIEPlugin()
   std::map<std::string, NrrdIEPlugin *>::iterator iter = matrix_plugin_table->find(pluginname);
   if (iter == matrix_plugin_table->end())
   {
-    std::cerr << "WARNING: NrrdIEPlugin " << pluginname << 
+    std::cerr << "WARNING: NrrdIEPlugin " << pluginname <<
       " not found in database for removal.\n";
   }
   else
@@ -226,7 +235,7 @@ NrrdIEPluginManager::get_exporter_list(std::vector<std::string> &results)
   nrrdIEPluginMutex.unlock();
 }
 
- 
+
 NrrdIEPlugin *
 NrrdIEPluginManager::get_plugin(const std::string &name)
 {

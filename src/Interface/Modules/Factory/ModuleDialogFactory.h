@@ -44,14 +44,18 @@ namespace SCIRun
       ModuleDialogFactory(QWidget* parentToUse, ExecutionDisablingServiceFunction disablerAdd,
         ExecutionDisablingServiceFunction disablerRemove);
       ModuleDialogGeneric* makeDialog(const std::string& moduleId, SCIRun::Dataflow::Networks::ModuleStateHandle state);
-    private:
-      QWidget* parentToUse_;
+
       typedef boost::function<ModuleDialogGeneric*(const std::string&, SCIRun::Dataflow::Networks::ModuleStateHandle, QWidget*)> DialogMaker;
       typedef std::map<std::string, DialogMaker> DialogMakerMap;
+
+      const DialogMakerMap& getMap() const { return dialogMakerMap_; }
+    private:
+      QWidget* parentToUse_;
       DialogMakerMap dialogMakerMap_;
       ExecutionDisablingServiceFunction disabler_;
       void addDialogsToMakerMap1();
       void addDialogsToMakerMap2();
+      void addDialogsToMakerMapGenerated();
     };
   }
 }

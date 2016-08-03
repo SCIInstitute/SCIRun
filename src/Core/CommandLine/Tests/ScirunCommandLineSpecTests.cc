@@ -37,24 +37,27 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
 
   const std::string expectedHelp =
     "SCIRun5 basic options:\n"
-    "  -h [ --help ]         prints usage information\n"
-    "  -v [ --version ]      prints out version information\n"
-    "  -e [ --execute ]      executes the given network on startup\n"
-    "  -E [ --Execute ]      executes the given network on startup and quits when \n"
-    "                        done\n"
-    "  -d [ --datadir ] arg  scirun data directory\n"
-    "  -r [ --regression ]   regression test a network\n"
-    "  -l [ --logfile ] arg  add output messages to a logfile--TODO\n"
-    "  -i [ --interactive ]  interactive mode--TODO\n"
-    "  -x [ --headless ]     disable GUI (Qt still needed, for now)\n"
-    "  --input-file arg      SCIRun Network Input File\n"
-    "  -s [ --script ] arg   SCIRun Python Script\n"
-    "  --no_splash           Turn off splash screen\n"
-    "  --verbose             Turn on debug log information\n"
-    "  --threadMode arg      network execution threading mode--DEVELOPER USE ONLY\n"
-    "  --reexecuteMode arg   network reexecution mode--DEVELOPER USE ONLY\n"
-    "  --frameInitLimit arg  ViewScene frame init limit--increase if renderer fails\n"
-    "  --list-modules        print list of available modules\n";
+    "  -h [ --help ]           prints usage information\n"
+    "  -v [ --version ]        prints out version information\n"
+    "  -e [ --execute ]        executes the given network on startup\n"
+    "  -E [ --Execute ]        executes the given network on startup and quits when \n"
+    "                          done\n"
+    "  -d [ --datadir ] arg    scirun data directory\n"
+    "  -r [ --regression ] arg regression test a network\n"
+    "  -l [ --logfile ] arg    add output messages to a logfile--TODO\n"
+    "  -1 [ --most-recent ]    load the most recently used file\n"
+    "  -i [ --interactive ]    interactive mode\n"
+    "  -x [ --headless ]       disable GUI (Qt still needed, for now)\n"
+    "  --input-file arg        SCIRun Network Input File\n"
+    "  -s [ --script ] arg     SCIRun Python Script\n"
+    "  --no_splash             Turn off splash screen\n"
+    "  --verbose               Turn on debug log information\n"
+    "  --threadMode arg        network execution threading mode--DEVELOPER USE ONLY\n"
+    "  --reexecuteMode arg     network reexecution mode--DEVELOPER USE ONLY\n"
+    "  --frameInitLimit arg    ViewScene frame init limit--increase if renderer \n"
+    "                          fails\n"
+    "  --guiExpandFactor arg   Expansion factor for high resolution displays\n"
+    "  --list-modules          print list of available modules\n";
 
   EXPECT_EQ(expectedHelp, parser.describe());
 
@@ -141,8 +144,8 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
 
     ApplicationParametersHandle aph = parser.parse(argc, argv);
 
-    ASSERT_TRUE(!!aph->threadMode());
-    EXPECT_EQ("serial", *aph->threadMode());
+    ASSERT_TRUE(!!aph->developerParameters()->threadMode());
+    EXPECT_EQ("serial", *aph->developerParameters()->threadMode());
   }
 
   {
@@ -151,7 +154,16 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
 
     ApplicationParametersHandle aph = parser.parse(argc, argv);
 
-    ASSERT_TRUE(!!aph->threadMode());
-    EXPECT_EQ("serial", *aph->threadMode());
+    ASSERT_TRUE(!!aph->developerParameters()->threadMode());
+    EXPECT_EQ("serial", *aph->developerParameters()->threadMode());
+  }
+
+  {
+    const char* argv[] = { "scirun.exe", "-1" };
+    int argc = sizeof(argv) / sizeof(char*);
+
+    ApplicationParametersHandle aph = parser.parse(argc, argv);
+
+    ASSERT_TRUE(aph->loadMostRecentFile());
   }
 }

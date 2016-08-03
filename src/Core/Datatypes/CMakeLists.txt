@@ -34,6 +34,7 @@ SET(Core_Datatypes_SRCS
   Geometry.cc
   Material.cc
   Matrix.cc
+  MatrixAlgorithms.cc
   MatrixTypeConversions.cc
   PropertyManagerExtensions.cc
   Scalar.cc
@@ -53,6 +54,7 @@ SET(Core_Datatypes_HEADERS
   HasId.h
   Material.h
   Matrix.h
+  MatrixAlgorithms.h
   MatrixComparison.h
   MatrixFwd.h
   MatrixIO.h
@@ -75,14 +77,11 @@ TARGET_LINK_LIBRARIES(Core_Datatypes
   Core_Persistent
   Core_Datatypes_Legacy_Base
   Core_Geometry_Primitives
-  ${OPENGL_LIBRARIES}
 )
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Datatypes)
 ENDIF(BUILD_SHARED_LIBS)
-
-ADD_DEPENDENCIES(Core_Datatypes Boost_external)
 
 SCIRUN_ADD_TEST_DIR(Tests)
 ADD_SUBDIRECTORY(Mesh)

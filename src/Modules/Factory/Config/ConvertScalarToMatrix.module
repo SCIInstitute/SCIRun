@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertScalarToMatrix",
+    "namespace": "Math",
+    "status": "Ported module.  For Int32 only.",
+    "description": "Converts Scalar datatype to 1x1 matrix",
+    "header": "Modules/Math/ConvertScalarToMatrix.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

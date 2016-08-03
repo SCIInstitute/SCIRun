@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GetDomainBoundary",
+    "namespace": "Fields",
+    "status": "Real ported module: Many bugs and UI logic issues",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/GetDomainBoundary.h"
+  },
+  "algorithm": {
+    "name": "GetDomainBoundaryAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h"
+  },
+  "UI": {
+    "name": "GetDomainBoundaryDialog",
+    "header": "Interface/Modules/Fields/GetDomainBoundaryDialog.h"
+  }
+}

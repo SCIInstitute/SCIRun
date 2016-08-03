@@ -45,7 +45,6 @@
 #include <Dataflow/Network/ExecutableObject.h>
 #endif
 
-class QGraphicsProxyWidget;
 class QDockWidget;
 class QProgressBar;
 
@@ -64,7 +63,7 @@ class ModuleWidgetDisplayBase
 {
 public:
   virtual ~ModuleWidgetDisplayBase() {}
-  virtual void setupFrame(QFrame* frame) = 0;
+  virtual void setupFrame(QStackedWidget* stacked) = 0; //TODO
   virtual void setupTitle(const QString& name) = 0;
   virtual void setupProgressBar() = 0;
   virtual void setupSpecial() = 0;
@@ -74,25 +73,40 @@ public:
   virtual QAbstractButton* getExecuteButton() const = 0;
   virtual QAbstractButton* getHelpButton() const = 0;
   virtual QAbstractButton* getLogButton() const = 0;
+  virtual void setStatusColor(const QString& color) = 0;
   virtual QPushButton* getModuleActionButton() const = 0;
 
   virtual QProgressBar* getProgressBar() const = 0;
 
   virtual int getTitleWidth() const = 0;
+  virtual QLabel* getTitle() const = 0;
 
-  virtual void adjustLayout(QLayout* layout) = 0;
+  virtual void startExecuteMovie() = 0;
+  virtual void stopExecuteMovie() = 0;
+
+  //The following have platform-specific values
+  static const int moduleWidthThreshold;
+  static const int extraModuleWidth;
+  static const int extraWidthThreshold;
+  static const int smushFactor;
+  static const int titleFontSize;
+  static const int viewFontSize;
+  static const int buttonPageFontSizeDiff;
+  static const int widgetHeightAdjust;
+  static const int widgetWidthAdjust;
 };
 
 typedef boost::shared_ptr<ModuleWidgetDisplayBase> ModuleWidgetDisplayPtr;
 
 class ModuleWidget : public QStackedWidget,
-  public SCIRun::Dataflow::Networks::ExecutableObject, public HasNotes
+  public Dataflow::Networks::ExecutableObject, public HasNotes
 {
 	Q_OBJECT
 
 public:
-  ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl,
-    QWidget* parent = 0);
+  ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule,
+    boost::shared_ptr<DialogErrorControl> dialogErrorControl,
+    QWidget* parent = nullptr);
   ~ModuleWidget();
 
   void trackConnections();
@@ -103,7 +117,7 @@ public:
   const PortWidgetManager& ports() const { return *ports_; }
 
   std::string getModuleId() const { return moduleId_; }
-  SCIRun::Dataflow::Networks::ModuleHandle getModule() const { return theModule_; }
+  Dataflow::Networks::ModuleHandle getModule() const { return theModule_; }
 
   void setDeletedFromGui(bool b) { deletedFromGui_ = b; }
 
@@ -114,6 +128,9 @@ public:
   void setColorSelected();
   void setColorUnselected();
 
+  bool executionDisabled() const { return disabled_; }
+  void setExecutionDisabled(bool disabled);
+
   void highlightPorts();
   void unhighlightPorts();
 
@@ -122,20 +139,34 @@ public:
   bool hasDynamicPorts() const;
 
   void createStartupNote();
+  void postLoadAction();
+
+  bool guiVisible() const;
 
   static const int SMALL_PORT_SPACING = 3;
-  static const int LARGE_PORT_SPACING = SMALL_PORT_SPACING * 4;
+  static const int LARGE_PORT_SPACING = SMALL_PORT_SPACING * 2;
   int portSpacing() const;
   void setPortSpacing(bool highlighted);
 
-  virtual boost::signals2::connection connectExecuteBegins(const SCIRun::Dataflow::Networks::ExecuteBeginsSignalType::slot_type& subscriber);
-  virtual boost::signals2::connection connectExecuteEnds(const SCIRun::Dataflow::Networks::ExecuteEndsSignalType::slot_type& subscriber);
-  virtual boost::signals2::connection connectErrorListener(const SCIRun::Dataflow::Networks::ErrorSignalType::slot_type& subscriber);
+  virtual boost::signals2::connection connectExecuteBegins(const SCIRun::Dataflow::Networks::ExecuteBeginsSignalType::slot_type& subscriber) override final;
+  virtual boost::signals2::connection connectExecuteEnds(const SCIRun::Dataflow::Networks::ExecuteEndsSignalType::slot_type& subscriber) override final;
+  virtual boost::signals2::connection connectErrorListener(const SCIRun::Dataflow::Networks::ErrorSignalType::slot_type& subscriber) override final;
 
   void updateNoteFromFile(const Note& note);
 
+  struct NetworkClearingScope
+  {
+    NetworkClearingScope();
+    ~NetworkClearingScope();
+  };
+
+  QString metadataToString() const;
+  QDialog* dialog();
+
+  static double highResolutionExpandFactor_;
+
 public Q_SLOTS:
-  virtual void execute();
+  virtual bool executeWithSignals() override;
   void toggleOptionsDialog();
   void setLogButtonColor(const QColor& color);
   void resetLogButtonColor();
@@ -152,12 +183,9 @@ public Q_SLOTS:
   void pinUI();
   void hideUI();
   void showUI();
-  void setMiniMode(bool mini);
-  void collapseToMiniMode();
-  void expandToFullMode();
   void updateMetadata(bool active);
   void updatePortSpacing(bool highlighted);
-  static void setGlobalMiniMode(bool mini);
+  void replaceMe();
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void interrupt(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
@@ -165,7 +193,7 @@ Q_SIGNALS:
   void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void moduleExecuted();
-  void executedManually(const SCIRun::Dataflow::Networks::ModuleHandle& module);
+  void executedManually(const SCIRun::Dataflow::Networks::ModuleHandle& module, bool fromButton);
   void updateProgressBarSignal(double percent);
   void cancelConnectionsInProgress();
   void noteUpdated(const Note& note);
@@ -173,7 +201,7 @@ Q_SIGNALS:
   void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
   void replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToReplace, const std::string& newModuleName);
   void backgroundColorUpdated(const QString& color);
-  void dynamicPortChanged(const std::string& portID);
+  void dynamicPortChanged(const std::string& portID, bool adding);
   void noteChanged();
   void moduleStateUpdated(int state);
   void moduleSelected(bool selected);
@@ -185,31 +213,36 @@ Q_SIGNALS:
   void disableWidgetDisabling();
   void reenableWidgetDisabling();
   void executeAgain();
+  void executionDisabled(bool disabled);
 private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
   void executeButtonPushed();
+  void executeTriggeredViaStateChange();
   void stopButtonPushed();
   void colorOptionsButton(bool visible);
   void fillReplaceWithMenu();
   void replaceModuleWith();
-  void updateDialogWithPortCount(const std::string& portName);
+  void updateDialogForDynamicPortChange(const std::string& portName, bool adding);
   void handleDialogFatalError(const QString& message);
   void changeExecuteButtonToPlay();
   void changeExecuteButtonToStop();
   void updateDockWidgetProperties(bool isFloating);
+  void incomingConnectionStateChanged(bool disabled, int index);
+protected:
+  virtual void enterEvent(QEvent* event) override;
+  virtual void leaveEvent(QEvent* event) override;
 private:
-  ModuleWidgetDisplayBase* currentDisplay_;
   ModuleWidgetDisplayPtr fullWidgetDisplay_;
-  ModuleWidgetDisplayPtr miniWidgetDisplay_;
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
-  bool isMini_, errored_;
+  bool executedOnce_, skipExecuteDueToFatalError_, disabled_;
+  std::atomic<bool> errored_;
+  int previousPageIndex_ {0};
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
   std::atomic<int> previousModuleState_;
-
   void addPorts(int index);
   void createPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   void createInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
@@ -224,10 +257,10 @@ private:
   int buildDisplay(ModuleWidgetDisplayBase* display, const QString& name);
   void setupDisplayWidgets(ModuleWidgetDisplayBase* display, const QString& name);
   void setupModuleActions();
-  void setupLogging();
+  void setupLogging(class ModuleErrorDisplayer* displayer);
   void adjustDockState(bool dockEnabled);
   Qt::DockWidgetArea allowedDockArea() const;
-  void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
+  void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider) const;
   QMenu* getReplaceWithMenu();
   void setInputPortSpacing(bool highlighted);
   void setOutputPortSpacing(bool highlighted);
@@ -238,7 +271,7 @@ private:
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
 	boost::shared_ptr<DialogErrorControl> dialogErrorControl_;
 
-  void changeDisplay(int oldIndex, int newIndex);
+  void movePortWidgets(int oldIndex, int newIndex);
   void addPortLayouts(int index);
   void addInputPortsToLayout(int index);
   void addInputPortsToWidget(int index);
@@ -248,10 +281,9 @@ private:
   void removeOutputPortsFromWidget(int index);
   QHBoxLayout* inputPortLayout_;
   QHBoxLayout* outputPortLayout_;
-  NetworkEditor* editor_;
   bool deleting_;
+  static bool networkBeingCleared_;
   const QString defaultBackgroundColor_;
-  int fullIndex_, miniIndex_;
   bool isViewScene_; //TODO: lots of special logic around this case.
 
   static bool globalMiniMode_;

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -50,12 +50,12 @@ class SCISHARE ExtractSimpleIsosurfaceAlgo : public AlgorithmBase
 {
 public:
   ExtractSimpleIsosurfaceAlgo();
-  
-  bool run(FieldHandle input, std::vector<double>& isovalues, FieldHandle& output) const;
 
-  AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+  bool run(FieldHandle input, const std::vector<double>& isovalues, FieldHandle& output) const;
+
+  AlgorithmOutput run(const AlgorithmInput& input) const;
 };
 
 }}}}
 
-#endif 
+#endif

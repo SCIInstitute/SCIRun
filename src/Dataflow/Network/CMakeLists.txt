@@ -69,8 +69,6 @@ SCIRUN_ADD_LIBRARY(Dataflow_Network
   ${Dataflow_Network_SRCS}
 )
 
-ADD_DEPENDENCIES(Algorithms_Base Boost_external)
-
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Dataflow_Network)
 ENDIF(BUILD_SHARED_LIBS)

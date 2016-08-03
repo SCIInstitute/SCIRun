@@ -43,23 +43,22 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
 
-SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("SolveLinearSystem", "Math", "SCIRun"))
+SolveLinearSystem::SolveLinearSystem() : Module(ModuleLookupInfo("SolveLinearSystem", "Math", "SCIRun"))
 {
   INITIALIZE_PORT(LHS);
   INITIALIZE_PORT(RHS);
   INITIALIZE_PORT(Solution);
 }
 
-void SolveLinearSystemModule::setStateDefaults()
+void SolveLinearSystem::setStateDefaults()
 {
-  auto state = get_state();
   setStateDoubleFromAlgo(Variables::TargetError);
-  setStateDoubleFromAlgo(Variables::MaxIterations);
+  setStateIntFromAlgo(Variables::MaxIterations);
   setStateStringFromAlgoOption(Variables::Method);
   setStateStringFromAlgoOption(Variables::Preconditioner);
 }
 
-void SolveLinearSystemModule::execute()
+void SolveLinearSystem::execute()
 {
   auto A = getRequiredInput(LHS);
   auto rhs = getRequiredInput(RHS);
@@ -69,12 +68,12 @@ void SolveLinearSystemModule::execute()
     /// @todo: why aren't these checks in the algo class?
     if (rhs->ncols() != 1)
       THROW_ALGORITHM_INPUT_ERROR("Right-hand side matrix must contain only one column.");
-    if (!matrix_is::sparse(A))
+    if (!matrixIs::sparse(A))
       THROW_ALGORITHM_INPUT_ERROR("Left-hand side matrix to solve must be sparse.");
 
-    auto rhsCol = matrix_cast::as_column(rhs);
+    auto rhsCol = castMatrix::toColumn(rhs);
     if (!rhsCol)
-      rhsCol = matrix_convert::to_column(rhs);
+      rhsCol = convertMatrix::toColumn(rhs);
 
     auto tolerance = get_state()->getValue(Variables::TargetError).toDouble();
     auto maxIterations = get_state()->getValue(Variables::MaxIterations).toInt();
@@ -88,9 +87,9 @@ void SolveLinearSystemModule::execute()
     auto method = get_state()->getValue(Variables::Method).toString();
     auto precond = get_state()->getValue(Variables::Preconditioner).toString();
     if (!method.empty())
-      algo().set_option(Variables::Method, method);
+      algo().setOption(Variables::Method, method);
     if (!precond.empty())
-      algo().set_option(Variables::Preconditioner, precond);
+      algo().setOption(Variables::Preconditioner, precond);
 
     std::ostringstream ostr;
     ostr << "Running algorithm Parallel " << method << " Solver with tolerance " << tolerance << " and maximum iterations " << maxIterations;
@@ -100,7 +99,7 @@ void SolveLinearSystemModule::execute()
       ScopedTimeRemarker perf(this, "Linear solver");
       remark("Using preconditioner: " + precond);
 
-      auto output = algo().run_generic(withInputData((LHS, A)(RHS, rhsCol)));
+      auto output = algo().run(withInputData((LHS, A)(RHS, rhsCol)));
 
       sendOutputFromAlgorithm(Solution, output);
     }

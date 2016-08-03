@@ -45,18 +45,21 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/BBox.h>
+#include <Graphics/Glyphs/GlyphGeom.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Core::Algorithms::Fields;
+using namespace Core;
+using namespace Datatypes;
+using namespace Dataflow::Networks;
+using namespace Modules::Fields;
+using namespace Geometry;
+using namespace Algorithms::Fields;
+using namespace Graphics::Datatypes;
 
 ALGORITHM_PARAMETER_DEF(Fields, NumSeeds);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeScale);
 
-const ModuleLookupInfo GeneratePointSamplesFromField::staticInfo_("GeneratePointSamplesFromField", "NewField", "SCIRun");
+MODULE_INFO_DEF(GeneratePointSamplesFromField, NewField, SCIRun)
 
 #if SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: include real PointWidget header here
 #include <Core/Thread/CrowdMonitor.h>
@@ -82,6 +85,8 @@ namespace SCIRun
         std::vector<PointWidgetPtr>     pointWidgets_;
         double l2norm_;
 
+        GeometryHandle buildWidgetObject(FieldHandle field, double radius, const GeometryIDGenerator& idGenerator);
+        RenderState getWidgetRenderState() const;
       };
     }
   }
@@ -89,7 +94,7 @@ namespace SCIRun
 
 
 GeneratePointSamplesFromField::GeneratePointSamplesFromField()
-  : Module(staticInfo_), impl_(new GeneratePointSamplesFromFieldImpl)
+  : GeometryGeneratingModule(staticInfo_), impl_(new GeneratePointSamplesFromFieldImpl)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(GeneratedWidget);
@@ -100,10 +105,19 @@ void GeneratePointSamplesFromField::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(Parameters::NumSeeds, 1);
-  state->setValue(Parameters::ProbeScale, 5.0);
+  state->setValue(Parameters::ProbeScale, 0.23);
 }
 
 void GeneratePointSamplesFromField::execute()
+{
+  FieldHandle field = GenerateOutputField();
+  sendOutput(GeneratedPoints, field);
+
+  auto geom = impl_->buildWidgetObject(field, get_state()->getValue(Parameters::ProbeScale).toDouble(), *this);
+  sendOutput(GeneratedWidget, geom);
+}
+
+FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
 {
   auto ifieldhandle = getRequiredInput(InputField);
 
@@ -249,17 +263,9 @@ void GeneratePointSamplesFromField::execute()
     }
   }
 
-  const BBox ibox = ifieldhandle->vmesh()->get_bounding_box();
-  Vector mag = ibox.get_max() - ibox.get_min();
-  double max = 0.0;
-  if (mag.x() > max) max = mag.x();
-  if (mag.y() > max) max = mag.y();
-  if (mag.z() > max) max = mag.z();
-
   for (int i = 0; i < numSeeds; i++)
   {
     impl_->pointWidgets_[i]->setScale(scale * impl_->l2norm_ * 0.003);
-    const Point location = impl_->pointWidgets_[i]->position();
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  //@cbrightsci: i think this adjusts the point/sphere scale
     TCLInterface::execute(get_id().c_str() + std::string(" set_seed " +
@@ -283,7 +289,77 @@ void GeneratePointSamplesFromField::execute()
     field->set_value(static_cast<double>(i), pcindex);
   }
 
-  sendOutput(GeneratedPoints, ofield);
+  return ofield;
+}
+
+GeometryHandle GeneratePointSamplesFromFieldImpl::buildWidgetObject(FieldHandle field, double radius, const GeometryIDGenerator& idGenerator)
+{
+  GeometryHandle geom(new GeometryObjectSpire(idGenerator, "EntireSinglePointProbeFromField", true));
+
+  VMesh*  mesh = field->vmesh();
+
+  ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
+  ColorRGB node_color;
+
+  mesh->synchronize(Mesh::NODES_E);
+
+  VMesh::Node::iterator eiter, eiter_end;
+  mesh->begin(eiter);
+  mesh->end(eiter_end);
+
+  double num_strips = 10;
+  if (radius < 0) radius = 1.;
+  if (num_strips < 0) num_strips = 10.;
+  std::stringstream ss;
+  ss << radius << num_strips << static_cast<int>(colorScheme);
+
+  std::string uniqueNodeID = geom->uniqueID() + "widget" + ss.str();
+
+  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::TRIANGLES;
+
+  Graphics::GlyphGeom glyphs;
+  while (eiter != eiter_end)
+  {
+    //checkForInterruption();
+
+    Point p;
+    mesh->get_point(p, *eiter);
+
+    glyphs.addSphere(p, radius, num_strips, node_color);
+
+    ++eiter;
+  }
+
+  RenderState renState = getWidgetRenderState();
+
+  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+    colorScheme, renState, primIn, mesh->get_bounding_box());
+
+  return geom;
+}
+
+RenderState GeneratePointSamplesFromFieldImpl::getWidgetRenderState() const
+{
+  RenderState renState;
+
+  renState.set(RenderState::IS_ON, true);
+  renState.set(RenderState::USE_TRANSPARENCY, false);
+
+  renState.defaultColor = ColorRGB(0.5, 0.5, 0.5);
+  renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
+    renState.defaultColor.g() > 1.0 ||
+    renState.defaultColor.b() > 1.0) ?
+    ColorRGB(
+    renState.defaultColor.r() / 255.,
+    renState.defaultColor.g() / 255.,
+    renState.defaultColor.b() / 255.)
+    : renState.defaultColor;
+
+  renState.set(RenderState::USE_DEFAULT_COLOR, true);
+  renState.set(RenderState::USE_NORMALS, true);
+  renState.set(RenderState::IS_WIDGET, true);
+
+  return renState;
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: this will be part 3, with interactive widgets

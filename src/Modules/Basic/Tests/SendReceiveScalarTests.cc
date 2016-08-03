@@ -1,3 +1,4 @@
+#if 0
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -77,9 +78,9 @@ TEST(BasicNetworkTest, SendAndReceiveScalarValueUsingManualExecution)
   const double dataToSend = 3.14;
   SendScalarModule* sendScalar = dynamic_cast<SendScalarModule*>(send.get());
   EXPECT_TRUE(sendScalar != 0);
-  
+
   sendScalar->get_state()->setValue(SendScalarModule::ValueToSend(), dataToSend);
-  
+
   //manually execute the network, in the correct order.
   send->execute();
   receive->execute();
@@ -88,3 +89,4 @@ TEST(BasicNetworkTest, SendAndReceiveScalarValueUsingManualExecution)
   EXPECT_TRUE(receiveScalar != 0);
   EXPECT_EQ(dataToSend, receiveScalar->latestReceivedValue());
 }
+#endif

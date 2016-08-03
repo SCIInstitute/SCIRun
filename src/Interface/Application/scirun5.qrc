@@ -27,6 +27,17 @@
     <file>Resources/align_center.png</file>
     <file>Resources/tagLayer.png</file>
     <file>Resources/metadataLayer.png</file>
+    <file>Resources/executing.gif</file>
+    <file>Resources/cut.png</file>
+    <file>Resources/copy.png</file>
+    <file>Resources/paste.png</file>
+    <file>Resources/download.png</file>
+    <file>Resources/cubicPipe.png</file>
+    <file>Resources/euclideanPipe.png</file>
+    <file>Resources/manhattanPipe.png</file>
+    <file>Resources/timepiece-512.png</file>
+    <file>Resources/scirunWizard.png</file>
+    <file>Resources/network.png</file>
     <file>Resources/new/general/folder.png</file>
     <file>Resources/new/general/header-divider.png</file>
     <file>Resources/new/general/help.png</file>
@@ -43,5 +54,8 @@
     <file>Resources/new/modules/run.png</file>
     <file>Resources/new/modules/settings.png</file>
     <file>Resources/scirun_5_0_alpha.png</file>
+    <file>Resources/rename.ico</file>
+    <file>Resources/delete_black.png</file>
+    <file>Resources/delete_red.png</file>
   </qresource>
 </RCC>

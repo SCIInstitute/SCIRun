@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,7 +28,7 @@
 /// @todo Documentation Dataflow/Network/Connection.h
 
 #ifndef DATAFLOW_NETWORK_CONNECTION_H
-#define DATAFLOW_NETWORK_CONNECTION_H 
+#define DATAFLOW_NETWORK_CONNECTION_H
 
 #include <string>
 #include <Dataflow/Network/NetworkFwd.h>
@@ -39,7 +39,7 @@ namespace SCIRun {
   namespace Dataflow {
     namespace Networks {
 
-      class SCISHARE Connection 
+      class SCISHARE Connection
       {
       public:
         Connection(OutputPortHandle oport, InputPortHandle iport, const ConnectionId& id);
@@ -48,11 +48,16 @@ namespace SCIRun {
         OutputPortHandle oport_;
         InputPortHandle iport_;
 
+        std::string id() const;
         ConnectionId id_;
-        bool disabled_;
+
+        bool disabled() const { return disabled_; }
+        void setDisable(bool disable);
+      private:
+        bool disabled_ {false};
       };
 
 }}}
 
 
-#endif 
+#endif

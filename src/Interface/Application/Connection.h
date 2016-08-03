@@ -69,40 +69,48 @@ public:
   ~ConnectionLine();
   void setColor(const QColor& color);
   void setColorAndWidth(const QColor& color, int width);
-  QColor color() const; 
-  ModuleIdPair getConnectedToModuleIds() const; 
+  QColor color() const;
+  ModuleIdPair getConnectedToModuleIds() const;
   void updateNoteFromFile(const Note& note);
-  std::pair<PortWidget*, PortWidget*> connectedPorts() const { return{ fromPort_, toPort_ }; }
+  std::pair<PortWidget*, PortWidget*> connectedPorts() const { return { fromPort_, toPort_ }; }
+  const SCIRun::Dataflow::Networks::ConnectionId& id() const { return id_; }
+  bool disabled() const { return disabled_; }
+  void setDisabled(bool disabled);
 public Q_SLOTS:
   void trackNodes();
   void setDrawStrategy(ConnectionDrawStrategyPtr drawer);
   void updateNote(const Note& note);
+  void toggleDisabled();
+  void insertNewModule();
 
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void noteChanged();
+  void insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* output, const std::string& newModuleName, const SCIRun::Dataflow::Networks::PortDescriptionInterface* input);
 protected:
-  void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override; 
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent* event) override;
   void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
-  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override; 
-  QVariant itemChange(GraphicsItemChange change, const QVariant& value);
+  void mouseMoveEvent(QGraphicsSceneMouseEvent* event) override;
+  QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
   void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) override;
   virtual void setNoteGraphicsContext() override;
   void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
   void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
   void keyPressEvent(QKeyEvent* event) override;
-   
+
 private:
   PortWidget* fromPort_;
   PortWidget* toPort_;
   SCIRun::Dataflow::Networks::ConnectionId id_;
   ConnectionDrawStrategyPtr drawer_;
-  void destroy();
+  void destroyConnection();
   bool destroyed_;
   class ConnectionMenu* menu_;
-  bool menuOpen_; 
+  bool menuOpen_;
+  bool disabled_ {false};
   QColor placeHoldingColor_;
   int placeHoldingWidth_;
+  double defaultZValue() const;
 };
 
 struct InvalidConnection : virtual Core::ExceptionBase {};
@@ -112,21 +120,29 @@ class ConnectionInProgress
 public:
 	virtual ~ConnectionInProgress() {}
   virtual void update(const QPointF& end) = 0;
+  virtual void makePotential() = 0;
+  virtual void highlight(bool on) = 0;
+  virtual bool isHighlighted() const = 0;
+  virtual QPointF endpoint() const = 0;
+  virtual PortWidget* receiver() const = 0;
+  virtual void setReceiver(PortWidget* rec) = 0;
+  virtual void setLabel(QGraphicsTextItem* label) = 0;
 };
 
 template <class Base>
 class ConnectionInProgressGraphicsItem : public Base, public ConnectionInProgress
 {
 public:
-  ConnectionInProgressGraphicsItem(PortWidget* port, ConnectionDrawStrategyPtr drawer) : fromPort_(port), drawStrategy_(drawer)
+  ConnectionInProgressGraphicsItem(PortWidget* port, ConnectionDrawStrategyPtr drawer) :
+    fromPort_(port), receiver_(nullptr), drawStrategy_(drawer), isHighlighted_(false)
   {
     Base::setZValue(1000); //TODO
-    setColor(port->color());
+    setColor(fromPort_->color());
   }
 
   void setColor(const QColor& color)
   {
-    Base::setPen(QPen(color, 5.0, Qt::DashLine));
+    Base::setPen(QPen(color, 5.0, Qt::DotLine));
   }
 
   QColor color() const
@@ -134,9 +150,58 @@ public:
     return Base::pen().color();
   }
 
+  virtual void makePotential() override
+  {
+    Base::setOpacity(0.3);
+    Base::setPen(QPen(color(), 3.0, Qt::DotLine));
+  }
+
+  virtual void highlight(bool on) override
+  {
+    if (on)
+    {
+      Base::setPen(QPen(Qt::red, 7.0, Qt::SolidLine));
+      if (label_)
+        label_->setDefaultTextColor(Qt::red);
+    }
+    else
+    {
+      Base::setPen(QPen(receiver_->color(), 3.0, Qt::DotLine));
+      if (label_)
+        label_->setDefaultTextColor(receiver_->color());
+    }
+    isHighlighted_ = on;
+  }
+
+  virtual bool isHighlighted() const override { return isHighlighted_; }
+
+  virtual QPointF endpoint() const override
+  {
+    return lastEnd_;
+  }
+
+  virtual PortWidget* receiver() const override
+  {
+    return receiver_;
+  }
+
+  virtual void setReceiver(PortWidget* rec) override
+  {
+    receiver_ = rec;
+  }
+
+  virtual void setLabel(QGraphicsTextItem* label) override
+  {
+    label_ = label;
+  }
+
 protected:
   PortWidget* fromPort_;
+  PortWidget* receiver_;
   ConnectionDrawStrategyPtr drawStrategy_;
+  QPointF lastEnd_;
+  bool isHighlighted_;
+  QGraphicsTextItem* label_ {nullptr};
 };
 
 class ConnectionInProgressStraight : public ConnectionInProgressGraphicsItem<QGraphicsLineItem>
@@ -166,16 +231,17 @@ class ConnectionFactory : public QObject
 public:
   explicit ConnectionFactory(QGraphicsScene* scene);
   ConnectionInProgress* makeConnectionInProgress(PortWidget* port) const;
+  ConnectionInProgress* makePotentialConnection(PortWidget* port) const;
   ConnectionLine* makeFinishedConnection(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id) const;
   void setType(ConnectionDrawType type);
   ConnectionDrawType getType() const;
   void setVisibility(bool visible) { visible_ = visible; }
+  void activate(QGraphicsItem* item) const;
 Q_SIGNALS:
   void typeChanged(ConnectionDrawStrategyPtr drawerMaker);
 private:
   ConnectionDrawType currentType_;
   bool visible_;
-  void activate(QGraphicsItem* item) const;
   QGraphicsScene* scene_;
   ConnectionDrawStrategyPtr euclidean_;
   ConnectionDrawStrategyPtr cubic_;

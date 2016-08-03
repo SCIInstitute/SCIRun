@@ -32,6 +32,7 @@
 #define CORE_COMMAND_COMMAND_H
 
 #include <boost/shared_ptr.hpp>
+#include <Core/Algorithms/Base/AlgorithmParameterList.h>
 #include <Core/Command/share.h>
 
 namespace SCIRun
@@ -47,8 +48,6 @@ namespace SCIRun
         virtual bool execute() = 0;
       };
 
-      typedef boost::shared_ptr<Command> CommandHandle;
-
       class SCISHARE UndoableCommand : public Command
       {
       public:
@@ -63,15 +62,21 @@ namespace SCIRun
         virtual void redo() = 0;
       };
 
-      class SCISHARE GuiCommand : public Command
+      class SCISHARE ParameterizedCommand : public Algorithms::AlgorithmParameterList, public Command
       {
       };
 
-      class SCISHARE ConsoleCommand : public Command
+      typedef boost::shared_ptr<ParameterizedCommand> CommandHandle;
+
+      class SCISHARE GuiCommand : public ParameterizedCommand
       {
       };
 
-      enum GlobalCommands
+      class SCISHARE ConsoleCommand : public ParameterizedCommand
+      {
+      };
+
+      enum class GlobalCommands
       {
         ShowMainWindow,
         ShowSplashScreen,
@@ -79,12 +84,31 @@ namespace SCIRun
         PrintVersion,
         PrintModules,
         LoadNetworkFile,
+        SaveNetworkFile,
+        ImportNetworkFile,
         RunPythonScript,
         SetupDataDirectory,
+        DisableViewScenes,
         ExecuteCurrentNetwork,
+        InteractiveMode,
         SetupQuitAfterExecute,
         QuitCommand
       };
+
+      enum class NetworkEventCommands
+      {
+        PostModuleAdd,
+        OnNetworkLoad
+        //TODO: add more based on user request
+      };
+
+      class SCISHARE NullCommand : public ParameterizedCommand
+      {
+      public:
+        virtual bool execute() override { return true; }
+      };
+
+      SCISHARE std::string mostRecentFileCode();
     }
   }
 }

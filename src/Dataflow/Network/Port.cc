@@ -28,7 +28,6 @@
 
 /// @todo Documentation Dataflow/Network/Port.cc
 
-#include <boost/foreach.hpp>
 #include <Dataflow/Network/Port.h>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Utils/Exception.h>
@@ -69,9 +68,14 @@ void Port::detach(Connection* conn)
   connections_.erase(pos);
 }
 
-const Connection* Port::connection(size_t i) const
+Connection* Port::connection(size_t i) const
 {
   return connections_[i];
+}
+
+boost::optional<ConnectionId> Port::firstConnectionId() const
+{
+  return !connections_.empty() ? connections_[0]->id_ : boost::optional<ConnectionId>();
 }
 
 void Port::setIndex(size_t index)
@@ -150,8 +154,23 @@ boost::signals2::connection InputPort::connectDataOnPortHasChanged(const DataOnP
 {
   return sink()->connectDataHasChanged([this, subscriber] (DatatypeHandle data)
   {
-    subscriber(this->id(), data);
+    if (this->shouldTriggerDataChange())
+    {
+      subscriber(this->id(), data);
+    }
   });
+}
+
+bool InputPort::shouldTriggerDataChange() const
+{
+  if (connections_.empty())
+    return true;
+  return !(*connections_.begin())->disabled();
+}
+
+void InputPort::resendNewDataSignal()
+{
+  sink()->forceFireDataHasChanged();
 }
 
 OutputPort::OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source)
@@ -172,10 +191,12 @@ void OutputPort::sendData(DatatypeHandle data)
   if (0 == nconnections())
     return;
 
-  BOOST_FOREACH(Connection* c, connections_)
+  for (auto c : connections_)
   {
     if (c && c->iport_)
+    {
       source_->send(c->iport_->sink());
+    }
   }
 }
 
@@ -206,7 +227,7 @@ boost::signals2::connection OutputPort::connectConnectionFeedbackListener(const 
   return cxnFeedback_.connect(subscriber);
 }
 
-void OutputPort::sendConnectionFeedback(SCIRun::Core::Algorithms::VariableHandle info)
+void OutputPort::sendConnectionFeedback(const ModuleFeedback& info)
 {
   cxnFeedback_(info);
 }

@@ -37,6 +37,7 @@
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
 #include <Dataflow/Network/ModuleFactory.h> // todo split out replacement impl types
+#include <Core/Command/CommandFactory.h>
 #include <Dataflow/Engine/Controller/share.h>
 
 namespace SCIRun {
@@ -89,8 +90,11 @@ namespace Engine {
       ExecutionStrategyFactoryHandle executorFactory,
       Core::Algorithms::AlgorithmFactoryHandle algoFactory,
       Networks::ReexecuteStrategyFactoryHandle reexFactory,
-      Networks::NetworkEditorSerializationManager* nesm = 0);
-    NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::NetworkEditorSerializationManager* nesm = 0);
+      Core::Commands::GlobalCommandFactoryHandle cmdFactory,
+      Core::Commands::NetworkEventCommandFactoryHandle eventCmdFactory,
+      Networks::NetworkEditorSerializationManager* nesm = nullptr);
+    NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::NetworkEditorSerializationManager* nesm = nullptr);
+    ~NetworkEditorController();
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////Start: To be Pythonized/////////////////////////////
@@ -100,20 +104,23 @@ namespace Engine {
     void interruptModule(const Networks::ModuleId& id);
 
     Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
-    void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+    Networks::ModuleHandle connectNewModule(const Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName, const Networks::PortDescriptionInterface* portToConnectUponInsertion);
 
-    void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
+    boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to) override;
     void removeConnection(const Networks::ConnectionId& id);
 
     void executeAll(const Networks::ExecutableLookup* lookup);
-    void executeModule(const Networks::ModuleHandle& module, const Networks::ExecutableLookup* lookup);
+    void executeModule(const Networks::ModuleHandle& module, const Networks::ExecutableLookup* lookup, bool executeUpstream);
 
-    virtual Networks::NetworkFileHandle saveNetwork() const;
-    virtual void loadNetwork(const Networks::NetworkFileHandle& xml);
+    virtual Networks::NetworkFileHandle saveNetwork() const override;
+    virtual void loadNetwork(const Networks::NetworkFileHandle& xml) override;
+
+    Networks::NetworkFileHandle serializeNetworkFragment(Networks::ModuleFilter modFilter, Networks::ConnectionFilter connFilter) const;
+    void appendToNetwork(const Networks::NetworkFileHandle& xml);
 //////////////////////End: To be Pythonized///////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-    virtual void clear();
+    virtual void clear() override;
 
     boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
@@ -146,6 +153,12 @@ namespace Engine {
 
     const Networks::ReplacementImpl::ModuleLookupInfoSet& possibleReplacements(Networks::ModuleHandle module);
 
+    void updateModulePositions(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions, bool selectAll);
+
+    void cleanUpNetwork();
+
+    const Networks::ModuleFactory& moduleFactory() const { return *moduleFactory_; }  //TOOD: lazy
+
   private:
     void printNetwork() const;
     Networks::ModuleHandle addModuleImpl(const Networks::ModuleLookupInfo& info);
@@ -161,6 +174,8 @@ namespace Engine {
     Networks::ReexecuteStrategyFactoryHandle reexFactory_;
     ExecutionStrategyHandle currentExecutor_;
     ExecutionStrategyFactoryHandle executorFactory_;
+    Core::Commands::GlobalCommandFactoryHandle cmdFactory_;
+    Core::Commands::NetworkEventCommandFactoryHandle eventCmdFactory_;
     Networks::NetworkEditorSerializationManager* serializationManager_;
 
     ExecutionQueueManager executionManager_;
@@ -173,8 +188,16 @@ namespace Engine {
     NetworkDoneLoadingSignalType networkDoneLoading_;
 
     boost::shared_ptr<DynamicPortManager> dynamicPortManager_;
-    bool signalSwitch_;
+    bool signalSwitch_, loadingContext_;
     boost::shared_ptr<Networks::ReplacementImpl::ModuleReplacementFilter> replacementFilter_;
+
+    struct LoadingContext
+    {
+      explicit LoadingContext(bool& load);
+      ~LoadingContext();
+    private:
+      bool& load_;
+    };
   };
 
   typedef boost::shared_ptr<NetworkEditorController> NetworkEditorControllerHandle;

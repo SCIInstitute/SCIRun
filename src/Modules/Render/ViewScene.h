@@ -34,9 +34,7 @@
 #include <Core/Algorithms/Base/AlgorithmMacros.h>
 #include <Modules/Render/share.h>
 
-
-
-namespace SCIRun 
+namespace SCIRun
 {
   namespace Core
   {
@@ -46,6 +44,7 @@ namespace SCIRun
       {
         ALGORITHM_PARAMETER_DECL(GeomData);
         ALGORITHM_PARAMETER_DECL(GeometryFeedbackInfo);
+        ALGORITHM_PARAMETER_DECL(ScreenshotData);
       }
     }
   }
@@ -53,33 +52,83 @@ namespace SCIRun
 namespace Modules {
 namespace Render {
 
+  struct SCISHARE RGBMatrices
+  {
+    Core::Datatypes::DenseMatrixHandle red;
+    Core::Datatypes::DenseMatrixHandle green;
+    Core::Datatypes::DenseMatrixHandle blue;
+  };
+
 /// @class ViewScene
 /// @brief The ViewScene displays interactive graphical output to the computer screen.
 ///
 /// Use the ViewScene to see a geometry, or spatial data. The ViewScene
 /// provides access to many simulation parameters and controls, thus,
 /// indirectly initiates new iterations of the simulation steps important to
-/// computational steering. 
+/// computational steering.
 
-  class SCISHARE ViewScene : public SCIRun::Dataflow::Networks::ModuleWithAsyncDynamicPorts,
+  class SCISHARE ViewScene : public Dataflow::Networks::ModuleWithAsyncDynamicPorts,
     public Has1InputPort<AsyncDynamicPortTag<GeometryPortTag>>,
-    public HasNoOutputPorts
+    public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
   {
   public:
     ViewScene();
     virtual void asyncExecute(const Dataflow::Networks::PortId& pid, Core::Datatypes::DatatypeHandle data) override;
-    virtual void setStateDefaults();
+    virtual void setStateDefaults() override;
 
-    static Dataflow::Networks::ModuleLookupInfo staticInfo_;
-    static Core::Algorithms::AlgorithmParameterName BackgroundColor;
-    
+    static const Core::Algorithms::AlgorithmParameterName BackgroundColor;
+    static const Core::Algorithms::AlgorithmParameterName Ambient;
+    static const Core::Algorithms::AlgorithmParameterName Diffuse;
+    static const Core::Algorithms::AlgorithmParameterName Specular;
+    static const Core::Algorithms::AlgorithmParameterName Shine;
+    static const Core::Algorithms::AlgorithmParameterName Emission;
+    static const Core::Algorithms::AlgorithmParameterName FogOn;
+    static const Core::Algorithms::AlgorithmParameterName ObjectsOnly;
+    static const Core::Algorithms::AlgorithmParameterName UseBGColor;
+    static const Core::Algorithms::AlgorithmParameterName FogStart;
+    static const Core::Algorithms::AlgorithmParameterName FogEnd;
+    static const Core::Algorithms::AlgorithmParameterName FogColor;
+    static const Core::Algorithms::AlgorithmParameterName ShowScaleBar;
+    static const Core::Algorithms::AlgorithmParameterName ScaleBarUnitValue;
+    static const Core::Algorithms::AlgorithmParameterName ScaleBarLength;
+    static const Core::Algorithms::AlgorithmParameterName ScaleBarHeight;
+    static const Core::Algorithms::AlgorithmParameterName ScaleBarMultiplier;
+    static const Core::Algorithms::AlgorithmParameterName ScaleBarNumTicks;
+    static const Core::Algorithms::AlgorithmParameterName ScaleBarLineWidth;
+    static const Core::Algorithms::AlgorithmParameterName ScaleBarFontSize;
+    static const Core::Algorithms::AlgorithmParameterName Lighting;
+    static const Core::Algorithms::AlgorithmParameterName ShowBBox;
+    static const Core::Algorithms::AlgorithmParameterName UseClip;
+    static const Core::Algorithms::AlgorithmParameterName Stereo;
+    static const Core::Algorithms::AlgorithmParameterName BackCull;
+    static const Core::Algorithms::AlgorithmParameterName DisplayList;
+    static const Core::Algorithms::AlgorithmParameterName StereoFusion;
+    static const Core::Algorithms::AlgorithmParameterName PolygonOffset;
+    static const Core::Algorithms::AlgorithmParameterName TextOffset;
+    static const Core::Algorithms::AlgorithmParameterName FieldOfView;
+    static const Core::Algorithms::AlgorithmParameterName HeadLightOn;
+    static const Core::Algorithms::AlgorithmParameterName Light1On;
+    static const Core::Algorithms::AlgorithmParameterName Light2On;
+    static const Core::Algorithms::AlgorithmParameterName Light3On;
+    static const Core::Algorithms::AlgorithmParameterName HeadLightColor;
+    static const Core::Algorithms::AlgorithmParameterName Light1Color;
+    static const Core::Algorithms::AlgorithmParameterName Light2Color;
+    static const Core::Algorithms::AlgorithmParameterName Light3Color;
+
+
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);
+    OUTPUT_PORT(0, ScreenshotDataRed, DenseMatrix);
+    OUTPUT_PORT(1, ScreenshotDataGreen, DenseMatrix);
+    OUTPUT_PORT(2, ScreenshotDataBlue, DenseMatrix);
+    virtual void execute() override;
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
     static Core::Thread::Mutex mutex_;
 
-    typedef std::set<Core::Datatypes::GeometryHandle> GeomList;
+    typedef std::set<Core::Datatypes::GeometryBaseHandle> GeomList;
     typedef boost::shared_ptr<GeomList> GeomListPtr;
-    typedef std::map<Dataflow::Networks::PortId, Core::Datatypes::GeometryHandle> ActiveGeometryMap;
+    typedef std::map<Dataflow::Networks::PortId, Core::Datatypes::GeometryBaseHandle> ActiveGeometryMap;
   protected:
     virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
     virtual void postStateChangeInternalSignalHookup() override;
@@ -87,7 +136,7 @@ namespace Render {
     void processViewSceneObjectFeedback();
     void updateTransientList();
     ActiveGeometryMap activeGeoms_;
-    Core::Algorithms::VariableList feedbackInfo_;
+    std::atomic<int> asyncUpdates_;
   };
 }}}
 

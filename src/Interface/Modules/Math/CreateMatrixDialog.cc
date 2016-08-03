@@ -29,11 +29,10 @@
 #include <Interface/Modules/Math/CreateMatrixDialog.h>
 #include <Modules/Math/CreateMatrix.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <QtGui>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Modules;
 
 CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -53,7 +52,7 @@ void CreateMatrixDialog::pushMatrixToState(int state)
   {
     if (0 == state) // matrix is done editing
     {
-      state_->setValue(CreateMatrixModule::TextEntry, matrixTextEdit_->toPlainText().toStdString());
+      state_->setValue(Math::CreateMatrix::TextEntry, matrixTextEdit_->toPlainText().toStdString());
       editBoxSaved();
     }
   }
@@ -62,7 +61,7 @@ void CreateMatrixDialog::pushMatrixToState(int state)
 void CreateMatrixDialog::pullSpecial()
 {
   Pulling p(this);
-  matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).toString()));
+  matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(Math::CreateMatrix::TextEntry).toString()));
   if (firstPull_)
     editBoxSaved();
 

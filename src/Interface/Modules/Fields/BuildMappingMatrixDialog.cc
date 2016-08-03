@@ -29,8 +29,6 @@
 #include <Interface/Modules/Fields/BuildMappingMatrixDialog.h>
 #include <Core/Algorithms/Legacy/Fields/Mapping/BuildMappingMatrixAlgo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
-#include <Core/Logging/Log.h>
-#include <Core/Math/MiscMath.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

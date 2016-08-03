@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -70,10 +70,11 @@ namespace SCIRun {
         enum DataLocation { NODES, CELLS, NONE };
         enum MeshDimensions { ELEMENTS_NORMALIZED, ELEMENT_SIZE_ONE };
 
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+
       private:
         enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
       };
-
     }
   }
 }

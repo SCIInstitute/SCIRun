@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "FairMesh",
+    "namespace": "Fields",
+    "status": "Converted",
+    "description": "...",
+    "header": "Modules/Legacy/Fields/FairMesh.h"
+  },
+  "algorithm": {
+    "name": "FairMeshAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/SmoothMesh/FairMesh.h"
+  },
+  "UI": {
+    "name": "FairMeshDialog",
+    "header": "Interface/Modules/Fields/FairMeshDialog.h"
+  }
+}

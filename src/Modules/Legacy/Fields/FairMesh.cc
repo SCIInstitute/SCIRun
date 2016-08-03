@@ -1,11 +1,11 @@
-/*  
+/*
  *  For more information, please see: http://software.sci.utah.edu
- *  
+ *
  *  The MIT License
- *  
+ *
  *  Copyright (c) 2015 Scientific Computing and Imaging Institute,
  *  University of Utah.
- *  
+ *
  *  License for the specific language governing rights and limitations under
  *  Permission is hereby granted, free of charge, to any person obtaining a
  *  copy of this software and associated documentation files (the "Software"),
@@ -13,10 +13,10 @@
  *  the rights to use, copy, modify, merge, publish, distribute, sublicense,
  *  and/or sell copies of the Software, and to permit persons to whom the
  *  Software is furnished to do so, subject to the following conditions:
- *  
+ *
  *  The above copyright notice and this permission notice shall be included
  *  in all copies or substantial portions of the Software.
- *  
+ *
  *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  *  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -40,10 +40,9 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-ModuleLookupInfo FairMesh::staticInfo_("FairMesh", "NewField", "SCIRun");
+MODULE_INFO_DEF(FairMesh, NewField, SCIRun)
 
-FairMesh::FairMesh() : 
-  Module(staticInfo_)
+FairMesh::FairMesh() : Module(staticInfo_)
 {
   INITIALIZE_PORT(Input_Mesh);
   INITIALIZE_PORT(Faired_Mesh);
@@ -63,11 +62,6 @@ void FairMesh::execute()
 {
   auto input = getRequiredInput(Input_Mesh);
 
-#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  if (inputs_changed_ || iterations_.changed() ||
-      method_.changed() || lambda_.changed() ||
-      mu_.changed() || !oport_cached("Faired Mesh"))
-#endif
   if (needToExecute())
   {
     update_state(Executing);
@@ -77,7 +71,7 @@ void FairMesh::execute()
     setAlgoDoubleFromState(Parameters::FilterCutoff);
     setAlgoOptionFromState(Parameters::FairMeshMethod);
 
-    auto output = algo().run_generic(withInputData((Input_Mesh, input)));
+    auto output = algo().run(withInputData((Input_Mesh, input)));
 
     sendOutputFromAlgorithm(Faired_Mesh, output);
   }

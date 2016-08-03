@@ -40,6 +40,9 @@ class QToolButton;
 
 namespace SCIRun {
   namespace Dataflow {
+    namespace Networks {
+      struct ModuleId;
+    }
     namespace Engine {
       class NetworkEditorController;
     }}}
@@ -51,9 +54,11 @@ class NetworkEditor;
 class ProvenanceWindow;
 class DeveloperConsole;
 class PreferencesWindow;
+class ShortcutsInterface;
 class TagManagerWindow;
 class PythonConsoleWidget;
 class FileDownloader;
+class TriggeredEventsWindow;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
@@ -66,26 +71,42 @@ public:
   //command access: extract an interface
   void saveNetworkFile(const QString& fileName);
   bool loadNetworkFile(const QString& filename);
+  bool importLegacyNetworkFile(const QString& filename);
   void setupQuitAfterExecute();
   void quit();
   void runPythonScript(const QString& scriptFileName);
   void setDataDirectory(const QString& dir);
   void setDataPath(const QString& dirs);
   void addToDataDirectory(const QString& dir);
+  void setCurrentFile(const QString& fileName);
+
+  //TODO: extract another interface for command objects
+  NetworkEditor* networkEditor() { return networkEditor_; }
 
   bool newInterface() const;
   bool isInFavorites(const QString& module) const;
   const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }
 
+  void preexecute();
+  void skipSaveCheck() { skipSaveCheck_ = true; }
+
   ~SCIRunMainWindow();
   int returnCode() const { return returnCode_; }
+
+  QString mostRecentFile() const;
 public Q_SLOTS:
   void executeAll();
   void showZoomStatusMessage(int zoomLevel);
+  void setDataDirectoryFromGUI();
+  void setConnectionPipelineType(int type);
+  void setSaveBeforeExecute(int state);
+  void showExtendedDataInfo();
 protected:
   virtual void closeEvent(QCloseEvent* event) override;
   virtual void keyPressEvent(QKeyEvent *event) override;
   virtual void keyReleaseEvent(QKeyEvent *event) override;
+  virtual void showEvent(QShowEvent* event) override;
+  virtual void hideEvent(QHideEvent* event) override;
 private:
   static SCIRunMainWindow* instance_;
   SCIRunMainWindow();
@@ -95,16 +116,20 @@ private:
   DeveloperConsole* devConsole_;
   PreferencesWindow* prefsWindow_;
   PythonConsoleWidget* pythonConsole_;
+  ShortcutsInterface* shortcuts_;
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
+  QMap<QString, QVariant> savedSubnetworksXml_;
+  QMap<QString, QVariant> savedSubnetworksNames_;
   QToolButton* executeButton_;
-
+  QByteArray windowState_;
+  QPushButton* versionButton_;
+  TriggeredEventsWindow* triggeredEventsWindow_;
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
   void setTipsAndWhatsThis();
   bool okToContinue();
-  void setCurrentFile(const QString& fileName);
   void updateRecentFileActions();
   QString strippedName(const QString& fullFileName);
   void setActionIcons();
@@ -113,15 +138,18 @@ private:
   void readSettings();
   void setupNetworkEditor();
   void setupProvenanceWindow();
+  void setupScriptedEventsWindow();
   void setupDevConsole();
   void setupPreferencesWindow();
   void setupTagManagerWindow();
   void setupPythonConsole();
   void fillModuleSelector();
+  void fillSavedSubnetworkMenu();
   void setupInputWidgets();
-  void parseStyleXML();
+  void setupVersionButton();
   void printStyleSheet() const;
   void hideNonfunctioningWidgets();
+  void setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, const QString& idFromMap);
   void showStatusMessage(const QString& str);
   void showStatusMessage(const QString& str, int timeInMsec);
 
@@ -130,25 +158,31 @@ private:
   QStringList recentFiles_;
   QString currentFile_;
   QDir latestNetworkDirectory_;
-  bool firstTimePythonShown_;
   int returnCode_;
   QMap<QString,QMap<QString,QString>> styleSheetDetails_;
+  QMap<QString, QAction*> currentModuleActions_;
   boost::shared_ptr<class DialogErrorControl> dialogErrorControl_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
+  bool quitAfterExecute_;
+  bool skipSaveCheck_ = false;
 
 Q_SIGNALS:
   void moduleItemDoubleClicked();
   void defaultNotePositionChanged(NotePosition position);
+  void dataDirectorySet(const QString& dir);
 private Q_SLOTS:
   void saveNetworkAs();
   void saveNetwork();
   void loadNetwork();
+  void checkAndLoadNetworkFile(const QString& filename);
   void loadRecentNetwork();
   bool newNetwork();
   void runScript();
+  void importLegacyNetwork();
   void networkModified();
+  void switchMouseMode();
   void filterModuleNamesInTreeView(const QString& start);
   void makePipesEuclidean();
   void makePipesCubicBezier();
@@ -161,29 +195,44 @@ private Q_SLOTS:
   void setGlobalPortCaching(bool enable);
   void readDefaultNotePosition(int index);
   void updateMiniView();
-  void showPythonWarning(bool visible);
-  void makeModulesLargeSize();
-  void makeModulesSmallSize();
-  void setDataDirectoryFromGUI();
+  void alertForNetworkCycles(int code);
+  void updateDockWidgetProperties(bool isFloating);
   void toolkitDownload();
   void addToPathFromGUI();
+  void removeSavedSubnetwork();
+  void renameSavedSubnetwork();
   void displayAcknowledgement();
   void setFocusOnFilterLine();
   void addModuleKeyboardAction();
+  void showKeyboardShortcutsDialog();
   void selectModuleKeyboardAction();
   void modulesSnapToChanged();
   void highlightPortsChanged();
   void openLogFolder();
+  void runNewModuleWizard();
   void resetWindowLayout();
   void zoomNetwork();
+  void networkTimedOut();
+  void loadPythonAPIDoc();
+  void showSnippetHelp();
+  void showClipboardHelp();
+  void showTagHelp();
+  void showTriggerHelp();
+  void launchNewUserWizard();
+  void copyVersionToClipboard();
+  void updateClipboardHistory(const QString& xml);
+  void showModuleSelectorContextMenu(const QPoint& p);
   void changeExecuteActionIconToStop();
   void changeExecuteActionIconToPlay();
   void adjustExecuteButtonAppearance();
+  void addModuleToWindowList(const QString& id, bool hasUI);
+  void removeModuleFromWindowList(const SCIRun::Dataflow::Networks::ModuleId& modId);
   void setDragMode(bool toggle);
   void setSelectMode(bool toggle);
   void toggleTagLayer(bool toggle);
   void toggleMetadataLayer(bool toggle);
   void adjustModuleDock(int state);
+  void reportIssue();
   void exitApplication(int code);
 };
 

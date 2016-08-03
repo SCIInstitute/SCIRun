@@ -32,6 +32,7 @@
 #include <Dataflow/Network/Module.h>
 #include <Modules/Fields/BoxWidgetTypes.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Core/GeometryPrimitives/BBox.h>
 #include <Modules/Fields/share.h>
 
 namespace SCIRun {
@@ -50,8 +51,8 @@ namespace SCIRun {
       {
       public:
         EditMeshBoundingBox();
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
         static const Core::Algorithms::AlgorithmParameterName Resetting;
         //Input Field Attributes
@@ -61,7 +62,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName InputSizeX;
         static const Core::Algorithms::AlgorithmParameterName InputSizeY;
         static const Core::Algorithms::AlgorithmParameterName InputSizeZ;
-        //Outpuconst t Field Atributes
+        //Output Field Atributes
         static const Core::Algorithms::AlgorithmParameterName UseOutputCenter;
         static const Core::Algorithms::AlgorithmParameterName UseOutputSize;
         static const Core::Algorithms::AlgorithmParameterName OutputCenterX;
@@ -70,7 +71,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName OutputSizeX;
         static const Core::Algorithms::AlgorithmParameterName OutputSizeY;
         static const Core::Algorithms::AlgorithmParameterName OutputSizeZ;
-        //Widgeconst t Scale/Mode
+        //Widget Scale/Mode
         static const Core::Algorithms::AlgorithmParameterName Scale;
         static const Core::Algorithms::AlgorithmParameterName NoTranslation;
         static const Core::Algorithms::AlgorithmParameterName XYZTranslation;
@@ -90,22 +91,26 @@ namespace SCIRun {
         OUTPUT_PORT(1, Transformation_Widget, GeometryObject);
         OUTPUT_PORT(2, Transformation_Matrix, Matrix);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+
       private:
         void executeImpl(FieldHandle f);
         void clear_vals();
         void update_input_attributes(FieldHandle);
+        void updateOutputAttributes(const Core::Geometry::BBox& box);
         void build_widget(FieldHandle, bool reset);
         bool isBoxEmpty() const;
         void widget_moved(bool);
         void createBoxWidget();
         void setBoxRestrictions();
-        Core::Datatypes::GeometryHandle buildGeometryObject();
-        void processWidgetFeedback(SCIRun::Core::Algorithms::VariableHandle var);
+        Core::Datatypes::GeometryBaseHandle buildGeometryObject();
+        void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
+        void adjustGeometryFromTransform(const Core::Geometry::Transform& transformMatrix);
         SCIRun::Core::Geometry::BBox bbox_;
 
         BoxWidgetPtr box_;
         boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;
+        bool widgetMoved_;
       };
     }
   }

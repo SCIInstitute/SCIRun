@@ -48,7 +48,7 @@ void ConvertHexVolToTetVol::execute()
   {
     update_state(Executing);
     
-    auto output = algo().run_generic(withInputData((HexOrLatVol, ifield)));
+    auto output = algo().run(withInputData((HexOrLatVol, ifield)));
 
     sendOutputFromAlgorithm(TetVol, output);
   }

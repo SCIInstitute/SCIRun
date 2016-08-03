@@ -27,38 +27,37 @@
 */
 /// @todo Documentation Modules/Math/CreateMatrix.cc
 
-#include <iostream>
-
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Modules/Math/CreateMatrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-SCIRun::Core::Algorithms::AlgorithmParameterName CreateMatrixModule::TextEntry("TextEntry");
+MODULE_INFO_DEF(CreateMatrix, Math, SCIRun)
 
-CreateMatrixModule::CreateMatrixModule() : Module(ModuleLookupInfo("CreateMatrix", "Math", "SCIRun")) 
+const SCIRun::Core::Algorithms::AlgorithmParameterName CreateMatrix::TextEntry("TextEntry");
+
+CreateMatrix::CreateMatrix() : Module(staticInfo_)
 {
   INITIALIZE_PORT(EnteredMatrix);
 }
 
-void CreateMatrixModule::setStateDefaults()
+void CreateMatrix::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(TextEntry, std::string());
 }
 
-void CreateMatrixModule::execute()
+void CreateMatrix::execute()
 {
   if (needToExecute())
   {
-    DenseMatrixHandle matrix(boost::make_shared<DenseMatrix>());
+    auto matrix(boost::make_shared<DenseMatrix>());
     try
     {
-      std::string matrixString = get_state()->getValue(TextEntry).toString();
+      auto matrixString = get_state()->getValue(TextEntry).toString();
 
       if (!matrixString.empty())
       {
