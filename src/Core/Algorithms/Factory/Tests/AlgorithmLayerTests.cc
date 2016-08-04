@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2016 Scientific Computing and Imaging Institute,
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -26,40 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Python/PythonObjectForwarder.h>
+#include <gtest/gtest.h>
+#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 
-using namespace SCIRun::Modules::Python;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Python;
+using namespace SCIRun;
+using namespace Core::Algorithms;
 
-ALGORITHM_PARAMETER_DEF(Python, PollingIntervalMilliseconds);
-ALGORITHM_PARAMETER_DEF(Python, NumberOfRetries);
-ALGORITHM_PARAMETER_DEF(Python, PythonObject);
+const int NUM_ALGORITHMS = 76;
 
-MODULE_INFO_DEF(PythonObjectForwarder, Python, SCIRun)
+const int EXPECTED_RANGE = 5;   // Require updating these numbers every few modules
 
-PythonObjectForwarder::PythonObjectForwarder() : Module(staticInfo_)
+TEST(AlgorithmLayerTests, ListAllAlgorithms)
 {
-  INITIALIZE_PORT(PythonMatrix);
-  INITIALIZE_PORT(PythonField);
-  INITIALIZE_PORT(PythonString);
-}
+  HardCodedAlgorithmFactory factory;
 
-void PythonObjectForwarder::setStateDefaults()
-{
-  auto state = get_state();
-  state->setValue(Parameters::PollingIntervalMilliseconds, 200);
-  state->setValue(Parameters::NumberOfRetries, 50);
-}
+  std::cout << "algorithm factory size: " << factory.numAlgorithms() << std::endl;
+  EXPECT_GE(factory.numAlgorithms(), NUM_ALGORITHMS);
+  EXPECT_LE(factory.numAlgorithms(), NUM_ALGORITHMS + EXPECTED_RANGE);
 
-void PythonObjectForwarder::execute()
-{
-#ifdef BUILD_WITH_PYTHON
-  PythonObjectForwarderImpl<PythonObjectForwarder> impl(*this);
-  impl.waitForOutputFromTransientState(Parameters::PythonObject.name(), PythonString, PythonMatrix, PythonField);
-#else
-  error("Build with Python is turned off, this module does nothing.");
-#endif
+  for (const auto& a : factory)
+  {
+    std::cout << a.first << " -> " << a.second.first << std::endl;
+  }
 }
