@@ -274,12 +274,18 @@ FieldHandle detail::InterfaceWithTetGenImplImpl::runImpl(const std::deque<FieldH
         f->holelist = nullptr;
         tetgenio::polygon *p = &f->polygonlist[0];
         p->numberofvertices = vert_per_face;
-        p->vertexlist = new int[p->numberofvertices];
-
-        mesh->get_nodes(nodes, eidx);
-        for (size_t i=0; i<nodes.size(); i++)
+        if (vert_per_face > 0)
         {
-          p->vertexlist[i] = VMesh::index_type(nodes[i]) + off;
+          p->vertexlist = new int[p->numberofvertices];
+          mesh->get_nodes(nodes, eidx);
+          for (size_t i = 0; i < nodes.size(); i++)
+          {
+            p->vertexlist[i] = VMesh::index_type(nodes[i]) + off;
+          }
+        }
+        else
+        {
+          p->vertexlist = nullptr;
         }
 
         in.facetmarkerlist[fidx] = marker;
