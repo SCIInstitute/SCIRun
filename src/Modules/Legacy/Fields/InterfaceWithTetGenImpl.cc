@@ -264,18 +264,19 @@ FieldHandle detail::InterfaceWithTetGenImplImpl::runImpl(const std::deque<FieldH
 
       // iterate over faces.
       VMesh::Node::array_type nodes;
-
-      for(VMesh::Elem::index_type eidx=0; eidx<num_elems; ++eidx)
+     
+      for (VMesh::Elem::index_type eidx = 0; eidx < num_elems; ++eidx)
       {
-        tetgenio::facet *f = &in.facetlist[fidx];
-        f->numberofpolygons = 1;
-        f->polygonlist = new tetgenio::polygon[1];
-        f->numberofholes = 0;
-        f->holelist = nullptr;
-        tetgenio::polygon *p = &f->polygonlist[0];
-        p->numberofvertices = vert_per_face;
         if (vert_per_face > 0)
         {
+          tetgenio::facet *f = &in.facetlist[fidx];
+          f->numberofpolygons = 1;
+          f->polygonlist = new tetgenio::polygon[1];
+          f->numberofholes = 0;
+          f->holelist = nullptr;
+          tetgenio::polygon *p = &f->polygonlist[0];
+          p->numberofvertices = vert_per_face;
+
           p->vertexlist = new int[p->numberofvertices];
           mesh->get_nodes(nodes, eidx);
           for (size_t i = 0; i < nodes.size(); i++)
@@ -285,9 +286,12 @@ FieldHandle detail::InterfaceWithTetGenImplImpl::runImpl(const std::deque<FieldH
         }
         else
         {
-          p->vertexlist = nullptr;
+          tetgenio::facet *f = &in.facetlist[fidx];
+          f->numberofpolygons = 0;
+          f->polygonlist = nullptr;
+          f->numberofholes = 0;
+          f->holelist = nullptr;
         }
-
         in.facetmarkerlist[fidx] = marker;
         ++fidx;
       }
