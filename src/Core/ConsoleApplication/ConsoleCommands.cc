@@ -161,8 +161,8 @@ bool PrintModulesCommand::execute()
 
 bool InteractiveModeCommandConsole::execute()
 {
+#ifdef BUILD_WITH_PYTHON
   quietModulesIfNotVerbose();
-
   PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
   std::string line;
   while (true)
@@ -175,6 +175,7 @@ bool InteractiveModeCommandConsole::execute()
     PythonInterpreter::Instance().run_string(line);
   }
   exit(0);
+#endif
   return true;
 }
 

@@ -288,6 +288,7 @@ namespace Gui {
     void adjustModuleHeight(int delta);
     void saveTagGroupRectInFile();
     void renameTagGroupInFile();
+    void makeSubnetwork();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -319,7 +320,7 @@ namespace Gui {
 
   private:
     typedef QPair<ModuleWidget*, ModuleWidget*> ModulePair;
-    void setupModuleWidget(ModuleWidget* node);
+    ModuleProxyWidget* setupModuleWidget(ModuleWidget* node);
     ModuleWidget* selectedModule() const;
     ConnectionLine* selectedLink() const;
     ModulePair selectedModulePair() const;

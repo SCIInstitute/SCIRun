@@ -24,7 +24,7 @@ before_install:
 # hopefully make OS X builds a bit faster
 script:
   - cd bin
-  - cmake -DDOWNLOAD_TOOLKITS:BOOL=OFF -DBUILD_TESTING:BOOL=OFF ../Superbuild
+  - cmake -DTRAVIS_BUILD:BOOL=ON ../Superbuild
   - make -j4 1> /dev/null
 #  make SCIRunTestData_external
 #  && make test
