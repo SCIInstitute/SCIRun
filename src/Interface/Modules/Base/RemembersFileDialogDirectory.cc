@@ -27,12 +27,27 @@
 */
 
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
+#include <QDir>
 
 using namespace SCIRun::Gui;
 
 void RemembersFileDialogDirectory::setStartingDir(const QString& dir)
 {
-  currentDirectory_ = dir;
+  startingDirectory_ = dir;
 }
 
-QString RemembersFileDialogDirectory::currentDirectory_(".");
+QString RemembersFileDialogDirectory::startingDirectory_(".");
+
+QString RemembersFileDialogDirectory::dialogDirectory()
+{
+  if (currentDirectory_.isEmpty())
+  {
+    currentDirectory_ = startingDirectory_;
+  }
+  return currentDirectory_;
+}
+
+void RemembersFileDialogDirectory::updateRecentFile(const QString& recentFile)
+{
+  currentDirectory_ = QDir(recentFile).absolutePath();
+}

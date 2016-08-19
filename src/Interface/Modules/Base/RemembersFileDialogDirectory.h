@@ -29,7 +29,7 @@
 #ifndef INTERFACE_APPLICATION_REMEMBERSFILEDIALOGDIRECTORY_H
 #define INTERFACE_APPLICATION_REMEMBERSFILEDIALOGDIRECTORY_H
 
-#include <QDir>
+#include <QString>
 #include <Interface/Modules/Base/share.h>
 
 namespace SCIRun {
@@ -40,17 +40,12 @@ namespace Gui {
   public:
     static void setStartingDir(const QString& dir);
   protected:
-    QString dialogDirectory() const
-    {
-      return currentDirectory_;
-    }
-    void updateRecentFile(const QString& recentFile)
-    {
-      currentDirectory_ = QDir(recentFile).absolutePath();
-    }
+    QString dialogDirectory();
+    void updateRecentFile(const QString& recentFile);
     QString selectedFilter_;
   private:
-    static QString currentDirectory_;
+    QString currentDirectory_;
+    static QString startingDirectory_;
   };
 
 }}
