@@ -1535,6 +1535,18 @@ void NetworkEditor::metadataLayer(bool active)
   }
 }
 
+void NetworkEditor::adjustExecuteButtonsToDownstream(bool downOnly)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module)
+    {
+      module->adjustExecuteButtonToDownstream(downOnly);
+    }
+  }
+}
+
 QColor Gui::defaultTagColor(int tag)
 {
   switch (tag)

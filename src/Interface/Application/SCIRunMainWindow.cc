@@ -27,7 +27,6 @@
 */
 
 #include <QtGui>
-#include <algorithm>
 #include <functional>
 #include <boost/bind.hpp>
 #include <boost/assign.hpp>
@@ -47,7 +46,6 @@
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/GuiCommands.h>
-#include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Interface/Application/DialogErrorControl.h>
@@ -63,7 +61,6 @@
 #include <Core/Logging/Log.h>
 #include <Core/Application/Version.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
-#include <Core/Command/CommandFactory.h>
 #include <Core/Utils/CurrentFileName.h>
 
 #ifdef BUILD_WITH_PYTHON
@@ -581,7 +578,7 @@ void SCIRunMainWindow::saveNetwork()
 
 void SCIRunMainWindow::saveNetworkAs()
 {
-  QString filename = QFileDialog::getSaveFileName(this, "Save Network...", latestNetworkDirectory_.path(), "*.srn5");
+  auto filename = QFileDialog::getSaveFileName(this, "Save Network...", latestNetworkDirectory_.path(), "*.srn5");
   if (!filename.isEmpty())
     saveNetworkFile(filename);
 }
@@ -597,7 +594,7 @@ void SCIRunMainWindow::loadNetwork()
 {
   if (okToContinue())
   {
-    QString filename = QFileDialog::getOpenFileName(this, "Load Network...", latestNetworkDirectory_.path(), "*.srn5");
+    auto filename = QFileDialog::getOpenFileName(this, "Load Network...", latestNetworkDirectory_.path(), "*.srn5");
     loadNetworkFile(filename);
   }
 }
@@ -1672,6 +1669,7 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
 	if (event->key() == Qt::Key_Shift)
 	{
 		showStatusMessage("Network zoom active");
+    networkEditor_->adjustExecuteButtonsToDownstream(true);
 	}
   else if (event->key() == MetadataShiftKey)
   {
@@ -1751,6 +1749,7 @@ void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
 	if (event->key() == Qt::Key_Shift)
 	{
 		showStatusMessage("Network zoom inactive", 1000);
+    networkEditor_->adjustExecuteButtonsToDownstream(false);
 	}
   else if (event->key() == MetadataShiftKey)
   {

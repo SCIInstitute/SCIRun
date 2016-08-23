@@ -192,7 +192,7 @@ void ModuleWidgetDisplay::setupButtons(bool hasUI, QObject*)
 
 void ModuleWidgetDisplay::setupIcons()
 {
-  getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run.png"));
+  getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run_all.png"));
   getOptionsButton()->setText("");
   getOptionsButton()->setIcon(QPixmap(":/general/Resources/new/modules/options.png"));
   getHelpButton()->setText("");
@@ -204,6 +204,18 @@ void ModuleWidgetDisplay::setupIcons()
 
   auto movie = new QMovie(":/general/Resources/executing.gif");
   executingLabel_->setMovie(movie);
+}
+
+void ModuleWidget::adjustExecuteButtonToDownstream(bool downOnly)
+{
+  if (downOnly)
+  {
+    fullWidgetDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run_down.png"));
+  }
+  else
+  {
+    fullWidgetDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run_all.png"));
+  }
 }
 
 void ModuleWidgetDisplay::startExecuteMovie()
@@ -1276,7 +1288,7 @@ void ModuleWidget::changeExecuteButtonToStop()
 
 void ModuleWidget::changeExecuteButtonToPlay()
 {
-  fullWidgetDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run.png"));
+  fullWidgetDisplay_->getExecuteButton()->setIcon(QPixmap(":/general/Resources/new/modules/run_all.png"));
   disconnect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(stopButtonPushed()));
   connect(fullWidgetDisplay_->getExecuteButton(), SIGNAL(clicked()), this, SLOT(executeButtonPushed()));
   movePortWidgets(currentIndex(), TITLE_PAGE);

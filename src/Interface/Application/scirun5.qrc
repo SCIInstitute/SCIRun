@@ -51,7 +51,8 @@
     <file>Resources/new/modules/help.png</file>
     <file>Resources/new/modules/info.png</file>
     <file>Resources/new/modules/options.png</file>
-    <file>Resources/new/modules/run.png</file>
+    <file>Resources/new/modules/run_all.png</file>
+    <file>Resources/new/modules/run_down.png</file>
     <file>Resources/new/modules/settings.png</file>
     <file>Resources/scirun_5_0_alpha.png</file>
     <file>Resources/rename.ico</file>
