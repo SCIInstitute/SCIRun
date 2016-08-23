@@ -1252,7 +1252,8 @@ void ModuleWidget::showUI()
 void ModuleWidget::executeButtonPushed()
 {
   LOG_DEBUG("Execute button pushed on module " << moduleId_ << std::endl);
-  Q_EMIT executedManually(theModule_, true);
+  auto skipUpstream = QApplication::keyboardModifiers() == Qt::ShiftModifier;
+  Q_EMIT executedManually(theModule_, !skipUpstream);
   changeExecuteButtonToStop();
 }
 
