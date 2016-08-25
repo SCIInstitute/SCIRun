@@ -83,6 +83,7 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_DataIO
   Modules_String
   Modules_Render
+  Modules_Python
   Modules_Visualization
   Modules_Legacy_Math
   Modules_Legacy_Bundle
@@ -94,13 +95,6 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_Legacy_Teem_Converters
   Modules_Legacy_String
 )
-
-
-IF(BUILD_WITH_PYTHON)
-  TARGET_LINK_LIBRARIES(Modules_Factory
-    Modules_Python
-  )
-ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Factory)

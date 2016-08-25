@@ -41,6 +41,7 @@
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //TODO: remove
+#include <Dataflow/Network/Module.h> //TODO: remove
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
@@ -316,7 +317,7 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
   oldModule->deleteLater();
 }
 
-void NetworkEditor::setupModuleWidget(ModuleWidget* module)
+ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
 {
   auto proxy = new ModuleProxyWidget(module);
 
@@ -402,6 +403,8 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->setVisible(visibleItems_);
 
   GuiLogger::Instance().logInfoStd("Module added: " + module->getModuleId());
+
+  return proxy;
 }
 
 void NetworkEditor::setMouseAsDragMode()
@@ -1693,6 +1696,114 @@ void NetworkEditor::renameTagGroupInFile()
   }
 
   Q_EMIT modified();
+}
+
+class SubnetworkGraphicsItem : public QGraphicsPixmapItem
+{
+public:
+  explicit SubnetworkGraphicsItem(const QPixmap& pic) : QGraphicsPixmapItem(pic) {}
+
+  virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override
+  {
+    painter->setPen(QPen(QColor(220,220,220,80), 18.0, Qt::SolidLine));
+    painter->drawRoundedRect(boundingRect(), 15, 15);
+
+    QGraphicsPixmapItem::paint(painter, option, widget);
+  }
+};
+
+class SubnetModule : public Module
+{
+public:
+  explicit SubnetModule(const std::vector<ModuleHandle>& underlyingModules) : Module(ModuleLookupInfo()),
+    underlyingModules_(underlyingModules)
+  {}
+  virtual void execute() override
+  {
+    //std::ostringstream ostr;
+    //ostr << "Module " << get_module_name() << " executing for " << 3.14 << " seconds." << std::endl;
+    //status(ostr.str());
+  }
+  virtual void setStateDefaults() override
+  {}
+  std::string listComponentIds() const
+  {
+    std::ostringstream ostr;
+    std::transform(underlyingModules_.begin(), underlyingModules_.end(),
+      std::ostream_iterator<std::string>(ostr, ", "),
+      [](const ModuleHandle& mod) { return mod->get_id(); });
+    return ostr.str();
+  }
+private:
+  std::vector<ModuleHandle> underlyingModules_;
+};
+
+void NetworkEditor::makeSubnetwork()
+{
+  QRectF rect;
+  QPointF position;
+
+  std::vector<ModuleHandle> underlyingModules;
+  Q_FOREACH(QGraphicsItem* item, scene_->selectedItems())
+  {
+    auto r = item->boundingRect();
+    position = item->pos();
+    r = item->mapRectToParent(r);
+
+    if (rect.isEmpty())
+      rect = r;
+    else
+      rect = rect.united(r);
+
+    auto module = getModule(item);
+    if (module)
+      underlyingModules.push_back(module->getModule());
+  }
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (dynamic_cast<QGraphicsPixmapItem*>(item))
+      item->setVisible(false);
+  }
+
+  auto pic = QPixmap::grabWidget(this, mapFromScene(rect).boundingRect());
+
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (dynamic_cast<QGraphicsPixmapItem*>(item))
+      item->setVisible(true);
+  }
+  // auto picItem = new SubnetworkGraphicsItem(pic);
+  // picItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
+  //
+  // auto picRect = picItem->boundingRect();
+  // auto longEdge = std::max(picRect.height(), picRect.width());
+  // picItem->setScale(100.0 / longEdge);
+  //
+  // scene_->addItem(picItem);
+  //
+  // while (!scene_->items(position.x() - 20, position.y() - 20, 40, 40).isEmpty())
+  // {
+  //   position += QPointF(100, 0);
+  // }
+  // picItem->setPos(position);
+  // scene_->clearSelection();
+  // picItem->setSelected(true);
+
+  auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:");
+
+  auto subnetModule = boost::make_shared<SubnetModule>(underlyingModules);
+  std::cout << "Subnet components: " << subnetModule->listComponentIds() << std::endl;
+  auto moduleWidget = new ModuleWidget(this, "Subnet::" + name, subnetModule, dialogErrorControl_);
+
+
+  QByteArray byteArray;
+  QBuffer buffer(&byteArray);
+  pic.scaled(pic.size() * 0.5).save(&buffer, "PNG");
+  QString tooltipPic = QString("<html><img src=\"data:image/png;base64,") + byteArray.toBase64() + "\"/></html>";
+
+  auto proxy = setupModuleWidget(moduleWidget);
+  proxy->setScale(1.5);
+  proxy->setToolTip(tooltipPic);
 }
 
 void NetworkEditor::drawTagGroups()

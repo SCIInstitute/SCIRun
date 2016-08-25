@@ -25,3 +25,30 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
+
+SET(Algorithm_Layer_Tests_SRCS
+  AlgorithmLayerTests.cc
+)
+
+SCIRUN_ADD_UNIT_TEST(Algorithm_Layer_Test
+  ${Algorithm_Layer_Tests_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Algorithm_Layer_Test
+  Algorithms_Factory
+  Algorithms_Base
+  Algorithms_BrainStimulator
+  Core_Algorithms_Legacy_Fields
+  Algorithms_Math
+  Algorithms_DataIO
+  Algorithms_Field
+  Core_Algorithms_Legacy_FiniteElements
+  Core_Algorithms_Legacy_Converter
+  Dataflow_Network
+  Engine_Network
+  Testing_Utils
+  gtest_main
+  gtest
+  gmock
+  ${SCI_BOOST_LIBRARY}
+)

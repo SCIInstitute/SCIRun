@@ -28,11 +28,13 @@
 
 #include <Modules/Python/InterfaceWithPython.h>
 #include <Modules/Python/PythonObjectForwarder.h>
+#ifdef BUILD_WITH_PYTHON
 #include <Core/Python/PythonInterpreter.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <boost/algorithm/string.hpp>
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
+#endif
 
 using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Core::Datatypes;
@@ -151,6 +153,7 @@ std::string InterfaceWithPython::convertInputSyntax(const std::string& code) con
 
 void InterfaceWithPython::execute()
 {
+#ifdef BUILD_WITH_PYTHON
   auto matrices = getOptionalDynamicInputs(InputMatrix);
   auto fields = getOptionalDynamicInputs(InputField);
   auto strings = getOptionalDynamicInputs(InputString);
@@ -195,4 +198,7 @@ void InterfaceWithPython::execute()
     if (oport_connected(PythonField3))
       impl.waitForOutputFromTransientState(state->getValue(Parameters::PythonOutputField3Name).toString(), PythonString1, PythonMatrix1, PythonField3);
   }
+#else
+  error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");
+#endif
 }
