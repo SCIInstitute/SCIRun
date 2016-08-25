@@ -160,6 +160,7 @@ namespace Gui {
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     void createExecuteAction();
+    void createExecuteDownstreamAction();
     void createShrinkAction();
     void doCollapse();
     void connectStateChangeToExecute();
@@ -167,6 +168,7 @@ namespace Gui {
     std::vector<WidgetSlotManagerPtr> slotManagers_;
     boost::signals2::connection stateConnection_;
     QAction* executeAction_;
+    QAction* executeDownstreamAction_;
     QAction* shrinkAction_;
     QAction* executeInteractivelyToggleAction_;
     bool collapsed_;

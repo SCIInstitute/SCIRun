@@ -60,6 +60,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* paren
   }
   connect(this, SIGNAL(pullSignal()), this, SLOT(pull()));
   createExecuteAction();
+  createExecuteDownstreamAction();
   createShrinkAction();
   connectStateChangeToExecute(); //TODO: make this a module state variable if a module wants it saved
 }
@@ -127,6 +128,14 @@ void ModuleDialogGeneric::createExecuteAction()
   connect(executeAction_, SIGNAL(triggered()), this, SIGNAL(executeActionTriggered()));
 }
 
+void ModuleDialogGeneric::createExecuteDownstreamAction()
+{
+  executeDownstreamAction_ = new QAction(this);
+  executeDownstreamAction_->setText("Execute + downstream only");
+  executeDownstreamAction_->setIcon(QApplication::style()->standardIcon(QStyle::SP_ArrowDown));
+  connect(executeDownstreamAction_, SIGNAL(triggered()), this, SIGNAL(executeActionTriggeredViaStateChange()));
+}
+  
 void ModuleDialogGeneric::createShrinkAction()
 {
   shrinkAction_ = new QAction(this);
@@ -199,6 +208,7 @@ void ModuleDialogGeneric::contextMenuEvent(QContextMenuEvent* e)
   menu.addAction(executeAction_);
   if (executeInteractivelyToggleAction_)
     menu.addAction(executeInteractivelyToggleAction_);
+  menu.addAction(executeDownstreamAction_);
   menu.addAction(shrinkAction_);
   menu.exec(e->globalPos());
 
