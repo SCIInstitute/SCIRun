@@ -71,38 +71,34 @@ bool LoadFileCommandConsole::execute()
     filename = get(Variables::Filename).toFilename().string();
   }
 
+  /// @todo: real logger
+  std::cout << "Attempting load of " << filename << std::endl;
+  if (!boost::filesystem::exists(filename))
   {
-    /// @todo: real logger
-    std::cout << "Attempting load of " << filename << std::endl;
-    if (!boost::filesystem::exists(filename))
-    {
-      std::cout << "File does not exist: " << filename << std::endl;
-      return false;
-    }
-    try
-    {
-      auto openedFile = XMLSerializer::load_xml<NetworkFile>(filename);
-
-      if (openedFile)
-      {
-        Application::Instance().controller()->clear();
-        Application::Instance().controller()->loadNetwork(openedFile);
-        /// @todo: real logger
-        std::cout << "File load done: " << filename << std::endl;
-        return true;
-      }
-      /// @todo: real logger
-      std::cout << "File load failed: " << filename << std::endl;
-    }
-    catch (...)
-    {
-      /// @todo: real logger
-      std::cout << "File load failed: " << filename << std::endl;
-    }
+    std::cout << "File does not exist: " << filename << std::endl;
     return false;
   }
+  try
+  {
+    auto openedFile = XMLSerializer::load_xml<NetworkFile>(filename);
 
-  return true;
+    if (openedFile)
+    {
+      Application::Instance().controller()->clear();
+      Application::Instance().controller()->loadNetwork(openedFile);
+      /// @todo: real logger
+      std::cout << "File load done: " << filename << std::endl;
+      return true;
+    }
+    /// @todo: real logger
+    std::cout << "File load failed: " << filename << std::endl;
+  }
+  catch (...)
+  {
+    /// @todo: real logger
+    std::cout << "File load failed: " << filename << std::endl;
+  }
+  return false;
 }
 
 bool SaveFileCommandConsole::execute()
@@ -125,7 +121,6 @@ bool QuitAfterExecuteCommandConsole::execute()
 {
   std::cout << "Goodbye!" << std::endl;
   Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ exit(code); });
-  //SCIRunMainWindow::Instance()->setupQuitAfterExecute();
   return true;
 }
 
@@ -136,7 +131,7 @@ QuitCommandConsole::QuitCommandConsole()
 
 bool QuitCommandConsole::execute()
 {
-  std::cout << "Exiting!" << std::endl;
+  std::cout << "Goodbye!" << std::endl;
   exit(0);
   return true;
 }
@@ -169,10 +164,11 @@ bool InteractiveModeCommandConsole::execute()
   {
     std::cout << "scirun5> " << std::flush;
     std::getline(std::cin, line);
-    if (line.find("quit") != std::string::npos) // TODO: need fix for ^D entry || (!x.empty() && x[0] == '\004'))
+    if (line == "quit") // TODO: need fix for ^D entry || (!x.empty() && x[0] == '\004'))
       break;
 
-    PythonInterpreter::Instance().run_string(line);
+    if (!PythonInterpreter::Instance().run_string(line))
+      break;
   }
   exit(0);
 #endif

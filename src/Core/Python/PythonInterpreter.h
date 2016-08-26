@@ -85,7 +85,7 @@ public:
 	// RUN_STRING:
 	/// Execute a single python command.
 	/// NOTE: The command is run in the main namespace.
-	void run_string( const std::string& command );
+	bool run_string( const std::string& command );
 
 	// RUN_SCRIPT:
 	/// Execute a python script.

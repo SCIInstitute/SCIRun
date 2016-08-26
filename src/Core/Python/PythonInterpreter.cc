@@ -455,7 +455,7 @@ void PythonInterpreter::print_banner()
 	this->prompt_signal_( this->private_->prompt1_ );
 }
 
-void PythonInterpreter::run_string( const std::string& command )
+bool PythonInterpreter::run_string( const std::string& command )
 {
 	{
 		PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
@@ -464,24 +464,6 @@ void PythonInterpreter::run_string( const std::string& command )
 			throw std::invalid_argument( "The python interpreter hasn't been initialized!" );
 		}
 	}
-
-	//if ( !this->is_eventhandler_thread() )
-	//{
-	//	{
-	//		PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
-	//		// If the Python thread is currently waiting for input, feed the string
-	//		// to the input buffer directly and return.
-	//		if ( this->private_->waiting_for_input_ )
-	//		{
-	//			this->private_->input_buffer_ = command + "\n";
-	//			this->private_->thread_condition_variable_.notify_one();
-	//			return;
-	//		}
-	//	}
-
-	//	this->post_event( boost::bind( &PythonInterpreter::run_string, this, command ) );
-	//	return;
-	//}
 
 	// Clear any previous Python errors.
 	PyErr_Clear();
@@ -509,9 +491,10 @@ void PythonInterpreter::run_string( const std::string& command )
 	catch ( ... ) {}
 
 	// If an error happened during compilation, print the error message
-	if ( PyErr_Occurred() != NULL )
+	if ( PyErr_Occurred() )
 	{
 		PyErr_Print();
+    return false;
 	}
 	// If compilation succeeded and the code object is not Py_None
 	else if ( code_obj )
@@ -519,12 +502,12 @@ void PythonInterpreter::run_string( const std::string& command )
 		//this->private_->action_context_->set_action_mode( PythonActionMode::INTERACTIVE_E );
 		try
 		{
-			PyObject* result = PyEval_EvalCode( code_obj.ptr(), this->private_->globals_.ptr(), NULL );
+		  auto result = PyEval_EvalCode( code_obj.ptr(), this->private_->globals_.ptr(), nullptr );
 			Py_XDECREF( result );
 		}
 		catch ( ... ) {}
 
-		if ( PyErr_Occurred() != NULL )
+		if ( PyErr_Occurred() )
 		{
 			if ( PyErr_ExceptionMatches( PyExc_EOFError ) )
 			{
@@ -535,17 +518,20 @@ void PythonInterpreter::run_string( const std::string& command )
 			{
 				PyErr_Print();
 			}
+      return false;
 		}
 	}
 	// If the code object is Py_None, prompt for more input
 	else
 	{
 		this->prompt_signal_( this->private_->prompt2_ );
-		return;
+		return true;
 	}
 
 	this->private_->command_buffer_.clear();
 	this->prompt_signal_( this->private_->prompt1_ );
+
+  return true;
 }
 
 void PythonInterpreter::run_script( const std::string& script )
