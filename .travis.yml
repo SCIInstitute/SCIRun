@@ -26,8 +26,8 @@ script:
   - cd bin
   - cmake -DTRAVIS_BUILD:BOOL=ON ../Superbuild
   - make -j4 1> /dev/null
-#  make SCIRunTestData_external
-#  && make test
+  - ./Algorithm_Layer_Test
+  - ./Modules_Factory_Tests
 
 notifications:
   slack: sciinstitute:lZnpQQXNd4Io5iGDPQDpJmI1
