@@ -502,7 +502,6 @@ bool PythonInterpreter::run_string( const std::string& command )
 	if ( PyErr_Occurred() )
 	{
 		PyErr_Print();
-    return false;
 	}
 	// If compilation succeeded and the code object is not Py_None
 	else if ( code_obj )
@@ -521,19 +520,18 @@ bool PythonInterpreter::run_string( const std::string& command )
 			{
 				this->error_signal_( "\nKeyboardInterrupt\n" );
 				PyErr_Clear();
+        return false;
 			}
 			else
 			{
 				PyErr_Print();
 			}
-      return false;
 		}
 	}
 	// If the code object is Py_None, prompt for more input
 	else
 	{
 		this->prompt_signal_( this->private_->prompt2_ );
-		return true;
 	}
 
 	this->private_->command_buffer_.clear();
