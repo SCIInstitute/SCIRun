@@ -160,16 +160,19 @@ bool InteractiveModeCommandConsole::execute()
   quietModulesIfNotVerbose();
   PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
   std::string line;
+
   while (true)
   {
     std::cout << "scirun5> " << std::flush;
     std::getline(std::cin, line);
     if (line == "quit") // TODO: need fix for ^D entry || (!x.empty() && x[0] == '\004'))
       break;
-
+    if (std::cin.eof())
+      break;
     if (!PythonInterpreter::Instance().run_string(line))
       break;
   }
+  std::cout << "\nGoodbye!" << std::endl;
   exit(0);
 #endif
   return true;
