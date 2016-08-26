@@ -641,9 +641,8 @@ ADD_SUBDIRECTORY(Graphics)
 
 ADD_SUBDIRECTORY(Main)
 
-IF(BUILD_TESTING)
-  ADD_SUBDIRECTORY(Testing)
-ENDIF()
+
+ADD_SUBDIRECTORY(Testing)
 
 ########################################################################
 # sci_defs variables
