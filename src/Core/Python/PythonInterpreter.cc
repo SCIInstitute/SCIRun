@@ -391,6 +391,14 @@ void PythonInterpreter::initialize_eventhandler(const std::string& commandLine, 
 		"sys.stdin = __term_io\n"
 		"sys.stdout = __term_io\n"
 		"sys.stderr = __term_err\n" );
+
+  PyRun_SimpleString(
+    "import atexit\n"
+    "def quit_gracefully():\n"
+    "\tprint('Goodbye!')\n"
+    "atexit.register(quit_gracefully)\n"
+  );
+
   PRINT_PY_INIT_DEBUG(11);
 	// Remove intermediate python variables
 	PyRun_SimpleString( "del (interpreter, __internal_compiler, __term_io, __term_err)\n" );
