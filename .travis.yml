@@ -28,7 +28,7 @@ script:
   - make -j4 1> /dev/null
   - cd SCIRun
   - ./Algorithm_Layer_Test
-  - ./Modules_Factory_Tests
+  - ./Modules_Factory_Tests --gtest_filter=*HardCodedModuleFactoryTests*
 
 notifications:
   slack: sciinstitute:lZnpQQXNd4Io5iGDPQDpJmI1
