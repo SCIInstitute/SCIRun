@@ -26,6 +26,7 @@ script:
   - cd bin
   - cmake -DTRAVIS_BUILD:BOOL=ON ../Superbuild
   - make -j4 1> /dev/null
+  - cd SCIRun
   - ./Algorithm_Layer_Test
   - ./Modules_Factory_Tests
 
