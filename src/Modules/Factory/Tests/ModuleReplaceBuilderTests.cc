@@ -49,7 +49,11 @@ class ModuleReplaceTests : public ModuleTest
 {
 };
 
+#ifdef TRAVIS_BUILD
+const int NUM_MODULES = 141;
+#else
 const int NUM_MODULES = 148;
+#endif
 const int NUM_ALGORITHMS = 76;
 
 const int EXPECTED_RANGE = 5;   // Require updating these numbers every few modules
