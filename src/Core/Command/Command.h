@@ -33,6 +33,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <Core/Algorithms/Base/AlgorithmParameterList.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Command/share.h>
 
 namespace SCIRun
@@ -67,6 +68,16 @@ namespace SCIRun
       };
 
       typedef boost::shared_ptr<ParameterizedCommand> CommandHandle;
+
+      template <class Base>
+      class FileCommand : public Base
+      {
+      public:
+        FileCommand()
+        {
+          Base::addParameter(Core::Algorithms::Variables::Filename, std::string());
+        }
+      };
 
       class SCISHARE GuiCommand : public ParameterizedCommand
       {

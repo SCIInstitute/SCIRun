@@ -42,7 +42,7 @@ namespace Gui {
   class NetworkEditor;
   class SCIRunMainWindow;
 
-  class LoadFileCommandGui : public Core::Commands::GuiCommand
+  class LoadFileCommandGui : public Core::Commands::FileCommand<Core::Commands::GuiCommand>
   {
   public:
     LoadFileCommandGui();
@@ -100,7 +100,7 @@ namespace Gui {
     static QTimer* splashTimer_;
   };
 
-  class NetworkFileProcessCommand : public Core::Commands::GuiCommand
+  class NetworkFileProcessCommand : public Core::Commands::FileCommand<Core::Commands::GuiCommand>
   {
   public:
     NetworkFileProcessCommand();
@@ -128,10 +128,9 @@ namespace Gui {
     std::ostringstream logContents_;
   };
 
-  class NetworkSaveCommand : public Core::Commands::GuiCommand
+  class NetworkSaveCommand : public Core::Commands::FileCommand<Core::Commands::GuiCommand>
   {
   public:
-    NetworkSaveCommand();
     virtual bool execute() override;
   };
 

@@ -56,7 +56,6 @@ using namespace Algorithms;
 LoadFileCommandGui::LoadFileCommandGui()
 {
   addParameter(Name("FileNum"), 0);
-  addParameter(Variables::Filename, std::string());
 }
 
 bool LoadFileCommandGui::execute()
@@ -286,11 +285,6 @@ bool SetupDataDirectoryCommandGui::execute()
   return true;
 }
 
-NetworkSaveCommand::NetworkSaveCommand()
-{
-  addParameter(Variables::Filename, std::string());
-}
-
 bool NetworkSaveCommand::execute()
 {
   auto filename = get(Variables::Filename).toFilename().string();
@@ -315,7 +309,6 @@ bool NetworkSaveCommand::execute()
 
 NetworkFileProcessCommand::NetworkFileProcessCommand() : networkEditor_(SCIRunMainWindow::Instance()->networkEditor())
 {
-  addParameter(Variables::Filename, std::string());
 }
 
 bool DisableViewScenesCommandGui::execute()
