@@ -35,6 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Dataflow/Network/Module.h>
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Python/PythonInterpreter.h>
+#include <boost/algorithm/string.hpp>
 
 using namespace SCIRun::Core;
 using namespace Commands;
@@ -45,7 +46,6 @@ using namespace Algorithms;
 LoadFileCommandConsole::LoadFileCommandConsole()
 {
   addParameter(Name("FileNum"), 0);
-  addParameter(Variables::Filename, std::string());
 }
 
 //TODO: find a better place for this function
@@ -54,7 +54,7 @@ namespace
   void quietModulesIfNotVerbose()
   {
     if (!Application::Instance().parameters()->verboseMode())
-      SCIRun::Dataflow::Networks::Module::defaultLogger_.reset(new SCIRun::Core::Logging::NullLogger);
+      Module::defaultLogger_.reset(new SCIRun::Core::Logging::NullLogger);
   }
 }
 
@@ -103,7 +103,7 @@ bool LoadFileCommandConsole::execute()
 
 bool SaveFileCommandConsole::execute()
 {
-  throw "todo";
+  return !saveImpl(get(Variables::Filename).toFilename().string()).empty();
 }
 
 bool ExecuteCurrentNetworkCommandConsole::execute()

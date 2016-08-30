@@ -30,13 +30,14 @@
 #define CORE_CONSOLEAPPLICATION_CONSOLECOMMANDS_H
 
 #include <Core/Command/Command.h>
+#include <Core/Application/Application.h>
 #include <Core/ConsoleApplication/share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Console {
 
-  class SCISHARE LoadFileCommandConsole : public Core::Commands::ConsoleCommand
+  class SCISHARE LoadFileCommandConsole : public Commands::FileCommand<Commands::ConsoleCommand>
   {
   public:
     LoadFileCommandConsole();
@@ -45,7 +46,7 @@ namespace Console {
   //   int index_ = 0;
   };
 
-  class SCISHARE SaveFileCommandConsole : public Core::Commands::ConsoleCommand
+  class SCISHARE SaveFileCommandConsole : public Commands::FileCommand<Commands::ConsoleCommand>, public Commands::SaveFileCommandHelper
   {
   public:
     virtual bool execute() override;

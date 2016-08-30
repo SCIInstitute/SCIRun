@@ -31,6 +31,7 @@
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Command/Command.h>
+#include <Core/Application/Application.h>
 #include <QString>
 
 class QSplashScreen;
@@ -128,7 +129,7 @@ namespace Gui {
     std::ostringstream logContents_;
   };
 
-  class NetworkSaveCommand : public Core::Commands::FileCommand<Core::Commands::GuiCommand>
+  class NetworkSaveCommand : public Core::Commands::FileCommand<Core::Commands::GuiCommand>, public Core::Commands::SaveFileCommandHelper
   {
   public:
     virtual bool execute() override;

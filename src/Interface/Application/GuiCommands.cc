@@ -29,7 +29,6 @@ DEALINGS IN THE SOFTWARE.
 #include <QtGui>
 #include <numeric>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/GuiCommands.h>
@@ -288,23 +287,18 @@ bool SetupDataDirectoryCommandGui::execute()
 bool NetworkSaveCommand::execute()
 {
   auto filename = get(Variables::Filename).toFilename().string();
-  auto fileNameWithExtension = filename;
-  if (!boost::algorithm::ends_with(fileNameWithExtension, ".srn5"))
-    fileNameWithExtension += ".srn5";
+  auto fileNameWithExtension = saveImpl(filename);
+  if (!fileNameWithExtension.empty())
+  {
+    SCIRunMainWindow::Instance()->setCurrentFile(QString::fromStdString(fileNameWithExtension));
+    SCIRunMainWindow::Instance()->statusBar()->showMessage("File saved: " + QString::fromStdString(filename), 2000);
+    GuiLogger::Instance().logInfo("File save done: " + QString::fromStdString(filename));
+    SCIRunMainWindow::Instance()->setWindowModified(false);
+    setCurrentFileName(filename);
 
-  auto file = Application::Instance().controller()->saveNetwork();
-
-  if (!XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile"))
-    return false;
-  SCIRunMainWindow::Instance()->setCurrentFile(QString::fromStdString(fileNameWithExtension));
-
-  SCIRunMainWindow::Instance()->statusBar()->showMessage("File saved: " + QString::fromStdString(filename), 2000);
-  GuiLogger::Instance().logInfo("File save done: " + QString::fromStdString(filename));
-  SCIRunMainWindow::Instance()->setWindowModified(false);
-
-  SCIRun::Core::setCurrentFileName(filename);
-
-  return true;
+    return true;
+  }
+  return false;
 }
 
 NetworkFileProcessCommand::NetworkFileProcessCommand() : networkEditor_(SCIRunMainWindow::Instance()->networkEditor())

@@ -69,16 +69,6 @@ namespace SCIRun
 
       typedef boost::shared_ptr<ParameterizedCommand> CommandHandle;
 
-      template <class Base>
-      class FileCommand : public Base
-      {
-      public:
-        FileCommand()
-        {
-          Base::addParameter(Core::Algorithms::Variables::Filename, std::string());
-        }
-      };
-
       class SCISHARE GuiCommand : public ParameterizedCommand
       {
       };
