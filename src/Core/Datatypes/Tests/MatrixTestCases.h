@@ -44,6 +44,27 @@ namespace TestUtils
         m(i, j) = 3.0 * i + j;
     return m;
   }
+  static inline SCIRun::Core::Datatypes::DenseMatrixHandle matrix1H() { return Core::Datatypes::DenseMatrixHandle(matrix1().clone()); }
+  static inline SCIRun::Core::Datatypes::DenseMatrixHandle matrix2()
+  {
+    SCIRun::Core::Datatypes::DenseMatrixHandle m(new SCIRun::Core::Datatypes::DenseMatrix(3, 3));
+    for (int i = 0; i < m->rows(); ++i)
+      for (int j = 0; j < m->cols(); ++j)
+        (*m)(i, j) = -2.0 * i + j;
+    return m;
+  }
+  static inline std::string matrix1str()
+  {
+    std::ostringstream o;
+    o << matrix1();
+    return o.str();
+  }
+  static inline std::string matrix2str()
+  {
+    std::ostringstream o;
+    o << *matrix2();
+    return o.str();
+  }
   static inline Core::Datatypes::SparseRowMatrixHandle matrix1sparse()
   {
     return Core::Datatypes::convertMatrix::toSparse(boost::make_shared<Core::Datatypes::DenseMatrix>(matrix1()));

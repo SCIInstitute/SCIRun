@@ -62,7 +62,7 @@
 									<name>XSize</name>
 									<value>
 										<which>0</which>
-										<value>16</value>
+										<value>2</value>
 									</value>
 								</second>
 							</item>
@@ -74,7 +74,7 @@
 									<name>YSize</name>
 									<value>
 										<which>0</which>
-										<value>16</value>
+										<value>2</value>
 									</value>
 								</second>
 							</item>
@@ -86,7 +86,7 @@
 									<name>ZSize</name>
 									<value>
 										<which>0</which>
-										<value>16</value>
+										<value>2</value>
 									</value>
 								</second>
 							</item>
@@ -114,7 +114,14 @@
 									<name>TextEntry</name>
 									<value>
 										<which>2</which>
-										<value></value>
+										<value>1
+1
+1
+1
+1
+1
+1
+1</value>
 									</value>
 								</second>
 							</item>

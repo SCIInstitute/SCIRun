@@ -40,6 +40,7 @@
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Dataflow/Network/Tests/MockModuleState.h>
+#include <Dataflow/Network/Tests/MockNetwork.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h>
 #include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
@@ -67,6 +68,7 @@
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/graph/visitors.hpp>
 #include <boost/thread.hpp>
+#include <Core/Datatypes/Tests/MatrixTestCases.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Math;
@@ -90,12 +92,6 @@ using namespace std;
 using namespace boost;
 using namespace boost::assign;
 
-namespace
-{
-  const DenseMatrix Zero(DenseMatrix::Zero(3,3));
-}
-
-
 class SchedulingWithBoostGraph : public ::testing::Test
 {
 public:
@@ -114,48 +110,7 @@ protected:
   ModuleHandle receive, report;
   DenseMatrix expected;
   UseGlobalInstanceCountIdGenerator switcher;
-
-  virtual void SetUp()
-  {
-
-  }
-
-  ModuleHandle addModuleToNetwork(Network& network, const std::string& moduleName)
-  {
-    ModuleLookupInfo info;
-    info.module_name_ = moduleName;
-    return network.add_module(info);
-  }
-
-  DenseMatrixHandle matrix1()
-  {
-    DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (int i = 0; i < m->rows(); ++i)
-      for (int j = 0; j < m->cols(); ++j)
-        (*m)(i, j) = 3.0 * i + j;
-    return m;
-  }
-  std::string matrix1str()
-  {
-    std::ostringstream o;
-    o << *matrix1();
-    return o.str();
-  }
-  DenseMatrixHandle matrix2()
-  {
-    DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (int i = 0; i < m->rows(); ++i)
-      for (int j = 0; j < m->cols(); ++j)
-        (*m)(i, j) = -2.0 * i + j;
-    return m;
-  }
-  std::string matrix2str()
-  {
-    std::ostringstream o;
-    o << *matrix2();
-    return o.str();
-  }
-
+  
   void setupBasicNetwork()
   {
     Module::resetIdGenerator();
@@ -172,7 +127,7 @@ protected:
           report(4) receive(4)
     */
 
-    expected = (-*matrix1()) * (4* *matrix2()) + matrix1()->transpose();
+    expected = (-TestUtils::matrix1()) * (4 * *TestUtils::matrix2()) + TestUtils::matrix1().transpose();
 
     ModuleHandle matrix1Send = addModuleToNetwork(matrixMathNetwork, "CreateMatrix");
     ModuleHandle matrix2Send = addModuleToNetwork(matrixMathNetwork, "CreateMatrix");
@@ -212,8 +167,8 @@ protected:
     EXPECT_EQ(9, matrixMathNetwork.nconnections());
 
     //Set module parameters.
-    matrix1Send->get_state()->setValue(CreateMatrix::TextEntry, matrix1str());
-    matrix2Send->get_state()->setValue(CreateMatrix::TextEntry, matrix2str());
+    matrix1Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix1str());
+    matrix2Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix2str());
     transpose->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
     negate->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
     scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);

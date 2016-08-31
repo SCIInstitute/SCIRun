@@ -51,6 +51,8 @@
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/Tests/MatrixTestCases.h>
+#include <Modules/Math/CreateMatrix.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
@@ -72,23 +74,6 @@ using namespace boost::assign;
 
 namespace
 {
-  DenseMatrixHandle matrix1()
-  {
-    DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (int i = 0; i < m->rows(); ++i)
-      for (int j = 0; j < m->cols(); ++j)
-        (*m)(i, j) = 3.0 * i + j;
-    return m;
-  }
-  DenseMatrixHandle matrix2()
-  {
-    DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (int i = 0; i < m->rows(); ++i)
-      for (int j = 0; j < m->cols(); ++j)
-        (*m)(i, j) = -2.0 * i + j;
-    return m;
-  }
-
   NetworkXML exampleNet()
   {
     ModuleLookupInfoXML info1;
@@ -184,8 +169,8 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(boost::optional<std::string>()));
   NetworkEditorController controller(mf, sf, exe, nullptr, nullptr, nullptr, nullptr);
 
-  ModuleHandle matrix1Send = controller.addModule("SendTestMatrix");
-  ModuleHandle matrix2Send = controller.addModule("SendTestMatrix");
+  ModuleHandle matrix1Send = controller.addModule("CreateMatrix");
+  ModuleHandle matrix2Send = controller.addModule("CreateMatrix");
 
   ModuleHandle transpose = controller.addModule("EvaluateLinearAlgebraUnary");
   ModuleHandle negate = controller.addModule("EvaluateLinearAlgebraUnary");
@@ -195,7 +180,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   ModuleHandle add = controller.addModule("EvaluateLinearAlgebraBinary");
 
   ModuleHandle report = controller.addModule("ReportMatrixInfo");
-  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+  ModuleHandle receive = controller.addModule("ReportMatrixInfo");
 
   NetworkHandle matrixMathNetwork = controller.getNetwork();
   EXPECT_EQ(9, matrixMathNetwork->nmodules());
@@ -213,8 +198,8 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   EXPECT_EQ(9, matrixMathNetwork->nconnections());
 
   //Set module parameters.
-  matrix1Send->get_state()->setTransientValue("MatrixToSend", matrix1());
-  matrix2Send->get_state()->setTransientValue("MatrixToSend", matrix2());
+  matrix1Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix1str());
+  matrix2Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix2str());
   transpose->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
   negate->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
   scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);

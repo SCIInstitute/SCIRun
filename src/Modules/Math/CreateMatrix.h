@@ -34,6 +34,13 @@
 #include <Modules/Math/share.h>
 
 namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Math {
+        ALGORITHM_PARAMETER_DECL(TextEntry);
+      }
+    }
+  }
 namespace Modules {
 namespace Math {
 
@@ -46,7 +53,6 @@ namespace Math {
     virtual void execute() override;
     virtual void setStateDefaults() override;
     OUTPUT_PORT(0, EnteredMatrix, DenseMatrix);
-    static const Core::Algorithms::AlgorithmParameterName TextEntry;
     MODULE_TRAITS_AND_INFO(ModuleHasUI)
   };
 }}}

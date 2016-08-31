@@ -45,7 +45,7 @@ CreateComplexMatrix::CreateComplexMatrix() : Module(staticInfo_)
 void CreateComplexMatrix::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(CreateMatrix::TextEntry, std::string());
+  state->setValue(Core::Algorithms::Math::Parameters::TextEntry, std::string());
 }
 
 void CreateComplexMatrix::execute()
@@ -55,7 +55,7 @@ void CreateComplexMatrix::execute()
     auto matrix(boost::make_shared<ComplexDenseMatrix>());
     try
     {
-      auto matrixString = get_state()->getValue(CreateMatrix::TextEntry).toString();
+      auto matrixString = get_state()->getValue(Core::Algorithms::Math::Parameters::TextEntry).toString();
 
       if (!matrixString.empty())
       {
