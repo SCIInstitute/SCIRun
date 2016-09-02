@@ -286,7 +286,7 @@ std::string Application::moduleList()
       }
     }
   }
-  return ostr.str();;
+  return ostr.str();
 }
 
 boost::filesystem::path Application::configDirectory() const

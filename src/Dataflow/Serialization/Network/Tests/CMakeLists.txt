@@ -50,6 +50,8 @@ TARGET_LINK_LIBRARIES(Core_Serialization_Network_Tests
   Dataflow_State
   Engine_Network
   Testing_Utils
+  Core_ConsoleApplication
+  Core_Application
   gtest_main
   gtest
   gmock
