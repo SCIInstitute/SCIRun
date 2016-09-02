@@ -75,9 +75,9 @@ namespace Engine {
     ExecutionQueueManager();
     void initExecutor(ExecutionStrategyFactoryHandle factory);
     void setExecutionStrategy(ExecutionStrategyHandle exec);
-    void enqueueContext(ExecutionContextHandle context);
+    boost::shared_ptr<boost::thread> enqueueContext(ExecutionContextHandle context);
     void start();
-    void stop();
+    void stop111();
   private:
     void executeImpl(ExecutionContextHandle context);
     typedef DynamicExecutor::WorkQueue<ExecutionContextHandle>::Impl ExecutionContextQueue;

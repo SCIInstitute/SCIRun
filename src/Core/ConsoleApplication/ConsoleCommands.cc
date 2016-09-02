@@ -108,7 +108,8 @@ bool SaveFileCommandConsole::execute()
 
 bool ExecuteCurrentNetworkCommandConsole::execute()
 {
-  Application::Instance().controller()->executeAll(nullptr);
+  auto t = Application::Instance().controller()->executeAll(nullptr);
+  t->join();
   return true;
 }
 

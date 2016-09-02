@@ -78,9 +78,9 @@ void ExecutionQueueManager::start()
   executionLaunchThread_.reset(new boost::thread([this]() { executeTopContext(); }));
 }
 
-void ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
+boost::shared_ptr<boost::thread> ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
 {
-  bool contextReady = false;
+  bool contextReady;
   {
     Guard g(executionMutex_.get());
     contextReady = contexts_.push(context);
@@ -93,6 +93,7 @@ void ExecutionQueueManager::enqueueContext(ExecutionContextHandle context)
       start();
     somethingToExecute_.conditionBroadcast();
   }
+  return executionLaunchThread_;
 }
 
 void ExecutionQueueManager::executeTopContext()
@@ -120,7 +121,7 @@ void ExecutionQueueManager::executeImpl(ExecutionContextHandle ctx)
   }
 }
 
-void ExecutionQueueManager::stop()
+void ExecutionQueueManager::stop111()
 {
   executionLaunchThread_->interrupt();
   executionLaunchThread_.reset();
