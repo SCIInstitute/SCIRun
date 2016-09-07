@@ -286,6 +286,11 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
     }
   }
 
+  if (serializationManager_)
+  {
+    serializationManager_->copyNote(module, newModule);
+  }
+
   return newModule;
 }
 

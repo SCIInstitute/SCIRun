@@ -207,6 +207,8 @@ namespace Gui {
     virtual Dataflow::Networks::DisabledComponentsHandle dumpDisabledComponents(Dataflow::Networks::ModuleFilter modFilter, Dataflow::Networks::ConnectionFilter connFilter) const override;
     virtual void updateDisabledComponents(const Dataflow::Networks::DisabledComponents& disabled) override;
 
+    virtual void copyNote(Dataflow::Networks::ModuleHandle from, Dataflow::Networks::ModuleHandle to) const override;
+
     size_t numModules() const;
 
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy() { return moduleEventProxy_; }
