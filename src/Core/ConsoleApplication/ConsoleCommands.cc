@@ -58,6 +58,9 @@ namespace
   }
 }
 
+/// @todo: real logger
+#define LOG_CONSOLE(x) std::cout << "[SCIRun] " << x << std::endl;
+
 bool LoadFileCommandConsole::execute()
 {
   quietModulesIfNotVerbose();
@@ -71,11 +74,10 @@ bool LoadFileCommandConsole::execute()
     filename = get(Variables::Filename).toFilename().string();
   }
 
-  /// @todo: real logger
-  std::cout << "Attempting load of " << filename << std::endl;
+  LOG_CONSOLE("Attempting load of " << filename);
   if (!boost::filesystem::exists(filename))
   {
-    std::cout << "File does not exist: " << filename << std::endl;
+    LOG_CONSOLE("File does not exist: " << filename);
     return false;
   }
   try
@@ -86,17 +88,14 @@ bool LoadFileCommandConsole::execute()
     {
       Application::Instance().controller()->clear();
       Application::Instance().controller()->loadNetwork(openedFile);
-      /// @todo: real logger
-      std::cout << "File load done: " << filename << std::endl;
+      LOG_CONSOLE("File load done: " << filename);
       return true;
     }
-    /// @todo: real logger
-    std::cout << "File load failed: " << filename << std::endl;
+    LOG_CONSOLE("File load failed: " << filename);
   }
   catch (...)
   {
-    /// @todo: real logger
-    std::cout << "File load failed: " << filename << std::endl;
+    LOG_CONSOLE("File load failed: " << filename);
   }
   return false;
 }
@@ -108,13 +107,13 @@ bool SaveFileCommandConsole::execute()
 
 bool ExecuteCurrentNetworkCommandConsole::execute()
 {
-  std::cout << "....Executing network..." << std::endl;
-  Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ std::cout << "Execution finished with code " << code << std::endl; });
+  LOG_CONSOLE("Executing network...");
+  Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); });
   Application::Instance().controller()->stopExecutionContextLoopWhenExecutionFinishes();
   auto t = Application::Instance().controller()->executeAll(nullptr);
-  std::cout << "....Execute started..." << std::endl;
+  LOG_CONSOLE("Execution started.");
   t->join();
-  std::cout << "....Execute thread stopped...entering interactive mode." << std::endl;
+  LOG_CONSOLE("Execute thread stopped. Entering interactive mode.");
 
   InteractiveModeCommandConsole interactive;
   return interactive.execute();
@@ -127,8 +126,12 @@ QuitAfterExecuteCommandConsole::QuitAfterExecuteCommandConsole()
 
 bool QuitAfterExecuteCommandConsole::execute()
 {
-  std::cout << "Quit after execute is set." << std::endl;
-  Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ exit(code); });
+  LOG_CONSOLE("Quit after execute is set.");
+  Application::Instance().controller()->connectNetworkExecutionFinished([](int code)
+  {
+    LOG_CONSOLE("Goodbye! Exit code: " << code);
+    exit(code);
+  });
   return true;
 }
 
@@ -139,7 +142,7 @@ QuitCommandConsole::QuitCommandConsole()
 
 bool QuitCommandConsole::execute()
 {
-  std::cout << "Goodbye!" << std::endl;
+  LOG_CONSOLE("Goodbye!");
   exit(0);
   return true;
 }
@@ -180,7 +183,7 @@ bool InteractiveModeCommandConsole::execute()
     if (!PythonInterpreter::Instance().run_string(line))
       break;
   }
-  std::cout << "\nGoodbye!" << std::endl;
+  std::cout << "\n[SCIRun] Goodbye!" << std::endl;
   exit(0);
 #endif
   return true;
@@ -194,7 +197,7 @@ bool RunPythonScriptCommandConsole::execute()
   if (script)
   {
 #ifdef BUILD_WITH_PYTHON
-    std::cout << "RUNNING PYTHON SCRIPT: " << *script << std::endl;;
+    LOG_CONSOLE("RUNNING PYTHON SCRIPT: " << *script);
 
     Application::Instance().controller()->clear();
     PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
@@ -205,14 +208,14 @@ bool RunPythonScriptCommandConsole::execute()
     {
       while (true)
       {
-        std::cout << "Running Python script." << std::endl;
+        LOG_CONSOLE("Running Python script.");
         boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
       }
     }
-    std::cout << "Done running Python script." << std::endl;
+    LOG_CONSOLE("Done running Python script.");
     return true;
 #else
-    std::cout << "Python disabled, cannot run script " << *script << std::endl;
+    LOG_CONSOLE("Python disabled, cannot run script " << *script);
     return false;
 #endif
   }
