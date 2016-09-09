@@ -62,7 +62,7 @@ namespace SCIRun {
 
         virtual void setStateDefaults() override;
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       protected:
         virtual std::string defaultFileTypeName() const override;
 
