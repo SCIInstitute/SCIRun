@@ -108,8 +108,12 @@ bool SaveFileCommandConsole::execute()
 
 bool ExecuteCurrentNetworkCommandConsole::execute()
 {
+  std::cout << "....Executing network..." << std::endl;
+  Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ std::cout << "Execution finished with code " << code << std::endl;; });
   auto t = Application::Instance().controller()->executeAll(nullptr);
+  std::cout << "....Execute started..." << std::endl;
   t->join();
+  std::cout << "....Execute thread joined..." << std::endl;
   return true;
 }
 
@@ -120,7 +124,7 @@ QuitAfterExecuteCommandConsole::QuitAfterExecuteCommandConsole()
 
 bool QuitAfterExecuteCommandConsole::execute()
 {
-  std::cout << "Goodbye!" << std::endl;
+  std::cout << "Quit after execute is set." << std::endl;
   Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ exit(code); });
   return true;
 }
