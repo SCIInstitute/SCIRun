@@ -117,6 +117,8 @@ IF(NOT BUILD_HEADLESS)
   ELSE()
     MESSAGE(FATAL_ERROR "QT ${QT_MIN_VERSION} or later is required for building the SCIRun GUI")
   ENDIF()
+ELSE()
+  ADD_DEFINITIONS(-DBUILD_HEADLESS)
 ENDIF()
 
 
