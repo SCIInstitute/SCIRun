@@ -243,6 +243,8 @@ namespace Gui {
     bool showTagGroupsOnFileLoad() const { return showTagGroupsOnFileLoad_; }
     void setShowTagGroupsOnFileLoad(bool show) { showTagGroupsOnFileLoad_ = show; }
 
+    void adjustExecuteButtonsToDownstream(bool downOnly);
+
   protected:
     virtual void dropEvent(QDropEvent* event) override;
     virtual void dragEnterEvent(QDragEnterEvent* event) override;

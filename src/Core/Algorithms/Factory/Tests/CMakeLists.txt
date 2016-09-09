@@ -46,9 +46,7 @@ TARGET_LINK_LIBRARIES(Algorithm_Layer_Test
   Core_Algorithms_Legacy_Converter
   Dataflow_Network
   Engine_Network
-  Testing_Utils
   gtest_main
   gtest
-  gmock
   ${SCI_BOOST_LIBRARY}
 )

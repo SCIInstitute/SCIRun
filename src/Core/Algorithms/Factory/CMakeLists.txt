@@ -84,4 +84,5 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Algorithms_Factory)
 ENDIF(BUILD_SHARED_LIBS)
 
-SCIRUN_ADD_TEST_DIR(Tests)
+# Framework test: always build
+ADD_SUBDIRECTORY(Tests)

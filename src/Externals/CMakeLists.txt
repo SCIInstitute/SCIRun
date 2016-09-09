@@ -29,11 +29,9 @@
 MESSAGE(STATUS "Configuring External Packages")
 
 # TODO: move to external repository
-IF(BUILD_TESTING)
-  MESSAGE(STATUS "Configuring google-mock")
-  ADD_SUBDIRECTORY(gmock)
-ENDIF()
 
+MESSAGE(STATUS "Configuring google-mock")
+ADD_SUBDIRECTORY(gmock)
 
 MESSAGE(STATUS "Configuring log4cpp")
 ADD_SUBDIRECTORY(log4cpp)

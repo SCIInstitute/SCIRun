@@ -391,6 +391,14 @@ void PythonInterpreter::initialize_eventhandler(const std::string& commandLine, 
 		"sys.stdin = __term_io\n"
 		"sys.stdout = __term_io\n"
 		"sys.stderr = __term_err\n" );
+
+  PyRun_SimpleString(
+    "import atexit\n"
+    "def quit_gracefully():\n"
+    "\tprint('Goodbye!')\n"
+    "atexit.register(quit_gracefully)\n"
+  );
+
   PRINT_PY_INIT_DEBUG(11);
 	// Remove intermediate python variables
 	PyRun_SimpleString( "del (interpreter, __internal_compiler, __term_io, __term_err)\n" );
@@ -455,7 +463,7 @@ void PythonInterpreter::print_banner()
 	this->prompt_signal_( this->private_->prompt1_ );
 }
 
-void PythonInterpreter::run_string( const std::string& command )
+bool PythonInterpreter::run_string( const std::string& command )
 {
 	{
 		PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
@@ -464,24 +472,6 @@ void PythonInterpreter::run_string( const std::string& command )
 			throw std::invalid_argument( "The python interpreter hasn't been initialized!" );
 		}
 	}
-
-	//if ( !this->is_eventhandler_thread() )
-	//{
-	//	{
-	//		PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
-	//		// If the Python thread is currently waiting for input, feed the string
-	//		// to the input buffer directly and return.
-	//		if ( this->private_->waiting_for_input_ )
-	//		{
-	//			this->private_->input_buffer_ = command + "\n";
-	//			this->private_->thread_condition_variable_.notify_one();
-	//			return;
-	//		}
-	//	}
-
-	//	this->post_event( boost::bind( &PythonInterpreter::run_string, this, command ) );
-	//	return;
-	//}
 
 	// Clear any previous Python errors.
 	PyErr_Clear();
@@ -509,7 +499,7 @@ void PythonInterpreter::run_string( const std::string& command )
 	catch ( ... ) {}
 
 	// If an error happened during compilation, print the error message
-	if ( PyErr_Occurred() != NULL )
+	if ( PyErr_Occurred() )
 	{
 		PyErr_Print();
 	}
@@ -519,17 +509,18 @@ void PythonInterpreter::run_string( const std::string& command )
 		//this->private_->action_context_->set_action_mode( PythonActionMode::INTERACTIVE_E );
 		try
 		{
-			PyObject* result = PyEval_EvalCode( code_obj.ptr(), this->private_->globals_.ptr(), NULL );
+		  auto result = PyEval_EvalCode( code_obj.ptr(), this->private_->globals_.ptr(), nullptr );
 			Py_XDECREF( result );
 		}
 		catch ( ... ) {}
 
-		if ( PyErr_Occurred() != NULL )
+		if ( PyErr_Occurred() )
 		{
 			if ( PyErr_ExceptionMatches( PyExc_EOFError ) )
 			{
 				this->error_signal_( "\nKeyboardInterrupt\n" );
 				PyErr_Clear();
+        return false;
 			}
 			else
 			{
@@ -541,11 +532,12 @@ void PythonInterpreter::run_string( const std::string& command )
 	else
 	{
 		this->prompt_signal_( this->private_->prompt2_ );
-		return;
 	}
 
 	this->private_->command_buffer_.clear();
 	this->prompt_signal_( this->private_->prompt1_ );
+
+  return true;
 }
 
 void PythonInterpreter::run_script( const std::string& script )
