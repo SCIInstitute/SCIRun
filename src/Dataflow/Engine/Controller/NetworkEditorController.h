@@ -135,6 +135,9 @@ namespace Engine {
 
     boost::signals2::connection connectNetworkDoneLoading(const NetworkDoneLoadingSignalType::slot_type& subscriber);
 
+    // headless hack
+    void stopExecutionContextLoopWhenExecutionFinishes();
+
     virtual void enableSignals() override;
     virtual void disableSignals() override;
 

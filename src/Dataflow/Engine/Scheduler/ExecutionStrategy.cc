@@ -121,7 +121,7 @@ void ExecutionQueueManager::executeImpl(ExecutionContextHandle ctx)
   }
 }
 
-void ExecutionQueueManager::stop111()
+void ExecutionQueueManager::stop()
 {
   executionLaunchThread_->interrupt();
   executionLaunchThread_.reset();

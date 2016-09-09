@@ -628,6 +628,15 @@ boost::shared_ptr<boost::thread> NetworkEditorController::executeGeneric(const E
   return executionManager_.enqueueContext(context);
 }
 
+void NetworkEditorController::stopExecutionContextLoopWhenExecutionFinishes()
+{
+  connectNetworkExecutionFinished([this](int)
+  {
+    std::cout << "Execution manager thread stopped." << std::endl;
+    executionManager_.stop();
+  });
+}
+
 NetworkHandle NetworkEditorController::getNetwork() const
 {
   return theNetwork_;

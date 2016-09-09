@@ -109,11 +109,12 @@ bool SaveFileCommandConsole::execute()
 bool ExecuteCurrentNetworkCommandConsole::execute()
 {
   std::cout << "....Executing network..." << std::endl;
-  Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ std::cout << "Execution finished with code " << code << std::endl;; });
+  Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ std::cout << "Execution finished with code " << code << std::endl; });
+  Application::Instance().controller()->stopExecutionContextLoopWhenExecutionFinishes();
   auto t = Application::Instance().controller()->executeAll(nullptr);
   std::cout << "....Execute started..." << std::endl;
   t->join();
-  std::cout << "....Execute thread joined..." << std::endl;
+  std::cout << "....Execute thread stopped..." << std::endl;
   return true;
 }
 
