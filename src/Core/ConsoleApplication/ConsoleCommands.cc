@@ -114,8 +114,10 @@ bool ExecuteCurrentNetworkCommandConsole::execute()
   auto t = Application::Instance().controller()->executeAll(nullptr);
   std::cout << "....Execute started..." << std::endl;
   t->join();
-  std::cout << "....Execute thread stopped..." << std::endl;
-  return true;
+  std::cout << "....Execute thread stopped...entering interactive mode." << std::endl;
+
+  InteractiveModeCommandConsole interactive;
+  return interactive.execute();
 }
 
 QuitAfterExecuteCommandConsole::QuitAfterExecuteCommandConsole()
