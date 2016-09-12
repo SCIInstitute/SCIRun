@@ -50,6 +50,7 @@ namespace Math {
     OUTPUT_PORT(2, NumElements, Int32);
 
     MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+    NEW_HELP_WEBPAGE_ONLY
   };
 }}}
 

@@ -53,7 +53,7 @@ SET(Modules_Math_HEADERS
   #GetSubmatrix.h
   AppendMatrix.h
   CreateGeometricTransform.h
-  ConvertMatrixToScalar.cc
+  ConvertMatrixToScalar.h
   ConvertScalarToMatrix.h
   CreateMatrix.h
   CreateComplexMatrix.h

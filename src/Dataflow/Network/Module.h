@@ -71,6 +71,7 @@ namespace Networks {
     ModuleId get_id() const override { return id_; }
 
     virtual std::string helpPageUrl() const override;
+    std::string newHelpPageUrl() const; // location in flux, but new v5 modules only have one of these
 
     //for serialization
     virtual const ModuleLookupInfo& get_info() const override final { return info_; }
@@ -1080,6 +1081,7 @@ namespace Modules
 #define LEGACY_BIOPSE_MODULE public: virtual std::string legacyPackageName() const override { return "BioPSE"; }
 #define LEGACY_MATLAB_MODULE public: virtual std::string legacyPackageName() const override { return "MatlabInterface"; }
 #define CONVERTED_VERSION_OF_MODULE(modName) public: virtual std::string legacyModuleName() const override { return #modName; }
+#define NEW_HELP_WEBPAGE_ONLY public: virtual std::string helpPageUrl() const override { return newHelpPageUrl(); }
 
 }
 }

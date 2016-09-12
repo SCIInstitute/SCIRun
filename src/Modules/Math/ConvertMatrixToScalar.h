@@ -49,6 +49,8 @@ namespace Math {
 
     INPUT_PORT(0, Input, Matrix);
     OUTPUT_PORT(0, Output, Int32);
+
+    NEW_HELP_WEBPAGE_ONLY
   };
 }}}
 
