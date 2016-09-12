@@ -36,6 +36,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Python/PythonInterpreter.h>
 #include <boost/algorithm/string.hpp>
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Core;
 using namespace Commands;
@@ -220,4 +221,13 @@ bool RunPythonScriptCommandConsole::execute()
 #endif
   }
   return false;
+}
+
+bool SetupDataDirectoryCommand::execute()
+{
+  auto dir = Application::Instance().parameters()->dataDirectory().get();
+  LOG_DEBUG("Data dir set to: " << dir << std::endl);
+
+  Preferences::Instance().setDataDirectory(dir);
+  return true;
 }
