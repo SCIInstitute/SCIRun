@@ -28,7 +28,6 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
@@ -42,13 +41,11 @@
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
-#include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
-#include <Core/Algorithms/Math/ReportMatrixInfo.h>
-#include <Dataflow/Network/Tests/MockModuleState.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/SimpleSourceSink.h>
+#include <Core/Datatypes/Tests/MatrixTestCases.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;
@@ -66,27 +63,6 @@ using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
-
-namespace
-{
-  DenseMatrixHandle matrix1()
-  {
-    DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (int i = 0; i < m->rows(); ++i)
-      for (int j = 0; j < m->cols(); ++j)
-        (*m)(i, j) = 3.0 * i + j;
-    return m;
-  }
-  DenseMatrixHandle matrix2()
-  {
-    DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (int i = 0; i < m->rows(); ++i)
-      for (int j = 0; j < m->cols(); ++j)
-        (*m)(i, j) = -2.0 * i + j;
-    return m;
-  }
-  const DenseMatrix Zero(DenseMatrix::Zero(3,3));
-}
 
 namespace Testing
 {
@@ -169,13 +145,13 @@ TEST_P(PortCachingUnitTest, TestWithMockReexecute)
 
   auto sendModule = dynamic_cast<CreateMatrix*>(send.get());
   ASSERT_TRUE(sendModule != nullptr);
-  NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
+  auto evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
   ASSERT_TRUE(evalModule != nullptr);
 
   ASSERT_FALSE(evalModule->executeCalled_);
 
-  DenseMatrixHandle input = matrix1();
-  sendModule->get_state()->setTransientValue("MatrixToSend", input);
+  auto input = TestUtils::matrix1();
+  sendModule->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix1str());
 
   Testing::MockModuleReexecutionStrategyPtr mockNeedToExecute(new NiceMock<Testing::MockModuleReexecutionStrategy>);
   process->setReexecutionStrategy(mockNeedToExecute);
@@ -300,9 +276,9 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealInputsChanged)
 
   auto network = controller.getNetwork();
 
-  ModuleHandle send = controller.addModule("SendTestMatrix");
+  ModuleHandle send = controller.addModule("CreateMatrix");
   ModuleHandle process = controller.addModule("NeedToExecuteTester");
-  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+  ModuleHandle receive = controller.addModule("ReportMatrixInfo");
 
   EXPECT_EQ(3, network->nmodules());
 
@@ -310,15 +286,14 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealInputsChanged)
   network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
   EXPECT_EQ(2, network->nconnections());
 
-  SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
-  ASSERT_TRUE(sendModule != nullptr);
   NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
   ASSERT_TRUE(evalModule != nullptr);
 
   ASSERT_FALSE(evalModule->executeCalled_);
 
   DenseMatrixHandle input = matrix1();
-  sendModule->get_state()->setTransientValue("MatrixToSend", input);
+  matrix1Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, matrix1str());
+  matrix2Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, matrix2str());
 
   std::cout << "RealInputsChanged, stateChanged = " << stateChanged_ << " oportsCached = " << oportsCached_ << std::endl;
   InputsChangedCheckerHandle realInputsChanged(new InputsChangedCheckerImpl(*evalModule));
@@ -359,7 +334,8 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealInputsChanged)
       EXPECT_FALSE(evalModule->expensiveComputationDone_);
 
       DenseMatrixHandle input = matrix2();
-      sendModule->get_state()->setTransientValue("MatrixToSend", input);
+      matrix1Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, matrix1str());
+      matrix2Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, matrix2str());
 
       //inputs have changed
       evalModule->resetFlags();
@@ -384,9 +360,9 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealStateChanged)
 
   auto network = controller.getNetwork();
 
-  ModuleHandle send = controller.addModule("SendTestMatrix");
+  ModuleHandle send = controller.addModule("CreateMatrix");
   ModuleHandle process = controller.addModule("NeedToExecuteTester");
-  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+  ModuleHandle receive = controller.addModule("ReportMatrixInfo");
 
   EXPECT_EQ(3, network->nmodules());
 
@@ -394,15 +370,14 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealStateChanged)
   network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
   EXPECT_EQ(2, network->nconnections());
 
-  SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
-  ASSERT_TRUE(sendModule != nullptr);
   NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
   ASSERT_TRUE(evalModule != nullptr);
 
   ASSERT_FALSE(evalModule->executeCalled_);
 
   DenseMatrixHandle input = matrix1();
-  sendModule->get_state()->setTransientValue("MatrixToSend", input);
+  matrix1Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, matrix1str());
+  matrix2Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, matrix2str());
 
   Testing::MockInputsChangedCheckerPtr mockInputsChanged(new NiceMock<Testing::MockInputsChangedChecker>);
   ON_CALL(*mockInputsChanged, inputsChanged()).WillByDefault(Return(inputsChanged_));
@@ -443,9 +418,6 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealStateChanged)
   }
 
   //std::cout << "Rest of test" << std::endl;
-
-  ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
-  ASSERT_TRUE(receiveModule != nullptr);
 
   if (evalModule->expensiveComputationDone_)
   {
@@ -479,9 +451,9 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealOportsCached)
 
   auto network = controller.getNetwork();
 
-  ModuleHandle send = controller.addModule("SendTestMatrix");
+  ModuleHandle send = controller.addModule("CreateMatrix");
   ModuleHandle process = controller.addModule("NeedToExecuteTester");
-  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+  ModuleHandle receive = controller.addModule("ReportMatrixInfo");
 
   EXPECT_EQ(3, network->nmodules());
 
@@ -489,15 +461,14 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealOportsCached)
   network->connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
   EXPECT_EQ(2, network->nconnections());
 
-  SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
-  ASSERT_TRUE(sendModule != nullptr);
   NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
   ASSERT_TRUE(evalModule != nullptr);
 
   ASSERT_FALSE(evalModule->executeCalled_);
 
   DenseMatrixHandle input = matrix1();
-  sendModule->get_state()->setTransientValue("MatrixToSend", input);
+  matrix1Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, matrix1str());
+  matrix2Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, matrix2str());
 
   Testing::MockInputsChangedCheckerPtr mockInputsChanged(new NiceMock<Testing::MockInputsChangedChecker>);
   ON_CALL(*mockInputsChanged, inputsChanged()).WillByDefault(Return(inputsChanged_));
@@ -538,9 +509,6 @@ TEST_P(ReexecuteStrategyUnitTest, TestNeedToExecuteWithRealOportsCached)
   }
 
   //std::cout << "Rest of test" << std::endl;
-
-  ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
-  ASSERT_TRUE(receiveModule != nullptr);
 
   if (evalModule->expensiveComputationDone_)
   {
@@ -600,14 +568,14 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
 
   auto sendModule = dynamic_cast<CreateMatrix*>(send.get());
   ASSERT_TRUE(sendModule != nullptr);
-  NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
+  auto evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
   ASSERT_TRUE(evalModule != nullptr);
 
   ASSERT_FALSE(evalModule->executeCalled_);
 
-  DenseMatrixHandle input = matrix1();
-  std::cout << "### first input has id: " << input->id() << std::endl;
-  sendModule->get_state()->setTransientValue("MatrixToSend", input);
+  auto input = TestUtils::matrix1();
+  std::cout << "### first input has id: " << input.id() << std::endl;
+  send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix1str());
 
   std::cout << "RealInputsChanged, stateChanged = " << stateChanged_ << " oportsCached = " << oportsCached_ << std::endl;
   InputsChangedCheckerHandle realInputsChanged(new InputsChangedCheckerImpl(*evalModule));
@@ -650,9 +618,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustInputsChanged)
       EXPECT_TRUE(evalModule->executeCalled_);
       EXPECT_FALSE(evalModule->expensiveComputationDone_);
 
-      DenseMatrixHandle input = matrix2();
-      std::cout << "### second input has id: " << input->id() << std::endl;
-      sendModule->get_state()->setTransientValue("MatrixToSend", input);
+      auto input2 = TestUtils::matrix2();
+      std::cout << "### second input has id: " << input2->id() << std::endl;
+      send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix1str());
 
       //std::cout << "EXECUTION 3 3 3 3 3 3 3" << std::endl;
       //inputs have changed
@@ -676,9 +644,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
 
   auto network = controller.getNetwork();
 
-  ModuleHandle send = controller.addModule("CreateMatrix");
-  ModuleHandle process = controller.addModule("NeedToExecuteTester");
-  ModuleHandle receive = controller.addModule("ReportMatrixInfo");
+  auto send = controller.addModule("CreateMatrix");
+  auto process = controller.addModule("NeedToExecuteTester");
+  auto receive = controller.addModule("ReportMatrixInfo");
 
   EXPECT_EQ(3, network->nmodules());
 
@@ -688,13 +656,13 @@ TEST_F(ReexecuteStrategySimpleUnitTest, JustStateChanged)
 
   auto sendModule = dynamic_cast<CreateMatrix*>(send.get());
   ASSERT_TRUE(sendModule != nullptr);
-  NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
+  auto evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
   ASSERT_TRUE(evalModule != nullptr);
 
   ASSERT_FALSE(evalModule->executeCalled_);
 
-  DenseMatrixHandle input = matrix1();
-  sendModule->get_state()->setTransientValue("MatrixToSend", input);
+  auto input = TestUtils::matrix1();
+  sendModule->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix1str());
 
   std::cout << "RealStateChanged, inputsChanged = " << inputsChanged_ << " oportsCached = " << oportsCached_ << std::endl;
   StateChangedCheckerHandle realStateChanged(new StateChangedCheckerImpl(*evalModule));
@@ -761,9 +729,9 @@ TEST_F(ReexecuteStrategySimpleUnitTest, DISABLED_JustOportsCached)
 
   auto network = controller.getNetwork();
 
-  ModuleHandle send = controller.addModule("CreateMatrix");
-  ModuleHandle process = controller.addModule("NeedToExecuteTester");
-  ModuleHandle receive = controller.addModule("ReportMatrixInfo");
+  auto send = controller.addModule("CreateMatrix");
+  auto process = controller.addModule("NeedToExecuteTester");
+  auto receive = controller.addModule("ReportMatrixInfo");
 
   EXPECT_EQ(3, network->nmodules());
 
@@ -778,8 +746,8 @@ TEST_F(ReexecuteStrategySimpleUnitTest, DISABLED_JustOportsCached)
 
   ASSERT_FALSE(evalModule->executeCalled_);
 
-  DenseMatrixHandle input = matrix1();
-  sendModule->get_state()->setTransientValue("MatrixToSend", input);
+  auto input = TestUtils::matrix1();
+  sendModule->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix1str());
 
   //std::cout << "RealOportsCached, inputsChanged = " << inputsChanged_ << " stateChanged = " << stateChanged_ << std::endl;
   Testing::MockStateChangedCheckerPtr mockStateChanged(new NiceMock<Testing::MockStateChangedChecker>);
@@ -873,7 +841,7 @@ TEST(PortCachingFunctionalTest, TestSourceSinkInputsChanged)
   network->connect(ConnectionOutputPort(process, 1), ConnectionInputPort(receive, 0));
   EXPECT_EQ(2, network->nconnections());
 
-  NeedToExecuteTester* evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
+  auto evalModule = dynamic_cast<NeedToExecuteTester*>(process.get());
   ASSERT_TRUE(evalModule != nullptr);
 
   EXPECT_FALSE(evalModule->executeCalled_);

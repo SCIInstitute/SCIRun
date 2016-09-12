@@ -286,6 +286,11 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
     }
   }
 
+  if (serializationManager_)
+  {
+    serializationManager_->copyNote(module, newModule);
+  }
+
   return newModule;
 }
 
@@ -489,7 +494,11 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
         serializationManager_->updateDisabledComponents(xml->disabledComponents);
       }
       else
-        Log::get() << INFO <<  "module position editor unavailable, module positions at default" << std::endl;
+      {
+#ifndef BUILD_HEADLESS
+        Log::get() << INFO << "module position editor unavailable, module positions at default" << std::endl;
+#endif
+      }
       networkDoneLoading_(static_cast<int>(theNetwork_->nmodules()) + 1);
     }
     catch (ExceptionBase& e)
@@ -590,9 +599,9 @@ void NetworkEditorController::clear()
 // - [X] set up execution context queue
 // - [X] separate threads for looping through queue: another producer/consumer pair
 
-void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
+boost::shared_ptr<boost::thread> NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 {
-  executeGeneric(lookup, ExecuteAllModules::Instance());
+  return executeGeneric(lookup, ExecuteAllModules::Instance());
 }
 
 void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup, bool executeUpstream)
@@ -611,12 +620,21 @@ ExecutionContextHandle NetworkEditorController::createExecutionContext(const Exe
   return boost::make_shared<ExecutionContext>(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
 }
 
-void NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
+boost::shared_ptr<boost::thread> NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
 {
   initExecutor();
   auto context = createExecutionContext(lookup, filter);
 
-  executionManager_.enqueueContext(context);
+  return executionManager_.enqueueContext(context);
+}
+
+void NetworkEditorController::stopExecutionContextLoopWhenExecutionFinishes()
+{
+  connectNetworkExecutionFinished([this](int)
+  {
+    std::cout << "Execution manager thread stopped." << std::endl;
+    executionManager_.stop();
+  });
 }
 
 NetworkHandle NetworkEditorController::getNetwork() const

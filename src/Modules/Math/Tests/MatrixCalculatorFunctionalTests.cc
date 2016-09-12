@@ -45,8 +45,10 @@
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Dataflow/Network/Tests/MockModuleState.h>
+#include <Dataflow/Network/Tests/MockNetwork.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/Tests/MatrixTestCases.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Math;
@@ -62,33 +64,6 @@ using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
-namespace
-{
-  DenseMatrixHandle matrix1()
-  {
-    DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (int i = 0; i < m->rows(); ++i)
-      for (int j = 0; j < m->cols(); ++j)
-        (*m)(i, j) = 3.0 * i + j;
-    return m;
-  }
-  DenseMatrixHandle matrix2()
-  {
-    DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (int i = 0; i < m->rows(); ++i)
-      for (int j = 0; j < m->cols(); ++j)
-        (*m)(i, j) = -2.0 * i + j;
-    return m;
-  }
-  const DenseMatrix Zero(DenseMatrix::Zero(3,3));
-
-  ModuleHandle addModuleToNetwork(Network& network, const std::string& moduleName)
-  {
-    ModuleLookupInfo info;
-    info.module_name_ = moduleName;
-    return network.add_module(info);
-  }
-}
 
 TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOperation)
 {
@@ -113,8 +88,8 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   auto evalModule = dynamic_cast<EvaluateLinearAlgebraUnary*>(process.get());
   ASSERT_TRUE(evalModule != nullptr);
 
-  auto input = matrix1();
-  sendModule->get_state()->setTransientValue("MatrixToSend", input);
+  auto input = TestUtils::matrix1();
+  sendModule->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix1str());
 
   process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
   //manually execute the network, in the correct order.
@@ -154,7 +129,7 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
 
 TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
 {
-  DenseMatrix expected = (-*matrix1()) * (4* *matrix2()) + matrix1()->transpose();
+  DenseMatrix expected = (-TestUtils::matrix1()) * (4 * *TestUtils::matrix2()) + TestUtils::matrix1().transpose();
 
   //Test network:
   /*
@@ -173,18 +148,18 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
   Network matrixMathNetwork(mf, sf, af, ReexecuteStrategyFactoryHandle());
-  ModuleHandle matrix1Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
-  ModuleHandle matrix2Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
+  auto matrix1Send = addModuleToNetwork(matrixMathNetwork, "CreateMatrix");
+  auto matrix2Send = addModuleToNetwork(matrixMathNetwork, "CreateMatrix");
 
-  ModuleHandle transpose = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
-  ModuleHandle negate = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
-  ModuleHandle scalar = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
+  auto transpose = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
+  auto negate = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
+  auto scalar = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
 
-  ModuleHandle multiply = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraBinary");
-  ModuleHandle add = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraBinary");
+  auto multiply = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraBinary");
+  auto add = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraBinary");
 
-  ModuleHandle report = addModuleToNetwork(matrixMathNetwork, "ReportMatrixInfo");
-  ModuleHandle receive = addModuleToNetwork(matrixMathNetwork, "ReceiveTestMatrix");
+  auto report = addModuleToNetwork(matrixMathNetwork, "ReportMatrixInfo");
+  auto receive = addModuleToNetwork(matrixMathNetwork, "ReportMatrixInfo");
 
   EXPECT_EQ(9, matrixMathNetwork.nmodules());
 
@@ -211,8 +186,8 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   EXPECT_EQ(9, matrixMathNetwork.nconnections());
 
   //Set module parameters.
-  matrix1Send->get_state()->setTransientValue("MatrixToSend", matrix1());
-  matrix2Send->get_state()->setTransientValue("MatrixToSend", matrix2());
+  matrix1Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix1str());
+  matrix2Send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, TestUtils::matrix2str());
   transpose->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
   negate->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
   scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
@@ -232,8 +207,8 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   receive->execute();
 
   //grab reporting module state
-  ReportMatrixInfoAlgorithm::Outputs reportOutput = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
-  DenseMatrixHandle receivedMatrix = transient_value_cast<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
+  auto reportOutput = transient_value_cast<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
+  auto receivedMatrix = transient_value_cast<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
 
   ASSERT_TRUE(receivedMatrix.get() != nullptr);
   //verify results

@@ -182,16 +182,20 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 
 void ViewScene::execute()
 {
+  // hack for headless viewscene. Right now, it hangs/crashes/who knows.
+#ifdef BUILD_HEADLESS
+  sendOutput(ScreenshotDataRed, boost::make_shared<DenseMatrix>(0, 0));
+  sendOutput(ScreenshotDataGreen, boost::make_shared<DenseMatrix>(0, 0));
+  sendOutput(ScreenshotDataBlue, boost::make_shared<DenseMatrix>(0, 0));
+#else
   if (needToExecute())
   {
-    //std::cout << "1execute " << asyncUpdates_ << std::endl;
     const int maxAsyncWaitTries = 100; //TODO: make configurable for longer-running networks
     auto asyncWaitTries = 0;
     if (inputPorts().size() > 1) // only send screenshot if input is present
     {
       while (asyncUpdates_ < inputPorts().size() - 1)
       {
-        //std::cout << "2execute " << asyncUpdates_ << std::endl;
         asyncWaitTries++;
         if (asyncWaitTries == maxAsyncWaitTries)
           return; // nothing coming down the ports
@@ -202,11 +206,9 @@ void ViewScene::execute()
       auto state = get_state();
       do
       {
-        //std::cout << "3execute " << asyncUpdates_ << std::endl;
         screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
         if (screenshotDataOption)
         {
-          //std::cout << "4execute found a non-empty" << asyncUpdates_ << std::endl;
           auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
           if (screenshotData.red)
           {
@@ -225,10 +227,9 @@ void ViewScene::execute()
     }
     asyncUpdates_ = 0;
 
-    //std::cout << "999execute " << asyncUpdates_ << std::endl;
-    //std::cout << "execute setting none " << asyncUpdates_ << std::endl;
     get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
   }
+#endif
 }
 
 void ViewScene::processViewSceneObjectFeedback()

@@ -1010,6 +1010,35 @@ ModuleNotesHandle NetworkEditor::dumpModuleNotes(ModuleFilter filter) const
   return notes;
 }
 
+void NetworkEditor::copyNote(ModuleHandle from, ModuleHandle to) const
+{
+  Note note;
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      if (w->getModuleWidget()->getModule()->get_id() == from->get_id())
+      {
+        note = w->currentNote();
+        break;
+      }
+    }
+  }
+
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      if (w->getModuleWidget()->getModule()->get_id() == to->get_id())
+      {
+        w->updateNote(note);
+        w->getModuleWidget()->setCurrentNote(note, true);
+        break;
+      }
+    }
+  }
+}
+
 namespace
 {
   std::string connectionNoteId(const ModuleIdPair& ms)

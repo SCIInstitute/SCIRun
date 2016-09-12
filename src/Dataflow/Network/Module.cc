@@ -252,7 +252,13 @@ void Module::copyStateToMetadata()
 bool Module::executeWithSignals() NOEXCEPT
 {
   //Log::get() << INFO << "executing module: " << id_ << std::endl;
-  //std::cout << "executing module: " << id_ << std::endl;
+#ifdef BUILD_HEADLESS //TODO: better headless logging
+  static Mutex executeLogLock("headlessExecution");
+  {
+    Guard g(executeLogLock.get());
+    std::cout << "Executing module: " << id_ << std::endl;
+  }
+#endif
   executeBegins_(id_);
   boost::timer executionTimer;
   {
@@ -332,6 +338,12 @@ bool Module::executeWithSignals() NOEXCEPT
   status("MODULE FINISHED: " + id_.id_);
   /// @todo: need separate logger per module
   //LOG_DEBUG("MODULE FINISHED: " << id_.id_);
+#ifdef BUILD_HEADLESS //TODO: better headless logging
+  {
+    Guard g(executeLogLock.get());
+    std::cout << "Module finished: " << id_ << std::endl;
+  }
+#endif
   //TODO: brittle dependency on Completed
   //auto endState = returnCode ? ModuleExecutionState::Completed : ModuleExecutionState::Errored;
   auto endState = ModuleExecutionState::Completed;
