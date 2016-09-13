@@ -56,7 +56,7 @@ namespace SCIRun {
           template <typename T>
           bool setscalardata(VField* ofield, const Datatypes::DenseMatrixGeneric<T>& data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
           bool setvectordata(VField* ofield, Datatypes::DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
-          bool settensordata(VField* ofield, Datatypes::DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
+          bool setTensorData(VField* ofield, Datatypes::DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const;
         };
 
       }
