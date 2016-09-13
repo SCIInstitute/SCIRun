@@ -88,7 +88,7 @@ void NetworkExecutionProgressBar::incrementModulesDone(double execTime, const st
     progressBar_->setValue(numModulesDone_);
     totalExecutionTime_ += execTime;
     double wallTime = executionTimer_.elapsed();
-    progressBar_->setToolTip(QString("Total execution time: %1\nTotal wall time: %2")
+    progressBar_->setToolTip(QString("Green - completed modules\n??? - Unexecuted modules\nRed - errored modules\nTotal execution time: %1\nTotal wall time: %2")
       .arg(totalExecutionTime_).arg(wallTime));
     timingStream_ << '\t' << moduleId.c_str() << "," << execTime << ',' << totalExecutionTime_
       << ','  << wallTime << '\n';
@@ -115,7 +115,6 @@ void NetworkExecutionProgressBar::resetModulesDone()
 void NetworkExecutionProgressBar::displayTimingInfo()
 {
   QApplication::clipboard()->setText(timingLog_);
-  //QMessageBox::information(nullptr, "Execution timing", timingLog_);
 }
 
 QString NetworkExecutionProgressBar::counterLabelString() const

@@ -40,6 +40,17 @@
 namespace SCIRun {
 namespace Gui {
 
+  //TODO: inject this for proper coloring
+  class NetworkStatus
+  {
+  public:
+    virtual ~NetworkStatus() {}
+    virtual size_t totalModules() const = 0;
+    virtual size_t erroredModules() const = 0;
+    virtual size_t finishedModules() const = 0;
+    virtual size_t unexecutedModules() const = 0;
+  };
+
   class SCIRunProgressBar : public QProgressBar
   {
     Q_OBJECT
