@@ -37,9 +37,10 @@ NetworkExecutionProgressBar::NetworkExecutionProgressBar(QWidget* parent) : numM
   totalModules_(0), totalExecutionTime_(0), mutex_("progress bar"), timingStream_(&timingLog_)
 {
   barAction_ = new QWidgetAction(parent);
-  barAction_->setDefaultWidget(progressBar_ = new QProgressBar(parent));
+  barAction_->setDefaultWidget(progressBar_ = new SCIRunProgressBar(parent));
   progressBar_->setToolTip("Percentage of completed modules and total execution time");
   progressBar_->setWhatsThis("This displays the percentage of completed modules while the network is executing.");
+  progressBar_->setValue(0);
   barAction_->setVisible(true);
 
   counterAction_ = new QWidgetAction(parent);
@@ -113,7 +114,6 @@ void NetworkExecutionProgressBar::resetModulesDone()
 
 void NetworkExecutionProgressBar::displayTimingInfo()
 {
-  //qDebug() << timingLog_;
   QApplication::clipboard()->setText(timingLog_);
   //QMessageBox::information(nullptr, "Execution timing", timingLog_);
 }
@@ -121,4 +121,52 @@ void NetworkExecutionProgressBar::displayTimingInfo()
 QString NetworkExecutionProgressBar::counterLabelString() const
 {
   return QString("  %1 / %2  ").arg(numModulesDone_).arg(totalModules_);
+}
+
+SCIRunProgressBar::SCIRunProgressBar(QWidget *parent) : QProgressBar(parent)
+{
+
+}
+
+void SCIRunProgressBar::paintEvent(QPaintEvent*)
+{
+  int val = value();
+  int pos = QStyle::sliderPositionFromValue(minimum(), maximum(), val, width());
+
+  int pos60 = QStyle::sliderPositionFromValue(minimum(), maximum(), 3, width());
+  int pos80 = QStyle::sliderPositionFromValue(minimum(), maximum(), 6, width());
+
+  QPainter p(this);
+  p.setPen(Qt::green);
+  p.setBrush(QBrush(Qt::green));
+
+  if (val >= 0 && val <= 3)
+  {
+    p.drawRect(0, 0, pos, height());
+  }
+  else if (val > 3 && val <= 6)
+  {
+    p.drawRect(0, 0, pos60, height());
+    p.setPen(QColor(255, 127, 0));
+    p.setBrush(QBrush(QColor(255, 127, 0)));
+    p.drawRect(pos60, 0, pos - pos60, height());
+  }
+  else
+  {
+    p.drawRect(0, 0, pos60, height());
+    p.setPen(QColor(255, 127, 0));
+    p.setBrush(QBrush(QColor(255, 127, 0)));
+    p.drawRect(pos60, 0, pos80 - pos60, height());
+    p.setPen(Qt::red);
+    p.setBrush(QBrush(Qt::red));
+    p.drawRect(pos80, 0, pos - pos80, height());
+  }
+
+  p.setPen(Qt::lightGray);
+  p.setBrush(QBrush(Qt::lightGray));
+  p.drawRect(pos, 0, width(), height());
+
+  p.setPen(Qt::black);
+  p.setBrush(QBrush(Qt::black));
+  p.drawText(0, 0, width(), height(), Qt::AlignCenter, text());
 }

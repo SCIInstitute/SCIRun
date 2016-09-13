@@ -638,7 +638,7 @@ void SCIRunMainWindow::importLegacyNetwork()
 {
   if (okToContinue())
   {
-    QString filename = QFileDialog::getOpenFileName(this, "Import Old Network...", latestNetworkDirectory_.path(), "*.srn");
+    auto filename = QFileDialog::getOpenFileName(this, "Import Old Network...", latestNetworkDirectory_.path(), "*.srn");
     importLegacyNetworkFile(filename);
   }
 }

@@ -31,6 +31,7 @@
 
 #include <QObject>
 #include <QTextStream>
+#include <QProgressBar>
 #ifndef Q_MOC_RUN
 #include <boost/timer.hpp>
 #include <Core/Thread/Mutex.h>
@@ -38,6 +39,15 @@
 
 namespace SCIRun {
 namespace Gui {
+
+  class SCIRunProgressBar : public QProgressBar
+  {
+    Q_OBJECT
+  public:
+    explicit SCIRunProgressBar(QWidget* parent = nullptr);
+  protected:
+    void paintEvent(QPaintEvent*) override;
+  };
 
 class NetworkExecutionProgressBar : public QObject
 {
@@ -55,7 +65,7 @@ public:
 
 private:
   class QWidgetAction* barAction_;
-  class QProgressBar* progressBar_;
+  SCIRunProgressBar* progressBar_;
   class QWidgetAction* counterAction_;
   class QLabel* counterLabel_;
   class QAction* timingAction_;
