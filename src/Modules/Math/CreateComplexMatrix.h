@@ -46,6 +46,7 @@ namespace Math {
     virtual void setStateDefaults() override;
     OUTPUT_PORT(0, EnteredMatrix, ComplexDenseMatrix);
     MODULE_TRAITS_AND_INFO(ModuleHasUI)
+    NEW_HELP_WEBPAGE_ONLY
   };
 }}}
 
