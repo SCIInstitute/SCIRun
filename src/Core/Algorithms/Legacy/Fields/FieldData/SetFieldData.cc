@@ -294,7 +294,7 @@ bool SetFieldDataAlgo::setvectordata(VField* ofield, DenseMatrixHandle data, siz
   return true;
 }
 
-bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const
+bool SetFieldDataAlgo::setTensorData(VField* ofield, DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const
 {
   /// Fill field with Tensor values
   /// Handle 6 by n data
@@ -302,56 +302,62 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, siz
   {
     for (VMesh::index_type i = 0; i < numnvals; i++)
     {
-      ofield->set_value(Tensor((*data)(i, 0),(*data)(i, 1),(*data)(i, 2),(*data)(i, 3),(*data)(i, 4),(*data)(i, 5)), i);
+      ofield->set_value(symmetricTensorFromSixElementArray(data->row(i)), i);
     }
     for (VMesh::index_type i=numnvals; i< numevals+numnvals; i++)
     {
-      ofield->set_evalue(Tensor((*data)(i, 0),(*data)(i, 1),(*data)(i, 2),(*data)(i, 3),(*data)(i, 4),(*data)(i, 5)), i);
+      ofield->set_evalue(symmetricTensorFromSixElementArray(data->row(i)), i);
     }
   }
   else if ((nrows == 6) && (ncols == numvals))
   {
     for (VMesh::index_type i = 0; i < numnvals; i++)
     {
-      ofield->set_value(Tensor((*data)(0,i),(*data)(1,i),(*data)(2,i),(*data)(3,i),(*data)(4,i),(*data)(5,i)), i);
-      std::cout<<"nodes. vector = "<<(*data)(0,i)<<","<<(*data)(1,i)<<","<<(*data)(2,i)<<","<<(*data)(3,i)<<","<<(*data)(4,i)<<","<<(*data)(5,i)<<std::endl;
+      ofield->set_value(symmetricTensorFromSixElementArray(data->col(i)), i);
     }
     for (VMesh::index_type i=numnvals; i< numevals+numnvals; i++)
     {
-      ofield->set_evalue(Tensor((*data)(0,i),(*data)(1,i),(*data)(2,i),(*data)(3,i),(*data)(4,i),(*data)(5,i)), i);
+      ofield->set_evalue(symmetricTensorFromSixElementArray(data->col(i)), i);
     }
   }
-  else if (((nrows == 1) && (ncols == 6)) || ((ncols == 1) && (nrows == 6)))
+  else if (1 == nrows && 6 == ncols)
   {
-    ofield->set_all_values(Tensor((*data)(0, 0),(*data)(0, 1),(*data)(0, 2),(*data)(0, 3),(*data)(0, 4),(*data)(0, 5)));
-    
+    ofield->set_all_values(symmetricTensorFromSixElementArray(data->row(0)));
+  }
+  else if (1 == ncols && 6 == nrows)
+  {
+    ofield->set_all_values(symmetricTensorFromSixElementArray(data->col(0)));
   }
   /// Handle 9 by n data
-  else if ((ncols == 9) && (nrows == numvals))
+  else if (ncols == 9 && nrows == numvals)
   {
     for (VMesh::index_type i = 0; i < numnvals; i++)
     {
-      ofield->set_value(Tensor((*data)(i, 0),(*data)(i, 1),(*data)(i, 2),(*data)(i, 3),(*data)(i, 4),(*data)(i, 8)), i);
+      ofield->set_value(symmetricTensorFromNineElementArray(data->row(i)), i);
     }
     for (VMesh::index_type i=numnvals; i< numevals+numnvals; i++)
     {
-      ofield->set_evalue(Tensor((*data)(i, 0),(*data)(i, 1),(*data)(i, 2),(*data)(i, 3),(*data)(i, 4),(*data)(i, 8)), i);
+      ofield->set_evalue(symmetricTensorFromNineElementArray(data->row(i)), i);
     }
   }
-  else if ((nrows == 9) && (ncols == numvals))
+  else if (nrows == 9 && ncols == numvals)
   {
     for (VMesh::index_type i = 0; i < numnvals; i++)
     {
-      ofield->set_value(Tensor((*data)(0,i),(*data)(1,i),(*data)(2,i),(*data)(3,i),(*data)(4,i),(*data)(8,i)), i);
+      ofield->set_value(symmetricTensorFromNineElementArray(data->col(i)), i);
     }
     for (VMesh::index_type i=numnvals; i< numevals+numnvals; i++)
     {
-      ofield->set_evalue(Tensor((*data)(0,i),(*data)(1,i),(*data)(2,i),(*data)(3,i),(*data)(4,i),(*data)(8,i)), i);
+      ofield->set_evalue(symmetricTensorFromNineElementArray(data->col(i)), i);
     }
   }
-  else if (((nrows == 1) && (ncols == 9)) || ((ncols == 1) && (nrows == 9)))
+  else if (1 == nrows && 9 == ncols)
   {
-    ofield->set_all_values(Tensor((*data)(0, 0),(*data)(0, 1),(*data)(0, 2),(*data)(0, 3),(*data)(0, 4),(*data)(0, 8)));
+    ofield->set_all_values(symmetricTensorFromNineElementArray(data->row(0)));
+  }
+  else if (1 == ncols && 9 == nrows)
+  {
+    ofield->set_all_values(symmetricTensorFromNineElementArray(data->col(0)));
   }
   else
   {
@@ -435,7 +441,7 @@ FieldHandle SetFieldDataAlgo::runImplRealComplex(FieldHandle input_field, DenseM
     }
     else if (fi.is_tensor())
     {
-      if (!settensordata(ofield, realData, numvals, nrows, ncols, numnvals, numevals))
+      if (!setTensorData(ofield, realData, numvals, nrows, ncols, numnvals, numevals))
         return nullptr;
     }
   }
