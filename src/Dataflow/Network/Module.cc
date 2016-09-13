@@ -989,3 +989,8 @@ std::string Module::helpPageUrl() const
     + legacyPackageName() + ":" + legacyModuleName();
   return url;
 }
+
+std::string Module::newHelpPageUrl() const
+{
+  return "https://cibctest.github.io/scirun-pages/modules.html#" + legacyModuleName();
+}

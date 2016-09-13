@@ -88,6 +88,7 @@ namespace SCIRun
         static std::vector<Core::Algorithms::AlgorithmParameterName> outputNameParameters();
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        NEW_HELP_WEBPAGE_ONLY
       private:
         static Core::Thread::Mutex lock_;
         std::string convertInputSyntax(const std::string& code) const;
