@@ -33,11 +33,11 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Thread;
 
-NetworkExecutionProgressBar::NetworkExecutionProgressBar(QWidget* parent) : numModulesDone_(0),
+NetworkExecutionProgressBar::NetworkExecutionProgressBar(NetworkStatusPtr status, QWidget* parent) : status_(status), numModulesDone_(0),
   totalModules_(0), totalExecutionTime_(0), mutex_("progress bar"), timingStream_(&timingLog_)
 {
   barAction_ = new QWidgetAction(parent);
-  barAction_->setDefaultWidget(progressBar_ = new SCIRunProgressBar(parent));
+  barAction_->setDefaultWidget(progressBar_ = new SCIRunProgressBar(status, parent));
   progressBar_->setToolTip("Percentage of completed modules and total execution time");
   progressBar_->setWhatsThis("This displays the percentage of completed modules while the network is executing.");
   progressBar_->setValue(0);
@@ -122,13 +122,20 @@ QString NetworkExecutionProgressBar::counterLabelString() const
   return QString("  %1 / %2  ").arg(numModulesDone_).arg(totalModules_);
 }
 
-SCIRunProgressBar::SCIRunProgressBar(QWidget *parent) : QProgressBar(parent)
+SCIRunProgressBar::SCIRunProgressBar(NetworkStatusPtr status, QWidget *parent) : status_(status), QProgressBar(parent)
 {
 
 }
 
 void SCIRunProgressBar::paintEvent(QPaintEvent*)
 {
+  qDebug() << "Status:" << "\n\ttotal:" << status_->total()
+    << "\n\twaiting:" << status_->waiting()
+    << "\n\terrored:" << status_->errored()
+    << "\n\tnonReexecuted:" << status_->nonReexecuted()
+    << "\n\tfinished:" << status_->finished()
+    << "\n\tunexecuted:" << status_->unexecuted();
+
   int val = value();
   int pos = QStyle::sliderPositionFromValue(minimum(), maximum(), val, width());
 

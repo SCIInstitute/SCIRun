@@ -83,6 +83,51 @@ static const char* ToolkitIconURL = "ToolkitIconURL";
 static const char* ToolkitURL = "ToolkitURL";
 static const char* ToolkitFilename = "ToolkitFilename";
 
+class NetworkStatusImpl : public NetworkStatus
+{
+public:
+  explicit NetworkStatusImpl(NetworkEditor* ned) : ned_(ned) {}
+
+  size_t total() const override
+  {
+    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
+    //qDebug() << "Total from state list: " << allStates.size();
+    return ned_->numModules();
+  }
+  size_t waiting() const override
+  {
+    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
+    //qDebug() << "Waiting from state list: " << std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Waiting);
+    return std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Waiting);
+  }
+  size_t errored() const override
+  {
+    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
+    //qDebug() << "Errored from state list: " << std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Errored);
+    return std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Errored);;
+  }
+  size_t nonReexecuted() const override
+  {
+    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
+    //qDebug() << "Nonreexecuted from state list: " << "NOT AVAILABLE YET";
+    return -1;
+  }
+  size_t finished() const override
+  {
+    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
+    //qDebug() << "Finished from state list: " << std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Completed);
+    return std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Completed);
+  }
+  size_t unexecuted() const override
+  {
+    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
+    //qDebug() << "Unexecuted from state list: " << total() - finished();
+    return total() - finished();;
+  }
+private:
+  NetworkEditor* ned_;
+};
+
 SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quitAfterExecute_(false)
 {
   setupUi(this);
@@ -170,7 +215,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
     executeButton_->setDefaultAction(actionExecute_All_);
     executeBar->addWidget(executeButton_);
 
-    networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
+    networkProgressBar_.reset(new NetworkExecutionProgressBar(boost::make_shared<NetworkStatusImpl>(networkEditor_), this));
     executeBar->addActions(networkProgressBar_->actions());
     executeBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
       "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"

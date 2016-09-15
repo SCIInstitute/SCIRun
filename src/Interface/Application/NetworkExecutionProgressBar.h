@@ -45,26 +45,32 @@ namespace Gui {
   {
   public:
     virtual ~NetworkStatus() {}
-    virtual size_t totalModules() const = 0;
-    virtual size_t erroredModules() const = 0;
-    virtual size_t finishedModules() const = 0;
-    virtual size_t unexecutedModules() const = 0;
+    virtual size_t total() const = 0;
+    virtual size_t waiting() const = 0;
+    virtual size_t errored() const = 0;
+    virtual size_t nonReexecuted() const = 0;
+    virtual size_t finished() const = 0;
+    virtual size_t unexecuted() const = 0;
   };
+
+  using NetworkStatusPtr = boost::shared_ptr<NetworkStatus>;
 
   class SCIRunProgressBar : public QProgressBar
   {
     Q_OBJECT
   public:
-    explicit SCIRunProgressBar(QWidget* parent = nullptr);
+    explicit SCIRunProgressBar(NetworkStatusPtr status, QWidget* parent = nullptr);
   protected:
     void paintEvent(QPaintEvent*) override;
+  private:
+    NetworkStatusPtr status_;
   };
 
 class NetworkExecutionProgressBar : public QObject
 {
   Q_OBJECT
 public:
-  explicit NetworkExecutionProgressBar(QWidget* parent);
+  NetworkExecutionProgressBar(NetworkStatusPtr status, QWidget* parent);
 
   QList<class QAction*> actions() const;
 
@@ -75,6 +81,7 @@ public:
     void displayTimingInfo();
 
 private:
+  NetworkStatusPtr status_;
   class QWidgetAction* barAction_;
   SCIRunProgressBar* progressBar_;
   class QWidgetAction* counterAction_;

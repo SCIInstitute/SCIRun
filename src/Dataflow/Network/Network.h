@@ -45,32 +45,33 @@ namespace Networks {
   class SCISHARE Network : public NetworkInterface, boost::noncopyable
   {
   public:
-    typedef std::map<ConnectionId, ConnectionHandle, OrderedByConnectionId> Connections;
-    typedef std::vector<ModuleHandle> Modules;
+    using Connections = std::map<ConnectionId, ConnectionHandle, OrderedByConnectionId>;
+    using Modules = std::vector<ModuleHandle>;
 
     Network(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, Core::Algorithms::AlgorithmFactoryHandle algoFactory, ReexecuteStrategyFactoryHandle reexFactory);
     ~Network();
 
-    virtual ModuleHandle add_module(const ModuleLookupInfo& info);
-    virtual bool remove_module(const ModuleId& id);
-    virtual size_t nmodules() const;
-    virtual ModuleHandle module(size_t i) const;
-    virtual ExecutableObject* lookupExecutable(const ModuleId& id) const;
-    virtual ModuleHandle lookupModule(const ModuleId& id) const;
-    virtual ConnectionId connect(const ConnectionOutputPort&, const ConnectionInputPort&);
-    virtual bool disconnect(const ConnectionId&);
-    virtual size_t nconnections() const;
-    virtual void disable_connection(const ConnectionId&);
-    virtual ConnectionDescriptionList connections() const;
-    virtual int errorCode() const;
-    virtual void incrementErrorCode(const ModuleId& moduleId);
-    virtual bool containsViewScene() const;
-    virtual NetworkGlobalSettings& settings();
-    virtual std::string toString() const;
-    virtual void setModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter);
-    virtual boost::signals2::connection connectModuleInterrupted(ModuleInterruptedSignal::slot_function_type subscriber) const;
-    virtual void interruptModuleRequest(const ModuleId& id);
-    virtual void clear();
+    ModuleHandle add_module(const ModuleLookupInfo& info) override;
+    bool remove_module(const ModuleId& id) override;
+    size_t nmodules() const override;
+    ModuleHandle module(size_t i) const override;
+    ExecutableObject* lookupExecutable(const ModuleId& id) const override;
+    ModuleHandle lookupModule(const ModuleId& id) const override;
+    ConnectionId connect(const ConnectionOutputPort&, const ConnectionInputPort&) override;
+    bool disconnect(const ConnectionId&) override;
+    size_t nconnections() const override;
+    void disable_connection(const ConnectionId&) override;
+    ConnectionDescriptionList connections() const override;
+    int errorCode() const override;
+    void incrementErrorCode(const ModuleId& moduleId) override;
+    bool containsViewScene() const override;
+    NetworkGlobalSettings& settings() override;
+    std::string toString() const override;
+    void setModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter) override;
+    std::vector<ModuleExecutionState::Value> moduleExecutionStates() const override;
+    boost::signals2::connection connectModuleInterrupted(ModuleInterruptedSignal::slot_function_type subscriber) const override;
+    void interruptModuleRequest(const ModuleId& id) override;
+    void clear() override;
   private:
     ModuleFactoryHandle moduleFactory_;
     ModuleStateFactoryHandle stateFactory_;
