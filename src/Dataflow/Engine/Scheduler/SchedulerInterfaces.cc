@@ -29,6 +29,7 @@
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <boost/thread.hpp>
+#include <boost/lambda/core.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
@@ -58,6 +59,7 @@ const ExecutionBounds& ExecutionContext::bounds() const
 
 void ExecutionContext::preexecute()
 {
+  network.setExpandedModuleExecutionState(ModuleExecutionState::NotExecuted, boost::lambda::constant(true));
   network.setModuleExecutionState(ModuleExecutionState::Waiting, additionalFilter);
 }
 

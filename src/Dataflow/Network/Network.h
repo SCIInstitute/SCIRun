@@ -69,6 +69,7 @@ namespace Networks {
     std::string toString() const override;
     void setModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter) override;
     std::vector<ModuleExecutionState::Value> moduleExecutionStates() const override;
+    void setExpandedModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter) override;
     boost::signals2::connection connectModuleInterrupted(ModuleInterruptedSignal::slot_function_type subscriber) const override;
     void interruptModuleRequest(const ModuleId& id) override;
     void clear() override;

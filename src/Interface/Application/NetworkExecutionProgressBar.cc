@@ -67,6 +67,7 @@ QList<QAction*> NetworkExecutionProgressBar::actions() const
 void NetworkExecutionProgressBar::updateTotalModules(size_t count)
 {
   Guard g(mutex_.get());
+  qDebug() << "updateTotalModules" << numModulesDone_ << totalModules_;
   if (count != totalModules_)
   {
     totalModules_ = count;
@@ -77,17 +78,19 @@ void NetworkExecutionProgressBar::updateTotalModules(size_t count)
       progressBar_->setMaximum(count);
     progressBar_->setValue(0);
   }
+  qDebug() << "~updateTotalModules" << numModulesDone_ << totalModules_;
 }
 void NetworkExecutionProgressBar::incrementModulesDone(double execTime, const std::string& moduleId)
 {
   Guard g(mutex_.get());
+  qDebug() << "incrementModulesDone" << numModulesDone_ << totalModules_;
   if (numModulesDone_ < totalModules_)
   {
     numModulesDone_++;
     counterLabel_->setText(counterLabelString());
     progressBar_->setValue(numModulesDone_);
     totalExecutionTime_ += execTime;
-    double wallTime = executionTimer_.elapsed();
+    auto wallTime = executionTimer_.elapsed();
     progressBar_->setToolTip(QString("Green - completed modules\n??? - Unexecuted modules\nRed - errored modules\nTotal execution time: %1\nTotal wall time: %2")
       .arg(totalExecutionTime_).arg(wallTime));
     timingStream_ << '\t' << moduleId.c_str() << "," << execTime << ',' << totalExecutionTime_
@@ -96,12 +99,14 @@ void NetworkExecutionProgressBar::incrementModulesDone(double execTime, const st
     if (numModulesDone_ == totalModules_)
       timingStream_ << "TIMING LOG: " << "execution ended at " << QTime::currentTime().toString("hh:mm:ss.zzz") << '\n';
   }
+  qDebug() << "~incrementModulesDone" << numModulesDone_ << totalModules_;
 }
 
 void NetworkExecutionProgressBar::resetModulesDone()
 {
   Guard g(mutex_.get());
   numModulesDone_ = 0;
+  qDebug() << "resetModulesDone" << numModulesDone_ << totalModules_;
   totalExecutionTime_ = 0;
   executionTimer_.restart();
   counterLabel_->setText(counterLabelString());
@@ -112,7 +117,7 @@ void NetworkExecutionProgressBar::resetModulesDone()
     << "\n\tModule ID,module time,total module time,total wall time\n";
 }
 
-void NetworkExecutionProgressBar::displayTimingInfo()
+void NetworkExecutionProgressBar::displayTimingInfo() const
 {
   QApplication::clipboard()->setText(timingLog_);
 }
@@ -122,7 +127,7 @@ QString NetworkExecutionProgressBar::counterLabelString() const
   return QString("  %1 / %2  ").arg(numModulesDone_).arg(totalModules_);
 }
 
-SCIRunProgressBar::SCIRunProgressBar(NetworkStatusPtr status, QWidget *parent) : status_(status), QProgressBar(parent)
+SCIRunProgressBar::SCIRunProgressBar(NetworkStatusPtr status, QWidget *parent) : QProgressBar(parent), status_(status)
 {
 
 }
@@ -139,13 +144,15 @@ void SCIRunProgressBar::paintEvent(QPaintEvent*)
   int val = value();
   int pos = QStyle::sliderPositionFromValue(minimum(), maximum(), val, width());
 
-  int pos60 = QStyle::sliderPositionFromValue(minimum(), maximum(), 3, width());
-  int pos80 = QStyle::sliderPositionFromValue(minimum(), maximum(), 6, width());
+  //int pos60 = QStyle::sliderPositionFromValue(minimum(), maximum(), 3, width());
+  //int pos80 = QStyle::sliderPositionFromValue(minimum(), maximum(), 6, width());
 
   QPainter p(this);
   p.setPen(Qt::green);
   p.setBrush(QBrush(Qt::green));
+  p.drawRect(0, 0, pos, height());
 
+/*
   if (val >= 0 && val <= 3)
   {
     p.drawRect(0, 0, pos, height());
@@ -167,7 +174,7 @@ void SCIRunProgressBar::paintEvent(QPaintEvent*)
     p.setBrush(QBrush(Qt::red));
     p.drawRect(pos80, 0, pos - pos80, height());
   }
-
+*/
   p.setPen(Qt::lightGray);
   p.setBrush(QBrush(Qt::lightGray));
   p.drawRect(pos, 0, width(), height());

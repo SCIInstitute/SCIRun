@@ -91,38 +91,32 @@ public:
   size_t total() const override
   {
     auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
-    //qDebug() << "Total from state list: " << allStates.size();
     return ned_->numModules();
   }
   size_t waiting() const override
   {
     auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
-    //qDebug() << "Waiting from state list: " << std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Waiting);
     return std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Waiting);
   }
   size_t errored() const override
   {
     auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
-    //qDebug() << "Errored from state list: " << std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Errored);
-    return std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Errored);;
+    return std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Errored);
   }
   size_t nonReexecuted() const override
   {
     auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
-    //qDebug() << "Nonreexecuted from state list: " << "NOT AVAILABLE YET";
     return -1;
   }
   size_t finished() const override
   {
     auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
-    //qDebug() << "Finished from state list: " << std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Completed);
     return std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Completed);
   }
   size_t unexecuted() const override
   {
     auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
-    //qDebug() << "Unexecuted from state list: " << total() - finished();
-    return total() - finished();;
+    return std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::NotExecuted);
   }
 private:
   NetworkEditor* ned_;

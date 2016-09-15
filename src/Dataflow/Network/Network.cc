@@ -233,6 +233,14 @@ void Network::setModuleExecutionState(ModuleExecutionState::Value state, ModuleF
   }
 }
 
+void Network::setExpandedModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter)
+{
+  for (auto module : modules_ | boost::adaptors::filtered(filter))
+  {
+    module->executionState().setExpandedState(state);
+  }
+}
+
 std::vector<ModuleExecutionState::Value> Network::moduleExecutionStates() const
 {
   std::vector<ModuleExecutionState::Value> values;

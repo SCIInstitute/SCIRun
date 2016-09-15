@@ -78,7 +78,7 @@ public:
     void updateTotalModules(size_t count);
     void incrementModulesDone(double execTime, const std::string& moduleId);
     void resetModulesDone();
-    void displayTimingInfo();
+    void displayTimingInfo() const;
 
 private:
   NetworkStatusPtr status_;
