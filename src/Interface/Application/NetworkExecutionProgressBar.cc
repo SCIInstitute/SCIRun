@@ -67,7 +67,7 @@ QList<QAction*> NetworkExecutionProgressBar::actions() const
 void NetworkExecutionProgressBar::updateTotalModules(size_t count)
 {
   Guard g(mutex_.get());
-  qDebug() << "updateTotalModules" << numModulesDone_ << totalModules_;
+  //qDebug() << "updateTotalModules" << numModulesDone_ << totalModules_;
   if (count != totalModules_)
   {
     totalModules_ = count;
@@ -78,12 +78,12 @@ void NetworkExecutionProgressBar::updateTotalModules(size_t count)
       progressBar_->setMaximum(count);
     progressBar_->setValue(0);
   }
-  qDebug() << "~updateTotalModules" << numModulesDone_ << totalModules_;
+  //qDebug() << "~updateTotalModules" << numModulesDone_ << totalModules_;
 }
 void NetworkExecutionProgressBar::incrementModulesDone(double execTime, const std::string& moduleId)
 {
   Guard g(mutex_.get());
-  qDebug() << "incrementModulesDone" << numModulesDone_ << totalModules_;
+  //qDebug() << "incrementModulesDone" << numModulesDone_ << totalModules_;
   if (numModulesDone_ < totalModules_)
   {
     numModulesDone_++;
@@ -99,14 +99,14 @@ void NetworkExecutionProgressBar::incrementModulesDone(double execTime, const st
     if (numModulesDone_ == totalModules_)
       timingStream_ << "TIMING LOG: " << "execution ended at " << QTime::currentTime().toString("hh:mm:ss.zzz") << '\n';
   }
-  qDebug() << "~incrementModulesDone" << numModulesDone_ << totalModules_;
+  //qDebug() << "~incrementModulesDone" << numModulesDone_ << totalModules_;
 }
 
 void NetworkExecutionProgressBar::resetModulesDone()
 {
   Guard g(mutex_.get());
   numModulesDone_ = 0;
-  qDebug() << "resetModulesDone" << numModulesDone_ << totalModules_;
+  //qDebug() << "resetModulesDone" << numModulesDone_ << totalModules_;
   totalExecutionTime_ = 0;
   executionTimer_.restart();
   counterLabel_->setText(counterLabelString());
@@ -134,23 +134,40 @@ SCIRunProgressBar::SCIRunProgressBar(NetworkStatusPtr status, QWidget *parent) :
 
 void SCIRunProgressBar::paintEvent(QPaintEvent*)
 {
-  qDebug() << "Status:" << "\n\ttotal:" << status_->total()
-    << "\n\twaiting:" << status_->waiting()
-    << "\n\terrored:" << status_->errored()
-    << "\n\tnonReexecuted:" << status_->nonReexecuted()
-    << "\n\tfinished:" << status_->finished()
-    << "\n\tunexecuted:" << status_->unexecuted();
+  //qDebug() << "Status:" << "\n\ttotal:" << status_->total()
+  //  << "\n\twaiting:" << status_->waiting()
+  //  << "\n\terrored:" << status_->errored()
+  //  << "\n\tnonReexecuted:" << status_->nonReexecuted()
+  //  << "\n\tfinished:" << status_->finished()
+  //  << "\n\tunexecuted:" << status_->unexecuted();
 
   int val = value();
   int pos = QStyle::sliderPositionFromValue(minimum(), maximum(), val, width());
 
-  //int pos60 = QStyle::sliderPositionFromValue(minimum(), maximum(), 3, width());
-  //int pos80 = QStyle::sliderPositionFromValue(minimum(), maximum(), 6, width());
+  qDebug() << "pos:" << pos << "value:" << val << "/" << status_->total();
 
   QPainter p(this);
-  p.setPen(Qt::green);
-  p.setBrush(QBrush(Qt::green));
-  p.drawRect(0, 0, pos, height());
+
+  {
+    //done modules: either green (good) or red (errored)
+
+    qDebug() << "done modules: green" << status_->finished() << "red" << status_->errored();
+    auto finished = status_->finished();
+    auto errored = status_->errored();
+
+    auto fracFinished = (static_cast<double>(finished) / (finished + errored)) * pos;
+
+    p.setPen(Qt::green);
+    p.setBrush(QBrush(Qt::green));
+    p.drawRect(0, 0, std::min((int)fracFinished, pos), height());
+
+    //if (fracFinished < pos)
+    //{
+      p.setPen(Qt::red);
+      p.setBrush(QBrush(Qt::red));
+      p.drawRect(fracFinished, 0, pos, height());
+    //}
+  }
 
 /*
   if (val >= 0 && val <= 3)
@@ -175,9 +192,32 @@ void SCIRunProgressBar::paintEvent(QPaintEvent*)
     p.drawRect(pos80, 0, pos - pos80, height());
   }
 */
-  p.setPen(Qt::lightGray);
-  p.setBrush(QBrush(Qt::lightGray));
-  p.drawRect(pos, 0, width(), height());
+  {
+    //not done modules: either gray (waiting), stripy green (unexecuted), dull green?? (executing)
+    qDebug() << "not done modules: gray" << status_->waiting() << "stripy green" << status_->unexecuted() << "dull green?" << status_->executing();
+
+    auto waiting = status_->waiting();
+    auto unexecuted = status_->unexecuted();
+    auto executing = status_->executing();
+    auto totalNotDone = waiting + unexecuted + executing;
+    auto leftToFill = width() - pos;
+
+    auto fracExecuting = (static_cast<double>(executing) / totalNotDone) * leftToFill;
+    p.setPen(Qt::darkGreen);
+    p.setBrush(QBrush(Qt::darkGreen));
+    p.drawRect(pos, 0, pos + fracExecuting, height());
+    auto fracWaiting = (static_cast<double>(waiting) / totalNotDone) * leftToFill;
+    p.setPen(Qt::lightGray);
+    p.setBrush(QBrush(Qt::lightGray));
+    p.drawRect(pos + fracExecuting, 0, pos + fracExecuting + fracWaiting, height());
+    auto fracUnexecuted = (static_cast<double>(unexecuted) / totalNotDone) * leftToFill;
+    p.setPen(Qt::darkGray);
+    p.setBrush(QBrush(Qt::darkGray));
+    p.drawRect(pos + fracExecuting + fracWaiting, 0, width(), height());
+    
+
+    
+  }
 
   p.setPen(Qt::black);
   p.setBrush(QBrush(Qt::black));

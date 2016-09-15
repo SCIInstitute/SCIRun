@@ -98,6 +98,11 @@ public:
     auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
     return std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Waiting);
   }
+  size_t executing() const override
+  {
+    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
+    return std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Executing);
+  }
   size_t errored() const override
   {
     auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();

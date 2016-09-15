@@ -48,6 +48,7 @@ namespace Gui {
     virtual size_t total() const = 0;
     virtual size_t waiting() const = 0;
     virtual size_t errored() const = 0;
+    virtual size_t executing() const = 0;
     virtual size_t nonReexecuted() const = 0;
     virtual size_t finished() const = 0;
     virtual size_t unexecuted() const = 0;
