@@ -90,41 +90,40 @@ public:
 
   size_t total() const override
   {
-    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
     return ned_->numModules();
   }
   size_t waiting() const override
   {
-    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
-    return std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Waiting);
+    return countState(ModuleExecutionState::Value::Waiting);
   }
   size_t executing() const override
   {
-    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
-    return std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Executing);
+    return countState(ModuleExecutionState::Value::Executing);
   }
   size_t errored() const override
   {
-    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
-    return std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Errored);
+    return countState(ModuleExecutionState::Value::Errored);
   }
   size_t nonReexecuted() const override
   {
-    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
-    return -1;
+    return -1; // not available yet
   }
   size_t finished() const override
   {
-    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
-    return std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::Completed);
+    return countState(ModuleExecutionState::Value::Completed);
   }
   size_t unexecuted() const override
   {
-    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
-    return std::count(allStates.begin(), allStates.end(), ModuleExecutionState::Value::NotExecuted);
+    return countState(ModuleExecutionState::Value::NotExecuted);
   }
 private:
   NetworkEditor* ned_;
+  
+  size_t countState(ModuleExecutionState::Value val) const
+  {
+    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
+    return std::count(allStates.begin(), allStates.end(), val);
+  }
 };
 
 SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quitAfterExecute_(false)
