@@ -67,7 +67,6 @@ QList<QAction*> NetworkExecutionProgressBar::actions() const
 void NetworkExecutionProgressBar::updateTotalModules(size_t count)
 {
   Guard g(mutex_.get());
-  //qDebug() << "updateTotalModules" << numModulesDone_ << totalModules_;
   if (count != totalModules_)
   {
     totalModules_ = count;
@@ -78,12 +77,10 @@ void NetworkExecutionProgressBar::updateTotalModules(size_t count)
       progressBar_->setMaximum(count);
     progressBar_->setValue(0);
   }
-  //qDebug() << "~updateTotalModules" << numModulesDone_ << totalModules_;
 }
 void NetworkExecutionProgressBar::incrementModulesDone(double execTime, const std::string& moduleId)
 {
   Guard g(mutex_.get());
-  //qDebug() << "incrementModulesDone" << numModulesDone_ << totalModules_;
   if (numModulesDone_ < totalModules_)
   {
     numModulesDone_++;
@@ -91,7 +88,8 @@ void NetworkExecutionProgressBar::incrementModulesDone(double execTime, const st
     progressBar_->setValue(numModulesDone_);
     totalExecutionTime_ += execTime;
     auto wallTime = executionTimer_.elapsed();
-    progressBar_->setToolTip(QString("Green - completed modules\n??? - Unexecuted modules\nRed - errored modules\nTotal execution time: %1\nTotal wall time: %2")
+    //Green - completed modules\n??? - Unexecuted modules\nRed - errored modules\n
+    progressBar_->setToolTip(QString("Total execution time: %1\nTotal wall time: %2")
       .arg(totalExecutionTime_).arg(wallTime));
     timingStream_ << '\t' << moduleId.c_str() << "," << execTime << ',' << totalExecutionTime_
       << ','  << wallTime << '\n';
@@ -99,14 +97,12 @@ void NetworkExecutionProgressBar::incrementModulesDone(double execTime, const st
     if (numModulesDone_ == totalModules_)
       timingStream_ << "TIMING LOG: " << "execution ended at " << QTime::currentTime().toString("hh:mm:ss.zzz") << '\n';
   }
-  //qDebug() << "~incrementModulesDone" << numModulesDone_ << totalModules_;
 }
 
 void NetworkExecutionProgressBar::resetModulesDone()
 {
   Guard g(mutex_.get());
   numModulesDone_ = 0;
-  //qDebug() << "resetModulesDone" << numModulesDone_ << totalModules_;
   totalExecutionTime_ = 0;
   executionTimer_.restart();
   counterLabel_->setText(counterLabelString());
@@ -144,14 +140,13 @@ void SCIRunProgressBar::paintEvent(QPaintEvent*)
   int val = value();
   int pos = QStyle::sliderPositionFromValue(minimum(), maximum(), val, width());
 
-  qDebug() << "pos:" << pos << "value:" << val << "/" << status_->total();
+  //qDebug() << "pos:" << pos << "value:" << val << "/" << status_->total();
 
   QPainter p(this);
 
   {
     //done modules: either green (good) or red (errored)
-
-    qDebug() << "done modules: green" << status_->finished() << "red" << status_->errored();
+    //qDebug() << "done modules: green" << status_->finished() << "red" << status_->errored();
     auto finished = status_->finished();
     auto errored = status_->errored();
 
@@ -161,40 +156,19 @@ void SCIRunProgressBar::paintEvent(QPaintEvent*)
     p.setBrush(QBrush(Qt::green));
     p.drawRect(0, 0, std::min((int)fracFinished, pos), height());
 
-    //if (fracFinished < pos)
-    //{
+    if (errored > 0)
+    {
       p.setPen(Qt::red);
       p.setBrush(QBrush(Qt::red));
-      p.drawRect(fracFinished, 0, pos, height());
-    //}
+      p.drawRect(fracFinished, 0, pos - fracFinished, height());
+    }
   }
 
-/*
-  if (val >= 0 && val <= 3)
-  {
-    p.drawRect(0, 0, pos, height());
-  }
-  else if (val > 3 && val <= 6)
-  {
-    p.drawRect(0, 0, pos60, height());
-    p.setPen(QColor(255, 127, 0));
-    p.setBrush(QBrush(QColor(255, 127, 0)));
-    p.drawRect(pos60, 0, pos - pos60, height());
-  }
-  else
-  {
-    p.drawRect(0, 0, pos60, height());
-    p.setPen(QColor(255, 127, 0));
-    p.setBrush(QBrush(QColor(255, 127, 0)));
-    p.drawRect(pos60, 0, pos80 - pos60, height());
-    p.setPen(Qt::red);
-    p.setBrush(QBrush(Qt::red));
-    p.drawRect(pos80, 0, pos - pos80, height());
-  }
-*/
+  if (val < maximum())
   {
     //not done modules: either gray (waiting), stripy green (unexecuted), dull green?? (executing)
-    qDebug() << "not done modules: gray" << status_->waiting() << "stripy green" << status_->unexecuted() << "dull green?" << status_->executing();
+    //qDebug() << "not done modules: gray" << status_->waiting() << "stripy green" << status_->unexecuted() << "dull green?" << status_->executing()
+    //  << "rest:" << status_->finished() << status_->errored();
 
     auto waiting = status_->waiting();
     auto unexecuted = status_->unexecuted();
@@ -202,24 +176,44 @@ void SCIRunProgressBar::paintEvent(QPaintEvent*)
     auto totalNotDone = waiting + unexecuted + executing;
     auto leftToFill = width() - pos;
 
-    auto fracExecuting = (static_cast<double>(executing) / totalNotDone) * leftToFill;
-    p.setPen(Qt::darkGreen);
-    p.setBrush(QBrush(Qt::darkGreen));
-    p.drawRect(pos, 0, pos + fracExecuting, height());
-    auto fracWaiting = (static_cast<double>(waiting) / totalNotDone) * leftToFill;
-    p.setPen(Qt::lightGray);
-    p.setBrush(QBrush(Qt::lightGray));
-    p.drawRect(pos + fracExecuting, 0, pos + fracExecuting + fracWaiting, height());
-    auto fracUnexecuted = (static_cast<double>(unexecuted) / totalNotDone) * leftToFill;
-    p.setPen(Qt::darkGray);
-    p.setBrush(QBrush(Qt::darkGray));
-    p.drawRect(pos + fracExecuting + fracWaiting, 0, width(), height());
-    
+    if (totalNotDone > 0)
+    {
+      auto fracExecuting = (static_cast<double>(executing) / totalNotDone) * leftToFill;
+      p.setPen(Qt::blue);
+      p.setBrush(QBrush(Qt::blue));
+      p.drawRect(pos, 0, fracExecuting, height());
 
-    
+      auto fracWaiting = (static_cast<double>(waiting) / totalNotDone) * leftToFill;
+      p.setPen(Qt::lightGray);
+      p.setBrush(QBrush(Qt::lightGray));
+      p.drawRect(pos + fracExecuting, 0, fracWaiting, height());
+
+      auto fracUnexecuted = (static_cast<double>(unexecuted) / totalNotDone) * leftToFill;
+      p.setPen(Qt::darkYellow);
+      p.setBrush(QBrush(Qt::darkYellow, Qt::BDiagPattern));
+      p.drawRect(pos + fracExecuting + fracWaiting, 0, fracUnexecuted, height());
+    }
+    else
+    {
+      p.setPen(Qt::lightGray);
+      p.setBrush(QBrush(Qt::lightGray));
+      p.drawRect(pos, 0, width(), height());
+    }
   }
 
-  p.setPen(Qt::black);
-  p.setBrush(QBrush(Qt::black));
-  p.drawText(0, 0, width(), height(), Qt::AlignCenter, text());
+  if (pos != 0 && status_->finished() + status_->unexecuted() == status_->total())
+  {
+    p.setPen(Qt::green);
+    p.setBrush(QBrush(Qt::green));
+    p.drawRect(0, 0, width(), height());
+    p.setPen(Qt::black);
+    p.setBrush(QBrush(Qt::black));
+    p.drawText(0, 0, width(), height(), Qt::AlignCenter, "100%");
+  }
+  else
+  {
+    p.setPen(Qt::black);
+    p.setBrush(QBrush(Qt::black));
+    p.drawText(0, 0, width(), height(), Qt::AlignCenter, text());
+  }
 }
