@@ -31,31 +31,19 @@
 #include <Core/Algorithms/Math/AppendMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
+#include <Core/Datatypes/Tests/MatrixTestCases.h>
 
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 
-namespace
-{
-  DenseMatrixHandle matrix1()
-  {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3, 4));
-    for (int i = 0; i < m->rows(); ++ i)
-      for (int j = 0; j < m->cols(); ++ j)
-        (*m)(i, j) = 3.0 * i + j - 5;
-    return m;
-  }
-  const DenseMatrix Zero(DenseMatrix::Zero(3,3));
-}
-
 TEST(AppendMatrixAlgorithmTests, CanAppendRows)
 {
   AppendMatrixAlgorithm algo;
 
-  DenseMatrixHandle m1(matrix1());
-  DenseMatrixHandle m2(matrix1());
-  AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS);
+  DenseMatrixHandle m1(SCIRun::TestUtils::matrixNonSquare().clone());
+  DenseMatrixHandle m2(SCIRun::TestUtils::matrixNonSquare().clone());
+  auto result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS);
 
   EXPECT_EQ(6, result->rows());
   EXPECT_EQ(4, result->cols());
@@ -67,9 +55,9 @@ TEST(AppendMatrixAlgorithmTests, CanAppendColumns)
 {
   AppendMatrixAlgorithm algo;
 
-  DenseMatrixHandle m1(matrix1());
-  DenseMatrixHandle m2(matrix1());
-  AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::COLUMNS);
+  DenseMatrixHandle m1(SCIRun::TestUtils::matrixNonSquare().clone());
+  DenseMatrixHandle m2(SCIRun::TestUtils::matrixNonSquare().clone());
+  auto result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::COLUMNS);
 
   EXPECT_EQ(3, result->rows());
   EXPECT_EQ(8, result->cols());
@@ -82,9 +70,9 @@ TEST(AppendMatrixAlgorithmTests, ReturnsNullWithSizeMismatch)
   /// @todo: should return with error.
   AppendMatrixAlgorithm algo;
 
-  DenseMatrixHandle m1(matrix1());
-  DenseMatrixHandle m2(Zero.clone());
-  AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS);
+  DenseMatrixHandle m1(SCIRun::TestUtils::matrixNonSquare().clone());
+  DenseMatrixHandle m2(SCIRun::TestUtils::Zero.clone());
+  auto result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS);
 
   ASSERT_FALSE(result);
 }
@@ -93,6 +81,6 @@ TEST(AppendMatrixAlgorithmTests, NullInputReturnsDummyValues)
 {
   AppendMatrixAlgorithm algo;
 
-  AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(), AppendMatrixAlgorithm::ROWS);
+  auto result = algo.run(AppendMatrixAlgorithm::Inputs(), AppendMatrixAlgorithm::ROWS);
   EXPECT_FALSE(result);
 }

@@ -30,6 +30,7 @@
 ADD_SUBDIRECTORY(Utils)
 ADD_SUBDIRECTORY(ModuleTestBase)
 
+IF(BUILD_TESTING)
 ########################################################################
 # Configure test support
 
@@ -60,5 +61,7 @@ IF(RUN_BASIC_REGRESSION_TESTS)
     GET_FILENAME_COMPONENT(srn_name ${srn} NAME_WE)
     ADD_TEST(".Test.Samples.${srn_name}_srn" ${EXE_LOC} -E ${srn} --no_splash --regression 30 -d ${SCIRUN_TEST_RESOURCE_DIR})
   ENDFOREACH()
+
+ENDIF()
 
 ENDIF()

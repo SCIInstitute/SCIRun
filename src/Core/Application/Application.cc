@@ -44,6 +44,9 @@
 #include <Core/Application/Version.h>
 #include <Core/Python/PythonInterpreter.h>
 #include <Core/Application/Preferences/Preferences.h>
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
+#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <boost/algorithm/string.hpp>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
@@ -68,7 +71,6 @@ namespace SCIRun
       ApplicationParametersHandle parameters_;
       NetworkEditorControllerHandle controller_;
       GlobalCommandFactoryHandle cmdFactory_;
-      //void start_eai();
     };
   }
 }
@@ -284,7 +286,7 @@ std::string Application::moduleList()
       }
     }
   }
-  return ostr.str();;
+  return ostr.str();
 }
 
 boost::filesystem::path Application::configDirectory() const
@@ -305,4 +307,18 @@ bool Application::get_config_directory( boost::filesystem::path& config_dir ) co
 bool Application::get_user_name( std::string& user_name ) const
 {
   return applicationHelper.get_user_name(user_name);
+}
+
+std::string SaveFileCommandHelper::saveImpl(const std::string& filename)
+{
+  auto fileNameWithExtension = filename;
+  if (!boost::algorithm::ends_with(fileNameWithExtension, ".srn5"))
+    fileNameWithExtension += ".srn5";
+
+  auto file = Application::Instance().controller()->saveNetwork();
+
+  if (!XMLSerializer::save_xml(*file, fileNameWithExtension, "networkFile"))
+    return "";
+
+  return fileNameWithExtension;
 }

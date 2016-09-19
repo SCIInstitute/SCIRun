@@ -159,6 +159,33 @@ Tensor operator*(double d, const Tensor &t) {
   return t*d;
 }
 
+template <typename Indexable>
+Tensor symmetricTensorFromSixElementArray(const Indexable& array)
+{
+  return Tensor(
+    array[0],
+    array[1],
+    array[2],
+    array[3],
+    array[4],
+    array[5]
+    );
+}
+
+template <typename Indexable>
+Tensor symmetricTensorFromNineElementArray(const Indexable& array)
+{
+  static int sixElementTensorMatrixIndices[] = { 0, 1, 2, 4, 5, 8 };
+  return Tensor(
+    array[sixElementTensorMatrixIndices[0]],
+    array[sixElementTensorMatrixIndices[1]],
+    array[sixElementTensorMatrixIndices[2]],
+    array[sixElementTensorMatrixIndices[3]],
+    array[sixElementTensorMatrixIndices[4]],
+    array[sixElementTensorMatrixIndices[5]]
+    );
+}
+
 SCISHARE const TypeDescription* get_type_description(Tensor*);
     }}
 

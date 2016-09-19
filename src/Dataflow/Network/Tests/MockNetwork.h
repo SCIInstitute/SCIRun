@@ -66,6 +66,14 @@ namespace SCIRun {
         };
 
         typedef boost::shared_ptr<MockNetwork> MockNetworkPtr;
+
+        inline ModuleHandle addModuleToNetwork(NetworkInterface& network, const std::string& moduleName)
+        {
+          ModuleLookupInfo info;
+          info.module_name_ = moduleName;
+          return network.add_module(info);
+        }
+
       }
     }
   }

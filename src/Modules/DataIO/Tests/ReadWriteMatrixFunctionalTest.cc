@@ -46,6 +46,9 @@
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <boost/filesystem.hpp>
+#include <Dataflow/Network/Tests/MockNetwork.h>
+#include <Modules/Math/CreateMatrix.h>
+#include <Core/Datatypes/Tests/MatrixTestCases.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms::DataIO;
@@ -64,27 +67,6 @@ using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
-
-namespace
-{
-  DenseMatrixHandle matrix1()
-  {
-    DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (int i = 0; i < m->rows(); ++i)
-      for (int j = 0; j < m->cols(); ++j)
-        (*m)(i, j) = 3.0 * i + j;
-    return m;
-  }
-
-  const DenseMatrix Zero(DenseMatrix::Zero(3,3));
-
-  ModuleHandle addModuleToNetwork(Network& network, const std::string& moduleName)
-  {
-    ModuleLookupInfo info;
-    info.module_name_ = moduleName;
-    return network.add_module(info);
-  }
-}
 
 //TODO: figure out this failure
 TEST(ReadWriteMatrixFunctionalTest, DISABLED_ManualExecution)
@@ -106,8 +88,7 @@ TEST(ReadWriteMatrixFunctionalTest, DISABLED_ManualExecution)
   writeReadMatrixNetwork.connect(ConnectionOutputPort(read, 1), ConnectionInputPort(receive, 0));
   EXPECT_EQ(2, writeReadMatrixNetwork.nconnections());
 
-  auto input = matrix1();
-  send->get_state()->setTransientValue("MatrixToSend", input);
+  send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, matrix1str());
 
   auto filename = TestResources::rootDir() / "moduleTestMatrix.txt";
   boost::filesystem::remove(filename);
