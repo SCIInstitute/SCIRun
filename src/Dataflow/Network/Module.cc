@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
 #include <memory>
 #include <numeric>
 #include <boost/lexical_cast.hpp>
@@ -130,15 +129,27 @@ namespace detail
         signal_(static_cast<int>(state));
       }
       current_ = state;
+      setExpandedState(state);
       return true;
     }
     virtual std::string currentColor() const override
     {
-      return "dunno";
+      return "not implemented";
     }
+    virtual Value expandedState() const override
+    {
+      return expandedState_.value_or(currentState());
+    }
+
+    virtual void setExpandedState(Value state) override
+    {
+      expandedState_ = state;
+    }
+
   private:
     Value current_;
     ExecutionStateChangedSignalType signal_;
+    boost::optional<Value> expandedState_;
   };
 }
 
@@ -166,7 +177,7 @@ Module::Module(const ModuleLookupInfo& info,
   oports_.set_module(this);
   setLogger(defaultLogger_);
 
-  Log& log = Log::get();
+  auto& log = Log::get();
 
   log << DEBUG_LOG << "Module created: " << info_.module_name_ << " with id: " << id_;
 
@@ -262,7 +273,7 @@ bool Module::executeWithSignals() NOEXCEPT
   executeBegins_(id_);
   boost::timer executionTimer;
   {
-    std::string isoString = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::universal_time());
+    auto isoString = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::universal_time());
     metadata_.setMetadata("Last execution timestamp", isoString);
     copyStateToMetadata();
   }
@@ -335,7 +346,7 @@ bool Module::executeWithSignals() NOEXCEPT
     metadata_.setMetadata("Last execution duration (seconds)", ostr.str());
   }
 
-  status("MODULE FINISHED: " + id_.id_);
+  status("MODULE FINISHED " + ((returnCode ? "successfully: " : "with errors: ") + id_.id_));
   /// @todo: need separate logger per module
   //LOG_DEBUG("MODULE FINISHED: " << id_.id_);
 #ifdef BUILD_HEADLESS //TODO: better headless logging
@@ -344,10 +355,12 @@ bool Module::executeWithSignals() NOEXCEPT
     std::cout << "Module finished: " << id_ << std::endl;
   }
 #endif
-  //TODO: brittle dependency on Completed
-  //auto endState = returnCode ? ModuleExecutionState::Completed : ModuleExecutionState::Errored;
-  auto endState = ModuleExecutionState::Completed;
-  executionState_->transitionTo(endState);
+  
+  //TODO: brittle dependency on Completed with executor
+  executionState_->transitionTo(ModuleExecutionState::Completed);
+
+  auto expandedEndState = returnCode ? ModuleExecutionState::Completed : ModuleExecutionState::Errored;
+  executionState_->setExpandedState(expandedEndState);
 
   if (!executionDisabled())
   {

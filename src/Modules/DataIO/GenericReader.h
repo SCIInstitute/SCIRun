@@ -149,15 +149,13 @@ GenericReader<HType, PortTag>::execute()
 
   if (filename_.empty())
   {
-    error("No file has been selected.  Please choose a file.");
-    return;
+    MODULE_ERROR_WITH_TYPE(Dataflow::Networks::GeneralModuleError, "No file has been selected. Please choose a file.");
   }
   else if (!file_exists(filename_))
   {
     if (!useCustomImporter(filename_))
     {
-      error("File '" + filename_ + "' not found.");
-      return;
+      MODULE_ERROR_WITH_TYPE(Dataflow::Networks::GeneralModuleError, "File '" + filename_ + "' not found.");
     }
     else
     {
@@ -190,17 +188,15 @@ GenericReader<HType, PortTag>::execute()
     {
       if (!call_importer(filename_, handle))
       {
-        error("Import failed.");
-        return;
+        MODULE_ERROR_WITH_TYPE(Dataflow::Networks::GeneralModuleError, "Import failed.");
       }
     }
     else
     {
-      PiostreamPtr stream = auto_istream(filename_, getLogger());
+      auto stream = auto_istream(filename_, getLogger());
       if (!stream)
       {
-        error("Error reading file '" + filename_ + "'.");
-        return;
+        MODULE_ERROR_WITH_TYPE(Dataflow::Networks::GeneralModuleError, "Error reading file '" + filename_ + "'.");
       }
 
       // Read the file
@@ -208,8 +204,7 @@ GenericReader<HType, PortTag>::execute()
 
       if (!handle || stream->error())
       {
-        error("Error reading data from file '" + filename_ +"'.");
-        return;
+        MODULE_ERROR_WITH_TYPE(Dataflow::Networks::GeneralModuleError, "Error reading data from file '" + filename_ + "'.");
       }
     }
 
