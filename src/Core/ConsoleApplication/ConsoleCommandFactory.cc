@@ -62,6 +62,8 @@ CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type) const
     return boost::make_shared<RunPythonScriptCommandConsole>();
   case GlobalCommands::ExecuteCurrentNetwork:
     return boost::make_shared<ExecuteCurrentNetworkCommandConsole>();
+  case GlobalCommands::SetupDataDirectory:
+    return boost::make_shared<SetupDataDirectoryCommand>();
   case GlobalCommands::InteractiveMode:
     return boost::make_shared<InteractiveModeCommandConsole>();
   case GlobalCommands::SetupQuitAfterExecute:

@@ -44,23 +44,6 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 
-namespace
-{
-  DenseMatrixHandle matrix1()
-  {
-    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3, 4));
-    for (int i = 0; i < m->rows(); i++)
-      for (int j = 0; j < m->cols(); j++)
-        (*m)(i, j) = 3.0 * i + j - 5;
-    return m;
-  }
-
-  SparseRowMatrixHandle matrix2()
-  {
-    return convertMatrix::toSparse(matrix1());
-  }
-}
-
 TEST(GetMatrixSliceAlgoTests, ThrowsOnNullInput)
 {
   GetMatrixSliceAlgo algo;
@@ -71,7 +54,7 @@ TEST(GetMatrixSliceAlgoTests, CanGetColumnOrRowDense)
 {
   GetMatrixSliceAlgo algo;
 
-  DenseMatrixHandle m1(matrix1());
+  DenseMatrixHandle m1(SCIRun::TestUtils::matrix1H());
 
   for (int i = 0; i < m1->ncols(); ++i)
   {
@@ -94,12 +77,12 @@ TEST(GetMatrixSliceAlgoTests, CanGetColumnOrRowSparse)
 {
   GetMatrixSliceAlgo algo;
 
-  SparseRowMatrixHandle m1(matrix2());
+  SparseRowMatrixHandle m1(SCIRun::TestUtils::matrix1sparse());
 
   for (int i = 0; i < m1->ncols(); ++i)
   {
     auto col = algo.runImpl(m1, i, true);
-    DenseMatrix expected(matrix1()->col(i));
+    DenseMatrix expected(SCIRun::TestUtils::matrix1H()->col(i));
     ASSERT_TRUE(col.get<0>() != nullptr);
     //std::cout << "expected\n" << expected << "\n\nactual\n" << *convertMatrix::toDense(castMatrix::toSparse(col.get<0>())) << std::endl;
     EXPECT_EQ(expected, *convertMatrix::toDense(castMatrix::toSparse(col.get<0>())));
@@ -119,7 +102,7 @@ TEST(GetMatrixSliceAlgoTests, DISABLED_RunGenericWorks)
 {
   GetMatrixSliceAlgo algo;
 
-  DenseMatrixHandle m1(matrix1());
+  DenseMatrixHandle m1(SCIRun::TestUtils::matrix1H());
   //auto output = algo.run()
 
   FAIL() << "todo";
@@ -129,7 +112,7 @@ TEST(GetMatrixSliceAlgoTests, ThrowsForOutOfRangeIndex)
 {
   GetMatrixSliceAlgo algo;
 
-  DenseMatrixHandle m1(matrix1());
+  DenseMatrixHandle m1(SCIRun::TestUtils::matrix1H());
 
   EXPECT_THROW(algo.runImpl(m1, m1->ncols(), true), AlgorithmInputException);
   EXPECT_THROW(algo.runImpl(m1, m1->ncols()+1, true), AlgorithmInputException);
@@ -142,7 +125,7 @@ TEST(GetMatrixSliceAlgoTests, ThrowsForOutOfRangeIndex)
 
 TEST(GetMatrixSliceAlgoTests, DISABLED_TestDoubleTranspose)
 {
-  auto m = matrix2();
+  auto m = SCIRun::TestUtils::matrix1sparse();
   std::cout << m->castForPrinting() << std::endl;
 
 /*

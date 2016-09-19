@@ -633,6 +633,8 @@ SET(BUILD_FROM_TOP_LEVEL 1)
 ADD_SUBDIRECTORY(Externals)
 IF(NOT BUILD_HEADLESS)
   ADD_SUBDIRECTORY(Interface)
+ELSE()
+  ADD_DEFINITIONS(-DBUILD_HEADLESS=1)
 ENDIF()
 ADD_SUBDIRECTORY(Core)
 ADD_SUBDIRECTORY(Dataflow)
@@ -641,9 +643,8 @@ ADD_SUBDIRECTORY(Graphics)
 
 ADD_SUBDIRECTORY(Main)
 
-IF(BUILD_TESTING)
-  ADD_SUBDIRECTORY(Testing)
-ENDIF()
+
+ADD_SUBDIRECTORY(Testing)
 
 ########################################################################
 # sci_defs variables
@@ -834,6 +835,7 @@ IF(BUILD_TESTING)
   SET_PROPERTY(TARGET Algorithms_Field_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
   SET_PROPERTY(TARGET Algorithms_Describe_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
   SET_PROPERTY(TARGET Algorithms_FiniteElements_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
+  SET_PROPERTY(TARGET Algorithm_Layer_Test   PROPERTY FOLDER "Core/Algorithms/Tests")
   SET_PROPERTY(TARGET Core_Application_Tests   PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_Application_Session_Tests   PROPERTY FOLDER "Core/Tests")
   SET_PROPERTY(TARGET Core_Basis_Tests   PROPERTY FOLDER "Core/Tests")
@@ -880,6 +882,7 @@ IF(BUILD_TESTING)
 
   IF(NOT BUILD_HEADLESS)
     SET_PROPERTY(TARGET Interface_Modules_Render_Tests PROPERTY FOLDER "Interface/Tests")
+	SET_PROPERTY(TARGET Modules_Dialog_Factory_Tests PROPERTY FOLDER "Interface/Tests")
   ENDIF()
   IF(BUILD_WITH_PYTHON)
     SET_PROPERTY(TARGET Core_Python_Tests     PROPERTY FOLDER "Core/Tests")

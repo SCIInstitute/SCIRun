@@ -50,6 +50,7 @@ namespace Math {
     OUTPUT_PORT(0, Output, ComplexDenseMatrix);
 
     MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+    NEW_HELP_WEBPAGE_ONLY
   };
 }}}
 

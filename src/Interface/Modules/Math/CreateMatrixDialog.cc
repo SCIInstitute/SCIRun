@@ -52,7 +52,7 @@ void CreateMatrixDialog::pushMatrixToState(int state)
   {
     if (0 == state) // matrix is done editing
     {
-      state_->setValue(Math::CreateMatrix::TextEntry, matrixTextEdit_->toPlainText().toStdString());
+      state_->setValue(Core::Algorithms::Math::Parameters::TextEntry, matrixTextEdit_->toPlainText().toStdString());
       editBoxSaved();
     }
   }
@@ -61,7 +61,7 @@ void CreateMatrixDialog::pushMatrixToState(int state)
 void CreateMatrixDialog::pullSpecial()
 {
   Pulling p(this);
-  matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(Math::CreateMatrix::TextEntry).toString()));
+  matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(Core::Algorithms::Math::Parameters::TextEntry).toString()));
   if (firstPull_)
     editBoxSaved();
 

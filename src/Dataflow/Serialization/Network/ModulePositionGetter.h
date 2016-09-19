@@ -61,6 +61,8 @@ namespace Networks {
 
     virtual DisabledComponentsHandle dumpDisabledComponents(ModuleFilter modFilter, ConnectionFilter connFilter) const = 0;
     virtual void updateDisabledComponents(const DisabledComponents& disabled) = 0;
+
+    virtual void copyNote(ModuleHandle from, ModuleHandle to) const = 0;
   };
 
 }}}
