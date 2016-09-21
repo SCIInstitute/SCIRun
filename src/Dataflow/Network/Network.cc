@@ -227,10 +227,25 @@ NetworkGlobalSettings& Network::settings()
 
 void Network::setModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter)
 {
-  for (ModuleHandle module : modules_ | boost::adaptors::filtered(filter))
+  for (auto module : modules_ | boost::adaptors::filtered(filter))
   {
     module->executionState().transitionTo(state);
   }
+}
+
+void Network::setExpandedModuleExecutionState(ModuleExecutionState::Value state, ModuleFilter filter)
+{
+  for (auto module : modules_ | boost::adaptors::filtered(filter))
+  {
+    module->executionState().setExpandedState(state);
+  }
+}
+
+std::vector<ModuleExecutionState::Value> Network::moduleExecutionStates() const
+{
+  std::vector<ModuleExecutionState::Value> values;
+  std::transform(modules_.begin(), modules_.end(), std::back_inserter(values), [](const ModuleHandle& m) { return m->executionState().expandedState(); });
+  return values;
 }
 
 void Network::clear()

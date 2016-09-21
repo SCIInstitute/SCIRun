@@ -83,6 +83,49 @@ static const char* ToolkitIconURL = "ToolkitIconURL";
 static const char* ToolkitURL = "ToolkitURL";
 static const char* ToolkitFilename = "ToolkitFilename";
 
+class NetworkStatusImpl : public NetworkStatus
+{
+public:
+  explicit NetworkStatusImpl(NetworkEditor* ned) : ned_(ned) {}
+
+  size_t total() const override
+  {
+    return ned_->numModules();
+  }
+  size_t waiting() const override
+  {
+    return countState(ModuleExecutionState::Value::Waiting);
+  }
+  size_t executing() const override
+  {
+    return countState(ModuleExecutionState::Value::Executing);
+  }
+  size_t errored() const override
+  {
+    return countState(ModuleExecutionState::Value::Errored);
+  }
+  size_t nonReexecuted() const override
+  {
+    return -1; // not available yet
+  }
+  size_t finished() const override
+  {
+    return countState(ModuleExecutionState::Value::Completed);
+  }
+  size_t unexecuted() const override
+  {
+    return countState(ModuleExecutionState::Value::NotExecuted);
+  }
+private:
+  NetworkEditor* ned_;
+  
+  size_t countState(ModuleExecutionState::Value val) const
+  {
+    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
+    return std::count(allStates.begin(), allStates.end(), val);
+  }
+};
+
 SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quitAfterExecute_(false)
 {
   setupUi(this);
@@ -170,7 +213,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
     executeButton_->setDefaultAction(actionExecute_All_);
     executeBar->addWidget(executeButton_);
 
-    networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
+    networkProgressBar_.reset(new NetworkExecutionProgressBar(boost::make_shared<NetworkStatusImpl>(networkEditor_), this));
     executeBar->addActions(networkProgressBar_->actions());
     executeBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
       "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
@@ -638,7 +681,7 @@ void SCIRunMainWindow::importLegacyNetwork()
 {
   if (okToContinue())
   {
-    QString filename = QFileDialog::getOpenFileName(this, "Import Old Network...", latestNetworkDirectory_.path(), "*.srn");
+    auto filename = QFileDialog::getOpenFileName(this, "Import Old Network...", latestNetworkDirectory_.path(), "*.srn");
     importLegacyNetworkFile(filename);
   }
 }

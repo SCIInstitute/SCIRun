@@ -55,5 +55,13 @@ void Parallel::RunTasks(IndexedTask task, int numProcs)
 
 unsigned int Parallel::NumCores()
 {
-  return boost::thread::hardware_concurrency();
+  return std::min(boost::thread::hardware_concurrency(), maximumCoresSetByUser_);
 }
+
+void Parallel::SetMaximumCores(unsigned int max)
+{
+  std::cout << "Maximum cores available for parallel algorithms set to " << max << std::endl;
+  maximumCoresSetByUser_ = max;
+}
+
+unsigned int Parallel::maximumCoresSetByUser_(std::numeric_limits<unsigned int>::max());

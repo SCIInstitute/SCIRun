@@ -59,6 +59,8 @@ namespace SCIRun {
           MOCK_METHOD1(incrementErrorCode, void(const ModuleId&));
           MOCK_METHOD0(settings, NetworkGlobalSettings&());
           MOCK_METHOD2(setModuleExecutionState, void(ModuleExecutionState::Value, ModuleFilter));
+          MOCK_METHOD2(setExpandedModuleExecutionState, void(ModuleExecutionState::Value, ModuleFilter));
+          MOCK_CONST_METHOD0(moduleExecutionStates, std::vector<ModuleExecutionState::Value>());
           MOCK_METHOD0(clear, void());
           MOCK_CONST_METHOD0(containsViewScene, bool());
           MOCK_CONST_METHOD1(connectModuleInterrupted, boost::signals2::connection(ModuleInterruptedSignal::slot_function_type));

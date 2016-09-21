@@ -130,23 +130,20 @@ void GenericWriter<HType, PortTag, PortDescriber>::execute()
     path = boost::filesystem::absolute(path);
     if (!boost::filesystem::exists(path.parent_path()))
     {
-      error("Could not create path to filename");
-      return;
+      MODULE_ERROR_WITH_TYPE(Dataflow::Networks::GeneralModuleError, "Could not create path to filename");
     }
     filename_ = path.string();
   }
 
   if (!objectPortName_)
   {
-    error("Logical error: object port name not specified.");
-    return;
+    MODULE_ERROR_WITH_TYPE(Dataflow::Networks::GeneralModuleError, "Logical error: object port name not specified.");
   }
   handle_ = getRequiredInput(*objectPortName_);
 
   if (filename_.empty())
   {
-    error("No filename specified.");
-    return;
+    MODULE_ERROR_WITH_TYPE(Dataflow::Networks::GeneralModuleError, "No filename specified.");
   }
   if (needToExecute())
   {
@@ -161,8 +158,7 @@ void GenericWriter<HType, PortTag, PortDescriber>::execute()
     {
       if (!call_exporter(filename_))
       {
-        error("Export failed.");
-        return;
+        MODULE_ERROR_WITH_TYPE(Dataflow::Networks::GeneralModuleError, "Export failed.");
       }
     }
     else
@@ -179,7 +175,7 @@ void GenericWriter<HType, PortTag, PortDescriber>::execute()
 
       if (stream->error())
       {
-        error("Could not open file for writing" + filename_);
+        MODULE_ERROR_WITH_TYPE(Dataflow::Networks::GeneralModuleError, "Could not open file for writing" + filename_);
       }
       else
       {

@@ -745,3 +745,8 @@ void NetworkEditorController::cleanUpNetwork()
 
   updateModulePositions(cleanedUp, false);
 }
+
+std::vector<ModuleExecutionState::Value> NetworkEditorController::moduleExecutionStates() const
+{
+  return theNetwork_ ? theNetwork_->moduleExecutionStates() : std::vector<ModuleExecutionState::Value>();
+}
