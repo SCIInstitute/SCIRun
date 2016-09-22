@@ -30,6 +30,10 @@
 ADD_SUBDIRECTORY(Utils)
 ADD_SUBDIRECTORY(ModuleTestBase)
 
+IF(BUILD_WITH_PYTHON)
+  ADD_SUBDIRECTORY(Python)
+ENDIF()
+
 IF(BUILD_TESTING)
 ########################################################################
 # Configure test support
