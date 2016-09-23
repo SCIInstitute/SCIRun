@@ -31,7 +31,23 @@ ADD_SUBDIRECTORY(Utils)
 ADD_SUBDIRECTORY(ModuleTestBase)
 
 IF(BUILD_WITH_PYTHON)
-  ADD_SUBDIRECTORY(Python)
+  
+	execute_process(COMMAND "python" ${CMAKE_SOURCE_DIR}/Testing/Python/list_tests.py ${CMAKE_SOURCE_DIR}/Testing/Python/
+					  OUTPUT_VARIABLE STR_TESTS
+					  OUTPUT_STRIP_TRAILING_WHITESPACE
+					  ERROR_STRIP_TRAILING_WHITESPACE)
+
+	message("Python tests: " ${STR_TESTS})
+					  
+	separate_arguments(TEST_LIST UNIX_COMMAND ${STR_TESTS})
+
+	foreach(ATEST ${TEST_LIST})
+		#message(${ATEST})
+
+		#add_test(${ATEST} "python" "-m" "unittest" "-v" ${ATEST})
+
+	endforeach(ATEST)
+
 ENDIF()
 
 IF(BUILD_TESTING)
