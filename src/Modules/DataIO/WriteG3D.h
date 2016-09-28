@@ -67,7 +67,6 @@ namespace SCIRun {
         virtual std::string defaultFileTypeName() const override;
 
       private:
-        bool write(const std::string& filename, const FieldHandle& field);
         void calculateColors();
 
         std::vector<Core::Datatypes::ColorRGB> colors_;

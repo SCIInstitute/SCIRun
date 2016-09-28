@@ -40,6 +40,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Algorithms/Legacy/DataIO/ObjToFieldReader.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -78,15 +79,8 @@ void WriteG3D::setStateDefaults()
 
 bool WriteG3D::call_exporter(const std::string& filename)
 {
-  ///@todo: how will this work via python? need more code to set the filetype based on the extension...
-  FieldIEPluginManager mgr;
-  auto pl = mgr.get_plugin(get_state()->getValue(Variables::FileTypeName).toString());
-  if (pl)
-  {
-    //return pl->writeFile(handle_, filename, getLogger());
-    return write(filename, handle_);
-  }
-  return false;
+  ObjToFieldReader todo(getLogger());
+  return todo.write(filename, getRequiredInput(FieldToWrite));
 }
 
 void WriteG3D::execute()
@@ -128,19 +122,12 @@ void WriteG3D::execute()
 
 bool WriteG3D::useCustomExporter(const std::string& filename) const
 {
-  auto ft = get_state()->getValue(Variables::FileTypeName).toString();
-  LOG_DEBUG("WriteG3D with filetype " << ft);
-  auto ret = boost::filesystem::extension(filename) != ".fld";
-  
-  filetype_ = ft.find("SCIRun Field ASCII") != std::string::npos ? "ASCII" : "Binary";
-
-  return ret;
+  return true;
 }
 
 std::string WriteG3D::defaultFileTypeName() const
 {
-  FieldIEPluginManager mgr;
-  return defaultImportTypeForFile(&mgr);
+  return "*.g3d";
 }
 
 void WriteG3D::calculateColors()
@@ -184,6 +171,7 @@ void WriteG3D::calculateColors()
       if (state->getValue(Coloring).toInt() == 0)
       {
         ColorRGB defaultColor = ColorRGB(state->getValue(DefaultColor).toString());
+        //TODO: extract method
         defaultColor = (defaultColor.r() > 1.0 || defaultColor.g() > 1.0 || defaultColor.b() > 1.0) ?
           ColorRGB(defaultColor.r() / 255., defaultColor.g() / 255., defaultColor.b() / 255.) : defaultColor;
         node_color = defaultColor;
@@ -233,50 +221,6 @@ void WriteG3D::calculateColors()
       ++eiter;
     }
   }
-}
-
-//TODO: below method is to test functionality. Needs to be moved to Core\Algorithms\Legacy\DataIO\ObjToFieldReader.cc
-bool WriteG3D::write(const std::string& filename, const FieldHandle& field)
-{
-  std::ofstream os;
-  const VMesh* mesh = field->vmesh();
-
-  if (mesh->num_nodes() == 0) { return false; }
-
-  os.open(filename.c_str(), std::ios::out);
-  if (!os) { return false; }
-
-  os << "# written by SCIRun\n";
-
-  {
-    VMesh::Node::size_type iter;
-    VMesh::Node::size_type end = mesh->num_nodes();
-    for (iter = 0; iter != end; ++iter)
-    {
-      Point p;
-      ColorRGB c;
-      mesh->get_point(p, iter);
-      c = colors_[iter];
-      os << "v " << p.x() << " " << p.y() << " " << p.z() << " " << c.r() << " " << c.g() << " " << c.b() << " " << c.a() << "\n";
-    }
-  }
-
-  {
-    VMesh::Face::iterator iter;
-    VMesh::Face::iterator end;
-    VMesh::Node::array_type faceNodes(4);
-    mesh->end(end);
-    for (mesh->begin(iter); iter != end; ++iter)
-    {
-      mesh->get_nodes(faceNodes, *iter);
-      // OBJ face indices are 1-based.  Seriously.
-      os << "f " << faceNodes[0] + 1 << " " << faceNodes[1] + 1 << " "
-        << faceNodes[2] + 1 << "\n";
-    }
-  }
-  os.close();
-
-  return true;
 }
 
 const AlgorithmParameterName WriteG3D::EnableTransparency("EnableTransparency");
