@@ -822,7 +822,7 @@ TextPiostream::TextPiostream(const std::string& filename, Direction dir,
   else
   {
     istr=0;
-    ostr=new std::ofstream(filename.c_str());
+    ostr = new std::ofstream(filename.c_str(), std::ios_base::binary | std::ios_base::out);
     std::ostream& out=*ostr;
     if (!out)
     {
