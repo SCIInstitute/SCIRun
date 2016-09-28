@@ -37,14 +37,14 @@ IF(BUILD_WITH_PYTHON)
 					  OUTPUT_STRIP_TRAILING_WHITESPACE
 					  ERROR_STRIP_TRAILING_WHITESPACE)
 
-	message("Python tests: " ${STR_TESTS})
+	#message("Python tests: " ${STR_TESTS})
 					  
 	separate_arguments(TEST_LIST UNIX_COMMAND ${STR_TESTS})
 
 	foreach(ATEST ${TEST_LIST})
-		#message(${ATEST})
-
-		#add_test(${ATEST} "python" "-m" "unittest" "-v" ${ATEST})
+		message(${ATEST})
+		#message(${ATEST} "python" "-m" "unittest" "-v" ${ATEST})
+		add_test(${ATEST} "python" "-m" "unittest" "-v" ${ATEST} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Testing/Python/)
 
 	endforeach(ATEST)
 
