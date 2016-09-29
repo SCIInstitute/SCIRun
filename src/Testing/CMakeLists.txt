@@ -44,7 +44,7 @@ IF(BUILD_WITH_PYTHON)
 	foreach(ATEST ${TEST_LIST})
 		message(${ATEST})
 		#message(${ATEST} "python" "-m" "unittest" "-v" ${ATEST})
-		add_test(${ATEST} "python" "-m" "unittest" "-v" ${ATEST} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Testing/Python/)
+		add_test(NAME ${ATEST} COMMAND "python" "-m" "unittest" "-v" ${ATEST} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Testing/Python/)
 
 	endforeach(ATEST)
 
