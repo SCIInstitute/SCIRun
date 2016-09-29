@@ -13,15 +13,17 @@ def getSCIRunExecutable():
 
     
 class TestSCIRunAddModule(unittest.TestCase):
-
+    executable = "SCIRun"
     def test_scirun_module_ids(self):
-        self.assertTrue(True)
+        self.assertEqual(self.executable, r"C:\Dev\SCIRun\bin\SCIRun\Release\SCIRun.exe")
         self.assertEqual(getSCIRunExecutable(), r"C:\Dev\SCIRun\bin\SCIRun\Release\SCIRun.exe")
         self.assertEqual(getSourceRoot(), r"C:\Dev\SCIRun\src")
         self.assertEqual(getNetworkFolder(), r"C:\Dev\SCIRun\src\ExampleNets\regression")
-        subprocess.check_output([r"C:\_\SCIRun\Release\SCIRun.exe", os.path.join(getNetworkFolder(), "basicViz.srn5"), "-E", "--no_splash"])
+        subprocess.check_output([self.executable, os.path.join(getNetworkFolder(), "basicViz.srn5"), "-E", "--no_splash"])
         #subprocess.check_output([r"C:\_\SCIRun\Release\SCIRun.exe", r"C:\Dev\SCIRun\src\ExampleNets\regression\setuptdcs_colin27_patchelc.srn5", "-E", "--no_splash"])
         
 
 if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        TestSCIRunAddModule.executable = sys.argv.pop()
     unittest.main()

@@ -30,52 +30,49 @@
 ADD_SUBDIRECTORY(Utils)
 ADD_SUBDIRECTORY(ModuleTestBase)
 
-IF(BUILD_WITH_PYTHON)
-  
-	execute_process(COMMAND "python" ${CMAKE_SOURCE_DIR}/Testing/Python/list_tests.py ${CMAKE_SOURCE_DIR}/Testing/Python/
-					  OUTPUT_VARIABLE STR_TESTS
-					  OUTPUT_STRIP_TRAILING_WHITESPACE
-					  ERROR_STRIP_TRAILING_WHITESPACE)
-
-	#message("Python tests: " ${STR_TESTS})
-					  
-	separate_arguments(TEST_LIST UNIX_COMMAND ${STR_TESTS})
-
-	foreach(ATEST ${TEST_LIST})
-		message(${ATEST})
-		#message(${ATEST} "python" "-m" "unittest" "-v" ${ATEST})
-		add_test(NAME ${ATEST} COMMAND "python" "-m" "unittest" "-v" ${ATEST} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Testing/Python/)
-
-	endforeach(ATEST)
-
-ENDIF()
 
 IF(BUILD_TESTING)
-########################################################################
-# Configure test support
 
+IF(WIN32)
+ SET(EXE_LOC ${SCIRun_BINARY_DIR}/${BUILD_TYPE}/SCIRun.exe CACHE PATH "Path to SCIRun executable")
+ELSE(WIN32)
+ # TODO: change once testing works with app bundle
+ IF(APPLE)
+   SET(EXE_LOC ${SCIRun_BINARY_DIR}/${TEST_APPLICATION_NAME} CACHE PATH "Path to SCIRun executable")
+ ELSE()
+   SET(EXE_LOC ${SCIRun_BINARY_DIR}/${APPLICATION_NAME} CACHE PATH "Path to SCIRun executable")
+ ENDIF()
+ENDIF()
+   
 IF(RUN_UNIT_TESTS)
+
+  IF(BUILD_WITH_PYTHON)
+    EXECUTE_PROCESS(COMMAND "python" ${CMAKE_SOURCE_DIR}/Testing/Python/list_tests.py
+      ${CMAKE_SOURCE_DIR}/Testing/Python/
+      OUTPUT_VARIABLE STR_TESTS
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_STRIP_TRAILING_WHITESPACE)
+              
+    SEPARATE_ARGUMENTS(TEST_LIST UNIX_COMMAND ${STR_TESTS})
+
+    FOREACH(ATEST ${TEST_LIST})
+      MESSAGE(${ATEST})
+      #message(${ATEST} "python" "-m" "unittest" "-v" ${ATEST} ${EXE_LOC})
+      ADD_TEST(NAME ${ATEST} 
+        COMMAND "python" "-m" "unittest" "-v" ${ATEST} "${EXE_LOC}"
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Testing/Python/)
+    ENDFOREACH(ATEST)
+  ENDIF()
+
   FOREACH(test ${UNIT_TEST_LIST})
     ADD_TEST("${test}" "../${EXE_DIRPATH}/${test}")
   ENDFOREACH(test ${UNIT_TEST_LIST})
 ENDIF()
 
-
 IF(RUN_BASIC_REGRESSION_TESTS)
+  MESSAGE(STATUS "Using executable: ${EXE_LOC} to test networks")
 
-   IF(WIN32)
-     SET(EXE_LOC ${SCIRun_BINARY_DIR}/${BUILD_TYPE}/SCIRun.exe CACHE PATH "Path to SCIRun executable")
-   ELSE(WIN32)
-     # TODO: change once testing works with app bundle
-     IF(APPLE)
-       SET(EXE_LOC ${SCIRun_BINARY_DIR}/${TEST_APPLICATION_NAME} CACHE PATH "Path to SCIRun executable")
-     ELSE()
-       SET(EXE_LOC ${SCIRun_BINARY_DIR}/${APPLICATION_NAME} CACHE PATH "Path to SCIRun executable")
-     ENDIF()
-   ENDIF()
-   MESSAGE(STATUS "Using executable: ${EXE_LOC} to test networks")
-
-  # Run all the possible .srn files in src/ExampleNets
+  # Run all the possible .srn5 files in src/ExampleNets
   FILE(GLOB_RECURSE scirun_srns "${SCIRun_SOURCE_DIR}/ExampleNets/regression/*.srn5")
   FOREACH(srn ${scirun_srns})
     GET_FILENAME_COMPONENT(srn_name ${srn} NAME_WE)
@@ -83,5 +80,7 @@ IF(RUN_BASIC_REGRESSION_TESTS)
   ENDFOREACH()
 
 ENDIF()
+
+
 
 ENDIF()
