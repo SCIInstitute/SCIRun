@@ -34,7 +34,8 @@ ADD_SUBDIRECTORY(ModuleTestBase)
 IF(BUILD_TESTING)
 
 IF(WIN32)
- SET(EXE_LOC ${SCIRun_BINARY_DIR}/${BUILD_TYPE}/SCIRun.exe CACHE PATH "Path to SCIRun executable")
+ # TODO: determine if VS is set to Release or Debug.
+ SET(EXE_LOC ${SCIRun_BINARY_DIR}/Release/SCIRun.exe CACHE PATH "Path to SCIRun executable")
 ELSE(WIN32)
  # TODO: change once testing works with app bundle
  IF(APPLE)
@@ -52,14 +53,17 @@ IF(RUN_UNIT_TESTS)
       OUTPUT_VARIABLE STR_TESTS
       OUTPUT_STRIP_TRAILING_WHITESPACE
       ERROR_STRIP_TRAILING_WHITESPACE)
-              
+   
     SEPARATE_ARGUMENTS(TEST_LIST UNIX_COMMAND ${STR_TESTS})
-
+  
+    
+    MESSAGE("?????????:" ${EXE_LOC})
+    MESSAGE(${SCIRun_BINARY_DIR})
+  
     FOREACH(ATEST ${TEST_LIST})
       MESSAGE(${ATEST})
-      #message(${ATEST} "python" "-m" "unittest" "-v" ${ATEST} ${EXE_LOC})
       ADD_TEST(NAME ${ATEST} 
-        COMMAND "python" "-m" "unittest" "-v" ${ATEST} "${EXE_LOC}"
+        COMMAND ${CMAKE_COMMAND} -E env "SCIRUN_EXECUTABLE_PATH_FOR_PYTHON_TESTS=${EXE_LOC}" "python" "-m" "unittest" "-v" ${ATEST}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Testing/Python/)
     ENDFOREACH(ATEST)
   ENDIF()
@@ -80,7 +84,5 @@ IF(RUN_BASIC_REGRESSION_TESTS)
   ENDFOREACH()
 
 ENDIF()
-
-
 
 ENDIF()
