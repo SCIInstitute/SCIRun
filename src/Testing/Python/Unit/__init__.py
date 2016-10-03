@@ -11,3 +11,6 @@ def getNetworkFolder():
 
 def script_folder():
   return os.path.join(getSourceRoot(), "Testing", "Python", "Unit")
+
+def executable():
+  return os.environ["SCIRUN_EXECUTABLE_PATH_FOR_PYTHON_TESTS"]
