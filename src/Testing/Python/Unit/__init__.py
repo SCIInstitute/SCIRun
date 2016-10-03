@@ -17,4 +17,4 @@ def executable():
   return os.environ["SCIRUN_EXECUTABLE_PATH_FOR_PYTHON_TESTS"]
 
 def check_scirun_python_script_input(file):
-  subprocess.check_output([executable(), "-s", os.path.join(script_folder(), file), "--headless"])
+  subprocess.check_output([executable(), "-s", os.path.join(script_folder(), os.path.basename(file)), "--headless"])
