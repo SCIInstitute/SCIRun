@@ -726,6 +726,18 @@ std::string PythonInterpreter::EscapeSingleQuotedString( const std::string& str 
 void PythonInterpreter::importSCIRunLibrary()
 {
   run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+
+#ifdef BUILD_TESTING
+  const std::string assertFuncCode =
+    "def scirun_assert(func) :\n"
+    "\tif not func() :\n"
+    "\t\tscirun_add_module('ReadMatrix') # guarantee errored network\n"
+    "\t\tscirun_quit_after_execute()\n"
+    "\t\tscirun_execute_all()\n"
+    "\telse :\n"
+    "\t\tscirun_force_quit() # SCIRun returns 0 to console\n";
+  run_string(assertFuncCode);
+#endif
 }
 
 #endif
