@@ -406,7 +406,7 @@ private_(new PythonConsoleWidgetPrivate)
   PythonInterpreter::Instance().error_signal_.connect(boost::bind(&PythonConsoleEdit::print_error, private_->console_edit_, _1));
 
   showBanner();
-  PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+  PythonInterpreter::Instance().importSCIRunLibrary();
 }
 
 PythonConsoleWidget::~PythonConsoleWidget()

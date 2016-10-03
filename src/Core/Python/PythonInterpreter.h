@@ -37,8 +37,6 @@
 
 #include <Core/Utils/Singleton.h>
 #include <Core/Python/share.h>
-//#include <Core/EventHandler/EventHandler.h>
-//#include <Core/Python/PythonActionContext.h>
 
 class PythonStdIO;
 
@@ -104,6 +102,8 @@ public:
 	// START_TERMINAL:
 	/// To be implemented.
 	void start_terminal();
+
+  void importSCIRunLibrary();
 
 	// -- signals --
 public:

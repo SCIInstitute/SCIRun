@@ -722,4 +722,11 @@ std::string PythonInterpreter::EscapeSingleQuotedString( const std::string& str 
 	static const boost::regex reg( "[\\\\']" );
 	return boost::regex_replace( str, reg, "\\\\$&", boost::regex_constants::format_default );
 }
+
+void PythonInterpreter::importSCIRunLibrary()
+{
+  run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+}
+
 #endif
+

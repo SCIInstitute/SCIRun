@@ -170,7 +170,7 @@ bool InteractiveModeCommandConsole::execute()
 {
 #ifdef BUILD_WITH_PYTHON
   quietModulesIfNotVerbose();
-  PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+  PythonInterpreter::Instance().importSCIRunLibrary();
   std::string line;
 
   while (true)
@@ -201,7 +201,7 @@ bool RunPythonScriptCommandConsole::execute()
     LOG_CONSOLE("RUNNING PYTHON SCRIPT: " << *script);
 
     Application::Instance().controller()->clear();
-    PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+    PythonInterpreter::Instance().importSCIRunLibrary();
     PythonInterpreter::Instance().run_file(script->string());
 
     //TODO: not sure what else to do here. Probably wait on a condition variable, or just loop forever

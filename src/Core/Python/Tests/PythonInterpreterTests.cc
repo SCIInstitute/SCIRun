@@ -58,7 +58,7 @@ protected:
   #ifdef WIN32
   #ifndef DEBUG
     PythonInterpreter::Instance().initialize(false, "Core_Python_Tests", boost::filesystem::current_path().string());
-    PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+    PythonInterpreter::Instance().importSCIRunLibrary();
   #endif
   #else
     Py_Initialize();
