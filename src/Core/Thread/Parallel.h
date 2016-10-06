@@ -45,6 +45,9 @@ namespace Thread
     typedef boost::function<void(int)> IndexedTask;
     static void RunTasks(IndexedTask task, int numProcs);
     static unsigned int NumCores();
+    static void SetMaximumCores(unsigned int max);
+  private:
+    static unsigned int maximumCoresSetByUser_;
   };
 
 }}}

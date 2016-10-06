@@ -162,6 +162,8 @@ namespace Engine {
 
     const Networks::ModuleFactory& moduleFactory() const { return *moduleFactory_; }  //TOOD: lazy
 
+    std::vector<Dataflow::Networks::ModuleExecutionState::Value> moduleExecutionStates() const;
+
   private:
     void printNetwork() const;
     Networks::ModuleHandle addModuleImpl(const Networks::ModuleLookupInfo& info);

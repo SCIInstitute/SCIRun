@@ -73,6 +73,7 @@ namespace SCIRun {
         virtual boost::optional<std::string> threadMode() const = 0;
         virtual boost::optional<std::string> reexecuteMode() const = 0;
         virtual boost::optional<int> frameInitLimit() const = 0;
+        virtual boost::optional<unsigned int> maxCores() const = 0;
         virtual boost::optional<double> guiExpandFactor() const = 0;
       };
 

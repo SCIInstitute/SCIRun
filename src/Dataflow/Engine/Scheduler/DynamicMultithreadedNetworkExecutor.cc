@@ -141,7 +141,7 @@ void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& contex
   boost::thread execution(runner);
 }
 
-bool ModuleWaitingFilter::operator()(SCIRun::Dataflow::Networks::ModuleHandle mh) const
+bool ModuleWaitingFilter::operator()(ModuleHandle mh) const
 {
   auto state = mh->executionState().currentState();
   return state != Networks::ModuleExecutionState::Completed;// || state != Networks::ModuleExecutionState::Errored;

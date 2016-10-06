@@ -47,6 +47,7 @@
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <boost/algorithm/string.hpp>
+#include <Core/Thread/Parallel.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
@@ -153,7 +154,14 @@ void Application::readCommandLine(int argc, const char* argv[])
 
   private_->parameters_ = private_->parser.parse(argc, argv);
 
-  Logging::Log::get().setVerbose(parameters()->verboseMode());
+  //TODO: move this special logic somewhere else
+  {
+    auto maxCoresOption = private_->parameters_->developerParameters()->maxCores();
+    if (maxCoresOption)
+      Thread::Parallel::SetMaximumCores(*maxCoresOption);
+
+    Log::get().setVerbose(parameters()->verboseMode());
+  }
 }
 
 namespace
