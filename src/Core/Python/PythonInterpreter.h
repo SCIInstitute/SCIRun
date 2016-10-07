@@ -93,7 +93,7 @@ public:
 	// RUN_FILE:
 	/// Execute a python script from file.
 	/// NOTE: The script is run in its own local namespace.
-	void run_file( const std::string& file_name );
+  bool run_file(const std::string& file_name);
 
 	// INTERRUPT:
 	/// Interrupt the current execution.

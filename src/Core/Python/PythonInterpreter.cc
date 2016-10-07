@@ -568,7 +568,7 @@ void PythonInterpreter::run_script( const std::string& script )
 	this->prompt_signal_( this->private_->prompt1_ );
 }
 
-void PythonInterpreter::run_file( const std::string& file_name )
+bool PythonInterpreter::run_file( const std::string& file_name )
 {
 	{
 		PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
@@ -583,10 +583,12 @@ void PythonInterpreter::run_file( const std::string& file_name )
   if (fp2)
   {
     PyRun_SimpleFile(fp2, file);
+    return true;
   }
   else
   {
     this->error_signal_("Could not load python file: " + file_name);
+    return false;
   }
 }
 

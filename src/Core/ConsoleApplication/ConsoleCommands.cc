@@ -177,7 +177,7 @@ bool InteractiveModeCommandConsole::execute()
   {
     std::cout << "scirun5> " << std::flush;
     std::getline(std::cin, line);
-    if (line == "quit") // TODO: need fix for ^D entry || (!x.empty() && x[0] == '\004'))
+    if (line == "quit")
       break;
     if (std::cin.eof())
       break;
@@ -202,7 +202,11 @@ bool RunPythonScriptCommandConsole::execute()
 
     Application::Instance().controller()->clear();
     PythonInterpreter::Instance().importSCIRunLibrary();
-    PythonInterpreter::Instance().run_file(script->string());
+    if (!PythonInterpreter::Instance().run_file(script->string()))
+    {
+      LOG_CONSOLE("No python script with filename " << script->string());
+      return false;
+    }
 
     //TODO: not sure what else to do here. Probably wait on a condition variable, or just loop forever
     if (!Application::Instance().parameters()->interactiveMode())
