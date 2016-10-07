@@ -119,12 +119,12 @@ ObjToFieldReader::read(const std::string& filename, FieldHandle& field_handle)
 bool
 ObjToFieldReader::write(const std::string& filename, const FieldHandle& field)
 {
-  std::ofstream os;
   const VMesh* mesh = field->vmesh();
 
   if (mesh->num_nodes() == 0) { return false; }
 
-  os.open(filename.c_str(), std::ios::out);
+  std::ofstream os(filename.c_str(), std::ios_base::binary | std::ios_base::out);
+
   if (!os) { return false; }
 
   os << "# written by SCIRun\n";
