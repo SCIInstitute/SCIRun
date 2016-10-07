@@ -224,14 +224,11 @@ BOOST_PYTHON_MODULE( interpreter )
 CORE_SINGLETON_IMPLEMENTATION( PythonInterpreter );
 
 PythonInterpreter::PythonInterpreter() :
-	//Core::EventHandler(),
 	private_( new PythonInterpreterPrivate )
 {
 	this->private_->initialized_ = false;
 	this->private_->terminal_running_ = false;
 	this->private_->waiting_for_input_ = false;
-	//this->private_->action_context_.reset( new PythonActionContext );
-//  initialize_eventhandler();
 }
 
 PythonInterpreter::~PythonInterpreter()
@@ -403,7 +400,6 @@ void PythonInterpreter::initialize_eventhandler(const std::string& commandLine, 
 	// Remove intermediate python variables
 	PyRun_SimpleString( "del (interpreter, __internal_compiler, __term_io, __term_err)\n" );
   PRINT_PY_INIT_DEBUG(12);
-	//this->private_->thread_condition_variable_.notify_one();
 
   this->private_->initialized_ = true;
   PRINT_PY_INIT_DEBUG(999);
@@ -423,16 +419,11 @@ void PythonInterpreter::initialize(bool needProgramName, const std::string& comm
     std::vector< wchar_t > program_name(name_len + 1);
     mbstowcs(&program_name[0], argv[0].c_str(), name_len + 1);
 
-    //  SCIRun::Core::PythonInterpreter::Instance().run_string( "import " + module_name + "\n" );
-    //  SCIRun::Core::PythonInterpreter::Instance().run_string( "from " + module_name + " import *\n" );
-
     //std::cerr << "Initializing Python ..." << std::endl;
     this->private_->setProgramName(program_name);
     // TODO: remove debug print when confident python initialization is stable
     //std::wcerr << "initialize program name=" << this->private_->programName() << std::endl;
   }
-//  PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
-//  this->start_eventhandler();
 
   initialize_eventhandler(commandLine, libPath);
 
@@ -447,18 +438,11 @@ void PythonInterpreter::initialize(bool needProgramName, const std::string& comm
     error_signal_.connect(error);
   }
 
-  //this->private_->thread_condition_variable_.wait( lock );
   this->private_->initialized_ = true;
-  //std::cerr << "Python initialized." << std::endl;
 }
 
 void PythonInterpreter::print_banner()
 {
-	//if ( !this->is_eventhandler_thread() )
-	//{
-	//	this->post_event( boost::bind( &PythonInterpreter::print_banner, this ) );
-	//	return;
-	//}
 	PyRun_SimpleString( "print('Python %s on %s' % (sys.version, sys.platform))\n" );
 	this->prompt_signal_( this->private_->prompt1_ );
 }
@@ -506,7 +490,6 @@ bool PythonInterpreter::run_string( const std::string& command )
 	// If compilation succeeded and the code object is not Py_None
 	else if ( code_obj )
 	{
-		//this->private_->action_context_->set_action_mode( PythonActionMode::INTERACTIVE_E );
 		try
 		{
 		  auto result = PyEval_EvalCode( code_obj.ptr(), this->private_->globals_.ptr(), nullptr );
@@ -550,13 +533,6 @@ void PythonInterpreter::run_script( const std::string& script )
 		}
 	}
 
-	//if ( !this->is_eventhandler_thread() )
-	//{
-	//	this->post_event( boost::bind( static_cast< void ( PythonInterpreter::* ) ( std::string ) >(
-	//		&PythonInterpreter::run_script ), this, script ) );
-	//	return;
-	//}
-
 	// Output the script to the console
 	//this->output_signal_( "Running script ...\n" );
 
@@ -579,7 +555,6 @@ void PythonInterpreter::run_script( const std::string& script )
 	// If compilation succeeded and the code object is not Py_None
 	else if ( code_obj )
 	{
-		//this->private_->action_context_->set_action_mode( PythonActionMode::REPLAY_E );
 		boost::python::dict local_var;
 		PyObject* result = PyEval_EvalCode( code_obj.ptr(), this->private_->globals_.ptr(), local_var.ptr() );
 		Py_XDECREF( result );
@@ -593,33 +568,7 @@ void PythonInterpreter::run_script( const std::string& script )
 	this->prompt_signal_( this->private_->prompt1_ );
 }
 
-//void PythonInterpreter::run_script( StringVectorConstHandle script )
-//{
-//	{
-//		PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
-//		if ( !this->private_->initialized_ )
-//		{
-//			throw std::logic_error( "The python interpreter hasn't been initialized!" );
-//		}
-//	}
-//
-//	//if ( !this->is_eventhandler_thread() )
-//	//{
-//	//	this->post_event( boost::bind( static_cast< void ( PythonInterpreter::* ) ( StringVectorConstHandle ) >(
-//	//		&PythonInterpreter::run_script ), this, script ) );
-//	//	return;
-//	//}
-//
-//	// Concatenate the strings into one single string
-//	std::string str;
-//	for ( size_t i = 0; i < script->size(); ++i )
-//	{
-//		str += script->at( i );
-//	}
-//	this->run_script( str );
-//}
-
-void PythonInterpreter::run_file( const std::string& file_name )
+bool PythonInterpreter::run_file( const std::string& file_name )
 {
 	{
 		PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
@@ -634,30 +583,23 @@ void PythonInterpreter::run_file( const std::string& file_name )
   if (fp2)
   {
     PyRun_SimpleFile(fp2, file);
+    return true;
   }
   else
   {
     this->error_signal_("Could not load python file: " + file_name);
+    return false;
   }
 }
 
 void PythonInterpreter::interrupt()
 {
-	//if ( !this->is_eventhandler_thread() )
-	//{
-	//	PyErr_SetInterrupt();
-	//	this->private_->thread_condition_variable_.notify_all();
-	//	this->post_event( boost::bind( &PythonInterpreter::interrupt, this ) );
-	//}
-	//else
-	//{
-		if ( PyErr_CheckSignals() != 0 )
-		{
-			this->error_signal_( "\nKeyboardInterrupt\n" );
-			this->private_->command_buffer_.clear();
-			this->prompt_signal_( this->private_->prompt1_ );
-		}
-	//}
+	if ( PyErr_CheckSignals() != 0 )
+	{
+		this->error_signal_( "\nKeyboardInterrupt\n" );
+		this->private_->command_buffer_.clear();
+		this->prompt_signal_( this->private_->prompt1_ );
+	}
 }
 
 void PythonInterpreter::start_terminal()
@@ -675,28 +617,10 @@ void PythonInterpreter::start_terminal()
 		}
 	}
 
-	//if ( !this->is_eventhandler_thread() )
-	//{
-	//	this->post_event( boost::bind( &PythonInterpreter::start_terminal, this ) );
-	//	return;
-	//}
-
 	PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 	this->private_->terminal_running_ = true;
 	lock.unlock();
 
-	//PyRun_SimpleString("import sys\n");
-	//PyRun_SimpleString("import io\n");
-	//PyRun_SimpleString("sys.stdout=io.open('CONOUT$', 'wt')\n");
-	//PyObject* sys = PyImport_ImportModule("sys");
-	//PyObject* io = PyImport_ImportModule("io");
-	//PyObject* pystdout = PyObject_CallMethod(io, "open", "ss", "CONOUT$", "wt");
-	//if (-1 == PyObject_SetAttrString(sys, "stdout", pystdout)) {
-	//	/* Announce your error to the world */
-	//}
-	//Py_DECREF(sys);
-	//Py_DECREF(io);
-	//Py_DECREF(pystdout);
 	wchar_t** argv = new wchar_t*[ 2 ];
   argv[0] = const_cast< wchar_t* >(this->private_->programName());
 	argv[ 1 ] = 0;
@@ -707,19 +631,29 @@ void PythonInterpreter::start_terminal()
 	this->private_->terminal_running_ = false;
 }
 
-//PythonActionContextHandle PythonInterpreter::get_action_context()
-//{
-//	return this->private_->action_context_;
-//}
-//
-//PythonActionContextHandle PythonInterpreter::GetActionContext()
-//{
-//	return Instance()->get_action_context();
-//}
-
 std::string PythonInterpreter::EscapeSingleQuotedString( const std::string& str )
 {
 	static const boost::regex reg( "[\\\\']" );
 	return boost::regex_replace( str, reg, "\\\\$&", boost::regex_constants::format_default );
 }
+
+void PythonInterpreter::importSCIRunLibrary()
+{
+  run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+
+#ifdef BUILD_TESTING
+  const std::string assertFuncCode =
+    "def scirun_assert(func, exit=False) :\n"
+    "\tif not func() :\n"
+    "\t\tscirun_add_module('ReadMatrix') # guarantee errored network\n"
+    "\t\tscirun_quit_after_execute()\n"
+    "\t\tscirun_execute_all()\n"
+    "\telse:\n"
+    "\t\tif exit:"
+    "\t\t\tscirun_force_quit() # SCIRun returns 0 to console\n";
+  run_string(assertFuncCode);
 #endif
+}
+
+#endif
+

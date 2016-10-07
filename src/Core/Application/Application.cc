@@ -180,7 +180,7 @@ namespace
 
       if (!script_.empty())
       {
-        PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+        PythonInterpreter::Instance().importSCIRunLibrary();
         PythonInterpreter::Instance().run_string(script_);
       }
       return true;

@@ -128,7 +128,7 @@ void AddMatrices::visit(DenseColumnMatrixGeneric<double>& column)
   }
 }
 
-MultiplyMatrices::MultiplyMatrices(MatrixHandle factor) : BinaryVisitor(factor), product_(cloneIfNotNull(factor))
+MultiplyMatrices::MultiplyMatrices(MatrixHandle factor) : BinaryVisitor(factor), factor_(factor)
 {
 }
 
@@ -137,13 +137,13 @@ void MultiplyMatrices::visit(DenseMatrixGeneric<double>& dense)
   switch (typeCode_)
   {
   case DENSE:
-    *castMatrix::toDense(product_) *= dense;
+    product_ = boost::make_shared<DenseMatrix>(*castMatrix::toDense(factor_) * dense);
     break;
   case COLUMN:
-    *castMatrix::toColumn(product_) *= dense;
+    product_ = boost::make_shared<DenseMatrix>(*castMatrix::toColumn(factor_) * dense);
     break;
   case SPARSE_ROW:
-    *castMatrix::toSparse(product_) = *castMatrix::toSparse(product_) * *convertMatrix::fromDenseToSparse(dense);
+    product_ = boost::make_shared<SparseRowMatrix>(*castMatrix::toSparse(factor_) * *convertMatrix::fromDenseToSparse(dense));
     break;
   case NULL_MATRIX: break;
   case UNKNOWN: break;
@@ -155,15 +155,15 @@ void MultiplyMatrices::visit(SparseRowMatrixGeneric<double>& sparse)
   switch (typeCode_)
   {
   case DENSE:
-    product_.reset(new SparseRowMatrix(*convertMatrix::toSparse(product_) * sparse));
+    product_.reset(new SparseRowMatrix(*convertMatrix::toSparse(factor_) * sparse));
     typeCode_ = SPARSE_ROW;
     break;
   case COLUMN:
-    product_.reset(new SparseRowMatrix(*convertMatrix::toSparse(product_) * sparse));
+    product_.reset(new SparseRowMatrix(*convertMatrix::toSparse(factor_) * sparse));
     typeCode_ = SPARSE_ROW;
     break;
   case SPARSE_ROW:
-    *castMatrix::toSparse(product_) = *castMatrix::toSparse(product_) * sparse;
+    product_.reset(new SparseRowMatrix(*castMatrix::toSparse(factor_) * sparse));
     break;
   case NULL_MATRIX: break;
   case UNKNOWN: break;
@@ -175,13 +175,13 @@ void MultiplyMatrices::visit(DenseColumnMatrixGeneric<double>& column)
   switch (typeCode_)
   {
   case DENSE:
-    *castMatrix::toDense(product_) *= column;
+    product_.reset(new DenseMatrix(*castMatrix::toDense(factor_) * column));
     break;
   case COLUMN:
-    *castMatrix::toColumn(product_) *= column;
+    product_.reset(new DenseMatrix(*castMatrix::toColumn(factor_) * column));
     break;
   case SPARSE_ROW:
-    *castMatrix::toSparse(product_) = *castMatrix::toSparse(product_) * *convertMatrix::fromDenseToSparse(column);
+    product_.reset(new SparseRowMatrix(*castMatrix::toSparse(factor_) * *convertMatrix::fromDenseToSparse(column)));
     break;
   case NULL_MATRIX: break;
   case UNKNOWN: break;
