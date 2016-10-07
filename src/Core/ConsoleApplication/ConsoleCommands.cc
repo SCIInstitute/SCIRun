@@ -202,6 +202,13 @@ bool RunPythonScriptCommandConsole::execute()
 
     Application::Instance().controller()->clear();
     PythonInterpreter::Instance().importSCIRunLibrary();
+
+    if (!Application::Instance().parameters()->interactiveMode())
+    {
+      Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); exit(code); });
+      Application::Instance().controller()->stopExecutionContextLoopWhenExecutionFinishes();
+    }
+
     if (!PythonInterpreter::Instance().run_file(script->string()))
     {
       return false;
@@ -210,9 +217,6 @@ bool RunPythonScriptCommandConsole::execute()
     //TODO: not sure what else to do here. Probably wait on a condition variable, or just loop forever
     if (!Application::Instance().parameters()->interactiveMode())
     {
-      Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); exit(code); });
-      Application::Instance().controller()->stopExecutionContextLoopWhenExecutionFinishes();
-
       while (true)
       {
         LOG_CONSOLE("Running Python script.");
