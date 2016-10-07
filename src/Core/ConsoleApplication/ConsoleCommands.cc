@@ -204,13 +204,15 @@ bool RunPythonScriptCommandConsole::execute()
     PythonInterpreter::Instance().importSCIRunLibrary();
     if (!PythonInterpreter::Instance().run_file(script->string()))
     {
-      LOG_CONSOLE("No python script with filename " << script->string());
       return false;
     }
 
     //TODO: not sure what else to do here. Probably wait on a condition variable, or just loop forever
     if (!Application::Instance().parameters()->interactiveMode())
     {
+      Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); exit(code); });
+      Application::Instance().controller()->stopExecutionContextLoopWhenExecutionFinishes();
+
       while (true)
       {
         LOG_CONSOLE("Running Python script.");
