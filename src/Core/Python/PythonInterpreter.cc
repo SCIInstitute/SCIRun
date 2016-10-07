@@ -240,8 +240,11 @@ PythonInterpreter::~PythonInterpreter()
 //#define PRINT_PY_INIT_DEBUG(n) std::cout << "ev " << (n) << std::endl;
 #define PRINT_PY_INIT_DEBUG(n)
 
-bool isOSXSCIRunTestExecutable(const std::string& commandLine)
+bool needsSpecialPythonPathTreatment(const std::string& commandLine)
 {
+#if defined(BUILD_HEADLESS) && defined(__APPLE__)
+  return true;
+#else
   const std::string TEST_EXECUTABLE_NAME = "SCIRun_test";
   const std::string UNIT_TEST_EXECUTABLE_NAME = "Engine_Python_Tests";
   return commandLine.find(TEST_EXECUTABLE_NAME) != std::string::npos
@@ -249,6 +252,7 @@ bool isOSXSCIRunTestExecutable(const std::string& commandLine)
   //TODO: this version is bugged if the test network name starts with a relative path: stem() returns the network name, not the executable name.
   //the full command line isn't normally a valid path object anyway.
   //  return 0 == boost::filesystem::path(commandLine).stem().string().compare(0, TEST_EXECUTABLE_NAME.size(), TEST_EXECUTABLE_NAME);
+#endif
 }
 
 void PythonInterpreter::initialize_eventhandler(const std::string& commandLine, const boost::filesystem::path& libPath)
@@ -295,7 +299,7 @@ void PythonInterpreter::initialize_eventhandler(const std::string& commandLine, 
   lib_path_list.push_back(lib_path.parent_path() / PYTHONPATH);
   PRINT_PY_INIT_DEBUG(lib_path_list.back());
 
-  if (isOSXSCIRunTestExecutable(commandLine))
+  if (needsSpecialPythonPathTreatment(commandLine))
   {
     boost::filesystem::path full_lib_path(PYTHONLIBDIR);
     full_lib_path /= PYTHONLIB;
@@ -656,4 +660,3 @@ void PythonInterpreter::importSCIRunLibrary()
 }
 
 #endif
-
