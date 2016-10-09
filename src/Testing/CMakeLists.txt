@@ -57,7 +57,7 @@ IF(RUN_UNIT_TESTS)
     SEPARATE_ARGUMENTS(PYTHON_TEST_LIST UNIX_COMMAND ${STR_TESTS})
 
     IF(APPLE)
-      SET(PYTHON_TEST_EXE ${SCIRun_BINARY_DIR}/Externals/Install/Python_external/bin/python3)
+      SET(PYTHON_TEST_EXE ${SCIRun_BINARY_DIR}/../Externals/Install/Python_external/bin/python3)
     ELSE(APPLE)
       SET(PYTHON_TEST_EXE "python")
     ENDIF(APPLE)
