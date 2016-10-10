@@ -35,20 +35,20 @@ using namespace SCIRun::Core::Logging;
 
 void ConsoleLogger::error(const std::string& msg) const
 {
-  std::cerr << "Error: " << msg << std::endl;
+  std::cout << "Error: " << msg << std::endl;
 }
 
 void ConsoleLogger::warning(const std::string& msg) const
 {
-  std::cerr << "Warning: " << msg << std::endl;
+  std::cout << "Warning: " << msg << std::endl;
 }
 
 void ConsoleLogger::remark(const std::string& msg) const
 {
-  std::cerr << "Remark: " << msg << std::endl;
+  std::cout << "Remark: " << msg << std::endl;
 }
 
 void ConsoleLogger::status(const std::string& msg) const
 {
-  std::cerr << msg << std::endl;
+  std::cout << msg << std::endl;
 }
