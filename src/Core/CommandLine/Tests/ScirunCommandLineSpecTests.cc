@@ -47,9 +47,12 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "  -l [ --logfile ] arg    add output messages to a logfile--TODO\n"
     "  -1 [ --most-recent ]    load the most recently used file\n"
     "  -i [ --interactive ]    interactive mode\n"
-    "  -x [ --headless ]       disable GUI (Qt still needed, for now)\n"
+    "  -x [ --headless ]       disable GUI\n"
     "  --input-file arg        SCIRun Network Input File\n"
-    "  -s [ --script ] arg     SCIRun Python Script\n"
+    "  -s [ --script ] arg     Python script--interpret and drop into embedded \n"
+    "                          console\n"
+    "  -S [ --Script ] arg     Python script--interpret and quit after one SCIRun \n"
+    "                          execution pass\n"
     "  -0 [ --no_splash ]      Turn off splash screen\n"
     "  --verbose               Turn on debug log information\n"
     "  --threadMode arg        network execution threading mode--DEVELOPER USE ONLY\n"
@@ -167,5 +170,26 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     auto aph = parser.parse(argc, argv);
 
     ASSERT_TRUE(aph->loadMostRecentFile());
+  }
+
+   {
+     const char* argv[] = { "scirun.exe", "-s", "scr1.py" };
+     int argc = sizeof(argv) / sizeof(char*);
+
+     auto aph = parser.parse(argc, argv);
+
+     EXPECT_TRUE(!!aph->pythonScriptFile());
+     EXPECT_EQ("scr1.py", *aph->pythonScriptFile());
+   }
+
+  {
+    const char* argv[] = { "scirun.exe", "-S", "scr1.py" };
+    int argc = sizeof(argv) / sizeof(char*);
+
+    auto aph = parser.parse(argc, argv);
+
+    EXPECT_TRUE(!!aph->pythonScriptFile());
+    EXPECT_EQ("scr1.py", *aph->pythonScriptFile());
+    EXPECT_TRUE(aph->quitAfterOneScriptedExecution());
   }
 }

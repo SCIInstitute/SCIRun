@@ -173,6 +173,11 @@ bool InteractiveModeCommandConsole::execute()
   PythonInterpreter::Instance().importSCIRunLibrary();
   std::string line;
 
+#ifndef WIN32
+  LOG_CONSOLE("\033[1; 31mEntering interactive mode, type quit or hit ^C to exit.\033[0m");
+#else
+  LOG_CONSOLE("Entering interactive mode, type quit or hit ^C to exit.");
+#endif
   while (true)
   {
     std::cout << "scirun5> " << std::flush;
@@ -184,7 +189,9 @@ bool InteractiveModeCommandConsole::execute()
     if (!PythonInterpreter::Instance().run_string(line))
       break;
   }
-  std::cout << "\n[SCIRun] Goodbye!" << std::endl;
+  LOG_CONSOLE("~~~~~~~");
+  LOG_CONSOLE("Goodbye!");
+  LOG_CONSOLE("~~~~~~~");
   exit(0);
 #endif
   return true;
@@ -194,19 +201,20 @@ bool RunPythonScriptCommandConsole::execute()
 {
   quietModulesIfNotVerbose();
 
-  auto script = Application::Instance().parameters()->pythonScriptFile();
+  auto& app = Application::Instance();
+  auto script = app.parameters()->pythonScriptFile();
   if (script)
   {
 #ifdef BUILD_WITH_PYTHON
     LOG_CONSOLE("RUNNING PYTHON SCRIPT: " << *script);
 
-    Application::Instance().controller()->clear();
+    app.controller()->clear();
     PythonInterpreter::Instance().importSCIRunLibrary();
 
-    if (!Application::Instance().parameters()->interactiveMode())
+    if (app.parameters()->quitAfterOneScriptedExecution())
     {
-      Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); exit(code); });
-      Application::Instance().controller()->stopExecutionContextLoopWhenExecutionFinishes();
+      app.controller()->connectNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); exit(code); });
+      app.controller()->stopExecutionContextLoopWhenExecutionFinishes();
     }
 
     if (!PythonInterpreter::Instance().run_file(script->string()))
@@ -214,16 +222,14 @@ bool RunPythonScriptCommandConsole::execute()
       return false;
     }
 
-    //TODO: not sure what else to do here. Probably wait on a condition variable, or just loop forever
-    if (!Application::Instance().parameters()->interactiveMode())
-    {
-      while (true)
-      {
-        LOG_CONSOLE("Running Python script.");
-        boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
-      }
-    }
     LOG_CONSOLE("Done running Python script.");
+    
+    if (!app.parameters()->quitAfterOneScriptedExecution())
+    {
+      InteractiveModeCommandConsole interactive;
+      return interactive.execute();
+    }
+    
     return true;
 #else
     LOG_CONSOLE("Python disabled, cannot run script " << *script);
