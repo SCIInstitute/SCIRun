@@ -60,10 +60,10 @@ namespace Gui {
 
     void log(const QString& message) const;
 
-    virtual void error(const std::string& msg) const override;
-    virtual void warning(const std::string& msg) const override;
-    virtual void remark(const std::string& msg) const override;
-    virtual void status(const std::string& msg) const override;
+    void error(const std::string& msg) const override;
+    void warning(const std::string& msg) const override;
+    void remark(const std::string& msg) const override;
+    void status(const std::string& msg) const override;
 
     virtual void log4(const std::string& message) const override;
   private:
@@ -76,10 +76,10 @@ namespace Gui {
   {
   public:
     explicit TreeViewModuleGetter(QTreeWidget& tree) : tree_(tree) {}
-    virtual QString text() const override;
-    virtual QString clipboardXML() const override;
-    virtual bool isModule() const override;
-    virtual bool isClipboardXML() const override;
+    QString text() const override;
+    QString clipboardXML() const override;
+    bool isModule() const override;
+    bool isClipboardXML() const override;
   private:
     QTreeWidget& tree_;
   };
@@ -160,7 +160,7 @@ namespace Gui {
   {
     Q_OBJECT
   public:
-    explicit ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar, QWidget* parent = 0);
+    explicit ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar, QWidget* parent = nullptr);
   private Q_SLOTS:
     void showMessageBox();
     void saveToolkit() const;

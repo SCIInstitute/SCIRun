@@ -148,6 +148,10 @@ private:
 SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quitAfterExecute_(false)
 {
   setupUi(this);
+
+  QCoreApplication::setOrganizationName("SCI:CIBC Software");
+  QCoreApplication::setApplicationName("SCIRun5");
+
   setAttribute(Qt::WA_DeleteOnClose);
   if (newInterface())
     setStyleSheet(
