@@ -2099,7 +2099,6 @@ void ToolkitDownloader::showMessageBox()
   
   if (settings.contains(iconKey_))
   {
-    qDebug() << "icon data read from settings";
     image.loadFromData(settings.value(iconKey_).toByteArray());
   }
   else
@@ -2107,7 +2106,6 @@ void ToolkitDownloader::showMessageBox()
     if (!iconDownloader_)
       return;
 
-    qDebug() << "icon data read from settings";
     image.loadFromData(iconDownloader_->downloadedData());
     settings.setValue(iconKey_, iconDownloader_->downloadedData());
   }
