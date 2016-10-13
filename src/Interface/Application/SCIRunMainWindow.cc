@@ -79,9 +79,28 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
-static const char* ToolkitIconURL = "ToolkitIconURL";
-static const char* ToolkitURL = "ToolkitURL";
-static const char* ToolkitFilename = "ToolkitFilename";
+
+struct ToolkitInfo
+{
+  static const char* ToolkitIconURL;
+  static const char* ToolkitURL;
+  static const char* ToolkitFilename;
+
+  QString iconUrl, zipUrl, filename;
+
+  void setupAction(QAction* action, QObject* window) const
+  {
+    QObject::connect(action, SIGNAL(triggered()), window, SLOT(toolkitDownload()));
+    action->setProperty(ToolkitIconURL, iconUrl);
+    action->setProperty(ToolkitURL, zipUrl);
+    action->setProperty(ToolkitFilename, filename);
+    action->setIcon(QPixmap(":/general/Resources/download.png"));
+  }
+};
+
+const char* ToolkitInfo::ToolkitIconURL{ "ToolkitIconURL" };
+const char* ToolkitInfo::ToolkitURL{ "ToolkitURL" };
+const char* ToolkitInfo::ToolkitFilename{ "ToolkitFilename" };
 
 class NetworkStatusImpl : public NetworkStatus
 {
@@ -367,17 +386,15 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   connect(actionKeyboardShortcuts_, SIGNAL(triggered()), this, SLOT(showKeyboardShortcutsDialog()));
 
   //TODO: store in xml file, add to app resources
-	connect(actionForwardInverse_, SIGNAL(triggered()), this, SLOT(toolkitDownload()));
-  actionForwardInverse_->setProperty(ToolkitIconURL, QString("http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png"));
-  actionForwardInverse_->setProperty(ToolkitURL, QString("http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.2.zip"));
-  actionForwardInverse_->setProperty(ToolkitFilename, QString("FwdInvToolkit_v1.2.zip"));
-  actionForwardInverse_->setIcon(QPixmap(":/general/Resources/download.png"));
+  ToolkitInfo fwdInv{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
+    "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.2.zip",
+    "FwdInvToolkit_v1.2.zip" };
+  fwdInv.setupAction(actionForwardInverse_, this);
 
-	connect(actionBrainStimulator_, SIGNAL(triggered()), this, SLOT(toolkitDownload()));
-  actionBrainStimulator_->setProperty(ToolkitIconURL, QString("http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png"));
-  actionBrainStimulator_->setProperty(ToolkitURL, QString("http://sci.utah.edu/devbuilds/scirun5/toolkits/BrainStimulator_v1.2.zip"));
-  actionBrainStimulator_->setProperty(ToolkitFilename, QString("BrainStimulator_v1.2.zip"));
-  actionBrainStimulator_->setIcon(QPixmap(":/general/Resources/download.png"));
+  ToolkitInfo brainStim{ "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png",
+    "http://sci.utah.edu/devbuilds/scirun5/toolkits/BrainStimulator_v1.2.zip",
+    "BrainStimulator_v1.2.zip" };
+  brainStim.setupAction(actionBrainStimulator_, this);
 
   connect(networkEditor_, SIGNAL(networkExecuted()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(double, const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone(double, const std::string&)));
@@ -2026,7 +2043,7 @@ void FileDownloader::fileDownloaded(QNetworkReply* reply)
   Q_EMIT downloaded();
 }
 
-void FileDownloader::downloadProgress(qint64 received, qint64 total)
+void FileDownloader::downloadProgress(qint64 received, qint64 total) const
 {
   if (statusBar_)
 	{
@@ -2048,9 +2065,9 @@ ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar,
 {
   if (infoObject)
   {
-    iconUrl_ = infoObject->property(ToolkitIconURL).toString();
-    fileUrl_ = infoObject->property(ToolkitURL).toString();
-    filename_ = infoObject->property(ToolkitFilename).toString();
+    iconUrl_ = infoObject->property(ToolkitInfo::ToolkitIconURL).toString();
+    fileUrl_ = infoObject->property(ToolkitInfo::ToolkitURL).toString();
+    filename_ = infoObject->property(ToolkitInfo::ToolkitFilename).toString();
 
     downloadIcon();
   }
@@ -2095,7 +2112,7 @@ void ToolkitDownloader::showMessageBox()
   }
 }
 
-void ToolkitDownloader::saveToolkit()
+void ToolkitDownloader::saveToolkit() const
 {
   if (!zipDownloader_)
     return;

@@ -140,7 +140,7 @@ namespace Gui {
     Q_OBJECT
 
   public:
-    explicit FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent = 0);
+    explicit FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent = nullptr);
     QByteArray downloadedData() const { return downloadedData_; }
 
   Q_SIGNALS:
@@ -148,7 +148,7 @@ namespace Gui {
 
   private Q_SLOTS:
     void fileDownloaded(QNetworkReply* reply);
-    void downloadProgress(qint64 received, qint64 total);
+    void downloadProgress(qint64 received, qint64 total) const;
   private:
     QNetworkAccessManager webCtrl_;
     QNetworkReply* reply_;
@@ -163,7 +163,7 @@ namespace Gui {
     explicit ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar, QWidget* parent = 0);
   private Q_SLOTS:
     void showMessageBox();
-    void saveToolkit();
+    void saveToolkit() const;
 
   private:
     void downloadIcon(); //TODO: cache somehow
