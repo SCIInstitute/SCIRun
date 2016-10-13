@@ -2073,23 +2073,44 @@ ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar,
     fileUrl_ = infoObject->property(ToolkitInfo::ToolkitURL).toString();
     filename_ = infoObject->property(ToolkitInfo::ToolkitFilename).toString();
 
+    iconKey_ = ToolkitInfo::ToolkitIconURL + QString("--") + iconUrl_;
+
     downloadIcon();
   }
 }
 
 void ToolkitDownloader::downloadIcon()
 {
-  iconDownloader_ = new FileDownloader(iconUrl_, nullptr, this);
-  connect(iconDownloader_, SIGNAL(downloaded()), this, SLOT(showMessageBox()));
+  QSettings settings;
+  if (!settings.contains(iconKey_))
+  {
+    iconDownloader_ = new FileDownloader(iconUrl_, nullptr, this);
+    connect(iconDownloader_, SIGNAL(downloaded()), this, SLOT(showMessageBox()));
+  }
+  else
+    showMessageBox();
 }
 
 void ToolkitDownloader::showMessageBox()
 {
-  if (!iconDownloader_)
-    return;
-
   QPixmap image;
-  image.loadFromData(iconDownloader_->downloadedData());
+
+  QSettings settings;
+  
+  if (settings.contains(iconKey_))
+  {
+    qDebug() << "icon data read from settings";
+    image.loadFromData(settings.value(iconKey_).toByteArray());
+  }
+  else
+  {
+    if (!iconDownloader_)
+      return;
+
+    qDebug() << "icon data read from settings";
+    image.loadFromData(iconDownloader_->downloadedData());
+    settings.setValue(iconKey_, iconDownloader_->downloadedData());
+  }
 
   QMessageBox toolkitInfo;
 #ifdef WIN32

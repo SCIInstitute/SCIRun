@@ -169,7 +169,7 @@ namespace Gui {
     void downloadIcon(); //TODO: cache somehow
     FileDownloader* iconDownloader_;
     FileDownloader* zipDownloader_;
-    QString iconUrl_, fileUrl_, filename_;
+    QString iconUrl_, iconKey_, fileUrl_, filename_;
     QDir toolkitDir_;
     QStatusBar* statusBar_;
   };
