@@ -57,9 +57,10 @@ public:
       ("logfile,l", po::value<std::string>(), "add output messages to a logfile--TODO")
       ("most-recent,1", "load the most recently used file")
       ("interactive,i", "interactive mode")
-      ("headless,x", "disable GUI (Qt still needed, for now)")
+      ("headless,x", "disable GUI")
       ("input-file", po::value<std::vector<std::string>>(), "SCIRun Network Input File")
-      ("script,s", po::value<std::string>(), "SCIRun Python Script")
+      ("script,s", po::value<std::string>(), "Python script--interpret and drop into embedded console")
+      ("Script,S", po::value<std::string>(), "Python script--interpret and quit after one SCIRun execution pass")
       ("no_splash,0", "Turn off splash screen")
       ("verbose", "Turn on debug log information")
       ("threadMode", po::value<std::string>(), "network execution threading mode--DEVELOPER USE ONLY")
@@ -164,17 +165,22 @@ public:
       bool disableSplash,
       bool isRegressionMode,
       bool interactiveMode,
+      bool quitAfterOneScriptedExecution,
       bool loadMostRecentFile,
       bool isVerboseMode,
       bool printModules) : help_(help), version_(version), executeNetwork_(executeNetwork),
       executeNetworkAndQuit_(executeNetworkAndQuit), disableGui_(disableGui),
       disableSplash_(disableSplash), isRegressionMode_(isRegressionMode),
       interactiveMode_(interactiveMode),
+      quitAfterOneScriptedExecution_(quitAfterOneScriptedExecution),
       loadMostRecentFile_(loadMostRecentFile),
       isVerboseMode_(isVerboseMode),
       printModules_(printModules)
     {}
-    bool help_, version_, executeNetwork_, executeNetworkAndQuit_, disableGui_, disableSplash_, isRegressionMode_, interactiveMode_, loadMostRecentFile_, isVerboseMode_, printModules_;
+    bool help_, version_, executeNetwork_, executeNetworkAndQuit_, 
+      disableGui_, disableSplash_, isRegressionMode_, interactiveMode_, 
+      quitAfterOneScriptedExecution_, 
+      loadMostRecentFile_, isVerboseMode_, printModules_;
   };
   ApplicationParametersImpl(
     const std::string& entireCommandLine,
@@ -244,6 +250,11 @@ public:
     return flags_.interactiveMode_;
   }
 
+  bool quitAfterOneScriptedExecution() const override
+  {
+    return flags_.quitAfterOneScriptedExecution_;
+  }
+
   bool loadMostRecentFile() const override
   {
     return flags_.loadMostRecentFile_;
@@ -310,6 +321,10 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
     {
       pythonScriptFile = boost::filesystem::path(parsed["script"].as<std::string>());
     }
+    else if (parsed.count("Script") != 0 && !parsed["Script"].empty() && !parsed["Script"].defaulted())
+    {
+      pythonScriptFile = boost::filesystem::path(parsed["Script"].as<std::string>());
+    }
     auto dataDirectory = boost::optional<boost::filesystem::path>();
     if (parsed.count("datadir") != 0 && !parsed["datadir"].empty() && !parsed["datadir"].defaulted())
     {
@@ -338,6 +353,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
         parsed.count("no_splash") != 0,
         parsed.count("regression") != 0,
         parsed.count("interactive") != 0,
+        parsed.count("Script") != 0,
         parsed.count("most-recent") != 0,
         parsed.count("verbose") != 0,
         parsed.count("list-modules") != 0)

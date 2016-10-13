@@ -224,7 +224,7 @@ bool mult_ss(SCIRun::LinAlgProgramCode& pc, std::string& err)
   data0->reset((*data2)->clone());
   MultiplyMatrices mult(*data1);
   (*data0)->accept(mult);
-  *data0 = mult.product_;
+  *data0 = mult.getProduct();
 
   return *data0 != nullptr;
 }

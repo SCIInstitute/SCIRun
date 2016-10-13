@@ -53,7 +53,7 @@ public:
   PythonControllerFunctionalTests()
   {
     PythonInterpreter::Instance().initialize(false, "Engine_Python_Tests", boost::filesystem::current_path().string());
-    PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+    PythonInterpreter::Instance().importSCIRunLibrary();
   }
 };
 

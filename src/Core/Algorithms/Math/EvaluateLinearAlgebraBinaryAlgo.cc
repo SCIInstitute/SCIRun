@@ -55,7 +55,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   ENSURE_ALGORITHM_INPUT_NOT_NULL(lhs, "lhs");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(rhs, "rhs");
 
-  Operator oper = params.get<0>();
+  auto oper = params.get<0>();
   switch (oper)
   {
   case ADD:
@@ -83,7 +83,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
       THROW_ALGORITHM_INPUT_ERROR("Invalid dimensions to multiply matrices.");
     MultiplyMatrices mult(lhs);
     rhs->accept(mult);
-    return mult.product_;
+    return mult.getProduct();
   }
   case FUNCTION:
   {
@@ -98,13 +98,13 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
     NewArrayMathEngine engine;
     MatrixHandle lhsInput(lhs->clone()), rhsInput(rhs->clone());
 
-    if (!(engine.add_input_fullmatrix("x", lhsInput)))
+    if (!engine.add_input_fullmatrix("x", lhsInput))
       THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
-    if (!(engine.add_input_fullmatrix("y", rhsInput)))
+    if (!engine.add_input_fullmatrix("y", rhsInput))
       THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
 
-    boost::optional<std::string> func = params.get<1>();
-    std::string function_string = func.get();
+    auto func = params.get<1>();
+    auto function_string = func.get();
 
     function_string = "RESULT=" + function_string;
     engine.add_expressions(function_string);
