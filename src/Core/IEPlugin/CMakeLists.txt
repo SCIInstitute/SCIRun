@@ -51,6 +51,8 @@ SET(Core_IEPlugin_SRCS
   #StructQuadSurfField_Plugin.cc
   TriSurfField_Plugin.cc
   TetVolField_Plugin.cc
+  CARPMesh_Plugin.cc
+  CARPFiber_PLugin.cc
 )
 
 SET(Core_IEPlugin_HEADERS
@@ -79,6 +81,8 @@ SET(Core_IEPlugin_HEADERS
   #StructQuadSurfField_Plugin.h
   TriSurfField_Plugin.h
   TetVolField_Plugin.h
+  CARPMesh_Plugin.h
+  CARPFiber_Plugin.h
 )
 
 SCIRUN_ADD_LIBRARY(Core_IEPlugin
