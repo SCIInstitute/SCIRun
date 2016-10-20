@@ -41,7 +41,6 @@
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/CompGeom.h>
 #include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/Plane.h>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Vector.h>
 
@@ -58,6 +57,7 @@
 #include <Core/Utils/Legacy/CheckSum.h>
 
 #include <boost/thread.hpp>
+#include <boost/unordered_map.hpp>
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
 
@@ -2468,23 +2468,8 @@ protected:
     }
   };
 
-/// Define the hash_map type, as this is not yet an approved type under Windows
-/// it is located in stdext
-
-#ifdef HAVE_HASH_MAP
-  #if defined(_WIN32)
-    /// hash_map is in stdext namespace
-    typedef stdext::hash_map<PFace, typename Face::index_type, FaceHash> face_ht;
-    typedef stdext::hash_map<PEdge, typename Edge::index_type, EdgeHash> edge_ht;
-  #else
-    /// hash_map is in std namespace
-    typedef hash_map<PFace, typename Face::index_type, FaceHash> face_ht;
-    typedef hash_map<PEdge, typename Edge::index_type, EdgeHash> edge_ht;
-  #endif
-#else
-  typedef std::map<PFace, typename Face::index_type, FaceHash> face_ht;
-  typedef std::map<PEdge, typename Edge::index_type, EdgeHash> edge_ht;
-#endif
+  using face_ht = boost::unordered_map<PFace, typename Face::index_type, FaceHash>;
+  using edge_ht = boost::unordered_map<PEdge, typename Edge::index_type, EdgeHash>;
 
   /// container for face storage. Must be computed each time
   ///  nodes or cells change. 
