@@ -266,6 +266,7 @@ bool Module::executeWithSignals() NOEXCEPT
   auto starting = "STARTING MODULE: " + id_.id_;
 #ifdef BUILD_HEADLESS //TODO: better headless logging
   static Mutex executeLogLock("headlessExecution");
+  if (!Log::get().verbose())
   {
     Guard g(executeLogLock.get());
     std::cout << starting << std::endl;
@@ -347,14 +348,14 @@ bool Module::executeWithSignals() NOEXCEPT
     metadata_.setMetadata("Last execution duration (seconds)", ostr.str());
   }
 
-  auto finished = "MODULE FINISHED " + ((returnCode ? "successfully: " : "with errors: ") + id_.id_);
-  status(finished);
-  /// @todo: need separate logger per module
-  //LOG_DEBUG("MODULE FINISHED: " << id_.id_);
+  std::ostringstream finished;
+  finished << "MODULE " << id_.id_ << " FINISHED " << (returnCode ? "successfully " : "with errors ") << "in " << executionTime << " seconds.";
+  status(finished.str());
 #ifdef BUILD_HEADLESS //TODO: better headless logging
+  if (!Log::get().verbose())
   {
     Guard g(executeLogLock.get());
-    std::cout << finished << std::endl;
+    std::cout << finished.str() << std::endl;
   }
 #endif
   
