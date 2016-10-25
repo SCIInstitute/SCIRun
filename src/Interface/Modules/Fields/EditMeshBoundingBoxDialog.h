@@ -44,7 +44,7 @@ class SCISHARE EditMeshBoundingBoxDialog : public ModuleDialogGeneric,
 public:
   EditMeshBoundingBoxDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
 private:
   void AdjustScale(float scaleFactor);
   float doubleUpScale_, upScale_, downScale_, doubleDownScale_;

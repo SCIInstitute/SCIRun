@@ -39,7 +39,6 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
   : ModuleDialogGeneric(state, parent), doubleUpScale_(1.5625), upScale_(1.25), downScale_(0.8), doubleDownScale_(0.64)
 {
   setupUi(this);
-  //custom value for cylinder size
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 

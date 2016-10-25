@@ -246,8 +246,8 @@
         </property>
         <property name="font">
          <font>
-          <weight>75</weight>
-          <bold>true</bold>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="text">
@@ -259,6 +259,12 @@
        <widget class="QDoubleSpinBox" name="outputCenterXSpinBox_">
         <property name="enabled">
          <bool>true</bool>
+        </property>
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
         </property>
         <property name="decimals">
          <number>5</number>
@@ -276,6 +282,12 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="decimals">
          <number>5</number>
         </property>
@@ -291,6 +303,12 @@
        <widget class="QDoubleSpinBox" name="outputCenterZSpinBox_">
         <property name="enabled">
          <bool>true</bool>
+        </property>
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
         </property>
         <property name="decimals">
          <number>5</number>
@@ -310,8 +328,8 @@
         </property>
         <property name="font">
          <font>
-          <weight>75</weight>
-          <bold>true</bold>
+          <weight>50</weight>
+          <bold>false</bold>
          </font>
         </property>
         <property name="text">
@@ -321,6 +339,12 @@
       </item>
       <item row="1" column="1">
        <widget class="QDoubleSpinBox" name="outputSizeXSpinBox_">
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="decimals">
          <number>5</number>
         </property>
@@ -331,6 +355,12 @@
       </item>
       <item row="1" column="2">
        <widget class="QDoubleSpinBox" name="outputSizeYSpinBox_">
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="decimals">
          <number>5</number>
         </property>
@@ -341,6 +371,12 @@
       </item>
       <item row="1" column="3">
        <widget class="QDoubleSpinBox" name="outputSizeZSpinBox_">
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="decimals">
          <number>5</number>
         </property>
@@ -371,8 +407,14 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QLabel" name="label">
+          <property name="font">
+           <font>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
           <property name="text">
-           <string>SCALE:</string>
+           <string>Scale:</string>
           </property>
          </widget>
         </item>
@@ -411,8 +453,14 @@
       </item>
       <item row="1" column="0">
        <widget class="QRadioButton" name="noTranslationRadioButton_">
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
-         <string>NO TRANSLATION RESTRICTION</string>
+         <string>No translation restriction</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -421,8 +469,14 @@
       </item>
       <item row="2" column="0">
        <widget class="QRadioButton" name="xyzTranslationRadioButton_">
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
-         <string>XYZ TRANSLATION RESTRICTION</string>
+         <string>XYZ translation restriction</string>
         </property>
        </widget>
       </item>
@@ -449,8 +503,14 @@
       </item>
       <item row="3" column="0">
        <widget class="QRadioButton" name="rdiTranslationRadioButton_">
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
         <property name="text">
-         <string>RDI TRANSLATION RESTRICTION</string>
+         <string>RDI translation restriction</string>
         </property>
        </widget>
       </item>
