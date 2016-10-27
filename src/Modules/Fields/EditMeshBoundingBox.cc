@@ -224,33 +224,6 @@ void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
   state->setValue(InputSizeZ, convertForLabel(size.z()));
 }
 
-void EditMeshBoundingBox::updateOutputAttributes(const BBox& box)
-{
-  auto size = box.diagonal();
-  auto center = box.center();
-  auto state = get_state();
-  const auto useOutputSize = state->getValue(UseOutputSize).toBool();
-  const auto useOutputCenter = state->getValue(UseOutputCenter).toBool();
-
-  state->setValue(OutputCenterX, convertForLabel(center.x()));
-  if (!useOutputCenter) state->setValue(OutputCenterX, center.x());
-
-  state->setValue(OutputCenterY, convertForLabel(center.y()));
-  if (!useOutputCenter) state->setValue(OutputCenterY, center.y());
-
-  state->setValue(OutputCenterZ, convertForLabel(center.z()));
-  if (!useOutputCenter) state->setValue(OutputCenterZ, center.z());
-
-  state->setValue(OutputSizeX, convertForLabel(size.x()));
-  if (!useOutputSize) state->setValue(OutputSizeX, size.x());
-
-  state->setValue(OutputSizeY, convertForLabel(size.y()));
-  if (!useOutputSize) state->setValue(OutputSizeY, size.y());
-
-  state->setValue(OutputSizeZ, convertForLabel(size.z()));
-  if (!useOutputSize) state->setValue(OutputSizeZ, size.z());
-}
-
 GeometryBaseHandle EditMeshBoundingBox::buildGeometryObject()
 {
   auto colorScheme(ColorScheme::COLOR_UNIFORM);
@@ -389,64 +362,66 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
   impl_->field_initial_transform_.pre_trans(r);
   impl_->field_initial_transform_.pre_translate(Vector(center));
 
+  auto reset = state->getValue(Resetting).toBool();
   state->setValue(Resetting, false);
 
   const auto useOutputSize = state->getValue(UseOutputSize).toBool();
   const auto useOutputCenter = state->getValue(UseOutputCenter).toBool();
-
-  if (useOutputSize || useOutputCenter || widgetMoved_)
-  {
-    state->setValue(OutputSizeX, std::fabs(state->getValue(OutputSizeX).toDouble()));
-    state->setValue(OutputSizeY, std::fabs(state->getValue(OutputSizeY).toDouble()));
-    state->setValue(OutputSizeZ, std::fabs(state->getValue(OutputSizeZ).toDouble()));
-
-    Vector sizex, sizey, sizez;
-    if (useOutputSize)
-    {
-      sizex = Vector(state->getValue(OutputSizeX).toDouble(), 0, 0);
-      sizey = Vector(0, state->getValue(OutputSizeY).toDouble(), 0);
-      sizez = Vector(0, 0, state->getValue(OutputSizeZ).toDouble());
-    }
-    else
-    {
-      sizex = (right - center) * 2;
-      sizey = (down - center) * 2;
-      sizez = (in - center) * 2;
-    }
-    if (useOutputCenter || widgetMoved_)
-    {
-      center = Point(state->getValue(OutputCenterX).toDouble(),
-        state->getValue(OutputCenterY).toDouble(),
-        state->getValue(OutputCenterZ).toDouble());
-    }
-    right = Point(center + sizex / 2.);
-    down = Point(center + sizey / 2.);
-    in = Point(center + sizez / 2.);
-
-    box_->setPosition(center, right, down, in);
-
-    widgetMoved_ = false;
-  }
-
-  // Transform the mesh if necessary.
-  // Translate * Rotate * Scale.
-  box_->getPosition(center, right, down, in);
-
   Transform t;
-  t.load_identity();
-  t.pre_scale(Vector((right - center).length(),
-    (down - center).length(),
-    (in - center).length()));
-  r.load_frame((right - center).safe_normal(),
-    (down - center).safe_normal(),
-    (in - center).safe_normal());
-  t.pre_trans(r);
-  t.pre_translate(Vector(center));
+  if (!reset)
+  {
+    if (useOutputSize || useOutputCenter || widgetMoved_)
+    {
+      state->setValue(OutputSizeX, std::fabs(state->getValue(OutputSizeX).toDouble()));
+      state->setValue(OutputSizeY, std::fabs(state->getValue(OutputSizeY).toDouble()));
+      state->setValue(OutputSizeZ, std::fabs(state->getValue(OutputSizeZ).toDouble()));
 
-  auto inv(impl_->field_initial_transform_);
-  inv.invert();
-  t.post_trans(inv);
+      Vector sizex, sizey, sizez;
+      if (useOutputSize)
+      {
+        sizex = Vector(state->getValue(OutputSizeX).toDouble(), 0, 0);
+        sizey = Vector(0, state->getValue(OutputSizeY).toDouble(), 0);
+        sizez = Vector(0, 0, state->getValue(OutputSizeZ).toDouble());
+      }
+      else
+      {
+        sizex = (right - center) * 2;
+        sizey = (down - center) * 2;
+        sizez = (in - center) * 2;
+      }
+      if (useOutputCenter || widgetMoved_)
+      {
+        center = Point(state->getValue(OutputCenterX).toDouble(),
+          state->getValue(OutputCenterY).toDouble(),
+          state->getValue(OutputCenterZ).toDouble());
+      }
+      right = Point(center + sizex / 2.);
+      down = Point(center + sizey / 2.);
+      in = Point(center + sizez / 2.);
 
+      box_->setPosition(center, right, down, in);
+
+      widgetMoved_ = false;
+    }
+
+    // Transform the mesh if necessary.
+    // Translate * Rotate * Scale.
+    box_->getPosition(center, right, down, in);
+    
+    t.load_identity();
+    t.pre_scale(Vector((right - center).length(),
+      (down - center).length(),
+      (in - center).length()));
+    r.load_frame((right - center).safe_normal(),
+      (down - center).safe_normal(),
+      (in - center).safe_normal());
+    t.pre_trans(r);
+    t.pre_translate(Vector(center));
+
+    auto inv(impl_->field_initial_transform_);
+    inv.invert();
+    t.post_trans(inv);
+  }
   // Change the input field handle here.
   FieldHandle output(inputField->deep_clone());
   output->vmesh()->transform(t);

@@ -97,13 +97,12 @@ namespace SCIRun {
         void executeImpl(FieldHandle f);
         void clear_vals();
         void update_input_attributes(FieldHandle);
-        void updateOutputAttributes(const Core::Geometry::BBox& box);
         void computeWidgetBox(const Core::Geometry::BBox& box) const;
         void createBoxWidget();
         Core::Datatypes::GeometryBaseHandle buildGeometryObject();
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
         void adjustGeometryFromTransform(const Core::Geometry::Transform& transformMatrix);
-        SCIRun::Core::Geometry::BBox bbox_;
+        Core::Geometry::BBox bbox_;
 
         BoxWidgetPtr box_;
         boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;

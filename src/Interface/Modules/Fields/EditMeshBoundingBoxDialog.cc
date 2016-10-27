@@ -60,16 +60,17 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
   addDynamicLabelManager(inputSizeYLabel_, EditMeshBoundingBoxModule::InputSizeY);
   addDynamicLabelManager(inputSizeZLabel_, EditMeshBoundingBoxModule::InputSizeZ);
 
-  connect(upScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleUpPush()));
-  connect(doubleUpScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDoubleUpPush()));
-  connect(downScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDownPush()));
-  connect(doubleDownScaleToolButton_, SIGNAL(clicked()), this, SLOT(ScaleDoubleDownPush()));
+  connect(upScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleUpPush()));
+  connect(doubleUpScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDoubleUpPush()));
+  connect(downScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDownPush()));
+  connect(doubleDownScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDoubleDownPush()));
 
+  connect(resetPushButton_, SIGNAL(clicked()), this, SLOT(resetWidget()));
 
   createExecuteInteractivelyToggleAction();
 }
 
-void EditMeshBoundingBoxDialog::AdjustScale(float scaleFactor)
+void EditMeshBoundingBoxDialog::adjustScale(float scaleFactor)
 {
   auto scale = state_->getValue(EditMeshBoundingBoxModule::Scale).toDouble();
   scale *= scaleFactor;
@@ -77,7 +78,13 @@ void EditMeshBoundingBoxDialog::AdjustScale(float scaleFactor)
   executeActionTriggered();
 }
 
-void EditMeshBoundingBoxDialog::ScaleUpPush(){ AdjustScale(upScale_); }
-void EditMeshBoundingBoxDialog::ScaleDoubleUpPush(){ AdjustScale(doubleUpScale_); }
-void EditMeshBoundingBoxDialog::ScaleDownPush(){ AdjustScale(downScale_); }
-void EditMeshBoundingBoxDialog::ScaleDoubleDownPush(){ AdjustScale(doubleDownScale_); }
+void EditMeshBoundingBoxDialog::scaleUpPush(){ adjustScale(upScale_); }
+void EditMeshBoundingBoxDialog::scaleDoubleUpPush(){ adjustScale(doubleUpScale_); }
+void EditMeshBoundingBoxDialog::scaleDownPush(){ adjustScale(downScale_); }
+void EditMeshBoundingBoxDialog::scaleDoubleDownPush(){ adjustScale(doubleDownScale_); }
+
+void EditMeshBoundingBoxDialog::resetWidget()
+{
+  state_->setValue(EditMeshBoundingBoxModule::Resetting, true);
+  executeActionTriggered();
+}
