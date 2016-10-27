@@ -52,7 +52,7 @@ SET(Core_IEPlugin_SRCS
   TriSurfField_Plugin.cc
   TetVolField_Plugin.cc
   CARPMesh_Plugin.cc
-  CARPFiber_PLugin.cc
+  CARPFiber_Plugin.cc
 )
 
 SET(Core_IEPlugin_HEADERS
