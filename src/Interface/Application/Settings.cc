@@ -110,7 +110,7 @@ namespace
 void SCIRunMainWindow::readSettings()
 {
   auto& prefs = Preferences::Instance();
-  QSettings settings("SCI:CIBC Software", "SCIRun5");
+  QSettings settings;
 
   //TODO: centralize all these values in Preferences singleton, together with keys as names.
   //TODO: extract QSettings logic into "PreferencesIO" class
@@ -305,7 +305,7 @@ void SCIRunMainWindow::readSettings()
 
 void SCIRunMainWindow::writeSettings()
 {
-  QSettings settings("SCI:CIBC Software", "SCIRun5");
+  QSettings settings;
   auto& prefs = Preferences::Instance();
 
   //TODO: centralize all these values in Preferences singleton, together with keys as names

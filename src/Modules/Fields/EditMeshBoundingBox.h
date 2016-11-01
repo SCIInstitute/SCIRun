@@ -38,7 +38,7 @@
 namespace SCIRun {
 
   class BoxWidgetInterface;
-  typedef boost::shared_ptr<BoxWidgetInterface> BoxWidgetPtr;
+  using BoxWidgetPtr = boost::shared_ptr<BoxWidgetInterface>;
 
   namespace Modules {
     namespace Fields {
@@ -51,8 +51,8 @@ namespace SCIRun {
       {
       public:
         EditMeshBoundingBox();
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
 
         static const Core::Algorithms::AlgorithmParameterName Resetting;
         //Input Field Attributes
@@ -97,16 +97,12 @@ namespace SCIRun {
         void executeImpl(FieldHandle f);
         void clear_vals();
         void update_input_attributes(FieldHandle);
-        void updateOutputAttributes(const Core::Geometry::BBox& box);
-        void build_widget(FieldHandle, bool reset);
-        bool isBoxEmpty() const;
-        void widget_moved(bool);
+        void computeWidgetBox(const Core::Geometry::BBox& box) const;
         void createBoxWidget();
-        void setBoxRestrictions();
         Core::Datatypes::GeometryBaseHandle buildGeometryObject();
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
         void adjustGeometryFromTransform(const Core::Geometry::Transform& transformMatrix);
-        SCIRun::Core::Geometry::BBox bbox_;
+        Core::Geometry::BBox bbox_;
 
         BoxWidgetPtr box_;
         boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;
