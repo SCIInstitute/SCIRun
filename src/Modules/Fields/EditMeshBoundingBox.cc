@@ -83,7 +83,6 @@ namespace SCIRun
       {
       public:
         Transform userWidgetTransform_;
-        Transform box_initial_transform_;
         Transform field_initial_transform_;
         BBox box_initial_bounds_;
       };
@@ -353,7 +352,6 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
   if (sz < VERY_SMALL) sz = 1.0;
 
   Transform r;
-  impl_->box_initial_transform_.load_identity();
   impl_->field_initial_transform_.pre_scale(Vector(sx, sy, sz));
   r.load_frame((right - center).safe_normal(),
     (down - center).safe_normal(),
