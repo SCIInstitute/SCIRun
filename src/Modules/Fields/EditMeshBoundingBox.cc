@@ -129,6 +129,15 @@ void EditMeshBoundingBox::adjustGeometryFromTransform(const Transform& transform
   state->setValue(OutputCenterX, newLocation.x());
   state->setValue(OutputCenterY, newLocation.y());
   state->setValue(OutputCenterZ, newLocation.z());
+  
+  auto sx = (right - currCenter).length() * 2;
+  auto sy = (down - currCenter).length() * 2;
+  auto sz = (in - currCenter).length() * 2;
+
+  state->setValue(OutputSizeX, sx);
+  state->setValue(OutputSizeY, sy);
+  state->setValue(OutputSizeZ, sz);
+
   impl_->userWidgetTransform_ = transformMatrix;
 }
 
