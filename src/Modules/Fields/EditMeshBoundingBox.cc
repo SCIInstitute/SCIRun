@@ -352,6 +352,7 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
   if (sz < VERY_SMALL) sz = 1.0;
 
   Transform r;
+  impl_->field_initial_transform_.load_identity();
   impl_->field_initial_transform_.pre_scale(Vector(sx, sy, sz));
   r.load_frame((right - center).safe_normal(),
     (down - center).safe_normal(),
@@ -365,7 +366,6 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
 
   const auto useOutputSize = state->getValue(UseOutputSize).toBool();
   const auto useOutputCenter = state->getValue(UseOutputCenter).toBool();
-  Transform t;
   if (!reset)
   {
     if (useOutputSize || useOutputCenter || widgetMoved_)
@@ -406,7 +406,7 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
     // Translate * Rotate * Scale.
     box_->getPosition(center, right, down, in);
     
-    t.load_identity();
+    Transform t;
     t.pre_scale(Vector((right - center).length(),
       (down - center).length(),
       (in - center).length()));
@@ -422,13 +422,53 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
   }
   // Change the input field handle here.
   FieldHandle output(inputField->deep_clone());
-  output->vmesh()->transform(t);
 
+  {
+    Point center, right, down, in;
+    box_->getPosition(center, right, down, in);
+
+    Transform t;
+    t.load_identity();
+    t.pre_scale(Vector((right - center).length(),
+      (down - center).length(),
+      (in - center).length()));
+
+    //std::cout << __LINE__ << " t transform: " << std::endl;
+    //t.print();
+
+    r.load_frame((right - center).safe_normal(),
+      (down - center).safe_normal(),
+      (in - center).safe_normal());
+
+    //std::cout << __LINE__ << " r transform : " << std::endl;
+    //r.print();
+
+    t.pre_trans(r);
+
+    //std::cout << __LINE__ << " t transform : " << std::endl;
+    //t.print();
+
+    t.pre_translate(Vector(center));
+
+    //std::cout << __LINE__ << "  t transform : " << std::endl;
+    //t.print();
+    auto inv(impl_->field_initial_transform_);
+    inv.invert();
+    t.post_trans(inv);
+
+    // Change the input field handle here.
+    output->vmesh()->transform(t);
+    //std::cout << "output transform: " << std::endl;
+    //t.print();
+
+    // Convert the transform into a matrix and send it out.
+    MatrixHandle mh(new DenseMatrix(t));
+    sendOutput(Transformation_Matrix, mh);
+  }
+  
   sendOutput(OutputField, output);
 
-  // Convert the transform into a matrix and send it out.
-  MatrixHandle mh(new DenseMatrix(t));
-  sendOutput(Transformation_Matrix, mh);
+ 
   sendOutput(Transformation_Widget, buildGeometryObject());
 }
 
