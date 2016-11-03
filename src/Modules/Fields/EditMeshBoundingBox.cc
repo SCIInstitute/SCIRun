@@ -129,14 +129,6 @@ void EditMeshBoundingBox::adjustGeometryFromTransform(const Transform& transform
   state->setValue(OutputCenterX, newLocation.x());
   state->setValue(OutputCenterY, newLocation.y());
   state->setValue(OutputCenterZ, newLocation.z());
-  
-  auto sx = (right - currCenter).length() * 2;
-  auto sy = (down - currCenter).length() * 2;
-  auto sz = (in - currCenter).length() * 2;
-
-  state->setValue(OutputSizeX, sx);
-  state->setValue(OutputSizeY, sy);
-  state->setValue(OutputSizeZ, sz);
 
   impl_->userWidgetTransform_ = transformMatrix;
 }
@@ -415,19 +407,9 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
     // Translate * Rotate * Scale.
     box_->getPosition(center, right, down, in);
     
-    Transform t;
-    t.pre_scale(Vector((right - center).length(),
-      (down - center).length(),
-      (in - center).length()));
     r.load_frame((right - center).safe_normal(),
       (down - center).safe_normal(),
       (in - center).safe_normal());
-    t.pre_trans(r);
-    t.pre_translate(Vector(center));
-
-    auto inv(impl_->field_initial_transform_);
-    inv.invert();
-    t.post_trans(inv);
   }
   // Change the input field handle here.
   FieldHandle output(inputField->deep_clone());
@@ -438,37 +420,24 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
 
     Transform t;
     t.load_identity();
-    t.pre_scale(Vector((right - center).length(),
+    Vector sizeHalf((right - center).length(),
       (down - center).length(),
-      (in - center).length()));
-
-    //std::cout << __LINE__ << " t transform: " << std::endl;
-    //t.print();
-
-    r.load_frame((right - center).safe_normal(),
-      (down - center).safe_normal(),
-      (in - center).safe_normal());
-
-    //std::cout << __LINE__ << " r transform : " << std::endl;
-    //r.print();
+      (in - center).length());
+    t.pre_scale(sizeHalf);
 
     t.pre_trans(r);
-
-    //std::cout << __LINE__ << " t transform : " << std::endl;
-    //t.print();
-
     t.pre_translate(Vector(center));
 
-    //std::cout << __LINE__ << "  t transform : " << std::endl;
-    //t.print();
     auto inv(impl_->field_initial_transform_);
     inv.invert();
     t.post_trans(inv);
 
     // Change the input field handle here.
     output->vmesh()->transform(t);
-    //std::cout << "output transform: " << std::endl;
-    //t.print();
+
+    state->setValue(OutputSizeX, sizeHalf.x() * 2);
+    state->setValue(OutputSizeY, sizeHalf.y() * 2);
+    state->setValue(OutputSizeZ, sizeHalf.z() * 2);
 
     // Convert the transform into a matrix and send it out.
     MatrixHandle mh(new DenseMatrix(t));
@@ -476,8 +445,6 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
   }
   
   sendOutput(OutputField, output);
-
- 
   sendOutput(Transformation_Widget, buildGeometryObject());
 }
 
