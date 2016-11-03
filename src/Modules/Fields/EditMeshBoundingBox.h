@@ -73,6 +73,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName OutputSizeZ;
         //Widget Scale/Mode
         static const Core::Algorithms::AlgorithmParameterName Scale;
+        static const Core::Algorithms::AlgorithmParameterName ScaleChanged;
         static const Core::Algorithms::AlgorithmParameterName NoTranslation;
         static const Core::Algorithms::AlgorithmParameterName XYZTranslation;
         static const Core::Algorithms::AlgorithmParameterName RDITranslation;

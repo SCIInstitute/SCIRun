@@ -65,6 +65,8 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
   connect(downScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDownPush()));
   connect(doubleDownScaleToolButton_, SIGNAL(clicked()), this, SLOT(scaleDoubleDownPush()));
 
+  setScaleButtonsEnabled(false);
+
   connect(resetPushButton_, SIGNAL(clicked()), this, SLOT(resetWidget()));
 
   connectButtonsToExecuteSignal({ upScaleToolButton_, doubleUpScaleToolButton_, downScaleToolButton_, doubleDownScaleToolButton_, resetPushButton_ });
@@ -72,11 +74,25 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
   createExecuteInteractivelyToggleAction();
 }
 
+void EditMeshBoundingBoxDialog::setScaleButtonsEnabled(bool enable)
+{
+  upScaleToolButton_->setEnabled(enable);
+  doubleUpScaleToolButton_->setEnabled(enable);
+  downScaleToolButton_->setEnabled(enable);
+  doubleDownScaleToolButton_->setEnabled(enable);
+}
+
+void EditMeshBoundingBoxDialog::moduleExecuted()
+{
+  setScaleButtonsEnabled(true);
+}
+
 void EditMeshBoundingBoxDialog::adjustScale(float scaleFactor)
 {
   auto scale = state_->getValue(EditMeshBoundingBoxModule::Scale).toDouble();
   scale *= scaleFactor;
   state_->setValue(EditMeshBoundingBoxModule::Scale, scale);
+  state_->setTransientValue(EditMeshBoundingBoxModule::ScaleChanged, true);
 }
 
 void EditMeshBoundingBoxDialog::scaleUpPush(){ adjustScale(upScale_); }
