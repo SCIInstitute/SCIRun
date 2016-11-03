@@ -373,7 +373,6 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
       impl_->field_initial_transform_.pre_translate(Vector(initialWidgetCenter));
     }
 
-    const auto reset = state->getValue(Resetting).toBool();
     const auto useUserEnteredSize = state->getValue(UseOutputSize).toBool();
     const auto useUserEnteredCenter = state->getValue(UseOutputCenter).toBool();
 
@@ -407,51 +406,43 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
       //TODO: no way for widget to change size yet
     }
 
-    {
-      Point newWidgetRight(newWidgetCenter + outputFieldSizeX / 2.);
-      Point newWidgetDown(newWidgetCenter + outputFieldSizeY / 2.);
-      Point newWidgetIn(newWidgetCenter + outputFieldSizeZ / 2.);
+    Point newWidgetRight(newWidgetCenter + outputFieldSizeX / 2.);
+    Point newWidgetDown(newWidgetCenter + outputFieldSizeY / 2.);
+    Point newWidgetIn(newWidgetCenter + outputFieldSizeZ / 2.);
 
-      box_->setPosition(newWidgetCenter, newWidgetRight, newWidgetDown, newWidgetIn);
+    box_->setPosition(newWidgetCenter, newWidgetRight, newWidgetDown, newWidgetIn);
 
-
-      r_transformThatIsAppliedSomewhere.load_frame((newWidgetRight - newWidgetCenter).safe_normal(),
-        (newWidgetDown - newWidgetCenter).safe_normal(),
-        (newWidgetIn - newWidgetCenter).safe_normal());
-    }
+    r_transformThatIsAppliedSomewhere.load_frame((newWidgetRight - newWidgetCenter).safe_normal(),
+      (newWidgetDown - newWidgetCenter).safe_normal(),
+      (newWidgetIn - newWidgetCenter).safe_normal());
 
     // Change the input field handle here.
     FieldHandle output(inputField->deep_clone());
 
-    {
-      Point center, right, down, in;
-      box_->getPosition(center, right, down, in);
+    Transform transformAppliedToOutputMesh;
+    transformAppliedToOutputMesh.load_identity();
+    Vector sizeHalf((newWidgetRight - newWidgetCenter).length(),
+      (newWidgetDown - newWidgetCenter).length(),
+      (newWidgetIn - newWidgetCenter).length());
+    transformAppliedToOutputMesh.pre_scale(sizeHalf);
 
-      Transform transformAppliedToOutputMesh;
-      transformAppliedToOutputMesh.load_identity();
-      Vector sizeHalf((right - center).length(),
-        (down - center).length(),
-        (in - center).length());
-      transformAppliedToOutputMesh.pre_scale(sizeHalf);
+    transformAppliedToOutputMesh.pre_trans(r_transformThatIsAppliedSomewhere);
+    transformAppliedToOutputMesh.pre_translate(Vector(newWidgetCenter));
 
-      transformAppliedToOutputMesh.pre_trans(r_transformThatIsAppliedSomewhere);
-      transformAppliedToOutputMesh.pre_translate(Vector(center));
+    auto inv(impl_->field_initial_transform_);
+    inv.invert();
+    transformAppliedToOutputMesh.post_trans(inv);
 
-      auto inv(impl_->field_initial_transform_);
-      inv.invert();
-      transformAppliedToOutputMesh.post_trans(inv);
+    // Change the input field handle here.
+    output->vmesh()->transform(transformAppliedToOutputMesh);
 
-      // Change the input field handle here.
-      output->vmesh()->transform(transformAppliedToOutputMesh);
+    state->setValue(OutputSizeX, sizeHalf.x() * 2);
+    state->setValue(OutputSizeY, sizeHalf.y() * 2);
+    state->setValue(OutputSizeZ, sizeHalf.z() * 2);
 
-      state->setValue(OutputSizeX, sizeHalf.x() * 2);
-      state->setValue(OutputSizeY, sizeHalf.y() * 2);
-      state->setValue(OutputSizeZ, sizeHalf.z() * 2);
-
-      // Convert the transform into a matrix and send it out.
-      MatrixHandle mh(new DenseMatrix(transformAppliedToOutputMesh));
-      sendOutput(Transformation_Matrix, mh);
-    }
+    // Convert the transform into a matrix and send it out.
+    MatrixHandle mh(new DenseMatrix(transformAppliedToOutputMesh));
+    sendOutput(Transformation_Matrix, mh);
 
     state->setValue(Resetting, false);
     widgetMoved_ = false;
