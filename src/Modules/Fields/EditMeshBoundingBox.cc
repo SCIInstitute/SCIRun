@@ -346,6 +346,10 @@ namespace
 void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
 {
   auto state = get_state();
+  
+  if (state->getValue(Resetting).toBool())
+    widgetMoved_ = false;
+
   if (!transient_value_cast<bool>(state->getTransientValue(ScaleChanged)))
   {
     computeWidgetBox(inputField->vmesh()->get_bounding_box());
@@ -445,7 +449,6 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
     sendOutput(Transformation_Matrix, mh);
 
     state->setValue(Resetting, false);
-    widgetMoved_ = false;
 
     sendOutput(OutputField, output);
   }
