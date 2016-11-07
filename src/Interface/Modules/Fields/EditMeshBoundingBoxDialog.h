@@ -45,8 +45,11 @@ public:
   EditMeshBoundingBoxDialog(const std::string& name,
     Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
+public Q_SLOTS:
+  void moduleExecuted() override;
 private:
   void adjustScale(float scaleFactor);
+  void setScaleButtonsEnabled(bool enable);
   float doubleUpScale_, upScale_, downScale_, doubleDownScale_;
 private Q_SLOTS:
   void scaleUpPush();

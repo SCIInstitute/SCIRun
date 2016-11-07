@@ -55,13 +55,8 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
 	addSpinBoxManager(xTranslationSpin_, SCM::XTranslation);
 	addSpinBoxManager(yTranslationSpin_, SCM::YTranslation);
 
-  connectButtonToExecuteSignal(leftRadioButton_);
-  connectButtonToExecuteSignal(bottomRadioButton_);
-  connectButtonToExecuteSignal(firstHalfRadioButton_);
-  connectButtonToExecuteSignal(fullRadioButton_);
-  connectButtonToExecuteSignal(secondHalfRadioButton_);
-
-  connect(textColorPushButton_,SIGNAL(clicked()),this,SLOT(getColor()));
+  connect(textColorPushButton_, SIGNAL(clicked()), this, SLOT(getColor()));
+  connectButtonsToExecuteSignal({ leftRadioButton_, bottomRadioButton_, firstHalfRadioButton_, fullRadioButton_, secondHalfRadioButton_, textColorPushButton_ } );
 
   addDoubleSpinBoxManager(&r_, SCM::TextRed);
   addDoubleSpinBoxManager(&g_, SCM::TextGreen);
@@ -104,13 +99,11 @@ void ShowColorMapDialog::pullSpecial()
 void ShowColorMapDialog::getColor()
 {
   text_color_ = QColorDialog::getColor(text_color_, this, "Choose text color");
-    std::stringstream ss;
-    ss << "background-color: rgb(" << text_color_.red() << ", " <<
-            text_color_.green() << ", " << text_color_.blue() << ");";
+  std::stringstream ss;
+  ss << "background-color: rgb(" << text_color_.red() << ", " <<
+    text_color_.green() << ", " << text_color_.blue() << ");";
   textColorDisplayLabel_->setStyleSheet(QString::fromStdString(ss.str()));
   r_.setValue(text_color_.redF());
   g_.setValue(text_color_.greenF());
   b_.setValue(text_color_.blueF());
-
-  Q_EMIT executeActionTriggered();
 }

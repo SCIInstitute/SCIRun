@@ -129,14 +129,6 @@ void EditMeshBoundingBox::adjustGeometryFromTransform(const Transform& transform
   state->setValue(OutputCenterX, newLocation.x());
   state->setValue(OutputCenterY, newLocation.y());
   state->setValue(OutputCenterZ, newLocation.z());
-  
-  auto sx = (right - currCenter).length() * 2;
-  auto sy = (down - currCenter).length() * 2;
-  auto sz = (in - currCenter).length() * 2;
-
-  state->setValue(OutputSizeX, sx);
-  state->setValue(OutputSizeY, sy);
-  state->setValue(OutputSizeZ, sz);
 
   impl_->userWidgetTransform_ = transformMatrix;
 }
@@ -342,142 +334,122 @@ void EditMeshBoundingBox::computeWidgetBox(const BBox& box) const
   box_->setPosition(center, right, down, in);
 }
 
+namespace
+{
+  void checkForVerySmall(double& size)
+  {
+    const auto VERY_SMALL = 1e-12;
+    if (size < VERY_SMALL) size = 1.0;
+  }
+}
+
 void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
 {
   auto state = get_state();
-  
-  computeWidgetBox(inputField->vmesh()->get_bounding_box());
-  
-  Point center, right, down, in;
-  box_->getPosition(center, right, down, in);
-
-  auto sx = (right - center).length();
-  auto sy = (down - center).length();
-  auto sz = (in - center).length();
-
-  const auto VERY_SMALL = 1e-12;
-  if (sx < VERY_SMALL) sx = 1.0;
-  if (sy < VERY_SMALL) sy = 1.0;
-  if (sz < VERY_SMALL) sz = 1.0;
-
-  Transform r;
-  impl_->field_initial_transform_.load_identity();
-  impl_->field_initial_transform_.pre_scale(Vector(sx, sy, sz));
-  r.load_frame((right - center).safe_normal(),
-    (down - center).safe_normal(),
-    (in - center).safe_normal());
-
-  impl_->field_initial_transform_.pre_trans(r);
-  impl_->field_initial_transform_.pre_translate(Vector(center));
-
-  auto reset = state->getValue(Resetting).toBool();
-  state->setValue(Resetting, false);
-
-  const auto useOutputSize = state->getValue(UseOutputSize).toBool();
-  const auto useOutputCenter = state->getValue(UseOutputCenter).toBool();
-  if (!reset)
+  if (!transient_value_cast<bool>(state->getTransientValue(ScaleChanged)))
   {
-    if (useOutputSize || useOutputCenter || widgetMoved_)
+    computeWidgetBox(inputField->vmesh()->get_bounding_box());
+
+    Point initialWidgetCenter, initialWidgetRight, initialWidgetDown, initialWidgetIn;
+    box_->getPosition(initialWidgetCenter, initialWidgetRight, initialWidgetDown, initialWidgetIn);
+
+    auto initialXSize = (initialWidgetRight - initialWidgetCenter).length();
+    auto initialYSize = (initialWidgetDown - initialWidgetCenter).length();
+    auto initialZSize = (initialWidgetIn - initialWidgetCenter).length();
+
+    checkForVerySmall(initialXSize);
+    checkForVerySmall(initialYSize);
+    checkForVerySmall(initialZSize);
+
+    Transform r_transformThatIsAppliedSomewhere;
+    {
+      impl_->field_initial_transform_.load_identity();
+      impl_->field_initial_transform_.pre_scale(Vector(initialXSize, initialYSize, initialZSize));
+      r_transformThatIsAppliedSomewhere.load_frame((initialWidgetRight - initialWidgetCenter).safe_normal(),
+        (initialWidgetDown - initialWidgetCenter).safe_normal(),
+        (initialWidgetIn - initialWidgetCenter).safe_normal());
+
+      impl_->field_initial_transform_.pre_trans(r_transformThatIsAppliedSomewhere);
+      impl_->field_initial_transform_.pre_translate(Vector(initialWidgetCenter));
+    }
+
+    const auto useUserEnteredSize = state->getValue(UseOutputSize).toBool();
+    const auto useUserEnteredCenter = state->getValue(UseOutputCenter).toBool();
+
+    Vector outputFieldSizeX, outputFieldSizeY, outputFieldSizeZ;
+    if (useUserEnteredSize || widgetMoved_)
     {
       state->setValue(OutputSizeX, std::fabs(state->getValue(OutputSizeX).toDouble()));
       state->setValue(OutputSizeY, std::fabs(state->getValue(OutputSizeY).toDouble()));
       state->setValue(OutputSizeZ, std::fabs(state->getValue(OutputSizeZ).toDouble()));
 
-      Vector sizex, sizey, sizez;
-      if (useOutputSize)
-      {
-        sizex = Vector(state->getValue(OutputSizeX).toDouble(), 0, 0);
-        sizey = Vector(0, state->getValue(OutputSizeY).toDouble(), 0);
-        sizez = Vector(0, 0, state->getValue(OutputSizeZ).toDouble());
-      }
-      else
-      {
-        sizex = (right - center) * 2;
-        sizey = (down - center) * 2;
-        sizez = (in - center) * 2;
-      }
-      if (useOutputCenter || widgetMoved_)
-      {
-        center = Point(state->getValue(OutputCenterX).toDouble(),
-          state->getValue(OutputCenterY).toDouble(),
-          state->getValue(OutputCenterZ).toDouble());
-      }
-      right = Point(center + sizex / 2.);
-      down = Point(center + sizey / 2.);
-      in = Point(center + sizez / 2.);
-
-      box_->setPosition(center, right, down, in);
-
-      widgetMoved_ = false;
+      outputFieldSizeX = Vector(state->getValue(OutputSizeX).toDouble(), 0, 0);
+      outputFieldSizeY = Vector(0, state->getValue(OutputSizeY).toDouble(), 0);
+      outputFieldSizeZ = Vector(0, 0, state->getValue(OutputSizeZ).toDouble());
+    }
+    else
+    {
+      outputFieldSizeX = (initialWidgetRight - initialWidgetCenter) * 2;
+      outputFieldSizeY = (initialWidgetDown - initialWidgetCenter) * 2;
+      outputFieldSizeZ = (initialWidgetIn - initialWidgetCenter) * 2;
     }
 
-    // Transform the mesh if necessary.
-    // Translate * Rotate * Scale.
-    box_->getPosition(center, right, down, in);
-    
-    Transform t;
-    t.pre_scale(Vector((right - center).length(),
-      (down - center).length(),
-      (in - center).length()));
-    r.load_frame((right - center).safe_normal(),
-      (down - center).safe_normal(),
-      (in - center).safe_normal());
-    t.pre_trans(r);
-    t.pre_translate(Vector(center));
+    Point newWidgetCenter = initialWidgetCenter;
+    if (useUserEnteredCenter || widgetMoved_)
+    {
+      newWidgetCenter = Point(state->getValue(OutputCenterX).toDouble(),
+        state->getValue(OutputCenterY).toDouble(),
+        state->getValue(OutputCenterZ).toDouble());
+    }
+    else
+    {
+      //TODO: no way for widget to change size yet
+    }
 
-    auto inv(impl_->field_initial_transform_);
-    inv.invert();
-    t.post_trans(inv);
-  }
-  // Change the input field handle here.
-  FieldHandle output(inputField->deep_clone());
+    Point newWidgetRight(newWidgetCenter + outputFieldSizeX / 2.);
+    Point newWidgetDown(newWidgetCenter + outputFieldSizeY / 2.);
+    Point newWidgetIn(newWidgetCenter + outputFieldSizeZ / 2.);
 
-  {
-    Point center, right, down, in;
-    box_->getPosition(center, right, down, in);
+    box_->setPosition(newWidgetCenter, newWidgetRight, newWidgetDown, newWidgetIn);
 
-    Transform t;
-    t.load_identity();
-    t.pre_scale(Vector((right - center).length(),
-      (down - center).length(),
-      (in - center).length()));
-
-    //std::cout << __LINE__ << " t transform: " << std::endl;
-    //t.print();
-
-    r.load_frame((right - center).safe_normal(),
-      (down - center).safe_normal(),
-      (in - center).safe_normal());
-
-    //std::cout << __LINE__ << " r transform : " << std::endl;
-    //r.print();
-
-    t.pre_trans(r);
-
-    //std::cout << __LINE__ << " t transform : " << std::endl;
-    //t.print();
-
-    t.pre_translate(Vector(center));
-
-    //std::cout << __LINE__ << "  t transform : " << std::endl;
-    //t.print();
-    auto inv(impl_->field_initial_transform_);
-    inv.invert();
-    t.post_trans(inv);
+    r_transformThatIsAppliedSomewhere.load_frame((newWidgetRight - newWidgetCenter).safe_normal(),
+      (newWidgetDown - newWidgetCenter).safe_normal(),
+      (newWidgetIn - newWidgetCenter).safe_normal());
 
     // Change the input field handle here.
-    output->vmesh()->transform(t);
-    //std::cout << "output transform: " << std::endl;
-    //t.print();
+    FieldHandle output(inputField->deep_clone());
+
+    Transform transformAppliedToOutputMesh;
+    transformAppliedToOutputMesh.load_identity();
+    Vector sizeHalf((newWidgetRight - newWidgetCenter).length(),
+      (newWidgetDown - newWidgetCenter).length(),
+      (newWidgetIn - newWidgetCenter).length());
+    transformAppliedToOutputMesh.pre_scale(sizeHalf);
+
+    transformAppliedToOutputMesh.pre_trans(r_transformThatIsAppliedSomewhere);
+    transformAppliedToOutputMesh.pre_translate(Vector(newWidgetCenter));
+
+    auto inv(impl_->field_initial_transform_);
+    inv.invert();
+    transformAppliedToOutputMesh.post_trans(inv);
+
+    // Change the input field handle here.
+    output->vmesh()->transform(transformAppliedToOutputMesh);
+
+    state->setValue(OutputSizeX, sizeHalf.x() * 2);
+    state->setValue(OutputSizeY, sizeHalf.y() * 2);
+    state->setValue(OutputSizeZ, sizeHalf.z() * 2);
 
     // Convert the transform into a matrix and send it out.
-    MatrixHandle mh(new DenseMatrix(t));
+    MatrixHandle mh(new DenseMatrix(transformAppliedToOutputMesh));
     sendOutput(Transformation_Matrix, mh);
-  }
-  
-  sendOutput(OutputField, output);
 
- 
+    state->setValue(Resetting, false);
+    widgetMoved_ = false;
+
+    sendOutput(OutputField, output);
+  }
+  state->setTransientValue(ScaleChanged, false);
   sendOutput(Transformation_Widget, buildGeometryObject());
 }
 
@@ -505,6 +477,7 @@ const AlgorithmParameterName EditMeshBoundingBox::OutputSizeY("OutputSizeY");
 const AlgorithmParameterName EditMeshBoundingBox::OutputSizeZ("OutputSizeZ");
 //Widget Scale/Mode
 const AlgorithmParameterName EditMeshBoundingBox::Scale("Scale");
+const AlgorithmParameterName EditMeshBoundingBox::ScaleChanged("ScaleChanged");
 const AlgorithmParameterName EditMeshBoundingBox::NoTranslation("NoTranslation");
 const AlgorithmParameterName EditMeshBoundingBox::XYZTranslation("XYZTranslation");
 const AlgorithmParameterName EditMeshBoundingBox::RDITranslation("RDITranslation");
