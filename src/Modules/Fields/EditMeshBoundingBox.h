@@ -54,7 +54,8 @@ namespace SCIRun {
         void execute() override;
         void setStateDefaults() override;
 
-        static const Core::Algorithms::AlgorithmParameterName Resetting;
+        static const Core::Algorithms::AlgorithmParameterName ResetSize;
+        static const Core::Algorithms::AlgorithmParameterName ResetCenter;
         //Input Field Attributes
         static const Core::Algorithms::AlgorithmParameterName InputCenterX;
         static const Core::Algorithms::AlgorithmParameterName InputCenterY;
@@ -63,8 +64,8 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName InputSizeY;
         static const Core::Algorithms::AlgorithmParameterName InputSizeZ;
         //Output Field Atributes
-        static const Core::Algorithms::AlgorithmParameterName UseOutputCenter;
-        static const Core::Algorithms::AlgorithmParameterName UseOutputSize;
+        static const Core::Algorithms::AlgorithmParameterName SetOutputCenter;
+        static const Core::Algorithms::AlgorithmParameterName SetOutputSize;
         static const Core::Algorithms::AlgorithmParameterName OutputCenterX;
         static const Core::Algorithms::AlgorithmParameterName OutputCenterY;
         static const Core::Algorithms::AlgorithmParameterName OutputCenterZ;

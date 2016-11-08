@@ -148,8 +148,6 @@ void EditMeshBoundingBox::setStateDefaults()
   state->setValue(RestrictR, false);
   state->setValue(RestrictD, false);
   state->setValue(RestrictI, false);
-  state->setValue(UseOutputCenter, false);
-  state->setValue(UseOutputSize, false);
   state->setValue(OutputCenterX, 0.0);
   state->setValue(OutputCenterY, 0.0);
   state->setValue(OutputCenterZ, 0.0);
@@ -160,7 +158,6 @@ void EditMeshBoundingBox::setStateDefaults()
   state->setValue(NoTranslation, true);
   state->setValue(XYZTranslation, false);
   state->setValue(RDITranslation, false);
-  state->setValue(Resetting, false);
   state->setValue(BoxRealScale, 0.0);
   state->setValue(BoxMode, 0);
 
@@ -346,9 +343,6 @@ namespace
 void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
 {
   auto state = get_state();
-  
-  if (state->getValue(Resetting).toBool())
-    widgetMoved_ = false;
 
   if (!transient_value_cast<bool>(state->getTransientValue(ScaleChanged)))
   {
@@ -377,11 +371,17 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
       impl_->field_initial_transform_.pre_translate(Vector(initialWidgetCenter));
     }
 
-    const auto useUserEnteredSize = state->getValue(UseOutputSize).toBool();
-    const auto useUserEnteredCenter = state->getValue(UseOutputCenter).toBool();
+    const auto useUserEnteredSize = transient_value_cast<bool>(state->getTransientValue(SetOutputSize));
+    const auto useUserEnteredCenter = transient_value_cast<bool>(state->getTransientValue(SetOutputCenter));
 
     Vector outputFieldSizeX, outputFieldSizeY, outputFieldSizeZ;
-    if (useUserEnteredSize || widgetMoved_)
+    if (transient_value_cast<bool>(state->getTransientValue(ResetSize)))
+    {
+      outputFieldSizeX = Vector(initialXSize * 2, 0, 0);
+      outputFieldSizeY = Vector(0, initialYSize * 2, 0);
+      outputFieldSizeZ = Vector(0, 0, initialZSize * 2);
+    }
+    else
     {
       state->setValue(OutputSizeX, std::fabs(state->getValue(OutputSizeX).toDouble()));
       state->setValue(OutputSizeY, std::fabs(state->getValue(OutputSizeY).toDouble()));
@@ -391,28 +391,18 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
       outputFieldSizeY = Vector(0, state->getValue(OutputSizeY).toDouble(), 0);
       outputFieldSizeZ = Vector(0, 0, state->getValue(OutputSizeZ).toDouble());
     }
-    else
-    {
-      outputFieldSizeX = (initialWidgetRight - initialWidgetCenter) * 2;
-      outputFieldSizeY = (initialWidgetDown - initialWidgetCenter) * 2;
-      outputFieldSizeZ = (initialWidgetIn - initialWidgetCenter) * 2;
-    }
 
-    Point newWidgetCenter = initialWidgetCenter;
-    if (useUserEnteredCenter || widgetMoved_)
+    auto newWidgetCenter = initialWidgetCenter;
+    if (!transient_value_cast<bool>(state->getTransientValue(ResetCenter)))
     {
       newWidgetCenter = Point(state->getValue(OutputCenterX).toDouble(),
-        state->getValue(OutputCenterY).toDouble(),
-        state->getValue(OutputCenterZ).toDouble());
-    }
-    else
-    {
-      //TODO: no way for widget to change size yet
+                              state->getValue(OutputCenterY).toDouble(),
+                              state->getValue(OutputCenterZ).toDouble());
     }
 
-    Point newWidgetRight(newWidgetCenter + outputFieldSizeX / 2.);
-    Point newWidgetDown(newWidgetCenter + outputFieldSizeY / 2.);
-    Point newWidgetIn(newWidgetCenter + outputFieldSizeZ / 2.);
+    auto newWidgetRight(newWidgetCenter + outputFieldSizeX / 2.);
+    auto newWidgetDown(newWidgetCenter + outputFieldSizeY / 2.);
+    auto newWidgetIn(newWidgetCenter + outputFieldSizeZ / 2.);
 
     box_->setPosition(newWidgetCenter, newWidgetRight, newWidgetDown, newWidgetIn);
 
@@ -443,16 +433,25 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
     state->setValue(OutputSizeX, sizeHalf.x() * 2);
     state->setValue(OutputSizeY, sizeHalf.y() * 2);
     state->setValue(OutputSizeZ, sizeHalf.z() * 2);
+    state->setValue(OutputCenterX, newWidgetCenter.x());
+    state->setValue(OutputCenterY, newWidgetCenter.y());
+    state->setValue(OutputCenterZ, newWidgetCenter.z());
 
     // Convert the transform into a matrix and send it out.
     MatrixHandle mh(new DenseMatrix(transformAppliedToOutputMesh));
     sendOutput(Transformation_Matrix, mh);
 
-    state->setValue(Resetting, false);
+    //state->setValue(Resetting, false);
+    widgetMoved_ = false;
 
     sendOutput(OutputField, output);
   }
   state->setTransientValue(ScaleChanged, false);
+  state->setTransientValue(SetOutputCenter, false);
+  state->setTransientValue(ResetCenter, false);
+  state->setTransientValue(SetOutputSize, false);
+  state->setTransientValue(ResetSize, false);
+
   sendOutput(Transformation_Widget, buildGeometryObject());
 }
 
@@ -461,7 +460,8 @@ BoxWidgetPtr WidgetFactory::createBox()
   return boost::make_shared<BoxWidgetNull>();
 }
 
-const AlgorithmParameterName EditMeshBoundingBox::Resetting("Resetting");
+const AlgorithmParameterName EditMeshBoundingBox::ResetCenter("ResetCenter");
+const AlgorithmParameterName EditMeshBoundingBox::ResetSize("ResetSize");
 
 const AlgorithmParameterName EditMeshBoundingBox::InputCenterX("InputCenterX");
 const AlgorithmParameterName EditMeshBoundingBox::InputCenterY("InputCenterY");
@@ -470,8 +470,8 @@ const AlgorithmParameterName EditMeshBoundingBox::InputSizeX("InputSizeX");
 const AlgorithmParameterName EditMeshBoundingBox::InputSizeY("InputSizeY");
 const AlgorithmParameterName EditMeshBoundingBox::InputSizeZ("InputSizeZ");
  //Output Field Atributes
-const AlgorithmParameterName EditMeshBoundingBox::UseOutputCenter("UseOutputCenter");
-const AlgorithmParameterName EditMeshBoundingBox::UseOutputSize("UseOutputSize");
+const AlgorithmParameterName EditMeshBoundingBox::SetOutputCenter("SetOutputCenter");
+const AlgorithmParameterName EditMeshBoundingBox::SetOutputSize("SetOutputSize");
 const AlgorithmParameterName EditMeshBoundingBox::OutputCenterX("OutputCenterX");
 const AlgorithmParameterName EditMeshBoundingBox::OutputCenterY("OutputCenterY");
 const AlgorithmParameterName EditMeshBoundingBox::OutputCenterZ("OutputCenterZ");
