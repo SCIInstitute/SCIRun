@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>492</width>
+    <width>565</width>
     <height>393</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>492</width>
+    <width>565</width>
     <height>393</height>
    </size>
   </property>
@@ -239,8 +239,40 @@
       <string>Output Field Attributes</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="useOutputCenterCheckBox_">
+      <item row="1" column="3">
+       <widget class="QDoubleSpinBox" name="outputSizeZSpinBox_">
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QDoubleSpinBox" name="outputSizeYSpinBox_">
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="useOutputSizeCheckBox_">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -251,7 +283,23 @@
          </font>
         </property>
         <property name="text">
-         <string>Center (x,y,z)  :</string>
+         <string>Set Size (x,y,z)       :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QDoubleSpinBox" name="outputSizeXSpinBox_">
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
         </property>
        </widget>
       </item>
@@ -321,8 +369,8 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="useOutputSizeCheckBox_">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="useOutputCenterCheckBox_">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -333,55 +381,39 @@
          </font>
         </property>
         <property name="text">
-         <string>Size (x,y,z)       :</string>
+         <string>Set Center (x,y,z)  :</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="outputSizeXSpinBox_">
+      <item row="0" column="4">
+       <widget class="QPushButton" name="resetCenterPushButton_">
+        <property name="maximumSize">
+         <size>
+          <width>120</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="font">
          <font>
           <weight>50</weight>
           <bold>false</bold>
          </font>
         </property>
-        <property name="decimals">
-         <number>5</number>
-        </property>
-        <property name="maximum">
-         <double>999999999.000000000000000</double>
+        <property name="text">
+         <string>Reset Center</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="2">
-       <widget class="QDoubleSpinBox" name="outputSizeYSpinBox_">
+      <item row="1" column="4">
+       <widget class="QPushButton" name="resetSizePushButton_">
         <property name="font">
          <font>
           <weight>50</weight>
           <bold>false</bold>
          </font>
         </property>
-        <property name="decimals">
-         <number>5</number>
-        </property>
-        <property name="maximum">
-         <double>999999999.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QDoubleSpinBox" name="outputSizeZSpinBox_">
-        <property name="font">
-         <font>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="decimals">
-         <number>5</number>
-        </property>
-        <property name="maximum">
-         <double>999999999.000000000000000</double>
+        <property name="text">
+         <string>Reset Size</string>
         </property>
        </widget>
       </item>
@@ -563,19 +595,6 @@
        </widget>
       </item>
      </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QPushButton" name="resetPushButton_">
-     <property name="maximumSize">
-      <size>
-       <width>120</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Reset Widget</string>
-     </property>
     </widget>
    </item>
   </layout>

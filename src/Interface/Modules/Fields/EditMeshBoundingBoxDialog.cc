@@ -67,9 +67,10 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
 
   setScaleButtonsEnabled(false);
 
-  connect(resetPushButton_, SIGNAL(clicked()), this, SLOT(resetWidget()));
+  //connect(resetPushButton_, SIGNAL(clicked()), this, SLOT(resetWidget()));
 
-  connectButtonsToExecuteSignal({ upScaleToolButton_, doubleUpScaleToolButton_, downScaleToolButton_, doubleDownScaleToolButton_, resetPushButton_ });
+  connectButtonsToExecuteSignal({ upScaleToolButton_, doubleUpScaleToolButton_, downScaleToolButton_, doubleDownScaleToolButton_,
+    useOutputCenterCheckBox_, useOutputSizeCheckBox_ /*resetPushButton_*/ });
 
   createExecuteInteractivelyToggleAction();
 }
