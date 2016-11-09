@@ -41,7 +41,6 @@
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/CompGeom.h>
 #include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/Plane.h>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Vector.h>
 
@@ -60,6 +59,7 @@
 #include <Core/Utils/Legacy/CheckSum.h>
 
 #include <boost/thread.hpp>
+#include <boost/unordered_map.hpp>
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
 
@@ -80,7 +80,7 @@ template <class Basis> class TetVolMesh;
 /// returns no virtual interface. Altering this behavior will allow
 /// for dynamically compiling the interface if needed.
 template<class MESH>
-VMesh* CreateVTetVolMesh(MESH*) { return (0); }
+VMesh* CreateVTetVolMesh(MESH*) { return nullptr; }
 
 /// These declarations are needed for a combined dynamic compilation as
 /// as well as virtual functions solution.
@@ -367,7 +367,7 @@ public:
   /// Access point to virtual interface
   virtual VMesh* vmesh() { return vmesh_.get(); }
 
-  MeshFacadeHandle getFacade() const
+  MeshFacadeHandle getFacade() const override
   {
     return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
@@ -2532,29 +2532,10 @@ protected:
     }
   };
 
-/// Define the hash_map type, as this is not yet an approved type under Windows
-/// it is located in stdext
-
-#ifdef HAVE_HASH_MAP
-  #if defined(_WIN32)
-    /// hash_map is in stdext namespace
-  typedef stdext::hash_map<PFace, typename Face::index_type, FaceHash> face_ht;
-  typedef stdext::hash_map<PFaceNode, typename Face::index_type, FaceHash> face_nt;
-  typedef stdext::hash_map<PEdge, typename Edge::index_type, EdgeHash> edge_ht;
-  typedef stdext::hash_map<PEdgeNode, typename Edge::index_type, EdgeHash> edge_nt;
-  #else
-    /// hash_map is in stdext namespace
-  typedef hash_map<PFace, typename Face::index_type, FaceHash> face_ht;
-  typedef hash_map<PFaceNode, typename Face::index_type, FaceHash> face_nt;
-  typedef hash_map<PEdge, typename Edge::index_type, EdgeHash> edge_ht;  
-  typedef hash_map<PEdgeNode, typename Edge::index_type, EdgeHash> edge_nt;  
-  #endif
-#else
-  typedef std::map<PFace, typename Face::index_type, FaceHash> face_ht;
-  typedef std::map<PFaceNode, typename Face::index_type, FaceHash> face_nt;
-  typedef std::map<PEdge, typename Edge::index_type, EdgeHash> edge_ht;
-  typedef std::map<PEdgeNode, typename Edge::index_type, EdgeHash> edge_nt;
-#endif
+  using face_ht = boost::unordered_map<PFace, typename Face::index_type, FaceHash>;
+  using face_nt = boost::unordered_map<PFaceNode, typename Face::index_type, FaceHash>;
+  using edge_ht = boost::unordered_map<PEdge, typename Edge::index_type, EdgeHash>;
+  using edge_nt = boost::unordered_map<PEdgeNode, typename Edge::index_type, EdgeHash>;
 
   typedef std::vector<PFaceCell> face_ct;
   typedef std::vector<PEdgeCell> edge_ct;
