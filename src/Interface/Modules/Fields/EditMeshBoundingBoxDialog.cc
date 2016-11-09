@@ -69,9 +69,10 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
   connect(resetCenterPushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
   connect(setCenterPushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
   connect(setSizePushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
+  connect(resetAllPushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
 
   connectButtonsToExecuteSignal({ upScaleToolButton_, doubleUpScaleToolButton_, downScaleToolButton_, doubleDownScaleToolButton_,
-    setCenterPushButton_, setSizePushButton_, resetSizePushButton_, resetCenterPushButton_ });
+    setCenterPushButton_, setSizePushButton_, resetSizePushButton_, resetCenterPushButton_, resetAllPushButton_ });
 
   createExecuteInteractivelyToggleAction();
 }
@@ -120,5 +121,10 @@ void EditMeshBoundingBoxDialog::userSetWidget()
   else if (button.startsWith("resetSize"))
   {
     state_->setTransientValue(EditMeshBoundingBoxModule::ResetSize, true);
+  }
+  else if (button.startsWith("resetAll"))
+  {
+    state_->setTransientValue(EditMeshBoundingBoxModule::ResetSize, true);
+    state_->setTransientValue(EditMeshBoundingBoxModule::ResetCenter, true);
   }
 }
