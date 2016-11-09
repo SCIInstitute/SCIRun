@@ -56,7 +56,7 @@ private Q_SLOTS:
   void scaleDoubleUpPush();
   void scaleDownPush();
   void scaleDoubleDownPush();
-  void resetWidget();
+  void userSetWidget();
 };
 
 }

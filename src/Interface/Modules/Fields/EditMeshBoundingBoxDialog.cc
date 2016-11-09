@@ -42,8 +42,6 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addCheckBoxManager(useOutputCenterCheckBox_, EditMeshBoundingBoxModule::UseOutputCenter);
-  addCheckBoxManager(useOutputSizeCheckBox_, EditMeshBoundingBoxModule::UseOutputSize);
   addCheckableButtonManager(noTranslationRadioButton_, EditMeshBoundingBoxModule::NoTranslation);
   addCheckableButtonManager(xyzTranslationRadioButton_, EditMeshBoundingBoxModule::XYZTranslation);
   addCheckableButtonManager(rdiTranslationRadioButton_, EditMeshBoundingBoxModule::RDITranslation);
@@ -67,9 +65,14 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
 
   setScaleButtonsEnabled(false);
 
-  connect(resetPushButton_, SIGNAL(clicked()), this, SLOT(resetWidget()));
+  connect(resetSizePushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
+  connect(resetCenterPushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
+  connect(setCenterPushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
+  connect(setSizePushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
+  connect(resetAllPushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
 
-  connectButtonsToExecuteSignal({ upScaleToolButton_, doubleUpScaleToolButton_, downScaleToolButton_, doubleDownScaleToolButton_, resetPushButton_ });
+  connectButtonsToExecuteSignal({ upScaleToolButton_, doubleUpScaleToolButton_, downScaleToolButton_, doubleDownScaleToolButton_,
+    setCenterPushButton_, setSizePushButton_, resetSizePushButton_, resetCenterPushButton_, resetAllPushButton_ });
 
   createExecuteInteractivelyToggleAction();
 }
@@ -100,7 +103,28 @@ void EditMeshBoundingBoxDialog::scaleDoubleUpPush(){ adjustScale(doubleUpScale_)
 void EditMeshBoundingBoxDialog::scaleDownPush(){ adjustScale(downScale_); }
 void EditMeshBoundingBoxDialog::scaleDoubleDownPush(){ adjustScale(doubleDownScale_); }
 
-void EditMeshBoundingBoxDialog::resetWidget()
+void EditMeshBoundingBoxDialog::userSetWidget()
 {
-  state_->setValue(EditMeshBoundingBoxModule::Resetting, true);
+  auto button = sender()->objectName();
+  if (button.startsWith("setCenter"))
+  {
+    state_->setTransientValue(EditMeshBoundingBoxModule::SetOutputCenter, true);
+  }
+  else if (button.startsWith("resetCenter"))
+  {
+    state_->setTransientValue(EditMeshBoundingBoxModule::ResetCenter, true);
+  }
+  else if (button.startsWith("setSize"))
+  {
+    state_->setTransientValue(EditMeshBoundingBoxModule::SetOutputSize, true);
+  }
+  else if (button.startsWith("resetSize"))
+  {
+    state_->setTransientValue(EditMeshBoundingBoxModule::ResetSize, true);
+  }
+  else if (button.startsWith("resetAll"))
+  {
+    state_->setTransientValue(EditMeshBoundingBoxModule::ResetSize, true);
+    state_->setTransientValue(EditMeshBoundingBoxModule::ResetCenter, true);
+  }
 }
