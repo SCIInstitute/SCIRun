@@ -69,7 +69,7 @@ private:
 	// INITIALIZE_EVENTHANDLER:
 	/// This function initializes the event handler associated with the singleton
 	/// class. It initializes the python interpreter.
-  void initialize_eventhandler(const std::string& commandLine, const boost::filesystem::path& libPath);
+  void initialize_eventhandler(bool needsSpecialPythonPathTreatment, const boost::filesystem::path& libPath);
 
 public:
   // INITIALIZE:
