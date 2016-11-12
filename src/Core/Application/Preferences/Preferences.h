@@ -95,7 +95,7 @@ namespace SCIRun
       std::string dataDirectoryPlaceholder() const;
 
       boost::filesystem::path dataDirectory() const;
-      void setDataDirectory(const boost::filesystem::path& path);
+      void setDataDirectory(const boost::filesystem::path& path, bool runPython = true);
 
       std::vector<boost::filesystem::path> dataPath() const;
       void addToDataPath(const boost::filesystem::path& path);
