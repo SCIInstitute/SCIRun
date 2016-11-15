@@ -53,15 +53,10 @@ GetFieldBoundaryAlgo::GetFieldBoundaryAlgo()
   addOption(AlgorithmParameterName("mapping"),"auto","auto|node|elem|none");
 }
 
-struct IndexHash {
-  static const size_t bucket_size = 4;
-  static const size_t min_buckets = 8;
-  
+struct IndexHash 
+{
   size_t operator()(const index_type &idx) const
     { return (static_cast<size_t>(idx)); }
-  
-  bool operator()(const index_type &i1, const index_type &i2) const
-    { return (i1 < i2); }
 };
 
 bool 
@@ -70,7 +65,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   ScopedAlgorithmStatusReporter asr(this, "GetFieldBoundary");
 
   /// Define types we need for mapping
-  typedef boost::unordered_map<index_type,index_type,IndexHash> hash_map_type;
+  using hash_map_type = boost::unordered_map<index_type,index_type,IndexHash>;
 
   hash_map_type node_map;
   hash_map_type elem_map;
@@ -94,7 +89,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   }
   
   /// Figure out which type of field the output is:
-  bool found_method = false;
+  auto found_method = false;
   if (fi.is_hex_element())    { fo.make_quadsurfmesh(); found_method = true; }
   if (fi.is_prism_element())  { fo.make_quadsurfmesh(); found_method = true; }
   if (fi.is_tet_element())    { fo.make_trisurfmesh(); found_method = true; }
@@ -123,13 +118,13 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   }
   
   /// Get the virtual interfaces:
-  VMesh* imesh = input->vmesh();
-  VMesh* omesh = output->vmesh();
-  VField* ifield = input->vfield();
-  VField* ofield = output->vfield();
-  
-  imesh->synchronize(Mesh::DELEMS_E|Mesh::ELEM_NEIGHBORS_E);
-  
+  auto imesh = input->vmesh();
+  auto omesh = output->vmesh();
+  auto ifield = input->vfield();
+  auto ofield = output->vfield();
+
+  imesh->synchronize(Mesh::DELEMS_E | Mesh::ELEM_NEIGHBORS_E);
+
   /// These are all virtual iterators, virtual index_types and array_types
   VMesh::Elem::iterator be, ee;
   VMesh::Elem::index_type nci, ci;
@@ -148,31 +143,31 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   imesh->begin(be); 
   imesh->end(ee);
 
-  while (be != ee) 
+  while (be != ee)
   {
     checkForInterruption();
     ci = *be;
-    imesh->get_delems(delems,ci);
-    for (size_t p =0; p < delems.size(); p++)
+    imesh->get_delems(delems, ci);
+    for (size_t p = 0; p < delems.size(); p++)
     {
-      bool includeface = false;
-      
-      if(!(imesh->get_neighbor(nci,ci,delems[p]))) includeface = true;
+      auto includeface = false;
+
+      if (!(imesh->get_neighbor(nci, ci, delems[p]))) includeface = true;
 
       if (includeface)
       {
-        imesh->get_nodes(inodes,delems[p]);
+        imesh->get_nodes(inodes, delems[p]);
         onodes.resize(inodes.size());
 
-        for (size_t q=0; q<inodes.size(); q++)
+        for (size_t q = 0; q < inodes.size(); q++)
         {
           a = inodes[q];
-          hash_map_type::iterator it = node_map.find(a);
+          auto it = node_map.find(a);
           if (it == node_map.end())
           {
-            imesh->get_center(point,a);
+            imesh->get_center(point, a);
             onodes[q] = omesh->add_node(point);
-            node_map[a] = onodes[q];            
+            node_map[a] = onodes[q];
           }
           else
           {
@@ -184,11 +179,11 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     }
     ++be;
   }
-  
+
   mapping.reset();
-  
+
   ofield->resize_fdata();
-  
+
   if (
     (
     (ifield->basis_order() == 0)
@@ -308,12 +303,12 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
 /// project nodes on.
 
 bool 
-GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
+GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "GetFieldBoundary");
 
   /// Define types we need for mapping
-  typedef boost::unordered_map<index_type,index_type,IndexHash> hash_map_type;
+  using hash_map_type = boost::unordered_map<index_type,index_type,IndexHash>;
   
   hash_map_type node_map;
   hash_map_type elem_map;
@@ -337,7 +332,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
   }
   
   /// Figure out which type of field the output is:
-  bool found_method = false;
+  auto found_method = false;
   if (fi.is_hex_element())    { fo.make_quadsurfmesh(); found_method = true; }
   if (fi.is_prism_element())  { fo.make_quadsurfmesh(); found_method = true; }
   if (fi.is_tet_element())    { fo.make_trisurfmesh(); found_method = true; }
@@ -366,10 +361,10 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
   }
   
   /// Get the virtual interfaces:
-  VMesh* imesh = input->vmesh();
-  VMesh* omesh = output->vmesh();
-  VField* ifield = input->vfield();
-  VField* ofield = output->vfield();
+  auto imesh = input->vmesh();
+  auto omesh = output->vmesh();
+  auto ifield = input->vfield();
+  auto ofield = output->vfield();
   
   imesh->synchronize(Mesh::DELEMS_E|Mesh::ELEM_NEIGHBORS_E);
   
@@ -391,30 +386,30 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
   imesh->begin(be); 
   imesh->end(ee);
 
-  while (be != ee) 
+  while (be != ee)
   {
     checkForInterruption();
     ci = *be;
-    imesh->get_delems(delems,ci);
-    for (size_t p =0; p < delems.size(); p++)
+    imesh->get_delems(delems, ci);
+    for (size_t p = 0; p < delems.size(); p++)
     {
-      bool includeface = false;
-      
-      if(!(imesh->get_neighbor(nci,ci,delems[p]))) includeface = true;
+      auto includeface = false;
+
+      if (!(imesh->get_neighbor(nci, ci, delems[p]))) includeface = true;
 
       if (includeface)
       {
-        imesh->get_nodes(inodes,delems[p]);
+        imesh->get_nodes(inodes, delems[p]);
         if (onodes.size() == 0) onodes.resize(inodes.size());
-        for (size_t q=0; q<onodes.size(); q++)
+        for (size_t q = 0; q < onodes.size(); q++)
         {
           a = inodes[q];
-          hash_map_type::iterator it = node_map.find(a);
+          auto it = node_map.find(a);
           if (it == node_map.end())
           {
-            imesh->get_center(point,a);
+            imesh->get_center(point, a);
             onodes[q] = omesh->add_node(point);
-            node_map[a] = onodes[q];            
+            node_map[a] = onodes[q];
           }
           else
           {

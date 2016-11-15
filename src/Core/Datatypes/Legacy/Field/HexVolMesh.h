@@ -60,6 +60,7 @@
 
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
+#include <boost/unordered_map.hpp>
 #include <boost/thread.hpp>
 
 #include <set>
@@ -2732,29 +2733,10 @@ protected:
     }
   };
 
-/// Define the hash_map type, as this is not yet an approved type under Windows
-/// it is located in stdext
-
-#ifdef HAVE_HASH_MAP
-  #if defined(_WIN32)
-    /// hash_map is in stdext namespace
-    typedef stdext::hash_map<PFace, typename Face::index_type, FaceHash> face_ht;
-    typedef stdext::hash_map<PFaceNode, typename Face::index_type, FaceHash> face_nt;
-    typedef stdext::hash_map<PEdge, typename Edge::index_type, EdgeHash> edge_ht;
-    typedef stdext::hash_map<PEdgeNode, typename Edge::index_type, EdgeHash> edge_nt;
-  #else
-    /// hash_map is in std namespace
-    typedef hash_map<PFace, typename Face::index_type, FaceHash> face_ht;
-    typedef hash_map<PFaceNode, typename Face::index_type, FaceHash> face_nt;
-    typedef hash_map<PEdge, typename Edge::index_type, EdgeHash> edge_ht;
-    typedef hash_map<PEdgeNode, typename Edge::index_type, EdgeHash> edge_nt;
-  #endif
-#else
-  typedef std::map<PFace, typename Face::index_type, FaceHash> face_ht;
-  typedef std::map<PFaceNode, typename Face::index_type, FaceHash> face_nt;
-  typedef std::map<PEdge, typename Edge::index_type, EdgeHash> edge_ht;
-  typedef std::map<PEdgeNode, typename Edge::index_type, EdgeHash> edge_nt;
-#endif
+  using face_ht = boost::unordered_map<PFace, typename Face::index_type, FaceHash>;
+  using face_nt = boost::unordered_map<PFaceNode, typename Face::index_type, FaceHash>;
+  using edge_ht = boost::unordered_map<PEdge, typename Edge::index_type, EdgeHash>;
+  using edge_nt = boost::unordered_map<PEdgeNode, typename Edge::index_type, EdgeHash>;
 
   typedef std::vector<PFaceCell> face_ct;
   typedef std::vector<PEdgeCell> edge_ct;

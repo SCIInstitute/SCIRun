@@ -2022,30 +2022,15 @@ protected:
 
   struct edgehash
   {
+    boost::hash<int> hasher_;
     size_t operator()(const std::pair<index_type, index_type> &a) const
     {
-      boost::hash<int> hasher;
-      return hasher(static_cast<int>(hasher(a.first) + a.second));
-    }
-
-    bool operator()(const std::pair<index_type, index_type> &a, const std::pair<index_type, index_type> &b) const
-    {
-      return a.first < b.first || (a.first == b.first && a.second < b.second);
+      return hasher_(static_cast<int>(hasher_(a.first) + a.second));
     }
   };
 
-  struct edgecompare
-  {
-    bool operator()(const std::pair<index_type, index_type> &a, const std::pair<index_type, index_type> &b) const
-    {
-      return a.first == b.first && a.second == b.second;
-    }
-  };
-
-
-  typedef boost::unordered_map<std::pair<index_type, index_type>, index_type, edgehash> EdgeMapType;
-  typedef boost::unordered_map<std::pair<index_type, index_type>, std::vector<index_type>, edgehash> EdgeMapType2;
-
+  using EdgeMapType = boost::unordered_map<std::pair<index_type, index_type>, index_type, edgehash>;
+  using EdgeMapType2 = boost::unordered_map<std::pair<index_type, index_type>, std::vector<index_type>, edgehash>;
 };
 
 

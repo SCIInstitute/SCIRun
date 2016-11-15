@@ -255,7 +255,7 @@ bool needsSpecialPythonPathTreatment(const std::string& commandLine)
 #endif
 }
 
-void PythonInterpreter::initialize_eventhandler(const std::string& commandLine, const boost::filesystem::path& libPath)
+void PythonInterpreter::initialize_eventhandler(bool needsSpecialPythonPathTreatment, const boost::filesystem::path& libPath)
 {
   PRINT_PY_INIT_DEBUG(1);
 	using namespace boost::python;
@@ -299,7 +299,7 @@ void PythonInterpreter::initialize_eventhandler(const std::string& commandLine, 
   lib_path_list.push_back(lib_path.parent_path() / PYTHONPATH);
   PRINT_PY_INIT_DEBUG(lib_path_list.back());
 
-  if (needsSpecialPythonPathTreatment(commandLine))
+  if (needsSpecialPythonPathTreatment)
   {
     boost::filesystem::path full_lib_path(PYTHONLIBDIR);
     full_lib_path /= PYTHONLIB;
@@ -409,18 +409,46 @@ void PythonInterpreter::initialize_eventhandler(const std::string& commandLine, 
   PRINT_PY_INIT_DEBUG(999);
 }
 
-void PythonInterpreter::initialize(bool needProgramName, const std::string& commandLine, const boost::filesystem::path& libPath)
+namespace
 {
-  if (needProgramName)
+  std::vector<std::string> argvFromFullString(const std::string& commandLine)
   {
     using namespace boost::algorithm;
-    std::string cmdline = commandLine;// Application::Instance().parameters()->entireCommandLine();
+    std::string cmdline = commandLine;
     trim_all(cmdline);
-    std::vector< std::string > argv;
+    std::vector<std::string> argv;
     split(argv, cmdline, is_any_of(" "));
+    return argv;
+  }
 
-    size_t name_len = strlen(argv[0].c_str());
-    std::vector< wchar_t > program_name(name_len + 1);
+  std::vector<std::vector<wchar_t>> wideArgvFromArgv(const std::vector<std::string>& argv)
+  {
+    std::vector<std::vector<wchar_t>> wideArgv(argv.size());
+    std::transform(argv.begin(), argv.end(), wideArgv.begin(), [](const std::string& arg)
+    {
+      std::vector<wchar_t> wide(arg.size() + 1);
+      mbstowcs(&wide[0], arg.c_str(), wide.size() + 1);
+      return wide;
+    });
+    return wideArgv;
+  }
+
+  std::vector<wchar_t*> wideArgvPtrsFromWideArgv(std::vector<std::vector<wchar_t>>& wideArgv)
+  {
+    std::vector<wchar_t*> wideArgvPtrs(wideArgv.size());
+    std::transform(wideArgv.begin(), wideArgv.end(), wideArgvPtrs.begin(), [](std::vector<wchar_t>& wide) { return &wide[0]; });
+    return wideArgvPtrs;
+  }
+}
+
+void PythonInterpreter::initialize(bool needProgramName, const std::string& commandLine, const boost::filesystem::path& libPath)
+{
+  const auto argv = argvFromFullString(commandLine);
+
+  if (needProgramName)
+  {
+    size_t name_len = argv[0].size();
+    std::vector<wchar_t> program_name(name_len + 1);
     mbstowcs(&program_name[0], argv[0].c_str(), name_len + 1);
 
     //std::cerr << "Initializing Python ..." << std::endl;
@@ -429,7 +457,12 @@ void PythonInterpreter::initialize(bool needProgramName, const std::string& comm
     //std::wcerr << "initialize program name=" << this->private_->programName() << std::endl;
   }
 
-  initialize_eventhandler(commandLine, libPath);
+  initialize_eventhandler(needsSpecialPythonPathTreatment(commandLine), libPath);
+
+  auto wideArgv = wideArgvFromArgv(argv);
+  auto wideArgvPtrs = wideArgvPtrsFromWideArgv(wideArgv);
+  
+  PySys_SetArgv(argv.size(), &wideArgvPtrs[0]);
 
   {
     auto out = [](const std::string& s)
