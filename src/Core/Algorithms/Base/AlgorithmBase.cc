@@ -80,7 +80,7 @@ void Variable::setValue(const Value& val)
   value_ = val;
 
   {
-    if (boost::get<std::string>(&val))
+    if ("Filename" == name_.name() && boost::get<std::string>(&val))
     {
       auto stringPath = toString();
       {
