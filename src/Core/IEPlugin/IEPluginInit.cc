@@ -68,7 +68,7 @@ void IEPluginManager::Initialize()
   static FieldIEPluginLegacyAdapter CurveField_plugin("CurveField", "*.pts *.pos *.edge", "", TextToCurveField_reader, CurveFieldToTextBaseIndexZero_writer);
 
   static MatrixIEPluginLegacyAdapter EcgsimFileMatrix_plugin("ECGSimFile", "", "", EcgsimFileMatrix_reader, EcgsimFileMatrix_writer);
-  static MatrixIEPluginLegacyAdapter IgbFileMatrix_plugin("IGBFile", "*.igb", "*.igb", IgbFileMatrix_reader, IgbFileMatrix_writer);
+  static MatrixIEPluginLegacyAdapter IgbFileMatrix_plugin("IGBFile", "*.igb", "*.igb", IgbFileMatrix_reader, nullptr);
 
   static FieldIEPluginLegacyAdapter TriSurfField_plugin("TriSurfField", "*.fac *.tri *.pts *.pos", "", TextToTriSurfField_reader, TriSurfFieldToTextBaseIndexZero_writer);
   static FieldIEPluginLegacyAdapter TriSurfFieldBaseIndexOne_plugin("TriSurfField[BaseIndex 1]", "*.fac *.pts", "", nullptr, TriSurfFieldToTextBaseIndexOne_writer);
