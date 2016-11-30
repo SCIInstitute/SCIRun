@@ -176,6 +176,7 @@ Module::Module(const ModuleLookupInfo& info,
   iports_.set_module(this);
   oports_.set_module(this);
   setLogger(defaultLogger_);
+  setUpdaterFunc([](double x) {});
 
   auto& log = Log::get();
 
@@ -262,12 +263,13 @@ void Module::copyStateToMetadata()
 
 bool Module::executeWithSignals() NOEXCEPT
 {
-  //Log::get() << INFO << "executing module: " << id_ << std::endl;
+  auto starting = "STARTING MODULE: " + id_.id_;
 #ifdef BUILD_HEADLESS //TODO: better headless logging
   static Mutex executeLogLock("headlessExecution");
+  if (!Log::get().verbose())
   {
     Guard g(executeLogLock.get());
-    std::cout << "Executing module: " << id_ << std::endl;
+    std::cout << starting << std::endl;
   }
 #endif
   executeBegins_(id_);
@@ -278,7 +280,7 @@ bool Module::executeWithSignals() NOEXCEPT
     copyStateToMetadata();
   }
   /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
-  status("STARTING MODULE: " + id_.id_);
+  status(starting);
   /// @todo: need separate logger per module
   //LOG_DEBUG("STARTING MODULE: " << id_.id_);
   executionState_->transitionTo(ModuleExecutionState::Executing);
@@ -346,13 +348,14 @@ bool Module::executeWithSignals() NOEXCEPT
     metadata_.setMetadata("Last execution duration (seconds)", ostr.str());
   }
 
-  status("MODULE FINISHED " + ((returnCode ? "successfully: " : "with errors: ") + id_.id_));
-  /// @todo: need separate logger per module
-  //LOG_DEBUG("MODULE FINISHED: " << id_.id_);
+  std::ostringstream finished;
+  finished << "MODULE " << id_.id_ << " FINISHED " << (returnCode ? "successfully " : "with errors ") << "in " << executionTime << " seconds.";
+  status(finished.str());
 #ifdef BUILD_HEADLESS //TODO: better headless logging
+  if (!Log::get().verbose())
   {
     Guard g(executeLogLock.get());
-    std::cout << "Module finished: " << id_ << std::endl;
+    std::cout << finished.str() << std::endl;
   }
 #endif
   

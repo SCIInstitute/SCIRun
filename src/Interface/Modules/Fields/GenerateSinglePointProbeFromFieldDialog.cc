@@ -56,6 +56,7 @@ GenerateSinglePointProbeFromFieldDialog::GenerateSinglePointProbeFromFieldDialog
 
   connect(moveToComboBox_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
   connect(colorChooserPushButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
+  connectButtonToExecuteSignal(colorChooserPushButton_);
 }
 
 void GenerateSinglePointProbeFromFieldDialog::enableWidgets(const QString& mode)
@@ -90,5 +91,4 @@ void GenerateSinglePointProbeFromFieldDialog::assignDefaultMeshColor()
 void GenerateSinglePointProbeFromFieldDialog::pushColor()
 {
   state_->setValue(Parameters::ProbeColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
-  Q_EMIT executeActionTriggered();
 }

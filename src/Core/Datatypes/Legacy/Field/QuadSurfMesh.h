@@ -56,6 +56,7 @@
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
 #include <boost/thread.hpp>
+#include <boost/unordered_map.hpp>
 #include <Core/Persistent/PersistentSTL.h>
 
 /// Needed for some specialized functions
@@ -2246,50 +2247,6 @@ protected:
   
   /// Pointer to virtual interface
   boost::shared_ptr<VMesh> vmesh_; /// Virtual function table
-
-#ifdef HAVE_HASH_MAP
-  struct edgehash
-  {
-    size_t operator()(const std::pair<index_type, index_type> &a) const
-    {
-#if defined(__ECC) || defined(_MSC_VER)
-      hash_compare<int> hasher;
-#else
-      hash<int> hasher;
-#endif
-      return hasher(static_cast<int>(hasher(a.first) + a.second));
-    }
-#if defined(__ECC) || defined(_MSC_VER)
-
-    static const size_t bucket_size = 4;
-    static const size_t min_buckets = 8;
-
-    bool operator()(const std::pair<index_type, index_type> &a, const std::pair<index_type, index_type> &b) const
-    {
-      return a.first < b.first || a.first == b.first && a.second < b.second;
-    }
-#endif
-  };
-
-  struct edgecompare
-  {
-    bool operator()(const std::pair<index_type, index_type> &a, const std::pair<index_type, index_type> &b) const
-    {
-      return a.first == b.first && a.second == b.second;
-    }
-  };
-
-#else // HAVE_HASH_MAP
-
-  struct edgecompare
-  {
-    bool operator()(const std::pair<index_type, index_type> &a, const std::pair<index_type, index_type> &b) const
-    {
-      return a.first < b.first || a.first == b.first && a.second < b.second;
-    }
-  };
-#endif // HAVE_HASH_MAP
-
 };
 
 
@@ -2871,79 +2828,17 @@ QuadSurfMesh<Basis>::add_quad(typename Node::index_type a,
   return static_cast<typename Elem::index_type>((static_cast<index_type>(faces_.size()) - 1) >> 2);
 }
 
-
-#ifdef HAVE_HASH_MAP
-
 struct edgehash
 {
+  boost::hash<int> hasher_;
   size_t operator()(const std::pair<index_type, index_type> &a) const
   {
-#if defined(__ECC) || defined(_MSC_VER)
-    hash_compare<int> hasher;
-#else
-    hash<int> hasher;
-#endif
-    return hasher(static_cast<index_type>(hasher(a.first)) + a.second);
-  }
-#if defined(__ECC) || defined(_MSC_VER)
-
-  static const size_t bucket_size = 4;
-  static const size_t min_buckets = 8;
-
-  bool operator()(const std::pair<index_type, index_type> &a, const std::pair<index_type, index_type> &b) const
-  {
-    return a.first < b.first || a.first == b.first && a.second < b.second;
-  }
-#endif
-};
-
-struct edgecompare
-{
-  bool operator()(const std::pair<index_type, index_type> &a, const std::pair<index_type, index_type> &b) const
-  {
-    return a.first == b.first && a.second == b.second;
+    return hasher_(static_cast<int>(hasher_(a.first) + a.second));
   }
 };
 
-#else
-
-struct edgecompare
-{
-  bool operator()(const std::pair<index_type, index_type> &a, const std::pair<index_type, index_type> &b) const
-  {
-    return a.first < b.first || a.first == b.first && a.second < b.second;
-  }
-};
-
-#endif
-
-#ifdef HAVE_HASH_MAP
-
-#if defined(__ECC) || defined(_MSC_VER)
-typedef hash_map<std::pair<index_type, index_type>, index_type, edgehash> EdgeMapType;
-#else
-typedef hash_map<std::pair<index_type, index_type>, index_type, edgehash, edgecompare> EdgeMapType;
-#endif
-
-#else
-
-typedef std::map<std::pair<index_type, index_type>, index_type, edgecompare> EdgeMapType;
-
-#endif
-
-#ifdef HAVE_HASH_MAP
-
-#if defined(__ECC) || defined(_MSC_VER)
-typedef hash_map<std::pair<index_type, index_type>, std::vector<index_type>, edgehash> EdgeMapType2;
-#else
-typedef hash_map<std::pair<index_type, index_type>, std::vector<index_type>, edgehash, edgecompare> EdgeMapType2;
-#endif
-
-#else
-
-typedef std::map<std::pair<index_type, index_type>, std::vector<index_type>, edgecompare> EdgeMapType2;
-
-#endif
+using EdgeMapType = boost::unordered_map<std::pair<index_type, index_type>, index_type, edgehash>;
+using EdgeMapType2 = boost::unordered_map<std::pair<index_type, index_type>, std::vector<index_type>, edgehash>;
 
 template <class Basis>
 void

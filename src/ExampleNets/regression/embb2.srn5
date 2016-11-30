@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="5">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>5</count>
+			<count>7</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CreateLatVol:1</first>
@@ -50,7 +50,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -104,10 +104,34 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>25</count>
+							<count>27</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
+									<name>BoxMode</name>
+								</first>
+								<second>
+									<name>BoxMode</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>BoxRealScale</name>
+								</first>
+								<second>
+									<name>BoxRealScale</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>InputCenterX</name>
 								</first>
 								<second>
@@ -198,7 +222,7 @@
 									<name>OutputCenterX</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000000e+00</value>
+										<value>2.02832031250000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -210,7 +234,7 @@
 									<name>OutputCenterY</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>-2.60864257812500000e-001</value>
 									</value>
 								</second>
 							</item>
@@ -222,7 +246,7 @@
 									<name>OutputCenterZ</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>1.79003906250000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -234,7 +258,7 @@
 									<name>OutputSizeX</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+00</value>
+										<value>4.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -246,7 +270,7 @@
 									<name>OutputSizeY</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+00</value>
+										<value>2.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -258,7 +282,7 @@
 									<name>OutputSizeZ</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+00</value>
+										<value>2.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -366,7 +390,7 @@
 									<name>Scale</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<value>1.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -378,7 +402,7 @@
 									<name>UseOutputCenter</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -411,6 +435,50 @@
 				</second>
 			</item>
 			<item>
+				<first>PrintMatrixIntoString:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>String</category_name_>
+						<module_name_>PrintMatrixIntoString</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FormatString</name>
+								</first>
+								<second>
+									<name>FormatString</name>
+									<value>
+										<which>2</which>
+										<value>%f </value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportStringInfo:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>String</category_name_>
+						<module_name_>ReportStringInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>ShowField:1</first>
 				<second>
 					<module>
@@ -420,7 +488,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>35</count>
+							<count>38</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -442,7 +510,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<value>1.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -502,7 +570,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -527,6 +595,18 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesColoring</name>
+								</first>
+								<second>
+									<name>EdgesColoring</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -562,7 +642,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -574,6 +654,18 @@
 									<name>FacesAvailable</name>
 									<value>
 										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesColoring</name>
+								</first>
+								<second>
+									<name>FacesColoring</name>
+									<value>
+										<which>0</which>
 										<value>1</value>
 									</value>
 								</second>
@@ -622,7 +714,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -634,6 +726,18 @@
 									<name>NodesAvailable</name>
 									<value>
 										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesColoring</name>
+								</first>
+								<second>
+									<name>NodesColoring</name>
+									<value>
+										<which>0</which>
 										<value>1</value>
 									</value>
 								</second>
@@ -778,7 +882,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999989e-02</value>
+										<value>2.99999999999999990e-002</value>
 									</value>
 								</second>
 							</item>
@@ -856,7 +960,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>35</count>
+							<count>38</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -878,7 +982,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<value>1.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -938,7 +1042,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -963,6 +1067,18 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesColoring</name>
+								</first>
+								<second>
+									<name>EdgesColoring</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -998,7 +1114,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1010,6 +1126,18 @@
 									<name>FacesAvailable</name>
 									<value>
 										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesColoring</name>
+								</first>
+								<second>
+									<name>FacesColoring</name>
+									<value>
+										<which>0</which>
 										<value>1</value>
 									</value>
 								</second>
@@ -1058,7 +1186,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1070,6 +1198,18 @@
 									<name>NodesAvailable</name>
 									<value>
 										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesColoring</name>
+								</first>
+								<second>
+									<name>NodesColoring</name>
+									<value>
+										<which>0</which>
 										<value>1</value>
 									</value>
 								</second>
@@ -1214,7 +1354,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999989e-02</value>
+										<value>2.99999999999999990e-002</value>
 									</value>
 								</second>
 							</item>
@@ -1302,7 +1442,7 @@
 									<name>Ambient</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000011e-01</value>
+										<value>2.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1338,7 +1478,7 @@
 									<name>Diffuse</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1362,7 +1502,7 @@
 									<name>Emission</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1398,7 +1538,7 @@
 									<name>FogEnd</name>
 									<value>
 										<which>1</which>
-										<value>7.09999999999999964e-01</value>
+										<value>7.09999999999999960e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1422,7 +1562,7 @@
 									<name>FogStart</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1554,7 +1694,7 @@
 									<name>PolygonOffset</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1566,7 +1706,7 @@
 									<name>ScaleBarFontSize</name>
 									<value>
 										<which>0</which>
-										<value>8</value>
+										<value>99</value>
 									</value>
 								</second>
 							</item>
@@ -1578,7 +1718,7 @@
 									<name>ScaleBarHeight</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1590,7 +1730,7 @@
 									<name>ScaleBarLength</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1602,7 +1742,7 @@
 									<name>ScaleBarLineWidth</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1614,7 +1754,7 @@
 									<name>ScaleBarMultiplier</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1626,7 +1766,7 @@
 									<name>ScaleBarNumTicks</name>
 									<value>
 										<which>0</which>
-										<value>11</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1650,7 +1790,7 @@
 									<name>Shine</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1686,7 +1826,7 @@
 									<name>Specular</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000022e-01</value>
+										<value>4.00000000000000020e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1710,7 +1850,7 @@
 									<name>StereoFusion</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000022e-01</value>
+										<value>4.00000000000000020e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1722,7 +1862,7 @@
 									<name>TextOffset</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1756,7 +1896,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>6</count>
+			<count>8</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:1</moduleId1_>
@@ -1797,6 +1937,18 @@
 			<item>
 				<moduleId1_>EditMeshBoundingBox:1</moduleId1_>
 				<port1_>
+					<name>Transformation_Matrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>PrintMatrixIntoString:0</moduleId2_>
+				<port2_>
+					<name>Input</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>EditMeshBoundingBox:1</moduleId1_>
+				<port1_>
 					<name>Transformation_Widget</name>
 					<id>0</id>
 				</port1_>
@@ -1804,6 +1956,18 @@
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>1</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>PrintMatrixIntoString:0</moduleId1_>
+				<port1_>
+					<name>Output</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportStringInfo:0</moduleId2_>
+				<port2_>
+					<name>Input</name>
+					<id>0</id>
 				</port2_>
 			</item>
 			<item>
@@ -1833,41 +1997,55 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>5</count>
+		<count>7</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateLatVol:1</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>4.56000000000000000e+02</first>
-				<second>0.00000000000000000e+00</second>
+				<first>4.56000000000000000e+002</first>
+				<second>0.00000000000000000e+000</second>
 			</second>
 		</item>
 		<item>
 			<first>EditMeshBoundingBox:1</first>
 			<second>
-				<first>6.20657500000000255e+02</first>
-				<second>8.39350000000000023e+01</second>
+				<first>6.20657500000000250e+002</first>
+				<second>8.39350000000000020e+001</second>
+			</second>
+		</item>
+		<item>
+			<first>PrintMatrixIntoString:0</first>
+			<second>
+				<first>6.88000000000000000e+002</first>
+				<second>2.17000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportStringInfo:0</first>
+			<second>
+				<first>7.28000000000000000e+002</first>
+				<second>3.07000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:1</first>
 			<second>
-				<first>4.78657500000000255e+02</first>
-				<second>9.79350000000000023e+01</second>
+				<first>4.78657500000000250e+002</first>
+				<second>9.79350000000000020e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:4</first>
 			<second>
-				<first>2.74000000000000000e+02</first>
-				<second>9.00000000000000000e+01</second>
+				<first>2.74000000000000000e+002</first>
+				<second>9.00000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:1</first>
 			<second>
-				<first>4.78657500000000255e+02</first>
-				<second>1.77935000000000002e+02</second>
+				<first>4.78657500000000250e+002</first>
+				<second>1.77935000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -1880,7 +2058,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>5</count>
+		<count>7</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>CreateLatVol:1</first>
@@ -1888,6 +2066,14 @@
 		</item>
 		<item>
 			<first>EditMeshBoundingBox:1</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>PrintMatrixIntoString:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportStringInfo:0</first>
 			<second>-1</second>
 		</item>
 		<item>

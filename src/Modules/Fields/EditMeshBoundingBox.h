@@ -38,7 +38,7 @@
 namespace SCIRun {
 
   class BoxWidgetInterface;
-  typedef boost::shared_ptr<BoxWidgetInterface> BoxWidgetPtr;
+  using BoxWidgetPtr = boost::shared_ptr<BoxWidgetInterface>;
 
   namespace Modules {
     namespace Fields {
@@ -51,10 +51,11 @@ namespace SCIRun {
       {
       public:
         EditMeshBoundingBox();
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
+        void execute() override;
+        void setStateDefaults() override;
 
-        static const Core::Algorithms::AlgorithmParameterName Resetting;
+        static const Core::Algorithms::AlgorithmParameterName ResetSize;
+        static const Core::Algorithms::AlgorithmParameterName ResetCenter;
         //Input Field Attributes
         static const Core::Algorithms::AlgorithmParameterName InputCenterX;
         static const Core::Algorithms::AlgorithmParameterName InputCenterY;
@@ -63,8 +64,8 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName InputSizeY;
         static const Core::Algorithms::AlgorithmParameterName InputSizeZ;
         //Output Field Atributes
-        static const Core::Algorithms::AlgorithmParameterName UseOutputCenter;
-        static const Core::Algorithms::AlgorithmParameterName UseOutputSize;
+        static const Core::Algorithms::AlgorithmParameterName SetOutputCenter;
+        static const Core::Algorithms::AlgorithmParameterName SetOutputSize;
         static const Core::Algorithms::AlgorithmParameterName OutputCenterX;
         static const Core::Algorithms::AlgorithmParameterName OutputCenterY;
         static const Core::Algorithms::AlgorithmParameterName OutputCenterZ;
@@ -73,6 +74,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName OutputSizeZ;
         //Widget Scale/Mode
         static const Core::Algorithms::AlgorithmParameterName Scale;
+        static const Core::Algorithms::AlgorithmParameterName ScaleChanged;
         static const Core::Algorithms::AlgorithmParameterName NoTranslation;
         static const Core::Algorithms::AlgorithmParameterName XYZTranslation;
         static const Core::Algorithms::AlgorithmParameterName RDITranslation;
@@ -97,16 +99,12 @@ namespace SCIRun {
         void executeImpl(FieldHandle f);
         void clear_vals();
         void update_input_attributes(FieldHandle);
-        void updateOutputAttributes(const Core::Geometry::BBox& box);
-        void build_widget(FieldHandle, bool reset);
-        bool isBoxEmpty() const;
-        void widget_moved(bool);
+        void computeWidgetBox(const Core::Geometry::BBox& box) const;
         void createBoxWidget();
-        void setBoxRestrictions();
         Core::Datatypes::GeometryBaseHandle buildGeometryObject();
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
         void adjustGeometryFromTransform(const Core::Geometry::Transform& transformMatrix);
-        SCIRun::Core::Geometry::BBox bbox_;
+        Core::Geometry::BBox bbox_;
 
         BoxWidgetPtr box_;
         boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;

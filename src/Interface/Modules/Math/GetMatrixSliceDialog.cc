@@ -61,7 +61,7 @@ GetMatrixSliceDialog::GetMatrixSliceDialog(const std::string& name, ModuleStateH
   lastIndexButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaSeekForward));
   connect(lastIndexButton_, SIGNAL(clicked()), this, SLOT(selectLastIndex()));
 
-  connect(indexSlider_, SIGNAL(sliderReleased()), this, SIGNAL(executeActionTriggered()));
+  connect(indexSlider_, SIGNAL(sliderReleased()), this, SIGNAL(executeFromStateChangeTriggered()));
 
   playButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
   connect(playButton_, SIGNAL(clicked()), this, SLOT(startPlay()));
@@ -87,32 +87,32 @@ void GetMatrixSliceDialog::incrementIndex()
 {
   for (int i = 0; i < indexIncrementSpinBox_->value(); ++i)
     indexSpinBox_->stepUp();
-  Q_EMIT executeActionTriggered();
+  Q_EMIT executeFromStateChangeTriggered();
 }
 
 void GetMatrixSliceDialog::decrementIndex()
 {
   for (int i = 0; i < indexIncrementSpinBox_->value(); ++i)
     indexSpinBox_->stepDown();
-  Q_EMIT executeActionTriggered();
+  Q_EMIT executeFromStateChangeTriggered();
 }
 
 void GetMatrixSliceDialog::selectFirstIndex()
 {
   indexSpinBox_->setValue(0);
-  Q_EMIT executeActionTriggered();
+  Q_EMIT executeFromStateChangeTriggered();
 }
 
 void GetMatrixSliceDialog::selectLastIndex()
 {
   indexSpinBox_->setValue(indexSlider_->maximum());
-  Q_EMIT executeActionTriggered();
+  Q_EMIT executeFromStateChangeTriggered();
 }
 
 void GetMatrixSliceDialog::startPlay()
 {
   state_->setTransientValue(Parameters::PlayModeActive, static_cast<int>(GetMatrixSliceAlgo::PLAY));
-  Q_EMIT executeActionTriggered();
+  Q_EMIT executeFromStateChangeTriggered();
   Q_EMIT executionLoopStarted();
   //qDebug() << " execution loop started emitted ";
 }
