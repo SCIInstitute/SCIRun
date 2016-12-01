@@ -67,7 +67,7 @@ boost::filesystem::path Preferences::dataDirectory() const
   return dataDir_;
 }
 
-void Preferences::setDataDirectory(const boost::filesystem::path& path)
+void Preferences::setDataDirectory(const boost::filesystem::path& path, bool runPython)
 {
   dataDir_ = path;
 
@@ -85,8 +85,11 @@ void Preferences::setDataDirectory(const boost::filesystem::path& path)
   AlgorithmParameterHelper::setDataDirPlaceholder(dataDirectoryPlaceholder());
 
 #ifdef BUILD_WITH_PYTHON
-  auto setDataDir = "import os; os.environ[\"SCIRUNDATADIR\"] = \"" + dataDir_.string() + "\"";
-  PythonInterpreter::Instance().run_string(setDataDir);
+  if (runPython)
+  {
+    auto setDataDir = "import os; os.environ[\"SCIRUNDATADIR\"] = \"" + dataDir_.string() + "\"";
+    PythonInterpreter::Instance().run_string(setDataDir);
+  }
 #endif
 }
 
