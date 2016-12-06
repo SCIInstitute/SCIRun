@@ -180,6 +180,7 @@ IF(APPLE)
             WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
 
         SET(SCIRUN_LIBS "Core_Application"
+                        "Core_Application_Preferences"
                         "Core_Python"
                         "SCIRunPythonAPI"
                         "Interface_Application"
@@ -244,6 +245,7 @@ IF(APPLE)
             WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
 
         SET(SCIRUN_LIBS "Core_Application"
+                        "Core_Application_Preferences"
                         "Core_Python"
                         "SCIRunPythonAPI"
                         "Engine_Network"
