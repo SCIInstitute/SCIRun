@@ -11,17 +11,13 @@ matrix:
       sudo: required
       compiler: clang
     - os: osx
+      osx_image: xcode7.2
 
-
-# check environment (copied from libgit2sharp)
 before_install:
 - date -u
 - uname -a
-#- sudo apt-get update -qq
+- sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa
 
-# TODO: could move script to separate file
-# Not running unit tests at the moment, so turn off testing, which will
-# hopefully make OS X builds a bit faster
 script:
   - cd bin
   - cmake -DTRAVIS_BUILD:BOOL=ON ../Superbuild
