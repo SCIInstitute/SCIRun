@@ -81,20 +81,21 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   addRadioButtonGroupManager({ defaultFaceColoringButton_, colormapLookupFaceColoringButton_/*, conversionRGBFaceColoringButton_*/ }, ShowField::FacesColoring);
   addRadioButtonGroupManager({ textColoringRadioButton_, colormapLookupTextRadioButton_, conversionRGBTextRadioButton_ }, ShowField::TextColoring);
 
+  connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
+  connect(textColorPushButton_, SIGNAL(clicked()), this, SLOT(assignDefaultTextColor()));
+
   connectButtonsToExecuteSignal({ showNodesCheckBox_, showEdgesCheckBox_, showFacesCheckBox_, enableTransparencyNodesCheckBox_,
     enableTransparencyEdgesCheckBox_, enableTransparencyFacesCheckBox_, invertNormalsCheckBox, edgesAsLinesButton_,
     edgesAsCylindersButton_, nodesAsPointsButton_, nodesAsSpheresButton_ ,
     defaultNodeColoringButton_, colormapLookupNodeColoringButton_, //conversionRGBNodeColoringButton_,
     defaultEdgeColoringButton_, colormapLookupEdgeColoringButton_, //conversionRGBEdgeColoringButton_,
-    defaultFaceColoringButton_, colormapLookupFaceColoringButton_, /*conversionRGBFaceColoringButton_*/ });
+    defaultFaceColoringButton_, colormapLookupFaceColoringButton_, /*conversionRGBFaceColoringButton_*/
+    defaultMeshColorButton_, textColorPushButton_ });
 
   connectButtonToExecuteSignal(useFaceNormalsCheckBox_);
 
   createExecuteInteractivelyToggleAction();
-
-  connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
-  connect(textColorPushButton_, SIGNAL(clicked()), this, SLOT(assignDefaultTextColor()));
-
+  
   /////Set unused widgets to be not visible
   //Nodes Tab
   //label_4->setVisible(false); // Sphere scale lable
@@ -196,6 +197,4 @@ void ShowFieldDialog::pushColor()
   QString styleSheet = "QLabel{ background: rgb(" + QString::number(defaultTextColor_.red()) + "," +
     QString::number(defaultTextColor_.green()) + "," + QString::number(defaultTextColor_.blue()) + "); }";
   textColorLabel_->setStyleSheet(styleSheet);
-
-  Q_EMIT executeActionTriggered();
 }

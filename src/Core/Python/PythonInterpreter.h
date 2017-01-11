@@ -37,8 +37,6 @@
 
 #include <Core/Utils/Singleton.h>
 #include <Core/Python/share.h>
-//#include <Core/EventHandler/EventHandler.h>
-//#include <Core/Python/PythonActionContext.h>
 
 class PythonStdIO;
 
@@ -71,7 +69,7 @@ private:
 	// INITIALIZE_EVENTHANDLER:
 	/// This function initializes the event handler associated with the singleton
 	/// class. It initializes the python interpreter.
-  void initialize_eventhandler(const std::string& commandLine, const boost::filesystem::path& libPath);
+  void initialize_eventhandler(bool needsSpecialPythonPathTreatment, const boost::filesystem::path& libPath);
 
 public:
   // INITIALIZE:
@@ -85,7 +83,7 @@ public:
 	// RUN_STRING:
 	/// Execute a single python command.
 	/// NOTE: The command is run in the main namespace.
-	void run_string( const std::string& command );
+	bool run_string( const std::string& command );
 
 	// RUN_SCRIPT:
 	/// Execute a python script.
@@ -95,7 +93,7 @@ public:
 	// RUN_FILE:
 	/// Execute a python script from file.
 	/// NOTE: The script is run in its own local namespace.
-	void run_file( const std::string& file_name );
+  bool run_file(const std::string& file_name);
 
 	// INTERRUPT:
 	/// Interrupt the current execution.
@@ -104,6 +102,8 @@ public:
 	// START_TERMINAL:
 	/// To be implemented.
 	void start_terminal();
+
+  void importSCIRunLibrary();
 
 	// -- signals --
 public:

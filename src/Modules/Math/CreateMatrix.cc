@@ -37,7 +37,7 @@ using namespace SCIRun::Dataflow::Networks;
 
 MODULE_INFO_DEF(CreateMatrix, Math, SCIRun)
 
-const SCIRun::Core::Algorithms::AlgorithmParameterName CreateMatrix::TextEntry("TextEntry");
+ALGORITHM_PARAMETER_DEF(Math, TextEntry);
 
 CreateMatrix::CreateMatrix() : Module(staticInfo_)
 {
@@ -47,7 +47,7 @@ CreateMatrix::CreateMatrix() : Module(staticInfo_)
 void CreateMatrix::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(TextEntry, std::string());
+  state->setValue(Core::Algorithms::Math::Parameters::TextEntry, std::string());
 }
 
 void CreateMatrix::execute()
@@ -57,7 +57,7 @@ void CreateMatrix::execute()
     auto matrix(boost::make_shared<DenseMatrix>());
     try
     {
-      auto matrixString = get_state()->getValue(TextEntry).toString();
+      auto matrixString = get_state()->getValue(Core::Algorithms::Math::Parameters::TextEntry).toString();
 
       if (!matrixString.empty())
       {

@@ -154,6 +154,8 @@ public:
 
   void updateNoteFromFile(const Note& note);
 
+  void adjustExecuteButtonToDownstream(bool downOnly);
+
   struct NetworkClearingScope
   {
     NetworkClearingScope();

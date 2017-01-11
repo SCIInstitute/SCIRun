@@ -64,6 +64,7 @@ namespace SCIRun
       void highlightPorts(int state);
       void ensureThisVisible();
       void showAndColor(const QColor& color);
+      void updateNote(const Note& note);
 
     Q_SIGNALS:
       void selected();
@@ -78,7 +79,6 @@ namespace SCIRun
       QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
       virtual void setNoteGraphicsContext() override;
     private Q_SLOTS:
-      void updateNote(const Note& note);
       void disableModuleGUI(bool disabled);
       void loadAnimate(qreal val);
       void colorAnimate(qreal val);

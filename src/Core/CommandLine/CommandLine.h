@@ -58,6 +58,7 @@ namespace SCIRun {
         virtual bool disableSplash() const = 0;
         virtual bool isRegressionMode() const = 0;
         virtual bool interactiveMode() const = 0;
+        virtual bool quitAfterOneScriptedExecution() const = 0;
         virtual bool loadMostRecentFile() const = 0;
         virtual DeveloperParametersPtr developerParameters() const = 0;
         virtual bool verboseMode() const = 0;
@@ -73,6 +74,7 @@ namespace SCIRun {
         virtual boost::optional<std::string> threadMode() const = 0;
         virtual boost::optional<std::string> reexecuteMode() const = 0;
         virtual boost::optional<int> frameInitLimit() const = 0;
+        virtual boost::optional<unsigned int> maxCores() const = 0;
         virtual boost::optional<double> guiExpandFactor() const = 0;
       };
 

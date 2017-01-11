@@ -62,4 +62,8 @@ void PrintDatatype::execute()
     get_state()->setValue(ReceivedValue, s->value());
   else
     get_state()->setValue(ReceivedValue, std::string("<complicated type>"));
+
+#ifdef BUILD_HEADLESS
+  std::cout << "PrintDatatype received: " << get_state()->getValue(ReceivedValue).toString() << std::endl;
+#endif
 }

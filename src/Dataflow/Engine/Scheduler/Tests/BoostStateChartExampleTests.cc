@@ -441,6 +441,9 @@ public:
     return moduleState_.currentColor();
   }
 
+  Value expandedState() const override { return currentState(); }
+  void setExpandedState(Value state) override { }
+
 private:
   ModuleState moduleState_;
   ExecutionStateChangedSignalType signal_;

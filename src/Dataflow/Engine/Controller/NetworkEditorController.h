@@ -109,7 +109,7 @@ namespace Engine {
     boost::optional<Networks::ConnectionId> requestConnection(const Networks::PortDescriptionInterface* from, const Networks::PortDescriptionInterface* to) override;
     void removeConnection(const Networks::ConnectionId& id);
 
-    void executeAll(const Networks::ExecutableLookup* lookup);
+    boost::shared_ptr<boost::thread> executeAll(const Networks::ExecutableLookup* lookup);
     void executeModule(const Networks::ModuleHandle& module, const Networks::ExecutableLookup* lookup, bool executeUpstream);
 
     virtual Networks::NetworkFileHandle saveNetwork() const override;
@@ -135,6 +135,9 @@ namespace Engine {
 
     boost::signals2::connection connectNetworkDoneLoading(const NetworkDoneLoadingSignalType::slot_type& subscriber);
 
+    // headless hack
+    void stopExecutionContextLoopWhenExecutionFinishes();
+
     virtual void enableSignals() override;
     virtual void disableSignals() override;
 
@@ -159,11 +162,13 @@ namespace Engine {
 
     const Networks::ModuleFactory& moduleFactory() const { return *moduleFactory_; }  //TOOD: lazy
 
+    std::vector<Dataflow::Networks::ModuleExecutionState::Value> moduleExecutionStates() const;
+
   private:
     void printNetwork() const;
     Networks::ModuleHandle addModuleImpl(const Networks::ModuleLookupInfo& info);
 
-    void executeGeneric(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
+    boost::shared_ptr<boost::thread> executeGeneric(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
     void initExecutor();
     ExecutionContextHandle createExecutionContext(const Networks::ExecutableLookup* lookup, Networks::ModuleFilter filter);
 

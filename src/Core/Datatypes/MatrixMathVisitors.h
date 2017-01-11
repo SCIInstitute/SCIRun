@@ -67,7 +67,9 @@ namespace SCIRun {
           virtual void visit(SparseRowMatrixGeneric<double>& sparse) override;
           virtual void visit(DenseColumnMatrixGeneric<double>& column) override;
 
-          MatrixHandle product_;
+          MatrixHandle getProduct() const { return product_; }
+        private:
+          MatrixHandle factor_, product_;
         };
 
         class SCISHARE NegateMatrix : public Matrix::Visitor
