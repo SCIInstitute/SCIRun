@@ -180,252 +180,40 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
     }
   }
 
-  int ncols = 0;
-  int nrows = 0;
-  int line_ncols = 0;
-  int num_nodes = 0, num_elems = 0;
-
   std::string line;
 
   // STAGE 1 - SCAN THE FILE TO DETERMINE THE NUMBER OF NODES
   // AND CHECK THE FILE'S INTEGRITY.
 
-  bool has_header_pts = false;
-  bool first_line_pts = true;
-
-  bool has_header = false;
-  bool first_line = true;
-
-  bool has_data = false;
-
+  int num_nodes = 0; int num_elems =0;
   std::vector<double> values;
+  std::vector<double> fvalues;
+  std::vector<VMesh::index_type> ivalues;
+  std::string elem_type;
 
-  {
-    std::ifstream inputfile;
-    inputfile.exceptions( std::ifstream::badbit );
-    try
-    {
-      inputfile.open(pts_fn.c_str());
-
-      while (getline(inputfile,line,'\n'))
-      {
-        if (line.size() > 0)
-        {
-          // block out comments
-          if ((line[0] == '#')||(line[0] == '%')) continue;
-        }
-
-        // replace comma's and tabs with white spaces
-        for (size_t p = 0;p<line.size();p++)
-        {
-          if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
-        }
-
-        multiple_from_string(line,values);
-        line_ncols = values.size();
-
-        if (first_line_pts)
-        {
-          if (line_ncols > 0)
-          {
-            if (line_ncols == 1)
-            {
-              has_header_pts = true;
-              num_nodes = static_cast<int>(values[0]) + 1;
-            }
-            else if ((line_ncols > 1))
-            {
-              has_header_pts = false;
-              first_line_pts = false;
-              nrows++;
-              ncols = line_ncols;
-            }
-          }
-        }
-        else
-        {
-          if (line_ncols > 0)
-          {
-            nrows++;
-            if (ncols > 0)
-            {
-              if (ncols != line_ncols)
-              {
-                if (pr)  pr->error("Improper format of text file, not every line contains the same amount of coordinates");
-                return (result);
-              }
-            }
-            else
-            {
-              ncols = line_ncols;
-            }
-          }
-        }
-      }
-    }
-    catch (...)
-    {
-      if (pr) pr->error("Could not open and read file: " + pts_fn);
-      return (result);
-    }
-    inputfile.close();
-  }
-
-  if (0 == num_nodes)
-  {
-    num_nodes = nrows;
-  }
-  else if ( has_header_pts && (nrows != num_nodes) )
-  {
-    if (pr) pr->warning("Number of nodes listed in header (" + boost::lexical_cast<std::string>(num_nodes) +
-                        ") does not match number of non-header rows in file (" + boost::lexical_cast<std::string>(nrows) + ")");
-  }
-
-  nrows = 0;
-  ncols = 0;
-  line_ncols = 0;
-
-  bool zero_based = false;
-  {
-    std::ifstream inputfile;
-    inputfile.exceptions( std::ifstream::badbit );
-    try
-    {
-      inputfile.open(elems_fn.c_str());
-
-      while (getline(inputfile,line,'\n'))
-      {
-        if (line.size() > 0)
-        {
-          // block out comments
-          if ((line[0] == '#')||(line[0] == '%')) continue;
-        }
-
-        // replace comma's and tabs with white spaces
-        for (size_t p = 0;p<line.size();p++)
-        {
-          if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
-        }
-
-        multiple_from_string(line,values);
-        line_ncols = values.size();
-
-        for (size_t j=0; j<values.size(); j++) if (values[j] == 0.0) zero_based = true;
-
-        if (first_line)
-        {
-          if (line_ncols > 0)
-          {
-            if (line_ncols == 1)
-            {
-              has_header = true;
-              num_elems = static_cast<int>(values[0]) + 1;
-            }
-            else if (line_ncols > 3)
-            {
-              has_header = false;
-              first_line = false;
-              nrows++;
-              ncols = line_ncols;
-              if (ncols == 5) has_data = true;
-            }
-            else
-            {
-              if (pr)  pr->error("Improper format of text file, some lines do not contain 4 entries");
-              return (result);
-            }
-          }
-        }
-        else
-        {
-          if (line_ncols > 0)
-          {
-            nrows++;
-            if (ncols > 0)
-            {
-              if (ncols != line_ncols)
-              {
-                if (pr)  pr->error("Improper format of text file, not every line contains the same amount of node references");
-                return (result);
-              }
-            }
-            else
-            {
-              ncols = line_ncols;
-              if (ncols == 5) has_data = true;
-            }
-          }
-        }
-      }
-    }
-    catch (...)
-    {
-      if (pr) pr->error("Could not open and read file: " + elems_fn);
-      return (result);
-    }
-    inputfile.close();
-  }
-
-  if (0 == num_elems)
-  {
-    num_elems = nrows;
-  }
-  else if ( has_header && (nrows != num_elems) )
-  {
-    if (pr) pr->warning("Number of elements listed in header (" + boost::lexical_cast<std::string>(num_elems) +
-                        ") does not match number of non-header rows in file (" + boost::lexical_cast<std::string>(nrows) + ")");
-  }
+//  if (nrows != num_nodes)
+//  {
+//    if (pr) pr->warning("Number of nodes listed in header (" + boost::lexical_cast<std::string>(num_nodes) +
+//                        ") does not match number of non-header rows in file (" + boost::lexical_cast<std::string>(nrows) + ")");
+//  }
+//
+//
+//  if ( nrows != num_elems)
+//  {
+//    if (pr) pr->warning("Number of elements listed in header (" + boost::lexical_cast<std::string>(num_elems) +
+//                        ") does not match number of non-header rows in file (" + boost::lexical_cast<std::string>(nrows) + ")");
+//  }
 
   // add data to elems (constant basis)
   FieldInformation fi("TetVolMesh",-1,"double");
-  if (has_data) fi.make_constantdata();
+  fi.make_constantdata();
   result = CreateField(fi);
 
   VMesh *mesh = result->vmesh();
   VField *field = result->vfield();
 
-  mesh->node_reserve(num_nodes);
-  mesh->elem_reserve(num_elems);
 
-  {
-    std::ifstream inputfile;
-    inputfile.exceptions( std::ifstream::badbit );
-
-    try
-    {
-      inputfile.open(pts_fn.c_str());
-
-      std::vector<double> vdata(3);
-
-      for (int i = 0; i < num_nodes && getline(inputfile,line,'\n'); ++i)
-      {
-        if (line.size() > 0)
-        {
-          // block out comments
-          if ((line[0] == '#')||(line[0] == '%')) continue;
-        }
-
-        // replace comma's and tabs with white spaces
-        for (size_t p = 0;p<line.size();p++)
-        {
-          if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
-        }
-
-        multiple_from_string(line,values);
-
-        if (values.size() == 3) mesh->add_point(Point(values[0],values[1],values[2]));
-        if (values.size() == 2) mesh->add_point(Point(values[0],values[1],0.0));
-      }
-    }
-    catch (...)
-    {
-      if (pr) pr->error("Could not open and process file: " + pts_fn);
-      return (result);
-    }
-    inputfile.close();
-  }
-
-  std::vector<double> fvalues;
+  // Elements file
 
   {
     std::ifstream inputfile;
@@ -438,31 +226,36 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
       VMesh::Node::array_type vdata;
       vdata.resize(4);
 
-      std::vector<VMesh::index_type> ivalues;
+      getline(inputfile,line,'\n');
+      multiple_from_string(line,values);
+      num_elems=static_cast<int>(values[0]);
+      mesh->elem_reserve(num_elems);
 
       for (int i = 0; i < num_elems && getline(inputfile,line,'\n'); ++i)
       {
-        if (line.size() > 0)
-        {
-          // block out comments
-          if ((line[0] == '#')||(line[0] == '%')) continue;
-        }
 
-        // replace comma's and tabs with white spaces
-        for (size_t p = 0;p<line.size();p++)
-        {
-          if ((line[p] == '\t')||(line[p] == ',')||(line[p]=='"')) line[p] = ' ';
-        }
+
+        if (i == 0) {
+            for (size_t k=0; k<line.size(); k++)
+            {
+               if (line[k]=' '){ break;}
+               else {
+                       elem_type += line[k];
+                   }
+            }
+          }
 
         multiple_from_string(line,ivalues);
+
         for (size_t j=0; j<ivalues.size() && j<4; j++)
         {
-          if (zero_based) vdata[j] = ivalues[j];
-          else vdata[j] = ivalues[j]-1;
+          vdata[j] = ivalues[j];
         }
-        if (ivalues.size() > 4) fvalues.push_back(ivalues[4]);
 
-        if (ivalues.size() > 3) mesh->add_elem(vdata);
+        fvalues.push_back(ivalues[ivalues.size()-1]);
+
+        mesh->add_elem(vdata);
+
       }
     }
     catch (...)
@@ -473,11 +266,41 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
     inputfile.close();
   }
 
-  if (has_data)
+
+    // Points file
+
   {
+    std::ifstream inputfile;
+    inputfile.exceptions( std::ifstream::badbit );
+
+    try
+    {
+      inputfile.open(pts_fn.c_str());
+
+      std::vector<double> vdata(3);
+      getline(inputfile,line,'\n');
+      multiple_from_string(line,values);
+      num_nodes=static_cast<int>(values[0]);
+
+      for (int i = 0; i < num_nodes && getline(inputfile,line,'\n'); ++i) {
+
+          multiple_from_string(line, values);
+
+          if (values.size() == 3) mesh->add_point(Point(values[0], values[1], values[2]));
+
+      }
+    }
+    catch (...)
+    {
+      if (pr) pr->error("Could not open and process file: " + pts_fn);
+      return (result);
+    }
+    inputfile.close();
+  }
+
     field->resize_values();
     field->set_values(fvalues);
-  }
+
   return (result);
 }
 

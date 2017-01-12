@@ -80,7 +80,7 @@ void IEPluginManager::Initialize()
   static FieldIEPluginLegacyAdapter TriSurfFieldToExotxtBaseIndexOne_plugin("TriSurfFieldToExotxt[BaseIndex 1]", "*.ex2", "", nullptr, TriSurfFieldToExotxtBaseIndexOne_writer);
 
   static FieldIEPluginLegacyAdapter TetVolField_plugin("TetVolField","*.elem *.tet *.pts *.pos", "", TextToTetVolField_reader, TetVolFieldToTextBaseIndexZero_writer);
-  static FieldIEPluginLegacyAdapter CARPMesh_plugin("CARPMesh","*.elem *.pts *.lon", "", nullptr, CARPMesh_writer);
+  static FieldIEPluginLegacyAdapter CARPMesh_plugin("CARPMesh","*.elem *.pts *.lon", "", CARPMesh_reader, CARPMesh_writer);
   static FieldIEPluginLegacyAdapter CARPFiber_plugin("CARPFiber","*.lon", "", nullptr, CARPFiber_writer);
   static FieldIEPluginLegacyAdapter TetVolFieldBaseIndexOne_plugin("TetVolField[BaseIndex 1]", "*.tet *.pts", "", nullptr, TetVolFieldToTextBaseIndexOne_writer);
   static FieldIEPluginLegacyAdapter JHU_elemsPtsFileToTetVol_plugin("JHUFileToTetVol","*.elem *.tet *.pts *.pos", "", TextToTetVolField_reader, nullptr);
