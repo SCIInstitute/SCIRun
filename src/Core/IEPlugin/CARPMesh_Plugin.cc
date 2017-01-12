@@ -238,10 +238,18 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
         if (i == 0) {
             for (size_t k=0; k<line.size(); k++)
             {
-               if (line[k]=' '){ break;}
+
+               if (line[k]==' '){ break;}
                else {
                        elem_type += line[k];
+
                    }
+            }
+
+            if (elem_type != "Tt") {
+              if (pr) pr->error("Mesh types other than Tet not supported");
+              return (result);
+
             }
           }
 

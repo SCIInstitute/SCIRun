@@ -92,9 +92,7 @@ MatrixHandle SCIRun::IgbFileMatrix_reader(LoggerHandle pr, const char *filename)
             
             for(int p=0;p<sz;p++)
             {
-             
-               std::cout << p << std::endl; 	
-             
+
                 if (boost::iequals(strs[p], "x"))
                 {
                     x_size=atoi(strs[p+1].c_str());
