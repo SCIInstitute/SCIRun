@@ -21,7 +21,7 @@ before_install:
 script:
   - cd bin
   - cmake -GNinja -DTRAVIS_BUILD:BOOL=ON ../Superbuild
-  - travis_wait 30 ninja
+  - travis_wait 40 ninja
   - cd SCIRun
   - ./Algorithm_Layer_Test
   - ./Modules_Factory_Tests --gtest_filter=*HardCodedModuleFactoryTests*
