@@ -178,6 +178,8 @@ private Q_SLOTS:
   void loadNetwork();
   void checkAndLoadNetworkFile(const QString& filename);
   void loadRecentNetwork();
+  void loadToolkitsFromFile(const QString& filename);
+  void loadToolkit();
   bool newNetwork();
   void runScript();
   void importLegacyNetwork();

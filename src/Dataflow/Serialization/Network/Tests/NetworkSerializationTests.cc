@@ -418,6 +418,13 @@ TEST(ToolkitSerializationTest, Experimenting)
   XMLSerializer::save_xml(toolkit.networks, ostr, "toolkit");
 
   std::cout << ostr.str() << std::endl;
+}
 
-  //FAIL() << "TODO WIP";
+TEST(ToolkitSerializationTest, CanCreateFromFolders)
+{
+  //C:\Users\Dan\Downloads\FwdInvToolkit-1.2.1\Networks
+
+
+
+  FAIL() << "todo";
 }

@@ -105,7 +105,7 @@ namespace Gui {
   {
   public:
     NetworkFileProcessCommand();
-    virtual bool execute() override;
+    bool execute() override;
 
     Dataflow::Networks::NetworkFileHandle file_;
   protected:
@@ -117,7 +117,7 @@ namespace Gui {
   class FileOpenCommand : public NetworkFileProcessCommand
   {
   protected:
-    virtual Dataflow::Networks::NetworkFileHandle processXmlFile(const std::string& filename) override;
+    Dataflow::Networks::NetworkFileHandle processXmlFile(const std::string& filename) override;
   };
 
   class FileImportCommand : public NetworkFileProcessCommand
@@ -125,20 +125,26 @@ namespace Gui {
   public:
     std::string logContents() const { return logContents_.str(); }
   protected:
-    virtual Dataflow::Networks::NetworkFileHandle processXmlFile(const std::string& filename) override;
+    Dataflow::Networks::NetworkFileHandle processXmlFile(const std::string& filename) override;
     std::ostringstream logContents_;
   };
 
   class NetworkSaveCommand : public Core::Commands::FileCommand<Core::Commands::GuiCommand>, public Core::Commands::SaveFileCommandHelper
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
   };
 
   class DisableViewScenesCommandGui : public Core::Commands::GuiCommand
   {
   public:
-    virtual bool execute() override;
+    bool execute() override;
+  };
+
+  class ToolkitUnpackerCommand : public Core::Commands::GuiCommand
+  {
+  public:
+    bool execute() override;
   };
 }
 }

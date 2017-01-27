@@ -311,3 +311,9 @@ bool DisableViewScenesCommandGui::execute()
   //TODO: hook up enableViewScenes to execution finished
   return true;
 }
+
+bool ToolkitUnpackerCommand::execute()
+{
+  return false; 
+  //return XMLSerializer::load_xml<NetworkFile>(filename);
+}

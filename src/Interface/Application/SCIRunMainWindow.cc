@@ -400,6 +400,8 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
     "BrainStimulator_v1.2.zip" };
   brainStim.setupAction(actionBrainStimulator_, this);
 
+  connect(actionLoadToolkit_, SIGNAL(triggered()), this, SLOT(loadToolkit()));
+
   connect(networkEditor_, SIGNAL(networkExecuted()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(double, const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone(double, const std::string&)));
 
@@ -2146,4 +2148,28 @@ void ToolkitDownloader::saveToolkit() const
   file.write(zipDownloader_->downloadedData());
   file.close();
 	statusBar_->showMessage("Toolkit file saved.", 1000);
+}
+
+void SCIRunMainWindow::loadToolkit()
+{
+  auto filename = QFileDialog::getOpenFileName(this, "Load Toolkit...", latestNetworkDirectory_.path(), "*.toolkit");
+  loadToolkitsFromFile(filename);
+}
+
+void SCIRunMainWindow::loadToolkitsFromFile(const QString& filename)
+{
+  if (!filename.isEmpty())
+  {
+    ToolkitUnpackerCommand command;
+    command.set(Variables::Filename, filename.toStdString());
+    if (command.execute())
+    {
+      statusBar()->showMessage(tr("Toolkit unpacked: ") + filename, 2000);
+
+    }
+    else
+    {
+      statusBar()->showMessage(tr("Toolkit unpacking failed: ") + filename, 2000);
+    }
+  }
 }
