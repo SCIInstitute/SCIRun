@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="transformTabWidget_">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="translateTab_">
       <attribute name="title">
@@ -55,7 +55,10 @@
              <number>6</number>
             </property>
             <property name="minimum">
-             <double>-99.989999999999995</double>
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -72,7 +75,10 @@
              <number>6</number>
             </property>
             <property name="minimum">
-             <double>-99.989999999999995</double>
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -89,7 +95,10 @@
              <number>6</number>
             </property>
             <property name="minimum">
-             <double>-99.989999999999995</double>
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -134,6 +143,12 @@
             <property name="decimals">
              <number>6</number>
             </property>
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
+            </property>
            </widget>
           </item>
           <item row="1" column="0">
@@ -148,6 +163,12 @@
             <property name="decimals">
              <number>6</number>
             </property>
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
+            </property>
            </widget>
           </item>
           <item row="2" column="0">
@@ -161,6 +182,12 @@
            <widget class="QDoubleSpinBox" name="scaleFixedPointZDoubleSpinBox_">
             <property name="decimals">
              <number>6</number>
+            </property>
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -380,7 +407,10 @@
              <number>6</number>
             </property>
             <property name="minimum">
-             <double>-99.989999999999995</double>
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -397,7 +427,10 @@
              <number>6</number>
             </property>
             <property name="minimum">
-             <double>-99.989999999999995</double>
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -414,7 +447,10 @@
              <number>6</number>
             </property>
             <property name="minimum">
-             <double>-99.989999999999995</double>
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -558,7 +594,10 @@
              <number>6</number>
             </property>
             <property name="minimum">
-             <double>-99.989999999999995</double>
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -575,7 +614,10 @@
              <number>6</number>
             </property>
             <property name="minimum">
-             <double>-99.989999999999995</double>
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -592,7 +634,10 @@
              <number>6</number>
             </property>
             <property name="minimum">
-             <double>-99.989999999999995</double>
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
             </property>
            </widget>
           </item>
