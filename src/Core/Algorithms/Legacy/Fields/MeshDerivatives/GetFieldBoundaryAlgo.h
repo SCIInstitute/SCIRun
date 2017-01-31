@@ -52,7 +52,7 @@ public:
   /// With mapping
   bool run(FieldHandle input, FieldHandle& output, Datatypes::MatrixHandle& mapping) const;
   /// Without mapping
-  bool run(FieldHandle input, FieldHandle& output);
+  bool run(FieldHandle input, FieldHandle& output) const;
 
   AlgorithmOutput run(const AlgorithmInput& input) const;
 };
