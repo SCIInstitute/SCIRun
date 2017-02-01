@@ -315,12 +315,15 @@ bool DisableViewScenesCommandGui::execute()
 bool ToolkitUnpackerCommand::execute()
 {
   ToolkitFile toolkit;
-  std::ifstream istr(get(Variables::Filename).toFilename().string());
+  auto filename = get(Variables::Filename).toFilename();
+  std::ifstream istr(filename.string());
   toolkit.load(istr);
   for (const auto& toolkitPair : toolkit.networks)
   {
     std::cout << toolkitPair.first << " -> #modules=" << toolkitPair.second.network.modules.size() << std::endl;
   }
 
-  return false;
+  SCIRunMainWindow::Instance()->addToolkit(filename.leaf().string(), toolkit);
+
+  return !toolkit.networks.empty();
 }

@@ -42,6 +42,7 @@ namespace SCIRun {
   namespace Dataflow {
     namespace Networks {
       struct ModuleId;
+      struct ToolkitFile;
     }
     namespace Engine {
       class NetworkEditorController;
@@ -79,6 +80,7 @@ public:
   void setDataPath(const QString& dirs);
   void addToDataDirectory(const QString& dir);
   void setCurrentFile(const QString& fileName);
+  void addToolkit(const std::string& filename, const SCIRun::Dataflow::Networks::ToolkitFile& toolkit);
 
   //TODO: extract another interface for command objects
   NetworkEditor* networkEditor() { return networkEditor_; }

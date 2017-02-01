@@ -2172,3 +2172,8 @@ void SCIRunMainWindow::loadToolkitsFromFile(const QString& filename)
     }
   }
 }
+
+void SCIRunMainWindow::addToolkit(const std::string& filename, const ToolkitFile& toolkit)
+{
+  menuToolkits_->addMenu("Toolkit: " + QString::fromStdString(filename));
+}
