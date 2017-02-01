@@ -420,9 +420,44 @@ TEST(ToolkitSerializationTest, Experimenting)
   std::cout << ostr.str() << std::endl;
 }
 
+namespace
+{
+  boost::filesystem::path diffPath(const boost::filesystem::path& basePath, const boost::filesystem::path& newPath)
+  {
+    namespace fs = boost::filesystem;
+
+    fs::path diffpath;
+
+    auto tmpPath = newPath;
+    while (tmpPath != basePath) 
+    {
+      diffpath = tmpPath.stem() / diffpath;
+      tmpPath = tmpPath.parent_path();
+    }
+
+    //std::cout << "basepath: " << basePath << std::endl;
+    //std::cout << "newpath: " << newPath << std::endl;
+    //std::cout << "diffpath: " << diffpath << std::endl;
+    //std::cout << "basepath/diffpath: " << basePath / diffpath << std::endl;
+
+    return diffpath;
+  }
+
+}
+
 TEST(ToolkitSerializationTest, CanCreateFromFolders)
 {
-  //C:\Users\Dan\Downloads\FwdInvToolkit-1.2.1\Networks
+  boost::filesystem::path toolkitPath("C:\\Users\\Dan\\Downloads\\FwdInvToolkit-1.2.1\\Networks");
+
+  for (const auto& p : boost::filesystem::recursive_directory_iterator(toolkitPath))
+  {
+    if (p.path().extension() == ".srn5")
+    {
+      std::cout << p << std::endl;
+      std::cout << p.path().parent_path() << std::endl;
+      std::cout << diffPath(toolkitPath, p.path()) << p.path().extension() << '\n' << std::endl;
+    }
+  }
 
 
 
