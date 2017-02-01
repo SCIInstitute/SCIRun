@@ -429,37 +429,75 @@ namespace
     fs::path diffpath;
 
     auto tmpPath = newPath;
-    while (tmpPath != basePath) 
+    while (tmpPath != basePath)
     {
       diffpath = tmpPath.stem() / diffpath;
       tmpPath = tmpPath.parent_path();
     }
 
-    //std::cout << "basepath: " << basePath << std::endl;
-    //std::cout << "newpath: " << newPath << std::endl;
-    //std::cout << "diffpath: " << diffpath << std::endl;
-    //std::cout << "basepath/diffpath: " << basePath / diffpath << std::endl;
-
+    auto filename = diffpath.leaf().string() + newPath.extension().string();
+    diffpath.remove_leaf() /= filename;
     return diffpath;
   }
 
+  ToolkitFile makeToolkitFromDirectory(const boost::filesystem::path& toolkitPath)
+  {
+    ToolkitFile toolkit;
+
+    for (const auto& p : boost::filesystem::recursive_directory_iterator(toolkitPath))
+    {
+      if (p.path().extension() == ".srn5")
+      {
+        toolkit.networks[diffPath(toolkitPath, p.path()).string()] = *XMLSerializer::load_xml<NetworkFile>(p.path().string());
+      }
+    }
+    return toolkit;
+  }
+
+  void saveToolkit(const ToolkitFile& toolkit, std::ostream& ostr)
+  {
+    XMLSerializer::save_xml(toolkit, ostr, "toolkit");
+  }
+
+  void loadToolkit(ToolkitFile& toolkit, std::istream& istr)
+  {
+    toolkit = *XMLSerializer::load_xml<ToolkitFile>(istr);
+  }
 }
+
+#ifdef WIN32
+boost::filesystem::path toolkitPath("C:\\Users\\Dan\\Downloads\\FwdInvToolkit-1.2.1\\Networks");
+#else
+boost::filesystem::path toolkitPath("/Users/dwhite/Desktop/Dev/FwdInvToolkit/Networks");
+#endif
 
 TEST(ToolkitSerializationTest, CanCreateFromFolders)
 {
-  boost::filesystem::path toolkitPath("C:\\Users\\Dan\\Downloads\\FwdInvToolkit-1.2.1\\Networks");
+  auto toolkit = makeToolkitFromDirectory(toolkitPath);
 
-  for (const auto& p : boost::filesystem::recursive_directory_iterator(toolkitPath))
+  std::ostringstream ostr;
+  saveToolkit(toolkit, ostr);
+
+  EXPECT_NE(0, ostr.str().size());
+  //std::cout << ostr.str() << std::endl;
+}
+
+TEST(ToolkitSerializationTest, RoundTripFromFolders)
+{
+  auto toolkit = makeToolkitFromDirectory(toolkitPath);
+
+  std::ostringstream ostr;
+  saveToolkit(toolkit, ostr);
+
+  std::ofstream f("toolkit1.toolkit");
+  saveToolkit(toolkit, f);
+
+  auto toolkitString = ostr.str();
+  ToolkitFile copy;
+  std::istringstream istr(toolkitString);
+  loadToolkit(copy, istr);
+  for (const auto& toolkitPair : copy.networks)
   {
-    if (p.path().extension() == ".srn5")
-    {
-      std::cout << p << std::endl;
-      std::cout << p.path().parent_path() << std::endl;
-      std::cout << diffPath(toolkitPath, p.path()) << p.path().extension() << '\n' << std::endl;
-    }
+    std::cout << toolkitPair.first << " -> #modules=" << toolkitPair.second.network.modules.size() << std::endl;
   }
-
-
-
-  FAIL() << "todo";
 }

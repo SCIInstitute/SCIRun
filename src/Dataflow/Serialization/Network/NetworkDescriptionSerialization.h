@@ -162,6 +162,13 @@ namespace Networks {
   struct SCISHARE ToolkitFile
   {
     FileNetworkMap networks;
+  private:
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+      ar & BOOST_SERIALIZATION_NVP(networks);
+    }
   };
 
   template <class Value>
