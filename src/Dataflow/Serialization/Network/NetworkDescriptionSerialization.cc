@@ -27,5 +27,18 @@
 */
 
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
 
 using namespace SCIRun::Dataflow::Networks;
+
+void ToolkitFile::load(std::istream& istr)
+{
+  auto xmlPtr = XMLSerializer::load_xml<ToolkitFile>(istr);
+  if (xmlPtr)
+    (*this) = *xmlPtr;
+}
+
+void ToolkitFile::save(std::ostream& ostr) const
+{
+  XMLSerializer::save_xml(*this, ostr, "toolkit");
+}

@@ -137,7 +137,7 @@ public:
   }
 private:
   NetworkEditor* ned_;
-  
+
   size_t countState(ModuleExecutionState::Value val) const
   {
     auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
@@ -2098,7 +2098,7 @@ void ToolkitDownloader::showMessageBox()
   QPixmap image;
 
   QSettings settings;
-  
+
   if (settings.contains(iconKey_))
   {
     image.loadFromData(settings.value(iconKey_).toByteArray());
@@ -2165,7 +2165,6 @@ void SCIRunMainWindow::loadToolkitsFromFile(const QString& filename)
     if (command.execute())
     {
       statusBar()->showMessage(tr("Toolkit unpacked: ") + filename, 2000);
-
     }
     else
     {

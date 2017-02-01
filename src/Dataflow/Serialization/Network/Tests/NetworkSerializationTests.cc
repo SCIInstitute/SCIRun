@@ -454,15 +454,7 @@ namespace
     return toolkit;
   }
 
-  void saveToolkit(const ToolkitFile& toolkit, std::ostream& ostr)
-  {
-    XMLSerializer::save_xml(toolkit, ostr, "toolkit");
-  }
 
-  void loadToolkit(ToolkitFile& toolkit, std::istream& istr)
-  {
-    toolkit = *XMLSerializer::load_xml<ToolkitFile>(istr);
-  }
 }
 
 #ifdef WIN32
@@ -476,7 +468,7 @@ TEST(ToolkitSerializationTest, CanCreateFromFolders)
   auto toolkit = makeToolkitFromDirectory(toolkitPath);
 
   std::ostringstream ostr;
-  saveToolkit(toolkit, ostr);
+  toolkit.save(ostr);
 
   EXPECT_NE(0, ostr.str().size());
   //std::cout << ostr.str() << std::endl;
@@ -487,15 +479,15 @@ TEST(ToolkitSerializationTest, RoundTripFromFolders)
   auto toolkit = makeToolkitFromDirectory(toolkitPath);
 
   std::ostringstream ostr;
-  saveToolkit(toolkit, ostr);
+  toolkit.save(ostr);
 
   std::ofstream f("toolkit1.toolkit");
-  saveToolkit(toolkit, f);
+  toolkit.save(f);
 
   auto toolkitString = ostr.str();
   ToolkitFile copy;
   std::istringstream istr(toolkitString);
-  loadToolkit(copy, istr);
+  copy.load(istr);
   for (const auto& toolkitPair : copy.networks)
   {
     std::cout << toolkitPair.first << " -> #modules=" << toolkitPair.second.network.modules.size() << std::endl;

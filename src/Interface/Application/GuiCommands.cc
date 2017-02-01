@@ -314,6 +314,13 @@ bool DisableViewScenesCommandGui::execute()
 
 bool ToolkitUnpackerCommand::execute()
 {
-  return false; 
-  //return XMLSerializer::load_xml<NetworkFile>(filename);
+  ToolkitFile toolkit;
+  std::ifstream istr(get(Variables::Filename).toFilename().string());
+  toolkit.load(istr);
+  for (const auto& toolkitPair : toolkit.networks)
+  {
+    std::cout << toolkitPair.first << " -> #modules=" << toolkitPair.second.network.modules.size() << std::endl;
+  }
+
+  return false;
 }

@@ -141,7 +141,7 @@ namespace Gui {
     bool execute() override;
   };
 
-  class ToolkitUnpackerCommand : public Core::Commands::GuiCommand
+  class ToolkitUnpackerCommand : public Core::Commands::FileCommand<Core::Commands::GuiCommand>
   {
   public:
     bool execute() override;

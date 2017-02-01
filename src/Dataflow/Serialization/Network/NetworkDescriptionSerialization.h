@@ -162,6 +162,8 @@ namespace Networks {
   struct SCISHARE ToolkitFile
   {
     FileNetworkMap networks;
+    void load(std::istream& istr);
+    void save(std::ostream& ostr) const;
   private:
     friend class boost::serialization::access;
     template <class Archive>
