@@ -109,7 +109,7 @@ void GenerateSinglePointProbeFromField::processWidgetFeedback(const ModuleFeedba
     impl_->previousTransform_ != vsf.transform)
   {
     adjustPositionFromTransform(vsf.transform);
-    enqueueExecuteAgain();
+    enqueueExecuteAgain(false);
   }
 }
 
@@ -279,11 +279,6 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
     }
 
     auto center = bmin + Vector(bmax - bmin) * 0.5;
-
-#if SCIRUN4_TO_BE_ENABLED_LATER
-    widget_->SetColor(Color(gui_color_r_.get(), gui_color_g_.get(), gui_color_b_.get()));
-    widget_->SetLabel(gui_label_.get());
-#endif
 
     impl_->widget_->setPosition(center);
     moved_p = true;

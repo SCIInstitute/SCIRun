@@ -144,7 +144,7 @@ namespace Networks {
 
     virtual void execute() = 0;
 
-    typedef boost::signals2::signal<void()> ExecutionSelfRequestSignalType;
+    typedef boost::signals2::signal<void(bool)> ExecutionSelfRequestSignalType;
     virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) = 0;
 
     virtual ModuleExecutionState& executionState() = 0;
@@ -180,7 +180,7 @@ namespace Networks {
     virtual void portRemovedSlot(const Networks::ModuleId& mid, const Networks::PortId& pid) {}
     virtual void addPortConnection(const boost::signals2::connection& con) = 0;
 
-    virtual void enqueueExecuteAgain() = 0;
+    virtual void enqueueExecuteAgain(bool upstream) = 0;
 
     virtual const MetadataMap& metadata() const = 0;
 

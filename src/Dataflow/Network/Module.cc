@@ -922,9 +922,9 @@ bool SCIRun::Dataflow::Networks::canReplaceWith(ModuleHandle module, const Modul
   return true;
 }
 
-void Module::enqueueExecuteAgain()
+void Module::enqueueExecuteAgain(bool upstream)
 {
-  executionSelfRequested_();
+  executionSelfRequested_(upstream);
 }
 
 boost::signals2::connection Module::connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber)

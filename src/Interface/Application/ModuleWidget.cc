@@ -330,8 +330,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
   theModule_->executionState().connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
 
-  theModule_->connectExecuteSelfRequest([this]() { executeAgain(); });
-  connect(this, SIGNAL(executeAgain()), this, SLOT(executeButtonPushed()));
+  theModule_->connectExecuteSelfRequest([this](bool upstream) { executeAgain(upstream); });
+  connect(this, SIGNAL(executeAgain(bool)), this, SLOT(executeTriggeredProgrammatically(bool)));
 
   Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
@@ -1263,9 +1263,14 @@ void ModuleWidget::showUI()
 
 void ModuleWidget::executeButtonPushed()
 {
-  LOG_DEBUG("Execute button pushed on module " << moduleId_ << std::endl);
   auto skipUpstream = QApplication::keyboardModifiers() == Qt::ShiftModifier;
   Q_EMIT executedManually(theModule_, !skipUpstream);
+  changeExecuteButtonToStop();
+}
+
+void ModuleWidget::executeTriggeredProgrammatically(bool upstream)
+{
+  Q_EMIT executedManually(theModule_, upstream);
   changeExecuteButtonToStop();
 }
 
