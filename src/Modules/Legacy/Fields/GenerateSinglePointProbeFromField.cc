@@ -41,12 +41,12 @@
 
 using namespace SCIRun;
 using namespace Core;
-using namespace Core::Algorithms;
+using namespace Algorithms;
 using namespace Datatypes;
 using namespace Dataflow::Networks;
 using namespace Modules::Fields;
 using namespace Geometry;
-using namespace Algorithms::Fields;
+using namespace Fields;
 using namespace Graphics::Datatypes;
 
 MODULE_INFO_DEF(GenerateSinglePointProbeFromField, NewField, SCIRun)
@@ -82,8 +82,6 @@ namespace SCIRun
           widget_(new PointWidgetStub),
           widgetid_(0), l2norm_(0), color_changed_(false) {}
         PointWidgetPtr widget_;
-        //CrowdMonitor widget_lock_;
-        //int  last_input_generation_;
         BBox last_bounds_;
         int widgetid_;
         double l2norm_;
@@ -131,9 +129,9 @@ void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const Transf
   state->setValue(XLocation, newLocation.x());
   state->setValue(YLocation, newLocation.y());
   state->setValue(ZLocation, newLocation.z());
-  std::string oldMoveMethod = state->getValue(MoveMethod).toString();
+  auto oldMoveMethod = state->getValue(MoveMethod).toString();
   state->setValue(MoveMethod, std::string("Location"));
-  state->setValue(MoveMethod, std::string(oldMoveMethod));
+  state->setValue(MoveMethod, oldMoveMethod);
   impl_->previousTransform_ = transformMatrix;
 }
 
@@ -157,28 +155,6 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
 
   getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
-
-#if 0
-
-GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField(GuiContext* ctx)
-  : Module("GenerateSinglePointProbeFromField", ctx, Filter, "NewField", "SCIRun"),
-    widget_lock_("GenerateSinglePointProbeFromField widget lock"),
-    last_input_generation_(0),
-    widgetid_(0),
-    color_changed_(false)
-{
-  widget_ = new PointWidget(this, &widget_lock_, 1.0);
-  GeometryOPortHandle ogport;
-  get_oport_handle("GenerateSinglePointProbeFromField Widget",ogport);
-  widget_->Connect(ogport.get_rep());
-}
-
-
-GenerateSinglePointProbeFromField::~GenerateSinglePointProbeFromField()
-{
-  delete widget_;
-}
-#endif
 
 Point GenerateSinglePointProbeFromField::currentLocation() const
 {
@@ -268,25 +244,9 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
 
     impl_->widget_->setPosition(center);
 
-#if SCIRUN4_TO_BE_ENABLED_LATER
-    GeomGroup *widget_group = new GeomGroup;
-    widget_group->add(widget_->GetWidget());
-
-    GeometryOPortHandle ogport;
-    get_oport_handle("GenerateSinglePointProbeFromField Widget", ogport);
-    widgetid_ = ogport->addObj(widget_group, "GenerateSinglePointProbeFromField Selection Widget",
-      &widget_lock_);
-    ogport->flushViews();
-#endif
     impl_->last_bounds_ = bbox;
   }
-
-#if SCIRUN4_TO_BE_ENABLED_LATER
-  widget_->SetScale(gui_probe_scale_.get() * l2norm_ * 0.003);
-  widget_->SetColor(Color(gui_color_r_.get(), gui_color_g_.get(), gui_color_b_.get()));
-  widget_->SetLabel(gui_label_.get());
-#endif
-
+  
   const auto moveto = state->getValue(MoveMethod).toString();
   bool moved_p = false;
   if (moveto == "Location")
@@ -318,7 +278,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
       bmax.z(bmax.z() + size_estimate);
     }
 
-    Point center = bmin + Vector(bmax - bmin) * 0.5;
+    auto center = bmin + Vector(bmax - bmin) * 0.5;
 
 #if SCIRUN4_TO_BE_ENABLED_LATER
     widget_->SetColor(Color(gui_color_r_.get(), gui_color_g_.get(), gui_color_b_.get()));
@@ -451,9 +411,6 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
       if (vmesh->find_closest_node(closest, node_idx, location))
         vfield->get_value(result, node_idx);
     }
-#if SCIRUN4_TO_BE_ENABLED_LATER
-    valstr << result;
-#endif
 
     fi.make_tensor();
     ofield = CreateField(fi, mesh);
@@ -497,9 +454,9 @@ GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHan
 {
   GeometryHandle geom(new GeometryObjectSpire(idGenerator, "EntireSinglePointProbeFromField", true));
 
-  VMesh* mesh = field->vmesh();
+  auto mesh = field->vmesh();
 
-  ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
+  auto colorScheme = ColorScheme::COLOR_UNIFORM;
   ColorRGB node_color;
 
   mesh->synchronize(Mesh::NODES_E);
@@ -561,36 +518,3 @@ RenderState GenerateSinglePointProbeFromFieldImpl::getWidgetRenderState(ModuleSt
 
   return renState;
 }
-
-#if 0
-
-void
-GenerateSinglePointProbeFromField::widget_moved(bool last, BaseWidget*)
-{
-  if (last)
-  {
-    want_to_execute();
-  }
-}
-
-
-
-void
-GenerateSinglePointProbeFromField::tcl_command(GuiArgs& args, void* userdata)
-{
-  if(args.count() < 2)
-  {
-    args.error("ShowString needs a minor command");
-    return;
-  }
-
-  if (args[1] == "color_change")
-  {
-    color_changed_ = true;
-  }
-  else
-  {
-    Module::tcl_command(args, userdata);
-  }
-}
-#endif
