@@ -83,13 +83,13 @@ TEST(SetComplexFieldDataTest, LatVolOnElemScalarMat)
   EXPECT_EQ(*resultmatrix, *matrix);
 }
 
-TEST(SetComplexFieldDataTest, DISABLED_TetMeshOnNodeScalarMat)
+TEST(SetComplexFieldDataTest, TetMeshOnNodeScalarMat)
 {
   SetFieldDataAlgo algo;
 
   auto tetmesh = LoadTet();
 
-  auto matrix = boost::make_shared<ComplexDenseMatrix>(2, 1, complex(1, 1));
+  auto matrix = boost::make_shared<ComplexDenseMatrix>(7, 1, complex(1, 1));
 
   auto result = algo.runImplComplex(tetmesh, matrix);
 
@@ -100,13 +100,13 @@ TEST(SetComplexFieldDataTest, DISABLED_TetMeshOnNodeScalarMat)
   EXPECT_EQ(*resultmatrix, *matrix);
 }
 
-TEST(SetComplexFieldDataTest, DISABLED_TetMeshOnElemScalarMat)
+TEST(SetComplexFieldDataTest, TetMeshOnElemScalarMat)
 {
   SetFieldDataAlgo algo;
 
   auto tetmesh = LoadTet();
 
-  auto matrix = boost::make_shared<ComplexDenseMatrix>(2, 1, complex(1, 1));
+  auto matrix = boost::make_shared<ComplexDenseMatrix>(3, 1, complex(1, 1));
 
   auto result = algo.runImplComplex(tetmesh, matrix);
 
