@@ -318,12 +318,8 @@ bool ToolkitUnpackerCommand::execute()
   auto filename = get(Variables::Filename).toFilename();
   std::ifstream istr(filename.string());
   toolkit.load(istr);
-  for (const auto& toolkitPair : toolkit.networks)
-  {
-    std::cout << toolkitPair.first << " -> #modules=" << toolkitPair.second.network.modules.size() << std::endl;
-  }
 
-  SCIRunMainWindow::Instance()->addToolkit(filename.leaf().string(), toolkit);
+  SCIRunMainWindow::Instance()->addToolkit(QString::fromStdString(filename.leaf().stem().string()), QString::fromStdString(filename.parent_path().string()), toolkit);
 
   return !toolkit.networks.empty();
 }

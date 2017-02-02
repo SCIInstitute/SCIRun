@@ -80,7 +80,7 @@ public:
   void setDataPath(const QString& dirs);
   void addToDataDirectory(const QString& dir);
   void setCurrentFile(const QString& fileName);
-  void addToolkit(const std::string& filename, const SCIRun::Dataflow::Networks::ToolkitFile& toolkit);
+  void addToolkit(const QString& filename, const QString& directory, const SCIRun::Dataflow::Networks::ToolkitFile& toolkit);
 
   //TODO: extract another interface for command objects
   NetworkEditor* networkEditor() { return networkEditor_; }
@@ -124,6 +124,8 @@ private:
   QStringList favoriteModuleNames_;
   QMap<QString, QVariant> savedSubnetworksXml_;
   QMap<QString, QVariant> savedSubnetworksNames_;
+  QMap<QString, QString> toolkitDirectories_;
+  QMap<QString, Dataflow::Networks::ToolkitFile> toolkitNetworks_;
   QToolButton* executeButton_;
   QByteArray windowState_;
   QPushButton* versionButton_;
@@ -198,6 +200,7 @@ private Q_SLOTS:
   void setExecutor(int type);
   void setGlobalPortCaching(bool enable);
   void readDefaultNotePosition(int index);
+  void openToolkitFolder();
   void updateMiniView();
   void alertForNetworkCycles(int code);
   void updateDockWidgetProperties(bool isFloating);

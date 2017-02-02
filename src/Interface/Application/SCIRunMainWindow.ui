@@ -134,9 +134,11 @@
     <property name="title">
      <string>&amp;Toolkits</string>
     </property>
+    <addaction name="actionLoadToolkit_"/>
+    <addaction name="separator"/>
     <addaction name="actionForwardInverse_"/>
     <addaction name="actionBrainStimulator_"/>
-    <addaction name="actionLoadToolkit_"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuHelp_">
     <property name="title">

@@ -2173,7 +2173,27 @@ void SCIRunMainWindow::loadToolkitsFromFile(const QString& filename)
   }
 }
 
-void SCIRunMainWindow::addToolkit(const std::string& filename, const ToolkitFile& toolkit)
+void SCIRunMainWindow::addToolkit(const QString& filename, const QString& directory, const ToolkitFile& toolkit)
 {
-  menuToolkits_->addMenu("Toolkit: " + QString::fromStdString(filename));
+  auto menu = menuToolkits_->addMenu(filename);
+  auto networks = menu->addMenu("Networks");
+  toolkitDirectories_[filename] = directory;
+  toolkitNetworks_[filename] = toolkit;
+  qDebug() << filename << directory;
+  for (const auto& toolkitPair : toolkit.networks)
+  {
+    for (const auto& part : boost::filesystem::path(toolkitPair.first))
+      std::cout << part << "\t";
+    std::cout << " -> #modules=" << toolkitPair.second.network.modules.size() << std::endl;
+  }
+
+  auto folder = menu->addAction("Open Toolkit Directory");
+  folder->setProperty("path", directory);
+  connect(folder, SIGNAL(triggered()), this, SLOT(openToolkitFolder()));
+}
+
+void SCIRunMainWindow::openToolkitFolder()
+{
+  auto path = sender()->property("path").toString();
+  QDesktopServices::openUrl(QUrl::fromLocalFile(path));
 }
