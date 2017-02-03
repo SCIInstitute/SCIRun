@@ -134,10 +134,15 @@
     <property name="title">
      <string>&amp;Toolkits</string>
     </property>
+    <widget class="QMenu" name="menuDownload_toolkit">
+     <property name="title">
+      <string>Download toolkit</string>
+     </property>
+     <addaction name="actionForwardInverse_"/>
+     <addaction name="actionBrainStimulator_"/>
+    </widget>
+    <addaction name="menuDownload_toolkit"/>
     <addaction name="actionLoadToolkit_"/>
-    <addaction name="separator"/>
-    <addaction name="actionForwardInverse_"/>
-    <addaction name="actionBrainStimulator_"/>
     <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuHelp_">
@@ -1108,6 +1113,11 @@
   <action name="actionLoadToolkit_">
    <property name="text">
     <string>Load toolkit...</string>
+   </property>
+  </action>
+  <action name="actionAsd">
+   <property name="text">
+    <string>asd</string>
    </property>
   </action>
  </widget>

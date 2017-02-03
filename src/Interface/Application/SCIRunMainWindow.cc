@@ -68,6 +68,7 @@
 #include <Core/Python/PythonInterpreter.h>
 #endif
 #include "TriggeredEventsWindow.h"
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
@@ -2175,25 +2176,62 @@ void SCIRunMainWindow::loadToolkitsFromFile(const QString& filename)
 
 void SCIRunMainWindow::addToolkit(const QString& filename, const QString& directory, const ToolkitFile& toolkit)
 {
+  auto added = toolkitDirectories_.contains(filename);
+  if (added && toolkitDirectories_[filename] == directory)
+  {
+    QMessageBox::information(this, "Toolkit already loaded", "Toolkit " + filename + " is already loaded.");
+    return;
+  }
+
   auto menu = menuToolkits_->addMenu(filename);
   auto networks = menu->addMenu("Networks");
   toolkitDirectories_[filename] = directory;
   toolkitNetworks_[filename] = toolkit;
-  qDebug() << filename << directory;
+  std::map<std::string, std::map<std::string, NetworkFile>> toolkitMenuData;
   for (const auto& toolkitPair : toolkit.networks)
   {
-    for (const auto& part : boost::filesystem::path(toolkitPair.first))
-      std::cout << part << "\t";
-    std::cout << " -> #modules=" << toolkitPair.second.network.modules.size() << std::endl;
+    std::vector<std::string> elements;
+    for (const auto& p : boost::filesystem::path(toolkitPair.first))
+      elements.emplace_back(p.filename().string());
+
+    if (elements.size() == 2)
+    {
+      toolkitMenuData[elements[0]][elements[1]] = toolkitPair.second;
+    }
+    else
+    {
+      qDebug() << "Cannot handle toolkit folders of depth > 1";
+    }
+  }
+
+  for (const auto& t1 : toolkitMenuData)
+  {
+    auto t1menu = networks->addMenu(QString::fromStdString(t1.first));
+    for (const auto& t2 : t1.second)
+    {
+      auto networkAction = t1menu->addAction(QString::fromStdString(t2.first));
+      std::ostringstream net;
+      XMLSerializer::save_xml(t2.second, net, "networkFile");
+      networkAction->setProperty("network", QString::fromStdString(net.str()));
+      connect(networkAction, SIGNAL(triggered()), this, SLOT(openToolkitNetwork()));
+    }
   }
 
   auto folder = menu->addAction("Open Toolkit Directory");
   folder->setProperty("path", directory);
   connect(folder, SIGNAL(triggered()), this, SLOT(openToolkitFolder()));
+
+  QMessageBox::information(this, "Toolkit loaded", "Toolkit " + filename + " successfully unpacked. Load networks from the menu.");
 }
 
 void SCIRunMainWindow::openToolkitFolder()
 {
   auto path = sender()->property("path").toString();
   QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+}
+
+void SCIRunMainWindow::openToolkitNetwork()
+{
+  auto network = sender()->property("network").toString();
+  qDebug() << network;
 }
