@@ -35,6 +35,8 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Visualization;
 
+using SCM = SCIRun::Modules::Visualization::ShowColorMap;
+
 ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
@@ -42,30 +44,25 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-	addRadioButtonGroupManager({ leftRadioButton_, bottomRadioButton_ }, ShowColorMapModule::DisplaySide);
-	addRadioButtonGroupManager({ firstHalfRadioButton_, fullRadioButton_, secondHalfRadioButton_ }, ShowColorMapModule::DisplayLength);
-  addSpinBoxManager(textSizeSpinner_, ShowColorMapModule::TextSize);
-	addSpinBoxManager(ticksSpinner_, ShowColorMapModule::Labels);
-	addDoubleSpinBoxManager(scaleSpinner_, ShowColorMapModule::Scale);
-	addLineEditManager(unitsText_, ShowColorMapModule::Units);
-	addSpinBoxManager(sigDigitsSpinner_, ShowColorMapModule::SignificantDigits);
+	addRadioButtonGroupManager({ leftRadioButton_, bottomRadioButton_ }, SCM::DisplaySide);
+	addRadioButtonGroupManager({ firstHalfRadioButton_, fullRadioButton_, secondHalfRadioButton_ }, SCM::DisplayLength);
+  addSpinBoxManager(textSizeSpinner_, SCM::TextSize);
+	addSpinBoxManager(ticksSpinner_, SCM::Labels);
+	addDoubleSpinBoxManager(scaleSpinner_, SCM::Scale);
+	addLineEditManager(unitsText_, SCM::Units);
+	addSpinBoxManager(sigDigitsSpinner_, SCM::SignificantDigits);
 
-	addSpinBoxManager(xTranslationSpin_, ShowColorMapModule::XTranslation);
-	addSpinBoxManager(yTranslationSpin_, ShowColorMapModule::YTranslation);
-  
-  connectButtonToExecuteSignal(leftRadioButton_);
-  connectButtonToExecuteSignal(bottomRadioButton_);
-  connectButtonToExecuteSignal(firstHalfRadioButton_);
-  connectButtonToExecuteSignal(fullRadioButton_);
-  connectButtonToExecuteSignal(secondHalfRadioButton_);
-  
-  connect(textColorPushButton_,SIGNAL(clicked()),this,SLOT(getColor()));
-  
-  addDoubleSpinBoxManager(&r_, ShowColorMapModule::TextRed);
-  addDoubleSpinBoxManager(&g_, ShowColorMapModule::TextGreen);
-  addDoubleSpinBoxManager(&b_, ShowColorMapModule::TextBlue);
-  
-  if (state_->getValue(ShowColorMapModule::TextRed).toDouble() < 0)
+	addSpinBoxManager(xTranslationSpin_, SCM::XTranslation);
+	addSpinBoxManager(yTranslationSpin_, SCM::YTranslation);
+
+  connect(textColorPushButton_, SIGNAL(clicked()), this, SLOT(getColor()));
+  connectButtonsToExecuteSignal({ leftRadioButton_, bottomRadioButton_, firstHalfRadioButton_, fullRadioButton_, secondHalfRadioButton_, textColorPushButton_ } );
+
+  addDoubleSpinBoxManager(&r_, SCM::TextRed);
+  addDoubleSpinBoxManager(&g_, SCM::TextGreen);
+  addDoubleSpinBoxManager(&b_, SCM::TextBlue);
+
+  if (state_->getValue(SCM::TextRed).toDouble() < 0)
   {
     text_color_ = QColor(255, 255, 255, 255);
     r_.setValue(1.);
@@ -80,9 +77,9 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
   }
   else
   {
-    text_color_ = QColor(state_->getValue(ShowColorMapModule::TextRed).toDouble() * 255, 
-      state_->getValue(ShowColorMapModule::TextGreen).toDouble() * 255, 
-      state_->getValue(ShowColorMapModule::TextBlue).toDouble() * 255);
+    text_color_ = QColor(state_->getValue(SCM::TextRed).toDouble() * 255,
+      state_->getValue(SCM::TextGreen).toDouble() * 255,
+      state_->getValue(SCM::TextBlue).toDouble() * 255);
     std::stringstream ss;
     ss << "background-color: rgb(" << text_color_.red() << ", " <<
       text_color_.green() << ", " << text_color_.blue() << ");";
@@ -94,21 +91,19 @@ ShowColorMapDialog::ShowColorMapDialog(const std::string& name, ModuleStateHandl
 
 void ShowColorMapDialog::pullSpecial()
 {
-  r_.setValue(state_->getValue(ShowColorMapModule::TextRed).toDouble());
-  g_.setValue(state_->getValue(ShowColorMapModule::TextGreen).toDouble());
-  b_.setValue(state_->getValue(ShowColorMapModule::TextBlue).toDouble());
+  r_.setValue(state_->getValue(SCM::TextRed).toDouble());
+  g_.setValue(state_->getValue(SCM::TextGreen).toDouble());
+  b_.setValue(state_->getValue(SCM::TextBlue).toDouble());
 }
 
 void ShowColorMapDialog::getColor()
 {
   text_color_ = QColorDialog::getColor(text_color_, this, "Choose text color");
-    std::stringstream ss;
-    ss << "background-color: rgb(" << text_color_.red() << ", " <<
-            text_color_.green() << ", " << text_color_.blue() << ");";
+  std::stringstream ss;
+  ss << "background-color: rgb(" << text_color_.red() << ", " <<
+    text_color_.green() << ", " << text_color_.blue() << ");";
   textColorDisplayLabel_->setStyleSheet(QString::fromStdString(ss.str()));
   r_.setValue(text_color_.redF());
   g_.setValue(text_color_.greenF());
   b_.setValue(text_color_.blueF());
-  
-  Q_EMIT executeActionTriggered();
 }

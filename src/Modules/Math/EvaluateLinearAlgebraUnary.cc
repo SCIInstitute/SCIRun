@@ -39,14 +39,14 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-EvaluateLinearAlgebraUnaryModule::EvaluateLinearAlgebraUnaryModule() :
+EvaluateLinearAlgebraUnary::EvaluateLinearAlgebraUnary() :
   Module(ModuleLookupInfo("EvaluateLinearAlgebraUnary", "Math", "SCIRun"))
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(Result);
 }
 
-void EvaluateLinearAlgebraUnaryModule::setStateDefaults()
+void EvaluateLinearAlgebraUnary::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(Variables::Operator, 0);
@@ -54,7 +54,7 @@ void EvaluateLinearAlgebraUnaryModule::setStateDefaults()
 	state->setValue(Variables::FunctionString, std::string("x+10"));
 }
 
-void EvaluateLinearAlgebraUnaryModule::execute()
+void EvaluateLinearAlgebraUnary::execute()
 {
   auto input = getRequiredInput(InputMatrix);
 

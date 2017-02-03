@@ -36,9 +36,8 @@
 #include <Core/Datatypes/MatrixIO.h>
 #include <Modules/DataIO/ReadMatrixClassic.h>
 #include <Modules/DataIO/WriteMatrix.h>
-#include <Modules/Basic/SendTestMatrix.h>
-#include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
+#include <Modules/Math/ReportMatrixInfo.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
@@ -47,10 +46,12 @@
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <boost/filesystem.hpp>
+#include <Dataflow/Network/Tests/MockNetwork.h>
+#include <Modules/Math/CreateMatrix.h>
+#include <Core/Datatypes/Tests/MatrixTestCases.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms::DataIO;
-using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Modules::Factory;
@@ -67,27 +68,6 @@ using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
-namespace
-{
-  DenseMatrixHandle matrix1()
-  {
-    DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (int i = 0; i < m->rows(); ++i)
-      for (int j = 0; j < m->cols(); ++j)
-        (*m)(i, j) = 3.0 * i + j;
-    return m;
-  }
-
-  const DenseMatrix Zero(DenseMatrix::Zero(3,3));
-
-  ModuleHandle addModuleToNetwork(Network& network, const std::string& moduleName)
-  {
-    ModuleLookupInfo info;
-    info.module_name_ = moduleName;
-    return network.add_module(info);
-  }
-}
-
 //TODO: figure out this failure
 TEST(ReadWriteMatrixFunctionalTest, DISABLED_ManualExecution)
 {
@@ -96,10 +76,10 @@ TEST(ReadWriteMatrixFunctionalTest, DISABLED_ManualExecution)
   AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
   Network writeReadMatrixNetwork(mf, sf, af, ReexecuteStrategyFactoryHandle());
 
-  ModuleHandle send = addModuleToNetwork(writeReadMatrixNetwork, "SendTestMatrix");
-  ModuleHandle write = addModuleToNetwork(writeReadMatrixNetwork, "WriteMatrix");
-  ModuleHandle read = addModuleToNetwork(writeReadMatrixNetwork, "ReadMatrix");
-  ModuleHandle receive = addModuleToNetwork(writeReadMatrixNetwork, "ReceiveTestMatrix");
+  auto send = addModuleToNetwork(writeReadMatrixNetwork, "CreateMatrix");
+  auto write = addModuleToNetwork(writeReadMatrixNetwork, "WriteMatrix");
+  auto read = addModuleToNetwork(writeReadMatrixNetwork, "ReadMatrix");
+  auto receive = addModuleToNetwork(writeReadMatrixNetwork, "ReportMatrixInfo");
 
   EXPECT_EQ(4, writeReadMatrixNetwork.nmodules());
 
@@ -108,18 +88,17 @@ TEST(ReadWriteMatrixFunctionalTest, DISABLED_ManualExecution)
   writeReadMatrixNetwork.connect(ConnectionOutputPort(read, 1), ConnectionInputPort(receive, 0));
   EXPECT_EQ(2, writeReadMatrixNetwork.nconnections());
 
-  DenseMatrixHandle input = matrix1();
-  send->get_state()->setTransientValue("MatrixToSend", input);
+  send->get_state()->setValue(Core::Algorithms::Math::Parameters::TextEntry, matrix1str());
 
   auto filename = TestResources::rootDir() / "moduleTestMatrix.txt";
   boost::filesystem::remove(filename);
 
   write->get_state()->setValue(Variables::Filename, filename.string());
-  WriteMatrixModule* writeModule = dynamic_cast<WriteMatrixModule*>(write.get());
-  ASSERT_TRUE(writeModule != 0);
+  auto writeModule = dynamic_cast<WriteMatrix*>(write.get());
+  ASSERT_TRUE(writeModule != nullptr);
   read->get_state()->setValue(Variables::Filename, filename.string());
-  ReadMatrix* readModule = dynamic_cast<ReadMatrix*>(read.get());
-  ASSERT_TRUE(readModule != 0);
+  auto readModule = dynamic_cast<ReadMatrix*>(read.get());
+  ASSERT_TRUE(readModule != nullptr);
 
   //manually execute the network, in the correct order.
   send->execute();
@@ -127,9 +106,12 @@ TEST(ReadWriteMatrixFunctionalTest, DISABLED_ManualExecution)
   read->execute();
   receive->execute();
 
-  ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
-  ASSERT_TRUE(receiveModule != 0);
-  ASSERT_TRUE(receiveModule->latestReceivedMatrix().get() != 0);
+  auto receiveModule = dynamic_cast<ReportMatrixInfo*>(receive.get());
+  ASSERT_TRUE(receiveModule != nullptr);
+  FAIL() << "test needs rewrite";
+  #if 0
+  ASSERT_TRUE(receiveModule->latestReceivedMatrix().get() != nullptr);
 
   EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
+  #endif
 }

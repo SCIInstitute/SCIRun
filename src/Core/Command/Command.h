@@ -33,6 +33,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <Core/Algorithms/Base/AlgorithmParameterList.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Command/share.h>
 
 namespace SCIRun
@@ -88,6 +89,7 @@ namespace SCIRun
         ImportNetworkFile,
         RunPythonScript,
         SetupDataDirectory,
+        DisableViewScenes,
         ExecuteCurrentNetwork,
         InteractiveMode,
         SetupQuitAfterExecute,

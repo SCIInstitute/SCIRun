@@ -144,9 +144,7 @@ protected:
     // Testing
     "('DynamicPortTester',              1,        1,                  1,              0,          0,              0,                    0,                  0,                              0,             0),"
     "('ReceiveScalar',                  1,        0,                  0,              1,          1,              0,                    0,                  0,                              0,             0),"
-    "('ReceiveTestMatrix',              1,        0,                  0,              0,          1,              0,                    0,                  0,                              0,             0),"
     "('SendScalar',                     1,        0,                  1,              1,          1,              0,                    0,                  0,                              0,             0),"
-    "('SendTestMatrix',                 1,        0,                  0,              0,          1,              0,                    0,                  0,                              0,             0),"
     // Visualization
     "('CreateStandardColorMap',         1,        1,                  1,              0,          1,              0,                    0,                  0,                              1,             0),"
     "('ExtractSimpleIsosurface',        1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
@@ -218,7 +216,7 @@ TEST_F(ModuleDatabaseQueries, CountEnabledModules)
 {
   auto count = countEnabledModules();
   std::cout << "# of enabled modules: " << count << std::endl;
-  EXPECT_EQ(59, count);
+  EXPECT_EQ(57, count);
 }
 
 //TODO: figure out better way to generate a report from these tests. Need a process to enforce keeping them up to date (special branch?)

@@ -56,10 +56,11 @@ ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* paren
   if (state_)
   {
     LOG_DEBUG("ModuleDialogGeneric connecting to state" << std::endl);
-    stateConnection_ = state_->connect_state_changed([this]() { pullSignal(); });
+    stateConnection_ = state_->connectStateChanged([this]() { pullSignal(); });
   }
   connect(this, SIGNAL(pullSignal()), this, SLOT(pull()));
   createExecuteAction();
+  createExecuteDownstreamAction();
   createShrinkAction();
   connectStateChangeToExecute(); //TODO: make this a module state variable if a module wants it saved
 }
@@ -93,7 +94,7 @@ void ModuleDialogGeneric::connectComboToExecuteSignal(QComboBox* box)
 {
   /*
   TODO: investigate why duplicate executes are signalled.
-  connect(box, SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(executeActionTriggered()));
+  connect(box, SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(executeActionTriggeredViaStateChange()));
   if (disablerAdd_ && disablerRemove_)
   {
     disablerAdd_(box);
@@ -127,6 +128,14 @@ void ModuleDialogGeneric::createExecuteAction()
   connect(executeAction_, SIGNAL(triggered()), this, SIGNAL(executeActionTriggered()));
 }
 
+void ModuleDialogGeneric::createExecuteDownstreamAction()
+{
+  executeDownstreamAction_ = new QAction(this);
+  executeDownstreamAction_->setText("Execute + downstream only");
+  executeDownstreamAction_->setIcon(QApplication::style()->standardIcon(QStyle::SP_ArrowDown));
+  connect(executeDownstreamAction_, SIGNAL(triggered()), this, SIGNAL(executeActionTriggeredViaStateChange()));
+}
+  
 void ModuleDialogGeneric::createShrinkAction()
 {
   shrinkAction_ = new QAction(this);
@@ -154,12 +163,12 @@ void ModuleDialogGeneric::executeInteractivelyToggled(bool toggle)
 
 void ModuleDialogGeneric::connectStateChangeToExecute()
 {
-  connect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggered()));
+  connect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggeredViaStateChange()));
 }
 
 void ModuleDialogGeneric::disconnectStateChangeToExecute()
 {
-  disconnect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggered()));
+  disconnect(this, SIGNAL(executeFromStateChangeTriggered()), this, SIGNAL(executeActionTriggeredViaStateChange()));
 }
 
 void ModuleDialogGeneric::toggleCollapse()
@@ -199,6 +208,7 @@ void ModuleDialogGeneric::contextMenuEvent(QContextMenuEvent* e)
   menu.addAction(executeAction_);
   if (executeInteractivelyToggleAction_)
     menu.addAction(executeInteractivelyToggleAction_);
+  menu.addAction(executeDownstreamAction_);
   menu.addAction(shrinkAction_);
   menu.exec(e->globalPos());
 
@@ -404,6 +414,38 @@ void ModuleDialogGeneric::addTextEditManager(QTextEdit* textEdit, const Algorith
   addWidgetSlotManager(boost::make_shared<TextEditSlotManager>(state_, *this, stateKey, textEdit));
 }
 
+class PlainTextEditSlotManager : public WidgetSlotManager
+{
+public:
+  PlainTextEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QPlainTextEdit* textEdit) :
+    WidgetSlotManager(state, dialog, textEdit, stateKey), stateKey_(stateKey), textEdit_(textEdit)
+  {
+    connect(textEdit, SIGNAL(textChanged()), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto newValue = QString::fromStdString(state_->getValue(stateKey_).toString());
+    if (newValue != textEdit_->toPlainText())
+    {
+      textEdit_->setPlainText(newValue);
+      LOG_DEBUG("In new version of pull code for PlainTextEdit: " << newValue.toStdString());
+    }
+  }
+  virtual void pushImpl() override
+  {
+    LOG_DEBUG("In new version of push code for PlainTextEdit: " << textEdit_->toPlainText().toStdString());
+    state_->setValue(stateKey_, textEdit_->toPlainText().toStdString());
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QPlainTextEdit* textEdit_;
+};
+
+void ModuleDialogGeneric::addPlainTextEditManager(QPlainTextEdit* plainTextEdit, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<PlainTextEditSlotManager>(state_, *this, stateKey, plainTextEdit));
+}
+
 class LineEditSlotManager : public WidgetSlotManager
 {
 public:
@@ -434,6 +476,45 @@ private:
 void ModuleDialogGeneric::addLineEditManager(QLineEdit* lineEdit, const AlgorithmParameterName& stateKey)
 {
   addWidgetSlotManager(boost::make_shared<LineEditSlotManager>(state_, *this, stateKey, lineEdit));
+}
+
+class TabSlotManager : public WidgetSlotManager
+{
+public:
+  TabSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QTabWidget* tabWidget) :
+    WidgetSlotManager(state, dialog, tabWidget, stateKey), stateKey_(stateKey), tabWidget_(tabWidget)
+  {
+    connect(tabWidget_, SIGNAL(currentChanged(int)), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto newValue = QString::fromStdString(state_->getValue(stateKey_).toString());
+    if (newValue != tabWidget_->tabText(tabWidget_->currentIndex()))
+    {
+      for (int i = 0; i < tabWidget_->count(); ++i)
+      {
+        if (tabWidget_->tabText(i) == newValue)
+        {
+          tabWidget_->setCurrentIndex(i);
+          LOG_DEBUG("In new version of pull code for LineEdit: " << newValue.toStdString());
+          return;
+        }
+      }
+    }
+  }
+  virtual void pushImpl() override
+  {
+    LOG_DEBUG("In new version of push code for QTabWidget: " << tabWidget_->tabText(tabWidget_->currentIndex()).toStdString());
+    state_->setValue(stateKey_, tabWidget_->tabText(tabWidget_->currentIndex()).toStdString());
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QTabWidget* tabWidget_;
+};
+
+void ModuleDialogGeneric::addTabManager(QTabWidget* tab, const AlgorithmParameterName& stateKey)
+{
+  addWidgetSlotManager(boost::make_shared<TabSlotManager>(state_, *this, stateKey, tab));
 }
 
 class DoubleLineEditSlotManager : public WidgetSlotManager
@@ -747,7 +828,7 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(const std::string& portId
   if (portId.find(type) != std::string::npos)
   {
     //qDebug() << "adjust input table: " << portId.c_str() << portChangeType;
-    
+
     if (portChangeType == DynamicPortChange::USER_ADDED_PORT || portChangeType == DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD)
     {
       //qDebug() << "trying to add row via port added, id: " << portId.c_str();

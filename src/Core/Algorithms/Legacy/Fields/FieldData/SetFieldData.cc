@@ -282,8 +282,7 @@ bool SetFieldDataAlgo::setvectordata(VField* ofield, DenseMatrixHandle data, siz
   else if (((nrows == 1) && (ncols == 3)) || ((ncols == 1) && (nrows == 3)))
   {
     Vector v;
-    if ((nrows == 1) && (nrows == 3)) { v[0] = (*data)(0, 0); v[1] = (*data)(0, 1); v[2] = (*data)(0, 2); }
-    if ((ncols == 1) && (ncols == 3)) { v[0] = (*data)(0, 0); v[1] = (*data)(1, 0); v[2] = (*data)(2, 0); }
+    v[0] = (*data)(0, 0); v[1] = (*data)(0, 1); v[2] = (*data)(0, 2);
     ofield->set_all_values(v);
   }
   else
@@ -295,92 +294,70 @@ bool SetFieldDataAlgo::setvectordata(VField* ofield, DenseMatrixHandle data, siz
   return true;
 }
 
-bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const
+bool SetFieldDataAlgo::setTensorData(VField* ofield, DenseMatrixHandle data, size_type numvals, size_type nrows, size_type ncols, size_type numnvals, size_type numevals) const
 {
   /// Fill field with Tensor values
   /// Handle 6 by n data
   if ((ncols == 6) && (nrows == numvals))
   {
-    Vector v[6];
     for (VMesh::index_type i = 0; i < numnvals; i++)
     {
-      v[0] = (*data)(i, 0); v[1] = (*data)(i, 1);	v[2] = (*data)(i, 2);
-      v[3] = (*data)(i, 3); v[4] = (*data)(i, 4);	v[5] = (*data)(i, 5);
-      ofield->set_values(v, i);
+      ofield->set_value(symmetricTensorFromSixElementArray(data->row(i)), i);
     }
     for (VMesh::index_type i=numnvals; i< numevals+numnvals; i++)
     {
-      v[0]=(* data)(i,0); v[1]=(* data)(i,1);	v[2]=(* data)(i,2);
-      v[3]=(* data)(i,3); v[4]=(* data)(i,4);	v[5]=(* data)(i,5);
-      ofield->set_evalues(v,i);
+      ofield->set_evalue(symmetricTensorFromSixElementArray(data->row(i)), i);
     }
   }
   else if ((nrows == 6) && (ncols == numvals))
   {
-    Vector v[6];
     for (VMesh::index_type i = 0; i < numnvals; i++)
     {
-      v[0] = (*data)(0, i); v[1] = (*data)(1, i);	v[2] = (*data)(2, i);
-      v[3] = (*data)(3, i); v[4] = (*data)(4, i);	v[5] = (*data)(5, i);
-      ofield->set_values(v, i);
+      ofield->set_value(symmetricTensorFromSixElementArray(data->col(i)), i);
     }
     for (VMesh::index_type i=numnvals; i< numevals+numnvals; i++)
     {
-      v[0]=(* data)(0,i); v[1]=(* data)(1,i);	v[2]=(* data)(2,i);
-      v[3]=(* data)(3,i); v[4]=(* data)(4,i);	v[5]=(* data)(5,i);
-      ofield->set_evalues(v,i);
+      ofield->set_evalue(symmetricTensorFromSixElementArray(data->col(i)), i);
     }
   }
-  else if (((nrows == 1) && (ncols == 6)) || ((ncols == 1) && (nrows == 6)))
+  else if (1 == nrows && 6 == ncols)
   {
-    Vector v;
-    if ((nrows == 1) && (ncols == 6)) { v[0] = (*data)(0, 0); v[1] = (*data)(0, 1); v[2] = (*data)(0, 2); v[3] = (*data)(0, 3); v[4] = (*data)(0, 4); v[5] = (*data)(0, 5); }
-    if ((ncols == 1) && (nrows == 6)) { v[0] = (*data)(0, 0); v[1] = (*data)(1, 0); v[2] = (*data)(2, 0); v[3] = (*data)(3, 0); v[4] = (*data)(4, 0); v[5] = (*data)(5, 0); }
-    ofield->set_all_values(v);
+    ofield->set_all_values(symmetricTensorFromSixElementArray(data->row(0)));
+  }
+  else if (1 == ncols && 6 == nrows)
+  {
+    ofield->set_all_values(symmetricTensorFromSixElementArray(data->col(0)));
   }
   /// Handle 9 by n data
-  else if ((ncols == 9) && (nrows == numvals))
+  else if (ncols == 9 && nrows == numvals)
   {
-    Vector v[9];
     for (VMesh::index_type i = 0; i < numnvals; i++)
     {
-      v[0] = (*data)(i, 0); v[1] = (*data)(i, 1);	v[2] = (*data)(i, 2);
-      v[3] = (*data)(i, 3); v[4] = (*data)(i, 4);	v[5] = (*data)(i, 5);
-      v[6] = (*data)(i, 6); v[7] = (*data)(i, 7);	v[8] = (*data)(i, 8);
-      ofield->set_values(v, i);
+      ofield->set_value(symmetricTensorFromNineElementArray(data->row(i)), i);
     }
     for (VMesh::index_type i=numnvals; i< numevals+numnvals; i++)
     {
-      v[0]=(* data)(i,0); v[1]=(* data)(i,1);	v[2]=(* data)(i,2);
-      v[3]=(* data)(i,3); v[4]=(* data)(i,4);	v[5]=(* data)(i,5);
-      v[6]=(* data)(i,6); v[7]=(* data)(i,7);	v[8]=(* data)(i,8);
-      ofield->set_evalues(v,i);
+      ofield->set_evalue(symmetricTensorFromNineElementArray(data->row(i)), i);
     }
   }
-  else if ((nrows == 9) && (ncols == numvals))
+  else if (nrows == 9 && ncols == numvals)
   {
-    Vector v[9];
     for (VMesh::index_type i = 0; i < numnvals; i++)
     {
-      v[0] = (*data)(0, i); v[1] = (*data)(1, i);	v[2] = (*data)(2, i);
-      v[3] = (*data)(3, i); v[4] = (*data)(4, i);	v[5] = (*data)(5, i);
-      v[6] = (*data)(6, i); v[7] = (*data)(7, i);	v[8] = (*data)(8, i);
-      ofield->set_values(v, i);
+      ofield->set_value(symmetricTensorFromNineElementArray(data->col(i)), i);
     }
     for (VMesh::index_type i=numnvals; i< numevals+numnvals; i++)
     {
-      v[0]=(* data)(0,i); v[1]=(* data)(1,i);	v[2]=(* data)(2,i);
-      v[3]=(* data)(3,i); v[4]=(* data)(4,i);	v[5]=(* data)(5,i);
-      v[6]=(* data)(6,i); v[7]=(* data)(7,i);	v[8]=(* data)(8,i);
-      ofield->set_evalues(v,i);
+      ofield->set_evalue(symmetricTensorFromNineElementArray(data->col(i)), i);
     }
   }
-  else if (((nrows == 1) && (ncols == 9)) || ((ncols == 1) && (nrows == 9)))
+  else if (1 == nrows && 9 == ncols)
   {
-    Vector v;
-    if ((nrows == 1) && (ncols == 9)) { v[0] = (*data)(0, 0); v[1] = (*data)(0, 1); v[2] = (*data)(0, 2); v[3] = (*data)(0, 3); v[4] = (*data)(0, 4); v[5] = (*data)(0, 5); }
-    if ((ncols == 1) && (nrows == 9)) { v[0] = (*data)(0, 0); v[1] = (*data)(1, 0); v[2] = (*data)(2, 0); v[3] = (*data)(3, 0); v[4] = (*data)(4, 0); v[5] = (*data)(5, 0); }
-    ofield->set_all_values(v);
+    ofield->set_all_values(symmetricTensorFromNineElementArray(data->row(0)));
+  }
+  else if (1 == ncols && 9 == nrows)
+  {
+    ofield->set_all_values(symmetricTensorFromNineElementArray(data->col(0)));
   }
   else
   {
@@ -464,7 +441,7 @@ FieldHandle SetFieldDataAlgo::runImplRealComplex(FieldHandle input_field, DenseM
     }
     else if (fi.is_tensor())
     {
-      if (!settensordata(ofield, realData, numvals, nrows, ncols, numnvals, numevals))
+      if (!setTensorData(ofield, realData, numvals, nrows, ncols, numnvals, numevals))
         return nullptr;
     }
   }

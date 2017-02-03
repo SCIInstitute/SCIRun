@@ -51,7 +51,8 @@ namespace SCIRun {
         OUTPUT_PORT(0, OutputLHS, SparseRowMatrix);
 	      OUTPUT_PORT(1, OutputRHS, Matrix);
         OUTPUT_PORT(2, Mapping, SparseRowMatrix);
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
+        MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
       };
 
     }

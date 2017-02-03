@@ -45,21 +45,24 @@ namespace SCIRun
   {
   public:
     virtual ~BoxWidgetInterface() {}
+
+    //TODO: EMBB only uses this type for position information. Remaining methods are being commented out until they are actually implemented.
+
     //TODO: need conversion to GPI type above, maybe
-    virtual void connect(Dataflow::Networks::OutputPortHandle port) = 0;
-    virtual void setRestrictX(bool restrict) = 0;
-    virtual void setRestrictY(bool restrict) = 0;
-    virtual void setRestrictZ(bool restrict) = 0;
-    virtual void setRestrictR(bool restrict) = 0;
-    virtual void setRestrictD(bool restrict) = 0;
-    virtual void setRestrictI(bool restrict) = 0;
-    virtual void unrestrictTranslation() = 0;
-    virtual void restrictTranslationXYZ() = 0;
-    virtual void restrictTranslationRDI() = 0;
+    //virtual void connect(Dataflow::Networks::OutputPortHandle port) = 0;
+    //virtual void setRestrictX(bool restrict) = 0;
+    //virtual void setRestrictY(bool restrict) = 0;
+    //virtual void setRestrictZ(bool restrict) = 0;
+    //virtual void setRestrictR(bool restrict) = 0;
+    //virtual void setRestrictD(bool restrict) = 0;
+    //virtual void setRestrictI(bool restrict) = 0;
+    //virtual void unrestrictTranslation() = 0;
+    //virtual void restrictTranslationXYZ() = 0;
+    //virtual void restrictTranslationRDI() = 0;
     virtual void setPosition(const Core::Geometry::Point&, const Core::Geometry::Point&, const Core::Geometry::Point&, const Core::Geometry::Point&) = 0;
     virtual void getPosition(Core::Geometry::Point&, Core::Geometry::Point&, Core::Geometry::Point&, Core::Geometry::Point&) const = 0;
-    virtual void setScale(double scale) = 0;
-    virtual void setCurrentMode(int mode) = 0;
+    //virtual void setScale(double scale) = 0;
+    //virtual void setCurrentMode(int mode) = 0;
   };
 
 }

@@ -36,7 +36,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-ModuleLookupInfo AsyncPortTestModule::staticInfo_("AsyncPortTestModule", "Testing", "SCIRun");
+MODULE_INFO_DEF(AsyncPortTestModule, Testing, SCIRun)
 
 AsyncPortTestModule::AsyncPortTestModule()
   : ModuleWithAsyncDynamicPorts(staticInfo_, false),

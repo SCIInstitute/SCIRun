@@ -25,9 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-#ifdef BUILD_WITH_PYTHON
-#include <Modules/Python/PythonObjectForwarder.h>
 
+#include <Modules/Python/PythonObjectForwarder.h>
 
 using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Core::Datatypes;
@@ -39,9 +38,9 @@ ALGORITHM_PARAMETER_DEF(Python, PollingIntervalMilliseconds);
 ALGORITHM_PARAMETER_DEF(Python, NumberOfRetries);
 ALGORITHM_PARAMETER_DEF(Python, PythonObject);
 
-const ModuleLookupInfo PythonObjectForwarder::staticInfo_("PythonObjectForwarder", "Python", "SCIRun");
+MODULE_INFO_DEF(PythonObjectForwarder, Python, SCIRun)
 
-PythonObjectForwarder::PythonObjectForwarder() : Module(staticInfo_) 
+PythonObjectForwarder::PythonObjectForwarder() : Module(staticInfo_)
 {
   INITIALIZE_PORT(PythonMatrix);
   INITIALIZE_PORT(PythonField);
@@ -57,8 +56,10 @@ void PythonObjectForwarder::setStateDefaults()
 
 void PythonObjectForwarder::execute()
 {
+#ifdef BUILD_WITH_PYTHON
   PythonObjectForwarderImpl<PythonObjectForwarder> impl(*this);
   impl.waitForOutputFromTransientState(Parameters::PythonObject.name(), PythonString, PythonMatrix, PythonField);
-}
-
+#else
+  error("Build with Python is turned off, this module does nothing.");
 #endif
+}

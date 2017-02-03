@@ -32,11 +32,8 @@
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Modules/Basic/SendScalar.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
 using ::testing::_;
@@ -44,4 +41,4 @@ using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
-/// @todo 
+/// @todo

@@ -66,7 +66,7 @@ IF(GENERATE_MODULE_FACTORY_CODE AND REGENERATE_MODULE_FACTORY_CODE)
     POST_BUILD
     COMMAND echo "${CMAKE_COMMAND} -E remove -f ${ModuleFactoryImpl_Generated}"
     COMMAND ${CMAKE_COMMAND} -E remove -f ${ModuleFactoryImpl_Generated}
-    COMMENT " Running POST BUILD action "
+    COMMENT "Removed generated Module Factory code--it will be regenerated next build. Turn off CMake flag REGENERATE_MODULE_FACTORY_CODE if new modules are not being added."
   )
 ENDIF()
 
@@ -74,7 +74,6 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Dataflow_Network
   Modules_Math
   Modules_Fields
-  Modules_FiniteElements
   Modules_BrainStimulator
   Modules_Legacy_FiniteElements
   Modules_Legacy_Forward
@@ -84,6 +83,7 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_DataIO
   Modules_String
   Modules_Render
+  Modules_Python
   Modules_Visualization
   Modules_Legacy_Math
   Modules_Legacy_Bundle
@@ -96,15 +96,9 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_Legacy_String
 )
 
-
-IF(BUILD_WITH_PYTHON)
-  TARGET_LINK_LIBRARIES(Modules_Factory
-    Modules_Python
-  )
-ENDIF()
-
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Factory)
 ENDIF(BUILD_SHARED_LIBS)
 
-SCIRUN_ADD_TEST_DIR(Tests)
+# Framework test: always build
+ADD_SUBDIRECTORY(Tests)

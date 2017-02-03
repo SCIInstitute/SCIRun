@@ -211,21 +211,54 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="6" column="0">
        <widget class="QLabel" name="label_6">
         <property name="text">
          <string>Maximum Distance:</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
+      <item row="6" column="1">
        <widget class="QLineEdit" name="maximumDistanceLineEdit_"/>
+      </item>
+      <item row="5" column="1">
+       <widget class="QCheckBox" name="useNanForUnassignedValuesCheckBox_">
+        <property name="text">
+         <string>Use Nan</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>quantityComboBox_</tabstop>
+  <tabstop>interpolationComboBox_</tabstop>
+  <tabstop>samplePointsComboBox_</tabstop>
+  <tabstop>sampleMethodComboBox_</tabstop>
+  <tabstop>outsideValueDoubleSpinBox_</tabstop>
+  <tabstop>useNanForUnassignedValuesCheckBox_</tabstop>
+  <tabstop>maximumDistanceLineEdit_</tabstop>
+ </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>useNanForUnassignedValuesCheckBox_</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>outsideValueDoubleSpinBox_</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>263</x>
+     <y>164</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>274</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

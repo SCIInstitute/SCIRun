@@ -55,7 +55,7 @@ class ReadField : public GenericReader<FieldHandle> {
     GuiInt    gui_delay_;
 #endif
 
-ReadFieldModule::ReadFieldModule()
+ReadField::ReadField()
   : my_base("ReadField", "DataIO", "SCIRun", "Field")
     //gui_filename_base_(get_ctx()->subVar("filename_base"), ""),
     //gui_number_in_series_(get_ctx()->subVar("number_in_series"), 0),
@@ -64,19 +64,19 @@ ReadFieldModule::ReadFieldModule()
   INITIALIZE_PORT(Field);
 }
 
-std::string ReadFieldModule::fileTypeList()
+std::string ReadField::fileTypeList()
 {
   FieldIEPluginManager mgr;
   return makeGuiTypesListForImport(mgr);
 }
 
-std::string ReadFieldModule::defaultFileTypeName() const
+std::string ReadField::defaultFileTypeName() const
 {
   FieldIEPluginManager mgr;
   return defaultImportTypeForFile(&mgr);
 }
 
-bool ReadFieldModule::call_importer(const std::string& filename, FieldHandle& fHandle)
+bool ReadField::call_importer(const std::string& filename, FieldHandle& fHandle)
 {
   ///@todo: how will this work via python? need more code to set the filetype based on the extension...
   FieldIEPluginManager mgr;
@@ -90,7 +90,7 @@ bool ReadFieldModule::call_importer(const std::string& filename, FieldHandle& fH
 }
 
 void
-ReadFieldModule::execute()
+ReadField::execute()
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (gui_types_.changed() || gui_filetype_.changed()) inputs_changed_ = true;
@@ -98,7 +98,7 @@ ReadFieldModule::execute()
   my_base::execute();
 }
 
-bool ReadFieldModule::useCustomImporter(const std::string& filename) const
+bool ReadField::useCustomImporter(const std::string& filename) const
 {
   return boost::filesystem::extension(filename) != ".fld";
 }

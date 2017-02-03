@@ -67,6 +67,8 @@ namespace SCIRun {
           description.maker_ = boost::factory<ModuleType*>();
           description.moduleStatus_ = status;
           description.moduleInfo_ = desc;
+          description.hasUI_ = HasUI<ModuleType>::value;
+          description.hasAlgo_ = HasAlgorithm<ModuleType>::value;
 
           lookup_[info] = description;
 

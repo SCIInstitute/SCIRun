@@ -104,7 +104,8 @@ class ModuleWidget : public QStackedWidget,
 	Q_OBJECT
 
 public:
-  ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl,
+  ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule,
+    boost::shared_ptr<DialogErrorControl> dialogErrorControl,
     QWidget* parent = nullptr);
   ~ModuleWidget();
 
@@ -153,11 +154,18 @@ public:
 
   void updateNoteFromFile(const Note& note);
 
+  void adjustExecuteButtonToDownstream(bool downOnly);
+
   struct NetworkClearingScope
   {
     NetworkClearingScope();
     ~NetworkClearingScope();
   };
+
+  QString metadataToString() const;
+  QDialog* dialog();
+
+  static double highResolutionExpandFactor_;
 
 public Q_SLOTS:
   virtual bool executeWithSignals() override;
@@ -187,7 +195,7 @@ Q_SIGNALS:
   void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void moduleExecuted();
-  void executedManually(const SCIRun::Dataflow::Networks::ModuleHandle& module);
+  void executedManually(const SCIRun::Dataflow::Networks::ModuleHandle& module, bool fromButton);
   void updateProgressBarSignal(double percent);
   void cancelConnectionsInProgress();
   void noteUpdated(const Note& note);
@@ -212,6 +220,7 @@ private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
   void executeButtonPushed();
+  void executeTriggeredViaStateChange();
   void stopButtonPushed();
   void colorOptionsButton(bool visible);
   void fillReplaceWithMenu();
@@ -221,7 +230,7 @@ private Q_SLOTS:
   void changeExecuteButtonToPlay();
   void changeExecuteButtonToStop();
   void updateDockWidgetProperties(bool isFloating);
-  void incomingConnectionStateChanged(bool disabled);
+  void incomingConnectionStateChanged(bool disabled, int index);
 protected:
   virtual void enterEvent(QEvent* event) override;
   virtual void leaveEvent(QEvent* event) override;
@@ -250,7 +259,7 @@ private:
   int buildDisplay(ModuleWidgetDisplayBase* display, const QString& name);
   void setupDisplayWidgets(ModuleWidgetDisplayBase* display, const QString& name);
   void setupModuleActions();
-  void setupLogging();
+  void setupLogging(class ModuleErrorDisplayer* displayer);
   void adjustDockState(bool dockEnabled);
   Qt::DockWidgetArea allowedDockArea() const;
   void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider) const;
@@ -274,7 +283,6 @@ private:
   void removeOutputPortsFromWidget(int index);
   QHBoxLayout* inputPortLayout_;
   QHBoxLayout* outputPortLayout_;
-  NetworkEditor* editor_;
   bool deleting_;
   static bool networkBeingCleared_;
   const QString defaultBackgroundColor_;

@@ -40,7 +40,7 @@ using namespace SCIRun::Core::Datatypes;
 
 ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent), vectorTabIndex_(-1), scalarTabIndex_(-1)
+  : ModuleDialogGeneric(state, parent), vectorTabIndex_(-1), scalarTabIndex_(-1), tensorTabIndex_(-1)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -55,6 +55,7 @@ ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStat
   createExecuteInteractivelyToggleAction();
   
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
+  connectButtonToExecuteSignal(defaultMeshColorButton_);
 }
 
 void ShowFieldGlyphsDialog::push()
@@ -98,9 +99,7 @@ void ShowFieldGlyphsDialog::assignDefaultMeshColor()
 
 void ShowFieldGlyphsDialog::pushColor()
 {
-  //std::cout << "push color: " << defaultMeshColor_.redF() << " " << defaultMeshColor_.greenF() << " " << defaultMeshColor_.blueF() << std::endl;
   state_->setValue(ShowFieldGlyphs::DefaultMeshColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
-  Q_EMIT executeActionTriggered();
 }
 
 void ShowFieldGlyphsDialog::checkTabs()
@@ -160,7 +159,7 @@ void ShowFieldGlyphsDialog::checkTabs()
   {
     if (tensorTabIndex_ > 0)
     {
-      displayOptionsTabs_->removeTab(scalarTabIndex_);
+      displayOptionsTabs_->removeTab(tensorTabIndex_);
       if (vectorTabIndex_ > tensorTabIndex_)
         --vectorTabIndex_;
       if (scalarTabIndex_ > tensorTabIndex_)

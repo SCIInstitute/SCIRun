@@ -50,7 +50,7 @@ namespace SCIRun {
         OUTPUT_PORT(0, Sampling_Widget, GeometryObject);
         OUTPUT_PORT(1, Samples, LegacyField);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       private:
         void execute_random(FieldHandle ifield);
 

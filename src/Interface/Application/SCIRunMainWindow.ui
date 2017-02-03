@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1093</width>
-         <height>482</height>
+         <width>1081</width>
+         <height>443</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -164,11 +164,20 @@
     <addaction name="actionKeyboardShortcuts_"/>
     <addaction name="helpActionNewUserWizard_"/>
     <addaction name="menuNew_Features"/>
+    <addaction name="actionReportIssue_"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
      <string>Window</string>
     </property>
+    <widget class="QMenu" name="menuToolbars">
+     <property name="title">
+      <string>Toolbars</string>
+     </property>
+     <addaction name="actionSearchBar_"/>
+     <addaction name="actionNetworkBar_"/>
+     <addaction name="actionExecuteBar_"/>
+    </widget>
     <addaction name="actionConfiguration_"/>
     <addaction name="actionModule_Selector"/>
     <addaction name="actionProvenance_"/>
@@ -177,6 +186,7 @@
     <addaction name="actionDevConsole_"/>
     <addaction name="actionTriggeredEvents_"/>
     <addaction name="actionPreferences_"/>
+    <addaction name="menuToolbars"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Window_Layout"/>
    </widget>
@@ -215,6 +225,7 @@
     <addaction name="separator"/>
     <addaction name="actionCleanUpNetwork_"/>
     <addaction name="separator"/>
+    <addaction name="actionMakeSubnetwork_"/>
    </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuEdit"/>
@@ -1044,6 +1055,46 @@
   <action name="helpActionNewUserWizard_">
    <property name="text">
     <string>New User Wizard...</string>
+   </property>
+  </action>
+  <action name="actionSearchBar_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Search</string>
+   </property>
+  </action>
+  <action name="actionNetworkBar_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Network</string>
+   </property>
+  </action>
+  <action name="actionExecuteBar_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Execute</string>
+   </property>
+  </action>
+  <action name="actionReportIssue_">
+   <property name="text">
+    <string>Report Issue...</string>
+   </property>
+  </action>
+  <action name="actionMakeSubnetwork_">
+   <property name="text">
+    <string>Make subnetwork...</string>
    </property>
   </action>
  </widget>

@@ -40,7 +40,9 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QDir>
+#include <QLineEdit>
 #include <QMutex>
+#include <QWizard>
 
 class QTextEdit;
 class QTreeWidget;
@@ -58,10 +60,10 @@ namespace Gui {
 
     void log(const QString& message) const;
 
-    virtual void error(const std::string& msg) const override;
-    virtual void warning(const std::string& msg) const override;
-    virtual void remark(const std::string& msg) const override;
-    virtual void status(const std::string& msg) const override;
+    void error(const std::string& msg) const override;
+    void warning(const std::string& msg) const override;
+    void remark(const std::string& msg) const override;
+    void status(const std::string& msg) const override;
 
     virtual void log4(const std::string& message) const override;
   private:
@@ -74,10 +76,10 @@ namespace Gui {
   {
   public:
     explicit TreeViewModuleGetter(QTreeWidget& tree) : tree_(tree) {}
-    virtual QString text() const override;
-    virtual QString clipboardXML() const override;
-    virtual bool isModule() const override;
-    virtual bool isClipboardXML() const override;
+    QString text() const override;
+    QString clipboardXML() const override;
+    bool isModule() const override;
+    bool isClipboardXML() const override;
   private:
     QTreeWidget& tree_;
   };
@@ -138,7 +140,7 @@ namespace Gui {
     Q_OBJECT
 
   public:
-    explicit FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent = 0);
+    explicit FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent = nullptr);
     QByteArray downloadedData() const { return downloadedData_; }
 
   Q_SIGNALS:
@@ -146,7 +148,7 @@ namespace Gui {
 
   private Q_SLOTS:
     void fileDownloaded(QNetworkReply* reply);
-    void downloadProgress(qint64 received, qint64 total);
+    void downloadProgress(qint64 received, qint64 total) const;
   private:
     QNetworkAccessManager webCtrl_;
     QNetworkReply* reply_;
@@ -158,21 +160,41 @@ namespace Gui {
   {
     Q_OBJECT
   public:
-    explicit ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar, QWidget* parent = 0);
+    explicit ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar, QWidget* parent = nullptr);
   private Q_SLOTS:
     void showMessageBox();
-    void saveToolkit();
+    void saveToolkit() const;
 
   private:
     void downloadIcon(); //TODO: cache somehow
     FileDownloader* iconDownloader_;
     FileDownloader* zipDownloader_;
-    QString iconUrl_, fileUrl_, filename_;
+    QString iconUrl_, iconKey_, fileUrl_, filename_;
     QDir toolkitDir_;
     QStatusBar* statusBar_;
   };
 
-  void newUserWizard(QWidget* parent);
+  class NewUserWizard : public QWizard
+  {
+    Q_OBJECT
+  public:
+    explicit NewUserWizard(QWidget* parent);
+    ~NewUserWizard();
+  public Q_SLOTS:
+    void setShowPrefs(int state);
+  private Q_SLOTS:
+    void updatePathLabel(const QString& dir);
+    void showPrefs();
+  private:
+    QWizardPage* createIntroPage();
+    QWizardPage* createPathSettingPage();
+    QWizardPage* createLicensePage();
+    QWizardPage* createConnectionChoicePage();
+    QWizardPage* createDocPage();
+    QWizardPage* createOtherSettingsPage();
+    QLineEdit* pathWidget_;
+    bool showPrefs_{ false };
+  };
 }
 }
 #endif

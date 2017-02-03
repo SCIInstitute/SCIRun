@@ -90,25 +90,18 @@ MatrixHandle SCIRun::IgbFileMatrix_reader(LoggerHandle pr, const char *filename)
             sz=line.size();
             
             
-            
             for(int p=0;p<sz;p++)
             {
-             
-               std::cout << p << std::endl; 	
-             
+
                 if (boost::iequals(strs[p], "x"))
                 {
                     x_size=atoi(strs[p+1].c_str());
-                
-                    
                     count += 1;
                     
                 }
                 if (boost::iequals(strs[p], "t"))
                 {
                     t_size=atoi(strs[p+1].c_str());
-                
-                    
                     count +=1;
                      
                 }
@@ -139,13 +132,13 @@ MatrixHandle SCIRun::IgbFileMatrix_reader(LoggerHandle pr, const char *filename)
             is.seekg (0, ios::end);
             length = is.tellg();
             is.seekg (1024, ios::beg);
+             t_size=t_size;
+            length=length-1024;
 
             vector<float> vec;
-            vec.resize(x_size*t_size);
+            vec.resize(length);
+            is.read ((char*)&vec[0],length);
             
-            
-        
-            is.read ((char*)&vec[0],x_size * t_size * sizeof(float));
             if (!is)
             {
                 numbyts=is.gcount();
@@ -155,11 +148,9 @@ MatrixHandle SCIRun::IgbFileMatrix_reader(LoggerHandle pr, const char *filename)
             is.close();
         
         
-            // auto result(boost::make_shared<DenseMatrix>(x_size,t_size));
+           auto result(boost::make_shared<DenseMatrix>(x_size,t_size));
             
-            DenseMatrixHandle result;
-            
-            result.reset(new DenseMatrix(x_size,t_size));
+        
             
                 for(size_t p=0;p<t_size;p++ )
                 {

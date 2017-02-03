@@ -57,12 +57,12 @@ namespace SCIRun {
   namespace Modules {
     namespace BrainStimulator {
 
-class SCISHARE ElectrodeCoilSetupModule : public SCIRun::Dataflow::Networks::Module,
+class SCISHARE ElectrodeCoilSetup : public SCIRun::Dataflow::Networks::Module,
   public Has3InputPorts<FieldPortTag, MatrixPortTag, DynamicPortTag<FieldPortTag>>,
   public Has4OutputPorts<MatrixPortTag, FieldPortTag, FieldPortTag, FieldPortTag>
 {
   public:
-    ElectrodeCoilSetupModule();
+    ElectrodeCoilSetup();
 
     virtual void execute();
     virtual void setStateDefaults();
@@ -78,6 +78,8 @@ class SCISHARE ElectrodeCoilSetupModule : public SCIRun::Dataflow::Networks::Mod
     OUTPUT_PORT(3, COILS_FIELD, LegacyField);
 
     NEW_BRAIN_STIMULATOR_MODULE
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 };
 
 }}}

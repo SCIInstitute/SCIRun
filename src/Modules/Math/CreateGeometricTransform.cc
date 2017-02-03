@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -53,7 +53,8 @@ using namespace Geometry;
 ///   University of Utah
 ///@date  March 1999
 
-const ModuleLookupInfo CreateGeometricTransform::staticInfo_("CreateGeometricTransform", "Math", "SCIRun");
+MODULE_INFO_DEF(CreateGeometricTransform, Math, SCIRun)
+
 ALGORITHM_PARAMETER_DEF(Math, TransformType);
 ALGORITHM_PARAMETER_DEF(Math, MultiplyRadioButton);
 ALGORITHM_PARAMETER_DEF(Math, TranslateVectorX);
@@ -132,7 +133,7 @@ void CreateGeometricTransform::setStateDefaults()
   std::string z = "z+";
   state->setValue(FieldMapX, x);
   state->setValue(FieldMapY, y);
-  state->setValue(FieldMapZ, z); 
+  state->setValue(FieldMapZ, z);
   state->setValue(PermuteX, 1);
   state->setValue(PermuteY, 2);
   state->setValue(PermuteZ, 3);
@@ -144,8 +145,8 @@ void CreateGeometricTransform::setStateDefaults()
 void CreateGeometricTransform::execute()
 {
   auto input_matrix_H = getOptionalInput(InputMatrix);
-  
-  
+
+
   if (needToExecute())
   {
     auto state = get_state();
@@ -183,7 +184,7 @@ void CreateGeometricTransform::execute()
 
     Transform local_transform;
 
-    // get the "fixed point"
+    // get the "fixed point"  This only gets the translation vector.  From the translation tab.
     Vector t(state->getValue(Parameters::TranslateVectorX).toDouble(),
       state->getValue(Parameters::TranslateVectorY).toDouble(),
       state->getValue(Parameters::TranslateVectorZ).toDouble());
@@ -196,6 +197,10 @@ void CreateGeometricTransform::execute()
     }
     else if (which_transform == 1) //scale
     {
+      Vector scale_point(state->getValue(Parameters::ScalePointX).toDouble(),
+               state->getValue(Parameters::ScalePointY).toDouble(),
+               state->getValue(Parameters::ScalePointZ).toDouble());
+      
       double new_scale = state->getValue(Parameters::UniformScale).toDouble();
       double s = pow(10., new_scale);
       double new_scalex = state->getValue(Parameters::ScalePointX).toDouble();
@@ -205,20 +210,29 @@ void CreateGeometricTransform::execute()
       double new_scalez = state->getValue(Parameters::ScalePointZ).toDouble();
       double sz = pow(10., new_scalez)*s;
       Vector sc(sx, sy, sz);
-      local_transform.post_translate(t);
+      local_transform.post_translate(scale_point);
       local_transform.post_scale(sc);
-      local_transform.post_translate(-t);
+      local_transform.post_translate(-scale_point);
     }
     else if (which_transform == 2) //rotate
     {
+      Vector rotate_point(state->getValue(Parameters::RotatePointX).toDouble(),
+                         state->getValue(Parameters::RotatePointY).toDouble(),
+                         state->getValue(Parameters::RotatePointZ).toDouble());
+      //std::cout<<"orig transform = "<<local_transform<<std::endl;
+      //std::cout<<"orig transform = "<<std::endl;
+      
       Vector axis(state->getValue(Parameters::RotateAxisX).toDouble(),
         state->getValue(Parameters::RotateAxisY).toDouble(),
         state->getValue(Parameters::RotateAxisZ).toDouble());
       if (!axis.length2()) axis.x(1);
       axis.normalize();
-      local_transform.post_translate(t);
+      local_transform.post_translate(rotate_point);
+      //std::cout<<"1st transform = "<<local_transform<<std::endl;
       local_transform.post_rotate(state->getValue(Parameters::RotateTheta).toDouble()*M_PI / 180., axis);
-      local_transform.post_translate(-t);
+      //std::cout<<"2nd transform = "<<local_transform<<std::endl;
+      local_transform.post_translate(-rotate_point);
+      //std::cout<<"3rd transform = "<<local_transform<<std::endl;
     }
     else if (which_transform == 3) //shear
     {
@@ -260,7 +274,7 @@ void CreateGeometricTransform::execute()
       widget_pose_inv_trans_.invert();
       */
     }
-    
+
     omatrixH_.reset(new DenseMatrix(4, 4));
 
     // now either pre- or post-multiply the transforms and store in matrix

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -39,9 +39,9 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-/// @brief Apply a mapping matrix to project the data from one field onto the mesh of another field. 
+/// @brief Apply a mapping matrix to project the data from one field onto the mesh of another field.
 
-ApplyMappingMatrixModule::ApplyMappingMatrixModule()
+ApplyMappingMatrix::ApplyMappingMatrix()
   : Module(ModuleLookupInfo("ApplyMappingMatrix", "ChangeFieldData", "SCIRun"), false)
 {
   INITIALIZE_PORT(Source);
@@ -50,18 +50,18 @@ ApplyMappingMatrixModule::ApplyMappingMatrixModule()
   INITIALIZE_PORT(Output);
 }
 
-void ApplyMappingMatrixModule::execute()
+void ApplyMappingMatrix::execute()
 {
   auto src = getRequiredInput(Source);
   auto dest = getRequiredInput(Destination);
   auto mapp = getRequiredInput(Mapping);
- 
+
   if (needToExecute())
   {
    update_state(Executing);
-   
+
    auto out = algo().run(withInputData((Source, src)(Destination, dest)(Mapping, mapp)));
- 
+
    sendOutputFromAlgorithm(Output, out);
   }
 }

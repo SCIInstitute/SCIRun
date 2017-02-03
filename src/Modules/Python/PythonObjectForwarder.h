@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
    */
 
-#ifdef BUILD_WITH_PYTHON
 #ifndef MODULES_PYTHON_PYTHONOBJECTFORWARDER_H
 #define MODULES_PYTHON_PYTHONOBJECTFORWARDER_H
 
@@ -51,7 +50,7 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(NumberOfRetries);
         ALGORITHM_PARAMETER_DECL(PythonObject);
 
-
+#ifdef BUILD_WITH_PYTHON
         template <class PythonModule>
         class PythonObjectForwarderImpl
         {
@@ -118,15 +117,16 @@ namespace SCIRun
           PythonModule& module_;
           int maxTries_, waitTime_;
         };
+        #endif
       }
     }
   }
+
 
   namespace Modules
   {
     namespace Python
     {
-
       class SCISHARE PythonObjectForwarder : public SCIRun::Dataflow::Networks::Module,
         public Has3OutputPorts<MatrixPortTag, FieldPortTag, StringPortTag>,
         public HasNoInputPorts
@@ -139,12 +139,11 @@ namespace SCIRun
         OUTPUT_PORT(1, PythonField, LegacyField);
         OUTPUT_PORT(2, PythonString, String);
 
-        static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
       };
 
     }
   }
 }
 
-#endif
 #endif

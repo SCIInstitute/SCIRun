@@ -1402,7 +1402,8 @@ namespace SCIRun {
 
           glm::vec3 viewDir = viewToWorld[2].xyz();
           viewDir = -viewDir; // Cameras look down -Z.
-          light->lightDir[i] = mLightsOn[i] ? viewDir - mLightPosition[i] : glm::vec3(0.0, 0.0, 0.0);
+          //light->lightDir[i] = mLightsOn[i] ? viewDir - mLightPosition[i] : glm::vec3(0.0, 0.0, 0.0);
+          light->lightDir[i] = mLightsOn[i] ? viewDir : glm::vec3(0.0, 0.0, 0.0);
           //light->lightDir[i] = mLightsOn[i] ? lightDir : glm::vec3(0.0, 0.0, 0.0);
         }
       }
@@ -1841,8 +1842,8 @@ namespace SCIRun {
           GLsizei(w), GLsizei(h), 0,
           GL_RGBA,
           GL_UNSIGNED_BYTE, (GLvoid*)font));
-        delete font_data;
-        delete font;
+        delete [] font_data;
+        delete [] font;
       }
     }
   } // namespace Render

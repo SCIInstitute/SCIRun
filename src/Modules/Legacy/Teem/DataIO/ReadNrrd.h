@@ -29,8 +29,6 @@
 #ifndef MODULES_TEEM_DATAIO_READ_NRRD_H
 #define MODULES_TEEM_DATAIO_READ_NRRD_H
 
-//#include <Core/Datatypes/Mesh/FieldFwd.h>
-//#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Teem/DataIO/share.h>
 
@@ -55,7 +53,7 @@ namespace DataIO {
 
     static std::string fileTypeList();
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
   private:
     NrrdDataHandle read_nrrd();
     NrrdDataHandle read_file(const std::string& fn);

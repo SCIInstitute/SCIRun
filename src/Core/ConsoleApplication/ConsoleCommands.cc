@@ -35,6 +35,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Dataflow/Network/Module.h>
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Python/PythonInterpreter.h>
+#include <boost/algorithm/string.hpp>
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Core;
 using namespace Commands;
@@ -45,7 +47,6 @@ using namespace Algorithms;
 LoadFileCommandConsole::LoadFileCommandConsole()
 {
   addParameter(Name("FileNum"), 0);
-  addParameter(Variables::Filename, std::string());
 }
 
 //TODO: find a better place for this function
@@ -54,9 +55,12 @@ namespace
   void quietModulesIfNotVerbose()
   {
     if (!Application::Instance().parameters()->verboseMode())
-      SCIRun::Dataflow::Networks::Module::defaultLogger_.reset(new SCIRun::Core::Logging::NullLogger);
+      Module::defaultLogger_.reset(new SCIRun::Core::Logging::NullLogger);
   }
 }
+
+/// @todo: real logger
+#define LOG_CONSOLE(x) std::cout << "[SCIRun] " << x << std::endl;
 
 bool LoadFileCommandConsole::execute()
 {
@@ -71,49 +75,49 @@ bool LoadFileCommandConsole::execute()
     filename = get(Variables::Filename).toFilename().string();
   }
 
+  LOG_CONSOLE("Attempting load of " << filename);
+  if (!boost::filesystem::exists(filename))
   {
-    /// @todo: real logger
-    std::cout << "Attempting load of " << filename << std::endl;
-    if (!boost::filesystem::exists(filename))
-    {
-      std::cout << "File does not exist: " << filename << std::endl;
-      return false;
-    }
-    try
-    {
-      auto openedFile = XMLSerializer::load_xml<NetworkFile>(filename);
-
-      if (openedFile)
-      {
-        Application::Instance().controller()->clear();
-        Application::Instance().controller()->loadNetwork(openedFile);
-        /// @todo: real logger
-        std::cout << "File load done: " << filename << std::endl;
-        return true;
-      }
-      /// @todo: real logger
-      std::cout << "File load failed: " << filename << std::endl;
-    }
-    catch (...)
-    {
-      /// @todo: real logger
-      std::cout << "File load failed: " << filename << std::endl;
-    }
+    LOG_CONSOLE("File does not exist: " << filename);
     return false;
   }
+  try
+  {
+    auto openedFile = XMLSerializer::load_xml<NetworkFile>(filename);
 
-  return true;
+    if (openedFile)
+    {
+      Application::Instance().controller()->clear();
+      Application::Instance().controller()->loadNetwork(openedFile);
+      LOG_CONSOLE("File load done: " << filename);
+      return true;
+    }
+    LOG_CONSOLE("File load failed: " << filename);
+  }
+  catch (...)
+  {
+    LOG_CONSOLE("File load failed: " << filename);
+  }
+  return false;
 }
 
 bool SaveFileCommandConsole::execute()
 {
-  throw "todo";
+  return !saveImpl(get(Variables::Filename).toFilename().string()).empty();
 }
 
 bool ExecuteCurrentNetworkCommandConsole::execute()
 {
-  Application::Instance().controller()->executeAll(nullptr);
-  return true;
+  LOG_CONSOLE("Executing network...");
+  Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); });
+  Application::Instance().controller()->stopExecutionContextLoopWhenExecutionFinishes();
+  auto t = Application::Instance().controller()->executeAll(nullptr);
+  LOG_CONSOLE("Execution started.");
+  t->join();
+  LOG_CONSOLE("Execute thread stopped. Entering interactive mode.");
+
+  InteractiveModeCommandConsole interactive;
+  return interactive.execute();
 }
 
 QuitAfterExecuteCommandConsole::QuitAfterExecuteCommandConsole()
@@ -123,9 +127,12 @@ QuitAfterExecuteCommandConsole::QuitAfterExecuteCommandConsole()
 
 bool QuitAfterExecuteCommandConsole::execute()
 {
-  std::cout << "Goodbye!" << std::endl;
-  Application::Instance().controller()->connectNetworkExecutionFinished([](int code){ exit(code); });
-  //SCIRunMainWindow::Instance()->setupQuitAfterExecute();
+  LOG_CONSOLE("Quit after execute is set.");
+  Application::Instance().controller()->connectNetworkExecutionFinished([](int code)
+  {
+    LOG_CONSOLE("Goodbye! Exit code: " << code);
+    exit(code);
+  });
   return true;
 }
 
@@ -136,7 +143,7 @@ QuitCommandConsole::QuitCommandConsole()
 
 bool QuitCommandConsole::execute()
 {
-  std::cout << "Exiting!" << std::endl;
+  LOG_CONSOLE("Goodbye!");
   exit(0);
   return true;
 }
@@ -161,20 +168,32 @@ bool PrintModulesCommand::execute()
 
 bool InteractiveModeCommandConsole::execute()
 {
+#ifdef BUILD_WITH_PYTHON
   quietModulesIfNotVerbose();
-
-  PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+  PythonInterpreter::Instance().importSCIRunLibrary();
   std::string line;
+
+#ifndef WIN32
+  LOG_CONSOLE("\033[1; 31mEntering interactive mode, type quit or hit ^C to exit.\033[0m");
+#else
+  LOG_CONSOLE("Entering interactive mode, type quit or hit ^C to exit.");
+#endif
   while (true)
   {
     std::cout << "scirun5> " << std::flush;
     std::getline(std::cin, line);
-    if (line.find("quit") != std::string::npos) // TODO: need fix for ^D entry || (!x.empty() && x[0] == '\004'))
+    if (line == "quit")
       break;
-
-    PythonInterpreter::Instance().run_string(line);
+    if (std::cin.eof())
+      break;
+    if (!PythonInterpreter::Instance().run_string(line))
+      break;
   }
+  LOG_CONSOLE("~~~~~~~");
+  LOG_CONSOLE("Goodbye!");
+  LOG_CONSOLE("~~~~~~~");
   exit(0);
+#endif
   return true;
 }
 
@@ -182,31 +201,49 @@ bool RunPythonScriptCommandConsole::execute()
 {
   quietModulesIfNotVerbose();
 
-  auto script = Application::Instance().parameters()->pythonScriptFile();
+  auto& app = Application::Instance();
+  auto script = app.parameters()->pythonScriptFile();
   if (script)
   {
 #ifdef BUILD_WITH_PYTHON
-    std::cout << "RUNNING PYTHON SCRIPT: " << *script << std::endl;;
+    LOG_CONSOLE("RUNNING PYTHON SCRIPT: " << *script);
 
-    Application::Instance().controller()->clear();
-    PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
-    PythonInterpreter::Instance().run_file(script->string());
+    app.controller()->clear();
+    PythonInterpreter::Instance().importSCIRunLibrary();
 
-    //TODO: not sure what else to do here. Probably wait on a condition variable, or just loop forever
-    if (!Application::Instance().parameters()->interactiveMode())
+    if (app.parameters()->quitAfterOneScriptedExecution())
     {
-      while (true)
-      {
-        std::cout << "Running Python script." << std::endl;
-        boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
-      }
+      app.controller()->connectNetworkExecutionFinished([](int code){ LOG_CONSOLE("Execution finished with code " << code); exit(code); });
+      app.controller()->stopExecutionContextLoopWhenExecutionFinishes();
     }
-    std::cout << "Done running Python script." << std::endl;
+
+    if (!PythonInterpreter::Instance().run_file(script->string()))
+    {
+      return false;
+    }
+
+    LOG_CONSOLE("Done running Python script.");
+    
+    if (!app.parameters()->quitAfterOneScriptedExecution())
+    {
+      InteractiveModeCommandConsole interactive;
+      return interactive.execute();
+    }
+    
     return true;
 #else
-    std::cout << "Python disabled, cannot run script " << *script << std::endl;
+    LOG_CONSOLE("Python disabled, cannot run script " << *script);
     return false;
 #endif
   }
   return false;
+}
+
+bool SetupDataDirectoryCommand::execute()
+{
+  auto dir = Application::Instance().parameters()->dataDirectory().get();
+  LOG_DEBUG("Data dir set to: " << dir << std::endl);
+
+  Preferences::Instance().setDataDirectory(dir);
+  return true;
 }

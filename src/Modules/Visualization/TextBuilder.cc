@@ -49,6 +49,9 @@ TextBuilder::TextBuilder()
 
 TextBuilder::~TextBuilder()
 {
+  //???
+  //FT_Done_FreeType(ftLib_);
+  //FT_Done_Face(ftFace_);
 }
 
 void TextBuilder::initFreeType(const std::string &libName, size_t size)

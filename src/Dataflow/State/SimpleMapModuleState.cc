@@ -104,14 +104,22 @@ void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Cor
   {
     LOG_DEBUG("----signaling from state map: (" << parameterName.name_ << ", " << SCIRun::Core::to_string(value) << "), num_slots = " << stateChangedSignal_.num_slots() << std::endl);
     stateChangedSignal_();
+    auto specSig = specificStateChangeSignalMap_.find(parameterName);
+    if (specSig != specificStateChangeSignalMap_.end())
+      specSig->second();
   }
 }
 
-boost::signals2::connection SimpleMapModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
+boost::signals2::connection SimpleMapModuleState::connectStateChanged(state_changed_sig_t::slot_function_type subscriber)
 {
   auto conn = stateChangedSignal_.connect(subscriber);
-  LOG_DEBUG("SimpleMapModuleState::connect_state_changed, num_slots = " << stateChangedSignal_.num_slots() << std::endl);
+  LOG_DEBUG("SimpleMapModuleState::connectStateChanged, num_slots = " << stateChangedSignal_.num_slots() << std::endl);
   return conn;
+}
+
+boost::signals2::connection SimpleMapModuleState::connectSpecificStateChanged(const Name& stateKeyToObserve, state_changed_sig_t::slot_function_type subscriber)
+{
+  return specificStateChangeSignalMap_[stateKeyToObserve].connect(subscriber);
 }
 
 ModuleStateInterface::Keys SimpleMapModuleState::getKeys() const
@@ -145,7 +153,12 @@ void SimpleMapModuleState::setTransientValue(const Name& name, const TransientVa
   //print();
 
   if (fireSignal)
+  {
     fireTransientStateChangeSignal();
+    auto specSig = specificStateChangeSignalMap_.find(name);
+    if (specSig != specificStateChangeSignalMap_.end())
+      specSig->second();
+  }
 }
 
 void SimpleMapModuleState::fireTransientStateChangeSignal()

@@ -260,7 +260,7 @@ bool MarchingCubesAlgo::run(FieldHandle input, const std::vector<double>& isoval
 
   if (fi.is_pnt_element())
   {
-    error("Field needs to have elements in order to  extract isosurfaces");
+    error("Field needs to have elements in order to extract isosurfaces");
   }
   else if (fi.is_crv_element())
   {

@@ -118,10 +118,14 @@ namespace Networks {
     };
     virtual Value currentState() const = 0;
 
-    typedef boost::signals2::signal<void(int)> ExecutionStateChangedSignalType;
+    using ExecutionStateChangedSignalType = boost::signals2::signal<void(int)>;
 
     virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) = 0;
     virtual bool transitionTo(Value state) = 0;
+
+    virtual Value expandedState() const = 0;
+    virtual void setExpandedState(Value state) = 0;
+
     virtual std::string currentColor() const = 0;
     virtual ~ModuleExecutionState() {}
   };
@@ -192,6 +196,7 @@ namespace Networks {
   struct SCISHARE WrongDatatypeOnPortException : virtual DataPortException {};
   struct SCISHARE PortNotFoundException : virtual DataPortException {};
   struct SCISHARE InvalidInputPortRequestException : virtual DataPortException {};
+  struct SCISHARE GeneralModuleError : virtual Core::ExceptionBase {};
 
   #define MODULE_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(type() << SCIRun::Core::ErrorMessage(message)); }
 

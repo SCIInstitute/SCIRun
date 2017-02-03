@@ -120,7 +120,7 @@ namespace
 
       ModulePositions positions;
       int i = 0;
-      const double moduleVerticalSpacing = 80;
+      const double moduleVerticalSpacing = 110;
       const double moduleHorizontalSpacing = 264;
       const double moduleSpacingOffset = 10;
       static int numSnips = 0;
@@ -284,6 +284,11 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
       /// @todo: this will work if we define PortId.id# to be 0..n, unique for each module. But what about gaps?
       requestConnection(source.get(), newModule->getInputPort(input->id()).get());
     }
+  }
+
+  if (serializationManager_)
+  {
+    serializationManager_->copyNote(module, newModule);
   }
 
   return newModule;
@@ -489,7 +494,11 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
         serializationManager_->updateDisabledComponents(xml->disabledComponents);
       }
       else
-        Log::get() << INFO <<  "module position editor unavailable, module positions at default" << std::endl;
+      {
+#ifndef BUILD_HEADLESS
+        Log::get() << INFO << "module position editor unavailable, module positions at default" << std::endl;
+#endif
+      }
       networkDoneLoading_(static_cast<int>(theNetwork_->nmodules()) + 1);
     }
     catch (ExceptionBase& e)
@@ -590,14 +599,14 @@ void NetworkEditorController::clear()
 // - [X] set up execution context queue
 // - [X] separate threads for looping through queue: another producer/consumer pair
 
-void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
+boost::shared_ptr<boost::thread> NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 {
-  executeGeneric(lookup, ExecuteAllModules::Instance());
+  return executeGeneric(lookup, ExecuteAllModules::Instance());
 }
 
-void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup)
+void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup, bool executeUpstream)
 {
-  ExecuteSingleModule filter(module, *theNetwork_);
+  ExecuteSingleModule filter(module, *theNetwork_, executeUpstream);
   executeGeneric(lookup, filter);
 }
 
@@ -611,12 +620,21 @@ ExecutionContextHandle NetworkEditorController::createExecutionContext(const Exe
   return boost::make_shared<ExecutionContext>(*theNetwork_, lookup ? *lookup : *theNetwork_, filter);
 }
 
-void NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
+boost::shared_ptr<boost::thread> NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
 {
   initExecutor();
   auto context = createExecutionContext(lookup, filter);
 
-  executionManager_.enqueueContext(context);
+  return executionManager_.enqueueContext(context);
+}
+
+void NetworkEditorController::stopExecutionContextLoopWhenExecutionFinishes()
+{
+  connectNetworkExecutionFinished([this](int)
+  {
+    std::cout << "Execution manager thread stopped." << std::endl;
+    executionManager_.stop();
+  });
 }
 
 NetworkHandle NetworkEditorController::getNetwork() const
@@ -726,4 +744,9 @@ void NetworkEditorController::cleanUpNetwork()
   }
 
   updateModulePositions(cleanedUp, false);
+}
+
+std::vector<ModuleExecutionState::Value> NetworkEditorController::moduleExecutionStates() const
+{
+  return theNetwork_ ? theNetwork_->moduleExecutionStates() : std::vector<ModuleExecutionState::Value>();
 }

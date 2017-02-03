@@ -36,11 +36,11 @@ namespace SCIRun {
 namespace Modules {
 namespace DataIO {
 
-  class SCISHARE ReadBundleModule : public GenericReader<Core::Datatypes::BundleHandle, BundlePortTag>
+  class SCISHARE ReadBundle : public GenericReader<Core::Datatypes::BundleHandle, BundlePortTag>
   {
   public:
     typedef GenericReader<Core::Datatypes::BundleHandle, BundlePortTag> my_base;
-    ReadBundleModule();
+    ReadBundle();
     virtual void execute() override;
     virtual bool useCustomImporter(const std::string& filename) const override { return false; }
 
@@ -48,7 +48,8 @@ namespace DataIO {
 
     static std::string fileTypeList();
 
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+
   protected:
     virtual std::string defaultFileTypeName() const override;
   };

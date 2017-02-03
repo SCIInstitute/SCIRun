@@ -26,10 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
 #include <QtGui>
 #include <Interface/Application/MainWindowCollaborators.h>
+#include <Interface/Application/SCIRunMainWindow.h>
 #include <Core/Logging/Log.h>
+#include "ui_ConnectionStyleWizardPage.h"
+#include "ui_OtherSettingsWizardPage.h"
+#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
@@ -159,64 +162,158 @@ void WidgetDisablingService::temporarilyEnableService()
   serviceEnabled_ = true;
 }
 
-namespace {
-
-QWizardPage *createIntroPage()
+NewUserWizard::NewUserWizard(QWidget* parent) : QWizard(parent)
 {
-  QWizardPage *page = new QWizardPage;
+  setWindowTitle("SCIRun Initial Setup");
+  setOption(NoCancelButton);
+
+  addPage(createIntroPage());
+  addPage(createPathSettingPage());
+  addPage(createConnectionChoicePage());
+  addPage(createOtherSettingsPage());
+  addPage(createLicensePage());
+  addPage(createDocPage());
+}
+
+NewUserWizard::~NewUserWizard()
+{
+  showPrefs();
+}
+
+void NewUserWizard::showPrefs()
+{
+  if (showPrefs_)
+    SCIRunMainWindow::Instance()->actionPreferences_->trigger();
+}
+
+QWizardPage* NewUserWizard::createIntroPage()
+{
+  auto page = new QWizardPage;
   page->setTitle("Introduction");
 
-  QLabel *label = new QLabel("This wizard will help you set up SCIRun for the first time and learn the basic SCIRun operations and hotkeys.");
-  label->setWordWrap(true);
+  page->setSubTitle("This wizard will help you set up SCIRun for the first time and learn the basic SCIRun operations and hotkeys. All of these settings are available at any time in the Preferences window.");
+  auto layout = new QVBoxLayout;
+  auto pic = new QLabel;
+  pic->setPixmap(QPixmap(":/general/Resources/scirunWizard.png"));
+  layout->addWidget(pic);
+  page->setLayout(layout);
+  return page;
+}
 
-  QVBoxLayout *layout = new QVBoxLayout;
-  layout->addWidget(label);
+class PathSettingPage : public QWizardPage
+{
+public:
+  explicit PathSettingPage(QLineEdit* pathWidget)
+  {
+    registerField("dataPath*", pathWidget);
+  }
+};
+
+QWizardPage* NewUserWizard::createPathSettingPage()
+{
+  pathWidget_ = new QLineEdit("");
+  pathWidget_->setReadOnly(true);
+  auto page = new PathSettingPage(pathWidget_);
+  page->setTitle("Configuring Paths");
+  page->setSubTitle("Specify the location of SCIRun's data folder. This path is referenced in network files and modules using the code %SCIRUNDATADIR%.");
+  auto downloadLabel = new QLabel("The data can be downloaded from <a href=\"http://www.sci.utah.edu/download/scirun/\">sci.utah.edu</a>");
+  downloadLabel->setOpenExternalLinks(true);
+  auto layout = new QVBoxLayout;
+  layout->addWidget(downloadLabel);
+
+  layout->addWidget(pathWidget_);
+  auto button = new QPushButton("Set Path...");
+  layout->addWidget(button);
+  connect(button, SIGNAL(clicked()), SCIRunMainWindow::Instance(), SLOT(setDataDirectoryFromGUI()));
+  connect(SCIRunMainWindow::Instance(), SIGNAL(dataDirectorySet(const QString&)), this, SLOT(updatePathLabel(const QString&)));
+
   page->setLayout(layout);
 
   return page;
 }
 
-QWizardPage *createPathSettingPage()
+QWizardPage* NewUserWizard::createLicensePage()
 {
-  QWizardPage *page = new QWizardPage;
-  page->setTitle("Set Data Path");
-
-  QLabel *label = new QLabel("Specify the location of SCIRun's data folder. This path is referenced in modules using the code %SCIRUNDATADIR%.");
-  label->setWordWrap(true);
-
-  auto classNameLabel = new QLabel("Data path:");
-  auto classNameLineEdit = new QLineEdit;
-  
-  //page->registerField("className*", classNameLineEdit);
-
-  QVBoxLayout *layout = new QVBoxLayout;
-  layout->addWidget(label);
-
-  auto hbox = new QHBoxLayout;
-  hbox->addWidget(classNameLabel);
-  hbox->addWidget(classNameLineEdit);
-  hbox->addWidget(new QPushButton("Set Path..."));
-  layout->addLayout(hbox);
-
+  auto page = new QWizardPage;
+  page->setTitle("Applicable Licenses");
+  QString licenseText(
+    "<p><a href = \"https://raw.githubusercontent.com/SCIInstitute/SCIRun/master/src/LICENSE.txt\">SCIRun License</a>"
+    "<p><a href = \"https://raw.githubusercontent.com/CIBC-Internal/teem/master/LICENSE.txt\">Teem License</a>"
+//#if WITH_TETGEN
+//    "<p><a href = \"http://wias-berlin.de/software/tetgen/1.5/FAQ-license.html\">Tetgen License</a>"
+//#endif
+    );
+  auto layout = new QVBoxLayout;
+  auto licenseLabel = new QLabel(licenseText);
+  licenseLabel->setStyleSheet("QLabel { background-color : lightgray; color : blue; }");
+  licenseLabel->setAlignment(Qt::AlignCenter);
+  licenseLabel->setOpenExternalLinks(true);
+  layout->addWidget(licenseLabel);
   page->setLayout(layout);
-
   return page;
 }
 
-QWizardPage *createConclusionPage()
+QWizardPage* NewUserWizard::createDocPage()
 {
-  return nullptr;
+  auto page = new QWizardPage;
+  page->setTitle("Documentation");
+  page->setSubTitle("For more information on SCIRun 5 functionality, documentation can be found at: ");
+  auto layout = new QVBoxLayout;
+  auto docLabel = new QLabel(
+    "<p><a href = \"https://github.com/SCIInstitute/SCIRun/wiki\">New SCIRun Wiki</a>"
+    "<p><a href = \"http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php5/CIBC:Documentation:SCIRun:Reference\">Old SCIRun Wiki</a>"
+    "<p><a href = \"http://sciinstitute.github.io/scirun.pages/\">SCIRun Doc Home Page</a>"
+    "<p><a href = \"mailto:scirun-users@sci.utah.edu\">SCIRun Users mailing list</a>"
+  );
+  docLabel->setStyleSheet("QLabel { background-color : lightgray; color : blue; }");
+  docLabel->setAlignment(Qt::AlignCenter);
+  docLabel->setOpenExternalLinks(true);
+  layout->addWidget(docLabel);
+  page->setLayout(layout);
+  return page;
 }
 
+void NewUserWizard::updatePathLabel(const QString& dir)
+{
+  pathWidget_->setText(dir);
 }
 
-void SCIRun::Gui::newUserWizard(QWidget* parent)
+void NewUserWizard::setShowPrefs(int state)
 {
-  auto wizard = new QWizard(parent);
-  wizard->addPage(createIntroPage());
-  wizard->addPage(createPathSettingPage());
-  //wizard.addPage(createConclusionPage());
+  showPrefs_ = state != 0;
+}
 
-  wizard->setWindowTitle("SCIRun Tutorial Wizard");
-  wizard->exec();
+class ConnectionStyleWizardPage : public QWizardPage, public Ui::ConnectionStyleWizardPage
+{
+public:
+  ConnectionStyleWizardPage()
+  {
+    setupUi(this);
+    manhattanLabel_->setPixmap(QPixmap(":/general/Resources/manhattanPipe.png"));
+    euclideanLabel_->setPixmap(QPixmap(":/general/Resources/euclideanPipe.png"));
+    cubicLabel_->setPixmap(QPixmap(":/general/Resources/cubicPipe.png"));
+    registerField("connectionChoice*", connectionComboBox_);
+    connect(connectionComboBox_, SIGNAL(currentIndexChanged(int)), SCIRunMainWindow::Instance(), SLOT(setConnectionPipelineType(int)));
+  }
+};
+
+QWizardPage* NewUserWizard::createConnectionChoicePage()
+{
+  return new ConnectionStyleWizardPage;
+}
+
+class OtherSettingsWizardPage : public QWizardPage, public Ui::OtherSettingsWizardPage
+{
+public:
+  explicit OtherSettingsWizardPage(NewUserWizard* wiz) 
+  {
+    setupUi(this);
+    connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), SCIRunMainWindow::Instance(), SLOT(setSaveBeforeExecute(int)));
+    connect(loadPreferencesCheckBox_, SIGNAL(stateChanged(int)), wiz, SLOT(setShowPrefs(int)));
+  }
+};
+
+QWizardPage* NewUserWizard::createOtherSettingsPage()
+{
+  return new OtherSettingsWizardPage(this);
 }

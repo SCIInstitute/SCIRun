@@ -32,7 +32,10 @@
 #include <QObject>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ConnectionId.h>
+#ifndef Q_MOC_RUN
+#include <Dataflow/Network/ModuleInterface.h>
 #include <boost/optional/optional.hpp>
+#endif
 
 namespace SCIRun {
   namespace Dataflow { namespace Engine { class NetworkEditorController; struct DisableDynamicPortSwitch; struct ModuleCounter; }}
@@ -57,8 +60,9 @@ namespace Gui {
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
     void appendToNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
     void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
-    void executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module, const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
+    void executeModule(const SCIRun::Dataflow::Networks::ModuleHandle& module, const SCIRun::Dataflow::Networks::ExecutableLookup& lookup, bool executeUpstream);
     size_t numModules() const;
+    std::vector<Dataflow::Networks::ModuleExecutionState::Value> moduleExecutionStates() const;
     int errorCode() const;
     void setExecutorType(int type);
     void cleanUpNetwork();

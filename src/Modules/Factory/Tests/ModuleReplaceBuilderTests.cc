@@ -28,10 +28,16 @@
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
+#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/ConnectionId.h>
+#include <Modules/Legacy/Fields/CreateLatVol.h>
+#include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
+#include <Modules/Legacy/Fields/GetMeshQualityField.h>
+#include <Modules/Legacy/Fields/GetFieldData.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Modules;
 using namespace Testing;
 using namespace Modules::Factory;
 using namespace Dataflow::Networks;
@@ -43,6 +49,15 @@ class ModuleReplaceTests : public ModuleTest
 {
 };
 
+#ifdef BUILD_TESTING
+const int NUM_MODULES = 148;
+#else
+const int NUM_MODULES = 141;
+#endif
+const int NUM_ALGORITHMS = 76;
+
+const int EXPECTED_RANGE = 5;   // Require updating these numbers every few modules
+
 TEST(HardCodedModuleFactoryTests, ListAllModules)
 {
   HardCodedModuleFactory factory;
@@ -50,7 +65,85 @@ TEST(HardCodedModuleFactoryTests, ListAllModules)
   auto descMap = factory.getDirectModuleDescriptionLookupMap();
 
   std::cout << "descMap size: " << descMap.size() << std::endl;
-  EXPECT_GE(descMap.size(), 142);
+  EXPECT_GE(descMap.size(), NUM_MODULES);
+  EXPECT_LE(descMap.size(), NUM_MODULES + EXPECTED_RANGE);
+
+  // for (const auto& m : descMap)
+  // {
+  //   std::cout << m.first << " -> " << m.second << std::endl;
+  // }
+}
+
+TEST(HardCodedModuleFactoryTests, ListAllAlgorithms)
+{
+  HardCodedAlgorithmFactory factory;
+
+  std::cout << "algorithm factory size: " << factory.numAlgorithms() << std::endl;
+  EXPECT_GE(factory.numAlgorithms(), NUM_ALGORITHMS);
+  EXPECT_LE(factory.numAlgorithms(), NUM_ALGORITHMS + EXPECTED_RANGE);
+
+  // for (const auto& a : factory)
+  // {
+  //   std::cout << a.first << " -> " << a.second.first << std::endl;
+  // }
+}
+
+TEST(HardCodedModuleFactoryTests, ModuleTraitHasAlgorithmMatchesAlgoFactory)
+{
+  HardCodedModuleFactory moduleFactory;
+
+  auto modules = moduleFactory.getDirectModuleDescriptionLookupMap();
+
+  HardCodedAlgorithmFactory algoFactory;
+
+  std::set<std::string> modulesWithAlgorithms;
+
+  for (const auto& a : algoFactory)
+  {
+    auto moduleName = a.first;
+    auto modFactIter = std::find_if(modules.cbegin(), modules.cend(),
+      [&moduleName](const DirectModuleDescriptionLookupMap::value_type& p) { return p.first.module_name_ == moduleName; });
+    if (modFactIter != modules.end())
+    {
+      if (!modFactIter->second.hasAlgo_)
+        std::cout << moduleName << " is missing trait HasAlgorithm" << std::endl;
+      EXPECT_TRUE(modFactIter->second.hasAlgo_);
+      modulesWithAlgorithms.insert(moduleName);
+    }
+    else
+      FAIL() << "Module found in algorithm factory but not module factory: " << moduleName;
+  }
+
+  for (const auto& m : modules)
+  {
+    if (modulesWithAlgorithms.find(m.first.module_name_) != modulesWithAlgorithms.end())
+    {
+      if (!m.second.hasAlgo_)
+        std::cout << m.first.module_name_ << " is missing trait HasAlgorithm" << std::endl;
+      EXPECT_TRUE(m.second.hasAlgo_);
+    }
+    else
+    {
+      if (m.second.hasAlgo_)
+        std::cout << m.first.module_name_ << " has trait HasAlgorithm, when it should not" << std::endl;
+      EXPECT_FALSE(m.second.hasAlgo_);
+    }
+  }
+}
+
+TEST(ModuleTraitsTest, CanDetermineUIAlgoStatically)
+{
+  ASSERT_TRUE(HasUI<Fields::CreateLatVol>::value);
+  ASSERT_FALSE(HasAlgorithm<Fields::CreateLatVol>::value);
+
+  ASSERT_FALSE(HasUI<Fields::GetFieldData>::value);
+  ASSERT_TRUE(HasAlgorithm<Fields::GetFieldData>::value);
+
+  ASSERT_TRUE(HasUI<Fields::GetMeshQualityField>::value);
+  ASSERT_TRUE(HasAlgorithm<Fields::GetMeshQualityField>::value);
+
+  ASSERT_FALSE(HasUI<Math::SolveMinNormLeastSqSystem>::value);
+  ASSERT_FALSE(HasAlgorithm<Math::SolveMinNormLeastSqSystem>::value);
 }
 
 TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
@@ -61,9 +154,9 @@ TEST_F(ModuleReplaceTests, CanComputeConnectedPortInfoFromModule)
 
   auto network = controller.getNetwork();
 
-  ModuleHandle send = controller.addModule("SendTestMatrix");
+  ModuleHandle send = controller.addModule("CreateMatrix");
   ModuleHandle process = controller.addModule("NeedToExecuteTester");
-  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+  ModuleHandle receive = controller.addModule("ReportMatrixInfo");
 
   ASSERT_EQ(3, network->nmodules());
 
@@ -193,9 +286,9 @@ TEST_F(ModuleReplaceTests, CurrentConnectionsFilterReplacements)
   NetworkEditorController controller(mf, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
   initModuleParameters(false);
   auto network = controller.getNetwork();
-  ModuleHandle send = controller.addModule("SendTestMatrix");
+  ModuleHandle send = controller.addModule("CreateMatrix");
   ModuleHandle process = controller.addModule("NeedToExecuteTester");
-  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+  ModuleHandle receive = controller.addModule("ReportMatrixInfo");
 
   ASSERT_EQ(3, network->nmodules());
 

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -49,7 +49,7 @@ namespace SCIRun {
         INPUT_PORT(0, InputField, LegacyField);
         OUTPUT_PORT(0, OutputField, LegacyField);
 
-        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       private:
         void setDimensionParameter(const std::string& name, const Core::Algorithms::AlgorithmParameterName& dim, const Core::Algorithms::AlgorithmParameterName& useScaling);
       };

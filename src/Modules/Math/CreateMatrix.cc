@@ -35,28 +35,29 @@ using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-const ModuleLookupInfo CreateMatrixModule::staticInfo_("CreateMatrix", "Math", "SCIRun");
-const SCIRun::Core::Algorithms::AlgorithmParameterName CreateMatrixModule::TextEntry("TextEntry");
+MODULE_INFO_DEF(CreateMatrix, Math, SCIRun)
 
-CreateMatrixModule::CreateMatrixModule() : Module(staticInfo_)
+ALGORITHM_PARAMETER_DEF(Math, TextEntry);
+
+CreateMatrix::CreateMatrix() : Module(staticInfo_)
 {
   INITIALIZE_PORT(EnteredMatrix);
 }
 
-void CreateMatrixModule::setStateDefaults()
+void CreateMatrix::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(TextEntry, std::string());
+  state->setValue(Core::Algorithms::Math::Parameters::TextEntry, std::string());
 }
 
-void CreateMatrixModule::execute()
+void CreateMatrix::execute()
 {
   if (needToExecute())
   {
     auto matrix(boost::make_shared<DenseMatrix>());
     try
     {
-      auto matrixString = get_state()->getValue(TextEntry).toString();
+      auto matrixString = get_state()->getValue(Core::Algorithms::Math::Parameters::TextEntry).toString();
 
       if (!matrixString.empty())
       {

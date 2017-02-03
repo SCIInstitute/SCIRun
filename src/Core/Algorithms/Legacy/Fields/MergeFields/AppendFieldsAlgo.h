@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -54,8 +54,8 @@ class SCISHARE AppendFieldsAlgorithm : public AlgorithmBase
 {
   public:
     // Algorithm Functions
-    bool run(std::vector<FieldHandle>& input, FieldHandle& output);   
-    bool run(std::list<FieldHandle>& input, FieldHandle& output);   
+    bool run(const std::vector<FieldHandle>& input, FieldHandle& output) const;   
+    bool run(std::list<FieldHandle>& input, FieldHandle& output);
     AlgorithmOutput run(const AlgorithmInput& input) const;
     AppendFieldsAlgorithm();
 };
@@ -65,4 +65,3 @@ class SCISHARE AppendFieldsAlgorithm : public AlgorithmBase
 }
 }
 #endif
-

@@ -36,12 +36,12 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-      class SCISHARE ClipVolumeByIsovalueModule : public Dataflow::Networks::Module,
+      class SCISHARE ClipVolumeByIsovalue : public Dataflow::Networks::Module,
         public Has2InputPorts<FieldPortTag, MatrixPortTag>,
         public Has1OutputPort<FieldPortTag>
       {
       public:
-        ClipVolumeByIsovalueModule();
+        ClipVolumeByIsovalue();
 
         virtual void execute();
         virtual void setStateDefaults();
@@ -49,8 +49,8 @@ namespace SCIRun {
         INPUT_PORT(0, InputField, LegacyField);
         INPUT_PORT(1, Isovalue, Matrix);
         OUTPUT_PORT(0, OutputField, LegacyField);
-	
-	      static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
+        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       };
 
     }

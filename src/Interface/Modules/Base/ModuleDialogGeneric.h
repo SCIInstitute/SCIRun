@@ -95,6 +95,7 @@ namespace Gui {
     void executionTimeChanged(int time);
     void executeActionTriggered();
     void executeFromStateChangeTriggered();
+    void executeActionTriggeredViaStateChange();
     void setStartupNote(const QString& text);
     void fatalError(const QString& message);
     void executionLoopStarted();
@@ -131,6 +132,7 @@ namespace Gui {
 		void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addComboBoxManager(QComboBox* comboBox, const Core::Algorithms::AlgorithmParameterName& stateKey, const GuiStringTranslationMap& stringMap);
     void addTextEditManager(QTextEdit* textEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addPlainTextEditManager(QPlainTextEdit* plainTextEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addLineEditManager(QLineEdit* lineEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addDoubleLineEditManager(QLineEdit* lineEdit, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addSpinBoxManager(QSpinBox* spinBox, const Core::Algorithms::AlgorithmParameterName& stateKey);
@@ -141,6 +143,7 @@ namespace Gui {
     void addDynamicLabelManager(QLabel* label, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addRadioButtonGroupManager(std::initializer_list<QRadioButton*> radioButtons, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void addSliderManager(QSlider* slider, const Core::Algorithms::AlgorithmParameterName& stateKey);
+    void addTabManager(QTabWidget* tab, const Core::Algorithms::AlgorithmParameterName& stateKey);
     void removeManager(const Core::Algorithms::AlgorithmParameterName& stateKey);
 
     using TableWidgetMaker = std::function<QTableWidgetItem*()>;
@@ -157,6 +160,7 @@ namespace Gui {
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     void createExecuteAction();
+    void createExecuteDownstreamAction();
     void createShrinkAction();
     void doCollapse();
     void connectStateChangeToExecute();
@@ -164,6 +168,7 @@ namespace Gui {
     std::vector<WidgetSlotManagerPtr> slotManagers_;
     boost::signals2::connection stateConnection_;
     QAction* executeAction_;
+    QAction* executeDownstreamAction_;
     QAction* shrinkAction_;
     QAction* executeInteractivelyToggleAction_;
     bool collapsed_;

@@ -279,7 +279,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsGeometryChanges | ItemIsFocusable);
 
   setZValue(defaultZValue());
-  setToolTip("<font color=\"#000000\" size=2>Left - Highlight\nDouble-Left - Menu\ni - Datatype info");
+  setToolTip("<font color=\"#EEEEEE\" size=2>Left - Highlight<br>Double-Left - Menu<br>i - Datatype info");
   setAcceptHoverEvents(true);
 
   menu_ = new ConnectionMenu(this);
@@ -509,9 +509,18 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
 {
   auto info = eval(portDataDescriber);
 
-  QMessageBox* msgBox = new QMessageBox(SCIRunMainWindow::Instance());
+  auto msgBox = new QMessageBox(SCIRunMainWindow::Instance());
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
   msgBox->setStandardButtons(QMessageBox::Ok);
+
+#if 0
+  auto viewButton = new QPushButton("View...");
+  auto pixmap = QPixmap::grabWidget(SCIRunMainWindow::Instance()); //TODO: pass in screenshot of visualized data
+  viewButton->setIcon(pixmap);
+  viewButton->setIconSize(pixmap.rect().size() / 10);
+  msgBox->addButton(viewButton, QMessageBox::HelpRole);
+#endif
+
   msgBox->setWindowTitle(label + " Data info: " + QString::fromStdString(id));
   msgBox->setText(info);
   msgBox->setModal(false);

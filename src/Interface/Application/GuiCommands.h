@@ -31,6 +31,7 @@
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Command/Command.h>
+#include <Core/Application/Application.h>
 #include <QString>
 
 class QSplashScreen;
@@ -42,13 +43,13 @@ namespace Gui {
   class NetworkEditor;
   class SCIRunMainWindow;
 
-  class LoadFileCommandGui : public Core::Commands::GuiCommand
+  class LoadFileCommandGui : public Core::Commands::FileCommand<Core::Commands::GuiCommand>
   {
   public:
     LoadFileCommandGui();
     virtual bool execute() override;
-  private:
-    int index_ = 0;
+  //private:
+  //  int index_ = 0;
   };
 
   class RunPythonScriptCommandGui : public Core::Commands::GuiCommand
@@ -100,7 +101,7 @@ namespace Gui {
     static QTimer* splashTimer_;
   };
 
-  class NetworkFileProcessCommand : public Core::Commands::GuiCommand
+  class NetworkFileProcessCommand : public Core::Commands::FileCommand<Core::Commands::GuiCommand>
   {
   public:
     NetworkFileProcessCommand();
@@ -128,10 +129,15 @@ namespace Gui {
     std::ostringstream logContents_;
   };
 
-  class NetworkSaveCommand : public Core::Commands::GuiCommand
+  class NetworkSaveCommand : public Core::Commands::FileCommand<Core::Commands::GuiCommand>, public Core::Commands::SaveFileCommandHelper
   {
   public:
-    NetworkSaveCommand();
+    virtual bool execute() override;
+  };
+
+  class DisableViewScenesCommandGui : public Core::Commands::GuiCommand
+  {
+  public:
     virtual bool execute() override;
   };
 }

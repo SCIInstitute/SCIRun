@@ -37,20 +37,20 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-AlgorithmParameterName CreateStringModule::InputString("InputString");
+const AlgorithmParameterName CreateString::InputString("InputString");
 
-CreateStringModule::CreateStringModule() : Module(ModuleLookupInfo("CreateString", "String", "SCIRun")) 
+CreateString::CreateString() : Module(ModuleLookupInfo("CreateString", "String", "SCIRun"))
 {
   INITIALIZE_PORT(NewString);
 }
 
-void CreateStringModule::setStateDefaults()
+void CreateString::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(InputString, std::string());
 }
 
-void CreateStringModule::execute()
+void CreateString::execute()
 {
   stringValue_ = get_state()->getValue(InputString).toString();
 

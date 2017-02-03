@@ -27,7 +27,6 @@
 */
 
 #include <QtGui>
-#include <algorithm>
 #include <functional>
 #include <boost/bind.hpp>
 #include <boost/assign.hpp>
@@ -47,7 +46,6 @@
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/GuiCommands.h>
-#include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Interface/Application/DialogErrorControl.h>
@@ -63,7 +61,6 @@
 #include <Core/Logging/Log.h>
 #include <Core/Application/Version.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
-#include <Core/Command/CommandFactory.h>
 #include <Core/Utils/CurrentFileName.h>
 
 #ifdef BUILD_WITH_PYTHON
@@ -82,43 +79,109 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
-static const char* ToolkitIconURL = "ToolkitIconURL";
-static const char* ToolkitURL = "ToolkitURL";
-static const char* ToolkitFilename = "ToolkitFilename";
+
+struct ToolkitInfo
+{
+  static const char* ToolkitIconURL;
+  static const char* ToolkitURL;
+  static const char* ToolkitFilename;
+
+  QString iconUrl, zipUrl, filename;
+
+  void setupAction(QAction* action, QObject* window) const
+  {
+    QObject::connect(action, SIGNAL(triggered()), window, SLOT(toolkitDownload()));
+    action->setProperty(ToolkitIconURL, iconUrl);
+    action->setProperty(ToolkitURL, zipUrl);
+    action->setProperty(ToolkitFilename, filename);
+    action->setIcon(QPixmap(":/general/Resources/download.png"));
+  }
+};
+
+const char* ToolkitInfo::ToolkitIconURL{ "ToolkitIconURL" };
+const char* ToolkitInfo::ToolkitURL{ "ToolkitURL" };
+const char* ToolkitInfo::ToolkitFilename{ "ToolkitFilename" };
+
+class NetworkStatusImpl : public NetworkStatus
+{
+public:
+  explicit NetworkStatusImpl(NetworkEditor* ned) : ned_(ned) {}
+
+  size_t total() const override
+  {
+    return ned_->numModules();
+  }
+  size_t waiting() const override
+  {
+    return countState(ModuleExecutionState::Value::Waiting);
+  }
+  size_t executing() const override
+  {
+    return countState(ModuleExecutionState::Value::Executing);
+  }
+  size_t errored() const override
+  {
+    return countState(ModuleExecutionState::Value::Errored);
+  }
+  size_t nonReexecuted() const override
+  {
+    return -1; // not available yet
+  }
+  size_t finished() const override
+  {
+    return countState(ModuleExecutionState::Value::Completed);
+  }
+  size_t unexecuted() const override
+  {
+    return countState(ModuleExecutionState::Value::NotExecuted);
+  }
+private:
+  NetworkEditor* ned_;
+  
+  size_t countState(ModuleExecutionState::Value val) const
+  {
+    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
+    return std::count(allStates.begin(), allStates.end(), val);
+  }
+};
 
 SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quitAfterExecute_(false)
 {
-	setupUi(this);
-	setAttribute(Qt::WA_DeleteOnClose);
-	if (newInterface())
-		setStyleSheet(
-		"background-color: rgb(66,66,69);"
-		"color: white;"
-		"selection-color: yellow;"
-		"selection-background-color: blue;"//336699 lighter blue
-		"QToolBar {        background-color: rgb(66,66,69); border: 1px solid black; color: black;     }"
-		"QProgressBar {        background-color: rgb(66,66,69); border: 0px solid black; color: black  ;   }"
-		"QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69); }"
-		"QPushButton {"
-		"  border: 2px solid #8f8f91;"
-		"  border - radius: 6px;"
-		"  background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
-		"  stop : 0 #f6f7fa, stop: 1 #dadbde);"
-		"  min - width: 80px;"
-		"}"
-		"QPushButton:pressed{"
-		"background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
-		"stop : 0 #dadbde, stop: 1 #f6f7fa);"
-		"}"
-		"QPushButton:flat{"
-		"          border: none; /* no border for a flat push button */"
-		"}"
-		"QPushButton:default {"
-		"border - color: navy; /* make the default button prominent */"
-		"}"
-		);
-	menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
-	dialogErrorControl_.reset(new DialogErrorControl(this));
+  setupUi(this);
+
+  QCoreApplication::setOrganizationName("SCI:CIBC Software");
+  QCoreApplication::setApplicationName("SCIRun5");
+
+  setAttribute(Qt::WA_DeleteOnClose);
+  if (newInterface())
+    setStyleSheet(
+    "background-color: rgb(66,66,69);"
+    "color: white;"
+    "selection-color: yellow;"
+    "selection-background-color: blue;"//336699 lighter blue
+    "QToolBar {        background-color: rgb(66,66,69); border: 1px solid black; color: black;     }"
+    "QProgressBar {        background-color: rgb(66,66,69); border: 0px solid black; color: black  ;   }"
+    "QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69); }"
+    "QPushButton {"
+    "  border: 2px solid #8f8f91;"
+    "  border - radius: 6px;"
+    "  background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
+    "  stop : 0 #f6f7fa, stop: 1 #dadbde);"
+    "  min - width: 80px;"
+    "}"
+    "QPushButton:pressed{"
+    "background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
+    "stop : 0 #dadbde, stop: 1 #f6f7fa);"
+    "}"
+    "QPushButton:flat{"
+    "          border: none; /* no border for a flat push button */"
+    "}"
+    "QPushButton:default {"
+    "border - color: navy; /* make the default button prominent */"
+    "}"
+    );
+  menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
+  dialogErrorControl_.reset(new DialogErrorControl(this));
   setupTagManagerWindow();
   tagManagerWindow_->hide();
   setupPreferencesWindow();
@@ -132,68 +195,68 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
 
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 
-  auto moduleSearchAction = new QWidgetAction(this);
-  moduleSearchAction->setDefaultWidget(new QLineEdit(this));
-
-#if 0
-  {
-    //TODO!!!!
-    moduleSearchAction->setVisible(true);
-
-    QToolBar* f = addToolBar(tr("&Search"));
-    f->setObjectName("SearchToolBar");
-
-    QWidgetAction* showModuleLabel = new QWidgetAction(this);
-    showModuleLabel->setDefaultWidget(new QLabel("Module Search:", this));
-    showModuleLabel->setVisible(true);
-
-    f->addAction(showModuleLabel);
-    f->addAction(moduleSearchAction);
-  }
-#endif
-
   setActionIcons();
 
-  auto standardBar = addToolBar("Standard");
-	WidgetStyleMixin::toolbarStyle(standardBar);
-  standardBar->setObjectName("StandardToolBar");
-  standardBar->addAction(actionNew_);
-  standardBar->addAction(actionLoad_);
-  standardBar->addAction(actionSave_);
-  standardBar->addAction(actionRunScript_);
-  standardBar->addAction(actionEnterWhatsThisMode_);
-  standardBar->addSeparator();
-  standardBar->addAction(actionPinAllModuleUIs_);
-  standardBar->addAction(actionRestoreAllModuleUIs_);
-  standardBar->addAction(actionHideAllModuleUIs_);
-  standardBar->addSeparator();
-  standardBar->addAction(actionCenterNetworkViewer_);
-  standardBar->addAction(actionZoomIn_);
-  standardBar->addAction(actionZoomOut_);
-  //standardBar->addAction(actionZoomBestFit_);
-  actionZoomBestFit_->setDisabled(true);
-  standardBar->addAction(actionResetNetworkZoom_);
-  standardBar->addAction(actionDragMode_);
-  standardBar->addAction(actionSelectMode_);
-  standardBar->addAction(actionToggleMetadataLayer_);
-  standardBar->addAction(actionToggleTagLayer_);
-  //setUnifiedTitleAndToolBarOnMac(true);
+  {
+    auto standardBar = addToolBar("Standard");
+    WidgetStyleMixin::toolbarStyle(standardBar);
+    standardBar->setObjectName("StandardToolBar");
+    standardBar->addAction(actionNew_);
+    standardBar->addAction(actionLoad_);
+    standardBar->addAction(actionSave_);
+    standardBar->addAction(actionRunScript_);
+    standardBar->addAction(actionEnterWhatsThisMode_);
+    standardBar->addSeparator();
+    standardBar->addAction(actionPinAllModuleUIs_);
+    standardBar->addAction(actionRestoreAllModuleUIs_);
+    standardBar->addAction(actionHideAllModuleUIs_);
+    standardBar->addSeparator();
+    standardBar->addAction(actionCenterNetworkViewer_);
+    standardBar->addAction(actionZoomIn_);
+    standardBar->addAction(actionZoomOut_);
+    //standardBar->addAction(actionZoomBestFit_);
+    actionZoomBestFit_->setDisabled(true);
+    standardBar->addAction(actionResetNetworkZoom_);
+    standardBar->addAction(actionDragMode_);
+    standardBar->addAction(actionSelectMode_);
+    standardBar->addAction(actionToggleMetadataLayer_);
+    standardBar->addAction(actionToggleTagLayer_);
+    //standardBar->addAction(actionMakeSubnetwork_);  //TODO: work in progress
+    connect(actionNetworkBar_, SIGNAL(toggled(bool)), standardBar, SLOT(setVisible(bool)));
+    connect(standardBar, SIGNAL(visibilityChanged(bool)), actionNetworkBar_, SLOT(setChecked(bool)));
+    //setUnifiedTitleAndToolBarOnMac(true);
+  }
+  {
+    auto executeBar = addToolBar(tr("&Execute"));
+    executeBar->setObjectName("ExecuteToolBar");
 
-  auto executeBar = addToolBar(tr("&Execute"));
-  executeBar->setObjectName("ExecuteToolBar");
+    executeButton_ = new QToolButton;
+    executeButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    executeButton_->addAction(actionExecute_All_);
+    executeButton_->setDefaultAction(actionExecute_All_);
+    executeBar->addWidget(executeButton_);
 
-	executeButton_ = new QToolButton;
-	executeButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-	executeButton_->addAction(actionExecute_All_);
-	executeButton_->setDefaultAction(actionExecute_All_);
-	executeBar->addWidget(executeButton_);
-
-  networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
-  executeBar->addActions(networkProgressBar_->actions());
-  executeBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
-		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
-		);
-  executeBar->setAutoFillBackground(true);
+    networkProgressBar_.reset(new NetworkExecutionProgressBar(boost::make_shared<NetworkStatusImpl>(networkEditor_), this));
+    executeBar->addActions(networkProgressBar_->actions());
+    executeBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
+      "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
+      );
+    executeBar->setAutoFillBackground(true);
+    connect(actionExecuteBar_, SIGNAL(toggled(bool)), executeBar, SLOT(setVisible(bool)));
+    connect(executeBar, SIGNAL(visibilityChanged(bool)), actionExecuteBar_, SLOT(setChecked(bool)));
+  }
+  {
+    auto searchAction = new QWidgetAction(this);
+    searchAction->setDefaultWidget(new NetworkSearchWidget(networkEditor_));
+    addToolBarBreak();
+    auto searchBar = addToolBar("&Search");
+    searchBar->setObjectName("SearchToolBar");
+    WidgetStyleMixin::toolbarStyle(searchBar);
+    searchBar->addAction(searchAction);
+    connect(actionSearchBar_, SIGNAL(toggled(bool)), searchBar, SLOT(setVisible(bool)));
+    connect(searchBar, SIGNAL(visibilityChanged(bool)), actionSearchBar_, SLOT(setChecked(bool)));
+    searchBar->setVisible(false);
+  }
 
   networkEditor_->addAction(actionExecute_All_);
   auto sep = new QAction(this);
@@ -301,11 +364,14 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   connect(actionSelectModule_, SIGNAL(triggered()), this, SLOT(selectModuleKeyboardAction()));
   actionSelectModule_->setVisible(false);
 
+  connect(actionReportIssue_, SIGNAL(triggered()), this, SLOT(reportIssue()));
+
   connect(actionSelectMode_, SIGNAL(toggled(bool)), this, SLOT(setSelectMode(bool)));
   connect(actionDragMode_, SIGNAL(toggled(bool)), this, SLOT(setDragMode(bool)));
 
 	connect(actionToggleTagLayer_, SIGNAL(toggled(bool)), this, SLOT(toggleTagLayer(bool)));
   connect(actionToggleMetadataLayer_, SIGNAL(toggled(bool)), this, SLOT(toggleMetadataLayer(bool)));
+  connect(actionMakeSubnetwork_, SIGNAL(triggered()), networkEditor_, SLOT(makeSubnetwork()));
 
   connect(actionResetNetworkZoom_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomIn_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
@@ -324,17 +390,15 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   connect(actionKeyboardShortcuts_, SIGNAL(triggered()), this, SLOT(showKeyboardShortcutsDialog()));
 
   //TODO: store in xml file, add to app resources
-	connect(actionForwardInverse_, SIGNAL(triggered()), this, SLOT(toolkitDownload()));
-  actionForwardInverse_->setProperty(ToolkitIconURL, QString("http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png"));
-  actionForwardInverse_->setProperty(ToolkitURL, QString("http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.2.zip"));
-  actionForwardInverse_->setProperty(ToolkitFilename, QString("FwdInvToolkit_v1.2.zip"));
-  actionForwardInverse_->setIcon(QPixmap(":/general/Resources/download.png"));
+  ToolkitInfo fwdInv{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
+    "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.2.zip",
+    "FwdInvToolkit_v1.2.zip" };
+  fwdInv.setupAction(actionForwardInverse_, this);
 
-	connect(actionBrainStimulator_, SIGNAL(triggered()), this, SLOT(toolkitDownload()));
-  actionBrainStimulator_->setProperty(ToolkitIconURL, QString("http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png"));
-  actionBrainStimulator_->setProperty(ToolkitURL, QString("http://sci.utah.edu/devbuilds/scirun5/toolkits/BrainStimulator_v1.2.zip"));
-  actionBrainStimulator_->setProperty(ToolkitFilename, QString("BrainStimulator_v1.2.zip"));
-  actionBrainStimulator_->setIcon(QPixmap(":/general/Resources/download.png"));
+  ToolkitInfo brainStim{ "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png",
+    "http://sci.utah.edu/devbuilds/scirun5/toolkits/BrainStimulator_v1.2.zip",
+    "BrainStimulator_v1.2.zip" };
+  brainStim.setupAction(actionBrainStimulator_, this);
 
   connect(networkEditor_, SIGNAL(networkExecuted()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(double, const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone(double, const std::string&)));
@@ -376,7 +440,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
 
   setupVersionButton();
 
-	WidgetStyleMixin::tabStyle(optionsTabWidget_);
+  WidgetStyleMixin::tabStyle(optionsTabWidget_);
 }
 
 void SCIRunMainWindow::initialize()
@@ -506,10 +570,15 @@ void SCIRunMainWindow::setupNetworkEditor()
   auto tagColorFunc = [this](int tag) { return tagManagerWindow_->tagColor(tag); };
   auto tagNameFunc = [this](int tag) { return tagManagerWindow_->tagName(tag); };
 	auto preexecuteFunc = [this]() { preexecute(); };
+  auto highResolutionExpandFactor = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().get_value_or(1.0);
+  {
+    auto screen = QApplication::desktop()->screenGeometry();
+    if (screen.height() * screen.width() > 5000000)
+      highResolutionExpandFactor *= 1.5;
+  }
   networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, dialogErrorControl_, preexecuteFunc,
-    tagColorFunc, tagNameFunc, scrollAreaWidgetContents_);
+    tagColorFunc, tagNameFunc, highResolutionExpandFactor, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
-  //networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   networkEditor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   networkEditor_->verticalScrollBar()->setValue(0);
@@ -533,7 +602,7 @@ void SCIRunMainWindow::executeAll()
 {
 	if (Application::Instance().parameters()->isRegressionMode())
 	{
-		auto timeout = Application::Instance().parameters()->regressionTimeoutSeconds();
+		auto timeout = Application::Instance().parameters()->developerParameters()->regressionTimeoutSeconds();
 		QTimer::singleShot(1000 * *timeout, this, SLOT(networkTimedOut()));
 	}
 
@@ -573,7 +642,7 @@ void SCIRunMainWindow::saveNetwork()
 
 void SCIRunMainWindow::saveNetworkAs()
 {
-  QString filename = QFileDialog::getSaveFileName(this, "Save Network...", latestNetworkDirectory_.path(), "*.srn5");
+  auto filename = QFileDialog::getSaveFileName(this, "Save Network...", latestNetworkDirectory_.path(), "*.srn5");
   if (!filename.isEmpty())
     saveNetworkFile(filename);
 }
@@ -589,7 +658,7 @@ void SCIRunMainWindow::loadNetwork()
 {
   if (okToContinue())
   {
-    QString filename = QFileDialog::getOpenFileName(this, "Load Network...", latestNetworkDirectory_.path(), "*.srn5");
+    auto filename = QFileDialog::getOpenFileName(this, "Load Network...", latestNetworkDirectory_.path(), "*.srn5");
     loadNetworkFile(filename);
   }
 }
@@ -633,7 +702,7 @@ void SCIRunMainWindow::importLegacyNetwork()
 {
   if (okToContinue())
   {
-    QString filename = QFileDialog::getOpenFileName(this, "Import Old Network...", latestNetworkDirectory_.path(), "*.srn");
+    auto filename = QFileDialog::getOpenFileName(this, "Import Old Network...", latestNetworkDirectory_.path(), "*.srn");
     importLegacyNetworkFile(filename);
   }
 }
@@ -802,7 +871,7 @@ void SCIRunMainWindow::setActionIcons()
   actionExecute_All_->setIcon(QPixmap(":/general/Resources/new/general/run.png"));
   actionUndo_->setIcon(QPixmap(":/general/Resources/undo.png"));
   actionRedo_->setIcon(QPixmap(":/general/Resources/redo.png"));
-  //actionCut_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+
   actionHideAllModuleUIs_->setIcon(QPixmap(":/general/Resources/new/general/hideAll.png"));
   actionPinAllModuleUIs_->setIcon(QPixmap(":/general/Resources/new/general/rightAll.png"));
   actionRestoreAllModuleUIs_->setIcon(QPixmap(":/general/Resources/new/general/showAll.png"));
@@ -817,6 +886,7 @@ void SCIRunMainWindow::setActionIcons()
 
   actionToggleMetadataLayer_->setIcon(QPixmap(":/general/Resources/metadataLayer.png"));
   actionToggleTagLayer_->setIcon(QPixmap(":/general/Resources/tagLayer.png"));
+  actionMakeSubnetwork_->setIcon(QPixmap(":/general/Resources/network.png"));
 }
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
@@ -864,6 +934,28 @@ void SCIRunMainWindow::makePipesEuclidean()
 void SCIRunMainWindow::makePipesManhattan()
 {
   networkEditor_->setConnectionPipelineType(MANHATTAN);
+}
+
+void SCIRunMainWindow::setConnectionPipelineType(int type)
+{
+	networkEditor_->setConnectionPipelineType(type);
+	switch (type)
+	{
+	case MANHATTAN:
+		prefsWindow_->manhattanPipesRadioButton_->setChecked(true);
+		break;
+	case CUBIC:
+		prefsWindow_->cubicPipesRadioButton_->setChecked(true);
+		break;
+	case EUCLIDEAN:
+		prefsWindow_->euclideanPipesRadioButton_->setChecked(true);
+		break;
+	}
+}
+
+void SCIRunMainWindow::setSaveBeforeExecute(int state)
+{
+  prefsWindow_->setSaveBeforeExecute(state != 0);
 }
 
 void SCIRunMainWindow::chooseBackgroundColor()
@@ -1051,7 +1143,7 @@ void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 {
 #ifdef BUILD_WITH_PYTHON
   GuiLogger::Instance().logInfo("RUNNING PYTHON SCRIPT: " + scriptFileName);
-  PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
+  PythonInterpreter::Instance().importSCIRunLibrary();
   PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
   statusBar()->showMessage(tr("Script is running."), 2000);
 #else
@@ -1169,6 +1261,7 @@ namespace {
     addSnippet("[ReadField*->ShowField->ViewScene]", snips);
     addSnippet("[CreateLatVol->ShowField->ViewScene]", snips);
     addSnippet("[ReadField*->ReportFieldInfo]", snips);
+    addSnippet("[ReadMatrix*->ReportMatrixInfo]", snips);
     addSnippet("[CreateStandardColorMap->RescaleColorMap->ShowField->ViewScene]", snips);
     addSnippet("[GetFieldBoundary->FairMesh->ShowField]", snips);
 
@@ -1448,6 +1541,7 @@ void SCIRunMainWindow::setDataDirectory(const QString& dir)
 
     RemembersFileDialogDirectory::setStartingDir(dir);
     Preferences::Instance().setDataDirectory(dir.toStdString());
+    Q_EMIT dataDirectorySet(dir);
   }
 }
 
@@ -1480,14 +1574,23 @@ void SCIRunMainWindow::addToDataDirectory(const QString& dir)
 
 void SCIRunMainWindow::setDataDirectoryFromGUI()
 {
-  QString dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), ".");
+  auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), QString::fromStdString(Core::Preferences::Instance().dataDirectory().parent_path().string()));
   setDataDirectory(dir);
 }
 
 void SCIRunMainWindow::addToPathFromGUI()
 {
-	QString dir = QFileDialog::getExistingDirectory(this, tr("Add Directory to Data Path"), ".");
+  auto dir = QFileDialog::getExistingDirectory(this, tr("Add Directory to Data Path"), ".");
 	addToDataDirectory(dir);
+}
+
+void SCIRunMainWindow::reportIssue()
+{
+  if (QMessageBox::Ok == QMessageBox::information(this, "Report Issue",
+    "Click OK to be taken to SCIRun's Github issue reporting page.\n\nFor bug reports, please follow the template.", QMessageBox::Ok|QMessageBox::Cancel))
+  {
+    QDesktopServices::openUrl(QUrl("https://github.com/SCIInstitute/SCIRun/issues/new", QUrl::TolerantMode));
+  }
 }
 
 bool SCIRunMainWindow::newInterface() const
@@ -1586,7 +1689,8 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
 
 void SCIRunMainWindow::launchNewUserWizard()
 {
-  newUserWizard(this);
+  NewUserWizard wiz(this);
+  wiz.exec();
 }
 
 void SCIRunMainWindow::adjustModuleDock(int state)
@@ -1629,6 +1733,7 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
 	if (event->key() == Qt::Key_Shift)
 	{
 		showStatusMessage("Network zoom active");
+    networkEditor_->adjustExecuteButtonsToDownstream(true);
 	}
   else if (event->key() == MetadataShiftKey)
   {
@@ -1708,6 +1813,7 @@ void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
 	if (event->key() == Qt::Key_Shift)
 	{
 		showStatusMessage("Network zoom inactive", 1000);
+    networkEditor_->adjustExecuteButtonsToDownstream(false);
 	}
   else if (event->key() == MetadataShiftKey)
   {
@@ -1825,6 +1931,11 @@ void SCIRunMainWindow::showStatusMessage(const QString& str, int timeInMsec)
 	statusBar()->showMessage(str, timeInMsec);
 }
 
+void SCIRunMainWindow::showExtendedDataInfo()
+{
+  qDebug() << "showExtendedDataInfo";
+}
+
 void SCIRunMainWindow::toggleMetadataLayer(bool toggle)
 {
 	networkEditor_->metadataLayer(toggle);
@@ -1846,7 +1957,6 @@ void SCIRunMainWindow::showKeyboardShortcutsDialog()
 
 void SCIRunMainWindow::runNewModuleWizard()
 {
-	qDebug() << "new module wizard coming soon";
   auto wizard = new ClassWizard(this);
 	wizard->show();
 }
@@ -1937,7 +2047,7 @@ void FileDownloader::fileDownloaded(QNetworkReply* reply)
   Q_EMIT downloaded();
 }
 
-void FileDownloader::downloadProgress(qint64 received, qint64 total)
+void FileDownloader::downloadProgress(qint64 received, qint64 total) const
 {
   if (statusBar_)
 	{
@@ -1959,9 +2069,11 @@ ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar,
 {
   if (infoObject)
   {
-    iconUrl_ = infoObject->property(ToolkitIconURL).toString();
-    fileUrl_ = infoObject->property(ToolkitURL).toString();
-    filename_ = infoObject->property(ToolkitFilename).toString();
+    iconUrl_ = infoObject->property(ToolkitInfo::ToolkitIconURL).toString();
+    fileUrl_ = infoObject->property(ToolkitInfo::ToolkitURL).toString();
+    filename_ = infoObject->property(ToolkitInfo::ToolkitFilename).toString();
+
+    iconKey_ = ToolkitInfo::ToolkitIconURL + QString("--") + iconUrl_;
 
     downloadIcon();
   }
@@ -1969,17 +2081,34 @@ ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar,
 
 void ToolkitDownloader::downloadIcon()
 {
-  iconDownloader_ = new FileDownloader(iconUrl_, nullptr, this);
-  connect(iconDownloader_, SIGNAL(downloaded()), this, SLOT(showMessageBox()));
+  QSettings settings;
+  if (!settings.contains(iconKey_))
+  {
+    iconDownloader_ = new FileDownloader(iconUrl_, nullptr, this);
+    connect(iconDownloader_, SIGNAL(downloaded()), this, SLOT(showMessageBox()));
+  }
+  else
+    showMessageBox();
 }
 
 void ToolkitDownloader::showMessageBox()
 {
-  if (!iconDownloader_)
-    return;
-
   QPixmap image;
-  image.loadFromData(iconDownloader_->downloadedData());
+
+  QSettings settings;
+  
+  if (settings.contains(iconKey_))
+  {
+    image.loadFromData(settings.value(iconKey_).toByteArray());
+  }
+  else
+  {
+    if (!iconDownloader_)
+      return;
+
+    image.loadFromData(iconDownloader_->downloadedData());
+    settings.setValue(iconKey_, iconDownloader_->downloadedData());
+  }
 
   QMessageBox toolkitInfo;
 #ifdef WIN32
@@ -2006,7 +2135,7 @@ void ToolkitDownloader::showMessageBox()
   }
 }
 
-void ToolkitDownloader::saveToolkit()
+void ToolkitDownloader::saveToolkit() const
 {
   if (!zipDownloader_)
     return;

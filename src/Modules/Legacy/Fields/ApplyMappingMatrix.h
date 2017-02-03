@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -36,12 +36,12 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-      class SCISHARE ApplyMappingMatrixModule : public Dataflow::Networks::Module,
+      class SCISHARE ApplyMappingMatrix : public Dataflow::Networks::Module,
         public Has3InputPorts<FieldPortTag,FieldPortTag,MatrixPortTag>,
         public Has1OutputPort<FieldPortTag>
       {
       public:
-        ApplyMappingMatrixModule();
+        ApplyMappingMatrix();
 
         virtual void execute();
         virtual void setStateDefaults() {}
@@ -50,6 +50,8 @@ namespace SCIRun {
         INPUT_PORT(1, Destination, LegacyField);
         INPUT_PORT(2, Mapping, Matrix);
         OUTPUT_PORT(0, Output, LegacyField);
+
+        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
       };
 
     }

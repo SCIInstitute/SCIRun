@@ -43,16 +43,20 @@ class SCISHARE EditMeshBoundingBoxDialog : public ModuleDialogGeneric,
 
 public:
   EditMeshBoundingBoxDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+public Q_SLOTS:
+  void moduleExecuted() override;
 private:
-    QDoubleSpinBox spinner_scale_;
-    double scale_;
+  void adjustScale(float scaleFactor);
+  void setScaleButtonsEnabled(bool enable);
+  float doubleUpScale_, upScale_, downScale_, doubleDownScale_;
 private Q_SLOTS:
-     void ScaleUpPush();
-     void ScaleDoubleUpPush();
-     void ScaleDownPush();
-     void ScaleDoubleDownPush();
+  void scaleUpPush();
+  void scaleDoubleUpPush();
+  void scaleDownPush();
+  void scaleDoubleDownPush();
+  void userSetWidget();
 };
 
 }

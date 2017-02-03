@@ -52,9 +52,10 @@ namespace SCIRun {
 
         INPUT_PORT(0, InputField, LegacyField);
 	      OUTPUT_PORT(0, OutputField, LegacyField);
-	      static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
 
         NEW_BRAIN_STIMULATOR_MODULE
+
+        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       };
 
     }

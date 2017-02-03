@@ -41,7 +41,7 @@ using namespace SCIRun::Dataflow::Networks;
 /// @class EvaluateLinAlgGeneral
 /// @brief This module performs a user defined linear algebra operation on up to five input matrices.
 
-const ModuleLookupInfo EvaluateLinearAlgebraGeneral::staticInfo_("EvaluateLinearAlgebraGeneral", "Math", "SCIRun");
+MODULE_INFO_DEF(EvaluateLinearAlgebraGeneral, Math, SCIRun)
 
 EvaluateLinearAlgebraGeneral::EvaluateLinearAlgebraGeneral() : Module(staticInfo_)
 {

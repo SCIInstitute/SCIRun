@@ -72,6 +72,7 @@ public:
 
   void setData(DatatypeHandleOption data) { data_ = data; }
   virtual void invalidateProvider() override {}
+  virtual void forceFireDataHasChanged() override {}
 
   virtual boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type&) override { return {}; }
 private:

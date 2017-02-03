@@ -38,20 +38,20 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
-AlgorithmParameterName PrintDatatypeModule::ReceivedValue("ReceivedValue");
+AlgorithmParameterName PrintDatatype::ReceivedValue("ReceivedValue");
 
-PrintDatatypeModule::PrintDatatypeModule()
+PrintDatatype::PrintDatatype()
   : Module(ModuleLookupInfo("PrintDatatype", "DataIO", "SCIRun"))
 {
   INITIALIZE_PORT(Input);
 }
 
-void PrintDatatypeModule::setStateDefaults()
+void PrintDatatype::setStateDefaults()
 {
   get_state()->setValue(ReceivedValue, std::string());
 }
 
-void PrintDatatypeModule::execute()
+void PrintDatatype::execute()
 {
   auto data = getRequiredInput(Input);
   if (auto i = data->as<Int32>())
@@ -62,4 +62,8 @@ void PrintDatatypeModule::execute()
     get_state()->setValue(ReceivedValue, s->value());
   else
     get_state()->setValue(ReceivedValue, std::string("<complicated type>"));
+
+#ifdef BUILD_HEADLESS
+  std::cout << "PrintDatatype received: " << get_state()->getValue(ReceivedValue).toString() << std::endl;
+#endif
 }

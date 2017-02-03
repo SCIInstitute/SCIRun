@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -54,7 +54,7 @@
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Modules::DataIO;
 
-WriteFieldModule::WriteFieldModule()
+WriteField::WriteField()
   : my_base("WriteField", "DataIO", "SCIRun", "Filename")
     //gui_increment_(get_ctx()->subVar("increment"), 0),
     //gui_current_(get_ctx()->subVar("current"), 0)
@@ -68,7 +68,7 @@ WriteFieldModule::WriteFieldModule()
   get_state()->setValue(Variables::FileTypeList, types);
 }
 
-bool WriteFieldModule::call_exporter(const std::string& filename)
+bool WriteField::call_exporter(const std::string& filename)
 {
   ///@todo: how will this work via python? need more code to set the filetype based on the extension...
   FieldIEPluginManager mgr;
@@ -80,28 +80,28 @@ bool WriteFieldModule::call_exporter(const std::string& filename)
   return false;
 }
 
-void WriteFieldModule::execute()
+void WriteField::execute()
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //get the current file name
   const std::string oldfilename=filename_.get();
-  
+
   //determine if we should increment an index in the file name
-  if (gui_increment_.get()) 
+  if (gui_increment_.get())
   {
 
-    //warn the user if they try to use 'Increment' incorrectly	
+    //warn the user if they try to use 'Increment' incorrectly
     const std::string::size_type loc2 = oldfilename.find("%d");
-    if(loc2 == std::string::npos) 
+    if(loc2 == std::string::npos)
     {
       remark("To use the increment function, there must be a '%d' in the file name.");
     }
-    
+
     char buf[1024];
-   
+
     int current=gui_current_.get();
     sprintf(buf, filename_.get().c_str(), current);
-    
+
     filename_.set(buf);
     gui_current_.set(current+1);
   }
@@ -115,18 +115,18 @@ void WriteFieldModule::execute()
 #endif
 }
 
-bool WriteFieldModule::useCustomExporter(const std::string& filename) const 
+bool WriteField::useCustomExporter(const std::string& filename) const
 {
   auto ft = get_state()->getValue(Variables::FileTypeName).toString();
   LOG_DEBUG("WriteField with filetype " << ft);
   auto ret = boost::filesystem::extension(filename) != ".fld";
-  
+
   filetype_ = ft.find("SCIRun Field ASCII") != std::string::npos ? "ASCII" : "Binary";
 
   return ret;
 }
 
-std::string WriteFieldModule::defaultFileTypeName() const
+std::string WriteField::defaultFileTypeName() const
 {
   FieldIEPluginManager mgr;
   return defaultImportTypeForFile(&mgr);

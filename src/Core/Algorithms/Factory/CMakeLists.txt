@@ -28,7 +28,6 @@
 
 SET(Algorithms_Factory_SRCS
   HardCodedAlgorithmFactory.cc
-  AlgorithmFactoryAdditions.cc
 )
 
 SET(Algorithms_Factory_HEADERS
@@ -65,7 +64,7 @@ IF(GENERATE_MODULE_FACTORY_CODE AND REGENERATE_MODULE_FACTORY_CODE)
     TARGET Algorithms_Factory
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E remove -f ${AlgorithmFactoryImpl_Generated}
-    COMMENT " Running POST BUILD action "
+    COMMENT "Removed generated Algorithm Factory code--it will be regenerated next build. Turn off CMake flag REGENERATE_MODULE_FACTORY_CODE if new modules are not being added."
   )
 ENDIF()
 
@@ -85,4 +84,5 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Algorithms_Factory)
 ENDIF(BUILD_SHARED_LIBS)
 
-SCIRUN_ADD_TEST_DIR(Tests)
+# Framework test: always build
+ADD_SUBDIRECTORY(Tests)

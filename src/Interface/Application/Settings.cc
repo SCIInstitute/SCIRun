@@ -64,7 +64,7 @@ namespace
     }
     return qsl;
   }
-  
+
   QMap<QString, QString> toStrMap(const QMap<QString, QVariant>& m)
   {
     QMap<QString, QString> ss;
@@ -110,7 +110,7 @@ namespace
 void SCIRunMainWindow::readSettings()
 {
   auto& prefs = Preferences::Instance();
-  QSettings settings("SCI:CIBC Software", "SCIRun5");
+  QSettings settings;
 
   //TODO: centralize all these values in Preferences singleton, together with keys as names.
   //TODO: extract QSettings logic into "PreferencesIO" class
@@ -145,20 +145,8 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(pipeTypeKey))
   {
     int pipeType = settings.value(pipeTypeKey).toInt();
-    networkEditor_->setConnectionPipelineType(pipeType);
+    setConnectionPipelineType(pipeType);
     GuiLogger::Instance().logInfo("Setting read: connection pipe style = " + QString::number(pipeType));
-    switch (pipeType)
-    {
-    case MANHATTAN:
-      prefsWindow_->manhattanPipesRadioButton_->setChecked(true);
-      break;
-    case CUBIC:
-      prefsWindow_->cubicPipesRadioButton_->setChecked(true);
-      break;
-    case EUCLIDEAN:
-      prefsWindow_->euclideanPipesRadioButton_->setChecked(true);
-      break;
-    }
   }
 
   const auto snapTo = qname(prefs.modulesSnapToGrid);
@@ -317,7 +305,7 @@ void SCIRunMainWindow::readSettings()
 
 void SCIRunMainWindow::writeSettings()
 {
-  QSettings settings("SCI:CIBC Software", "SCIRun5");
+  QSettings settings;
   auto& prefs = Preferences::Instance();
 
   //TODO: centralize all these values in Preferences singleton, together with keys as names

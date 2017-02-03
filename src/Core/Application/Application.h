@@ -120,6 +120,25 @@ private:
 //	static std::string GetAbout();
 };
 
+namespace Commands
+{
+  template <class Base>
+  class FileCommand : public Base
+  {
+  public:
+    FileCommand()
+    {
+      Base::addParameter(Core::Algorithms::Variables::Filename, std::string());
+    }
+  };
+
+  class SCISHARE SaveFileCommandHelper
+  {
+  public:
+    std::string saveImpl(const std::string& filename);
+  };
+}
+
 }}
 
 //#define ASSERT_IS_APPLICATION_THREAD() assert( Core::Application::IsApplicationThread() )
