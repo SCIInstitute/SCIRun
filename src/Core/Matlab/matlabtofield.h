@@ -109,7 +109,7 @@ class SCISHARE MatlabToFieldAlgo : public matfilebase
 
     // Field description classes
     matlabarray mlfield;
-    matlabarray mlfieldedge;
+    //matlabarray mlfieldedge;
 
     matlabarray mlfieldderivatives; 
     matlabarray mlfieldscalefactors; 

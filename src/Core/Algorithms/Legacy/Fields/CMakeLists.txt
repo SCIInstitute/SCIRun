@@ -99,6 +99,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   RegisterWithCorrespondences.h
   SampleField/GeneratePointSamplesFromField.h
   DistanceField/CalculateIsInsideField.h
+  MeshData/GetMeshQualityFieldAlgo.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -180,7 +181,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   Mapping/ApplyMappingMatrix.cc
   #MeshData/GetSurfaceNodeNormals.cc
   #MeshData/GetSurfaceElemNormals.cc
-  #MeshData/GetMeshQualityField.cc
+  MeshData/GetMeshQualityFieldAlgo.cc
   #MeshDerivatives/CalculateMeshConnector.cc
   #MeshDerivatives/CalculateMeshCenter.cc
   #MeshDerivatives/GetCentroids.cc

@@ -868,7 +868,7 @@
           <item>
            <widget class="QLabel" name="label_11">
             <property name="text">
-             <string>Click on number to move light. Note: Headlight will not move.</string>
+             <string>Click on dot to move light. Note: Headlight will not move.</string>
             </property>
            </widget>
           </item>

@@ -91,6 +91,8 @@ namespace SCIRun {
           MOCK_METHOD1(connectExecuteSelfRequest, boost::signals2::connection(const ExecutionSelfRequestSignalType::slot_type&));
           MOCK_METHOD1(setExecutionDisabled, void(bool));
           MOCK_CONST_METHOD0(executionDisabled, bool(void));
+          MOCK_CONST_METHOD0(legacyPackageName, std::string());
+          MOCK_CONST_METHOD0(legacyModuleName, std::string());
         };
 
         typedef boost::shared_ptr<MockModule> MockModulePtr;

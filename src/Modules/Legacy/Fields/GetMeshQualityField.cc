@@ -26,54 +26,46 @@
    DEALINGS IN THE SOFTWARE.
 */
 /// @todo Documentation Modules/Legacy/Fields/GetMeshQualityField.cc
+//Reports the quality of each element in the mesh based on the metric that you choose.
 
-#include <Core/Algorithms/Fields/MeshData/GetMeshQualityField.h>
-
-#include <Dataflow/Network/Ports/FieldPort.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshQualityFieldAlgo.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Dataflow/Network/Module.h>
-
-namespace SCIRun {
+#include <Modules/Legacy/Fields/GetMeshQualityField.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 
-class GetMeshQualityField : public Module {
-  public:
-    GetMeshQualityField(GuiContext*);
-    virtual ~GetMeshQualityField() {}
-    virtual void execute();
-    
-  private:
-    GuiString guimethod_;
-    SCIRunAlgo::GetMeshQualityFieldAlgo algo_;
-};
+const ModuleLookupInfo GetMeshQualityField::staticInfo_("GetMeshQualityField", "MiscField", "SCIRun");
 
-
-DECLARE_MAKER(GetMeshQualityField)
-
-GetMeshQualityField::GetMeshQualityField(GuiContext* ctx) :
-  Module("GetMeshQualityField", ctx, Source, "MiscField", "SCIRun"),
-  guimethod_(ctx->subVar("method"),"scaled_jacobian")
+GetMeshQualityField::GetMeshQualityField() : Module(staticInfo_)
 {
-  algo_.set_progress_reporter(this);
+    //Initialize all ports.
+    INITIALIZE_PORT(InputField);
+    INITIALIZE_PORT(OutputField);
 }
 
-void
-GetMeshQualityField::execute()
+void GetMeshQualityField::setStateDefaults()
 {
-  FieldHandle input, output;
-  get_input_handle("Field",input,true);
+    setStateStringFromAlgoOption(Metric);
+}
+
+void GetMeshQualityField::execute()
+{
+  auto input = getRequiredInput(InputField);
   
-  if (inputs_changed_ ||  guimethod_.changed() || !oport_cached("MeshQuality"))
+  if (needToExecute())
   {
     update_state(Executing);
-    
-    algo_.set_option("metric",guimethod_.get());
-    if(!(algo_.run(input,output))) return;
-
-    send_output_handle("MeshQuality", output);
+      
+    setAlgoOptionFromState(Metric);
+      
+    auto output = algo().run(withInputData((InputField,input)));
+      
+    sendOutputFromAlgorithm(OutputField,output);
+      
   }
 }
-
-} // End namespace SCIRun
-
-
