@@ -116,6 +116,8 @@ namespace Gui {
 
   class FileOpenCommand : public NetworkFileProcessCommand
   {
+  public:
+    FileOpenCommand();
   protected:
     Dataflow::Networks::NetworkFileHandle processXmlFile(const std::string& filename) override;
   };

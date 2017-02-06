@@ -71,7 +71,7 @@ public:
 
   //command access: extract an interface
   void saveNetworkFile(const QString& fileName);
-  bool loadNetworkFile(const QString& filename);
+  bool loadNetworkFile(const QString& filename, bool isTemporary = false);
   bool importLegacyNetworkFile(const QString& filename);
   void setupQuitAfterExecute();
   void quit();

@@ -1112,7 +1112,7 @@
   </action>
   <action name="actionLoadToolkit_">
    <property name="text">
-    <string>Load toolkit...</string>
+    <string>Import toolkit...</string>
    </property>
   </action>
   <action name="actionAsd">

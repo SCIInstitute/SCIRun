@@ -674,19 +674,24 @@ void SCIRunMainWindow::checkAndLoadNetworkFile(const QString& filename)
   }
 }
 
-bool SCIRunMainWindow::loadNetworkFile(const QString& filename)
+bool SCIRunMainWindow::loadNetworkFile(const QString& filename, bool isTemporary)
 {
   if (!filename.isEmpty())
   {
     FileOpenCommand command;
     command.set(Variables::Filename, filename.toStdString());
+    command.set(Name("temporary-file"), isTemporary);
     if (command.execute())
     {
-      setCurrentFile(filename);
-      statusBar()->showMessage(tr("File loaded: ") + filename, 2000);
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
-      provenanceWindow_->clear();
-      provenanceWindow_->showFile(command.file_);
+
+      if (!isTemporary)
+      {
+        setCurrentFile(filename);
+        statusBar()->showMessage(tr("File loaded: ") + filename, 2000);
+        provenanceWindow_->clear();
+        provenanceWindow_->showFile(command.file_);
+      }
 			networkEditor_->viewport()->update();
       return true;
     }
@@ -813,7 +818,7 @@ void SCIRunMainWindow::loadRecentNetwork()
 {
   if (okToContinue())
   {
-    QAction *action = qobject_cast<QAction *>(sender());
+    auto action = qobject_cast<QAction*>(sender());
     if (action)
       loadNetworkFile(action->data().toString());
   }
@@ -2165,11 +2170,11 @@ void SCIRunMainWindow::loadToolkitsFromFile(const QString& filename)
     command.set(Variables::Filename, filename.toStdString());
     if (command.execute())
     {
-      statusBar()->showMessage(tr("Toolkit unpacked: ") + filename, 2000);
+      statusBar()->showMessage(tr("Toolkit imported: ") + filename, 2000);
     }
     else
     {
-      statusBar()->showMessage(tr("Toolkit unpacking failed: ") + filename, 2000);
+      statusBar()->showMessage(tr("Toolkit import failed: ") + filename, 2000);
     }
   }
 }
@@ -2221,7 +2226,7 @@ void SCIRunMainWindow::addToolkit(const QString& filename, const QString& direct
   folder->setProperty("path", directory);
   connect(folder, SIGNAL(triggered()), this, SLOT(openToolkitFolder()));
 
-  QMessageBox::information(this, "Toolkit loaded", "Toolkit " + filename + " successfully unpacked. Load networks from the menu.");
+  QMessageBox::information(this, "Toolkit loaded", "Toolkit " + filename + " successfully imported. A new submenu is available under Toolkits for loading networks.");
 }
 
 void SCIRunMainWindow::openToolkitFolder()
@@ -2232,6 +2237,15 @@ void SCIRunMainWindow::openToolkitFolder()
 
 void SCIRunMainWindow::openToolkitNetwork()
 {
-  auto network = sender()->property("network").toString();
-  qDebug() << network;
+  if (okToContinue())
+  {
+    QTemporaryFile temp;
+    if (temp.open())
+    {
+      auto network = sender()->property("network").toString();
+      QTextStream stream(&temp);
+      stream << network;
+    }
+    loadNetworkFile(temp.fileName(), true);
+  }
 }
