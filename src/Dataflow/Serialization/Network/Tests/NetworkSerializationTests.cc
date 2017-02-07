@@ -448,7 +448,9 @@ namespace
     {
       if (p.path().extension() == ".srn5")
       {
-        toolkit.networks[diffPath(toolkitPath, p.path()).string()] = *XMLSerializer::load_xml<NetworkFile>(p.path().string());
+        auto path = diffPath(toolkitPath, p.path()).string();
+        std::replace(path.begin(), path.end(), '\\', '/');
+        toolkit.networks[path] = *XMLSerializer::load_xml<NetworkFile>(p.path().string());
       }
     }
     return toolkit;
@@ -471,7 +473,9 @@ TEST(ToolkitSerializationTest, CanCreateFromFolders)
   toolkit.save(ostr);
 
   EXPECT_NE(0, ostr.str().size());
-  //std::cout << ostr.str() << std::endl;
+
+  //std::ofstream f("FwdInvToolkit.toolkit");
+  //makeToolkitFromDirectory("C:\\_\\Toolkits\\FwdInvToolkit\\Networks").save(f);
 }
 
 TEST(ToolkitSerializationTest, RoundTripFromFolders)
