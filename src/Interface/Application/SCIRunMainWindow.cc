@@ -340,12 +340,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
 
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
-
-#if 0 //TODO: decide on modifiable background color
-  connect(chooseBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(chooseBackgroundColor()));
-  connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
-#endif
-
+  
   connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
   connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
 
@@ -530,9 +525,6 @@ void SCIRunMainWindow::setupInputWidgets()
     actionDelete_,
     moduleSelectorTreeWidget_,
     actionRunScript_;
-//#ifdef BUILD_WITH_PYTHON
-//  widgets += pythonConsole_;
-//#endif
 
   WidgetDisablingService::Instance().addWidgets(widgets.begin(), widgets.end());
   WidgetDisablingService::Instance().addWidgets(recentFileActions_.begin(), recentFileActions_.end());
@@ -778,7 +770,7 @@ void SCIRunMainWindow::setCurrentFile(const QString& fileName)
   currentFile_ = fileName;
   setCurrentFileName(currentFile_.toStdString());
   setWindowModified(false);
-  QString shownName = tr("Untitled");
+  auto shownName = tr("Untitled");
   if (!currentFile_.isEmpty())
   {
     shownName = strippedName(currentFile_);
@@ -808,7 +800,7 @@ void SCIRunMainWindow::updateRecentFileActions()
   {
     if (j < recentFiles_.count())
     {
-      QString text = tr("&%1 %2")
+      auto text = tr("&%1 %2")
         .arg(j + 1)
         .arg(strippedName(recentFiles_[j]));
 
@@ -884,7 +876,6 @@ void SCIRunMainWindow::setActionIcons()
   actionLoad_->setIcon(QPixmap(":/general/Resources/new/general/folder.png"));
   actionSave_->setIcon(QPixmap(":/general/Resources/new/general/save.png"));
   actionRunScript_->setIcon(QPixmap(":/general/Resources/new/general/wand.png"));
-  //actionSave_As_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveCDIcon));  //TODO?
   actionExecute_All_->setIcon(QPixmap(":/general/Resources/new/general/run.png"));
   actionUndo_->setIcon(QPixmap(":/general/Resources/undo.png"));
   actionRedo_->setIcon(QPixmap(":/general/Resources/redo.png"));
@@ -1027,7 +1018,7 @@ void SCIRunMainWindow::zoomNetwork()
   auto action = qobject_cast<QAction*>(sender());
   if (action)
   {
-    const QString name = action->text();
+    const auto name = action->text();
     if (name == "Zoom In")
     {
       networkEditor_->zoomIn();
@@ -1180,7 +1171,7 @@ void SCIRunMainWindow::runScript()
 void SCIRunMainWindow::updateMiniView()
 {
   //networkEditorMiniViewLabel_->setText("+" + networkEditorMiniViewLabel_->text());
-  QPixmap network = networkEditor_->sceneGrab();
+  auto network = networkEditor_->sceneGrab();
   networkEditorMiniViewLabel_->setPixmap(network.scaled(networkEditorMiniViewLabel_->size(),
     Qt::KeepAspectRatio,
     Qt::SmoothTransformation));
