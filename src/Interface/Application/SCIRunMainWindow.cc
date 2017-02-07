@@ -150,6 +150,8 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
 {
   setupUi(this);
 
+  startup_ = true;
+
   QCoreApplication::setOrganizationName("SCI:CIBC Software");
   QCoreApplication::setApplicationName("SCIRun5");
 
@@ -487,6 +489,13 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   connect(networkEditor_, SIGNAL(newModule(const QString&, bool)), this, SLOT(addModuleToWindowList(const QString&, bool)));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
     this, SLOT(removeModuleFromWindowList(const SCIRun::Dataflow::Networks::ModuleId&)));
+
+  for (const auto& t : toolkitFiles_)
+  {
+    loadToolkitsFromFile(t);
+  }
+
+  startup_ = false;
 }
 
 void SCIRunMainWindow::setTipsAndWhatsThis()
@@ -2171,6 +2180,8 @@ void SCIRunMainWindow::loadToolkitsFromFile(const QString& filename)
     if (command.execute())
     {
       statusBar()->showMessage(tr("Toolkit imported: ") + filename, 2000);
+      if (!toolkitFiles_.contains(filename))
+        toolkitFiles_ << filename;
     }
     else
     {
@@ -2226,7 +2237,8 @@ void SCIRunMainWindow::addToolkit(const QString& filename, const QString& direct
   folder->setProperty("path", directory);
   connect(folder, SIGNAL(triggered()), this, SLOT(openToolkitFolder()));
 
-  QMessageBox::information(this, "Toolkit loaded", "Toolkit " + filename + " successfully imported. A new submenu is available under Toolkits for loading networks.");
+  if (!startup_)
+    QMessageBox::information(this, "Toolkit loaded", "Toolkit " + filename + " successfully imported. A new submenu is available under Toolkits for loading networks.");
 }
 
 void SCIRunMainWindow::openToolkitFolder()

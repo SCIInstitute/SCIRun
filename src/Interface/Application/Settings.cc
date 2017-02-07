@@ -299,6 +299,14 @@ void SCIRunMainWindow::readSettings()
     savedSubnetworksXml_ = subnetMap;
   }
 
+  const QString toolkitFiles = "toolkitFiles";
+  if (settings.contains(toolkitFiles))
+  {
+    auto toolkits = settings.value(toolkitFiles).toStringList();
+    GuiLogger::Instance().logInfo("Setting read: toolkitFiles = " + QString::number(toolkits.size()));
+    toolkitFiles_ = toolkits;
+  }
+
   restoreGeometry(settings.value("geometry").toByteArray());
   restoreState(settings.value("windowState").toByteArray());
 }
@@ -333,6 +341,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("triggeredScriptEnableFlags", fromBoolMap(triggeredEventsWindow_->getScriptEnabledFlags()));
   settings.setValue("savedSubnetworksNames", savedSubnetworksNames_);
   settings.setValue("savedSubnetworksXml", savedSubnetworksXml_);
+  settings.setValue("toolkitFiles", toolkitFiles_);
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());

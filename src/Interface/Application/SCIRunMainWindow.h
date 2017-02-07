@@ -124,6 +124,7 @@ private:
   QStringList favoriteModuleNames_;
   QMap<QString, QVariant> savedSubnetworksXml_;
   QMap<QString, QVariant> savedSubnetworksNames_;
+  QStringList toolkitFiles_;
   QMap<QString, QString> toolkitDirectories_;
   QMap<QString, Dataflow::Networks::ToolkitFile> toolkitNetworks_;
   QToolButton* executeButton_;
@@ -171,6 +172,7 @@ private:
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
   bool quitAfterExecute_;
   bool skipSaveCheck_ = false;
+  bool startup_;
 
 Q_SIGNALS:
   void moduleItemDoubleClicked();
