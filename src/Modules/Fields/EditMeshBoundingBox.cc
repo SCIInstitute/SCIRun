@@ -108,7 +108,7 @@ void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
   {
     widgetMoved_ = true;
     adjustGeometryFromTransform(vsf.transform);
-    enqueueExecuteAgain();
+    enqueueExecuteAgain(false);
   }
 }
 

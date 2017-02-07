@@ -52,6 +52,7 @@ namespace SCIRun {
   typedef ConstantBasis<Vector>             CFDVectorBasis;
   typedef ConstantBasis<double>             CFDdoubleBasis;
   typedef ConstantBasis<float>              CFDfloatBasis;
+  typedef ConstantBasis<complex>            CFDcomplexBasis;
   typedef ConstantBasis<int>                CFDintBasis;
   typedef ConstantBasis<long long>          CFDlonglongBasis;
   typedef ConstantBasis<short>              CFDshortBasis;
@@ -66,6 +67,7 @@ namespace SCIRun {
   typedef QuadBilinearLgn<Vector>             FDVectorBasis;
   typedef QuadBilinearLgn<double>             FDdoubleBasis;
   typedef QuadBilinearLgn<float>              FDfloatBasis;
+  typedef QuadBilinearLgn<complex>            FDcomplexBasis;
   typedef QuadBilinearLgn<int>                FDintBasis;
   typedef QuadBilinearLgn<long long>          FDlonglongBasis;
   typedef QuadBilinearLgn<short>              FDshortBasis;
@@ -78,8 +80,7 @@ namespace SCIRun {
 typedef QuadSurfMesh<QuadBilinearLgn<Point> > QSMesh;
 
 template class QuadSurfMesh<QuadBilinearLgn<Point> >;
-PersistentTypeID backwards_compat_QSM("QuadSurfMesh", "Mesh",
-				      QSMesh::maker, QSMesh::maker);
+PersistentTypeID backwards_compat_QSM("QuadSurfMesh", "Mesh", QSMesh::maker, QSMesh::maker);
 
 //NoData
 template class GenericField<QSMesh, NoDataBasis<double>, std::vector<double> >;
@@ -90,6 +91,7 @@ template class GenericField<QSMesh, CFDTensorBasis, std::vector<Tensor> >;
 template class GenericField<QSMesh, CFDVectorBasis, std::vector<Vector> >;       
 template class GenericField<QSMesh, CFDdoubleBasis, std::vector<double> >;       
 template class GenericField<QSMesh, CFDfloatBasis,  std::vector<float> >;
+template class GenericField<QSMesh, CFDcomplexBasis, std::vector<complex> >;
 template class GenericField<QSMesh, CFDintBasis,    std::vector<int> >;          
 template class GenericField<QSMesh, CFDlonglongBasis, std::vector<long long> >;          
 template class GenericField<QSMesh, CFDshortBasis,  std::vector<short> >;        
@@ -104,6 +106,7 @@ template class GenericField<QSMesh, FDTensorBasis, std::vector<Tensor> >;
 template class GenericField<QSMesh, FDVectorBasis, std::vector<Vector> >;       
 template class GenericField<QSMesh, FDdoubleBasis, std::vector<double> >;       
 template class GenericField<QSMesh, FDfloatBasis,  std::vector<float> >;      
+template class GenericField<QSMesh, FDcomplexBasis, std::vector<complex> >;
 template class GenericField<QSMesh, FDintBasis,    std::vector<int> >;      
 template class GenericField<QSMesh, FDlonglongBasis,std::vector<long long> >;      
 template class GenericField<QSMesh, FDshortBasis,  std::vector<short> >;        
@@ -140,6 +143,12 @@ backwards_compat_QSFf("QuadSurfField<float>", "Field",
 		      std::vector<float> >::maker, 
 		      GenericField<QSMesh, CFDfloatBasis, 
 		      std::vector<float> >::maker);
+PersistentTypeID
+backwards_compat_QSFco("QuadSurfField<complex>", "Field",
+          GenericField<QSMesh, FDcomplexBasis,
+          std::vector<complex> >::maker,
+          GenericField<QSMesh, CFDcomplexBasis,
+          std::vector<complex> >::maker);
 PersistentTypeID 
 backwards_compat_QSFi("QuadSurfField<int>", "Field",
 		      GenericField<QSMesh, FDintBasis, 

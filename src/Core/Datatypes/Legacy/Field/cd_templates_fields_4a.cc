@@ -48,6 +48,7 @@ typedef ConstantBasis<Tensor>                CFDTensorBasis;
 typedef ConstantBasis<Vector>                CFDVectorBasis;
 typedef ConstantBasis<double>                CFDdoubleBasis;
 typedef ConstantBasis<float>                 CFDfloatBasis;
+typedef ConstantBasis<complex>               CFDcomplexBasis;
 typedef ConstantBasis<int>                   CFDintBasis;
 typedef ConstantBasis<long long>             CFDlonglongBasis;
 typedef ConstantBasis<short>                 CFDshortBasis;
@@ -62,6 +63,7 @@ typedef TriLinearLgn<Tensor>                FDTensorBasis;
 typedef TriLinearLgn<Vector>                FDVectorBasis;
 typedef TriLinearLgn<double>                FDdoubleBasis;
 typedef TriLinearLgn<float>                 FDfloatBasis;
+typedef TriLinearLgn<complex>                 FDcomplexBasis;
 typedef TriLinearLgn<int>                   FDintBasis;
 typedef TriLinearLgn<long long>             FDlonglongBasis;
 typedef TriLinearLgn<short>                 FDshortBasis;
@@ -83,6 +85,7 @@ template class GenericField<TSMesh, FDTensorBasis, std::vector<Tensor> >;
 template class GenericField<TSMesh, FDVectorBasis, std::vector<Vector> >;       
 template class GenericField<TSMesh, FDdoubleBasis, std::vector<double> >;       
 template class GenericField<TSMesh, FDfloatBasis,  std::vector<float> >;        
+template class GenericField<TSMesh, FDcomplexBasis, std::vector<complex> >;
 template class GenericField<TSMesh, FDintBasis,    std::vector<int> >;
 template class GenericField<TSMesh, FDlonglongBasis,std::vector<long long> >;
 template class GenericField<TSMesh, FDshortBasis,  std::vector<short> >;        
@@ -117,6 +120,12 @@ GenericField<TSMesh, FDfloatBasis,
 std::vector<float> >::maker,
 GenericField<TSMesh, CFDfloatBasis,
 std::vector<float> >::maker);
+PersistentTypeID
+backwards_compat_TSFco("TriSurfField<complex>", "Field",
+GenericField<TSMesh, FDcomplexBasis,
+std::vector<complex> >::maker,
+GenericField<TSMesh, CFDcomplexBasis,
+std::vector<complex> >::maker);
 PersistentTypeID
 backwards_compat_TSFi("TriSurfField<int>", "Field",
 GenericField<TSMesh, FDintBasis,
@@ -165,6 +174,7 @@ typedef CrvLinearLgn<Tensor>                CrFDTensorBasis;
 typedef CrvLinearLgn<Vector>                CrFDVectorBasis;
 typedef CrvLinearLgn<double>                CrFDdoubleBasis;
 typedef CrvLinearLgn<float>                 CrFDfloatBasis;
+typedef CrvLinearLgn<complex>               CrFDcomplexBasis;
 typedef CrvLinearLgn<int>                   CrFDintBasis;
 typedef CrvLinearLgn<long long>             CrFDlonglongBasis;
 typedef CrvLinearLgn<short>                 CrFDshortBasis;
@@ -185,6 +195,7 @@ template class GenericField<CMesh, CrFDTensorBasis, std::vector<Tensor> >;
 template class GenericField<CMesh, CrFDVectorBasis, std::vector<Vector> >;       
 template class GenericField<CMesh, CrFDdoubleBasis, std::vector<double> >;       
 template class GenericField<CMesh, CrFDfloatBasis,  std::vector<float> >;        
+template class GenericField<CMesh, CrFDcomplexBasis, std::vector<complex> >;
 template class GenericField<CMesh, CrFDintBasis,    std::vector<int> >;
 template class GenericField<CMesh, CrFDlonglongBasis,std::vector<long long> >;
 template class GenericField<CMesh, CrFDshortBasis,  std::vector<short> >;        

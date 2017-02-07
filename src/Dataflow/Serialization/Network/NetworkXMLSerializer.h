@@ -47,7 +47,7 @@ namespace Networks {
   public:
     NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, Core::Algorithms::AlgorithmFactoryHandle algoFactory,
       ReexecuteStrategyFactoryHandle reexFactory,
-      NetworkEditorControllerInterface* nec, NetworkEditorSerializationManager* nesm = 0);
+      NetworkEditorControllerInterface* nec, NetworkEditorSerializationManager* nesm = nullptr);
     NetworkHandle from_xml_data(const NetworkXML& data);
     NetworkFileHandle to_xml_data(const NetworkHandle& network);
 
@@ -70,7 +70,7 @@ namespace Networks {
   class SCISHARE NetworkToXML : boost::noncopyable
   {
   public:
-    explicit NetworkToXML(NetworkEditorSerializationManager* nesm = 0);
+    explicit NetworkToXML(NetworkEditorSerializationManager* nesm = nullptr);
     NetworkFileHandle to_xml_data(const NetworkHandle& network);
     NetworkFileHandle to_xml_data(const NetworkHandle& network, ModuleFilter modFilter, ConnectionFilter connFilter);
   private:

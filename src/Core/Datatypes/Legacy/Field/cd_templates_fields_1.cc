@@ -57,6 +57,7 @@ typedef ConstantBasis<Tensor>             CFDTensorBasis;
 typedef ConstantBasis<Vector>             CFDVectorBasis;
 typedef ConstantBasis<double>             CFDdoubleBasis;
 typedef ConstantBasis<float>              CFDfloatBasis;
+typedef ConstantBasis<complex>            CFDcomplexBasis;
 typedef ConstantBasis<int>                CFDintBasis;
 typedef ConstantBasis<long long>          CFDlonglongBasis;
 typedef ConstantBasis<short>              CFDshortBasis;
@@ -71,6 +72,7 @@ typedef QuadBilinearLgn<Tensor>             FDTensorBasis;
 typedef QuadBilinearLgn<Vector>             FDVectorBasis;
 typedef QuadBilinearLgn<double>             FDdoubleBasis;
 typedef QuadBilinearLgn<float>              FDfloatBasis;
+typedef QuadBilinearLgn<complex>            FDcomplexBasis;
 typedef QuadBilinearLgn<int>                FDintBasis;
 typedef QuadBilinearLgn<long long>          FDlonglongBasis;
 typedef QuadBilinearLgn<short>              FDshortBasis;
@@ -82,7 +84,7 @@ typedef QuadBilinearLgn<unsigned long>      FDulongBasis;
 
 
 //NoData
-template class GenericField<IMesh, NoDataBasis<double>, FData2d<double, IMesh> >;
+template class GenericField<IMesh, NDBasis, FData2d<double, IMesh> >;
 template class GenericField<IMesh, NoDataBasis<int>, FData2d<int, IMesh> >;
 
 //Constant
@@ -90,6 +92,7 @@ template class GenericField<IMesh, CFDTensorBasis, FData2d<Tensor, IMesh> >;
 template class GenericField<IMesh, CFDVectorBasis, FData2d<Vector, IMesh> >;
 template class GenericField<IMesh, CFDdoubleBasis, FData2d<double, IMesh> >;
 template class GenericField<IMesh, CFDfloatBasis,  FData2d<float, IMesh> >;
+template class GenericField<IMesh, CFDcomplexBasis, FData2d<complex, IMesh> >;
 template class GenericField<IMesh, CFDintBasis,    FData2d<int, IMesh> >;
 template class GenericField<IMesh, CFDlonglongBasis, FData2d<long long, IMesh> >;
 template class GenericField<IMesh, CFDshortBasis,  FData2d<short, IMesh> >;
@@ -104,6 +107,7 @@ template class GenericField<IMesh, FDTensorBasis, FData2d<Tensor, IMesh> >;
 template class GenericField<IMesh, FDVectorBasis, FData2d<Vector, IMesh> >;
 template class GenericField<IMesh, FDdoubleBasis, FData2d<double, IMesh> >;
 template class GenericField<IMesh, FDfloatBasis,  FData2d<float, IMesh> >;
+template class GenericField<IMesh, FDcomplexBasis, FData2d<complex, IMesh> >;
 template class GenericField<IMesh, FDintBasis,    FData2d<int, IMesh> >;
 template class GenericField<IMesh, FDlonglongBasis, FData2d<long long, IMesh> >;
 template class GenericField<IMesh, FDshortBasis,  FData2d<short, IMesh> >;
@@ -143,6 +147,12 @@ backwards_compat_IFf("ImageField<float>", "Field",
 		     FData2d<float, IMesh> >::maker, 
 		     GenericField<IMesh, CFDfloatBasis, 
 		     FData2d<float, IMesh> >::maker);
+PersistentTypeID
+backwards_compat_IFco("ImageField<complex>", "Field",
+         GenericField<IMesh, FDcomplexBasis,
+         FData2d<complex, IMesh> >::maker,
+         GenericField<IMesh, CFDcomplexBasis,
+         FData2d<complex, IMesh> >::maker);
 PersistentTypeID 
 backwards_compat_IFi("ImageField<int>", "Field",
 		     GenericField<IMesh, FDintBasis, 

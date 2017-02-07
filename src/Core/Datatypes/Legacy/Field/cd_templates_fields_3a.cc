@@ -53,6 +53,7 @@ typedef ConstantBasis<Tensor>                CFDTensorBasis;
 typedef ConstantBasis<Vector>                CFDVectorBasis;
 typedef ConstantBasis<double>                CFDdoubleBasis;
 typedef ConstantBasis<float>                 CFDfloatBasis;
+typedef ConstantBasis<complex>               CFDcomplexBasis;
 typedef ConstantBasis<int>                   CFDintBasis;
 typedef ConstantBasis<long long>             CFDlonglongBasis;
 typedef ConstantBasis<short>                 CFDshortBasis;
@@ -67,6 +68,7 @@ typedef PrismLinearLgn<Tensor>                PFDTensorBasis;
 typedef PrismLinearLgn<Vector>                PFDVectorBasis;
 typedef PrismLinearLgn<double>                PFDdoubleBasis;
 typedef PrismLinearLgn<float>                 PFDfloatBasis;
+typedef PrismLinearLgn<complex>               PFDcomplexBasis;
 typedef PrismLinearLgn<int>                   PFDintBasis;
 typedef PrismLinearLgn<long long>             PFDlonglongBasis;
 typedef PrismLinearLgn<short>                 PFDshortBasis;
@@ -77,8 +79,7 @@ typedef PrismLinearLgn<unsigned char>         PFDucharBasis;
 typedef PrismLinearLgn<unsigned long>         PFDulongBasis;
 
 typedef PrismVolMesh<PrismLinearLgn<Point> > PVMesh;
-PersistentTypeID backwards_compat_PVM("PrismVolMesh", "Mesh",
-				      PVMesh::maker, PVMesh::maker);
+PersistentTypeID backwards_compat_PVM("PrismVolMesh", "Mesh", PVMesh::maker, PVMesh::maker);
 
 namespace SCIRun {
  
@@ -93,6 +94,7 @@ template class GenericField<PVMesh, CFDTensorBasis, std::vector<Tensor> >;
 template class GenericField<PVMesh, CFDVectorBasis, std::vector<Vector> >;       
 template class GenericField<PVMesh, CFDdoubleBasis, std::vector<double> >;       
 template class GenericField<PVMesh, CFDfloatBasis,  std::vector<float> >;        
+template class GenericField<PVMesh, CFDcomplexBasis, std::vector<complex> >;
 template class GenericField<PVMesh, CFDintBasis,    std::vector<int> >;
 template class GenericField<PVMesh, CFDlonglongBasis,std::vector<long long> >;
 template class GenericField<PVMesh, CFDshortBasis,  std::vector<short> >;        
@@ -107,6 +109,7 @@ template class GenericField<PVMesh, PFDTensorBasis, std::vector<Tensor> >;
 template class GenericField<PVMesh, PFDVectorBasis, std::vector<Vector> >;       
 template class GenericField<PVMesh, PFDdoubleBasis, std::vector<double> >;       
 template class GenericField<PVMesh, PFDfloatBasis,  std::vector<float> >;        
+template class GenericField<PVMesh, PFDcomplexBasis, std::vector<complex> >;
 template class GenericField<PVMesh, PFDintBasis,    std::vector<int> >;
 template class GenericField<PVMesh, PFDlonglongBasis,std::vector<long long> >;
 template class GenericField<PVMesh, PFDshortBasis,  std::vector<short> >;        
@@ -144,6 +147,12 @@ backwards_compat_PVFf("PrismVolField<float>", "Field",
 		      std::vector<float> >::maker,
 		      GenericField<PVMesh, CFDfloatBasis, 
 		      std::vector<float> >::maker);
+PersistentTypeID
+backwards_compat_PVFco("PrismVolField<complex>", "Field",
+          GenericField<PVMesh, PFDcomplexBasis,
+          std::vector<complex> >::maker,
+          GenericField<PVMesh, CFDcomplexBasis,
+          std::vector<complex> >::maker);
 PersistentTypeID 
 backwards_compat_PVFi("PrismVolField<int>", "Field",
 		      GenericField<PVMesh, PFDintBasis, 

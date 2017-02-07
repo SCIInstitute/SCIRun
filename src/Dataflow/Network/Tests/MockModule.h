@@ -87,7 +87,7 @@ namespace SCIRun {
           MOCK_METHOD1(addPortConnection, void(const boost::signals2::connection&));
           MOCK_CONST_METHOD0(getReexecutionStrategy, ModuleReexecutionStrategyHandle());
           MOCK_METHOD1(setReexecutionStrategy, void(ModuleReexecutionStrategyHandle));
-          MOCK_METHOD0(enqueueExecuteAgain, void());
+          MOCK_METHOD1(enqueueExecuteAgain, void(bool));
           MOCK_METHOD1(connectExecuteSelfRequest, boost::signals2::connection(const ExecutionSelfRequestSignalType::slot_type&));
           MOCK_METHOD1(setExecutionDisabled, void(bool));
           MOCK_CONST_METHOD0(executionDisabled, bool(void));
