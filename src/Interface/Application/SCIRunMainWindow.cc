@@ -68,6 +68,7 @@
 #include <Core/Python/PythonInterpreter.h>
 #endif
 #include "TriggeredEventsWindow.h"
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
@@ -137,7 +138,7 @@ public:
   }
 private:
   NetworkEditor* ned_;
-  
+
   size_t countState(ModuleExecutionState::Value val) const
   {
     auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
@@ -148,6 +149,8 @@ private:
 SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quitAfterExecute_(false)
 {
   setupUi(this);
+
+  startup_ = true;
 
   QCoreApplication::setOrganizationName("SCI:CIBC Software");
   QCoreApplication::setApplicationName("SCIRun5");
@@ -337,12 +340,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
 
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
-
-#if 0 //TODO: decide on modifiable background color
-  connect(chooseBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(chooseBackgroundColor()));
-  connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
-#endif
-
+  
   connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
   connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
 
@@ -399,6 +397,8 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
     "http://sci.utah.edu/devbuilds/scirun5/toolkits/BrainStimulator_v1.2.zip",
     "BrainStimulator_v1.2.zip" };
   brainStim.setupAction(actionBrainStimulator_, this);
+
+  connect(actionLoadToolkit_, SIGNAL(triggered()), this, SLOT(loadToolkit()));
 
   connect(networkEditor_, SIGNAL(networkExecuted()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(double, const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone(double, const std::string&)));
@@ -484,6 +484,13 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   connect(networkEditor_, SIGNAL(newModule(const QString&, bool)), this, SLOT(addModuleToWindowList(const QString&, bool)));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
     this, SLOT(removeModuleFromWindowList(const SCIRun::Dataflow::Networks::ModuleId&)));
+
+  for (const auto& t : toolkitFiles_)
+  {
+    loadToolkitsFromFile(t);
+  }
+
+  startup_ = false;
 }
 
 void SCIRunMainWindow::setTipsAndWhatsThis()
@@ -518,9 +525,6 @@ void SCIRunMainWindow::setupInputWidgets()
     actionDelete_,
     moduleSelectorTreeWidget_,
     actionRunScript_;
-//#ifdef BUILD_WITH_PYTHON
-//  widgets += pythonConsole_;
-//#endif
 
   WidgetDisablingService::Instance().addWidgets(widgets.begin(), widgets.end());
   WidgetDisablingService::Instance().addWidgets(recentFileActions_.begin(), recentFileActions_.end());
@@ -671,19 +675,24 @@ void SCIRunMainWindow::checkAndLoadNetworkFile(const QString& filename)
   }
 }
 
-bool SCIRunMainWindow::loadNetworkFile(const QString& filename)
+bool SCIRunMainWindow::loadNetworkFile(const QString& filename, bool isTemporary)
 {
   if (!filename.isEmpty())
   {
     FileOpenCommand command;
     command.set(Variables::Filename, filename.toStdString());
+    command.set(Name("temporary-file"), isTemporary);
     if (command.execute())
     {
-      setCurrentFile(filename);
-      statusBar()->showMessage(tr("File loaded: ") + filename, 2000);
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
-      provenanceWindow_->clear();
-      provenanceWindow_->showFile(command.file_);
+
+      if (!isTemporary)
+      {
+        setCurrentFile(filename);
+        statusBar()->showMessage(tr("File loaded: ") + filename, 2000);
+        provenanceWindow_->clear();
+        provenanceWindow_->showFile(command.file_);
+      }
 			networkEditor_->viewport()->update();
       return true;
     }
@@ -761,7 +770,7 @@ void SCIRunMainWindow::setCurrentFile(const QString& fileName)
   currentFile_ = fileName;
   setCurrentFileName(currentFile_.toStdString());
   setWindowModified(false);
-  QString shownName = tr("Untitled");
+  auto shownName = tr("Untitled");
   if (!currentFile_.isEmpty())
   {
     shownName = strippedName(currentFile_);
@@ -791,7 +800,7 @@ void SCIRunMainWindow::updateRecentFileActions()
   {
     if (j < recentFiles_.count())
     {
-      QString text = tr("&%1 %2")
+      auto text = tr("&%1 %2")
         .arg(j + 1)
         .arg(strippedName(recentFiles_[j]));
 
@@ -810,7 +819,7 @@ void SCIRunMainWindow::loadRecentNetwork()
 {
   if (okToContinue())
   {
-    QAction *action = qobject_cast<QAction *>(sender());
+    auto action = qobject_cast<QAction*>(sender());
     if (action)
       loadNetworkFile(action->data().toString());
   }
@@ -867,7 +876,6 @@ void SCIRunMainWindow::setActionIcons()
   actionLoad_->setIcon(QPixmap(":/general/Resources/new/general/folder.png"));
   actionSave_->setIcon(QPixmap(":/general/Resources/new/general/save.png"));
   actionRunScript_->setIcon(QPixmap(":/general/Resources/new/general/wand.png"));
-  //actionSave_As_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveCDIcon));  //TODO?
   actionExecute_All_->setIcon(QPixmap(":/general/Resources/new/general/run.png"));
   actionUndo_->setIcon(QPixmap(":/general/Resources/undo.png"));
   actionRedo_->setIcon(QPixmap(":/general/Resources/redo.png"));
@@ -1010,7 +1018,7 @@ void SCIRunMainWindow::zoomNetwork()
   auto action = qobject_cast<QAction*>(sender());
   if (action)
   {
-    const QString name = action->text();
+    const auto name = action->text();
     if (name == "Zoom In")
     {
       networkEditor_->zoomIn();
@@ -1163,7 +1171,7 @@ void SCIRunMainWindow::runScript()
 void SCIRunMainWindow::updateMiniView()
 {
   //networkEditorMiniViewLabel_->setText("+" + networkEditorMiniViewLabel_->text());
-  QPixmap network = networkEditor_->sceneGrab();
+  auto network = networkEditor_->sceneGrab();
   networkEditorMiniViewLabel_->setPixmap(network.scaled(networkEditorMiniViewLabel_->size(),
     Qt::KeepAspectRatio,
     Qt::SmoothTransformation));
@@ -2096,7 +2104,7 @@ void ToolkitDownloader::showMessageBox()
   QPixmap image;
 
   QSettings settings;
-  
+
   if (settings.contains(iconKey_))
   {
     image.loadFromData(settings.value(iconKey_).toByteArray());
@@ -2146,4 +2154,101 @@ void ToolkitDownloader::saveToolkit() const
   file.write(zipDownloader_->downloadedData());
   file.close();
 	statusBar_->showMessage("Toolkit file saved.", 1000);
+}
+
+void SCIRunMainWindow::loadToolkit()
+{
+  auto filename = QFileDialog::getOpenFileName(this, "Load Toolkit...", latestNetworkDirectory_.path(), "*.toolkit");
+  loadToolkitsFromFile(filename);
+}
+
+void SCIRunMainWindow::loadToolkitsFromFile(const QString& filename)
+{
+  if (!filename.isEmpty())
+  {
+    ToolkitUnpackerCommand command;
+    command.set(Variables::Filename, filename.toStdString());
+    if (command.execute())
+    {
+      statusBar()->showMessage(tr("Toolkit imported: ") + filename, 2000);
+      if (!toolkitFiles_.contains(filename))
+        toolkitFiles_ << filename;
+    }
+    else
+    {
+      statusBar()->showMessage(tr("Toolkit import failed: ") + filename, 2000);
+    }
+  }
+}
+
+void SCIRunMainWindow::addToolkit(const QString& filename, const QString& directory, const ToolkitFile& toolkit)
+{
+  auto added = toolkitDirectories_.contains(filename);
+  if (added && toolkitDirectories_[filename] == directory)
+  {
+    QMessageBox::information(this, "Toolkit already loaded", "Toolkit " + filename + " is already loaded.");
+    return;
+  }
+
+  auto menu = menuToolkits_->addMenu(filename);
+  auto networks = menu->addMenu("Networks");
+  toolkitDirectories_[filename] = directory;
+  toolkitNetworks_[filename] = toolkit;
+  std::map<std::string, std::map<std::string, NetworkFile>> toolkitMenuData;
+  for (const auto& toolkitPair : toolkit.networks)
+  {
+    std::vector<std::string> elements;
+    for (const auto& p : boost::filesystem::path(toolkitPair.first))
+      elements.emplace_back(p.filename().string());
+
+    if (elements.size() == 2)
+    {
+      toolkitMenuData[elements[0]][elements[1]] = toolkitPair.second;
+    }
+    else
+    {
+      qDebug() << "Cannot handle toolkit folders of depth > 1";
+    }
+  }
+
+  for (const auto& t1 : toolkitMenuData)
+  {
+    auto t1menu = networks->addMenu(QString::fromStdString(t1.first));
+    for (const auto& t2 : t1.second)
+    {
+      auto networkAction = t1menu->addAction(QString::fromStdString(t2.first));
+      std::ostringstream net;
+      XMLSerializer::save_xml(t2.second, net, "networkFile");
+      networkAction->setProperty("network", QString::fromStdString(net.str()));
+      connect(networkAction, SIGNAL(triggered()), this, SLOT(openToolkitNetwork()));
+    }
+  }
+
+  auto folder = menu->addAction("Open Toolkit Directory");
+  folder->setProperty("path", directory);
+  connect(folder, SIGNAL(triggered()), this, SLOT(openToolkitFolder()));
+
+  if (!startup_)
+    QMessageBox::information(this, "Toolkit loaded", "Toolkit " + filename + " successfully imported. A new submenu is available under Toolkits for loading networks.");
+}
+
+void SCIRunMainWindow::openToolkitFolder()
+{
+  auto path = sender()->property("path").toString();
+  QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+}
+
+void SCIRunMainWindow::openToolkitNetwork()
+{
+  if (okToContinue())
+  {
+    QTemporaryFile temp;
+    if (temp.open())
+    {
+      auto network = sender()->property("network").toString();
+      QTextStream stream(&temp);
+      stream << network;
+    }
+    loadNetworkFile(temp.fileName(), true);
+  }
 }

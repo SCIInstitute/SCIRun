@@ -108,7 +108,7 @@ namespace Networks {
 
     virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) override final;
 
-    virtual void enqueueExecuteAgain() override final;
+    virtual void enqueueExecuteAgain(bool upstream) override final;
 
     virtual const MetadataMap& metadata() const override final;
 
