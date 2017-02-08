@@ -73,6 +73,27 @@ ModuleDialogGeneric::~ModuleDialogGeneric()
   }
 }
 
+void ModuleDialogGeneric::addButtonBar()
+{
+  auto findButton = new QPushButton(tr("&Find in network"));
+  auto executeButton = new QPushButton("Execute");
+  auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Close | QDialogButtonBox::Help);
+  buttonBox->addButton(findButton, QDialogButtonBox::ActionRole);
+  buttonBox->addButton(executeButton, QDialogButtonBox::ActionRole);
+  layout()->setMenuBar(buttonBox);
+  layout()->menuBar()->setVisible(false);
+}
+
+void ModuleDialogGeneric::enterEvent(QEvent* e)
+{
+  layout()->menuBar()->show();
+}
+
+void ModuleDialogGeneric::leaveEvent(QEvent* e)
+{
+  layout()->menuBar()->hide();
+}
+
 void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
 {
   connect(button, SIGNAL(clicked()), this, SIGNAL(executeFromStateChangeTriggered()));

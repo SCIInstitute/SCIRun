@@ -48,6 +48,7 @@ ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, Modu
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
+  addButtonBar();
   fixSize();
 
   WidgetStyleMixin::tableHeaderStyle(this->electrode_coil_tableWidget);
