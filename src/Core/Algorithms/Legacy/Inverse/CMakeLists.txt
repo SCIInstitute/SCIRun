@@ -26,10 +26,36 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Converter)
-ADD_SUBDIRECTORY(Forward)
-ADD_SUBDIRECTORY(Inverse)
-ADD_SUBDIRECTORY(Geometry)
-ADD_SUBDIRECTORY(FiniteElements)
+SET(Algorithms_Legacy_Inverse_SRCS
+  TikhonovImplAbstractBase.cc
+  SolveInverseProblemWithTikhonovImpl_child.cc
+  SolveInverseProblemWithTikhonovSVD_impl.cc
+)
+
+SET(Algorithms_Legacy_Inverse_HEADERS
+  TikhonovImplAbstractBase.h
+  SolveInverseProblemWithTikhonovImpl_child.h
+  SolveInverseProblemWithTikhonovSVD_impl.h
+  share.h
+)
+
+SCIRUN_ADD_LIBRARY(Algorithms_Legacy_Inverse
+  ${Algorithms_Legacy_Inverse_HEADERS}
+  ${Algorithms_Legacy_Inverse_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Algorithms_Legacy_Inverse
+  Core_Datatypes #matrices
+  Core_Datatypes_Legacy_Field
+  Core_Geometry_Primitives  #vectors
+  Core_Basis #field basis
+  Core_Algorithms_Legacy_Fields
+  Algorithms_Base
+  ${SCI_BOOST_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Algorithms_Legacy_Inverse)
+ENDIF(BUILD_SHARED_LIBS)
+
+#SCIRUN_ADD_TEST_DIR(Tests)

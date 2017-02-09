@@ -31,15 +31,8 @@
 #define MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonov_H__
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Algorithms/Legacy/Inverse/TikhonovImplAbstractBase.h>
 #include <Modules/Legacy/Inverse/share.h>
-
-namespace BioPSE
-{
-  namespace TikhonovAlgorithm
-  {
-    struct LCurveInput;
-  }
-}
 
 namespace SCIRun {
   namespace Core
@@ -83,13 +76,17 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName LambdaSliderValue;
         static const Core::Algorithms::AlgorithmParameterName LambdaCorner;
         static const Core::Algorithms::AlgorithmParameterName LCurveText;
+// <<<<<<< HEAD
+//
+// =======
 
         LEGACY_BIOPSE_MODULE
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
+// >>>>>>> sciinstitute/master
       private:
-        void update_lcurve_gui(const double lambda, const BioPSE::TikhonovAlgorithm::LCurveInput& input, const int lambda_index);
+        void update_lcurve_gui(const double lambda, const Core::Algorithms::Inverse::TikhonovAlgorithm::LCurveInput& input, const int lambda_index);
       };
 
     }
