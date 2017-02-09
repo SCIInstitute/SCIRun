@@ -76,7 +76,7 @@ namespace SCIRun {
 
 
 
-			  class SCISHARE TikhonovImplAbstractBase : public  boost::noncopyable
+			  class SCISHARE TikhonovImplAbstractBase : public AlgorithmBase, boost::noncopyable
 			  {
 
 				  // PUBLIC MEMBERS OF CLASS TikhonovImplAbstractBase
