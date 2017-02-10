@@ -73,7 +73,7 @@ namespace Gui {
     virtual ~ModuleDialogGeneric();
     bool isPulling() const { return pulling_; } //yuck
     QAction* getExecuteAction() { return executeAction_; }
-    void setDockable(QDockWidget* dock) { dock_ = dock; } // to enable title changes
+    void setDockable(QDockWidget* dock);
     void updateWindowTitle(const QString& title);
     virtual void createStartupNote() {}
     static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
@@ -108,8 +108,6 @@ namespace Gui {
     void connectButtonsToExecuteSignal(std::initializer_list<QAbstractButton*> buttons);
     void connectComboToExecuteSignal(QComboBox* box);
     void addButtonBar();
-    void enterEvent(QEvent* e) override;
-    void leaveEvent(QEvent* e) override;
 
     void pullManagedWidgets();
     // Dialog classes should override this method to provide pull behavior not available from the widget managers.
@@ -177,6 +175,7 @@ namespace Gui {
     bool collapsed_;
     QString windowTitle_;
     QDockWidget* dock_;
+    QDialogButtonBox* buttonBox_;
     QSize oldSize_;
     std::vector<QWidget*> needToRemoveFromDisabler_;
     static ExecutionDisablingServiceFunction disablerAdd_;

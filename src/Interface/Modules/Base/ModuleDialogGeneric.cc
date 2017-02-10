@@ -48,7 +48,8 @@ ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* paren
   shrinkAction_(nullptr),
   executeInteractivelyToggleAction_(nullptr),
   collapsed_(false),
-  dock_(nullptr)
+  dock_(nullptr),
+  buttonBox_(nullptr)
 {
   setModal(false);
   setAttribute(Qt::WA_MacAlwaysShowToolWindow, true);
@@ -77,22 +78,18 @@ void ModuleDialogGeneric::addButtonBar()
 {
   auto findButton = new QPushButton(tr("&Find in network"));
   auto executeButton = new QPushButton("Execute");
-  auto buttonBox = new QDialogButtonBox(QDialogButtonBox::Close | QDialogButtonBox::Help);
-  buttonBox->addButton(findButton, QDialogButtonBox::ActionRole);
-  buttonBox->addButton(executeButton, QDialogButtonBox::ActionRole);
-  layout()->setMenuBar(buttonBox);
-  layout()->menuBar()->setVisible(false);
+  
+  buttonBox_ = new QDialogButtonBox(QDialogButtonBox::Close | QDialogButtonBox::Help);
+  buttonBox_->addButton(findButton, QDialogButtonBox::ActionRole);
+  buttonBox_->addButton(executeButton, QDialogButtonBox::ActionRole);
 }
 
-void ModuleDialogGeneric::enterEvent(QEvent* e)
+void ModuleDialogGeneric::setDockable(QDockWidget* dock)
 {
-  layout()->menuBar()->show();
-}
-
-void ModuleDialogGeneric::leaveEvent(QEvent* e)
-{
-  layout()->menuBar()->hide();
-}
+  dock_ = dock; 
+  if (dock_ && buttonBox_)
+    dock_->setTitleBarWidget(buttonBox_);
+} 
 
 void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
 {
