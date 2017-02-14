@@ -27,10 +27,30 @@
 */
 
 #include <iostream>
+#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <fstream>
+#include <boost/filesystem/operations.hpp>
 
 
 int main(int argc, const char* argv[])
 {
-  std::cout << "toolkit" << std::endl;
+  if (argc < 2)
+  {
+    std::cout << "Usage: bundle_toolkit OUTPUT_FILE [DIRECTORY_TO_SCAN]\nIf no directory specified, current directory is scanned." << std::endl;
+    return 0;
+  }
+
+  std::string filename(argv[1]);
+  std::string directoryToScan;
+  if (argc < 3)
+  {
+    directoryToScan = boost::filesystem::current_path().string();
+  }
+  else
+    directoryToScan = argv[2];
+
+  std::ofstream f(filename + ".toolkit");
+  SCIRun::Dataflow::Networks::makeToolkitFromDirectory(directoryToScan).save(f);
+  std::cout << "Saved toolkit file: " << filename << ".toolkit" << std::endl;
   return 0;
 }

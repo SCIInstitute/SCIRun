@@ -37,9 +37,7 @@ ADD_EXECUTABLE(bundle_toolkit
 
  
 TARGET_LINK_LIBRARIES(bundle_toolkit
-  Dataflow_Network
-  Core_Datatypes
-  Dataflow_State
+  Core_Serialization_Network
   ${SCI_BOOST_LIBRARY}
 )
 
