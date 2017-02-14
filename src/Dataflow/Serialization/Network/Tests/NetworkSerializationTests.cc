@@ -473,9 +473,12 @@ TEST(ToolkitSerializationTest, CanCreateFromFolders)
   toolkit.save(ostr);
 
   EXPECT_NE(0, ostr.str().size());
+}
 
-  //std::ofstream f("FwdInvToolkit.toolkit");
-  //makeToolkitFromDirectory("C:\\_\\Toolkits\\FwdInvToolkit\\Networks").save(f);
+TEST(ToolkitSerializationTest, ManuallyCreate)
+{
+  std::ofstream f("FwdInvToolkit.toolkit");
+  makeToolkitFromDirectory("C:\\_\\SCIRun\\FwdInvToolkit_v1.2\\FwdInvToolkit-1.2.1\\Networks").save(f);
 }
 
 TEST(ToolkitSerializationTest, RoundTripFromFolders)
