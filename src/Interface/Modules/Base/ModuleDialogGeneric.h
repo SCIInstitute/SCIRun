@@ -107,7 +107,6 @@ namespace Gui {
     void connectButtonToExecuteSignal(QAbstractButton* button);
     void connectButtonsToExecuteSignal(std::initializer_list<QAbstractButton*> buttons);
     void connectComboToExecuteSignal(QComboBox* box);
-    void addButtonBar();
 
     void pullManagedWidgets();
     // Dialog classes should override this method to provide pull behavior not available from the widget managers.
@@ -175,7 +174,7 @@ namespace Gui {
     bool collapsed_;
     QString windowTitle_;
     QDockWidget* dock_;
-    QDialogButtonBox* buttonBox_;
+    QWidget* buttonBox_;
     QSize oldSize_;
     std::vector<QWidget*> needToRemoveFromDisabler_;
     static ExecutionDisablingServiceFunction disablerAdd_;

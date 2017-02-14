@@ -28,6 +28,7 @@
 
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Base/ModuleButtonBar.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
 #include <boost/regex.hpp>
@@ -49,7 +50,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* paren
   executeInteractivelyToggleAction_(nullptr),
   collapsed_(false),
   dock_(nullptr),
-  buttonBox_(nullptr)
+  buttonBox_(new ModuleButtonBar())
 {
   setModal(false);
   setAttribute(Qt::WA_MacAlwaysShowToolWindow, true);
@@ -74,22 +75,12 @@ ModuleDialogGeneric::~ModuleDialogGeneric()
   }
 }
 
-void ModuleDialogGeneric::addButtonBar()
-{
-  auto findButton = new QPushButton(tr("&Find in network"));
-  auto executeButton = new QPushButton("Execute");
-  
-  buttonBox_ = new QDialogButtonBox(QDialogButtonBox::Close | QDialogButtonBox::Help);
-  buttonBox_->addButton(findButton, QDialogButtonBox::ActionRole);
-  buttonBox_->addButton(executeButton, QDialogButtonBox::ActionRole);
-}
-
 void ModuleDialogGeneric::setDockable(QDockWidget* dock)
 {
-  dock_ = dock; 
+  dock_ = dock;
   if (dock_ && buttonBox_)
     dock_->setTitleBarWidget(buttonBox_);
-} 
+}
 
 void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
 {
@@ -153,7 +144,7 @@ void ModuleDialogGeneric::createExecuteDownstreamAction()
   executeDownstreamAction_->setIcon(QApplication::style()->standardIcon(QStyle::SP_ArrowDown));
   connect(executeDownstreamAction_, SIGNAL(triggered()), this, SIGNAL(executeActionTriggeredViaStateChange()));
 }
-  
+
 void ModuleDialogGeneric::createShrinkAction()
 {
   shrinkAction_ = new QAction(this);
