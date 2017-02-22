@@ -73,6 +73,7 @@ namespace Gui {
     virtual ~ModuleDialogGeneric();
     bool isPulling() const { return pulling_; } //yuck
     QAction* getExecuteAction() { return executeAction_; }
+    QAction* getExecuteDownstreamAction() { return executeDownstreamAction_; }
     void setDockable(QDockWidget* dock);
     void updateWindowTitle(const QString& title);
     virtual void createStartupNote() {}

@@ -45,4 +45,7 @@ ModuleButtonBar::ModuleButtonBar(ModuleDialogGeneric* parent) : QWidget(parent)
   executeToolButton_->setIcon(QPixmap(":/general/Resources/new/modules/run_all.png"));
   findToolButton_->setIcon(QPixmap(":/general/Resources/zoom_reset.png"));
   helpToolButton_->setIcon(QPixmap(":/general/Resources/new/modules/help.png"));
+
+  connect(executeDownOnlyToolButton_, SIGNAL(clicked()), parent->getExecuteDownstreamAction(), SIGNAL(triggered()));
+  connect(executeToolButton_, SIGNAL(clicked()), parent->getExecuteAction(), SIGNAL(triggered()));
 }
