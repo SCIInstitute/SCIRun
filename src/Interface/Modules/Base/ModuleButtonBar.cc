@@ -28,10 +28,21 @@
 
 #include <QtGui>
 #include <Interface/Modules/Base/ModuleButtonBar.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
 
 using namespace SCIRun::Gui;
 
-ModuleButtonBar::ModuleButtonBar(QWidget* parent) : QWidget(parent)
+ModuleButtonBar::ModuleButtonBar(ModuleDialogGeneric* parent) : QWidget(parent)
 {
   setupUi(this);
+  
+  for (auto b : { closeToolButton_, executeDownOnlyToolButton_, executeToolButton_, findToolButton_, helpToolButton_ })
+  {
+    b->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+  }
+  closeToolButton_->setIcon(QPixmap(":/general/Resources/delete_red.png"));
+  executeDownOnlyToolButton_->setIcon(QPixmap(":/general/Resources/new/modules/run_down.png"));
+  executeToolButton_->setIcon(QPixmap(":/general/Resources/new/modules/run_all.png"));
+  findToolButton_->setIcon(QPixmap(":/general/Resources/zoom_reset.png"));
+  helpToolButton_->setIcon(QPixmap(":/general/Resources/new/modules/help.png"));
 }

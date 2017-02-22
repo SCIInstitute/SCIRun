@@ -36,11 +36,13 @@
 namespace SCIRun {
 namespace Gui {
 
+  class ModuleDialogGeneric;
+
   class SCISHARE ModuleButtonBar : public QWidget, public Ui::ModuleButtonBar
   {
     Q_OBJECT
 public:
-  explicit ModuleButtonBar(QWidget* parent = nullptr);
+  explicit ModuleButtonBar(ModuleDialogGeneric* parent = nullptr);
   };
 
 
