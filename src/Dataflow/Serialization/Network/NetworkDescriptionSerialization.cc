@@ -46,14 +46,22 @@ void ToolkitFile::save(std::ostream& ostr) const
 
 namespace
 {
-  boost::filesystem::path diffPath(const boost::filesystem::path& basePath, const boost::filesystem::path& newPath)
+  namespace fs = boost::filesystem;
+
+  fs::path addSlash(const fs::path& p)
   {
-    namespace fs = boost::filesystem;
+    auto fullBasePath(p);
+    if ("." != fullBasePath.filename())
+      fullBasePath += fs::path::preferred_separator;
+    return fullBasePath;
+  }
 
-    fs::path diffpath;
-
+  fs::path diffPath(const fs::path& basePath, const fs::path& newPath)
+  {
+    auto fullBasePath = addSlash(basePath);
     auto tmpPath = newPath;
-    while (tmpPath != basePath)
+    fs::path diffpath;
+    while (addSlash(tmpPath) != fullBasePath)
     {
       diffpath = tmpPath.stem() / diffpath;
       tmpPath = tmpPath.parent_path();

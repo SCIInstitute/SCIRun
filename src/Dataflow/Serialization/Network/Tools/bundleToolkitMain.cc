@@ -49,6 +49,8 @@ int main(int argc, const char* argv[])
   else
     directoryToScan = argv[2];
 
+  std::cout << "Scanning directory: " << directoryToScan << std::endl;
+
   std::ofstream f(filename + ".toolkit");
   SCIRun::Dataflow::Networks::makeToolkitFromDirectory(directoryToScan).save(f);
   std::cout << "Saved toolkit file: " << filename << ".toolkit" << std::endl;
