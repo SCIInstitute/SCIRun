@@ -310,7 +310,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   outputPortLayout_(nullptr),
   deleting_(false),
   defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(99,99,104) : moduleRGBA(192,192,192)),
-  isViewScene_(name == "ViewScene")
+  isViewScene_(name == "ViewScene"),
+  colorizeTimeLine_(nullptr)
 {
   fillColorStateLookup(defaultBackgroundColor_);
 
@@ -1071,7 +1072,7 @@ void ModuleWidget::makeOptionsDialog()
       connect(dialog_, SIGNAL(executionLoopHalted()), this, SIGNAL(reenableWidgetDisabling()));
       connect(dialog_, SIGNAL(closeButtonClicked()), this, SLOT(toggleOptionsDialog()));
       connect(dialog_, SIGNAL(helpButtonClicked()), this, SLOT(launchDocumentation()));
-      connect(dialog_, SIGNAL(findButtonClicked()), this, SLOT(findInNetwork()));
+      connect(dialog_, SIGNAL(findButtonClicked()), this, SIGNAL(findInNetwork()));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), nullptr);
       dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
@@ -1106,11 +1107,6 @@ void ModuleWidget::makeOptionsDialog()
       dialog_->pull();
     }
   }
-}
-
-void ModuleWidget::findInNetwork()
-{
-  qDebug() << "findInNetwork: " << QString::fromStdString(moduleId_);
 }
 
 QDialog* ModuleWidget::dialog()
