@@ -118,6 +118,8 @@ void ModuleDialogGeneric::updateWindowTitle(const QString& title)
   setWindowTitle(title);
   if (dock_)
     dock_->setWindowTitle(title);
+  if (buttonBox_)
+    buttonBox_->setTitle(title);
 }
 
 void ModuleDialogGeneric::fixSize()
@@ -255,12 +257,10 @@ void ModuleDialogGeneric::moduleSelected(bool selected)
   {
     windowTitle_ = windowTitle();
     updateWindowTitle(">>> " + windowTitle_ + " <<<");
-    //setWindowOpacity(0.5);
   }
   else
   {
     updateWindowTitle(windowTitle_);
-    //setWindowOpacity(1);
   }
 }
 

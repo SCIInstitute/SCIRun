@@ -41,8 +41,9 @@ namespace Gui {
   class SCISHARE ModuleButtonBar : public QWidget, public Ui::ModuleButtonBar
   {
     Q_OBJECT
-public:
-  explicit ModuleButtonBar(ModuleDialogGeneric* parent = nullptr);
+  public:
+    explicit ModuleButtonBar(ModuleDialogGeneric* parent = nullptr);
+    void setTitle(const QString& title);
   };
 
 

@@ -103,7 +103,7 @@ namespace Gui {
     void executionLoopHalted();
   protected:
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
-    virtual void contextMenuEvent(QContextMenuEvent* e) override;
+    void contextMenuEvent(QContextMenuEvent* e) override;
     void fixSize();
     void connectButtonToExecuteSignal(QAbstractButton* button);
     void connectButtonsToExecuteSignal(std::initializer_list<QAbstractButton*> buttons);
@@ -175,7 +175,7 @@ namespace Gui {
     bool collapsed_;
     QString windowTitle_;
     QDockWidget* dock_;
-    QWidget* buttonBox_;
+    class ModuleButtonBar* buttonBox_;
     QSize oldSize_;
     std::vector<QWidget*> needToRemoveFromDisabler_;
     static ExecutionDisablingServiceFunction disablerAdd_;
