@@ -1069,10 +1069,15 @@ void ModuleWidget::makeOptionsDialog()
       connect(dialog_, SIGNAL(fatalError(const QString&)), this, SLOT(handleDialogFatalError(const QString&)));
       connect(dialog_, SIGNAL(executionLoopStarted()), this, SIGNAL(disableWidgetDisabling()));
       connect(dialog_, SIGNAL(executionLoopHalted()), this, SIGNAL(reenableWidgetDisabling()));
+      connect(dialog_, SIGNAL(closeButtonClicked()), this, SLOT(toggleOptionsDialog()));
+      connect(dialog_, SIGNAL(helpButtonClicked()), this, SLOT(launchDocumentation()));
+      connect(dialog_, SIGNAL(findButtonClicked()), this, SLOT(findInNetwork()));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), nullptr);
       dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
       dialog_->setDockable(dockable_);
+      if (!isViewScene_)
+        dialog_->setupButtonBar();
       dockable_->setMinimumSize(dialog_->minimumSize());
       dockable_->setAllowedAreas(allowedDockArea());
       dockable_->setAutoFillBackground(true);
@@ -1101,6 +1106,11 @@ void ModuleWidget::makeOptionsDialog()
       dialog_->pull();
     }
   }
+}
+
+void ModuleWidget::findInNetwork()
+{
+  qDebug() << "findInNetwork: " << QString::fromStdString(moduleId_);
 }
 
 QDialog* ModuleWidget::dialog()

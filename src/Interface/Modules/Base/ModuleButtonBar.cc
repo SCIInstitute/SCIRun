@@ -48,6 +48,9 @@ ModuleButtonBar::ModuleButtonBar(ModuleDialogGeneric* parent) : QWidget(parent)
 
   connect(executeDownOnlyToolButton_, SIGNAL(clicked()), parent->getExecuteDownstreamAction(), SIGNAL(triggered()));
   connect(executeToolButton_, SIGNAL(clicked()), parent->getExecuteAction(), SIGNAL(triggered()));
+  connect(closeToolButton_, SIGNAL(clicked()), parent, SIGNAL(closeButtonClicked()));
+  connect(helpToolButton_, SIGNAL(clicked()), parent, SIGNAL(helpButtonClicked()));
+  connect(findToolButton_, SIGNAL(clicked()), parent, SIGNAL(findButtonClicked()));
 }
 
 void ModuleButtonBar::setTitle(const QString& title)

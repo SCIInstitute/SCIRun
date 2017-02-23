@@ -49,7 +49,8 @@ ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* paren
   shrinkAction_(nullptr),
   executeInteractivelyToggleAction_(nullptr),
   collapsed_(false),
-  dock_(nullptr)
+  dock_(nullptr),
+  buttonBox_(nullptr)
 {
   setModal(false);
   setAttribute(Qt::WA_MacAlwaysShowToolWindow, true);
@@ -64,8 +65,6 @@ ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* paren
   createExecuteDownstreamAction();
   createShrinkAction();
   connectStateChangeToExecute(); //TODO: make this a module state variable if a module wants it saved
-
-  buttonBox_ = new ModuleButtonBar(this);
 }
 
 ModuleDialogGeneric::~ModuleDialogGeneric()
@@ -79,8 +78,12 @@ ModuleDialogGeneric::~ModuleDialogGeneric()
 void ModuleDialogGeneric::setDockable(QDockWidget* dock)
 {
   dock_ = dock;
-  if (dock_ && buttonBox_)
-    dock_->setTitleBarWidget(buttonBox_);
+}
+
+void ModuleDialogGeneric::setupButtonBar()
+{
+  buttonBox_ = new ModuleButtonBar(this);
+  dock_->setTitleBarWidget(buttonBox_);
 }
 
 void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
@@ -124,7 +127,8 @@ void ModuleDialogGeneric::updateWindowTitle(const QString& title)
 
 void ModuleDialogGeneric::setButtonBarTitleVisible(bool visible)
 {
-  buttonBox_->setTitleVisible(visible);
+  if (buttonBox_)
+    buttonBox_->setTitleVisible(visible);
 }
 
 void ModuleDialogGeneric::fixSize()

@@ -77,6 +77,7 @@ namespace Gui {
     void setDockable(QDockWidget* dock);
     void updateWindowTitle(const QString& title);
     void setButtonBarTitleVisible(bool visible);
+    void setupButtonBar();
     virtual void createStartupNote() {}
     static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
     static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }
@@ -102,6 +103,9 @@ namespace Gui {
     void fatalError(const QString& message);
     void executionLoopStarted();
     void executionLoopHalted();
+    void closeButtonClicked();
+    void helpButtonClicked();
+    void findButtonClicked();
   protected:
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
     void contextMenuEvent(QContextMenuEvent* e) override;

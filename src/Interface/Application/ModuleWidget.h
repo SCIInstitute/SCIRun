@@ -226,6 +226,7 @@ private Q_SLOTS:
   void colorOptionsButton(bool visible);
   void fillReplaceWithMenu();
   void replaceModuleWith();
+  void findInNetwork();
   void updateDialogForDynamicPortChange(const std::string& portName, bool adding);
   void handleDialogFatalError(const QString& message);
   void changeExecuteButtonToPlay();
