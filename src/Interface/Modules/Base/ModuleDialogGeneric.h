@@ -76,6 +76,7 @@ namespace Gui {
     QAction* getExecuteDownstreamAction() { return executeDownstreamAction_; }
     void setDockable(QDockWidget* dock);
     void updateWindowTitle(const QString& title);
+    void setButtonBarTitleVisible(bool visible);
     virtual void createStartupNote() {}
     static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
     static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }

@@ -122,6 +122,11 @@ void ModuleDialogGeneric::updateWindowTitle(const QString& title)
     buttonBox_->setTitle(title);
 }
 
+void ModuleDialogGeneric::setButtonBarTitleVisible(bool visible)
+{
+  buttonBox_->setTitleVisible(visible);
+}
+
 void ModuleDialogGeneric::fixSize()
 {
   if (minimumWidth() > 0 && minimumHeight() > 0)

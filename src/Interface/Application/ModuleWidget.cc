@@ -1115,6 +1115,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
     dockable_->setWindowFlags(Qt::Window);
     dockable_->show();
   }
+  dialog_->setButtonBarTitleVisible(!isFloating);
 }
 
 void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)

@@ -35,7 +35,7 @@ using namespace SCIRun::Gui;
 ModuleButtonBar::ModuleButtonBar(ModuleDialogGeneric* parent) : QWidget(parent)
 {
   setupUi(this);
-  
+
   for (auto b : { closeToolButton_, executeDownOnlyToolButton_, executeToolButton_, findToolButton_, helpToolButton_ })
   {
     b->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
@@ -53,4 +53,9 @@ ModuleButtonBar::ModuleButtonBar(ModuleDialogGeneric* parent) : QWidget(parent)
 void ModuleButtonBar::setTitle(const QString& title)
 {
   titleLabel_->setText(title);
+}
+
+void ModuleButtonBar::setTitleVisible(bool visible)
+{
+  titleLabel_->setVisible(visible);
 }

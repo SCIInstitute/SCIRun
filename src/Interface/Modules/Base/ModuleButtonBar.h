@@ -44,6 +44,7 @@ namespace Gui {
   public:
     explicit ModuleButtonBar(ModuleDialogGeneric* parent = nullptr);
     void setTitle(const QString& title);
+    void setTitleVisible(bool visible);
   };
 
 
