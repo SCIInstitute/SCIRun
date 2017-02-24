@@ -340,7 +340,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
 
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
-  
+
   connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
   connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
 
@@ -2166,17 +2166,26 @@ void SCIRunMainWindow::loadToolkitsFromFile(const QString& filename)
 {
   if (!filename.isEmpty())
   {
+    // if (importedToolkits_.contains(filename))
+    // {
+    //   qDebug() << "SAME TOOLKITFILE NAME: " << filename;
+    // }
+
     ToolkitUnpackerCommand command;
     command.set(Variables::Filename, filename.toStdString());
     if (command.execute())
     {
       statusBar()->showMessage(tr("Toolkit imported: ") + filename, 2000);
       if (!toolkitFiles_.contains(filename))
+      {
         toolkitFiles_ << filename;
+      }
+      importedToolkits_ << filename;
     }
     else
     {
       statusBar()->showMessage(tr("Toolkit import failed: ") + filename, 2000);
+      toolkitFiles_.removeAll(filename);
     }
   }
 }
@@ -2228,6 +2237,11 @@ void SCIRunMainWindow::addToolkit(const QString& filename, const QString& direct
   folder->setProperty("path", directory);
   connect(folder, SIGNAL(triggered()), this, SLOT(openToolkitFolder()));
 
+  auto remove = menu->addAction("Remove Toolkit...");
+  remove->setProperty("filename", filename);
+  remove->setProperty("fullpath", directory + QDir::separator() + filename + ".toolkit");
+  connect(remove, SIGNAL(triggered()), this, SLOT(removeToolkit()));
+
   if (!startup_)
     QMessageBox::information(this, "Toolkit loaded", "Toolkit " + filename + " successfully imported. A new submenu is available under Toolkits for loading networks.");
 }
@@ -2236,6 +2250,19 @@ void SCIRunMainWindow::openToolkitFolder()
 {
   auto path = sender()->property("path").toString();
   QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+}
+
+void SCIRunMainWindow::removeToolkit()
+{
+  auto filename = sender()->property("filename").toString();
+  int r = QMessageBox::warning(this, tr("SCIRun 5"), "Remove toolkit " + filename + "?", QMessageBox::Yes | QMessageBox::No);
+  if (QMessageBox::Yes == r)
+  {
+    menuToolkits_->removeAction(qobject_cast<QMenu*>(sender()->parent())->menuAction());
+    auto fullpath = sender()->property("fullpath").toString();
+    toolkitFiles_.removeAll(fullpath);
+    importedToolkits_.removeAll(fullpath);
+  }
 }
 
 void SCIRunMainWindow::openToolkitNetwork()
