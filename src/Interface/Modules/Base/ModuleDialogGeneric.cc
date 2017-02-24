@@ -86,11 +86,12 @@ void ModuleDialogGeneric::setupButtonBar()
   dock_->setTitleBarWidget(buttonBox_);
   if (executeInteractivelyToggleAction_)
   {
-    qDebug() << "connect to action";
+    connect(buttonBox_->executeInteractivelyCheckBox_, SIGNAL(toggled(bool)), this, SLOT(executeInteractivelyToggled(bool)));
+    buttonBox_->executeInteractivelyCheckBox_->setChecked(executeInteractivelyToggleAction_->isChecked());
   }
   else
   {
-    qDebug() << "hide checkbox";
+    buttonBox_->executeInteractivelyCheckBox_->setVisible(false);
   }
 }
 
@@ -184,6 +185,10 @@ void ModuleDialogGeneric::createExecuteInteractivelyToggleAction()
 
 void ModuleDialogGeneric::executeInteractivelyToggled(bool toggle)
 {
+  if (qobject_cast<QCheckBox*>(sender()))
+    executeInteractivelyToggleAction_->setChecked(toggle);
+  else
+    buttonBox_->executeInteractivelyCheckBox_->setChecked(toggle);
   if (toggle)
     connectStateChangeToExecute();
   else
