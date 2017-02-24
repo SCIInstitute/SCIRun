@@ -84,6 +84,14 @@ void ModuleDialogGeneric::setupButtonBar()
 {
   buttonBox_ = new ModuleButtonBar(this);
   dock_->setTitleBarWidget(buttonBox_);
+  if (executeInteractivelyToggleAction_)
+  {
+    qDebug() << "connect to action";
+  }
+  else
+  {
+    qDebug() << "hide checkbox";
+  }
 }
 
 void ModuleDialogGeneric::connectButtonToExecuteSignal(QAbstractButton* button)
