@@ -330,7 +330,8 @@ bool ToolkitUnpackerCommand::execute()
 
   auto add = !toolkit.networks.empty();
   if (add)
-    SCIRunMainWindow::Instance()->addToolkit(QString::fromStdString(filename.leaf().stem().string()), QString::fromStdString(filename.parent_path().string()), toolkit);
+    SCIRunMainWindow::Instance()->addToolkit(QString::fromStdString(filename.leaf().stem().string()),
+      QString::fromStdString(filename.parent_path().string()), toolkit);
 
   return add;
 }

@@ -127,6 +127,7 @@ private:
   QStringList toolkitFiles_, importedToolkits_;
   QMap<QString, QString> toolkitDirectories_;
   QMap<QString, Dataflow::Networks::ToolkitFile> toolkitNetworks_;
+  QMap<QString, QMenu*> toolkitMenus_;
   QToolButton* executeButton_;
   QByteArray windowState_;
   QPushButton* versionButton_;
