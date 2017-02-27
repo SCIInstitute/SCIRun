@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-//#include <Core/Algorithms/Math/ConvertRealToComplexMatrix.h>
+
 #include <Modules/Math/ConvertRealToComplexMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -33,6 +33,7 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Eigen/Dense>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
@@ -132,4 +133,41 @@ TEST_F(ConvertRealToComplexMatrixModuleTests, ThisShouldWork)
      ASSERT_TRUE(input_real == output_real);
      ASSERT_TRUE(input_imag == output_imag);
     }
+}
+
+
+TEST_F(ConvertRealToComplexMatrixModuleTests, ThisShouldWork_sparse)
+{  
+  SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+  m->insert(0,0) = 1;
+  m->insert(0,2) = 1;
+  m->insert(1,0) = 3;
+  m->insert(1,1) = 5;
+  m->insert(2,1) = 1;
+  m->insert(2,2) = 3;
+  m->makeCompressed();   
+  SparseRowMatrixHandle n(boost::make_shared<SparseRowMatrix>(3,3));
+  n->insert(0,1) = 1;
+  n->insert(0,2) = 2;
+  n->insert(1,0) = 8;
+  n->insert(1,2) = -3;
+  n->insert(2,0) = 9;
+  n->insert(2,2) = 8;
+  n->makeCompressed();
+  auto csdf = makeModule("ConvertRealToComplexMatrix");
+  stubPortNWithThisData(csdf, 0, m);
+  stubPortNWithThisData(csdf, 1, n);
+  EXPECT_NO_THROW(csdf->execute());
+  auto output = getDataOnThisOutputPort(csdf, 0);
+  ASSERT_TRUE(output != nullptr);
+  auto out = boost::dynamic_pointer_cast<ComplexSparseRowMatrix>(output);
+  for (int k=0; k < out->outerSize(); ++k)
+  {
+   for (ComplexSparseRowMatrix::InnerIterator it(*out,k); it; ++it)
+   {
+    auto tmp=it.value();
+    ASSERT_TRUE(m->coeffRef(it.row(),it.col()) == tmp.real());
+    ASSERT_TRUE(n->coeffRef(it.row(),it.col()) == tmp.imag());	 
+   }
+  }
 }
