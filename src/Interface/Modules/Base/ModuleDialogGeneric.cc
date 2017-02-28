@@ -28,6 +28,7 @@
 
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Base/ModuleButtonBar.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
 #include <boost/regex.hpp>
@@ -48,7 +49,8 @@ ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* paren
   shrinkAction_(nullptr),
   executeInteractivelyToggleAction_(nullptr),
   collapsed_(false),
-  dock_(nullptr)
+  dock_(nullptr),
+  buttonBox_(nullptr)
 {
   setModal(false);
   setAttribute(Qt::WA_MacAlwaysShowToolWindow, true);
@@ -70,6 +72,26 @@ ModuleDialogGeneric::~ModuleDialogGeneric()
   if (disablerAdd_ && disablerRemove_)
   {
     std::for_each(needToRemoveFromDisabler_.begin(), needToRemoveFromDisabler_.end(), disablerRemove_);
+  }
+}
+
+void ModuleDialogGeneric::setDockable(QDockWidget* dock)
+{
+  dock_ = dock;
+}
+
+void ModuleDialogGeneric::setupButtonBar()
+{
+  buttonBox_ = new ModuleButtonBar(this);
+  dock_->setTitleBarWidget(buttonBox_);
+  if (executeInteractivelyToggleAction_)
+  {
+    connect(buttonBox_->executeInteractivelyCheckBox_, SIGNAL(toggled(bool)), this, SLOT(executeInteractivelyToggled(bool)));
+    buttonBox_->executeInteractivelyCheckBox_->setChecked(executeInteractivelyToggleAction_->isChecked());
+  }
+  else
+  {
+    buttonBox_->executeInteractivelyCheckBox_->setVisible(false);
   }
 }
 
@@ -108,6 +130,14 @@ void ModuleDialogGeneric::updateWindowTitle(const QString& title)
   setWindowTitle(title);
   if (dock_)
     dock_->setWindowTitle(title);
+  if (buttonBox_)
+    buttonBox_->setTitle(title);
+}
+
+void ModuleDialogGeneric::setButtonBarTitleVisible(bool visible)
+{
+  if (buttonBox_)
+    buttonBox_->setTitleVisible(visible);
 }
 
 void ModuleDialogGeneric::fixSize()
@@ -135,7 +165,7 @@ void ModuleDialogGeneric::createExecuteDownstreamAction()
   executeDownstreamAction_->setIcon(QApplication::style()->standardIcon(QStyle::SP_ArrowDown));
   connect(executeDownstreamAction_, SIGNAL(triggered()), this, SIGNAL(executeActionTriggeredViaStateChange()));
 }
-  
+
 void ModuleDialogGeneric::createShrinkAction()
 {
   shrinkAction_ = new QAction(this);
@@ -155,6 +185,10 @@ void ModuleDialogGeneric::createExecuteInteractivelyToggleAction()
 
 void ModuleDialogGeneric::executeInteractivelyToggled(bool toggle)
 {
+  if (qobject_cast<QCheckBox*>(sender()))
+    executeInteractivelyToggleAction_->setChecked(toggle);
+  else
+    buttonBox_->executeInteractivelyCheckBox_->setChecked(toggle);
   if (toggle)
     connectStateChangeToExecute();
   else
@@ -245,12 +279,10 @@ void ModuleDialogGeneric::moduleSelected(bool selected)
   {
     windowTitle_ = windowTitle();
     updateWindowTitle(">>> " + windowTitle_ + " <<<");
-    //setWindowOpacity(0.5);
   }
   else
   {
     updateWindowTitle(windowTitle_);
-    //setWindowOpacity(1);
   }
 }
 
