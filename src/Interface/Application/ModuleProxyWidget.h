@@ -82,7 +82,9 @@ namespace SCIRun
       void disableModuleGUI(bool disabled);
       void loadAnimate(qreal val);
       void colorAnimate(qreal val);
+      void findInNetwork();
     private:
+      void showAndColorImpl(const QColor& color, int milliseconds);
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
 
