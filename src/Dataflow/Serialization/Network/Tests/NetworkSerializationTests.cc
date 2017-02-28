@@ -420,45 +420,6 @@ TEST(ToolkitSerializationTest, Experimenting)
   std::cout << ostr.str() << std::endl;
 }
 
-namespace
-{
-  boost::filesystem::path diffPath(const boost::filesystem::path& basePath, const boost::filesystem::path& newPath)
-  {
-    namespace fs = boost::filesystem;
-
-    fs::path diffpath;
-
-    auto tmpPath = newPath;
-    while (tmpPath != basePath)
-    {
-      diffpath = tmpPath.stem() / diffpath;
-      tmpPath = tmpPath.parent_path();
-    }
-
-    auto filename = diffpath.leaf().string() + newPath.extension().string();
-    diffpath.remove_leaf() /= filename;
-    return diffpath;
-  }
-
-  ToolkitFile makeToolkitFromDirectory(const boost::filesystem::path& toolkitPath)
-  {
-    ToolkitFile toolkit;
-
-    for (const auto& p : boost::filesystem::recursive_directory_iterator(toolkitPath))
-    {
-      if (p.path().extension() == ".srn5")
-      {
-        auto path = diffPath(toolkitPath, p.path()).string();
-        std::replace(path.begin(), path.end(), '\\', '/');
-        toolkit.networks[path] = *XMLSerializer::load_xml<NetworkFile>(p.path().string());
-      }
-    }
-    return toolkit;
-  }
-
-
-}
-
 #ifdef WIN32
 boost::filesystem::path toolkitPath("C:\\Users\\Dan\\Downloads\\FwdInvToolkit-1.2.1\\Networks");
 #else
@@ -473,9 +434,12 @@ TEST(ToolkitSerializationTest, CanCreateFromFolders)
   toolkit.save(ostr);
 
   EXPECT_NE(0, ostr.str().size());
+}
 
-  //std::ofstream f("FwdInvToolkit.toolkit");
-  //makeToolkitFromDirectory("C:\\_\\Toolkits\\FwdInvToolkit\\Networks").save(f);
+TEST(ToolkitSerializationTest, DISABLED_ManuallyCreate)
+{
+  std::ofstream f("FwdInvToolkit.toolkit");
+  makeToolkitFromDirectory("C:\\_\\SCIRun\\FwdInvToolkit_v1.2\\FwdInvToolkit-1.2.1\\Networks").save(f);
 }
 
 TEST(ToolkitSerializationTest, RoundTripFromFolders)

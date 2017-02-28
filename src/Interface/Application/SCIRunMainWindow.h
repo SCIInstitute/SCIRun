@@ -124,9 +124,10 @@ private:
   QStringList favoriteModuleNames_;
   QMap<QString, QVariant> savedSubnetworksXml_;
   QMap<QString, QVariant> savedSubnetworksNames_;
-  QStringList toolkitFiles_;
+  QStringList toolkitFiles_, importedToolkits_;
   QMap<QString, QString> toolkitDirectories_;
   QMap<QString, Dataflow::Networks::ToolkitFile> toolkitNetworks_;
+  QMap<QString, QMenu*> toolkitMenus_;
   QToolButton* executeButton_;
   QByteArray windowState_;
   QPushButton* versionButton_;
@@ -186,6 +187,7 @@ private Q_SLOTS:
   void loadRecentNetwork();
   void loadToolkitsFromFile(const QString& filename);
   void loadToolkit();
+  void removeToolkit();
   bool newNetwork();
   void runScript();
   void importLegacyNetwork();
