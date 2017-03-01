@@ -55,28 +55,36 @@ void SolveInverseProblemWithTikhonovSVD::execute()
         auto forward_matrix_h = getRequiredInput(ForwardMatrix);
         auto hMatrixMeasDat = getRequiredInput(MeasuredPotentials);
 
+		auto hMatrixRegMat = getOptionalInput(WeightingInSourceSpace);
+		auto hMatrixNoiseCov = getOptionalInput(WeightingInSensorSpace);
 
         const bool computeRegularizedInverse = oport_connected(InverseSolution);
 
         if (needToExecute())
         {
 
-            using namespace BioPSE;
-            auto state = get_state();
+			auto state = get_state();
+
+		    auto gui_tikhonov_case = static_cast<SolveInverseProblemWithTikhonovSVD_impl::AlgorithmChoice>(state->getValue(TikhonovCase).toInt());
+		    auto gui_tikhonov_solution_subcase = static_cast<SolveInverseProblemWithTikhonovSVD_impl::AlgorithmSolutionSubcase>(state->getValue(Core::Algorithms::Inverse::Parameters::TikhonovSolutionSubcase).toInt());
+		    auto gui_tikhonov_residual_subcase = static_cast<SolveInverseProblemWithTikhonovSVD_impl::AlgorithmResidualSubcase>(state->getValue(Core::Algorithms::Inverse::Parameters::TikhonovResidualSubcase).toInt());
 
 
-            auto denseForward = castMatrix::toDense(forward_matrix_h);
-            auto measuredDense = convertMatrix::toDense(hMatrixMeasDat);
+
+			auto denseForward = castMatrix::toDense(forward_matrix_h);
+		    auto measuredDense = convertMatrix::toDense(hMatrixMeasDat);
+		    auto regMatDense = castMatrix::toDense(hMatrixRegMat.get_value_or(nullptr));
+		    auto noiseCovDense = castMatrix::toDense(hMatrixNoiseCov.get_value_or(nullptr));
 
 
-            SolveInverseProblemWithTikhonovSVD_impl algo(   denseForward,
-                                                            measuredDense,
-                                                            computeRegularizedInverse,
-                                                            this);
+            SolveInverseProblemWithTikhonovSVD_impl algo(  denseForward,
+	                                                        measuredDense,
+	                                                        computeRegularizedInverse,
+															this);
 
-            TikhonovImplAbstractBase::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonovSVD::update_lcurve_gui, this, _1, _2, _3);
+            SolveInverseProblemWithTikhonovSVD_impl::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonovSVD::update_lcurve_gui, this, _1, _2, _3);
 
-            TikhonovImplAbstractBase::Input input(
+            SolveInverseProblemWithTikhonovSVD_impl::Input input(
                                                     state->getValue(RegularizationMethod).toString(),
                                                     state->getValue(LambdaFromDirectEntry).toDouble(),
                                                     state->getValue(LambdaSliderValue).toDouble(),
@@ -86,7 +94,7 @@ void SolveInverseProblemWithTikhonovSVD::execute()
                                                     update);
 
 
-            algo.run(input);
+            algo.run1(input);
 
             if (computeRegularizedInverse)
             {
@@ -137,13 +145,13 @@ void SolveInverseProblemWithTikhonovSVD::setStateDefaults()
 /////////////////////////////////////
 ////// MODULE UI DECLARATION
 ///////////////////////////////////
-const ModuleLookupInfo SolveInverseProblemWithTikhonovSVD::staticInfo_("SolveInverseProblemWithTikhonovSVD", "Inverse", "SCIRun");
+// const ModuleLookupInfo SolveInverseProblemWithTikhonovSVD::staticInfo_("SolveInverseProblemWithTikhonovSVD", "Inverse", "SCIRun");
 
 
 ///////////////////////////////////
 //// UPDATE L-CURVE IN GUI
 //////////////////////////////////
-void SolveInverseProblemWithTikhonovSVD::update_lcurve_gui(const double lambda, const BioPSE::TikhonovAlgorithm::LCurveInput& input, const int lambda_index)
+void SolveInverseProblemWithTikhonovSVD::update_lcurve_gui(const double lambda, const Core::Algorithms::Inverse::TikhonovAlgorithm::LCurveInput& input, const int lambda_index)
 {
     auto state = get_state();
     state->setValue(LambdaCorner, lambda);

@@ -76,15 +76,11 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName LambdaSliderValue;
         static const Core::Algorithms::AlgorithmParameterName LambdaCorner;
         static const Core::Algorithms::AlgorithmParameterName LCurveText;
-// <<<<<<< HEAD
-//
-// =======
-
+		
         LEGACY_BIOPSE_MODULE
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
-// >>>>>>> sciinstitute/master
       private:
         void update_lcurve_gui(const double lambda, const Core::Algorithms::Inverse::TikhonovAlgorithm::LCurveInput& input, const int lambda_index);
       };

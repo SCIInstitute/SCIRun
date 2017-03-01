@@ -63,10 +63,10 @@ namespace SCIRun
 
 			    public:
 
-			        SolveInverseProblemWithTikhonovSVD_impl(    const SCIRun::Core::Datatypes::DenseMatrixHandle& forwardMatrix,
-			                                                    const SCIRun::Core::Datatypes::DenseMatrixHandle& measuredData,
-			                                                    bool computeRegularizedInverse = false,
-			                                                    SCIRun::Core::Logging::LegacyLoggerInterface* pr = 0)
+			        SolveInverseProblemWithTikhonovSVD_impl( const SCIRun::Core::Datatypes::DenseMatrixHandle& forwardMatrix,
+			                                                  const SCIRun::Core::Datatypes::DenseMatrixHandle& measuredData,
+			                                                  bool computeRegularizedInverse = false,
+			                                                  SCIRun::Core::Logging::LegacyLoggerInterface* pr = 0)
 
 			                                    : TikhonovImplAbstractBase( forwardMatrix,
 			                                                               measuredData,

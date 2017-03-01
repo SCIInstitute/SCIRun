@@ -51,8 +51,6 @@ namespace SCIRun {
 		namespace Algorithms {
 			namespace Inverse {
 
-			  // TODO: this needs to be moved into a SCIRun algorithm class
-
 			  namespace TikhonovAlgorithm {
 
 				struct SCISHARE LCurveInput
@@ -76,7 +74,7 @@ namespace SCIRun {
 
 
 
-			  class SCISHARE TikhonovImplAbstractBase : public AlgorithmBase, boost::noncopyable
+			  class SCISHARE TikhonovImplAbstractBase : public AlgorithmBase //, boost::noncopyable
 			  {
 
 				  // PUBLIC MEMBERS OF CLASS TikhonovImplAbstractBase
@@ -129,7 +127,8 @@ namespace SCIRun {
 				    };
 
 				    // abstract functions
-				    virtual void run(const Input& input);
+					virtual AlgorithmOutput run(const AlgorithmInput & input) const override;
+				    virtual void run1(const TikhonovImplAbstractBase::Input& input);
 
 				    // defined functions
 				    void update_graph(const TikhonovImplAbstractBase::Input& input, double lambda, int lambda_index, const double epsilon);

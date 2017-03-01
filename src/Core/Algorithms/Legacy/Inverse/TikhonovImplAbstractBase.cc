@@ -221,7 +221,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 
 /////////////////////////
 /////////  run()
-    void TikhonovImplAbstractBase::run(const TikhonovImplAbstractBase::Input& input)
+    void TikhonovImplAbstractBase::run1(const TikhonovImplAbstractBase::Input& input)
     {
 
         const int M = forwardMatrix_->nrows();
@@ -269,6 +269,13 @@ using namespace SCIRun::Core::Algorithms::Inverse;
     }
 //////// fi  run()
 ///////////////////////////
+
+AlgorithmOutput TikhonovImplAbstractBase::run(const AlgorithmInput& input) const
+{
+  	AlgorithmOutput output;
+
+	return output;
+ }
 
 
 ///////////////////////////
