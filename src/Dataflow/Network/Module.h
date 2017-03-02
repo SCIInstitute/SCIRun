@@ -86,9 +86,9 @@ namespace Networks {
     virtual size_t num_output_ports() const override final;
 
     // override this for modules that changed packages, to point to correct wiki page
-    virtual std::string legacyPackageName() const { return get_packagename(); }
+    virtual std::string legacyPackageName() const override { return get_packagename(); }
     // override this for modules that changed names, to point to correct wiki page
-    virtual std::string legacyModuleName() const { return get_module_name(); }
+    virtual std::string legacyModuleName() const override { return get_module_name(); }
 
     virtual bool hasInputPort(const PortId& id) const override final;
     virtual bool hasOutputPort(const PortId& id) const override final;
