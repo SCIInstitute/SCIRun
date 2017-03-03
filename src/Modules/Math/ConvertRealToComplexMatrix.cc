@@ -26,11 +26,10 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
    author: Moritz Dannhauer
-   last change: 05/06/16
+   last change: 02/26/17
 */
 
 #include <Modules/Math/ConvertRealToComplexMatrix.h>
-
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 
@@ -52,7 +51,8 @@ void ConvertRealToComplexMatrix::execute()
 {
   auto input_matrix1 = getRequiredInput(RealPartMatrix);
   auto input_matrix2 = getRequiredInput(ComplexPartMatrix);
-
+  auto sparse_input = false;
+  
   if (needToExecute())
   {
     update_state(Executing);
@@ -63,36 +63,64 @@ void ConvertRealToComplexMatrix::execute()
      return;
     }
 
-    if (!matrixIs::dense(input_matrix1))
+    if( (matrixIs::dense(input_matrix1) && matrixIs::dense(input_matrix2)) || (matrixIs::sparse(input_matrix1) || matrixIs::sparse(input_matrix2)) )
     {
-      //TODO implement something with sparse
-      error("Currently only works with dense matrices (check first module input).");
-      return;
-    }
-
-    if (!matrixIs::dense(input_matrix2))
+     if(matrixIs::sparse(input_matrix1) && matrixIs::sparse(input_matrix2))
+     {
+      sparse_input=true;
+     } 
+    } else
     {
-      //TODO implement something with sparse
-      error("Currently only works with dense matrices (check second module input).");
-      return;
+     error("This module works with dense and sparse matrices only.");
+     return;  
     }
 
     auto nr_cols_mat1=input_matrix1->ncols(), nr_rows_mat1=input_matrix1->nrows(),
          nr_cols_mat2=input_matrix2->ncols(), nr_rows_mat2=input_matrix2->nrows();
-
+    
     if(nr_cols_mat1!=nr_cols_mat2 || nr_rows_mat1!=nr_rows_mat2)
     {
      error("Input matrices do not have same number of rows or columns.");
      return;
-    }
-
-    auto out(boost::make_shared<ComplexDenseMatrix>(nr_rows_mat1,nr_cols_mat1));
-    auto mat1 = castMatrix::toDense (input_matrix1), mat2 = castMatrix::toDense (input_matrix2);
-
-    for(auto i=0; i<nr_rows_mat1; i++)
-     for(auto j=0; j<nr_cols_mat1; j++)
+    } 
+    
+    if(sparse_input)
+    { 
+      auto out(boost::make_shared<ComplexSparseRowMatrix>(nr_rows_mat1,nr_cols_mat1));
+      auto real = castMatrix::toSparse(input_matrix1), imag = castMatrix::toSparse(input_matrix2);
+      
+      for (int k=0; k < real->outerSize(); ++k)
+      {
+       for (SparseRowMatrix::InnerIterator it(*real,k); it; ++it)
+       {
+         std::complex<double> comp_entry(it.value(),imag->coeffRef(it.row(),it.col()));
+	 out->insert(it.row(),it.col())=comp_entry;	 
+       }
+      }
+                 
+      for (int k=0; k < imag->outerSize(); ++k)
+      {
+       for (SparseRowMatrix::InnerIterator it(*imag,k); it; ++it)
+       {
+         if (!real->coeffRef(it.row(), it.col()))
+	 {
+	   std::complex<double> comp_entry(0,imag->coeffRef(it.row(),it.col()));
+	   out->insert(it.row(),it.col())=comp_entry; 
+	 } 
+       }
+      }
+      
+      out->makeCompressed();     
+      sendOutput(Output,out);	
+      
+    } else
+    {
+      auto out(boost::make_shared<ComplexDenseMatrix>(nr_rows_mat1,nr_cols_mat1));
+      auto mat1 = castMatrix::toDense(input_matrix1), mat2 = castMatrix::toDense(input_matrix2);
+      for(auto i=0; i<nr_rows_mat1; i++)
+       for(auto j=0; j<nr_cols_mat1; j++)
         (*out)(i,j) = complex((*mat1)(i,j),(*mat2)(i,j));
-
-    sendOutput(Output,out);
+      sendOutput(Output,out);
+    }
   }
 }
