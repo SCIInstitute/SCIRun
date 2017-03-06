@@ -79,7 +79,7 @@ void SimpleSink::invalidateAll()
 
 DatatypeHandleOption SimpleSink::receive()
 {
-  if (DatatypeHandle strong = weakData_.lock())
+  if (auto strong = weakData_.lock())
   {
     return strong;
   }
@@ -88,7 +88,7 @@ DatatypeHandleOption SimpleSink::receive()
 
 void SimpleSink::setData(DatatypeHandle data)
 {
-  if (DatatypeHandle strong = weakData_.lock())
+  if (auto strong = weakData_.lock())
   {
     if (data)
     {
@@ -118,7 +118,7 @@ DatatypeSinkInterface* SimpleSink::clone() const
 
 bool SimpleSink::hasChanged() const
 {
-  bool val = hasChanged_;
+  auto val = hasChanged_;
   hasChanged_ = false;
   return val;
 }

@@ -42,21 +42,21 @@ namespace SCIRun
   {
     namespace Networks
     {
-      typedef boost::weak_ptr<Core::Datatypes::DatatypeHandle::element_type> WeakDatatypeHandle;
+      using WeakDatatypeHandle = boost::weak_ptr<Core::Datatypes::DatatypeHandle::element_type>;
 
       class SCISHARE SimpleSink : public DatatypeSinkInterface
       {
       public:
         SimpleSink();
         ~SimpleSink();
-        virtual void waitForData();
-        virtual SCIRun::Core::Datatypes::DatatypeHandleOption receive();
-        virtual DatatypeSinkInterface* clone() const;
-        virtual bool hasChanged() const;
+        void waitForData() override;
+        Core::Datatypes::DatatypeHandleOption receive() override;
+        DatatypeSinkInterface* clone() const override;
+        bool hasChanged() const override;
         void setData(Core::Datatypes::DatatypeHandle data);
-        virtual void invalidateProvider() { /*TODO*/ }
-        virtual boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber);
-        virtual void forceFireDataHasChanged() override;
+        void invalidateProvider() override { /*TODO*/ }
+        boost::signals2::connection connectDataHasChanged(const DataHasChangedSignalType::slot_type& subscriber) override;
+        void forceFireDataHasChanged() override;
 
         static bool globalPortCachingFlag();
         static void setGlobalPortCachingFlag(bool value);

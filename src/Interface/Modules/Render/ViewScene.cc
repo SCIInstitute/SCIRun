@@ -1004,7 +1004,6 @@ void ViewSceneDialog::setScaleBar()
 GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
 {
   const int    numTicks = scaleBar_.numTicks;
-  const double mult = scaleBar_.multiplier;
   double length = scaleBar_.projLength;
   const double height = scaleBar_.height;
   glm::vec4 color(1.0);

@@ -150,10 +150,10 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   ss << resolution << sigdig << txtsize << numlabel << st->getValue(Units).toString() <<
     scale << displaySide << red << green << blue << xTrans << yTrans;
 
-  std::string uniqueNodeID = id + "colorMapLegend" + ss.str();
-  std::string vboName = uniqueNodeID + "VBO";
-  std::string iboName = uniqueNodeID + "IBO";
-  std::string passName = uniqueNodeID + "Pass";
+  auto uniqueNodeID = id + "colorMapLegend" + ss.str();
+  auto vboName = uniqueNodeID + "VBO";
+  auto iboName = uniqueNodeID + "IBO";
+  auto passName = uniqueNodeID + "Pass";
 
   // NOTE: Attributes will depend on the color scheme. We will want to
   // normalize the colors if the color scheme is COLOR_IN_SITU.
@@ -169,7 +169,7 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   uniforms.push_back(SpireSubPass::Uniform("uDisplaySide", static_cast<float>(displaySide)));
   int displayLength = state->getValue(DisplayLength).toInt();
   uniforms.push_back(SpireSubPass::Uniform("uDisplayLength", static_cast<float>(displayLength)));
-  SpireVBO geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr,
+  auto geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr,
     numVBOElements, BBox(), true);
 
   // Construct IBO.
@@ -201,7 +201,6 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   sd << "%." << sigdig << "g";
   std::vector<Vector> txt_coords;
   double increment = 1. / static_cast<double>(numlabel - 1);
-  //double textSize = 5. * static_cast<double>(txtsize + 3);
   double textSize = 3. * static_cast<double>(txtsize);
   double dash_size = 18.;
   double pipe_size = 18.;
