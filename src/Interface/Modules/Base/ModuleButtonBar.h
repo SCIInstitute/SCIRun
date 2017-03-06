@@ -26,32 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_ConvertRealToComplexMatrix_H
-#define MODULES_MATH_ConvertRealToComplexMatrix_H
+#ifndef INTERFACE_APPLICATION_MODULEBUTTONBAR_H
+#define INTERFACE_APPLICATION_MODULEBUTTONBAR_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include <QDialog>
+#include "Interface/Modules/Base/ui_ModuleButtonBar.h"
+#include <Interface/Modules/Base/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Math {
+namespace Gui {
 
-  class SCISHARE ConvertRealToComplexMatrix : public Dataflow::Networks::Module,
-    public Has2InputPorts<MatrixPortTag, MatrixPortTag>,
-    public Has1OutputPort<ComplexMatrixPortTag>
+  class ModuleDialogGeneric;
+
+  class SCISHARE ModuleButtonBar : public QWidget, public Ui::ModuleButtonBar
   {
+    Q_OBJECT
   public:
-    ConvertRealToComplexMatrix();
-    virtual void execute();
-    virtual void setStateDefaults() {}
-
-    INPUT_PORT(0, RealPartMatrix, Matrix);
-    INPUT_PORT(1, ComplexPartMatrix, Matrix);
-    OUTPUT_PORT(0, Output, ComplexMatrix);
-
-    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
-    NEW_HELP_WEBPAGE_ONLY
+    explicit ModuleButtonBar(ModuleDialogGeneric* parent = nullptr);
+    void setTitle(const QString& title);
+    void setTitleVisible(bool visible);
   };
-}}}
+
+
+}}
 
 #endif

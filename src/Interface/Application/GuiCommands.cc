@@ -328,7 +328,10 @@ bool ToolkitUnpackerCommand::execute()
   std::ifstream istr(filename.string());
   toolkit.load(istr);
 
-  SCIRunMainWindow::Instance()->addToolkit(QString::fromStdString(filename.leaf().stem().string()), QString::fromStdString(filename.parent_path().string()), toolkit);
+  auto add = !toolkit.networks.empty();
+  if (add)
+    SCIRunMainWindow::Instance()->addToolkit(QString::fromStdString(filename.leaf().stem().string()),
+      QString::fromStdString(filename.parent_path().string()), toolkit);
 
-  return !toolkit.networks.empty();
+  return add;
 }

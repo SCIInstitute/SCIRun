@@ -26,32 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_ConvertRealToComplexMatrix_H
-#define MODULES_MATH_ConvertRealToComplexMatrix_H
+#include <iostream>
+#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <fstream>
+#include <boost/filesystem/operations.hpp>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
 
-namespace SCIRun {
-namespace Modules {
-namespace Math {
-
-  class SCISHARE ConvertRealToComplexMatrix : public Dataflow::Networks::Module,
-    public Has2InputPorts<MatrixPortTag, MatrixPortTag>,
-    public Has1OutputPort<ComplexMatrixPortTag>
+int main(int argc, const char* argv[])
+{
+  if (argc < 2)
   {
-  public:
-    ConvertRealToComplexMatrix();
-    virtual void execute();
-    virtual void setStateDefaults() {}
+    std::cout << "Usage: bundle_toolkit OUTPUT_FILE [DIRECTORY_TO_SCAN]\nIf no directory specified, current directory is scanned." << std::endl;
+    return 0;
+  }
 
-    INPUT_PORT(0, RealPartMatrix, Matrix);
-    INPUT_PORT(1, ComplexPartMatrix, Matrix);
-    OUTPUT_PORT(0, Output, ComplexMatrix);
+  std::string filename(argv[1]);
+  std::string directoryToScan;
+  if (argc < 3)
+  {
+    directoryToScan = boost::filesystem::current_path().string();
+  }
+  else
+    directoryToScan = argv[2];
 
-    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
-    NEW_HELP_WEBPAGE_ONLY
-  };
-}}}
+  std::cout << "Scanning directory: " << directoryToScan << std::endl;
 
-#endif
+  std::ofstream f(filename + ".toolkit");
+  SCIRun::Dataflow::Networks::makeToolkitFromDirectory(directoryToScan).save(f);
+  std::cout << "Saved toolkit file: " << filename << ".toolkit" << std::endl;
+  return 0;
+}
