@@ -57,34 +57,36 @@ void ConvertComplexToRealMatrix::execute()
   {
     update_state(Executing);
     
-    auto input = boost::dynamic_pointer_cast<ComplexDenseMatrix>(input_complex_matrix);
+    auto input_dense = boost::dynamic_pointer_cast<ComplexDenseMatrix>(input_complex_matrix);
+    auto input_sparse = boost::dynamic_pointer_cast<ComplexSparseRowMatrix>(input_complex_matrix);
     
-    if (!input)
+    if (!input_dense && !input_sparse)
     {
      error("Number of Rows or Columns are zero");
+     return;
     }
     
-    auto nr_cols=input->ncols(), nr_rows=input->nrows();
-    if (!(nr_rows>0 && nr_cols>0))
+    auto nr_cols=input_dense->ncols(), nr_rows=input_dense->nrows();
+   
+    if (nr_rows==0 || nr_cols==0)
     {
      error("Number of Rows or Columns are zero");
+     return;
     }
    
-    DenseMatrixHandle OUTPUT_REAL(boost::make_shared<DenseMatrix>(nr_rows,nr_cols));
-    DenseMatrixHandle OUTPUT_IMAG(boost::make_shared<DenseMatrix>(nr_rows,nr_cols));
-    //auto output_real = (*result)(x,y).real(), output_imag = (*result)(x,y).imag();
+    MatrixHandle output_real,output_imag;
     
-    //ComplexDenseMatrixHandle    
-
-
-    for(auto i=0; i<nr_rows; i++)
-     for(auto j=0; j<nr_cols; j++)
-	{
-	 (*OUTPUT_REAL)(i,j)=(*input_complex_matrix)(i,j).real();
-	 (*OUTPUT_IMAG)(i,j)=(*input_complex_matrix)(i,j).imag();	  
-	}
-	
-     sendOutput(OutputRealPartMatrix,OUTPUT_REAL);
-     sendOutput(OutputComplexPartMatrix,OUTPUT_IMAG);
+    if(input_dense)
+    {
+      output_real = boost::make_shared<DenseMatrix>(input_dense->real());  
+      output_imag= boost::make_shared<DenseMatrix>(input_dense->imag()); 
+    } else
+    {
+     output_real = boost::make_shared<SparseRowMatrix>(input_sparse->real());
+    output_imag = boost::make_shared<SparseRowMatrix>(input_sparse->imag());
+    } 
+       
+    sendOutput(OutputRealPartMatrix,output_real);
+    sendOutput(OutputComplexPartMatrix,output_imag);
   }
 }

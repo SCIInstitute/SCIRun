@@ -45,7 +45,7 @@ namespace Math {
     virtual void execute();
     virtual void setStateDefaults() {}
 
-    INPUT_PORT(0, InputComplexMatrix, ComplexDenseMatrix);  
+    INPUT_PORT(0, InputComplexMatrix, ComplexMatrix);  
     OUTPUT_PORT(0, OutputRealPartMatrix, Matrix);
     OUTPUT_PORT(1, OutputComplexPartMatrix, Matrix);
     MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
