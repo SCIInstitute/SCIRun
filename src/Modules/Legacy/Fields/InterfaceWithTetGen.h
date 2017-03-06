@@ -62,8 +62,8 @@ namespace SCIRun {
       public:
         InterfaceWithTetGen();
 
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
         virtual bool hasDynamicPorts() const override { return true; }
 
         INPUT_PORT(0, Main, LegacyField);

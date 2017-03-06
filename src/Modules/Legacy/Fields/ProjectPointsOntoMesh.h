@@ -43,8 +43,8 @@ namespace SCIRun {
       public:
         ProjectPointsOntoMesh();
 
-        virtual void execute();
-        virtual void setStateDefaults();
+        void execute() override;
+        void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, LegacyField);
         INPUT_PORT(1, ObjectField, LegacyField);

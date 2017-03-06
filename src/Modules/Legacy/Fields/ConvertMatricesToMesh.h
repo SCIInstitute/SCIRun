@@ -54,8 +54,8 @@ namespace SCIRun {
       {
       public:
         ConvertMatricesToMesh();
-        virtual void setStateDefaults();
-        virtual void execute();
+        virtual void setStateDefaults() override;
+        virtual void execute() override;
 
         INPUT_PORT(0, MeshElements, Matrix);
         INPUT_PORT(1, MeshPositions, Matrix);

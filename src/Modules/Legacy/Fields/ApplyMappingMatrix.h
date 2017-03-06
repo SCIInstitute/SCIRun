@@ -43,8 +43,8 @@ namespace SCIRun {
       public:
         ApplyMappingMatrix();
 
-        virtual void execute();
-        virtual void setStateDefaults() {}
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
 
         INPUT_PORT(0, Source, LegacyField);
         INPUT_PORT(1, Destination, LegacyField);

@@ -56,8 +56,8 @@ class SCISHARE SimulateForwardMagneticField : public SCIRun::Dataflow::Networks:
   public:
     SimulateForwardMagneticField();
 
-    virtual void execute();
-    virtual void setStateDefaults();
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
 
     INPUT_PORT(0, ElectricField, LegacyField);
     INPUT_PORT(1, ConductivityTensor, LegacyField);

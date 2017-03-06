@@ -68,8 +68,8 @@ class SCISHARE GenerateROIStatistics : public SCIRun::Dataflow::Networks::Module
   public:
     GenerateROIStatistics();
 
-    virtual void execute();
-    virtual void setStateDefaults();
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
 
     INPUT_PORT(0, MeshDataOnElements, LegacyField);
     INPUT_PORT(1, PhysicalUnit, String);

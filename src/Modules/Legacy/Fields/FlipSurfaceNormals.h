@@ -42,8 +42,8 @@ namespace SCIRun {
 			{
 				public:
 					FlipSurfaceNormals();
-					virtual void setStateDefaults() {}
-					virtual void execute();
+					virtual void setStateDefaults() override {}
+					virtual void execute() override;
 
 					INPUT_PORT(0, InputField, LegacyField);
 					OUTPUT_PORT(0, OutputField, LegacyField);

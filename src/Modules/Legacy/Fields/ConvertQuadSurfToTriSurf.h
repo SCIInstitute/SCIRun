@@ -46,8 +46,8 @@ namespace SCIRun {
       public:
         ConvertQuadSurfToTriSurf();
 
-        virtual void execute();
-        virtual void setStateDefaults() {}
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
 
         INPUT_PORT(0, QuadSurf, LegacyField);
         OUTPUT_PORT(0, TriSurf, LegacyField);

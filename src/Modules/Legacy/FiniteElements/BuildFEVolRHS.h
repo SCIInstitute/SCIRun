@@ -55,8 +55,8 @@ namespace SCIRun {
       {
       public:
         BuildFEVolRHS();
-        virtual void setStateDefaults();
-        virtual void execute();
+        void setStateDefaults() override;
+        void execute() override;
 
         INPUT_PORT(0, Mesh, LegacyField);
         OUTPUT_PORT(0, RHS, Matrix);

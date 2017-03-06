@@ -43,8 +43,11 @@ namespace SCIRun {
       {
       public:
         CalculateCurrentDensity();
-        virtual void setStateDefaults() {}
-        virtual void execute();
+
+        void setStateDefaults() override
+        {}
+
+        void execute() override;
 
         INPUT_PORT(0, TetMesh_EField, LegacyField);
         INPUT_PORT(1, TetMesh_Sigmas, LegacyField);

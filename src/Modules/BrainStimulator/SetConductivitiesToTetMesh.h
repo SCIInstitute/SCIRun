@@ -55,8 +55,8 @@ class SCISHARE SetConductivitiesToMesh : public SCIRun::Dataflow::Networks::Modu
   public:
     SetConductivitiesToMesh();
 
-    virtual void execute();
-    virtual void setStateDefaults();
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
 
     INPUT_PORT(0, InputField, LegacyField);
     OUTPUT_PORT(0, OutputField, LegacyField);

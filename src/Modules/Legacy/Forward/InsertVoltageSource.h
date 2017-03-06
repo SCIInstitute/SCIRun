@@ -43,8 +43,8 @@ namespace SCIRun {
       {
       public:
         InsertVoltageSource();
-        virtual void setStateDefaults();
-        virtual void execute();
+        void setStateDefaults() override;
+        void execute() override;
 
         INPUT_PORT(0, InputFEMesh, LegacyField);
         INPUT_PORT(1, VoltageSource, LegacyField);

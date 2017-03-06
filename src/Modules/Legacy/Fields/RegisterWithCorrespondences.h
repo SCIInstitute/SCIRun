@@ -43,8 +43,8 @@ namespace SCIRun {
       public:
         RegisterWithCorrespondences();
 
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, LegacyField);
         INPUT_PORT(1, Correspondences1, LegacyField);

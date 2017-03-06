@@ -43,8 +43,8 @@ namespace SCIRun {
       public:
         CalculateVectorMagnitudes();
 
-        virtual void execute();
-        virtual void setStateDefaults() {}
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
 
         INPUT_PORT(0, VectorField, LegacyField);
         OUTPUT_PORT(0, ScalarField, LegacyField);

@@ -46,8 +46,8 @@ namespace SCIRun {
       public:
         ConvertHexVolToTetVol();
 
-        virtual void execute();
-        virtual void setStateDefaults() {}
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
 
         INPUT_PORT(0, HexOrLatVol, LegacyField);
         OUTPUT_PORT(0, TetVol, LegacyField);

@@ -42,8 +42,8 @@ namespace Math {
   {
   public:
     ConvertMatrixType();
-    virtual void execute();
-    virtual void setStateDefaults();
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
 
     INPUT_PORT(0, InputMatrix, Matrix);
     OUTPUT_PORT(0, ResultMatrix, Matrix);

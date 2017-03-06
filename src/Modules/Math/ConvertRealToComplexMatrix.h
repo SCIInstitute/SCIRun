@@ -42,8 +42,8 @@ namespace Math {
   {
   public:
     ConvertRealToComplexMatrix();
-    virtual void execute();
-    virtual void setStateDefaults() {}
+    virtual void execute() override;
+    virtual void setStateDefaults() override {}
 
     INPUT_PORT(0, RealPartMatrix, Matrix);
     INPUT_PORT(1, ComplexPartMatrix, Matrix);

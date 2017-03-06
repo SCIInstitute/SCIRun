@@ -47,8 +47,8 @@ namespace Fields {
   public:
     MapFieldDataOntoElements();
 
-    virtual void execute();
-    virtual void setStateDefaults();
+    void execute() override;
+    void setStateDefaults() override;
 
     INPUT_PORT(0, Source, LegacyField);
     INPUT_PORT(1, Weights, LegacyField);

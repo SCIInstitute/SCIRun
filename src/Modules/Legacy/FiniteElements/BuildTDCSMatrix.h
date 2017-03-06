@@ -43,8 +43,11 @@ namespace SCIRun {
       {
       public:
         BuildTDCSMatrix();
-        virtual void setStateDefaults() {}
-        virtual void execute();
+
+        void setStateDefaults() override
+        {}
+
+        void execute() override;
 
         INPUT_PORT(0, FEM_Stiffness_Matrix, SparseRowMatrix);
         INPUT_PORT(1, FEM_Mesh, LegacyField);

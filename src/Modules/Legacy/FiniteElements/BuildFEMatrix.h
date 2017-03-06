@@ -43,8 +43,11 @@ namespace SCIRun {
       {
       public:
         BuildFEMatrix();
-        virtual void setStateDefaults() {}
-        virtual void execute();
+
+        void setStateDefaults() override
+        {}
+
+        void execute() override;
 
         INPUT_PORT(0, InputField, LegacyField);
         INPUT_PORT(1, Conductivity_Table, Matrix);

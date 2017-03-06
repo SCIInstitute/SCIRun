@@ -65,8 +65,8 @@ class SCISHARE SetupTDCS : public SCIRun::Dataflow::Networks::Module,
   public:
     SetupTDCS();
 
-    virtual void execute();
-    virtual void setStateDefaults();
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
 
     INPUT_PORT(0, MESH, LegacyField);
     INPUT_PORT(1, SCALP_TRI_SURF_MESH, LegacyField);
