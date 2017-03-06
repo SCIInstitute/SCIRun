@@ -45,7 +45,7 @@ namespace Fields {
     ReportFieldInfo();
     virtual void execute() override;
     virtual void setStateDefaults() override {}
-    INPUT_PORT(0, InputField, LegacyField);
+    INPUT_PORT(0, InputField, Field);
     OUTPUT_PORT(0, NumNodes, Int32);
     OUTPUT_PORT(1, NumElements, Int32);
     OUTPUT_PORT(2, NumData, Int32);

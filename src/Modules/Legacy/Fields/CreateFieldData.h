@@ -52,10 +52,10 @@ namespace SCIRun {
         virtual void setStateDefaults() override;
         HAS_DYNAMIC_PORTS
 
-        INPUT_PORT(0, InputField, LegacyField);
+        INPUT_PORT(0, InputField, Field);
         INPUT_PORT(1, Function, String);
         INPUT_PORT_DYNAMIC(2, DataArray, Matrix);
-        OUTPUT_PORT(0, OutputField, LegacyField);
+        OUTPUT_PORT(0, OutputField, Field);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 

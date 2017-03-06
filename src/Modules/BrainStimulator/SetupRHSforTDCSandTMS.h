@@ -68,9 +68,9 @@ class SCISHARE SetupTDCS : public SCIRun::Dataflow::Networks::Module,
     virtual void execute() override;
     virtual void setStateDefaults() override;
 
-    INPUT_PORT(0, MESH, LegacyField);
-    INPUT_PORT(1, SCALP_TRI_SURF_MESH, LegacyField);
-    INPUT_PORT(2, ELECTRODE_TRI_SURF_MESH, LegacyField);
+    INPUT_PORT(0, MESH, Field);
+    INPUT_PORT(1, SCALP_TRI_SURF_MESH, Field);
+    INPUT_PORT(2, ELECTRODE_TRI_SURF_MESH, Field);
     INPUT_PORT(3, ELECTRODE_SPONGE_LOCATION_AVR, Matrix);
 
     OUTPUT_PORT(0, LHS_KNOWNS, Matrix);
@@ -80,7 +80,7 @@ class SCISHARE SetupTDCS : public SCIRun::Dataflow::Networks::Module,
     OUTPUT_PORT(4, ELECTRODE_CONTACT_IMPEDANCE, Matrix);
     OUTPUT_PORT(5, RHS, Matrix);
     OUTPUT_PORT(6, SELECTMATRIXINDECES, Matrix);
-    OUTPUT_PORT(7, ELECTRODE_SPONGE_SURF, LegacyField);
+    OUTPUT_PORT(7, ELECTRODE_SPONGE_SURF, Field);
 
     NEW_BRAIN_STIMULATOR_MODULE
 

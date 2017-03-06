@@ -59,13 +59,13 @@ class SCISHARE SimulateForwardMagneticField : public SCIRun::Dataflow::Networks:
     virtual void execute() override;
     virtual void setStateDefaults() override;
 
-    INPUT_PORT(0, ElectricField, LegacyField);
-    INPUT_PORT(1, ConductivityTensor, LegacyField);
-    INPUT_PORT(2, DipoleSources, LegacyField);
-    INPUT_PORT(3, DetectorLocations, LegacyField);
+    INPUT_PORT(0, ElectricField, Field);
+    INPUT_PORT(1, ConductivityTensor, Field);
+    INPUT_PORT(2, DipoleSources, Field);
+    INPUT_PORT(3, DetectorLocations, Field);
 
-    OUTPUT_PORT(0, MagneticField, LegacyField);
-    OUTPUT_PORT(1, MagneticFieldMagnitudes, LegacyField);
+    OUTPUT_PORT(0, MagneticField, Field);
+    OUTPUT_PORT(1, MagneticFieldMagnitudes, Field);
 
     LEGACY_BIOPSE_MODULE
 

@@ -60,7 +60,7 @@ namespace SCIRun {
         INPUT_PORT(0, MeshElements, Matrix);
         INPUT_PORT(1, MeshPositions, Matrix);
         INPUT_PORT(2, MeshNormals, Matrix);
-        OUTPUT_PORT(0, OutputField, LegacyField);
+        OUTPUT_PORT(0, OutputField, Field);
 
         static const Core::Algorithms::AlgorithmParameterName InputFieldName;
         static const Core::Algorithms::AlgorithmParameterName InputFieldTypeName;

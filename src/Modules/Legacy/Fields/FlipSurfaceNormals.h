@@ -45,8 +45,8 @@ namespace SCIRun {
 					virtual void setStateDefaults() override {}
 					virtual void execute() override;
 
-					INPUT_PORT(0, InputField, LegacyField);
-					OUTPUT_PORT(0, OutputField, LegacyField);
+					INPUT_PORT(0, InputField, Field);
+					OUTPUT_PORT(0, OutputField, Field);
 
 					MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
 			};

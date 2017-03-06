@@ -46,8 +46,8 @@ namespace SCIRun {
         void setStateDefaults() override;
         void execute() override;
 
-        INPUT_PORT(0, Mesh, LegacyField);
-        INPUT_PORT(1, Sources, LegacyField);
+        INPUT_PORT(0, Mesh, Field);
+        INPUT_PORT(1, Sources, Field);
         INPUT_PORT(2, Mapping, Matrix);
         INPUT_PORT(3, Input_RHS, Matrix);
         OUTPUT_PORT(0, Output_RHS, Matrix);

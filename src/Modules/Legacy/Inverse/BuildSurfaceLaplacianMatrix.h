@@ -45,7 +45,7 @@ namespace SCIRun {
         virtual void setStateDefaults() override {}
         virtual void execute() override;
 
-        INPUT_PORT(0, Source, LegacyField);
+        INPUT_PORT(0, Source, Field);
         OUTPUT_PORT(0, ResultMatrix, Matrix);
 
         LEGACY_BIOPSE_MODULE

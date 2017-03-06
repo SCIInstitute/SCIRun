@@ -69,13 +69,13 @@ class SCISHARE ElectrodeCoilSetup : public SCIRun::Dataflow::Networks::Module,
 
     virtual bool hasDynamicPorts() const override { return true; }
 
-    INPUT_PORT(0, SCALP_SURF, LegacyField);
+    INPUT_PORT(0, SCALP_SURF, Field);
     INPUT_PORT(1, LOCATIONS, Matrix);
-    INPUT_PORT_DYNAMIC(2, ELECTRODECOILPROTOTYPES, LegacyField);
+    INPUT_PORT_DYNAMIC(2, ELECTRODECOILPROTOTYPES, Field);
     OUTPUT_PORT(0, ELECTRODE_SPONGE_LOCATION_AVR, Matrix);
-    OUTPUT_PORT(1, MOVED_ELECTRODES_FIELD, LegacyField);
-    OUTPUT_PORT(2, FINAL_ELECTRODES_FIELD, LegacyField);
-    OUTPUT_PORT(3, COILS_FIELD, LegacyField);
+    OUTPUT_PORT(1, MOVED_ELECTRODES_FIELD, Field);
+    OUTPUT_PORT(2, FINAL_ELECTRODES_FIELD, Field);
+    OUTPUT_PORT(3, COILS_FIELD, Field);
 
     NEW_BRAIN_STIMULATOR_MODULE
 

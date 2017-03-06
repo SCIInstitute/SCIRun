@@ -58,8 +58,8 @@ class SCISHARE SetConductivitiesToMesh : public SCIRun::Dataflow::Networks::Modu
     virtual void execute() override;
     virtual void setStateDefaults() override;
 
-    INPUT_PORT(0, InputField, LegacyField);
-    OUTPUT_PORT(0, OutputField, LegacyField);
+    INPUT_PORT(0, InputField, Field);
+    OUTPUT_PORT(0, OutputField, Field);
 
     NEW_BRAIN_STIMULATOR_MODULE
 
