@@ -200,28 +200,25 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   std::stringstream sd;
   sd << "%." << sigdig << "g";
   std::vector<Vector> txt_coords;
-  double increment = 1. / static_cast<double>(numlabel - 1);
-  double textSize = 3. * static_cast<double>(txtsize);
+  double increment = 1.0 / (numlabel - 1);
+  double textSize = 3.0 * txtsize;
   double dash_size = 18.;
   double pipe_size = 18.;
-  size_t text_size = size_t(textSize);
-  if (!textBuilder_.isInit())
-    textBuilder_.initFreeType("FreeSans.ttf", text_size);
-  else if (!textBuilder_.isValid())
-    textBuilder_.loadNewFace("FreeSans.ttf", text_size);
-
-  if (!textBuilder_.isInit() || !textBuilder_.isValid())
+  size_t text_size = static_cast<size_t>(textSize);
+  
+  if (!textBuilder_.initialize(text_size))
     return geom;
+
   if (textBuilder_.getFaceSize() != text_size)
     textBuilder_.setFaceSize(text_size);
-  textBuilder_.setColor(glm::vec4(red, green, blue, 1.0));
+  textBuilder_.setColor(red, green, blue, 1.0);
 
   for (double i = 0.; i <= 1.000000001; i += increment)
   {
     std::stringstream line;
     sprintf(str2, sd.str().c_str(), (i / cm->getColorMapRescaleScale() - cm->getColorMapRescaleShift()) * scale);
     line << str2 << " " << st->getValue(Units).toString();
-    Vector shift = Vector((displaySide == 0) ?
+    Vector shift((displaySide == 0) ?
       (xTrans > 50 ? -(textSize*strlen(line.str().c_str())) : dash_size) : 0.,
       (displaySide == 0) ?
       0. : (yTrans > 50 ? (-textSize - pipe_size / 2.) : pipe_size), i);
@@ -236,7 +233,7 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
       + yTrans / 50.;
     Vector trans(x_trans, y_trans, 0.0);
 
-    textBuilder_.printString(line.str(), trans, shift, id, geom);
+    textBuilder_.printString(line.str(), trans, shift, id, *geom);
   }
 
   return geom;
