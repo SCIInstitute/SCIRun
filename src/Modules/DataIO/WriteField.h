@@ -47,7 +47,7 @@ namespace SCIRun {
         virtual bool useCustomExporter(const std::string& filename) const override;
         virtual bool call_exporter(const std::string& filename) override;
 
-        INPUT_PORT(0, FieldToWrite, LegacyField);
+        INPUT_PORT(0, FieldToWrite, Field);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 

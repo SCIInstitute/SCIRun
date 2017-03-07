@@ -42,8 +42,8 @@ namespace Math {
   {
   public:
     ConvertMatrixToScalar();
-    virtual void execute();
-    virtual void setStateDefaults() {}
+    void execute() override;
+    void setStateDefaults() override {}
 
     MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
 

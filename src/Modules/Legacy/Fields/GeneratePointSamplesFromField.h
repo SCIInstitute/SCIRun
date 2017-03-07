@@ -60,9 +60,9 @@ namespace SCIRun {
         virtual void execute() override;
         virtual void setStateDefaults() override;
 
-        INPUT_PORT(0, InputField, LegacyField);
+        INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, GeneratedWidget, GeometryObject);
-        OUTPUT_PORT(1, GeneratedPoints, LegacyField);
+        OUTPUT_PORT(1, GeneratedPoints, Field);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
       private:

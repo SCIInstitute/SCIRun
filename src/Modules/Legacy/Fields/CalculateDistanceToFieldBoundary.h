@@ -43,12 +43,12 @@ namespace SCIRun {
       public:
         CalculateDistanceToFieldBoundary();
 
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
-        INPUT_PORT(0, InputField, LegacyField);
-        OUTPUT_PORT(0, DistanceField, LegacyField);
-        OUTPUT_PORT(1, ValueField, LegacyField);
+        INPUT_PORT(0, InputField, Field);
+        OUTPUT_PORT(0, DistanceField, Field);
+        OUTPUT_PORT(1, ValueField, Field);
         
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       };

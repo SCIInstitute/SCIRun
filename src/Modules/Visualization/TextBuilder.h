@@ -29,7 +29,6 @@
 #ifndef MODULES_VISUALIZATION_TEXTBUILDER_H
 #define MODULES_VISUALIZATION_TEXTBUILDER_H
 
-//freetype
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
@@ -45,20 +44,16 @@ namespace SCIRun {
       public:
         TextBuilder();
         ~TextBuilder();
+        bool initialize(size_t textSize);
 
-        void initFreeType(const std::string &libName, size_t size);
-        void loadNewFace(const std::string &libName, size_t size);
         void setFaceSize(size_t size);
         size_t getFaceSize() const { return ftSize_; }
-        void setColor(const glm::vec4 &color) { color_ = color; }
 
-        bool isInit() const { return ftInit_; }
-        bool isValid() const { return ftValid_; }
+        void setColor(float r, float g, float b, float a);
 
-        static void setFSStrings(std::string &root, std::string &separator);
+        bool isReady() const { return isInit() && isValid(); }
 
-        std::string getUniqueFontString(const char *p, double x,
-          double y, double z, double w, double h);
+        static void setFSStrings(const std::string &root, const std::string &separator);
 
         //startNrmSpc: start position in normalized space [[0, 2][0, 2]], origin at lower left corner
         //shiftPxlSpc: shift from start position in pixel space
@@ -66,12 +61,20 @@ namespace SCIRun {
           const Core::Geometry::Vector &startNrmSpc,
           const Core::Geometry::Vector &shiftPxlSpc,
           const std::string& id,
-          Graphics::Datatypes::GeometryHandle geom);
+          Graphics::Datatypes::GeometryObjectSpire& geom) const;
+
         //get string length based on current settings
         //return value in pixels
-        double getStringLen(const std::string& oneline);
+        double getStringLen(const std::string& oneline) const;
 
       private:
+        std::string getUniqueFontString(char p, double x, double y, double z, double w, double h) const;
+
+        void initFreeType(const std::string &libName, size_t size);
+        void loadNewFace(const std::string &libName, size_t size);
+        bool isInit() const { return ftInit_; }
+        bool isValid() const { return ftValid_; }
+
         std::string libName_;
         FT_Library ftLib_;
         FT_Face ftFace_;
@@ -82,6 +85,9 @@ namespace SCIRun {
         static std::string mFSSeparator;
         glm::vec4 color_;
       };
+
+      
+
     }
   }
 }

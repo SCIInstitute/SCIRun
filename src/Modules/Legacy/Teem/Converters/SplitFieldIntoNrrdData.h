@@ -45,7 +45,7 @@ namespace Teem {
     virtual void execute() override;
     virtual void setStateDefaults() override;
 
-    INPUT_PORT(0, InputField, LegacyField);
+    INPUT_PORT(0, InputField, Field);
     OUTPUT_PORT(0, Data, NrrdDataType);
     OUTPUT_PORT(1, Points, NrrdDataType);
     OUTPUT_PORT(2, Connections, NrrdDataType);

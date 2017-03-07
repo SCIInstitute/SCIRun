@@ -44,7 +44,7 @@ namespace SCIRun {
       {
       public:
         ShowColorMap();
-        virtual void execute() override;
+        void execute() override;
         Core::Datatypes::GeometryBaseHandle buildGeometryObject(Core::Datatypes::ColorMapHandle cm,
           Dataflow::Networks::ModuleStateHandle state,
           const std::string& id);
@@ -64,7 +64,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName XTranslation;
         static const Core::Algorithms::AlgorithmParameterName YTranslation;
 
-        virtual void setStateDefaults() override;
+        void setStateDefaults() override;
         INPUT_PORT(0, ColorMapObject, ColorMap);
         OUTPUT_PORT(0, GeometryOutput, GeometryObject);
         MODULE_TRAITS_AND_INFO(ModuleHasUI)

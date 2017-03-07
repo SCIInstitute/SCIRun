@@ -46,11 +46,11 @@ namespace SCIRun {
       public:
         ConvertFieldBasis();
 
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
-        INPUT_PORT(0, InputField, LegacyField);
-        OUTPUT_PORT(0, OutputField, LegacyField);
+        INPUT_PORT(0, InputField, Field);
+        OUTPUT_PORT(0, OutputField, Field);
         //OUTPUT_PORT(1, Mapping, Matrix);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)

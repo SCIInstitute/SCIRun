@@ -43,7 +43,7 @@ namespace Visualization {
   {
   public:
     ShowString();
-    virtual void execute();
+    virtual void execute() override;
     INPUT_PORT(0, String, String);
     OUTPUT_PORT(0, RenderedString, GeometryObject);
     MODULE_TRAITS_AND_INFO(ModuleHasUI)

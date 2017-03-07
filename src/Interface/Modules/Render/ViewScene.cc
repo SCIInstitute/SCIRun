@@ -1004,25 +1004,23 @@ void ViewSceneDialog::setScaleBar()
 GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
 {
   const int    numTicks = scaleBar_.numTicks;
-  const double mult = scaleBar_.multiplier;
   double length = scaleBar_.projLength;
   const double height = scaleBar_.height;
   glm::vec4 color(1.0);
   glm::vec4 shift(1.9, 0.1, 0.0, 0.0);
 
   //figure out text length first
-  size_t text_size = size_t(scaleBar_.fontSize);
-  if (!textBuilder_.isInit())
-    textBuilder_.initFreeType("FreeSans.ttf", text_size);
-  else if (!textBuilder_.isValid())
-    textBuilder_.loadNewFace("FreeSans.ttf", text_size);
+  size_t text_size = static_cast<size_t>(scaleBar_.fontSize);
+
+  textBuilder_.initialize(text_size);
+
   //text
   std::stringstream ss;
   std::string oneline;
   ss << scaleBar_.length * scaleBar_.multiplier << " " << scaleBar_.unit;
   oneline = ss.str();
   double text_len = 0.0;
-  if (textBuilder_.isInit() && textBuilder_.isValid())
+  if (textBuilder_.isReady())
     text_len = textBuilder_.getStringLen(oneline);
   text_len += 5;//add a 5-pixel gap
 
@@ -1071,10 +1069,10 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
 
   ss.str("");
   ss << "_scaleBar::" << scaleBar_.fontSize << scaleBar_.length << scaleBar_.height << scaleBar_.numTicks << scaleBar_.projLength;
-  std::string uniqueNodeID = ss.str();
-  std::string vboName = uniqueNodeID + "VBO";
-  std::string iboName = uniqueNodeID + "IBO";
-  std::string passName = uniqueNodeID + "Pass";
+  auto uniqueNodeID = ss.str();
+  auto vboName = uniqueNodeID + "VBO";
+  auto iboName = uniqueNodeID + "IBO";
+  auto passName = uniqueNodeID + "Pass";
 
   // Construct VBO.
   std::string shader = "Shaders/HudUniform";
@@ -1083,7 +1081,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   std::vector<SpireSubPass::Uniform> uniforms;
   uniforms.push_back(SpireSubPass::Uniform("uTrans", shift));
   uniforms.push_back(SpireSubPass::Uniform("uColor", color));
-  SpireVBO geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr,
+  SpireVBO geomVBO(vboName, attribs, vboBufferSPtr,
     numVBOElements, BBox(), true);
 
   // Construct IBO.
@@ -1113,14 +1111,14 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   geom->mPasses.push_back(pass);
 
   //text
-  if (textBuilder_.isInit() && textBuilder_.isValid())
+  if (textBuilder_.isReady())
   {
     if (textBuilder_.getFaceSize() != text_size)
       textBuilder_.setFaceSize(text_size);
-    textBuilder_.setColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
+    textBuilder_.setColor(1.0, 1.0, 1.0, 1.0);
     Vector shift(1.9, 0.1, 0.0);
     Vector trans(-text_len + 5, 0.0, 0.0);
-    textBuilder_.printString(oneline, shift, trans, uniqueNodeID, geom);
+    textBuilder_.printString(oneline, shift, trans, uniqueNodeID, *geom);
   }
 
   return geom;
@@ -1155,7 +1153,7 @@ void ViewSceneDialog::buildGeomClippingPlanes()
   auto spire = mSpire.lock();
   if (!spire)
     return;
-  StaticClippingPlanes* clippingPlanes = spire->getClippingPlanes();
+  auto clippingPlanes = spire->getClippingPlanes();
 
   clippingPlaneGeoms_.clear();
   int index = 0;
@@ -1174,9 +1172,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
   Point c(bbox.center());
   Vector n(plane.x, plane.y, plane.z);
   n.normalize();
-  //Core::Geometry::Point p(c + (n * diag.length() / 2.0) * (plane.w));
   auto p(c + ((-plane.w) - Dot(c, n)) * n);
-  //std::cout << "p0" << "\t" << p << "\n";
   if (clippingPlanes_[index].reverseNormal)
     n = -n;
   double w, h; w = h = diag.length() / 2.0;
@@ -1187,11 +1183,6 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
     w = std::max(w, 2.1 * (intersect - c).length());
   if (bbox.intersect(c, axis2, intersect))
     h = std::max(h, 2.1 * (intersect - c).length());
-  //if (clippingPlanes_[index].reverseNormal)
-  //  p = Core::Geometry::Point(n * plane.w);
-  //else
-  //  p = Core::Geometry::Point(-n * plane.w);
-  //std::cout << "pp" << "\t" << p << "\n";
   auto p1 = p - axis1 * w / 2.0 - axis2 * h / 2.0;
   auto p2 = p + axis1 * w / 2.0 - axis2 * h / 2.0;
   auto p3 = p + axis1 * w / 2.0 + axis2 * h / 2.0;
@@ -1209,7 +1200,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
     p3.x() << p3.y() << p3.z() <<
     p4.x() << p4.y() << p4.z();
   uniqueNodeID = ss.str();
-  ColorScheme colorScheme(ColorScheme::COLOR_UNIFORM);
+  auto colorScheme(ColorScheme::COLOR_UNIFORM);
   RenderState renState;
   renState.set(RenderState::IS_ON, true);
   renState.set(RenderState::USE_TRANSPARENCY, false);

@@ -66,8 +66,8 @@ namespace SCIRun {
       {
       public:
         SolveMinNormLeastSqSystem();
-        virtual void execute();
-        virtual void setStateDefaults() {}
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
         INPUT_PORT(0, BasisVector1, DenseColumnMatrix);
         INPUT_PORT(1, BasisVector2, DenseColumnMatrix);
         INPUT_PORT(2, BasisVector3, DenseColumnMatrix);

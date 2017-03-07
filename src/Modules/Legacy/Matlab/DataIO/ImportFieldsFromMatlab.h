@@ -57,12 +57,12 @@ namespace Matlab {
     virtual void execute() override;
     virtual void setStateDefaults() override;
     INPUT_PORT(0, Filename, String);
-    OUTPUT_PORT(0, Field1, LegacyField);
-    OUTPUT_PORT(1, Field2, LegacyField);
-    OUTPUT_PORT(2, Field3, LegacyField);
-    OUTPUT_PORT(3, Field4, LegacyField);
-    OUTPUT_PORT(4, Field5, LegacyField);
-    OUTPUT_PORT(5, Field6, LegacyField);
+    OUTPUT_PORT(0, Field1, Field);
+    OUTPUT_PORT(1, Field2, Field);
+    OUTPUT_PORT(2, Field3, Field);
+    OUTPUT_PORT(3, Field4, Field);
+    OUTPUT_PORT(4, Field5, Field);
+    OUTPUT_PORT(5, Field6, Field);
     OUTPUT_PORT(6, FilenameOut, String);
     enum { NUMPORTS = 6 };
 

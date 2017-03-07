@@ -56,12 +56,12 @@ namespace SCIRun {
       public:
         GetSliceFromStructuredFieldByIndices();
 
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
-        INPUT_PORT(0, InputField, LegacyField);
+        INPUT_PORT(0, InputField, Field);
         INPUT_PORT(1, InputMatrix, Matrix);
-        OUTPUT_PORT(0, OutputField, LegacyField);
+        OUTPUT_PORT(0, OutputField, Field);
         OUTPUT_PORT(1, OutputMatrix, Matrix);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)

@@ -43,11 +43,11 @@ namespace SCIRun {
       {
       public:
         BuildBEMatrix();
-        virtual void setStateDefaults();
-        virtual void execute();
+        void setStateDefaults() override;
+        void execute() override;
         HAS_DYNAMIC_PORTS
 
-        INPUT_PORT_DYNAMIC(0, Surface, LegacyField);
+        INPUT_PORT_DYNAMIC(0, Surface, Field);
         OUTPUT_PORT(0, BEM_Forward_Matrix, Matrix);
 
         LEGACY_BIOPSE_MODULE
