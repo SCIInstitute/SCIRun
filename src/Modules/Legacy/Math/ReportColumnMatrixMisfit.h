@@ -42,8 +42,8 @@ namespace SCIRun {
       {
       public:
         ReportColumnMatrixMisfit();
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
         INPUT_PORT(0, Vec1, Matrix);
         INPUT_PORT(1, Vec2, Matrix);
         OUTPUT_PORT(0, Error_Out, Double);

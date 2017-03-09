@@ -35,11 +35,7 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  typedef SCIRun::Field LegacyField;
-  typedef SCIRun::Mesh LegacyMesh;
-
-  typedef boost::shared_ptr<LegacyMesh> LegacyMeshHandle;
-  typedef boost::shared_ptr<LegacyField> LegacyFieldHandle;
+  typedef SCIRun::Field Field;
   
 }}}
 

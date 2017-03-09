@@ -32,15 +32,28 @@
 #include <boost/filesystem/operations.hpp>
 
 
+int printHelp()
+{
+  std::cout << "Usage: bundle_toolkit OUTPUT_FILE [DIRECTORY_TO_SCAN]\nIf no directory specified, current directory is scanned." << std::endl;
+  return 0;
+}
+
 int main(int argc, const char* argv[])
 {
   if (argc < 2)
   {
-    std::cout << "Usage: bundle_toolkit OUTPUT_FILE [DIRECTORY_TO_SCAN]\nIf no directory specified, current directory is scanned." << std::endl;
-    return 0;
+    return printHelp();
   }
 
   std::string filename(argv[1]);
+
+  if (filename.find("help") != std::string::npos ||
+      filename.find("-h") != std::string::npos ||
+      (!filename.empty() && filename[0] == '-'))
+  {
+    return printHelp();
+  }
+
   std::string directoryToScan;
   if (argc < 3)
   {

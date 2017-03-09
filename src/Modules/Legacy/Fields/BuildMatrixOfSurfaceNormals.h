@@ -44,9 +44,9 @@ namespace SCIRun {
         BuildMatrixOfSurfaceNormals();
 
         virtual void execute() override;
-				virtual void setStateDefaults(){}
+				virtual void setStateDefaults() override {}
 
-        INPUT_PORT(0, InputField, LegacyField);
+        INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, OutputMatrix, DenseMatrix);
 
         MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -113,12 +113,12 @@ namespace detail
     double dsecond, dthird;
   };
 
-  bool operator==(const facetriple_t &a, const facetriple_t &b) 
+  bool operator==(const facetriple_t &a, const facetriple_t &b)
   {
     return a.first == b.first && a.second == b.second && a.third == b.third;
   }
 
-  bool operator!=(const facetriple_t &a, const facetriple_t &b) 
+  bool operator!=(const facetriple_t &a, const facetriple_t &b)
   {
     return !(a == b);
   }
@@ -169,11 +169,11 @@ VMesh::Node::index_type ClipMeshByIsovalueAlgoTet::edge_lookup(VField::index_typ
   else { np.first = u1; np.second = u0; np.dfirst = 1.0 - d0; }
 
   auto loc = edgemap.find(np);
-      
+
   if (loc == edgemap.end())
   {
     const VMesh::Node::index_type nodeindex = clipped->add_point(p);
-    edgemap[np] = nodeindex; 
+    edgemap[np] = nodeindex;
     return nodeindex;
   }
   else
@@ -240,30 +240,30 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
   VField* field = input->vfield();
   VMesh*  mesh  = input->vmesh();
   VMesh*  clipped = output->vmesh();
- 
+
   using namespace detail;
   node_hash_type nodemap;
   edge_hash_type edgemap;
   face_hash_type facemap;
-  
+
   VMesh::Node::array_type onodes(4);
   std::vector<double> v(4);
   std::vector<Point> p(4);
-  
+
   double isoval = algo->get(ClipMeshByIsovalueAlgo::ScalarIsoValue).toDouble();
-  
+
   bool lte = !algo->get(ClipMeshByIsovalueAlgo::LessThanIsoValue).toBool();
-  
+
   VMesh::size_type num_elems = mesh->num_elems();
-  
+
   for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
   {
     mesh->get_nodes(onodes, idx);
-    
+
       // Get the values and compute an inside/outside mask.
     VField::index_type inside = 0;
     mesh->get_centers(p, onodes);
-    field->get_values(v,onodes);  
+    field->get_values(v,onodes);
     for (size_t i = 0; i < onodes.size(); i++)
     {
       inside = inside << 1;
@@ -298,7 +298,7 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
           nnodes[i] = nodemap[(VField::index_type)onodes[i]];
         }
       }
-      
+
       clipped->add_elem(nnodes);
     }
     else if (inside == 0x8 || inside == 0x4 || inside == 0x2 || inside == 0x1)
@@ -306,7 +306,7 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
         // Lop off 3 points and add resulting tet to the new mesh.
       const int *perm = tet_permute_table[inside];
       VMesh::Node::array_type nnodes(4);
-      
+
       if (nodemap.find((VField::index_type)onodes[perm[0]]) == nodemap.end())
       {
         const VMesh::Node::index_type nodeindex = clipped->add_point(p[perm[0]]);
@@ -317,7 +317,7 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
       {
         nnodes[0] = nodemap[(VField::index_type)onodes[perm[0]]];
       }
-      
+
       const double imv = isoval - v[perm[0]];
       const double dl1 = imv / (v[perm[1]] - v[perm[0]]);
       const Point l1 = Interpolate(p[perm[0]], p[perm[1]], dl1);
@@ -325,20 +325,20 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
       const Point l2 = Interpolate(p[perm[0]], p[perm[2]], dl2);
       const double dl3 = imv / (v[perm[3]] - v[perm[0]]);
       const Point l3 = Interpolate(p[perm[0]], p[perm[3]], dl3);
-      
-      
+
+
       nnodes[1] = edge_lookup((VField::index_type)onodes[perm[0]],
                               (VField::index_type)onodes[perm[1]],
                               dl1, l1, edgemap, clipped);
-      
+
       nnodes[2] = edge_lookup((VField::index_type)onodes[perm[0]],
                               (VField::index_type)onodes[perm[2]],
                               dl2, l2, edgemap, clipped);
-      
+
       nnodes[3] = edge_lookup((VField::index_type)onodes[perm[0]],
                               (VField::index_type)onodes[perm[3]],
                               dl3, l3, edgemap, clipped);
-      
+
       clipped->add_elem(nnodes);
     }
     else if (inside == 0x7 || inside == 0xb || inside == 0xd || inside == 0xe)
@@ -347,7 +347,7 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
         // resulting tets to the mesh.
       const int *perm = tet_permute_table[inside];
       VMesh::Node::array_type nnodes(4);
-      
+
       VMesh::Node::index_type inodes[9];
       for (size_t i = 1; i < 4; i++)
       {
@@ -362,7 +362,7 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
           inodes[i-1] = nodemap[(VField::index_type)onodes[perm[i]]];
         }
       }
-      
+
       const double imv = isoval - v[perm[0]];
       const double dl1 = imv / (v[perm[1]] - v[perm[0]]);
       const Point l1 = Interpolate(p[perm[0]], p[perm[1]], dl1);
@@ -370,24 +370,24 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
       const Point l2 = Interpolate(p[perm[0]], p[perm[2]], dl2);
       const double dl3 = imv / (v[perm[3]] - v[perm[0]]);
       const Point l3 = Interpolate(p[perm[0]], p[perm[3]], dl3);
-      
-      
+
+
       inodes[3] = edge_lookup((index_type)onodes[perm[0]],
                               (index_type)onodes[perm[1]],
                               dl1, l1, edgemap, clipped);
-      
+
       inodes[4] = edge_lookup((index_type)onodes[perm[0]],
                               (index_type)onodes[perm[2]],
                               dl2, l2, edgemap, clipped);
-      
+
       inodes[5] = edge_lookup((index_type)onodes[perm[0]],
                               (index_type)onodes[perm[3]],
                               dl3, l3, edgemap, clipped);
-      
+
       const Point c1 = Interpolate(l1, l2, 0.5);
       const Point c2 = Interpolate(l2, l3, 0.5);
       const Point c3 = Interpolate(l3, l1, 0.5);
-      
+
       inodes[6] = face_lookup((index_type)onodes[perm[0]],
                               (index_type)onodes[perm[1]],
                               (index_type)onodes[perm[2]],
@@ -403,43 +403,43 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
                               (index_type)onodes[perm[1]],
                               dl3*0.5, dl1*0.5,
                               c3, facemap, clipped);
-      
+
       nnodes[0] = inodes[0];
       nnodes[1] = inodes[3];
       nnodes[2] = inodes[8];
       nnodes[3] = inodes[6];
       clipped->add_elem(nnodes);
-      
+
       nnodes[0] = inodes[1];
       nnodes[1] = inodes[4];
       nnodes[2] = inodes[6];
       nnodes[3] = inodes[7];
       clipped->add_elem(nnodes);
-      
+
       nnodes[0] = inodes[2];
       nnodes[1] = inodes[5];
       nnodes[2] = inodes[7];
       nnodes[3] = inodes[8];
       clipped->add_elem(nnodes);
-      
+
       nnodes[0] = inodes[0];
       nnodes[1] = inodes[6];
       nnodes[2] = inodes[8];
       nnodes[3] = inodes[7];
       clipped->add_elem(nnodes);
-      
+
       nnodes[0] = inodes[0];
       nnodes[1] = inodes[8];
       nnodes[2] = inodes[2];
       nnodes[3] = inodes[7];
       clipped->add_elem(nnodes);
-      
+
       nnodes[0] = inodes[0];
       nnodes[1] = inodes[6];
       nnodes[2] = inodes[7];
       nnodes[3] = inodes[1];
       clipped->add_elem(nnodes);
-      
+
       nnodes[0] = inodes[0];
       nnodes[1] = inodes[1];
       nnodes[2] = inodes[7];
@@ -453,7 +453,7 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
         // new tets to the mesh.
       const int *perm = tet_permute_table[inside];
       VMesh::Node::array_type nnodes(4);
-      
+
       VMesh::Node::index_type inodes[8];
       for (size_t i = 2; i < 4; i++)
       {
@@ -473,14 +473,14 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
       const Point l02 = Interpolate(p[perm[0]], p[perm[2]], dl02);
       const double dl03 = imv0 / (v[perm[3]] - v[perm[0]]);
       const Point l03 = Interpolate(p[perm[0]], p[perm[3]], dl03);
-      
+
       const double imv1 = isoval - v[perm[1]];
       const double dl12 = imv1 / (v[perm[2]] - v[perm[1]]);
       const Point l12 = Interpolate(p[perm[1]], p[perm[2]], dl12);
       const double dl13 = imv1 / (v[perm[3]] - v[perm[1]]);
       const Point l13 = Interpolate(p[perm[1]], p[perm[3]], dl13);
-      
-      
+
+
       inodes[2] = edge_lookup((index_type)onodes[perm[0]],
                               (index_type)onodes[perm[2]],
                               dl02, l02, edgemap, clipped);
@@ -493,10 +493,10 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
       inodes[5] = edge_lookup((index_type)onodes[perm[1]],
                               (index_type)onodes[perm[3]],
                               dl13, l13, edgemap, clipped);
-      
+
       const Point c1 = Interpolate(l02, l03, 0.5);
       const Point c2 = Interpolate(l12, l13, 0.5);
-      
+
       inodes[6] = face_lookup((index_type)onodes[perm[0]],
                               (index_type)onodes[perm[2]],
                               (index_type)onodes[perm[3]],
@@ -509,31 +509,31 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
                               dl12*0.5,
                               dl13*0.5,
                               c2, facemap, clipped);
-      
+
       nnodes[0] = inodes[7];
       nnodes[1] = inodes[2];
       nnodes[2] = inodes[0];
       nnodes[3] = inodes[4];
       clipped->add_elem(nnodes);
-      
+
       nnodes[0] = inodes[1];
       nnodes[1] = inodes[5];
       nnodes[2] = inodes[3];
       nnodes[3] = inodes[7];
       clipped->add_elem(nnodes);
-      
+
       nnodes[0] = inodes[1];
       nnodes[1] = inodes[3];
       nnodes[2] = inodes[6];
       nnodes[3] = inodes[7];
       clipped->add_elem(nnodes);
-      
+
       nnodes[0] = inodes[0];
       nnodes[1] = inodes[7];
       nnodes[2] = inodes[6];
       nnodes[3] = inodes[2];
       clipped->add_elem(nnodes);
-      
+
       nnodes[0] = inodes[0];
       nnodes[1] = inodes[1];
       nnodes[2] = inodes[6];
@@ -541,11 +541,11 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
       clipped->add_elem(nnodes);
     }
   }
-  
+
   VField* ofield = output->vfield();
   ofield->resize_values();
   CopyProperties(*input, *output);
-  
+
     // Add the data values from the old field to the new field.
   node_hash_type::iterator nmitr = nodemap.begin();
   while (nmitr != nodemap.end())
@@ -553,15 +553,15 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
     ofield->copy_value(field,((*nmitr).first),((*nmitr).second));
     ++nmitr;
   }
-  
+
     // Put the isovalue at the edge break points.
   edge_hash_type::iterator emitr = edgemap.begin();
   while (emitr != edgemap.end())
   {
-    ofield->set_value(isoval,((*emitr).second));    
+    ofield->set_value(isoval,((*emitr).second));
     ++emitr;
   }
-  
+
     // Put the isovalue at the face break points.  Assumes linear
     // interpolation across the faces (which seems safe, this is what we
     // used to cut with.)
@@ -571,7 +571,7 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
     ofield->set_value(isoval,((*fmitr).second));
     ++fmitr;
   }
-  
+
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (algo->get_bool("build_mapping"))
   {
@@ -583,14 +583,14 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
     std::vector<double> dtmp(nrows*3);
     SparseRowMatrix::Builder sparseBuilder;
     const SparseRowMatrix::Rows& rr = sparseBuilder.allocate_rows(nrows + 1);
-    
+
     for (index_type i = 0; i < nrows * 3; i++)
     {
       cctmp[i] = -1;
     }
-    
+
     size_type nnz = 0;
-    
+
       // Add the data values from the old field to the new field.
     nmitr = nodemap.begin();
     while (nmitr != nodemap.end())
@@ -600,7 +600,7 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
       nnz++;
       ++nmitr;
     }
-    
+
       // Insert the double hits into cc.
       // Put the isovalue at the edge break points.
     emitr = edgemap.begin();
@@ -613,7 +613,7 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
       nnz+=2;
       ++emitr;
     }
-    
+
       // Insert the double hits into cc.
       // Put the isovalue at the edge break points.
     fmitr = facemap.begin();
@@ -627,13 +627,13 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
       dtmp[(*fmitr).second * 3 + 1] = (*fmitr).first.dsecond;
       dtmp[(*fmitr).second * 3 + 2] = (*fmitr).first.dthird;
       nnz+=3;
-      
+
       ++fmitr;
     }
-    
+
     const SparseRowMatrix::Columns& cc = sparseBuilder.allocate_columns(nnz);
     const SparseRowMatrix::Storage& d = sparseBuilder.allocate_data(nnz);
-    
+
     index_type j;
     index_type counter = 0;
     rr[0] = 0;
@@ -651,17 +651,17 @@ bool ClipMeshByIsovalueAlgoTet::run(const AlgorithmBase* algo, FieldHandle input
     mapping = new SparseRowMatrix(nrows, ncols, sparseBuilder.build(), nnz);
   }
   #endif
-  
+
   return (true);
 }
 
-// Algorithm for tri meshes 
+// Algorithm for tri meshes
 
 class ClipMeshByIsovalueAlgoTri
 {
   public:
     bool run(const AlgorithmBase* algo,FieldHandle input, FieldHandle& output, MatrixHandle& mapping) const;
-  
+
 private:
     VMesh::Node::index_type
     edge_lookup(VField::index_type u0, VField::index_type u1, double d0,
@@ -693,7 +693,7 @@ bool ClipMeshByIsovalueAlgoTri::run(const AlgorithmBase* algo, FieldHandle input
   VField* field = input->vfield();
   VMesh*  mesh  = input->vmesh();
   VMesh*  clipped = output->vmesh();
-  
+
   using namespace detail;
 
   node_hash_type nodemap;
@@ -704,7 +704,7 @@ bool ClipMeshByIsovalueAlgoTri::run(const AlgorithmBase* algo, FieldHandle input
   std::vector<Point>  p(3);
 
   double isoval = algo->get(ClipMeshByIsovalueAlgo::ScalarIsoValue).toDouble();
-    
+
   bool lte = !algo->get(ClipMeshByIsovalueAlgo::LessThanIsoValue).toBool();
 
   VMesh::size_type num_elems = mesh->num_elems();
@@ -772,7 +772,7 @@ bool ClipMeshByIsovalueAlgoTri::run(const AlgorithmBase* algo, FieldHandle input
       }
 
       const double imv = isoval - v[perm[0]];
-      
+
       const double dl1 = imv / (v[perm[1]] - v[perm[0]]);
       const Point l1 = Interpolate(p[perm[0]], p[perm[1]], dl1);
       const double dl2 = imv / (v[perm[2]] - v[perm[0]]);
@@ -847,7 +847,7 @@ bool ClipMeshByIsovalueAlgoTri::run(const AlgorithmBase* algo, FieldHandle input
   }
 
   VField* ofield = output->vfield();
-  ofield->resize_values(); 
+  ofield->resize_values();
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
    ofield->copy_properties(field);
   #endif
@@ -867,12 +867,12 @@ bool ClipMeshByIsovalueAlgoTri::run(const AlgorithmBase* algo, FieldHandle input
     ofield->set_value(isoval, ((*emitr).second));
     ++emitr;
   }
-  
+
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if(algo->get_bool("build_mapping"))
   {
     // Create the interpolant matrix.
-    
+
     const size_type nrows = clipped->num_nodes();
     const size_type ncols = mesh->num_nodes();
     std::vector<index_type> cctmp(nrows*2);
@@ -912,7 +912,7 @@ bool ClipMeshByIsovalueAlgoTri::run(const AlgorithmBase* algo, FieldHandle input
 
     const SparseRowMatrix::Columns& cc = sparseBuilder.allocate_columns(nnz);
     const SparseRowMatrix::Storage& d = sparseBuilder.allocate_data(nnz);
-    
+
     index_type j;
     index_type counter = 0;
     rr[0] = 0;
@@ -930,15 +930,15 @@ bool ClipMeshByIsovalueAlgoTri::run(const AlgorithmBase* algo, FieldHandle input
     mapping = new SparseRowMatrix(nrows, ncols, sparseBuilder.build(), nnz);
   }
   #endif
-  
+
   return (true);
 }
 
-class ClipMeshByIsovalueAlgoHex 
+class ClipMeshByIsovalueAlgoHex
 {
   public:
     bool run(const AlgorithmBase* algo,FieldHandle input, FieldHandle& output, MatrixHandle& mapping) const;
-             
+
     static bool ud_pair_less(const std::pair<VField::index_type, double> &a,
                              const std::pair<VField::index_type, double> &b)
     {
@@ -951,20 +951,20 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
 {
   // Do marching cubes
   FieldHandle tri_field;
-  
+
   MarchingCubesAlgo mc_algo;
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
    mc_algo.set_progress_reporter(algo->get_progress_reporter());
   #endif
-  
+
   double isoval = algo->get(ClipMeshByIsovalueAlgo::ScalarIsoValue).toDouble();
   mc_algo.set(MarchingCubesAlgo::build_field, true);
-  
+
   bool lte = !algo->get(ClipMeshByIsovalueAlgo::LessThanIsoValue).toBool();
-  
+
   std::vector<double> isovals(1);
   isovals[0] = isoval;
- 
+
    // Run marching cubes
   mc_algo.run(input,isovals,tri_field);
   VMesh *tri_mesh = tri_field->vmesh();
@@ -983,44 +983,44 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
   VMesh::Elem::index_type nidx;
 
   for (VMesh::Elem::index_type idx=0; idx< num_elems; idx++)
-  {    
+  {
     // Get all the faces in the cell.
     mesh->get_delems(delems, idx);
-    
+
     for (size_t j=0; j<delems.size(); j++)
     {
       if( !mesh->get_neighbor(nidx, idx, delems[j] ) )
       {
         // Faces with no neighbors are on the boundary.
         original_boundary[delems[j]] = delems[j];
-      }      
+      }
     }
   }
-  
+
   // Create a map to help differentiate between new nodes created for
   // the inserted sheet, and the nodes on the stair stepped boundary.
   std::map<VMesh::Node::index_type, VMesh::Node::index_type> clipped_to_original_nodemap;
   typedef boost::unordered_map<VField::index_type, VMesh::Node::index_type> hash_type;
-   
+
   hash_type nodemap;
-  
+
   std::vector<VMesh::Elem::index_type> elemmap;
-  
+
   // Find all of the hexes inside the isosurface and add them to the
   // clipped mesh.
   for (VMesh::Elem::index_type idx=0; idx<num_elems; idx++)
   {
     bool inside = false;
-    
+
     VMesh::Node::array_type onodes;
     mesh->get_nodes(onodes, idx);
     inside = true;
-    
+
     for (size_t i = 0; i < onodes.size(); i++)
     {
       double v;
       field->get_value(v, onodes[i]);
-      
+
       if( lte )
       {
         if( v > isoval )
@@ -1038,15 +1038,15 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
         }
       }
     }
-    
+
     if (inside)
     {
       VMesh::Node::array_type onodes;
       mesh->get_nodes(onodes, idx);
-      
+
       // Add this element to the new mesh.
       VMesh::Node::array_type nnodes(onodes.size());
-      
+
       for (size_t i = 0; i<onodes.size(); i++)
       {
         if (nodemap.find((VField::index_type)onodes[i]) == nodemap.end())
@@ -1063,52 +1063,52 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
           nnodes[i] = nodemap[(VField::index_type)onodes[i]];
         }
       }
-      
+
       clipped->add_elem(nnodes);
       elemmap.push_back(idx); // Assumes elements always added to end.
     }
   }
-  
+
   // Get the boundary elements of the clipped mesh (code from FieldBoundary)
   // We'll use this list of boundary elements (minus the elements from
   // the original boundary) so we know which nodes to project to the
   // isosurface to create the new sheet of hexes.
   std::map<VMesh::Node::index_type, VMesh::Node::index_type> vertex_map;
-  
+
   std::vector<VMesh::Node::index_type> node_list;
   std::vector<VMesh::DElem::index_type> face_list;
-  
+
   clipped->synchronize( Mesh::ELEM_NEIGHBORS_E | Mesh::FACES_E );
-  
+
   // Walk all the cells in the clipped mesh to find the boundary faces.
-  
+
   VMesh::size_type num_celems = clipped->num_elems();
   VMesh::DElem::array_type faces;
   VMesh::DElem::index_type old_face;
-  VMesh::Node::array_type face_nodes;  
+  VMesh::Node::array_type face_nodes;
   VMesh::Node::array_type nodes;
-   
+
   for (VMesh::Elem::index_type idx = 0; idx<num_celems; idx++)
-  {    
+  {
     // Get all the faces in the cell.
     clipped->get_delems( faces, idx );
-    
+
     // Check each face for neighbors.
     VMesh::DElem::array_type::iterator fiter = faces.begin();
-    
+
     while( fiter != faces.end() )
     {
       VMesh::Elem::index_type nci;
       VMesh::DElem::index_type fi = *fiter;
       ++fiter;
-      
+
       if( !clipped->get_neighbor( nci, idx, fi ) )
       {
         // Faces with no neighbors are on the boundary.  Make sure
         // that this face isn't on the original boundary.
         bool is_old_boundary = false;
         index_type i;
-        
+
         clipped->get_nodes( face_nodes, fi );
         for (size_t j=0;j<4; j++) face_nodes[j] = clipped_to_original_nodemap[face_nodes[j]];
         if( mesh->get_delem( old_face, face_nodes) )
@@ -1119,18 +1119,18 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
             is_old_boundary = true;
           }
         }
-        
+
         // Don't add the nodes from the faces of the original boundary
         // to the list of nodes that we'll be projecting later to
         // create the new sheet of hex elements.
         if( !is_old_boundary )
         {
           face_list.push_back( fi );
-          
+
           clipped->get_nodes( nodes, fi );
-          
+
           VMesh::Node::array_type::iterator niter = nodes.begin();
-          
+
           VMesh::size_type size = nodes.size();
           for( i = 0; i < size; i++ )
           {
@@ -1146,7 +1146,7 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
       }
     }
   }
-  
+
   // For each new node on the clipped boundary, project a new node to
   // the isosurface create a map between the clipped boundary nodes
   // and the new nodes to help us create hexes with the correct
@@ -1160,40 +1160,39 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
     VMesh::Node::index_type this_node = node_list[i];
     Point n_p;
     clipped->get_center( n_p, this_node );
-    
+
     Point new_result;
     VMesh::Elem::index_type face_id;
     double dist;
-    
+
     tri_mesh->find_closest_elem(dist, new_result, face_id, n_p );
-    Vector dist_vect = n_p - new_result;
-    
+
     // Add the new node to the clipped mesh.
     Point new_point( new_result );
     VMesh::Node::index_type this_index = clipped->add_point( new_point );
-    
+
     // Create a map for the new node to a node on the boundary of the
     // clipped mesh.
     new_map[this_node] = this_index;
-    cnt++; 
-    if (cnt == 100) 
-    { 
-     cnt = 0; 
+    cnt++;
+    if (cnt == 100)
+    {
+     cnt = 0;
      #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-      algo->update_progress(i,(size_type)(1.3*num_celems)); 
+      algo->update_progress(i,(size_type)(1.3*num_celems));
      #endif
     }
   }
-  
+
   // For each quad on the clipped boundary we have a map to the new
   // projected nodes so, create the new sheet of hexes from each quad
   // on the clipped boundary
   std::vector<VMesh::Elem::index_type> new_elems;
   for(size_t i = 0; i < face_list.size(); i++ )
-  { 
+  {
     VMesh::Node::array_type nodes;
     clipped->get_nodes( nodes, face_list[i] );
-    
+
     VMesh::Node::array_type nnodes(8);
     nnodes[0] = nodes[3];
     nnodes[1] = nodes[2];
@@ -1203,10 +1202,10 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
     nnodes[5] = new_map[nodes[2]];
     nnodes[6] = new_map[nodes[1]];
     nnodes[7] = new_map[nodes[0]];
-    
+
     new_elems.push_back( clipped->add_elem( nnodes ) );
   }
-  
+
   // Force all the synch data to be rebuilt on next synch call.
   clipped->clear_synchronization();
 
@@ -1214,28 +1213,27 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
   ofield->resize_values();
   CopyProperties(*input, *output);
 
+  const size_type nrows = nodemap.size() + node_list.size();
+
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Create the interpolation matrix for downstream use.
   hash_type::iterator hitr = nodemap.begin();
-
-  const size_type nrows = nodemap.size() + node_list.size();
   const size_type ncols = field->num_values();
   const size_type nnz = nrows+7*node_list.size();
-  
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   SparseRowMatrix::Data sparseData(nrows+1, nnz);
   const SparseRowMatrix::Rows& rr = sparseData.rows();
   const SparseRowMatrix::Columns& cc = sparseData.columns();
   const SparseRowMatrix::Storage& d = sparseData.data();
-  
+
   // Nodes in the original mesh will have the same field values as
   // before since we didn't move any of them.
   while( hitr != nodemap.end() )
   {
-    ofield->copy_value(field,((*hitr).first), ((*hitr).second));      
+    ofield->copy_value(field,((*hitr).first), ((*hitr).second));
     cc[(*hitr).second] = (*hitr).first;
     ++hitr;
   }
-  
+
   // Nodes in the original mesh have a one-to-one correspondence in
   // the interp matrix.
   size_t i;
@@ -1244,22 +1242,22 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
     rr[i] = i;
     d[i] = 1.0;
   }
-  
+
   // Figure out the correspondence for the new nodes with the original mesh.
   index_type counter = i;
   index_type rrvalue = i;
-  
+
   mesh->synchronize(Mesh::LOCATE_E);
   for( size_t j = 0; j < node_list.size(); j++ )
   {
     rr[counter+j] = rrvalue;
-    
+
     VMesh::Node::index_type ni = new_map[node_list[j]];
-    
+
     Point p;
     clipped->get_center(p, ni);
-    
-    // Find the cell in the old mesh which the new node is located in and 
+
+    // Find the cell in the old mesh which the new node is located in and
     // interpolate values between the nodes in this cell for the new values.
     VMesh::Elem::index_type el;
     if( mesh->locate( el, p ) )
@@ -1307,22 +1305,22 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
       cc[rrvalue+7] = 0;
       d[rrvalue+7] = 0.0;
     }
-    
+
     rrvalue += 8;
-  }  
+  }
   rr[nrows] = rrvalue; // An extra entry goes on the end of rr.
-  
+
   // Create the interp matrix.
   mapping = new SparseRowMatrix( nrows, ncols, sparseData, nrows+7*node_list.size() );
   #endif
-  
+
   return (true);
 }
 
 
 // Version without building mapping matrix
 bool ClipMeshByIsovalueAlgo::run(FieldHandle input, FieldHandle& output) const
-{ 
+{
    // Store old setting
    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
    bool temp = get_bool("build_mapping");
@@ -1330,7 +1328,7 @@ bool ClipMeshByIsovalueAlgo::run(FieldHandle input, FieldHandle& output) const
    #endif
    MatrixHandle dummy;
    // Run full algorithm
-   
+
    bool ret = run(input,output,dummy);
    // Reset old setting
    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -1354,12 +1352,12 @@ bool ClipMeshByIsovalueAlgo::run(FieldHandle input, FieldHandle& output, MatrixH
   // Using a null handle will cause the program to crash. Hence it is a good
   // policy to check all incoming handles and to see whether they point to actual
   // objects.
-  
+
   // Handle: the function get_rep() returns the pointer contained in the handle
   if (!input)
   {
     // If we encounter a null pointer we return an error message and return to
-    // the program to deal with this error.  
+    // the program to deal with this error.
     error("No input field");
     return (false);
   }
@@ -1368,7 +1366,7 @@ bool ClipMeshByIsovalueAlgo::run(FieldHandle input, FieldHandle& output, MatrixH
   // output field should be.
 
   FieldInformation fi(input);
-  // Here we test whether the class is part of any of these newly defined 
+  // Here we test whether the class is part of any of these newly defined
   // non-linear classes. If so we return an error.
   if (fi.is_nonlinear())
   {
@@ -1376,9 +1374,9 @@ bool ClipMeshByIsovalueAlgo::run(FieldHandle input, FieldHandle& output, MatrixH
     return (false);
   }
 
-  if (!(fi.is_tet_element()||fi.is_hex_element()||fi.is_tri_element())) 
+  if (!(fi.is_tet_element()||fi.is_hex_element()||fi.is_tri_element()))
   {
-    // Notify the user that no action is done  
+    // Notify the user that no action is done
     error("This algorithm only works on a TetVolMesh, a HexVolMesh, or a TriSurfMesh");
     return (false);
   }
@@ -1389,26 +1387,26 @@ bool ClipMeshByIsovalueAlgo::run(FieldHandle input, FieldHandle& output, MatrixH
     error("This algorithms requires a scalar value as field data");
     return (false);
   }
-  
+
   // Needs to be linear data
   if (!(fi.is_lineardata()))
   {
     error("This algorithm is only defined for data located at the nodes of the elements");
     return (false);
   }
-  
+
   // For unstructuring
   if (fi.is_hex_element()) fi.make_hexvolmesh();
   if (fi.is_quad_element()) fi.make_quadsurfmesh();
   if (fi.is_crv_element()) fi.make_curvemesh();
-  
-  output = CreateField(fi);  
+
+  output = CreateField(fi);
   if (!output)
   {
     error("Could not allocate output field");
     return (false);
   }
-  
+
   if (fi.is_tet_element())
   {
     ClipMeshByIsovalueAlgoTet algo;
@@ -1437,7 +1435,7 @@ bool ClipMeshByIsovalueAlgo::run(FieldHandle input, FieldHandle& output, MatrixH
    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   /// Copy properties of the property manager
 	output->copy_properties(input.get_rep());
-   #endif   
+   #endif
   // Success:
   return (true);
 }
@@ -1450,7 +1448,7 @@ AlgorithmParameterName ClipMeshByIsovalueAlgo::ScalarIsoValue("ScalarIsoValue");
 AlgorithmOutput ClipMeshByIsovalueAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(InputField);
-  
+
   FieldHandle output_fld;
 
   if (!run(inputField, output_fld))
@@ -1458,10 +1456,10 @@ AlgorithmOutput ClipMeshByIsovalueAlgo::run(const AlgorithmInput& input) const
 
   AlgorithmOutput output;
   output[OutputField] = output_fld;
-  
+
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
    output[Mapping] = mapping;
   #endif
-   
+
   return output;
 }

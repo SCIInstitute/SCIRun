@@ -47,8 +47,8 @@ namespace Basic {
 
     INPUT_PORT(0, TestMatrixIn, DenseMatrix);
     OUTPUT_PORT(0, TestMatrixOut, DenseMatrix);
-    INPUT_PORT(1, TestFieldIn, LegacyField);
-    OUTPUT_PORT(1, TestFieldOut, LegacyField);
+    INPUT_PORT(1, TestFieldIn, Field);
+    OUTPUT_PORT(1, TestFieldOut, Field);
 
     bool expensiveComputationDone_, executeCalled_;
     void resetFlags();

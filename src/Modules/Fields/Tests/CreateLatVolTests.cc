@@ -65,7 +65,7 @@ TEST_F(CreateLatVolModuleTests, DefaultLatVolCreation)
   auto output = getDataOnThisOutputPort(clv, 0);
   ASSERT_TRUE(output != nullptr);
 
-  auto latvol = boost::dynamic_pointer_cast<Field>(output);
+  auto latvol = boost::dynamic_pointer_cast<SCIRun::Field>(output);
   ASSERT_TRUE(latvol != nullptr);
   FieldInformation info(latvol);
   EXPECT_TRUE(info.is_latvolmesh());
