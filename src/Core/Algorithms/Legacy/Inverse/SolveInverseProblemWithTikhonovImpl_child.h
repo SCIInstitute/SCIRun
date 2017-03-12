@@ -40,7 +40,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Logging/LoggerFwd.h>
-#include <Core/Algorithms/Legacy/Inverse/TikhonovImplAbstractBase.h>
+#include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 #include <Core/Algorithms/Legacy/Inverse/share.h>
 
 namespace SCIRun {
@@ -52,15 +52,11 @@ namespace SCIRun {
 			    {
 
 			    public:
-			        SolveInverseProblemWithTikhonovImpl_child(const SCIRun::Core::Datatypes::DenseMatrixHandle& forwardMatrix,
-			                                                  const SCIRun::Core::Datatypes::DenseMatrixHandle& measuredData,
-			                                                  AlgorithmChoice regularizationChoice = automatic,
-			                                                  AlgorithmSolutionSubcase regularizationSolutionSubcase = solution_constrained,
-			                                                  AlgorithmResidualSubcase regularizationResidualSubcase = residual_constrained,
-			                                                  const SCIRun::Core::Datatypes::DenseMatrixHandle sourceWeighting = 0,
-			                                                  const SCIRun::Core::Datatypes::DenseMatrixHandle sensorWeighting = 0,
-			                                                  bool computeRegularizedInverse = false,
-			                                                  SCIRun::Core::Logging::LegacyLoggerInterface* pr = 0);
+			        SolveInverseProblemWithTikhonovImpl_child() : TikhonovImplAbstractBase()
+						{
+							// prealocate matrices needed for computation
+				        	preAlocateInverseMatrices();
+						};
 
 			    private:
 
@@ -72,7 +68,7 @@ namespace SCIRun {
 
 
 			        SCIRun::Core::Datatypes::DenseColumnMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation);
-			        void preAlocateInverseMatrices();
+			        void preAlocateInverseMatrices(SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_,SCIRun::Core::Datatypes::DenseMatrix& measuredData_ ,SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_,SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_);
 			//      bool checkInputMatrixSizes(); // DEFINED IN PARENT, MIGHT WANT TO OVERRIDE SOME OTHER TIME
 
 			    };

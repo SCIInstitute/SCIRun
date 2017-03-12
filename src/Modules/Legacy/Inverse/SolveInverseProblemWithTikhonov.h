@@ -1,4 +1,3 @@
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -7,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,66 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #ifndef MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonov_H__
 #define MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonov_H__
-
 #include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/Legacy/Inverse/TikhonovImplAbstractBase.h>
-#include <Modules/Legacy/Inverse/share.h>
+#include <Modules/Fields/share.h>
 
 namespace SCIRun {
-  namespace Core
-  {
-    namespace Algorithms
-    {
-      namespace Inverse
-      {
-        ALGORITHM_PARAMETER_DECL(TikhonovSolutionSubcase);
-        ALGORITHM_PARAMETER_DECL(TikhonovResidualSubcase);
-      }
-    }
-  }
-  namespace Modules {
-    namespace Inverse {
+namespace Modules {
+namespace Inverse {
 
-      class SCISHARE SolveInverseProblemWithTikhonov : public Dataflow::Networks::Module,
-        public Has4InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
-        public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
-      {
-      public:
-        SolveInverseProblemWithTikhonov();
-        virtual void setStateDefaults();
-        virtual void execute();
+	class SCISHARE SolveInverseProblemWithTikhonov : public SCIRun::Dataflow::Networks::Module,
+		public Has4InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
+		public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
+	{
+	public:
+		SolveInverseProblemWithTikhonov();
+		virtual void execute();
+		virtual void setStateDefaults();
 
-        INPUT_PORT(0, ForwardMatrix, Matrix);
-        INPUT_PORT(1, WeightingInSourceSpace, Matrix);
-        INPUT_PORT(2, MeasuredPotentials, Matrix);
-        INPUT_PORT(3, WeightingInSensorSpace, Matrix);
-        OUTPUT_PORT(0, InverseSolution, Matrix);
-        OUTPUT_PORT(1, RegularizationParameter, Matrix);
-        OUTPUT_PORT(2, RegInverse, Matrix);
+		INPUT_PORT(0, ForwardMatrix, Matrix);
+		INPUT_PORT(1, WeightingInSourceSpace, Matrix);
+		INPUT_PORT(2, MeasuredPotentials, Matrix);
+		INPUT_PORT(3, WeightingInSensorSpace, Matrix);
+		OUTPUT_PORT(0, InverseSolution, Matrix);
+		OUTPUT_PORT(1, RegularizationParameter, Matrix);
+		OUTPUT_PORT(2, RegInverse, Matrix);
 
-        static const Core::Algorithms::AlgorithmParameterName LambdaFromDirectEntry;
-        static const Core::Algorithms::AlgorithmParameterName RegularizationMethod;
-        static const Core::Algorithms::AlgorithmParameterName LambdaMin;
-        static const Core::Algorithms::AlgorithmParameterName LambdaMax;
-        static const Core::Algorithms::AlgorithmParameterName LambdaNum;
-        static const Core::Algorithms::AlgorithmParameterName LambdaResolution;
-        static const Core::Algorithms::AlgorithmParameterName TikhonovCase;
-        static const Core::Algorithms::AlgorithmParameterName LambdaSliderValue;
-        static const Core::Algorithms::AlgorithmParameterName LambdaCorner;
-        static const Core::Algorithms::AlgorithmParameterName LCurveText;
-		
-        LEGACY_BIOPSE_MODULE
+		MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
-
-      private:
-        void update_lcurve_gui(const double lambda, const Core::Algorithms::Inverse::TikhonovAlgorithm::LCurveInput& input, const int lambda_index);
-      };
-
-    }
-  }
-}
+	private:
+		void update_lcurve_gui(const double lambda, const Core::Algorithms::Inverse::TikhonovAlgorithm::LCurveInput& input, const int lambda_index);
+	};
+}}}
 
 #endif

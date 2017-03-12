@@ -54,33 +54,6 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Inverse;
 
-//// Class Constructor
-/////////////
-    SolveInverseProblemWithTikhonovImpl_child::SolveInverseProblemWithTikhonovImpl_child(const DenseMatrixHandle& forwardMatrix,
-                                             const DenseMatrixHandle& measuredData,
-                                             AlgorithmChoice regularizationChoice,
-                                             AlgorithmSolutionSubcase regularizationSolutionSubcase,
-                                             AlgorithmResidualSubcase regularizationResidualSubcase,
-                                             const DenseMatrixHandle sourceWeighting,
-                                             const DenseMatrixHandle sensorWeighting,
-                                             bool computeRegularizedInverse,
-                                             LegacyLoggerInterface* pr)
-        :TikhonovImplAbstractBase(forwardMatrix,
-                                  measuredData,
-                                  regularizationChoice,
-                                  regularizationSolutionSubcase,
-                                  regularizationResidualSubcase,
-                                  sourceWeighting,
-                                  sensorWeighting,
-                                  computeRegularizedInverse,
-                                  pr)
-    {
-        // prealocate matrices needed for computation
-        preAlocateInverseMatrices();
-    }
-//////////////////
-//////////
-
 
 /////////////////////////
 ///////// compute Inverse solution
@@ -125,7 +98,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 
 /////// precomputeInverseMatrices
 ///////////////
-    void SolveInverseProblemWithTikhonovImpl_child::preAlocateInverseMatrices()
+    void SolveInverseProblemWithTikhonovImpl_child::preAlocateInverseMatrices(SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
     {
 
         // TODO: use DimensionMismatch exception where appropriate
