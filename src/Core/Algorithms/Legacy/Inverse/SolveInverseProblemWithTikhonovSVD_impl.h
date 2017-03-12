@@ -65,6 +65,11 @@ namespace SCIRun
 
 			        SolveInverseProblemWithTikhonovSVD_impl( const SCIRun::Core::Datatypes::DenseMatrixHandle& forwardMatrix,
 			                                                  const SCIRun::Core::Datatypes::DenseMatrixHandle& measuredData,
+			                                                  AlgorithmChoice regularizationChoice = automatic,
+			                                                  AlgorithmSolutionSubcase regularizationSolutionSubcase = solution_constrained,
+			                                                  AlgorithmResidualSubcase regularizationResidualSubcase = residual_constrained,
+			                                                  const SCIRun::Core::Datatypes::DenseMatrixHandle sourceWeighting = 0,
+			                                                  const SCIRun::Core::Datatypes::DenseMatrixHandle sensorWeighting = 0,
 			                                                  bool computeRegularizedInverse = false,
 			                                                  SCIRun::Core::Logging::LegacyLoggerInterface* pr = 0)
 
