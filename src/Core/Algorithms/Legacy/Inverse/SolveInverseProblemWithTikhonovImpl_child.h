@@ -48,11 +48,11 @@ namespace SCIRun {
 		namespace Algorithms {
 			namespace Inverse {
 
-			    class SCISHARE SolveInverseProblemWithTikhonovImpl_child : public TikhonovImplAbstractBase
+			    class SCISHARE SolveInverseProblemWithTikhonovImpl_child : public TikhonovAlgoAbstractBase
 			    {
 
 			    public:
-			        SolveInverseProblemWithTikhonovImpl_child() : TikhonovImplAbstractBase()
+			        SolveInverseProblemWithTikhonovImpl_child() : TikhonovAlgoAbstractBase()
 						{
 							// prealocate matrices needed for computation
 				        	preAlocateInverseMatrices();

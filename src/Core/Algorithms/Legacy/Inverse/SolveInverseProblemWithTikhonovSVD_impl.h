@@ -57,12 +57,12 @@ namespace SCIRun
 			namespace Inverse
 			{
 
-			    class SCISHARE SolveInverseProblemWithTikhonovSVD_impl : public TikhonovImplAbstractBase
+			    class SCISHARE SolveInverseProblemWithTikhonovSVD_impl : public TikhonovAlgoAbstractBase
 			    {
 
 
 			    public:
-			        SolveInverseProblemWithTikhonovSVD_impl() : TikhonovImplAbstractBase()
+			        SolveInverseProblemWithTikhonovSVD_impl() : TikhonovAlgoAbstractBase()
 			                                        {
 			                                            rank = 0;
 			                                        };

@@ -33,7 +33,7 @@ DEALINGS IN THE SOFTWARE.
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <Core/Algorithms/Legacy/Inverse/TikhonovImplAbstractBase.h>
+#include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovImpl_child.h>
 
 #include <Core/Datatypes/Matrix.h>
