@@ -52,28 +52,69 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Inverse;
 
+AlgorithmInputName TikhonovAlgoAbstractBase::ForwardMatrix("ForwardMatrix");
+AlgorithmInputName TikhonovAlgoAbstractBase::MeasuredPotentials("MeasuredPotentials");
+AlgorithmInputName TikhonovAlgoAbstractBase::WeightingInSourceSpace("WeightingInSourceSpace");
+AlgorithmInputName TikhonovAlgoAbstractBase::WeightingInSensorSpace("WeightingInSensorSpace");
 
-AlgorithmParameterName TikhonovAlgoAbstractBase::AlgorithmChoice("AlgorithmChoice");
-AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationSolutionSubcase("regularizationSolutionSubcase");
-AlgorithmParameterName TikhonovAlgoAbstractBase::AlgoriregularizationResidualSubcasethmChoice("regularizationResidualSubcase");
+AlgorithmOutputName TikhonovAlgoAbstractBase::InverseSolution("InverseSolution");
+AlgorithmOutputName TikhonovAlgoAbstractBase::RegularizationParameter("RegularizationParameter");
+AlgorithmOutputName TikhonovAlgoAbstractBase::RegInverse("RegInverse");
+
+
+AlgorithmParameterName TikhonovAlgoAbstractBase::RegularizationMethod("lambdaMethodComboBox");
+AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationChoice("autoRadioButton");
+AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaFromDirectEntry("lambdaDoubleSpinBox");
+AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaMin("lambdaMinDoubleSpinBox");
+AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaMax("lambdaMaxDoubleSpinBox");
+AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaNum("lambdaNumberSpinBox");
+AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaResolution("lambdaResolutionDoubleSpinBox");
+AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaSliderValue("lambdaSliderDoubleSpinBox");
+AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaCorner("lCurveLambdaLineEdit");
+AlgorithmParameterName TikhonovAlgoAbstractBase::LCurveText("lCurveTextEdit");
+AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationSolutionSubcase("solutionConstraintRadioButton");
+AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationResidualSubcase("residualConstraintRadioButton");
+
+// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, RegularizationMethod);
+// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, regularizationChoice);
+// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaFromDirectEntry);
+// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaMin);
+// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaMax);
+// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaNum);
+// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaResolution);
+// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaSliderValue);
+// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaCorner);
+// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LCurveText);
+// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, regularizationSolutionSubcase);
+// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, regularizationResidualSubcase);
 
 TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
 {
-	addParameter(regularizationChoice,TikhonovAlgoAbstractBase::AlgorithmChoice::automatic);
-	addParameter(regularizationSolutionSubcase,TikhonovAlgoAbstractBase::AlgorithmChoice::solution_constrained);
-	addOption(regularizationResidualSubcase,TikhonovAlgoAbstractBase::AlgorithmChoice::residual_constrained);
+	addParameter(RegularizationMethod, "lcurve");
+	addParameter(regularizationChoice, 0);
+	addParameter(LambdaFromDirectEntry,1e-6);
+	addParameter(lambdaDoubleSpinBox,1e-6);
+	addParameter(LambdaMin,1e-6);
+	addParameter(LambdaMax,1);
+	addParameter(LambdaNum,1000);
+	addParameter(LambdaResolution,1e-6);
+	addParameter(LambdaSliderValue,0);
+	addParameter(LambdaCorner,0);
+	addParameter(LCurveText,"lcurve");
+	addParameter(regularizationSolutionSubcase,solution_constrained);
+	addParameter(regularizationResidualSubcase,residual_constrained);
 
 }
 
 ////// CHECK IF INPUT MATRICES HAVE THE CORRECT SIZE
-bool TikhonovAlgoAbstractBase::checkInputMatrixSizes(const AlgorithmInput & input)
+bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & input)
 {
 
 	// get inputs
-	auto forwardMatrix_ = input.get<Matrix>(Variables::ForwardMatrix);
-	auto measuredData_ = input.get<Matrix>(Variables::MeasuredPotentials);
-	auto sourceWeighting_ = input.get<Matrix>(Variables::WeightingInSourceSpace);
-	auto sensorWeighting_ = input.get<Matrix>(Variables::WeightingInSensorSpace);
+	auto forwardMatrix_ = input.get<Matrix>(ForwardMatrix);
+	auto measuredData_ = input.get<Matrix>(MeasuredPotentials);
+	auto sourceWeighting_ = input.get<Matrix>(WeightingInSourceSpace);
+	auto sensorWeighting_ = input.get<Matrix>(WeightingInSensorSpace);
 
 	// get input sizes
     const int M = forwardMatrix_->nrows();
@@ -82,69 +123,37 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes(const AlgorithmInput & inpu
     // check that rows of fwd matrix equal number of measurements
     if ( M != measuredData_->nrows() )
     {
-        const std::string errorMessage("Input matrix dimensions must agree.");
-        if (pr_)
-        {
-            pr_->error(errorMessage);
-        }
-        else
-        {
-            std::cerr << errorMessage << std::endl;
-        }
-        BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
+		THROW_ALGORITHM_INPUT_ERROR("Input matrix dimensions must agree.");
+		return false;
     }
 
     // check that number of time samples is 1. @JCOLLFONT to change for a more general case later (should add a for loop)
     if (1 != measuredData_->ncols())
     {
-        const std::string errorMessage("Measured data must be a vector");
-        if (pr_)
-        {
-            pr_->error(errorMessage);
-        }
-        else
-        {
-            std::cerr << errorMessage << std::endl;
-        }
-        BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
+		THROW_ALGORITHM_INPUT_ERROR("Measured data must be a vector");
+		return false;
     }
 
     // check source regularization matrix sizes
     if (sourceWeighting_)
     {
-        if( regularizationSolutionSubcase_==solution_constrained )
+        if( get(regularizationSolutionSubcase).toInt()==solution_constrained )
         {
             // check that the matrix is of appropriate size (equal number of rows as columns in fwd matrix)
             if ( N != sourceWeighting_->ncols() )
             {
-                const std::string errorMessage("Solution Regularization Matrix must have the same number of rows as columns in the Forward Matrix !");
-                if (pr_)
-                {
-                    pr_->error(errorMessage);
-                }
-                else
-                {
-                    std::cerr << errorMessage << std::endl;
-                }
-                BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
+				THROW_ALGORITHM_INPUT_ERROR("Solution Regularization Matrix must have the same number of rows as columns in the Forward Matrix !");
+				return false;
             }
         }
         // otherwise, if the source regularization is provided as the squared version (RR^T)
-        else if ( regularizationSolutionSubcase_==solution_constrained_squared )
+        else if ( get(regularizationSolutionSubcase).toInt()==solution_constrained_squared )
         {
             // check that the matrix is of appropriate size and squared (equal number of rows as columns in fwd matrix)
             if ( ( N != sourceWeighting_->nrows() ) || ( N != sourceWeighting_->ncols() ) )
             {
-                const std::string errorMessage("The squared solution Regularization Matrix must have the same number of rows and columns and must be equal to the number of columns in the Forward Matrix !");
-                if (pr_)
-                {
-                    pr_->error(errorMessage);
-                }
-                else
-                {
-                    std::cerr << errorMessage << std::endl;
-                }
-                BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
+				THROW_ALGORITHM_INPUT_ERROR("The squared solution Regularization Matrix must have the same number of rows and columns and must be equal to the number of columns in the Forward Matrix !");
+				return false;
             }
         }
     }
@@ -152,40 +161,24 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes(const AlgorithmInput & inpu
     // check measurement regularization matrix sizes
     if (sensorWeighting_)
     {
-        if (regularizationResidualSubcase_ == residual_constrained)
+        if (get(regularizationResidualSubcase).toInt() == residual_constrained)
         {
             // check that the matrix is of appropriate size (equal number of rows as rows in fwd matrix)
             if(M != sensorWeighting_->ncols())
             {
-                const std::string errorMessage("Data Residual Weighting Matrix must have the same number of rows as the Forward Matrix !");
-                if (pr_)
-                {
-                    pr_->error(errorMessage);
-                }
-                else
-                {
-                    std::cerr << errorMessage << std::endl;
-                }
-                BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
+				THROW_ALGORITHM_INPUT_ERROR("Data Residual Weighting Matrix must have the same number of rows as the Forward Matrix !");
+				return false;
             }
         }
         // otherwise if the source covariance matrix is provided in squared form
-        else if  ( regularizationResidualSubcase_ == residual_constrained_squared )
+        else if  ( get(regularizationResidualSubcase).toInt() == residual_constrained_squared )
         {
             // check that the matrix is of appropriate size and squared (equal number of rows as rows in fwd matrix)
             if( (M != sensorWeighting_->nrows()) || (M != sensorWeighting_->ncols()) )
             {
-                const std::string errorMessage("Squared data Residual Weighting Matrix must have the same number of rows and columns as number of rows in the Forward Matrix !");
-                if (pr_)
-                {
-                    pr_->error(errorMessage);
-                }
-                else
-                {
-                    std::cerr << errorMessage << std::endl;
-                }
-                BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo(errorMessage));
-            }
+				THROW_ALGORITHM_INPUT_ERROR("Squared data Residual Weighting Matrix must have the same number of rows and columns as number of rows in the Forward Matrix !");
+				return false;
+			}
 
         }
     }
@@ -197,21 +190,25 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes(const AlgorithmInput & inpu
 
 /////////////////////////
 /////////  run()
-AlgorithmOutput run(const AlgorithmInput & input) const
+AlgorithmOutput run(const AlgorithmInput & input)
 {
 	// get inputs
-	auto forwardMatrix_ = input.get<Matrix>(Variables::ForwardMatrix);
-	auto measuredData_ = input.get<Matrix>(Variables::MeasuredPotentials);
-	auto sourceWeighting_ = input.get<Matrix>(Variables::WeightingInSourceSpace);
-	auto sensorWeighting_ = input.get<Matrix>(Variables::WeightingInSensorSpace);
+	auto forwardMatrix_ = input.get<Matrix>(TikhonovAlgoAbstractBase::ForwardMatrix);
+	auto measuredData_ = input.get<Matrix>(TikhonovAlgoAbstractBase::MeasuredPotentials);
+	auto sourceWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSourceSpace);
+	auto sensorWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSensorSpace);
+
+	// get Parameters
+	auto RegularizationMethod = get(RegularizationMethod).toString();
 
 	preAlocateInverseMatrices(forwardMatrix_,measuredData_,sourceWeighting_,sensorWeighting_);
 
     const int M = forwardMatrix_->nrows();
 
-    // Alocate variables
+    // Alocate Variable
     DenseColumnMatrix solution(M);
-    double lambda_sq=0;
+    double lambda_sq = 0;
+	double lambda_;
 
 
     //Get Regularization parameter(s) : Lambda
@@ -220,12 +217,12 @@ AlgorithmOutput run(const AlgorithmInput & input) const
         if (RegularizationMethod == "single")
         {
             // Use single fixed lambda value, entered in UI
-            lambda_ = input.lambdaFromTextEntry_;
+            lambda_ = get(LambdaFromDirectEntry).toDouble();
         }
         else if (RegularizationMethod == "slider")
         {
             // Use single fixed lambda value, select via slider
-            lambda_ = input.lambdaSlider_;
+            lambda_ = get(LambdaSliderValue).toDouble();
         }
     }
     else if (RegularizationMethod == "lcurve")
@@ -240,21 +237,21 @@ AlgorithmOutput run(const AlgorithmInput & input) const
     // compute inverse solution
     solution = computeInverseSolution( lambda_sq, true);
 
-
-    // set final result
-    inverseSolution_.reset(new DenseMatrix(solution));
+	//
+    // // set final result
+    // inverseSolution_.reset(new DenseMatrix(solution));
 
     // output regularization parameter
-    DenseColumnMatrix tempLambda(1);
-    tempLambda[0] = lambda_;
-
-    regularizationParameter_. reset( new DenseColumnMatrix(tempLambda) );
+    // DenseColumnMatrix tempLambda(1);
+    // tempLambda[0] = lambda_;
+	//
+    // regularizationParameter_. reset( new DenseColumnMatrix(tempLambda) );
 
 
 	// Set outputs
 	AlgorithmOutput output;
-	output[Variables::InverseSolution] = inverseSolution_;
-	output[Variables::RegularizationParameter] = regularizationParameter_;
+	output[Variable::InverseSolution] = solution;
+	output[Variable::RegularizationParameter] = lambda_;
 
 	return output;
 
@@ -269,15 +266,19 @@ double TikhonovAlgoAbstractBase::computeLcurve(const AlgorithmInput & input)
 {
 
 	// get inputs
-	auto forwardMatrix_ = input.get<Matrix>(Variables::ForwardMatrix);
-	auto measuredData_ = input.get<Matrix>(Variables::MeasuredPotentials);
-	auto sourceWeighting_ = input.get<Matrix>(Variables::WeightingInSourceSpace);
-	auto sensorWeighting_ = input.get<Matrix>(Variables::WeightingInSensorSpace);
+	auto forwardMatrix_ = input.get<Matrix>(TikhonovAlgoAbstractBase::ForwardMatrix);
+	auto measuredData_ = input.get<Matrix>(TikhonovAlgoAbstractBase::MeasuredPotentials);
+	auto sourceWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSourceSpace);
+	auto sensorWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSensorSpace);
 
     // define the step size of the lambda vector to be computed  (distance between min and max divided by number of desired lambdas in log scale)
-    const int nLambda = lambdaCount_;
-    const double lam_step = pow(10.0, log10(lambdaMax_ / lambdaMin_) / (nLambda-1));
+    const int nLambda = get(LambdaNum).toInt();
+	const int lambdaMin_ = get(lambdaMin).toDouble();
+	const int lambdaMax_ = get(lambdaMax).toDouble();
+    const double lam_step = pow(10.0, lambdaMax_ / lambdaMin_) / (nLambda-1));
     double lambda;
+
+	double lambdaArray[nLambda];
 
     const int sizeSolution = forwardMatrix_->ncols();
     double lambda_sq;
@@ -317,11 +318,7 @@ double TikhonovAlgoAbstractBase::computeLcurve(const AlgorithmInput & input)
                 Rx = *sourceWeighting_ * solution;
             else
             {
-                const std::string errorMessage(" Solution weighting matrix unexpectedly does not fit to compute the weighted solution norm. ");
-                if (pr_)
-                    pr_->error(errorMessage);
-                else
-                    std::cerr << errorMessage << std::endl;
+				BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage(" Solution weighting matrix unexpectedly does not fit to compute the weighted solution norm. "));
             }
         }
         else
@@ -379,12 +376,12 @@ double TikhonovAlgoAbstractBase::computeLcurve(const AlgorithmInput & input)
 
 
 ///// Find Corner, find the maximal curvature which corresponds to the L-curve corner
-double TikhonovAlgoAbstractBase::FindCorner(const AlgorithmInput & input, int& lambda_index)
+double TikhonovAlgoAbstractBase::FindCorner( LCurveInput & input, const AlgorithmInput & input, int& lambda_index)
 {
-    const std::vector<double>& rho = rho_;
-    const std::vector<double>& eta = eta_;
-    const std::vector<double>& lambdaArray = lambdaArray_;
-    int nLambda = nLambda_;
+	const int nLambda = nput->nLambda_;
+    const std::vector<double>& rho = input->rho_;
+    const std::vector<double>& eta = input->eta_;
+    const std::vector<double>& lambdaArray = input->lambdaArray_;
 
     std::vector<double> deta(nLambda);
     std::vector<double> ddeta(nLambda);
@@ -433,10 +430,10 @@ double TikhonovAlgoAbstractBase::FindCorner(const AlgorithmInput & input, int& l
 }
 
 ///// Search for closest Lambda to given lambda
-double TikhonovAlgoAbstractBase::LambdaLookup( const AlgorithmInput & input, double lambda, int& lambda_index, const double epsilon)
+double TikhonovAlgoAbstractBase::LambdaLookup( LCurveInput& input, double lambda, int& lambda_index, const double epsilon)
 {
-    const std::vector<double>& lambdaArray = lambdaArray_;
-    int nLambda = nLambda_;
+	const int nLambda = nput->nLambda_;
+	const std::vector<double>& lambdaArray = input->lambdaArray_;
 
     for (int i = 0; i < nLambda-1; ++i)
     {
@@ -466,14 +463,15 @@ double TikhonovAlgoAbstractBase::LambdaLookup( const AlgorithmInput & input, dou
 }
 
 ////////// update L-curve graph
-void TikhonovAlgoAbstractBase::update_graph( const AlgorithmInput & input, double lambda, int lambda_index, const double epsilon)
+void TikhonovAlgoAbstractBase::update_graph( LCurveInput & input, double lambda, int lambda_index, const double epsilon)
 {
-    if (lcurveInput_handle_ && updateLCurveGui_)
+
+    if (lcurveInput_handle_ && input.updateLCurveGui_)
     {
         lambda = LambdaLookup(*lcurveInput_handle_, lambda, lambda_index, epsilon);
         if (lambda >= 0)
         {
-            updateLCurveGui_(lambda, *lcurveInput_handle_, lambda_index);
+            input.updateLCurveGui_(lambda, *lcurveInput_handle_, lambda_index);
         }
     }
 }

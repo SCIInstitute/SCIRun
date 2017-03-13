@@ -85,11 +85,11 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 
         solution = M3 * b;
 
-        if (inverseCalculation)
-        {
-            inverseG = G.inverse().eval();
-            inverseMatrix_.reset( new DenseMatrix( (M3 * inverseG) * M4) );
-        }
+        // if (inverseCalculation)
+        // {
+        //     inverseG = G.inverse().eval();
+        //     inverseMatrix_.reset( new DenseMatrix( (M3 * inverseG) * M4) );
+        // }
         //     inverseSolution_.reset(new DenseMatrix(solution));
         return solution;
     }

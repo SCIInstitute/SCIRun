@@ -38,13 +38,31 @@ namespace Core {
 namespace Algorithms {
 namespace Inverse {
 
+	// ALGORITHM_PARAMETER_DECL(RegularizationMethod);
+	// ALGORITHM_PARAMETER_DECL(regularizationChoice);
+	// ALGORITHM_PARAMETER_DECL(regularizationSolutionSubcase);
+	// ALGORITHM_PARAMETER_DECL(regularizationResidualSubcase);
+	// ALGORITHM_PARAMETER_DECL(LambdaFromDirectEntry);
+	// ALGORITHM_PARAMETER_DECL(LambdaMin);
+	// ALGORITHM_PARAMETER_DECL(LambdaMax);
+	// ALGORITHM_PARAMETER_DECL(LambdaNum);
+	// ALGORITHM_PARAMETER_DECL(LambdaResolution);
+	// ALGORITHM_PARAMETER_DECL(LambdaSliderValue);
+	// ALGORITHM_PARAMETER_DECL(LambdaCorner);
+	// ALGORITHM_PARAMETER_DECL(LCurveText);
+
 	class SCISHARE TikhonovAlgoAbstractBase : public AlgorithmBase
 	{
 
 	public:
 
-		TikhonovAlgoAbstractBase();
+		// define input names
+		static AlgorithmInputName ForwardMatrix;
+		static AlgorithmInputName MeasuredPotentials;
+		static AlgorithmInputName WeightingInSourceSpace;
+		static AlgorithmInputName WeightingInSensorSpace;
 
+		// define parameter names
 		static AlgorithmParameterName RegularizationMethod;
 		static AlgorithmParameterName regularizationChoice;
 		static AlgorithmParameterName regularizationSolutionSubcase;
@@ -57,15 +75,6 @@ namespace Inverse {
 		static AlgorithmParameterName LambdaSliderValue;
 		static AlgorithmParameterName LambdaCorner;
 		static AlgorithmParameterName LCurveText;
-
-		// run function
-		virtual AlgorithmOutput run(const AlgorithmInput &) const override;
-
-		// defined functions
-		void update_graph( const AlgorithmInput & input,  double lambda, int lambda_index, const double epsilon);
-		static double FindCorner( const AlgorithmInput & input, int& lambda_index);
-		static double LambdaLookup(const AlgorithmInput & input, double lambda, int& lambda_index, const double epsilon);
-		double computeLcurve(  const AlgorithmInput & input );
 
 		// Define algorithm choices
 		enum AlgorithmChoice {
@@ -82,9 +91,32 @@ namespace Inverse {
 			residual_constrained_squared
 		};
 
+		struct SCISHARE LCurveInput
+		{
+			const std::vector<double> rho_;
+			const std::vector<double> eta_;
+			const std::vector<double> lambdaArray_;
+			const int nLambda_;
+
+			LCurveInput(const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, 			const int nLambda);
+		};
+
+
+		// constructor
+		TikhonovAlgoAbstractBase();
+
+		// run function
+		virtual AlgorithmOutput run(const AlgorithmInput &) const override;
+
+		// defined public functions
+		void update_graph( const AlgorithmInput & input,  double lambda, int lambda_index, const double epsilon);
+		static double FindCorner( const AlgorithmInput & input, int& lambda_index);
+		static double LambdaLookup(const AlgorithmInput & input, double lambda, int& lambda_index, const double epsilon);
+		double computeLcurve(  const AlgorithmInput & input );
+
 	protected:
-		// defined functions
-		double computeLcurve( const AlgorithmInput & input, SCIRun::Core::Datatypes::DenseMatrix& M1, SCIRun::Core::Datatypes::DenseMatrix& M2, SCIRun::Core::Datatypes::DenseMatrix& M3, SCIRun::Core::Datatypes::DenseMatrix& M4, SCIRun::Core::Datatypes::DenseColumnMatrix& y );
+		// defined protected functions
+		double computeLcurve( LCurveInput & input, SCIRun::Core::Datatypes::DenseMatrix& M1, SCIRun::Core::Datatypes::DenseMatrix& M2, SCIRun::Core::Datatypes::DenseMatrix& M3, SCIRun::Core::Datatypes::DenseMatrix& M4, SCIRun::Core::Datatypes::DenseColumnMatrix& y );
 
 		// Abstract functions
 		virtual SCIRun::Core::Datatypes::DenseColumnMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation) = 0;

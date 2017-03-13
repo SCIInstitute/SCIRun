@@ -61,13 +61,13 @@ SolveInverseProblemWithTikhonov::SolveInverseProblemWithTikhonov() : Module(stat
 
 void SolveInverseProblemWithTikhonov::setStateDefaults()
 {
-	setStateOptionFromAlgo(SolveInverseProblemWithTikhonovImpl_child::regularizationChoice);
-	setStateOptionFromAlgo(SolveInverseProblemWithTikhonovImpl_child::regularizationSolutionSubcase);
-	setStateOptionFromAlgo(SolveInverseProblemWithTikhonovImpl_child::regularizationResidualSubcase);
+	setStateIntFromAlgo(SolveInverseProblemWithTikhonovImpl_child::regularizationChoice);
+	setStateIntFromAlgo(SolveInverseProblemWithTikhonovImpl_child::regularizationSolutionSubcase);
+	setStateIntFromAlgo(SolveInverseProblemWithTikhonovImpl_child::regularizationResidualSubcase);
 }
 
 // execute function
-void InterfaceWithCleaver::execute()
+void SolveInverseProblemWithTikhonovSVD::execute()
 {
 
 	// load required inputs

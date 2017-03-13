@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "SolveInverseProblemWithTikhonov",
+    "namespace": "Inverse",
+    "status": "Ported module",
+    "description": "...",
+    "header": "Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h"
+  },
+  "algorithm": {
+    "name": "SolveInverseProblemWithTikhonovImpl_child",
+    "namespace": "Inverse",
+    "header": "Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovImpl_child.h"
+  },
+  "UI": {
+    "name": "SolveInverseProblemWithTikhonovDialog",
+    "header": "Interface/Modules/Inverse/SolveInverseProblemWithTikhonovDialog.h"
+  }
+}

@@ -45,7 +45,7 @@
 #include <Core/Utils/Exception.h>
 
 // Tikhonov inverse libraries
-#include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
+// #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 // #include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
 
@@ -121,8 +121,8 @@ SCIRun::Core::Datatypes::DenseColumnMatrix SolveInverseProblemWithTikhonovSVD_im
         }
 
     // output solutions
-      if (inverseCalculation)
-          inverseMatrix_.reset( new SCIRun::Core::Datatypes::DenseMatrix(tempInverse) );
+    //   if (inverseCalculation)
+    //       inverseMatrix_.reset( new SCIRun::Core::Datatypes::DenseMatrix(tempInverse) );
 
         return solution;
 }

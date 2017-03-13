@@ -52,11 +52,7 @@ namespace SCIRun {
 			    {
 
 			    public:
-			        SolveInverseProblemWithTikhonovImpl_child() : TikhonovAlgoAbstractBase()
-						{
-							// prealocate matrices needed for computation
-				        	preAlocateInverseMatrices();
-						};
+			        SolveInverseProblemWithTikhonovImpl_child() {};
 
 			    private:
 
