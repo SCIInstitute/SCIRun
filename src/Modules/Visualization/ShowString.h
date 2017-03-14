@@ -37,7 +37,7 @@ namespace SCIRun {
 namespace Modules {
 namespace Visualization {
 
-  class SCISHARE ShowString : public SCIRun::Dataflow::Networks::Module,
+  class SCISHARE ShowString : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
     public Has1InputPort<StringPortTag>,
     public Has1OutputPort<GeometryPortTag>
   {
@@ -48,6 +48,9 @@ namespace Visualization {
     INPUT_PORT(0, String, String);
     OUTPUT_PORT(0, RenderedString, GeometryObject);
     MODULE_TRAITS_AND_INFO(ModuleHasUI)
+  private:
+    boost::shared_ptr<class TextBuilder> textBuilder_; 
+    Core::Datatypes::GeometryBaseHandle buildGeometryObject(const std::string& text);
   };
 }}}
 
