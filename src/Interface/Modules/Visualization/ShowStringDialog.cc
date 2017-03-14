@@ -28,10 +28,12 @@
 
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Modules/Visualization/ShowString.h>
+#include <Core/Datatypes/Color.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Visualization;
+using namespace SCIRun::Core::Datatypes;
 
 ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -50,12 +52,40 @@ ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle st
 
 void ShowStringDialog::getColor()
 {
-  auto c = QColorDialog::getColor(Qt::white, this, "Choose text color");
+  color_ = QColorDialog::getColor(color_, this, "Choose text color");
+  setButtonColor();
+ 
+  state_->setValue(Parameters::TextRed, color_.redF());
+  state_->setValue(Parameters::TextGreen, color_.greenF());
+  state_->setValue(Parameters::TextBlue, color_.blueF());
+  //state_->setValue(Parameters::TextAlpha, color_.alphaF());
+}
+
+void ShowStringDialog::pullSpecial()
+{
+  ColorRGB color(state_->getValue(Parameters::TextRed).toDouble(),
+    state_->getValue(Parameters::TextGreen).toDouble(),
+    state_->getValue(Parameters::TextBlue).toDouble()
+    );
+
+  color_ = QColor(
+    static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
+    static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
+    static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+
+  setButtonColor();
+}
+
+void ShowStringDialog::setButtonColor()
+{
   std::stringstream ss;
-  /*ss << "background-color: rgb(" << text_color_.red() << ", " <<
-    text_color_.green() << ", " << text_color_.blue() << ");";
-  textColorDisplayLabel_->setStyleSheet(QString::fromStdString(ss.str()));
-  r_.setValue(text_color_.redF());
-  g_.setValue(text_color_.greenF());
-  b_.setValue(text_color_.blueF());*/
+  ss << "QPushButton { background-color: rgb("
+    << color_.red() << ", "
+    << color_.green() << ", "
+    << color_.blue() <<
+    "); color: rgb("
+    << 256 - color_.red() << ", "
+    << 256 - color_.green() << ", "
+    << 256 - color_.blue() << ");}";
+  colorButton_->setStyleSheet(QString::fromStdString(ss.str()));
 }

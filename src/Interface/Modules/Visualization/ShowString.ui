@@ -54,7 +54,13 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QComboBox" name="fontComboBox_"/>
+       <widget class="QComboBox" name="fontComboBox_">
+        <item>
+         <property name="text">
+          <string>Dummy Font</string>
+         </property>
+        </item>
+       </widget>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label">

@@ -104,7 +104,7 @@ public:
   void derivate(const VECTOR1 &coords, const ElemData &cd, 
 		VECTOR2 &derivs) const
   {
-    double w[20];
+    double w[24];
     get_cubic_derivate_weights(coords, w); 
 
     derivs.resize(2);

@@ -159,7 +159,14 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   if (textBuilder_->getFaceSize() != fontSize)
     textBuilder_->setFaceSize(fontSize);
 
-  textBuilder_->setColor(1, 0, 0, 1.0);  // USER PARAM
+  {
+    auto r = state->getValue(Parameters::TextRed).toDouble();
+    auto g = state->getValue(Parameters::TextGreen).toDouble();
+    auto b = state->getValue(Parameters::TextBlue).toDouble();
+    auto a = state->getValue(Parameters::TextBlue).toDouble();
+
+    textBuilder_->setColor(r, g, b, 0.5);
+  }
 
   Vector trans(xTrans, yTrans, 0.0); 
   Vector shift(20, 0, 0.5);  // USER PARAM
