@@ -34,6 +34,22 @@
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
+
+  namespace Core {
+    namespace Algorithms {
+      namespace Visualization {
+
+        ALGORITHM_PARAMETER_DECL(TextRed);
+        ALGORITHM_PARAMETER_DECL(TextGreen);
+        ALGORITHM_PARAMETER_DECL(TextBlue);
+        ALGORITHM_PARAMETER_DECL(TextAlpha);
+        ALGORITHM_PARAMETER_DECL(FontName);
+        ALGORITHM_PARAMETER_DECL(FontSize);
+        ALGORITHM_PARAMETER_DECL(PositionType);
+      }
+    }
+  }
+
 namespace Modules {
 namespace Visualization {
 
@@ -44,7 +60,7 @@ namespace Visualization {
   public:
     ShowString();
     virtual void execute() override;
-    virtual void setStateDefaults() override {}
+    virtual void setStateDefaults() override;
     INPUT_PORT(0, String, String);
     OUTPUT_PORT(0, RenderedString, GeometryObject);
     MODULE_TRAITS_AND_INFO(ModuleHasUI)

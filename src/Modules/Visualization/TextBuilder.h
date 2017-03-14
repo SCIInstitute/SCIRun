@@ -45,6 +45,7 @@ namespace SCIRun {
         TextBuilder();
         ~TextBuilder();
         bool initialize(size_t textSize);
+        bool initialize(size_t textSize, const std::string& fontName);
 
         void setFaceSize(size_t size);
         size_t getFaceSize() const { return ftSize_; }

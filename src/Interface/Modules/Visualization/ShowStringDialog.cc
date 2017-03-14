@@ -27,9 +27,11 @@
 */
 
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
+#include <Modules/Visualization/ShowString.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Visualization;
 
 ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -38,4 +40,22 @@ ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle st
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+
+  WidgetStyleMixin::tabStyle(locationTabWidget_);
+
+  connect(colorButton_, SIGNAL(clicked()), this, SLOT(getColor()));
+
+  addSpinBoxManager(fontSizeSpinBox_, Parameters::FontSize);
+}
+
+void ShowStringDialog::getColor()
+{
+  auto c = QColorDialog::getColor(Qt::white, this, "Choose text color");
+  std::stringstream ss;
+  /*ss << "background-color: rgb(" << text_color_.red() << ", " <<
+    text_color_.green() << ", " << text_color_.blue() << ");";
+  textColorDisplayLabel_->setStyleSheet(QString::fromStdString(ss.str()));
+  r_.setValue(text_color_.redF());
+  g_.setValue(text_color_.greenF());
+  b_.setValue(text_color_.blueF());*/
 }

@@ -38,8 +38,17 @@ using namespace Modules::Visualization;
 using namespace Core::Datatypes;
 using namespace Dataflow::Networks;
 using namespace Core::Algorithms;
+using namespace Core::Algorithms::Visualization;
 using namespace Core::Geometry;
 using namespace Graphics::Datatypes;
+
+ALGORITHM_PARAMETER_DEF(Visualization, TextRed);
+ALGORITHM_PARAMETER_DEF(Visualization, TextGreen);
+ALGORITHM_PARAMETER_DEF(Visualization, TextBlue);
+ALGORITHM_PARAMETER_DEF(Visualization, TextAlpha);
+ALGORITHM_PARAMETER_DEF(Visualization, FontName);
+ALGORITHM_PARAMETER_DEF(Visualization, FontSize);
+ALGORITHM_PARAMETER_DEF(Visualization, PositionType);
 
 MODULE_INFO_DEF(ShowString, Visualization, SCIRun)
 
@@ -47,6 +56,15 @@ ShowString::ShowString() : GeometryGeneratingModule(staticInfo_), textBuilder_(b
 {
   INITIALIZE_PORT(String);
   INITIALIZE_PORT(RenderedString);
+}
+
+void ShowString::setStateDefaults()
+{
+  auto state = get_state();
+  state->setValue(Parameters::TextRed, 1.0);
+  state->setValue(Parameters::TextGreen, 1.0);
+  state->setValue(Parameters::TextBlue, 1.0);
+  state->setValue(Parameters::FontSize, 16);
 }
 
 void ShowString::execute()
@@ -92,7 +110,6 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
     vboBuffer->write(static_cast<float>(1.f));
   }
 
-
   auto uniqueNodeID = get_id().id_ + "_showString_" + text;
   auto vboName = uniqueNodeID + "VBO";
   auto iboName = uniqueNodeID + "IBO";
@@ -105,6 +122,8 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
   std::vector<SpireSubPass::Uniform> uniforms;
   
+  auto state = get_state();
+
   int xTrans = 1;   // USER PARAM
   int yTrans = 1;   // USER PARAM
 
@@ -132,10 +151,13 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   geom->mVBOs.push_back(geomVBO);
   geom->mPasses.push_back(pass);
 
-  int fontSize = 24;  // USER PARAM
+  int fontSize = state->getValue(Parameters::FontSize).toInt();
 
   if (!textBuilder_->initialize(fontSize))
     return geom;
+
+  if (textBuilder_->getFaceSize() != fontSize)
+    textBuilder_->setFaceSize(fontSize);
 
   textBuilder_->setColor(1, 0, 0, 1.0);  // USER PARAM
 

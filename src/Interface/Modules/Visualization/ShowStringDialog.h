@@ -44,7 +44,9 @@ class SCISHARE ShowStringDialog : public ModuleDialogGeneric,
 public:
   ShowStringDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
+private Q_SLOTS:
+  void getColor();
 };
 
 }
