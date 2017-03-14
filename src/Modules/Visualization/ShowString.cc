@@ -36,7 +36,13 @@ using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-ShowString::ShowString() : Module(ModuleLookupInfo("ShowString", "Visualization", "SCIRun")) {}
+MODULE_INFO_DEF(ShowString, Visualization, SCIRun)
+
+ShowString::ShowString() : Module(staticInfo_) 
+{
+  INITIALIZE_PORT(String);
+  INITIALIZE_PORT(RenderedString);
+}
 
 void ShowString::execute()
 {
