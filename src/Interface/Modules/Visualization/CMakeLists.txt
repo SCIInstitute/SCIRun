@@ -82,6 +82,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Visualization
   Modules_Visualization
   Core_Algorithms_Legacy_Fields
   Interface_Modules_Base
+  Core_Application
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )

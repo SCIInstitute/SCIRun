@@ -49,6 +49,7 @@ namespace SCIRun {
 
         void setFaceSize(size_t size);
         size_t getFaceSize() const { return ftSize_; }
+        std::string getFontName() const { return libName_; }
 
         void setColor(float r, float g, float b, float a);
 

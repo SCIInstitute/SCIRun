@@ -29,11 +29,15 @@
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Modules/Visualization/ShowString.h>
 #include <Core/Datatypes/Color.h>
+#include <Core/Application/Application.h>
+#include <Core/Thread/Mutex.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Visualization;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Thread;
 
 ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -48,31 +52,61 @@ ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle st
   connect(colorButton_, SIGNAL(clicked()), this, SLOT(getColor()));
 
   addSpinBoxManager(fontSizeSpinBox_, Parameters::FontSize);
+
+  QStringList fonts;
+  auto fontPath = Core::Application::Instance().executablePath() / "Fonts";
+  for (const auto& p : boost::filesystem::recursive_directory_iterator(fontPath))
+  {
+    if (p.path().extension() == ".ttf")
+    {
+      fonts << QString::fromStdString(p.path().stem().string());
+    }
+  }
+  fontComboBox_->clear();
+  fontComboBox_->addItems(fonts);
+
+  addComboBoxManager(fontComboBox_, Parameters::FontName);
 }
+
+static bool colorLock_(false);
 
 void ShowStringDialog::getColor()
 {
-  color_ = QColorDialog::getColor(color_, this, "Choose text color");
-  setButtonColor();
- 
-  state_->setValue(Parameters::TextRed, color_.redF());
-  state_->setValue(Parameters::TextGreen, color_.greenF());
-  state_->setValue(Parameters::TextBlue, color_.blueF());
-  //state_->setValue(Parameters::TextAlpha, color_.alphaF());
+  auto c = QColorDialog::getColor(color_, this, "Choose text color");
+  if (c.isValid())
+  {
+    color_ = c;
+    setButtonColor();
+
+    {
+      colorLock_ = true;
+      state_->setValue(Parameters::TextRed, color_.redF());
+      state_->setValue(Parameters::TextGreen, color_.greenF());
+      state_->setValue(Parameters::TextBlue, color_.blueF());
+      colorLock_ = false;
+      //state_->setValue(Parameters::TextAlpha, color_.alphaF());
+    }
+  }
 }
 
 void ShowStringDialog::pullSpecial()
 {
-  ColorRGB color(state_->getValue(Parameters::TextRed).toDouble(),
-    state_->getValue(Parameters::TextGreen).toDouble(),
-    state_->getValue(Parameters::TextBlue).toDouble()
-    );
+  if (!colorLock_)
+  {
+    ColorRGB color(state_->getValue(Parameters::TextRed).toDouble(),
+      state_->getValue(Parameters::TextGreen).toDouble(),
+      state_->getValue(Parameters::TextBlue).toDouble()
+      );
 
-  color_ = QColor(
-    static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
-    static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
-    static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+    color_ = QColor(
+      static_cast<int>(color.r() * 255.0),
+      static_cast<int>(color.g() * 255.0),
+      static_cast<int>(color.b() * 255.0));
+  }
+}
 
+void ShowStringDialog::createStartupNote()
+{
   setButtonColor();
 }
 

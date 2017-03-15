@@ -233,7 +233,6 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
       + yTrans / 50.;
     Vector trans(x_trans, y_trans, 0.0);
 
-    std::cout << "ShowColorMap: " << line.str() << " " << trans << " " << shift << std::endl;
     textBuilder_.printString(line.str(), trans, shift, id, *geom);
   }
 

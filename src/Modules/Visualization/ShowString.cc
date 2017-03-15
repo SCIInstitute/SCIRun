@@ -65,6 +65,8 @@ void ShowString::setStateDefaults()
   state->setValue(Parameters::TextGreen, 1.0);
   state->setValue(Parameters::TextBlue, 1.0);
   state->setValue(Parameters::FontSize, 16);
+
+  state->setValue(Parameters::FontName, std::string("FreeSans.ttf"));
 }
 
 void ShowString::execute()
@@ -151,9 +153,15 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   geom->mVBOs.push_back(geomVBO);
   geom->mPasses.push_back(pass);
 
-  int fontSize = state->getValue(Parameters::FontSize).toInt();
+  auto fontSize = state->getValue(Parameters::FontSize).toInt();
+  auto fontName = state->getValue(Parameters::FontName).toString() + ".ttf";
 
-  if (!textBuilder_->initialize(fontSize))
+  if (textBuilder_ && textBuilder_->isReady() && textBuilder_->getFontName() != fontName)
+  {
+    textBuilder_.reset(new TextBuilder);
+  }
+
+  if (!textBuilder_->initialize(fontSize, fontName))
     return geom;
 
   if (textBuilder_->getFaceSize() != fontSize)

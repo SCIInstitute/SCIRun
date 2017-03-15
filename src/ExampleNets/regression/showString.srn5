@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="5">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>5</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CreateStandardColorMap:0</first>
@@ -295,8 +295,96 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>4</count>
+							<count>5</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FontName</name>
+								</first>
+								<second>
+									<name>FontName</name>
+									<value>
+										<which>2</which>
+										<value>FreeMonoBold</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FontSize</name>
+								</first>
+								<second>
+									<name>FontSize</name>
+									<value>
+										<which>0</which>
+										<value>24</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextBlue</name>
+								</first>
+								<second>
+									<name>TextBlue</name>
+									<value>
+										<which>1</which>
+										<value>9.37254901960784310e-001</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextGreen</name>
+								</first>
+								<second>
+									<name>TextGreen</name>
+									<value>
+										<which>1</which>
+										<value>1.25490196078431370e-001</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextRed</name>
+								</first>
+								<second>
+									<name>TextRed</name>
+									<value>
+										<which>1</which>
+										<value>8.86274509803921530e-001</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowString:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowString</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>5</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FontName</name>
+								</first>
+								<second>
+									<name>FontName</name>
+									<value>
+										<which>2</which>
+										<value>FreeSans</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>FontSize</name>
@@ -317,7 +405,7 @@
 									<name>TextBlue</name>
 									<value>
 										<which>1</which>
-										<value>6.62745098039215660e-001</value>
+										<value>7.84313725490196070e-002</value>
 									</value>
 								</second>
 							</item>
@@ -329,7 +417,7 @@
 									<name>TextGreen</name>
 									<value>
 										<which>1</which>
-										<value>1.13725490196078430e-001</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -341,7 +429,7 @@
 									<name>TextRed</name>
 									<value>
 										<which>1</which>
-										<value>6.66666666666666660e-002</value>
+										<value>2.47058823529411780e-001</value>
 									</value>
 								</second>
 							</item>
@@ -823,7 +911,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>4</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CreateStandardColorMap:0</moduleId1_>
@@ -844,6 +932,18 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowString:0</moduleId2_>
+				<port2_>
+					<name>String</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateString:0</moduleId1_>
+				<port1_>
+					<name>NewString</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowString:1</moduleId2_>
 				<port2_>
 					<name>String</name>
 					<id>0</id>
@@ -873,10 +973,22 @@
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>ShowString:1</moduleId1_>
+				<port1_>
+					<name>RenderedString</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:0</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>2</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>5</count>
+		<count>6</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>CreateStandardColorMap:0</first>
@@ -907,6 +1019,13 @@
 			</second>
 		</item>
 		<item>
+			<first>ShowString:1</first>
+			<second>
+				<first>3.76000000000000000e+002</first>
+				<second>1.49000000000000000e+002</second>
+			</second>
+		</item>
+		<item>
 			<first>ViewScene:0</first>
 			<second>
 				<first>1.86000000000000000e+002</first>
@@ -923,7 +1042,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="20" tracking_level="0" version="0">
-		<count>5</count>
+		<count>6</count>
 		<item_version>0</item_version>
 		<item class_id="21" tracking_level="0" version="0">
 			<first>CreateStandardColorMap:0</first>
@@ -939,6 +1058,10 @@
 		</item>
 		<item>
 			<first>ShowString:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ShowString:1</first>
 			<second>-1</second>
 		</item>
 		<item>
