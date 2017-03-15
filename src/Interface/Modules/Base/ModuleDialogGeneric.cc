@@ -114,15 +114,32 @@ void ModuleDialogGeneric::connectButtonsToExecuteSignal(std::initializer_list<QA
 
 void ModuleDialogGeneric::connectComboToExecuteSignal(QComboBox* box)
 {
-  /*
-  TODO: investigate why duplicate executes are signalled.
-  connect(box, SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(executeActionTriggeredViaStateChange()));
+  connect(box, SIGNAL(activated(const QString&)), this, SIGNAL(executeFromStateChangeTriggered()));
   if (disablerAdd_ && disablerRemove_)
   {
     disablerAdd_(box);
     needToRemoveFromDisabler_.push_back(box);
   }
-  */
+}
+
+void ModuleDialogGeneric::connectSpinBoxToExecuteSignal(QSpinBox* box)
+{
+  connect(box, SIGNAL(valueChanged(int)), this, SIGNAL(executeFromStateChangeTriggered()));
+  if (disablerAdd_ && disablerRemove_)
+  {
+    disablerAdd_(box);
+    needToRemoveFromDisabler_.push_back(box);
+  }
+}
+
+void ModuleDialogGeneric::connectSpinBoxToExecuteSignal(QDoubleSpinBox* box)
+{
+  connect(box, SIGNAL(valueChanged(double)), this, SIGNAL(executeFromStateChangeTriggered()));
+  if (disablerAdd_ && disablerRemove_)
+  {
+    disablerAdd_(box);
+    needToRemoveFromDisabler_.push_back(box);
+  }
 }
 
 void ModuleDialogGeneric::updateWindowTitle(const QString& title)

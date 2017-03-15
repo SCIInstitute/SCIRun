@@ -51,7 +51,7 @@ class SCISHARE ShowStringDialog : public ModuleDialogGeneric,
   private Q_SLOTS:
     void getColor();
   private:
-    void setButtonColor();
+    void setButtonColor() const;
     QColor color_;
   };
 

@@ -295,7 +295,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>5</count>
+							<count>6</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -305,7 +305,7 @@
 									<name>FontName</name>
 									<value>
 										<which>2</which>
-										<value>FreeMonoBold</value>
+										<value>FreeSerifBold</value>
 									</value>
 								</second>
 							</item>
@@ -318,6 +318,18 @@
 									<value>
 										<which>0</which>
 										<value>24</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextAlpha</name>
+								</first>
+								<second>
+									<name>TextAlpha</name>
+									<value>
+										<which>1</which>
+										<value>4.50000000000000120e-001</value>
 									</value>
 								</second>
 							</item>
@@ -371,7 +383,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>5</count>
+							<count>6</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -381,7 +393,7 @@
 									<name>FontName</name>
 									<value>
 										<which>2</which>
-										<value>FreeSans</value>
+										<value>FreeSerif</value>
 									</value>
 								</second>
 							</item>
@@ -393,7 +405,19 @@
 									<name>FontSize</name>
 									<value>
 										<which>0</which>
-										<value>16</value>
+										<value>24</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TextAlpha</name>
+								</first>
+								<second>
+									<name>TextAlpha</name>
+									<value>
+										<which>1</which>
+										<value>9.69999999999999970e-001</value>
 									</value>
 								</second>
 							</item>
@@ -405,7 +429,7 @@
 									<name>TextBlue</name>
 									<value>
 										<which>1</which>
-										<value>7.84313725490196070e-002</value>
+										<value>9.01960784313725480e-002</value>
 									</value>
 								</second>
 							</item>
@@ -429,7 +453,7 @@
 									<name>TextRed</name>
 									<value>
 										<which>1</which>
-										<value>2.47058823529411780e-001</value>
+										<value>3.01960784313725470e-001</value>
 									</value>
 								</second>
 							</item>
@@ -721,7 +745,7 @@
 									<name>ScaleBarFontSize</name>
 									<value>
 										<which>0</which>
-										<value>1</value>
+										<value>99</value>
 									</value>
 								</second>
 							</item>
@@ -982,7 +1006,7 @@
 				<moduleId2_>ViewScene:0</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
-					<id>2</id>
+					<id>4</id>
 				</port2_>
 			</item>
 		</connections>
@@ -1021,8 +1045,8 @@
 		<item>
 			<first>ShowString:1</first>
 			<second>
-				<first>3.76000000000000000e+002</first>
-				<second>1.49000000000000000e+002</second>
+				<first>3.80000000000000000e+002</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>

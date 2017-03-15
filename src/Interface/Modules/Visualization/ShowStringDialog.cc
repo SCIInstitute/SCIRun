@@ -53,6 +53,7 @@ ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle st
   connectButtonToExecuteSignal(colorButton_);
 
   addSpinBoxManager(fontSizeSpinBox_, Parameters::FontSize);
+  
   addDoubleSpinBoxManager(alphaDoubleSpinBox_, Parameters::TextAlpha);
 
   QStringList fonts;
@@ -68,6 +69,7 @@ ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle st
   fontComboBox_->addItems(fonts);
 
   addComboBoxManager(fontComboBox_, Parameters::FontName);
+  connectComboToExecuteSignal(fontComboBox_);
 
   createExecuteInteractivelyToggleAction();
 }
@@ -111,9 +113,10 @@ void ShowStringDialog::pullSpecial()
 void ShowStringDialog::createStartupNote()
 {
   setButtonColor();
+  connectSpinBoxToExecuteSignal(fontSizeSpinBox_);
 }
 
-void ShowStringDialog::setButtonColor()
+void ShowStringDialog::setButtonColor() const
 {
   std::stringstream ss;
   ss << "QPushButton { background-color: rgb("
