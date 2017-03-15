@@ -50,8 +50,10 @@ ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle st
   WidgetStyleMixin::tabStyle(locationTabWidget_);
 
   connect(colorButton_, SIGNAL(clicked()), this, SLOT(getColor()));
+  connectButtonToExecuteSignal(colorButton_);
 
   addSpinBoxManager(fontSizeSpinBox_, Parameters::FontSize);
+  addDoubleSpinBoxManager(alphaDoubleSpinBox_, Parameters::TextAlpha);
 
   QStringList fonts;
   auto fontPath = Core::Application::Instance().executablePath() / "Fonts";
@@ -66,6 +68,8 @@ ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle st
   fontComboBox_->addItems(fonts);
 
   addComboBoxManager(fontComboBox_, Parameters::FontName);
+
+  createExecuteInteractivelyToggleAction();
 }
 
 static bool colorLock_(false);
@@ -84,7 +88,6 @@ void ShowStringDialog::getColor()
       state_->setValue(Parameters::TextGreen, color_.greenF());
       state_->setValue(Parameters::TextBlue, color_.blueF());
       colorLock_ = false;
-      //state_->setValue(Parameters::TextAlpha, color_.alphaF());
     }
   }
 }
