@@ -113,6 +113,8 @@ namespace Gui {
     void connectButtonToExecuteSignal(QAbstractButton* button);
     void connectButtonsToExecuteSignal(std::initializer_list<QAbstractButton*> buttons);
     void connectComboToExecuteSignal(QComboBox* box);
+    void connectSpinBoxToExecuteSignal(QSpinBox* box);
+    void connectSpinBoxToExecuteSignal(QDoubleSpinBox* box);
 
     void pullManagedWidgets();
     // Dialog classes should override this method to provide pull behavior not available from the widget managers.
