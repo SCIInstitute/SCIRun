@@ -53,9 +53,24 @@ ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle st
   connectButtonToExecuteSignal(colorButton_);
 
   addSpinBoxManager(fontSizeSpinBox_, Parameters::FontSize);
-  
   addDoubleSpinBoxManager(alphaDoubleSpinBox_, Parameters::TextAlpha);
 
+  addFonts();
+
+  addComboBoxManager(fontComboBox_, Parameters::FontName);
+  connectComboToExecuteSignal(fontComboBox_);
+
+  addTabManager(locationTabWidget_, Parameters::PositionType);
+  addComboBoxManager(horizontalPositionComboBox_, Parameters::FixedHorizontal);
+  addComboBoxManager(verticalPositionComboBox_, Parameters::FixedVertical);
+  addDoubleSpinBoxManager(xPositionDoubleSpinBox_, Parameters::CoordinateHorizontal);
+  addDoubleSpinBoxManager(yPositionDoubleSpinBox_, Parameters::CoordinateVertical);
+
+  createExecuteInteractivelyToggleAction();
+}
+
+void ShowStringDialog::addFonts()
+{
   QStringList fonts;
   auto fontPath = Core::Application::Instance().executablePath() / "Fonts";
   for (const auto& p : boost::filesystem::recursive_directory_iterator(fontPath))
@@ -67,11 +82,6 @@ ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle st
   }
   fontComboBox_->clear();
   fontComboBox_->addItems(fonts);
-
-  addComboBoxManager(fontComboBox_, Parameters::FontName);
-  connectComboToExecuteSignal(fontComboBox_);
-
-  createExecuteInteractivelyToggleAction();
 }
 
 static bool colorLock_(false);

@@ -46,6 +46,10 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(FontName);
         ALGORITHM_PARAMETER_DECL(FontSize);
         ALGORITHM_PARAMETER_DECL(PositionType);
+        ALGORITHM_PARAMETER_DECL(FixedHorizontal);
+        ALGORITHM_PARAMETER_DECL(FixedVertical);
+        ALGORITHM_PARAMETER_DECL(CoordinateHorizontal);
+        ALGORITHM_PARAMETER_DECL(CoordinateVertical);
       }
     }
   }
@@ -67,6 +71,7 @@ namespace Visualization {
   private:
     boost::shared_ptr<class TextBuilder> textBuilder_; 
     Core::Datatypes::GeometryBaseHandle buildGeometryObject(const std::string& text);
+    std::tuple<double, double> getTextPosition() const;
   };
 }}}
 

@@ -48,6 +48,10 @@ ALGORITHM_PARAMETER_DEF(Visualization, TextAlpha);
 ALGORITHM_PARAMETER_DEF(Visualization, FontName);
 ALGORITHM_PARAMETER_DEF(Visualization, FontSize);
 ALGORITHM_PARAMETER_DEF(Visualization, PositionType);
+ALGORITHM_PARAMETER_DEF(Visualization, FixedHorizontal);
+ALGORITHM_PARAMETER_DEF(Visualization, FixedVertical);
+ALGORITHM_PARAMETER_DEF(Visualization, CoordinateHorizontal);
+ALGORITHM_PARAMETER_DEF(Visualization, CoordinateVertical);
 
 MODULE_INFO_DEF(ShowString, Visualization, SCIRun)
 
@@ -67,6 +71,11 @@ void ShowString::setStateDefaults()
   state->setValue(Parameters::FontSize, 16);
 
   state->setValue(Parameters::FontName, std::string("FreeSans.ttf"));
+  state->setValue(Parameters::PositionType, std::string("Preset"));
+  state->setValue(Parameters::FixedHorizontal, std::string("Left"));
+  state->setValue(Parameters::FixedVertical, std::string("Top"));
+  state->setValue(Parameters::CoordinateHorizontal, 0.5);
+  state->setValue(Parameters::CoordinateVertical, 0.5);
 }
 
 void ShowString::execute()
@@ -77,6 +86,24 @@ void ShowString::execute()
   {
     auto geom = buildGeometryObject(str->value());
     sendOutput(RenderedString, geom);
+  }
+}
+
+std::tuple<double, double> ShowString::getTextPosition() const
+{
+  auto state = get_state();
+  auto positionChoice = state->getValue(Parameters::PositionType).toString();
+  if ("Preset" == positionChoice)
+  {
+    return std::make_tuple(1.0, 1.0);
+  }
+  else if ("Coordinates" == positionChoice)
+  {
+    return std::make_tuple(1.0, 1.0);
+  }
+  else
+  {
+    throw "logical error";
   }
 }
 
@@ -122,11 +149,10 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
   attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
   std::vector<SpireSubPass::Uniform> uniforms;
-  
-  auto state = get_state();
 
-  int xTrans = 1;   // USER PARAM
-  int yTrans = 1;   // USER PARAM
+  auto position = getTextPosition();
+  int xTrans = std::get<0>(position); 
+  int yTrans = std::get<1>(position);
 
   uniforms.push_back(SpireSubPass::Uniform("uXTranslate", static_cast<float>(xTrans)));
   uniforms.push_back(SpireSubPass::Uniform("uYTranslate", static_cast<float>(yTrans)));
@@ -152,6 +178,7 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   geom->mVBOs.push_back(geomVBO);
   geom->mPasses.push_back(pass);
 
+  auto state = get_state();
   auto fontSize = state->getValue(Parameters::FontSize).toInt();
   auto fontName = state->getValue(Parameters::FontName).toString() + ".ttf";
 
@@ -176,8 +203,7 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   }
 
   Vector trans(xTrans, yTrans, 0.0); 
-  Vector shift(20, 0, 0.5);  // USER PARAM
-  textBuilder_->printString(text, trans, shift, text, *geom);
+  textBuilder_->printString(text, trans, Vector(), text, *geom);
 
   return geom;
 }

@@ -52,6 +52,7 @@ class SCISHARE ShowStringDialog : public ModuleDialogGeneric,
     void getColor();
   private:
     void setButtonColor() const;
+    void addFonts();
     QColor color_;
   };
 
