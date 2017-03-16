@@ -95,11 +95,29 @@ std::tuple<double, double> ShowString::getTextPosition() const
   auto positionChoice = state->getValue(Parameters::PositionType).toString();
   if ("Preset" == positionChoice)
   {
-    return std::make_tuple(1.0, 1.0);
+    double x, y;
+    auto horizontal = state->getValue(Parameters::FixedHorizontal).toString();
+    if ("Left" == horizontal)
+      x = 0.3;
+    else if ("Center" == horizontal)
+      x = 1.0;
+    else // "Right"
+      x = 1.7;
+
+    auto vertical = state->getValue(Parameters::FixedVertical).toString();
+    if ("Top" == vertical)
+      y = 1.7;
+    else if ("Middle" == vertical)
+      y = 1.0;
+    else // "Bottom"
+      y = 0.3;
+
+    return std::make_tuple(x, y);
   }
   else if ("Coordinates" == positionChoice)
   {
-    return std::make_tuple(1.0, 1.0);
+    return std::make_tuple(2 * state->getValue(Parameters::CoordinateHorizontal).toDouble(),
+      2 * state->getValue(Parameters::CoordinateVertical).toDouble());
   }
   else
   {
@@ -151,11 +169,11 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   std::vector<SpireSubPass::Uniform> uniforms;
 
   auto position = getTextPosition();
-  int xTrans = std::get<0>(position); 
-  int yTrans = std::get<1>(position);
+  auto xTrans = std::get<0>(position); 
+  auto yTrans = std::get<1>(position);
 
-  uniforms.push_back(SpireSubPass::Uniform("uXTranslate", static_cast<float>(xTrans)));
-  uniforms.push_back(SpireSubPass::Uniform("uYTranslate", static_cast<float>(yTrans)));
+  uniforms.push_back(SpireSubPass::Uniform("uXTranslate", xTrans));
+  uniforms.push_back(SpireSubPass::Uniform("uYTranslate", yTrans));
   
   SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements, BBox(), true);
   SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);

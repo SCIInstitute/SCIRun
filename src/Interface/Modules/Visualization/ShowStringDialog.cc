@@ -62,7 +62,9 @@ ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle st
 
   addTabManager(locationTabWidget_, Parameters::PositionType);
   addComboBoxManager(horizontalPositionComboBox_, Parameters::FixedHorizontal);
+  connectComboToExecuteSignal(horizontalPositionComboBox_);
   addComboBoxManager(verticalPositionComboBox_, Parameters::FixedVertical);
+  connectComboToExecuteSignal(verticalPositionComboBox_);
   addDoubleSpinBoxManager(xPositionDoubleSpinBox_, Parameters::CoordinateHorizontal);
   addDoubleSpinBoxManager(yPositionDoubleSpinBox_, Parameters::CoordinateVertical);
 
@@ -124,6 +126,8 @@ void ShowStringDialog::createStartupNote()
 {
   setButtonColor();
   connectSpinBoxToExecuteSignal(fontSizeSpinBox_);
+  connectSpinBoxToExecuteSignal(xPositionDoubleSpinBox_);
+  connectSpinBoxToExecuteSignal(yPositionDoubleSpinBox_);
 }
 
 void ShowStringDialog::setButtonColor() const

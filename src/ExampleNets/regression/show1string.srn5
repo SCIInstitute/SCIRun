@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="5">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>6</count>
+			<count>5</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CreateStandardColorMap:0</first>
@@ -305,7 +305,7 @@
 									<name>CoordinateHorizontal</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-001</value>
+										<value>8.00000000000000040e-001</value>
 									</value>
 								</second>
 							</item>
@@ -317,7 +317,7 @@
 									<name>CoordinateVertical</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-001</value>
+										<value>2.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -329,7 +329,7 @@
 									<name>FixedHorizontal</name>
 									<value>
 										<which>2</which>
-										<value>Left</value>
+										<value>Center</value>
 									</value>
 								</second>
 							</item>
@@ -341,7 +341,7 @@
 									<name>FixedVertical</name>
 									<value>
 										<which>2</which>
-										<value>Top</value>
+										<value>Bottom</value>
 									</value>
 								</second>
 							</item>
@@ -377,7 +377,7 @@
 									<name>PositionType</name>
 									<value>
 										<which>2</which>
-										<value>Preset</value>
+										<value>Coordinates</value>
 									</value>
 								</second>
 							</item>
@@ -426,154 +426,6 @@
 									<value>
 										<which>1</which>
 										<value>8.86274509803921530e-001</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ShowString:1</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Visualization</category_name_>
-						<module_name_>ShowString</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>11</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>CoordinateHorizontal</name>
-								</first>
-								<second>
-									<name>CoordinateHorizontal</name>
-									<value>
-										<which>1</which>
-										<value>5.30000000000000030e-001</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CoordinateVertical</name>
-								</first>
-								<second>
-									<name>CoordinateVertical</name>
-									<value>
-										<which>1</which>
-										<value>4.69999999999999970e-001</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FixedHorizontal</name>
-								</first>
-								<second>
-									<name>FixedHorizontal</name>
-									<value>
-										<which>2</which>
-										<value>Center</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FixedVertical</name>
-								</first>
-								<second>
-									<name>FixedVertical</name>
-									<value>
-										<which>2</which>
-										<value>Bottom</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FontName</name>
-								</first>
-								<second>
-									<name>FontName</name>
-									<value>
-										<which>2</which>
-										<value>FreeSans</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FontSize</name>
-								</first>
-								<second>
-									<name>FontSize</name>
-									<value>
-										<which>0</which>
-										<value>24</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>PositionType</name>
-								</first>
-								<second>
-									<name>PositionType</name>
-									<value>
-										<which>2</which>
-										<value>Coordinates</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>TextAlpha</name>
-								</first>
-								<second>
-									<name>TextAlpha</name>
-									<value>
-										<which>1</which>
-										<value>9.69999999999999970e-001</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>TextBlue</name>
-								</first>
-								<second>
-									<name>TextBlue</name>
-									<value>
-										<which>1</which>
-										<value>9.01960784313725480e-002</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>TextGreen</name>
-								</first>
-								<second>
-									<name>TextGreen</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>TextRed</name>
-								</first>
-								<second>
-									<name>TextRed</name>
-									<value>
-										<which>1</which>
-										<value>3.01960784313725470e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1055,7 +907,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>6</count>
+			<count>4</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CreateStandardColorMap:0</moduleId1_>
@@ -1076,18 +928,6 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowString:0</moduleId2_>
-				<port2_>
-					<name>String</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>CreateString:0</moduleId1_>
-				<port1_>
-					<name>NewString</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ShowString:1</moduleId2_>
 				<port2_>
 					<name>String</name>
 					<id>0</id>
@@ -1117,22 +957,10 @@
 					<id>0</id>
 				</port2_>
 			</item>
-			<item>
-				<moduleId1_>ShowString:1</moduleId1_>
-				<port1_>
-					<name>RenderedString</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
-				<port2_>
-					<name>GeneralGeom</name>
-					<id>5</id>
-				</port2_>
-			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>6</count>
+		<count>5</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>CreateStandardColorMap:0</first>
@@ -1163,13 +991,6 @@
 			</second>
 		</item>
 		<item>
-			<first>ShowString:1</first>
-			<second>
-				<first>3.80000000000000000e+002</first>
-				<second>1.52000000000000000e+002</second>
-			</second>
-		</item>
-		<item>
 			<first>ViewScene:0</first>
 			<second>
 				<first>1.86000000000000000e+002</first>
@@ -1186,7 +1007,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="20" tracking_level="0" version="0">
-		<count>6</count>
+		<count>5</count>
 		<item_version>0</item_version>
 		<item class_id="21" tracking_level="0" version="0">
 			<first>CreateStandardColorMap:0</first>
@@ -1202,10 +1023,6 @@
 		</item>
 		<item>
 			<first>ShowString:0</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>ShowString:1</first>
 			<second>-1</second>
 		</item>
 		<item>
