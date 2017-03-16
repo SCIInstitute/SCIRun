@@ -30,14 +30,12 @@
 #include <Modules/Visualization/ShowString.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Application/Application.h>
-#include <Core/Thread/Mutex.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Visualization;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Thread;
 
 ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
