@@ -64,7 +64,7 @@ public:
   virtual bool isDynamic() const override = 0;
   virtual SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const override = 0;
   virtual size_t getIndex() const override = 0;
-  virtual boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const = 0;
+  virtual boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override = 0;
 
   virtual QColor color() const = 0;
   virtual bool isLightOn() const = 0;

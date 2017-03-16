@@ -45,8 +45,8 @@ namespace SCIRun {
       {
       public:
         PrintStringIntoString();
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
         HAS_DYNAMIC_PORTS
 
         INPUT_PORT(0, Format, String);

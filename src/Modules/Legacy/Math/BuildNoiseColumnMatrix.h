@@ -42,8 +42,8 @@ namespace SCIRun {
 			{
 				public:
 					BuildNoiseColumnMatrix();
-					virtual void setStateDefaults();
-					virtual void execute();
+					virtual void setStateDefaults() override;
+					virtual void execute() override;
 
 					INPUT_PORT(0, InputMatrix, Matrix);
 					OUTPUT_PORT(0, ResultMatrix, Matrix);

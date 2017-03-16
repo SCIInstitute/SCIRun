@@ -62,8 +62,8 @@ namespace SCIRun {
       {
       public:
         SolveInverseProblemWithTikhonov();
-        virtual void setStateDefaults();
-        virtual void execute();
+        virtual void setStateDefaults() override;
+        virtual void execute() override;
 
         INPUT_PORT(0, ForwardMatrix, Matrix);
         INPUT_PORT(1, WeightingInSourceSpace, Matrix);

@@ -44,8 +44,8 @@ namespace Math {
 
   public:
     GetMatrixSlice();
-    virtual void execute();
-    virtual void setStateDefaults();
+    void execute() override;
+    void setStateDefaults() override;
     INPUT_PORT(0, InputMatrix, Matrix);
     INPUT_PORT(1, Current_Index, Int32);
     OUTPUT_PORT(0, OutputMatrix, Matrix);

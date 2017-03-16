@@ -45,8 +45,8 @@ namespace SCIRun {
         virtual void setStateDefaults() override;
         virtual void execute() override;
 
-        INPUT_PORT(0, DipoleInputField, LegacyField);
-        OUTPUT_PORT(0, DipoleOutputField, LegacyField);
+        INPUT_PORT(0, DipoleInputField, Field);
+        OUTPUT_PORT(0, DipoleOutputField, Field);
         OUTPUT_PORT(1, DipoleWidget, GeometryObject);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)

@@ -46,8 +46,8 @@ namespace SCIRun {
         virtual void execute() override;
         virtual void setStateDefaults() override;
 
-        INPUT_PORT(0, Input_Mesh, LegacyField);
-        OUTPUT_PORT(0, Faired_Mesh, LegacyField);
+        INPUT_PORT(0, Input_Mesh, Field);
+        OUTPUT_PORT(0, Faired_Mesh, Field);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       };

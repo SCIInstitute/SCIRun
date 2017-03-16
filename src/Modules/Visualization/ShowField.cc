@@ -338,7 +338,7 @@ RenderState GeometryBuilder::getFaceRenderState(
 }
 
 GeometryHandle GeometryBuilder::buildGeometryObject(
-  boost::shared_ptr<Field> field,
+  FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
   ModuleStateHandle state, const GeometryIDGenerator& gid, Interruptible* interruptible)
 {
@@ -396,7 +396,7 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
 
 
 void GeometryBuilder::renderFaces(
-  boost::shared_ptr<Field> field,
+  FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
   ModuleStateHandle moduleState,
   Interruptible* interruptible,
@@ -428,7 +428,7 @@ void GeometryBuilder::renderFaces(
 
 
 void GeometryBuilder::renderFacesLinear(
-  boost::shared_ptr<Field> field,
+  FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
   ModuleStateHandle moduleState,
   Interruptible* interruptible,
@@ -1203,7 +1203,7 @@ void GeometryBuilder::addFaceGeom(
 }
 
 void GeometryBuilder::renderNodes(
-  boost::shared_ptr<Field> field,
+  FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
   ModuleStateHandle moduleState,
   Interruptible* interruptible,
@@ -1297,7 +1297,7 @@ void GeometryBuilder::renderNodes(
 
 
 void GeometryBuilder::renderEdges(
-  boost::shared_ptr<Field> field,
+  FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
   ModuleStateHandle moduleState,
   Interruptible* interruptible,
