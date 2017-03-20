@@ -224,7 +224,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
     standardBar->addAction(actionSelectMode_);
     standardBar->addAction(actionToggleMetadataLayer_);
     standardBar->addAction(actionToggleTagLayer_);
-    //standardBar->addAction(actionMakeSubnetwork_);  //TODO: work in progress
+    standardBar->addAction(actionMakeSubnetwork_);  //TODO: work in progress
     connect(actionNetworkBar_, SIGNAL(toggled(bool)), standardBar, SLOT(setVisible(bool)));
     connect(standardBar, SIGNAL(visibilityChanged(bool)), actionNetworkBar_, SLOT(setChecked(bool)));
     //setUnifiedTitleAndToolBarOnMac(true);

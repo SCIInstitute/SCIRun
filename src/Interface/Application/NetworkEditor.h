@@ -182,6 +182,8 @@ namespace Gui {
         TagNameFunc tagName,
         double highResolutionExpandFactor,
         QWidget* parent = nullptr);
+    NetworkEditor(const NetworkEditor& rhs);
+    NetworkEditor& operator=(const NetworkEditor&) = delete;
     ~NetworkEditor();
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
     boost::shared_ptr<NetworkEditorControllerGuiProxy> getNetworkEditorController() const;
@@ -339,6 +341,7 @@ namespace Gui {
     QString checkForOverriddenTagName(int tag) const;
     void renameTagGroup(int tag, const QString& name);
     QPointF positionOfFloatingText(int num, bool top, int horizontalIndent, int verticalSpacing) const;
+    
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;

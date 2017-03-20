@@ -110,6 +110,11 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   connect(this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SLOT(redrawTagGroups()));
 }
 
+NetworkEditor::NetworkEditor(const NetworkEditor& rhs)
+{
+  qDebug() << "NetworkEditor copy ctor";
+}
+
 void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller)
 {
   if (controller_ == controller)
@@ -1758,7 +1763,10 @@ class SubnetModule : public Module
 public:
   explicit SubnetModule(const std::vector<ModuleHandle>& underlyingModules) : Module(ModuleLookupInfo()),
     underlyingModules_(underlyingModules)
-  {}
+  {
+    set_id("Subnet:" + boost::lexical_cast<std::string>(subnetCount_));
+    subnetCount_++;
+  }
   virtual void execute() override
   {
     //std::ostringstream ostr;
@@ -1777,7 +1785,10 @@ public:
   }
 private:
   std::vector<ModuleHandle> underlyingModules_;
+  static int subnetCount_;
 };
+
+int SubnetModule::subnetCount_(0);
 
 void NetworkEditor::makeSubnetwork()
 {
@@ -1835,7 +1846,6 @@ void NetworkEditor::makeSubnetwork()
   auto subnetModule = boost::make_shared<SubnetModule>(underlyingModules);
   std::cout << "Subnet components: " << subnetModule->listComponentIds() << std::endl;
   auto moduleWidget = new ModuleWidget(this, "Subnet::" + name, subnetModule, dialogErrorControl_);
-
 
   QByteArray byteArray;
   QBuffer buffer(&byteArray);
