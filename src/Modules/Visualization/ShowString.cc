@@ -70,7 +70,7 @@ void ShowString::setStateDefaults()
   state->setValue(Parameters::TextAlpha, 1.0);
   state->setValue(Parameters::FontSize, 16);
 
-  state->setValue(Parameters::FontName, std::string("FreeSans.ttf"));
+  state->setValue(Parameters::FontName, std::string("FreeSansBold"));
   state->setValue(Parameters::PositionType, std::string("Preset"));
   state->setValue(Parameters::FixedHorizontal, std::string("Left"));
   state->setValue(Parameters::FixedVertical, std::string("Top"));
@@ -145,7 +145,7 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
 
   for (auto a : indices) iboBuffer->write(a);
 
-  for (size_t i = 0; i < points.size(); i++) 
+  for (size_t i = 0; i < points.size(); i++)
   {
     vboBuffer->write(static_cast<float>(points[i].x()));
     vboBuffer->write(static_cast<float>(points[i].y()));
@@ -169,12 +169,12 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   std::vector<SpireSubPass::Uniform> uniforms;
 
   auto position = getTextPosition();
-  auto xTrans = std::get<0>(position); 
+  auto xTrans = std::get<0>(position);
   auto yTrans = std::get<1>(position);
 
   uniforms.push_back(SpireSubPass::Uniform("uXTranslate", xTrans));
   uniforms.push_back(SpireSubPass::Uniform("uYTranslate", yTrans));
-  
+
   SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements, BBox(), true);
   SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
 
@@ -220,7 +220,7 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
     textBuilder_->setColor(r, g, b, a);
   }
 
-  Vector trans(xTrans, yTrans, 0.0); 
+  Vector trans(xTrans, yTrans, 0.0);
   textBuilder_->printString(text, trans, Vector(), text, *geom);
 
   return geom;
