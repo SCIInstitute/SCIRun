@@ -63,8 +63,8 @@ ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle st
   //connectComboToExecuteSignal(horizontalPositionComboBox_);
   addComboBoxManager(verticalPositionComboBox_, Parameters::FixedVertical);
   //connectComboToExecuteSignal(verticalPositionComboBox_);
-  //addDoubleSpinBoxManager(xPositionDoubleSpinBox_, Parameters::CoordinateHorizontal);
-  //addDoubleSpinBoxManager(yPositionDoubleSpinBox_, Parameters::CoordinateVertical);
+  addDoubleSpinBoxManager(xPositionDoubleSpinBox_, Parameters::CoordinateHorizontal);
+  addDoubleSpinBoxManager(yPositionDoubleSpinBox_, Parameters::CoordinateVertical);
 
   createExecuteInteractivelyToggleAction();
 }
