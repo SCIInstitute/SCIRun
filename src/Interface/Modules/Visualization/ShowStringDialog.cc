@@ -56,15 +56,15 @@ ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle st
   addFonts();
 
   addComboBoxManager(fontComboBox_, Parameters::FontName);
-  connectComboToExecuteSignal(fontComboBox_);
+  //connectComboToExecuteSignal(fontComboBox_);
 
   addTabManager(locationTabWidget_, Parameters::PositionType);
   addComboBoxManager(horizontalPositionComboBox_, Parameters::FixedHorizontal);
-  connectComboToExecuteSignal(horizontalPositionComboBox_);
+  //connectComboToExecuteSignal(horizontalPositionComboBox_);
   addComboBoxManager(verticalPositionComboBox_, Parameters::FixedVertical);
-  connectComboToExecuteSignal(verticalPositionComboBox_);
-  addDoubleSpinBoxManager(xPositionDoubleSpinBox_, Parameters::CoordinateHorizontal);
-  addDoubleSpinBoxManager(yPositionDoubleSpinBox_, Parameters::CoordinateVertical);
+  //connectComboToExecuteSignal(verticalPositionComboBox_);
+  //addDoubleSpinBoxManager(xPositionDoubleSpinBox_, Parameters::CoordinateHorizontal);
+  //addDoubleSpinBoxManager(yPositionDoubleSpinBox_, Parameters::CoordinateVertical);
 
   createExecuteInteractivelyToggleAction();
 }
@@ -123,9 +123,9 @@ void ShowStringDialog::pullSpecial()
 void ShowStringDialog::createStartupNote()
 {
   setButtonColor();
-  connectSpinBoxToExecuteSignal(fontSizeSpinBox_);
-  connectSpinBoxToExecuteSignal(xPositionDoubleSpinBox_);
-  connectSpinBoxToExecuteSignal(yPositionDoubleSpinBox_);
+  // connectSpinBoxToExecuteSignal(fontSizeSpinBox_);
+  // connectSpinBoxToExecuteSignal(xPositionDoubleSpinBox_);
+  // connectSpinBoxToExecuteSignal(yPositionDoubleSpinBox_);
 }
 
 void ShowStringDialog::setButtonColor() const
