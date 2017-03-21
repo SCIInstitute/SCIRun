@@ -266,22 +266,29 @@ double TextBuilder::getStringLen(const std::string& oneline) const
     return 0.0;
 
   auto len = 0.0;
+  auto rows = 0;
   for (const auto& p : oneline)
   {
     if (FT_Load_Char(ftFace_, p, FT_LOAD_RENDER))
       continue;
     auto g = ftFace_->glyph;
     len += g->bitmap.width;
+    rows = g->bitmap.rows;
   }
   return len;
 }
 
 bool TextBuilder::initialize(size_t textSize)
 {
+  return initialize(textSize, "FreeSans.ttf");
+}
+
+bool TextBuilder::initialize(size_t textSize, const std::string& fontName)
+{
   if (!isInit())
-    initFreeType("FreeSans.ttf", textSize);
+    initFreeType(fontName, textSize);
   else if (!isValid())
-    loadNewFace("FreeSans.ttf", textSize);
+    loadNewFace(fontName, textSize);
 
   return isReady();
 }
