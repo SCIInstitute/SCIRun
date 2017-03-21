@@ -140,7 +140,7 @@ public:
   bool hasDynamicPorts() const;
 
   void createStartupNote();
-  void postLoadAction();
+  virtual void postLoadAction();
 
   bool guiVisible() const;
 
@@ -237,8 +237,8 @@ private Q_SLOTS:
 protected:
   virtual void enterEvent(QEvent* event) override;
   virtual void leaveEvent(QEvent* event) override;
-private:
   ModuleWidgetDisplayPtr fullWidgetDisplay_;
+private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
@@ -292,6 +292,14 @@ private:
   bool isViewScene_; //TODO: lots of special logic around this case.
 
   static bool globalMiniMode_;
+};
+
+class SubnetWidget : public ModuleWidget
+{
+	Q_OBJECT
+public:
+  using ModuleWidget::ModuleWidget;
+  void postLoadAction() override;
 };
 
 }

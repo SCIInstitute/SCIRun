@@ -1845,7 +1845,7 @@ void NetworkEditor::makeSubnetwork()
 
   auto subnetModule = boost::make_shared<SubnetModule>(underlyingModules);
   std::cout << "Subnet components: " << subnetModule->listComponentIds() << std::endl;
-  auto moduleWidget = new ModuleWidget(this, "Subnet::" + name, subnetModule, dialogErrorControl_);
+  auto moduleWidget = new SubnetWidget(this, "Subnet::" + name, subnetModule, dialogErrorControl_);
 
   QByteArray byteArray;
   QBuffer buffer(&byteArray);
@@ -1853,6 +1853,8 @@ void NetworkEditor::makeSubnetwork()
   QString tooltipPic = QString("<html><img src=\"data:image/png;base64,") + byteArray.toBase64() + "\"/></html>";
 
   auto proxy = setupModuleWidget(moduleWidget);
+  //TODO: file loading case, duplicated
+  moduleWidget->postLoadAction();
   proxy->setScale(1.5);
   proxy->setToolTip(tooltipPic);
 }

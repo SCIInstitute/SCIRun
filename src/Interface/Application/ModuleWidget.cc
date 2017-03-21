@@ -1430,3 +1430,9 @@ void ModuleWidget::incomingConnectionStateChanged(bool disabled, int index)
     output->setConnectionsDisabled(disabled_ || disabled);
   }
 }
+
+void SubnetWidget::postLoadAction()
+{
+  qDebug() << "SubnetWidget::postLoadAction()";
+  fullWidgetDisplay_->getExecuteButton()->setVisible(false);
+}
