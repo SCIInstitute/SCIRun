@@ -59,15 +59,25 @@ void ConvertComplexToRealMatrix::execute()
     
     auto input_dense = boost::dynamic_pointer_cast<ComplexDenseMatrix>(input_complex_matrix);
     auto input_sparse = boost::dynamic_pointer_cast<ComplexSparseRowMatrix>(input_complex_matrix);
-    
+
     if (!input_dense && !input_sparse)
     {
      error("Number of Rows or Columns are zero");
      return;
     }
     
-    auto nr_cols=input_dense->ncols(), nr_rows=input_dense->nrows();
+    auto nr_cols=0, nr_rows=0;
    
+    if (input_dense)
+    {
+      nr_cols=input_dense->ncols();
+      nr_rows=input_dense->nrows();
+    } else
+    {
+      nr_cols=input_sparse->ncols();
+      nr_rows=input_sparse->nrows(); 
+    }
+    
     if (nr_rows==0 || nr_cols==0)
     {
      error("Number of Rows or Columns are zero");
