@@ -20,7 +20,7 @@ before_install:
 
 script:
   - cd bin
-  - cmake -GNinja -DTRAVIS_BUILD:BOOL=ON ../Superbuild
+  - cmake -GNinja -DTRAVIS_BUILD:BOOL=OFF ../Superbuild
   - travis_wait 40 ninja
   - cd SCIRun
   - ./Algorithm_Layer_Test
