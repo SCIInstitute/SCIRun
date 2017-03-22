@@ -43,10 +43,10 @@ namespace SCIRun {
         LEGACY_BIOPSE_MODULE
       public:
         ApplyFEMVoltageSource();
-        virtual void setStateDefaults();
-        virtual void execute();
+        void setStateDefaults() override;
+        void execute() override;
 
-        INPUT_PORT(0, Mesh, LegacyField);
+        INPUT_PORT(0, Mesh, Field);
         INPUT_PORT(1, StiffnessMatrix, Matrix);
         INPUT_PORT(2, RHS, Matrix);
         INPUT_PORT(3, Dirichlet, DenseMatrix);

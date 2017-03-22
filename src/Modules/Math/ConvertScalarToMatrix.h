@@ -42,8 +42,8 @@ namespace Math {
   {
   public:
     ConvertScalarToMatrix();
-    virtual void execute();
-    virtual void setStateDefaults() {}
+    virtual void execute() override;
+    virtual void setStateDefaults() override {}
 
     INPUT_PORT(0, Input, Int32);
     OUTPUT_PORT(0, Output, Matrix);

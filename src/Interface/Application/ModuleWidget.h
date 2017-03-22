@@ -47,6 +47,7 @@
 
 class QDockWidget;
 class QProgressBar;
+class QTimeLine;
 
 namespace SCIRun {
 namespace Gui {
@@ -214,13 +215,15 @@ Q_SIGNALS:
   void signalExecuteButtonIconChangeToStop();
   void disableWidgetDisabling();
   void reenableWidgetDisabling();
-  void executeAgain();
+  void executeAgain(bool upstream);
   void executionDisabled(bool disabled);
+  void findInNetwork();
 private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
   void executeButtonPushed();
   void executeTriggeredViaStateChange();
+  void executeTriggeredProgrammatically(bool upstream);
   void stopButtonPushed();
   void colorOptionsButton(bool visible);
   void fillReplaceWithMenu();

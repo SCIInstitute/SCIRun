@@ -42,8 +42,8 @@ namespace Basic {
   {
   public:
     SendComplexScalar();
-    virtual void execute();
-    virtual void setStateDefaults() {}
+    virtual void execute() override;
+    virtual void setStateDefaults() override {}
 
     OUTPUT_PORT(0, Scalar, ComplexDenseMatrix);
     MODULE_TRAITS_AND_INFO(NoAlgoOrUI)

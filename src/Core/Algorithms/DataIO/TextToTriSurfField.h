@@ -43,7 +43,7 @@ namespace SCIRun {
         class SCISHARE TextToTriSurfFieldAlgorithm : public AlgorithmBase
         {
         public:
-          Datatypes::LegacyMeshHandle run(const std::string& filename);
+          boost::shared_ptr<Mesh> run(const std::string& filename);
 
           AlgorithmOutput run(const AlgorithmInput& input) const override;
         };

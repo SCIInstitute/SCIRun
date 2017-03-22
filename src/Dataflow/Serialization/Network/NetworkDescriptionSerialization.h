@@ -44,7 +44,7 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
-  typedef std::vector<ConnectionDescriptionXML> ConnectionsXML;
+  using ConnectionsXML = std::vector<ConnectionDescriptionXML>;
 
   struct SCISHARE ModuleWithState
   {
@@ -65,7 +65,8 @@ namespace Networks {
   {
     std::string noteHTML, noteText;
     int position, fontSize;
-    NoteXML(const std::string& html = "", int p = 0, const std::string& text = "", int f = 12) :
+
+    explicit NoteXML(const std::string& html = "", int p = 0, const std::string& text = "", int f = 12) :
       noteHTML(html), noteText(text), position(p), fontSize(f) {}
   private:
     friend class boost::serialization::access;
@@ -79,11 +80,11 @@ namespace Networks {
     }
   };
 
-  typedef std::map<std::string, ModuleWithState> ModuleMapXML;
-  typedef std::map<std::string, NoteXML> NotesMapXML;
-  typedef std::map<std::string, int> ModuleTagsMapXML;
-  typedef std::map<int, std::string> ModuleTagLabelOverridesMapXML;
-  typedef std::vector<std::string> DisabledComponentListXML;
+  using ModuleMapXML = std::map<std::string, ModuleWithState>;
+  using NotesMapXML = std::map<std::string, NoteXML>;
+  using ModuleTagsMapXML = std::map<std::string, int>;
+  using ModuleTagLabelOverridesMapXML = std::map<int, std::string>;
+  using DisabledComponentListXML = std::vector<std::string>;
 
   struct SCISHARE ModuleNotes
   {
@@ -156,6 +157,24 @@ namespace Networks {
       }
     }
   };
+
+  using FileNetworkMap = std::map<std::string, NetworkFile>;
+
+  struct SCISHARE ToolkitFile
+  {
+    FileNetworkMap networks;
+    void load(std::istream& istr);
+    void save(std::ostream& ostr) const;
+  private:
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+      ar & BOOST_SERIALIZATION_NVP(networks);
+    }
+  };
+
+  SCISHARE ToolkitFile makeToolkitFromDirectory(const boost::filesystem::path& toolkitPath);
 
   template <class Value>
   std::map<std::string, Value> remapIdBasedContainer(const std::map<std::string, Value>& keyedByOriginalId, const std::map<std::string, std::string>& idMapping)

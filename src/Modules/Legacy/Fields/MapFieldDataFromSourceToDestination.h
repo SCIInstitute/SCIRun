@@ -48,9 +48,9 @@ namespace Fields {
     virtual void execute() override;
     virtual void setStateDefaults() override;
 
-    INPUT_PORT(0, Source, LegacyField);
-    INPUT_PORT(1, Destination, LegacyField);
-    OUTPUT_PORT(0, Remapped_Destination, LegacyField);
+    INPUT_PORT(0, Source, Field);
+    INPUT_PORT(1, Destination, Field);
+    OUTPUT_PORT(0, Remapped_Destination, Field);
 
     MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };

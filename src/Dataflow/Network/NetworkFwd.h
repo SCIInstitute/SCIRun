@@ -72,6 +72,7 @@ struct ModuleTags;
 struct DisabledComponents;
 /// @todo: rename this
 struct NetworkFile;
+struct ToolkitFile;
 class NetworkGlobalSettings;
 class NetworkEditorSerializationManager;
 class ConnectionMakerService;

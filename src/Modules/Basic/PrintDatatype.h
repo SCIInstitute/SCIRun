@@ -43,8 +43,8 @@ namespace SCIRun {
       {
       public:
         PrintDatatype();
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
         INPUT_PORT(0, Input, Datatype);
 

@@ -34,7 +34,6 @@ DEALINGS IN THE SOFTWARE.
 
 #include "Interface/Modules/Render/ui_ViewScene.h"
 
-#include <boost/shared_ptr.hpp>
 #include <Modules/Visualization/TextBuilder.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
@@ -142,16 +141,16 @@ namespace SCIRun {
       void toggleLight3(bool value);
 
     protected:
-      virtual void mousePressEvent(QMouseEvent* event);
-      virtual void mouseReleaseEvent(QMouseEvent* event);
-      virtual void mouseMoveEvent(QMouseEvent* event);
-      virtual void wheelEvent(QWheelEvent* event);
-      virtual void keyPressEvent(QKeyEvent* event);
-      virtual void keyReleaseEvent(QKeyEvent*event);
-      virtual void closeEvent(QCloseEvent* evt) override;
-      virtual void showEvent(QShowEvent* evt) override;
-      virtual void hideEvent(QHideEvent* evt) override;
-      virtual void contextMenuEvent(QContextMenuEvent* evt) override {}
+      void mousePressEvent(QMouseEvent* event) override;
+      void mouseReleaseEvent(QMouseEvent* event) override;
+      void mouseMoveEvent(QMouseEvent* event) override;
+      void wheelEvent(QWheelEvent* event) override;
+      void keyPressEvent(QKeyEvent* event) override;
+      void keyReleaseEvent(QKeyEvent*event) override;
+      void closeEvent(QCloseEvent* evt) override;
+      void showEvent(QShowEvent* evt) override;
+      void hideEvent(QHideEvent* evt) override;
+      void contextMenuEvent(QContextMenuEvent* evt) override {}
     private:
       struct ClippingPlane {
         bool visible, showFrame, reverseNormal;

@@ -43,7 +43,7 @@ namespace Datatypes {
     explicit String(const std::string& s = "");
 
     const std::string& value() const { return value_; }
-    virtual String* clone() const { return new String(*this); }
+    virtual String* clone() const override { return new String(*this); }
 
     //! Persistent representation
     virtual void io(Piostream&) override;

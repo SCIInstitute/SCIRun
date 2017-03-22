@@ -120,7 +120,7 @@ TEST_F(JoinFieldsAlgoTests, CanJoinMultipleLatVolsGeneric)
   
   auto outputObj = algo.run(withInputData((Variables::InputFields, input)));
   
-  FieldHandle output = outputObj.get<Field>(Variables::OutputField);
+  FieldHandle output = outputObj.get<SCIRun::Field>(Variables::OutputField);
   EXPECT_EQ(914, output->vmesh()->num_nodes());
 }
 
@@ -214,7 +214,7 @@ TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_generic)
   input.push_back(CreateEmptyLatVol(8,9,10));
   
   auto outputObj = algo_.run(withInputData((Variables::InputFields, input)));
-  FieldHandle output = outputObj.get<Field>(Variables::OutputField);
+  FieldHandle output = outputObj.get<SCIRun::Field>(Variables::OutputField);
   EXPECT_EQ(output->vmesh()->num_nodes(),output->vmesh()->num_nodes());
 }
 

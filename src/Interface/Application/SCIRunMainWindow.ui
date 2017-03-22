@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1081</width>
-         <height>443</height>
+         <width>1093</width>
+         <height>482</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -134,8 +134,16 @@
     <property name="title">
      <string>&amp;Toolkits</string>
     </property>
-    <addaction name="actionForwardInverse_"/>
-    <addaction name="actionBrainStimulator_"/>
+    <widget class="QMenu" name="menuDownload_toolkit">
+     <property name="title">
+      <string>Download toolkit</string>
+     </property>
+     <addaction name="actionForwardInverse_"/>
+     <addaction name="actionBrainStimulator_"/>
+    </widget>
+    <addaction name="menuDownload_toolkit"/>
+    <addaction name="actionLoadToolkit_"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuHelp_">
     <property name="title">
@@ -1095,6 +1103,21 @@
   <action name="actionMakeSubnetwork_">
    <property name="text">
     <string>Make subnetwork...</string>
+   </property>
+  </action>
+  <action name="actionForward_Inverse_2">
+   <property name="text">
+    <string>Forward/Inverse 2</string>
+   </property>
+  </action>
+  <action name="actionLoadToolkit_">
+   <property name="text">
+    <string>Import toolkit...</string>
+   </property>
+  </action>
+  <action name="actionAsd">
+   <property name="text">
+    <string>asd</string>
    </property>
   </action>
  </widget>

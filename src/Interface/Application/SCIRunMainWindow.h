@@ -42,6 +42,7 @@ namespace SCIRun {
   namespace Dataflow {
     namespace Networks {
       struct ModuleId;
+      struct ToolkitFile;
     }
     namespace Engine {
       class NetworkEditorController;
@@ -70,7 +71,7 @@ public:
 
   //command access: extract an interface
   void saveNetworkFile(const QString& fileName);
-  bool loadNetworkFile(const QString& filename);
+  bool loadNetworkFile(const QString& filename, bool isTemporary = false);
   bool importLegacyNetworkFile(const QString& filename);
   void setupQuitAfterExecute();
   void quit();
@@ -79,6 +80,7 @@ public:
   void setDataPath(const QString& dirs);
   void addToDataDirectory(const QString& dir);
   void setCurrentFile(const QString& fileName);
+  void addToolkit(const QString& filename, const QString& directory, const SCIRun::Dataflow::Networks::ToolkitFile& toolkit);
 
   //TODO: extract another interface for command objects
   NetworkEditor* networkEditor() { return networkEditor_; }
@@ -122,6 +124,10 @@ private:
   QStringList favoriteModuleNames_;
   QMap<QString, QVariant> savedSubnetworksXml_;
   QMap<QString, QVariant> savedSubnetworksNames_;
+  QStringList toolkitFiles_, importedToolkits_;
+  QMap<QString, QString> toolkitDirectories_;
+  QMap<QString, Dataflow::Networks::ToolkitFile> toolkitNetworks_;
+  QMap<QString, QMenu*> toolkitMenus_;
   QToolButton* executeButton_;
   QByteArray windowState_;
   QPushButton* versionButton_;
@@ -167,6 +173,7 @@ private:
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
   bool quitAfterExecute_;
   bool skipSaveCheck_ = false;
+  bool startup_;
 
 Q_SIGNALS:
   void moduleItemDoubleClicked();
@@ -178,6 +185,9 @@ private Q_SLOTS:
   void loadNetwork();
   void checkAndLoadNetworkFile(const QString& filename);
   void loadRecentNetwork();
+  void loadToolkitsFromFile(const QString& filename);
+  void loadToolkit();
+  void removeToolkit();
   bool newNetwork();
   void runScript();
   void importLegacyNetwork();
@@ -194,6 +204,8 @@ private Q_SLOTS:
   void setExecutor(int type);
   void setGlobalPortCaching(bool enable);
   void readDefaultNotePosition(int index);
+  void openToolkitFolder();
+  void openToolkitNetwork();
   void updateMiniView();
   void alertForNetworkCycles(int code);
   void updateDockWidgetProperties(bool isFloating);

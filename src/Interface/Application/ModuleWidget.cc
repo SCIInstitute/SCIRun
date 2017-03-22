@@ -323,15 +323,11 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   createPorts(*theModule_);
   addPorts(currentIndex());
 
-  //qDebug() << width() << height() << currentWidget()->size();
-  //resize(currentWidget()->size());
-  //qDebug() << width() << height() << currentWidget()->size();
-
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
   theModule_->executionState().connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
 
-  theModule_->connectExecuteSelfRequest([this]() { executeAgain(); });
-  connect(this, SIGNAL(executeAgain()), this, SLOT(executeButtonPushed()));
+  theModule_->connectExecuteSelfRequest([this](bool upstream) { executeAgain(upstream); });
+  connect(this, SIGNAL(executeAgain(bool)), this, SLOT(executeTriggeredProgrammatically(bool)));
 
   Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
@@ -340,7 +336,6 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   connectExecuteEnds(boost::bind(&ModuleWidget::executeEnds, this));
   connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
   connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
-  //qDebug() << width() << height() << currentWidget()->size();
 
   auto oldName = theModule->legacyModuleName();
   if (theModule->get_module_name() != oldName)
@@ -580,7 +575,6 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
   for (const auto& port : inputs)
   {
     auto type = port->get_typename();
-    //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
     auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
       portAlpha()), type,
       moduleId, port->id(),
@@ -603,8 +597,6 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
       auto justAddedIndex = i - 1;
       bool isNotLastDynamicPortOfThisName = justAddedIndex < inputs.size() - 1
         && std::find_if(inputs.cbegin() + justAddedIndex + 1, inputs.cend(), nameMatches) != inputs.cend();
-      //qDebug() << "UPDATE FROM PORT CHANGE TYPE CHECK:" << isNotLastDynamicPortOfThisName << justAddedIndex << inputs.size() << (justAddedIndex < inputs.size() - 1)
-        //<< ((justAddedIndex < inputs.size() - 1) && (std::find_if(inputs.cbegin() + justAddedIndex + 1, inputs.cend(), nameMatches) != inputs.end()));
       if (isNotLastDynamicPortOfThisName)
         portConstructionType = DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD;
       dialog_->updateFromPortChange(i, port->id().toString(), portConstructionType);
@@ -704,12 +696,10 @@ void PortWidgetManager::addInputsToLayout(QHBoxLayout* layout)
   if (inputPorts_.empty())
     layout->addWidget(new BlankPort(layout->parentWidget()));
 
-  for (PortWidget* port : inputPorts_)
+  for (auto port : inputPorts_)
     layout->addWidget(port);
 
   layout->setSizeConstraint(QLayout::SetMinimumSize);
-  //qDebug() << "input port layout min size: " << layout->minimumSize();
-  //qDebug() << "input port layout max size: " << layout->maximumSize();
 }
 
 void PortWidgetManager::addOutputsToLayout(QHBoxLayout* layout)
@@ -717,12 +707,10 @@ void PortWidgetManager::addOutputsToLayout(QHBoxLayout* layout)
   if (outputPorts_.empty())
     layout->addWidget(new BlankPort(layout->parentWidget()));
 
-  for (PortWidget* port : outputPorts_)
+  for (auto port : outputPorts_)
     layout->addWidget(port);
 
   layout->setSizeConstraint(QLayout::SetMinimumSize);
-  //qDebug() << "output port layout min size: " << layout->minimumSize();
-  //qDebug() << "output port layout max size: " << layout->maximumSize();
 }
 
 void ModuleWidget::addInputPortsToLayout(int index)
@@ -800,7 +788,6 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
 {
   if (mid.id_ == moduleId_)
   {
-    //std::cout << "ADDING NEW DYNAMIC PORT: " << pid << std::endl;
     auto port = theModule_->getInputPort(pid);
     auto type = port->get_typename();
 
@@ -910,10 +897,7 @@ ModuleWidget::~ModuleWidget()
   Q_FOREACH (PortWidget* p, ports_->getAllPorts())
     p->deleteConnections();
 
-  //GuiLogger::Instance().log("Module deleted.");
-
   theModule_->setLogger(nullptr);
-
 
   if (deletedFromGui_)
   {
@@ -993,7 +977,6 @@ void fillColorStateLookup(const QString& background)
 //primitive state machine--updateBackgroundColor slot needs the thread-safe state machine too
 void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
 {
-  //qDebug() << "color slot: " << moduleState;
   switch (moduleState)
   {
   case static_cast<int>(ModuleExecutionState::Waiting):
@@ -1069,10 +1052,15 @@ void ModuleWidget::makeOptionsDialog()
       connect(dialog_, SIGNAL(fatalError(const QString&)), this, SLOT(handleDialogFatalError(const QString&)));
       connect(dialog_, SIGNAL(executionLoopStarted()), this, SIGNAL(disableWidgetDisabling()));
       connect(dialog_, SIGNAL(executionLoopHalted()), this, SIGNAL(reenableWidgetDisabling()));
+      connect(dialog_, SIGNAL(closeButtonClicked()), this, SLOT(toggleOptionsDialog()));
+      connect(dialog_, SIGNAL(helpButtonClicked()), this, SLOT(launchDocumentation()));
+      connect(dialog_, SIGNAL(findButtonClicked()), this, SIGNAL(findInNetwork()));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), nullptr);
       dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
       dialog_->setDockable(dockable_);
+      if (!isViewScene_)
+        dialog_->setupButtonBar();
       dockable_->setMinimumSize(dialog_->minimumSize());
       dockable_->setAllowedAreas(allowedDockArea());
       dockable_->setAutoFillBackground(true);
@@ -1115,6 +1103,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
     dockable_->setWindowFlags(Qt::Window);
     dockable_->show();
   }
+  dialog_->setButtonBarTitleVisible(!isFloating);
 }
 
 void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)
@@ -1263,9 +1252,14 @@ void ModuleWidget::showUI()
 
 void ModuleWidget::executeButtonPushed()
 {
-  LOG_DEBUG("Execute button pushed on module " << moduleId_ << std::endl);
   auto skipUpstream = QApplication::keyboardModifiers() == Qt::ShiftModifier;
   Q_EMIT executedManually(theModule_, !skipUpstream);
+  changeExecuteButtonToStop();
+}
+
+void ModuleWidget::executeTriggeredProgrammatically(bool upstream)
+{
+  Q_EMIT executedManually(theModule_, upstream);
   changeExecuteButtonToStop();
 }
 
@@ -1297,7 +1291,6 @@ void ModuleWidget::changeExecuteButtonToPlay()
 
 void ModuleWidget::stopButtonPushed()
 {
-  //qDebug() << "stop pressed for " << QString::fromStdString(theModule_->get_id().id_);
   Q_EMIT interrupt(theModule_->get_id());
 }
 
@@ -1305,14 +1298,10 @@ bool ModuleWidget::globalMiniMode_(false);
 
 void ModuleWidget::movePortWidgets(int oldIndex, int newIndex)
 {
-  //qDebug() << "movePortWidgets" << oldIndex << newIndex;
   removeInputPortsFromWidget(oldIndex);
   removeOutputPortsFromWidget(oldIndex);
   addInputPortsToWidget(newIndex);
   addOutputPortsToWidget(newIndex);
-  //auto size = widget(newIndex)->size();
-  //setCurrentIndex(newIndex);
-  //resize(size);
   Q_EMIT displayChanged();
 }
 
@@ -1369,7 +1358,6 @@ int ModuleWidget::portSpacing() const
 
 void ModuleWidget::updatePortSpacing(bool highlighted)
 {
-  //qDebug() << "NEED TO UPDATE SPACING FOR " << sender();
   auto port = qobject_cast<PortWidget*>(sender());
   if (port)
   {

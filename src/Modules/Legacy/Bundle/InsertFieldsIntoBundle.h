@@ -50,7 +50,7 @@ namespace SCIRun {
         HAS_DYNAMIC_PORTS
 
         INPUT_PORT(0, InputBundle, Bundle);
-        INPUT_PORT_DYNAMIC(1, InputFields, LegacyField);
+        INPUT_PORT_DYNAMIC(1, InputFields, Field);
         OUTPUT_PORT(0, OutputBundle, Bundle);
 
         static const Core::Algorithms::AlgorithmParameterName BundleName;

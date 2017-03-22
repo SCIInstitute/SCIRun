@@ -106,7 +106,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName UseFaceNormals;
 
 
-        INPUT_PORT(0, Field, LegacyField);
+        INPUT_PORT(0, Field, Field);
         INPUT_PORT(1, ColorMapObject, ColorMap);
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
