@@ -341,7 +341,9 @@ namespace Gui {
     QString checkForOverriddenTagName(int tag) const;
     void renameTagGroup(int tag, const QString& name);
     QPointF positionOfFloatingText(int num, bool top, int horizontalIndent, int verticalSpacing) const;
-    
+    QPixmap grabSubnetPic(const QRectF& rect);
+    QString convertToTooltip(const QPixmap& pic) const;
+
 		bool modulesSelectedByCL_;
     double currentScale_;
     bool tagLayerActive_;

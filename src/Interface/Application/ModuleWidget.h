@@ -79,6 +79,8 @@ public:
 
   virtual QProgressBar* getProgressBar() const = 0;
 
+  virtual void setupSubnetWidgets() = 0;
+
   virtual int getTitleWidth() const = 0;
   virtual QLabel* getTitle() const = 0;
 

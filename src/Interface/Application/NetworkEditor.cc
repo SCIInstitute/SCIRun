@@ -1811,6 +1811,25 @@ void NetworkEditor::makeSubnetwork()
     if (module)
       underlyingModules.push_back(module->getModule());
   }
+
+  auto pic = grabSubnetPic(rect);
+
+  auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:");
+
+  auto subnetModule = boost::make_shared<SubnetModule>(underlyingModules);
+  auto moduleWidget = new SubnetWidget(this, name, subnetModule, dialogErrorControl_);
+
+  auto tooltipPic = convertToTooltip(pic);
+  auto proxy = setupModuleWidget(moduleWidget);
+
+  //TODO: file loading case, duplicated
+  moduleWidget->postLoadAction();
+  proxy->setScale(1.5);
+  proxy->setToolTip(tooltipPic);
+}
+
+QPixmap NetworkEditor::grabSubnetPic(const QRectF& rect)
+{
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (dynamic_cast<QGraphicsPixmapItem*>(item))
@@ -1824,39 +1843,16 @@ void NetworkEditor::makeSubnetwork()
     if (dynamic_cast<QGraphicsPixmapItem*>(item))
       item->setVisible(true);
   }
-  // auto picItem = new SubnetworkGraphicsItem(pic);
-  // picItem->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable);
-  //
-  // auto picRect = picItem->boundingRect();
-  // auto longEdge = std::max(picRect.height(), picRect.width());
-  // picItem->setScale(100.0 / longEdge);
-  //
-  // scene_->addItem(picItem);
-  //
-  // while (!scene_->items(position.x() - 20, position.y() - 20, 40, 40).isEmpty())
-  // {
-  //   position += QPointF(100, 0);
-  // }
-  // picItem->setPos(position);
-  // scene_->clearSelection();
-  // picItem->setSelected(true);
 
-  auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:");
+  return pic;
+}
 
-  auto subnetModule = boost::make_shared<SubnetModule>(underlyingModules);
-  std::cout << "Subnet components: " << subnetModule->listComponentIds() << std::endl;
-  auto moduleWidget = new SubnetWidget(this, "Subnet::" + name, subnetModule, dialogErrorControl_);
-
+QString NetworkEditor::convertToTooltip(const QPixmap& pic) const
+{
   QByteArray byteArray;
   QBuffer buffer(&byteArray);
   pic.scaled(pic.size() * 0.5).save(&buffer, "PNG");
-  QString tooltipPic = QString("<html><img src=\"data:image/png;base64,") + byteArray.toBase64() + "\"/></html>";
-
-  auto proxy = setupModuleWidget(moduleWidget);
-  //TODO: file loading case, duplicated
-  moduleWidget->postLoadAction();
-  proxy->setScale(1.5);
-  proxy->setToolTip(tooltipPic);
+  return QString("<html><img src=\"data:image/png;base64,") + byteArray.toBase64() + "\"/></html>";
 }
 
 void NetworkEditor::drawTagGroups()

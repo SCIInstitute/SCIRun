@@ -139,6 +139,8 @@ public:
 
   virtual QProgressBar* getProgressBar() const override;
 
+  virtual void setupSubnetWidgets() override;
+
   virtual int getTitleWidth() const override;
   virtual QLabel* getTitle() const override;
 
@@ -246,6 +248,16 @@ QAbstractButton* ModuleWidgetDisplay::getHelpButton() const
 QAbstractButton* ModuleWidgetDisplay::getLogButton() const
 {
   return logButton2_;
+}
+
+void ModuleWidgetDisplay::setupSubnetWidgets()
+{
+  getExecuteButton()->setVisible(false);
+  getLogButton()->setVisible(false);
+  auto subnetView = new QPushButton("Subnet");
+  auto layout = qobject_cast<QHBoxLayout*>(buttonGroup_->layout());
+  if (layout)
+    layout->insertWidget(0, subnetView);
 }
 
 void ModuleWidgetDisplay::setStatusColor(const QString& color)
@@ -1433,6 +1445,5 @@ void ModuleWidget::incomingConnectionStateChanged(bool disabled, int index)
 
 void SubnetWidget::postLoadAction()
 {
-  qDebug() << "SubnetWidget::postLoadAction()";
-  fullWidgetDisplay_->getExecuteButton()->setVisible(false);
+  fullWidgetDisplay_->setupSubnetWidgets();
 }
