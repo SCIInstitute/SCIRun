@@ -44,8 +44,8 @@ namespace
   class SolveLinearSystemAlgorithmEigenCGImpl
   {
   public:
-    SolveLinearSystemAlgorithmEigenCGImpl(const DenseColumnMatrix& rhs, double tolerance, int maxIterations) : 
-        rhs_(rhs), tolerance_(tolerance), maxIterations_(maxIterations) {}
+    SolveLinearSystemAlgorithmEigenCGImpl(const DenseColumnMatrix& rhs, double tolerance, int maxIterations) :
+        tolerance_(tolerance), maxIterations_(maxIterations), rhs_(rhs) {}
 
     template <class MatrixType>
     DenseColumnMatrix::EigenBase solveWithEigen(const MatrixType& lhs)
@@ -54,7 +54,7 @@ namespace
       cg.compute(lhs);
 
       if (cg.info() != Eigen::Success)
-        BOOST_THROW_EXCEPTION(AlgorithmInputException() 
+        BOOST_THROW_EXCEPTION(AlgorithmInputException()
           << LinearAlgebraErrorMessage("Conjugate gradient initialization was unsuccessful")
           << EigenComputationInfo(cg.info()));
 
@@ -75,16 +75,22 @@ namespace
 
 SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs& input, const Parameters& params) const
 {
-  auto A = input.get<0>();
+  return runImpl<Inputs, Outputs>(input, params);
+}
+
+template <typename In, typename Out>
+Out SolveLinearSystemAlgorithm::runImpl(const In& input, const Parameters& params) const
+{
+  auto A = std::get<0>(input);
   ENSURE_ALGORITHM_INPUT_NOT_NULL(A, "Null input matrix");
 
-  auto b = input.get<1>();
+  auto b = std::get<1>(input);
   ENSURE_ALGORITHM_INPUT_NOT_NULL(b, "Null rhs vector");
-  
-  double tolerance = params.get<0>();
+
+  double tolerance = std::get<0>(params);
   ENSURE_POSITIVE_DOUBLE(tolerance, "Tolerance out of range!");
 
-  int maxIterations = params.get<1>();
+  int maxIterations = std::get<1>(params);
   ENSURE_POSITIVE_INT(maxIterations, "Max iterations out of range!");
 
   SolveLinearSystemAlgorithmEigenCGImpl impl(*b, tolerance, maxIterations);
@@ -99,7 +105,7 @@ SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs
   }
   else
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("solveWithEigen can only handle dense and sparse matrices."));
-  
+
   if (x.size() != 0)
   {
     /// @todo: move ctor
