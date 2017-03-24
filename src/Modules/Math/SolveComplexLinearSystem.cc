@@ -29,11 +29,12 @@
 #include <Modules/Math/SolveComplexLinearSystem.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Math;
 
 MODULE_INFO_DEF(SolveComplexLinearSystem, Math, SCIRun)
 
@@ -56,6 +57,14 @@ void SolveComplexLinearSystem::execute()
 
   if (needToExecute())
   {
-    remark("TODO");
+    SolveLinearSystemAlgorithm algo;
+
+    auto input = std::make_tuple(lhs, rhs);
+    auto x = algo.run(input, std::make_tuple(1e-20, 4000));
+    auto solution = std::get<0>(x);
+
+    std::cout << "error: " << std::get<1>(x) << std::endl;
+    std::cout << "iterations: " << std::get<2>(x) << std::endl;
+    sendOutput(Solution, solution);
   }
 }

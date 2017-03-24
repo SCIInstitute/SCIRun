@@ -41,14 +41,15 @@ using namespace SCIRun::Core;
 
 namespace
 {
+  template <class ColumnMatrixType>
   class SolveLinearSystemAlgorithmEigenCGImpl
   {
   public:
-    SolveLinearSystemAlgorithmEigenCGImpl(const DenseColumnMatrix& rhs, double tolerance, int maxIterations) :
+    SolveLinearSystemAlgorithmEigenCGImpl(const ColumnMatrixType& rhs, double tolerance, int maxIterations) :
         tolerance_(tolerance), maxIterations_(maxIterations), rhs_(rhs) {}
 
     template <class MatrixType>
-    DenseColumnMatrix::EigenBase solveWithEigen(const MatrixType& lhs)
+    typename ColumnMatrixType::EigenBase solveWithEigen(const MatrixType& lhs)
     {
       Eigen::ConjugateGradient<typename MatrixType::EigenBase> cg;
       cg.compute(lhs);
@@ -69,13 +70,18 @@ namespace
     double tolerance_;
     int maxIterations_;
   private:
-    const DenseColumnMatrix& rhs_;
+    const ColumnMatrixType& rhs_;
   };
 }
 
 SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs& input, const Parameters& params) const
 {
   return runImpl<Inputs, Outputs>(input, params);
+}
+
+SolveLinearSystemAlgorithm::ComplexOutputs SolveLinearSystemAlgorithm::run(const ComplexInputs& input, const Parameters& params) const
+{
+  return runImpl<ComplexInputs, ComplexOutputs>(input, params);
 }
 
 template <typename In, typename Out>
