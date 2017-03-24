@@ -35,6 +35,7 @@
 #define register
 #include <Eigen/Dense>
 #undef register
+#include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {
