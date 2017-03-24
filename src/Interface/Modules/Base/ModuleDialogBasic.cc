@@ -32,9 +32,18 @@
 using namespace SCIRun::Gui;
 
 ModuleDialogBasic::ModuleDialogBasic(const std::string& name, QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle(), parent)
+  : ModuleDialogGeneric(nullptr, parent)
 {
   setupUi(this);
   setModal(false);
   setWindowTitle(QString::fromStdString(name));
+}
+
+SubnetDialog::SubnetDialog(const std::string& name, QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(nullptr, parent)
+{
+  setupUi(this);
+  setModal(false);
+  setWindowTitle(QString::fromStdString(name));
+  WidgetStyleMixin::tableHeaderStyle(moduleTableWidget_);
 }
