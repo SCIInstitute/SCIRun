@@ -30,6 +30,7 @@
 #include <Interface/Modules/Base/ModuleDialogBasic.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
 
 ModuleDialogBasic::ModuleDialogBasic(const std::string& name, QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(nullptr, parent)
@@ -39,11 +40,32 @@ ModuleDialogBasic::ModuleDialogBasic(const std::string& name, QWidget* parent /*
   setWindowTitle(QString::fromStdString(name));
 }
 
-SubnetDialog::SubnetDialog(const std::string& name, QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(nullptr, parent)
+SubnetDialog::SubnetDialog(const std::string& name, ModuleStateHandle state, QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setModal(false);
   setWindowTitle(QString::fromStdString(name));
   WidgetStyleMixin::tableHeaderStyle(moduleTableWidget_);
+}
+
+void SubnetDialog::pullSpecial()
+{
+  auto tableValues = state_->getValue(Core::Algorithms::Name("ModuleInfo")).toVector();
+
+  moduleTableWidget_->setRowCount(static_cast<int>(tableValues.size()));
+
+  int i = 0;
+  int j = 0;
+  for (const auto& row : tableValues)
+  {
+    for (const auto& ap : row.toVector())
+    {
+      auto tmpstr = ap.toString();
+      auto item = new QTableWidgetItem(QString::fromStdString(tmpstr));
+      moduleTableWidget_->setItem(i, j, item);
+      j++;
+    }
+    i++;
+  }
 }

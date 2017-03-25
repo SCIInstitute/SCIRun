@@ -50,7 +50,9 @@ namespace Gui {
     Q_OBJECT
 
   public:
-    explicit SubnetDialog(const std::string& name, QWidget* parent = 0);
+    explicit SubnetDialog(const std::string& name, Dataflow::Networks::ModuleStateHandle state,
+      QWidget* parent = nullptr);
+    void pullSpecial() override;
   };
 }
 }

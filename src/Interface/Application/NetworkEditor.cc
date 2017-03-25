@@ -55,6 +55,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
@@ -1773,8 +1774,24 @@ public:
     //ostr << "Module " << get_module_name() << " executing for " << 3.14 << " seconds." << std::endl;
     //status(ostr.str());
   }
+
+  static const AlgorithmParameterName ModuleInfo;
+
   virtual void setStateDefaults() override
-  {}
+  {
+    auto state = get_state();
+
+    auto table = makeHomogeneousVariableList(
+      [this](size_t i)
+      {
+        return makeAnonymousVariableList(underlyingModules_[i]->get_id().id_,
+          boost::lexical_cast<std::string>(underlyingModules_[i]->num_input_ports()),
+          boost::lexical_cast<std::string>(underlyingModules_[i]->num_output_ports()));
+      },
+      underlyingModules_.size());
+
+    state->setValue(ModuleInfo, table);
+  }
   std::string listComponentIds() const
   {
     std::ostringstream ostr;
@@ -1789,6 +1806,7 @@ private:
 };
 
 int SubnetModule::subnetCount_(0);
+const AlgorithmParameterName SubnetModule::ModuleInfo("ModuleInfo");
 
 void NetworkEditor::makeSubnetwork()
 {
@@ -1817,6 +1835,7 @@ void NetworkEditor::makeSubnetwork()
   auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:");
 
   auto subnetModule = boost::make_shared<SubnetModule>(underlyingModules);
+  subnetModule->setStateDefaults();
   auto moduleWidget = new SubnetWidget(this, name, subnetModule, dialogErrorControl_);
 
   auto tooltipPic = convertToTooltip(pic);
