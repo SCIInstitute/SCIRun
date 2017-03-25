@@ -48,6 +48,8 @@ namespace
     SolveLinearSystemAlgorithmEigenCGImpl(const ColumnMatrixType& rhs, double tolerance, int maxIterations) :
         tolerance_(tolerance), maxIterations_(maxIterations), rhs_(rhs) {}
 
+    using SolutionType = ColumnMatrixType;
+
     template <class MatrixType>
     typename ColumnMatrixType::EigenBase solveWithEigen(const MatrixType& lhs)
     {
@@ -84,6 +86,24 @@ SolveLinearSystemAlgorithm::ComplexOutputs SolveLinearSystemAlgorithm::run(const
   return runImpl<ComplexInputs, ComplexOutputs>(input, params);
 }
 
+template <class T>
+struct NumericalTypeOfInput
+{
+  using number_type = void;
+};
+
+template <>
+struct NumericalTypeOfInput<SolveLinearSystemAlgorithm::ComplexInputs>
+{
+  using number_type = SCIRun::complex;
+};
+
+template <>
+struct NumericalTypeOfInput<SolveLinearSystemAlgorithm::Inputs>
+{
+  using number_type = double;
+};
+
 template <typename In, typename Out>
 Out SolveLinearSystemAlgorithm::runImpl(const In& input, const Parameters& params) const
 {
@@ -99,8 +119,10 @@ Out SolveLinearSystemAlgorithm::runImpl(const In& input, const Parameters& param
   int maxIterations = std::get<1>(params);
   ENSURE_POSITIVE_INT(maxIterations, "Max iterations out of range!");
 
-  SolveLinearSystemAlgorithmEigenCGImpl impl(*b, tolerance, maxIterations);
-  DenseColumnMatrix x;
+  using SolutionType = DenseColumnMatrixGeneric<typename NumericalTypeOfInput<In>::number_type>;
+  using SolverType = SolveLinearSystemAlgorithmEigenCGImpl<SolutionType>;
+  SolverType impl(*b, tolerance, maxIterations);
+  typename SolverType::SolutionType x;
   if (matrixIs::dense(A))
   {
     x = impl.solveWithEigen(*castMatrix::toDense(A));
@@ -115,8 +137,8 @@ Out SolveLinearSystemAlgorithm::runImpl(const In& input, const Parameters& param
   if (x.size() != 0)
   {
     /// @todo: move ctor
-    DenseColumnMatrixHandle solution(boost::make_shared<DenseColumnMatrix>(x));
-    return SolveLinearSystemAlgorithm::Outputs(solution, impl.tolerance_, impl.maxIterations_);
+    auto solution(boost::make_shared<SolutionType>(x));
+    return Out(solution, impl.tolerance_, impl.maxIterations_);
   }
   else
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("solveWithEigen produced an empty solution."));
