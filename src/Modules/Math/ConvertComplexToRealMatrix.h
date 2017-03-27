@@ -26,36 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_SHOW_STRING_H
-#define INTERFACE_MODULES_SHOW_STRING_H
+#ifndef MODULES_MATH_ConvertComplexToRealMatrix_H
+#define MODULES_MATH_ConvertComplexToRealMatrix_H
 
-#include "Interface/Modules/Visualization/ui_ShowString.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Visualization/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
 namespace SCIRun {
-namespace Gui {
+namespace Modules {
+namespace Math {
 
-class SCISHARE ShowStringDialog : public ModuleDialogGeneric,
-  public Ui::ShowString
-{
-	Q_OBJECT
-
+  class SCISHARE ConvertComplexToRealMatrix : public Dataflow::Networks::Module,
+    public Has2OutputPorts<MatrixPortTag, MatrixPortTag>,
+    public Has1InputPort<ComplexMatrixPortTag>
+  {
   public:
-    ShowStringDialog(const std::string& name,
-      SCIRun::Dataflow::Networks::ModuleStateHandle state,
-      QWidget* parent = nullptr);
-    virtual void createStartupNote() override;
-  protected:
-    virtual void pullSpecial() override;
-  private Q_SLOTS:
-    void getColor();
-  private:
-    void setButtonColor() const;
-    void addFonts();
-    QColor color_;
-  };
+    ConvertComplexToRealMatrix();
+    virtual void execute();
+    virtual void setStateDefaults() {}
 
-}}
+    INPUT_PORT(0, InputComplexMatrix, ComplexMatrix);  
+    OUTPUT_PORT(0, OutputRealPartMatrix, Matrix);
+    OUTPUT_PORT(1, OutputComplexPartMatrix, Matrix);
+    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+    NEW_HELP_WEBPAGE_ONLY
+  };
+}}}
 
 #endif

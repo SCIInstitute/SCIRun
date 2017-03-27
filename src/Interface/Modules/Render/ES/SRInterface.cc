@@ -35,7 +35,6 @@
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
 #include <Core/Application/Application.h>
-//#include <Modules/Visualization/ShowColorMapModule.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 
 // CPM modules.
