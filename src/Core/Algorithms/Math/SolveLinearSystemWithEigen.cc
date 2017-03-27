@@ -86,24 +86,6 @@ SolveLinearSystemAlgorithm::ComplexOutputs SolveLinearSystemAlgorithm::run(const
   return runImpl<ComplexInputs, ComplexOutputs>(input, params);
 }
 
-template <class T>
-struct NumericalTypeOfInput
-{
-  using number_type = void;
-};
-
-template <>
-struct NumericalTypeOfInput<SolveLinearSystemAlgorithm::ComplexInputs>
-{
-  using number_type = SCIRun::complex;
-};
-
-template <>
-struct NumericalTypeOfInput<SolveLinearSystemAlgorithm::Inputs>
-{
-  using number_type = double;
-};
-
 template <typename In, typename Out>
 Out SolveLinearSystemAlgorithm::runImpl(const In& input, const Parameters& params) const
 {
@@ -119,7 +101,7 @@ Out SolveLinearSystemAlgorithm::runImpl(const In& input, const Parameters& param
   int maxIterations = std::get<1>(params);
   ENSURE_POSITIVE_INT(maxIterations, "Max iterations out of range!");
 
-  using SolutionType = DenseColumnMatrixGeneric<typename NumericalTypeOfInput<In>::number_type>;
+  using SolutionType = DenseMatrixGeneric<typename std::tuple_element<0, In>::type::element_type::value_type>;
   using SolverType = SolveLinearSystemAlgorithmEigenCGImpl<SolutionType>;
   SolverType impl(*b, tolerance, maxIterations);
   typename SolverType::SolutionType x;

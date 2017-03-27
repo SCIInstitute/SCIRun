@@ -44,15 +44,15 @@ namespace Math {
   {
   public:
     typedef std::tuple<SCIRun::Core::Datatypes::MatrixHandle, SCIRun::Core::Datatypes::DenseColumnMatrixHandle> Inputs;
-    typedef std::tuple<SCIRun::Core::Datatypes::ComplexMatrixHandle, SCIRun::Core::Datatypes::ComplexDenseColumnMatrixHandle> ComplexInputs;
+    typedef std::tuple<SCIRun::Core::Datatypes::ComplexMatrixHandle, SCIRun::Core::Datatypes::ComplexDenseMatrixHandle> ComplexInputs;
     typedef std::tuple<double, int> Parameters;
-    typedef std::tuple<SCIRun::Core::Datatypes::DenseColumnMatrixHandle, double, int> Outputs;
-    typedef std::tuple<SCIRun::Core::Datatypes::ComplexDenseColumnMatrixHandle, double, int> ComplexOutputs;
+    typedef std::tuple<SCIRun::Core::Datatypes::DenseMatrixHandle, double, int> Outputs;
+    typedef std::tuple<SCIRun::Core::Datatypes::ComplexDenseMatrixHandle, double, int> ComplexOutputs;
 
     Outputs run(const Inputs& input, const Parameters& params) const;
     ComplexOutputs run(const ComplexInputs& input, const Parameters& params) const;
 
-    AlgorithmOutput run(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
   private:
     template <typename In, typename Out>
     Out runImpl(const In& input, const Parameters& params) const;

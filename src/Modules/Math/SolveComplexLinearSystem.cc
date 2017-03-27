@@ -30,6 +30,7 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
@@ -59,8 +60,8 @@ void SolveComplexLinearSystem::execute()
   {
     SolveLinearSystemAlgorithm algo;
 
-    auto input = std::make_tuple(lhs, rhs);
-    auto x = algo.run(input, std::make_tuple(1e-20, 4000));
+    auto input = std::make_tuple(lhs, convertMatrix::toColumn(rhs));
+    auto x = algo.run(input,  std::make_tuple(1e-20, 4000));
     auto solution = std::get<0>(x);
 
     std::cout << "error: " << std::get<1>(x) << std::endl;
