@@ -80,6 +80,7 @@ public:
   virtual QProgressBar* getProgressBar() const = 0;
 
   virtual void setupSubnetWidgets() = 0;
+  virtual QAbstractButton* getSubnetButton() const = 0;
 
   virtual int getTitleWidth() const = 0;
   virtual QLabel* getTitle() const = 0;
@@ -220,6 +221,7 @@ Q_SIGNALS:
   void executeAgain(bool upstream);
   void executionDisabled(bool disabled);
   void findInNetwork();
+  void showSubnetworkEditor();
 private Q_SLOTS:
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);

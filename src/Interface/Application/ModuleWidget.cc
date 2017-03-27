@@ -136,6 +136,7 @@ public:
   virtual QAbstractButton* getLogButton() const override;
   virtual void setStatusColor(const QString& color) override;
   virtual QPushButton* getModuleActionButton() const override;
+  virtual QAbstractButton* getSubnetButton() const override;
 
   virtual QProgressBar* getProgressBar() const override;
 
@@ -146,6 +147,9 @@ public:
 
   virtual void startExecuteMovie() override;
   virtual void stopExecuteMovie() override;
+
+private:
+  QAbstractButton* subnetButton_ { nullptr };
 };
 
 void ModuleWidgetDisplay::setupFrame(QStackedWidget* stacked)
@@ -178,10 +182,6 @@ void ModuleWidgetDisplay::setupSpecial()
   optionsButton_->setText("VIEW");
   optionsButton_->setFont(QFont(scirunModuleFontName(), viewFontSize));
   optionsButton_->setToolTip("View renderer output");
-
-  //optionsButton_->setMaximumWidth(140);
-  //optionsButton_->resize(140, optionsButton_->height());
-
   optionsButton_->setIcon(QIcon());
   executePushButton_->hide();
   progressBar_->setVisible(false);
@@ -250,14 +250,19 @@ QAbstractButton* ModuleWidgetDisplay::getLogButton() const
   return logButton2_;
 }
 
+QAbstractButton* ModuleWidgetDisplay::getSubnetButton() const
+{
+  return subnetButton_;
+}
+
 void ModuleWidgetDisplay::setupSubnetWidgets()
 {
   getExecuteButton()->setVisible(false);
   getLogButton()->setVisible(false);
-  auto subnetView = new QPushButton("Subnet");
+  subnetButton_ = new QPushButton("Subnet");
   auto layout = qobject_cast<QHBoxLayout*>(buttonGroup_->layout());
   if (layout)
-    layout->insertWidget(0, subnetView);
+    layout->insertWidget(0, subnetButton_);
 }
 
 void ModuleWidgetDisplay::setStatusColor(const QString& color)
@@ -467,6 +472,9 @@ void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
   connect(display->getHelpButton(), SIGNAL(clicked()), this, SLOT(launchDocumentation()));
   connect(display->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(show()));
   connect(display->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(raise()));
+  auto subnetButton = display->getSubnetButton();
+  if (subnetButton)
+    connect(subnetButton, SIGNAL(clicked()), this, SIGNAL(showSubnetworkEditor()));
   display->getModuleActionButton()->setMenu(actionsMenu_->getMenu());
 }
 
