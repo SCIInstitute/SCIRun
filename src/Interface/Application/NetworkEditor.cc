@@ -1785,6 +1785,7 @@ public:
       [this](size_t i)
       {
         return makeAnonymousVariableList(underlyingModules_[i]->get_id().id_,
+          std::string("Push me"),
           boost::lexical_cast<std::string>(underlyingModules_[i]->num_input_ports()),
           boost::lexical_cast<std::string>(underlyingModules_[i]->num_output_ports()));
       },
@@ -1810,6 +1811,10 @@ const AlgorithmParameterName SubnetModule::ModuleInfo("ModuleInfo");
 
 void NetworkEditor::makeSubnetwork()
 {
+  auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:");
+  if (name.isEmpty())
+    return;
+
   QRectF rect;
   QPointF position;
 
@@ -1831,9 +1836,6 @@ void NetworkEditor::makeSubnetwork()
   }
 
   auto pic = grabSubnetPic(rect);
-
-  auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:");
-
   auto subnetModule = boost::make_shared<SubnetModule>(underlyingModules);
   subnetModule->setStateDefaults();
   auto moduleWidget = new SubnetWidget(this, name, subnetModule, dialogErrorControl_);

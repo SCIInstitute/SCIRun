@@ -67,5 +67,8 @@ void SubnetDialog::pullSpecial()
       j++;
     }
     i++;
+    j = 0;
   }
+
+  moduleTableWidget_->resizeColumnsToContents();
 }
