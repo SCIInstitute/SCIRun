@@ -371,6 +371,8 @@ namespace Gui {
     double highResolutionExpandFactor_{ 1 };
   };
 
+  ModuleWidget* getModule(QGraphicsItem* item);
+
   class SubnetworkEditor : public NetworkEditor
   {
     Q_OBJECT

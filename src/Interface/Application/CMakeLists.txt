@@ -62,6 +62,7 @@ SET(Interface_Application_SOURCES
   TreeViewCollaborators.cc
   ModuleWizard/ModuleWizard.cc
   TriggeredEventsWindow.cc
+  Subnetworks.cc
 )
 
 SET(Interface_Application_HEADERS
