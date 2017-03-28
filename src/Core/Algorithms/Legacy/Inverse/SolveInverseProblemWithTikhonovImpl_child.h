@@ -54,17 +54,19 @@ namespace SCIRun {
 			    public:
 			        SolveInverseProblemWithTikhonovImpl_child() {};
 
+
 			    private:
 
 			        SCIRun::Core::Datatypes::DenseMatrix M1;
 			        SCIRun::Core::Datatypes::DenseMatrix M2;
 			        SCIRun::Core::Datatypes::DenseMatrix M3;
 			        SCIRun::Core::Datatypes::DenseMatrix M4;
-			        SCIRun::Core::Datatypes::DenseColumnMatrix y;
+			        SCIRun::Core::Datatypes::DenseMatrix y;
 
+				protected:
 
-			        SCIRun::Core::Datatypes::DenseColumnMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation);
-			        void preAlocateInverseMatrices(SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_,SCIRun::Core::Datatypes::DenseMatrix& measuredData_ ,SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_,SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_);
+			        virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation) const;
+			        void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_);
 			//      bool checkInputMatrixSizes(); // DEFINED IN PARENT, MIGHT WANT TO OVERRIDE SOME OTHER TIME
 
 			    };

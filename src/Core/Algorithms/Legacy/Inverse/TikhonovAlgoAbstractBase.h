@@ -51,30 +51,35 @@ namespace Inverse {
 	// ALGORITHM_PARAMETER_DECL(LambdaCorner);
 	// ALGORITHM_PARAMETER_DECL(LCurveText);
 
-	class SCISHARE TikhonovAlgoAbstractBase : public AlgorithmBase
+	class SCISHARE TikhonovAlgoAbstractBase : virtual public AlgorithmBase
 	{
 
 	public:
 
 		// define input names
-		static AlgorithmInputName ForwardMatrix;
-		static AlgorithmInputName MeasuredPotentials;
-		static AlgorithmInputName WeightingInSourceSpace;
-		static AlgorithmInputName WeightingInSensorSpace;
+		static const AlgorithmInputName ForwardMatrix;
+		static  const AlgorithmInputName MeasuredPotentials;
+		static  const AlgorithmInputName WeightingInSourceSpace;
+		static  const AlgorithmInputName WeightingInSensorSpace;
+
+		// define output names
+		static const AlgorithmOutputName InverseSolution;
+		static const AlgorithmOutputName RegularizationParameter;
+		static const AlgorithmOutputName RegInverse;
 
 		// define parameter names
-		static AlgorithmParameterName RegularizationMethod;
-		static AlgorithmParameterName regularizationChoice;
-		static AlgorithmParameterName regularizationSolutionSubcase;
-		static AlgorithmParameterName regularizationResidualSubcase;
-		static AlgorithmParameterName LambdaFromDirectEntry;
-		static AlgorithmParameterName LambdaMin;
-		static AlgorithmParameterName LambdaMax;
-		static AlgorithmParameterName LambdaNum;
-		static AlgorithmParameterName LambdaResolution;
-		static AlgorithmParameterName LambdaSliderValue;
-		static AlgorithmParameterName LambdaCorner;
-		static AlgorithmParameterName LCurveText;
+		static  const AlgorithmParameterName RegularizationMethod;
+		static  const AlgorithmParameterName regularizationChoice;
+		static  const AlgorithmParameterName regularizationSolutionSubcase;
+		static  const AlgorithmParameterName regularizationResidualSubcase;
+		static  const AlgorithmParameterName LambdaFromDirectEntry;
+		static  const AlgorithmParameterName LambdaMin;
+		static  const AlgorithmParameterName LambdaMax;
+		static  const AlgorithmParameterName LambdaNum;
+		static  const AlgorithmParameterName LambdaResolution;
+		static  const AlgorithmParameterName LambdaSliderValue;
+		static  const AlgorithmParameterName LambdaCorner;
+		static  const AlgorithmParameterName LCurveText;
 
 		// Define algorithm choices
 		enum AlgorithmChoice {
@@ -109,20 +114,19 @@ namespace Inverse {
 		virtual AlgorithmOutput run(const AlgorithmInput &) const override;
 
 		// defined public functions
-		void update_graph( const AlgorithmInput & input,  double lambda, int lambda_index, const double epsilon);
-		static double FindCorner( const AlgorithmInput & input, int& lambda_index);
-		static double LambdaLookup(const AlgorithmInput & input, double lambda, int& lambda_index, const double epsilon);
-		double computeLcurve(  const AlgorithmInput & input );
+		// void update_graph( const AlgorithmInput & input,  double lambda, int lambda_index, double epsilon);
+		static double FindCorner( LCurveInput & Linput, const AlgorithmInput & input, int& lambda_index);
+		static double LambdaLookup(LCurveInput& input, double lambda, int& lambda_index, const double epsilon);
+		double computeLcurve(  const AlgorithmInput & input ) const;
 
 	protected:
-		// defined protected functions
-		double computeLcurve( LCurveInput & input, SCIRun::Core::Datatypes::DenseMatrix& M1, SCIRun::Core::Datatypes::DenseMatrix& M2, SCIRun::Core::Datatypes::DenseMatrix& M3, SCIRun::Core::Datatypes::DenseMatrix& M4, SCIRun::Core::Datatypes::DenseColumnMatrix& y );
+
+		bool checkInputMatrixSizes( const AlgorithmInput & input ) const;
 
 		// Abstract functions
-		virtual SCIRun::Core::Datatypes::DenseColumnMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation) = 0;
+		virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation) const = 0;
 
-		virtual bool checkInputMatrixSizes( const AlgorithmInput & input );
-		virtual void preAlocateInverseMatrices(SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_,SCIRun::Core::Datatypes::DenseMatrix& 		measuredData_ ,SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_,SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_) = 0;
+		// virtual void preAlocateInverseMatrices( const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_) = 0;
 	};
 
 	}}}}

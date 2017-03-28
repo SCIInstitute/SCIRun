@@ -72,11 +72,11 @@ namespace Inverse {
 		//        const SCIRun::Core::Datatypes::DenseColumnMatrix matrixS_;
 		//        const SCIRun::Core::Datatypes::DenseMatrix matrixV_;
 		//        SCIRun::Core::Datatypes::DenseMatrix y;
-		        SCIRun::Core::Datatypes::DenseColumnMatrix Uy;
+		        SCIRun::Core::Datatypes::DenseMatrix Uy;
 
 
-		        SCIRun::Core::Datatypes::DenseColumnMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation);
-		        void preAlocateInverseMatrices(SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_,SCIRun::Core::Datatypes::DenseMatrix& measuredData_ ,SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_,SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_);
+		        virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation) const;
+		        void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_);
 		        //      bool checkInputMatrixSizes(); // DEFINED IN PARENT, MIGHT WANT TO OVERRIDE SOME OTHER TIME
 
 

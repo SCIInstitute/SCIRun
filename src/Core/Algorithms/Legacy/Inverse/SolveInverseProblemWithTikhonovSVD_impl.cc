@@ -63,15 +63,16 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Inverse;
 
 
+
 ///////////////////////////////////////////////////////////////////
 /////// prealocate Matrices for inverse compuation
 ///     This function precalcualtes the SVD of the forward matrix and prepares singular vectors and values for posterior computations
 ///////////////////////////////////////////////////////////////////
-void SolveInverseProblemWithTikhonovSVD_impl::preAlocateInverseMatrices( SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_,SCIRun::Core::Datatypes::DenseMatrix& measuredData_ ,SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_,SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
+void SolveInverseProblemWithTikhonovSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
 {
 
     // Compute the SVD of the forward matrix
-        Eigen::JacobiSVD<SCIRun::Core::Datatypes::DenseMatrix::EigenBase> svd( *forwardMatrix_, Eigen::ComputeFullU | Eigen::ComputeFullV);
+        Eigen::JacobiSVD<SCIRun::Core::Datatypes::DenseMatrix::EigenBase> svd( forwardMatrix_, Eigen::ComputeFullU | Eigen::ComputeFullV);
         SVDdecomposition = svd;
 
     // determine rank
@@ -85,8 +86,7 @@ void SolveInverseProblemWithTikhonovSVD_impl::preAlocateInverseMatrices( SCIRun:
 
 
     // Compute the projection of data y on the left singular vectors
-        SCIRun::Core::Datatypes::DenseColumnMatrix tempUy(rank);
-        tempUy = SVDdecomposition.matrixU().transpose() * (*measuredData_);
+        auto tempUy = SVDdecomposition.matrixU().transpose() * (measuredData_);
 
         Uy = tempUy;
 
@@ -95,22 +95,24 @@ void SolveInverseProblemWithTikhonovSVD_impl::preAlocateInverseMatrices( SCIRun:
 //////////////////////////////////////////////////////////////////////
 // THIS FUNCTION returns regularized solution by tikhonov method
 //////////////////////////////////////////////////////////////////////
-SCIRun::Core::Datatypes::DenseColumnMatrix SolveInverseProblemWithTikhonovSVD_impl::computeInverseSolution( double lambda_sq, bool inverseCalculation )
+SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovSVD_impl::computeInverseSolution( double lambda_sq, bool inverseCalculation ) const
 {
 
     // prealocate matrices
-        const int N = forwardMatrix_->ncols();
-        const int M = forwardMatrix_->nrows();
-        DenseColumnMatrix solution(DenseMatrix::Zero(N,1));
+        const int N = SVDdecomposition.matrixV().cols();
+        const int M = SVDdecomposition.matrixU().rows();
+        const int numTimeSamples = Uy.ncols();
+        DenseMatrix solution(DenseMatrix::Zero(N,numTimeSamples));
         DenseMatrix tempInverse(DenseMatrix::Zero(N,M));
 
+int x = 0;
 
     // Compute inverse solution
         for (int rr=0; rr<rank ; rr++)
         {
             // evaluate filter factor
                 double singVal = SVDdecomposition.singularValues()[rr];
-                double filterFactor_i =  singVal / ( lambda_sq + singVal * singVal ) * Uy[rr];
+                double filterFactor_i =  singVal / ( lambda_sq + singVal * singVal ) * Uy(rr);
 
             // u[date solution
                 solution += filterFactor_i * SVDdecomposition.matrixV().col(rr);

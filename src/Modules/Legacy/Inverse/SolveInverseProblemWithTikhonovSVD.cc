@@ -87,13 +87,18 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 		setAlgoOptionFromState(SolveInverseProblemWithTikhonovSVD_impl::regularizationResidualSubcase);
 
 		// check input sizes
-		TikhonovAlgoAbstractBase::checkInputMatrixSizes( withInputData((ForwardMatrix, forward_matrix_h) (MeasuredPotentials,hMatrixMeasDat) (WeightingInSourceSpace,hMatrixRegMat) (WeightingInSensorSpace, hMatrixNoiseCov) ) );
+		algo().checkInputMatrixSizes( withInputData((ForwardMatrix, forward_matrix_h) (MeasuredPotentials,hMatrixMeasDat) (WeightingInSourceSpace,hMatrixRegMat) (WeightingInSensorSpace, hMatrixNoiseCov) ) );
+
+		// prealocate MATRICES
+		algo().preAlocateInverseMatrices( forward_matrix_h,  hMatrixMeasDat, hMatrixRegMat, hMatrixNoiseCov);
 
 		// run
-		auto output = algo().run(withInputData((ForwardMatrix, forward_matrix_h) (MeasuredPotentials,hMatrixMeasDat) (WeightingInSourceSpace,hMatrixRegMat) (WeightingInSensorSpace, hMatrixNoiseCov) ));
+		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h) (MeasuredPotentials,hMatrixMeasDat) (WeightingInSourceSpace,hMatrixRegMat) (WeightingInSensorSpace, hMatrixNoiseCov) ));
 
 		// update L-curve
-        SolveInverseProblemWithTikhonovSVD_impl::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonov::update_lcurve_gui, this, _1, _2, _3);
+		/* NO EXISTE
+        SolveInverseProblemWithTikhonovImpl_child::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonov::update_lcurve_gui, this, _1, _2, _3);
+		*/
 
 		// set outputs
 		sendOutputFromAlgorithm(InverseSolution,output);

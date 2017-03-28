@@ -52,28 +52,28 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Inverse;
 
-AlgorithmInputName TikhonovAlgoAbstractBase::ForwardMatrix("ForwardMatrix");
-AlgorithmInputName TikhonovAlgoAbstractBase::MeasuredPotentials("MeasuredPotentials");
-AlgorithmInputName TikhonovAlgoAbstractBase::WeightingInSourceSpace("WeightingInSourceSpace");
-AlgorithmInputName TikhonovAlgoAbstractBase::WeightingInSensorSpace("WeightingInSensorSpace");
+const AlgorithmInputName TikhonovAlgoAbstractBase::ForwardMatrix("ForwardMatrix");
+const AlgorithmInputName TikhonovAlgoAbstractBase::MeasuredPotentials("MeasuredPotentials");
+const AlgorithmInputName TikhonovAlgoAbstractBase::WeightingInSourceSpace("WeightingInSourceSpace");
+const AlgorithmInputName TikhonovAlgoAbstractBase::WeightingInSensorSpace("WeightingInSensorSpace");
 
-AlgorithmOutputName TikhonovAlgoAbstractBase::InverseSolution("InverseSolution");
-AlgorithmOutputName TikhonovAlgoAbstractBase::RegularizationParameter("RegularizationParameter");
-AlgorithmOutputName TikhonovAlgoAbstractBase::RegInverse("RegInverse");
+const AlgorithmOutputName TikhonovAlgoAbstractBase::InverseSolution("InverseSolution");
+const AlgorithmOutputName TikhonovAlgoAbstractBase::RegularizationParameter("RegularizationParameter");
+const AlgorithmOutputName TikhonovAlgoAbstractBase::RegInverse("RegInverse");
 
 
-AlgorithmParameterName TikhonovAlgoAbstractBase::RegularizationMethod("lambdaMethodComboBox");
-AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationChoice("autoRadioButton");
-AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaFromDirectEntry("lambdaDoubleSpinBox");
-AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaMin("lambdaMinDoubleSpinBox");
-AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaMax("lambdaMaxDoubleSpinBox");
-AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaNum("lambdaNumberSpinBox");
-AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaResolution("lambdaResolutionDoubleSpinBox");
-AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaSliderValue("lambdaSliderDoubleSpinBox");
-AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaCorner("lCurveLambdaLineEdit");
-AlgorithmParameterName TikhonovAlgoAbstractBase::LCurveText("lCurveTextEdit");
-AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationSolutionSubcase("solutionConstraintRadioButton");
-AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationResidualSubcase("residualConstraintRadioButton");
+const AlgorithmParameterName TikhonovAlgoAbstractBase::RegularizationMethod("lambdaMethodComboBox");
+const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationChoice("autoRadioButton");
+const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaFromDirectEntry("lambdaDoubleSpinBox");
+const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaMin("lambdaMinDoubleSpinBox");
+const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaMax("lambdaMaxDoubleSpinBox");
+const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaNum("lambdaNumberSpinBox");
+const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaResolution("lambdaResolutionDoubleSpinBox");
+const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaSliderValue("lambdaSliderDoubleSpinBox");
+const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaCorner("lCurveLambdaLineEdit");
+const AlgorithmParameterName TikhonovAlgoAbstractBase::LCurveText("lCurveTextEdit");
+const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationSolutionSubcase("solutionConstraintRadioButton");
+const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationResidualSubcase("residualConstraintRadioButton");
 
 // ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, RegularizationMethod);
 // ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, regularizationChoice);
@@ -93,7 +93,7 @@ TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
 	addParameter(RegularizationMethod, "lcurve");
 	addParameter(regularizationChoice, 0);
 	addParameter(LambdaFromDirectEntry,1e-6);
-	addParameter(lambdaDoubleSpinBox,1e-6);
+	// addParameter(lambdaDoubleSpinBox,1e-6);
 	addParameter(LambdaMin,1e-6);
 	addParameter(LambdaMax,1);
 	addParameter(LambdaNum,1000);
@@ -107,7 +107,7 @@ TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
 }
 
 ////// CHECK IF INPUT MATRICES HAVE THE CORRECT SIZE
-bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & input)
+bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & input) const
 {
 
 	// get inputs
@@ -190,7 +190,7 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & inp
 
 /////////////////////////
 /////////  run()
-AlgorithmOutput run(const AlgorithmInput & input)
+AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) const
 {
 	// get inputs
 	auto forwardMatrix_ = input.get<Matrix>(TikhonovAlgoAbstractBase::ForwardMatrix);
@@ -199,43 +199,47 @@ AlgorithmOutput run(const AlgorithmInput & input)
 	auto sensorWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSensorSpace);
 
 	// get Parameters
-	auto RegularizationMethod = get(RegularizationMethod).toString();
+	auto RegularizationMethod_gotten = get(RegularizationMethod).toString();
 
-	preAlocateInverseMatrices(forwardMatrix_,measuredData_,sourceWeighting_,sensorWeighting_);
+	// preAlocateInverseMatrices(forwardMatrix_,measuredData_,sourceWeighting_,sensorWeighting_);
 
     const int M = forwardMatrix_->nrows();
 
     // Alocate Variable
-    DenseColumnMatrix solution(M);
+	DenseMatrix solution;
     double lambda_sq = 0;
-	double lambda_;
+	double lambda_ = 0;
 
 
     //Get Regularization parameter(s) : Lambda
-    if ((RegularizationMethod == "single") || (RegularizationMethod == "slider"))
+    if ((RegularizationMethod_gotten == "single") || (RegularizationMethod_gotten == "slider"))
     {
-        if (RegularizationMethod == "single")
+        if (RegularizationMethod_gotten == "single")
         {
             // Use single fixed lambda value, entered in UI
             lambda_ = get(LambdaFromDirectEntry).toDouble();
         }
-        else if (RegularizationMethod == "slider")
+        else if (RegularizationMethod_gotten == "slider")
         {
             // Use single fixed lambda value, select via slider
             lambda_ = get(LambdaSliderValue).toDouble();
         }
     }
-    else if (RegularizationMethod == "lcurve")
+    else if (RegularizationMethod_gotten == "lcurve")
     {
         lambda_ = computeLcurve( input );
     }
+	else
+	{
+		THROW_ALGORITHM_PROCESSING_ERROR("Lambda selection was never set");
+	}
 
 
     lambda_sq = lambda_ * lambda_;
 
 
     // compute inverse solution
-    solution = computeInverseSolution( lambda_sq, true);
+	solution = computeInverseSolution(lambda_sq, true);
 
 	//
     // // set final result
@@ -250,8 +254,8 @@ AlgorithmOutput run(const AlgorithmInput & input)
 
 	// Set outputs
 	AlgorithmOutput output;
-	output[Variable::InverseSolution] = solution;
-	output[Variable::RegularizationParameter] = lambda_;
+	output[InverseSolution] = boost::make_shared<DenseMatrix>(solution);
+	output[RegularizationParameter] = boost::make_shared<DenseMatrix>(lambda_);
 
 	return output;
 
@@ -262,7 +266,7 @@ AlgorithmOutput run(const AlgorithmInput & input)
 
 ///////////////////////////
 /////// compute L-curve
-double TikhonovAlgoAbstractBase::computeLcurve(const AlgorithmInput & input)
+double TikhonovAlgoAbstractBase::computeLcurve(const AlgorithmInput & input ) const
 {
 
 	// get inputs
@@ -273,12 +277,10 @@ double TikhonovAlgoAbstractBase::computeLcurve(const AlgorithmInput & input)
 
     // define the step size of the lambda vector to be computed  (distance between min and max divided by number of desired lambdas in log scale)
     const int nLambda = get(LambdaNum).toInt();
-	const int lambdaMin_ = get(lambdaMin).toDouble();
-	const int lambdaMax_ = get(lambdaMax).toDouble();
-    const double lam_step = pow(10.0, lambdaMax_ / lambdaMin_) / (nLambda-1));
-    double lambda;
-
-	double lambdaArray[nLambda];
+	const int lambdaMin_ = get(LambdaMin).toDouble();
+	const int lambdaMax_ = get(LambdaMax).toDouble();
+    const double lam_step = pow(10.0, lambdaMax_ / lambdaMin_) / (nLambda-1);
+    double lambda = 0;
 
     const int sizeSolution = forwardMatrix_->ncols();
     double lambda_sq;
@@ -288,8 +290,8 @@ double TikhonovAlgoAbstractBase::computeLcurve(const AlgorithmInput & input)
     std::vector<double> rho(nLambda, 0.0);
     std::vector<double> eta(nLambda, 0.0);
 
-    DenseColumnMatrix CAx, Rx;
-    DenseColumnMatrix solution(sizeSolution);
+    DenseMatrix CAx, Rx;
+    DenseMatrix solution;
 
     lambdaArray[0] = lambdaMin_;
 
@@ -315,7 +317,7 @@ double TikhonovAlgoAbstractBase::computeLcurve(const AlgorithmInput & input)
         if (sourceWeighting_)
         {
             if (solution.nrows() == sourceWeighting_->ncols()) // check that regularization matrix and solution match sizes
-                Rx = *sourceWeighting_ * solution;
+                Rx = (*castMatrix::toDense(sourceWeighting_)) * solution;
             else
             {
 				BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage(" Solution weighting matrix unexpectedly does not fit to compute the weighted solution norm. "));
@@ -325,12 +327,12 @@ double TikhonovAlgoAbstractBase::computeLcurve(const AlgorithmInput & input)
             Rx = solution;
 
 
-        auto Ax = *forwardMatrix_  * solution;
-        auto residualSolution = Ax - *measuredData_;
+        auto Ax = (*castMatrix::toDense(forwardMatrix_)) * solution;
+        auto residualSolution = Ax - (*castMatrix::toDense(measuredData_));
 
         // if using source regularization matrix, apply it to compute Rx (for the eta computations)
         if (sensorWeighting_)
-            CAx = (*sensorWeighting_) * residualSolution;
+            CAx = (*castMatrix::toDense(sensorWeighting_)) * residualSolution;
         else
             CAx = residualSolution;
 
@@ -345,7 +347,7 @@ double TikhonovAlgoAbstractBase::computeLcurve(const AlgorithmInput & input)
 
         for (int k = 0; k < Rx.nrows(); k++)
         {
-            double T = Rx[k];
+            double T = Rx(k);
             eta[j] += T*T; //norm of the model term
         }
 
@@ -356,16 +358,16 @@ double TikhonovAlgoAbstractBase::computeLcurve(const AlgorithmInput & input)
 
     }
 
-    // update L-curve
-    boost::shared_ptr<TikhonovAlgorithm::LCurveInput> lcurveInput(new TikhonovAlgorithm::LCurveInput(rho, eta, lambdaArray, nLambda));
-    lcurveInput_handle_ = lcurveInput;
-
-    // Find corner in L-curve
-    lambda = FindCorner(*lcurveInput_handle_, lambda_index);
-
-    // update GUI
-    if (updateLCurveGui_)
-        updateLCurveGui_(lambda, *lcurveInput_handle_, lambda_index);
+    // // update L-curve
+    // boost::shared_ptr<TikhonovAlgorithm::LCurveInput> lcurveInput(new TikhonovAlgorithm::LCurveInput(rho, eta, lambdaArray, nLambda));
+    // lcurveInput_handle_ = lcurveInput;
+	//
+    // // Find corner in L-curve
+    // lambda = FindCorner(*lcurveInput_handle_, lambda_index);
+	//
+    // // update GUI
+    // if (updateLCurveGui_)
+    //     updateLCurveGui_(lambda, *lcurveInput_handle_, lambda_index);
 
     // return lambda
     return lambda;
@@ -376,12 +378,12 @@ double TikhonovAlgoAbstractBase::computeLcurve(const AlgorithmInput & input)
 
 
 ///// Find Corner, find the maximal curvature which corresponds to the L-curve corner
-double TikhonovAlgoAbstractBase::FindCorner( LCurveInput & input, const AlgorithmInput & input, int& lambda_index)
+double TikhonovAlgoAbstractBase::FindCorner( LCurveInput & Linput, const AlgorithmInput & input, int& lambda_index)
 {
-	const int nLambda = nput->nLambda_;
-    const std::vector<double>& rho = input->rho_;
-    const std::vector<double>& eta = input->eta_;
-    const std::vector<double>& lambdaArray = input->lambdaArray_;
+	const int nLambda = Linput.nLambda_;
+    const std::vector<double>& rho = Linput.rho_;
+    const std::vector<double>& eta = Linput.eta_;
+    const std::vector<double>& lambdaArray = Linput.lambdaArray_;
 
     std::vector<double> deta(nLambda);
     std::vector<double> ddeta(nLambda);
@@ -430,10 +432,10 @@ double TikhonovAlgoAbstractBase::FindCorner( LCurveInput & input, const Algorith
 }
 
 ///// Search for closest Lambda to given lambda
-double TikhonovAlgoAbstractBase::LambdaLookup( LCurveInput& input, double lambda, int& lambda_index, const double epsilon)
+double TikhonovAlgoAbstractBase::LambdaLookup( LCurveInput& Linput, double lambda, int& lambda_index, const double epsilon)
 {
-	const int nLambda = nput->nLambda_;
-	const std::vector<double>& lambdaArray = input->lambdaArray_;
+	const int nLambda = Linput.nLambda_;
+	const std::vector<double>& lambdaArray = Linput.lambdaArray_;
 
     for (int i = 0; i < nLambda-1; ++i)
     {
@@ -462,16 +464,16 @@ double TikhonovAlgoAbstractBase::LambdaLookup( LCurveInput& input, double lambda
     return -1;
 }
 
-////////// update L-curve graph
-void TikhonovAlgoAbstractBase::update_graph( LCurveInput & input, double lambda, int lambda_index, const double epsilon)
-{
-
-    if (lcurveInput_handle_ && input.updateLCurveGui_)
-    {
-        lambda = LambdaLookup(*lcurveInput_handle_, lambda, lambda_index, epsilon);
-        if (lambda >= 0)
-        {
-            input.updateLCurveGui_(lambda, *lcurveInput_handle_, lambda_index);
-        }
-    }
-}
+// ////////// update L-curve graph
+// void TikhonovAlgoAbstractBase::update_graph( LCurveInput & input, double lambda, int lambda_index, const double epsilon)
+// {
+//
+//     if (lcurveInput_handle_ && input.updateLCurveGui_)
+//     {
+//         lambda = LambdaLookup(*lcurveInput_handle_, lambda, lambda_index, epsilon);
+//         if (lambda >= 0)
+//         {
+//             input.updateLCurveGui_(lambda, *lcurveInput_handle_, lambda_index);
+//         }
+//     }
+// }

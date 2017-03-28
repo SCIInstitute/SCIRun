@@ -57,7 +57,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 
 /////////////////////////
 ///////// compute Inverse solution
-    DenseColumnMatrix SolveInverseProblemWithTikhonovImpl_child::computeInverseSolution( double lambda_sq, bool inverseCalculation)
+    DenseMatrix SolveInverseProblemWithTikhonovImpl_child::computeInverseSolution( double lambda_sq, bool inverseCalculation) const
     {
         //............................
         //  OPERATIONS PERFORMED IN THIS SECTION:
@@ -73,10 +73,11 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 
         const int sizeB = M1.ncols();
         const int sizeSolution = M3.nrows();
+        const int numTimeSamples = y.ncols();
         DenseMatrix inverseG(sizeB,sizeB);
 
         DenseColumnMatrix b(sizeB);
-        DenseColumnMatrix solution(sizeSolution);
+        DenseMatrix solution(sizeSolution,numTimeSamples);
         DenseMatrix G;
 
         G = M1 + lambda_sq * M2;
@@ -98,16 +99,23 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 
 /////// precomputeInverseMatrices
 ///////////////
-    void SolveInverseProblemWithTikhonovImpl_child::preAlocateInverseMatrices(SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
+    void SolveInverseProblemWithTikhonovImpl_child::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
     {
 
         // TODO: use DimensionMismatch exception where appropriate
         // DIMENSION CHECK!!
-        const int M = forwardMatrix_->nrows();
-        const int N = forwardMatrix_->ncols();
+        const int M = forwardMatrix_.nrows();
+        const int N = forwardMatrix_.ncols();
+
+		int x = 0;
 
         // PREALOCATE VARIABLES and MATRICES
-        DenseMatrix forward_transpose = forwardMatrix_->transpose();
+        DenseMatrix forward_transpose = forwardMatrix_.transpose();
+
+		// get Parameters
+		auto  regularizationChoice_ = get(regularizationChoice).toInt();
+		auto regularizationSolutionSubcase_ = get(regularizationSolutionSubcase).toInt();
+		auto regularizationResidualSubcase_ = get(regularizationResidualSubcase).toInt();
 
         // select underdetermined case if user decides so or the option is set to automatic and number of measurements is smaller than number of unknowns.
         if ( ( (M < N) && (regularizationChoice_ == automatic) ) || (regularizationChoice_ == underdetermined))
@@ -132,7 +140,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 
             // DEFINITIONS AND PREALOCATION OF SOURCE REGULARIZATION MATRIX 'R'
             // if R does not exist, set as identity of size equal to N (columns of fwd matrix)
-            if (!sourceWeighting_)
+            if (true)//(&sourceWeighting_==NULL)
             {
                 RRtr = DenseMatrix::Identity(N, N);
                 iRRtr = RRtr;
@@ -143,28 +151,19 @@ using namespace SCIRun::Core::Algorithms::Inverse;
                 // if provided the non-squared version of R
                 if( regularizationSolutionSubcase_==solution_constrained )
                 {
-                    RRtr = sourceWeighting_->transpose() * *sourceWeighting_;
+                    RRtr = sourceWeighting_.transpose() * sourceWeighting_;
                 }
                 // otherwise, if the source regularization is provided as the squared version (RR^T)
                 else if ( regularizationSolutionSubcase_==solution_constrained_squared )
                 {
-                    RRtr = *sourceWeighting_;
+                    RRtr = sourceWeighting_;
                 }
 
                 // check if squared regularization matrix is invertible
                 if ( !RRtr.fullPivLu().isInvertible() )
                 {
-                    const std::string errorMessage("Regularization matrix in the source space is not invertible.");
-                    if (pr_)
-                    {
-                        pr_->error(errorMessage);
-                    }
-                    else
-                    {
-                        std::cerr << errorMessage << std::endl;
-                    }
 
-                    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(errorMessage);
+                    THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Regularization matrix in the source space is not invertible.");
                 }
 
                 // COMPUTE inverse
@@ -175,7 +174,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 
             // DEFINITIONS AND PREALOCATIONS OF MEASUREMENTS COVARIANCE MATRIX 'C'
             // if C does not exist, set as identity of size equal to M (rows of fwd matrix)
-            if (!sensorWeighting_)
+            if (true)//(&sensorWeighting_==NULL)
             {
                 CCtr = DenseMatrix::Identity(M, M);
                 iCCtr = CCtr;
@@ -187,30 +186,21 @@ using namespace SCIRun::Core::Algorithms::Inverse;
                 if (regularizationResidualSubcase_ == residual_constrained)
                 {
                     // check that the matrix is of appropriate size (equal number of rows as rows in fwd matrix)
-                    if(M != sensorWeighting_->ncols())
+                    if(M != sensorWeighting_.ncols())
                     {
-                        CCtr = sensorWeighting_->transpose() * *sensorWeighting_;
+                        CCtr = sensorWeighting_.transpose() * sensorWeighting_;
                     }
                 }
                 // otherwise if the source covariance matrix is provided in squared form
                 else if  ( regularizationResidualSubcase_ == residual_constrained_squared )
                 {
-                    CCtr = *sensorWeighting_;
+                    CCtr = sensorWeighting_;
                 }
 
                 // check if squared regularization matrix is invertible
                 if ( !CCtr.fullPivLu().isInvertible() )
                 {
-                    const std::string errorMessage("Residual covariance matrix is not invertible.");
-                    if (pr_)
-                    {
-                        pr_->error(errorMessage);
-                    }
-                    else
-                    {
-                        std::cerr << errorMessage << std::endl;
-                    }
-                    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(errorMessage);
+                    THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Residual covariance matrix is not invertible.");
                 }
                 iCCtr = CCtr.inverse().eval();
 
@@ -220,7 +210,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 
             // DEFINE  M1 = (A * (R^T*R)^-1 * A^T MATRIX FOR FASTER COMPUTATION
             DenseMatrix RAtr = iRRtr * forward_transpose;
-            M1 = *forwardMatrix_ * RAtr;
+            M1 = forwardMatrix_ * RAtr;
 
             // DEFINE M2 = (C^TC)^-1
             M2 = iCCtr;
@@ -232,7 +222,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
             M4 = DenseMatrix::Identity(M, N);
 
             // DEFINE measurement vector
-            y = *measuredData_;
+            y = measuredData_;
 
 
 
@@ -263,7 +253,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
             // DEFINITIONS AND PREALOCATION OF SOURCE REGULARIZATION MATRIX 'R'
 
             // if R does not exist, set as identity of size equal to N (columns of fwd matrix)
-            if (!sourceWeighting_)
+            if (true)//(&sourceWeighting_==NULL)
             {
                 RtrR = DenseMatrix::Identity(N, N);
             }
@@ -272,19 +262,19 @@ using namespace SCIRun::Core::Algorithms::Inverse;
                 // if provided the non-squared version of R
                 if( regularizationSolutionSubcase_==solution_constrained )
                 {
-                    RtrR = sourceWeighting_->transpose() * *sourceWeighting_;
+                    RtrR = sourceWeighting_.transpose() * sourceWeighting_;
                 }
                 // otherwise, if the source regularization is provided as the squared version (RR^T)
                 else if (  regularizationSolutionSubcase_==solution_constrained_squared  )
                 {
-                    RtrR = *sourceWeighting_;
+                    RtrR = sourceWeighting_;
                 }
             }
 
 
             // DEFINITIONS AND PREALOCATIONS OF MEASUREMENTS COVARIANCE MATRIX 'C'
             // if C does not exist, set as identity of size equal to M (rows of fwd matrix)
-            if (!sensorWeighting_)
+            if (true)//(&sensorWeighting_==NULL)
             {
                 CtrC = DenseMatrix::Identity(M, M);
             }
@@ -293,18 +283,18 @@ using namespace SCIRun::Core::Algorithms::Inverse;
                 // if measurement covariance matrix provided in non-squared form
                 if (regularizationResidualSubcase_ == residual_constrained)
                 {
-                    CtrC = sensorWeighting_->transpose() * *sensorWeighting_;
+                    CtrC = sensorWeighting_.transpose() * sensorWeighting_;
                 }
                 // otherwise if the source covariance matrix is provided in squared form
                 else if  ( regularizationResidualSubcase_ == residual_constrained_squared )
                 {
-                    CtrC = *sensorWeighting_;
+                    CtrC = sensorWeighting_;
                 }
 
             }
 
             // DEFINE  M1 = (A * (R*R^T)^-1 * A^T MATRIX FOR FASTER COMPUTATION
-            DenseMatrix CtrCA = CtrC * (*forwardMatrix_);
+            DenseMatrix CtrCA = CtrC * (forwardMatrix_);
             M1 = forward_transpose * CtrCA;
 
             // DEFINE M2 = (CC^T)^-1
@@ -317,7 +307,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
             M4 = CtrCA.transpose();
 
             // DEFINE measurement vector
-            y = CtrCA.transpose() * *measuredData_;
+            y = CtrCA.transpose() * measuredData_;
 
         }
 
