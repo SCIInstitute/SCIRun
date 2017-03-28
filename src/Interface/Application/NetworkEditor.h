@@ -295,6 +295,7 @@ namespace Gui {
     void saveTagGroupRectInFile();
     void renameTagGroupInFile();
     void makeSubnetwork();
+    void showSubnetworkEditor();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -368,6 +369,14 @@ namespace Gui {
     PreexecuteFunc preexecute_;
     bool showTagGroupsOnFileLoad_ { false };
     double highResolutionExpandFactor_{ 1 };
+  };
+
+  class SubnetworkEditor : public NetworkEditor
+  {
+    Q_OBJECT
+
+  public:
+    SubnetworkEditor(const NetworkEditor& parent);
   };
 }
 }

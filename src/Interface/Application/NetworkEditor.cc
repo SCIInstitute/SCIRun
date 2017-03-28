@@ -111,9 +111,25 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   connect(this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SLOT(redrawTagGroups()));
 }
 
-NetworkEditor::NetworkEditor(const NetworkEditor& rhs)
+NetworkEditor::NetworkEditor(const NetworkEditor& rhs) : QGraphicsView(rhs.parentWidget()),
+  modulesSelectedByCL_(rhs.modulesSelectedByCL_),
+  currentScale_(1),
+  tagLayerActive_(false),
+  tagColor_(rhs.tagColor_),
+  tagName_(rhs.tagName_),
+  scene_(new QGraphicsScene(rhs.parent())),
+  visibleItems_(true),
+  lastModulePosition_(0,0),
+  dialogErrorControl_(rhs.dialogErrorControl_),
+  moduleSelectionGetter_(rhs.moduleSelectionGetter_),
+  defaultNotePositionGetter_(rhs.defaultNotePositionGetter_),
+  moduleEventProxy_(rhs.moduleEventProxy_),
+  zLevelManager_(new ZLevelManager(scene_)),
+  fileLoading_(false),
+  preexecute_(rhs.preexecute_),
+  highResolutionExpandFactor_(rhs.highResolutionExpandFactor_)
 {
-  qDebug() << "NetworkEditor copy ctor";
+  qDebug() << "NetworkEditor(copy)";
 }
 
 void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller)
@@ -1759,6 +1775,20 @@ public:
     QGraphicsPixmapItem::paint(painter, option, widget);
   }
 };
+
+void NetworkEditor::showSubnetworkEditor()
+{
+  auto subnet = new SubnetworkEditor(*this);
+  auto dialog = new QDialog(parentWidget());
+  dialog->setLayout(new QGridLayout);
+  dialog->layout()->addWidget(subnet);
+  dialog->show();
+}
+
+SubnetworkEditor::SubnetworkEditor(const NetworkEditor& parent) : NetworkEditor(parent)
+{
+  qDebug() << "class SubnetworkEditor";
+}
 
 class SubnetModule : public Module
 {

@@ -124,6 +124,8 @@ namespace
 class ModuleWidgetDisplay : public Ui::Module, public ModuleWidgetDisplayBase
 {
 public:
+  ModuleWidgetDisplay() : subnetButton_(new QPushButton("Subnet"))
+  { }
   virtual void setupFrame(QStackedWidget* stacked) override;
   virtual void setupTitle(const QString& name) override;
   virtual void setupProgressBar() override;
@@ -149,7 +151,7 @@ public:
   virtual void stopExecuteMovie() override;
 
 private:
-  QAbstractButton* subnetButton_ { nullptr };
+  QAbstractButton* subnetButton_;
 };
 
 void ModuleWidgetDisplay::setupFrame(QStackedWidget* stacked)
@@ -259,7 +261,6 @@ void ModuleWidgetDisplay::setupSubnetWidgets()
 {
   getExecuteButton()->setVisible(false);
   getLogButton()->setVisible(false);
-  subnetButton_ = new QPushButton("Subnet");
   auto layout = qobject_cast<QHBoxLayout*>(buttonGroup_->layout());
   if (layout)
     layout->insertWidget(0, subnetButton_);
@@ -472,9 +473,7 @@ void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
   connect(display->getHelpButton(), SIGNAL(clicked()), this, SLOT(launchDocumentation()));
   connect(display->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(show()));
   connect(display->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(raise()));
-  auto subnetButton = display->getSubnetButton();
-  if (subnetButton)
-    connect(subnetButton, SIGNAL(clicked()), this, SIGNAL(showSubnetworkEditor()));
+  connect(display->getSubnetButton(), SIGNAL(clicked()), this, SIGNAL(showSubnetworkEditor()));
   display->getModuleActionButton()->setMenu(actionsMenu_->getMenu());
 }
 
