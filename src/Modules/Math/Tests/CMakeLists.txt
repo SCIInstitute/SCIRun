@@ -41,6 +41,7 @@ SET(Modules_Math_Tests_SRCS
   ComputePCAtest.cc
   ComputeSVDtest.cc
   ConvertRealToComplexMatrixTests.cc
+  ConvertComplexToRealMatrixTests.cc
 )
 
 #SET(Engine_Network_Tests_HEADERS
