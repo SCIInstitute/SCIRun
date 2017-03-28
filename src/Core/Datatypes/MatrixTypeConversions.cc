@@ -34,11 +34,6 @@ using namespace SCIRun;
 
 const double convertMatrix::zero_threshold = 1.00000e-08f;
 
-DenseColumnMatrixHandle castMatrix::toColumn(const MatrixHandle& mh)
-{
-  return to<DenseColumnMatrix>(mh);
-}
-
 bool matrixIs::column(const MatrixHandle& mh)
 {
   return castMatrix::toColumn(mh) != nullptr;

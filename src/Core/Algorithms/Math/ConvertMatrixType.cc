@@ -41,7 +41,7 @@ using namespace SCIRun::Core::Datatypes;
 ALGORITHM_PARAMETER_DEF(Math, OutputMatrixType);
 
 /// @class ConvertMatrixType
-/// @image html ConvertMatrixType.png 
+/// @image html ConvertMatrixType.png
 ConvertMatrixTypeAlgorithm::ConvertMatrixTypeAlgorithm()
 {
   addOption(Parameters::OutputMatrixType, "passThrough", "passThrough|dense|column|sparse");
@@ -51,7 +51,7 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
 {
   if (!input_matrix)
   {
-    THROW_ALGORITHM_INPUT_ERROR("No input matrix");    
+    THROW_ALGORITHM_INPUT_ERROR("No input matrix");
   }
 
   MatrixHandle omH;
@@ -63,62 +63,62 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
   if(matrixIs::dense(input_matrix))
   {
     ostr2 << "Input Matrix Type: DENSE MATRIX";
-  } 
+  }
   else if (matrixIs::column(input_matrix))
   {
     ostr2 << "Input Matrix Type: COLUMN MATRIX";
-  } 
+  }
   else if (matrixIs::sparse(input_matrix))
   {
     ostr2 << "Input Matrix Type: SPARSE MATRIX";
-  } 
-  else       
+  }
+  else
   {
-    THROW_ALGORITHM_INPUT_ERROR("Unknown input matrix type");      
+    THROW_ALGORITHM_INPUT_ERROR("Unknown input matrix type");
   }
 
   remark(ostr2.str());
 
   auto outputType = getOption(Parameters::OutputMatrixType);
 
-  if ("passThrough" == outputType) 
+  if ("passThrough" == outputType)
   {
     return input_matrix;
-  } 
+  }
   else
   {
     if ("column" == outputType && !matrixIs::column(input_matrix))
     {
       if (input_matrix->ncols()!=1)
       {
-        THROW_ALGORITHM_INPUT_ERROR("Input matrix needs to have a single column to be converted to column matrix type.");  
+        THROW_ALGORITHM_INPUT_ERROR("Input matrix needs to have a single column to be converted to column matrix type.");
       }
-      DenseColumnMatrixHandle output = convertMatrix::toColumn(input_matrix);
-      if (!output) 
+      auto output = convertMatrix::toColumn(input_matrix);
+      if (!output)
       {
-        THROW_ALGORITHM_INPUT_ERROR("Conversion to column matrix failed.");    
+        THROW_ALGORITHM_INPUT_ERROR("Conversion to column matrix failed.");
       }
       return output;
-    } 
+    }
     else if ("dense" == outputType && !matrixIs::dense(input_matrix))
     {
       auto output = convertMatrix::toDense(input_matrix);
-      if (!output) 
+      if (!output)
       {
-        THROW_ALGORITHM_INPUT_ERROR("Conversion to dense matrix failed.");    
+        THROW_ALGORITHM_INPUT_ERROR("Conversion to dense matrix failed.");
       }
       return output;
-    } 
+    }
     else if ("sparse" == outputType && !matrixIs::sparse(input_matrix))
     {
       auto output = convertMatrix::toSparse(input_matrix);
-      if (!output) 
+      if (!output)
       {
-        THROW_ALGORITHM_INPUT_ERROR("Conversion to sparse matrix failed.");    
+        THROW_ALGORITHM_INPUT_ERROR("Conversion to sparse matrix failed.");
       }
       return output;
-    }  
-    { 
+    }
+    {
       remark(" Datatype unknown or input and output data type are equal. Passing input matrix through. ");
       return input_matrix;
     }
@@ -131,7 +131,7 @@ AlgorithmOutput ConvertMatrixTypeAlgorithm::run(const AlgorithmInput& input) con
 
   MatrixHandle output_matrix = run(input_matrix);
 
-  AlgorithmOutput output;  
+  AlgorithmOutput output;
   output[Variables::ResultMatrix] = output_matrix;
 
   return output;

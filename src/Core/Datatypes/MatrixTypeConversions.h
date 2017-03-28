@@ -47,25 +47,29 @@ namespace Datatypes {
   class SCISHARE castMatrix
   {
   public:
-    template <class ToType>
-    static SharedPointer<ToType> to(const SharedPointer<MatrixBase<typename ToType::value_type>>& matrix, typename boost::enable_if<boost::is_base_of<MatrixBase<typename ToType::value_type>, ToType> >::type* = nullptr)
+    template <class ToType, typename T, template <typename> class MatrixType>
+    static SharedPointer<ToType> to(const SharedPointer<MatrixType<T>>& matrix, typename boost::enable_if<boost::is_same<T, typename ToType::value_type> >::type* = nullptr)
     {
       return boost::dynamic_pointer_cast<ToType>(matrix);
     }
 
-    template <typename T>
-    static SharedPointer<DenseMatrixGeneric<T>> toDense(const SharedPointer<MatrixBase<T>>& mh)
+    template <typename T, template <typename> class MatrixType>
+    static SharedPointer<DenseMatrixGeneric<T>> toDense(const SharedPointer<MatrixType<T>>& mh)
     {
       return to<DenseMatrixGeneric<T>>(mh);
     }
 
-    template <typename T>
-    static SharedPointer<SparseRowMatrixGeneric<T>> toSparse(const SharedPointer<MatrixBase<T>>& mh)
+    template <typename T, template <typename> class MatrixType>
+    static SharedPointer<SparseRowMatrixGeneric<T>> toSparse(const SharedPointer<MatrixType<T>>& mh)
     {
       return to<SparseRowMatrixGeneric<T>>(mh);
     }
-    
-    static DenseColumnMatrixHandle toColumn(const MatrixHandle& mh);
+
+    template <typename T, template <typename> class MatrixType>
+    static SharedPointer<DenseColumnMatrixGeneric<T>> toColumn(const SharedPointer<MatrixType<T>>& mh)
+    {
+      return to<DenseColumnMatrixGeneric<T>>(mh);
+    }
 
     castMatrix() = delete;
   };
@@ -79,7 +83,7 @@ namespace Datatypes {
     {
       return castMatrix::toDense(mh) != nullptr;
     }
-    
+
     template <typename T>
     static bool sparse(const SharedPointer<MatrixBase<T>>& mh)
     {
@@ -99,7 +103,7 @@ namespace Datatypes {
   {
   public:
     template <typename T, template <typename> class MatrixType>
-    static boost::shared_ptr<DenseColumnMatrixGeneric<typename MatrixType<T>::value_type>> toColumn(const MatrixType<T>& mh)
+    static SharedPointer<DenseColumnMatrixGeneric<typename MatrixType<T>::value_type>> toColumn(const SharedPointer<MatrixType<T>>& mh)
     {
       auto col = castMatrix::toColumn(mh);
       if (col)
@@ -112,7 +116,7 @@ namespace Datatypes {
       auto sparse = castMatrix::toSparse(mh);
       if (sparse)
       {
-        auto dense_col(DenseColumnMatrixGeneric<T>::Zero(sparse->nrows()));
+        DenseColumnMatrixGeneric<T> dense_col(DenseColumnMatrixGeneric<T>::Zero(sparse->nrows()));
         for (auto i = 0; i < sparse->nrows(); i++)
           dense_col(i, 0) = sparse->coeff(i, 0);
 

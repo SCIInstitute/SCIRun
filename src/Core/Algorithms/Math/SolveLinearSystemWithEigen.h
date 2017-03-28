@@ -44,7 +44,7 @@ namespace Math {
   {
   public:
     typedef std::tuple<SCIRun::Core::Datatypes::MatrixHandle, SCIRun::Core::Datatypes::DenseColumnMatrixHandle> Inputs;
-    typedef std::tuple<SCIRun::Core::Datatypes::ComplexMatrixHandle, SCIRun::Core::Datatypes::ComplexDenseMatrixHandle> ComplexInputs;
+    typedef std::tuple<SCIRun::Core::Datatypes::ComplexMatrixHandle, SCIRun::Core::Datatypes::ComplexDenseColumnMatrixHandle> ComplexInputs;
     typedef std::tuple<double, int> Parameters;
     typedef std::tuple<SCIRun::Core::Datatypes::DenseMatrixHandle, double, int> Outputs;
     typedef std::tuple<SCIRun::Core::Datatypes::ComplexDenseMatrixHandle, double, int> ComplexOutputs;
