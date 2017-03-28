@@ -107,11 +107,13 @@ Out SolveLinearSystemAlgorithm::runImpl(const In& input, const Parameters& param
   typename SolverType::SolutionType x;
   if (matrixIs::dense(A))
   {
-    x = impl.solveWithEigen(*castMatrix::toDense(A));
+    auto dense = castMatrix::toDense(A);
+    x = impl.solveWithEigen(*dense);
   }
   else if (matrixIs::sparse(A))
   {
-    x = impl.solveWithEigen(*castMatrix::toSparse(A));
+    auto sparse = castMatrix::toSparse(A);
+    x = impl.solveWithEigen(*sparse);
   }
   else
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("solveWithEigen can only handle dense and sparse matrices."));
