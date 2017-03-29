@@ -164,6 +164,17 @@ namespace Gui {
   class NetworkEditorControllerGuiProxy;
 	class DialogErrorControl;
 
+  struct NetworkEditorParameters
+  {
+    boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter;
+    boost::shared_ptr<DefaultNotePositionGetter> dnpg;
+    boost::shared_ptr<DialogErrorControl> dialogErrorControl;
+    PreexecuteFunc preexecuteFunc;
+    TagColorFunc tagColor;
+    TagNameFunc tagName;
+    double highResolutionExpandFactor;
+  };
+
   class NetworkEditor : public QGraphicsView,
     public Dataflow::Networks::ExecutableLookup,
     public Dataflow::Networks::NetworkEditorSerializationManager,
@@ -174,15 +185,8 @@ namespace Gui {
 	  Q_OBJECT
 
   public:
-    explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter,
-        boost::shared_ptr<DefaultNotePositionGetter> dnpg,
-				boost::shared_ptr<DialogErrorControl> dialogErrorControl,
-        PreexecuteFunc preexecuteFunc,
-        TagColorFunc tagColor,
-        TagNameFunc tagName,
-        double highResolutionExpandFactor,
-        QWidget* parent = nullptr);
-    NetworkEditor(const NetworkEditor& rhs);
+    explicit NetworkEditor(const NetworkEditorParameters& params, QWidget* parent = nullptr);
+    NetworkEditor(const NetworkEditor& rhs) = delete;
     NetworkEditor& operator=(const NetworkEditor&) = delete;
     ~NetworkEditor();
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
@@ -213,7 +217,7 @@ namespace Gui {
 
     size_t numModules() const;
 
-    boost::shared_ptr<ModuleEventProxy> moduleEventProxy() { return moduleEventProxy_; }
+    boost::shared_ptr<ModuleEventProxy> moduleEventProxy() const { return moduleEventProxy_; }
     int errorCode() const override;
 
     void disableInputWidgets();
@@ -295,7 +299,7 @@ namespace Gui {
     void saveTagGroupRectInFile();
     void renameTagGroupInFile();
     void makeSubnetwork();
-    void showSubnetworkEditor();
+    void addSubnetChild();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -345,30 +349,47 @@ namespace Gui {
     QPixmap grabSubnetPic(const QRectF& rect);
     QString convertToTooltip(const QPixmap& pic) const;
 
-		bool modulesSelectedByCL_;
-    double currentScale_;
-    bool tagLayerActive_;
+    // default constructed
+    bool modulesSelectedByCL_{ false };
+    double currentScale_ { 1.0 };
+    bool tagLayerActive_{ false };
     bool tagGroupsActive_ {false};
-    TagColorFunc tagColor_;
-    TagNameFunc tagName_;
-
-    QGraphicsScene* scene_;
-
-    bool visibleItems_;
-    QPointF lastModulePosition_;
-		boost::shared_ptr<DialogErrorControl> dialogErrorControl_;
-    boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
-    boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;
-    boost::shared_ptr<DefaultNotePositionGetter> defaultNotePositionGetter_;
-    boost::shared_ptr<ModuleEventProxy> moduleEventProxy_;
-    boost::shared_ptr<ZLevelManager> zLevelManager_;
+    bool fileLoading_{ false };
+    bool insertingNewModuleAlongConnection_{ false };
+    bool showTagGroupsOnFileLoad_{ false };
+    bool visibleItems_{ true };
+    QPointF lastModulePosition_{ 0, 0 };
     std::string latestModuleId_;
     std::map<int, std::string> tagLabelOverrides_;
-    bool fileLoading_;
-    bool insertingNewModuleAlongConnection_ { false };
+
+    // for subnets
+    NetworkEditorParameters ctorParams_;
+
+    // unpacked constructor parameters
+    TagColorFunc tagColor_;
+    TagNameFunc tagName_;
+		boost::shared_ptr<DialogErrorControl> dialogErrorControl_;
+    boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
+    boost::shared_ptr<DefaultNotePositionGetter> defaultNotePositionGetter_;
     PreexecuteFunc preexecute_;
-    bool showTagGroupsOnFileLoad_ { false };
-    double highResolutionExpandFactor_{ 1 };
+    const double highResolutionExpandFactor_;
+
+    // special
+    QGraphicsScene* scene_;
+    boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;
+
+    // newed up
+    boost::shared_ptr<ModuleEventProxy> moduleEventProxy_;
+    boost::shared_ptr<ZLevelManager> zLevelManager_;
+    
+    // tree structure
+    NetworkEditor* parentNetworks_ {nullptr};
+    std::vector<NetworkEditor*> childrenNetworks_;
+  };
+
+  class NetworkEditorFactory
+  {
+
   };
 
   ModuleWidget* getModule(QGraphicsItem* item);

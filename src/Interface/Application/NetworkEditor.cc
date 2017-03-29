@@ -60,31 +60,19 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
 
-NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter,
-  boost::shared_ptr<DefaultNotePositionGetter> dnpg,
-  boost::shared_ptr<DialogErrorControl> dialogErrorControl,
-  PreexecuteFunc preexecuteFunc,
-  TagColorFunc tagColor,
-  TagNameFunc tagName,
-  double highResolutionExpandFactor,
-  QWidget* parent)
+NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* parent)
   : QGraphicsView(parent),
-  modulesSelectedByCL_(false),
-  currentScale_(1),
-  tagLayerActive_(false),
-  tagColor_(tagColor),
-  tagName_(tagName),
+  ctorParams_(params),
+  tagColor_(params.tagColor),
+  tagName_(params.tagName),
+  dialogErrorControl_(params.dialogErrorControl),
+  moduleSelectionGetter_(params.moduleSelectionGetter),
+  defaultNotePositionGetter_(params.dnpg),
+  preexecute_(params.preexecuteFunc),
+  highResolutionExpandFactor_(params.highResolutionExpandFactor),
   scene_(new QGraphicsScene(parent)),
-  visibleItems_(true),
-  lastModulePosition_(0,0),
-  dialogErrorControl_(dialogErrorControl),
-  moduleSelectionGetter_(moduleSelectionGetter),
-  defaultNotePositionGetter_(dnpg),
   moduleEventProxy_(new ModuleEventProxy),
-  zLevelManager_(new ZLevelManager(scene_)),
-  fileLoading_(false),
-  preexecute_(preexecuteFunc),
-  highResolutionExpandFactor_(highResolutionExpandFactor)
+  zLevelManager_(new ZLevelManager(scene_))
 {
   scene_->setBackgroundBrush(Qt::darkGray);
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
@@ -268,7 +256,7 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
   const auto& newModPorts = newModule->getModuleWidget()->ports();
 
   {
-    int nextInputIndex = 0;
+    size_t nextInputIndex = 0;
     for (const auto& iport : oldModPorts.inputs())
     {
       if (iport->isConnected())
@@ -288,7 +276,7 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
   }
 
   {
-    int nextOutputIndex = 0;
+    size_t nextOutputIndex = 0;
     auto newOutputs = newModPorts.outputs();
     for (const auto& oport : oldModPorts.outputs())
     {
@@ -344,7 +332,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
     this, SLOT(replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle&, const std::string&)));
   connect(module, SIGNAL(disableWidgetDisabling()), this, SIGNAL(disableWidgetDisabling()));
   connect(module, SIGNAL(reenableWidgetDisabling()), this, SIGNAL(reenableWidgetDisabling()));
-  connect(module, SIGNAL(showSubnetworkEditor()), this, SLOT(showSubnetworkEditor()));
+  connect(module, SIGNAL(showSubnetworkEditor()), this, SLOT(addSubnetChild()));
 
   if (module->hasDynamicPorts())
   {

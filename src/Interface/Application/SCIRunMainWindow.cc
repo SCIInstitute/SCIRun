@@ -580,8 +580,8 @@ void SCIRunMainWindow::setupNetworkEditor()
     if (screen.height() * screen.width() > 5000000)
       highResolutionExpandFactor *= 1.5;
   }
-  networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, dialogErrorControl_, preexecuteFunc,
-    tagColorFunc, tagNameFunc, highResolutionExpandFactor, scrollAreaWidgetContents_);
+  networkEditor_ = new NetworkEditor({ getter, defaultNotePositionGetter_, dialogErrorControl_, preexecuteFunc,
+    tagColorFunc, tagNameFunc, highResolutionExpandFactor }, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   networkEditor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);

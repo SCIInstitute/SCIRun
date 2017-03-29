@@ -261,6 +261,7 @@ void ModuleWidgetDisplay::setupSubnetWidgets()
 {
   getExecuteButton()->setVisible(false);
   getLogButton()->setVisible(false);
+  subnetButton_->setMinimumWidth(50);
   auto layout = qobject_cast<QHBoxLayout*>(buttonGroup_->layout());
   if (layout)
     layout->insertWidget(0, subnetButton_);
