@@ -69,14 +69,17 @@ SubnetworkEditor::SubnetworkEditor(QWidget* parent) : QDockWidget(parent)
 
 void NetworkEditor::addSubnetChild(const QString& name)
 {
-  auto subnet = new NetworkEditor(ctorParams_, parentWidget());
-  subnet->parentNetworks_ = this;
-  childrenNetworks_.push_back(subnet);
+  auto it = childrenNetworks_.find(name);
+  if (it == childrenNetworks_.end())
+  {
+    auto subnet = new NetworkEditor(ctorParams_, parentWidget());
+    subnet->parentNetworks_ = this;
+    childrenNetworks_[name] = subnet;
 
-  auto dialog = new QDialog(parentWidget());
-  dialog->setLayout(new QGridLayout);
-  dialog->layout()->addWidget(subnet);
-  dialog->show();
+    auto dock = new SubnetworkEditor(parentWidget());
+    dock->scrollArea->setWidget(subnet);
+    dock->show();
+  }
 }
 
 class SubnetModule : public Module
