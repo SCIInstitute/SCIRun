@@ -302,7 +302,7 @@ class SubnetWidget : public ModuleWidget
 {
 	Q_OBJECT
 public:
-  using ModuleWidget::ModuleWidget;
+  SubnetWidget(NetworkEditor* ed, const QString& name, Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = nullptr);
   void postLoadAction() override;
 };
 

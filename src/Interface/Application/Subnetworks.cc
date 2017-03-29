@@ -159,10 +159,6 @@ const AlgorithmParameterName SubnetModule::ModuleInfo("ModuleInfo");
 
 void NetworkEditor::makeSubnetwork()
 {
-  auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:");
-  if (name.isEmpty())
-    return;
-
   QRectF rect;
   QPointF position;
 
@@ -182,6 +178,12 @@ void NetworkEditor::makeSubnetwork()
     if (module)
       underlyingModules.push_back(module->getModule());
   }
+  if (underlyingModules.empty())
+    return;
+
+  auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:");
+  if (name.isEmpty())
+    return;
 
   auto pic = grabSubnetPic(rect);
   auto subnetModule = boost::make_shared<SubnetModule>(underlyingModules);
@@ -222,4 +224,10 @@ QString NetworkEditor::convertToTooltip(const QPixmap& pic) const
   QBuffer buffer(&byteArray);
   pic.scaled(pic.size() * 0.5).save(&buffer, "PNG");
   return QString("<html><img src=\"data:image/png;base64,") + byteArray.toBase64() + "\"/></html>";
+}
+
+SubnetWidget::SubnetWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl,
+  QWidget* parent /* = 0 */) : ModuleWidget(ed, name, theModule, dialogErrorControl, parent)
+{
+  
 }
