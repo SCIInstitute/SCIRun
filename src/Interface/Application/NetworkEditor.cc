@@ -332,7 +332,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
     this, SLOT(replaceModuleWith(const SCIRun::Dataflow::Networks::ModuleHandle&, const std::string&)));
   connect(module, SIGNAL(disableWidgetDisabling()), this, SIGNAL(disableWidgetDisabling()));
   connect(module, SIGNAL(reenableWidgetDisabling()), this, SIGNAL(reenableWidgetDisabling()));
-  connect(module, SIGNAL(showSubnetworkEditor()), this, SLOT(addSubnetChild()));
+  connect(module, SIGNAL(showSubnetworkEditor(const QString&)), this, SLOT(addSubnetChild(const QString&)));
 
   if (module->hasDynamicPorts())
   {

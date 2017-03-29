@@ -221,8 +221,9 @@ Q_SIGNALS:
   void executeAgain(bool upstream);
   void executionDisabled(bool disabled);
   void findInNetwork();
-  void showSubnetworkEditor();
+  void showSubnetworkEditor(const QString& name);
 private Q_SLOTS:
+  void subnetButtonClicked();
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
   void executeButtonPushed();

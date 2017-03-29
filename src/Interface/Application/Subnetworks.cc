@@ -33,25 +33,16 @@
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/ModuleProxyWidget.h>
-#include <Interface/Application/Utility.h>
-#include <Interface/Application/Port.h>
 #include <Interface/Application/PortWidgetManager.h>
-#include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
-#include <Interface/Application/ClosestPortFinder.h>
+#include <Interface/Application/Subnetworks.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //TODO: remove
 #include <Dataflow/Network/Module.h> //TODO: remove
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
-#ifdef BUILD_WITH_PYTHON
-#include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
-#endif
-
-#include <boost/bind.hpp>
 #include <boost/lambda/lambda.hpp>
-#include <boost/algorithm/string/find.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -71,7 +62,12 @@ NetworkEditor::~NetworkEditor()
   NetworkEditor::clear();
 }
 
-void NetworkEditor::addSubnetChild()
+SubnetworkEditor::SubnetworkEditor(QWidget* parent) : QDockWidget(parent)
+{
+  
+}
+
+void NetworkEditor::addSubnetChild(const QString& name)
 {
   auto subnet = new NetworkEditor(ctorParams_, parentWidget());
   subnet->parentNetworks_ = this;
@@ -171,7 +167,7 @@ void NetworkEditor::makeSubnetwork()
 
   //TODO: file loading case, duplicated
   moduleWidget->postLoadAction();
-  proxy->setScale(1.5);
+  proxy->setScale(1.6);
   proxy->setToolTip(tooltipPic);
 }
 

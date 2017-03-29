@@ -299,7 +299,7 @@ namespace Gui {
     void saveTagGroupRectInFile();
     void renameTagGroupInFile();
     void makeSubnetwork();
-    void addSubnetChild();
+    void addSubnetChild(const QString& name);
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -387,20 +387,7 @@ namespace Gui {
     std::vector<NetworkEditor*> childrenNetworks_;
   };
 
-  class NetworkEditorFactory
-  {
-
-  };
-
   ModuleWidget* getModule(QGraphicsItem* item);
-
-  class SubnetworkEditor : public NetworkEditor
-  {
-    Q_OBJECT
-
-  public:
-    SubnetworkEditor(const NetworkEditor& parent);
-  };
 }
 }
 

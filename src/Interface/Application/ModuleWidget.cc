@@ -474,8 +474,13 @@ void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
   connect(display->getHelpButton(), SIGNAL(clicked()), this, SLOT(launchDocumentation()));
   connect(display->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(show()));
   connect(display->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(raise()));
-  connect(display->getSubnetButton(), SIGNAL(clicked()), this, SIGNAL(showSubnetworkEditor()));
+  connect(display->getSubnetButton(), SIGNAL(clicked()), this, SLOT(subnetButtonClicked()));
   display->getModuleActionButton()->setMenu(actionsMenu_->getMenu());
+}
+
+void ModuleWidget::subnetButtonClicked()
+{
+  Q_EMIT showSubnetworkEditor(QString::fromStdString(theModule_->get_id().id_));
 }
 
 void ModuleWidget::setLogButtonColor(const QColor& color)
