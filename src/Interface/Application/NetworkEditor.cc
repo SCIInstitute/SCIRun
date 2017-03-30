@@ -74,7 +74,7 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   moduleEventProxy_(new ModuleEventProxy),
   zLevelManager_(new ZLevelManager(scene_))
 {
-  scene_->setBackgroundBrush(Qt::darkGray);
+  setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-small.png"));
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
   ModuleWidget::closestPortFinder_.reset(new ClosestPortFinder(scene_));
   ModuleWidget::highResolutionExpandFactor_ = highResolutionExpandFactor_;
@@ -97,6 +97,12 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
 #endif
 
   connect(this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SLOT(redrawTagGroups()));
+
+  setObjectName(QString::fromUtf8("networkEditor_"));
+  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  verticalScrollBar()->setValue(0);
+  horizontalScrollBar()->setValue(0);
 }
 
 void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller)

@@ -62,9 +62,10 @@ NetworkEditor::~NetworkEditor()
   NetworkEditor::clear();
 }
 
-SubnetworkEditor::SubnetworkEditor(QWidget* parent) : QDockWidget(parent)
+SubnetworkEditor::SubnetworkEditor(NetworkEditor* editor, QWidget* parent) : QDockWidget(parent),
+  editor_(editor)
 {
-  
+  setupUi(this);
 }
 
 void NetworkEditor::addSubnetChild(const QString& name)
@@ -72,13 +73,19 @@ void NetworkEditor::addSubnetChild(const QString& name)
   auto it = childrenNetworks_.find(name);
   if (it == childrenNetworks_.end())
   {
-    auto subnet = new NetworkEditor(ctorParams_, parentWidget());
+    auto subnet = new NetworkEditor(ctorParams_);
     subnet->parentNetworks_ = this;
-    childrenNetworks_[name] = subnet;
-
-    auto dock = new SubnetworkEditor(parentWidget());
-    dock->scrollArea->setWidget(subnet);
+    auto dock = new SubnetworkEditor(subnet, parentWidget());
+    dock->groupBox->setTitle(name);
+    auto vbox = new QVBoxLayout;
+    vbox->addWidget(subnet);
+    dock->groupBox->setLayout(vbox);
     dock->show();
+    childrenNetworks_[name] = dock;
+  }
+  else
+  {
+    it->second->show();
   }
 }
 
@@ -163,6 +170,7 @@ void NetworkEditor::makeSubnetwork()
   auto pic = grabSubnetPic(rect);
   auto subnetModule = boost::make_shared<SubnetModule>(underlyingModules);
   subnetModule->setStateDefaults();
+  subnetModule->get_state()->setValue(Name("Name"), name.toStdString());
   auto moduleWidget = new SubnetWidget(this, name, subnetModule, dialogErrorControl_);
 
   auto tooltipPic = convertToTooltip(pic);
@@ -204,5 +212,5 @@ QString NetworkEditor::convertToTooltip(const QPixmap& pic) const
 SubnetWidget::SubnetWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */) : ModuleWidget(ed, name, theModule, dialogErrorControl, parent)
 {
-  
+
 }

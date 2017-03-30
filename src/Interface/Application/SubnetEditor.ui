@@ -21,34 +21,42 @@
   </property>
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <widget class="QScrollArea" name="scrollArea">
-      <property name="widgetResizable">
-       <bool>true</bool>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_2">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>15</height>
+       </size>
       </property>
-      <widget class="QWidget" name="scrollAreaWidgetContents">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>473</width>
-         <height>331</height>
-        </rect>
-       </property>
-      </widget>
+      <property name="text">
+       <string>Outputs</string>
+      </property>
      </widget>
     </item>
     <item row="0" column="0">
      <widget class="QLabel" name="label">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>15</height>
+       </size>
+      </property>
       <property name="text">
        <string>Inputs</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="label_2">
-      <property name="text">
-       <string>Outputs</string>
+    <item row="1" column="0">
+     <widget class="QGroupBox" name="groupBox">
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="title">
+       <string/>
       </property>
      </widget>
     </item>

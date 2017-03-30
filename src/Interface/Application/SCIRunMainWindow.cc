@@ -187,16 +187,15 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   dialogErrorControl_.reset(new DialogErrorControl(this));
   setupTagManagerWindow();
   tagManagerWindow_->hide();
+
   setupPreferencesWindow();
+
   setupNetworkEditor();
 
   setTipsAndWhatsThis();
 
   connect(actionExecute_All_, SIGNAL(triggered()), this, SLOT(executeAll()));
   connect(actionNew_, SIGNAL(triggered()), this, SLOT(newNetwork()));
-  connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
-
-  gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 
   setActionIcons();
 
@@ -261,22 +260,6 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
     searchBar->setVisible(false);
   }
 
-  networkEditor_->addAction(actionExecute_All_);
-  auto sep = new QAction(this);
-  sep->setSeparator(true);
-  networkEditor_->addAction(sep);
-  networkEditor_->addAction(actionCut_);
-  networkEditor_->addAction(actionCopy_);
-  networkEditor_->addAction(actionPaste_);
-	sep = new QAction(this);
-  sep->setSeparator(true);
-	networkEditor_->addAction(sep);
-	networkEditor_->addAction(actionResetNetworkZoom_);
-	networkEditor_->addAction(actionDragMode_);
-  networkEditor_->addAction(actionSelectMode_);
-  networkEditor_->addAction(actionToggleMetadataLayer_);
-  networkEditor_->addAction(actionToggleTagLayer_);
-
   setContextMenuPolicy(Qt::NoContextMenu);
 
   scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
@@ -289,18 +272,15 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   connect(actionImportNetwork_, SIGNAL(triggered()), this, SLOT(importLegacyNetwork()));
   connect(actionQuit_, SIGNAL(triggered()), this, SLOT(close()));
   connect(actionRunScript_, SIGNAL(triggered()), this, SLOT(runScript()));
-  connect(actionSelectAll_, SIGNAL(triggered()), networkEditor_, SLOT(selectAll()));
+
   actionQuit_->setShortcut(QKeySequence::Quit);
-  connect(actionDelete_, SIGNAL(triggered()), networkEditor_, SLOT(del()));
+
   actionDelete_->setShortcuts(QList<QKeySequence>() << QKeySequence::Delete << Qt::Key_Backspace);
-	connect(actionCleanUpNetwork_, SIGNAL(triggered()), networkEditor_, SLOT(cleanUpNetwork()));
+
 	connect(actionRunNewModuleWizard_, SIGNAL(triggered()), this, SLOT(runNewModuleWizard()));
 	actionRunNewModuleWizard_->setDisabled(true);
 
   connect(actionAbout_, SIGNAL(triggered()), this, SLOT(displayAcknowledgement()));
-  connect(actionPinAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(pinAllModuleUIs()));
-  connect(actionRestoreAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(restoreAllModuleUIs()));
-  connect(actionHideAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(hideAllModuleUIs()));
 
   connect(helpActionPythonAPI_, SIGNAL(triggered()), this, SLOT(loadPythonAPIDoc()));
   connect(helpActionSnippets_, SIGNAL(triggered()), this, SLOT(showSnippetHelp()));
@@ -338,21 +318,16 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   //TODO: will be a user or network setting
   makePipesEuclidean();
 
-  connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
+
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
 
   connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
   connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
-
   connect(prefsWindow_->portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(highlightPortsChanged()));
   connect(prefsWindow_->portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(highlightPorts(int)));
-
   connect(prefsWindow_->dockableModulesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(adjustModuleDock(int)));
 
   makeFilterButtonMenu();
-
-  if (newInterface())
-    networkEditor_->setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-small.png"));
 
   connect(prefsWindow_->scirunDataPushButton_, SIGNAL(clicked()), this, SLOT(setDataDirectoryFromGUI()));
   connect(prefsWindow_->addToPathButton_, SIGNAL(clicked()), this, SLOT(addToPathFromGUI()));
@@ -361,26 +336,17 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   actionAddModule_->setVisible(false);
   connect(actionSelectModule_, SIGNAL(triggered()), this, SLOT(selectModuleKeyboardAction()));
   actionSelectModule_->setVisible(false);
-
   connect(actionReportIssue_, SIGNAL(triggered()), this, SLOT(reportIssue()));
-
   connect(actionSelectMode_, SIGNAL(toggled(bool)), this, SLOT(setSelectMode(bool)));
   connect(actionDragMode_, SIGNAL(toggled(bool)), this, SLOT(setDragMode(bool)));
-
 	connect(actionToggleTagLayer_, SIGNAL(toggled(bool)), this, SLOT(toggleTagLayer(bool)));
   connect(actionToggleMetadataLayer_, SIGNAL(toggled(bool)), this, SLOT(toggleMetadataLayer(bool)));
-  connect(actionMakeSubnetwork_, SIGNAL(triggered()), networkEditor_, SLOT(makeSubnetwork()));
-
   connect(actionResetNetworkZoom_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomIn_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomOut_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomBestFit_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
-  connect(networkEditor_, SIGNAL(zoomLevelChanged(int)), this, SLOT(showZoomStatusMessage(int)));
-  connect(actionCenterNetworkViewer_, SIGNAL(triggered()), networkEditor_, SLOT(centerView()));
 
-	connect(actionCut_, SIGNAL(triggered()), networkEditor_, SLOT(cut()));
-	connect(actionCopy_, SIGNAL(triggered()), networkEditor_, SLOT(copy()));
-	connect(actionPaste_, SIGNAL(triggered()), networkEditor_, SLOT(paste()));
+
   actionCut_->setIcon(QPixmap(":/general/Resources/cut.png"));
   actionCopy_->setIcon(QPixmap(":/general/Resources/copy.png"));
   actionPaste_->setIcon(QPixmap(":/general/Resources/paste.png"));
@@ -582,11 +548,27 @@ void SCIRunMainWindow::setupNetworkEditor()
   }
   networkEditor_ = new NetworkEditor({ getter, defaultNotePositionGetter_, dialogErrorControl_, preexecuteFunc,
     tagColorFunc, tagNameFunc, highResolutionExpandFactor }, scrollAreaWidgetContents_);
-  networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
-  networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-  networkEditor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-  networkEditor_->verticalScrollBar()->setValue(0);
-  networkEditor_->horizontalScrollBar()->setValue(0);
+  gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
+
+  connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
+  connect(actionSelectAll_, SIGNAL(triggered()), networkEditor_, SLOT(selectAll()));
+  connect(actionDelete_, SIGNAL(triggered()), networkEditor_, SLOT(del()));
+  connect(actionCleanUpNetwork_, SIGNAL(triggered()), networkEditor_, SLOT(cleanUpNetwork()));
+  connect(actionPinAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(pinAllModuleUIs()));
+  connect(actionRestoreAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(restoreAllModuleUIs()));
+  connect(actionHideAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(hideAllModuleUIs()));
+  connect(actionMakeSubnetwork_, SIGNAL(triggered()), networkEditor_, SLOT(makeSubnetwork()));
+  connect(networkEditor_, SIGNAL(zoomLevelChanged(int)), this, SLOT(showZoomStatusMessage(int)));
+	connect(actionCut_, SIGNAL(triggered()), networkEditor_, SLOT(cut()));
+	connect(actionCopy_, SIGNAL(triggered()), networkEditor_, SLOT(copy()));
+	connect(actionPaste_, SIGNAL(triggered()), networkEditor_, SLOT(paste()));
+
+  // root NetworkEditor only.
+  connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
+  connect(actionCenterNetworkViewer_, SIGNAL(triggered()), networkEditor_, SLOT(centerView()));
+
+  // children only
+  // addDockWidget(Qt::RightDockWidgetArea, subnet);
 }
 
 void SCIRunMainWindow::executeCommandLineRequests()

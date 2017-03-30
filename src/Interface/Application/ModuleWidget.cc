@@ -480,7 +480,7 @@ void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
 
 void ModuleWidget::subnetButtonClicked()
 {
-  Q_EMIT showSubnetworkEditor(QString::fromStdString(theModule_->get_id().id_));
+  Q_EMIT showSubnetworkEditor(QString::fromStdString(theModule_->get_state()->getValue(Core::Algorithms::Name("Name")).toString()));
 }
 
 void ModuleWidget::setLogButtonColor(const QColor& color)

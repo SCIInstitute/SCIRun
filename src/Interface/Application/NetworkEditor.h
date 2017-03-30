@@ -381,10 +381,10 @@ namespace Gui {
     // newed up
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy_;
     boost::shared_ptr<ZLevelManager> zLevelManager_;
-    
+
     // tree structure
     NetworkEditor* parentNetworks_ {nullptr};
-    std::map<QString, NetworkEditor*> childrenNetworks_;
+    std::map<QString, class SubnetworkEditor*> childrenNetworks_;
   };
 
   ModuleWidget* getModule(QGraphicsItem* item);
