@@ -53,6 +53,8 @@ class QStatusBar;
 namespace SCIRun {
 namespace Gui {
 
+  class SCIRunMainWindow;
+
   class TextEditAppender : public Core::Logging::LegacyLoggerInterface, public Core::Logging::LogAppenderStrategy
   {
   public:
@@ -222,6 +224,15 @@ namespace Gui {
   private:
     NetworkEditor* ned_;
     size_t countState(Dataflow::Networks::ModuleExecutionState::Value val) const;
+  };
+
+  class NetworkEditorBuilder
+  {
+  public:
+    explicit NetworkEditorBuilder(SCIRunMainWindow* mainWindow) : mainWindow_(mainWindow) {}
+    void connectAll(NetworkEditor* editor);
+  private:
+    SCIRunMainWindow* mainWindow_;
   };
 
 }
