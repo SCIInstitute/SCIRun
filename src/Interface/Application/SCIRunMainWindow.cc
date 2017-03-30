@@ -120,9 +120,9 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
     );
 
   menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
+
   dialogErrorControl_.reset(new DialogErrorControl(this));
   setupTagManagerWindow();
-
 
   setupPreferencesWindow();
 
@@ -246,8 +246,6 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   setupPythonConsole();
 
   connect(prefsWindow_->defaultNotePositionComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNotePosition(int)));
-  connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), networkEditor_, SIGNAL(defaultNotePositionChanged(NotePosition)));
-
   connect(prefsWindow_->cubicPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesCubicBezier()));
   connect(prefsWindow_->manhattanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesManhattan()));
   connect(prefsWindow_->euclideanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesEuclidean()));
@@ -460,6 +458,37 @@ void SCIRunMainWindow::setController(NetworkEditorControllerHandle controller)
   controller->setSerializationManager(networkEditor_);
 }
 
+class NetworkEditorBuilder
+{
+public:
+  explicit NetworkEditorBuilder(SCIRunMainWindow* mainWindow) : mainWindow_(mainWindow) {}
+  void connectAll(NetworkEditor* editor)
+  {
+    QObject::connect(editor, SIGNAL(modified()), mainWindow_, SLOT(networkModified()));
+    QObject::connect(mainWindow_->actionSelectAll_, SIGNAL(triggered()), editor, SLOT(selectAll()));
+    QObject::connect(mainWindow_->actionDelete_, SIGNAL(triggered()), editor, SLOT(del()));
+    QObject::connect(mainWindow_->actionCleanUpNetwork_, SIGNAL(triggered()), editor, SLOT(cleanUpNetwork()));
+    QObject::connect(mainWindow_->actionPinAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(pinAllModuleUIs()));
+    QObject::connect(mainWindow_->actionRestoreAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(restoreAllModuleUIs()));
+    QObject::connect(mainWindow_->actionHideAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(hideAllModuleUIs()));
+    QObject::connect(mainWindow_->actionMakeSubnetwork_, SIGNAL(triggered()), editor, SLOT(makeSubnetwork()));
+    QObject::connect(editor, SIGNAL(zoomLevelChanged(int)), mainWindow_, SLOT(showZoomStatusMessage(int)));
+    QObject::connect(mainWindow_->actionCut_, SIGNAL(triggered()), editor, SLOT(cut()));
+    QObject::connect(mainWindow_->actionCopy_, SIGNAL(triggered()), editor, SLOT(copy()));
+    QObject::connect(mainWindow_->actionPaste_, SIGNAL(triggered()), editor, SLOT(paste()));
+    QObject::connect(mainWindow_, SIGNAL(defaultNotePositionChanged(NotePosition)), editor, SIGNAL(defaultNotePositionChanged(NotePosition)));
+
+    // root NetworkEditor only.
+    QObject::connect(mainWindow_, SIGNAL(moduleItemDoubleClicked()), editor, SLOT(addModuleViaDoubleClickedTreeItem()));
+    QObject::connect(mainWindow_->actionCenterNetworkViewer_, SIGNAL(triggered()), editor, SLOT(centerView()));
+
+    // children only
+    // addDockWidget(Qt::RightDockWidgetArea, subnet);
+  }
+private:
+  SCIRunMainWindow* mainWindow_;
+};
+
 void SCIRunMainWindow::setupNetworkEditor()
 {
   boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
@@ -484,25 +513,8 @@ void SCIRunMainWindow::setupNetworkEditor()
     tagColorFunc, tagNameFunc, highResolutionExpandFactor }, scrollAreaWidgetContents_);
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 
-  connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
-  connect(actionSelectAll_, SIGNAL(triggered()), networkEditor_, SLOT(selectAll()));
-  connect(actionDelete_, SIGNAL(triggered()), networkEditor_, SLOT(del()));
-  connect(actionCleanUpNetwork_, SIGNAL(triggered()), networkEditor_, SLOT(cleanUpNetwork()));
-  connect(actionPinAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(pinAllModuleUIs()));
-  connect(actionRestoreAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(restoreAllModuleUIs()));
-  connect(actionHideAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(hideAllModuleUIs()));
-  connect(actionMakeSubnetwork_, SIGNAL(triggered()), networkEditor_, SLOT(makeSubnetwork()));
-  connect(networkEditor_, SIGNAL(zoomLevelChanged(int)), this, SLOT(showZoomStatusMessage(int)));
-	connect(actionCut_, SIGNAL(triggered()), networkEditor_, SLOT(cut()));
-	connect(actionCopy_, SIGNAL(triggered()), networkEditor_, SLOT(copy()));
-	connect(actionPaste_, SIGNAL(triggered()), networkEditor_, SLOT(paste()));
-
-  // root NetworkEditor only.
-  connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
-  connect(actionCenterNetworkViewer_, SIGNAL(triggered()), networkEditor_, SLOT(centerView()));
-
-  // children only
-  // addDockWidget(Qt::RightDockWidgetArea, subnet);
+  NetworkEditorBuilder builder(this);
+  builder.connectAll(networkEditor_);
 }
 
 void SCIRunMainWindow::executeCommandLineRequests()
