@@ -135,54 +135,9 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
 
   setActionIcons();
 
-  {
-    auto standardBar = addToolBar("Standard");
-    WidgetStyleMixin::toolbarStyle(standardBar);
-    standardBar->setObjectName("StandardToolBar");
-    standardBar->addAction(actionNew_);
-    standardBar->addAction(actionLoad_);
-    standardBar->addAction(actionSave_);
-    standardBar->addAction(actionRunScript_);
-    standardBar->addAction(actionEnterWhatsThisMode_);
-    standardBar->addSeparator();
-    standardBar->addAction(actionPinAllModuleUIs_);
-    standardBar->addAction(actionRestoreAllModuleUIs_);
-    standardBar->addAction(actionHideAllModuleUIs_);
-    standardBar->addSeparator();
-    standardBar->addAction(actionCenterNetworkViewer_);
-    standardBar->addAction(actionZoomIn_);
-    standardBar->addAction(actionZoomOut_);
-    //standardBar->addAction(actionZoomBestFit_);
-    actionZoomBestFit_->setDisabled(true);
-    standardBar->addAction(actionResetNetworkZoom_);
-    standardBar->addAction(actionDragMode_);
-    standardBar->addAction(actionSelectMode_);
-    standardBar->addAction(actionToggleMetadataLayer_);
-    standardBar->addAction(actionToggleTagLayer_);
-    standardBar->addAction(actionMakeSubnetwork_);  //TODO: work in progress
-    connect(actionNetworkBar_, SIGNAL(toggled(bool)), standardBar, SLOT(setVisible(bool)));
-    connect(standardBar, SIGNAL(visibilityChanged(bool)), actionNetworkBar_, SLOT(setChecked(bool)));
-    //setUnifiedTitleAndToolBarOnMac(true);
-  }
-  {
-    auto executeBar = addToolBar(tr("&Execute"));
-    executeBar->setObjectName("ExecuteToolBar");
+  createStandardToolbar();
+  createExecuteToolbar();
 
-    executeButton_ = new QToolButton;
-    executeButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    executeButton_->addAction(actionExecute_All_);
-    executeButton_->setDefaultAction(actionExecute_All_);
-    executeBar->addWidget(executeButton_);
-
-    networkProgressBar_.reset(new NetworkExecutionProgressBar(boost::make_shared<NetworkStatusImpl>(networkEditor_), this));
-    executeBar->addActions(networkProgressBar_->actions());
-    executeBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
-      "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
-      );
-    executeBar->setAutoFillBackground(true);
-    connect(actionExecuteBar_, SIGNAL(toggled(bool)), executeBar, SLOT(setVisible(bool)));
-    connect(executeBar, SIGNAL(visibilityChanged(bool)), actionExecuteBar_, SLOT(setChecked(bool)));
-  }
   {
     auto searchAction = new QWidgetAction(this);
     searchAction->setDefaultWidget(new NetworkSearchWidget(networkEditor_));
@@ -339,6 +294,57 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   setupVersionButton();
 
   WidgetStyleMixin::tabStyle(optionsTabWidget_);
+}
+
+void SCIRunMainWindow::createStandardToolbar()
+{
+  auto standardBar = addToolBar("Standard");
+  WidgetStyleMixin::toolbarStyle(standardBar);
+  standardBar->setObjectName("StandardToolBar");
+  standardBar->addAction(actionNew_);
+  standardBar->addAction(actionLoad_);
+  standardBar->addAction(actionSave_);
+  standardBar->addAction(actionRunScript_);
+  standardBar->addAction(actionEnterWhatsThisMode_);
+  standardBar->addSeparator();
+  standardBar->addAction(actionPinAllModuleUIs_);
+  standardBar->addAction(actionRestoreAllModuleUIs_);
+  standardBar->addAction(actionHideAllModuleUIs_);
+  standardBar->addSeparator();
+  standardBar->addAction(actionCenterNetworkViewer_);
+  standardBar->addAction(actionZoomIn_);
+  standardBar->addAction(actionZoomOut_);
+  //standardBar->addAction(actionZoomBestFit_);
+  actionZoomBestFit_->setDisabled(true);
+  standardBar->addAction(actionResetNetworkZoom_);
+  standardBar->addAction(actionDragMode_);
+  standardBar->addAction(actionSelectMode_);
+  standardBar->addAction(actionToggleMetadataLayer_);
+  standardBar->addAction(actionToggleTagLayer_);
+  standardBar->addAction(actionMakeSubnetwork_);  //TODO: work in progress
+  connect(actionNetworkBar_, SIGNAL(toggled(bool)), standardBar, SLOT(setVisible(bool)));
+  connect(standardBar, SIGNAL(visibilityChanged(bool)), actionNetworkBar_, SLOT(setChecked(bool)));
+}
+
+void SCIRunMainWindow::createExecuteToolbar()
+{
+  auto executeBar = addToolBar(tr("&Execute"));
+  executeBar->setObjectName("ExecuteToolBar");
+
+  executeButton_ = new QToolButton;
+  executeButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+  executeButton_->addAction(actionExecute_All_);
+  executeButton_->setDefaultAction(actionExecute_All_);
+  executeBar->addWidget(executeButton_);
+
+  networkProgressBar_.reset(new NetworkExecutionProgressBar(boost::make_shared<NetworkStatusImpl>(networkEditor_), this));
+  executeBar->addActions(networkProgressBar_->actions());
+  executeBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
+    "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
+    );
+  executeBar->setAutoFillBackground(true);
+  connect(actionExecuteBar_, SIGNAL(toggled(bool)), executeBar, SLOT(setVisible(bool)));
+  connect(executeBar, SIGNAL(visibilityChanged(bool)), actionExecuteBar_, SLOT(setChecked(bool)));
 }
 
 void SCIRunMainWindow::initialize()

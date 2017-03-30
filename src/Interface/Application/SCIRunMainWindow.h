@@ -132,6 +132,9 @@ private:
   QByteArray windowState_;
   QPushButton* versionButton_;
   TriggeredEventsWindow* triggeredEventsWindow_;
+
+  void createStandardToolbar();
+  void createExecuteToolbar();
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
   void setTipsAndWhatsThis();

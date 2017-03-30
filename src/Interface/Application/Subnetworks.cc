@@ -75,6 +75,8 @@ void NetworkEditor::addSubnetChild(const QString& name)
   {
     auto subnet = new NetworkEditor(ctorParams_);
     subnet->parentNetworks_ = this;
+    subnet->setNetworkEditorController(getNetworkEditorController());
+
     auto dock = new SubnetworkEditor(subnet, parentWidget());
     dock->groupBox->setTitle(name);
     auto vbox = new QVBoxLayout;
