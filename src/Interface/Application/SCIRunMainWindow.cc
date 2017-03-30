@@ -80,72 +80,6 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
-
-struct ToolkitInfo
-{
-  static const char* ToolkitIconURL;
-  static const char* ToolkitURL;
-  static const char* ToolkitFilename;
-
-  QString iconUrl, zipUrl, filename;
-
-  void setupAction(QAction* action, QObject* window) const
-  {
-    QObject::connect(action, SIGNAL(triggered()), window, SLOT(toolkitDownload()));
-    action->setProperty(ToolkitIconURL, iconUrl);
-    action->setProperty(ToolkitURL, zipUrl);
-    action->setProperty(ToolkitFilename, filename);
-    action->setIcon(QPixmap(":/general/Resources/download.png"));
-  }
-};
-
-const char* ToolkitInfo::ToolkitIconURL{ "ToolkitIconURL" };
-const char* ToolkitInfo::ToolkitURL{ "ToolkitURL" };
-const char* ToolkitInfo::ToolkitFilename{ "ToolkitFilename" };
-
-class NetworkStatusImpl : public NetworkStatus
-{
-public:
-  explicit NetworkStatusImpl(NetworkEditor* ned) : ned_(ned) {}
-
-  size_t total() const override
-  {
-    return ned_->numModules();
-  }
-  size_t waiting() const override
-  {
-    return countState(ModuleExecutionState::Value::Waiting);
-  }
-  size_t executing() const override
-  {
-    return countState(ModuleExecutionState::Value::Executing);
-  }
-  size_t errored() const override
-  {
-    return countState(ModuleExecutionState::Value::Errored);
-  }
-  size_t nonReexecuted() const override
-  {
-    return -1; // not available yet
-  }
-  size_t finished() const override
-  {
-    return countState(ModuleExecutionState::Value::Completed);
-  }
-  size_t unexecuted() const override
-  {
-    return countState(ModuleExecutionState::Value::NotExecuted);
-  }
-private:
-  NetworkEditor* ned_;
-
-  size_t countState(ModuleExecutionState::Value val) const
-  {
-    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
-    return std::count(allStates.begin(), allStates.end(), val);
-  }
-};
-
 SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quitAfterExecute_(false)
 {
   setupUi(this);
@@ -156,6 +90,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   QCoreApplication::setApplicationName("SCIRun5");
 
   setAttribute(Qt::WA_DeleteOnClose);
+
   if (newInterface())
     setStyleSheet(
     "background-color: rgb(66,66,69);"
@@ -183,10 +118,11 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
     "border - color: navy; /* make the default button prominent */"
     "}"
     );
+
   menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
   dialogErrorControl_.reset(new DialogErrorControl(this));
   setupTagManagerWindow();
-  tagManagerWindow_->hide();
+
 
   setupPreferencesWindow();
 
@@ -346,7 +282,6 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   connect(actionZoomOut_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomBestFit_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
 
-
   actionCut_->setIcon(QPixmap(":/general/Resources/cut.png"));
   actionCopy_->setIcon(QPixmap(":/general/Resources/copy.png"));
   actionPaste_->setIcon(QPixmap(":/general/Resources/paste.png"));
@@ -368,11 +303,10 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
 
   connect(networkEditor_, SIGNAL(networkExecuted()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(double, const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone(double, const std::string&)));
-
   connect(networkEditor_, SIGNAL(networkExecuted()), dialogErrorControl_.get(), SLOT(resetCounter()));
 	connect(networkEditor_, SIGNAL(requestLoadNetwork(const QString&)), this, SLOT(checkAndLoadNetworkFile(const QString&)));
-
   connect(networkEditor_, SIGNAL(networkExecuted()), this, SLOT(changeExecuteActionIconToStop()));
+
   connect(prefsWindow_->actionTextIconCheckBox_, SIGNAL(clicked()), this, SLOT(adjustExecuteButtonAppearance()));
   prefsWindow_->actionTextIconCheckBox_->setCheckState(Qt::PartiallyChecked);
   adjustExecuteButtonAppearance();
@@ -948,19 +882,6 @@ void SCIRunMainWindow::setSaveBeforeExecute(int state)
   prefsWindow_->setSaveBeforeExecute(state != 0);
 }
 
-void SCIRunMainWindow::chooseBackgroundColor()
-{
-  auto brush = networkEditor_->background();
-  auto oldColor = brush.color();
-
-  auto newColor = QColorDialog::getColor(oldColor, this, "Choose background color");
-  if (newColor.isValid())
-  {
-    networkEditor_->setBackground(newColor);
-    GuiLogger::Instance().logInfo("Background color set to " + newColor.name());
-  }
-}
-
 void SCIRunMainWindow::setDragMode(bool toggle)
 {
   if (toggle)
@@ -1027,14 +948,6 @@ void SCIRunMainWindow::zoomNetwork()
 void SCIRunMainWindow::showZoomStatusMessage(int zoomLevel)
 {
   statusBar()->showMessage(tr("Zoom: %1%").arg(zoomLevel), 2000);
-}
-
-void SCIRunMainWindow::resetBackgroundColor()
-{
-  //TODO: standardize these defaults
-  QColor defaultColor(Qt::darkGray);
-  networkEditor_->setBackground(defaultColor);
-  GuiLogger::Instance().logInfo("Background color set to " + defaultColor.name());
 }
 
 void SCIRunMainWindow::setupScriptedEventsWindow()
@@ -1895,6 +1808,7 @@ void SCIRunMainWindow::setupTagManagerWindow()
   tagManagerWindow_ = new TagManagerWindow(this);
   connect(actionTagManager_, SIGNAL(toggled(bool)), tagManagerWindow_, SLOT(setVisible(bool)));
   connect(tagManagerWindow_, SIGNAL(visibilityChanged(bool)), actionTagManager_, SLOT(setChecked(bool)));
+  tagManagerWindow_->hide();
 }
 
 void SCIRunMainWindow::showTagHelp()

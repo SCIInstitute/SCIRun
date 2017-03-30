@@ -35,6 +35,7 @@
 #include <Core/Utils/Singleton.h>
 #include <set>
 #include <Interface/Application/NetworkEditor.h>  //TODO
+#include <Interface/Application/NetworkExecutionProgressBar.h>
 #endif
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -195,6 +196,34 @@ namespace Gui {
     QLineEdit* pathWidget_;
     bool showPrefs_{ false };
   };
+
+  struct ToolkitInfo
+  {
+    static const char* ToolkitIconURL;
+    static const char* ToolkitURL;
+    static const char* ToolkitFilename;
+
+    QString iconUrl, zipUrl, filename;
+
+    void setupAction(QAction* action, QObject* window) const;
+  };
+
+  class NetworkStatusImpl : public NetworkStatus
+  {
+  public:
+    explicit NetworkStatusImpl(NetworkEditor* ned) : ned_(ned) {}
+    size_t total() const override;
+    size_t waiting() const override;
+    size_t executing() const override;
+    size_t errored() const override;
+    size_t nonReexecuted() const override;
+    size_t finished() const override;
+    size_t unexecuted() const override;
+  private:
+    NetworkEditor* ned_;
+    size_t countState(Dataflow::Networks::ModuleExecutionState::Value val) const;
+  };
+
 }
 }
 #endif
