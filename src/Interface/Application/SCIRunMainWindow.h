@@ -204,7 +204,6 @@ private Q_SLOTS:
   void readDefaultNotePosition(int index);
   void openToolkitFolder();
   void openToolkitNetwork();
-  void updateMiniView();
   void alertForNetworkCycles(int code);
   void updateDockWidgetProperties(bool isFloating);
   void toolkitDownload();

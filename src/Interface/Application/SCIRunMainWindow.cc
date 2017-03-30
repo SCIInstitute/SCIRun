@@ -1044,15 +1044,6 @@ void SCIRunMainWindow::runScript()
   }
 }
 
-void SCIRunMainWindow::updateMiniView()
-{
-  //networkEditorMiniViewLabel_->setText("+" + networkEditorMiniViewLabel_->text());
-  auto network = networkEditor_->sceneGrab();
-  networkEditorMiniViewLabel_->setPixmap(network.scaled(networkEditorMiniViewLabel_->size(),
-    Qt::KeepAspectRatio,
-    Qt::SmoothTransformation));
-}
-
 namespace {
 
   QColor favesColor()
