@@ -59,9 +59,9 @@ void SolveComplexLinearSystem::execute()
   if (needToExecute())
   {
     SolveLinearSystemAlgorithm algo;
-
-    auto input = std::make_tuple(lhs, convertMatrix::toColumn(rhs));
-    auto x = algo.run(input,  std::make_tuple(1e-20, 4000));
+    auto col = convertMatrix::toColumn(rhs);
+    auto input = std::make_tuple(lhs, col);
+    auto x = algo.run(input,  std::make_tuple(1e-100, 4000));
     auto solution = std::get<0>(x);
 
     std::cout << "error: " << std::get<1>(x) << std::endl;

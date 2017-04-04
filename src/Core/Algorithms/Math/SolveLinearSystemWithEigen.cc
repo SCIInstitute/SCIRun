@@ -34,6 +34,7 @@
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Eigen/Sparse>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
@@ -45,7 +46,7 @@ namespace
   class SolveLinearSystemAlgorithmEigenCGImpl
   {
   public:
-    SolveLinearSystemAlgorithmEigenCGImpl(const ColumnMatrixType& rhs, double tolerance, int maxIterations) :
+    SolveLinearSystemAlgorithmEigenCGImpl(SharedPointer<ColumnMatrixType> rhs, double tolerance, int maxIterations) :
         tolerance_(tolerance), maxIterations_(maxIterations), rhs_(rhs) {}
 
     using SolutionType = ColumnMatrixType;
@@ -63,7 +64,7 @@ namespace
 
       cg.setTolerance(tolerance_);
       cg.setMaxIterations(maxIterations_);
-      auto solution = cg.solve(rhs_).eval();
+      auto solution = cg.solve(*rhs_).eval();
       tolerance_ = cg.error();
       maxIterations_ = cg.iterations();
       return solution;
@@ -72,7 +73,7 @@ namespace
     double tolerance_;
     int maxIterations_;
   private:
-    const ColumnMatrixType& rhs_;
+    SharedPointer<ColumnMatrixType> rhs_;
   };
 }
 
@@ -101,9 +102,11 @@ Out SolveLinearSystemAlgorithm::runImpl(const In& input, const Parameters& param
   int maxIterations = std::get<1>(params);
   ENSURE_POSITIVE_INT(maxIterations, "Max iterations out of range!");
 
-  using SolutionType = DenseMatrixGeneric<typename std::tuple_element<0, In>::type::element_type::value_type>;
+  using SolutionType = DenseColumnMatrixGeneric<typename std::tuple_element<0, In>::type::element_type::value_type>;
   using SolverType = SolveLinearSystemAlgorithmEigenCGImpl<SolutionType>;
-  SolverType impl(*b, tolerance, maxIterations);
+
+  SolverType impl(b, tolerance, maxIterations);
+
   typename SolverType::SolutionType x;
   if (matrixIs::dense(A))
   {
