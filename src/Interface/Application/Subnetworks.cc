@@ -74,8 +74,9 @@ void NetworkEditor::addSubnetChild(const QString& name)
   if (it == childrenNetworks_.end())
   {
     auto subnet = new NetworkEditor(ctorParams_);
-    subnet->parentNetworks_ = this;
+    subnet->parentNetwork_ = this;
     subnet->setNetworkEditorController(getNetworkEditorController());
+    qDebug() << "addSubnetChild" << this << subnet << subnet->parentNetwork_;
 
     auto dock = new SubnetworkEditor(subnet, parentWidget());
     dock->groupBox->setTitle(name);

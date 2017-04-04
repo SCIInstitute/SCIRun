@@ -144,6 +144,9 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 
 void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module, const ModuleCounter& count)
 {
+  if (parentNetwork_)
+    return;
+
   latestModuleId_ = module->get_id().id_;
   auto moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
   moduleEventProxy_->trackModule(module);
@@ -590,6 +593,9 @@ void NetworkEditor::paste()
 
 void NetworkEditor::pasteImpl(const QString& xml)
 {
+  if (parentNetwork_)
+    return;
+
   std::istringstream istr(xml.toStdString());
   try
   {
@@ -644,6 +650,9 @@ void NetworkEditor::dropEvent(QDropEvent* event)
 
 void NetworkEditor::addNewModuleAtPosition(const QPointF& position)
 {
+  if (parentNetwork_)
+    return;
+
   lastModulePosition_ = position;
   controller_->addModule(moduleSelectionGetter_->text().toStdString());
   Q_EMIT modified();
@@ -651,6 +660,10 @@ void NetworkEditor::addNewModuleAtPosition(const QPointF& position)
 
 void NetworkEditor::addModuleViaDoubleClickedTreeItem()
 {
+  qDebug() << "addModuleViaDoubleClickedTreeItem" << this << parentNetwork_;
+  if (parentNetwork_)
+    return;
+
   if (moduleSelectionGetter_->isModule())
   {
     auto upperLeft = mapToScene(viewport()->geometry()).boundingRect().center();

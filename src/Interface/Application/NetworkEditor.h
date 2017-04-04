@@ -383,7 +383,7 @@ namespace Gui {
     boost::shared_ptr<ZLevelManager> zLevelManager_;
 
     // tree structure
-    NetworkEditor* parentNetworks_ {nullptr};
+    NetworkEditor* parentNetwork_ {nullptr};
     std::map<QString, class SubnetworkEditor*> childrenNetworks_;
   };
 
