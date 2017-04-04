@@ -385,6 +385,7 @@ namespace Gui {
     // tree structure
     NetworkEditor* parentNetwork_ {nullptr};
     std::map<QString, class SubnetworkEditor*> childrenNetworks_;
+    std::map<QString, QList<QGraphicsItem*>> childrenNetworkItems_;
   };
 
   ModuleWidget* getModule(QGraphicsItem* item);

@@ -450,6 +450,7 @@ SCIRunMainWindow::~SCIRunMainWindow()
   GuiLogger::setInstance(nullptr);
   Log::get().clearAppenders();
   Log::get("Modules").clearAppenders();
+  commandConverter_.reset();
   networkEditor_->disconnect();
   networkEditor_->setNetworkEditorController(nullptr);
   networkEditor_->clear();

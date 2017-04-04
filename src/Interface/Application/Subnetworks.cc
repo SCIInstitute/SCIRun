@@ -53,6 +53,7 @@ using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::~NetworkEditor()
 {
+
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     auto module = getModule(item);
@@ -76,7 +77,6 @@ void NetworkEditor::addSubnetChild(const QString& name)
     auto subnet = new NetworkEditor(ctorParams_);
     subnet->parentNetwork_ = this;
     subnet->setNetworkEditorController(getNetworkEditorController());
-    qDebug() << "addSubnetChild" << this << subnet << subnet->parentNetwork_;
 
     auto dock = new SubnetworkEditor(subnet, parentWidget());
     dock->groupBox->setTitle(name);
@@ -85,6 +85,8 @@ void NetworkEditor::addSubnetChild(const QString& name)
     dock->groupBox->setLayout(vbox);
     dock->show();
     childrenNetworks_[name] = dock;
+    for (auto& item : childrenNetworkItems_[name])
+      subnet->scene_->addItem(item);
   }
   else
   {
@@ -95,8 +97,8 @@ void NetworkEditor::addSubnetChild(const QString& name)
 class SubnetModule : public Module
 {
 public:
-  explicit SubnetModule(const std::vector<ModuleHandle>& underlyingModules) : Module(ModuleLookupInfo()),
-    underlyingModules_(underlyingModules)
+  SubnetModule(const std::vector<ModuleHandle>& underlyingModules, const QList<QGraphicsItem*>& items) : Module(ModuleLookupInfo()),
+    underlyingModules_(underlyingModules), items_(items)
   {
     set_id("Subnet:" + boost::lexical_cast<std::string>(subnetCount_));
     subnetCount_++;
@@ -136,6 +138,7 @@ public:
   }
 private:
   std::vector<ModuleHandle> underlyingModules_;
+  QList<QGraphicsItem*> items_;
   static int subnetCount_;
 };
 
@@ -148,7 +151,8 @@ void NetworkEditor::makeSubnetwork()
   QPointF position;
 
   std::vector<ModuleHandle> underlyingModules;
-  Q_FOREACH(QGraphicsItem* item, scene_->selectedItems())
+  auto items = scene_->selectedItems();
+  Q_FOREACH(QGraphicsItem* item, items)
   {
     auto r = item->boundingRect();
     position = item->pos();
@@ -166,12 +170,13 @@ void NetworkEditor::makeSubnetwork()
   if (underlyingModules.empty())
     return;
 
-  auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:");
-  if (name.isEmpty())
+  bool ok;
+  auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:", QLineEdit::Normal, "subnet", &ok);
+  if (!ok || name.isEmpty())
     return;
 
   auto pic = grabSubnetPic(rect);
-  auto subnetModule = boost::make_shared<SubnetModule>(underlyingModules);
+  auto subnetModule = boost::make_shared<SubnetModule>(underlyingModules, items);
   subnetModule->setStateDefaults();
   subnetModule->get_state()->setValue(Name("Name"), name.toStdString());
   auto moduleWidget = new SubnetWidget(this, name, subnetModule, dialogErrorControl_);
@@ -183,6 +188,10 @@ void NetworkEditor::makeSubnetwork()
   moduleWidget->postLoadAction();
   proxy->setScale(1.6);
   proxy->setToolTip(tooltipPic);
+
+  childrenNetworkItems_[name] = items;
+
+  addSubnetChild(name);
 }
 
 QPixmap NetworkEditor::grabSubnetPic(const QRectF& rect)

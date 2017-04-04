@@ -37,6 +37,7 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/PortWidgetManager.h>
 #include <Interface/Application/GuiLogger.h>
+#include <Interface/Application/Subnetworks.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
@@ -107,6 +108,11 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
 
 void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller)
 {
+  for (auto& child : childrenNetworks_)
+  {
+    child.second->get()->setNetworkEditorController(controller);
+  }
+
   if (controller_ == controller)
     return;
 
