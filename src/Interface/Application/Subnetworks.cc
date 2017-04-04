@@ -53,6 +53,18 @@ using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::~NetworkEditor()
 {
+  for (auto& child : childrenNetworks_)
+  {
+    delete child.second;
+    child.second = nullptr;
+  }
+  childrenNetworks_.clear();
+
+  if (parentNetwork_)
+  {
+    for (auto& item : scene_->items())
+      parentNetwork_->scene_->addItem(item);
+  }
 
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
@@ -75,8 +87,7 @@ void NetworkEditor::addSubnetChild(const QString& name)
   if (it == childrenNetworks_.end())
   {
     auto subnet = new NetworkEditor(ctorParams_);
-    subnet->parentNetwork_ = this;
-    subnet->setNetworkEditorController(getNetworkEditorController());
+    initializeSubnet(name, subnet);
 
     auto dock = new SubnetworkEditor(subnet, parentWidget());
     dock->groupBox->setTitle(name);
@@ -85,13 +96,21 @@ void NetworkEditor::addSubnetChild(const QString& name)
     dock->groupBox->setLayout(vbox);
     dock->show();
     childrenNetworks_[name] = dock;
-    for (auto& item : childrenNetworkItems_[name])
-      subnet->scene_->addItem(item);
+    
   }
   else
   {
     it->second->show();
   }
+}
+
+void NetworkEditor::initializeSubnet(const QString& name, NetworkEditor* subnet)
+{
+  subnet->parentNetwork_ = this;
+  subnet->setNetworkEditorController(getNetworkEditorController());
+
+  for (auto& item : childrenNetworkItems_[name])
+    subnet->scene_->addItem(item);
 }
 
 class SubnetModule : public Module

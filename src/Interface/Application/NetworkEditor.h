@@ -348,6 +348,7 @@ namespace Gui {
     QPointF positionOfFloatingText(int num, bool top, int horizontalIndent, int verticalSpacing) const;
     QPixmap grabSubnetPic(const QRectF& rect);
     QString convertToTooltip(const QPixmap& pic) const;
+    void initializeSubnet(const QString& name, NetworkEditor* subnet);
 
     // default constructed
     bool modulesSelectedByCL_{ false };
