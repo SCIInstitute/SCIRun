@@ -81,6 +81,11 @@ SubnetworkEditor::SubnetworkEditor(NetworkEditor* editor, QWidget* parent) : QDo
   setupUi(this);
 }
 
+void SubnetworkEditor::expand()
+{
+
+}
+
 void NetworkEditor::addSubnetChild(const QString& name)
 {
   auto it = childrenNetworks_.find(name);
