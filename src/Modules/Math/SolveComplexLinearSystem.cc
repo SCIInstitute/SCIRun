@@ -35,11 +35,12 @@
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 
 MODULE_INFO_DEF(SolveComplexLinearSystem, Math, SCIRun)
 
-SolveComplexLinearSystem::SolveComplexLinearSystem() : Module(staticInfo_, false)
+SolveComplexLinearSystem::SolveComplexLinearSystem() : Module(staticInfo_)
 {
   INITIALIZE_PORT(LHS);
   INITIALIZE_PORT(RHS);
@@ -49,6 +50,9 @@ SolveComplexLinearSystem::SolveComplexLinearSystem() : Module(staticInfo_, false
 void SolveComplexLinearSystem::setStateDefaults()
 {
   auto state = get_state();
+  state->setValue(Variables::TargetError, 1e-5);
+  state->setValue(Variables::MaxIterations, 500);
+  state->setValue(Variables::Method, std::string("cg"));
 }
 
 void SolveComplexLinearSystem::execute()
@@ -61,7 +65,9 @@ void SolveComplexLinearSystem::execute()
     SolveLinearSystemAlgorithm algo;
     auto col = convertMatrix::toColumn(rhs);
     auto input = std::make_tuple(lhs, col);
-    auto x = algo.run(input,  std::make_tuple(1e-100, 4000));
+    auto tolerance = get_state()->getValue(Variables::TargetError).toDouble();
+    auto maxIterations = get_state()->getValue(Variables::MaxIterations).toInt();
+    auto x = algo.run(input, std::make_tuple(tolerance, maxIterations));
     auto solution = std::get<0>(x);
 
     std::cout << "error: " << std::get<1>(x) << std::endl;
