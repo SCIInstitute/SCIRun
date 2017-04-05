@@ -62,19 +62,22 @@ NetworkEditor::~NetworkEditor()
   NetworkEditor::clear();
 }
 
-SubnetworkEditor::SubnetworkEditor(NetworkEditor* editor, const QString& name, QWidget* parent) : QDockWidget(parent),
-  editor_(editor)
+SubnetworkEditor::SubnetworkEditor(NetworkEditor* editor, const ModuleId& subnetModuleId, const QString& name, QWidget* parent) : QDockWidget(parent),
+  editor_(editor), subnetModuleId_(subnetModuleId)
 {
   setupUi(this);
   groupBox->setTitle(name);
   auto vbox = new QVBoxLayout;
   vbox->addWidget(editor);
   groupBox->setLayout(vbox);
+  connect(expandPushButton_, SIGNAL(clicked()), this, SLOT(expand()));
 }
 
 void SubnetworkEditor::expand()
 {
   editor_->sendItemsToParent();
+  editor_->parentNetwork()->removeModuleWidget(subnetModuleId_);
+  deleteLater();
 }
 
 void NetworkEditor::sendItemsToParent()
@@ -83,16 +86,18 @@ void NetworkEditor::sendItemsToParent()
   {
     for (auto& item : scene_->items())
       parentNetwork_->scene_->addItem(item);
+
+    
   }
 }
 
-void NetworkEditor::addSubnetChild(const QString& name)
+void NetworkEditor::addSubnetChild(const QString& name, const ModuleId& mid)
 {
   auto it = childrenNetworks_.find(name);
   if (it == childrenNetworks_.end())
   {
     auto subnet = new NetworkEditor(ctorParams_);
-    initializeSubnet(name, subnet);
+    initializeSubnet(name, mid, subnet);
   }
   else
   {
@@ -100,7 +105,20 @@ void NetworkEditor::addSubnetChild(const QString& name)
   }
 }
 
-void NetworkEditor::initializeSubnet(const QString& name, NetworkEditor* subnet)
+void NetworkEditor::showSubnetChild(const QString& name)
+{
+  auto it = childrenNetworks_.find(name);
+  if (it == childrenNetworks_.end())
+  {
+    throw "logical error";
+  }
+  else
+  {
+    it->second->show();
+  }
+}
+
+void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, NetworkEditor* subnet)
 {
   subnet->parentNetwork_ = this;
   subnet->setNetworkEditorController(getNetworkEditorController());
@@ -108,7 +126,7 @@ void NetworkEditor::initializeSubnet(const QString& name, NetworkEditor* subnet)
   for (auto& item : childrenNetworkItems_[name])
     subnet->scene_->addItem(item);
 
-  auto dock = new SubnetworkEditor(subnet, name, parentWidget());
+  auto dock = new SubnetworkEditor(subnet, mid, name, parentWidget());
   dock->show();
 
   childrenNetworks_[name] = dock;
@@ -211,7 +229,7 @@ void NetworkEditor::makeSubnetwork()
 
   childrenNetworkItems_[name] = items;
 
-  addSubnetChild(name);
+  addSubnetChild(name, subnetModule->get_id());
 }
 
 QPixmap NetworkEditor::grabSubnetPic(const QRectF& rect)

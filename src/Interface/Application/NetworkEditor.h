@@ -302,7 +302,8 @@ namespace Gui {
     void saveTagGroupRectInFile();
     void renameTagGroupInFile();
     void makeSubnetwork();
-    void addSubnetChild(const QString& name);
+    void showSubnetChild(const QString& name);
+    void addSubnetChild(const QString& name, const SCIRun::Dataflow::Networks::ModuleId& mid);
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -351,7 +352,7 @@ namespace Gui {
     QPointF positionOfFloatingText(int num, bool top, int horizontalIndent, int verticalSpacing) const;
     QPixmap grabSubnetPic(const QRectF& rect);
     QString convertToTooltip(const QPixmap& pic) const;
-    void initializeSubnet(const QString& name, NetworkEditor* subnet);
+    void initializeSubnet(const QString& name, const SCIRun::Dataflow::Networks::ModuleId& subnetModuleId, NetworkEditor* subnet);
 
     // default constructed
     bool modulesSelectedByCL_{ false };

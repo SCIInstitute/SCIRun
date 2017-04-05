@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_SUBNETWORKS_H
 
 #include "ui_SubnetEditor.h"
+#include <Dataflow/Network/ModuleDescription.h>
 #include <QDockWidget>
 
 namespace SCIRun
@@ -43,12 +44,13 @@ namespace SCIRun
       Q_OBJECT
 
     public:
-      SubnetworkEditor(NetworkEditor* editor, const QString& name, QWidget *parent = nullptr);
+      SubnetworkEditor(NetworkEditor* editor, const SCIRun::Dataflow::Networks::ModuleId& subnetModuleId, const QString& name, QWidget* parent = nullptr);
       NetworkEditor* get() { return editor_; }
     private Q_SLOTS:
       void expand();
     private:
       NetworkEditor* editor_;
+      SCIRun::Dataflow::Networks::ModuleId subnetModuleId_;
     };
 
   }
