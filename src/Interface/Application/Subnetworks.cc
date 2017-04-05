@@ -63,7 +63,7 @@ NetworkEditor::~NetworkEditor()
 }
 
 SubnetworkEditor::SubnetworkEditor(NetworkEditor* editor, const ModuleId& subnetModuleId, const QString& name, QWidget* parent) : QDockWidget(parent),
-  editor_(editor), subnetModuleId_(subnetModuleId)
+editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
 {
   setupUi(this);
   groupBox->setTitle(name);
@@ -77,6 +77,7 @@ void SubnetworkEditor::expand()
 {
   editor_->sendItemsToParent();
   editor_->parentNetwork()->removeModuleWidget(subnetModuleId_);
+  editor_->parentNetwork()->removeSubnetChild(name_);
   deleteLater();
 }
 
@@ -86,9 +87,12 @@ void NetworkEditor::sendItemsToParent()
   {
     for (auto& item : scene_->items())
       parentNetwork_->scene_->addItem(item);
-
-    
   }
+}
+
+void NetworkEditor::removeSubnetChild(const QString& name)
+{
+  childrenNetworks_.erase(name);
 }
 
 void NetworkEditor::addSubnetChild(const QString& name, const ModuleId& mid)

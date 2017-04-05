@@ -50,6 +50,7 @@ namespace SCIRun
       void expand();
     private:
       NetworkEditor* editor_;
+      QString name_;
       SCIRun::Dataflow::Networks::ModuleId subnetModuleId_;
     };
 

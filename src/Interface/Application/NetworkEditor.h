@@ -304,6 +304,7 @@ namespace Gui {
     void makeSubnetwork();
     void showSubnetChild(const QString& name);
     void addSubnetChild(const QString& name, const SCIRun::Dataflow::Networks::ModuleId& mid);
+    void removeSubnetChild(const QString& name);
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
