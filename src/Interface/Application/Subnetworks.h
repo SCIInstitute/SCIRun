@@ -43,7 +43,7 @@ namespace SCIRun
       Q_OBJECT
 
     public:
-      SubnetworkEditor(NetworkEditor* editor, QWidget *parent = nullptr);
+      SubnetworkEditor(NetworkEditor* editor, const QString& name, QWidget *parent = nullptr);
       NetworkEditor* get() { return editor_; }
     private Q_SLOTS:
       void expand();

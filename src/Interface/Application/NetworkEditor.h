@@ -253,6 +253,9 @@ namespace Gui {
 
     void adjustExecuteButtonsToDownstream(bool downOnly);
 
+    NetworkEditor* parentNetwork() { return parentNetwork_; }
+    void sendItemsToParent();
+
   protected:
     void dropEvent(QDropEvent* event) override;
     void dragEnterEvent(QDragEnterEvent* event) override;

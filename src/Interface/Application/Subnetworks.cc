@@ -53,19 +53,6 @@ using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::~NetworkEditor()
 {
-  for (auto& child : childrenNetworks_)
-  {
-    delete child.second;
-    child.second = nullptr;
-  }
-  childrenNetworks_.clear();
-
-  if (parentNetwork_)
-  {
-    for (auto& item : scene_->items())
-      parentNetwork_->scene_->addItem(item);
-  }
-
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     auto module = getModule(item);
@@ -75,15 +62,28 @@ NetworkEditor::~NetworkEditor()
   NetworkEditor::clear();
 }
 
-SubnetworkEditor::SubnetworkEditor(NetworkEditor* editor, QWidget* parent) : QDockWidget(parent),
+SubnetworkEditor::SubnetworkEditor(NetworkEditor* editor, const QString& name, QWidget* parent) : QDockWidget(parent),
   editor_(editor)
 {
   setupUi(this);
+  groupBox->setTitle(name);
+  auto vbox = new QVBoxLayout;
+  vbox->addWidget(editor);
+  groupBox->setLayout(vbox);
 }
 
 void SubnetworkEditor::expand()
 {
+  editor_->sendItemsToParent();
+}
 
+void NetworkEditor::sendItemsToParent()
+{
+  if (parentNetwork_)
+  {
+    for (auto& item : scene_->items())
+      parentNetwork_->scene_->addItem(item);
+  }
 }
 
 void NetworkEditor::addSubnetChild(const QString& name)
@@ -93,15 +93,6 @@ void NetworkEditor::addSubnetChild(const QString& name)
   {
     auto subnet = new NetworkEditor(ctorParams_);
     initializeSubnet(name, subnet);
-
-    auto dock = new SubnetworkEditor(subnet, parentWidget());
-    dock->groupBox->setTitle(name);
-    auto vbox = new QVBoxLayout;
-    vbox->addWidget(subnet);
-    dock->groupBox->setLayout(vbox);
-    dock->show();
-    childrenNetworks_[name] = dock;
-    
   }
   else
   {
@@ -116,6 +107,11 @@ void NetworkEditor::initializeSubnet(const QString& name, NetworkEditor* subnet)
 
   for (auto& item : childrenNetworkItems_[name])
     subnet->scene_->addItem(item);
+
+  auto dock = new SubnetworkEditor(subnet, name, parentWidget());
+  dock->show();
+
+  childrenNetworks_[name] = dock;
 }
 
 class SubnetModule : public Module
