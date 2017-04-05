@@ -27,40 +27,12 @@
    */
 
 #include <Core/Datatypes/MatrixTypeConversions.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrixFromMap.h>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
 const double convertMatrix::zero_threshold = 1.00000e-08f;
-
-DenseMatrixHandle castMatrix::toDense(const MatrixHandle& mh)
-{
-  return to<DenseMatrix>(mh);
-}
-
-SparseRowMatrixHandle castMatrix::toSparse(const MatrixHandle& mh)
-{
-  return to<SparseRowMatrix>(mh);
-}
-
-DenseColumnMatrixHandle castMatrix::toColumn(const MatrixHandle& mh)
-{
-  return to<DenseColumnMatrix>(mh);
-}
-
-bool matrixIs::dense(const MatrixHandle& mh)
-{
-  return castMatrix::toDense(mh) != nullptr;
-}
-
-bool matrixIs::sparse(const MatrixHandle& mh)
-{
-  return castMatrix::toSparse(mh) != nullptr;
-}
 
 bool matrixIs::column(const MatrixHandle& mh)
 {
@@ -120,29 +92,6 @@ return boost::make_shared<DenseColumnMatrix>(dense->col(0));
 return DenseColumnMatrixHandle();
 }
 */
-
-DenseColumnMatrixHandle convertMatrix::toColumn(const MatrixHandle& mh)
-{
-  auto col = castMatrix::toColumn(mh);
-  if (col)
-    return col;
-
-  auto dense = castMatrix::toDense(mh);
-  if (dense)
-    return boost::make_shared<DenseColumnMatrix>(dense->col(0));
-
-  auto sparse = castMatrix::toSparse(mh);
-  if (sparse)
-  {
-    DenseColumnMatrix dense_col(DenseColumnMatrix::Zero(sparse->nrows()));
-    for (auto i = 0; i < sparse->nrows(); i++)
-      dense_col(i, 0) = sparse->coeff(i, 0);
-
-    return boost::make_shared<DenseColumnMatrix>(dense_col);
-  }
-
-  return DenseColumnMatrixHandle();
-}
 
 DenseMatrixHandle convertMatrix::toDense(const MatrixHandle& mh)
 {

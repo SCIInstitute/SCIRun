@@ -41,20 +41,23 @@ using namespace SCIRun::Core;
 
 namespace
 {
+  template <class ColumnMatrixType>
   class SolveLinearSystemAlgorithmEigenCGImpl
   {
   public:
-    SolveLinearSystemAlgorithmEigenCGImpl(const DenseColumnMatrix& rhs, double tolerance, int maxIterations) : 
-        rhs_(rhs), tolerance_(tolerance), maxIterations_(maxIterations) {}
+    SolveLinearSystemAlgorithmEigenCGImpl(const ColumnMatrixType& rhs, double tolerance, int maxIterations) :
+        tolerance_(tolerance), maxIterations_(maxIterations), rhs_(rhs) {}
+
+    using SolutionType = ColumnMatrixType;
 
     template <class MatrixType>
-    DenseColumnMatrix::EigenBase solveWithEigen(const MatrixType& lhs)
+    typename ColumnMatrixType::EigenBase solveWithEigen(const MatrixType& lhs)
     {
       Eigen::ConjugateGradient<typename MatrixType::EigenBase> cg;
       cg.compute(lhs);
 
       if (cg.info() != Eigen::Success)
-        BOOST_THROW_EXCEPTION(AlgorithmInputException() 
+        BOOST_THROW_EXCEPTION(AlgorithmInputException()
           << LinearAlgebraErrorMessage("Conjugate gradient initialization was unsuccessful")
           << EigenComputationInfo(cg.info()));
 
@@ -69,42 +72,57 @@ namespace
     double tolerance_;
     int maxIterations_;
   private:
-    const DenseColumnMatrix& rhs_;
+    const ColumnMatrixType& rhs_;
   };
 }
 
 SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs& input, const Parameters& params) const
 {
-  auto A = input.get<0>();
+  return runImpl<Inputs, Outputs>(input, params);
+}
+
+SolveLinearSystemAlgorithm::ComplexOutputs SolveLinearSystemAlgorithm::run(const ComplexInputs& input, const Parameters& params) const
+{
+  return runImpl<ComplexInputs, ComplexOutputs>(input, params);
+}
+
+template <typename In, typename Out>
+Out SolveLinearSystemAlgorithm::runImpl(const In& input, const Parameters& params) const
+{
+  auto A = std::get<0>(input);
   ENSURE_ALGORITHM_INPUT_NOT_NULL(A, "Null input matrix");
 
-  auto b = input.get<1>();
+  auto b = std::get<1>(input);
   ENSURE_ALGORITHM_INPUT_NOT_NULL(b, "Null rhs vector");
-  
-  double tolerance = params.get<0>();
+
+  double tolerance = std::get<0>(params);
   ENSURE_POSITIVE_DOUBLE(tolerance, "Tolerance out of range!");
 
-  int maxIterations = params.get<1>();
+  int maxIterations = std::get<1>(params);
   ENSURE_POSITIVE_INT(maxIterations, "Max iterations out of range!");
 
-  SolveLinearSystemAlgorithmEigenCGImpl impl(*b, tolerance, maxIterations);
-  DenseColumnMatrix x;
+  using SolutionType = DenseMatrixGeneric<typename std::tuple_element<0, In>::type::element_type::value_type>;
+  using SolverType = SolveLinearSystemAlgorithmEigenCGImpl<SolutionType>;
+  SolverType impl(*b, tolerance, maxIterations);
+  typename SolverType::SolutionType x;
   if (matrixIs::dense(A))
   {
-    x = impl.solveWithEigen(*castMatrix::toDense(A));
+    auto dense = castMatrix::toDense(A);
+    x = impl.solveWithEigen(*dense);
   }
   else if (matrixIs::sparse(A))
   {
-    x = impl.solveWithEigen(*castMatrix::toSparse(A));
+    auto sparse = castMatrix::toSparse(A);
+    x = impl.solveWithEigen(*sparse);
   }
   else
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("solveWithEigen can only handle dense and sparse matrices."));
-  
+
   if (x.size() != 0)
   {
     /// @todo: move ctor
-    DenseColumnMatrixHandle solution(boost::make_shared<DenseColumnMatrix>(x));
-    return SolveLinearSystemAlgorithm::Outputs(solution, impl.tolerance_, impl.maxIterations_);
+    auto solution(boost::make_shared<SolutionType>(x));
+    return Out(solution, impl.tolerance_, impl.maxIterations_);
   }
   else
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("solveWithEigen produced an empty solution."));
