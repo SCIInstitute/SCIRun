@@ -135,6 +135,8 @@ void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, N
   subnet->parentNetwork_ = this;
   subnet->setNetworkEditorController(getNetworkEditorController());
 
+  //subnet->setSceneRect(QRectF(-100, -100, 200, 200));
+
   for (auto& item : childrenNetworkItems_[name])
     subnet->scene_->addItem(item);
 
@@ -238,6 +240,12 @@ void NetworkEditor::makeSubnetwork()
   moduleWidget->postLoadAction();
   proxy->setScale(1.6);
   proxy->setToolTip(tooltipPic);
+
+  auto size = proxy->getModuleWidget()->size();
+  auto pos = rect.center();
+  pos.rx() -= size.width() / 2;
+  pos.ry() -= size.height() / 2;
+  proxy->setPos(pos);
 
   childrenNetworkItems_[name] = items;
 

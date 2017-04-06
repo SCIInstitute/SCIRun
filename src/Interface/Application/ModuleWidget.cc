@@ -542,6 +542,9 @@ bool ModuleWidget::guiVisible() const
 
 void ModuleWidget::fillReplaceWithMenu()
 {
+  if (deleting_)
+    return;
+
   auto menu = getReplaceWithMenu();
   menu->clear();
   LOG_DEBUG("Filling menu for " << theModule_->get_module_name() << std::endl);
