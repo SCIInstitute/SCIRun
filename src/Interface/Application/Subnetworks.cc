@@ -53,6 +53,14 @@ using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::~NetworkEditor()
 {
+  sendItemsToParent();
+
+  for (auto& child : childrenNetworks_)
+  {
+    delete child.second->get();
+    child.second = nullptr;
+  }
+
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     auto module = getModule(item);

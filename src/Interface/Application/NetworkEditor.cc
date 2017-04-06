@@ -666,7 +666,6 @@ void NetworkEditor::addNewModuleAtPosition(const QPointF& position)
 
 void NetworkEditor::addModuleViaDoubleClickedTreeItem()
 {
-  qDebug() << "addModuleViaDoubleClickedTreeItem" << this << parentNetwork_;
   if (parentNetwork_)
     return;
 
@@ -1242,8 +1241,15 @@ void NetworkEditor::executeModule(const ModuleHandle& module, bool fromButton)
 
 ExecutableObject* NetworkEditor::lookupExecutable(const ModuleId& id) const
 {
+  for (const auto& child : childrenNetworks_)
+  {
+    auto exec = child.second->get()->lookupExecutable(id);
+    if (exec)
+      return exec;
+  }
+
   auto widget = findById(scene_->items(), id.id_);
-  return widget ? widget->getModuleWidget() : 0;
+  return widget ? widget->getModuleWidget() : nullptr;
 }
 
 void NetworkEditor::resetNetworkDueToCycle()
