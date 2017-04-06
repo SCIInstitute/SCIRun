@@ -75,6 +75,10 @@ OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
 OPTION(WITH_TETGEN "Build Tetgen." OFF)
 
 ###########################################
+# Configure data
+OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" ON)
+
+###########################################
 # Configure Windows executable to run with
 # or without the console
 
@@ -93,14 +97,11 @@ OPTION(TRAVIS_BUILD "Slim build for Travis CI" OFF)
 MARK_AS_ADVANCED(TRAVIS_BUILD)
 
 IF(TRAVIS_BUILD)
-  IF(CMAKE_C_COMPILER_ID MATCHES "GNU")
-    SET(BUILD_TESTING OFF)
-    SET(DOWNLOAD_TOOLKITS OFF)
-    SET(BUILD_HEADLESS ON)
-    SET(BUILD_WITH_PYTHON OFF)
-  ELSE()
-    # try building everything with clang!
-  ENDIF()
+  SET(BUILD_TESTING OFF)
+  SET(DOWNLOAD_TOOLKITS OFF)
+  SET(BUILD_HEADLESS ON)
+  SET(BUILD_WITH_PYTHON OFF)
+  SET(BUILD_WITH_SCIRUN_DATA OFF)
   ADD_DEFINITIONS(-DTRAVIS_BUILD)
 ENDIF()
 
@@ -121,8 +122,6 @@ IF(NOT BUILD_HEADLESS)
   ELSE()
     MESSAGE(FATAL_ERROR "QT ${QT_MIN_VERSION} or later is required for building the SCIRun GUI")
   ENDIF()
-ELSE()
-  ADD_DEFINITIONS(-DBUILD_HEADLESS)
 ENDIF()
 
 
@@ -168,6 +167,14 @@ IF(BUILD_WITH_PYTHON)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/PythonExternal.cmake Python_external )
 ENDIF()
 
+FIND_PACKAGE(Subversion)
+IF(NOT Subversion_FOUND)
+  SET(BUILD_WITH_SCIRUN_DATA OFF)
+ENDIF()
+IF(BUILD_WITH_SCIRUN_DATA)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/SCIRunDataExternal.cmake SCI_data_external)
+ENDIF()
+
 IF(WITH_TETGEN)
   MESSAGE(STATUS "Configuring Tetgen library under GPL. The SCIRun InterfaceWithTetGen module can be disabled by setting the CMake build variable WITH_TETGEN to OFF.")
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TetgenExternal.cmake Tetgen_external )
@@ -205,6 +212,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DTeem_DIR:PATH=${Teem_DIR}"
     "-DTetgen_DIR:PATH=${Tetgen_DIR}"
     "-DFreetype_DIR:PATH=${Freetype_DIR}"
+    "-DSCI_DATA_DIR:PATH=${SCI_DATA_DIR}"
 )
 
 IF(BUILD_WITH_PYTHON)
