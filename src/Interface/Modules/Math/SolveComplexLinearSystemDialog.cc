@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2017 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -26,31 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_SOLVECOMPLEXLINEARSYSTEM_H
-#define MODULES_MATH_SOLVECOMPLEXLINEARSYSTEM_H
+#include <Interface/Modules/Math/SolveComplexLinearSystemDialog.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-namespace SCIRun {
-  namespace Modules {
-    namespace Math {
+SolveComplexLinearSystemDialog::SolveComplexLinearSystemDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-      class SCISHARE SolveComplexLinearSystem : public SCIRun::Dataflow::Networks::Module,
-        public Has2InputPorts<ComplexMatrixPortTag, ComplexMatrixPortTag>,
-        public Has1OutputPort<ComplexMatrixPortTag>
-      {
-      public:
-        SolveComplexLinearSystem();
-        void execute() override;
-        void setStateDefaults() override;
+  addSpinBoxManager(maxIterationsSpinBox_, Variables::MaxIterations);
+  addDoubleSpinBoxManager(targetErrorSpinBox_, Variables::TargetError);
 
-        INPUT_PORT(0, LHS, ComplexMatrix);
-        INPUT_PORT(1, RHS, ComplexMatrix);
-        OUTPUT_PORT(0, Solution, ComplexMatrix);
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
-      };
+  GuiStringTranslationMap solverNameLookup;
+  solverNameLookup.insert(StringPair("Conjugate Gradient (Eigen)", "cg"));
+  solverNameLookup.insert(StringPair("BiConjugate Gradient (Eigen)", "bicg"));
+  solverNameLookup.insert(StringPair("Least Squares Conjugate Gradient (Eigen)", "lscg"));
+  addComboBoxManager(methodComboBox_, Variables::Method, solverNameLookup);
 }
-}}
-
-#endif

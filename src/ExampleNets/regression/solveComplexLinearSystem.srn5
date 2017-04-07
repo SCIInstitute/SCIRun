@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="5">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>6</count>
+			<count>8</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>ConvertRealToComplexMatrix:0</first>
@@ -39,50 +39,28 @@
 				</second>
 			</item>
 			<item>
-				<first>ReadMatrix:0</first>
+				<first>CreateMatrix:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>ReadMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>1</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
-									<name>FileTypeName</name>
+									<name>TextEntry</name>
 								</first>
 								<second class_id="10" tracking_level="0" version="0">
-									<name>FileTypeName</name>
+									<name>TextEntry</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>SCIRun Matrix File</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>C:/Dev/lhs.mat</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ScriptEnvironmentVariable</name>
-								</first>
-								<second>
-									<name>ScriptEnvironmentVariable</name>
-									<value>
-										<which>2</which>
-										<value></value>
+										<value>0 0
+0 0
+</value>
 									</value>
 								</second>
 							</item>
@@ -91,50 +69,28 @@
 				</second>
 			</item>
 			<item>
-				<first>ReadMatrix:1</first>
+				<first>CreateMatrix:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>ReadMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>1</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
-									<name>FileTypeName</name>
+									<name>TextEntry</name>
 								</first>
 								<second>
-									<name>FileTypeName</name>
+									<name>TextEntry</name>
 									<value>
 										<which>2</which>
-										<value>SCIRun Matrix File</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>C:/Dev/rhs.mat</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ScriptEnvironmentVariable</name>
-								</first>
-								<second>
-									<name>ScriptEnvironmentVariable</name>
-									<value>
-										<which>2</which>
-										<value></value>
+										<value>1 2
+3 4
+</value>
 									</value>
 								</second>
 							</item>
@@ -143,7 +99,67 @@
 				</second>
 			</item>
 			<item>
-				<first>ReportComplexMatrixInfo:0</first>
+				<first>CreateMatrix:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>TextEntry</name>
+								</first>
+								<second>
+									<name>TextEntry</name>
+									<value>
+										<which>2</which>
+										<value>1
+-1
+</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateMatrix:3</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>TextEntry</name>
+								</first>
+								<second>
+									<name>TextEntry</name>
+									<value>
+										<which>2</which>
+										<value>0
+0
+</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportComplexMatrixInfo:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -159,7 +175,7 @@
 				</second>
 			</item>
 			<item>
-				<first>SolveComplexLinearSystem:0</first>
+				<first>SolveComplexLinearSystem:8</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -168,8 +184,44 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>3</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>MaxIterations</name>
+								</first>
+								<second>
+									<name>MaxIterations</name>
+									<value>
+										<which>0</which>
+										<value>500</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Method</name>
+								</first>
+								<second>
+									<name>Method</name>
+									<value>
+										<which>2</which>
+										<value>cg</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>TargetError</name>
+								</first>
+								<second>
+									<name>TargetError</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000008e-05</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -184,7 +236,7 @@
 					<name>Output</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SolveComplexLinearSystem:0</moduleId2_>
+				<moduleId2_>SolveComplexLinearSystem:8</moduleId2_>
 				<port2_>
 					<name>LHS</name>
 					<id>0</id>
@@ -196,16 +248,16 @@
 					<name>Output</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>SolveComplexLinearSystem:0</moduleId2_>
+				<moduleId2_>SolveComplexLinearSystem:8</moduleId2_>
 				<port2_>
 					<name>RHS</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ReadMatrix:0</moduleId1_>
+				<moduleId1_>CreateMatrix:0</moduleId1_>
 				<port1_>
-					<name>Matrix</name>
+					<name>EnteredMatrix</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ConvertRealToComplexMatrix:0</moduleId2_>
@@ -215,9 +267,9 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ReadMatrix:0</moduleId1_>
+				<moduleId1_>CreateMatrix:1</moduleId1_>
 				<port1_>
-					<name>Matrix</name>
+					<name>EnteredMatrix</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ConvertRealToComplexMatrix:0</moduleId2_>
@@ -227,21 +279,9 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ReadMatrix:1</moduleId1_>
+				<moduleId1_>CreateMatrix:2</moduleId1_>
 				<port1_>
-					<name>Matrix</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ConvertRealToComplexMatrix:1</moduleId2_>
-				<port2_>
-					<name>ComplexPartMatrix</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadMatrix:1</moduleId1_>
-				<port1_>
-					<name>Matrix</name>
+					<name>EnteredMatrix</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ConvertRealToComplexMatrix:1</moduleId2_>
@@ -251,12 +291,24 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>SolveComplexLinearSystem:0</moduleId1_>
+				<moduleId1_>CreateMatrix:3</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ConvertRealToComplexMatrix:1</moduleId2_>
+				<port2_>
+					<name>ComplexPartMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>SolveComplexLinearSystem:8</moduleId1_>
 				<port1_>
 					<name>Solution</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ReportComplexMatrixInfo:0</moduleId2_>
+				<moduleId2_>ReportComplexMatrixInfo:1</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
 					<id>0</id>
@@ -265,48 +317,62 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>6</count>
+		<count>8</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ConvertRealToComplexMatrix:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>7.00000000000000000e+000</first>
-				<second>-1.48000000000000000e+002</second>
+				<first>-4.55000000000000000e+02</first>
+				<second>-1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertRealToComplexMatrix:1</first>
 			<second>
-				<first>3.02000000000000000e+002</first>
-				<second>-1.41000000000000000e+002</second>
+				<first>-1.52000000000000000e+02</first>
+				<second>-1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>ReadMatrix:0</first>
+			<first>CreateMatrix:0</first>
 			<second>
-				<first>-1.40000000000000000e+001</first>
-				<second>-2.37000000000000000e+002</second>
+				<first>-3.80000000000000000e+02</first>
+				<second>-3.04000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>ReadMatrix:1</first>
+			<first>CreateMatrix:1</first>
 			<second>
-				<first>2.05000000000000000e+002</first>
-				<second>-2.30000000000000000e+002</second>
+				<first>-6.08000000000000000e+02</first>
+				<second>-3.04000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportComplexMatrixInfo:0</first>
+			<first>CreateMatrix:2</first>
 			<second>
-				<first>1.14000000000000000e+002</first>
-				<second>1.38000000000000000e+002</second>
+				<first>-2.28000000000000000e+02</first>
+				<second>-3.04000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>SolveComplexLinearSystem:0</first>
+			<first>CreateMatrix:3</first>
 			<second>
-				<first>5.90000000000000000e+001</first>
-				<second>-1.10000000000000000e+001</second>
+				<first>-7.60000000000000000e+01</first>
+				<second>-3.04000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportComplexMatrixInfo:1</first>
+			<second>
+				<first>-2.28000000000000000e+02</first>
+				<second>1.52000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>SolveComplexLinearSystem:8</first>
+			<second>
+				<first>-2.23000000000000000e+02</first>
+				<second>1.40000000000000000e+01</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -319,7 +385,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>6</count>
+		<count>8</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>ConvertRealToComplexMatrix:0</first>
@@ -330,19 +396,27 @@
 			<second>-1</second>
 		</item>
 		<item>
-			<first>ReadMatrix:0</first>
+			<first>CreateMatrix:0</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>ReadMatrix:1</first>
+			<first>CreateMatrix:1</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>ReportComplexMatrixInfo:0</first>
+			<first>CreateMatrix:2</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>SolveComplexLinearSystem:0</first>
+			<first>CreateMatrix:3</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ReportComplexMatrixInfo:1</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>SolveComplexLinearSystem:8</first>
 			<second>-1</second>
 		</item>
 	</moduleTags>
