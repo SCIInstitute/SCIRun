@@ -16,12 +16,12 @@ matrix:
 before_install:
 - date -u
 - uname -a
-- sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build
+- sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build libqt4-dev qt4-qmake libqt4-opengl-dev
 
 script:
   - cd bin
   - cmake -GNinja -DTRAVIS_BUILD:BOOL=ON ../Superbuild
-  - travis_wait 40 ninja
+  - travis_wait 80 ninja
   - cd SCIRun
   - ./Algorithm_Layer_Test
   - ./Modules_Factory_Tests --gtest_filter=*HardCodedModuleFactoryTests*
