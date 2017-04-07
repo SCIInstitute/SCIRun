@@ -125,10 +125,6 @@ public:
 
   void setDeletedFromGui(bool b) { deletedFromGui_ = b; }
 
-  //TODO: initialize in a new class
-  static boost::shared_ptr<class ConnectionFactory> connectionFactory_;
-  static boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
-
   void setColorSelected();
   void setColorUnselected();
 
@@ -170,6 +166,8 @@ public:
   QDialog* dialog();
 
   static double highResolutionExpandFactor_;
+
+  void setupPortSceneCollaborator(QGraphicsProxyWidget* proxy);
 
 public Q_SLOTS:
   virtual bool executeWithSignals() override;
@@ -295,6 +293,9 @@ private:
   static bool networkBeingCleared_;
   const QString defaultBackgroundColor_;
   bool isViewScene_; //TODO: lots of special logic around this case.
+
+  boost::shared_ptr<class ConnectionFactory> connectionFactory_;
+  boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
 
   static bool globalMiniMode_;
 };

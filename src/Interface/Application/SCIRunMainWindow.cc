@@ -835,31 +835,31 @@ void SCIRunMainWindow::makeFilterButtonMenu()
 
 void SCIRunMainWindow::makePipesCubicBezier()
 {
-  networkEditor_->setConnectionPipelineType(CUBIC);
+  networkEditor_->setConnectionPipelineType(static_cast<int>(ConnectionDrawType::CUBIC));
 }
 
 void SCIRunMainWindow::makePipesEuclidean()
 {
-  networkEditor_->setConnectionPipelineType(EUCLIDEAN);
+  networkEditor_->setConnectionPipelineType(static_cast<int>(ConnectionDrawType::EUCLIDEAN));
 }
 
 void SCIRunMainWindow::makePipesManhattan()
 {
-  networkEditor_->setConnectionPipelineType(MANHATTAN);
+  networkEditor_->setConnectionPipelineType(static_cast<int>(ConnectionDrawType::MANHATTAN));
 }
 
 void SCIRunMainWindow::setConnectionPipelineType(int type)
 {
 	networkEditor_->setConnectionPipelineType(type);
-	switch (type)
+  switch (ConnectionDrawType(type))
 	{
-	case MANHATTAN:
+  case ConnectionDrawType::MANHATTAN:
 		prefsWindow_->manhattanPipesRadioButton_->setChecked(true);
 		break;
-	case CUBIC:
+  case ConnectionDrawType::CUBIC:
 		prefsWindow_->cubicPipesRadioButton_->setChecked(true);
 		break;
-	case EUCLIDEAN:
+  case ConnectionDrawType::EUCLIDEAN:
 		prefsWindow_->euclideanPipesRadioButton_->setChecked(true);
 		break;
 	}

@@ -76,8 +76,6 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   zLevelManager_(new ZLevelManager(scene_))
 {
   setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-small.png"));
-  ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
-  ModuleWidget::closestPortFinder_.reset(new ClosestPortFinder(scene_));
   ModuleWidget::highResolutionExpandFactor_ = highResolutionExpandFactor_;
 
   setScene(scene_);
@@ -469,7 +467,7 @@ ModuleWidget* SCIRun::Gui::getModule(QGraphicsItem* item)
 void NetworkEditor::setVisibility(bool visible)
 {
   visibleItems_ = visible;
-  ModuleWidget::connectionFactory_->setVisibility(visible);
+  ConnectionFactory::setVisibility(visible);
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (auto p = getModuleProxy(item))
@@ -1358,12 +1356,19 @@ size_t NetworkEditor::numModules() const
 
 void NetworkEditor::setConnectionPipelineType(int type)
 {
-  ModuleWidget::connectionFactory_->setType(ConnectionDrawType(type));
+  ConnectionFactory::setType(ConnectionDrawType(type));
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto c = dynamic_cast<ConnectionLine*>(item))
+    {
+      c->setDrawStrategy(ConnectionFactory::getCurrentDrawer());
+    }
+  }
 }
 
 int NetworkEditor::connectionPipelineType() const
 {
-  return static_cast<int>(ModuleWidget::connectionFactory_->getType());
+  return static_cast<int>(ConnectionFactory::getType());
 }
 
 int NetworkEditor::errorCode() const

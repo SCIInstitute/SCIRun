@@ -606,8 +606,9 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
     auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
       portAlpha()), type,
       moduleId, port->id(),
-      i, port->isDynamic(), connectionFactory_,
-      closestPortFinder_,
+      i, port->isDynamic(), 
+      [this]() { return connectionFactory_; },
+      [this]() { return closestPortFinder_; },
       PortDataDescriber(),
       this);
     hookUpGeneralPortSignals(w);
@@ -654,8 +655,8 @@ void ModuleWidget::createOutputPorts(const ModuleInfoProvider& moduleInfoProvide
     auto type = port->get_typename();
     auto w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()),
       type, moduleId, port->id(), i, port->isDynamic(),
-      connectionFactory_,
-      closestPortFinder_,
+      [this]() { return connectionFactory_; },
+      [this]() { return closestPortFinder_; },
       port->getPortDataDescriber(),
       this);
     hookUpGeneralPortSignals(w);
@@ -819,7 +820,10 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     auto port = theModule_->getInputPort(pid);
     auto type = port->get_typename();
 
-    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), connectionFactory_, closestPortFinder_, PortDataDescriber(), this);
+    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), 
+      [this]() { return connectionFactory_; },
+      [this]() { return closestPortFinder_; },
+      PortDataDescriber(), this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
 
@@ -1162,9 +1166,6 @@ void ModuleWidget::adjustDockState(bool dockEnabled)
   }
 }
 
-boost::shared_ptr<ConnectionFactory> ModuleWidget::connectionFactory_;
-boost::shared_ptr<ClosestPortFinder> ModuleWidget::closestPortFinder_;
-
 void ModuleWidget::toggleOptionsDialog()
 {
   if (dialog_)
@@ -1458,6 +1459,12 @@ void ModuleWidget::incomingConnectionStateChanged(bool disabled, int index)
   {
     output->setConnectionsDisabled(disabled_ || disabled);
   }
+}
+
+void ModuleWidget::setupPortSceneCollaborator(QGraphicsProxyWidget* proxy)
+{
+  connectionFactory_ = boost::make_shared<ConnectionFactory>(proxy);
+  closestPortFinder_ = boost::make_shared<ClosestPortFinder>(proxy);
 }
 
 void SubnetWidget::postLoadAction()
