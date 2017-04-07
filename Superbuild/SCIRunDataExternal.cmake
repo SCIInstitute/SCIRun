@@ -31,6 +31,9 @@ SET(sci_data_DIR "${CMAKE_BINARY_DIR}/SCIRunData")
 
 ExternalProject_Add(SCI_data_external
   SVN_REPOSITORY "${data_SVN_URL}"
+  SVN_TRUST_CERT 1
+  SVN_USERNAME "anonymous"
+  SVN_PASSWIRD ""
   DOWNLOAD_DIR "${sci_data_DIR}"
   PATCH_COMMAND ""
   INSTALL_DIR ""
@@ -38,7 +41,6 @@ ExternalProject_Add(SCI_data_external
   CONFIGURE_COMMAND ""
   CMAKE_COMMAND ""
   BUILD_COMMAND ""
-  SVN_TRUST_CERT 1
 )
 
 ExternalProject_Get_Property(SCI_data_external BINARY_DIR)
