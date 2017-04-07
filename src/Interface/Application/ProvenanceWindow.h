@@ -48,7 +48,7 @@ class ProvenanceWindow : public QDockWidget, public Ui::ProvenanceWindow
 	Q_OBJECT
 
 public:
-  explicit ProvenanceWindow(SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager, QWidget* parent = 0);
+  explicit ProvenanceWindow(SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager, QWidget* parent = nullptr);
   void showFile(SCIRun::Dataflow::Networks::NetworkFileHandle file);
 public Q_SLOTS:
   void clear();

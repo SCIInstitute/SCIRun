@@ -35,11 +35,11 @@
 
 using namespace SCIRun::Gui;
 
-ClosestPortFinder::ClosestPortFinder(QGraphicsScene* scene) : scene_(scene) {}
+ClosestPortFinder::ClosestPortFinder(QGraphicsProxyWidget* module) : module_(module) {}
 
 PortWidget* ClosestPortFinder::closestPort(const QPointF& pos)
 {
-  Q_FOREACH (QGraphicsItem* item, scene_->items(pos))
+  Q_FOREACH(QGraphicsItem* item, module_->scene()->items(pos))
   {
     if (auto mpw = dynamic_cast<ModuleProxyWidget*>(item))
     {
@@ -49,7 +49,7 @@ PortWidget* ClosestPortFinder::closestPort(const QPointF& pos)
       return *std::min_element(ports.begin(), ports.end(), [=](PortWidget* lhs, PortWidget* rhs) {return lessPort(pos, lhs, rhs); });
     }
   }
-  return 0;
+  return nullptr;
 }
 
 int ClosestPortFinder::distance(const QPointF& pos, PortWidget* port) const

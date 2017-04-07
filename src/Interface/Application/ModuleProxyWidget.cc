@@ -135,12 +135,7 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
 
   originalSize_ = size();
 
-  // {
-  //   const int fadeInSeconds = 1;
-  //   timeLine_ = new QTimeLine(fadeInSeconds * 1000, this);
-  //   connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(loadAnimate(qreal)));
-  //   timeLine_->start();
-  // }
+  module_->setupPortSceneCollaborator(this);
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()

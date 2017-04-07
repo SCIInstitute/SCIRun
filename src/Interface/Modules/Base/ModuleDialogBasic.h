@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
 
 #include "Interface/Modules/Base/ui_ModuleDialogBasic.h"
+#include "Interface/Modules/Base/ui_SubnetDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Base/share.h>
 
@@ -44,6 +45,15 @@ namespace Gui {
     explicit ModuleDialogBasic(const std::string& name, QWidget* parent = 0);
   };
 
+  class SCISHARE SubnetDialog : public ModuleDialogGeneric, public Ui::Subnet
+  {
+    Q_OBJECT
+
+  public:
+    explicit SubnetDialog(const std::string& name, Dataflow::Networks::ModuleStateHandle state,
+      QWidget* parent = nullptr);
+    void pullSpecial() override;
+  };
 }
 }
 
