@@ -25,10 +25,12 @@
 #  DEALINGS IN THE SOFTWARE.
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+
+SET(data_SVN_URL "https://gforge.sci.utah.edu/svn/CIBCData")
 SET(sci_data_DIR "${CMAKE_BINARY_DIR}/SCIRunData")
 
 ExternalProject_Add(SCI_data_external
-  SVN_REPOSITORY "https://gforge.sci.utah.edu/svn/CIBCData"
+  SVN_REPOSITORY "${data_SVN_URL}"
   DOWNLOAD_DIR "${sci_data_DIR}"
   PATCH_COMMAND ""
   INSTALL_DIR ""
@@ -36,7 +38,7 @@ ExternalProject_Add(SCI_data_external
   CONFIGURE_COMMAND ""
   CMAKE_COMMAND ""
   BUILD_COMMAND ""
-
+  SVN_TRUST_CERT 1
 )
 
 ExternalProject_Get_Property(SCI_data_external BINARY_DIR)
