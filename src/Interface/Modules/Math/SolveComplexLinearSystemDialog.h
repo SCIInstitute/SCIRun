@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2017 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -26,31 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_SOLVECOMPLEXLINEARSYSTEM_H
-#define MODULES_MATH_SOLVECOMPLEXLINEARSYSTEM_H
+#ifndef INTERFACE_MODULES_SOLVECOMPLEXLINEARSYSTEMDIALOG_H
+#define INTERFACE_MODULES_SOLVECOMPLEXLINEARSYSTEMDIALOG_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include "Interface/Modules/Math/ui_SolveComplexLinearSystem.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Math {
+namespace Gui {
 
-      class SCISHARE SolveComplexLinearSystem : public SCIRun::Dataflow::Networks::Module,
-        public Has2InputPorts<ComplexMatrixPortTag, ComplexMatrixPortTag>,
-        public Has1OutputPort<ComplexMatrixPortTag>
-      {
-      public:
-        SolveComplexLinearSystem();
-        void execute() override;
-        void setStateDefaults() override;
+class SCISHARE SolveComplexLinearSystemDialog : public ModuleDialogGeneric,
+  public Ui::SolveComplexLinearSystem
+{
+	Q_OBJECT
 
-        INPUT_PORT(0, LHS, ComplexMatrix);
-        INPUT_PORT(1, RHS, ComplexMatrix);
-        OUTPUT_PORT(0, Solution, ComplexMatrix);
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
-      };
+public:
+  SolveComplexLinearSystemDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+};
+
 }
-}}
+}
 
 #endif

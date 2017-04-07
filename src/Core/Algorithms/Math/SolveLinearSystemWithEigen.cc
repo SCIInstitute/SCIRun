@@ -34,6 +34,7 @@
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Eigen/Sparse>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
@@ -41,11 +42,11 @@ using namespace SCIRun::Core;
 
 namespace
 {
-  template <class ColumnMatrixType>
+  template <class ColumnMatrixType, template <typename> class SolverType>
   class SolveLinearSystemAlgorithmEigenCGImpl
   {
   public:
-    SolveLinearSystemAlgorithmEigenCGImpl(const ColumnMatrixType& rhs, double tolerance, int maxIterations) :
+    SolveLinearSystemAlgorithmEigenCGImpl(SharedPointer<ColumnMatrixType> rhs, double tolerance, int maxIterations) :
         tolerance_(tolerance), maxIterations_(maxIterations), rhs_(rhs) {}
 
     using SolutionType = ColumnMatrixType;
@@ -53,26 +54,26 @@ namespace
     template <class MatrixType>
     typename ColumnMatrixType::EigenBase solveWithEigen(const MatrixType& lhs)
     {
-      Eigen::ConjugateGradient<typename MatrixType::EigenBase> cg;
-      cg.compute(lhs);
+      SolverType<typename MatrixType::EigenBase> solver;
+      solver.compute(lhs);
 
-      if (cg.info() != Eigen::Success)
+      if (solver.info() != Eigen::Success)
         BOOST_THROW_EXCEPTION(AlgorithmInputException()
-          << LinearAlgebraErrorMessage("Conjugate gradient initialization was unsuccessful")
-          << EigenComputationInfo(cg.info()));
+          << LinearAlgebraErrorMessage("Eigen solver initialization was unsuccessful")
+          << EigenComputationInfo(solver.info()));
 
-      cg.setTolerance(tolerance_);
-      cg.setMaxIterations(maxIterations_);
-      auto solution = cg.solve(rhs_).eval();
-      tolerance_ = cg.error();
-      maxIterations_ = cg.iterations();
+      solver.setTolerance(tolerance_);
+      solver.setMaxIterations(maxIterations_);
+      auto solution = solver.solve(*rhs_).eval();
+      tolerance_ = solver.error();
+      maxIterations_ = solver.iterations();
       return solution;
     }
 
     double tolerance_;
     int maxIterations_;
   private:
-    const ColumnMatrixType& rhs_;
+    SharedPointer<ColumnMatrixType> rhs_;
   };
 }
 
@@ -85,6 +86,14 @@ SolveLinearSystemAlgorithm::ComplexOutputs SolveLinearSystemAlgorithm::run(const
 {
   return runImpl<ComplexInputs, ComplexOutputs>(input, params);
 }
+
+template <typename T>
+using CG = Eigen::ConjugateGradient<T>;
+// Not available yet, need to upgrade Eigen
+// template <typename T>
+// using LSCG = Eigen::LeastSquaresConjugateGradient<T>;
+template <typename T>
+using BiCG = Eigen::BiCGSTAB<T>;
 
 template <typename In, typename Out>
 Out SolveLinearSystemAlgorithm::runImpl(const In& input, const Parameters& params) const
@@ -101,9 +110,32 @@ Out SolveLinearSystemAlgorithm::runImpl(const In& input, const Parameters& param
   int maxIterations = std::get<1>(params);
   ENSURE_POSITIVE_INT(maxIterations, "Max iterations out of range!");
 
-  using SolutionType = DenseMatrixGeneric<typename std::tuple_element<0, In>::type::element_type::value_type>;
-  using SolverType = SolveLinearSystemAlgorithmEigenCGImpl<SolutionType>;
-  SolverType impl(*b, tolerance, maxIterations);
+  auto method = std::get<2>(params);
+
+  using SolutionType = DenseColumnMatrixGeneric<typename std::tuple_element<0, In>::type::element_type::value_type>;
+  using AlgoTypeCG = SolveLinearSystemAlgorithmEigenCGImpl<SolutionType, CG>;
+  using AlgoTypeBiCG = SolveLinearSystemAlgorithmEigenCGImpl<SolutionType, BiCG>;
+
+  if ("cg" == method)
+    return solve<AlgoTypeCG, In, Out>(input, params);
+  else if ("bicg" == method)
+    return solve<AlgoTypeBiCG, In, Out>(input, params);
+  else
+  {
+    BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("Need to upgrade Eigen for LSCG."));
+  }
+}
+
+template <typename SolverType, typename In, typename Out>
+Out SolveLinearSystemAlgorithm::solve(const In& input, const Parameters& params) const
+{
+  auto A = std::get<0>(input);
+  auto b = std::get<1>(input);
+  double tolerance = std::get<0>(params);
+  int maxIterations = std::get<1>(params);
+
+  SolverType impl(b, tolerance, maxIterations);
+
   typename SolverType::SolutionType x;
   if (matrixIs::dense(A))
   {
@@ -120,8 +152,7 @@ Out SolveLinearSystemAlgorithm::runImpl(const In& input, const Parameters& param
 
   if (x.size() != 0)
   {
-    /// @todo: move ctor
-    auto solution(boost::make_shared<SolutionType>(x));
+    auto solution(boost::make_shared<typename SolverType::SolutionType>(x));
     return Out(solution, impl.tolerance_, impl.maxIterations_);
   }
   else
