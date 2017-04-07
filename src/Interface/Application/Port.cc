@@ -201,8 +201,8 @@ PortWidgetBase::PortWidgetBase(QWidget* parent) : QPushButton(parent), isHighlig
 PortWidget::PortWidget(const QString& name, const QColor& color, const std::string& datatype, const ModuleId& moduleId,
   const PortId& portId, size_t index,
   bool isInput, bool isDynamic,
-  boost::shared_ptr<ConnectionFactory> connectionFactory,
-  boost::shared_ptr<ClosestPortFinder> closestPortFinder,
+  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
+  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
   : PortWidgetBase(parent),
@@ -469,7 +469,7 @@ void PortWidget::MakeTheConnection(const ConnectionDescription& cd)
     auto out = portWidgetMap_[cd.out_.moduleId_][false][cd.out_.portId_];
     auto in = portWidgetMap_[cd.in_.moduleId_][true][cd.in_.portId_];
     auto id = ConnectionId::create(cd);
-    auto c = connectionFactory_->makeFinishedConnection(out, in, id);
+    auto c = connectionFactory_()->makeFinishedConnection(out, in, id);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
     connect(c, SIGNAL(noteChanged()), this, SIGNAL(connectionNoteChanged()));
     connect(out, SIGNAL(portMoved()), c, SLOT(trackNodes()));
@@ -523,7 +523,7 @@ QGraphicsItem* PortWidget::dragImpl(const QPointF& endPos)
 {
   if (!currentConnection_)
   {
-    currentConnection_ = connectionFactory_->makeConnectionInProgress(this);
+    currentConnection_ = connectionFactory_()->makeConnectionInProgress(this);
   }
   currentConnection_->update(endPos);
 
@@ -580,7 +580,7 @@ void PortWidget::makePotentialConnectionLine(PortWidget* other)
   if (potentials.find(other) == potentials.end())
   {
     potentialConnectionsMap_[this][other] = true;
-    auto potential = connectionFactory_->makePotentialConnection(this);
+    auto potential = connectionFactory_()->makePotentialConnection(this);
     potential->update(other->position());
     potential->setReceiver(other);
     auto label = other->makeNameLabel();
@@ -605,7 +605,7 @@ QGraphicsTextItem* PortWidget::makeNameLabel() const
     portNameTextItem->setRotation(45);
     portNameTextItem->setPos(getPositionObject()->currentPosition());
   }
-  connectionFactory_->activate(portNameTextItem);
+  connectionFactory_()->activate(portNameTextItem);
   return portNameTextItem;
 }
 
@@ -715,8 +715,8 @@ void PortWidget::insertNewModule(const PortDescriptionInterface* output, const s
 
 InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
   const ModuleId& moduleId, const PortId& portId, size_t index, bool isDynamic,
-  boost::shared_ptr<ConnectionFactory> connectionFactory,
-  boost::shared_ptr<ClosestPortFinder> closestPortFinder,
+  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
+  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
   : PortWidget(name, color, datatype, moduleId, portId, index, true, isDynamic, connectionFactory, closestPortFinder, portDataDescriber, parent)
@@ -725,8 +725,8 @@ InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const
 
 OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
   const ModuleId& moduleId, const PortId& portId, size_t index, bool isDynamic,
-  boost::shared_ptr<ConnectionFactory> connectionFactory,
-  boost::shared_ptr<ClosestPortFinder> closestPortFinder,
+  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
+  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
   : PortWidget(name, color, datatype, moduleId, portId, index, false, isDynamic, connectionFactory, closestPortFinder, portDataDescriber, parent)

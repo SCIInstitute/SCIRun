@@ -30,12 +30,15 @@
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Core/Logging/Log.h>
+#include <Core/Application/Preferences/Preferences.h>
+#include <Interface/Application/NetworkEditorControllerGuiProxy.h>
+
 #include "ui_ConnectionStyleWizardPage.h"
 #include "ui_OtherSettingsWizardPage.h"
-#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Dataflow::Networks;
 
 void TextEditAppender::log(const QString& message) const
 {
@@ -305,7 +308,7 @@ QWizardPage* NewUserWizard::createConnectionChoicePage()
 class OtherSettingsWizardPage : public QWizardPage, public Ui::OtherSettingsWizardPage
 {
 public:
-  explicit OtherSettingsWizardPage(NewUserWizard* wiz) 
+  explicit OtherSettingsWizardPage(NewUserWizard* wiz)
   {
     setupUi(this);
     connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), SCIRunMainWindow::Instance(), SLOT(setSaveBeforeExecute(int)));
@@ -316,4 +319,79 @@ public:
 QWizardPage* NewUserWizard::createOtherSettingsPage()
 {
   return new OtherSettingsWizardPage(this);
+}
+
+void ToolkitInfo::setupAction(QAction* action, QObject* window) const
+{
+  QObject::connect(action, SIGNAL(triggered()), window, SLOT(toolkitDownload()));
+  action->setProperty(ToolkitIconURL, iconUrl);
+  action->setProperty(ToolkitURL, zipUrl);
+  action->setProperty(ToolkitFilename, filename);
+  action->setIcon(QPixmap(":/general/Resources/download.png"));
+}
+
+const char* ToolkitInfo::ToolkitIconURL{ "ToolkitIconURL" };
+const char* ToolkitInfo::ToolkitURL{ "ToolkitURL" };
+const char* ToolkitInfo::ToolkitFilename{ "ToolkitFilename" };
+
+size_t NetworkStatusImpl::total() const
+{
+  return ned_->numModules();
+}
+size_t NetworkStatusImpl::waiting() const
+{
+  return countState(ModuleExecutionState::Value::Waiting);
+}
+size_t NetworkStatusImpl::executing() const
+{
+  return countState(ModuleExecutionState::Value::Executing);
+}
+size_t NetworkStatusImpl::errored() const
+{
+  return countState(ModuleExecutionState::Value::Errored);
+}
+size_t NetworkStatusImpl::nonReexecuted() const
+{
+  return -1; // not available yet
+}
+size_t NetworkStatusImpl::finished() const
+{
+  return countState(ModuleExecutionState::Value::Completed);
+}
+size_t NetworkStatusImpl::unexecuted() const
+{
+  return countState(ModuleExecutionState::Value::NotExecuted);
+}
+
+size_t NetworkStatusImpl::countState(ModuleExecutionState::Value val) const
+{
+  auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
+  return std::count(allStates.begin(), allStates.end(), val);
+}
+
+void NetworkEditorBuilder::connectAll(NetworkEditor* editor)
+{
+  // for any network editor
+  QObject::connect(editor, SIGNAL(modified()), mainWindow_, SLOT(networkModified()));
+  QObject::connect(mainWindow_, SIGNAL(defaultNotePositionChanged(NotePosition)), editor, SIGNAL(defaultNotePositionChanged(NotePosition)));
+
+  // for active network editor
+  QObject::connect(mainWindow_->actionSelectAll_, SIGNAL(triggered()), editor, SLOT(selectAll()));
+  QObject::connect(mainWindow_->actionDelete_, SIGNAL(triggered()), editor, SLOT(del()));
+  QObject::connect(mainWindow_->actionCleanUpNetwork_, SIGNAL(triggered()), editor, SLOT(cleanUpNetwork()));
+  QObject::connect(mainWindow_->actionMakeSubnetwork_, SIGNAL(triggered()), editor, SLOT(makeSubnetwork()));
+  QObject::connect(editor, SIGNAL(zoomLevelChanged(int)), mainWindow_, SLOT(showZoomStatusMessage(int)));
+  QObject::connect(mainWindow_->actionCut_, SIGNAL(triggered()), editor, SLOT(cut()));
+  QObject::connect(mainWindow_->actionCopy_, SIGNAL(triggered()), editor, SLOT(copy()));
+  QObject::connect(mainWindow_->actionPaste_, SIGNAL(triggered()), editor, SLOT(paste()));
+
+  // root NetworkEditor only.
+  QObject::connect(mainWindow_, SIGNAL(moduleItemDoubleClicked()), editor, SLOT(addModuleViaDoubleClickedTreeItem()));
+  QObject::connect(mainWindow_->actionCenterNetworkViewer_, SIGNAL(triggered()), editor, SLOT(centerView()));
+  QObject::connect(mainWindow_->actionPinAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(pinAllModuleUIs()));
+  QObject::connect(mainWindow_->actionRestoreAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(restoreAllModuleUIs()));
+  QObject::connect(mainWindow_->actionHideAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(hideAllModuleUIs()));
+
+  // children only
+  // addDockWidget(Qt::RightDockWidgetArea, subnet);
 }

@@ -44,11 +44,11 @@ namespace Engine {
   class ProvenanceManager : boost::noncopyable
   {
   public:
-    typedef ProvenanceItem<Memento> Item;
-    typedef typename Item::Handle ItemHandle;
-    typedef std::stack<ItemHandle> Stack;
-    typedef typename Stack::container_type List;
-    typedef Engine::NetworkIOInterface<Memento> IOType;
+    using Item = ProvenanceItem<Memento>;
+    using ItemHandle = typename Item::Handle;
+    using Stack = std::stack<ItemHandle>;
+    using List = typename Stack::container_type;
+    using IOType = Engine::NetworkIOInterface<Memento>;
 
     explicit ProvenanceManager(IOType* networkIO);
     void setInitialState(const Memento& initialState);

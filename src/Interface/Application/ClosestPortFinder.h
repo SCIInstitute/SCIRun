@@ -40,10 +40,10 @@ namespace Gui {
   class ClosestPortFinder
   {
   public:
-    explicit ClosestPortFinder(QGraphicsScene* scene);
+    explicit ClosestPortFinder(QGraphicsProxyWidget* module);
     PortWidget* closestPort(const QPointF& pos);
   private:
-    QGraphicsScene* scene_;
+    QGraphicsProxyWidget* module_;
     int distance(const QPointF& pos, PortWidget* port) const;
     bool lessPort(const QPointF& pos, PortWidget* lhs, PortWidget* rhs) const;
   };
