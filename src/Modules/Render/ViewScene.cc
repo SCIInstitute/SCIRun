@@ -102,6 +102,7 @@ void ViewScene::setStateDefaults()
   state->setValue(Light1Color, ColorRGB(0.0, 0.0, 0.0).toString());
   state->setValue(Light2Color, ColorRGB(0.0, 0.0, 0.0).toString());
   state->setValue(Light3Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(ShowViewer, false);
 
   postStateChangeInternalSignalHookup();
 }
@@ -283,3 +284,4 @@ const AlgorithmParameterName ViewScene::HeadLightColor("HeadLightColor");
 const AlgorithmParameterName ViewScene::Light1Color("Light1Color");
 const AlgorithmParameterName ViewScene::Light2Color("Light2Color");
 const AlgorithmParameterName ViewScene::Light3Color("Light3Color");
+const AlgorithmParameterName ViewScene::ShowViewer("ShowViewer");

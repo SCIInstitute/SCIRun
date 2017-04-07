@@ -188,6 +188,7 @@ IF(APPLE)
                         "Interface_Modules_Factory"
                         "Interface_Modules_Render"
                         "Interface_Modules_Python"
+                        "Interface_Modules_Visualization"
                         "Core_ConsoleApplication"
                         "Modules_Factory"
                         "Modules_Python"
