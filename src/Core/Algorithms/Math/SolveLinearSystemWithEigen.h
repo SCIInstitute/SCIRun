@@ -45,7 +45,7 @@ namespace Math {
   public:
     typedef std::tuple<SCIRun::Core::Datatypes::MatrixHandle, SCIRun::Core::Datatypes::DenseColumnMatrixHandle> Inputs;
     typedef std::tuple<SCIRun::Core::Datatypes::ComplexMatrixHandle, SCIRun::Core::Datatypes::ComplexDenseColumnMatrixHandle> ComplexInputs;
-    typedef std::tuple<double, int> Parameters;
+    typedef std::tuple<double, int, std::string> Parameters;
     typedef std::tuple<SCIRun::Core::Datatypes::DenseColumnMatrixHandle, double, int> Outputs;
     typedef std::tuple<SCIRun::Core::Datatypes::ComplexDenseColumnMatrixHandle, double, int> ComplexOutputs;
 
@@ -56,6 +56,8 @@ namespace Math {
   private:
     template <typename In, typename Out>
     Out runImpl(const In& input, const Parameters& params) const;
+    template <typename SolverType, typename In, typename Out>
+    Out solve(const In& input, const Parameters& params) const;
   };
 
   typedef boost::error_info<struct tag_eigen_computation, Eigen::ComputationInfo> EigenComputationInfo;

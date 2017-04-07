@@ -56,7 +56,7 @@
         </item>
         <item>
          <property name="text">
-          <string>Least Squares Conjugate Gradient (Eigen)</string>
+          <string>Least Squares Conjugate Gradient (Eigen)--not available yet</string>
          </property>
         </item>
        </widget>

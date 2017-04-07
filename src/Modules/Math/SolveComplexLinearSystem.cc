@@ -67,9 +67,16 @@ void SolveComplexLinearSystem::execute()
     auto input = std::make_tuple(lhs, col);
     auto tolerance = get_state()->getValue(Variables::TargetError).toDouble();
     auto maxIterations = get_state()->getValue(Variables::MaxIterations).toInt();
-    auto x = algo.run(input, std::make_tuple(tolerance, maxIterations));
-    auto solution = std::get<0>(x);
+    auto method = get_state()->getValue(Variables::Method).toString();
+    auto params = std::make_tuple(tolerance, maxIterations, method);
+    std::cout << "Running Eigen solver with " <<
+      std::get<0>(params) << ", " <<
+      std::get<1>(params) << ", " <<
+      std::get<2>(params) << std::endl;
 
+    auto x = algo.run(input, params);
+
+    auto solution = std::get<0>(x);
     std::cout << "error: " << std::get<1>(x) << std::endl;
     std::cout << "iterations: " << std::get<2>(x) << std::endl;
     sendOutput(Solution, solution);
