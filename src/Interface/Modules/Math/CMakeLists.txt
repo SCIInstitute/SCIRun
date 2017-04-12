@@ -1,10 +1,9 @@
-
 #
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
 #
-#  Copyright (c) 2015 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2017 Scientific Computing and Imaging Institute,
 #  University of Utah.
 #
 #
@@ -40,6 +39,7 @@ SET(Interface_Modules_Math_FORMS
   ReportMatrixInfo.ui
   ReportComplexMatrixInfo.ui
   SolveLinearSystem.ui
+  SolveComplexLinearSystem.ui
   ConvertMatrixType.ui
   BuildNoiseColumnMatrix.ui
   ReportColumnMatrixMisfit.ui
@@ -68,6 +68,7 @@ SET(Interface_Modules_Math_HEADERS
   CollectMatricesDialog.h
   ReportMatrixSliceMeasureDialog.h
   SetSubmatrixDialog.h
+  SolveComplexLinearSystemDialog.h
 )
 
 IF(WITH_QWT_WIDGETS)
@@ -95,6 +96,7 @@ SET(Interface_Modules_Math_SOURCES
   CollectMatricesDialog.cc
   ReportMatrixSliceMeasureDialog.cc
   SetSubmatrixDialog.cc
+  SolveComplexLinearSystemDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS ${Interface_Modules_Math_FORMS})

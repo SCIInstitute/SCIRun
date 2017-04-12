@@ -132,6 +132,9 @@ private:
   QByteArray windowState_;
   QPushButton* versionButton_;
   TriggeredEventsWindow* triggeredEventsWindow_;
+
+  void createStandardToolbar();
+  void createExecuteToolbar();
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
   void setTipsAndWhatsThis();
@@ -197,8 +200,6 @@ private Q_SLOTS:
   void makePipesEuclidean();
   void makePipesCubicBezier();
   void makePipesManhattan();
-  void chooseBackgroundColor();
-  void resetBackgroundColor();
   void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);
   void handleCheckedModuleEntry(QTreeWidgetItem* item, int column);
   void setExecutor(int type);
@@ -206,7 +207,6 @@ private Q_SLOTS:
   void readDefaultNotePosition(int index);
   void openToolkitFolder();
   void openToolkitNetwork();
-  void updateMiniView();
   void alertForNetworkCycles(int code);
   void updateDockWidgetProperties(bool isFloating);
   void toolkitDownload();

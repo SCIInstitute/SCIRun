@@ -26,39 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QtGui>
-#include <Interface/Application/ClosestPortFinder.h>
-#include <Interface/Application/ModuleProxyWidget.h>
-#include <Interface/Application/ModuleWidget.h>
-#include <Interface/Application/Port.h>
-#include <Interface/Application/PortWidgetManager.h>
+#ifndef MODULES_MATH_SOLVECOMPLEXLINEARSYSTEM_H
+#define MODULES_MATH_SOLVECOMPLEXLINEARSYSTEM_H
 
-using namespace SCIRun::Gui;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
-ClosestPortFinder::ClosestPortFinder(QGraphicsProxyWidget* module) : module_(module) {}
+namespace SCIRun {
+  namespace Modules {
+    namespace Math {
 
-PortWidget* ClosestPortFinder::closestPort(const QPointF& pos)
-{
-  Q_FOREACH(QGraphicsItem* item, module_->scene()->items(pos))
-  {
-    if (auto mpw = dynamic_cast<ModuleProxyWidget*>(item))
-    {
-      auto overModule = mpw->getModuleWidget();
+      class SCISHARE SolveComplexLinearSystem : public SCIRun::Dataflow::Networks::Module,
+        public Has2InputPorts<ComplexMatrixPortTag, ComplexMatrixPortTag>,
+        public Has1OutputPort<ComplexMatrixPortTag>
+      {
+      public:
+        SolveComplexLinearSystem();
+        void execute() override;
+        void setStateDefaults() override;
 
-      auto ports = overModule->ports().getAllPorts();
-      return *std::min_element(ports.begin(), ports.end(), [=](PortWidget* lhs, PortWidget* rhs) {return lessPort(pos, lhs, rhs); });
-    }
-  }
-  return nullptr;
+        INPUT_PORT(0, LHS, ComplexMatrix);
+        INPUT_PORT(1, RHS, ComplexMatrix);
+        OUTPUT_PORT(0, Solution, ComplexMatrix);
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+      };
 }
+}}
 
-int ClosestPortFinder::distance(const QPointF& pos, PortWidget* port) const
-{
-  return (pos - port->position()).manhattanLength();
-}
-
-bool ClosestPortFinder::lessPort(const QPointF& pos, PortWidget* lhs, PortWidget* rhs) const
-{
-  return distance(pos, lhs) < distance(pos, rhs);
-}
-
+#endif

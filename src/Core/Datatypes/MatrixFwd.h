@@ -66,9 +66,12 @@ namespace Datatypes {
   class DenseColumnMatrixGeneric;
 
   typedef DenseColumnMatrixGeneric<double> DenseColumnMatrix;
+  using ComplexDenseColumnMatrix = DenseColumnMatrixGeneric<complex>;
 
   typedef SharedPointer<DenseColumnMatrix> DenseColumnMatrixHandle;
   typedef SharedPointer<const DenseColumnMatrix> DenseColumnMatrixConstHandle;
+
+  typedef SharedPointer<ComplexDenseColumnMatrix> ComplexDenseColumnMatrixHandle;
 
   template <typename T>
   class SparseRowMatrixGeneric;

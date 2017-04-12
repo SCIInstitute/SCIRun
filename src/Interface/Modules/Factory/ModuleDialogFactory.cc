@@ -204,13 +204,16 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
 
 ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId, ModuleStateHandle state)
 {
-  for(const auto& makerPair : dialogMakerMap_)
+  for (const auto& makerPair : dialogMakerMap_)
   {
     //TODO: match full string name; need to strip module id's number
     auto findIndex = moduleId.find(makerPair.first);
     if (findIndex != std::string::npos && moduleId[makerPair.first.size()] == ':')
       return makerPair.second(moduleId, state, parentToUse_);
   }
+
+  if (moduleId.find("Subnet") != std::string::npos)
+    return new SubnetDialog(moduleId, state, parentToUse_);
 
   QMessageBox::critical(nullptr, "Module/Dialog Inconsistency", "The module with ID \"" +
     QString::fromStdString(moduleId) + "\" cannot find its dialog implementation. SCIRun is constructing a basic dialog so your network still is functional. Please update your network file by hand.");

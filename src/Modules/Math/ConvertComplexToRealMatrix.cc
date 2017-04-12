@@ -50,52 +50,47 @@ ConvertComplexToRealMatrix::ConvertComplexToRealMatrix() : Module(staticInfo_,fa
 
 void ConvertComplexToRealMatrix::execute()
 {
-  
+
   auto input_complex_matrix = getRequiredInput(InputComplexMatrix);
 
   if (needToExecute())
   {
     update_state(Executing);
-    
+
     auto input_dense = boost::dynamic_pointer_cast<ComplexDenseMatrix>(input_complex_matrix);
     auto input_sparse = boost::dynamic_pointer_cast<ComplexSparseRowMatrix>(input_complex_matrix);
+    auto input_column = boost::dynamic_pointer_cast<ComplexDenseColumnMatrix>(input_complex_matrix);
 
-    if (!input_dense && !input_sparse)
+    if (!input_dense && !input_sparse && !input_column)
+    {
+     error("Unknown matrix type");
+     return;
+    }
+
+    if (input_complex_matrix->nrows()==0 || input_complex_matrix->ncols()==0)
     {
      error("Number of Rows or Columns are zero");
      return;
     }
-    
-    auto nr_cols=0, nr_rows=0;
-   
-    if (input_dense)
-    {
-      nr_cols=input_dense->ncols();
-      nr_rows=input_dense->nrows();
-    } else
-    {
-      nr_cols=input_sparse->ncols();
-      nr_rows=input_sparse->nrows(); 
-    }
-    
-    if (nr_rows==0 || nr_cols==0)
-    {
-     error("Number of Rows or Columns are zero");
-     return;
-    }
-   
+
     MatrixHandle output_real,output_imag;
-    
+
     if(input_dense)
     {
-      output_real = boost::make_shared<DenseMatrix>(input_dense->real());  
-      output_imag= boost::make_shared<DenseMatrix>(input_dense->imag()); 
-    } else
+      output_real = boost::make_shared<DenseMatrix>(input_dense->real());
+      output_imag= boost::make_shared<DenseMatrix>(input_dense->imag());
+    }
+    else if(input_column)
+    {
+      output_real = boost::make_shared<DenseColumnMatrix>(input_column->real());
+      output_imag= boost::make_shared<DenseColumnMatrix>(input_column->imag());
+    }
+    else
     {
      output_real = boost::make_shared<SparseRowMatrix>(input_sparse->real());
-    output_imag = boost::make_shared<SparseRowMatrix>(input_sparse->imag());
-    } 
-       
+     output_imag = boost::make_shared<SparseRowMatrix>(input_sparse->imag());
+    }
+
     sendOutput(OutputRealPartMatrix,output_real);
     sendOutput(OutputComplexPartMatrix,output_imag);
   }
