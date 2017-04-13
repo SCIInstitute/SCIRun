@@ -583,32 +583,33 @@ QPointF MidpointPositionerFromPorts::currentPosition() const
   return (p1_->getPositionObject()->currentPosition() + p2_->getPositionObject()->currentPosition()) / 2;
 }
 
-ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) :
-  currentType_(EUCLIDEAN),
-  visible_(true),
-  scene_(scene),
-  euclidean_(new EuclideanDrawStrategy),
-  cubic_(new CubicBezierDrawStrategy),
-  manhattan_(new ManhattanDrawStrategy)
+ConnectionFactory::ConnectionFactory(QGraphicsProxyWidget* module) :
+  module_(module)
 {}
+ 
+bool ConnectionFactory::visible_(true);
+ConnectionDrawType ConnectionFactory::currentType_(ConnectionDrawType::EUCLIDEAN);
+ConnectionDrawStrategyPtr ConnectionFactory::euclidean_(new EuclideanDrawStrategy);
+ConnectionDrawStrategyPtr ConnectionFactory::cubic_(new CubicBezierDrawStrategy);
+ConnectionDrawStrategyPtr ConnectionFactory::manhattan_(new ManhattanDrawStrategy);
 
 ConnectionInProgress* ConnectionFactory::makeConnectionInProgress(PortWidget* port) const
 {
   switch (currentType_)
   {
-    case EUCLIDEAN:
+    case ConnectionDrawType::EUCLIDEAN:
     {
       auto c = new ConnectionInProgressStraight(port, getCurrentDrawer());
       activate(c);
       return c;
     }
-    case CUBIC:
+    case ConnectionDrawType::CUBIC:
     {
       auto c = new ConnectionInProgressCurved(port, getCurrentDrawer());
       activate(c);
       return c;
     }
-    case MANHATTAN:
+    case ConnectionDrawType::MANHATTAN:
     {
       auto c = new ConnectionInProgressManhattan(port, getCurrentDrawer());
       activate(c);
@@ -632,8 +633,8 @@ void ConnectionFactory::activate(QGraphicsItem* item) const
 {
   if (item)
   {
-    if (scene_)
-      scene_->addItem(item);
+    if (module_)
+      module_->scene()->addItem(item);
     item->setVisible(visible_);
   }
 }
@@ -643,28 +644,27 @@ void ConnectionFactory::setType(ConnectionDrawType type)
   if (type != currentType_)
   {
     currentType_ = type;
-    Q_EMIT typeChanged(getCurrentDrawer());
   }
 }
 
-ConnectionDrawType ConnectionFactory::getType() const
+ConnectionDrawType ConnectionFactory::getType()
 {
   return currentType_;
 }
 
-ConnectionDrawStrategyPtr ConnectionFactory::getCurrentDrawer() const
+ConnectionDrawStrategyPtr ConnectionFactory::getCurrentDrawer()
 {
   switch (currentType_)
   {
-  case EUCLIDEAN:
+  case ConnectionDrawType::EUCLIDEAN:
     return euclidean_;
-  case CUBIC:
+  case ConnectionDrawType::CUBIC:
     return cubic_;
-  case MANHATTAN:
+  case ConnectionDrawType::MANHATTAN:
     return manhattan_;
   default:
     std::cerr << "Unknown connection type." << std::endl;
-    return ConnectionDrawStrategyPtr();
+    return nullptr;
   }
 }
 
@@ -672,6 +672,5 @@ ConnectionLine* ConnectionFactory::makeFinishedConnection(PortWidget* fromPort, 
 {
   auto c = new ConnectionLine(fromPort, toPort, id, getCurrentDrawer());
   activate(c);
-  connect(this, SIGNAL(typeChanged(ConnectionDrawStrategyPtr)), c, SLOT(setDrawStrategy(ConnectionDrawStrategyPtr)));
   return c;
 }

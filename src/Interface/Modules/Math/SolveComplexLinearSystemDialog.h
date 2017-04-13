@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2017 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -26,39 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QtGui>
-#include <Interface/Application/ClosestPortFinder.h>
-#include <Interface/Application/ModuleProxyWidget.h>
-#include <Interface/Application/ModuleWidget.h>
-#include <Interface/Application/Port.h>
-#include <Interface/Application/PortWidgetManager.h>
+#ifndef INTERFACE_MODULES_SOLVECOMPLEXLINEARSYSTEMDIALOG_H
+#define INTERFACE_MODULES_SOLVECOMPLEXLINEARSYSTEMDIALOG_H
 
-using namespace SCIRun::Gui;
+#include "Interface/Modules/Math/ui_SolveComplexLinearSystem.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
-ClosestPortFinder::ClosestPortFinder(QGraphicsProxyWidget* module) : module_(module) {}
+namespace SCIRun {
+namespace Gui {
 
-PortWidget* ClosestPortFinder::closestPort(const QPointF& pos)
+class SCISHARE SolveComplexLinearSystemDialog : public ModuleDialogGeneric,
+  public Ui::SolveComplexLinearSystem
 {
-  Q_FOREACH(QGraphicsItem* item, module_->scene()->items(pos))
-  {
-    if (auto mpw = dynamic_cast<ModuleProxyWidget*>(item))
-    {
-      auto overModule = mpw->getModuleWidget();
+	Q_OBJECT
 
-      auto ports = overModule->ports().getAllPorts();
-      return *std::min_element(ports.begin(), ports.end(), [=](PortWidget* lhs, PortWidget* rhs) {return lessPort(pos, lhs, rhs); });
-    }
-  }
-  return nullptr;
+public:
+  SolveComplexLinearSystemDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+};
+
+}
 }
 
-int ClosestPortFinder::distance(const QPointF& pos, PortWidget* port) const
-{
-  return (pos - port->position()).manhattanLength();
-}
-
-bool ClosestPortFinder::lessPort(const QPointF& pos, PortWidget* lhs, PortWidget* rhs) const
-{
-  return distance(pos, lhs) < distance(pos, rhs);
-}
-
+#endif

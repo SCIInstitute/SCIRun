@@ -146,6 +146,15 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   Modules::Visualization::TextBuilder::setFSStrings(filesystemRoot, sep);
 }
 
+void ViewSceneDialog::pullSpecial()
+{
+  auto show = state_->getValue(Modules::Render::ViewScene::ShowViewer).toBool();
+
+  if (show && parentWidget())
+    parentWidget()->show();
+
+  pulledSavedVisibility_ = true;
+}
 
 void ViewSceneDialog::setInitialLightValues()
 {
@@ -396,6 +405,7 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
   // future. Kept for future reference.
   //glLayout->removeWidget(mGLWidget);
   mGLWidget->close();
+  state_->setValue(Modules::Render::ViewScene::ShowViewer, isVisible());
   ModuleDialogGeneric::closeEvent(evt);
 }
 
@@ -1618,6 +1628,12 @@ void ViewSceneDialog::showEvent(QShowEvent* evt)
     autoViewClicked();
     shown_ = true;
   }
+
+  if (pulledSavedVisibility_)
+  {
+    state_->setValue(Modules::Render::ViewScene::ShowViewer, true);
+  }
+
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
   ModuleDialogGeneric::showEvent(evt);
 }
@@ -1625,6 +1641,12 @@ void ViewSceneDialog::showEvent(QShowEvent* evt)
 void ViewSceneDialog::hideEvent(QHideEvent* evt)
 {
   mConfigurationDock->setVisible(false);
+
+  if (pulledSavedVisibility_)
+  {
+    state_->setValue(Modules::Render::ViewScene::ShowViewer, false);
+  }
+
   ModuleDialogGeneric::hideEvent(evt);
 }
 

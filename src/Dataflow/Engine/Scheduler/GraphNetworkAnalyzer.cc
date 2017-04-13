@@ -154,6 +154,8 @@ bool ExecuteSingleModule::operator()(SCIRun::Dataflow::Networks::ModuleHandle mo
     THROW_INVALID_ARGUMENT("Module not found in component map");
 
   auto rootId = module_->get_id();
+  if (rootId.name_ == "Subnet")
+    return false;
   auto rootIdIter = components_.find(rootId);
   if (rootIdIter == components_.end())
     THROW_INVALID_ARGUMENT("Current module not found in component map");

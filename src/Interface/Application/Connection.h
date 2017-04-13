@@ -53,7 +53,7 @@ public:
 
 typedef boost::shared_ptr<ConnectionDrawStrategy> ConnectionDrawStrategyPtr;
 
-enum ConnectionDrawType
+enum class ConnectionDrawType
 {
   MANHATTAN, EUCLIDEAN, CUBIC
 };
@@ -225,28 +225,29 @@ public:
   virtual void update(const QPointF& end);
 };
 
-class ConnectionFactory : public QObject
+class ConnectionFactory
 {
-  Q_OBJECT
 public:
-  explicit ConnectionFactory(QGraphicsScene* scene);
+  explicit ConnectionFactory(QGraphicsProxyWidget* module);
+  
   ConnectionInProgress* makeConnectionInProgress(PortWidget* port) const;
   ConnectionInProgress* makePotentialConnection(PortWidget* port) const;
   ConnectionLine* makeFinishedConnection(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id) const;
-  void setType(ConnectionDrawType type);
-  ConnectionDrawType getType() const;
-  void setVisibility(bool visible) { visible_ = visible; }
   void activate(QGraphicsItem* item) const;
-Q_SIGNALS:
-  void typeChanged(ConnectionDrawStrategyPtr drawerMaker);
+
+  static void setType(ConnectionDrawType type);
+  static ConnectionDrawType getType();
+  static ConnectionDrawStrategyPtr getCurrentDrawer();
+  static void setVisibility(bool visible) { visible_ = visible; }
+  
 private:
-  ConnectionDrawType currentType_;
-  bool visible_;
-  QGraphicsScene* scene_;
-  ConnectionDrawStrategyPtr euclidean_;
-  ConnectionDrawStrategyPtr cubic_;
-  ConnectionDrawStrategyPtr manhattan_;
-  ConnectionDrawStrategyPtr getCurrentDrawer() const;
+  static ConnectionDrawType currentType_;
+  static bool visible_;
+  static ConnectionDrawStrategyPtr euclidean_;
+  static ConnectionDrawStrategyPtr cubic_;
+  static ConnectionDrawStrategyPtr manhattan_;
+
+  QGraphicsProxyWidget* module_;
 };
 
 }

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2017 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -26,39 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QtGui>
-#include <Interface/Application/ClosestPortFinder.h>
-#include <Interface/Application/ModuleProxyWidget.h>
-#include <Interface/Application/ModuleWidget.h>
-#include <Interface/Application/Port.h>
-#include <Interface/Application/PortWidgetManager.h>
+#include <Interface/Modules/Math/SolveComplexLinearSystemDialog.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-ClosestPortFinder::ClosestPortFinder(QGraphicsProxyWidget* module) : module_(module) {}
-
-PortWidget* ClosestPortFinder::closestPort(const QPointF& pos)
+SolveComplexLinearSystemDialog::SolveComplexLinearSystemDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  Q_FOREACH(QGraphicsItem* item, module_->scene()->items(pos))
-  {
-    if (auto mpw = dynamic_cast<ModuleProxyWidget*>(item))
-    {
-      auto overModule = mpw->getModuleWidget();
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-      auto ports = overModule->ports().getAllPorts();
-      return *std::min_element(ports.begin(), ports.end(), [=](PortWidget* lhs, PortWidget* rhs) {return lessPort(pos, lhs, rhs); });
-    }
-  }
-  return nullptr;
+  addSpinBoxManager(maxIterationsSpinBox_, Variables::MaxIterations);
+  addDoubleSpinBoxManager(targetErrorSpinBox_, Variables::TargetError);
+
+  GuiStringTranslationMap solverNameLookup;
+  solverNameLookup.insert(StringPair("Conjugate Gradient (Eigen)", "cg"));
+  solverNameLookup.insert(StringPair("BiConjugate Gradient (Eigen)", "bicg"));
+  solverNameLookup.insert(StringPair("Least Squares Conjugate Gradient (Eigen)", "lscg"));
+  addComboBoxManager(methodComboBox_, Variables::Method, solverNameLookup);
 }
-
-int ClosestPortFinder::distance(const QPointF& pos, PortWidget* port) const
-{
-  return (pos - port->position()).manhattanLength();
-}
-
-bool ClosestPortFinder::lessPort(const QPointF& pos, PortWidget* lhs, PortWidget* rhs) const
-{
-  return distance(pos, lhs) < distance(pos, rhs);
-}
-

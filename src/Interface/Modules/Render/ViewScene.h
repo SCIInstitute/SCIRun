@@ -151,6 +151,9 @@ namespace SCIRun {
       void showEvent(QShowEvent* evt) override;
       void hideEvent(QHideEvent* evt) override;
       void contextMenuEvent(QContextMenuEvent* evt) override {}
+
+      void pullSpecial() override;
+
     private:
       struct ClippingPlane {
         bool visible, showFrame, reverseNormal;
@@ -227,6 +230,7 @@ namespace SCIRun {
       std::vector<ClippingPlane> clippingPlanes_;
       class Screenshot* screenshotTaker_;
       bool saveScreenshotOnNewGeometry_;
+      bool pulledSavedVisibility_ {false};
 
       //geometries
       Modules::Visualization::TextBuilder textBuilder_;

@@ -124,6 +124,8 @@ namespace
 class ModuleWidgetDisplay : public Ui::Module, public ModuleWidgetDisplayBase
 {
 public:
+  ModuleWidgetDisplay() : subnetButton_(new QPushButton("Subnet"))
+  { }
   virtual void setupFrame(QStackedWidget* stacked) override;
   virtual void setupTitle(const QString& name) override;
   virtual void setupProgressBar() override;
@@ -136,14 +138,20 @@ public:
   virtual QAbstractButton* getLogButton() const override;
   virtual void setStatusColor(const QString& color) override;
   virtual QPushButton* getModuleActionButton() const override;
+  virtual QAbstractButton* getSubnetButton() const override;
 
   virtual QProgressBar* getProgressBar() const override;
+
+  virtual void setupSubnetWidgets() override;
 
   virtual int getTitleWidth() const override;
   virtual QLabel* getTitle() const override;
 
   virtual void startExecuteMovie() override;
   virtual void stopExecuteMovie() override;
+
+private:
+  QAbstractButton* subnetButton_;
 };
 
 void ModuleWidgetDisplay::setupFrame(QStackedWidget* stacked)
@@ -176,10 +184,6 @@ void ModuleWidgetDisplay::setupSpecial()
   optionsButton_->setText("VIEW");
   optionsButton_->setFont(QFont(scirunModuleFontName(), viewFontSize));
   optionsButton_->setToolTip("View renderer output");
-
-  //optionsButton_->setMaximumWidth(140);
-  //optionsButton_->resize(140, optionsButton_->height());
-
   optionsButton_->setIcon(QIcon());
   executePushButton_->hide();
   progressBar_->setVisible(false);
@@ -246,6 +250,21 @@ QAbstractButton* ModuleWidgetDisplay::getHelpButton() const
 QAbstractButton* ModuleWidgetDisplay::getLogButton() const
 {
   return logButton2_;
+}
+
+QAbstractButton* ModuleWidgetDisplay::getSubnetButton() const
+{
+  return subnetButton_;
+}
+
+void ModuleWidgetDisplay::setupSubnetWidgets()
+{
+  getExecuteButton()->setVisible(false);
+  getLogButton()->setVisible(false);
+  subnetButton_->setMinimumWidth(50);
+  auto layout = qobject_cast<QHBoxLayout*>(buttonGroup_->layout());
+  if (layout)
+    layout->insertWidget(0, subnetButton_);
 }
 
 void ModuleWidgetDisplay::setStatusColor(const QString& color)
@@ -455,7 +474,13 @@ void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
   connect(display->getHelpButton(), SIGNAL(clicked()), this, SLOT(launchDocumentation()));
   connect(display->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(show()));
   connect(display->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(raise()));
+  connect(display->getSubnetButton(), SIGNAL(clicked()), this, SLOT(subnetButtonClicked()));
   display->getModuleActionButton()->setMenu(actionsMenu_->getMenu());
+}
+
+void ModuleWidget::subnetButtonClicked()
+{
+  Q_EMIT showSubnetworkEditor(QString::fromStdString(theModule_->get_state()->getValue(Core::Algorithms::Name("Name")).toString()));
 }
 
 void ModuleWidget::setLogButtonColor(const QColor& color)
@@ -517,6 +542,9 @@ bool ModuleWidget::guiVisible() const
 
 void ModuleWidget::fillReplaceWithMenu()
 {
+  if (deleting_)
+    return;
+
   auto menu = getReplaceWithMenu();
   menu->clear();
   LOG_DEBUG("Filling menu for " << theModule_->get_module_name() << std::endl);
@@ -578,8 +606,9 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
     auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
       portAlpha()), type,
       moduleId, port->id(),
-      i, port->isDynamic(), connectionFactory_,
-      closestPortFinder_,
+      i, port->isDynamic(), 
+      [this]() { return connectionFactory_; },
+      [this]() { return closestPortFinder_; },
       PortDataDescriber(),
       this);
     hookUpGeneralPortSignals(w);
@@ -626,8 +655,8 @@ void ModuleWidget::createOutputPorts(const ModuleInfoProvider& moduleInfoProvide
     auto type = port->get_typename();
     auto w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()),
       type, moduleId, port->id(), i, port->isDynamic(),
-      connectionFactory_,
-      closestPortFinder_,
+      [this]() { return connectionFactory_; },
+      [this]() { return closestPortFinder_; },
       port->getPortDataDescriber(),
       this);
     hookUpGeneralPortSignals(w);
@@ -791,7 +820,10 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     auto port = theModule_->getInputPort(pid);
     auto type = port->get_typename();
 
-    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), connectionFactory_, closestPortFinder_, PortDataDescriber(), this);
+    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), 
+      [this]() { return connectionFactory_; },
+      [this]() { return closestPortFinder_; },
+      PortDataDescriber(), this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
 
@@ -882,6 +914,7 @@ ModuleWidget::NetworkClearingScope::~NetworkClearingScope()
 ModuleWidget::~ModuleWidget()
 {
   disconnect(this, SIGNAL(dynamicPortChanged(const std::string&, bool)), this, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
+  disconnect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
 
   if (!theModule_->isStoppable())
   {
@@ -1132,9 +1165,6 @@ void ModuleWidget::adjustDockState(bool dockEnabled)
     }
   }
 }
-
-boost::shared_ptr<ConnectionFactory> ModuleWidget::connectionFactory_;
-boost::shared_ptr<ClosestPortFinder> ModuleWidget::closestPortFinder_;
 
 void ModuleWidget::toggleOptionsDialog()
 {
@@ -1429,4 +1459,15 @@ void ModuleWidget::incomingConnectionStateChanged(bool disabled, int index)
   {
     output->setConnectionsDisabled(disabled_ || disabled);
   }
+}
+
+void ModuleWidget::setupPortSceneCollaborator(QGraphicsProxyWidget* proxy)
+{
+  connectionFactory_ = boost::make_shared<ConnectionFactory>(proxy);
+  closestPortFinder_ = boost::make_shared<ClosestPortFinder>(proxy);
+}
+
+void SubnetWidget::postLoadAction()
+{
+  fullWidgetDisplay_->setupSubnetWidgets();
 }

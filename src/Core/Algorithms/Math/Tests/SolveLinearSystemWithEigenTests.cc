@@ -344,7 +344,7 @@ TEST(EigenSparseSolverTest, DISABLED_CanSolveBigSystem)
     ScopedTimer t("using algorithm object");
     SolveLinearSystemAlgorithm algo;
 
-    x = algo.run(std::make_tuple(A, bCol), std::make_tuple(1e-20, 4000));
+    x = algo.run(std::make_tuple(A, bCol), std::make_tuple(1e-20, 4000, "cg"));
     MatrixHandle solution = std::get<0>(x);
 
     ASSERT_TRUE(solution.get() != nullptr);
