@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Dataflow/Network/ModuleInterface.h
 
 #ifndef DATAFLOW_NETWORK_MODULE_INTERFACE_H
 #define DATAFLOW_NETWORK_MODULE_INTERFACE_H
@@ -35,102 +34,17 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Base/AlgorithmFactory.h>
 #include <Dataflow/Network/ExecutableObject.h>
+#include <Dataflow/Network/ModuleInfoProvider.h>
+#include <Dataflow/Network/ModuleExceptions.h>
+#include <Dataflow/Network/ModuleExecutionInterfaces.h>
+#include <Dataflow/Network/ModuleIdGenerator.h>
+#include <Dataflow/Network/ModuleDisplayInterface.h>
 #include <Core/Logging/LoggerFwd.h>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
-
-  //TODO: refactor with this type
-  template <class PortType>
-  class SCISHARE PortView
-  {
-  public:
-    virtual ~PortView() {}
-    virtual bool hasPort(const PortId& id) const = 0;
-    virtual boost::shared_ptr<PortType> getPort(const PortId& id) const = 0;
-    virtual std::vector<boost::shared_ptr<PortType>> findPortsWithName(const std::string& name) const = 0;
-    virtual size_t numPorts() const = 0;
-    virtual std::vector<boost::shared_ptr<PortType>> ports() const = 0;
-  };
-
-  class SCISHARE ModuleInfoProvider
-  {
-  public:
-    virtual ~ModuleInfoProvider() {}
-
-    /// @todo: kind of ridiculous interface/duplication. Should pull out a subinterface for "PortView" and just return one of those for input/output
-    virtual bool hasOutputPort(const PortId& id) const = 0;
-    virtual OutputPortHandle getOutputPort(const PortId& id) const = 0;
-    virtual std::vector<OutputPortHandle> findOutputPortsWithName(const std::string& name) const = 0;
-    virtual size_t num_output_ports() const = 0;
-    virtual std::vector<OutputPortHandle> outputPorts() const = 0;
-
-    virtual bool hasInputPort(const PortId& id) const = 0;
-    virtual InputPortHandle getInputPort(const PortId& id) = 0;
-    virtual std::vector<InputPortHandle> findInputPortsWithName(const std::string& name) const = 0;
-    virtual size_t num_input_ports() const = 0;
-    virtual std::vector<InputPortHandle> inputPorts() const = 0;
-
-    virtual std::string get_module_name() const = 0;
-    virtual ModuleId get_id() const = 0;
-    virtual bool has_ui() const = 0;
-    virtual const ModuleLookupInfo& get_info() const = 0;
-    virtual bool hasDynamicPorts() const = 0;
-
-    virtual std::string helpPageUrl() const = 0;
-    virtual std::string legacyPackageName() const = 0;
-    virtual std::string legacyModuleName() const = 0;
-  };
-
-  class SCISHARE ModuleDisplayInterface
-  {
-  public:
-    virtual ~ModuleDisplayInterface() {}
-    virtual void setUiVisible(bool visible) = 0;
-  };
-
-  SCISHARE std::string to_string(const ModuleInfoProvider&);
-
-  typedef boost::function<void(bool)> UiToggleFunc;
-
-  class SCISHARE ModuleReexecutionStrategy
-  {
-  public:
-    virtual ~ModuleReexecutionStrategy() {}
-
-    virtual bool needToExecute() const = 0;
-  };
-
-  typedef boost::shared_ptr<ModuleReexecutionStrategy> ModuleReexecutionStrategyHandle;
-
-  class SCISHARE ModuleExecutionState
-  {
-  public:
-    enum Value
-    {
-      NotExecuted,
-      Waiting,
-      Executing,
-      Completed,
-      Errored
-    };
-    virtual Value currentState() const = 0;
-
-    using ExecutionStateChangedSignalType = boost::signals2::signal<void(int)>;
-
-    virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) = 0;
-    virtual bool transitionTo(Value state) = 0;
-
-    virtual Value expandedState() const = 0;
-    virtual void setExpandedState(Value state) = 0;
-
-    virtual std::string currentColor() const = 0;
-    virtual ~ModuleExecutionState() {}
-  };
-
-  typedef boost::shared_ptr<ModuleExecutionState> ModuleExecutionStateHandle;
 
   /// @todo: interface is getting bloated, segregate it.
   class SCISHARE ModuleInterface : public ModuleInfoProvider, public ModuleDisplayInterface,
@@ -189,33 +103,6 @@ namespace Networks {
     virtual bool executionDisabled() const = 0;
     virtual void setExecutionDisabled(bool disable) = 0;
   };
-
-  struct SCISHARE DataPortException : virtual Core::ExceptionBase {};
-  struct SCISHARE NoHandleOnPortException : virtual DataPortException {};
-  struct SCISHARE NullHandleOnPortException : virtual DataPortException {};
-  struct SCISHARE WrongDatatypeOnPortException : virtual DataPortException {};
-  struct SCISHARE PortNotFoundException : virtual DataPortException {};
-  struct SCISHARE InvalidInputPortRequestException : virtual DataPortException {};
-  struct SCISHARE GeneralModuleError : virtual Core::ExceptionBase {};
-
-  #define MODULE_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(type() << SCIRun::Core::ErrorMessage(message)); }
-
-  class SCISHARE ReexecuteStrategyFactory
-  {
-  public:
-    virtual ~ReexecuteStrategyFactory() {}
-    virtual ModuleReexecutionStrategyHandle create(const class Module& module) const = 0;
-  };
-
-  class SCISHARE ModuleIdGenerator
-  {
-  public:
-    virtual ~ModuleIdGenerator() {}
-    virtual int makeId(const std::string& name) = 0;
-    virtual bool takeId(const std::string& name, int id) = 0;
-    virtual void reset() = 0; //for unit testing
-  };
-  typedef boost::shared_ptr<ModuleIdGenerator> ModuleIdGeneratorHandle;
 
 }}}
 

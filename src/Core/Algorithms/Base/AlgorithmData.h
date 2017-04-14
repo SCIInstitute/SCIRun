@@ -81,7 +81,7 @@ namespace Algorithms {
     boost::any transient_;
   };
 
-  class SCISHARE AlgorithmInput : public AlgorithmData 
+  class SCISHARE AlgorithmInput : public AlgorithmData
   {
   public:
     AlgorithmInput() {}
@@ -97,9 +97,9 @@ namespace Algorithms {
     VariableHandle additionalAlgoOutput_;
   };
 
-  typedef Datatypes::SharedPointer<AlgorithmInput> AlgorithmInputHandle;
-  typedef Datatypes::SharedPointer<AlgorithmOutput> AlgorithmOutputHandle;
-  
+  typedef SharedPointer<AlgorithmInput> AlgorithmInputHandle;
+  typedef SharedPointer<AlgorithmOutput> AlgorithmOutputHandle;
+
 }}}
 
 #endif

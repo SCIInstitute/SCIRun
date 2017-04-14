@@ -26,22 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_BASE_ALGORITHMFWD_H
-#define ALGORITHMS_BASE_ALGORITHMFWD_H
+#ifndef DATAFLOW_NETWORK_MODULEEXCEPTIONS_H
+#define DATAFLOW_NETWORK_MODULEEXCEPTIONS_H
 
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Utils/SmartPointers.h>
-#include <Core/Algorithms/Base/share.h>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Algorithms {
+namespace Dataflow {
+namespace Networks {
 
-  class AlgorithmBase;
-  typedef SharedPointer<AlgorithmBase> AlgorithmHandle;
+  struct SCISHARE DataPortException : virtual Core::ExceptionBase {};
+  struct SCISHARE NoHandleOnPortException : virtual DataPortException {};
+  struct SCISHARE NullHandleOnPortException : virtual DataPortException {};
+  struct SCISHARE WrongDatatypeOnPortException : virtual DataPortException {};
+  struct SCISHARE PortNotFoundException : virtual DataPortException {};
+  struct SCISHARE InvalidInputPortRequestException : virtual DataPortException {};
+  struct SCISHARE GeneralModuleError : virtual Core::ExceptionBase {};
 
-  class AlgorithmFactory;
-  typedef SharedPointer<AlgorithmFactory> AlgorithmFactoryHandle;
+  #define MODULE_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(type() << SCIRun::Core::ErrorMessage(message)); }
 
 }}}
 

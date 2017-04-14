@@ -26,22 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_BASE_ALGORITHMFWD_H
-#define ALGORITHMS_BASE_ALGORITHMFWD_H
+#ifndef DATAFLOW_NETWORK_ModuleIdGenerator_H
+#define DATAFLOW_NETWORK_ModuleIdGenerator_H
 
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Utils/SmartPointers.h>
-#include <Core/Algorithms/Base/share.h>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Algorithms {
+namespace Dataflow {
+namespace Networks {
 
-  class AlgorithmBase;
-  typedef SharedPointer<AlgorithmBase> AlgorithmHandle;
-
-  class AlgorithmFactory;
-  typedef SharedPointer<AlgorithmFactory> AlgorithmFactoryHandle;
+  class SCISHARE ModuleIdGenerator
+  {
+  public:
+    virtual ~ModuleIdGenerator() {}
+    virtual int makeId(const std::string& name) = 0;
+    virtual bool takeId(const std::string& name, int id) = 0;
+    virtual void reset() = 0; //for unit testing
+  };
+  using ModuleIdGeneratorHandle =SharedPointer<ModuleIdGenerator>;
 
 }}}
 

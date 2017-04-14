@@ -26,22 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_BASE_ALGORITHMFWD_H
-#define ALGORITHMS_BASE_ALGORITHMFWD_H
+#ifndef DATAFLOW_NETWORK_MODULEDISPLAYINTERFACE_H
+#define DATAFLOW_NETWORK_MODULEDISPLAYINTERFACE_H
 
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Utils/SmartPointers.h>
-#include <Core/Algorithms/Base/share.h>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <boost/function.hpp>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Algorithms {
+namespace Dataflow {
+namespace Networks {
 
-  class AlgorithmBase;
-  typedef SharedPointer<AlgorithmBase> AlgorithmHandle;
+  class SCISHARE ModuleDisplayInterface
+  {
+  public:
+    virtual ~ModuleDisplayInterface() {}
+    virtual void setUiVisible(bool visible) = 0;
+  };
 
-  class AlgorithmFactory;
-  typedef SharedPointer<AlgorithmFactory> AlgorithmFactoryHandle;
+  using UiToggleFunc = boost::function<void(bool)>;
 
 }}}
 
