@@ -57,6 +57,8 @@ SET(Dataflow_Network_HEADERS
   ModuleExecutionInterfaces.h
   ModuleIdGenerator.h
   ModuleInfoProvider.h
+  ModulePortDescriptionTags.h
+  ModuleTraits.h
   Network.h
   NetworkFwd.h
   NetworkInterface.h

@@ -44,7 +44,7 @@ namespace Networks {
     virtual bool takeId(const std::string& name, int id) = 0;
     virtual void reset() = 0; //for unit testing
   };
-  using ModuleIdGeneratorHandle =SharedPointer<ModuleIdGenerator>;
+  using ModuleIdGeneratorHandle = SharedPointer<ModuleIdGenerator>;
 
 }}}
 
