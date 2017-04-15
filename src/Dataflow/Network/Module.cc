@@ -39,6 +39,9 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/NullModuleState.h>
+#include <Dataflow/Network/ModuleReexecutionStrategies.h>
+#include <Dataflow/Network/ModuleWithAsyncDynamicPorts.h>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Dataflow/Network/DataflowInterfaces.h>
 #include <Core/Logging/ConsoleLogger.h>
@@ -63,26 +66,6 @@ std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 
 namespace detail
 {
-  class InstanceCountIdGenerator : public ModuleIdGenerator
-  {
-  public:
-    InstanceCountIdGenerator() : instanceCount_(0) {}
-    virtual int makeId(const std::string& /*name*/) override final
-    {
-      return instanceCount_++;
-    }
-    virtual bool takeId(const std::string& name, int id) override final
-    {
-      return false;
-    }
-    virtual void reset() override final
-    {
-      instanceCount_ = 0;
-    }
-  private:
-    std::atomic<int> instanceCount_;
-  };
-
   class PerTypeInstanceCountIdGenerator : public ModuleIdGenerator
   {
   public:
@@ -358,7 +341,7 @@ bool Module::executeWithSignals() NOEXCEPT
     std::cout << finished.str() << std::endl;
   }
 #endif
-  
+
   //TODO: brittle dependency on Completed with executor
   executionState_->transitionTo(ModuleExecutionState::Completed);
 
@@ -930,17 +913,6 @@ void Module::enqueueExecuteAgain(bool upstream)
 boost::signals2::connection Module::connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber)
 {
   return executionSelfRequested_.connect(subscriber);
-}
-
-UseGlobalInstanceCountIdGenerator::UseGlobalInstanceCountIdGenerator()
-{
-  oldGenerator_ = Module::idGenerator_;
-  Module::idGenerator_.reset(new detail::InstanceCountIdGenerator);
-}
-
-UseGlobalInstanceCountIdGenerator::~UseGlobalInstanceCountIdGenerator()
-{
-  Module::idGenerator_ = oldGenerator_;
 }
 
 std::hash<std::string> ModuleLevelUniqueIDGenerator::hash_;

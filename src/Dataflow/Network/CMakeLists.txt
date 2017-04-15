@@ -47,6 +47,10 @@ SET(Dataflow_Network_HEADERS
   ConnectionId.h
   DataflowInterfaces.h
   ExecutableObject.h
+  GeometryGeneratingModule.h
+  ModuleReexecutionStrategies.h
+  ModuleTemplateImpl.h
+  ModuleWithAsyncDynamicPorts.h
   Module.h
   ModuleFactory.h
   ModuleDescription.h

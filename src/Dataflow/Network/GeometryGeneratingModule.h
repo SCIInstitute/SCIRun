@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,52 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FIELDS_GeneratePointSamplesFromField_H__
-#define MODULES_LEGACY_FIELDS_GeneratePointSamplesFromField_H__
+#ifndef DATAFLOW_NETWORK_GeometryGeneratingModule_H
+#define DATAFLOW_NETWORK_GeometryGeneratingModule_H
 
-#include <Dataflow/Network/GeometryGeneratingModule.h>
-#include <Core/Datatypes/Geometry.h>
-#include <Modules/Legacy/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
+namespace Dataflow {
+namespace Networks {
 
-  namespace Core
+  class SCISHARE ModuleLevelUniqueIDGenerator
   {
-    namespace Algorithms
-    {
-      namespace Fields
-      {
-        ALGORITHM_PARAMETER_DECL(NumSeeds);
-        ALGORITHM_PARAMETER_DECL(ProbeScale);
-      }
-    }
-  }
+  public:
+    ModuleLevelUniqueIDGenerator(const ModuleInterface& module, const std::string& name) :
+      module_(module), name_(name)
+    {}
+    std::string operator()() const { return generateModuleLevelUniqueID(module_, name_); }
+  private:
+    const ModuleInterface& module_;
+    std::string name_;
+    static std::hash<std::string> hash_;
+    std::string generateModuleLevelUniqueID(const ModuleInterface& module, const std::string& name) const;
+  };
 
-  namespace Modules {
-    namespace Fields {
+  class SCISHARE GeometryGeneratingModule : public Module, public Core::GeometryIDGenerator
+  {
+  public:
+    explicit GeometryGeneratingModule(const ModuleLookupInfo& info);
+    virtual std::string generateGeometryID(const std::string& tag) const override;
+  };
 
-      class SCISHARE GeneratePointSamplesFromField : public Dataflow::Networks::GeometryGeneratingModule,
-        public Has1InputPort<FieldPortTag>,
-        public Has2OutputPorts<GeometryPortTag, FieldPortTag>
-      {
-      public:
-        GeneratePointSamplesFromField();
-
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
-
-        INPUT_PORT(0, InputField, Field);
-        OUTPUT_PORT(0, GeneratedWidget, GeometryObject);
-        OUTPUT_PORT(1, GeneratedPoints, Field);
-
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
-      private:
-        boost::shared_ptr<class GeneratePointSamplesFromFieldImpl> impl_;
-        FieldHandle GenerateOutputField();
-      };
-
-    }
-  }
-}
+}}}
 
 #endif

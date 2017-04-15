@@ -242,6 +242,7 @@ namespace Networks {
     static Core::Algorithms::AlgorithmFactoryHandle defaultAlgoFactory_;
     static ReexecuteStrategyFactoryHandle defaultReexFactory_;
     static Core::Logging::LoggerHandle defaultLogger_;
+    static ModuleIdGeneratorHandle idGenerator_;
 
   protected:
     const ModuleLookupInfo info_;
@@ -292,11 +293,9 @@ namespace Networks {
 
     boost::atomic<bool> inputsChanged_ { false };
 
-
     friend class Builder;
 
     bool has_ui_;
-
     Core::Algorithms::AlgorithmHandle algo_;
 
     ModuleStateHandle state_;
@@ -307,8 +306,6 @@ namespace Networks {
     ExecuteBeginsSignalType executeBegins_;
     ExecuteEndsSignalType executeEnds_;
     ErrorSignalType errorSignal_;
-    //boost::atomic<ExecutionState> executionState_;
-    //ExecutionStateChangedSignalType executionStateChanged_;
     std::vector<boost::shared_ptr<boost::signals2::scoped_connection>> portConnections_;
     ExecutionSelfRequestSignalType executionSelfRequested_;
 
@@ -321,228 +318,9 @@ namespace Networks {
     Core::Logging::LoggerHandle log_;
     Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
     UiToggleFunc uiToggleFunc_;
-    static ModuleIdGeneratorHandle idGenerator_;
-    friend class UseGlobalInstanceCountIdGenerator;
   };
 
-  template <class T>
-  boost::shared_ptr<T> Module::getRequiredInputAtIndex(const PortId& id)
-  {
-    auto inputOpt = get_input_handle(id);
-    if (!inputOpt)
-      MODULE_ERROR_WITH_TYPE(NoHandleOnPortException, "Input data required on port " + id.name);
-
-    return checkInput<T>(inputOpt, id);
-  }
-
-  template <class T, size_t N>
-  boost::shared_ptr<T> Module::getRequiredInput(const StaticPortName<T,N>& port)
-  {
-    return getRequiredInputAtIndex<T>(port.toId());
-  }
-
-  template <class T>
-  boost::optional<boost::shared_ptr<T>> Module::getOptionalInputAtIndex(const PortId& id)
-  {
-    auto inputOpt = get_input_handle(id);
-    if (!inputOpt)
-      return boost::optional<boost::shared_ptr<T>>();
-
-    return checkInput<T>(inputOpt, id);
-  }
-
-  template <class T, size_t N>
-  std::vector<boost::shared_ptr<T>> Module::getRequiredDynamicInputs(const DynamicPortName<T,N>& port)
-  {
-    auto handleOptions = get_dynamic_input_handles(port.id_);
-    std::vector<boost::shared_ptr<T>> handles;
-    auto check = [&, this](Core::Datatypes::DatatypeHandleOption opt) { return this->checkInput<T>(opt, port.id_); };
-    auto end = handleOptions.end() - 1; //leave off empty final port
-    std::transform(handleOptions.begin(), end, std::back_inserter(handles), check);
-    if (handles.empty())
-      MODULE_ERROR_WITH_TYPE(NoHandleOnPortException, "Input data required on port " + port.id_.name);
-    return handles;
-  }
-
-  template <class T, size_t N>
-  std::vector<boost::shared_ptr<T>> Module::getOptionalDynamicInputs(const DynamicPortName<T,N>& port)
-  {
-    auto handleOptions = get_dynamic_input_handles(port.id_);
-    std::vector<boost::shared_ptr<T>> handles;
-    auto check = [&, this](Core::Datatypes::DatatypeHandleOption opt) { return this->checkInput<T>(opt, port.id_); };
-    auto end = handleOptions.end() - 1; //leave off empty final port
-    std::transform(handleOptions.begin(), end, std::back_inserter(handles), check);
-    return handles;
-  }
-
-  template <class T, size_t N>
-  boost::optional<boost::shared_ptr<T>> Module::getOptionalInput(const StaticPortName<T,N>& port)
-  {
-    return getOptionalInputAtIndex<T>(port.id_);
-  }
-
-  template <class T, class D, size_t N>
-  void Module::sendOutput(const StaticPortName<T,N>& port, boost::shared_ptr<D> data)
-  {
-    const bool datatypeForThisPortMustBeCompatible = boost::is_base_of<T,D>::value;
-    BOOST_STATIC_ASSERT(datatypeForThisPortMustBeCompatible);
-    send_output_handle(port.id_, data);
-  }
-
-  template <class T, size_t N>
-  void Module::sendOutputFromAlgorithm(const StaticPortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output)
-  {
-    sendOutput<T, T, N>(port, output.get<T>(Core::Algorithms::AlgorithmParameterName(port)));
-  }
-
-  template <class T>
-  boost::shared_ptr<T> Module::checkInput(Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id)
-  {
-    if (!inputOpt)
-      MODULE_ERROR_WITH_TYPE(NoHandleOnPortException, "Input data required on port " + id.name);
-
-    if (!*inputOpt)
-      MODULE_ERROR_WITH_TYPE(NullHandleOnPortException, "Null handle on port " + id.name);
-
-    boost::shared_ptr<T> data = boost::dynamic_pointer_cast<T>(*inputOpt);
-
-    if (!data)
-    {
-      std::ostringstream ostr;
-      ostr << "Wrong datatype on port " << id.name << "; expected " << typeid(T).name() << " but received " << typeid(*inputOpt).name();
-      MODULE_ERROR_WITH_TYPE(WrongDatatypeOnPortException, ostr.str());
-    }
-    return data;
-  }
-
-  class SCISHARE ModuleWithAsyncDynamicPorts : public Module
-  {
-  public:
-    explicit ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info, bool hasUI);
-    virtual bool hasDynamicPorts() const override { return true; }
-    virtual void execute() override;
-    virtual void asyncExecute(const PortId& pid, Core::Datatypes::DatatypeHandle data) = 0;
-    virtual void portRemovedSlot(const ModuleId& mid, const PortId& pid) override;
-  protected:
-    virtual void portRemovedSlotImpl(const PortId& pid) = 0;
-    virtual size_t add_input_port(InputPortHandle h) override;
-  };
-
-  class SCISHARE ModuleLevelUniqueIDGenerator
-  {
-  public:
-    ModuleLevelUniqueIDGenerator(const ModuleInterface& module, const std::string& name) :
-      module_(module), name_(name)
-    {}
-    std::string operator()() const { return generateModuleLevelUniqueID(module_, name_); }
-  private:
-    const ModuleInterface& module_;
-    std::string name_;
-    static std::hash<std::string> hash_;
-    std::string generateModuleLevelUniqueID(const ModuleInterface& module, const std::string& name) const;
-  };
-
-  class SCISHARE GeometryGeneratingModule : public Module, public Core::GeometryIDGenerator
-  {
-  public:
-    explicit GeometryGeneratingModule(const ModuleLookupInfo& info);
-    virtual std::string generateGeometryID(const std::string& tag) const override;
-  };
-
-  class SCISHARE AlwaysReexecuteStrategy : public ModuleReexecutionStrategy
-  {
-  public:
-    virtual bool needToExecute() const override { return true; }
-  };
-
-  class SCISHARE InputsChangedChecker
-  {
-  public:
-    virtual ~InputsChangedChecker() {}
-
-    virtual bool inputsChanged() const = 0;
-  };
-
-  typedef boost::shared_ptr<InputsChangedChecker> InputsChangedCheckerHandle;
-
-  class SCISHARE StateChangedChecker
-  {
-  public:
-    virtual ~StateChangedChecker() {}
-
-    virtual bool newStatePresent() const = 0;
-  };
-
-  typedef boost::shared_ptr<StateChangedChecker> StateChangedCheckerHandle;
-
-  class SCISHARE OutputPortsCachedChecker
-  {
-  public:
-    virtual ~OutputPortsCachedChecker() {}
-
-    virtual bool outputPortsCached() const = 0;
-  };
-
-  typedef boost::shared_ptr<OutputPortsCachedChecker> OutputPortsCachedCheckerHandle;
-
-  class SCISHARE DynamicReexecutionStrategy : public ModuleReexecutionStrategy
-  {
-  public:
-    DynamicReexecutionStrategy(
-      InputsChangedCheckerHandle inputsChanged,
-      StateChangedCheckerHandle stateChanged,
-      OutputPortsCachedCheckerHandle outputsCached);
-    virtual bool needToExecute() const override;
-  private:
-    InputsChangedCheckerHandle inputsChanged_;
-    StateChangedCheckerHandle stateChanged_;
-    OutputPortsCachedCheckerHandle outputsCached_;
-  };
-
-  class SCISHARE InputsChangedCheckerImpl : public InputsChangedChecker
-  {
-  public:
-    explicit InputsChangedCheckerImpl(const Module& module);
-    virtual bool inputsChanged() const override;
-  private:
-    const Module& module_;
-  };
-
-  class SCISHARE StateChangedCheckerImpl : public StateChangedChecker
-  {
-  public:
-    explicit StateChangedCheckerImpl(const Module& module);
-    virtual bool newStatePresent() const override;
-  private:
-    const Module& module_;
-  };
-
-  class SCISHARE OutputPortsCachedCheckerImpl : public OutputPortsCachedChecker
-  {
-  public:
-    explicit OutputPortsCachedCheckerImpl(const Module& module);
-    virtual bool outputPortsCached() const override;
-  private:
-    const Module& module_;
-  };
-
-  class SCISHARE DynamicReexecutionStrategyFactory : public ReexecuteStrategyFactory
-  {
-  public:
-    explicit DynamicReexecutionStrategyFactory(const boost::optional<std::string>& reexMode);
-    ModuleReexecutionStrategyHandle create(const Module& module) const override;
-  private:
-    boost::optional<std::string> reexecuteMode_;
-  };
-
-  class SCISHARE UseGlobalInstanceCountIdGenerator
-  {
-  public:
-    UseGlobalInstanceCountIdGenerator();
-    ~UseGlobalInstanceCountIdGenerator();
-  private:
-    ModuleIdGeneratorHandle oldGenerator_;
-  };
+  #include <Dataflow/Network/ModuleTemplateImpl.h>
 
 }}}
 

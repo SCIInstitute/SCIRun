@@ -92,6 +92,49 @@ using namespace std;
 using namespace boost;
 using namespace boost::assign;
 
+namespace
+{
+  class InstanceCountIdGenerator : public ModuleIdGenerator
+  {
+  public:
+    InstanceCountIdGenerator() : instanceCount_(0) {}
+    virtual int makeId(const std::string& /*name*/) override final
+    {
+      return instanceCount_++;
+    }
+    virtual bool takeId(const std::string& name, int id) override final
+    {
+      return false;
+    }
+    virtual void reset() override final
+    {
+      instanceCount_ = 0;
+    }
+  private:
+    std::atomic<int> instanceCount_;
+  };
+}
+  class UseGlobalInstanceCountIdGenerator
+  {
+  public:
+    UseGlobalInstanceCountIdGenerator();
+    ~UseGlobalInstanceCountIdGenerator();
+  private:
+    ModuleIdGeneratorHandle oldGenerator_;
+  };
+
+  UseGlobalInstanceCountIdGenerator::UseGlobalInstanceCountIdGenerator()
+  {
+    oldGenerator_ = Module::idGenerator_;
+    Module::idGenerator_.reset(new InstanceCountIdGenerator);
+  }
+
+  UseGlobalInstanceCountIdGenerator::~UseGlobalInstanceCountIdGenerator()
+  {
+    Module::idGenerator_ = oldGenerator_;
+  }
+
+
 class SchedulingWithBoostGraph : public ::testing::Test
 {
 public:
@@ -110,7 +153,7 @@ protected:
   ModuleHandle receive, report;
   DenseMatrix expected;
   UseGlobalInstanceCountIdGenerator switcher;
-  
+
   void setupBasicNetwork()
   {
     Module::resetIdGenerator();

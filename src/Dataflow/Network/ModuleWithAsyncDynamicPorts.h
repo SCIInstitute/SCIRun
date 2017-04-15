@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,52 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FIELDS_GeneratePointSamplesFromField_H__
-#define MODULES_LEGACY_FIELDS_GeneratePointSamplesFromField_H__
+#ifndef DATAFLOW_NETWORK_ModuleWithAsyncDynamicPorts_H
+#define DATAFLOW_NETWORK_ModuleWithAsyncDynamicPorts_H
 
-#include <Dataflow/Network/GeometryGeneratingModule.h>
-#include <Core/Datatypes/Geometry.h>
-#include <Modules/Legacy/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
+namespace Dataflow {
+namespace Networks {
 
-  namespace Core
+  class SCISHARE ModuleWithAsyncDynamicPorts : public Module
   {
-    namespace Algorithms
-    {
-      namespace Fields
-      {
-        ALGORITHM_PARAMETER_DECL(NumSeeds);
-        ALGORITHM_PARAMETER_DECL(ProbeScale);
-      }
-    }
-  }
+  public:
+    explicit ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info, bool hasUI);
+    virtual bool hasDynamicPorts() const override { return true; }
+    virtual void execute() override;
+    virtual void asyncExecute(const PortId& pid, Core::Datatypes::DatatypeHandle data) = 0;
+    virtual void portRemovedSlot(const ModuleId& mid, const PortId& pid) override;
+  protected:
+    virtual void portRemovedSlotImpl(const PortId& pid) = 0;
+    virtual size_t add_input_port(InputPortHandle h) override;
+  };
 
-  namespace Modules {
-    namespace Fields {
-
-      class SCISHARE GeneratePointSamplesFromField : public Dataflow::Networks::GeometryGeneratingModule,
-        public Has1InputPort<FieldPortTag>,
-        public Has2OutputPorts<GeometryPortTag, FieldPortTag>
-      {
-      public:
-        GeneratePointSamplesFromField();
-
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
-
-        INPUT_PORT(0, InputField, Field);
-        OUTPUT_PORT(0, GeneratedWidget, GeometryObject);
-        OUTPUT_PORT(1, GeneratedPoints, Field);
-
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
-      private:
-        boost::shared_ptr<class GeneratePointSamplesFromFieldImpl> impl_;
-        FieldHandle GenerateOutputField();
-      };
-
-    }
-  }
-}
+}}}
 
 #endif
