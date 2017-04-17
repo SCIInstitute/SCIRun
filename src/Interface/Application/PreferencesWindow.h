@@ -39,10 +39,10 @@ namespace Gui {
 class PreferencesWindow : public QDialog, public Ui::PreferencesDialog
 {
 	Q_OBJECT
-	
+
 public:
-  explicit PreferencesWindow(NetworkEditor* editor, QWidget* parent = 0);
-  
+  explicit PreferencesWindow(NetworkEditor* editor, QWidget* parent = nullptr);
+
   bool saveBeforeExecute() const;
   void setSaveBeforeExecute(bool mode);
 
