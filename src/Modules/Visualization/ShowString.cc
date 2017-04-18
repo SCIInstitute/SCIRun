@@ -76,16 +76,31 @@ void ShowString::setStateDefaults()
   state->setValue(Parameters::FixedVertical, std::string("Top"));
   state->setValue(Parameters::CoordinateHorizontal, 0.5);
   state->setValue(Parameters::CoordinateVertical, 0.5);
+
+  getOutputPort(RenderedString)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWindowResizeFeedback(var); });
+}
+
+void ShowString::processWindowResizeFeedback(const Core::Datatypes::ModuleFeedback& var)
+{
+  auto vsf = static_cast<const ViewSceneFeedback&>(var);
+  auto width = std::get<0>(vsf.windowSize);
+  if (lastWindowSize_ != width)
+  {
+    lastWindowSize_ = width;
+    needReexecute_ = true;
+    enqueueExecuteAgain(false);
+  }
 }
 
 void ShowString::execute()
 {
   auto str = getRequiredInput(String);
 
-  if (needToExecute())
+  if (needToExecute() || needReexecute_)
   {
     auto geom = buildGeometryObject(str->value());
     sendOutput(RenderedString, geom);
+    needReexecute_ = false;
   }
 }
 
@@ -196,9 +211,12 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
     textBuilder_->setColor(r, g, b, a);
   }
 
-  // std::cout << "xTrans " << xTrans << " len " << textBuilder_->getStringLen(text) << std::endl;
-  // auto length = textBuilder_->getStringLen(text);
-  // xTrans *= 1 - length / visibleViewSceneSize;
+  auto length = textBuilder_->getStringLen(text) + 20;
+  // std::cout << "xTrans before " << xTrans <<
+  //   " lastWindowSize_ " << lastWindowSize_ <<
+  //   " multiplier " << (1 - length / lastWindowSize_) <<
+  //   " xTrans after " << (xTrans * (1 - length / lastWindowSize_)) << std::endl;
+  xTrans *= 1 - length / lastWindowSize_;
   Vector trans(xTrans, yTrans, 0.0);
   textBuilder_->printString(text, trans, Vector(), text, *geom);
 

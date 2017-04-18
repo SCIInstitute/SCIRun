@@ -151,6 +151,7 @@ namespace SCIRun {
       void showEvent(QShowEvent* evt) override;
       void hideEvent(QHideEvent* evt) override;
       void contextMenuEvent(QContextMenuEvent* evt) override {}
+      void resizeEvent(QResizeEvent *event) override;
 
       void pullSpecial() override;
 
