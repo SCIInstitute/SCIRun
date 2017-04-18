@@ -69,9 +69,9 @@ namespace Visualization {
     OUTPUT_PORT(0, RenderedString, GeometryObject);
     MODULE_TRAITS_AND_INFO(ModuleHasUI)
   private:
-    boost::shared_ptr<class TextBuilder> textBuilder_; 
+    boost::shared_ptr<class TextBuilder> textBuilder_;
     Core::Datatypes::GeometryBaseHandle buildGeometryObject(const std::string& text);
-    std::tuple<double, double> getTextPosition() const;
+    std::tuple<double, double> getTextPosition();
   };
 }}}
 
