@@ -188,10 +188,10 @@ namespace SCIRun
   }
 }
 
-/*static*/ LoggerHandle Module::defaultLogger_(new ConsoleLogger);
-/*static*/ ModuleIdGeneratorHandle Module::idGenerator_(new detail::PerTypeInstanceCountIdGenerator);
+/*static*/ LoggerHandle DefaultModuleFactories::defaultLogger_(new ConsoleLogger);
+/*static*/ ModuleIdGeneratorHandle DefaultModuleFactories::idGenerator_(new detail::PerTypeInstanceCountIdGenerator);
 
-/*static*/ void Module::resetIdGenerator() { idGenerator_->reset(); }
+/*static*/ void Module::resetIdGenerator() { DefaultModuleFactories::idGenerator_->reset(); }
 
 const int Module::TraitFlags = SCIRun::Modules::UNDEFINED_MODULE_FLAG;
 
@@ -202,11 +202,11 @@ Module::Module(const ModuleLookupInfo& info,
   ReexecuteStrategyFactoryHandle reexFactory,
   const std::string& version)
   : info_(info),
-  id_(info.module_name_, idGenerator_->makeId(info.module_name_))
+  id_(info.module_name_, DefaultModuleFactories::idGenerator_->makeId(info.module_name_))
 {
   impl_ = boost::make_shared<ModuleImpl>(this, hasUi, stateFactory);
 
-  setLogger(defaultLogger_);
+  setLogger(DefaultModuleFactories::defaultLogger_);
   setUpdaterFunc([](double x) {});
 
   auto& log = Log::get();
@@ -232,7 +232,7 @@ Module::Module(const ModuleLookupInfo& info,
 void Module::set_id(const std::string& id)
 {
   ModuleId newId(id);
-  if (!idGenerator_->takeId(newId.name_, newId.idNumber_))
+  if (!DefaultModuleFactories::idGenerator_->takeId(newId.name_, newId.idNumber_))
     THROW_INVALID_ARGUMENT("Duplicate module IDs, invalid network file.");
   id_ = newId;
 }
@@ -241,9 +241,9 @@ Module::~Module()
 {
 }
 
-ModuleStateFactoryHandle Module::defaultStateFactory_;
-AlgorithmFactoryHandle Module::defaultAlgoFactory_;
-ReexecuteStrategyFactoryHandle Module::defaultReexFactory_;
+ModuleStateFactoryHandle DefaultModuleFactories::defaultStateFactory_;
+AlgorithmFactoryHandle DefaultModuleFactories::defaultAlgoFactory_;
+ReexecuteStrategyFactoryHandle DefaultModuleFactories::defaultReexFactory_;
 
 bool Module::has_ui() const
 {
@@ -283,7 +283,7 @@ AlgorithmHandle Module::getAlgorithm() const
 
 LoggerHandle Module::getLogger() const
 {
-  return impl_->log_ ? impl_->log_ : defaultLogger_;
+  return impl_->log_ ? impl_->log_ : DefaultModuleFactories::defaultLogger_;
 }
 
 OutputPortHandle Module::getOutputPort(const PortId& id) const
@@ -592,15 +592,15 @@ std::vector<OutputPortHandle> Module::outputPorts() const
   return impl_->oports_.view();
 }
 
-Module::Builder::Builder()
+ModuleBuilder::ModuleBuilder()
 {
 }
 
-Module::Builder::SinkMaker Module::Builder::sink_maker_;
-Module::Builder::SourceMaker Module::Builder::source_maker_;
+ModuleBuilder::SinkMaker ModuleBuilder::sink_maker_;
+ModuleBuilder::SourceMaker ModuleBuilder::source_maker_;
 
-/*static*/ void Module::Builder::use_sink_type(SinkMaker func) { sink_maker_ = func; }
-/*static*/ void Module::Builder::use_source_type(SourceMaker func) { source_maker_ = func; }
+/*static*/ void ModuleBuilder::use_sink_type(SinkMaker func) { sink_maker_ = func; }
+/*static*/ void ModuleBuilder::use_source_type(SourceMaker func) { source_maker_ = func; }
 
 class DummyModule : public Module
 {
@@ -616,7 +616,7 @@ public:
   {}
 };
 
-Module::Builder& Module::Builder::with_name(const std::string& name)
+ModuleBuilder& ModuleBuilder::with_name(const std::string& name)
 {
   if (!module_)
   {
@@ -627,14 +627,14 @@ Module::Builder& Module::Builder::with_name(const std::string& name)
   return *this;
 }
 
-Module::Builder& Module::Builder::using_func(ModuleMaker create)
+ModuleBuilder& ModuleBuilder::using_func(ModuleMaker create)
 {
   if (!module_)
     module_.reset(create());
   return *this;
 }
 
-Module::Builder& Module::Builder::setStateDefaults()
+ModuleBuilder& ModuleBuilder::setStateDefaults()
 {
   if (module_)
   {
@@ -644,7 +644,7 @@ Module::Builder& Module::Builder::setStateDefaults()
   return *this;
 }
 
-Module::Builder& Module::Builder::add_input_port(const Port::ConstructionParams& params)
+ModuleBuilder& ModuleBuilder::add_input_port(const Port::ConstructionParams& params)
 {
   if (module_)
   {
@@ -653,14 +653,14 @@ Module::Builder& Module::Builder::add_input_port(const Port::ConstructionParams&
   return *this;
 }
 
-void Module::Builder::addInputPortImpl(Module& module, const Port::ConstructionParams& params)
+void ModuleBuilder::addInputPortImpl(Module& module, const Port::ConstructionParams& params)
 {
   DatatypeSinkInterfaceHandle sink(sink_maker_ ? sink_maker_() : nullptr);
   auto port(boost::make_shared<InputPort>(module_.get(), params, sink));
   port->setIndex(module_->add_input_port(port));
 }
 
-Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams& params)
+ModuleBuilder& ModuleBuilder::add_output_port(const Port::ConstructionParams& params)
 {
   if (module_)
   {
@@ -671,7 +671,7 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
   return *this;
 }
 
-PortId Module::Builder::cloneInputPort(ModuleHandle module, const PortId& id)
+PortId ModuleBuilder::cloneInputPort(ModuleHandle module, const PortId& id)
 {
   auto m = dynamic_cast<Module*>(module.get());
   if (m)
@@ -683,7 +683,7 @@ PortId Module::Builder::cloneInputPort(ModuleHandle module, const PortId& id)
   THROW_INVALID_ARGUMENT("Don't know how to clone ports on other Module types");
 }
 
-void Module::Builder::removeInputPort(ModuleHandle module, const PortId& id)
+void ModuleBuilder::removeInputPort(ModuleHandle module, const PortId& id)
 {
   auto m = dynamic_cast<Module*>(module.get());
   if (m)
@@ -692,7 +692,7 @@ void Module::Builder::removeInputPort(ModuleHandle module, const PortId& id)
   }
 }
 
-ModuleHandle Module::Builder::build()
+ModuleHandle ModuleBuilder::build()
 {
   return module_;
 }

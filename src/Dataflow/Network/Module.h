@@ -51,6 +51,16 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
+  struct SCISHARE DefaultModuleFactories
+  {
+    /// @todo: yuck
+    static ModuleStateFactoryHandle defaultStateFactory_;
+    static Core::Algorithms::AlgorithmFactoryHandle defaultAlgoFactory_;
+    static ReexecuteStrategyFactoryHandle defaultReexFactory_;
+    static Core::Logging::LoggerHandle defaultLogger_;
+    static ModuleIdGeneratorHandle idGenerator_;
+  };
+
   class SCISHARE Module : public ModuleInterface,
     public Core::Logging::LegacyLoggerInterface,
     public StateChangeObserver,
@@ -59,9 +69,9 @@ namespace Networks {
   public:
     explicit Module(const ModuleLookupInfo& info,
       bool hasUi = true,
-      Core::Algorithms::AlgorithmFactoryHandle algoFactory = defaultAlgoFactory_,
-      ModuleStateFactoryHandle stateFactory = defaultStateFactory_,
-      ReexecuteStrategyFactoryHandle reexFactory = defaultReexFactory_,
+      Core::Algorithms::AlgorithmFactoryHandle algoFactory = DefaultModuleFactories::defaultAlgoFactory_,
+      ModuleStateFactoryHandle stateFactory = DefaultModuleFactories::defaultStateFactory_,
+      ReexecuteStrategyFactoryHandle reexFactory = DefaultModuleFactories::defaultReexFactory_,
       const std::string& version = "1.0");
     virtual ~Module() override;
 
@@ -213,53 +223,11 @@ namespace Networks {
     template <class T, size_t N>
     void sendOutputFromAlgorithm(const StaticPortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output);
 
-    class SCISHARE Builder : boost::noncopyable
-    {
-    public:
-      Builder();
-      Builder& with_name(const std::string& name);
-      Builder& using_func(ModuleMaker create);
-      Builder& add_input_port(const Port::ConstructionParams& params);
-      Builder& add_output_port(const Port::ConstructionParams& params);
-      Builder& setStateDefaults();
-      ModuleHandle build();
-
-      /// @todo: these don't quite belong here, think about extracting
-      PortId cloneInputPort(ModuleHandle module, const PortId& id);
-      void removeInputPort(ModuleHandle module, const PortId& id);
-
-      typedef boost::function<DatatypeSinkInterface*()> SinkMaker;
-      typedef boost::function<DatatypeSourceInterface*()> SourceMaker;
-      static void use_sink_type(SinkMaker func);
-      static void use_source_type(SourceMaker func);
-    private:
-      void addInputPortImpl(Module& module, const Port::ConstructionParams& params);
-      boost::shared_ptr<Module> module_;
-      static SinkMaker sink_maker_;
-      static SourceMaker source_maker_;
-    };
-
-    /// @todo: yuck
-    static ModuleStateFactoryHandle defaultStateFactory_;
-    static Core::Algorithms::AlgorithmFactoryHandle defaultAlgoFactory_;
-    static ReexecuteStrategyFactoryHandle defaultReexFactory_;
-    static Core::Logging::LoggerHandle defaultLogger_;
-    static ModuleIdGeneratorHandle idGenerator_;
-
   protected:
+    friend class ModuleBuilder;
     const ModuleLookupInfo info_;
     ModuleId id_;
-
     Core::Algorithms::AlgorithmBase& algo();
-
-  protected:
-    enum LegacyState {
-      NeedData,
-      JustStarted,
-      Executing,
-      Completed
-    };
-    void update_state(LegacyState) { /*TODO*/ }
 
     void setStateBoolFromAlgo(const Core::Algorithms::AlgorithmParameterName& name);
     void setStateIntFromAlgo(const Core::Algorithms::AlgorithmParameterName& name);
@@ -295,6 +263,32 @@ namespace Networks {
 
     friend class ModuleImpl;
     boost::shared_ptr<class ModuleImpl> impl_;
+  };
+
+  class SCISHARE ModuleBuilder : boost::noncopyable
+  {
+  public:
+    ModuleBuilder();
+    ModuleBuilder& with_name(const std::string& name);
+    ModuleBuilder& using_func(ModuleMaker create);
+    ModuleBuilder& add_input_port(const Port::ConstructionParams& params);
+    ModuleBuilder& add_output_port(const Port::ConstructionParams& params);
+    ModuleBuilder& setStateDefaults();
+    ModuleHandle build();
+
+    /// @todo: these don't quite belong here, think about extracting
+    PortId cloneInputPort(ModuleHandle module, const PortId& id);
+    void removeInputPort(ModuleHandle module, const PortId& id);
+
+    typedef boost::function<DatatypeSinkInterface*()> SinkMaker;
+    typedef boost::function<DatatypeSourceInterface*()> SourceMaker;
+    static void use_sink_type(SinkMaker func);
+    static void use_source_type(SourceMaker func);
+  private:
+    void addInputPortImpl(Module& module, const Port::ConstructionParams& params);
+    boost::shared_ptr<Module> module_;
+    static SinkMaker sink_maker_;
+    static SourceMaker source_maker_;
   };
 
 #include <Dataflow/Network/ModuleTemplateImpl.h>

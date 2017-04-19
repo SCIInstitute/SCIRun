@@ -173,7 +173,6 @@ void EditMeshBoundingBox::execute()
   if (needToExecute())
   {
     clear_vals();
-    update_state(Executing);
     update_input_attributes(field);
     executeImpl(field);
   }

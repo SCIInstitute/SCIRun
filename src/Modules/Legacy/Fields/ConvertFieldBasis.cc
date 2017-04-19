@@ -71,8 +71,6 @@ ConvertFieldBasis::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     pushInputFieldInfo(input);
 
     setAlgoOptionFromState(Parameters::OutputType);

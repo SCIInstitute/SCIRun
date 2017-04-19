@@ -177,7 +177,6 @@ GenericReader<HType, PortTag>::execute()
 #endif
       )
   {
-    update_state(Executing);
     old_filemodification_ = new_filemodification;
 
     HType handle;

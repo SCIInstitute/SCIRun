@@ -64,8 +64,6 @@ BuildMappingMatrix::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     setAlgoOptionFromState(Parameters::MappingMethod);
     setAlgoDoubleFromState(Parameters::MaxDistance);
 

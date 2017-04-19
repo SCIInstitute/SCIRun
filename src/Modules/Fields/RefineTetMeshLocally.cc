@@ -75,8 +75,6 @@ void RefineTetMeshLocally::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     setAlgoDoubleFromState(Parameters::RefineTetMeshLocallyIsoValue);
     setAlgoDoubleFromState(Parameters::RefineTetMeshLocallyEdgeLength);
     setAlgoDoubleFromState(Parameters::RefineTetMeshLocallyVolume);

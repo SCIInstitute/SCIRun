@@ -162,8 +162,6 @@ void ReportFieldGeometryMeasures::execute()
 
   DenseMatrixHandle output;
 
-  update_state(Executing);
-
   if (state->getValue(Parameters::MeasureLocation).toString() == "Nodes")
   {
     VMesh::Node::size_type nrows;

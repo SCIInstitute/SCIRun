@@ -93,9 +93,6 @@ EvaluateLinearAlgebraGeneral::execute()
 
   if (needToExecute())
   {
-    // Inform module that execution started
-    update_state(Executing);
-
     NewLinAlgEngine engine;
     engine.setLogger(getLogger());
 

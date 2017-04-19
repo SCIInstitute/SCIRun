@@ -111,8 +111,6 @@ void ExportFieldsToMatlab::execute()
     if (!overwrite()) return;
 #endif
 
-    update_state(Executing);
-
     std::vector<std::string> fieldnames;
 
     auto iPorts = inputPorts();
