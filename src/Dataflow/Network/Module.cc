@@ -136,6 +136,58 @@ namespace detail
   };
 }
 
+namespace SCIRun
+{
+  namespace Dataflow
+  {
+    namespace Networks
+    {
+      class ModuleImpl
+      {
+      private:
+        Module* module_;
+      public:
+        ModuleImpl(Module* module, bool hasUi, ModuleStateFactoryHandle stateFactory)
+          : module_(module),
+          has_ui_(hasUi),
+          state_(stateFactory ? stateFactory->make_state(module->info_.module_name_) : new NullModuleState),
+          metadata_(state_),
+          executionState_(boost::make_shared<detail::ModuleExecutionStateImpl>())
+        {
+          iports_.set_module(module_);
+          oports_.set_module(module_);
+        }
+
+        boost::atomic<bool> inputsChanged_ { false };
+
+        bool has_ui_;
+        AlgorithmHandle algo_;
+
+        ModuleStateHandle state_;
+        MetadataMap metadata_;
+        PortManager<OutputPortHandle> oports_;
+        PortManager<InputPortHandle> iports_;
+
+        ExecuteBeginsSignalType executeBegins_;
+        ExecuteEndsSignalType executeEnds_;
+        ErrorSignalType errorSignal_;
+        std::vector<boost::shared_ptr<boost::signals2::scoped_connection>> portConnections_;
+        ModuleInterface::ExecutionSelfRequestSignalType executionSelfRequested_;
+
+        ModuleReexecutionStrategyHandle reexecute_;
+        std::atomic<bool> threadStopped_ { false };
+
+        ModuleExecutionStateHandle executionState_;
+        std::atomic<bool> executionDisabled_ { false };
+
+        LoggerHandle log_;
+        AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
+        UiToggleFunc uiToggleFunc_;
+      };
+    }
+  }
+}
+
 /*static*/ LoggerHandle Module::defaultLogger_(new ConsoleLogger);
 /*static*/ ModuleIdGeneratorHandle Module::idGenerator_(new detail::PerTypeInstanceCountIdGenerator);
 
@@ -150,14 +202,10 @@ Module::Module(const ModuleLookupInfo& info,
   ReexecuteStrategyFactoryHandle reexFactory,
   const std::string& version)
   : info_(info),
-  id_(info.module_name_, idGenerator_->makeId(info.module_name_)),
-  has_ui_(hasUi),
-  state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
-  metadata_(state_),
-  executionState_(new detail::ModuleExecutionStateImpl)
+  id_(info.module_name_, idGenerator_->makeId(info.module_name_))
 {
-  iports_.set_module(this);
-  oports_.set_module(this);
+  impl_ = boost::make_shared<ModuleImpl>(this, hasUi, stateFactory);
+
   setLogger(defaultLogger_);
   setUpdaterFunc([](double x) {});
 
@@ -167,18 +215,18 @@ Module::Module(const ModuleLookupInfo& info,
 
   if (algoFactory)
   {
-    algo_ = algoFactory->create(get_module_name(), this);
-    if (algo_)
+    impl_->algo_ = algoFactory->create(get_module_name(), this);
+    if (impl_->algo_)
       log << DEBUG_LOG << "Module algorithm initialized: " << info_.module_name_;
   }
   log.flush();
 
-  initStateObserver(state_.get());
+  initStateObserver(impl_->state_.get());
 
   if (reexFactory)
     setReexecutionStrategy(reexFactory->create(*this));
 
-  executionState_->transitionTo(ModuleExecutionState::NotExecuted);
+  impl_->executionState_->transitionTo(ModuleExecutionState::NotExecuted);
 }
 
 void Module::set_id(const std::string& id)
@@ -197,40 +245,79 @@ ModuleStateFactoryHandle Module::defaultStateFactory_;
 AlgorithmFactoryHandle Module::defaultAlgoFactory_;
 ReexecuteStrategyFactoryHandle Module::defaultReexFactory_;
 
-LoggerHandle Module::getLogger() const { return log_ ? log_ : defaultLogger_; }
+bool Module::has_ui() const
+{
+  return impl_->has_ui_;
+}
+
+bool Module::executionDisabled() const
+{
+  return impl_->executionDisabled_;
+}
+
+void Module::setExecutionDisabled(bool disable)
+{
+  impl_->executionDisabled_ = disable;
+}
+
+void Module::error(const std::string& msg) const
+{
+  impl_->errorSignal_(id_);
+  getLogger()->error(msg);
+}
+
+AlgorithmStatusReporter::UpdaterFunc Module::getUpdaterFunc() const
+{
+  return impl_->updaterFunc_;
+}
+
+void Module::setUiToggleFunc(UiToggleFunc func)
+{
+  impl_->uiToggleFunc_ = func;
+}
+
+AlgorithmHandle Module::getAlgorithm() const
+{
+  return impl_->algo_;
+}
+
+LoggerHandle Module::getLogger() const
+{
+  return impl_->log_ ? impl_->log_ : defaultLogger_;
+}
 
 OutputPortHandle Module::getOutputPort(const PortId& id) const
 {
-  return oports_[id];
+  return impl_->oports_[id];
 }
 
 InputPortHandle Module::getInputPort(const PortId& id)
 {
-  return iports_[id];
+  return impl_->iports_[id];
 }
 
 size_t Module::num_input_ports() const
 {
-  return iports_.size();
+  return impl_->iports_.size();
 }
 
 size_t Module::num_output_ports() const
 {
-  return oports_.size();
+  return impl_->oports_.size();
 }
 
 //TODO requirements for state metadata reporting
 std::string Module::stateMetaInfo() const
 {
-  if (!state_)
+  if (!get_state())
     return "Null state map.";
-  auto keys = state_->getKeys();
+  auto keys = get_state()->getKeys();
   size_t i = 0;
   std::ostringstream ostr;
   ostr << "\n\t{";
   for (const auto& key : keys)
   {
-    ostr << "[" << key.name() << ", " << state_->getValue(key).value() << "]";
+    ostr << "[" << key.name() << ", " << get_state()->getValue(key).value() << "]";
     i++;
     if (i < keys.size())
       ostr << ",\n\t";
@@ -241,7 +328,7 @@ std::string Module::stateMetaInfo() const
 
 void Module::copyStateToMetadata()
 {
-  metadata_.setMetadata("Module state", stateMetaInfo());
+  impl_->metadata_.setMetadata("Module state", stateMetaInfo());
 }
 
 bool Module::executeWithSignals() NOEXCEPT
@@ -255,18 +342,18 @@ bool Module::executeWithSignals() NOEXCEPT
     std::cout << starting << std::endl;
   }
 #endif
-  executeBegins_(id_);
+  impl_->executeBegins_(id_);
   boost::timer executionTimer;
   {
     auto isoString = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::universal_time());
-    metadata_.setMetadata("Last execution timestamp", isoString);
+    impl_->metadata_.setMetadata("Last execution timestamp", isoString);
     copyStateToMetadata();
   }
   /// @todo: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
   status(starting);
   /// @todo: need separate logger per module
   //LOG_DEBUG("STARTING MODULE: " << id_.id_);
-  executionState_->transitionTo(ModuleExecutionState::Executing);
+  impl_->executionState_->transitionTo(ModuleExecutionState::Executing);
   bool returnCode = false;
   bool threadStopValue = false;
 
@@ -322,13 +409,13 @@ bool Module::executeWithSignals() NOEXCEPT
   {
     error("MODULE ERROR: unhandled exception caught");
   }
-  threadStopped_ = threadStopValue;
+  impl_->threadStopped_ = threadStopValue;
 
   auto executionTime = executionTimer.elapsed();
   {
     std::ostringstream ostr;
     ostr << executionTime;
-    metadata_.setMetadata("Last execution duration (seconds)", ostr.str());
+    impl_->metadata_.setMetadata("Last execution duration (seconds)", ostr.str());
   }
 
   std::ostringstream finished;
@@ -343,71 +430,71 @@ bool Module::executeWithSignals() NOEXCEPT
 #endif
 
   //TODO: brittle dependency on Completed with executor
-  executionState_->transitionTo(ModuleExecutionState::Completed);
+  impl_->executionState_->transitionTo(ModuleExecutionState::Completed);
 
   auto expandedEndState = returnCode ? ModuleExecutionState::Completed : ModuleExecutionState::Errored;
-  executionState_->setExpandedState(expandedEndState);
+  impl_->executionState_->setExpandedState(expandedEndState);
 
   if (!executionDisabled())
   {
     resetStateChanged();
-    inputsChanged_ = false;
+    impl_->inputsChanged_ = false;
   }
 
-  executeEnds_(executionTime, id_);
+  impl_->executeEnds_(executionTime, id_);
   return returnCode;
 }
 
 ModuleStateHandle Module::get_state()
 {
-  return state_;
+  return impl_->state_;
 }
 
 const ModuleStateHandle Module::get_state() const
 {
-  return state_;
+  return impl_->state_;
 }
 
 void Module::set_state(ModuleStateHandle state)
 {
-  if (!state_)
-    state_ = state;
+  if (!get_state())
+    impl_->state_ = state;
   else if (state) // merge/overwrite
   {
-    state_->overwriteWith(*state);
+    impl_->state_->overwriteWith(*state);
   }
-  initStateObserver(state_.get());
+  initStateObserver(impl_->state_.get());
   postStateChangeInternalSignalHookup();
   copyStateToMetadata();
 }
 
 AlgorithmBase& Module::algo()
 {
-  if (!algo_)
+  if (!impl_->algo_)
     error("Null algorithm object, make sure AlgorithmFactory knows about this module's algorithm types.");
-  ENSURE_NOT_NULL(algo_, "Null algorithm!");
+  ENSURE_NOT_NULL(impl_->algo_, "Null algorithm!");
 
-  return *algo_;
+  return *impl_->algo_;
 }
 
 size_t Module::add_input_port(InputPortHandle h)
 {
-  return iports_.add(h);
+  return impl_->iports_.add(h);
 }
 
 size_t Module::add_output_port(OutputPortHandle h)
 {
-  return oports_.add(h);
+  return impl_->oports_.add(h);
 }
 
 bool Module::hasInputPort(const PortId& id) const
 {
-  return iports_.hasPort(id);
+  return impl_->iports_.hasPort(id);
 }
 
 bool Module::hasOutputPort(const PortId& id) const
 {
-  return oports_.hasPort(id);
+  return impl_->oports_.hasPort(id);
 }
 
 namespace //TODO: flesh out requirements for metadata on input handles.
@@ -425,12 +512,12 @@ namespace //TODO: flesh out requirements for metadata on input handles.
 DatatypeHandleOption Module::get_input_handle(const PortId& id)
 {
   /// @todo test...
-  if (!iports_.hasPort(id))
+  if (!impl_->iports_.hasPort(id))
   {
     BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Input port not found: " + id.toString()));
   }
 
-  auto port = iports_[id];
+  auto port = impl_->iports_[id];
   if (port->isDynamic())
   {
     BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + id.toString() + " is dynamic, get_dynamic_input_handles must be called."));
@@ -439,21 +526,19 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
   {
     //Log::get() << DEBUG_LOG << id_ << " :: inputsChanged is " << inputsChanged_ << ", querying port for value." << std::endl;
     // NOTE: don't use short-circuited boolean OR here, we need to call hasChanged each time since it updates the port's cache flag.
-    inputsChanged_ = port->hasChanged() || inputsChanged_;
+    impl_->inputsChanged_ = port->hasChanged() || impl_->inputsChanged_;
     //Log::get() << DEBUG_LOG << id_ << ":: inputsChanged is now " << inputsChanged_ << std::endl;
   }
 
   auto data = port->getData();
-
-  metadata_.setMetadata("Input " + id.toString(), metaInfo(data));
-
+  impl_->metadata_.setMetadata("Input " + id.toString(), metaInfo(data));
   return data;
 }
 
 std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId& id)
 {
   /// @todo test...
-  auto portsWithName = iports_[id.name];  //will throw if empty
+  auto portsWithName = impl_->iports_[id.name];  //will throw if empty
   if (!portsWithName[0]->isDynamic())
   {
     BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + id.toString() + " is static, get_input_handle must be called."));
@@ -462,8 +547,8 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
   {
     LOG_DEBUG(id_ << " :: inputsChanged is " << inputsChanged_ << ", querying port for value.");
     // NOTE: don't use short-circuited boolean OR here, we need to call hasChanged each time since it updates the port's cache flag.
-    bool startingVal = inputsChanged_;
-    inputsChanged_ = std::accumulate(portsWithName.begin(), portsWithName.end(), startingVal, [](bool acc, InputPortHandle input) { return input->hasChanged() || acc; });
+    bool startingVal = impl_->inputsChanged_;
+    impl_->inputsChanged_ = std::accumulate(portsWithName.begin(), portsWithName.end(), startingVal, [](bool acc, InputPortHandle input) { return input->hasChanged() || acc; });
     LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
   }
 
@@ -471,7 +556,7 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
   auto getData = [](InputPortHandle input) { return input->getData(); };
   std::transform(portsWithName.begin(), portsWithName.end(), std::back_inserter(options), getData);
 
-  metadata_.setMetadata("Input " + id.toString(), metaInfo(options.empty() ? boost::none : options[0]));
+  impl_->metadata_.setMetadata("Input " + id.toString(), metaInfo(options.empty() ? boost::none : options[0]));
 
   return options;
 }
@@ -479,32 +564,32 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
 void Module::send_output_handle(const PortId& id, DatatypeHandle data)
 {
   /// @todo test...
-  if (!oports_.hasPort(id))
+  if (!impl_->oports_.hasPort(id))
   {
     THROW_OUT_OF_RANGE("Output port does not exist: " + id.toString());
   }
 
-  oports_[id]->sendData(data);
+  impl_->oports_[id]->sendData(data);
 }
 
 std::vector<InputPortHandle> Module::findInputPortsWithName(const std::string& name) const
 {
-  return iports_[name];
+  return impl_->iports_[name];
 }
 
 std::vector<OutputPortHandle> Module::findOutputPortsWithName(const std::string& name) const
 {
-  return oports_[name];
+  return impl_->oports_[name];
 }
 
 std::vector<InputPortHandle> Module::inputPorts() const
 {
-  return iports_.view();
+  return impl_->iports_.view();
 }
 
 std::vector<OutputPortHandle> Module::outputPorts() const
 {
-  return oports_.view();
+  return impl_->oports_.view();
 }
 
 Module::Builder::Builder()
@@ -614,51 +699,51 @@ ModuleHandle Module::Builder::build()
 
 boost::signals2::connection Module::connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber)
 {
-  return executeBegins_.connect(subscriber);
+  return impl_->executeBegins_.connect(subscriber);
 }
 
 boost::signals2::connection Module::connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber)
 {
-  return executeEnds_.connect(subscriber);
+  return impl_->executeEnds_.connect(subscriber);
 }
 
 boost::signals2::connection Module::connectErrorListener(const ErrorSignalType::slot_type& subscriber)
 {
-  return errorSignal_.connect(subscriber);
+  return impl_->errorSignal_.connect(subscriber);
 }
 
 void Module::setUiVisible(bool visible)
 {
-  if (uiToggleFunc_)
-    uiToggleFunc_(visible);
+  if (impl_->uiToggleFunc_)
+    impl_->uiToggleFunc_(visible);
 }
 
 void Module::setLogger(LoggerHandle log)
 {
-  log_ = log;
-  if (algo_)
-    algo_->setLogger(log);
+  impl_->log_ = log;
+  if (impl_->algo_)
+    impl_->algo_->setLogger(log);
 }
 
 void Module::setUpdaterFunc(AlgorithmStatusReporter::UpdaterFunc func)
 {
-  updaterFunc_ = func;
-  if (algo_)
-    algo_->setUpdaterFunc(func);
+  impl_->updaterFunc_ = func;
+  if (impl_->algo_)
+    impl_->algo_->setUpdaterFunc(func);
 }
 
 bool Module::oport_connected(const PortId& id) const
 {
-  if (!oports_.hasPort(id))
+  if (!impl_->oports_.hasPort(id))
     return false;
 
-  auto port = oports_[id];
+  auto port = impl_->oports_[id];
   return port->nconnections() > 0;
 }
 
 void Module::removeInputPort(const PortId& id)
 {
-  iports_.remove(id);
+  impl_->iports_.remove(id);
 }
 
 void Module::setStateBoolFromAlgo(const AlgorithmParameterName& name)
@@ -723,19 +808,19 @@ void Module::setAlgoListFromState(const AlgorithmParameterName& name)
 
 ModuleExecutionState& Module::executionState()
 {
-  return *executionState_;
+  return *impl_->executionState_;
 }
 
 bool Module::needToExecute() const
 {
   static Mutex needToExecuteLock("needToExecute");
-  if (reexecute_)
+  if (impl_->reexecute_)
   {
     //Test fix for reexecute problem. Seems like it could be a race condition, but not sure.
     Guard g(needToExecuteLock.get());
-    if (threadStopped_)
+    if (impl_->threadStopped_)
       return true;
-    auto val = reexecute_->needToExecute();
+    auto val = impl_->reexecute_->needToExecute();
     //Log::get() << DEBUG_LOG << id_ << " Using real needToExecute strategy object, value is: " << val << std::endl;
     return val;
   }
@@ -745,27 +830,27 @@ bool Module::needToExecute() const
 
 const MetadataMap& Module::metadata() const
 {
-  return metadata_;
+  return impl_->metadata_;
 }
 
 ModuleReexecutionStrategyHandle Module::getReexecutionStrategy() const
 {
-  return reexecute_;
+  return impl_->reexecute_;
 }
 
 void Module::setReexecutionStrategy(ModuleReexecutionStrategyHandle caching)
 {
-  reexecute_ = caching;
+  impl_->reexecute_ = caching;
 }
 
 bool Module::inputsChanged() const
 {
-  return inputsChanged_;
+  return impl_->inputsChanged_;
 }
 
 void Module::addPortConnection(const boost::signals2::connection& con)
 {
-  portConnections_.emplace_back(new boost::signals2::scoped_connection(con));
+  impl_->portConnections_.emplace_back(new boost::signals2::scoped_connection(con));
 }
 
 ModuleWithAsyncDynamicPorts::ModuleWithAsyncDynamicPorts(const ModuleLookupInfo& info, bool hasUI) : Module(info, hasUI)
@@ -907,12 +992,12 @@ bool SCIRun::Dataflow::Networks::canReplaceWith(ModuleHandle module, const Modul
 
 void Module::enqueueExecuteAgain(bool upstream)
 {
-  executionSelfRequested_(upstream);
+  impl_->executionSelfRequested_(upstream);
 }
 
 boost::signals2::connection Module::connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber)
 {
-  return executionSelfRequested_.connect(subscriber);
+  return impl_->executionSelfRequested_.connect(subscriber);
 }
 
 std::hash<std::string> ModuleLevelUniqueIDGenerator::hash_;

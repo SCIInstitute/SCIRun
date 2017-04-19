@@ -50,7 +50,7 @@
   {
     auto inputOpt = get_input_handle(id);
     if (!inputOpt)
-      return boost::optional<boost::shared_ptr<T>>();
+      return {};
 
     return checkInput<T>(inputOpt, id);
   }
@@ -108,7 +108,7 @@
     if (!*inputOpt)
       MODULE_ERROR_WITH_TYPE(NullHandleOnPortException, "Null handle on port " + id.name);
 
-    boost::shared_ptr<T> data = boost::dynamic_pointer_cast<T>(*inputOpt);
+    auto data = boost::dynamic_pointer_cast<T>(*inputOpt);
 
     if (!data)
     {

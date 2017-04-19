@@ -51,7 +51,10 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
-  class SCISHARE Module : public ModuleInterface, public Core::Logging::LegacyLoggerInterface, public StateChangeObserver, boost::noncopyable
+  class SCISHARE Module : public ModuleInterface,
+    public Core::Logging::LegacyLoggerInterface,
+    public StateChangeObserver,
+    boost::noncopyable
   {
   public:
     explicit Module(const ModuleLookupInfo& info,
@@ -79,7 +82,7 @@ namespace Networks {
     //for unit testing. Need to restrict access somehow.
     static void resetIdGenerator();
 
-    bool has_ui() const override { return has_ui_; }
+    bool has_ui() const override;
     void setUiVisible(bool visible) override;
     virtual size_t num_input_ports() const override final;
     virtual size_t num_output_ports() const override final;
@@ -111,8 +114,8 @@ namespace Networks {
 
     virtual const MetadataMap& metadata() const override final;
 
-    virtual bool executionDisabled() const override final { return executionDisabled_; }
-    virtual void setExecutionDisabled(bool disable) override final { executionDisabled_ = disable; }
+    virtual bool executionDisabled() const override final;
+    virtual void setExecutionDisabled(bool disable) override final;
 
   private:
     virtual Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) override final;
@@ -123,14 +126,14 @@ namespace Networks {
   public:
     virtual void setLogger(Core::Logging::LoggerHandle log) override final;
     virtual Core::Logging::LoggerHandle getLogger() const override final;
-    virtual void error(const std::string& msg) const override final { errorSignal_(id_); getLogger()->error(msg); }
+    virtual void error(const std::string& msg) const override final;
     virtual void warning(const std::string& msg) const override final { getLogger()->warning(msg); }
     virtual void remark(const std::string& msg) const override final { getLogger()->remark(msg); }
     virtual void status(const std::string& msg) const override final { getLogger()->status(msg); }
 
-    virtual Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const override final { return updaterFunc_; }
+    virtual Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const override final;
     virtual void setUpdaterFunc(Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) override final;
-    virtual void setUiToggleFunc(UiToggleFunc func) override final { uiToggleFunc_ = func; }
+    virtual void setUiToggleFunc(UiToggleFunc func) override final;
 
     virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber) override final;
     virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber) override final;
@@ -138,7 +141,7 @@ namespace Networks {
 
     virtual void addPortConnection(const boost::signals2::connection& con) override final;
 
-    virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const override final { return algo_; }
+    virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const override final;
 
     virtual bool needToExecute() const override final;
 
@@ -159,7 +162,6 @@ namespace Networks {
     struct PortNameBase
     {
       explicit PortNameBase(const PortId& id) : id_(id) {}
-      //operator size_t() const { return N; }
 
       operator PortId() const
       {
@@ -291,36 +293,11 @@ namespace Networks {
     template <class T>
     boost::shared_ptr<T> checkInput(Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id);
 
-    boost::atomic<bool> inputsChanged_ { false };
-
-    friend class Builder;
-
-    bool has_ui_;
-    Core::Algorithms::AlgorithmHandle algo_;
-
-    ModuleStateHandle state_;
-    MetadataMap metadata_;
-    PortManager<OutputPortHandle> oports_;
-    PortManager<InputPortHandle> iports_;
-
-    ExecuteBeginsSignalType executeBegins_;
-    ExecuteEndsSignalType executeEnds_;
-    ErrorSignalType errorSignal_;
-    std::vector<boost::shared_ptr<boost::signals2::scoped_connection>> portConnections_;
-    ExecutionSelfRequestSignalType executionSelfRequested_;
-
-    ModuleReexecutionStrategyHandle reexecute_;
-    std::atomic<bool> threadStopped_ { false };
-
-    ModuleExecutionStateHandle executionState_;
-    std::atomic<bool> executionDisabled_ { false };
-
-    Core::Logging::LoggerHandle log_;
-    Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
-    UiToggleFunc uiToggleFunc_;
+    friend class ModuleImpl;
+    boost::shared_ptr<class ModuleImpl> impl_;
   };
 
-  #include <Dataflow/Network/ModuleTemplateImpl.h>
+#include <Dataflow/Network/ModuleTemplateImpl.h>
 
 }}}
 
