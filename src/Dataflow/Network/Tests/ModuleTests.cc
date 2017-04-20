@@ -27,6 +27,7 @@
 */
 
 #include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/ModuleBuilder.h>
 #include <gtest/gtest.h>
 
 using namespace SCIRun::Dataflow::Networks;

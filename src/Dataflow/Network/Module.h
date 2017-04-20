@@ -45,21 +45,12 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/PortManager.h>
+#include <Dataflow/Network/DefaultModuleFactories.h>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
-
-  struct SCISHARE DefaultModuleFactories
-  {
-    /// @todo: yuck
-    static ModuleStateFactoryHandle defaultStateFactory_;
-    static Core::Algorithms::AlgorithmFactoryHandle defaultAlgoFactory_;
-    static ReexecuteStrategyFactoryHandle defaultReexFactory_;
-    static Core::Logging::LoggerHandle defaultLogger_;
-    static ModuleIdGeneratorHandle idGenerator_;
-  };
 
   class SCISHARE Module : public ModuleInterface,
     public Core::Logging::LegacyLoggerInterface,
@@ -263,32 +254,6 @@ namespace Networks {
 
     friend class ModuleImpl;
     boost::shared_ptr<class ModuleImpl> impl_;
-  };
-
-  class SCISHARE ModuleBuilder : boost::noncopyable
-  {
-  public:
-    ModuleBuilder();
-    ModuleBuilder& with_name(const std::string& name);
-    ModuleBuilder& using_func(ModuleMaker create);
-    ModuleBuilder& add_input_port(const Port::ConstructionParams& params);
-    ModuleBuilder& add_output_port(const Port::ConstructionParams& params);
-    ModuleBuilder& setStateDefaults();
-    ModuleHandle build();
-
-    /// @todo: these don't quite belong here, think about extracting
-    PortId cloneInputPort(ModuleHandle module, const PortId& id);
-    void removeInputPort(ModuleHandle module, const PortId& id);
-
-    typedef boost::function<DatatypeSinkInterface*()> SinkMaker;
-    typedef boost::function<DatatypeSourceInterface*()> SourceMaker;
-    static void use_sink_type(SinkMaker func);
-    static void use_source_type(SourceMaker func);
-  private:
-    void addInputPortImpl(Module& module, const Port::ConstructionParams& params);
-    boost::shared_ptr<Module> module_;
-    static SinkMaker sink_maker_;
-    static SourceMaker source_maker_;
   };
 
 #include <Dataflow/Network/ModuleTemplateImpl.h>

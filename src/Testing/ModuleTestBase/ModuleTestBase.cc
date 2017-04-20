@@ -44,6 +44,7 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
 #include <Dataflow/Network/SimpleSourceSink.h>
+#include <Dataflow/Network/ModuleBuilder.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;

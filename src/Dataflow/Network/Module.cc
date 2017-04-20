@@ -44,6 +44,7 @@
 #include <Dataflow/Network/GeometryGeneratingModule.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Dataflow/Network/DataflowInterfaces.h>
+#include <Dataflow/Network/ModuleBuilder.h>
 #include <Core/Logging/ConsoleLogger.h>
 #include <Core/Logging/Log.h>
 #include <Core/Thread/Mutex.h>

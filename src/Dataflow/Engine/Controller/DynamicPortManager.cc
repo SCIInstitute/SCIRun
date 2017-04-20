@@ -31,6 +31,7 @@
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/ConnectionId.h>
+#include <Dataflow/Network/ModuleBuilder.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;

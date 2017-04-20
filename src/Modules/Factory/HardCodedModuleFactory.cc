@@ -33,6 +33,7 @@
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/ModuleBuilder.h>
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 
