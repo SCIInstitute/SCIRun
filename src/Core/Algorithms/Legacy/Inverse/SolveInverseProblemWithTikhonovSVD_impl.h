@@ -63,20 +63,16 @@ namespace Inverse {
 		                                            rank = 0;
 		                                        };
 
+				void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_);
 
 		    private:
 
 		        int rank;
 		        Eigen::JacobiSVD<SCIRun::Core::Datatypes::DenseMatrix::EigenBase> SVDdecomposition;
-		//        const SCIRun::Core::Datatypes::DenseMatrix matrixU_;
-		//        const SCIRun::Core::Datatypes::DenseColumnMatrix matrixS_;
-		//        const SCIRun::Core::Datatypes::DenseMatrix matrixV_;
-		//        SCIRun::Core::Datatypes::DenseMatrix y;
 		        SCIRun::Core::Datatypes::DenseMatrix Uy;
 
 
 		        virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation) const;
-		        void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_);
 		        //      bool checkInputMatrixSizes(); // DEFINED IN PARENT, MIGHT WANT TO OVERRIDE SOME OTHER TIME
 
 

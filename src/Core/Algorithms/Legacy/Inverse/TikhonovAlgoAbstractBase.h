@@ -119,10 +119,9 @@ namespace Inverse {
 		static double LambdaLookup(LCurveInput& input, double lambda, int& lambda_index, const double epsilon);
 		double computeLcurve(  const AlgorithmInput & input ) const;
 
-	protected:
-
 		bool checkInputMatrixSizes( const AlgorithmInput & input ) const;
 
+	protected:
 		// Abstract functions
 		virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation) const = 0;
 

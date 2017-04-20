@@ -61,13 +61,13 @@ SolveInverseProblemWithTikhonov::SolveInverseProblemWithTikhonov() : Module(stat
 
 void SolveInverseProblemWithTikhonov::setStateDefaults()
 {
-	setStateIntFromAlgo(SolveInverseProblemWithTikhonovImpl_child::regularizationChoice);
-	setStateIntFromAlgo(SolveInverseProblemWithTikhonovImpl_child::regularizationSolutionSubcase);
-	setStateIntFromAlgo(SolveInverseProblemWithTikhonovImpl_child::regularizationResidualSubcase);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationChoice);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationSolutionSubcase);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationResidualSubcase);
 }
 
 // execute function
-void SolveInverseProblemWithTikhonovSVD::execute()
+void SolveInverseProblemWithTikhonov::execute()
 {
 
 	// load required inputs
@@ -81,19 +81,21 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 
 	if (needToExecute())
 	{
+		SolveInverseProblemWithTikhonovImpl_child algo;
+
 		// set parameters
-		setAlgoOptionFromState(SolveInverseProblemWithTikhonovImpl_child::regularizationChoice);
-		setAlgoOptionFromState(SolveInverseProblemWithTikhonovImpl_child::regularizationSolutionSubcase);
-		setAlgoOptionFromState(SolveInverseProblemWithTikhonovImpl_child::regularizationResidualSubcase);
+		algo.setOption(TikhonovAlgoAbstractBase::regularizationChoice, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationChoice).toString());
+		algo.setOption(TikhonovAlgoAbstractBase::regularizationSolutionSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationSolutionSubcase).toString());
+		algo.setOption(TikhonovAlgoAbstractBase::regularizationResidualSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationResidualSubcase).toString());
 
 		// check input sizes
-		algo().checkInputMatrixSizes( withInputData((ForwardMatrix, forward_matrix_h) (MeasuredPotentials,hMatrixMeasDat) (WeightingInSourceSpace,hMatrixRegMat) (WeightingInSensorSpace, hMatrixNoiseCov) ) );
+		algo.checkInputMatrixSizes( make_input((ForwardMatrix, *forward_matrix_h) (MeasuredPotentials,*hMatrixMeasDat) (WeightingInSourceSpace,*hMatrixRegMat) (WeightingInSensorSpace, *hMatrixNoiseCov) ) );
 
 		// prealocate MATRICES
-		algo().preAlocateInverseMatrices( forward_matrix_h,  hMatrixMeasDat, hMatrixRegMat, hMatrixNoiseCov);
+		algo.preAlocateInverseMatrices( *forward_matrix_h,  *hMatrixMeasDat, *hMatrixRegMat, *hMatrixNoiseCov );
 
 		// run
-		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h) (MeasuredPotentials,hMatrixMeasDat) (WeightingInSourceSpace,hMatrixRegMat) (WeightingInSensorSpace, hMatrixNoiseCov) ));
+		auto output = algo.run( make_input((ForwardMatrix, *forward_matrix_h) (MeasuredPotentials,*hMatrixMeasDat) (WeightingInSourceSpace,*hMatrixRegMat) (WeightingInSensorSpace, *hMatrixNoiseCov)));
 
 		// update L-curve
 		/* NO EXISTE

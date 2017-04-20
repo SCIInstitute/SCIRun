@@ -30,6 +30,7 @@
 #ifndef MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonov_H__
 #define MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonov_H__
 #include <Dataflow/Network/Module.h>
+#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovImpl_child.h>
 #include <Modules/Fields/share.h>
 
 namespace SCIRun {
@@ -45,18 +46,19 @@ namespace Inverse {
 		virtual void execute();
 		virtual void setStateDefaults();
 
-		INPUT_PORT(0, ForwardMatrix, Matrix);
-		INPUT_PORT(1, WeightingInSourceSpace, Matrix);
-		INPUT_PORT(2, MeasuredPotentials, Matrix);
-		INPUT_PORT(3, WeightingInSensorSpace, Matrix);
-		OUTPUT_PORT(0, InverseSolution, Matrix);
-		OUTPUT_PORT(1, RegularizationParameter, Matrix);
-		OUTPUT_PORT(2, RegInverse, Matrix);
+		INPUT_PORT(0, ForwardMatrix, DenseMatrix);
+		INPUT_PORT(1, WeightingInSourceSpace, DenseMatrix);
+		INPUT_PORT(2, MeasuredPotentials, DenseMatrix);
+		INPUT_PORT(3, WeightingInSensorSpace, DenseMatrix);
+
+		OUTPUT_PORT(0, InverseSolution, DenseMatrix);
+		OUTPUT_PORT(1, RegularizationParameter, DenseMatrix);
+		OUTPUT_PORT(2, RegInverse, DenseMatrix);
 
 		MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 
 	private:
-		void update_lcurve_gui(const double lambda, const Core::Algorithms::Inverse::TikhonovAlgorithm::LCurveInput& input, const int lambda_index);
+		// void update_lcurve_gui(const double lambda, const Core::Algorithms::Inverse::SolveInverseProblemWithTikhonovImpl_child::LCurveInput& input, const int lambda_index);
 	};
 }}}
 

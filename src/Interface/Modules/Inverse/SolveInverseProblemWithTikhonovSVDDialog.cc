@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Interface/Modules/Inverse/SolveInverseProblemWithTikhonovSVDDialog.h>
 #include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD.h>
+#include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -49,23 +50,23 @@ SolveInverseProblemWithTikhonovSVDDialog::SolveInverseProblemWithTikhonovSVDDial
 
   WidgetStyleMixin::tabStyle(inputTabWidget_);
 
-  addDoubleLineEditManager(lCurveLambdaLineEdit_, SolveInverseProblemWithTikhonovSVDModule::LambdaCorner);
-  addSpinBoxManager(lambdaNumberSpinBox_, SolveInverseProblemWithTikhonovSVDModule::LambdaNum);
-  addDoubleSpinBoxManager(lambdaDoubleSpinBox_, SolveInverseProblemWithTikhonovSVDModule::LambdaFromDirectEntry);
-  addDoubleSpinBoxManager(lambdaMinDoubleSpinBox_, SolveInverseProblemWithTikhonovSVDModule::LambdaMin);
-  addDoubleSpinBoxManager(lambdaMaxDoubleSpinBox_, SolveInverseProblemWithTikhonovSVDModule::LambdaMax);
-  addDoubleSpinBoxManager(lambdaResolutionDoubleSpinBox_, SolveInverseProblemWithTikhonovSVDModule::LambdaResolution);
-  addDoubleSpinBoxManager(lCurveMinDoubleSpinBox_, SolveInverseProblemWithTikhonovSVDModule::LambdaMin);
-  addDoubleSpinBoxManager(lCurveMaxDoubleSpinBox_, SolveInverseProblemWithTikhonovSVDModule::LambdaMax);
+  addDoubleLineEditManager(lCurveLambdaLineEdit_, TikhonovAlgoAbstractBase::LambdaCorner);
+  addSpinBoxManager(lambdaNumberSpinBox_, TikhonovAlgoAbstractBase::LambdaNum);
+  addDoubleSpinBoxManager(lambdaDoubleSpinBox_, TikhonovAlgoAbstractBase::LambdaFromDirectEntry);
+  addDoubleSpinBoxManager(lambdaMinDoubleSpinBox_, TikhonovAlgoAbstractBase::LambdaMin);
+  addDoubleSpinBoxManager(lambdaMaxDoubleSpinBox_, TikhonovAlgoAbstractBase::LambdaMax);
+  addDoubleSpinBoxManager(lambdaResolutionDoubleSpinBox_, TikhonovAlgoAbstractBase::LambdaResolution);
+  addDoubleSpinBoxManager(lCurveMinDoubleSpinBox_, TikhonovAlgoAbstractBase::LambdaMin);
+  addDoubleSpinBoxManager(lCurveMaxDoubleSpinBox_, TikhonovAlgoAbstractBase::LambdaMax);
 
-  addDoubleSpinBoxManager(lambdaSliderDoubleSpinBox_, SolveInverseProblemWithTikhonovSVDModule::LambdaSliderValue);
+  addDoubleSpinBoxManager(lambdaSliderDoubleSpinBox_, TikhonovAlgoAbstractBase::LambdaSliderValue);
 
   addRadioButtonGroupManager({ autoRadioButton_, underRadioButton_, overRadioButton_ }, SolveInverseProblemWithTikhonovSVDModule::TikhonovCase);
-  addRadioButtonGroupManager({ solutionConstraintRadioButton_, squaredSolutionRadioButton_ }, Parameters::TikhonovSolutionSubcase);
-  addRadioButtonGroupManager({ residualConstraintRadioButton_, squaredResidualSolutionRadioButton_ }, Parameters::TikhonovResidualSubcase);
+  addRadioButtonGroupManager({ solutionConstraintRadioButton_, squaredSolutionRadioButton_ }, TikhonovAlgoAbstractBase::TikhonovSolutionSubcase);
+  addRadioButtonGroupManager({ residualConstraintRadioButton_, squaredResidualSolutionRadioButton_ }, TikhonovAlgoAbstractBase::TikhonovResidualSubcase);
 
-  addComboBoxManager(lambdaMethodComboBox_, SolveInverseProblemWithTikhonovSVDModule::RegularizationMethod, lambdaMethod_);
-  addTextEditManager(lCurveTextEdit_, SolveInverseProblemWithTikhonovSVDModule::LCurveText);
+  addComboBoxManager(lambdaMethodComboBox_, TikhonovAlgoAbstractBase::RegularizationMethod, lambdaMethod_);
+  addTextEditManager(lCurveTextEdit_, TikhonovAlgoAbstractBase::LCurveText);
 
   connect(lambdaSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));
   connect(lambdaSliderDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderValue(double)));

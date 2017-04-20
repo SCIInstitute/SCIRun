@@ -45,8 +45,7 @@
 #include <Core/Utils/Exception.h>
 
 // Tikhonov inverse libraries
-// #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
-// #include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD.h>
+#include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
 
 // EIGEN LIBRARY
@@ -77,13 +76,6 @@ void SolveInverseProblemWithTikhonovSVD_impl::preAlocateInverseMatrices(const SC
 
     // determine rank
         rank = SVDdecomposition.nonzeroSingularValues();
-
-
-    // Set matrix U, S and V
-//        matrixU_ = convertMatrix::toDense(SVDdecomposition.computeU());
-//        matrixV_ = convertMatrix::toDense(SVDdecomposition.computeV());
-//        matrixS_ = convertMatrix::toDense(SVDdecomposition.nonzeroSingularValues());
-
 
     // Compute the projection of data y on the left singular vectors
         auto tempUy = SVDdecomposition.matrixU().transpose() * (measuredData_);

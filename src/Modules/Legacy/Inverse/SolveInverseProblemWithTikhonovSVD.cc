@@ -50,10 +50,12 @@ MODULE_INFO_DEF(SolveInverseProblemWithTikhonovSVD, Inverse, SCIRun)
 // Constructor needs to initialize all input/output ports
 SolveInverseProblemWithTikhonovSVD::SolveInverseProblemWithTikhonovSVD() : Module(staticInfo_)
 {
+	//inputs
 	INITIALIZE_PORT(ForwardMatrix);
 	INITIALIZE_PORT(WeightingInSourceSpace);
 	INITIALIZE_PORT(MeasuredPotentials);
 	INITIALIZE_PORT(WeightingInSensorSpace);
+	// outputs
 	INITIALIZE_PORT(InverseSolution);
 	INITIALIZE_PORT(RegularizationParameter);
 	INITIALIZE_PORT(RegInverse);
@@ -61,9 +63,9 @@ SolveInverseProblemWithTikhonovSVD::SolveInverseProblemWithTikhonovSVD() : Modul
 
 void SolveInverseProblemWithTikhonovSVD::setStateDefaults()
 {
-	setStateIntFromAlgo(SolveInverseProblemWithTikhonovSVD_impl::regularizationChoice);
-	setStateIntFromAlgo(SolveInverseProblemWithTikhonovSVD_impl::regularizationSolutionSubcase);
-	setStateIntFromAlgo(SolveInverseProblemWithTikhonovSVD_impl::regularizationResidualSubcase);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationChoice);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationSolutionSubcase);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationResidualSubcase);
 }
 
 // execute function
@@ -81,23 +83,25 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 
 	if (needToExecute())
 	{
+		SolveInverseProblemWithTikhonovSVD_impl algo;
+
 		// set parameters
-		setAlgoOptionFromState(SolveInverseProblemWithTikhonovSVD_impl::regularizationChoice);
-		setAlgoOptionFromState(SolveInverseProblemWithTikhonovSVD_impl::regularizationSolutionSubcase);
-		setAlgoOptionFromState(SolveInverseProblemWithTikhonovSVD_impl::regularizationResidualSubcase);
+		algo.setOption(TikhonovAlgoAbstractBase::regularizationChoice, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationChoice).toString() );
+		algo.setOption(TikhonovAlgoAbstractBase::regularizationSolutionSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationSolutionSubcase).toString() );
+		algo.setOption(TikhonovAlgoAbstractBase::regularizationResidualSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationResidualSubcase).toString() );
 
 		// check input sizes
-		algo().checkInputMatrixSizes( withInputData((ForwardMatrix, forward_matrix_h) (MeasuredPotentials,hMatrixMeasDat) (WeightingInSourceSpace,hMatrixRegMat) (WeightingInSensorSpace, hMatrixNoiseCov) ) );
+		algo.checkInputMatrixSizes( make_input( (ForwardMatrix, *forward_matrix_h) (MeasuredPotentials,*hMatrixMeasDat) (WeightingInSourceSpace,*hMatrixRegMat) (WeightingInSensorSpace, *hMatrixNoiseCov) ) );
 
 		// prealocate MATRICES
-		algo().preAlocateInverseMatrices( forward_matrix_h,  hMatrixMeasDat, hMatrixRegMat, hMatrixNoiseCov);
+		algo.preAlocateInverseMatrices( *forward_matrix_h,  *hMatrixMeasDat, *hMatrixRegMat, *hMatrixNoiseCov );
 
 		// run
-		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h) (MeasuredPotentials,hMatrixMeasDat) (WeightingInSourceSpace,hMatrixRegMat) (WeightingInSensorSpace, hMatrixNoiseCov) ));
+		auto output = algo.run( make_input( (ForwardMatrix, *forward_matrix_h)(MeasuredPotentials,*hMatrixMeasDat)(WeightingInSourceSpace,*hMatrixRegMat)(WeightingInSensorSpace, *hMatrixNoiseCov) ));
 
 		// update L-curve
 		/* NO EXISTE
-        SolveInverseProblemWithTikhonovImpl_child::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonov::update_lcurve_gui, this, _1, _2, _3);
+        SolveInverseProblemWithTikhonovSVD_impl::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonov::update_lcurve_gui, this, _1, _2, _3);
 		*/
 
 		// set outputs
