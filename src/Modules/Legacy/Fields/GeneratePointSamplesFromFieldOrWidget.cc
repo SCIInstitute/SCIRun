@@ -720,7 +720,6 @@ GeneratePointSamplesFromFieldOrWidget::execute()
   {
     if (needToExecute())
     {
-      update_state(Executing);
       execute_random(field_in_handle);
     }
   }

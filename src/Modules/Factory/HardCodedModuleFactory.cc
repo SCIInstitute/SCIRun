@@ -93,28 +93,28 @@ namespace SCIRun {
 
 HardCodedModuleFactory::HardCodedModuleFactory() : impl_(new HardCodedModuleFactoryImpl)
 {
-  Module::Builder::use_sink_type(boost::factory<SimpleSink*>());
-  Module::Builder::use_source_type(boost::factory<SimpleSource*>());
+  ModuleBuilder::use_sink_type(boost::factory<SimpleSink*>());
+  ModuleBuilder::use_source_type(boost::factory<SimpleSource*>());
 }
 
 void HardCodedModuleFactory::setStateFactory(ModuleStateFactoryHandle stateFactory)
 {
-  Module::defaultStateFactory_ = stateFactory_ = stateFactory;
+  DefaultModuleFactories::defaultStateFactory_ = stateFactory_ = stateFactory;
 }
 
 void HardCodedModuleFactory::setAlgorithmFactory(AlgorithmFactoryHandle algoFactory)
 {
-  Module::defaultAlgoFactory_ = algoFactory;
+  DefaultModuleFactories::defaultAlgoFactory_ = algoFactory;
 }
 
 void HardCodedModuleFactory::setReexecutionFactory(ReexecuteStrategyFactoryHandle reexFactory)
 {
-  Module::defaultReexFactory_ = reexFactory;
+  DefaultModuleFactories::defaultReexFactory_ = reexFactory;
 }
 
 ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
 {
-  Module::Builder builder;
+  ModuleBuilder builder;
 
   if (desc.maker_)
     builder.using_func(desc.maker_);

@@ -125,13 +125,13 @@ namespace
 
   UseGlobalInstanceCountIdGenerator::UseGlobalInstanceCountIdGenerator()
   {
-    oldGenerator_ = Module::idGenerator_;
-    Module::idGenerator_.reset(new InstanceCountIdGenerator);
+    oldGenerator_ = DefaultModuleFactories::idGenerator_;
+    DefaultModuleFactories::idGenerator_.reset(new InstanceCountIdGenerator);
   }
 
   UseGlobalInstanceCountIdGenerator::~UseGlobalInstanceCountIdGenerator()
   {
-    Module::idGenerator_ = oldGenerator_;
+    DefaultModuleFactories::idGenerator_ = oldGenerator_;
   }
 
 

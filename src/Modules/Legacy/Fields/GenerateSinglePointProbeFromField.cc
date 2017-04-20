@@ -182,9 +182,6 @@ void GenerateSinglePointProbeFromField::execute()
 FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::optional<FieldHandle> ifieldOption)
 {
   FieldHandle ifield;
-
-  update_state(Executing);
-
   const double THRESHOLD = 1e-6;
   auto state = get_state();
   using namespace Parameters;
@@ -246,7 +243,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
 
     impl_->last_bounds_ = bbox;
   }
-  
+
   const auto moveto = state->getValue(MoveMethod).toString();
   bool moved_p = false;
   if (moveto == "Location")

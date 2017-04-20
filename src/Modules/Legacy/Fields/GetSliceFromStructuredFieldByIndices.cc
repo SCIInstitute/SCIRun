@@ -92,7 +92,6 @@ void GetSliceFromStructuredFieldByIndices::execute()
   auto inputMatrixOption = getOptionalInput(InputMatrix);
 
   bool indexesChanged = false;
-  update_state(Executing);
 
   VField* ifield = inputField->vfield();
   VMesh*  imesh = inputField->vmesh();
@@ -118,7 +117,6 @@ void GetSliceFromStructuredFieldByIndices::execute()
 
   imesh->get_dimensions(dims);
 
-  bool update_dims = false;
   auto state = get_state();
 
   /// Check to see if the gui dimensions are different than the field.
@@ -237,8 +235,6 @@ void GetSliceFromStructuredFieldByIndices::execute()
 
   if (indexesChanged || needToExecute())
   {
-    update_state(Executing);
-
     if (ifield->basis_order() == 0)
     {
       VMesh::index_type i_start = 0;

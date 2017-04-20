@@ -66,7 +66,6 @@ void ExtractSimpleIsosurface::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
     auto state = get_state();
 
     if (isovalueOption && *isovalueOption && !(*isovalueOption)->empty())

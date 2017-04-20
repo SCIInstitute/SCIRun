@@ -106,9 +106,9 @@ ModuleTestBase::ModuleTestBase() : factory_(new HardCodedModuleFactory)
 
 void ModuleTestBase::initModuleParameters(bool verbose)
 {
-  Module::Builder::use_sink_type(boost::factory<StubbedDatatypeSink*>());
-  Module::Builder::use_source_type(boost::factory<TestSimpleSource*>());
-  Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory(verbose));
+  ModuleBuilder::use_sink_type(boost::factory<StubbedDatatypeSink*>());
+  ModuleBuilder::use_source_type(boost::factory<TestSimpleSource*>());
+  DefaultModuleFactories::defaultAlgoFactory_.reset(new MockAlgorithmFactory(verbose));
   DefaultValue<AlgorithmParameterName>::Set(AlgorithmParameterName());
   DefaultValue<AlgorithmParameter>::Set(AlgorithmParameter());
   DefaultValue<const AlgorithmParameter&>::Set(algoParam_);
@@ -132,7 +132,7 @@ void ModuleTestBase::stubPortNWithThisData(ModuleHandle module, size_t portNum, 
     iport->attach(nullptr);
     if (iport->isDynamic())
     {
-      Module::Builder builder;
+      ModuleBuilder builder;
       auto newPortId = builder.cloneInputPort(module, iport->id());
     }
     DatatypeHandleOption o = data;
@@ -161,20 +161,20 @@ void ModuleTestBase::connectDummyOutputConnection(Dataflow::Networks::ModuleHand
 
 UseRealAlgorithmFactory::UseRealAlgorithmFactory()
 {
-  Module::defaultAlgoFactory_.reset(new HardCodedAlgorithmFactory);
+  DefaultModuleFactories::defaultAlgoFactory_.reset(new HardCodedAlgorithmFactory);
 }
 
 UseRealAlgorithmFactory::~UseRealAlgorithmFactory()
 {
-  Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory(true));
+  DefaultModuleFactories::defaultAlgoFactory_.reset(new MockAlgorithmFactory(true));
 }
 
 UseRealModuleStateFactory::UseRealModuleStateFactory()
 {
-  Module::defaultStateFactory_.reset(new SimpleMapModuleStateFactory);
+  DefaultModuleFactories::defaultStateFactory_.reset(new SimpleMapModuleStateFactory);
 }
 
 UseRealModuleStateFactory::~UseRealModuleStateFactory()
 {
-  Module::defaultStateFactory_.reset();
+  DefaultModuleFactories::defaultStateFactory_.reset();
 }

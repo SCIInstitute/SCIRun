@@ -68,7 +68,6 @@ ConvertIndicesToFieldData::execute()
 
 	if (needToExecute())
 	{
-		update_state(Executing);
 		setAlgoOptionFromState(Parameters::OutputFieldDataType);
 
 		auto output = algo().run(withInputData((InputField, input_field)(InputMatrix, input_matrix)));
