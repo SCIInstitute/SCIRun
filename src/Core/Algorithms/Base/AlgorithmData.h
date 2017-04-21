@@ -55,7 +55,7 @@ namespace Algorithms {
     {
       auto it = data_.find(name);
       /// @todo: log incorrect type if present but wrong type
-      return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(it->second[0]);
+      return it == data_.end() ? nullptr : boost::dynamic_pointer_cast<T>(it->second[0]);
     }
 
     template <typename T>
@@ -85,7 +85,7 @@ namespace Algorithms {
   {
   public:
     AlgorithmInput() {}
-    AlgorithmInput(const Map& m) : AlgorithmData(m) {}
+    explicit AlgorithmInput(const Map& m) : AlgorithmData(m) {}
   };
 
   class SCISHARE AlgorithmOutput : public AlgorithmData

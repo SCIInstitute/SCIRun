@@ -50,16 +50,15 @@ namespace Algorithms {
   class SCISHARE Variable
   {
   public:
-    typedef std::vector<Variable> List;
-
-    typedef boost::variant<
+    using List = std::vector<Variable>;
+    using Value = boost::variant<
       int,
       double,
       std::string,
       bool,
       AlgoOption,
       List
-    > Value;
+    >;
 
     Variable() {}
     Variable(const Name& name, const Value& value);

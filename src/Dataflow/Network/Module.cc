@@ -829,6 +829,11 @@ bool Module::needToExecute() const
   return true;
 }
 
+bool Module::hasDynamicPorts() const
+{
+  return false; /// @todo: need to examine HasPorts base classes
+}
+
 const MetadataMap& Module::metadata() const
 {
   return impl_->metadata_;
@@ -871,7 +876,7 @@ size_t ModuleWithAsyncDynamicPorts::add_input_port(InputPortHandle h)
 void ModuleWithAsyncDynamicPorts::portRemovedSlot(const ModuleId& mid, const PortId& pid)
 {
   //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
-  if (mid == id_)
+  if (mid == get_id())
   {
     portRemovedSlotImpl(pid);
   }

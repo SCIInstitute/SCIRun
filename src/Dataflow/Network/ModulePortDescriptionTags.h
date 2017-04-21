@@ -31,11 +31,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/static_assert.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/atomic.hpp>
-#include <atomic>
 #include <vector>
-#include <Core/Logging/LoggerInterface.h>
 #include <Core/Datatypes/DatatypeFwd.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Mesh/FieldFwd.h>
@@ -333,13 +329,13 @@ namespace Modules
 #define ATTACH_NAMESPACE2(type) SCIRun::Core::Datatypes::type
 
 #define INPUT_PORT(index, name, type) static std::string inputPort ## index ## Name() { return #name; } \
-  StaticPortName< ATTACH_NAMESPACE(type), index > name;
+  Dataflow::Networks::StaticPortName< ATTACH_NAMESPACE(type), index > name;
 
 #define INPUT_PORT_DYNAMIC(index, name, type) static std::string inputPort ## index ## Name() { return #name; } \
-  DynamicPortName< ATTACH_NAMESPACE(type), index > name;
+  Dataflow::Networks::DynamicPortName< ATTACH_NAMESPACE(type), index > name;
 
 #define OUTPUT_PORT(index, name, type) static std::string outputPort ## index ## Name() { return #name; } \
-  StaticPortName< ATTACH_NAMESPACE(type), index> name;
+  Dataflow::Networks::StaticPortName< ATTACH_NAMESPACE(type), index> name;
 
 #define INITIALIZE_PORT(nameObj) do{ nameObj.id_.name = #nameObj; }while(0);
 
