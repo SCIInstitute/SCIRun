@@ -105,93 +105,83 @@ namespace Networks {
     virtual ~Module() override;
 
     /*** User-interface ****/
-    virtual ModuleStateHandle get_state() override final;
-    virtual const ModuleStateHandle get_state() const override final;
-    virtual void enqueueExecuteAgain(bool upstream) override final;
-    virtual void error(const std::string& msg) const override final;
-    virtual void warning(const std::string& msg) const override final { getLogger()->warning(msg); }
-    virtual void remark(const std::string& msg) const override final { getLogger()->remark(msg); }
-    virtual void status(const std::string& msg) const override final { getLogger()->status(msg); }
-    virtual bool needToExecute() const override final;
+    ModuleStateHandle get_state() override final;
+    const ModuleStateHandle get_state() const override final;
+    void enqueueExecuteAgain(bool upstream) override final;
+    void error(const std::string& msg) const override final;
+    void warning(const std::string& msg) const override final { getLogger()->warning(msg); }
+    void remark(const std::string& msg) const override final { getLogger()->remark(msg); }
+    void status(const std::string& msg) const override final { getLogger()->status(msg); }
+    bool needToExecute() const override final;
+    bool hasDynamicPorts() const override;
+    template <class T, class D, size_t N>
+    void sendOutput(const StaticPortName<T,N>& port, boost::shared_ptr<D> data);
 
-    /*** Dev-interface ****/
-    virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) override final;
-    virtual void set_state(ModuleStateHandle state) override final;
-    virtual ModuleExecutionState& executionState() override final;
+    /*** public Dev-interface ****/
+    boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) override final;
+    void set_state(ModuleStateHandle state) override final;
+    ModuleExecutionState& executionState() override final;
+
     virtual std::string helpPageUrl() const override;
     std::string newHelpPageUrl() const; // location in flux, but new v5 modules only have one of these
     //for serialization
-    virtual const ModuleLookupInfo& get_info() const override final { return info_; }
-    virtual void set_id(const std::string& id) override final;
-    virtual bool executeWithSignals() NOEXCEPT override final;
+    const ModuleLookupInfo& get_info() const override final { return info_; }
+    void set_id(const std::string& id) override final;
+    bool executeWithSignals() NOEXCEPT override final;
     bool has_ui() const override;
     void setUiVisible(bool visible) override;
-    virtual size_t num_input_ports() const override final;
-    virtual size_t num_output_ports() const override final;
+    size_t num_input_ports() const override final;
+    size_t num_output_ports() const override final;
     // override this for modules that changed packages, to point to correct wiki page
     virtual std::string legacyPackageName() const override { return get_packagename(); }
     // override this for modules that changed names, to point to correct wiki page
     virtual std::string legacyModuleName() const override { return get_module_name(); }
-    virtual bool hasInputPort(const PortId& id) const override final;
-    virtual bool hasOutputPort(const PortId& id) const override final;
-    virtual InputPortHandle getInputPort(const PortId& id) override final;
-    virtual OutputPortHandle getOutputPort(const PortId& id) const override final;
-    virtual std::vector<InputPortHandle> findInputPortsWithName(const std::string& name) const override final;
-    virtual std::vector<OutputPortHandle> findOutputPortsWithName(const std::string& name) const override final;
-    virtual std::vector<InputPortHandle> inputPorts() const override final;
-    virtual std::vector<OutputPortHandle> outputPorts() const override final;
-    virtual bool isStoppable() const override final;
-    virtual bool hasDynamicPorts() const override;
+    bool hasInputPort(const PortId& id) const override final;
+    bool hasOutputPort(const PortId& id) const override final;
+    InputPortHandle getInputPort(const PortId& id) override final;
+    OutputPortHandle getOutputPort(const PortId& id) const override final;
+    std::vector<InputPortHandle> findInputPortsWithName(const std::string& name) const override final;
+    std::vector<OutputPortHandle> findOutputPortsWithName(const std::string& name) const override final;
+    std::vector<InputPortHandle> inputPorts() const override final;
+    std::vector<OutputPortHandle> outputPorts() const override final;
+    bool isStoppable() const override final;
     bool oport_connected(const PortId& id) const;
     bool inputsChanged() const;
-    virtual std::string get_module_name() const override final { return info_.module_name_; }
+    std::string get_module_name() const override final { return info_.module_name_; }
     std::string get_categoryname() const { return info_.category_name_; }
     std::string get_packagename() const { return info_.package_name_; }
     ModuleId get_id() const override { return id_; }
-
-    virtual ModuleReexecutionStrategyHandle getReexecutionStrategy() const override final;
-    virtual void setReexecutionStrategy(ModuleReexecutionStrategyHandle caching) override final;
-    virtual Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const override final;
-    virtual void setUpdaterFunc(Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) override final;
-    virtual void setUiToggleFunc(UiToggleFunc func) override final;
-
-    virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber) override final;
-    virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber) override final;
-    virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber) override final;
-
-    virtual void addPortConnection(const boost::signals2::connection& con) override final;
-
-    virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const override final;
-    virtual void setLogger(Core::Logging::LoggerHandle log) override final;
-    virtual Core::Logging::LoggerHandle getLogger() const override final;
-    virtual const MetadataMap& metadata() const override final;
-    virtual bool executionDisabled() const override final;
-    virtual void setExecutionDisabled(bool disable) override final;
-
-    template <class T, class D, size_t N>
-    void sendOutput(const StaticPortName<T,N>& port, boost::shared_ptr<D> data);
-
+    ModuleReexecutionStrategyHandle getReexecutionStrategy() const override final;
+    void setReexecutionStrategy(ModuleReexecutionStrategyHandle caching) override final;
+    Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const override final;
+    void setUpdaterFunc(Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) override final;
+    void setUiToggleFunc(UiToggleFunc func) override final;
+    boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber) override final;
+    boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber) override final;
+    boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber) override final;
+    void addPortConnection(const boost::signals2::connection& con) override final;
+    Core::Algorithms::AlgorithmHandle getAlgorithm() const override final;
+    void setLogger(Core::Logging::LoggerHandle log) override final;
+    Core::Logging::LoggerHandle getLogger() const override final;
+    const MetadataMap& metadata() const override final;
+    bool executionDisabled() const override final;
+    void setExecutionDisabled(bool disable) override final;
     static const int TraitFlags;
-    /*******/
-
     //for unit testing. Need to restrict access somehow.
     static void resetIdGenerator();
+    /*******/
 
   protected:
 /*** User-interface ****/
     // Throws if input is not present or null.
     template <class T, size_t N>
     boost::shared_ptr<T> getRequiredInput(const StaticPortName<T,N>& port);
-
     template <class T, size_t N>
     boost::optional<boost::shared_ptr<T>> getOptionalInput(const StaticPortName<T,N>& port);
-
     template <class T, size_t N>
     std::vector<boost::shared_ptr<T>> getRequiredDynamicInputs(const DynamicPortName<T,N>& port);
-
     template <class T, size_t N>
     std::vector<boost::shared_ptr<T>> getOptionalDynamicInputs(const DynamicPortName<T,N>& port);
-
     template <class T, size_t N>
     void sendOutputFromAlgorithm(const StaticPortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output);
 
@@ -212,7 +202,7 @@ namespace Networks {
     //For modules that need to initialize some internal state signal/slots, this needs to be called after set_state to reinitialize.
     virtual void postStateChangeInternalSignalHookup() {}
 
-/*** Dev-interface ****/
+/*** protected Dev-interface ****/
     virtual void send_output_handle(const PortId& id, Core::Datatypes::DatatypeHandle data) override final;
     virtual size_t add_input_port(InputPortHandle);
     size_t add_output_port(OutputPortHandle);
