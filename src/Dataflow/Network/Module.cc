@@ -148,10 +148,15 @@ namespace SCIRun
       private:
         Module* module_;
       public:
-        ModuleImpl(Module* module, bool hasUi, ModuleStateFactoryHandle stateFactory)
+        ModuleImpl(Module* module,
+          const ModuleLookupInfo& info,
+          bool hasUi,
+          ModuleStateFactoryHandle stateFactory)
           : module_(module),
+          info_(info),
+          id_(info.module_name_, DefaultModuleFactories::idGenerator_->makeId(info.module_name_)),
           has_ui_(hasUi),
-          state_(stateFactory ? stateFactory->make_state(module->info_.module_name_) : new NullModuleState),
+          state_(stateFactory ? stateFactory->make_state(info_.module_name_) : new NullModuleState),
           metadata_(state_),
           executionState_(boost::make_shared<detail::ModuleExecutionStateImpl>())
         {
@@ -161,6 +166,8 @@ namespace SCIRun
 
         boost::atomic<bool> inputsChanged_ { false };
 
+        const ModuleLookupInfo info_;
+        ModuleId id_;
         bool has_ui_;
         AlgorithmHandle algo_;
 
@@ -200,25 +207,22 @@ Module::Module(const ModuleLookupInfo& info,
   bool hasUi,
   AlgorithmFactoryHandle algoFactory,
   ModuleStateFactoryHandle stateFactory,
-  ReexecuteStrategyFactoryHandle reexFactory,
-  const std::string& version)
-  : info_(info),
-  id_(info.module_name_, DefaultModuleFactories::idGenerator_->makeId(info.module_name_))
+  ReexecuteStrategyFactoryHandle reexFactory)
 {
-  impl_ = boost::make_shared<ModuleImpl>(this, hasUi, stateFactory);
+  impl_ = boost::make_shared<ModuleImpl>(this, info, hasUi, stateFactory);
 
   setLogger(DefaultModuleFactories::defaultLogger_);
   setUpdaterFunc([](double x) {});
 
   auto& log = Log::get();
 
-  log << DEBUG_LOG << "Module created: " << info_.module_name_ << " with id: " << id_;
+  log << DEBUG_LOG << "Module created: " << info.module_name_ << " with id: " << impl_->id_;
 
   if (algoFactory)
   {
     impl_->algo_ = algoFactory->create(get_module_name(), this);
     if (impl_->algo_)
-      log << DEBUG_LOG << "Module algorithm initialized: " << info_.module_name_;
+      log << DEBUG_LOG << "Module algorithm initialized: " << info.module_name_;
   }
   log.flush();
 
@@ -235,7 +239,7 @@ void Module::set_id(const std::string& id)
   ModuleId newId(id);
   if (!DefaultModuleFactories::idGenerator_->takeId(newId.name_, newId.idNumber_))
     THROW_INVALID_ARGUMENT("Duplicate module IDs, invalid network file.");
-  id_ = newId;
+  impl_->id_ = newId;
 }
 
 Module::~Module()
@@ -251,6 +255,31 @@ bool Module::has_ui() const
   return impl_->has_ui_;
 }
 
+const ModuleLookupInfo& Module::get_info() const
+{
+  return impl_->info_;
+}
+
+std::string Module::get_module_name() const
+{
+  return get_info().module_name_;
+}
+
+std::string Module::get_categoryname() const
+{
+  return get_info().category_name_;
+}
+
+std::string Module::get_packagename() const
+{
+  return get_info().package_name_;
+}
+
+ModuleId Module::get_id() const
+{
+  return impl_->id_;
+}
+
 bool Module::executionDisabled() const
 {
   return impl_->executionDisabled_;
@@ -263,7 +292,7 @@ void Module::setExecutionDisabled(bool disable)
 
 void Module::error(const std::string& msg) const
 {
-  impl_->errorSignal_(id_);
+  impl_->errorSignal_(get_id());
   getLogger()->error(msg);
 }
 
@@ -334,7 +363,7 @@ void Module::copyStateToMetadata()
 
 bool Module::executeWithSignals() NOEXCEPT
 {
-  auto starting = "STARTING MODULE: " + id_.id_;
+  auto starting = "STARTING MODULE: " + get_id().id_;
 #ifdef BUILD_HEADLESS //TODO: better headless logging
   static Mutex executeLogLock("headlessExecution");
   if (!Log::get().verbose())
@@ -343,7 +372,7 @@ bool Module::executeWithSignals() NOEXCEPT
     std::cout << starting << std::endl;
   }
 #endif
-  impl_->executeBegins_(id_);
+  impl_->executeBegins_(get_id());
   boost::timer executionTimer;
   {
     auto isoString = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::universal_time());
@@ -420,7 +449,8 @@ bool Module::executeWithSignals() NOEXCEPT
   }
 
   std::ostringstream finished;
-  finished << "MODULE " << id_.id_ << " FINISHED " << (returnCode ? "successfully " : "with errors ") << "in " << executionTime << " seconds.";
+  finished << "MODULE " << get_id().id_ << " FINISHED " <<
+    (returnCode ? "successfully " : "with errors ") << "in " << executionTime << " seconds.";
   status(finished.str());
 #ifdef BUILD_HEADLESS //TODO: better headless logging
   if (!Log::get().verbose())
@@ -442,7 +472,7 @@ bool Module::executeWithSignals() NOEXCEPT
     impl_->inputsChanged_ = false;
   }
 
-  impl_->executeEnds_(executionTime, id_);
+  impl_->executeEnds_(executionTime, get_id());
   return returnCode;
 }
 
@@ -550,7 +580,7 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
     // NOTE: don't use short-circuited boolean OR here, we need to call hasChanged each time since it updates the port's cache flag.
     bool startingVal = impl_->inputsChanged_;
     impl_->inputsChanged_ = std::accumulate(portsWithName.begin(), portsWithName.end(), startingVal, [](bool acc, InputPortHandle input) { return input->hasChanged() || acc; });
-    LOG_DEBUG(id_ << ":: inputsChanged is now " << inputsChanged_);
+    LOG_DEBUG(get_id() << ":: inputsChanged is now " << inputsChanged_);
   }
 
   std::vector<DatatypeHandleOption> options;

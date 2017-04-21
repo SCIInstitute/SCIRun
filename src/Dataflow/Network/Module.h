@@ -100,8 +100,7 @@ namespace Networks {
       bool hasUi = true,
       Core::Algorithms::AlgorithmFactoryHandle algoFactory = DefaultModuleFactories::defaultAlgoFactory_,
       ModuleStateFactoryHandle stateFactory = DefaultModuleFactories::defaultStateFactory_,
-      ReexecuteStrategyFactoryHandle reexFactory = DefaultModuleFactories::defaultReexFactory_,
-      const std::string& version = "1.0");
+      ReexecuteStrategyFactoryHandle reexFactory = DefaultModuleFactories::defaultReexFactory_);
     virtual ~Module() override;
 
     /*** User-interface ****/
@@ -125,7 +124,7 @@ namespace Networks {
     virtual std::string helpPageUrl() const override;
     std::string newHelpPageUrl() const; // location in flux, but new v5 modules only have one of these
     //for serialization
-    const ModuleLookupInfo& get_info() const override final { return info_; }
+    const ModuleLookupInfo& get_info() const override final;
     void set_id(const std::string& id) override final;
     bool executeWithSignals() NOEXCEPT override final;
     bool has_ui() const override;
@@ -147,10 +146,10 @@ namespace Networks {
     bool isStoppable() const override final;
     bool oport_connected(const PortId& id) const;
     bool inputsChanged() const;
-    std::string get_module_name() const override final { return info_.module_name_; }
-    std::string get_categoryname() const { return info_.category_name_; }
-    std::string get_packagename() const { return info_.package_name_; }
-    ModuleId get_id() const override { return id_; }
+    std::string get_module_name() const override final;
+    std::string get_categoryname() const;
+    std::string get_packagename() const;
+    ModuleId get_id() const override;
     ModuleReexecutionStrategyHandle getReexecutionStrategy() const override final;
     void setReexecutionStrategy(ModuleReexecutionStrategyHandle caching) override final;
     Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const override final;
@@ -223,8 +222,6 @@ namespace Networks {
     template <class T>
     boost::shared_ptr<T> checkInput(Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id);
 
-    const ModuleLookupInfo info_;
-    ModuleId id_;
     friend class ModuleImpl;
     boost::shared_ptr<class ModuleImpl> impl_;
   };
