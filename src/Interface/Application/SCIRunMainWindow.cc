@@ -1686,6 +1686,10 @@ void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
     	}
 		}
   }
+  else if (event->key() == Qt::Key_Period)
+	{
+    switchMouseMode();
+	}
 
   QMainWindow::keyPressEvent(event);
 }

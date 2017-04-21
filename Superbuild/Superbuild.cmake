@@ -75,6 +75,10 @@ OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
 OPTION(WITH_TETGEN "Build Tetgen." OFF)
 
 ###########################################
+# Configure data
+OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" ON)
+
+###########################################
 # Configure Windows executable to run with
 # or without the console
 
@@ -98,7 +102,9 @@ IF(TRAVIS_BUILD)
     SET(DOWNLOAD_TOOLKITS OFF)
     SET(BUILD_HEADLESS ON)
     SET(BUILD_WITH_PYTHON OFF)
+    SET(BUILD_WITH_SCIRUN_DATA OFF)
   ELSE()
+    SET(BUILD_WITH_SCIRUN_DATA OFF)
     # try building everything with clang!
   ENDIF()
   ADD_DEFINITIONS(-DTRAVIS_BUILD)
@@ -168,6 +174,14 @@ IF(BUILD_WITH_PYTHON)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/PythonExternal.cmake Python_external )
 ENDIF()
 
+FIND_PACKAGE(Subversion)
+IF(NOT Subversion_FOUND)
+  SET(BUILD_WITH_SCIRUN_DATA OFF)
+ENDIF()
+IF(BUILD_WITH_SCIRUN_DATA)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/SCIRunDataExternal.cmake SCI_data_external)
+ENDIF()
+
 IF(WITH_TETGEN)
   MESSAGE(STATUS "Configuring Tetgen library under GPL. The SCIRun InterfaceWithTetGen module can be disabled by setting the CMake build variable WITH_TETGEN to OFF.")
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TetgenExternal.cmake Tetgen_external )
@@ -205,6 +219,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DTeem_DIR:PATH=${Teem_DIR}"
     "-DTetgen_DIR:PATH=${Tetgen_DIR}"
     "-DFreetype_DIR:PATH=${Freetype_DIR}"
+    "-DSCI_DATA_DIR:PATH=${SCI_DATA_DIR}"
 )
 
 IF(BUILD_WITH_PYTHON)
