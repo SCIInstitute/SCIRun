@@ -140,7 +140,7 @@ void ReportColumnMatrixMisfit::execute()
 }
 
 
-void ReportColumnMatrixMisfit::showGraph(const DenseColumnMatrix& v1, const DenseColumnMatrix& v2, double ccInv, double rmsRel) const
+void ReportColumnMatrixMisfit::showGraph(const DenseColumnMatrix& v1, const DenseColumnMatrix& v2, double ccInv, double rmsRel)
 {
   if (containsInfiniteComponent(v1) || containsInfiniteComponent(v2))
     return;

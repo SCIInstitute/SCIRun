@@ -158,7 +158,7 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
 
 Point GenerateSinglePointProbeFromField::currentLocation() const
 {
-  auto state = get_state();
+  auto state = cstate();
   using namespace Parameters;
   return Point(state->getValue(XLocation).toDouble(), state->getValue(YLocation).toDouble(), state->getValue(ZLocation).toDouble());
 }

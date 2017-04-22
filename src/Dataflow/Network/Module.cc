@@ -339,15 +339,15 @@ size_t Module::num_output_ports() const
 //TODO requirements for state metadata reporting
 std::string Module::stateMetaInfo() const
 {
-  if (!get_state())
+  if (!cstate())
     return "Null state map.";
-  auto keys = get_state()->getKeys();
+  auto keys = cstate()->getKeys();
   size_t i = 0;
   std::ostringstream ostr;
   ostr << "\n\t{";
   for (const auto& key : keys)
   {
-    ostr << "[" << key.name() << ", " << get_state()->getValue(key).value() << "]";
+    ostr << "[" << key.name() << ", " << cstate()->getValue(key).value() << "]";
     i++;
     if (i < keys.size())
       ostr << ",\n\t";
@@ -481,7 +481,7 @@ ModuleStateHandle Module::get_state()
   return impl_->state_;
 }
 
-const ModuleStateHandle Module::get_state() const
+const ModuleStateHandle Module::cstate() const
 {
   return impl_->state_;
 }
@@ -842,6 +842,8 @@ ModuleExecutionState& Module::executionState()
   return *impl_->executionState_;
 }
 
+/// @todo:
+// need to hook up output ports for cached state.
 bool Module::needToExecute() const
 {
   static Mutex needToExecuteLock("needToExecute");
@@ -1053,7 +1055,7 @@ std::string ModuleLevelUniqueIDGenerator::generateModuleLevelUniqueID(const Modu
   }
 
   toHash << "}__State{";
-  auto state = module.get_state();
+  auto state = module.cstate();
   for (const auto& key : state->getKeys())
   {
     toHash << key << "->" << state->getValue(key).value() << "_";

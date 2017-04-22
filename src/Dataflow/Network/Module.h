@@ -46,49 +46,12 @@
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/PortManager.h>
 #include <Dataflow/Network/DefaultModuleFactories.h>
+#include <Dataflow/Network/PortNames.h>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
-
-
-      template <class Type, size_t N>
-      struct PortNameBase
-      {
-        explicit PortNameBase(const PortId& id) : id_(id) {}
-
-        operator PortId() const
-        {
-          return toId();
-        }
-
-        PortId toId() const
-        {
-          if (id_.name.empty())
-            BOOST_THROW_EXCEPTION(DataPortException() << SCIRun::Core::ErrorMessage("Port name not initialized!"));
-          return id_;
-        }
-        operator std::string() const
-        {
-          return toId().name;
-        }
-
-        PortId id_;
-      };
-
-      template <class Type, size_t N>
-      struct StaticPortName : PortNameBase<Type,N>
-      {
-        explicit StaticPortName(const PortId& id = PortId(0, "[not defined yet]")) : PortNameBase<Type,N>(id) {}
-      };
-
-      template <class Type, size_t N>
-      struct DynamicPortName : PortNameBase<Type,N>
-      {
-        explicit DynamicPortName(const PortId& id = PortId(0, "[not defined yet]")) : PortNameBase<Type,N>(id) {}
-      };
-
 
   class SCISHARE Module : public ModuleInterface,
     public Core::Logging::LegacyLoggerInterface,
@@ -105,7 +68,7 @@ namespace Networks {
 
     /*** User-interface ****/
     ModuleStateHandle get_state() override final;
-    const ModuleStateHandle get_state() const override final;
+    const ModuleStateHandle cstate() const override final;
     void enqueueExecuteAgain(bool upstream) override final;
     void error(const std::string& msg) const override final;
     void warning(const std::string& msg) const override final { getLogger()->warning(msg); }

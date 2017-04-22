@@ -95,7 +95,7 @@ ConvertFieldBasis::execute()
   }
 }
 
-void ConvertFieldBasis::pushInputFieldInfo(FieldHandle input) const
+void ConvertFieldBasis::pushInputFieldInfo(FieldHandle input)
 {
   auto state = get_state();
   std::string name = input->properties().get_name();

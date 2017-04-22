@@ -46,62 +46,62 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
-  /// @todo: interface is getting bloated, segregate it.
-  class SCISHARE ModuleInterface : public ModuleInfoProvider, public ModuleDisplayInterface,
-    public ExecutableObject, public Core::Algorithms::AlgorithmCollaborator
+  // Methods a module writer needs to know/use/override
+  class SCISHARE ModuleUserInterface
   {
   public:
-    virtual ~ModuleInterface();
+    virtual ~ModuleUserInterface() {}
 
-    virtual ModuleStateHandle get_state() = 0;
-    virtual const ModuleStateHandle get_state() const = 0;
-
+    // These two functions must be implemented:
     virtual void execute() = 0;
+    virtual void setStateDefaults() = 0;
 
+    // These two functions must be understood and used correctly:
+    virtual ModuleStateHandle get_state() = 0;
+    virtual bool needToExecute() const = 0;
+  };
+
+  // Methods for internal developer use/testing
+  class SCISHARE ModuleInternalsInterface
+  {
+  public:
+    virtual ~ModuleInternalsInterface() {}
+    virtual const ModuleStateHandle cstate() const = 0;
     typedef boost::signals2::signal<void(bool)> ExecutionSelfRequestSignalType;
     virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) = 0;
-
     virtual ModuleExecutionState& executionState() = 0;
-
     /// @todo for deserialization
     virtual void set_id(const std::string& id) = 0;
     virtual void set_state(ModuleStateHandle state) = 0;
-
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) = 0;
     virtual std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) = 0;
     virtual void send_output_handle(const PortId& id, SCIRun::Core::Datatypes::DatatypeHandle data) = 0;
-
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) = 0;
-    virtual SCIRun::Core::Logging::LoggerHandle getLogger() const override = 0;
-
-    /// @todo functions
-    virtual SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const override = 0;
     virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) = 0;
     virtual void setUiToggleFunc(UiToggleFunc func) = 0;
-
-    /// @todo:
-    // need to hook up output ports for cached state.
-    virtual bool needToExecute() const = 0;
-
     virtual ModuleReexecutionStrategyHandle getReexecutionStrategy() const = 0;
     virtual void setReexecutionStrategy(ModuleReexecutionStrategyHandle caching) = 0;
-
-    virtual void setStateDefaults() = 0;
-
     virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const = 0;
-
     virtual void portAddedSlot(const Networks::ModuleId& mid, const Networks::PortId& pid) {}
     virtual void portRemovedSlot(const Networks::ModuleId& mid, const Networks::PortId& pid) {}
     virtual void addPortConnection(const boost::signals2::connection& con) = 0;
-
     virtual void enqueueExecuteAgain(bool upstream) = 0;
-
     virtual const MetadataMap& metadata() const = 0;
-
     virtual bool isStoppable() const = 0;
-
     virtual bool executionDisabled() const = 0;
     virtual void setExecutionDisabled(bool disable) = 0;
+  };
+
+  class SCISHARE ModuleInterface :
+    public ModuleUserInterface,
+    public ModuleInternalsInterface,
+    public ModuleInfoProvider,
+    public ModuleDisplayInterface,
+    public ExecutableObject,
+    public Core::Algorithms::AlgorithmCollaborator
+  {
+  public:
+    virtual ~ModuleInterface();
   };
 
 }}}

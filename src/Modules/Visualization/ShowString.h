@@ -71,7 +71,7 @@ namespace Visualization {
   private:
     boost::shared_ptr<class TextBuilder> textBuilder_;
     Core::Datatypes::GeometryBaseHandle buildGeometryObject(const std::string& text);
-    std::tuple<double, double> getTextPosition() const;
+    std::tuple<double, double> getTextPosition();
   };
 }}}
 

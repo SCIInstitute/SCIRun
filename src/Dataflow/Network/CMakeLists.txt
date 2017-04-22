@@ -71,6 +71,7 @@ SET(Dataflow_Network_HEADERS
   NetworkSettings.h
   NullModuleState.h
   Port.h
+  PortNames.h
   PortInterface.h
   PortManager.h
   share.h
