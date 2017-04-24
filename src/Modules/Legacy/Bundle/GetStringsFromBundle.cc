@@ -82,7 +82,6 @@ GetStringsFromBundle::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
     auto state = get_state();
     state->setTransientValue(StringNameList.name(), bundle->getStringNames());
 

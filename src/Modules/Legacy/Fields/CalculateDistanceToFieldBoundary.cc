@@ -76,8 +76,6 @@ CalculateDistanceToFieldBoundary::execute()
 //  if (inputs_changed_ || !oport_cached("DistanceField") ||
 //      (!oport_cached("ValueField") && value_connected))
   {
-    update_state(Executing);
-
     setAlgoBoolFromState(Parameters::Truncate);
     setAlgoDoubleFromState(Parameters::TruncateDistance);
     setAlgoOptionFromState(Parameters::BasisType);

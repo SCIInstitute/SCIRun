@@ -38,6 +38,7 @@
 #include <boost/iterator/counting_iterator.hpp>
 #endif
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Core/Algorithms/Base/Name.h>
 #include <Core/Algorithms/Base/Option.h>
 #include <Core/Algorithms/Base/share.h>
@@ -49,16 +50,15 @@ namespace Algorithms {
   class SCISHARE Variable
   {
   public:
-    typedef std::vector<Variable> List;
-
-    typedef boost::variant<
+    using List = std::vector<Variable>;
+    using Value = boost::variant<
       int,
       double,
       std::string,
       bool,
       AlgoOption,
       List
-    > Value;
+    >;
 
     Variable() {}
     Variable(const Name& name, const Value& value);
@@ -109,7 +109,7 @@ namespace Algorithms {
   Variable::List makeNamedVariableList(const Name (&namesList)[N], Ts&&... params)
   {
     std::vector<Variable::Value> values{ params... };
-    
+
     auto namesIter = &namesList[0];
     Variable::List vars;
     std::transform(values.begin(), values.end(), std::back_inserter(vars),
@@ -139,7 +139,7 @@ namespace Algorithms {
 
   typedef Variable AlgorithmParameter;
   typedef Variable::List VariableList;
-  typedef Datatypes::SharedPointer<Variable> VariableHandle;
+  typedef SharedPointer<Variable> VariableHandle;
 
 }
 

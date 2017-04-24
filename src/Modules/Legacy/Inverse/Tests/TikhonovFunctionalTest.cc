@@ -68,10 +68,6 @@ protected:
     UseRealModuleStateFactory f;
 };
 
-namespace  {
-    const double abs_error = 1e-6;
-}
-
 /// -------- INPUTS TESTS ------------ ///
 
 // NULL fwd matrix + NULL measure data
@@ -207,11 +203,11 @@ TEST_F(TikhonovFunctionalTest, loadIDSquaredSourceReguWithNonSquareOption)
     MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (IDentityt)
     MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
     MatrixHandle sourceRegularizationMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (Identity)
-    
+
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
     tikAlgImp->get_state()->setValue(Parameters::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained);  // select single lambda
-    
+
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
     stubPortNWithThisData(tikAlgImp, 2, measuredData);
@@ -228,11 +224,11 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredSourceReguWithNonSquareOption)
     MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (IDentityt)
     MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
     MatrixHandle sourceRegularizationMatrix(new DenseMatrix(DenseMatrix::Identity(5, 4)));    // forward matrix (Identity)
-    
+
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
     tikAlgImp->get_state()->setValue(Parameters::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained);  // select single lambda
-    
+
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
     stubPortNWithThisData(tikAlgImp, 2, measuredData);
@@ -249,11 +245,11 @@ TEST_F(TikhonovFunctionalTest, loadIDSquaredSourceReguWithSquareOption)
     MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (IDentityt)
     MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
     MatrixHandle sourceRegularizationMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (Identity)
-    
+
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
     tikAlgImp->get_state()->setValue(Parameters::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained_squared);  // select single lambda
-    
+
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
     stubPortNWithThisData(tikAlgImp, 2, measuredData);
@@ -271,11 +267,11 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredSourceReguWithSquareOption)
     MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (IDentityt)
     MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
     MatrixHandle sourceRegularizationMatrix(new DenseMatrix(DenseMatrix::Identity(5, 4)));    // forward matrix (Identity)
-    
+
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
     tikAlgImp->get_state()->setValue(Parameters::TikhonovSolutionSubcase, 1);  // select single lambda
-    
+
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
     stubPortNWithThisData(tikAlgImp, 2, measuredData);
@@ -292,11 +288,11 @@ TEST_F(TikhonovFunctionalTest, loadIDSquaredSourceReguWithNonSquareOptionWrongSi
     MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (IDentityt)
     MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
     MatrixHandle sourceRegularizationMatrix(new DenseMatrix(DenseMatrix::Identity(5, 5)));    // forward matrix (Identity)
-    
+
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
     tikAlgImp->get_state()->setValue(Parameters::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained);  // select single lambda
-    
+
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
     stubPortNWithThisData(tikAlgImp, 2, measuredData);
@@ -313,11 +309,11 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredSourceReguWithNonSquareOptionWron
     MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (IDentityt)
     MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
     MatrixHandle sourceRegularizationMatrix(new DenseMatrix(DenseMatrix::Identity(4, 5)));    // forward matrix (Identity)
-    
+
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
     tikAlgImp->get_state()->setValue(Parameters::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained);  // select single lambda
-    
+
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
     stubPortNWithThisData(tikAlgImp, 2, measuredData);
@@ -334,11 +330,11 @@ TEST_F(TikhonovFunctionalTest, loadIDSquaredSourceReguWithSquareOptionWrongSize)
     MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (IDentityt)
     MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
     MatrixHandle sourceRegularizationMatrix(new DenseMatrix(DenseMatrix::Identity(5, 5)));    // forward matrix (Identity)
-    
+
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
     tikAlgImp->get_state()->setValue(Parameters::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained_squared);  // select single lambda
-    
+
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
     stubPortNWithThisData(tikAlgImp, 2, measuredData);
@@ -355,11 +351,11 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredSourceReguWithSquareOptionWrongSi
     MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (IDentityt)
     MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
     MatrixHandle sourceRegularizationMatrix(new DenseMatrix(DenseMatrix::Identity(4, 5)));    // forward matrix (Identity)
-    
+
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
     tikAlgImp->get_state()->setValue(Parameters::TikhonovSolutionSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmSolutionSubcase::solution_constrained_squared);  // select single lambda
-    
+
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
     stubPortNWithThisData(tikAlgImp, 2, measuredData);
@@ -379,11 +375,11 @@ TEST_F(TikhonovFunctionalTest, loadIDSquaredMeasurementReguWithNonSquareOption)
     MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (IDentityt)
     MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
     MatrixHandle sourceRegularizationMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (Identity)
-    
+
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
     tikAlgImp->get_state()->setValue(Parameters::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained);  // select single lambda
-    
+
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
     stubPortNWithThisData(tikAlgImp, 2, measuredData);
@@ -400,11 +396,11 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredMeasurementReguWithNonSquareOptio
     MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (IDentityt)
     MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
     MatrixHandle sourceRegularizationMatrix(new DenseMatrix(DenseMatrix::Identity(5, 4)));    // forward matrix (Identity)
-    
+
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
     tikAlgImp->get_state()->setValue(Parameters::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained);  // select single lambda
-    
+
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
     stubPortNWithThisData(tikAlgImp, 2, measuredData);
@@ -421,11 +417,11 @@ TEST_F(TikhonovFunctionalTest, loadIDSquaredMeasurementReguWithSquareOption)
     MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (IDentityt)
     MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
     MatrixHandle sourceRegularizationMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (Identity)
-    
+
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
     tikAlgImp->get_state()->setValue(Parameters::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained_squared);  // select single lambda
-    
+
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
     stubPortNWithThisData(tikAlgImp, 2, measuredData);
@@ -442,11 +438,11 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredMeasurementReguWithSquareOption)
     MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (IDentityt)
     MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
     MatrixHandle sourceRegularizationMatrix(new DenseMatrix(DenseMatrix::Identity(5, 4)));    // forward matrix (Identity)
-    
+
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
     tikAlgImp->get_state()->setValue(Parameters::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained_squared);  // select single lambda
-    
+
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
     stubPortNWithThisData(tikAlgImp, 2, measuredData);
@@ -463,11 +459,11 @@ TEST_F(TikhonovFunctionalTest, loadIDSquaredMeasurementReguWithNonSquareOptionWr
     MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (IDentityt)
     MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
     MatrixHandle sourceRegularizationMatrix(new DenseMatrix(DenseMatrix::Identity(5, 5)));    // forward matrix (Identity)
-    
+
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
     tikAlgImp->get_state()->setValue(Parameters::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained);  // select single lambda
-    
+
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
     stubPortNWithThisData(tikAlgImp, 2, measuredData);
@@ -484,11 +480,11 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredMeasurementReguWithNonSquareOptio
     MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (IDentityt)
     MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
     MatrixHandle sourceRegularizationMatrix(new DenseMatrix(DenseMatrix::Identity(4, 5)));    // forward matrix (Identity)
-    
+
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
     tikAlgImp->get_state()->setValue(Parameters::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained);  // select single lambda
-    
+
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
     stubPortNWithThisData(tikAlgImp, 2, measuredData);
@@ -505,11 +501,11 @@ TEST_F(TikhonovFunctionalTest, loadIDSquaredMeasurementReguWithSquareOptionWrong
     MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (IDentityt)
     MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
     MatrixHandle sourceRegularizationMatrix(new DenseMatrix(DenseMatrix::Identity(5, 5)));    // forward matrix (Identity)
-    
+
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
     tikAlgImp->get_state()->setValue(Parameters::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained_squared);  // select single lambda
-    
+
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
     stubPortNWithThisData(tikAlgImp, 2, measuredData);
@@ -526,11 +522,11 @@ TEST_F(TikhonovFunctionalTest, loadIDNonSquaredMeasurementReguWithSquareOptionWr
     MatrixHandle fwdMatrix(new DenseMatrix(DenseMatrix::Identity(4, 4)));    // forward matrix (IDentityt)
     MatrixHandle measuredData(new DenseMatrix(DenseMatrix::Random(4, 1)));   // measurement data (rand)
     MatrixHandle sourceRegularizationMatrix(new DenseMatrix(DenseMatrix::Identity(4, 5)));    // forward matrix (Identity)
-    
+
     // change params
     tikAlgImp->setStateDefaults();                                                  // set default params
     tikAlgImp->get_state()->setValue(Parameters::TikhonovResidualSubcase, BioPSE::TikhonovAlgorithmImpl::AlgorithmResidualSubcase::residual_constrained_squared);  // select single lambda
-    
+
     // input data
     stubPortNWithThisData(tikAlgImp, 0, fwdMatrix);
     stubPortNWithThisData(tikAlgImp, 2, measuredData);

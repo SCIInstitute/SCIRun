@@ -91,8 +91,6 @@ CreateFieldData::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     // Get number of matrix ports with data (the last one is always empty)
     size_t numinputs = matrices.size();
     if (numinputs > 23)

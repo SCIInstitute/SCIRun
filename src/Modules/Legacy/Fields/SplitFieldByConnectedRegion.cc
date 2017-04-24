@@ -65,7 +65,6 @@ void SplitFieldByConnectedRegion::execute()
 
  if (needToExecute())
   {
-    update_state(Executing);
     setAlgoBoolFromState(SplitFieldByConnectedRegionAlgo::SortDomainBySize());
     setAlgoBoolFromState(SplitFieldByConnectedRegionAlgo::SortAscending());
 

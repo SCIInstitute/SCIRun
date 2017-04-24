@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -42,12 +42,10 @@ ConvertHexVolToTetVol::ConvertHexVolToTetVol()
 void ConvertHexVolToTetVol::execute()
 {
   FieldHandle ifield = getRequiredInput(HexOrLatVol);
-  
+
   // inputs_changed_ || !oport_cached("HexOrLatVol")
   if (needToExecute())
   {
-    update_state(Executing);
-    
     auto output = algo().run(withInputData((HexOrLatVol, ifield)));
 
     sendOutputFromAlgorithm(TetVol, output);

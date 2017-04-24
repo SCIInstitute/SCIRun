@@ -49,7 +49,6 @@ void ConvertScalarToMatrix::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
     auto matrix(boost::make_shared<DenseMatrix>(1,1,input_scalar->value()));
     sendOutput(Output,matrix);
   }

@@ -29,7 +29,7 @@
 #ifndef MODULES_VISUALIZATION_SHOWCOLORMAPMODULE_H
 #define MODULES_VISUALIZATION_SHOWCOLORMAPMODULE_H
 
-#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Modules/Visualization/TextBuilder.h>
 #include <Modules/Visualization/share.h>

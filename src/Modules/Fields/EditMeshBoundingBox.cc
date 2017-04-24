@@ -173,7 +173,6 @@ void EditMeshBoundingBox::execute()
   if (needToExecute())
   {
     clear_vals();
-    update_state(Executing);
     update_input_attributes(field);
     executeImpl(field);
   }
@@ -327,7 +326,7 @@ void EditMeshBoundingBox::computeWidgetBox(const BBox& box) const
   auto right(center + sizex / 2.);
   auto down(center + sizey / 2.);
   auto in(center + sizez / 2.);
-    
+
   box_->setPosition(center, right, down, in);
 }
 
@@ -370,9 +369,6 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
       impl_->field_initial_transform_.pre_trans(r_transformThatIsAppliedSomewhere);
       impl_->field_initial_transform_.pre_translate(Vector(initialWidgetCenter));
     }
-
-    const auto useUserEnteredSize = transient_value_cast<bool>(state->getTransientValue(SetOutputSize));
-    const auto useUserEnteredCenter = transient_value_cast<bool>(state->getTransientValue(SetOutputCenter));
 
     Vector outputFieldSizeX, outputFieldSizeY, outputFieldSizeZ;
     if (transient_value_cast<bool>(state->getTransientValue(ResetSize)))

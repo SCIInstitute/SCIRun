@@ -49,7 +49,6 @@ void ReportBundleInfo::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
     std::ostringstream infostring;
 
     for (const auto& nameHandlePair : *bundle)
