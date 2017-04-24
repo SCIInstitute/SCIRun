@@ -117,7 +117,7 @@ void WriteField::execute()
 
 bool WriteField::useCustomExporter(const std::string& filename) const
 {
-  auto ft = get_state()->getValue(Variables::FileTypeName).toString();
+  auto ft = cstate()->getValue(Variables::FileTypeName).toString();
   LOG_DEBUG("WriteField with filetype " << ft);
   auto ret = boost::filesystem::extension(filename) != ".fld";
 

@@ -71,8 +71,6 @@ MapFieldDataOntoNodes::execute()
 //     gui_outside_value_.changed() || gui_max_distance_.changed())
   if (needToExecute())
   {
-    update_state(Executing);
-
     setAlgoOptionFromState(Parameters::Quantity);
     setAlgoOptionFromState(Parameters::InterpolationModel);
     setAlgoDoubleFromState(Parameters::OutsideValue);

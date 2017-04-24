@@ -92,8 +92,6 @@ CreateLatVol::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     if (sizeOption)
     {
       auto sizeMatrix = *sizeOption;

@@ -104,7 +104,7 @@ void WriteMatrix::execute()
 
 bool WriteMatrix::useCustomExporter(const std::string& filename) const
 {
-  auto ft = get_state()->getValue(Variables::FileTypeName).toString();
+  auto ft = cstate()->getValue(Variables::FileTypeName).toString();
   LOG_DEBUG("WriteMatrix with filetype " << ft);
 
   filetype_ = (ft == "SCIRun Matrix ASCII") ? "ASCII" : "Binary";

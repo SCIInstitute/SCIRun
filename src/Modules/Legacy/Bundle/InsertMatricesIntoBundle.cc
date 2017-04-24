@@ -63,8 +63,6 @@ void InsertMatricesIntoBundle::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     BundleHandle bundle;
     if (bundleOption && *bundleOption)
     {

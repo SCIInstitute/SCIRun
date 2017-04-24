@@ -50,7 +50,8 @@ namespace SCIRun {
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
       private:
-        void showGraph(const Core::Datatypes::DenseColumnMatrix& v1, const Core::Datatypes::DenseColumnMatrix& v2, double ccInv, double rmsRel) const;
+        void showGraph(const Core::Datatypes::DenseColumnMatrix& v1, const Core::Datatypes::DenseColumnMatrix& v2,
+          double ccInv, double rmsRel);
         bool containsInfiniteComponent(const Core::Datatypes::DenseColumnMatrix& v) const;
       };
 }}}

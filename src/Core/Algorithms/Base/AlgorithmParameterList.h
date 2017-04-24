@@ -73,10 +73,11 @@ namespace Algorithms {
     typedef std::map<AlgorithmParameterName, AlgorithmParameter> ParameterMap;
     ParameterMap::const_iterator paramsBegin() const { return parameters_.begin(); }
     ParameterMap::const_iterator paramsEnd() const { return parameters_.end(); }
+    void dumpAlgoState() const;
   private:
     ParameterMap parameters_;
   };
-  
+
 }}}
 
 #endif

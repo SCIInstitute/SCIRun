@@ -134,8 +134,6 @@ void ImportFieldsFromMatlab::execute()
 
   indexmatlabfile();
 
-  update_state(Executing);
-
   auto choices = toStringVector(state->getValue(Parameters::PortChoices).toVector());
 
   try

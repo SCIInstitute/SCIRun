@@ -55,7 +55,7 @@ namespace SCIRun {
 
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       private:
-        void pushInputFieldInfo(FieldHandle input) const;
+        void pushInputFieldInfo(FieldHandle input);
       };
     }
   }
