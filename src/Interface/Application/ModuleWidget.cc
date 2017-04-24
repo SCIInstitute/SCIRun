@@ -606,7 +606,7 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
     auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
       portAlpha()), type,
       moduleId, port->id(),
-      i, port->isDynamic(), 
+      i, port->isDynamic(),
       [this]() { return connectionFactory_; },
       [this]() { return closestPortFinder_; },
       PortDataDescriber(),
@@ -820,7 +820,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     auto port = theModule_->getInputPort(pid);
     auto type = port->get_typename();
 
-    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), 
+    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(),
       [this]() { return connectionFactory_; },
       [this]() { return closestPortFinder_; },
       PortDataDescriber(), this);
@@ -1162,6 +1162,7 @@ void ModuleWidget::adjustDockState(bool dockEnabled)
     if (dockable_ && !dockable_->isHidden())
     {
       dockable_->setFloating(true);
+      updateDockWidgetProperties(true);
     }
   }
 }
