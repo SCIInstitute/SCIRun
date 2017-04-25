@@ -1213,9 +1213,8 @@ bool ClipMeshByIsovalueAlgoHex::run(const AlgorithmBase* algo, FieldHandle input
   ofield->resize_values();
   CopyProperties(*input, *output);
 
-  const size_type nrows = nodemap.size() + node_list.size();
-
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  const size_type nrows = nodemap.size() + node_list.size();
   // Create the interpolation matrix for downstream use.
   hash_type::iterator hitr = nodemap.begin();
   const size_type ncols = field->num_values();

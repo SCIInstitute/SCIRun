@@ -110,7 +110,7 @@ void GeneratePointSamplesFromField::setStateDefaults()
 
 void GeneratePointSamplesFromField::execute()
 {
-  FieldHandle field = GenerateOutputField();
+  auto field = GenerateOutputField();
   sendOutput(GeneratedPoints, field);
 
   auto geom = impl_->buildWidgetObject(field, get_state()->getValue(Parameters::ProbeScale).toDouble(), *this);
@@ -120,9 +120,6 @@ void GeneratePointSamplesFromField::execute()
 FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
 {
   auto ifieldhandle = getRequiredInput(InputField);
-
-  update_state(Executing);
-
   bool input_field_p = true;
   /// @todo: It looks like the input field is meant to be optional even
   // though it is not.

@@ -29,7 +29,7 @@
 #ifndef MODULES_LEGACY_FIELDS_GeneratePointSamplesFromFieldOrWidget_H__
 #define MODULES_LEGACY_FIELDS_GeneratePointSamplesFromFieldOrWidget_H__
 
-#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {

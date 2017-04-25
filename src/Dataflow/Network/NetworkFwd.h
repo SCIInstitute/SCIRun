@@ -79,6 +79,7 @@ class ConnectionMakerService;
 class NetworkEditorControllerInterface;
 class ReexecuteStrategyFactory;
 class MetadataMap;
+class ModuleBuilder;
 
 typedef boost::shared_ptr<NetworkInterface> NetworkHandle;
 typedef boost::shared_ptr<ModuleInterface> ModuleHandle;

@@ -52,7 +52,7 @@ namespace Algorithms {
     virtual void update_progress(double percent) const
     {
       if (updaterFunc_)
-        updaterFunc_(percent); 
+        updaterFunc_(percent);
     }
 
     typedef boost::function<void(double)> UpdaterFunc;
@@ -71,6 +71,8 @@ namespace Algorithms {
   private:
     const AlgorithmStatusReporter* asr_;
   };
+
+  #define REPORT_STATUS(className) ScopedAlgorithmStatusReporter __asr(this, #className);
 
 }}}
 

@@ -52,8 +52,6 @@ void ConvertMatrixToScalar::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     if (!matrixIs::dense(input_matrix))
     {
       //TODO implement something with sparse

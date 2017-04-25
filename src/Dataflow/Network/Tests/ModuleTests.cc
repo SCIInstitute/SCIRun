@@ -27,6 +27,7 @@
 */
 
 #include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/ModuleBuilder.h>
 #include <gtest/gtest.h>
 
 using namespace SCIRun::Dataflow::Networks;
@@ -34,7 +35,7 @@ using namespace SCIRun::Dataflow::Networks;
 TEST(ModuleTests, CanBuildWithPorts)
 {
   Module::resetIdGenerator();
-  ModuleHandle module = Module::Builder().with_name("SolveLinearSystem")
+  ModuleHandle module = ModuleBuilder().with_name("SolveLinearSystem")
     .add_input_port(Port::ConstructionParams(PortId(0, "ForwardMatrix"), "Matrix", false))
     .add_input_port(Port::ConstructionParams(PortId(0, "RHS"), "Matrix", false))
     .add_output_port(Port::ConstructionParams(PortId(0, "Solution"), "Matrix", false))
@@ -49,7 +50,7 @@ TEST(ModuleTests, CanBuildWithPorts)
 TEST(ModuleTests, CanBuildWithDynamicPorts)
 {
   Module::resetIdGenerator();
-  ModuleHandle module = Module::Builder().with_name("ViewScene")
+  ModuleHandle module = ModuleBuilder().with_name("ViewScene")
     .add_input_port(Port::ConstructionParams(PortId(0, "ForwardMatrix"), "Matrix", true))
     .build();
   EXPECT_EQ(1, module->num_input_ports());

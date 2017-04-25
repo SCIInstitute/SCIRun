@@ -89,7 +89,7 @@ void ShowString::execute()
   }
 }
 
-std::tuple<double, double> ShowString::getTextPosition() const
+std::tuple<double, double> ShowString::getTextPosition()
 {
   auto state = get_state();
   auto positionChoice = state->getValue(Parameters::PositionType).toString();

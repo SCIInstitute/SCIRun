@@ -71,8 +71,8 @@ out_fname_(""),
 sn_count_(0),
 sn_ctx_(0),
 dtdPath_(dtdpath),
-modFactory_(modFactory),
-simpleLog_(simpleLog)
+simpleLog_(simpleLog),
+modFactory_(modFactory)
 {
   netid_to_modid_.push(id_map_t());
   netid_to_conid_.push(id_map_t());
