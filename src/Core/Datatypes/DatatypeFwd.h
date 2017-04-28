@@ -30,7 +30,7 @@
 #define CORE_DATATYPES_DATATYPE_FWD_H
 
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <boost/optional.hpp>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <boost/make_shared.hpp>
@@ -64,12 +64,12 @@ namespace Datatypes {
 
   class Field;
   class Mesh;
-  typedef Core::Datatypes::SharedPointer<Field> FieldHandle;
-  typedef Core::Datatypes::SharedPointer<Mesh> MeshHandle;
+  typedef SharedPointer<Field> FieldHandle;
+  typedef SharedPointer<Mesh> MeshHandle;
   typedef std::vector<FieldHandle> FieldList;
 
   class NrrdData;
-  typedef Core::Datatypes::SharedPointer<NrrdData> NrrdDataHandle;
+  typedef SharedPointer<NrrdData> NrrdDataHandle;
 
   namespace Core {
   namespace Datatypes {

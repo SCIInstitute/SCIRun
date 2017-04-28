@@ -31,6 +31,7 @@
 #define CORE_DATATYPES_MATRIX_FWD_H
 
 #include <Core/Datatypes/Legacy/Base/TypeName.h>
+#include <Core/Utils/SmartPointers.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <boost/shared_ptr.hpp>
 
@@ -43,9 +44,6 @@ namespace Datatypes {
 
   typedef MatrixBase<double> Matrix;
   using ComplexMatrix = MatrixBase<complex>;
-
-  template <typename T>
-  using SharedPointer = boost::shared_ptr<T>;
 
   typedef SharedPointer<Matrix> MatrixHandle;
   typedef SharedPointer<const Matrix> MatrixConstHandle;

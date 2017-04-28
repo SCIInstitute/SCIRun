@@ -46,6 +46,7 @@
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <Core/Datatypes/Tests/MatrixTestCases.h>
+#include <Dataflow/Network/ModuleReexecutionStrategies.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;

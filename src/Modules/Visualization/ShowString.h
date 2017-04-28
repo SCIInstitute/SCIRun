@@ -30,7 +30,7 @@
 #ifndef MODULES_VISUALIZATION_SHOW_STRING_H
 #define MODULES_VISUALIZATION_SHOW_STRING_H
 
-#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {

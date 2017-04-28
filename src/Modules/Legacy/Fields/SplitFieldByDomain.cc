@@ -69,8 +69,6 @@ void SplitFieldByDomain::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     setAlgoBoolFromState(SplitFieldByDomainAlgo::SortBySize);
     setAlgoBoolFromState(SplitFieldByDomainAlgo::SortAscending);
 

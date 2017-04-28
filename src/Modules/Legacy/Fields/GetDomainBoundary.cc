@@ -89,8 +89,6 @@ void GetDomainBoundary::execute()
 #endif
   if (needToExecute())
   {
-    update_state(Executing);
-
     if (minValue && *minValue)
     {
       double minrange = (*minValue)->value();

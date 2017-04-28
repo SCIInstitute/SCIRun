@@ -53,7 +53,6 @@ void ConvertMatrixType::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
     setAlgoOptionFromState(Parameters::OutputMatrixType);
 
     auto output = algo().run(withInputData((InputMatrix, input_matrix)));

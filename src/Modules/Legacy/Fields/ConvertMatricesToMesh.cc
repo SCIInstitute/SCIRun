@@ -108,9 +108,8 @@ void ConvertMatricesToMesh::execute()
     FieldHandle result_field = CreateField(fi);
     VMesh* mesh = result_field->vmesh();
 
-    index_type i, j;
     const size_type pnrows = positionshandle->nrows();
-    for (i = 0; i < pnrows; i++)
+    for (auto i = 0; i < pnrows; i++)
     {
       const Point p(positionshandle->get(i, 0),
         positionshandle->get(i, 1),

@@ -63,7 +63,6 @@ void InsertStringsIntoBundle::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     std::string bundlename = guibundlename_.get();
 #endif
