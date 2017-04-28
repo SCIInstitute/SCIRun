@@ -576,11 +576,11 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
   }
 
   {
-    LOG_DEBUG(id_ << " :: inputsChanged is " << inputsChanged_ << ", querying port for value.");
+    LOG_DEBUG(get_id() << " :: inputsChanged is " << impl_->inputsChanged_ << ", querying port for value.");
     // NOTE: don't use short-circuited boolean OR here, we need to call hasChanged each time since it updates the port's cache flag.
     bool startingVal = impl_->inputsChanged_;
     impl_->inputsChanged_ = std::accumulate(portsWithName.begin(), portsWithName.end(), startingVal, [](bool acc, InputPortHandle input) { return input->hasChanged() || acc; });
-    LOG_DEBUG(get_id() << ":: inputsChanged is now " << inputsChanged_);
+    LOG_DEBUG(get_id() << ":: inputsChanged is now " << impl_->inputsChanged_);
   }
 
   std::vector<DatatypeHandleOption> options;

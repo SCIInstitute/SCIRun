@@ -214,7 +214,7 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 void ViewSceneDialog::resizeEvent(QResizeEvent *event)
 {
   ViewSceneFeedback vsf;
-  vsf.windowSize = { event->size().width(), event->size().height() };
+  vsf.windowSize = std::make_tuple(event->size().width(), event->size().height());
   state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
 
   ModuleDialogGeneric::resizeEvent(event);
