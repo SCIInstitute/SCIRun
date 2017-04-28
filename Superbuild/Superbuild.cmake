@@ -76,7 +76,7 @@ OPTION(WITH_TETGEN "Build Tetgen." OFF)
 
 ###########################################
 # Configure data
-OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" ON)
+OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" OFF)
 
 ###########################################
 # Configure Windows executable to run with
