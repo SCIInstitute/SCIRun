@@ -181,7 +181,7 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-  GeometryHandle geom(new GeometryObjectSpire(*this, "ShowString", false));
+  auto geom(boost::make_shared<GeometryObjectSpire>(*this, "ShowString", false));
 
   geom->mIBOs.push_back(geomIBO);
   geom->mVBOs.push_back(geomVBO);
