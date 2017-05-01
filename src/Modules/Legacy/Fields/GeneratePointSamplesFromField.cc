@@ -291,9 +291,9 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
 
 GeometryHandle GeneratePointSamplesFromFieldImpl::buildWidgetObject(FieldHandle field, double radius, const GeometryIDGenerator& idGenerator)
 {
-  GeometryHandle geom(new GeometryObjectSpire(idGenerator, "EntireSinglePointProbeFromField", true));
+  auto geom(boost::make_shared<GeometryObjectSpire>(idGenerator, "EntireSinglePointProbeFromField", true));
 
-  VMesh*  mesh = field->vmesh();
+  auto mesh = field->vmesh();
 
   ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
   ColorRGB node_color;

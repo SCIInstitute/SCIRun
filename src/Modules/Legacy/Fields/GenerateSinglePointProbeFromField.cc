@@ -444,7 +444,7 @@ index_type GenerateSinglePointProbeFromField::GenerateIndex()
 
 GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHandle field, ModuleStateHandle state, const GeometryIDGenerator& idGenerator)
 {
-  GeometryHandle geom(new GeometryObjectSpire(idGenerator, "EntireSinglePointProbeFromField", true));
+  auto geom(boost::make_shared<GeometryObjectSpire>(idGenerator, "EntireSinglePointProbeFromField", true));
 
   auto mesh = field->vmesh();
 
