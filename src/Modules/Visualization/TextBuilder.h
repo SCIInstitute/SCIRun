@@ -67,7 +67,7 @@ namespace SCIRun {
 
         //get string length based on current settings
         //return value in pixels
-        double getStringLen(const std::string& oneline) const;
+        std::tuple<double,double> getStringDims(const std::string& oneline) const;
 
       private:
         std::string getUniqueFontString(char p, double x, double y, double z, double w, double h) const;

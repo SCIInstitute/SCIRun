@@ -39,6 +39,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/GeometryPrimitives/Transform.h>
+#include <boost/timer.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -213,9 +214,19 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 
 void ViewSceneDialog::resizeEvent(QResizeEvent *event)
 {
-  ViewSceneFeedback vsf;
-  vsf.windowSize = std::make_tuple(event->size().width(), event->size().height());
-  state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
+  static boost::timer timer;
+  static Mutex lock("VS::resize");
+  
+  {
+    Guard g(lock.get());
+    if (timer.elapsed() > 1)
+    {
+      timer.restart();
+      ViewSceneFeedback vsf;
+      vsf.windowSize = std::make_tuple(event->size().width(), event->size().height());
+      state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
+    }
+  }
 
   ModuleDialogGeneric::resizeEvent(event);
 }
@@ -1040,7 +1051,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   oneline = ss.str();
   double text_len = 0.0;
   if (textBuilder_.isReady())
-    text_len = textBuilder_.getStringLen(oneline);
+    text_len = std::get<0>(textBuilder_.getStringDims(oneline));
   text_len += 5;//add a 5-pixel gap
 
   std::vector<Vector> points;
@@ -1679,8 +1690,8 @@ namespace //TODO: move to appropriate location
 
 void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y, const std::string& selName)
 {
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
-  glm::mat4 trans = spire->getWidgetTransform().transform;
+  auto spire = mSpire.lock();
+  auto trans = spire->getWidgetTransform().transform;
 
   ViewSceneFeedback vsf;
   vsf.transform = toSciTransform(trans);

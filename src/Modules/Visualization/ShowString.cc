@@ -80,13 +80,12 @@ void ShowString::setStateDefaults()
   getOutputPort(RenderedString)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWindowResizeFeedback(var); });
 }
 
-void ShowString::processWindowResizeFeedback(const Core::Datatypes::ModuleFeedback& var)
+void ShowString::processWindowResizeFeedback(const ModuleFeedback& var)
 {
   auto vsf = static_cast<const ViewSceneFeedback&>(var);
-  auto width = std::get<0>(vsf.windowSize);
-  if (lastWindowSize_ != width)
+  if (lastWindowSize_ != vsf.windowSize)
   {
-    lastWindowSize_ = width;
+    lastWindowSize_ = vsf.windowSize;
     needReexecute_ = true;
     enqueueExecuteAgain(false);
   }
@@ -211,12 +210,12 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
     textBuilder_->setColor(r, g, b, a);
   }
 
-  auto length = textBuilder_->getStringLen(text) + 20;
-  // std::cout << "xTrans before " << xTrans <<
-  //   " lastWindowSize_ " << lastWindowSize_ <<
-  //   " multiplier " << (1 - length / lastWindowSize_) <<
-  //   " xTrans after " << (xTrans * (1 - length / lastWindowSize_)) << std::endl;
-  xTrans *= 1 - length / lastWindowSize_;
+  auto dims = textBuilder_->getStringDims(text);
+  auto length = std::get<0>(dims) + 20;
+  xTrans *= 1 - length / std::get<0>(lastWindowSize_);
+
+  std::cout << "Rows from string dims: " << std::get<1>(dims) << " yTrans: " << yTrans << std::endl;
+
   Vector trans(xTrans, yTrans, 0.0);
   textBuilder_->printString(text, trans, Vector(), text, *geom);
 

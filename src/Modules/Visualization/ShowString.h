@@ -73,7 +73,7 @@ namespace Visualization {
     Core::Datatypes::GeometryBaseHandle buildGeometryObject(const std::string& text);
     std::tuple<double, double> getTextPosition();
     void processWindowResizeFeedback(const Core::Datatypes::ModuleFeedback& var);
-    int lastWindowSize_ {450};
+    std::tuple<int,int> lastWindowSize_ { 450, 1000 };
     bool needReexecute_ {true};
   };
 }}}
