@@ -70,7 +70,7 @@ namespace SCIRun {
       void newGeometryValueForwarder();
       void mousePressSignalForTestingGeometryObjectFeedback(int x, int y, const std::string& selName);
 
-      protected Q_SLOTS:
+    protected Q_SLOTS:
       void menuMouseControlChanged(int index);
       void autoViewClicked();
       void newGeometryValue();
@@ -139,6 +139,7 @@ namespace SCIRun {
       void toggleLight1(bool value);
       void toggleLight2(bool value);
       void toggleLight3(bool value);
+      void resizingDone();
 
     protected:
       void mousePressEvent(QMouseEvent* event) override;
@@ -232,6 +233,7 @@ namespace SCIRun {
       class Screenshot* screenshotTaker_;
       bool saveScreenshotOnNewGeometry_;
       bool pulledSavedVisibility_ {false};
+      QTimer resizeTimer_;
 
       //geometries
       Modules::Visualization::TextBuilder textBuilder_;

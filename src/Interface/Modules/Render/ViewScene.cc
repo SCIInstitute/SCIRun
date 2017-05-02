@@ -145,6 +145,9 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   std::string sep;
   sep += boost::filesystem::path::preferred_separator;
   Modules::Visualization::TextBuilder::setFSStrings(filesystemRoot, sep);
+
+  resizeTimer_.setSingleShot(true);
+  connect(&resizeTimer_, SIGNAL(timeout()), this, SLOT(resizingDone()));
 }
 
 void ViewSceneDialog::pullSpecial()
@@ -214,21 +217,15 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 
 void ViewSceneDialog::resizeEvent(QResizeEvent *event)
 {
-  static boost::timer timer;
-  static Mutex lock("VS::resize");
-  
-  {
-    Guard g(lock.get());
-    if (timer.elapsed() > 1)
-    {
-      timer.restart();
-      ViewSceneFeedback vsf;
-      vsf.windowSize = std::make_tuple(event->size().width(), event->size().height());
-      state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
-    }
-  }
-
+  resizeTimer_.start(500);
   ModuleDialogGeneric::resizeEvent(event);
+}
+
+void ViewSceneDialog::resizingDone()
+{
+  ViewSceneFeedback vsf;
+  vsf.windowSize = std::make_tuple(size().width(), size().height());
+  state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
 }
 
 std::string ViewSceneDialog::restoreObjColor()
