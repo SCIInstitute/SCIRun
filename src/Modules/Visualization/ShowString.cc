@@ -212,9 +212,9 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
 
   auto dims = textBuilder_->getStringDims(text);
   auto length = std::get<0>(dims) + 20;
+  auto width = std::get<1>(dims) + 10;
   xTrans *= 1 - length / std::get<0>(lastWindowSize_);
-
-  std::cout << "Rows from string dims: " << std::get<1>(dims) << " yTrans: " << yTrans << std::endl;
+  yTrans *= 1 - width / std::get<1>(lastWindowSize_);
 
   Vector trans(xTrans, yTrans, 0.0);
   textBuilder_->printString(text, trans, Vector(), text, *geom);

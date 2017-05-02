@@ -217,7 +217,7 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 
 void ViewSceneDialog::resizeEvent(QResizeEvent *event)
 {
-  resizeTimer_.start(500);
+  resizeTimer_.start(400);
   ModuleDialogGeneric::resizeEvent(event);
 }
 
