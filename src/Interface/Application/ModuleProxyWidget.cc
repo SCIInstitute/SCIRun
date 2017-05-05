@@ -149,6 +149,9 @@ void ModuleProxyWidget::showAndColor(const QColor& color)
 
 void ModuleProxyWidget::showAndColorImpl(const QColor& color, int milliseconds)
 {
+  if (timeLine_)
+    return;
+    
   animateColor_ = color;
   timeLine_ = new QTimeLine(milliseconds, this);
   connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(colorAnimate(qreal)));
@@ -186,7 +189,11 @@ void ModuleProxyWidget::colorAnimate(qreal val)
     }
   }
   else // 1 = done coloring
+  {
     setGraphicsEffect(nullptr);
+    delete timeLine_;
+    timeLine_ = nullptr;
+  }
 }
 
 void ModuleProxyWidget::adjustHeight(int delta)

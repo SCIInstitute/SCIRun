@@ -1281,6 +1281,14 @@ void ModuleWidget::showUI()
     dockable_->show();
 }
 
+void ModuleWidget::collapsePinnedDialog()
+{
+  if (!isViewScene_ && dockable_ && !dockable_->isFloating())
+  {
+    dialog_->collapse();
+  }
+}
+
 void ModuleWidget::executeButtonPushed()
 {
   auto skipUpstream = QApplication::keyboardModifiers() == Qt::ShiftModifier;
