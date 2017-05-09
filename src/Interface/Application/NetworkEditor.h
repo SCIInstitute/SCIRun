@@ -254,6 +254,7 @@ namespace Gui {
     void adjustExecuteButtonsToDownstream(bool downOnly);
 
     NetworkEditor* parentNetwork() { return parentNetwork_; }
+    size_t childCount() const { return childrenNetworks_.size(); }
     void sendItemsToParent();
 
   protected:
