@@ -67,7 +67,7 @@ Q_SIGNALS:
   void networkModified();
 private:
   SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager_;
-  int lastUndoRow_;
+  int lastUndoRow_, maxItems_{10};
   const SCIRun::Dataflow::Engine::ProvenanceManagerHandle::element_type::IOType* networkEditor_;
 
   void setUndoEnabled(bool enable);

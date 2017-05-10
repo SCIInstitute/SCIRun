@@ -125,8 +125,16 @@ void ProvenanceWindow::addProvenanceItem(ProvenanceItemHandle item)
   for (int i = provenanceListWidget_->count() - 1; i > lastUndoRow_; --i)
     delete provenanceListWidget_->takeItem(i);
 
+  if (provenanceListWidget_->count() == maxItems_)
+  {
+    delete provenanceListWidget_->takeItem(0);
+  }
+  else
+  {
+    lastUndoRow_++;
+  }
+
   new ProvenanceWindowListItem(item, provenanceListWidget_);
-  lastUndoRow_++;
   setRedoEnabled(false);
   setUndoEnabled(true);
 
@@ -156,6 +164,7 @@ void ProvenanceWindow::clear()
 
 void ProvenanceWindow::setMaxItems(int max)
 {
+  maxItems_ = max;
   for (int i = 0; i < provenanceListWidget_->count() - max; ++i)
   {
     delete provenanceListWidget_->takeItem(0);
