@@ -164,7 +164,11 @@ void ProvenanceWindow::clear()
 
 void ProvenanceWindow::setMaxItems(int max)
 {
+  if (maxItems_ == max)
+    return;
+
   maxItems_ = max;
+  itemMaxSpinBox_->setValue(max);
   for (int i = 0; i < provenanceListWidget_->count() - max; ++i)
   {
     delete provenanceListWidget_->takeItem(0);

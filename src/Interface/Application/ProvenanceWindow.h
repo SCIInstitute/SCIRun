@@ -50,6 +50,7 @@ class ProvenanceWindow : public QDockWidget, public Ui::ProvenanceWindow
 public:
   explicit ProvenanceWindow(SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager, QWidget* parent = nullptr);
   void showFile(SCIRun::Dataflow::Networks::NetworkFileHandle file);
+  int maxItems() const { return maxItems_; }
 public Q_SLOTS:
   void clear();
   void addProvenanceItem(SCIRun::Dataflow::Engine::ProvenanceItemHandle item);
@@ -57,9 +58,9 @@ public Q_SLOTS:
   void redo();
   void undoAll();
   void redoAll();
+  void setMaxItems(int max);
 private Q_SLOTS:
   void displayInfo(QListWidgetItem* item);
-  void setMaxItems(int max);
 Q_SIGNALS:
   void modifyingNetwork(bool modifying);
   void undoStateChanged(bool enabled);
