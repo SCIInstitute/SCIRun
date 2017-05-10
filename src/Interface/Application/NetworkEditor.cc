@@ -1453,7 +1453,10 @@ void NetworkEditor::restoreAllModuleUIs()
   {
     auto module = getModule(item);
     if (module)
+    {
       module->showUI();
+      module->collapsePinnedDialog();
+    }
   }
 }
 

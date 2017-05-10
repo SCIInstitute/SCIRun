@@ -192,7 +192,7 @@ TEST(EigenDenseComplexMatrixTests, MinMax)
     Complex(3, 2), Complex(4, 4);
   B << Complex(4, 4), Complex(3, 2),
     Complex(2, 3), Complex(-1, -1);
-  C << Complex(0, 0), Complex(1, 0), Complex(-1, 0);
+  C << Complex(0, 0), Complex(1, 0), Complex(-1, 0), Complex(0.5,0.5);
 
   EXPECT_EQ(Complex(1, 1), A.minCoeff());
   EXPECT_EQ(Complex(4, 4), A.maxCoeff());
