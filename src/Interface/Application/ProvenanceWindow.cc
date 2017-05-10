@@ -56,6 +56,8 @@ ProvenanceWindow::ProvenanceWindow(ProvenanceManagerHandle provenanceManager, QW
   connect(undoAllButton_, SIGNAL(clicked()), this, SLOT(undoAll()));
   connect(redoAllButton_, SIGNAL(clicked()), this, SLOT(redoAll()));
   connect(clearButton_, SIGNAL(clicked()), this, SLOT(clear()));
+  connect(itemMaxSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setMaxItems(int)));
+  setMaxItems(10);
   setUndoEnabled(false);
   setRedoEnabled(false);
 }
@@ -150,6 +152,14 @@ void ProvenanceWindow::clear()
   setRedoEnabled(false);
 
   networkXMLTextEdit_->clear();
+}
+
+void ProvenanceWindow::setMaxItems(int max)
+{
+  for (int i = 0; i < provenanceListWidget_->count() - max; ++i)
+  {
+    delete provenanceListWidget_->takeItem(0);
+  }
 }
 
 void ProvenanceWindow::setUndoEnabled(bool enable)

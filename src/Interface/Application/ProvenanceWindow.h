@@ -59,6 +59,7 @@ public Q_SLOTS:
   void redoAll();
 private Q_SLOTS:
   void displayInfo(QListWidgetItem* item);
+  void setMaxItems(int max);
 Q_SIGNALS:
   void modifyingNetwork(bool modifying);
   void undoStateChanged(bool enabled);
