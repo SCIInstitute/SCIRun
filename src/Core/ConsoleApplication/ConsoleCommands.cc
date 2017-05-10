@@ -189,6 +189,7 @@ bool InteractiveModeCommandConsole::execute()
     if (!PythonInterpreter::Instance().run_string(line))
       break;
   }
+  std::cout << std::endl;
   LOG_CONSOLE("~~~~~~~");
   LOG_CONSOLE("Goodbye!");
   LOG_CONSOLE("~~~~~~~");
