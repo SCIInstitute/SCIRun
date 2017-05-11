@@ -984,6 +984,10 @@ ModulePositionsHandle NetworkEditor::dumpModulePositions(ModuleFilter filter) co
 {
   auto positions(boost::make_shared<ModulePositions>());
   fillModulePositionMap(*positions, filter);
+  for (const auto& sub : childrenNetworks_)
+  {
+    sub.second->get()->fillModulePositionMap(*positions, filter);
+  }
   return positions;
 }
 
@@ -1141,6 +1145,10 @@ void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions
           w->setSelected(true);
       }
     }
+  }
+  for (const auto& child : childrenNetworks_)
+  {
+    child.second->get()->updateModulePositions(modulePositions, selectAll);
   }
 }
 

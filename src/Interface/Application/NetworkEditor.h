@@ -258,6 +258,7 @@ namespace Gui {
 
     NetworkEditor* parentNetwork() { return parentNetwork_; }
     size_t childCount() const { return childrenNetworks_.size(); }
+    void killChild(const QString& name);
     void sendItemsToParent();
 
   protected:
@@ -362,6 +363,7 @@ namespace Gui {
     QString convertToTooltip(const QPixmap& pic) const;
     void initializeSubnet(const QString& name, const SCIRun::Dataflow::Networks::ModuleId& subnetModuleId, NetworkEditor* subnet);
     void dumpSubnetworksImpl(const QString& name, Dataflow::Networks::Subnetworks& data, Dataflow::Networks::ModuleFilter modFilter) const;
+    QList<QGraphicsItem*> includeConnections(QList<QGraphicsItem*> items) const;
 
     // default constructed
     bool modulesSelectedByCL_{ false };

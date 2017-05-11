@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>515</width>
-    <height>389</height>
+    <width>540</width>
+    <height>565</height>
    </rect>
   </property>
   <property name="floating">
@@ -77,12 +77,12 @@
       </item>
      </layout>
     </item>
-    <item row="4" column="0">
+    <item row="2" column="0" rowspan="3">
      <widget class="QGroupBox" name="groupBox">
       <property name="minimumSize">
        <size>
-        <width>300</width>
-        <height>300</height>
+        <width>500</width>
+        <height>500</height>
        </size>
       </property>
       <property name="title">

@@ -135,10 +135,14 @@ void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, N
   subnet->parentNetwork_ = this;
   subnet->setNetworkEditorController(getNetworkEditorController());
 
-  //subnet->setSceneRect(QRectF(-100, -100, 200, 200));
+  subnet->setSceneRect(QRectF(0, 0, 400, 400));
 
   for (auto& item : childrenNetworkItems_[name])
+  {
     subnet->scene_->addItem(item);
+    item->setVisible(true);
+    item->ensureVisible();
+  }
 
   auto dock = new SubnetworkEditor(subnet, mid, name, parentWidget());
   dock->show();
@@ -197,6 +201,20 @@ private:
 int SubnetModule::subnetCount_(0);
 const AlgorithmParameterName SubnetModule::ModuleInfo("ModuleInfo");
 
+QList<QGraphicsItem*> NetworkEditor::includeConnections(QList<QGraphicsItem*> items) const
+{
+  QSet<QGraphicsItem*> subnetItems = items.toSet();
+  Q_FOREACH(QGraphicsItem* item, items)
+  {
+    auto module = getModule(item);
+    if (module)
+    {
+      subnetItems.unite(module->connections().toSet());
+    }
+  }
+  return subnetItems.toList();
+}
+
 void NetworkEditor::makeSubnetwork()
 {
   QRectF rect;
@@ -204,7 +222,6 @@ void NetworkEditor::makeSubnetwork()
 
   std::vector<ModuleHandle> underlyingModules;
   auto items = scene_->selectedItems();
-  QSet<QGraphicsItem*> subnetItems = items.toSet();
   Q_FOREACH(QGraphicsItem* item, items)
   {
     auto r = item->boundingRect();
@@ -220,7 +237,6 @@ void NetworkEditor::makeSubnetwork()
     if (module)
     {
       underlyingModules.push_back(module->getModule());
-      subnetItems.unite(module->connections().toSet());
     }
   }
   
@@ -233,9 +249,12 @@ void NetworkEditor::makeSubnetwork()
   bool ok;
   auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:", QLineEdit::Normal, "subnet", &ok);
   if (!ok || name.isEmpty())
+  {
+    QMessageBox::information(this, "Make subnetwork", "Invalid name.");
     return;
+  }
 
-  makeSubnetworkFromComponents(name, underlyingModules, subnetItems.toList(), rect);
+  makeSubnetworkFromComponents(name, underlyingModules, includeConnections(items), rect);
 }
 
 void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std::vector<ModuleHandle>& modules, QList<QGraphicsItem*> items, const QRectF& rect)
@@ -255,10 +274,17 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   proxy->setToolTip(tooltipPic);
 
   auto size = proxy->getModuleWidget()->size();
-  auto pos = rect.center();
-  pos.rx() -= size.width() / 2;
-  pos.ry() -= size.height() / 2;
-  proxy->setPos(pos);
+  if (!rect.isEmpty())
+  {
+    auto pos = rect.center();
+    pos.rx() -= size.width() / 2;
+    pos.ry() -= size.height() / 2;
+    proxy->setPos(pos);
+  }
+  else
+  {
+    //qDebug() << "rect is empty, pos is" << proxy->pos();
+  }
 
   childrenNetworkItems_[name] = items;
 
@@ -308,32 +334,43 @@ void NetworkEditor::dumpSubnetworksImpl(const QString& name, Subnetworks& data, 
 
 void NetworkEditor::updateSubnetworks(const Subnetworks& subnets)
 {
-  qDebug() << "Subnets:";
   for (const auto& sub : subnets.subnets)
   {
-    qDebug() << QString::fromStdString(sub.first);
-    for (const auto& mod : sub.second)
-      qDebug() << QString::fromStdString(mod);
-  }
+    std::vector<ModuleHandle> underlying;
+    QList<QGraphicsItem*> items;
 
-  Q_FOREACH(QGraphicsItem* item, scene_->items())
-  {
-    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+    Q_FOREACH(QGraphicsItem* item, scene_->items())
     {
-      // auto posIter = modulePositions.modulePositions.find(w->getModuleWidget()->getModuleId());
-      // if (posIter != modulePositions.modulePositions.end())
-      // {
-      //   w->setPos(posIter->second.first, posIter->second.second);
-      //   ensureVisible(w);
-      //   if (selectAll)
-      //     w->setSelected(true);
-      // }
+      if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+      {
+        if (std::find(sub.second.begin(), sub.second.end(), w->getModuleWidget()->getModuleId()) != sub.second.end())
+        {
+          underlying.push_back(w->getModuleWidget()->getModule());
+          items.append(w);
+        }
+      }
     }
+    makeSubnetworkFromComponents(QString::fromStdString(sub.first), underlying, includeConnections(items), {});
   }
 }
 
 SubnetWidget::SubnetWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl,
-  QWidget* parent /* = 0 */) : ModuleWidget(ed, name, theModule, dialogErrorControl, parent)
+  QWidget* parent /* = 0 */) : ModuleWidget(ed, name, theModule, dialogErrorControl, parent), editor_(ed), name_(name)
 {
+}
 
+SubnetWidget::~SubnetWidget()
+{
+  editor_->killChild(name_);
+}
+
+void NetworkEditor::killChild(const QString& name)
+{
+  auto subnetIter = childrenNetworks_.find(name);
+  if (subnetIter != childrenNetworks_.end())
+  {
+    subnetIter->second->get()->clear();
+    delete subnetIter->second;
+    childrenNetworks_.erase(subnetIter);
+  }
 }
