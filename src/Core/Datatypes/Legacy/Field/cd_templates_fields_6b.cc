@@ -64,6 +64,7 @@ typedef ConstantBasis<Tensor>                CFDTensorBasis;
 typedef ConstantBasis<Vector>                CFDVectorBasis;
 typedef ConstantBasis<double>                CFDdoubleBasis;
 typedef ConstantBasis<float>                 CFDfloatBasis;
+typedef ConstantBasis<complex>               CFDcomplexBasis;
 typedef ConstantBasis<int>                   CFDintBasis;
 typedef ConstantBasis<long long>             CFDlonglongBasis;
 typedef ConstantBasis<short>                 CFDshortBasis;
@@ -78,6 +79,7 @@ typedef CrvLinearLgn<Tensor>                FDCrTensorBasis;
 typedef CrvLinearLgn<Vector>                FDCrVectorBasis;
 typedef CrvLinearLgn<double>                FDCrdoubleBasis;
 typedef CrvLinearLgn<float>                 FDCrfloatBasis;
+typedef CrvLinearLgn<complex>               FDCrcomplexBasis;
 typedef CrvLinearLgn<int>                   FDCrintBasis;
 typedef CrvLinearLgn<long long>             FDCrlonglongBasis;
 typedef CrvLinearLgn<short>                 FDCrshortBasis;
@@ -92,6 +94,7 @@ typedef QuadBilinearLgn<Tensor>                FDQTensorBasis;
 typedef QuadBilinearLgn<Vector>                FDQVectorBasis;
 typedef QuadBilinearLgn<double>                FDQdoubleBasis;
 typedef QuadBilinearLgn<float>                 FDQfloatBasis;
+typedef QuadBilinearLgn<complex>               FDQcomplexBasis;
 typedef QuadBilinearLgn<int>                   FDQintBasis;
 typedef QuadBilinearLgn<long long>             FDQlonglongBasis;
 typedef QuadBilinearLgn<short>                 FDQshortBasis;
@@ -114,36 +117,30 @@ template class GenericField<SQMesh, CFDTensorBasis, FData2d<Tensor,SQMesh> >;
 template class GenericField<SQMesh, CFDVectorBasis, FData2d<Vector,SQMesh> >;
 template class GenericField<SQMesh, CFDdoubleBasis, FData2d<double,SQMesh> >;
 template class GenericField<SQMesh, CFDfloatBasis,  FData2d<float,SQMesh> >;
+template class GenericField<SQMesh, CFDcomplexBasis, FData2d<complex, SQMesh> >;
 template class GenericField<SQMesh, CFDintBasis,    FData2d<int,SQMesh> >;
 template class GenericField<SQMesh, CFDlonglongBasis,FData2d<long long,SQMesh> >;
 template class GenericField<SQMesh, CFDshortBasis,  FData2d<short,SQMesh> >;
 template class GenericField<SQMesh, CFDcharBasis,   FData2d<char,SQMesh> >;
-template class GenericField<SQMesh, CFDuintBasis,   FData2d<unsigned int,
-							     SQMesh> >; 
-template class GenericField<SQMesh, CFDushortBasis, FData2d<unsigned short,
-							     SQMesh> >;
-template class GenericField<SQMesh, CFDucharBasis,  FData2d<unsigned char,
-							     SQMesh> >;
-template class GenericField<SQMesh, CFDulongBasis,  FData2d<unsigned long,
-							    SQMesh> >;
+template class GenericField<SQMesh, CFDuintBasis,   FData2d<unsigned int,SQMesh> >; 
+template class GenericField<SQMesh, CFDushortBasis, FData2d<unsigned short,SQMesh> >;
+template class GenericField<SQMesh, CFDucharBasis,  FData2d<unsigned char,SQMesh> >;
+template class GenericField<SQMesh, CFDulongBasis,  FData2d<unsigned long,SQMesh> >;
 
 //Linear
 template class GenericField<SQMesh, FDQTensorBasis, FData2d<Tensor,SQMesh> >;
 template class GenericField<SQMesh, FDQVectorBasis, FData2d<Vector,SQMesh> >;
 template class GenericField<SQMesh, FDQdoubleBasis, FData2d<double,SQMesh> >;
 template class GenericField<SQMesh, FDQfloatBasis,  FData2d<float,SQMesh> >;
+template class GenericField<SQMesh, FDQcomplexBasis, FData2d<complex, SQMesh> >;
 template class GenericField<SQMesh, FDQintBasis,    FData2d<int,SQMesh> >;
 template class GenericField<SQMesh, FDQlonglongBasis,FData2d<long long,SQMesh> >;
 template class GenericField<SQMesh, FDQshortBasis,  FData2d<short,SQMesh> >;
 template class GenericField<SQMesh, FDQcharBasis,   FData2d<char,SQMesh> >;
-template class GenericField<SQMesh, FDQuintBasis,   FData2d<unsigned int,
-							    SQMesh> >; 
-template class GenericField<SQMesh, FDQushortBasis, FData2d<unsigned short,
-							    SQMesh> >;
-template class GenericField<SQMesh, FDQucharBasis,  FData2d<unsigned char,
-							    SQMesh> >;
-template class GenericField<SQMesh, FDQulongBasis,  FData2d<unsigned long,
-							    SQMesh> >;
+template class GenericField<SQMesh, FDQuintBasis,   FData2d<unsigned int,SQMesh> >; 
+template class GenericField<SQMesh, FDQushortBasis, FData2d<unsigned short,SQMesh> >;
+template class GenericField<SQMesh, FDQucharBasis,  FData2d<unsigned char,SQMesh> >;
+template class GenericField<SQMesh, FDQulongBasis,  FData2d<unsigned long,SQMesh> >;
 
 PersistentTypeID 
 backwards_compat_SQSFT("StructQuadSurfField<Tensor>", "Field",
@@ -171,6 +168,12 @@ backwards_compat_SQSFf("StructQuadSurfField<float>", "Field",
 		       FData2d<float, SQMesh> >::maker,
 		       GenericField<SQMesh, CFDfloatBasis, 
 		       FData2d<float, SQMesh> >::maker);
+PersistentTypeID
+backwards_compat_SQSFco("StructQuadSurfField<complex>", "Field",
+          GenericField<SQMesh, FDQcomplexBasis,
+          FData2d<complex, SQMesh> >::maker,
+          GenericField<SQMesh, CFDcomplexBasis,
+          FData2d<complex, SQMesh> >::maker);
 PersistentTypeID 
 backwards_compat_SQSFi("StructQuadSurfField<int>", "Field",
 		       GenericField<SQMesh, FDQintBasis, 

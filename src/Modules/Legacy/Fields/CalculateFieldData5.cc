@@ -99,8 +99,6 @@ void CalculateFieldData::execute()
 //       guiformat_.changed() || !oport_cached("Field"))
   if (needToExecute())
   {
-    update_state(Executing);
-
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     // If not caching set the field and count to zero.
     if( !(gui_cache_.get()) )

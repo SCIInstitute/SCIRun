@@ -53,8 +53,6 @@ void ComputeSVD::execute()
 
 	if(needToExecute())
 	{
-		update_state(Executing);
-
 		auto output = algo().run(withInputData((InputMatrix,input_matrix)));
 
 		sendOutputFromAlgorithm(LeftSingularMatrix, output);

@@ -29,7 +29,7 @@
 #ifndef MODULES_RENDER_VIEWSCENE_H
 #define MODULES_RENDER_VIEWSCENE_H
 
-#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/ModuleWithAsyncDynamicPorts.h>
 #include <Core/Thread/Mutex.h>
 #include <Core/Algorithms/Base/AlgorithmMacros.h>
 #include <Modules/Render/share.h>
@@ -114,6 +114,7 @@ namespace Render {
     static const Core::Algorithms::AlgorithmParameterName Light1Color;
     static const Core::Algorithms::AlgorithmParameterName Light2Color;
     static const Core::Algorithms::AlgorithmParameterName Light3Color;
+    static const Core::Algorithms::AlgorithmParameterName ShowViewer;
 
 
     INPUT_PORT_DYNAMIC(0, GeneralGeom, GeometryObject);

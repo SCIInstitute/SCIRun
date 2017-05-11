@@ -62,7 +62,6 @@ void ConvertFieldDataType::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
     setAlgoOptionFromState(Parameters::FieldDatatype);
 
     auto output = algo().run(withInputData((InputField, input)));

@@ -29,7 +29,7 @@
 #ifndef MODULES_LEGACY_FIELDS_GenerateSinglePointProbeFromField_H__
 #define MODULES_LEGACY_FIELDS_GenerateSinglePointProbeFromField_H__
 
-#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Modules/Legacy/Fields/share.h>
@@ -72,9 +72,9 @@ namespace SCIRun {
         virtual void execute() override;
         virtual void setStateDefaults() override;
 
-        INPUT_PORT(0, InputField, LegacyField);
+        INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, GeneratedWidget, GeometryObject);
-        OUTPUT_PORT(1, GeneratedPoint, LegacyField);
+        OUTPUT_PORT(1, GeneratedPoint, Field);
         OUTPUT_PORT(2, ElementIndex, Int32);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)

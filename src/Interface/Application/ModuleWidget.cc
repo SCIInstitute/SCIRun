@@ -124,6 +124,8 @@ namespace
 class ModuleWidgetDisplay : public Ui::Module, public ModuleWidgetDisplayBase
 {
 public:
+  ModuleWidgetDisplay() : subnetButton_(new QPushButton("Subnet"))
+  { }
   virtual void setupFrame(QStackedWidget* stacked) override;
   virtual void setupTitle(const QString& name) override;
   virtual void setupProgressBar() override;
@@ -136,14 +138,20 @@ public:
   virtual QAbstractButton* getLogButton() const override;
   virtual void setStatusColor(const QString& color) override;
   virtual QPushButton* getModuleActionButton() const override;
+  virtual QAbstractButton* getSubnetButton() const override;
 
   virtual QProgressBar* getProgressBar() const override;
+
+  virtual void setupSubnetWidgets() override;
 
   virtual int getTitleWidth() const override;
   virtual QLabel* getTitle() const override;
 
   virtual void startExecuteMovie() override;
   virtual void stopExecuteMovie() override;
+
+private:
+  QAbstractButton* subnetButton_;
 };
 
 void ModuleWidgetDisplay::setupFrame(QStackedWidget* stacked)
@@ -176,10 +184,6 @@ void ModuleWidgetDisplay::setupSpecial()
   optionsButton_->setText("VIEW");
   optionsButton_->setFont(QFont(scirunModuleFontName(), viewFontSize));
   optionsButton_->setToolTip("View renderer output");
-
-  //optionsButton_->setMaximumWidth(140);
-  //optionsButton_->resize(140, optionsButton_->height());
-
   optionsButton_->setIcon(QIcon());
   executePushButton_->hide();
   progressBar_->setVisible(false);
@@ -246,6 +250,21 @@ QAbstractButton* ModuleWidgetDisplay::getHelpButton() const
 QAbstractButton* ModuleWidgetDisplay::getLogButton() const
 {
   return logButton2_;
+}
+
+QAbstractButton* ModuleWidgetDisplay::getSubnetButton() const
+{
+  return subnetButton_;
+}
+
+void ModuleWidgetDisplay::setupSubnetWidgets()
+{
+  getExecuteButton()->setVisible(false);
+  getLogButton()->setVisible(false);
+  subnetButton_->setMinimumWidth(50);
+  auto layout = qobject_cast<QHBoxLayout*>(buttonGroup_->layout());
+  if (layout)
+    layout->insertWidget(0, subnetButton_);
 }
 
 void ModuleWidgetDisplay::setStatusColor(const QString& color)
@@ -323,15 +342,11 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   createPorts(*theModule_);
   addPorts(currentIndex());
 
-  //qDebug() << width() << height() << currentWidget()->size();
-  //resize(currentWidget()->size());
-  //qDebug() << width() << height() << currentWidget()->size();
-
   connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
   theModule_->executionState().connectExecutionStateChanged([this](int state) { QtConcurrent::run(boost::bind(&ModuleWidget::updateBackgroundColorForModuleState, this, state)); });
 
-  theModule_->connectExecuteSelfRequest([this]() { executeAgain(); });
-  connect(this, SIGNAL(executeAgain()), this, SLOT(executeButtonPushed()));
+  theModule_->connectExecuteSelfRequest([this](bool upstream) { executeAgain(upstream); });
+  connect(this, SIGNAL(executeAgain(bool)), this, SLOT(executeTriggeredProgrammatically(bool)));
 
   Preferences::Instance().modulesAreDockable.connectValueChanged(boost::bind(&ModuleWidget::adjustDockState, this, _1));
 
@@ -340,7 +355,6 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   connectExecuteEnds(boost::bind(&ModuleWidget::executeEnds, this));
   connect(this, SIGNAL(executeEnds()), this, SLOT(changeExecuteButtonToPlay()));
   connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
-  //qDebug() << width() << height() << currentWidget()->size();
 
   auto oldName = theModule->legacyModuleName();
   if (theModule->get_module_name() != oldName)
@@ -460,7 +474,13 @@ void ModuleWidget::setupDisplayConnections(ModuleWidgetDisplayBase* display)
   connect(display->getHelpButton(), SIGNAL(clicked()), this, SLOT(launchDocumentation()));
   connect(display->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(show()));
   connect(display->getLogButton(), SIGNAL(clicked()), logWindow_, SLOT(raise()));
+  connect(display->getSubnetButton(), SIGNAL(clicked()), this, SLOT(subnetButtonClicked()));
   display->getModuleActionButton()->setMenu(actionsMenu_->getMenu());
+}
+
+void ModuleWidget::subnetButtonClicked()
+{
+  Q_EMIT showSubnetworkEditor(QString::fromStdString(theModule_->get_state()->getValue(Core::Algorithms::Name("Name")).toString()));
 }
 
 void ModuleWidget::setLogButtonColor(const QColor& color)
@@ -522,6 +542,9 @@ bool ModuleWidget::guiVisible() const
 
 void ModuleWidget::fillReplaceWithMenu()
 {
+  if (deleting_)
+    return;
+
   auto menu = getReplaceWithMenu();
   menu->clear();
   LOG_DEBUG("Filling menu for " << theModule_->get_module_name() << std::endl);
@@ -580,12 +603,12 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
   for (const auto& port : inputs)
   {
     auto type = port->get_typename();
-    //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
     auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
       portAlpha()), type,
       moduleId, port->id(),
-      i, port->isDynamic(), connectionFactory_,
-      closestPortFinder_,
+      i, port->isDynamic(),
+      [this]() { return connectionFactory_; },
+      [this]() { return closestPortFinder_; },
       PortDataDescriber(),
       this);
     hookUpGeneralPortSignals(w);
@@ -603,8 +626,6 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
       auto justAddedIndex = i - 1;
       bool isNotLastDynamicPortOfThisName = justAddedIndex < inputs.size() - 1
         && std::find_if(inputs.cbegin() + justAddedIndex + 1, inputs.cend(), nameMatches) != inputs.cend();
-      //qDebug() << "UPDATE FROM PORT CHANGE TYPE CHECK:" << isNotLastDynamicPortOfThisName << justAddedIndex << inputs.size() << (justAddedIndex < inputs.size() - 1)
-        //<< ((justAddedIndex < inputs.size() - 1) && (std::find_if(inputs.cbegin() + justAddedIndex + 1, inputs.cend(), nameMatches) != inputs.end()));
       if (isNotLastDynamicPortOfThisName)
         portConstructionType = DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD;
       dialog_->updateFromPortChange(i, port->id().toString(), portConstructionType);
@@ -634,8 +655,8 @@ void ModuleWidget::createOutputPorts(const ModuleInfoProvider& moduleInfoProvide
     auto type = port->get_typename();
     auto w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()),
       type, moduleId, port->id(), i, port->isDynamic(),
-      connectionFactory_,
-      closestPortFinder_,
+      [this]() { return connectionFactory_; },
+      [this]() { return closestPortFinder_; },
       port->getPortDataDescriber(),
       this);
     hookUpGeneralPortSignals(w);
@@ -704,12 +725,10 @@ void PortWidgetManager::addInputsToLayout(QHBoxLayout* layout)
   if (inputPorts_.empty())
     layout->addWidget(new BlankPort(layout->parentWidget()));
 
-  for (PortWidget* port : inputPorts_)
+  for (auto port : inputPorts_)
     layout->addWidget(port);
 
   layout->setSizeConstraint(QLayout::SetMinimumSize);
-  //qDebug() << "input port layout min size: " << layout->minimumSize();
-  //qDebug() << "input port layout max size: " << layout->maximumSize();
 }
 
 void PortWidgetManager::addOutputsToLayout(QHBoxLayout* layout)
@@ -717,12 +736,10 @@ void PortWidgetManager::addOutputsToLayout(QHBoxLayout* layout)
   if (outputPorts_.empty())
     layout->addWidget(new BlankPort(layout->parentWidget()));
 
-  for (PortWidget* port : outputPorts_)
+  for (auto port : outputPorts_)
     layout->addWidget(port);
 
   layout->setSizeConstraint(QLayout::SetMinimumSize);
-  //qDebug() << "output port layout min size: " << layout->minimumSize();
-  //qDebug() << "output port layout max size: " << layout->maximumSize();
 }
 
 void ModuleWidget::addInputPortsToLayout(int index)
@@ -800,11 +817,13 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
 {
   if (mid.id_ == moduleId_)
   {
-    //std::cout << "ADDING NEW DYNAMIC PORT: " << pid << std::endl;
     auto port = theModule_->getInputPort(pid);
     auto type = port->get_typename();
 
-    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), connectionFactory_, closestPortFinder_, PortDataDescriber(), this);
+    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(),
+      [this]() { return connectionFactory_; },
+      [this]() { return closestPortFinder_; },
+      PortDataDescriber(), this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
 
@@ -895,6 +914,7 @@ ModuleWidget::NetworkClearingScope::~NetworkClearingScope()
 ModuleWidget::~ModuleWidget()
 {
   disconnect(this, SIGNAL(dynamicPortChanged(const std::string&, bool)), this, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
+  disconnect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
 
   if (!theModule_->isStoppable())
   {
@@ -910,10 +930,7 @@ ModuleWidget::~ModuleWidget()
   Q_FOREACH (PortWidget* p, ports_->getAllPorts())
     p->deleteConnections();
 
-  //GuiLogger::Instance().log("Module deleted.");
-
   theModule_->setLogger(nullptr);
-
 
   if (deletedFromGui_)
   {
@@ -993,7 +1010,6 @@ void fillColorStateLookup(const QString& background)
 //primitive state machine--updateBackgroundColor slot needs the thread-safe state machine too
 void ModuleWidget::updateBackgroundColorForModuleState(int moduleState)
 {
-  //qDebug() << "color slot: " << moduleState;
   switch (moduleState)
   {
   case static_cast<int>(ModuleExecutionState::Waiting):
@@ -1069,10 +1085,15 @@ void ModuleWidget::makeOptionsDialog()
       connect(dialog_, SIGNAL(fatalError(const QString&)), this, SLOT(handleDialogFatalError(const QString&)));
       connect(dialog_, SIGNAL(executionLoopStarted()), this, SIGNAL(disableWidgetDisabling()));
       connect(dialog_, SIGNAL(executionLoopHalted()), this, SIGNAL(reenableWidgetDisabling()));
+      connect(dialog_, SIGNAL(closeButtonClicked()), this, SLOT(toggleOptionsDialog()));
+      connect(dialog_, SIGNAL(helpButtonClicked()), this, SLOT(launchDocumentation()));
+      connect(dialog_, SIGNAL(findButtonClicked()), this, SIGNAL(findInNetwork()));
       dockable_ = new QDockWidget(QString::fromStdString(moduleId_), nullptr);
       dockable_->setObjectName(dialog_->windowTitle());
       dockable_->setWidget(dialog_);
       dialog_->setDockable(dockable_);
+      if (!isViewScene_)
+        dialog_->setupButtonBar();
       dockable_->setMinimumSize(dialog_->minimumSize());
       dockable_->setAllowedAreas(allowedDockArea());
       dockable_->setAutoFillBackground(true);
@@ -1115,6 +1136,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
     dockable_->setWindowFlags(Qt::Window);
     dockable_->show();
   }
+  dialog_->setButtonBarTitleVisible(!isFloating);
 }
 
 void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)
@@ -1140,12 +1162,10 @@ void ModuleWidget::adjustDockState(bool dockEnabled)
     if (dockable_ && !dockable_->isHidden())
     {
       dockable_->setFloating(true);
+      updateDockWidgetProperties(true);
     }
   }
 }
-
-boost::shared_ptr<ConnectionFactory> ModuleWidget::connectionFactory_;
-boost::shared_ptr<ClosestPortFinder> ModuleWidget::closestPortFinder_;
 
 void ModuleWidget::toggleOptionsDialog()
 {
@@ -1261,11 +1281,24 @@ void ModuleWidget::showUI()
     dockable_->show();
 }
 
+void ModuleWidget::collapsePinnedDialog()
+{
+  if (!isViewScene_ && dockable_ && !dockable_->isFloating())
+  {
+    dialog_->collapse();
+  }
+}
+
 void ModuleWidget::executeButtonPushed()
 {
-  LOG_DEBUG("Execute button pushed on module " << moduleId_ << std::endl);
   auto skipUpstream = QApplication::keyboardModifiers() == Qt::ShiftModifier;
   Q_EMIT executedManually(theModule_, !skipUpstream);
+  changeExecuteButtonToStop();
+}
+
+void ModuleWidget::executeTriggeredProgrammatically(bool upstream)
+{
+  Q_EMIT executedManually(theModule_, upstream);
   changeExecuteButtonToStop();
 }
 
@@ -1297,7 +1330,6 @@ void ModuleWidget::changeExecuteButtonToPlay()
 
 void ModuleWidget::stopButtonPushed()
 {
-  //qDebug() << "stop pressed for " << QString::fromStdString(theModule_->get_id().id_);
   Q_EMIT interrupt(theModule_->get_id());
 }
 
@@ -1305,14 +1337,10 @@ bool ModuleWidget::globalMiniMode_(false);
 
 void ModuleWidget::movePortWidgets(int oldIndex, int newIndex)
 {
-  //qDebug() << "movePortWidgets" << oldIndex << newIndex;
   removeInputPortsFromWidget(oldIndex);
   removeOutputPortsFromWidget(oldIndex);
   addInputPortsToWidget(newIndex);
   addOutputPortsToWidget(newIndex);
-  //auto size = widget(newIndex)->size();
-  //setCurrentIndex(newIndex);
-  //resize(size);
   Q_EMIT displayChanged();
 }
 
@@ -1369,7 +1397,6 @@ int ModuleWidget::portSpacing() const
 
 void ModuleWidget::updatePortSpacing(bool highlighted)
 {
-  //qDebug() << "NEED TO UPDATE SPACING FOR " << sender();
   auto port = qobject_cast<PortWidget*>(sender());
   if (port)
   {
@@ -1441,4 +1468,15 @@ void ModuleWidget::incomingConnectionStateChanged(bool disabled, int index)
   {
     output->setConnectionsDisabled(disabled_ || disabled);
   }
+}
+
+void ModuleWidget::setupPortSceneCollaborator(QGraphicsProxyWidget* proxy)
+{
+  connectionFactory_ = boost::make_shared<ConnectionFactory>(proxy);
+  closestPortFinder_ = boost::make_shared<ClosestPortFinder>(proxy);
+}
+
+void SubnetWidget::postLoadAction()
+{
+  fullWidgetDisplay_->setupSubnetWidgets();
 }

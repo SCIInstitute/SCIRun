@@ -50,12 +50,12 @@ namespace SCIRun {
 
         INPUT_PORT(0, InputBundle, Bundle);
         OUTPUT_PORT(0, OutputBundle, Bundle);
-        OUTPUT_PORT(1, field1, LegacyField);
-        OUTPUT_PORT(2, field2, LegacyField);
-        OUTPUT_PORT(3, field3, LegacyField);
-        OUTPUT_PORT(4, field4, LegacyField);
-        OUTPUT_PORT(5, field5, LegacyField);
-        OUTPUT_PORT(6, field6, LegacyField);
+        OUTPUT_PORT(1, field1, Field);
+        OUTPUT_PORT(2, field2, Field);
+        OUTPUT_PORT(3, field3, Field);
+        OUTPUT_PORT(4, field4, Field);
+        OUTPUT_PORT(5, field5, Field);
+        OUTPUT_PORT(6, field6, Field);
 
         static const Core::Algorithms::AlgorithmParameterName FieldNameList;
         static const Core::Algorithms::AlgorithmParameterName FieldNames[];

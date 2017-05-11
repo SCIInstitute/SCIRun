@@ -52,6 +52,7 @@ typedef ConstantBasis<Tensor>                CFDTensorBasis;
 typedef ConstantBasis<Vector>                CFDVectorBasis;
 typedef ConstantBasis<double>                CFDdoubleBasis;
 typedef ConstantBasis<float>                 CFDfloatBasis;
+typedef ConstantBasis<complex>               CFDcomplexBasis;
 typedef ConstantBasis<int>                   CFDintBasis;
 typedef ConstantBasis<long long>             CFDlonglongBasis;
 typedef ConstantBasis<short>                 CFDshortBasis;
@@ -66,6 +67,7 @@ typedef HexTrilinearLgn<Tensor>                FDTensorBasis;
 typedef HexTrilinearLgn<Vector>                FDVectorBasis;
 typedef HexTrilinearLgn<double>                FDdoubleBasis;
 typedef HexTrilinearLgn<float>                 FDfloatBasis;
+typedef HexTrilinearLgn<complex>               FDcomplexBasis;
 typedef HexTrilinearLgn<int>                   FDintBasis;
 typedef HexTrilinearLgn<long long>             FDlonglongBasis;
 typedef HexTrilinearLgn<short>                 FDshortBasis;
@@ -89,6 +91,7 @@ template class GenericField<HVMesh, CFDTensorBasis, std::vector<Tensor> >;
 template class GenericField<HVMesh, CFDVectorBasis, std::vector<Vector> >;       
 template class GenericField<HVMesh, CFDdoubleBasis, std::vector<double> >;       
 template class GenericField<HVMesh, CFDfloatBasis,  std::vector<float> >;        
+template class GenericField<HVMesh, CFDcomplexBasis, std::vector<complex> >;
 template class GenericField<HVMesh, CFDintBasis,    std::vector<int> >;
 template class GenericField<HVMesh, CFDlonglongBasis,std::vector<long long> >;
 template class GenericField<HVMesh, CFDshortBasis,  std::vector<short> >;        
@@ -103,6 +106,7 @@ template class GenericField<HVMesh, FDTensorBasis, std::vector<Tensor> >;
 template class GenericField<HVMesh, FDVectorBasis, std::vector<Vector> >;       
 template class GenericField<HVMesh, FDdoubleBasis, std::vector<double> >;       
 template class GenericField<HVMesh, FDfloatBasis,  std::vector<float> >;        
+template class GenericField<HVMesh, FDcomplexBasis, std::vector<complex> >;
 template class GenericField<HVMesh, FDintBasis,    std::vector<int> >;
 template class GenericField<HVMesh, FDlonglongBasis,std::vector<long long> >;
 template class GenericField<HVMesh, FDshortBasis,  std::vector<short> >;        
@@ -139,6 +143,12 @@ backwards_compat_HVFf("HexVolField<float>", "Field",
 		      std::vector<float> >::maker,
 		      GenericField<HVMesh, CFDfloatBasis, 
 		      std::vector<float> >::maker);
+PersistentTypeID
+backwards_compat_HVFco("HexVolField<complex>", "Field",
+          GenericField<HVMesh, FDcomplexBasis,
+          std::vector<complex> >::maker,
+          GenericField<HVMesh, CFDcomplexBasis,
+          std::vector<complex> >::maker);
 PersistentTypeID 
 backwards_compat_HVFi("HexVolField<int>", "Field",
 		      GenericField<HVMesh, FDintBasis, 

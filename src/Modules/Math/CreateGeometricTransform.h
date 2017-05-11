@@ -87,7 +87,7 @@ namespace Math {
     CreateGeometricTransform();
     virtual void execute() override;
 
-    virtual void setStateDefaults();
+    void setStateDefaults() override;
 
     INPUT_PORT(0, InputMatrix, Matrix);
     OUTPUT_PORT(0, OutputMatrix, Matrix);

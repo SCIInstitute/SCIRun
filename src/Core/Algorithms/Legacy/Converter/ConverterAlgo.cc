@@ -754,8 +754,6 @@ bool ConverterAlgo::MatrixToString(Datatypes::MatrixHandle input, Datatypes::Str
   if (matrixIs::sparse(input))
   {
     SparseRowMatrixHandle sparse = convertMatrix::toSparse(input);
-    SparseRowMatrixGeneric<double>::RowsPtr rowData = sparse->get_rows();
-    SparseRowMatrixGeneric<double>::ColumnsPtr columnData = sparse->get_cols();
     size_type numRows = sparse->nrows();
     size_type numCols = sparse->ncols();
 

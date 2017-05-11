@@ -65,8 +65,6 @@ void SetFieldData::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     auto output = algo().run(withInputData(
       (InputField, input_field)
       (InputMatrix, optionalAlgoInput(input_matrix))

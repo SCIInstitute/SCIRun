@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -51,8 +51,6 @@ void AlignMeshBoundingBoxes::execute()
   // inputs_changed_ || !oport_cached("Output") || !oport_cached("Transform")
   if (needToExecute())
   {
-    update_state(Executing);
-
     auto output = algo().run(withInputData((InputField, ifield)(AlignmentField, objfield)));
 
     sendOutputFromAlgorithm(OutputField, output);

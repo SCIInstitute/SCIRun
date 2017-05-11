@@ -51,8 +51,6 @@ void ConvertMeshToUnstructuredMesh::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     auto output = algo().run(withInputData((InputField, ifield)));
     sendOutputFromAlgorithm(OutputField, output);
   }

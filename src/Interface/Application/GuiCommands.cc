@@ -191,6 +191,7 @@ std::ostream& operator<<(std::ostream& o, const std::pair<T1,T2>& p)
 bool NetworkFileProcessCommand::execute()
 {
   auto filename = get(Variables::Filename).toFilename().string();
+  auto tempFile = get(Name("temporary-file")).toBool();
   GuiLogger::Instance().logInfo("Attempting load of " + QString::fromStdString(filename));
 
   try
@@ -207,7 +208,7 @@ bool NetworkFileProcessCommand::execute()
       else
       {
         int numModules = static_cast<int>(file->network.modules.size());
-        QProgressDialog progress("Loading network " + QString::fromStdString(filename), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
+        QProgressDialog progress("Loading network " + (tempFile ? "" : QString::fromStdString(filename)), QString(), 0, numModules + 1, SCIRunMainWindow::Instance());
         progress.connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(networkDoneLoading(int)), SLOT(setValue(int)));
         progress.setWindowModality(Qt::WindowModal);
         progress.show();
@@ -223,11 +224,14 @@ bool NetworkFileProcessCommand::execute()
       }
       file_ = file;
 
-      QPointF center = findCenterOfNetworkFile(*file);
+      auto center = findCenterOfNetworkFile(*file);
       networkEditor_->centerOn(center);
 
-      GuiLogger::Instance().logInfoStd("File load done (" + filename + ").");
-      SCIRun::Core::setCurrentFileName(filename);
+      if (!tempFile)
+      {
+        GuiLogger::Instance().logInfoStd("File load done (" + filename + ").");
+        SCIRun::Core::setCurrentFileName(filename);
+      }
       return true;
     }
     GuiLogger::Instance().logErrorStd("File load failed (" + filename + "): null xml returned.");
@@ -252,6 +256,11 @@ int NetworkFileProcessCommand::guiProcess(const NetworkFileHandle& file)
   networkEditor_->clear();
   networkEditor_->loadNetwork(file);
   return static_cast<int>(file->network.modules.size()) + 1;
+}
+
+FileOpenCommand::FileOpenCommand()
+{
+  addParameter(Name("temporary-file"), false);
 }
 
 NetworkFileHandle FileOpenCommand::processXmlFile(const std::string& filename)
@@ -310,4 +319,19 @@ bool DisableViewScenesCommandGui::execute()
   SCIRunMainWindow::Instance()->networkEditor()->disableViewScenes();
   //TODO: hook up enableViewScenes to execution finished
   return true;
+}
+
+bool ToolkitUnpackerCommand::execute()
+{
+  ToolkitFile toolkit;
+  auto filename = get(Variables::Filename).toFilename();
+  std::ifstream istr(filename.string());
+  toolkit.load(istr);
+
+  auto add = !toolkit.networks.empty();
+  if (add)
+    SCIRunMainWindow::Instance()->addToolkit(QString::fromStdString(filename.leaf().stem().string()),
+      QString::fromStdString(filename.parent_path().string()), toolkit);
+
+  return add;
 }

@@ -70,8 +70,6 @@ auto isovaluefield = getOptionalInput(IsoValueField);
 
   if (needToExecute() )
   {
-    update_state(Executing);
-
 		setAlgoOptionFromState(Parameters::AddConstraints);
 		setAlgoOptionFromState(Parameters::RefineMethod);
 		setAlgoDoubleFromState(Parameters::IsoValue);

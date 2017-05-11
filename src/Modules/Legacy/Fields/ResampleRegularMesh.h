@@ -43,11 +43,11 @@ namespace SCIRun {
       public:
         ResampleRegularMesh();
 
-        virtual void execute();
-        virtual void setStateDefaults();
+        void execute() override;
+        void setStateDefaults() override;
 
-        INPUT_PORT(0, InputField, LegacyField);
-        OUTPUT_PORT(0, OutputField, LegacyField);
+        INPUT_PORT(0, InputField, Field);
+        OUTPUT_PORT(0, OutputField, Field);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       private:

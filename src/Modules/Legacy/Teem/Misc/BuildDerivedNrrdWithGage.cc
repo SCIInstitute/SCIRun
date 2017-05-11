@@ -175,9 +175,7 @@ namespace
 void
 BuildDerivedNrrdWithGage::execute()
 {
-  update_state(NeedData);
-
-  NrrdDataHandle nrrd_handle = getRequiredInput(InputNrrd);
+  auto nrrd_handle = getRequiredInput(InputNrrd);
 
   Nrrd *nin = nrrd_handle->getNrrd();
   Nrrd *nout = nrrdNew();

@@ -47,6 +47,7 @@
 
 class QDockWidget;
 class QProgressBar;
+class QTimeLine;
 
 namespace SCIRun {
 namespace Gui {
@@ -77,6 +78,9 @@ public:
   virtual QPushButton* getModuleActionButton() const = 0;
 
   virtual QProgressBar* getProgressBar() const = 0;
+
+  virtual void setupSubnetWidgets() = 0;
+  virtual QAbstractButton* getSubnetButton() const = 0;
 
   virtual int getTitleWidth() const = 0;
   virtual QLabel* getTitle() const = 0;
@@ -121,10 +125,6 @@ public:
 
   void setDeletedFromGui(bool b) { deletedFromGui_ = b; }
 
-  //TODO: initialize in a new class
-  static boost::shared_ptr<class ConnectionFactory> connectionFactory_;
-  static boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
-
   void setColorSelected();
   void setColorUnselected();
 
@@ -139,7 +139,7 @@ public:
   bool hasDynamicPorts() const;
 
   void createStartupNote();
-  void postLoadAction();
+  virtual void postLoadAction();
 
   bool guiVisible() const;
 
@@ -164,8 +164,11 @@ public:
 
   QString metadataToString() const;
   QDialog* dialog();
+  void collapsePinnedDialog();
 
   static double highResolutionExpandFactor_;
+
+  void setupPortSceneCollaborator(QGraphicsProxyWidget* proxy);
 
 public Q_SLOTS:
   virtual bool executeWithSignals() override;
@@ -214,13 +217,17 @@ Q_SIGNALS:
   void signalExecuteButtonIconChangeToStop();
   void disableWidgetDisabling();
   void reenableWidgetDisabling();
-  void executeAgain();
+  void executeAgain(bool upstream);
   void executionDisabled(bool disabled);
+  void findInNetwork();
+  void showSubnetworkEditor(const QString& name);
 private Q_SLOTS:
+  void subnetButtonClicked();
   void updateBackgroundColorForModuleState(int moduleState);
   void updateBackgroundColor(const QString& color);
   void executeButtonPushed();
   void executeTriggeredViaStateChange();
+  void executeTriggeredProgrammatically(bool upstream);
   void stopButtonPushed();
   void colorOptionsButton(bool visible);
   void fillReplaceWithMenu();
@@ -234,8 +241,8 @@ private Q_SLOTS:
 protected:
   virtual void enterEvent(QEvent* event) override;
   virtual void leaveEvent(QEvent* event) override;
-private:
   ModuleWidgetDisplayPtr fullWidgetDisplay_;
+private:
   boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
@@ -288,7 +295,18 @@ private:
   const QString defaultBackgroundColor_;
   bool isViewScene_; //TODO: lots of special logic around this case.
 
+  boost::shared_ptr<class ConnectionFactory> connectionFactory_;
+  boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
+
   static bool globalMiniMode_;
+};
+
+class SubnetWidget : public ModuleWidget
+{
+	Q_OBJECT
+public:
+  SubnetWidget(NetworkEditor* ed, const QString& name, Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = nullptr);
+  void postLoadAction() override;
 };
 
 }

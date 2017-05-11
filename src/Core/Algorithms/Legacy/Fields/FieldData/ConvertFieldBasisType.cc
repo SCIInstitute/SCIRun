@@ -66,10 +66,10 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
   
   FieldInformation fo(input);
   
-  const std::string basistype = getOption(Parameters::OutputType);
-  const bool buildBasisMapping = get(Parameters::BuildBasisMapping).toBool();
-  
-  int basis_order = input->vfield()->basis_order();
+  const auto basistype = getOption(Parameters::OutputType);
+  const auto buildBasisMapping = get(Parameters::BuildBasisMapping).toBool();
+
+  auto basis_order = input->vfield()->basis_order();
   
   if (basistype == "None")
   {
@@ -105,9 +105,7 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
         mapping.reset();
     }
 
-    VMesh* mesh    = input->vmesh();
-    VField* ifield = input->vfield();
-    VMesh::size_type num_values = ifield->num_values();
+    auto mesh    = input->vmesh();
 
     if (basis_order == 0)
     {
@@ -125,14 +123,14 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     fo.make_constantdata();
     output = CreateField(fo,input->mesh());
     
-    VField* ofield = output->vfield();
-    
     VMesh::coords_type center;
     mesh->get_element_center(center);
     
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
     VMesh::size_type num_elems = mesh->num_elems();
     VMesh::size_type num_nodes = mesh->num_nodes();
     VMesh::size_type num_nodes_per_elem = mesh->num_nodes_per_elem();
+#endif
     
     if (basis_order == 1)
     {
@@ -246,9 +244,11 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
       mapping.reset();
     }
 
-    VMesh* mesh    = input->vmesh();
-    VField* ifield = input->vfield();
-    VMesh::size_type num_values = ifield->num_values();
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    auto mesh    = input->vmesh();
+    auto ifield = input->vfield();
+    auto num_values = ifield->num_values();
+#endif
 
     if (basis_order == 1)
     {
@@ -266,10 +266,10 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
     fo.make_lineardata();
     output = CreateField(fo,input->mesh());
     
-    VField* ofield = output->vfield();
-    
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER    
     VMesh::size_type num_elems = mesh->num_elems();
     VMesh::size_type num_nodes = mesh->num_nodes();
+#endif
     
     if (basis_order == 0)
     {
@@ -364,9 +364,11 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
       mapping.reset();
     }
 
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER 
     VMesh* mesh    = input->vmesh();
     VField* ifield = input->vfield();
     VMesh::size_type num_values = ifield->num_values();
+#endif
 
     if (basis_order == 2)
     {
@@ -383,8 +385,6 @@ ConvertFieldBasisTypeAlgo::runImpl(FieldHandle input, FieldHandle& output, Matri
 
     fo.make_quadraticdata();
     output = CreateField(fo,input->mesh());
-    
-    VField* ofield = output->vfield();
     
     if (buildBasisMapping)
     {

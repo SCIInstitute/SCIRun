@@ -129,17 +129,13 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   connect(module, SIGNAL(requestModuleVisible()), this, SLOT(ensureThisVisible()));
   connect(module, SIGNAL(deleteMeLater()), this, SLOT(deleteLater()));
   connect(module, SIGNAL(executionDisabled(bool)), this, SLOT(disableModuleGUI(bool)));
+  connect(module, SIGNAL(findInNetwork()), this, SLOT(findInNetwork()));
 
   stackDepth_ = 0;
 
   originalSize_ = size();
 
-  // {
-  //   const int fadeInSeconds = 1;
-  //   timeLine_ = new QTimeLine(fadeInSeconds * 1000, this);
-  //   connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(loadAnimate(qreal)));
-  //   timeLine_->start();
-  // }
+  module_->setupPortSceneCollaborator(this);
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
@@ -148,11 +144,24 @@ ModuleProxyWidget::~ModuleProxyWidget()
 
 void ModuleProxyWidget::showAndColor(const QColor& color)
 {
+  showAndColorImpl(color, 4000);
+}
+
+void ModuleProxyWidget::showAndColorImpl(const QColor& color, int milliseconds)
+{
+  if (timeLine_)
+    return;
+    
   animateColor_ = color;
-  timeLine_ = new QTimeLine(4000, this);
+  timeLine_ = new QTimeLine(milliseconds, this);
   connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(colorAnimate(qreal)));
   timeLine_->start();
   ensureThisVisible();
+}
+
+void ModuleProxyWidget::findInNetwork()
+{
+  showAndColorImpl(Qt::white, 2000);
 }
 
 void ModuleProxyWidget::loadAnimate(qreal val)
@@ -180,7 +189,11 @@ void ModuleProxyWidget::colorAnimate(qreal val)
     }
   }
   else // 1 = done coloring
+  {
     setGraphicsEffect(nullptr);
+    delete timeLine_;
+    timeLine_ = nullptr;
+  }
 }
 
 void ModuleProxyWidget::adjustHeight(int delta)

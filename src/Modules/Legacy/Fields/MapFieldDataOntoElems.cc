@@ -85,8 +85,6 @@ MapFieldDataOntoElements::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     setAlgoOptionFromState(Parameters::Quantity);
     setAlgoOptionFromState(Parameters::InterpolationModel);
     setAlgoOptionFromState(Parameters::SampleMethod);

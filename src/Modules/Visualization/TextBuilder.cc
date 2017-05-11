@@ -54,6 +54,12 @@ TextBuilder::~TextBuilder()
   //FT_Done_Face(ftFace_);
 }
 
+void TextBuilder::setColor(float r, float g, float b, float a)
+{
+  color_ = glm::vec4(r,g,b,a);
+}
+
+
 void TextBuilder::initFreeType(const std::string &libName, size_t size)
 {
   FT_Error err;
@@ -121,23 +127,23 @@ void TextBuilder::setFaceSize(size_t size)
   FT_Set_Pixel_Sizes(ftFace_, 0, size);
 }
 
-void TextBuilder::setFSStrings(std::string &root, std::string &separator)
+void TextBuilder::setFSStrings(const std::string &root, const std::string &separator)
 {
   mFSRoot = root;
   mFSSeparator = separator;
 }
 
-std::string TextBuilder::getUniqueFontString(const char *p, double x,
-  double y, double z, double w, double h)
+std::string TextBuilder::getUniqueFontString(char p, double x,
+  double y, double z, double w, double h) const
 {
   std::stringstream ss;
-  ss << libName_ << p[0] << x << y << z << w << h;
+  ss << libName_ << p << x << y << z << w << h;
   return ss.str();
 }
 
 void TextBuilder::printString(const std::string& oneline,
   const Vector &startNrmSpc, const Vector &shiftPxlSpc,
-  const std::string& id, GeometryHandle geom)
+  const std::string& id, GeometryObjectSpire& geom) const
 {
   if (!ftValid_)
     return;
@@ -147,14 +153,13 @@ void TextBuilder::printString(const std::string& oneline,
   std::vector<Vector> txt_coords;
   auto pos = shiftPxlSpc;
 
-  const char *p;
-  for (p = oneline.c_str(); *p; p++)
+  for (const auto& p : oneline)
   {
     points.clear();
     indices.clear();
     txt_coords.clear();
 
-    if (FT_Load_Char(ftFace_, *p, FT_LOAD_RENDER))
+    if (FT_Load_Char(ftFace_, p, FT_LOAD_RENDER))
       continue;
     auto g = ftFace_->glyph;
 
@@ -215,11 +220,11 @@ void TextBuilder::printString(const std::string& oneline,
     }
 
     //add the actual points and colors
-    std::string uniqueFontStr = getUniqueFontString(p, x, y, z, w, h);
-    std::string uniqueNodeID = id + "colorMapLegendTextFont" + uniqueFontStr;
-    std::string vboName = uniqueNodeID + "VBO";
-    std::string iboName = uniqueNodeID + "IBO";
-    std::string passName = uniqueNodeID + "Pass";
+    auto uniqueFontStr = getUniqueFontString(p, x, y, z, w, h);
+    auto uniqueNodeID = id + "colorMapLegendTextFont" + uniqueFontStr;
+    auto vboName = uniqueNodeID + "VBO";
+    auto iboName = uniqueNodeID + "IBO";
+    auto passName = uniqueNodeID + "Pass";
 
     // Construct VBO.
     std::string shader = "Shaders/TextBuilder";
@@ -229,20 +234,20 @@ void TextBuilder::printString(const std::string& oneline,
     std::vector<SpireSubPass::Uniform> uniforms;
     uniforms.push_back(SpireSubPass::Uniform("uTrans", glm::vec4(startNrmSpc.x(), startNrmSpc.y(), 0.0, 0.0)));
     uniforms.push_back(SpireSubPass::Uniform("uColor", color_));
-    SpireVBO geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr2,
+    auto geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr2,
       numVBOElements, BBox(), true);
 
-    geom->mVBOs.push_back(geomVBO);
+    geom.mVBOs.push_back(geomVBO);
 
     // Construct IBO.
 
     SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr2);
-    geom->mIBOs.push_back(geomIBO);
+    geom.mIBOs.push_back(geomIBO);
     RenderState renState;
     renState.set(RenderState::USE_COLORMAP, false);
     renState.set(RenderState::USE_TRANSPARENCY, false);
     renState.set(RenderState::IS_TEXT, true);
-    char c[2] = { p[0], 0 };
+    char c[2] = { p, 0 };
     SpireText text(c, ftFace_);
 
     SpireSubPass pass2(passName, vboName, iboName, shader,
@@ -251,23 +256,39 @@ void TextBuilder::printString(const std::string& oneline,
     // Add all uniforms generated above to the pass.
     for (const auto& uniform : uniforms) { pass2.addUniform(uniform); }
 
-    geom->mPasses.push_back(pass2);
+    geom.mPasses.push_back(pass2);
   }
 }
 
-double TextBuilder::getStringLen(const std::string& oneline)
+std::tuple<double, double> TextBuilder::getStringDims(const std::string& oneline) const
 {
   if (!ftValid_)
-    return 0.0;
+    return {};
 
-  double len = 0.0;
-  const char *p;
-  for (p = oneline.c_str(); *p; p++)
+  auto len = 0.0;
+  auto rows = 0;
+  for (const auto& p : oneline)
   {
-    if (FT_Load_Char(ftFace_, *p, FT_LOAD_RENDER))
+    if (FT_Load_Char(ftFace_, p, FT_LOAD_RENDER))
       continue;
-    FT_GlyphSlot g = ftFace_->glyph;
+    auto g = ftFace_->glyph;
     len += g->bitmap.width;
+    rows = g->bitmap.rows;
   }
-  return len;
+  return std::make_tuple(len, rows);
+}
+
+bool TextBuilder::initialize(size_t textSize)
+{
+  return initialize(textSize, "FreeSans.ttf");
+}
+
+bool TextBuilder::initialize(size_t textSize, const std::string& fontName)
+{
+  if (!isInit())
+    initFreeType(fontName, textSize);
+  else if (!isValid())
+    loadNewFace(fontName, textSize);
+
+  return isReady();
 }

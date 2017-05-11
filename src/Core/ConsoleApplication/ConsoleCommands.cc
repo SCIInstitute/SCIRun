@@ -55,7 +55,7 @@ namespace
   void quietModulesIfNotVerbose()
   {
     if (!Application::Instance().parameters()->verboseMode())
-      Module::defaultLogger_.reset(new SCIRun::Core::Logging::NullLogger);
+      DefaultModuleFactories::defaultLogger_.reset(new Logging::NullLogger);
   }
 }
 
@@ -189,6 +189,7 @@ bool InteractiveModeCommandConsole::execute()
     if (!PythonInterpreter::Instance().run_string(line))
       break;
   }
+  std::cout << std::endl;
   LOG_CONSOLE("~~~~~~~");
   LOG_CONSOLE("Goodbye!");
   LOG_CONSOLE("~~~~~~~");
@@ -223,13 +224,13 @@ bool RunPythonScriptCommandConsole::execute()
     }
 
     LOG_CONSOLE("Done running Python script.");
-    
+
     if (!app.parameters()->quitAfterOneScriptedExecution())
     {
       InteractiveModeCommandConsole interactive;
       return interactive.execute();
     }
-    
+
     return true;
 #else
     LOG_CONSOLE("Python disabled, cannot run script " << *script);

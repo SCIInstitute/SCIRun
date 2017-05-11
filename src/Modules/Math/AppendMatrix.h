@@ -45,8 +45,8 @@ namespace Math {
   {
   public:
     AppendMatrix();
-    virtual void execute();
-    virtual void setStateDefaults();
+    void execute() override;
+    void setStateDefaults() override;
     HAS_DYNAMIC_PORTS
 
     INPUT_PORT(0, FirstMatrix, DenseMatrix);

@@ -54,6 +54,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/ExtractSimpleIsosurface.h>
 #include <Modules/Legacy/Fields/ClipVolumeByIsovalue.h>
 #include <Modules/Math/ComputePCA.h>
+#include <Modules/Visualization/ShowString.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
@@ -95,4 +96,5 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<ComputePCA>("ComputePCA","Math","SCIRun","...","...");
   addModuleDesc<ClipVolumeByIsovalue>("ClipVolumeByIsovalue","NewField","SCIRun","...","...");
   addModuleDesc<RefineTetMeshLocally>("RefineTetMeshLocally","ChangeMesh","SCIRun","...","...");
+  addModuleDesc<ShowString>("in progress--needs testing", "...");
 }

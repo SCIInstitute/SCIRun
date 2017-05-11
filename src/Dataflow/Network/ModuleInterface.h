@@ -25,7 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Dataflow/Network/ModuleInterface.h
 
 #ifndef DATAFLOW_NETWORK_MODULE_INTERFACE_H
 #define DATAFLOW_NETWORK_MODULE_INTERFACE_H
@@ -35,6 +34,11 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Base/AlgorithmFactory.h>
 #include <Dataflow/Network/ExecutableObject.h>
+#include <Dataflow/Network/ModuleInfoProvider.h>
+#include <Dataflow/Network/ModuleExceptions.h>
+#include <Dataflow/Network/ModuleExecutionInterfaces.h>
+#include <Dataflow/Network/ModuleIdGenerator.h>
+#include <Dataflow/Network/ModuleDisplayInterface.h>
 #include <Core/Logging/LoggerFwd.h>
 #include <Dataflow/Network/share.h>
 
@@ -42,180 +46,63 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
-  //TODO: refactor with this type
-  template <class PortType>
-  class SCISHARE PortView
+  // Methods a module writer needs to know/use/override
+  class SCISHARE ModuleUserInterface
   {
   public:
-    virtual ~PortView() {}
-    virtual bool hasPort(const PortId& id) const = 0;
-    virtual boost::shared_ptr<PortType> getPort(const PortId& id) const = 0;
-    virtual std::vector<boost::shared_ptr<PortType>> findPortsWithName(const std::string& name) const = 0;
-    virtual size_t numPorts() const = 0;
-    virtual std::vector<boost::shared_ptr<PortType>> ports() const = 0;
-  };
+    virtual ~ModuleUserInterface() {}
 
-  class SCISHARE ModuleInfoProvider
-  {
-  public:
-    virtual ~ModuleInfoProvider() {}
+    // These two functions must be implemented:
+    virtual void execute() = 0;
+    virtual void setStateDefaults() = 0;
 
-    /// @todo: kind of ridiculous interface/duplication. Should pull out a subinterface for "PortView" and just return one of those for input/output
-    virtual bool hasOutputPort(const PortId& id) const = 0;
-    virtual OutputPortHandle getOutputPort(const PortId& id) const = 0;
-    virtual std::vector<OutputPortHandle> findOutputPortsWithName(const std::string& name) const = 0;
-    virtual size_t num_output_ports() const = 0;
-    virtual std::vector<OutputPortHandle> outputPorts() const = 0;
-
-    virtual bool hasInputPort(const PortId& id) const = 0;
-    virtual InputPortHandle getInputPort(const PortId& id) = 0;
-    virtual std::vector<InputPortHandle> findInputPortsWithName(const std::string& name) const = 0;
-    virtual size_t num_input_ports() const = 0;
-    virtual std::vector<InputPortHandle> inputPorts() const = 0;
-
-    virtual std::string get_module_name() const = 0;
-    virtual ModuleId get_id() const = 0;
-    virtual bool has_ui() const = 0;
-    virtual const ModuleLookupInfo& get_info() const = 0;
-    virtual bool hasDynamicPorts() const = 0;
-
-    virtual std::string helpPageUrl() const = 0;
-    virtual std::string legacyPackageName() const = 0;
-    virtual std::string legacyModuleName() const = 0;
-  };
-
-  class SCISHARE ModuleDisplayInterface
-  {
-  public:
-    virtual ~ModuleDisplayInterface() {}
-    virtual void setUiVisible(bool visible) = 0;
-  };
-
-  SCISHARE std::string to_string(const ModuleInfoProvider&);
-
-  typedef boost::function<void(bool)> UiToggleFunc;
-
-  class SCISHARE ModuleReexecutionStrategy
-  {
-  public:
-    virtual ~ModuleReexecutionStrategy() {}
-
+    // These two functions must be understood and used correctly:
+    virtual ModuleStateHandle get_state() = 0;
     virtual bool needToExecute() const = 0;
   };
 
-  typedef boost::shared_ptr<ModuleReexecutionStrategy> ModuleReexecutionStrategyHandle;
-
-  class SCISHARE ModuleExecutionState
+  // Methods for internal developer use/testing
+  class SCISHARE ModuleInternalsInterface
   {
   public:
-    enum Value
-    {
-      NotExecuted,
-      Waiting,
-      Executing,
-      Completed,
-      Errored
-    };
-    virtual Value currentState() const = 0;
-
-    using ExecutionStateChangedSignalType = boost::signals2::signal<void(int)>;
-
-    virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) = 0;
-    virtual bool transitionTo(Value state) = 0;
-
-    virtual Value expandedState() const = 0;
-    virtual void setExpandedState(Value state) = 0;
-
-    virtual std::string currentColor() const = 0;
-    virtual ~ModuleExecutionState() {}
-  };
-
-  typedef boost::shared_ptr<ModuleExecutionState> ModuleExecutionStateHandle;
-
-  /// @todo: interface is getting bloated, segregate it.
-  class SCISHARE ModuleInterface : public ModuleInfoProvider, public ModuleDisplayInterface,
-    public ExecutableObject, public Core::Algorithms::AlgorithmCollaborator
-  {
-  public:
-    virtual ~ModuleInterface();
-
-    virtual ModuleStateHandle get_state() = 0;
-    virtual const ModuleStateHandle get_state() const = 0;
-
-    virtual void execute() = 0;
-
-    typedef boost::signals2::signal<void()> ExecutionSelfRequestSignalType;
+    virtual ~ModuleInternalsInterface() {}
+    virtual const ModuleStateHandle cstate() const = 0;
+    typedef boost::signals2::signal<void(bool)> ExecutionSelfRequestSignalType;
     virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) = 0;
-
     virtual ModuleExecutionState& executionState() = 0;
-
     /// @todo for deserialization
     virtual void set_id(const std::string& id) = 0;
     virtual void set_state(ModuleStateHandle state) = 0;
-
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) = 0;
     virtual std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) = 0;
     virtual void send_output_handle(const PortId& id, SCIRun::Core::Datatypes::DatatypeHandle data) = 0;
-
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) = 0;
-    virtual SCIRun::Core::Logging::LoggerHandle getLogger() const override = 0;
-
-    /// @todo functions
-    virtual SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const override = 0;
     virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) = 0;
     virtual void setUiToggleFunc(UiToggleFunc func) = 0;
-
-    /// @todo:
-    // need to hook up output ports for cached state.
-    virtual bool needToExecute() const = 0;
-
     virtual ModuleReexecutionStrategyHandle getReexecutionStrategy() const = 0;
     virtual void setReexecutionStrategy(ModuleReexecutionStrategyHandle caching) = 0;
-
-    virtual void setStateDefaults() = 0;
-
     virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const = 0;
-
     virtual void portAddedSlot(const Networks::ModuleId& mid, const Networks::PortId& pid) {}
     virtual void portRemovedSlot(const Networks::ModuleId& mid, const Networks::PortId& pid) {}
     virtual void addPortConnection(const boost::signals2::connection& con) = 0;
-
-    virtual void enqueueExecuteAgain() = 0;
-
+    virtual void enqueueExecuteAgain(bool upstream) = 0;
     virtual const MetadataMap& metadata() const = 0;
-
     virtual bool isStoppable() const = 0;
-
     virtual bool executionDisabled() const = 0;
     virtual void setExecutionDisabled(bool disable) = 0;
   };
 
-  struct SCISHARE DataPortException : virtual Core::ExceptionBase {};
-  struct SCISHARE NoHandleOnPortException : virtual DataPortException {};
-  struct SCISHARE NullHandleOnPortException : virtual DataPortException {};
-  struct SCISHARE WrongDatatypeOnPortException : virtual DataPortException {};
-  struct SCISHARE PortNotFoundException : virtual DataPortException {};
-  struct SCISHARE InvalidInputPortRequestException : virtual DataPortException {};
-  struct SCISHARE GeneralModuleError : virtual Core::ExceptionBase {};
-
-  #define MODULE_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(type() << SCIRun::Core::ErrorMessage(message)); }
-
-  class SCISHARE ReexecuteStrategyFactory
+  class SCISHARE ModuleInterface :
+    public ModuleUserInterface,
+    public ModuleInternalsInterface,
+    public ModuleInfoProvider,
+    public ModuleDisplayInterface,
+    public ExecutableObject,
+    public Core::Algorithms::AlgorithmCollaborator
   {
   public:
-    virtual ~ReexecuteStrategyFactory() {}
-    virtual ModuleReexecutionStrategyHandle create(const class Module& module) const = 0;
+    virtual ~ModuleInterface();
   };
-
-  class SCISHARE ModuleIdGenerator
-  {
-  public:
-    virtual ~ModuleIdGenerator() {}
-    virtual int makeId(const std::string& name) = 0;
-    virtual bool takeId(const std::string& name, int id) = 0;
-    virtual void reset() = 0; //for unit testing
-  };
-  typedef boost::shared_ptr<ModuleIdGenerator> ModuleIdGeneratorHandle;
 
 }}}
 

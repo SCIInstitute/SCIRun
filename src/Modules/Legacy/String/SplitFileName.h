@@ -45,8 +45,8 @@ namespace SCIRun {
       {
       public:
         SplitFileName();
-        virtual void execute();
-        virtual void setStateDefaults() {}
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
 
         INPUT_PORT(0, Full_Filename, String);
         OUTPUT_PORT(0, Pathname, String);

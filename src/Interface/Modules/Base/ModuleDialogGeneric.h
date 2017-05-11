@@ -73,8 +73,11 @@ namespace Gui {
     virtual ~ModuleDialogGeneric();
     bool isPulling() const { return pulling_; } //yuck
     QAction* getExecuteAction() { return executeAction_; }
-    void setDockable(QDockWidget* dock) { dock_ = dock; } // to enable title changes
+    QAction* getExecuteDownstreamAction() { return executeDownstreamAction_; }
+    void setDockable(QDockWidget* dock);
     void updateWindowTitle(const QString& title);
+    void setButtonBarTitleVisible(bool visible);
+    void setupButtonBar();
     virtual void createStartupNote() {}
     static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
     static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }
@@ -89,6 +92,7 @@ namespace Gui {
     virtual void pull() final;
     void moduleSelected(bool selected);
     void toggleCollapse();
+    void collapse() { if (!collapsed_) toggleCollapse(); }
     virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) {}
   Q_SIGNALS:
     void pullSignal();
@@ -100,13 +104,18 @@ namespace Gui {
     void fatalError(const QString& message);
     void executionLoopStarted();
     void executionLoopHalted();
+    void closeButtonClicked();
+    void helpButtonClicked();
+    void findButtonClicked();
   protected:
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
-    virtual void contextMenuEvent(QContextMenuEvent* e) override;
+    void contextMenuEvent(QContextMenuEvent* e) override;
     void fixSize();
     void connectButtonToExecuteSignal(QAbstractButton* button);
     void connectButtonsToExecuteSignal(std::initializer_list<QAbstractButton*> buttons);
     void connectComboToExecuteSignal(QComboBox* box);
+    void connectSpinBoxToExecuteSignal(QSpinBox* box);
+    void connectSpinBoxToExecuteSignal(QDoubleSpinBox* box);
 
     void pullManagedWidgets();
     // Dialog classes should override this method to provide pull behavior not available from the widget managers.
@@ -174,6 +183,7 @@ namespace Gui {
     bool collapsed_;
     QString windowTitle_;
     QDockWidget* dock_;
+    class ModuleButtonBar* buttonBox_;
     QSize oldSize_;
     std::vector<QWidget*> needToRemoveFromDisabler_;
     static ExecutionDisablingServiceFunction disablerAdd_;

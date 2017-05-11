@@ -51,6 +51,7 @@ typedef ConstantBasis<Tensor>                CFDTensorBasis;
 typedef ConstantBasis<Vector>                CFDVectorBasis;
 typedef ConstantBasis<double>                CFDdoubleBasis;
 typedef ConstantBasis<float>                 CFDfloatBasis;
+typedef ConstantBasis<complex>               CFDcomplexBasis;
 typedef ConstantBasis<int>                   CFDintBasis;
 typedef ConstantBasis<long long>             CFDlonglongBasis;
 typedef ConstantBasis<short>                 CFDshortBasis;
@@ -65,6 +66,7 @@ typedef TriLinearLgn<Tensor>                FDTensorBasis;
 typedef TriLinearLgn<Vector>                FDVectorBasis;
 typedef TriLinearLgn<double>                FDdoubleBasis;
 typedef TriLinearLgn<float>                 FDfloatBasis;
+typedef TriLinearLgn<complex>               FDcomplexBasis;
 typedef TriLinearLgn<int>                   FDintBasis;
 typedef TriLinearLgn<long long>             FDlonglongBasis;
 typedef TriLinearLgn<short>                 FDshortBasis;
@@ -89,6 +91,7 @@ template class GenericField<TSMesh, CFDTensorBasis, std::vector<Tensor> >;
 template class GenericField<TSMesh, CFDVectorBasis, std::vector<Vector> >;       
 template class GenericField<TSMesh, CFDdoubleBasis, std::vector<double> >;       
 template class GenericField<TSMesh, CFDfloatBasis,  std::vector<float> >;        
+template class GenericField<TSMesh, CFDcomplexBasis, std::vector<complex> >;
 template class GenericField<TSMesh, CFDintBasis,    std::vector<int> >;
 template class GenericField<TSMesh, CFDlonglongBasis,std::vector<long long> >;
 template class GenericField<TSMesh, CFDshortBasis,  std::vector<short> >;        
@@ -100,13 +103,11 @@ template class GenericField<TSMesh, CFDulongBasis,  std::vector<unsigned long> >
 
 }
 
-PersistentTypeID backwards_compat_TSM("TriSurfMesh", "Mesh",
-  TSMesh::maker, TSMesh::maker);
+PersistentTypeID backwards_compat_TSM("TriSurfMesh", "Mesh", TSMesh::maker, TSMesh::maker);
 
 
 typedef CurveMesh<CrvLinearLgn<Point> > CMesh;
-PersistentTypeID backwards_compat_CM("CurveMesh", "Mesh",
-				      CMesh::maker, CMesh::maker);
+PersistentTypeID backwards_compat_CM("CurveMesh", "Mesh", CMesh::maker, CMesh::maker);
 
 namespace SCIRun {
 
@@ -120,6 +121,7 @@ template class GenericField<CMesh, CFDTensorBasis, std::vector<Tensor> >;
 template class GenericField<CMesh, CFDVectorBasis, std::vector<Vector> >;       
 template class GenericField<CMesh, CFDdoubleBasis, std::vector<double> >;       
 template class GenericField<CMesh, CFDfloatBasis,  std::vector<float> >;        
+template class GenericField<CMesh, CFDcomplexBasis, std::vector<complex> >;
 template class GenericField<CMesh, CFDintBasis,    std::vector<int> >;
 template class GenericField<CMesh, CFDlonglongBasis,std::vector<long long> >;
 template class GenericField<CMesh, CFDshortBasis,  std::vector<short> >;        
@@ -136,6 +138,7 @@ typedef CrvLinearLgn<Tensor>                CrFDTensorBasis;
 typedef CrvLinearLgn<Vector>                CrFDVectorBasis;
 typedef CrvLinearLgn<double>                CrFDdoubleBasis;
 typedef CrvLinearLgn<float>                 CrFDfloatBasis;
+typedef CrvLinearLgn<complex>               CrFDcomplexBasis;
 typedef CrvLinearLgn<int>                   CrFDintBasis;
 typedef CrvLinearLgn<long long>             CrFDlonglongBasis;
 typedef CrvLinearLgn<short>                 CrFDshortBasis;
@@ -171,6 +174,12 @@ GenericField<CMesh, CrFDfloatBasis,
 std::vector<float> >::maker,
 GenericField<CMesh, CFDfloatBasis,
 std::vector<float> >::maker);
+PersistentTypeID
+backwards_compat_CFco("CurveField<complex>", "Field",
+GenericField<CMesh, CrFDcomplexBasis,
+std::vector<complex> >::maker,
+GenericField<CMesh, CFDcomplexBasis,
+std::vector<complex> >::maker);
 PersistentTypeID
 backwards_compat_CFi("CurveField<int>", "Field",
 GenericField<CMesh, CrFDintBasis,

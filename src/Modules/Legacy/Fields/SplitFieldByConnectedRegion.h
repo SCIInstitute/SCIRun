@@ -54,18 +54,18 @@ namespace SCIRun {
       public:
         SplitFieldByConnectedRegion();
 
-        virtual void execute();
-        virtual void setStateDefaults();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
-        INPUT_PORT(0, InputField, LegacyField);
-        OUTPUT_PORT(0, OutputField1, LegacyField);
-	      OUTPUT_PORT(1, OutputField2, LegacyField);
-        OUTPUT_PORT(2, OutputField3, LegacyField);
-        OUTPUT_PORT(3, OutputField4, LegacyField);
-        OUTPUT_PORT(4, OutputField5, LegacyField);
-        OUTPUT_PORT(5, OutputField6, LegacyField);
-        OUTPUT_PORT(6, OutputField7, LegacyField);
-        OUTPUT_PORT(7, OutputField8, LegacyField);
+        INPUT_PORT(0, InputField, Field);
+        OUTPUT_PORT(0, OutputField1, Field);
+	      OUTPUT_PORT(1, OutputField2, Field);
+        OUTPUT_PORT(2, OutputField3, Field);
+        OUTPUT_PORT(3, OutputField4, Field);
+        OUTPUT_PORT(4, OutputField5, Field);
+        OUTPUT_PORT(5, OutputField6, Field);
+        OUTPUT_PORT(6, OutputField7, Field);
+        OUTPUT_PORT(7, OutputField8, Field);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       };

@@ -34,7 +34,6 @@ DEALINGS IN THE SOFTWARE.
 
 #include "Interface/Modules/Render/ui_ViewScene.h"
 
-#include <boost/shared_ptr.hpp>
 #include <Modules/Visualization/TextBuilder.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
@@ -71,7 +70,7 @@ namespace SCIRun {
       void newGeometryValueForwarder();
       void mousePressSignalForTestingGeometryObjectFeedback(int x, int y, const std::string& selName);
 
-      protected Q_SLOTS:
+    protected Q_SLOTS:
       void menuMouseControlChanged(int index);
       void autoViewClicked();
       void newGeometryValue();
@@ -140,18 +139,23 @@ namespace SCIRun {
       void toggleLight1(bool value);
       void toggleLight2(bool value);
       void toggleLight3(bool value);
+      void resizingDone();
 
     protected:
-      virtual void mousePressEvent(QMouseEvent* event);
-      virtual void mouseReleaseEvent(QMouseEvent* event);
-      virtual void mouseMoveEvent(QMouseEvent* event);
-      virtual void wheelEvent(QWheelEvent* event);
-      virtual void keyPressEvent(QKeyEvent* event);
-      virtual void keyReleaseEvent(QKeyEvent*event);
-      virtual void closeEvent(QCloseEvent* evt) override;
-      virtual void showEvent(QShowEvent* evt) override;
-      virtual void hideEvent(QHideEvent* evt) override;
-      virtual void contextMenuEvent(QContextMenuEvent* evt) override {}
+      void mousePressEvent(QMouseEvent* event) override;
+      void mouseReleaseEvent(QMouseEvent* event) override;
+      void mouseMoveEvent(QMouseEvent* event) override;
+      void wheelEvent(QWheelEvent* event) override;
+      void keyPressEvent(QKeyEvent* event) override;
+      void keyReleaseEvent(QKeyEvent*event) override;
+      void closeEvent(QCloseEvent* evt) override;
+      void showEvent(QShowEvent* evt) override;
+      void hideEvent(QHideEvent* evt) override;
+      void contextMenuEvent(QContextMenuEvent* evt) override {}
+      void resizeEvent(QResizeEvent *event) override;
+
+      void pullSpecial() override;
+
     private:
       struct ClippingPlane {
         bool visible, showFrame, reverseNormal;
@@ -228,6 +232,8 @@ namespace SCIRun {
       std::vector<ClippingPlane> clippingPlanes_;
       class Screenshot* screenshotTaker_;
       bool saveScreenshotOnNewGeometry_;
+      bool pulledSavedVisibility_ {false};
+      QTimer resizeTimer_;
 
       //geometries
       Modules::Visualization::TextBuilder textBuilder_;

@@ -29,7 +29,7 @@
 #ifndef MODULES_FIELDS_EDITMESHBOUNDINGBOX_H
 #define MODULES_FIELDS_EDITMESHBOUNDINGBOX_H
 
-#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Modules/Fields/BoxWidgetTypes.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/GeometryPrimitives/BBox.h>
@@ -88,8 +88,8 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName BoxMode;
         static const Core::Algorithms::AlgorithmParameterName BoxRealScale;
 
-        INPUT_PORT(0, InputField, LegacyField);
-        OUTPUT_PORT(0, OutputField, LegacyField);
+        INPUT_PORT(0, InputField, Field);
+        OUTPUT_PORT(0, OutputField, Field);
         OUTPUT_PORT(1, Transformation_Widget, GeometryObject);
         OUTPUT_PORT(2, Transformation_Matrix, Matrix);
 

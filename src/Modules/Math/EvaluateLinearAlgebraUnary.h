@@ -44,8 +44,8 @@ namespace Math {
     CONVERTED_VERSION_OF_MODULE(EvaluateLinAlgUnary)
   public:
     EvaluateLinearAlgebraUnary();
-    virtual void execute();
-    virtual void setStateDefaults();
+    void execute() override;
+    void setStateDefaults() override;
     INPUT_PORT(0, InputMatrix, Matrix);
     OUTPUT_PORT(0, Result, Matrix);
     MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
