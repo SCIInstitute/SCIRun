@@ -28,13 +28,14 @@
 
 SET(Algorithms_Legacy_Inverse_SRCS
   TikhonovAlgoAbstractBase.cc
-  SolveInverseProblemWithTikhonovImpl_child.cc
+  SolveInverseProblemWithStandardTikhonovImpl.cc
   SolveInverseProblemWithTikhonovSVD_impl.cc
 )
 
 SET(Algorithms_Legacy_Inverse_HEADERS
   TikhonovAlgoAbstractBase.h
-  SolveInverseProblemWithTikhonovImpl_child.h
+  TikhonovImpl.h
+  SolveInverseProblemWithStandardTikhonovImpl.h
   SolveInverseProblemWithTikhonovSVD_impl.h
   share.h
 )

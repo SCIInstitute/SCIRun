@@ -7,9 +7,9 @@
     "header": "Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD.h"
   },
   "algorithm": {
-    "name": "SolveInverseProblemWithTikhonovSVD_impl",
+    "name": "TikhonovAlgoAbstractBase",
     "namespace": "Inverse",
-    "header": "Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h"
+    "header": "Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h"
   },
   "UI": {
     "name": "SolveInverseProblemWithTikhonovSVDDialog",

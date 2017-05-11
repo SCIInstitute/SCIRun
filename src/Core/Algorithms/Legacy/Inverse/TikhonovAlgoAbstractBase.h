@@ -30,6 +30,7 @@
 #define BioPSE_TikhonovAlgoAbstractBase_H__
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Inverse/TikhonovImpl.h>
 #include <Core/Algorithms/Field/share.h>
 
 
@@ -68,6 +69,7 @@ namespace Inverse {
 		static const AlgorithmOutputName RegInverse;
 
 		// define parameter names
+		static  const AlgorithmParameterName TikhonovImplementation;
 		static  const AlgorithmParameterName RegularizationMethod;
 		static  const AlgorithmParameterName regularizationChoice;
 		static  const AlgorithmParameterName regularizationSolutionSubcase;
@@ -117,15 +119,10 @@ namespace Inverse {
 		// void update_graph( const AlgorithmInput & input,  double lambda, int lambda_index, double epsilon);
 		static double FindCorner( LCurveInput & Linput, const AlgorithmInput & input, int& lambda_index);
 		static double LambdaLookup(LCurveInput& input, double lambda, int& lambda_index, const double epsilon);
-		double computeLcurve(  const AlgorithmInput & input ) const;
+		double computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl * algoImpl,   const AlgorithmInput & input ) const;
 
 		bool checkInputMatrixSizes( const AlgorithmInput & input ) const;
 
-	protected:
-		// Abstract functions
-		virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation) const = 0;
-
-		// virtual void preAlocateInverseMatrices( const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_) = 0;
 	};
 
 	}}}}

@@ -40,6 +40,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Logging/LoggerFwd.h>
+#include <Core/Algorithms/Legacy/Inverse/TikhonovImpl.h>
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 #include <Core/Algorithms/Legacy/Inverse/share.h>
 
@@ -48,13 +49,14 @@ namespace SCIRun {
 		namespace Algorithms {
 			namespace Inverse {
 
-			    class SCISHARE SolveInverseProblemWithTikhonovImpl_child : public TikhonovAlgoAbstractBase
+			    class SCISHARE SolveInverseProblemWithStandardTikhonovImpl : public TikhonovImpl
 			    {
 
 			    public:
-			        SolveInverseProblemWithTikhonovImpl_child() {};
-
-					void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_);
+			        SolveInverseProblemWithStandardTikhonovImpl(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const int regularizationChoice_, const int regularizationSolutionSubcase_, const int regularizationResidualSubcase_ )
+					{
+						preAlocateInverseMatrices( forwardMatrix_, measuredData_ , sourceWeighting_, sensorWeighting_, regularizationChoice_, regularizationSolutionSubcase_, regularizationResidualSubcase_);
+					};
 
 			    private:
 
@@ -64,7 +66,7 @@ namespace SCIRun {
 			        SCIRun::Core::Datatypes::DenseMatrix M4;
 			        SCIRun::Core::Datatypes::DenseMatrix y;
 
-				protected:
+					void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const int regularizationChoice_, const int regularizationSolutionSubcase_, const int regularizationResidualSubcase_ );
 
 			        virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation) const;
 			//      bool checkInputMatrixSizes(); // DEFINED IN PARENT, MIGHT WANT TO OVERRIDE SOME OTHER TIME

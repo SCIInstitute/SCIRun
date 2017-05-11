@@ -25,23 +25,28 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
-Author            : Moritz Dannhauer
-Last modification : March 16 2014
-ToDo: Padding is always enabled because of exit() in cleaver lib
+Author            : Jaume Coll-Font
+Last modification : April 20 2017
 */
+
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
+// Tikhonov specific headers
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
+#include <Core/Algorithms/Legacy/Inverse/TikhonovImpl.h>
+#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
+#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
 
+// Datatypes
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 
+// SCIRun structural
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Utils/Exception.h>
 
@@ -61,7 +66,7 @@ const AlgorithmOutputName TikhonovAlgoAbstractBase::InverseSolution("InverseSolu
 const AlgorithmOutputName TikhonovAlgoAbstractBase::RegularizationParameter("RegularizationParameter");
 const AlgorithmOutputName TikhonovAlgoAbstractBase::RegInverse("RegInverse");
 
-
+const AlgorithmParameterName TikhonovAlgoAbstractBase::TikhonovImplementation("NoMethodSelected");
 const AlgorithmParameterName TikhonovAlgoAbstractBase::RegularizationMethod("lambdaMethodComboBox");
 const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationChoice("autoRadioButton");
 const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaFromDirectEntry("lambdaDoubleSpinBox");
@@ -109,7 +114,6 @@ TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
 ////// CHECK IF INPUT MATRICES HAVE THE CORRECT SIZE
 bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & input) const
 {
-
 	// get inputs
 	auto forwardMatrix_ = input.get<Matrix>(ForwardMatrix);
 	auto measuredData_ = input.get<Matrix>(MeasuredPotentials);
@@ -200,16 +204,37 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
 	// get Parameters
 	auto RegularizationMethod_gotten = get(RegularizationMethod).toString();
-
-	// preAlocateInverseMatrices(forwardMatrix_,measuredData_,sourceWeighting_,sensorWeighting_);
-
-    const int M = forwardMatrix_->nrows();
+	auto TikhonovImplementation_gotten = get(TikhonovImplementation).toString();
 
     // Alocate Variable
 	DenseMatrix solution;
     double lambda_sq = 0;
 	double lambda_ = 0;
 
+	// check input MATRICES
+	checkInputMatrixSizes( input );
+
+	// Determine specific Tikhonov Implementation
+	TikhonovImpl  *algoImpl;
+	if ( TikhonovImplementation_gotten ==  "standardTikhonov"){
+		// get Parameters
+		int  regularizationChoice_ = get(regularizationChoice).toInt();
+		int regularizationSolutionSubcase_ = get(regularizationSolutionSubcase).toInt();
+		int regularizationResidualSubcase_ = get(regularizationResidualSubcase).toInt();
+
+		algoImpl = new SolveInverseProblemWithStandardTikhonovImpl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), regularizationChoice_, regularizationSolutionSubcase_, regularizationResidualSubcase_);
+	}
+	else if ( TikhonovImplementation_gotten ==  "TikhonovSVD"){
+		algoImpl = new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_));
+	}
+	else if ( TikhonovImplementation_gotten ==  "TikhonovTSVD" ){
+		THROW_ALGORITHM_PROCESSING_ERROR("Tikhonov TSVD not implemented yet");
+	}
+	else{
+		THROW_ALGORITHM_PROCESSING_ERROR("Not a valid Tikhonov Implementation selection");
+	}
+
+	// preAlocateInverseMatrices(forwardMatrix_,measuredData_,sourceWeighting_,sensorWeighting_);
 
     //Get Regularization parameter(s) : Lambda
     if ((RegularizationMethod_gotten == "single") || (RegularizationMethod_gotten == "slider"))
@@ -227,7 +252,7 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
     }
     else if (RegularizationMethod_gotten == "lcurve")
     {
-        lambda_ = computeLcurve( input );
+        lambda_ = computeLcurve( algoImpl, input );
     }
 	else
 	{
@@ -239,7 +264,7 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
 
     // compute inverse solution
-	solution = computeInverseSolution(lambda_sq, true);
+	solution = algoImpl->computeInverseSolution(lambda_sq, true);
 
 	//
     // // set final result
@@ -266,7 +291,7 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
 ///////////////////////////
 /////// compute L-curve
-double TikhonovAlgoAbstractBase::computeLcurve(const AlgorithmInput & input ) const
+double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl * algoImpl, const AlgorithmInput & input ) const
 {
 
 	// get inputs
@@ -309,8 +334,8 @@ double TikhonovAlgoAbstractBase::computeLcurve(const AlgorithmInput & input ) co
         // set current lambda
         lambda_sq = lambdaArray[j] * lambdaArray[j];
 
-        // COMPUTE INVERSE SOLUTION  // Todo: @JCOLLFONT function needs to be defined
-        solution = computeInverseSolution( lambda_sq, false);
+        // COMPUTE INVERSE SOLUTION
+        solution = algoImpl->computeInverseSolution( lambda_sq, false);
 
 
         // if using source regularization matrix, apply it to compute Rx (for the eta computations)

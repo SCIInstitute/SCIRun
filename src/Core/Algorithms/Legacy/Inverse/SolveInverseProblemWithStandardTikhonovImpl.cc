@@ -34,7 +34,7 @@ DEALINGS IN THE SOFTWARE.
 #include <boost/lexical_cast.hpp>
 
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
-#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovImpl_child.h>
+#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -57,7 +57,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 
 /////////////////////////
 ///////// compute Inverse solution
-    DenseMatrix SolveInverseProblemWithTikhonovImpl_child::computeInverseSolution( double lambda_sq, bool inverseCalculation) const
+    DenseMatrix SolveInverseProblemWithStandardTikhonovImpl::computeInverseSolution( double lambda_sq, bool inverseCalculation) const
     {
         //............................
         //  OPERATIONS PERFORMED IN THIS SECTION:
@@ -99,7 +99,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 
 /////// precomputeInverseMatrices
 ///////////////
-    void SolveInverseProblemWithTikhonovImpl_child::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
+    void SolveInverseProblemWithStandardTikhonovImpl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const int regularizationChoice_, const int regularizationSolutionSubcase_, const int regularizationResidualSubcase_)
     {
 
         // TODO: use DimensionMismatch exception where appropriate
@@ -113,12 +113,12 @@ using namespace SCIRun::Core::Algorithms::Inverse;
         DenseMatrix forward_transpose = forwardMatrix_.transpose();
 
 		// get Parameters
-		auto  regularizationChoice_ = get(regularizationChoice).toInt();
-		auto regularizationSolutionSubcase_ = get(regularizationSolutionSubcase).toInt();
-		auto regularizationResidualSubcase_ = get(regularizationResidualSubcase).toInt();
+		// auto  regularizationChoice_ = get(regularizationChoice).toInt();
+		// auto regularizationChoice_ = get(regularizationSolutionSubcase).toInt();
+		// auto regularizationResidualSubcase_ = get(regularizationResidualSubcase).toInt();
 
         // select underdetermined case if user decides so or the option is set to automatic and number of measurements is smaller than number of unknowns.
-        if ( ( (M < N) && (regularizationChoice_ == automatic) ) || (regularizationChoice_ == underdetermined))
+        if ( ( (M < N) && (regularizationChoice_ ==  TikhonovAlgoAbstractBase::automatic) ) || (regularizationChoice_ ==  TikhonovAlgoAbstractBase::underdetermined))
         {
             //UNDERDETERMINED CASE
             //.........................................................................
@@ -149,12 +149,12 @@ using namespace SCIRun::Core::Algorithms::Inverse;
             {
 
                 // if provided the non-squared version of R
-                if( regularizationSolutionSubcase_==solution_constrained )
+                if( regularizationSolutionSubcase_ ==  TikhonovAlgoAbstractBase::solution_constrained )
                 {
                     RRtr = sourceWeighting_.transpose() * sourceWeighting_;
                 }
                 // otherwise, if the source regularization is provided as the squared version (RR^T)
-                else if ( regularizationSolutionSubcase_==solution_constrained_squared )
+                else if ( regularizationSolutionSubcase_ ==  TikhonovAlgoAbstractBase::solution_constrained_squared )
                 {
                     RRtr = sourceWeighting_;
                 }
@@ -183,7 +183,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
             else
             {
                 // if measurement covariance matrix provided in non-squared form
-                if (regularizationResidualSubcase_ == residual_constrained)
+                if (regularizationResidualSubcase_ ==  TikhonovAlgoAbstractBase::residual_constrained)
                 {
                     // check that the matrix is of appropriate size (equal number of rows as rows in fwd matrix)
                     if(M != sensorWeighting_.ncols())
@@ -192,7 +192,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
                     }
                 }
                 // otherwise if the source covariance matrix is provided in squared form
-                else if  ( regularizationResidualSubcase_ == residual_constrained_squared )
+                else if  ( regularizationResidualSubcase_ ==  TikhonovAlgoAbstractBase::residual_constrained_squared )
                 {
                     CCtr = sensorWeighting_;
                 }
@@ -229,7 +229,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
         }
         //OVERDETERMINED CASE,
         //similar procedure as underdetermined case (documentation comments similar, see above)
-        else if ( ( (regularizationChoice_ == automatic) && (M>=N) ) || (regularizationChoice_==overdetermined) )
+        else if ( ( (regularizationChoice_ ==  TikhonovAlgoAbstractBase::automatic) && (M>=N) ) || (regularizationChoice_ ==  TikhonovAlgoAbstractBase::overdetermined) )
         {
             //.........................................................................
             // OPERATE ON DATA:
@@ -260,12 +260,12 @@ using namespace SCIRun::Core::Algorithms::Inverse;
             else
             {
                 // if provided the non-squared version of R
-                if( regularizationSolutionSubcase_==solution_constrained )
+                if( regularizationSolutionSubcase_ ==  TikhonovAlgoAbstractBase::solution_constrained )
                 {
                     RtrR = sourceWeighting_.transpose() * sourceWeighting_;
                 }
                 // otherwise, if the source regularization is provided as the squared version (RR^T)
-                else if (  regularizationSolutionSubcase_==solution_constrained_squared  )
+                else if (  regularizationSolutionSubcase_ ==  TikhonovAlgoAbstractBase::solution_constrained_squared  )
                 {
                     RtrR = sourceWeighting_;
                 }
@@ -281,12 +281,12 @@ using namespace SCIRun::Core::Algorithms::Inverse;
             else
             {
                 // if measurement covariance matrix provided in non-squared form
-                if (regularizationResidualSubcase_ == residual_constrained)
+                if (regularizationResidualSubcase_ ==  TikhonovAlgoAbstractBase::residual_constrained)
                 {
                     CtrC = sensorWeighting_.transpose() * sensorWeighting_;
                 }
                 // otherwise if the source covariance matrix is provided in squared form
-                else if  ( regularizationResidualSubcase_ == residual_constrained_squared )
+                else if  ( regularizationResidualSubcase_ ==  TikhonovAlgoAbstractBase::residual_constrained_squared )
                 {
                     CtrC = sensorWeighting_;
                 }

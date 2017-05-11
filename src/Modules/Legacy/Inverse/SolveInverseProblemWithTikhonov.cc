@@ -30,7 +30,7 @@
 #include <Core/Datatypes/Scalar.h>
 #include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovImpl_child.h>
+#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
 // #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -81,21 +81,15 @@ void SolveInverseProblemWithTikhonov::execute()
 
 	if (needToExecute())
 	{
-		SolveInverseProblemWithTikhonovImpl_child algo;
-
 		// set parameters
-		algo.setOption(TikhonovAlgoAbstractBase::regularizationChoice, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationChoice).toString());
-		algo.setOption(TikhonovAlgoAbstractBase::regularizationSolutionSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationSolutionSubcase).toString());
-		algo.setOption(TikhonovAlgoAbstractBase::regularizationResidualSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationResidualSubcase).toString());
-
-		// check input sizes
-		algo.checkInputMatrixSizes( make_input((ForwardMatrix, *forward_matrix_h) (MeasuredPotentials,*hMatrixMeasDat) (WeightingInSourceSpace,*hMatrixRegMat) (WeightingInSensorSpace, *hMatrixNoiseCov) ) );
-
-		// prealocate MATRICES
-		algo.preAlocateInverseMatrices( *forward_matrix_h,  *hMatrixMeasDat, *hMatrixRegMat, *hMatrixNoiseCov );
+		algo().setOption( TikhonovAlgoAbstractBase::TikhonovImplementation, "standardTikhonov" );
+		algo().setOption(TikhonovAlgoAbstractBase::regularizationChoice, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationChoice).toString());
+		algo().setOption(TikhonovAlgoAbstractBase::regularizationSolutionSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationSolutionSubcase).toString());
+		algo().setOption(TikhonovAlgoAbstractBase::regularizationResidualSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationResidualSubcase).toString());
 
 		// run
-		auto output = algo.run( make_input((ForwardMatrix, *forward_matrix_h) (MeasuredPotentials,*hMatrixMeasDat) (WeightingInSourceSpace,*hMatrixRegMat) (WeightingInSensorSpace, *hMatrixNoiseCov)));
+		// auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,hMatrixRegMat)(WeightingInSensorSpace, hMatrixNoiseCov)));
+		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)) );
 
 		// update L-curve
 		/* NO EXISTE

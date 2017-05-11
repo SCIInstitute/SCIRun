@@ -32,6 +32,7 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
 // #include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
@@ -83,21 +84,16 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 
 	if (needToExecute())
 	{
-		SolveInverseProblemWithTikhonovSVD_impl algo;
-
 		// set parameters
-		algo.setOption(TikhonovAlgoAbstractBase::regularizationChoice, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationChoice).toString() );
-		algo.setOption(TikhonovAlgoAbstractBase::regularizationSolutionSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationSolutionSubcase).toString() );
-		algo.setOption(TikhonovAlgoAbstractBase::regularizationResidualSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationResidualSubcase).toString() );
+		algo().setOption( TikhonovAlgoAbstractBase::TikhonovImplementation, "TikhonovSVD" );
+		algo().setOption(TikhonovAlgoAbstractBase::regularizationChoice, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationChoice).toString() );
+		algo().setOption(TikhonovAlgoAbstractBase::regularizationSolutionSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationSolutionSubcase).toString() );
+		algo().setOption(TikhonovAlgoAbstractBase::regularizationResidualSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationResidualSubcase).toString() );
 
-		// check input sizes
-		algo.checkInputMatrixSizes( make_input( (ForwardMatrix, *forward_matrix_h) (MeasuredPotentials,*hMatrixMeasDat) (WeightingInSourceSpace,*hMatrixRegMat) (WeightingInSensorSpace, *hMatrixNoiseCov) ) );
-
-		// prealocate MATRICES
-		algo.preAlocateInverseMatrices( *forward_matrix_h,  *hMatrixMeasDat, *hMatrixRegMat, *hMatrixNoiseCov );
 
 		// run
-		auto output = algo.run( make_input( (ForwardMatrix, *forward_matrix_h)(MeasuredPotentials,*hMatrixMeasDat)(WeightingInSourceSpace,*hMatrixRegMat)(WeightingInSensorSpace, *hMatrixNoiseCov) ));
+		// auto output = algo().run( withInputData( (ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,hMatrixRegMat)(WeightingInSensorSpace, hMatrixNoiseCov) ));
+		auto output = algo().run( withInputData( (ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat) ));
 
 		// update L-curve
 		/* NO EXISTE
