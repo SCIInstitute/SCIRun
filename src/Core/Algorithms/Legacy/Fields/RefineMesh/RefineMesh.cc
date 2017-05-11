@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,17 +28,17 @@
 
 
 #include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMesh.h>
-#include <Core/Datatypes/Legacy/Field/VMesh.h> 
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 // For mapping matrices
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshTriSurfAlgoV.h> 
-#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshTetVolAlgoV.h> 
-#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshHexVolAlgoV.h> 
-#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshCurveAlgoV.h> 
-#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshQuadSurfAlgoV.h>  
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshTriSurfAlgoV.h>
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshTetVolAlgoV.h>
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshHexVolAlgoV.h>
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshCurveAlgoV.h>
+#include <Core/Algorithms/Legacy/Fields/RefineMesh/RefineMeshQuadSurfAlgoV.h>
 
 //STL classes needed
 #include <algorithm>
@@ -58,14 +58,14 @@ ALGORITHM_PARAMETER_DEF(Fields, IsoValue);
 
 RefineMeshAlgo::RefineMeshAlgo()
 {
-		using namespace Parameters; 
+		using namespace Parameters;
 		addOption(AddConstraints,"all","all|greaterthan|unequal|lessthan|none");
-		addOption(RefineMethod,"Default","Default|Expand refinement volume to improve element quality"); 
+		addOption(RefineMethod,"Default","Default|Expand refinement volume to improve element quality");
 		addParameter(IsoValue,0.0);
 }
 
-AlgorithmOutput RefineMeshAlgo::run(const AlgorithmInput& input) const 
-{ 
+AlgorithmOutput RefineMeshAlgo::run(const AlgorithmInput& input) const
+{
 	auto field = input.get<Field>(Variables::InputField);
   FieldHandle outputField;
 
@@ -81,31 +81,31 @@ AlgorithmOutput RefineMeshAlgo::run(const AlgorithmInput& input) const
 bool
 RefineMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
-	ScopedAlgorithmStatusReporter asr(this, "RefineMesh"); 
+	REPORT_STATUS(RefineMesh);
   if (!input)
   {
     error("No input field");
     return (false);
   }
 	FieldInformation fi(input);
-	FieldInformation fo(output); 
+	FieldInformation fo(output);
 
 	const std::string rMethod = getOption(Parameters::RefineMethod);
 	const double isoVal = get(Parameters::IsoValue).toDouble();
 	const std::string addCon = getOption(Parameters::AddConstraints);
- 
+
   if (input->vfield()->num_values() == 0)
   {
-    error("Input field has no data values. The RefineMesh algorithm requires input fields to contain data."); 
+    error("Input field has no data values. The RefineMesh algorithm requires input fields to contain data.");
     return (false);
   }
-	
+
   if (addCon == "none")
   {
     output = input;
-    return (true); 
+    return (true);
   }
-	  
+
   if (fi.is_pnt_element() || fi.is_prism_element())
   {
     error("This algorithm does not support point or prism meshes");

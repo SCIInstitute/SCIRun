@@ -53,7 +53,7 @@ FieldList LoadAllCasesInputField()
    if (!(i==31 || i==47 || i==55 || i==59 || i==61 || i==62))
    {
     auto file = (TestResources::rootDir() / "Fields/refinetetmeshlocally/all57outof64case_input/").string() + std::to_string(i) + ".mat";
-    FieldHandle field = MatlabField_reader(0, file.c_str()); 
+    FieldHandle field = MatlabField_reader(0, file.c_str());
     result.push_back(field);
    }
   }
@@ -79,8 +79,8 @@ FieldList LoadAllCasesResultField()
 
 SparseRowMatrixHandle GetTheoreticalTetCases(int cases, int nr_nodes)
  {
-  SparseRowMatrixFromMap::Values result; 
-  
+  SparseRowMatrixFromMap::Values result;
+
   if (cases==31)
   {
    result[1][2]=1;
@@ -141,8 +141,8 @@ TEST(RefineTetMeshLocallyAlgoTests, Test59basicCutCases)
   FieldList result_files = LoadAllCasesResultField();
 
   double epsilon=1e-8;
- 
-  RefineTetMeshLocallyAlgorithm algo;  
+
+  RefineTetMeshLocallyAlgorithm algo;
   algo.set(Parameters::RefineTetMeshLocallyIsoValue, 1.0);
   algo.set(Parameters::RefineTetMeshLocallyEdgeLength, 0.0);
   algo.set(Parameters::RefineTetMeshLocallyVolume, 0.0);
@@ -155,31 +155,31 @@ TEST(RefineTetMeshLocallyAlgoTests, Test59basicCutCases)
   algo.set(Parameters::RefineTetMeshLocallyMaxNumberRefinementIterations, 1);
   GetMeshNodesAlgo getfieldnodes_algo;
   DenseMatrixHandle output_nodes,exp_result_nodes;
-  VMesh::Node::array_type onodes1(4),onodes2(4); 
+  VMesh::Node::array_type onodes1(4),onodes2(4);
   VMesh *output_vmesh, *exp_result_vmesh;
   FieldHandle input,output, exp_result;
 
   int count=0;
   for(int i=0; i<63; i++)
-  {  
+  {
    if (!(i==31-1 || i==47-1 || i==55-1 || i==59-1 || i==61-1 || i==62-1))
-   { 
+   {
     if(!input_files[count] || !result_files[i])
     {
       FAIL() << " ERROR: could not load data files. Please check path set in SCIRUN_TEST_RESOURCE_DIR variable (cmake). " << std::endl;
     }
     input=input_files[count++];
     exp_result=result_files[i];
-    
+
     try
     {
      algo.runImpl(input, output);
-    } catch (...) 
+    } catch (...)
     {
       FAIL() << " ERROR: RefineTetMeshLocallyAlgorithm: Case 1 does not work. " << std::endl;
     }
     exp_result_vmesh=exp_result->vmesh();
-    output_vmesh=output->vmesh(); 
+    output_vmesh=output->vmesh();
     try
     {
      getfieldnodes_algo.run(output,output_nodes);
@@ -188,60 +188,59 @@ TEST(RefineTetMeshLocallyAlgoTests, Test59basicCutCases)
     {
      FAIL() << " ERROR: RefineTetMeshLocallyAlgorithm: Case 1 does not work (could not get field nodes from input files). " << std::endl;
     }
- 
+
     if( output_nodes->ncols()!=exp_result_nodes->ncols() || output_nodes->nrows()!=exp_result_nodes->nrows() )
       FAIL() << " ERROR: RefineTetMeshLocallyAlgorithm: Case 1 does not work (number of nodes is different than expected). " << std::endl;
- 
+
     for (long idx=0;idx<exp_result_nodes->nrows();idx++)
     {
       EXPECT_NEAR( (*exp_result_nodes)(idx,0),(*output_nodes)(idx,0), epsilon);
       EXPECT_NEAR( (*exp_result_nodes)(idx,1),(*output_nodes)(idx,1), epsilon);
       EXPECT_NEAR( (*exp_result_nodes)(idx,2),(*output_nodes)(idx,2), epsilon);
     }
- 
+
     output_vmesh->synchronize(Mesh::NODES_E);
     exp_result_vmesh->synchronize(Mesh::NODES_E);
- 
+
     if( output_vmesh->num_elems()!=exp_result_vmesh->num_elems() || output_vmesh->num_elems()!=exp_result_vmesh->num_elems() )
       FAIL() << " ERROR: RefineTetMeshLocallyAlgorithm: Case 1 does not work (number of elements is different than expected). " << std::endl;
- 
+
     for(VMesh::Elem::index_type idx=0; idx<output_vmesh->num_elems(); idx++)
     {
      output_vmesh->get_nodes(onodes1, idx);
      exp_result_vmesh->get_nodes(onodes2, idx);
      for (int j=0;j<4;j++)
       if (onodes1[j]!=onodes2[j])
-       FAIL() << " ERROR: RefineTetMeshLocallyAlgorithm: Case 1 does not work (definition of resulting and expected tet definition differs). " << std::endl;    
+       FAIL() << " ERROR: RefineTetMeshLocallyAlgorithm: Case 1 does not work (definition of resulting and expected tet definition differs). " << std::endl;
     }
-    
+
    }
-   
+
   }
-  
+
 }
 
 TEST(RefineTetMeshLocallyAlgoTests, Test5MoreTheoreticalCutCases)
 {
  double epsilon=1e-8;
- RefineTetMeshLocallyAlgorithm algo; 
+ RefineTetMeshLocallyAlgorithm algo;
  VMesh::Node::array_type onodes1(4),onodes2(4);
  DenseMatrixHandle output_nodes,exp_result_nodes;
  FieldList input_list=LoadAllCasesInputField();
  FieldList result_list=LoadAllCasesResultField();
  FieldHandle input=input_list[56];
- int nr_nodes = input->vmesh()->num_nodes(); 
+ int nr_nodes = input->vmesh()->num_nodes();
  SparseRowMatrixHandle case_;
  GetMeshNodesAlgo getfieldnodes_algo;
- VMesh *case_vmesh, *case_exp_vmesh;
  int cases[] = {31, 47, 55, 59, 61, 62};
  for(int i=0; i<sizeof(cases)/4; i++)
  {
   SparseRowMatrixHandle case_=GetTheoreticalTetCases(cases[i], nr_nodes);
-  FieldHandle Casefld=algo.RefineMesh(input, case_);   
+  FieldHandle Casefld=algo.RefineMesh(input, case_);
   FieldHandle case_exp_result=result_list[cases[i]-1];
-  VMesh *case_vmesh=Casefld->vmesh(); 
+  VMesh *case_vmesh=Casefld->vmesh();
   VMesh *case_exp_vmesh=case_exp_result->vmesh();
- 
+
   try
   {
    getfieldnodes_algo.run(Casefld,output_nodes);
@@ -250,32 +249,32 @@ TEST(RefineTetMeshLocallyAlgoTests, Test5MoreTheoreticalCutCases)
   {
    FAIL() << " ERROR: RefineTetMeshLocallyAlgorithm: Case 31 does not work (could not get field nodes from input files). " << std::endl;
   }
- 
+
   if(output_nodes->ncols()!=exp_result_nodes->ncols() || output_nodes->nrows()!=exp_result_nodes->nrows() )
     FAIL() << " ERROR: RefineTetMeshLocallyAlgorithm: Case 63 does not work (number of nodes is different than expected). " << std::endl;
- 
+
   for (long idx=0;idx<exp_result_nodes->nrows();idx++)
   {
     EXPECT_NEAR( (*exp_result_nodes)(idx,0),(*output_nodes)(idx,0), epsilon);
     EXPECT_NEAR( (*exp_result_nodes)(idx,1),(*output_nodes)(idx,1), epsilon);
     EXPECT_NEAR( (*exp_result_nodes)(idx,2),(*output_nodes)(idx,2), epsilon);
   }
- 
+
  case_vmesh->synchronize(Mesh::NODES_E);
  case_exp_vmesh->synchronize(Mesh::NODES_E);
- 
+
  if( case_vmesh->num_elems()!=case_exp_vmesh->num_elems() || case_vmesh->num_elems()!=case_exp_vmesh->num_elems() )
    FAIL() << " ERROR: RefineTetMeshLocallyAlgorithm: Case 63 does not work (number of elements is different than expected). " << std::endl;
- 
+
  for(VMesh::Elem::index_type idx=0; idx<case_vmesh->num_elems(); idx++)
  {
   case_vmesh->get_nodes(onodes1, idx);
   case_exp_vmesh->get_nodes(onodes2, idx);
   for (int j=0;j<4;j++)
    if (onodes1[j]!=onodes2[j])
-    FAIL() << " ERROR: RefineTetMeshLocallyAlgorithm: Case 63 does not work (definition of resulting and expected tet definition differs). " << std::endl;    
- } 
- 
+    FAIL() << " ERROR: RefineTetMeshLocallyAlgorithm: Case 63 does not work (definition of resulting and expected tet definition differs). " << std::endl;
+ }
+
  }
 
 }

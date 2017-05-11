@@ -164,6 +164,7 @@ public:
 
   QString metadataToString() const;
   QDialog* dialog();
+  void collapsePinnedDialog();
 
   static double highResolutionExpandFactor_;
 

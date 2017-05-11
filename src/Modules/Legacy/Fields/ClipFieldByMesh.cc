@@ -65,8 +65,6 @@ void ClipFieldByMesh::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     //TODO: two-algo module
 
     CalculateIsInsideFieldAlgo insideAlgo;

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -64,13 +64,13 @@ protected:
   std::string filename_;
   mutable std::string filetype_;
   Core::Algorithms::AlgorithmParameterName stateFilename_;
-  StaticPortName<typename HType::element_type, 0>* objectPortName_;
+  Dataflow::Networks::StaticPortName<typename HType::element_type, 0>* objectPortName_;
 
   virtual std::string defaultFileTypeName() const = 0;
 
   //GuiInt      confirm_;
   //GuiInt			confirm_once_;
-  
+
   virtual bool useCustomExporter(const std::string& filename) const = 0;
   virtual bool call_exporter(const std::string &filename) { return false; }
 
@@ -141,7 +141,7 @@ GenericWriter<HType, PortTag>::execute()
     MODULE_ERROR_WITH_TYPE(Dataflow::Networks::GeneralModuleError, "Logical error: object port name not specified.");
   }
   handle_ = getRequiredInput(*objectPortName_);
-  
+
   if (filename_.empty())
   {
     MODULE_ERROR_WITH_TYPE(Dataflow::Networks::GeneralModuleError, "No filename specified.");
@@ -149,7 +149,7 @@ GenericWriter<HType, PortTag>::execute()
   if (needToExecute())
   {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    update_state(Executing);  
+    update_state(Executing);
 #endif
     remark("saving file " + filename_);
 
@@ -181,7 +181,7 @@ GenericWriter<HType, PortTag>::execute()
       else
       {
         Pio(*stream, handle_);
-      } 
+      }
     }
   }
 }

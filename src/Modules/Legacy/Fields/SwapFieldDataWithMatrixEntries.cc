@@ -62,7 +62,6 @@ SwapFieldDataWithMatrixEntries::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
     setAlgoBoolFromState(Parameters::PreserveScalar);
     algo().set(Parameters::NeedOutputMatrix, oport_connected(OutputMatrix));
 

@@ -30,7 +30,7 @@
 #ifndef MODULES_VISUALIZATION_SHOW_STRING_H
 #define MODULES_VISUALIZATION_SHOW_STRING_H
 
-#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
@@ -69,9 +69,12 @@ namespace Visualization {
     OUTPUT_PORT(0, RenderedString, GeometryObject);
     MODULE_TRAITS_AND_INFO(ModuleHasUI)
   private:
-    boost::shared_ptr<class TextBuilder> textBuilder_; 
+    boost::shared_ptr<class TextBuilder> textBuilder_;
     Core::Datatypes::GeometryBaseHandle buildGeometryObject(const std::string& text);
-    std::tuple<double, double> getTextPosition() const;
+    std::tuple<double, double> getTextPosition();
+    void processWindowResizeFeedback(const Core::Datatypes::ModuleFeedback& var);
+    std::tuple<int,int> lastWindowSize_ { 450, 1000 };
+    bool needReexecute_ {true};
   };
 }}}
 

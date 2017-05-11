@@ -75,13 +75,18 @@ using namespace SCIRun::Core::Algorithms;
 
     if (!params->disableGui())
       q->enqueue(cmdFactory_->create(GlobalCommands::ShowMainWindow));
-    else
-      std::cout << "HEADLESS MODE" << std::endl;  /// @todo obviously
 
     if (params->dataDirectory())
       q->enqueue(cmdFactory_->create(GlobalCommands::SetupDataDirectory));
 
-    if (!params->inputFiles().empty() || params->loadMostRecentFile())
+    if (params->pythonScriptFile())
+    {
+      if (params->executeNetworkAndQuit())
+        q->enqueue(cmdFactory_->create(GlobalCommands::SetupQuitAfterExecute));
+      q->enqueue(cmdFactory_->create(GlobalCommands::RunPythonScript));
+      std::cout << "Please note all args after script file name will be passed to python and not SCIRun!" << std::endl;
+    }
+    else if (!params->inputFiles().empty() || params->loadMostRecentFile())
     {
       const int last = 1;
       //TODO: support multiple files loaded--need to be able to execute and wait for each before loading next. See #825
@@ -104,11 +109,10 @@ using namespace SCIRun::Core::Algorithms;
         }
       }
     }
-    else if (params->pythonScriptFile())
+    else if (params->disableGui() && !params->interactiveMode())
     {
-      if (params->executeNetworkAndQuit())
-        q->enqueue(cmdFactory_->create(GlobalCommands::SetupQuitAfterExecute));
-      q->enqueue(cmdFactory_->create(GlobalCommands::RunPythonScript));
+      std::cout << "No input files: run with GUI or in interactive mode (-i)" << std::endl;
+      q->enqueue(cmdFactory_->create(GlobalCommands::QuitCommand));
     }
 
     if (params->interactiveMode())

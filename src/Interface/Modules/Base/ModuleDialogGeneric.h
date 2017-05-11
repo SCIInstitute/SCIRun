@@ -92,6 +92,7 @@ namespace Gui {
     virtual void pull() final;
     void moduleSelected(bool selected);
     void toggleCollapse();
+    void collapse() { if (!collapsed_) toggleCollapse(); }
     virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) {}
   Q_SIGNALS:
     void pullSignal();

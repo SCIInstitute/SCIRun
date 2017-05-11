@@ -60,8 +60,6 @@ Name::Name(const std::string& name) : name_(name)
   }
 }
 
-AlgorithmBase::~AlgorithmBase() {}
-
 namespace
 {
   // Note: boost::serialization has trouble with NaN values, in addition to the platform differences.
@@ -381,10 +379,10 @@ bool AlgorithmParameterList::checkOption(const AlgorithmParameterName& key, cons
   return boost::iequals(value, currentValue);
 }
 
-void AlgorithmBase::dumpAlgoState() const
+void AlgorithmParameterList::dumpAlgoState() const
 {
   std::ostringstream ostr;
-  ostr << "Algorithm state for " << typeid(*this).name() << " id#" << id() << std::endl;
+  ostr << "Algorithm state for " << typeid(*this).name() << std::endl;
 
   auto range = std::make_pair(paramsBegin(), paramsEnd());
   BOOST_FOREACH(const ParameterMap::value_type& pair, range)
