@@ -109,7 +109,7 @@ namespace Networks {
     DisabledComponentListXML disabledConnections;
   };
 
-  using SubnetworkMap = std::map<std::string, std::string>;
+  using SubnetworkMap = std::map<std::string, std::vector<std::string>>;
 
   struct SCISHARE Subnetworks
   {

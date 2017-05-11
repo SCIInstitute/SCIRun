@@ -204,6 +204,7 @@ void NetworkEditor::makeSubnetwork()
 
   std::vector<ModuleHandle> underlyingModules;
   auto items = scene_->selectedItems();
+  QSet<QGraphicsItem*> subnetItems = items.toSet();
   Q_FOREACH(QGraphicsItem* item, items)
   {
     auto r = item->boundingRect();
@@ -217,28 +218,40 @@ void NetworkEditor::makeSubnetwork()
 
     auto module = getModule(item);
     if (module)
+    {
       underlyingModules.push_back(module->getModule());
+      subnetItems.unite(module->connections().toSet());
+    }
   }
+  
   if (underlyingModules.empty())
+  {
+    QMessageBox::information(this, "Make subnetwork", "Please select at least one module.");
     return;
+  }
 
   bool ok;
   auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:", QLineEdit::Normal, "subnet", &ok);
   if (!ok || name.isEmpty())
     return;
 
-  auto pic = grabSubnetPic(rect);
-  auto subnetModule = boost::make_shared<SubnetModule>(underlyingModules, items);
+  makeSubnetworkFromComponents(name, underlyingModules, subnetItems.toList(), rect);
+}
+
+void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std::vector<ModuleHandle>& modules, QList<QGraphicsItem*> items, const QRectF& rect)
+{
+  auto subnetModule = boost::make_shared<SubnetModule>(modules, items);
   subnetModule->setStateDefaults();
   subnetModule->get_state()->setValue(Name("Name"), name.toStdString());
   auto moduleWidget = new SubnetWidget(this, name, subnetModule, dialogErrorControl_);
 
-  auto tooltipPic = convertToTooltip(pic);
   auto proxy = setupModuleWidget(moduleWidget);
 
   //TODO: file loading case, duplicated
   moduleWidget->postLoadAction();
   proxy->setScale(1.6);
+  auto pic = grabSubnetPic(rect);
+  auto tooltipPic = convertToTooltip(pic);
   proxy->setToolTip(tooltipPic);
 
   auto size = proxy->getModuleWidget()->size();
@@ -277,6 +290,46 @@ QString NetworkEditor::convertToTooltip(const QPixmap& pic) const
   QBuffer buffer(&byteArray);
   pic.scaled(pic.size() * 0.5).save(&buffer, "PNG");
   return QString("<html><img src=\"data:image/png;base64,") + byteArray.toBase64() + "\"/></html>";
+}
+
+void NetworkEditor::dumpSubnetworksImpl(const QString& name, Subnetworks& data, ModuleFilter modFilter) const
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto mod = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      if (parentNetwork_ && modFilter(mod->getModuleWidget()->getModule()))
+      {
+        data.subnets[name.toStdString()].push_back(mod->getModuleWidget()->getModuleId());
+      }
+    }
+  }
+}
+
+void NetworkEditor::updateSubnetworks(const Subnetworks& subnets)
+{
+  qDebug() << "Subnets:";
+  for (const auto& sub : subnets.subnets)
+  {
+    qDebug() << QString::fromStdString(sub.first);
+    for (const auto& mod : sub.second)
+      qDebug() << QString::fromStdString(mod);
+  }
+
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      // auto posIter = modulePositions.modulePositions.find(w->getModuleWidget()->getModuleId());
+      // if (posIter != modulePositions.modulePositions.end())
+      // {
+      //   w->setPos(posIter->second.first, posIter->second.second);
+      //   ensureVisible(w);
+      //   if (selectAll)
+      //     w->setSelected(true);
+      // }
+    }
+  }
 }
 
 SubnetWidget::SubnetWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl,

@@ -119,6 +119,7 @@ public:
   size_t numOutputPorts() const;
 
   const PortWidgetManager& ports() const { return *ports_; }
+  QList<QGraphicsItem*> connections() const;
 
   std::string getModuleId() const { return moduleId_; }
   Dataflow::Networks::ModuleHandle getModule() const { return theModule_; }

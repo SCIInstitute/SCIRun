@@ -306,6 +306,9 @@ namespace Gui {
     void saveTagGroupRectInFile();
     void renameTagGroupInFile();
     void makeSubnetwork();
+    void makeSubnetworkFromComponents(const QString& name, 
+      const std::vector<SCIRun::Dataflow::Networks::ModuleHandle>& modules,
+      QList<QGraphicsItem*> items, const QRectF& rect);
     void showSubnetChild(const QString& name);
     void addSubnetChild(const QString& name, const SCIRun::Dataflow::Networks::ModuleId& mid);
     void removeSubnetChild(const QString& name);

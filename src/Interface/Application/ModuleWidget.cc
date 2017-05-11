@@ -813,6 +813,17 @@ void PortWidgetManager::setHighlightPorts(bool on)
   }
 }
 
+QList<QGraphicsItem*> ModuleWidget::connections() const
+{
+  QList<QGraphicsItem*> conns;
+  for (const auto& port : ports().getAllPorts())
+  {
+    for (const auto& conn : port->connections())
+      conns.append(conn);
+  }
+  return conns;
+}
+
 void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
 {
   if (mid.id_ == moduleId_)

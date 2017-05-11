@@ -148,6 +148,8 @@ public:
 
   QGraphicsTextItem* makeNameLabel() const;
 
+  const std::set<ConnectionLine*>& connections() const { return connections_; }
+
 protected:
   virtual void moveEvent(QMoveEvent * event) override;
 
