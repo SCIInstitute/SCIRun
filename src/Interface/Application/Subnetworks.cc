@@ -79,14 +79,13 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
   vbox->addWidget(editor);
   groupBox->setLayout(vbox);
   connect(expandPushButton_, SIGNAL(clicked()), this, SLOT(expand()));
+  editor_->setParent(groupBox);
 }
 
 void SubnetworkEditor::expand()
 {
   editor_->sendItemsToParent();
   editor_->parentNetwork()->removeModuleWidget(subnetModuleId_);
-  editor_->parentNetwork()->removeSubnetChild(name_);
-  deleteLater();
 }
 
 void NetworkEditor::sendItemsToParent()
