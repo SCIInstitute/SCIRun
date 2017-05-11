@@ -32,7 +32,7 @@
 #ifndef DATAFLOW_NETWORK_NETWORK_FWD_H
 #define DATAFLOW_NETWORK_NETWORK_FWD_H
 
-#include <boost/shared_ptr.hpp>
+#include <Core/Utils/SmartPointers.h>
 #include <boost/function.hpp>
 #include <boost/any.hpp>
 #include <map>
@@ -70,6 +70,7 @@ struct ModuleNotes;
 struct ConnectionNotes;
 struct ModuleTags;
 struct DisabledComponents;
+struct Subnetworks;
 /// @todo: rename this
 struct NetworkFile;
 struct ToolkitFile;
@@ -81,25 +82,26 @@ class ReexecuteStrategyFactory;
 class MetadataMap;
 class ModuleBuilder;
 
-typedef boost::shared_ptr<NetworkInterface> NetworkHandle;
-typedef boost::shared_ptr<ModuleInterface> ModuleHandle;
-typedef boost::shared_ptr<ModuleStateInterface> ModuleStateHandle;
-typedef boost::shared_ptr<ModuleStateInterfaceFactory> ModuleStateFactoryHandle;
-typedef boost::shared_ptr<ReexecuteStrategyFactory> ReexecuteStrategyFactoryHandle;
-typedef boost::shared_ptr<PortInterface> PortHandle;
-typedef boost::shared_ptr<Connection> ConnectionHandle;
-typedef boost::shared_ptr<InputPortInterface> InputPortHandle;
-typedef boost::shared_ptr<OutputPortInterface> OutputPortHandle;
-typedef boost::shared_ptr<ModuleFactory> ModuleFactoryHandle;
-typedef boost::shared_ptr<DatatypeSinkInterface> DatatypeSinkInterfaceHandle;
-typedef boost::shared_ptr<DatatypeSourceInterface> DatatypeSourceInterfaceHandle;
-typedef boost::shared_ptr<NetworkXML> NetworkXMLHandle;
-typedef boost::shared_ptr<ModulePositions> ModulePositionsHandle;
-typedef boost::shared_ptr<ModuleNotes> ModuleNotesHandle;
-typedef boost::shared_ptr<ConnectionNotes> ConnectionNotesHandle;
-typedef boost::shared_ptr<ModuleTags> ModuleTagsHandle;
-typedef boost::shared_ptr<DisabledComponents> DisabledComponentsHandle;
-typedef boost::shared_ptr<NetworkFile> NetworkFileHandle;
+typedef SharedPointer<NetworkInterface> NetworkHandle;
+typedef SharedPointer<ModuleInterface> ModuleHandle;
+typedef SharedPointer<ModuleStateInterface> ModuleStateHandle;
+typedef SharedPointer<ModuleStateInterfaceFactory> ModuleStateFactoryHandle;
+typedef SharedPointer<ReexecuteStrategyFactory> ReexecuteStrategyFactoryHandle;
+typedef SharedPointer<PortInterface> PortHandle;
+typedef SharedPointer<Connection> ConnectionHandle;
+typedef SharedPointer<InputPortInterface> InputPortHandle;
+typedef SharedPointer<OutputPortInterface> OutputPortHandle;
+typedef SharedPointer<ModuleFactory> ModuleFactoryHandle;
+typedef SharedPointer<DatatypeSinkInterface> DatatypeSinkInterfaceHandle;
+typedef SharedPointer<DatatypeSourceInterface> DatatypeSourceInterfaceHandle;
+typedef SharedPointer<NetworkXML> NetworkXMLHandle;
+typedef SharedPointer<ModulePositions> ModulePositionsHandle;
+typedef SharedPointer<ModuleNotes> ModuleNotesHandle;
+typedef SharedPointer<ConnectionNotes> ConnectionNotesHandle;
+typedef SharedPointer<ModuleTags> ModuleTagsHandle;
+typedef SharedPointer<DisabledComponents> DisabledComponentsHandle;
+typedef SharedPointer<NetworkFile> NetworkFileHandle;
+typedef SharedPointer<Subnetworks> SubnetworksHandle;
 
 typedef std::map<std::string, std::map<std::string, std::map<std::string, ModuleDescription>>> ModuleDescriptionMap;
 typedef boost::function<bool(ModuleHandle)> ModuleFilter;

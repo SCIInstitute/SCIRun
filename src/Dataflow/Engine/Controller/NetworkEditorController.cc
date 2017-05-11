@@ -492,6 +492,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
         serializationManager_->updateConnectionNotes(xml->connectionNotes);
         serializationManager_->updateModuleTags(xml->moduleTags);
         serializationManager_->updateDisabledComponents(xml->disabledComponents);
+        serializationManager_->updateSubnetworks(xml->subnetworks);
       }
       else
       {

@@ -1116,6 +1116,54 @@ DisabledComponentsHandle NetworkEditor::dumpDisabledComponents(ModuleFilter modF
   return disabled;
 }
 
+SubnetworksHandle NetworkEditor::dumpSubnetworks(ModuleFilter modFilter) const
+{
+  auto subnets(boost::make_shared<Subnetworks>());
+  for (const auto& child : childrenNetworks_)
+  {
+    child.second->get()->dumpSubnetworksImpl(child.first, *subnets, modFilter);
+  }
+  return subnets;
+}
+
+void NetworkEditor::dumpSubnetworksImpl(const QString& name, Subnetworks& data, ModuleFilter modFilter) const
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto mod = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      if (parentNetwork_ && modFilter(mod->getModuleWidget()->getModule()))
+      {
+        data.subnets[mod->getModuleWidget()->getModuleId()] = name.toStdString();
+      }
+    }
+  }
+}
+
+void NetworkEditor::updateSubnetworks(const Subnetworks& subnets)
+{
+  qDebug() << "Subnets:";
+  for (const auto& sub : subnets.subnets)
+  {
+    qDebug() << QString::fromStdString(sub.first) << QString::fromStdString(sub.second);
+  }
+
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      // auto posIter = modulePositions.modulePositions.find(w->getModuleWidget()->getModuleId());
+      // if (posIter != modulePositions.modulePositions.end())
+      // {
+      //   w->setPos(posIter->second.first, posIter->second.second);
+      //   ensureVisible(w);
+      //   if (selectAll)
+      //     w->setSelected(true);
+      // }
+    }
+  }
+}
+
 void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions, bool selectAll)
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
