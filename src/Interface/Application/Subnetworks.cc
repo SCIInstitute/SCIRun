@@ -36,6 +36,7 @@
 #include <Interface/Application/PortWidgetManager.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/Subnetworks.h>
+#include <Interface/Application/SCIRunMainWindow.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //TODO: remove
 #include <Dataflow/Network/Module.h> //TODO: remove
@@ -80,6 +81,8 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
   groupBox->setLayout(vbox);
   connect(expandPushButton_, SIGNAL(clicked()), this, SLOT(expand()));
   editor_->setParent(groupBox);
+  editor_->setAcceptDrops(true);
+  qDebug() << editor_->acceptDrops() << acceptDrops() << groupBox->acceptDrops();;
 }
 
 void SubnetworkEditor::expand()
@@ -143,7 +146,7 @@ void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, N
     item->ensureVisible();
   }
 
-  auto dock = new SubnetworkEditor(subnet, mid, name, parentWidget());
+  auto dock = new SubnetworkEditor(subnet, mid, name, SCIRunMainWindow::Instance());
   dock->show();
 
   childrenNetworks_[name] = dock;
@@ -238,7 +241,7 @@ void NetworkEditor::makeSubnetwork()
       underlyingModules.push_back(module->getModule());
     }
   }
-  
+
   if (underlyingModules.empty())
   {
     QMessageBox::information(this, "Make subnetwork", "Please select at least one module.");

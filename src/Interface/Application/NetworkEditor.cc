@@ -628,13 +628,16 @@ void NetworkEditor::contextMenuEvent(QContextMenuEvent *event)
 
 void NetworkEditor::dropEvent(QDropEvent* event)
 {
+  qDebug() << __FUNCTION__;
   auto data = event->mimeData();
   if (data->hasUrls())
   {
     auto urls = data->urls();
+    qDebug() << "hasUrls:" << urls;
     if (!urls.isEmpty())
     {
-      auto file = urls[0].path();
+      auto file = urls[0].toLocalFile();
+      qDebug() << file;
       QFileInfo check_file(file);
       if (check_file.exists() && check_file.isFile() && file.endsWith("srn5"))
       {
@@ -642,6 +645,10 @@ void NetworkEditor::dropEvent(QDropEvent* event)
         return;
       }
     }
+  }
+  else
+  {
+    qDebug() << "no urls";
   }
 
   if (moduleSelectionGetter_->isModule())
@@ -655,7 +662,10 @@ void NetworkEditor::dropEvent(QDropEvent* event)
 void NetworkEditor::addNewModuleAtPosition(const QPointF& position)
 {
   if (parentNetwork_)
+  {
+    qDebug() << "how do i add to a subnet?";
     return;
+  }
 
   lastModulePosition_ = position;
   controller_->addModule(moduleSelectionGetter_->text().toStdString());
@@ -684,6 +694,7 @@ void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
 
 void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
+  event->acceptProposedAction();
 }
 
 void NetworkEditor::updateViewport()

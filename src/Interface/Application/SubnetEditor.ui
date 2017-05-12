@@ -6,15 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>540</width>
-    <height>565</height>
+    <width>550</width>
+    <height>594</height>
    </rect>
+  </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
   </property>
   <property name="floating">
    <bool>true</bool>
   </property>
   <property name="features">
    <set>QDockWidget::DockWidgetFeatureMask</set>
+  </property>
+  <property name="allowedAreas">
+   <set>Qt::NoDockWidgetArea</set>
   </property>
   <property name="windowTitle">
    <string>Subnet Editor</string>
@@ -28,6 +34,9 @@
         <width>16777215</width>
         <height>15</height>
        </size>
+      </property>
+      <property name="acceptDrops">
+       <bool>true</bool>
       </property>
       <property name="text">
        <string>Outputs</string>
@@ -43,6 +52,9 @@
           <width>16777215</width>
           <height>15</height>
          </size>
+        </property>
+        <property name="acceptDrops">
+         <bool>true</bool>
         </property>
         <property name="text">
          <string>Inputs</string>
@@ -84,6 +96,9 @@
         <width>500</width>
         <height>500</height>
        </size>
+      </property>
+      <property name="acceptDrops">
+       <bool>true</bool>
       </property>
       <property name="title">
        <string/>
