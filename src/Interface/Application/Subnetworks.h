@@ -54,7 +54,6 @@ namespace SCIRun
       QString name_;
       SCIRun::Dataflow::Networks::ModuleId subnetModuleId_;
     };
-
   }
 }
 

@@ -56,8 +56,12 @@ NetworkEditor::~NetworkEditor()
 {
   sendItemsToParent();
 
+  if (parentNetwork_)
+    controller_.reset();
+
   for (auto& child : childrenNetworks_)
   {
+    child.second->get()->controller_.reset();
     delete child.second->get();
     child.second = nullptr;
   }
@@ -82,7 +86,6 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
   connect(expandPushButton_, SIGNAL(clicked()), this, SLOT(expand()));
   editor_->setParent(groupBox);
   editor_->setAcceptDrops(true);
-  qDebug() << editor_->acceptDrops() << acceptDrops() << groupBox->acceptDrops();;
 }
 
 void SubnetworkEditor::expand()
@@ -132,10 +135,12 @@ void NetworkEditor::showSubnetChild(const QString& name)
   }
 }
 
+NetworkEditor* NetworkEditor::inEditingContext_(nullptr);
+
 void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, NetworkEditor* subnet)
 {
   subnet->parentNetwork_ = this;
-  subnet->setNetworkEditorController(getNetworkEditorController());
+  subnet->setNetworkEditorController(getNetworkEditorController()->withSubnet(subnet));
 
   subnet->setSceneRect(QRectF(0, 0, 400, 400));
 

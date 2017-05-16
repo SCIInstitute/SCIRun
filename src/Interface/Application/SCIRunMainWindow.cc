@@ -459,7 +459,7 @@ SCIRunMainWindow::~SCIRunMainWindow()
 
 void SCIRunMainWindow::setController(NetworkEditorControllerHandle controller)
 {
-  boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
+  auto controllerProxy(boost::make_shared<NetworkEditorControllerGuiProxy>(controller, networkEditor_));
   networkEditor_->setNetworkEditorController(controllerProxy);
   //TODO: need better way to wire this up
   controller->setSerializationManager(networkEditor_);

@@ -402,6 +402,18 @@ namespace Gui {
     NetworkEditor* parentNetwork_ {nullptr};
     std::map<QString, class SubnetworkEditor*> childrenNetworks_;
     std::map<QString, QList<QGraphicsItem*>> childrenNetworkItems_;
+    static NetworkEditor* inEditingContext_;
+    struct InEditingContext
+    {
+      explicit InEditingContext(NetworkEditor* ed)
+      {
+        inEditingContext_ = ed;
+      }
+      ~InEditingContext()
+      {
+        inEditingContext_ = nullptr;
+      }
+    };
   };
 
   ModuleWidget* getModule(QGraphicsItem* item);

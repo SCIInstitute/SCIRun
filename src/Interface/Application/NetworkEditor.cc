@@ -106,11 +106,6 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
 
 void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller)
 {
-  for (auto& child : childrenNetworks_)
-  {
-    child.second->get()->setNetworkEditorController(controller);
-  }
-
   if (controller_ == controller)
     return;
 
@@ -148,7 +143,7 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 
 void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module, const ModuleCounter& count)
 {
-  if (parentNetwork_)
+  if (!fileLoading_ && inEditingContext_ != this)
     return;
 
   latestModuleId_ = module->get_id().id_;
@@ -628,16 +623,13 @@ void NetworkEditor::contextMenuEvent(QContextMenuEvent *event)
 
 void NetworkEditor::dropEvent(QDropEvent* event)
 {
-  qDebug() << __FUNCTION__;
   auto data = event->mimeData();
   if (data->hasUrls())
   {
     auto urls = data->urls();
-    qDebug() << "hasUrls:" << urls;
     if (!urls.isEmpty())
     {
       auto file = urls[0].toLocalFile();
-      qDebug() << file;
       QFileInfo check_file(file);
       if (check_file.exists() && check_file.isFile() && file.endsWith("srn5"))
       {
@@ -645,10 +637,6 @@ void NetworkEditor::dropEvent(QDropEvent* event)
         return;
       }
     }
-  }
-  else
-  {
-    qDebug() << "no urls";
   }
 
   if (moduleSelectionGetter_->isModule())
@@ -661,11 +649,7 @@ void NetworkEditor::dropEvent(QDropEvent* event)
 
 void NetworkEditor::addNewModuleAtPosition(const QPointF& position)
 {
-  if (parentNetwork_)
-  {
-    qDebug() << "how do i add to a subnet?";
-    return;
-  }
+  InEditingContext iec(this);
 
   lastModulePosition_ = position;
   controller_->addModule(moduleSelectionGetter_->text().toStdString());
@@ -688,13 +672,11 @@ void NetworkEditor::addModuleViaDoubleClickedTreeItem()
 
 void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
 {
-  //???
   event->acceptProposedAction();
 }
 
 void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
-  event->acceptProposedAction();
 }
 
 void NetworkEditor::updateViewport()
