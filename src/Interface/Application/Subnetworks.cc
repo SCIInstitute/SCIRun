@@ -136,6 +136,7 @@ void NetworkEditor::showSubnetChild(const QString& name)
 }
 
 NetworkEditor* NetworkEditor::inEditingContext_(nullptr);
+NetworkEditor::ConnectorFunc NetworkEditor::connectorFunc_;
 
 void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, NetworkEditor* subnet)
 {
@@ -151,6 +152,7 @@ void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, N
     item->ensureVisible();
   }
 
+  connectorFunc_(subnet);
   auto dock = new SubnetworkEditor(subnet, mid, name, SCIRunMainWindow::Instance());
   dock->show();
 

@@ -261,6 +261,9 @@ namespace Gui {
     void killChild(const QString& name);
     void sendItemsToParent();
 
+    using ConnectorFunc = std::function<void(NetworkEditor*)>;
+    static void setConnectorFunc(ConnectorFunc func) { connectorFunc_ = func; }
+
   protected:
     void dropEvent(QDropEvent* event) override;
     void dragEnterEvent(QDragEnterEvent* event) override;
@@ -414,6 +417,7 @@ namespace Gui {
         inEditingContext_ = nullptr;
       }
     };
+    static ConnectorFunc connectorFunc_;
   };
 
   ModuleWidget* getModule(QGraphicsItem* item);

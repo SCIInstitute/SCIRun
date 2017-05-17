@@ -516,6 +516,9 @@ NetworkEditor::ModulePair NetworkEditor::selectedModulePair() const
 
 void NetworkEditor::del()
 {
+  if (!isActiveWindow())
+    return;
+
   auto items = scene_->selectedItems();
   QMutableListIterator<QGraphicsItem*> i(items);
   while (i.hasNext())
@@ -1287,7 +1290,8 @@ void NetworkEditor::clear()
   //TODO: this (unwritten) method does not need to be called here.  the dtors of all the module widgets get called when the scene_ is cleared, which triggered removal from the underlying network.
   // we'll need a similar hook when programming the scripting interface (moduleWidgets<->modules).
   //controller_->clear();
-  Q_EMIT modified();
+  if (!parentNetwork_)
+    Q_EMIT modified();
 }
 
 NetworkFileHandle NetworkEditor::saveNetwork() const
