@@ -219,9 +219,7 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
 
   if (containsDescenderLetter(text))
   {
-    std::cout << text << " ==> " << yTrans;
     yTrans += 0.02;
-    std::cout << " -> " << yTrans << std::endl;
   }
 
   Vector trans(xTrans, yTrans, 0.0);
