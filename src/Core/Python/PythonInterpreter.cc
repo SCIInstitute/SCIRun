@@ -439,6 +439,34 @@ namespace
     std::transform(wideArgv.begin(), wideArgv.end(), wideArgvPtrs.begin(), [](std::vector<wchar_t>& wide) { return &wide[0]; });
     return wideArgvPtrs;
   }
+
+  std::vector<wchar_t> getProgramName(const std::vector<std::string>& argv)
+  {
+    size_t name_len = argv[0].size();
+    std::vector<wchar_t> program_name(name_len + 1);
+    mbstowcs(&program_name[0], argv[0].c_str(), name_len + 1);
+    return program_name;
+  }
+
+  void setPythonArgv(const std::vector<std::string>& argv)
+  {
+    auto wideArgv = wideArgvFromArgv(argv);
+    auto wideArgvPtrs = wideArgvPtrsFromWideArgv(wideArgv);
+
+    int argsOffset = 0;
+    auto scriptFlag1 = std::find(argv.begin(), argv.end(), "-s");
+    auto scriptFlag2 = std::find(argv.begin(), argv.end(), "--script");
+    if (scriptFlag1 != argv.end())
+    {
+      argsOffset = scriptFlag1 - argv.begin() + 1;
+    }
+    else if (scriptFlag2 != argv.end())
+    {
+      argsOffset = scriptFlag2 - argv.begin() + 1;
+    }
+
+    PySys_SetArgv(wideArgvPtrs.size() - argsOffset, &wideArgvPtrs[argsOffset]);
+  }
 }
 
 void PythonInterpreter::initialize(bool needProgramName, const std::string& commandLine, const boost::filesystem::path& libPath)
@@ -447,22 +475,14 @@ void PythonInterpreter::initialize(bool needProgramName, const std::string& comm
 
   if (needProgramName)
   {
-    size_t name_len = argv[0].size();
-    std::vector<wchar_t> program_name(name_len + 1);
-    mbstowcs(&program_name[0], argv[0].c_str(), name_len + 1);
-
-    //std::cerr << "Initializing Python ..." << std::endl;
-    this->private_->setProgramName(program_name);
+    this->private_->setProgramName(getProgramName(argv));
     // TODO: remove debug print when confident python initialization is stable
     //std::wcerr << "initialize program name=" << this->private_->programName() << std::endl;
   }
 
   initialize_eventhandler(needsSpecialPythonPathTreatment(commandLine), libPath);
 
-  auto wideArgv = wideArgvFromArgv(argv);
-  auto wideArgvPtrs = wideArgvPtrsFromWideArgv(wideArgv);
-  
-  PySys_SetArgv(argv.size(), &wideArgvPtrs[0]);
+  setPythonArgv(argv);
 
   {
     auto out = [](const std::string& s)
