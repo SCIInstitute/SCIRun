@@ -1052,9 +1052,7 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
       colorToUse = colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Errored));
     }
 
-    QString rounded;
-    if (SCIRunMainWindow::Instance()->newInterface())
-      rounded = "color: white; border-radius: 7px;";
+    QString rounded("color: white; border-radius: 7px;");
     setStyleSheet(rounded + " background-color: " + colorToUse);
     previousModuleState_ = colorStateLookup.left.at(colorToUse);
   }

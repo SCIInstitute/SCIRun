@@ -538,12 +538,18 @@ void NetworkEditor::del()
 
 void NetworkEditor::cut()
 {
+  if (!isActiveWindow())
+    return;
+
   copy();
   del();
 }
 
 void NetworkEditor::copy()
 {
+  if (!isActiveWindow())
+    return;
+
   auto selected = scene_->selectedItems();
   auto modSelected = [&selected](ModuleHandle mod)
   {
@@ -1436,6 +1442,9 @@ QPixmap NetworkEditor::sceneGrab()
 
 void NetworkEditor::selectAll()
 {
+  if (!isActiveWindow())
+    return;
+    
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     item->setSelected(true);
