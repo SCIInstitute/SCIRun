@@ -1372,6 +1372,8 @@ void NetworkEditor::enableViewScenes()
 
 size_t NetworkEditor::numModules() const
 {
+  if (!controller_)
+    return 0;
   return controller_->numModules();
 }
 
