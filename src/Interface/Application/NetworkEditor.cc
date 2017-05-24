@@ -705,9 +705,13 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
       if (!(event->modifiers() & Qt::ControlModifier))
       {
         auto selectedPair = cL->getConnectedToModuleIds();
+        auto c1 = findById(scene_->items(), selectedPair.first);
+        if (c1)
+          c1->setSelected(true);
+        auto c2 = findById(scene_->items(), selectedPair.second);
+        if (c2)
+          c2->setSelected(true);
 
-        findById(scene_->items(), selectedPair.first)->setSelected(true);
-        findById(scene_->items(), selectedPair.second)->setSelected(true);
         modulesSelectedByCL_ = true;
       }
     }
@@ -1446,7 +1450,7 @@ void NetworkEditor::selectAll()
 {
   if (!isActiveWindow())
     return;
-    
+
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     item->setSelected(true);
