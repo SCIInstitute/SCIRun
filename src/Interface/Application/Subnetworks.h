@@ -39,7 +39,7 @@ namespace SCIRun
   {
     class NetworkEditor;
 
-    class SubnetworkEditor : public QDockWidget, public Ui::SubnetEditor
+    class SubnetworkEditor : public QFrame, public Ui::SubnetEditor
     {
       Q_OBJECT
 

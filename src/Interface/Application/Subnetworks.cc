@@ -75,7 +75,7 @@ NetworkEditor::~NetworkEditor()
   NetworkEditor::clear();
 }
 
-SubnetworkEditor::SubnetworkEditor(NetworkEditor* editor, const ModuleId& subnetModuleId, const QString& name, QWidget* parent) : QDockWidget(parent),
+SubnetworkEditor::SubnetworkEditor(NetworkEditor* editor, const ModuleId& subnetModuleId, const QString& name, QWidget* parent) : QFrame(parent),
 editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
 {
   setupUi(this);
@@ -153,7 +153,8 @@ void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, N
   }
 
   connectorFunc_(subnet);
-  auto dock = new SubnetworkEditor(subnet, mid, name, SCIRunMainWindow::Instance());
+  auto dock = new SubnetworkEditor(subnet, mid, name, nullptr);
+  dock->setStyleSheet(SCIRunMainWindow::Instance()->styleSheet());
   dock->show();
 
   childrenNetworks_[name] = dock;
@@ -170,9 +171,6 @@ public:
   }
   virtual void execute() override
   {
-    //std::ostringstream ostr;
-    //ostr << "Module " << get_module_name() << " executing for " << 3.14 << " seconds." << std::endl;
-    //status(ostr.str());
   }
 
   static const AlgorithmParameterName ModuleInfo;
