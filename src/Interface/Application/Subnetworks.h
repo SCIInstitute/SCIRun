@@ -46,6 +46,7 @@ namespace SCIRun
     public:
       SubnetworkEditor(NetworkEditor* editor, const SCIRun::Dataflow::Networks::ModuleId& subnetModuleId, const QString& name, QWidget* parent = nullptr);
       NetworkEditor* get() { return editor_; }
+      ~SubnetworkEditor();
 
     private Q_SLOTS:
       void expand();

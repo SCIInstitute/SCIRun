@@ -73,6 +73,7 @@ NetworkEditor::~NetworkEditor()
       module->setDeletedFromGui(false);
   }
   NetworkEditor::clear();
+  //qDebug() << __FILE__ << __LINE__ << __FUNCTION__;
 }
 
 SubnetworkEditor::SubnetworkEditor(NetworkEditor* editor, const ModuleId& subnetModuleId, const QString& name, QWidget* parent) : QFrame(parent),
@@ -90,8 +91,19 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
 
 void SubnetworkEditor::expand()
 {
+  //qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "start";
+  //qDebug() << this;
   editor_->sendItemsToParent();
+  //qDebug() << __FILE__ << __LINE__ << __FUNCTION__;
+  //qDebug() << this;
   editor_->parentNetwork()->removeModuleWidget(subnetModuleId_);
+  //qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "end";
+  //qDebug() << this;
+}
+
+SubnetworkEditor::~SubnetworkEditor()
+{
+  //qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "start/end";
 }
 
 void NetworkEditor::sendItemsToParent()
@@ -368,16 +380,21 @@ SubnetWidget::SubnetWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
 
 SubnetWidget::~SubnetWidget()
 {
+  //qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "start";
   editor_->killChild(name_);
+  //qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "end";
 }
 
 void NetworkEditor::killChild(const QString& name)
 {
+  //qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "start";
   auto subnetIter = childrenNetworks_.find(name);
   if (subnetIter != childrenNetworks_.end())
   {
     subnetIter->second->get()->clear();
-    delete subnetIter->second;
+    //qDebug() << __FILE__ << __LINE__ << __FUNCTION__;
+    subnetIter->second->deleteLater();
+    //qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "end";
     childrenNetworks_.erase(subnetIter);
   }
 }
