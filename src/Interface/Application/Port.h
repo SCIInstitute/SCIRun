@@ -113,6 +113,7 @@ public:
   void turn_on_light();
   void turn_off_light();
   virtual bool isLightOn() const override { return lightOn_; }
+  void connectToSubnetPort();
 
   void setHighlight(bool on, bool individual = false);
   virtual void setPositionObject(PositionProviderPtr provider) override;

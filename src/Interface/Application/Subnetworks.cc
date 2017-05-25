@@ -185,20 +185,7 @@ public:
     set_id("Subnet:" + boost::lexical_cast<std::string>(subnetCount_));
     subnetCount_++;
 
-    for (const auto& i : items_)
-    {
-      auto conn = qgraphicsitem_cast<ConnectionLine*>(i);
-      if (conn)
-      {
-        auto mods = conn->getConnectedToModuleIds();
-        auto foundFirst = std::find_if(underlyingModules_.cbegin(), underlyingModules_.cend(),
-          [&mods](const ModuleHandle& mod) { return mod->get_id().id_ == mods.first.id_; });
-        auto foundSecond = std::find_if(underlyingModules_.cbegin(), underlyingModules_.cend(),
-          [&mods](const ModuleHandle& mod) { return mod->get_id().id_ == mods.second.id_; });
-        auto isInternalConnection = foundFirst != underlyingModules_.cend() && foundSecond != underlyingModules_.cend();
-        conn->setData(IS_INTERNAL, isInternalConnection);
-      }
-    }
+
   }
 
   void execute() override
@@ -303,13 +290,44 @@ public:
   ModuleHandle makeSubnet(const QString& name, const std::vector<ModuleHandle>& modules, QList<QGraphicsItem*> items) const
   {
     ModuleDescription desc;
+
+    for (const auto& i : items)
+    {
+      auto conn = qgraphicsitem_cast<ConnectionLine*>(i);
+      if (conn)
+      {
+        auto mods = conn->getConnectedToModuleIds();
+        auto foundFirst = std::find_if(modules.cbegin(), modules.cend(),
+          [&mods](const ModuleHandle& mod) { return mod->get_id().id_ == mods.first.id_; });
+        auto foundSecond = std::find_if(modules.cbegin(), modules.cend(),
+          [&mods](const ModuleHandle& mod) { return mod->get_id().id_ == mods.second.id_; });
+        auto isInternalConnection = foundFirst != modules.cend() && foundSecond != modules.cend();
+        conn->setData(IS_INTERNAL, isInternalConnection);
+
+        if (!isInternalConnection)
+        {
+          auto ports = conn->connectedPorts();
+
+          auto addSubnetToId = [](PortWidget* port) { return PortId{ port->id().id, port->id().name + "[From:" + port->getUnderlyingModuleId().id_ + "]"}; };
+          if (foundFirst != modules.cend())
+          {
+            auto portToReplicate = ports.second;
+            desc.input_ports_.emplace_back(addSubnetToId(portToReplicate), portToReplicate->get_typename(), portToReplicate->isDynamic());
+            ports.first->connectToSubnetPort();
+          }
+          else
+          {
+            auto portToReplicate = ports.first;
+            desc.output_ports_.emplace_back(addSubnetToId(portToReplicate), portToReplicate->get_typename(), portToReplicate->isDynamic());
+            ports.second->connectToSubnetPort();
+          }
+        }
+      }
+    }
+
     desc.maker_ = [&modules, items]() { return new SubnetModule(modules, items); };
 
-    //desc.input_ports_.emplace_back(PortId{ 0, "Foo" }, "Field", false);
-
-
     auto mod = create(desc);
-
 
     mod->get_state()->setValue(Name("Name"), name.toStdString());
 
@@ -322,7 +340,7 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
 {
   static SubnetModuleFactory factory;
   auto subnetModule = factory.makeSubnet(name, modules, items);
-  
+
   auto moduleWidget = new SubnetWidget(this, name, subnetModule, dialogErrorControl_);
   auto proxy = setupModuleWidget(moduleWidget);
   //TODO: file loading case, duplicated

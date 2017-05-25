@@ -462,6 +462,11 @@ void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port, double thr
   }
 }
 
+void PortWidget::connectToSubnetPort()
+{
+  qDebug() << this << name() << get_typename().c_str() << get_portname().c_str() << getUnderlyingModuleId().id_.c_str();
+}
+
 void PortWidget::MakeTheConnection(const ConnectionDescription& cd)
 {
   if (matches(cd))
