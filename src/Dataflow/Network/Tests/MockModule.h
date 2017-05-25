@@ -101,15 +101,15 @@ namespace SCIRun {
         {
         public:
           MockModuleFactory() : moduleCounter_(0) {}
-          virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info) const;
-          virtual ModuleHandle create(const ModuleDescription& info);
-          virtual void setStateFactory(ModuleStateFactoryHandle stateFactory);
-          virtual void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory);
-          virtual void setReexecutionFactory(ReexecuteStrategyFactoryHandle reexFactory);
-          virtual const ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
-          virtual const DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const { throw "not implemented"; }
+          ModuleDescription lookupDescription(const ModuleLookupInfo& info) const override;
+          ModuleHandle create(const ModuleDescription& info) const override;
+          void setStateFactory(ModuleStateFactoryHandle stateFactory) override;
+          void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory) override;
+          void setReexecutionFactory(ReexecuteStrategyFactoryHandle reexFactory) override;
+          const ModuleDescriptionMap& getAllAvailableModuleDescriptions() const override;
+          const DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const override { throw "not implemented"; }
         private:
-          size_t moduleCounter_;
+          mutable size_t moduleCounter_;
           ModuleStateFactoryHandle stateFactory_;
         };
       }

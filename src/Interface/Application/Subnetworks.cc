@@ -44,6 +44,7 @@
 #include <Core/Application/Application.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <boost/lambda/lambda.hpp>
+#include <Modules/Factory/HardCodedModuleFactory.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -199,13 +200,14 @@ public:
       }
     }
   }
-  virtual void execute() override
+
+  void execute() override
   {
   }
 
   static const AlgorithmParameterName ModuleInfo;
 
-  virtual void setStateDefaults() override
+  void setStateDefaults() override
   {
     auto state = get_state();
 
@@ -221,6 +223,7 @@ public:
 
     state->setValue(ModuleInfo, table);
   }
+
   std::string listComponentIds() const
   {
     std::ostringstream ostr;
@@ -240,7 +243,7 @@ const AlgorithmParameterName SubnetModule::ModuleInfo("ModuleInfo");
 
 QList<QGraphicsItem*> NetworkEditor::includeConnections(QList<QGraphicsItem*> items) const
 {
-  QSet<QGraphicsItem*> subnetItems = items.toSet();
+  auto subnetItems = items.toSet();
   Q_FOREACH(QGraphicsItem* item, items)
   {
     auto module = getModule(item);
@@ -294,12 +297,28 @@ void NetworkEditor::makeSubnetwork()
   makeSubnetworkFromComponents(name, underlyingModules, includeConnections(items), rect);
 }
 
+class SubnetModuleFactory : public Modules::Factory::HardCodedModuleFactory
+{
+public:
+  ModuleHandle makeSubnet(const QString& name, const std::vector<ModuleHandle>& modules, QList<QGraphicsItem*> items) const
+  {
+    ModuleDescription desc;
+    desc.maker_ = [&modules, items]() { return new SubnetModule(modules, items); };
+    auto mod = create(desc);
+
+
+    mod->get_state()->setValue(Name("Name"), name.toStdString());
+
+    return mod;
+  }
+};
+
 void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std::vector<ModuleHandle>& modules,
   QList<QGraphicsItem*> items, const QRectF& rect)
 {
-  auto subnetModule = boost::make_shared<SubnetModule>(modules, items);
-  subnetModule->setStateDefaults();
-  subnetModule->get_state()->setValue(Name("Name"), name.toStdString());
+  static SubnetModuleFactory factory;
+  auto subnetModule = factory.makeSubnet(name, modules, items);
+  
   auto moduleWidget = new SubnetWidget(this, name, subnetModule, dialogErrorControl_);
   auto proxy = setupModuleWidget(moduleWidget);
   //TODO: file loading case, duplicated
@@ -396,21 +415,16 @@ SubnetWidget::SubnetWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
 
 SubnetWidget::~SubnetWidget()
 {
-  //qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "start";
   editor_->killChild(name_);
-  //qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "end";
 }
 
 void NetworkEditor::killChild(const QString& name)
 {
-  //qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "start";
   auto subnetIter = childrenNetworks_.find(name);
   if (subnetIter != childrenNetworks_.end())
   {
     subnetIter->second->get()->clear();
-    //qDebug() << __FILE__ << __LINE__ << __FUNCTION__;
     subnetIter->second->deleteLater();
-    //qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "end";
     childrenNetworks_.erase(subnetIter);
   }
 }

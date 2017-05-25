@@ -30,22 +30,11 @@
 #define DATAFLOW_NETWORK_MODULEBUILDER_H
 
 #include <boost/noncopyable.hpp>
-#include <boost/static_assert.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/atomic.hpp>
-#include <atomic>
-#include <vector>
-#include <Core/Logging/LoggerInterface.h>
-#include <Core/Datatypes/DatatypeFwd.h>
 // ReSharper disable once CppUnusedIncludeDirective
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Network/ModuleInterface.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/PortManager.h>
-#include <Dataflow/Network/DefaultModuleFactories.h>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {
@@ -61,18 +50,18 @@ namespace Networks {
     ModuleBuilder& add_input_port(const Port::ConstructionParams& params);
     ModuleBuilder& add_output_port(const Port::ConstructionParams& params);
     ModuleBuilder& setStateDefaults();
-    ModuleHandle build();
+    ModuleHandle build() const;
 
     /// @todo: these don't quite belong here, think about extracting
-    PortId cloneInputPort(ModuleHandle module, const PortId& id);
-    void removeInputPort(ModuleHandle module, const PortId& id);
+    PortId cloneInputPort(ModuleHandle module, const PortId& id) const;
+    void removeInputPort(ModuleHandle module, const PortId& id) const;
 
     typedef boost::function<DatatypeSinkInterface*()> SinkMaker;
     typedef boost::function<DatatypeSourceInterface*()> SourceMaker;
     static void use_sink_type(SinkMaker func);
     static void use_source_type(SourceMaker func);
   private:
-    void addInputPortImpl(Module& module, const Port::ConstructionParams& params);
+    void addInputPortImpl(const Port::ConstructionParams& params) const;
     boost::shared_ptr<Module> module_;
     static SinkMaker sink_maker_;
     static SourceMaker source_maker_;
