@@ -38,9 +38,9 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
-  typedef boost::signals2::signal<void (const ModuleId&)> ExecuteBeginsSignalType;
-  typedef boost::signals2::signal<void (double, const ModuleId&)> ExecuteEndsSignalType; // 1st parameter is execution time
-  typedef boost::signals2::signal<void (const ModuleId&)> ErrorSignalType;
+  using ExecuteBeginsSignalType = boost::signals2::signal<void (const ModuleId&)>;
+  using ExecuteEndsSignalType = boost::signals2::signal<void (double, const ModuleId&)>; // 1st parameter is execution time
+  using ErrorSignalType = boost::signals2::signal<void (const ModuleId&)>;
 
   class SCISHARE ExecutableObject
   {

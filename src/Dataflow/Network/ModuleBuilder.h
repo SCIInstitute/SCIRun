@@ -56,13 +56,13 @@ namespace Networks {
     PortId cloneInputPort(ModuleHandle module, const PortId& id) const;
     void removeInputPort(ModuleHandle module, const PortId& id) const;
 
-    typedef boost::function<DatatypeSinkInterface*()> SinkMaker;
-    typedef boost::function<DatatypeSourceInterface*()> SourceMaker;
+    using SinkMaker = boost::function<DatatypeSinkInterface*()>;
+    using SourceMaker = boost::function<DatatypeSourceInterface*()>;
     static void use_sink_type(SinkMaker func);
     static void use_source_type(SourceMaker func);
   private:
     void addInputPortImpl(const Port::ConstructionParams& params) const;
-    boost::shared_ptr<Module> module_;
+    SharedPointer<Module> module_;
     static SinkMaker sink_maker_;
     static SourceMaker source_maker_;
   };

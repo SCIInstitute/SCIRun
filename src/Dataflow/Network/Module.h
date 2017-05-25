@@ -32,7 +32,6 @@
 #include <boost/noncopyable.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/atomic.hpp>
 #include <atomic>
 #include <vector>
 #include <Core/Logging/LoggerInterface.h>
@@ -64,7 +63,7 @@ namespace Networks {
       Core::Algorithms::AlgorithmFactoryHandle algoFactory = DefaultModuleFactories::defaultAlgoFactory_,
       ModuleStateFactoryHandle stateFactory = DefaultModuleFactories::defaultStateFactory_,
       ReexecuteStrategyFactoryHandle reexFactory = DefaultModuleFactories::defaultReexFactory_);
-    virtual ~Module() override;
+    ~Module() override;
 
     /*** User-interface ****/
     ModuleStateHandle get_state() override final;
@@ -84,7 +83,7 @@ namespace Networks {
     void set_state(ModuleStateHandle state) override final;
     ModuleExecutionState& executionState() override final;
 
-    virtual std::string helpPageUrl() const override;
+    std::string helpPageUrl() const override;
     std::string newHelpPageUrl() const; // location in flux, but new v5 modules only have one of these
     //for serialization
     const ModuleLookupInfo& get_info() const override final;
@@ -95,9 +94,9 @@ namespace Networks {
     size_t num_input_ports() const override final;
     size_t num_output_ports() const override final;
     // override this for modules that changed packages, to point to correct wiki page
-    virtual std::string legacyPackageName() const override { return get_packagename(); }
+    std::string legacyPackageName() const override { return get_packagename(); }
     // override this for modules that changed names, to point to correct wiki page
-    virtual std::string legacyModuleName() const override { return get_module_name(); }
+    std::string legacyModuleName() const override { return get_module_name(); }
     bool hasInputPort(const PortId& id) const override final;
     bool hasOutputPort(const PortId& id) const override final;
     InputPortHandle getInputPort(const PortId& id) override final;
@@ -176,8 +175,8 @@ namespace Networks {
     friend class ModuleBuilder;
 
   private:
-    virtual Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) override final;
-    virtual std::vector<Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) override final;
+    Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) override final;
+    std::vector<Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) override final;
     template <class T>
     boost::shared_ptr<T> getRequiredInputAtIndex(const PortId& id);
     template <class T>
@@ -189,11 +188,14 @@ namespace Networks {
     boost::shared_ptr<class ModuleImpl> impl_;
   };
 
+  // ReSharper disable once CppUnusedIncludeDirective
 #include <Dataflow/Network/ModuleTemplateImpl.h>
 
 }}}
 
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Dataflow/Network/ModulePortDescriptionTags.h>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <Dataflow/Network/ModuleTraits.h>
 
 #endif
