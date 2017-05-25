@@ -304,6 +304,10 @@ public:
   {
     ModuleDescription desc;
     desc.maker_ = [&modules, items]() { return new SubnetModule(modules, items); };
+
+    //desc.input_ports_.emplace_back(PortId{ 0, "Foo" }, "Field", false);
+
+
     auto mod = create(desc);
 
 
