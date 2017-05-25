@@ -73,7 +73,6 @@ NetworkEditor::~NetworkEditor()
       module->setDeletedFromGui(false);
   }
   NetworkEditor::clear();
-  //qDebug() << __FILE__ << __LINE__ << __FUNCTION__;
 }
 
 SubnetworkEditor::SubnetworkEditor(NetworkEditor* editor, const ModuleId& subnetModuleId, const QString& name, QWidget* parent) : QFrame(parent),
@@ -91,27 +90,26 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
 
 void SubnetworkEditor::expand()
 {
-  //qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "start";
-  //qDebug() << this;
   editor_->sendItemsToParent();
-  //qDebug() << __FILE__ << __LINE__ << __FUNCTION__;
-  //qDebug() << this;
   editor_->parentNetwork()->removeModuleWidget(subnetModuleId_);
-  //qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "end";
-  //qDebug() << this;
 }
 
 SubnetworkEditor::~SubnetworkEditor()
 {
-  //qDebug() << __FILE__ << __LINE__ << __FUNCTION__ << "start/end";
 }
+
+const int IS_INTERNAL = -123;
 
 void NetworkEditor::sendItemsToParent()
 {
   if (parentNetwork_)
   {
     for (auto& item : scene_->items())
+    {
       parentNetwork_->scene_->addItem(item);
+      item->setVisible(true);
+      item->setData(IS_INTERNAL, false);
+    }
   }
 }
 
@@ -160,7 +158,12 @@ void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, N
   for (auto& item : childrenNetworkItems_[name])
   {
     subnet->scene_->addItem(item);
-    item->setVisible(true);
+    if (qgraphicsitem_cast<ModuleProxyWidget*>(item))
+      item->setVisible(true);
+    else if (qgraphicsitem_cast<ConnectionLine*>(item))
+    {
+      item->setVisible(item->data(IS_INTERNAL).toBool());
+    }
     item->ensureVisible();
   }
 
@@ -180,6 +183,21 @@ public:
   {
     set_id("Subnet:" + boost::lexical_cast<std::string>(subnetCount_));
     subnetCount_++;
+
+    for (const auto& i : items_)
+    {
+      auto conn = qgraphicsitem_cast<ConnectionLine*>(i);
+      if (conn)
+      {
+        auto mods = conn->getConnectedToModuleIds();
+        auto foundFirst = std::find_if(underlyingModules_.cbegin(), underlyingModules_.cend(),
+          [&mods](const ModuleHandle& mod) { return mod->get_id().id_ == mods.first.id_; });
+        auto foundSecond = std::find_if(underlyingModules_.cbegin(), underlyingModules_.cend(),
+          [&mods](const ModuleHandle& mod) { return mod->get_id().id_ == mods.second.id_; });
+        auto isInternalConnection = foundFirst != underlyingModules_.cend() && foundSecond != underlyingModules_.cend();
+        conn->setData(IS_INTERNAL, isInternalConnection);
+      }
+    }
   }
   virtual void execute() override
   {
@@ -276,22 +294,20 @@ void NetworkEditor::makeSubnetwork()
   makeSubnetworkFromComponents(name, underlyingModules, includeConnections(items), rect);
 }
 
-void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std::vector<ModuleHandle>& modules, QList<QGraphicsItem*> items, const QRectF& rect)
+void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std::vector<ModuleHandle>& modules,
+  QList<QGraphicsItem*> items, const QRectF& rect)
 {
   auto subnetModule = boost::make_shared<SubnetModule>(modules, items);
   subnetModule->setStateDefaults();
   subnetModule->get_state()->setValue(Name("Name"), name.toStdString());
   auto moduleWidget = new SubnetWidget(this, name, subnetModule, dialogErrorControl_);
-
   auto proxy = setupModuleWidget(moduleWidget);
-
   //TODO: file loading case, duplicated
   moduleWidget->postLoadAction();
   proxy->setScale(1.6);
   auto pic = grabSubnetPic(rect);
   auto tooltipPic = convertToTooltip(pic);
   proxy->setToolTip(tooltipPic);
-
   auto size = proxy->getModuleWidget()->size();
   if (!rect.isEmpty())
   {
