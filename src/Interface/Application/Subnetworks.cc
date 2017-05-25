@@ -313,13 +313,13 @@ public:
           {
             auto portToReplicate = ports.second;
             desc.input_ports_.emplace_back(addSubnetToId(portToReplicate), portToReplicate->get_typename(), portToReplicate->isDynamic());
-            ports.first->connectToSubnetPort();
+            //ports.first->connectToSubnetPort();
           }
           else
           {
             auto portToReplicate = ports.first;
             desc.output_ports_.emplace_back(addSubnetToId(portToReplicate), portToReplicate->get_typename(), portToReplicate->isDynamic());
-            ports.second->connectToSubnetPort();
+            //ports.second->connectToSubnetPort();
           }
         }
       }
@@ -349,6 +349,26 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   auto pic = grabSubnetPic(rect);
   auto tooltipPic = convertToTooltip(pic);
   proxy->setToolTip(tooltipPic);
+
+
+  {
+    for (const auto& i : items)
+    {
+      auto conn = qgraphicsitem_cast<ConnectionLine*>(i);
+      if (conn)
+      {
+        auto mods = conn->getConnectedToModuleIds();
+        if (!conn->data(IS_INTERNAL).toBool())
+        {
+          qDebug() << "Found external connection with" << mods.first.id_.c_str() << mods.second.id_.c_str();
+        }
+      }
+    }
+  }
+
+
+
+
   auto size = proxy->getModuleWidget()->size();
   if (!rect.isEmpty())
   {
