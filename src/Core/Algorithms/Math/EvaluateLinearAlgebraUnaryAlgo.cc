@@ -63,7 +63,7 @@ namespace impl
     }
     virtual void visit(DenseColumnMatrixGeneric<double>& column) override
     {
-      column.transposeInPlace();
+      column = column.transpose();
     }
   };
 }
@@ -105,7 +105,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
   break;
   case FUNCTION:
   {
-    // BUG FIX: the ArrayMathEngine is not well designed for use with sparse matrices, especially allocating proper space for the result. 
+    // BUG FIX: the ArrayMathEngine is not well designed for use with sparse matrices, especially allocating proper space for the result.
     // There's no way to know ahead of time, so I'll just throw an error here and require the user to do this type of math elsewhere.
     if (matrixIs::sparse(matrix) && (matrix->nrows() * matrix->ncols() > 10000))
     {
