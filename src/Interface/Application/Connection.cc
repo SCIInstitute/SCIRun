@@ -257,6 +257,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   NoteDisplayHelper(boost::make_shared<ConnectionLineNoteDisplayStrategy>()),
   fromPort_(fromPort), toPort_(toPort), id_(id), drawer_(drawer), destroyed_(false), menu_(nullptr), menuOpen_(0), placeHoldingWidth_(0)
 {
+  qDebug() << __FUNCTION__ << __LINE__;
   if (fromPort_)
   {
     fromPort_->addConnection(this);
@@ -269,34 +270,36 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   }
   else
     LOG_DEBUG("NULL TO PORT: " << id_.id_ << std::endl);
-
+qDebug() << __FUNCTION__ << __LINE__;
   if (fromPort_ && toPort_)
   {
     setColor(fromPort_->color());
 	  placeHoldingColor_ = fromPort_->color();
   }
-
+qDebug() << __FUNCTION__ << __LINE__;
   setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsGeometryChanges | ItemIsFocusable);
-
+qDebug() << __FUNCTION__ << __LINE__;
   setZValue(defaultZValue());
   setToolTip("<font color=\"#EEEEEE\" size=2>Left - Highlight<br>Double-Left - Menu<br>i - Datatype info");
   setAcceptHoverEvents(true);
-
+qDebug() << __FUNCTION__ << __LINE__;
   menu_ = new ConnectionMenu(this);
   connectNoteEditorToAction(menu_->notesAction_);
   connectUpdateNote(this);
-
+qDebug() << __FUNCTION__ << __LINE__;
   NeedsScenePositionProvider::setPositionObject(boost::make_shared<MidpointPositionerFromPorts>(fromPort_, toPort_));
-
+qDebug() << __FUNCTION__ << __LINE__;
   connect(menu_->disableAction_, SIGNAL(triggered()), this, SLOT(toggleDisabled()));
-
+qDebug() << __FUNCTION__ << __LINE__;
   connect(this, SIGNAL(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)),
     fromPort_, SLOT(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)));
   setProperty(addNewModuleActionTypePropertyName(), QString("insertModule"));
-
+qDebug() << __FUNCTION__ << __LINE__;
   menu_->setStyleSheet(fromPort->styleSheet());
-
+qDebug() << __FUNCTION__ << __LINE__;
+  qDebug() << __FUNCTION__ << __LINE__;
   trackNodes();
+  qDebug() << __FUNCTION__ << __LINE__;
   GuiLogger::Instance().logInfoStd("Connection made: " + id_.id_);
 }
 
@@ -366,9 +369,12 @@ QColor ConnectionLine::color() const
 
 void ConnectionLine::trackNodes()
 {
+  qDebug() << __FUNCTION__ << __LINE__;
   if (fromPort_ && toPort_)
   {
+    qDebug() << __FUNCTION__ << __LINE__;
     drawer_->draw(this, fromPort_->position(), toPort_->position());
+    qDebug() << __FUNCTION__ << __LINE__;
     updateNotePosition();
     setZValue(defaultZValue());
   }
@@ -387,6 +393,7 @@ void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
 
 double ConnectionLine::defaultZValue() const
 {
+  qDebug() << __FUNCTION__ << __LINE__;
   // longer the connection length, the lower the z-value should be. Just negate the length.
   return -(fromPort_->position() - toPort_->position()).manhattanLength();
 }
@@ -586,7 +593,7 @@ QPointF MidpointPositionerFromPorts::currentPosition() const
 ConnectionFactory::ConnectionFactory(QGraphicsProxyWidget* module) :
   module_(module)
 {}
- 
+
 bool ConnectionFactory::visible_(true);
 ConnectionDrawType ConnectionFactory::currentType_(ConnectionDrawType::EUCLIDEAN);
 ConnectionDrawStrategyPtr ConnectionFactory::euclidean_(new EuclideanDrawStrategy);

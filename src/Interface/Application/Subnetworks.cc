@@ -100,6 +100,7 @@ SubnetworkEditor::~SubnetworkEditor()
 }
 
 const int IS_INTERNAL = -123;
+const char* SUBNET_PORT_ID_TO_FIND = "SUBNET_PORT_ID_TO_FIND";
 
 void NetworkEditor::sendItemsToParent()
 {
@@ -184,8 +185,6 @@ public:
   {
     set_id("Subnet:" + boost::lexical_cast<std::string>(subnetCount_));
     subnetCount_++;
-
-
   }
 
   void execute() override
@@ -312,14 +311,16 @@ public:
           if (foundFirst != modules.cend())
           {
             auto portToReplicate = ports.second;
-            desc.input_ports_.emplace_back(addSubnetToId(portToReplicate), portToReplicate->get_typename(), portToReplicate->isDynamic());
-            //ports.first->connectToSubnetPort();
+            auto id = addSubnetToId(portToReplicate);
+            desc.input_ports_.emplace_back(id, portToReplicate->get_typename(), portToReplicate->isDynamic());
+            ports.first->setProperty(SUBNET_PORT_ID_TO_FIND, QString::fromStdString(id.toString()));
           }
           else
           {
             auto portToReplicate = ports.first;
-            desc.output_ports_.emplace_back(addSubnetToId(portToReplicate), portToReplicate->get_typename(), portToReplicate->isDynamic());
-            //ports.second->connectToSubnetPort();
+            auto id = addSubnetToId(portToReplicate);
+            desc.output_ports_.emplace_back(id, portToReplicate->get_typename(), portToReplicate->isDynamic());
+            ports.second->setProperty(SUBNET_PORT_ID_TO_FIND, QString::fromStdString(id.toString()));
           }
         }
       }
@@ -352,6 +353,16 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
 
 
   {
+    QMap<QString, PortWidget*> subPortMap;
+    {
+      auto subPorts = moduleWidget->ports().getAllPorts();
+      for (const auto& subP : subPorts)
+      {
+        qDebug() << "New port:" << subP->name();
+        subPortMap[subP->name()] = subP;
+      }
+    }
+
     for (const auto& i : items)
     {
       auto conn = qgraphicsitem_cast<ConnectionLine*>(i);
@@ -360,7 +371,21 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
         auto mods = conn->getConnectedToModuleIds();
         if (!conn->data(IS_INTERNAL).toBool())
         {
-          qDebug() << "Found external connection with" << mods.first.id_.c_str() << mods.second.id_.c_str();
+          auto ports = conn->connectedPorts();
+          qDebug() << "Found external connection with" << mods.first.id_.c_str()
+            << mods.second.id_.c_str() << "Direction:" << ports.first->name()
+            << ports.second->name()
+            << ports.first->property(SUBNET_PORT_ID_TO_FIND).toString()
+            << ports.second->property(SUBNET_PORT_ID_TO_FIND).toString();
+          if (!ports.first->property(SUBNET_PORT_ID_TO_FIND).toString().isEmpty())
+          {
+            ports.first->connectToSubnetPort(subPortMap[ports.first->property(SUBNET_PORT_ID_TO_FIND).toString()]);
+          }
+          else
+          {
+            ports.second->connectToSubnetPort(subPortMap[ports.second->property(SUBNET_PORT_ID_TO_FIND).toString()]);
+          }
+
         }
       }
     }

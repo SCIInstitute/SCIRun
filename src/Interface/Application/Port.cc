@@ -655,10 +655,13 @@ void PortWidget::trackConnections()
 
 QPointF PortWidget::position() const
 {
+  qDebug() << name() << __FUNCTION__ << __LINE__;
   if (positionProvider_)
   {
+    qDebug() << name() << __FUNCTION__ << __LINE__;
     return positionProvider_->currentPosition();
   }
+  qDebug() << name() << __FUNCTION__ << __LINE__;
   return pos();
 }
 
