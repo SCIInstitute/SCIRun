@@ -1113,7 +1113,7 @@
 									<name>ShowViewer</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1350,8 +1350,8 @@
 			<second>
 				<count>3</count>
 				<item_version>0</item_version>
-				<item>RescaleColorMap:0</item>
 				<item>ShowField:1</item>
+				<item>RescaleColorMap:0</item>
 				<item>CreateStandardColorMap:0</item>
 			</second>
 		</item>

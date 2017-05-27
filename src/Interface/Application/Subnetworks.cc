@@ -351,15 +351,13 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   auto tooltipPic = convertToTooltip(pic);
   proxy->setToolTip(tooltipPic);
 
-
   {
     QMap<QString, PortWidget*> subPortMap;
     {
       auto subPorts = moduleWidget->ports().getAllPorts();
       for (const auto& subP : subPorts)
       {
-        qDebug() << "New port:" << subP->name();
-        subPortMap[subP->name()] = subP;
+        subPortMap[QString::fromStdString(subP->id().toString())] = subP;
       }
     }
 
@@ -372,11 +370,11 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
         if (!conn->data(IS_INTERNAL).toBool())
         {
           auto ports = conn->connectedPorts();
-          qDebug() << "Found external connection with" << mods.first.id_.c_str()
-            << mods.second.id_.c_str() << "Direction:" << ports.first->name()
-            << ports.second->name()
-            << ports.first->property(SUBNET_PORT_ID_TO_FIND).toString()
-            << ports.second->property(SUBNET_PORT_ID_TO_FIND).toString();
+          // qDebug() << "Found external connection with" << mods.first.id_.c_str()
+          //   << mods.second.id_.c_str() << "Direction:" << ports.first->name()
+          //   << ports.second->name()
+          //   << ports.first->property(SUBNET_PORT_ID_TO_FIND).toString()
+          //   << ports.second->property(SUBNET_PORT_ID_TO_FIND).toString();
           if (!ports.first->property(SUBNET_PORT_ID_TO_FIND).toString().isEmpty())
           {
             ports.first->connectToSubnetPort(subPortMap[ports.first->property(SUBNET_PORT_ID_TO_FIND).toString()]);

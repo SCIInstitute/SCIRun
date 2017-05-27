@@ -83,10 +83,8 @@ namespace SCIRun {
 
           for (const auto& module : category.second)
           {
-            //qDebug() << module.second.lookupInfo_.module_name_.c_str();
             if (modulePred(module.second))
             {
-              //qDebug() << "is compatible";
               const auto& moduleName = module.first;
               auto qname = QString::fromStdString(moduleName);
               auto action = new QAction(qname, menu);
@@ -97,7 +95,6 @@ namespace SCIRun {
           }
           if (!actions.empty())
           {
-            //qDebug() << "action list not empty, adding to submenu" << categoryName.c_str();
             auto m = new QMenu(QString::fromStdString(categoryName), parent);
             m->addActions(actions);
             packageMenus.append(m);
@@ -105,7 +102,6 @@ namespace SCIRun {
         }
         if (!packageMenus.isEmpty())
         {
-          //qDebug() << "package menu not empty, adding to menu" << packageName.c_str();
           auto p = new QMenu(QString::fromStdString(packageName), parent);
           for (auto pm : packageMenus)
             p->addMenu(pm);
@@ -464,7 +460,6 @@ void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port, double thr
 
 void PortWidget::connectToSubnetPort(PortWidget* subnetPort)
 {
-  qDebug() << __FUNCTION__ << this << name() << get_typename().c_str() << getUnderlyingModuleId().id_.c_str();
   auto out = isInput_ ? subnetPort : this;
   auto in = isInput_ ? this : subnetPort;
   auto c = connectionFactory_()->makeFinishedConnection(out, in, "Subnet connection");
@@ -505,7 +500,7 @@ void PortWidget::setPositionObject(PositionProviderPtr provider)
   Q_EMIT portMoved();
 }
 
-void PortWidget::moveEvent(QMoveEvent * event)
+void PortWidget::moveEvent(QMoveEvent* event)
 {
   QPushButton::moveEvent(event);
   Q_EMIT portMoved();
@@ -655,13 +650,10 @@ void PortWidget::trackConnections()
 
 QPointF PortWidget::position() const
 {
-  qDebug() << name() << __FUNCTION__ << __LINE__;
   if (positionProvider_)
   {
-    qDebug() << name() << __FUNCTION__ << __LINE__;
     return positionProvider_->currentPosition();
   }
-  qDebug() << name() << __FUNCTION__ << __LINE__;
   return pos();
 }
 
