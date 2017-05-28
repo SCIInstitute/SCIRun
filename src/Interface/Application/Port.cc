@@ -462,7 +462,11 @@ void PortWidget::connectToSubnetPort(PortWidget* subnetPort)
 {
   auto out = isInput_ ? subnetPort : this;
   auto in = isInput_ ? this : subnetPort;
-  auto c = connectionFactory_()->makeFinishedConnection(out, in, "Subnet connection");
+
+  ConnectionDescription cd { { out->moduleId_, out->portId_ }, { in->moduleId_, in->portId_ } };
+  auto c = connectionFactory_()->makeFinishedConnection(out, in, ConnectionId::create(cd));
+  //TODO: position provider needs adjustment
+  //TODO: management of c?
 }
 
 void PortWidget::MakeTheConnection(const ConnectionDescription& cd)
