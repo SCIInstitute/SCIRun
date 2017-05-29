@@ -52,6 +52,7 @@ class ConnectionInProgress;
 class ConnectionFactory;
 class ClosestPortFinder;
 class PortActionsMenu;
+using SceneFunc = std::function<QGraphicsScene*()>;
 
 class PortWidgetBase : public QPushButton, public SCIRun::Dataflow::Networks::PortDescriptionInterface
 {
@@ -71,6 +72,7 @@ public:
 
   bool isHighlighted() const { return isHighlighted_; }
   int properWidth() const { return sizeHint().width(); }
+  void setSceneFunc(SceneFunc getScene) { getScene_ = getScene; }
 
 protected:
   static const int DEFAULT_WIDTH = 11;
@@ -78,6 +80,7 @@ protected:
   virtual QSize sizeHint() const override;
   virtual void paintEvent(QPaintEvent* event) override;
   bool isHighlighted_;
+  SceneFunc getScene_;
 };
 
 class PortWidget : public PortWidgetBase, public NeedsScenePositionProvider

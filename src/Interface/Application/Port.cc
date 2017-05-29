@@ -464,9 +464,9 @@ void PortWidget::connectToSubnetPort(PortWidget* subnetPort)
   auto in = isInput_ ? this : subnetPort;
 
   ConnectionDescription cd { { out->moduleId_, out->portId_ }, { in->moduleId_, in->portId_ } };
-  auto c = connectionFactory_()->makeFinishedConnection(out, in, ConnectionId::create(cd));
+  connectionFactory_()->makeFinishedConnection(out, in, ConnectionId::create(cd));
   //TODO: position provider needs adjustment
-  //TODO: management of c?
+  //TODO: management of return value?
 }
 
 void PortWidget::MakeTheConnection(const ConnectionDescription& cd)
@@ -583,6 +583,9 @@ void PortWidget::forEachPort(Func func, Pred pred)
 
 void PortWidget::makePotentialConnectionLine(PortWidget* other)
 {
+  if (getScene_() != other->getScene_())
+    return;
+
   auto potentials = potentialConnectionsMap_[this];
   if (potentials.find(other) == potentials.end())
   {

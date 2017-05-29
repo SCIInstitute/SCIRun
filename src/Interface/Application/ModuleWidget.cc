@@ -742,6 +742,13 @@ void PortWidgetManager::addOutputsToLayout(QHBoxLayout* layout)
   layout->setSizeConstraint(QLayout::SetMinimumSize);
 }
 
+void PortWidgetManager::setSceneFunc(SceneFunc f)
+{
+  getScene_ = f;
+  for (auto& p : getAllPorts())
+    p->setSceneFunc(f);
+}
+
 void ModuleWidget::addInputPortsToLayout(int index)
 {
   if (!inputPortLayout_)
@@ -1483,6 +1490,7 @@ void ModuleWidget::setupPortSceneCollaborator(QGraphicsProxyWidget* proxy)
 {
   connectionFactory_ = boost::make_shared<ConnectionFactory>(proxy);
   closestPortFinder_ = boost::make_shared<ClosestPortFinder>(proxy);
+  ports().setSceneFunc([proxy]() { return proxy->scene(); });
 }
 
 void SubnetWidget::postLoadAction()

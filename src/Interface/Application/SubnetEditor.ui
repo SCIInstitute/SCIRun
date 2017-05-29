@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>525</width>
-    <height>567</height>
+    <width>526</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,52 +20,6 @@
    <enum>QFrame::Raised</enum>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>15</height>
-        </size>
-       </property>
-       <property name="acceptDrops">
-        <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>Inputs</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>5</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="expandPushButton_">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>20</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Expand (send back to parent)</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="minimumSize">
@@ -83,18 +37,15 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_2">
+    <widget class="QPushButton" name="expandPushButton_">
      <property name="maximumSize">
       <size>
-       <width>16777215</width>
-       <height>15</height>
+       <width>200</width>
+       <height>20</height>
       </size>
      </property>
-     <property name="acceptDrops">
-      <bool>true</bool>
-     </property>
      <property name="text">
-      <string>Outputs</string>
+      <string>Expand (send back to parent)</string>
      </property>
     </widget>
    </item>

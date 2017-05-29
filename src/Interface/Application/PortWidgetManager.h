@@ -66,9 +66,11 @@ public:
   void addOutputsToLayout(QHBoxLayout* layout);
   void reindexInputs();
   void setHighlightPorts(bool on);
+  void setSceneFunc(SceneFunc getScene);
 
 private:
   Ports inputPorts_, outputPorts_;
+  SceneFunc getScene_;
 };
 
 

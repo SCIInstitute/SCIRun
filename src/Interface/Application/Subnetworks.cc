@@ -82,7 +82,9 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
   setupUi(this);
   groupBox->setTitle(name);
   auto vbox = new QVBoxLayout;
+  vbox->addWidget(new QLabel("Inputs"));
   vbox->addWidget(editor);
+  vbox->addWidget(new QLabel("Outputs"));
   groupBox->setLayout(vbox);
   connect(expandPushButton_, SIGNAL(clicked()), this, SLOT(expand()));
   editor_->setParent(groupBox);
@@ -164,7 +166,8 @@ void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, N
       item->setVisible(true);
     else if (qgraphicsitem_cast<ConnectionLine*>(item))
     {
-      item->setVisible(item->data(IS_INTERNAL).toBool());
+      //item->setVisible(item->data(IS_INTERNAL).toBool());
+      item->setVisible(true);
     }
     item->ensureVisible();
   }
@@ -347,6 +350,7 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   //TODO: file loading case, duplicated
   moduleWidget->postLoadAction();
   proxy->setScale(1.6);
+  proxy->createPortPositionProviders();
   auto pic = grabSubnetPic(rect);
   auto tooltipPic = convertToTooltip(pic);
   proxy->setToolTip(tooltipPic);
@@ -370,11 +374,6 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
         if (!conn->data(IS_INTERNAL).toBool())
         {
           auto ports = conn->connectedPorts();
-          // qDebug() << "Found external connection with" << mods.first.id_.c_str()
-          //   << mods.second.id_.c_str() << "Direction:" << ports.first->name()
-          //   << ports.second->name()
-          //   << ports.first->property(SUBNET_PORT_ID_TO_FIND).toString()
-          //   << ports.second->property(SUBNET_PORT_ID_TO_FIND).toString();
           if (!ports.first->property(SUBNET_PORT_ID_TO_FIND).toString().isEmpty())
           {
             ports.first->connectToSubnetPort(subPortMap[ports.first->property(SUBNET_PORT_ID_TO_FIND).toString()]);
@@ -383,14 +382,10 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
           {
             ports.second->connectToSubnetPort(subPortMap[ports.second->property(SUBNET_PORT_ID_TO_FIND).toString()]);
           }
-
         }
       }
     }
   }
-
-
-
 
   auto size = proxy->getModuleWidget()->size();
   if (!rect.isEmpty())
