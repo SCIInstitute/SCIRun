@@ -310,7 +310,7 @@ public:
         {
           auto ports = conn->connectedPorts();
 
-          auto addSubnetToId = [](PortWidget* port) { return PortId{ port->id().id, port->id().name + "[From:" + port->getUnderlyingModuleId().id_ + "]"}; };
+          auto addSubnetToId = [](PortWidget* port) { return PortId{ port->id().id, port->id().name + (port->isInput() ? std::string("[To:") : std::string("[From:")) + port->getUnderlyingModuleId().id_ + "]" }; };
           if (foundFirst != modules.cend())
           {
             auto portToReplicate = ports.second;

@@ -393,7 +393,7 @@ PortId PortWidget::id() const
 {
   if (moduleId_.id_.find("Subnet") != std::string::npos)
   {
-    static boost::regex r("(.+)\\[From:.+\\]");
+    static boost::regex r("(.+)\\[.+\\]");
     boost::smatch what;
     regex_match(portId_.name, what, r);
     return PortId(0, std::string(what[1]));
@@ -692,7 +692,7 @@ ModuleId PortWidget::getUnderlyingModuleId() const
 {
   if (moduleId_.id_.find("Subnet") != std::string::npos)
   {
-    static boost::regex r(".+\\[From:(.+)\\]");
+    static boost::regex r(".+\\[[A-Za-z]+:(.+)\\]");
     boost::smatch what;
     regex_match(portId_.name, what, r);
     return ModuleId(std::string(what[1]));
