@@ -361,7 +361,7 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
       auto subPorts = moduleWidget->ports().getAllPorts();
       for (const auto& subP : subPorts)
       {
-        subPortMap[QString::fromStdString(subP->id().toString())] = subP;
+        subPortMap[QString::fromStdString(subP->realId().toString())] = subP;
       }
     }
 

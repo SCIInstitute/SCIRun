@@ -109,6 +109,7 @@ public:
   virtual Dataflow::Networks::ModuleId getUnderlyingModuleId() const override;
   virtual size_t getIndex() const override;
   void setIndex(size_t i);
+  Dataflow::Networks::PortId realId() const { return portId_; }
 
   virtual SCIRun::Dataflow::Networks::PortId id() const override;
 
