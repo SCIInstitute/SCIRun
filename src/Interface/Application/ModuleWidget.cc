@@ -635,6 +635,24 @@ public:
       }
     }
   }
+  void buildOutputs(ModuleWidget* widget, const ModuleInfoProvider& moduleInfoProvider)
+  {
+    const ModuleId moduleId = moduleInfoProvider.get_id();
+    size_t i = 0;
+    for (const auto& port : moduleInfoProvider.outputPorts())
+    {
+      auto type = port->get_typename();
+      auto w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()),
+        type, moduleId, port->id(), i, port->isDynamic(),
+        [widget]() { return widget->connectionFactory_; },
+        [widget]() { return widget->closestPortFinder_; },
+        port->getPortDataDescriber(),
+        widget);
+      widget->hookUpGeneralPortSignals(w);
+      widget->ports_->addPort(w);
+      ++i;
+    }
+  }
 private:
 
 };
@@ -660,21 +678,8 @@ void ModuleWidget::printInputPorts(const ModuleInfoProvider& moduleInfoProvider)
 
 void ModuleWidget::createOutputPorts(const ModuleInfoProvider& moduleInfoProvider)
 {
-  const ModuleId moduleId = moduleInfoProvider.get_id();
-  size_t i = 0;
-  for (const auto& port : moduleInfoProvider.outputPorts())
-  {
-    auto type = port->get_typename();
-    auto w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()),
-      type, moduleId, port->id(), i, port->isDynamic(),
-      [this]() { return connectionFactory_; },
-      [this]() { return closestPortFinder_; },
-      port->getPortDataDescriber(),
-      this);
-    hookUpGeneralPortSignals(w);
-    ports_->addPort(w);
-    ++i;
-  }
+  PortBuilder builder;
+  builder.buildOutputs(this, moduleInfoProvider);
 }
 
 void ModuleWidget::hookUpGeneralPortSignals(PortWidget* port) const
