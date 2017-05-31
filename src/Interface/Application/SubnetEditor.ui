@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>526</width>
-    <height>600</height>
+    <width>576</width>
+    <height>576</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,6 +20,28 @@
    <enum>QFrame::Raised</enum>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QGroupBox" name="inputPortsGroupBox_">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Input ports</string>
+     </property>
+     <property name="title">
+      <string/>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="minimumSize">
@@ -33,6 +55,26 @@
      </property>
      <property name="title">
       <string/>
+     </property>
+     <zorder>tabWidget</zorder>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="outputPortsGroupBox_">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Output ports</string>
+     </property>
+     <property name="title">
+      <string/>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
    </item>

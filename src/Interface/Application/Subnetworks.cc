@@ -80,11 +80,9 @@ SubnetworkEditor::SubnetworkEditor(NetworkEditor* editor, const ModuleId& subnet
 editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
 {
   setupUi(this);
-  groupBox->setTitle(name);
+  setWindowTitle(windowTitle() + " - " + name);
   auto vbox = new QVBoxLayout;
-  vbox->addWidget(new QLabel("Inputs"));
   vbox->addWidget(editor);
-  vbox->addWidget(new QLabel("Outputs"));
   groupBox->setLayout(vbox);
   connect(expandPushButton_, SIGNAL(clicked()), this, SLOT(expand()));
   editor_->setParent(groupBox);
@@ -349,8 +347,12 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   auto proxy = setupModuleWidget(moduleWidget);
   //TODO: file loading case, duplicated
   moduleWidget->postLoadAction();
-  proxy->setScale(1.6);
-  proxy->createPortPositionProviders();
+  //proxy->setScale(1.6);--problematic with port positions
+
+  auto colorize = new QGraphicsColorizeEffect;
+  colorize->setColor(QColor(0, 128, 128, 200));
+  proxy->setGraphicsEffect(colorize);
+
   auto pic = grabSubnetPic(rect);
   auto tooltipPic = convertToTooltip(pic);
   proxy->setToolTip(tooltipPic);

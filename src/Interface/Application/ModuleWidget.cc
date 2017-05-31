@@ -595,42 +595,54 @@ void ModuleWidget::addPorts(int index)
   addOutputPortsToLayout(index);
 }
 
-void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider)
+class PortBuilder
 {
-  const auto moduleId = moduleInfoProvider.get_id();
-  size_t i = 0;
-  const auto& inputs = moduleInfoProvider.inputPorts();
-  for (const auto& port : inputs)
+public:
+  void buildInputs(ModuleWidget* widget, const ModuleInfoProvider& moduleInfoProvider)
   {
-    auto type = port->get_typename();
-    auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
-      portAlpha()), type,
-      moduleId, port->id(),
-      i, port->isDynamic(),
-      [this]() { return connectionFactory_; },
-      [this]() { return closestPortFinder_; },
-      PortDataDescriber(),
-      this);
-    hookUpGeneralPortSignals(w);
-    connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-    connect(w, SIGNAL(incomingConnectionStateChange(bool, int)), this, SLOT(incomingConnectionStateChanged(bool, int)));
-    ports_->addPort(w);
-    ++i;
-    if (dialog_ && port->isDynamic())
+    const auto moduleId = moduleInfoProvider.get_id();
+    size_t i = 0;
+    const auto& inputs = moduleInfoProvider.inputPorts();
+    for (const auto& port : inputs)
     {
-      auto portConstructionType = DynamicPortChange::INITIAL_PORT_CONSTRUCTION;
-      auto nameMatches = [&](const InputPortHandle& in)
+      auto type = port->get_typename();
+      auto w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type),
+        portAlpha()), type,
+        moduleId, port->id(),
+        i, port->isDynamic(),
+        [widget]() { return widget->connectionFactory_; },
+        [widget]() { return widget->closestPortFinder_; },
+        {},
+        widget);
+      widget->hookUpGeneralPortSignals(w);
+      widget->connect(widget, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+      widget->connect(w, SIGNAL(incomingConnectionStateChange(bool, int)), widget, SLOT(incomingConnectionStateChanged(bool, int)));
+      widget->ports_->addPort(w);
+      ++i;
+      if (widget->dialog_ && port->isDynamic())
       {
-        return in->id().name == port->id().name;
-      };
-      auto justAddedIndex = i - 1;
-      bool isNotLastDynamicPortOfThisName = justAddedIndex < inputs.size() - 1
-        && std::find_if(inputs.cbegin() + justAddedIndex + 1, inputs.cend(), nameMatches) != inputs.cend();
-      if (isNotLastDynamicPortOfThisName)
-        portConstructionType = DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD;
-      dialog_->updateFromPortChange(i, port->id().toString(), portConstructionType);
+        auto portConstructionType = DynamicPortChange::INITIAL_PORT_CONSTRUCTION;
+        auto nameMatches = [&](const InputPortHandle& in)
+        {
+          return in->id().name == port->id().name;
+        };
+        auto justAddedIndex = i - 1;
+        bool isNotLastDynamicPortOfThisName = justAddedIndex < inputs.size() - 1
+          && std::find_if(inputs.cbegin() + justAddedIndex + 1, inputs.cend(), nameMatches) != inputs.cend();
+        if (isNotLastDynamicPortOfThisName)
+          portConstructionType = DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD;
+        widget->dialog_->updateFromPortChange(i, port->id().toString(), portConstructionType);
+      }
     }
   }
+private:
+
+};
+
+void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider)
+{
+  PortBuilder builder;
+  builder.buildInputs(this, moduleInfoProvider);
 }
 
 void ModuleWidget::printInputPorts(const ModuleInfoProvider& moduleInfoProvider) const

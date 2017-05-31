@@ -48,6 +48,7 @@
 class QDockWidget;
 class QProgressBar;
 class QTimeLine;
+class PortBuilder;
 
 namespace SCIRun {
 namespace Gui {
@@ -301,6 +302,8 @@ private:
   boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
 
   static bool globalMiniMode_;
+
+  friend class ::PortBuilder;
 };
 
 class SubnetWidget : public ModuleWidget
