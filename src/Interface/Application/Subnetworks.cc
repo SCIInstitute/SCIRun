@@ -87,6 +87,10 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
   connect(expandPushButton_, SIGNAL(clicked()), this, SLOT(expand()));
   editor_->setParent(groupBox);
   editor_->setAcceptDrops(true);
+  //editor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  //editor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+  editor_->horizontalScrollBar()->setStyleSheet("QScrollBar {height:1px;}");
+  editor_->verticalScrollBar()->setStyleSheet("QScrollBar {width:1px;}");
 }
 
 void SubnetworkEditor::expand()
@@ -349,8 +353,9 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   moduleWidget->postLoadAction();
   //proxy->setScale(1.6);--problematic with port positions
 
-  auto colorize = new QGraphicsColorizeEffect;
-  colorize->setColor(QColor(0, 128, 128, 200));
+  auto colorize = new QGraphicsDropShadowEffect;
+  colorize->setColor(QColor(255,182,193,200));
+  colorize->setOffset(8,8);
   proxy->setGraphicsEffect(colorize);
 
   auto pic = grabSubnetPic(rect);
