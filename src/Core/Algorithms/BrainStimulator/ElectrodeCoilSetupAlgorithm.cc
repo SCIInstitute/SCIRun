@@ -35,7 +35,6 @@
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
-#include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/SplitByConnectedRegion.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h>
@@ -49,17 +48,13 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/MatrixComparison.h>
-#include <string>
-#include <boost/range/algorithm/count.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
 #include <boost/format.hpp>
 #include <boost/assign.hpp>
 #include <math.h>
 #include <Core/Math/MiscMath.h>
-#include <iostream>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
@@ -129,7 +124,7 @@ ElectrodeCoilSetupAlgorithm::ElectrodeCoilSetupAlgorithm()
 }
 
 
-VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle scalp, DenseMatrixHandle locations, const std::vector<FieldHandle>& input) const
+VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle, DenseMatrixHandle locations, const std::vector<FieldHandle>&) const
 {
   Variable::List table;
   if (locations->ncols() != 3)
@@ -628,17 +623,17 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
   std::vector<double> field_values, field_values_elc_on_scalp;
   std::vector<int> valid_electrode_definition;
   FieldInformation fieldinfo("TriSurfMesh", CONSTANTDATA_E, "int");
-  FieldHandle electrode_field = CreateField(fieldinfo);
-  VMesh* tdcs_vmesh = electrode_field->vmesh();
-  VField* tdcs_vfld = electrode_field->vfield();
+  auto electrode_field = CreateField(fieldinfo);
+  auto tdcs_vmesh = electrode_field->vmesh();
+  auto tdcs_vfld = electrode_field->vfield();
   FieldInformation fieldinfo3("TriSurfMesh", CONSTANTDATA_E, "int");
-  FieldHandle output = CreateField(fieldinfo3);
-  VMesh* output_vmesh = output->vmesh();
-  VField* output_vfld = output->vfield();
+  auto output = CreateField(fieldinfo3);
+  auto output_vmesh = output->vmesh();
+  auto output_vfld = output->vfield();
   Variable::List new_table;
   DenseMatrixHandle elc_sponge_locations;
   auto tab_values = get(Parameters::TableValues).toVector();
-  bool flip_normal = false;
+  auto flip_normal = false;
   FlipSurfaceNormalsAlgo flipnormal_algo;
   ConvertMeshToTriSurfMeshAlgo conv_algo;
   FieldInformation scalp_info(scalp_mesh);
@@ -653,8 +648,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
   if (tab_values.size() == elc_prototyp_map.size() && elc_thickness.size() == elc_prototyp_map.size() && elc_x.size() == elc_prototyp_map.size() && elc_y.size() == elc_prototyp_map.size() && elc_z.size() == elc_prototyp_map.size() && elc_angle_rotation.size() == elc_prototyp_map.size())
   {
-    VMesh* scalp_vmesh = scalp->vmesh();
-    VField* scalp_vfld = scalp->vfield();
+    auto scalp_vmesh = scalp->vmesh();
+    auto scalp_vfld = scalp->vfield();
     valid_electrode_definition.resize(elc_prototyp_map.size());
     for (int i = 0; i < elc_prototyp_map.size(); i++)
     {
@@ -667,7 +662,6 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
       }
 
       double distance = 0;
-      bool skip_current_iteration = false;
       VMesh::Node::index_type didx;
       Point elc(elc_x[i], elc_y[i], elc_z[i]), r;
       scalp_vmesh->synchronize(Mesh::NODE_LOCATE_E);
@@ -759,7 +753,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
         for (int j = 0; j < fieldnodes->nrows(); j++)
         {
-          DenseMatrixHandle pos_vec(boost::make_shared<DenseMatrix>(3, 1));
+          auto pos_vec(boost::make_shared<DenseMatrix>(3, 1));
 
           (*pos_vec)(0, 0) = (*fieldnodes)(j, 0);
           (*pos_vec)(1, 0) = (*fieldnodes)(j, 1);
@@ -872,7 +866,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
           SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion;
           algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
           algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
-          FieldList scalp_result = algo_splitbyconnectedregion.run(tmp_fld);
+          auto scalp_result = algo_splitbyconnectedregion.run(tmp_fld);
 
           FieldHandle small_scalp_surf;
 
@@ -979,7 +973,6 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
                   std::ostringstream ostr3;
                   ostr3 << " Electrode sponge/scalp surface could not be found for " << i + 1 << ". electrode. Make sure that prototype encapsulated scalp!" << std::endl;
                   remark(ostr3.str());
-                  skip_current_iteration = true;
                   continue;
                 }
 
@@ -993,10 +986,10 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               }
 
               final_electrode_sponge_surf->vfield()->set_all_values(0.0); /// Precaution: set data values (defined at elements) to zero  
-              SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion;
-              algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
-              algo_splitbyconnectedregion.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
-              result = algo_splitbyconnectedregion.run(final_electrode_sponge_surf);
+              SplitFieldByConnectedRegionAlgo algo_splitbyconnectedregion_1;
+              algo_splitbyconnectedregion_1.set(SplitFieldByConnectedRegionAlgo::SortDomainBySize(), true);
+              algo_splitbyconnectedregion_1.set(SplitFieldByConnectedRegionAlgo::SortAscending(), false);
+              result = algo_splitbyconnectedregion_1.run(final_electrode_sponge_surf);
             }
 
           }
@@ -1033,7 +1026,6 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               std::ostringstream ostr3;
               ostr3 << " Electrode sponge/scalp surface could not be found for " << i + 1 << ". electrode. Make sure that prototype encapsulated scalp." << std::endl;
               remark(ostr3.str());
-              skip_current_iteration = true;
               continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i 	
             }
 
@@ -1056,7 +1048,6 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               std::ostringstream ostr3;
               ostr3 << " Electrode sponge/scalp surface could not be found for " << i + 1 << ". electrode (after sdf binarization). Make sure that prototype encapsulates scalp." << std::endl;
               remark(ostr3.str());
-              skip_current_iteration = true;
               continue;/// in that case go to the next electrode -> leave the for loop thats iterating over
             }
 
@@ -1075,7 +1066,6 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               std::ostringstream ostr3;
               ostr3 << " Electrode sponge/scalp surface could not be found for " << i + 1 << ". electrode (conversion to constant data storage). Make sure that prototype encapsulates scalp." << std::endl;
               remark(ostr3.str());
-              skip_current_iteration = true;
               continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i 
             }
 
@@ -1099,7 +1089,6 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               std::ostringstream ostr3;
               ostr3 << " Electrode sponge/scalp surface could not be found for " << i + 1 << ". electrode (conversion to constant data storage). Make sure that prototype encapsulates scalp." << std::endl;
               remark(ostr3.str());
-              skip_current_iteration = true;
               continue;/// in that case go to the next electrode -> leave the for loop thats iterating over i   
             }
 
@@ -1148,8 +1137,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
           for (int l = 0; l < result.size(); l++)
           {
-            FieldHandle tmp_fld = result[l];
-            VMesh*  tmp_fld_msh = tmp_fld->vmesh();
+            auto tmp_fld_1 = result[l];
+            auto tmp_fld_msh = tmp_fld_1->vmesh();
 
             tmp_fld_msh->synchronize(Mesh::NODE_LOCATE_E);
             tmp_fld_msh->find_closest_node(distance, p, didx, r);
@@ -1159,7 +1148,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               found_elc_surf = true;
               scalp_vmesh->synchronize(Mesh::NORMALS_E);
               Point q;
-              Vector norm;
+              Vector norm1;
 
               /// create scalp/electrode sponge triangle nodes  
               for (VMesh::Node::index_type k = 0; k < tmp_fld_msh->num_nodes(); k++)
@@ -1174,8 +1163,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               {
                 tmp_fld_msh->get_center(p, k);
                 scalp_vmesh->find_closest_node(distance, q, didx, p);
-                scalp_vmesh->get_normal(norm, didx);
-                double x = norm.x(), y = norm.y(), z = norm.z();
+                scalp_vmesh->get_normal(norm1, didx);
+                double x = norm1.x(), y = norm1.y(), z = norm1.z();
                 double normal_mag = sqrt(x*x + y*y + z*z);
                 x /= normal_mag;
                 y /= normal_mag;
@@ -1198,8 +1187,8 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               bool scalp_elec_surf_needs_flipping = false;
               if (scalp_vmesh->find_closest_node(distance, tmp, scalp_node_idx, r))
               {
-                scalp_vmesh->get_normal(norm, scalp_node_idx);
-                double dot_product = Dot(norm, Vector(nx, ny, nz));
+                scalp_vmesh->get_normal(norm1, scalp_node_idx);
+                double dot_product = Dot(norm1, Vector(nx, ny, nz));
                 if (dot_product > 0)
                 {
                   scalp_elec_surf_needs_flipping = true;
@@ -1272,7 +1261,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
               MatrixHandle mapping;
               GetFieldBoundaryAlgo algo_getfldbnd;
               FieldHandle boundary;
-              algo_getfldbnd.run(tmp_fld, boundary, mapping);
+              algo_getfldbnd.run(tmp_fld_1, boundary, mapping);
               VMesh* boundary_msh = boundary->vmesh();
               /// connect electrode sponge surfaces
               if (boundary->vmesh()->is_curvemesh())
@@ -1341,7 +1330,6 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
         std::ostringstream ostr3;
         ostr3 << " tDCS electrode definition for " << i + 1 << ". row needs be a QuadSurf / TriSurf (with defined scalar or vectors data)." << std::endl;
         remark(ostr3.str());
-        skip_current_iteration = true;
         continue;
       }
 
@@ -1352,7 +1340,7 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
       {
         output_vfld->resize_values();
         output_vfld->set_values(field_values_elc_on_scalp);
-        elc_sponge_locations = boost::make_shared<DenseMatrix>(DenseMatrix::Zero(num_valid_electrode_definition, 4));
+        elc_sponge_locations.reset(new DenseMatrix(static_cast<size_t>(num_valid_electrode_definition), 4ul, 0.0));
         int count = 0;
         for (int j = 0; j < valid_electrode_definition.size(); j++)
         {
@@ -1394,7 +1382,6 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
 
   VariableHandle table2(new Variable(Name("Table"), new_table));
   return boost::make_tuple(elc_sponge_locations, electrode_field, output, table2);
-
 }
 
 boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldHandle> ElectrodeCoilSetupAlgorithm::run(const FieldHandle scalp, const DenseMatrixHandle locations, const std::vector<FieldHandle>& elc_coil_proto) const

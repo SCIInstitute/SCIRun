@@ -283,8 +283,8 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, const std:
      m=rows.size();
      for (size_t i=0; i<rows.size(); i++)
      {
-      auto matrix_row = sparse_matrix->row(rows[i]);
-      for (Eigen::SparseVector<double,Eigen::RowMajor, index_type>::InnerIterator it(matrix_row); it; ++it)
+       Eigen::SparseVector<double> matrix_row = sparse_matrix->row(rows[i]);
+      for (Eigen::SparseVector<double>::InnerIterator it(matrix_row); it; ++it)
       {
        additionalData[rows[i]][it.index()]=it.value();
       }
@@ -296,8 +296,8 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, const std:
      n=cols.size();
      for (size_t j=0; j<cols.size(); j++)
      {
-      auto  matrix_col=sparse_matrix->col(cols[j]);
-      for (Eigen::SparseVector<double,Eigen::RowMajor, index_type>::InnerIterator it(matrix_col); it; ++it)
+       Eigen::SparseVector<double>  matrix_col = sparse_matrix->col(cols[j]);
+      for (Eigen::SparseVector<double>::InnerIterator it(matrix_col); it; ++it)
       {
        additionalData[it.index()][cols[j]]=it.value();
       }
