@@ -407,6 +407,8 @@ namespace Gui {
     std::map<QString, class SubnetworkEditor*> childrenNetworks_;
     std::map<QString, QList<QGraphicsItem*>> childrenNetworkItems_;
     QList<QGraphicsItem*> subnetPortHolders_;
+    void setupPortHolders();
+    void setupPortHolder(const QString& name, std::function<QPointF(const QRectF&)> position);
     static NetworkEditor* inEditingContext_;
     struct InEditingContext
     {

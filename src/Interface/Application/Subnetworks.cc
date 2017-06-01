@@ -152,6 +152,27 @@ void NetworkEditor::showSubnetChild(const QString& name)
 NetworkEditor* NetworkEditor::inEditingContext_(nullptr);
 NetworkEditor::ConnectorFunc NetworkEditor::connectorFunc_;
 
+void NetworkEditor::setupPortHolder(const QString& name, std::function<QPointF(const QRectF&)> position)
+{
+  auto portsBridge = new SubnetPortsBridgeWidget(this, name);
+  auto proxy = new QGraphicsProxyWidget;
+  proxy->setWidget(portsBridge);
+  proxy->setAcceptDrops(true);
+
+  auto visible = mapToScene(rect()).boundingRect();
+  proxy->setMinimumWidth(visible.width());
+  scene_->addItem(proxy);
+  subnetPortHolders_.append(proxy);
+
+  proxy->setPos(position(visible));
+}
+
+void NetworkEditor::setupPortHolders()
+{
+  setupPortHolder("Inputs", [](const QRectF& rect) { return rect.topLeft(); });
+  setupPortHolder("Outputs", [](const QRectF& rect) { return rect.bottomLeft() + QPointF(0,-30); });
+}
+
 void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, NetworkEditor* subnet)
 {
   subnet->parentNetwork_ = this;
@@ -173,22 +194,7 @@ void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, N
   }
 
   connectorFunc_(subnet);
-  {
-    auto inputPortsBridge = new SubnetPortsBridgeWidget(this, "Inputs");
-    auto proxy = new QGraphicsProxyWidget;
-    proxy->setWidget(inputPortsBridge);
-    proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
-    proxy->setAcceptDrops(true);
-
-    auto visible = subnet->mapToScene(subnet->rect()).boundingRect();
-    auto size1 = proxy->size();
-    proxy->setMinimumWidth(visible.width());
-
-    subnet->scene_->addItem(proxy);
-
-    proxy->setPos(visible.topLeft() + QPointF(size1.width(), 0));
-    subnet->subnetPortHolders_.append(proxy);
-  }
+  subnet->setupPortHolders();
 
 
   auto dock = new SubnetworkEditor(subnet, mid, name, nullptr);
@@ -504,18 +510,9 @@ SubnetWidget::~SubnetWidget()
 SubnetPortsBridgeWidget::SubnetPortsBridgeWidget(NetworkEditor* ed, const QString& name, QWidget* parent /* = 0 */) :
   QWidget(parent), editor_(ed), name_(name)
 {
-  //setFixedWidth(100);
   setFixedHeight(20);
-  //setColor(Qt::gray);
-  //setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
-  //setAcceptDrops(true);
   QString rounded("color: white; border-radius: 7px;");
-  setStyleSheet(rounded + " background-color: blue");
-  auto hbox = new QHBoxLayout;
-  auto label = new QLabel(name);
-  label->setStyleSheet("color: white");
-  hbox->addWidget(label);
-  setLayout(hbox);
+  setStyleSheet(rounded + " background-color: darkGray");
 }
 
 void NetworkEditor::killChild(const QString& name)
