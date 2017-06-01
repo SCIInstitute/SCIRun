@@ -273,6 +273,7 @@ namespace Gui {
     void wheelEvent(QWheelEvent* event) override;
     void contextMenuEvent(QContextMenuEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
+    void scrollContentsBy(int dx, int dy) override;
 
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
@@ -310,7 +311,7 @@ namespace Gui {
     void saveTagGroupRectInFile();
     void renameTagGroupInFile();
     void makeSubnetwork();
-    void makeSubnetworkFromComponents(const QString& name, 
+    void makeSubnetworkFromComponents(const QString& name,
       const std::vector<SCIRun::Dataflow::Networks::ModuleHandle>& modules,
       QList<QGraphicsItem*> items, const QRectF& rect);
     void showSubnetChild(const QString& name);
@@ -405,6 +406,7 @@ namespace Gui {
     NetworkEditor* parentNetwork_ {nullptr};
     std::map<QString, class SubnetworkEditor*> childrenNetworks_;
     std::map<QString, QList<QGraphicsItem*>> childrenNetworkItems_;
+    QList<QGraphicsItem*> subnetPortHolders_;
     static NetworkEditor* inEditingContext_;
     struct InEditingContext
     {

@@ -308,9 +308,17 @@ typedef ColorStateLookup::value_type ColorStatePair;
 static ColorStateLookup colorStateLookup;
 void fillColorStateLookup(const QString& background);
 
+namespace
+{
+  ModuleId id(ModuleHandle mod)
+  {
+    return mod ? mod->get_id() : ModuleId();
+  }
+}
+
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl,
   QWidget* parent /* = 0 */)
-  : QStackedWidget(parent), HasNotes(theModule->get_id(), true),
+  : QStackedWidget(parent), HasNotes(id(theModule), true),
   fullWidgetDisplay_(new ModuleWidgetDisplay),
   ports_(new PortWidgetManager),
   deletedFromGui_(true),
@@ -321,14 +329,14 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   errored_(false),
   theModule_(theModule),
   previousModuleState_(UNSET),
-  moduleId_(theModule->get_id()),
+  moduleId_(id(theModule)),
   dialog_(nullptr),
   dockable_(nullptr),
   dialogErrorControl_(dialogErrorControl),
   inputPortLayout_(nullptr),
   outputPortLayout_(nullptr),
   deleting_(false),
-  defaultBackgroundColor_(SCIRunMainWindow::Instance()->newInterface() ? moduleRGBA(99,99,104) : moduleRGBA(192,192,192)),
+  defaultBackgroundColor_(moduleRGBA(99,99,104)),
   isViewScene_(name == "ViewScene")
 {
   fillColorStateLookup(defaultBackgroundColor_);

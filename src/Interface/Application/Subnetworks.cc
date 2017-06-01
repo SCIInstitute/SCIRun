@@ -87,8 +87,8 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
   editor_->setAcceptDrops(true);
   //editor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   //editor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  editor_->horizontalScrollBar()->setStyleSheet("QScrollBar {height:1px;}");
-  editor_->verticalScrollBar()->setStyleSheet("QScrollBar {width:1px;}");
+  //editor_->horizontalScrollBar()->setStyleSheet("QScrollBar {height:1px;}");
+  //editor_->verticalScrollBar()->setStyleSheet("QScrollBar {width:1px;}");
 }
 
 void SubnetworkEditor::expand()
@@ -157,7 +157,7 @@ void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, N
   subnet->parentNetwork_ = this;
   subnet->setNetworkEditorController(getNetworkEditorController()->withSubnet(subnet));
 
-  subnet->setSceneRect(QRectF(0, 0, 400, 400));
+  subnet->setSceneRect(QRectF(-500, -500, 1000, 1000));
 
   for (auto& item : childrenNetworkItems_[name])
   {
@@ -173,6 +173,24 @@ void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, N
   }
 
   connectorFunc_(subnet);
+  {
+    auto inputPortsBridge = new SubnetPortsBridgeWidget(this, "Inputs");
+    auto proxy = new QGraphicsProxyWidget;
+    proxy->setWidget(inputPortsBridge);
+    proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
+    proxy->setAcceptDrops(true);
+
+    auto visible = subnet->mapToScene(subnet->rect()).boundingRect();
+    auto size1 = proxy->size();
+    proxy->setMinimumWidth(visible.width());
+
+    subnet->scene_->addItem(proxy);
+
+    proxy->setPos(visible.topLeft() + QPointF(size1.width(), 0));
+    subnet->subnetPortHolders_.append(proxy);
+  }
+
+
   auto dock = new SubnetworkEditor(subnet, mid, name, nullptr);
   dock->setStyleSheet(SCIRunMainWindow::Instance()->styleSheet());
   dock->show();
@@ -481,6 +499,23 @@ SubnetWidget::SubnetWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
 SubnetWidget::~SubnetWidget()
 {
   editor_->killChild(name_);
+}
+
+SubnetPortsBridgeWidget::SubnetPortsBridgeWidget(NetworkEditor* ed, const QString& name, QWidget* parent /* = 0 */) :
+  QWidget(parent), editor_(ed), name_(name)
+{
+  //setFixedWidth(100);
+  setFixedHeight(20);
+  //setColor(Qt::gray);
+  //setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
+  //setAcceptDrops(true);
+  QString rounded("color: white; border-radius: 7px;");
+  setStyleSheet(rounded + " background-color: blue");
+  auto hbox = new QHBoxLayout;
+  auto label = new QLabel(name);
+  label->setStyleSheet("color: white");
+  hbox->addWidget(label);
+  setLayout(hbox);
 }
 
 void NetworkEditor::killChild(const QString& name)

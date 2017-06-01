@@ -318,6 +318,16 @@ private:
   QString name_;
 };
 
+class SubnetPortsBridgeWidget : public QWidget
+{
+	Q_OBJECT
+public:
+  SubnetPortsBridgeWidget(NetworkEditor* ed, const QString& name, QWidget* parent = nullptr);
+private:
+  NetworkEditor* editor_;
+  QString name_;
+};
+
 }
 }
 

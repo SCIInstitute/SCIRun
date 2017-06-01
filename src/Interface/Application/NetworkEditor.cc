@@ -1798,6 +1798,15 @@ void NetworkEditor::renameTagGroupInFile()
   Q_EMIT modified();
 }
 
+void NetworkEditor::scrollContentsBy(int dx, int dy)
+{
+  for (auto& item : subnetPortHolders_)
+  {
+    item->setPos(item->pos() + QPointF(-dx,-dy));
+  }
+  QGraphicsView::scrollContentsBy(dx, dy);
+}
+
 void NetworkEditor::drawTagGroups()
 {
   if (tagGroupsActive_)
