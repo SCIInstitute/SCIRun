@@ -81,11 +81,9 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
 {
   setupUi(this);
   setWindowTitle(windowTitle() + " - " + name);
-  auto vbox = new QVBoxLayout;
-  vbox->addWidget(editor);
-  groupBox->setLayout(vbox);
+  qobject_cast<QVBoxLayout*>(layout())->insertWidget(0, editor);
   connect(expandPushButton_, SIGNAL(clicked()), this, SLOT(expand()));
-  editor_->setParent(groupBox);
+  editor_->setParent(this);
   editor_->setAcceptDrops(true);
   //editor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   //editor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
