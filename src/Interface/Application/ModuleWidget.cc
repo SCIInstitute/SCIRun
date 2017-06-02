@@ -650,7 +650,9 @@ public:
     for (const auto& port : moduleInfoProvider.outputPorts())
     {
       auto type = port->get_typename();
-      auto w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type), portAlpha()),
+      auto w = new OutputPortWidget(
+        QString::fromStdString(port->get_portname()),
+        to_color(PortColorLookup::toColor(type), portAlpha()),
         type, moduleId, port->id(), i, port->isDynamic(),
         [widget]() { return widget->connectionFactory_; },
         [widget]() { return widget->closestPortFinder_; },

@@ -257,6 +257,12 @@ public:
     QWidget* parent = nullptr);
 };
 
+class SubnetOutputPortWidget : public OutputPortWidget
+{
+public:
+  SubnetOutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, QWidget* parent = nullptr);
+};
+
 class DataInfoDialog
 {
 public:

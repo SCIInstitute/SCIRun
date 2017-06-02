@@ -155,6 +155,18 @@ NetworkEditor::ConnectorFunc NetworkEditor::connectorFunc_;
 void NetworkEditor::setupPortHolder(const QString& name, std::function<QPointF(const QRectF&)> position)
 {
   auto portsBridge = new SubnetPortsBridgeWidget(this, name);
+
+  auto layout = new QHBoxLayout;
+  auto p1 = new SubnetOutputPortWidget("foo", Qt::yellow, "Field");
+
+  layout->setSpacing(4);
+  layout->setAlignment(Qt::AlignLeft);
+  layout->setContentsMargins(5, 0, 5, 0);
+  auto p2 = new SubnetOutputPortWidget("bar", Qt::blue, "Matrix");
+  layout->addWidget(p1);
+  layout->addWidget(p2);
+  portsBridge->setLayout(layout);
+
   auto proxy = new QGraphicsProxyWidget;
   proxy->setWidget(portsBridge);
   proxy->setAcceptDrops(true);
@@ -167,10 +179,16 @@ void NetworkEditor::setupPortHolder(const QString& name, std::function<QPointF(c
   proxy->setPos(position(visible));
 }
 
+SubnetOutputPortWidget::SubnetOutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, QWidget* parent)
+  : OutputPortWidget(name, color, datatype, ModuleId(), PortId(), 0, false, {}, {}, {})
+{
+
+}
+
 void NetworkEditor::setupPortHolders()
 {
   setupPortHolder("Inputs", [](const QRectF& rect) { return rect.topLeft(); });
-  setupPortHolder("Outputs", [](const QRectF& rect) { return rect.bottomLeft() + QPointF(0,-30); });
+  setupPortHolder("Outputs", [](const QRectF& rect) { return rect.bottomLeft() + QPointF(0,-23); });
 }
 
 void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, NetworkEditor* subnet)
@@ -510,7 +528,7 @@ SubnetWidget::~SubnetWidget()
 SubnetPortsBridgeWidget::SubnetPortsBridgeWidget(NetworkEditor* ed, const QString& name, QWidget* parent /* = 0 */) :
   QWidget(parent), editor_(ed), name_(name)
 {
-  setFixedHeight(20);
+  setFixedHeight(8);
   QString rounded("color: white; border-radius: 7px;");
   setStyleSheet(rounded + " background-color: darkGray");
 }
