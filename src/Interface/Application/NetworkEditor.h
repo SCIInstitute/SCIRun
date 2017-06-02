@@ -304,7 +304,7 @@ namespace Gui {
     void highlightTaggedItem(int tagValue);
     void resetNetworkDueToCycle();
     void moduleWindowAction();
-    void cleanUpNetwork();
+    void cleanUpNetwork(); 
     void redrawTagGroups();
     void adjustModuleWidth(int delta);
     void adjustModuleHeight(int delta);
@@ -315,7 +315,7 @@ namespace Gui {
       const std::vector<SCIRun::Dataflow::Networks::ModuleHandle>& modules,
       QList<QGraphicsItem*> items, const QRectF& rect);
     void showSubnetChild(const QString& name);
-    void addSubnetChild(const QString& name, const SCIRun::Dataflow::Networks::ModuleId& mid);
+    void addSubnetChild(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle mod);
     void removeSubnetChild(const QString& name);
 
   Q_SIGNALS:
@@ -365,7 +365,7 @@ namespace Gui {
     QPointF positionOfFloatingText(int num, bool top, int horizontalIndent, int verticalSpacing) const;
     QPixmap grabSubnetPic(const QRectF& rect);
     QString convertToTooltip(const QPixmap& pic) const;
-    void initializeSubnet(const QString& name, const SCIRun::Dataflow::Networks::ModuleId& subnetModuleId, NetworkEditor* subnet);
+    void initializeSubnet(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle mod, NetworkEditor* subnet);
     void dumpSubnetworksImpl(const QString& name, Dataflow::Networks::Subnetworks& data, Dataflow::Networks::ModuleFilter modFilter) const;
     QList<QGraphicsItem*> includeConnections(QList<QGraphicsItem*> items) const;
 
@@ -407,8 +407,9 @@ namespace Gui {
     std::map<QString, class SubnetworkEditor*> childrenNetworks_;
     std::map<QString, QList<QGraphicsItem*>> childrenNetworkItems_;
     QList<QGraphicsItem*> subnetPortHolders_;
-    void setupPortHolders();
-    void setupPortHolder(const QString& name, std::function<QPointF(const QRectF&)> position);
+    void setupPortHolders(Dataflow::Networks::ModuleHandle mod);
+    void setupPortHolder(const std::vector<SharedPointer<SCIRun::Dataflow::Networks::PortDescriptionInterface>>& ports, const QString& name,
+      std::function<QPointF(const QRectF&)> position);
     static NetworkEditor* inEditingContext_;
     struct InEditingContext
     {

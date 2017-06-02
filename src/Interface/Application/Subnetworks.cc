@@ -45,6 +45,7 @@
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <boost/lambda/lambda.hpp>
 #include <Modules/Factory/HardCodedModuleFactory.h>
+#include <Core/Utils/StringUtil.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -85,10 +86,6 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
   connect(expandPushButton_, SIGNAL(clicked()), this, SLOT(expand()));
   editor_->setParent(this);
   editor_->setAcceptDrops(true);
-  //editor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  //editor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  //editor_->horizontalScrollBar()->setStyleSheet("QScrollBar {height:1px;}");
-  //editor_->verticalScrollBar()->setStyleSheet("QScrollBar {width:1px;}");
 }
 
 void SubnetworkEditor::expand()
@@ -108,6 +105,10 @@ void NetworkEditor::sendItemsToParent()
 {
   if (parentNetwork_)
   {
+    for (auto& item : subnetPortHolders_)
+      scene_->removeItem(item);
+    subnetPortHolders_.clear();
+
     for (auto& item : scene_->items())
     {
       parentNetwork_->scene_->addItem(item);
@@ -122,13 +123,13 @@ void NetworkEditor::removeSubnetChild(const QString& name)
   childrenNetworks_.erase(name);
 }
 
-void NetworkEditor::addSubnetChild(const QString& name, const ModuleId& mid)
+void NetworkEditor::addSubnetChild(const QString& name, ModuleHandle mod)
 {
   auto it = childrenNetworks_.find(name);
   if (it == childrenNetworks_.end())
   {
     auto subnet = new NetworkEditor(ctorParams_);
-    initializeSubnet(name, mid, subnet);
+    initializeSubnet(name, mod, subnet);
   }
   else
   {
@@ -152,19 +153,23 @@ void NetworkEditor::showSubnetChild(const QString& name)
 NetworkEditor* NetworkEditor::inEditingContext_(nullptr);
 NetworkEditor::ConnectorFunc NetworkEditor::connectorFunc_;
 
-void NetworkEditor::setupPortHolder(const QString& name, std::function<QPointF(const QRectF&)> position)
+void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescriptionInterface>>& ports, const QString& name, std::function<QPointF(const QRectF&)> position)
 {
   auto portsBridge = new SubnetPortsBridgeWidget(this, name);
+  portsBridge->setToolTip(name);
 
   auto layout = new QHBoxLayout;
-  auto p1 = new SubnetOutputPortWidget("foo", Qt::yellow, "Field");
-
   layout->setSpacing(4);
   layout->setAlignment(Qt::AlignLeft);
   layout->setContentsMargins(5, 0, 5, 0);
-  auto p2 = new SubnetOutputPortWidget("bar", Qt::blue, "Matrix");
-  layout->addWidget(p1);
-  layout->addWidget(p2);
+  
+  for (const auto& port : ports)
+  {
+    auto portRepl = new SubnetOutputPortWidget(QString::fromStdString(port->get_portname()), 
+      to_color(PortColorLookup::toColor(port->get_typename()), 230), port->get_typename());
+    layout->addWidget(portRepl);
+  }
+  
   portsBridge->setLayout(layout);
 
   auto proxy = new QGraphicsProxyWidget;
@@ -185,13 +190,13 @@ SubnetOutputPortWidget::SubnetOutputPortWidget(const QString& name, const QColor
 
 }
 
-void NetworkEditor::setupPortHolders()
+void NetworkEditor::setupPortHolders(ModuleHandle mod)
 {
-  setupPortHolder("Inputs", [](const QRectF& rect) { return rect.topLeft(); });
-  setupPortHolder("Outputs", [](const QRectF& rect) { return rect.bottomLeft() + QPointF(0,-23); });
+  setupPortHolder(upcast_range<PortDescriptionInterface>(mod->inputPorts()), "Inputs", [](const QRectF& rect) { return rect.topLeft(); });
+  setupPortHolder(upcast_range<PortDescriptionInterface>(mod->outputPorts()), "Outputs", [](const QRectF& rect) { return rect.bottomLeft() + QPointF(0, -23); });
 }
 
-void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, NetworkEditor* subnet)
+void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, NetworkEditor* subnet)
 {
   subnet->parentNetwork_ = this;
   subnet->setNetworkEditorController(getNetworkEditorController()->withSubnet(subnet));
@@ -212,10 +217,10 @@ void NetworkEditor::initializeSubnet(const QString& name, const ModuleId& mid, N
   }
 
   connectorFunc_(subnet);
-  subnet->setupPortHolders();
+  subnet->setupPortHolders(mod);
 
 
-  auto dock = new SubnetworkEditor(subnet, mid, name, nullptr);
+  auto dock = new SubnetworkEditor(subnet, mod->get_id(), name, nullptr);
   dock->setStyleSheet(SCIRunMainWindow::Instance()->styleSheet());
   dock->show();
 
@@ -449,7 +454,7 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
 
   childrenNetworkItems_[name] = items;
 
-  addSubnetChild(name, subnetModule->get_id());
+  addSubnetChild(name, subnetModule);
 }
 
 QPixmap NetworkEditor::grabSubnetPic(const QRectF& rect)
