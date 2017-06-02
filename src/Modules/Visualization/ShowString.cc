@@ -212,12 +212,25 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
 
   auto dims = textBuilder_->getStringDims(text);
   auto length = std::get<0>(dims) + 20;
-  auto width = std::get<1>(dims) + 10;
+  auto width = std::get<1>(dims) + 20;
+
   xTrans *= 1 - length / std::get<0>(lastWindowSize_);
   yTrans *= 1 - width / std::get<1>(lastWindowSize_);
+
+  if (containsDescenderLetter(text))
+  {
+    yTrans += 0.02;
+  }
 
   Vector trans(xTrans, yTrans, 0.0);
   textBuilder_->printString(text, trans, Vector(), text, *geom);
 
   return geom;
+}
+
+bool ShowString::containsDescenderLetter(const std::string& text)
+{
+  static const std::string descenders("qpygj");
+  return std::any_of(descenders.begin(), descenders.end(),
+    [&text](char c) { return text.find(c) != std::string::npos; });
 }
