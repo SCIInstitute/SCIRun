@@ -163,6 +163,8 @@ namespace Gui {
   class ModuleWidget;
   class NetworkEditorControllerGuiProxy;
 	class DialogErrorControl;
+  using PortRewiringMap = std::map<std::string, std::map<std::string, Dataflow::Networks::PortId>>;
+  using PortRewiringMap2 = std::map<std::string, ConnectionLine*>;
 
   struct NetworkEditorParameters
   {
@@ -410,6 +412,9 @@ namespace Gui {
     void setupPortHolders(Dataflow::Networks::ModuleHandle mod);
     void setupPortHolder(const std::vector<SharedPointer<SCIRun::Dataflow::Networks::PortDescriptionInterface>>& ports, const QString& name,
       std::function<QPointF(const QRectF&)> position);
+    PortRewiringMap portRewiringMap_;
+    PortRewiringMap2 portRewiringMap2_;
+
     static NetworkEditor* inEditingContext_;
     struct InEditingContext
     {

@@ -126,6 +126,7 @@ void NetworkEditor::addSubnetChild(const QString& name, ModuleHandle mod)
   if (it == childrenNetworks_.end())
   {
     auto subnet = new NetworkEditor(ctorParams_);
+    subnet->portRewiringMap_.swap(portRewiringMap_);
     initializeSubnet(name, mod, subnet);
   }
   else
@@ -159,15 +160,20 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
   layout->setSpacing(4);
   layout->setAlignment(Qt::AlignLeft);
   layout->setContentsMargins(5, 0, 5, 0);
-  
+
   for (const auto& port : ports)
   {
     auto portRepl = new SubnetOutputPortWidget(QString::fromStdString(port->get_portname()), 
       to_color(PortColorLookup::toColor(port->get_typename()), 230), port->get_typename());
     layout->addWidget(portRepl);
 
-    //qDebug() << "port subnet in editor" << QString::fromStdString(port->id().toString());
+    //qDebug() << "port subnet in editor" << QString::fromStdString(port->id().toString()) <<
+    //  portRewiringMap2_[port->id().toString()]->id().id_.c_str();
+
+    portRewiringMap2_[port->id().toString()]->addSubnetCompanion(portRepl);
   }
+  portRewiringMap_.clear();
+  portRewiringMap2_.clear();
   
   portsBridge->setLayout(layout);
 
@@ -207,16 +213,53 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
     subnet->scene_->addItem(item);
     if (qgraphicsitem_cast<ModuleProxyWidget*>(item))
       item->setVisible(true);
-    else if (qgraphicsitem_cast<ConnectionLine*>(item))
+    else
     {
-      //item->setVisible(item->data(IS_INTERNAL).toBool());
-      item->setVisible(true);
-      if (item->data(SUBNET_KEY).toInt() == EXTERNAL_SUBNET_CONNECTION)
+      auto conn = qgraphicsitem_cast<ConnectionLine*>(item);
+      if (conn)
       {
-        auto conn = qgraphicsitem_cast<ConnectionLine*>(item);
-        //qDebug() << "hidden external connection ports" << conn->connectedPorts().first->id().toString().c_str() << conn->connectedPorts().second->id().toString().c_str();
+        //item->setVisible(item->data(IS_INTERNAL).toBool());
+        item->setVisible(true);
+        if (item->data(SUBNET_KEY).toInt() == EXTERNAL_SUBNET_CONNECTION)
+        {
+
+          //qDebug() << "hidden external connection ports" << conn->connectedPorts().first->id().toString().c_str()
+          //  << conn->connectedPorts().first->getUnderlyingModuleId().id_.c_str()
+          //  << conn->connectedPorts().second->id().toString().c_str()
+          //  << conn->connectedPorts().second->getUnderlyingModuleId().id_.c_str()
+          //  ;
+
+
+
+          auto firstMatch = subnet->portRewiringMap_.find(conn->connectedPorts().first->getUnderlyingModuleId().id_);
+          if (firstMatch != subnet->portRewiringMap_.end())
+          {
+            //qDebug() << "found match for conn end--first";
+            auto portMatch = firstMatch->second.find(conn->connectedPorts().first->id().toString());
+            if (portMatch != firstMatch->second.end())
+            {
+              //qDebug() << "\tand found port match at" << portMatch->second.toString().c_str();
+              subnet->portRewiringMap2_[portMatch->second.toString()] = conn;
+            }
+          }
+          else
+          {
+            auto secondMatch = subnet->portRewiringMap_.find(conn->connectedPorts().second->getUnderlyingModuleId().id_);
+            if (secondMatch != subnet->portRewiringMap_.end())
+            {
+              //qDebug() << "found match for conn end--second";
+              auto portMatch = secondMatch->second.find(conn->connectedPorts().second->id().toString());
+              if (portMatch != secondMatch->second.end())
+              {
+                //qDebug() << "\tand found port match at" << portMatch->second.toString().c_str();
+                subnet->portRewiringMap2_[portMatch->second.toString()] = conn;
+              }
+            }
+          }
+        }
       }
     }
+
     item->ensureVisible();
   }
 
@@ -371,6 +414,8 @@ public:
             //  portToReplicate->id().toString().c_str() << 
             //  portToReplicate->getUnderlyingModuleId().id_.c_str();
 
+            map_[portToReplicate->getUnderlyingModuleId().id_][portToReplicate->id().toString()] = id;
+
             desc.input_ports_.emplace_back(id, portToReplicate->get_typename(), portToReplicate->isDynamic());
             ports.first->setProperty(SUBNET_PORT_ID_TO_FIND, QString::fromStdString(id.toString()));
           }
@@ -382,6 +427,8 @@ public:
             //qDebug() << "port being replicated" << id.toString().c_str() <<
             //  portToReplicate->id().toString().c_str() <<
             //  portToReplicate->getUnderlyingModuleId().id_.c_str();
+
+            map_[portToReplicate->getUnderlyingModuleId().id_][portToReplicate->id().toString()] = id;
 
             desc.output_ports_.emplace_back(id, portToReplicate->get_typename(), portToReplicate->isDynamic());
             ports.second->setProperty(SUBNET_PORT_ID_TO_FIND, QString::fromStdString(id.toString()));
@@ -398,13 +445,21 @@ public:
 
     return mod;
   }
+
+  const PortRewiringMap& getMap() const
+  {
+    return map_; 
+  }
+private:
+  mutable PortRewiringMap map_;
 };
 
 void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std::vector<ModuleHandle>& modules,
   QList<QGraphicsItem*> items, const QRectF& rect)
 {
-  static SubnetModuleFactory factory;
+  SubnetModuleFactory factory;
   auto subnetModule = factory.makeSubnet(name, modules, items);
+  portRewiringMap_ = factory.getMap();
 
   auto moduleWidget = new SubnetWidget(this, name, subnetModule, dialogErrorControl_);
   auto proxy = setupModuleWidget(moduleWidget);
@@ -469,6 +524,7 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   childrenNetworkItems_[name] = items;
 
   addSubnetChild(name, subnetModule);
+  qDebug() << "port repl map out of scope";
 }
 
 QPixmap NetworkEditor::grabSubnetPic(const QRectF& rect)

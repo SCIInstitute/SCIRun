@@ -83,6 +83,7 @@ public:
   const SCIRun::Dataflow::Networks::ConnectionId& id() const { return id_; }
   bool disabled() const { return disabled_; }
   void setDisabled(bool disabled);
+  void addSubnetCompanion(PortWidget* subnetPort);
 public Q_SLOTS:
   void trackNodes();
   void setDrawStrategy(ConnectionDrawStrategyPtr drawer);
@@ -118,6 +119,7 @@ private:
   QColor placeHoldingColor_;
   int placeHoldingWidth_;
   double defaultZValue() const;
+  ConnectionLine* subnetCompanion_ { nullptr };
 };
 
 struct InvalidConnection : virtual Core::ExceptionBase {};

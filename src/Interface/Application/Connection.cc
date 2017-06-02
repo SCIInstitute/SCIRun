@@ -371,6 +371,11 @@ void ConnectionLine::trackNodes()
     BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection: " + id_.id_));
 }
 
+void ConnectionLine::addSubnetCompanion(PortWidget* subnetPort)
+{
+  qDebug() << id().id_.c_str() << "setup companion with" << subnetPort;
+}
+
 void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
 {
   if (!destroyed_)
