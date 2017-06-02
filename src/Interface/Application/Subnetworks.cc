@@ -166,7 +166,7 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
       to_color(PortColorLookup::toColor(port->get_typename()), 230), port->get_typename());
     layout->addWidget(portRepl);
 
-    qDebug() << "port subnet in editor" << QString::fromStdString(port->id().toString());
+    //qDebug() << "port subnet in editor" << QString::fromStdString(port->id().toString());
   }
   
   portsBridge->setLayout(layout);
@@ -214,7 +214,7 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
       if (item->data(SUBNET_KEY).toInt() == EXTERNAL_SUBNET_CONNECTION)
       {
         auto conn = qgraphicsitem_cast<ConnectionLine*>(item);
-        qDebug() << "hidden external connection ports" << conn->connectedPorts().first->id().toString().c_str() << conn->connectedPorts().second->id().toString().c_str();
+        //qDebug() << "hidden external connection ports" << conn->connectedPorts().first->id().toString().c_str() << conn->connectedPorts().second->id().toString().c_str();
       }
     }
     item->ensureVisible();
@@ -367,9 +367,9 @@ public:
             auto portToReplicate = ports.second;
             auto id = addSubnetToId(portToReplicate);
             
-            qDebug() << "port being replicated" << id.toString().c_str() << 
-              portToReplicate->id().toString().c_str() << 
-              portToReplicate->getUnderlyingModuleId().id_.c_str();
+            //qDebug() << "port being replicated" << id.toString().c_str() << 
+            //  portToReplicate->id().toString().c_str() << 
+            //  portToReplicate->getUnderlyingModuleId().id_.c_str();
 
             desc.input_ports_.emplace_back(id, portToReplicate->get_typename(), portToReplicate->isDynamic());
             ports.first->setProperty(SUBNET_PORT_ID_TO_FIND, QString::fromStdString(id.toString()));
@@ -379,9 +379,9 @@ public:
             auto portToReplicate = ports.first;
             auto id = addSubnetToId(portToReplicate);
             
-            qDebug() << "port being replicated" << id.toString().c_str() <<
-              portToReplicate->id().toString().c_str() <<
-              portToReplicate->getUnderlyingModuleId().id_.c_str();
+            //qDebug() << "port being replicated" << id.toString().c_str() <<
+            //  portToReplicate->id().toString().c_str() <<
+            //  portToReplicate->getUnderlyingModuleId().id_.c_str();
 
             desc.output_ports_.emplace_back(id, portToReplicate->get_typename(), portToReplicate->isDynamic());
             ports.second->setProperty(SUBNET_PORT_ID_TO_FIND, QString::fromStdString(id.toString()));
