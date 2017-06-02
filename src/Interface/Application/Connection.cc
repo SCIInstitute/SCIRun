@@ -363,9 +363,12 @@ void ConnectionLine::trackNodes()
 {
   if (fromPort_ && toPort_)
   {
-    drawer_->draw(this, fromPort_->position(), toPort_->position());
-    updateNotePosition();
-    setZValue(defaultZValue());
+    //if (data(SUBNET_KEY).toInt() != EXTERNAL_SUBNET_CONNECTION)
+    {
+      drawer_->draw(this, fromPort_->position(), toPort_->position());
+      updateNotePosition();
+      setZValue(defaultZValue());
+    }
   }
   else
     BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection: " + id_.id_));

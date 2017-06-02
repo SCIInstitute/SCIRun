@@ -60,6 +60,13 @@ enum class ConnectionDrawType
 
 typedef std::pair<SCIRun::Dataflow::Networks::ModuleId, SCIRun::Dataflow::Networks::ModuleId> ModuleIdPair;
 
+enum
+{
+  SUBNET_KEY = -123,
+  INTERNAL_SUBNET_CONNECTION = 100,
+  EXTERNAL_SUBNET_CONNECTION = 200
+};
+
 class ConnectionLine : public QObject, public QGraphicsPathItem, public HasNotes, public NoteDisplayHelper, public NeedsScenePositionProvider
 {
   Q_OBJECT

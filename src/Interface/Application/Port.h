@@ -73,6 +73,7 @@ public:
   bool isHighlighted() const { return isHighlighted_; }
   int properWidth() const { return sizeHint().width(); }
   void setSceneFunc(SceneFunc getScene) { getScene_ = getScene; }
+  bool sameScene(const PortWidgetBase* other) const;
 
 protected:
   static const int DEFAULT_WIDTH = 11;

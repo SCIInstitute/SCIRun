@@ -384,6 +384,15 @@ void PortWidget::pickConnectModule()
   }
 }
 
+bool PortWidgetBase::sameScene(const PortWidgetBase* other) const
+{
+  if (getScene_ && other && other->getScene_)
+  {
+    return getScene_() == other->getScene_();
+  }
+  return true;
+}
+
 size_t PortWidget::getIndex() const
 {
   return index_;

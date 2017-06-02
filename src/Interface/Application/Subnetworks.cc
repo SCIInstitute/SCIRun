@@ -56,8 +56,6 @@ using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::~NetworkEditor()
 {
-  sendItemsToParent();
-
   if (parentNetwork_)
     controller_.reset();
 
@@ -98,7 +96,6 @@ SubnetworkEditor::~SubnetworkEditor()
 {
 }
 
-const int IS_INTERNAL = -123;
 const char* SUBNET_PORT_ID_TO_FIND = "SUBNET_PORT_ID_TO_FIND";
 
 void NetworkEditor::sendItemsToParent()
@@ -113,7 +110,7 @@ void NetworkEditor::sendItemsToParent()
     {
       parentNetwork_->scene_->addItem(item);
       item->setVisible(true);
-      item->setData(IS_INTERNAL, false);
+      item->setData(SUBNET_KEY, 0);
     }
   }
 }
@@ -168,6 +165,8 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
     auto portRepl = new SubnetOutputPortWidget(QString::fromStdString(port->get_portname()), 
       to_color(PortColorLookup::toColor(port->get_typename()), 230), port->get_typename());
     layout->addWidget(portRepl);
+
+    qDebug() << "port subnet in editor" << QString::fromStdString(port->id().toString());
   }
   
   portsBridge->setLayout(layout);
@@ -212,6 +211,11 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
     {
       //item->setVisible(item->data(IS_INTERNAL).toBool());
       item->setVisible(true);
+      if (item->data(SUBNET_KEY).toInt() == EXTERNAL_SUBNET_CONNECTION)
+      {
+        auto conn = qgraphicsitem_cast<ConnectionLine*>(item);
+        qDebug() << "hidden external connection ports" << conn->connectedPorts().first->id().toString().c_str() << conn->connectedPorts().second->id().toString().c_str();
+      }
     }
     item->ensureVisible();
   }
@@ -351,7 +355,7 @@ public:
         auto foundSecond = std::find_if(modules.cbegin(), modules.cend(),
           [&mods](const ModuleHandle& mod) { return mod->get_id().id_ == mods.second.id_; });
         auto isInternalConnection = foundFirst != modules.cend() && foundSecond != modules.cend();
-        conn->setData(IS_INTERNAL, isInternalConnection);
+        conn->setData(SUBNET_KEY, isInternalConnection ? INTERNAL_SUBNET_CONNECTION : EXTERNAL_SUBNET_CONNECTION);
 
         if (!isInternalConnection)
         {
@@ -362,6 +366,11 @@ public:
           {
             auto portToReplicate = ports.second;
             auto id = addSubnetToId(portToReplicate);
+            
+            qDebug() << "port being replicated" << id.toString().c_str() << 
+              portToReplicate->id().toString().c_str() << 
+              portToReplicate->getUnderlyingModuleId().id_.c_str();
+
             desc.input_ports_.emplace_back(id, portToReplicate->get_typename(), portToReplicate->isDynamic());
             ports.first->setProperty(SUBNET_PORT_ID_TO_FIND, QString::fromStdString(id.toString()));
           }
@@ -369,6 +378,11 @@ public:
           {
             auto portToReplicate = ports.first;
             auto id = addSubnetToId(portToReplicate);
+            
+            qDebug() << "port being replicated" << id.toString().c_str() <<
+              portToReplicate->id().toString().c_str() <<
+              portToReplicate->getUnderlyingModuleId().id_.c_str();
+
             desc.output_ports_.emplace_back(id, portToReplicate->get_typename(), portToReplicate->isDynamic());
             ports.second->setProperty(SUBNET_PORT_ID_TO_FIND, QString::fromStdString(id.toString()));
           }
@@ -423,7 +437,7 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
       if (conn)
       {
         auto mods = conn->getConnectedToModuleIds();
-        if (!conn->data(IS_INTERNAL).toBool())
+        if (conn->data(SUBNET_KEY).toInt() == EXTERNAL_SUBNET_CONNECTION)
         {
           auto ports = conn->connectedPorts();
           if (!ports.first->property(SUBNET_PORT_ID_TO_FIND).toString().isEmpty())
