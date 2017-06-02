@@ -48,6 +48,7 @@
 class QDockWidget;
 class QProgressBar;
 class QTimeLine;
+class PortBuilder;
 
 namespace SCIRun {
 namespace Gui {
@@ -119,6 +120,8 @@ public:
   size_t numOutputPorts() const;
 
   const PortWidgetManager& ports() const { return *ports_; }
+  PortWidgetManager& ports() { return *ports_; }
+  QList<QGraphicsItem*> connections() const;
 
   std::string getModuleId() const { return moduleId_; }
   Dataflow::Networks::ModuleHandle getModule() const { return theModule_; }
@@ -299,6 +302,8 @@ private:
   boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
 
   static bool globalMiniMode_;
+
+  friend class ::PortBuilder;
 };
 
 class SubnetWidget : public ModuleWidget
@@ -306,7 +311,21 @@ class SubnetWidget : public ModuleWidget
 	Q_OBJECT
 public:
   SubnetWidget(NetworkEditor* ed, const QString& name, Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = nullptr);
+  ~SubnetWidget();
   void postLoadAction() override;
+private:
+  NetworkEditor* editor_;
+  QString name_;
+};
+
+class SubnetPortsBridgeWidget : public QWidget
+{
+	Q_OBJECT
+public:
+  SubnetPortsBridgeWidget(NetworkEditor* ed, const QString& name, QWidget* parent = nullptr);
+private:
+  NetworkEditor* editor_;
+  QString name_;
 };
 
 }

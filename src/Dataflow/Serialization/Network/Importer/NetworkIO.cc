@@ -236,7 +236,7 @@ LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string&
     connections.push_back(conn);
     connectionIdMap_[con_id] = ConnectionId::create(conn).id_;
   }
-  catch (Core::InvalidArgumentException& e)
+  catch (Core::InvalidArgumentException&)
   {
     simpleLog_ << "File conversion error: connection not created between modules " << fromId << " and " << toId << std::endl;
   }

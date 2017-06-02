@@ -54,7 +54,7 @@ namespace Networks {
   {
   public:
     explicit GeometryGeneratingModule(const ModuleLookupInfo& info);
-    virtual std::string generateGeometryID(const std::string& tag) const override;
+    std::string generateGeometryID(const std::string& tag) const override;
   };
 
 }}}

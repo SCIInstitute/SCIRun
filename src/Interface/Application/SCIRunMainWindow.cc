@@ -80,9 +80,10 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
-SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quitAfterExecute_(false)
+SCIRunMainWindow::SCIRunMainWindow() 
 {
   setupUi(this);
+  builder_ = boost::make_shared<NetworkEditorBuilder>(this);
 
   startup_ = true;
 
@@ -459,7 +460,7 @@ SCIRunMainWindow::~SCIRunMainWindow()
 
 void SCIRunMainWindow::setController(NetworkEditorControllerHandle controller)
 {
-  boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
+  auto controllerProxy(boost::make_shared<NetworkEditorControllerGuiProxy>(controller, networkEditor_));
   networkEditor_->setNetworkEditorController(controllerProxy);
   //TODO: need better way to wire this up
   controller->setSerializationManager(networkEditor_);
@@ -489,8 +490,8 @@ void SCIRunMainWindow::setupNetworkEditor()
     tagColorFunc, tagNameFunc, highResolutionExpandFactor }, scrollAreaWidgetContents_);
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 
-  NetworkEditorBuilder builder(this);
-  builder.connectAll(networkEditor_);
+  builder_->connectAll(networkEditor_);
+  NetworkEditor::setConnectorFunc([this](NetworkEditor* ed) { builder_->connectAll(ed); });
 }
 
 void SCIRunMainWindow::executeCommandLineRequests()

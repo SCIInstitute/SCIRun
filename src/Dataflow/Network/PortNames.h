@@ -33,9 +33,7 @@
 #include <boost/static_assert.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ModuleInterface.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
-#include <Dataflow/Network/PortManager.h>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {
