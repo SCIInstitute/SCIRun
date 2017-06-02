@@ -30,7 +30,6 @@
 #ifndef DATAFLOW_NETWORK_CONNECTION_H
 #define DATAFLOW_NETWORK_CONNECTION_H
 
-#include <string>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Network/share.h>

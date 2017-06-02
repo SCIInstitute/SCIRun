@@ -77,7 +77,7 @@ void ViewScene::setStateDefaults()
   state->setValue(FogEnd, 0.71);
   state->setValue(FogColor, ColorRGB(0.0, 0.0, 1.0).toString());
   state->setValue(ShowScaleBar, false);
-  state->setValue(ScaleBarUnitValue, "mm");
+  state->setValue(ScaleBarUnitValue, std::string("mm"));
   state->setValue(ScaleBarLength, 1.0);
   state->setValue(ScaleBarHeight, 1.0);
   state->setValue(ScaleBarMultiplier, 1.0);

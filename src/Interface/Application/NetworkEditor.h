@@ -163,12 +163,14 @@ namespace Gui {
   class ModuleWidget;
   class NetworkEditorControllerGuiProxy;
 	class DialogErrorControl;
+  using PortRewiringMap = std::map<std::string, std::map<std::string, Dataflow::Networks::PortId>>;
+  using PortRewiringMap2 = std::map<std::string, ConnectionLine*>;
 
   struct NetworkEditorParameters
   {
-    boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter;
-    boost::shared_ptr<DefaultNotePositionGetter> dnpg;
-    boost::shared_ptr<DialogErrorControl> dialogErrorControl;
+    SharedPointer<CurrentModuleSelection> moduleSelectionGetter;
+    SharedPointer<DefaultNotePositionGetter> dnpg;
+    SharedPointer<DialogErrorControl> dialogErrorControl;
     PreexecuteFunc preexecuteFunc;
     TagColorFunc tagColor;
     TagNameFunc tagName;
@@ -189,8 +191,8 @@ namespace Gui {
     NetworkEditor(const NetworkEditor& rhs) = delete;
     NetworkEditor& operator=(const NetworkEditor&) = delete;
     ~NetworkEditor();
-    void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
-    boost::shared_ptr<NetworkEditorControllerGuiProxy> getNetworkEditorController() const;
+    void setNetworkEditorController(SharedPointer<NetworkEditorControllerGuiProxy> controller);
+    SharedPointer<NetworkEditorControllerGuiProxy> getNetworkEditorController() const;
     Dataflow::Networks::ExecutableObject* lookupExecutable(const Dataflow::Networks::ModuleId& id) const override;
     bool containsViewScene() const override;
 
@@ -213,11 +215,14 @@ namespace Gui {
     Dataflow::Networks::DisabledComponentsHandle dumpDisabledComponents(Dataflow::Networks::ModuleFilter modFilter, Dataflow::Networks::ConnectionFilter connFilter) const override;
     void updateDisabledComponents(const Dataflow::Networks::DisabledComponents& disabled) override;
 
+    Dataflow::Networks::SubnetworksHandle dumpSubnetworks(Dataflow::Networks::ModuleFilter filter) const override;
+    void updateSubnetworks(const Dataflow::Networks::Subnetworks& subnets) override;
+
     void copyNote(Dataflow::Networks::ModuleHandle from, Dataflow::Networks::ModuleHandle to) const override;
 
     size_t numModules() const;
 
-    boost::shared_ptr<ModuleEventProxy> moduleEventProxy() const { return moduleEventProxy_; }
+    SharedPointer<ModuleEventProxy> moduleEventProxy() const { return moduleEventProxy_; }
     int errorCode() const override;
 
     void disableInputWidgets();
@@ -235,7 +240,7 @@ namespace Gui {
 
     QPixmap sceneGrab();
 
-    boost::shared_ptr<Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortDisabler();
+    SharedPointer<Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortDisabler();
 
     int currentZoomPercentage() const;
 
@@ -254,7 +259,12 @@ namespace Gui {
     void adjustExecuteButtonsToDownstream(bool downOnly);
 
     NetworkEditor* parentNetwork() { return parentNetwork_; }
+    size_t childCount() const { return childrenNetworks_.size(); }
+    void killChild(const QString& name);
     void sendItemsToParent();
+
+    using ConnectorFunc = std::function<void(NetworkEditor*)>;
+    static void setConnectorFunc(ConnectorFunc func) { connectorFunc_ = func; }
 
   protected:
     void dropEvent(QDropEvent* event) override;
@@ -265,6 +275,7 @@ namespace Gui {
     void wheelEvent(QWheelEvent* event) override;
     void contextMenuEvent(QContextMenuEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
+    void scrollContentsBy(int dx, int dy) override;
 
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
@@ -295,15 +306,18 @@ namespace Gui {
     void highlightTaggedItem(int tagValue);
     void resetNetworkDueToCycle();
     void moduleWindowAction();
-    void cleanUpNetwork();
+    void cleanUpNetwork(); 
     void redrawTagGroups();
     void adjustModuleWidth(int delta);
     void adjustModuleHeight(int delta);
     void saveTagGroupRectInFile();
     void renameTagGroupInFile();
     void makeSubnetwork();
+    void makeSubnetworkFromComponents(const QString& name,
+      const std::vector<SCIRun::Dataflow::Networks::ModuleHandle>& modules,
+      QList<QGraphicsItem*> items, const QRectF& rect);
     void showSubnetChild(const QString& name);
-    void addSubnetChild(const QString& name, const SCIRun::Dataflow::Networks::ModuleId& mid);
+    void addSubnetChild(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle mod);
     void removeSubnetChild(const QString& name);
 
   Q_SIGNALS:
@@ -353,7 +367,9 @@ namespace Gui {
     QPointF positionOfFloatingText(int num, bool top, int horizontalIndent, int verticalSpacing) const;
     QPixmap grabSubnetPic(const QRectF& rect);
     QString convertToTooltip(const QPixmap& pic) const;
-    void initializeSubnet(const QString& name, const SCIRun::Dataflow::Networks::ModuleId& subnetModuleId, NetworkEditor* subnet);
+    void initializeSubnet(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle mod, NetworkEditor* subnet);
+    void dumpSubnetworksImpl(const QString& name, Dataflow::Networks::Subnetworks& data, Dataflow::Networks::ModuleFilter modFilter) const;
+    QList<QGraphicsItem*> includeConnections(QList<QGraphicsItem*> items) const;
 
     // default constructed
     bool modulesSelectedByCL_{ false };
@@ -374,24 +390,44 @@ namespace Gui {
     // unpacked constructor parameters
     TagColorFunc tagColor_;
     TagNameFunc tagName_;
-		boost::shared_ptr<DialogErrorControl> dialogErrorControl_;
-    boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
-    boost::shared_ptr<DefaultNotePositionGetter> defaultNotePositionGetter_;
+		SharedPointer<DialogErrorControl> dialogErrorControl_;
+    SharedPointer<CurrentModuleSelection> moduleSelectionGetter_;
+    SharedPointer<DefaultNotePositionGetter> defaultNotePositionGetter_;
     PreexecuteFunc preexecute_;
     const double highResolutionExpandFactor_;
 
     // special
     QGraphicsScene* scene_;
-    boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;
+    SharedPointer<NetworkEditorControllerGuiProxy> controller_;
 
     // newed up
-    boost::shared_ptr<ModuleEventProxy> moduleEventProxy_;
-    boost::shared_ptr<ZLevelManager> zLevelManager_;
+    SharedPointer<ModuleEventProxy> moduleEventProxy_;
+    SharedPointer<ZLevelManager> zLevelManager_;
 
     // tree structure
     NetworkEditor* parentNetwork_ {nullptr};
     std::map<QString, class SubnetworkEditor*> childrenNetworks_;
     std::map<QString, QList<QGraphicsItem*>> childrenNetworkItems_;
+    QList<QGraphicsItem*> subnetPortHolders_;
+    void setupPortHolders(Dataflow::Networks::ModuleHandle mod);
+    void setupPortHolder(const std::vector<SharedPointer<SCIRun::Dataflow::Networks::PortDescriptionInterface>>& ports, const QString& name,
+      std::function<QPointF(const QRectF&)> position);
+    PortRewiringMap portRewiringMap_;
+    PortRewiringMap2 portRewiringMap2_;
+
+    static NetworkEditor* inEditingContext_;
+    struct InEditingContext
+    {
+      explicit InEditingContext(NetworkEditor* ed)
+      {
+        inEditingContext_ = ed;
+      }
+      ~InEditingContext()
+      {
+        inEditingContext_ = nullptr;
+      }
+    };
+    static ConnectorFunc connectorFunc_;
   };
 
   ModuleWidget* getModule(QGraphicsItem* item);

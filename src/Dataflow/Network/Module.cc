@@ -679,12 +679,12 @@ ModuleBuilder& ModuleBuilder::add_input_port(const Port::ConstructionParams& par
 {
   if (module_)
   {
-    addInputPortImpl(*module_, params);
+    addInputPortImpl(params);
   }
   return *this;
 }
 
-void ModuleBuilder::addInputPortImpl(Module& module, const Port::ConstructionParams& params)
+void ModuleBuilder::addInputPortImpl(const Port::ConstructionParams& params) const
 {
   DatatypeSinkInterfaceHandle sink(sink_maker_ ? sink_maker_() : nullptr);
   auto port(boost::make_shared<InputPort>(module_.get(), params, sink));
@@ -702,7 +702,7 @@ ModuleBuilder& ModuleBuilder::add_output_port(const Port::ConstructionParams& pa
   return *this;
 }
 
-PortId ModuleBuilder::cloneInputPort(ModuleHandle module, const PortId& id)
+PortId ModuleBuilder::cloneInputPort(ModuleHandle module, const PortId& id) const
 {
   auto m = dynamic_cast<Module*>(module.get());
   if (m)
@@ -714,7 +714,7 @@ PortId ModuleBuilder::cloneInputPort(ModuleHandle module, const PortId& id)
   THROW_INVALID_ARGUMENT("Don't know how to clone ports on other Module types");
 }
 
-void ModuleBuilder::removeInputPort(ModuleHandle module, const PortId& id)
+void ModuleBuilder::removeInputPort(ModuleHandle module, const PortId& id) const
 {
   auto m = dynamic_cast<Module*>(module.get());
   if (m)
@@ -723,7 +723,7 @@ void ModuleBuilder::removeInputPort(ModuleHandle module, const PortId& id)
   }
 }
 
-ModuleHandle ModuleBuilder::build()
+ModuleHandle ModuleBuilder::build() const
 {
   return module_;
 }

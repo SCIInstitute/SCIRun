@@ -109,6 +109,13 @@ namespace Networks {
     DisabledComponentListXML disabledConnections;
   };
 
+  using SubnetworkMap = std::map<std::string, std::vector<std::string>>;
+
+  struct SCISHARE Subnetworks
+  {
+    SubnetworkMap subnets;
+  };
+
   class SCISHARE NetworkXML
   {
   public:
@@ -132,6 +139,7 @@ namespace Networks {
     ConnectionNotes connectionNotes;
     ModuleTags moduleTags;
     DisabledComponents disabledComponents;
+    Subnetworks subnetworks;
   private:
     friend class boost::serialization::access;
     template <class Archive>
@@ -154,6 +162,10 @@ namespace Networks {
       {
         ar & boost::serialization::make_nvp("moduleTagLabels", moduleTags.labels);
         ar & boost::serialization::make_nvp("loadTagGroups", moduleTags.showTagGroupsOnLoad);
+      }
+      if (version > 5)
+      {
+        ar & boost::serialization::make_nvp("subnetworks", subnetworks.subnets);
       }
     }
   };
@@ -191,6 +203,6 @@ namespace Networks {
 
 }}}
 
-BOOST_CLASS_VERSION(SCIRun::Dataflow::Networks::NetworkFile, 5)
+BOOST_CLASS_VERSION(SCIRun::Dataflow::Networks::NetworkFile, 6)
 
 #endif

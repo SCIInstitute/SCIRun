@@ -30,7 +30,6 @@
 #ifndef DATAFLOW_NETWORK_MODULE_DESCRIPTION_H
 #define DATAFLOW_NETWORK_MODULE_DESCRIPTION_H
 
-#include <string>
 #include <vector>
 #include <iosfwd>
 #include <boost/function.hpp>
@@ -44,9 +43,7 @@ namespace Networks {
   struct SCISHARE PortId
   {
     explicit PortId(size_t num = 0, const std::string& n = "[undefined]") : name(n), id(num)
-    {
-      //std::cout << "PortId(" << num << "," << n << "," << dyn << ")" << std::endl;
-    }
+    {}
     std::string name;
     size_t id; /// @todo: need smart way to set
     std::string toString() const;
@@ -70,10 +67,10 @@ namespace Networks {
     static void init();
   };
 
-  typedef PortDescription InputPortDescription;
-  typedef PortDescription OutputPortDescription;
-  typedef std::vector<InputPortDescription> InputPortDescriptionList;
-  typedef std::vector<OutputPortDescription> OutputPortDescriptionList;
+  using InputPortDescription = PortDescription;
+  using OutputPortDescription = PortDescription;
+  using InputPortDescriptionList = std::vector<InputPortDescription>;
+  using OutputPortDescriptionList = std::vector<OutputPortDescription>;
 
   struct SCISHARE ModuleId
   {
@@ -114,7 +111,7 @@ namespace Networks {
   SCISHARE bool operator==(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs);
   SCISHARE bool operator!=(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs);
 
-  typedef boost::function<class Module*()> ModuleMaker;
+  using ModuleMaker = boost::function<class Module*()>;
 
   struct SCISHARE ModuleDescription
   {
@@ -137,7 +134,7 @@ namespace Networks {
     bool operator()(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs) const;
   };
 
-  typedef std::map<ModuleLookupInfo, ModuleDescription, ModuleLookupInfoLess> DirectModuleDescriptionLookupMap;
+  using DirectModuleDescriptionLookupMap = std::map<ModuleLookupInfo, ModuleDescription, ModuleLookupInfoLess>;
 
 }}}
 
