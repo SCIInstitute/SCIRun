@@ -167,14 +167,12 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
       to_color(PortColorLookup::toColor(port->get_typename()), 230), port->get_typename());
     layout->addWidget(portRepl);
 
-    //qDebug() << "port subnet in editor" << QString::fromStdString(port->id().toString()) <<
-    //  portRewiringMap2_[port->id().toString()]->id().id_.c_str();
+    //qDebug() << "port subnet in editor" << QString::fromStdString(port->id().toString());
+      //<< portRewiringMap2_[port->id().toString()]->id().id_.c_str();
 
-    portRewiringMap2_[port->id().toString()]->addSubnetCompanion(portRepl);
+    portRewiringMap_[port->id().toString()]->addSubnetCompanion(portRepl);
   }
-  portRewiringMap_.clear();
-  portRewiringMap2_.clear();
-  
+ 
   portsBridge->setLayout(layout);
 
   auto proxy = new QGraphicsProxyWidget;
@@ -199,6 +197,7 @@ void NetworkEditor::setupPortHolders(ModuleHandle mod)
 {
   setupPortHolder(upcast_range<PortDescriptionInterface>(mod->inputPorts()), "Inputs", [](const QRectF& rect) { return rect.topLeft(); });
   setupPortHolder(upcast_range<PortDescriptionInterface>(mod->outputPorts()), "Outputs", [](const QRectF& rect) { return rect.bottomLeft() + QPointF(0, -23); });
+  portRewiringMap_.clear();
 }
 
 void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, NetworkEditor* subnet)
@@ -231,31 +230,31 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
 
 
 
-          auto firstMatch = subnet->portRewiringMap_.find(conn->connectedPorts().first->getUnderlyingModuleId().id_);
-          if (firstMatch != subnet->portRewiringMap_.end())
-          {
-            //qDebug() << "found match for conn end--first";
-            auto portMatch = firstMatch->second.find(conn->connectedPorts().first->id().toString());
-            if (portMatch != firstMatch->second.end())
-            {
-              //qDebug() << "\tand found port match at" << portMatch->second.toString().c_str();
-              subnet->portRewiringMap2_[portMatch->second.toString()] = conn;
-            }
-          }
-          else
-          {
-            auto secondMatch = subnet->portRewiringMap_.find(conn->connectedPorts().second->getUnderlyingModuleId().id_);
-            if (secondMatch != subnet->portRewiringMap_.end())
-            {
-              //qDebug() << "found match for conn end--second";
-              auto portMatch = secondMatch->second.find(conn->connectedPorts().second->id().toString());
-              if (portMatch != secondMatch->second.end())
-              {
-                //qDebug() << "\tand found port match at" << portMatch->second.toString().c_str();
-                subnet->portRewiringMap2_[portMatch->second.toString()] = conn;
-              }
-            }
-          }
+          //auto firstMatch = subnet->portRewiringMap_.find(conn->connectedPorts().first->getUnderlyingModuleId().id_);
+          //if (firstMatch != subnet->portRewiringMap_.end())
+          //{
+          //  //qDebug() << "found match for conn end--first";
+          //  auto portMatch = firstMatch->second.find(conn->connectedPorts().first->id().toString());
+          //  if (portMatch != firstMatch->second.end())
+          //  {
+          //    //qDebug() << "\tand found port match at" << portMatch->second.toString().c_str();
+          //    subnet->portRewiringMap2_[portMatch->second.toString()] = conn;
+          //  }
+          //}
+          //else
+          //{
+          //  auto secondMatch = subnet->portRewiringMap_.find(conn->connectedPorts().second->getUnderlyingModuleId().id_);
+          //  if (secondMatch != subnet->portRewiringMap_.end())
+          //  {
+          //    //qDebug() << "found match for conn end--second";
+          //    auto portMatch = secondMatch->second.find(conn->connectedPorts().second->id().toString());
+          //    if (portMatch != secondMatch->second.end())
+          //    {
+          //      //qDebug() << "\tand found port match at" << portMatch->second.toString().c_str();
+          //      subnet->portRewiringMap2_[portMatch->second.toString()] = conn;
+          //    }
+          //  }
+          //}
         }
       }
     }
@@ -410,11 +409,11 @@ public:
             auto portToReplicate = ports.second;
             auto id = addSubnetToId(portToReplicate);
             
-            //qDebug() << "port being replicated" << id.toString().c_str() << 
-            //  portToReplicate->id().toString().c_str() << 
-            //  portToReplicate->getUnderlyingModuleId().id_.c_str();
+            qDebug() << "port being replicated" << id.toString().c_str() << 
+              portToReplicate->id().toString().c_str() << 
+              portToReplicate->getUnderlyingModuleId().id_.c_str();
 
-            map_[portToReplicate->getUnderlyingModuleId().id_][portToReplicate->id().toString()] = id;
+            map_[id.toString()] = conn;
 
             desc.input_ports_.emplace_back(id, portToReplicate->get_typename(), portToReplicate->isDynamic());
             ports.first->setProperty(SUBNET_PORT_ID_TO_FIND, QString::fromStdString(id.toString()));
@@ -428,7 +427,7 @@ public:
             //  portToReplicate->id().toString().c_str() <<
             //  portToReplicate->getUnderlyingModuleId().id_.c_str();
 
-            map_[portToReplicate->getUnderlyingModuleId().id_][portToReplicate->id().toString()] = id;
+            map_[id.toString()] = conn;
 
             desc.output_ports_.emplace_back(id, portToReplicate->get_typename(), portToReplicate->isDynamic());
             ports.second->setProperty(SUBNET_PORT_ID_TO_FIND, QString::fromStdString(id.toString()));
