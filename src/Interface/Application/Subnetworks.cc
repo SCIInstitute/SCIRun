@@ -366,7 +366,7 @@ void NetworkEditor::makeSubnetwork()
   auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:", QLineEdit::Normal, "subnet", &ok);
   if (!ok)
     return;
-    
+
   if (name.isEmpty())
   {
     QMessageBox::information(this, "Make subnetwork", "Invalid name.");
@@ -479,8 +479,8 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
 
   auto colorize = new QGraphicsDropShadowEffect;
   colorize->setColor(QColor(255,182,193,200));
-  colorize->setOffset(8,8);
-  colorize->setBlurRadius(10);
+  colorize->setOffset(10, 6);
+  colorize->setBlurRadius(30);
   proxy->setGraphicsEffect(colorize);
 
   auto pic = grabSubnetPic(rect);
@@ -627,5 +627,6 @@ void NetworkEditor::killChild(const QString& name)
     subnetIter->second->get()->clear();
     subnetIter->second->deleteLater();
     childrenNetworks_.erase(subnetIter);
+    currentSubnetNames_.remove(name);
   }
 }
