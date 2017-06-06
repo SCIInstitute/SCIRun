@@ -43,27 +43,43 @@ MODULE_INFO_DEF(ConditionalMatrix, Math, SCIRun)
 
 ConditionalMatrix::ConditionalMatrix() : Module(staticInfo_)
 {
-  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(MatrixA);
+  INITIALIZE_PORT(MatrixB);
+  INITIALIZE_PORT(PossibleOutput);
   INITIALIZE_PORT(OutputMatrix);
+  INITIALIZE_PORT(ConditionMatrix);
 }
 
 void ConditionalMatrix::setStateDefaults()
 {
-  setStateIntFromAlgo(Variables::Method);
+  setStateStringFromAlgoOption(Parameters::Operator);
+  setStateStringFromAlgoOption(Parameters::Method);
+  setStateStringFromAlgoOption(Parameters::Method2);
+  setStateStringFromAlgoOption(Parameters::OutputFormat);
+  setStateStringFromAlgoOption(Parameters::ObjectInfo);
 }
 
 void
 ConditionalMatrix::execute()
 {
-  auto input = getRequiredInput(InputMatrix);
+  auto matrixA = getRequiredInput(MatrixA);
+  auto matrixB = getOptionalInput(MatrixB);
+  auto possout = getOptionalInput(PossibleOutput);
 
   if (needToExecute())
   {
-    setAlgoIntFromState(Variables::Method);
+    update_state(Executing);
+      
+    setAlgoOptionFromState(Variables::Operator);
+    setAlgoOptionFromState(Variables::Method);
+    setAlgoOptionFromState(Variables::Method2);
+    setAlgoOptionFromState(Variables::OutputFormat);
+    setAlgoOptionFromState(Variables::ObjectInfo);
 
-    auto output = algo().run_generic(withInputData((InputMatrix, input)));
+    auto Output = algo().run(withInputData((MatrixA, matrixA)(MatrixB, optionalAlgoInput(matrixB))(PossibleOutput, optionalAlgoInput(possout))));
 
     sendOutputFromAlgorithm(OutputMatrix, output);
+    sendOutputFromAlgorithm(ConditionMatrix, output);
 
   }
 }
