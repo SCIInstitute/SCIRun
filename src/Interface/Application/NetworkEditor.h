@@ -413,6 +413,7 @@ namespace Gui {
     void setupPortHolder(const std::vector<SharedPointer<SCIRun::Dataflow::Networks::PortDescriptionInterface>>& ports, const QString& name,
       std::function<QPointF(const QRectF&)> position);
     PortRewiringMap portRewiringMap_;
+    QSet<QString> currentSubnetNames_;
 
     static NetworkEditor* inEditingContext_;
     struct InEditingContext

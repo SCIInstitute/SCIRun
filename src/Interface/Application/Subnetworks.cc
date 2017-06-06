@@ -362,17 +362,23 @@ void NetworkEditor::makeSubnetwork()
     }
   }
 
-  if (underlyingModules.empty())
-  {
-    QMessageBox::information(this, "Make subnetwork", "Please select at least one module.");
-    return;
-  }
-
   bool ok;
   auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:", QLineEdit::Normal, "subnet", &ok);
   if (!ok || name.isEmpty())
   {
     QMessageBox::information(this, "Make subnetwork", "Invalid name.");
+    return;
+  }
+  
+  if (currentSubnetNames_.contains(name))
+  {
+    QMessageBox::information(this, "Make subnetwork", "A subnet by that name already exists.");
+    return;
+  }
+  
+  if (underlyingModules.empty())
+  {
+    QMessageBox::information(this, "Make subnetwork", "Please select at least one module.");
     return;
   }
 
@@ -456,6 +462,8 @@ private:
 void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std::vector<ModuleHandle>& modules,
   QList<QGraphicsItem*> items, const QRectF& rect)
 {
+  currentSubnetNames_.insert(name);
+
   SubnetModuleFactory factory;
   auto subnetModule = factory.makeSubnet(name, modules, items);
   portRewiringMap_ = factory.getMap();
@@ -469,6 +477,7 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   auto colorize = new QGraphicsDropShadowEffect;
   colorize->setColor(QColor(255,182,193,200));
   colorize->setOffset(8,8);
+  colorize->setBlurRadius(10);
   proxy->setGraphicsEffect(colorize);
 
   auto pic = grabSubnetPic(rect);
@@ -523,7 +532,7 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   childrenNetworkItems_[name] = items;
 
   addSubnetChild(name, subnetModule);
-  qDebug() << "port repl map out of scope";
+  //qDebug() << "port repl map out of scope";
 }
 
 QPixmap NetworkEditor::grabSubnetPic(const QRectF& rect)
