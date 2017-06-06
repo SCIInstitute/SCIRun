@@ -163,7 +163,7 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
 
   for (const auto& port : ports)
   {
-    auto portRepl = new SubnetOutputPortWidget(QString::fromStdString(port->get_portname()), 
+    auto portRepl = new SubnetOutputPortWidget(QString::fromStdString(port->get_portname()),
       to_color(PortColorLookup::toColor(port->get_typename()), 230), port->get_typename());
     layout->addWidget(portRepl);
 
@@ -172,7 +172,7 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
 
     portRewiringMap_[port->id().toString()]->addSubnetCompanion(portRepl);
   }
- 
+
   portsBridge->setLayout(layout);
 
   auto proxy = new QGraphicsProxyWidget;
@@ -364,18 +364,21 @@ void NetworkEditor::makeSubnetwork()
 
   bool ok;
   auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:", QLineEdit::Normal, "subnet", &ok);
-  if (!ok || name.isEmpty())
+  if (!ok)
+    return;
+    
+  if (name.isEmpty())
   {
     QMessageBox::information(this, "Make subnetwork", "Invalid name.");
     return;
   }
-  
+
   if (currentSubnetNames_.contains(name))
   {
     QMessageBox::information(this, "Make subnetwork", "A subnet by that name already exists.");
     return;
   }
-  
+
   if (underlyingModules.empty())
   {
     QMessageBox::information(this, "Make subnetwork", "Please select at least one module.");
@@ -414,9 +417,9 @@ public:
           {
             auto portToReplicate = ports.second;
             auto id = addSubnetToId(portToReplicate);
-            
-            qDebug() << "port being replicated" << id.toString().c_str() << 
-              portToReplicate->id().toString().c_str() << 
+
+            qDebug() << "port being replicated" << id.toString().c_str() <<
+              portToReplicate->id().toString().c_str() <<
               portToReplicate->getUnderlyingModuleId().id_.c_str();
 
             map_[id.toString()] = conn;
@@ -428,7 +431,7 @@ public:
           {
             auto portToReplicate = ports.first;
             auto id = addSubnetToId(portToReplicate);
-            
+
             //qDebug() << "port being replicated" << id.toString().c_str() <<
             //  portToReplicate->id().toString().c_str() <<
             //  portToReplicate->getUnderlyingModuleId().id_.c_str();
@@ -453,7 +456,7 @@ public:
 
   const PortRewiringMap& getMap() const
   {
-    return map_; 
+    return map_;
   }
 private:
   mutable PortRewiringMap map_;
