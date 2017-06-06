@@ -240,15 +240,13 @@ void ModuleDialogGeneric::doCollapse()
 {
   if (collapsed_)
   {
-    oldSize_ = size();
+    oldSize_ = dock_->size();
     const int h = std::min(40, oldSize_.height());
     const int w = std::min(400, oldSize_.width());
-    setFixedSize(w, h);
     dock_->setFixedSize(w, h);
   }
   else
   {
-    setFixedSize(oldSize_);
     dock_->setFixedSize(oldSize_);
   }
 }

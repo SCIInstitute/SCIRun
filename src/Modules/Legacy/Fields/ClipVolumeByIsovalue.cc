@@ -77,7 +77,6 @@ void ClipVolumeByIsovalue::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
     double iso=0;
 
     // GUI inputs have less priority than isovalue - second module input

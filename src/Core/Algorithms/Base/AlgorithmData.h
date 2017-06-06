@@ -55,7 +55,7 @@ namespace Algorithms {
     {
       auto it = data_.find(name);
       /// @todo: log incorrect type if present but wrong type
-      return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(it->second[0]);
+      return it == data_.end() ? nullptr : boost::dynamic_pointer_cast<T>(it->second[0]);
     }
 
     template <typename T>
@@ -81,11 +81,11 @@ namespace Algorithms {
     boost::any transient_;
   };
 
-  class SCISHARE AlgorithmInput : public AlgorithmData 
+  class SCISHARE AlgorithmInput : public AlgorithmData
   {
   public:
     AlgorithmInput() {}
-    AlgorithmInput(const Map& m) : AlgorithmData(m) {}
+    explicit AlgorithmInput(const Map& m) : AlgorithmData(m) {}
   };
 
   class SCISHARE AlgorithmOutput : public AlgorithmData
@@ -97,9 +97,9 @@ namespace Algorithms {
     VariableHandle additionalAlgoOutput_;
   };
 
-  typedef Datatypes::SharedPointer<AlgorithmInput> AlgorithmInputHandle;
-  typedef Datatypes::SharedPointer<AlgorithmOutput> AlgorithmOutputHandle;
-  
+  typedef SharedPointer<AlgorithmInput> AlgorithmInputHandle;
+  typedef SharedPointer<AlgorithmOutput> AlgorithmOutputHandle;
+
 }}}
 
 #endif

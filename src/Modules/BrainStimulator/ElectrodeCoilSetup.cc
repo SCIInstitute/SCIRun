@@ -86,7 +86,6 @@ void ElectrodeCoilSetup::execute()
    setAlgoBoolFromState(Parameters::InterpolateElectrodeShapeCheckbox);
    setAlgoDoubleFromState(Parameters::ElectrodethicknessSpinBox);
 
-   update_state(Executing);
    if(elc_coil_proto.size()>0)
     {
      get_state()->setValue(Parameters::NumberOfPrototypes, (int)elc_coil_proto.size());

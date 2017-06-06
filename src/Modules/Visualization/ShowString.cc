@@ -76,20 +76,34 @@ void ShowString::setStateDefaults()
   state->setValue(Parameters::FixedVertical, std::string("Top"));
   state->setValue(Parameters::CoordinateHorizontal, 0.5);
   state->setValue(Parameters::CoordinateVertical, 0.5);
+
+  getOutputPort(RenderedString)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWindowResizeFeedback(var); });
+}
+
+void ShowString::processWindowResizeFeedback(const ModuleFeedback& var)
+{
+  auto vsf = static_cast<const ViewSceneFeedback&>(var);
+  if (lastWindowSize_ != vsf.windowSize)
+  {
+    lastWindowSize_ = vsf.windowSize;
+    needReexecute_ = true;
+    enqueueExecuteAgain(false);
+  }
 }
 
 void ShowString::execute()
 {
   auto str = getRequiredInput(String);
 
-  if (needToExecute())
+  if (needToExecute() || needReexecute_)
   {
     auto geom = buildGeometryObject(str->value());
     sendOutput(RenderedString, geom);
+    needReexecute_ = false;
   }
 }
 
-std::tuple<double, double> ShowString::getTextPosition() const
+std::tuple<double, double> ShowString::getTextPosition()
 {
   auto state = get_state();
   auto positionChoice = state->getValue(Parameters::PositionType).toString();
@@ -112,6 +126,8 @@ std::tuple<double, double> ShowString::getTextPosition() const
     else // "Bottom"
       y = 0.3;
 
+    state->setValue(Parameters::CoordinateHorizontal, x / 2.0);
+    state->setValue(Parameters::CoordinateVertical, y / 2.0);
     return std::make_tuple(x, y);
   }
   else if ("Coordinates" == positionChoice)
@@ -128,33 +144,8 @@ std::tuple<double, double> ShowString::getTextPosition() const
 // TODO: clean up duplication here and in ShowColorMap
 GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
 {
-  std::vector<Vector> points;
-  std::vector<ColorRGB> colors;
-  std::vector<uint32_t> indices;
-  auto numVBOElements = 0;
-
-  // IBO/VBOs and sizes
-  uint32_t iboSize = sizeof(uint32_t) * static_cast<uint32_t>(indices.size());
-  uint32_t vboSize = sizeof(float) * 7 * static_cast<uint32_t>(points.size());
-
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
-
-  CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
-  CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
-
-  for (auto a : indices) iboBuffer->write(a);
-
-  for (size_t i = 0; i < points.size(); i++)
-  {
-    vboBuffer->write(static_cast<float>(points[i].x()));
-    vboBuffer->write(static_cast<float>(points[i].y()));
-    vboBuffer->write(static_cast<float>(points[i].z()));
-    vboBuffer->write(static_cast<float>(colors[i].r()));
-    vboBuffer->write(static_cast<float>(colors[i].g()));
-    vboBuffer->write(static_cast<float>(colors[i].b()));
-    vboBuffer->write(static_cast<float>(1.f));
-  }
+  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(new CPM_VAR_BUFFER_NS::VarBuffer(0));
+  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(new CPM_VAR_BUFFER_NS::VarBuffer(0));
 
   auto uniqueNodeID = get_id().id_ + "_showString_" + text;
   auto vboName = uniqueNodeID + "VBO";
@@ -168,14 +159,13 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
   std::vector<SpireSubPass::Uniform> uniforms;
 
-  auto position = getTextPosition();
-  auto xTrans = std::get<0>(position);
-  auto yTrans = std::get<1>(position);
+  double xTrans, yTrans;
+  std::tie(xTrans, yTrans) = getTextPosition();
 
   uniforms.push_back(SpireSubPass::Uniform("uXTranslate", xTrans));
   uniforms.push_back(SpireSubPass::Uniform("uYTranslate", yTrans));
 
-  SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements, BBox(), true);
+  SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, 0, BBox(), true);
   SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
 
   RenderState renState;
@@ -190,7 +180,7 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-  GeometryHandle geom(new GeometryObjectSpire(*this, "ShowString", false));
+  auto geom(boost::make_shared<GeometryObjectSpire>(*this, "ShowString", false));
 
   geom->mIBOs.push_back(geomIBO);
   geom->mVBOs.push_back(geomVBO);
@@ -220,8 +210,27 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
     textBuilder_->setColor(r, g, b, a);
   }
 
+  auto dims = textBuilder_->getStringDims(text);
+  auto length = std::get<0>(dims) + 20;
+  auto width = std::get<1>(dims) + 20;
+
+  xTrans *= 1 - length / std::get<0>(lastWindowSize_);
+  yTrans *= 1 - width / std::get<1>(lastWindowSize_);
+
+  if (containsDescenderLetter(text))
+  {
+    yTrans += 0.02;
+  }
+
   Vector trans(xTrans, yTrans, 0.0);
   textBuilder_->printString(text, trans, Vector(), text, *geom);
 
   return geom;
+}
+
+bool ShowString::containsDescenderLetter(const std::string& text)
+{
+  static const std::string descenders("qpygj");
+  return std::any_of(descenders.begin(), descenders.end(),
+    [&text](char c) { return text.find(c) != std::string::npos; });
 }

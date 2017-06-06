@@ -159,7 +159,6 @@ void SelectSubMatrix::execute()
 
   if (needToExecute())
   {
-   update_state(Executing);
    algo().set(SelectSubMatrixAlgorithm::rowCheckBox(), get_state()->getValue(SelectSubMatrixAlgorithm::rowCheckBox()).toBool());
    algo().set(SelectSubMatrixAlgorithm::columnCheckBox(), get_state()->getValue(SelectSubMatrixAlgorithm::columnCheckBox()).toBool());
    algo().set(SelectSubMatrixAlgorithm::rowStartSpinBox(), get_state()->getValue(SelectSubMatrixAlgorithm::rowStartSpinBox()).toInt());

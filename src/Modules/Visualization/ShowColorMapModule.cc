@@ -114,9 +114,9 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   uint32_t vboSize = sizeof(float) * 7 * static_cast<uint32_t>(points.size());
 
   std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
-    new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
     new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
+  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
+    new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
 
   CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
   CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
@@ -188,7 +188,7 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-  GeometryHandle geom(new GeometryObjectSpire(*this, "ShowColorMap", false));
+  auto geom(boost::make_shared<GeometryObjectSpire>(*this, "ShowColorMap", false));
 
   geom->mColorMap = cm->getColorMapName();
   geom->mIBOs.push_back(geomIBO);
@@ -205,7 +205,7 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   double dash_size = 18.;
   double pipe_size = 18.;
   size_t text_size = static_cast<size_t>(textSize);
-  
+
   if (!textBuilder_.initialize(text_size))
     return geom;
 

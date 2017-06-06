@@ -60,6 +60,13 @@ enum class ConnectionDrawType
 
 typedef std::pair<SCIRun::Dataflow::Networks::ModuleId, SCIRun::Dataflow::Networks::ModuleId> ModuleIdPair;
 
+enum
+{
+  SUBNET_KEY = -123,
+  INTERNAL_SUBNET_CONNECTION = 100,
+  EXTERNAL_SUBNET_CONNECTION = 200
+};
+
 class ConnectionLine : public QObject, public QGraphicsPathItem, public HasNotes, public NoteDisplayHelper, public NeedsScenePositionProvider
 {
   Q_OBJECT
@@ -76,6 +83,7 @@ public:
   const SCIRun::Dataflow::Networks::ConnectionId& id() const { return id_; }
   bool disabled() const { return disabled_; }
   void setDisabled(bool disabled);
+  void addSubnetCompanion(PortWidget* subnetPort);
 public Q_SLOTS:
   void trackNodes();
   void setDrawStrategy(ConnectionDrawStrategyPtr drawer);
@@ -111,6 +119,7 @@ private:
   QColor placeHoldingColor_;
   int placeHoldingWidth_;
   double defaultZValue() const;
+  ConnectionLine* subnetCompanion_ { nullptr };
 };
 
 struct InvalidConnection : virtual Core::ExceptionBase {};

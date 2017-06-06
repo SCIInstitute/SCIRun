@@ -39,6 +39,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/GeometryPrimitives/Transform.h>
+#include <boost/timer.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -144,6 +145,9 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   std::string sep;
   sep += boost::filesystem::path::preferred_separator;
   Modules::Visualization::TextBuilder::setFSStrings(filesystemRoot, sep);
+
+  resizeTimer_.setSingleShot(true);
+  connect(&resizeTimer_, SIGNAL(timeout()), this, SLOT(resizingDone()));
 }
 
 void ViewSceneDialog::pullSpecial()
@@ -209,6 +213,19 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
     selectObject(event->x(), event->y());
     newGeometryValue();
   }
+}
+
+void ViewSceneDialog::resizeEvent(QResizeEvent *event)
+{
+  resizeTimer_.start(400);
+  ModuleDialogGeneric::resizeEvent(event);
+}
+
+void ViewSceneDialog::resizingDone()
+{
+  ViewSceneFeedback vsf;
+  vsf.windowSize = std::make_tuple(size().width(), size().height());
+  state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
 }
 
 std::string ViewSceneDialog::restoreObjColor()
@@ -1031,7 +1048,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   oneline = ss.str();
   double text_len = 0.0;
   if (textBuilder_.isReady())
-    text_len = textBuilder_.getStringLen(oneline);
+    text_len = std::get<0>(textBuilder_.getStringDims(oneline));
   text_len += 5;//add a 5-pixel gap
 
   std::vector<Vector> points;
@@ -1218,7 +1235,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
   renState.set(RenderState::USE_DEFAULT_COLOR, true);
   renState.set(RenderState::USE_NORMALS, true);
   renState.set(RenderState::IS_WIDGET, true);
-  GeometryHandle geom(new GeometryObjectSpire(*gid_, uniqueNodeID, false));
+  auto geom(boost::make_shared<GeometryObjectSpire>(*gid_, uniqueNodeID, false));
   glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
 
@@ -1233,7 +1250,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
   uniqueNodeID = ss.str();
   renState.set(RenderState::USE_TRANSPARENCY, true);
   renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
-  GeometryHandle geom2(new GeometryObjectSpire(*gid_, ss.str(), false));
+  auto geom2(boost::make_shared<GeometryObjectSpire>(*gid_, ss.str(), false));
   glyphs2.buildObject(geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
 
@@ -1670,8 +1687,8 @@ namespace //TODO: move to appropriate location
 
 void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y, const std::string& selName)
 {
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
-  glm::mat4 trans = spire->getWidgetTransform().transform;
+  auto spire = mSpire.lock();
+  auto trans = spire->getWidgetTransform().transform;
 
   ViewSceneFeedback vsf;
   vsf.transform = toSciTransform(trans);

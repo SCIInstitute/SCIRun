@@ -68,7 +68,7 @@ void ChooseInput::execute()
 void ChooseInput::portAddedSlot(const ModuleId& mid, const PortId&)
 {
   //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
-  if (mid == id_)
+  if (mid == get_id())
   {
     portChangeImpl();
   }
@@ -77,7 +77,7 @@ void ChooseInput::portAddedSlot(const ModuleId& mid, const PortId&)
 void ChooseInput::portRemovedSlot(const ModuleId& mid, const PortId&)
 {
   //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
-  if (mid == id_)
+  if (mid == get_id())
   {
     portChangeImpl();
   }

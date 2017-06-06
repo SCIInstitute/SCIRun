@@ -55,8 +55,6 @@ void ConvertComplexToRealMatrix::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     auto input_dense = boost::dynamic_pointer_cast<ComplexDenseMatrix>(input_complex_matrix);
     auto input_sparse = boost::dynamic_pointer_cast<ComplexSparseRowMatrix>(input_complex_matrix);
     auto input_column = boost::dynamic_pointer_cast<ComplexDenseColumnMatrix>(input_complex_matrix);

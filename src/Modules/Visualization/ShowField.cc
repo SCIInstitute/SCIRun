@@ -357,7 +357,7 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
     idname = idname + "_" + state->getValue(ShowField::FieldName).toString();
   }
 
-  GeometryHandle geom(new GeometryObjectSpire(gid, idname, true));
+  auto geom(boost::make_shared<GeometryObjectSpire>(gid, idname, true));
 
   /// \todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
 

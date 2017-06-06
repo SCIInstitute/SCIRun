@@ -39,13 +39,15 @@ namespace SCIRun
   {
     class NetworkEditor;
 
-    class SubnetworkEditor : public QDockWidget, public Ui::SubnetEditor
+    class SubnetworkEditor : public QFrame, public Ui::SubnetEditor
     {
       Q_OBJECT
 
     public:
       SubnetworkEditor(NetworkEditor* editor, const SCIRun::Dataflow::Networks::ModuleId& subnetModuleId, const QString& name, QWidget* parent = nullptr);
       NetworkEditor* get() { return editor_; }
+      ~SubnetworkEditor();
+
     private Q_SLOTS:
       void expand();
     private:
@@ -53,7 +55,6 @@ namespace SCIRun
       QString name_;
       SCIRun::Dataflow::Networks::ModuleId subnetModuleId_;
     };
-
   }
 }
 

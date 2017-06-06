@@ -260,10 +260,10 @@ void TextBuilder::printString(const std::string& oneline,
   }
 }
 
-double TextBuilder::getStringLen(const std::string& oneline) const
+std::tuple<double, double> TextBuilder::getStringDims(const std::string& oneline) const
 {
   if (!ftValid_)
-    return 0.0;
+    return {};
 
   auto len = 0.0;
   auto rows = 0;
@@ -275,7 +275,7 @@ double TextBuilder::getStringLen(const std::string& oneline) const
     len += g->bitmap.width;
     rows = g->bitmap.rows;
   }
-  return len;
+  return std::make_tuple(len, rows);
 }
 
 bool TextBuilder::initialize(size_t textSize)

@@ -158,7 +158,7 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
 
 Point GenerateSinglePointProbeFromField::currentLocation() const
 {
-  auto state = get_state();
+  auto state = cstate();
   using namespace Parameters;
   return Point(state->getValue(XLocation).toDouble(), state->getValue(YLocation).toDouble(), state->getValue(ZLocation).toDouble());
 }
@@ -182,9 +182,6 @@ void GenerateSinglePointProbeFromField::execute()
 FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::optional<FieldHandle> ifieldOption)
 {
   FieldHandle ifield;
-
-  update_state(Executing);
-
   const double THRESHOLD = 1e-6;
   auto state = get_state();
   using namespace Parameters;
@@ -246,7 +243,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
 
     impl_->last_bounds_ = bbox;
   }
-  
+
   const auto moveto = state->getValue(MoveMethod).toString();
   bool moved_p = false;
   if (moveto == "Location")
@@ -447,7 +444,7 @@ index_type GenerateSinglePointProbeFromField::GenerateIndex()
 
 GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHandle field, ModuleStateHandle state, const GeometryIDGenerator& idGenerator)
 {
-  GeometryHandle geom(new GeometryObjectSpire(idGenerator, "EntireSinglePointProbeFromField", true));
+  auto geom(boost::make_shared<GeometryObjectSpire>(idGenerator, "EntireSinglePointProbeFromField", true));
 
   auto mesh = field->vmesh();
 

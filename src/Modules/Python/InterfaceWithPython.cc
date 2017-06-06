@@ -112,7 +112,7 @@ std::string InterfaceWithPython::convertOutputSyntax(const std::string& code) co
 
   for (const auto& var : outputVarsToCheck)
   {
-    auto varName = get_state()->getValue(var).toString();
+    auto varName = cstate()->getValue(var).toString();
 
     auto regexString = "(\\h*)" + varName + " = (.+)";
     //std::cout << "REGEX STRING " << regexString << std::endl;
@@ -138,7 +138,7 @@ std::string InterfaceWithPython::convertInputSyntax(const std::string& code) con
   {
     if (port->nconnections() > 0)
     {
-      auto inputName = get_state()->getValue(Name(port->id().toString())).toString();
+      auto inputName = cstate()->getValue(Name(port->id().toString())).toString();
       //std::cout << "FOUND INPUT VARIABLE NAME: " << inputName << " for port " << port->id().toString() << std::endl;
       //std::cout << "NEED TO REPLACE " << inputName << " with\n\t" << "scirun_get_module_input_value(\"" << get_id() << "\", \"" << port->id().toString() << "\")" << std::endl;
       auto index = code.find(inputName);

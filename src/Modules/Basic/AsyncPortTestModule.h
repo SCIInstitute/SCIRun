@@ -29,7 +29,7 @@
 #ifndef MODULES_BASIC_ASYNCPORTTESTMODULE_H
 #define MODULES_BASIC_ASYNCPORTTESTMODULE_H
 
-#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/ModuleWithAsyncDynamicPorts.h>
 #include <Modules/Basic/share.h>
 
 namespace SCIRun {

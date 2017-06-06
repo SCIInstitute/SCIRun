@@ -70,8 +70,6 @@ void GenerateStreamLines::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     setAlgoDoubleFromState(Parameters::StreamlineStepSize);
     setAlgoDoubleFromState(Parameters::StreamlineTolerance);
     setAlgoOptionFromState(Parameters::StreamlineDirection);
