@@ -52,6 +52,7 @@ class ConnectionInProgress;
 class ConnectionFactory;
 class ClosestPortFinder;
 class PortActionsMenu;
+using SceneFunc = std::function<QGraphicsScene*()>;
 
 class PortWidgetBase : public QPushButton, public SCIRun::Dataflow::Networks::PortDescriptionInterface
 {
@@ -71,6 +72,8 @@ public:
 
   bool isHighlighted() const { return isHighlighted_; }
   int properWidth() const { return sizeHint().width(); }
+  void setSceneFunc(SceneFunc getScene) { getScene_ = getScene; }
+  bool sameScene(const PortWidgetBase* other) const;
 
 protected:
   static const int DEFAULT_WIDTH = 11;
@@ -78,6 +81,7 @@ protected:
   virtual QSize sizeHint() const override;
   virtual void paintEvent(QPaintEvent* event) override;
   bool isHighlighted_;
+  SceneFunc getScene_;
 };
 
 class PortWidget : public PortWidgetBase, public NeedsScenePositionProvider
@@ -106,6 +110,7 @@ public:
   virtual Dataflow::Networks::ModuleId getUnderlyingModuleId() const override;
   virtual size_t getIndex() const override;
   void setIndex(size_t i);
+  Dataflow::Networks::PortId realId() const { return portId_; }
 
   virtual SCIRun::Dataflow::Networks::PortId id() const override;
 
@@ -113,6 +118,7 @@ public:
   void turn_on_light();
   void turn_off_light();
   virtual bool isLightOn() const override { return lightOn_; }
+  void connectToSubnetPort(PortWidget* subnetPort);
 
   void setHighlight(bool on, bool individual = false);
   virtual void setPositionObject(PositionProviderPtr provider) override;
@@ -147,6 +153,8 @@ public:
   virtual boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override;
 
   QGraphicsTextItem* makeNameLabel() const;
+
+  const std::set<ConnectionLine*>& connections() const { return connections_; }
 
 protected:
   virtual void moveEvent(QMoveEvent * event) override;
@@ -248,6 +256,12 @@ public:
     boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
     SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber,
     QWidget* parent = nullptr);
+};
+
+class SubnetOutputPortWidget : public OutputPortWidget
+{
+public:
+  SubnetOutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, QWidget* parent = nullptr);
 };
 
 class DataInfoDialog

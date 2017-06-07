@@ -60,6 +60,7 @@ class TagManagerWindow;
 class PythonConsoleWidget;
 class FileDownloader;
 class TriggeredEventsWindow;
+class NetworkEditorBuilder;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
@@ -118,7 +119,7 @@ private:
   DeveloperConsole* devConsole_;
   PreferencesWindow* prefsWindow_;
   PythonConsoleWidget* pythonConsole_;
-  ShortcutsInterface* shortcuts_;
+  ShortcutsInterface* shortcuts_ { nullptr };
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   QStringList favoriteModuleNames_;
@@ -167,16 +168,17 @@ private:
   QStringList recentFiles_;
   QString currentFile_;
   QDir latestNetworkDirectory_;
-  int returnCode_;
+  int returnCode_ { 0 };
   QMap<QString,QMap<QString,QString>> styleSheetDetails_;
   QMap<QString, QAction*> currentModuleActions_;
   boost::shared_ptr<class DialogErrorControl> dialogErrorControl_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
-  bool quitAfterExecute_;
+  bool quitAfterExecute_ { false };
   bool skipSaveCheck_ = false;
   bool startup_;
+  boost::shared_ptr<NetworkEditorBuilder> builder_;
 
 Q_SIGNALS:
   void moduleItemDoubleClicked();
