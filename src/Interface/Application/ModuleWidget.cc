@@ -829,6 +829,7 @@ void PortWidgetManager::addPort(OutputPortWidget* port)
 void PortWidgetManager::addPort(InputPortWidget* port)
 {
   inputPorts_.push_back(port);
+  port->setSceneFunc(getScene_);
 }
 
 void PortWidgetManager::insertPort(int index, InputPortWidget* port)
@@ -837,6 +838,7 @@ void PortWidgetManager::insertPort(int index, InputPortWidget* port)
     inputPorts_.push_back(port);
   else
     inputPorts_.insert(inputPorts_.begin() + index, port);
+  port->setSceneFunc(getScene_);
 }
 
 void PortWidgetManager::setHighlightPorts(bool on)

@@ -606,7 +606,7 @@ void PortWidget::forEachPort(Func func, Pred pred)
 
 void PortWidget::makePotentialConnectionLine(PortWidget* other)
 {
-  if (getScene_() != other->getScene_())
+  if (other && getScene_ && other->getScene_ && getScene_() != other->getScene_())
     return;
 
   auto potentials = potentialConnectionsMap_[this];
