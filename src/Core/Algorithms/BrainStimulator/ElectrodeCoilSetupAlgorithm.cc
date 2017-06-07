@@ -52,8 +52,6 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/format.hpp>
-#include <boost/assign.hpp>
-#include <math.h>
 #include <Core/Math/MiscMath.h>
 
 using namespace SCIRun::Core::Algorithms;
@@ -62,9 +60,6 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun;
-using namespace boost;
-using namespace boost::assign;
-using namespace  Eigen;
 
 ALGORITHM_PARAMETER_DEF(BrainStimulator, NumberOfPrototypes);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, TableValues);
@@ -141,7 +136,7 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle, DenseMatrixH
 
     if (tab_values.size() < locations->nrows())
     {
-      row +=
+      row = {
         Variable(columnNames[0], boost::str(boost::format("%s") % "0")),
         Variable(columnNames[1], boost::str(boost::format("%s") % "0")),
         Variable(columnNames[2], boost::str(boost::format("%.3f") % (*locations)(i, 0))),
@@ -151,7 +146,7 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle, DenseMatrixH
         Variable(columnNames[6], std::string("???")),
         Variable(columnNames[7], std::string("???")),
         Variable(columnNames[8], std::string("???")),
-        Variable(columnNames[9], std::string("???"));
+        Variable(columnNames[9], std::string("???")) };
 /*
 //TODO: this compiles but needs testing by user. Not sure it's an improvement.
       row = makeNamedVariableList(columnNames,
@@ -212,7 +207,7 @@ VariableHandle ElectrodeCoilSetupAlgorithm::fill_table(FieldHandle, DenseMatrixH
         Variable var8 = makeVariable("NY", boost::str(boost::format("%s") % str8));
         Variable var9 = makeVariable("NZ", boost::str(boost::format("%s") % str9));
         Variable var10 = makeVariable("thickness", boost::str(boost::format("%s") % str10));
-        row += var1, var2, var3, var4, var5, var6, var7, var8, var9, var10;
+        row = { var1, var2, var3, var4, var5, var6, var7, var8, var9, var10 };
 
       }
     }
@@ -230,9 +225,9 @@ DenseMatrixHandle ElectrodeCoilSetupAlgorithm::make_rotation_matrix(const double
   DenseMatrixHandle result(new DenseMatrix(3, 3));
 
   double normal_vector_norm = sqrt(normal[0] * normal[0] + normal[1] * normal[1] + normal[2] * normal[2]);
-  Vector3d normal_vector((double)normal[0] / normal_vector_norm, (double)normal[1] / normal_vector_norm, (double)normal[2] / normal_vector_norm);
+  Eigen::Vector3d normal_vector((double)normal[0] / normal_vector_norm, (double)normal[1] / normal_vector_norm, (double)normal[2] / normal_vector_norm);
 
-  Vector3d tan_vector1, tan_vector2;
+  Eigen::Vector3d tan_vector1, tan_vector2;
   if (normal_vector(0) != 0 || normal_vector(2) != 0)
   {
     tan_vector1(0) = normal_vector(2);
@@ -254,8 +249,6 @@ DenseMatrixHandle ElectrodeCoilSetupAlgorithm::make_rotation_matrix(const double
   tan_vector2 = normal_vector.cross(tan_vector1);
   normal_vector_norm = sqrt(tan_vector2(0)*tan_vector2(0) + tan_vector2(1)*tan_vector2(1) + tan_vector2(2)*tan_vector2(2));
   tan_vector2(0) /= normal_vector_norm; tan_vector2(1) /= normal_vector_norm; tan_vector2(2) /= normal_vector_norm;
-  DenseMatrixHandle rotation_matrix2;
-  Matrix3d rotation_matrix(3, 3), rotation_matrix1(3, 3);
 
   (*result)(0, 2) = normal_vector(0);
   (*result)(1, 2) = normal_vector(1);
@@ -299,7 +292,7 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
   VMesh* tms_coils_vmesh = tms_coils_field->vmesh();
   VField* tms_coils_vfld = tms_coils_field->vfield();
   std::vector<Point> tms_coils_field_values;
-
+  
   for (int i = 0; i < coil_prototyp_map.size(); i++)
   {
     if (coil_prototyp_map[i] <= elc_coil_proto.size() && coil_prototyp_map[i] >= 0)
@@ -340,7 +333,7 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
           THROW_ALGORITHM_PROCESSING_ERROR("Internal error: could not retrieve coil prototype positions ");
         }
 
-        DenseMatrixHandle magnetic_dipoles(boost::make_shared<DenseMatrix>(fielddata->nrows(), 3));
+        auto magnetic_dipoles(boost::make_shared<DenseMatrix>(fielddata->nrows(), 3ul));
 
         /// subtract the mean from the coil positions to move them accourding to GUI table entries
         double mean_loc_x = 0, mean_loc_y = 0, mean_loc_z = 0;
@@ -524,7 +517,6 @@ FieldHandle ElectrodeCoilSetupAlgorithm::make_tms(FieldHandle scalp, const std::
 
 boost::tuple<Variable::List, double, double, double> ElectrodeCoilSetupAlgorithm::make_table_row(int i, double x, double y, double z, double nx, double ny, double nz) const
 {
-  Variable::List row;
   double out_nx, out_ny, out_nz;
   auto tab_values = get(Parameters::TableValues).toVector();
   auto col = tab_values[i].toVector();
@@ -552,7 +544,7 @@ boost::tuple<Variable::List, double, double, double> ElectrodeCoilSetupAlgorithm
     {
       out_nx = boost::lexical_cast<double>(col[6].toString());
     }
-    catch (bad_lexical_cast&) {}
+    catch (boost::bad_lexical_cast&) {}
   }
 
   if (str8.compare("???") == 0)
@@ -566,7 +558,7 @@ boost::tuple<Variable::List, double, double, double> ElectrodeCoilSetupAlgorithm
     {
       out_ny = boost::lexical_cast<double>(col[7].toString());
     }
-    catch (bad_lexical_cast&) {}
+    catch (boost::bad_lexical_cast&) {}
   }
 
   if (str9.compare("???") == 0)
@@ -580,7 +572,7 @@ boost::tuple<Variable::List, double, double, double> ElectrodeCoilSetupAlgorithm
     {
       out_nz = boost::lexical_cast<double>(col[8].toString());
     }
-    catch (bad_lexical_cast&) {}
+    catch (boost::bad_lexical_cast&) {}
   }
 
   Variable var1 = makeVariable("Input #", boost::str(boost::format("%s") % str1));
@@ -609,9 +601,9 @@ boost::tuple<Variable::List, double, double, double> ElectrodeCoilSetupAlgorithm
   Variable var7 = makeVariable("NX", boost::str(boost::format("%s") % str7));
   Variable var8 = makeVariable("NY", boost::str(boost::format("%s") % str8));
   Variable var9 = makeVariable("NZ", boost::str(boost::format("%s") % str9));
-
   Variable var10 = makeVariable("thickness", boost::str(boost::format("%s") % str10));
-  row += var1, var2, var3, var4, var5, var6, var7, var8, var9, var10;
+  
+  Variable::List row{ var1, var2, var3, var4, var5, var6, var7, var8, var9, var10 };
 
   return boost::make_tuple(row, out_nx, out_ny, out_nz);
 }
@@ -724,12 +716,10 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
         {
           THROW_ALGORITHM_PROCESSING_ERROR("Internal error: could not retrieve positions from assigned prototype ");
         }
-
-        if (fieldnodes->nrows() <= 0) // put this to tms as well
+        if (fieldnodes->nrows() == 0) // put this to tms as well
         {
           THROW_ALGORITHM_PROCESSING_ERROR("Internal error: could not retrieve positions from assigned prototype ");
         }
-
         ///second, subtract the mean of the prototyp positions to center it in origin
         double mean_loc_x = 0, mean_loc_y = 0, mean_loc_z = 0;
         for (int j = 0; j < fieldnodes->nrows(); j++)
@@ -768,7 +758,6 @@ boost::tuple<DenseMatrixHandle, FieldHandle, FieldHandle, VariableHandle> Electr
           (*fieldnodes)(j, 1) = (*rotated_positions)(1, 0) + elc_y[i];
           (*fieldnodes)(j, 2) = (*rotated_positions)(2, 0) + elc_z[i];
         }
-
         VMesh* prototype_vmesh = prototype->vmesh();
 
         FieldInformation fieldinfo("TriSurfMesh", CONSTANTDATA_E, "double"); /// this is the final moved prototype for elc i
@@ -1433,9 +1422,9 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
 
     try
     {
-      c1 = lexical_cast<int>(row[0].toString());
+      c1 = boost::lexical_cast<int>(row[0].toString());
     }
-    catch (bad_lexical_cast &)
+    catch (boost::bad_lexical_cast &)
     {
       c1 = std::numeric_limits<double>::quiet_NaN();
       row_valid = false;
@@ -1443,9 +1432,9 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
 
     try
     {
-      c2 = lexical_cast<int>(row[1].toString());
+      c2 = boost::lexical_cast<int>(row[1].toString());
     }
-    catch (bad_lexical_cast &)
+    catch (boost::bad_lexical_cast &)
     {
       c2 = std::numeric_limits<double>::quiet_NaN();
       row_valid = false;
@@ -1460,9 +1449,9 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
     {
       try
       {
-        c3 = lexical_cast<double>(str_x);
+        c3 = boost::lexical_cast<double>(str_x);
       }
-      catch (bad_lexical_cast &)
+      catch (boost::bad_lexical_cast &)
       {
         c3 = std::numeric_limits<double>::quiet_NaN();
         valid_position = false;
@@ -1478,9 +1467,9 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
     {
       try  ///get the electrode thickness from GUI
       {
-        c4 = lexical_cast<double>(str_y);
+        c4 = boost::lexical_cast<double>(str_y);
       }
-      catch (bad_lexical_cast &)
+      catch (boost::bad_lexical_cast &)
       {
         c4 = std::numeric_limits<double>::quiet_NaN();
         valid_position = false;
@@ -1496,9 +1485,9 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
     {
       try  ///get the electrode thickness from GUI
       {
-        c5 = lexical_cast<double>(str_z);
+        c5 = boost::lexical_cast<double>(str_z);
       }
-      catch (bad_lexical_cast &)
+      catch (boost::bad_lexical_cast &)
       {
         c5 = std::numeric_limits<double>::quiet_NaN();
         valid_position = false;
@@ -1511,9 +1500,9 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
     {
       try
       {
-        c6 = lexical_cast<double>(row[5].toString());
+        c6 = boost::lexical_cast<double>(row[5].toString());
       }
-      catch (bad_lexical_cast &)
+      catch (boost::bad_lexical_cast &)
       {
         c6 = std::numeric_limits<double>::quiet_NaN();
       }
@@ -1583,9 +1572,9 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
       /// get NX
       try
       {
-        c7 = lexical_cast<double>(row[6].toString());
+        c7 = boost::lexical_cast<double>(row[6].toString());
       }
-      catch (bad_lexical_cast &)
+      catch (boost::bad_lexical_cast &)
       {
         c7 = std::numeric_limits<double>::quiet_NaN();
         valid_normal = false;
@@ -1594,9 +1583,9 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
       /// get NY
       try
       {
-        c8 = lexical_cast<double>(row[7].toString());
+        c8 = boost::lexical_cast<double>(row[7].toString());
       }
-      catch (bad_lexical_cast &)
+      catch (boost::bad_lexical_cast &)
       {
         c8 = std::numeric_limits<double>::quiet_NaN();
         valid_normal = false;
@@ -1605,9 +1594,9 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
       /// get NZ
       try
       {
-        c9 = lexical_cast<double>(row[8].toString());
+        c9 = boost::lexical_cast<double>(row[8].toString());
       }
-      catch (bad_lexical_cast &)
+      catch (boost::bad_lexical_cast &)
       {
         c9 = std::numeric_limits<double>::quiet_NaN();
         valid_normal = false;
@@ -1616,9 +1605,9 @@ boost::tuple<VariableHandle, DenseMatrixHandle, FieldHandle, FieldHandle, FieldH
       /// get electrode thickness
       try
       {
-        c10 = lexical_cast<double>(row[9].toString());
+        c10 = boost::lexical_cast<double>(row[9].toString());
       }
-      catch (bad_lexical_cast &)
+      catch (boost::bad_lexical_cast &)
       {
         c10 = std::numeric_limits<double>::quiet_NaN();
       }
