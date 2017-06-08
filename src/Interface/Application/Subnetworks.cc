@@ -108,6 +108,11 @@ void NetworkEditor::sendItemsToParent()
 
     for (auto& item : scene_->items())
     {
+      auto conn = qgraphicsitem_cast<ConnectionLine*>(item);
+      if (conn)
+      {
+        conn->deleteCompanion();
+      }
       parentNetwork_->scene_->addItem(item);
       item->setVisible(true);
       item->setData(SUBNET_KEY, 0);
@@ -166,9 +171,10 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
     auto portRepl = new SubnetOutputPortWidget(QString::fromStdString(port->get_portname()),
       to_color(PortColorLookup::toColor(port->get_typename()), 230), port->get_typename());
     layout->addWidget(portRepl);
+    portRepl->setSceneFunc([this]() { return scene_; });
 
-    //qDebug() << "port subnet in editor" << QString::fromStdString(port->id().toString());
-      //<< portRewiringMap2_[port->id().toString()]->id().id_.c_str();
+    // qDebug() << "port subnet in editor" << QString::fromStdString(port->id().toString());
+    //   << portRewiringMap2_[port->id().toString()]->id().id_.c_str();
 
     portRewiringMap_[port->id().toString()]->addSubnetCompanion(portRepl);
   }

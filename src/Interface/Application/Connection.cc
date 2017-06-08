@@ -374,14 +374,28 @@ void ConnectionLine::trackNodes()
 void ConnectionLine::addSubnetCompanion(PortWidget* subnetPort)
 {
   qDebug() << id().id_.c_str() << "setup companion with" << subnetPort;
-  //setVisible(false);
-  ConnectionFactory f(nullptr);
+  setVisible(false);
+  ConnectionFactory f(subnetPort->sceneFunc());
 
   auto out = subnetPort->isInput() ? fromPort_ : subnetPort;
   auto in = subnetPort->isInput() ? subnetPort : toPort_;
 
   ConnectionDescription cd{ { out->getUnderlyingModuleId(), out->id() }, { in->getUnderlyingModuleId(), in->id() } };
-  f.makeFinishedConnection(out, in, ConnectionId::create(cd));
+  subnetCompanion_ = f.makeFinishedConnection(out, in, ConnectionId::create(cd));
+  qDebug() << __FUNCTION__ << (void*)this << (void*)subnetCompanion_;
+}
+
+void ConnectionLine::deleteCompanion()
+{
+  qDebug() << "deleteCompanion" << (void*)this << (void*)subnetCompanion_;
+  if (subnetCompanion_)
+  {
+    subnetCompanion_->blockSignals(true);
+    scene()->removeItem(subnetCompanion_);
+    delete subnetCompanion_;
+    subnetCompanion_ = nullptr;
+  }
+  qDebug() << "~deleteCompanion";
 }
 
 void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
@@ -595,6 +609,10 @@ ConnectionFactory::ConnectionFactory(QGraphicsProxyWidget* module) :
   module_(module)
 {}
 
+ConnectionFactory::ConnectionFactory(SceneFunc func) :
+  func_(func)
+{}
+
 bool ConnectionFactory::visible_(true);
 ConnectionDrawType ConnectionFactory::currentType_(ConnectionDrawType::EUCLIDEAN);
 ConnectionDrawStrategyPtr ConnectionFactory::euclidean_(new EuclideanDrawStrategy);
@@ -636,13 +654,24 @@ ConnectionInProgress* ConnectionFactory::makePotentialConnection(PortWidget* por
   return conn;
 }
 
+QGraphicsScene* ConnectionFactory::getScene() const
+{
+  if (module_)
+    return module_->scene();
+  else if (func_ && func_())
+    return func_();
+
+  qDebug() << "No graphics scene getter available!";
+  return nullptr;
+}
 
 void ConnectionFactory::activate(QGraphicsItem* item) const
 {
   if (item)
   {
-    if (module_)
-      module_->scene()->addItem(item);
+    auto scene = getScene();
+    if (scene)
+      scene->addItem(item);
     item->setVisible(visible_);
   }
 }
