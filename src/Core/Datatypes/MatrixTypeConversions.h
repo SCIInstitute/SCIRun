@@ -118,7 +118,7 @@ namespace Datatypes {
       {
         DenseColumnMatrixGeneric<T> dense_col(DenseColumnMatrixGeneric<T>::Zero(sparse->nrows()));
         for (auto i = 0; i < sparse->nrows(); i++)
-          dense_col(i, 0) = sparse->coeff(i, 0);
+          dense_col(i) = sparse->coeff(i, 0);
 
         return boost::make_shared<DenseColumnMatrixGeneric<T>>(dense_col);
       }
