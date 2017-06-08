@@ -374,6 +374,14 @@ void ConnectionLine::trackNodes()
 void ConnectionLine::addSubnetCompanion(PortWidget* subnetPort)
 {
   qDebug() << id().id_.c_str() << "setup companion with" << subnetPort;
+  //setVisible(false);
+  ConnectionFactory f(nullptr);
+
+  auto out = subnetPort->isInput() ? fromPort_ : subnetPort;
+  auto in = subnetPort->isInput() ? subnetPort : toPort_;
+
+  ConnectionDescription cd{ { out->getUnderlyingModuleId(), out->id() }, { in->getUnderlyingModuleId(), in->id() } };
+  f.makeFinishedConnection(out, in, ConnectionId::create(cd));
 }
 
 void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
