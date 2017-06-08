@@ -207,6 +207,7 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
 
   auto visible = mapToScene(rect()).boundingRect();
   proxy->setMinimumWidth(visible.width());
+  proxy->setData(123, name);
   scene_->addItem(proxy);
   subnetPortHolders_.append(proxy);
 
@@ -243,44 +244,9 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
       auto conn = qgraphicsitem_cast<ConnectionLine*>(item);
       if (conn)
       {
-        //item->setVisible(item->data(IS_INTERNAL).toBool());
         item->setVisible(true);
         if (item->data(SUBNET_KEY).toInt() == EXTERNAL_SUBNET_CONNECTION)
         {
-
-          //qDebug() << "hidden external connection ports" << conn->connectedPorts().first->id().toString().c_str()
-          //  << conn->connectedPorts().first->getUnderlyingModuleId().id_.c_str()
-          //  << conn->connectedPorts().second->id().toString().c_str()
-          //  << conn->connectedPorts().second->getUnderlyingModuleId().id_.c_str()
-          //  ;
-
-
-
-          //auto firstMatch = subnet->portRewiringMap_.find(conn->connectedPorts().first->getUnderlyingModuleId().id_);
-          //if (firstMatch != subnet->portRewiringMap_.end())
-          //{
-          //  //qDebug() << "found match for conn end--first";
-          //  auto portMatch = firstMatch->second.find(conn->connectedPorts().first->id().toString());
-          //  if (portMatch != firstMatch->second.end())
-          //  {
-          //    //qDebug() << "\tand found port match at" << portMatch->second.toString().c_str();
-          //    subnet->portRewiringMap2_[portMatch->second.toString()] = conn;
-          //  }
-          //}
-          //else
-          //{
-          //  auto secondMatch = subnet->portRewiringMap_.find(conn->connectedPorts().second->getUnderlyingModuleId().id_);
-          //  if (secondMatch != subnet->portRewiringMap_.end())
-          //  {
-          //    //qDebug() << "found match for conn end--second";
-          //    auto portMatch = secondMatch->second.find(conn->connectedPorts().second->id().toString());
-          //    if (portMatch != secondMatch->second.end())
-          //    {
-          //      //qDebug() << "\tand found port match at" << portMatch->second.toString().c_str();
-          //      subnet->portRewiringMap2_[portMatch->second.toString()] = conn;
-          //    }
-          //  }
-          //}
         }
       }
     }
@@ -291,6 +257,7 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
   connectorFunc_(subnet);
   subnet->setupPortHolders(mod);
 
+  subnet->setSceneRect(QRectF());
 
   auto dock = new SubnetworkEditor(subnet, mod->get_id(), name, nullptr);
   dock->setStyleSheet(SCIRunMainWindow::Instance()->styleSheet());
@@ -655,4 +622,19 @@ void NetworkEditor::killChild(const QString& name)
     childrenNetworks_.erase(subnetIter);
     currentSubnetNames_.remove(name);
   }
+}
+
+void NetworkEditor::resizeEvent(QResizeEvent *event)
+{
+  if (event->oldSize() != QSize(-1, -1))
+  {
+    for (auto& item : subnetPortHolders_)
+    {
+      item->resize(QSize(item->size().width() * (event->size().width() / static_cast<double>(event->oldSize().width())), item->size().height()));
+      auto isInput = item->data(123).toString() == "Inputs";
+      item->setPos(item->pos() + QPointF(0, (isInput ? 0 : 1) * (event->size().height() - event->oldSize().height())));
+    }
+  }
+
+  QGraphicsView::resizeEvent(event);
 }
