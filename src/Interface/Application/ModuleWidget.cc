@@ -550,7 +550,7 @@ bool ModuleWidget::guiVisible() const
 
 void ModuleWidget::fillReplaceWithMenu()
 {
-  if (deleting_)
+  if (deleting_ || networkBeingCleared_)
     return;
 
   auto menu = getReplaceWithMenu();

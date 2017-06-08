@@ -102,11 +102,9 @@ void NetworkEditor::sendItemsToParent()
 {
   if (parentNetwork_)
   {
-    for (auto& item : subnetPortHolders_)
-      scene_->removeItem(item);
-    subnetPortHolders_.clear();
+    removeSubnetPortHolders();
 
-    for (auto& item : scene_->items())
+    for (auto& item : subnetItemsToMove())
     {
       auto conn = qgraphicsitem_cast<ConnectionLine*>(item);
       if (conn)
@@ -118,6 +116,28 @@ void NetworkEditor::sendItemsToParent()
       item->setData(SUBNET_KEY, 0);
     }
   }
+}
+
+void NetworkEditor::removeSubnetPortHolders()
+{
+  for (auto& item : subnetPortHolders_)
+    scene_->removeItem(item);
+  subnetPortHolders_.clear();
+}
+
+std::vector<QGraphicsItem*> NetworkEditor::subnetItemsToMove()
+{
+  auto nonCompanionItems = scene_->items().toVector().toStdVector();
+
+  nonCompanionItems.erase(std::remove_if(nonCompanionItems.begin(), nonCompanionItems.end(),
+    [](QGraphicsItem* item)
+  {
+    auto conn = qgraphicsitem_cast<ConnectionLine*>(item);
+    return conn && conn->isCompanion();
+  }),
+    nonCompanionItems.end());
+
+  return nonCompanionItems;
 }
 
 void NetworkEditor::removeSubnetChild(const QString& name)
@@ -424,9 +444,9 @@ public:
             auto portToReplicate = ports.second;
             auto id = addSubnetToId(portToReplicate);
 
-            qDebug() << "port being replicated" << id.toString().c_str() <<
-              portToReplicate->id().toString().c_str() <<
-              portToReplicate->getUnderlyingModuleId().id_.c_str();
+            //qDebug() << "port being replicated" << id.toString().c_str() <<
+            //  portToReplicate->id().toString().c_str() <<
+            //  portToReplicate->getUnderlyingModuleId().id_.c_str();
 
             map_[id.toString()] = conn;
 

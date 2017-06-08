@@ -412,6 +412,8 @@ namespace Gui {
     void setupPortHolders(Dataflow::Networks::ModuleHandle mod);
     void setupPortHolder(const std::vector<SharedPointer<SCIRun::Dataflow::Networks::PortDescriptionInterface>>& ports, const QString& name,
       std::function<QPointF(const QRectF&)> position);
+    void removeSubnetPortHolders();
+    std::vector<QGraphicsItem*> subnetItemsToMove();
     PortRewiringMap portRewiringMap_;
     QSet<QString> currentSubnetNames_;
 

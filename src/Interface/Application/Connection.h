@@ -85,6 +85,7 @@ public:
   void setDisabled(bool disabled);
   void addSubnetCompanion(PortWidget* subnetPort);
   void deleteCompanion();
+  bool isCompanion() const { return isCompanion_; }
 public Q_SLOTS:
   void trackNodes();
   void setDrawStrategy(ConnectionDrawStrategyPtr drawer);
@@ -121,6 +122,7 @@ private:
   int placeHoldingWidth_;
   double defaultZValue() const;
   ConnectionLine* subnetCompanion_ { nullptr };
+  bool isCompanion_{ false };
 };
 
 struct InvalidConnection : virtual Core::ExceptionBase {};
