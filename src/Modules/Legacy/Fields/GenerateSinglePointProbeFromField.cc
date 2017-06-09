@@ -55,9 +55,6 @@ ALGORITHM_PARAMETER_DEF(Fields, XLocation);
 ALGORITHM_PARAMETER_DEF(Fields, YLocation);
 ALGORITHM_PARAMETER_DEF(Fields, ZLocation);
 ALGORITHM_PARAMETER_DEF(Fields, MoveMethod);
-ALGORITHM_PARAMETER_DEF(Fields, DisplayValue);
-ALGORITHM_PARAMETER_DEF(Fields, DisplayNode);
-ALGORITHM_PARAMETER_DEF(Fields, DisplayElem);
 ALGORITHM_PARAMETER_DEF(Fields, FieldValue);
 ALGORITHM_PARAMETER_DEF(Fields, FieldNode);
 ALGORITHM_PARAMETER_DEF(Fields, FieldElem);
@@ -115,6 +112,12 @@ void GenerateSinglePointProbeFromField::processWidgetFeedback(const ModuleFeedba
 
 void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const Transform& transformMatrix)
 {
+  using namespace Parameters;
+
+  if (get_state()->getValue(MoveMethod).toString() == "Node")
+  {
+    std::cout << "would like to snap to nearest node" << std::endl;
+  }
   DenseMatrix center(4, 1);
   auto currLoc = currentLocation();
   center << currLoc.x(), currLoc.y(), currLoc.z(), 1.0;
@@ -125,7 +128,7 @@ void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const Transf
                     newTransform(2, 0) / newTransform(3, 0));
 
   auto state = get_state();
-  using namespace Parameters;
+
   state->setValue(XLocation, newLocation.x());
   state->setValue(YLocation, newLocation.y());
   state->setValue(ZLocation, newLocation.z());
@@ -143,9 +146,6 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(YLocation, 0.0);
   state->setValue(ZLocation, 0.0);
   state->setValue(MoveMethod, std::string("Location"));
-  state->setValue(DisplayValue, true);
-  state->setValue(DisplayNode, true);
-  state->setValue(DisplayElem, true);
   state->setValue(FieldValue, std::string());
   state->setValue(FieldNode, 0);
   state->setValue(FieldElem, 0);
@@ -246,6 +246,9 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
 
   const auto moveto = state->getValue(MoveMethod).toString();
   bool moved_p = false;
+
+  std::cout << moveto << std::endl;
+
   if (moveto == "Location")
   {
     const auto newloc = currentLocation();
@@ -285,11 +288,13 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
     if (moveto == "Node")
     {
       VMesh::index_type idx = state->getValue(FieldNode).toInt();
+      std::cout << "gui says node index " << idx << std::endl;
       if (idx >= 0 && idx < ifield->vmesh()->num_nodes())
       {
         Point p;
         ifield->vmesh()->get_center(p, VMesh::Node::index_type(idx));
         impl_->widget_->setPosition(p);
+        std::cout << "node move to position " << p << std::endl;
         moved_p = true;
       }
     }
@@ -325,8 +330,8 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
 
   if (ifieldOption)
   {
-    if (state->getValue(DisplayNode).toBool())
     {
+      //std::cout << "~~~~finding nearest node~~~~" << std::endl;
       ifield->vmesh()->synchronize(Mesh::FIND_CLOSEST_NODE_E);
       Point r;
       VMesh::Node::index_type idx;
@@ -334,8 +339,8 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
       state->setValue(FieldNode, static_cast<int>(idx));
     }
 
-    if (state->getValue(DisplayElem).toBool())
     {
+      //std::cout << "~~~~finding nearest node~~~~" << std::endl;
       ifield->vmesh()->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
       Point r;
       VMesh::Elem::index_type idx;
@@ -353,7 +358,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
     vmesh = ifield->vmesh();
   }
 
-  if (!ifieldOption || ifield->basis_order() == -1 || !state->getValue(DisplayValue).toBool())
+  if (!ifieldOption || ifield->basis_order() == -1)
   {
     fi.make_double();
     ofield = CreateField(fi, mesh);
@@ -412,10 +417,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
   state->setValue(XLocation, location.x());
   state->setValue(YLocation, location.y());
   state->setValue(ZLocation, location.z());
-  if (state->getValue(DisplayValue).toBool())
-  {
-    state->setValue(FieldValue, valstr.str());
-  }
+  state->setValue(FieldValue, valstr.str());
 
   return ofield;
 }
@@ -429,11 +431,11 @@ index_type GenerateSinglePointProbeFromField::GenerateIndex()
   using namespace Parameters;
   if (ifieldOption && *ifieldOption)
   {
-    if (state->getValue(DisplayNode).toBool())
+    if (state->getValue(MoveMethod).toString() == "Node")
     {
       index = state->getValue(FieldNode).toInt();
     }
-    else if (state->getValue(DisplayElem).toBool())
+    else if (state->getValue(MoveMethod).toString() == "Element")
     {
       index = state->getValue(FieldElem).toInt();
     }

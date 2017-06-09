@@ -46,9 +46,6 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(YLocation);
         ALGORITHM_PARAMETER_DECL(ZLocation);
         ALGORITHM_PARAMETER_DECL(MoveMethod);
-        ALGORITHM_PARAMETER_DECL(DisplayValue);
-        ALGORITHM_PARAMETER_DECL(DisplayNode);
-        ALGORITHM_PARAMETER_DECL(DisplayElem);
         ALGORITHM_PARAMETER_DECL(FieldValue);
         ALGORITHM_PARAMETER_DECL(FieldNode);
         ALGORITHM_PARAMETER_DECL(FieldElem);
