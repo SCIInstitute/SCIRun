@@ -192,16 +192,16 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
   layout->setSpacing(4);
   layout->setAlignment(Qt::AlignLeft);
   layout->setContentsMargins(5, 0, 5, 0);
-  
+
   auto visible = mapToScene(rect()).boundingRect();
 
   auto proxy = new SubnetPortsBridgeProxyWidget(portsBridge);
   proxy->setWidget(portsBridge);
   proxy->setAcceptDrops(true);
-  
+
   proxy->setMinimumWidth(visible.width());
   proxy->setData(123, name);
-  
+
   int offset = 12;
   for (const auto& port : ports)
   {
@@ -241,7 +241,7 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
 
 SubnetInputPortWidget::SubnetInputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
   boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
-  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder, 
+  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
   PortDescriptionInterface* realPort,
   QWidget* parent)
   : InputPortWidget(name, color, datatype, ModuleId(), PortId(), 0, false, connectionFactory, closestPortFinder, {}, parent), realPort_(realPort)
@@ -251,9 +251,9 @@ SubnetInputPortWidget::SubnetInputPortWidget(const QString& name, const QColor& 
 }
 
 
-SubnetOutputPortWidget::SubnetOutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, 
+SubnetOutputPortWidget::SubnetOutputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
   boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
-  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder, 
+  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
   PortDescriptionInterface* realPort,
   QWidget* parent)
   : OutputPortWidget(name, color, datatype, ModuleId(), PortId(), 0, false, connectionFactory, closestPortFinder, {}, parent), realPort_(realPort)
@@ -456,7 +456,7 @@ public:
         {
           auto ports = conn->connectedPorts();
 
-          auto addSubnetToId = [](PortWidget* port) { return PortId{ port->id().id, 
+          auto addSubnetToId = [](PortWidget* port) { return PortId{ port->id().id,
             port->id().name + (port->isInput() ? std::string("[To:") : std::string("[From:")) + port->getUnderlyingModuleId().id_ + "]" }; };
           if (foundFirst != modules.cend())
           {
@@ -523,9 +523,9 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   //proxy->setScale(1.6);--problematic with port positions
 
   auto colorize = new QGraphicsDropShadowEffect;
-  colorize->setColor(QColor(255,182,193,200));
-  colorize->setOffset(10, 6);
-  colorize->setBlurRadius(30);
+  colorize->setColor(Qt::darkGray);
+  colorize->setOffset(5, 5);
+  colorize->setBlurRadius(2);
   proxy->setGraphicsEffect(colorize);
 
   auto pic = grabSubnetPic(rect, items);
