@@ -44,11 +44,11 @@ using namespace SCIRun::Core::Algorithms::Math;
 ConditionalMatrixAlgo::ConditionalMatrixAlgo()
 {
   //set parameter defaults for UI
-  addOption(Variables::Operator, "Anonzero", "boolop|andop|orop|lessop|lesseqop|eqop|greateqop|greatop");
-  addOption(Variables::Method, "value", "value|size");
-  addOption(Variables::ObjectInfo, "value", "value|size");
-  addOption(Variables::FormatString, "null", "null|first|second|third");
-  addOption(Variables::FunctionString, "null", "null|first|second|third");
+  addOption(Variables::Operator, "boolop", "boolop|andop|orop|lessop|lesseqop|eqop|greateqop|greatop");
+  addOption(Variables::Method, "value", "value|size|norm");
+  addOption(Variables::ObjectInfo, "value", "value|size|norm");
+  addOption(Variables::FormatString, "first", "null|first|second|third|quit");
+  addOption(Variables::FunctionString, "null", "null|first|second|third|quit");
 }
 
 
