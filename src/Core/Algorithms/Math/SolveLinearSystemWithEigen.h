@@ -30,8 +30,6 @@
 #define ALGORITHMS_MATH_SOLVELINEARSYSTEMWITHEIGEN_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-/// @todo: move
-#include <Eigen/src/Core/util/Constants.h>
 #include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
@@ -60,7 +58,7 @@ namespace Math {
     Out solve(const In& input, const Parameters& params) const;
   };
 
-  typedef boost::error_info<struct tag_eigen_computation, Eigen::ComputationInfo> EigenComputationInfo;
+  
 
 }}}}
 

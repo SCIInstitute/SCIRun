@@ -51,8 +51,6 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::TestUtils;
-using namespace boost;
-using namespace boost::assign;
 
 namespace
 {
@@ -97,8 +95,7 @@ TEST(ElectrodeCoilSetupAlgorithmTests, AlgoCorrect)
   var8=makeVariable("NY", boost::str(boost::format("%s") % "???"));
   var9=makeVariable("NZ", boost::str(boost::format("%s") % "???"));
   var10=makeVariable("thickness",boost::str(boost::format("%s") % "2"));
-  Variable::List tmp;
-  tmp += var1,var2,var3,var4,var5,var6,var7,var8,var9,var10;
+  Variable::List tmp{ var1, var2, var3, var4, var5, var6, var7, var8, var9, var10 };
   table.push_back(makeVariable("row" + boost::lexical_cast<std::string>(0), tmp)); 
   VariableHandle output(new Variable(Name("Table"), table));
   ///@Dan: I dont know how to set the table to the GUI so that the module can executed properly.

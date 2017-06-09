@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -42,6 +43,8 @@ using namespace SCIRun::Core;
 
 namespace
 {
+  using EigenComputationInfo = boost::error_info<struct tag_eigen_computation, Eigen::ComputationInfo>;
+
   template <class ColumnMatrixType, template <typename> class SolverType>
   class SolveLinearSystemAlgorithmEigenCGImpl
   {

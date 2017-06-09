@@ -362,8 +362,14 @@ void NetworkEditor::makeSubnetwork()
     }
   }
 
+  if (underlyingModules.empty())
+  {
+    QMessageBox::information(this, "Make subnetwork", "Please select at least one module.");
+    return;
+  }
+
   bool ok;
-  auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:", QLineEdit::Normal, "subnet", &ok);
+  auto name = QInputDialog::getText(nullptr, "Make subnet", "Enter subnet name:", QLineEdit::Normal, "subnet" + QString::number(currentSubnetNames_.size()), &ok);
   if (!ok)
     return;
 
@@ -376,12 +382,6 @@ void NetworkEditor::makeSubnetwork()
   if (currentSubnetNames_.contains(name))
   {
     QMessageBox::information(this, "Make subnetwork", "A subnet by that name already exists.");
-    return;
-  }
-
-  if (underlyingModules.empty())
-  {
-    QMessageBox::information(this, "Make subnetwork", "Please select at least one module.");
     return;
   }
 
