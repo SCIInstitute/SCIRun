@@ -1285,7 +1285,7 @@ void NetworkEditor::removeModuleWidget(const ModuleId& id)
   auto widget = findById(scene_->items(), id.id_);
   if (widget)
   {
-    widget->getModuleWidget()->setDeletedFromGui(false);
+    widget->getModuleWidget()->setDeletedFromGui(id.id_.find("Subnet") != std::string::npos);
     delete widget;
     Q_EMIT modified();
   }
@@ -1803,6 +1803,7 @@ void NetworkEditor::scrollContentsBy(int dx, int dy)
   for (auto& item : subnetPortHolders_)
   {
     item->setPos(item->pos() + QPointF(-dx,-dy));
+    item->updateConnections();
   }
   QGraphicsView::scrollContentsBy(dx, dy);
 }
