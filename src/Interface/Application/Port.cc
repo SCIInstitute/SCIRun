@@ -472,7 +472,7 @@ void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port, double thr
   int distance = (pos - port->position()).manhattanLength();     //GUI concern: needs unit test
   if (distance <= threshold)                 //GUI concern: needs unit test
   {
-    Q_EMIT requestConnection(this, port);
+    Q_EMIT requestConnection(getRealPort(), port->getRealPort());
   }
 }
 

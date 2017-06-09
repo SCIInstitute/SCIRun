@@ -105,6 +105,8 @@ public:
   bool isConnected() const { return isConnected_; }
   void setConnected(bool connected) { isConnected_ = connected; }
 
+  virtual Dataflow::Networks::PortDescriptionInterface* getRealPort() { return this; }
+
   virtual size_t nconnections() const override;
   virtual std::string get_typename() const override;
   virtual std::string get_portname() const override;
@@ -265,16 +267,24 @@ public:
   SubnetInputPortWidget(const QString& name, const QColor& color, const std::string& datatype, 
     boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
     boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
+    Dataflow::Networks::PortDescriptionInterface* realPort,
     QWidget* parent = nullptr);
+  virtual Dataflow::Networks::PortDescriptionInterface* getRealPort() override { return realPort_; }
+private:
+  Dataflow::Networks::PortDescriptionInterface* realPort_;
 };
 
 class SubnetOutputPortWidget : public OutputPortWidget
 {
 public:
-  SubnetOutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, 
+  SubnetOutputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
     boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
     boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
+    Dataflow::Networks::PortDescriptionInterface* realPort,
     QWidget* parent = nullptr);
+  virtual Dataflow::Networks::PortDescriptionInterface* getRealPort() override { return realPort_; }
+private:
+  Dataflow::Networks::PortDescriptionInterface* realPort_;
 };
 
 class DataInfoDialog

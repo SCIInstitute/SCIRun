@@ -210,12 +210,14 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
       portRepl = new SubnetInputPortWidget(QString::fromStdString(port->get_portname()),
         to_color(PortColorLookup::toColor(port->get_typename()), 230), port->get_typename(),
         [this](){ return boost::make_shared<ConnectionFactory>([this]() { return scene_; }); },
-        [this](){ return boost::make_shared<ClosestPortFinder>([this]() { return scene_; }); });
+        [this](){ return boost::make_shared<ClosestPortFinder>([this]() { return scene_; }); },
+        port.get());
     else // Inputs
       portRepl = new SubnetOutputPortWidget(QString::fromStdString(port->get_portname()),
         to_color(PortColorLookup::toColor(port->get_typename()), 230), port->get_typename(),
         [this](){ return boost::make_shared<ConnectionFactory>([this]() { return scene_; }); },
-        [this](){ return boost::make_shared<ClosestPortFinder>([this]() { return scene_; }); }
+        [this](){ return boost::make_shared<ClosestPortFinder>([this]() { return scene_; }); },
+        port.get()
         );
     layout->addWidget(portRepl);
     portRepl->setSceneFunc([this]() { return scene_; });
@@ -240,8 +242,10 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
 SubnetInputPortWidget::SubnetInputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
   boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
   boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder, 
+  PortDescriptionInterface* realPort,
   QWidget* parent)
-  : InputPortWidget(name, color, datatype, ModuleId(), PortId(), 0, false, connectionFactory, closestPortFinder, {}, parent)
+  : InputPortWidget(name, color, datatype, ModuleId(), PortId(), 0, false, connectionFactory, closestPortFinder, {}, parent), realPort_(realPort)
+
 {
 
 }
@@ -250,8 +254,9 @@ SubnetInputPortWidget::SubnetInputPortWidget(const QString& name, const QColor& 
 SubnetOutputPortWidget::SubnetOutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, 
   boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
   boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder, 
+  PortDescriptionInterface* realPort,
   QWidget* parent)
-  : OutputPortWidget(name, color, datatype, ModuleId(), PortId(), 0, false, connectionFactory, closestPortFinder, {}, parent)
+  : OutputPortWidget(name, color, datatype, ModuleId(), PortId(), 0, false, connectionFactory, closestPortFinder, {}, parent), realPort_(realPort)
 {
 
 }
