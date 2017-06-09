@@ -367,7 +367,7 @@ namespace Gui {
     QString checkForOverriddenTagName(int tag) const;
     void renameTagGroup(int tag, const QString& name);
     QPointF positionOfFloatingText(int num, bool top, int horizontalIndent, int verticalSpacing) const;
-    QPixmap grabSubnetPic(const QRectF& rect);
+    QPixmap grabSubnetPic(const QRectF& rect, const QList<QGraphicsItem*>& items);
     QString convertToTooltip(const QPixmap& pic) const;
     void initializeSubnet(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle mod, NetworkEditor* subnet);
     void dumpSubnetworksImpl(const QString& name, Dataflow::Networks::Subnetworks& data, Dataflow::Networks::ModuleFilter modFilter) const;

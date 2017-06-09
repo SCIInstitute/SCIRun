@@ -157,7 +157,10 @@ void NetworkEditor::addSubnetChild(const QString& name, ModuleHandle mod)
   }
   else
   {
-    it->second->show();
+    auto subnet = it->second;
+    subnet->show();
+    subnet->activateWindow();
+    subnet->raise();
   }
 }
 
@@ -170,7 +173,10 @@ void NetworkEditor::showSubnetChild(const QString& name)
   }
   else
   {
-    it->second->show();
+    auto subnet = it->second;
+    subnet->show();
+    subnet->activateWindow();
+    subnet->raise();
   }
 }
 
@@ -196,7 +202,7 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
   proxy->setMinimumWidth(visible.width());
   proxy->setData(123, name);
   
-  int offset = 15;
+  int offset = 12;
   for (const auto& port : ports)
   {
     PortWidget* portRepl;
@@ -219,7 +225,7 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
     //   << portRewiringMap2_[port->id().toString()]->id().id_.c_str();
 
     portRewiringMap_[port->id().toString()]->addSubnetCompanion(portRepl);
-    offset += portRepl->properWidth() + 5;
+    offset += portRepl->properWidth() + 3;
     portsBridge->addPort(portRepl);
   }
 
@@ -288,6 +294,7 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
   subnet->setupPortHolders(mod);
 
   subnet->setSceneRect(QRectF());
+  subnet->centerView();
 
   auto dock = new SubnetworkEditor(subnet, mod->get_id(), name, nullptr);
   dock->setStyleSheet(SCIRunMainWindow::Instance()->styleSheet());
@@ -360,6 +367,20 @@ QList<QGraphicsItem*> NetworkEditor::includeConnections(QList<QGraphicsItem*> it
   return subnetItems.toList();
 }
 
+namespace
+{
+  QRectF updateRect(QGraphicsItem* item, QRectF rect)
+  {
+    auto r = item->boundingRect();
+    r = item->mapRectToParent(r);
+
+    if (rect.isEmpty())
+      return r;
+    else
+      return rect.united(r);
+  }
+}
+
 void NetworkEditor::makeSubnetwork()
 {
   QRectF rect;
@@ -369,14 +390,8 @@ void NetworkEditor::makeSubnetwork()
   QList<QGraphicsItem*> items;
   Q_FOREACH(QGraphicsItem* item, scene_->selectedItems())
   {
-    auto r = item->boundingRect();
     position = item->pos();
-    r = item->mapRectToParent(r);
-
-    if (rect.isEmpty())
-      rect = r;
-    else
-      rect = rect.united(r);
+    rect = updateRect(item, rect);
 
     auto module = getModule(item);
     if (module)
@@ -436,7 +451,8 @@ public:
         {
           auto ports = conn->connectedPorts();
 
-          auto addSubnetToId = [](PortWidget* port) { return PortId{ port->id().id, port->id().name + (port->isInput() ? std::string("[To:") : std::string("[From:")) + port->getUnderlyingModuleId().id_ + "]" }; };
+          auto addSubnetToId = [](PortWidget* port) { return PortId{ port->id().id, 
+            port->id().name + (port->isInput() ? std::string("[To:") : std::string("[From:")) + port->getUnderlyingModuleId().id_ + "]" }; };
           if (foundFirst != modules.cend())
           {
             auto portToReplicate = ports.second;
@@ -507,7 +523,7 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   colorize->setBlurRadius(30);
   proxy->setGraphicsEffect(colorize);
 
-  auto pic = grabSubnetPic(rect);
+  auto pic = grabSubnetPic(rect, items);
   auto tooltipPic = convertToTooltip(pic);
   proxy->setToolTip(tooltipPic);
 
@@ -559,23 +575,25 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   childrenNetworkItems_[name] = items;
 
   addSubnetChild(name, subnetModule);
-  //qDebug() << "port repl map out of scope";
 }
 
-QPixmap NetworkEditor::grabSubnetPic(const QRectF& rect)
+QPixmap NetworkEditor::grabSubnetPic(const QRectF& rect, const QList<QGraphicsItem*>& items)
 {
+  QList<QGraphicsItem*> toHide;
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    if (dynamic_cast<QGraphicsPixmapItem*>(item))
+    if (dynamic_cast<QGraphicsPixmapItem*>(item) || !items.contains(item))
+    {
       item->setVisible(false);
+      toHide.append(item);
+    }
   }
 
   auto pic = QPixmap::grabWidget(this, mapFromScene(rect).boundingRect());
 
-  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  Q_FOREACH(QGraphicsItem* item, toHide)
   {
-    if (dynamic_cast<QGraphicsPixmapItem*>(item))
-      item->setVisible(true);
+    item->setVisible(true);
   }
 
   return pic;
@@ -610,6 +628,7 @@ void NetworkEditor::updateSubnetworks(const Subnetworks& subnets)
     std::vector<ModuleHandle> underlying;
     QList<QGraphicsItem*> items;
 
+    QRectF rect;
     Q_FOREACH(QGraphicsItem* item, scene_->items())
     {
       if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
@@ -618,10 +637,11 @@ void NetworkEditor::updateSubnetworks(const Subnetworks& subnets)
         {
           underlying.push_back(w->getModuleWidget()->getModule());
           items.append(w);
+          rect = updateRect(item, rect);
         }
       }
     }
-    makeSubnetworkFromComponents(QString::fromStdString(sub.first), underlying, includeConnections(items), {});
+    makeSubnetworkFromComponents(QString::fromStdString(sub.first), underlying, includeConnections(items), rect);
   }
 }
 
