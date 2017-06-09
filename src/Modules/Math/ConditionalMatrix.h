@@ -38,19 +38,21 @@ namespace Modules {
 namespace Math {
 
   class SCISHARE ConditionalMatrix : public SCIRun::Dataflow::Networks::Module,
-    public Has3InputPort<MatrixPortTag,MatrixPortTag,MatrixPortTag>,
-    public Has2OutputPort<MatrixPortTag,MatrixPortTag>
+    public Has3InputPorts<MatrixPortTag,MatrixPortTag,MatrixPortTag>,
+    public Has2OutputPorts<MatrixPortTag,MatrixPortTag>
   {
   public:
     ConditionalMatrix();
     virtual void execute();
     virtual void setStateDefaults();
 
-    INPUT_PORT(0, Matrix1, Matrix);
-    INPUT_PORT(1, Matrix2, Matrix);
+    INPUT_PORT(0, MatrixA, Matrix);
+    INPUT_PORT(1, MatrixB, Matrix);
     INPUT_PORT(2, PossibleOutput, Matrix);
     OUTPUT_PORT(0, OutputMatrix, Matrix);
     OUTPUT_PORT(1, ConditionMatrix, Matrix);
+      
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };
 }}}
 

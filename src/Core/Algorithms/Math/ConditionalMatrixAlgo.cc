@@ -27,6 +27,11 @@
 */
 
 #include <Core/Algorithms/Math/ConditionalMatrixAlgo.h>
+
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Parser/ArrayMathEngine.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Math/MiscMath.h>
 
@@ -35,47 +40,51 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 
+
 ConditionalMatrixAlgo::ConditionalMatrixAlgo()
 {
   //set parameter defaults for UI
-  addOption(Parameters::Operator, "Anonzero", "boolop|andop|orop|lessop|lesseqop|eqop|greateqop|greatop");
-  addOption(Parameters::Method, "value", "value|size");
-  addOption(Parameters::Method2, "value", "value|size");
-  addOption(Parameters::OutputFormat, "null" "null,first,second,third");
-  addOption(Parameters::OutputFormat2, "null" "null,first,second,third");
+  addOption(Variables::Operator, "Anonzero", "boolop|andop|orop|lessop|lesseqop|eqop|greateqop|greatop");
+  addOption(Variables::Method, "value", "value|size");
+  addOption(Variables::ObjectInfo, "value", "value|size");
+  addOption(Variables::FormatString, "null", "null|first|second|third");
+  addOption(Variables::FunctionString, "null", "null|first|second|third");
 }
 
 
 AlgorithmOutput ConditionalMatrixAlgo::run(const AlgorithmInput& input) const
 {
-  auto matrixa = input.get<Matrix>(Variables::MatrixA);
-  auto matrixb = input.get<Matrix>(Variables::MatrixB);
-  auto possout = input.get<Matrix>(Variables::PossibleOutput);
+  auto matrixa = input.get<Matrix>(Variables::FirstMatrix);
+  auto matrixb = input.get<Matrix>(Variables::SecondMatrix);
+  auto possout = input.get<Matrix>(Variables::InputMatrix);
     
   AlgorithmOutput output;
   
   //sparse support not fully implemented yet.
-  if (!matrix_is::dense(input_matrix))
+  if (!matrixIs::dense(matrixa) || !matrixIs::dense(matrixb))
   {
     //TODO implement something with sparse
     error("ConditionalMatrix: Currently only works with dense matrices");
-    output[Variables::OutputMatrix] = null;
-    output[Variables::ConditionMatrix] = null;
+    output[Variables::OutputMatrix] = 0;
+    output[Variables::Solution] = 0;
     return output;
   }
-  auto mat  = matrix_cast::as_dense (input_matrix);
+  //auto mata  = matrix_cast::as_dense (matrixa);
+  //auto matb  = matrix_cast::as_dense (matrixb);
+    
   DenseMatrixHandle out_matrix;
+  DenseMatrixHandle cond_matrix;
   
   //pull parameter from UI
-    std::string valoptA = getOption(Parameters::Method);
-    std::string valoptB = getOption(Parameters::Method2);
-    std::string cond_statement = getOption(Parameters::Operator);
-    std::string then_result = getOption(Parameters::OutputFormat);
-    std::string else_result = getOption(Parameters::OutputFormat2);
+    std::string valoptA = getOption(Variables::Method);
+    std::string valoptB = getOption(Variables::ObjectInfo);
+    std::string cond_statement = getOption(Variables::Operator);
+    std::string then_result = getOption(Variables::FormatString);
+    std::string else_result = getOption(Variables::FunctionString);
   
   
-  output[Variables::OutputMatrix] = null;
-  output[Variables::ConditionMatrix] = null;
+  output[Variables::OutputMatrix] = 0;
+  output[Variables::Solution] = 0;
   return output;
 }
 

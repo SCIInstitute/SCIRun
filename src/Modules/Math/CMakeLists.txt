@@ -47,6 +47,7 @@ SET(Modules_Math_SRCS
   ComputePCA.cc
   ConvertRealToComplexMatrix.cc
   ConvertComplexToRealMatrix.cc
+  ConditionalMatrix.cc
 )
 
 SET(Modules_Math_HEADERS
@@ -71,6 +72,7 @@ SET(Modules_Math_HEADERS
   ComputePCA.h
   ConvertRealToComplexMatrix.h
   ConvertComplexToRealMatrix.h
+  ConditionalMatrix.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Math

@@ -42,5 +42,9 @@ ConditionalMatrixDialog::ConditionalMatrixDialog(const std::string& name, Module
 	setWindowTitle(QString::fromStdString(name));
 	fixSize();
 
-  addRadioButtonGroupManager({ ascendButton_, descendButton_ }, Variables::Method);
+    addComboBoxManager(valueBox_1_, Variables::Method);
+    addComboBoxManager(valueBox_2_, Variables::ObjectInfo);
+    addComboBoxManager(conditionBox_, Variables::Operator);
+    addComboBoxManager(thenBox_, Variables::FormatString);
+    addComboBoxManager(elseBox_, Variables::FunctionString);
 }

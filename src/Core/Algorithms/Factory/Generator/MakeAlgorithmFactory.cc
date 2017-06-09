@@ -36,8 +36,8 @@ int SCIRun::Core::Algorithms::Factory::MakeGeneratedAlgorithmFactoryCode(const s
   auto code = SCIRun::Modules::Factory::Generator::GenerateAlgorithmCodeFileFromSourcePath(sourcePath);
   std::ofstream out(generatedFilename);
   out << code;
-  //std::cout << "MakeGeneratedAlgorithmFactoryCode " << sourcePath << " , " << generatedFilename << std::endl;
-  //std::cout << code << std::endl;
+  std::cout << "MakeGeneratedAlgorithmFactoryCode " << sourcePath << " , " << generatedFilename << std::endl;
+  std::cout << code << std::endl;
   return 0;
 }
 

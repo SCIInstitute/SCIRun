@@ -28,6 +28,7 @@
 
 #include <Modules/Math/ConditionalMatrix.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/Module.h>
 #include <Core/Algorithms/Math/ConditionalMatrixAlgo.h>
 
@@ -37,7 +38,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 
 /// @class ConditionalMatrix
-/// @brief This module sorts the matrix entries into ascending or descending order.
+/// This module is for comparing two matrices and sending outputs
 
 MODULE_INFO_DEF(ConditionalMatrix, Math, SCIRun)
 
@@ -52,11 +53,11 @@ ConditionalMatrix::ConditionalMatrix() : Module(staticInfo_)
 
 void ConditionalMatrix::setStateDefaults()
 {
-  setStateStringFromAlgoOption(Parameters::Operator);
-  setStateStringFromAlgoOption(Parameters::Method);
-  setStateStringFromAlgoOption(Parameters::Method2);
-  setStateStringFromAlgoOption(Parameters::OutputFormat);
-  setStateStringFromAlgoOption(Parameters::ObjectInfo);
+  setStateStringFromAlgoOption(Variables::Operator);
+  setStateStringFromAlgoOption(Variables::Method);
+  setStateStringFromAlgoOption(Variables::ObjectInfo);
+  setStateStringFromAlgoOption(Variables::FormatString);
+  setStateStringFromAlgoOption(Variables::FunctionString);
 }
 
 void
@@ -68,15 +69,15 @@ ConditionalMatrix::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
       
     setAlgoOptionFromState(Variables::Operator);
     setAlgoOptionFromState(Variables::Method);
-    setAlgoOptionFromState(Variables::Method2);
-    setAlgoOptionFromState(Variables::OutputFormat);
     setAlgoOptionFromState(Variables::ObjectInfo);
+    setAlgoOptionFromState(Variables::FormatString);
+    setAlgoOptionFromState(Variables::FunctionString);
+    
 
-    auto Output = algo().run(withInputData((MatrixA, matrixA)(MatrixB, optionalAlgoInput(matrixB))(PossibleOutput, optionalAlgoInput(possout))));
+    auto output = algo().run(withInputData((Variables::FirstMatrix, matrixA)(Variables::SecondMatrix, optionalAlgoInput(matrixB))(Variables::InputMatrix, optionalAlgoInput(possout))));
 
     sendOutputFromAlgorithm(OutputMatrix, output);
     sendOutputFromAlgorithm(ConditionMatrix, output);

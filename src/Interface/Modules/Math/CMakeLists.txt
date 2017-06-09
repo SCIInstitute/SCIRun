@@ -46,6 +46,7 @@ SET(Interface_Modules_Math_FORMS
   CollectMatrices.ui
   ReportMatrixSliceMeasureDialog.ui
   SetSubmatrix.ui
+  ConditionalMatrixDialog.ui
 )
 
 SET(Interface_Modules_Math_HEADERS
@@ -69,6 +70,7 @@ SET(Interface_Modules_Math_HEADERS
   ReportMatrixSliceMeasureDialog.h
   SetSubmatrixDialog.h
   SolveComplexLinearSystemDialog.h
+  ConditionalMatrixDialog.h
 )
 
 IF(WITH_QWT_WIDGETS)
@@ -97,6 +99,7 @@ SET(Interface_Modules_Math_SOURCES
   ReportMatrixSliceMeasureDialog.cc
   SetSubmatrixDialog.cc
   SolveComplexLinearSystemDialog.cc
+  ConditionalMatrixDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS ${Interface_Modules_Math_FORMS})
