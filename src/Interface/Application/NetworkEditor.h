@@ -59,6 +59,7 @@ namespace SCIRun {
 namespace Gui {
 
   class DialogErrorControl;
+  class SubnetPortsBridgeProxyWidget;
   
   class CurrentModuleSelection
   {
@@ -409,7 +410,7 @@ namespace Gui {
     NetworkEditor* parentNetwork_ {nullptr};
     std::map<QString, class SubnetworkEditor*> childrenNetworks_;
     std::map<QString, QList<QGraphicsItem*>> childrenNetworkItems_;
-    QList<QGraphicsProxyWidget*> subnetPortHolders_;
+    QList<SubnetPortsBridgeProxyWidget*> subnetPortHolders_;
     void setupPortHolders(Dataflow::Networks::ModuleHandle mod);
     void setupPortHolder(const std::vector<SharedPointer<SCIRun::Dataflow::Networks::PortDescriptionInterface>>& ports, const QString& name,
       std::function<QPointF(const QRectF&)> position);

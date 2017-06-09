@@ -259,10 +259,22 @@ public:
     QWidget* parent = nullptr);
 };
 
+class SubnetInputPortWidget : public InputPortWidget
+{
+public:
+  SubnetInputPortWidget(const QString& name, const QColor& color, const std::string& datatype, 
+    boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
+    boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
+    QWidget* parent = nullptr);
+};
+
 class SubnetOutputPortWidget : public OutputPortWidget
 {
 public:
-  SubnetOutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, QWidget* parent = nullptr);
+  SubnetOutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, 
+    boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
+    boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
+    QWidget* parent = nullptr);
 };
 
 class DataInfoDialog

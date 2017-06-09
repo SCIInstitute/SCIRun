@@ -1803,6 +1803,7 @@ void NetworkEditor::scrollContentsBy(int dx, int dy)
   for (auto& item : subnetPortHolders_)
   {
     item->setPos(item->pos() + QPointF(-dx,-dy));
+    item->updateConnections();
   }
   QGraphicsView::scrollContentsBy(dx, dy);
 }

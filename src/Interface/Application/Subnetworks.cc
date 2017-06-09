@@ -34,6 +34,7 @@
 #include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/PortWidgetManager.h>
+#include <Interface/Application/ClosestPortFinder.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/Subnetworks.h>
 #include <Interface/Application/SCIRunMainWindow.h>
@@ -185,37 +186,66 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
   layout->setSpacing(4);
   layout->setAlignment(Qt::AlignLeft);
   layout->setContentsMargins(5, 0, 5, 0);
+  
+  auto visible = mapToScene(rect()).boundingRect();
 
+  auto proxy = new SubnetPortsBridgeProxyWidget(portsBridge);
+  proxy->setWidget(portsBridge);
+  proxy->setAcceptDrops(true);
+  
+  proxy->setMinimumWidth(visible.width());
+  proxy->setData(123, name);
+  
+  int offset = 15;
   for (const auto& port : ports)
   {
-    auto portRepl = new SubnetOutputPortWidget(QString::fromStdString(port->get_portname()),
-      to_color(PortColorLookup::toColor(port->get_typename()), 230), port->get_typename());
+    PortWidget* portRepl;
+    if (name == "Outputs")
+      portRepl = new SubnetInputPortWidget(QString::fromStdString(port->get_portname()),
+        to_color(PortColorLookup::toColor(port->get_typename()), 230), port->get_typename(),
+        [this](){ return boost::make_shared<ConnectionFactory>([this]() { return scene_; }); },
+        [this](){ return boost::make_shared<ClosestPortFinder>([this]() { return scene_; }); });
+    else // Inputs
+      portRepl = new SubnetOutputPortWidget(QString::fromStdString(port->get_portname()),
+        to_color(PortColorLookup::toColor(port->get_typename()), 230), port->get_typename(),
+        [this](){ return boost::make_shared<ConnectionFactory>([this]() { return scene_; }); },
+        [this](){ return boost::make_shared<ClosestPortFinder>([this]() { return scene_; }); }
+        );
     layout->addWidget(portRepl);
     portRepl->setSceneFunc([this]() { return scene_; });
+    portRepl->setPositionObject(boost::make_shared<LambdaPositionProvider>([proxy, offset]() { return proxy->pos() + QPointF(offset, 0); }));
 
     // qDebug() << "port subnet in editor" << QString::fromStdString(port->id().toString());
     //   << portRewiringMap2_[port->id().toString()]->id().id_.c_str();
 
     portRewiringMap_[port->id().toString()]->addSubnetCompanion(portRepl);
+    offset += portRepl->properWidth() + 5;
+    portsBridge->addPort(portRepl);
   }
 
   portsBridge->setLayout(layout);
 
-  auto proxy = new QGraphicsProxyWidget;
-  proxy->setWidget(portsBridge);
-  proxy->setAcceptDrops(true);
-
-  auto visible = mapToScene(rect()).boundingRect();
-  proxy->setMinimumWidth(visible.width());
-  proxy->setData(123, name);
   scene_->addItem(proxy);
   subnetPortHolders_.append(proxy);
 
   proxy->setPos(position(visible));
 }
 
-SubnetOutputPortWidget::SubnetOutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, QWidget* parent)
-  : OutputPortWidget(name, color, datatype, ModuleId(), PortId(), 0, false, {}, {}, {})
+SubnetInputPortWidget::SubnetInputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
+  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
+  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder, 
+  QWidget* parent)
+  : InputPortWidget(name, color, datatype, ModuleId(), PortId(), 0, false, connectionFactory, closestPortFinder, {}, parent)
+{
+
+}
+
+
+SubnetOutputPortWidget::SubnetOutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, 
+  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
+  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder, 
+  QWidget* parent)
+  : OutputPortWidget(name, color, datatype, ModuleId(), PortId(), 0, false, connectionFactory, closestPortFinder, {}, parent)
 {
 
 }
@@ -336,8 +366,8 @@ void NetworkEditor::makeSubnetwork()
   QPointF position;
 
   std::vector<ModuleHandle> underlyingModules;
-  auto items = scene_->selectedItems();
-  Q_FOREACH(QGraphicsItem* item, items)
+  QList<QGraphicsItem*> items;
+  Q_FOREACH(QGraphicsItem* item, scene_->selectedItems())
   {
     auto r = item->boundingRect();
     position = item->pos();
@@ -351,6 +381,7 @@ void NetworkEditor::makeSubnetwork()
     auto module = getModule(item);
     if (module)
     {
+      items.append(item);
       underlyingModules.push_back(module->getModule());
     }
   }
@@ -633,6 +664,7 @@ void NetworkEditor::resizeEvent(QResizeEvent *event)
       item->resize(QSize(item->size().width() * (event->size().width() / static_cast<double>(event->oldSize().width())), item->size().height()));
       auto isInput = item->data(123).toString() == "Inputs";
       item->setPos(item->pos() + QPointF(0, (isInput ? 0 : 1) * (event->size().height() - event->oldSize().height())));
+      item->updateConnections();
     }
   }
 

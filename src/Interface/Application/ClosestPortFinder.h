@@ -29,6 +29,8 @@
 #ifndef INTERFACE_APPLICATION_CLOSESTPORTFINDER_H
 #define INTERFACE_APPLICATION_CLOSESTPORTFINDER_H
 
+#include <functional>
+
 class QGraphicsScene;
 class QPointF;
 
@@ -41,9 +43,12 @@ namespace Gui {
   {
   public:
     explicit ClosestPortFinder(QGraphicsProxyWidget* module);
+    explicit ClosestPortFinder(std::function<QGraphicsScene*()> sceneFunc);
     PortWidget* closestPort(const QPointF& pos);
   private:
-    QGraphicsProxyWidget* module_;
+    QGraphicsProxyWidget* module_{ nullptr };
+    std::function<QGraphicsScene*()> func_;
+    QGraphicsScene* getScene() const;
     int distance(const QPointF& pos, PortWidget* port) const;
     bool lessPort(const QPointF& pos, PortWidget* lhs, PortWidget* rhs) const;
   };

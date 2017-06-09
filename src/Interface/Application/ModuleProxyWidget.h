@@ -99,6 +99,15 @@ namespace SCIRun
       QSizeF originalSize_;
       QTimeLine* timeLine_;
     };
+
+    class SubnetPortsBridgeProxyWidget : public QGraphicsProxyWidget
+    {
+    public:
+      explicit SubnetPortsBridgeProxyWidget(class SubnetPortsBridgeWidget* ports, QGraphicsItem* parent = nullptr);
+      void updateConnections();
+    private:
+      class SubnetPortsBridgeWidget* ports_;
+    };
   }
 }
 

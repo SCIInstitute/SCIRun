@@ -373,7 +373,6 @@ void ConnectionLine::trackNodes()
 
 void ConnectionLine::addSubnetCompanion(PortWidget* subnetPort)
 {
-  //qDebug() << id().id_.c_str() << "setup companion with" << subnetPort;
   setVisible(false);
   ConnectionFactory f(subnetPort->sceneFunc());
 
@@ -382,13 +381,15 @@ void ConnectionLine::addSubnetCompanion(PortWidget* subnetPort)
 
   ConnectionDescription cd{ { out->getUnderlyingModuleId(), out->id() }, { in->getUnderlyingModuleId(), in->id() } };
   subnetCompanion_ = f.makeFinishedConnection(out, in, ConnectionId::create(cd));
+
+  connect(subnetPort, SIGNAL(portMoved()), subnetCompanion_, SLOT(trackNodes()));
+
   subnetCompanion_->isCompanion_ = true;
-  //qDebug() << __FUNCTION__ << (void*)this << (void*)subnetCompanion_;
+  subnetCompanion_->trackNodes();
 }
 
 void ConnectionLine::deleteCompanion()
 {
-  //qDebug() << "deleteCompanion" << (void*)this << (void*)subnetCompanion_;
   if (subnetCompanion_)
   {
     subnetCompanion_->blockSignals(true);
@@ -396,7 +397,6 @@ void ConnectionLine::deleteCompanion()
     delete subnetCompanion_;
     subnetCompanion_ = nullptr;
   }
-  //qDebug() << "~deleteCompanion";
 }
 
 void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
