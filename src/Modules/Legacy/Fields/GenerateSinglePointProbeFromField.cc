@@ -116,11 +116,6 @@ void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const Transf
 {
   using namespace Parameters;
 
-  if (get_state()->getValue(MoveMethod).toString() == "Node" &&
-      get_state()->getValue(SnapToNode).toBool())
-  {
-    std::cout << "would like to snap to nearest node" << std::endl;
-  }
   DenseMatrix center(4, 1);
   auto currLoc = currentLocation();
   center << currLoc.x(), currLoc.y(), currLoc.z(), 1.0;
@@ -135,6 +130,19 @@ void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const Transf
   state->setValue(XLocation, newLocation.x());
   state->setValue(YLocation, newLocation.y());
   state->setValue(ZLocation, newLocation.z());
+
+  if (get_state()->getValue(MoveMethod).toString() == "Node" &&
+      get_state()->getValue(SnapToNode).toBool())
+  {
+    setNearestNode(newLocation);
+  }
+
+  if (get_state()->getValue(MoveMethod).toString() == "Element" &&
+      get_state()->getValue(SnapToElement).toBool())
+  {
+    setNearestElement(newLocation);
+  }
+
   auto oldMoveMethod = state->getValue(MoveMethod).toString();
   state->setValue(MoveMethod, std::string("Location"));
   state->setValue(MoveMethod, oldMoveMethod);
@@ -291,13 +299,11 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
     if (moveto == "Node")
     {
       VMesh::index_type idx = state->getValue(FieldNode).toInt();
-      std::cout << "gui says node index " << idx << std::endl;
       if (idx >= 0 && idx < ifield->vmesh()->num_nodes())
       {
         Point p;
         ifield->vmesh()->get_center(p, VMesh::Node::index_type(idx));
         impl_->widget_->setPosition(p);
-        std::cout << "node move to position " << p << std::endl;
         moved_p = true;
       }
     }
@@ -333,16 +339,8 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
 
   if (ifieldOption)
   {
-    setNearestNode();
-
-    {
-      //std::cout << "~~~~finding nearest node~~~~" << std::endl;
-      ifield->vmesh()->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
-      Point r;
-      VMesh::Elem::index_type idx;
-      ifield->vmesh()->find_closest_elem(r, idx, location);
-      state->setValue(FieldElem, static_cast<int>(idx));
-    }
+    setNearestNode(location);
+    setNearestElement(location);
   }
 
   std::ostringstream valstr;
@@ -418,15 +416,32 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
   return ofield;
 }
 
-void GenerateSinglePointProbeFromField::setNearestNode()
+void GenerateSinglePointProbeFromField::setNearestNode(const Point& location)
 {
-  auto ifield = *getOptionalInput(InputField);
-  const auto location = impl_->widget_->position();
-  ifield->vmesh()->synchronize(Mesh::FIND_CLOSEST_NODE_E);
-  Point r;
-  VMesh::Node::index_type idx;
-  ifield->vmesh()->find_closest_node(r, idx, location);
-  get_state()->setValue(Parameters::FieldNode, static_cast<int>(idx));
+  auto fieldOpt = getOptionalInput(InputField);
+  if (fieldOpt && *fieldOpt)
+  {
+    auto ifield = *fieldOpt;
+    ifield->vmesh()->synchronize(Mesh::FIND_CLOSEST_NODE_E);
+    Point r;
+    VMesh::Node::index_type idx;
+    ifield->vmesh()->find_closest_node(r, idx, location);
+    get_state()->setValue(Parameters::FieldNode, static_cast<int>(idx));
+  }
+}
+
+void GenerateSinglePointProbeFromField::setNearestElement(const Point& location)
+{
+  auto fieldOpt = getOptionalInput(InputField);
+  if (fieldOpt && *fieldOpt)
+  {
+    auto ifield = *fieldOpt;
+    ifield->vmesh()->synchronize(Mesh::FIND_CLOSEST_ELEM_E);
+    Point r;
+    VMesh::Elem::index_type idx;
+    ifield->vmesh()->find_closest_elem(r, idx, location);
+    get_state()->setValue(Parameters::FieldElem, static_cast<int>(idx));
+  }
 }
 
 index_type GenerateSinglePointProbeFromField::GenerateIndex()

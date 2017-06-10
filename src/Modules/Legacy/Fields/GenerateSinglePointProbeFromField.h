@@ -85,7 +85,8 @@ namespace SCIRun {
 
         FieldHandle GenerateOutputField(boost::optional<FieldHandle> ifieldOption);
         index_type GenerateIndex();
-        void setNearestNode();
+        void setNearestNode(const Core::Geometry::Point& location);
+        void setNearestElement(const Core::Geometry::Point& location);
       };
 
       class SCISHARE PointWidgetStub
