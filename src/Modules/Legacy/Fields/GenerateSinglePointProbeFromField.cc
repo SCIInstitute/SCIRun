@@ -247,8 +247,6 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
   const auto moveto = state->getValue(MoveMethod).toString();
   bool moved_p = false;
 
-  std::cout << moveto << std::endl;
-
   if (moveto == "Location")
   {
     const auto newloc = currentLocation();
@@ -330,14 +328,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
 
   if (ifieldOption)
   {
-    {
-      //std::cout << "~~~~finding nearest node~~~~" << std::endl;
-      ifield->vmesh()->synchronize(Mesh::FIND_CLOSEST_NODE_E);
-      Point r;
-      VMesh::Node::index_type idx;
-      ifield->vmesh()->find_closest_node(r, idx, location);
-      state->setValue(FieldNode, static_cast<int>(idx));
-    }
+    setNearestNode();
 
     {
       //std::cout << "~~~~finding nearest node~~~~" << std::endl;
@@ -420,6 +411,17 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
   state->setValue(FieldValue, valstr.str());
 
   return ofield;
+}
+
+void GenerateSinglePointProbeFromField::setNearestNode()
+{
+  auto ifield = *getOptionalInput(InputField);
+  const auto location = impl_->widget_->position();
+  ifield->vmesh()->synchronize(Mesh::FIND_CLOSEST_NODE_E);
+  Point r;
+  VMesh::Node::index_type idx;
+  ifield->vmesh()->find_closest_node(r, idx, location);
+  get_state()->setValue(Parameters::FieldNode, static_cast<int>(idx));
 }
 
 index_type GenerateSinglePointProbeFromField::GenerateIndex()
