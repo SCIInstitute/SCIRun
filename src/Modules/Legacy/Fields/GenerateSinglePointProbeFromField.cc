@@ -61,6 +61,8 @@ ALGORITHM_PARAMETER_DEF(Fields, FieldElem);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeSize);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeLabel);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeColor);
+ALGORITHM_PARAMETER_DEF(Fields, SnapToNode);
+ALGORITHM_PARAMETER_DEF(Fields, SnapToElement);
 
 namespace SCIRun
 {
@@ -114,7 +116,8 @@ void GenerateSinglePointProbeFromField::adjustPositionFromTransform(const Transf
 {
   using namespace Parameters;
 
-  if (get_state()->getValue(MoveMethod).toString() == "Node")
+  if (get_state()->getValue(MoveMethod).toString() == "Node" &&
+      get_state()->getValue(SnapToNode).toBool())
   {
     std::cout << "would like to snap to nearest node" << std::endl;
   }
@@ -152,6 +155,8 @@ void GenerateSinglePointProbeFromField::setStateDefaults()
   state->setValue(ProbeSize, 1.0);
   state->setValue(ProbeLabel, std::string());
   state->setValue(ProbeColor, ColorRGB(1, 1, 1).toString());
+  state->setValue(SnapToNode, false);
+  state->setValue(SnapToElement, false);
 
   getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }

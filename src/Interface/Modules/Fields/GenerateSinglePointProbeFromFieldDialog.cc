@@ -53,6 +53,8 @@ GenerateSinglePointProbeFromFieldDialog::GenerateSinglePointProbeFromFieldDialog
   addLineEditManager(fieldValueLineEdit_, Parameters::FieldValue);
   addSpinBoxManager(fieldNodeSpinBox_, Parameters::FieldNode);
   addSpinBoxManager(fieldElemSpinBox_, Parameters::FieldElem);
+  addCheckBoxManager(snapToNodeCheckBox_, Parameters::SnapToNode);
+  addCheckBoxManager(snapToElementCheckBox_, Parameters::SnapToElement);
 
   connect(moveToComboBox_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
   connect(colorChooserPushButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));

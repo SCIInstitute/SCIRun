@@ -52,6 +52,8 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(ProbeSize);
         ALGORITHM_PARAMETER_DECL(ProbeLabel);
         ALGORITHM_PARAMETER_DECL(ProbeColor);
+        ALGORITHM_PARAMETER_DECL(SnapToNode);
+        ALGORITHM_PARAMETER_DECL(SnapToElement);
       }
     }
   }
