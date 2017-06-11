@@ -84,6 +84,8 @@ public:
   bool disabled() const { return disabled_; }
   void setDisabled(bool disabled);
   void addSubnetCompanion(PortWidget* subnetPort);
+  void deleteCompanion();
+  bool isCompanion() const { return isCompanion_; }
 public Q_SLOTS:
   void trackNodes();
   void setDrawStrategy(ConnectionDrawStrategyPtr drawer);
@@ -120,6 +122,7 @@ private:
   int placeHoldingWidth_;
   double defaultZValue() const;
   ConnectionLine* subnetCompanion_ { nullptr };
+  bool isCompanion_{ false };
 };
 
 struct InvalidConnection : virtual Core::ExceptionBase {};
@@ -238,7 +241,8 @@ class ConnectionFactory
 {
 public:
   explicit ConnectionFactory(QGraphicsProxyWidget* module);
-  
+  explicit ConnectionFactory(SceneFunc func);
+
   ConnectionInProgress* makeConnectionInProgress(PortWidget* port) const;
   ConnectionInProgress* makePotentialConnection(PortWidget* port) const;
   ConnectionLine* makeFinishedConnection(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id) const;
@@ -248,7 +252,7 @@ public:
   static ConnectionDrawType getType();
   static ConnectionDrawStrategyPtr getCurrentDrawer();
   static void setVisibility(bool visible) { visible_ = visible; }
-  
+
 private:
   static ConnectionDrawType currentType_;
   static bool visible_;
@@ -256,7 +260,9 @@ private:
   static ConnectionDrawStrategyPtr cubic_;
   static ConnectionDrawStrategyPtr manhattan_;
 
-  QGraphicsProxyWidget* module_;
+  QGraphicsProxyWidget* module_ {nullptr};
+  SceneFunc func_;
+  QGraphicsScene* getScene() const;
 };
 
 }

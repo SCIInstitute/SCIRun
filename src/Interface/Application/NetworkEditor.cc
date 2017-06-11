@@ -144,7 +144,10 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module, const ModuleCounter& count)
 {
   if (!fileLoading_ && inEditingContext_ != this)
+  {
+    //std::cout << "\t\tnew condition: !" << fileLoading_ << " and " << inEditingContext_ << " != " << this << std::endl;
     return;
+  }
 
   latestModuleId_ = module->get_id().id_;
   auto moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
@@ -210,6 +213,8 @@ namespace
 
 void NetworkEditor::duplicateModule(const ModuleHandle& module)
 {
+  InEditingContext iec(this);
+
   auto widget = findById(scene_->items(), module->get_id());
   lastModulePosition_ = widget->scenePos() + QPointF(0, 110);
   //TODO: need better duplicate placement. hard code it for now.
@@ -223,6 +228,8 @@ namespace
 
 void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
+  InEditingContext iec(this);
+
   auto prop = sender()->property(addNewModuleActionTypePropertyName());
 
   auto widget = findById(scene_->items(), moduleToConnectTo->get_id());
@@ -253,6 +260,8 @@ void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, cons
 
 void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const std::string& newModuleName)
 {
+  InEditingContext iec(this);
+
   auto oldModule = findById(scene_->items(), moduleToReplace->get_id());
   lastModulePosition_ = oldModule->scenePos();
   controller_->addModule(newModuleName);
@@ -1285,7 +1294,7 @@ void NetworkEditor::removeModuleWidget(const ModuleId& id)
   auto widget = findById(scene_->items(), id.id_);
   if (widget)
   {
-    widget->getModuleWidget()->setDeletedFromGui(false);
+    widget->getModuleWidget()->setDeletedFromGui(id.id_.find("Subnet") != std::string::npos);
     delete widget;
     Q_EMIT modified();
   }
@@ -1803,6 +1812,7 @@ void NetworkEditor::scrollContentsBy(int dx, int dy)
   for (auto& item : subnetPortHolders_)
   {
     item->setPos(item->pos() + QPointF(-dx,-dy));
+    item->updateConnections();
   }
   QGraphicsView::scrollContentsBy(dx, dy);
 }

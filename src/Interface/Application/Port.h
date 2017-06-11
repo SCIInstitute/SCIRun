@@ -73,6 +73,7 @@ public:
   bool isHighlighted() const { return isHighlighted_; }
   int properWidth() const { return sizeHint().width(); }
   void setSceneFunc(SceneFunc getScene) { getScene_ = getScene; }
+  SceneFunc sceneFunc() const { return getScene_; }
   bool sameScene(const PortWidgetBase* other) const;
 
 protected:
@@ -103,6 +104,8 @@ public:
   virtual bool isDynamic() const override { return isDynamic_; }
   bool isConnected() const { return isConnected_; }
   void setConnected(bool connected) { isConnected_ = connected; }
+
+  virtual Dataflow::Networks::PortDescriptionInterface* getRealPort() { return this; }
 
   virtual size_t nconnections() const override;
   virtual std::string get_typename() const override;
@@ -258,10 +261,30 @@ public:
     QWidget* parent = nullptr);
 };
 
+class SubnetInputPortWidget : public InputPortWidget
+{
+public:
+  SubnetInputPortWidget(const QString& name, const QColor& color, const std::string& datatype, 
+    boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
+    boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
+    Dataflow::Networks::PortDescriptionInterface* realPort,
+    QWidget* parent = nullptr);
+  virtual Dataflow::Networks::PortDescriptionInterface* getRealPort() override { return realPort_; }
+private:
+  Dataflow::Networks::PortDescriptionInterface* realPort_;
+};
+
 class SubnetOutputPortWidget : public OutputPortWidget
 {
 public:
-  SubnetOutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, QWidget* parent = nullptr);
+  SubnetOutputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
+    boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
+    boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
+    Dataflow::Networks::PortDescriptionInterface* realPort,
+    QWidget* parent = nullptr);
+  virtual Dataflow::Networks::PortDescriptionInterface* getRealPort() override { return realPort_; }
+private:
+  Dataflow::Networks::PortDescriptionInterface* realPort_;
 };
 
 class DataInfoDialog

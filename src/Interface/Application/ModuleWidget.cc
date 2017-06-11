@@ -550,7 +550,7 @@ bool ModuleWidget::guiVisible() const
 
 void ModuleWidget::fillReplaceWithMenu()
 {
-  if (deleting_)
+  if (deleting_ || networkBeingCleared_)
     return;
 
   auto menu = getReplaceWithMenu();
@@ -960,6 +960,8 @@ ModuleWidget::NetworkClearingScope::~NetworkClearingScope()
 
 ModuleWidget::~ModuleWidget()
 {
+  actionsMenu_->getAction("Replace With")->setMenu(nullptr);
+
   disconnect(this, SIGNAL(dynamicPortChanged(const std::string&, bool)), this, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
   disconnect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
 
@@ -1377,8 +1379,6 @@ void ModuleWidget::stopButtonPushed()
 {
   Q_EMIT interrupt(theModule_->get_id());
 }
-
-bool ModuleWidget::globalMiniMode_(false);
 
 void ModuleWidget::movePortWidgets(int oldIndex, int newIndex)
 {

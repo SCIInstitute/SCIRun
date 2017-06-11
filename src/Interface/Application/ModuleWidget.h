@@ -301,8 +301,6 @@ private:
   boost::shared_ptr<class ConnectionFactory> connectionFactory_;
   boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
 
-  static bool globalMiniMode_;
-
   friend class ::PortBuilder;
 };
 
@@ -323,9 +321,12 @@ class SubnetPortsBridgeWidget : public QWidget
 	Q_OBJECT
 public:
   SubnetPortsBridgeWidget(NetworkEditor* ed, const QString& name, QWidget* parent = nullptr);
+  void addPort(PortWidget* port) { ports_.push_back(port); }
+  const std::vector<PortWidget*>& ports() const { return ports_; }
 private:
   NetworkEditor* editor_;
   QString name_;
+  std::vector<PortWidget*> ports_;
 };
 
 }
