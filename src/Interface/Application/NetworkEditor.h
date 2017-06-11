@@ -59,6 +59,7 @@ namespace SCIRun {
 namespace Gui {
 
   class DialogErrorControl;
+  class SubnetPortsBridgeProxyWidget;
   
   class CurrentModuleSelection
   {
@@ -276,6 +277,7 @@ namespace Gui {
     void contextMenuEvent(QContextMenuEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void scrollContentsBy(int dx, int dy) override;
+    void resizeEvent(QResizeEvent *event) override;
 
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
@@ -365,7 +367,7 @@ namespace Gui {
     QString checkForOverriddenTagName(int tag) const;
     void renameTagGroup(int tag, const QString& name);
     QPointF positionOfFloatingText(int num, bool top, int horizontalIndent, int verticalSpacing) const;
-    QPixmap grabSubnetPic(const QRectF& rect);
+    QPixmap grabSubnetPic(const QRectF& rect, const QList<QGraphicsItem*>& items);
     QString convertToTooltip(const QPixmap& pic) const;
     void initializeSubnet(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle mod, NetworkEditor* subnet);
     void dumpSubnetworksImpl(const QString& name, Dataflow::Networks::Subnetworks& data, Dataflow::Networks::ModuleFilter modFilter) const;
@@ -408,10 +410,12 @@ namespace Gui {
     NetworkEditor* parentNetwork_ {nullptr};
     std::map<QString, class SubnetworkEditor*> childrenNetworks_;
     std::map<QString, QList<QGraphicsItem*>> childrenNetworkItems_;
-    QList<QGraphicsItem*> subnetPortHolders_;
+    QList<SubnetPortsBridgeProxyWidget*> subnetPortHolders_;
     void setupPortHolders(Dataflow::Networks::ModuleHandle mod);
     void setupPortHolder(const std::vector<SharedPointer<SCIRun::Dataflow::Networks::PortDescriptionInterface>>& ports, const QString& name,
       std::function<QPointF(const QRectF&)> position);
+    void removeSubnetPortHolders();
+    std::vector<QGraphicsItem*> subnetItemsToMove();
     PortRewiringMap portRewiringMap_;
     QSet<QString> currentSubnetNames_;
 
