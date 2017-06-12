@@ -362,6 +362,8 @@ namespace Gui {
     void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions, SCIRun::Dataflow::Networks::ModuleFilter filter) const;
     void highlightTaggedItem(QGraphicsItem* item, int tagValue);
     void pasteImpl(const QString& xml);
+    void connectNewModuleImpl(const Dataflow::Networks::ModuleHandle& moduleToConnectTo, const Dataflow::Networks::PortDescriptionInterface* portToConnect, 
+      const std::string& newModuleName, QObject* sender);
     void drawTagGroups();
     void removeTagGroups();
     QString checkForOverriddenTagName(int tag) const;

@@ -228,35 +228,48 @@ namespace
 
 void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
-  InEditingContext iec(this);
-
-  auto prop = sender()->property(addNewModuleActionTypePropertyName());
-
-  auto widget = findById(scene_->items(), moduleToConnectTo->get_id());
-  QPointF increment(0, portToConnect->isInput() ? -110 : 50);
-  lastModulePosition_ = widget->scenePos() + increment;
-  moduleAddIncrement = { 20.0, portToConnect->isInput() ? -20.0 : 20.0 };
-
-  PortWidget* newConnectionInputPort = nullptr;
-  auto q = dynamic_cast<const PortWidget*>(portToConnect);
-  if (q)
-  {
-    for (size_t i = 0; i < q->nconnections(); ++i)
-    {
-      auto cpi = q->connectedPorts()[i];
-      if (QString::fromStdString(cpi->id().toString()) == sender()->property(insertNewModuleActionTypePropertyName()))
-        newConnectionInputPort = cpi;
-    }
-  }
-
-  if (newConnectionInputPort)
-  {
-    controller_->removeConnection(*newConnectionInputPort->firstConnectionId());
-    newConnectionInputPort->deleteConnectionsLater();
-  }
-
-  controller_->connectNewModule(portToConnect, newModuleName, newConnectionInputPort);
+  connectNewModuleImpl(moduleToConnectTo, portToConnect, newModuleName, sender());
 }
+
+void NetworkEditor::connectNewModuleImpl(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName, QObject* sender)
+{
+  auto widget = findById(scene_->items(), moduleToConnectTo->get_id());
+
+  if (widget)
+  {
+    InEditingContext iec(this);
+    QPointF increment(0, portToConnect->isInput() ? -110 : 50);
+    lastModulePosition_ = widget->scenePos() + increment;
+    moduleAddIncrement = { 20.0, portToConnect->isInput() ? -20.0 : 20.0 };
+
+    PortWidget* newConnectionInputPort = nullptr;
+    auto q = dynamic_cast<const PortWidget*>(portToConnect);
+    if (q)
+    {
+      for (size_t i = 0; i < q->nconnections(); ++i)
+      {
+        auto cpi = q->connectedPorts()[i];
+        if (QString::fromStdString(cpi->id().toString()) == sender->property(insertNewModuleActionTypePropertyName()))
+          newConnectionInputPort = cpi;
+      }
+    }
+
+    if (newConnectionInputPort)
+    {
+      controller_->removeConnection(*newConnectionInputPort->firstConnectionId());
+      newConnectionInputPort->deleteConnectionsLater();
+    }
+
+    controller_->connectNewModule(portToConnect, newModuleName, newConnectionInputPort);
+    return;
+  }
+
+  for (auto& child : childrenNetworks_)
+  {
+    child.second->get()->connectNewModuleImpl(moduleToConnectTo, portToConnect, newModuleName, sender);
+  }
+}
+
 
 void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const std::string& newModuleName)
 {

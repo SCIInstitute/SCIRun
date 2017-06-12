@@ -386,8 +386,16 @@ namespace
   }
 }
 
+static const char* noRecursiveSubnetsWarning = "Subnets only support a depth level of one at this time. See issue #1641.";
+
 void NetworkEditor::makeSubnetwork()
 {
+  if (parentNetwork_)
+  {
+    QMessageBox::information(this, "Make subnetwork", noRecursiveSubnetsWarning);
+    return;
+  }
+
   QRectF rect;
   QPointF position;
 
@@ -402,7 +410,13 @@ void NetworkEditor::makeSubnetwork()
     if (module)
     {
       items.append(item);
-      underlyingModules.push_back(module->getModule());
+      auto mod = module->getModule();
+      if (mod->get_id().id_.find("Subnet") != std::string::npos)
+      {
+        QMessageBox::information(this, "Make subnetwork", noRecursiveSubnetsWarning);
+        return;
+      }
+      underlyingModules.push_back(mod);
     }
   }
 
