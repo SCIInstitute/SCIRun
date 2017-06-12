@@ -374,6 +374,7 @@ namespace Gui {
     void initializeSubnet(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle mod, NetworkEditor* subnet);
     void dumpSubnetworksImpl(const QString& name, Dataflow::Networks::Subnetworks& data, Dataflow::Networks::ModuleFilter modFilter) const;
     QList<QGraphicsItem*> includeConnections(QList<QGraphicsItem*> items) const;
+    QRectF visibleRect() const;
 
     // default constructed
     bool modulesSelectedByCL_{ false };
@@ -417,6 +418,7 @@ namespace Gui {
     void setupPortHolder(const std::vector<SharedPointer<SCIRun::Dataflow::Networks::PortDescriptionInterface>>& ports, const QString& name,
       std::function<QPointF(const QRectF&)> position);
     void removeSubnetPortHolders();
+    void resizeSubnetPortHolders(double scaleFactor);
     std::vector<QGraphicsItem*> subnetItemsToMove();
     PortRewiringMap portRewiringMap_;
     QSet<QString> currentSubnetNames_;
@@ -434,6 +436,8 @@ namespace Gui {
       }
     };
     static ConnectorFunc connectorFunc_;
+    static std::function<QPointF(const QRectF&)> topSubnetPortHolderPositioner_;
+    static std::function<QPointF(const QRectF&)> bottomSubnetPortHolderPositioner_;
   };
 
   ModuleWidget* getModule(QGraphicsItem* item);

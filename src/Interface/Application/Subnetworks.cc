@@ -180,8 +180,16 @@ void NetworkEditor::showSubnetChild(const QString& name)
   }
 }
 
+QRectF NetworkEditor::visibleRect() const
+{
+  return mapToScene(rect()).boundingRect();
+}
+
 NetworkEditor* NetworkEditor::inEditingContext_(nullptr);
 NetworkEditor::ConnectorFunc NetworkEditor::connectorFunc_;
+
+std::function<QPointF(const QRectF&)> NetworkEditor::topSubnetPortHolderPositioner_([](const QRectF& rect) { return rect.topLeft(); });
+std::function<QPointF(const QRectF&)> NetworkEditor::bottomSubnetPortHolderPositioner_([](const QRectF& rect) { return rect.bottomLeft() + QPointF(0, -23); });
 
 void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescriptionInterface>>& ports, const QString& name, std::function<QPointF(const QRectF&)> position)
 {
@@ -193,7 +201,7 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
   layout->setAlignment(Qt::AlignLeft);
   layout->setContentsMargins(5, 0, 5, 0);
 
-  auto visible = mapToScene(rect()).boundingRect();
+  auto visible = visibleRect();
 
   auto proxy = new SubnetPortsBridgeProxyWidget(portsBridge);
   proxy->setWidget(portsBridge);
@@ -263,8 +271,8 @@ SubnetOutputPortWidget::SubnetOutputPortWidget(const QString& name, const QColor
 
 void NetworkEditor::setupPortHolders(ModuleHandle mod)
 {
-  setupPortHolder(upcast_range<PortDescriptionInterface>(mod->inputPorts()), "Inputs", [](const QRectF& rect) { return rect.topLeft(); });
-  setupPortHolder(upcast_range<PortDescriptionInterface>(mod->outputPorts()), "Outputs", [](const QRectF& rect) { return rect.bottomLeft() + QPointF(0, -23); });
+  setupPortHolder(upcast_range<PortDescriptionInterface>(mod->inputPorts()), "Inputs", topSubnetPortHolderPositioner_);
+  setupPortHolder(upcast_range<PortDescriptionInterface>(mod->outputPorts()), "Outputs", bottomSubnetPortHolderPositioner_);
   portRewiringMap_.clear();
 }
 

@@ -322,7 +322,8 @@ void SCIRunMainWindow::createStandardToolbar()
   standardBar->addAction(actionSelectMode_);
   standardBar->addAction(actionToggleMetadataLayer_);
   standardBar->addAction(actionToggleTagLayer_);
-  standardBar->addAction(actionMakeSubnetwork_);  //TODO: work in progress
+  standardBar->addAction(actionMakeSubnetwork_); 
+  
   connect(actionNetworkBar_, SIGNAL(toggled(bool)), standardBar, SLOT(setVisible(bool)));
   connect(standardBar, SIGNAL(visibilityChanged(bool)), actionNetworkBar_, SLOT(setChecked(bool)));
 }
@@ -799,7 +800,7 @@ void SCIRunMainWindow::setActionIcons()
 
   actionToggleMetadataLayer_->setIcon(QPixmap(":/general/Resources/metadataLayer.png"));
   actionToggleTagLayer_->setIcon(QPixmap(":/general/Resources/tagLayer.png"));
-  actionMakeSubnetwork_->setIcon(QPixmap(":/general/Resources/network.png"));
+  actionMakeSubnetwork_->setIcon(QPixmap(":/general/Resources/subnet3.png"));
 }
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)

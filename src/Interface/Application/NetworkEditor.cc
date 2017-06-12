@@ -1540,6 +1540,21 @@ void NetworkEditor::wheelEvent(QWheelEvent* event)
     QGraphicsView::wheelEvent(event);
 }
 
+void NetworkEditor::resizeSubnetPortHolders(double scaleFactor)
+{
+  for (auto& item : subnetPortHolders_)
+  {
+    item->resize(QSize(item->size().width() * scaleFactor, item->size().height()));
+
+    auto isInput = item->data(123).toString() == "Inputs";
+    if (isInput)
+      item->setPos(topSubnetPortHolderPositioner_(visibleRect()));
+    else
+      item->setPos(bottomSubnetPortHolderPositioner_(visibleRect()));
+    item->updateConnections();
+  }
+}
+
 void NetworkEditor::zoomIn()
 {
   if (currentScale_ < maxScale)
@@ -1547,6 +1562,9 @@ void NetworkEditor::zoomIn()
     double factor = std::min(scaleFactor, 4.0/currentScale_);
     scale(factor, factor);
     currentScale_ *= factor;
+
+    resizeSubnetPortHolders(1.0 / factor);
+
     Q_EMIT zoomLevelChanged(currentZoomPercentage());
   }
 }
@@ -1557,6 +1575,9 @@ void NetworkEditor::zoomOut()
   {
     scale(1.0 / scaleFactor, 1.0 / scaleFactor);
     currentScale_ /= scaleFactor;
+
+    resizeSubnetPortHolders(scaleFactor);
+
     Q_EMIT zoomLevelChanged(currentZoomPercentage());
   }
 }
@@ -1824,7 +1845,7 @@ void NetworkEditor::scrollContentsBy(int dx, int dy)
 {
   for (auto& item : subnetPortHolders_)
   {
-    item->setPos(item->pos() + QPointF(-dx,-dy));
+    item->setPos(item->pos() + QPointF(-dx / currentScale_, -dy / currentScale_));
     item->updateConnections();
   }
   QGraphicsView::scrollContentsBy(dx, dy);

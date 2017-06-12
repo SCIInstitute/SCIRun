@@ -206,6 +206,9 @@ void ModuleWidgetDisplay::setupIcons()
   getModuleActionButton()->setText("");
   getModuleActionButton()->setIcon(QPixmap(":/general/Resources/new/modules/settings.png"));
 
+  getSubnetButton()->setIcon(QPixmap(":/general/Resources/editSubnet.png"));
+  getSubnetButton()->setText("Edit");
+
   auto movie = new QMovie(":/general/Resources/executing.gif");
   executingLabel_->setMovie(movie);
 }
@@ -261,6 +264,8 @@ void ModuleWidgetDisplay::setupSubnetWidgets()
 {
   getExecuteButton()->setVisible(false);
   getLogButton()->setVisible(false);
+  getHelpButton()->setVisible(false);
+
   subnetButton_->setMinimumWidth(50);
   auto layout = qobject_cast<QHBoxLayout*>(buttonGroup_->layout());
   if (layout)
