@@ -42,10 +42,10 @@ namespace Math {
   {
   public:
     ConvertComplexToRealMatrix();
-    virtual void execute();
-    virtual void setStateDefaults() {}
+    virtual void execute() override;
+    virtual void setStateDefaults() override {}
 
-    INPUT_PORT(0, InputComplexMatrix, ComplexMatrix);  
+    INPUT_PORT(0, InputComplexMatrix, ComplexMatrix);
     OUTPUT_PORT(0, OutputRealPartMatrix, Matrix);
     OUTPUT_PORT(1, OutputComplexPartMatrix, Matrix);
     MODULE_TRAITS_AND_INFO(NoAlgoOrUI)

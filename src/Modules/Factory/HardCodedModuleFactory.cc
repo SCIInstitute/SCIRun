@@ -113,7 +113,7 @@ void HardCodedModuleFactory::setReexecutionFactory(ReexecuteStrategyFactoryHandl
   DefaultModuleFactories::defaultReexFactory_ = reexFactory;
 }
 
-ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
+ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc) const
 {
   ModuleBuilder builder;
 

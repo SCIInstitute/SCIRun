@@ -277,26 +277,21 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   }
 
   setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsGeometryChanges | ItemIsFocusable);
-
   setZValue(defaultZValue());
   setToolTip("<font color=\"#EEEEEE\" size=2>Left - Highlight<br>Double-Left - Menu<br>i - Datatype info");
   setAcceptHoverEvents(true);
-
   menu_ = new ConnectionMenu(this);
   connectNoteEditorToAction(menu_->notesAction_);
   connectUpdateNote(this);
-
   NeedsScenePositionProvider::setPositionObject(boost::make_shared<MidpointPositionerFromPorts>(fromPort_, toPort_));
-
   connect(menu_->disableAction_, SIGNAL(triggered()), this, SLOT(toggleDisabled()));
-
   connect(this, SIGNAL(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)),
     fromPort_, SLOT(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)));
   setProperty(addNewModuleActionTypePropertyName(), QString("insertModule"));
-
   menu_->setStyleSheet(fromPort->styleSheet());
 
   trackNodes();
+
   GuiLogger::Instance().logInfoStd("Connection made: " + id_.id_);
 }
 
@@ -374,6 +369,19 @@ void ConnectionLine::trackNodes()
   }
   else
     BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection: " + id_.id_));
+}
+
+void ConnectionLine::addSubnetCompanion(PortWidget* subnetPort)
+{
+  qDebug() << id().id_.c_str() << "setup companion with" << subnetPort;
+  //setVisible(false);
+  ConnectionFactory f(nullptr);
+
+  auto out = subnetPort->isInput() ? fromPort_ : subnetPort;
+  auto in = subnetPort->isInput() ? subnetPort : toPort_;
+
+  ConnectionDescription cd{ { out->getUnderlyingModuleId(), out->id() }, { in->getUnderlyingModuleId(), in->id() } };
+  f.makeFinishedConnection(out, in, ConnectionId::create(cd));
 }
 
 void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
@@ -586,7 +594,7 @@ QPointF MidpointPositionerFromPorts::currentPosition() const
 ConnectionFactory::ConnectionFactory(QGraphicsProxyWidget* module) :
   module_(module)
 {}
- 
+
 bool ConnectionFactory::visible_(true);
 ConnectionDrawType ConnectionFactory::currentType_(ConnectionDrawType::EUCLIDEAN);
 ConnectionDrawStrategyPtr ConnectionFactory::euclidean_(new EuclideanDrawStrategy);

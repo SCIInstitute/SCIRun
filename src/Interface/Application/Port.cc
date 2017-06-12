@@ -29,6 +29,7 @@
 #include <iostream>
 #include <QtGui>
 #include <boost/lambda/lambda.hpp>
+#include <boost/regex.hpp>
 #include <Dataflow/Network/Port.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/Connection.h>
@@ -83,10 +84,8 @@ namespace SCIRun {
 
           for (const auto& module : category.second)
           {
-            //qDebug() << module.second.lookupInfo_.module_name_.c_str();
             if (modulePred(module.second))
             {
-              //qDebug() << "is compatible";
               const auto& moduleName = module.first;
               auto qname = QString::fromStdString(moduleName);
               auto action = new QAction(qname, menu);
@@ -97,7 +96,6 @@ namespace SCIRun {
           }
           if (!actions.empty())
           {
-            //qDebug() << "action list not empty, adding to submenu" << categoryName.c_str();
             auto m = new QMenu(QString::fromStdString(categoryName), parent);
             m->addActions(actions);
             packageMenus.append(m);
@@ -105,7 +103,6 @@ namespace SCIRun {
         }
         if (!packageMenus.isEmpty())
         {
-          //qDebug() << "package menu not empty, adding to menu" << packageName.c_str();
           auto p = new QMenu(QString::fromStdString(packageName), parent);
           for (auto pm : packageMenus)
             p->addMenu(pm);
@@ -387,6 +384,15 @@ void PortWidget::pickConnectModule()
   }
 }
 
+bool PortWidgetBase::sameScene(const PortWidgetBase* other) const
+{
+  if (getScene_ && other && other->getScene_)
+  {
+    return getScene_() == other->getScene_();
+  }
+  return true;
+}
+
 size_t PortWidget::getIndex() const
 {
   return index_;
@@ -394,6 +400,14 @@ size_t PortWidget::getIndex() const
 
 PortId PortWidget::id() const
 {
+  if (moduleId_.id_.find("Subnet") != std::string::npos)
+  {
+    static boost::regex r("(.+)\\[.+\\]");
+    boost::smatch what;
+    regex_match(portId_.name, what, r);
+    return PortId(0, std::string(what[1]));
+  }
+
   return portId_;
 }
 
@@ -462,6 +476,22 @@ void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port, double thr
   }
 }
 
+void PortWidget::connectToSubnetPort(PortWidget* subnetPort)
+{
+  auto out = isInput_ ? subnetPort : this;
+  auto in = isInput_ ? this : subnetPort;
+
+  ConnectionDescription cd { { out->moduleId_, out->portId_ }, { in->moduleId_, in->portId_ } };
+  if (connectionFactory_ && connectionFactory_())
+    connectionFactory_()->makeFinishedConnection(out, in, ConnectionId::create(cd));
+  else
+  {
+    qDebug() << "NO CONNECTION FACTORY AVAILABLE!!";
+  }
+  //TODO: position provider needs adjustment
+  //TODO: management of return value?
+}
+
 void PortWidget::MakeTheConnection(const ConnectionDescription& cd)
 {
   if (matches(cd))
@@ -497,7 +527,7 @@ void PortWidget::setPositionObject(PositionProviderPtr provider)
   Q_EMIT portMoved();
 }
 
-void PortWidget::moveEvent(QMoveEvent * event)
+void PortWidget::moveEvent(QMoveEvent* event)
 {
   QPushButton::moveEvent(event);
   Q_EMIT portMoved();
@@ -576,6 +606,9 @@ void PortWidget::forEachPort(Func func, Pred pred)
 
 void PortWidget::makePotentialConnectionLine(PortWidget* other)
 {
+  if (other && getScene_ && other->getScene_ && getScene_() != other->getScene_())
+    return;
+
   auto potentials = potentialConnectionsMap_[this];
   if (potentials.find(other) == potentials.end())
   {
@@ -671,6 +704,13 @@ std::string PortWidget::get_portname() const
 
 ModuleId PortWidget::getUnderlyingModuleId() const
 {
+  if (moduleId_.id_.find("Subnet") != std::string::npos)
+  {
+    static boost::regex r(".+\\[[A-Za-z]+:(.+)\\]");
+    boost::smatch what;
+    regex_match(portId_.name, what, r);
+    return ModuleId(std::string(what[1]));
+  }
   return moduleId_;
 }
 

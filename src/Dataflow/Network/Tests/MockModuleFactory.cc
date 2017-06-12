@@ -49,7 +49,7 @@ ModuleDescription MockModuleFactory::lookupDescription(const ModuleLookupInfo& i
   return d;
 }
 
-ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
+ModuleHandle MockModuleFactory::create(const ModuleDescription& info) const
 {
   MockModulePtr module(new NiceMock<MockModule>);
 
