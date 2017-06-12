@@ -53,6 +53,8 @@ GenerateSinglePointProbeFromFieldDialog::GenerateSinglePointProbeFromFieldDialog
   addLineEditManager(fieldValueLineEdit_, Parameters::FieldValue);
   addSpinBoxManager(fieldNodeSpinBox_, Parameters::FieldNode);
   addSpinBoxManager(fieldElemSpinBox_, Parameters::FieldElem);
+  addCheckBoxManager(snapToNodeCheckBox_, Parameters::SnapToNode);
+  addCheckBoxManager(snapToElementCheckBox_, Parameters::SnapToElement);
 
   connect(moveToComboBox_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
   connect(colorChooserPushButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
@@ -66,6 +68,8 @@ void GenerateSinglePointProbeFromFieldDialog::enableWidgets(const QString& mode)
   zLocationDoubleSpinBox_->setReadOnly(mode != "Location");
   fieldNodeSpinBox_->setReadOnly(mode != "Node");
   fieldElemSpinBox_->setReadOnly(mode != "Element");
+  snapToNodeCheckBox_->setVisible(mode == "Node");
+  snapToElementCheckBox_->setVisible(mode == "Element");
 }
 
 void GenerateSinglePointProbeFromFieldDialog::pullSpecial()
@@ -76,6 +80,8 @@ void GenerateSinglePointProbeFromFieldDialog::pullSpecial()
     static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
     static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
     static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+
+  enableWidgets(QString::fromStdString(state_->getValue(Parameters::MoveMethod).toString()));
 }
 
 void GenerateSinglePointProbeFromFieldDialog::assignDefaultMeshColor()
