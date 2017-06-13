@@ -441,13 +441,19 @@ void NetworkEditor::makeSubnetwork()
 
   if (name.isEmpty())
   {
-    QMessageBox::information(this, "Make subnetwork", "Invalid name.");
+    QMessageBox::information(this, "Make subnetwork", "Invalid name: cannot be empty.");
     return;
   }
 
   if (currentSubnetNames_.contains(name))
   {
-    QMessageBox::information(this, "Make subnetwork", "A subnet by that name already exists.");
+    QMessageBox::information(this, "Make subnetwork", "Invalid name: a subnet by that name already exists.");
+    return;
+  }
+
+  if (Application::Instance().moduleNameExists(name.toStdString()))
+  {
+    QMessageBox::information(this, "Make subnetwork", "Invalid name: matches a module name.");
     return;
   }
 
