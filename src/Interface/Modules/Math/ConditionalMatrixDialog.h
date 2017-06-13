@@ -44,6 +44,9 @@ namespace SCIRun {
 			ConditionalMatrixDialog(const std::string& name,
 						SCIRun::Dataflow::Networks::ModuleStateHandle state,
 						QWidget* parent = 0);
+        private:
+            
+            boost::shared_ptr<class ConditionalMatrixDialogImpl> impl_;
 		};
 	}
 }

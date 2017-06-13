@@ -54,6 +54,10 @@ class SCISHARE ConditionalMatrixAlgo : public AlgorithmBase
   public:
     ConditionalMatrixAlgo();
     AlgorithmOutput run(const AlgorithmInput& input) const;
+  bool runImpl(Datatypes::DenseMatrixHandle matrixa, Datatypes::DenseMatrixHandle matrixb, std::string valoptA, std::string valoptB, std::string cond_statement, bool cond_state) const;
+  bool return_value(Datatypes::MatrixHandle out_matrix,std::string result_statement, Datatypes::MatrixHandle first, Datatypes::MatrixHandle second, Datatypes::MatrixHandle possout) const;
+  bool CompareMatrix(Datatypes::DenseMatrixHandle mata, Datatypes::DenseMatrixHandle matb, std::string cond_statement) const;
+  double ComputeNorm(Datatypes::DenseMatrixHandle mat) const;
 };
 
       }}}}// end SCIRun namespace

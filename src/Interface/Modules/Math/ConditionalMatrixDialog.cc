@@ -27,24 +27,82 @@
 */
 
 #include <Interface/Modules/Math/ConditionalMatrixDialog.h>
+#include <Core/Algorithms/Math/ConditionalMatrixAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <QtGui>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Math;
+
+namespace SCIRun {
+    namespace Gui {
+        class ConditionalMatrixDialogImpl
+        {
+        public:
+            ConditionalMatrixDialogImpl()
+            {
+                value_1_.insert(StringPair("Elements", "value"));
+                value_1_.insert(StringPair("Size", "size"));
+                value_1_.insert(StringPair("Norm", "norm"));
+                
+                value_2_.insert(StringPair("Elements", "value"));
+                value_2_.insert(StringPair("Size", "size"));
+                value_2_.insert(StringPair("Norm", "norm"));
+                
+                condition_.insert(StringPair("A is non-zero","boolop"));
+                condition_.insert(StringPair("A and B are non-zero (and)","andop"));
+                condition_.insert(StringPair("Either A or B is non-zero (or)","orop"));
+                condition_.insert(StringPair("A is less than B (<)","lessop"));
+                condition_.insert(StringPair("A is less or equal to B (<=)","lesseqop"));
+                condition_.insert(StringPair("A is equal to B (==)","eqop"));
+                condition_.insert(StringPair("A is greater than B (>)","greatop"));
+                condition_.insert(StringPair("A is greater or equal to B (>=)","greateqop"));
+                
+                then_.insert(StringPair("Return: null","null"));
+                then_.insert(StringPair("Return: first input","first"));
+                then_.insert(StringPair("Return: second input","second"));
+                then_.insert(StringPair("Return: thrid input","third"));
+                then_.insert(StringPair("Quit SCIRun","quit"));
+                
+                else_.insert(StringPair("Return: null","null"));
+                else_.insert(StringPair("Return: first input","first"));
+                else_.insert(StringPair("Return: second input","second"));
+                else_.insert(StringPair("Return: thrid input","third"));
+                else_.insert(StringPair("Quit SCIRun","quit"));
+            }
+            GuiStringTranslationMap value_1_;
+            GuiStringTranslationMap value_2_;
+            GuiStringTranslationMap condition_;
+            GuiStringTranslationMap then_;
+            GuiStringTranslationMap else_;
+        };
+    }}
+
+    
+            
 
 ConditionalMatrixDialog::ConditionalMatrixDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent/* = 0*/)
-	: ModuleDialogGeneric(state, parent)
+	: ModuleDialogGeneric(state, parent),
+    impl_(new ConditionalMatrixDialogImpl)
 {
 	setupUi(this);
 	setWindowTitle(QString::fromStdString(name));
 	fixSize();
+    
+    
+    
 
-    addComboBoxManager(valueBox_1_, Variables::Method);
-    addComboBoxManager(valueBox_2_, Variables::ObjectInfo);
-    addComboBoxManager(conditionBox_, Variables::Operator);
-    addComboBoxManager(thenBox_, Variables::FormatString);
-    addComboBoxManager(elseBox_, Variables::FunctionString);
+    addComboBoxManager(valueBox_1_, Variables::Method,impl_->value_1_);
+    addComboBoxManager(valueBox_2_, Variables::ObjectInfo,impl_->value_2_);
+    addComboBoxManager(conditionBox_, Variables::Operator,impl_->condition_);
+    addComboBoxManager(thenBox_, Variables::FormatString,impl_->then_);
+    addComboBoxManager(elseBox_, Variables::FunctionString,impl_->else_);
 }
+
+//void ConditionalMatrixDialog::pullSpecial()
+//{
+//    
+//}
