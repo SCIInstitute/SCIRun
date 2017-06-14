@@ -47,11 +47,16 @@ GetSliceFromStructuredFieldByIndicesDialog::GetSliceFromStructuredFieldByIndices
   addSpinBoxManager(kAxisSpinBox_, Index_k);
   addRadioButtonGroupManager({ iAxisRadioButton_, jAxisRadioButton_, kAxisRadioButton_ }, Axis_ijk);
 
-  //TODO: test whether users want live execution for this module
-  //createExecuteInteractivelyToggleAction();
-  //connect(iAxisHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executeFromStateChangeTriggered()));
-  //connect(jAxisHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executeFromStateChangeTriggered()));
-  //connect(kAxisHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executeFromStateChangeTriggered()));
+  createExecuteInteractivelyToggleAction();
+  connect(iAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SIGNAL(executeFromStateChangeTriggered()));
+  connect(jAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SIGNAL(executeFromStateChangeTriggered()));
+  connect(kAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SIGNAL(executeFromStateChangeTriggered()));
+  connect(iAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
+  connect(jAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
+  connect(kAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
+  connect(iAxisRadioButton_, SIGNAL(clicked()), this, SIGNAL(executeFromStateChangeTriggered()));
+  connect(jAxisRadioButton_, SIGNAL(clicked()), this, SIGNAL(executeFromStateChangeTriggered()));
+  connect(kAxisRadioButton_, SIGNAL(clicked()), this, SIGNAL(executeFromStateChangeTriggered()));
 }
 
 void GetSliceFromStructuredFieldByIndicesDialog::pullSpecial()
@@ -65,4 +70,10 @@ void GetSliceFromStructuredFieldByIndicesDialog::pullSpecial()
   iAxisHorizontalSlider_->setMaximum(state_->getValue(Dim_i).toInt());
   jAxisHorizontalSlider_->setMaximum(state_->getValue(Dim_j).toInt());
   kAxisHorizontalSlider_->setMaximum(state_->getValue(Dim_k).toInt());
+}
+
+void GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked(int value)
+{
+  if (!pulling_)
+    Q_EMIT executeFromStateChangeTriggered();
 }
