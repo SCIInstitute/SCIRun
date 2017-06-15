@@ -50,7 +50,6 @@ GetSliceFromStructuredFieldByIndicesDialog::GetSliceFromStructuredFieldByIndices
   addCheckBoxManager(axisExecuteCheckBox_, AxisReexecute);
   addCheckBoxManager(sliderExecuteCheckBox_, SliderReexecute);
 
-  createExecuteInteractivelyToggleAction();
   connect(iAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderIndexChanged()));
   connect(jAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderIndexChanged()));
   connect(kAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderIndexChanged()));
