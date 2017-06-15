@@ -49,6 +49,8 @@ namespace SCIRun {
       virtual void pullSpecial() override;
     private Q_SLOTS:
       void spinBoxClicked(int value);
+      void sliderIndexChanged();
+      void axisButtonClicked();
     };
 
   }
