@@ -1637,7 +1637,6 @@ void NetworkEditor::adjustModuleWidth(int delta)
     if (proxy)
     {
       proxy->adjustWidth(delta);
-      //qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
     }
   }
 }
@@ -1650,7 +1649,6 @@ void NetworkEditor::adjustModuleHeight(int delta)
     if (proxy)
     {
       proxy->adjustHeight(delta);
-      //qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
     }
   }
 }
@@ -1664,6 +1662,7 @@ void NetworkEditor::metadataLayer(bool active)
     if (module)
       module->updateMetadata(active);
   }
+  tailRecurse(boost::bind(&NetworkEditor::metadataLayer, _1, active));
 }
 
 void NetworkEditor::adjustExecuteButtonsToDownstream(bool downOnly)
@@ -1675,6 +1674,17 @@ void NetworkEditor::adjustExecuteButtonsToDownstream(bool downOnly)
     {
       module->adjustExecuteButtonToDownstream(downOnly);
     }
+  }
+
+  tailRecurse(boost::bind(&NetworkEditor::adjustExecuteButtonsToDownstream, _1, downOnly));
+}
+
+template <typename Func>
+void NetworkEditor::tailRecurse(Func func)
+{
+  for (auto& child : childrenNetworks_)
+  {
+    func(child.second->get());
   }
 }
 
@@ -1774,6 +1784,8 @@ void NetworkEditor::tagLayer(bool active, int tag)
     tagGroupsActive_ = false;
     removeTagGroups();
   }
+
+  tailRecurse(boost::bind(&NetworkEditor::tagLayer, _1, active, tag));
 }
 
 namespace

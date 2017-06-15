@@ -423,6 +423,9 @@ namespace Gui {
     PortRewiringMap portRewiringMap_;
     QSet<QString> currentSubnetNames_;
 
+    template <typename Func>
+    void tailRecurse(Func func);
+
     static NetworkEditor* inEditingContext_;
     struct InEditingContext
     {
