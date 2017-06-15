@@ -54,9 +54,12 @@ class SCISHARE ConditionalMatrixAlgo : public AlgorithmBase
   public:
     ConditionalMatrixAlgo();
     AlgorithmOutput run(const AlgorithmInput& input) const;
-  bool runImpl(Datatypes::DenseMatrixHandle matrixa, Datatypes::DenseMatrixHandle matrixb, std::string valoptA, std::string valoptB, std::string cond_statement, bool cond_state) const;
-  bool return_value(Datatypes::MatrixHandle out_matrix,std::string result_statement, Datatypes::MatrixHandle first, Datatypes::MatrixHandle second, Datatypes::MatrixHandle possout) const;
-  bool CompareMatrix(Datatypes::DenseMatrixHandle mata, Datatypes::DenseMatrixHandle matb, std::string cond_statement) const;
+  bool runImpl(Datatypes::DenseMatrixHandle matrixa, Datatypes::DenseMatrixHandle matrixb, std::string valoptA, std::string valoptB, std::string& cond_statement, int& cond_state) const;
+  bool runImpl(Datatypes::DenseMatrixHandle matrixa, std::string valoptA, std::string& cond_statement, int& cond_state) const;
+  bool return_check(int& cond_state, Datatypes::DenseMatrixHandle& cond_matrix, Datatypes::MatrixHandle& out_matrix, std::string then_result, std::string else_result, Datatypes::MatrixHandle matrixa, Datatypes::MatrixHandle matrixb, Datatypes::MatrixHandle possout) const;
+  bool return_value(Datatypes::MatrixHandle& out_matrix, std::string result_statement, Datatypes::MatrixHandle first, Datatypes::MatrixHandle second, Datatypes::MatrixHandle possout) const;
+  int CompareMatrix(Datatypes::DenseMatrixHandle mata, Datatypes::DenseMatrixHandle matb, std::string cond_statement) const;
+  int CompareMatrix(Datatypes::DenseMatrixHandle mata) const;
   double ComputeNorm(Datatypes::DenseMatrixHandle mat) const;
 };
 

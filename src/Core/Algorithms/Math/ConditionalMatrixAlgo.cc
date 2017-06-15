@@ -33,14 +33,12 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Parser/ArrayMathEngine.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
-//#include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #include <Core/Math/MiscMath.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
-//using namespace SCIRun::Core::Thread;
 
 ConditionalMatrixAlgo::ConditionalMatrixAlgo()
 {
@@ -56,6 +54,8 @@ ConditionalMatrixAlgo::ConditionalMatrixAlgo()
 
 AlgorithmOutput ConditionalMatrixAlgo::run(const AlgorithmInput& input) const
 {
+  std::cout<<"starting run function"<<std::endl;
+  
   auto matrixa = input.get<Matrix>(Variables::FirstMatrix);
   auto matrixb = input.get<Matrix>(Variables::SecondMatrix);
   auto possout = input.get<Matrix>(Variables::InputMatrix);
@@ -71,16 +71,23 @@ AlgorithmOutput ConditionalMatrixAlgo::run(const AlgorithmInput& input) const
     output[Variables::Solution] = 0;
     return output;
   }
+  
   auto mata  = castMatrix::toDense (matrixa);
   auto matb  = castMatrix::toDense (matrixb);
+  
+  
     
   MatrixHandle out_matrix;
   DenseMatrixHandle cond_matrix;
-  auto cmat = castMatrix::toDense(cond_matrix);
-  double *data = cmat->data();
+  cond_matrix.reset(new DenseMatrix(1,1,0.0));
   
-  bool cond_state= false;
+  std::cout<<"outputs create"<<std::endl;
   
+  std::cout<<"got data from output"<<std::endl;
+  
+  int cond_state = 0;
+  
+  std::cout<<"getting module option"<<std::endl;
   //pull parameter from UI
   std::string valoptA = getOption(Variables::Method);
   std::string valoptB = getOption(Variables::ObjectInfo);
@@ -94,47 +101,110 @@ AlgorithmOutput ConditionalMatrixAlgo::run(const AlgorithmInput& input) const
   std::cout<<"then_result ="<<then_result<<std::endl;
   std::cout<<"else_result ="<<else_result<<std::endl;
   
-  if (!runImpl(mata, matb, valoptA, valoptB, cond_statement, cond_state))
-    THROW_ALGORITHM_PROCESSING_ERROR("Error running conditional matrix algorithm");
-  
-  
-  
-  if (cond_state)
+  std::cout<<"condition:"<<cond_state<<std::endl;
+  if (!matb || cond_statement == "boolop")
   {
-    data[0] = 1;
-    return_value(out_matrix,then_result,matrixa,matrixb,possout);
-  }
-  else if (!cond_state)
-  {
-    data[0] = 0;
-    return_value(out_matrix,else_result,matrixa,matrixb,possout);
+//    if no second input, only run boolean on first input
+    if (!runImpl(mata, valoptA, cond_statement, cond_state))
+      THROW_ALGORITHM_PROCESSING_ERROR("Error running conditional matrix algorithm");
+    std::cout<<"condition:"<<cond_state<<std::endl;
   }
   else
-    THROW_ALGORITHM_PROCESSING_ERROR("Error running conditional matrix algorithm");
+  {
+    if (!runImpl(mata, matb, valoptA, valoptB, cond_statement, cond_state))
+      THROW_ALGORITHM_PROCESSING_ERROR("Error running conditional matrix algorithm");
+    std::cout<<"condition:"<<cond_state<<std::endl;
+  }
+  
+  std::cout<<"runImpl done"<<std::endl;
+  std::cout<<"condition:"<<cond_state<<std::endl;
+  
+  //  after testing the statement, determine the module output
+  return_check(cond_state,cond_matrix,out_matrix,then_result,else_result,matrixa,matrixb,possout);
+  std::cout<<"return condition set"<<std::endl;
+  std::cout<<"cond_matrix = "<<*cond_matrix<<std::endl;
   
   output[Variables::OutputMatrix] = out_matrix;
   output[Variables::Solution] = cond_matrix;
   return output;
 }
 
-bool ConditionalMatrixAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle matb, std::string valoptA, std::string valoptB, std::string cond_statement, bool cond_state) const
+bool ConditionalMatrixAlgo::runImpl(DenseMatrixHandle mata, std::string valoptA, std::string& cond_statement, int& cond_state) const
 {
+  std::cout<<"starting runImpl function single"<<std::endl;
+  
+  size_t nrA = mata->nrows();
+  size_t ncA = mata->ncols();
+  
+  if (cond_statement!="boolop")
+  {
+    warning("no second input, only checking for non-zero comparison of A");
+    cond_statement="boolop";
+  }
+  
+  DenseMatrixHandle compa;
+  if (valoptA == "size")
+  {
+    compa.reset(new DenseMatrix(1,1,0.0));
+    double *data = compa->data();
+    data[0] = static_cast<double>(nrA);
+    data[1] = static_cast<double>(ncA);
+  }
+  else if (valoptA == "norm")
+  {
+    compa.reset(new DenseMatrix(1,1,0.0));
+    double *data = compa->data();
+    data[0] = ComputeNorm(mata);
+  }
+  else if (valoptA == "value")
+  {
+    compa=mata;
+  }
+  else error("Choosen options do not make sense.");
+  
+  
+  std::cout<<"setup done"<<std::endl;
+  
+  cond_state = CompareMatrix(compa);
+  
+  std::cout<<"condition is "<<cond_state<<std::endl;
+  
+  return true;
+}
+
+
+
+
+bool ConditionalMatrixAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle matb, std::string valoptA, std::string valoptB, std::string& cond_statement, int& cond_state) const
+{
+  std::cout<<"starting runImpl function double"<<std::endl;
+  
+  
+  
   size_t nrA = mata->nrows();
   size_t ncA = mata->ncols();
   size_t nrB = matb->nrows();
   size_t ncB = matb->ncols();
   
+  
+  
+  std::cout<<"size established"<<std::endl;
+  
   DenseMatrixHandle compa, compb;
-  double *data = compa->data();
-  double *datb = compb->data();
   
   if ((valoptA == "size" && valoptB == "norm") || (valoptB == "size" && valoptA == "norm"))
   {
-    THROW_ALGORITHM_PROCESSING_ERROR("Cannot compare size of one matrix to norm of the other");
+    error("Cannot compare size of one matrix to norm of the other");
     return false;
   }
   else if (valoptA == "size" && valoptB == "size")
   {
+    compa.reset(new DenseMatrix(2,1,0.0));
+    compb.reset(new DenseMatrix(2,1,0.0));
+    
+    double *data = compa->data();
+    double *datb = compb->data();
+    
     data[0] = static_cast<double>(nrA);
     data[1] = static_cast<double>(ncA);
     
@@ -145,48 +215,66 @@ bool ConditionalMatrixAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle ma
   {
     if (nrB*ncB != 2)
     {
-      THROW_ALGORITHM_PROCESSING_ERROR("Must compare size of one matrix to matrix with 2 elements");
+      error("Must compare size of one matrix to matrix with 2 elements");
       return false;
     }
+    compa.reset(new DenseMatrix(2,1,0.0));
+    compb=matb;
+    
+    double *data = compa->data();
     data[0] = static_cast<double>(nrA);
     data[1] = static_cast<double>(ncA);
-    
-    compb = matb;
   }
   else if (valoptB == "size" && valoptA == "value")
   {
     if (nrA*ncA != 2)
     {
-      THROW_ALGORITHM_PROCESSING_ERROR("Must compare size of one matrix to matrix with 2 elements");
+      error("Must compare size of one matrix to matrix with 2 elements");
       return false;
     }
+    compa=mata;
+    compb.reset(new DenseMatrix(2,1,0.0));
+    
+    double *datb = compb->data();
     datb[0] = static_cast<double>(nrB);
     datb[1] = static_cast<double>(ncB);
     
-    compa = mata;
   }
   else if (valoptA == "norm" && valoptB == "value")
   {
     if (nrB*ncB != 1)
     {
-      THROW_ALGORITHM_PROCESSING_ERROR("Must compare size of one matrix to matrix with 2 elements");
+      error("Must compare size of one matrix to matrix with 2 elements");
       return false;
     }
+    compa.reset(new DenseMatrix(1,1,0.0));
+    compb=matb;
+    
+    double *data = compa->data();
     data[0] = ComputeNorm(mata);
-    compb = matb;
   }
   else if (valoptB == "norm" && valoptA == "value")
   {
     if (nrA*ncA != 1)
     {
-      THROW_ALGORITHM_PROCESSING_ERROR("Must compare size of one matrix to matrix with 2 elements");
+      error("Must compare size of one matrix to matrix with 2 elements");
       return false;
     }
+    
+    compa=mata;
+    compb.reset(new DenseMatrix(1,1,0.0));
+    
+    double *datb = compb->data();
     datb[0] = ComputeNorm(matb);
-    compa = mata;
   }
   else if (valoptA == "norm" && valoptB == "norm")
   {
+    compa.reset(new DenseMatrix(1,1,0.0));
+    compb.reset(new DenseMatrix(1,1,0.0));
+    
+    double *data = compa->data();
+    double *datb = compb->data();
+    
     data[0] = ComputeNorm(mata);
     datb[0] = ComputeNorm(matb);
   }
@@ -194,16 +282,19 @@ bool ConditionalMatrixAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle ma
   {
     if ((nrA!=nrB) || (ncA!=ncB))
     {
-      THROW_ALGORITHM_PROCESSING_ERROR("Matrix must be of the same size when comparing values");
+      error("Matrix must be of the same size when comparing values");
       return false;
     }
-    compa = mata;
-    compb = matb;
+    compa=mata;
+    compb=matb;
   }
-  else THROW_ALGORITHM_PROCESSING_ERROR("Choosen options do not make sense.");
+  else error("Choosen options do not make sense.");
+  
+  std::cout<<"input checks established"<<std::endl;
   
   cond_state = CompareMatrix(compa, compb, cond_statement);
   
+  std::cout<<"condition is "<<cond_state<<std::endl;
   
   return true;
     
@@ -212,22 +303,224 @@ bool ConditionalMatrixAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle ma
 
 double ConditionalMatrixAlgo::ComputeNorm(DenseMatrixHandle mat) const
 {
+//  calculate the second norm for a magnitude comparison.
+  size_type n = mat->nrows();
+  size_type m = mat->ncols();
+  double *data = mat->data();
+  
+  double sumation = 0;
+  
+  for (index_type k=0;  k<(m*n);k++)
+  {
+    sumation+=data[k]*data[k];
+  }
+  double norm = sqrt(sumation);
+
+  std::cout<<"norm ="<<norm<<std::endl;
+  
+  return norm;
+}
+
+int ConditionalMatrixAlgo::CompareMatrix(DenseMatrixHandle mata) const
+{
+  //   check for non-zero entries of single matrix
+  
+  size_type n = mata->nrows();
+  size_type m = mata->ncols();
+  double *data = mata->data();
+  
+  for (index_type k=0; k<(m*n);k++)
+  {
+    if (data[k]!=0) return 1;
+  }
   return 0;
 }
 
-bool ConditionalMatrixAlgo::CompareMatrix(DenseMatrixHandle mata, DenseMatrixHandle matb,std::string cond_statement) const
+
+int ConditionalMatrixAlgo::CompareMatrix(DenseMatrixHandle mata, DenseMatrixHandle matb,std::string cond_statement) const
 {
-  return true;
+//  compare values of two matrices
+  size_type na = mata->nrows();
+  size_type ma = mata->ncols();
+  size_type nb = matb->nrows();
+  size_type mb = matb->ncols();
+  
+  double *data = mata->data();
+  double *datb = matb->data();
+  
+  if ((na!=nb) || (ma!=mb)) error("Matrices must be the same size");
+  
+  if (cond_statement == "eqop")
+  {
+    //   check for non-equal values entries of matrix
+    for (index_type k=0; k<(ma*na);k++)
+    {
+      if (data[k]!=datb[k]) return 0;
+    }
+    return 1;
+  }
+  else if (cond_statement == "andop")
+  {
+    //   check for both for non-zero values entries of matrix
+    for (index_type k=0; k<(ma*na);k++)
+    {
+      if (data[k]!=0 && datb[k]!=0) return 1;
+    }
+    return 0;
+  }
+  else if (cond_statement == "orop")
+  {
+    //   check for both for non-zero values entries of matrix
+    for (index_type k=0; k<(ma*na);k++)
+    {
+      if (data[k]!=0 || datb[k]!=0) return 1;
+    }
+    return 0;
+  }
+  else if (cond_statement == "greatop" || cond_statement == "greateqop" || cond_statement == "lesseqop"|| cond_statement == "lessop")
+  {
+    //  These cases are tricky to compare with multiple entries, because some entries could
+    //  greater, less, or equal to the the corresponding etries.
+    
+    
+    int great=0;
+    int less=0;
+    int eq=0;
+    double sumation=0;
+    
+    for (index_type k=0; k<(ma*na);k++)
+    {
+      if (data[k]<datb[k]) less+=1;
+      if (data[k]==datb[k]) eq+=1;
+      if (data[k]>datb[k]) great+=1;
+      sumation += data[k]-datb[k];
+    }
+    
+    std::cout<<"greater ="<<great<<std::endl;
+    std::cout<<"less ="<<less<<std::endl;
+    std::cout<<"equal ="<<eq<<std::endl;
+    std::cout<<"sumation ="<<sumation<<std::endl;
+    
+//    if there are both greater and less than, need some extra checking. compare the number of
+//    entries that fulfill the condition, and the magnitude of the difference.
+    
+    if (great>0 && less>0)
+    {
+      warning("Matrices have entries that are both greater and less than the other.  Attempting to compare based on number of elements and magnitude of the difference.");
+      if (cond_statement == "greatop")
+      {
+        if (great>less && sumation>0) return 1;
+        else return 0;
+      }
+      else if (cond_statement == "greateqop")
+      {
+        if (great>=less && sumation>=0) return 1;
+        else return 0;
+      }
+      else if (cond_statement == "lesseqop")
+      {
+        if (great<=less && sumation<=0) return 1;
+        else return 0;
+      }
+      else if (cond_statement == "lessop")
+      {
+        if (great<less && sumation<0) return 1;
+        else return 0;
+      }
+      else
+      {
+        THROW_ALGORITHM_PROCESSING_ERROR("Error running conditional matrix algorithm");
+        return 0;
+      }
+    }
+    else if (great+less+eq ==0)
+    {
+      THROW_ALGORITHM_PROCESSING_ERROR("Error running conditional matrix algorithm");
+      return 0;
+    }
+    else
+    {
+      if (cond_statement == "greatop")
+      {
+        if (great>0) return 1;
+        return 0;
+      }
+      else if (cond_statement == "greateqop")
+      {
+        if (less == 0) return 1;
+        return 0;
+      }
+      else if (cond_statement == "lesseqop")
+      {
+        if (great == 0) return 1;
+        return 0;
+      }
+      else if (cond_statement == "lessop")
+      {
+        if (less>0) return 1;
+        return 0;
+      }
+      else
+      {
+        THROW_ALGORITHM_PROCESSING_ERROR("Error running conditional matrix algorithm");
+        return 0;
+      }
+    }
+  }
+  else
+  {
+    THROW_ALGORITHM_PROCESSING_ERROR("statement not recognized");
+    return 0;
+  }
 }
 
 // determine the output
- bool ConditionalMatrixAlgo::return_value(MatrixHandle out_matrix,std::string result_statement, MatrixHandle first, MatrixHandle second, MatrixHandle possout) const
+bool ConditionalMatrixAlgo::return_check(int& cond_state, DenseMatrixHandle& cond_matrix, MatrixHandle& out_matrix, std::string then_result, std::string else_result, MatrixHandle matrixa, MatrixHandle matrixb, MatrixHandle possout) const
+{
+  std::cout<<"starting return_check"<<std::endl;
+  double *data = cond_matrix->data();
+  
+  if (cond_state==1)
+  {
+    std::cout<<"true return"<<std::endl;
+    data[0] = 1;
+    return_value(out_matrix,then_result,matrixa,matrixb,possout);
+  }
+  else if (cond_state==0)
+  {
+    std::cout<<"false return"<<std::endl;
+    data[0] = 0;
+    return_value(out_matrix,else_result,matrixa,matrixb,possout);
+  }
+  else
+  {
+    THROW_ALGORITHM_PROCESSING_ERROR("Error running conditional matrix algorithm");
+    return false;
+  }
+
+  std::cout<<"finished return_check"<<std::endl;
+  return true;
+}
+
+
+bool ConditionalMatrixAlgo::return_value(MatrixHandle& out_matrix,std::string result_statement, MatrixHandle first, MatrixHandle second, MatrixHandle possout) const
 {
   std::string exit_status = "running";
   
+  if (result_statement == "second" && !second)
+  {
+    result_statement = "null";
+    warning("no input for second matrix, cannot use it as an output.");
+  }
+  if (result_statement == "third" && !possout)
+  {
+    result_statement = "null";
+    warning("no input for third matrix, cannot use it as an output.");
+  }
+  
   if (result_statement == "first") out_matrix = first;
-  else if (result_statement == "second" && second) out_matrix = second;
-  else if (result_statement == "third" && possout) out_matrix = possout;
+  else if (result_statement == "second") out_matrix = second;
+  else if (result_statement == "third") out_matrix = possout;
   else if (result_statement == "null") out_matrix = 0;
   else if (result_statement == "quit")
   {
@@ -239,84 +532,7 @@ bool ConditionalMatrixAlgo::CompareMatrix(DenseMatrixHandle mata, DenseMatrixHan
   {
     out_matrix = 0;
     THROW_ALGORITHM_PROCESSING_ERROR("Error running conditional matrix algorithm");
+    return false;
   }
+  return true;
 }
-
-
-//bool
-//ConditionalMatrixAlgo::Sort(DenseMatrixHandle input, DenseMatrixHandle& output,int method) const
-//{
-//  if (!input)
-//  {
-//    error("SortAscending: no input matrix found");
-//    return false;
-//  }
-//  //get size of original matrix
-//  size_type nrows = input->nrows();
-//  size_type ncols = input->ncols();
-//  //copy original matrix for processing
-//  output.reset(new DenseMatrix(*input));
-//  //pointer to matrix data
-//  double *data = output->data();
-//
-//  if (!output)
-//  {
-//    error("ApplyRowOperation: could not create output matrix");
-//    return false;
-//  }
-//  
-//  size_type n = nrows*ncols;
-//  //call the sorting functions
-//  Quicksort(data,0,n-1);
-//  
-//  if (method==1)
-//  {
-//    //if set to descending, reverse the order.
-//    output.reset(new DenseMatrix(output -> reverse()));
-//  }
-//  return true;
-//}
-//
-//bool
-//ConditionalMatrixAlgo::Quicksort(double* input, index_type lo, index_type hi) const
-//{
-//  //splits matrix based on Partition function
-//  index_type ind;
-//  if (lo<hi)
-//  {
-//    ind=Partition(input,lo,hi);
-//    Quicksort(input,lo,ind-1);
-//    Quicksort(input,ind+1,hi);
-//  }
-//  return true;
-//}
-//
-//index_type
-//ConditionalMatrixAlgo::Partition(double* input, index_type lo, index_type hi) const
-//{
-//  // places the last entry in its proper place in relation to the other
-//  // entries, ie, smaller values before and larger values after.
-//  index_type ind=lo;
-//  
-//  double pivot = input[hi];
-//  double tmp;
-//  for (index_type k=lo;k<hi;k++)
-//  {
-//    if (input[k]<=pivot)
-//    {
-//      tmp=input[ind];
-//      input[ind]=input[k];
-//      input[k]=tmp;
-//      ind+=1;
-//    }
-//  }
-//  tmp=input[ind];
-//  input[ind]=input[hi];
-//  input[hi]=tmp;
-//  return ind;
-//}
-
-
-
-  
-  

@@ -50,7 +50,7 @@ namespace Math {
     INPUT_PORT(1, MatrixB, Matrix);
     INPUT_PORT(2, PossibleOutput, Matrix);
     OUTPUT_PORT(0, OutputMatrix, Matrix);
-    OUTPUT_PORT(1, ConditionMatrix, Matrix);
+    OUTPUT_PORT(1, Solution, Matrix);
       
     MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };

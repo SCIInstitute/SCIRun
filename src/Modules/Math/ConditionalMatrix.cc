@@ -28,13 +28,17 @@
 
 #include <Modules/Math/ConditionalMatrix.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Math/ConditionalMatrixAlgo.h>
+#include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
 /// @class ConditionalMatrix
@@ -48,7 +52,7 @@ ConditionalMatrix::ConditionalMatrix() : Module(staticInfo_)
   INITIALIZE_PORT(MatrixB);
   INITIALIZE_PORT(PossibleOutput);
   INITIALIZE_PORT(OutputMatrix);
-  INITIALIZE_PORT(ConditionMatrix);
+  INITIALIZE_PORT(Solution);
 }
 
 void ConditionalMatrix::setStateDefaults()
@@ -78,9 +82,32 @@ ConditionalMatrix::execute()
     
 
     auto output = algo().run(withInputData((Variables::FirstMatrix, matrixA)(Variables::SecondMatrix, optionalAlgoInput(matrixB))(Variables::InputMatrix, optionalAlgoInput(possout))));
+    
+//    Check for quit condition and then quit.  Arguably the most useful part of the module
+    auto state = get_state();
+    std::string then_statement = state->getValue(Variables::FormatString).toString();
+    std::string else_statement = state->getValue(Variables::FunctionString).toString();
+    
+    
+    
+    if (then_statement == "quit" || else_statement == "quit")
+    {
+      auto out_mat=output.get<DenseMatrix>(Variables::Solution);
+      
+//      auto out  = castMatrix::toDense (out_mat);
+//      double *data=out->data();
+      std::cout<<"cond matrix :"<<out_mat<<std::endl;
+      
+//      if ((data[0]==1 && then_statement == "quit") || (data[0]==0 && else_statement == "quit"))
+//      {
+//        std::cout<<"ordered to quit. Not implemented yet"<<std::endl;
+//      }
+      
+    }
+      
 
     sendOutputFromAlgorithm(OutputMatrix, output);
-    sendOutputFromAlgorithm(ConditionMatrix, output);
+    sendOutputFromAlgorithm(Solution, output);
 
   }
 }
