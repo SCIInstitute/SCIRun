@@ -48,7 +48,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBox">
+       <widget class="QCheckBox" name="axisExecuteCheckBox_">
         <property name="text">
          <string>Execute on click</string>
         </property>
@@ -100,7 +100,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_2">
+          <widget class="QCheckBox" name="sliderExecuteCheckBox_">
            <property name="text">
             <string>Execute on release</string>
            </property>
@@ -137,7 +137,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_3">
+          <widget class="QCheckBox" name="spinBoxExecuteCheckBox_">
            <property name="text">
             <string>Execute on click</string>
            </property>
@@ -153,54 +153,6 @@
  </widget>
  <resources/>
  <connections>
-  <connection>
-   <sender>iAxisHorizontalSlider_</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>iAxisSpinBox_</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>203</x>
-     <y>68</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>359</x>
-     <y>68</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>jAxisHorizontalSlider_</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>jAxisSpinBox_</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>203</x>
-     <y>94</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>359</x>
-     <y>94</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>kAxisHorizontalSlider_</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>kAxisSpinBox_</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>203</x>
-     <y>120</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>359</x>
-     <y>120</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>iAxisSpinBox_</sender>
    <signal>valueChanged(int)</signal>
