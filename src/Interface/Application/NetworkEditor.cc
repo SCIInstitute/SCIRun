@@ -1557,6 +1557,12 @@ void NetworkEditor::resizeSubnetPortHolders(double scaleFactor)
 
 void NetworkEditor::zoomIn()
 {
+  if (!isActiveWindow())
+  {
+    tailRecurse(boost::bind(&NetworkEditor::zoomIn, _1));
+    return;
+  }
+
   if (currentScale_ < maxScale)
   {
     double factor = std::min(scaleFactor, 4.0/currentScale_);
@@ -1571,6 +1577,12 @@ void NetworkEditor::zoomIn()
 
 void NetworkEditor::zoomOut()
 {
+  if (!isActiveWindow())
+  {
+    tailRecurse(boost::bind(&NetworkEditor::zoomOut, _1));
+    return;
+  }
+
   if (currentScale_ > minScale)
   {
     scale(1.0 / scaleFactor, 1.0 / scaleFactor);
@@ -1584,6 +1596,12 @@ void NetworkEditor::zoomOut()
 
 void NetworkEditor::zoomReset()
 {
+  if (!isActiveWindow())
+  {
+    tailRecurse(boost::bind(&NetworkEditor::zoomReset, _1));
+    return;
+  }
+
   scale(1.0 / currentScale_, 1.0 / currentScale_);
   currentScale_ = 1;
   Q_EMIT zoomLevelChanged(currentZoomPercentage());
