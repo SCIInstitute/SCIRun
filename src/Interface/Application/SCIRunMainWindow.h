@@ -134,8 +134,9 @@ private:
   QPushButton* versionButton_;
   TriggeredEventsWindow* triggeredEventsWindow_;
 
-  void createStandardToolbar();
+  void createStandardToolbars();
   void createExecuteToolbar();
+  void createAdvancedToolbar();
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
   void setTipsAndWhatsThis();

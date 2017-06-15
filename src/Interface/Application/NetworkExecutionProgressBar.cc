@@ -59,9 +59,14 @@ NetworkExecutionProgressBar::NetworkExecutionProgressBar(NetworkStatusPtr status
   progressBar_->setStyleSheet(parent->styleSheet());
 }
 
-QList<QAction*> NetworkExecutionProgressBar::actions() const
+QList<QAction*> NetworkExecutionProgressBar::mainActions() const
 {
-  return QList<QAction*>() << barAction_ << counterAction_ << timingAction_;
+  return QList<QAction*>() << barAction_ << counterAction_;
+}
+
+QList<QAction*> NetworkExecutionProgressBar::advancedActions() const
+{
+  return QList<QAction*>() << timingAction_;
 }
 
 void NetworkExecutionProgressBar::updateTotalModules(size_t count)

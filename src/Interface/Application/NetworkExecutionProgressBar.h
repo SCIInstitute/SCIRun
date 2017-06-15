@@ -37,6 +37,10 @@
 #include <Core/Thread/Mutex.h>
 #endif
 
+class QAction;
+class QWidgetAction;
+class QLabel;
+
 namespace SCIRun {
 namespace Gui {
 
@@ -73,7 +77,8 @@ class NetworkExecutionProgressBar : public QObject
 public:
   NetworkExecutionProgressBar(NetworkStatusPtr status, QWidget* parent);
 
-  QList<class QAction*> actions() const;
+  QList<QAction*> mainActions() const;
+  QList<QAction*> advancedActions() const;
 
   public Q_SLOTS:
     void updateTotalModules(size_t count);
@@ -83,11 +88,11 @@ public:
 
 private:
   NetworkStatusPtr status_;
-  class QWidgetAction* barAction_;
+  QWidgetAction* barAction_;
   SCIRunProgressBar* progressBar_;
-  class QWidgetAction* counterAction_;
-  class QLabel* counterLabel_;
-  class QAction* timingAction_;
+  QWidgetAction* counterAction_;
+  QLabel* counterLabel_;
+  QAction* timingAction_;
   size_t numModulesDone_;
   size_t totalModules_;
   double totalExecutionTime_;
