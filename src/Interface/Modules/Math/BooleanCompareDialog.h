@@ -26,27 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_MATH_ConditionalMatrixDIALOG_H
-#define INTERFACE_MODULES_MATH_ConditionalMatrixDIALOG_H 1
+#ifndef INTERFACE_MODULES_MATH_BooleanCompareDIALOG_H
+#define INTERFACE_MODULES_MATH_BooleanCompareDIALOG_H 1
 
-#include "Interface/Modules/Math/ui_ConditionalMatrixDialog.h"
+#include "Interface/Modules/Math/ui_BooleanCompareDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
 	namespace Gui {
-		class SCISHARE ConditionalMatrixDialog : public ModuleDialogGeneric,
-			public Ui::ConditionalMatrixDialog
+		class SCISHARE BooleanCompareDialog : public ModuleDialogGeneric,
+			public Ui::BooleanCompareDialog
 		{
 			Q_OBJECT
 
 		public:
-			ConditionalMatrixDialog(const std::string& name,
+			BooleanCompareDialog(const std::string& name,
 						SCIRun::Dataflow::Networks::ModuleStateHandle state,
 						QWidget* parent = 0);
         private:
             
-            boost::shared_ptr<class ConditionalMatrixDialogImpl> impl_;
+            boost::shared_ptr<class BooleanCompareDialogImpl> impl_;
 		};
 	}
 }

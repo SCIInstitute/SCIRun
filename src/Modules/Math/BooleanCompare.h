@@ -25,10 +25,10 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/ConditionalMatrix.h
+/// @todo Documentation Modules/Math/BooleanCompare.h
 
-#ifndef MODULES_MATH_ConditionalMatrix_H
-#define MODULES_MATH_ConditionalMatrix_H
+#ifndef MODULES_MATH_BooleanCompare_H
+#define MODULES_MATH_BooleanCompare_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Math/share.h>
@@ -37,12 +37,12 @@ namespace SCIRun {
 namespace Modules {
 namespace Math {
 
-  class SCISHARE ConditionalMatrix : public SCIRun::Dataflow::Networks::Module,
+  class SCISHARE BooleanCompare : public SCIRun::Dataflow::Networks::Module,
     public Has3InputPorts<MatrixPortTag,MatrixPortTag,MatrixPortTag>,
     public Has2OutputPorts<MatrixPortTag,MatrixPortTag>
   {
   public:
-    ConditionalMatrix();
+    BooleanCompare();
     virtual void execute();
     virtual void setStateDefaults();
 

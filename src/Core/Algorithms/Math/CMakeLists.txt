@@ -45,7 +45,7 @@ SET(Algorithms_Math_SRCS
   ComputePCA.cc
   CollectMatrices/CollectMatricesAlgorithm.cc
   ReportMatrixSliceMeasureAlgo.cc
-  ConditionalMatrixAlgo.cc
+  BooleanCompareAlgo.cc
 )
 
 SET(Algorithms_Math_HEADERS
@@ -68,7 +68,7 @@ SET(Algorithms_Math_HEADERS
   ComputePCA.h
   CollectMatrices/CollectMatricesAlgorithm.h
   ReportMatrixSliceMeasureAlgo.h
-  ConditionalMatrixAlgo.h
+  BooleanCompareAlgo.h
 )
 
 SCIRUN_ADD_LIBRARY(Algorithms_Math 

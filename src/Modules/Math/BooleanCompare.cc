@@ -26,13 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Math/ConditionalMatrix.h>
+#include <Modules/Math/BooleanCompare.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
-#include <Core/Algorithms/Math/ConditionalMatrixAlgo.h>
+#include <Core/Algorithms/Math/BooleanCompareAlgo.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 
 using namespace SCIRun::Modules::Math;
@@ -41,12 +41,12 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
-/// @class ConditionalMatrix
+/// @class BooleanCompare
 /// This module is for comparing two matrices and sending outputs
 
-MODULE_INFO_DEF(ConditionalMatrix, Math, SCIRun)
+MODULE_INFO_DEF(BooleanCompare, Math, SCIRun)
 
-ConditionalMatrix::ConditionalMatrix() : Module(staticInfo_)
+BooleanCompare::BooleanCompare() : Module(staticInfo_)
 {
   INITIALIZE_PORT(MatrixA);
   INITIALIZE_PORT(MatrixB);
@@ -55,7 +55,7 @@ ConditionalMatrix::ConditionalMatrix() : Module(staticInfo_)
   INITIALIZE_PORT(BooleanResult);
 }
 
-void ConditionalMatrix::setStateDefaults()
+void BooleanCompare::setStateDefaults()
 {
   setStateStringFromAlgoOption(Parameters::Comparison_Option);
   setStateStringFromAlgoOption(Parameters::Value_Option_1);
@@ -65,7 +65,7 @@ void ConditionalMatrix::setStateDefaults()
 }
 
 void
-ConditionalMatrix::execute()
+BooleanCompare::execute()
 {
   auto matrixA = getRequiredInput(MatrixA);
   auto matrixB = getOptionalInput(MatrixB);

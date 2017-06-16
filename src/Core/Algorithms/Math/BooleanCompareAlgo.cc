@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Math/ConditionalMatrixAlgo.h>
+#include <Core/Algorithms/Math/BooleanCompareAlgo.h>
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -46,7 +46,7 @@ ALGORITHM_PARAMETER_DEF(Math, Then_Option);
 ALGORITHM_PARAMETER_DEF(Math, Else_Option);
 ALGORITHM_PARAMETER_DEF(Math, Comparison_Option);
 
-ConditionalMatrixAlgo::ConditionalMatrixAlgo()
+BooleanCompareAlgo::BooleanCompareAlgo()
 {
   //set parameter defaults for UI
   using namespace Parameters;
@@ -59,7 +59,7 @@ ConditionalMatrixAlgo::ConditionalMatrixAlgo()
 }
 
 
-AlgorithmOutput ConditionalMatrixAlgo::run(const AlgorithmInput& input) const
+AlgorithmOutput BooleanCompareAlgo::run(const AlgorithmInput& input) const
 {
   std::cout<<"starting run function"<<std::endl;
   
@@ -73,7 +73,7 @@ AlgorithmOutput ConditionalMatrixAlgo::run(const AlgorithmInput& input) const
   if (!matrixIs::dense(matrixa) || (matrixb && !matrixIs::dense(matrixb)))
   {
     //TODO implement something with sparse
-    error("ConditionalMatrix: Currently only works with dense matrices");
+    error("BooleanCompare: Currently only works with dense matrices");
     output[Variables::OutputMatrix] = 0;
     output[Variables::Solution] = 0;
     return output;
@@ -136,7 +136,7 @@ AlgorithmOutput ConditionalMatrixAlgo::run(const AlgorithmInput& input) const
   return output;
 }
 
-bool ConditionalMatrixAlgo::runImpl(DenseMatrixHandle mata, std::string valoptA, std::string& cond_statement, int& cond_state) const
+bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, std::string valoptA, std::string& cond_statement, int& cond_state) const
 {
   std::cout<<"starting runImpl function single"<<std::endl;
   
@@ -182,7 +182,7 @@ bool ConditionalMatrixAlgo::runImpl(DenseMatrixHandle mata, std::string valoptA,
 
 
 
-bool ConditionalMatrixAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle matb, std::string valoptA, std::string valoptB, std::string& cond_statement, int& cond_state) const
+bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle matb, std::string valoptA, std::string valoptB, std::string& cond_statement, int& cond_state) const
 {
   std::cout<<"starting runImpl function double"<<std::endl;
   
@@ -308,7 +308,7 @@ bool ConditionalMatrixAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle ma
 }
 
 
-double ConditionalMatrixAlgo::ComputeNorm(DenseMatrixHandle mat) const
+double BooleanCompareAlgo::ComputeNorm(DenseMatrixHandle mat) const
 {
 //  calculate the second norm for a magnitude comparison.
   size_type n = mat->nrows();
@@ -328,7 +328,7 @@ double ConditionalMatrixAlgo::ComputeNorm(DenseMatrixHandle mat) const
   return norm;
 }
 
-int ConditionalMatrixAlgo::CompareMatrix(DenseMatrixHandle mata) const
+int BooleanCompareAlgo::CompareMatrix(DenseMatrixHandle mata) const
 {
   //   check for non-zero entries of single matrix
   
@@ -344,7 +344,7 @@ int ConditionalMatrixAlgo::CompareMatrix(DenseMatrixHandle mata) const
 }
 
 
-int ConditionalMatrixAlgo::CompareMatrix(DenseMatrixHandle mata, DenseMatrixHandle matb,std::string cond_statement) const
+int BooleanCompareAlgo::CompareMatrix(DenseMatrixHandle mata, DenseMatrixHandle matb,std::string cond_statement) const
 {
 //  compare values of two matrices
   size_type na = mata->nrows();
@@ -482,7 +482,7 @@ int ConditionalMatrixAlgo::CompareMatrix(DenseMatrixHandle mata, DenseMatrixHand
 }
 
 // determine the output
-bool ConditionalMatrixAlgo::return_check(int& cond_state, DenseMatrixHandle& cond_matrix, MatrixHandle& out_matrix, std::string then_result, std::string else_result, MatrixHandle matrixa, MatrixHandle matrixb, MatrixHandle possout) const
+bool BooleanCompareAlgo::return_check(int& cond_state, DenseMatrixHandle& cond_matrix, MatrixHandle& out_matrix, std::string then_result, std::string else_result, MatrixHandle matrixa, MatrixHandle matrixb, MatrixHandle possout) const
 {
   std::cout<<"starting return_check"<<std::endl;
   double *data = cond_matrix->data();
@@ -510,7 +510,7 @@ bool ConditionalMatrixAlgo::return_check(int& cond_state, DenseMatrixHandle& con
 }
 
 
-bool ConditionalMatrixAlgo::return_value(MatrixHandle& out_matrix,std::string result_statement, MatrixHandle first, MatrixHandle second, MatrixHandle possout) const
+bool BooleanCompareAlgo::return_value(MatrixHandle& out_matrix,std::string result_statement, MatrixHandle first, MatrixHandle second, MatrixHandle possout) const
 {
   std::string exit_status = "running";
   

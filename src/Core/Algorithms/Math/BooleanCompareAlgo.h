@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_MATH_ConditionalMatrixALGO_H
-#define CORE_ALGORITHMS_MATH_ConditionalMatrixALGO_H
+#ifndef CORE_ALGORITHMS_MATH_BooleanCompareALGO_H
+#define CORE_ALGORITHMS_MATH_BooleanCompareALGO_H
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -54,11 +54,11 @@ namespace Math {
   ALGORITHM_PARAMETER_DECL(Else_Option);
   ALGORITHM_PARAMETER_DECL(Comparison_Option);
                            
-class SCISHARE ConditionalMatrixAlgo : public AlgorithmBase
+class SCISHARE BooleanCompareAlgo : public AlgorithmBase
 {
 
   public:
-    ConditionalMatrixAlgo();
+    BooleanCompareAlgo();
     AlgorithmOutput run(const AlgorithmInput& input) const;
   bool runImpl(Datatypes::DenseMatrixHandle matrixa, Datatypes::DenseMatrixHandle matrixb, std::string valoptA, std::string valoptB, std::string& cond_statement, int& cond_state) const;
   bool runImpl(Datatypes::DenseMatrixHandle matrixa, std::string valoptA, std::string& cond_statement, int& cond_state) const;

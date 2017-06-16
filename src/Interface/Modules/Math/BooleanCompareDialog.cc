@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Math/ConditionalMatrixDialog.h>
-#include <Core/Algorithms/Math/ConditionalMatrixAlgo.h>
+#include <Interface/Modules/Math/BooleanCompareDialog.h>
+#include <Core/Algorithms/Math/BooleanCompareAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <QtGui>
 
@@ -38,10 +38,10 @@ using namespace SCIRun::Core::Algorithms::Math;
 
 namespace SCIRun {
     namespace Gui {
-        class ConditionalMatrixDialogImpl
+        class BooleanCompareDialogImpl
         {
         public:
-            ConditionalMatrixDialogImpl()
+            BooleanCompareDialogImpl()
             {
                 value_1_.insert(StringPair("Elements", "value"));
                 value_1_.insert(StringPair("Size", "size"));
@@ -83,10 +83,10 @@ namespace SCIRun {
     
             
 
-ConditionalMatrixDialog::ConditionalMatrixDialog(const std::string& name, ModuleStateHandle state,
+BooleanCompareDialog::BooleanCompareDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent/* = 0*/)
 	: ModuleDialogGeneric(state, parent),
-    impl_(new ConditionalMatrixDialogImpl)
+    impl_(new BooleanCompareDialogImpl)
 {
 	setupUi(this);
 	setWindowTitle(QString::fromStdString(name));
@@ -101,8 +101,3 @@ ConditionalMatrixDialog::ConditionalMatrixDialog(const std::string& name, Module
     addComboBoxManager(thenBox_, Parameters::Then_Option,impl_->then_);
     addComboBoxManager(elseBox_, Parameters::Else_Option,impl_->else_);
 }
-
-//void ConditionalMatrixDialog::pullSpecial()
-//{
-//    
-//}
