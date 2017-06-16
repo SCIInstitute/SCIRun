@@ -95,6 +95,8 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
   subnetBar->addAction("hi");
   subnetBar->addAction("bye");
   vbox->setMenuBar(subnetBar);
+
+  saveAsTemplatePushButton_->hide();
 }
 
 void SubnetworkEditor::expand()

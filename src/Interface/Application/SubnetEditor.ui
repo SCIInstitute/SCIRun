@@ -24,6 +24,19 @@
     <number>-1</number>
    </property>
    <item>
+    <widget class="QPushButton" name="openAllPushButton_">
+     <property name="maximumSize">
+      <size>
+       <width>220</width>
+       <height>25</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Open all module UIs</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QPushButton" name="expandPushButton_">
      <property name="maximumSize">
       <size>
