@@ -38,6 +38,7 @@
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/Subnetworks.h>
 #include <Interface/Application/SCIRunMainWindow.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //TODO: remove
 #include <Dataflow/Network/Module.h> //TODO: remove
@@ -81,10 +82,19 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
 {
   setupUi(this);
   setWindowTitle(windowTitle() + " - " + name);
-  qobject_cast<QVBoxLayout*>(layout())->insertWidget(0, editor);
+  auto vbox = qobject_cast<QVBoxLayout*>(layout());
+  vbox->insertWidget(0, editor);
   connect(expandPushButton_, SIGNAL(clicked()), this, SLOT(expand()));
   editor_->setParent(this);
   editor_->setAcceptDrops(true);
+
+  auto subnetBar = new QToolBar("Subnet");
+  WidgetStyleMixin::toolbarStyle(subnetBar);
+  subnetBar->setObjectName("SubnetToolbar");
+
+  subnetBar->addAction("hi");
+  subnetBar->addAction("bye");
+  vbox->setMenuBar(subnetBar);
 }
 
 void SubnetworkEditor::expand()

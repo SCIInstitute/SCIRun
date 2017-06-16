@@ -137,6 +137,7 @@ private:
   void createStandardToolbars();
   void createExecuteToolbar();
   void createAdvancedToolbar();
+  void addNetworkActionsToBar(QToolBar* toolbar) const;
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
   void setTipsAndWhatsThis();

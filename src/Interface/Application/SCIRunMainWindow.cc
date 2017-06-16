@@ -309,24 +309,30 @@ void SCIRunMainWindow::createStandardToolbars()
   standardBar->addAction(actionEnterWhatsThisMode_);
 
   auto networkBar = addToolBar("Network");
-  WidgetStyleMixin::toolbarStyle(networkBar);
-  networkBar->setObjectName("NetworkToolBar");
+  addNetworkActionsToBar(networkBar);
 
-  networkBar->addAction(actionPinAllModuleUIs_);
-  networkBar->addAction(actionRestoreAllModuleUIs_);
-  networkBar->addAction(actionHideAllModuleUIs_);
-  networkBar->addSeparator();
-  networkBar->addAction(actionCenterNetworkViewer_);
-  networkBar->addAction(actionZoomIn_);
-  networkBar->addAction(actionZoomOut_);
   actionZoomBestFit_->setDisabled(true);
-  networkBar->addAction(actionResetNetworkZoom_);
 
   connect(actionFileBar_, SIGNAL(toggled(bool)), standardBar, SLOT(setVisible(bool)));
   connect(standardBar, SIGNAL(visibilityChanged(bool)), actionFileBar_, SLOT(setChecked(bool)));
 
   connect(actionNetworkBar_, SIGNAL(toggled(bool)), networkBar, SLOT(setVisible(bool)));
   connect(networkBar, SIGNAL(visibilityChanged(bool)), actionNetworkBar_, SLOT(setChecked(bool)));
+}
+
+void SCIRunMainWindow::addNetworkActionsToBar(QToolBar* toolbar) const
+{
+  WidgetStyleMixin::toolbarStyle(toolbar);
+  toolbar->setObjectName("NetworkToolBar");
+
+  toolbar->addAction(actionPinAllModuleUIs_);
+  toolbar->addAction(actionRestoreAllModuleUIs_);
+  toolbar->addAction(actionHideAllModuleUIs_);
+  toolbar->addSeparator();
+  toolbar->addAction(actionCenterNetworkViewer_);
+  toolbar->addAction(actionZoomIn_);
+  toolbar->addAction(actionZoomOut_);
+  toolbar->addAction(actionResetNetworkZoom_);
 }
 
 void SCIRunMainWindow::createAdvancedToolbar()
