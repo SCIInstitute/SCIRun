@@ -215,9 +215,9 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
   portsBridge->setToolTip(name);
 
   auto layout = new QHBoxLayout;
-  layout->setSpacing(4);
+  layout->setSpacing(15);
   layout->setAlignment(Qt::AlignLeft);
-  layout->setContentsMargins(5, 0, 5, 0);
+  layout->setContentsMargins(15, 0, 5, 0);
 
   auto visible = visibleRect();
 
@@ -228,7 +228,7 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
   proxy->setMinimumWidth(visible.width());
   proxy->setData(123, name);
 
-  int offset = 12;
+  int offset = 40;
   for (const auto& port : ports)
   {
     SubnetPortWidgetCtorArgs args { QString::fromStdString(port->get_portname()),
@@ -251,8 +251,32 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
     //   << portRewiringMap2_[port->id().toString()]->id().id_.c_str();
 
     portRewiringMap_[port->id().toString()]->addSubnetCompanion(portRepl);
-    offset += portRepl->properWidth() + 3;
+    offset += portRepl->properWidth() + 10;
     portsBridge->addPort(portRepl);
+  }
+
+  //TODO: get from somewhere else
+  std::vector<QString> types{"Field", "Matrix", "String", "Geometry", "Bundle", "Nrrd"};
+  for (const auto& type : types)
+  {
+    SubnetPortWidgetCtorArgs args { "Test" + type,
+      to_color(PortColorLookup::toColor(type.toStdString()), 230), type.toStdString(),
+      [this](){ return boost::make_shared<ConnectionFactory>([this]() { return scene_; }); },
+      [this](){ return boost::make_shared<ClosestPortFinder>([this]() { return scene_; }); },
+      nullptr};
+
+    PortWidget* testPort;
+    if (name == "Outputs") // flip input and output designation here.
+      testPort = new SubnetInputPortWidget(args);
+    else // Inputs
+      testPort = new SubnetOutputPortWidget(args);
+
+    layout->addWidget(testPort);
+    testPort->setSceneFunc([this]() { return scene_; });
+    testPort->setPositionObject(boost::make_shared<LambdaPositionProvider>([proxy, offset]() { return proxy->pos() + QPointF(offset, 0); }));
+    offset += testPort->properWidth() + 3;
+    portsBridge->addPort(testPort);
+    testPort->hide();
   }
 
   portsBridge->setLayout(layout);
