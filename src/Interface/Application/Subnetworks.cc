@@ -92,6 +92,7 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
   WidgetStyleMixin::toolbarStyle(subnetBar);
   subnetBar->setObjectName("SubnetToolbar");
   SCIRunMainWindow::Instance()->addNetworkActionsToBar(subnetBar);
+  subnetBar->setIconSize(QSize(20, 20));
   vbox->setMenuBar(subnetBar);
 
   saveAsTemplatePushButton_->hide();
@@ -230,20 +231,18 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
   int offset = 12;
   for (const auto& port : ports)
   {
+    SubnetPortWidgetCtorArgs args { QString::fromStdString(port->get_portname()),
+      to_color(PortColorLookup::toColor(port->get_typename()), 230), port->get_typename(),
+      [this](){ return boost::make_shared<ConnectionFactory>([this]() { return scene_; }); },
+      [this](){ return boost::make_shared<ClosestPortFinder>([this]() { return scene_; }); },
+      port.get()};
+
     PortWidget* portRepl;
-    if (name == "Outputs")
-      portRepl = new SubnetInputPortWidget(QString::fromStdString(port->get_portname()),
-        to_color(PortColorLookup::toColor(port->get_typename()), 230), port->get_typename(),
-        [this](){ return boost::make_shared<ConnectionFactory>([this]() { return scene_; }); },
-        [this](){ return boost::make_shared<ClosestPortFinder>([this]() { return scene_; }); },
-        port.get());
+    if (name == "Outputs") // flip input and output designation here.
+      portRepl = new SubnetInputPortWidget(args);
     else // Inputs
-      portRepl = new SubnetOutputPortWidget(QString::fromStdString(port->get_portname()),
-        to_color(PortColorLookup::toColor(port->get_typename()), 230), port->get_typename(),
-        [this](){ return boost::make_shared<ConnectionFactory>([this]() { return scene_; }); },
-        [this](){ return boost::make_shared<ClosestPortFinder>([this]() { return scene_; }); },
-        port.get()
-        );
+      portRepl = new SubnetOutputPortWidget(args);
+
     layout->addWidget(portRepl);
     portRepl->setSceneFunc([this]() { return scene_; });
     portRepl->setPositionObject(boost::make_shared<LambdaPositionProvider>([proxy, offset]() { return proxy->pos() + QPointF(offset, 0); }));
@@ -264,24 +263,15 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
   proxy->setPos(position(visibleRect()));
 }
 
-SubnetInputPortWidget::SubnetInputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
-  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
-  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
-  PortDescriptionInterface* realPort,
-  QWidget* parent)
-  : InputPortWidget(name, color, datatype, ModuleId(), PortId(), 0, true, connectionFactory, closestPortFinder, {}, parent), realPort_(realPort)
-
+SubnetInputPortWidget::SubnetInputPortWidget(const SubnetPortWidgetCtorArgs& args, QWidget* parent)
+  : InputPortWidget(args.name, args.color, args.datatype, {}, PortId(), 0, true, args.connectionFactory, args.closestPortFinder, {}, parent), realPort_(args.realPort)
 {
 
 }
 
 
-SubnetOutputPortWidget::SubnetOutputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
-  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
-  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
-  PortDescriptionInterface* realPort,
-  QWidget* parent)
-  : OutputPortWidget(name, color, datatype, ModuleId(), PortId(), 0, true, connectionFactory, closestPortFinder, {}, parent), realPort_(realPort)
+SubnetOutputPortWidget::SubnetOutputPortWidget(const SubnetPortWidgetCtorArgs& args, QWidget* parent)
+  : OutputPortWidget(args.name, args.color, args.datatype, {}, PortId(), 0, true, args.connectionFactory, args.closestPortFinder, {}, parent), realPort_(args.realPort)
 {
 
 }
