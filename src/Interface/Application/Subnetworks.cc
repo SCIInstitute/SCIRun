@@ -91,9 +91,7 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
   auto subnetBar = new QToolBar("Subnet");
   WidgetStyleMixin::toolbarStyle(subnetBar);
   subnetBar->setObjectName("SubnetToolbar");
-
-  subnetBar->addAction("hi");
-  subnetBar->addAction("bye");
+  SCIRunMainWindow::Instance()->addNetworkActionsToBar(subnetBar);
   vbox->setMenuBar(subnetBar);
 
   saveAsTemplatePushButton_->hide();
@@ -208,7 +206,7 @@ NetworkEditor* NetworkEditor::inEditingContext_(nullptr);
 NetworkEditor::ConnectorFunc NetworkEditor::connectorFunc_;
 
 std::function<QPointF(const QRectF&)> NetworkEditor::topSubnetPortHolderPositioner_([](const QRectF& rect) { return rect.topLeft(); });
-std::function<QPointF(const QRectF&)> NetworkEditor::bottomSubnetPortHolderPositioner_([](const QRectF& rect) { return rect.bottomLeft() + QPointF(0, -23); });
+std::function<QPointF(const QRectF&)> NetworkEditor::bottomSubnetPortHolderPositioner_([](const QRectF& rect) { return rect.bottomLeft() + QPointF(0, -40); });
 
 void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescriptionInterface>>& ports, const QString& name, std::function<QPointF(const QRectF&)> position)
 {
@@ -263,7 +261,7 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
   scene_->addItem(proxy);
   subnetPortHolders_.append(proxy);
 
-  proxy->setPos(position(visible));
+  proxy->setPos(position(visibleRect()));
 }
 
 SubnetInputPortWidget::SubnetInputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
@@ -271,7 +269,7 @@ SubnetInputPortWidget::SubnetInputPortWidget(const QString& name, const QColor& 
   boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
   PortDescriptionInterface* realPort,
   QWidget* parent)
-  : InputPortWidget(name, color, datatype, ModuleId(), PortId(), 0, false, connectionFactory, closestPortFinder, {}, parent), realPort_(realPort)
+  : InputPortWidget(name, color, datatype, ModuleId(), PortId(), 0, true, connectionFactory, closestPortFinder, {}, parent), realPort_(realPort)
 
 {
 
@@ -283,7 +281,7 @@ SubnetOutputPortWidget::SubnetOutputPortWidget(const QString& name, const QColor
   boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
   PortDescriptionInterface* realPort,
   QWidget* parent)
-  : OutputPortWidget(name, color, datatype, ModuleId(), PortId(), 0, false, connectionFactory, closestPortFinder, {}, parent), realPort_(realPort)
+  : OutputPortWidget(name, color, datatype, ModuleId(), PortId(), 0, true, connectionFactory, closestPortFinder, {}, parent), realPort_(realPort)
 {
 
 }
@@ -325,12 +323,12 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
   connectorFunc_(subnet);
   subnet->setupPortHolders(mod);
 
-  subnet->setSceneRect(QRectF());
-  subnet->centerView();
-
   auto dock = new SubnetworkEditor(subnet, mod->get_id(), name, nullptr);
   dock->setStyleSheet(SCIRunMainWindow::Instance()->styleSheet());
+  //subnet->setSceneRect(QRectF());
+
   dock->show();
+  subnet->centerView();
 
   childrenNetworks_[name] = dock;
 }

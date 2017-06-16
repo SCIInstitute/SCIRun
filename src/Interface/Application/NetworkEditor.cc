@@ -1033,6 +1033,12 @@ void NetworkEditor::fillModulePositionMap(ModulePositions& positions, ModuleFilt
 
 void NetworkEditor::centerView()
 {
+  if (!isActiveWindow())
+  {
+    tailRecurse(boost::bind(&NetworkEditor::centerView, _1));
+    return;
+  }
+
   ModulePositions positions;
   fillModulePositionMap(positions, boost::lambda::constant(true));
   centerOn(findCenterOfNetwork(positions));
@@ -1471,7 +1477,10 @@ QPixmap NetworkEditor::sceneGrab()
 void NetworkEditor::selectAll()
 {
   if (!isActiveWindow())
+  {
+    tailRecurse(boost::bind(&NetworkEditor::selectAll, _1));
     return;
+  }
 
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
@@ -1481,6 +1490,12 @@ void NetworkEditor::selectAll()
 
 void NetworkEditor::pinAllModuleUIs()
 {
+  if (!isActiveWindow())
+  {
+    tailRecurse(boost::bind(&NetworkEditor::pinAllModuleUIs, _1));
+    return;
+  }
+
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     auto module = getModule(item);
@@ -1491,6 +1506,12 @@ void NetworkEditor::pinAllModuleUIs()
 
 void NetworkEditor::hideAllModuleUIs()
 {
+  if (!isActiveWindow())
+  {
+    tailRecurse(boost::bind(&NetworkEditor::hideAllModuleUIs, _1));
+    return;
+  }
+
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     auto module = getModule(item);
@@ -1501,6 +1522,12 @@ void NetworkEditor::hideAllModuleUIs()
 
 void NetworkEditor::restoreAllModuleUIs()
 {
+  if (!isActiveWindow())
+  {
+    tailRecurse(boost::bind(&NetworkEditor::restoreAllModuleUIs, _1));
+    return;
+  }
+
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     auto module = getModule(item);
