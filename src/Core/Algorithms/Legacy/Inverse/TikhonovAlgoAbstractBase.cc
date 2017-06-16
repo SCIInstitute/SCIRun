@@ -36,7 +36,7 @@ Last modification : April 20 2017
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 #include <Core/Algorithms/Legacy/Inverse/TikhonovImpl.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
-#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
+// #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
 
 // Datatypes
 #include <Core/Datatypes/Matrix.h>
@@ -66,7 +66,7 @@ const AlgorithmOutputName TikhonovAlgoAbstractBase::InverseSolution("InverseSolu
 const AlgorithmOutputName TikhonovAlgoAbstractBase::RegularizationParameter("RegularizationParameter");
 const AlgorithmOutputName TikhonovAlgoAbstractBase::RegInverse("RegInverse");
 
-const AlgorithmParameterName TikhonovAlgoAbstractBase::TikhonovImplementation("NoMethodSelected");
+const AlgorithmParameterName TikhonovAlgoAbstractBase::TikhonovImplementation("TikhonovImplementationOption");
 const AlgorithmParameterName TikhonovAlgoAbstractBase::RegularizationMethod("lambdaMethodComboBox");
 const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationChoice("autoRadioButton");
 const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaFromDirectEntry("lambdaDoubleSpinBox");
@@ -95,6 +95,7 @@ const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationResidualSub
 
 TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
 {
+	addParameter(TikhonovImplementation, NoMethodSelected);
 	addParameter(RegularizationMethod, "lcurve");
 	addParameter(regularizationChoice, 0);
 	addParameter(LambdaFromDirectEntry,1e-6);
@@ -216,7 +217,7 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
 	// Determine specific Tikhonov Implementation
 	TikhonovImpl  *algoImpl;
-	if ( TikhonovImplementation_gotten ==  "standardTikhonov"){
+	if ( get(RegularizationMethod).toInt() ==  standardTikhonov ){
 		// get Parameters
 		int  regularizationChoice_ = get(regularizationChoice).toInt();
 		int regularizationSolutionSubcase_ = get(regularizationSolutionSubcase).toInt();
@@ -224,10 +225,10 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
 		algoImpl = new SolveInverseProblemWithStandardTikhonovImpl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), regularizationChoice_, regularizationSolutionSubcase_, regularizationResidualSubcase_);
 	}
-	else if ( TikhonovImplementation_gotten ==  "TikhonovSVD"){
-		algoImpl = new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_));
+	else if ( get(RegularizationMethod).toInt() ==  TikhonovSVD ){
+		// algoImpl = new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_));
 	}
-	else if ( TikhonovImplementation_gotten ==  "TikhonovTSVD" ){
+	else if ( get(RegularizationMethod).toInt() ==  TikhonovTSVD ){
 		THROW_ALGORITHM_PROCESSING_ERROR("Tikhonov TSVD not implemented yet");
 	}
 	else{

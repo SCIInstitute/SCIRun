@@ -84,6 +84,12 @@ namespace Inverse {
 		static  const AlgorithmParameterName LCurveText;
 
 		// Define algorithm choices
+		enum TikhonovImplementationChoice {
+			NoMethodSelected,
+			standardTikhonov,
+			TikhonovSVD,
+			TikhonovTSVD
+		};
 		enum AlgorithmChoice {
 			automatic,
 			underdetermined,

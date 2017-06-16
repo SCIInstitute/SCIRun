@@ -61,7 +61,17 @@ SolveInverseProblemWithTikhonov::SolveInverseProblemWithTikhonov() : Module(stat
 
 void SolveInverseProblemWithTikhonov::setStateDefaults()
 {
+	// setStateIntFromAlgo(TikhonovAlgoAbstractBase::TikhonovImplementation);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::RegularizationMethod);
 	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationChoice);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaFromDirectEntry);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaMin);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaMax);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaNum);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaResolution);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaSliderValue);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaCorner);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LCurveText);
 	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationSolutionSubcase);
 	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationResidualSubcase);
 }
@@ -81,6 +91,7 @@ void SolveInverseProblemWithTikhonov::execute()
 
 	if (needToExecute())
 	{
+
 		// set parameters
 		algo().setOption( TikhonovAlgoAbstractBase::TikhonovImplementation, "standardTikhonov" );
 		algo().setOption(TikhonovAlgoAbstractBase::regularizationChoice, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationChoice).toString());

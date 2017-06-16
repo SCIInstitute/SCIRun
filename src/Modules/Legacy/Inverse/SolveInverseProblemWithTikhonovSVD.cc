@@ -64,7 +64,18 @@ SolveInverseProblemWithTikhonovSVD::SolveInverseProblemWithTikhonovSVD() : Modul
 
 void SolveInverseProblemWithTikhonovSVD::setStateDefaults()
 {
+
+	// setStateIntFromAlgo(TikhonovAlgoAbstractBase::TikhonovImplementation);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::RegularizationMethod);
 	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationChoice);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaFromDirectEntry);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaMin);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaMax);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaNum);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaResolution);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaSliderValue);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaCorner);
+	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LCurveText);
 	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationSolutionSubcase);
 	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationResidualSubcase);
 }
