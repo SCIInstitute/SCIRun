@@ -61,7 +61,6 @@ BooleanCompareAlgo::BooleanCompareAlgo()
 
 AlgorithmOutput BooleanCompareAlgo::run(const AlgorithmInput& input) const
 {
-  std::cout<<"starting run function"<<std::endl;
   
   auto matrixa = input.get<Matrix>(Variables::FirstMatrix);
   auto matrixb = input.get<Matrix>(Variables::SecondMatrix);
@@ -102,29 +101,23 @@ AlgorithmOutput BooleanCompareAlgo::run(const AlgorithmInput& input) const
   std::string then_result = getOption(Parameters::Then_Option);
   std::string else_result = getOption(Parameters::Else_Option);
   
-  std::cout<<"valoptA ="<<valoptA<<std::endl;
-  std::cout<<"valoptB ="<<valoptB<<std::endl;
-  std::cout<<"cond_statement ="<<cond_statement<<std::endl;
-  std::cout<<"then_result ="<<then_result<<std::endl;
-  std::cout<<"else_result ="<<else_result<<std::endl;
-  
-  std::cout<<"condition:"<<cond_state<<std::endl;
+//  std::cout<<"valoptA ="<<valoptA<<std::endl;
+//  std::cout<<"valoptB ="<<valoptB<<std::endl;
+//  std::cout<<"cond_statement ="<<cond_statement<<std::endl;
+//  std::cout<<"then_result ="<<then_result<<std::endl;
+//  std::cout<<"else_result ="<<else_result<<std::endl;
+
   if (!matb || cond_statement == "boolop")
   {
 //    if no second input, only run boolean on first input
     if (!runImpl(mata, valoptA, cond_statement, cond_state))
       THROW_ALGORITHM_PROCESSING_ERROR("Error running conditional matrix algorithm");
-    std::cout<<"condition:"<<cond_state<<std::endl;
   }
   else
   {
     if (!runImpl(mata, matb, valoptA, valoptB, cond_statement, cond_state))
       THROW_ALGORITHM_PROCESSING_ERROR("Error running conditional matrix algorithm");
-    std::cout<<"condition:"<<cond_state<<std::endl;
   }
-  
-  std::cout<<"runImpl done"<<std::endl;
-  std::cout<<"condition:"<<cond_state<<std::endl;
   
   //  after testing the statement, determine the module output
   return_check(cond_state,cond_matrix,out_matrix,then_result,else_result,matrixa,matrixb,possout);
@@ -138,7 +131,7 @@ AlgorithmOutput BooleanCompareAlgo::run(const AlgorithmInput& input) const
 
 bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, std::string valoptA, std::string& cond_statement, int& cond_state) const
 {
-  std::cout<<"starting runImpl function single"<<std::endl;
+//  if only need to check one matrix, run this version
   
   size_t nrA = mata->nrows();
   size_t ncA = mata->ncols();
@@ -169,12 +162,7 @@ bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, std::string valoptA, st
   }
   else error("Choosen options do not make sense.");
   
-  
-  std::cout<<"setup done"<<std::endl;
-  
   cond_state = CompareMatrix(compa);
-  
-  std::cout<<"condition is "<<cond_state<<std::endl;
   
   return true;
 }
@@ -184,21 +172,17 @@ bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, std::string valoptA, st
 
 bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle matb, std::string valoptA, std::string valoptB, std::string& cond_statement, int& cond_state) const
 {
-  std::cout<<"starting runImpl function double"<<std::endl;
-  
+// this is for two marix imputs. the comparison is trickier
   
   
   size_t nrA = mata->nrows();
   size_t ncA = mata->ncols();
   size_t nrB = matb->nrows();
   size_t ncB = matb->ncols();
-  
-  
-  
-  std::cout<<"size established"<<std::endl;
-  
+
   DenseMatrixHandle compa, compb;
   
+//  check the various quantities to check make sure the checks make since.
   if ((valoptA == "size" && valoptB == "norm") || (valoptB == "size" && valoptA == "norm"))
   {
     error("Cannot compare size of one matrix to norm of the other");
@@ -295,10 +279,8 @@ bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle matb,
     compa=mata;
     compb=matb;
   }
-  else error("Choosen options do not make sense.");  
+  else error("Choosen options do not make sense.");
   cond_state = CompareMatrix(compa, compb, cond_statement);
-  
-  std::cout<<"condition is "<<cond_state<<std::endl;
   
   return true;
     
@@ -319,9 +301,6 @@ double BooleanCompareAlgo::ComputeNorm(DenseMatrixHandle mat) const
     sumation+=data[k]*data[k];
   }
   double norm = sqrt(sumation);
-
-  std::cout<<"norm ="<<norm<<std::endl;
-  
   return norm;
 }
 
@@ -400,10 +379,12 @@ int BooleanCompareAlgo::CompareMatrix(DenseMatrixHandle mata, DenseMatrixHandle 
       sumation += data[k]-datb[k];
     }
     
-    std::cout<<"greater ="<<great<<std::endl;
-    std::cout<<"less ="<<less<<std::endl;
-    std::cout<<"equal ="<<eq<<std::endl;
-    std::cout<<"sumation ="<<sumation<<std::endl;
+//    std::cout<<"greater ="<<great<<std::endl;
+//    std::cout<<"less ="<<less<<std::endl;
+//    std::cout<<"equal ="<<eq<<std::endl;
+//    std::cout<<"sumation ="<<sumation<<std::endl;
+    
+    
     
 //    if there are both greater and less than, need some extra checking. compare the number of
 //    entries that fulfill the condition, and the magnitude of the difference.
@@ -481,18 +462,15 @@ int BooleanCompareAlgo::CompareMatrix(DenseMatrixHandle mata, DenseMatrixHandle 
 // determine the output
 bool BooleanCompareAlgo::return_check(int& cond_state, DenseMatrixHandle& cond_matrix, MatrixHandle& out_matrix, std::string then_result, std::string else_result, MatrixHandle matrixa, MatrixHandle matrixb, MatrixHandle possout) const
 {
-  std::cout<<"starting return_check"<<std::endl;
   double *data = cond_matrix->data();
   
   if (cond_state==1)
   {
-    std::cout<<"true return"<<std::endl;
     data[0] = 1;
     return_value(out_matrix,then_result,matrixa,matrixb,possout);
   }
   else if (cond_state==0)
   {
-    std::cout<<"false return"<<std::endl;
     data[0] = 0;
     return_value(out_matrix,else_result,matrixa,matrixb,possout);
   }
@@ -501,16 +479,12 @@ bool BooleanCompareAlgo::return_check(int& cond_state, DenseMatrixHandle& cond_m
     THROW_ALGORITHM_PROCESSING_ERROR("Error running conditional matrix algorithm");
     return false;
   }
-
-  std::cout<<"finished return_check"<<std::endl;
   return true;
 }
 
 
 bool BooleanCompareAlgo::return_value(MatrixHandle& out_matrix,std::string result_statement, MatrixHandle first, MatrixHandle second, MatrixHandle possout) const
 {
-  std::string exit_status = "running";
-  
   if (result_statement == "second" && !second)
   {
     result_statement = "null";
@@ -529,8 +503,6 @@ bool BooleanCompareAlgo::return_value(MatrixHandle& out_matrix,std::string resul
   else if (result_statement == "quit")
   {
     out_matrix = 0;
-    exit_status = "supposed to quit";
-    std::cout<<"exit status:"<<exit_status<<std::endl;
   }
   else
   {

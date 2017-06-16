@@ -96,6 +96,7 @@ BooleanCompare::execute()
 
       std::cout<<"cond matrix :"<<*out_mat<<std::endl;
       std::cout<<"ordered to quit.  Trying to quit."<<std::endl;
+//      quit nicely
       std::string q_message=NetworkEditorPythonAPI::quit(false);
       std::cout<<"Quit message = "<<q_message<<std::endl;
       

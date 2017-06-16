@@ -7,9 +7,9 @@
     "header": "Modules/Math/BooleanCompare.h"
   },
   "algorithm": {
-    "name": "BooleanCompare",
+    "name": "BooleanCompareAlgo",
     "namespace": "Math",
-    "header": "Core/Algorithms/Math/BooleanCompare.h"
+    "header": "Core/Algorithms/Math/BooleanCompareAlgo.h"
   },
   "UI": {
     "name": "BooleanCompareDialog",
