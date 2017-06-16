@@ -95,9 +95,9 @@ ConditionalMatrix::execute()
     {
 
       std::cout<<"cond matrix :"<<*out_mat<<std::endl;
-      std::cout<<"ordered to quit. Not implemented yet"<<std::endl;
+      std::cout<<"ordered to quit.  Trying to quit."<<std::endl;
       std::string q_message=NetworkEditorPythonAPI::quit(false);
-      std::cout<<"message = "<<q_message<<std::endl;
+      std::cout<<"Quit message = "<<q_message<<std::endl;
       
     }
       
