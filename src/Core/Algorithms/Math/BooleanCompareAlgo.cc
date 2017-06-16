@@ -295,10 +295,7 @@ bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle matb,
     compa=mata;
     compb=matb;
   }
-  else error("Choosen options do not make sense.");
-  
-  std::cout<<"input checks established"<<std::endl;
-  
+  else error("Choosen options do not make sense.");  
   cond_state = CompareMatrix(compa, compb, cond_statement);
   
   std::cout<<"condition is "<<cond_state<<std::endl;
