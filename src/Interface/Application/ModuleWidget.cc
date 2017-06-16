@@ -569,6 +569,13 @@ void ModuleWidget::fillReplaceWithMenu()
     fullWidgetDisplay_->getModuleActionButton());
 }
 
+void ModuleWidget::menuFunction()
+{
+  qDebug() << "ModuleWidget::menuFunction";
+  // fullWidgetDisplay_->getModuleActionButton()->setMenu(nullptr);
+  // actionsMenu_.reset();
+}
+
 QMenu* ModuleWidget::getReplaceWithMenu()
 {
   return actionsMenu_->getAction("Replace With")->menu();
@@ -965,8 +972,6 @@ ModuleWidget::NetworkClearingScope::~NetworkClearingScope()
 
 ModuleWidget::~ModuleWidget()
 {
-  actionsMenu_->getAction("Replace With")->setMenu(nullptr);
-
   disconnect(this, SIGNAL(dynamicPortChanged(const std::string&, bool)), this, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
   disconnect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
 

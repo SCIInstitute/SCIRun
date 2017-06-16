@@ -194,6 +194,7 @@ public Q_SLOTS:
   void updateMetadata(bool active);
   void updatePortSpacing(bool highlighted);
   void replaceMe();
+  void menuFunction();
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void interrupt(const SCIRun::Dataflow::Networks::ModuleId& moduleId);

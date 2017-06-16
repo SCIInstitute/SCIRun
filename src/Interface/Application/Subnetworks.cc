@@ -124,6 +124,13 @@ void NetworkEditor::sendItemsToParent()
       {
         conn->deleteCompanion();
       }
+
+      auto module = getModule(item);
+      if (module)
+      {
+        module->menuFunction();
+      }
+
       parentNetwork_->scene_->addItem(item);
       item->setVisible(true);
       item->setData(SUBNET_KEY, 0);
