@@ -40,15 +40,22 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 
+ALGORITHM_PARAMETER_DEF(Math, Value_Option_1);
+ALGORITHM_PARAMETER_DEF(Math, Value_Option_2);
+ALGORITHM_PARAMETER_DEF(Math, Then_Option);
+ALGORITHM_PARAMETER_DEF(Math, Else_Option);
+ALGORITHM_PARAMETER_DEF(Math, Comparison_Option);
+
 ConditionalMatrixAlgo::ConditionalMatrixAlgo()
 {
   //set parameter defaults for UI
+  using namespace Parameters;
     
-  addOption(Variables::Operator, "boolop", "boolop|andop|orop|lessop|lesseqop|eqop|greateqop|greatop");
-  addOption(Variables::Method, "value", "value|size|norm");
-  addOption(Variables::ObjectInfo, "value", "value|size|norm");
-  addOption(Variables::FormatString, "first", "null|first|second|third|quit");
-  addOption(Variables::FunctionString, "null", "null|first|second|third|quit");
+  addOption(Comparison_Option, "boolop", "boolop|andop|orop|lessop|lesseqop|eqop|greateqop|greatop");
+  addOption(Value_Option_1, "value", "value|size|norm");
+  addOption(Value_Option_2, "value", "value|size|norm");
+  addOption(Then_Option, "first", "null|first|second|third|quit");
+  addOption(Else_Option, "null", "null|first|second|third|quit");
 }
 
 
@@ -89,11 +96,11 @@ AlgorithmOutput ConditionalMatrixAlgo::run(const AlgorithmInput& input) const
   
   std::cout<<"getting module option"<<std::endl;
   //pull parameter from UI
-  std::string valoptA = getOption(Variables::Method);
-  std::string valoptB = getOption(Variables::ObjectInfo);
-  std::string cond_statement = getOption(Variables::Operator);
-  std::string then_result = getOption(Variables::FormatString);
-  std::string else_result = getOption(Variables::FunctionString);
+  std::string valoptA = getOption(Parameters::Value_Option_1);
+  std::string valoptB = getOption(Parameters::Value_Option_2);
+  std::string cond_statement = getOption(Parameters::Comparison_Option);
+  std::string then_result = getOption(Parameters::Then_Option);
+  std::string else_result = getOption(Parameters::Else_Option);
   
   std::cout<<"valoptA ="<<valoptA<<std::endl;
   std::cout<<"valoptB ="<<valoptB<<std::endl;

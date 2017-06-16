@@ -95,11 +95,11 @@ ConditionalMatrixDialog::ConditionalMatrixDialog(const std::string& name, Module
     
     
 
-    addComboBoxManager(valueBox_1_, Variables::Method,impl_->value_1_);
-    addComboBoxManager(valueBox_2_, Variables::ObjectInfo,impl_->value_2_);
-    addComboBoxManager(conditionBox_, Variables::Operator,impl_->condition_);
-    addComboBoxManager(thenBox_, Variables::FormatString,impl_->then_);
-    addComboBoxManager(elseBox_, Variables::FunctionString,impl_->else_);
+    addComboBoxManager(valueBox_1_, Parameters::Value_Option_1,impl_->value_1_);
+    addComboBoxManager(valueBox_2_, Parameters::Value_Option_2,impl_->value_2_);
+    addComboBoxManager(conditionBox_, Parameters::Comparison_Option,impl_->condition_);
+    addComboBoxManager(thenBox_, Parameters::Then_Option,impl_->then_);
+    addComboBoxManager(elseBox_, Parameters::Else_Option,impl_->else_);
 }
 
 //void ConditionalMatrixDialog::pullSpecial()

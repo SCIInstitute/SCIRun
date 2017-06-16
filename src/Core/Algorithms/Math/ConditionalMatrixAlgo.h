@@ -48,6 +48,12 @@ namespace Core {
 namespace Algorithms {
 namespace Math {
 
+  ALGORITHM_PARAMETER_DECL(Value_Option_1);
+  ALGORITHM_PARAMETER_DECL(Value_Option_2);
+  ALGORITHM_PARAMETER_DECL(Then_Option);
+  ALGORITHM_PARAMETER_DECL(Else_Option);
+  ALGORITHM_PARAMETER_DECL(Comparison_Option);
+                           
 class SCISHARE ConditionalMatrixAlgo : public AlgorithmBase
 {
 

@@ -52,16 +52,16 @@ ConditionalMatrix::ConditionalMatrix() : Module(staticInfo_)
   INITIALIZE_PORT(MatrixB);
   INITIALIZE_PORT(PossibleOutput);
   INITIALIZE_PORT(OutputMatrix);
-  INITIALIZE_PORT(Solution);
+  INITIALIZE_PORT(BooleanResult);
 }
 
 void ConditionalMatrix::setStateDefaults()
 {
-  setStateStringFromAlgoOption(Variables::Operator);
-  setStateStringFromAlgoOption(Variables::Method);
-  setStateStringFromAlgoOption(Variables::ObjectInfo);
-  setStateStringFromAlgoOption(Variables::FormatString);
-  setStateStringFromAlgoOption(Variables::FunctionString);
+  setStateStringFromAlgoOption(Parameters::Comparison_Option);
+  setStateStringFromAlgoOption(Parameters::Value_Option_1);
+  setStateStringFromAlgoOption(Parameters::Value_Option_2);
+  setStateStringFromAlgoOption(Parameters::Then_Option);
+  setStateStringFromAlgoOption(Parameters::Else_Option);
 }
 
 void
@@ -74,40 +74,36 @@ ConditionalMatrix::execute()
   if (needToExecute())
   {
       
-    setAlgoOptionFromState(Variables::Operator);
-    setAlgoOptionFromState(Variables::Method);
-    setAlgoOptionFromState(Variables::ObjectInfo);
-    setAlgoOptionFromState(Variables::FormatString);
-    setAlgoOptionFromState(Variables::FunctionString);
+    setAlgoOptionFromState(Parameters::Comparison_Option);
+    setAlgoOptionFromState(Parameters::Value_Option_1);
+    setAlgoOptionFromState(Parameters::Value_Option_2);
+    setAlgoOptionFromState(Parameters::Then_Option);
+    setAlgoOptionFromState(Parameters::Else_Option);
     
 
     auto output = algo().run(withInputData((Variables::FirstMatrix, matrixA)(Variables::SecondMatrix, optionalAlgoInput(matrixB))(Variables::InputMatrix, optionalAlgoInput(possout))));
     
 //    Check for quit condition and then quit.  Arguably the most useful part of the module
     auto state = get_state();
-    std::string then_statement = state->getValue(Variables::FormatString).toString();
-    std::string else_statement = state->getValue(Variables::FunctionString).toString();
+    std::string then_statement = state->getValue(Parameters::Then_Option).toString();
+    std::string else_statement = state->getValue(Parameters::Else_Option).toString();
     
+    auto out_mat=output.get<DenseMatrix>(Variables::Solution);
+    double *data=out_mat->data();
     
-    
-    if (then_statement == "quit" || else_statement == "quit")
+    if ((data[0]==1 && then_statement == "quit") || (data[0]==0 && else_statement == "quit"))
     {
-      auto out_mat=output.get<DenseMatrix>(Variables::Solution);
-      
-//      auto out  = castMatrix::toDense (out_mat);
-//      double *data=out->data();
-      std::cout<<"cond matrix :"<<out_mat<<std::endl;
-      
-//      if ((data[0]==1 && then_statement == "quit") || (data[0]==0 && else_statement == "quit"))
-//      {
-//        std::cout<<"ordered to quit. Not implemented yet"<<std::endl;
-//      }
+
+      std::cout<<"cond matrix :"<<*out_mat<<std::endl;
+      std::cout<<"ordered to quit. Not implemented yet"<<std::endl;
+      std::string q_message=NetworkEditorPythonAPI::quit(true);
+      std::cout<<"message = "<<q_message<<std::endl;
       
     }
       
 
     sendOutputFromAlgorithm(OutputMatrix, output);
-    sendOutputFromAlgorithm(Solution, output);
+    sendOutput(BooleanResult, out_mat);
 
   }
 }
