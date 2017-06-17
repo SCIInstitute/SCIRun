@@ -44,7 +44,7 @@ using namespace SCIRun::Core::Datatypes;
 /// @class BooleanCompare
 /// This module is for comparing two matrices and sending outputs
 
-MODULE_INFO_DEF(BooleanCompare, Math, SCIRun)
+MODULE_INFO_DEF(BooleanCompare, Flow Control, SCIRun)
 
 BooleanCompare::BooleanCompare() : Module(staticInfo_)
 {
