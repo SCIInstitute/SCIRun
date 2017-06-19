@@ -43,6 +43,7 @@
 #include <Dataflow/Serialization/Network/ModulePositionGetter.h>
 #include <Interface/Application/Note.h>
 #include <Interface/Application/Utility.h>
+#include <Interface/Application/Subnetworks.h>
 #endif
 
 class QMenu;
@@ -60,7 +61,7 @@ namespace Gui {
 
   class DialogErrorControl;
   class SubnetPortsBridgeProxyWidget;
-  
+
   class CurrentModuleSelection
   {
   public:
@@ -308,7 +309,7 @@ namespace Gui {
     void highlightTaggedItem(int tagValue);
     void resetNetworkDueToCycle();
     void moduleWindowAction();
-    void cleanUpNetwork(); 
+    void cleanUpNetwork();
     void redrawTagGroups();
     void adjustModuleWidth(int delta);
     void adjustModuleHeight(int delta);
@@ -349,6 +350,7 @@ namespace Gui {
     void bringToFront();
     void sendToBack();
     void searchTextChanged(const QString& text);
+    void clearSiblingSelections();
 
   private:
     using ModulePair = QPair<ModuleWidget*, ModuleWidget*>;
@@ -362,7 +364,7 @@ namespace Gui {
     void fillModulePositionMap(SCIRun::Dataflow::Networks::ModulePositions& positions, SCIRun::Dataflow::Networks::ModuleFilter filter) const;
     void highlightTaggedItem(QGraphicsItem* item, int tagValue);
     void pasteImpl(const QString& xml);
-    void connectNewModuleImpl(const Dataflow::Networks::ModuleHandle& moduleToConnectTo, const Dataflow::Networks::PortDescriptionInterface* portToConnect, 
+    void connectNewModuleImpl(const Dataflow::Networks::ModuleHandle& moduleToConnectTo, const Dataflow::Networks::PortDescriptionInterface* portToConnect,
       const std::string& newModuleName, QObject* sender);
     void drawTagGroups();
     void removeTagGroups();
@@ -424,7 +426,13 @@ namespace Gui {
     QSet<QString> currentSubnetNames_;
 
     template <typename Func>
-    void tailRecurse(Func func);
+    void tailRecurse(Func func)
+    {
+      for (auto& child : childrenNetworks_)
+      {
+        func(child.second->get());
+      }
+    }
 
     static NetworkEditor* inEditingContext_;
     struct InEditingContext

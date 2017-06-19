@@ -276,7 +276,7 @@ void NetworkEditor::setupPortHolder(const std::vector<SharedPointer<PortDescript
     testPort->setPositionObject(boost::make_shared<LambdaPositionProvider>([proxy, offset]() { return proxy->pos() + QPointF(offset, 0); }));
     offset += testPort->properWidth() + 3;
     portsBridge->addPort(testPort);
-    testPort->hide();
+    //testPort->hide();
   }
 
   portsBridge->setLayout(layout);
@@ -307,18 +307,36 @@ void NetworkEditor::setupPortHolders(ModuleHandle mod)
   portRewiringMap_.clear();
 }
 
+void NetworkEditor::clearSiblingSelections()
+{
+  auto active = sender();
+  for (auto& child : childrenNetworks_)
+  {
+    auto scene = child.second->get()->scene_;
+    if (scene != active)
+      scene->clearSelection();
+  }
+}
+
 void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, NetworkEditor* subnet)
 {
   subnet->parentNetwork_ = this;
+  subnet->setDragMode(dragMode());
   subnet->setNetworkEditorController(getNetworkEditorController()->withSubnet(subnet));
 
   subnet->setSceneRect(QRectF(-500, -500, 1000, 1000));
+  connect(subnet->scene_, SIGNAL(selectionChanged()), scene_, SLOT(clearSelection()));
+  connect(subnet->scene_, SIGNAL(selectionChanged()), this, SLOT(clearSiblingSelections()));
+  connect(scene_, SIGNAL(selectionChanged()), subnet->scene_, SLOT(clearSelection()));
 
   for (auto& item : childrenNetworkItems_[name])
   {
     subnet->scene_->addItem(item);
-    if (qgraphicsitem_cast<ModuleProxyWidget*>(item))
+    if (auto proxy = qgraphicsitem_cast<ModuleProxyWidget*>(item))
+    {
       item->setVisible(true);
+      connect(subnet->scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
+    }
     else
     {
       auto conn = qgraphicsitem_cast<ConnectionLine*>(item);
@@ -330,7 +348,6 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
         }
       }
     }
-
     item->ensureVisible();
   }
 
@@ -339,7 +356,6 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
 
   auto dock = new SubnetworkEditor(subnet, mod->get_id(), name, nullptr);
   dock->setStyleSheet(SCIRunMainWindow::Instance()->styleSheet());
-  //subnet->setSceneRect(QRectF());
 
   dock->show();
   subnet->centerView();

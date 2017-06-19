@@ -430,11 +430,13 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
 void NetworkEditor::setMouseAsDragMode()
 {
   setDragMode(ScrollHandDrag);
+  tailRecurse(boost::bind(&NetworkEditor::setMouseAsDragMode, _1));
 }
 
 void NetworkEditor::setMouseAsSelectMode()
 {
   setDragMode(RubberBandDrag);
+  tailRecurse(boost::bind(&NetworkEditor::setMouseAsSelectMode, _1));
 }
 
 void NetworkEditor::bringToFront()
@@ -1722,15 +1724,6 @@ void NetworkEditor::adjustExecuteButtonsToDownstream(bool downOnly)
   }
 
   tailRecurse(boost::bind(&NetworkEditor::adjustExecuteButtonsToDownstream, _1, downOnly));
-}
-
-template <typename Func>
-void NetworkEditor::tailRecurse(Func func)
-{
-  for (auto& child : childrenNetworks_)
-  {
-    func(child.second->get());
-  }
 }
 
 QColor Gui::defaultTagColor(int tag)
