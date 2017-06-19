@@ -130,6 +130,12 @@ void NetworkEditor::sendItemsToParent()
         module->menuFunction();
       }
 
+      auto proxy = dynamic_cast<ModuleProxyWidget*>(item);
+      if (proxy)
+      {
+        connect(parentNetwork_->scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
+      }
+
       parentNetwork_->scene_->addItem(item);
       item->setVisible(true);
       item->setData(SUBNET_KEY, 0);
