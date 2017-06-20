@@ -311,6 +311,7 @@ void NetworkEditor::setupPortHolders(ModuleHandle mod)
   setupPortHolder(upcast_range<PortDescriptionInterface>(mod->inputPorts()), "Inputs", topSubnetPortHolderPositioner_);
   setupPortHolder(upcast_range<PortDescriptionInterface>(mod->outputPorts()), "Outputs", bottomSubnetPortHolderPositioner_);
   portRewiringMap_.clear();
+  boost::dynamic_pointer_cast<SubnetModule>(mod)->setSubnet(this);
 }
 
 void NetworkEditor::clearSiblingSelections()
@@ -369,52 +370,44 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
   childrenNetworks_[name] = dock;
 }
 
-class SubnetModule : public Module
+SubnetModule::SubnetModule(const std::vector<ModuleHandle>& underlyingModules, const QList<QGraphicsItem*>& items,
+  NetworkEditor* parent) : Module(ModuleLookupInfo()),
+  underlyingModules_(underlyingModules), items_(items), connector_(parent)
 {
-public:
-  SubnetModule(const std::vector<ModuleHandle>& underlyingModules, const QList<QGraphicsItem*>& items) : Module(ModuleLookupInfo()),
-    underlyingModules_(underlyingModules), items_(items)
-  {
-    set_id("Subnet:" + boost::lexical_cast<std::string>(subnetCount_));
-    subnetCount_++;
-  }
+  set_id("Subnet:" + boost::lexical_cast<std::string>(subnetCount_));
+  subnetCount_++;
+  connector_.setModule(this);
+}
 
-  void execute() override
-  {
-  }
+void SubnetModule::execute()
+{
+}
 
-  static const AlgorithmParameterName ModuleInfo;
+void SubnetModule::setStateDefaults() 
+{
+  auto state = get_state();
 
-  void setStateDefaults() override
-  {
-    auto state = get_state();
+  auto table = makeHomogeneousVariableList(
+    [this](size_t i)
+    {
+      return makeAnonymousVariableList(underlyingModules_[i]->get_id().id_,
+        std::string("Push me"),
+        boost::lexical_cast<std::string>(underlyingModules_[i]->num_input_ports()),
+        boost::lexical_cast<std::string>(underlyingModules_[i]->num_output_ports()));
+    },
+    underlyingModules_.size());
 
-    auto table = makeHomogeneousVariableList(
-      [this](size_t i)
-      {
-        return makeAnonymousVariableList(underlyingModules_[i]->get_id().id_,
-          std::string("Push me"),
-          boost::lexical_cast<std::string>(underlyingModules_[i]->num_input_ports()),
-          boost::lexical_cast<std::string>(underlyingModules_[i]->num_output_ports()));
-      },
-      underlyingModules_.size());
+  state->setValue(ModuleInfo, table);
+}
 
-    state->setValue(ModuleInfo, table);
-  }
-
-  std::string listComponentIds() const
-  {
-    std::ostringstream ostr;
-    std::transform(underlyingModules_.begin(), underlyingModules_.end(),
-      std::ostream_iterator<std::string>(ostr, ", "),
-      [](const ModuleHandle& mod) { return mod->get_id(); });
-    return ostr.str();
-  }
-private:
-  std::vector<ModuleHandle> underlyingModules_;
-  QList<QGraphicsItem*> items_;
-  static int subnetCount_;
-};
+std::string SubnetModule::listComponentIds() const
+{
+  std::ostringstream ostr;
+  std::transform(underlyingModules_.begin(), underlyingModules_.end(),
+    std::ostream_iterator<std::string>(ostr, ", "),
+    [](const ModuleHandle& mod) { return mod->get_id(); });
+  return ostr.str();
+}
 
 int SubnetModule::subnetCount_(0);
 const AlgorithmParameterName SubnetModule::ModuleInfo("ModuleInfo");
@@ -516,6 +509,7 @@ void NetworkEditor::makeSubnetwork()
 class SubnetModuleFactory : public Modules::Factory::HardCodedModuleFactory
 {
 public:
+  explicit SubnetModuleFactory(NetworkEditor* parent) : parent_(parent) {}
   ModuleHandle makeSubnet(const QString& name, const std::vector<ModuleHandle>& modules, QList<QGraphicsItem*> items) const
   {
     ModuleDescription desc;
@@ -571,7 +565,7 @@ public:
       }
     }
 
-    desc.maker_ = [&modules, items]() { return new SubnetModule(modules, items); };
+    desc.maker_ = [&modules, items, this]() { return new SubnetModule(modules, items, parent_); };
 
     auto mod = create(desc);
 
@@ -586,6 +580,7 @@ public:
   }
 private:
   mutable PortRewiringMap map_;
+  NetworkEditor* parent_;
 };
 
 void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std::vector<ModuleHandle>& modules,
@@ -593,7 +588,7 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
 {
   currentSubnetNames_.insert(name);
 
-  SubnetModuleFactory factory;
+  SubnetModuleFactory factory(this);
   auto subnetModule = factory.makeSubnet(name, modules, items);
   portRewiringMap_ = factory.getMap();
 
@@ -775,4 +770,32 @@ void NetworkEditor::resizeEvent(QResizeEvent *event)
   }
 
   QGraphicsView::resizeEvent(event);
+}
+
+SubnetModuleConnector::SubnetModuleConnector(NetworkEditor* parent) :
+  parent_(parent), subnet_(nullptr)
+{
+  connect(parent, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
+    this, SLOT(connectionDeletedFromParent()));
+}
+
+void SubnetModuleConnector::setSubnet(NetworkEditor* subnet) 
+{ 
+  subnet_ = subnet; 
+
+  connect(subnet_->getNetworkEditorController().get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)),
+    this, SLOT(moduleAddedToSubnet(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
+}
+
+void SubnetModuleConnector::moduleAddedToSubnet(const std::string& s, ModuleHandle module)
+{
+  qDebug() << __FUNCTION__;
+  qDebug() << "was:" << module_->underlyingModules_.size();
+  module_->underlyingModules_.push_back(module);
+  qDebug() << "now:" << module_->underlyingModules_.size() << "added" << s.c_str();
+}
+
+void SubnetModuleConnector::connectionDeletedFromParent()
+{
+  qDebug() << __FUNCTION__;
 }
