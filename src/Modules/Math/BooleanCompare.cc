@@ -33,8 +33,11 @@
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Math/BooleanCompareAlgo.h>
-#include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #include <Core/Logging/Log.h>
+
+#ifdef BUILD_WITH_PYTHON
+#include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
+#endif
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
