@@ -39,18 +39,18 @@ namespace Core {
 namespace Algorithms {
 namespace Inverse {
 
-	// ALGORITHM_PARAMETER_DECL(RegularizationMethod);
-	// ALGORITHM_PARAMETER_DECL(regularizationChoice);
-	// ALGORITHM_PARAMETER_DECL(regularizationSolutionSubcase);
-	// ALGORITHM_PARAMETER_DECL(regularizationResidualSubcase);
-	// ALGORITHM_PARAMETER_DECL(LambdaFromDirectEntry);
-	// ALGORITHM_PARAMETER_DECL(LambdaMin);
-	// ALGORITHM_PARAMETER_DECL(LambdaMax);
-	// ALGORITHM_PARAMETER_DECL(LambdaNum);
-	// ALGORITHM_PARAMETER_DECL(LambdaResolution);
-	// ALGORITHM_PARAMETER_DECL(LambdaSliderValue);
-	// ALGORITHM_PARAMETER_DECL(LambdaCorner);
-	// ALGORITHM_PARAMETER_DECL(LCurveText);
+	 ALGORITHM_PARAMETER_DECL(RegularizationMethod);
+	 ALGORITHM_PARAMETER_DECL(regularizationChoice);
+	 ALGORITHM_PARAMETER_DECL(regularizationSolutionSubcase);
+	 ALGORITHM_PARAMETER_DECL(regularizationResidualSubcase);
+	 ALGORITHM_PARAMETER_DECL(LambdaFromDirectEntry);
+	 ALGORITHM_PARAMETER_DECL(LambdaMin);
+	 ALGORITHM_PARAMETER_DECL(LambdaMax);
+	 ALGORITHM_PARAMETER_DECL(LambdaNum);
+	 ALGORITHM_PARAMETER_DECL(LambdaResolution);
+	 ALGORITHM_PARAMETER_DECL(LambdaSliderValue);
+	 ALGORITHM_PARAMETER_DECL(LambdaCorner);
+	 ALGORITHM_PARAMETER_DECL(LCurveText);
 
 	class SCISHARE TikhonovAlgoAbstractBase : virtual public AlgorithmBase
 	{

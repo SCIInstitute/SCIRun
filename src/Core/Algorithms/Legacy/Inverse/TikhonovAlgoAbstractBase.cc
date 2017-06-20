@@ -65,38 +65,38 @@ const AlgorithmInputName TikhonovAlgoAbstractBase::WeightingInSensorSpace("Weigh
 const AlgorithmOutputName TikhonovAlgoAbstractBase::InverseSolution("InverseSolution");
 const AlgorithmOutputName TikhonovAlgoAbstractBase::RegularizationParameter("RegularizationParameter");
 const AlgorithmOutputName TikhonovAlgoAbstractBase::RegInverse("RegInverse");
+//
+//const AlgorithmParameterName TikhonovAlgoAbstractBase::TikhonovImplementation("TikhonovImplementationOption");
+//const AlgorithmParameterName TikhonovAlgoAbstractBase::RegularizationMethod("lambdaMethodComboBox");
+//const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationChoice("autoRadioButton");
+//const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaFromDirectEntry("lambdaDoubleSpinBox");
+//const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaMin("lambdaMinDoubleSpinBox");
+//const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaMax("lambdaMaxDoubleSpinBox");
+//const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaNum("lambdaNumberSpinBox");
+//const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaResolution("lambdaResolutionDoubleSpinBox");
+//const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaSliderValue("lambdaSliderDoubleSpinBox");
+//const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaCorner("lCurveLambdaLineEdit");
+//const AlgorithmParameterName TikhonovAlgoAbstractBase::LCurveText("lCurveTextEdit");
+//const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationSolutionSubcase("solutionConstraintRadioButton");
+//const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationResidualSubcase("residualConstraintRadioButton");
 
-const AlgorithmParameterName TikhonovAlgoAbstractBase::TikhonovImplementation("TikhonovImplementationOption");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::RegularizationMethod("lambdaMethodComboBox");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationChoice("autoRadioButton");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaFromDirectEntry("lambdaDoubleSpinBox");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaMin("lambdaMinDoubleSpinBox");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaMax("lambdaMaxDoubleSpinBox");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaNum("lambdaNumberSpinBox");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaResolution("lambdaResolutionDoubleSpinBox");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaSliderValue("lambdaSliderDoubleSpinBox");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaCorner("lCurveLambdaLineEdit");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::LCurveText("lCurveTextEdit");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationSolutionSubcase("solutionConstraintRadioButton");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationResidualSubcase("residualConstraintRadioButton");
-
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, RegularizationMethod);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, regularizationChoice);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaFromDirectEntry);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaMin);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaMax);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaNum);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaResolution);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaSliderValue);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaCorner);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LCurveText);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, regularizationSolutionSubcase);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, regularizationResidualSubcase);
+ ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, RegularizationMethod);
+ ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, regularizationChoice);
+ ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaFromDirectEntry);
+ ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaMin);
+ ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaMax);
+ ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaNum);
+ ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaResolution);
+ ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaSliderValue);
+ ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaCorner);
+ ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LCurveText);
+ ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, regularizationSolutionSubcase);
+ ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, regularizationResidualSubcase);
 
 TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
 {
 	addParameter(TikhonovImplementation, NoMethodSelected);
-	addParameter(RegularizationMethod, "lcurve");
+	addOption(RegularizationMethod, "lcurve", "single"|"slider"|"lcurve");
 	addParameter(regularizationChoice, 0);
 	addParameter(LambdaFromDirectEntry,1e-6);
 	// addParameter(lambdaDoubleSpinBox,1e-6);

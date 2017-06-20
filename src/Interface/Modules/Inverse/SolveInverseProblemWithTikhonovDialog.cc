@@ -50,23 +50,23 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
 
   WidgetStyleMixin::tabStyle(inputTabWidget_);
 
-  addDoubleLineEditManager(lCurveLambdaLineEdit_, TikhonovAlgoAbstractBase::LambdaCorner);
-  addSpinBoxManager(lambdaNumberSpinBox_, TikhonovAlgoAbstractBase::LambdaNum);
-  addDoubleSpinBoxManager(lambdaDoubleSpinBox_, TikhonovAlgoAbstractBase::LambdaFromDirectEntry);
-  addDoubleSpinBoxManager(lambdaMinDoubleSpinBox_, TikhonovAlgoAbstractBase::LambdaMin);
-  addDoubleSpinBoxManager(lambdaMaxDoubleSpinBox_, TikhonovAlgoAbstractBase::LambdaMax);
-  addDoubleSpinBoxManager(lambdaResolutionDoubleSpinBox_, TikhonovAlgoAbstractBase::LambdaResolution);
-  addDoubleLineEditManager(lCurveMinLineEdit_, TikhonovAlgoAbstractBase::LambdaMin);
-  addDoubleLineEditManager(lCurveMaxLineEdit_, TikhonovAlgoAbstractBase::LambdaMax);
+  addDoubleLineEditManager(lCurveLambdaLineEdit_, Parameters::LambdaCorner);
+  addSpinBoxManager(lambdaNumberSpinBox_, Parameters::LambdaNum);
+  addDoubleSpinBoxManager(lambdaDoubleSpinBox_, Parameters::LambdaFromDirectEntry);
+  addDoubleSpinBoxManager(lambdaMinDoubleSpinBox_, Parameters::LambdaMin);
+  addDoubleSpinBoxManager(lambdaMaxDoubleSpinBox_, Parameters::LambdaMax);
+  addDoubleSpinBoxManager(lambdaResolutionDoubleSpinBox_, Parameters::LambdaResolution);
+  addDoubleLineEditManager(lCurveMinLineEdit_, Parameters::LambdaMin);
+  addDoubleLineEditManager(lCurveMaxLineEdit_, Parameters::LambdaMax);
 
   addDoubleSpinBoxManager(lambdaSliderDoubleSpinBox_, TikhonovAlgoAbstractBase::LambdaSliderValue);
 
-  addRadioButtonGroupManager({ autoRadioButton_, underRadioButton_, overRadioButton_ }, TikhonovAlgoAbstractBase::regularizationChoice);
-  addRadioButtonGroupManager({ solutionConstraintRadioButton_, squaredSolutionRadioButton_ }, TikhonovAlgoAbstractBase::regularizationSolutionSubcase);
-  addRadioButtonGroupManager({ residualConstraintRadioButton_, squaredResidualSolutionRadioButton_ }, TikhonovAlgoAbstractBase::regularizationResidualSubcase);
+  addRadioButtonGroupManager({ autoRadioButton_, underRadioButton_, overRadioButton_ }, Parameters::regularizationChoice);
+  addRadioButtonGroupManager({ solutionConstraintRadioButton_, squaredSolutionRadioButton_ }, Parameters::regularizationSolutionSubcase);
+  addRadioButtonGroupManager({ residualConstraintRadioButton_, squaredResidualSolutionRadioButton_ }, Parameters::regularizationResidualSubcase);
 
-  addComboBoxManager(lambdaMethodComboBox_, TikhonovAlgoAbstractBase::RegularizationMethod, lambdaMethod_);
-  addTextEditManager(lCurveTextEdit_, TikhonovAlgoAbstractBase::LCurveText);
+  addComboBoxManager(lambdaMethodComboBox_, Parameters::RegularizationMethod, lambdaMethod_);
+  addTextEditManager(lCurveTextEdit_, Parameters::LCurveText);
 
   connect(lambdaSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));
   connect(lambdaSliderDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderValue(double)));
