@@ -108,7 +108,7 @@ BooleanCompare::execute()
       ostr << "Quit message = "<<q_message;
       remark(ostr.str());
 #else
-      remark(" cannot quite without building with python");
+      remark(" cannot quit without building with python");
 #endif
       
       
