@@ -34,6 +34,7 @@
 #include <Core/Parser/ArrayMathEngine.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Math/MiscMath.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -97,11 +98,11 @@ AlgorithmOutput BooleanCompareAlgo::run(const AlgorithmInput& input) const
   std::string then_result = getOption(Parameters::Then_Option);
   std::string else_result = getOption(Parameters::Else_Option);
   
-//  std::cout<<"valoptA ="<<valoptA<<std::endl;
-//  std::cout<<"valoptB ="<<valoptB<<std::endl;
-//  std::cout<<"cond_statement ="<<cond_statement<<std::endl;
-//  std::cout<<"then_result ="<<then_result<<std::endl;
-//  std::cout<<"else_result ="<<else_result<<std::endl;
+  LOG_DEBUG("valoptA =" <<valoptA<<std::endl);
+  LOG_DEBUG("valoptB ="<<valoptB<<std::endl);
+  LOG_DEBUG("cond_statement ="<<cond_statement<<std::endl);
+  LOG_DEBUG("then_result ="<<then_result<<std::endl);
+  LOG_DEBUG("else_result ="<<else_result<<std::endl);
 
   if (!matb || cond_statement == "boolop")
   {
@@ -324,8 +325,8 @@ bool BooleanCompareAlgo::CompareMatrix(DenseMatrixHandle mata, DenseMatrixHandle
   double *data = mata->data();
   double *datb = matb->data();
   
-  //std::cout<<"mata ="<<*mata<<std::endl;
-  //std::cout<<"matb ="<<*matb<<std::endl;
+  LOG_DEBUG("mata ="<<*mata<<std::endl);
+  LOG_DEBUG("matb ="<<*matb<<std::endl);
   
   if ((na!=nb) || (ma!=mb)) THROW_ALGORITHM_PROCESSING_ERROR("Matrices must be the same size");
   
@@ -390,10 +391,10 @@ bool BooleanCompareAlgo::CompareMatrix(DenseMatrixHandle mata, DenseMatrixHandle
       sumation += data[k]-datb[k];
     }
     
-//    std::cout<<"greater ="<<great<<std::endl;
-//    std::cout<<"less ="<<less<<std::endl;
-//    std::cout<<"equal ="<<eq<<std::endl;
-//    std::cout<<"sumation ="<<sumation<<std::endl;
+    LOG_DEBUG("greater ="<<great<<std::endl);
+    LOG_DEBUG("less ="<<less<<std::endl);
+    LOG_DEBUG("equal"<<eq<<std::endl);
+    LOG_DEBUG("sumation ="<<sumation<<std::endl);
     
     
     

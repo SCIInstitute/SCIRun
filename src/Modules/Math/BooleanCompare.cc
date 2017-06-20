@@ -34,6 +34,7 @@
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Math/BooleanCompareAlgo.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
@@ -93,12 +94,20 @@ BooleanCompare::execute()
     
     if ((data[0]==1 && then_statement == "quit") || (data[0]==0 && else_statement == "quit"))
     {
-
-      std::cout<<"cond matrix :"<<*out_mat<<std::endl;
-      std::cout<<"ordered to quit.  Trying to quit."<<std::endl;
+      
+      
+#ifdef BUILD_WITH_PYTHON
 //      quit nicely
+      LOG_DEBUG("cond matrix :"<<*out_mat<<std::endl);
+      remark("ordered to quit.  Trying to quit.");
+      std::ostringstream ostr;
       std::string q_message=NetworkEditorPythonAPI::quit(false);
-      std::cout<<"Quit message = "<<q_message<<std::endl;
+      ostr << "Quit message = "<<q_message;
+      remark(ostr.str());
+#else
+      remark(" cannot quite without building with python");
+#endif
+      
       
     }
       
