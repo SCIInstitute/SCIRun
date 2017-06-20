@@ -36,6 +36,8 @@
 #endif
 #include <QDockWidget>
 
+class QGraphicsItem;
+
 namespace SCIRun
 {
   namespace Gui
