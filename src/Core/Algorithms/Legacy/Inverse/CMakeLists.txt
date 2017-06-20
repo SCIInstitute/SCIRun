@@ -26,24 +26,37 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Modules_Legacy_Inverse_Tests_SRC
-  TikhonovFunctionalTest.cc
+SET(Algorithms_Legacy_Inverse_SRCS
+  TikhonovAlgoAbstractBase.cc
+  SolveInverseProblemWithStandardTikhonovImpl.cc
+  SolveInverseProblemWithTikhonovSVD_impl.cc
 )
 
-SCIRUN_ADD_UNIT_TEST(Modules_Legacy_Inverse_Tests
-  ${Modules_Legacy_Inverse_Tests_SRC}
+SET(Algorithms_Legacy_Inverse_HEADERS
+  TikhonovAlgoAbstractBase.h
+  TikhonovImpl.h
+  SolveInverseProblemWithStandardTikhonovImpl.h
+  SolveInverseProblemWithTikhonovSVD_impl.h
+  share.h
 )
 
-TARGET_LINK_LIBRARIES(Modules_Legacy_Inverse_Tests
-  Modules_Legacy_Inverse
-  Modules_Fields
-  Modules_Factory
-  Core_Datatypes
-  Dataflow_Network
-  Dataflow_State
-  Testing_Utils
-  Testing_ModuleTestBase
-  gtest_main
-  gtest
-  gmock
+SCIRUN_ADD_LIBRARY(Algorithms_Legacy_Inverse
+  ${Algorithms_Legacy_Inverse_HEADERS}
+  ${Algorithms_Legacy_Inverse_SRCS}
 )
+
+TARGET_LINK_LIBRARIES(Algorithms_Legacy_Inverse
+  Core_Datatypes #matrices
+  Core_Datatypes_Legacy_Field
+  Core_Geometry_Primitives  #vectors
+  Core_Basis #field basis
+  Core_Algorithms_Legacy_Fields
+  Algorithms_Base
+  ${SCI_BOOST_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Algorithms_Legacy_Inverse)
+ENDIF(BUILD_SHARED_LIBS)
+
+#SCIRUN_ADD_TEST_DIR(Tests)
