@@ -47,6 +47,7 @@ Last modification : April 20 2017
 
 // SCIRun structural
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Utils/Exception.h>
 
@@ -80,21 +81,24 @@ const AlgorithmOutputName TikhonovAlgoAbstractBase::RegInverse("RegInverse");
 //const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationSolutionSubcase("solutionConstraintRadioButton");
 //const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationResidualSubcase("residualConstraintRadioButton");
 
- ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, RegularizationMethod);
- ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, regularizationChoice);
- ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaFromDirectEntry);
- ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaMin);
- ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaMax);
- ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaNum);
- ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaResolution);
- ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaSliderValue);
- ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaCorner);
- ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LCurveText);
- ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, regularizationSolutionSubcase);
- ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, regularizationResidualSubcase);
+ALGORITHM_PARAMETER_DEF( Inverse, TikhonovImplementation);
+ALGORITHM_PARAMETER_DEF( Inverse, RegularizationMethod);
+ALGORITHM_PARAMETER_DEF( Inverse, regularizationChoice);
+ALGORITHM_PARAMETER_DEF( Inverse, LambdaFromDirectEntry);
+ALGORITHM_PARAMETER_DEF( Inverse, LambdaMin);
+ALGORITHM_PARAMETER_DEF( Inverse, LambdaMax);
+ALGORITHM_PARAMETER_DEF( Inverse, LambdaNum);
+ALGORITHM_PARAMETER_DEF( Inverse, LambdaResolution);
+ALGORITHM_PARAMETER_DEF( Inverse, LambdaSliderValue);
+ALGORITHM_PARAMETER_DEF( Inverse, LambdaCorner);
+ALGORITHM_PARAMETER_DEF( Inverse, LCurveText);
+ALGORITHM_PARAMETER_DEF( Inverse, regularizationSolutionSubcase);
+ALGORITHM_PARAMETER_DEF( Inverse, regularizationResidualSubcase);
 
 TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
 {
+  using namespace Parameters;
+  
 	addParameter(TikhonovImplementation, NoMethodSelected);
 	addOption(RegularizationMethod, "lcurve", "single"|"slider"|"lcurve");
 	addParameter(regularizationChoice, 0);

@@ -39,6 +39,7 @@ namespace Core {
 namespace Algorithms {
 namespace Inverse {
 
+   ALGORITHM_PARAMETER_DECL(TikhonovImplementation);
 	 ALGORITHM_PARAMETER_DECL(RegularizationMethod);
 	 ALGORITHM_PARAMETER_DECL(regularizationChoice);
 	 ALGORITHM_PARAMETER_DECL(regularizationSolutionSubcase);

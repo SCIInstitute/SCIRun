@@ -61,19 +61,19 @@ SolveInverseProblemWithTikhonov::SolveInverseProblemWithTikhonov() : Module(stat
 
 void SolveInverseProblemWithTikhonov::setStateDefaults()
 {
-	// setStateIntFromAlgo(TikhonovAlgoAbstractBase::TikhonovImplementation);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::RegularizationMethod);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationChoice);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaFromDirectEntry);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaMin);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaMax);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaNum);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaResolution);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaSliderValue);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaCorner);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LCurveText);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationSolutionSubcase);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationResidualSubcase);
+	setStateIntFromAlgo(Parameters::TikhonovImplementation);
+	setStateStringFromAlgoOption(Parameters::RegularizationMethod);
+	setStateIntFromAlgo(Parameters::regularizationChoice);
+	setStateDoubleFromAlgo(Parameters::LambdaFromDirectEntry);
+	setStateDoubleFromAlgo(Parameters::LambdaMin);
+	setStateDoubleFromAlgo(Parameters::LambdaMax);
+	setStateDoubleFromAlgo(Parameters::LambdaNum);
+	setStateDoubleFromAlgo(Parameters::LambdaResolution);
+	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
+	setStateIntFromAlgo(Parameters::LambdaCorner);
+	setStateStringFromAlgo(Parameters::LCurveText);
+	setStateIntFromAlgo(Parameters::regularizationSolutionSubcase);
+	setStateIntFromAlgo(Parameters::regularizationResidualSubcase);
 }
 
 // execute function
@@ -93,10 +93,26 @@ void SolveInverseProblemWithTikhonov::execute()
 	{
 
 		// set parameters
-		algo().setOption( TikhonovAlgoAbstractBase::TikhonovImplementation, "standardTikhonov" );
-		algo().setOption(TikhonovAlgoAbstractBase::regularizationChoice, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationChoice).toString());
-		algo().setOption(TikhonovAlgoAbstractBase::regularizationSolutionSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationSolutionSubcase).toString());
-		algo().setOption(TikhonovAlgoAbstractBase::regularizationResidualSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationResidualSubcase).toString());
+//    setAlgoOptionFromState
+//		algo().setOption( TikhonovAlgoAbstractBase::TikhonovImplementation, "standardTikhonov" );
+//		algo().setOption(TikhonovAlgoAbstractBase::regularizationChoice, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationChoice).toString());
+//		algo().setOption(TikhonovAlgoAbstractBase::regularizationSolutionSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationSolutionSubcase).toString());
+//		algo().setOption(TikhonovAlgoAbstractBase::regularizationResidualSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationResidualSubcase).toString());
+    
+    setAlgoIntFromState(Parameters::TikhonovImplementation);
+    setAlgoOptionFromState(Parameters::RegularizationMethod);
+    setAlgoIntFromState(Parameters::regularizationChoice);
+    setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
+    setAlgoDoubleFromState(Parameters::LambdaMin);
+    setAlgoDoubleFromState(Parameters::LambdaMax);
+    setAlgoDoubleFromState(Parameters::LambdaNum);
+    setAlgoDoubleFromState(Parameters::LambdaResolution);
+    setAlgoDoubleFromState(Parameters::LambdaSliderValue);
+    setAlgoIntFromState(Parameters::LambdaCorner);
+    setAlgoStringFromState(Parameters::LCurveText);
+    setAlgoIntFromState(Parameters::regularizationSolutionSubcase);
+    setAlgoIntFromState(Parameters::regularizationResidualSubcase);
+    
 
 		// run
 		// auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,hMatrixRegMat)(WeightingInSensorSpace, hMatrixNoiseCov)));

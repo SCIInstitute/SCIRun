@@ -43,7 +43,8 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-
+  
+  GuiStringTranslationMap lambdaMethod_;
   lambdaMethod_.insert(StringPair("Direct entry", "single"));
   lambdaMethod_.insert(StringPair("Slider", "slider"));
   lambdaMethod_.insert(StringPair("L-curve", "lcurve"));
