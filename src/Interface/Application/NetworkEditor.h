@@ -264,6 +264,7 @@ namespace Gui {
     size_t childCount() const { return childrenNetworks_.size(); }
     void killChild(const QString& name);
     void sendItemsToParent();
+    bool containsModule(const std::string& moduleId) const;
 
     using ConnectorFunc = std::function<void(NetworkEditor*)>;
     static void setConnectorFunc(ConnectorFunc func) { connectorFunc_ = func; }

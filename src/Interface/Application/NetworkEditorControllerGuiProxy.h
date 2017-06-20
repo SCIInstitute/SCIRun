@@ -74,6 +74,7 @@ namespace Gui {
     SCIRun::Dataflow::Networks::NetworkGlobalSettings& getSettings();
     boost::shared_ptr<SCIRun::Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortSwitch();
     boost::shared_ptr<NetworkEditorControllerGuiProxy> withSubnet(NetworkEditor* subnet) const;
+    NetworkEditor* activeNetwork() const { return editor_; }
   Q_SIGNALS:
     void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module, const SCIRun::Dataflow::Engine::ModuleCounter& count);
     void moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId& id);

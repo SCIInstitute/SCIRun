@@ -77,6 +77,8 @@ namespace SCIRun
       NetworkEditor* parent_;
       NetworkEditor* subnet_;
       SubnetModule* module_;
+      bool signalFromParent(QObject* sender) const;
+      bool signalFromSubnet(QObject* sender) const;
     };
 
     class SubnetModule : public Dataflow::Networks::Module

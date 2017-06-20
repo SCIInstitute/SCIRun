@@ -383,7 +383,7 @@ void SubnetModule::execute()
 {
 }
 
-void SubnetModule::setStateDefaults() 
+void SubnetModule::setStateDefaults()
 {
   auto state = get_state();
 
@@ -777,22 +777,49 @@ SubnetModuleConnector::SubnetModuleConnector(NetworkEditor* parent) :
 {
   connect(parent, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)),
     this, SLOT(connectionDeletedFromParent()));
+
+  connect(parent_->getNetworkEditorController().get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)),
+    this, SLOT(moduleAddedToSubnet(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
 }
 
-void SubnetModuleConnector::setSubnet(NetworkEditor* subnet) 
-{ 
-  subnet_ = subnet; 
+void SubnetModuleConnector::setSubnet(NetworkEditor* subnet)
+{
+  subnet_ = subnet;
 
   connect(subnet_->getNetworkEditorController().get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)),
     this, SLOT(moduleAddedToSubnet(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
 }
 
+bool SubnetModuleConnector::signalFromParent(QObject* sender) const
+{
+  return qobject_cast<NetworkEditorControllerGuiProxy*>(sender)->activeNetwork() == parent_;
+}
+
+bool SubnetModuleConnector::signalFromSubnet(QObject* sender) const
+{
+  return qobject_cast<NetworkEditorControllerGuiProxy*>(sender)->activeNetwork() == subnet_;
+}
+
 void SubnetModuleConnector::moduleAddedToSubnet(const std::string& s, ModuleHandle module)
 {
-  qDebug() << __FUNCTION__;
-  qDebug() << "was:" << module_->underlyingModules_.size();
-  module_->underlyingModules_.push_back(module);
-  qDebug() << "now:" << module_->underlyingModules_.size() << "added" << s.c_str();
+  //qDebug() << __FUNCTION__ << sender() << signalFromSubnet(sender()) << signalFromParent(sender());
+  if (signalFromSubnet(sender()) && subnet_->containsModule(module->get_id().id_))
+  {
+    qDebug() << "was:" << module_->underlyingModules_.size();
+    module_->underlyingModules_.push_back(module);
+    qDebug() << "now:" << module_->underlyingModules_.size() << "added" << s.c_str();
+  }
+}
+
+bool NetworkEditor::containsModule(const std::string& id) const
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    auto module = getModule(item);
+    if (module && module->getModuleId() == id)
+      return true;
+  }
+  return false;
 }
 
 void SubnetModuleConnector::connectionDeletedFromParent()
