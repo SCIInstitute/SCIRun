@@ -168,11 +168,8 @@ ExecuteSingleModule::ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandl
   {
     orderImpl_.reset(new ExecuteSingleModuleImpl);
     auto all = boost::lambda::constant(true);
-    std::cout << __FILE__ << __LINE__ << std::endl;
     BoostGraphParallelScheduler scheduleAll(all);
-    std::cout << __FILE__ << __LINE__ << std::endl;
     orderImpl_->order_ = scheduleAll.schedule(network_);
-    std::cout << __FILE__ << __LINE__ << std::endl;
   }
 }
 
@@ -197,24 +194,6 @@ bool ExecuteSingleModule::operator()(SCIRun::Dataflow::Networks::ModuleHandle mo
   }
   else
   {
-    //
-    //
-    //
-    // try
-    // {
-    //   order = scheduler.schedule(context.network);
-    // }
-    // catch (NetworkHasCyclesException&)
-    // {
-    //   /// @todo: use real logger here--or just let this exception bubble up--needs testing.
-    //   SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::ERROR_LOG << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
-    //   context.bounds().executeFinishes_(-1);
-    //   return;
-    // }
-
-
-
-
     // should execute if in same connected component, and downstream only
     return modIdIter->second == rootIdIter->second
       && orderImpl_->isDownstreamFrom(toCheckId, rootId);

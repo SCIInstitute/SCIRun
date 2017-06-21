@@ -554,6 +554,7 @@ void ConnectionLine::keyPressEvent(QKeyEvent* event)
 {
   if (event->key() == Qt::Key_I)
     DataInfoDialog::show(fromPort_->getPortDataDescriber(), "Connection", id_.id_);
+  QGraphicsPathItem::keyPressEvent(event);
 }
 
 ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port, ConnectionDrawStrategyPtr drawer)
