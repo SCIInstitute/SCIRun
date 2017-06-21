@@ -25,10 +25,10 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/SortMatrix.h
+/// @todo Documentation Modules/Math/BooleanCompare.h
 
-#ifndef MODULES_MATH_SortMatrix_H
-#define MODULES_MATH_SortMatrix_H
+#ifndef MODULES_MATH_BooleanCompare_H
+#define MODULES_MATH_BooleanCompare_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Math/share.h>
@@ -37,18 +37,21 @@ namespace SCIRun {
 namespace Modules {
 namespace Math {
 
-  class SCISHARE SortMatrix : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
-    public Has1OutputPort<MatrixPortTag>
+  class SCISHARE BooleanCompare : public SCIRun::Dataflow::Networks::Module,
+    public Has3InputPorts<MatrixPortTag,MatrixPortTag,MatrixPortTag>,
+    public Has2OutputPorts<MatrixPortTag,MatrixPortTag>
   {
   public:
-    SortMatrix();
+    BooleanCompare();
     virtual void execute();
     virtual void setStateDefaults();
 
-    INPUT_PORT(0, InputMatrix, Matrix);
+    INPUT_PORT(0, MatrixA, Matrix);
+    INPUT_PORT(1, MatrixB, Matrix);
+    INPUT_PORT(2, PossibleOutput, Matrix);
     OUTPUT_PORT(0, OutputMatrix, Matrix);
-    
+    OUTPUT_PORT(1, BooleanResult, Matrix);
+      
     MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };
 }}}

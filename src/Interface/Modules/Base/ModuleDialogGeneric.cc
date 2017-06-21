@@ -321,6 +321,13 @@ public:
     {
       THROW_INVALID_ARGUMENT("empty combo box string mapping");
     }
+    if (0 == comboBox->count())
+    {
+      for (const auto& choices : stringMap_.left)
+      {
+        comboBox->addItem(QString::fromStdString(choices.first));
+      }
+    }
     fromLabelConverter_ = [this](const QString& qstr) { return findOrFirst(stringMap_.left, qstr.toStdString()); };
     toLabelConverter_ = [this](const std::string& str) { return QString::fromStdString(findOrFirst(stringMap_.right, str)); };
     connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
