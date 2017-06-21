@@ -66,49 +66,50 @@ const AlgorithmOutputName TikhonovAlgoAbstractBase::InverseSolution("InverseSolu
 const AlgorithmOutputName TikhonovAlgoAbstractBase::RegularizationParameter("RegularizationParameter");
 const AlgorithmOutputName TikhonovAlgoAbstractBase::RegInverse("RegInverse");
 
-const AlgorithmParameterName TikhonovAlgoAbstractBase::TikhonovImplementation("TikhonovImplementationOption");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::RegularizationMethod("lambdaMethodComboBox");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationChoice("autoRadioButton");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaFromDirectEntry("lambdaDoubleSpinBox");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaMin("lambdaMinDoubleSpinBox");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaMax("lambdaMaxDoubleSpinBox");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaNum("lambdaNumberSpinBox");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaResolution("lambdaResolutionDoubleSpinBox");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaSliderValue("lambdaSliderDoubleSpinBox");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaCorner("lCurveLambdaLineEdit");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::LCurveText("lCurveTextEdit");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationSolutionSubcase("solutionConstraintRadioButton");
-const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationResidualSubcase("residualConstraintRadioButton");
+// const AlgorithmParameterName TikhonovAlgoAbstractBase::TikhonovImplementation("TikhonovImplementationOption");
+// const AlgorithmParameterName TikhonovAlgoAbstractBase::RegularizationMethod("lambdaMethodComboBox");
+// const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationChoice("regularizationChoice");
+// const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaFromDirectEntry("lambdaDoubleSpinBox");
+// const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaMin("lambdaMinDoubleSpinBox");
+// const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaMax("lambdaMaxDoubleSpinBox");
+// const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaNum("lambdaNumberSpinBox");
+// const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaResolution("lambdaResolutionDoubleSpinBox");
+// const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaSliderValue("lambdaSliderDoubleSpinBox");
+// const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaCorner("lCurveLambdaLineEdit");
+// const AlgorithmParameterName TikhonovAlgoAbstractBase::LCurveText("lCurveTextEdit");
+// const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationSolutionSubcase("solutionConstraintRadioButton");
+// const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationResidualSubcase("residualConstraintRadioButton");
 
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, RegularizationMethod);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, regularizationChoice);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaFromDirectEntry);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaMin);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaMax);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaNum);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaResolution);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaSliderValue);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LambdaCorner);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, LCurveText);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, regularizationSolutionSubcase);
-// ALGORITHM_PARAMETER_DEF( TikhonovAlgoAbstractBase, regularizationResidualSubcase);
+ALGORITHM_PARAMETER_DEF( Inverse, TikhonovImplementation);
+ALGORITHM_PARAMETER_DEF( Inverse, RegularizationMethod);
+ALGORITHM_PARAMETER_DEF( Inverse, regularizationChoice);
+ALGORITHM_PARAMETER_DEF( Inverse, LambdaFromDirectEntry);
+ALGORITHM_PARAMETER_DEF( Inverse, LambdaMin);
+ALGORITHM_PARAMETER_DEF( Inverse, LambdaMax);
+ALGORITHM_PARAMETER_DEF( Inverse, LambdaNum);
+ALGORITHM_PARAMETER_DEF( Inverse, LambdaResolution);
+ALGORITHM_PARAMETER_DEF( Inverse, LambdaSliderValue);
+ALGORITHM_PARAMETER_DEF( Inverse, LambdaCorner);
+ALGORITHM_PARAMETER_DEF( Inverse, LCurveText);
+ALGORITHM_PARAMETER_DEF( Inverse, regularizationSolutionSubcase);
+ALGORITHM_PARAMETER_DEF( Inverse, regularizationResidualSubcase);
 
 TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
 {
-	addParameter(TikhonovImplementation, NoMethodSelected);
-	addParameter(RegularizationMethod, "lcurve");
-	addParameter(regularizationChoice, 0);
-	addParameter(LambdaFromDirectEntry,1e-6);
+	addParameter(Parameters::TikhonovImplementation, "NoMethodSelected");
+	addParameter(Parameters::RegularizationMethod, "lcurve");
+	addParameter(Parameters::regularizationChoice, "automatic");
+	addParameter(Parameters::LambdaFromDirectEntry,1e-6);
 	// addParameter(lambdaDoubleSpinBox,1e-6);
-	addParameter(LambdaMin,1e-6);
-	addParameter(LambdaMax,1);
-	addParameter(LambdaNum,1000);
-	addParameter(LambdaResolution,1e-6);
-	addParameter(LambdaSliderValue,0);
-	addParameter(LambdaCorner,0);
-	addParameter(LCurveText,"lcurve");
-	addParameter(regularizationSolutionSubcase,solution_constrained);
-	addParameter(regularizationResidualSubcase,residual_constrained);
+	addParameter(Parameters::LambdaMin,1e-6);
+	addParameter(Parameters::LambdaMax,1);
+	addParameter(Parameters::LambdaNum,1000);
+	addParameter(Parameters::LambdaResolution,1e-6);
+	addParameter(Parameters::LambdaSliderValue,0);
+	addParameter(Parameters::LambdaCorner,0);
+	addParameter(Parameters::LCurveText,"lcurve");
+	addParameter(Parameters::regularizationSolutionSubcase,solution_constrained);
+	addParameter(Parameters::regularizationResidualSubcase,residual_constrained);
 
 }
 
@@ -142,7 +143,7 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & inp
     // check source regularization matrix sizes
     if (sourceWeighting_)
     {
-        if( get(regularizationSolutionSubcase).toInt()==solution_constrained )
+        if( get(Parameters::regularizationSolutionSubcase).toInt()==solution_constrained )
         {
             // check that the matrix is of appropriate size (equal number of rows as columns in fwd matrix)
             if ( N != sourceWeighting_->ncols() )
@@ -152,7 +153,7 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & inp
             }
         }
         // otherwise, if the source regularization is provided as the squared version (RR^T)
-        else if ( get(regularizationSolutionSubcase).toInt()==solution_constrained_squared )
+        else if ( get(Parameters::regularizationSolutionSubcase).toInt()==solution_constrained_squared )
         {
             // check that the matrix is of appropriate size and squared (equal number of rows as columns in fwd matrix)
             if ( ( N != sourceWeighting_->nrows() ) || ( N != sourceWeighting_->ncols() ) )
@@ -166,7 +167,7 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & inp
     // check measurement regularization matrix sizes
     if (sensorWeighting_)
     {
-        if (get(regularizationResidualSubcase).toInt() == residual_constrained)
+        if (get(Parameters::regularizationResidualSubcase).toInt() == residual_constrained)
         {
             // check that the matrix is of appropriate size (equal number of rows as rows in fwd matrix)
             if(M != sensorWeighting_->ncols())
@@ -176,7 +177,7 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & inp
             }
         }
         // otherwise if the source covariance matrix is provided in squared form
-        else if  ( get(regularizationResidualSubcase).toInt() == residual_constrained_squared )
+        else if  ( get(Parameters::regularizationResidualSubcase).toInt() == residual_constrained_squared )
         {
             // check that the matrix is of appropriate size and squared (equal number of rows as rows in fwd matrix)
             if( (M != sensorWeighting_->nrows()) || (M != sensorWeighting_->ncols()) )
@@ -197,6 +198,7 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & inp
 /////////  run()
 AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) const
 {
+	THROW_ALGORITHM_PROCESSING_ERROR("We got to run");
 	// get inputs
 	auto forwardMatrix_ = input.get<Matrix>(TikhonovAlgoAbstractBase::ForwardMatrix);
 	auto measuredData_ = input.get<Matrix>(TikhonovAlgoAbstractBase::MeasuredPotentials);
@@ -204,8 +206,8 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 	auto sensorWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSensorSpace);
 
 	// get Parameters
-	auto RegularizationMethod_gotten = get(RegularizationMethod).toString();
-	auto TikhonovImplementation_gotten = get(TikhonovImplementation).toString();
+	auto RegularizationMethod_gotten = get(Parameters::RegularizationMethod).toString();
+	auto TikhonovImplementation_gotten = get(Parameters::TikhonovImplementation).toString();
 
     // Alocate Variable
 	DenseMatrix solution;
@@ -217,18 +219,18 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
 	// Determine specific Tikhonov Implementation
 	TikhonovImpl  *algoImpl;
-	if ( get(RegularizationMethod).toInt() ==  standardTikhonov ){
+	if ( get(Parameters::RegularizationMethod).toInt() ==  standardTikhonov ){
 		// get Parameters
-		int  regularizationChoice_ = get(regularizationChoice).toInt();
-		int regularizationSolutionSubcase_ = get(regularizationSolutionSubcase).toInt();
-		int regularizationResidualSubcase_ = get(regularizationResidualSubcase).toInt();
+		int  regularizationChoice_ = get(Parameters::regularizationChoice).toInt();
+		int regularizationSolutionSubcase_ = get(Parameters::regularizationSolutionSubcase).toInt();
+		int regularizationResidualSubcase_ = get(Parameters::regularizationResidualSubcase).toInt();
 
 		algoImpl = new SolveInverseProblemWithStandardTikhonovImpl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), regularizationChoice_, regularizationSolutionSubcase_, regularizationResidualSubcase_);
 	}
-	else if ( get(RegularizationMethod).toInt() ==  TikhonovSVD ){
+	else if ( get(Parameters::RegularizationMethod).toInt() ==  TikhonovSVD ){
 		// algoImpl = new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_));
 	}
-	else if ( get(RegularizationMethod).toInt() ==  TikhonovTSVD ){
+	else if ( get(Parameters::RegularizationMethod).toInt() ==  TikhonovTSVD ){
 		THROW_ALGORITHM_PROCESSING_ERROR("Tikhonov TSVD not implemented yet");
 	}
 	else{
@@ -243,12 +245,12 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
         if (RegularizationMethod_gotten == "single")
         {
             // Use single fixed lambda value, entered in UI
-            lambda_ = get(LambdaFromDirectEntry).toDouble();
+            lambda_ = get(Parameters::LambdaFromDirectEntry).toDouble();
         }
         else if (RegularizationMethod_gotten == "slider")
         {
             // Use single fixed lambda value, select via slider
-            lambda_ = get(LambdaSliderValue).toDouble();
+            lambda_ = get(Parameters::LambdaSliderValue).toDouble();
         }
     }
     else if (RegularizationMethod_gotten == "lcurve")
@@ -302,9 +304,9 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
 	auto sensorWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSensorSpace);
 
     // define the step size of the lambda vector to be computed  (distance between min and max divided by number of desired lambdas in log scale)
-    const int nLambda = get(LambdaNum).toInt();
-	const int lambdaMin_ = get(LambdaMin).toDouble();
-	const int lambdaMax_ = get(LambdaMax).toDouble();
+    const int nLambda = get(Parameters::LambdaNum).toInt();
+	const int lambdaMin_ = get(Parameters::LambdaMin).toDouble();
+	const int lambdaMax_ = get(Parameters::LambdaMax).toDouble();
     const double lam_step = pow(10.0, lambdaMax_ / lambdaMin_) / (nLambda-1);
     double lambda = 0;
 
