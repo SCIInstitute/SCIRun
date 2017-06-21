@@ -137,6 +137,25 @@ ComponentMap NetworkGraphAnalyzer::connectedComponents()
   return componentMap;
 }
 
+namespace SCIRun
+{
+  namespace Dataflow
+  {
+    namespace Engine
+    {
+      class ExecuteSingleModuleImpl
+      {
+      public:
+        ParallelModuleExecutionOrder order_;
+        bool isDownstreamFrom(const ModuleId& toCheckId, const ModuleId& rootId) const
+        {
+          return order_.groupOf(toCheckId) >= order_.groupOf(rootId);
+        }
+      };
+    }
+  }
+}
+
 ExecuteSingleModule::ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod,
   const SCIRun::Dataflow::Networks::NetworkInterface& network,
   bool executeUpstream) : module_(mod), network_(network), executeUpstream_(executeUpstream)
@@ -144,6 +163,17 @@ ExecuteSingleModule::ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandl
   //TODO: composite with which filter?
   NetworkGraphAnalyzer analyze(network, ExecuteAllModules::Instance(), false);
   components_ = analyze.connectedComponents();
+
+  if (!executeUpstream_)
+  {
+    orderImpl_.reset(new ExecuteSingleModuleImpl);
+    auto all = boost::lambda::constant(true);
+    std::cout << __FILE__ << __LINE__ << std::endl;
+    BoostGraphParallelScheduler scheduleAll(all);
+    std::cout << __FILE__ << __LINE__ << std::endl;
+    orderImpl_->order_ = scheduleAll.schedule(network_);
+    std::cout << __FILE__ << __LINE__ << std::endl;
+  }
 }
 
 bool ExecuteSingleModule::operator()(SCIRun::Dataflow::Networks::ModuleHandle mod) const
@@ -167,11 +197,26 @@ bool ExecuteSingleModule::operator()(SCIRun::Dataflow::Networks::ModuleHandle mo
   }
   else
   {
-    auto all = boost::lambda::constant(true);
-    BoostGraphParallelScheduler scheduleAll(all);
-    auto order = scheduleAll.schedule(network_);
+    //
+    //
+    //
+    // try
+    // {
+    //   order = scheduler.schedule(context.network);
+    // }
+    // catch (NetworkHasCyclesException&)
+    // {
+    //   /// @todo: use real logger here--or just let this exception bubble up--needs testing.
+    //   SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::ERROR_LOG << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
+    //   context.bounds().executeFinishes_(-1);
+    //   return;
+    // }
+
+
+
 
     // should execute if in same connected component, and downstream only
-    return modIdIter->second == rootIdIter->second && order.groupOf(toCheckId) >= order.groupOf(rootId);
+    return modIdIter->second == rootIdIter->second
+      && orderImpl_->isDownstreamFrom(toCheckId, rootId);
   }
 }

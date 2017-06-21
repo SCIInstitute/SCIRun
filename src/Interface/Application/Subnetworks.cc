@@ -94,7 +94,7 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
   WidgetStyleMixin::toolbarStyle(subnetBar);
   subnetBar->setObjectName("SubnetToolbar");
   SCIRunMainWindow::Instance()->addNetworkActionsToBar(subnetBar);
-  subnetBar->setIconSize(QSize(20, 20));
+  subnetBar->setIconSize(QSize(25, 25));
   vbox->setMenuBar(subnetBar);
 
   saveAsTemplatePushButton_->hide();
