@@ -44,11 +44,13 @@ Last modification : April 20 2017
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Math/MiscMath.h>
 
 // SCIRun structural
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Logging/LoggerInterface.h>
+#include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
 
 using namespace SCIRun;
@@ -100,7 +102,7 @@ TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
   using namespace Parameters;
   
 	addParameter(TikhonovImplementation, NoMethodSelected);
-	addOption(RegularizationMethod, "lcurve", "single"|"slider"|"lcurve");
+	addOption(RegularizationMethod, "lcurve", "single|slider|lcurve");
 	addParameter(regularizationChoice, 0);
 	addParameter(LambdaFromDirectEntry,1e-6);
 	// addParameter(lambdaDoubleSpinBox,1e-6);

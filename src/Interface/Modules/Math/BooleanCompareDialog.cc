@@ -63,7 +63,7 @@ namespace SCIRun {
                 then_.insert(StringPair("Return: null","null"));
                 then_.insert(StringPair("Return: first input","first"));
                 then_.insert(StringPair("Return: second input","second"));
-                then_.insert(StringPair("Return: thrid input","third"));
+                then_.insert(StringPair("Return: third input","third"));
                 then_.insert(StringPair("Quit SCIRun","quit"));
                 
                 else_.insert(StringPair("Return: null","null"));
