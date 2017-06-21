@@ -163,10 +163,8 @@ void GLWidget::resizeGL(int width, int height)
 //------------------------------------------------------------------------------
 void GLWidget::closeEvent(QCloseEvent *evt)
 {
-  //qDebug() << "Close event for window.";
   if (mGraphics != nullptr)
   {
-    //std::cout << "Terminating spire." << std::endl;
     mGraphics.reset();
   }
   QGLWidget::closeEvent(evt);

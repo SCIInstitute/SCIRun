@@ -262,7 +262,7 @@ namespace Gui {
 
     NetworkEditor* parentNetwork() { return parentNetwork_; }
     size_t childCount() const { return childrenNetworks_.size(); }
-    void killChild(const QString& name);
+    void killChild(const QString& name, bool force);
     void sendItemsToParent();
     bool containsModule(const std::string& moduleId) const;
 
@@ -377,6 +377,7 @@ namespace Gui {
     void dumpSubnetworksImpl(const QString& name, Dataflow::Networks::Subnetworks& data, Dataflow::Networks::ModuleFilter modFilter) const;
     QList<QGraphicsItem*> includeConnections(QList<QGraphicsItem*> items) const;
     QRectF visibleRect() const;
+    void deleteImpl(QList<QGraphicsItem*> items);
 
     // default constructed
     bool modulesSelectedByCL_{ false };

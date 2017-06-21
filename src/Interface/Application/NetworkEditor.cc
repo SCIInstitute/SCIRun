@@ -404,13 +404,10 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
 
   if (highResolutionExpandFactor_ > 1)
   {
-    //qDebug() << "module widget expand factor:" << highResolutionExpandFactor_;
-    //qDebug() << proxy->size();
     module->setFixedHeight(proxy->size().height() * highResolutionExpandFactor_);
     proxy->setMaximumHeight(proxy->size().height() * highResolutionExpandFactor_);
     module->setFixedWidth(proxy->size().width() * std::max(highResolutionExpandFactor_*0.9, 1.0));
     proxy->setMaximumWidth(proxy->size().width() * std::max(highResolutionExpandFactor_*0.9, 1.0));
-    //qDebug() << proxy->size();
   }
 
   scene_->addItem(proxy);
@@ -543,7 +540,13 @@ void NetworkEditor::del()
   if (!isActiveWindow())
     return;
 
-  auto items = scene_->selectedItems();
+  deleteImpl(scene_->selectedItems());
+  updateViewport();
+  Q_EMIT modified();
+}
+
+void NetworkEditor::deleteImpl(QList<QGraphicsItem*> items)
+{
   QMutableListIterator<QGraphicsItem*> i(items);
   while (i.hasNext())
   {
@@ -556,8 +559,6 @@ void NetworkEditor::del()
     }
   }
   qDeleteAll(items);
-  updateViewport();
-  Q_EMIT modified();
 }
 
 void NetworkEditor::cut()
@@ -832,7 +833,6 @@ public:
       }
       else
       {
-        //qDebug() << "something else";
       }
       results.insert(results.end(), subresults.begin(), subresults.end());
     }
@@ -1325,7 +1325,16 @@ void NetworkEditor::clear()
 {
   tagLabelOverrides_.clear();
   ModuleWidget::NetworkClearingScope clearing;
-  //auto portSwitch = createDynamicPortDisabler();
+
+  QList<QGraphicsItem*> deleteTheseFirst;
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto s = dynamic_cast<SubnetWidget*>(getModule(item)))
+    {
+      deleteTheseFirst.append(item);
+    }
+  }
+  deleteImpl(deleteTheseFirst);
   scene_->clear();
   //TODO: this (unwritten) method does not need to be called here.  the dtors of all the module widgets get called when the scene_ is cleared, which triggered removal from the underlying network.
   // we'll need a similar hook when programming the scripting interface (moduleWidgets<->modules).
@@ -1642,7 +1651,6 @@ void NetworkEditor::zoomBestFit()
   auto oldRect = sceneRect();
   setSceneRect(QRectF());
   fitInView(sceneRect(), Qt::KeepAspectRatio);
-  //qDebug() << "old rect: " << oldRect << "new rect:" << sceneRect();
   currentScale_ *= sceneRect().x() / oldRect.x();
   //scale(1.0 / currentScale_, 1.0 / currentScale_);
   //currentScale_ = 1;

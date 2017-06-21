@@ -618,7 +618,6 @@ bool SCIRunMainWindow::loadNetworkFile(const QString& filename, bool isTemporary
     if (command.execute())
     {
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
-
       if (!isTemporary)
       {
         setCurrentFile(filename);

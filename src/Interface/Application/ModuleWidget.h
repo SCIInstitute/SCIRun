@@ -312,9 +312,11 @@ public:
   SubnetWidget(NetworkEditor* ed, const QString& name, Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = nullptr);
   ~SubnetWidget();
   void postLoadAction() override;
+  void deleteSubnetImmediately() { deleteSubnetImmediately_ = true; }
 private:
   NetworkEditor* editor_;
   QString name_;
+  bool deleteSubnetImmediately_{ false };
 };
 
 class SubnetPortsBridgeWidget : public QWidget

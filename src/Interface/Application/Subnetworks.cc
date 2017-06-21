@@ -65,8 +65,10 @@ NetworkEditor::~NetworkEditor()
   {
     child.second->get()->controller_.reset();
     delete child.second->get();
+    delete child.second;
     child.second = nullptr;
   }
+  childrenNetworks_.clear();
 
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
@@ -363,7 +365,7 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
 
   auto dock = new SubnetworkEditor(subnet, mod->get_id(), name, nullptr);
   dock->setStyleSheet(SCIRunMainWindow::Instance()->styleSheet());
-
+  dock->setWindowFlags(dock->windowFlags() | Qt::WindowStaysOnTopHint);
   dock->show();
   subnet->centerView();
 
@@ -733,7 +735,7 @@ SubnetWidget::SubnetWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
 
 SubnetWidget::~SubnetWidget()
 {
-  editor_->killChild(name_);
+  editor_->killChild(name_, deleteSubnetImmediately_);
 }
 
 SubnetPortsBridgeWidget::SubnetPortsBridgeWidget(NetworkEditor* ed, const QString& name, QWidget* parent /* = 0 */) :
@@ -744,13 +746,16 @@ SubnetPortsBridgeWidget::SubnetPortsBridgeWidget(NetworkEditor* ed, const QStrin
   setStyleSheet(rounded + " background-color: darkGray");
 }
 
-void NetworkEditor::killChild(const QString& name)
+void NetworkEditor::killChild(const QString& name, bool force)
 {
   auto subnetIter = childrenNetworks_.find(name);
   if (subnetIter != childrenNetworks_.end())
   {
     subnetIter->second->get()->clear();
-    subnetIter->second->deleteLater();
+    if (force)
+      delete subnetIter->second;
+    else
+      subnetIter->second->deleteLater();
     childrenNetworks_.erase(subnetIter);
     currentSubnetNames_.remove(name);
   }
@@ -802,7 +807,6 @@ bool SubnetModuleConnector::signalFromSubnet(QObject* sender) const
 
 void SubnetModuleConnector::moduleAddedToSubnet(const std::string& s, ModuleHandle module)
 {
-  //qDebug() << __FUNCTION__ << sender() << signalFromSubnet(sender()) << signalFromParent(sender());
   if (signalFromSubnet(sender()) && subnet_->containsModule(module->get_id().id_))
   {
     qDebug() << "was:" << module_->underlyingModules_.size();
@@ -824,5 +828,4 @@ bool NetworkEditor::containsModule(const std::string& id) const
 
 void SubnetModuleConnector::connectionDeletedFromParent()
 {
-  qDebug() << __FUNCTION__;
 }

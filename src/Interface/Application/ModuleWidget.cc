@@ -458,21 +458,14 @@ void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int
 {
   auto frame = this;
   int pixelWidth = display->getTitleWidth();
-  //qDebug() << moduleId_.c_str();
-  //qDebug() << "\tPixelwidth = " << pixelWidth;
   int extraWidth = pixelWidth - ModuleWidgetDisplayBase::moduleWidthThreshold;
-  //qDebug() << "\textraWidth = " << extraWidth;
   if (extraWidth > ModuleWidgetDisplayBase::extraWidthThreshold)
   {
-    //qDebug() << "\tGROWING MODULE Current width: " << frame->width();
     frame->resize(frame->width() + extraWidth + ModuleWidgetDisplayBase::extraModuleWidth, frame->height());
-    //qDebug() << "\tNew width: " << frame->width();
   }
   else
   {
-    //qDebug() << "\tSHRINKING MODULE Current width: " << frame->width();
     frame->resize(frame->width() - ModuleWidgetDisplayBase::smushFactor, frame->height());
-    //qDebug() << "\tNew width: " << frame->width();
   }
 }
 
@@ -571,7 +564,6 @@ void ModuleWidget::fillReplaceWithMenu()
 
 void ModuleWidget::menuFunction()
 {
-  qDebug() << "ModuleWidget::menuFunction";
   // fullWidgetDisplay_->getModuleActionButton()->setMenu(nullptr);
   // actionsMenu_.reset();
 }
@@ -744,7 +736,6 @@ void ModuleWidget::addOutputPortsToWidget(int index)
   }
   else
   {
-    qDebug() << "OOPS NO OUTPUT PORTS";
   }
 }
 
@@ -811,7 +802,6 @@ void ModuleWidget::addInputPortsToWidget(int index)
   }
   else
   {
-    qDebug() << "OOPS NO INPUT PORTS";
   }
 }
 
