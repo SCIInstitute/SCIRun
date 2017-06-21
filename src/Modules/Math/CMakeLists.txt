@@ -47,6 +47,7 @@ SET(Modules_Math_SRCS
   ComputePCA.cc
   ConvertRealToComplexMatrix.cc
   ConvertComplexToRealMatrix.cc
+  BooleanCompare.cc
 )
 
 SET(Modules_Math_HEADERS
@@ -71,6 +72,7 @@ SET(Modules_Math_HEADERS
   ComputePCA.h
   ConvertRealToComplexMatrix.h
   ConvertComplexToRealMatrix.h
+  BooleanCompare.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Math
@@ -83,6 +85,12 @@ TARGET_LINK_LIBRARIES(Modules_Math
   Core_Datatypes
   Algorithms_Math
 )
+
+IF(BUILD_WITH_PYTHON)
+  TARGET_LINK_LIBRARIES(Modules_Math
+    Core_Python
+    )
+ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Math)

@@ -25,32 +25,30 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Math/SortMatrix.h
 
-#ifndef MODULES_MATH_SortMatrix_H
-#define MODULES_MATH_SortMatrix_H
+#ifndef INTERFACE_MODULES_MATH_BooleanCompareDIALOG_H
+#define INTERFACE_MODULES_MATH_BooleanCompareDIALOG_H 1
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include "Interface/Modules/Math/ui_BooleanCompareDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Math {
+	namespace Gui {
+		class SCISHARE BooleanCompareDialog : public ModuleDialogGeneric,
+			public Ui::BooleanCompareDialog
+		{
+			Q_OBJECT
 
-  class SCISHARE SortMatrix : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MatrixPortTag>,
-    public Has1OutputPort<MatrixPortTag>
-  {
-  public:
-    SortMatrix();
-    virtual void execute();
-    virtual void setStateDefaults();
-
-    INPUT_PORT(0, InputMatrix, Matrix);
-    OUTPUT_PORT(0, OutputMatrix, Matrix);
-    
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
-  };
-}}}
+		public:
+			BooleanCompareDialog(const std::string& name,
+						SCIRun::Dataflow::Networks::ModuleStateHandle state,
+						QWidget* parent = 0);
+        private:
+            
+            boost::shared_ptr<class BooleanCompareDialogImpl> impl_;
+		};
+	}
+}
 
 #endif
