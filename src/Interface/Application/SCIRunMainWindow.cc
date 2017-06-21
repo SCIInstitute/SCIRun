@@ -1095,9 +1095,10 @@ namespace {
   }
 
   const QString bullet = "* ";
+  const QString hash = "# ";
   const QString favoritesText = bullet + "Favorites";
-  const QString clipboardHistoryText = bullet + "Clipboard History";
-  const QString savedSubsText = bullet + "Saved Subnetworks";
+  const QString clipboardHistoryText = hash + "Clipboard History";
+  const QString savedSubsText = hash + "Saved Fragments";
 
   void addFavoriteMenu(QTreeWidget* tree)
   {
@@ -1145,16 +1146,16 @@ namespace {
 
   void readCustomSnippets(QTreeWidgetItem* snips)
   {
-    QFile inputFile("snippets.txt");
+    QFile inputFile("patterns.txt");
     if (inputFile.open(QIODevice::ReadOnly))
     {
-      GuiLogger::Instance().logInfo("Snippet file opened: " + inputFile.fileName());
+      GuiLogger::Instance().logInfo("Pattern file opened: " + inputFile.fileName());
       QTextStream in(&inputFile);
       while (!in.atEnd())
       {
         QString line = in.readLine();
         addSnippet(line, snips);
-        GuiLogger::Instance().logInfo("Snippet read: " + line);
+        GuiLogger::Instance().logInfo("Pattern read: " + line);
       }
       inputFile.close();
     }
@@ -1163,7 +1164,7 @@ namespace {
   void addSnippetMenu(QTreeWidget* tree)
 	{
 		auto snips = new QTreeWidgetItem();
-    snips->setText(0, bullet + "Snippets");
+    snips->setText(0, bullet + "Typical Patterns");
 		snips->setForeground(0, favesColor());
 
 		//hard-code a few popular ones.
@@ -1573,8 +1574,7 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
   nonfunctioningActions <<
     actionInsert_;
   QList<QMenu*> nonfunctioningMenus;
-  nonfunctioningMenus <<
-    menuSubnets_;
+  //nonfunctioningMenus <<  menuSubnets_;
   QList<QWidget*> nonfunctioningWidgets;
   nonfunctioningWidgets <<
     prefsWindow_->scirunNetsLabel_ <<
@@ -1802,6 +1802,11 @@ void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
   connect(modAction, SIGNAL(triggered()), networkEditor_, SLOT(moduleWindowAction()));
   currentModuleActions_.insert(modId, modAction);
   menuCurrent_->addAction(modAction);
+
+  if (modId.contains("Subnet"))
+  {
+    qDebug() << "do subnet stuff";
+  }
 }
 
 void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
@@ -1912,11 +1917,10 @@ void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
 
 void SCIRunMainWindow::showSnippetHelp()
 {
-  QMessageBox::information(this, "Snippets",
-    "Snippets are strings that encode a linear subnetwork. They can vastly shorten network construction time. They take the form [A->B->...->C] where A, B, C, etc are module names, and the arrow represents a connection between adjacent modules. "
+  QMessageBox::information(this, "Patterns",
+    "Patterns are strings that encode a linear subnetwork. They can vastly shorten network construction time. They take the form [A->B->...->C] where A, B, C, etc are module names, and the arrow represents a connection between adjacent modules. "
     "\n\nThey are available in the module selector and work just like the single module entries there: double-click or drag onto the "
-    "network editor to insert the entire snippet. A '*' at the end of the module name will open the UI for that module.\n\nCustom snippets can be created by editing the file snippets.txt (if not present, create it) in the same folder as the SCIRun executable. Enter one snippet per line in the prescribed format, then restart SCIRun for them to appear."
-    "\n\nFeatures coming soon include: hotkeys."
+    "network editor to insert the entire snippet. A '*' at the end of the module name will open the UI for that module.\n\nCustom patterns can be created by editing the file patterns.txt (if not present, create it) in the same folder as the SCIRun executable. Enter one pattern per line in the prescribed format, then restart SCIRun for them to appear."
     "\n\nFor feedback, please comment on this issue: https://github.com/SCIInstitute/SCIRun/issues/1263"
     );
 }
@@ -1926,9 +1930,9 @@ void SCIRunMainWindow::showClipboardHelp()
   QMessageBox::information(this, "Clipboard",
     "The network editor clipboard works on arbitrary network selections (modules and connections). A history of five copied items is kept under \"Clipboard History\" in the module selector. "
     "\n\nTo cut/copy/paste, see the Edit menu and the corresponding hotkeys."
-    "\n\nClipboard history items can be starred like module favorites. When starred, they are saved as fragments under \"Saved Subnetworks,\" which are preserved in application settings. "
-    "\n\nThe user may edit the text of the saved subnetwork items to give them informative names, which are also saved. Hover over them to see a tooltip representation of the saved fragment."
-    "\n\nCurrently there is no way to delete a saved subnetwork in the GUI."
+    "\n\nClipboard history items can be starred like module favorites. When starred, they are saved as fragments under \"Saved Fragments,\" which are preserved in application settings. "
+    "\n\nThe user may edit the text of the saved fragment items to give them informative names, which are also saved. Hover over them to see a tooltip representation of the saved fragment."
+    "\n\nRight-click on the fragment item to rename or delete it."
     );
 }
 
