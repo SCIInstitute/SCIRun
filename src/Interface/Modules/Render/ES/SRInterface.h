@@ -176,7 +176,7 @@ namespace SCIRun {
       static std::string& getFSRoot();
       static std::string& getFSSeparator();
 
-      //Clipping Plane 
+      //Clipping Plane
       void setClippingPlaneIndex(int index);
       void setClippingPlaneVisible(bool value);
       void setClippingPlaneFrameOn(bool value);
@@ -198,6 +198,10 @@ namespace SCIRun {
       const glm::mat4& getWorldToView() const;
       const glm::mat4& getViewToWorld() const;
       const glm::mat4& getViewToProjection() const;
+
+      void setLockZoom(bool lock);
+      void setLockPanning(bool lock);
+      void setLockRotation(bool lock);
 
       //clipping planes
       StaticClippingPlanes* getClippingPlanes();
@@ -337,7 +341,7 @@ namespace SCIRun {
 
       // make sure clipping plane number matches
       void checkClippingPlanes(int n);
-      
+
       bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
       bool                              autoRotate_;      ///< Whether the scene will continue to rotate.
       bool                              selectWidget_;    ///< Whether mouse click will select a widget.
@@ -376,8 +380,6 @@ namespace SCIRun {
       ren::ShaderVBOAttribs<5>          mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
       ren::CommonUniforms               mArrowUniforms;   ///< Common uniforms used in the arrow shader.
       RenderState::TransparencySortType mRenderSortType;  ///< Which strategy will be used to render transparency
-      const int frameInitLimit_;
-      std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
 
       //material settings
       double                            mMatAmbient;
@@ -394,9 +396,12 @@ namespace SCIRun {
       //light settings
       std::vector<glm::vec3>            mLightPosition;
       std::vector<bool>                 mLightsOn;
+
+      const int frameInitLimit_;
+      std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
     };
 
   } // namespace Render
-} // namespace SCIRun 
+} // namespace SCIRun
 
-#endif 
+#endif
