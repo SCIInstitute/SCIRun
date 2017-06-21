@@ -658,6 +658,9 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   childrenNetworkItems_[name] = items;
 
   addSubnetChild(name, subnetModule);
+
+  Q_EMIT modified();
+  Q_EMIT newModule(QString::fromStdString(subnetModule->get_id()), subnetModule->has_ui());
 }
 
 QPixmap NetworkEditor::grabSubnetPic(const QRectF& rect, const QList<QGraphicsItem*>& items)
