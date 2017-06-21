@@ -83,6 +83,7 @@ public:
   std::string applicationName() const;
   std::string version() const;
   std::string moduleList();
+  bool moduleNameExists(const std::string& name);
 
   void shutdown();
 

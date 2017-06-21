@@ -363,7 +363,6 @@ void Highlighter::highlightBlock(const QString &text)
 
 void Highlighter::highlightBlockParens(const QString &text)
 {
-  //qDebug() << "highlightBlockParens" << text;
   auto data = new TextBlockData;
   int leftPos = text.indexOf('(');
   while (leftPos != -1)

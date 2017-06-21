@@ -43,13 +43,9 @@ namespace SCIRun {
         public:
             BooleanCompareDialogImpl()
             {
-                value_1_.insert(StringPair("Elements", "value"));
-                value_1_.insert(StringPair("Size", "size"));
-                value_1_.insert(StringPair("Norm", "norm"));
-                
-                value_2_.insert(StringPair("Elements", "value"));
-                value_2_.insert(StringPair("Size", "size"));
-                value_2_.insert(StringPair("Norm", "norm"));
+                value_.insert(StringPair("Elements", "value"));
+                value_.insert(StringPair("Size", "size"));
+                value_.insert(StringPair("Norm", "norm"));
                 
                 condition_.insert(StringPair("A is non-zero","boolop"));
                 condition_.insert(StringPair("A and B are non-zero (and)","andop"));
@@ -59,24 +55,17 @@ namespace SCIRun {
                 condition_.insert(StringPair("A is equal to B (==)","eqop"));
                 condition_.insert(StringPair("A is greater than B (>)","greatop"));
                 condition_.insert(StringPair("A is greater or equal to B (>=)","greateqop"));
-                
-                then_.insert(StringPair("Return: null","null"));
-                then_.insert(StringPair("Return: first input","first"));
-                then_.insert(StringPair("Return: second input","second"));
-                then_.insert(StringPair("Return: third input","third"));
-                then_.insert(StringPair("Quit SCIRun","quit"));
-                
-                else_.insert(StringPair("Return: null","null"));
-                else_.insert(StringPair("Return: first input","first"));
-                else_.insert(StringPair("Return: second input","second"));
-                else_.insert(StringPair("Return: thrid input","third"));
-                else_.insert(StringPair("Quit SCIRun","quit"));
+              
+                result_.insert(StringPair("Return: null","null"));
+                result_.insert(StringPair("Return: first input","first"));
+                result_.insert(StringPair("Return: second input","second"));
+                result_.insert(StringPair("Return: third input","third"));
+                result_.insert(StringPair("Quit SCIRun","quit"));
+
             }
-            GuiStringTranslationMap value_1_;
-            GuiStringTranslationMap value_2_;
+            GuiStringTranslationMap value_;
             GuiStringTranslationMap condition_;
-            GuiStringTranslationMap then_;
-            GuiStringTranslationMap else_;
+            GuiStringTranslationMap result_;
         };
     }}
 
@@ -95,9 +84,9 @@ BooleanCompareDialog::BooleanCompareDialog(const std::string& name, ModuleStateH
     
     
 
-    addComboBoxManager(valueBox_1_, Parameters::Value_Option_1,impl_->value_1_);
-    addComboBoxManager(valueBox_2_, Parameters::Value_Option_2,impl_->value_2_);
+    addComboBoxManager(valueBox_1_, Parameters::Value_Option_1,impl_->value_);
+    addComboBoxManager(valueBox_2_, Parameters::Value_Option_2,impl_->value_);
     addComboBoxManager(conditionBox_, Parameters::Comparison_Option,impl_->condition_);
-    addComboBoxManager(thenBox_, Parameters::Then_Option,impl_->then_);
-    addComboBoxManager(elseBox_, Parameters::Else_Option,impl_->else_);
+    addComboBoxManager(thenBox_, Parameters::Then_Option,impl_->result_);
+    addComboBoxManager(elseBox_, Parameters::Else_Option,impl_->result_);
 }

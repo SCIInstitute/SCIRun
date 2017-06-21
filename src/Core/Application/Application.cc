@@ -297,6 +297,23 @@ std::string Application::moduleList()
   return ostr.str();
 }
 
+bool Application::moduleNameExists(const std::string& name)
+{
+  auto map = controller()->getAllAvailableModuleDescriptions();
+  for (const auto& p1 : map)
+  {
+    for (const auto& p2 : p1.second)
+    {
+      for (const auto& p3 : p2.second)
+      {
+        if (boost::iequals(name, p3.first))
+          return true;
+      }
+    }
+  }
+  return false;
+}
+
 boost::filesystem::path Application::configDirectory() const
 {
   return applicationHelper.configDirectory();
