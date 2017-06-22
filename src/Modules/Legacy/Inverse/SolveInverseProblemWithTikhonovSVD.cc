@@ -65,19 +65,19 @@ SolveInverseProblemWithTikhonovSVD::SolveInverseProblemWithTikhonovSVD() : Modul
 void SolveInverseProblemWithTikhonovSVD::setStateDefaults()
 {
 
-	// setStateIntFromAlgo(TikhonovAlgoAbstractBase::TikhonovImplementation);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::RegularizationMethod);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationChoice);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaFromDirectEntry);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaMin);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaMax);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaNum);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaResolution);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaSliderValue);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LambdaCorner);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::LCurveText);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationSolutionSubcase);
-	setStateIntFromAlgo(TikhonovAlgoAbstractBase::regularizationResidualSubcase);
+	// setStateIntFromAlgo(Parameters::TikhonovImplementation);
+	setStateIntFromAlgo(Parameters::RegularizationMethod);
+	setStateIntFromAlgo(Parameters::regularizationChoice);
+	setStateIntFromAlgo(Parameters::LambdaFromDirectEntry);
+	setStateIntFromAlgo(Parameters::LambdaMin);
+	setStateIntFromAlgo(Parameters::LambdaMax);
+	setStateIntFromAlgo(Parameters::LambdaNum);
+	setStateIntFromAlgo(Parameters::LambdaResolution);
+	setStateIntFromAlgo(Parameters::LambdaSliderValue);
+	setStateIntFromAlgo(Parameters::LambdaCorner);
+	setStateIntFromAlgo(Parameters::LCurveText);
+	setStateIntFromAlgo(Parameters::regularizationSolutionSubcase);
+	setStateIntFromAlgo(Parameters::regularizationResidualSubcase);
 }
 
 // execute function
@@ -96,10 +96,10 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 	if (needToExecute())
 	{
 		// set parameters
-		algo().setOption( TikhonovAlgoAbstractBase::TikhonovImplementation, "TikhonovSVD" );
-		algo().setOption(TikhonovAlgoAbstractBase::regularizationChoice, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationChoice).toString() );
-		algo().setOption(TikhonovAlgoAbstractBase::regularizationSolutionSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationSolutionSubcase).toString() );
-		algo().setOption(TikhonovAlgoAbstractBase::regularizationResidualSubcase, get_state()->getValue(TikhonovAlgoAbstractBase::regularizationResidualSubcase).toString() );
+		algo().setOption( Parameters::TikhonovImplementation, "TikhonovSVD" );
+		algo().setOption(Parameters::regularizationChoice, get_state()->getValue(Parameters::regularizationChoice).toString() );
+		algo().setOption(Parameters::regularizationSolutionSubcase, get_state()->getValue(Parameters::regularizationSolutionSubcase).toString() );
+		algo().setOption(Parameters::regularizationResidualSubcase, get_state()->getValue(Parameters::regularizationResidualSubcase).toString() );
 
 
 		// run

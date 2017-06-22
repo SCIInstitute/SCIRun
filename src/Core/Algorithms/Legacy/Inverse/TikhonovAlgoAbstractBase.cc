@@ -148,7 +148,7 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & inp
     // check source regularization matrix sizes
     if (sourceWeighting_)
     {
-        if( get(regularizationSolutionSubcase).toInt()==solution_constrained )
+        if( get(Parameters::regularizationSolutionSubcase).toInt()==solution_constrained )
         {
             // check that the matrix is of appropriate size (equal number of rows as columns in fwd matrix)
             if ( N != sourceWeighting_->ncols() )
@@ -158,7 +158,7 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & inp
             }
         }
         // otherwise, if the source regularization is provided as the squared version (RR^T)
-        else if ( get(regularizationSolutionSubcase).toInt()==solution_constrained_squared )
+        else if ( get(Parameters::regularizationSolutionSubcase).toInt()==solution_constrained_squared )
         {
             // check that the matrix is of appropriate size and squared (equal number of rows as columns in fwd matrix)
             if ( ( N != sourceWeighting_->nrows() ) || ( N != sourceWeighting_->ncols() ) )
@@ -172,7 +172,7 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & inp
     // check measurement regularization matrix sizes
     if (sensorWeighting_)
     {
-        if (get(regularizationResidualSubcase).toInt() == residual_constrained)
+        if (get(Parameters::regularizationResidualSubcase).toInt() == residual_constrained)
         {
             // check that the matrix is of appropriate size (equal number of rows as rows in fwd matrix)
             if(M != sensorWeighting_->ncols())
@@ -182,7 +182,7 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & inp
             }
         }
         // otherwise if the source covariance matrix is provided in squared form
-        else if  ( get(regularizationResidualSubcase).toInt() == residual_constrained_squared )
+        else if  ( get(Parameters::regularizationResidualSubcase).toInt() == residual_constrained_squared )
         {
             // check that the matrix is of appropriate size and squared (equal number of rows as rows in fwd matrix)
             if( (M != sensorWeighting_->nrows()) || (M != sensorWeighting_->ncols()) )
@@ -210,8 +210,8 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 	auto sensorWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSensorSpace);
 
 	// get Parameters
-	auto RegularizationMethod_gotten = get(RegularizationMethod).toString();
-	auto TikhonovImplementation_gotten = get(TikhonovImplementation).toString();
+	auto RegularizationMethod_gotten = getOption(Parameters::RegularizationMethod);
+	auto TikhonovImplementation_gotten = get(Parameters::TikhonovImplementation).toString();
 
     // Alocate Variable
 	DenseMatrix solution;
@@ -223,18 +223,18 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
 	// Determine specific Tikhonov Implementation
 	TikhonovImpl  *algoImpl;
-	if ( get(RegularizationMethod).toInt() ==  standardTikhonov ){
+	if ( get(Parameters::RegularizationMethod).toInt() ==  standardTikhonov ){
 		// get Parameters
-		int  regularizationChoice_ = get(regularizationChoice).toInt();
-		int regularizationSolutionSubcase_ = get(regularizationSolutionSubcase).toInt();
-		int regularizationResidualSubcase_ = get(regularizationResidualSubcase).toInt();
+		int  regularizationChoice_ = get(Parameters::regularizationChoice).toInt();
+		int regularizationSolutionSubcase_ = get(Parameters::regularizationSolutionSubcase).toInt();
+		int regularizationResidualSubcase_ = get(Parameters::regularizationResidualSubcase).toInt();
 
 		algoImpl = new SolveInverseProblemWithStandardTikhonovImpl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), regularizationChoice_, regularizationSolutionSubcase_, regularizationResidualSubcase_);
 	}
-	else if ( get(RegularizationMethod).toInt() ==  TikhonovSVD ){
+	else if ( get(Parameters::RegularizationMethod).toInt() ==  TikhonovSVD ){
 		// algoImpl = new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_));
 	}
-	else if ( get(RegularizationMethod).toInt() ==  TikhonovTSVD ){
+	else if ( get(Parameters::RegularizationMethod).toInt() ==  TikhonovTSVD ){
 		THROW_ALGORITHM_PROCESSING_ERROR("Tikhonov TSVD not implemented yet");
 	}
 	else{
@@ -249,12 +249,12 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
         if (RegularizationMethod_gotten == "single")
         {
             // Use single fixed lambda value, entered in UI
-            lambda_ = get(LambdaFromDirectEntry).toDouble();
+            lambda_ = get(Parameters::LambdaFromDirectEntry).toDouble();
         }
         else if (RegularizationMethod_gotten == "slider")
         {
             // Use single fixed lambda value, select via slider
-            lambda_ = get(LambdaSliderValue).toDouble();
+            lambda_ = get(Parameters::LambdaSliderValue).toDouble();
         }
     }
     else if (RegularizationMethod_gotten == "lcurve")
@@ -308,9 +308,9 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
 	auto sensorWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSensorSpace);
 
     // define the step size of the lambda vector to be computed  (distance between min and max divided by number of desired lambdas in log scale)
-    const int nLambda = get(LambdaNum).toInt();
-	const int lambdaMin_ = get(LambdaMin).toDouble();
-	const int lambdaMax_ = get(LambdaMax).toDouble();
+    const int nLambda = get(Parameters::LambdaNum).toInt();
+	const int lambdaMin_ = get(Parameters::LambdaMin).toDouble();
+	const int lambdaMax_ = get(Parameters::LambdaMax).toDouble();
     const double lam_step = pow(10.0, lambdaMax_ / lambdaMin_) / (nLambda-1);
     double lambda = 0;
 

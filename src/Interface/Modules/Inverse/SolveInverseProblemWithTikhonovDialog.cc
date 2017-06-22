@@ -60,7 +60,7 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   addDoubleLineEditManager(lCurveMinLineEdit_, Parameters::LambdaMin);
   addDoubleLineEditManager(lCurveMaxLineEdit_, Parameters::LambdaMax);
 
-  addDoubleSpinBoxManager(lambdaSliderDoubleSpinBox_, TikhonovAlgoAbstractBase::LambdaSliderValue);
+  addDoubleSpinBoxManager(lambdaSliderDoubleSpinBox_, Parameters::LambdaSliderValue);
 
   addRadioButtonGroupManager({ autoRadioButton_, underRadioButton_, overRadioButton_ }, Parameters::regularizationChoice);
   addRadioButtonGroupManager({ solutionConstraintRadioButton_, squaredSolutionRadioButton_ }, Parameters::regularizationSolutionSubcase);
