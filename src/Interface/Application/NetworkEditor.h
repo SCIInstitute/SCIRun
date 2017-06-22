@@ -323,6 +323,7 @@ namespace Gui {
     void showSubnetChild(const QString& name);
     void addSubnetChild(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle mod);
     void removeSubnetChild(const QString& name);
+    void subnetMenuActionTriggered();
 
   Q_SIGNALS:
     void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
@@ -425,6 +426,7 @@ namespace Gui {
     std::vector<QGraphicsItem*> subnetItemsToMove();
     PortRewiringMap portRewiringMap_;
     QSet<QString> currentSubnetNames_;
+    std::map<std::string, QString> subnetNameMap_;
 
     template <typename Func>
     void tailRecurse(Func func)

@@ -254,8 +254,8 @@
    </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuEdit"/>
-   <addaction name="menuModules_"/>
    <addaction name="menuNetwork"/>
+   <addaction name="menuModules_"/>
    <addaction name="menuSubnets_"/>
    <addaction name="menuToolkits_"/>
    <addaction name="menuWindow"/>

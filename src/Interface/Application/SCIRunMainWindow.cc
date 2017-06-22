@@ -1415,7 +1415,7 @@ void SCIRunMainWindow::renameSavedSubnetwork()
 {
   auto toRename = sender()->property("ID").toString();
   bool ok;
-  auto text = QInputDialog::getText(this, tr("Rename subnet"), tr("Enter new subnet name:"), QLineEdit::Normal, savedSubnetworksNames_[toRename].toString(), &ok);
+  auto text = QInputDialog::getText(this, tr("Rename fragment"), tr("Enter new fragment name:"), QLineEdit::Normal, savedSubnetworksNames_[toRename].toString(), &ok);
   if (ok && !text.isEmpty())
   {
     savedSubnetworksNames_[toRename] = text;
@@ -1805,18 +1805,47 @@ void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
 
   if (modId.contains("Subnet"))
   {
-    qDebug() << "do subnet stuff";
+    if (menuCurrentSubnets_->actions().isEmpty())
+      menuCurrentSubnets_->setEnabled(true);
+
+    auto subnetMenu = new QMenu(modId, this);
+    auto showAction = new QAction(subnetMenu);
+    showAction->setText("Show");
+    subnetMenu->addAction(showAction);
+    auto renameAction = new QAction(subnetMenu);
+    renameAction->setText("Rename...");
+    subnetMenu->addAction(renameAction);
+
+    connect(showAction, SIGNAL(triggered()), networkEditor_, SLOT(subnetMenuActionTriggered()));
+    connect(renameAction, SIGNAL(triggered()), networkEditor_, SLOT(subnetMenuActionTriggered()));
+    qDebug() << "add" << modId;
+    currentSubnetActions_.insert(modId, subnetMenu);
+    menuCurrentSubnets_->addMenu(subnetMenu);
   }
 }
 
 void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
 {
   auto name = QString::fromStdString(modId.id_);
+  qDebug() << "remove" << name;
   auto action = currentModuleActions_[name];
   menuCurrent_->removeAction(action);
   currentModuleActions_.remove(name);
   if (menuCurrent_->actions().isEmpty())
     menuCurrent_->setEnabled(false);
+
+  if (modId.id_.find("Subnet") != std::string::npos)
+  {
+    qDebug() << currentSubnetActions_;
+    auto subnet = currentSubnetActions_[name];
+    if (subnet)
+      subnet->setEnabled(false);
+    // //menuCurrentSubnets_->remove(subnet);
+    // currentSubnetActions_.remove(name);
+    // if (menuCurrentSubnets_->actions().isEmpty())
+    //   menuCurrentSubnets_->setEnabled(false);
+  }
+
 }
 
 void SCIRunMainWindow::setupTagManagerWindow()
