@@ -2479,8 +2479,8 @@ protected:
 
     /// These are for our own use (making the hash function).
     static const int sz_third_int = (int)(sz_int / 3);
-    static const int up_mask = (~((int)0) << sz_third_int << sz_third_int);
-    static const int mid_mask =  up_mask ^ (~((int)0) << sz_third_int);
+    static const int up_mask = -(1 << sz_third_int << sz_third_int);
+    static const int mid_mask =  up_mask ^ -(1 << sz_third_int);
     static const int low_mask = ~(up_mask | mid_mask);
 
     /// This is the hash function
@@ -2513,7 +2513,7 @@ protected:
     /// These are for our own use (making the hash function.
     static const int sz_int = sizeof(int) * 8; // in bits
     static const int sz_half_int = sizeof(int) << 2; // in bits
-    static const int up_mask = ((~((int)0)) << sz_half_int);
+    static const int up_mask = -(1 << sz_half_int);
     static const int low_mask = (~((int)0) ^ up_mask);
 
     /// This is the hash function
