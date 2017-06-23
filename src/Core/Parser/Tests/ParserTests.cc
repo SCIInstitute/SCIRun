@@ -1586,8 +1586,8 @@ TEST(FieldHashTests, TestShiftingZero)
 
   /// These are for our own use (making the hash function).
   static const int sz_third_int = (int)(sz_int / 3);
-  static const int up_mask = (~((int)0) << sz_third_int << sz_third_int);
-  static const int mid_mask = up_mask ^ (~((int)0) << sz_third_int);
+  static const int up_mask = -1048576; // (~((int)0) << sz_third_int << sz_third_int);
+  static const int mid_mask = 1047552; // up_mask ^ (~((int)0) << sz_third_int);
   static const int low_mask = ~(up_mask | mid_mask);
 
   std::cout << "sz_int: " << sz_int << std::endl;
