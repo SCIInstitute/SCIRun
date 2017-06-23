@@ -289,7 +289,6 @@ void PortWidget::doMousePress(Qt::MouseButton button, const QPointF& pos)
   }
   else
   {
-    //qDebug() << "mouse press sth else";
   }
 }
 
@@ -308,7 +307,6 @@ QGraphicsItem* PortWidget::doMouseMove(Qt::MouseButtons buttons, const QPointF& 
   }
   else
   {
-    //qDebug() << "mouse move sth else";
   }
   return nullptr;
 }
@@ -341,7 +339,6 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos, Qt::
   }
   else
   {
-    //qDebug() << "mouse release sth else";
   }
 }
 
@@ -472,7 +469,7 @@ void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port, double thr
   int distance = (pos - port->position()).manhattanLength();     //GUI concern: needs unit test
   if (distance <= threshold)                 //GUI concern: needs unit test
   {
-    Q_EMIT requestConnection(this, port);
+    Q_EMIT requestConnection(getRealPort(), port->getRealPort());
   }
 }
 

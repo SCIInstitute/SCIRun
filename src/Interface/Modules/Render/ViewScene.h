@@ -141,6 +141,10 @@ namespace SCIRun {
       void toggleLight3(bool value);
       void resizingDone();
 
+      void lockRotationToggled();
+      void lockPanningToggled();
+      void lockZoomToggled();
+
     protected:
       void mousePressEvent(QMouseEvent* event) override;
       void mouseReleaseEvent(QMouseEvent* event) override;
@@ -179,6 +183,7 @@ namespace SCIRun {
       void addAutoViewButton();
       void addScreenshotButton();
       void addViewBarButton();
+      void addControlLockButton();
       void addViewBar();
       void addViewOptions();
       void addConfigurationButton();

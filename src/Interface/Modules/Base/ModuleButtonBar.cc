@@ -69,7 +69,6 @@ void ModuleButtonBar::setTitleVisible(bool visible)
 void ModuleButtonBar::switchIcons()
 {
   //TODO
-  //qDebug() << collapseToolButton_->styleSheet();
   //collapseToolButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_TitleBarShadeButton));
   //collapseToolButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_TitleBarUnshadeButton));
 }

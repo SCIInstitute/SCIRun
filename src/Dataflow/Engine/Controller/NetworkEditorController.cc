@@ -607,8 +607,17 @@ boost::shared_ptr<boost::thread> NetworkEditorController::executeAll(const Execu
 
 void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup, bool executeUpstream)
 {
-  ExecuteSingleModule filter(module, *theNetwork_, executeUpstream);
-  executeGeneric(lookup, filter);
+  try
+  {
+    ExecuteSingleModule filter(module, *theNetwork_, executeUpstream);
+    executeGeneric(lookup, filter);
+  }
+  catch (NetworkHasCyclesException&)
+  {
+    SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::ERROR_LOG << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
+    ExecutionContext::executionBounds_.executeFinishes_(-1);
+    return;
+  }
 }
 
 void NetworkEditorController::initExecutor()
@@ -624,6 +633,10 @@ ExecutionContextHandle NetworkEditorController::createExecutionContext(const Exe
 boost::shared_ptr<boost::thread> NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
 {
   initExecutor();
+
+
+
+
   auto context = createExecutionContext(lookup, filter);
 
   return executionManager_.enqueueContext(context);

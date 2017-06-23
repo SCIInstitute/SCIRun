@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1093</width>
-         <height>482</height>
+         <width>1081</width>
+         <height>443</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -121,11 +121,26 @@
    </widget>
    <widget class="QMenu" name="menuSubnets_">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
      <string>&amp;Subnets</string>
     </property>
+    <widget class="QMenu" name="menuCurrentSubnets_">
+     <property name="title">
+      <string>Current</string>
+     </property>
+    </widget>
+    <widget class="QMenu" name="menuSavedSubnets_">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Saved</string>
+     </property>
+    </widget>
+    <addaction name="menuCurrentSubnets_"/>
+    <addaction name="menuSavedSubnets_"/>
    </widget>
    <widget class="QMenu" name="menuToolkits_">
     <property name="enabled">
@@ -182,9 +197,11 @@
      <property name="title">
       <string>Toolbars</string>
      </property>
-     <addaction name="actionSearchBar_"/>
+     <addaction name="actionFileBar_"/>
      <addaction name="actionNetworkBar_"/>
      <addaction name="actionExecuteBar_"/>
+     <addaction name="actionSearchBar_"/>
+     <addaction name="actionAdvancedBar_"/>
     </widget>
     <addaction name="actionConfiguration_"/>
     <addaction name="actionModule_Selector"/>
@@ -237,8 +254,8 @@
    </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuEdit"/>
-   <addaction name="menuModules_"/>
    <addaction name="menuNetwork"/>
+   <addaction name="menuModules_"/>
    <addaction name="menuSubnets_"/>
    <addaction name="menuToolkits_"/>
    <addaction name="menuWindow"/>
@@ -899,6 +916,9 @@
    <property name="shortcut">
     <string>+</string>
    </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
   <action name="actionZoomOut_">
    <property name="text">
@@ -906,6 +926,9 @@
    </property>
    <property name="shortcut">
     <string>-</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
   <action name="actionZoomBestFit_">
@@ -1073,7 +1096,7 @@
     <string>Search</string>
    </property>
   </action>
-  <action name="actionNetworkBar_">
+  <action name="actionFileBar_">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1081,7 +1104,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Network</string>
+    <string>File</string>
    </property>
   </action>
   <action name="actionExecuteBar_">
@@ -1118,6 +1141,35 @@
   <action name="actionAsd">
    <property name="text">
     <string>asd</string>
+   </property>
+  </action>
+  <action name="actionNetworkBar_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Network</string>
+   </property>
+  </action>
+  <action name="actionAdvancedBar_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Advanced</string>
+   </property>
+  </action>
+  <action name="actionX">
+   <property name="text">
+    <string>x</string>
+   </property>
+  </action>
+  <action name="actionA">
+   <property name="text">
+    <string>a</string>
    </property>
   </action>
  </widget>

@@ -80,7 +80,7 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
-SCIRunMainWindow::SCIRunMainWindow() 
+SCIRunMainWindow::SCIRunMainWindow()
 {
   setupUi(this);
   builder_ = boost::make_shared<NetworkEditorBuilder>(this);
@@ -136,8 +136,9 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   setActionIcons();
 
-  createStandardToolbar();
+  createStandardToolbars();
   createExecuteToolbar();
+  createAdvancedToolbar();
 
   {
     auto searchAction = new QWidgetAction(this);
@@ -297,34 +298,61 @@ SCIRunMainWindow::SCIRunMainWindow()
   WidgetStyleMixin::tabStyle(optionsTabWidget_);
 }
 
-void SCIRunMainWindow::createStandardToolbar()
+void SCIRunMainWindow::createStandardToolbars()
 {
-  auto standardBar = addToolBar("Standard");
+  auto standardBar = addToolBar("File");
   WidgetStyleMixin::toolbarStyle(standardBar);
-  standardBar->setObjectName("StandardToolBar");
+  standardBar->setObjectName("FileToolBar");
   standardBar->addAction(actionNew_);
   standardBar->addAction(actionLoad_);
   standardBar->addAction(actionSave_);
-  standardBar->addAction(actionRunScript_);
   standardBar->addAction(actionEnterWhatsThisMode_);
-  standardBar->addSeparator();
-  standardBar->addAction(actionPinAllModuleUIs_);
-  standardBar->addAction(actionRestoreAllModuleUIs_);
-  standardBar->addAction(actionHideAllModuleUIs_);
-  standardBar->addSeparator();
-  standardBar->addAction(actionCenterNetworkViewer_);
-  standardBar->addAction(actionZoomIn_);
-  standardBar->addAction(actionZoomOut_);
-  //standardBar->addAction(actionZoomBestFit_);
+
+  auto networkBar = addToolBar("Network");
+  addNetworkActionsToBar(networkBar);
+
   actionZoomBestFit_->setDisabled(true);
-  standardBar->addAction(actionResetNetworkZoom_);
-  standardBar->addAction(actionDragMode_);
-  standardBar->addAction(actionSelectMode_);
-  standardBar->addAction(actionToggleMetadataLayer_);
-  standardBar->addAction(actionToggleTagLayer_);
-  standardBar->addAction(actionMakeSubnetwork_);  //TODO: work in progress
-  connect(actionNetworkBar_, SIGNAL(toggled(bool)), standardBar, SLOT(setVisible(bool)));
-  connect(standardBar, SIGNAL(visibilityChanged(bool)), actionNetworkBar_, SLOT(setChecked(bool)));
+
+  connect(actionFileBar_, SIGNAL(toggled(bool)), standardBar, SLOT(setVisible(bool)));
+  connect(standardBar, SIGNAL(visibilityChanged(bool)), actionFileBar_, SLOT(setChecked(bool)));
+
+  connect(actionNetworkBar_, SIGNAL(toggled(bool)), networkBar, SLOT(setVisible(bool)));
+  connect(networkBar, SIGNAL(visibilityChanged(bool)), actionNetworkBar_, SLOT(setChecked(bool)));
+}
+
+void SCIRunMainWindow::addNetworkActionsToBar(QToolBar* toolbar) const
+{
+  WidgetStyleMixin::toolbarStyle(toolbar);
+  toolbar->setObjectName("NetworkToolBar");
+
+  toolbar->addAction(actionPinAllModuleUIs_);
+  toolbar->addAction(actionRestoreAllModuleUIs_);
+  toolbar->addAction(actionHideAllModuleUIs_);
+  toolbar->addSeparator();
+  toolbar->addAction(actionCenterNetworkViewer_);
+  toolbar->addAction(actionZoomIn_);
+  toolbar->addAction(actionZoomOut_);
+  toolbar->addAction(actionResetNetworkZoom_);
+}
+
+void SCIRunMainWindow::createAdvancedToolbar()
+{
+  auto advancedBar = addToolBar("Advanced");
+  WidgetStyleMixin::toolbarStyle(advancedBar);
+  advancedBar->setObjectName("AdvancedToolBar");
+
+  advancedBar->addAction(actionRunScript_);
+  advancedBar->addAction(actionDragMode_);
+  advancedBar->addAction(actionSelectMode_);
+  advancedBar->addAction(actionToggleMetadataLayer_);
+  advancedBar->addAction(actionToggleTagLayer_);
+  advancedBar->addAction(actionMakeSubnetwork_);
+  advancedBar->addActions(networkProgressBar_->advancedActions());
+
+  connect(actionAdvancedBar_, SIGNAL(toggled(bool)), advancedBar, SLOT(setVisible(bool)));
+  connect(advancedBar, SIGNAL(visibilityChanged(bool)), actionAdvancedBar_, SLOT(setChecked(bool)));
+
+  advancedBar->setVisible(false);
 }
 
 void SCIRunMainWindow::createExecuteToolbar()
@@ -339,7 +367,7 @@ void SCIRunMainWindow::createExecuteToolbar()
   executeBar->addWidget(executeButton_);
 
   networkProgressBar_.reset(new NetworkExecutionProgressBar(boost::make_shared<NetworkStatusImpl>(networkEditor_), this));
-  executeBar->addActions(networkProgressBar_->actions());
+  executeBar->addActions(networkProgressBar_->mainActions());
   executeBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
     "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
     );
@@ -590,7 +618,6 @@ bool SCIRunMainWindow::loadNetworkFile(const QString& filename, bool isTemporary
     if (command.execute())
     {
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
-
       if (!isTemporary)
       {
         setCurrentFile(filename);
@@ -799,7 +826,7 @@ void SCIRunMainWindow::setActionIcons()
 
   actionToggleMetadataLayer_->setIcon(QPixmap(":/general/Resources/metadataLayer.png"));
   actionToggleTagLayer_->setIcon(QPixmap(":/general/Resources/tagLayer.png"));
-  actionMakeSubnetwork_->setIcon(QPixmap(":/general/Resources/network.png"));
+  actionMakeSubnetwork_->setIcon(QPixmap(":/general/Resources/subnet3.png"));
 }
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
@@ -1068,9 +1095,10 @@ namespace {
   }
 
   const QString bullet = "* ";
+  const QString hash = "# ";
   const QString favoritesText = bullet + "Favorites";
-  const QString clipboardHistoryText = bullet + "Clipboard History";
-  const QString savedSubsText = bullet + "Saved Subnetworks";
+  const QString clipboardHistoryText = hash + "Clipboard History";
+  const QString savedSubsText = hash + "Saved Fragments";
 
   void addFavoriteMenu(QTreeWidget* tree)
   {
@@ -1118,16 +1146,16 @@ namespace {
 
   void readCustomSnippets(QTreeWidgetItem* snips)
   {
-    QFile inputFile("snippets.txt");
+    QFile inputFile("patterns.txt");
     if (inputFile.open(QIODevice::ReadOnly))
     {
-      GuiLogger::Instance().logInfo("Snippet file opened: " + inputFile.fileName());
+      GuiLogger::Instance().logInfo("Pattern file opened: " + inputFile.fileName());
       QTextStream in(&inputFile);
       while (!in.atEnd())
       {
         QString line = in.readLine();
         addSnippet(line, snips);
-        GuiLogger::Instance().logInfo("Snippet read: " + line);
+        GuiLogger::Instance().logInfo("Pattern read: " + line);
       }
       inputFile.close();
     }
@@ -1136,7 +1164,7 @@ namespace {
   void addSnippetMenu(QTreeWidget* tree)
 	{
 		auto snips = new QTreeWidgetItem();
-    snips->setText(0, bullet + "Snippets");
+    snips->setText(0, bullet + "Typical Patterns");
 		snips->setForeground(0, favesColor());
 
 		//hard-code a few popular ones.
@@ -1387,7 +1415,7 @@ void SCIRunMainWindow::renameSavedSubnetwork()
 {
   auto toRename = sender()->property("ID").toString();
   bool ok;
-  auto text = QInputDialog::getText(this, tr("Rename subnet"), tr("Enter new subnet name:"), QLineEdit::Normal, savedSubnetworksNames_[toRename].toString(), &ok);
+  auto text = QInputDialog::getText(this, tr("Rename fragment"), tr("Enter new fragment name:"), QLineEdit::Normal, savedSubnetworksNames_[toRename].toString(), &ok);
   if (ok && !text.isEmpty())
   {
     savedSubnetworksNames_[toRename] = text;
@@ -1546,8 +1574,7 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
   nonfunctioningActions <<
     actionInsert_;
   QList<QMenu*> nonfunctioningMenus;
-  nonfunctioningMenus <<
-    menuSubnets_;
+  //nonfunctioningMenus <<  menuSubnets_;
   QList<QWidget*> nonfunctioningWidgets;
   nonfunctioningWidgets <<
     prefsWindow_->scirunNetsLabel_ <<
@@ -1775,16 +1802,50 @@ void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
   connect(modAction, SIGNAL(triggered()), networkEditor_, SLOT(moduleWindowAction()));
   currentModuleActions_.insert(modId, modAction);
   menuCurrent_->addAction(modAction);
+
+  if (modId.contains("Subnet"))
+  {
+    if (menuCurrentSubnets_->actions().isEmpty())
+      menuCurrentSubnets_->setEnabled(true);
+
+    auto subnetMenu = new QMenu(modId, this);
+    auto showAction = new QAction(subnetMenu);
+    showAction->setText("Show");
+    subnetMenu->addAction(showAction);
+    auto renameAction = new QAction(subnetMenu);
+    renameAction->setText("Rename...");
+    subnetMenu->addAction(renameAction);
+
+    connect(showAction, SIGNAL(triggered()), networkEditor_, SLOT(subnetMenuActionTriggered()));
+    connect(renameAction, SIGNAL(triggered()), networkEditor_, SLOT(subnetMenuActionTriggered()));
+    //qDebug() << "add" << modId;
+    currentSubnetActions_.insert(modId, subnetMenu);
+    menuCurrentSubnets_->addMenu(subnetMenu);
+  }
 }
 
 void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
 {
   auto name = QString::fromStdString(modId.id_);
+  //qDebug() << "remove" << name;
   auto action = currentModuleActions_[name];
   menuCurrent_->removeAction(action);
   currentModuleActions_.remove(name);
   if (menuCurrent_->actions().isEmpty())
     menuCurrent_->setEnabled(false);
+
+  if (modId.id_.find("Subnet") != std::string::npos)
+  {
+    qDebug() << currentSubnetActions_;
+    auto subnet = currentSubnetActions_[name];
+    if (subnet)
+      subnet->setEnabled(false);
+    // //menuCurrentSubnets_->remove(subnet);
+    // currentSubnetActions_.remove(name);
+    // if (menuCurrentSubnets_->actions().isEmpty())
+    //   menuCurrentSubnets_->setEnabled(false);
+  }
+
 }
 
 void SCIRunMainWindow::setupTagManagerWindow()
@@ -1885,11 +1946,10 @@ void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
 
 void SCIRunMainWindow::showSnippetHelp()
 {
-  QMessageBox::information(this, "Snippets",
-    "Snippets are strings that encode a linear subnetwork. They can vastly shorten network construction time. They take the form [A->B->...->C] where A, B, C, etc are module names, and the arrow represents a connection between adjacent modules. "
+  QMessageBox::information(this, "Patterns",
+    "Patterns are strings that encode a linear subnetwork. They can vastly shorten network construction time. They take the form [A->B->...->C] where A, B, C, etc are module names, and the arrow represents a connection between adjacent modules. "
     "\n\nThey are available in the module selector and work just like the single module entries there: double-click or drag onto the "
-    "network editor to insert the entire snippet. A '*' at the end of the module name will open the UI for that module.\n\nCustom snippets can be created by editing the file snippets.txt (if not present, create it) in the same folder as the SCIRun executable. Enter one snippet per line in the prescribed format, then restart SCIRun for them to appear."
-    "\n\nFeatures coming soon include: hotkeys."
+    "network editor to insert the entire snippet. A '*' at the end of the module name will open the UI for that module.\n\nCustom patterns can be created by editing the file patterns.txt (if not present, create it) in the same folder as the SCIRun executable. Enter one pattern per line in the prescribed format, then restart SCIRun for them to appear."
     "\n\nFor feedback, please comment on this issue: https://github.com/SCIInstitute/SCIRun/issues/1263"
     );
 }
@@ -1899,9 +1959,9 @@ void SCIRunMainWindow::showClipboardHelp()
   QMessageBox::information(this, "Clipboard",
     "The network editor clipboard works on arbitrary network selections (modules and connections). A history of five copied items is kept under \"Clipboard History\" in the module selector. "
     "\n\nTo cut/copy/paste, see the Edit menu and the corresponding hotkeys."
-    "\n\nClipboard history items can be starred like module favorites. When starred, they are saved as fragments under \"Saved Subnetworks,\" which are preserved in application settings. "
-    "\n\nThe user may edit the text of the saved subnetwork items to give them informative names, which are also saved. Hover over them to see a tooltip representation of the saved fragment."
-    "\n\nCurrently there is no way to delete a saved subnetwork in the GUI."
+    "\n\nClipboard history items can be starred like module favorites. When starred, they are saved as fragments under \"Saved Fragments,\" which are preserved in application settings. "
+    "\n\nThe user may edit the text of the saved fragment items to give them informative names, which are also saved. Hover over them to see a tooltip representation of the saved fragment."
+    "\n\nRight-click on the fragment item to rename or delete it."
     );
 }
 

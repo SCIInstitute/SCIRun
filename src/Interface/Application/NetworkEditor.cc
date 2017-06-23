@@ -144,7 +144,10 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module, const ModuleCounter& count)
 {
   if (!fileLoading_ && inEditingContext_ != this)
+  {
+    //std::cout << "\t\tnew condition: !" << fileLoading_ << " and " << inEditingContext_ << " != " << this << std::endl;
     return;
+  }
 
   latestModuleId_ = module->get_id().id_;
   auto moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
@@ -210,6 +213,8 @@ namespace
 
 void NetworkEditor::duplicateModule(const ModuleHandle& module)
 {
+  InEditingContext iec(this);
+
   auto widget = findById(scene_->items(), module->get_id());
   lastModulePosition_ = widget->scenePos() + QPointF(0, 110);
   //TODO: need better duplicate placement. hard code it for now.
@@ -223,36 +228,53 @@ namespace
 
 void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
-  auto prop = sender()->property(addNewModuleActionTypePropertyName());
-
-  auto widget = findById(scene_->items(), moduleToConnectTo->get_id());
-  QPointF increment(0, portToConnect->isInput() ? -110 : 50);
-  lastModulePosition_ = widget->scenePos() + increment;
-  moduleAddIncrement = { 20.0, portToConnect->isInput() ? -20.0 : 20.0 };
-
-  PortWidget* newConnectionInputPort = nullptr;
-  auto q = dynamic_cast<const PortWidget*>(portToConnect);
-  if (q)
-  {
-    for (size_t i = 0; i < q->nconnections(); ++i)
-    {
-      auto cpi = q->connectedPorts()[i];
-      if (QString::fromStdString(cpi->id().toString()) == sender()->property(insertNewModuleActionTypePropertyName()))
-        newConnectionInputPort = cpi;
-    }
-  }
-
-  if (newConnectionInputPort)
-  {
-    controller_->removeConnection(*newConnectionInputPort->firstConnectionId());
-    newConnectionInputPort->deleteConnectionsLater();
-  }
-
-  controller_->connectNewModule(portToConnect, newModuleName, newConnectionInputPort);
+  connectNewModuleImpl(moduleToConnectTo, portToConnect, newModuleName, sender());
 }
+
+void NetworkEditor::connectNewModuleImpl(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName, QObject* sender)
+{
+  auto widget = findById(scene_->items(), moduleToConnectTo->get_id());
+
+  if (widget)
+  {
+    InEditingContext iec(this);
+    QPointF increment(0, portToConnect->isInput() ? -110 : 50);
+    lastModulePosition_ = widget->scenePos() + increment;
+    moduleAddIncrement = { 20.0, portToConnect->isInput() ? -20.0 : 20.0 };
+
+    PortWidget* newConnectionInputPort = nullptr;
+    auto q = dynamic_cast<const PortWidget*>(portToConnect);
+    if (q)
+    {
+      for (size_t i = 0; i < q->nconnections(); ++i)
+      {
+        auto cpi = q->connectedPorts()[i];
+        if (QString::fromStdString(cpi->id().toString()) == sender->property(insertNewModuleActionTypePropertyName()))
+          newConnectionInputPort = cpi;
+      }
+    }
+
+    if (newConnectionInputPort)
+    {
+      controller_->removeConnection(*newConnectionInputPort->firstConnectionId());
+      newConnectionInputPort->deleteConnectionsLater();
+    }
+
+    controller_->connectNewModule(portToConnect, newModuleName, newConnectionInputPort);
+    return;
+  }
+
+  for (auto& child : childrenNetworks_)
+  {
+    child.second->get()->connectNewModuleImpl(moduleToConnectTo, portToConnect, newModuleName, sender);
+  }
+}
+
 
 void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const std::string& newModuleName)
 {
+  InEditingContext iec(this);
+
   auto oldModule = findById(scene_->items(), moduleToReplace->get_id());
   lastModulePosition_ = oldModule->scenePos();
   controller_->addModule(newModuleName);
@@ -382,13 +404,10 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
 
   if (highResolutionExpandFactor_ > 1)
   {
-    //qDebug() << "module widget expand factor:" << highResolutionExpandFactor_;
-    //qDebug() << proxy->size();
     module->setFixedHeight(proxy->size().height() * highResolutionExpandFactor_);
     proxy->setMaximumHeight(proxy->size().height() * highResolutionExpandFactor_);
     module->setFixedWidth(proxy->size().width() * std::max(highResolutionExpandFactor_*0.9, 1.0));
     proxy->setMaximumWidth(proxy->size().width() * std::max(highResolutionExpandFactor_*0.9, 1.0));
-    //qDebug() << proxy->size();
   }
 
   scene_->addItem(proxy);
@@ -408,11 +427,13 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
 void NetworkEditor::setMouseAsDragMode()
 {
   setDragMode(ScrollHandDrag);
+  tailRecurse(boost::bind(&NetworkEditor::setMouseAsDragMode, _1));
 }
 
 void NetworkEditor::setMouseAsSelectMode()
 {
   setDragMode(RubberBandDrag);
+  tailRecurse(boost::bind(&NetworkEditor::setMouseAsSelectMode, _1));
 }
 
 void NetworkEditor::bringToFront()
@@ -519,7 +540,13 @@ void NetworkEditor::del()
   if (!isActiveWindow())
     return;
 
-  auto items = scene_->selectedItems();
+  deleteImpl(scene_->selectedItems());
+  updateViewport();
+  Q_EMIT modified();
+}
+
+void NetworkEditor::deleteImpl(QList<QGraphicsItem*> items)
+{
   QMutableListIterator<QGraphicsItem*> i(items);
   while (i.hasNext())
   {
@@ -532,8 +559,6 @@ void NetworkEditor::del()
     }
   }
   qDeleteAll(items);
-  updateViewport();
-  Q_EMIT modified();
 }
 
 void NetworkEditor::cut()
@@ -808,7 +833,6 @@ public:
       }
       else
       {
-        //qDebug() << "something else";
       }
       results.insert(results.end(), subresults.begin(), subresults.end());
     }
@@ -1011,6 +1035,12 @@ void NetworkEditor::fillModulePositionMap(ModulePositions& positions, ModuleFilt
 
 void NetworkEditor::centerView()
 {
+  if (!isActiveWindow())
+  {
+    tailRecurse(boost::bind(&NetworkEditor::centerView, _1));
+    return;
+  }
+
   ModulePositions positions;
   fillModulePositionMap(positions, boost::lambda::constant(true));
   centerOn(findCenterOfNetwork(positions));
@@ -1285,7 +1315,7 @@ void NetworkEditor::removeModuleWidget(const ModuleId& id)
   auto widget = findById(scene_->items(), id.id_);
   if (widget)
   {
-    widget->getModuleWidget()->setDeletedFromGui(false);
+    widget->getModuleWidget()->setDeletedFromGui(id.id_.find("Subnet") != std::string::npos);
     delete widget;
     Q_EMIT modified();
   }
@@ -1295,7 +1325,16 @@ void NetworkEditor::clear()
 {
   tagLabelOverrides_.clear();
   ModuleWidget::NetworkClearingScope clearing;
-  //auto portSwitch = createDynamicPortDisabler();
+
+  QList<QGraphicsItem*> deleteTheseFirst;
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (dynamic_cast<SubnetWidget*>(getModule(item)))
+    {
+      deleteTheseFirst.append(item);
+    }
+  }
+  deleteImpl(deleteTheseFirst);
   scene_->clear();
   //TODO: this (unwritten) method does not need to be called here.  the dtors of all the module widgets get called when the scene_ is cleared, which triggered removal from the underlying network.
   // we'll need a similar hook when programming the scripting interface (moduleWidgets<->modules).
@@ -1449,7 +1488,10 @@ QPixmap NetworkEditor::sceneGrab()
 void NetworkEditor::selectAll()
 {
   if (!isActiveWindow())
+  {
+    tailRecurse(boost::bind(&NetworkEditor::selectAll, _1));
     return;
+  }
 
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
@@ -1459,6 +1501,12 @@ void NetworkEditor::selectAll()
 
 void NetworkEditor::pinAllModuleUIs()
 {
+  if (!isActiveWindow())
+  {
+    tailRecurse(boost::bind(&NetworkEditor::pinAllModuleUIs, _1));
+    return;
+  }
+
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     auto module = getModule(item);
@@ -1469,6 +1517,12 @@ void NetworkEditor::pinAllModuleUIs()
 
 void NetworkEditor::hideAllModuleUIs()
 {
+  if (!isActiveWindow())
+  {
+    tailRecurse(boost::bind(&NetworkEditor::hideAllModuleUIs, _1));
+    return;
+  }
+
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     auto module = getModule(item);
@@ -1479,6 +1533,12 @@ void NetworkEditor::hideAllModuleUIs()
 
 void NetworkEditor::restoreAllModuleUIs()
 {
+  if (!isActiveWindow())
+  {
+    tailRecurse(boost::bind(&NetworkEditor::restoreAllModuleUIs, _1));
+    return;
+  }
+
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     auto module = getModule(item);
@@ -1518,29 +1578,68 @@ void NetworkEditor::wheelEvent(QWheelEvent* event)
     QGraphicsView::wheelEvent(event);
 }
 
+void NetworkEditor::resizeSubnetPortHolders(double scaleFactor)
+{
+  for (auto& item : subnetPortHolders_)
+  {
+    item->resize(QSize(item->size().width() * scaleFactor, item->size().height()));
+
+    auto isInput = item->data(123).toString() == "Inputs";
+    if (isInput)
+      item->setPos(topSubnetPortHolderPositioner_(visibleRect()));
+    else
+      item->setPos(bottomSubnetPortHolderPositioner_(visibleRect()));
+    item->updateConnections();
+  }
+}
+
 void NetworkEditor::zoomIn()
 {
+  if (!isActiveWindow())
+  {
+    tailRecurse(boost::bind(&NetworkEditor::zoomIn, _1));
+    return;
+  }
+
   if (currentScale_ < maxScale)
   {
     double factor = std::min(scaleFactor, 4.0/currentScale_);
     scale(factor, factor);
     currentScale_ *= factor;
+
+    resizeSubnetPortHolders(1.0 / factor);
+
     Q_EMIT zoomLevelChanged(currentZoomPercentage());
   }
 }
 
 void NetworkEditor::zoomOut()
 {
+  if (!isActiveWindow())
+  {
+    tailRecurse(boost::bind(&NetworkEditor::zoomOut, _1));
+    return;
+  }
+
   if (currentScale_ > minScale)
   {
     scale(1.0 / scaleFactor, 1.0 / scaleFactor);
     currentScale_ /= scaleFactor;
+
+    resizeSubnetPortHolders(scaleFactor);
+
     Q_EMIT zoomLevelChanged(currentZoomPercentage());
   }
 }
 
 void NetworkEditor::zoomReset()
 {
+  if (!isActiveWindow())
+  {
+    tailRecurse(boost::bind(&NetworkEditor::zoomReset, _1));
+    return;
+  }
+
   scale(1.0 / currentScale_, 1.0 / currentScale_);
   currentScale_ = 1;
   Q_EMIT zoomLevelChanged(currentZoomPercentage());
@@ -1552,7 +1651,6 @@ void NetworkEditor::zoomBestFit()
   auto oldRect = sceneRect();
   setSceneRect(QRectF());
   fitInView(sceneRect(), Qt::KeepAspectRatio);
-  //qDebug() << "old rect: " << oldRect << "new rect:" << sceneRect();
   currentScale_ *= sceneRect().x() / oldRect.x();
   //scale(1.0 / currentScale_, 1.0 / currentScale_);
   //currentScale_ = 1;
@@ -1594,7 +1692,6 @@ void NetworkEditor::adjustModuleWidth(int delta)
     if (proxy)
     {
       proxy->adjustWidth(delta);
-      //qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
     }
   }
 }
@@ -1607,7 +1704,6 @@ void NetworkEditor::adjustModuleHeight(int delta)
     if (proxy)
     {
       proxy->adjustHeight(delta);
-      //qDebug() << module->size() << proxy->minimumSize() << proxy->maximumSize() << proxy->preferredSize();
     }
   }
 }
@@ -1621,6 +1717,7 @@ void NetworkEditor::metadataLayer(bool active)
     if (module)
       module->updateMetadata(active);
   }
+  tailRecurse(boost::bind(&NetworkEditor::metadataLayer, _1, active));
 }
 
 void NetworkEditor::adjustExecuteButtonsToDownstream(bool downOnly)
@@ -1633,6 +1730,8 @@ void NetworkEditor::adjustExecuteButtonsToDownstream(bool downOnly)
       module->adjustExecuteButtonToDownstream(downOnly);
     }
   }
+
+  tailRecurse(boost::bind(&NetworkEditor::adjustExecuteButtonsToDownstream, _1, downOnly));
 }
 
 QColor Gui::defaultTagColor(int tag)
@@ -1731,6 +1830,8 @@ void NetworkEditor::tagLayer(bool active, int tag)
     tagGroupsActive_ = false;
     removeTagGroups();
   }
+
+  tailRecurse(boost::bind(&NetworkEditor::tagLayer, _1, active, tag));
 }
 
 namespace
@@ -1802,7 +1903,8 @@ void NetworkEditor::scrollContentsBy(int dx, int dy)
 {
   for (auto& item : subnetPortHolders_)
   {
-    item->setPos(item->pos() + QPointF(-dx,-dy));
+    item->setPos(item->pos() + QPointF(-dx / currentScale_, -dy / currentScale_));
+    item->updateConnections();
   }
   QGraphicsView::scrollContentsBy(dx, dy);
 }
