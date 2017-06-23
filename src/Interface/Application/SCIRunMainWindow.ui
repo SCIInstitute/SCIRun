@@ -121,11 +121,26 @@
    </widget>
    <widget class="QMenu" name="menuSubnets_">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
      <string>&amp;Subnets</string>
     </property>
+    <widget class="QMenu" name="menuCurrentSubnets_">
+     <property name="title">
+      <string>Current</string>
+     </property>
+    </widget>
+    <widget class="QMenu" name="menuSavedSubnets_">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Saved</string>
+     </property>
+    </widget>
+    <addaction name="menuCurrentSubnets_"/>
+    <addaction name="menuSavedSubnets_"/>
    </widget>
    <widget class="QMenu" name="menuToolkits_">
     <property name="enabled">
@@ -239,8 +254,8 @@
    </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuEdit"/>
-   <addaction name="menuModules_"/>
    <addaction name="menuNetwork"/>
+   <addaction name="menuModules_"/>
    <addaction name="menuSubnets_"/>
    <addaction name="menuToolkits_"/>
    <addaction name="menuWindow"/>
@@ -1145,6 +1160,16 @@
    </property>
    <property name="text">
     <string>Advanced</string>
+   </property>
+  </action>
+  <action name="actionX">
+   <property name="text">
+    <string>x</string>
+   </property>
+  </action>
+  <action name="actionA">
+   <property name="text">
+    <string>a</string>
    </property>
   </action>
  </widget>
