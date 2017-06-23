@@ -223,23 +223,9 @@ void NetworkEditor::subnetMenuActionTriggered()
       QLineEdit::Normal, subnetNameMap_[subnetId.toStdString()], &ok);
     if (ok && !text.isEmpty())
     {
-      qDebug() << "how to rename subnet";
+      //qDebug() << "how to rename subnet";
     }
-
-
   }
-  // Q_FOREACH(QGraphicsItem* item, scene_->items())
-  // {
-  //   auto module = getModule(item);
-  //   if (module && module->getModuleId() == action->text().toStdString())
-  //   {
-  //     if (module->guiVisible())
-  //       module->hideUI();
-  //     else
-  //       module->showUI();
-  //     break;
-  //   }
-  // }
 }
 
 QRectF NetworkEditor::visibleRect() const
@@ -849,9 +835,9 @@ void SubnetModuleConnector::moduleAddedToSubnet(const std::string& s, ModuleHand
 {
   if (signalFromSubnet(sender()) && subnet_->containsModule(module->get_id().id_))
   {
-    qDebug() << "was:" << module_->underlyingModules_.size();
+    //qDebug() << "was:" << module_->underlyingModules_.size();
     module_->underlyingModules_.push_back(module);
-    qDebug() << "now:" << module_->underlyingModules_.size() << "added" << s.c_str();
+    //qDebug() << "now:" << module_->underlyingModules_.size() << "added" << s.c_str();
   }
 }
 

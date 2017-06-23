@@ -386,6 +386,7 @@ void ConnectionLine::addSubnetCompanion(PortWidget* subnetPort)
 
   subnetCompanion_->isCompanion_ = true;
   subnetCompanion_->trackNodes();
+  subnetCompanion_->setVisible(true);
 }
 
 void ConnectionLine::deleteCompanion()

@@ -1818,7 +1818,7 @@ void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
 
     connect(showAction, SIGNAL(triggered()), networkEditor_, SLOT(subnetMenuActionTriggered()));
     connect(renameAction, SIGNAL(triggered()), networkEditor_, SLOT(subnetMenuActionTriggered()));
-    qDebug() << "add" << modId;
+    //qDebug() << "add" << modId;
     currentSubnetActions_.insert(modId, subnetMenu);
     menuCurrentSubnets_->addMenu(subnetMenu);
   }
@@ -1827,7 +1827,7 @@ void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
 void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
 {
   auto name = QString::fromStdString(modId.id_);
-  qDebug() << "remove" << name;
+  //qDebug() << "remove" << name;
   auto action = currentModuleActions_[name];
   menuCurrent_->removeAction(action);
   currentModuleActions_.remove(name);
