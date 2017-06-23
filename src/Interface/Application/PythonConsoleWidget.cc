@@ -37,9 +37,9 @@
 #include <QScrollBar>
 #include <QVBoxLayout>
 
+#include <Interface/Application/NetworkEditor.h>
 #include <Core/Python/PythonInterpreter.h>
 #include <Interface/Application/PythonConsoleWidget.h>
-#include <Interface/Application/NetworkEditor.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Gui;
