@@ -206,6 +206,9 @@ void ModuleWidgetDisplay::setupIcons()
   getModuleActionButton()->setText("");
   getModuleActionButton()->setIcon(QPixmap(":/general/Resources/new/modules/settings.png"));
 
+  getSubnetButton()->setIcon(QPixmap(":/general/Resources/editSubnet.png"));
+  getSubnetButton()->setText("Edit");
+
   auto movie = new QMovie(":/general/Resources/executing.gif");
   executingLabel_->setMovie(movie);
 }
@@ -261,6 +264,8 @@ void ModuleWidgetDisplay::setupSubnetWidgets()
 {
   getExecuteButton()->setVisible(false);
   getLogButton()->setVisible(false);
+  getHelpButton()->setVisible(false);
+
   subnetButton_->setMinimumWidth(50);
   auto layout = qobject_cast<QHBoxLayout*>(buttonGroup_->layout());
   if (layout)
@@ -453,21 +458,14 @@ void ModuleWidget::resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int
 {
   auto frame = this;
   int pixelWidth = display->getTitleWidth();
-  //qDebug() << moduleId_.c_str();
-  //qDebug() << "\tPixelwidth = " << pixelWidth;
   int extraWidth = pixelWidth - ModuleWidgetDisplayBase::moduleWidthThreshold;
-  //qDebug() << "\textraWidth = " << extraWidth;
   if (extraWidth > ModuleWidgetDisplayBase::extraWidthThreshold)
   {
-    //qDebug() << "\tGROWING MODULE Current width: " << frame->width();
     frame->resize(frame->width() + extraWidth + ModuleWidgetDisplayBase::extraModuleWidth, frame->height());
-    //qDebug() << "\tNew width: " << frame->width();
   }
   else
   {
-    //qDebug() << "\tSHRINKING MODULE Current width: " << frame->width();
     frame->resize(frame->width() - ModuleWidgetDisplayBase::smushFactor, frame->height());
-    //qDebug() << "\tNew width: " << frame->width();
   }
 }
 
@@ -524,8 +522,12 @@ void ModuleWidget::setupModuleActions()
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
   connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
   connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
-  if (isViewScene_ || theModule_->hasDynamicPorts()) //TODO: buggy combination, will disable for now. Fix is #1035
+  if (isViewScene_
+    || theModule_->hasDynamicPorts()  //TODO: buggy combination, will disable for now. Fix is #1035
+    || theModule_->get_id().name_ == "Subnet")
     actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Duplicate"));
+  if (theModule_->get_id().name_ == "Subnet")
+    actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Replace With"));
 
   connectNoteEditorToAction(actionsMenu_->getAction("Notes"));
   connectUpdateNote(this);
@@ -562,6 +564,12 @@ void ModuleWidget::fillReplaceWithMenu()
     isReplacement,
     [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), this, SLOT(replaceModuleWith())); },
     fullWidgetDisplay_->getModuleActionButton());
+}
+
+void ModuleWidget::menuFunction()
+{
+  // fullWidgetDisplay_->getModuleActionButton()->setMenu(nullptr);
+  // actionsMenu_.reset();
 }
 
 QMenu* ModuleWidget::getReplaceWithMenu()
@@ -732,7 +740,6 @@ void ModuleWidget::addOutputPortsToWidget(int index)
   }
   else
   {
-    qDebug() << "OOPS NO OUTPUT PORTS";
   }
 }
 
@@ -799,7 +806,6 @@ void ModuleWidget::addInputPortsToWidget(int index)
   }
   else
   {
-    qDebug() << "OOPS NO INPUT PORTS";
   }
 }
 
@@ -960,8 +966,6 @@ ModuleWidget::NetworkClearingScope::~NetworkClearingScope()
 
 ModuleWidget::~ModuleWidget()
 {
-  actionsMenu_->getAction("Replace With")->setMenu(nullptr);
-
   disconnect(this, SIGNAL(dynamicPortChanged(const std::string&, bool)), this, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
   disconnect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
 

@@ -386,6 +386,7 @@ void ConnectionLine::addSubnetCompanion(PortWidget* subnetPort)
 
   subnetCompanion_->isCompanion_ = true;
   subnetCompanion_->trackNodes();
+  subnetCompanion_->setVisible(true);
 }
 
 void ConnectionLine::deleteCompanion()
@@ -554,6 +555,7 @@ void ConnectionLine::keyPressEvent(QKeyEvent* event)
 {
   if (event->key() == Qt::Key_I)
     DataInfoDialog::show(fromPort_->getPortDataDescriber(), "Connection", id_.id_);
+  QGraphicsPathItem::keyPressEvent(event);
 }
 
 ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port, ConnectionDrawStrategyPtr drawer)

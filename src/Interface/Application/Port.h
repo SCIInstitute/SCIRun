@@ -261,14 +261,20 @@ public:
     QWidget* parent = nullptr);
 };
 
+struct SubnetPortWidgetCtorArgs
+{
+  QString name;
+  QColor color;
+  std::string datatype;
+  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory;
+  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder;
+  Dataflow::Networks::PortDescriptionInterface* realPort;
+};
+
 class SubnetInputPortWidget : public InputPortWidget
 {
 public:
-  SubnetInputPortWidget(const QString& name, const QColor& color, const std::string& datatype, 
-    boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
-    boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
-    Dataflow::Networks::PortDescriptionInterface* realPort,
-    QWidget* parent = nullptr);
+  SubnetInputPortWidget(const SubnetPortWidgetCtorArgs& args, QWidget* parent = nullptr);
   virtual Dataflow::Networks::PortDescriptionInterface* getRealPort() override { return realPort_; }
 private:
   Dataflow::Networks::PortDescriptionInterface* realPort_;
@@ -277,11 +283,7 @@ private:
 class SubnetOutputPortWidget : public OutputPortWidget
 {
 public:
-  SubnetOutputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
-    boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
-    boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
-    Dataflow::Networks::PortDescriptionInterface* realPort,
-    QWidget* parent = nullptr);
+  SubnetOutputPortWidget(const SubnetPortWidgetCtorArgs& args, QWidget* parent = nullptr);
   virtual Dataflow::Networks::PortDescriptionInterface* getRealPort() override { return realPort_; }
 private:
   Dataflow::Networks::PortDescriptionInterface* realPort_;

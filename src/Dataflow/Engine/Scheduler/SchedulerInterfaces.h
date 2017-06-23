@@ -137,6 +137,8 @@ namespace Engine {
     static const ModuleWaitingFilter& Instance();
   };
 
+  class ExecuteSingleModuleImpl;
+
   struct SCISHARE ExecuteSingleModule
   {
     ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod,
@@ -147,6 +149,7 @@ namespace Engine {
     const SCIRun::Dataflow::Networks::NetworkInterface& network_;
     std::map<std::string, int> components_;
     bool executeUpstream_;
+    boost::shared_ptr<ExecuteSingleModuleImpl> orderImpl_;
   };
 
   class SCISHARE WaitsForStartupInitialization

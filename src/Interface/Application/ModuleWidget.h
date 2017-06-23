@@ -194,6 +194,7 @@ public Q_SLOTS:
   void updateMetadata(bool active);
   void updatePortSpacing(bool highlighted);
   void replaceMe();
+  void menuFunction();
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void interrupt(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
@@ -311,9 +312,11 @@ public:
   SubnetWidget(NetworkEditor* ed, const QString& name, Dataflow::Networks::ModuleHandle theModule, boost::shared_ptr<DialogErrorControl> dialogErrorControl, QWidget* parent = nullptr);
   ~SubnetWidget();
   void postLoadAction() override;
+  void deleteSubnetImmediately() { deleteSubnetImmediately_ = true; }
 private:
   NetworkEditor* editor_;
   QString name_;
+  bool deleteSubnetImmediately_{ false };
 };
 
 class SubnetPortsBridgeWidget : public QWidget

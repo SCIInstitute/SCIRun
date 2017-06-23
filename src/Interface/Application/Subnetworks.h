@@ -30,8 +30,13 @@
 #define INTERFACE_APPLICATION_SUBNETWORKS_H
 
 #include "ui_SubnetEditor.h"
+#ifndef Q_MOC_RUN
 #include <Dataflow/Network/ModuleDescription.h>
+#include <Dataflow/Network/Module.h>
+#endif
 #include <QDockWidget>
+
+class QGraphicsItem;
 
 namespace SCIRun
 {
@@ -54,6 +59,47 @@ namespace SCIRun
       NetworkEditor* editor_;
       QString name_;
       SCIRun::Dataflow::Networks::ModuleId subnetModuleId_;
+    };
+
+    class SubnetModule;
+
+    class SubnetModuleConnector : public QObject
+    {
+      Q_OBJECT
+    public:
+      explicit SubnetModuleConnector(NetworkEditor* parent);
+      void setSubnet(NetworkEditor* subnet);
+      void setModule(SubnetModule* module) { module_ = module; }
+    public Q_SLOTS:
+      void moduleAddedToSubnet(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle module);
+      void connectionDeletedFromParent();
+    private:
+      NetworkEditor* parent_;
+      NetworkEditor* subnet_;
+      SubnetModule* module_;
+      bool signalFromParent(QObject* sender) const;
+      bool signalFromSubnet(QObject* sender) const;
+    };
+
+    class SubnetModule : public Dataflow::Networks::Module
+    {
+    public:
+      SubnetModule(const std::vector<Dataflow::Networks::ModuleHandle>& underlyingModules, const QList<QGraphicsItem*>& items, NetworkEditor* parent);
+
+      void execute() override;
+
+      static const Core::Algorithms::AlgorithmParameterName ModuleInfo;
+
+      void setStateDefaults() override;
+
+      std::string listComponentIds() const;
+      void setSubnet(NetworkEditor* subnet) { connector_.setSubnet(subnet); }
+    private:
+      friend class SubnetModuleConnector;
+      std::vector<Dataflow::Networks::ModuleHandle> underlyingModules_;
+      QList<QGraphicsItem*> items_;
+      static int subnetCount_;
+      SubnetModuleConnector connector_;
     };
   }
 }
