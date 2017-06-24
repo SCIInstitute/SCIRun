@@ -96,7 +96,7 @@ void GLWidget::initializeGL()
 //------------------------------------------------------------------------------
 SCIRun::Render::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
 {
-  SCIRun::Render::SRInterface::MouseButton btn = SCIRun::Render::SRInterface::MOUSE_NONE;
+  auto btn = SCIRun::Render::SRInterface::MOUSE_NONE;
   if (event->buttons() & Qt::LeftButton)
     btn = Render::SRInterface::MOUSE_LEFT;
   else if (event->buttons() & Qt::RightButton)
@@ -111,7 +111,7 @@ SCIRun::Render::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* e
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
   // Extract appropriate key.
-  SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
+  auto btn = getSpireButton(event);
   mGraphics->inputMouseMove(glm::ivec2(event->x(), event->y()), btn);
   event->ignore();
 }
@@ -119,8 +119,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
-
-  SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
+  auto btn = getSpireButton(event);
   mGraphics->inputMouseDown(glm::ivec2(event->x(), event->y()), btn);
   event->ignore();
 }
@@ -128,7 +127,7 @@ void GLWidget::mousePressEvent(QMouseEvent* event)
 //------------------------------------------------------------------------------
 void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-  SCIRun::Render::SRInterface::MouseButton btn = getSpireButton(event);
+  auto btn = getSpireButton(event);
   mGraphics->inputMouseUp(glm::ivec2(event->x(), event->y()), btn);
   event->ignore();
 }
@@ -143,7 +142,6 @@ void GLWidget::wheelEvent(QWheelEvent * event)
 //------------------------------------------------------------------------------
 void GLWidget::keyPressEvent(QKeyEvent* event)
 {
-  std::cout << "key down" << std::endl;
   mGraphics->inputShiftKeyDown(event->key() == Qt::Key_Shift);
   event->ignore();
 }
@@ -165,10 +163,8 @@ void GLWidget::resizeGL(int width, int height)
 //------------------------------------------------------------------------------
 void GLWidget::closeEvent(QCloseEvent *evt)
 {
-  //qDebug() << "Close event for window.";
   if (mGraphics != nullptr)
   {
-    //std::cout << "Terminating spire." << std::endl;
     mGraphics.reset();
   }
   QGLWidget::closeEvent(evt);

@@ -68,6 +68,10 @@ public:
   /// contexts running on the same thread.
   void makeCurrent();
 
+  void setLockZoom(bool lock) { mGraphics->setLockZoom(lock); }
+  void setLockPanning(bool lock) { mGraphics->setLockPanning(lock); }
+  void setLockRotation(bool lock) { mGraphics->setLockRotation(lock); }
+
 Q_SIGNALS:
   void fatalError(const QString& message);
 protected:

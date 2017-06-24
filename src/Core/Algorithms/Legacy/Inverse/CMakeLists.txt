@@ -48,6 +48,7 @@ SCIRUN_ADD_LIBRARY(Algorithms_Legacy_Inverse
 TARGET_LINK_LIBRARIES(Algorithms_Legacy_Inverse
   Core_Datatypes #matrices
   Core_Datatypes_Legacy_Field
+  Algorithms_Math
   Core_Geometry_Primitives  #vectors
   Core_Basis #field basis
   Core_Algorithms_Legacy_Fields

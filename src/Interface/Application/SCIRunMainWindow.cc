@@ -80,7 +80,7 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
-SCIRunMainWindow::SCIRunMainWindow() 
+SCIRunMainWindow::SCIRunMainWindow()
 {
   setupUi(this);
   builder_ = boost::make_shared<NetworkEditorBuilder>(this);
@@ -136,8 +136,9 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   setActionIcons();
 
-  createStandardToolbar();
+  createStandardToolbars();
   createExecuteToolbar();
+  createAdvancedToolbar();
 
   {
     auto searchAction = new QWidgetAction(this);
@@ -297,34 +298,61 @@ SCIRunMainWindow::SCIRunMainWindow()
   WidgetStyleMixin::tabStyle(optionsTabWidget_);
 }
 
-void SCIRunMainWindow::createStandardToolbar()
+void SCIRunMainWindow::createStandardToolbars()
 {
-  auto standardBar = addToolBar("Standard");
+  auto standardBar = addToolBar("File");
   WidgetStyleMixin::toolbarStyle(standardBar);
-  standardBar->setObjectName("StandardToolBar");
+  standardBar->setObjectName("FileToolBar");
   standardBar->addAction(actionNew_);
   standardBar->addAction(actionLoad_);
   standardBar->addAction(actionSave_);
-  standardBar->addAction(actionRunScript_);
   standardBar->addAction(actionEnterWhatsThisMode_);
-  standardBar->addSeparator();
-  standardBar->addAction(actionPinAllModuleUIs_);
-  standardBar->addAction(actionRestoreAllModuleUIs_);
-  standardBar->addAction(actionHideAllModuleUIs_);
-  standardBar->addSeparator();
-  standardBar->addAction(actionCenterNetworkViewer_);
-  standardBar->addAction(actionZoomIn_);
-  standardBar->addAction(actionZoomOut_);
-  //standardBar->addAction(actionZoomBestFit_);
+
+  auto networkBar = addToolBar("Network");
+  addNetworkActionsToBar(networkBar);
+
   actionZoomBestFit_->setDisabled(true);
-  standardBar->addAction(actionResetNetworkZoom_);
-  standardBar->addAction(actionDragMode_);
-  standardBar->addAction(actionSelectMode_);
-  standardBar->addAction(actionToggleMetadataLayer_);
-  standardBar->addAction(actionToggleTagLayer_);
-  standardBar->addAction(actionMakeSubnetwork_);  //TODO: work in progress
-  connect(actionNetworkBar_, SIGNAL(toggled(bool)), standardBar, SLOT(setVisible(bool)));
-  connect(standardBar, SIGNAL(visibilityChanged(bool)), actionNetworkBar_, SLOT(setChecked(bool)));
+
+  connect(actionFileBar_, SIGNAL(toggled(bool)), standardBar, SLOT(setVisible(bool)));
+  connect(standardBar, SIGNAL(visibilityChanged(bool)), actionFileBar_, SLOT(setChecked(bool)));
+
+  connect(actionNetworkBar_, SIGNAL(toggled(bool)), networkBar, SLOT(setVisible(bool)));
+  connect(networkBar, SIGNAL(visibilityChanged(bool)), actionNetworkBar_, SLOT(setChecked(bool)));
+}
+
+void SCIRunMainWindow::addNetworkActionsToBar(QToolBar* toolbar) const
+{
+  WidgetStyleMixin::toolbarStyle(toolbar);
+  toolbar->setObjectName("NetworkToolBar");
+
+  toolbar->addAction(actionPinAllModuleUIs_);
+  toolbar->addAction(actionRestoreAllModuleUIs_);
+  toolbar->addAction(actionHideAllModuleUIs_);
+  toolbar->addSeparator();
+  toolbar->addAction(actionCenterNetworkViewer_);
+  toolbar->addAction(actionZoomIn_);
+  toolbar->addAction(actionZoomOut_);
+  toolbar->addAction(actionResetNetworkZoom_);
+}
+
+void SCIRunMainWindow::createAdvancedToolbar()
+{
+  auto advancedBar = addToolBar("Advanced");
+  WidgetStyleMixin::toolbarStyle(advancedBar);
+  advancedBar->setObjectName("AdvancedToolBar");
+
+  advancedBar->addAction(actionRunScript_);
+  advancedBar->addAction(actionDragMode_);
+  advancedBar->addAction(actionSelectMode_);
+  advancedBar->addAction(actionToggleMetadataLayer_);
+  advancedBar->addAction(actionToggleTagLayer_);
+  advancedBar->addAction(actionMakeSubnetwork_);
+  advancedBar->addActions(networkProgressBar_->advancedActions());
+
+  connect(actionAdvancedBar_, SIGNAL(toggled(bool)), advancedBar, SLOT(setVisible(bool)));
+  connect(advancedBar, SIGNAL(visibilityChanged(bool)), actionAdvancedBar_, SLOT(setChecked(bool)));
+
+  advancedBar->setVisible(false);
 }
 
 void SCIRunMainWindow::createExecuteToolbar()
@@ -339,7 +367,7 @@ void SCIRunMainWindow::createExecuteToolbar()
   executeBar->addWidget(executeButton_);
 
   networkProgressBar_.reset(new NetworkExecutionProgressBar(boost::make_shared<NetworkStatusImpl>(networkEditor_), this));
-  executeBar->addActions(networkProgressBar_->actions());
+  executeBar->addActions(networkProgressBar_->mainActions());
   executeBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
     "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
     );
@@ -590,7 +618,6 @@ bool SCIRunMainWindow::loadNetworkFile(const QString& filename, bool isTemporary
     if (command.execute())
     {
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
-
       if (!isTemporary)
       {
         setCurrentFile(filename);
@@ -799,7 +826,7 @@ void SCIRunMainWindow::setActionIcons()
 
   actionToggleMetadataLayer_->setIcon(QPixmap(":/general/Resources/metadataLayer.png"));
   actionToggleTagLayer_->setIcon(QPixmap(":/general/Resources/tagLayer.png"));
-  actionMakeSubnetwork_->setIcon(QPixmap(":/general/Resources/network.png"));
+  actionMakeSubnetwork_->setIcon(QPixmap(":/general/Resources/subnet3.png"));
 }
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)

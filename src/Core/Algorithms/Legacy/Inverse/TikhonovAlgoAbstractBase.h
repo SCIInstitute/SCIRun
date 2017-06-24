@@ -39,18 +39,19 @@ namespace Core {
 namespace Algorithms {
 namespace Inverse {
 
-	// ALGORITHM_PARAMETER_DECL(RegularizationMethod);
-	// ALGORITHM_PARAMETER_DECL(regularizationChoice);
-	// ALGORITHM_PARAMETER_DECL(regularizationSolutionSubcase);
-	// ALGORITHM_PARAMETER_DECL(regularizationResidualSubcase);
-	// ALGORITHM_PARAMETER_DECL(LambdaFromDirectEntry);
-	// ALGORITHM_PARAMETER_DECL(LambdaMin);
-	// ALGORITHM_PARAMETER_DECL(LambdaMax);
-	// ALGORITHM_PARAMETER_DECL(LambdaNum);
-	// ALGORITHM_PARAMETER_DECL(LambdaResolution);
-	// ALGORITHM_PARAMETER_DECL(LambdaSliderValue);
-	// ALGORITHM_PARAMETER_DECL(LambdaCorner);
-	// ALGORITHM_PARAMETER_DECL(LCurveText);
+   ALGORITHM_PARAMETER_DECL(TikhonovImplementation);
+	 ALGORITHM_PARAMETER_DECL(RegularizationMethod);
+	 ALGORITHM_PARAMETER_DECL(regularizationChoice);
+	 ALGORITHM_PARAMETER_DECL(regularizationSolutionSubcase);
+	 ALGORITHM_PARAMETER_DECL(regularizationResidualSubcase);
+	 ALGORITHM_PARAMETER_DECL(LambdaFromDirectEntry);
+	 ALGORITHM_PARAMETER_DECL(LambdaMin);
+	 ALGORITHM_PARAMETER_DECL(LambdaMax);
+	 ALGORITHM_PARAMETER_DECL(LambdaNum);
+	 ALGORITHM_PARAMETER_DECL(LambdaResolution);
+	 ALGORITHM_PARAMETER_DECL(LambdaSliderValue);
+	 ALGORITHM_PARAMETER_DECL(LambdaCorner);
+	 ALGORITHM_PARAMETER_DECL(LCurveText);
 
 	class SCISHARE TikhonovAlgoAbstractBase : virtual public AlgorithmBase
 	{
@@ -69,19 +70,19 @@ namespace Inverse {
 		static const AlgorithmOutputName RegInverse;
 
 		// define parameter names
-		static  const AlgorithmParameterName TikhonovImplementation;
-		static  const AlgorithmParameterName RegularizationMethod;
-		static  const AlgorithmParameterName regularizationChoice;
-		static  const AlgorithmParameterName regularizationSolutionSubcase;
-		static  const AlgorithmParameterName regularizationResidualSubcase;
-		static  const AlgorithmParameterName LambdaFromDirectEntry;
-		static  const AlgorithmParameterName LambdaMin;
-		static  const AlgorithmParameterName LambdaMax;
-		static  const AlgorithmParameterName LambdaNum;
-		static  const AlgorithmParameterName LambdaResolution;
-		static  const AlgorithmParameterName LambdaSliderValue;
-		static  const AlgorithmParameterName LambdaCorner;
-		static  const AlgorithmParameterName LCurveText;
+//		static  const AlgorithmParameterName TikhonovImplementation;
+//		static  const AlgorithmParameterName RegularizationMethod;
+//		static  const AlgorithmParameterName regularizationChoice;
+//		static  const AlgorithmParameterName regularizationSolutionSubcase;
+//		static  const AlgorithmParameterName regularizationResidualSubcase;
+//		static  const AlgorithmParameterName LambdaFromDirectEntry;
+//		static  const AlgorithmParameterName LambdaMin;
+//		static  const AlgorithmParameterName LambdaMax;
+//		static  const AlgorithmParameterName LambdaNum;
+//		static  const AlgorithmParameterName LambdaResolution;
+//		static  const AlgorithmParameterName LambdaSliderValue;
+//		static  const AlgorithmParameterName LambdaCorner;
+//		static  const AlgorithmParameterName LCurveText;
 
 		// Define algorithm choices
 		enum TikhonovImplementationChoice {

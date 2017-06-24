@@ -52,6 +52,7 @@ namespace SCIRun
       void createStartupNote();
       void adjustHeight(int delta);
       void adjustWidth(int delta);
+      void menuFunction();
 
       //TODO: move to utility
       static void ensureItemVisible(QGraphicsItem* item);
@@ -98,6 +99,15 @@ namespace SCIRun
       int stackDepth_;
       QSizeF originalSize_;
       QTimeLine* timeLine_;
+    };
+
+    class SubnetPortsBridgeProxyWidget : public QGraphicsProxyWidget
+    {
+    public:
+      explicit SubnetPortsBridgeProxyWidget(class SubnetPortsBridgeWidget* ports, QGraphicsItem* parent = nullptr);
+      void updateConnections();
+    private:
+      class SubnetPortsBridgeWidget* ports_;
     };
   }
 }

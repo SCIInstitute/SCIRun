@@ -51,8 +51,6 @@ private Q_SLOTS:
   void setSliderMin(double value);
   void setSliderMax(double value);
   void setSliderStep(double value);
-private:
-  GuiStringTranslationMap lambdaMethod_;
 };
 
 }

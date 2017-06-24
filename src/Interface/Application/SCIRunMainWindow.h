@@ -82,6 +82,7 @@ public:
   void addToDataDirectory(const QString& dir);
   void setCurrentFile(const QString& fileName);
   void addToolkit(const QString& filename, const QString& directory, const SCIRun::Dataflow::Networks::ToolkitFile& toolkit);
+  void addNetworkActionsToBar(QToolBar* toolbar) const;
 
   //TODO: extract another interface for command objects
   NetworkEditor* networkEditor() { return networkEditor_; }
@@ -134,8 +135,9 @@ private:
   QPushButton* versionButton_;
   TriggeredEventsWindow* triggeredEventsWindow_;
 
-  void createStandardToolbar();
+  void createStandardToolbars();
   void createExecuteToolbar();
+  void createAdvancedToolbar();
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
   void setTipsAndWhatsThis();

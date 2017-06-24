@@ -60,6 +60,9 @@ ALGORITHM_PARAMETER_DEF(Fields, Index_i);
 ALGORITHM_PARAMETER_DEF(Fields, Index_j);
 ALGORITHM_PARAMETER_DEF(Fields, Index_k);
 ALGORITHM_PARAMETER_DEF(Fields, Axis_ijk);
+ALGORITHM_PARAMETER_DEF(Fields, SpinBoxReexecute);
+ALGORITHM_PARAMETER_DEF(Fields, AxisReexecute);
+ALGORITHM_PARAMETER_DEF(Fields, SliderReexecute);
 
 MODULE_INFO_DEF(GetSliceFromStructuredFieldByIndices, NewField, SCIRun)
 
@@ -81,6 +84,9 @@ void GetSliceFromStructuredFieldByIndices::setStateDefaults()
   state->setValue(Index_j, 0);
   state->setValue(Index_k, 0);
   state->setValue(Axis_ijk, 2);
+  state->setValue(SpinBoxReexecute, false);
+  state->setValue(AxisReexecute, false);
+  state->setValue(SliderReexecute, false);
 }
 
 void GetSliceFromStructuredFieldByIndices::execute()
