@@ -46,15 +46,14 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(YLocation);
         ALGORITHM_PARAMETER_DECL(ZLocation);
         ALGORITHM_PARAMETER_DECL(MoveMethod);
-        ALGORITHM_PARAMETER_DECL(DisplayValue);
-        ALGORITHM_PARAMETER_DECL(DisplayNode);
-        ALGORITHM_PARAMETER_DECL(DisplayElem);
         ALGORITHM_PARAMETER_DECL(FieldValue);
         ALGORITHM_PARAMETER_DECL(FieldNode);
         ALGORITHM_PARAMETER_DECL(FieldElem);
         ALGORITHM_PARAMETER_DECL(ProbeSize);
         ALGORITHM_PARAMETER_DECL(ProbeLabel);
         ALGORITHM_PARAMETER_DECL(ProbeColor);
+        ALGORITHM_PARAMETER_DECL(SnapToNode);
+        ALGORITHM_PARAMETER_DECL(SnapToElement);
       }
     }
   }
@@ -86,6 +85,8 @@ namespace SCIRun {
 
         FieldHandle GenerateOutputField(boost::optional<FieldHandle> ifieldOption);
         index_type GenerateIndex();
+        void setNearestNode(const Core::Geometry::Point& location);
+        void setNearestElement(const Core::Geometry::Point& location);
       };
 
       class SCISHARE PointWidgetStub

@@ -87,6 +87,15 @@ private:
   const QGraphicsProxyWidget* widget_;
 };
 
+class LambdaPositionProvider : public PositionProvider
+{
+public:
+  explicit LambdaPositionProvider(std::function<QPointF()> pointFunc) : pointFunc_(pointFunc) {}
+  virtual QPointF currentPosition() const override { return pointFunc_(); }
+private:
+  std::function<QPointF()> pointFunc_;
+};
+
 }
 }
 

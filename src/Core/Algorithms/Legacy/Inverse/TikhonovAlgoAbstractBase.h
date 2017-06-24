@@ -39,6 +39,7 @@ namespace Core {
 namespace Algorithms {
 namespace Inverse {
 
+
 	ALGORITHM_PARAMETER_DECL(TikhonovImplementation);
 	ALGORITHM_PARAMETER_DECL(RegularizationMethod);
 	ALGORITHM_PARAMETER_DECL(regularizationChoice);
@@ -68,21 +69,6 @@ namespace Inverse {
 		static const AlgorithmOutputName InverseSolution;
 		static const AlgorithmOutputName RegularizationParameter;
 		static const AlgorithmOutputName RegInverse;
-
-		// define parameter names
-		// static  const AlgorithmParameterName TikhonovImplementation;
-		// static  const AlgorithmParameterName RegularizationMethod;
-		// static  const AlgorithmParameterName regularizationChoice;
-		// static  const AlgorithmParameterName regularizationSolutionSubcase;
-		// static  const AlgorithmParameterName regularizationResidualSubcase;
-		// static  const AlgorithmParameterName LambdaFromDirectEntry;
-		// static  const AlgorithmParameterName LambdaMin;
-		// static  const AlgorithmParameterName LambdaMax;
-		// static  const AlgorithmParameterName LambdaNum;
-		// static  const AlgorithmParameterName LambdaResolution;
-		// static  const AlgorithmParameterName LambdaSliderValue;
-		// static  const AlgorithmParameterName LambdaCorner;
-		// static  const AlgorithmParameterName LCurveText;
 
 		// Define algorithm choices
 		enum TikhonovImplementationChoice {

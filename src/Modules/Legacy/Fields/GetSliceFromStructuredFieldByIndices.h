@@ -44,6 +44,9 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(Index_j);
         ALGORITHM_PARAMETER_DECL(Index_k);
         ALGORITHM_PARAMETER_DECL(Axis_ijk);
+        ALGORITHM_PARAMETER_DECL(SpinBoxReexecute);
+        ALGORITHM_PARAMETER_DECL(AxisReexecute);
+        ALGORITHM_PARAMETER_DECL(SliderReexecute);
       }}}
 
   namespace Modules {

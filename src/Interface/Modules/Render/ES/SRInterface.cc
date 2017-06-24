@@ -84,8 +84,6 @@ namespace SCIRun {
       mScreenHeight(480),
       axesFailCount_(0),
       mContext(context),
-      frameInitLimit_(frameInitLimit),
-      mCamera(new SRCamera(*this)),  // Should come after all vars have been initialized.
       clippingPlaneIndex_(0),
       mMatAmbient(0.2),
       mMatDiffuse(1.0),
@@ -94,11 +92,10 @@ namespace SCIRun {
       mFogIntensity(0.0),
       mFogStart(0.0),
       mFogEnd(1.0),
-      mFogColor(glm::vec4(0.0))
+      mFogColor(glm::vec4(0.0)),
+      frameInitLimit_(frameInitLimit),
+      mCamera(new SRCamera(*this))  // Should come after all vars have been initialized.
     {
-      // Create default colormaps.
-      //generateTextures();
-
       showOrientation_ = true;
       autoRotate_ = false;
       selectWidget_ = false;
@@ -238,11 +235,26 @@ namespace SCIRun {
       {
         if (btn == MouseButton::MOUSE_LEFT)
         {
-          //widgetSelected_ = foundWidget(pos);
-          std::cout << "widget exists" << std::endl;
+          // //widgetSelected_ = foundWidget(pos);
+          // std::cout << "widget exists" << std::endl;
         }
       }
       mCamera->mouseDownEvent(pos, btn);
+    }
+
+    void SRInterface::setLockZoom(bool lock)
+    {
+      mCamera->setLockZoom(lock);
+    }
+
+    void SRInterface::setLockPanning(bool lock)
+    {
+      mCamera->setLockPanning(lock);
+    }
+
+    void SRInterface::setLockRotation(bool lock)
+    {
+      mCamera->setLockRotation(lock);
     }
 
     //------------------------------------------------------------------------------
@@ -573,7 +585,7 @@ namespace SCIRun {
     {
       return mWidgetTransform;
     }
-    
+
     //------------------------------------------------------------------------------
     //--------------Clipping Plane Tools--------------------------------------------
     void SRInterface::checkClippingPlanes(int n)
@@ -1426,7 +1438,6 @@ namespace SCIRun {
         return;
 
       glm::mat4 viewToWorld = mCamera->getViewToWorld();
-      glm::vec3 position = glm::vec3(x, y, 0);
       if (mLightPosition.size() > 0)
       {
         mLightPosition[index] = glm::vec3(x, y, 0.0);
@@ -1437,7 +1448,7 @@ namespace SCIRun {
       if (light)
       {
         glm::vec3 viewDir = viewToWorld[2].xyz();
-        viewDir = -viewDir; // Cameras look down -Z.        
+        viewDir = -viewDir; // Cameras look down -Z.
         light->lightDir[index] = mLightsOn[index] ? viewDir-position : glm::vec3(0.0, 0.0, 0.0);
 
         glm::vec3 view1 = viewToWorld[0].xyz();

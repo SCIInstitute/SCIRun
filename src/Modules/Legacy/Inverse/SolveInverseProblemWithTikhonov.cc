@@ -62,15 +62,15 @@ SolveInverseProblemWithTikhonov::SolveInverseProblemWithTikhonov() : Module(stat
 void SolveInverseProblemWithTikhonov::setStateDefaults()
 {
 	setStateStringFromAlgo(Parameters::TikhonovImplementation);
-	setStateStringFromAlgo(Parameters::RegularizationMethod);
-	setStateStringFromAlgo(Parameters::regularizationChoice);
+	setStateStringFromAlgoOption(Parameters::RegularizationMethod);
+	setStateIntFromAlgo(Parameters::regularizationChoice);
 	setStateDoubleFromAlgo(Parameters::LambdaFromDirectEntry);
 	setStateDoubleFromAlgo(Parameters::LambdaMin);
 	setStateDoubleFromAlgo(Parameters::LambdaMax);
 	setStateDoubleFromAlgo(Parameters::LambdaNum);
 	setStateDoubleFromAlgo(Parameters::LambdaResolution);
 	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
-	setStateDoubleFromAlgo(Parameters::LambdaCorner);
+	setStateIntFromAlgo(Parameters::LambdaCorner);
 	setStateStringFromAlgo(Parameters::LCurveText);
 	setStateIntFromAlgo(Parameters::regularizationSolutionSubcase);
 	setStateIntFromAlgo(Parameters::regularizationResidualSubcase);
@@ -91,11 +91,28 @@ void SolveInverseProblemWithTikhonov::execute()
 	if (needToExecute())
 	{
 
+
+		auto state = get_state();
 		// set parameters
-		algo().set( Parameters::TikhonovImplementation, "standardTikhonov" );
-		algo().setOption(Parameters::regularizationChoice, get_state()->getValue(Parameters::regularizationChoice).toString());
-		algo().setOption(Parameters::regularizationSolutionSubcase, get_state()->getValue(Parameters::regularizationSolutionSubcase).toString());
-		algo().setOption(Parameters::regularizationResidualSubcase, get_state()->getValue(Parameters::regularizationResidualSubcase).toString());
+		std::cout << "The parameter was set to: " << state->getValue(Parameters::TikhonovImplementation).toString() << std::endl;
+		std::cout << "Selecting Tikhonov in the module: " ;
+
+	    state->setValue( Parameters::TikhonovImplementation, "standardTikhonov" );
+	    setAlgoOptionFromState(Parameters::RegularizationMethod);
+	    setAlgoIntFromState(Parameters::regularizationChoice);
+	    setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
+	    setAlgoDoubleFromState(Parameters::LambdaMin);
+	    setAlgoDoubleFromState(Parameters::LambdaMax);
+	    setAlgoDoubleFromState(Parameters::LambdaNum);
+	    setAlgoDoubleFromState(Parameters::LambdaResolution);
+	    setAlgoDoubleFromState(Parameters::LambdaSliderValue);
+	    setAlgoIntFromState(Parameters::LambdaCorner);
+	    setAlgoStringFromState(Parameters::LCurveText);
+	    setAlgoIntFromState(Parameters::regularizationSolutionSubcase);
+	    setAlgoIntFromState(Parameters::regularizationResidualSubcase);
+
+
+		std::cout << state->getValue(Parameters::TikhonovImplementation).toString()  << std::endl;
 
 		// run
 		// auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,hMatrixRegMat)(WeightingInSensorSpace, hMatrixNoiseCov)));

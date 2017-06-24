@@ -1470,6 +1470,47 @@ void ViewSceneDialog::addViewBarButton()
   mToolBar->addSeparator();
 }
 
+void ViewSceneDialog::addControlLockButton()
+{
+  auto controlLock = new QPushButton();
+  controlLock->setToolTip("Lock specific view controls");
+  controlLock->setText("Lock View");
+  auto menu = new QMenu;
+
+  auto lockRot = menu->addAction("Lock Rotation");
+  lockRot->setCheckable(true);
+  connect(lockRot, SIGNAL(triggered()), this, SLOT(lockRotationToggled()));
+
+  auto lockPan = menu->addAction("Lock Panning");
+  lockPan->setCheckable(true);
+  connect(lockPan, SIGNAL(triggered()), this, SLOT(lockPanningToggled()));
+
+  auto lockZoom = menu->addAction("Lock Zoom");
+  lockZoom->setCheckable(true);
+  connect(lockZoom, SIGNAL(triggered()), this, SLOT(lockZoomToggled()));
+
+  controlLock->setMenu(menu);
+  mToolBar->addWidget(controlLock);
+}
+
+void ViewSceneDialog::lockRotationToggled()
+{
+  auto action = qobject_cast<QAction*>(sender());
+  mGLWidget->setLockRotation(action->isChecked());
+}
+
+void ViewSceneDialog::lockPanningToggled()
+{
+  auto action = qobject_cast<QAction*>(sender());
+  mGLWidget->setLockPanning(action->isChecked());
+}
+
+void ViewSceneDialog::lockZoomToggled()
+{
+  auto action = qobject_cast<QAction*>(sender());
+  mGLWidget->setLockZoom(action->isChecked());
+}
+
 void ViewSceneDialog::addViewBar()
 {
   mViewBar = new QToolBar(this);
@@ -1482,6 +1523,7 @@ void ViewSceneDialog::addViewBar()
   glLayout->addWidget(mViewBar);
 
   addViewBarButton();
+  addControlLockButton();
 }
 
 void ViewSceneDialog::addViewOptions()

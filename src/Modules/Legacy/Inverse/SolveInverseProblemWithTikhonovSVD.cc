@@ -65,17 +65,17 @@ SolveInverseProblemWithTikhonovSVD::SolveInverseProblemWithTikhonovSVD() : Modul
 void SolveInverseProblemWithTikhonovSVD::setStateDefaults()
 {
 
-	setStateStringFromAlgo(Parameters::TikhonovImplementation);
-	setStateStringFromAlgo(Parameters::RegularizationMethod);
+	// setStateIntFromAlgo(Parameters::TikhonovImplementation);
+	setStateIntFromAlgo(Parameters::RegularizationMethod);
 	setStateIntFromAlgo(Parameters::regularizationChoice);
-	setStateDoubleFromAlgo(Parameters::LambdaFromDirectEntry);
-	setStateDoubleFromAlgo(Parameters::LambdaMin);
-	setStateDoubleFromAlgo(Parameters::LambdaMax);
-	setStateDoubleFromAlgo(Parameters::LambdaNum);
-	setStateDoubleFromAlgo(Parameters::LambdaResolution);
-	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
-	setStateDoubleFromAlgo(Parameters::LambdaCorner);
-	setStateStringFromAlgo(Parameters::LCurveText);
+	setStateIntFromAlgo(Parameters::LambdaFromDirectEntry);
+	setStateIntFromAlgo(Parameters::LambdaMin);
+	setStateIntFromAlgo(Parameters::LambdaMax);
+	setStateIntFromAlgo(Parameters::LambdaNum);
+	setStateIntFromAlgo(Parameters::LambdaResolution);
+	setStateIntFromAlgo(Parameters::LambdaSliderValue);
+	setStateIntFromAlgo(Parameters::LambdaCorner);
+	setStateIntFromAlgo(Parameters::LCurveText);
 	setStateIntFromAlgo(Parameters::regularizationSolutionSubcase);
 	setStateIntFromAlgo(Parameters::regularizationResidualSubcase);
 }

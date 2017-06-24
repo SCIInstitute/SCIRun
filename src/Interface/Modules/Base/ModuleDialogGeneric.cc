@@ -321,6 +321,13 @@ public:
     {
       THROW_INVALID_ARGUMENT("empty combo box string mapping");
     }
+    if (0 == comboBox->count())
+    {
+      for (const auto& choices : stringMap_.left)
+      {
+        comboBox->addItem(QString::fromStdString(choices.first));
+      }
+    }
     fromLabelConverter_ = [this](const QString& qstr) { return findOrFirst(stringMap_.left, qstr.toStdString()); };
     toLabelConverter_ = [this](const std::string& str) { return QString::fromStdString(findOrFirst(stringMap_.right, str)); };
     connect(comboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(push()));
@@ -874,12 +881,8 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(const std::string& portId
   ScopedWidgetSignalBlocker swsb(table);
   if (portId.find(type) != std::string::npos)
   {
-    //qDebug() << "adjust input table: " << portId.c_str() << portChangeType;
-
     if (portChangeType == DynamicPortChange::USER_ADDED_PORT || portChangeType == DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD)
     {
-      //qDebug() << "trying to add row via port added, id: " << portId.c_str();
-
       int connectedPortNumber;
       std::string connectedPortId;
       std::tie(connectedPortId, connectedPortNumber) = getConnectedDynamicPortId(portId, type, portChangeType == DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD);
@@ -910,7 +913,6 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(const std::string& portId
 
         addLineEditManager(lineEdit, name);
         table->setCellWidget(newRowIndex, lineEditIndex, lineEdit);
-        //qDebug() << "row added with " << lineEditText;
 
         for (int i = 1; i < table->columnCount(); ++i)
         {
@@ -935,14 +937,12 @@ void ModuleDialogGeneric::syncTableRowsWithDynamicPort(const std::string& portId
     }
     else
     {
-      //qDebug() << "trying to remove row with " << portId.c_str();
       auto items = table->findItems(QString::fromStdString(portId), Qt::MatchFixedString);
       if (!items.empty())
       {
         auto item = items[0];
         int row = table->row(item);
         table->removeRow(row);
-        //qDebug() << "row removed" << QString::fromStdString(portId);
         removeManager(Name(portId));
       }
       else

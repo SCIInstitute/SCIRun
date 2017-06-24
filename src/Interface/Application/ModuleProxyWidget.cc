@@ -151,7 +151,7 @@ void ModuleProxyWidget::showAndColorImpl(const QColor& color, int milliseconds)
 {
   if (timeLine_)
     return;
-    
+
   animateColor_ = color;
   timeLine_ = new QTimeLine(milliseconds, this);
   connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(colorAnimate(qreal)));
@@ -369,6 +369,11 @@ bool ModuleProxyWidget::isSubwidget(QWidget* alienWidget) const
     qobject_cast<QProgressBar*>(alienWidget);
 }
 
+void ModuleProxyWidget::menuFunction()
+{
+  module_->menuFunction();
+}
+
 void ModuleProxyWidget::highlightIfSelected()
 {
   if (!isSelected_ && isSelected())
@@ -409,9 +414,9 @@ void ModuleProxyWidget::createPortPositionProviders()
 
     int extraPadding = p->isHighlighted() ? 4 : 0;
     auto pp(boost::make_shared<ProxyWidgetPosition>(this, realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5)));
-    
+
     //qDebug() << "PWP real " << realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5);
-    
+
     p->setPositionObject(pp);
   }
   if (pos() == QPointF(0, 0) && cachedPosition_ != pos())
@@ -476,4 +481,16 @@ ProxyWidgetPosition::ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPo
 QPointF ProxyWidgetPosition::currentPosition() const
 {
   return widget_->pos() + offset_;
+}
+
+SubnetPortsBridgeProxyWidget::SubnetPortsBridgeProxyWidget(SubnetPortsBridgeWidget* ports, QGraphicsItem* parent) : QGraphicsProxyWidget(parent), ports_(ports)
+{
+}
+
+void SubnetPortsBridgeProxyWidget::updateConnections()
+{
+  for (auto& port : ports_->ports())
+  {
+    port->trackConnections();
+  }
 }

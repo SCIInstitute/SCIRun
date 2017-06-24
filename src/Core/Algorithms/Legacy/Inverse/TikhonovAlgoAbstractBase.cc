@@ -44,10 +44,13 @@ Last modification : April 20 2017
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Math/MiscMath.h>
 
 // SCIRun structural
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Logging/LoggerInterface.h>
+#include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
 
 using namespace SCIRun;
@@ -66,20 +69,6 @@ const AlgorithmOutputName TikhonovAlgoAbstractBase::InverseSolution("InverseSolu
 const AlgorithmOutputName TikhonovAlgoAbstractBase::RegularizationParameter("RegularizationParameter");
 const AlgorithmOutputName TikhonovAlgoAbstractBase::RegInverse("RegInverse");
 
-// const AlgorithmParameterName TikhonovAlgoAbstractBase::TikhonovImplementation("TikhonovImplementationOption");
-// const AlgorithmParameterName TikhonovAlgoAbstractBase::RegularizationMethod("lambdaMethodComboBox");
-// const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationChoice("regularizationChoice");
-// const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaFromDirectEntry("lambdaDoubleSpinBox");
-// const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaMin("lambdaMinDoubleSpinBox");
-// const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaMax("lambdaMaxDoubleSpinBox");
-// const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaNum("lambdaNumberSpinBox");
-// const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaResolution("lambdaResolutionDoubleSpinBox");
-// const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaSliderValue("lambdaSliderDoubleSpinBox");
-// const AlgorithmParameterName TikhonovAlgoAbstractBase::LambdaCorner("lCurveLambdaLineEdit");
-// const AlgorithmParameterName TikhonovAlgoAbstractBase::LCurveText("lCurveTextEdit");
-// const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationSolutionSubcase("solutionConstraintRadioButton");
-// const AlgorithmParameterName TikhonovAlgoAbstractBase::regularizationResidualSubcase("residualConstraintRadioButton");
-
 ALGORITHM_PARAMETER_DEF( Inverse, TikhonovImplementation);
 ALGORITHM_PARAMETER_DEF( Inverse, RegularizationMethod);
 ALGORITHM_PARAMETER_DEF( Inverse, regularizationChoice);
@@ -96,10 +85,12 @@ ALGORITHM_PARAMETER_DEF( Inverse, regularizationResidualSubcase);
 
 TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
 {
-	addParameter(Parameters::TikhonovImplementation, "NoMethodSelected");
-	addParameter(Parameters::RegularizationMethod, "lcurve");
-	addParameter(Parameters::regularizationChoice, "automatic");
-	addParameter(Parameters::LambdaFromDirectEntry,1e-6);
+ 	using namespace Parameters;
+
+	addParameter(TikhonovImplementation, "NoMethodSelected" );
+	addOption(RegularizationMethod, "lcurve", "single|slider|lcurve");
+	addParameter(regularizationChoice, 0);
+	addParameter(LambdaFromDirectEntry,1e-6);
 	// addParameter(lambdaDoubleSpinBox,1e-6);
 	addParameter(Parameters::LambdaMin,1e-6);
 	addParameter(Parameters::LambdaMax,1);
@@ -198,7 +189,6 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & inp
 /////////  run()
 AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) const
 {
-	THROW_ALGORITHM_PROCESSING_ERROR("We got to run");
 	// get inputs
 	auto forwardMatrix_ = input.get<Matrix>(TikhonovAlgoAbstractBase::ForwardMatrix);
 	auto measuredData_ = input.get<Matrix>(TikhonovAlgoAbstractBase::MeasuredPotentials);
@@ -206,7 +196,7 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 	auto sensorWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSensorSpace);
 
 	// get Parameters
-	auto RegularizationMethod_gotten = get(Parameters::RegularizationMethod).toString();
+	auto RegularizationMethod_gotten = getOption(Parameters::RegularizationMethod);
 	auto TikhonovImplementation_gotten = get(Parameters::TikhonovImplementation).toString();
 
     // Alocate Variable
@@ -219,7 +209,8 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
 	// Determine specific Tikhonov Implementation
 	TikhonovImpl  *algoImpl;
-	if ( get(Parameters::RegularizationMethod).toInt() ==  standardTikhonov ){
+	std::cout << "Selecting Tikhonov: " << TikhonovImplementation_gotten << std::endl;
+	if ( TikhonovImplementation_gotten ==  "standardTikhonov" ){
 		// get Parameters
 		int  regularizationChoice_ = get(Parameters::regularizationChoice).toInt();
 		int regularizationSolutionSubcase_ = get(Parameters::regularizationSolutionSubcase).toInt();
@@ -227,10 +218,10 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
 		algoImpl = new SolveInverseProblemWithStandardTikhonovImpl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), regularizationChoice_, regularizationSolutionSubcase_, regularizationResidualSubcase_);
 	}
-	else if ( get(Parameters::RegularizationMethod).toInt() ==  TikhonovSVD ){
+	else if ( TikhonovImplementation_gotten ==  "TikhonovSVD" ){
 		// algoImpl = new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_));
 	}
-	else if ( get(Parameters::RegularizationMethod).toInt() ==  TikhonovTSVD ){
+	else if ( TikhonovImplementation_gotten==  "TikhonovTSVD" ){
 		THROW_ALGORITHM_PROCESSING_ERROR("Tikhonov TSVD not implemented yet");
 	}
 	else{
