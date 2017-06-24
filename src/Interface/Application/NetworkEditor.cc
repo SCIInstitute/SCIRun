@@ -1329,7 +1329,7 @@ void NetworkEditor::clear()
   QList<QGraphicsItem*> deleteTheseFirst;
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    if (auto s = dynamic_cast<SubnetWidget*>(getModule(item)))
+    if (dynamic_cast<SubnetWidget*>(getModule(item)))
     {
       deleteTheseFirst.append(item);
     }

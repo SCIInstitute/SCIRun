@@ -94,7 +94,7 @@ editor_(editor), name_(name), subnetModuleId_(subnetModuleId)
   WidgetStyleMixin::toolbarStyle(subnetBar);
   subnetBar->setObjectName("SubnetToolbar");
   SCIRunMainWindow::Instance()->addNetworkActionsToBar(subnetBar);
-  subnetBar->setIconSize(QSize(20, 20));
+  subnetBar->setIconSize(QSize(25, 25));
   vbox->setMenuBar(subnetBar);
 
   saveAsTemplatePushButton_->hide();
@@ -170,6 +170,7 @@ std::vector<QGraphicsItem*> NetworkEditor::subnetItemsToMove()
 void NetworkEditor::removeSubnetChild(const QString& name)
 {
   childrenNetworks_.erase(name);
+  //TODO: erase from subnetNameMap_
 }
 
 void NetworkEditor::addSubnetChild(const QString& name, ModuleHandle mod)
@@ -203,6 +204,27 @@ void NetworkEditor::showSubnetChild(const QString& name)
     subnet->show();
     subnet->activateWindow();
     subnet->raise();
+  }
+}
+
+void NetworkEditor::subnetMenuActionTriggered()
+{
+  auto action = qobject_cast<QAction*>(sender());
+  auto subnetId = qobject_cast<QMenu*>(action->parent())->title();
+  auto actionText = action->text();
+  if ("Show" == actionText)
+  {
+    showSubnetChild(subnetNameMap_[subnetId.toStdString()]);
+  }
+  else if ("Rename..." == actionText)
+  {
+    bool ok;
+    auto text = QInputDialog::getText(this, tr("Rename subnet"), tr("Enter new subnet name:"),
+      QLineEdit::Normal, subnetNameMap_[subnetId.toStdString()], &ok);
+    if (ok && !text.isEmpty())
+    {
+      //qDebug() << "how to rename subnet";
+    }
   }
 }
 
@@ -658,6 +680,10 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   childrenNetworkItems_[name] = items;
 
   addSubnetChild(name, subnetModule);
+  subnetNameMap_[subnetModule->get_id()] = name;
+
+  Q_EMIT modified();
+  Q_EMIT newModule(QString::fromStdString(subnetModule->get_id()), subnetModule->has_ui());
 }
 
 QPixmap NetworkEditor::grabSubnetPic(const QRectF& rect, const QList<QGraphicsItem*>& items)
@@ -809,9 +835,9 @@ void SubnetModuleConnector::moduleAddedToSubnet(const std::string& s, ModuleHand
 {
   if (signalFromSubnet(sender()) && subnet_->containsModule(module->get_id().id_))
   {
-    qDebug() << "was:" << module_->underlyingModules_.size();
+    //qDebug() << "was:" << module_->underlyingModules_.size();
     module_->underlyingModules_.push_back(module);
-    qDebug() << "now:" << module_->underlyingModules_.size() << "added" << s.c_str();
+    //qDebug() << "now:" << module_->underlyingModules_.size() << "added" << s.c_str();
   }
 }
 

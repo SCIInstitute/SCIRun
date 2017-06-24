@@ -522,8 +522,12 @@ void ModuleWidget::setupModuleActions()
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
   connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
   connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
-  if (isViewScene_ || theModule_->hasDynamicPorts()) //TODO: buggy combination, will disable for now. Fix is #1035
+  if (isViewScene_
+    || theModule_->hasDynamicPorts()  //TODO: buggy combination, will disable for now. Fix is #1035
+    || theModule_->get_id().name_ == "Subnet")
     actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Duplicate"));
+  if (theModule_->get_id().name_ == "Subnet")
+    actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Replace With"));
 
   connectNoteEditorToAction(actionsMenu_->getAction("Notes"));
   connectUpdateNote(this);
