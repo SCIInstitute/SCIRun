@@ -67,7 +67,7 @@ void SolveInverseProblemWithTikhonov::setStateDefaults()
 	setStateDoubleFromAlgo(Parameters::LambdaFromDirectEntry);
 	setStateDoubleFromAlgo(Parameters::LambdaMin);
 	setStateDoubleFromAlgo(Parameters::LambdaMax);
-	setStateDoubleFromAlgo(Parameters::LambdaNum);
+	setStateIntFromAlgo(Parameters::LambdaNum);
 	setStateDoubleFromAlgo(Parameters::LambdaResolution);
 	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
 	setStateIntFromAlgo(Parameters::LambdaCorner);
@@ -91,19 +91,16 @@ void SolveInverseProblemWithTikhonov::execute()
 	if (needToExecute())
 	{
 
-
 		auto state = get_state();
 		// set parameters
-		std::cout << "The parameter was set to: " << state->getValue(Parameters::TikhonovImplementation).toString() << std::endl;
-		std::cout << "Selecting Tikhonov in the module: " ;
-
-	    state->setValue( Parameters::TikhonovImplementation, "standardTikhonov" );
+	    state->setValue( Parameters::TikhonovImplementation, std::string("standardTikhonov") );
+		setAlgoStringFromState(Parameters::TikhonovImplementation);
 	    setAlgoOptionFromState(Parameters::RegularizationMethod);
 	    setAlgoIntFromState(Parameters::regularizationChoice);
 	    setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
 	    setAlgoDoubleFromState(Parameters::LambdaMin);
 	    setAlgoDoubleFromState(Parameters::LambdaMax);
-	    setAlgoDoubleFromState(Parameters::LambdaNum);
+	    setAlgoIntFromState(Parameters::LambdaNum);
 	    setAlgoDoubleFromState(Parameters::LambdaResolution);
 	    setAlgoDoubleFromState(Parameters::LambdaSliderValue);
 	    setAlgoIntFromState(Parameters::LambdaCorner);
@@ -111,12 +108,8 @@ void SolveInverseProblemWithTikhonov::execute()
 	    setAlgoIntFromState(Parameters::regularizationSolutionSubcase);
 	    setAlgoIntFromState(Parameters::regularizationResidualSubcase);
 
-
-		std::cout << state->getValue(Parameters::TikhonovImplementation).toString()  << std::endl;
-
 		// run
-		// auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,hMatrixRegMat)(WeightingInSensorSpace, hMatrixNoiseCov)));
-		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)) );
+		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,optionalAlgoInput(hMatrixRegMat))(WeightingInSensorSpace,optionalAlgoInput(hMatrixNoiseCov))) );
 
 		// update L-curve
 		/* NO EXISTE

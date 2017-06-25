@@ -71,12 +71,6 @@ namespace Inverse {
 		static const AlgorithmOutputName RegInverse;
 
 		// Define algorithm choices
-		enum TikhonovImplementationChoice {
-			NoMethodSelected,
-			standardTikhonov,
-			TikhonovSVD,
-			TikhonovTSVD
-		};
 		enum AlgorithmChoice {
 			automatic,
 			underdetermined,
@@ -91,17 +85,6 @@ namespace Inverse {
 			residual_constrained_squared
 		};
 
-		struct SCISHARE LCurveInput
-		{
-			const std::vector<double> rho_;
-			const std::vector<double> eta_;
-			const std::vector<double> lambdaArray_;
-			const int nLambda_;
-
-			LCurveInput(const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, 			const int nLambda);
-		};
-
-
 		// constructor
 		TikhonovAlgoAbstractBase();
 
@@ -110,8 +93,8 @@ namespace Inverse {
 
 		// defined public functions
 		// void update_graph( const AlgorithmInput & input,  double lambda, int lambda_index, double epsilon);
-		static double FindCorner( LCurveInput & Linput, const AlgorithmInput & input, int& lambda_index);
-		static double LambdaLookup(LCurveInput& input, double lambda, int& lambda_index, const double epsilon);
+		static double FindCorner( const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, const int nLambda );
+		// static double LambdaLookup(LCurveInput& input, double lambda, int& lambda_index, const double epsilon);
 		double computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl * algoImpl,   const AlgorithmInput & input ) const;
 
 		bool checkInputMatrixSizes( const AlgorithmInput & input ) const;

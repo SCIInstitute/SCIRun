@@ -70,7 +70,6 @@ using namespace SCIRun::Core::Algorithms::Inverse;
         //
         //      A^-1 = M3 * G^-1 * M4
         //...........................................................................................................
-
         const int sizeB = M1.ncols();
         const int sizeSolution = M3.nrows();
         const int numTimeSamples = y.ncols();
@@ -106,8 +105,6 @@ using namespace SCIRun::Core::Algorithms::Inverse;
         // DIMENSION CHECK!!
         const int M = forwardMatrix_.nrows();
         const int N = forwardMatrix_.ncols();
-
-		int x = 0;
 
         // PREALOCATE VARIABLES and MATRICES
         DenseMatrix forward_transpose = forwardMatrix_.transpose();

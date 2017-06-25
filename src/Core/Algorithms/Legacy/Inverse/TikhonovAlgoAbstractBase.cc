@@ -36,7 +36,7 @@ Last modification : April 20 2017
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 #include <Core/Algorithms/Legacy/Inverse/TikhonovImpl.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
-// #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
+#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
 
 // Datatypes
 #include <Core/Datatypes/Matrix.h>
@@ -87,14 +87,13 @@ TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
 {
  	using namespace Parameters;
 
-	addParameter(TikhonovImplementation, "NoMethodSelected" );
-	addOption(RegularizationMethod, "lcurve", "single|slider|lcurve");
-	addParameter(regularizationChoice, 0);
-	addParameter(LambdaFromDirectEntry,1e-6);
-	// addParameter(lambdaDoubleSpinBox,1e-6);
+	addParameter(Parameters::TikhonovImplementation, std::string("NoMethodSelected") );
+	addOption(Parameters::RegularizationMethod, "lcurve", "single|slider|lcurve");
+	addParameter(Parameters::regularizationChoice, 0);
+	addParameter(Parameters::LambdaFromDirectEntry,1e-6);
 	addParameter(Parameters::LambdaMin,1e-6);
 	addParameter(Parameters::LambdaMax,1);
-	addParameter(Parameters::LambdaNum,1000);
+	addParameter(Parameters::LambdaNum,200);
 	addParameter(Parameters::LambdaResolution,1e-6);
 	addParameter(Parameters::LambdaSliderValue,0);
 	addParameter(Parameters::LambdaCorner,0);
@@ -209,8 +208,8 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
 	// Determine specific Tikhonov Implementation
 	TikhonovImpl  *algoImpl;
-	std::cout << "Selecting Tikhonov: " << TikhonovImplementation_gotten << std::endl;
-	if ( TikhonovImplementation_gotten ==  "standardTikhonov" ){
+	if ( TikhonovImplementation_gotten ==  std::string("standardTikhonov") ){
+
 		// get Parameters
 		int  regularizationChoice_ = get(Parameters::regularizationChoice).toInt();
 		int regularizationSolutionSubcase_ = get(Parameters::regularizationSolutionSubcase).toInt();
@@ -218,10 +217,16 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
 		algoImpl = new SolveInverseProblemWithStandardTikhonovImpl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), regularizationChoice_, regularizationSolutionSubcase_, regularizationResidualSubcase_);
 	}
-	else if ( TikhonovImplementation_gotten ==  "TikhonovSVD" ){
-		// algoImpl = new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_));
+	else if ( TikhonovImplementation_gotten ==  std::string("TikhonovSVD") ){
+
+		// get Parameters
+		int  regularizationChoice_ = get(Parameters::regularizationChoice).toInt();
+		int regularizationSolutionSubcase_ = get(Parameters::regularizationSolutionSubcase).toInt();
+		int regularizationResidualSubcase_ = get(Parameters::regularizationResidualSubcase).toInt();
+
+		algoImpl = new SolveInverseProblemWithTikhonovSVD_impl(*castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_));
 	}
-	else if ( TikhonovImplementation_gotten==  "TikhonovTSVD" ){
+	else if ( TikhonovImplementation_gotten ==  std::string("TikhonovTSVD") ){
 		THROW_ALGORITHM_PROCESSING_ERROR("Tikhonov TSVD not implemented yet");
 	}
 	else{
@@ -247,6 +252,7 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
     else if (RegularizationMethod_gotten == "lcurve")
     {
         lambda_ = computeLcurve( algoImpl, input );
+		std::cout << "Lambda: "  << lambda_ << std::endl;
     }
 	else
 	{
@@ -287,21 +293,18 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 /////// compute L-curve
 double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl * algoImpl, const AlgorithmInput & input ) const
 {
-
 	// get inputs
 	auto forwardMatrix_ = input.get<Matrix>(TikhonovAlgoAbstractBase::ForwardMatrix);
 	auto measuredData_ = input.get<Matrix>(TikhonovAlgoAbstractBase::MeasuredPotentials);
 	auto sourceWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSourceSpace);
 	auto sensorWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSensorSpace);
-
     // define the step size of the lambda vector to be computed  (distance between min and max divided by number of desired lambdas in log scale)
     const int nLambda = get(Parameters::LambdaNum).toInt();
-	const int lambdaMin_ = get(Parameters::LambdaMin).toDouble();
-	const int lambdaMax_ = get(Parameters::LambdaMax).toDouble();
-    const double lam_step = pow(10.0, lambdaMax_ / lambdaMin_) / (nLambda-1);
+	const double lambdaMin_ = get(Parameters::LambdaMin).toDouble();
+	const double lambdaMax_ = get(Parameters::LambdaMax).toDouble();
+    const double lam_step = (log10(lambdaMax_) - log10(lambdaMin_))  / (nLambda-1);
+	std::cout << "Lambda power step: " << lam_step << ". Number: "<< nLambda <<". Lambda min: " << lambdaMin_ << ". Lambda max: "<< lambdaMax_<< ". Ratio: "<<  lambdaMax_ / lambdaMin_ << std::endl;
     double lambda = 0;
-
-    const int sizeSolution = forwardMatrix_->ncols();
     double lambda_sq;
 
     // prealocate vector of lambdas and eta and rho
@@ -314,15 +317,12 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
 
     lambdaArray[0] = lambdaMin_;
 
-    // initialize counter
-    int lambda_index = 0;
-
     // for all lambdas
     for (int j = 0; j < nLambda; j++)
     {
         if (j)
         {
-            lambdaArray[j] = lambdaArray[j-1] * lam_step;
+            lambdaArray[j] = lambdaArray[j-1] * pow(10.0,lam_step);
         }
 
         // set current lambda
@@ -377,13 +377,9 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
 
     }
 
-    // // update L-curve
-    // boost::shared_ptr<TikhonovAlgorithm::LCurveInput> lcurveInput(new TikhonovAlgorithm::LCurveInput(rho, eta, lambdaArray, nLambda));
-    // lcurveInput_handle_ = lcurveInput;
-	//
-    // // Find corner in L-curve
-    // lambda = FindCorner(*lcurveInput_handle_, lambda_index);
-	//
+    // Find corner in L-curve
+    lambda = FindCorner( rho, eta, lambdaArray, nLambda );
+
     // // update GUI
     // if (updateLCurveGui_)
     //     updateLCurveGui_(lambda, *lcurveInput_handle_, lambda_index);
@@ -397,13 +393,9 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
 
 
 ///// Find Corner, find the maximal curvature which corresponds to the L-curve corner
-double TikhonovAlgoAbstractBase::FindCorner( LCurveInput & Linput, const AlgorithmInput & input, int& lambda_index)
+double TikhonovAlgoAbstractBase::FindCorner( const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, const int nLambda )
 {
-	const int nLambda = Linput.nLambda_;
-    const std::vector<double>& rho = Linput.rho_;
-    const std::vector<double>& eta = Linput.eta_;
-    const std::vector<double>& lambdaArray = Linput.lambdaArray_;
-
+	int lambda_index;
     std::vector<double> deta(nLambda);
     std::vector<double> ddeta(nLambda);
     std::vector<double> drho(nLambda);
@@ -450,38 +442,38 @@ double TikhonovAlgoAbstractBase::FindCorner( LCurveInput & Linput, const Algorit
     return lambdaArray[lambda_index];
 }
 
-///// Search for closest Lambda to given lambda
-double TikhonovAlgoAbstractBase::LambdaLookup( LCurveInput& Linput, double lambda, int& lambda_index, const double epsilon)
-{
-	const int nLambda = Linput.nLambda_;
-	const std::vector<double>& lambdaArray = Linput.lambdaArray_;
-
-    for (int i = 0; i < nLambda-1; ++i)
-    {
-        if (i > 0 && (lambda < lambdaArray[i-1] || lambda > lambdaArray[i+1])) continue;
-
-        double lambda_step_midpoint = std::abs(lambdaArray[i+1] - lambdaArray[i])/2;
-
-        if (std::abs(lambda - lambdaArray[i]) <= epsilon)  // TODO: is this a reasonable comparison???
-        {
-            lambda_index = i;
-            return lambdaArray[lambda_index];
-        }
-
-        if (std::abs(lambda - lambdaArray[i]) < lambda_step_midpoint)
-        {
-            lambda_index = i;
-            return lambdaArray[lambda_index];
-        }
-
-        if (std::abs(lambda - lambdaArray[i+1]) < lambda_step_midpoint)
-        {
-            lambda_index = i+1;
-            return lambdaArray[lambda_index];
-        }
-    }
-    return -1;
-}
+// ///// Search for closest Lambda to given lambda
+// double TikhonovAlgoAbstractBase::LambdaLookup( LCurveInput& Linput, double lambda, int& lambda_index, const double epsilon)
+// {
+// 	const int nLambda = Linput.nLambda_;
+// 	const std::vector<double>& lambdaArray = Linput.lambdaArray_;
+//
+//     for (int i = 0; i < nLambda-1; ++i)
+//     {
+//         if (i > 0 && (lambda < lambdaArray[i-1] || lambda > lambdaArray[i+1])) continue;
+//
+//         double lambda_step_midpoint = std::abs(lambdaArray[i+1] - lambdaArray[i])/2;
+//
+//         if (std::abs(lambda - lambdaArray[i]) <= epsilon)  // TODO: is this a reasonable comparison???
+//         {
+//             lambda_index = i;
+//             return lambdaArray[lambda_index];
+//         }
+//
+//         if (std::abs(lambda - lambdaArray[i]) < lambda_step_midpoint)
+//         {
+//             lambda_index = i;
+//             return lambdaArray[lambda_index];
+//         }
+//
+//         if (std::abs(lambda - lambdaArray[i+1]) < lambda_step_midpoint)
+//         {
+//             lambda_index = i+1;
+//             return lambdaArray[lambda_index];
+//         }
+//     }
+//     return -1;
+// }
 
 // ////////// update L-curve graph
 // void TikhonovAlgoAbstractBase::update_graph( LCurveInput & input, double lambda, int lambda_index, const double epsilon)

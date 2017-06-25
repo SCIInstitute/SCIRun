@@ -43,7 +43,7 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   GuiStringTranslationMap lambdaMethod_;
   lambdaMethod_.insert(StringPair("Direct entry", "single"));
   lambdaMethod_.insert(StringPair("Slider", "slider"));
@@ -68,7 +68,7 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
 
   addComboBoxManager(lambdaMethodComboBox_, Parameters::RegularizationMethod, lambdaMethod_);
   addTextEditManager(lCurveTextEdit_, Parameters::LCurveText);
-
+  
   connect(lambdaSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));
   connect(lambdaSliderDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderValue(double)));
   connect(lambdaMinDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMin(double)));
