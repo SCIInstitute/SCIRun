@@ -64,18 +64,17 @@ SolveInverseProblemWithTikhonovSVD::SolveInverseProblemWithTikhonovSVD() : Modul
 
 void SolveInverseProblemWithTikhonovSVD::setStateDefaults()
 {
-
-	// setStateIntFromAlgo(Parameters::TikhonovImplementation);
-	setStateIntFromAlgo(Parameters::RegularizationMethod);
+	setStateStringFromAlgo(Parameters::TikhonovImplementation);
+	setStateStringFromAlgoOption(Parameters::RegularizationMethod);
 	setStateIntFromAlgo(Parameters::regularizationChoice);
-	setStateIntFromAlgo(Parameters::LambdaFromDirectEntry);
-	setStateIntFromAlgo(Parameters::LambdaMin);
-	setStateIntFromAlgo(Parameters::LambdaMax);
+	setStateDoubleFromAlgo(Parameters::LambdaFromDirectEntry);
+	setStateDoubleFromAlgo(Parameters::LambdaMin);
+	setStateDoubleFromAlgo(Parameters::LambdaMax);
 	setStateIntFromAlgo(Parameters::LambdaNum);
-	setStateIntFromAlgo(Parameters::LambdaResolution);
-	setStateIntFromAlgo(Parameters::LambdaSliderValue);
+	setStateDoubleFromAlgo(Parameters::LambdaResolution);
+	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
 	setStateIntFromAlgo(Parameters::LambdaCorner);
-	setStateIntFromAlgo(Parameters::LCurveText);
+	setStateStringFromAlgo(Parameters::LCurveText);
 	setStateIntFromAlgo(Parameters::regularizationSolutionSubcase);
 	setStateIntFromAlgo(Parameters::regularizationResidualSubcase);
 }
@@ -92,19 +91,31 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 	auto hMatrixRegMat = getOptionalInput(WeightingInSourceSpace);
 	auto hMatrixNoiseCov = getOptionalInput(WeightingInSensorSpace);
 
+	std::cout << "gato" << std::endl;
 
 	if (needToExecute())
 	{
 		// set parameters
-		algo().set( Parameters::TikhonovImplementation, "TikhonovSVD" );
-		algo().setOption(Parameters::regularizationChoice, get_state()->getValue(Parameters::regularizationChoice).toString() );
-		algo().setOption(Parameters::regularizationSolutionSubcase, get_state()->getValue(Parameters::regularizationSolutionSubcase).toString() );
-		algo().setOption(Parameters::regularizationResidualSubcase, get_state()->getValue(Parameters::regularizationResidualSubcase).toString() );
-
+		auto state = get_state();
+		// set parameters
+		state->setValue( Parameters::TikhonovImplementation, std::string("TikhonovSVD") );
+		setAlgoStringFromState(Parameters::TikhonovImplementation);
+		setAlgoOptionFromState(Parameters::RegularizationMethod);
+		setAlgoIntFromState(Parameters::regularizationChoice);
+		setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
+		setAlgoDoubleFromState(Parameters::LambdaMin);
+		setAlgoDoubleFromState(Parameters::LambdaMax);
+		setAlgoIntFromState(Parameters::LambdaNum);
+		setAlgoDoubleFromState(Parameters::LambdaResolution);
+		setAlgoDoubleFromState(Parameters::LambdaSliderValue);
+		setAlgoIntFromState(Parameters::LambdaCorner);
+		setAlgoStringFromState(Parameters::LCurveText);
+		setAlgoIntFromState(Parameters::regularizationSolutionSubcase);
+		setAlgoIntFromState(Parameters::regularizationResidualSubcase);
 
 		// run
-		// auto output = algo().run( withInputData( (ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,hMatrixRegMat)(WeightingInSensorSpace, hMatrixNoiseCov) ));
-		auto output = algo().run( withInputData( (ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat) ));
+		// run
+		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,optionalAlgoInput(hMatrixRegMat))(WeightingInSensorSpace,optionalAlgoInput(hMatrixNoiseCov))) );
 
 		// update L-curve
 		/* NO EXISTE

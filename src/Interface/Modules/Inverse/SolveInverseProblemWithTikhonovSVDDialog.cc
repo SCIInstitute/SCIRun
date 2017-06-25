@@ -44,6 +44,7 @@ SolveInverseProblemWithTikhonovSVDDialog::SolveInverseProblemWithTikhonovSVDDial
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
+  GuiStringTranslationMap lambdaMethod_;
   lambdaMethod_.insert(StringPair("Direct entry", "single"));
   lambdaMethod_.insert(StringPair("Slider", "slider"));
   lambdaMethod_.insert(StringPair("L-curve", "lcurve"));
@@ -56,6 +57,9 @@ SolveInverseProblemWithTikhonovSVDDialog::SolveInverseProblemWithTikhonovSVDDial
   addDoubleSpinBoxManager(lambdaMinDoubleSpinBox_, Parameters::LambdaMin);
   addDoubleSpinBoxManager(lambdaMaxDoubleSpinBox_, Parameters::LambdaMax);
   addDoubleSpinBoxManager(lambdaResolutionDoubleSpinBox_, Parameters::LambdaResolution);
+
+  // addDoubleLineEditManager(lCurveMinLineEdit_, Parameters::LambdaMin);
+  // addDoubleLineEditManager(lCurveMaxLineEdit_, Parameters::LambdaMax);
 
   addDoubleSpinBoxManager(lambdaSliderDoubleSpinBox_, Parameters::LambdaSliderValue);
 
@@ -72,6 +76,7 @@ SolveInverseProblemWithTikhonovSVDDialog::SolveInverseProblemWithTikhonovSVDDial
   connect(lambdaMaxDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMax(double)));
   connect(lambdaResolutionDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderStep(double)));
 }
+
 
 void SolveInverseProblemWithTikhonovSVDDialog::setSpinBoxValue(int value)
 {

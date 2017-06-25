@@ -97,8 +97,6 @@ SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovSVD_impl::co
         DenseMatrix solution(DenseMatrix::Zero(N,numTimeSamples));
         DenseMatrix tempInverse(DenseMatrix::Zero(N,M));
 
-int x = 0;
-
     // Compute inverse solution
         for (int rr=0; rr<rank ; rr++)
         {
