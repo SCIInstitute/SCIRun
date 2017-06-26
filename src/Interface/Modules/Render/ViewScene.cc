@@ -778,8 +778,7 @@ void ViewSceneDialog::invertZoomClicked(bool value)
 //--------------Clipping Plane Tools--------------------------------------------
 void ViewSceneDialog::setClippingPlaneIndex(int index)
 {
-  int indexOffset = 7;
-  clippingPlaneIndex_ = index + indexOffset;
+  clippingPlaneIndex_ = index;
   auto spire = mSpire.lock();
   if (spire)
     spire->setClippingPlaneIndex(clippingPlaneIndex_);

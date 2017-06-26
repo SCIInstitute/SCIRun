@@ -242,6 +242,7 @@ private Q_SLOTS:
   void changeExecuteButtonToStop();
   void updateDockWidgetProperties(bool isFloating);
   void incomingConnectionStateChanged(bool disabled, int index);
+  void showReplaceWithWidget();
 protected:
   virtual void enterEvent(QEvent* event) override;
   virtual void leaveEvent(QEvent* event) override;
@@ -253,6 +254,7 @@ private:
   bool executedOnce_, skipExecuteDueToFatalError_, disabled_;
   std::atomic<bool> errored_;
   int previousPageIndex_ {0};
+  QPushButton* replaceWithWidget_{nullptr};
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
   std::atomic<int> previousModuleState_;
@@ -277,6 +279,7 @@ private:
   QMenu* getReplaceWithMenu();
   void setInputPortSpacing(bool highlighted);
   void setOutputPortSpacing(bool highlighted);
+  void fillReplaceWithMenuImpl(QMenu* menu);
 
   class ModuleLogWindow* logWindow_;
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;
