@@ -548,12 +548,23 @@ void ModuleWidget::postLoadAction()
 void ModuleWidget::showReplaceWithWidget()
 {
   qDebug() << __FUNCTION__;
-  QMessageBox msgBox;
+  /*QMessageBox msgBox;
   QPushButton *connectButton = msgBox.addButton("Replacement", QMessageBox::ActionRole);
+  qDebug() << replaceWithWidget_->menu()->actions().size();
   connectButton->setMenu(replaceWithWidget_->menu());
   QPushButton *abortButton = msgBox.addButton(QMessageBox::Abort);
   msgBox.setText("Press button to replace.");
-  msgBox.exec();
+
+  QDialog dialog;
+  auto l = new QHBoxLayout;
+  auto b = new QPushButton("Replacement");
+  auto menu = new QMenu(this);
+  b->setMenu(menu);
+  fillReplaceWithMenuImpl(menu);
+  l->addWidget(b);
+  dialog.setLayout(l);
+  dialog.exec();
+  */
 }
 
 bool ModuleWidget::guiVisible() const
@@ -568,7 +579,14 @@ void ModuleWidget::fillReplaceWithMenu()
   if (deleting_ || networkBeingCleared_)
     return;
 
-  auto menu = getReplaceWithMenu();
+  fillReplaceWithMenuImpl(getReplaceWithMenu());
+}
+
+void ModuleWidget::fillReplaceWithMenuImpl(QMenu* menu)
+{
+  if (deleting_ || networkBeingCleared_)
+    return;
+
   menu->clear();
   LOG_DEBUG("Filling menu for " << theModule_->get_module_name() << std::endl);
   auto replacements = Application::Instance().controller()->possibleReplacements(this->theModule_);
