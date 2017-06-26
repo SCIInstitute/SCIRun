@@ -151,9 +151,9 @@ public:
   int portSpacing() const;
   void setPortSpacing(bool highlighted);
 
-  virtual boost::signals2::connection connectExecuteBegins(const SCIRun::Dataflow::Networks::ExecuteBeginsSignalType::slot_type& subscriber) override final;
-  virtual boost::signals2::connection connectExecuteEnds(const SCIRun::Dataflow::Networks::ExecuteEndsSignalType::slot_type& subscriber) override final;
-  virtual boost::signals2::connection connectErrorListener(const SCIRun::Dataflow::Networks::ErrorSignalType::slot_type& subscriber) override final;
+  boost::signals2::connection connectExecuteBegins(const SCIRun::Dataflow::Networks::ExecuteBeginsSignalType::slot_type& subscriber) override final;
+  boost::signals2::connection connectExecuteEnds(const SCIRun::Dataflow::Networks::ExecuteEndsSignalType::slot_type& subscriber) override final;
+  boost::signals2::connection connectErrorListener(const SCIRun::Dataflow::Networks::ErrorSignalType::slot_type& subscriber) override final;
 
   void updateNoteFromFile(const Note& note);
 
@@ -174,7 +174,7 @@ public:
   void setupPortSceneCollaborator(QGraphicsProxyWidget* proxy);
 
 public Q_SLOTS:
-  virtual bool executeWithSignals() override;
+  bool executeWithSignals() override;
   void toggleOptionsDialog();
   void setLogButtonColor(const QColor& color);
   void resetLogButtonColor();
@@ -194,7 +194,6 @@ public Q_SLOTS:
   void updateMetadata(bool active);
   void updatePortSpacing(bool highlighted);
   void replaceMe();
-  void menuFunction();
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void interrupt(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
@@ -234,7 +233,6 @@ private Q_SLOTS:
   void executeTriggeredProgrammatically(bool upstream);
   void stopButtonPushed();
   void colorOptionsButton(bool visible);
-  void fillReplaceWithMenu();
   void replaceModuleWith();
   void updateDialogForDynamicPortChange(const std::string& portName, bool adding);
   void handleDialogFatalError(const QString& message);
@@ -254,7 +252,7 @@ private:
   bool executedOnce_, skipExecuteDueToFatalError_, disabled_;
   std::atomic<bool> errored_;
   int previousPageIndex_ {0};
-  QPushButton* replaceWithWidget_{nullptr};
+  QDialog* replaceWithDialog_{ nullptr };
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
   std::atomic<int> previousModuleState_;
@@ -266,6 +264,7 @@ private:
   void setupDisplayConnections(ModuleWidgetDisplayBase* display);
   void resizeBasedOnModuleName(ModuleWidgetDisplayBase* display, int index);
   std::string moduleId_;
+  QString name_;
   class ModuleDialogGeneric* dialog_;
   QDockWidget* dockable_;
   void makeOptionsDialog();
@@ -276,10 +275,9 @@ private:
   void adjustDockState(bool dockEnabled);
   Qt::DockWidgetArea allowedDockArea() const;
   void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider) const;
-  QMenu* getReplaceWithMenu();
   void setInputPortSpacing(bool highlighted);
   void setOutputPortSpacing(bool highlighted);
-  void fillReplaceWithMenuImpl(QMenu* menu);
+  void fillReplaceWithMenu(QMenu* menu);
 
   class ModuleLogWindow* logWindow_;
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;

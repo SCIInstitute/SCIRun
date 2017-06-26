@@ -369,11 +369,6 @@ bool ModuleProxyWidget::isSubwidget(QWidget* alienWidget) const
     qobject_cast<QProgressBar*>(alienWidget);
 }
 
-void ModuleProxyWidget::menuFunction()
-{
-  module_->menuFunction();
-}
-
 void ModuleProxyWidget::highlightIfSelected()
 {
   if (!isSelected_ && isSelected())
