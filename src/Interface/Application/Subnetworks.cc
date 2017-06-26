@@ -125,13 +125,7 @@ void NetworkEditor::sendItemsToParent()
       {
         conn->deleteCompanion();
       }
-
-      auto module = getModule(item);
-      if (module)
-      {
-        module->menuFunction();
-      }
-
+      
       auto proxy = dynamic_cast<ModuleProxyWidget*>(item);
       if (proxy)
       {
