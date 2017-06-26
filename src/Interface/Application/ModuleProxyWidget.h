@@ -87,6 +87,7 @@ namespace SCIRun
       void showAndColorImpl(const QColor& color, int milliseconds);
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
+      void keepInScene();
 
       ModuleWidget* module_;
       QColor animateColor_;

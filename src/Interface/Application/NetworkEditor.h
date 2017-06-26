@@ -179,6 +179,14 @@ namespace Gui {
     double highResolutionExpandFactor;
   };
 
+  namespace NetworkBoundaries
+  {
+    const int sceneWidth = 800;
+    const int sceneHeight = 2400;
+
+    QPointF keepInScene(const QPointF& p);
+  }
+
   class NetworkEditor : public QGraphicsView,
     public Dataflow::Networks::ExecutableLookup,
     public Dataflow::Networks::NetworkEditorSerializationManager,
@@ -449,7 +457,7 @@ namespace Gui {
     }
 
     static NetworkEditor* inEditingContext_;
-    
+
     static ConnectorFunc connectorFunc_;
     static std::function<QPointF(const QRectF&)> topSubnetPortHolderPositioner_;
     static std::function<QPointF(const QRectF&)> bottomSubnetPortHolderPositioner_;
