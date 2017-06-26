@@ -82,6 +82,12 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(textOffsetHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setTextOffset(int)));
   connect(fieldOfViewHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setFieldOfView(int)));
   //-----------Clipping Tab-----------------//
+  planeButtonGroup_->setId(plane1RadioButton_, 0);
+  planeButtonGroup_->setId(plane2RadioButton_, 1);
+  planeButtonGroup_->setId(plane3RadioButton_, 2);
+  planeButtonGroup_->setId(plane4RadioButton_, 3);
+  planeButtonGroup_->setId(plane5RadioButton_, 4);
+  planeButtonGroup_->setId(plane6RadioButton_, 5);
   connect(planeButtonGroup_, SIGNAL(buttonPressed(int)), parent, SLOT(setClippingPlaneIndex(int)));
   connect(planeVisibleCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneVisible(bool)));
   connect(showPlaneFrameCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneFrameOn(bool)));
