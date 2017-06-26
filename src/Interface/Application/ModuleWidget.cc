@@ -587,7 +587,7 @@ void ModuleWidget::fillReplaceWithMenu(QMenu* menu)
 
 void ModuleWidget::replaceModuleWith()
 {
-  replaceWithDialog_->deleteLater();
+  delete replaceWithDialog_;
   replaceWithDialog_ = nullptr;
   auto action = qobject_cast<QAction*>(sender());
   auto moduleToReplace = action->text();
