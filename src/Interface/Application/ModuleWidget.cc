@@ -74,7 +74,7 @@ namespace Gui {
         << new QAction("Help", parent)
         << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
-        << new QAction("Replace With", parent)
+        << new QAction("Replace With...", parent)
         //<< disabled(new QAction("Ignore*", parent))
         << new QAction("Show Log", parent)
         //<< disabled(new QAction("Make Sub-Network", parent))  // Issue #287
@@ -527,7 +527,7 @@ void ModuleWidget::setupModuleActions()
     || theModule_->get_id().name_ == "Subnet")
     actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Duplicate"));
   if (theModule_->get_id().name_ == "Subnet")
-    actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Replace With"));
+    actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Replace With..."));
 
   connectNoteEditorToAction(actionsMenu_->getAction("Notes"));
   connectUpdateNote(this);
@@ -535,12 +535,25 @@ void ModuleWidget::setupModuleActions()
 
 void ModuleWidget::postLoadAction()
 {
-  auto replaceWith = actionsMenu_->getAction("Replace With");
+  auto replaceWith = actionsMenu_->getAction("Replace With...");
+  connect(replaceWith, SIGNAL(triggered()), this, SLOT(showReplaceWithWidget()));
+  replaceWithWidget_ = new QPushButton(this);
   auto menu = new QMenu(this);
-  replaceWith->setMenu(menu);
+  replaceWithWidget_->setMenu(menu);
   fillReplaceWithMenu();
   connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
   connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
+}
+
+void ModuleWidget::showReplaceWithWidget()
+{
+  qDebug() << __FUNCTION__;
+  QMessageBox msgBox;
+  QPushButton *connectButton = msgBox.addButton("Replacement", QMessageBox::ActionRole);
+  connectButton->setMenu(replaceWithWidget_->menu());
+  QPushButton *abortButton = msgBox.addButton(QMessageBox::Abort);
+  msgBox.setText("Press button to replace.");
+  msgBox.exec();
 }
 
 bool ModuleWidget::guiVisible() const
@@ -574,7 +587,7 @@ void ModuleWidget::menuFunction()
 
 QMenu* ModuleWidget::getReplaceWithMenu()
 {
-  return actionsMenu_->getAction("Replace With")->menu();
+  return replaceWithWidget_->menu();
 }
 
 void ModuleWidget::replaceModuleWith()
