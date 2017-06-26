@@ -543,6 +543,7 @@ void ModuleWidget::postLoadAction()
 
 void ModuleWidget::showReplaceWithWidget()
 {
+#ifndef __APPLE__
   replaceWithDialog_ = new QDialog;
   replaceWithDialog_->setWindowTitle("Replace a module");
   auto layout = new QHBoxLayout;
@@ -557,6 +558,9 @@ void ModuleWidget::showReplaceWithWidget()
   layout->addWidget(cancel);
   replaceWithDialog_->setLayout(layout);
   replaceWithDialog_->exec();
+#else
+  QMessageBox::information(nullptr, "Replace with disabled", "The replace with command is disabled on OSX until the Qt 5 upgrade is complete.");
+#endif
 }
 
 bool ModuleWidget::guiVisible() const
@@ -583,7 +587,8 @@ void ModuleWidget::fillReplaceWithMenu(QMenu* menu)
 
 void ModuleWidget::replaceModuleWith()
 {
-  delete replaceWithDialog_;
+  replaceWithDialog_->deleteLater();
+  replaceWithDialog_ = nullptr;
   auto action = qobject_cast<QAction*>(sender());
   auto moduleToReplace = action->text();
   Q_EMIT replaceModuleWith(theModule_, moduleToReplace.toStdString());
