@@ -1299,7 +1299,7 @@ void SCIRunMainWindow::fillSavedSubnetworkMenu()
     QString key;
     boost::tie(name, xml, key) = tup;
     subnet->setText(0, name.toString());
-    subnet->setToolTip(0, xml.toString());
+    subnet->setData(0, clipboardKey, xml.toString());
 		subnet->setTextColor(0, CLIPBOARD_COLOR);
 		savedSubnetworks->addChild(subnet);
 		setupSubnetItem(subnet, false, key);
@@ -1352,7 +1352,7 @@ void SCIRunMainWindow::setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, con
 
   if (addToMap)
   {
-    savedSubnetworksXml_[id] = fave->toolTip(0);
+    savedSubnetworksXml_[id] = fave->data(0, clipboardKey).toString();
     savedSubnetworksNames_[id] = fave->text(0);
   }
 }
@@ -1933,7 +1933,8 @@ void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
 
   auto clip = new QTreeWidgetItem();
   clip->setText(0, "clipboard " + QDateTime::currentDateTime().toString("ddd MMMM d yyyy hh:mm:ss.zzz"));
-  clip->setToolTip(0, xml);
+  clip->setToolTip(0, "todo: xml translation");
+  clip->setData(0, 125, xml);
   clip->setTextColor(0, CLIPBOARD_COLOR);
 
   const int clipMax = 5;

@@ -98,6 +98,7 @@ public:
   int returnCode() const { return returnCode_; }
 
   QString mostRecentFile() const;
+  static const int clipboardKey = 125;
 public Q_SLOTS:
   void executeAll();
   void showZoomStatusMessage(int zoomLevel);
