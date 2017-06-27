@@ -37,6 +37,11 @@
     <file>Resources/manhattanPipe.png</file>
     <file>Resources/timepiece-512.png</file>
     <file>Resources/scirunWizard.png</file>
+    <file>Resources/autoview.png</file>
+    <file>Resources/configure.png</file>
+    <file>Resources/views.png</file>
+    <file>Resources/lockView.png</file>
+    <file>Resources/screenshot.png</file>
     <file>Resources/network.png</file>
     <file>Resources/subnet3.png</file>
     <file>Resources/editSubnet.png</file>
