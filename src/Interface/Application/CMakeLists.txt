@@ -114,6 +114,7 @@ SET(Interface_Application_FORMS
   SCIRunMainWindow.ui
   ShortcutsInterface.ui
   SubnetEditor.ui
+  SubnetWindow.ui
   RenderWindow.ui
   TagManager.ui
   TriggeredEventsWindow.ui

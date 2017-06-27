@@ -341,7 +341,6 @@ namespace Gui {
       QList<QGraphicsItem*> items, const QRectF& rect);
     void showSubnetChild(const QString& name);
     void addSubnetChild(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle mod);
-    void removeSubnetChild(const QString& name);
     void subnetMenuActionTriggered();
 
   Q_SIGNALS:
@@ -408,7 +407,7 @@ namespace Gui {
     bool insertingNewModuleAlongConnection_{ false };
     bool showTagGroupsOnFileLoad_{ false };
     bool visibleItems_{ true };
-    QPointF lastModulePosition_{ 0, 0 };
+    QPointF lastModulePosition_{ 30, 30 };
     std::string latestModuleId_;
     std::map<int, std::string> tagLabelOverrides_;
 

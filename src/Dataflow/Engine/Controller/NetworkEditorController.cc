@@ -123,11 +123,12 @@ namespace
       const double MODULE_VERTICAL_SPACING = 110;
       const double MODULE_HORIZONTAL_SPACING = 264;
       const double MODULE_SPACING_OFFSET = 10;
-      static double snippetSpacer = 10;
+      const double INITIAL_SNIPPET_LOC = 50;
+      static double snippetSpacer = 50;
       static int numSnips = 0;
       if (0 == nec_.getNetwork()->nmodules())
       {
-        snippetSpacer = MODULE_SPACING_OFFSET;
+        snippetSpacer = INITIAL_SNIPPET_LOC;
       }
       for (auto m : modsNeeded)
       {

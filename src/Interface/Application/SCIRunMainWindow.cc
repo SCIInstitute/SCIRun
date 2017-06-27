@@ -1837,14 +1837,13 @@ void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
 
   if (modId.id_.find("Subnet") != std::string::npos)
   {
-    qDebug() << currentSubnetActions_;
+    //qDebug() << currentSubnetActions_;
     auto subnet = currentSubnetActions_[name];
     if (subnet)
-      subnet->setEnabled(false);
-    // //menuCurrentSubnets_->remove(subnet);
-    // currentSubnetActions_.remove(name);
-    // if (menuCurrentSubnets_->actions().isEmpty())
-    //   menuCurrentSubnets_->setEnabled(false);
+      menuCurrentSubnets_->removeAction(subnet->menuAction());
+    currentSubnetActions_.remove(name);
+    if (menuCurrentSubnets_->actions().isEmpty())
+      menuCurrentSubnets_->setEnabled(false);
   }
 
 }

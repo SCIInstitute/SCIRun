@@ -125,7 +125,7 @@ void NetworkEditor::sendItemsToParent()
       {
         conn->deleteCompanion();
       }
-      
+
       auto proxy = dynamic_cast<ModuleProxyWidget*>(item);
       if (proxy)
       {
@@ -159,12 +159,6 @@ std::vector<QGraphicsItem*> NetworkEditor::subnetItemsToMove()
     nonCompanionItems.end());
 
   return nonCompanionItems;
-}
-
-void NetworkEditor::removeSubnetChild(const QString& name)
-{
-  childrenNetworks_.erase(name);
-  //TODO: erase from subnetNameMap_
 }
 
 void NetworkEditor::addSubnetChild(const QString& name, ModuleHandle mod)
@@ -217,7 +211,7 @@ void NetworkEditor::subnetMenuActionTriggered()
       QLineEdit::Normal, subnetNameMap_[subnetId.toStdString()], &ok);
     if (ok && !text.isEmpty())
     {
-      //qDebug() << "how to rename subnet";
+      qDebug() << "how to rename subnet";
     }
   }
 }
@@ -379,9 +373,13 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
   connectorFunc_(subnet);
   subnet->setupPortHolders(mod);
 
+  //TODO: later
+  //auto mdi = new SubnetworkWindow;
+
   auto dock = new SubnetworkEditor(subnet, mod->get_id(), name, nullptr);
   dock->setStyleSheet(SCIRunMainWindow::Instance()->styleSheet());
-  dock->setWindowFlags(dock->windowFlags() | Qt::WindowStaysOnTopHint);
+  //dock->setWindowFlags(Qt::WindowStaysOnTopHint);
+  //mdi->addSubWindow(dock, Qt::WindowStaysOnTopHint);
   dock->show();
   subnet->centerView();
 
@@ -778,6 +776,13 @@ void NetworkEditor::killChild(const QString& name, bool force)
       subnetIter->second->deleteLater();
     childrenNetworks_.erase(subnetIter);
     currentSubnetNames_.remove(name);
+
+    auto idNameIter = std::find_if(subnetNameMap_.begin(), subnetNameMap_.end(),
+      [&name](const std::map<std::string, QString>::value_type& p) { return p.second == name; });
+    if (idNameIter != subnetNameMap_.end())
+    {
+      subnetNameMap_.erase(idNameIter);
+    }
   }
 }
 
