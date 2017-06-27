@@ -120,10 +120,16 @@ namespace
 
       ModulePositions positions;
       int i = 0;
-      const double moduleVerticalSpacing = 110;
-      const double moduleHorizontalSpacing = 264;
-      const double moduleSpacingOffset = 10;
+      const double MODULE_VERTICAL_SPACING = 110;
+      const double MODULE_HORIZONTAL_SPACING = 264;
+      const double MODULE_SPACING_OFFSET = 10;
+      const double INITIAL_SNIPPET_LOC = 50;
+      static double snippetSpacer = 50;
       static int numSnips = 0;
+      if (0 == nec_.getNetwork()->nmodules())
+      {
+        snippetSpacer = INITIAL_SNIPPET_LOC;
+      }
       for (auto m : modsNeeded)
       {
         bool uiVisible = false;
@@ -136,9 +142,15 @@ namespace
         if (mod->has_ui())
           mod->setUiVisible(uiVisible);
         mods_.push_back(mod);
-        positions.modulePositions[mod->get_id().id_] = std::make_pair(moduleSpacingOffset + numSnips*moduleHorizontalSpacing, moduleVerticalSpacing * i++ + moduleSpacingOffset);
+        positions.modulePositions[mod->get_id().id_] =
+          { snippetSpacer + numSnips * MODULE_HORIZONTAL_SPACING,
+            snippetSpacer + MODULE_VERTICAL_SPACING * i++ };
       }
-      numSnips++;
+      numSnips = (numSnips + 1) % 3;
+      if (0 == numSnips)
+      {
+        snippetSpacer += MODULE_SPACING_OFFSET;
+      }
 
       auto connsNeeded = parseConnections(label);
       for (const auto& c : connsNeeded)

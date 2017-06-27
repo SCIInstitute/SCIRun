@@ -232,7 +232,7 @@ void ModuleProxyWidget::ensureItemVisible(QGraphicsItem* item)
     {
       return; // the call below led to a crash when too zoomed in to fit a module.
     }
-    views[0]->ensureVisible(item);
+    views[0]->ensureVisible(item, 400, 200);
   }
 }
 
@@ -332,7 +332,26 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void ModuleProxyWidget::snapToGrid()
 {
   if (Preferences::Instance().modulesSnapToGrid)
+  {
     setPos(snapTo(pos().x()), snapTo(pos().y()));
+    keepInScene();
+  }
+}
+
+void ModuleProxyWidget::keepInScene()
+{
+  //qDebug() << __FUNCTION__ << pos();
+  if (x() < 0)
+    setPos(10, y());
+  else if (x() > NetworkBoundaries::sceneWidth)
+    setPos(NetworkBoundaries::sceneWidth - 100, y());
+
+  if (y() < 0)
+    setPos(x(), 10);
+  else if (y() > NetworkBoundaries::sceneHeight)
+    setPos(x(), NetworkBoundaries::sceneHeight - 10);
+
+  //qDebug() << "~" << __FUNCTION__ << pos();
 }
 
 void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -356,10 +375,13 @@ void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   }
   if (stackDepth_ > 1)
     return;
-  if (stackDepth_ == 0)
+
+  if (stackDepth_ == 1)
     ensureThisVisible();
   QGraphicsItem::mouseMoveEvent(event);
   stackDepth_ = 0;
+
+  keepInScene();
 }
 
 bool ModuleProxyWidget::isSubwidget(QWidget* alienWidget) const
