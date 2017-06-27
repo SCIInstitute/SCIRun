@@ -232,7 +232,7 @@ void ModuleProxyWidget::ensureItemVisible(QGraphicsItem* item)
     {
       return; // the call below led to a crash when too zoomed in to fit a module.
     }
-    views[0]->ensureVisible(item, 200, 200);
+    views[0]->ensureVisible(item, 400, 200);
   }
 }
 
@@ -342,12 +342,12 @@ void ModuleProxyWidget::keepInScene()
 {
   //qDebug() << __FUNCTION__ << pos();
   if (x() < 0)
-    setPos(40, y());
+    setPos(10, y());
   else if (x() > NetworkBoundaries::sceneWidth)
-    setPos(NetworkBoundaries::sceneWidth - 10, y());
+    setPos(NetworkBoundaries::sceneWidth - 100, y());
 
   if (y() < 0)
-    setPos(x(), 40);
+    setPos(x(), 10);
   else if (y() > NetworkBoundaries::sceneHeight)
     setPos(x(), NetworkBoundaries::sceneHeight - 10);
 

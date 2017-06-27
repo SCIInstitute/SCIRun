@@ -1185,6 +1185,8 @@ SubnetworksHandle NetworkEditor::dumpSubnetworks(ModuleFilter modFilter) const
 
 void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions, bool selectAll)
 {
+  QPointF furthestFromOrigin(0,0);
+  std::vector<QPointF> positions;
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
@@ -1192,7 +1194,32 @@ void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions
       auto posIter = modulePositions.modulePositions.find(w->getModuleWidget()->getModuleId());
       if (posIter != modulePositions.modulePositions.end())
       {
-        w->setPos(posIter->second.first, posIter->second.second);
+        positions.emplace_back(posIter->second.first, posIter->second.second);
+      }
+    }
+  }
+
+  std::sort(positions.begin(), positions.end(),
+    [](const QPointF& lhs, const QPointF& rhs)
+    {
+      return std::make_pair(lhs.x(), lhs.y()) < std::make_pair(rhs.x(), rhs.y());
+    });
+
+  QPointF adjustment;
+  if (positions[0].x() < 0 || positions[0].y() < 0)
+  {
+    adjustment = positions[0];
+  }
+
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      auto posIter = modulePositions.modulePositions.find(w->getModuleWidget()->getModuleId());
+      if (posIter != modulePositions.modulePositions.end())
+      {
+        QPointF p {posIter->second.first, posIter->second.second};
+        w->setPos(p - adjustment);
         ensureVisible(w);
         if (selectAll)
           w->setSelected(true);
@@ -1569,8 +1596,8 @@ void NetworkEditor::restoreAllModuleUIs()
 
 namespace
 {
-  const double minScale = 0.1;
-  const double maxScale = 3.0;
+  const double minScale = 0.3;
+  const double maxScale = 2.0;
   const double scaleFactor = 1.15;
 }
 
