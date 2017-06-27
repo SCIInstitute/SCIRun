@@ -131,7 +131,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   setTipsAndWhatsThis();
 
-  connect(actionExecute_All_, SIGNAL(triggered()), this, SLOT(executeAll()));
+  connect(actionExecuteAll_, SIGNAL(triggered()), this, SLOT(executeAll()));
   connect(actionNew_, SIGNAL(triggered()), this, SLOT(newNetwork()));
 
   setActionIcons();
@@ -139,6 +139,12 @@ SCIRunMainWindow::SCIRunMainWindow()
   createStandardToolbars();
   createExecuteToolbar();
   createAdvancedToolbar();
+
+  #ifdef __APPLE__
+  connect(actionLaunchNewInstance_, SIGNAL(triggered()), this, SLOT(launchNewInstance()));
+  #else
+  menuFile_->removeAction(actionLaunchNewInstance_);
+  #endif
 
   {
     auto searchAction = new QWidgetAction(this);
@@ -362,8 +368,8 @@ void SCIRunMainWindow::createExecuteToolbar()
 
   executeButton_ = new QToolButton;
   executeButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-  executeButton_->addAction(actionExecute_All_);
-  executeButton_->setDefaultAction(actionExecute_All_);
+  executeButton_->addAction(actionExecuteAll_);
+  executeButton_->setDefaultAction(actionExecuteAll_);
   executeBar->addWidget(executeButton_);
 
   networkProgressBar_.reset(new NetworkExecutionProgressBar(boost::make_shared<NetworkStatusImpl>(networkEditor_), this));
@@ -428,8 +434,8 @@ void SCIRunMainWindow::postConstructionSignalHookup()
 
 void SCIRunMainWindow::setTipsAndWhatsThis()
 {
-  actionExecute_All_->setStatusTip(tr("Execute all modules"));
-  actionExecute_All_->setWhatsThis(tr("Click this option to execute all modules in the current network editor."));
+  actionExecuteAll_->setStatusTip(tr("Execute all modules"));
+  actionExecuteAll_->setWhatsThis(tr("Click this option to execute all modules in the current network editor."));
   actionNew_->setStatusTip(tr("New network"));
   actionNew_->setWhatsThis(tr("Click this option to start editing a blank network file."));
   actionSave_->setStatusTip(tr("Save network"));
@@ -450,7 +456,7 @@ void SCIRunMainWindow::setupInputWidgets()
   // will be slicker in C++11
   using namespace boost::assign;
   std::vector<InputWidget> widgets;
-  widgets += actionExecute_All_,
+  widgets += actionExecuteAll_,
     actionSave_,
     actionLoad_,
     actionSave_As_,
@@ -808,7 +814,7 @@ void SCIRunMainWindow::setActionIcons()
   actionLoad_->setIcon(QPixmap(":/general/Resources/new/general/folder.png"));
   actionSave_->setIcon(QPixmap(":/general/Resources/new/general/save.png"));
   actionRunScript_->setIcon(QPixmap(":/general/Resources/new/general/wand.png"));
-  actionExecute_All_->setIcon(QPixmap(":/general/Resources/new/general/run.png"));
+  actionExecuteAll_->setIcon(QPixmap(":/general/Resources/new/general/run.png"));
   actionUndo_->setIcon(QPixmap(":/general/Resources/undo.png"));
   actionRedo_->setIcon(QPixmap(":/general/Resources/redo.png"));
 
@@ -1749,14 +1755,14 @@ void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
 
 void SCIRunMainWindow::changeExecuteActionIconToStop()
 {
-  actionExecute_All_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
-	actionExecute_All_->setText("Halt Execution");
+  actionExecuteAll_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
+	actionExecuteAll_->setText("Halt Execution");
 }
 
 void SCIRunMainWindow::changeExecuteActionIconToPlay()
 {
-  actionExecute_All_->setIcon(QPixmap(":/general/Resources/new/general/run.png"));
-	actionExecute_All_->setText("Execute All");
+  actionExecuteAll_->setIcon(QPixmap(":/general/Resources/new/general/run.png"));
+	actionExecuteAll_->setText("Execute All");
 }
 
 void SCIRunMainWindow::openLogFolder()
@@ -2244,4 +2250,20 @@ void SCIRunMainWindow::openToolkitNetwork()
     }
     loadNetworkFile(temp.fileName(), true);
   }
+}
+
+void SCIRunMainWindow::launchNewInstance()
+{
+  #ifdef __APPLE__
+  //TODO: test with bundle/installer
+  auto appFilepath = Core::Application::Instance().executablePath();
+  qDebug() << Core::Application::Instance().applicationName().c_str();
+  qDebug() << appFilepath.string().c_str();
+  qDebug() << appFilepath.parent_path().parent_path().string().c_str();
+  auto command = "open -n " +
+    (appFilepath.parent_path().parent_path() / "SCIRun/SCIRun_test").string() + " &";
+  qDebug() << command.c_str();
+  system( command.c_str() );
+
+  #endif
 }
