@@ -205,14 +205,14 @@ namespace SCIRun
       {
         deleteAction_ = addAction(deleteAction);
         addWidgetToExecutionDisableList(deleteAction_);
-        insertAction_ = addAction(insertModuleAction);
-        addWidgetToExecutionDisableList(insertAction_);
-
-
-        auto insertable = new QMenu;
-        fillInsertModuleMenu(insertable, Application::Instance().controller()->getAllAvailableModuleDescriptions(), conn->connectedPorts().first, conn);
-        insertAction_->setMenu(insertable);
-
+        if (!eitherPortDynamic(conn->connectedPorts()))
+        {
+          insertAction_ = addAction(insertModuleAction);
+          addWidgetToExecutionDisableList(insertAction_);
+          auto insertable = new QMenu;
+          fillInsertModuleMenu(insertable, Application::Instance().controller()->getAllAvailableModuleDescriptions(), conn->connectedPorts().first, conn);
+          insertAction_->setMenu(insertable);
+        }
         disableAction_ = addAction(disableEnableAction);
         addWidgetToExecutionDisableList(disableAction_);
         notesAction_ = addAction(editNotesAction);
@@ -220,13 +220,20 @@ namespace SCIRun
       ~ConnectionMenu()
       {
         removeWidgetFromExecutionDisableList(deleteAction_);
-        removeWidgetFromExecutionDisableList(insertAction_);
+        if (insertAction_)
+          removeWidgetFromExecutionDisableList(insertAction_);
         removeWidgetFromExecutionDisableList(disableAction_);
       }
-      QAction* notesAction_;
-      QAction* deleteAction_;
-      QAction* disableAction_;
-      QAction* insertAction_;
+      QAction* notesAction_{ nullptr };
+      QAction* deleteAction_{ nullptr };
+      QAction* disableAction_{ nullptr };
+      QAction* insertAction_{ nullptr };
+
+    private:
+      bool eitherPortDynamic(const std::pair<PortWidget*, PortWidget*>& ports) const
+      {
+        return ports.first->isDynamic() || ports.second->isDynamic();
+      }
     };
   }
 }

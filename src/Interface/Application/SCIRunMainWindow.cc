@@ -1045,7 +1045,7 @@ void SCIRunMainWindow::setupPreferencesWindow()
 void SCIRunMainWindow::setupPythonConsole()
 {
 #ifdef BUILD_WITH_PYTHON
-  pythonConsole_ = new PythonConsoleWidget(this);
+  pythonConsole_ = new PythonConsoleWidget(networkEditor_, this);
   connect(actionPythonConsole_, SIGNAL(toggled(bool)), pythonConsole_, SLOT(setVisible(bool)));
   actionPythonConsole_->setIcon(QPixmap(":/general/Resources/terminal.png"));
   connect(pythonConsole_, SIGNAL(visibilityChanged(bool)), actionPythonConsole_, SLOT(setChecked(bool)));
@@ -1061,6 +1061,7 @@ void SCIRunMainWindow::setupPythonConsole()
 void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 {
 #ifdef BUILD_WITH_PYTHON
+  NetworkEditor::InEditingContext iec(networkEditor_);
   GuiLogger::Instance().logInfo("RUNNING PYTHON SCRIPT: " + scriptFileName);
   PythonInterpreter::Instance().importSCIRunLibrary();
   PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
