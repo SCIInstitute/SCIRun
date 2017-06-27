@@ -269,6 +269,17 @@ namespace Gui {
     using ConnectorFunc = std::function<void(NetworkEditor*)>;
     static void setConnectorFunc(ConnectorFunc func) { connectorFunc_ = func; }
 
+    struct InEditingContext
+    {
+      explicit InEditingContext(NetworkEditor* ed)
+      {
+        inEditingContext_ = ed;
+      }
+      ~InEditingContext()
+      {
+        inEditingContext_ = nullptr;
+      }
+    };
   protected:
     void dropEvent(QDropEvent* event) override;
     void dragEnterEvent(QDragEnterEvent* event) override;
@@ -438,17 +449,7 @@ namespace Gui {
     }
 
     static NetworkEditor* inEditingContext_;
-    struct InEditingContext
-    {
-      explicit InEditingContext(NetworkEditor* ed)
-      {
-        inEditingContext_ = ed;
-      }
-      ~InEditingContext()
-      {
-        inEditingContext_ = nullptr;
-      }
-    };
+    
     static ConnectorFunc connectorFunc_;
     static std::function<QPointF(const QRectF&)> topSubnetPortHolderPositioner_;
     static std::function<QPointF(const QRectF&)> bottomSubnetPortHolderPositioner_;

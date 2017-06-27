@@ -276,7 +276,7 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
   InEditingContext iec(this);
 
   auto oldModule = findById(scene_->items(), moduleToReplace->get_id());
-  lastModulePosition_ = oldModule->scenePos();
+  lastModulePosition_ = oldModule->scenePos() - QPointF(15, 15);;
   controller_->addModule(newModuleName);
 
   // connect up same ports

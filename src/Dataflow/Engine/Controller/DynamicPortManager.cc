@@ -48,14 +48,11 @@ void DynamicPortManager::connectionAddedNeedToCloneAPort(const SCIRun::Dataflow:
 {
   if (enabled_)
   {
-    //std::cout << "need to clone a port: " << ConnectionId::create(cd).id_ << std::endl;
-    /// @todo: assumption: dynamic = input
     auto moduleIn = controller_->getNetwork()->lookupModule(cd.in_.moduleId_);
     if (moduleIn->getInputPort(cd.in_.portId_)->isDynamic())
     {
       ModuleBuilder builder;
       auto newPortId = builder.cloneInputPort(moduleIn, cd.in_.portId_);
-      //std::cout << "SIGNALLING ADD: " << moduleIn->get_id() << " /// " << newPortId << std::endl;
       portAdded_(moduleIn->get_id(), newPortId);
     }
   }
@@ -65,16 +62,16 @@ void DynamicPortManager::connectionRemovedNeedToRemoveAPort(const SCIRun::Datafl
 {
   if (enabled_)
   {
-    //std::cout << "need to remove a port: " << id.id_ << std::endl;
     auto desc = id.describe();
     auto moduleIn = controller_->getNetwork()->lookupModule(desc.in_.moduleId_);
-    //std::cout << "REMOVE CHECKING: " << desc.in_.moduleId_ << " /// " << desc.in_.portId_ << std::endl;
-    if (moduleIn->getInputPort(desc.in_.portId_)->isDynamic())
+    if (moduleIn)
     {
-      ModuleBuilder builder;
-      builder.removeInputPort(moduleIn, desc.in_.portId_);
-      //std::cout << "SIGNALLING REMOVE: " << moduleIn->get_id() << " /// " << desc.in_.portId_ << std::endl;
-      portRemoved_(moduleIn->get_id(), desc.in_.portId_);
+      if (moduleIn->getInputPort(desc.in_.portId_)->isDynamic())
+      {
+        ModuleBuilder builder;
+        builder.removeInputPort(moduleIn, desc.in_.portId_);
+        portRemoved_(moduleIn->get_id(), desc.in_.portId_);
+      }
     }
   }
 }
