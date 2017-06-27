@@ -1198,17 +1198,16 @@ void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions
       }
     }
   }
-
-  std::sort(positions.begin(), positions.end(),
-    [](const QPointF& lhs, const QPointF& rhs)
-    {
-      return std::make_pair(lhs.x(), lhs.y()) < std::make_pair(rhs.x(), rhs.y());
-    });
-
+  
   QPointF adjustment;
-  if (positions[0].x() < 0 || positions[0].y() < 0)
+  if (!positions.empty())
   {
-    adjustment = positions[0];
+    auto minX = *std::min_element(positions.begin(), positions.end(), [](const QPointF& p1, const QPointF& p2) { return p1.x() < p2.x(); });
+    auto minY = *std::min_element(positions.begin(), positions.end(), [](const QPointF& p1, const QPointF& p2) { return p1.y() < p2.y(); });
+    if (minX.x() < 0 || minY.y() < 0)
+    {
+      adjustment = { minX.x(), minY.y() };
+    }
   }
 
   Q_FOREACH(QGraphicsItem* item, scene_->items())

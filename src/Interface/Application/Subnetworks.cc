@@ -349,7 +349,7 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
   subnet->setDragMode(dragMode());
   subnet->setNetworkEditorController(getNetworkEditorController()->withSubnet(subnet));
 
-  subnet->setSceneRect(QRectF(-500, -500, 1000, 1000));
+  subnet->setSceneRect(QRectF(0, 0, NetworkBoundaries::sceneWidth / 2, NetworkBoundaries::sceneHeight / 2));
   connect(subnet->scene_, SIGNAL(selectionChanged()), scene_, SLOT(clearSelection()));
   connect(subnet->scene_, SIGNAL(selectionChanged()), this, SLOT(clearSiblingSelections()));
   connect(scene_, SIGNAL(selectionChanged()), subnet->scene_, SLOT(clearSelection()));
