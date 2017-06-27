@@ -232,8 +232,7 @@ void ModuleProxyWidget::ensureItemVisible(QGraphicsItem* item)
     {
       return; // the call below led to a crash when too zoomed in to fit a module.
     }
-    views[0]->ensureVisible(item);
-    qDebug() << __FUNCTION__ << __LINE__;
+    views[0]->ensureVisible(item, 200, 200);
   }
 }
 
@@ -341,15 +340,18 @@ void ModuleProxyWidget::snapToGrid()
 
 void ModuleProxyWidget::keepInScene()
 {
+  //qDebug() << __FUNCTION__ << pos();
   if (x() < 0)
-    setPos(0, y());
+    setPos(40, y());
   else if (x() > NetworkBoundaries::sceneWidth)
-    setPos(NetworkBoundaries::sceneWidth, y());
+    setPos(NetworkBoundaries::sceneWidth - 10, y());
 
   if (y() < 0)
-    setPos(x(), 0);
+    setPos(x(), 40);
   else if (y() > NetworkBoundaries::sceneHeight)
-    setPos(x(), NetworkBoundaries::sceneHeight);
+    setPos(x(), NetworkBoundaries::sceneHeight - 10);
+
+  //qDebug() << "~" << __FUNCTION__ << pos();
 }
 
 void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -373,7 +375,8 @@ void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   }
   if (stackDepth_ > 1)
     return;
-  if (stackDepth_ == 0)
+
+  if (stackDepth_ == 1)
     ensureThisVisible();
   QGraphicsItem::mouseMoveEvent(event);
   stackDepth_ = 0;

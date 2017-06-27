@@ -86,9 +86,7 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   connect(scene_, SIGNAL(changed(const QList<QRectF>&)), this, SIGNAL(sceneChanged(const QList<QRectF>&)));
 
   setSceneRect(QRectF(0, 0, sceneWidth, sceneHeight));
-  setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-  setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-  centerOn(sceneWidth / 2, sceneHeight / 4);
+  //centerOn(sceneWidth / 2, sceneHeight / 4);
 
   setMouseAsDragMode();
 
@@ -144,7 +142,19 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 
 QPointF NetworkBoundaries::keepInScene(const QPointF& p)
 {
-  return QPointF(static_cast<int>(p.x()) % sceneWidth, static_cast<int>(p.y()) % sceneHeight);
+  auto adjusted = p;
+  if (adjusted.x() < 0)
+    adjusted.setX(0);
+  else if (adjusted.x() > NetworkBoundaries::sceneWidth)
+    adjusted.setX(NetworkBoundaries::sceneWidth);
+
+  if (adjusted.y() < 0)
+    adjusted.setY(0);
+  else if (adjusted.y() > NetworkBoundaries::sceneHeight)
+    adjusted.setY(NetworkBoundaries::sceneHeight);
+
+  return adjusted;
+  //return QPointF(static_cast<int>(p.x()) % sceneWidth, static_cast<int>(p.y()) % sceneHeight);
 }
 
 void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module, const ModuleCounter& count)
@@ -704,7 +714,7 @@ void NetworkEditor::addModuleViaDoubleClickedTreeItem()
 
   if (moduleSelectionGetter_->isModule())
   {
-    auto upperLeft = mapToScene(viewport()->geometry()).boundingRect().topLeft();
+    auto upperLeft = mapToScene(viewport()->geometry()).boundingRect().topLeft() + QPointF(50,50);
     addNewModuleAtPosition(upperLeft);
   }
   else if (moduleSelectionGetter_->isClipboardXML())

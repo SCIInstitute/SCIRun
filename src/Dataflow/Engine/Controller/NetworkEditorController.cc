@@ -122,8 +122,13 @@ namespace
       int i = 0;
       const double MODULE_VERTICAL_SPACING = 110;
       const double MODULE_HORIZONTAL_SPACING = 264;
-      static double MODULE_SPACING_OFFSET = 10;
+      const double MODULE_SPACING_OFFSET = 10;
+      static double snippetSpacer = 10;
       static int numSnips = 0;
+      if (0 == nec_.getNetwork()->nmodules())
+      {
+        snippetSpacer = MODULE_SPACING_OFFSET;
+      }
       for (auto m : modsNeeded)
       {
         bool uiVisible = false;
@@ -137,13 +142,13 @@ namespace
           mod->setUiVisible(uiVisible);
         mods_.push_back(mod);
         positions.modulePositions[mod->get_id().id_] =
-          { MODULE_SPACING_OFFSET + numSnips * MODULE_HORIZONTAL_SPACING,
-            MODULE_SPACING_OFFSET + MODULE_VERTICAL_SPACING * i++ };
+          { snippetSpacer + numSnips * MODULE_HORIZONTAL_SPACING,
+            snippetSpacer + MODULE_VERTICAL_SPACING * i++ };
       }
       numSnips = (numSnips + 1) % 3;
       if (0 == numSnips)
       {
-        MODULE_SPACING_OFFSET += 100;
+        snippetSpacer += MODULE_SPACING_OFFSET;
       }
 
       auto connsNeeded = parseConnections(label);
