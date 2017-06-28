@@ -897,6 +897,11 @@ void SCIRunMainWindow::setConnectionPipelineType(int type)
 		prefsWindow_->euclideanPipesRadioButton_->setChecked(true);
 		break;
 	}
+
+  {
+    QSettings settings;
+    settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
+  }
 }
 
 void SCIRunMainWindow::setSaveBeforeExecute(int state)
@@ -1494,6 +1499,11 @@ void SCIRunMainWindow::setDataDirectoryFromGUI()
 {
   auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), QString::fromStdString(Core::Preferences::Instance().dataDirectory().parent_path().string()));
   setDataDirectory(dir);
+
+  {
+    QSettings settings;
+    settings.setValue("dataDirectory", QString::fromStdString(Preferences::Instance().dataDirectory().string()));
+  }
 }
 
 void SCIRunMainWindow::addToPathFromGUI()
