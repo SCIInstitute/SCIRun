@@ -1430,46 +1430,47 @@ void ViewSceneDialog::addToolBar()
   addViewBar();
 }
 
+void ViewSceneDialog::addToolbarButton(QPushButton* button)
+{
+  button->setFixedSize(35,35);
+  button->setIconSize(QSize(25,25));
+  mToolBar->addWidget(button);
+}
+
 void ViewSceneDialog::addAutoViewButton()
 {
   auto autoViewBtn = new QPushButton(this);
   autoViewBtn->setToolTip("Auto View");
-  autoViewBtn->setIcon(QPixmap(":/general/Resources/autoview.png"));
-  autoViewBtn->setAutoDefault(false);
-  autoViewBtn->setDefault(false);
+  autoViewBtn->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
   autoViewBtn->setShortcut(Qt::Key_0);
   connect(autoViewBtn, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
-  mToolBar->addWidget(autoViewBtn);
+  addToolbarButton(autoViewBtn);
 }
 
 void ViewSceneDialog::addScreenshotButton()
 {
   QPushButton* screenshotButton = new QPushButton(this);
   screenshotButton->setToolTip("Take screenshot");
-  screenshotButton->setIcon(QPixmap(":/general/Resources/screenshot.png"));
-  screenshotButton->setAutoDefault(false);
-  screenshotButton->setDefault(false);
+  screenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
   screenshotButton->setShortcut(Qt::Key_F12);
   connect(screenshotButton, SIGNAL(clicked(bool)), this, SLOT(screenshotClicked()));
-  mToolBar->addWidget(screenshotButton);
+  addToolbarButton(screenshotButton);
 }
 
 void ViewSceneDialog::addViewBarButton()
 {
   QPushButton* viewBarBtn = new QPushButton();
   viewBarBtn->setToolTip("Show View Options");
-  viewBarBtn->setIcon(QPixmap(":/general/Resources/views.png"));
-  viewBarBtn->setAutoDefault(false);
-  viewBarBtn->setDefault(false);
+  viewBarBtn->setIcon(QPixmap(":/general/Resources/ViewScene/views.png"));
   connect(viewBarBtn, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
-  mToolBar->addWidget(viewBarBtn);
+  addToolbarButton(viewBarBtn);
 }
 
 void ViewSceneDialog::addControlLockButton()
 {
   auto controlLock = new QPushButton();
   controlLock->setToolTip("Lock specific view controls");
-  controlLock->setIcon(QPixmap(":/general/Resources/lockView.png"));
+  controlLock->setIcon(QPixmap(":/general/Resources/ViewScene/lockView.png"));
   auto menu = new QMenu;
 
   auto lockRot = menu->addAction("Lock Rotation");
@@ -1485,7 +1486,9 @@ void ViewSceneDialog::addControlLockButton()
   connect(lockZoom, SIGNAL(triggered()), this, SLOT(lockZoomToggled()));
 
   controlLock->setMenu(menu);
-  mToolBar->addWidget(controlLock);
+
+  addToolbarButton(controlLock);
+  controlLock->setFixedWidth(45);
 }
 
 void ViewSceneDialog::lockRotationToggled()
@@ -1556,12 +1559,10 @@ void ViewSceneDialog::addConfigurationButton()
 {
   QPushButton* configurationButton = new QPushButton();
   configurationButton->setToolTip("Open/Close Configuration Menu");
-  configurationButton->setIcon(QPixmap(":/general/Resources/configure.png"));
-  configurationButton->setAutoDefault(false);
-  configurationButton->setDefault(false);
+  configurationButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
   configurationButton->setShortcut(Qt::Key_F5);
   connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
-  mToolBar->addWidget(configurationButton);
+  addToolbarButton(configurationButton);
 }
 
 void ViewSceneDialog::addConfigurationDock()
