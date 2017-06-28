@@ -251,13 +251,13 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   //TODO: store in xml file, add to app resources
   ToolkitInfo fwdInv{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
-    "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.2.zip",
-    "FwdInvToolkit_v1.2.zip" };
+    "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/master",
+    "FwdInvToolkit_latest.zip" };
   fwdInv.setupAction(actionForwardInverse_, this);
 
   ToolkitInfo brainStim{ "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png",
-    "http://sci.utah.edu/devbuilds/scirun5/toolkits/BrainStimulator_v1.2.zip",
-    "BrainStimulator_v1.2.zip" };
+    "https://codeload.github.com/SCIInstitute/BrainStimulator/zip/master",
+    "BrainStimulator_latest.zip" };
   brainStim.setupAction(actionBrainStimulator_, this);
 
   connect(actionLoadToolkit_, SIGNAL(triggered()), this, SLOT(loadToolkit()));
