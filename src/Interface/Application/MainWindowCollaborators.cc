@@ -86,7 +86,7 @@ bool TreeViewModuleGetter::isModule() const
 
 QString TreeViewModuleGetter::clipboardXML() const
 {
-  return tree_.currentItem()->toolTip(0);
+  return tree_.currentItem()->data(0, SCIRunMainWindow::clipboardKey).toString();
 }
 
 bool TreeViewModuleGetter::isClipboardXML() const

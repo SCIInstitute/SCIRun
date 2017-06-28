@@ -98,6 +98,7 @@ public:
   int returnCode() const { return returnCode_; }
 
   QString mostRecentFile() const;
+  static const int clipboardKey = 125;
 public Q_SLOTS:
   void executeAll();
   void showZoomStatusMessage(int zoomLevel);
@@ -205,6 +206,7 @@ private Q_SLOTS:
   void makePipesEuclidean();
   void makePipesCubicBezier();
   void makePipesManhattan();
+  void launchNewInstance();
   void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);
   void handleCheckedModuleEntry(QTreeWidgetItem* item, int column);
   void setExecutor(int type);
