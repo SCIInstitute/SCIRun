@@ -2408,9 +2408,9 @@ protected:
 
     /// These are for our own use (making the hash function.
     static const int sz_quarter_int = (int)(sz_int / 4);
-    static const int top4_mask = ((~((int)0)) << sz_quarter_int << sz_quarter_int << sz_quarter_int);
-    static const int up4_mask = top4_mask ^ (~((int)0) << sz_quarter_int << sz_quarter_int);
-    static const int mid4_mask =  top4_mask ^ (~((int)0) << sz_quarter_int);
+    static const int top4_mask = -(1 << sz_quarter_int << sz_quarter_int << sz_quarter_int);
+    static const int up4_mask = top4_mask ^ -(1 << sz_quarter_int << sz_quarter_int);
+    static const int mid4_mask =  top4_mask ^ -(1 << sz_quarter_int);
     static const int low4_mask = ~(top4_mask | mid4_mask);
 
     /// This is the hash function
@@ -2451,7 +2451,7 @@ protected:
     /// These are for our own use (making the hash function.
     static const int sz_int = sizeof(int) * 8; // in bits
     static const int sz_half_int = sizeof(int) << 2; // in bits
-    static const int up_mask = ((~((int)0)) << sz_half_int);
+    static const int up_mask = -(1 << sz_half_int);
     static const int low_mask = (~((int)0) ^ up_mask);
 
     /// This is the hash function
