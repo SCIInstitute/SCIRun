@@ -184,6 +184,7 @@ namespace SCIRun {
       void addScreenshotButton();
       void addViewBarButton();
       void addControlLockButton();
+      void addToolbarButton(QPushButton* button);
       void addViewBar();
       void addViewOptions();
       void addConfigurationButton();
