@@ -189,11 +189,9 @@ IF(APPLE)
                         "Interface_Modules_Render"
                         "Interface_Modules_Python"
                         "Interface_Modules_Visualization"
-                        "Interface_Modules_Math"
                         "Core_ConsoleApplication"
                         "Modules_Factory"
                         "Modules_Python"
-                        "Modules_Math"
         )
 
         FOREACH(lib ${SCIRUN_LIBS})
