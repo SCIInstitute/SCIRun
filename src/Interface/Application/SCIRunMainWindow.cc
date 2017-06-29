@@ -1446,6 +1446,7 @@ void SCIRunMainWindow::setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, con
   {
     savedSubnetworksXml_[id] = fave->data(0, clipboardKey).toString();
     savedSubnetworksNames_[id] = fave->text(0);
+    fave->setFlags(fave->flags() & !Qt::ItemIsEditable);
   }
 }
 
