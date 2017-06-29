@@ -56,6 +56,7 @@
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
 #include <Dataflow/Network/SimpleSourceSink.h>  //TODO: encapsulate!!!
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
@@ -1192,12 +1193,13 @@ namespace {
 
 	  tree->addTopLevelItem(snips);
 	}
+  static const QString saveFragmentData("fragmentTree");
 
   void addSavedSubnetworkMenu(QTreeWidget* tree)
   {
     auto savedSubnetworks = new QTreeWidgetItem();
     savedSubnetworks->setText(0, savedSubsText);
-    savedSubnetworks->setData(0, Qt::UserRole, "QQQ");
+    savedSubnetworks->setData(0, Qt::UserRole, saveFragmentData);
     savedSubnetworks->setForeground(0, favesColor());
     tree->addTopLevelItem(savedSubnetworks);
   }
@@ -1284,12 +1286,12 @@ void SCIRunMainWindow::showModuleSelectorContextMenu(const QPoint& pos)
   auto globalPos = moduleSelectorTreeWidget_->mapToGlobal(pos);
 	auto item = moduleSelectorTreeWidget_->selectedItems()[0];
 	auto subnetData = item->data(0, Qt::UserRole).toString();
-  if (subnetData == "QQQ")
+  if (saveFragmentData == subnetData)
   {
-
     QMenu menu;
 		menu.addAction("Export fragment list...", this, SLOT(exportFragmentList()));
     menu.addAction("Import fragment list...", this, SLOT(importFragmentList()));
+    menu.addAction("Clear", this, SLOT(clearFragmentList()));
   	menu.exec(globalPos);
   }
 	else if (!subnetData.isEmpty())
@@ -1301,65 +1303,87 @@ void SCIRunMainWindow::showModuleSelectorContextMenu(const QPoint& pos)
 	}
 }
 
-  //using ModuleMapXML = std::map<std::string, ModuleWithState>;
-  /*
-  class SCISHARE NetworkXML
+void SCIRunMainWindow::clearFragmentList()
+{
+  savedSubnetworksNames_.clear();
+  savedSubnetworksXml_.clear();
+  auto menu = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
+  auto count = menu->childCount();
+  for (int i = 0; i < count; ++i)
   {
-  public:
-    ModuleMapXML modules;
-    ConnectionsXML connections;
-  private:
-    friend class boost::serialization::access;
-    template <class Archive>
-    void serialize(Archive& ar, const unsigned int version)
-    {
-      ar & BOOST_SERIALIZATION_NVP(modules);
-      ar & BOOST_SERIALIZATION_NVP(connections);
-    }
-  };
-  */
+    delete menu->child(0);
+  }
+}
+
+using NetworkFragmentXMLMap = std::map<std::string, std::pair<std::string, std::string>>;
+
+class NetworkFragmentXML
+{
+public:
+  NetworkFragmentXMLMap fragments;
+private:
+  friend class boost::serialization::access;
+  template <class Archive>
+  void serialize(Archive& ar, const unsigned int version)
+  {
+    ar & BOOST_SERIALIZATION_NVP(fragments);
+  }
+};
 
 void SCIRunMainWindow::importFragmentList()
 {
-  //TODO
+  auto filename = QFileDialog::getOpenFileName(this, "Import Network Fragments...", latestNetworkDirectory_.path(), "*.srn5fragment");
+  if (!filename.isEmpty())
+  {
+    auto frags = XMLSerializer::load_xml<NetworkFragmentXML>(filename.toStdString());
+    QMap<QString, QVariant> names, xmls;
+    for (const auto& frag : frags->fragments)
+    {
+      auto key = QString::fromStdString(frag.first);
+      names.insert(key, QString::fromStdString(frag.second.first));
+      xmls.insert(key, QString::fromStdString(frag.second.second));
+    }
+    addFragmentsToMenu(names, xmls);
+    savedSubnetworksNames_.unite(names);
+    savedSubnetworksXml_.unite(xmls);
+    showStatusMessage("Fragment list imported: " + filename, 2000);
+  }
 }
 
 void SCIRunMainWindow::exportFragmentList()
 {
-  qDebug() << "display special menu for exporting qqq";
-
-  //QMap<QString, QVariant> savedSubnetworksXml_;
-  //QMap<QString, QVariant> savedSubnetworksNames_;
-  for (const auto& name : savedSubnetworksNames_.toStdMap())
+  auto filename = QFileDialog::getSaveFileName(this, "Export Network Fragments...", latestNetworkDirectory_.path(), "*.srn5fragment");
+  if (!filename.isEmpty())
   {
-    qDebug() << name.first << name.second;
-  }
-
-  for (const auto& name : savedSubnetworksXml_.toStdMap())
-  {
-    qDebug() << name.first << name.second;
-  }
-
-  auto keys = savedSubnetworksNames_.keys();
-  for (auto&& tup : zip(savedSubnetworksNames_, savedSubnetworksXml_, keys))
-  {
-    QVariant name, xml;
-    QString key;
-    boost::tie(name, xml, key) = tup;
-
+    NetworkFragmentXML data;
+    auto keys = savedSubnetworksNames_.keys();
+    for (auto&& tup : zip(savedSubnetworksNames_, savedSubnetworksXml_, keys))
+    {
+      QVariant name, xml;
+      QString key;
+      boost::tie(name, xml, key) = tup;
+      data.fragments[key.toStdString()] = { name.toString().toStdString(), xml.toString().toStdString() };
+    }
+    XMLSerializer::save_xml(data, filename.toStdString(), "fragments");
+    showStatusMessage("Fragment list exported: " + filename, 2000);
   }
 }
 
 void SCIRunMainWindow::fillSavedSubnetworkMenu()
 {
-	auto savedSubnetworks = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
   if (savedSubnetworksNames_.size() != savedSubnetworksXml_.size())
   {
     qDebug() << "invalid subnet saved settings: sizes don't match" << savedSubnetworksNames_.size() << "," << savedSubnetworksXml_.size() << ',' << savedSubnetworksNames_.keys().size() << savedSubnetworksNames_.keys();
     return;
   }
-  auto keys = savedSubnetworksNames_.keys(); // don't inline this into the zip call! temporary containers don't work with zip.
-  for (auto&& tup : zip(savedSubnetworksNames_, savedSubnetworksXml_, keys))
+  addFragmentsToMenu(savedSubnetworksNames_, savedSubnetworksXml_);
+}
+
+void SCIRunMainWindow::addFragmentsToMenu(const QMap<QString, QVariant>& names, const QMap<QString, QVariant>& xmls)
+{
+  auto savedSubnetworks = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
+  auto keys = names.keys(); // don't inline this into the zip call! temporary containers don't work with zip.
+  for (auto&& tup : zip(names, xmls, keys))
   {
     auto subnet = new QTreeWidgetItem();
     QVariant name, xml;
@@ -1415,7 +1439,6 @@ QString idFromPointer(T* item)
 void SCIRunMainWindow::setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, const QString& idFromMap)
 {
   auto id = addToMap ? idFromPointer(fave) + "::" + fave->text(0) : idFromMap;
-  qDebug() << __FUNCTION__ << id;
   fave->setData(0, Qt::UserRole, id);
 
   if (addToMap)
