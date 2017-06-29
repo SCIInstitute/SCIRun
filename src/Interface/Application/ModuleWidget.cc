@@ -74,7 +74,7 @@ namespace Gui {
         << new QAction("Help", parent)
         << new QAction("Edit Notes...", parent)
         << new QAction("Duplicate", parent)
-        << new QAction("Replace With", parent)
+        << new QAction("Replace With...", parent)
         //<< disabled(new QAction("Ignore*", parent))
         << new QAction("Show Log", parent)
         //<< disabled(new QAction("Make Sub-Network", parent))  // Issue #287
@@ -335,6 +335,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   theModule_(theModule),
   previousModuleState_(UNSET),
   moduleId_(id(theModule)),
+  name_(name),
   dialog_(nullptr),
   dockable_(nullptr),
   dialogErrorControl_(dialogErrorControl),
@@ -527,7 +528,7 @@ void ModuleWidget::setupModuleActions()
     || theModule_->get_id().name_ == "Subnet")
     actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Duplicate"));
   if (theModule_->get_id().name_ == "Subnet")
-    actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Replace With"));
+    actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Replace With..."));
 
   connectNoteEditorToAction(actionsMenu_->getAction("Notes"));
   connectUpdateNote(this);
@@ -535,12 +536,31 @@ void ModuleWidget::setupModuleActions()
 
 void ModuleWidget::postLoadAction()
 {
-  auto replaceWith = actionsMenu_->getAction("Replace With");
-  auto menu = new QMenu(this);
-  replaceWith->setMenu(menu);
-  fillReplaceWithMenu();
-  connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), this, SLOT(fillReplaceWithMenu()));
-  connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
+  auto replaceWith = actionsMenu_->getAction("Replace With...");
+  if (replaceWith)
+    connect(replaceWith, SIGNAL(triggered()), this, SLOT(showReplaceWithWidget()));
+}
+
+void ModuleWidget::showReplaceWithWidget()
+{
+#ifndef __APPLE__
+  replaceWithDialog_ = new QDialog;
+  replaceWithDialog_->setWindowTitle("Replace a module");
+  auto layout = new QHBoxLayout;
+  layout->addWidget(new QLabel("Replace " + name_ + " with:"));
+  auto button = new QPushButton("Choose a compatible module");
+  auto menu = new QMenu;
+  button->setMenu(menu);
+  fillReplaceWithMenu(menu);
+  layout->addWidget(button);
+  auto cancel = new QPushButton("Cancel");
+  connect(cancel, SIGNAL(clicked()), replaceWithDialog_, SLOT(reject()));
+  layout->addWidget(cancel);
+  replaceWithDialog_->setLayout(layout);
+  replaceWithDialog_->exec();
+#else
+  QMessageBox::information(nullptr, "Replace with disabled", "The replace with command is disabled on OSX until the Qt 5 upgrade is complete.");
+#endif
 }
 
 bool ModuleWidget::guiVisible() const
@@ -550,12 +570,11 @@ bool ModuleWidget::guiVisible() const
   return false;
 }
 
-void ModuleWidget::fillReplaceWithMenu()
+void ModuleWidget::fillReplaceWithMenu(QMenu* menu)
 {
   if (deleting_ || networkBeingCleared_)
     return;
 
-  auto menu = getReplaceWithMenu();
   menu->clear();
   LOG_DEBUG("Filling menu for " << theModule_->get_module_name() << std::endl);
   auto replacements = Application::Instance().controller()->possibleReplacements(this->theModule_);
@@ -563,22 +582,13 @@ void ModuleWidget::fillReplaceWithMenu()
   fillMenuWithFilteredModuleActions(menu, Application::Instance().controller()->getAllAvailableModuleDescriptions(),
     isReplacement,
     [=](QAction* action) { QObject::connect(action, SIGNAL(triggered()), this, SLOT(replaceModuleWith())); },
-    fullWidgetDisplay_->getModuleActionButton());
-}
-
-void ModuleWidget::menuFunction()
-{
-  // fullWidgetDisplay_->getModuleActionButton()->setMenu(nullptr);
-  // actionsMenu_.reset();
-}
-
-QMenu* ModuleWidget::getReplaceWithMenu()
-{
-  return actionsMenu_->getAction("Replace With")->menu();
+    replaceWithDialog_);
 }
 
 void ModuleWidget::replaceModuleWith()
 {
+  delete replaceWithDialog_;
+  replaceWithDialog_ = nullptr;
   auto action = qobject_cast<QAction*>(sender());
   auto moduleToReplace = action->text();
   Q_EMIT replaceModuleWith(theModule_, moduleToReplace.toStdString());
@@ -967,7 +977,6 @@ ModuleWidget::NetworkClearingScope::~NetworkClearingScope()
 ModuleWidget::~ModuleWidget()
 {
   disconnect(this, SIGNAL(dynamicPortChanged(const std::string&, bool)), this, SLOT(updateDialogForDynamicPortChange(const std::string&, bool)));
-  disconnect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SLOT(fillReplaceWithMenu()));
 
   if (!theModule_->isStoppable())
   {

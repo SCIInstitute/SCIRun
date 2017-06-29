@@ -52,7 +52,6 @@ namespace SCIRun
       void createStartupNote();
       void adjustHeight(int delta);
       void adjustWidth(int delta);
-      void menuFunction();
 
       //TODO: move to utility
       static void ensureItemVisible(QGraphicsItem* item);
