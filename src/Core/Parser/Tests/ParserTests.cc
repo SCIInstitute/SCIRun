@@ -1579,3 +1579,33 @@ TEST_F(BasicParserTests, CreateFieldData_fracanisotropy)
 
 */
 
+TEST(FieldHashTests, TestShiftingZero)
+{
+  // copied from TetVolMesh.h, failing compilation on GCC 6.2.
+  static const int sz_int = sizeof(int) * 8; // in bits
+
+  /// These are for our own use (making the hash function).
+  static const int sz_third_int = (int)(sz_int / 3);
+  static const int up_mask = -1048576; // (~((int)0) << sz_third_int << sz_third_int);
+  static const int mid_mask = 1047552; // up_mask ^ (~((int)0) << sz_third_int);
+  static const int low_mask = ~(up_mask | mid_mask);
+
+  std::cout << "sz_int: " << sz_int << std::endl;
+  std::cout << "sz_third_int: " << sz_third_int << std::endl;
+  std::cout << "up_mask: " << up_mask << std::endl;
+  std::cout << "mid_mask: " << mid_mask << std::endl;
+  std::cout << "low_mask: " << low_mask << std::endl;
+
+  auto badGcc = ~((int)0);
+  std::cout << "badGcc: " << badGcc << std::endl;
+  
+  auto redo_up_mask = -(1 << 10 << 10);
+  std::cout << "redo_up_mask: " << redo_up_mask << std::endl;
+
+  auto redo_mid_mask = redo_up_mask ^ (-(1 << sz_third_int));
+  auto redo_low_mask = ~(redo_up_mask | redo_mid_mask);
+
+  ASSERT_EQ(redo_up_mask, up_mask);
+  ASSERT_EQ(redo_mid_mask, mid_mask);
+  ASSERT_EQ(redo_low_mask, low_mask);
+}
