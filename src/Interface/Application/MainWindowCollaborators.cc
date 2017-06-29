@@ -263,10 +263,10 @@ QWizardPage* NewUserWizard::createDocPage()
   page->setSubTitle("For more information on SCIRun 5 functionality, documentation can be found at: ");
   auto layout = new QVBoxLayout;
   auto docLabel = new QLabel(
+    "<p><a href = \"http://sciinstitute.github.io/scirun.pages/\">SCIRun Doc Home Page</a>"
     "<p><a href = \"https://github.com/SCIInstitute/SCIRun/wiki\">New SCIRun Wiki</a>"
     "<p><a href = \"http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php5/CIBC:Documentation:SCIRun:Reference\">Old SCIRun Wiki</a>"
-    "<p><a href = \"http://sciinstitute.github.io/scirun.pages/\">SCIRun Doc Home Page</a>"
-    "<p><a href = \"mailto:scirun-users@sci.utah.edu\">SCIRun Users mailing list</a>"
+    "<p><a href = \"https://lists.sci.utah.edu/sympa/arc/scirun-users\">SCIRun Users mailing list</a>"
   );
   docLabel->setStyleSheet("QLabel { background-color : lightgray; color : blue; }");
   docLabel->setAlignment(Qt::AlignCenter);

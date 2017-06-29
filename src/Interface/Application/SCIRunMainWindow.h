@@ -232,6 +232,8 @@ private Q_SLOTS:
   void resetWindowLayout();
   void zoomNetwork();
   void networkTimedOut();
+  void exportFragmentList();
+  void importFragmentList();
   void loadPythonAPIDoc();
   void showSnippetHelp();
   void showClipboardHelp();

@@ -251,13 +251,13 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   //TODO: store in xml file, add to app resources
   ToolkitInfo fwdInv{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
-    "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.2.zip",
-    "FwdInvToolkit_v1.2.zip" };
+    "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/master",
+    "FwdInvToolkit_latest.zip" };
   fwdInv.setupAction(actionForwardInverse_, this);
 
   ToolkitInfo brainStim{ "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png",
-    "http://sci.utah.edu/devbuilds/scirun5/toolkits/BrainStimulator_v1.2.zip",
-    "BrainStimulator_v1.2.zip" };
+    "https://codeload.github.com/SCIInstitute/BrainStimulator/zip/master",
+    "BrainStimulator_latest.zip" };
   brainStim.setupAction(actionBrainStimulator_, this);
 
   connect(actionLoadToolkit_, SIGNAL(triggered()), this, SLOT(loadToolkit()));
@@ -897,6 +897,11 @@ void SCIRunMainWindow::setConnectionPipelineType(int type)
 		prefsWindow_->euclideanPipesRadioButton_->setChecked(true);
 		break;
 	}
+
+  {
+    QSettings settings;
+    settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
+  }
 }
 
 void SCIRunMainWindow::setSaveBeforeExecute(int state)
@@ -1192,11 +1197,10 @@ namespace {
   {
     auto savedSubnetworks = new QTreeWidgetItem();
     savedSubnetworks->setText(0, savedSubsText);
+    savedSubnetworks->setData(0, Qt::UserRole, "QQQ");
     savedSubnetworks->setForeground(0, favesColor());
     tree->addTopLevelItem(savedSubnetworks);
   }
-
-
 
   void addClipboardHistoryMenu(QTreeWidget* tree)
   {
@@ -1280,13 +1284,70 @@ void SCIRunMainWindow::showModuleSelectorContextMenu(const QPoint& pos)
   auto globalPos = moduleSelectorTreeWidget_->mapToGlobal(pos);
 	auto item = moduleSelectorTreeWidget_->selectedItems()[0];
 	auto subnetData = item->data(0, Qt::UserRole).toString();
-	if (!subnetData.isEmpty())
+  if (subnetData == "QQQ")
+  {
+
+    QMenu menu;
+		menu.addAction("Export fragment list...", this, SLOT(exportFragmentList()));
+    menu.addAction("Import fragment list...", this, SLOT(importFragmentList()));
+  	menu.exec(globalPos);
+  }
+	else if (!subnetData.isEmpty())
 	{
   	QMenu menu;
 		menu.addAction("Rename", this, SLOT(renameSavedSubnetwork()))->setProperty("ID", subnetData);
 		menu.addAction("Delete", this, SLOT(removeSavedSubnetwork()))->setProperty("ID", subnetData);
   	menu.exec(globalPos);
 	}
+}
+
+  //using ModuleMapXML = std::map<std::string, ModuleWithState>;
+  /*
+  class SCISHARE NetworkXML
+  {
+  public:
+    ModuleMapXML modules;
+    ConnectionsXML connections;
+  private:
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+      ar & BOOST_SERIALIZATION_NVP(modules);
+      ar & BOOST_SERIALIZATION_NVP(connections);
+    }
+  };
+  */
+
+void SCIRunMainWindow::importFragmentList()
+{
+  //TODO
+}
+
+void SCIRunMainWindow::exportFragmentList()
+{
+  qDebug() << "display special menu for exporting qqq";
+
+  //QMap<QString, QVariant> savedSubnetworksXml_;
+  //QMap<QString, QVariant> savedSubnetworksNames_;
+  for (const auto& name : savedSubnetworksNames_.toStdMap())
+  {
+    qDebug() << name.first << name.second;
+  }
+
+  for (const auto& name : savedSubnetworksXml_.toStdMap())
+  {
+    qDebug() << name.first << name.second;
+  }
+
+  auto keys = savedSubnetworksNames_.keys();
+  for (auto&& tup : zip(savedSubnetworksNames_, savedSubnetworksXml_, keys))
+  {
+    QVariant name, xml;
+    QString key;
+    boost::tie(name, xml, key) = tup;
+
+  }
 }
 
 void SCIRunMainWindow::fillSavedSubnetworkMenu()
@@ -1354,6 +1415,7 @@ QString idFromPointer(T* item)
 void SCIRunMainWindow::setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, const QString& idFromMap)
 {
   auto id = addToMap ? idFromPointer(fave) + "::" + fave->text(0) : idFromMap;
+  qDebug() << __FUNCTION__ << id;
   fave->setData(0, Qt::UserRole, id);
 
   if (addToMap)
@@ -1494,6 +1556,11 @@ void SCIRunMainWindow::setDataDirectoryFromGUI()
 {
   auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), QString::fromStdString(Core::Preferences::Instance().dataDirectory().parent_path().string()));
   setDataDirectory(dir);
+
+  {
+    QSettings settings;
+    settings.setValue("dataDirectory", QString::fromStdString(Preferences::Instance().dataDirectory().string()));
+  }
 }
 
 void SCIRunMainWindow::addToPathFromGUI()

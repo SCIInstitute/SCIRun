@@ -1439,12 +1439,12 @@ void ViewSceneDialog::addToolbarButton(QPushButton* button)
 
 void ViewSceneDialog::addAutoViewButton()
 {
-  auto autoViewBtn = new QPushButton(this);
-  autoViewBtn->setToolTip("Auto View");
-  autoViewBtn->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
-  autoViewBtn->setShortcut(Qt::Key_0);
-  connect(autoViewBtn, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
-  addToolbarButton(autoViewBtn);
+  autoViewButton_ = new QPushButton(this);
+  autoViewButton_->setToolTip("Auto View");
+  autoViewButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
+  autoViewButton_->setShortcut(Qt::Key_0);
+  connect(autoViewButton_, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
+  addToolbarButton(autoViewButton_);
 }
 
 void ViewSceneDialog::addScreenshotButton()
@@ -1468,45 +1468,83 @@ void ViewSceneDialog::addViewBarButton()
 
 void ViewSceneDialog::addControlLockButton()
 {
-  auto controlLock = new QPushButton();
-  controlLock->setToolTip("Lock specific view controls");
-  controlLock->setIcon(QPixmap(":/general/Resources/ViewScene/lockView.png"));
+  controlLock_ = new QPushButton();
+  controlLock_->setToolTip("Lock specific view controls");
+  controlLock_->setIcon(QPixmap(":/general/Resources/ViewScene/lockView.png"));
   auto menu = new QMenu;
 
-  auto lockRot = menu->addAction("Lock Rotation");
-  lockRot->setCheckable(true);
-  connect(lockRot, SIGNAL(triggered()), this, SLOT(lockRotationToggled()));
+  lockRotation_ = menu->addAction("Lock Rotation");
+  lockRotation_->setCheckable(true);
+  connect(lockRotation_, SIGNAL(triggered()), this, SLOT(lockRotationToggled()));
 
-  auto lockPan = menu->addAction("Lock Panning");
-  lockPan->setCheckable(true);
-  connect(lockPan, SIGNAL(triggered()), this, SLOT(lockPanningToggled()));
+  lockPan_ = menu->addAction("Lock Panning");
+  lockPan_->setCheckable(true);
+  connect(lockPan_, SIGNAL(triggered()), this, SLOT(lockPanningToggled()));
 
-  auto lockZoom = menu->addAction("Lock Zoom");
-  lockZoom->setCheckable(true);
-  connect(lockZoom, SIGNAL(triggered()), this, SLOT(lockZoomToggled()));
+  lockZoom_ = menu->addAction("Lock Zoom");
+  lockZoom_->setCheckable(true);
+  connect(lockZoom_, SIGNAL(triggered()), this, SLOT(lockZoomToggled()));
 
-  controlLock->setMenu(menu);
+  menu->addSeparator();
+  
+  auto lockAll = menu->addAction("Lock All");
+  connect(lockAll, SIGNAL(triggered()), this, SLOT(lockAllTriggered()));
+  
+  auto unlockAll = menu->addAction("Unlock All");
+  connect(unlockAll, SIGNAL(triggered()), this, SLOT(unlockAllTriggered()));
 
-  addToolbarButton(controlLock);
-  controlLock->setFixedWidth(45);
+  controlLock_->setMenu(menu);
+
+  addToolbarButton(controlLock_);
+  controlLock_->setFixedWidth(45);
+  toggleLockColor(false);
 }
 
 void ViewSceneDialog::lockRotationToggled()
 {
-  auto action = qobject_cast<QAction*>(sender());
-  mGLWidget->setLockRotation(action->isChecked());
+  mGLWidget->setLockRotation(lockRotation_->isChecked());
+  toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
+}
+
+void ViewSceneDialog::toggleLockColor(bool locked)
+{
+  QString color = locked ? "red" : "rgb(66,66,69)";
+  controlLock_->setStyleSheet("QPushButton { background-color: " + color + "; }");
+  autoViewButton_->setDisabled(locked);
 }
 
 void ViewSceneDialog::lockPanningToggled()
 {
-  auto action = qobject_cast<QAction*>(sender());
-  mGLWidget->setLockPanning(action->isChecked());
+  mGLWidget->setLockPanning(lockPan_->isChecked());
+  toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
 }
 
 void ViewSceneDialog::lockZoomToggled()
 {
-  auto action = qobject_cast<QAction*>(sender());
-  mGLWidget->setLockZoom(action->isChecked());
+  mGLWidget->setLockZoom(lockZoom_->isChecked());
+  toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
+}
+
+void ViewSceneDialog::lockAllTriggered()
+{
+  lockRotation_->setChecked(true);
+  mGLWidget->setLockRotation(true);
+  lockPan_->setChecked(true);
+  mGLWidget->setLockPanning(true);
+  lockZoom_->setChecked(true);
+  mGLWidget->setLockZoom(true);
+  toggleLockColor(true);
+}
+
+void ViewSceneDialog::unlockAllTriggered()
+{
+  lockRotation_->setChecked(false);
+  mGLWidget->setLockRotation(false);
+  lockPan_->setChecked(false);
+  mGLWidget->setLockPanning(false);
+  lockZoom_->setChecked(false);
+  mGLWidget->setLockZoom(false);
+  toggleLockColor(false);
 }
 
 void ViewSceneDialog::addViewBar()
