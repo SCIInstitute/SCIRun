@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 scirunbuild_dir=@CMAKE_BINARY_DIR@
+productbuild_dir=@PKG_BUILD_DIR@
 productroot_dir=@PKG_ROOT_DIR@
 
 if [[ ! -e $productroot_dir ]]; then
@@ -13,9 +14,9 @@ fi
     --component-plist $scirunbuild_dir/@CPACK_PACKAGE_NAME@.plist \
     --install-location /Applications $scirunbuild_dir/@CPACK_PACKAGE_NAME@.pkg
 @PRODUCTBUILD_EXE@ --distribution $scirunbuild_dir/CPack.Distribution.dist \
-    --package-path $productroot_dir $productroot_dir/tmp.pkg
+    --package-path $productroot_dir $productbuild_dir/tmp.pkg
 # Tip: pkgutil --expand can be used to debug package building
-@PKGUTIL_EXE@ --expand $productroot_dir/tmp.pkg $productroot_dir/tmp
-@PKGUTIL_EXE@ --flatten $productroot_dir/tmp $scirunbuild_dir/@PKG_FILE_NAME@.pkg
+@PKGUTIL_EXE@ --expand $productbuild_dir/tmp.pkg $productbuild_dir/tmp
+@PKGUTIL_EXE@ --flatten $productbuild_dir/tmp $scirunbuild_dir/@PKG_FILE_NAME@.pkg
 rm -f $scirunbuild_dir/@CPACK_PACKAGE_NAME@.pkg $scirunbuild_dir/@CPACK_PACKAGE_NAME@.plist
-rm -Rf $productroot_dir/tmp
+rm -Rf $productbuild_dir/tmp
