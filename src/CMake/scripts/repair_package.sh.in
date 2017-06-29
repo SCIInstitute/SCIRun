@@ -18,3 +18,4 @@ fi
 @PKGUTIL_EXE@ --expand $productroot_dir/tmp.pkg $productroot_dir/tmp
 @PKGUTIL_EXE@ --flatten $productroot_dir/tmp $scirunbuild_dir/@PKG_FILE_NAME@.pkg
 rm -f $scirunbuild_dir/@CPACK_PACKAGE_NAME@.pkg $scirunbuild_dir/@CPACK_PACKAGE_NAME@.plist
+rm -Rf $productroot_dir/tmp
