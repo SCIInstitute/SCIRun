@@ -232,7 +232,7 @@ void ModuleProxyWidget::ensureItemVisible(QGraphicsItem* item)
     {
       return; // the call below led to a crash when too zoomed in to fit a module.
     }
-    views[0]->ensureVisible(item, 400, 200);
+    views[0]->ensureVisible(item);
   }
 }
 

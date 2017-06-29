@@ -181,8 +181,8 @@ namespace Gui {
 
   namespace NetworkBoundaries
   {
-    const int sceneWidth = 800;
-    const int sceneHeight = 2400;
+    const int sceneWidth = 1600;
+    const int sceneHeight = 3200;
 
     QPointF keepInScene(const QPointF& p);
   }

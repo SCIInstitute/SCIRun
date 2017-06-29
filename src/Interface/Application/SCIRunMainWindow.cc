@@ -353,7 +353,8 @@ void SCIRunMainWindow::createAdvancedToolbar()
   advancedBar->addAction(actionSelectMode_);
   advancedBar->addAction(actionToggleMetadataLayer_);
   advancedBar->addAction(actionToggleTagLayer_);
-  advancedBar->addAction(actionMakeSubnetwork_);
+  //TODO: turn back on after IBBM
+  //advancedBar->addAction(actionMakeSubnetwork_);
   advancedBar->addActions(networkProgressBar_->advancedActions());
 
   connect(actionAdvancedBar_, SIGNAL(toggled(bool)), advancedBar, SLOT(setVisible(bool)));
@@ -1445,6 +1446,7 @@ void SCIRunMainWindow::setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, con
   {
     savedSubnetworksXml_[id] = fave->data(0, clipboardKey).toString();
     savedSubnetworksNames_[id] = fave->text(0);
+    fave->setFlags(fave->flags() & !Qt::ItemIsEditable);
   }
 }
 
