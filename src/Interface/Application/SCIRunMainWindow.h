@@ -165,6 +165,7 @@ private:
   void setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, const QString& idFromMap);
   void showStatusMessage(const QString& str);
   void showStatusMessage(const QString& str, int timeInMsec);
+  void addFragmentsToMenu(const QMap<QString, QVariant>& names, const QMap<QString, QVariant>& xmls);
 
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
@@ -234,6 +235,7 @@ private Q_SLOTS:
   void networkTimedOut();
   void exportFragmentList();
   void importFragmentList();
+  void clearFragmentList();
   void loadPythonAPIDoc();
   void showSnippetHelp();
   void showClipboardHelp();
