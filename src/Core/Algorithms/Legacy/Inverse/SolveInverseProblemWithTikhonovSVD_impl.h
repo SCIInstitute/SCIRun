@@ -61,7 +61,6 @@ namespace Inverse {
 		        SolveInverseProblemWithTikhonovSVD_impl(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
                                     {
 										preAlocateInverseMatrices( forwardMatrix_,  measuredData_ ,  sourceWeighting_,  sensorWeighting_);
-                                        rank = 0;
                                     };
 
 		    private:

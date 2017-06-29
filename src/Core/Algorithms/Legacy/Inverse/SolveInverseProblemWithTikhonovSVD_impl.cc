@@ -103,7 +103,7 @@ SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovSVD_impl::co
             // evaluate filter factor
                 double singVal = SVDdecomposition.singularValues()[rr];
                 double filterFactor_i =  singVal / ( lambda_sq + singVal * singVal ) * Uy(rr);
-
+				
             // u[date solution
                 solution += filterFactor_i * SVDdecomposition.matrixV().col(rr);
 

@@ -57,9 +57,8 @@ SolveInverseProblemWithTikhonovSVDDialog::SolveInverseProblemWithTikhonovSVDDial
   addDoubleSpinBoxManager(lambdaMinDoubleSpinBox_, Parameters::LambdaMin);
   addDoubleSpinBoxManager(lambdaMaxDoubleSpinBox_, Parameters::LambdaMax);
   addDoubleSpinBoxManager(lambdaResolutionDoubleSpinBox_, Parameters::LambdaResolution);
-
-  // addDoubleLineEditManager(lCurveMinLineEdit_, Parameters::LambdaMin);
-  // addDoubleLineEditManager(lCurveMaxLineEdit_, Parameters::LambdaMax);
+  addDoubleLineEditManager(lCurveMinLineEdit_, Parameters::LambdaMin);
+  addDoubleLineEditManager(lCurveMaxLineEdit_, Parameters::LambdaMax);
 
   addDoubleSpinBoxManager(lambdaSliderDoubleSpinBox_, Parameters::LambdaSliderValue);
 
@@ -67,7 +66,7 @@ SolveInverseProblemWithTikhonovSVDDialog::SolveInverseProblemWithTikhonovSVDDial
   addRadioButtonGroupManager({ solutionConstraintRadioButton_, squaredSolutionRadioButton_ }, Parameters::regularizationSolutionSubcase);
   addRadioButtonGroupManager({ residualConstraintRadioButton_, squaredResidualSolutionRadioButton_ }, Parameters::regularizationResidualSubcase);
 
-  addComboBoxManager(lambdaMethodComboBox_, Parameters::RegularizationMethod);
+  addComboBoxManager(lambdaMethodComboBox_, Parameters::RegularizationMethod, lambdaMethod_);
   addTextEditManager(lCurveTextEdit_, Parameters::LCurveText);
 
   connect(lambdaSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));

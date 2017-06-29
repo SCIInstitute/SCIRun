@@ -252,14 +252,13 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
     else if (RegularizationMethod_gotten == "lcurve")
     {
         lambda_ = computeLcurve( algoImpl, input );
-		std::cout << "Lambda: "  << lambda_ << std::endl;
     }
 	else
 	{
 		THROW_ALGORITHM_PROCESSING_ERROR("Lambda selection was never set");
 	}
 
-
+	std::cout << "Lambda: "  << lambda_ << std::endl;
     lambda_sq = lambda_ * lambda_;
 
 
