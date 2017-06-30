@@ -2032,7 +2032,7 @@ void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
   auto clip = new QTreeWidgetItem();
   clip->setText(0, "clipboard " + QDateTime::currentDateTime().toString("ddd MMMM d yyyy hh:mm:ss.zzz"));
   clip->setToolTip(0, "todo: xml translation");
-  clip->setData(0, 125, xml);
+  clip->setData(0, clipboardKey, xml);
   clip->setTextColor(0, CLIPBOARD_COLOR);
 
   const int clipMax = 5;

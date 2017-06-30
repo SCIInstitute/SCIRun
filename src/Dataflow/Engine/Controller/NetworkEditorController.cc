@@ -501,10 +501,10 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       {
         serializationManager_->updateModuleNotes(xml->moduleNotes);
         serializationManager_->updateConnectionNotes(xml->connectionNotes);
-        serializationManager_->updateModuleTags(xml->moduleTags);
         serializationManager_->updateDisabledComponents(xml->disabledComponents);
         serializationManager_->updateSubnetworks(xml->subnetworks);
         serializationManager_->updateModulePositions(xml->modulePositions, false);
+        serializationManager_->updateModuleTags(xml->moduleTags);
       }
       else
       {
