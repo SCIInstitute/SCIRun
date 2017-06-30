@@ -593,9 +593,6 @@ void NetworkEditor::copy()
     return;
 
   auto selected = scene_->selectedItems();
-  if (selected.empty())
-    return;
-    
   auto modSelected = [&selected](ModuleHandle mod)
   {
     for (const auto& item : selected)
@@ -1201,7 +1198,7 @@ void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions
       }
     }
   }
-
+  
   QPointF adjustment;
   if (!positions.empty())
   {
