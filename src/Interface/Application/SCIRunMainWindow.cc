@@ -252,14 +252,22 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   //TODO: store in xml file, add to app resources
   ToolkitInfo fwdInv{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
+    "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.2.zip",
+    "FwdInvToolkit_stable.zip" };
+  fwdInv.setupAction(actionForwardInverseStable_, this);
+  ToolkitInfo fwdInvNightly{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
     "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/master",
-    "FwdInvToolkit_latest.zip" };
-  fwdInv.setupAction(actionForwardInverse_, this);
+    "FwdInvToolkit_nightly.zip" };
+  fwdInvNightly.setupAction(actionForwardInverseNightly_, this);
 
   ToolkitInfo brainStim{ "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png",
+    "http://sci.utah.edu/devbuilds/scirun5/toolkits/BrainStimulator_v1.2.zip",
+    "BrainStimulator_stable.zip" };
+  brainStim.setupAction(actionBrainStimulatorStable_, this);
+  ToolkitInfo brainStimNightly{ "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png",
     "https://codeload.github.com/SCIInstitute/BrainStimulator/zip/master",
-    "BrainStimulator_latest.zip" };
-  brainStim.setupAction(actionBrainStimulator_, this);
+    "BrainStimulator_nightly.zip" };
+  brainStimNightly.setupAction(actionBrainStimulatorNightly_, this);
 
   connect(actionLoadToolkit_, SIGNAL(triggered()), this, SLOT(loadToolkit()));
 
@@ -1446,7 +1454,7 @@ void SCIRunMainWindow::setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, con
   {
     savedSubnetworksXml_[id] = fave->data(0, clipboardKey).toString();
     savedSubnetworksNames_[id] = fave->text(0);
-    fave->setFlags(fave->flags() & !Qt::ItemIsEditable);
+    fave->setFlags(fave->flags() & ~Qt::ItemIsEditable);
   }
 }
 
