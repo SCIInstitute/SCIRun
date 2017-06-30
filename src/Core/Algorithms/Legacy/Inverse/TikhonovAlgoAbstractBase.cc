@@ -60,11 +60,18 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Inverse;
 
+// shared inputs
 const AlgorithmInputName TikhonovAlgoAbstractBase::ForwardMatrix("ForwardMatrix");
 const AlgorithmInputName TikhonovAlgoAbstractBase::MeasuredPotentials("MeasuredPotentials");
 const AlgorithmInputName TikhonovAlgoAbstractBase::WeightingInSourceSpace("WeightingInSourceSpace");
 const AlgorithmInputName TikhonovAlgoAbstractBase::WeightingInSensorSpace("WeightingInSensorSpace");
 
+// Inputs specific from the Tikhonov SVD module
+const AlgorithmInputName TikhonovAlgoAbstractBase::matrixU("matrixU");
+const AlgorithmInputName TikhonovAlgoAbstractBase::singularValues("singularValues");
+const AlgorithmInputName TikhonovAlgoAbstractBase::matrixV("matrixV");
+
+// outputs
 const AlgorithmOutputName TikhonovAlgoAbstractBase::InverseSolution("InverseSolution");
 const AlgorithmOutputName TikhonovAlgoAbstractBase::RegularizationParameter("RegularizationParameter");
 const AlgorithmOutputName TikhonovAlgoAbstractBase::RegInverse("RegInverse");
@@ -224,7 +231,12 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 		int regularizationSolutionSubcase_ = get(Parameters::regularizationSolutionSubcase).toInt();
 		int regularizationResidualSubcase_ = get(Parameters::regularizationResidualSubcase).toInt();
 
-		algoImpl = new SolveInverseProblemWithTikhonovSVD_impl(*castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_));
+		// get TikhonovSVD special inputs
+		auto matrixU_ = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixU);
+		auto singularValues_ = input.get<Matrix>(TikhonovAlgoAbstractBase::singularValues);
+		auto matrixV_ = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixV);
+
+		algoImpl = new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), *castMatrix::toDense(matrixU_), *castMatrix::toDense(singularValues_), *castMatrix::toDense(matrixV_) );
 	}
 	else if ( TikhonovImplementation_gotten ==  std::string("TikhonovTSVD") ){
 		THROW_ALGORITHM_PROCESSING_ERROR("Tikhonov TSVD not implemented yet");

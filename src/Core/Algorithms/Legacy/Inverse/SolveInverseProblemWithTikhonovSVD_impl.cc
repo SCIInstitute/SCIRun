@@ -67,21 +67,37 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 /////// prealocate Matrices for inverse compuation
 ///     This function precalcualtes the SVD of the forward matrix and prepares singular vectors and values for posterior computations
 ///////////////////////////////////////////////////////////////////
-void SolveInverseProblemWithTikhonovSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
+void SolveInverseProblemWithTikhonovSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& matrixU_, const SCIRun::Core::Datatypes::DenseMatrix& singularValues_, const SCIRun::Core::Datatypes::DenseMatrix& matrixV_)
 {
 
-    // Compute the SVD of the forward matrix
-        Eigen::JacobiSVD<SCIRun::Core::Datatypes::DenseMatrix::EigenBase> svd( forwardMatrix_, Eigen::ComputeFullU | Eigen::ComputeFullV);
-        SVDdecomposition = svd;
+	// if (!matrixU_.size())&&(!matrixV_.size())&&(!singularValues_.size()){
+	// 	std::cout << "Precomputed SVD variables found as an input" << std::endl;
+	//
+	// 	svd_MatrixU = *matrixU_;
+	// 	svd_MatrixV = *matrixV_;
+	// 	svd_SingularValues = *singularValues_;
+	//
+	// }else{
 
-    // determine rank
-        rank = SVDdecomposition.nonzeroSingularValues();
+		std::cout << "No precomputed SVD... computing now" << std::endl;
 
-    // Compute the projection of data y on the left singular vectors
-        auto tempUy = SVDdecomposition.matrixU().transpose() * (measuredData_);
+	    // Compute the SVD of the forward matrix
+	        Eigen::JacobiSVD<SCIRun::Core::Datatypes::DenseMatrix::EigenBase> SVDdecomposition( forwardMatrix_, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
-        Uy = tempUy;
+			// alocate the left and right singular vectors and the singular values
+			svd_MatrixU = SVDdecomposition.matrixU();
+			svd_MatrixV = SVDdecomposition.matrixV();
+			svd_SingularValues = SVDdecomposition.singularValues();
 
+	    // determine rank
+	        rank = SVDdecomposition.nonzeroSingularValues();
+
+	    // Compute the projection of data y on the left singular vectors
+	        auto tempUy = SVDdecomposition.matrixU().transpose() * (measuredData_);
+
+	        Uy = tempUy;
+
+	// }
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -91,8 +107,8 @@ SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovSVD_impl::co
 {
 
     // prealocate matrices
-        const int N = SVDdecomposition.matrixV().cols();
-        const int M = SVDdecomposition.matrixU().rows();
+        const int N = svd_MatrixV.cols();
+        const int M = svd_MatrixU.rows();
         const int numTimeSamples = Uy.ncols();
         DenseMatrix solution(DenseMatrix::Zero(N,numTimeSamples));
         DenseMatrix tempInverse(DenseMatrix::Zero(N,M));
@@ -101,15 +117,15 @@ SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovSVD_impl::co
         for (int rr=0; rr<rank ; rr++)
         {
             // evaluate filter factor
-                double singVal = SVDdecomposition.singularValues()[rr];
+                double singVal = svd_SingularValues[rr];
                 double filterFactor_i =  singVal / ( lambda_sq + singVal * singVal ) * Uy(rr);
-				
+
             // u[date solution
-                solution += filterFactor_i * SVDdecomposition.matrixV().col(rr);
+                solution += filterFactor_i * svd_MatrixV.col(rr);
 
             // update inverse operator
                 if (inverseCalculation)
-                    tempInverse += filterFactor_i * ( SVDdecomposition.matrixV().col(rr) *  SVDdecomposition.matrixU().col(rr).transpose() );
+                    tempInverse += filterFactor_i * ( svd_MatrixV.col(rr) *  svd_MatrixU.col(rr).transpose() );
         }
 
     // output solutions

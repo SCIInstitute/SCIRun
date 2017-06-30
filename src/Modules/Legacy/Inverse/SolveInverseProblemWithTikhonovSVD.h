@@ -38,7 +38,7 @@ namespace Modules {
 namespace Inverse {
 
 	class SCISHARE SolveInverseProblemWithTikhonovSVD : public SCIRun::Dataflow::Networks::Module,
-		public Has4InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
+		public Has7InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
 		public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
 	{
 	public:
@@ -50,6 +50,9 @@ namespace Inverse {
 		INPUT_PORT(1, WeightingInSourceSpace, DenseMatrix);
 		INPUT_PORT(2, MeasuredPotentials, DenseMatrix);
 		INPUT_PORT(3, WeightingInSensorSpace, DenseMatrix);
+		INPUT_PORT(4, matrixU, DenseMatrix);
+		INPUT_PORT(5, singularValues, DenseMatrix);
+		INPUT_PORT(6, matrixV, DenseMatrix);
 		OUTPUT_PORT(0, InverseSolution, DenseMatrix);
 		OUTPUT_PORT(1, RegularizationParameter, DenseMatrix);
 		OUTPUT_PORT(2, RegInverse, DenseMatrix);

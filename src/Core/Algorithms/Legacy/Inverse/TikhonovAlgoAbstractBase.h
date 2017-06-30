@@ -65,6 +65,11 @@ namespace Inverse {
 		static  const AlgorithmInputName WeightingInSourceSpace;
 		static  const AlgorithmInputName WeightingInSensorSpace;
 
+		// input names particular for the SVD case
+		static  const AlgorithmInputName matrixU;
+		static  const AlgorithmInputName singularValues;
+		static  const AlgorithmInputName matrixV;
+
 		// define output names
 		static const AlgorithmOutputName InverseSolution;
 		static const AlgorithmOutputName RegularizationParameter;

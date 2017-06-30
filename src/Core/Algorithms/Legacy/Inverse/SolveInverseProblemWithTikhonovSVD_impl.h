@@ -58,20 +58,23 @@ namespace Inverse {
 
 
 		    public:
-		        SolveInverseProblemWithTikhonovSVD_impl(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
+		        SolveInverseProblemWithTikhonovSVD_impl(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& matrixU_, const SCIRun::Core::Datatypes::DenseMatrix& singularValues_, const SCIRun::Core::Datatypes::DenseMatrix& matrixV_)
                                     {
-										preAlocateInverseMatrices( forwardMatrix_,  measuredData_ ,  sourceWeighting_,  sensorWeighting_);
+										preAlocateInverseMatrices( forwardMatrix_,  measuredData_ ,  sourceWeighting_,  sensorWeighting_, matrixU_, singularValues_, matrixV_ );
                                     };
 
 		    private:
 
 				// Data Members
 		        int rank;
-		        Eigen::JacobiSVD<SCIRun::Core::Datatypes::DenseMatrix::EigenBase> SVDdecomposition;
+				SCIRun::Core::Datatypes::DenseMatrix svd_MatrixU;
+				SCIRun::Core::Datatypes::DenseColumnMatrix svd_SingularValues;
+				SCIRun::Core::Datatypes::DenseMatrix svd_MatrixV;
+
 		        SCIRun::Core::Datatypes::DenseMatrix Uy;
 
 				// Methods
-				void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_);
+				void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& matrixU_, const SCIRun::Core::Datatypes::DenseMatrix& singularValues_, const SCIRun::Core::Datatypes::DenseMatrix& matrixV_);
 
 		        virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation) const;
 		        //      bool checkInputMatrixSizes(); // DEFINED IN PARENT, MIGHT WANT TO OVERRIDE SOME OTHER TIME
