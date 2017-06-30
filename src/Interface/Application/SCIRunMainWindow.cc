@@ -311,6 +311,14 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupVersionButton();
 
   WidgetStyleMixin::tabStyle(optionsTabWidget_);
+
+  qDebug() << "available height:" << size().height();
+}
+
+void SCIRunMainWindow::resizeEvent(QResizeEvent* event)
+{
+  qDebug() << "available height:" << size().height();
+  QMainWindow::resizeEvent(event);
 }
 
 void SCIRunMainWindow::createStandardToolbars()

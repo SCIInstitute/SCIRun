@@ -1233,6 +1233,7 @@ void ModuleWidget::toggleOptionsDialog()
   {
     if (dockable_->isHidden())
     {
+      qDebug() << "h: " << dockable_->size().height();
       dockable_->show();
       dockable_->raise();
       dockable_->activateWindow();
@@ -1326,7 +1327,10 @@ bool ModuleWidget::hasDynamicPorts() const
 void ModuleWidget::pinUI()
 {
   if (dockable_)
+  {
     dockable_->setFloating(false);
+    qDebug() << dockable_->size().height();
+  }
 }
 
 void ModuleWidget::hideUI()
@@ -1338,7 +1342,10 @@ void ModuleWidget::hideUI()
 void ModuleWidget::showUI()
 {
   if (dockable_)
+  {
     dockable_->show();
+    qDebug() << dockable_->size().height();
+  }
 }
 
 void ModuleWidget::collapsePinnedDialog()

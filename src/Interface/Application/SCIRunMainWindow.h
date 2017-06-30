@@ -112,6 +112,7 @@ protected:
   virtual void keyReleaseEvent(QKeyEvent *event) override;
   virtual void showEvent(QShowEvent* event) override;
   virtual void hideEvent(QHideEvent* event) override;
+  void resizeEvent(QResizeEvent* event) override;
 private:
   static SCIRunMainWindow* instance_;
   SCIRunMainWindow();
