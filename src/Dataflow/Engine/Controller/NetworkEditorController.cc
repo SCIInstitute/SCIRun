@@ -645,12 +645,7 @@ ExecutionContextHandle NetworkEditorController::createExecutionContext(const Exe
 boost::shared_ptr<boost::thread> NetworkEditorController::executeGeneric(const ExecutableLookup* lookup, ModuleFilter filter)
 {
   initExecutor();
-
-
-
-
   auto context = createExecutionContext(lookup, filter);
-
   return executionManager_.enqueueContext(context);
 }
 
