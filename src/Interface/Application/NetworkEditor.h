@@ -177,6 +177,7 @@ namespace Gui {
     TagColorFunc tagColor;
     TagNameFunc tagName;
     double highResolutionExpandFactor;
+    class DockManager* dockManager_;
   };
 
   namespace NetworkBoundaries

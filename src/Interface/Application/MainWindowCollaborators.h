@@ -34,6 +34,7 @@
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Singleton.h>
 #include <set>
+#include <queue>
 #include <Interface/Application/NetworkEditor.h>  //TODO
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #endif
@@ -54,6 +55,7 @@ namespace SCIRun {
 namespace Gui {
 
   class SCIRunMainWindow;
+  class ModuleDialogGeneric;
 
   class TextEditAppender : public Core::Logging::LegacyLoggerInterface, public Core::Logging::LogAppenderStrategy
   {
@@ -235,6 +237,17 @@ namespace Gui {
     SCIRunMainWindow* mainWindow_;
   };
 
+  class DockManager : public QObject
+  {
+    Q_OBJECT
+  public:
+    explicit DockManager(int& availableSize, QObject* parent);
+    void requestShow(ModuleDialogGeneric* dialog);
+  private:
+    int& availableSize_;
+    std::set<ModuleDialogGeneric*>& currentDialogs_;
+    std::queue<ModuleDialogGeneric*> collapseQueue_;
+  };
 }
 }
 #endif

@@ -166,6 +166,8 @@ SCIRunMainWindow::SCIRunMainWindow()
   scrollArea_->viewport()->setAutoFillBackground(true);
   scrollArea_->setStyleSheet(styleSheet());
 
+  setDockOptions(AnimatedDocks | AllowTabbedDocks | VerticalTabs);
+
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetworkAs()));
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
   connect(actionLoad_, SIGNAL(triggered()), this, SLOT(loadNetwork()));
@@ -318,6 +320,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 void SCIRunMainWindow::resizeEvent(QResizeEvent* event)
 {
   qDebug() << "available height:" << size().height();
+  dockSpace_ = size().height();
   QMainWindow::resizeEvent(event);
 }
 

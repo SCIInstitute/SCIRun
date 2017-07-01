@@ -1344,6 +1344,7 @@ void ModuleWidget::showUI()
   if (dockable_)
   {
     dockable_->show();
+    dialog_->expand();
     qDebug() << dockable_->size().height();
   }
 }

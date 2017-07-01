@@ -93,6 +93,7 @@ namespace Gui {
     void moduleSelected(bool selected);
     void toggleCollapse();
     void collapse() { if (!collapsed_) toggleCollapse(); }
+    void expand() { if (collapsed_) toggleCollapse(); }
     virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) {}
   Q_SIGNALS:
     void pullSignal();
@@ -188,6 +189,7 @@ namespace Gui {
     std::vector<QWidget*> needToRemoveFromDisabler_;
     static ExecutionDisablingServiceFunction disablerAdd_;
     static ExecutionDisablingServiceFunction disablerRemove_;
+    static std::set<ModuleDialogGeneric*> instances_;
   };
 
   class SCISHARE ScopedWidgetSignalBlocker

@@ -185,6 +185,7 @@ private:
   bool skipSaveCheck_ = false;
   bool startup_;
   boost::shared_ptr<NetworkEditorBuilder> builder_;
+  int dockSpace_{0};
 
 Q_SIGNALS:
   void moduleItemDoubleClicked();
