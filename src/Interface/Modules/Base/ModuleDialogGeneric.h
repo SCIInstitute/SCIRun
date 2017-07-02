@@ -78,9 +78,11 @@ namespace Gui {
     void updateWindowTitle(const QString& title);
     void setButtonBarTitleVisible(bool visible);
     void setupButtonBar();
+    bool isCollapsed() const { return collapsed_; }
     virtual void createStartupNote() {}
     static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
     static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }
+    static const std::set<ModuleDialogGeneric*>& instances() { return instances_; }
 
     //TODO: input state hookup?
     //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)

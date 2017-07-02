@@ -85,6 +85,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 {
   setupUi(this);
   builder_ = boost::make_shared<NetworkEditorBuilder>(this);
+  dockManager_ = new DockManager(dockSpace_, this);
 
   startup_ = true;
 
@@ -313,13 +314,11 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupVersionButton();
 
   WidgetStyleMixin::tabStyle(optionsTabWidget_);
-
-  qDebug() << "available height:" << size().height();
+  setMaximumHeight(QApplication::desktop()->screenGeometry().height());
 }
 
 void SCIRunMainWindow::resizeEvent(QResizeEvent* event)
 {
-  qDebug() << "available height:" << size().height();
   dockSpace_ = size().height();
   QMainWindow::resizeEvent(event);
 }
@@ -542,7 +541,7 @@ void SCIRunMainWindow::setupNetworkEditor()
       highResolutionExpandFactor *= 1.5;
   }
   networkEditor_ = new NetworkEditor({ getter, defaultNotePositionGetter_, dialogErrorControl_, preexecuteFunc,
-    tagColorFunc, tagNameFunc, highResolutionExpandFactor }, scrollAreaWidgetContents_);
+    tagColorFunc, tagNameFunc, highResolutionExpandFactor, dockManager_ }, scrollAreaWidgetContents_);
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 
   builder_->connectAll(networkEditor_);
@@ -1936,7 +1935,6 @@ void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
 
     connect(showAction, SIGNAL(triggered()), networkEditor_, SLOT(subnetMenuActionTriggered()));
     connect(renameAction, SIGNAL(triggered()), networkEditor_, SLOT(subnetMenuActionTriggered()));
-    //qDebug() << "add" << modId;
     currentSubnetActions_.insert(modId, subnetMenu);
     menuCurrentSubnets_->addMenu(subnetMenu);
   }
@@ -1945,7 +1943,6 @@ void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
 void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
 {
   auto name = QString::fromStdString(modId.id_);
-  //qDebug() << "remove" << name;
   auto action = currentModuleActions_[name];
   menuCurrent_->removeAction(action);
   currentModuleActions_.remove(name);
@@ -1954,7 +1951,6 @@ void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
 
   if (modId.id_.find("Subnet") != std::string::npos)
   {
-    //qDebug() << currentSubnetActions_;
     auto subnet = currentSubnetActions_[name];
     if (subnet)
       menuCurrentSubnets_->removeAction(subnet->menuAction());

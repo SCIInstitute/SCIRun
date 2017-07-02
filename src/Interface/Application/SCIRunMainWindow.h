@@ -186,6 +186,7 @@ private:
   bool startup_;
   boost::shared_ptr<NetworkEditorBuilder> builder_;
   int dockSpace_{0};
+  class DockManager* dockManager_;
 
 Q_SIGNALS:
   void moduleItemDoubleClicked();

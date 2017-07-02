@@ -34,7 +34,7 @@
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Singleton.h>
 #include <set>
-#include <queue>
+#include <deque>
 #include <Interface/Application/NetworkEditor.h>  //TODO
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #endif
@@ -242,11 +242,13 @@ namespace Gui {
     Q_OBJECT
   public:
     explicit DockManager(int& availableSize, QObject* parent);
+  public Q_SLOTS:
     void requestShow(ModuleDialogGeneric* dialog);
   private:
-    int& availableSize_;
-    std::set<ModuleDialogGeneric*>& currentDialogs_;
-    std::queue<ModuleDialogGeneric*> collapseQueue_;
+    int& availableHeight_;
+    const std::set<ModuleDialogGeneric*>& currentDialogs_;
+    std::deque<ModuleDialogGeneric*> collapseQueue_;
+    int usedSpace() const;
   };
 }
 }
