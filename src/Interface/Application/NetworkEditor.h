@@ -177,7 +177,16 @@ namespace Gui {
     TagColorFunc tagColor;
     TagNameFunc tagName;
     double highResolutionExpandFactor;
+    class DockManager* dockManager_;
   };
+
+  namespace NetworkBoundaries
+  {
+    const int sceneWidth = 1600;
+    const int sceneHeight = 3200;
+
+    QPointF keepInScene(const QPointF& p);
+  }
 
   class NetworkEditor : public QGraphicsView,
     public Dataflow::Networks::ExecutableLookup,
@@ -333,7 +342,6 @@ namespace Gui {
       QList<QGraphicsItem*> items, const QRectF& rect);
     void showSubnetChild(const QString& name);
     void addSubnetChild(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle mod);
-    void removeSubnetChild(const QString& name);
     void subnetMenuActionTriggered();
 
   Q_SIGNALS:
@@ -390,6 +398,7 @@ namespace Gui {
     QList<QGraphicsItem*> includeConnections(QList<QGraphicsItem*> items) const;
     QRectF visibleRect() const;
     void deleteImpl(QList<QGraphicsItem*> items);
+    QPointF getModulePositionAdjustment(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
 
     // default constructed
     bool modulesSelectedByCL_{ false };
@@ -400,7 +409,7 @@ namespace Gui {
     bool insertingNewModuleAlongConnection_{ false };
     bool showTagGroupsOnFileLoad_{ false };
     bool visibleItems_{ true };
-    QPointF lastModulePosition_{ 0, 0 };
+    QPointF lastModulePosition_{ 30, 30 };
     std::string latestModuleId_;
     std::map<int, std::string> tagLabelOverrides_;
 
@@ -449,7 +458,7 @@ namespace Gui {
     }
 
     static NetworkEditor* inEditingContext_;
-    
+
     static ConnectorFunc connectorFunc_;
     static std::function<QPointF(const QRectF&)> topSubnetPortHolderPositioner_;
     static std::function<QPointF(const QRectF&)> bottomSubnetPortHolderPositioner_;

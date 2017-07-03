@@ -1195,6 +1195,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
   {
     dockable_->setWindowFlags(Qt::Window);
     dockable_->show();
+    Q_EMIT showUIrequested(dialog_);
   }
   dialog_->setButtonBarTitleVisible(!isFloating);
 }
@@ -1234,6 +1235,7 @@ void ModuleWidget::toggleOptionsDialog()
     if (dockable_->isHidden())
     {
       dockable_->show();
+      Q_EMIT showUIrequested(dialog_);
       dockable_->raise();
       dockable_->activateWindow();
       if (isViewScene_)
@@ -1326,7 +1328,10 @@ bool ModuleWidget::hasDynamicPorts() const
 void ModuleWidget::pinUI()
 {
   if (dockable_)
+  {
     dockable_->setFloating(false);
+    Q_EMIT showUIrequested(dialog_);
+  }
 }
 
 void ModuleWidget::hideUI()
@@ -1338,7 +1343,11 @@ void ModuleWidget::hideUI()
 void ModuleWidget::showUI()
 {
   if (dockable_)
+  {
     dockable_->show();
+    dialog_->expand();
+    Q_EMIT showUIrequested(dialog_);
+  }
 }
 
 void ModuleWidget::collapsePinnedDialog()

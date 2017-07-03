@@ -1430,84 +1430,121 @@ void ViewSceneDialog::addToolBar()
   addViewBar();
 }
 
+void ViewSceneDialog::addToolbarButton(QPushButton* button)
+{
+  button->setFixedSize(35,35);
+  button->setIconSize(QSize(25,25));
+  mToolBar->addWidget(button);
+}
+
 void ViewSceneDialog::addAutoViewButton()
 {
-  QPushButton* autoViewBtn = new QPushButton(this);
-  autoViewBtn->setToolTip("Fit Object to Screen");
-  autoViewBtn->setText("Auto View");
-  autoViewBtn->setAutoDefault(false);
-  autoViewBtn->setDefault(false);
-  autoViewBtn->setShortcut(Qt::Key_0);
-  connect(autoViewBtn, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
-  mToolBar->addWidget(autoViewBtn);
-  mToolBar->addSeparator();
+  autoViewButton_ = new QPushButton(this);
+  autoViewButton_->setToolTip("Auto View");
+  autoViewButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
+  autoViewButton_->setShortcut(Qt::Key_0);
+  connect(autoViewButton_, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
+  addToolbarButton(autoViewButton_);
 }
 
 void ViewSceneDialog::addScreenshotButton()
 {
   QPushButton* screenshotButton = new QPushButton(this);
   screenshotButton->setToolTip("Take screenshot");
-  screenshotButton->setText("Take screenshot");
-  screenshotButton->setAutoDefault(false);
-  screenshotButton->setDefault(false);
+  screenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
   screenshotButton->setShortcut(Qt::Key_F12);
   connect(screenshotButton, SIGNAL(clicked(bool)), this, SLOT(screenshotClicked()));
-  mToolBar->addWidget(screenshotButton);
-
-  mToolBar->addSeparator();
+  addToolbarButton(screenshotButton);
 }
 
 void ViewSceneDialog::addViewBarButton()
 {
   QPushButton* viewBarBtn = new QPushButton();
   viewBarBtn->setToolTip("Show View Options");
-  viewBarBtn->setText("Views");
-  viewBarBtn->setAutoDefault(false);
-  viewBarBtn->setDefault(false);
+  viewBarBtn->setIcon(QPixmap(":/general/Resources/ViewScene/views.png"));
   connect(viewBarBtn, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
-  mToolBar->addWidget(viewBarBtn);
-  mToolBar->addSeparator();
+  addToolbarButton(viewBarBtn);
 }
 
 void ViewSceneDialog::addControlLockButton()
 {
-  auto controlLock = new QPushButton();
-  controlLock->setToolTip("Lock specific view controls");
-  controlLock->setText("Lock View");
+  controlLock_ = new QPushButton();
+  controlLock_->setToolTip("Lock specific view controls");
+  controlLock_->setIcon(QPixmap(":/general/Resources/ViewScene/lockView.png"));
   auto menu = new QMenu;
 
-  auto lockRot = menu->addAction("Lock Rotation");
-  lockRot->setCheckable(true);
-  connect(lockRot, SIGNAL(triggered()), this, SLOT(lockRotationToggled()));
+  lockRotation_ = menu->addAction("Lock Rotation");
+  lockRotation_->setCheckable(true);
+  connect(lockRotation_, SIGNAL(triggered()), this, SLOT(lockRotationToggled()));
 
-  auto lockPan = menu->addAction("Lock Panning");
-  lockPan->setCheckable(true);
-  connect(lockPan, SIGNAL(triggered()), this, SLOT(lockPanningToggled()));
+  lockPan_ = menu->addAction("Lock Panning");
+  lockPan_->setCheckable(true);
+  connect(lockPan_, SIGNAL(triggered()), this, SLOT(lockPanningToggled()));
 
-  auto lockZoom = menu->addAction("Lock Zoom");
-  lockZoom->setCheckable(true);
-  connect(lockZoom, SIGNAL(triggered()), this, SLOT(lockZoomToggled()));
+  lockZoom_ = menu->addAction("Lock Zoom");
+  lockZoom_->setCheckable(true);
+  connect(lockZoom_, SIGNAL(triggered()), this, SLOT(lockZoomToggled()));
 
-  controlLock->setMenu(menu);
-  mToolBar->addWidget(controlLock);
+  menu->addSeparator();
+  
+  auto lockAll = menu->addAction("Lock All");
+  connect(lockAll, SIGNAL(triggered()), this, SLOT(lockAllTriggered()));
+  
+  auto unlockAll = menu->addAction("Unlock All");
+  connect(unlockAll, SIGNAL(triggered()), this, SLOT(unlockAllTriggered()));
+
+  controlLock_->setMenu(menu);
+
+  addToolbarButton(controlLock_);
+  controlLock_->setFixedWidth(45);
+  toggleLockColor(false);
 }
 
 void ViewSceneDialog::lockRotationToggled()
 {
-  auto action = qobject_cast<QAction*>(sender());
-  mGLWidget->setLockRotation(action->isChecked());
+  mGLWidget->setLockRotation(lockRotation_->isChecked());
+  toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
+}
+
+void ViewSceneDialog::toggleLockColor(bool locked)
+{
+  QString color = locked ? "red" : "rgb(66,66,69)";
+  controlLock_->setStyleSheet("QPushButton { background-color: " + color + "; }");
+  autoViewButton_->setDisabled(locked);
 }
 
 void ViewSceneDialog::lockPanningToggled()
 {
-  auto action = qobject_cast<QAction*>(sender());
-  mGLWidget->setLockPanning(action->isChecked());
+  mGLWidget->setLockPanning(lockPan_->isChecked());
+  toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
 }
 
 void ViewSceneDialog::lockZoomToggled()
 {
-  auto action = qobject_cast<QAction*>(sender());
-  mGLWidget->setLockZoom(action->isChecked());
+  mGLWidget->setLockZoom(lockZoom_->isChecked());
+  toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
+}
+
+void ViewSceneDialog::lockAllTriggered()
+{
+  lockRotation_->setChecked(true);
+  mGLWidget->setLockRotation(true);
+  lockPan_->setChecked(true);
+  mGLWidget->setLockPanning(true);
+  lockZoom_->setChecked(true);
+  mGLWidget->setLockZoom(true);
+  toggleLockColor(true);
+}
+
+void ViewSceneDialog::unlockAllTriggered()
+{
+  lockRotation_->setChecked(false);
+  mGLWidget->setLockRotation(false);
+  lockPan_->setChecked(false);
+  mGLWidget->setLockPanning(false);
+  lockZoom_->setChecked(false);
+  mGLWidget->setLockZoom(false);
+  toggleLockColor(false);
 }
 
 void ViewSceneDialog::addViewBar()
@@ -1554,20 +1591,16 @@ void ViewSceneDialog::addViewOptions()
   mUpVectorBox->addItem("------");
   connect(mUpVectorBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewVectorSelected(int)));
   mViewBar->addWidget(mUpVectorBox);
-  mViewBar->addSeparator();
 }
 
 void ViewSceneDialog::addConfigurationButton()
 {
   QPushButton* configurationButton = new QPushButton();
   configurationButton->setToolTip("Open/Close Configuration Menu");
-  configurationButton->setText("Configure");
-  configurationButton->setAutoDefault(false);
-  configurationButton->setDefault(false);
+  configurationButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
   configurationButton->setShortcut(Qt::Key_F5);
   connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
-  mToolBar->addWidget(configurationButton);
-  mToolBar->addSeparator();
+  addToolbarButton(configurationButton);
 }
 
 void ViewSceneDialog::addConfigurationDock()
@@ -1577,10 +1610,10 @@ void ViewSceneDialog::addConfigurationDock()
   mConfigurationDock->setHidden(true);
   mConfigurationDock->setVisible(false);
 
-    mConfigurationDock->setSampleColor(bgColor_);
-    mConfigurationDock->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
-      scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
-    setupMaterials();
+  mConfigurationDock->setSampleColor(bgColor_);
+  mConfigurationDock->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
+    scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
+  setupMaterials();
 }
 
 void ViewSceneDialog::setupClippingPlanes()

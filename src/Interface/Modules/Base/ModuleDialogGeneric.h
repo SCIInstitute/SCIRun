@@ -78,9 +78,11 @@ namespace Gui {
     void updateWindowTitle(const QString& title);
     void setButtonBarTitleVisible(bool visible);
     void setupButtonBar();
+    bool isCollapsed() const { return collapsed_; }
     virtual void createStartupNote() {}
     static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
     static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }
+    static const std::set<ModuleDialogGeneric*>& instances() { return instances_; }
 
     //TODO: input state hookup?
     //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)
@@ -93,6 +95,7 @@ namespace Gui {
     void moduleSelected(bool selected);
     void toggleCollapse();
     void collapse() { if (!collapsed_) toggleCollapse(); }
+    void expand() { if (collapsed_) toggleCollapse(); }
     virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) {}
   Q_SIGNALS:
     void pullSignal();
@@ -188,6 +191,7 @@ namespace Gui {
     std::vector<QWidget*> needToRemoveFromDisabler_;
     static ExecutionDisablingServiceFunction disablerAdd_;
     static ExecutionDisablingServiceFunction disablerRemove_;
+    static std::set<ModuleDialogGeneric*> instances_;
   };
 
   class SCISHARE ScopedWidgetSignalBlocker
