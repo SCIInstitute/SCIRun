@@ -167,7 +167,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   scrollArea_->viewport()->setAutoFillBackground(true);
   scrollArea_->setStyleSheet(styleSheet());
 
-  setDockOptions(AnimatedDocks | AllowTabbedDocks | VerticalTabs);
+  //setDockOptions(AnimatedDocks | AllowTabbedDocks);
 
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetworkAs()));
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
@@ -314,7 +314,6 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupVersionButton();
 
   WidgetStyleMixin::tabStyle(optionsTabWidget_);
-  setMaximumHeight(QApplication::desktop()->screenGeometry().height());
 }
 
 void SCIRunMainWindow::resizeEvent(QResizeEvent* event)
@@ -853,6 +852,8 @@ void SCIRunMainWindow::setActionIcons()
   actionToggleMetadataLayer_->setIcon(QPixmap(":/general/Resources/metadataLayer.png"));
   actionToggleTagLayer_->setIcon(QPixmap(":/general/Resources/tagLayer.png"));
   actionMakeSubnetwork_->setIcon(QPixmap(":/general/Resources/subnet3.png"));
+  //IBBM disable
+  actionMakeSubnetwork_->setDisabled(true);
 }
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)

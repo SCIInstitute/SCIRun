@@ -387,7 +387,8 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(module, SIGNAL(disableWidgetDisabling()), this, SIGNAL(disableWidgetDisabling()));
   connect(module, SIGNAL(reenableWidgetDisabling()), this, SIGNAL(reenableWidgetDisabling()));
   connect(module, SIGNAL(showSubnetworkEditor(const QString&)), this, SLOT(showSubnetChild(const QString&)));
-  connect(module, SIGNAL(showUIrequested(ModuleDialogGeneric*)), ctorParams_.dockManager_, SLOT(requestShow(ModuleDialogGeneric*)));
+  //disable for IBBM
+  //connect(module, SIGNAL(showUIrequested(ModuleDialogGeneric*)), ctorParams_.dockManager_, SLOT(requestShow(ModuleDialogGeneric*)));
 
   if (module->hasDynamicPorts())
   {
