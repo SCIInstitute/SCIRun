@@ -177,6 +177,7 @@ namespace Gui {
     TagColorFunc tagColor;
     TagNameFunc tagName;
     double highResolutionExpandFactor;
+    class DockManager* dockManager_;
   };
 
   namespace NetworkBoundaries
@@ -397,6 +398,7 @@ namespace Gui {
     QList<QGraphicsItem*> includeConnections(QList<QGraphicsItem*> items) const;
     QRectF visibleRect() const;
     void deleteImpl(QList<QGraphicsItem*> items);
+    QPointF getModulePositionAdjustment(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
 
     // default constructed
     bool modulesSelectedByCL_{ false };

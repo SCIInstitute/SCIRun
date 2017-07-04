@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1081</width>
-         <height>443</height>
+         <width>1093</width>
+         <height>482</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -152,8 +152,22 @@
      <property name="title">
       <string>Download toolkit</string>
      </property>
-     <addaction name="actionForwardInverse_"/>
-     <addaction name="actionBrainStimulator_"/>
+     <widget class="QMenu" name="menuForwardInverse_">
+      <property name="title">
+       <string>Forward/Inverse</string>
+      </property>
+      <addaction name="actionForwardInverseStable_"/>
+      <addaction name="actionForwardInverseNightly_"/>
+     </widget>
+     <widget class="QMenu" name="menuBrainStimulator_">
+      <property name="title">
+       <string>Brain Stimulator</string>
+      </property>
+      <addaction name="actionBrainStimulatorStable_"/>
+      <addaction name="actionBrainStimulatorNightly_"/>
+     </widget>
+     <addaction name="menuForwardInverse_"/>
+     <addaction name="menuBrainStimulator_"/>
     </widget>
     <addaction name="menuDownload_toolkit"/>
     <addaction name="actionLoadToolkit_"/>
@@ -945,16 +959,6 @@
     <string>Tag Manager</string>
    </property>
   </action>
-  <action name="actionForwardInverse_">
-   <property name="text">
-    <string>Forward/Inverse</string>
-   </property>
-  </action>
-  <action name="actionBrainStimulator_">
-   <property name="text">
-    <string>Brain Stimulator</string>
-   </property>
-  </action>
   <action name="actionToggleMetadataLayer_">
    <property name="checkable">
     <bool>true</bool>
@@ -1184,6 +1188,26 @@
   <action name="actionLaunchNewInstance_">
    <property name="text">
     <string>Launch new instance...</string>
+   </property>
+  </action>
+  <action name="actionForwardInverseNightly_">
+   <property name="text">
+    <string>Nightly (OSX only)</string>
+   </property>
+  </action>
+  <action name="actionBrainStimulatorNightly_">
+   <property name="text">
+    <string>Nightly (OSX only)</string>
+   </property>
+  </action>
+  <action name="actionForwardInverseStable_">
+   <property name="text">
+    <string>Stable</string>
+   </property>
+  </action>
+  <action name="actionBrainStimulatorStable_">
+   <property name="text">
+    <string>Stable</string>
    </property>
   </action>
  </widget>

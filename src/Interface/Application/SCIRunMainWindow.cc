@@ -85,6 +85,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 {
   setupUi(this);
   builder_ = boost::make_shared<NetworkEditorBuilder>(this);
+  dockManager_ = new DockManager(dockSpace_, this);
 
   startup_ = true;
 
@@ -165,6 +166,8 @@ SCIRunMainWindow::SCIRunMainWindow()
   scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
   scrollArea_->viewport()->setAutoFillBackground(true);
   scrollArea_->setStyleSheet(styleSheet());
+
+  //setDockOptions(AnimatedDocks | AllowTabbedDocks);
 
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetworkAs()));
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
@@ -252,14 +255,22 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   //TODO: store in xml file, add to app resources
   ToolkitInfo fwdInv{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
+    "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.2.zip",
+    "FwdInvToolkit_stable.zip" };
+  fwdInv.setupAction(actionForwardInverseStable_, this);
+  ToolkitInfo fwdInvNightly{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
     "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/master",
-    "FwdInvToolkit_latest.zip" };
-  fwdInv.setupAction(actionForwardInverse_, this);
+    "FwdInvToolkit_nightly.zip" };
+  fwdInvNightly.setupAction(actionForwardInverseNightly_, this);
 
   ToolkitInfo brainStim{ "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png",
+    "http://sci.utah.edu/devbuilds/scirun5/toolkits/BrainStimulator_v1.2.zip",
+    "BrainStimulator_stable.zip" };
+  brainStim.setupAction(actionBrainStimulatorStable_, this);
+  ToolkitInfo brainStimNightly{ "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png",
     "https://codeload.github.com/SCIInstitute/BrainStimulator/zip/master",
-    "BrainStimulator_latest.zip" };
-  brainStim.setupAction(actionBrainStimulator_, this);
+    "BrainStimulator_nightly.zip" };
+  brainStimNightly.setupAction(actionBrainStimulatorNightly_, this);
 
   connect(actionLoadToolkit_, SIGNAL(triggered()), this, SLOT(loadToolkit()));
 
@@ -303,6 +314,12 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupVersionButton();
 
   WidgetStyleMixin::tabStyle(optionsTabWidget_);
+}
+
+void SCIRunMainWindow::resizeEvent(QResizeEvent* event)
+{
+  dockSpace_ = size().height();
+  QMainWindow::resizeEvent(event);
 }
 
 void SCIRunMainWindow::createStandardToolbars()
@@ -522,7 +539,7 @@ void SCIRunMainWindow::setupNetworkEditor()
       highResolutionExpandFactor *= 1.5;
   }
   networkEditor_ = new NetworkEditor({ getter, defaultNotePositionGetter_, dialogErrorControl_, preexecuteFunc,
-    tagColorFunc, tagNameFunc, highResolutionExpandFactor }, scrollAreaWidgetContents_);
+    tagColorFunc, tagNameFunc, highResolutionExpandFactor, dockManager_ }, scrollAreaWidgetContents_);
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 
   builder_->connectAll(networkEditor_);
@@ -834,6 +851,8 @@ void SCIRunMainWindow::setActionIcons()
   actionToggleMetadataLayer_->setIcon(QPixmap(":/general/Resources/metadataLayer.png"));
   actionToggleTagLayer_->setIcon(QPixmap(":/general/Resources/tagLayer.png"));
   actionMakeSubnetwork_->setIcon(QPixmap(":/general/Resources/subnet3.png"));
+  //IBBM disable
+  actionMakeSubnetwork_->setDisabled(true);
 }
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
@@ -1445,6 +1464,7 @@ void SCIRunMainWindow::setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, con
   {
     savedSubnetworksXml_[id] = fave->data(0, clipboardKey).toString();
     savedSubnetworksNames_[id] = fave->text(0);
+    fave->setFlags(fave->flags() & ~Qt::ItemIsEditable);
   }
 }
 
@@ -1915,7 +1935,6 @@ void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
 
     connect(showAction, SIGNAL(triggered()), networkEditor_, SLOT(subnetMenuActionTriggered()));
     connect(renameAction, SIGNAL(triggered()), networkEditor_, SLOT(subnetMenuActionTriggered()));
-    //qDebug() << "add" << modId;
     currentSubnetActions_.insert(modId, subnetMenu);
     menuCurrentSubnets_->addMenu(subnetMenu);
   }
@@ -1924,7 +1943,6 @@ void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
 void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
 {
   auto name = QString::fromStdString(modId.id_);
-  //qDebug() << "remove" << name;
   auto action = currentModuleActions_[name];
   menuCurrent_->removeAction(action);
   currentModuleActions_.remove(name);
@@ -1933,7 +1951,6 @@ void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
 
   if (modId.id_.find("Subnet") != std::string::npos)
   {
-    //qDebug() << currentSubnetActions_;
     auto subnet = currentSubnetActions_[name];
     if (subnet)
       menuCurrentSubnets_->removeAction(subnet->menuAction());
@@ -2030,7 +2047,7 @@ void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
   auto clip = new QTreeWidgetItem();
   clip->setText(0, "clipboard " + QDateTime::currentDateTime().toString("ddd MMMM d yyyy hh:mm:ss.zzz"));
   clip->setToolTip(0, "todo: xml translation");
-  clip->setData(0, 125, xml);
+  clip->setData(0, clipboardKey, xml);
   clip->setTextColor(0, CLIPBOARD_COLOR);
 
   const int clipMax = 5;

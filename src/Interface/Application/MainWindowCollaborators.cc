@@ -29,9 +29,11 @@
 #include <QtGui>
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/SCIRunMainWindow.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Core/Logging/Log.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
+#include <numeric>
 
 #include "ui_ConnectionStyleWizardPage.h"
 #include "ui_OtherSettingsWizardPage.h"
@@ -396,4 +398,41 @@ void NetworkEditorBuilder::connectAll(NetworkEditor* editor)
   }
   // children only
   // addDockWidget(Qt::RightDockWidgetArea, subnet);
+}
+
+DockManager::DockManager(int& availableSize, QObject* parent) : QObject(parent),
+  availableHeight_(availableSize),
+  currentDialogs_(ModuleDialogGeneric::instances())
+{
+
+}
+
+void DockManager::requestShow(ModuleDialogGeneric* dialog)
+{
+  //clear out old pointers
+  collapseQueue_.erase(std::remove_if(collapseQueue_.begin(), collapseQueue_.end(),
+    [this](ModuleDialogGeneric* d) { return currentDialogs_.find(d) == currentDialogs_.end(); }),
+    collapseQueue_.end());
+
+  // collapse oldest until they fit
+  auto needToFit = availableHeight_ - dialog->size().height();
+  while (usedSpace() > needToFit)
+  {
+    auto firstNonCollapsed = std::find_if(collapseQueue_.begin(), collapseQueue_.end(),
+      [dialog](ModuleDialogGeneric* d) { return d != dialog && !d->isCollapsed(); });
+    if (firstNonCollapsed != collapseQueue_.end())
+      (*firstNonCollapsed)->collapse();
+    else
+      break;
+  }
+
+  // add latest
+  collapseQueue_.push_back(dialog);
+  dialog->expand();
+}
+
+int DockManager::usedSpace() const
+{
+  return std::accumulate(currentDialogs_.begin(), currentDialogs_.end(), 0,
+    [](int height, ModuleDialogGeneric* d) { return height + (d->isCollapsed() ? 0 : d->size().height()); });
 }

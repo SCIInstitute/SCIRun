@@ -46,6 +46,7 @@
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
+#include <Interface/Application/MainWindowCollaborators.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #endif
@@ -85,7 +86,11 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
 
   connect(scene_, SIGNAL(changed(const QList<QRectF>&)), this, SIGNAL(sceneChanged(const QList<QRectF>&)));
 
-  setSceneRect(QRectF(0, 0, sceneWidth, sceneHeight));
+  //old
+  setSceneRect(QRectF(-1000, -1000, 2000, 2000));
+  centerOn(100, 100);
+  //new
+  //setSceneRect(QRectF(0, 0, sceneWidth, sceneHeight));
   //centerOn(sceneWidth / 2, sceneHeight / 4);
 
   setMouseAsDragMode();
@@ -142,6 +147,8 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 
 QPointF NetworkBoundaries::keepInScene(const QPointF& p)
 {
+  return p;
+  #if 0 //post-ibbm
   auto adjusted = p;
   if (adjusted.x() < 0)
     adjusted.setX(0);
@@ -155,6 +162,7 @@ QPointF NetworkBoundaries::keepInScene(const QPointF& p)
 
   return adjusted;
   //return QPointF(static_cast<int>(p.x()) % sceneWidth, static_cast<int>(p.y()) % sceneHeight);
+  #endif
 }
 
 void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module, const ModuleCounter& count)
@@ -379,6 +387,8 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(module, SIGNAL(disableWidgetDisabling()), this, SIGNAL(disableWidgetDisabling()));
   connect(module, SIGNAL(reenableWidgetDisabling()), this, SIGNAL(reenableWidgetDisabling()));
   connect(module, SIGNAL(showSubnetworkEditor(const QString&)), this, SLOT(showSubnetChild(const QString&)));
+  //disable for IBBM
+  //connect(module, SIGNAL(showUIrequested(ModuleDialogGeneric*)), ctorParams_.dockManager_, SLOT(requestShow(ModuleDialogGeneric*)));
 
   if (module->hasDynamicPorts())
   {
@@ -593,6 +603,9 @@ void NetworkEditor::copy()
     return;
 
   auto selected = scene_->selectedItems();
+  if (selected.empty())
+    return;
+  
   auto modSelected = [&selected](ModuleHandle mod)
   {
     for (const auto& item : selected)
@@ -1183,9 +1196,8 @@ SubnetworksHandle NetworkEditor::dumpSubnetworks(ModuleFilter modFilter) const
   return subnets;
 }
 
-void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions, bool selectAll)
+QPointF NetworkEditor::getModulePositionAdjustment(const ModulePositions& modulePositions)
 {
-  QPointF furthestFromOrigin(0,0);
   std::vector<QPointF> positions;
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
@@ -1209,7 +1221,12 @@ void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions
       adjustment = { minX.x(), minY.y() };
     }
   }
+  return adjustment;
+}
 
+void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions, bool selectAll)
+{
+  const auto adjustment = QPointF(); // TODO: after ibbm, work on resizing of network editor space
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (auto w = dynamic_cast<ModuleProxyWidget*>(item))

@@ -340,6 +340,7 @@ void ModuleProxyWidget::snapToGrid()
 
 void ModuleProxyWidget::keepInScene()
 {
+  #if 0 //post-ibbm
   //qDebug() << __FUNCTION__ << pos();
   if (x() < 0)
     setPos(10, y());
@@ -352,6 +353,7 @@ void ModuleProxyWidget::keepInScene()
     setPos(x(), NetworkBoundaries::sceneHeight - 10);
 
   //qDebug() << "~" << __FUNCTION__ << pos();
+  #endif
 }
 
 void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)

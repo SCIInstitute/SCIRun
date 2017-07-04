@@ -112,6 +112,7 @@ protected:
   virtual void keyReleaseEvent(QKeyEvent *event) override;
   virtual void showEvent(QShowEvent* event) override;
   virtual void hideEvent(QHideEvent* event) override;
+  void resizeEvent(QResizeEvent* event) override;
 private:
   static SCIRunMainWindow* instance_;
   SCIRunMainWindow();
@@ -184,6 +185,8 @@ private:
   bool skipSaveCheck_ = false;
   bool startup_;
   boost::shared_ptr<NetworkEditorBuilder> builder_;
+  int dockSpace_{0};
+  class DockManager* dockManager_;
 
 Q_SIGNALS:
   void moduleItemDoubleClicked();
