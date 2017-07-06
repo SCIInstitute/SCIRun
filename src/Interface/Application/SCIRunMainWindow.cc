@@ -254,24 +254,38 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionKeyboardShortcuts_, SIGNAL(triggered()), this, SLOT(showKeyboardShortcutsDialog()));
 
   //TODO: store in xml file, add to app resources
-  ToolkitInfo fwdInv{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
-    "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.2.zip",
-    "FwdInvToolkit_stable.zip" };
-  fwdInv.setupAction(actionForwardInverseStable_, this);
-  ToolkitInfo fwdInvNightly{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
-    "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/master",
-    "FwdInvToolkit_nightly.zip" };
-  fwdInvNightly.setupAction(actionForwardInverseNightly_, this);
-
-  ToolkitInfo brainStim{ "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png",
-    "http://sci.utah.edu/devbuilds/scirun5/toolkits/BrainStimulator_v1.2.zip",
-    "BrainStimulator_stable.zip" };
-  brainStim.setupAction(actionBrainStimulatorStable_, this);
-  ToolkitInfo brainStimNightly{ "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png",
-    "https://codeload.github.com/SCIInstitute/BrainStimulator/zip/master",
-    "BrainStimulator_nightly.zip" };
-  brainStimNightly.setupAction(actionBrainStimulatorNightly_, this);
-
+  {
+    ToolkitInfo fwdInv{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
+    #ifdef __APPLE__
+      "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/v1.3",
+    #else
+      "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.3.zip",
+    #endif
+      "FwdInvToolkit_stable.zip" };
+    fwdInv.setupAction(actionForwardInverseStable_, this);
+  }
+  {
+    ToolkitInfo fwdInvNightly{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
+      "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/master",
+      "FwdInvToolkit_nightly.zip" };
+    fwdInvNightly.setupAction(actionForwardInverseNightly_, this);
+  }
+  {
+    ToolkitInfo brainStim{ "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png",
+    #ifdef __APPLE__
+      "https://codeload.github.com/SCIInstitute/BrainStimulator/zip/BrainStimulator_v1.3",
+    #else
+      "http://sci.utah.edu/devbuilds/scirun5/toolkits/BrainStimulator_v1.3.zip",
+    #endif
+      "BrainStimulator_stable.zip" };
+    brainStim.setupAction(actionBrainStimulatorStable_, this);
+  }
+  {
+    ToolkitInfo brainStimNightly{ "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png",
+      "https://codeload.github.com/SCIInstitute/BrainStimulator/zip/master",
+      "BrainStimulator_nightly.zip" };
+    brainStimNightly.setupAction(actionBrainStimulatorNightly_, this);
+  }
   connect(actionLoadToolkit_, SIGNAL(triggered()), this, SLOT(loadToolkit()));
 
   connect(networkEditor_, SIGNAL(networkExecuted()), networkProgressBar_.get(), SLOT(resetModulesDone()));
@@ -536,7 +550,7 @@ void SCIRunMainWindow::setupNetworkEditor()
   {
     auto screen = QApplication::desktop()->screenGeometry();
     if (screen.height() * screen.width() > 5000000)
-      highResolutionExpandFactor *= 1.5;
+      highResolutionExpandFactor = 1.7;
   }
   networkEditor_ = new NetworkEditor({ getter, defaultNotePositionGetter_, dialogErrorControl_, preexecuteFunc,
     tagColorFunc, tagNameFunc, highResolutionExpandFactor, dockManager_ }, scrollAreaWidgetContents_);
@@ -1680,8 +1694,6 @@ void SCIRunMainWindow::resetWindowLayout()
   moduleSelectorDockWidget_->show();
   moduleSelectorDockWidget_->setFloating(false);
   addDockWidget(Qt::LeftDockWidgetArea, moduleSelectorDockWidget_);
-
-  qDebug() << "TODO: toolbars";
 }
 
 void SCIRunMainWindow::hideNonfunctioningWidgets()
@@ -1995,7 +2007,6 @@ void SCIRunMainWindow::showStatusMessage(const QString& str, int timeInMsec)
 
 void SCIRunMainWindow::showExtendedDataInfo()
 {
-  qDebug() << "showExtendedDataInfo";
 }
 
 void SCIRunMainWindow::toggleMetadataLayer(bool toggle)

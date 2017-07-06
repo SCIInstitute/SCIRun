@@ -160,6 +160,19 @@ void ViewSceneDialog::pullSpecial()
   pulledSavedVisibility_ = true;
 }
 
+void ViewSceneDialog::adjustToolbar()
+{
+  for (auto& child : mToolBar->children())
+  {
+    auto button = qobject_cast<QPushButton*>(child);
+    if (button)
+    {
+      button->setFixedSize(button->size() * 2);
+      button->setIconSize(button->iconSize() * 2);
+    }
+  }
+}
+
 void ViewSceneDialog::setInitialLightValues()
 {
   auto light0str = state_->getValue(Modules::Render::ViewScene::HeadLightColor).toString();

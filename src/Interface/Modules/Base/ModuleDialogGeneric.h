@@ -80,6 +80,7 @@ namespace Gui {
     void setupButtonBar();
     bool isCollapsed() const { return collapsed_; }
     virtual void createStartupNote() {}
+    virtual void adjustToolbar() {}
     static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
     static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }
     static const std::set<ModuleDialogGeneric*>& instances() { return instances_; }
