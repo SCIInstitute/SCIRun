@@ -161,10 +161,18 @@ void ModuleWidgetDisplay::setupFrame(QStackedWidget* stacked)
 
 void ModuleWidgetDisplay::setupTitle(const QString& name)
 {
-  QFont titleFont(scirunModuleFontName(), titleFontSize, QFont::Bold);
+  auto hiDpi = ModuleWidget::highResolutionExpandFactor_ > 1;
+  auto fontSize = titleFontSize;
+  if (hiDpi)
+    fontSize--;
+  QFont titleFont(scirunModuleFontName(), fontSize, QFont::Bold);
+  if (hiDpi)
+    titleFont.setBold(false);
   titleLabel_->setFont(titleFont);
   titleLabel_->setText(name);
-  QFont smallerTitleFont(scirunModuleFontName(), titleFontSize - buttonPageFontSizeDiff);
+  if (hiDpi)
+    titleLabel_->setMinimumHeight(1.2 * titleLabel_->minimumHeight());
+  QFont smallerTitleFont(scirunModuleFontName(), fontSize - buttonPageFontSizeDiff);
   buttonGroup_->setFont(smallerTitleFont);
   buttonGroup_->setTitle(name);
   progressGroupBox_->setFont(smallerTitleFont);
@@ -1178,6 +1186,9 @@ void ModuleWidget::makeOptionsDialog()
         dialog_->setFixedWidth(dialog_->size().width() * (((highResolutionExpandFactor_ - 1) * 0.5) + 1));
         //qDebug() << dialog_->size();
       }
+
+      if (highResolutionExpandFactor_ > 1 && isViewScene_)
+        dialog_->adjustToolbar();
 
       dialog_->pull();
     }
