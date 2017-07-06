@@ -431,10 +431,11 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
 
   if (highResolutionExpandFactor_ > 1)
   {
-    module->setFixedHeight(proxy->size().height() * highResolutionExpandFactor_);
-    proxy->setMaximumHeight(proxy->size().height() * highResolutionExpandFactor_);
-    module->setFixedWidth(proxy->size().width() * std::max(highResolutionExpandFactor_*0.9, 1.0));
-    proxy->setMaximumWidth(proxy->size().width() * std::max(highResolutionExpandFactor_*0.9, 1.0));
+    auto multiplier = std::min(highResolutionExpandFactor_, 1.5);
+    module->setFixedHeight(proxy->size().height() * multiplier);
+    proxy->setMaximumHeight(proxy->size().height() * multiplier);
+    module->setFixedWidth(proxy->size().width() * std::max(multiplier*0.9, 1.0));
+    proxy->setMaximumWidth(proxy->size().width() * std::max(multiplier*0.9, 1.0));
   }
 
   scene_->addItem(proxy);
