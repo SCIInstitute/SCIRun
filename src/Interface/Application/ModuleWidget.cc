@@ -1180,11 +1180,8 @@ void ModuleWidget::makeOptionsDialog()
 
       if (highResolutionExpandFactor_ > 1 && !isViewScene_)
       {
-        //qDebug() << "expand factor for dialogs:" << highResolutionExpandFactor_;
-        //qDebug() << dialog_->size();
         dialog_->setFixedHeight(dialog_->size().height() * highResolutionExpandFactor_);
         dialog_->setFixedWidth(dialog_->size().width() * (((highResolutionExpandFactor_ - 1) * 0.5) + 1));
-        //qDebug() << dialog_->size();
       }
 
       if (highResolutionExpandFactor_ > 1 && isViewScene_)

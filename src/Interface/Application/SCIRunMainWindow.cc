@@ -1681,8 +1681,6 @@ void SCIRunMainWindow::resetWindowLayout()
   moduleSelectorDockWidget_->show();
   moduleSelectorDockWidget_->setFloating(false);
   addDockWidget(Qt::LeftDockWidgetArea, moduleSelectorDockWidget_);
-
-  qDebug() << "TODO: toolbars";
 }
 
 void SCIRunMainWindow::hideNonfunctioningWidgets()
@@ -1996,7 +1994,6 @@ void SCIRunMainWindow::showStatusMessage(const QString& str, int timeInMsec)
 
 void SCIRunMainWindow::showExtendedDataInfo()
 {
-  qDebug() << "showExtendedDataInfo";
 }
 
 void SCIRunMainWindow::toggleMetadataLayer(bool toggle)
