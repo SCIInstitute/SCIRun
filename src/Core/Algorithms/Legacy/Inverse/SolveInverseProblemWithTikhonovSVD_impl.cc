@@ -70,21 +70,32 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 void SolveInverseProblemWithTikhonovSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& matrixU_, const SCIRun::Core::Datatypes::DenseMatrix& singularValues_, const SCIRun::Core::Datatypes::DenseMatrix& matrixV_)
 {
 
-	// if (!matrixU_.size())&&(!matrixV_.size())&&(!singularValues_.size()){
-	// 	std::cout << "Precomputed SVD variables found as an input" << std::endl;
-	//
-	// 	svd_MatrixU = *matrixU_;
-	// 	svd_MatrixV = *matrixV_;
-	// 	svd_SingularValues = *singularValues_;
-	//
-	// }else{
+		// alocate U and V matrices
+			svd_MatrixU = matrixU_;
+			svd_MatrixV = matrixV_;
 
-		std::cout << "No precomputed SVD... computing now" << std::endl;
+		// alocate singular values
+			if (singularValues_.ncols() == 1 ){
+				svd_SingularValues = singularValues_;
+			}
+			else{
+				svd_SingularValues = singularValues_.diagonal();
+			}
+
+		// Compute the projection of data y on the left singular vectors
+			Uy = svd_MatrixU.transpose() * (measuredData_);
+
+		// determine rank
+	        rank = svd_SingularValues.nrows();
+}
+
+void SolveInverseProblemWithTikhonovSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
+{
 
 	    // Compute the SVD of the forward matrix
 	        Eigen::JacobiSVD<SCIRun::Core::Datatypes::DenseMatrix::EigenBase> SVDdecomposition( forwardMatrix_, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
-			// alocate the left and right singular vectors and the singular values
+		// alocate the left and right singular vectors and the singular values
 			svd_MatrixU = SVDdecomposition.matrixU();
 			svd_MatrixV = SVDdecomposition.matrixV();
 			svd_SingularValues = SVDdecomposition.singularValues();
@@ -93,11 +104,7 @@ void SolveInverseProblemWithTikhonovSVD_impl::preAlocateInverseMatrices(const SC
 	        rank = SVDdecomposition.nonzeroSingularValues();
 
 	    // Compute the projection of data y on the left singular vectors
-	        auto tempUy = SVDdecomposition.matrixU().transpose() * (measuredData_);
-
-	        Uy = tempUy;
-
-	// }
+	        Uy = svd_MatrixU.transpose() * (measuredData_);
 }
 
 //////////////////////////////////////////////////////////////////////

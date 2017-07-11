@@ -234,5 +234,38 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>lambdaMethodComboBox_</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>stackedWidget</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+ 	<x>182</x>
+ 	<y>49</y>
+    </hint>
+    <hint type="destinationlabel">
+ 	<x>182</x>
+ 	<y>196</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>stackedWidget</sender>
+   <signal>currentChanged(int)</signal>
+   <receiver>lambdaMethodComboBox_</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+ 	<x>182</x>
+ 	<y>196</y>
+    </hint>
+    <hint type="destinationlabel">
+ 	<x>182</x>
+ 	<y>49</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
