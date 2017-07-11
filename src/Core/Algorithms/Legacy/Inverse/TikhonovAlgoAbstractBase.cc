@@ -37,6 +37,7 @@ Last modification : April 20 2017
 #include <Core/Algorithms/Legacy/Inverse/TikhonovImpl.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
+#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD_impl.h>
 
 // Datatypes
 #include <Core/Datatypes/Matrix.h>
@@ -236,7 +237,7 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 		auto singularValues_ = input.get<Matrix>(TikhonovAlgoAbstractBase::singularValues);
 		auto matrixV_ = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixV);
 
-		// If there is a missing matrix from the precomputed SVD input 
+		// If there is a missing matrix from the precomputed SVD input
 		if ( (matrixU_ == NULL) || 	 (singularValues_ == NULL) || ( matrixV_ == NULL)  )
 			algoImpl = new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_) );
 		else
@@ -244,7 +245,22 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
 	}
 	else if ( TikhonovImplementation_gotten ==  std::string("TikhonovTSVD") ){
-		THROW_ALGORITHM_PROCESSING_ERROR("Tikhonov TSVD not implemented yet");
+
+		// get Parameters
+		int  regularizationChoice_ = get(Parameters::regularizationChoice).toInt();
+		int regularizationSolutionSubcase_ = get(Parameters::regularizationSolutionSubcase).toInt();
+		int regularizationResidualSubcase_ = get(Parameters::regularizationResidualSubcase).toInt();
+
+		// get TikhonovSVD special inputs
+		auto matrixU_ = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixU);
+		auto singularValues_ = input.get<Matrix>(TikhonovAlgoAbstractBase::singularValues);
+		auto matrixV_ = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixV);
+
+		// If there is a missing matrix from the precomputed SVD input
+		if ( (matrixU_ == NULL) || 	 (singularValues_ == NULL) || ( matrixV_ == NULL)  )
+			algoImpl = new SolveInverseProblemWithTikhonovTSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_) );
+		else
+			algoImpl = new SolveInverseProblemWithTikhonovTSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), *castMatrix::toDense(matrixU_), *castMatrix::toDense(singularValues_), *castMatrix::toDense(matrixV_) );
 	}
 	else{
 		THROW_ALGORITHM_PROCESSING_ERROR("Not a valid Tikhonov Implementation selection");
