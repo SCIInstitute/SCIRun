@@ -67,13 +67,21 @@ SolveInverseProblemWithTikhonovTSVD::SolveInverseProblemWithTikhonovTSVD() : Mod
 
 void SolveInverseProblemWithTikhonovTSVD::setStateDefaults()
 {
-	setStateStringFromAlgo(Parameters::TikhonovImplementation);
+	auto state = get_state();
+
+	state->setValue( Parameters::TikhonovImplementation, std::string("TikhonovTSVD") );
+	state->setValue(Parameters::LambdaMin,1);
+	state->setValue(Parameters::LambdaMax,1);
+	state->setValue(Parameters::LambdaNum, 1);
+	state->setValue( Parameters::LambdaResolution, 1);
+
+	// setStateStringFromAlgo(Parameters::TikhonovImplementation);
 	setStateStringFromAlgoOption(Parameters::RegularizationMethod);
 	setStateDoubleFromAlgo(Parameters::LambdaFromDirectEntry);
-	setStateDoubleFromAlgo(Parameters::LambdaMin);
-	setStateDoubleFromAlgo(Parameters::LambdaMax);
-	setStateIntFromAlgo(Parameters::LambdaNum);
-	setStateDoubleFromAlgo(Parameters::LambdaResolution);
+	// setStateDoubleFromAlgo(Parameters::LambdaMin);
+	// setStateDoubleFromAlgo(Parameters::LambdaMax);
+	// setStateIntFromAlgo(Parameters::LambdaNum);
+	// setStateDoubleFromAlgo(Parameters::LambdaResolution);
 	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
 	setStateIntFromAlgo(Parameters::LambdaCorner);
 	setStateStringFromAlgo(Parameters::LCurveText);
@@ -96,26 +104,39 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
 	auto hSingularValues = getOptionalInput(singularValues);
 	auto hMatrixV = getOptionalInput(matrixV);
 
-	std::cout << "gato" << std::endl;
 
 	if (needToExecute())
 	{
+
+		// Obtain rank of forward matrix
+		int rank;
+		if ( hSingularValues ) {
+			rank = (*hSingularValues)->nrows();
+		}
+		else{
+			Eigen::FullPivLU<SCIRun::Core::Datatypes::DenseMatrix::EigenBase> lu_decomp(*forward_matrix_h);
+			rank = lu_decomp.rank();
+		}
+
+		std::cout << "Computed rank: " << rank << std::endl;
 		// set parameters
 		auto state = get_state();
-		// set parameters
-		state->setValue( Parameters::TikhonovImplementation, std::string("TikhonovTSVD") );
+
+		// state->setValue( Parameters::TikhonovImplementation, std::string("TikhonovTSVD") );
 		setAlgoStringFromState(Parameters::TikhonovImplementation);
 		setAlgoOptionFromState(Parameters::RegularizationMethod);
 		setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
+		// state->setValue(Parameters::LambdaMin,1);
+		// state->setValue(Parameters::LambdaMax,double(rank)); // casting to double to keep consistency across tikhonov types
+		// state->setValue(Parameters::LambdaNum, rank);	// casting to double to keep consistency across tikhonov types
+		// state->setValue( Parameters::LambdaResolution, 1);
 		setAlgoDoubleFromState(Parameters::LambdaMin);
 		setAlgoDoubleFromState(Parameters::LambdaMax);
 		setAlgoIntFromState(Parameters::LambdaNum);
-		setAlgoDoubleFromState(Parameters::LambdaResolution);
 		setAlgoDoubleFromState(Parameters::LambdaSliderValue);
 		setAlgoIntFromState(Parameters::LambdaCorner);
 		setAlgoStringFromState(Parameters::LCurveText);
 
-		// run
 		// run
 		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,optionalAlgoInput(hMatrixRegMat))(WeightingInSensorSpace,optionalAlgoInput(hMatrixNoiseCov))(matrixU,optionalAlgoInput(hMatrixU))(singularValues,optionalAlgoInput(hSingularValues))(matrixV,optionalAlgoInput(hMatrixV))) );
 

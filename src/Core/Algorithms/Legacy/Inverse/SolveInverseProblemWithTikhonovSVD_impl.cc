@@ -110,7 +110,7 @@ void SolveInverseProblemWithTikhonovSVD_impl::preAlocateInverseMatrices(const SC
 //////////////////////////////////////////////////////////////////////
 // THIS FUNCTION returns regularized solution by tikhonov method
 //////////////////////////////////////////////////////////////////////
-SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovSVD_impl::computeInverseSolution( double lambda_sq, bool inverseCalculation ) const
+SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovSVD_impl::computeInverseSolution( double lambda, bool inverseCalculation ) const
 {
 
     // prealocate matrices
@@ -125,7 +125,7 @@ SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovSVD_impl::co
         {
             // evaluate filter factor
                 double singVal = svd_SingularValues[rr];
-                double filterFactor_i =  singVal / ( lambda_sq + singVal * singVal ) * Uy(rr);
+                double filterFactor_i =  singVal / ( lambda * lambda + singVal * singVal ) * Uy(rr);
 
             // u[date solution
                 solution += filterFactor_i * svd_MatrixV.col(rr);

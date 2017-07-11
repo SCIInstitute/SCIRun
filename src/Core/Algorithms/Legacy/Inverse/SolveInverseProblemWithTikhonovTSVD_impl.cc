@@ -87,6 +87,7 @@ void SolveInverseProblemWithTikhonovTSVD_impl::preAlocateInverseMatrices(const S
 
 		// determine rank
 	        rank = svd_SingularValues.nrows();
+
 }
 
 void SolveInverseProblemWithTikhonovTSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
@@ -110,7 +111,7 @@ void SolveInverseProblemWithTikhonovTSVD_impl::preAlocateInverseMatrices(const S
 //////////////////////////////////////////////////////////////////////
 // THIS FUNCTION returns regularized solution by tikhonov method
 //////////////////////////////////////////////////////////////////////
-SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovTSVD_impl::computeInverseSolution( double truncationPoint, bool inverseCalculation ) const
+SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovTSVD_impl::computeInverseSolution( double lambda, bool inverseCalculation ) const
 {
 
     // prealocate matrices
@@ -119,6 +120,8 @@ SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovTSVD_impl::c
         const int numTimeSamples = Uy.ncols();
         DenseMatrix solution(DenseMatrix::Zero(N,numTimeSamples));
         DenseMatrix tempInverse(DenseMatrix::Zero(N,M));
+
+		const int truncationPoint = Min( int(lambda), rank, int(9999999999999) );
 
     // Compute inverse SolveInverseProblemWithTikhonovTSVD
         for (int rr=0; rr < truncationPoint ; rr++)
