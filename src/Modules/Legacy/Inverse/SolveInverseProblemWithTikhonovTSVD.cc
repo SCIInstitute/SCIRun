@@ -28,9 +28,9 @@
 
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Scalar.h>
-#include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD.h>
+#include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
+#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD_impl.h>
 // #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
@@ -45,11 +45,11 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Inverse;
 
 // Module definitions. Sets the info into the staticInfo_
-MODULE_INFO_DEF(SolveInverseProblemWithTikhonovSVD, Inverse, SCIRun)
+MODULE_INFO_DEF(SolveInverseProblemWithTikhonovTSVD, Inverse, SCIRun)
 
 // Constructor neeeds to have empty inputs and the parent's constructor has staticInfo_ as an input (adapted to thsi module in MODULE_INFO_DEF macro)
 // Constructor needs to initialize all input/output ports
-SolveInverseProblemWithTikhonovSVD::SolveInverseProblemWithTikhonovSVD() : Module(staticInfo_)
+SolveInverseProblemWithTikhonovTSVD::SolveInverseProblemWithTikhonovTSVD() : Module(staticInfo_)
 {
 	//inputs
 	INITIALIZE_PORT(ForwardMatrix);
@@ -65,22 +65,30 @@ SolveInverseProblemWithTikhonovSVD::SolveInverseProblemWithTikhonovSVD() : Modul
 	INITIALIZE_PORT(RegInverse);
 }
 
-void SolveInverseProblemWithTikhonovSVD::setStateDefaults()
+void SolveInverseProblemWithTikhonovTSVD::setStateDefaults()
 {
-	setStateStringFromAlgo(Parameters::TikhonovImplementation);
+	auto state = get_state();
+
+	state->setValue( Parameters::TikhonovImplementation, std::string("TikhonovTSVD") );
+	state->setValue(Parameters::LambdaMin,1);
+	state->setValue(Parameters::LambdaMax,1);
+	state->setValue(Parameters::LambdaNum, 1);
+	state->setValue( Parameters::LambdaResolution, 1);
+
+	// setStateStringFromAlgo(Parameters::TikhonovImplementation);
 	setStateStringFromAlgoOption(Parameters::RegularizationMethod);
 	setStateDoubleFromAlgo(Parameters::LambdaFromDirectEntry);
-	setStateDoubleFromAlgo(Parameters::LambdaMin);
-	setStateDoubleFromAlgo(Parameters::LambdaMax);
-	setStateIntFromAlgo(Parameters::LambdaNum);
-	setStateDoubleFromAlgo(Parameters::LambdaResolution);
+	// setStateDoubleFromAlgo(Parameters::LambdaMin);
+	// setStateDoubleFromAlgo(Parameters::LambdaMax);
+	// setStateIntFromAlgo(Parameters::LambdaNum);
+	// setStateDoubleFromAlgo(Parameters::LambdaResolution);
 	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
 	setStateIntFromAlgo(Parameters::LambdaCorner);
 	setStateStringFromAlgo(Parameters::LCurveText);
 }
 
 // execute function
-void SolveInverseProblemWithTikhonovSVD::execute()
+void SolveInverseProblemWithTikhonovTSVD::execute()
 {
 
 	// load required inputs
@@ -96,21 +104,35 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 	auto hSingularValues = getOptionalInput(singularValues);
 	auto hMatrixV = getOptionalInput(matrixV);
 
-	std::cout << "gato" << std::endl;
 
 	if (needToExecute())
 	{
+
+		// Obtain rank of forward matrix
+		int rank;
+		if ( hSingularValues ) {
+			rank = (*hSingularValues)->nrows();
+		}
+		else{
+			Eigen::FullPivLU<SCIRun::Core::Datatypes::DenseMatrix::EigenBase> lu_decomp(*forward_matrix_h);
+			rank = lu_decomp.rank();
+		}
+
+		std::cout << "Computed rank: " << rank << std::endl;
 		// set parameters
 		auto state = get_state();
-		// set parameters
-		state->setValue( Parameters::TikhonovImplementation, std::string("TikhonovSVD") );
+
+		// state->setValue( Parameters::TikhonovImplementation, std::string("TikhonovTSVD") );
 		setAlgoStringFromState(Parameters::TikhonovImplementation);
 		setAlgoOptionFromState(Parameters::RegularizationMethod);
 		setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
+		// state->setValue(Parameters::LambdaMin,1);
+		// state->setValue(Parameters::LambdaMax,double(rank)); // casting to double to keep consistency across tikhonov types
+		// state->setValue(Parameters::LambdaNum, rank);	// casting to double to keep consistency across tikhonov types
+		// state->setValue( Parameters::LambdaResolution, 1);
 		setAlgoDoubleFromState(Parameters::LambdaMin);
 		setAlgoDoubleFromState(Parameters::LambdaMax);
 		setAlgoIntFromState(Parameters::LambdaNum);
-		setAlgoDoubleFromState(Parameters::LambdaResolution);
 		setAlgoDoubleFromState(Parameters::LambdaSliderValue);
 		setAlgoIntFromState(Parameters::LambdaCorner);
 		setAlgoStringFromState(Parameters::LCurveText);
@@ -120,7 +142,7 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 
 		// update L-curve
 		/* NO EXISTE
-        SolveInverseProblemWithTikhonovSVD_impl::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonov::update_lcurve_gui, this, _1, _2, _3);
+        SolveInverseProblemWithTikhonovTSVD_impl::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonov::update_lcurve_gui, this, _1, _2, _3);
 		*/
 
 		// set outputs

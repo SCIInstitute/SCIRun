@@ -31,6 +31,7 @@
 SET(Modules_Legacy_Inverse_HEADERS
   SolveInverseProblemWithTikhonov.h
   SolveInverseProblemWithTikhonovSVD.h
+  SolveInverseProblemWithTikhonovTSVD.h
   BuildSurfaceLaplacianMatrix.h
   share.h
 )
@@ -38,6 +39,7 @@ SET(Modules_Legacy_Inverse_HEADERS
 SET(Modules_Legacy_Inverse_SRCS
   SolveInverseProblemWithTikhonov.cc
   SolveInverseProblemWithTikhonovSVD.cc
+  SolveInverseProblemWithTikhonovTSVD.cc
   BuildSurfaceLaplacianMatrix.cc
 )
 

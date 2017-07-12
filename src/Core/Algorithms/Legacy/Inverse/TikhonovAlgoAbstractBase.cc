@@ -307,10 +307,8 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 	std::cout << "Lambda: "  << lambda_ << std::endl;
     lambda = lambda_;
 
-
     // compute final inverse solution
 	solution = algoImpl->computeInverseSolution(lambda, true);
-
 
 
 	// Set outputs

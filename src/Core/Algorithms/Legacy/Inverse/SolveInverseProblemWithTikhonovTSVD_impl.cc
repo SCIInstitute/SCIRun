@@ -26,7 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-//    File       : SolveInverseProblemWithTikhonovSVD.cc
+//    File       : SolveInverseProblemWithTikhonovTSVD.cc
 //    Author     : Yesim Serinagaoglu & Alireza Ghodrati
 //    Date       : 07 Aug. 2001
 //    Last update: Dec 2011
@@ -46,7 +46,7 @@
 
 // Tikhonov inverse libraries
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
-#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
+#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD_impl.h>
 
 // EIGEN LIBRARY
 #include <Eigen/Eigen>
@@ -67,7 +67,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 /////// prealocate Matrices for inverse compuation
 ///     This function precalcualtes the SVD of the forward matrix and prepares singular vectors and values for posterior computations
 ///////////////////////////////////////////////////////////////////
-void SolveInverseProblemWithTikhonovSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& matrixU_, const SCIRun::Core::Datatypes::DenseMatrix& singularValues_, const SCIRun::Core::Datatypes::DenseMatrix& matrixV_)
+void SolveInverseProblemWithTikhonovTSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& matrixU_, const SCIRun::Core::Datatypes::DenseMatrix& singularValues_, const SCIRun::Core::Datatypes::DenseMatrix& matrixV_)
 {
 
 		// alocate U and V matrices
@@ -87,9 +87,10 @@ void SolveInverseProblemWithTikhonovSVD_impl::preAlocateInverseMatrices(const SC
 
 		// determine rank
 	        rank = svd_SingularValues.nrows();
+
 }
 
-void SolveInverseProblemWithTikhonovSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
+void SolveInverseProblemWithTikhonovTSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
 {
 
 	    // Compute the SVD of the forward matrix
@@ -110,7 +111,7 @@ void SolveInverseProblemWithTikhonovSVD_impl::preAlocateInverseMatrices(const SC
 //////////////////////////////////////////////////////////////////////
 // THIS FUNCTION returns regularized solution by tikhonov method
 //////////////////////////////////////////////////////////////////////
-SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovSVD_impl::computeInverseSolution( double lambda, bool inverseCalculation ) const
+SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovTSVD_impl::computeInverseSolution( double lambda, bool inverseCalculation ) const
 {
 
     // prealocate matrices
@@ -120,12 +121,14 @@ SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovSVD_impl::co
         DenseMatrix solution(DenseMatrix::Zero(N,numTimeSamples));
         DenseMatrix tempInverse(DenseMatrix::Zero(N,M));
 
-    // Compute inverse solution
-        for (int rr=0; rr<rank ; rr++)
+		const int truncationPoint = Min( int(lambda), rank, int(9999999999999) );
+
+    // Compute inverse SolveInverseProblemWithTikhonovTSVD
+        for (int rr=0; rr < truncationPoint ; rr++)
         {
             // evaluate filter factor
                 double singVal = svd_SingularValues[rr];
-                double filterFactor_i =  singVal / ( lambda * lambda + singVal * singVal ) * Uy(rr);
+                double filterFactor_i =  1 / ( singVal ) * Uy(rr);
 
             // u[date solution
                 solution += filterFactor_i * svd_MatrixV.col(rr);

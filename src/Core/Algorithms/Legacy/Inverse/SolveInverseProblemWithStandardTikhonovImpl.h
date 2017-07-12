@@ -68,7 +68,7 @@ namespace SCIRun {
 
 					void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const int regularizationChoice_, const int regularizationSolutionSubcase_, const int regularizationResidualSubcase_ );
 
-			        virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation) const;
+			        virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda, bool inverseCalculation) const;
 			//      bool checkInputMatrixSizes(); // DEFINED IN PARENT, MIGHT WANT TO OVERRIDE SOME OTHER TIME
 
 			    };

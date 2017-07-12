@@ -30,8 +30,8 @@
 //    Author     : Moritz Dannhauer and Ayla Khan
 //    Date       : 15 Aug. 2012
 
-#ifndef BioPSE_SolveInverseProblemWithTikhonovSVDimpl_H__
-#define BioPSE_SolveInverseProblemWithTikhonovSVDimpl_H__
+#ifndef BioPSE_SolveInverseProblemWithTikhonovTSVDimpl_H__
+#define BioPSE_SolveInverseProblemWithTikhonovTSVDimpl_H__
 
 #include <vector>
 
@@ -53,17 +53,17 @@ namespace Core {
 namespace Algorithms {
 namespace Inverse {
 
-		    class SCISHARE SolveInverseProblemWithTikhonovSVD_impl : public TikhonovImpl
+		    class SCISHARE SolveInverseProblemWithTikhonovTSVD_impl : public TikhonovImpl
 		    {
 
 
 		    public:
-		        SolveInverseProblemWithTikhonovSVD_impl(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& matrixU_, const SCIRun::Core::Datatypes::DenseMatrix& singularValues_, const SCIRun::Core::Datatypes::DenseMatrix& matrixV_)
+		        SolveInverseProblemWithTikhonovTSVD_impl(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& matrixU_, const SCIRun::Core::Datatypes::DenseMatrix& singularValues_, const SCIRun::Core::Datatypes::DenseMatrix& matrixV_)
                                     {
 										preAlocateInverseMatrices( forwardMatrix_,  measuredData_ ,  sourceWeighting_,  sensorWeighting_, matrixU_, singularValues_, matrixV_ );
                                     };
 
-				SolveInverseProblemWithTikhonovSVD_impl(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
+				SolveInverseProblemWithTikhonovTSVD_impl(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
                                     {
 										preAlocateInverseMatrices( forwardMatrix_,  measuredData_ ,  sourceWeighting_,  sensorWeighting_);
                                     };
@@ -82,7 +82,7 @@ namespace Inverse {
 				void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& matrixU_, const SCIRun::Core::Datatypes::DenseMatrix& singularValues_, const SCIRun::Core::Datatypes::DenseMatrix& matrixV_);
 				void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_);
 
-		        virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda, bool inverseCalculation) const;
+		        virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double truncationPoint, bool inverseCalculation) const;
 		        //      bool checkInputMatrixSizes(); // DEFINED IN PARENT, MIGHT WANT TO OVERRIDE SOME OTHER TIME
 
 

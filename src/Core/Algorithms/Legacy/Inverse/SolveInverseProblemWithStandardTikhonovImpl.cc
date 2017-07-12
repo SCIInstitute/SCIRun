@@ -57,7 +57,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 
 /////////////////////////
 ///////// compute Inverse solution
-    DenseMatrix SolveInverseProblemWithStandardTikhonovImpl::computeInverseSolution( double lambda_sq, bool inverseCalculation) const
+    DenseMatrix SolveInverseProblemWithStandardTikhonovImpl::computeInverseSolution( double lambda, bool inverseCalculation) const
     {
         //............................
         //  OPERATIONS PERFORMED IN THIS SECTION:
@@ -79,7 +79,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
         DenseMatrix solution(sizeSolution,numTimeSamples);
         DenseMatrix G;
 
-        G = M1 + lambda_sq * M2;
+        G = M1 + lambda * lambda * M2;
 
         b = G.lu().solve(y).eval();
 
