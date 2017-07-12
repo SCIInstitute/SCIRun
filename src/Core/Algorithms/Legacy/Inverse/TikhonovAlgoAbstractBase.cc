@@ -37,6 +37,7 @@ Last modification : April 20 2017
 #include <Core/Algorithms/Legacy/Inverse/TikhonovImpl.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
+#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD_impl.h>
 
 // Datatypes
 #include <Core/Datatypes/Matrix.h>
@@ -89,6 +90,7 @@ ALGORITHM_PARAMETER_DEF( Inverse, LambdaCorner);
 ALGORITHM_PARAMETER_DEF( Inverse, LCurveText);
 ALGORITHM_PARAMETER_DEF( Inverse, regularizationSolutionSubcase);
 ALGORITHM_PARAMETER_DEF( Inverse, regularizationResidualSubcase);
+
 
 TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
 {
@@ -207,7 +209,7 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
     // Alocate Variable
 	DenseMatrix solution;
-    double lambda_sq = 0;
+    double lambda = 0;
 	double lambda_ = 0;
 
 	// check input MATRICES
@@ -223,6 +225,9 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 		int regularizationResidualSubcase_ = get(Parameters::regularizationResidualSubcase).toInt();
 
 		algoImpl = new SolveInverseProblemWithStandardTikhonovImpl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), regularizationChoice_, regularizationSolutionSubcase_, regularizationResidualSubcase_);
+
+
+
 	}
 	else if ( TikhonovImplementation_gotten ==  std::string("TikhonovSVD") ){
 
@@ -236,21 +241,45 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 		auto singularValues_ = input.get<Matrix>(TikhonovAlgoAbstractBase::singularValues);
 		auto matrixV_ = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixV);
 
-		// If there is a missing matrix from the precomputed SVD input 
+
+		// If there is a missing matrix from the precomputed SVD input
 		if ( (matrixU_ == NULL) || 	 (singularValues_ == NULL) || ( matrixV_ == NULL)  )
 			algoImpl = new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_) );
 		else
 			algoImpl = new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), *castMatrix::toDense(matrixU_), *castMatrix::toDense(singularValues_), *castMatrix::toDense(matrixV_) );
 
+
+
 	}
 	else if ( TikhonovImplementation_gotten ==  std::string("TikhonovTSVD") ){
-		THROW_ALGORITHM_PROCESSING_ERROR("Tikhonov TSVD not implemented yet");
+
+		// get Parameters
+		int  regularizationChoice_ = get(Parameters::regularizationChoice).toInt();
+		int regularizationSolutionSubcase_ = get(Parameters::regularizationSolutionSubcase).toInt();
+		int regularizationResidualSubcase_ = get(Parameters::regularizationResidualSubcase).toInt();
+
+		// get TikhonovSVD special inputs
+		auto matrixU_ = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixU);
+		auto singularValues_ = input.get<Matrix>(TikhonovAlgoAbstractBase::singularValues);
+		auto matrixV_ = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixV);
+
+
+		// If there is a missing matrix from the precomputed SVD input
+		if ( (matrixU_ == NULL) || 	 (singularValues_ == NULL) || ( matrixV_ == NULL)  )
+			algoImpl = new SolveInverseProblemWithTikhonovTSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_) );
+		else
+			algoImpl = new SolveInverseProblemWithTikhonovTSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), *castMatrix::toDense(matrixU_), *castMatrix::toDense(singularValues_), *castMatrix::toDense(matrixV_) );
+
+
+
 	}
 	else{
 		THROW_ALGORITHM_PROCESSING_ERROR("Not a valid Tikhonov Implementation selection");
+
 	}
 
-	// preAlocateInverseMatrices(forwardMatrix_,measuredData_,sourceWeighting_,sensorWeighting_);
+
+
 
     //Get Regularization parameter(s) : Lambda
     if ((RegularizationMethod_gotten == "single") || (RegularizationMethod_gotten == "slider"))
@@ -276,21 +305,12 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 	}
 
 	std::cout << "Lambda: "  << lambda_ << std::endl;
-    lambda_sq = lambda_ * lambda_;
+    lambda = lambda_;
 
 
-    // compute inverse solution
-	solution = algoImpl->computeInverseSolution(lambda_sq, true);
+    // compute final inverse solution
+	solution = algoImpl->computeInverseSolution(lambda, true);
 
-	//
-    // // set final result
-    // inverseSolution_.reset(new DenseMatrix(solution));
-
-    // output regularization parameter
-    // DenseColumnMatrix tempLambda(1);
-    // tempLambda[0] = lambda_;
-	//
-    // regularizationParameter_. reset( new DenseColumnMatrix(tempLambda) );
 
 
 	// Set outputs
@@ -321,7 +341,6 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
     const double lam_step = (log10(lambdaMax_) - log10(lambdaMin_))  / (nLambda-1);
 	std::cout << "Lambda power step: " << lam_step << ". Number: "<< nLambda <<". Lambda min: " << lambdaMin_ << ". Lambda max: "<< lambdaMax_<< ". Ratio: "<<  lambdaMax_ / lambdaMin_ << std::endl;
     double lambda = 0;
-    double lambda_sq;
 
     // prealocate vector of lambdas and eta and rho
     std::vector<double> lambdaArray(nLambda, 0.0);
@@ -341,11 +360,8 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
             lambdaArray[j] = lambdaArray[j-1] * pow(10.0,lam_step);
         }
 
-        // set current lambda
-        lambda_sq = lambdaArray[j] * lambdaArray[j];
-
         // COMPUTE INVERSE SOLUTION
-        solution = algoImpl->computeInverseSolution( lambda_sq, false);
+        solution = algoImpl->computeInverseSolution( lambdaArray[j], false);
 
 
         // if using source regularization matrix, apply it to compute Rx (for the eta computations)
@@ -373,23 +389,8 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
 
 
         // compute rho and eta
-        rho[j]=0; eta[j]=0;
-        for (int k = 0; k < CAx.nrows(); k++)
-        {
-            double T = CAx(k);
-            rho[j] += T*T; //norm of the data fit term
-        }
-
-        for (int k = 0; k < Rx.nrows(); k++)
-        {
-            double T = Rx(k);
-            eta[j] += T*T; //norm of the model term
-        }
-
-        // eta and rho needed to plot the Lcurve and determine the L corner
-        rho[j] = sqrt(rho[j]);
-        eta[j] = sqrt(eta[j]);
-
+		rho[j] = CAx.norm();
+		eta[j] = Rx.norm();
 
     }
 
