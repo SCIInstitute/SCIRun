@@ -550,7 +550,7 @@ void SCIRunMainWindow::setupNetworkEditor()
   auto highResolutionExpandFactor = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().get_value_or(1.0);
   {
     auto screen = QApplication::desktop()->screenGeometry();
-    if (screen.height() * screen.width() > 5000000)
+    if (screen.height() * screen.width() > 4096000) // 2560x1600
       highResolutionExpandFactor = 1.7;
   }
   networkEditor_ = new NetworkEditor({ getter, defaultNotePositionGetter_, dialogErrorControl_, preexecuteFunc,
