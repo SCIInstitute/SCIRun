@@ -75,7 +75,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
         const int numTimeSamples = y.ncols();
         DenseMatrix inverseG(sizeB,sizeB);
 
-        DenseColumnMatrix b(sizeB);
+        DenseMatrix b(sizeB);
         DenseMatrix solution(sizeSolution,numTimeSamples);
         DenseMatrix G;
 

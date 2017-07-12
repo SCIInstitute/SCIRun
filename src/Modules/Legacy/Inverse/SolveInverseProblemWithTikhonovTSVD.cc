@@ -127,8 +127,8 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
 		setAlgoOptionFromState(Parameters::RegularizationMethod);
 		setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
 		// state->setValue(Parameters::LambdaMin,1);
-		// state->setValue(Parameters::LambdaMax,double(rank)); // casting to double to keep consistency across tikhonov types
-		// state->setValue(Parameters::LambdaNum, rank);	// casting to double to keep consistency across tikhonov types
+		state->setValue(Parameters::LambdaMax,double(rank)); // casting to double to keep consistency across tikhonov types
+		state->setValue(Parameters::LambdaNum, rank);	// casting to double to keep consistency across tikhonov types
 		// state->setValue( Parameters::LambdaResolution, 1);
 		setAlgoDoubleFromState(Parameters::LambdaMin);
 		setAlgoDoubleFromState(Parameters::LambdaMax);

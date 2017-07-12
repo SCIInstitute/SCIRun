@@ -125,10 +125,10 @@ SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovSVD_impl::co
         {
             // evaluate filter factor
                 double singVal = svd_SingularValues[rr];
-                double filterFactor_i =  singVal / ( lambda * lambda + singVal * singVal ) * Uy(rr);
+                double filterFactor_i =  singVal / ( lambda * lambda + singVal * singVal );
 
             // u[date solution
-                solution += filterFactor_i * svd_MatrixV.col(rr);
+                solution += filterFactor_i * svd_MatrixV.col(rr) * Uy.row(rr);
 
             // update inverse operator
                 if (inverseCalculation)

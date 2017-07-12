@@ -132,12 +132,12 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & inp
 		return false;
     }
 
-    // check that number of time samples is 1. @JCOLLFONT to change for a more general case later (should add a for loop)
-    if (1 != measuredData_->ncols())
-    {
-		THROW_ALGORITHM_INPUT_ERROR("Measured data must be a vector");
-		return false;
-    }
+    // // check that number of time samples is 1. @JCOLLFONT to change for a more general case later (should add a for loop)
+    // if (1 != measuredData_->ncols())
+    // {
+	// 	THROW_ALGORITHM_INPUT_ERROR("Measured data must be a vector");
+	// 	return false;
+    // }
 
     // check source regularization matrix sizes
     if (sourceWeighting_)
