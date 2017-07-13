@@ -42,6 +42,7 @@ PreferencesWindow::PreferencesWindow(NetworkEditor* editor, QWidget* parent /* =
   connect(moduleErrorDialogDisableCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorDialogOption(int)));
   connect(autoModuleNoteCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateAutoNotesState(int)));
   connect(errorGraphicItemsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorInlineMessagesOption(int)));
+  connect(highDPIAdjustCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateHighDPIAdjust(int)));
 }
 
 void PreferencesWindow::updateModuleErrorDialogOption(int state)
@@ -62,10 +63,22 @@ void PreferencesWindow::updateAutoNotesState(int state)
   LOG_DEBUG("autoNotes is " << (state != 0));
 }
 
+void PreferencesWindow::updateHighDPIAdjust(int state)
+{
+  SCIRun::Core::Preferences::Instance().highDPIAdjustment.setValue(state != 0);
+  LOG_DEBUG("highDPIAdjustment is " << (state != 0));
+}
+
 void PreferencesWindow::setSaveBeforeExecute(bool mode)
 {
   updateSaveBeforeExecuteOption(mode ? 1 : 0);
   saveBeforeExecuteCheckBox_->setChecked(mode);
+}
+
+void PreferencesWindow::setHighDPIAdjustment(bool highDPI)
+{
+  updateHighDPIAdjust(highDPI ? 1 : 0);
+  highDPIAdjustCheckBox_->setChecked(highDPI);
 }
 
 void PreferencesWindow::setDisableModuleErrorDialogs(bool mode)

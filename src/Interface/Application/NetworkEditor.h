@@ -185,6 +185,8 @@ namespace Gui {
     const int sceneWidth = 1600;
     const int sceneHeight = 3200;
 
+    const double highDPIExpandFactorDefault = 1.7;
+
     QPointF keepInScene(const QPointF& p);
   }
 
@@ -266,6 +268,8 @@ namespace Gui {
 
     bool showTagGroupsOnFileLoad() const { return showTagGroupsOnFileLoad_; }
     void setShowTagGroupsOnFileLoad(bool show) { showTagGroupsOnFileLoad_ = show; }
+
+    void setHighResolutionExpandFactor(double factor = NetworkBoundaries::highDPIExpandFactorDefault);
 
     void adjustExecuteButtonsToDownstream(bool downOnly);
 
@@ -423,7 +427,7 @@ namespace Gui {
     SharedPointer<CurrentModuleSelection> moduleSelectionGetter_;
     SharedPointer<DefaultNotePositionGetter> defaultNotePositionGetter_;
     PreexecuteFunc preexecute_;
-    const double highResolutionExpandFactor_;
+    double highResolutionExpandFactor_;
 
     // special
     QGraphicsScene* scene_;
