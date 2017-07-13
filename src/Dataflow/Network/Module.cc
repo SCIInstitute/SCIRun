@@ -1043,7 +1043,7 @@ std::hash<std::string> ModuleLevelUniqueIDGenerator::hash_;
 std::string ModuleLevelUniqueIDGenerator::generateModuleLevelUniqueID(const ModuleInterface& module, const std::string& name) const
 {
   std::ostringstream ostr;
-  ostr << name << "_" << module.get_id() << "__";
+  ostr << name << "$" << module.get_id() << "$_";
 
   std::ostringstream toHash;
   toHash << "Data{";

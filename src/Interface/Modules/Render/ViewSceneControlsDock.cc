@@ -344,12 +344,20 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
 {
   std::vector<QString> displayNames;
   std::transform(geomList.begin(), geomList.end(), std::back_inserter(displayNames),
-    [](const GeometryBaseHandle& geom) { return QString::fromStdString(geom->uniqueID()).split('_').at(1); });
+    [](const GeometryBaseHandle& geom) { return QString::fromStdString(geom->uniqueID()).split('$').at(1); });
   for (int i = 0; i < itemList_->count(); ++i)
   {
     if (std::find(displayNames.begin(), displayNames.end(), itemList_->item(i)->text()) == displayNames.end())
       delete itemList_->takeItem(i);
   }
+  qDebug() << "displaynames:";
+  for (const auto& name : displayNames)
+    qDebug() << name;
+
+  std::set<QString> uniques(displayNames.begin(), displayNames.end());
+  if (uniques.size() < displayNames.size())
+    qDebug() << "duplicate field names, what to do?";
+
   for (const auto& name : displayNames)
   {
     if (!containsItem(name))
@@ -361,6 +369,7 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
 
 void VisibleItemManager::addRenderItem(const QString& name, bool checked)
 {
+  qDebug() << "addRenderItem" << name;
   auto items = itemList_->findItems(name, Qt::MatchExactly);
   if (items.count() > 0)
   {

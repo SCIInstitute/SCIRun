@@ -352,9 +352,9 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
   // Resultant geometry type (representing a spire object and a number of passes).
 
   std::string idname = "EntireField";
-  if (state->getValue(ShowField::FieldName).toString() != "")
+  if (!state->getValue(ShowField::FieldName).toString().empty())
   {
-    idname = idname + "_" + state->getValue(ShowField::FieldName).toString();
+    idname += "$" + state->getValue(ShowField::FieldName).toString();
   }
 
   auto geom(boost::make_shared<GeometryObjectSpire>(gid, idname, true));
