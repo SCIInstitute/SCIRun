@@ -372,7 +372,7 @@ void ViewSceneDialog::selectObject(const int x, const int y)
     {
       // Check if object is visible
       auto obj = *it; auto name = obj->uniqueID();
-      auto displayName = QString::fromStdString(name).split('_').at(1);
+      auto displayName = QString::fromStdString(name).split(GeometryObject::delimiter).at(1);
       if (mConfigurationDock->visibleItems().isVisible(displayName))
       {
         auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);

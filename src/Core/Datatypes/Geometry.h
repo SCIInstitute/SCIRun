@@ -52,6 +52,8 @@ namespace Datatypes
     const std::string& uniqueID() const { return objectName_; }
 
     virtual std::string dynamic_type_name() const override { return "GeometryObject"; }
+
+    static const char delimiter = '\t';
     
   private:
     const std::string objectName_;     ///< Name of this object. Should be unique across all modules in the network.

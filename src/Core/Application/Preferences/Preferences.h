@@ -83,6 +83,7 @@ namespace SCIRun
       BooleanVariable modulesSnapToGrid;
       BooleanVariable highlightPorts;
       BooleanVariable autoNotes;
+      BooleanVariable highDPIAdjustment;
       TrackedVariable<BooleanVariable> modulesAreDockable;
       StringVariable networkBackgroundColor;
 

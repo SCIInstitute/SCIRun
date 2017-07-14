@@ -202,6 +202,18 @@ void SCIRunMainWindow::readSettings()
     prefsWindow_->setModuleErrorInlineMessages(val);
   }
 
+  {
+    const QString highDPIAdjustment = "highDPIAdjustment";
+    if (settings.contains(highDPIAdjustment))
+    {
+      bool val = settings.value(highDPIAdjustment).toBool();
+      GuiLogger::Instance().logInfo("Setting read: high DPI adjustment = " + QString::number(val));
+      prefsWindow_->setHighDPIAdjustment(val);
+      if (val)
+        networkEditor_->setHighResolutionExpandFactor();
+    }
+  }
+
   const QString saveBeforeExecute = "saveBeforeExecute";
   if (settings.contains(saveBeforeExecute))
   {
@@ -335,6 +347,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue(qname(prefs.autoNotes), prefs.autoNotes.val());
   settings.setValue(qname(prefs.highlightPorts), prefs.highlightPorts.val());
   settings.setValue(qname(prefs.showModuleErrorInlineMessages), prefs.showModuleErrorInlineMessages.val());
+  settings.setValue(qname(prefs.highDPIAdjustment), prefs.highDPIAdjustment.val());
   settings.setValue("defaultNotePositionIndex", prefsWindow_->defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
   settings.setValue("disableModuleErrorDialogs", prefsWindow_->disableModuleErrorDialogs());
