@@ -51,11 +51,14 @@ public:
 
   void setModuleErrorInlineMessages(bool showInlineErrors);
 
+  void setHighDPIAdjustment(bool highDPI);
+
 public Q_SLOTS:
   void updateModuleErrorDialogOption(int state);
   void updateModuleErrorInlineMessagesOption(int state);
   void updateSaveBeforeExecuteOption(int state);
   void updateAutoNotesState(int state);
+  void updateHighDPIAdjust(int state);
 
 private:
   NetworkEditor* networkEditor_;

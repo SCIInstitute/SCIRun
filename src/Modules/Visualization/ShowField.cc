@@ -62,13 +62,12 @@ namespace detail
 class GeometryBuilder
 {
 public:
-  //GeometryBuilder();
+  GeometryBuilder(const std::string& moduleId, ModuleStateHandle state) : moduleId_(moduleId), state_(state) {}
   /// Constructs a geometry object (essentially a spire object) from the given
   /// field data.
   GeometryHandle buildGeometryObject(
     FieldHandle field,
     boost::optional<ColorMapHandle> colorMap,
-    ModuleStateHandle state,
     const GeometryIDGenerator& gid,
     Interruptible* interruptible);
 
@@ -77,7 +76,6 @@ public:
   void renderNodes(
     FieldHandle field,
     boost::optional<ColorMapHandle> colorMap,
-    ModuleStateHandle moduleState,
     Interruptible* interruptible,
     RenderState state, GeometryHandle geom,
     const std::string& id);
@@ -85,7 +83,6 @@ public:
   void renderFaces(
     FieldHandle field,
     boost::optional<ColorMapHandle> colorMap,
-    ModuleStateHandle moduleState,
     Interruptible* interruptible,
     RenderState state, GeometryHandle geom,
     unsigned int approx_div,
@@ -94,7 +91,6 @@ public:
   void renderFacesLinear(
     FieldHandle field,
     boost::optional<ColorMapHandle> colorMap,
-    ModuleStateHandle moduleState,
     Interruptible* interruptible,
     RenderState state, GeometryHandle geom,
     unsigned int approxDiv,
@@ -114,34 +110,27 @@ public:
   void renderEdges(
     FieldHandle field,
     boost::optional<ColorMapHandle> colorMap,
-    ModuleStateHandle moduleState,
     Interruptible* interruptible,
     RenderState state,
     GeometryHandle geom,
     const std::string& id);
 
-  RenderState getNodeRenderState(
-    ModuleStateHandle state,
-    boost::optional<ColorMapHandle> colorMap);
-
-  RenderState getEdgeRenderState(
-    ModuleStateHandle state,
-    boost::optional<ColorMapHandle> colorMap);
-
-  RenderState getFaceRenderState(
-    ModuleStateHandle state,
-    boost::optional<ColorMapHandle> colorMap);
+  RenderState getNodeRenderState(boost::optional<ColorMapHandle> colorMap);
+  RenderState getEdgeRenderState(boost::optional<ColorMapHandle> colorMap);
+  RenderState getFaceRenderState(boost::optional<ColorMapHandle> colorMap);
 private:
   float faceTransparencyValue_ = 0.65f;
   float edgeTransparencyValue_ = 0.65f;
   float nodeTransparencyValue_ = 0.65f;
+  std::string moduleId_;
+  ModuleStateHandle state_;
 };
 }}}}
 
 using namespace detail;
 
 ShowField::ShowField() : GeometryGeneratingModule(staticInfo_),
-  builder_(new GeometryBuilder)
+  builder_(new GeometryBuilder(get_id().id_, get_state()))
 {
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
@@ -210,25 +199,24 @@ void ShowField::execute()
   if (needToExecute())
   {
     updateAvailableRenderOptions(field);
-    GeometryHandle geom = builder_->buildGeometryObject(field, colorMap, get_state(), *this, this);
+    auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);
     sendOutput(SceneGraph, geom);
   }
 }
 
 RenderState GeometryBuilder::getNodeRenderState(
-  ModuleStateHandle state,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap)
 {
   RenderState renState;
 
-  bool useColorMap = state->getValue(ShowField::NodesColoring).toInt() == 1;
-  bool rgbConversion = state->getValue(ShowField::NodesColoring).toInt() == 2;
-  renState.set(RenderState::IS_ON, state->getValue(ShowField::ShowNodes).toBool());
-  renState.set(RenderState::USE_TRANSPARENT_NODES, state->getValue(ShowField::NodeTransparency).toBool());
+  bool useColorMap = state_->getValue(ShowField::NodesColoring).toInt() == 1;
+  bool rgbConversion = state_->getValue(ShowField::NodesColoring).toInt() == 2;
+  renState.set(RenderState::IS_ON, state_->getValue(ShowField::ShowNodes).toBool());
+  renState.set(RenderState::USE_TRANSPARENT_NODES, state_->getValue(ShowField::NodeTransparency).toBool());
 
-  renState.set(RenderState::USE_SPHERE, state->getValue(ShowField::NodeAsSpheres).toInt() == 1);
+  renState.set(RenderState::USE_SPHERE, state_->getValue(ShowField::NodeAsSpheres).toInt() == 1);
 
-  renState.defaultColor = ColorRGB(state->getValue(ShowField::DefaultMeshColor).toString());
+  renState.defaultColor = ColorRGB(state_->getValue(ShowField::DefaultMeshColor).toString());
   renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
                            renState.defaultColor.g() > 1.0 ||
                            renState.defaultColor.b() > 1.0)?
@@ -249,25 +237,23 @@ RenderState GeometryBuilder::getNodeRenderState(
   else
   {
     renState.set(RenderState::USE_DEFAULT_COLOR_NODES, true);
-    state->setValue(ShowField::NodesColoring, 0);
+    state_->setValue(ShowField::NodesColoring, 0);
   }
 
   return renState;
 }
 
-RenderState GeometryBuilder::getEdgeRenderState(
-  ModuleStateHandle state,
-  boost::optional<boost::shared_ptr<ColorMap>> colorMap)
+RenderState GeometryBuilder::getEdgeRenderState(boost::optional<boost::shared_ptr<ColorMap>> colorMap)
 {
   RenderState renState;
 
-  bool useColorMap = state->getValue(ShowField::EdgesColoring).toInt() == 1;
-  bool rgbConversion = state->getValue(ShowField::EdgesColoring).toInt() == 2;
-  renState.set(RenderState::IS_ON, state->getValue(ShowField::ShowEdges).toBool());
-  renState.set(RenderState::USE_TRANSPARENT_EDGES, state->getValue(ShowField::EdgeTransparency).toBool());
-  renState.set(RenderState::USE_CYLINDER, state->getValue(ShowField::EdgesAsCylinders).toInt() == 1);
+  bool useColorMap = state_->getValue(ShowField::EdgesColoring).toInt() == 1;
+  bool rgbConversion = state_->getValue(ShowField::EdgesColoring).toInt() == 2;
+  renState.set(RenderState::IS_ON, state_->getValue(ShowField::ShowEdges).toBool());
+  renState.set(RenderState::USE_TRANSPARENT_EDGES, state_->getValue(ShowField::EdgeTransparency).toBool());
+  renState.set(RenderState::USE_CYLINDER, state_->getValue(ShowField::EdgesAsCylinders).toInt() == 1);
 
-  renState.defaultColor = ColorRGB(state->getValue(ShowField::DefaultMeshColor).toString());
+  renState.defaultColor = ColorRGB(state_->getValue(ShowField::DefaultMeshColor).toString());
   renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
                            renState.defaultColor.g() > 1.0 ||
                            renState.defaultColor.b() > 1.0)?
@@ -277,7 +263,7 @@ RenderState GeometryBuilder::getEdgeRenderState(
                                 renState.defaultColor.b() / 255.)
                             :   renState.defaultColor;
 
-  edgeTransparencyValue_ = static_cast<float>(state->getValue(ShowField::EdgeTransparencyValue).toDouble());
+  edgeTransparencyValue_ = static_cast<float>(state_->getValue(ShowField::EdgeTransparencyValue).toDouble());
 
   if (colorMap && useColorMap)
   {
@@ -290,25 +276,23 @@ RenderState GeometryBuilder::getEdgeRenderState(
   else
   {
     renState.set(RenderState::USE_DEFAULT_COLOR_EDGES, true);
-    state->setValue(ShowField::EdgesColoring, 0);
+    state_->setValue(ShowField::EdgesColoring, 0);
   }
 
   return renState;
 }
 
-RenderState GeometryBuilder::getFaceRenderState(
-  ModuleStateHandle state,
-  boost::optional<boost::shared_ptr<ColorMap>> colorMap)
+RenderState GeometryBuilder::getFaceRenderState(boost::optional<boost::shared_ptr<ColorMap>> colorMap)
 {
   RenderState renState;
 
-  bool useColorMap = state->getValue(ShowField::FacesColoring).toInt() == 1;
-  bool rgbConversion = state->getValue(ShowField::FacesColoring).toInt() == 2;
-  renState.set(RenderState::IS_ON, state->getValue(ShowField::ShowFaces).toBool());
-  renState.set(RenderState::USE_TRANSPARENCY, state->getValue(ShowField::FaceTransparency).toBool());
-  renState.set(RenderState::USE_FACE_NORMALS, state->getValue(ShowField::UseFaceNormals).toBool());
+  bool useColorMap = state_->getValue(ShowField::FacesColoring).toInt() == 1;
+  bool rgbConversion = state_->getValue(ShowField::FacesColoring).toInt() == 2;
+  renState.set(RenderState::IS_ON, state_->getValue(ShowField::ShowFaces).toBool());
+  renState.set(RenderState::USE_TRANSPARENCY, state_->getValue(ShowField::FaceTransparency).toBool());
+  renState.set(RenderState::USE_FACE_NORMALS, state_->getValue(ShowField::UseFaceNormals).toBool());
 
-  renState.defaultColor = ColorRGB(state->getValue(ShowField::DefaultMeshColor).toString());
+  renState.defaultColor = ColorRGB(state_->getValue(ShowField::DefaultMeshColor).toString());
   renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
                            renState.defaultColor.g() > 1.0 ||
                            renState.defaultColor.b() > 1.0)?
@@ -318,7 +302,7 @@ RenderState GeometryBuilder::getFaceRenderState(
                                 renState.defaultColor.b() / 255.)
                             :   renState.defaultColor;
 
-  faceTransparencyValue_ = static_cast<float>(state->getValue(ShowField::FaceTransparencyValue).toDouble());
+  faceTransparencyValue_ = static_cast<float>(state_->getValue(ShowField::FaceTransparencyValue).toDouble());
 
   if (colorMap && useColorMap)
   {
@@ -331,7 +315,7 @@ RenderState GeometryBuilder::getFaceRenderState(
   else
   {
     renState.set(RenderState::USE_DEFAULT_COLOR, true);
-    state->setValue(ShowField::FacesColoring, 0);
+    state_->setValue(ShowField::FacesColoring, 0);
   }
 
   return renState;
@@ -340,21 +324,21 @@ RenderState GeometryBuilder::getFaceRenderState(
 GeometryHandle GeometryBuilder::buildGeometryObject(
   FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  ModuleStateHandle state, const GeometryIDGenerator& gid, Interruptible* interruptible)
+  const GeometryIDGenerator& gid, Interruptible* interruptible)
 {
   // Function for reporting progress. TODO: use this variable somewhere!
   //auto progressFunc = getUpdaterFunc();
 
-  /// \todo Determine a better way of handling all of the various object state.
-  bool showNodes = state->getValue(ShowField::ShowNodes).toBool();
-  bool showEdges = state->getValue(ShowField::ShowEdges).toBool();
-  bool showFaces = state->getValue(ShowField::ShowFaces).toBool();
+  /// \todo Determine a better way of handling all of the various object state_.
+  bool showNodes = state_->getValue(ShowField::ShowNodes).toBool();
+  bool showEdges = state_->getValue(ShowField::ShowEdges).toBool();
+  bool showFaces = state_->getValue(ShowField::ShowFaces).toBool();
   // Resultant geometry type (representing a spire object and a number of passes).
 
   std::string idname = "EntireField";
-  if (state->getValue(ShowField::FieldName).toString() != "")
+  if (!state_->getValue(ShowField::FieldName).toString().empty())
   {
-    idname = idname + "_" + state->getValue(ShowField::FieldName).toString();
+    idname += GeometryObject::delimiter + state_->getValue(ShowField::FieldName).toString() + " (from " + moduleId_ + ")";
   }
 
   auto geom(boost::make_shared<GeometryObjectSpire>(gid, idname, true));
@@ -377,18 +361,18 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
   if (showNodes)
   {
     // Construct node geometry.
-    renderNodes(field, colorMap, state, interruptible, getNodeRenderState(state, colorMap), geom, geom->uniqueID());
+    renderNodes(field, colorMap, interruptible, getNodeRenderState(colorMap), geom, geom->uniqueID());
   }
 
   if (showFaces)
   {
     int approxDiv = 1;
-    renderFaces(field, colorMap, state, interruptible, getFaceRenderState(state, colorMap), geom, approxDiv, geom->uniqueID());
+    renderFaces(field, colorMap, interruptible, getFaceRenderState(colorMap), geom, approxDiv, geom->uniqueID());
   }
 
   if (showEdges)
   {
-    renderEdges(field, colorMap, state, interruptible, getEdgeRenderState(state, colorMap), geom, geom->uniqueID());
+    renderEdges(field, colorMap, interruptible, getEdgeRenderState(colorMap), geom, geom->uniqueID());
   }
 
   return geom;
@@ -398,7 +382,6 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
 void GeometryBuilder::renderFaces(
   FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  ModuleStateHandle moduleState,
   Interruptible* interruptible,
   RenderState state, GeometryHandle geom,
   unsigned int approxDiv,
@@ -418,7 +401,7 @@ void GeometryBuilder::renderFaces(
 
   if (doLinear)
   {
-    return renderFacesLinear(field, colorMap, moduleState, interruptible, state, geom, approxDiv, id);
+    return renderFacesLinear(field, colorMap, interruptible, state, geom, approxDiv, id);
   }
   else
   {
@@ -430,7 +413,6 @@ void GeometryBuilder::renderFaces(
 void GeometryBuilder::renderFacesLinear(
   FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  ModuleStateHandle moduleState,
   Interruptible* interruptible,
   RenderState state,
   GeometryHandle geom,
@@ -452,7 +434,7 @@ void GeometryBuilder::renderFacesLinear(
   bool withNormals = (state.get(RenderState::USE_NORMALS));
   if (withNormals) { mesh->synchronize(Mesh::NORMALS_E); }
 
-  bool invertNormals = moduleState->getValue(ShowField::FaceInvertNormals).toBool();
+  bool invertNormals = state_->getValue(ShowField::FaceInvertNormals).toBool();
   ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
   std::vector<double> svals;
   std::vector<Vector> vvals;
@@ -1205,7 +1187,6 @@ void GeometryBuilder::addFaceGeom(
 void GeometryBuilder::renderNodes(
   FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  ModuleStateHandle moduleState,
   Interruptible* interruptible,
   RenderState state,
   GeometryHandle geom,
@@ -1235,8 +1216,8 @@ void GeometryBuilder::renderNodes(
   mesh->begin(eiter);
   mesh->end(eiter_end);
 
-  double radius = moduleState->getValue(ShowField::SphereScaleValue).toDouble();
-  double num_strips = static_cast<double>(moduleState->getValue(ShowField::SphereResolution).toInt());
+  double radius = state_->getValue(ShowField::SphereScaleValue).toDouble();
+  double num_strips = static_cast<double>(state_->getValue(ShowField::SphereResolution).toInt());
   if (radius < 0) radius = 1.;
   if (num_strips < 0) num_strips = 10.;
   std::stringstream ss;
@@ -1244,7 +1225,7 @@ void GeometryBuilder::renderNodes(
 
   std::string uniqueNodeID = id + "node" + ss.str();
 
-  nodeTransparencyValue_ = static_cast<float>(moduleState->getValue(ShowField::NodeTransparencyValue).toDouble());
+  nodeTransparencyValue_ = static_cast<float>(state_->getValue(ShowField::NodeTransparencyValue).toDouble());
 
   SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::POINTS;
   // Use spheres...
@@ -1299,7 +1280,6 @@ void GeometryBuilder::renderNodes(
 void GeometryBuilder::renderEdges(
   FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
-  ModuleStateHandle moduleState,
   Interruptible* interruptible,
   RenderState state,
   GeometryHandle geom,
@@ -1330,8 +1310,8 @@ void GeometryBuilder::renderEdges(
   mesh->begin(eiter);
   mesh->end(eiter_end);
 
-  double num_strips = static_cast<double>(moduleState->getValue(ShowField::CylinderResolution).toInt());
-  double radius = moduleState->getValue(ShowField::CylinderRadius).toDouble();
+  double num_strips = static_cast<double>(state_->getValue(ShowField::CylinderResolution).toInt());
+  double radius = state_->getValue(ShowField::CylinderRadius).toDouble();
   if (num_strips < 0) num_strips = 50.;
   if (radius < 0) radius = 1.;
 

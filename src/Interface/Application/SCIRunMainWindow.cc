@@ -167,8 +167,6 @@ SCIRunMainWindow::SCIRunMainWindow()
   scrollArea_->viewport()->setAutoFillBackground(true);
   scrollArea_->setStyleSheet(styleSheet());
 
-  //setDockOptions(AnimatedDocks | AllowTabbedDocks);
-
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetworkAs()));
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
   connect(actionLoad_, SIGNAL(triggered()), this, SLOT(loadNetwork()));
@@ -550,8 +548,8 @@ void SCIRunMainWindow::setupNetworkEditor()
   auto highResolutionExpandFactor = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().get_value_or(1.0);
   {
     auto screen = QApplication::desktop()->screenGeometry();
-    if (screen.height() * screen.width() > 5000000)
-      highResolutionExpandFactor = 1.7;
+    if (screen.height() * screen.width() > 4096000) // 2560x1600
+      highResolutionExpandFactor = NetworkBoundaries::highDPIExpandFactorDefault;
   }
   networkEditor_ = new NetworkEditor({ getter, defaultNotePositionGetter_, dialogErrorControl_, preexecuteFunc,
     tagColorFunc, tagNameFunc, highResolutionExpandFactor, dockManager_ }, scrollAreaWidgetContents_);
