@@ -73,8 +73,7 @@ ALGORITHM_PARAMETER_DEF(Teem, DDNumParm1);
 ALGORITHM_PARAMETER_DEF(Teem, DDNumParm2);
 ALGORITHM_PARAMETER_DEF(Teem, DDNumParm3);
 
-BuildDerivedNrrdWithGage::BuildDerivedNrrdWithGage():
-  Module(staticInfo_)
+BuildDerivedNrrdWithGage::BuildDerivedNrrdWithGage() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputNrrd);
   INITIALIZE_PORT(OutputNrrd);
@@ -82,7 +81,6 @@ BuildDerivedNrrdWithGage::BuildDerivedNrrdWithGage():
 
 void BuildDerivedNrrdWithGage::setStateDefaults()
 {
-  //setStateStringFromAlgo(Parameters::DataLabel);
   auto state = get_state();
   state->setValue(Parameters::FieldKind, std::string("Scalar"));
   state->setValue(Parameters::Quantity, std::string("value"));
@@ -101,67 +99,6 @@ void BuildDerivedNrrdWithGage::setStateDefaults()
   state->setValue(Parameters::DDNumParm3, std::string());
 }
 
-#if 0
-
-
-namespace SCITeem {
-
-using namespace SCIRun;
-
-class BuildDerivedNrrdWithGage : public Module {
-public:
-  BuildDerivedNrrdWithGage(SCIRun::GuiContext *ctx);
-  virtual ~BuildDerivedNrrdWithGage();
-  virtual void execute();
-
-private:
-  void setMiscKind(gageKind *& kind, gageKind *newkind);
-
-  GuiString field_kind_;
-  GuiString otype_;
-  GuiString quantity_;
-
-  GuiString valuesType_;
-  GuiString valuesNumParm1_;
-  GuiString valuesNumParm2_;
-  GuiString valuesNumParm3_;
-
-  GuiString dType_;
-  GuiString dNumParm1_;
-  GuiString dNumParm2_;
-  GuiString dNumParm3_;
-
-  GuiString ddType_;
-  GuiString ddNumParm1_;
-  GuiString ddNumParm2_;
-  GuiString ddNumParm3_;
-};
-
-DECLARE_MAKER(BuildDerivedNrrdWithGage)
-BuildDerivedNrrdWithGage::BuildDerivedNrrdWithGage(SCIRun::GuiContext *ctx)
-  : Module("BuildDerivedNrrdWithGage", ctx, Source, "Misc", "Teem"),
-  field_kind_(get_ctx()->subVar("field_kind_")),
-  otype_(get_ctx()->subVar("otype_")),
-  quantity_(get_ctx()->subVar("quantity_")),
-
-  valuesType_(get_ctx()->subVar("valuesType_")),
-  valuesNumParm1_(get_ctx()->subVar("valuesNumParm1_")),
-  valuesNumParm2_(get_ctx()->subVar("valuesNumParm2_")),
-  valuesNumParm3_(get_ctx()->subVar("valuesNumParm3_")),
-
-  dType_(get_ctx()->subVar("dType_")),
-  dNumParm1_(get_ctx()->subVar("dNumParm1_")),
-  dNumParm2_(get_ctx()->subVar("dNumParm2_")),
-  dNumParm3_(get_ctx()->subVar("dNumParm3_")),
-
-  ddType_(get_ctx()->subVar("ddType_")),
-  ddNumParm1_(get_ctx()->subVar("ddNumParm1_")),
-  ddNumParm2_(get_ctx()->subVar("ddNumParm2_")),
-  ddNumParm3_(get_ctx()->subVar("ddNumParm3_"))
-{
-}
-#endif
-
 namespace
 {
   void setMiscKind(gageKind *& kind, gageKind *newkind)
@@ -169,7 +106,10 @@ namespace
     kind = newkind;
   }
 
-  double SPACING(double spc) { return AIR_EXISTS(spc) ? spc: 1.0; }
+  double SPACING(double spc)
+  {
+    return AIR_EXISTS(spc) ? spc: 1.0;
+  }
 }
 
 void
@@ -180,17 +120,17 @@ BuildDerivedNrrdWithGage::execute()
   Nrrd *nin = nrrd_handle->getNrrd();
   Nrrd *nout = nrrdNew();
 
-  gageContext *ctx;
-  double gmc, ipos[4], /*opos[4], */ minx, miny, minz, spx, spy, spz;
+  gageContext *ctx = nullptr;
+  double gmc, ipos[4];
   float x, y, z;
   float scale[3];
-  gageKind *kind = NULL;
-  int a, ansLen, E=0, idx, otype, /*renorm,*/ what;
+  gageKind *kind = nullptr;
+  int a, ansLen, E=0, idx, otype, what;
   int six, siy, siz, sox, soy, soz, xi, yi, zi;
   int iBaseDim, oBaseDim;
   gagePerVolume *pvl;
-  char /* *outS,*/ *err = NULL;
-  NrrdKernelSpec *k00 = NULL, *k11 = NULL, *k22 = NULL;
+  char *err = nullptr;
+  NrrdKernelSpec *k00 = nullptr, *k11 = nullptr, *k22 = nullptr;
 
   auto state = get_state();
   //attempt to set gageKind
@@ -308,19 +248,12 @@ BuildDerivedNrrdWithGage::execute()
   six = nin->axis[0+iBaseDim].size;
   siy = nin->axis[1+iBaseDim].size;
   siz = nin->axis[2+iBaseDim].size;
-  spx = SPACING(nin->axis[0+iBaseDim].spacing);
-  spy = SPACING(nin->axis[1+iBaseDim].spacing);
-  spz = SPACING(nin->axis[2+iBaseDim].spacing);
   sox = (int)scale[0]*six;
   soy = (int)scale[1]*siy;
   soz = (int)scale[2]*siz;
   nin->axis[0+iBaseDim].spacing = SPACING(nin->axis[0+iBaseDim].spacing);
   nin->axis[1+iBaseDim].spacing = SPACING(nin->axis[1+iBaseDim].spacing);
   nin->axis[2+iBaseDim].spacing = SPACING(nin->axis[2+iBaseDim].spacing);
-
-  minx = nin->axis[0+iBaseDim].min;
-  miny = nin->axis[1+iBaseDim].min;
-  minz = nin->axis[2+iBaseDim].min;
 
   //set up gage
   ctx = gageContextNew();
