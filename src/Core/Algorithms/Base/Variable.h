@@ -146,23 +146,24 @@ template <typename T>
 class TypedVariable : public Algorithms::Variable
 {
 public:
-  typedef T value_type;
+  using value_type = T;
   TypedVariable(const std::string& name, const value_type& value) : Algorithms::Variable(Algorithms::Name(name), value) {}
 
   operator value_type() const { return val(); }
   value_type val() const { throw "unknown type"; }
 };
 
-#define TYPED_VARIABLE_CLASS(type, func, name) template <> \
-class TypedVariable<type> : public Algorithms::Variable \
+#define TYPED_VARIABLE_CLASS(varType, func, name) template <> \
+class TypedVariable<varType> : public Algorithms::Variable \
 {\
 public:\
-  typedef type value_type;\
+  using value_type = varType;\
   TypedVariable(const std::string& name, const value_type& value) : Algorithms::Variable(Algorithms::Name(name), value) {}\
   operator value_type() const { return val(); }\
   value_type val() const { return func(); }\
 };\
-using name = TypedVariable<type>;\
+using name = TypedVariable<varType>;\
+\
 
 TYPED_VARIABLE_CLASS(bool, toBool, BooleanVariable)
 TYPED_VARIABLE_CLASS(std::string, toString, StringVariable)
