@@ -138,11 +138,11 @@ class VImageMesh : public VMeshShared<MESH> {
     virtual void get_centers(Point* points, const VMesh::Node::array_type& array) const;
     virtual void get_centers(Point* points, const VMesh::Elem::array_type& array) const;
 
-    virtual double get_size(VMesh::Node::index_type i) const;
-    virtual double get_size(VMesh::Edge::index_type i) const;
-    virtual double get_size(VMesh::Face::index_type i) const;
-    virtual double get_size(VMesh::Elem::index_type i) const;
-    virtual double get_size(VMesh::DElem::index_type i) const;
+    virtual double get_size(VMesh::Node::index_type i) const override;
+    virtual double get_size(VMesh::Edge::index_type i) const override;
+    virtual double get_size(VMesh::Face::index_type i) const override;
+    virtual double get_size(VMesh::Elem::index_type i) const override;
+    virtual double get_size(VMesh::DElem::index_type i) const override;
                                                       
     virtual bool locate(VMesh::Node::index_type &i, const Point &point) const;
     virtual bool locate(VMesh::Elem::index_type &i, const Point &point) const;

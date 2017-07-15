@@ -2902,7 +2902,6 @@ TetVolMesh<Basis>::remove_face(typename Node::index_type n1,
   {
     ASSERTFAIL("this face did not exist in the table");
   }
-  PFaceNode found_face = (*iter).first;
   index_type found_idx = (*iter).second;
     
   index_type* cells = faces_[found_idx].cells_;
@@ -2910,7 +2909,6 @@ TetVolMesh<Basis>::remove_face(typename Node::index_type n1,
   if (cells[1] == MESH_NO_NEIGHBOR) 
   {
     // this face belongs to only one cell
-    //faces_.erase(faces_.begin() + found_idx);
     cells[0] = MESH_NO_NEIGHBOR;
     cells[1] = MESH_NO_NEIGHBOR;
     face_table_.erase(iter);
@@ -3439,7 +3437,6 @@ TetVolMesh<Basis>::remove_edge(typename Node::index_type n1,
     ASSERTFAIL("this edge did not exist in the table");
   }
   
-  PEdgeNode found_edge = (*iter).first;
   index_type found_idx = (*iter).second;
   
   const std::vector<index_type>& cells = edges_[found_idx].cells_;

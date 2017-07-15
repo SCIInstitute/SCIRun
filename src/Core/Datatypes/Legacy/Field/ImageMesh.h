@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -199,7 +199,7 @@ public:
     IFaceIter &operator++()
     {
       this->i_++;
-      if (this->i_ >= this->mesh_->min_i_+this->mesh_->ni_-1) 
+      if (this->i_ >= this->mesh_->min_i_+this->mesh_->ni_-1)
       {
         this->i_ = this->mesh_->min_i_;
         this->j_++;
@@ -225,7 +225,7 @@ public:
 
     operator index_type() const { return i_*j_; }
 
-    std::ostream& str_render(std::ostream& os) const 
+    std::ostream& str_render(std::ostream& os) const
     {
       os << i_*j_ << " (" << i_ << " x " << j_ << ")";
       return os;
@@ -298,46 +298,46 @@ public:
 
     // the following designed to coordinate with ::get_nodes
     inline
-    index_type node0_index() const 
+    index_type node0_index() const
     {
       return (index_.i_ + mesh_.get_ni()*index_.j_);
     }
     inline
-    index_type node1_index() const 
+    index_type node1_index() const
     {
       return (index_.i_+ 1 + mesh_.get_ni()*index_.j_);
     }
     inline
-    index_type node2_index() const 
+    index_type node2_index() const
     {
       return (index_.i_ + 1 + mesh_.get_ni()*(index_.j_ + 1));
 
     }
     inline
-    index_type node3_index() const 
+    index_type node3_index() const
     {
       return (index_.i_ + mesh_.get_ni()*(index_.j_ + 1));
     }
 
     // the following designed to coordinate with ::get_edges
     inline
-    index_type edge0_index() const 
+    index_type edge0_index() const
     {
       return index_.i_ + index_.j_ * (mesh_.ni_- 1);
     }
     inline
-    index_type edge1_index() const 
+    index_type edge1_index() const
     {
       return index_.i_ + (index_.j_ + 1) * (mesh_.ni_ - 1);
     }
     inline
-    index_type edge2_index() const 
+    index_type edge2_index() const
     {
       return index_.i_    *(mesh_.nj_ - 1) + index_.j_ +
         ((mesh_.ni_ - 1) * mesh_.nj_);
      }
     inline
-    index_type edge3_index() const 
+    index_type edge3_index() const
     {
       return (index_.i_ + 1) * (mesh_.nj_ - 1) + index_.j_ +
         ((mesh_.ni_ - 1) * mesh_.nj_);
@@ -345,25 +345,25 @@ public:
 
 
     inline
-    const Core::Geometry::Point node0() const 
+    const Core::Geometry::Point node0() const
     {
       Core::Geometry::Point p(index_.i_, index_.j_, 0.0);
       return mesh_.transform_.project(p);
     }
     inline
-    const Core::Geometry::Point node1() const 
+    const Core::Geometry::Point node1() const
     {
       Core::Geometry::Point p(index_.i_ + 1, index_.j_, 0.0);
       return mesh_.transform_.project(p);
     }
     inline
-    const Core::Geometry::Point node2() const 
+    const Core::Geometry::Point node2() const
     {
       Core::Geometry::Point p(index_.i_ + 1, index_.j_ + 1, 0.0);
       return mesh_.transform_.project(p);
     }
     inline
-    const Core::Geometry::Point node3() const 
+    const Core::Geometry::Point node3() const
     {
       Core::Geometry::Point p(index_.i_, index_.j_ + 1, 0.0);
       return mesh_.transform_.project(p);
@@ -378,9 +378,9 @@ public:
 
   ImageMesh()
     : min_i_(0), min_j_(0),
-      ni_(1), nj_(1) 
+      ni_(1), nj_(1)
   {
-    DEBUG_CONSTRUCTOR("ImageMesh")  
+    DEBUG_CONSTRUCTOR("ImageMesh")
     /// Create a new virtual interface for this copy
     /// all pointers have changed hence create a new
     /// virtual interface class
@@ -390,37 +390,37 @@ public:
   ImageMesh(size_type x, size_type y, const Core::Geometry::Point &min, const Core::Geometry::Point &max);
   ImageMesh(ImageMesh* mh, size_type mx, size_type my,
             size_type x, size_type y)
-    : min_i_(mx), min_j_(my), ni_(x), nj_(y), transform_(mh->transform_) 
-  { 
-    DEBUG_CONSTRUCTOR("ImageMesh") 
+    : min_i_(mx), min_j_(my), ni_(x), nj_(y), transform_(mh->transform_)
+  {
+    DEBUG_CONSTRUCTOR("ImageMesh")
     transform_.compute_imat();
-    compute_jacobian(); 
+    compute_jacobian();
 
     /// Create a new virtual interface for this copy
     /// all pointers have changed hence create a new
     /// virtual interface class
-    vmesh_.reset(CreateVImageMesh(this));   
+    vmesh_.reset(CreateVImageMesh(this));
   }
-  
+
   ImageMesh(const ImageMesh &copy)
     : Mesh(copy),
       min_i_(copy.min_i_), min_j_(copy.min_j_),
-      ni_(copy.get_ni()), nj_(copy.get_nj()), transform_(copy.transform_) 
-  { 
-    DEBUG_CONSTRUCTOR("ImageMesh") 
+      ni_(copy.get_ni()), nj_(copy.get_nj()), transform_(copy.transform_)
+  {
+    DEBUG_CONSTRUCTOR("ImageMesh")
     transform_.compute_imat();
-    compute_jacobian(); 
+    compute_jacobian();
 
     /// Create a new virtual interface for this copy
     /// all pointers have changed hence create a new
     /// virtual interface class
-    vmesh_.reset(CreateVImageMesh(this));   
+    vmesh_.reset(CreateVImageMesh(this));
   }
-  
+
   virtual ImageMesh *clone() const { return new ImageMesh(*this); }
-  virtual ~ImageMesh() 
+  virtual ~ImageMesh()
   {
-    DEBUG_DESTRUCTOR("ImageMesh") 
+    DEBUG_DESTRUCTOR("ImageMesh")
   }
 
   MeshFacadeHandle getFacade() const
@@ -436,7 +436,7 @@ public:
   virtual bool has_normals() const { return false; }
   virtual bool has_face_normals() const { return false; }
   virtual bool is_editable() const { return false; }
-  
+
   Basis& get_basis() { return basis_; }
 
   /// Generate the list of points that make up a sufficiently accurate
@@ -471,12 +471,12 @@ public:
   {
     // If polynomial order is larger, use the complicated HO basis implementation
     // Since this is a latvol and most probably linear, this function is to expensive
-    if (basis_.polynomial_order() > 1) 
+    if (basis_.polynomial_order() > 1)
     {
       ElemData ed(*this, idx);
       return basis_.get_coords(coords, p, ed);
     }
-    
+
     // Cheap implementation that assumes it is a regular grid
     // This implementation should be faster then the interpolate of the linear
     // basis which needs to work as well for the unstructured hexvol :(
@@ -488,15 +488,35 @@ public:
 
     const double epsilon = 1e-8;
 
-    if (static_cast<double>(coords[0]) < 0.0) if (static_cast<double>(coords[0]) > -(epsilon)) 
-          coords[0] = static_cast<typename VECTOR::value_type>(0.0); else return (false);
-    if (static_cast<double>(coords[0]) > 1.0) if (static_cast<double>(coords[0]) < 1.0+(epsilon)) 
-          coords[0] = static_cast<typename VECTOR::value_type>(1.0); else return (false);
-    if (static_cast<double>(coords[1]) < 0.0) if (static_cast<double>(coords[1]) > -(epsilon)) 
-          coords[1] = static_cast<typename VECTOR::value_type>(0.0); else return (false);
-    if (static_cast<double>(coords[1]) > 1.0) if (static_cast<double>(coords[1]) < 1.0+(epsilon)) 
-          coords[1] = static_cast<typename VECTOR::value_type>(1.0); else return (false);
-    
+    if (static_cast<double>(coords[0]) < 0.0)
+    {
+      if (static_cast<double>(coords[0]) > -(epsilon))
+        coords[0] = static_cast<typename VECTOR::value_type>(0.0);
+      else
+        return (false);
+    }
+    if (static_cast<double>(coords[0]) > 1.0)
+    {
+      if (static_cast<double>(coords[0]) < 1.0+(epsilon))
+        coords[0] = static_cast<typename VECTOR::value_type>(1.0);
+      else
+        return (false);
+    }
+    if (static_cast<double>(coords[1]) < 0.0)
+    {
+      if (static_cast<double>(coords[1]) > -(epsilon))
+        coords[1] = static_cast<typename VECTOR::value_type>(0.0);
+      else
+        return (false);
+    }
+    if (static_cast<double>(coords[1]) > 1.0)
+    {
+      if (static_cast<double>(coords[1]) < 1.0+(epsilon))
+        coords[1] = static_cast<typename VECTOR::value_type>(1.0);
+      else
+        return (false);
+    }
+
     return (true);
   }
 
@@ -506,14 +526,14 @@ public:
   void interpolate(Core::Geometry::Point &pt, const VECTOR &coords, typename Elem::index_type idx) const
   {
     // only makes sense for higher order
-    if (basis_.polynomial_order() > 1) 
+    if (basis_.polynomial_order() > 1)
     {
       ElemData ed(*this, idx);
       pt = basis_.interpolate(coords, ed);
       return;
     }
     // Cheaper implementation
-    
+
     Core::Geometry::Point p(static_cast<double>(idx.i_)+static_cast<double>(coords[0]),
             static_cast<double>(idx.j_)+static_cast<double>(coords[1]),
             0.0);
@@ -527,8 +547,8 @@ public:
   void derivate(const VECTOR1 &coords, typename Elem::index_type idx, VECTOR2 &J) const
   {
     // only makes sense for higher order
-    if (basis_.polynomial_order() > 1) 
-    {  
+    if (basis_.polynomial_order() > 1)
+    {
       ElemData ed(*this, idx);
       basis_.derivate(coords, ed, J);
       return;
@@ -536,8 +556,8 @@ public:
 
     // Cheaper implementation
     J.resize(2);
-    J[0] = (transform_.project(Core::Geometry::Point(1.0,0.0,0.0))); 
-    J[1] = (transform_.project(Core::Geometry::Point(0.0,1.0,0.0))); 
+    J[0] = (transform_.project(Core::Geometry::Point(1.0,0.0,0.0)));
+    J[1] = (transform_.project(Core::Geometry::Point(0.0,1.0,0.0)));
   }
 
   /// Get the determinant of the jacobian, which is the local volume of an element
@@ -545,24 +565,24 @@ public:
   template<class VECTOR>
   double det_jacobian(const VECTOR& coords, typename Elem::index_type idx) const
   {
-    if (basis_.polynomial_order() > 1) 
-    {  
+    if (basis_.polynomial_order() > 1)
+    {
       double J[9];
       jacobian(coords,idx,J);
       return (DetMatrix3x3(J));
     }
-    
+
     return (det_jacobian_);
   }
 
   /// Get the jacobian of the transformation. In case one wants the non inverted
-  /// version of this matrix. This is currentl here for completeness of the 
+  /// version of this matrix. This is currentl here for completeness of the
   /// interface
   template<class VECTOR>
   void jacobian(const VECTOR& coords, typename Elem::index_type idx, double* J) const
   {
-    if (basis_.polynomial_order() > 1) 
-    {  
+    if (basis_.polynomial_order() > 1)
+    {
       StackVector<Core::Geometry::Point,3> Jv;
       ElemData ed(*this,idx);
       basis_.derivate(coords,ed,Jv);
@@ -579,8 +599,8 @@ public:
       J[8] = Jv2.z();
 
       return;
-    }    
-  
+    }
+
     J[0] = jacobian_[0];
     J[1] = jacobian_[1];
     J[2] = jacobian_[2];
@@ -591,15 +611,15 @@ public:
     J[7] = jacobian_[7];
     J[8] = jacobian_[8];
   }
-                
-  /// Get the inverse jacobian of the transformation. This one is needed to 
+
+  /// Get the inverse jacobian of the transformation. This one is needed to
   /// translate local gradients into global gradients. Hence it is crucial for
-  /// calculating gradients of fields, or constructing finite elements.             
+  /// calculating gradients of fields, or constructing finite elements.
   template<class VECTOR>
   double inverse_jacobian(const VECTOR& coords, typename Elem::index_type idx, double* Ji) const
   {
-    if (basis_.polynomial_order() > 1) 
-    {  
+    if (basis_.polynomial_order() > 1)
+    {
       StackVector<Core::Geometry::Point,2> Jv;
       ElemData ed(*this,idx);
       basis_.derivate(coords,ed,Jv);
@@ -615,10 +635,10 @@ public:
       J[6] = Jv2.x();
       J[7] = Jv2.y();
       J[8] = Jv2.z();
-      
+
       return (InverseMatrix3x3(J,Ji));
-    }    
-  
+    }
+
     Ji[0] = inverse_jacobian_[0];
     Ji[1] = inverse_jacobian_[1];
     Ji[2] = inverse_jacobian_[2];
@@ -699,19 +719,19 @@ public:
   void to_index(typename Node::index_type &index, index_type i) const;
   void to_index(typename Edge::index_type &index, index_type i) const { index= i; }
   void to_index(typename Face::index_type &index, index_type i) const;
-  void to_index(typename Cell::index_type &, index_type) const 
+  void to_index(typename Cell::index_type &, index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
 
   /// get the child elements of the given index
   void get_nodes(typename Node::array_type &, typename Edge::index_type) const;
   void get_nodes(typename Node::array_type &, typename Face::index_type) const;
-  void get_nodes(typename Node::array_type &, typename Cell::index_type) const 
+  void get_nodes(typename Node::array_type &, typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\".");}
   void get_edges(typename Edge::array_type &, typename Face::index_type) const;
-  void get_edges(typename Edge::array_type &, typename Cell::index_type) const 
+  void get_edges(typename Edge::array_type &, typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
-  void get_faces(typename Face::array_type &, typename Cell::index_type) const 
+  void get_faces(typename Face::array_type &, typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
   void get_faces(typename Face::array_type &a,typename Face::index_type f) const
   { a.push_back(f); }
@@ -756,12 +776,12 @@ public:
     get_point(p2,ra[2]);
     return (Cross(p0-p1,p2-p0)).length();
   }
-  double get_size(typename Cell::index_type /*idx*/) const 
+  double get_size(typename Cell::index_type /*idx*/) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
-  
+
   double get_length(typename Edge::index_type idx) const { return get_size(idx); };
   double get_area(typename Face::index_type idx) const { return get_size(idx); };
-  double get_volume(typename Cell::index_type /*idx*/) const 
+  double get_volume(typename Cell::index_type /*idx*/) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); };
 
 
@@ -815,7 +835,7 @@ public:
   /// The first one is for Pio and the second for the virtual interface
   /// These are currently different as they serve different needs.  static PersistentTypeID type_idts;
   static PersistentTypeID imagemesh_typeid;
-  /// Core functionality for getting the name of a templated mesh class  
+  /// Core functionality for getting the name of a templated mesh class
   static const std::string type_name(int n = -1);
   virtual std::string dynamic_type_name() const { return imagemesh_typeid.type; }
 
@@ -828,7 +848,7 @@ public:
   virtual int  topology_geometry() const { return (STRUCTURED | REGULAR); }
 
   /// Type description, used for finding names of the mesh class for
-  /// dynamic compilation purposes. Some of this should be obsolete  
+  /// dynamic compilation purposes. Some of this should be obsolete
   virtual const TypeDescription *get_type_description() const;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
@@ -844,25 +864,25 @@ public:
   /// This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() { return boost::make_shared<ImageMesh<Basis>>();}
   /// This function returns a handle for the virtual interface.
-  static MeshHandle image_maker(size_type x, size_type y, const Core::Geometry::Point& min, const Core::Geometry::Point& max) 
+  static MeshHandle image_maker(size_type x, size_type y, const Core::Geometry::Point& min, const Core::Geometry::Point& max)
     { return boost::make_shared<ImageMesh<Basis>>(x,y,min,max); }
 
   /// This function will find the closest element and the location on that
   /// element that is the closest
-  bool find_closest_node(double& pdist,Core::Geometry::Point &result, 
+  bool find_closest_node(double& pdist,Core::Geometry::Point &result,
                          typename Node::index_type &elem,
                          const Core::Geometry::Point &p) const;
 
-  bool find_closest_node(double& pdist,Core::Geometry::Point &result, 
+  bool find_closest_node(double& pdist,Core::Geometry::Point &result,
                          typename Node::index_type &elem,
                          const Core::Geometry::Point &p, double maxdist) const;
 
   /// This function will find the closest element and the location on that
   /// element that is the closest
   template <class ARRAY>
-  bool find_closest_elem(double& pdist, 
+  bool find_closest_elem(double& pdist,
                          Core::Geometry::Point &result,
-                         ARRAY& coords, 
+                         ARRAY& coords,
                          typename Elem::index_type &elem,
                          const Core::Geometry::Point &p,
                          double maxdist) const
@@ -872,11 +892,11 @@ public:
     if (maxdist < 0.0 || pdist < maxdist) return (true);
     return (false);
   }
-                           
+
   /// This function will find the closest element and the location on that
   /// element that is the closest
-  bool find_closest_elem(double& pdist, 
-                         Core::Geometry::Point &result, 
+  bool find_closest_elem(double& pdist,
+                         Core::Geometry::Point &result,
                          typename Elem::index_type &elem,
                          const Core::Geometry::Point &p) const
   {
@@ -885,21 +905,21 @@ public:
   }
 
   template<class ARRAY>
-  bool find_closest_elem(double& pdist, 
-                         Core::Geometry::Point& result, 
-                         ARRAY& coords, 
+  bool find_closest_elem(double& pdist,
+                         Core::Geometry::Point& result,
+                         ARRAY& coords,
                          typename Elem::index_type &elem,
                          const Core::Geometry::Point &p) const
   {
     if (ni_ == 0 || nj_ == 0) return (false);
-    
+
     const Core::Geometry::Point r = transform_.unproject(p);
 
     double ii = r.x();
     double jj = r.y();
     const double nii = static_cast<double>(ni_-2);
     const double njj = static_cast<double>(nj_-2);
-     
+
     if (ii < 0.0) ii = 0.0; if (ii > nii) ii = nii;
     if (jj < 0.0) jj = 0.0; if (jj > njj) jj = njj;
 
@@ -909,27 +929,27 @@ public:
     elem.i_ = static_cast<index_type>(fi);
     elem.j_ = static_cast<index_type>(fj);
     elem.mesh_ = this;
-    
+
     result = transform_.project(Core::Geometry::Point(ii,jj,0));
     pdist = (p-result).length();
-    
+
     coords.resize(2);
     coords[0] = ii-fi;
     coords[1] = jj-fj;
-    
+
     return (true);
   }
 
 
   /// This function will return multiple elements if the closest point is
-  /// located on a node or edge. All bordering elements are returned in that 
-  /// case. 
-  bool find_closest_elems(double& pdist, Core::Geometry::Point &result, 
+  /// located on a node or edge. All bordering elements are returned in that
+  /// case.
+  bool find_closest_elems(double& pdist, Core::Geometry::Point &result,
                           std::vector<typename Elem::index_type> &elem,
                           const Core::Geometry::Point &p) const;
 
   double get_epsilon() const;
-  
+
 protected:
 
   void compute_jacobian();
@@ -973,9 +993,9 @@ ImageMesh<Basis>::ImageMesh(size_type i, size_type j,
                             const Core::Geometry::Point &min, const Core::Geometry::Point &max) :
   min_i_(0), min_j_(0), ni_(i), nj_(j)
 {
-  DEBUG_CONSTRUCTOR("ImageMesh") 
+  DEBUG_CONSTRUCTOR("ImageMesh")
   transform_.pre_scale(Core::Geometry::Vector(1.0 / (i-1.0), 1.0 / (j-1.0), 1.0));
-  
+
   Core::Geometry::Vector scale = max - min;
   scale[2] = 1.0;
 
@@ -986,7 +1006,7 @@ ImageMesh<Basis>::ImageMesh(size_type i, size_type j,
   normal_ = Core::Geometry::Vector(0.0, 0.0, 0.0);
   transform_.project_normal(normal_);
   normal_.safe_normalize();
-  
+
   compute_jacobian();
 
   /// Create a new virtual interface for this copy
@@ -1177,7 +1197,7 @@ ImageMesh<Basis>::get_nodes(typename Node::array_type &array,
 
 template<class Basis>
 void
-ImageMesh<Basis>::get_edges(typename Edge::array_type &array, 
+ImageMesh<Basis>::get_edges(typename Edge::array_type &array,
                                           typename Face::index_type idx) const
 {
   array.resize(4);
@@ -1192,28 +1212,28 @@ ImageMesh<Basis>::get_edges(typename Edge::array_type &array,
 
 template<class Basis>
 void
-ImageMesh<Basis>::get_elems(typename Face::array_type &array, 
+ImageMesh<Basis>::get_elems(typename Face::array_type &array,
                                           typename Edge::index_type idx) const
 {
   array.reserve(2);
   array.clear();
-  
+
   const index_type offset = (ni_-1)*nj_;
-  
+
   if (idx < offset)
   {
-    const index_type j = idx/(ni_-1); 
+    const index_type j = idx/(ni_-1);
     const index_type i = idx - j*(ni_-1);
     if (j < (nj_-1)) array.push_back(IFaceIndex(this,i,j));
-    if (j > 0) array.push_back(IFaceIndex(this,i,j-1));  
+    if (j > 0) array.push_back(IFaceIndex(this,i,j-1));
   }
   else
   {
     idx = idx - offset;
-    const index_type i = idx/(nj_-1); 
+    const index_type i = idx/(nj_-1);
     const index_type j = idx - i*(nj_-1);
     if (i < (ni_-1)) array.push_back(IFaceIndex(this,i,j));
-    if (i > 0) array.push_back(IFaceIndex(this,i-1,j));  
+    if (i > 0) array.push_back(IFaceIndex(this,i-1,j));
   }
 }
 
@@ -1308,9 +1328,9 @@ ImageMesh<Basis>::get_faces(typename Face::array_type &arr, const Core::Geometry
   if (max.i_ >= ni_ - 1) max.i_ = ni_ - 2;
   if (max.j_ >= nj_ - 1) max.j_ = nj_ - 2;
 
-  for (index_type i = min.i_; i <= max.i_; i++) 
+  for (index_type i = min.i_; i <= max.i_; i++)
   {
-    for (index_type j = min.j_; j <= max.j_; j++) 
+    for (index_type j = min.j_; j <= max.j_; j++)
     {
       arr.push_back(typename Face::index_type(this, i,j));
     }
@@ -1495,9 +1515,9 @@ ImageMesh<Basis>::io(Piostream& stream)
   else
   {
     Pio_size(stream, ni_);
-    Pio_size(stream, nj_);  
+    Pio_size(stream, nj_);
   }
-  
+
   if (version >= 2) {
     basis_.io(stream);
   }
@@ -1623,7 +1643,7 @@ ImageMesh<Basis>::size(typename ImageMesh::Face::size_type &s) const
 
 template<class Basis>
 void
-ImageMesh<Basis>::to_index(typename ImageMesh::Face::index_type &idx, 
+ImageMesh<Basis>::to_index(typename ImageMesh::Face::index_type &idx,
                                                           index_type a) const
 {
   const index_type i = a % (ni_-1);
@@ -1770,21 +1790,21 @@ ImageMesh<Basis>::locate(typename Face::index_type &elem, const Core::Geometry::
 
   double ii = r.x();
   double jj = r.y();
-  
+
   const double nii = static_cast<double>(ni_-1);
   const double njj = static_cast<double>(nj_-1);
-   
+
   if (ii>=nii && (ii-epsilon)<nii) ii=nii-epsilon;
   if (jj>=njj && (jj-epsilon)<njj) jj=njj-epsilon;
 
   if (ii<0 && ii>(-epsilon)) ii=0.0;
   if (jj<0 && jj>(-epsilon)) jj=0.0;
-	
+
   const index_type i = static_cast<index_type>(floor(ii));
   const index_type j = static_cast<index_type>(floor(jj));
 
-  if (i < (ni_-1) && i >= 0 && 
-      j < (nj_-1) && j >= 0 && 
+  if (i < (ni_-1) && i >= 0 &&
+      j < (nj_-1) && j >= 0 &&
       ii >= 0.0 && jj >= 0.0)
   {
     elem.i_ = i;
@@ -1802,7 +1822,7 @@ bool
 ImageMesh<Basis>::locate(typename Node::index_type &node, const Core::Geometry::Point &p) const
 {
   if (ni_ == 0 || nj_ == 0) return (false);
-  
+
   const Core::Geometry::Point r = transform_.unproject(p);
 
   double rx = floor(r.x() + 0.5);
@@ -1812,11 +1832,11 @@ ImageMesh<Basis>::locate(typename Node::index_type &node, const Core::Geometry::
 
   if (rx < 0.0) rx = 0.0; if (rx > nii) rx = nii;
   if (ry < 0.0) ry = 0.0; if (ry > njj) ry = njj;
-  
+
   node.i_ = static_cast<index_type>(rx);
   node.j_ = static_cast<index_type>(ry);
   node.mesh_ = this;
-  
+
   return (true);
 }
 
@@ -1824,28 +1844,28 @@ ImageMesh<Basis>::locate(typename Node::index_type &node, const Core::Geometry::
 template <class Basis>
 bool
 ImageMesh<Basis>::find_closest_node(double& pdist,
-                                    Core::Geometry::Point &result, 
+                                    Core::Geometry::Point &result,
                                     typename Node::index_type &node,
                                     const Core::Geometry::Point &p) const
 {
   if (ni_ == 0 || nj_ == 0) return (false);
-  
+
   const Core::Geometry::Point r = transform_.unproject(p);
 
   double rx = floor(r.x() + 0.5);
   double ry = floor(r.y() + 0.5);
-  
+
   const double nii = static_cast<double>(ni_-1);
   const double njj = static_cast<double>(nj_-1);
 
   if (rx < 0.0) rx = 0.0; if (rx > nii) rx = nii;
   if (ry < 0.0) ry = 0.0; if (ry > njj) ry = njj;
 
-  result = transform_.project(Core::Geometry::Point(rx,ry,0.0)); 
+  result = transform_.project(Core::Geometry::Point(rx,ry,0.0));
   node.i_ = static_cast<index_type>(rx);
   node.j_ = static_cast<index_type>(ry);
   node.mesh_ = this;
-  
+
   pdist = (p-result).length();
   return (true);
 }
@@ -1854,7 +1874,7 @@ ImageMesh<Basis>::find_closest_node(double& pdist,
 template <class Basis>
 bool
 ImageMesh<Basis>::find_closest_node(double& pdist,
-                                    Core::Geometry::Point &result, 
+                                    Core::Geometry::Point &result,
                                     typename Node::index_type &node,
                                     const Core::Geometry::Point &p, double maxdist) const
 {
@@ -1874,16 +1894,16 @@ ImageMesh<Basis>::find_closest_elems(double& pdist,
   if (ni_ == 0 || nj_ == 0) return (false);
 
   elems.clear();
-    
+
   const double epsilon = 1e-8;
-  
+
   const Core::Geometry::Point r = transform_.unproject(p);
 
   double ii = r.x();
   double jj = r.y();
   const double nii = static_cast<double>(ni_-2);
   const double njj = static_cast<double>(nj_-2);
-   
+
   if (ii < 0.0) ii = 0.0; if (ii > nii) ii = nii;
   if (jj < 0.0) jj = 0.0; if (jj > njj) jj = njj;
 
@@ -1892,9 +1912,9 @@ ImageMesh<Basis>::find_closest_elems(double& pdist,
 
   index_type i = static_cast<index_type>(fii);
   index_type j = static_cast<index_type>(fjj);
-  
+
   typename Elem::index_type elem;
-  
+
   elem.i_ = i;
   elem.j_ = j;
   elem.mesh_ = this;
@@ -1904,28 +1924,28 @@ ImageMesh<Basis>::find_closest_elems(double& pdist,
   {
     elem.i_ = i-1;
     elem.j_ = j;
-    elems.push_back(elem);  
+    elems.push_back(elem);
   }
-  
+
   if ((fabs(fii-(ii+1.0)) < epsilon) && (i<(ni_-1)))
   {
     elem.i_ = i+1;
     elem.j_ = j;
-    elems.push_back(elem);  
+    elems.push_back(elem);
   }
 
   if ((fabs(fjj-jj) < epsilon) && ((j-1)>0))
   {
     elem.i_ = i;
     elem.j_ = j-1;
-    elems.push_back(elem);  
+    elems.push_back(elem);
   }
-  
+
   if ((fabs(fjj-(jj+1.0)) < epsilon) && (j<(nj_-1)))
   {
     elem.i_ = i;
     elem.j_ = j+1;
-    elems.push_back(elem);  
+    elems.push_back(elem);
   }
 
   result = transform_.project(Core::Geometry::Point(ii,jj,0));
@@ -1935,17 +1955,17 @@ ImageMesh<Basis>::find_closest_elems(double& pdist,
 }
 
 template <class Basis>
-void 
+void
 ImageMesh<Basis>::compute_jacobian()
 {
   if (basis_.polynomial_order() < 2)
-  { 
+  {
 
-    Core::Geometry::Vector J1 = transform_.project(Core::Geometry::Vector(1.0,0.0,0.0)); 
-    Core::Geometry::Vector J2 = transform_.project(Core::Geometry::Vector(0.0,1.0,0.0)); 
-    Core::Geometry::Vector J3 = Cross(J1,J2); 
+    Core::Geometry::Vector J1 = transform_.project(Core::Geometry::Vector(1.0,0.0,0.0));
+    Core::Geometry::Vector J2 = transform_.project(Core::Geometry::Vector(0.0,1.0,0.0));
+    Core::Geometry::Vector J3 = Cross(J1,J2);
     J3.normalize();
-    
+
     jacobian_[0] = J1.x();
     jacobian_[1] = J1.y();
     jacobian_[2] = J1.z();
@@ -1955,7 +1975,7 @@ ImageMesh<Basis>::compute_jacobian()
     jacobian_[6] = J3.x();
     jacobian_[7] = J3.y();
     jacobian_[8] = J3.z();
-    
+
     det_jacobian_ = DetMatrix3x3(jacobian_);
     scaled_jacobian_ = ScaledDetMatrix3x3(jacobian_);
     det_inverse_jacobian_ = InverseMatrix3x3(jacobian_,inverse_jacobian_);

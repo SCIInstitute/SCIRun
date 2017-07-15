@@ -802,8 +802,9 @@ void ParallelLinearAlgebraBase::run_parallel(ParallelLinearAlgebraSharedData& da
 ParallelLinearAlgebraSharedData::ParallelLinearAlgebraSharedData(const SolverInputs& inputs, int numProcs) : size_(inputs.A->nrows()),
   success_(numProcs),
   reduce1_(numProcs),
+  imatrices_(inputs),
   reduce2_(numProcs),
-  imatrices_(inputs), barrier_("Parallel Linear Algebra", numProcs), numProcs_(numProcs)
+  barrier_("Parallel Linear Algebra", numProcs), numProcs_(numProcs)
 {
   if (inputs.b->nrows() != size_
     || inputs.x->nrows() != size_

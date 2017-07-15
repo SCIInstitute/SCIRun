@@ -218,7 +218,7 @@ public:
   virtual void transform(const Core::Geometry::Transform &t);
 
   virtual bool get_dim(std::vector<size_type>&) const;
-  virtual void set_dim(const std::vector<size_type>& dims) {
+  virtual void set_dim(const std::vector<size_type>& dims) override {
     LatVolMesh<Basis>::ni_ = dims[0];
     LatVolMesh<Basis>::nj_ = dims[1];
     LatVolMesh<Basis>::nk_ = dims[2];
