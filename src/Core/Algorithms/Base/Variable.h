@@ -64,12 +64,10 @@ namespace Algorithms {
     Variable(const Name& name, const Value& value);
     enum DatatypeVariableDummyEnum { DATATYPE_VARIABLE };
     Variable(const Name& name, const Datatypes::DatatypeHandle& data, DatatypeVariableDummyEnum) : name_(name), data_(data) {}
-    virtual ~Variable() {}
 
     const Name& name() const { return name_; }
     const Value& value() const { return value_; }
-    //TODO: remove virtual on this class
-    virtual void setValue(const Value& val);
+    void setValue(const Value& val);
 
     int toInt() const;
     double toDouble() const;
@@ -85,7 +83,7 @@ namespace Algorithms {
     Value& valueForXml() { return value_; }
 
   private:
-    /*const*/ Name name_;
+    Name name_;
     Value value_;
     Datatypes::DatatypeHandleOption data_;
   };
@@ -155,7 +153,7 @@ public:
   value_type val() const { throw "unknown type"; }
 };
 
-#define TYPED_VARIABLE_CLASS(type, func) template <> \
+#define TYPED_VARIABLE_CLASS(type, func, name) template <> \
 class TypedVariable<type> : public Algorithms::Variable \
 {\
 public:\
@@ -164,12 +162,10 @@ public:\
   operator value_type() const { return val(); }\
   value_type val() const { return func(); }\
 };\
+using name = TypedVariable<type>;\
 
-TYPED_VARIABLE_CLASS(bool, toBool)
-TYPED_VARIABLE_CLASS(std::string, toString)
-
-typedef TypedVariable<bool> BooleanVariable;
-typedef TypedVariable<std::string> StringVariable;
+TYPED_VARIABLE_CLASS(bool, toBool, BooleanVariable)
+TYPED_VARIABLE_CLASS(std::string, toString, StringVariable)
 
 }}
 
