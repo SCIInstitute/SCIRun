@@ -64,17 +64,19 @@ namespace Core
   typedef boost::error_info<struct tag_double_out_of_range, boost::tuple<std::string, double, boost::numeric::interval<double> > > DoubleOutOfRangeInfo;
   typedef boost::error_info<struct tag_int_out_of_range, boost::tuple<std::string, int, boost::numeric::interval<int> > > IntOutOfRangeInfo;
 
+  #define SCIRUN_THROW(x) BOOST_THROW_EXCEPTION(x); throw "not implemented--unreachable--disables warning";
+
   struct SCISHARE NullPointerException : virtual ExceptionBase {};
 
   #define ENSURE_NOT_NULL(var, message)  if (!(var)) BOOST_THROW_EXCEPTION(SCIRun::Core::NullPointerException() << SCIRun::Core::NullObjectInfo(message))
 
   struct SCISHARE OutOfRangeException : virtual ExceptionBase {};
 
-  #define THROW_OUT_OF_RANGE(message)  BOOST_THROW_EXCEPTION(SCIRun::Core::OutOfRangeException() << SCIRun::Core::ErrorMessage(message))
+  #define THROW_OUT_OF_RANGE(message)  SCIRUN_THROW(SCIRun::Core::OutOfRangeException() << SCIRun::Core::ErrorMessage(message))
 
   struct SCISHARE InvalidArgumentException : virtual ExceptionBase {};
 
-  #define THROW_INVALID_ARGUMENT(message)  BOOST_THROW_EXCEPTION(SCIRun::Core::InvalidArgumentException() << SCIRun::Core::ErrorMessage(message))
+  #define THROW_INVALID_ARGUMENT(message)  SCIRUN_THROW(SCIRun::Core::InvalidArgumentException() << SCIRun::Core::ErrorMessage(message))
 
   typedef boost::error_info<struct tag_dimension_mismatch, std::string> DimensionMismatchInfo;
   typedef boost::error_info<struct tag_invalid_argument_value, std::string> InvalidArgumentValueInfo;
@@ -84,7 +86,13 @@ namespace Core
   struct SCISHARE DimensionMismatch : virtual ExceptionBase
   {
     virtual const char* what() const NOEXCEPT override;
-  };
+  }; 
+
+#define ENSURE_DIMENSIONS_MATCH(var1, var2, message)  if (var1 != var2) \
+  BOOST_THROW_EXCEPTION(SCIRun::Core::DimensionMismatch() << SCIRun::Core::DimensionMismatchInfo( \
+    SCIRun::Core::DimensionMismatchInfo::value_type( \
+      std::string(message) )))
+
 
   /// @todo should not need this in production code.
   //
@@ -93,19 +101,11 @@ namespace Core
   {
   };
 
-#define ENSURE_DIMENSIONS_MATCH(var1, var2, message)  if (var1 != var2) \
-  BOOST_THROW_EXCEPTION(SCIRun::Core::DimensionMismatch() << SCIRun::Core::DimensionMismatchInfo( \
-    SCIRun::Core::DimensionMismatchInfo::value_type( \
-      std::string(message) )))
- 
-/// @todo should not need this in production code.
-//
-// Any prototype code using this exception should be reviewed and improved!!!
 #define REPORT_NOT_IMPLEMENTED(message) \
-  BOOST_THROW_EXCEPTION(SCIRun::Core::NotImplemented() << SCIRun::Core::NotImplementedInfo( \
+  SCIRUN_THROW(SCIRun::Core::NotImplemented() << SCIRun::Core::NotImplementedInfo( \
     SCIRun::Core::NotImplementedInfo::value_type( \
       std::string(message) )))
-
+  
   struct SCISHARE AssertionFailed : virtual ExceptionBase {};
 
 #define ASSERTMSG(condition,message) \

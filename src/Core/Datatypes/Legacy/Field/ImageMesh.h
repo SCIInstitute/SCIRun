@@ -920,8 +920,10 @@ public:
     const double nii = static_cast<double>(ni_-2);
     const double njj = static_cast<double>(nj_-2);
 
-    if (ii < 0.0) ii = 0.0; if (ii > nii) ii = nii;
-    if (jj < 0.0) jj = 0.0; if (jj > njj) jj = njj;
+    if (ii < 0.0) ii = 0.0; 
+    if (ii > nii) ii = nii;
+    if (jj < 0.0) jj = 0.0; 
+    if (jj > njj) jj = njj;
 
     const double fi = floor(ii);
     const double fj = floor(jj);
