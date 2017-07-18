@@ -231,7 +231,7 @@ public:
     LatVolMesh<Basis>::vmesh_.reset(CreateVStructHexVolMesh(this));
   }
 
-  virtual int topology_geometry() const
+  virtual int topology_geometry() const override
   {
     return (Mesh::STRUCTURED | Mesh::IRREGULAR);
   }
@@ -372,11 +372,11 @@ public:
     elem_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; 
+    if (bi > ni) bi = ni;
     if (bi < 0) bi = 0;
     if (bj > nj) bj = nj;
     if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; 
+    if (bk > nk) bk = nk;
     if (bk < 0) bk = 0;
 
     ei = bi; ej = bj; ek = bk;
@@ -778,7 +778,7 @@ public:
 
   /// Type description, used for finding names of the mesh class for
   /// dynamic compilation purposes. Soem of this should be obsolete
-  virtual const TypeDescription *get_type_description() const;
+  virtual const TypeDescription *get_type_description() const override;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
   static const TypeDescription* face_type_description();
@@ -1314,11 +1314,11 @@ StructHexVolMesh<Basis>::find_closest_node(double& pdist, Core::Geometry::Point 
   node_grid_->unsafe_locate(bi, bj, bk, p);
 
   // Clamp to closest point on the grid.
-  if (bi > ni) bi = ni; 
+  if (bi > ni) bi = ni;
   if (bi < 0) bi = 0;
-  if (bj > nj) bj = nj; 
+  if (bj > nj) bj = nj;
   if (bj < 0) bj = 0;
-  if (bk > nk) bk = nk; 
+  if (bk > nk) bk = nk;
   if (bk < 0) bk = 0;
 
   ei = bi; ej = bj; ek = bk;

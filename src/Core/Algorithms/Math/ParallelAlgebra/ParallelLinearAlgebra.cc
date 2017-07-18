@@ -799,12 +799,14 @@ void ParallelLinearAlgebraBase::run_parallel(ParallelLinearAlgebraSharedData& da
   data.setFlag(proc, parallel(PLA, data.inputs()));
 }
 
-ParallelLinearAlgebraSharedData::ParallelLinearAlgebraSharedData(const SolverInputs& inputs, int numProcs) : size_(inputs.A->nrows()),
+ParallelLinearAlgebraSharedData::ParallelLinearAlgebraSharedData(const SolverInputs& inputs, int numProcs) :
+  size_(inputs.A->nrows()),
   success_(numProcs),
-  reduce1_(numProcs),
   imatrices_(inputs),
-  reduce2_(numProcs),
-  barrier_("Parallel Linear Algebra", numProcs), numProcs_(numProcs)
+  barrier_("Parallel Linear Algebra", numProcs),
+  numProcs_(numProcs),
+  reduce1_(numProcs),
+  reduce2_(numProcs)
 {
   if (inputs.b->nrows() != size_
     || inputs.x->nrows() != size_

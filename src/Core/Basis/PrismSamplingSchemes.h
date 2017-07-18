@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -42,7 +42,7 @@ namespace Basis {
 class SCISHARE PrismSamplingSchemes
 {
   public:
-  
+
   template <class ARRAY1, class ARRAY2>
   void get_gaussian_scheme(ARRAY1& coords, ARRAY2& weights, int order)
   {
@@ -53,7 +53,7 @@ class SCISHARE PrismSamplingSchemes
       const double gaussian_coords[1][3] = {{1./3.,1./3., 0.5}};
       const unsigned int num_coords = 3;
       const unsigned int num_points = 1;
-      
+
       coords.resize(num_points);
       weights.resize(num_points);
       for (unsigned int i=0; i<num_points; i++)
@@ -65,16 +65,16 @@ class SCISHARE PrismSamplingSchemes
       }
     }
     else if (order == 2)
-    { 
-      const double gaussian_weights[6] = {1./6., 1./6., 1./6., 
+    {
+      const double gaussian_weights[6] = {1./6., 1./6., 1./6.,
                                           1./6., 1./6., 1./6.};
       const double gaussian_coords[6][3] = {
-        {1./6.,1./6., 0.211324865405}, {2./3.,1./6., 0.211324865405}, 
-        {1./6.,2./3., 0.211324865405}, {1./6.,1./6., 0.788675134595}, 
+        {1./6.,1./6., 0.211324865405}, {2./3.,1./6., 0.211324865405},
+        {1./6.,2./3., 0.211324865405}, {1./6.,1./6., 0.788675134595},
         {2./3.,1./6., 0.788675134595}, {1./6.,2./3., 0.788675134595}};
       const unsigned int num_coords = 3;
       const unsigned int num_points = 6;
-      
+
       coords.resize(num_points);
       weights.resize(num_points);
       for (unsigned int i=0; i<num_points; i++)
@@ -94,11 +94,10 @@ class SCISHARE PrismSamplingSchemes
       REPORT_NOT_IMPLEMENTED("Only Gaussian scheme 1, and 2 are implemented");
     }
   }
-  
+
   template <class ARRAY1, class ARRAY2>
   void get_regular_scheme(ARRAY1& coords, ARRAY2& weights, int /*order*/)
   {
-    typedef typename ARRAY1::value_type coords_type;
     coords.resize(0);
     weights.resize(0);
   }

@@ -359,13 +359,13 @@ public:
 
   /// Clone function for detaching the mesh and automatically generating
   /// a new version if needed.
-  virtual TetVolMesh *clone() const { return new TetVolMesh(*this); }
+  virtual TetVolMesh *clone() const override { return new TetVolMesh(*this); }
 
   /// Destructor
   virtual ~TetVolMesh();
 
   /// Access point to virtual interface
-  virtual VMesh* vmesh() { return vmesh_.get(); }
+  virtual VMesh* vmesh() override { return vmesh_.get(); }
 
   MeshFacadeHandle getFacade() const override
   {
@@ -374,7 +374,7 @@ public:
 
   /// This one should go at some point, should be reroute through the
   /// virtual interface
-  virtual int basis_order() { return (basis_.polynomial_order()); }
+  virtual int basis_order() override { return (basis_.polynomial_order()); }
 
   /// Topological dimension
   virtual int  dimensionality() const { return 3; }
@@ -408,8 +408,8 @@ public:
 
   /// Compute tables for doing topology, these need to be synchronized
   /// before doing a lot of operations.
-  virtual bool synchronize(mask_type mask);
-  virtual bool unsynchronize(mask_type mask);
+  virtual bool synchronize(mask_type mask) override;
+  virtual bool unsynchronize(mask_type mask) override;
   bool clear_synchronization();
 
   /// Get the basis class.
@@ -928,9 +928,9 @@ public:
     node_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; 
+    if (bi > ni) bi = ni;
     if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; 
+    if (bj > nj) bj = nj;
     if (bj < 0) bj = 0;
     if (bk > nk) bk = nk;
     if (bk < 0) bk = 0;
@@ -1022,18 +1022,18 @@ public:
     node_grid_->unsafe_locate(ei, ej, ek, max);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; 
+    if (bi > ni) bi = ni;
     if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; 
+    if (bj > nj) bj = nj;
     if (bj < 0) bj = 0;
     if (bk > nk) bk = nk;
     if (bk < 0) bk = 0;
 
     if (ei > ni) ei = ni;
     if (ei < 0) ei = 0;
-    if (ej > nj) ej = nj; 
+    if (ej > nj) ej = nj;
     if (ej < 0) ej = 0;
-    if (ek > nk) ek = nk; 
+    if (ek > nk) ek = nk;
     if (ek < 0) ek = 0;
 
     double maxdist2 = maxdist*maxdist;
@@ -1096,16 +1096,16 @@ public:
     // Clamp to closest point on the grid.
     if (bi > ni) bi = ni;
     if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; 
+    if (bj > nj) bj = nj;
     if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; 
+    if (bk > nk) bk = nk;
     if (bk < 0) bk = 0;
 
-    if (ei > ni) ei = ni; 
+    if (ei > ni) ei = ni;
     if (ei < 0) ei = 0;
-    if (ej > nj) ej = nj; 
+    if (ej > nj) ej = nj;
     if (ej < 0) ej = 0;
-    if (ek > nk) ek = nk; 
+    if (ek > nk) ek = nk;
     if (ek < 0) ek = 0;
 
     double maxdist2 = maxdist*maxdist;
@@ -1218,11 +1218,11 @@ public:
     elem_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; 
+    if (bi > ni) bi = ni;
     if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; 
+    if (bj > nj) bj = nj;
     if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; 
+    if (bk > nk) bk = nk;
     if (bk < 0) bk = 0;
 
     ei = bi; ej = bj; ek = bk;
@@ -1394,7 +1394,7 @@ public:
   }
 
   /// Export this class using the old Pio system
-  virtual void io(Piostream&);
+  virtual void io(Piostream&) override;
 
   ///////////////////////////////////////////////////
   // STATIC VARIABLES AND FUNCTIONS
@@ -1404,7 +1404,7 @@ public:
 
   /// Core functionality for getting the name of a templated mesh class
   static  const std::string type_name(int n = -1);
-  virtual std::string dynamic_type_name() const { return tetvolmesh_typeid.type; }
+  virtual std::string dynamic_type_name() const override { return tetvolmesh_typeid.type; }
 
   /// Type description, used for finding names of the mesh class for
   /// dynamic compilation purposes. Soem of this should be obsolete
