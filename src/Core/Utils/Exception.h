@@ -64,7 +64,7 @@ namespace Core
   typedef boost::error_info<struct tag_double_out_of_range, boost::tuple<std::string, double, boost::numeric::interval<double> > > DoubleOutOfRangeInfo;
   typedef boost::error_info<struct tag_int_out_of_range, boost::tuple<std::string, int, boost::numeric::interval<int> > > IntOutOfRangeInfo;
 
-  #define SCIRUN_THROW(x) BOOST_THROW_EXCEPTION(x); throw "not implemented--unreachable--disables warning";
+  #define SCIRUN_THROW(x) do { BOOST_THROW_EXCEPTION(x); throw "not implemented--unreachable--disables warning"; } while(false);
 
   struct SCISHARE NullPointerException : virtual ExceptionBase {};
 

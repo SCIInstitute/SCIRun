@@ -149,11 +149,10 @@ public:
   using value_type = T;
   TypedVariable(const std::string& name, const value_type& value) : Algorithms::Variable(Algorithms::Name(name), value) {}
 
-  operator value_type() const { return val(); }
-  value_type val() const { throw "unknown type"; }
+  operator value_type() const { return {}; }
 };
 
-#define TYPED_VARIABLE_CLASS(varType, func, name) template <> \
+#define TYPED_VARIABLE_CLASS(varType, func) template <> \
 class TypedVariable<varType> : public Algorithms::Variable \
 {\
 public:\
@@ -161,11 +160,13 @@ public:\
   TypedVariable(const std::string& name, const value_type& value) : Algorithms::Variable(Algorithms::Name(name), value) {}\
   operator value_type() const { return val(); }\
   value_type val() const { return func(); }\
-};\
-using name = TypedVariable<varType>;
+};
 
-TYPED_VARIABLE_CLASS(bool, toBool, BooleanVariable)
-TYPED_VARIABLE_CLASS(std::string, toString, StringVariable)
+TYPED_VARIABLE_CLASS(bool, toBool)
+TYPED_VARIABLE_CLASS(std::string, toString)
+
+using BooleanVariable = TypedVariable<bool>;
+using StringVariable = TypedVariable<std::string>;
 
 }}
 
