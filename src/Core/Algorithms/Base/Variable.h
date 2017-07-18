@@ -162,8 +162,7 @@ public:\
   operator value_type() const { return val(); }\
   value_type val() const { return func(); }\
 };\
-using name = TypedVariable<varType>;\
-\
+using name = TypedVariable<varType>;
 
 TYPED_VARIABLE_CLASS(bool, toBool, BooleanVariable)
 TYPED_VARIABLE_CLASS(std::string, toString, StringVariable)
