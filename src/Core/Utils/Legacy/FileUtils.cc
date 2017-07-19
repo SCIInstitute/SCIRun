@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -48,7 +48,6 @@
 #endif
 #include <sys/stat.h>
 #include <Core/Utils/Legacy/FileUtils.h>
-#include <Core/Utils/Legacy/Dir.h>
 #include <Core/Utils/Legacy/Assert.h>
 #include <Core/Utils/Legacy/Environment.h>
 #include <Core/Utils/Legacy/sci_system.h>
@@ -68,13 +67,13 @@ namespace SCIRun {
 
 ////////////////////////////////////////////////////////////
 //
-// InsertStringInFile 
+// InsertStringInFile
 //
 //       If "match" is found in "filename", then add "add_text" text
 //       to the file _after_ the location of the matched text.
 //
 //   Normally, I would just use sed via system() to edit a file,
-//   but for some reason system() calls never work from Dataflow 
+//   but for some reason system() calls never work from Dataflow
 //   processes in linux.  Oh well, sed isn't natively available
 //   under windows, so I'd have to do something like this anyhow
 //   - Chris Moulding
@@ -152,7 +151,7 @@ InsertStringInFile(char* filename, const char* match, const char* add_text)
     }
     fclose(ifile);
     fclose(ofile);
-  } 
+  }
 }
 
 std::map<int,char*>*
@@ -163,14 +162,14 @@ GetFilenamesEndingWith(const char* d, const  char* ext)
   DIR* dir = opendir(d);
   char* newstring = 0;
 
-  if (!dir) 
+  if (!dir)
     return 0;
 
   newmap = new std::map<int,char*>;
 
   file = readdir(dir);
   while (file) {
-    if ((strlen(file->d_name)>=strlen(ext)) && 
+    if ((strlen(file->d_name)>=strlen(ext)) &&
         (strcmp(&(file->d_name[strlen(file->d_name)-strlen(ext)]),ext)==0)) {
       newstring = new char[strlen(file->d_name)+1];
       sprintf(newstring,"%s",file->d_name);
@@ -183,14 +182,14 @@ GetFilenamesEndingWith(const char* d, const  char* ext)
   return newmap;
 }
 
-std::string 
+std::string
 substituteTilde( const std::string & dirstr ) {
   std::string realdirstr = dirstr;
 
   std::string::size_type pos = realdirstr.find("~");
   if (pos != std::string::npos && (pos == 0 || dirstr[pos-1] == '/')) {
     std::string HOME = sci_getenv("HOME");
-    realdirstr = HOME + "/" + 
+    realdirstr = HOME + "/" +
       dirstr.substr(pos+1, dirstr.size()-pos-1);
   }
   return realdirstr;
@@ -229,7 +228,10 @@ in_sequence_compare(const std::string &a, const std::string &b)
 
   for (size_t i = 0; i < a.size(); i++)
   {
-    if (!(a[i] == b[i] || isdigit(a[i]) && isdigit(b[i])))
+    if (!(
+        a[i] == b[i] ||
+        (isdigit(a[i]) && isdigit(b[i]))
+      ))
       return false;
   }
   return true;
@@ -266,11 +268,11 @@ split_filename(std::string fname) {
   if (fname[fname.size()-1] == '/' || fname[fname.size()-1] == '\\') {
     fname = fname.substr(0, fname.size()-1);
   }
-  
+
   if (validDir(fname)) {
     return make_pair(fname, std::string(""));
   }
-    
+
   std::string::size_type pos = fname.find_last_of("/");
   if (pos == std::string::npos)
     pos = fname.find_last_of("\\");
@@ -281,7 +283,7 @@ split_filename(std::string fname) {
 }
 
 bool
-validFile( const bfs::path& filename ) 
+validFile( const bfs::path& filename )
 {
   bool retval = false;
   try
@@ -296,7 +298,7 @@ validFile( const bfs::path& filename )
 }
 
 bool
-validFile( const std::string& filename ) 
+validFile( const std::string& filename )
 {
   bool retval = false;
   try {
@@ -330,7 +332,6 @@ validDir( const std::string& dirname )
 {
   bool retval = false;
   try {
-    struct stat buf;
     std::string updatedDirname = substituteTilde(dirname);
     retval = bfs::is_directory(updatedDirname);
   }
@@ -418,7 +419,7 @@ testFilesystem( std::string directoryPath )
 // Searches the colon-seperated 'path' string variable for a file named
 // 'file'.  From left to right in the path string each directory is
 // tested to see if the file named 'file' is in it.
-// 
+//
 // If the file is found, it returns the DIRECTORY that the file is located in
 // Otherwise if the file is not found in the path, returns an empty string
 //
@@ -454,7 +455,7 @@ findFileInPath(const std::string &file, const std::string &path)
   }
   return "";
 }
-    
+
 std::string
 autocomplete(const std::string &instr) {
   std::string str = instr;
@@ -465,20 +466,20 @@ autocomplete(const std::string &instr) {
     // in windows c:/dir1/ will not be valid, but c:/dir1 will be.  Lose the end '/' and try again
     if ((dir[dir.length()-1] == '/' || dir[dir.length()-1] == '\\') && dir.length() > 1) {
       dir = dir.substr(0, dir.length()-1);
-      if (!validDir(dir)) 
+      if (!validDir(dir))
         return str;
     }
-    else 
+    else
 #endif
       return str;
   }
   if (dirfile.first.empty() || dirfile.first[dirfile.first.length()-1] != '/') {
     dirfile.first = dirfile.first+"/";
   }
-    std::vector<std::string> files = 
+    std::vector<std::string> files =
     GetFilenamesStartingWith(dir, dirfile.second);
-  
-    
+
+
   if (files.empty()) {
     return str;
   } if (files.size() == 3 && files[0] == "." && files[1] == "..") {
@@ -508,7 +509,7 @@ autocomplete(const std::string &instr) {
 }
 
 
-std::string 
+std::string
 canonicalize(std::string filename)
 {
   filename = substituteTilde(filename);
@@ -528,8 +529,8 @@ canonicalize(std::string filename)
         newentries.push_back(entries[i]);
       }
     }
-  } 
-  
+  }
+
   filename = "";
   for (unsigned int i = 0; i < entries.size(); ++i) {
 #ifdef _WIN32
@@ -543,7 +544,7 @@ canonicalize(std::string filename)
   if (filename == "" || validDir(filename)) {
     filename = filename+"/";
   }
-  
+
   return filename;
 }
 
@@ -557,7 +558,7 @@ convertToWindowsPath( std::string & unixPath )
       unixPath[cnt] = '\\';
     }
   }
-}    
+}
 
 int copyFile(const bfs::path& src, const bfs::path& dest)
 {
@@ -629,7 +630,7 @@ int deleteFile(const bfs::path& filename)
   return code;
 }
 
-  
+
 /// @todo: boostify this
 int copyDir(std::string src, std::string dest)
 {
@@ -640,7 +641,7 @@ int copyDir(std::string src, std::string dest)
 #else
   std::string cpCmd = "cp -fr ";
 #endif
-  
+
   std::string cmd = cpCmd + "\"" + src + "\"" + " " + "\"" + dest + "\"";
   int code = sci_system(cmd.c_str());
   if (code)
@@ -649,36 +650,26 @@ int copyDir(std::string src, std::string dest)
   }
   return code;
 }
-  
+
 int deleteDir(const bfs::path& filename)
 {
   int code = -1;
   try
   {
     bsys::error_code ec;
-    boost::uintmax_t count = bfs::remove_all(filename, ec);
+    bfs::remove_all(filename, ec);
     code = ec.value();
-#if DEBUG
-    if (code = bsys::errc::success)
-    {
-      std::cout << count << " files removed when deleting " << filename << std::endl;
-    }
-    else
-    {
-      std::cerr << "error " << ec.value() << ": " << ec.message() << std::endl;
-    }
-#endif
   }
   catch (...)
   {
     std::cerr << "Error removing " << filename.c_str() << std::endl;
   }
-  return code;  
+  return code;
 }
 
 
 int
-getNumNonEmptyLines(char *filename) 
+getNumNonEmptyLines(char *filename)
 {
   // read through the file -- when you see a non-white-space set a flag to one.
   // when you get to the end of the line (or EOF), see if the flag has
@@ -692,19 +683,17 @@ getNumNonEmptyLines(char *filename)
   int count = 0;
   int haveNonWhiteSpace = 0;
   int c;
-  while ((c = fgetc(fin)) != EOF) 
+  while ((c = fgetc(fin)) != EOF)
   {
     if (!isspace(c)) haveNonWhiteSpace = 1;
-    else if ((c == '\n' || c == '\r') && haveNonWhiteSpace) 
+    else if ((c == '\n' || c == '\r') && haveNonWhiteSpace)
     {
       count++;
       haveNonWhiteSpace = 0;
     }
   }
   if (haveNonWhiteSpace) count++;
-#if DEBUG
-  std::cerr << "number of nonempty lines was: "<< count << "\n";
-#endif
+
   return count;
 }
 
@@ -729,22 +718,22 @@ opendir(const char *name)
 {
   // grab the first file in the directory by ending name with "/*"
   DIR *dir = 0;
-  if (name != 0) 
+  if (name != 0)
   {
     size_t length = strlen(name);
-    if (length > 0) 
+    if (length > 0)
     {
       dir = new DIR;
       dir->done = false;
 
       // create the file search path with the wildcard
-      std::string search_path = name; 
+      std::string search_path = name;
       if (name[length-1] == '/' || name[length-1] == '\\')
         search_path += "*";
       else
         search_path += "/*";
 
-      if ((dir->file_handle = _findfirst(search_path.c_str(), &dir->nextfinddata)) == -1) 
+      if ((dir->file_handle = _findfirst(search_path.c_str(), &dir->nextfinddata)) == -1)
       {
         delete dir;
         dir = 0;
@@ -760,7 +749,7 @@ int
 closedir(DIR *dir)
 {
   int result = -1;
-  if (dir) 
+  if (dir)
   {
     result = _findclose(dir->file_handle);
     delete dir;
@@ -772,9 +761,9 @@ closedir(DIR *dir)
 dirent
 *readdir(DIR *dir)
 {
-  if (dir->done) 
+  if (dir->done)
     return 0;
-  if (dir) 
+  if (dir)
   {
     dir->finddata = dir->nextfinddata;
     if (_findnext(dir->file_handle, &dir->nextfinddata) == -1)
@@ -782,7 +771,7 @@ dirent
     dir->return_on_read.d_name = dir->finddata.name;
     return &dir->return_on_read;
   }
-  else 
+  else
   {
     errno = EBADF;
   }

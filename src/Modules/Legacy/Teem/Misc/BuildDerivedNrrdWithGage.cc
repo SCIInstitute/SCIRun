@@ -122,7 +122,6 @@ BuildDerivedNrrdWithGage::execute()
 
   gageContext *ctx = nullptr;
   double gmc, ipos[4];
-  float x, y, z;
   float scale[3];
   gageKind *kind = nullptr;
   int a, ansLen, E=0, idx, otype, what;
@@ -296,26 +295,34 @@ BuildDerivedNrrdWithGage::execute()
   }
 
   //probing the volume
-  for (zi=0; zi<=soz-1; zi++) {
-    z = AIR_AFFINE(0, zi, soz-1, 0, siz-1);
-    for (yi=0; yi<=soy-1; yi++) {
-      y = AIR_AFFINE(0, yi, soy-1, 0, siy-1);
-      for (xi=0; xi<=sox-1; xi++) {
-	x = AIR_AFFINE(0, xi, sox-1, 0, six-1);
+  for (zi=0; zi<=soz-1; zi++)
+  {
+    AIR_AFFINE(0, zi, soz-1, 0, siz-1);
+    for (yi=0; yi<=soy-1; yi++)
+    {
+      AIR_AFFINE(0, yi, soy-1, 0, siy-1);
+      for (xi=0; xi<=sox-1; xi++)
+      {
+        AIR_AFFINE(0, xi, sox-1, 0, six-1);
         idx = xi + sox*(yi + soy*zi);
 
-	ipos[0] = xi;
-	ipos[1] = yi;
-	ipos[2] = zi;
+        ipos[0] = xi;
+        ipos[1] = yi;
+        ipos[2] = zi;
 
-	if (gageProbe(ctx, ipos[0], ipos[1], ipos[2])) {
+        if (gageProbe(ctx, ipos[0], ipos[1], ipos[2]))
+        {
           error(ctx->errStr);
         }
 
-	if (1 == ansLen) {
-	    nrrdFInsert[nout->type](nout->data, idx, nrrdFClamp[nout->type](*answer));
-        } else {
-          for (a=0; a<=ansLen-1; a++) {
+        if (1 == ansLen)
+        {
+          nrrdFInsert[nout->type](nout->data, idx, nrrdFClamp[nout->type](*answer));
+        }
+        else
+        {
+          for (a=0; a<=ansLen-1; a++)
+          {
             nrrdFInsert[nout->type](nout->data, a + ansLen*idx,
                                     nrrdFClamp[nout->type](answer[a]));
           }
