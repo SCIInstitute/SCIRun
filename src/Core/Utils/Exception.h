@@ -51,18 +51,18 @@ namespace Core
 
   struct SCISHARE ExceptionBase : virtual std::exception, virtual boost::exception
   {
-    virtual const char* what() const NOEXCEPT;
+    virtual const char* what() const NOEXCEPT override;
     std::string typeName() const;
   };
 
-  typedef boost::error_info<struct tag_error_message, std::string> ErrorMessage;
-  typedef boost::error_info<struct tag_null_object, std::string> NullObjectInfo;
-  typedef boost::error_info<struct tag_file_not_found, std::string> FileNotFound;
+  using ErrorMessage = boost::error_info<struct tag_error_message, std::string>;
+  using NullObjectInfo = boost::error_info<struct tag_null_object, std::string>;
+  using FileNotFound = boost::error_info<struct tag_file_not_found, std::string>;
   /// @todo discuss location/type
-  typedef boost::error_info<struct tag_linear_algebra_error, std::string> LinearAlgebraErrorMessage;
+  using LinearAlgebraErrorMessage = boost::error_info<struct tag_linear_algebra_error, std::string>;
   /// @todo make macro for various types
-  typedef boost::error_info<struct tag_double_out_of_range, boost::tuple<std::string, double, boost::numeric::interval<double> > > DoubleOutOfRangeInfo;
-  typedef boost::error_info<struct tag_int_out_of_range, boost::tuple<std::string, int, boost::numeric::interval<int> > > IntOutOfRangeInfo;
+  using DoubleOutOfRangeInfo = boost::error_info<struct tag_double_out_of_range, boost::tuple<std::string, double, boost::numeric::interval<double> > >;
+  using IntOutOfRangeInfo = boost::error_info<struct tag_int_out_of_range, boost::tuple<std::string, int, boost::numeric::interval<int> > >;
 
   #define SCIRUN_THROW(x) do { BOOST_THROW_EXCEPTION(x); throw "not implemented--unreachable--disables warning"; } while(false);
 
@@ -78,14 +78,14 @@ namespace Core
 
   #define THROW_INVALID_ARGUMENT(message)  SCIRUN_THROW(SCIRun::Core::InvalidArgumentException() << SCIRun::Core::ErrorMessage(message))
 
-  typedef boost::error_info<struct tag_dimension_mismatch, std::string> DimensionMismatchInfo;
-  typedef boost::error_info<struct tag_invalid_argument_value, std::string> InvalidArgumentValueInfo;
-  typedef boost::error_info<struct tag_not_implemented, std::string> NotImplementedInfo;
+  using DimensionMismatchInfo = boost::error_info<struct tag_dimension_mismatch, std::string>;
+  using InvalidArgumentValueInfo = boost::error_info<struct tag_invalid_argument_value, std::string>;
+  using NotImplementedInfo = boost::error_info<struct tag_not_implemented, std::string>;
   
   /// @todo move these exceptions to new exception header file once it exists
   struct SCISHARE DimensionMismatch : virtual ExceptionBase
   {
-    virtual const char* what() const NOEXCEPT override;
+    const char* what() const NOEXCEPT override;
   }; 
 
 #define ENSURE_DIMENSIONS_MATCH(var1, var2, message)  if (var1 != var2) \
