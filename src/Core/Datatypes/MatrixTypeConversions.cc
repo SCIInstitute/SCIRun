@@ -49,7 +49,7 @@ std::string matrixIs::whatType(const MatrixHandle& mh)
     return "DenseMatrix";
   if (sparse(mh))
     return "SparseRowMatrix";
-  return typeid(*mh).name();
+  return mh->dynamic_type_name();
 }
 
 std::string matrixIs::whatType(const ComplexMatrixHandle& cmh)
@@ -62,7 +62,7 @@ std::string matrixIs::whatType(const ComplexMatrixHandle& cmh)
     return "ComplexDenseMatrix";
   if (boost::dynamic_pointer_cast<ComplexSparseRowMatrix>(cmh))
     return "ComplexSparseRowMatrix";
-  return typeid(*cmh).name();
+  return cmh->dynamic_type_name();
 }
 
 MatrixTypeCode matrixIs::typeCode(const MatrixHandle& mh)
