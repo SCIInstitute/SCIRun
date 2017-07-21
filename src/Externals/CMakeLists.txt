@@ -41,3 +41,6 @@ ADD_SUBDIRECTORY(cleaver)
 
 MESSAGE(STATUS "Configuring libxml2")
 ADD_SUBDIRECTORY(libxml2)
+
+MESSAGE(STATUS "Configuring spire libs")
+ADD_SUBDIRECTORY(spire)

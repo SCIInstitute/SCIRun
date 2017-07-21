@@ -363,110 +363,6 @@ IF(WITH_TETGEN)
 ENDIF()
 
 ########################################################################
-# Configure CPM and Spire - http://github.com/iauns/cpm
-# Configure CPM and Spire - http://github.com/CIBC-Internal/cpm
-
-MESSAGE(STATUS "Configuring CPMs")
-
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
-# CPM Setup.
-set(CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/cpm" CACHE TYPE STRING)
-find_package(Git)
-if(NOT GIT_FOUND)
-  message(FATAL_ERROR "CPM requires Git.")
-endif()
-if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
-  message(STATUS "Cloning repo (https://github.com/CIBC-Internal/cpm)")
-  execute_process(
-    COMMAND "${GIT_EXECUTABLE}" clone https://github.com/CIBC-Internal/cpm ${CPM_DIR}
-    RESULT_VARIABLE error_code
-    OUTPUT_QUIET ERROR_QUIET)
-  if(error_code)
-    message(FATAL_ERROR "CPM failed to get the hash for HEAD")
-  endif()
-endif()
-include(${CPM_DIR}/CPM.cmake)
-
-# TODO: Add tags for *all* of the CPM modules. This will allow upstream
-# flexibility. Once all versions are appropriately tagged, I will be able
-# to untag upstream and keep it moving forward.
-
-# ++ MODULE: GL Platform
-CPM_AddModule("gl_platform"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-gl-platform"
-  GIT_TAG "origin/master")
-
-# ++ MODULE: Arc-Look-At (Autoview Camera)
-CPM_AddModule("look_at"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-arc-look-at"
-  GIT_TAG "origin/SCIRun")
-
-# ++ MODULE: Entity System
-CPM_AddModule("es"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-entity-system"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: Entity system component serialization
-CPM_AddModule("es_cereal"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-cereal"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: Cereal support for GLM.
-CPM_AddModule("cereal_glm"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-cereal-glm"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: ES Systems
-CPM_AddModule("es_systems"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-systems"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: Async filesystem support
-CPM_AddModule("es_fs"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-fs"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: General transforms and components
-CPM_AddModule("es_general"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-general"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: Entity System Rendering.
-CPM_AddModule("es_render"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-render"
-  GIT_TAG "origin/FontTextures"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: Acorn
-CPM_AddModule("es_acorn"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-acorn"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: Var buffer
-CPM_AddModule("var_buffer"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-var-buffer"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: BSerialize
-CPM_AddModule("bserialize"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-bserialize"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-CPM_Finish()
-
-MESSAGE(STATUS "Done configuring CPMs")
-
-########################################################################
 # Copy Spire-SCIRun specific assets and shaders
 
 set(OUTPUT_SHADER_DIR ${CMAKE_CURRENT_BINARY_DIR}/Shaders)
@@ -583,6 +479,8 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_SOURCE_DIR}/Externals/gmock/gtest/include
   ${SCIRun_SOURCE_DIR}/Externals/gmock/include
   ${SCIRun_SOURCE_DIR}/Externals/libxml2/include
+  ${SCIRun_SOURCE_DIR}/Externals/spire/3rdParty/glm
+  ${SCIRun_SOURCE_DIR}/Externals/spire/
   ${CMAKE_CURRENT_BINARY_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
@@ -898,7 +796,7 @@ IF(BUILD_TESTING)
   ENDIF()
 ENDIF()
 
-SET_PROPERTY(TARGET ${CPM_LIBRARIES} PROPERTY FOLDER "Externals")
+#SET_PROPERTY(TARGET ${CPM_LIBRARIES} PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET ${SCI_LOG4CPP_LIBRARY} PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET cleaver PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
