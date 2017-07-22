@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,49 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Bundle/ReportBundleInfo.h>
-#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
-#include <Core/Datatypes/String.h>
+///@brief Define drand48 function for WIN32 platform.
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Bundles;
+#ifndef CORE_OS_RAND_H
+#define CORE_OS_RAND_H
 
-/// @class ReportBundleInfo
-/// @brief This module lists all the objects stored in a bundle.
+#include <Core/Thread/Time.h>
 
-MODULE_INFO_DEF(ReportBundleInfo, Bundle, SCIRun)
-
-ReportBundleInfo::ReportBundleInfo() : Module(staticInfo_)
+inline double drand48()
 {
-  INITIALIZE_PORT(InputBundle);
-}
-
-void ReportBundleInfo::execute()
-{
-  auto bundle = getRequiredInput(InputBundle);
-
-  if (needToExecute())
-  {
-    std::ostringstream infostring;
-
-    for (const auto& nameHandlePair : *bundle)
-    {
-      std::string name = nameHandlePair.first;
-      infostring << " {" << name << " (";
-      std::string type = typeid(*nameHandlePair.second).name(); //nameHandlePair.second->dynamic_type_name();
-      if (type.find("String"))
-      {
-        auto str = boost::dynamic_pointer_cast<Core::Datatypes::String>(nameHandlePair.second);
-        if (str)
-          infostring << str->value();
-        else
-          infostring << type;
-      }
-      else
-        infostring << type;
-      infostring << ") }\n";
-    }
-
-    get_state()->setTransientValue("ReportedInfo", infostring.str());
+  static bool initialized = false;
+  if (!initialized) {
+    srand((int) SCIRun::Time::currentTicks());
+    initialized = true;
   }
+  return ((double) rand())/ RAND_MAX;
 }
+
+
+#endif

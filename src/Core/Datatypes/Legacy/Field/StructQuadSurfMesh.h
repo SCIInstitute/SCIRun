@@ -598,12 +598,9 @@ public:
     node_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi =ni;
-    if (bi < 0) bi = 0;
-    if (bj > nj) bj =nj; 
-    if (bj < 0) bj = 0;
-    if (bk > nk) bk =nk;
-    if (bk < 0) bk = 0;
+    if (bi > ni) bi =ni; if (bi < 0) bi = 0;
+    if (bj > nj) bj =nj; if (bj < 0) bj = 0;
+    if (bk > nk) bk =nk; if (bk < 0) bk = 0;
 
     ei = bi; 
     ej = bj; 
@@ -834,12 +831,9 @@ public:
     elem_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni;
-    if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; 
-    if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; 
-    if (bk < 0) bk = 0;
+    if (bi > ni) bi = ni; if (bi < 0) bi = 0;
+    if (bj > nj) bj = nj; if (bj < 0) bj = 0;
+    if (bk > nk) bk = nk; if (bk < 0) bk = 0;
 
     ei = bi; ej = bj; ek = bk;
     
@@ -1787,12 +1781,9 @@ StructQuadSurfMesh<Basis>::find_closest_node(double& pdist, Core::Geometry::Poin
   node_grid_->unsafe_locate(bi, bj, bk, p);
 
   // Clamp to closest point on the grid.
-  if (bi > ni) bi = ni; 
-  if (bi < 0) bi = 0;
-  if (bj > nj) bj = nj; 
-  if (bj < 0) bj = 0;
-  if (bk > nk) bk = nk;
-  if (bk < 0) bk = 0;
+  if (bi > ni) bi = ni; if (bi < 0) bi = 0;
+  if (bj > nj) bj = nj; if (bj < 0) bj = 0;
+  if (bk > nk) bk = nk; if (bk < 0) bk = 0;
 
   ei = bi; ej = bj; ek = bk;
   
@@ -1904,12 +1895,9 @@ StructQuadSurfMesh<Basis>::find_closest_elems(double& pdist,
   elem_grid_->unsafe_locate(bi, bj, bk, p);
 
   // Clamp to closest point on the grid.
-  if (bi > ni) bi = ni;
-  if (bi < 0) bi = 0;
-  if (bj > nj) bj = nj; 
-  if (bj < 0) bj = 0;
-  if (bk > nk) bk = nk; 
-  if (bk < 0) bk = 0;
+  if (bi > ni) bi = ni; if (bi < 0) bi = 0;
+  if (bj > nj) bj = nj; if (bj < 0) bj = 0;
+  if (bk > nk) bk = nk; if (bk < 0) bk = 0;
 
   ei = bi; ej = bj; ek = bk;
 

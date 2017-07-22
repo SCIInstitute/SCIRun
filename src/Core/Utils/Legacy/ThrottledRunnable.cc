@@ -1,3 +1,5 @@
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -6,7 +8,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,49 +28,47 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Bundle/ReportBundleInfo.h>
-#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
-#include <Core/Datatypes/String.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Bundles;
 
-/// @class ReportBundleInfo
-/// @brief This module lists all the objects stored in a bundle.
+///
+///@file   ThrottledRunnable.cc 
+///
+///@author McKay Davis
+///
 
-MODULE_INFO_DEF(ReportBundleInfo, Bundle, SCIRun)
+#include <Core/Utils/Legacy/Timer.h>
+#include <Core/Utils/Legacy/ThrottledRunnable.h>
 
-ReportBundleInfo::ReportBundleInfo() : Module(staticInfo_)
+namespace SCIRun {
+
+ThrottledRunnable::ThrottledRunnable(double hertz) :
+  Runnable(),
+  dt_(1.0 / hertz),
+  quit_(0)
 {
-  INITIALIZE_PORT(InputBundle);
 }
-
-void ReportBundleInfo::execute()
+  
+  
+ThrottledRunnable::~ThrottledRunnable()
 {
-  auto bundle = getRequiredInput(InputBundle);
-
-  if (needToExecute())
-  {
-    std::ostringstream infostring;
-
-    for (const auto& nameHandlePair : *bundle)
-    {
-      std::string name = nameHandlePair.first;
-      infostring << " {" << name << " (";
-      std::string type = typeid(*nameHandlePair.second).name(); //nameHandlePair.second->dynamic_type_name();
-      if (type.find("String"))
-      {
-        auto str = boost::dynamic_pointer_cast<Core::Datatypes::String>(nameHandlePair.second);
-        if (str)
-          infostring << str->value();
-        else
-          infostring << type;
-      }
-      else
-        infostring << type;
-      infostring << ") }\n";
-    }
-
-    get_state()->setTransientValue("ReportedInfo", infostring.str());
+}
+  
+void
+ThrottledRunnable::run()
+{
+  TimeThrottle throttle;
+  throttle.start();
+  while (!quit_ && iterate()) {
+    throttle.wait_for_time(throttle.time() + dt_);
   }
+  throttle.stop();
 }
+  
+// Tells running thread to terminate.  
+void
+ThrottledRunnable::quit() {
+  quit_ = true;
+}  
+
+} // End namespace SCIRun
+#endif

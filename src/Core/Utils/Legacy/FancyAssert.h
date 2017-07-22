@@ -27,58 +27,57 @@
 */
 
 
+
 ///
-///@file  Exception.h
-///@brief Base class for all SCI Exceptions
+///@file  Assert.h
+///@brief Utility for specifying data invariants (Assertions)
 ///
 ///@author
 ///       Steven G. Parker
 ///       Department of Computer Science
 ///       University of Utah
-///@date  July 1999
+///@date  Feb. 1994
 ///
 
-#ifndef Core_Exceptions_Exception_h
-#define Core_Exceptions_Exception_h
+#ifndef SCI_Containers_FancyAssert_h
+#define SCI_Containers_FancyAssert_h
 
-#include <string>
-#include <Core/Utils/Exception.h>
 #include <sci_defs/error_defs.h>
-#include <Core/Exceptions/share.h>
 
-namespace SCIRun {
-  class SCISHARE Exception : public std::exception
-  {
-  public:
-    Exception();
-    virtual ~Exception() NOEXCEPT;
-    virtual const char* message() const=0;
-    virtual const char* type() const=0;
-    const char* stackTrace() const {
-      return stacktrace_;
-    }
+#include <Core/Exceptions/AssertionFailed.h>
 
-    const char* what() const NOEXCEPT
-    {
-      return message();
-    }
-
-    static void sci_throw(const Exception& exc);
-    static bool alwaysFalse();
-  protected:
-    const char* stacktrace_;
-  private:
-    Exception& operator=(const Exception&);
-  };
-
-  SCISHARE std::string getStackTrace(void* context = 0);
-} // End namespace SCIRun
+#include <sstream>
 
 
-#if USE_SCI_THROW
-#define SCI_THROW(exc) do {SCIRun::Exception::sci_throw(exc);throw exc;} while(SCIRun::Exception::alwaysFalse())
+/*
+ * Note - a normal AssertionFailed exception cannot be used here.  We
+ * must use one that takes a string
+ */
+
+#if SCI_ASSERTION_LEVEL >= 2
+#define ASSERTEQ(c1, c2) \
+   if(c1 != c2){ \
+      std::ostringstream msg; \
+      msg << #c1 << "(value=" << c1 << ") == " << #c2 << "(value=" << c2 << ")"; \
+      SCI_THROW(SCIRun::AssertionFailed(msg.str().c_str(), __FILE__, __LINE__)); \
+   }
+
+#define ASSERTNE(c1, c2) \
+   if(c1 != c2){ \
+      std::ostringstream msg; \
+      msg << #c1 << "(value=" << c1 << ") != " << #c2 << "(value=" << c2 << ")"; \
+      SCI_THROW(SCIRun::AssertionFailed(msg.str().c_str(), __FILE__, __LINE__)); \
+   }
+
+#define ASSERTRANGE(c, l, h) \
+   if(c < l || c >= h){ \
+      std::ostringstream msg; \
+      msg << #l "(value=" << l << ") <= " #c << "(value=" << c << ") < " << #h << "(value=" << h << ")"; \
+      SCI_THROW(SCIRun::AssertionFailed(msg.str().c_str(), __FILE__, __LINE__)); \
+   }
 #else
-#define SCI_THROW(exc) BOOST_THROW_EXCEPTION(exc)
+#define ASSERTEQ(c1, c2)
+#define ASSERTRANGE(c, l, h)
 #endif
 
 #endif

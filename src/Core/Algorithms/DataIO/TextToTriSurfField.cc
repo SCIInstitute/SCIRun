@@ -1,11 +1,11 @@
 /*
  For more information, please see: http://software.sci.utah.edu
-
+ 
  The MIT License
-
+ 
  Copyright (c) 2015 Scientific Computing and Imaging Institute,
  University of Utah.
-
+ 
  License for the specific language governing rights and limitations under
  Permission is hereby granted, free of charge, to any person obtaining a
  copy of this software and associated documentation files (the "Software"),
@@ -13,10 +13,10 @@
  the rights to use, copy, modify, merge, publish, distribute, sublicense,
  and/or sell copies of the Software, and to permit persons to whom the
  Software is furnished to do so, subject to the following conditions:
-
+ 
  The above copyright notice and this permission notice shall be included
  in all copies or substantial portions of the Software.
-
+ 
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -90,7 +90,7 @@ public:
   {
     return bfs::extension(filename) == ".fac" || bfs::extension(filename) == ".tri";
   }
-
+  
   // these files just contain geometry (note that data can be applied to field from matrix)
   MeshHandle readField();
 
@@ -107,10 +107,10 @@ private:
     {
       stream_.close();
     }
-
+    
     std::ifstream stream_;
   };
-
+  
   size_t numberPointsFromHeader_;
   size_t numberFacesFromHeader_;
 
@@ -127,7 +127,7 @@ private:
 bool TextToTriSurfFieldPrivate::validatePointsFile(const std::string& filename)
 {
   FileStreamWrapper wrapper(filename);
-
+  
   std::string line;
   bool first_line = true;
 
@@ -136,11 +136,11 @@ bool TextToTriSurfFieldPrivate::validatePointsFile(const std::string& filename)
   while (getline(wrapper.stream_, line, '\n'))
   {
     if ( lineStartsWithComment(line) ) continue;
-
+    
     replaceDelimitersWithWhitespace(line);
-    auto values(parseLineOfNumbers<double>(line));
+    std::vector<double> values(std::move(parseLineOfNumbers<double>(line)));
     lineColumnCount = values.size();
-
+    
     if (first_line)
     {
       if (lineColumnCount == 1)
@@ -201,18 +201,18 @@ bool TextToTriSurfFieldPrivate::validatePointsFile(const std::string& filename)
 bool TextToTriSurfFieldPrivate::validateFacesFile(const std::string& filename)
 {
   FileStreamWrapper wrapper(filename);
-
+  
   std::string line;
   bool first_line = true;
-
+  
   size_t ncols = 0, nrows = 0, lineColumnCount = 0;
-
+  
   while (getline(wrapper.stream_, line, '\n'))
   {
     if ( lineStartsWithComment(line) ) continue;
-
+    
     replaceDelimitersWithWhitespace(line);
-    auto values(parseLineOfNumbers<double>(line));
+    std::vector<double> values(std::move(parseLineOfNumbers<double>(line)));
     lineColumnCount = values.size();
 
     for (auto j = 0; j < values.size(); ++j)
@@ -258,7 +258,7 @@ bool TextToTriSurfFieldPrivate::validateFacesFile(const std::string& filename)
       }
     }
   }
-
+  
   if (0 == numberFacesFromHeader_)
   {
     numberFacesFromHeader_ = nrows;
@@ -270,7 +270,7 @@ bool TextToTriSurfFieldPrivate::validateFacesFile(const std::string& filename)
     oss << "Number of faces listed in header (" << numberFacesFromHeader_ << ") does not match number of non-header rows in file (" << nrows <<  "). Using number of faces from header.";
     algo_.warning(oss.str());
   }
-
+  
   facesFilePath_ = filename;
   return true;
 }
@@ -286,19 +286,19 @@ MeshHandle TextToTriSurfFieldPrivate::readField()
 
   FileStreamWrapper pointsStreamWrapper(pointsFilePath_.string());
 
-  std::string line;
+  std::string line;  
   for(auto i = 0; i < numberPointsFromHeader_ && getline(pointsStreamWrapper.stream_, line, '\n'); ++i)
   {
     // block out comments
     if ( lineStartsWithComment(line) ) continue;
     replaceDelimitersWithWhitespace(line);
-
-    auto values(parseLineOfNumbers<double>(line));
-
+    
+    std::vector<double> values(std::move(parseLineOfNumbers<double>(line)));
+    
     if (values.size() == 3) triSurfVMesh->add_point(Point(values[0],values[1],values[2]));
     if (values.size() == 2) triSurfVMesh->add_point(Point(values[0],values[1],0.0));
   }
-
+    
   FileStreamWrapper facesStreamWrapper(facesFilePath_.string());
 
   VMesh::Node::array_type vdata;
@@ -308,21 +308,21 @@ MeshHandle TextToTriSurfFieldPrivate::readField()
   {
     if ( lineStartsWithComment(line) ) continue;
     replaceDelimitersWithWhitespace(line);
-
-    auto ivalues(parseLineOfNumbers<VMesh::index_type>(line));
+    
+    std::vector<VMesh::index_type> ivalues(std::move(parseLineOfNumbers<VMesh::index_type>(line)));
 
     for (auto j = 0; j < ivalues.size() && j < 3; j++)
     {
       if (zeroBased_) vdata[j] = ivalues[j];
       else vdata[j] = ivalues[j]-1;
     }
-
+    
     if (ivalues.size() > 2) triSurfVMesh->add_elem(vdata);
   }
-
+  
   return triSurfMesh;
 }
-
+  
 // Text file format for tetrahedral meshes (files supported with or without headers)
 // points: x y z
 // elems: n1 n2 n3
@@ -345,7 +345,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
       std::string stem(bfs::path(filename).stem().string());
       this->remark("Reading triangle surface from " + stem);
       validPointsFile = privateImpl.validatePointsFile(filename);
-
+      
       if (! validPointsFile)
       {
         std::ostringstream oss;
@@ -353,7 +353,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
         error(oss.str());
         return MeshHandle();
       }
-
+      
       bool foundFacesFile = false;
       bfs::path facesFilePath = bfs::path(filename).replace_extension(".fac");
       {
@@ -373,7 +373,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
           foundFacesFile = true;
         }
       }
-
+      
       if (foundFacesFile)
         validFacesFile = privateImpl.validateFacesFile(facesFilePath.string());
 
@@ -395,7 +395,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
       std::string stem(bfs::path(filename).stem().string());
       this->remark("Reading triangle surface from " + stem);
       validFacesFile = privateImpl.validateFacesFile(filename);
-
+      
       if (! validFacesFile)
       {
         std::ostringstream oss;
@@ -423,10 +423,10 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
           foundPointsFile = true;
         }
       }
-
+      
       if (foundPointsFile)
         validPointsFile = privateImpl.validatePointsFile(pointsFilePath.string());
-
+      
       // can't continue without a valid points file
       if (! (validPointsFile && foundPointsFile) )
       {
@@ -436,7 +436,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
         return MeshHandle();
       }
     }
-
+    
     /// @todo: change to FieldHandle when available...
     auto mesh = privateImpl.readField();
     return mesh;
@@ -456,7 +456,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
   /// @todo: other exceptions?
   return MeshHandle();
 }
-
+  
 AlgorithmOutput TextToTriSurfFieldAlgorithm::run(const AlgorithmInput& input) const
 {
   throw 2;

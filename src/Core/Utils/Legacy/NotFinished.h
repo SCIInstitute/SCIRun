@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,49 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Bundle/ReportBundleInfo.h>
-#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
-#include <Core/Datatypes/String.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Bundles;
 
-/// @class ReportBundleInfo
-/// @brief This module lists all the objects stored in a bundle.
+/*
+ *@file  NotFinished.h
+ *@brief Consistent way to keep track of holes in the code...
+ *
+ *@author
+ *   Steven G. Parker
+ *   Department of Computer Science
+ *   University of Utah
+ *@date  March 1994
+ *
+ */
 
-MODULE_INFO_DEF(ReportBundleInfo, Bundle, SCIRun)
+#ifndef SCI_project_NotFinished_h
+#define SCI_project_NotFinished_h
 
-ReportBundleInfo::ReportBundleInfo() : Module(staticInfo_)
-{
-  INITIALIZE_PORT(InputBundle);
-}
 
-void ReportBundleInfo::execute()
-{
-  auto bundle = getRequiredInput(InputBundle);
+#include <iostream>
 
-  if (needToExecute())
-  {
-    std::ostringstream infostring;
 
-    for (const auto& nameHandlePair : *bundle)
-    {
-      std::string name = nameHandlePair.first;
-      infostring << " {" << name << " (";
-      std::string type = typeid(*nameHandlePair.second).name(); //nameHandlePair.second->dynamic_type_name();
-      if (type.find("String"))
-      {
-        auto str = boost::dynamic_pointer_cast<Core::Datatypes::String>(nameHandlePair.second);
-        if (str)
-          infostring << str->value();
-        else
-          infostring << type;
-      }
-      else
-        infostring << type;
-      infostring << ") }\n";
-    }
+#define NOT_FINISHED(what) std::cerr << "Not finished: " << what << " (" << __FILE__ << ", line " << __LINE__ << ") " << std::endl
 
-    get_state()->setTransientValue("ReportedInfo", infostring.str());
-  }
-}
+#endif /* SCI_project_NotFinished_h */
+

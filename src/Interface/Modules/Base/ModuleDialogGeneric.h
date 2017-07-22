@@ -71,7 +71,7 @@ namespace Gui {
     Q_OBJECT
   public:
     virtual ~ModuleDialogGeneric();
-    bool isPulling() const { return pulling_; }
+    bool isPulling() const { return pulling_; } //yuck
     QAction* getExecuteAction() { return executeAction_; }
     QAction* getExecuteDownstreamAction() { return executeDownstreamAction_; }
     void setDockable(QDockWidget* dock);
@@ -84,6 +84,11 @@ namespace Gui {
     static void setExecutionDisablingServiceFunctionAdd(ExecutionDisablingServiceFunction add) { disablerAdd_ = add; }
     static void setExecutionDisablingServiceFunctionRemove(ExecutionDisablingServiceFunction remove) { disablerRemove_ = remove; }
     static const std::set<ModuleDialogGeneric*>& instances() { return instances_; }
+
+    //TODO: input state hookup?
+    //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)
+    //virtual int moduleExecutionTime() = 0;
+    //TODO: how to genericize this?  do we need to?
   public Q_SLOTS:
     virtual void moduleExecuted() {}
     //need a better name: read/updateUI
@@ -156,8 +161,8 @@ namespace Gui {
 
     using TableWidgetMaker = std::function<QTableWidgetItem*()>;
     using WidgetMaker = std::function<QWidget*()>;
-    using TableItemMakerMap = std::map<int, TableWidgetMaker>;
-    using WidgetItemMakerMap = std::map<int, WidgetMaker>;
+    typedef std::map<int, TableWidgetMaker> TableItemMakerMap;
+    typedef std::map<int, WidgetMaker> WidgetItemMakerMap;
     void syncTableRowsWithDynamicPort(const std::string& portId, const std::string& type,
       QTableWidget* table, int lineEditIndex, DynamicPortChange portChangeType, const TableItemMakerMap& tableItems, const WidgetItemMakerMap& widgetItems = WidgetItemMakerMap());
     static std::tuple<std::string, int> getConnectedDynamicPortId(const std::string& portId, const std::string& type, bool isLoadingFile);

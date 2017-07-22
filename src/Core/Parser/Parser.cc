@@ -59,9 +59,23 @@ namespace
   }
   
   std::string
+  ParserFunctionID(const std::string& name)
+  {
+  std::string fid = name + "$";
+  return (fid);
+  }
+  
+  std::string
   ParserFunctionID(const std::string& name, const std::string& arg1)
   {
   std::string fid = name + "$" + arg1;
+  return (fid);
+  }
+  
+  std::string
+  ParserFunctionID(const std::string& name, const std::string& arg1, const std::string& arg2)
+  {
+  std::string fid = name + "$" + arg1 +":" + arg2;
   return (fid);
   }
   

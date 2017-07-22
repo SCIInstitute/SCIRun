@@ -93,6 +93,7 @@ boost::optional<NrrdDataHandle> colsHOpt, int cols)
   // Determine if we have data, rows, columns to indicate whether it is
   // a dense or sparse matrix
   bool has_data = false, has_rows = false, has_cols = false;
+  bool has_error = false;
 
   if (dataHOpt && *dataHOpt)
     has_data = true;
@@ -136,6 +137,7 @@ boost::optional<NrrdDataHandle> colsHOpt, int cols)
         break;
       default:
         error("Unknown nrrd type.");
+        has_error = true;
         return nullptr;
       }
     }
@@ -168,11 +170,13 @@ boost::optional<NrrdDataHandle> colsHOpt, int cols)
         break;
       default:
         error("Unknown nrrd type.");
+        has_error = true;
         return nullptr;
       }
     }
     else {
       error("Can only convert data nrrds of 1 or 2D (Column or Dense Matrix).");
+      has_error = true;
       return nullptr;
     }
   }
@@ -184,11 +188,13 @@ boost::optional<NrrdDataHandle> colsHOpt, int cols)
     // rows and cols should be of type nrrdTypeInt
     if (rowsH->getNrrd()->type != nrrdTypeInt || colsH->getNrrd()->type != nrrdTypeInt) {
       error("Rows and Columns nrrds must both be of type nrrdTypeInt");
+      has_error = true;
       return nullptr;
     }
 
     if (dataH->getNrrd()->dim != 1 || rowsH->getNrrd()->dim != 1 || colsH->getNrrd()->dim != 1) {
       error("All nrrds must be 1 dimension for a SparseRowMatrix.");
+      has_error = true;
       return nullptr;
     }
     switch (dataH->getNrrd()->type) {
@@ -218,11 +224,13 @@ boost::optional<NrrdDataHandle> colsHOpt, int cols)
       break;
     default:
       error("Unknown nrrd type.");
+      has_error = true;
       return nullptr;
     }
   }
   else {
     error("Must have data to convert to any type of Matrix.  Must have rows and columns for a SparseRowMatrix.");
+    has_error = true;
     return nullptr;
   }
 

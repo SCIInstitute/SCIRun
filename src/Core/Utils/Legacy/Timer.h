@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,49 +26,73 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Bundle/ReportBundleInfo.h>
-#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
-#include <Core/Datatypes/String.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Bundles;
 
-/// @class ReportBundleInfo
-/// @brief This module lists all the objects stored in a bundle.
+///
+///@file  Timer.h
+///@brief Interface to portable timer utility classes
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  Feb. 1994
+///
 
-MODULE_INFO_DEF(ReportBundleInfo, Bundle, SCIRun)
+#if !defined(Timer_h)
+#define Timer_h
 
-ReportBundleInfo::ReportBundleInfo() : Module(staticInfo_)
-{
-  INITIALIZE_PORT(InputBundle);
-}
+#include <Core/Utils/Legacy/share.h>
 
-void ReportBundleInfo::execute()
-{
-  auto bundle = getRequiredInput(InputBundle);
+namespace SCIRun {
 
-  if (needToExecute())
-  {
-    std::ostringstream infostring;
+class SCISHARE Timer {
+public:
+  enum timer_state_e {
+    Stopped,
+    Running
+  };
 
-    for (const auto& nameHandlePair : *bundle)
-    {
-      std::string name = nameHandlePair.first;
-      infostring << " {" << name << " (";
-      std::string type = typeid(*nameHandlePair.second).name(); //nameHandlePair.second->dynamic_type_name();
-      if (type.find("String"))
-      {
-        auto str = boost::dynamic_pointer_cast<Core::Datatypes::String>(nameHandlePair.second);
-        if (str)
-          infostring << str->value();
-        else
-          infostring << type;
-      }
-      else
-        infostring << type;
-      infostring << ") }\n";
-    }
+  Timer();
+  virtual ~Timer();
 
-    get_state()->setTransientValue("ReportedInfo", infostring.str());
-  }
-}
+  void               start();
+  void               stop();
+  void               clear();
+  double             time();
+  void               add(double t);
+  timer_state_e      state() { return state_; }
+protected:
+  virtual double get_time() = 0;
+private:
+  double total_time_;
+  double start_time_;
+  timer_state_e state_;
+};
+
+class SCISHARE CPUTimer : public Timer {
+public:
+  virtual ~CPUTimer();
+protected:
+  virtual double get_time();
+};
+
+class SCISHARE WallClockTimer : public Timer {
+public:
+  WallClockTimer();
+  virtual ~WallClockTimer();
+protected:
+  virtual double get_time();
+};
+
+class SCISHARE TimeThrottle : public WallClockTimer {
+public:
+  TimeThrottle();
+  virtual ~TimeThrottle();
+
+  void wait_for_time(double time);
+};
+
+} // end namespace SCIRun
+
+#endif /* Timer_h */

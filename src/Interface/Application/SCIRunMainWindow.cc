@@ -1734,7 +1734,7 @@ void SCIRunMainWindow::adjustModuleDock(int state)
 {
   bool dockable = prefsWindow_->dockableModulesCheckBox_->isChecked();
   actionPinAllModuleUIs_->setEnabled(dockable);
-  Preferences::Instance().modulesAreDockable.setValueWithSignal(dockable);
+  Preferences::Instance().modulesAreDockable.setValue(dockable);
 }
 
 void SCIRunMainWindow::showEvent(QShowEvent* event)

@@ -53,7 +53,7 @@ namespace SCIRun
 
       TrackedVariable(const std::string& name, const typename Var::value_type& value) : Var(name, value) {}
 
-      void setValueWithSignal(const typename Var::Value& val)
+      virtual void setValue(const typename Var::Value& val) override
       {
         Var::setValue(val);
         valueChanged_(this->val());

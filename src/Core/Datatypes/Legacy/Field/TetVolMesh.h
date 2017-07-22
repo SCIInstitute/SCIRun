@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -112,17 +112,17 @@ TetVolFacePerNodeTable[4][9] = {{0,1,2, 0,1,3, 0,3,2},
                                {0,1,2, 1,2,3, 0,3,2},
                                {1,2,3, 0,1,3, 0,3,2}};
 
-static const int
+static const int   
 TetVolFacePerEdgeTable[6][6] = {{0,1,2, 0,1,3}, {0,1,2, 1,2,3},
                                 {0,1,2, 0,3,2}, {0,1,3, 0,3,2},
                                 {1,2,3, 0,1,3}, {1,2,3, 0,3,2}};
 
-static const int
+static const int   
 TetVolEdgePerFaceTable[4][6] = {{0,1, 1,2, 2,0 },
                                 {1,2, 3,1, 3,2 },
                                 {0,1, 3,0, 3,1 },
-                                {2,0, 3,0, 3,2}};
-
+                                {2,0, 3,0, 3,2}}; 
+                            
 static const int
 TetVolEdgeTable[6][2] = {{0,1},{1,2},{2,0},{3,0},{3,1},{3,2}};
 
@@ -155,7 +155,7 @@ public:
     typedef NodeIndex<under_type>       index_type;
     typedef NodeIterator<under_type>    iterator;
     typedef NodeIndex<under_type>       size_type;
-    typedef StackVector<index_type, 4>  array_type;
+    typedef StackVector<index_type, 4>  array_type; 
   };
 
   struct Edge {
@@ -187,7 +187,7 @@ public:
 
   /// Somehow the information of how to interpolate inside an element
   /// ended up in a separate class, as they need to share information
-  /// this construction was created to transfer data.
+  /// this construction was created to transfer data. 
   /// Hopefully in the future this class will disappear again.
   friend class ElemData;
 
@@ -201,83 +201,83 @@ public:
       index_(ind)
     {
       /// Linear and Constant Basis never use edges_
-      if (basis_type::polynomial_order() > 1)
+      if (basis_type::polynomial_order() > 1) 
       {
         mesh_.get_edges_from_cell(edges_, index_);
       }
     }
-
+    
     /// the following designed to coordinate with ::get_nodes
     inline
-    index_type node0_index() const
+    index_type node0_index() const 
     {
       return mesh_.cells_[index_ * 4];
     }
     inline
-    index_type node1_index() const
+    index_type node1_index() const 
     {
       return mesh_.cells_[index_ * 4 + 1];
     }
     inline
-    index_type node2_index() const
+    index_type node2_index() const 
     {
       return mesh_.cells_[index_ * 4 + 2];
     }
     inline
-    index_type node3_index() const
+    index_type node3_index() const 
     {
       return mesh_.cells_[index_ * 4 + 3];
     }
 
     /// the following designed to coordinate with ::get_edges
     inline
-    index_type edge0_index() const
+    index_type edge0_index() const 
     {
       return edges_[0];
     }
     inline
-    index_type edge1_index() const
+    index_type edge1_index() const 
     {
       return edges_[1];
     }
     inline
-    index_type edge2_index() const
+    index_type edge2_index() const 
     {
       return edges_[2];
     }
     inline
-    index_type edge3_index() const
+    index_type edge3_index() const 
     {
       return edges_[3];
     }
     inline
-    index_type edge4_index() const
+    index_type edge4_index() const 
     {
       return edges_[4];
     }
     inline
-    index_type edge5_index() const
+    index_type edge5_index() const 
     {
       return edges_[5];
     }
 
     inline
-    const Core::Geometry::Point &node0() const
+    const Core::Geometry::Point &node0() const 
     {
       return mesh_.points_[node0_index()];
     }
     inline
-    const Core::Geometry::Point &node1() const
+    const Core::Geometry::Point &node1() const 
     {
       return mesh_.points_[node1_index()];
     }
     inline
-    const Core::Geometry::Point &node2() const
+    const Core::Geometry::Point &node2() const 
     {
       return mesh_.points_[node2_index()];
     }
     inline
-    const Core::Geometry::Point &node3() const
+    const Core::Geometry::Point &node3() const 
     {
       return mesh_.points_[node3_index()];
     }
@@ -287,18 +287,18 @@ public:
     const TetVolMesh<Basis>          &mesh_;
     /// copy of element index
     const index_type                 index_;
-    /// need edges for quadratic meshes
+    /// need edges for quadratic meshes    
     typename Edge::array_type        edges_;
-  };
+  };  
 
   friend class Synchronize;
-
+  
   class Synchronize //: public Runnable
   {
     public:
       Synchronize(TetVolMesh<Basis>* mesh, mask_type sync) :
         mesh_(mesh), sync_(sync) {}
-
+        
       void operator()()
       {
         run();
@@ -316,24 +316,24 @@ public:
         mesh_->synchronizing_ |= sync_;
         // Other threads now know what this tread will be doing
         mesh_->synchronize_lock_.unlock();
-
+     
         if (sync_ & Mesh::NODE_NEIGHBORS_E) mesh_->compute_node_neighbors();
         if (sync_ & Mesh::EDGES_E) mesh_->compute_edges();
         if (sync_ & Mesh::FACES_E) mesh_->compute_faces();
         if (sync_ & Mesh::BOUNDING_BOX_E) mesh_->compute_bounding_box();
-
+        
         // These depend on the bounding box being synchronized
         if (sync_ & (Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E))
         {
           {
             Core::Thread::UniqueLock lock(mesh_->synchronize_lock_.get());
-            while(!(mesh_->synchronized_ & Mesh::BOUNDING_BOX_E))
+            while(!(mesh_->synchronized_ & Mesh::BOUNDING_BOX_E)) 
               mesh_->synchronize_cond_.wait(lock);
           }
           if (sync_ & Mesh::NODE_LOCATE_E) mesh_->compute_node_grid();
           if (sync_ & Mesh::ELEM_LOCATE_E) mesh_->compute_elem_grid();
         }
-
+        
         mesh_->synchronize_lock_.lock();
         // Mark the ones that were just synchronized
         mesh_->synchronized_ |= sync_;
@@ -350,49 +350,49 @@ public:
   };
 
   //////////////////////////////////////////////////////////////////
-
+  
   /// Construct a new mesh
   TetVolMesh();
-
-  /// Copy a mesh, needed for detaching the mesh from a field
+  
+  /// Copy a mesh, needed for detaching the mesh from a field   
   TetVolMesh(const TetVolMesh &copy);
-
+  
   /// Clone function for detaching the mesh and automatically generating
-  /// a new version if needed.
-  virtual TetVolMesh *clone() const override { return new TetVolMesh(*this); }
+  /// a new version if needed.    
+  virtual TetVolMesh *clone() const { return new TetVolMesh(*this); }
 
-  /// Destructor
+  /// Destructor 
   virtual ~TetVolMesh();
 
   /// Access point to virtual interface
-  virtual VMesh* vmesh() override { return vmesh_.get(); }
+  virtual VMesh* vmesh() { return vmesh_.get(); }
 
   MeshFacadeHandle getFacade() const override
   {
     return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
-
+  
   /// This one should go at some point, should be reroute through the
   /// virtual interface
-  virtual int basis_order() override { return (basis_.polynomial_order()); }
+  virtual int basis_order() { return (basis_.polynomial_order()); }
 
-  /// Topological dimension
+  /// Topological dimension  
   virtual int  dimensionality() const { return 3; }
-
-  /// What kind of mesh is this
+  
+  /// What kind of mesh is this 
   /// structured = no connectivity data
   /// regular    = no node location data
-  virtual int  topology_geometry() const
+  virtual int  topology_geometry() const 
     { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
 
-  /// Get the bounding box of the field
+  /// Get the bounding box of the field    
   virtual Core::Geometry::BBox get_bounding_box() const;
-
-  /// Return the transformation that takes a 0-1 space bounding box
-  /// to the current bounding box of this mesh.
+  
+  /// Return the transformation that takes a 0-1 space bounding box 
+  /// to the current bounding box of this mesh.  
   virtual void get_canonical_transform(Core::Geometry::Transform &t) const;
-
-  /// Core::Geometry::Transform a field (transform all nodes using this transformation matrix)
+    
+  /// Core::Geometry::Transform a field (transform all nodes using this transformation matrix)  
   virtual void transform(const Core::Geometry::Transform &t);
 
   /// Check whether mesh can be altered by adding nodes or elements
@@ -408,14 +408,14 @@ public:
 
   /// Compute tables for doing topology, these need to be synchronized
   /// before doing a lot of operations.
-  virtual bool synchronize(mask_type mask) override;
-  virtual bool unsynchronize(mask_type mask) override;
+  virtual bool synchronize(mask_type mask);
+  virtual bool unsynchronize(mask_type mask);
   bool clear_synchronization();
-
-  /// Get the basis class.
+  
+  /// Get the basis class.  
   Basis& get_basis() { return basis_; }
 
-  /// begin/end iterators
+  /// begin/end iterators 
   void begin(typename Node::iterator &) const;
   void begin(typename Edge::iterator &) const;
   void begin(typename Face::iterator &) const;
@@ -447,23 +447,23 @@ public:
     { index = i; }
 
   /// Get the child topology elements of the given topology
-  void get_nodes(typename Node::array_type &array,
+  void get_nodes(typename Node::array_type &array, 
                  typename Node::index_type idx) const
     { array.resize(1); array[0]= idx; }
-  void get_nodes(typename Node::array_type &array,
+  void get_nodes(typename Node::array_type &array, 
                  typename Edge::index_type idx) const
     { get_nodes_from_edge(array,idx); }
-  void get_nodes(typename Node::array_type &array,
+  void get_nodes(typename Node::array_type &array, 
                  typename Face::index_type idx) const
     { get_nodes_from_face(array,idx); }
-  void get_nodes(typename Node::array_type &array,
+  void get_nodes(typename Node::array_type &array, 
                  typename Cell::index_type idx) const
     { get_nodes_from_cell(array,idx); }
 
-  void get_edges(typename Edge::array_type &array,
+  void get_edges(typename Edge::array_type &array, 
                  typename Node::index_type idx) const
     { get_edges_from_node(array,idx); }
-  void get_edges(typename Edge::array_type &array,
+  void get_edges(typename Edge::array_type &array, 
                  typename Edge::index_type idx) const
     { array.resize(1); array[0]= idx; }
   void get_edges(typename Edge::array_type &array,
@@ -483,20 +483,20 @@ public:
   void get_faces(typename Face::array_type &array,
                  typename Face::index_type idx) const
     { array.resize(1); array[0]= idx; }
-  void get_faces(typename Face::array_type &array,
+  void get_faces(typename Face::array_type &array, 
                  typename Cell::index_type idx) const
     { get_faces_from_cell(array,idx); }
 
-  void get_cells(typename Cell::array_type &array,
+  void get_cells(typename Cell::array_type &array, 
                  typename Node::index_type idx) const
     { get_cells_from_node(array,idx); }
-  void get_cells(typename Cell::array_type &array,
+  void get_cells(typename Cell::array_type &array, 
                  typename Edge::index_type idx) const
     { get_cells_from_edge(array,idx); }
   void get_cells(typename Cell::array_type &array,
                  typename Face::index_type idx) const
     { get_cells_from_face(array,idx); }
-  void get_cells(typename Cell::array_type &array,
+  void get_cells(typename Cell::array_type &array, 
                  typename Cell::index_type idx) const
     { array.resize(1); array[0]= idx; }
 
@@ -509,7 +509,7 @@ public:
   void get_elems(typename Elem::array_type &array,
                  typename Face::index_type idx) const
     { get_cells_from_face(array,idx); }
-  void get_elems(typename Elem::array_type &array,
+  void get_elems(typename Elem::array_type &array, 
                  typename Cell::index_type idx) const
     { array.resize(1); array[0]= idx; }
 
@@ -519,13 +519,13 @@ public:
   void get_delems(typename DElem::array_type &array,
                   typename Edge::index_type idx) const
     { get_faces_from_edge(array,idx); }
-  void get_delems(typename DElem::array_type &array,
+  void get_delems(typename DElem::array_type &array, 
                   typename Face::index_type idx) const
     { array.resize(1); array[0]= idx; }
   void get_delems(typename DElem::array_type &array,
                   typename Cell::index_type idx) const
     { get_faces_from_cell(array,idx); }
-
+  
   /// Generate the list of points that make up a sufficiently accurate
   /// piecewise linear approximation of an edge.
   template<class VECTOR, class INDEX>
@@ -546,9 +546,9 @@ public:
                        unsigned div_per_unit) const
   {
     basis_.approx_face(which_face, div_per_unit, coords);
-  }
-
-  /// get the center point (in object space) of an element
+  }  
+  
+  /// get the center point (in object space) of an element  
   void get_center(Core::Geometry::Point &result, typename Node::index_type idx) const
   { get_node_center(result, idx); }
   void get_center(Core::Geometry::Point &result, typename Edge::index_type idx) const
@@ -557,11 +557,11 @@ public:
   { get_face_center(result, idx); }
   void get_center(Core::Geometry::Point &result, typename Cell::index_type idx) const
   { get_cell_center(result, idx); }
-
+  
   /// Get the size of an element (length, area, volume)
-  double get_size(typename Node::index_type /*idx*/) const
+  double get_size(typename Node::index_type /*idx*/) const 
   { return 0.0; }
-
+    
   double get_size(typename Edge::index_type idx) const
   {
     typename Node::array_type arr;
@@ -571,7 +571,7 @@ public:
     get_center(p1, arr[1]);
     return ((p1 - p0).length());
   }
-
+    
   double get_size(typename Face::index_type idx) const
   {
     typename Node::array_type ra;
@@ -582,13 +582,13 @@ public:
     get_point(p2,ra[2]);
     return (Cross(p0-p1,p2-p0)).length()*0.5;
   }
-
+    
   double get_size(typename Elem::index_type idx) const
   {
     ElemData ed(*this,idx);
     return (basis_.get_volume(ed));
-  }
-
+  }  
+  
   /// More specific names for get_size
   double get_length(typename Edge::index_type idx) const
   { return get_size(idx); };
@@ -598,7 +598,7 @@ public:
   { return get_size(idx); };
 
   /// Get neighbors of an element or a node
-
+  
   /// THIS ONE IS FLAWED AS IN 3D SPACE FOR AND ELEMENT TYPE THAT
   /// IS NOT A VOLUME. HENCE IT WORKS HERE, BUT GENERALLY IT IS FLAWED
   /// AS IT ASSUMES ONLY ONE NEIGHBOR, WHEREAS FOR ANYTHING ELSE THAN
@@ -606,16 +606,16 @@ public:
   bool get_neighbor(typename Elem::index_type &neighbor,
                     typename Elem::index_type elem,
                     typename DElem::index_type delem) const
-  { return(get_elem_neighbor(neighbor,elem,delem)); }
-
-  /// These are more general implementations
+  { return(get_elem_neighbor(neighbor,elem,delem)); }       
+  
+  /// These are more general implementations                      
   void get_neighbors(std::vector<typename Node::index_type> &array,
                      typename Node::index_type node) const
   { get_node_neighbors(array,node); }
   bool get_neighbors(std::vector<typename Elem::index_type> &array,
                      typename Elem::index_type elem,
-                     typename DElem::index_type delem) const
-  { return(get_elem_neighbors(array,elem,delem)); }
+                     typename DElem::index_type delem) const 
+  { return(get_elem_neighbors(array,elem,delem)); }                     
   void get_neighbors(typename Elem::array_type &array,
                      typename Elem::index_type elem) const
   { get_elem_neighbors(array,elem); }
@@ -630,7 +630,7 @@ public:
   bool locate(typename Cell::index_type &cell, const Core::Geometry::Point &p) const
   { return (locate_elem(cell,p)); }
 
-  bool locate(typename Elem::index_type &elem,
+  bool locate(typename Elem::index_type &elem, 
     std::vector<double>& coords,
               const Core::Geometry::Point &p) const
   { return (locate_elem(elem,coords,p)); }
@@ -642,15 +642,15 @@ public:
   {ASSERTFAIL("TetVolMesh::get_weights for edges isn't supported"); }
   int get_weights(const Core::Geometry::Point&, typename Face::array_type&, double*)
   {ASSERTFAIL("TetVolMesh::get_weights for faces isn't supported"); }
-  int get_weights(const Core::Geometry::Point &p, typename Cell::array_type &l, double *w);
-
-  /// Access the nodes of the mesh
+  int get_weights(const Core::Geometry::Point &p, typename Cell::array_type &l, double *w);  
+  
+  /// Access the nodes of the mesh 
   void get_point(Core::Geometry::Point &result, typename Node::index_type index) const
   { result = points_[index]; }
   void set_point(const Core::Geometry::Point &point, typename Node::index_type index)
   { points_[index] = point; }
   void get_random_point(Core::Geometry::Point &p, typename Elem::index_type i, FieldRNG &r) const;
-
+    
   /// Normals for visualizations
   void get_normal(Core::Geometry::Vector& /*result*/, typename Node::index_type /*index*/) const
   { ASSERTFAIL("TetVolMesh: This mesh type does not have node normals."); }
@@ -662,11 +662,11 @@ public:
   {
     // Improved algorithm, which should be faster as it is fully
     // on the stack.
-
+            
     // Obtain the inverse jacobian
     double Ji[9];
     inverse_jacobian(coords,eidx,Ji);
-
+      
     // Get the normal in local coordinates
     const double un0 = basis_.unit_face_normals[fidx][0];
     const double un1 = basis_.unit_face_normals[fidx][1];
@@ -676,18 +676,18 @@ public:
     result.x(Ji[0]*un0+Ji[1]*un1+Ji[2]*un2);
     result.y(Ji[3]*un0+Ji[4]*un1+Ji[5]*un2);
     result.z(Ji[6]*un0+Ji[7]*un1+Ji[8]*un2);
-
+      
     // normalize vector
     result.normalize();
   }
-
-  /// Add a new node to the mesh
+  
+  /// Add a new node to the mesh  
   typename Node::index_type add_point(const Core::Geometry::Point &p);
-  typename Node::index_type add_node(const Core::Geometry::Point &p)
+  typename Node::index_type add_node(const Core::Geometry::Point &p) 
   { return(add_point(p)); }
-
+ 
   /// Add a new element to the mesh
-  template<class ARRAY>
+  template<class ARRAY> 
   typename Elem::index_type add_elem(ARRAY a)
   {
     ASSERTMSG(a.size() == 4, "Tried to add non-tet element.");
@@ -697,9 +697,9 @@ public:
 		    static_cast<typename Node::index_type>(a[2]),
 		    static_cast<typename Node::index_type>(a[3]) );
   }
-
+ 
   /// Functions to improve memory management. Often one knows how many
-  /// nodes/elements one needs, prereserving memory is often possible.
+  /// nodes/elements one needs, prereserving memory is often possible. 
   void node_reserve(size_type s) { points_.reserve(static_cast<std::vector<Core::Geometry::Point>::size_type>(s)); }
   void elem_reserve(size_type s) { cells_.reserve(static_cast<std::vector<index_type>::size_type>(s*4)); }
   void resize_nodes(size_type s) { points_.resize(static_cast<std::vector<Core::Geometry::Point>::size_type>(s)); }
@@ -746,7 +746,7 @@ public:
   }
 
   /// Get the jacobian of the transformation. In case one wants the non inverted
-  /// version of this matrix. This is currentl here for completeness of the
+  /// version of this matrix. This is currentl here for completeness of the 
   /// interface
   template<class VECTOR, class INDEX>
   void jacobian(const VECTOR& coords,INDEX idx, double* J) const
@@ -764,11 +764,11 @@ public:
     J[7] = Jv[2].y();
     J[8] = Jv[2].z();
   }
-
-  /// Get the inverse jacobian of the transformation. This one is needed to
+  
+  /// Get the inverse jacobian of the transformation. This one is needed to 
   /// translate local gradients into global gradients. Hence it is crucial for
-  /// calculating gradients of fields, or constructing finite elements.
-  template<class VECTOR, class INDEX>
+  /// calculating gradients of fields, or constructing finite elements.             
+  template<class VECTOR, class INDEX>                               
   double inverse_jacobian(const VECTOR& coords, INDEX idx, double* Ji) const
   {
     StackVector<Core::Geometry::Point,3> Jv;
@@ -792,14 +792,14 @@ public:
     Core::Geometry::Point p1 = points_[cells_[idx2+1]];
     Core::Geometry::Point p2 = points_[cells_[idx2+2]];
     Core::Geometry::Point p3 = points_[cells_[idx2+3]];
-
+    
     double l0 = (p1-p0).length();
     double l1 = (p2-p1).length();
     double l2 = (p0-p2).length();
     double l3 = (p3-p0).length();
     double l4 = (p3-p1).length();
     double l5 = (p3-p2).length();
-
+    
     double min_scale = l0*l2*l3;
     temp = l0*l1*l4;
     if (temp > min_scale) min_scale = temp;
@@ -808,7 +808,7 @@ public:
     temp = l3*l4*l5;
     if (temp > min_scale) min_scale = temp;
     if (min_jacobian > min_scale) min_scale = min_jacobian;
-
+    
     return (sqrt(2.0)*min_jacobian/(min_scale));
   }
 
@@ -822,7 +822,7 @@ public:
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     double min_jacobian = DetMatrix3P(Jv);
-
+    
     size_t num_vertices = basis_.number_of_vertices();
     for (size_t j=0;j < num_vertices;j++)
     {
@@ -830,7 +830,7 @@ public:
       temp = DetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
     }
-
+      
     return (min_jacobian);
   }
 
@@ -839,14 +839,14 @@ public:
   double inscribed_circumscribed_radius_metric(INDEX idx) const
   {
     StackVector<Core::Geometry::Point,3> Vec;
-    ElemData ed(*this,idx);
-
+    ElemData ed(*this,idx);    
+    
     INDEX idx2 = idx*4;
     Core::Geometry::Point p0 = points_[cells_[idx2]];
     Core::Geometry::Point p1 = points_[cells_[idx2+1]];
     Core::Geometry::Point p2 = points_[cells_[idx2+2]];
     Core::Geometry::Point p3 = points_[cells_[idx2+3]];
-
+    
     double l0 = (p1-p0).length();
     double l1 = (p2-p1).length();
     double l2 = (p0-p2).length();
@@ -857,42 +857,42 @@ public:
   // area of a triangle using heron's formula
   // heron's area = sqrt(s(s-a)(s-b)(s-c)) where s=0.5*(a+b+c)
   double tri_AREA = (l0*l5 + l1*l3 + l2*l4) / 2.0;
-
+  
   // volume of the element
   double tet_VOL = basis_.get_volume(ed);
-
+  
   // surface area of element
   double s_A = 0.5*(l0+l1+l2);
   double s_B = 0.5*(l1+l4+l5);
   double s_C = 0.5*(l2+l3+l5);
   double s_D = 0.5*(l0+l3+l4);
-
+  
   double tri_A = sqrt(s_A*(s_A - l0)*(s_A - l1)*(s_A - l2));
   double tri_B = sqrt(s_B*(s_B - l1)*(s_B - l4)*(s_B - l5));
   double tri_C = sqrt(s_C*(s_C - l2)*(s_C - l3)*(s_C - l5));
-  double tri_D = sqrt(s_D*(s_D - l0)*(s_D - l3)*(s_D - l4));
-
+  double tri_D = sqrt(s_D*(s_D - l0)*(s_D - l3)*(s_D - l4));    
+  
   double tet_SA = tri_A + tri_B + tri_C + tri_D;
-
-  // calculating inscribed and circumscribed radii
+    
+  // calculating inscribed and circumscribed radii  
   double r_in = 3.0 * tet_VOL / tet_SA;
   double r_cir = sqrt(tri_AREA*(tri_AREA - l0*l5)*(tri_AREA - l1*l3)*(tri_AREA - l2*l4)) / (6.0*tet_VOL);
-
-  // for an equilateral tetrahedron, the circ radius is 3 times larger than the inscr
+      
+  // for an equilateral tetrahedron, the circ radius is 3 times larger than the inscr    
   double ideal_ratio = 0.333333;
-  double normalized_actual_ratio = (r_in / r_cir) / ideal_ratio;
+  double normalized_actual_ratio = (r_in / r_cir) / ideal_ratio;    
   return (normalized_actual_ratio);
   }
 
   template <class INDEX>
-  bool find_closest_node(double& pdist, Core::Geometry::Point &result,
+  bool find_closest_node(double& pdist, Core::Geometry::Point &result, 
                          INDEX &node, const Core::Geometry::Point &p) const
   {
     return(find_closest_node(pdist,result,node,p,-1.0));
   }
-
+  
   template <class INDEX>
-  bool find_closest_node(double& pdist, Core::Geometry::Point &result,
+  bool find_closest_node(double& pdist, Core::Geometry::Point &result, 
                          INDEX &node, const Core::Geometry::Point &p,
                          double maxdist) const
   {
@@ -901,20 +901,20 @@ public:
 
     /// If there are no nodes we cannot find the closest one
     if (sz == 0) return (false);
-
+    
     if (node >= 0 && node < sz)
     {
-      Core::Geometry::Point point = points_[node];
+      Core::Geometry::Point point = points_[node]; 
       double dist = (point-p).length2();
-
+      
       if ( dist < epsilon2_ )
       {
         result = point;
         pdist = sqrt(dist);
         return (true);
-      }
-    }
-
+      }           
+    } 
+    
     ASSERTMSG(synchronized_ & Mesh::NODE_LOCATE_E,
 	      "TetVolMesh::find_closest_node requires synchronize(NODE_LOCATE_E).");
 
@@ -928,24 +928,21 @@ public:
     node_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni;
-    if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj;
-    if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk;
-    if (bk < 0) bk = 0;
+    if (bi > ni) bi = ni; if (bi < 0) bi = 0;
+    if (bj > nj) bj = nj; if (bj < 0) bj = 0;
+    if (bk > nk) bk = nk; if (bk < 0) bk = 0;
 
     ei = bi; ej = bj; ek = bk;
-
+    
     double dmin = maxdist;
     bool found = true;
     bool found_one = false;
-    do
+    do 
     {
-      found = true;
+      found = true; 
       /// We need to do a full shell without any elements that are closer
       /// to make sure there no closer elements in neighboring searchgrid cells
-
+    
       for (index_type i = bi; i <= ei; i++)
       {
         if (i < 0 || i > ni) continue;
@@ -967,15 +964,15 @@ public:
                 {
                   const Core::Geometry::Point point = points_[*it];
                   const double dist = (p-point).length2();
-
-                  if (dist < dmin)
-                  {
+                  
+                  if (dist < dmin) 
+                  { 
                     found_one = true;
-                    result = point;
-                    node = INDEX(*it);
-                    dmin = dist;
+                    result = point; 
+                    node = INDEX(*it); 
+                    dmin = dist; 
                     /// If we are closer than eps^2 we found a node close enough
-                    if (dmin < epsilon2_)
+                    if (dmin < epsilon2_) 
                     {
                       pdist = sqrt(dmin);
                       return (true);
@@ -991,7 +988,7 @@ public:
       bi--;ei++;
       bj--;ej++;
       bk--;ek++;
-    }
+    } 
     while (!found) ;
 
     if (!found_one) return (false);
@@ -1003,7 +1000,7 @@ public:
   bool find_closest_nodes(ARRAY &nodes, const Core::Geometry::Point &p, double maxdist) const
   {
     nodes.clear();
-
+    
     ASSERTMSG(synchronized_ & Mesh::NODE_LOCATE_E,
         "TetVolMesh::find_closest_node requires synchronize(NODE_LOCATE_E).")
 
@@ -1022,19 +1019,13 @@ public:
     node_grid_->unsafe_locate(ei, ej, ek, max);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni;
-    if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj;
-    if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk;
-    if (bk < 0) bk = 0;
+    if (bi > ni) bi = ni; if (bi < 0) bi = 0;
+    if (bj > nj) bj = nj; if (bj < 0) bj = 0;
+    if (bk > nk) bk = nk; if (bk < 0) bk = 0;
 
-    if (ei > ni) ei = ni;
-    if (ei < 0) ei = 0;
-    if (ej > nj) ej = nj;
-    if (ej < 0) ej = 0;
-    if (ek > nk) ek = nk;
-    if (ek < 0) ek = 0;
+    if (ei > ni) ei = ni; if (ei < 0) ei = 0;
+    if (ej > nj) ej = nj; if (ej < 0) ej = 0;
+    if (ek > nk) ek = nk; if (ek < 0) ek = 0;
 
     double maxdist2 = maxdist*maxdist;
 
@@ -1054,8 +1045,8 @@ public:
               const Core::Geometry::Point point = points_[*it];
               const double dist  = (p-point).length2();
 
-              if (dist < maxdist2)
-              {
+              if (dist < maxdist2) 
+              { 
                 nodes.push_back(*it);
               }
               ++it;
@@ -1064,7 +1055,7 @@ public:
         }
       }
     }
-
+      
     return(nodes.size() > 0);
   }
 
@@ -1075,7 +1066,7 @@ public:
   {
     nodes.clear();
     distances.clear();
-
+    
     ASSERTMSG(synchronized_ & Mesh::NODE_LOCATE_E,
         "TetVolMesh::find_closest_node requires synchronize(NODE_LOCATE_E).")
 
@@ -1094,19 +1085,13 @@ public:
     node_grid_->unsafe_locate(ei, ej, ek, max);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni;
-    if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj;
-    if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk;
-    if (bk < 0) bk = 0;
+    if (bi > ni) bi = ni; if (bi < 0) bi = 0;
+    if (bj > nj) bj = nj; if (bj < 0) bj = 0;
+    if (bk > nk) bk = nk; if (bk < 0) bk = 0;
 
-    if (ei > ni) ei = ni;
-    if (ei < 0) ei = 0;
-    if (ej > nj) ej = nj;
-    if (ej < 0) ej = 0;
-    if (ek > nk) ek = nk;
-    if (ek < 0) ek = 0;
+    if (ei > ni) ei = ni; if (ei < 0) ei = 0;
+    if (ej > nj) ej = nj; if (ej < 0) ej = 0;
+    if (ek > nk) ek = nk; if (ek < 0) ek = 0;
 
     double maxdist2 = maxdist*maxdist;
 
@@ -1126,8 +1111,8 @@ public:
               const Core::Geometry::Point point = points_[*it];
               const double dist  = (p-point).length2();
 
-              if (dist < maxdist2)
-              {
+              if (dist < maxdist2) 
+              { 
                 nodes.push_back(*it);
                 distances.push_back(dist);
               }
@@ -1137,17 +1122,17 @@ public:
         }
       }
     }
-
+      
     return(nodes.size() > 0);
   }
 
 
   /// Find the closest element to a point
   template <class INDEX, class ARRAY>
-  bool find_closest_elem(double& pdist,
-                         Core::Geometry::Point &result,
+  bool find_closest_elem(double& pdist, 
+                         Core::Geometry::Point &result, 
                          ARRAY &coords,
-                         INDEX &elem,
+                         INDEX &elem, 
                          const Core::Geometry::Point &p) const
   {
     return (find_closest_elem(pdist,result,coords,elem,p,-1.0));
@@ -1156,10 +1141,10 @@ public:
 
   /// Find the closest element to a point
   template <class INDEX, class ARRAY>
-  bool find_closest_elem(double& pdist,
-                         Core::Geometry::Point &result,
+  bool find_closest_elem(double& pdist, 
+                         Core::Geometry::Point &result, 
                          ARRAY &coords,
-                         INDEX &elem,
+                         INDEX &elem, 
                          const Core::Geometry::Point &p,
                          double maxdist) const
   {
@@ -1170,7 +1155,7 @@ public:
     /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
 
-    /// Check whether the estimate given in idx is the point we are looking for
+    /// Check whether the estimate given in idx is the point we are looking for    
     if ((elem > 0)&&(elem < sz))
     {
       if (inside(elem,p))
@@ -1200,13 +1185,13 @@ public:
           result = p;
           elem = static_cast<INDEX>(*it);
           ElemData ed(*this, elem);
-          basis_.get_coords(coords, p, ed);
+          basis_.get_coords(coords, p, ed);          
           return (true);
         }
         ++it;
       }
     }
-
+    
     // If not start searching for the closest outer boundary
     // get grid sizes
     const size_type ni = elem_grid_->get_ni()-1;
@@ -1218,22 +1203,19 @@ public:
     elem_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni;
-    if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj;
-    if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk;
-    if (bk < 0) bk = 0;
+    if (bi > ni) bi = ni; if (bi < 0) bi = 0;
+    if (bj > nj) bj = nj; if (bj < 0) bj = 0;
+    if (bk > nk) bk = nk; if (bk < 0) bk = 0;
 
     ei = bi; ej = bj; ek = bk;
-
+        
     double dmin = maxdist;
     bool found = true;
     bool found_one = false;
-
-    do
+    
+    do 
     {
-      found = true;
+      found = true; 
       /// We need to do a full shell without any elements that are closer
       /// to make sure there no closer elements in neighboring searchgrid cells
       for (index_type i = bi; i <= ei; i++)
@@ -1274,7 +1256,7 @@ public:
                         result = r;
                         elem = INDEX(cidx);
                         dmin = dtmp;
-
+                        
                         if (dmin < epsilon2_)
                         {
                           pdist = sqrt(dmin);
@@ -1297,7 +1279,7 @@ public:
                         result = r;
                         elem = INDEX(cidx);
                         dmin = dtmp;
-
+                        
                         if (dmin < epsilon2_)
                         {
                           pdist = sqrt(dmin);
@@ -1320,7 +1302,7 @@ public:
                         result = r;
                         elem = INDEX(cidx);
                         dmin = dtmp;
-
+                        
                         if (dmin < epsilon2_)
                         {
                           pdist = sqrt(dmin);
@@ -1329,7 +1311,7 @@ public:
                           return (true);
                         }
                       }
-                    }
+                    }                    
                     if (b & 0x8)
                     {
                       closest_point_on_tri(r, p,
@@ -1343,7 +1325,7 @@ public:
                         result = r;
                         elem = INDEX(cidx);
                         dmin = dtmp;
-
+                        
                         if (dmin < epsilon2_)
                         {
                           pdist = sqrt(dmin);
@@ -1352,7 +1334,7 @@ public:
                           return (true);
                         }
                       }
-                    }
+                    }                    
                   }
                   ++it;
                 }
@@ -1364,7 +1346,7 @@ public:
       bi--;ei++;
       bj--;ej++;
       bk--;ek++;
-    }
+    } 
     while (!found) ;
 
     if (!found_one) return (false);
@@ -1375,47 +1357,47 @@ public:
     pdist = sqrt(dmin);
     return (true);
   }
-
+  
   template <class INDEX>
-  bool find_closest_elem(double& pdist, Core::Geometry::Point &result,
+  bool find_closest_elem(double& pdist, Core::Geometry::Point &result, 
                          INDEX &elem, const Core::Geometry::Point &p) const
   {
     StackVector<double,3> coords;
     return(find_closest_elem(pdist,result,coords,elem,p,-1.0));
   }
 
-  /// Find the closest elements to a point
+  /// Find the closest elements to a point  
   template<class ARRAY>
-  bool find_closest_elems(double& /*pdist*/, Core::Geometry::Point& /*result*/,
+  bool find_closest_elems(double& /*pdist*/, Core::Geometry::Point& /*result*/, 
                           ARRAY& /*elems*/, const Core::Geometry::Point& /*p*/) const
-  {
-    ASSERTFAIL("TetVolMesh: Find closest element has not yet been implemented.");
+  {  
+    ASSERTFAIL("TetVolMesh: Find closest element has not yet been implemented.");  
     return (false);
   }
 
   /// Export this class using the old Pio system
-  virtual void io(Piostream&) override;
-
+  virtual void io(Piostream&);
+  
   ///////////////////////////////////////////////////
   // STATIC VARIABLES AND FUNCTIONS
-
+  
   /// This ID is created as soon as this class will be instantiated
   static PersistentTypeID tetvolmesh_typeid;
-
+  
   /// Core functionality for getting the name of a templated mesh class
   static  const std::string type_name(int n = -1);
-  virtual std::string dynamic_type_name() const override { return tetvolmesh_typeid.type; }
+  virtual std::string dynamic_type_name() const { return tetvolmesh_typeid.type; }
 
   /// Type description, used for finding names of the mesh class for
-  /// dynamic compilation purposes. Soem of this should be obsolete
-  virtual const TypeDescription *get_type_description() const override;
+  /// dynamic compilation purposes. Soem of this should be obsolete   
+  virtual const TypeDescription *get_type_description() const;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
   static const TypeDescription* face_type_description();
   static const TypeDescription* cell_type_description();
   static const TypeDescription* elem_type_description()
   { return cell_type_description(); }
-
+  
   /// This function returns a maker for Pio.
   static Persistent* maker() { return new TetVolMesh(); }
   /// This function returns a handle for the virtual interface.
@@ -1471,23 +1453,23 @@ public:
   void fill_neighbors(Iter begin, Iter end, Functor fill_ftor);
   template <class Iter, class Functor>
   void fill_data(Iter begin, Iter end, Functor fill_ftor);
-
+                
   // THIS FUNCTION NEEDS TO BE REVISED AS IT DOES NOT SCALE PROPERLY
   // THE TOLERANCE IS NOT RELATIVE, WHICH IS A PROBLEM.........
   typename Node::index_type     add_find_point(const Core::Geometry::Point &p,
                                                double err = 1.0e-6);
 
-  // Short cut for generating an element....
+  // Short cut for generating an element....   
   typename Elem::index_type add_tet(typename Node::index_type a,
 				    typename Node::index_type b,
 				    typename Node::index_type c,
 				    typename Node::index_type d);
-
+  
   typename Elem::index_type add_tet(const Core::Geometry::Point &p0,
 				    const Core::Geometry::Point &p1,
 				    const Core::Geometry::Point &p2,
 				    const Core::Geometry::Point &p3);
-
+  
   bool insert_node_in_elem(typename Elem::array_type &tets,
 			   typename Node::index_type &ni,
 			   typename Elem::index_type ci,
@@ -1495,7 +1477,7 @@ public:
 
   /// must detach, if altering points!
   std::vector<Core::Geometry::Point>& get_points() { return points_; }
-
+ 
   int compute_checksum();
 
 protected:
@@ -1510,7 +1492,7 @@ protected:
   // as well as the STL vector. When an algorithm supports non linear
   // functions an STL vector is a better choice, in the other cases
   // often a StackVector is enough (The latter improves performance).
-
+   
   template<class ARRAY, class INDEX>
   inline void get_nodes_from_edge(ARRAY& array, INDEX idx) const
   {
@@ -1519,7 +1501,7 @@ protected:
 
     if (edges_[idx].cells_.size() == 0)
       { array.clear(); return; }
-
+    
     array.resize(2);
 
     index_type cell_edge_index = edges_[idx].cells_[0];
@@ -1582,7 +1564,7 @@ protected:
     array.reserve(3);
     index_type cell_index = (faces_[idx].cells_[0])&(~0x3);
     index_type face_index = (faces_[idx].cells_[0])&(0x3);
-
+    
     const int* offset = TetVolFaceTable[face_index];
 
     typename Node::index_type n0 = cells_[cell_index+offset[0]];
@@ -1591,19 +1573,19 @@ protected:
 
     if (n0 != n1)
     {
-      PEdgeNode e(n0, n1);
+      PEdgeNode e(n0, n1);  
       array.push_back(static_cast<typename ARRAY::value_type>(
                                             (*(edge_table_.find(e))).second));
     }
     if (n1 != n2)
     {
-      PEdgeNode e(n1, n2);
+      PEdgeNode e(n1, n2);  
       array.push_back(static_cast<typename ARRAY::value_type>(
                                             (*(edge_table_.find(e))).second));
     }
     if (n2 != n0)
     {
-      PEdgeNode e(n2, n0);
+      PEdgeNode e(n2, n0);  
       array.push_back(static_cast<typename ARRAY::value_type>(
                                             (*(edge_table_.find(e))).second));
     }
@@ -1627,40 +1609,40 @@ protected:
     n1 = cells_[off    ]; n2 = cells_[off + 1];
     size_t i = 0;
     typedef typename ARRAY::value_type T;
-    if (n1 != n2)
-    {
-      PEdge e(n1,n2);
-      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second));
+    if (n1 != n2) 
+    { 
+      PEdge e(n1,n2); 
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
     }
     n1 = cells_[off + 1]; n2 = cells_[off + 2];
-    if (n1 != n2)
-    {
-      PEdge e(n1,n2);
-      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second));
+    if (n1 != n2) 
+    { 
+      PEdge e(n1,n2); 
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
     }
     n1 = cells_[off + 2]; n2 = cells_[off    ];
-    if (n1 != n2)
-    {
-      PEdge e(n1,n2);
-      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second));
+    if (n1 != n2) 
+    { 
+      PEdge e(n1,n2); 
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
     }
     n1 = cells_[off    ]; n2 = cells_[off + 3];
-    if (n1 != n2)
-    {
-      PEdge e(n1,n2);
-      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second));
+    if (n1 != n2) 
+    { 
+      PEdge e(n1,n2); 
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
     }
     n1 = cells_[off + 1]; n2 = cells_[off + 3];
-    if (n1 != n2)
-    {
-      PEdge e(n1,n2);
-      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second));
+    if (n1 != n2) 
+    { 
+      PEdge e(n1,n2); 
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
     }
     n1 = cells_[off + 2]; n2 = cells_[off + 3];
-    if (n1 != n2)
-    {
-      PEdge e(n1,n2);
-      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second));
+    if (n1 != n2) 
+    { 
+      PEdge e(n1,n2); 
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
     }
   }
 
@@ -1680,9 +1662,9 @@ protected:
     array.resize(4);
 
     const index_type off = idx << 2;
-    const typename Node::index_type n0 = cells_[off    ];
-    const typename Node::index_type n1 = cells_[off + 1];
-    const typename Node::index_type n2 = cells_[off + 2];
+    const typename Node::index_type n0 = cells_[off    ]; 
+    const typename Node::index_type n1 = cells_[off + 1]; 
+    const typename Node::index_type n2 = cells_[off + 2]; 
     const typename Node::index_type n3 = cells_[off + 3];
 
     PFaceNode f0(n3, n2, n1);
@@ -1705,7 +1687,7 @@ protected:
   {
     ASSERTMSG(synchronized_ & Mesh::NODE_NEIGHBORS_E,
             "TetVolMesh: Must call synchronize NODE_NEIGHBORS_E first.");
-
+            
     array.resize(node_neighbors_[idx].size());
     for (size_t i = 0; i < node_neighbors_[idx].size(); ++i)
       array[i] = static_cast<typename ARRAY::value_type>(
@@ -1722,7 +1704,7 @@ protected:
 
     // Get all the nodes that share an edge with this node
     const std::vector<typename Cell::index_type>& neighbors = node_neighbors_[idx];
-
+    
     array.clear();
     array.reserve(neighbors.size());
     // Iterate through all those edges
@@ -1730,9 +1712,9 @@ protected:
     {
       index_type cell_index = neighbors[n]&(~0x3);
       index_type node_index = neighbors[n]&0x3;
-
+    
       const int *offset = TetVolEdgePerNodeTable[node_index];
-
+       
       PEdgeNode e(cells_[cell_index+offset[0]],cells_[cell_index+offset[1]]);
       typename edge_nt::const_iterator iter = edge_table_.find(e);
       if (((edges_[iter->second].cells_[0])&(~0x7))==(cell_index<<1) )
@@ -1759,7 +1741,7 @@ protected:
       "TetVolMesh: Must call synchronize FACES_E first");
 
     array.clear();
-
+    
     for (size_t c=0; c<edges_[idx].cells_.size();c++)
     {
       index_type cell_index = ((edges_[idx].cells_[c])>>3)<<2;
@@ -1769,23 +1751,23 @@ protected:
 
       typename Node::index_type n1, n2, n3;
       typename face_nt::const_iterator fiter;
-
+      
       n1 = cells_[cell_index+off[0]]; n2 = cells_[cell_index+off[1]];
-      n3 = cells_[cell_index+off[2]];
+      n3 = cells_[cell_index+off[2]]; 
 
       fiter = face_table_.find(PFaceNode(n1,n2,n3));
       if (((faces_[fiter->second].cells_[0])&(~0x3)) == cell_index)
         array.push_back(typename ARRAY::value_type(fiter->second));
 
       n1 = cells_[cell_index+off[3]]; n2 = cells_[cell_index+off[4]];
-      n3 = cells_[cell_index+off[5]];
+      n3 = cells_[cell_index+off[5]]; 
 
       fiter = face_table_.find(PFaceNode(n1,n2,n3));
       if (((faces_[fiter->second].cells_[0])&(~0x3)) == cell_index)
         array.push_back(typename ARRAY::value_type(fiter->second));
     }
   }
-
+  
   template<class ARRAY, class INDEX>
   inline void get_faces_from_node(ARRAY& array, INDEX idx) const
   {
@@ -1795,10 +1777,10 @@ protected:
       "TetVolMesh: Must call synchronize EDGES_E first");
     ASSERTMSG(synchronized_ & (Mesh::FACES_E),
       "TetVolMesh: Must call synchronize FACES_E first");
-
+    
     // Get all the nodes that share an edge with this node
     const std::vector<typename Cell::index_type>& neighbors = node_neighbors_[idx];
-
+    
     array.clear();
     array.reserve(neighbors.size());
     // Iterate through all those edges
@@ -1806,9 +1788,9 @@ protected:
     {
       index_type cell_index = neighbors[n]&(~0x3);
       index_type node_index = neighbors[n]&0x3;
-
+  
       const int *offset = TetVolFacePerNodeTable[node_index];
-
+       
       PFaceNode e(cells_[cell_index+offset[0]],
                   cells_[cell_index+offset[1]],cells_[cell_index+offset[2]]);
 
@@ -1836,9 +1818,9 @@ protected:
     ASSERTMSG(synchronized_ & Mesh::EDGES_E,
               "TetVolMesh: Must call synchronize EDGES_E first");
     for (size_t i=0; i< edges_[idx].cells_.size(); i++)
-      array[i] = static_cast<typename ARRAY::value_type>(edges_[idx].cells_[i]);
+      array[i] = static_cast<typename ARRAY::value_type>(edges_[idx].cells_[i]);  
   }
-
+  
   template<class ARRAY, class INDEX>
   inline void get_cells_from_face(ARRAY& array, INDEX idx) const
   {
@@ -1871,12 +1853,12 @@ protected:
               "TetVolMesh: Must call synchronize FACES_E on TetVolMesh first");
     const PFaceCell &f = faces_[delem];
 
-    if (elem == static_cast<INDEX1>((f.cells_[0])>>2))
+    if (elem == static_cast<INDEX1>((f.cells_[0])>>2)) 
     {
       if (f.cells_[1] == MESH_NO_NEIGHBOR) return (false);
       neighbor = static_cast<INDEX1>((f.cells_[1])>>2);
-    }
-    else
+    } 
+    else 
     {
       if (f.cells_[0] == MESH_NO_NEIGHBOR) return (false);
       neighbor = static_cast<INDEX1>((f.cells_[0])>>2);
@@ -1892,13 +1874,13 @@ protected:
 
     const PFaceCell &f = faces_[delem];
 
-    if (elem == static_cast<INDEX1>((f.cells_[0])>>2))
+    if (elem == static_cast<INDEX1>((f.cells_[0])>>2)) 
     {
       if (f.cells_[1] == MESH_NO_NEIGHBOR) return (false);
       array.resize(1);
       array[0] = static_cast<typename ARRAY::value_type>((f.cells_[1])>>2);
-    }
-    else
+    } 
+    else 
     {
       if (f.cells_[0] == MESH_NO_NEIGHBOR) return (false);
       array.resize(1);
@@ -1916,7 +1898,7 @@ protected:
     array.clear();
     array.reserve(faces.size());
     typename Face::array_type::iterator iter = faces.begin();
-    while(iter != faces.end())
+    while(iter != faces.end()) 
     {
       typename ARRAY::value_type nbor;
       if (get_elem_neighbor(nbor, idx, *iter))
@@ -1934,7 +1916,7 @@ protected:
     ASSERTMSG(synchronized_ & Mesh::NODE_NEIGHBORS_E,
               "Must call synchronize NODE_NEIGHBORS_E on TetVolMesh first.");
     size_t sz = node_neighbors_[node].size();
-
+   
     std::set<index_type> inserted;
     for (size_t i = 0; i < sz; i++)
     {
@@ -1957,13 +1939,13 @@ protected:
 
     /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
-
+    
     /// Check first guess
-    if (node >= 0 && node < sz)
+    if (node >= 0 && node < sz) 
     {
       if ((p - points_[node]).length2() < epsilon2_) return (true);
-    }
-
+    }    
+    
     ASSERTMSG(synchronized_ & Mesh::NODE_LOCATE_E,
               "TetVolMesh::locate_node requires synchronize(NODE_LOCATE_E).")
 
@@ -1981,18 +1963,18 @@ protected:
     if (bj > nj) bj =nj; if (bj < 0) bj = 0;
     if (bk > nk) bk =nk; if (bk < 0) bk = 0;
 
-    ei = bi;
-    ej = bj;
+    ei = bi; 
+    ej = bj; 
     ek = bk;
-
+    
     double dmin = DBL_MAX;
     bool found;
-    do
+    do 
     {
-      found = true;
+      found = true; 
       /// We need to do a full shell without any elements that are closer
       /// to make sure there no closer elements in neighboring searchgrid cells
-
+    
       for (index_type i = bi; i <= ei; i++)
       {
         if (i < 0 || i > ni) continue;
@@ -2015,10 +1997,10 @@ protected:
                   const Core::Geometry::Point point = points_[*it];
                   const double dist = (p-point).length2();
 
-                  if (dist < dmin)
-                  {
-                    node = INDEX(*it);
-                    dmin = dist;
+                  if (dist < dmin) 
+                  { 
+                    node = INDEX(*it);   
+                    dmin = dist; 
 
                     if (dist < epsilon2_) return (true);
                   }
@@ -2032,10 +2014,10 @@ protected:
       bi--;ei++;
       bj--;ej++;
       bk--;ek++;
-    }
+    } 
     while ((!found)||(dmin == DBL_MAX)) ;
 
-    return (true);
+    return (true); 
   }
 
   /// @todo: Fix this function, needs to use search grid
@@ -2107,7 +2089,7 @@ protected:
     /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
 
-    /// Check whether the estimate given in idx is the point we are looking for
+    /// Check whether the estimate given in idx is the point we are looking for    
     if ((elem > 0)&&(elem < sz))
     {
       if (inside(elem,p)) return (true);
@@ -2136,9 +2118,9 @@ protected:
   template <class ARRAY>
   inline bool locate_elems(ARRAY &array, const Core::Geometry::BBox &b) const
   {
-
+  
     ASSERTMSG(synchronized_ & Mesh::ELEM_LOCATE_E,
-              "TetVolMesh::locate_elems requires synchronize(ELEM_LOCATE_E).")
+              "TetVolMesh::locate_elems requires synchronize(ELEM_LOCATE_E).")  
 
     array.clear();
     index_type is,js,ks;
@@ -2149,7 +2131,7 @@ protected:
       for (index_type j=js; j<je;j++)
         for (index_type k=ks; k<ke; k++)
         {
-          typename SearchGridT<index_type>::iterator it, eit;
+          typename SearchGridT<index_type>::iterator it, eit;        
           elem_grid_->lookup_ijk(it, eit, i, j, k);
           while (it != eit)
           {
@@ -2159,7 +2141,7 @@ protected:
             ++it;
           }
         }
-
+        
     return (array.size() > 0);
   }
 
@@ -2175,7 +2157,7 @@ protected:
     /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
 
-    /// Check whether the estimate given in idx is the point we are looking for
+    /// Check whether the estimate given in idx is the point we are looking for    
     if ((elem > 0)&&(elem < sz))
     {
       if (inside(elem,p))
@@ -2198,20 +2180,20 @@ protected:
         {
           elem = static_cast<INDEX>(*it);
           ElemData ed(*this, elem);
-          basis_.get_coords(coords, p, ed);
+          basis_.get_coords(coords, p, ed);          
           return (true);
         }
         ++it;
       }
     }
-
+    
     return (false);
   }
 
   template <class INDEX>
   inline void get_node_center(Core::Geometry::Point &p, INDEX idx) const
   {
-    p = points_[idx];
+    p = points_[idx]; 
   }
 
   template <class INDEX>
@@ -2254,8 +2236,8 @@ protected:
   }
 
   //////////////////////////////////////////////////////////////
-  // Internal functions that the mesh depends on
-
+  // Internal functions that the mesh depends on  
+  
 protected:
 
   void compute_node_neighbors();
@@ -2264,7 +2246,7 @@ protected:
   void compute_node_grid();
   void compute_elem_grid();
   void compute_bounding_box();
-
+  
   void insert_elem_into_grid(typename Elem::index_type ci);
   void remove_elem_from_grid(typename Elem::index_type ci);
   void insert_node_into_grid(typename Node::index_type ci);
@@ -2279,7 +2261,7 @@ protected:
     const Core::Geometry::Point &p1 = points_[cells_[idx*4+1]];
     const Core::Geometry::Point &p2 = points_[cells_[idx*4+2]];
     const Core::Geometry::Point &p3 = points_[cells_[idx*4+3]];
-
+    
     const double x0 = p0.x();
     const double y0 = p0.y();
     const double z0 = p0.z();
@@ -2298,7 +2280,7 @@ protected:
     const double a2 = + x3*(y0*z1-y1*z0) + x0*(y1*z3-y3*z1) + x1*(y3*z0-y0*z3);
     const double a3 = - x0*(y1*z2-y2*z1) - x1*(y2*z0-y0*z2) - x2*(y0*z1-y1*z0);
     const double iV6 = 1.0 / (a0+a1+a2+a3);
-
+ 
     const double b0 = - (y2*z3-y3*z2) - (y3*z1-y1*z3) - (y1*z2-y2*z1);
     const double c0 = + (x2*z3-x3*z2) + (x3*z1-x1*z3) + (x1*z2-x2*z1);
     const double d0 = - (x2*y3-x3*y2) - (x3*y1-x1*y3) - (x1*y2-x2*y1);
@@ -2335,17 +2317,17 @@ protected:
   /// Face information.
   class PFaceCell {
   public:
-    PFaceCell()
+    PFaceCell() 
     {
       cells_[0] = MESH_NO_NEIGHBOR;
       cells_[1] = MESH_NO_NEIGHBOR;
     }
-
+   
     bool shared() const { return ((cells_[0] != MESH_NO_NEIGHBOR) &&
                                   (cells_[1] != MESH_NO_NEIGHBOR)); }
-    index_type  cells_[2];
+    index_type  cells_[2]; 
   };
-
+  
   class PFaceNode {
     public:
     // The order of nodes_ corresponds with cells_[0] for CW/CCW purposes.
@@ -2356,10 +2338,10 @@ protected:
       nodes_[1] = MESH_NO_NEIGHBOR;
       nodes_[2] = MESH_NO_NEIGHBOR;
     }
-
+    
     // snodes_ must be sorted. See Hash Function below.
     PFaceNode(typename Node::index_type n1, typename Node::index_type n2,
-          typename Node::index_type n3)
+          typename Node::index_type n3) 
     {
       if (n2 < n1 && n2 < n3)
       {
@@ -2370,7 +2352,7 @@ protected:
         }
         else
         {
-          t = n1; n1 = n2; n2 = t;
+          t = n1; n1 = n2; n2 = t; 
         }
       }
       else if (n3 < n1 && n3 < n2)
@@ -2378,11 +2360,11 @@ protected:
         typename Node::index_type t;
         if (n1 < n2)
         {
-          t = n1; n1 = n3; n3 = n2; n2 = t;
+          t = n1; n1 = n3; n3 = n2; n2 = t;        
         }
         else
         {
-          t = n1; n1 = n3; n3 = t;
+          t = n1; n1 = n3; n3 = t;                
         }
       }
       else if (n3 < n2)
@@ -2396,7 +2378,7 @@ protected:
     }
 
     /// true if both have the same nodes (order does not matter)
-    bool operator==(const PFaceNode &f) const
+    bool operator==(const PFaceNode &f) const 
     {
       return ((nodes_[0] == f.nodes_[0]) && (nodes_[1] == f.nodes_[1]) &&
               (nodes_[2] == f.nodes_[2]));
@@ -2404,7 +2386,7 @@ protected:
 
     /// Compares each node.  When a non equal node is found the <
     /// operator is applied.
-    bool operator<(const PFaceNode &f) const
+    bool operator<(const PFaceNode &f) const 
     {
       if (nodes_[0] == f.nodes_[0])
         if (nodes_[1] == f.nodes_[1])
@@ -2438,12 +2420,12 @@ protected:
     PEdgeNode(typename Node::index_type n1,
               typename Node::index_type n2)
     {
-      if (n1 < n2)
+      if (n1 < n2) 
       {
         nodes_[0] = n1;
         nodes_[1] = n2;
-      }
-      else
+      } 
+      else 
       {
         nodes_[0] = n2;
         nodes_[1] = n1;
@@ -2451,14 +2433,14 @@ protected:
     }
 
     /// true if both have the same nodes (order does not matter)
-    bool operator==(const PEdgeNode &e) const
+    bool operator==(const PEdgeNode &e) const 
     {
       return ((nodes_[0] == e.nodes_[0]) && (nodes_[1] == e.nodes_[1]));
     }
 
     /// Compares each node.  When a non equal node is found the <
     /// operator is applied.
-    bool operator<(const PEdgeNode &e) const
+    bool operator<(const PEdgeNode &e) const 
     {
       if (nodes_[0] == e.nodes_[0])
         return (nodes_[1] < e.nodes_[1]);
@@ -2474,19 +2456,19 @@ protected:
 
       bool shared() const { return cells_.size() > 1; }
   };
-
+  
   /// Edge information.
-  class PEdge : public PEdgeNode, public PEdgeCell
+  class PEdge : public PEdgeNode, public PEdgeCell 
   {
     public:
       PEdge(typename Node::index_type n1,typename Node::index_type n2) :
         PEdgeNode(n1,n2) {}
-  };
-
+  };  
+  
   /// hash the egde's node_indecies such that edges with the same nodes
-  ///  hash to the same value. nodes are sorted on edge construction.
+  ///  hash to the same value. nodes are sorted on edge construction. 
   static const int sz_int = sizeof(int) * 8; // in bits
-  struct FaceHash
+  struct FaceHash 
   {
     // These are needed by the hash_map particularly
     // ANSI C++ allows us to initialize these variables in the
@@ -2503,7 +2485,7 @@ protected:
 
     /// This is the hash function
     template <class PFACE>
-    size_t operator()(const PFACE &f) const
+    size_t operator()(const PFACE &f) const 
     {
       return ((up_mask & (static_cast<int>(f.nodes_[0]) << sz_third_int << sz_third_int)) |
               (mid_mask & (static_cast<int>(f.nodes_[1]) << sz_third_int)) |
@@ -2512,14 +2494,14 @@ protected:
     /// This should return less than rather than equal to.
 
     template <class PFACE>
-    bool operator()(const PFACE &f1, const PFACE& f2) const
+    bool operator()(const PFACE &f1, const PFACE& f2) const 
     {
       return f1 < f2;
     }
   };
 
   /// hash the egde's node_indecies such that edges with the same nodes
-  ///  hash to the same value. nodes are sorted on edge construction.
+  ///  hash to the same value. nodes are sorted on edge construction. 
   struct EdgeHash {
     /// These are needed by the hash_map particularly
     // ANSI C++ allows us to initialize these variables in the
@@ -2536,15 +2518,15 @@ protected:
 
     /// This is the hash function
     template <class PEDGE>
-    size_t operator()(const PEDGE &e) const
+    size_t operator()(const PEDGE &e) const 
     {
-      return (static_cast<int>(e.nodes_[0]) << sz_half_int) |
+      return (static_cast<int>(e.nodes_[0]) << sz_half_int) | 
               (low_mask & static_cast<int>(e.nodes_[1]));
     }
 
     ///  This should return less than rather than equal to.
     template <class PEDGE>
-    bool operator()(const PEDGE &e1, const PEDGE& e2) const
+    bool operator()(const PEDGE &e1, const PEDGE& e2) const 
     {
       return e1 < e2;
     }
@@ -2559,13 +2541,13 @@ protected:
   typedef std::vector<PEdgeCell> edge_ct;
 
   // These should not be called outside of the synchronize_lock_.
-
+  
   /// container for face storage. Must be computed each time
-  ///  nodes or cells change.
+  ///  nodes or cells change. 
   face_ct faces_;
   face_nt face_table_;
   /// container for edge storage. Must be computed each time
-  ///  nodes or cells change.
+  ///  nodes or cells change. 
   edge_ct edges_;
   edge_nt edge_table_;
 
@@ -2574,12 +2556,12 @@ protected:
 			  typename Cell::index_type ci,
 			  bool table_only = false);
 
-  inline void hash_edge(typename Node::index_type n1,
+  inline void hash_edge(typename Node::index_type n1, 
                         typename Node::index_type n2,
                         index_type combined_index,
                         edge_ht& table);
-
-  inline void add_edge(typename Node::index_type n1,
+                        
+  inline void add_edge(typename Node::index_type n1, 
                         typename Node::index_type n2,
                         index_type combined_index);
 
@@ -2588,13 +2570,13 @@ protected:
                           typename Node::index_type n3,
                           typename Cell::index_type ci,
                           bool table_only = false);
-  inline void hash_face(typename Node::index_type n1,
+  inline void hash_face(typename Node::index_type n1, 
                         typename Node::index_type n2,
-                        typename Node::index_type n3,
+                        typename Node::index_type n3, 
                         index_type ci, face_ht& table);
-  inline void add_face(typename Node::index_type n1,
+  inline void add_face(typename Node::index_type n1, 
                        typename Node::index_type n2,
-                       typename Node::index_type n3,
+                       typename Node::index_type n3, 
                        index_type combined_index);
 
   std::vector<std::vector<typename Cell::index_type> > node_neighbors_;
@@ -2611,19 +2593,19 @@ protected:
   // Lock and Condition Variable for hand shaking
   mutable Core::Thread::Mutex                 synchronize_lock_;
   Core::Thread::ConditionVariable             synchronize_cond_;
-
+  
   // Which tables have been computed
   mask_type                     synchronized_;
   // Which tables are currently being computed
   mask_type                     synchronizing_;
-
+  
   Core::Geometry::BBox                  bbox_;
   Basis                 basis_;
   double                epsilon_;
   double                epsilon2_;
   double                epsilon3_;
-
-  /// Pointer to virtual interface
+  
+  /// Pointer to virtual interface  
   boost::shared_ptr<VMesh>         vmesh_;
 
 public:
@@ -2643,7 +2625,7 @@ public:
 			   typename Node::index_type ni,
 			   typename Cell::index_type ci,
 			   const PEdgeNode &e);
-
+  
 }; // end class TetVolMesh
 
 template <class Basis>
@@ -2672,7 +2654,7 @@ TetVolMesh<Basis>::TetVolMesh() :
   epsilon2_(0.0),
   epsilon3_(0.0)
 {
-  DEBUG_CONSTRUCTOR("TetVolMesh")
+  DEBUG_CONSTRUCTOR("TetVolMesh")      
 
   vmesh_.reset(CreateVTetVolMesh(this));
 }
@@ -2694,7 +2676,7 @@ TetVolMesh<Basis>::TetVolMesh(const TetVolMesh &copy) :
   epsilon2_(0.0),
   epsilon3_(0.0)
 {
-  DEBUG_CONSTRUCTOR("TetVolMesh")
+  DEBUG_CONSTRUCTOR("TetVolMesh")      
 
   /// We need to lock before we can copy these as these
   /// structures are generate dynamically when they are
@@ -2703,7 +2685,7 @@ TetVolMesh<Basis>::TetVolMesh(const TetVolMesh &copy) :
 
   points_ = copy.points_;
   cells_ = copy.cells_;
-
+  
   // Epsilon does not require much space, hence copy those
   synchronized_ |= copy.synchronized_ & Mesh::BOUNDING_BOX_E;
   bbox_ = copy.bbox_;
@@ -2722,7 +2704,7 @@ TetVolMesh<Basis>::TetVolMesh(const TetVolMesh &copy) :
 template <class Basis>
 TetVolMesh<Basis>::~TetVolMesh()
 {
-  DEBUG_DESTRUCTOR("TetVolMesh")
+  DEBUG_DESTRUCTOR("TetVolMesh")      
 }
 
 template <class Basis>
@@ -2734,7 +2716,7 @@ TetVolMesh<Basis>::fill_points(Iter begin, Iter end, Functor fill_ftor)
   Iter iter = begin;
   points_.resize(end - begin); // resize to the new size
   std::vector<Core::Geometry::Point>::iterator piter = points_.begin();
-  while (iter != end)
+  while (iter != end) 
   {
     *piter = fill_ftor(*iter);
     ++piter; ++iter;
@@ -2745,13 +2727,13 @@ TetVolMesh<Basis>::fill_points(Iter begin, Iter end, Functor fill_ftor)
 template <class Basis>
 template <class Iter, class Functor>
 void
-TetVolMesh<Basis>::fill_cells(Iter begin, Iter end, Functor fill_ftor)
+TetVolMesh<Basis>::fill_cells(Iter begin, Iter end, Functor fill_ftor) 
 {
   synchronize_lock_.lock();
   Iter iter = begin;
   cells_.resize((end - begin) * 4); // resize to the new size
   std::vector<under_type>::iterator citer = cells_.begin();
-  while (iter != end)
+  while (iter != end) 
   {
     index_type *nodes = fill_ftor(*iter); // returns an array of length 4
     *citer = nodes[0];
@@ -2854,7 +2836,7 @@ TetVolMesh<Basis>::get_bounding_box() const
 }
 
 template <class Basis>
-void
+void 
 TetVolMesh<Basis>::get_canonical_transform(Core::Geometry::Transform &t) const
 {
   t.load_identity();
@@ -2868,7 +2850,7 @@ void
 TetVolMesh<Basis>::transform(const Core::Geometry::Transform &t)
 {
   synchronize_lock_.lock();
-
+  
   std::vector<Core::Geometry::Point>::iterator itr = points_.begin();
   std::vector<Core::Geometry::Point>::iterator eitr = points_.end();
   while (itr != eitr)
@@ -2895,10 +2877,10 @@ TetVolMesh<Basis>::transform(const Core::Geometry::Transform &t)
     epsilon_ = bbox_.diagonal().length()*1e-8;
     epsilon2_ = epsilon_*epsilon_;
     epsilon3_ = epsilon_*epsilon_*epsilon_;
-
+    
     synchronized_ |= BOUNDING_BOX_E;
   }
-
+  
   if (node_grid_) { node_grid_->transform(t); }
   if (elem_grid_) { elem_grid_->transform(t); }
 
@@ -2916,24 +2898,26 @@ TetVolMesh<Basis>::remove_face(typename Node::index_type n1,
   PFaceNode f(n1, n2, n3);
   typename face_nt::iterator iter = face_table_.find(f);
 
-  if (iter == face_table_.end())
+  if (iter == face_table_.end()) 
   {
     ASSERTFAIL("this face did not exist in the table");
   }
+  PFaceNode found_face = (*iter).first;
   index_type found_idx = (*iter).second;
-
+    
   index_type* cells = faces_[found_idx].cells_;
-
-  if (cells[1] == MESH_NO_NEIGHBOR)
+    
+  if (cells[1] == MESH_NO_NEIGHBOR) 
   {
     // this face belongs to only one cell
+    //faces_.erase(faces_.begin() + found_idx);
     cells[0] = MESH_NO_NEIGHBOR;
     cells[1] = MESH_NO_NEIGHBOR;
     face_table_.erase(iter);
-  }
-  else
+  } 
+  else 
   {
-    if (((faces_[found_idx].cells_[0])>>2) == ci)
+    if (((faces_[found_idx].cells_[0])>>2) == ci) 
     {
       cells[0] = cells[1];
       cells[1] = MESH_NO_NEIGHBOR;
@@ -2944,7 +2928,7 @@ TetVolMesh<Basis>::remove_face(typename Node::index_type n1,
     }
     else
     {
-      ASSERTFAIL("remove face: face does exist but is ");
+      ASSERTFAIL("remove face: face does exist but is ");    
     }
   }
 }
@@ -2960,27 +2944,27 @@ TetVolMesh<Basis>::hash_face(typename Node::index_type n1,
   PFace f(n1, n2, n3);
 
   typename face_ht::iterator iter = table.find(f);
-  if (iter == table.end())
+  if (iter == table.end()) 
   {
     f.cells_[0] = combined_index;
     table[f] = 0; // insert for the first time
-  }
-  else
+  } 
+  else 
   {
     PFace f = (*iter).first;
-    if (f.cells_[1] != MESH_NO_NEIGHBOR)
+    if (f.cells_[1] != MESH_NO_NEIGHBOR) 
     {
       std::cerr << "TetVolMesh - This Mesh has problems: Cells #"
-           << (f.cells_[0]>>2) << ", #" << (f.cells_[1]>>2) << ", and #"
+           << (f.cells_[0]>>2) << ", #" << (f.cells_[1]>>2) << ", and #" 
            << (combined_index>>2) << " are illegally adjacent." << std::endl;
-    }
-    else if ((f.cells_[0]>>2) == (combined_index>>2))
+    } 
+    else if ((f.cells_[0]>>2) == (combined_index>>2)) 
     {
       std::cerr << "TetVolMesh - This Mesh has problems: Cells #"
            << (f.cells_[0]>>2) << " and #" << (combined_index>>2)
            << " are the same." << std::endl;
-    }
-    else
+    } 
+    else 
     {
       f.cells_[1] = combined_index; // add this cell
       table.erase(iter);
@@ -2996,9 +2980,9 @@ TetVolMesh<Basis>::compute_faces()
   typename Cell::iterator ci, cie;
   begin(ci); end(cie);
   typename Node::array_type arr(4);
-
+  
   face_ht table;
-
+  
   while (ci != cie)
   {
     get_nodes(arr, *ci);
@@ -3016,11 +3000,11 @@ TetVolMesh<Basis>::compute_faces()
 
   typename face_ht::iterator ht_iter = table.begin();
   typename face_ht::iterator ht_iter_end = table.end();
-
+  
   boundary_faces_.resize(cells_.size() >> 2);
-
+  
   index_type uidx = 0;
-  while (ht_iter != ht_iter_end)
+  while (ht_iter != ht_iter_end) 
   {
     const PFace& pface = (*ht_iter).first;
     faces_[uidx].cells_[0] = pface.cells_[0];
@@ -3035,20 +3019,20 @@ TetVolMesh<Basis>::compute_faces()
     }
     ++ht_iter; uidx++;
   }
-
+  
   synchronize_lock_.lock();
   synchronized_ |= Mesh::FACES_E;
   synchronize_lock_.unlock();
 
-
+  
 }
 
 
 template <class Basis>
 void
-TetVolMesh<Basis>::add_face(typename Node::index_type n1,
+TetVolMesh<Basis>::add_face(typename Node::index_type n1, 
                             typename Node::index_type n2,
-                            typename Node::index_type n3,
+                            typename Node::index_type n3, 
                             index_type combined_index)
 {
 
@@ -3089,11 +3073,11 @@ TetVolMesh<Basis>::hash_edge(typename Node::index_type n1,
   PEdge e(n1, n2);
   typename edge_ht::iterator iter = table.find(e);
 
-  if (iter == table.end())
+  if (iter == table.end()) 
   {
     e.cells_.push_back(combined_index); // add this cell
     table[e] = 0; // insert for the first time
-  }
+  } 
   else
   {
     PEdge e = (*iter).first;
@@ -3110,7 +3094,7 @@ TetVolMesh<Basis>::compute_edges()
   typename Cell::iterator ci, cie;
   begin(ci); end(cie);
   edge_ht table;
-
+  
   typename Node::array_type arr;
   while (ci != cie)
   {
@@ -3124,14 +3108,14 @@ TetVolMesh<Basis>::compute_edges()
     hash_edge(arr[3], arr[2], cell_index+5,table);
     ++ci;
   }
-
+  
   edges_.resize(table.size());
-
+  
   typename edge_ht::iterator ht_iter = table.begin();
   typename edge_ht::iterator ht_iter_end = table.end();
-
+  
   index_type uidx = 0;
-  while (ht_iter != ht_iter_end)
+  while (ht_iter != ht_iter_end) 
   {
     const PEdge& pedge = (*ht_iter).first;
     edges_[uidx].cells_ = pedge.cells_;
@@ -3146,7 +3130,7 @@ TetVolMesh<Basis>::compute_edges()
 
 template <class Basis>
 void
-TetVolMesh<Basis>::add_edge(typename Node::index_type n1,
+TetVolMesh<Basis>::add_edge(typename Node::index_type n1, 
                             typename Node::index_type n2, index_type combined_index)
 {
   PEdgeNode e(n1,n2);
@@ -3170,7 +3154,7 @@ bool
 TetVolMesh<Basis>::synchronize(mask_type sync)
 {
   // Conversion table
-  if (sync & (Mesh::ELEM_NEIGHBORS_E|Mesh::DELEMS_E))
+  if (sync & (Mesh::ELEM_NEIGHBORS_E|Mesh::DELEMS_E)) 
   { sync |= Mesh::FACES_E; sync &= ~(Mesh::ELEM_NEIGHBORS_E|Mesh::DELEMS_E); }
 
   if (sync & Mesh::FIND_CLOSEST_NODE_E)
@@ -3190,7 +3174,7 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
 
   // Only sync was hasn't been synched
   sync &= (~synchronized_);
-
+  
   if (sync == Mesh::EDGES_E)
   {
     Synchronize Synchronize(this,sync);
@@ -3295,9 +3279,9 @@ template <class Basis>
 bool
 TetVolMesh<Basis>::clear_synchronization()
 {
-  // Undo marking the synchronization
+  // Undo marking the synchronization 
   synchronize_lock_.lock();
-
+  
   synchronized_ = Mesh::NODES_E | Mesh::ELEMS_E | Mesh::CELLS_E;
 
   // Free memory where possible
@@ -3308,12 +3292,12 @@ TetVolMesh<Basis>::clear_synchronization()
   edge_table_.clear();
   node_neighbors_.clear();
   boundary_faces_.clear();
-
+  
   node_grid_.reset();
   elem_grid_.reset();
 
   synchronize_lock_.unlock();
-
+    
   return (true);
 }
 
@@ -3450,13 +3434,14 @@ TetVolMesh<Basis>::remove_edge(typename Node::index_type n1,
   PEdgeNode e(n1, n2);
   typename edge_nt::iterator iter = edge_table_.find(e);
 
-  if (iter == edge_table_.end())
+  if (iter == edge_table_.end()) 
   {
     ASSERTFAIL("this edge did not exist in the table");
   }
-
+  
+  PEdgeNode found_edge = (*iter).first;
   index_type found_idx = (*iter).second;
-
+  
   const std::vector<index_type>& cells = edges_[found_idx].cells_;
   if (cells.size() < 2)
   {
@@ -3468,10 +3453,10 @@ TetVolMesh<Basis>::remove_edge(typename Node::index_type n1,
     if (!table_only) edges_[found_idx].cells_.clear();
   }
   else
-  {
+  {   
     typename std::vector<index_type>::iterator citer = edges_[found_idx].cells_.begin();
     typename std::vector<index_type>::iterator citer_end = edges_[found_idx].cells_.end();
-
+    
     index_type cell_idx = ci;
     while(citer != citer_end)
     {
@@ -3488,7 +3473,7 @@ TetVolMesh<Basis>::remove_edge(typename Node::index_type n1,
     }
   }
 }
-
+ 
 template <class Basis>
 void
 TetVolMesh<Basis>::delete_cell_edges(typename Cell::index_type c,
@@ -3602,7 +3587,7 @@ TetVolMesh<Basis>::create_cell_syncinfo_special(typename Cell::index_type ci)
   synchronize_lock_.lock();
   if (synchronized_ & Mesh::NODE_NEIGHBORS_E)
     create_cell_node_neighbors(ci);
-
+    
   if (synchronized_&Mesh::EDGES_E)
   {
     typename Node::array_type arr;
@@ -3615,7 +3600,7 @@ TetVolMesh<Basis>::create_cell_syncinfo_special(typename Cell::index_type ci)
     add_edge(arr[3], arr[1], cell_index+4);
     add_edge(arr[3], arr[2], cell_index+5);
   }
-
+  
   if (synchronized_&Mesh::FACES_E)
   {
     typename Node::array_type arr;
@@ -3674,7 +3659,7 @@ TetVolMesh<Basis>::compute_node_neighbors()
   {
     node_neighbors_[cells_[i]].push_back(i);
   }
-
+  
   synchronize_lock_.lock();
   synchronized_ |= Mesh::NODE_NEIGHBORS_E;
   synchronize_lock_.unlock();
@@ -3770,10 +3755,10 @@ TetVolMesh<Basis>::compute_elem_grid()
   if (bbox_.valid())
   {
     // Cubed root of number of cells to get a subdivision ballpark.
-
+    
     typename Elem::size_type esz;  size(esz);
-
-    const size_type s =
+    
+    const size_type s = 
       3*static_cast<size_type>((ceil(pow(static_cast<double>(esz) , (1.0/3.0))))/2.0 + 1.0);
 
     Core::Geometry::Vector diag  = bbox_.diagonal();
@@ -3807,9 +3792,9 @@ TetVolMesh<Basis>::compute_node_grid()
   if (bbox_.valid())
   {
     // Cubed root of number of cells to get a subdivision ballpark.
-
+    
     typename Elem::size_type esz;  size(esz);
-
+    
     const size_type s =  3*static_cast<size_type>
                   ((ceil(pow(static_cast<double>(esz) , (1.0/3.0))))/2.0 + 1.0);
 
@@ -3818,7 +3803,7 @@ TetVolMesh<Basis>::compute_node_grid()
     size_type sx = static_cast<size_type>(ceil(0.5+diag.x()/trace*s));
     size_type sy = static_cast<size_type>(ceil(0.5+diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(0.5+diag.z()/trace*s));
-
+    
     Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
     node_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.get_min(), b.get_max()));
 
@@ -3864,7 +3849,7 @@ TetVolMesh<Basis>::compute_bounding_box()
   epsilon_ = bbox_.diagonal().length()*1e-8;
   epsilon2_ = epsilon_*epsilon_;
   epsilon3_ = epsilon_*epsilon_*epsilon_;
-
+  
   synchronize_lock_.lock();
   synchronized_ |= BOUNDING_BOX_E;
   synchronize_lock_.unlock();
@@ -3882,7 +3867,7 @@ TetVolMesh<Basis>::add_find_point(const Core::Geometry::Point &p, double /*err*/
   else
   {
     points_.push_back(p);
-    if (synchronized_ & Mesh::NODE_NEIGHBORS_E)
+    if (synchronized_ & Mesh::NODE_NEIGHBORS_E) 
     {
       synchronize_lock_.lock();
       node_neighbors_.push_back(std::vector<typename Cell::index_type>());
@@ -3894,9 +3879,9 @@ TetVolMesh<Basis>::add_find_point(const Core::Geometry::Point &p, double /*err*/
 
 template <class Basis>
 typename TetVolMesh<Basis>::Elem::index_type
-TetVolMesh<Basis>::add_tet(typename Node::index_type a,
+TetVolMesh<Basis>::add_tet(typename Node::index_type a, 
 			   typename Node::index_type b,
-			   typename Node::index_type c,
+			   typename Node::index_type c, 
 			   typename Node::index_type d)
 {
   const index_type tet = static_cast<index_type>(cells_.size()) / 4;
@@ -3927,9 +3912,9 @@ TetVolMesh<Basis>::add_tet(const Core::Geometry::Point &p0, const Core::Geometry
 
 template <class Basis>
 typename TetVolMesh<Basis>::Elem::index_type
-TetVolMesh<Basis>::add_tet_pos(typename Node::index_type a,
+TetVolMesh<Basis>::add_tet_pos(typename Node::index_type a, 
                                typename Node::index_type b,
-                               typename Node::index_type c,
+                               typename Node::index_type c, 
                                typename Node::index_type d)
 {
   const index_type tet = static_cast<index_type>(cells_.size()) / 4;
@@ -3956,9 +3941,9 @@ TetVolMesh<Basis>::add_tet_pos(typename Node::index_type a,
 template <class Basis>
 void
 TetVolMesh<Basis>::mod_tet_pos(typename TetVolMesh<Basis>::Elem::index_type ci,
-                               typename Node::index_type a,
+                               typename Node::index_type a, 
                                typename Node::index_type b,
-                               typename Node::index_type c,
+                               typename Node::index_type c, 
                                typename Node::index_type d)
 {
   const Core::Geometry::Point &p0 = point(a);
@@ -3986,7 +3971,7 @@ TetVolMesh<Basis>::delete_cells(std::set<index_type> &to_delete)
 {
   synchronize_lock_.lock();
   std::set<index_type>::reverse_iterator iter = to_delete.rbegin();
-  while (iter != to_delete.rend())
+  while (iter != to_delete.rend()) 
   {
     // erase the correct cell
     typename TetVolMesh<Basis>::Cell::index_type ci = *iter++;
@@ -4018,7 +4003,7 @@ TetVolMesh<Basis>::delete_nodes(std::set<index_type> &to_delete)
 {
   synchronize_lock_.lock();
   std::set<index_type>::reverse_iterator iter = to_delete.rbegin();
-  while (iter != to_delete.rend())
+  while (iter != to_delete.rend()) 
   {
     typename TetVolMesh::Node::index_type n = *iter++;
     std::vector<Core::Geometry::Point>::iterator pit = points_.begin() + n;
@@ -4076,18 +4061,18 @@ TetVolMesh<Basis>::insert_node_in_face(typename Cell::array_type &tets,
                                        const PFaceNode &f)
 {
 
-  // NOTE: This function assumes that the same operation has or will happen
+  // NOTE: This function assumes that the same operation has or will happen 
   // to any neighbor cell across the face.
-
+  
   index_type skip;
   for (skip = 0; skip < 4; skip++)
   {
     typename Node::index_type ni = cells_[ci*4+skip];
     if (ni != f.nodes_[0] && ni != f.nodes_[1] && ni != f.nodes_[2]) break;
   }
-
+  
   delete_cell_syncinfo_special(ci);
-
+  
   const index_type i = ci*4;
   tets.push_back(ci);
   if (skip == 0)
@@ -4263,37 +4248,37 @@ TetVolMesh<Basis>::insert_node_in_elem(typename Elem::array_type &tets,
            mask == 9 || mask == 10 || mask == 12)
   {
     PEdgeNode etmp;
-    if      (mask == 3)
-    {
-      /* 0-1 edge */
+    if      (mask == 3) 
+    { 
+      /* 0-1 edge */ 
       etmp = PEdgeNode(cells_[ci*4 + 0], cells_[ci*4 + 1]);
-    }
-    else if (mask == 5)
-    {
+    } 
+    else if (mask == 5) 
+    { 
       /* 0-2 edge */
       etmp = PEdgeNode(cells_[ci*4 + 0], cells_[ci*4 + 2]);
-    }
-    else if (mask == 6)
-    {
+    } 
+    else if (mask == 6) 
+    { 
       /* 1-2 edge */
       etmp = PEdgeNode(cells_[ci*4 + 1], cells_[ci*4 + 2]);
-    }
-    else if (mask == 9)
-    {
+    } 
+    else if (mask == 9) 
+    { 
       /* 0-3 edge */
       etmp = PEdgeNode(cells_[ci*4 + 0], cells_[ci*4 + 3]);
-    }
-    else if (mask == 10)
-    {
+    } 
+    else if (mask == 10) 
+    { 
       /* 1-3 edge */
       etmp = PEdgeNode(cells_[ci*4 + 1], cells_[ci*4 + 3]);
-    }
-    else if (mask == 12)
-    {
+    } 
+    else if (mask == 12) 
+    { 
       /* 2-3 edge */
       etmp = PEdgeNode(cells_[ci*4 + 2], cells_[ci*4 + 3]);
-    }
-
+    } 
+    
     typename edge_nt::iterator iter = edge_table_.find(etmp);
     PEdgeNode e = iter->first;
     const std::vector<index_type>& cells = edges_[iter->second].cells_;
@@ -4308,36 +4293,36 @@ TetVolMesh<Basis>::insert_node_in_elem(typename Elem::array_type &tets,
 
   // If we're on a face, we do a face insert.
   else if (mask == 7 || mask == 11 || mask == 13 || mask == 14)
-  {
+  { 
     typename Face::index_type fi;
     PFaceNode ftmp;
-    if        (mask == 7)
+    if        (mask == 7)  
     {
       /* on 0 1 2 face */
       ftmp = PFaceNode(cells_[ci*4 + 0], cells_[ci*4 + 1], cells_[ci*4 + 2]);
-    }
-    else if (mask == 11)
+    } 
+    else if (mask == 11) 
     {
       /* on 0 1 3 face */
       ftmp = PFaceNode(cells_[ci*4 + 0], cells_[ci*4 + 1], cells_[ci*4 + 3]);
-    }
-    else if (mask == 13)
+    } 
+    else if (mask == 13) 
     {
       /* on 0 2 3 face */
       ftmp = PFaceNode(cells_[ci*4 + 0], cells_[ci*4 + 2], cells_[ci*4 + 3]);
-    }
-    else if (mask == 14)
+    } 
+    else if (mask == 14) 
     {
       /* on 1 2 3 face */
       ftmp = PFaceNode(cells_[ci*4 + 1], cells_[ci*4 + 2], cells_[ci*4 + 3]);
     }
-
+    
     typename face_nt::iterator iter = face_table_.find(ftmp);
     const PFaceNode& n = iter->first;
     const PFaceCell& f = faces_[iter->second];
     typename Cell::index_type nbr_tet =
       (ci == (f.cells_[0])>>2) ? ((f.cells_[1])>>2) : ((f.cells_[0])>>2);
-
+    
     pi = add_point(p);
     tets.clear();
     insert_node_in_face(tets, pi, ci, n);

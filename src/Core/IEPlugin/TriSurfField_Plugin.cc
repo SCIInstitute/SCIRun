@@ -205,7 +205,10 @@ FieldHandle SCIRun::TextToTriSurfField_reader(LoggerHandle pr, const char *filen
   // STAGE 1 - SCAN THE FILE TO DETERMINE THE NUMBER OF NODES
   // AND CHECK THE FILE'S INTEGRITY.
 
+  bool has_header_pts = false;
   bool first_line_pts = true;
+
+  bool has_header = false;
   bool first_line = true;
 
   std::vector<double> values;
@@ -240,10 +243,12 @@ FieldHandle SCIRun::TextToTriSurfField_reader(LoggerHandle pr, const char *filen
           {
             if (line_ncols == 1)
             {
+              has_header_pts = true;
               num_nodes =  static_cast<int>(values[0]) + 1;
             }
             else if ((line_ncols == 3)||(line_ncols == 2))
             {
+              has_header_pts = false;
               first_line_pts = false;
               nrows++;
               ncols = line_ncols;
@@ -325,10 +330,12 @@ FieldHandle SCIRun::TextToTriSurfField_reader(LoggerHandle pr, const char *filen
           {
             if (line_ncols == 1)
             {
+              has_header = true;
               num_elems =  static_cast<int>(values[0]) + 1;
             }
             else if (line_ncols == 3)
             {
+              has_header = false;
               first_line = false;
               nrows++;
               ncols = line_ncols;
@@ -488,8 +495,10 @@ FieldHandle SCIRun::MToTriSurfField_reader(LoggerHandle pr, const char *filename
     std::string type;
     instr >> type;
     if (type[0] == '#') {
+      //cerr << "skipping comment line" << endl;
       char c = instr.get();
       while(c != '\n') {
+        //cerr << c << endl;
         c = instr.get();
       }
       line++;
@@ -501,6 +510,8 @@ FieldHandle SCIRun::MToTriSurfField_reader(LoggerHandle pr, const char *filename
       double x, y, z;
       instr >> x >> y >> z;
       mesh->add_point(Point(x,y,z));
+      //cerr << "Added point #"<< i <<": ("
+      //   << x << ", " << y << ", " << z << ")" << endl;
     } else if (type == "Face") {
       VMesh::Node::array_type n(3);
       unsigned int n1, n2, n3;
@@ -510,6 +521,8 @@ FieldHandle SCIRun::MToTriSurfField_reader(LoggerHandle pr, const char *filename
       n3 -= 1; n[2] = n3;
 
       mesh->add_elem(n);
+      //cerr << "Added face #"<< i <<": ("
+      //   << n1 << ", " << n2 << ", " << n3 << ")" << endl;
     } else {
       if (instr.eof()) break;
       std::ostringstream oss;

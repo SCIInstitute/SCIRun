@@ -51,20 +51,18 @@ namespace Core
 
   struct SCISHARE ExceptionBase : virtual std::exception, virtual boost::exception
   {
-    virtual const char* what() const NOEXCEPT override;
+    virtual const char* what() const NOEXCEPT;
     std::string typeName() const;
   };
 
-  using ErrorMessage = boost::error_info<struct tag_error_message, std::string>;
-  using NullObjectInfo = boost::error_info<struct tag_null_object, std::string>;
-  using FileNotFound = boost::error_info<struct tag_file_not_found, std::string>;
+  typedef boost::error_info<struct tag_error_message, std::string> ErrorMessage;
+  typedef boost::error_info<struct tag_null_object, std::string> NullObjectInfo;
+  typedef boost::error_info<struct tag_file_not_found, std::string> FileNotFound;
   /// @todo discuss location/type
-  using LinearAlgebraErrorMessage = boost::error_info<struct tag_linear_algebra_error, std::string>;
+  typedef boost::error_info<struct tag_linear_algebra_error, std::string> LinearAlgebraErrorMessage;
   /// @todo make macro for various types
-  using DoubleOutOfRangeInfo = boost::error_info<struct tag_double_out_of_range, boost::tuple<std::string, double, boost::numeric::interval<double> > >;
-  using IntOutOfRangeInfo = boost::error_info<struct tag_int_out_of_range, boost::tuple<std::string, int, boost::numeric::interval<int> > >;
-
-  #define SCIRUN_THROW(x) do { BOOST_THROW_EXCEPTION(x); throw "not implemented--unreachable--disables warning"; } while(false);
+  typedef boost::error_info<struct tag_double_out_of_range, boost::tuple<std::string, double, boost::numeric::interval<double> > > DoubleOutOfRangeInfo;
+  typedef boost::error_info<struct tag_int_out_of_range, boost::tuple<std::string, int, boost::numeric::interval<int> > > IntOutOfRangeInfo;
 
   struct SCISHARE NullPointerException : virtual ExceptionBase {};
 
@@ -72,27 +70,21 @@ namespace Core
 
   struct SCISHARE OutOfRangeException : virtual ExceptionBase {};
 
-  #define THROW_OUT_OF_RANGE(message)  SCIRUN_THROW(SCIRun::Core::OutOfRangeException() << SCIRun::Core::ErrorMessage(message))
+  #define THROW_OUT_OF_RANGE(message)  BOOST_THROW_EXCEPTION(SCIRun::Core::OutOfRangeException() << SCIRun::Core::ErrorMessage(message))
 
   struct SCISHARE InvalidArgumentException : virtual ExceptionBase {};
 
-  #define THROW_INVALID_ARGUMENT(message)  SCIRUN_THROW(SCIRun::Core::InvalidArgumentException() << SCIRun::Core::ErrorMessage(message))
+  #define THROW_INVALID_ARGUMENT(message)  BOOST_THROW_EXCEPTION(SCIRun::Core::InvalidArgumentException() << SCIRun::Core::ErrorMessage(message))
 
-  using DimensionMismatchInfo = boost::error_info<struct tag_dimension_mismatch, std::string>;
-  using InvalidArgumentValueInfo = boost::error_info<struct tag_invalid_argument_value, std::string>;
-  using NotImplementedInfo = boost::error_info<struct tag_not_implemented, std::string>;
+  typedef boost::error_info<struct tag_dimension_mismatch, std::string> DimensionMismatchInfo;
+  typedef boost::error_info<struct tag_invalid_argument_value, std::string> InvalidArgumentValueInfo;
+  typedef boost::error_info<struct tag_not_implemented, std::string> NotImplementedInfo;
   
   /// @todo move these exceptions to new exception header file once it exists
   struct SCISHARE DimensionMismatch : virtual ExceptionBase
   {
-    const char* what() const NOEXCEPT override;
-  }; 
-
-#define ENSURE_DIMENSIONS_MATCH(var1, var2, message)  if (var1 != var2) \
-  BOOST_THROW_EXCEPTION(SCIRun::Core::DimensionMismatch() << SCIRun::Core::DimensionMismatchInfo( \
-    SCIRun::Core::DimensionMismatchInfo::value_type( \
-      std::string(message) )))
-
+    virtual const char* what() const NOEXCEPT override;
+  };
 
   /// @todo should not need this in production code.
   //
@@ -101,11 +93,19 @@ namespace Core
   {
   };
 
+#define ENSURE_DIMENSIONS_MATCH(var1, var2, message)  if (var1 != var2) \
+  BOOST_THROW_EXCEPTION(SCIRun::Core::DimensionMismatch() << SCIRun::Core::DimensionMismatchInfo( \
+    SCIRun::Core::DimensionMismatchInfo::value_type( \
+      std::string(message) )))
+ 
+/// @todo should not need this in production code.
+//
+// Any prototype code using this exception should be reviewed and improved!!!
 #define REPORT_NOT_IMPLEMENTED(message) \
-  SCIRUN_THROW(SCIRun::Core::NotImplemented() << SCIRun::Core::NotImplementedInfo( \
+  BOOST_THROW_EXCEPTION(SCIRun::Core::NotImplemented() << SCIRun::Core::NotImplementedInfo( \
     SCIRun::Core::NotImplementedInfo::value_type( \
       std::string(message) )))
-  
+
   struct SCISHARE AssertionFailed : virtual ExceptionBase {};
 
 #define ASSERTMSG(condition,message) \
