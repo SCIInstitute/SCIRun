@@ -332,9 +332,9 @@ private:
               iboNegZID = it->glid;
           }
 
-          Core::Geometry::Vector absDir(abs(camera.front().data.worldToView[0][2]),
-                                        abs(camera.front().data.worldToView[1][2]),
-                                        abs(camera.front().data.worldToView[2][2]));
+          Core::Geometry::Vector absDir(fabs(camera.front().data.worldToView[0][2]),
+                                        fabs(camera.front().data.worldToView[1][2]),
+                                        fabs(camera.front().data.worldToView[2][2]));
 
           double xORy = absDir.x() > absDir.y() ? absDir.x() : absDir.y();
           double orZ = absDir.z() > xORy ? absDir.z() : xORy;
