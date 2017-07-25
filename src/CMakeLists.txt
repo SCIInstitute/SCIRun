@@ -324,7 +324,7 @@ IF(APPLE)
   MARK_AS_ADVANCED(AWK)
 ENDIF()
 
-OPTION(BUILD_BUNDLE "Build Mac bundle" TRUE)
+OPTION(BUILD_BUNDLE "Build Mac bundle" FALSE)
 MARK_AS_ADVANCED(BUILD_BUNDLE)
 
 ########################################################################
