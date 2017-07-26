@@ -41,6 +41,15 @@ IF(BUILD_HEADLESS)
 ENDIF()
 
 IF(APPLE)
+  IF(${MACDEPLOYQT} MATCHES "NOTFOUND" OR ${SED} MATCHES "NOTFOUND" OR ${AWK} MATCHES "NOTFOUND")
+    SET(BUILD_BUNDLE FALSE)
+    MESSAGE(WARNING "macdeployqt, sed and awk are required to build the SCIRun app bundle. Please ensure that all are installed and in your path.")
+  ENDIF()
+ENDIF()
+
+MESSAGE(STATUS "Build Mac bundle: ${BUILD_BUNDLE}")
+
+IF(APPLE)
   # TODO: temporary - until testing can be configured with app bundle
   ADD_EXECUTABLE(${TEST_APPLICATION_NAME}
     ${SCIRunMain_SOURCES}
@@ -113,6 +122,8 @@ IF(APPLE)
   ENDIF()
 ENDIF()
 
+MESSAGE(${APPS})
+
 FOREACH(app ${APPS})
   TARGET_LINK_LIBRARIES(${app}
     Core_Util_Legacy
@@ -135,140 +146,135 @@ FOREACH(app ${APPS})
   ENDIF()
 ENDFOREACH()
 
-IF(APPLE AND BUILD_BUNDLE)
-  IF(${MACDEPLOYQT} MATCHES "NOTFOUND" OR ${SED} MATCHES "NOTFOUND" OR ${AWK} MATCHES "NOTFOUND")
-    SET(BUILD_BUNDLE FALSE)
-    MESSAGE(WARNING "macdeployqt, sed and awk are required to build the SCIRun app bundle. Please ensure that all are installed and in your path.")
+
+IF(APPLE)
+  IF(${CMAKE_GENERATOR} MATCHES "Xcode")
+    SET(SCIRUN_LIB_DIR ${SCIRun_BINARY_DIR}/lib/$<CONFIGURATION>)
+  ELSE()
+    SET(SCIRUN_LIB_DIR ${SCIRun_BINARY_DIR}/lib)
   ENDIF()
 ENDIF()
 
-MESSAGE(STATUS "Build Mac bundle: ${BUILD_BUNDLE}")
 
 IF(APPLE)
-  IF(BUILD_BUNDLE)
+
+  IF(BUILD_WITH_PYTHON)
+    SET(SCIRUN_PYTHON_DEPENDENT_LIBS
+                    "Core_Application"
+                    "Core_Application_Preferences"
+                    "Core_Python"
+                    "SCIRunPythonAPI"
+                    "Engine_Network"
+                    "Core_ConsoleApplication"
+                    "Modules_Factory"
+                    "Modules_Python"
+                    "Modules_Math"
+    )
+    SET(FRAMEWORK_PATH Python.framework)
+
     IF(NOT BUILD_HEADLESS)
-      MESSAGE(STATUS "Building Mac OS X bundle")
-      SET(APP_PATH "${CMAKE_CFG_INTDIR}/${APPLICATION_NAME}.app/Contents")
-
-      IF(${CMAKE_GENERATOR} MATCHES "Xcode")
-        SET(SCIRUN_LIB_DIR ${SCIRun_BINARY_DIR}/lib/$<CONFIGURATION>)
-      ELSE()
-        SET(SCIRUN_LIB_DIR ${SCIRun_BINARY_DIR}/lib)
-      ENDIF()
-
-      # otool can be used to check list of dependent dylibs
-      ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
-        POST_BUILD
-        # clean out libraries
-        COMMAND ${CMAKE_COMMAND} ARGS -E remove -f ${APP_PATH}/Frameworks/*${CMAKE_SHARED_LIBRARY_SUFFIX}
-        COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${SCIRUN_LIB_DIR} ${APP_PATH}/Frameworks
-        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+      SET(SCIRUN_PYTHON_DEPENDENT_LIBS
+                      ${SCIRUN_PYTHON_DEPENDENT_LIBS}
+                      "Interface_Application"
+                      "Interface_Modules_Factory"
+                      "Interface_Modules_Render"
+                      "Interface_Modules_Python"
+                      "Interface_Modules_Visualization"
+                      "Interface_Modules_Math"
       )
 
-      IF(BUILD_WITH_PYTHON)
-        SET(VERSION_PATH Versions/${SCI_PYTHON_VERSION_SHORT})
-        SET(FRAMEWORK_PATH Frameworks/Python.framework)
-        SET(PYTHON_PATH ${APP_PATH}/${FRAMEWORK_PATH}/${VERSION_PATH})
+    ENDIF()
+
+    IF(BUILD_BUNDLE)
+      SET(FRAMEWORK_PATH Frameworks/Python.framework)
+      SET(APP_PATH "${CMAKE_CFG_INTDIR}/${APPLICATION_NAME}.app/Contents")
+    ELSE()
+      SET(APP_PATH ${CMAKE_CFG_INTDIR})
+    ENDIF()
+
+    SET(VERSION_PATH Versions/${SCI_PYTHON_VERSION_SHORT})
+    SET(PYTHON_PATH ${APP_PATH}/${FRAMEWORK_PATH}/${VERSION_PATH})
+
+    IF(BUILD_BUNDLE)
+
+      ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+        POST_BUILD
+
+        COMMAND ${CMAKE_COMMAND} ARGS -E chdir ${APP_PATH}/Frameworks tar xf ${SCI_PYTHON_FRAMEWORK_ARCHIVE}
+        COMMAND chmod u+w  ${PYTHON_PATH}/Python
+        COMMAND install_name_tool -id Python ${PYTHON_PATH}/Python
+        COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
+          @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
+          ${APP_PATH}/MacOS/${APPLICATION_NAME}
+          WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+
+      FOREACH(lib ${SCIRUN_PYTHON_DEPENDENT_LIBS})
         ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
           POST_BUILD
-          # macdeployqt puts frameworks in app/Content/Frameworks
-          # TODO: when CMake 2.8 support is dropped, and CMP0042 new is enabled, change to @rpath
-          COMMAND ${CMAKE_COMMAND} ARGS -E chdir ${APP_PATH}/Frameworks tar xf ${SCI_PYTHON_FRAMEWORK_ARCHIVE}
-          COMMAND chmod u+w  ${PYTHON_PATH}/Python
-          COMMAND install_name_tool -id Python ${PYTHON_PATH}/Python
           COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
             @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
-            ${APP_PATH}/MacOS/${APPLICATION_NAME}
-            WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+            ${APP_PATH}/Frameworks/${CMAKE_SHARED_LIBRARY_PREFIX}${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
+          WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
+      ENDFOREACH()
 
-        SET(SCIRUN_LIBS "Core_Application"
-                        "Core_Application_Preferences"
-                        "Core_Python"
-                        "SCIRunPythonAPI"
-                        "Interface_Application"
-                        "Engine_Network"
-                        "Interface_Modules_Factory"
-                        "Interface_Modules_Render"
-                        "Interface_Modules_Python"
-                        "Interface_Modules_Visualization"
-                        "Interface_Modules_Math"
-                        "Core_ConsoleApplication"
-                        "Modules_Factory"
-                        "Modules_Python"
-                        "Modules_Math"
-        )
-
-        FOREACH(lib ${SCIRUN_LIBS})
-          ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
-            POST_BUILD
-            COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
-              @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
-              ${APP_PATH}/Frameworks/${CMAKE_SHARED_LIBRARY_PREFIX}${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
-            WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
-        ENDFOREACH()
-      ENDIF()
-
-      ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
-        POST_BUILD
-        # configure Qt libs
-        # Note: macdeployqt also processes SCIRun dynamically linked libraries under the lib directory
-        COMMAND ${MACDEPLOYQT} ${APPLICATION_NAME}.app -verbose=${MACDEPLOYQT_OUTPUT_LEVEL}
-        COMMAND ${CMAKE_COMMAND} ARGS -E copy ${SCIRun_SOURCE_DIR}/CMake/qt.conf ${APPLICATION_NAME}.app/Contents/Resources
-        COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
-          ${SCIRun_BINARY_DIR}/Shaders ${APP_PATH}/MacOS/Shaders
-        COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
-          ${SCIRun_BINARY_DIR}/Assets ${APP_PATH}/MacOS/Assets
-        COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
-          ${SCIRun_BINARY_DIR}/Fonts ${APP_PATH}/MacOS/Fonts
-        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-      )
-
-      INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION . BUNDLE DESTINATION . )
     ELSE()
-      MESSAGE(STATUS "Building Mac OS X headless SCIRun")
-      SET(APP_PATH ${CMAKE_CFG_INTDIR})
 
-      IF(${CMAKE_GENERATOR} MATCHES "Xcode")
-        SET(SCIRUN_LIB_DIR ${SCIRun_BINARY_DIR}/lib/$<CONFIGURATION>)
-      ELSE()
-        SET(SCIRUN_LIB_DIR ${SCIRun_BINARY_DIR}/lib)
-      ENDIF()
-
-      IF(BUILD_WITH_PYTHON)
-        SET(VERSION_PATH Versions/${SCI_PYTHON_VERSION_SHORT})
-        SET(FRAMEWORK_PATH Python.framework)
-        SET(PYTHON_PATH ${APP_PATH}/${FRAMEWORK_PATH}/${VERSION_PATH})
-        ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+      FOREACH(app ${APPS})
+        ADD_CUSTOM_COMMAND(TARGET ${app}
           POST_BUILD
-          # TODO: when CMake 2.8 support is dropped, and CMP0042 new is enabled, change to @rpath
           COMMAND ${CMAKE_COMMAND} ARGS -E chdir ${APP_PATH} tar xf ${SCI_PYTHON_FRAMEWORK_ARCHIVE}
           COMMAND chmod u+w  ${PYTHON_PATH}/Python
           COMMAND install_name_tool -id Python ${PYTHON_PATH}/Python
           COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
             @executable_path/${FRAMEWORK_PATH}/${VERSION_PATH}/Python
-            ${APP_PATH}/${APPLICATION_NAME}
+            ${APP_PATH}/${app}
             WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
 
-        SET(SCIRUN_LIBS "Core_Application"
-                        "Core_Application_Preferences"
-                        "Core_Python"
-                        "SCIRunPythonAPI"
-                        "Engine_Network"
-                        "Core_ConsoleApplication"
-                        "Modules_Factory"
-                        "Modules_Python"
-        )
-
-        FOREACH(lib ${SCIRUN_LIBS})
-          ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+        FOREACH(lib ${SCIRUN_PYTHON_DEPENDENT_LIBS})
+          ADD_CUSTOM_COMMAND(TARGET ${app}
             POST_BUILD
             COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
               @executable_path/${FRAMEWORK_PATH}/${VERSION_PATH}/Python
               ${SCIRUN_LIB_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
             WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
         ENDFOREACH()
-      ENDIF()
+      ENDFOREACH()
     ENDIF()
+
+  ENDIF()
+
+# macdeployqt puts frameworks in app/Content/Frameworks
+
+  IF(BUILD_BUNDLE)
+    MESSAGE(STATUS "Building Mac OS X bundle")
+
+    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+      POST_BUILD
+      # clean out libraries
+      COMMAND ${CMAKE_COMMAND} ARGS -E remove -f ${APP_PATH}/Frameworks/*${CMAKE_SHARED_LIBRARY_SUFFIX}
+      COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${SCIRUN_LIB_DIR} ${APP_PATH}/Frameworks
+      WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    )
+
+    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+      POST_BUILD
+      # configure Qt libs
+      # Note: macdeployqt also processes SCIRun dynamically linked libraries under the lib directory
+      COMMAND ${MACDEPLOYQT} ${APPLICATION_NAME}.app -verbose=${MACDEPLOYQT_OUTPUT_LEVEL}
+      COMMAND ${CMAKE_COMMAND} ARGS -E copy ${SCIRun_SOURCE_DIR}/CMake/qt.conf ${APPLICATION_NAME}.app/Contents/Resources
+      COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
+        ${SCIRun_BINARY_DIR}/Shaders ${APP_PATH}/MacOS/Shaders
+      COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
+        ${SCIRun_BINARY_DIR}/Assets ${APP_PATH}/MacOS/Assets
+      COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
+        ${SCIRun_BINARY_DIR}/Fonts ${APP_PATH}/MacOS/Fonts
+      WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    )
+
+    INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION . BUNDLE DESTINATION . )
+  ELSE()
+    MESSAGE(STATUS "Building Mac OS X headless SCIRun")
+
   ENDIF()
 ELSE()
   IF(WIN32)
