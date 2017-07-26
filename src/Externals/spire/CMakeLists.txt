@@ -26,7 +26,23 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-MESSAGE(STATUS "Configuring Spire Packages")
+MESSAGE(STATUS "Configuring Spire Meta-library")
 
-MESSAGE(STATUS "Configuring 3rdParty libraries")
-ADD_SUBDIRECTORY(3rdParty)
+PROJECT ( Spire )
+
+IF (WIN32)
+  ADD_DEFINITIONS ( -D_CRT_SECURE_NO_WARNINGS )
+ENDIF (WIN32)
+
+IF ( CMAKE_BUILD_TYPE MATCHES "Debug" )
+  SET ( SPIRE_LIBRARY_NAME "spireD" )
+ELSE ( CMAKE_BUILD_TYPE MATCHES "Debug" )
+  SET ( SPIRE_LIBRARY_NAME "spire" )
+ENDIF ( CMAKE_BUILD_TYPE MATCHES "Debug" )
+
+SET(SCI_SPIRE_LIBRARY ${SPIRE_LIBRARY_NAME} CACHE INTERNAL "spire library name." FORCE)
+
+ADD_LIBRARY ( ${SCI_SPIRE_LIBRARY}
+  var-buffer/VarBuffer.hpp
+  var-buffer/VarBuffer.cpp
+  )
