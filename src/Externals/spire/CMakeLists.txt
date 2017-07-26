@@ -50,4 +50,6 @@ ADD_LIBRARY ( ${SCI_SPIRE_LIBRARY}
   bserialize/BSerialize.hpp
   bserialize/BSerialize.cpp
   bserialize/src/BSerializeDetail.hpp
+  gl-platform/GLPlatform.hpp
+  gl-platform/GLPlatform.cpp
   )
