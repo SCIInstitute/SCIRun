@@ -657,6 +657,7 @@ SET_PROPERTY(TARGET bundle_toolkit         PROPERTY FOLDER "Dataflow/Serializati
 SET_PROPERTY(TARGET Engine_Network         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Engine_Scheduler         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Dataflow_State         PROPERTY FOLDER "Dataflow")
+SET_PROPERTY(TARGET spire PROPERTY FOLDER "Graphics")
 
 IF(NOT BUILD_HEADLESS)
   SET_PROPERTY(TARGET Interface_Modules_Base   PROPERTY FOLDER "Interface/Modules")
