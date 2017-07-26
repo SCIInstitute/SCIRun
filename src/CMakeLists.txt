@@ -441,25 +441,6 @@ IF(NOT BUILD_HEADLESS)
 ENDIF()
 
 ########################################################################
-# Find and configure Qwt custom widgets
-
-OPTION(WITH_QWT_WIDGETS "Qwt Custom Widgets" OFF)
-MARK_AS_ADVANCED(WITH_QWT_WIDGETS)
-
-IF(WITH_QWT_WIDGETS)
-  SET(QWT_INCLUDE_DIR CACHE PATH "Qwt include directory")
-  IF(NOT QWT_INCLUDE_DIR)
-    MESSAGE(FATAL_ERROR "QWT_INCLUDE_DIR should be set to path like 'qwt-6.0.1/include'")
-  ENDIF()
-  INCLUDE_DIRECTORIES(${QWT_INCLUDE_DIR})
-  SET(QWT_LIBRARY CACHE FILEPATH "Qwt library")
-  IF(NOT QWT_LIBRARY)
-  	MESSAGE(FATAL_ERROR "QWT_LIBRARY should be set to a filepath like 'qwt-6.0.1/lib/libqwt.so'")
-  ENDIF()
-  SET(qwt_libraries ${QWT_LIBRARY} )
-ENDIF()
-
-########################################################################
 # Find and configure dl library
 
 IF(UNIX)
@@ -479,7 +460,6 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_SOURCE_DIR}/Externals/gmock/gtest/include
   ${SCIRun_SOURCE_DIR}/Externals/gmock/include
   ${SCIRun_SOURCE_DIR}/Externals/libxml2/include
-  ${SCIRun_SOURCE_DIR}/Externals/spire/3rdParty/glm
   ${SCIRun_SOURCE_DIR}/Externals/spire/
   ${CMAKE_CURRENT_BINARY_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/
@@ -490,7 +470,7 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_SOURCE_DIR}/Externals/log4cpp/include
   ${SCI_TEEM_INCLUDE}
   ${SCI_ZLIB_INCLUDE}
-  #${SCI_TETGEN_INCLUDE}
+  ${GLM_DIR}
 )
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
