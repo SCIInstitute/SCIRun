@@ -47,7 +47,12 @@ IF(APPLE)
   ENDIF()
 ENDIF()
 
-MESSAGE(STATUS "Build Mac bundle: ${BUILD_BUNDLE}")
+IF(APPLE)
+  MESSAGE(STATUS "Build Mac bundle: ${BUILD_BUNDLE}")
+  IF(BUILD_BUNDLE)
+    ADD_SUBDIRECTORY(ox_bundle)
+  ENDIF()
+ENDIF()
 
 IF(APPLE)
   # TODO: temporary - until testing can be configured with app bundle
@@ -59,18 +64,6 @@ IF(APPLE)
     ADD_EXECUTABLE(${APPLICATION_NAME}
       ${SCIRunMain_SOURCES}
     )
-  ELSE()
-    IF(BUILD_BUNDLE)
-      LIST(APPEND SCIRunMain_SOURCES "${APPLICATION_OSX_ICON_FULL_PATH}")
-      SET_SOURCE_FILES_PROPERTIES(${APPLICATION_OSX_ICON_FULL_PATH}
-                                  PROPERTIES
-                                  MACOSX_PACKAGE_LOCATION Resources)
-      SET(MACOSX_BUNDLE_ICON_FILE "${APPLICATION_OSX_ICON}" )
-
-      ADD_EXECUTABLE(${APPLICATION_NAME} MACOSX_BUNDLE
-        ${SCIRunMain_SOURCES}
-      )
-    ENDIF()
   ENDIF()
 
 ELSEIF(WIN32)
@@ -114,12 +107,10 @@ ELSE()
   ADD_EXECUTABLE(${APPLICATION_NAME} ${SCIRunMain_SOURCES})
 ENDIF()
 
-SET(APPS ${TEST_APPLICATION_NAME})
-
 IF(APPLE)
-  IF(BUILD_BUNDLE)
-    LIST(APPEND APPS ${APPLICATION_NAME})
-  ENDIF()
+  SET(APPS ${TEST_APPLICATION_NAME})
+ELSE()
+  SET(APPS ${APPLICATION_NAME})
 ENDIF()
 
 FOREACH(app ${APPS})
@@ -156,119 +147,6 @@ ENDIF()
 
 IF(APPLE)
 
-  IF(BUILD_WITH_PYTHON)
-    SET(SCIRUN_PYTHON_DEPENDENT_LIBS
-                    "Core_Application"
-                    "Core_Application_Preferences"
-                    "Core_Python"
-                    "SCIRunPythonAPI"
-                    "Engine_Network"
-                    "Core_ConsoleApplication"
-                    "Modules_Factory"
-                    "Modules_Python"
-                    "Modules_Math"
-    )
-    SET(FRAMEWORK_PATH Python.framework)
-
-    IF(NOT BUILD_HEADLESS)
-      SET(SCIRUN_PYTHON_DEPENDENT_LIBS
-                      ${SCIRUN_PYTHON_DEPENDENT_LIBS}
-                      "Interface_Application"
-                      "Interface_Modules_Factory"
-                      "Interface_Modules_Render"
-                      "Interface_Modules_Python"
-                      "Interface_Modules_Visualization"
-                      "Interface_Modules_Math"
-      )
-
-    ENDIF()
-
-    SET(APP_PATH ${CMAKE_CFG_INTDIR})
-
-    SET(VERSION_PATH Versions/${SCI_PYTHON_VERSION_SHORT})
-    SET(PYTHON_PATH ${APP_PATH}/${FRAMEWORK_PATH}/${VERSION_PATH})
-
-    IF(BUILD_BUNDLE)
-      SET(FRAMEWORK_PATH Frameworks/Python.framework)
-      SET(APP_PATH "${CMAKE_CFG_INTDIR}/${APPLICATION_NAME}.app/Contents")
-      ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
-        POST_BUILD
-
-        COMMAND ${CMAKE_COMMAND} ARGS -E chdir ${APP_PATH}/Frameworks tar xf ${SCI_PYTHON_FRAMEWORK_ARCHIVE}
-        COMMAND chmod u+w  ${PYTHON_PATH}/Python
-        COMMAND install_name_tool -id Python ${PYTHON_PATH}/Python
-        COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
-          @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
-          ${APP_PATH}/MacOS/${APPLICATION_NAME}
-          WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
-
-      FOREACH(lib ${SCIRUN_PYTHON_DEPENDENT_LIBS})
-        ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
-          POST_BUILD
-          COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
-            @executable_path/../${FRAMEWORK_PATH}/${VERSION_PATH}/Python
-            ${APP_PATH}/Frameworks/${CMAKE_SHARED_LIBRARY_PREFIX}${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
-          WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
-      ENDFOREACH()
-
-    ENDIF()
-
-      IF(BUILD_HEADLESS)
-        ADD_CUSTOM_COMMAND(TARGET ${TEST_APPLICATION_NAME}
-          POST_BUILD
-          COMMAND ${CMAKE_COMMAND} ARGS -E chdir ${APP_PATH} tar xf ${SCI_PYTHON_FRAMEWORK_ARCHIVE}
-          COMMAND chmod u+w  ${PYTHON_PATH}/Python
-          COMMAND install_name_tool -id Python ${PYTHON_PATH}/Python
-          COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
-            @executable_path/${FRAMEWORK_PATH}/${VERSION_PATH}/Python
-            ${APP_PATH}/${TEST_APPLICATION_NAME}
-            WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
-      ENDIF()
-
-      FOREACH(lib ${SCIRUN_PYTHON_DEPENDENT_LIBS})
-        ADD_CUSTOM_COMMAND(TARGET ${TEST_APPLICATION_NAME}
-          POST_BUILD
-          COMMAND install_name_tool -change ${SCI_PYTHON_FRAMEWORK}/${VERSION_PATH}/Python
-            @executable_path/${FRAMEWORK_PATH}/${VERSION_PATH}/Python
-            ${SCIRUN_LIB_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}${lib}${CMAKE_SHARED_LIBRARY_SUFFIX}
-          WORKING_DIRECTORY ${SCIRun_BINARY_DIR})
-      ENDFOREACH()
-
-  ENDIF()
-
-# macdeployqt puts frameworks in app/Content/Frameworks
-
-  IF(BUILD_BUNDLE)
-    MESSAGE(STATUS "Building Mac OS X bundle")
-
-    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
-      POST_BUILD
-      # clean out libraries
-      COMMAND ${CMAKE_COMMAND} ARGS -E remove -f ${APP_PATH}/Frameworks/*${CMAKE_SHARED_LIBRARY_SUFFIX}
-      COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory ${SCIRUN_LIB_DIR} ${APP_PATH}/Frameworks
-      WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-    )
-
-    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
-      POST_BUILD
-      # configure Qt libs
-      # Note: macdeployqt also processes SCIRun dynamically linked libraries under the lib directory
-      COMMAND ${MACDEPLOYQT} ${APPLICATION_NAME}.app -verbose=${MACDEPLOYQT_OUTPUT_LEVEL}
-      COMMAND ${CMAKE_COMMAND} ARGS -E copy ${SCIRun_SOURCE_DIR}/CMake/qt.conf ${APPLICATION_NAME}.app/Contents/Resources
-      COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
-        ${SCIRun_BINARY_DIR}/Shaders ${APP_PATH}/MacOS/Shaders
-      COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
-        ${SCIRun_BINARY_DIR}/Assets ${APP_PATH}/MacOS/Assets
-      COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory
-        ${SCIRun_BINARY_DIR}/Fonts ${APP_PATH}/MacOS/Fonts
-      WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
-    )
-
-    INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION . BUNDLE DESTINATION . )
-  ELSE()
-    MESSAGE(STATUS "Building Mac OS X headless SCIRun")
-
-  ENDIF()
 ELSE()
   IF(WIN32)
     IF(BUILD_WITH_PYTHON)
