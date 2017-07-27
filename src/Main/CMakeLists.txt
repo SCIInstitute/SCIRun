@@ -50,7 +50,7 @@ ENDIF()
 IF(APPLE)
   MESSAGE(STATUS "Build Mac bundle: ${BUILD_BUNDLE}")
   IF(BUILD_BUNDLE)
-    ADD_SUBDIRECTORY(ox_bundle)
+    ADD_SUBDIRECTORY(osx_bundle)
   ENDIF()
 ENDIF()
 
