@@ -1274,14 +1274,13 @@ namespace SCIRun {
       return true;
     }
 
-    //
     void SRInterface::updateWidget(const glm::ivec2& pos)
     {
       gen::StaticCamera* cam = mCore.getStaticComponent<gen::StaticCamera>();
       glm::vec4 spos((float(2 * pos.x) - float(mScreenWidth)) / float(mScreenWidth),
         (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
         mSelectedPos.z, 1.0f);
-      //gen::Transform trafo;
+
       mWidgetTransform = gen::Transform();
       mWidgetTransform.setPosition((spos - mSelectedPos).xyz());
       mWidgetTransform.transform = glm::inverse(cam->data.projIV) *

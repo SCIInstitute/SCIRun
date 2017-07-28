@@ -40,10 +40,10 @@ class ComponentContainer : public BaseComponentContainer
 
 public:
   ComponentContainer() :
-      mIsStatic(false),
       mLastSortedSize(0),
       mUpperSequence(0),
-      mLowerSequence(0)
+      mLowerSequence(0),
+      mIsStatic(false)
   {
     /// \todo Extract information from global table regarding default / max size
     ///       of components.
@@ -240,7 +240,7 @@ public:
       for (; attemptIdx != numMods;)
       {
         size_t resolvedIndex = attemptIdx;
-        while (   (attemptIdx + 1) != numMods 
+        while (   (attemptIdx + 1) != numMods
                && mModifications[attemptIdx + 1].componentIndex == mModifications[resolvedIndex].componentIndex)
         {
           ++attemptIdx;
@@ -615,7 +615,7 @@ public:
     //{}
 
     T value;
-    size_t componentIndex; 
+    size_t componentIndex;
     int priority;
   };
 
@@ -638,6 +638,6 @@ protected:
                                                 ///< to be updated during renormalization.
 };
 
-} // namespace CPM_ES_NS 
+} // namespace CPM_ES_NS
 
-#endif 
+#endif

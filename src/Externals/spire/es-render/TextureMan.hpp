@@ -11,7 +11,7 @@
 
 namespace ren {
 
-  class Texture;
+  struct Texture;
   /// Basic texture manager. Very similar to the shader manager.
   class TextureMan
   {
@@ -123,4 +123,4 @@ namespace ren {
 
 } // namespace ren
 
-#endif 
+#endif

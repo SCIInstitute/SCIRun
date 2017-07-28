@@ -29,7 +29,7 @@ public:
 class SystemCore
 {
 public:
-  
+
   /// Perform requested additions and removals of systems that occured
   /// during the frame.
   void renormalize();
@@ -45,7 +45,6 @@ public:
     // Perform a static assert on the system to make sure it has a static
     // function that grabs the name.
     static_assert( core_detail::has_getname_fun<T>::value, "System does not expose a getName function." );
-    const char* name = T::getName();
 
     // Ensure there is no duplicate system.
     if (mSystemFactory.hasSystem(T::getName()))
@@ -69,7 +68,7 @@ public:
   /// If ms is positive, then it represents the number of milliseconds that
   /// should elapse before the system walks its components. If referenceTime
   /// is 0, then the system will be executed at the next valid time.
-  /// @param stagger  If non-zero, then 
+  /// @param stagger  If non-zero, then
   void addActiveSystem(const std::string& name, uint64_t ms = 0,
                        uint64_t referenceTime = 0, uint64_t stagger = 0);
 
@@ -137,8 +136,8 @@ private:
 
     SystemItem(const std::string& n, std::shared_ptr<CPM_ES_NS::BaseSystem> sys,
                uint64_t updateInterval, uint64_t referenceTime, uint64_t stag) :
-        systemName(n),
         system(sys),
+        systemName(n),
         interval(updateInterval),
         stagger(stag)
     {
@@ -146,8 +145,8 @@ private:
     }
 
     SystemItem(const SystemItem& other) :
-        systemName(other.systemName),
         system(other.system),
+        systemName(other.systemName),
         interval(other.interval),
         stagger(other.stagger),
         nextExecutionTime(other.nextExecutionTime)
@@ -190,6 +189,6 @@ private:
   SystemFactory      mSystemFactory;
 };
 
-} // namespace CPM_ES_SYSTEMS_NS 
+} // namespace CPM_ES_SYSTEMS_NS
 
 #endif

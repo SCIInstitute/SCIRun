@@ -114,7 +114,7 @@ private:
 
   SRInterface&          mInterface;   ///< SRInterface.
 
-  std::shared_ptr<CPM_LOOK_AT_NS::ArcLookAt>  mArcLookAt;
+  std::shared_ptr<CPM_ARC_LOOK_AT_NS::ArcLookAt>  mArcLookAt;
 
   bool lockRotation_{false};
   bool lockZoom_{false};

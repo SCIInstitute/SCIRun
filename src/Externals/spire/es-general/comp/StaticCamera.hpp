@@ -115,8 +115,6 @@ struct StaticCameraData
 
     projection = orthoProj;
 
-    float zDist = fabs(zfar - znear);
-
     // Nearest plane.
     {
       float zs = -znear;
@@ -237,4 +235,4 @@ struct StaticCamera
 
 } // namespace gen
 
-#endif 
+#endif

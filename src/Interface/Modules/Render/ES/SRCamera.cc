@@ -46,7 +46,7 @@ SRCamera::SRCamera(SRInterface& iface) :
     mZNear(getDefaultZNear()),
     mZFar(getDefaultZFar()),
     mInterface(iface),
-    mArcLookAt(new CPM_LOOK_AT_NS::ArcLookAt())
+    mArcLookAt(new CPM_ARC_LOOK_AT_NS::ArcLookAt())
 {
   setAsPerspective();
 

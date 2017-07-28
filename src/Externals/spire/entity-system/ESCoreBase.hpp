@@ -20,7 +20,7 @@ uint64_t getESTypeID()
 /// An example of creating a component container map using a std::map.
 /// Feel free to use this class instead of rolling your own.
 /// NOTE: This class is not meant to be used by itself! You should either use
-/// the ESCore class or you should derive from this class and implement the 
+/// the ESCore class or you should derive from this class and implement the
 /// necessary addComponent and addStaticComponent template functions. See ESCore
 /// for an example implementation. I cannot enforce the existence of template
 /// functions in a derived class, but this class is fairly useless without
@@ -52,7 +52,7 @@ public:
   /// Call this function at the beginning or end of every frame. It renormalizes
   /// all your components (adds / removes components). To call a system, execute
   /// the walkComponents function on BaseSystem. Most systems don't need a
-  /// stable sort. But if you need to guarantee the relative order of multiple 
+  /// stable sort. But if you need to guarantee the relative order of multiple
   /// components with the same entity ID, use stable sort.
   virtual void renormalize(bool stableSort = false);
 
@@ -133,9 +133,8 @@ public:
     BaseComponentContainer* componentContainer = getComponentContainer(getESTypeID<T>());
     if (componentContainer != nullptr)
     {
-      ComponentContainer<T>* concreteContainer = dynamic_cast<ComponentContainer<T>*>(componentContainer);
-      typename ComponentContainer<T>::ComponentItem* components = concreteContainer->getComponentArray();
-      int numComp = concreteContainer->getNumComponents();
+      auto concreteContainer = dynamic_cast<ComponentContainer<T>*>(componentContainer);
+      auto components = concreteContainer->getComponentArray();
       if (components != nullptr && index < concreteContainer->getNumComponents())
         return &components[index].component;
       else
@@ -242,6 +241,6 @@ protected:
 
 
 
-} // namespace CPM_ES_NS 
+} // namespace CPM_ES_NS
 
-#endif 
+#endif

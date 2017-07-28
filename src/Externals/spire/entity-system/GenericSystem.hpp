@@ -4,7 +4,7 @@
 // GenericSystems are not associated with any one core. You can use a system
 // with any number of cores. All important functions are static and don't
 // use any stored state. You can create instances of this class and use
-// the BaseSystem interface to iterate over all systems with the 
+// the BaseSystem interface to iterate over all systems with the
 // walkComponentsOver override.
 
 #include <iostream>
@@ -73,7 +73,7 @@ template< class B, class T, class ... U>
 struct is_unique_impl<B, T, U...> : if_t< std::is_base_of< id<T>, B>, std::false_type, is_unique_impl< base<B,id<T>>, U...> >{};
 
 template< class ...T >struct is_unique : is_unique_impl< empty, T ... > {};
-} // mpl    
+} // mpl
 #endif
 
 /// Base class implementation of generic system. You do not need instances of
@@ -189,7 +189,6 @@ public:
     // the user about possible performance problems when doing this.
     uint64_t lowestUpperSequence = std::numeric_limits<uint64_t>::max();
     int leadingComponent = -1;
-    int numOptionalComponents = 0;
     for (int i = 0; i < sizeof...(Ts); ++i)
     {
       if (baseComponents[i] == nullptr)
@@ -284,8 +283,8 @@ public:
           // product.
           if (GroupComponents == false)
           {
-            if (!RecurseExecute<0, Ts...>::exec(core, this, componentArrays, 
-                                                numComponents, indices, 
+            if (!RecurseExecute<0, Ts...>::exec(core, this, componentArrays,
+                                                numComponents, indices,
                                                 optionalComponents, isStatic,
                                                 nextIndices, values,
                                                 targetSequence))
@@ -373,8 +372,8 @@ public:
           // product.
           if (GroupComponents == false)
           {
-            if (!RecurseExecute<0, Ts...>::exec(core, this, componentArrays, 
-                                                numComponents, indices, 
+            if (!RecurseExecute<0, Ts...>::exec(core, this, componentArrays,
+                                                numComponents, indices,
                                                 optionalComponents, isStatic,
                                                 nextIndices, values,
                                                 targetSequence))
@@ -419,8 +418,8 @@ public:
         {
           if (GroupComponents == false)
           {
-            if (!RecurseExecute<0, Ts...>::exec(core, this, componentArrays, 
-                                                numComponents, indices, 
+            if (!RecurseExecute<0, Ts...>::exec(core, this, componentArrays,
+                                                numComponents, indices,
                                                 optionalComponents, isStatic,
                                                 nextIndices, values,
                                                 BaseComponentContainer::StaticEntID))
@@ -575,7 +574,7 @@ public:
     {
       if (baseComponents[TupleIndex] != nullptr)
       {
-        std::get<TupleIndex>(input).container 
+        std::get<TupleIndex>(input).container
             = dynamic_cast<ComponentContainer<RT>*>(core.getComponentContainer(TemplateID<RT>::getID()));
       }
       else
@@ -932,4 +931,3 @@ bool OptionalComponents(uint64_t templateID)
 } // namespace CPM_ES_NS
 
 #endif
-

@@ -26,9 +26,9 @@ public:
   // The instance members in this class are only used when the serialize
   // member function is called.
   ComponentSerialize(CPM_ES_NS::ESCoreBase& core, bool deserializing) :
-    mDeserializing(deserializing),
     mLastIndex(-1),
-    mTnyRoot(NULL),
+    mDeserializing(deserializing),
+    mTnyRoot(nullptr),
     mCore(core)
   {
     if (deserializing) mHeader.reserve(15);
@@ -98,7 +98,7 @@ public:
   /// serialization.
   Tny* getSerializedObject();
 
-  /// True if deserializing into variables. 
+  /// True if deserializing into variables.
   bool isDeserializing()        {return mDeserializing;}
 
   /// Sets the root element to use for deserialization.
@@ -157,4 +157,4 @@ public:
 
 } // namespace CPM_ES_CEREAL_NS
 
-#endif 
+#endif
