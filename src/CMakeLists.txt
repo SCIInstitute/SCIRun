@@ -828,13 +828,15 @@ SET_PROPERTY(TARGET Graphics_Glyphs   PROPERTY FOLDER "Graphics")
 SET_PROPERTY(TARGET Graphics_Widgets   PROPERTY FOLDER "Graphics")
 SET_PROPERTY(TARGET Graphics_Datatypes   PROPERTY FOLDER "Graphics")
 
+SET_PROPERTY(TARGET gmock         PROPERTY FOLDER "Testing Support")
+SET_PROPERTY(TARGET gmock_main   PROPERTY FOLDER "Testing Support")
+SET_PROPERTY(TARGET gtest         PROPERTY FOLDER "Testing Support")
+SET_PROPERTY(TARGET gtest_main   PROPERTY FOLDER "Testing Support")
+SET_PROPERTY(TARGET Testing_Utils PROPERTY FOLDER "Testing Support")
+SET_PROPERTY(TARGET Testing_ModuleTestBase PROPERTY FOLDER "Testing Support")
+
 IF(BUILD_TESTING)
-  SET_PROPERTY(TARGET gmock         PROPERTY FOLDER "Testing Support")
-  SET_PROPERTY(TARGET gmock_main   PROPERTY FOLDER "Testing Support")
-  SET_PROPERTY(TARGET gtest         PROPERTY FOLDER "Testing Support")
-  SET_PROPERTY(TARGET gtest_main   PROPERTY FOLDER "Testing Support")
-  SET_PROPERTY(TARGET Testing_Utils PROPERTY FOLDER "Testing Support")
-  SET_PROPERTY(TARGET Testing_ModuleTestBase PROPERTY FOLDER "Testing Support")
+ 
   #SET_PROPERTY(TARGET SCIRunTestData_external   PROPERTY FOLDER "Testing Support")
 
   SET_PROPERTY(TARGET Algorithms_Base_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
