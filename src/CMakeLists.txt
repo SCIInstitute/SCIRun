@@ -300,6 +300,9 @@ IF(NOT GIT_FOUND)
   MESSAGE(FATAL_ERROR "Git not found.")
 ENDIF()
 
+OPTION(BUILD_BUNDLE "Build Mac bundle" FALSE)
+MARK_AS_ADVANCED(BUILD_BUNDLE)
+
 ########################################################################
 # Find and configure Awk & Sed  {(OS X only), needed to build App bundle
 
@@ -323,7 +326,6 @@ IF(APPLE)
   )
   MARK_AS_ADVANCED(AWK)
 ENDIF()
-
 
 ########################################################################
 # Configure documentation
