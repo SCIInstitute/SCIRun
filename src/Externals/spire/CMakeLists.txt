@@ -44,7 +44,7 @@ SET(BUILD_SHARED_LIBS OFF)
 
 SET(SCI_SPIRE_LIBRARY ${SPIRE_LIBRARY_NAME} CACHE INTERNAL "spire library name." FORCE)
 
-ADD_DEFINITIONS(-DGLM_SWIZZLE -DGLM_FORCE_CXX03 -DGLM_FORCE_RADIANS)
+ADD_DEFINITIONS(-DGLM_SWIZZLE -DGLM_FORCE_CXX03 -DGLM_FORCE_RADIANS -Wno-missing-braces)
 
 ADD_LIBRARY ( ${SCI_SPIRE_LIBRARY}
   arc-ball/ArcBall.hpp
@@ -207,3 +207,7 @@ ADD_LIBRARY ( ${SCI_SPIRE_LIBRARY}
   glm-aabb/AABB.cpp
   var-buffer/VarBuffer.cpp
   )
+
+target_link_libraries(${SCI_SPIRE_LIBRARY}
+  ${LodePng_external}
+  ${Tny_external})

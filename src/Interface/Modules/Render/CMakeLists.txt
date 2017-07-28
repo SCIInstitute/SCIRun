@@ -27,6 +27,8 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+ADD_DEFINITIONS(-DGLM_SWIZZLE -DGLM_FORCE_CXX03 -DGLM_FORCE_RADIANS)
+
 SET(Interface_Modules_Render_FORMS
   ViewScene.ui
   ViewSceneControls.ui
@@ -99,7 +101,8 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
   Core_Application
   ${OPENGL_LIBRARIES}
   ${QT_OPENGL_LIBRARY}
-#  ${CPM_LIBRARIES}
+  ${LodePng_external}
+  ${Tny_external}
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
   ${SCI_FREETYPE_LIBRARY}

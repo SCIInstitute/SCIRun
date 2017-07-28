@@ -19,7 +19,7 @@ struct StaticArcBallCam
 
   // -- Data --
   CamerasAffected           cams;
-  CPM_LOOK_AT_NS::ArcLookAt arcLookAt;
+  CPM_ARC_LOOK_AT_NS::ArcLookAt arcLookAt;
 
   // -- Functions --
   StaticArcBallCam()
@@ -51,4 +51,4 @@ struct StaticArcBallCam
 
 } // namespace ren
 
-#endif 
+#endif
