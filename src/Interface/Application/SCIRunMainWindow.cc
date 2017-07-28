@@ -662,6 +662,12 @@ bool SCIRunMainWindow::loadNetworkFile(const QString& filename, bool isTemporary
         provenanceWindow_->clear();
         provenanceWindow_->showFile(command.file_);
       }
+      else
+      {
+        setCurrentFile("");
+        setWindowModified(true);
+        showStatusMessage("Toolkit network loaded. ", 2000);
+      }
 			networkEditor_->viewport()->update();
       return true;
     }
