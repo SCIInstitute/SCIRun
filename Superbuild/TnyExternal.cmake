@@ -38,7 +38,7 @@ ExternalProject_Add(Tny_external
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
 )
 
-ExternalProject_Get_Property(Tny_external SOURCE_DIR)
-SET(TNY_DIR ${SOURCE_DIR}/src)
+ExternalProject_Get_Property(Tny_external BINARY_DIR)
+SET(TNY_DIR ${BINARY_DIR} PATH)
 
 MESSAGE(STATUS "TNY_DIR: ${TNY_DIR}")

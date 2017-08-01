@@ -36,7 +36,7 @@ ExternalProject_Add(LodePng_external
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
 )
 
-ExternalProject_Get_Property(LodePng_external SOURCE_DIR)
-SET(LODEPNG_DIR ${SOURCE_DIR})
+ExternalProject_Get_Property(LodePng_external BINARY_DIR)
+SET(LODEPNG_DIR ${BINARY_DIR})
 
 MESSAGE(STATUS "LODEPNG_DIR: ${LODEPNG_DIR}")

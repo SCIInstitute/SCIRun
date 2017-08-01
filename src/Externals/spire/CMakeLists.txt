@@ -208,6 +208,12 @@ ADD_LIBRARY ( ${SCI_SPIRE_LIBRARY}
   var-buffer/VarBuffer.cpp
   )
 
+  MESSAGE("111WTF")
+  MESSAGE(${SCI_TEEM_LIBRARY})
+  MESSAGE(${SCI_LODEPNG_LIBRARY})
+  MESSAGE(${SCI_TNY_LIBRARY})
+  MESSAGE("111DXU")
+
 target_link_libraries(${SCI_SPIRE_LIBRARY}
-  ${LodePng_external}
-  ${Tny_external})
+  ${SCI_LODEPNG_LIBRARY}
+  ${SCI_TNY_LIBRARY})
