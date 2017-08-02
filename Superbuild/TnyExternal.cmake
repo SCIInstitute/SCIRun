@@ -39,6 +39,6 @@ ExternalProject_Add(Tny_external
 )
 
 ExternalProject_Get_Property(Tny_external BINARY_DIR)
-SET(TNY_DIR ${BINARY_DIR} PATH)
+SET(TNY_DIR ${BINARY_DIR})
 
 MESSAGE(STATUS "TNY_DIR: ${TNY_DIR}")
