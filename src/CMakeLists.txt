@@ -262,6 +262,11 @@ IF(WITH_TETGEN)
   INCLUDE(${TETGEN_USE_FILE})
 ENDIF()
 
+IF(WIN32)
+  CONFIG_STANDARD_EXTERNAL( Glew GlewConfig.cmake ${GLEW_DIR} )
+  INCLUDE(${GLEW_USE_FILE})
+ENDIF()
+
 ########################################################################
 # Custom compiler flags and definitions
 
