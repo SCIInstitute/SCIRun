@@ -58,7 +58,6 @@ TARGET_LINK_LIBRARIES(Modules_Fields
   Graphics_Glyphs
   Graphics_Datatypes
   ${OPENGL_LIBRARIES}
-#  ${CPM_LIBRARIES}
 )
 
 IF(BUILD_SHARED_LIBS)

@@ -62,17 +62,6 @@ IF(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
   MESSAGE( FATAL_ERROR "Goodbye." )
 ENDIF()
 
-################################################################################
-# If building on Windows, make sure that the path to the bin directory is short.
-# TODO: Revisit if CPM module names get shorter.
-
-IF(WIN32)
-  STRING(LENGTH ${CMAKE_BINARY_DIR} BIN_DIR_LENGTH)
-  IF(${BIN_DIR_LENGTH} GREATER 15)
-    MESSAGE(WARNING "Binary directory is too long, the build may fail due to long path names.")
-  ENDIF()
-ENDIF()
-
 ########################################################################
 # Build shared libraries by default
 
@@ -792,7 +781,6 @@ IF(BUILD_TESTING)
   ENDIF()
 ENDIF()
 
-#SET_PROPERTY(TARGET ${CPM_LIBRARIES} PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET ${SCI_LOG4CPP_LIBRARY} PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET cleaver PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")

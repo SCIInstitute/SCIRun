@@ -46,7 +46,6 @@ TARGET_LINK_LIBRARIES(Graphics_Widgets
   Core_Geometry_Primitives
   Graphics_Glyphs
   ${OPENGL_LIBRARIES}
-#  ${CPM_LIBRARIES}
   ${SCI_BOOST_LIBRARY}
 )
 
