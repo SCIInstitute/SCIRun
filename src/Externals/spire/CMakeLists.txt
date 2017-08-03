@@ -50,10 +50,6 @@ IF(UNIX)
   ADD_DEFINITIONS(-Wno-missing-braces -fPIC)
 ENDIF()
 
-IF(WIN32)
-  find_package(GLEW)
-ENDIF()
-
 ADD_LIBRARY ( ${SCI_SPIRE_LIBRARY}
   arc-ball/ArcBall.hpp
   arc-look-at/ArcLookAt.hpp
