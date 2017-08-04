@@ -1,8 +1,8 @@
 /// \author James Hughes
 /// \date   January 2014
 
-#ifndef IAUNS_GLSHADER_HPP
-#define IAUNS_GLSHADER_HPP
+#ifndef SPIRE_GLSHADER_HPP
+#define SPIRE_GLSHADER_HPP
 
 // All functions below assume there is a valid OpenGL context active.
 #include <vector>
@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <gl-platform/GLPlatform.hpp>
 
-namespace CPM_GL_SHADERS_NS {
+namespace spire {
 
 struct ShaderSource
 {
@@ -162,6 +162,6 @@ bool operator!=(const ShaderUniform& a, const ShaderUniform& b);
 /// Collects all shader uniforms into a vector of ShaderUniform.
 std::vector<ShaderUniform> getProgramUniforms(GLuint program);
 
-} // namespace CPM_GL_SHADER_NS 
+} // namespace spire 
 
 #endif 

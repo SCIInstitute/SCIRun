@@ -1,7 +1,7 @@
-#ifndef IAUNS_ARC_BALL_H
-#define IAUNS_ARC_BALL_H
+#ifndef SPIRE_ARC_BALL_H
+#define SPIRE_ARC_BALL_H
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -9,7 +9,7 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace CPM_ARC_BALL_NS {
+namespace spire {
 
 /// A reimplementation of Ken Shoemake's arcball camera. SCIRun 4's camera
 /// system is based off of Ken's code. The Code appears in Graphics Gems 4,
@@ -35,7 +35,6 @@ public:
   ///                       to TCS. \p center and \p radius are given in TCS.
   ArcBall(const glm::vec3& center, glm::float_t radius,
           const glm::mat4& screenToTCS = glm::mat4());
-  virtual ~ArcBall();
 
   /// Initiate an arc ball drag given the mouse click in screen coordinates.
   /// \param mouseScreenCoords  Mouse screen coordinates.
@@ -86,6 +85,6 @@ private:
   glm::mat4     mScreenToTCS;
 };
 
-} // namespace CPM_ARC_BALL_NS
+} // namespace spire
 
 #endif

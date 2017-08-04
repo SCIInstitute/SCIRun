@@ -1,5 +1,5 @@
-#ifndef IAUNS_COMMON_CEREALHEAP_HPP
-#define IAUNS_COMMON_CEREALHEAP_HPP
+#ifndef SPIRE_COMMON_CEREALHEAP_HPP
+#define SPIRE_COMMON_CEREALHEAP_HPP
 
 #include <entity-system/ESCoreBase.hpp>
 #include <tny/tny.hpp>
@@ -11,7 +11,7 @@
 
 #include "ComponentSerialize.hpp"
 
-namespace CPM_ES_CEREAL_NS {
+namespace spire {
 
 namespace heap_detail {
 
@@ -24,7 +24,7 @@ Tny* readSerializedHeap(ComponentSerialize& s, Tny* compArray,
 
 
 template <typename T>
-class CerealHeap : public CPM_ES_NS::ComponentContainer<T>, public ComponentSerializeInterface
+class CerealHeap : public spire::ComponentContainer<T>, public ComponentSerializeInterface
 {
   /// Checking if a function exists at runtime.
   /// http://stackoverflow.com/questions/10957924/is-there-any-way-to-detect-whether-a-function-exists-and-can-be-used-at-compile
@@ -59,18 +59,18 @@ public:
   CerealHeap() : mIsSerializable(true)  {}
   virtual ~CerealHeap()                 {}
 
-  Tny* serialize(CPM_ES_NS::ESCoreBase& core) override
+  Tny* serialize(spire::ESCoreBase& core) override
   {
     static_assert( has_member_serialize<T>::value,
-                  "Component does not have a serialize function with signature: bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize&, uint64_t)" );
+                  "Component does not have a serialize function with signature: bool serialize(spire::ComponentSerialize&, uint64_t)" );
 
     // Build component array.
     Tny* compArray = Tny_add(NULL, TNY_ARRAY, NULL, NULL, 0);
 
     ComponentSerialize s(core, false);
 
-    for (auto it = CPM_ES_NS::ComponentContainer<T>::mComponents.begin();
-         it != CPM_ES_NS::ComponentContainer<T>::mComponents.end(); ++it)
+    for (auto it = spire::ComponentContainer<T>::mComponents.begin();
+         it != spire::ComponentContainer<T>::mComponents.end(); ++it)
     {
       s.prepareForNewComponent();
       if (it->component.serialize(s, it->sequence))
@@ -89,14 +89,14 @@ public:
 
   /// \todo Add serializeEntityComponent function! Serializes one component,
   ///       of a particular entity, at a particular component index.
-  Tny* serializeEntity(CPM_ES_NS::ESCoreBase& core, uint64_t entityID) override
+  Tny* serializeEntity(spire::ESCoreBase& core, uint64_t entityID) override
   {
     static_assert( has_member_serialize<T>::value,
-                  "Component does not have a serialize function with signature: bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize&, uint64_t)" );
+                  "Component does not have a serialize function with signature: bool serialize(spire::ComponentSerialize&, uint64_t)" );
 
     // Attempt to find entity in our component array. Then serialize all
     // components related to that entity.
-    int baseIndex = CPM_ES_NS::ComponentContainer<T>::getComponentItemIndexWithSequence(entityID);
+    int baseIndex = spire::ComponentContainer<T>::getComponentItemIndexWithSequence(entityID);
     if (baseIndex == -1)
     {
       std::cerr << "Unable to find entityID " << entityID << " in " << getComponentName() << std::endl;
@@ -107,10 +107,10 @@ public:
 
     ComponentSerialize s(core, false);
 
-    typename CPM_ES_NS::ComponentContainer<T>::ComponentItem* array =
-        CPM_ES_NS::ComponentContainer<T>::getComponentArray();
+    typename spire::ComponentContainer<T>::ComponentItem* array =
+        spire::ComponentContainer<T>::getComponentArray();
     int i = baseIndex;
-    size_t numComponents = CPM_ES_NS::ComponentContainer<T>::getNumComponents();
+    size_t numComponents = spire::ComponentContainer<T>::getNumComponents();
     while (i != numComponents && array[i].sequence == entityID)
     {
       // Serialize the entity at index 'i'.
@@ -129,10 +129,10 @@ public:
 
   /// Returns the Tny* dictionary containing value's serialized contents.
   /// for the given entityID and componentIndex.
-  Tny* serializeValue(CPM_ES_NS::ESCoreBase& core, T& value, uint64_t entityID, int32_t componentIndex)
+  Tny* serializeValue(spire::ESCoreBase& core, T& value, uint64_t entityID, int32_t componentIndex)
   {
     static_assert( has_member_serialize<T>::value,
-                  "Component does not have a serialize function with signature: bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize&, uint64_t)" );
+                  "Component does not have a serialize function with signature: bool serialize(spire::ComponentSerialize&, uint64_t)" );
 
     Tny* compArray = Tny_add(NULL, TNY_ARRAY, NULL, NULL, 0);
 
@@ -148,17 +148,17 @@ public:
     return root;
   }
 
-  void deserializeMerge(CPM_ES_NS::ESCoreBase& core, Tny* root, bool copyExisting) override
+  void deserializeMerge(spire::ESCoreBase& core, Tny* root, bool copyExisting) override
   {
     static_assert( has_member_serialize<T>::value,
-                  "Component does not have a serialize function with signature: bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize&, uint64_t)" );
+                  "Component does not have a serialize function with signature: bool serialize(spire::ComponentSerialize&, uint64_t)" );
     deserializeMergeInternal(core, root, copyExisting);
   }
 
-  void deserializeCreate(CPM_ES_NS::ESCoreBase& core, Tny* root) override
+  void deserializeCreate(spire::ESCoreBase& core, Tny* root) override
   {
     static_assert( has_member_serialize<T>::value,
-                  "Component does not have a serialize function with signature: bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize&, uint64_t)" );
+                  "Component does not have a serialize function with signature: bool serialize(spire::ComponentSerialize&, uint64_t)" );
     deserializeCreateInternal(core, root);
   }
 
@@ -173,7 +173,7 @@ public:
   {
     if (mTypeHeaders.size() == 0)
     {
-      std::cerr << "cpm-es-cereal: Can't find type name, don't have type data (have you deserialized once?)." << std::endl;
+      std::cerr << "es-cereal: Can't find type name, don't have type data (have you deserialized once?)." << std::endl;
       return std::string();
     }
 
@@ -185,7 +185,7 @@ public:
       }
     }
 
-    std::cerr << "cpm-es-cereal: Unable to find type name." << std::endl;
+    std::cerr << "es-cereal: Unable to find type name." << std::endl;
     return std::string();
   }
 
@@ -194,7 +194,7 @@ public:
 
 private:
 
-  void deserializeMergeInternal(CPM_ES_NS::ESCoreBase& core, Tny* root, bool copyExisting)
+  void deserializeMergeInternal(spire::ESCoreBase& core, Tny* root, bool copyExisting)
   {
     /// \xxx  We may be erasing good type headers in preference of partial
     ///       type headers when we merge (delta compression).
@@ -205,13 +205,13 @@ private:
     Tny* components = heap_detail::readSerializedHeap(s, root, mTypeHeaders);
     if (components == nullptr)
     {
-      std::cerr << "cpm-es-cereal: Corrupt heap header." << std::endl;
+      std::cerr << "es-cereal: Corrupt heap header." << std::endl;
       return;
     }
 
     T value;
-    typename CPM_ES_NS::ComponentContainer<T>::ComponentItem* array = 
-        CPM_ES_NS::ComponentContainer<T>::getComponentArray();
+    typename spire::ComponentContainer<T>::ComponentItem* array = 
+        spire::ComponentContainer<T>::getComponentArray();
     Tny* cur = components;
     int componentIndex = 0;
     uint64_t lastEntityID = 0;
@@ -225,8 +225,8 @@ private:
 
       if (!Tny_hasNext(cur))
       {
-        std::cerr << "cpm-es-cereal: Unexpected end of header." << std::endl;
-        throw std::runtime_error("cpm-es-cereal: Unexpected end of header.");
+        std::cerr << "es-cereal: Unexpected end of header." << std::endl;
+        throw std::runtime_error("es-cereal: Unexpected end of header.");
         return;
       }
 
@@ -242,7 +242,7 @@ private:
       // Check to ensure that the entityID exists alongised the correct
       // component ID. These will be used together to add a modification
       // to the current state of the component system.
-      int baseIndex = CPM_ES_NS::ComponentContainer<T>::getComponentItemIndexWithSequence(entityID);
+      int baseIndex = spire::ComponentContainer<T>::getComponentItemIndexWithSequence(entityID);
       if (baseIndex != -1)
       {
         Tny* obj = cur->value.tny;
@@ -265,7 +265,7 @@ private:
           trueIndex = baseIndex + componentIndex;
         }
 
-        if (trueIndex < CPM_ES_NS::ComponentContainer<T>::getNumComponents())
+        if (trueIndex < spire::ComponentContainer<T>::getNumComponents())
         {
           if (array[trueIndex].sequence == entityID)
           {
@@ -281,7 +281,7 @@ private:
             // item to the modification array.
             s.setDeserializeRoot(obj);
             if (value.serialize(s, entityID))
-              CPM_ES_NS::ComponentContainer<T>::modifyIndex(value, trueIndex, 10000);
+              spire::ComponentContainer<T>::modifyIndex(value, trueIndex, 10000);
           }
         }
 
@@ -289,7 +289,7 @@ private:
     }
   }
 
-  void deserializeCreateInternal(CPM_ES_NS::ESCoreBase& core, Tny* root)
+  void deserializeCreateInternal(spire::ESCoreBase& core, Tny* root)
   {
     /// \xxx  We may be erasing good type headers in preference of partial
     ///       type headers when we merge (delta compression).
@@ -300,7 +300,7 @@ private:
     Tny* components = heap_detail::readSerializedHeap(s, root, mTypeHeaders);
     if (components == nullptr)
     {
-      std::cerr << "cpm-es-cereal: Corrupt heap header." << std::endl;
+      std::cerr << "es-cereal: Corrupt heap header." << std::endl;
       return;
     }
 
@@ -317,8 +317,8 @@ private:
       // Ensure next TNY_OBJ is present.
       if (!Tny_hasNext(cur))
       {
-        std::cerr << "cpm-es-cereal: Unexpected end of header." << std::endl;
-        throw std::runtime_error("cpm-es-cereal: Unexpected end of header.");
+        std::cerr << "es-cereal: Unexpected end of header." << std::endl;
+        throw std::runtime_error("es-cereal: Unexpected end of header.");
         return;
       }
 
@@ -329,7 +329,7 @@ private:
       Tny* obj = cur->value.tny;
       s.setDeserializeRoot(obj);
       if (value.serialize(s, entityID))
-        CPM_ES_NS::ComponentContainer<T>::addComponent(entityID, value);
+        spire::ComponentContainer<T>::addComponent(entityID, value);
     }
   }
 
@@ -341,7 +341,7 @@ private:
   bool mIsSerializable;
 };
 
-} // namespace CPM_ES_CEREAL_NS
+} // namespace spire
 
 #endif
 

@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_TEXTUREMAN_HPP
-#define IAUNS_RENDER_TEXTUREMAN_HPP
+#ifndef SPIRE_RENDER_TEXTUREMAN_HPP
+#define SPIRE_RENDER_TEXTUREMAN_HPP
 
 #include <map>
 #include <set>
@@ -27,7 +27,7 @@ namespace ren {
     /// \param  core        Core base.
     /// \param  entityID    Entity ID which will receive the ren::Texture component.
     /// \param  assetName   Name of the texture to load.
-    void loadTexture(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
+    void loadTexture(spire::CerealCore& core, uint64_t entityID,
       const std::string& assetName, int32_t textureUnit,
       const std::string& uniformName);
 
@@ -50,7 +50,7 @@ namespace ren {
       GLsizei textureHeight);
 
     /// Runs a single garbage collection cycle on the current state of the core.
-    void runGCCycle(CPM_ES_NS::ESCoreBase& core);
+    void runGCCycle(spire::ESCoreBase& core);
 
     /// Returns the GLID for the given assetName (texture name), if one has been
     /// generated. Returns 0 if the texture is not found in the system.
@@ -61,7 +61,7 @@ namespace ren {
 
     /// Registers TextureMan's systems. Both the garbage collector and the promise
     /// fullfillment system are registered.
-    static void registerSystems(CPM_ES_ACORN_NS::Acorn& core);
+    static void registerSystems(spire::Acorn& core);
 
     /// Obtains the garbage collectors name so that you can setup intermitent
     /// garbage collection cycles.
@@ -78,7 +78,7 @@ namespace ren {
 
     /// Returns false if we failed to generate the component because the asset
     /// has not been loaded yet.
-    bool buildComponent(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
+    bool buildComponent(spire::CerealCore& core, uint64_t entityID,
       const std::string& assetName, int32_t textureUnit,
       const std::string& uniformName);
 
@@ -86,24 +86,24 @@ namespace ren {
     void runGCAgainstVaidIDs(const std::set<GLuint>& validKeys);
 
     /// Issues a request for a texture.
-    void requestTexture(CPM_ES_NS::ESCoreBase& core, const std::string& assetName,
+    void requestTexture(spire::ESCoreBase& core, const std::string& assetName,
       int32_t numRetries);
 
     /// Callback issued when a texture has been read from disk and is ready
     /// to load.
     void loadTextureCB(const std::string& textureName, bool error,
       size_t bytesRead, uint8_t* buffer,
-      int32_t numRetries, CPM_ES_NS::ESCoreBase& core);
+      int32_t numRetries, spire::ESCoreBase& core);
 
 
     /// Called from loadTextureCB.
     void loadRawPNG(const std::string& assetName, uint8_t* buffer,
       size_t bytesRead, int numRetries,
-      CPM_ES_NS::ESCoreBase& core);
+      spire::ESCoreBase& core);
 
     void loadRawITX(const std::string& assetName, uint8_t* buffer,
       size_t bytesRead, int numRetries,
-      CPM_ES_NS::ESCoreBase& core);
+      spire::ESCoreBase& core);
 
     /// Map from GL id to asset name.
     std::map<GLuint, std::string> mGLToName;

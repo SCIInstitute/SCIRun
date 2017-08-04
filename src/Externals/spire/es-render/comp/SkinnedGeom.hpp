@@ -1,5 +1,5 @@
-#ifndef IAUNS_COMPONENT_SKINNED_GEOM_HPP
-#define IAUNS_COMPONENT_SKINNED_GEOM_HPP
+#ifndef SPIRE_COMPONENT_SKINNED_GEOM_HPP
+#define SPIRE_COMPONENT_SKINNED_GEOM_HPP
 
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -16,7 +16,7 @@ struct SkinnedGeom
   // -- Functions --
   static const char* getName() {return "ren:SkinnedGeom";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
   {
     // ?
     return true;

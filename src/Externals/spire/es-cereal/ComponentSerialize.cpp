@@ -1,7 +1,7 @@
 #include "ComponentSerialize.hpp"
 #include <tny/tny.hpp>
 
-namespace CPM_ES_CEREAL_NS {
+namespace spire {
 
 ComponentSerialize::~ComponentSerialize()
 {
@@ -15,7 +15,7 @@ void ComponentSerialize::prepareForNewComponent(int32_t componentIndex)
 {
   if (mDeserializing)
   {
-    std::cerr << "cpm-es-cereal: Logic error - prepareForNewComponent called when deserializing." << std::endl;
+    std::cerr << "es-cereal: Logic error - prepareForNewComponent called when deserializing." << std::endl;
   }
 
   mLastIndex = -1;
@@ -55,5 +55,5 @@ Tny* ComponentSerialize::getTypeHeader()
   return root->root;
 }
 
-} // namespace CPM_ES_CEREAL_NS
+} // namespace spire
 

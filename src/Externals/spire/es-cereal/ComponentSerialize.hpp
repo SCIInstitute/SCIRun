@@ -1,5 +1,5 @@
-#ifndef IAUNS_COMMON_COMPONENTSERIALIZE_HPP
-#define IAUNS_COMMON_COMPONENTSERIALIZE_HPP
+#ifndef SPIRE_COMMON_COMPONENTSERIALIZE_HPP
+#define SPIRE_COMMON_COMPONENTSERIALIZE_HPP
 
 #include <entity-system/ESCoreBase.hpp>
 #include "CerealTypeSerialize.hpp"
@@ -7,7 +7,7 @@
 struct _Tny;
 typedef _Tny Tny;
 
-namespace CPM_ES_CEREAL_NS {
+namespace spire {
 
 // Idea to speed up serialization:
 // Add integer block alongside every component. This will denote the offsets
@@ -25,7 +25,7 @@ public:
   // This class will be instantiated inside of the static functions.
   // The instance members in this class are only used when the serialize
   // member function is called.
-  ComponentSerialize(CPM_ES_NS::ESCoreBase& core, bool deserializing) :
+  ComponentSerialize(spire::ESCoreBase& core, bool deserializing) :
     mLastIndex(-1),
     mDeserializing(deserializing),
     mTnyRoot(nullptr),
@@ -109,7 +109,7 @@ public:
 
   /// Retrieves the core that is currently responsible for creating this
   /// serialization class.
-  CPM_ES_NS::ESCoreBase& getCore()  {return mCore;}
+  spire::ESCoreBase& getCore()  {return mCore;}
 
   // A header doesn't need to be built for the components. It's just for
   // determining explicit type is being serialized remotely. Later, it could
@@ -138,7 +138,7 @@ private:
   bool                    mDeserializing; ///< True if we are serializing into variables.
   Tny*                    mTnyRoot;       ///< When serializing in, this is the source.
 
-  CPM_ES_NS::ESCoreBase&  mCore;          ///< ESCore.
+  spire::ESCoreBase&  mCore;          ///< ESCore.
 };
 
 /// Interface defining what a ComponentHeap must implement in order to properly
@@ -146,15 +146,15 @@ private:
 class ComponentSerializeInterface
 {
 public:
-  virtual Tny* serialize(CPM_ES_NS::ESCoreBase& core) = 0;
-  virtual Tny* serializeEntity(CPM_ES_NS::ESCoreBase& core, uint64_t entity) = 0;
-  virtual void deserializeMerge(CPM_ES_NS::ESCoreBase& core, Tny* root, bool copyExisting) = 0;
-  virtual void deserializeCreate(CPM_ES_NS::ESCoreBase& core, Tny* root) = 0;
+  virtual Tny* serialize(spire::ESCoreBase& core) = 0;
+  virtual Tny* serializeEntity(spire::ESCoreBase& core, uint64_t entity) = 0;
+  virtual void deserializeMerge(spire::ESCoreBase& core, Tny* root, bool copyExisting) = 0;
+  virtual void deserializeCreate(spire::ESCoreBase& core, Tny* root) = 0;
   virtual bool isSerializable() {return true;}
 
   virtual const char* getComponentName() = 0;
 };
 
-} // namespace CPM_ES_CEREAL_NS
+} // namespace spire
 
 #endif

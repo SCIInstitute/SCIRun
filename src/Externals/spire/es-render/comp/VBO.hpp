@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_COMPONENT_VBO_HPP
-#define IAUNS_RENDER_COMPONENT_VBO_HPP
+#ifndef SPIRE_RENDER_COMPONENT_VBO_HPP
+#define SPIRE_RENDER_COMPONENT_VBO_HPP
 
 #include <glm/glm.hpp>
 #include <gl-platform/GLPlatform.hpp>
@@ -17,7 +17,7 @@ struct VBO
 
   GLuint glid;
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
   {
     // Serialize out the asset name (if any), and the attributes associated
     // with this glid. We don't need to store the attributes alongside

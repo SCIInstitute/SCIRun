@@ -3,9 +3,9 @@
 #include "Filesystem.hpp"
 #include "fscomp/StaticFS.hpp"
 
-namespace CPM_ES_FS_NS {
+namespace spire {
 
-void registerAll(CPM_ES_ACORN_NS::Acorn& core)
+void registerAll(spire::Acorn& core)
 {
   // Systems
   Filesystem::registerSystems(core);
@@ -14,5 +14,5 @@ void registerAll(CPM_ES_ACORN_NS::Acorn& core)
   core.registerComponent<StaticFS>();   // Non-serializable
 }
 
-} // namespace CPM_ES_FS_NS
+} // namespace spire
 

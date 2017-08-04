@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_UTIL_VIEW_POS_ALIGN_HPP
-#define IAUNS_RENDER_UTIL_VIEW_POS_ALIGN_HPP
+#ifndef SPIRE_RENDER_UTIL_VIEW_POS_ALIGN_HPP
+#define SPIRE_RENDER_UTIL_VIEW_POS_ALIGN_HPP
 
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -26,7 +26,7 @@ struct UtilViewPosAlign
 
   static const char* getName() {return "ren:UtilViewPosAlign";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& s, uint64_t /* entityID */)
   {
     s.serialize("offvc", offsetInViewCoords);
     s.serialize("offset", offset);

@@ -1,5 +1,5 @@
-#ifndef IAUNS_COMPONENT_RENDER_TEXTURE_HPP
-#define IAUNS_COMPONENT_RENDER_TEXTURE_HPP
+#ifndef SPIRE_COMPONENT_RENDER_TEXTURE_HPP
+#define SPIRE_COMPONENT_RENDER_TEXTURE_HPP
 
 #include <es-cereal/ComponentSerialize.hpp>
 
@@ -57,7 +57,7 @@ struct Texture
     }
   }
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t entityID)
+  bool serialize(spire::ComponentSerialize& s, uint64_t entityID)
   {
     // The logic below ensures we deserialize with promises, not with actual
     // texture assets (which wouldn't make sense with OpenGL assets).
@@ -74,8 +74,8 @@ struct Texture
       newPromise.textureUnit = tu;
       newPromise.setAssetName(assetName.c_str());
 
-      CPM_ES_CEREAL_NS::CerealCore& core 
-          = dynamic_cast<CPM_ES_CEREAL_NS::CerealCore&>(s.getCore());
+      spire::CerealCore& core 
+          = dynamic_cast<spire::CerealCore&>(s.getCore());
       core.addComponent(entityID, newPromise);
 
       return false; // We do not want to add this texture component back into the components.
@@ -83,8 +83,8 @@ struct Texture
     }
     else
     {
-      CPM_ES_CEREAL_NS::CerealCore& core 
-          = dynamic_cast<CPM_ES_CEREAL_NS::CerealCore&>(s.getCore());
+      spire::CerealCore& core 
+          = dynamic_cast<spire::CerealCore&>(s.getCore());
       StaticTextureMan* staticTX = core.getStaticComponent<StaticTextureMan>();
       std::weak_ptr<TextureMan> texMan = staticTX->instance_;
 

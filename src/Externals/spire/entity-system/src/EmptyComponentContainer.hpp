@@ -1,7 +1,7 @@
-#ifndef IAUNS_ENTITY_SYSTEM_EMPTYCOMPONENTCONTAINER_HPP
-#define IAUNS_ENTITY_SYSTEM_EMPTYCOMPONENTCONTAINER_HPP
+#ifndef SPIRE_ENTITY_SYSTEM_EMPTYCOMPONENTCONTAINER_HPP
+#define SPIRE_ENTITY_SYSTEM_EMPTYCOMPONENTCONTAINER_HPP
 
-namespace CPM_ES_NS {
+namespace spire {
 
 // Component base class, used to verify component types at run-time.
 class EmptyComponentContainer : public BaseComponentContainer
@@ -25,6 +25,6 @@ public:
   uint64_t getSequenceFromIndex(int) const override {return 0;}
 };
 
-} // namespace CPM_ES_NS 
+} // namespace spire 
 
 #endif 

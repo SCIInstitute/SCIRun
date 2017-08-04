@@ -1,5 +1,5 @@
-#ifndef IAUNS_ES_RENDER_UTIL_TEXQUAD_HPP
-#define IAUNS_ES_RENDER_UTIL_TEXQUAD_HPP
+#ifndef SPIRE_ES_RENDER_UTIL_TEXQUAD_HPP
+#define SPIRE_ES_RENDER_UTIL_TEXQUAD_HPP
 
 #include <glm/glm.hpp>
 #include <es-cereal/CerealCore.hpp>
@@ -23,14 +23,14 @@ namespace ren {
 /// are at each of the positive and negative units -1,-1 ... 1,1.
 /// Texture coordinates range from [0 to 1] on both the U and V axes.
 /// \return Fully prepared VBO and IBO components.
-std::pair<ren::VBO, ren::IBO> getTexUnitQuad(CPM_ES_NS::ESCoreBase& core);
+std::pair<ren::VBO, ren::IBO> getTexUnitQuad(spire::ESCoreBase& core);
 
 /// Function will add a unit quad VBO and IBO alongside the given shader and
 /// texture into the entityID. The texture is placed in unit 0 with uniform
 /// name uTX0. Rendering and transform is up to you.
 /// You will still have to add the renderer (something like simple geom),
 /// uniforms, and transforms.
-void addTexQuad(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID, const std::string& texture);
+void addTexQuad(spire::CerealCore& core, uint64_t entityID, const std::string& texture);
 
 /// Returns a mat4 that will position a tex quad generated with 'getTexUnitQuad'
 /// at the given position and dimensions. This function will apply scaling
@@ -44,9 +44,9 @@ glm::mat4 getTexQuadTransform(const glm::vec2& topLeft, const glm::vec2& bottomR
 /// existing transform component!
 /// \todo These should be renamed to *add* tex quad transform. Because that is
 ///       what they are doing.
-void setTexQuadTransform(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
+void setTexQuadTransform(spire::CerealCore& core, uint64_t entityID,
                          const glm::vec3& center, float width, float height);
-void setTexQuadTransform(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
+void setTexQuadTransform(spire::CerealCore& core, uint64_t entityID,
                          const glm::vec2& topLeft, const glm::vec2& bottomRight, float z);
 
 } // namespace ren 

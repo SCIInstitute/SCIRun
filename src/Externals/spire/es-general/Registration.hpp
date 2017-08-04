@@ -1,12 +1,12 @@
-#ifndef IAUNS_ES_GENERAL_REGISTRATION_HPP
-#define IAUNS_ES_GENERAL_REGISTRATION_HPP
+#ifndef SPIRE_ES_GENERAL_REGISTRATION_HPP
+#define SPIRE_ES_GENERAL_REGISTRATION_HPP
 
 #include <es-acorn/Acorn.hpp>
 
 namespace gen {
 
 /// Registers all gameplay systems and components.
-void registerAll(CPM_ES_ACORN_NS::Acorn& core);
+void registerAll(spire::Acorn& core);
 
 } // namespace gen
 

@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_TEXTUREPROMISE_HPP
-#define IAUNS_RENDER_TEXTUREPROMISE_HPP
+#ifndef SPIRE_RENDER_TEXTUREPROMISE_HPP
+#define SPIRE_RENDER_TEXTUREPROMISE_HPP
 
 #include <cstring>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -63,7 +63,7 @@ struct TexturePromise
     }
   }
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& s, uint64_t /* entityID */)
   {
     std::string asset = assetName;
     std::string uname = uniformName;

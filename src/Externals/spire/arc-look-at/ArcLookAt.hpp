@@ -29,10 +29,10 @@
 /// \author James Hughes
 /// \date   April 2013
 
-#ifndef IAUNS_ARC_LOOK_AT_H
-#define IAUNS_ARC_LOOK_AT_H
+#ifndef SPIRE_ARC_LOOK_AT_H
+#define SPIRE_ARC_LOOK_AT_H
 
-#include <stdint.h>
+#include <cstdint>
 #include <memory>
 
 #include <glm/glm.hpp>
@@ -42,14 +42,13 @@
 
 #include <glm-aabb/AABB.hpp>
 
-// Forward declaration of ArcBall in its CPM namespace.
-namespace CPM_ARC_BALL_NS {
+namespace spire {
   class ArcBall;
 }
 
-namespace CPM_ARC_LOOK_AT_NS {
+namespace spire {
 
-/// Basic camera class that uses cpm-arc-ball to control view orientation.
+/// Basic camera class that uses arc-ball to control view orientation.
 /// Supports a number of utility functions such as ensuring a given
 /// AABB is in the view of the frustum (zooming only).
 /// All coordinates, unless otherwise specified, are in 2D screen space
@@ -91,7 +90,7 @@ public:
   /// This function will change the lookat point to the center of the bounding
   /// box.
   /// \p fov is expected to be in radians.
-  void autoview(const CPM_GLM_AABB_NS::AABB& aabb, float fov);
+  void autoview(const spire::AABB& aabb, float fov);
 
   /// Sets the view to the specified location and up
   void setView(const glm::vec3& view, const glm::vec3& up);
@@ -107,7 +106,7 @@ public:
   glm::mat4 getWorldViewTransform() const;
 
 private:
-  std::unique_ptr<CPM_ARC_BALL_NS::ArcBall>  mArcBall;
+  std::unique_ptr<spire::ArcBall>  mArcBall;
 
   glm::vec3                 mCamLookAt;     ///< Current lookat position.
   glm::float_t              mCamDistance;   ///< Distance from look-at.
@@ -119,6 +118,6 @@ private:
   glm::float_t              mReferenceCamDistance;
 };
 
-} // namespace CPM_ARC_LOOK_AT_NS
+} // namespace spire
 
 #endif

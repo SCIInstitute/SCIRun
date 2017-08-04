@@ -4,7 +4,7 @@
 
 #include "CommonUniforms.hpp"
 
-namespace shaders = CPM_GL_SHADERS_NS;
+namespace shaders = spire;
 
 namespace ren {
 

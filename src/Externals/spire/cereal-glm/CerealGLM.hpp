@@ -1,5 +1,5 @@
-#ifndef IAUNS_CEREAL_GLM_CEREALTYPESERIALIZE_HPP
-#define IAUNS_CEREAL_GLM_CEREALTYPESERIALIZE_HPP
+#ifndef SPIRE_CEREAL_GLM_CEREALTYPESERIALIZE_HPP
+#define SPIRE_CEREAL_GLM_CEREALTYPESERIALIZE_HPP
 
 #include <cstdint>
 #include <cstddef>
@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 #include <tny/tny.hpp>
 
-namespace CPM_ES_CEREAL_NS {
+namespace spire {
 
 template<>
 class CerealSerializeType<glm::vec3>
@@ -212,6 +212,6 @@ public:
   static const char* getTypeName()    {return "glm::mat3";}
 };
 
-} // namespace CPM_ES_CEREAL_NS
+} // namespace spire
 
 #endif

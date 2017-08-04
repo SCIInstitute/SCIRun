@@ -9,7 +9,7 @@
 
 #include "es-render/comp/UtilViewPosAlign.hpp"
 
-namespace es      = CPM_ES_NS;
+namespace es      = spire;
 
 // Every component is self contained. It only accesses the systems and
 // components that it specifies in it's component list. If you need to access
@@ -17,7 +17,7 @@ namespace es      = CPM_ES_NS;
 namespace ren {
 
 class UtilViewPosAlignSys :
-    public es::GenericSystem<true,
+    public spire::GenericSystem<true,
                              gen::Transform,
                              gen::StaticCamera,
                              UtilViewPosAlign>
@@ -29,10 +29,10 @@ public:
   static const char* getName() {return "qren:UtilViewPosAlignSys";}
 
   void groupExecute(
-      es::ESCoreBase&, uint64_t /* entityID */,
-      const es::ComponentGroup<gen::Transform>& trafo,
-      const es::ComponentGroup<gen::StaticCamera>& cam,
-      const es::ComponentGroup<UtilViewPosAlign>& /* posAlign */) override
+      spire::ESCoreBase&, uint64_t /* entityID */,
+      const spire::ComponentGroup<gen::Transform>& trafo,
+      const spire::ComponentGroup<gen::StaticCamera>& cam,
+      const spire::ComponentGroup<UtilViewPosAlign>& /* posAlign */) override
   {
     glm::mat4 viewMat = cam.front().data.getView();
     glm::mat4 newTrafo = trafo.front().transform;
@@ -50,7 +50,7 @@ public:
   }
 };
 
-void registerSystem_UtilViewPosAlign(CPM_ES_ACORN_NS::Acorn& core)
+void registerSystem_UtilViewPosAlign(spire::Acorn& core)
 {
   core.registerSystem<UtilViewPosAlignSys>();
 }

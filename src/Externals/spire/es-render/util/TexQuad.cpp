@@ -11,7 +11,7 @@
 
 namespace ren {
 
-void addTexQuad(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID, const std::string& texture)
+void addTexQuad(spire::CerealCore& core, uint64_t entityID, const std::string& texture)
 {
   // Obtain the common quad IBO and VBO from rendering system.
   auto vboIbo = getTexUnitQuad(core);
@@ -22,7 +22,7 @@ void addTexQuad(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID, const std
   texMan->loadTexture(core, entityID, texture, 0, "uTX0");
 }
 
-void setTexQuadTransform(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID, const glm::vec3& center,
+void setTexQuadTransform(spire::CerealCore& core, uint64_t entityID, const glm::vec3& center,
                          float width, float height)
 {
   gen::Transform xform;
@@ -30,7 +30,7 @@ void setTexQuadTransform(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID, 
   core.addComponent(entityID, xform);
 }
 
-void setTexQuadTransform(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID, const glm::vec2& topLeft,
+void setTexQuadTransform(spire::CerealCore& core, uint64_t entityID, const glm::vec2& topLeft,
                          const glm::vec2& bottomRight, float z)
 {
 
@@ -39,7 +39,7 @@ void setTexQuadTransform(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID, 
   core.addComponent(entityID, xform);
 }
 
-std::pair<ren::VBO, ren::IBO> getTexUnitQuad(CPM_ES_NS::ESCoreBase& core)
+std::pair<ren::VBO, ren::IBO> getTexUnitQuad(spire::ESCoreBase& core)
 {
   ren::VBO vboComp;
   ren::IBO iboComp;

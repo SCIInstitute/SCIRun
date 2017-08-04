@@ -10,8 +10,8 @@
 #include "comp/StaticVBOMan.hpp"
 #include "comp/VBO.hpp"
 
-namespace es = CPM_ES_NS;
-namespace shaders = CPM_GL_SHADERS_NS;
+namespace es = spire;
+namespace shaders = spire;
 
 namespace ren {
 
@@ -162,7 +162,7 @@ void VBOMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
 }
 
 class VBOGarbageCollector :
-    public es::GenericSystem<false, VBO>
+    public spire::GenericSystem<false, VBO>
 {
 public:
 
@@ -170,9 +170,9 @@ public:
 
   std::set<GLuint> mValidKeys;
 
-  void preWalkComponents(es::ESCoreBase&) {mValidKeys.clear();}
+  void preWalkComponents(spire::ESCoreBase&) {mValidKeys.clear();}
 
-  void postWalkComponents(es::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core)
   {
     std::weak_ptr<ren::VBOMan> man = core.getStaticComponent<StaticVBOMan>()->instance_;
     if (std::shared_ptr<VBOMan> vboMan = man.lock()) {
@@ -185,19 +185,19 @@ public:
     }
   }
 
-  void execute(es::ESCoreBase&, uint64_t /* entityID */, const VBO* vbo) override
+  void execute(spire::ESCoreBase&, uint64_t /* entityID */, const VBO* vbo) override
   {
     mValidKeys.insert(vbo->glid);
   }
 };
 
-void VBOMan::registerSystems(CPM_ES_ACORN_NS::Acorn& core)
+void VBOMan::registerSystems(spire::Acorn& core)
 {
   // Register the garbage collector.
   core.registerSystem<VBOGarbageCollector>();
 }
 
-void VBOMan::runGCCycle(CPM_ES_NS::ESCoreBase& core)
+void VBOMan::runGCCycle(spire::ESCoreBase& core)
 {
   VBOGarbageCollector gc;
   gc.walkComponents(core);

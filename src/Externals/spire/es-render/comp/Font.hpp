@@ -1,5 +1,5 @@
-#ifndef IAUNS_COMPONENT_RENDER_FONT_HPP
-#define IAUNS_COMPONENT_RENDER_FONT_HPP
+#ifndef SPIRE_COMPONENT_RENDER_FONT_HPP
+#define SPIRE_COMPONENT_RENDER_FONT_HPP
 
 #include <es-cereal/ComponentSerialize.hpp>
 
@@ -23,7 +23,7 @@ struct Font
 
   static const char* getName() {return "ren:Font";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t entityID)
+  bool serialize(spire::ComponentSerialize& s, uint64_t entityID)
   {
     // The logic below ensures we deserialize with promises, not with actual
     // font assets (which wouldn't make sense with OpenGL assets).
@@ -37,7 +37,7 @@ struct Font
       newPromise.requestInitiated = false;
       newPromise.setAssetName(assetName.c_str());
 
-      CPM_ES_CEREAL_NS::CerealCore* core = dynamic_cast<CPM_ES_CEREAL_NS::CerealCore*>(&s.getCore());
+      spire::CerealCore* core = dynamic_cast<spire::CerealCore*>(&s.getCore());
       if (core != nullptr)
       {
         core->addComponent(entityID, newPromise);
@@ -52,7 +52,7 @@ struct Font
     }
     else
     {
-      CPM_ES_CEREAL_NS::CerealCore* core = dynamic_cast<CPM_ES_CEREAL_NS::CerealCore*>(&s.getCore());
+      spire::CerealCore* core = dynamic_cast<spire::CerealCore*>(&s.getCore());
       if (core != nullptr)
       {
         StaticFontMan* staticFontMan = core->getStaticComponent<StaticFontMan>();

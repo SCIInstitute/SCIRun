@@ -1,6 +1,6 @@
 #include "ESCoreBase.hpp"
 
-namespace CPM_ES_NS {
+namespace spire {
 
 EmptyComponentContainer ESCoreBase::mEmptyContainer;
 
@@ -33,7 +33,7 @@ void ESCoreBase::addComponentContainer(BaseComponentContainer* componentCont, ui
   }
   else
   {
-    std::cerr << "cpm-entity-system - Warning: Attempting to add pre-existing component container!" << std::endl;
+    std::cerr << "entity-system - Warning: Attempting to add pre-existing component container!" << std::endl;
     delete componentCont;
   }
 }
@@ -112,6 +112,6 @@ void ESCoreBase::removeAllComponents(uint64_t entityID, uint64_t compTemplateID)
   cont->removeSequence(entityID);
 }
 
-} // namespace CPM_ES_NS
+} // namespace spire
 
 

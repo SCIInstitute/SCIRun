@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Render/namespaces.h>
 #include <Interface/Modules/Render/ES/SRUtil.h>
 
 #include <glm/glm.hpp>

@@ -14,8 +14,8 @@
 #include "comp/IBO.hpp"
 #include "comp/VBO.hpp"
 
-namespace es = CPM_ES_NS;
-namespace fs = CPM_ES_FS_NS;
+namespace es = spire;
+namespace fs = spire;
 
 namespace ren {
 
@@ -31,7 +31,7 @@ GeomMan::~GeomMan()
   mNameMap.clear();
 }
 
-void GeomMan::loadGeometry(CPM_ES_CEREAL_NS::CerealCore& core,
+void GeomMan::loadGeometry(spire::CerealCore& core,
                     uint64_t entityID, const std::string& assetName)
 {
   // Ensure there is a file extension on the asset name. The texture loader
@@ -55,7 +55,7 @@ void GeomMan::loadGeometry(CPM_ES_CEREAL_NS::CerealCore& core,
   }
 }
 
-void GeomMan::requestAsset(es::ESCoreBase& core, const std::string& assetName,
+void GeomMan::requestAsset(spire::ESCoreBase& core, const std::string& assetName,
                            int32_t numRetries)
 {
   // Begin by attempting to load the vertex shader.
@@ -70,7 +70,7 @@ void GeomMan::requestAsset(es::ESCoreBase& core, const std::string& assetName,
 //                                   std::placeholders::_3, std::placeholders::_4,
 //                                   numRetries, std::ref(core)));
 //#else
-  es::ESCoreBase* refPtr = &core;
+  spire::ESCoreBase* refPtr = &core;
   auto callbackLambda = [this, numRetries, refPtr](
       const std::string& name, bool error, size_t bytesRead, uint8_t* buffer)
   {
@@ -82,7 +82,7 @@ void GeomMan::requestAsset(es::ESCoreBase& core, const std::string& assetName,
 
 void GeomMan::loadAssetCB(const std::string& assetName, bool error,
                    size_t bytesRead, uint8_t* buffer, int32_t numRetries,
-                   es::ESCoreBase& core)
+                   spire::ESCoreBase& core)
 {
   if (!error)
   {
@@ -94,7 +94,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
       // Run through Tny document and extract all appropriate information
       // from geom document.
       bool littleEndian = true;
-      CPM_ES_CEREAL_NS::CerealSerializeType<bool>::in(doc, "little_endian", littleEndian);
+      spire::CerealSerializeType<bool>::in(doc, "little_endian", littleEndian);
       if (littleEndian == false)
       {
         std::cerr << "Big endian is not a supported geometry type." << std::endl;
@@ -105,7 +105,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
       GeomItem geom;
 
       uint32_t numMeshes = 0;
-      CPM_ES_CEREAL_NS::CerealSerializeType<uint32_t>::in(doc, "num_meshes", numMeshes);
+      spire::CerealSerializeType<uint32_t>::in(doc, "num_meshes", numMeshes);
       if (numMeshes > 1)
       {
         std::cerr << "There is no planned support for multiple meshes in a single geom file." << std::endl;
@@ -115,7 +115,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
       if (Tny_get(doc, "shader") != NULL)
       {
         // Set shader name appropriately.
-        CPM_ES_CEREAL_NS::CerealSerializeType<std::string>::in(doc, "shader", shaderName);
+        spire::CerealSerializeType<std::string>::in(doc, "shader", shaderName);
       }
       geom.shaderName = shaderName;
 
@@ -128,10 +128,10 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
         std::string texName;
         uint32_t texUnit;
         std::string samplerName;
-        textureRoot = CPM_ES_CEREAL_NS::CST_detail::inStringArray(textureRoot, tmpName, tmpNameSize);
+        textureRoot = spire::CST_detail::inStringArray(textureRoot, tmpName, tmpNameSize);
         texName = tmpName;
-        textureRoot = CPM_ES_CEREAL_NS::CST_detail::inUInt32Array(textureRoot, texUnit);
-        textureRoot = CPM_ES_CEREAL_NS::CST_detail::inStringArray(textureRoot, tmpName, tmpNameSize);
+        textureRoot = spire::CST_detail::inUInt32Array(textureRoot, texUnit);
+        textureRoot = spire::CST_detail::inStringArray(textureRoot, tmpName, tmpNameSize);
         samplerName = tmpName;
 
         // Add item to texture list. 
@@ -157,7 +157,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
 
                 // Retrieve the attributes in the geometry.
                 int32_t numAttribs = 0;
-                attributeRoot = CPM_ES_CEREAL_NS::CST_detail::inInt32Array(
+                attributeRoot = spire::CST_detail::inInt32Array(
                             attributeRoot, numAttribs);
 
                 std::vector<std::tuple<std::string, size_t, bool>> attribs;
@@ -166,12 +166,12 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
                   std::string attribName;
                   int32_t attribSize;
                   bool normalize;
-                  attributeRoot = CPM_ES_CEREAL_NS::CST_detail::inStringArray(
+                  attributeRoot = spire::CST_detail::inStringArray(
                               attributeRoot, tmpName, tmpNameSize);
                   attribName = tmpName;
-                  attributeRoot = CPM_ES_CEREAL_NS::CST_detail::inInt32Array(
+                  attributeRoot = spire::CST_detail::inInt32Array(
                               attributeRoot, attribSize);
-                  attributeRoot = CPM_ES_CEREAL_NS::CST_detail::inBoolArray(
+                  attributeRoot = spire::CST_detail::inBoolArray(
                               attributeRoot, normalize);
                   attribs.push_back(std::make_tuple(attribName, attribSize, normalize));
                 }
@@ -179,7 +179,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
                 // Retrieve the number of vertices. Even though we really don't use
                 // the number of vertices.
                 uint32_t numVertices;
-                CPM_ES_CEREAL_NS::CerealSerializeType<uint32_t>::in(
+                spire::CerealSerializeType<uint32_t>::in(
                             meshDict, "num_vertices", numVertices);
 
                 // Retrieve and install binary data.
@@ -260,7 +260,7 @@ bool GeomMan::hasGeomItemForAsset(const char* assetName)
   }
 }
 
-bool GeomMan::buildComponent(CPM_ES_CEREAL_NS::CerealCore& core,
+bool GeomMan::buildComponent(spire::CerealCore& core,
                              uint64_t entityID, const std::string& assetName)
 {
   if (hasGeomItemForAsset(assetName.c_str()))
@@ -354,7 +354,7 @@ bool GeomMan::buildComponent(CPM_ES_CEREAL_NS::CerealCore& core,
 //------------------------------------------------------------------------------
 
 class GeomPromiseFulfillment :
-    public es::GenericSystem<true,
+    public spire::GenericSystem<true,
                              GeomPromise,
                              StaticGeomMan>
 {
@@ -371,13 +371,13 @@ public:
   /// request should not be attempted.
   std::set<std::string> mAssetsAlreadyRequested;
 
-  void preWalkComponents(es::ESCoreBase&)
+  void preWalkComponents(spire::ESCoreBase&)
   {
     mAssetsAwaitingRequest.clear();
     mAssetsAlreadyRequested.clear();
   }
 
-  void postWalkComponents(es::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core)
   {
     std::weak_ptr<GeomMan> gm = core.getStaticComponent<StaticGeomMan>()->instance_;
     if (std::shared_ptr<GeomMan> man = gm.lock()) {
@@ -401,21 +401,21 @@ public:
     }
   }
 
-  void groupExecute(es::ESCoreBase& core, uint64_t entityID,
-               const es::ComponentGroup<GeomPromise>& promisesGroup,
-               const es::ComponentGroup<StaticGeomMan>& geomManGroup) override
+  void groupExecute(spire::ESCoreBase& core, uint64_t entityID,
+               const spire::ComponentGroup<GeomPromise>& promisesGroup,
+               const spire::ComponentGroup<StaticGeomMan>& geomManGroup) override
   {
     std::weak_ptr<GeomMan> gm = geomManGroup.front().instance_;
     if (std::shared_ptr<GeomMan> geomMan = gm.lock()) {
 
-        CPM_ES_CEREAL_NS::CerealCore* ourCorePtr =
-                dynamic_cast<CPM_ES_CEREAL_NS::CerealCore*>(&core);
+        spire::CerealCore* ourCorePtr =
+                dynamic_cast<spire::CerealCore*>(&core);
         if (ourCorePtr == nullptr)
         {
           std::cerr << "Unable to execute geom promise fulfillment. Bad cast." << std::endl;
           return;
         }
-        CPM_ES_CEREAL_NS::CerealCore& ourCore = *ourCorePtr;
+        spire::CerealCore& ourCore = *ourCorePtr;
 
         int index = 0;
         for (const GeomPromise& p : promisesGroup)
@@ -521,7 +521,7 @@ void GeomMan::runGCAgainstVaidNames(const std::set<std::string>& validKeys)
 }
 
 class GeomGarbageCollector :
-    public es::GenericSystem<false, Geom>
+    public spire::GenericSystem<false, Geom>
 {
 public:
 
@@ -529,9 +529,9 @@ public:
 
   std::set<std::string> mValidKeys;
 
-  void preWalkComponents(es::ESCoreBase&) {mValidKeys.clear();}
+  void preWalkComponents(spire::ESCoreBase&) {mValidKeys.clear();}
 
-  void postWalkComponents(es::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core)
   {
     std::weak_ptr<GeomMan> gm = core.getStaticComponent<StaticGeomMan>()->instance_;
     if (std::shared_ptr<GeomMan> geomMan = gm.lock()) {
@@ -543,7 +543,7 @@ public:
     }
   }
 
-  void execute(es::ESCoreBase&, uint64_t /* entityID */, const Geom* geom) override
+  void execute(spire::ESCoreBase&, uint64_t /* entityID */, const Geom* geom) override
   {
     mValidKeys.insert(geom->assetName);
   }
@@ -554,13 +554,13 @@ const char* GeomMan::getGCName()
   return GeomGarbageCollector::getName();
 }
 
-void GeomMan::registerSystems(CPM_ES_ACORN_NS::Acorn& core)
+void GeomMan::registerSystems(spire::Acorn& core)
 {
   core.registerSystem<GeomPromiseFulfillment>();
   core.registerSystem<GeomGarbageCollector>();
 }
 
-void GeomMan::runGCCycle(CPM_ES_NS::ESCoreBase& core)
+void GeomMan::runGCCycle(spire::ESCoreBase& core)
 {
   GeomGarbageCollector gc;
   gc.walkComponents(core);

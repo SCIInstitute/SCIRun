@@ -1,12 +1,12 @@
-#ifndef ASYNC_IAUNS_FILESYSTEM_HPP
-#define ASYNC_IAUNS_FILESYSTEM_HPP
+#ifndef ASYNC_SPIRE_FILESYSTEM_HPP
+#define ASYNC_SPIRE_FILESYSTEM_HPP
 
 #include <string>
 #include <functional>
 
 #include <es-acorn/Acorn.hpp>
 
-namespace CPM_ES_FS_NS {
+namespace spire {
 
 /// Possibly use https://github.com/d5/node.native for C++ libuv support.
 typedef std::function<void(const std::string& assetName, bool error,
@@ -35,10 +35,10 @@ public:
   static const char* getFSSystemName();
 
   /// Registers file system.
-  static void registerSystems(CPM_ES_ACORN_NS::Acorn& core);
+  static void registerSystems(spire::Acorn& core);
 };
 
-} // namespace CPM_ES_FS_NS 
+} // namespace spire 
 
 #endif
 

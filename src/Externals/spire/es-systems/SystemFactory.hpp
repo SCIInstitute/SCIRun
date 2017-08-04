@@ -1,16 +1,16 @@
-#ifndef IAUNS_SYSTEM_SYSTEMFACTORY_HPP
-#define IAUNS_SYSTEM_SYSTEMFACTORY_HPP
+#ifndef SPIRE_SYSTEM_SYSTEMFACTORY_HPP
+#define SPIRE_SYSTEM_SYSTEMFACTORY_HPP
 
 #include <memory>
 #include <stdexcept>
 #include <entity-system/ESCoreBase.hpp>
 
-namespace CPM_ES_SYSTEMS_NS {
+namespace spire {
 
 /// System factory.
 class SystemFactory
 {
-  typedef std::shared_ptr<CPM_ES_NS::BaseSystem> (*ClassFactoryFunPtr)();
+  typedef std::shared_ptr<spire::BaseSystem> (*ClassFactoryFunPtr)();
 public:
 
   template <typename T>
@@ -18,16 +18,16 @@ public:
   {
     ClassFactoryFunPtr fun = &createSystem<T>;
     auto ret = mMap.insert(std::make_pair(name, fun));
-    if (std::get<1>(ret) == false)
+    if (!std::get<1>(ret))
     {
-      std::cerr << "cpm-es-systems: Duplicate system name: " << name << std::endl;
+      std::cerr << "es-systems: Duplicate system name: " << name << std::endl;
       throw std::runtime_error("Duplicate system name.");
     }
   }
 
   /// new's a new system based purely on name.
   /// Warns and returns a nullptr if \p name is not found.
-  std::shared_ptr<CPM_ES_NS::BaseSystem> newSystemFromName(const char* name);
+  std::shared_ptr<spire::BaseSystem> newSystemFromName(const char* name);
 
   /// True if the system with the given name exists in our map.
   bool hasSystem(const char* name);
@@ -38,14 +38,14 @@ public:
 private:
 
   template<typename T>
-  static std::shared_ptr<CPM_ES_NS::BaseSystem> createSystem()
+  static std::shared_ptr<spire::BaseSystem> createSystem()
   {
-    return std::shared_ptr<CPM_ES_NS::BaseSystem>(new T);
+    return std::shared_ptr<spire::BaseSystem>(new T);
   }
 
   std::map<std::string, ClassFactoryFunPtr> mMap;
 };
 
-} // namespace CPM_ES_SYSTEMS_NS 
+} // namespace spire 
 
 #endif 

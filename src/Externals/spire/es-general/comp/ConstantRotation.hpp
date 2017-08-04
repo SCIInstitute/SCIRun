@@ -1,5 +1,5 @@
-#ifndef IAUNS_ES_GENERAL_CONSTANT_ROTATION_HPP
-#define IAUNS_ES_GENERAL_CONSTANT_ROTATION_HPP
+#ifndef SPIRE_ES_GENERAL_CONSTANT_ROTATION_HPP
+#define SPIRE_ES_GENERAL_CONSTANT_ROTATION_HPP
 
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -29,7 +29,7 @@ struct ConstantRotation
 
   static const char* getName() {return "gen:ConstantRotation";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& s, uint64_t /* entityID */)
   {
     s.serialize("prexform", pretransform);
     s.serialize("axis", rotationAxis);

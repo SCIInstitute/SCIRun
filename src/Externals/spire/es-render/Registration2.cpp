@@ -34,7 +34,7 @@
 
 namespace ren {
 
-  void register2(CPM_ES_ACORN_NS::Acorn& core)
+  void register2(spire::Acorn& core)
   {
     core.registerComponent<StaticArcBallCam>();
     core.registerComponent<StaticGLState>();

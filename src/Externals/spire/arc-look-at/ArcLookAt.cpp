@@ -32,13 +32,11 @@
 #include "ArcLookAt.hpp"
 #include <arc-ball/ArcBall.hpp>
 
-namespace ArcBall = CPM_ARC_BALL_NS;
-
-namespace CPM_ARC_LOOK_AT_NS {
+namespace spire {
 
 //------------------------------------------------------------------------------
 ArcLookAt::ArcLookAt() :
-    mArcBall(new ArcBall::ArcBall(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f)),
+    mArcBall(new ArcBall(glm::vec3(0.0f, 0.0f, 0.0f), 1.0f)),
     mCamLookAt(0.0f),
     mCamDistance(3.0f),
     mReferenceCamDistance(0.0f)
@@ -145,7 +143,7 @@ glm::mat4 ArcLookAt::getWorldViewTransform() const
 }
 
 //------------------------------------------------------------------------------
-void ArcLookAt::autoview(const CPM_GLM_AABB_NS::AABB& bbox, float fov)
+void ArcLookAt::autoview(const spire::AABB& bbox, float fov)
 {
   if (bbox.isNull()) return;
 
@@ -154,7 +152,7 @@ void ArcLookAt::autoview(const CPM_GLM_AABB_NS::AABB& bbox, float fov)
 
   if (w < 0.000001)
   {
-    CPM_GLM_AABB_NS::AABB bb;
+    spire::AABB bb;
     bb.setNull();
     glm::vec3 epsilon(0.001, 0.001, 0.001);
     bb.extend( bbox.getMin() - epsilon );
@@ -186,5 +184,5 @@ void ArcLookAt::setView(const glm::vec3& view, const glm::vec3& up)
   mCamLookAt = mReferenceLookAt;
 }
 
-} // namespace CPM_ARC_LOOK_AT_NS
+} // namespace spire
 

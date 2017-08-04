@@ -3,7 +3,7 @@
 #include <bserialize/BSerialize.hpp>
 #include "BMFont.hpp"
 
-namespace bs = CPM_BSERIALIZE_NS;
+namespace bs = spire;
 
 namespace ren {
 
@@ -220,7 +220,7 @@ void BMFont::readCharBlock(bs::BSerialize& s, size_t blockSize)
   }
 }
 
-void BMFont::readKernBlock(CPM_BSERIALIZE_NS::BSerialize& s, size_t blockSize)
+void BMFont::readKernBlock(spire::BSerialize& s, size_t blockSize)
 {
   // Size of first, second and amount.
   size_t kernInfoSize = sizeof(uint32_t) + sizeof(uint32_t) + sizeof(uint16_t);

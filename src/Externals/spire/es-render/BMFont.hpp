@@ -1,6 +1,6 @@
 
-#ifndef IAUNS_RENDER_BMFONT_HPP
-#define IAUNS_RENDER_BMFONT_HPP
+#ifndef SPIRE_RENDER_BMFONT_HPP
+#define SPIRE_RENDER_BMFONT_HPP
 
 #include <cstdint>
 #include <cstddef>
@@ -9,7 +9,7 @@
 #include <map>
 
 // Forward declare a class that we need for parsing BMFont files.
-namespace CPM_BSERIALIZE_NS {
+namespace spire {
 class BSerialize;
 }
 
@@ -141,11 +141,11 @@ private:
 
   /// Various functions to read blocks inside of the BMFont file.
   /// @{
-  void readInfoBlock(CPM_BSERIALIZE_NS::BSerialize& s);
-  void readCommonBlock(CPM_BSERIALIZE_NS::BSerialize& s);
-  void readPageBlock(CPM_BSERIALIZE_NS::BSerialize& s, size_t blockSize);
-  void readCharBlock(CPM_BSERIALIZE_NS::BSerialize& s, size_t blockSize);
-  void readKernBlock(CPM_BSERIALIZE_NS::BSerialize& s, size_t blockSize);
+  void readInfoBlock(spire::BSerialize& s);
+  void readCommonBlock(spire::BSerialize& s);
+  void readPageBlock(spire::BSerialize& s, size_t blockSize);
+  void readCharBlock(spire::BSerialize& s, size_t blockSize);
+  void readKernBlock(spire::BSerialize& s, size_t blockSize);
   /// @}
 
   InfoBlock   mInfoBlock;

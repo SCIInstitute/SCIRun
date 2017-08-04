@@ -2,7 +2,7 @@
 #include <iostream>
 #include "FilesystemDummy.hpp"
 
-namespace CPM_ES_FS_NS {
+namespace spire {
 
 void FilesystemDummy::update()
 {
@@ -28,5 +28,5 @@ void FilesystemDummy::readFile(const std::string& assetName, const FSCallback& c
   mAssets.emplace_back(assetName, cb);
 }
 
-} // namespace CPM_ES_FS_NS
+} // namespace spire
 

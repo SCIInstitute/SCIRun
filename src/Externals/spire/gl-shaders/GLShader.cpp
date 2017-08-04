@@ -7,7 +7,7 @@
 #include <functional>
 #include "GLShader.hpp"
 
-namespace CPM_GL_SHADERS_NS {
+namespace spire {
 
 GLsizei calculateStride(const ShaderAttribute* array, size_t size);
 
@@ -244,7 +244,7 @@ std::tuple<size_t, size_t> buildPreappliedAttrib(
     {
       if (appliedSize == outMaxSize)
       {
-        std::cerr << "cpm-gl-shaders - buildPreAppliedAttrib: outMaxSize too small" << std::endl;
+        std::cerr << "gl-shaders - buildPreAppliedAttrib: outMaxSize too small" << std::endl;
         throw std::runtime_error("outMaxSize too small.");
         return std::make_tuple(0,0);
       }
@@ -551,6 +551,6 @@ size_t getSizeOfBaseGLType(GLenum type)
   }
 }
 
-} // namespace CPM_GL_SHADER_NS
+} // namespace spire
 
 

@@ -5,7 +5,7 @@
 #include "CerealCore.hpp"
 #include <tny/tny.hpp>
 
-namespace CPM_ES_CEREAL_NS {
+namespace spire {
 
 CerealCore::CerealCore()
 {
@@ -55,7 +55,7 @@ Tny* CerealCore::serializeAllComponents()
 
       if (cur == NULL)
       {
-        std::cerr << "cpm-es-cereal: Failed to serialize all components." << std::endl;
+        std::cerr << "es-cereal: Failed to serialize all components." << std::endl;
         std::cerr << "Failed on component: " << heap->getComponentName() << std::endl;
         throw std::runtime_error("Failed serialization");
       }
@@ -91,7 +91,7 @@ Tny* CerealCore::serializeEntity(uint64_t entityID)
 
       if (cur == NULL)
       {
-        std::cerr << "cpm-es-cereal: Failed to serialize all components." << std::endl;
+        std::cerr << "es-cereal: Failed to serialize all components." << std::endl;
         std::cerr << "Failed on component: " << heap->getComponentName() << std::endl;
         throw std::runtime_error("Failed serialization");
       }
@@ -111,7 +111,7 @@ void CerealCore::deserializeComponentMerge(Tny* root, bool copyExisting)
 {
   if (root == NULL)
   {
-    std::cerr << "cpm-es-cereal: deserializeComponentMerge root is NULL" << std::endl;
+    std::cerr << "es-cereal: deserializeComponentMerge root is NULL" << std::endl;
     throw std::runtime_error("Tny root NULL");
     return;
   }
@@ -119,7 +119,7 @@ void CerealCore::deserializeComponentMerge(Tny* root, bool copyExisting)
   /// Root should be a dictionary.
   if (root->type != TNY_DICT)
   {
-    std::cerr << "cpm-es-cereal: Unexpected Tny type to deserializeComponentMerge." << std::endl;
+    std::cerr << "es-cereal: Unexpected Tny type to deserializeComponentMerge." << std::endl;
     throw std::runtime_error("Unexpected Tny type");
     return;
   }
@@ -136,7 +136,7 @@ void CerealCore::deserializeComponentMerge(Tny* root, bool copyExisting)
 
     if (cur->type != TNY_OBJ)
     {
-      std::cerr << "cpm-es-cereal: Unexpected Tny type deserializing heap." << std::endl;
+      std::cerr << "es-cereal: Unexpected Tny type deserializing heap." << std::endl;
       throw std::runtime_error("Unexpected Tny type");
       return;
     }
@@ -161,7 +161,7 @@ void CerealCore::deserializeComponentMerge(Tny* root, bool copyExisting)
 
     if (foundHeap != true)
     {
-      std::cerr << "cpm-es-cereal: Warning - Unable to find heap with key: " << heapName << std::endl;
+      std::cerr << "es-cereal: Warning - Unable to find heap with key: " << heapName << std::endl;
       return;
     }
   }
@@ -174,7 +174,7 @@ void CerealCore::deserializeComponentCreate(Tny* root)
 {
   if (root == NULL)
   {
-    std::cerr << "cpm-es-cereal: deserializeComponentMerge root is NULL" << std::endl;
+    std::cerr << "es-cereal: deserializeComponentMerge root is NULL" << std::endl;
     throw std::runtime_error("Tny root NULL");
     return;
   }
@@ -182,7 +182,7 @@ void CerealCore::deserializeComponentCreate(Tny* root)
   /// Root should be a dictionary.
   if (root->type != TNY_DICT)
   {
-    std::cerr << "cpm-es-cereal: Unexpected Tny type to deserializeComponentMerge." << std::endl;
+    std::cerr << "es-cereal: Unexpected Tny type to deserializeComponentMerge." << std::endl;
     throw std::runtime_error("Unexpected Tny type");
     return;
   }
@@ -199,7 +199,7 @@ void CerealCore::deserializeComponentCreate(Tny* root)
 
     if (cur->type != TNY_OBJ)
     {
-      std::cerr << "cpm-es-cereal: Unexpected Tny type deserializing heap." << std::endl;
+      std::cerr << "es-cereal: Unexpected Tny type deserializing heap." << std::endl;
       throw std::runtime_error("Unexpected Tny type");
       return;
     }
@@ -224,11 +224,11 @@ void CerealCore::deserializeComponentCreate(Tny* root)
 
     if (foundHeap != true)
     {
-      std::cerr << "cpm-es-cereal: Warning - Unable to find heap with key: " << heapName << std::endl;
+      std::cerr << "es-cereal: Warning - Unable to find heap with key: " << heapName << std::endl;
       return;
     }
   }
 }
 
-} // namespace CPM_ES_CEREAL_CORE
+} 
 

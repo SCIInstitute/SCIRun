@@ -1,5 +1,5 @@
-#ifndef IAUNS_ES_RENDER_GEOMMAN_HPP
-#define IAUNS_ES_RENDER_GEOMMAN_HPP
+#ifndef SPIRE_ES_RENDER_GEOMMAN_HPP
+#define SPIRE_ES_RENDER_GEOMMAN_HPP
 
 #include <map>
 #include <set>
@@ -29,17 +29,17 @@ public:
   /// \param  entityID  Entity ID which will receive any ren::IBO, ren::VBO,
   ///                   and ren::Shaders loaded alongside the geometry.
   /// \param  assetName Name of the asset to load. Without extension.
-  void loadGeometry(CPM_ES_CEREAL_NS::CerealCore& core,
+  void loadGeometry(spire::CerealCore& core,
                     uint64_t entityID, const std::string& assetName);
 
   /// Runs a single GC cycle over Geom components. This does not affect
   /// components other than the Geom component (VBOs, IBOs, Shaders, etc...).
   /// You will have to run GC cycles over the other components in order
   /// to fully clean up the system.
-  void runGCCycle(CPM_ES_NS::ESCoreBase& core);
+  void runGCCycle(spire::ESCoreBase& core);
 
   /// Registers just the promise fullfilment system and the garbage collector.
-  static void registerSystems(CPM_ES_ACORN_NS::Acorn& core);
+  static void registerSystems(spire::Acorn& core);
 
   /// Retrieves GeomMan's garbage collector name.
   static const char* getGCName();
@@ -51,21 +51,21 @@ private:
   friend class GeomPromiseFulfillment;
   friend class GeomGarbageCollector;
 
-  bool buildComponent(CPM_ES_CEREAL_NS::CerealCore& core,
+  bool buildComponent(spire::CerealCore& core,
                       uint64_t entityID, const std::string& assetName);
 
   /// Runs garbage collection against a collection of valid asset names.
   void runGCAgainstVaidNames(const std::set<std::string>& validAssets);
 
   /// Initiates a request for a geometry object.
-  void requestAsset(CPM_ES_NS::ESCoreBase& core, const std::string& assetName,
+  void requestAsset(spire::ESCoreBase& core, const std::string& assetName,
                     int32_t numRetries);
 
   /// Callback issued when an asset has been loaded, or it was unable to
   /// be loaded.
   void loadAssetCB(const std::string& assetName, bool error,
                    size_t bytesRead, uint8_t* buffer, int32_t numRetries,
-                   CPM_ES_NS::ESCoreBase& core);
+                   spire::ESCoreBase& core);
 
   struct GeomItem
   {

@@ -1,5 +1,5 @@
-#ifndef IAUNS_CEREALCORE_HPP
-#define IAUNS_CEREALCORE_HPP
+#ifndef SPIRE_CEREALCORE_HPP
+#define SPIRE_CEREALCORE_HPP
 
 #include <set>
 #include <iostream>
@@ -12,9 +12,9 @@
 struct _Tny;
 typedef _Tny Tny;
 
-namespace CPM_ES_CEREAL_NS {
+namespace spire {
 
-class CerealCore : public CPM_ES_NS::ESCoreBase
+  class CerealCore : public spire::ESCoreBase
 {
 public:
   CerealCore();
@@ -62,7 +62,7 @@ public:
   Tny* serializeValue(T& value, uint64_t entityID, int32_t componentIndex = -1)
   {
     // Grab the CerealHeap based off of the 
-    CPM_ES_NS::BaseComponentContainer* cont = ensureComponentArrayExists<T, CerealHeap<T>>();
+    spire::BaseComponentContainer* cont = ensureComponentArrayExists<T, CerealHeap<T>>();
     
     // Convert value into a TNY_DICT, then call the necessary function to
     // slap on a valid serialization header.
@@ -112,29 +112,29 @@ public:
   template <typename T>
   void registerComponent()
   {
-    CPM_ES_NS::BaseComponentContainer* system = ensureComponentArrayExists<T, CerealHeap<T>>();
+    spire::BaseComponentContainer* system = ensureComponentArrayExists<T, CerealHeap<T>>();
     const char* name = dynamic_cast<CerealHeap<T>*>(system)->getComponentName();
 
     // Ensure there are no duplicate component names.
     if (std::get<1>(mComponentNames.insert(std::string(name))) == false)
     {
-      std::cerr << "cpm-es-cereal: Component with duplicate name." << " Name: " << name << std::endl;
-      throw std::runtime_error("cpm-es-cereal: Component with duplicate name.");
+      std::cerr << "es-cereal: Component with duplicate name." << " Name: " << name << std::endl;
+      throw std::runtime_error("es-cereal: Component with duplicate name.");
       return;
     }
 
-    mComponentIDNameMap.insert(std::make_pair(CPM_ES_NS::TemplateID<T>::getID(), std::string(name)));
+    mComponentIDNameMap.insert(std::make_pair(spire::TemplateID<T>::getID(), std::string(name)));
   }
 
   template <typename T>
   void addComponent(uint64_t entityID, const T& component)
   {
-    CPM_ES_NS::BaseComponentContainer* componentContainer
-        = getComponentContainer(CPM_ES_NS::TemplateID<T>::getID());
+    spire::BaseComponentContainer* componentContainer
+        = getComponentContainer(spire::TemplateID<T>::getID());
     if (componentContainer == nullptr)
     {
-      std::cerr << "cpm-es-cereal: Warning - addComponent called but component has not been registered yet!" << std::endl;
-      std::cerr << "cpm-es-cereal: Component - " << T::getName() << std::endl;
+      std::cerr << "es-cereal: Warning - addComponent called but component has not been registered yet!" << std::endl;
+      std::cerr << "es-cereal: Component - " << T::getName() << std::endl;
     }
 
     coreAddComponent<T, CerealHeap<T>>(entityID, component);
@@ -143,12 +143,12 @@ public:
   template <typename T>
   size_t addStaticComponent(T&& component)
   {
-    CPM_ES_NS::BaseComponentContainer* componentContainer
-        = getComponentContainer(CPM_ES_NS::getESTypeID<T>());
+    spire::BaseComponentContainer* componentContainer
+        = getComponentContainer(spire::getESTypeID<T>());
     if (componentContainer == nullptr)
     {
-      std::cerr << "cpm-es-cereal: Warning - addStaticComponent called but component has not been registered yet!" << std::endl;
-      std::cerr << "cpm-es-cereal: Component - " << std::decay<T>::type::getName() << std::endl;
+      std::cerr << "es-cereal: Warning - addStaticComponent called but component has not been registered yet!" << std::endl;
+      std::cerr << "es-cereal: Component - " << std::decay<T>::type::getName() << std::endl;
     }
 
     return coreAddStaticComponent<T, CerealHeap<typename std::decay<T>::type>>(std::forward<T>(component));
@@ -162,7 +162,7 @@ public:
   void disableComponentSerialization()
   {
     // Grab the CerealHeap based off of the 
-    CPM_ES_NS::BaseComponentContainer* cont = ensureComponentArrayExists<T, CerealHeap<T>>();
+    spire::BaseComponentContainer* cont = ensureComponentArrayExists<T, CerealHeap<T>>();
     
     CerealHeap<T>* heap = dynamic_cast<CerealHeap<T>*>(cont);
     heap->setSerializable(false);
@@ -172,7 +172,7 @@ public:
   template <typename T>
   CerealHeap<T>* getOrCreateComponentContainer()
   {
-    CPM_ES_NS::BaseComponentContainer* cont = ensureComponentArrayExists<T, CerealHeap<T>>();
+    spire::BaseComponentContainer* cont = ensureComponentArrayExists<T, CerealHeap<T>>();
     return dynamic_cast<CerealHeap<T>*>(cont);
   }
 
@@ -184,7 +184,7 @@ protected:
   std::map<uint64_t, std::string> mComponentIDNameMap;
 };
 
-} // namespace CPM_ES_CEREAL_NS
+} // namespace spire
 
 #endif 
 

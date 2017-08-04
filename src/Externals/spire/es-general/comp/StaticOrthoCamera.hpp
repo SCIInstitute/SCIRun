@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_COMPONENTS_STATIC_ORTHO_CAMERA_HPP
-#define IAUNS_RENDER_COMPONENTS_STATIC_ORTHO_CAMERA_HPP
+#ifndef SPIRE_RENDER_COMPONENTS_STATIC_ORTHO_CAMERA_HPP
+#define SPIRE_RENDER_COMPONENTS_STATIC_ORTHO_CAMERA_HPP
 
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -18,7 +18,7 @@ struct StaticOrthoCamera
   // -- Functions --
   static const char* getName() {return "gen:StaticOrthoCamera";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
   {
     /// \todo Serialize camera settings.
     return true;

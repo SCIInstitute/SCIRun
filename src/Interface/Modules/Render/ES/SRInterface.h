@@ -32,17 +32,16 @@
 #include <cstdint>
 #include <memory>
 #include <Interface/Modules/Render/GLContext.h>
-#include "Core.h"
+#include <Interface/Modules/Render/ES/Core.h>
 #include <es-general/comp/Transform.hpp>
 
 //freetype
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-// CPM Modules
 #include <es-render/util/Shader.hpp>
 #include <es-render/comp/CommonUniforms.hpp>
-#include "comp/StaticClippingPlanes.h"
+#include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Interface/Modules/Render/share.h>
 

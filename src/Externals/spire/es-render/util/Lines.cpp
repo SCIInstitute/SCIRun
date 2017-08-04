@@ -10,7 +10,7 @@
 
 namespace ren {
 
-std::pair<ren::VBO, ren::IBO> getLineUnitSquare(CPM_ES_CEREAL_NS::CerealCore& core)
+std::pair<ren::VBO, ren::IBO> getLineUnitSquare(spire::CerealCore& core)
 {
   // Build VBO component to add to the entityID.
   ren::VBO vboComp;
@@ -74,7 +74,7 @@ std::pair<ren::VBO, ren::IBO> getLineUnitSquare(CPM_ES_CEREAL_NS::CerealCore& co
   return std::make_pair(vboComp, iboComp);
 }
 
-GLuint getColorLineShader(CPM_ES_CEREAL_NS::CerealCore& core)
+GLuint getColorLineShader(spire::CerealCore& core)
 {
   const char* colorLineShaderName = "_memColorLine";
   std::weak_ptr<ren::ShaderMan> sm = core.getStaticComponent<ren::StaticShaderMan>()->instance_;

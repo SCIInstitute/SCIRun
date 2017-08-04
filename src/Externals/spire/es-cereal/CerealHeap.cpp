@@ -1,6 +1,6 @@
 #include "CerealHeap.hpp"
 
-namespace CPM_ES_CEREAL_NS {
+namespace spire {
 
 namespace heap_detail {
 
@@ -8,14 +8,14 @@ bool checkTnyType(Tny* root, TnyType type)
 {
   if (root == NULL)
   {
-    std::cerr << "cpm-es-cereal: deserialize root is NULL" << std::endl;
+    std::cerr << "es-cereal: deserialize root is NULL" << std::endl;
     throw std::runtime_error("NULL ptr");
     return false;
   }
 
   if (root->type != type)
   {
-    std::cerr << "cpm-es-cereal: Unexpected Tny type to deserialize." << std::endl;
+    std::cerr << "es-cereal: Unexpected Tny type to deserialize." << std::endl;
     throw std::runtime_error("Unexpected Tny type");
     return false;
   }
@@ -87,5 +87,5 @@ Tny* readSerializedHeap(ComponentSerialize& /* s */, Tny* root,
 
 } // namespace heap_detail
 
-} // namespace CPM_ES_CEREAL_ES
+} 
 

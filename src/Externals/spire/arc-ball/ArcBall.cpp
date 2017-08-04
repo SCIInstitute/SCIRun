@@ -1,6 +1,6 @@
 #include "ArcBall.hpp"
 
-namespace CPM_ARC_BALL_NS {
+namespace spire {
 
 //------------------------------------------------------------------------------
 ArcBall::ArcBall(const glm::vec3& center, glm::float_t radius, const glm::mat4& screenToTCS) :
@@ -17,11 +17,6 @@ ArcBall::ArcBall(const glm::vec3& center, glm::float_t radius, const glm::mat4& 
   mVNow     = vZero;
   mQDown    = qOne;
   mQNow     = qOne;
-}
-
-//------------------------------------------------------------------------------
-ArcBall::~ArcBall()
-{
 }
 
 //------------------------------------------------------------------------------
@@ -115,4 +110,4 @@ glm::mat4 ArcBall::getTransformation() const
 }
 
 
-} // namespace CPM_ARC_BALL_NS
+} // namespace spire

@@ -1,5 +1,5 @@
-#ifndef IAUNS_GENERAL_COMP_STATIC_RANDOM_HPP
-#define IAUNS_GENERAL_COMP_STATIC_RANDOM_HPP
+#ifndef SPIRE_GENERAL_COMP_STATIC_RANDOM_HPP
+#define SPIRE_GENERAL_COMP_STATIC_RANDOM_HPP
 
 #include <random>
 #include <ctime>
@@ -54,7 +54,7 @@ struct StaticRandom
   
   static const char* getName() {return "gen:StaticRandom";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
   {
     return true;
   }

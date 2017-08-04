@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_COMPONENT_STATIC_FONT_MAN_HPP
-#define IAUNS_RENDER_COMPONENT_STATIC_FONT_MAN_HPP
+#ifndef SPIRE_RENDER_COMPONENT_STATIC_FONT_MAN_HPP
+#define SPIRE_RENDER_COMPONENT_STATIC_FONT_MAN_HPP
 
 #include <memory>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -29,9 +29,9 @@ struct StaticFontMan
     static const char* getName() {return "ren:StaticFontMan";}
 
 private:
-    friend class CPM_ES_CEREAL_NS::CerealHeap<StaticFontMan>;
+    friend class spire::CerealHeap<StaticFontMan>;
 
-    bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize&, uint64_t)
+    bool serialize(spire::ComponentSerialize&, uint64_t)
     {
     // No need to serialize. But we do want that we were in the component
     // system to be serialized out.

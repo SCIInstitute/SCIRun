@@ -33,7 +33,7 @@
 
 namespace ren {
 
-  void register3(CPM_ES_ACORN_NS::Acorn& core)
+  void register3(spire::Acorn& core)
   {
     core.registerComponent<Font>();
     core.registerComponent<FontPromise>();

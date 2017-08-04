@@ -1,12 +1,12 @@
-#ifndef IAUNS_ASYNC_REGISTRATION_HPP
-#define IAUNS_ASYNC_REGISTRATION_HPP
+#ifndef SPIRE_ASYNC_REGISTRATION_HPP
+#define SPIRE_ASYNC_REGISTRATION_HPP
 
 #include <es-acorn/Acorn.hpp>
 
-namespace CPM_ES_FS_NS {
+namespace spire {
 
 /// Registers all gameplay systems and components.
-void registerAll(CPM_ES_ACORN_NS::Acorn& core);
+void registerAll(spire::Acorn& core);
 
 } // namespace ren
 

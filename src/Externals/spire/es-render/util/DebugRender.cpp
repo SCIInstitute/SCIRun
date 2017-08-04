@@ -19,7 +19,7 @@ DebugRender::DebugRender() :
     mShaderID(0)
 {}
 
-DebugRender::DebugRender(CPM_ES_CEREAL_NS::CerealCore& core) :
+DebugRender::DebugRender(spire::CerealCore& core) :
     mLines(0),
     mCurCircum(0),
     mColorUniform("uColor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), VecUniform::VEC4)
@@ -39,7 +39,7 @@ void DebugRender::finalizeClosedObject()
   addLine(mFirstPoint, mLastPoint);
 }
 
-void DebugRender::reaquireShader(CPM_ES_CEREAL_NS::CerealCore& core)
+void DebugRender::reaquireShader(spire::CerealCore& core)
 {
   mShaderID = getColorLineShader(core);
 

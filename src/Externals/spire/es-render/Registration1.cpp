@@ -33,7 +33,7 @@
 
 namespace ren {
 
-  void register1(CPM_ES_ACORN_NS::Acorn& core)
+  void register1(spire::Acorn& core)
   {
     core.registerComponent<CommonUniforms>();
     core.registerComponent<GLState>();

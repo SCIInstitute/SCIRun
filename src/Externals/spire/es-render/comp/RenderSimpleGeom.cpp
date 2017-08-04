@@ -14,12 +14,12 @@ void RenderSimpleGeom::checkAttribArray(GLuint vboID, GLuint shaderID,
     ///       we are looking up the shader's attributes using OpenGL), then
     ///       we can cache the attributes in the shader manager and import
     ///       them using the StaticShaderMan component.
-    std::vector<CPM_GL_SHADERS_NS::ShaderAttribute> attribs = 
-        CPM_GL_SHADERS_NS::getProgramAttributes(shaderID);
-    CPM_GL_SHADERS_NS::sortAttributesAlphabetically(attribs);
+    std::vector<spire::ShaderAttribute> attribs = 
+        spire::getProgramAttributes(shaderID);
+    spire::sortAttributesAlphabetically(attribs);
 
     // Lookup the VBO and its attributes by GL id.
-    std::vector<CPM_GL_SHADERS_NS::ShaderAttribute> vboAttribs =
+    std::vector<spire::ShaderAttribute> vboAttribs =
         vboMan.instance_->getVBOAttributes(vboID);
 
     if (vboAttribs.size() < attribs.size())

@@ -1,5 +1,5 @@
-#ifndef IAUNS_BSERIALIZE_H_
-#define IAUNS_BSERIALIZE_H_
+#ifndef SPIRE_BSERIALIZE_H_
+#define SPIRE_BSERIALIZE_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -7,7 +7,7 @@
 
 #include "src/BSerializeDetail.hpp"
 
-namespace CPM_BSERIALIZE_NS {
+namespace spire {
 
 class BSerialize
 {
@@ -65,7 +65,7 @@ private:
   size_t  mOffset;
 };
 
-} // namespace CPM_BSERIALIZE_NS
+} // namespace spire
 
 #endif
 

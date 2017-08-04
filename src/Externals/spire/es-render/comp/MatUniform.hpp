@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_COMPONENT_MAT_UNIFORM_HPP
-#define IAUNS_RENDER_COMPONENT_MAT_UNIFORM_HPP
+#ifndef SPIRE_RENDER_COMPONENT_MAT_UNIFORM_HPP
+#define SPIRE_RENDER_COMPONENT_MAT_UNIFORM_HPP
 
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -43,7 +43,7 @@ struct MatUniform
 
   static const char* getName() {return "ren:MatUniform";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
   {
     /// \todo Serialize appropriate uniform data (mat4).
     return true;

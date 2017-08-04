@@ -2,7 +2,7 @@
 #include <glm/gtc/type_ptr.hpp>           // glm::value_ptr
 #include <var-buffer/VarBuffer.hpp>
 
-namespace shaders = CPM_GL_SHADERS_NS;
+namespace shaders = spire;
 
 namespace ren {
 
@@ -13,11 +13,11 @@ bool RenderFont::isSetUp() const
 
 void RenderFont::setupAttributesAndUniforms(GLuint shaderID)
 {
-  std::vector<CPM_GL_SHADERS_NS::ShaderAttribute> shaderAttribs = 
-      CPM_GL_SHADERS_NS::getProgramAttributes(shaderID);
-  CPM_GL_SHADERS_NS::sortAttributesAlphabetically(shaderAttribs);
+  std::vector<spire::ShaderAttribute> shaderAttribs = 
+      spire::getProgramAttributes(shaderID);
+  spire::sortAttributesAlphabetically(shaderAttribs);
 
-  CPM_GL_SHADERS_NS::ShaderAttribute attribs[MaxFontAttributes];
+  spire::ShaderAttribute attribs[MaxFontAttributes];
 
   /// \todo Have an easier way of initializing these. Place in tuple and
   ///       have a function that combines them altogether.
@@ -96,8 +96,8 @@ void RenderFont::constructFontGeometry(const StaticFontMan& fontMan, uint64_t fo
   // Assuming RENDER_LINE for now...
 
   // Variable buffers that will contain our VBO and IBO.
-  CPM_VAR_BUFFER_NS::VarBuffer vboBuff;
-  CPM_VAR_BUFFER_NS::VarBuffer iboBuff;
+  spire::VarBuffer vboBuff;
+  spire::VarBuffer iboBuff;
 
   // We create everything in pixel coordinates, then transfer coordinate
   // systems.

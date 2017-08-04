@@ -1,14 +1,14 @@
-#ifndef IAUNS_CPM_ES_ACORN_HPP
-#define IAUNS_CPM_ES_ACORN_HPP
+#ifndef SPIRE_ES_ACORN_HPP
+#define SPIRE_ES_ACORN_HPP
 
 #include <entity-system/ESCoreBase.hpp>
 #include <es-cereal/CerealCore.hpp>
 #include <es-systems/SystemCore.hpp>
 #include <set>
 
-namespace CPM_ES_ACORN_NS {
+namespace spire {
 
-class Acorn : public CPM_ES_CEREAL_NS::CerealCore
+  class Acorn : public spire::CerealCore
 {
 public:
   Acorn();
@@ -33,7 +33,7 @@ public:
                      uint64_t referenceTime = 0, uint64_t stagger = 0);
 
   /// This function does not check to see if the system already exists before
-  /// adding. It adds it anyways and cpm_es_system will sort out any conflicts
+  /// adding. It adds it anyways and es_system will sort out any conflicts
   /// during renormalization. This is useful if you know that the system may
   /// be removed during the course of the current frame and you want it to
   /// remain after its duplicate is removed from the system. Used in the
@@ -55,7 +55,7 @@ public:
   template <typename T>
   void addExemptComponent()
   {
-    mExemptComponents.insert(CPM_ES_NS::TemplateID<T>::getID());
+    mExemptComponents.insert(spire::TemplateID<T>::getID());
   }
 
   /// Adds a garbage collector system. Can be used in conjunction with
@@ -95,7 +95,7 @@ public:
 protected:
 
   /// Get the system core.
-  std::shared_ptr<CPM_ES_SYSTEMS_NS::SystemCore> getSystemCore() {return mSystems;}
+  std::shared_ptr<spire::SystemCore> getSystemCore() { return mSystems; }
 
   /// Returns true if the system is present.
   bool warnIfSystemPresent(const std::string& name);
@@ -118,9 +118,9 @@ protected:
   std::set<uint64_t> mExemptComponents;
 
   /// All registered systems.
-  std::shared_ptr<CPM_ES_SYSTEMS_NS::SystemCore>  mSystems;
+  std::shared_ptr<spire::SystemCore>  mSystems;
 };
 
-} // namespace CPM_ES_ACORN_NS
+} // namespace spire
 
 #endif 

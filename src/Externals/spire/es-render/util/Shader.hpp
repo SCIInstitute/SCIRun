@@ -1,5 +1,5 @@
-#ifndef IAUNS_ES_RENDER_UTIL_SHADER_HPP
-#define IAUNS_ES_RENDER_UTIL_SHADER_HPP
+#ifndef SPIRE_ES_RENDER_UTIL_SHADER_HPP
+#define SPIRE_ES_RENDER_UTIL_SHADER_HPP
 
 #include <es-cereal/CerealCore.hpp>
 #include <gl-shaders/GLShader.hpp>
@@ -9,7 +9,7 @@
 
 namespace ren {
 
-void addShaderVSFS(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
+void addShaderVSFS(spire::CerealCore& core, uint64_t entityID,
                    const std::string& shader);
 
 // Class to help construct attributes given a VBO and a shader.
@@ -34,7 +34,7 @@ public:
   void bind() const
   {
     if (isSetup()) {
-      CPM_GL_SHADERS_NS::bindPreappliedAttrib(mAppliedAttribs,
+      spire::bindPreappliedAttrib(mAppliedAttribs,
                                     static_cast<size_t>(mAttribSize), mStride);
     } else {
       std::cerr << "Attempted to bind uninitialized attributes!" << std::endl;
@@ -45,7 +45,7 @@ public:
   void unbind() const
   {
     if (isSetup()) {
-      CPM_GL_SHADERS_NS::unbindPreappliedAttrib(mAppliedAttribs, 
+      spire::unbindPreappliedAttrib(mAppliedAttribs, 
                                       static_cast<size_t>(mAttribSize));
     } else {
       std::cerr << "Attempted to unbind unitialized attributes!" << std::endl;
@@ -68,12 +68,12 @@ public:
     ///       we are looking up the shader's attributes using OpenGL), then
     ///       we can cache the attributes in the shader manager and import
     ///       them using the StaticShaderMan component.
-    std::vector<CPM_GL_SHADERS_NS::ShaderAttribute> attribs = 
-        CPM_GL_SHADERS_NS::getProgramAttributes(shaderID);
-    CPM_GL_SHADERS_NS::sortAttributesAlphabetically(attribs);
+    std::vector<spire::ShaderAttribute> attribs = 
+        spire::getProgramAttributes(shaderID);
+    spire::sortAttributesAlphabetically(attribs);
 
     // Lookup the VBO and its attributes by GL id.
-    std::vector<CPM_GL_SHADERS_NS::ShaderAttribute> vboAttribs =
+    std::vector<spire::ShaderAttribute> vboAttribs =
         vboMan.getVBOAttributes(vboID);
 
     if (vboAttribs.size() < attribs.size())
@@ -108,7 +108,7 @@ private:
   int     mAttribSize;   ///< How many elements in 'appliedAttribs' are valid.
   size_t  mStride;       ///< Stride between elements in the vertex buffer.
 
-  CPM_GL_SHADERS_NS::ShaderAttributeApplied mAppliedAttribs[MaxNumAttributes];
+  spire::ShaderAttributeApplied mAppliedAttribs[MaxNumAttributes];
 };
 
 } // namespace ren

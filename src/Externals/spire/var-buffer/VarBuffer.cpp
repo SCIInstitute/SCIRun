@@ -4,20 +4,20 @@
 #include <stdexcept>
 #include "VarBuffer.hpp"
 
-namespace CPM_VAR_BUFFER_NS {
+namespace spire {
 
 VarBuffer::VarBuffer() :
 mBuffer(1024),
     mBufferSize(1024)
 {
-  mSerializer.reset(new CPM_BSERIALIZE_NS::BSerialize(getBuffer(), mBufferSize));
+  mSerializer.reset(new spire::BSerialize(getBuffer(), mBufferSize));
 }
 
 VarBuffer::VarBuffer(uint32_t size) :
 mBuffer(size),
 mBufferSize(size)
 {
-  mSerializer.reset(new CPM_BSERIALIZE_NS::BSerialize(getBuffer(), mBufferSize));
+  mSerializer.reset(new spire::BSerialize(getBuffer(), mBufferSize));
 }
 
 void VarBuffer::clear()
@@ -60,10 +60,10 @@ void VarBuffer::resize()
   size_t bufferOffset = mSerializer->getOffset();
 
   // Create a new serializer and reset its offset.
-  mSerializer.reset(new CPM_BSERIALIZE_NS::BSerialize(getBuffer(), mBufferSize));
+  mSerializer.reset(new spire::BSerialize(getBuffer(), mBufferSize));
   mSerializer->setOffset(bufferOffset);
 }
 
-} // namespace CPM_VAR_BUFFER_NS
+} // namespace spire
 
 

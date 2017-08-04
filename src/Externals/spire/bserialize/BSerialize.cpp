@@ -1,7 +1,7 @@
 
 #include "BSerialize.hpp"
 
-namespace CPM_BSERIALIZE_NS {
+namespace spire {
 
 /// Use this constructor for either reading or writing.
 BSerialize::BSerialize(char* msg, size_t msgSize) :
@@ -70,5 +70,5 @@ void BSerialize::writeNullTermString(const char* str)
   writeBytes(str, length + 1);
 }
 
-} // namespace CPM_BSERIALIZE_NS
+} // namespace spire
 

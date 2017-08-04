@@ -3,9 +3,9 @@
 
 #include "SystemCore.hpp"
 
-namespace CPM_ES_SYSTEMS_NS {
+namespace spire {
 
-void SystemCore::runSystems(CPM_ES_NS::ESCoreBase& core, uint64_t referenceTime)
+void SystemCore::runSystems(spire::ESCoreBase& core, uint64_t referenceTime)
 {
   for (SystemItem& sys : mSystems)
   {
@@ -35,7 +35,7 @@ void SystemCore::renormalize()
     }
     else
     {
-      std::cerr << "cpm-es-system: Unable to find system with name: " << name << " in active list." << std::endl;
+      std::cerr << "es-system: Unable to find system with name: " << name << " in active list." << std::endl;
     }
   }
   mSystemsToRemove.clear();
@@ -112,7 +112,7 @@ bool SystemCore::isSystemActive(const std::string& name) const
 void SystemCore::addActiveSystem(const std::string& name, uint64_t ms,
                                  uint64_t referenceTime, uint64_t stagger)
 {
-  std::shared_ptr<CPM_ES_NS::BaseSystem> sys = mSystemFactory.newSystemFromName(name.c_str());
+  std::shared_ptr<spire::BaseSystem> sys = mSystemFactory.newSystemFromName(name.c_str());
   if (sys != nullptr)
   {
     SystemItem item(name, sys, ms, referenceTime, stagger);
@@ -120,8 +120,8 @@ void SystemCore::addActiveSystem(const std::string& name, uint64_t ms,
   }
   else
   {
-    std::cerr << "cpm-es-system: Unable to find system with name: " << name << std::endl;
-    std::cerr << "cpm-es-system: Was the system registered?" << std::endl;
+    std::cerr << "es-system: Unable to find system with name: " << name << std::endl;
+    std::cerr << "es-system: Was the system registered?" << std::endl;
   }
 }
 
@@ -134,7 +134,7 @@ void SystemCore::deserializeActiveSystems(Tny* root, uint64_t referenceTime)
 {
   if (root->type != TNY_DICT)
   {
-    std::cerr << "cpm-es-system: Unexpected type during deserialization." << std::endl;
+    std::cerr << "es-system: Unexpected type during deserialization." << std::endl;
     throw std::runtime_error("Unexepected Tny type");
   }
 
@@ -145,7 +145,7 @@ void SystemCore::deserializeActiveSystems(Tny* root, uint64_t referenceTime)
     std::string name = root->key;
     if (root->type != TNY_OBJ)
     {
-      std::cerr << "cpm-es-system: Unexpected type during deserialization." << std::endl;
+      std::cerr << "es-system: Unexpected type during deserialization." << std::endl;
       throw std::runtime_error("Unexpected Tny type");
     }
 
@@ -153,7 +153,7 @@ void SystemCore::deserializeActiveSystems(Tny* root, uint64_t referenceTime)
 
     if (comp->type != TNY_DICT)
     {
-      std::cerr << "cpm-es-system: Unexpected type during deserialization." << std::endl;
+      std::cerr << "es-system: Unexpected type during deserialization." << std::endl;
       throw std::runtime_error("Unexpected Tny type");
     }
     Tny* val = Tny_get(comp, "interval");
@@ -233,5 +233,5 @@ uint64_t SystemCore::SystemItem::calcNextExecutionTime(uint64_t referenceTime)
   }
 }
 
-} // namespace CPM_ES_SYSTEMS_NS
+} // namespace spire
 

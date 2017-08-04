@@ -1,7 +1,7 @@
 #include <gl-shaders/GLShader.hpp>
 #include "Texture.hpp"
 
-namespace shaders = CPM_GL_SHADERS_NS;
+namespace shaders = spire;
 
 namespace ren {
 

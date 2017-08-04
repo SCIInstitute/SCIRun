@@ -1,5 +1,5 @@
-#ifndef IAUNS_GENERAL_COMPONENTS_STATIC_CAMERA_HPP
-#define IAUNS_GENERAL_COMPONENTS_STATIC_CAMERA_HPP
+#ifndef SPIRE_GENERAL_COMPONENTS_STATIC_CAMERA_HPP
+#define SPIRE_GENERAL_COMPONENTS_STATIC_CAMERA_HPP
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
@@ -226,7 +226,7 @@ struct StaticCamera
   // -- Functions --
   static const char* getName() {return "gen:StaticCamera";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
   {
     /// \todo Serialize camera settings.
     return true;

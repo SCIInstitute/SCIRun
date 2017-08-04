@@ -1,5 +1,5 @@
-#ifndef IAUNS_COMPONENT_RENDER_SHADER_HPP
-#define IAUNS_COMPONENT_RENDER_SHADER_HPP
+#ifndef SPIRE_COMPONENT_RENDER_SHADER_HPP
+#define SPIRE_COMPONENT_RENDER_SHADER_HPP
 
 #include <gl-platform/GLPlatform.hpp>
 #include <glm/glm.hpp>
@@ -18,7 +18,7 @@ struct Shader
   // -- Functions --
   static const char* getName() {return "ren:shader";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t entityID)
+  bool serialize(spire::ComponentSerialize& s, uint64_t entityID)
   {
     // The logic below ensures we deserialize with promises, not with actual
     // shader assets (which wouldn't make sense with OpenGL assets).
@@ -32,15 +32,15 @@ struct Shader
       newPromise.requestInitiated = false;
       newPromise.setAssetName(assetName.c_str());
 
-      CPM_ES_CEREAL_NS::CerealCore& core 
-          = dynamic_cast<CPM_ES_CEREAL_NS::CerealCore&>(s.getCore());
+      spire::CerealCore& core 
+          = dynamic_cast<spire::CerealCore&>(s.getCore());
       core.addComponent(entityID, newPromise);
 
       return false; // We do not want to add this shader component back into the components.
                     // Instead we rely on the shader promise we created above.
     } else {
-      CPM_ES_CEREAL_NS::CerealCore& core 
-          = dynamic_cast<CPM_ES_CEREAL_NS::CerealCore&>(s.getCore());
+      spire::CerealCore& core 
+          = dynamic_cast<spire::CerealCore&>(s.getCore());
       std::weak_ptr<ShaderMan> sm = core.getStaticComponent<StaticShaderMan>()->instance_;
       if (std::shared_ptr<ShaderMan> shaderMan = sm.lock()) {
           // Find the asset name associated with our glid and serialize it out.

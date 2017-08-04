@@ -11,8 +11,8 @@
 #include "comp/TexturePromise.hpp"
 #include "comp/StaticTextureMan.hpp"
 
-namespace es = CPM_ES_NS;
-namespace fs = CPM_ES_FS_NS;
+namespace es = spire;
+namespace fs = spire;
 
 namespace ren {
 
@@ -32,7 +32,7 @@ namespace ren {
   }
 
   void TextureMan::loadTexture(
-    CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
+    spire::CerealCore& core, uint64_t entityID,
     const std::string& assetName, int32_t textureUnit,
     const std::string& uniformName)
   {
@@ -177,7 +177,7 @@ namespace ren {
     return true;
   }
 
-  void TextureMan::requestTexture(CPM_ES_NS::ESCoreBase& core, const std::string& assetName,
+  void TextureMan::requestTexture(spire::ESCoreBase& core, const std::string& assetName,
     int32_t numRetries)
   {
     fs::StaticFS* sfs = core.getStaticComponent<fs::StaticFS>();
@@ -185,7 +185,7 @@ namespace ren {
     /// \todo Get rid of this code when we switch to the new emscripten backend.
     ///       std::bind is preferable to cooking up a lambda. See ShaderMan
     ///       for functional examples.
-    es::ESCoreBase* refPtr = &core;
+    spire::ESCoreBase* refPtr = &core;
     auto callbackLambda = [this, numRetries, refPtr](
       const std::string& asset, bool error, size_t bytesRead, uint8_t* buffer)
     {
@@ -197,7 +197,7 @@ namespace ren {
 
   void TextureMan::loadTextureCB(const std::string& assetName, bool error,
     size_t bytesRead, uint8_t* buffer,
-    int32_t numRetries, CPM_ES_NS::ESCoreBase& core)
+    int32_t numRetries, spire::ESCoreBase& core)
   {
     if (!error)
     {
@@ -229,7 +229,7 @@ namespace ren {
 
   void TextureMan::loadRawPNG(const std::string& assetName, uint8_t* buffer,
     size_t bytesRead, int /* numRetries */,
-    CPM_ES_NS::ESCoreBase& /* core */)
+    spire::ESCoreBase& /* core */)
   {
     unsigned int width, height;
     unsigned char* image = nullptr;
@@ -282,24 +282,24 @@ namespace ren {
 
   void TextureMan::loadRawITX(const std::string& assetName, uint8_t* buffer,
     size_t bytesRead, int /* numRetries */,
-    CPM_ES_NS::ESCoreBase& /* core */)
+    spire::ESCoreBase& /* core */)
   {
     // We have a texture of our own format (possibly with mip-chain included).
     Tny* doc = Tny_loads(buffer, bytesRead);
     if (doc)
     {
       uint32_t width, height;
-      CPM_ES_CEREAL_NS::CerealSerializeType<uint32_t>::in(doc, "width", width);
-      CPM_ES_CEREAL_NS::CerealSerializeType<uint32_t>::in(doc, "height", height);
+      spire::CerealSerializeType<uint32_t>::in(doc, "width", width);
+      spire::CerealSerializeType<uint32_t>::in(doc, "height", height);
 
       bool rgba;
-      CPM_ES_CEREAL_NS::CerealSerializeType<bool>::in(doc, "rgba", rgba);
+      spire::CerealSerializeType<bool>::in(doc, "rgba", rgba);
 
       bool mips;
-      CPM_ES_CEREAL_NS::CerealSerializeType<bool>::in(doc, "mips", mips);
+      spire::CerealSerializeType<bool>::in(doc, "mips", mips);
 
       std::string filtering;
-      CPM_ES_CEREAL_NS::CerealSerializeType<std::string>::in(doc, "filter", filtering);
+      spire::CerealSerializeType<std::string>::in(doc, "filter", filtering);
 
       /// \todo Handle texture wrapping from the JSON file.
 
@@ -365,7 +365,7 @@ namespace ren {
       {
         // Extract mipmaps from document.
         uint32_t numMipLevels;
-        CPM_ES_CEREAL_NS::CerealSerializeType<uint32_t>::in(doc, "num_mips", numMipLevels);
+        spire::CerealSerializeType<uint32_t>::in(doc, "num_mips", numMipLevels);
 
         int twoFactor = 2;
         for (uint32_t i = 0; i < numMipLevels; ++i)
@@ -476,7 +476,7 @@ namespace ren {
     }
   }
 
-  bool TextureMan::buildComponent(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
+  bool TextureMan::buildComponent(spire::CerealCore& core, uint64_t entityID,
     const std::string& assetName, int32_t textureUnit,
     const std::string& uniformName)
   {
@@ -507,7 +507,7 @@ namespace ren {
   //------------------------------------------------------------------------------
 
   class TexturePromiseFulfillment :
-    public es::GenericSystem<true,
+    public spire::GenericSystem<true,
     TexturePromise,
     StaticTextureMan>
   {
@@ -524,13 +524,13 @@ namespace ren {
     /// request should not be attempted.
     std::set<std::string> mAssetsAlreadyRequested;
 
-    void preWalkComponents(es::ESCoreBase&)
+    void preWalkComponents(spire::ESCoreBase&)
     {
       mAssetsAwaitingRequest.clear();
       mAssetsAlreadyRequested.clear();
     }
 
-    void postWalkComponents(es::ESCoreBase& core)
+    void postWalkComponents(spire::ESCoreBase& core)
     {
       StaticTextureMan* man = core.getStaticComponent<StaticTextureMan>();
       if (man == nullptr)
@@ -559,21 +559,21 @@ namespace ren {
       }
     }
 
-    void groupExecute(es::ESCoreBase& core, uint64_t entityID,
-      const es::ComponentGroup<TexturePromise>& promisesGroup,
-      const es::ComponentGroup<StaticTextureMan>& textureManGroup) override
+    void groupExecute(spire::ESCoreBase& core, uint64_t entityID,
+      const spire::ComponentGroup<TexturePromise>& promisesGroup,
+      const spire::ComponentGroup<StaticTextureMan>& textureManGroup) override
     {
       std::weak_ptr<TextureMan> tm = textureManGroup.front().instance_;
       if (std::shared_ptr<TextureMan> textureMan = tm.lock()) {
 
-        CPM_ES_CEREAL_NS::CerealCore* ourCorePtr =
-          dynamic_cast<CPM_ES_CEREAL_NS::CerealCore*>(&core);
+        spire::CerealCore* ourCorePtr =
+          dynamic_cast<spire::CerealCore*>(&core);
         if (ourCorePtr == nullptr)
         {
           std::cerr << "Unable to execute texture promise fulfillment. Bad cast." << std::endl;
           return;
         }
-        CPM_ES_CEREAL_NS::CerealCore& ourCore = *ourCorePtr;
+        spire::CerealCore& ourCore = *ourCorePtr;
 
         int index = 0;
         for (const TexturePromise& p : promisesGroup)
@@ -692,7 +692,7 @@ namespace ren {
   }
 
   class TextureGarbageCollector :
-    public es::GenericSystem<false, Texture>
+    public spire::GenericSystem<false, Texture>
   {
   public:
 
@@ -700,12 +700,12 @@ namespace ren {
 
     std::set<GLuint> mValidKeys;
 
-    void preWalkComponents(es::ESCoreBase&)
+    void preWalkComponents(spire::ESCoreBase&)
     {
       mValidKeys.clear();
     }
 
-    void postWalkComponents(es::ESCoreBase& core)
+    void postWalkComponents(spire::ESCoreBase& core)
     {
       StaticTextureMan* man = core.getStaticComponent<StaticTextureMan>();
       if (man == nullptr)
@@ -720,7 +720,7 @@ namespace ren {
       }
     }
 
-    void execute(es::ESCoreBase&, uint64_t /* entityID */, const Texture* tex) override
+    void execute(spire::ESCoreBase&, uint64_t /* entityID */, const Texture* tex) override
     {
       mValidKeys.insert(tex->glid);
     }
@@ -731,13 +731,13 @@ namespace ren {
     return TextureGarbageCollector::getName();
   }
 
-  void TextureMan::registerSystems(CPM_ES_ACORN_NS::Acorn& core)
+  void TextureMan::registerSystems(spire::Acorn& core)
   {
     core.registerSystem<TexturePromiseFulfillment>();
     core.registerSystem<TextureGarbageCollector>();
   }
 
-  void TextureMan::runGCCycle(CPM_ES_NS::ESCoreBase& core)
+  void TextureMan::runGCCycle(spire::ESCoreBase& core)
   {
     TextureGarbageCollector gc;
     gc.walkComponents(core);

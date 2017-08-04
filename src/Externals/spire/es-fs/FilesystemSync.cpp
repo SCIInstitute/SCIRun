@@ -2,7 +2,7 @@
 #include <iostream>
 #include "FilesystemSync.hpp"
 
-namespace CPM_ES_FS_NS {
+namespace spire {
 
 void FilesystemSync::update()
 {
@@ -51,5 +51,5 @@ void FilesystemSync::readFile(const std::string& assetName, const FSCallback& cb
   mAssets.emplace_back(assetName, cb);
 }
 
-} // namespace CPM_ES_FS_NS
+} // namespace spire
 

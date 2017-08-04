@@ -1,7 +1,7 @@
-#ifndef IAUNS_GL_PLATFORM_HPP
-#define IAUNS_GL_PLATFORM_HPP
+#ifndef SPIRE_GL_PLATFORM_HPP
+#define SPIRE_GL_PLATFORM_HPP
 
-namespace CPM_GL_PLATFORM_NS {
+namespace spire {
 
 /// This function is only required on Windows (due to GLEW -- unless you alerady
 /// call GLEW init somewhere else) and it only calls glewInit(). It's best to
@@ -9,7 +9,7 @@ namespace CPM_GL_PLATFORM_NS {
 /// mandatory.
 void glPlatformInit();
 
-} // namespace CPM_GL_PLATFORM_NS
+} // namespace spire
 
 #if defined(USE_CORE_PROFILE_3) && defined(USE_CORE_PROFILE_4)
   #error Both USE_CORE_PROFILE_3 and USE_CORE_PROFILE_4 are defined. Ensure that only one is defined.
@@ -81,7 +81,7 @@ void glPlatformInit();
 
 // Misc GL debugging.
 #define MAX_GL_ERROR_COUNT 10 
-#ifdef IAUNS_GLDEBUG_DEBUG
+#ifdef SPIRE_GLDEBUG_DEBUG
 # define GL(stmt)                                                      \
   do {                                                                 \
     GLenum glerr;                                                      \

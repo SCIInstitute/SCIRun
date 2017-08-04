@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_COMPONENT_COMMON_UNIFORMS_HPP
-#define IAUNS_RENDER_COMPONENT_COMMON_UNIFORMS_HPP
+#ifndef SPIRE_RENDER_COMPONENT_COMMON_UNIFORMS_HPP
+#define SPIRE_RENDER_COMPONENT_COMMON_UNIFORMS_HPP
 
 #include <gl-platform/GLPlatform.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -59,7 +59,7 @@ struct CommonUniforms
 
   static const char* getName() {return "ren:CommonUniforms";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
   {
     // This component will be populated in real-time and doesn't need to be
     // serialized since the values will be dependent on this running

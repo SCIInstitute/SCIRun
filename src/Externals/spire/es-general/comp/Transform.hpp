@@ -1,5 +1,5 @@
-#ifndef IAUNS_ES_GENERAL_COMP_TRANSFORM_HPP
-#define IAUNS_ES_GENERAL_COMP_TRANSFORM_HPP
+#ifndef SPIRE_ES_GENERAL_COMP_TRANSFORM_HPP
+#define SPIRE_ES_GENERAL_COMP_TRANSFORM_HPP
 
 #include <es-cereal/ComponentSerialize.hpp>
 #include <cereal-glm/CerealGLM.hpp>
@@ -26,7 +26,7 @@ struct Transform
 
   static const char* getName() {return "gen:transform";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& s, uint64_t /* entityID */)
   {
     s.serialize("trafo", transform);
     return true;

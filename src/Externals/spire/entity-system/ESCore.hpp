@@ -1,9 +1,9 @@
-#ifndef IAUNS_ENTITY_SYSTEM_ESCORE_HPP
-#define IAUNS_ENTITY_SYSTEM_ESCORE_HPP
+#ifndef SPIRE_ENTITY_SYSTEM_ESCORE_HPP
+#define SPIRE_ENTITY_SYSTEM_ESCORE_HPP
 
 #include "ESCoreBase.hpp"
 
-namespace CPM_ES_NS {
+namespace spire {
 
 // This class is simply a lite wrapper around ESCoreBase which exposes
 // coreAddComponent and coreAddStaticComponent.
@@ -30,7 +30,7 @@ public:
   }
 };
 
-} // namespace CPM_ES_NS
+} // namespace spire
 
 #endif
 

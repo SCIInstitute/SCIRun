@@ -18,7 +18,7 @@
 
 namespace gen {
 
-void registerAll(CPM_ES_ACORN_NS::Acorn& core)
+void registerAll(spire::Acorn& core)
 {
   // Register systems
   registerSystem_ConstantRotation(core);

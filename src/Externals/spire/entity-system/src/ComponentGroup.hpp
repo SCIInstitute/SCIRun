@@ -1,11 +1,11 @@
-#ifndef IAUNS_ENTITY_SYSTEM_COMPONENTGROUP_HPP
-#define IAUNS_ENTITY_SYSTEM_COMPONENTGROUP_HPP
+#ifndef SPIRE_ENTITY_SYSTEM_COMPONENTGROUP_HPP
+#define SPIRE_ENTITY_SYSTEM_COMPONENTGROUP_HPP
 
 #include <iterator>
 
 #include "ComponentContainer.hpp"
 
-namespace CPM_ES_NS {
+namespace spire {
 
 template <typename T>
 struct ComponentGroup
@@ -164,6 +164,6 @@ struct ComponentGroup
   ComponentContainer<T>* container; // Can be a nullptr.
 };
 
-} // namespace CPM_ES_NS 
+} // namespace spire 
 
 #endif 

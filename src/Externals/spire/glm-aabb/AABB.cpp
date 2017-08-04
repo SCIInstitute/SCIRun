@@ -1,7 +1,7 @@
 #include "AABB.hpp"
 #include <glm/gtx/component_wise.hpp>
 
-namespace CPM_GLM_AABB_NS {
+namespace spire {
 
 AABB::AABB()
 {
@@ -200,5 +200,5 @@ bool AABB::isSimilarTo(const AABB& b, glm::float_t diff) const
   return true;
 }
 
-} // namespace CPM_GLM_AABB_NS
+} // namespace spire
 

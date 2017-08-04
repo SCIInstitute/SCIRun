@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_FBOMAN_HPP
-#define IAUNS_RENDER_FBOMAN_HPP
+#ifndef SPIRE_RENDER_FBOMAN_HPP
+#define SPIRE_RENDER_FBOMAN_HPP
 
 #include <set>
 #include <map>
@@ -24,15 +24,15 @@ namespace ren {
 
     /// Adds a FBO whose data is already in memory. Returns the GLid of the
     /// generated FBO.
-    GLuint createFBO(CPM_ES_CEREAL_NS::CerealCore& core, GLenum ttype,
+    GLuint createFBO(spire::CerealCore& core, GLenum ttype,
       GLsizei npixelx, GLsizei npixely, GLsizei npixelz,
       const std::string& assetName);
 
-    GLuint resizeFBO(CPM_ES_CEREAL_NS::CerealCore& core,
+    GLuint resizeFBO(spire::CerealCore& core,
       const std::string& assetName,
       GLsizei npixelx, GLsizei npixely, GLsizei npixelz);
 
-    GLuint getOrCreateFBO(CPM_ES_CEREAL_NS::CerealCore& core, GLenum ttype,
+    GLuint getOrCreateFBO(spire::CerealCore& core, GLenum ttype,
       GLsizei npixelx, GLsizei npixely, GLsizei npixelz,
       const std::string& assetName);
 
@@ -40,7 +40,7 @@ namespace ren {
     void bindFBO(GLuint glid);
     void unbindFBO();
 
-    bool readFBO(CPM_ES_CEREAL_NS::CerealCore& core,
+    bool readFBO(spire::CerealCore& core,
       const std::string& assetName,
       GLint posx, GLint posy, GLsizei width, GLsizei height,
       GLvoid* value, GLvoid* depth);
@@ -89,7 +89,7 @@ namespace ren {
     /// cycle and removes all shaders no longer in use. If this was a system
     /// that had promises, you would run promises before running a GC cycle
     /// since you don't want GC to remove useful shaders.
-    void runGCCycle(CPM_ES_NS::ESCoreBase& core);
+    void runGCCycle(spire::ESCoreBase& core);
 
     /// Returns the GLID for the given assetName (texture name), if one has been
     /// generated. Returns 0 if the texture is not found in the system.
@@ -105,7 +105,7 @@ namespace ren {
     /// Registers FBO managers systems. In this case, just the GC system.
     /// Other managers also have a promise system as well, which will fufill
     /// promises made to entities when assets are loaded from disk.
-    static void registerSystems(CPM_ES_ACORN_NS::Acorn& core);
+    static void registerSystems(spire::Acorn& core);
 
   private:
     friend class FBOGarbageCollector;

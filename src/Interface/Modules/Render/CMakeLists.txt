@@ -56,12 +56,15 @@ SET(Interface_Modules_Render_HEADERS_NO_MOC
   ES/Core.h
   ES/CoreBootstrap.h
   ES/AssetBootstrap.h
+  ES/Registration.h
   ES/comp/RenderBasicGeom.h
   ES/comp/StaticSRInterface.h
   ES/comp/StaticWorldLight.h
   ES/comp/StaticClippingPlanes.h
   ES/comp/LightingUniforms.h
   ES/comp/ClippingPlaneUniforms.h
+  ES/comp/RenderList.h
+  ES/comp/SRRenderState.h
   ES/systems/RenderBasicSys.h
   ES/systems/RenderTransBasicSys.h
   ES/systems/RenderTransText.h

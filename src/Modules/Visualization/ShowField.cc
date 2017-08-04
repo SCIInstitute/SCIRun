@@ -101,8 +101,8 @@ public:
     const std::vector<Vector> &normals,
     bool withNormals,
     uint32_t& iboBufferIndex,
-    CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
-    CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
+    spire::VarBuffer* iboBuffer,
+    spire::VarBuffer* vboBuffer,
     ColorScheme colorScheme,
     const std::vector<ColorRGB> &face_colors,
     const RenderState& state);
@@ -463,15 +463,15 @@ void GeometryBuilder::renderFacesLinear(
   // IBOs are not strictly needed. But, we may be able to optimize this code
   // somewhat.
   /// \todo Switch to unique_ptrs and move semantics.
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
-    new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
-    new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
+  std::shared_ptr<spire::VarBuffer> iboBufferSPtr(
+    new spire::VarBuffer(vboSize));
+  std::shared_ptr<spire::VarBuffer> vboBufferSPtr(
+    new spire::VarBuffer(iboSize));
 
   // Accessing the pointers like this is contrived. We only do this for
   // speed since we will be using the pointers in a tight inner loop.
-  CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
-  CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
+  auto iboBuffer = iboBufferSPtr.get();
+  auto vboBuffer = vboBufferSPtr.get();
 
   uint32_t iboIndex = 0;
   int64_t numVBOElements = 0;
@@ -872,8 +872,8 @@ void GeometryBuilder::addFaceGeom(
   const std::vector<Vector> &normals,
   bool withNormals,
   uint32_t& iboIndex,
-  CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer,
-  CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer,
+  spire::VarBuffer* iboBuffer,
+  spire::VarBuffer* vboBuffer,
   ColorScheme colorScheme,
   const std::vector<ColorRGB> &face_colors,
   const RenderState& state)

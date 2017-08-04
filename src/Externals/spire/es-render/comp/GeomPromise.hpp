@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_GEOMPROMISE_HPP
-#define IAUNS_RENDER_GEOMPROMISE_HPP
+#ifndef SPIRE_RENDER_GEOMPROMISE_HPP
+#define SPIRE_RENDER_GEOMPROMISE_HPP
 
 #include <cstring>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -41,7 +41,7 @@ struct GeomPromise
     }
   }
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& s, uint64_t /* entityID */)
   {
     std::string asset = assetName;
     s.serialize("name", asset);

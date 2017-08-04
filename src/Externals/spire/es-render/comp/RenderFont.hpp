@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_COMPONENT_RENDER_FONT_HPP
-#define IAUNS_RENDER_COMPONENT_RENDER_FONT_HPP
+#ifndef SPIRE_RENDER_COMPONENT_RENDER_FONT_HPP
+#define SPIRE_RENDER_COMPONENT_RENDER_FONT_HPP
 
 #include <glm/glm.hpp>
 #include <gl-shaders/GLShader.hpp>
@@ -48,7 +48,7 @@ struct RenderFont
   // the shader and the attributes that we supply.
   int attribSize;
   size_t stride;
-  CPM_GL_SHADERS_NS::ShaderAttributeApplied appliedAttribs[MaxFontAttributes]; 
+  spire::ShaderAttributeApplied appliedAttribs[MaxFontAttributes]; 
 
   // Uniform location for text scaling.
   GLint numTextCharsUniformLoc;
@@ -122,7 +122,7 @@ struct RenderFont
   // Applies uniforms
   void applyUniforms() const;
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
   {
     // Shouldn't need to serialize these values. They are context specific.
     return true;

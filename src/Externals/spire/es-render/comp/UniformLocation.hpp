@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_COMPONENT_UNIFORMLOCATION_HPP
-#define IAUNS_RENDER_COMPONENT_UNIFORMLOCATION_HPP
+#ifndef SPIRE_RENDER_COMPONENT_UNIFORMLOCATION_HPP
+#define SPIRE_RENDER_COMPONENT_UNIFORMLOCATION_HPP
 
 #include <es-cereal/ComponentSerialize.hpp>
 
@@ -16,7 +16,7 @@ struct UniformLocation
   // -- Functions --
   static const char* getName() {return "ren:UniformLocation";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
   {
     // How is this component used?
     return true;

@@ -3,16 +3,16 @@
 #include <entity-system/GenericSystem.hpp>
 #include <es-systems/SystemCore.hpp>
 
-namespace es = CPM_ES_NS;
+namespace es = spire;
 
-namespace CPM_ES_FS_NS {
+namespace spire {
 
-class FSSystem : public es::GenericSystem<false, StaticFS>
+class FSSystem : public spire::GenericSystem<false, StaticFS>
 {
 public:
   static const char* getName() {return "es-fs:FSSystem";}
 
-  void execute(es::ESCoreBase& /* core */, uint64_t /* entityID */, const StaticFS* fs) override
+  void execute(spire::ESCoreBase& /* core */, uint64_t /* entityID */, const StaticFS* fs) override
   {
     // Update the static filesystem by casting off const.
     StaticFS* mutableFS = const_cast<StaticFS*>(fs);
@@ -25,10 +25,10 @@ const char* Filesystem::getFSSystemName()
   return FSSystem::getName();
 }
 
-void Filesystem::registerSystems(CPM_ES_ACORN_NS::Acorn& core)
+void Filesystem::registerSystems(spire::Acorn& core)
 {
   core.registerSystem<FSSystem>();
 }
 
-} // namespace CPM_ES_FS_NS
+} // namespace spire
 

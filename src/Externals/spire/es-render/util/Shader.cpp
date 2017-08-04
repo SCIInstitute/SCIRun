@@ -3,7 +3,7 @@
 
 namespace ren {
 
-void addShaderVSFS(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
+void addShaderVSFS(spire::CerealCore& core, uint64_t entityID,
                    const std::string& shader)
 {
   std::weak_ptr<ren::ShaderMan> sm = core.getStaticComponent<ren::StaticShaderMan>()->instance_;

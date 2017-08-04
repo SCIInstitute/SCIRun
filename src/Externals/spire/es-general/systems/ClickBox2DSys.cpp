@@ -11,7 +11,7 @@
 #include "../comp/CameraSelect.hpp"
 #include "../comp/ClickBox2D.hpp"
 
-namespace es      = CPM_ES_NS;
+namespace es      = spire;
 
 // Every component is self contained. It only accesses the systems and
 // components that it specifies in it's component list. If you need to access
@@ -19,7 +19,7 @@ namespace es      = CPM_ES_NS;
 namespace gen {
 
 class ClickBox2DSys :
-    public es::GenericSystem<true,
+    public spire::GenericSystem<true,
                              Transform,
                              ClickBox2D,
                              CameraSelect,
@@ -33,17 +33,17 @@ public:
 
   bool isComponentOptional(uint64_t type) override
   {
-    return es::OptionalComponents<Transform, CameraSelect>(type);
+    return spire::OptionalComponents<Transform, CameraSelect>(type);
   }
 
   void groupExecute(
-      es::ESCoreBase&, uint64_t /* entityID */,
-      const es::ComponentGroup<Transform>& trafo,
-      const es::ComponentGroup<ClickBox2D>& clickBox,
-      const es::ComponentGroup<CameraSelect>& camSel,
-      const es::ComponentGroup<StaticCamera>& cam,
-      const es::ComponentGroup<StaticOrthoCamera>& orthoCam,
-      const es::ComponentGroup<StaticMouseInput>& mouseInput) override
+      spire::ESCoreBase&, uint64_t /* entityID */,
+      const spire::ComponentGroup<Transform>& trafo,
+      const spire::ComponentGroup<ClickBox2D>& clickBox,
+      const spire::ComponentGroup<CameraSelect>& camSel,
+      const spire::ComponentGroup<StaticCamera>& cam,
+      const spire::ComponentGroup<StaticOrthoCamera>& orthoCam,
+      const spire::ComponentGroup<StaticMouseInput>& mouseInput) override
   {
     if (mouseInput.front().size() == 0)
       return;
@@ -119,7 +119,7 @@ public:
   }
 };
 
-void registerSystem_ClickBox2D(CPM_ES_ACORN_NS::Acorn& core)
+void registerSystem_ClickBox2D(spire::Acorn& core)
 {
   core.registerSystem<ClickBox2DSys>();
 }

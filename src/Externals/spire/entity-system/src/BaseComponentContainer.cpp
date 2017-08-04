@@ -1,8 +1,8 @@
 #include "BaseComponentContainer.hpp"
 
-namespace CPM_ES_NS {
+namespace spire {
 
 const int BaseComponentContainer::StaticEntID = 1;
 
-} // namespace CPM_ES_NS
+} // namespace spire
 

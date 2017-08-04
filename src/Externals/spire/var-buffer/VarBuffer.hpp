@@ -1,12 +1,12 @@
-#ifndef IAUNS_VARBUFFER_HPP
-#define IAUNS_VARBUFFER_HPP
+#ifndef SPIRE_VARBUFFER_HPP
+#define SPIRE_VARBUFFER_HPP
 
 #include <cstdint>
 #include <memory>
 #include <vector>
 #include <bserialize/BSerialize.hpp>
 
-namespace CPM_VAR_BUFFER_NS {
+namespace spire {
 
 /// This class is only for writing to a variable sized buffer. It is a thin
 /// layer over the BSerialize code. To read data from a buffer, simply wrap
@@ -65,9 +65,9 @@ private:
   std::vector<char>   mBuffer;      ///< buffer
   int     mBufferSize;  ///< Absolute size of mBuffer in bytes.
 
-  std::unique_ptr<CPM_BSERIALIZE_NS::BSerialize> mSerializer;
+  std::unique_ptr<spire::BSerialize> mSerializer;
 };
 
-} // namespace CPM_VAR_BUFFER_NS
+} // namespace spire
 
 #endif 

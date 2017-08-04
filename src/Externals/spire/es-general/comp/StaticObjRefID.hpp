@@ -1,5 +1,5 @@
-#ifndef IAUNS_ES_GENERAL_COMP_STATICOBJREFID_HPP
-#define IAUNS_ES_GENERAL_COMP_STATICOBJREFID_HPP
+#ifndef SPIRE_ES_GENERAL_COMP_STATICOBJREFID_HPP
+#define SPIRE_ES_GENERAL_COMP_STATICOBJREFID_HPP
 
 #include <cstdint>
 #include <entity-system/GenericSystem.hpp>
@@ -22,12 +22,12 @@ struct StaticObjRefID
   // This is IMPORTANT! We must start spawning entities AFTER the static entity
   // ID. Otheriwes we can accidentally delete static entitys when deleting
   // regular components!
-  StaticObjRefID() {referenceID = CPM_ES_NS::BaseComponentContainer::StaticEntID + 1;}
+  StaticObjRefID() {referenceID = spire::BaseComponentContainer::StaticEntID + 1;}
 
   /// Retrieves a new object ID without having to know about 'this'.
   /// 'this' gets retrieved from the core and it is created if it does
   /// not already exist.
-  static uint64_t getNewObjectID(CPM_ES_CEREAL_NS::CerealCore& core)
+  static uint64_t getNewObjectID(spire::CerealCore& core)
   {
     return getMe(core)->getNewID();
   }
@@ -35,22 +35,22 @@ struct StaticObjRefID
   /// Allocates a block of ids and returns the ID of the first block entry.
   /// Useful for creating object pools. These pools can be used to logically
   /// sort entitys.
-  static uint64_t getNewBlock(CPM_ES_CEREAL_NS::CerealCore& core, int32_t blockSize)
+  static uint64_t getNewBlock(spire::CerealCore& core, int32_t blockSize)
   {
     return getMe(core)->getBlock(blockSize);
   }
 
-  // Required functions (CPM_ES_CEREAL_NS::CerealHeap)
+  // Required functions (spire::CerealHeap)
   static const char* getName() {return "gp:StaticObjRefID";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& s, uint64_t /* entityID */)
   {
     s.serialize("refID", referenceID);
     return true;
   }
 
 private:
-  static StaticObjRefID* getMe(CPM_ES_CEREAL_NS::CerealCore& core)
+  static StaticObjRefID* getMe(spire::CerealCore& core)
   {
     StaticObjRefID* me = core.getStaticComponent<StaticObjRefID>();
     if (me == nullptr)

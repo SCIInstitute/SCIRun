@@ -1,5 +1,5 @@
-#ifndef IAUNS_ES_GENERAL_COMP_CLICKBOX2D_HPP
-#define IAUNS_ES_GENERAL_COMP_CLICKBOX2D_HPP
+#ifndef SPIRE_ES_GENERAL_COMP_CLICKBOX2D_HPP
+#define SPIRE_ES_GENERAL_COMP_CLICKBOX2D_HPP
 
 #include <cstdint>
 #include <entity-system/GenericSystem.hpp>
@@ -33,10 +33,10 @@ struct ClickBox2D
     userID = 0;
   }
 
-  // Required functions (CPM_ES_CEREAL_NS::CerealHeap)
+  // Required functions (spire::CerealHeap)
   static const char* getName() {return "gp:ClickBox2D";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& s, uint64_t /* entityID */)
   {
     /// \todo Serialize ClickBox2D
     return true;

@@ -1,5 +1,5 @@
-#ifndef IAUNS_ES_GENERAL_STATIC_MOUSE_INPUT_HPP
-#define IAUNS_ES_GENERAL_STATIC_MOUSE_INPUT_HPP
+#ifndef SPIRE_ES_GENERAL_STATIC_MOUSE_INPUT_HPP
+#define SPIRE_ES_GENERAL_STATIC_MOUSE_INPUT_HPP
 
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -173,7 +173,7 @@ struct StaticMouseInput
 
   static const char* getName() {return "gen:StaticMouseInput";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
   {
     /// \todo Serialize mouse input
     return true;

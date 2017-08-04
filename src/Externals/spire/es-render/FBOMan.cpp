@@ -10,8 +10,8 @@
 #include "comp/StaticFBOMan.hpp"
 #include "comp/FBO.hpp"
 
-namespace es = CPM_ES_NS;
-namespace shaders = CPM_GL_SHADERS_NS;
+namespace es = spire;
+namespace shaders = spire;
 
 namespace ren {
 
@@ -29,7 +29,7 @@ namespace ren {
     mFBOData.clear();
   }
 
-  GLuint FBOMan::createFBO(CPM_ES_CEREAL_NS::CerealCore& core, GLenum ttype,
+  GLuint FBOMan::createFBO(spire::CerealCore& core, GLenum ttype,
     GLsizei npixelx, GLsizei npixely, GLsizei npixelz,
     const std::string& assetName)
   {
@@ -88,7 +88,7 @@ namespace ren {
     return glid;
   }
 
-  GLuint FBOMan::resizeFBO(CPM_ES_CEREAL_NS::CerealCore& core,
+  GLuint FBOMan::resizeFBO(spire::CerealCore& core,
     const std::string& assetName,
     GLsizei npixelx, GLsizei npixely, GLsizei npixelz)
   {
@@ -101,7 +101,7 @@ namespace ren {
     modifyFBOData(assetName, fboData);
 
     //get fbo
-    CPM_ES_CEREAL_NS::CerealHeap<ren::FBO>* contFBO =
+    spire::CerealHeap<ren::FBO>* contFBO =
       core.getOrCreateComponentContainer<ren::FBO>();
     std::pair<const ren::FBO*, size_t> component =
       contFBO->getComponent(getEntityIDForName(assetName));
@@ -109,11 +109,11 @@ namespace ren {
       return 0;
     ren::FBO fbo = *component.first;
     //get tex container
-    //containerID = CPM_ES_NS::getESTypeID<ren::Texture>();
+    //containerID = spire::getESTypeID<ren::Texture>();
     //container = core.getComponentContainer(containerID);
-    //CPM_ES_CEREAL_NS::CerealHeap<ren::Texture>* contTex =
-    //	dynamic_cast<CPM_ES_CEREAL_NS::CerealHeap<ren::Texture>*>(container);
-    CPM_ES_CEREAL_NS::CerealHeap<ren::Texture>* contTex =
+    //spire::CerealHeap<ren::Texture>* contTex =
+    //	dynamic_cast<spire::CerealHeap<ren::Texture>*>(container);
+    spire::CerealHeap<ren::Texture>* contTex =
       core.getOrCreateComponentContainer<ren::Texture>();
     //get tex manager
     std::weak_ptr<TextureMan> tm = core.getStaticComponent<StaticTextureMan>()->instance_;
@@ -144,17 +144,17 @@ namespace ren {
     return fbo.glid;
   }
 
-  GLuint FBOMan::getOrCreateFBO(CPM_ES_CEREAL_NS::CerealCore& core, GLenum ttype,
+  GLuint FBOMan::getOrCreateFBO(spire::CerealCore& core, GLenum ttype,
     GLsizei npixelx, GLsizei npixely, GLsizei npixelz,
     const std::string& assetName)
   {
     //get fbo
-    //uint64_t containerID = CPM_ES_NS::getESTypeID<ren::FBO>();
-    //CPM_ES_NS::BaseComponentContainer* container =
+    //uint64_t containerID = spire::getESTypeID<ren::FBO>();
+    //spire::BaseComponentContainer* container =
     //	core.getComponentContainer(containerID);
-    //CPM_ES_CEREAL_NS::CerealHeap<ren::FBO>* contFBO =
-    //	dynamic_cast<CPM_ES_CEREAL_NS::CerealHeap<ren::FBO>*>(container);
-    CPM_ES_CEREAL_NS::CerealHeap<ren::FBO>* contFBO =
+    //spire::CerealHeap<ren::FBO>* contFBO =
+    //	dynamic_cast<spire::CerealHeap<ren::FBO>*>(container);
+    spire::CerealHeap<ren::FBO>* contFBO =
       core.getOrCreateComponentContainer<ren::FBO>();
     std::pair<const ren::FBO*, size_t> component =
       contFBO->getComponent(getEntityIDForName(assetName));
@@ -195,13 +195,13 @@ namespace ren {
     mFBOIds.pop();
   }
 
-  bool FBOMan::readFBO(CPM_ES_CEREAL_NS::CerealCore& core,
+  bool FBOMan::readFBO(spire::CerealCore& core,
     const std::string& assetName,
     GLint posx, GLint posy, GLsizei width, GLsizei height,
     GLvoid* value, GLvoid* depth)
   {
     //get fbo
-    CPM_ES_CEREAL_NS::CerealHeap<ren::FBO>* contFBO =
+    spire::CerealHeap<ren::FBO>* contFBO =
       core.getOrCreateComponentContainer<ren::FBO>();
     std::pair<const ren::FBO*, size_t> component =
       contFBO->getComponent(getEntityIDForName(assetName));
@@ -210,7 +210,7 @@ namespace ren {
     ren::FBO fbo = *component.first;
 
     //get tex container
-    CPM_ES_CEREAL_NS::CerealHeap<ren::Texture>* contTex =
+    spire::CerealHeap<ren::Texture>* contTex =
       core.getOrCreateComponentContainer<ren::Texture>();
     //get tex manager
     std::weak_ptr<TextureMan> tm = core.getStaticComponent<StaticTextureMan>()->instance_;
@@ -371,7 +371,7 @@ namespace ren {
   }
 
   class FBOGarbageCollector :
-    public es::GenericSystem<false, FBO>
+    public spire::GenericSystem<false, FBO>
   {
   public:
 
@@ -379,8 +379,8 @@ namespace ren {
 
     std::set<GLuint> mValidKeys;
 
-    void preWalkComponents(es::ESCoreBase&) { mValidKeys.clear(); }
-    void postWalkComponents(es::ESCoreBase& core)
+    void preWalkComponents(spire::ESCoreBase&) { mValidKeys.clear(); }
+    void postWalkComponents(spire::ESCoreBase& core)
     {
       std::weak_ptr<FBOMan> im = core.getStaticComponent<StaticFBOMan>()->instance_;
       if (std::shared_ptr<FBOMan> man = im.lock()) {
@@ -393,19 +393,19 @@ namespace ren {
       }
     }
 
-    void execute(es::ESCoreBase&, uint64_t /* entityID */, const FBO* fbo) override
+    void execute(spire::ESCoreBase&, uint64_t /* entityID */, const FBO* fbo) override
     {
       mValidKeys.insert(fbo->glid);
     }
   };
 
-  void FBOMan::registerSystems(CPM_ES_ACORN_NS::Acorn& core)
+  void FBOMan::registerSystems(spire::Acorn& core)
   {
     // Register the garbage collector.
     core.registerSystem<FBOGarbageCollector>();
   }
 
-  void FBOMan::runGCCycle(CPM_ES_NS::ESCoreBase& core)
+  void FBOMan::runGCCycle(spire::ESCoreBase& core)
   {
     FBOGarbageCollector gc;
     gc.walkComponents(core);

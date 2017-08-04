@@ -1,5 +1,5 @@
-#ifndef IAUNS_BSERIALIZEDETAIL_HPP
-#define IAUNS_BSERIALIZEDETAIL_HPP
+#ifndef SPIRE_BSERIALIZEDETAIL_HPP
+#define SPIRE_BSERIALIZEDETAIL_HPP
 
 #include <cstddef>
 #include <cstdint>
@@ -7,7 +7,7 @@
 #include <string>
 #include <stdexcept>
 
-namespace CPM_BSERIALIZE_NS {
+namespace spire {
 
 namespace detail
 {
@@ -311,6 +311,6 @@ public:
 
 } // namespace detail
 
-} // namespace CPM_BSERIALIZE_NS
+} // namespace spire
 
 #endif 

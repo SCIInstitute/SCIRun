@@ -5,7 +5,7 @@
 
 namespace ren {
 
-void selectCamera(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
+void selectCamera(spire::CerealCore& core, uint64_t entityID,
                   gen::CameraSelect::Selection sel, bool newComponent)
 {
   bool createComponent = true;
@@ -15,7 +15,7 @@ void selectCamera(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
   {
     // Check to see if there already exists a CameraSelect component for this
     // entity in the system. We are guaranteed that the container will exist.
-    CPM_ES_CEREAL_NS::CerealHeap<gen::CameraSelect>* container = 
+    spire::CerealHeap<gen::CameraSelect>* container = 
         core.getOrCreateComponentContainer<gen::CameraSelect>();
 
     std::pair<const gen::CameraSelect*, size_t> component = container->getComponent(entityID);
@@ -57,7 +57,7 @@ void selectCamera(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
       // components for the specific entityID whenever add is called. If one
       // already exists, then we should probably throw an exception.
       //
-      // See the todo list for cpm-entity-system. It is layed out there in
+      // See the todo list for entity-system. It is layed out there in
       // detail.
     }
   }

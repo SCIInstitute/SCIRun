@@ -10,8 +10,8 @@
 #include "comp/StaticIBOMan.hpp"
 #include "comp/IBO.hpp"
 
-namespace es = CPM_ES_NS;
-namespace shaders = CPM_GL_SHADERS_NS;
+namespace es = spire;
+namespace shaders = spire;
 
 namespace ren {
 
@@ -132,7 +132,7 @@ void IBOMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
 }
 
 class IBOGarbageCollector :
-    public es::GenericSystem<false, IBO>
+    public spire::GenericSystem<false, IBO>
 {
 public:
 
@@ -140,8 +140,8 @@ public:
 
   std::set<GLuint> mValidKeys;
 
-  void preWalkComponents(es::ESCoreBase&) {mValidKeys.clear();}
-  void postWalkComponents(es::ESCoreBase& core)
+  void preWalkComponents(spire::ESCoreBase&) {mValidKeys.clear();}
+  void postWalkComponents(spire::ESCoreBase& core)
   {
     std::weak_ptr<IBOMan> im = core.getStaticComponent<StaticIBOMan>()->instance_;
     if (std::shared_ptr<IBOMan> man = im.lock()) {
@@ -154,19 +154,19 @@ public:
     }
   }
 
-  void execute(es::ESCoreBase&, uint64_t /* entityID */, const IBO* ibo) override
+  void execute(spire::ESCoreBase&, uint64_t /* entityID */, const IBO* ibo) override
   {
     mValidKeys.insert(ibo->glid);
   }
 };
 
-void IBOMan::registerSystems(CPM_ES_ACORN_NS::Acorn& core)
+void IBOMan::registerSystems(spire::Acorn& core)
 {
   // Register the garbage collector.
   core.registerSystem<IBOGarbageCollector>();
 }
 
-void IBOMan::runGCCycle(CPM_ES_NS::ESCoreBase& core)
+void IBOMan::runGCCycle(spire::ESCoreBase& core)
 {
   IBOGarbageCollector gc;
   gc.walkComponents(core);

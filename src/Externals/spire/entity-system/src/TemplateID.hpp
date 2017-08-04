@@ -1,12 +1,12 @@
 /// \author James Hughes
 /// \date   December 2013
 
-#ifndef IAUNS_CPM_ENTITY_SYSTEM_TEMPLATEID_HPP
-#define IAUNS_CPM_ENTITY_SYSTEM_TEMPLATEID_HPP
+#ifndef SPIRE_ENTITY_SYSTEM_TEMPLATEID_HPP
+#define SPIRE_ENTITY_SYSTEM_TEMPLATEID_HPP
 
 #include <cstdint>
 
-namespace CPM_ES_NS {
+namespace spire {
 
 class TemplateIDHelper
 {
@@ -53,6 +53,6 @@ public:
 
 template <typename T> uint64_t TemplateID<T>::mStaticTypeID = 0;
 
-} // namespace CPM_ES_NS
+} // namespace spire
 
 #endif 

@@ -1,5 +1,5 @@
-#ifndef IAUNS_ES_RENDER_UTIL_DEBUG_RENDER_HPP
-#define IAUNS_ES_RENDER_UTIL_DEBUG_RENDER_HPP
+#ifndef SPIRE_ES_RENDER_UTIL_DEBUG_RENDER_HPP
+#define SPIRE_ES_RENDER_UTIL_DEBUG_RENDER_HPP
 
 #include <var-buffer/VarBuffer.hpp>
 #include <es-cereal/CerealCore.hpp>
@@ -22,7 +22,7 @@ public:
   DebugRender();
 
   // The constructor looks up the shader that will be used for rendering lines.
-  DebugRender(CPM_ES_CEREAL_NS::CerealCore& core);
+  DebugRender(spire::CerealCore& core);
 
   // Clear
   void clear();
@@ -31,7 +31,7 @@ public:
   // every frame and save some dynamic memory allocation. You would generally
   // reaquire the shader every frame because we have no way of knowning whether
   // a GC cycle was run and GCed our shader.
-  void reaquireShader(CPM_ES_CEREAL_NS::CerealCore& core);
+  void reaquireShader(spire::CerealCore& core);
 
   // Adds a line to the debug renderer.
   void addLine(const glm::vec3& a, const glm::vec3& b);
@@ -56,7 +56,7 @@ private:
 
   GLuint mShaderID;
 
-  CPM_VAR_BUFFER_NS::VarBuffer  mVBO;
+  spire::VarBuffer  mVBO;
   VecUniform      mColorUniform;
   CommonUniforms  mCommonUniforms;
 };

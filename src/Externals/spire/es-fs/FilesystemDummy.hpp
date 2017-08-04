@@ -1,10 +1,10 @@
-#ifndef IAUNS_ASYNC_FILESYSTEMDUMMY_HPP
-#define IAUNS_ASYNC_FILESYSTEMDUMMY_HPP
+#ifndef SPIRE_ASYNC_FILESYSTEMDUMMY_HPP
+#define SPIRE_ASYNC_FILESYSTEMDUMMY_HPP
 
 #include <vector>
 #include "Filesystem.hpp"
 
-namespace CPM_ES_FS_NS {
+namespace spire {
 
 // Use this system if you want to provide synchronous operations on disk.
 // Only used when disk is present.
@@ -37,6 +37,6 @@ private:
   std::string             mPrefix;
 };
 
-} // namespace CPM_ES_FS_NS 
+} // namespace spire 
 
 #endif 

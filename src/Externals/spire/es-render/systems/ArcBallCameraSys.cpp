@@ -10,22 +10,22 @@
 
 #include "../comp/StaticArcBallCam.hpp"
 
-namespace es = CPM_ES_NS;
+namespace es = spire;
 
 namespace ren {
 
 class ArcBallCameraSys :
-    public es::GenericSystem<true, gen::StaticCamera, gen::StaticOrthoCamera,
+    public spire::GenericSystem<true, gen::StaticCamera, gen::StaticOrthoCamera,
                                    StaticArcBallCam, gen::StaticMouseInput>
 {
 public:
   static const char* getName() {return "ren:ArcBallCameraSys";}
 
-  void groupExecute(es::ESCoreBase&, uint64_t,
-      const es::ComponentGroup<gen::StaticCamera>& camera,
-      const es::ComponentGroup<gen::StaticOrthoCamera>& orthoCamera,
-      const es::ComponentGroup<StaticArcBallCam>& arcBallConst,
-      const es::ComponentGroup<gen::StaticMouseInput>& mouseInputIn) override
+  void groupExecute(spire::ESCoreBase&, uint64_t,
+      const spire::ComponentGroup<gen::StaticCamera>& camera,
+      const spire::ComponentGroup<gen::StaticOrthoCamera>& orthoCamera,
+      const spire::ComponentGroup<StaticArcBallCam>& arcBallConst,
+      const spire::ComponentGroup<gen::StaticMouseInput>& mouseInputIn) override
   {
     // We will modify arcBall in-place. We will be the only system modifying
     // its data, so no ill effects will be felt by bypassing the modification
@@ -104,7 +104,7 @@ public:
 
 };
 
-void registerSystem_ArcBallCameraMouse(CPM_ES_ACORN_NS::Acorn& core)
+void registerSystem_ArcBallCameraMouse(spire::Acorn& core)
 {
   core.registerSystem<ArcBallCameraSys>();
 }

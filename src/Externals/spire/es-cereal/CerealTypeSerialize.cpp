@@ -3,7 +3,7 @@
 #include "CerealTypeSerialize.hpp"
 #include <tny/tny.hpp>
 
-namespace CPM_ES_CEREAL_NS {
+namespace spire {
 namespace CST_detail {
 
 template <typename T>
@@ -26,17 +26,13 @@ bool tny8In(Tny* root, const char* name, T& v)
     }
     else
     {
-      std::cerr << "cpm-es-cereal: Mismatched Tny types for " << name << "!" << std::endl;
+      std::cerr << "es-cereal: Mismatched Tny types for " << name << "!" << std::endl;
       std::cerr << "Expected TNY_CHAR (" << TNY_CHAR << ") got (" << obj->type << ")" << std::endl;
       return false;
     }
   }
   else
   {
-#ifdef CPM_ES_CEREAL_VERBOSE_OUTPUT
-    // This is unlikely an error when we use delta compression.
-    std::cerr << "cpm-es-cereal: Unable to find " << name << " in Tny dictionary." << std::endl;
-#endif
     return false;
   }
 }
@@ -54,16 +50,13 @@ bool tny32In(Tny* root, const char* name, T& v)
     }
     else
     {
-      std::cerr << "cpm-es-cereal: Mismatched Tny types for " << name << "!" << std::endl;
+      std::cerr << "es-cereal: Mismatched Tny types for " << name << "!" << std::endl;
       std::cerr << "Expected TNY_INT32 (" << TNY_INT32 << ") got (" << obj->type << ")" << std::endl;
       return false;
     }
   }
   else
   {
-#ifdef CPM_ES_CEREAL_VERBOSE_OUTPUT
-    std::cerr << "cpm-es-cereal: Unable to find " << name << " in Tny dictionary." << std::endl;
-#endif
     return false;
   }
 }
@@ -81,16 +74,13 @@ bool tny64In(Tny* root, const char* name, T& v)
     }
     else
     {
-      std::cerr << "cpm-es-cereal: Mismatched Tny types for " << name << "!" << std::endl;
+      std::cerr << "es-cereal: Mismatched Tny types for " << name << "!" << std::endl;
       std::cerr << "Expected TNY_INT64 (" << TNY_INT64 << ") got (" << obj->type << ")" << std::endl;
       return false;
     }
   }
   else
   {
-#ifdef CPM_ES_CEREAL_VERBOSE_OUTPUT
-    std::cerr << "cpm-es-cereal: Unable to find " << name << " in Tny dictionary." << std::endl;
-#endif
     return false;
   }
 }
@@ -107,16 +97,13 @@ bool inBool(Tny* root, const char* name, bool& ch)
     }
     else
     {
-      std::cerr << "cpm-es-cereal: Mismatched Tny types for " << name << "!" << std::endl;
+      std::cerr << "es-cereal: Mismatched Tny types for " << name << "!" << std::endl;
       std::cerr << "Expected TNY_CHAR (" << TNY_CHAR << ") got (" << obj->type << ")" << std::endl;
       return false;
     }
   }
   else
   {
-#ifdef CPM_ES_CEREAL_VERBOSE_OUTPUT
-    std::cerr << "cpm-es-cereal: Unable to find " << name << " in Tny dictionary." << std::endl;
-#endif
     return false;
   }
 }
@@ -161,23 +148,20 @@ bool inBinary(Tny* root, const char* name, void* data, size_t size)
       }
       else
       {
-        std::cerr << "cpm-es-cereal: Memory for binary block too small for: " << name << std::endl;
+        std::cerr << "es-cereal: Memory for binary block too small for: " << name << std::endl;
         std::cerr << "Size of incoming binary block: " << obj->size << " size of memory: " << size << std::endl;
         return false;
       }
     }
     else
     {
-      std::cerr << "cpm-es-cereal: Mismatched Tny types for " << name << "!" << std::endl;
+      std::cerr << "es-cereal: Mismatched Tny types for " << name << "!" << std::endl;
       std::cerr << "Expected TNY_BIN (" << TNY_BIN << ") got (" << obj->type << ")" << std::endl;
       return false;
     }
   }
   else
   {
-#ifdef CPM_ES_CEREAL_VERBOSE_OUTPUT
-    std::cerr << "cpm-es-cereal: Unable to find " << name << " in Tny dictionary." << std::endl;
-#endif
     return false;
   }
 }
@@ -204,7 +188,7 @@ bool inStringStd(Tny* root, const char* name, std::string& str)
 
 Tny* outString(Tny* root, const char* name, const char* str)
 {
-  int length = std::strlen(str);
+  auto length = std::strlen(str);
   return outBinary(root, name, static_cast<const void*>(str), length + 1);   // include null
 }
 
@@ -223,22 +207,19 @@ bool inBinaryMalloc(Tny* root, const char* name, void** data)
       }
       else
       {
-        std::cerr << "cpm-es-cereal: Failed to allocate memory for " << name << " of size " << obj->size << std::endl;
+        std::cerr << "es-cereal: Failed to allocate memory for " << name << " of size " << obj->size << std::endl;
         return false;
       }
     }
     else
     {
-      std::cerr << "cpm-es-cereal: Mismatched Tny types for " << name << "!" << std::endl;
+      std::cerr << "es-cereal: Mismatched Tny types for " << name << "!" << std::endl;
       std::cerr << "Expected TNY_BIN (" << TNY_BIN << ") got (" << obj->type << ")" << std::endl;
       return false;
     }
   }
   else
   {
-#ifdef CPM_ES_CEREAL_VERBOSE_OUTPUT
-    std::cerr << "cpm-es-cereal: Unable to find " << name << " in Tny dictionary." << std::endl;
-#endif
     return false;
   }
 }
@@ -352,13 +333,13 @@ Tny* inBinaryArray(Tny* root, void* data, size_t size)
     }
     else
     {
-      std::cerr << "cpm-es-cereal: Memory for binary block too small. " << std::endl;
+      std::cerr << "es-cereal: Memory for binary block too small. " << std::endl;
       std::cerr << "Size of incoming binary block: " << root->size << " size of memory: " << size << std::endl;
     }
   }
   else
   {
-    std::cerr << "cpm-es-cereal: Expected TNY_BIN (" << TNY_BIN << ") got (" << root->type << ")" << std::endl;
+    std::cerr << "es-cereal: Expected TNY_BIN (" << TNY_BIN << ") got (" << root->type << ")" << std::endl;
   }
 
   if (Tny_hasNext(root))
@@ -380,7 +361,7 @@ Tny* inStringArray(Tny* root, char* str, size_t maxSize)
 
 Tny* outStringArray(Tny* root, const char* str)
 {
-  int length = std::strlen(str);
+  auto length = std::strlen(str);
   return outBinaryArray(root, static_cast<const void*>(str), length + 1);   // include null
 }
 
@@ -392,11 +373,11 @@ Tny* inBinaryMallocArray(Tny* root, void** data)
     if (*data != NULL)
       std::memcpy(*data, root->value.ptr, root->size);
     else
-      std::cerr << "cpm-es-cereal: Failed to allocate memory for size " << root->size << std::endl;
+      std::cerr << "es-cereal: Failed to allocate memory for size " << root->size << std::endl;
   }
   else
   {
-    std::cerr << "cpm-es-cereal: Mismatched Tny types!" << std::endl;
+    std::cerr << "es-cereal: Mismatched Tny types!" << std::endl;
     std::cerr << "Expected TNY_BIN (" << TNY_BIN << ") got (" << root->type << ")" << std::endl;
   }
 
@@ -415,5 +396,5 @@ Tny* outBinaryMallocArray(Tny* root, const void* data, size_t size)
 
 
 } // namespace CST_detail
-} // namespace CPM_ES_CEREAL_NS
+} // namespace spire
 

@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_COMPONENT_VEC_UNIFORM_HPP
-#define IAUNS_RENDER_COMPONENT_VEC_UNIFORM_HPP
+#ifndef SPIRE_RENDER_COMPONENT_VEC_UNIFORM_HPP
+#define SPIRE_RENDER_COMPONENT_VEC_UNIFORM_HPP
 
 #include <cstring>
 #include <glm/glm.hpp>
@@ -49,7 +49,7 @@ struct VecUniform
 
   static const char* getName() {return "ren:VecUniform";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
   {
     /// \todo Write out appropriate vector uniform.
     return true;

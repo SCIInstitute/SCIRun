@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_ASSETPROMISE_HPP
-#define IAUNS_RENDER_ASSETPROMISE_HPP
+#ifndef SPIRE_RENDER_ASSETPROMISE_HPP
+#define SPIRE_RENDER_ASSETPROMISE_HPP
 
 #include <es-cereal/ComponentSerialize.hpp>
 
@@ -27,7 +27,7 @@ struct AssetPromise
 
   static const char* getName() {return "ren:AssetPromise";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */,
+  bool serialize(spire::ComponentSerialize& /* s */,
                  uint64_t /* entityID */)
   {
     return true;

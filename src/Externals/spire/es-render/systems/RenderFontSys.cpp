@@ -24,8 +24,8 @@
 #include "../comp/RenderFont.hpp"
 #include "../comp/Font.hpp"
 
-namespace es = CPM_ES_NS;
-namespace shaders = CPM_GL_SHADERS_NS;
+namespace es = spire;
+namespace shaders = spire;
 
 // Every component is self contained. It only accesses the systems and
 // components that it specifies in it's component list. If you need to access
@@ -33,7 +33,7 @@ namespace shaders = CPM_GL_SHADERS_NS;
 namespace ren {
 
 class RenderFontSys : 
-    public es::GenericSystem<true,
+    public spire::GenericSystem<true,
                              gen::Transform,
                              gen::StaticGlobalTime,
                              CommonUniforms,
@@ -56,7 +56,7 @@ public:
 
   bool isComponentOptional(uint64_t type) override
   {
-    return es::OptionalComponents<CommonUniforms,
+    return spire::OptionalComponents<CommonUniforms,
                                   GLState,
                                   StaticGLState,
                                   VecUniform,
@@ -65,22 +65,22 @@ public:
   }
 
   void groupExecute(
-      es::ESCoreBase&, uint64_t /* entityID */,
-      const es::ComponentGroup<gen::Transform>& trafo,
-      const es::ComponentGroup<gen::StaticGlobalTime>& time,
-      const es::ComponentGroup<CommonUniforms>& commonUniforms,
-      const es::ComponentGroup<VecUniform>& vecUniforms,
-      const es::ComponentGroup<MatUniform>& matUniforms,
-      const es::ComponentGroup<Shader>& shader,
-      const es::ComponentGroup<Texture>& textures,
-      const es::ComponentGroup<Font>& font,
-      const es::ComponentGroup<RenderFont>& renFontGroup,
-      const es::ComponentGroup<GLState>& state,
-      const es::ComponentGroup<gen::CameraSelect>& camSelect,
-      const es::ComponentGroup<gen::StaticCamera>& camera,
-      const es::ComponentGroup<gen::StaticOrthoCamera>& orthoCamera,
-      const es::ComponentGroup<StaticGLState>& defaultGLState,
-      const es::ComponentGroup<StaticFontMan>& fontMan) override
+      spire::ESCoreBase&, uint64_t /* entityID */,
+      const spire::ComponentGroup<gen::Transform>& trafo,
+      const spire::ComponentGroup<gen::StaticGlobalTime>& time,
+      const spire::ComponentGroup<CommonUniforms>& commonUniforms,
+      const spire::ComponentGroup<VecUniform>& vecUniforms,
+      const spire::ComponentGroup<MatUniform>& matUniforms,
+      const spire::ComponentGroup<Shader>& shader,
+      const spire::ComponentGroup<Texture>& textures,
+      const spire::ComponentGroup<Font>& font,
+      const spire::ComponentGroup<RenderFont>& renFontGroup,
+      const spire::ComponentGroup<GLState>& state,
+      const spire::ComponentGroup<gen::CameraSelect>& camSelect,
+      const spire::ComponentGroup<gen::StaticCamera>& camera,
+      const spire::ComponentGroup<gen::StaticOrthoCamera>& orthoCamera,
+      const spire::ComponentGroup<StaticGLState>& defaultGLState,
+      const spire::ComponentGroup<StaticFontMan>& fontMan) override
   {
     const RenderFont& renFont = renFontGroup.front();
 
@@ -190,7 +190,7 @@ public:
   }
 };
 
-void registerSystem_RenderFont(CPM_ES_ACORN_NS::Acorn& core)
+void registerSystem_RenderFont(spire::Acorn& core)
 {
   core.registerSystem<RenderFontSys>();
 }

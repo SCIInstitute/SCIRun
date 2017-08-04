@@ -8,7 +8,7 @@
 #include "../comp/StaticGlobalTime.hpp"
 #include "../comp/ConstantRotation.hpp"
 
-namespace es      = CPM_ES_NS;
+namespace es      = spire;
 
 // Every component is self contained. It only accesses the systems and
 // components that it specifies in it's component list. If you need to access
@@ -16,7 +16,7 @@ namespace es      = CPM_ES_NS;
 namespace gen {
 
 class ConstantRotationSys :
-    public es::GenericSystem<true,
+    public spire::GenericSystem<true,
                              Transform,
                              StaticGlobalTime,
                              ConstantRotation>
@@ -26,10 +26,10 @@ public:
   static const char* getName() {return "gen:ConstantRotationSys";}
 
   void groupExecute(
-      es::ESCoreBase&, uint64_t /* entityID */,
-      const es::ComponentGroup<Transform>& trafo,
-      const es::ComponentGroup<StaticGlobalTime>& time,
-      const es::ComponentGroup<ConstantRotation>& constRot) override
+      spire::ESCoreBase&, uint64_t /* entityID */,
+      const spire::ComponentGroup<Transform>& trafo,
+      const spire::ComponentGroup<StaticGlobalTime>& time,
+      const spire::ComponentGroup<ConstantRotation>& constRot) override
   {
     /// NOTE: We can combine transformations, so long as this is the only
     ///       other transformation besides modifying the raw transform
@@ -68,7 +68,7 @@ public:
   }
 };
 
-void registerSystem_ConstantRotation(CPM_ES_ACORN_NS::Acorn& core)
+void registerSystem_ConstantRotation(spire::Acorn& core)
 {
   core.registerSystem<ConstantRotationSys>();
 }

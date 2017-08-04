@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_SHADERMAN_HPP
-#define IAUNS_RENDER_SHADERMAN_HPP
+#ifndef SPIRE_RENDER_SHADERMAN_HPP
+#define SPIRE_RENDER_SHADERMAN_HPP
 
 #include <map>
 #include <set>
@@ -37,7 +37,7 @@ public:
   /// \param  core        Core base.
   /// \param  entityID    Entity ID which will receive the ren::Shader component.
   /// \param  assetName   Name of the asset which to load.
-  void loadVertexAndFragmentShader(CPM_ES_CEREAL_NS::CerealCore& core, 
+  void loadVertexAndFragmentShader(spire::CerealCore& core, 
                                    uint64_t entityID, const std::string& assetName);
 
   /// Add in-memory vertex and fragment shader. Associates the assets with
@@ -46,7 +46,7 @@ public:
                          const std::string& assetName);
 
   /// Runs a single garbage collection cycle on the current state of the core.
-  void runGCCycle(CPM_ES_NS::ESCoreBase& core);
+  void runGCCycle(spire::ESCoreBase& core);
 
   /// Returns the GLID for the given assetName, if one has been generated.
   /// Returns 0 if the shader is not found in the system.
@@ -57,7 +57,7 @@ public:
 
   /// Registers ShaderMan's systems. Both the garbage collector and the promise
   /// fullfillment system are registered.
-  static void registerSystems(CPM_ES_ACORN_NS::Acorn& core);
+  static void registerSystems(spire::Acorn& core);
 
   /// Obtains the garbage collectors name so that you can setup intermitent
   /// garbage collection cycles.
@@ -72,13 +72,13 @@ private:
   friend class ShaderGarbageCollector;
   friend class ShaderPromiseVFFulfillment;
 
-  bool buildComponent(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
+  bool buildComponent(spire::CerealCore& core, uint64_t entityID,
                       const std::string& assetName);
 
   void runGCAgainstVaidIDs(const std::set<GLuint>& validKeys);
 
   /// Issues a request for a vertex shader and fragment shader.
-  void requestVSandFS(CPM_ES_NS::ESCoreBase& core, const std::string& assetName,
+  void requestVSandFS(spire::ESCoreBase& core, const std::string& assetName,
                       int32_t numRetries);
 
   /// Callback issued to load vertex shader. Think of a better format to use
@@ -86,14 +86,14 @@ private:
   void loadVertexShaderCB(const std::string& vsName, bool error,
                           size_t bytesRead, uint8_t* buffer,
                           std::string assetName, int32_t numRetries,
-                          CPM_ES_NS::ESCoreBase& core);
+                          spire::ESCoreBase& core);
 
   /// Callback issued to load fragment shader. 
   void loadFragmentShaderCB(const std::string& fsName, bool error,
                             size_t bytesRead, uint8_t* buffer,
                             std::string vertexShaderSource,
                             std::string assetName, int32_t numRetries,
-                            CPM_ES_NS::ESCoreBase& core);
+                            spire::ESCoreBase& core);
 
   /// Map from GL id to asset name.
   std::map<GLuint, std::string> mGLToName;

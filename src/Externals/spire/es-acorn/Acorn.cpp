@@ -1,10 +1,10 @@
 #include "Acorn.hpp"
 #include <string>
 
-namespace es      = CPM_ES_NS;
-namespace systems = CPM_ES_SYSTEMS_NS;
+namespace es      = spire;
+namespace systems = spire;
 
-namespace CPM_ES_ACORN_NS {
+namespace spire {
 
 Acorn::Acorn() :
     mSystems(new systems::SystemCore())
@@ -39,7 +39,7 @@ bool Acorn::displayEntityVersusSystemInfo(uint64_t entityID, const std::string& 
   }
 
   bool satisfied = true;
-  std::shared_ptr<CPM_ES_NS::BaseSystem> sys = mSystems->createNewSystem(sysName);
+  std::shared_ptr<spire::BaseSystem> sys = mSystems->createNewSystem(sysName);
   if (sys)
   {
     std::vector<uint64_t> components = sys->getComponents();
@@ -50,7 +50,7 @@ bool Acorn::displayEntityVersusSystemInfo(uint64_t entityID, const std::string& 
         optionalText = " - OPTIONAL";
 
       // Check to see if the entityID exists in the component container.
-      es::BaseComponentContainer* cont = getComponentContainer(c);
+      spire::BaseComponentContainer* cont = getComponentContainer(c);
       if (cont != nullptr)
       {
         std::string staticText;
@@ -67,7 +67,7 @@ bool Acorn::displayEntityVersusSystemInfo(uint64_t entityID, const std::string& 
         {
           if (cont->isStatic())
           {
-            numComponents = cont->getNumComponentsWithSequence(static_cast<uint64_t>(es::BaseComponentContainer::StaticEntID));
+            numComponents = cont->getNumComponentsWithSequence(static_cast<uint64_t>(spire::BaseComponentContainer::StaticEntID));
             if (numComponents > 0)
             {
               std::cout << "== " << numComponents << " - (" << mComponentIDNameMap.find(c)->second << ")"
@@ -246,10 +246,10 @@ void Acorn::runCompleteGC()
 {
   for (const std::string& str : mGarbageCollectorSystems)
   {
-    std::shared_ptr<CPM_ES_NS::BaseSystem> sys = mSystems->createNewSystem(str);
+    std::shared_ptr<spire::BaseSystem> sys = mSystems->createNewSystem(str);
     sys->walkComponents(*this);
   }
 }
 
-} // namespace CPM_ES_GCORE_NS
+} // namespace spire
 

@@ -1,10 +1,10 @@
-#ifndef IAUNS_ENTITY_SYSTEM_BASESYSTEM_HPP
-#define IAUNS_ENTITY_SYSTEM_BASESYSTEM_HPP
+#ifndef SPIRE_ENTITY_SYSTEM_BASESYSTEM_HPP
+#define SPIRE_ENTITY_SYSTEM_BASESYSTEM_HPP
 
 #include <vector>
 #include <cstdint>
 
-namespace CPM_ES_NS {
+namespace spire {
 
 class ESCoreBase;
 
@@ -24,6 +24,6 @@ public:
   virtual bool isComponentOptional(uint64_t component) = 0;
 };
 
-} // namespace CPM_ES_NS
+} // namespace spire
 
 #endif 

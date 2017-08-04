@@ -1,9 +1,9 @@
-#ifndef IAUNS_ENTITY_SYSTEM_DUPLICATECOMPONENT_HPP
-#define IAUNS_ENTITY_SYSTEM_DUPLICATECOMPONENT_HPP
+#ifndef SPIRE_ENTITY_SYSTEM_DUPLICATECOMPONENT_HPP
+#define SPIRE_ENTITY_SYSTEM_DUPLICATECOMPONENT_HPP
 
 #include "GenericSystem.hpp"
 
-namespace CPM_ES_NS {
+namespace spire {
 
 template <typename T>
 class HasDuplicateComponent : public GenericSystem<true, T>
@@ -44,7 +44,7 @@ bool hasDuplicateComponent(ESCoreBase& core, uint64_t entityID, const T& compone
   return sys.hasFoundDuplicate();
 }
 
-} // namespace CPM_ES_NS 
+} // namespace spire 
 
 #endif 
 

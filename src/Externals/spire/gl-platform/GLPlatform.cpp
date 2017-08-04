@@ -2,7 +2,7 @@
 #include "GLPlatform.hpp"
 #include <stdexcept>
 
-namespace CPM_GL_PLATFORM_NS {
+namespace spire {
 
 void glPlatformInit()
 {
@@ -15,5 +15,5 @@ void glPlatformInit()
 #endif
 }
 
-} // namespace CPM_GL_PLATFORM_NS
+} // namespace spire
 

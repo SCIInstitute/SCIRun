@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_IBOMAN_HPP
-#define IAUNS_RENDER_IBOMAN_HPP
+#ifndef SPIRE_RENDER_IBOMAN_HPP
+#define SPIRE_RENDER_IBOMAN_HPP
 
 #include <set>
 #include <map>
@@ -65,7 +65,7 @@ public:
   /// cycle and removes all shaders no longer in use. If this was a system
   /// that had promises, you would run promises before running a GC cycle
   /// since you don't want GC to remove useful shaders.
-  void runGCCycle(CPM_ES_NS::ESCoreBase& core);
+  void runGCCycle(spire::ESCoreBase& core);
 
   /// Retrieves the GC's name. You can use this in conjunction with
   /// SystemCore to setup an intermitent GC cycle.
@@ -74,7 +74,7 @@ public:
   /// Registers IBO managers systems. In this case, just the GC system.
   /// Other managers also have a promise system as well, which will fufill
   /// promises made to entities when assets are loaded from disk.
-  static void registerSystems(CPM_ES_ACORN_NS::Acorn& core);
+  static void registerSystems(spire::Acorn& core);
 
 private:
   friend class IBOGarbageCollector;

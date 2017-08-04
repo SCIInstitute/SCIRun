@@ -29,13 +29,13 @@
 /// \author James Hughes
 /// \date   February 2014
 
-#ifndef IAUNS_ENTITY_SYSTEM_EMPTYSYSTEM_HPP
-#define IAUNS_ENTITY_SYSTEM_EMPTYSYSTEM_HPP
+#ifndef SPIRE_ENTITY_SYSTEM_EMPTYSYSTEM_HPP
+#define SPIRE_ENTITY_SYSTEM_EMPTYSYSTEM_HPP
 
 #include "BaseSystem.hpp"
 #include "ESCoreBase.hpp"
 
-namespace CPM_ES_NS {
+namespace spire {
 
 /// A system that executes without any associated components.
 class EmptySystem : public BaseSystem
@@ -74,6 +74,6 @@ public:
   }
 };
 
-} // namespace CPM_ES_NS
+} // namespace spire
 
 #endif 

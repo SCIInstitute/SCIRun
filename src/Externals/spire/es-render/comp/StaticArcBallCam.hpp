@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_COMPONENTS_STATIC_ARC_BALL_CAMERA_HPP
-#define IAUNS_RENDER_COMPONENTS_STATIC_ARC_BALL_CAMERA_HPP
+#ifndef SPIRE_RENDER_COMPONENTS_STATIC_ARC_BALL_CAMERA_HPP
+#define SPIRE_RENDER_COMPONENTS_STATIC_ARC_BALL_CAMERA_HPP
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
@@ -19,7 +19,7 @@ struct StaticArcBallCam
 
   // -- Data --
   CamerasAffected           cams;
-  CPM_ARC_LOOK_AT_NS::ArcLookAt arcLookAt;
+  spire::ArcLookAt arcLookAt;
 
   // -- Functions --
   StaticArcBallCam()
@@ -42,7 +42,7 @@ struct StaticArcBallCam
 
   static const char* getName() {return "ren:StaticArcBallCam";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
   {
     /// \todo Serialize camera settings.
     return true;

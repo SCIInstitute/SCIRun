@@ -8,8 +8,8 @@
 #include "comp/StaticShaderMan.hpp"
 #include "comp/Shader.hpp"
 
-namespace es = CPM_ES_NS;
-namespace fs = CPM_ES_FS_NS;
+namespace es = spire;
+namespace fs = spire;
 
 namespace ren {
 
@@ -36,7 +36,7 @@ void ShaderMan::setShaderHeaderCode(const std::string& header)
 }
 
 void ShaderMan::loadVertexAndFragmentShader(
-    CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
+    spire::CerealCore& core, uint64_t entityID,
     const std::string& assetName)
 {
   // Attempt to build the component from what we have in-memory.
@@ -59,18 +59,18 @@ GLuint ShaderMan::addInMemoryVSFS(
   GLuint program = 0;
   if (mShaderHeader.size() > 0)
   {
-    program = CPM_GL_SHADERS_NS::loadShaderProgram(
+    program = spire::loadShaderProgram(
         {
-        CPM_GL_SHADERS_NS::ShaderSource({mShaderHeader.c_str(), vsSource.c_str()}, GL_VERTEX_SHADER),
-        CPM_GL_SHADERS_NS::ShaderSource({mShaderHeader.c_str(), fsSource.c_str()}, GL_FRAGMENT_SHADER)
+        spire::ShaderSource({mShaderHeader.c_str(), vsSource.c_str()}, GL_VERTEX_SHADER),
+        spire::ShaderSource({mShaderHeader.c_str(), fsSource.c_str()}, GL_FRAGMENT_SHADER)
         });
   }
   else
   {
-    program = CPM_GL_SHADERS_NS::loadShaderProgram(
+    program = spire::loadShaderProgram(
         {
-        CPM_GL_SHADERS_NS::ShaderSource({vsSource.c_str()}, GL_VERTEX_SHADER),
-        CPM_GL_SHADERS_NS::ShaderSource({fsSource.c_str()}, GL_FRAGMENT_SHADER)
+        spire::ShaderSource({vsSource.c_str()}, GL_VERTEX_SHADER),
+        spire::ShaderSource({fsSource.c_str()}, GL_FRAGMENT_SHADER)
         });
   }
 
@@ -82,7 +82,7 @@ GLuint ShaderMan::addInMemoryVSFS(
   return program;
 }
 
-void ShaderMan::requestVSandFS(CPM_ES_NS::ESCoreBase& core, const std::string& assetName,
+void ShaderMan::requestVSandFS(spire::ESCoreBase& core, const std::string& assetName,
                                int32_t numRetries)
 {
   // Begin by attempting to load the vertex shader.
@@ -98,7 +98,7 @@ void ShaderMan::requestVSandFS(CPM_ES_NS::ESCoreBase& core, const std::string& a
   /// \todo Get rid of this code when we switch to the new emscripten backend.
   ///       std::bind is preferable to cooking up a lambda. Working bind code
   ///       is given directly above.
-  es::ESCoreBase* refPtr = &core;
+  spire::ESCoreBase* refPtr = &core;
   auto callbackLambda = [this, assetName, numRetries, refPtr](
       const std::string& vsName, bool error, size_t bytesRead, uint8_t* buffer)
   {
@@ -110,7 +110,7 @@ void ShaderMan::requestVSandFS(CPM_ES_NS::ESCoreBase& core, const std::string& a
 void ShaderMan::loadVertexShaderCB(const std::string& /* vsName */, bool error,
                                    size_t bytesRead, uint8_t* buffer,
                                    std::string assetName, int32_t numRetries,
-                                   CPM_ES_NS::ESCoreBase& core)
+                                   spire::ESCoreBase& core)
 {
   if (!error)
   {
@@ -132,7 +132,7 @@ void ShaderMan::loadVertexShaderCB(const std::string& /* vsName */, bool error,
     /// \todo Get rid of this code when we switch to the new emscripten backend.
     ///       std::bind is preferable to cooking up a lambda. Working bind code
     ///       is given directly below.
-    es::ESCoreBase* refPtr = &core;
+    spire::ESCoreBase* refPtr = &core;
     auto callbackLambda = [this, assetName, numRetries, refPtr, vertexSource](
         const std::string& fsName, bool lambdaError, size_t lambdaBytesRead, uint8_t* lambdaBuffer)
     {
@@ -160,7 +160,7 @@ void ShaderMan::loadVertexShaderCB(const std::string& /* vsName */, bool error,
 void ShaderMan::loadFragmentShaderCB(const std::string& /* fsName */, bool error,
                                      size_t bytesRead, uint8_t* buffer,
                                      std::string vertexSource, std::string assetName,
-                                     int32_t numRetries, CPM_ES_NS::ESCoreBase& core)
+                                     int32_t numRetries, spire::ESCoreBase& core)
 {
   // We have both the vertex shader and fragment shader source. Proceed
   // to compile the shader and add the appropriate component to the indicated
@@ -178,18 +178,18 @@ void ShaderMan::loadFragmentShaderCB(const std::string& /* fsName */, bool error
     GLuint program = 0;
     if (mShaderHeader.size() > 0)
     {
-      program = CPM_GL_SHADERS_NS::loadShaderProgram(
+      program = spire::loadShaderProgram(
         {
-          CPM_GL_SHADERS_NS::ShaderSource({mShaderHeader.c_str(), vertexSource.c_str()}, GL_VERTEX_SHADER),
-          CPM_GL_SHADERS_NS::ShaderSource({mShaderHeader.c_str(), fragmentSource.c_str()}, GL_FRAGMENT_SHADER)
+          spire::ShaderSource({mShaderHeader.c_str(), vertexSource.c_str()}, GL_VERTEX_SHADER),
+          spire::ShaderSource({mShaderHeader.c_str(), fragmentSource.c_str()}, GL_FRAGMENT_SHADER)
         });
     }
     else
     {
-      program = CPM_GL_SHADERS_NS::loadShaderProgram(
+      program = spire::loadShaderProgram(
         {
-          CPM_GL_SHADERS_NS::ShaderSource({vertexSource.c_str()}, GL_VERTEX_SHADER),
-          CPM_GL_SHADERS_NS::ShaderSource({fragmentSource.c_str()}, GL_FRAGMENT_SHADER)
+          spire::ShaderSource({vertexSource.c_str()}, GL_VERTEX_SHADER),
+          spire::ShaderSource({fragmentSource.c_str()}, GL_FRAGMENT_SHADER)
         });
     }
 
@@ -247,7 +247,7 @@ std::string ShaderMan::getAssetFromID(GLuint id) const
 
 /// Returns false if we failed to generate the component because the asset
 /// has not been loaded yet.
-bool ShaderMan::buildComponent(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
+bool ShaderMan::buildComponent(spire::CerealCore& core, uint64_t entityID,
                                const std::string& assetName)
 {
   GLuint id = getIDForAsset(assetName.c_str());
@@ -272,7 +272,7 @@ bool ShaderMan::buildComponent(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t enti
 //------------------------------------------------------------------------------
 
 class ShaderPromiseVFFulfillment :
-    public es::GenericSystem<true,
+    public spire::GenericSystem<true,
                              ShaderPromiseVF,
                              StaticShaderMan>
 {
@@ -289,13 +289,13 @@ public:
   /// request should not be attempted.
   std::set<std::string> mAssetsAlreadyRequested;
 
-  void preWalkComponents(es::ESCoreBase&)
+  void preWalkComponents(spire::ESCoreBase&)
   {
     mAssetsAwaitingRequest.clear();
     mAssetsAlreadyRequested.clear();
   }
 
-  void postWalkComponents(es::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core)
   {
     std::weak_ptr<ShaderMan> sm = core.getStaticComponent<StaticShaderMan>()->instance_;
     if (std::shared_ptr<ShaderMan> man = sm.lock()) {
@@ -320,19 +320,19 @@ public:
     }
   }
 
-  void groupExecute(es::ESCoreBase& core, uint64_t entityID,
-               const es::ComponentGroup<ShaderPromiseVF>& promisesGroup,
-               const es::ComponentGroup<StaticShaderMan>& shaderManGroup) override
+  void groupExecute(spire::ESCoreBase& core, uint64_t entityID,
+               const spire::ComponentGroup<ShaderPromiseVF>& promisesGroup,
+               const spire::ComponentGroup<StaticShaderMan>& shaderManGroup) override
   {
     std::weak_ptr<ShaderMan> sm = shaderManGroup.front().instance_;
     if (std::shared_ptr<ShaderMan> shaderMan = sm.lock()) {
-        CPM_ES_CEREAL_NS::CerealCore* ourCorePtr = dynamic_cast<CPM_ES_CEREAL_NS::CerealCore*>(&core);
+        spire::CerealCore* ourCorePtr = dynamic_cast<spire::CerealCore*>(&core);
         if (ourCorePtr == nullptr)
         {
           std::cerr << "Unable to execute shader promise fulfillment. Bad cast." << std::endl;
           return;
         }
-        CPM_ES_CEREAL_NS::CerealCore& ourCore = *ourCorePtr;
+        spire::CerealCore& ourCore = *ourCorePtr;
 
         int index = 0;
         for (const ShaderPromiseVF& p : promisesGroup)
@@ -453,7 +453,7 @@ void ShaderMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
 }
 
 class ShaderGarbageCollector :
-    public es::GenericSystem<false, Shader>
+    public spire::GenericSystem<false, Shader>
 {
 public:
 
@@ -461,9 +461,9 @@ public:
 
   std::set<GLuint> mValidKeys;
 
-  void preWalkComponents(es::ESCoreBase&) {mValidKeys.clear();}
+  void preWalkComponents(spire::ESCoreBase&) {mValidKeys.clear();}
 
-  void postWalkComponents(es::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core)
   {
     std::weak_ptr<ShaderMan> sm = core.getStaticComponent<StaticShaderMan>()->instance_;
     if (std::shared_ptr<ShaderMan> man = sm.lock()) {
@@ -476,7 +476,7 @@ public:
     }
   }
 
-  void execute(es::ESCoreBase&, uint64_t /* entityID */, const Shader* shader) override
+  void execute(spire::ESCoreBase&, uint64_t /* entityID */, const Shader* shader) override
   {
     mValidKeys.insert(shader->glid);
   }
@@ -487,13 +487,13 @@ const char* ShaderMan::getGCName()
   return ShaderGarbageCollector::getName();
 }
 
-void ShaderMan::registerSystems(CPM_ES_ACORN_NS::Acorn& core)
+void ShaderMan::registerSystems(spire::Acorn& core)
 {
   core.registerSystem<ShaderPromiseVFFulfillment>();
   core.registerSystem<ShaderGarbageCollector>();
 }
 
-void ShaderMan::runGCCycle(CPM_ES_NS::ESCoreBase& core)
+void ShaderMan::runGCCycle(spire::ESCoreBase& core)
 {
   ShaderGarbageCollector gc;
   gc.walkComponents(core);

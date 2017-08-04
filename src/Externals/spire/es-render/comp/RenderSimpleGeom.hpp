@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_COMPONENT_RENDER_SIMPLE_GEOM_HPP
-#define IAUNS_RENDER_COMPONENT_RENDER_SIMPLE_GEOM_HPP
+#ifndef SPIRE_RENDER_COMPONENT_RENDER_SIMPLE_GEOM_HPP
+#define SPIRE_RENDER_COMPONENT_RENDER_SIMPLE_GEOM_HPP
 
 #include <gl-shaders/GLShader.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -17,7 +17,7 @@ struct RenderSimpleGeom
   
   int attribSize;     ///< How many elements in 'appliedAttribs' are valid.
   size_t stride;      ///< Stride between elements vertex buffer.
-  CPM_GL_SHADERS_NS::ShaderAttributeApplied appliedAttribs[MaxNumAttributes]; 
+  spire::ShaderAttributeApplied appliedAttribs[MaxNumAttributes]; 
 
   // -- Functions --
 
@@ -43,7 +43,7 @@ struct RenderSimpleGeom
   void checkAttribArray(GLuint vboID, GLuint shaderID,
                         const StaticVBOMan& vboMan);
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
   {
     // Shouldn't need to serialize these values. They are context specific.
     // Maybe? Will need to figure out as I go along.

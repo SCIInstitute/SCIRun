@@ -1,5 +1,5 @@
-#ifndef IAUNS_CEREALTYPESERIALIZE_HPP
-#define IAUNS_CEREALTYPESERIALIZE_HPP
+#ifndef SPIRE_CEREALTYPESERIALIZE_HPP
+#define SPIRE_CEREALTYPESERIALIZE_HPP
 
 #include <cstdint>
 #include <cstddef>
@@ -8,7 +8,7 @@
 struct _Tny;
 typedef _Tny Tny;
 
-namespace CPM_ES_CEREAL_NS {
+namespace spire {
 
 // Cereal serialize type detail
 namespace CST_detail
@@ -75,7 +75,7 @@ class CerealSerializeType
 public:
   typedef int Type;
 
-  static_assert(true, "cpm-es-cereal: CerealSerializeType type specialization not defined.");
+  static_assert(true, "es-cereal: CerealSerializeType type specialization not defined.");
   static bool in(Tny* root, const char* name, Type& v);
   static Tny* out(Tny* root, const char* name, const Type& v);
   static const char* getTypeName();
@@ -191,6 +191,6 @@ public:
   static const char* getTypeName()    {return "string";}
 };
 
-} // namespace CPM_ES_CEREAL_NS
+} // namespace spire
 
 #endif 

@@ -1,12 +1,12 @@
-#ifndef IAUNS_ASYNC_STATICFS_HPP
-#define IAUNS_ASYNC_STATICFS_HPP
+#ifndef SPIRE_ASYNC_STATICFS_HPP
+#define SPIRE_ASYNC_STATICFS_HPP
 
 #include <stdexcept>
 #include <memory>
 #include <es-cereal/ComponentSerialize.hpp>
 #include "../Filesystem.hpp"
 
-namespace CPM_ES_FS_NS {
+namespace spire {
 
 struct StaticFS
 {
@@ -23,7 +23,7 @@ struct StaticFS
 
   static const char* getName() {return "es-fs:StaticFS";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize&, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize&, uint64_t /* entityID */)
   {
     std::cerr << "No serialization sohuld be performed on StaticFS!" << std::endl;
     throw std::runtime_error("Cannot serialize StaticFS!");
@@ -31,6 +31,6 @@ struct StaticFS
   }
 };
 
-} // namespace CPM_ES_FS_NS 
+} // namespace spire 
 
 #endif 

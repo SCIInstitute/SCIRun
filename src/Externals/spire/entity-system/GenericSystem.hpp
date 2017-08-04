@@ -1,5 +1,5 @@
-#ifndef IAUNS_ENTITY_SYSTEM_GENERICSYSTEM_HPP
-#define IAUNS_ENTITY_SYSTEM_GENERICSYSTEM_HPP
+#ifndef SPIRE_ENTITY_SYSTEM_GENERICSYSTEM_HPP
+#define SPIRE_ENTITY_SYSTEM_GENERICSYSTEM_HPP
 
 // GenericSystems are not associated with any one core. You can use a system
 // with any number of cores. All important functions are static and don't
@@ -17,7 +17,7 @@
 #include "src/TemplateID.hpp"
 #include "src/ComponentGroup.hpp"
 
-namespace CPM_ES_NS {
+namespace spire {
 
 
 namespace gs_detail
@@ -874,15 +874,15 @@ public:
   // Non-grouped version of execute.
   virtual void execute(ESCoreBase&, uint64_t, const Ts*... vs)
   {
-    std::cerr << "cpm-entity-system: Unimplmented system execute." << std::endl;
-    throw std::runtime_error("cpm-entity-system: Unimplemented system execute.");
+    std::cerr << "entity-system: Unimplmented system execute." << std::endl;
+    throw std::runtime_error("entity-system: Unimplemented system execute.");
   }
 
   // Grouped version of execute.
   virtual void groupExecute(ESCoreBase&, uint64_t, const ComponentGroup<Ts>&... groups)
   {
-    std::cerr << "cpm-entity-system: Unimplmented system group execute." << std::endl;
-    throw std::runtime_error("cpm-entity-system: Unimplemented system group execute.");
+    std::cerr << "entity-system: Unimplmented system group execute." << std::endl;
+    throw std::runtime_error("entity-system: Unimplemented system group execute.");
   }
 
   /// This function should be overriden and return true for all components
@@ -928,6 +928,6 @@ bool OptionalComponents(uint64_t templateID)
   return optional_components_impl::OptionalCompImpl<RTs...>::exec(templateID);
 }
 
-} // namespace CPM_ES_NS
+} // namespace spire
 
 #endif

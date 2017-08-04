@@ -1,6 +1,6 @@
 
-#ifndef IAUNS_GL_STATE_H
-#define IAUNS_GL_STATE_H
+#ifndef SPIRE_GL_STATE_H
+#define SPIRE_GL_STATE_H
 
 /// \todo Handle state relative to some default state?
 
@@ -8,7 +8,7 @@
 #include <tuple>
 #include <gl-platform/GLPlatform.hpp>
 
-namespace CPM_GL_STATE_NS {
+namespace spire {
 
 // Texture state is not managed. This GLState class is not for the fixed
 // function pipeline. See:
@@ -174,6 +174,6 @@ private:
   void applyStateInternal(bool force, const GLState* state) const;
 };
 
-} // namespace CPM_GL_STATE_NS 
+} // namespace spire 
 
 #endif 

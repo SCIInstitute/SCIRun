@@ -22,8 +22,8 @@
 #include "../comp/StaticGLState.hpp"
 #include "../comp/StaticVBOMan.hpp"
 
-namespace es = CPM_ES_NS;
-namespace shaders = CPM_GL_SHADERS_NS;
+namespace es = spire;
+namespace shaders = spire;
 
 /// \note This is a *very* generic renderer. Renderers based on this can be
 ///       made and specialized. See the font renderer. We could also specialize
@@ -37,7 +37,7 @@ namespace shaders = CPM_GL_SHADERS_NS;
 namespace ren {
 
 class RenderSimpleGeomSys : 
-    public es::GenericSystem<true,
+    public spire::GenericSystem<true,
                              gen::Transform,
                              gen::StaticGlobalTime,
                              VBO,
@@ -61,7 +61,7 @@ public:
 
   bool isComponentOptional(uint64_t type) override
   {
-    return es::OptionalComponents<Texture,
+    return spire::OptionalComponents<Texture,
                                   GLState,
                                   StaticGLState,
                                   CommonUniforms,
@@ -71,23 +71,23 @@ public:
   }
 
   void groupExecute(
-      es::ESCoreBase&, uint64_t /* entityID */,
-      const es::ComponentGroup<gen::Transform>& trafo,
-      const es::ComponentGroup<gen::StaticGlobalTime>& time,
-      const es::ComponentGroup<VBO>& vbo,
-      const es::ComponentGroup<IBO>& ibo,
-      const es::ComponentGroup<RenderSimpleGeom>& geom,
-      const es::ComponentGroup<CommonUniforms>& commonUniforms,
-      const es::ComponentGroup<VecUniform>& vecUniforms,
-      const es::ComponentGroup<MatUniform>& matUniforms,
-      const es::ComponentGroup<Shader>& shader,
-      const es::ComponentGroup<Texture>& textures,
-      const es::ComponentGroup<GLState>& state,
-      const es::ComponentGroup<gen::CameraSelect>& camSelect,
-      const es::ComponentGroup<gen::StaticCamera>& camera,
-      const es::ComponentGroup<gen::StaticOrthoCamera>& orthoCamera,
-      const es::ComponentGroup<StaticGLState>& defaultGLState,
-      const es::ComponentGroup<StaticVBOMan>& vboMan) override
+      spire::ESCoreBase&, uint64_t /* entityID */,
+      const spire::ComponentGroup<gen::Transform>& trafo,
+      const spire::ComponentGroup<gen::StaticGlobalTime>& time,
+      const spire::ComponentGroup<VBO>& vbo,
+      const spire::ComponentGroup<IBO>& ibo,
+      const spire::ComponentGroup<RenderSimpleGeom>& geom,
+      const spire::ComponentGroup<CommonUniforms>& commonUniforms,
+      const spire::ComponentGroup<VecUniform>& vecUniforms,
+      const spire::ComponentGroup<MatUniform>& matUniforms,
+      const spire::ComponentGroup<Shader>& shader,
+      const spire::ComponentGroup<Texture>& textures,
+      const spire::ComponentGroup<GLState>& state,
+      const spire::ComponentGroup<gen::CameraSelect>& camSelect,
+      const spire::ComponentGroup<gen::StaticCamera>& camera,
+      const spire::ComponentGroup<gen::StaticOrthoCamera>& orthoCamera,
+      const spire::ComponentGroup<StaticGLState>& defaultGLState,
+      const spire::ComponentGroup<StaticVBOMan>& vboMan) override
   {
     // Setup *everything*. We don't want to enter multiple conditional
     // statements if we can avoid it. So we assume everything has not been
@@ -206,7 +206,7 @@ public:
   }
 };
 
-void registerSystem_RenderSimpleGeom(CPM_ES_ACORN_NS::Acorn& core)
+void registerSystem_RenderSimpleGeom(spire::Acorn& core)
 {
   core.registerSystem<RenderSimpleGeomSys>();
 }

@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_COMPONENT_CAMERA_SELECT_HPP
-#define IAUNS_RENDER_COMPONENT_CAMERA_SELECT_HPP
+#ifndef SPIRE_RENDER_COMPONENT_CAMERA_SELECT_HPP
+#define SPIRE_RENDER_COMPONENT_CAMERA_SELECT_HPP
 
 #include <es-cereal/ComponentSerialize.hpp>
 
@@ -24,7 +24,7 @@ struct CameraSelect
 
   static const char* getName() {return "gen:CameraSelect";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& s, uint64_t /* entityID */)
   {
     /// Nothing needs to be serialized. This is context specific.
     int32_t camValue = static_cast<int32_t>(cam);

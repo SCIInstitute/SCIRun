@@ -1,5 +1,5 @@
-#ifndef IAUNS_ES_SYSTEMS_SYSTEMCORE_HPP
-#define IAUNS_ES_SYSTEMS_SYSTEMCORE_HPP
+#ifndef SPIRE_ES_SYSTEMS_SYSTEMCORE_HPP
+#define SPIRE_ES_SYSTEMS_SYSTEMCORE_HPP
 
 #include <list>
 #include <entity-system/ESCoreBase.hpp>
@@ -7,7 +7,7 @@
 
 #include "SystemFactory.hpp"
 
-namespace CPM_ES_SYSTEMS_NS {
+namespace spire {
 
 namespace core_detail {
 
@@ -35,7 +35,7 @@ public:
   void renormalize();
 
   /// Runs all systems.
-  void runSystems(CPM_ES_NS::ESCoreBase& core, uint64_t referenceTime);
+  void runSystems(spire::ESCoreBase& core, uint64_t referenceTime);
 
   /// Registers the system with the serialization system so that a system can
   /// be created on-demand during deserialization.
@@ -49,8 +49,8 @@ public:
     // Ensure there is no duplicate system.
     if (mSystemFactory.hasSystem(T::getName()))
     {
-      std::cerr << "cpm-es-systems: System with duplicate name." << " Name: " << T::getName() << std::endl;
-      throw std::runtime_error("cpm-es-systems: System with duplicate name.");
+      std::cerr << "es-systems: System with duplicate name." << " Name: " << T::getName() << std::endl;
+      throw std::runtime_error("es-systems: System with duplicate name.");
       return;
     }
 
@@ -97,7 +97,7 @@ public:
   }
 
   /// Create a new system and return its shared_ptr.
-  std::shared_ptr<CPM_ES_NS::BaseSystem> createNewSystem(const std::string& name)
+  std::shared_ptr<spire::BaseSystem> createNewSystem(const std::string& name)
   {
     return mSystemFactory.newSystemFromName(name.c_str());
   }
@@ -134,7 +134,7 @@ private:
         nextExecutionTime(0)
     {}
 
-    SystemItem(const std::string& n, std::shared_ptr<CPM_ES_NS::BaseSystem> sys,
+    SystemItem(const std::string& n, std::shared_ptr<spire::BaseSystem> sys,
                uint64_t updateInterval, uint64_t referenceTime, uint64_t stag) :
         system(sys),
         systemName(n),
@@ -160,7 +160,7 @@ private:
     uint64_t calcNextExecutionTime(uint64_t referenceTime);
 
     /// Pointer to our system.
-    std::shared_ptr<CPM_ES_NS::BaseSystem>  system;
+    std::shared_ptr<spire::BaseSystem>  system;
 
     /// We store the name alongside our system pointer because BaseSystem
     /// does not expose a getName function. We expose it at compile time.
@@ -189,6 +189,6 @@ private:
   SystemFactory      mSystemFactory;
 };
 
-} // namespace CPM_ES_SYSTEMS_NS
+} // namespace spire
 
 #endif

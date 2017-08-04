@@ -1,5 +1,5 @@
-#ifndef IAUNS_ENTITY_SYSTEM_COMPONENTCONTAINER_HPP
-#define IAUNS_ENTITY_SYSTEM_COMPONENTCONTAINER_HPP
+#ifndef SPIRE_ENTITY_SYSTEM_COMPONENTCONTAINER_HPP
+#define SPIRE_ENTITY_SYSTEM_COMPONENTCONTAINER_HPP
 
 #include <cstdint>
 #include <vector>
@@ -7,7 +7,7 @@
 #include "TemplateID.hpp"
 #include "BaseComponentContainer.hpp"
 
-namespace CPM_ES_NS {
+namespace spire {
 
 /// Component container.
 /// \todo Add maximum size caps to the container. Should also check size
@@ -256,7 +256,7 @@ public:
         }
         else
         {
-          std::cerr << "cpm-entity-system - renormalize: Bad index!" << std::endl;
+          std::cerr << "entity-system - renormalize: Bad index!" << std::endl;
         }
         ++attemptIdx;
       }
@@ -639,6 +639,6 @@ protected:
                                                 ///< to be updated during renormalization.
 };
 
-} // namespace CPM_ES_NS
+} // namespace spire
 
 #endif

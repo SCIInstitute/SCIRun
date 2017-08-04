@@ -2,7 +2,7 @@
 #include <cmath>
 #include "GLState.hpp"
 
-namespace CPM_GL_STATE_NS {
+namespace spire {
 
 //------------------------------------------------------------------------------
 GLState::GLState() :
@@ -59,7 +59,7 @@ bool GLState::operator==(const GLState &o) const
 size_t GLState::getMaxTextureUnits() const
 {
   GLint tmp;
-#ifdef CPM_GL_STATE_ES_2
+#ifdef GL_STATE_ES_2
   glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &tmp);
 #else
   glGetIntegerv(GL_MAX_TEXTURE_UNITS, &tmp);
@@ -128,7 +128,7 @@ void GLState::readStateFromOpenGL()
   mBlendEquation = static_cast<GLenum>(e);
 
   GLint src, dest;
-#ifdef CPM_GL_STATE_ES_2
+#ifdef GL_STATE_ES_2
   glGetIntegerv(GL_BLEND_SRC_RGB, &src);
   glGetIntegerv(GL_BLEND_DST_RGB, &dest);
 #else
@@ -300,5 +300,5 @@ void GLState::applyActiveTexture(bool force, const GLState* cur) const
 }
 
 
-} // namespace CPM_GL_STATE_NS 
+} // namespace spire 
 

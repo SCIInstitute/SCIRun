@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_COMPONENT_FBO_HPP
-#define IAUNS_RENDER_COMPONENT_FBO_HPP
+#ifndef SPIRE_RENDER_COMPONENT_FBO_HPP
+#define SPIRE_RENDER_COMPONENT_FBO_HPP
 
 #include <glm/glm.hpp>
 #include <gl-platform/GLPlatform.hpp>
@@ -33,7 +33,7 @@ namespace ren {
 
     std::vector<TextureData> textures;
 
-    bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+    bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
     {
       /// Nothing needs to be serialized. This is context specific.
       return true;

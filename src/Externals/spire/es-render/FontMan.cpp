@@ -10,8 +10,8 @@
 #include "comp/StaticFontMan.hpp"
 #include "comp/StaticTextureMan.hpp"
 
-namespace es = CPM_ES_NS;
-namespace fs = CPM_ES_FS_NS;;
+namespace es = spire;
+namespace fs = spire;
 
 namespace ren {
 
@@ -27,7 +27,7 @@ FontMan::~FontMan()
 }
 
 void FontMan::loadFont(
-    CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
+    spire::CerealCore& core, uint64_t entityID,
     const std::string& assetName)
 {
   if (buildComponent(core, entityID, assetName) == false)
@@ -40,7 +40,7 @@ void FontMan::loadFont(
   }
 }
 
-void FontMan::requestFont(CPM_ES_NS::ESCoreBase& core, const std::string& assetName,
+void FontMan::requestFont(spire::ESCoreBase& core, const std::string& assetName,
                              int32_t numRetries)
 {
   fs::StaticFS* sfs = core.getStaticComponent<fs::StaticFS>();
@@ -48,7 +48,7 @@ void FontMan::requestFont(CPM_ES_NS::ESCoreBase& core, const std::string& assetN
   /// \todo Get rid of this code when we switch to the new emscripten backend.
   ///       std::bind is preferable to cooking up a lambda. See ShaderMan
   ///       for functional examples.
-  es::ESCoreBase* refPtr = &core;
+  spire::ESCoreBase* refPtr = &core;
   auto callbackLambda = [this, numRetries, refPtr](
       const std::string& asset, bool error, size_t bytesRead, uint8_t* buffer)
   {
@@ -68,7 +68,7 @@ void FontMan::requestFont(CPM_ES_NS::ESCoreBase& core, const std::string& assetN
 
 void FontMan::loadFontCB(const std::string& assetName, bool error,
                          size_t bytesRead, uint8_t* buffer,
-                         int32_t numRetries, CPM_ES_NS::ESCoreBase& core)
+                         int32_t numRetries, spire::ESCoreBase& core)
 {
   if (!error)
   {
@@ -163,7 +163,7 @@ const FontMan::FontInfo& FontMan::getFontInfo(uint64_t id)
   }
 }
 
-bool FontMan::buildComponent(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
+bool FontMan::buildComponent(spire::CerealCore& core, uint64_t entityID,
                              const std::string& assetName)
 {
   uint64_t id = getIDForAsset(assetName.c_str());
@@ -225,7 +225,7 @@ bool FontMan::buildComponent(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entity
 //------------------------------------------------------------------------------
 
 class FontPromiseFulfillment :
-    public es::GenericSystem<true,
+    public spire::GenericSystem<true,
                              FontPromise,
                              StaticFontMan>
 {
@@ -242,13 +242,13 @@ public:
   /// request should not be attempted.
   std::set<std::string> mAssetsAlreadyRequested;
 
-  void preWalkComponents(es::ESCoreBase&)
+  void preWalkComponents(spire::ESCoreBase&)
   {
     mAssetsAwaitingRequest.clear();
     mAssetsAlreadyRequested.clear();
   }
 
-  void postWalkComponents(es::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core)
   {
     StaticFontMan* man = core.getStaticComponent<StaticFontMan>();
     if (man == nullptr)
@@ -277,21 +277,21 @@ public:
     }
   }
 
-  void groupExecute(es::ESCoreBase& core, uint64_t entityID,
-               const es::ComponentGroup<FontPromise>& promisesGroup,
-               const es::ComponentGroup<StaticFontMan>& fontManGroup) override
+  void groupExecute(spire::ESCoreBase& core, uint64_t entityID,
+               const spire::ComponentGroup<FontPromise>& promisesGroup,
+               const spire::ComponentGroup<StaticFontMan>& fontManGroup) override
   {
     std::weak_ptr<FontMan> fm = fontManGroup.front().instance_;
     if (std::shared_ptr<FontMan> fontMan = fm.lock()) {
 
-        CPM_ES_CEREAL_NS::CerealCore* ourCorePtr =
-                dynamic_cast<CPM_ES_CEREAL_NS::CerealCore*>(&core);
+        spire::CerealCore* ourCorePtr =
+                dynamic_cast<spire::CerealCore*>(&core);
         if (ourCorePtr == nullptr)
         {
           std::cerr << "Unable to execute font promise fulfillment. Bad cast." << std::endl;
           return;
         }
-        CPM_ES_CEREAL_NS::CerealCore& ourCore = *ourCorePtr;
+        spire::CerealCore& ourCore = *ourCorePtr;
 
         int index = 0;
         for (const FontPromise& p : promisesGroup)
@@ -397,7 +397,7 @@ void FontMan::runGCAgainstVaidIDs(const std::set<uint64_t>& validKeys)
 }
 
 class FontGarbageCollector :
-    public es::GenericSystem<false, Font>
+    public spire::GenericSystem<false, Font>
 {
 public:
 
@@ -405,9 +405,9 @@ public:
 
   std::set<uint64_t> mValidKeys;
 
-  void preWalkComponents(es::ESCoreBase&) {mValidKeys.clear();}
+  void preWalkComponents(spire::ESCoreBase&) {mValidKeys.clear();}
 
-  void postWalkComponents(es::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core)
   {
     StaticFontMan* man = core.getStaticComponent<StaticFontMan>();
     if (man == nullptr)
@@ -423,7 +423,7 @@ public:
     }
   }
 
-  void execute(es::ESCoreBase&, uint64_t /* entityID */, const Font* font) override
+  void execute(spire::ESCoreBase&, uint64_t /* entityID */, const Font* font) override
   {
     mValidKeys.insert(font->fontID);
   }
@@ -434,13 +434,13 @@ const char* FontMan::getGCName()
   return FontGarbageCollector::getName();
 }
 
-void FontMan::registerSystems(CPM_ES_ACORN_NS::Acorn& core)
+void FontMan::registerSystems(spire::Acorn& core)
 {
   core.registerSystem<FontPromiseFulfillment>();
   core.registerSystem<FontGarbageCollector>();
 }
 
-void FontMan::runGCCycle(CPM_ES_NS::ESCoreBase& core)
+void FontMan::runGCCycle(spire::ESCoreBase& core)
 {
   FontGarbageCollector gc;
   gc.walkComponents(core);

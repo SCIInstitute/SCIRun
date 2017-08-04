@@ -1,5 +1,5 @@
-#ifndef IAUNS_ENTITY_SYSTEM_ESCORE_BASE_HPP
-#define IAUNS_ENTITY_SYSTEM_ESCORE_BASE_HPP
+#ifndef SPIRE_ENTITY_SYSTEM_ESCORE_BASE_HPP
+#define SPIRE_ENTITY_SYSTEM_ESCORE_BASE_HPP
 
 #include <map>
 #include <list>
@@ -9,7 +9,7 @@
 #include "src/ComponentContainer.hpp"
 #include "src/EmptyComponentContainer.hpp"
 
-namespace CPM_ES_NS {
+namespace spire {
 
 template <typename T>
 uint64_t getESTypeID()
@@ -168,7 +168,7 @@ protected:
   {
     if (entityID == 0)
     {
-      std::cerr << "cpm-entity-system: Attempting to add a component of entityID 0! Not allowed." << std::endl;
+      std::cerr << "entity-system: Attempting to add a component of entityID 0! Not allowed." << std::endl;
       throw std::runtime_error("Attempting to add a component of entityID 0.");
       return;
     }
@@ -184,7 +184,7 @@ protected:
   //{
   //  if (entityID == 0)
   //  {
-  //    std::cerr << "cpm-entity-system: Attempting to add a component of entityID 0! Not allowed." << std::endl;
+  //    std::cerr << "entity-system: Attempting to add a component of entityID 0! Not allowed." << std::endl;
   //    throw std::runtime_error("Attempting to add a component of entityID 0.");
   //    return;
   //  }
@@ -241,6 +241,6 @@ protected:
 
 
 
-} // namespace CPM_ES_NS
+} // namespace spire
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_COMPONENT_IBO_HPP
-#define IAUNS_RENDER_COMPONENT_IBO_HPP
+#ifndef SPIRE_RENDER_COMPONENT_IBO_HPP
+#define SPIRE_RENDER_COMPONENT_IBO_HPP
 
 #include <glm/glm.hpp>
 #include <gl-platform/GLPlatform.hpp>
@@ -26,7 +26,7 @@ struct IBO
 
   static const char* getName() {return "ren:IBO";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
   {
     /// Nothing needs to be serialized. This is context specific.
     return true;

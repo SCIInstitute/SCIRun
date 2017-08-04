@@ -1,9 +1,9 @@
-#ifndef IAUNS_ENTITY_SYSTEM_BASECOMPONENTCONTAINER_HPP
-#define IAUNS_ENTITY_SYSTEM_BASECOMPONENTCONTAINER_HPP
+#ifndef SPIRE_ENTITY_SYSTEM_BASECOMPONENTCONTAINER_HPP
+#define SPIRE_ENTITY_SYSTEM_BASECOMPONENTCONTAINER_HPP
 
 #include <cstdint>
 
-namespace CPM_ES_NS {
+namespace spire {
 
 // Component base class, used to verify component types at run-time.
 class BaseComponentContainer
@@ -65,6 +65,6 @@ public:
   static const int StaticEntID;
 };
 
-} // namespace CPM_ES_NS 
+} // namespace spire 
 
 #endif 

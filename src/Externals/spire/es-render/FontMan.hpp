@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_FONTMAN_HPP
-#define IAUNS_RENDER_FONTMAN_HPP
+#ifndef SPIRE_RENDER_FONTMAN_HPP
+#define SPIRE_RENDER_FONTMAN_HPP
 
 #include <map>
 #include <set>
@@ -31,11 +31,11 @@ public:
   /// \param  core        Core base.
   /// \param  entityID    Entity ID which will receive the ren::Texture component.
   /// \param  assetName   Name of the texture to load.
-  void loadFont(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
+  void loadFont(spire::CerealCore& core, uint64_t entityID,
                 const std::string& assetName);
 
   /// Runs a single garbage collection cycle on the current state of the core.
-  void runGCCycle(CPM_ES_NS::ESCoreBase& core);
+  void runGCCycle(spire::ESCoreBase& core);
 
   /// Returns the entity ID for the given assetName, if one has been
   /// generated. Returns 0 if the asset is not found in the system.
@@ -49,7 +49,7 @@ public:
   
   /// Registers TextureMan's systems. Both the garbage collector and the promise
   /// fullfillment system are registered.
-  static void registerSystems(CPM_ES_ACORN_NS::Acorn& core);
+  static void registerSystems(spire::Acorn& core);
 
   /// Obtains the garbage collectors name so that you can setup intermitent
   /// garbage collection cycles.
@@ -64,20 +64,20 @@ private:
   friend class FontGarbageCollector;
   friend class FontPromiseFulfillment;
 
-  bool buildComponent(CPM_ES_CEREAL_NS::CerealCore& core, uint64_t entityID,
+  bool buildComponent(spire::CerealCore& core, uint64_t entityID,
                       const std::string& assetName);
 
   void runGCAgainstVaidIDs(const std::set<uint64_t>& validKeys);
 
   /// Issues a request for a texture.
-  void requestFont(CPM_ES_NS::ESCoreBase& core, const std::string& assetName,
+  void requestFont(spire::ESCoreBase& core, const std::string& assetName,
                    int32_t numRetries);
 
   /// Callback issued when a texture has been read from disk and is ready
   /// to load.
   void loadFontCB(const std::string& textureName, bool error,
                   size_t bytesRead, uint8_t* buffer,
-                  int32_t numRetries, CPM_ES_NS::ESCoreBase& core);
+                  int32_t numRetries, spire::ESCoreBase& core);
 
   struct FontInfo
   {

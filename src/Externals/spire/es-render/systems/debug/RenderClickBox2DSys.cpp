@@ -20,15 +20,15 @@
 #include "../../comp/RenderSimpleGeom.hpp"
 #include "../../util/Lines.hpp"
 
-namespace es = CPM_ES_NS;
-namespace shaders = CPM_GL_SHADERS_NS;
+namespace es = spire;
+namespace shaders = spire;
 
 namespace ren {
 
 // This debug render will be surprisingly quick because the same VBO, IBO,
 // and Shader are used across all components.
 class DebugRenderClickBox2DSys :
-    public es::GenericSystem<true,
+    public spire::GenericSystem<true,
                              gen::Transform,
                              gen::ClickBox2D,
                              gen::StaticGlobalTime,
@@ -48,18 +48,18 @@ public:
 
   bool isComponentOptional(uint64_t type) override
   {
-    return es::OptionalComponents<gen::Transform>(type);
+    return spire::OptionalComponents<gen::Transform>(type);
   }
 
-  void preWalkComponents(es::ESCoreBase& coreIn)
+  void preWalkComponents(spire::ESCoreBase& coreIn)
   {
-    CPM_ES_CEREAL_NS::CerealCore* ourCorePtr = dynamic_cast<CPM_ES_CEREAL_NS::CerealCore*>(&coreIn);
+    spire::CerealCore* ourCorePtr = dynamic_cast<spire::CerealCore*>(&coreIn);
     if (ourCorePtr == nullptr)
     {
       std::cerr << "Unable to execute clickbox promise fulfillment. Bad cast." << std::endl;
       return;
     }
-    CPM_ES_CEREAL_NS::CerealCore& core = *ourCorePtr;
+    spire::CerealCore& core = *ourCorePtr;
 
 
     ren::StaticVBOMan& vboMan = *core.getStaticComponent<ren::StaticVBOMan>();
@@ -94,18 +94,18 @@ public:
                                   mAttribs.stride);
   }
 
-  void postWalkComponents(es::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core)
   {
     shaders::unbindPreappliedAttrib(mAttribs.appliedAttribs, 
                                     static_cast<size_t>(mAttribs.attribSize));
   }
 
   void groupExecute(
-      es::ESCoreBase&, uint64_t /* entityID */,
-      const es::ComponentGroup<gen::Transform>& trafo,
-      const es::ComponentGroup<gen::ClickBox2D>& clickBox,
-      const es::ComponentGroup<gen::StaticGlobalTime>& time,
-      const es::ComponentGroup<gen::StaticOrthoCamera>& camera) override
+      spire::ESCoreBase&, uint64_t /* entityID */,
+      const spire::ComponentGroup<gen::Transform>& trafo,
+      const spire::ComponentGroup<gen::ClickBox2D>& clickBox,
+      const spire::ComponentGroup<gen::StaticGlobalTime>& time,
+      const spire::ComponentGroup<gen::StaticOrthoCamera>& camera) override
   {
     for (const gen::ClickBox2D& box : clickBox)
     {
@@ -133,7 +133,7 @@ public:
   }
 };
 
-void registerSystem_DebugRenderClickBox2D(CPM_ES_ACORN_NS::Acorn& core)
+void registerSystem_DebugRenderClickBox2D(spire::Acorn& core)
 {
   core.registerSystem<DebugRenderClickBox2DSys>();
 }

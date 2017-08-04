@@ -1,9 +1,9 @@
-#ifndef IAUNS_GLM_AABB_HPP
-#define IAUNS_GLM_AABB_HPP
+#ifndef SPIRE_GLM_AABB_HPP
+#define SPIRE_GLM_AABB_HPP
 
 #include <glm/glm.hpp>
 
-namespace CPM_GLM_AABB_NS {
+namespace spire {
 
 /// Standalone axis aligned bounding box implemented built on top of GLM.
 class AABB
@@ -104,6 +104,6 @@ private:
   glm::vec3 mMax;   ///< Maximum point.
 };
 
-} // namespace CPM_GLM_AABB_NS 
+} // namespace spire 
 
 #endif 

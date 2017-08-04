@@ -1,5 +1,5 @@
-#ifndef IAUNS_RENDER_COMPONENT_STATIC_SHADER_MAN_HPP
-#define IAUNS_RENDER_COMPONENT_STATIC_SHADER_MAN_HPP
+#ifndef SPIRE_RENDER_COMPONENT_STATIC_SHADER_MAN_HPP
+#define SPIRE_RENDER_COMPONENT_STATIC_SHADER_MAN_HPP
 
 #include <memory>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -31,9 +31,9 @@ struct StaticShaderMan
   static const char* getName() {return "ren:StaticShaderMan";}
 
 private:
-  friend class CPM_ES_CEREAL_NS::CerealHeap<StaticShaderMan>;
+  friend class spire::CerealHeap<StaticShaderMan>;
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize&, uint64_t)
+  bool serialize(spire::ComponentSerialize&, uint64_t)
   {
     // No need to serialize. But we do want that we were in the component
     // system to be serialized out.

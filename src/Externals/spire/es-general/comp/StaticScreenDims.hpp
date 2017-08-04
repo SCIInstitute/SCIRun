@@ -1,5 +1,5 @@
-#ifndef IAUNS_ES_GENERAL_STATIC_SCREEN_DIMS_HPP
-#define IAUNS_ES_GENERAL_STATIC_SCREEN_DIMS_HPP
+#ifndef SPIRE_ES_GENERAL_STATIC_SCREEN_DIMS_HPP
+#define SPIRE_ES_GENERAL_STATIC_SCREEN_DIMS_HPP
 
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -24,7 +24,7 @@ struct StaticScreenDims
 
   static const char* getName() {return "gen:StaticScreenDims";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& s, uint64_t /* entityID */)
   {
     s.serialize("width", width);
     s.serialize("height", height);

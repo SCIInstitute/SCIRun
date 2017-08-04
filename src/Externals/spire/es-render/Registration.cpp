@@ -45,7 +45,7 @@
 
 namespace ren {
 
-void registerAll(CPM_ES_ACORN_NS::Acorn& core)
+void registerAll(spire::Acorn& core)
 {
   // Systems
   registerSystem_RenderSimpleGeom(core);
