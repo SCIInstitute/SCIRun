@@ -65,7 +65,7 @@ void GeomMan::requestAsset(spire::ESCoreBase& core, const std::string& assetName
   ///       which will support std::bind (which I prefer over using lambdas).
 //#ifndef EMSCRIPTEN
 //  sfs->instance->readFile(assetName,
-//                         std::bind(&GeomMan::loadAssetCB, this, 
+//                         std::bind(&GeomMan::loadAssetCB, this,
 //                                   std::placeholders::_1, std::placeholders::_2,
 //                                   std::placeholders::_3, std::placeholders::_4,
 //                                   numRetries, std::ref(core)));
@@ -134,7 +134,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
         textureRoot = spire::CST_detail::inStringArray(textureRoot, tmpName, tmpNameSize);
         samplerName = tmpName;
 
-        // Add item to texture list. 
+        // Add item to texture list.
         geom.textures.emplace_back(texName, samplerName, texUnit);
       }
 
@@ -371,13 +371,13 @@ public:
   /// request should not be attempted.
   std::set<std::string> mAssetsAlreadyRequested;
 
-  void preWalkComponents(spire::ESCoreBase&)
+  void preWalkComponents(spire::ESCoreBase&) override
   {
     mAssetsAwaitingRequest.clear();
     mAssetsAlreadyRequested.clear();
   }
 
-  void postWalkComponents(spire::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core) override
   {
     std::weak_ptr<GeomMan> gm = core.getStaticComponent<StaticGeomMan>()->instance_;
     if (std::shared_ptr<GeomMan> man = gm.lock()) {
@@ -529,9 +529,9 @@ public:
 
   std::set<std::string> mValidKeys;
 
-  void preWalkComponents(spire::ESCoreBase&) {mValidKeys.clear();}
+  void preWalkComponents(spire::ESCoreBase&) override {mValidKeys.clear();}
 
-  void postWalkComponents(spire::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core) override
   {
     std::weak_ptr<GeomMan> gm = core.getStaticComponent<StaticGeomMan>()->instance_;
     if (std::shared_ptr<GeomMan> geomMan = gm.lock()) {
@@ -567,4 +567,3 @@ void GeomMan::runGCCycle(spire::ESCoreBase& core)
 }
 
 } // namespace ren
-

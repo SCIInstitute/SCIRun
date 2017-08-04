@@ -170,9 +170,9 @@ public:
 
   std::set<GLuint> mValidKeys;
 
-  void preWalkComponents(spire::ESCoreBase&) {mValidKeys.clear();}
+  void preWalkComponents(spire::ESCoreBase&) override {mValidKeys.clear();}
 
-  void postWalkComponents(spire::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core) override
   {
     std::weak_ptr<ren::VBOMan> man = core.getStaticComponent<StaticVBOMan>()->instance_;
     if (std::shared_ptr<VBOMan> vboMan = man.lock()) {
@@ -209,4 +209,3 @@ const char* VBOMan::getGCName()
 }
 
 } // namespace ren
-

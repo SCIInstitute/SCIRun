@@ -524,13 +524,13 @@ namespace ren {
     /// request should not be attempted.
     std::set<std::string> mAssetsAlreadyRequested;
 
-    void preWalkComponents(spire::ESCoreBase&)
+    void preWalkComponents(spire::ESCoreBase&) override
     {
       mAssetsAwaitingRequest.clear();
       mAssetsAlreadyRequested.clear();
     }
 
-    void postWalkComponents(spire::ESCoreBase& core)
+    void postWalkComponents(spire::ESCoreBase& core) override
     {
       StaticTextureMan* man = core.getStaticComponent<StaticTextureMan>();
       if (man == nullptr)
@@ -700,12 +700,12 @@ namespace ren {
 
     std::set<GLuint> mValidKeys;
 
-    void preWalkComponents(spire::ESCoreBase&)
+    void preWalkComponents(spire::ESCoreBase&) override
     {
       mValidKeys.clear();
     }
 
-    void postWalkComponents(spire::ESCoreBase& core)
+    void postWalkComponents(spire::ESCoreBase& core) override
     {
       StaticTextureMan* man = core.getStaticComponent<StaticTextureMan>();
       if (man == nullptr)
@@ -744,4 +744,3 @@ namespace ren {
   }
 
 } // namespace ren
-

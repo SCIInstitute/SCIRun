@@ -90,7 +90,7 @@ void ShaderMan::requestVSandFS(spire::ESCoreBase& core, const std::string& asset
   std::string vertexShader = assetName + ".vs";
 
   //sfs->instance->readFile(vertexShader,
-  //                       std::bind(&ShaderMan::loadVertexShaderCB, this, 
+  //                       std::bind(&ShaderMan::loadVertexShaderCB, this,
   //                                 std::placeholders::_1, std::placeholders::_2,
   //                                 std::placeholders::_3, std::placeholders::_4,
   //                                 assetName, numRetries, std::ref(core)));
@@ -136,7 +136,7 @@ void ShaderMan::loadVertexShaderCB(const std::string& /* vsName */, bool error,
     auto callbackLambda = [this, assetName, numRetries, refPtr, vertexSource](
         const std::string& fsName, bool lambdaError, size_t lambdaBytesRead, uint8_t* lambdaBuffer)
     {
-      loadFragmentShaderCB(fsName, lambdaError, lambdaBytesRead, lambdaBuffer, 
+      loadFragmentShaderCB(fsName, lambdaError, lambdaBytesRead, lambdaBuffer,
                            vertexSource, assetName, numRetries, *refPtr);
     };
     frag->instance->readFile(fragmentShader, callbackLambda);
@@ -221,7 +221,7 @@ void ShaderMan::loadFragmentShaderCB(const std::string& /* fsName */, bool error
 
 GLuint ShaderMan::getIDForAsset(const char* assetName) const
 {
-  auto it = mNameToGL.find(std::string(assetName));  
+  auto it = mNameToGL.find(std::string(assetName));
   if (it != mNameToGL.end())
   {
     return it->second;
@@ -289,13 +289,13 @@ public:
   /// request should not be attempted.
   std::set<std::string> mAssetsAlreadyRequested;
 
-  void preWalkComponents(spire::ESCoreBase&)
+  void preWalkComponents(spire::ESCoreBase&) override
   {
     mAssetsAwaitingRequest.clear();
     mAssetsAlreadyRequested.clear();
   }
 
-  void postWalkComponents(spire::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core) override
   {
     std::weak_ptr<ShaderMan> sm = core.getStaticComponent<StaticShaderMan>()->instance_;
     if (std::shared_ptr<ShaderMan> man = sm.lock()) {
@@ -461,9 +461,9 @@ public:
 
   std::set<GLuint> mValidKeys;
 
-  void preWalkComponents(spire::ESCoreBase&) {mValidKeys.clear();}
+  void preWalkComponents(spire::ESCoreBase&) override {mValidKeys.clear();}
 
-  void postWalkComponents(spire::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core) override
   {
     std::weak_ptr<ShaderMan> sm = core.getStaticComponent<StaticShaderMan>()->instance_;
     if (std::shared_ptr<ShaderMan> man = sm.lock()) {
@@ -500,4 +500,3 @@ void ShaderMan::runGCCycle(spire::ESCoreBase& core)
 }
 
 } // namespace ren
-
