@@ -199,8 +199,8 @@ namespace SCIRun {
       gen::StaticScreenDims* dims = mCore.getStaticComponent<gen::StaticScreenDims>();
       if (dims)
       {
-        dims->width = static_cast<size_t>(width);
-        dims->height = static_cast<size_t>(height);
+        dims->width = static_cast<uint32_t>(width);
+        dims->height = static_cast<uint32_t>(height);
       }
 
       // Setup default camera projection.

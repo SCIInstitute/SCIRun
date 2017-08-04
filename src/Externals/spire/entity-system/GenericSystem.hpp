@@ -117,7 +117,7 @@ public:
         baseComponents[i] = ESCoreBase::getEmptyContainer();
 
       isStatic[i] = baseComponents[i]->isStatic();
-      numComponents[i] = baseComponents[i]->getNumComponents();
+      numComponents[i] = static_cast<int>(baseComponents[i]->getNumComponents());
 
       // Note: For static components, getComponentItemIndexWithSequence always
       //       returns 0. Which is the correct index to start at.
@@ -202,7 +202,7 @@ public:
 
       indices[i] = 0;
       nextIndices[i] = 0;
-      numComponents[i] = baseComponents[i]->getNumComponents();
+      numComponents[i] = static_cast<int>(baseComponents[i]->getNumComponents());
       isStatic[i] = baseComponents[i]->isStatic();
 
       // Optional and static components are not allowed to be leading components

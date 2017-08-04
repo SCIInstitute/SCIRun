@@ -9,7 +9,7 @@ namespace gen {
 struct StaticRandom
 {
   // -- Data --
-  uint64_t currentSeed; ///< Current seed being used to generate random numbers.
+  std::random_device::result_type currentSeed; ///< Current seed being used to generate random numbers.
 
   /// \todo Look into random number generation on emscripten. I'm not sure
   ///       it is being done correctly -- unsure about hardware random.
@@ -51,13 +51,7 @@ struct StaticRandom
     randEngine.seed(currentSeed);
 #endif
   }
-
-  void changeSeed(uint64_t seed)
-  {
-    currentSeed = seed;
-    randEngine.seed(seed);
-  }
-
+  
   static const char* getName() {return "gen:StaticRandom";}
 
   bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)

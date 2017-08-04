@@ -12,16 +12,14 @@ namespace CPM_VAR_BUFFER_NS {
 /// layer over the BSerialize code. To read data from a buffer, simply wrap
 /// the buffer using BSerialize. There is no need to automatically extend
 /// the buffer size when reading.
-class VarBuffer
+class VarBuffer final
 {
 public:
   /// Initialize an empty buffer.
   VarBuffer();
 
   // Preallocate the variable buffer to the preset size.
-  VarBuffer(uint32_t size);
-
-  virtual ~VarBuffer();
+  explicit VarBuffer(uint32_t size);
   
   /// \todo Add flag which will swap bytes when reading out of or into buffer.
 
@@ -50,7 +48,7 @@ public:
 
   /// Retrieves the current size of the buffer (size of all data currently
   /// written to the buffer).
-  int getBufferSize() const {return mSerializer->getOffset();}
+  size_t getBufferSize() const {return mSerializer->getOffset();}
 
   /// Retrieves currently allocated size of the buffer.
   int getAllocatedSize() const {return mBufferSize;}

@@ -104,7 +104,7 @@ public:
 
     if (it->sequence == sequence)
     {
-      return it - mComponents.cbegin();
+      return static_cast<int>(it - mComponents.cbegin());
     }
     else
     {
@@ -197,8 +197,9 @@ public:
     // We are guaranteed that there is at least one component in the mComponents
     // array because nullptr was not returned from the
     // getComponentItemWithSequence function.
-    int curIndex = item - &mComponents[0];
-    while (item->sequence == sequence && curIndex < mComponents.size())
+    auto curIndex = item - &mComponents[0];
+    while (item->sequence == sequence 
+      && curIndex < static_cast<int>(mComponents.size()))
     {
       ++numComponents;
       ++curIndex;
@@ -286,7 +287,7 @@ public:
         else
           std::stable_sort(mComponents.begin(), mComponents.end());
 
-        mLastSortedSize = mComponents.size();
+        mLastSortedSize = static_cast<int>(mComponents.size());
       }
 
       mLowerSequence = mComponents.front().sequence;
@@ -566,8 +567,8 @@ public:
   int mLastSortedSize;                ///< Unsorted elements can be added to the end
                                       ///< of mComponents. This represents the last
                                       ///< sorted element inside mComponents.
-  int mUpperSequence;                 ///< Largest sequence in the list.
-  int mLowerSequence;                 ///< Smallest sequence in the list.
+  uint64_t mUpperSequence;                 ///< Largest sequence in the list.
+  uint64_t mLowerSequence;                 ///< Smallest sequence in the list.
 
   bool mIsStatic;                     ///< True if this container contains static
                                       ///< component data.
