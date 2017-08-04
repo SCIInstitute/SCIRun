@@ -10,7 +10,7 @@ namespace Render {
 struct RenderList
 {
   // -- Data --
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> data;
+  std::shared_ptr<spire::VarBuffer> data;
   std::vector<Graphics::Datatypes::SpireVBO::AttributeData> attributes;
   Graphics::Datatypes::RenderType renderType;
   int64_t numElements;
@@ -20,7 +20,7 @@ struct RenderList
 
   static const char* getName() {return "RenderList";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
   {
     // Shouldn't need to serialize these values. They are context specific.
     // Maybe? Will need to figure out as I go along.

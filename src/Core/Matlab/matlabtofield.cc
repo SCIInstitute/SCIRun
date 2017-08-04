@@ -38,7 +38,7 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Logging/LoggerInterface.h>
-#include "matlabconverter.h"
+#include <Core/Matlab/matlabconverter.h>
 
 using namespace SCIRun;
 using namespace SCIRun::MatlabIO;

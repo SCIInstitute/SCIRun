@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2014 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -27,16 +27,53 @@
 */
 
 /// \author James Hughes
-/// \date   October 2013
+/// \date   February 2014
 
-#ifndef __SCIRUN_SPIRE_NAMESPACES_H
-#define __SCIRUN_SPIRE_NAMESPACES_H
+#ifndef SPIRE_ENTITY_SYSTEM_EMPTYSYSTEM_HPP
+#define SPIRE_ENTITY_SYSTEM_EMPTYSYSTEM_HPP
 
-// 'Forward declaration' of namespaces.
-namespace CPM_SPIRE_NS {}
+#include "BaseSystem.hpp"
+#include "ESCoreBase.hpp"
 
-// Renaming namespaces in our top level.
-namespace spire = CPM_SPIRE_NS;
+namespace spire {
+
+/// A system that executes without any associated components.
+class EmptySystem : public BaseSystem
+{
+public:
+  /// Abstract functions.
+  virtual void execute(ESCoreBase& core) = 0;
+
+  void walkComponents(ESCoreBase& core) override
+  {
+    preWalkComponents(core);
+    execute(core);
+    postWalkComponents(core);
+  }
+
+  bool walkEntity(ESCoreBase& core, uint64_t entityID) override
+  {
+    preWalkComponents(core);
+    execute(core);
+    postWalkComponents(core);
+    return true;
+  }
+
+  // Used in the two functions above.
+  virtual void preWalkComponents(ESCoreBase& core)            {}
+  virtual void postWalkComponents(ESCoreBase& core)           {}
+
+  std::vector<uint64_t> getComponents() const override
+  {
+    return std::vector<uint64_t>();
+  }
+
+  virtual bool isComponentOptional(uint64_t /* component */) override
+  {
+    return false;
+  }
+};
+
+} // namespace spire
 
 #endif 
-

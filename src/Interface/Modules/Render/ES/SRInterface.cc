@@ -37,7 +37,6 @@
 #include <Core/Application/Application.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 
-// CPM modules.
 #include <es-general/comp/StaticScreenDims.hpp>
 #include <es-general/comp/StaticCamera.hpp>
 #include <es-general/comp/StaticOrthoCamera.hpp>
@@ -69,7 +68,7 @@ using namespace SCIRun::Core::Geometry;
 
 using namespace std::placeholders;
 
-namespace fs = CPM_ES_FS_NS;
+namespace fs = spire;
 
 namespace SCIRun {
   namespace Render {
@@ -199,8 +198,8 @@ namespace SCIRun {
       gen::StaticScreenDims* dims = mCore.getStaticComponent<gen::StaticScreenDims>();
       if (dims)
       {
-        dims->width = static_cast<size_t>(width);
-        dims->height = static_cast<size_t>(height);
+        dims->width = static_cast<uint32_t>(width);
+        dims->height = static_cast<uint32_t>(height);
       }
 
       // Setup default camera projection.
@@ -1186,7 +1185,7 @@ namespace SCIRun {
 
       ren::Texture texture;
 
-      CPM_ES_CEREAL_NS::CerealHeap<ren::Texture>* contTex =
+      spire::CerealHeap<ren::Texture>* contTex =
         mCore.getOrCreateComponentContainer<ren::Texture>();
       std::pair<const ren::Texture*, size_t> component =
         contTex->getComponent(entityID);
@@ -1274,20 +1273,19 @@ namespace SCIRun {
       return true;
     }
 
-    //
     void SRInterface::updateWidget(const glm::ivec2& pos)
     {
       gen::StaticCamera* cam = mCore.getStaticComponent<gen::StaticCamera>();
       glm::vec4 spos((float(2 * pos.x) - float(mScreenWidth)) / float(mScreenWidth),
         (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
         mSelectedPos.z, 1.0f);
-      //gen::Transform trafo;
+
       mWidgetTransform = gen::Transform();
       mWidgetTransform.setPosition((spos - mSelectedPos).xyz());
       mWidgetTransform.transform = glm::inverse(cam->data.projIV) *
         mWidgetTransform.transform * cam->data.projIV;
 
-      CPM_ES_CEREAL_NS::CerealHeap<gen::Transform>* contTrans =
+      spire::CerealHeap<gen::Transform>* contTrans =
         mCore.getOrCreateComponentContainer<gen::Transform>();
       std::pair<const gen::Transform*, size_t> component =
         contTrans->getComponent(mSelectedID);

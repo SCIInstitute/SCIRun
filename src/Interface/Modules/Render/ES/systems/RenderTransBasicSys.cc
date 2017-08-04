@@ -59,8 +59,8 @@
 #include "../comp/LightingUniforms.h"
 #include "../comp/ClippingPlaneUniforms.h"
 
-namespace es = CPM_ES_NS;
-namespace shaders = CPM_GL_SHADERS_NS;
+namespace es = spire;
+namespace shaders = spire;
 using namespace SCIRun::Graphics::Datatypes;
 
 // Every component is self contained. It only accesses the systems and
@@ -70,7 +70,7 @@ namespace SCIRun {
 namespace Render {
 
 class RenderBasicSysTrans :
-    public es::GenericSystem<true,
+    public spire::GenericSystem<true,
                              RenderBasicGeom,   // TAG class
                              SRRenderState,
                              RenderList,
@@ -101,7 +101,7 @@ public:
 
   bool isComponentOptional(uint64_t type) override
   {
-    return es::OptionalComponents<RenderList,
+    return spire::OptionalComponents<RenderList,
                                   ren::GLState,
                                   ren::StaticGLState,
                                   ren::CommonUniforms,
@@ -156,9 +156,9 @@ private:
   };
 
   GLuint sortObjects(const Core::Geometry::Vector& dir,
-    const es::ComponentGroup<ren::IBO>& ibo,
-    const es::ComponentGroup<SpireSubPass>& pass,
-    const es::ComponentGroup<ren::StaticIBOMan>& iboMan)
+    const spire::ComponentGroup<ren::IBO>& ibo,
+    const spire::ComponentGroup<SpireSubPass>& pass,
+    const spire::ComponentGroup<ren::StaticIBOMan>& iboMan)
   {
     char* vbo_buffer = reinterpret_cast<char*>(pass.front().vbo.data->getBuffer());
     uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(pass.front().ibo.data->getBuffer());
@@ -213,30 +213,30 @@ private:
   }
 
   void groupExecute(
-      es::ESCoreBase&, uint64_t /* entityID */,
-      const es::ComponentGroup<RenderBasicGeom>& geom,
-      const es::ComponentGroup<SRRenderState>& srstate,
-      const es::ComponentGroup<RenderList>& rlist,
-      const es::ComponentGroup<LightingUniforms>& lightUniforms,
-      const es::ComponentGroup<ClippingPlaneUniforms>& clippingPlaneUniforms,
-      const es::ComponentGroup<gen::Transform>& trafo,
-      const es::ComponentGroup<gen::StaticGlobalTime>& time,
-      const es::ComponentGroup<ren::VBO>& vbo,
-      const es::ComponentGroup<ren::IBO>& ibo,
-      const es::ComponentGroup<ren::Texture>& textures,
-      const es::ComponentGroup<ren::CommonUniforms>& commonUniforms,
-      const es::ComponentGroup<ren::VecUniform>& vecUniforms,
-      const es::ComponentGroup<ren::MatUniform>& matUniforms,
-      const es::ComponentGroup<ren::Shader>& shader,
-      const es::ComponentGroup<ren::GLState>& state,
-      const es::ComponentGroup<SpireSubPass>& pass,
-      const es::ComponentGroup<StaticWorldLight>& worldLight,
-      const es::ComponentGroup<StaticClippingPlanes>& clippingPlanes,
-      const es::ComponentGroup<gen::StaticCamera>& camera,
-      const es::ComponentGroup<ren::StaticGLState>& defaultGLState,
-      const es::ComponentGroup<ren::StaticVBOMan>& vboMan,
-      const es::ComponentGroup<ren::StaticIBOMan>& iboMan,
-      const es::ComponentGroup<ren::StaticTextureMan>& texMan) override
+      spire::ESCoreBase&, uint64_t /* entityID */,
+      const spire::ComponentGroup<RenderBasicGeom>& geom,
+      const spire::ComponentGroup<SRRenderState>& srstate,
+      const spire::ComponentGroup<RenderList>& rlist,
+      const spire::ComponentGroup<LightingUniforms>& lightUniforms,
+      const spire::ComponentGroup<ClippingPlaneUniforms>& clippingPlaneUniforms,
+      const spire::ComponentGroup<gen::Transform>& trafo,
+      const spire::ComponentGroup<gen::StaticGlobalTime>& time,
+      const spire::ComponentGroup<ren::VBO>& vbo,
+      const spire::ComponentGroup<ren::IBO>& ibo,
+      const spire::ComponentGroup<ren::Texture>& textures,
+      const spire::ComponentGroup<ren::CommonUniforms>& commonUniforms,
+      const spire::ComponentGroup<ren::VecUniform>& vecUniforms,
+      const spire::ComponentGroup<ren::MatUniform>& matUniforms,
+      const spire::ComponentGroup<ren::Shader>& shader,
+      const spire::ComponentGroup<ren::GLState>& state,
+      const spire::ComponentGroup<SpireSubPass>& pass,
+      const spire::ComponentGroup<StaticWorldLight>& worldLight,
+      const spire::ComponentGroup<StaticClippingPlanes>& clippingPlanes,
+      const spire::ComponentGroup<gen::StaticCamera>& camera,
+      const spire::ComponentGroup<ren::StaticGLState>& defaultGLState,
+      const spire::ComponentGroup<ren::StaticVBOMan>& vboMan,
+      const spire::ComponentGroup<ren::StaticIBOMan>& iboMan,
+      const spire::ComponentGroup<ren::StaticTextureMan>& texMan) override
   {
     /// \todo This needs to be moved to pre-execute.
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -483,10 +483,10 @@ private:
       // fairly dramatically.
 
       // Build BSerialize object.
-      CPM_BSERIALIZE_NS::BSerialize posDeserialize(
+      spire::BSerialize posDeserialize(
           rlist.front().data->getBuffer(), rlist.front().data->getBufferSize());
 
-      CPM_BSERIALIZE_NS::BSerialize colorDeserialize(
+      spire::BSerialize colorDeserialize(
           rlist.front().data->getBuffer(), rlist.front().data->getBufferSize());
 
       int64_t posSize     = 0;
@@ -619,7 +619,7 @@ private:
   }
 };
 
-void registerSystem_RenderBasicTransGeom(CPM_ES_ACORN_NS::Acorn& core)
+void registerSystem_RenderBasicTransGeom(spire::Acorn& core)
 {
 	core.registerSystem<RenderBasicSysTrans>();
 }
