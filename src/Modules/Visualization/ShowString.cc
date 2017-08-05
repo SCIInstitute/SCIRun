@@ -144,8 +144,8 @@ std::tuple<double, double> ShowString::getTextPosition()
 // TODO: clean up duplication here and in ShowColorMap
 GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
 {
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(new CPM_VAR_BUFFER_NS::VarBuffer(0));
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(new CPM_VAR_BUFFER_NS::VarBuffer(0));
+  std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(0));
+  std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(0));
 
   auto uniqueNodeID = get_id().id_ + "_showString_" + text;
   auto vboName = uniqueNodeID + "VBO";

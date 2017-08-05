@@ -29,7 +29,7 @@ struct StaticWorldLight
 
   static const char* getName() {return "StaticWorldLight";}
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& s, uint64_t /* entityID */)
   {
     for (int i = 0; i < LIGHT_NUM; ++i)
       s.serialize("dir", lightDir[i]);

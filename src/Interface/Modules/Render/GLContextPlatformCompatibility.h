@@ -38,6 +38,4 @@
 
 #include <QtOpenGL/QGLWidget>
 
-#include <Interface/Modules/Render/namespaces.h>
-
 #endif
