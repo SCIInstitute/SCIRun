@@ -62,17 +62,6 @@ IF(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
   MESSAGE( FATAL_ERROR "Goodbye." )
 ENDIF()
 
-################################################################################
-# If building on Windows, make sure that the path to the bin directory is short.
-# TODO: Revisit if CPM module names get shorter.
-
-IF(WIN32)
-  STRING(LENGTH ${CMAKE_BINARY_DIR} BIN_DIR_LENGTH)
-  IF(${BIN_DIR_LENGTH} GREATER 15)
-    MESSAGE(WARNING "Binary directory is too long, the build may fail due to long path names.")
-  ENDIF()
-ENDIF()
-
 ########################################################################
 # Build shared libraries by default
 
@@ -251,9 +240,20 @@ ENDIF()
 CONFIG_STANDARD_EXTERNAL( Boost BoostConfig.cmake ${Boost_DIR} )
 INCLUDE(${SCI_BOOST_USE_FILE})
 
+CONFIG_STANDARD_EXTERNAL( Tny TnyConfig.cmake ${TNY_DIR} )
+INCLUDE(${TNY_USE_FILE})
+
+CONFIG_STANDARD_EXTERNAL( LodePng LodePngConfig.cmake ${LODEPNG_DIR} )
+INCLUDE(${LODEPNG_USE_FILE})
+
 IF(WITH_TETGEN)
   CONFIG_STANDARD_EXTERNAL( Tetgen TetgenConfig.cmake ${Tetgen_DIR} )
   INCLUDE(${TETGEN_USE_FILE})
+ENDIF()
+
+IF(WIN32)
+  CONFIG_STANDARD_EXTERNAL( Glew GlewConfig.cmake ${GLEW_DIR} )
+  INCLUDE(${GLEW_USE_FILE})
 ENDIF()
 
 ########################################################################
@@ -365,110 +365,6 @@ IF(WITH_TETGEN)
 ENDIF()
 
 ########################################################################
-# Configure CPM and Spire - http://github.com/iauns/cpm
-# Configure CPM and Spire - http://github.com/CIBC-Internal/cpm
-
-MESSAGE(STATUS "Configuring CPMs")
-
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
-# CPM Setup.
-set(CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/cpm" CACHE TYPE STRING)
-find_package(Git)
-if(NOT GIT_FOUND)
-  message(FATAL_ERROR "CPM requires Git.")
-endif()
-if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
-  message(STATUS "Cloning repo (https://github.com/CIBC-Internal/cpm)")
-  execute_process(
-    COMMAND "${GIT_EXECUTABLE}" clone https://github.com/CIBC-Internal/cpm ${CPM_DIR}
-    RESULT_VARIABLE error_code
-    OUTPUT_QUIET ERROR_QUIET)
-  if(error_code)
-    message(FATAL_ERROR "CPM failed to get the hash for HEAD")
-  endif()
-endif()
-include(${CPM_DIR}/CPM.cmake)
-
-# TODO: Add tags for *all* of the CPM modules. This will allow upstream
-# flexibility. Once all versions are appropriately tagged, I will be able
-# to untag upstream and keep it moving forward.
-
-# ++ MODULE: GL Platform
-CPM_AddModule("gl_platform"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-gl-platform"
-  GIT_TAG "origin/master")
-
-# ++ MODULE: Arc-Look-At (Autoview Camera)
-CPM_AddModule("look_at"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-arc-look-at"
-  GIT_TAG "origin/SCIRun")
-
-# ++ MODULE: Entity System
-CPM_AddModule("es"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-entity-system"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: Entity system component serialization
-CPM_AddModule("es_cereal"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-cereal"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: Cereal support for GLM.
-CPM_AddModule("cereal_glm"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-cereal-glm"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: ES Systems
-CPM_AddModule("es_systems"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-systems"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: Async filesystem support
-CPM_AddModule("es_fs"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-fs"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: General transforms and components
-CPM_AddModule("es_general"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-general"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: Entity System Rendering.
-CPM_AddModule("es_render"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-render"
-  GIT_TAG "origin/FontTextures"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: Acorn
-CPM_AddModule("es_acorn"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-es-acorn"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: Var buffer
-CPM_AddModule("var_buffer"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-var-buffer"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-# ++ MODULE: BSerialize
-CPM_AddModule("bserialize"
-  GIT_REPOSITORY "https://github.com/CIBC-Internal/cpm-bserialize"
-  GIT_TAG "origin/master"
-  USE_EXISTING_VER TRUE)
-
-CPM_Finish()
-
-MESSAGE(STATUS "Done configuring CPMs")
-
-########################################################################
 # Copy Spire-SCIRun specific assets and shaders
 
 set(OUTPUT_SHADER_DIR ${CMAKE_CURRENT_BINARY_DIR}/Shaders)
@@ -547,25 +443,6 @@ IF(NOT BUILD_HEADLESS)
 ENDIF()
 
 ########################################################################
-# Find and configure Qwt custom widgets
-
-OPTION(WITH_QWT_WIDGETS "Qwt Custom Widgets" OFF)
-MARK_AS_ADVANCED(WITH_QWT_WIDGETS)
-
-IF(WITH_QWT_WIDGETS)
-  SET(QWT_INCLUDE_DIR CACHE PATH "Qwt include directory")
-  IF(NOT QWT_INCLUDE_DIR)
-    MESSAGE(FATAL_ERROR "QWT_INCLUDE_DIR should be set to path like 'qwt-6.0.1/include'")
-  ENDIF()
-  INCLUDE_DIRECTORIES(${QWT_INCLUDE_DIR})
-  SET(QWT_LIBRARY CACHE FILEPATH "Qwt library")
-  IF(NOT QWT_LIBRARY)
-  	MESSAGE(FATAL_ERROR "QWT_LIBRARY should be set to a filepath like 'qwt-6.0.1/lib/libqwt.so'")
-  ENDIF()
-  SET(qwt_libraries ${QWT_LIBRARY} )
-ENDIF()
-
-########################################################################
 # Find and configure dl library
 
 IF(UNIX)
@@ -585,6 +462,7 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_SOURCE_DIR}/Externals/gmock/gtest/include
   ${SCIRun_SOURCE_DIR}/Externals/gmock/include
   ${SCIRun_SOURCE_DIR}/Externals/libxml2/include
+  ${SCIRun_SOURCE_DIR}/Externals/spire/
   ${CMAKE_CURRENT_BINARY_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
@@ -594,7 +472,9 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_SOURCE_DIR}/Externals/log4cpp/include
   ${SCI_TEEM_INCLUDE}
   ${SCI_ZLIB_INCLUDE}
-  #${SCI_TETGEN_INCLUDE}
+  ${GLM_DIR}
+  ${SCI_TNY_INCLUDE}
+  ${SCI_LODEPNG_INCLUDE}
 )
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
@@ -781,6 +661,7 @@ SET_PROPERTY(TARGET bundle_toolkit         PROPERTY FOLDER "Dataflow/Serializati
 SET_PROPERTY(TARGET Engine_Network         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Engine_Scheduler         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Dataflow_State         PROPERTY FOLDER "Dataflow")
+SET_PROPERTY(TARGET spire PROPERTY FOLDER "Graphics")
 
 IF(NOT BUILD_HEADLESS)
   SET_PROPERTY(TARGET Interface_Modules_Base   PROPERTY FOLDER "Interface/Modules")
@@ -902,7 +783,6 @@ IF(BUILD_TESTING)
   ENDIF()
 ENDIF()
 
-SET_PROPERTY(TARGET ${CPM_LIBRARIES} PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET ${SCI_LOG4CPP_LIBRARY} PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET cleaver PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")

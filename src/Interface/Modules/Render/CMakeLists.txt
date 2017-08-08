@@ -27,6 +27,12 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+ADD_DEFINITIONS(-DGLM_SWIZZLE -DGLM_FORCE_CXX03 -DGLM_FORCE_RADIANS)
+
+IF(UNIX)
+  ADD_DEFINITIONS(-Wno-missing-braces)
+ENDIF()
+
 SET(Interface_Modules_Render_FORMS
   ViewScene.ui
   ViewSceneControls.ui
@@ -50,12 +56,15 @@ SET(Interface_Modules_Render_HEADERS_NO_MOC
   ES/Core.h
   ES/CoreBootstrap.h
   ES/AssetBootstrap.h
+  ES/Registration.h
   ES/comp/RenderBasicGeom.h
   ES/comp/StaticSRInterface.h
   ES/comp/StaticWorldLight.h
   ES/comp/StaticClippingPlanes.h
   ES/comp/LightingUniforms.h
   ES/comp/ClippingPlaneUniforms.h
+  ES/comp/RenderList.h
+  ES/comp/SRRenderState.h
   ES/systems/RenderBasicSys.h
   ES/systems/RenderTransBasicSys.h
   ES/systems/RenderTransText.h
@@ -99,10 +108,12 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
   Core_Application
   ${OPENGL_LIBRARIES}
   ${QT_OPENGL_LIBRARY}
-  ${CPM_LIBRARIES}
+  ${SCI_SPIRE_LIBRARY}
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
   ${SCI_FREETYPE_LIBRARY}
+  ${SCI_LODEPNG_LIBRARY}
+  ${SCI_TNY_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

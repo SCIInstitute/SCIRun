@@ -34,7 +34,7 @@
 namespace SCIRun {
 namespace Render {
 
-void rendererRegisterAll(CPM_ES_ACORN_NS::Acorn& core);
+void rendererRegisterAll(spire::Acorn& core);
 
 } // namespace Render
 } // namespace SCIRun
