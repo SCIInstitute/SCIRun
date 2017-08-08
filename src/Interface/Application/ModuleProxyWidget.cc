@@ -468,6 +468,11 @@ void ModuleProxyWidget::setDefaultNotePosition(NotePosition position)
   setDefaultNotePositionImpl(position);
 }
 
+void ModuleProxyWidget::setDefaultNoteSize(int size)
+{
+  setDefaultNoteSizeImpl(size);
+}
+
 void ModuleProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
   if (doHighlight_)

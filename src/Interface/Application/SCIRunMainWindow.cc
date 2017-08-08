@@ -540,7 +540,7 @@ void SCIRunMainWindow::setupNetworkEditor()
   //TODO: this logger will crash on Windows when the console is closed. See #1250. Need to figure out a better way to manage scope/lifetime of Qt widgets passed to global singletons...
   //boost::shared_ptr<TextEditAppender> moduleLog(new TextEditAppender(moduleLogTextBrowser_));
   //Log::get("Modules").addCustomAppender(moduleLog);
-  defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*prefsWindow_->defaultNotePositionComboBox_));
+  defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(prefsWindow_->defaultNotePositionComboBox_, prefsWindow_->defaultNoteSizeComboBox_));
   auto tagColorFunc = [this](int tag) { return tagManagerWindow_->tagColor(tag); };
   auto tagNameFunc = [this](int tag) { return tagManagerWindow_->tagName(tag); };
 	auto preexecuteFunc = [this]() { preexecute(); };
@@ -660,6 +660,12 @@ bool SCIRunMainWindow::loadNetworkFile(const QString& filename, bool isTemporary
         statusBar()->showMessage(tr("File loaded: ") + filename, 2000);
         provenanceWindow_->clear();
         provenanceWindow_->showFile(command.file_);
+      }
+      else
+      {
+        setCurrentFile("");
+        setWindowModified(true);
+        showStatusMessage("Toolkit network loaded. ", 2000);
       }
 			networkEditor_->viewport()->update();
       return true;

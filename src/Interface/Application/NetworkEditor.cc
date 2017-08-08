@@ -433,6 +433,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(proxy, SIGNAL(tagChanged(int)), this, SLOT(highlightTaggedItem(int)));
 
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
+  proxy->setDefaultNoteSize(defaultNotePositionGetter_->size());
   proxy->createPortPositionProviders();
   proxy->highlightPorts(Preferences::Instance().highlightPorts ? 1 : 0);
 
