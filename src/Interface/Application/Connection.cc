@@ -543,6 +543,7 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
   auto msgBox = new QMessageBox(SCIRunMainWindow::Instance());
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
   msgBox->setStandardButtons(QMessageBox::Ok);
+  msgBox->setEscapeButton(QMessageBox::Ok);
 
 #if 0
   auto viewButton = new QPushButton("View...");
