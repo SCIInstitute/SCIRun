@@ -54,7 +54,6 @@ void AppendMatrix::execute()
   auto matrixLHS = getRequiredInput(FirstMatrix);
   auto matrixRHS = getRequiredInput(SecondMatrix);
   auto param = get_state()->getValue(Variables::RowsOrColumns).toInt();
-
   algo().set(Variables::RowsOrColumns, param);
   auto output = algo().run(withInputData((FirstMatrix, matrixLHS)(SecondMatrix, matrixRHS)));
 
