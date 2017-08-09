@@ -42,12 +42,12 @@ namespace Math {
   public:
     enum Option { ROWS, COLUMNS };
 
-    typedef boost::tuple<SCIRun::Core::Datatypes::DenseMatrixConstHandle, SCIRun::Core::Datatypes::DenseMatrixConstHandle> Inputs;
+    typedef boost::tuple<SCIRun::Core::Datatypes::MatrixHandle, SCIRun::Core::Datatypes::MatrixHandle> Inputs;
     typedef Option Parameters;  
-    typedef SCIRun::Core::Datatypes::DenseMatrixHandle Outputs;
+    typedef SCIRun::Core::Datatypes::MatrixHandle Outputs;
 
     Outputs run(const Inputs& input, const Parameters& params) const;
-
+    bool check_dimensions(const Datatypes::Matrix& mat1, const Datatypes::Matrix& mat2, const Parameters& params) const;
     AppendMatrixAlgorithm();
     AlgorithmOutput run(const AlgorithmInput& input) const;
   };

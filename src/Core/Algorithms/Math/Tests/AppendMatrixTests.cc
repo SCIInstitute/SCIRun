@@ -45,8 +45,8 @@ TEST(AppendMatrixAlgorithmTests, CanAppendRows)
   DenseMatrixHandle m2(SCIRun::TestUtils::matrixNonSquare().clone());
   auto result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS);
 
-  EXPECT_EQ(6, result->rows());
-  EXPECT_EQ(4, result->cols());
+  EXPECT_EQ(6, result->nrows());
+  EXPECT_EQ(4, result->ncols());
 
   std::cout << *result << std::endl;
 }
@@ -59,8 +59,8 @@ TEST(AppendMatrixAlgorithmTests, CanAppendColumns)
   DenseMatrixHandle m2(SCIRun::TestUtils::matrixNonSquare().clone());
   auto result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::COLUMNS);
 
-  EXPECT_EQ(3, result->rows());
-  EXPECT_EQ(8, result->cols());
+  EXPECT_EQ(3, result->nrows());
+  EXPECT_EQ(8, result->ncols());
 
   std::cout << *result << std::endl;
 }
@@ -83,4 +83,30 @@ TEST(AppendMatrixAlgorithmTests, NullInputReturnsDummyValues)
 
   auto result = algo.run(AppendMatrixAlgorithm::Inputs(), AppendMatrixAlgorithm::ROWS);
   EXPECT_FALSE(result);
+}
+
+TEST(AppendMatrixAlgorithmTests, AppendSparseMatrix)
+{
+  AppendMatrixAlgorithm algo;  
+   
+  SparseRowMatrix m1(3,3);
+  m1.insert(1,1) = 1;
+  m1.insert(2,3) = 0.5;
+  m1.insert(3,1) = -2;
+  SparseRowMatrix m2(3,3);
+  m2.insert(1,2) = 8;
+  m2.insert(2,2) = -7;
+  m2.insert(3,2) = 0.1;
+  /*  
+  SparseMatrix<double> m3(m1.rows() + m2.rows(), m1.cols());
+  m3.reserve(m1.nonZeros() + m2.nonZeros());
+  for(Index c=0; c<m1.cols(); ++c)
+  {
+    for(SparseMatrix<double>::InnerIterator itL(m1, c); itL; ++itL)
+         m3.insertBack(itm1.row(), c) = itm1.value();
+    for(SparseMatrix<double>::InnerIterator itC(m2, c); itC; ++itC)
+         m3.insertBack(itC.row(), c) = itC.value();
+ }
+ m3.finalize();*/
+  
 }
