@@ -62,6 +62,7 @@ namespace SCIRun
         static SparseRowMatrixHandle make(size_type rows, size_type cols, const SymmetricValues& values);
         static SparseRowMatrixHandle appendToSparseMatrix(size_type rows, size_type cols, const SparseRowMatrix& sparse, const Values& additionalValues);
         static SparseRowMatrixHandle appendToSparseMatrixSumming(size_type rows, size_type cols, const SparseRowMatrix& sparse, const Values& additionalValues);
+	static SparseRowMatrixHandle concatenateSparseMatrices(const SparseRowMatrix& mat1, const SparseRowMatrix& mat2, const bool rows);
       private:
         SparseRowMatrixFromMap();
 
