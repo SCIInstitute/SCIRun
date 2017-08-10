@@ -80,33 +80,96 @@ TEST(AppendMatrixAlgorithmTests, ReturnsNullWithSizeMismatch)
 TEST(AppendMatrixAlgorithmTests, NullInputReturnsDummyValues)
 {
   AppendMatrixAlgorithm algo;
-
+  
   auto result = algo.run(AppendMatrixAlgorithm::Inputs(), AppendMatrixAlgorithm::ROWS);
   EXPECT_FALSE(result);
 }
 
-TEST(AppendMatrixAlgorithmTests, AppendSparseMatrix)
+TEST(AppendMatrixAlgorithmTests, AppendSquareSparseMatrix)
 {
   AppendMatrixAlgorithm algo;  
-   
-  SparseRowMatrix m1(3,3);
-  m1.insert(1,1) = 1;
-  m1.insert(2,3) = 0.5;
-  m1.insert(3,1) = -2;
-  SparseRowMatrix m2(3,3);
-  m2.insert(1,2) = 8;
-  m2.insert(2,2) = -7;
-  m2.insert(3,2) = 0.1;
-  /*  
-  SparseMatrix<double> m3(m1.rows() + m2.rows(), m1.cols());
-  m3.reserve(m1.nonZeros() + m2.nonZeros());
-  for(Index c=0; c<m1.cols(); ++c)
-  {
-    for(SparseMatrix<double>::InnerIterator itL(m1, c); itL; ++itL)
-         m3.insertBack(itm1.row(), c) = itm1.value();
-    for(SparseMatrix<double>::InnerIterator itC(m2, c); itC; ++itC)
-         m3.insertBack(itC.row(), c) = itC.value();
- }
- m3.finalize();*/
+  int nr_rows=3, nr_cols=nr_rows;     
+  SparseRowMatrix m1(nr_rows,nr_cols);
+  for(int i=0;i<nr_rows;i++)
+    m1.insert(i,i) = i+1;
   
+  SparseRowMatrix m2(nr_rows,nr_cols);
+  for(int i=0;i<nr_rows;i++)
+    m2.insert(i,i) = i+nr_rows;
+      
+  auto result = algo.run(AppendMatrixAlgorithm::Inputs(boost::make_shared<SparseRowMatrix>(m1), boost::make_shared<SparseRowMatrix>(m2)), AppendMatrixAlgorithm::ROWS); 
+  auto out = boost::dynamic_pointer_cast<SparseRowMatrix>(result);
+
+  for (Eigen::Index k = 0; k < out->nrows(); ++k)
+  {
+    for (SparseRowMatrix::InnerIterator it(*out, k); it; ++it)
+    {    
+      if (it.row()<nr_rows)
+       ASSERT_TRUE(m1.coeffRef(it.row(),it.col())==it.value());
+      else
+       ASSERT_TRUE(m2.coeffRef(it.row()-nr_rows,it.col())==it.value());
+    }
+  }
+  
+  result = algo.run(AppendMatrixAlgorithm::Inputs(boost::make_shared<SparseRowMatrix>(m1), boost::make_shared<SparseRowMatrix>(m2)), AppendMatrixAlgorithm::COLUMNS); 
+  out = boost::dynamic_pointer_cast<SparseRowMatrix>(result);
+
+  for (Eigen::Index k = 0; k < out->nrows(); ++k)
+  {
+    for (SparseRowMatrix::InnerIterator it(*out, k); it; ++it)
+    {    
+      if (it.col()<nr_cols)
+       ASSERT_TRUE(m1.coeffRef(it.row(),it.col())==it.value());
+      else
+       ASSERT_TRUE(m2.coeffRef(it.row(),it.col()-nr_cols)==it.value());
+    }
+  }
+ 
 }
+
+TEST(AppendMatrixAlgorithmTests, AppendDenseColumnMatrix)
+{
+  AppendMatrixAlgorithm algo;  
+  int nr_comp1=3, nr_comp2=2; /// assumption for the code in this function: the second column vector is shorter
+  DenseColumnMatrixHandle m1(boost::make_shared<DenseColumnMatrix>(nr_comp1));
+  DenseColumnMatrixHandle m2(boost::make_shared<DenseColumnMatrix>(nr_comp2));
+  
+  for (int i=0;i<nr_comp1;i++)
+    (*m1)(i) = i+1;
+    
+  for (int i=0;i<nr_comp2;i++)
+    (*m2)(i) = 2*(i+1);
+
+  auto result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::COLUMNS); 
+  EXPECT_TRUE(result==nullptr);
+       result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS); 
+ 
+ auto out = boost::dynamic_pointer_cast<DenseColumnMatrix>(result);
+ for (int i = 0; i < out->nrows(); i++)
+  if(i<nr_comp1)
+   EXPECT_EQ((*m1)(i),(*out)(i)); 
+  else
+   EXPECT_EQ((*m2)(i-nr_comp1),(*out)(i));  
+   
+}
+
+TEST(AppendMatrixAlgorithmTests, MixingMatrixInputTypes)
+{
+  AppendMatrixAlgorithm algo;  
+  int nr_rows=3, nr_cols=nr_rows;     
+  SparseRowMatrix sparse_mat(nr_rows,nr_cols); 
+  
+  for(int i=0;i<nr_rows;i++)
+   sparse_mat.insert(i,i) = i;
+  
+  int count=0;
+  
+  DenseMatrixHandle dense_mat(boost::make_shared<DenseMatrix>(nr_rows,nr_cols));
+  for(int i=0;i<nr_rows;i++)
+   for(int j=0;j<nr_rows;j++)
+     (*dense_mat)(i,j)=++count;
+    
+  auto result = algo.run(AppendMatrixAlgorithm::Inputs(dense_mat, boost::make_shared<SparseRowMatrix>(sparse_mat)), AppendMatrixAlgorithm::ROWS); 
+  EXPECT_TRUE(result==nullptr);
+}
+

@@ -42,6 +42,8 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
+const AlgorithmInputName AppendMatrixAlgorithm::InputMatrices("InputMatrices");
+
 AppendMatrixAlgorithm::AppendMatrixAlgorithm()
 {
   addParameter(Variables::RowsOrColumns, 0);
@@ -60,22 +62,40 @@ bool AppendMatrixAlgorithm::check_dimensions(const Matrix& mat1, const Matrix& m
  return true;
 }
 
+AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::ConcatenateMatrices(const MatrixHandle base_matrix, const std::vector<boost::shared_ptr<Matrix>> input_matrices, const AppendMatrixAlgorithm::Parameters& params) const
+{  
+
+ if (input_matrices.size()==0)
+   return base_matrix;
+   
+ Outputs outputs = run(boost::make_tuple(base_matrix, input_matrices[0]), params);
+ for(Eigen::Index c=1; c<input_matrices.size(); c++)
+ {
+  auto concatenated = run(boost::make_tuple(outputs, input_matrices[c]), params);
+  outputs=concatenated;
+ }
+
+ return outputs;
+}
+
 AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgorithm::Inputs& input, const AppendMatrixAlgorithm::Parameters& params) const
-{
+{ 
   auto lhsPtr = input.get<0>();
   auto rhsPtr = input.get<1>();
   if (!lhsPtr || !rhsPtr)
    error(" At least two matrices are needed to run this module. ");
-  
+
   if (!((matrixIs::sparse(lhsPtr) && matrixIs::sparse(rhsPtr)) || (matrixIs::dense(lhsPtr) && matrixIs::dense(rhsPtr)) || (matrixIs::column(lhsPtr) && matrixIs::column(rhsPtr))))  
   {
    error(" Mixing of different matrix types as inputs is not supported. ");
    return Outputs(); 
   }
   
-  /// if dynamic input ports 
   if (!check_dimensions(*lhsPtr, *rhsPtr, params))
+  {
     error(" Input matrix dimensions do not match. ");
+    return Outputs();
+  }
   
   Eigen::MatrixXd result;
   if(matrixIs::dense(lhsPtr) || matrixIs::column(lhsPtr))
@@ -89,7 +109,7 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgo
      result << *castMatrix::toDense(lhsPtr), *castMatrix::toDense(rhsPtr);
    else
     result << *castMatrix::toColumn(lhsPtr), *castMatrix::toColumn(rhsPtr);
-
+ 
    if (result.rows()==1 || result.cols()==1)
     return boost::make_shared<DenseColumnMatrix>(result); 
     
@@ -100,18 +120,24 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgo
   else
   {
    error(" This matrix type is not supported");
-  }
-  
-  return Outputs();
+  } 
+ 
+ return Outputs();
 }
 
 AlgorithmOutput AppendMatrixAlgorithm::run(const AlgorithmInput& input) const
 {
   auto lhs = input.get<Matrix>(Variables::FirstMatrix);
   auto rhs = input.get<Matrix>(Variables::SecondMatrix);
-
-  auto outputs = run(boost::make_tuple(lhs, rhs), Option(get(Variables::RowsOrColumns).toInt()));
-
+  auto input_matrices = input.getList<Matrix>(AppendMatrixAlgorithm::InputMatrices);
+  
+  Outputs outputs; 
+  Parameters params=Option(get(Variables::RowsOrColumns).toInt());
+  outputs = run(boost::make_tuple(lhs, rhs), params);
+ 
+  if (input_matrices.size()>0)
+   outputs = ConcatenateMatrices(outputs, input_matrices, params);
+    
   AlgorithmOutput output;
   output[Variables::ResultMatrix] = outputs;
   return output;
