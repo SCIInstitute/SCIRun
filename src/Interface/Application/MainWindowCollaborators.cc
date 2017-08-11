@@ -99,7 +99,12 @@ bool TreeViewModuleGetter::isClipboardXML() const
 
 NotePosition ComboBoxDefaultNotePositionGetter::position() const
 {
-  return NotePosition(combo_.currentIndex() + 1);
+  return NotePosition(positionCombo_->currentIndex() + 1);
+}
+
+int ComboBoxDefaultNotePositionGetter::size() const
+{
+  return sizeCombo_->currentText().toInt();
 }
 
 CORE_SINGLETON_IMPLEMENTATION( WidgetDisablingService )

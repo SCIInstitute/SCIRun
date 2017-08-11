@@ -92,10 +92,12 @@ namespace Gui {
   class ComboBoxDefaultNotePositionGetter : public DefaultNotePositionGetter
   {
   public:
-    explicit ComboBoxDefaultNotePositionGetter(QComboBox& combo) : combo_(combo) {}
-    virtual NotePosition position() const override;
+    ComboBoxDefaultNotePositionGetter(QComboBox* positionCombo, QComboBox* sizeCombo) : positionCombo_(positionCombo), sizeCombo_(sizeCombo) {}
+    NotePosition position() const override;
+    int size() const override;
   private:
-    QComboBox& combo_;
+    QComboBox* positionCombo_;
+    QComboBox* sizeCombo_;
   };
 
   typedef boost::variant<QAction*, QWidget*> InputWidget;

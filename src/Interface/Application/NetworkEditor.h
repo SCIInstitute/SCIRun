@@ -78,6 +78,7 @@ namespace Gui {
   public:
     virtual ~DefaultNotePositionGetter() {}
     virtual NotePosition position() const = 0;
+    virtual int size() const = 0;
   };
 
   class ModuleErrorDisplayer

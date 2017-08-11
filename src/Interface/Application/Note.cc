@@ -81,7 +81,7 @@ void HasNotes::setCurrentNote(const Note& note, bool updateEditor)
 }
 
 NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) :
-  item_(0), scene_(0), note_(0),
+  item_(nullptr), scene_(nullptr), note_(nullptr),
   notePosition_(Default),
   defaultNotePosition_(Top), //TODO
   displayStrategy_(display),
@@ -153,12 +153,28 @@ void NoteDisplayHelper::setDefaultNotePositionImpl(NotePosition position)
   updateNotePosition();
 }
 
+void NoteDisplayHelper::setDefaultNoteSizeImpl(int size)
+{
+  defaultNoteSize_ = size;
+  updateNoteSize();
+}
+
 void NoteDisplayHelper::updateNotePosition()
 {
   if (note_ && item_)
   {
     auto position = positioner_->currentPosition() + relativeNotePosition();
     note_->setPos(position);
+  }
+}
+
+void NoteDisplayHelper::updateNoteSize()
+{
+  if (note_ && item_)
+  {
+    qDebug() << note_ << item_ << note_->font() << note_->font().pointSizeF() << defaultNoteSize_;
+    //auto position = positioner_->currentPosition() + relativeNotePosition();
+    //note_->setPos(position);
   }
 }
 
