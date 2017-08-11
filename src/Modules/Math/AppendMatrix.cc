@@ -58,8 +58,10 @@ void AppendMatrix::execute()
   auto input_matrices = getOptionalDynamicInputs(InputMatrices);
   algo().set(Variables::RowsOrColumns, param);
   
-  AlgorithmOutput output;
-  output = algo().run(withInputData((FirstMatrix, matrixLHS)(SecondMatrix, matrixRHS)(InputMatrices, input_matrices)));
-    
-  sendOutputFromAlgorithm(ResultMatrix, output);
+  if (needToExecute())
+  {
+   AlgorithmOutput output;
+   output = algo().run(withInputData((FirstMatrix, matrixLHS)(SecondMatrix, matrixRHS)(InputMatrices, input_matrices)));    
+   sendOutputFromAlgorithm(ResultMatrix, output);
+  }
 }
