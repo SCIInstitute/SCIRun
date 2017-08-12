@@ -74,7 +74,12 @@ void NoteEditor::changeNotePosition(int index)
 
 void NoteEditor::changeFontSize(const QString& text)
 {
-  textEdit_->setFontPointSize(text.toDouble());
+  double size;
+  if (text == "Default")
+    size = 30; //??
+  else
+    size = text.toDouble();
+  textEdit_->setFontPointSize(size);
   textEdit_->setPlainText(textEdit_->toPlainText());
 }
 

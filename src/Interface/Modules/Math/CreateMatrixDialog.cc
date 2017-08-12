@@ -46,6 +46,23 @@ CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandl
   connect(matrixTextEdit_, SIGNAL(textChanged()), this, SLOT(editBoxUnsaved()));
 }
 
+void CreateMatrixDialog::hideEvent(QHideEvent* event)
+{
+  editCheckBox_->setChecked(false);
+}
+
+void CreateMatrixDialog::moduleExecuted()
+{
+  remindAboutUnsavedMatrix();
+}
+
+void CreateMatrixDialog::remindAboutUnsavedMatrix()
+{
+  if (editCheckBox_->isChecked() && editCheckBox_->text().contains("changed"))
+    QMessageBox::information(nullptr, "Matrix input unsaved: " + windowTitle(),
+      windowTitle() + "\nMatrix is edited but not saved--did you mean to click the save checkbox?");
+}
+
 void CreateMatrixDialog::pushMatrixToState(int state)
 {
   if (!pulling_)

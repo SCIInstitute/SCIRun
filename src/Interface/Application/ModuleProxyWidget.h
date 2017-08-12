@@ -59,6 +59,7 @@ namespace SCIRun
     public Q_SLOTS:
       void highlightIfSelected();
       void setDefaultNotePosition(NotePosition position);
+      void setDefaultNoteSize(int size);
       void createPortPositionProviders();
       void snapToGrid();
       void highlightPorts(int state);
