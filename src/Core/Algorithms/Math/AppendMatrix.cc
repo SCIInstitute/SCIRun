@@ -110,7 +110,7 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgo
    else
     result << *castMatrix::toColumn(lhsPtr), *castMatrix::toColumn(rhsPtr);
  
-   if (result.rows()==1 || result.cols()==1)
+   if (matrixIs::column(lhsPtr) && (result.rows()==1 || result.cols()==1))
     return boost::make_shared<DenseColumnMatrix>(result); 
     
    return boost::make_shared<DenseMatrix>(result);
