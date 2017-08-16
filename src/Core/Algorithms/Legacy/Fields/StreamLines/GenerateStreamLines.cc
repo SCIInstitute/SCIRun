@@ -661,12 +661,10 @@ bool GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo, FieldHandle inpu
   direction_ = convertDirectionOption(algo_->getOption(Parameters::StreamlineDirection));
   value_ = convertValue(algo_->getOption(Parameters::StreamlineValue));
   remove_colinear_pts_ = algo_->get(Parameters::RemoveColinearPoints).toBool();  
-  
   global_dimension_=seed_mesh_->num_nodes()-1;
   if (global_dimension_<numprocessors_) numprocessors_=1;
   success_.resize(numprocessors_,true);
   outputs_.resize(numprocessors_, nullptr);
-
   Parallel::RunTasks([this](int i) { parallel(i); }, numprocessors_);
   for (size_t j=0; j<success_.size(); j++)
   {
@@ -835,11 +833,9 @@ bool GenerateStreamLinesAlgo::runImpl(FieldHandle input, FieldHandle seeds, Fiel
   }
 
   bool success = false;
-  detail::GenerateStreamLinesAccAlgo algo;
-  success = algo.run(this,input,seeds,output);
-  
+
   if (method == 5)
-  {
+  {  
     detail::GenerateStreamLinesAccAlgo algo;
     success = algo.run(this,input,seeds,output);
   }
