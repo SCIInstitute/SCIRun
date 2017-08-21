@@ -26,41 +26,45 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef BioPSE_TikhonovImpl_H__
+#define BioPSE_TikhonovImpl_H__
 
-#ifndef MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonov_H__
-#define MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonov_H__
-#include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
-#include <Modules/Fields/share.h>
+#include <Core/Algorithms/Field/share.h>
+
 
 namespace SCIRun {
-namespace Modules {
+namespace Core {
+namespace Algorithms {
 namespace Inverse {
 
-	class SCISHARE SolveInverseProblemWithTikhonov : public SCIRun::Dataflow::Networks::Module,
-		public Has4InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
-		public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
+
+	class SCISHARE TikhonovImpl
 	{
+
 	public:
-		SolveInverseProblemWithTikhonov();
-		virtual void execute();
-		virtual void setStateDefaults();
 
-		INPUT_PORT(0, ForwardMatrix, DenseMatrix);
-		INPUT_PORT(1, WeightingInSourceSpace, DenseMatrix);
-		INPUT_PORT(2, MeasuredPotentials, DenseMatrix);
-		INPUT_PORT(3, WeightingInSensorSpace, DenseMatrix);
+		// constructor
+		TikhonovImpl() {};
 
-		OUTPUT_PORT(0, InverseSolution, DenseMatrix);
-		OUTPUT_PORT(1, RegularizationParameter, DenseMatrix);
-		OUTPUT_PORT(2, RegInverse, DenseMatrix);
+		virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation) const = 0;
 
-		MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+		// default lambda step. Can ve overriden if necessary (see TSVD as reference)
+		virtual std::vector<double> computeLambdaArray( double lambdaMin, double lambdaMax, int nLambda ) const {
 
-	private:
-		// void update_lcurve_gui(const double lambda, const Core::Algorithms::Inverse::SolveInverseProblemWithTikhonovImpl_child::LCurveInput& input, const int lambda_index);
+			std::vector<double> lambdaArray(nLambda,0.0);
+			double lam_step = (log10(lambdaMax) - log10(lambdaMin)) / (nLambda-1);
+
+			lambdaArray[0] = lambdaMin;
+			for (int j = 1; j < nLambda; j++)
+		    {
+		        lambdaArray[j] = lambdaArray[j-1] * pow(10.0,lam_step);
+			}
+
+			return lambdaArray;
+		};
+
 	};
-}}}
 
+	}}}}
 
 #endif

@@ -27,22 +27,22 @@
 */
 
 
-#ifndef MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonov_H__
-#define MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonov_H__
+#ifndef MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonovSVD_H__
+#define MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonovSVD_H__
 #include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
+#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
 #include <Modules/Fields/share.h>
 
 namespace SCIRun {
 namespace Modules {
 namespace Inverse {
 
-	class SCISHARE SolveInverseProblemWithTikhonov : public SCIRun::Dataflow::Networks::Module,
-		public Has4InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
+	class SCISHARE SolveInverseProblemWithTikhonovSVD : public SCIRun::Dataflow::Networks::Module,
+		public Has7InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
 		public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
 	{
 	public:
-		SolveInverseProblemWithTikhonov();
+		SolveInverseProblemWithTikhonovSVD();
 		virtual void execute();
 		virtual void setStateDefaults();
 
@@ -50,7 +50,9 @@ namespace Inverse {
 		INPUT_PORT(1, WeightingInSourceSpace, DenseMatrix);
 		INPUT_PORT(2, MeasuredPotentials, DenseMatrix);
 		INPUT_PORT(3, WeightingInSensorSpace, DenseMatrix);
-
+		INPUT_PORT(4, matrixU, DenseMatrix);
+		INPUT_PORT(5, singularValues, DenseMatrix);
+		INPUT_PORT(6, matrixV, DenseMatrix);
 		OUTPUT_PORT(0, InverseSolution, DenseMatrix);
 		OUTPUT_PORT(1, RegularizationParameter, DenseMatrix);
 		OUTPUT_PORT(2, RegInverse, DenseMatrix);
@@ -61,6 +63,5 @@ namespace Inverse {
 		// void update_lcurve_gui(const double lambda, const Core::Algorithms::Inverse::SolveInverseProblemWithTikhonovImpl_child::LCurveInput& input, const int lambda_index);
 	};
 }}}
-
 
 #endif

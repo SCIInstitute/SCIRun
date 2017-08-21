@@ -26,41 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_INVERSE_SolveInverseProblemWithTikhonovTSVDDIALOG_H
+#define INTERFACE_MODULES_INVERSE_SolveInverseProblemWithTikhonovTSVDDIALOG_H
 
-#ifndef MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonov_H__
-#define MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonov_H__
-#include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
-#include <Modules/Fields/share.h>
+#include <Interface/Modules/Inverse/ui_SolveInverseProblemWithTikhonovTSVDDialog.h>
+#include <boost/shared_ptr.hpp>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Inverse/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Inverse {
+namespace Gui {
 
-	class SCISHARE SolveInverseProblemWithTikhonov : public SCIRun::Dataflow::Networks::Module,
-		public Has4InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
-		public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
-	{
-	public:
-		SolveInverseProblemWithTikhonov();
-		virtual void execute();
-		virtual void setStateDefaults();
+class SCISHARE SolveInverseProblemWithTikhonovTSVDDialog : public ModuleDialogGeneric,
+  public Ui::SolveInverseProblemWithTikhonovTSVDDialog
+{
+	Q_OBJECT
 
-		INPUT_PORT(0, ForwardMatrix, DenseMatrix);
-		INPUT_PORT(1, WeightingInSourceSpace, DenseMatrix);
-		INPUT_PORT(2, MeasuredPotentials, DenseMatrix);
-		INPUT_PORT(3, WeightingInSensorSpace, DenseMatrix);
+public:
+  SolveInverseProblemWithTikhonovTSVDDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
 
-		OUTPUT_PORT(0, InverseSolution, DenseMatrix);
-		OUTPUT_PORT(1, RegularizationParameter, DenseMatrix);
-		OUTPUT_PORT(2, RegInverse, DenseMatrix);
+private Q_SLOTS:
+  void setSpinBoxValue(int value);
+  void setSliderValue(double value);
+  void setSliderMin(double value);
+  void setSliderMax(double value);
+  void setSliderStep(double value);
+private:
+  GuiStringTranslationMap lambdaMethod_;
+};
 
-		MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
-
-	private:
-		// void update_lcurve_gui(const double lambda, const Core::Algorithms::Inverse::SolveInverseProblemWithTikhonovImpl_child::LCurveInput& input, const int lambda_index);
-	};
-}}}
-
+}
+}
 
 #endif

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVDIALOG_H
-#define INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVDIALOG_H
+#undef SCISHARE
 
-#include "Interface/Modules/Inverse/ui_SolveInverseProblemWithTikhonov.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Inverse/share.h>
-
-namespace SCIRun {
-namespace Gui {
-
-class SCISHARE SolveInverseProblemWithTikhonovDialog : public ModuleDialogGeneric,
-  public Ui::SolveInverseProblemWithTikhonov
-{
-	Q_OBJECT
-
-public:
-  SolveInverseProblemWithTikhonovDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-private Q_SLOTS:
-  void setSpinBoxValue(int value);
-  void setSliderValue(double value);
-  void setSliderMin(double value);
-  void setSliderMax(double value);
-  void setSliderStep(double value);
-};
-
-}
-}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Algorithms_Legacy_Inverse
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

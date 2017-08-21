@@ -55,12 +55,13 @@ namespace SCIRun {
                 condition_.insert(StringPair("A is equal to B (==)","eqop"));
                 condition_.insert(StringPair("A is greater than B (>)","greatop"));
                 condition_.insert(StringPair("A is greater or equal to B (>=)","greateqop"));
-                
+              
                 result_.insert(StringPair("Return: null","null"));
                 result_.insert(StringPair("Return: first input","first"));
                 result_.insert(StringPair("Return: second input","second"));
                 result_.insert(StringPair("Return: third input","third"));
                 result_.insert(StringPair("Quit SCIRun","quit"));
+
             }
             GuiStringTranslationMap value_;
             GuiStringTranslationMap condition_;
