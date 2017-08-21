@@ -122,7 +122,7 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
 		// set parameters
 		auto state = get_state();
 
-		// state->setValue( Parameters::TikhonovImplementation, std::string("TikhonovTSVD") );
+		state->setValue( Parameters::TikhonovImplementation, std::string("TikhonovTSVD") );
 		setAlgoStringFromState(Parameters::TikhonovImplementation);
 		setAlgoOptionFromState(Parameters::RegularizationMethod);
 		setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);

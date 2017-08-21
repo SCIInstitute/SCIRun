@@ -336,14 +336,16 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
     const int nLambda = get(Parameters::LambdaNum).toInt();
 	const double lambdaMin_ = get(Parameters::LambdaMin).toDouble();
 	const double lambdaMax_ = get(Parameters::LambdaMax).toDouble();
-    const double lam_step = (log10(lambdaMax_) - log10(lambdaMin_))  / (nLambda-1);
-	std::cout << "Lambda power step: " << lam_step << ". Number: "<< nLambda <<". Lambda min: " << lambdaMin_ << ". Lambda max: "<< lambdaMax_<< ". Ratio: "<<  lambdaMax_ / lambdaMin_ << std::endl;
-    double lambda = 0;
+	double lambda = 0;
 
-    // prealocate vector of lambdas and eta and rho
-    std::vector<double> lambdaArray(nLambda, 0.0);
+	// prealocate vector of lambdas and eta and rho
     std::vector<double> rho(nLambda, 0.0);
     std::vector<double> eta(nLambda, 0.0);
+
+	// Compute the lambda array
+	std::vector<double> lambdaArray(nLambda, 0.0);
+    lambdaArray = algoImpl->computeLambdaArray( lambdaMin_, lambdaMax_, nLambda );
+
 
     DenseMatrix CAx, Rx;
     DenseMatrix solution;
@@ -353,10 +355,6 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
     // for all lambdas
     for (int j = 0; j < nLambda; j++)
     {
-        if (j)
-        {
-            lambdaArray[j] = lambdaArray[j-1] * pow(10.0,lam_step);
-        }
 
         // COMPUTE INVERSE SOLUTION
         solution = algoImpl->computeInverseSolution( lambdaArray[j], false);
@@ -386,7 +384,7 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
             CAx = residualSolution;
 
 
-        // compute rho and eta
+        // compute rho and eta. Using Frobenious norm when using matrices
 		rho[j] = CAx.norm();
 		eta[j] = Rx.norm();
 

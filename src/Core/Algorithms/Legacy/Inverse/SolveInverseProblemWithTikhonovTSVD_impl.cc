@@ -144,3 +144,19 @@ SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovTSVD_impl::c
 
         return solution;
 }
+
+//////////////////////////////////////////////////////////////////////
+// THIS FUNCTION returns a string of lambdas from which the L-curve is computed
+//////////////////////////////////////////////////////////////////////
+std::vector<double> SolveInverseProblemWithTikhonovTSVD_impl::computeLambdaArray( double lambdaMin, double lambdaMax, int nLambda ) const
+{
+	std::vector<double> lambdaArray(nLambda,0.0);
+	const double lam_step = 1;
+
+	lambdaArray[0] = lambdaMin;
+	for (int j = 1; j < nLambda; j++)
+	{
+		lambdaArray[j] = lambdaArray[j-1]  + lam_step;
+	}
+	return lambdaArray;
+}

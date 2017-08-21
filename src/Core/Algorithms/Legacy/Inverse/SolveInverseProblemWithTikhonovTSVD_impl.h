@@ -83,6 +83,7 @@ namespace Inverse {
 				void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_);
 
 		        virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double truncationPoint, bool inverseCalculation) const;
+				std::vector<double> computeLambdaArray( double lambdaMin, double lambdaMax, int nLambda ) const;
 		        //      bool checkInputMatrixSizes(); // DEFINED IN PARENT, MIGHT WANT TO OVERRIDE SOME OTHER TIME
 
 
