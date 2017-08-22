@@ -52,6 +52,7 @@ Preferences::Preferences() :
   modulesSnapToGrid("modulesSnapToGrid", true),
   highlightPorts("highlightPorts", false),
   autoNotes("autoNotes", false),
+  highDPIAdjustment("highDPIAdjustment", false),
   modulesAreDockable("modulesAreDockable", true),
   networkBackgroundColor("backgroundColor", "#808080"),
   postModuleAddScript_temporarySolution("postModuleAddScript_temporarySolution", ""),

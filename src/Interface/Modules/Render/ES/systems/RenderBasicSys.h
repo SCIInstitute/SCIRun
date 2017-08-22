@@ -34,7 +34,7 @@
 namespace SCIRun {
 namespace Render {
 
-void        registerSystem_RenderBasicGeom(CPM_ES_ACORN_NS::Acorn& core);
+void        registerSystem_RenderBasicGeom(spire::Acorn& core);
 const char* getSystemName_RenderBasicGeom();
 
 } // namespace Render

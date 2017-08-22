@@ -59,24 +59,6 @@ namespace
     return m;
   }
 
-  SparseRowMatrix matrix2() 
-  {
-    SparseRowMatrix m(size,size);
-    m.insert(0,1) = -2;
-    m.insert(1,1) = 0.5;
-    m.insert(size-1,size-1) = 4;
-    return m;
-  }
-
-  SparseRowMatrix matrix3() 
-  {
-    SparseRowMatrix m(size,size);
-    m.insert(0,0) = -1;
-    m.insert(1,2) = 1;
-    m.insert(size-1,size-1) = -2;
-    return m;
-  }
-
   DenseColumnMatrixHandle vector1()
   {
     DenseColumnMatrixHandle v(boost::make_shared<DenseColumnMatrix>(size));
@@ -115,11 +97,6 @@ namespace
 	  (*v)[2] = 0; 
     (*v)[size-1] = -7;
     return v;
-  }
-
-  unsigned int numProcs()
-  {
-    return boost::thread::hardware_concurrency();
   }
 
   SolverInputs getDummySystem()
@@ -211,7 +188,7 @@ struct Copy
 {
   Copy(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, 
     ParallelLinearAlgebra::ParallelVector& v2, int proc, DenseColumnMatrixHandle vec2copy) : 
-    data_(data), v1_(v1), v2_(v2), proc_(proc), vec2copy_(vec2copy) {}
+    data_(data), proc_(proc), v1_(v1), v2_(v2), vec2copy_(vec2copy) {}
 
   ParallelLinearAlgebraSharedData& data_;
   int proc_;
@@ -302,7 +279,7 @@ struct absdiag
 {
    absdiag(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelMatrix& m1, 
      ParallelLinearAlgebra::ParallelVector& v2, int proc, DenseColumnMatrixHandle dcmHandle,
-     SparseRowMatrixHandle srmHandle) : data_(data), m1_(m1), v2_(v2), proc_(proc), 
+     SparseRowMatrixHandle srmHandle) : data_(data), proc_(proc), m1_(m1), v2_(v2),
      dcmHandle_(dcmHandle), srmHandle_(srmHandle) {}
 
   ParallelLinearAlgebraSharedData& data_;
@@ -354,15 +331,15 @@ TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonalMulti)
 
 struct max
 {
-   max(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, 
+  max(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1,
      int proc, DenseColumnMatrixHandle dcmHandle) : 
-      data_(data), v1_(v1), proc_(proc), dcmHandle_(dcmHandle) {}
+      data_(data), proc_(proc), v1_(v1), dcmHandle_(dcmHandle) {}
 
   ParallelLinearAlgebraSharedData& data_;
   int proc_;
   ParallelLinearAlgebra::ParallelVector& v1_;
   DenseColumnMatrixHandle dcmHandle_;
-  double maxResult_; 
+  double maxResult_{0};
 
   void operator()()
   {
@@ -447,7 +424,7 @@ struct absthreshold_inv
 {
    absthreshold_inv(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, 
      ParallelLinearAlgebra::ParallelVector& v2, int proc, DenseColumnMatrixHandle dcmHandle) : 
-    data_(data), v1_(v1), v2_(v2), proc_(proc), dcmHandle_(dcmHandle) {}
+    data_(data), proc_(proc), v1_(v1), v2_(v2), dcmHandle_(dcmHandle) {}
 
   ParallelLinearAlgebraSharedData& data_;
   int proc_;
@@ -579,7 +556,7 @@ struct mv_Multiply
   mv_Multiply(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelMatrix& m1, 
     ParallelLinearAlgebra::ParallelVector& v2, ParallelLinearAlgebra::ParallelVector& vR, 
     int proc, DenseColumnMatrixHandle dcmHandle, SparseRowMatrixHandle srmHandle) : 
-    data_(data), m1_(m1), v2_(v2), vR_(vR), proc_(proc), dcmHandle_(dcmHandle), srmHandle_(srmHandle) {}
+    data_(data), proc_(proc), m1_(m1), v2_(v2), vR_(vR), dcmHandle_(dcmHandle), srmHandle_(srmHandle) {}
 
   ParallelLinearAlgebraSharedData& data_;
   int proc_;
@@ -662,7 +639,7 @@ struct subtract
   subtract(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, 
     ParallelLinearAlgebra::ParallelVector& v2, ParallelLinearAlgebra::ParallelVector& vR, 
     int proc, DenseColumnMatrixHandle dcmHandle, DenseColumnMatrixHandle dcmHandle2) : 
-    data_(data), v1_(v1), v2_(v2), vR_(vR), proc_(proc), dcmHandle_(dcmHandle), dcmHandle2_(dcmHandle2) {}
+    data_(data), proc_(proc), v1_(v1), v2_(v2), vR_(vR), dcmHandle_(dcmHandle), dcmHandle2_(dcmHandle2) {}
 
   ParallelLinearAlgebraSharedData& data_;
   int proc_;
@@ -746,7 +723,7 @@ struct norm
     ParallelLinearAlgebra::ParallelVector& v2, ParallelLinearAlgebra::ParallelVector& v3, 
     int proc, DenseColumnMatrixHandle dcmHandle1, DenseColumnMatrixHandle dcmHandle2
     , DenseColumnMatrixHandle dcmHandle3) : 
-    data_(data), v1_(v1), v2_(v2), v3_(v3), proc_(proc), dcmHandle1_(dcmHandle1),
+    data_(data), proc_(proc), v1_(v1), v2_(v2), v3_(v3), dcmHandle1_(dcmHandle1),
     dcmHandle2_(dcmHandle2), dcmHandle3_(dcmHandle3) {}
 
   ParallelLinearAlgebraSharedData& data_;
@@ -852,7 +829,7 @@ struct multVectors
   multVectors(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, 
     ParallelLinearAlgebra::ParallelVector& v2, ParallelLinearAlgebra::ParallelVector& v3, 
     int proc, DenseColumnMatrixHandle dcmHandle1, DenseColumnMatrixHandle dcmHandle2) : 
-    data_(data), v1_(v1), v2_(v2), v3_(v3), proc_(proc), 
+    data_(data), proc_(proc), v1_(v1), v2_(v2), v3_(v3),
       dcmHandle1_(dcmHandle1), dcmHandle2_(dcmHandle2) {}
 
   ParallelLinearAlgebraSharedData& data_;
@@ -933,7 +910,7 @@ struct dotMult
     ParallelLinearAlgebra::ParallelVector& v2, ParallelLinearAlgebra::ParallelVector& v3, 
     int proc, DenseColumnMatrixHandle dcmHandle, DenseColumnMatrixHandle dcmHandle2, 
     DenseColumnMatrixHandle dcmHandle3) : 
-      data_(data), v1_(v1), v2_(v2), v3_(v3), proc_(proc), 
+      data_(data), proc_(proc), v1_(v1), v2_(v2), v3_(v3), 
       dcmHandle_(dcmHandle), dcmHandle2_(dcmHandle2), dcmHandle3_(dcmHandle3) {}
 
   ParallelLinearAlgebraSharedData& data_;

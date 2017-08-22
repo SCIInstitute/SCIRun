@@ -543,6 +543,7 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
   auto msgBox = new QMessageBox(SCIRunMainWindow::Instance());
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
   msgBox->setStandardButtons(QMessageBox::Ok);
+  msgBox->setEscapeButton(QMessageBox::Ok);
 
 #if 0
   auto viewButton = new QPushButton("View...");
@@ -552,6 +553,7 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
   msgBox->addButton(viewButton, QMessageBox::HelpRole);
 #endif
 
+  msgBox->setDetailedText("The above datatype info is displayed for the current run only. Hit i again after executing to display updated info. Keep this window open to compare info between runs.");
   msgBox->setWindowTitle(label + " Data info: " + QString::fromStdString(id));
   msgBox->setText(info);
   msgBox->setModal(false);

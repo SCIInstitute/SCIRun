@@ -167,7 +167,6 @@ TEST_F(BasicParserTests, CreateField_Parenthesis_Unbalanced)
   engine.get_field("RESULT",ofield);
 
   ASSERT_THAT(ofield, NotNull());
-  auto ovfield = ofield->vfield();
 }
 
 TEST_F(BasicParserTests, CreateField_Brackets_Unbalanced)
@@ -190,7 +189,6 @@ TEST_F(BasicParserTests, CreateField_Brackets_Unbalanced)
   engine.get_field("RESULT",ofield);
 
   ASSERT_THAT(ofield, NotNull());
-  auto ovfield = ofield->vfield();
 }
 
 TEST_F(BasicParserTests, CreateFieldData_Arithmetic)

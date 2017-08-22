@@ -44,6 +44,14 @@ namespace SCIRun
   {
     class NetworkEditor;
 
+    //TODO: post-ibbm
+    // class SubnetworkWindow : public QMdiArea, public Ui::SubnetEditor2
+    // {
+    //   Q_OBJECT
+    // public:
+    //   explicit SubnetworkWindow(QWidget* parent = nullptr);
+    // };
+
     class SubnetworkEditor : public QFrame, public Ui::SubnetEditor
     {
       Q_OBJECT

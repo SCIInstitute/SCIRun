@@ -154,3 +154,56 @@ SparseRowMatrixHandle SparseRowMatrixFromMap::appendToSparseMatrixSumming(size_t
   (*mat) += originalValuesLarger;
   return mat;
 }
+
+
+SparseRowMatrixHandle SparseRowMatrixFromMap::concatenateSparseMatrices(const SparseRowMatrix& mat1, const SparseRowMatrix& mat2, const bool rows)
+{
+ SparseRowMatrixHandle mat;
+ size_type offset_rows=0,offset_cols=0;
+ 
+ if ( (rows && mat1.ncols() != mat2.ncols()) || (!rows && mat1.nrows() != mat2.nrows()) ) 
+   THROW_INVALID_ARGUMENT(" Matrix dimensions do not match! ");
+ 
+ const size_type nnz = mat1.nonZeros() + mat2.nonZeros();
+
+ typedef Eigen::Triplet<double> T;
+ std::vector<T> tripletList;
+ tripletList.reserve(nnz);
+  for (size_type k=0; k < mat1.outerSize(); ++k)
+  {
+    for (Core::Datatypes::SparseRowMatrix::InnerIterator it(mat1,k); it; ++it)
+    {
+      tripletList.push_back(T(it.row(), it.col(), it.value()));
+    }
+  }
+  
+  if (rows)
+  {
+   offset_rows=mat1.nrows();
+   offset_cols=0;
+  } else
+  {
+   offset_rows=0;
+   offset_cols=mat1.ncols();
+  }
+  
+  for (size_type k=0; k < mat2.outerSize(); ++k)
+  {
+    for (Core::Datatypes::SparseRowMatrix::InnerIterator it(mat2,k); it; ++it)
+    {
+      tripletList.push_back(T(it.row()+offset_rows, it.col()+offset_cols, it.value()));
+    }
+  }
+  
+  if(rows)
+  {
+    mat=boost::make_shared<SparseRowMatrix>(mat1.nrows()+mat2.nrows(),mat1.ncols());
+  } else
+  {
+    mat=boost::make_shared<SparseRowMatrix>(mat1.nrows(),mat1.ncols()+mat2.ncols());
+  }
+  
+  mat->setFromTriplets(tripletList.begin(), tripletList.end());
+    
+ return mat;
+}

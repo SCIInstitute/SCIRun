@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -50,35 +50,21 @@ namespace SCIRun {
   class SCISHARE Exception : public std::exception
   {
   public:
-    Exception();
-    virtual ~Exception() NOEXCEPT;
-    virtual const char* message() const=0;
-    virtual const char* type() const=0;
-    const char* stackTrace() const {
-      return stacktrace_;
-    }
+    Exception() {}
+    virtual ~Exception() NOEXCEPT {}
+    virtual const char* message() const = 0;
+    virtual const char* type() const = 0;
 
     const char* what() const NOEXCEPT
     {
       return message();
     }
 
-    static void sci_throw(const Exception& exc);
-    static bool alwaysFalse();
-  protected:
-    const char* stacktrace_;
   private:
     Exception& operator=(const Exception&);
   };
+}
 
-  SCISHARE std::string getStackTrace(void* context = 0);
-} // End namespace SCIRun
-
-
-#if USE_SCI_THROW
-#define SCI_THROW(exc) do {SCIRun::Exception::sci_throw(exc);throw exc;} while(SCIRun::Exception::alwaysFalse())
-#else
-#define SCI_THROW(exc) BOOST_THROW_EXCEPTION(exc)
-#endif
+#define SCI_THROW(exc) SCIRUN_THROW(exc)
 
 #endif

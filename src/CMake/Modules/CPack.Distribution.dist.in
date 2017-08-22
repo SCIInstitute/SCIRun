@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<installer-gui-script minSpecVersion="1">
+    <title>@CPACK_PACKAGE_NAME@</title>
+    <allowed-os-versions>
+        <os-version min="@OSX_MINIMUM_OS_VERSION@"/>
+    </allowed-os-versions>
+    <license file="@CPACK_RESOURCE_FILE_LICENSE@" mime-type="text/plain"/>
+    <welcome file="@CPACK_RESOURCE_FILE_WELCOME@" mime-type="text/plain"/>
+    <pkg-ref id="edu.utah.sci.@CPACK_PACKAGE_NAME@"/>
+    <options customize="never" require-scripts="false"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="edu.utah.sci.@CPACK_PACKAGE_NAME@"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="edu.utah.sci.@CPACK_PACKAGE_NAME@" visible="false">
+        <pkg-ref id="edu.utah.sci.@CPACK_PACKAGE_NAME@"/>
+    </choice>
+    <pkg-ref id="edu.utah.sci.@CPACK_PACKAGE_NAME@" version="0" onConclusion="none">@CPACK_PACKAGE_NAME@.pkg</pkg-ref>
+</installer-gui-script>

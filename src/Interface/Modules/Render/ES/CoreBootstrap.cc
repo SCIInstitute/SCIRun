@@ -35,20 +35,15 @@
 #include "AssetBootstrap.h"
 #include "Core.h"
 
-namespace es      = CPM_ES_NS;
-namespace cereal  = CPM_ES_CEREAL_NS;
-namespace systems = CPM_ES_SYSTEMS_NS;
-namespace fs      = CPM_ES_FS_NS;
-
 namespace SCIRun {
 namespace Render {
 
-class CoreBootstrap : public es::EmptySystem
+class CoreBootstrap : public spire::EmptySystem
 {
 public:
   static const char* getName() {return "scirun:CoreBootstrap";}
 
-  void execute(es::ESCoreBase& baseCore)
+  void execute(spire::ESCoreBase& baseCore)
   {
     // Dynamic cast core into our core so that we have access to the systems
     // factory.
@@ -69,7 +64,7 @@ public:
     core.addExemptComponent<gen::StaticObjRefID>();
 
     // Kernel file system.
-    core.addKernelSystem(fs::Filesystem::getFSSystemName());
+    core.addKernelSystem(spire::Filesystem::getFSSystemName());
 
     // --== Base Rendering ==--
 
@@ -134,7 +129,7 @@ public:
     core.addExemptComponent<gen::StaticScreenDims>();
     core.addExemptComponent<gen::StaticGlobalTime>();
     core.addExemptComponent<ren::StaticGLState>();
-    core.addExemptComponent<fs::StaticFS>();
+    core.addExemptComponent<spire::StaticFS>();
 
     // Setup default camera projection.
     gen::StaticCamera cam;
@@ -192,7 +187,7 @@ public:
   }
 };
 
-void registerSystem_CoreBootstrap(CPM_ES_ACORN_NS::Acorn& core)
+void registerSystem_CoreBootstrap(spire::Acorn& core)
 {
   core.registerSystem<CoreBootstrap>();
 }

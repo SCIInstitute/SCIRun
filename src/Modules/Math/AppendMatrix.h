@@ -49,10 +49,10 @@ namespace Math {
     void setStateDefaults() override;
     HAS_DYNAMIC_PORTS
 
-    INPUT_PORT(0, FirstMatrix, DenseMatrix);
-    INPUT_PORT(1, SecondMatrix, DenseMatrix);
-    INPUT_PORT_DYNAMIC(2, NextMatrix, DenseMatrix);
-    OUTPUT_PORT(0, ResultMatrix, DenseMatrix);
+    INPUT_PORT(0, FirstMatrix, Matrix);
+    INPUT_PORT(1, SecondMatrix, Matrix);
+    INPUT_PORT_DYNAMIC(2, InputMatrices, Matrix);
+    OUTPUT_PORT(0, ResultMatrix, Matrix);
     MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };
 }}}

@@ -41,6 +41,7 @@ using namespace SCIRun::Core::Logging;
 
 ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerAdd_;
 ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerRemove_;
+std::set<ModuleDialogGeneric*> ModuleDialogGeneric::instances_;
 
 ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
@@ -65,10 +66,12 @@ ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* paren
   createExecuteDownstreamAction();
   createShrinkAction();
   connectStateChangeToExecute(); //TODO: make this a module state variable if a module wants it saved
+  instances_.insert(this);
 }
 
 ModuleDialogGeneric::~ModuleDialogGeneric()
 {
+  instances_.erase(this);
   if (disablerAdd_ && disablerRemove_)
   {
     std::for_each(needToRemoveFromDisabler_.begin(), needToRemoveFromDisabler_.end(), disablerRemove_);

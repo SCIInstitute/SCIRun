@@ -45,7 +45,6 @@
 #include <Interface/Modules/Render/QtGLContext.h>
 
 #include <Interface/Modules/Render/ES/SRInterface.h>
-#include <Interface/Modules/Render/namespaces.h>
 #endif
 #include <QtOpenGL/QGLWidget>
 

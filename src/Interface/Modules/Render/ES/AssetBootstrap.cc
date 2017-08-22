@@ -18,18 +18,16 @@
 #include "AssetBootstrap.h"
 #include "Core.h"
 
-namespace es      = CPM_ES_NS;
-
 namespace SCIRun {
 namespace Render {
 
-class AssetBootstrap : public es::EmptySystem
+class AssetBootstrap : public spire::EmptySystem
 {
 public:
   
   static const char* getName() {return "scirun:AssetBootstrap";}
 
-  void execute(es::ESCoreBase& baseCore)
+  void execute(spire::ESCoreBase& baseCore)
   {
     // Dynamic cast core into our core so that we have access to the systems
     // factory.
@@ -71,7 +69,7 @@ public:
   }
 };
 
-void registerSystem_AssetBootstrap(CPM_ES_ACORN_NS::Acorn& core)
+void registerSystem_AssetBootstrap(spire::Acorn& core)
 {
   core.registerSystem<AssetBootstrap>();
 }

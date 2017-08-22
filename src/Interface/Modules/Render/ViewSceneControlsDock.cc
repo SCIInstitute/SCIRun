@@ -344,12 +344,13 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
 {
   std::vector<QString> displayNames;
   std::transform(geomList.begin(), geomList.end(), std::back_inserter(displayNames),
-    [](const GeometryBaseHandle& geom) { return QString::fromStdString(geom->uniqueID()).split('_').at(1); });
+    [](const GeometryBaseHandle& geom) { return QString::fromStdString(geom->uniqueID()).split(GeometryObject::delimiter).at(1); });
   for (int i = 0; i < itemList_->count(); ++i)
   {
     if (std::find(displayNames.begin(), displayNames.end(), itemList_->item(i)->text()) == displayNames.end())
       delete itemList_->takeItem(i);
   }
+
   for (const auto& name : displayNames)
   {
     if (!containsItem(name))

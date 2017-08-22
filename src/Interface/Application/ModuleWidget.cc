@@ -161,10 +161,18 @@ void ModuleWidgetDisplay::setupFrame(QStackedWidget* stacked)
 
 void ModuleWidgetDisplay::setupTitle(const QString& name)
 {
-  QFont titleFont(scirunModuleFontName(), titleFontSize, QFont::Bold);
+  auto hiDpi = ModuleWidget::highResolutionExpandFactor_ > 1;
+  auto fontSize = titleFontSize;
+  if (hiDpi)
+    fontSize--;
+  QFont titleFont(scirunModuleFontName(), fontSize, QFont::Bold);
+  if (hiDpi)
+    titleFont.setBold(false);
   titleLabel_->setFont(titleFont);
   titleLabel_->setText(name);
-  QFont smallerTitleFont(scirunModuleFontName(), titleFontSize - buttonPageFontSizeDiff);
+  if (hiDpi)
+    titleLabel_->setMinimumHeight(1.2 * titleLabel_->minimumHeight());
+  QFont smallerTitleFont(scirunModuleFontName(), fontSize - buttonPageFontSizeDiff);
   buttonGroup_->setFont(smallerTitleFont);
   buttonGroup_->setTitle(name);
   progressGroupBox_->setFont(smallerTitleFont);
@@ -1172,12 +1180,12 @@ void ModuleWidget::makeOptionsDialog()
 
       if (highResolutionExpandFactor_ > 1 && !isViewScene_)
       {
-        //qDebug() << "expand factor for dialogs:" << highResolutionExpandFactor_;
-        //qDebug() << dialog_->size();
         dialog_->setFixedHeight(dialog_->size().height() * highResolutionExpandFactor_);
         dialog_->setFixedWidth(dialog_->size().width() * (((highResolutionExpandFactor_ - 1) * 0.5) + 1));
-        //qDebug() << dialog_->size();
       }
+
+      if (highResolutionExpandFactor_ > 1 && isViewScene_)
+        dialog_->adjustToolbar();
 
       dialog_->pull();
     }
@@ -1195,6 +1203,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
   {
     dockable_->setWindowFlags(Qt::Window);
     dockable_->show();
+    Q_EMIT showUIrequested(dialog_);
   }
   dialog_->setButtonBarTitleVisible(!isFloating);
 }
@@ -1234,6 +1243,7 @@ void ModuleWidget::toggleOptionsDialog()
     if (dockable_->isHidden())
     {
       dockable_->show();
+      Q_EMIT showUIrequested(dialog_);
       dockable_->raise();
       dockable_->activateWindow();
       if (isViewScene_)
@@ -1326,7 +1336,10 @@ bool ModuleWidget::hasDynamicPorts() const
 void ModuleWidget::pinUI()
 {
   if (dockable_)
+  {
     dockable_->setFloating(false);
+    Q_EMIT showUIrequested(dialog_);
+  }
 }
 
 void ModuleWidget::hideUI()
@@ -1338,7 +1351,11 @@ void ModuleWidget::hideUI()
 void ModuleWidget::showUI()
 {
   if (dockable_)
+  {
     dockable_->show();
+    dialog_->expand();
+    Q_EMIT showUIrequested(dialog_);
+  }
 }
 
 void ModuleWidget::collapsePinnedDialog()
