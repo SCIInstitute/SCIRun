@@ -59,6 +59,7 @@ namespace SCIRun
     public Q_SLOTS:
       void highlightIfSelected();
       void setDefaultNotePosition(NotePosition position);
+      void setDefaultNoteSize(int size);
       void createPortPositionProviders();
       void snapToGrid();
       void highlightPorts(int state);
@@ -87,6 +88,7 @@ namespace SCIRun
       void showAndColorImpl(const QColor& color, int milliseconds);
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
+      void keepInScene();
 
       ModuleWidget* module_;
       QColor animateColor_;

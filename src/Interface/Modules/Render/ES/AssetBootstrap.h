@@ -37,7 +37,7 @@ namespace Render {
 
 // Two required functions for systems. Technically, systems could
 // register themselves.
-void        registerSystem_AssetBootstrap(CPM_ES_ACORN_NS::Acorn& core);
+void        registerSystem_AssetBootstrap(spire::Acorn& core);
 const char* getSystemName_AssetBootstrap();
 
 } // namespace Render

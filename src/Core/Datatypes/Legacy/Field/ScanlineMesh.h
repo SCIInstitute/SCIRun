@@ -456,12 +456,22 @@ public:
     coords.resize(1);
     coords[0] = static_cast<typename VECTOR::value_type>(r.x()-static_cast<double>(idx));
     
-    if (static_cast<double>(coords[0]) < 0.0) if (static_cast<double>(coords[0]) > -(1e-8)) 
-        coords[0] = static_cast<typename VECTOR::value_type>(0.0); else return (false);
-    if (static_cast<double>(coords[0]) > 1.0) if (static_cast<double>(coords[0]) < 1.0+(1e-8)) 
-        coords[0] = static_cast<typename VECTOR::value_type>(1.0); else return (false);    
+    if (static_cast<double>(coords[0]) < 0.0)
+    {
+      if (static_cast<double>(coords[0]) > -(1e-8))
+        coords[0] = static_cast<typename VECTOR::value_type>(0.0);
+      else
+        return (false);
+    }
+    if (static_cast<double>(coords[0]) > 1.0)
+    {
+      if (static_cast<double>(coords[0]) < 1.0+(1e-8))
+        coords[0] = static_cast<typename VECTOR::value_type>(1.0);
+      else
+        return (false);
+    }
 
-    return (true);    
+    return (true);
   }
 
   /// Find the location in the global coordinate system for a local coordinate

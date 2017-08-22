@@ -70,7 +70,7 @@ void ShowColorMap::execute()
   if (needToExecute())
   {
     std::ostringstream ostr;
-    ostr << get_id() << "_" <<
+    ostr << get_id() << "$" <<
       colorMap->getColorMapInvert() << colorMap->getColorMapName() << colorMap->getColorMapRescaleScale() <<
       colorMap->getColorMapRescaleShift() << colorMap->getColorMapResolution() << colorMap.get() <<
       colorMap->getColorMapShift();
@@ -113,13 +113,13 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   uint32_t iboSize = sizeof(uint32_t) * static_cast<uint32_t>(indices.size());
   uint32_t vboSize = sizeof(float) * 7 * static_cast<uint32_t>(points.size());
 
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
-    new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
-    new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
+  std::shared_ptr<spire::VarBuffer> iboBufferSPtr(
+    new spire::VarBuffer(iboSize));
+  std::shared_ptr<spire::VarBuffer> vboBufferSPtr(
+    new spire::VarBuffer(vboSize));
 
-  CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
-  CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
+  spire::VarBuffer* iboBuffer = iboBufferSPtr.get();
+  spire::VarBuffer* vboBuffer = vboBufferSPtr.get();
 
   for (auto a : indices) iboBuffer->write(a);
 

@@ -30,8 +30,6 @@
 /// \date   March 2013
 
 #include <gl-platform/GLPlatform.hpp>
-#include <Interface/Modules/Render/namespaces.h>
-
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
 namespace SCIRun {
@@ -46,7 +44,7 @@ SRCamera::SRCamera(SRInterface& iface) :
     mZNear(getDefaultZNear()),
     mZFar(getDefaultZFar()),
     mInterface(iface),
-    mArcLookAt(new CPM_LOOK_AT_NS::ArcLookAt())
+    mArcLookAt(new spire::ArcLookAt())
 {
   setAsPerspective();
 
@@ -135,7 +133,7 @@ void SRCamera::doAutoView(const Core::Geometry::BBox& bbox)
   glm::vec3 min(bboxMin.x(), bboxMin.y(), bboxMin.z());
   glm::vec3 max(bboxMax.x(), bboxMax.y(), bboxMax.z());
 
-  CPM_GLM_AABB_NS::AABB aabb(min, max);
+  spire::AABB aabb(min, max);
 
   /// \todo Use real FOV-Y when we allow the user to change the FOV.
   mArcLookAt->autoview(aabb, getDefaultFOVY());

@@ -169,6 +169,13 @@ ADD_EXTERNAL( ${SUPERBUILD_DIR}/SQLiteExternal.cmake SQLite_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/LibPNGExternal.cmake LibPNG_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/TeemExternal.cmake Teem_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/FreetypeExternal.cmake Freetype_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/GLMExternal.cmake GLM_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/TnyExternal.cmake Tny_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/LodePngExternal.cmake LodePng_external )
+
+IF(WIN32)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/GlewExternal.cmake Glew_external )
+ENDIF()
 
 IF(BUILD_WITH_PYTHON)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/PythonExternal.cmake Python_external )
@@ -219,6 +226,10 @@ SET(SCIRUN_CACHE_ARGS
     "-DTeem_DIR:PATH=${Teem_DIR}"
     "-DTetgen_DIR:PATH=${Tetgen_DIR}"
     "-DFreetype_DIR:PATH=${Freetype_DIR}"
+	"-DGLM_DIR:PATH=${GLM_DIR}"
+    "-DTNY_DIR:PATH=${TNY_DIR}"
+	"-DGLEW_DIR:PATH=${Glew_DIR}"
+    "-DLODEPNG_DIR:PATH=${LODEPNG_DIR}"
     "-DSCI_DATA_DIR:PATH=${SCI_DATA_DIR}"
 )
 

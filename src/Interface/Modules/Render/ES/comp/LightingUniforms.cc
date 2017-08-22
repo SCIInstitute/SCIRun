@@ -4,7 +4,7 @@
 
 #include "LightingUniforms.h"
 
-namespace shaders = CPM_GL_SHADERS_NS;
+namespace shaders = spire;
 
 namespace SCIRun {
 namespace Render {

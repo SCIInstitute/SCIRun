@@ -57,8 +57,7 @@ GLWidget::GLWidget(QtGLContext* context, QWidget* parent) :
 
   mContext->makeCurrent();
 
-  // Call gl platform init.
-  CPM_GL_PLATFORM_NS::glPlatformInit();
+  spire::glPlatformInit();
 
   auto frameInitLimitFromCommandLine = Core::Application::Instance().parameters()->developerParameters()->frameInitLimit();
   if (frameInitLimitFromCommandLine)

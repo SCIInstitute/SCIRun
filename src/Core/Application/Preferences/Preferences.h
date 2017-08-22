@@ -53,7 +53,7 @@ namespace SCIRun
 
       TrackedVariable(const std::string& name, const typename Var::value_type& value) : Var(name, value) {}
 
-      virtual void setValue(const typename Var::Value& val) override
+      void setValueWithSignal(const typename Var::Value& val)
       {
         Var::setValue(val);
         valueChanged_(this->val());
@@ -83,6 +83,7 @@ namespace SCIRun
       BooleanVariable modulesSnapToGrid;
       BooleanVariable highlightPorts;
       BooleanVariable autoNotes;
+      BooleanVariable highDPIAdjustment;
       TrackedVariable<BooleanVariable> modulesAreDockable;
       StringVariable networkBackgroundColor;
 

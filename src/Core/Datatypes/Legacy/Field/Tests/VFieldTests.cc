@@ -43,7 +43,6 @@ TEST(VFieldTest, EmptyFieldConstantBasis)
   FieldHandle field = EmptyTriSurfFieldConstantBasis(DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
   
-  VMesh *vmesh = field->vmesh();
   VField *vfield = field->vfield();
   
   ASSERT_EQ(vfield->num_values(), 0);
@@ -63,7 +62,6 @@ TEST(VFieldTest, EmptyFieldAddValuesConstantBasis)
   FieldHandle field = EmptyTriSurfFieldConstantBasis(DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
   
-  VMesh *vmesh = field->vmesh();
   VField *vfield = field->vfield();
   vfield->resize_values();
   
@@ -79,7 +77,6 @@ TEST(VFieldTest, EmptyFieldLinearBasis)
   FieldHandle field = EmptyTriSurfFieldLinearBasis(DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
 
-  VMesh *vmesh = field->vmesh();
   VField *vfield = field->vfield();
   
   ASSERT_EQ(vfield->num_values(), 0);
@@ -90,7 +87,6 @@ TEST(VFieldTest, EmptyFieldAddValuesLinearBasis)
   FieldHandle field = EmptyTriSurfFieldLinearBasis(DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
   
-  VMesh *vmesh = field->vmesh();
   VField *vfield = field->vfield();
   vfield->resize_values();
 
@@ -106,7 +102,6 @@ TEST(VFieldTest, TetVolMeshAddValuesConstantBasis)
   FieldHandle field = TetrahedronTetVolConstantBasis(DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
   
-  VMesh *vmesh = field->vmesh();
   VField *vfield = field->vfield();
   vfield->resize_values();
 
@@ -122,7 +117,6 @@ TEST(VFieldTest, TetVolMeshAddValuesLinearBasis)
   FieldHandle field = TetrahedronTetVolLinearBasis(DOUBLE_E);
   ASSERT_TRUE(field.get() != nullptr);
   
-  VMesh *vmesh = field->vmesh();
   VField *vfield = field->vfield();
   vfield->resize_values();
 

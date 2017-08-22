@@ -37,7 +37,6 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-// CPM modules
 #include <glm/glm.hpp>
 #include <var-buffer/VarBuffer.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -85,7 +84,7 @@ namespace SCIRun {
 
         SpireVBO() : numElements(0), onGPU(false) {}
         SpireVBO(const std::string& vboName, const std::vector<AttributeData> attribs,
-          std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboData,
+          std::shared_ptr<spire::VarBuffer> vboData,
           int64_t numVBOElements, const Core::Geometry::BBox& bbox, bool placeOnGPU) :
           name(vboName),
           attributes(attribs),
@@ -97,7 +96,7 @@ namespace SCIRun {
 
         std::string                           name;
         std::vector<AttributeData>            attributes;
-        std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> data; // Change to unique_ptr w/ move semantics (possibly).
+        std::shared_ptr<spire::VarBuffer> data; // Change to unique_ptr w/ move semantics (possibly).
         int64_t                               numElements;
         Core::Geometry::BBox                  boundingBox;
         bool                                  onGPU;
@@ -114,7 +113,7 @@ namespace SCIRun {
 
         SpireIBO() : indexSize(0), prim(PRIMITIVE::POINTS) {}
         SpireIBO(const std::string& iboName, PRIMITIVE primIn, size_t iboIndexSize,
-          std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboData) :
+          std::shared_ptr<spire::VarBuffer> iboData) :
           name(iboName),
           indexSize(iboIndexSize),
           prim(primIn),
@@ -124,7 +123,7 @@ namespace SCIRun {
         std::string                           name;
         size_t                                indexSize;
         PRIMITIVE                             prim;
-        std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> data; // Change to unique_ptr w/ move semantics (possibly).
+        std::shared_ptr<spire::VarBuffer> data; // Change to unique_ptr w/ move semantics (possibly).
       };
 
       struct SpireText
@@ -139,8 +138,6 @@ namespace SCIRun {
           bitmap.resize(s);
           std::copy(f->glyph->bitmap.buffer,
             f->glyph->bitmap.buffer + s, bitmap.begin());
-          //for (auto i = 0; i < width*height; ++i)
-          //  bitmap.push_back(f->glyph->bitmap.buffer[i]);
         }
         std::string                           name;
         size_t                                width;
@@ -172,7 +169,7 @@ namespace SCIRun {
 
         static const char* getName() { return "SpireSubPass"; }
 
-        bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& /* s */, uint64_t /* entityID */)
+        bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
         {
           // No need to serialize.
           return true;

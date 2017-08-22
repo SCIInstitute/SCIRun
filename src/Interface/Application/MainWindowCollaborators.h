@@ -34,6 +34,7 @@
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Singleton.h>
 #include <set>
+#include <deque>
 #include <Interface/Application/NetworkEditor.h>  //TODO
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #endif
@@ -54,6 +55,7 @@ namespace SCIRun {
 namespace Gui {
 
   class SCIRunMainWindow;
+  class ModuleDialogGeneric;
 
   class TextEditAppender : public Core::Logging::LegacyLoggerInterface, public Core::Logging::LogAppenderStrategy
   {
@@ -90,10 +92,12 @@ namespace Gui {
   class ComboBoxDefaultNotePositionGetter : public DefaultNotePositionGetter
   {
   public:
-    explicit ComboBoxDefaultNotePositionGetter(QComboBox& combo) : combo_(combo) {}
-    virtual NotePosition position() const override;
+    ComboBoxDefaultNotePositionGetter(QComboBox* positionCombo, QComboBox* sizeCombo) : positionCombo_(positionCombo), sizeCombo_(sizeCombo) {}
+    NotePosition position() const override;
+    int size() const override;
   private:
-    QComboBox& combo_;
+    QComboBox* positionCombo_;
+    QComboBox* sizeCombo_;
   };
 
   typedef boost::variant<QAction*, QWidget*> InputWidget;
@@ -235,6 +239,19 @@ namespace Gui {
     SCIRunMainWindow* mainWindow_;
   };
 
+  class DockManager : public QObject
+  {
+    Q_OBJECT
+  public:
+    explicit DockManager(int& availableSize, QObject* parent);
+  public Q_SLOTS:
+    void requestShow(ModuleDialogGeneric* dialog);
+  private:
+    int& availableHeight_;
+    const std::set<ModuleDialogGeneric*>& currentDialogs_;
+    std::deque<ModuleDialogGeneric*> collapseQueue_;
+    int usedSpace() const;
+  };
 }
 }
 #endif

@@ -36,11 +36,6 @@
 
 #include "Registration.h"
 
-namespace es      = CPM_ES_NS;
-namespace cereal  = CPM_ES_CEREAL_NS;
-namespace systems = CPM_ES_SYSTEMS_NS;
-namespace fs      = CPM_ES_FS_NS;
-
 namespace SCIRun {
 namespace Render {
 
@@ -48,7 +43,7 @@ namespace Render {
 {
   // Register common systems.
   gen::registerAll(*this);
-  fs::registerAll(*this);
+  spire::registerAll(*this);
   ren::registerAll(*this);
   rendererRegisterAll(*this);
 
