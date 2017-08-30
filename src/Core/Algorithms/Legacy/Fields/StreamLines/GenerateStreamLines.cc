@@ -410,6 +410,7 @@ bool GenerateStreamLinesAlgoP::run(FieldHandle input,
   
   global_dimension_=seed_mesh_->num_nodes()-1;
   if (global_dimension_<numprocessors_) numprocessors_=1;
+  if (numprocessors_>16) numprocessors_=16;
   success_.resize(numprocessors_,true);
   outputs_.resize(numprocessors_, nullptr);
 
