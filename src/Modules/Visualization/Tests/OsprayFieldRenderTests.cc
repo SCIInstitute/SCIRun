@@ -30,21 +30,26 @@
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Utils/Exception.h>
 #include <Core/Logging/Log.h>
-#include <Core/Datatypes/ColorMap.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 
 #include <ospray/ospray.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Testing;
 using namespace SCIRun::TestUtils;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace Fields;
 using namespace SCIRun::Core::Algorithms::Visualization;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core;
-using namespace SCIRun;
 using namespace SCIRun::Core::Logging;
 using ::testing::Values;
 using ::testing::Combine;
@@ -52,8 +57,18 @@ using ::testing::Range;
 
 class OsprayFieldRenderTest : public ParameterizedModuleTest<int>
 {
+public:
+  static void SetUpTestCase()
+  {
+    // initialize OSPRay; OSPRay parses (and removes) its commandline parameters, e.g. "--osp:debug"
+    const char* argv[] = { "" };
+    int argc = 0;
+    int init_error = ospInit(&argc, argv);
+    if (init_error != OSP_NO_ERROR)
+      throw init_error;
+  }
 protected:
-  virtual void SetUp()
+  virtual void SetUp() override
   {
     Log::get().setVerbose(false);
     auto size = GetParam();
@@ -92,9 +107,50 @@ namespace osprayImpl
     std::cout << "wrote file " << fileName << std::endl;
   }
 
-
-  int mainFunc() 
+  template <typename T>
+  std::string join(const T& list)
   {
+    std::ostringstream oss;
+    const auto SIZE = list.size();
+    for (int i = 0; i < SIZE; ++i)
+    {
+      oss << list[i];
+      if (i < SIZE - 1)
+        oss << ", ";
+    }
+    return oss.str();
+  }
+
+  int renderLatVol(FieldHandle latvol, float cameraSteps)
+  {
+    if (false)
+    {
+      GetFieldBoundaryAlgo getfieldbound_algo;
+      FieldHandle field_boundary;
+      getfieldbound_algo.run(latvol, field_boundary);
+      ConvertMeshToTriSurfMeshAlgo converter;
+      FieldHandle trisurf;
+      converter.run(field_boundary, trisurf);
+    }
+
+    auto trisurf = TriangleTriSurfLinearBasis(DOUBLE_E);
+    auto facade(trisurf->mesh()->getFacade());
+
+    //std::ostringstream ostr;
+    //for (const auto& node : facade->nodes())
+    //{
+    //  auto edges = node.edgeIndices();
+    //  ostr << "Node " << node.index() << " point=" << node.point().get_string() << /*" edges=[" << join(edges) << "]" <<*/ std::endl;
+    //}
+    //for (const auto& face : facade->faces())
+    //{
+    //  auto faceID = face.index();
+    //  auto nodes = face.nodeIndices();
+    //  ostr << "Face " << faceID << " nodes=[" << join(nodes) << "]" << std::endl;
+    //}
+
+    //std::cout << ostr.str() << std::endl;
+
     std::cout << "hello ospray" << std::endl;
     // image size
     osp::vec2i imgSize;
@@ -102,29 +158,65 @@ namespace osprayImpl
     imgSize.y = 768; // height
 
     // camera
-    float cam_pos[] = { 0.f, 0.f, 0.f };
+    float cam_pos[] = { -1.f, 0.f, 1.f };
+    cam_pos[0] += cameraSteps;
     float cam_up[] = { 0.f, 1.f, 0.f };
-    float cam_view[] = { 0.1f, 0.f, 1.f };
+    float cam_view[] = { 0.5f, 0.5f, -1.f };
+    //cam_view[2] += cam_pos[2];
 
     // triangle mesh data
-    float vertex[] = { -1.0f, -1.0f, 3.0f, 0.f,
+    float vertex_example[] = { -1.0f, -1.0f, 3.0f, 0.f,
       -1.0f, 1.0f, 3.0f, 0.f,
       1.0f, -1.0f, 3.0f, 0.f,
       0.1f, 0.1f, 0.3f, 0.f };
-    float color[] = { 0.9f, 0.5f, 0.5f, 1.0f,
+
+    std::vector<float> vertex, color;
+    {
+      //auto i = 0;
+      for (const auto& node : facade->nodes())
+      {
+        auto point = node.point();
+        vertex.push_back(static_cast<float>(point.x()));
+        vertex.push_back(static_cast<float>(point.y()));
+        vertex.push_back(static_cast<float>(point.z()));
+        vertex.push_back(0);
+        //++i;
+        //if (i % 2 == 0)
+        {
+          color.push_back(0.9f);
+          color.push_back(0.5f);
+          color.push_back(0.5f);
+        }
+        //else
+        //{
+        //  color.push_back(0.8f);
+        //  color.push_back(0.8f);
+        //  color.push_back(0.8f);
+        //}
+        color.push_back(1.0f);
+      }
+    }
+
+    float color_example[] = { 0.9f, 0.5f, 0.5f, 1.0f,
       0.8f, 0.8f, 0.8f, 1.0f,
       0.8f, 0.8f, 0.8f, 1.0f,
       0.5f, 0.9f, 0.5f, 1.0f };
-    int32_t index[] = { 0, 1, 2,
-      1, 2, 3 };
+    int32_t index_example[] = { 0, 1, 2,
+      1, 2, 3};
+
+    std::vector<int32_t> index;
+    {
+      for (const auto& face : facade->faces())
+      {
+        auto nodes = face.nodeIndices();
+        index.push_back(static_cast<int32_t>(nodes[0]));
+        index.push_back(static_cast<int32_t>(nodes[1]));
+        index.push_back(static_cast<int32_t>(nodes[2]));
+      }
+    }
 
 
-    // initialize OSPRay; OSPRay parses (and removes) its commandline parameters, e.g. "--osp:debug"
-    const char* argv[] = {""};
-    int argc = 0;
-    int init_error = ospInit(&argc, argv);
-    if (init_error != OSP_NO_ERROR)
-      return init_error;
+   
 
     // create and setup camera
     OSPCamera camera = ospNewCamera("perspective");
@@ -137,15 +229,18 @@ namespace osprayImpl
 
     // create and setup model and mesh
     OSPGeometry mesh = ospNewGeometry("triangles");
-    OSPData data = ospNewData(4, OSP_FLOAT3A, vertex); // OSP_FLOAT3 format is also supported for vertex positions
+    OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
+    //OSPData data = ospNewData(4, OSP_FLOAT3A, vertex_example); // OSP_FLOAT3 format is also supported for vertex positions
     ospCommit(data);
     ospSetData(mesh, "vertex", data);
 
-    data = ospNewData(4, OSP_FLOAT4, color);
+    data = ospNewData(vertex.size() / 4, OSP_FLOAT4, &color[0]);
+    //data = ospNewData(4, OSP_FLOAT4, color_example);
     ospCommit(data);
     ospSetData(mesh, "vertex.color", data);
 
-    data = ospNewData(2, OSP_INT3, index); // OSP_INT4 format is also supported for triangle indices
+    data = ospNewData(index.size() / 3, OSP_INT3, &index[0]); // OSP_INT4 format is also supported for triangle indices
+    //data = ospNewData(2, OSP_INT3, index_example); // OSP_INT4 format is also supported for triangle indices
     ospCommit(data);
     ospSetData(mesh, "index", data);
 
@@ -155,7 +250,6 @@ namespace osprayImpl
     OSPModel world = ospNewModel();
     ospAddGeometry(world, mesh);
     ospCommit(world);
-
 
     // create renderer
     OSPRenderer renderer = ospNewRenderer("scivis"); // choose Scientific Visualization renderer
@@ -184,7 +278,9 @@ namespace osprayImpl
 
     // access framebuffer and write its content as PPM file
     const uint32_t * fb = (uint32_t*)ospMapFrameBuffer(framebuffer, OSP_FB_COLOR);
-    writePPM("firstFrame.ppm", imgSize, fb);
+    //std::ostringstream fileName;
+    //fileName << "firstFrame" << cameraSteps << ".ppm";
+    //writePPM(fileName.str().c_str(), imgSize, fb);
     ospUnmapFrameBuffer(fb, framebuffer);
 
 
@@ -193,7 +289,9 @@ namespace osprayImpl
       ospRenderFrame(framebuffer, renderer, OSP_FB_COLOR | OSP_FB_ACCUM);
 
     fb = (uint32_t*)ospMapFrameBuffer(framebuffer, OSP_FB_COLOR);
-    writePPM("accumulatedFrame.ppm", imgSize, fb);
+    std::ostringstream fileNameAcc;
+    fileNameAcc << "accumulatedFrame" << cameraSteps << ".ppm";
+    writePPM(fileNameAcc.str().c_str(), imgSize, fb);
     ospUnmapFrameBuffer(fb, framebuffer);
 
     return 0;
@@ -205,8 +303,10 @@ TEST_P(OsprayFieldRenderTest, RenderLatVolWithOspray)
 {
   Log::get() << INFO << "Start ShowField::execute" << std::endl;
   
-
-  osprayImpl::mainFunc();
+  for (int inc : {1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
+  {
+    osprayImpl::renderLatVol(latVol, inc*0.2);
+  }
 
   FAIL() << "todo";
 
@@ -217,7 +317,7 @@ TEST_P(OsprayFieldRenderTest, RenderLatVolWithOspray)
 INSTANTIATE_TEST_CASE_P(
   RenderLatVolWithOspray,
   OsprayFieldRenderTest,
-  Values(20//, 40, 60, 80
+  Values(2//, 40, 60, 80
   //, 100, 120, 150//, //200 //to speed up make test
   //, 256 // probably runs out of memory
   )
