@@ -34,15 +34,16 @@ SET(Modules_Visualization_Tests_SRCS
   ShowFieldTests.cc
   ShowMeshTests.cc
   ShowStringTests.cc
+  OsprayFieldRenderTests.cc
 )
-
-#SET(Engine_Network_Tests_HEADERS
-#  NetworkEditorControllerTests_.h
-#)
 
 SCIRUN_ADD_UNIT_TEST(Modules_Visualization_Tests
   ${Modules_Visualization_Tests_SRCS}
 )
+
+INCLUDE(${CMAKE_SOURCE_DIR}/CMake/Modules/FindOSPRay.cmake)
+
+INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
 
 TARGET_LINK_LIBRARIES(Modules_Visualization_Tests
   Modules_Visualization
@@ -56,4 +57,5 @@ TARGET_LINK_LIBRARIES(Modules_Visualization_Tests
   gtest_main
   gtest
   gmock
+  ${OSPRAY_LIBRARIES}
 )
