@@ -579,7 +579,7 @@ void SCIRunMainWindow::executeAll()
 		auto timeout = Application::Instance().parameters()->developerParameters()->regressionTimeoutSeconds();
 		QTimer::singleShot(1000 * *timeout, this, SLOT(networkTimedOut()));
 	}
-
+  writeSettings();
   networkEditor_->executeAll();
 }
 
@@ -623,6 +623,7 @@ void SCIRunMainWindow::saveNetworkAs()
 
 void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
 {
+  writeSettings();
   NetworkSaveCommand save;
   save.set(Variables::Filename, fileName.toStdString());
   save.execute();
@@ -1085,10 +1086,10 @@ void SCIRunMainWindow::readDefaultNotePosition(int index)
 
 void SCIRunMainWindow::setupPreferencesWindow()
 {
-  prefsWindow_ = new PreferencesWindow(networkEditor_, this);
+  prefsWindow_ = new PreferencesWindow(networkEditor_, [this]() { writeSettings(); }, this);
 
   connect(actionPreferences_, SIGNAL(triggered()), prefsWindow_, SLOT(show()));
-  //connect(prefs_, SIGNAL(visibilityChanged(bool)), actionPreferences_, SLOT(setChecked(bool)));
+
   prefsWindow_->setVisible(false);
 }
 
