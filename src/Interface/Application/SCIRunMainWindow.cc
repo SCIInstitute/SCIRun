@@ -343,6 +343,8 @@ void SCIRunMainWindow::createStandardToolbars()
   standardBar->addAction(actionLoad_);
   standardBar->addAction(actionSave_);
   standardBar->addAction(actionEnterWhatsThisMode_);
+  standardBar->addAction(actionDragMode_);
+  standardBar->addAction(actionSelectMode_);
 
   auto networkBar = addToolBar("Network");
   addNetworkActionsToBar(networkBar);
@@ -378,8 +380,6 @@ void SCIRunMainWindow::createAdvancedToolbar()
   advancedBar->setObjectName("AdvancedToolBar");
 
   advancedBar->addAction(actionRunScript_);
-  advancedBar->addAction(actionDragMode_);
-  advancedBar->addAction(actionSelectMode_);
   advancedBar->addAction(actionToggleMetadataLayer_);
   advancedBar->addAction(actionToggleTagLayer_);
   //TODO: turn back on after IBBM
