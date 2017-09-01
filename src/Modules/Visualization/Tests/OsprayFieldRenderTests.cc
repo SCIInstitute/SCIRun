@@ -72,7 +72,8 @@ protected:
   {
     Log::get().setVerbose(false);
     auto size = GetParam();
-    latVol = CreateEmptyLatVol(size, size, size);
+    auto max = static_cast<double>(size);
+    latVol = CreateEmptyLatVol(size, size, size, DOUBLE_E, { 0, 0, 0 }, { max, max, max });
     Log::get() << INFO << "Setting up ShowField with size " << size << "^3 latvol" << std::endl;
   }
 
@@ -123,17 +124,18 @@ namespace osprayImpl
 
   int renderLatVol(FieldHandle latvol, float cameraSteps)
   {
-    if (false)
+    FieldHandle trisurf;
+    //if (false)
     {
       GetFieldBoundaryAlgo getfieldbound_algo;
       FieldHandle field_boundary;
       getfieldbound_algo.run(latvol, field_boundary);
       ConvertMeshToTriSurfMeshAlgo converter;
-      FieldHandle trisurf;
+      
       converter.run(field_boundary, trisurf);
     }
 
-    auto trisurf = TriangleTriSurfLinearBasis(DOUBLE_E);
+    //trisurf = TriangleTriSurfLinearBasis(DOUBLE_E);
     auto facade(trisurf->mesh()->getFacade());
 
     //std::ostringstream ostr;
@@ -158,10 +160,10 @@ namespace osprayImpl
     imgSize.y = 768; // height
 
     // camera
-    float cam_pos[] = { -1.f, 0.f, 1.f };
+    float cam_pos[] = { -1.f, 0.f, -5.f };
     cam_pos[0] += cameraSteps;
     float cam_up[] = { 0.f, 1.f, 0.f };
-    float cam_view[] = { 0.5f, 0.5f, -1.f };
+    float cam_view[] = { 0.5f, 0.5f, 1.f };
     //cam_view[2] += cam_pos[2];
 
     // triangle mesh data
@@ -317,7 +319,7 @@ TEST_P(OsprayFieldRenderTest, RenderLatVolWithOspray)
 INSTANTIATE_TEST_CASE_P(
   RenderLatVolWithOspray,
   OsprayFieldRenderTest,
-  Values(2//, 40, 60, 80
+  Values(4//, 40, 60, 80
   //, 100, 120, 150//, //200 //to speed up make test
   //, 256 // probably runs out of memory
   )
