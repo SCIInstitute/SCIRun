@@ -138,7 +138,16 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
 		setAlgoStringFromState(Parameters::LCurveText);
 
 		// run
-		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,optionalAlgoInput(hMatrixRegMat))(WeightingInSensorSpace,optionalAlgoInput(hMatrixNoiseCov))(matrixU,optionalAlgoInput(hMatrixU))(singularValues,optionalAlgoInput(hSingularValues))(matrixV,optionalAlgoInput(hMatrixV))) );
+		auto output = algo().run(
+							withInputData(
+								(ForwardMatrix, forward_matrix_h)
+								(MeasuredPotentials,hMatrixMeasDat)
+								(MeasuredPotentials,hMatrixMeasDat)
+								(WeightingInSourceSpace,optionalAlgoInput(hMatrixRegMat))
+								(WeightingInSensorSpace,optionalAlgoInput(hMatrixNoiseCov))
+								(matrixU,optionalAlgoInput(hMatrixU))(singularValues,optionalAlgoInput(hSingularValues))
+								(matrixV,optionalAlgoInput(hMatrixV)))
+							);
 
 		// update L-curve
 		/* NO EXISTE

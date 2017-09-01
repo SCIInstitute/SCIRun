@@ -157,14 +157,15 @@ using namespace SCIRun::Core::Algorithms::Inverse;
                 }
 
                 // check if squared regularization matrix is invertible
-                if ( !RRtr.fullPivLu().isInvertible() )
+				auto LURRtr = RRtr.fullPivLu();
+                if ( !LURRtr.isInvertible() )
                 {
 
                     THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Regularization matrix in the source space is not invertible.");
                 }
 
                 // COMPUTE inverse
-                iRRtr = RRtr.inverse().eval();
+                iRRtr = LURRtr.inverse().eval();
 
             }
 
@@ -195,11 +196,12 @@ using namespace SCIRun::Core::Algorithms::Inverse;
                 }
 
                 // check if squared regularization matrix is invertible
-                if ( !CCtr.fullPivLu().isInvertible() )
+				auto LUCCtr = CCtr.fullPivLu();
+                if ( !LUCCtr.isInvertible() )
                 {
                     THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Residual covariance matrix is not invertible.");
                 }
-                iCCtr = CCtr.inverse().eval();
+                iCCtr = LUCCtr.inverse().eval();
 
 
 

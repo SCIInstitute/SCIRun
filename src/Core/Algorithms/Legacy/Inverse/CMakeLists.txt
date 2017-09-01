@@ -28,6 +28,7 @@
 
 SET(Algorithms_Legacy_Inverse_SRCS
   TikhonovAlgoAbstractBase.cc
+  TikhonovImpl.cc
   SolveInverseProblemWithStandardTikhonovImpl.cc
   SolveInverseProblemWithTikhonovSVD_impl.cc
   SolveInverseProblemWithTikhonovTSVD_impl.cc

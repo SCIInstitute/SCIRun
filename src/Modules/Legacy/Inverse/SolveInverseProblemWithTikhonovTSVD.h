@@ -31,7 +31,7 @@
 #define MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonovTSVD_H__
 #include <Dataflow/Network/Module.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD_impl.h>
-#include <Modules/Fields/share.h>
+#include <Modules/Legacy/Inverse/share.h>
 
 namespace SCIRun {
 namespace Modules {

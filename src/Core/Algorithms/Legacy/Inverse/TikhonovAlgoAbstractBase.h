@@ -31,7 +31,7 @@
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Inverse/TikhonovImpl.h>
-#include <Core/Algorithms/Field/share.h>
+#include <Core/Algorithms/Legacy/Inverse/share.h>
 
 
 namespace SCIRun {
