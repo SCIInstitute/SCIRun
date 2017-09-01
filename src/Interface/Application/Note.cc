@@ -120,6 +120,7 @@ void NoteDisplayHelper::updateNoteImpl(const Note& note)
 
   note_->setHtml(note.html_);
   notePosition_ = note.position_;
+  noteFontSize_ = note.fontSize_;
   updateNotePosition();
   note_->setZValue(item_->zValue() - 1);
 }
@@ -155,7 +156,7 @@ void NoteDisplayHelper::setDefaultNotePositionImpl(NotePosition position)
 
 void NoteDisplayHelper::setDefaultNoteSizeImpl(int size)
 {
-  defaultNoteSize_ = size;
+  defaultNoteFontSize_ = size;
   updateNoteSize();
 }
 
@@ -170,11 +171,13 @@ void NoteDisplayHelper::updateNotePosition()
 
 void NoteDisplayHelper::updateNoteSize()
 {
+  qDebug() << __FUNCTION__ << noteFontSize_ << defaultNoteFontSize_;
   if (note_ && item_)
   {
-    qDebug() << note_ << item_ << note_->font() << note_->font().pointSizeF() << defaultNoteSize_;
-    //auto position = positioner_->currentPosition() + relativeNotePosition();
-    //note_->setPos(position);
+    //qDebug() << note_ << item_ << note_->font() << note_->font().pointSizeF() << defaultNoteSize_;
+    auto f = note_->font();
+    f.setPointSizeF(noteFontSize_ == -1 ? defaultNoteFontSize_ : noteFontSize_);
+    note_->setFont(f);
   }
 }
 

@@ -191,6 +191,7 @@ private:
 Q_SIGNALS:
   void moduleItemDoubleClicked();
   void defaultNotePositionChanged(NotePosition position);
+  void defaultNoteSizeChanged(int size);
   void dataDirectorySet(const QString& dir);
 private Q_SLOTS:
   void saveNetworkAs();
@@ -216,6 +217,7 @@ private Q_SLOTS:
   void setExecutor(int type);
   void setGlobalPortCaching(bool enable);
   void readDefaultNotePosition(int index);
+  void readDefaultNoteSize(int index);
   void openToolkitFolder();
   void openToolkitNetwork();
   void alertForNetworkCycles(int code);

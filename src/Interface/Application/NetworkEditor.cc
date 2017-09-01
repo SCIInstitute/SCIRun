@@ -78,7 +78,7 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   zLevelManager_(new ZLevelManager(scene_))
 {
   setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-small.png"));
- 
+
   setHighResolutionExpandFactor(highResolutionExpandFactor_);
 
   setScene(scene_);
@@ -110,8 +110,8 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
 }
 
 void  NetworkEditor::setHighResolutionExpandFactor(double factor)
-{ 
-  highResolutionExpandFactor_ = factor; 
+{
+  highResolutionExpandFactor_ = factor;
   ModuleWidget::highResolutionExpandFactor_ = highResolutionExpandFactor_;
 }
 
@@ -428,6 +428,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(highlightPorts(int)), proxy, SLOT(highlightPorts(int)));
   connect(this, SIGNAL(resetModulesDueToCycle()), module, SLOT(changeExecuteButtonToPlay()));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
+  connect(this, SIGNAL(defaultNoteSizeChanged(int)), proxy, SLOT(setDefaultNoteSize(int)));
   connect(module, SIGNAL(displayChanged()), this, SLOT(updateViewport()));
   connect(module, SIGNAL(displayChanged()), proxy, SLOT(createPortPositionProviders()));
   connect(proxy, SIGNAL(tagChanged(int)), this, SLOT(highlightTaggedItem(int)));

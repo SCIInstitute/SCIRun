@@ -358,6 +358,7 @@ namespace Gui {
     void middleMouseClicked();
     void moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
     void defaultNotePositionChanged(NotePosition position);
+    void defaultNoteSizeChanged(int size);
     void sceneChanged(const QList<QRectF>& region);
     void snapToModules();
     void highlightPorts(int state);

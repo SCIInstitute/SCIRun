@@ -211,6 +211,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupPythonConsole();
 
   connect(prefsWindow_->defaultNotePositionComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNotePosition(int)));
+  connect(prefsWindow_->defaultNoteSizeComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNoteSize(int)));
   connect(prefsWindow_->cubicPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesCubicBezier()));
   connect(prefsWindow_->manhattanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesManhattan()));
   connect(prefsWindow_->euclideanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesEuclidean()));
@@ -1082,6 +1083,11 @@ void SCIRunMainWindow::setGlobalPortCaching(bool enable)
 void SCIRunMainWindow::readDefaultNotePosition(int index)
 {
   Q_EMIT defaultNotePositionChanged(defaultNotePositionGetter_->position()); //TODO: unit test.
+}
+
+void SCIRunMainWindow::readDefaultNoteSize(int index)
+{
+  Q_EMIT defaultNoteSizeChanged(defaultNotePositionGetter_->size()); //TODO: unit test.
 }
 
 void SCIRunMainWindow::setupPreferencesWindow()
