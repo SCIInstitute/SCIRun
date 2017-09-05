@@ -108,50 +108,19 @@ namespace osprayImpl
     std::cout << "wrote file " << fileName << std::endl;
   }
 
-  template <typename T>
-  std::string join(const T& list)
-  {
-    std::ostringstream oss;
-    const auto SIZE = list.size();
-    for (int i = 0; i < SIZE; ++i)
-    {
-      oss << list[i];
-      if (i < SIZE - 1)
-        oss << ", ";
-    }
-    return oss.str();
-  }
-
-  int renderLatVol(FieldHandle latvol, float cameraSteps)
+  int renderLatVol(FieldHandle latvol, float cameraSteps, int max)
   {
     FieldHandle trisurf;
-    //if (false)
     {
       GetFieldBoundaryAlgo getfieldbound_algo;
       FieldHandle field_boundary;
       getfieldbound_algo.run(latvol, field_boundary);
       ConvertMeshToTriSurfMeshAlgo converter;
-      
+
       converter.run(field_boundary, trisurf);
     }
 
-    //trisurf = TriangleTriSurfLinearBasis(DOUBLE_E);
     auto facade(trisurf->mesh()->getFacade());
-
-    //std::ostringstream ostr;
-    //for (const auto& node : facade->nodes())
-    //{
-    //  auto edges = node.edgeIndices();
-    //  ostr << "Node " << node.index() << " point=" << node.point().get_string() << /*" edges=[" << join(edges) << "]" <<*/ std::endl;
-    //}
-    //for (const auto& face : facade->faces())
-    //{
-    //  auto faceID = face.index();
-    //  auto nodes = face.nodeIndices();
-    //  ostr << "Face " << faceID << " nodes=[" << join(nodes) << "]" << std::endl;
-    //}
-
-    //std::cout << ostr.str() << std::endl;
 
     std::cout << "hello ospray" << std::endl;
     // image size
@@ -164,17 +133,16 @@ namespace osprayImpl
     cam_pos[0] += cameraSteps;
     float cam_up[] = { 0.f, 1.f, 0.f };
     float cam_view[] = { 0.5f, 0.5f, 1.f };
-    //cam_view[2] += cam_pos[2];
 
     // triangle mesh data
-    float vertex_example[] = { -1.0f, -1.0f, 3.0f, 0.f,
-      -1.0f, 1.0f, 3.0f, 0.f,
-      1.0f, -1.0f, 3.0f, 0.f,
-      0.1f, 0.1f, 0.3f, 0.f };
+    // float vertex_example[] = { -1.0f, -1.0f, 3.0f, 0.f,
+    //   -1.0f, 1.0f, 3.0f, 0.f,
+    //   1.0f, -1.0f, 3.0f, 0.f,
+    //   0.1f, 0.1f, 0.3f, 0.f };
 
     std::vector<float> vertex, color;
+    float maxColor = max;
     {
-      //auto i = 0;
       for (const auto& node : facade->nodes())
       {
         auto point = node.point();
@@ -182,29 +150,19 @@ namespace osprayImpl
         vertex.push_back(static_cast<float>(point.y()));
         vertex.push_back(static_cast<float>(point.z()));
         vertex.push_back(0);
-        //++i;
-        //if (i % 2 == 0)
-        {
-          color.push_back(0.9f);
-          color.push_back(0.5f);
-          color.push_back(0.5f);
-        }
-        //else
-        //{
-        //  color.push_back(0.8f);
-        //  color.push_back(0.8f);
-        //  color.push_back(0.8f);
-        //}
+        color.push_back(0.9f * point.x() / maxColor);
+        color.push_back(0.9f * point.y() / maxColor);
+        color.push_back(0.9f * point.z() / maxColor);
         color.push_back(1.0f);
       }
     }
 
-    float color_example[] = { 0.9f, 0.5f, 0.5f, 1.0f,
-      0.8f, 0.8f, 0.8f, 1.0f,
-      0.8f, 0.8f, 0.8f, 1.0f,
-      0.5f, 0.9f, 0.5f, 1.0f };
-    int32_t index_example[] = { 0, 1, 2,
-      1, 2, 3};
+    // float color_example[] = { 0.9f, 0.5f, 0.5f, 1.0f,
+    //   0.8f, 0.8f, 0.8f, 1.0f,
+    //   0.8f, 0.8f, 0.8f, 1.0f,
+    //   0.5f, 0.9f, 0.5f, 1.0f };
+    // int32_t index_example[] = { 0, 1, 2,
+    //   1, 2, 3};
 
     std::vector<int32_t> index;
     {
@@ -217,9 +175,6 @@ namespace osprayImpl
       }
     }
 
-
-   
-
     // create and setup camera
     OSPCamera camera = ospNewCamera("perspective");
     ospSetf(camera, "aspect", imgSize.x / (float)imgSize.y);
@@ -227,7 +182,6 @@ namespace osprayImpl
     ospSet3fv(camera, "dir", cam_view);
     ospSet3fv(camera, "up", cam_up);
     ospCommit(camera); // commit each object to indicate modifications are done
-
 
     // create and setup model and mesh
     OSPGeometry mesh = ospNewGeometry("triangles");
@@ -247,7 +201,6 @@ namespace osprayImpl
     ospSetData(mesh, "index", data);
 
     ospCommit(mesh);
-
 
     OSPModel world = ospNewModel();
     ospAddGeometry(world, mesh);
@@ -270,7 +223,6 @@ namespace osprayImpl
     ospSetObject(renderer, "lights", lights);
     ospCommit(renderer);
 
-
     // create and setup framebuffer
     OSPFrameBuffer framebuffer = ospNewFrameBuffer(imgSize, OSP_FB_SRGBA, OSP_FB_COLOR | /*OSP_FB_DEPTH |*/ OSP_FB_ACCUM);
     ospFrameBufferClear(framebuffer, OSP_FB_COLOR | OSP_FB_ACCUM);
@@ -280,11 +232,7 @@ namespace osprayImpl
 
     // access framebuffer and write its content as PPM file
     const uint32_t * fb = (uint32_t*)ospMapFrameBuffer(framebuffer, OSP_FB_COLOR);
-    //std::ostringstream fileName;
-    //fileName << "firstFrame" << cameraSteps << ".ppm";
-    //writePPM(fileName.str().c_str(), imgSize, fb);
     ospUnmapFrameBuffer(fb, framebuffer);
-
 
     // render 10 more frames, which are accumulated to result in a better converged image
     for (int frames = 0; frames < 10; frames++)
@@ -292,7 +240,7 @@ namespace osprayImpl
 
     fb = (uint32_t*)ospMapFrameBuffer(framebuffer, OSP_FB_COLOR);
     std::ostringstream fileNameAcc;
-    fileNameAcc << "accumulatedFrame" << cameraSteps << ".ppm";
+    fileNameAcc << "accumulatedFrame_" << vertex.size() << "_" << cameraSteps << ".ppm";
     writePPM(fileNameAcc.str().c_str(), imgSize, fb);
     ospUnmapFrameBuffer(fb, framebuffer);
 
@@ -304,10 +252,10 @@ namespace osprayImpl
 TEST_P(OsprayFieldRenderTest, RenderLatVolWithOspray)
 {
   Log::get() << INFO << "Start ShowField::execute" << std::endl;
-  
+
   for (int inc : {1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
   {
-    osprayImpl::renderLatVol(latVol, inc*0.2);
+    osprayImpl::renderLatVol(latVol, inc*0.2, GetParam());
   }
 
   FAIL() << "todo";
