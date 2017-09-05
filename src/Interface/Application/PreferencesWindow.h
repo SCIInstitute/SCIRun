@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_PREFERENCES_H
 
 #include "ui_Preferences.h"
+#include <functional>
 
 namespace SCIRun {
 namespace Gui {
