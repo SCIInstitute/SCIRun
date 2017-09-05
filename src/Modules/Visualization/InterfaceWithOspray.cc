@@ -31,7 +31,7 @@ DEALINGS IN THE SOFTWARE.
 // #include <Core/Algorithms/Visualization/RenderFieldState.h>
 // #include <Core/Datatypes/Legacy/Field/VMesh.h>
 // #include <Core/Datatypes/Legacy/Field/Field.h>
-// #include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 // #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/ColorMap.h>
 // #include <Core/GeometryPrimitives/Vector.h>
@@ -136,13 +136,6 @@ private:
 using namespace detail;
 #endif
 
-InterfaceWithOspray::InterfaceWithOspray() : GeometryGeneratingModule(staticInfo_)
-{
-  INITIALIZE_PORT(Field);
-  INITIALIZE_PORT(ColorMapObject);
-  INITIALIZE_PORT(SceneGraph);
-}
-
 void InterfaceWithOspray::setStateDefaults()
 {
   // auto state = get_state();
@@ -197,7 +190,7 @@ void InterfaceWithOspray::setStateDefaults()
   // // is more up in the air.
 }
 
-namespace
+namespace detail
 {
   class OsprayImpl
   {
@@ -228,8 +221,10 @@ namespace
       float cam_view[] = { 0.5f, 0.5f, 1.f };
 
       std::vector<float> vertex, color;
+      auto vfield = field->vfield();
       //float maxColor = max;
       {
+        double value;
         for (const auto& node : facade->nodes())
         {
           auto point = node.point();
@@ -237,7 +232,11 @@ namespace
           vertex.push_back(static_cast<float>(point.y()));
           vertex.push_back(static_cast<float>(point.z()));
           vertex.push_back(0);
-          color.push_back(0.8f);
+
+          vfield->get_value(value, node.index());
+          //std::cout << "Node: " << node.index() << " value: " << value << std::endl;
+
+          color.push_back(value / 2.0f);
           color.push_back(0.5f);
           color.push_back(0.5f);
           color.push_back(1.0f);
@@ -345,6 +344,12 @@ namespace
   };
 }
 
+InterfaceWithOspray::InterfaceWithOspray() : GeometryGeneratingModule(staticInfo_), impl_(new detail::OsprayImpl)
+{
+  INITIALIZE_PORT(Field);
+  INITIALIZE_PORT(ColorMapObject);
+  INITIALIZE_PORT(SceneGraph);
+}
 
 void InterfaceWithOspray::execute()
 {
@@ -353,12 +358,11 @@ void InterfaceWithOspray::execute()
 
   if (needToExecute())
   {
-    OsprayImpl impl;
     // for (int inc : {1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
     // {
     //   osprayImpl::renderLatVol(latVol, inc*0.2, GetParam());
     // }
-    impl.writeImage(field, "scirunOsprayOutput.ppm", 0.2);
+    impl_->writeImage(field, "scirunOsprayOutput.ppm", 0.2);
 
     //updateAvailableRenderOptions(field);
     //auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);

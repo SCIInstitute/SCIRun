@@ -33,6 +33,11 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Thread/Interruptible.h>
 #include <Modules/Visualization/share.h>
 
+namespace detail
+{
+  class OsprayImpl;
+}
+
 namespace SCIRun {
 
   namespace Core
@@ -108,7 +113,7 @@ namespace SCIRun {
 
         virtual void setStateDefaults() override;
       private:
-
+        boost::shared_ptr<detail::OsprayImpl> impl_;
       };
 
 
