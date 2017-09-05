@@ -27,16 +27,21 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Modules/Visualization/InterfaceWithOspray.h>
-// #include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/Geometry.h>
 // #include <Core/Algorithms/Visualization/RenderFieldState.h>
 // #include <Core/Datatypes/Legacy/Field/VMesh.h>
 // #include <Core/Datatypes/Legacy/Field/Field.h>
 // #include <Core/Datatypes/Legacy/Field/VField.h>
 // #include <Core/Datatypes/Color.h>
-// #include <Core/Datatypes/ColorMap.h>
+#include <Core/Datatypes/ColorMap.h>
 // #include <Core/GeometryPrimitives/Vector.h>
 // #include <Core/GeometryPrimitives/Tensor.h>
 // #include <Graphics/Glyphs/GlyphGeom.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
+
+#include <ospray/ospray.h>
 
 using namespace SCIRun;
 using namespace Modules::Visualization;
@@ -192,18 +197,175 @@ void InterfaceWithOspray::setStateDefaults()
   // // is more up in the air.
 }
 
+namespace
+{
+  class OsprayImpl
+  {
+  public:
+    OsprayImpl()
+    {
+      const char* argv[] = { "" };
+      int argc = 0;
+      int init_error = ospInit(&argc, argv);
+      if (init_error != OSP_NO_ERROR)
+        throw init_error;
+    }
+
+    void writeImage(FieldHandle field, const std::string& filename, float cameraSteps)
+    {
+      auto facade(field->mesh()->getFacade());
+
+      std::cout << "hello ospray" << std::endl;
+      // image size
+      osp::vec2i imgSize;
+      imgSize.x = 1024; // width
+      imgSize.y = 768; // height
+
+      // camera
+      float cam_pos[] = { -1.f, 0.f, -5.f };
+      cam_pos[0] += cameraSteps;
+      float cam_up[] = { 0.f, 1.f, 0.f };
+      float cam_view[] = { 0.5f, 0.5f, 1.f };
+
+      std::vector<float> vertex, color;
+      //float maxColor = max;
+      {
+        for (const auto& node : facade->nodes())
+        {
+          auto point = node.point();
+          vertex.push_back(static_cast<float>(point.x()));
+          vertex.push_back(static_cast<float>(point.y()));
+          vertex.push_back(static_cast<float>(point.z()));
+          vertex.push_back(0);
+          color.push_back(0.8f);
+          color.push_back(0.5f);
+          color.push_back(0.5f);
+          color.push_back(1.0f);
+        }
+      }
+
+      std::vector<int32_t> index;
+      {
+        for (const auto& face : facade->faces())
+        {
+          auto nodes = face.nodeIndices();
+          index.push_back(static_cast<int32_t>(nodes[0]));
+          index.push_back(static_cast<int32_t>(nodes[1]));
+          index.push_back(static_cast<int32_t>(nodes[2]));
+        }
+      }
+
+      // create and setup camera
+      OSPCamera camera = ospNewCamera("perspective");
+      ospSetf(camera, "aspect", imgSize.x / (float)imgSize.y);
+      ospSet3fv(camera, "pos", cam_pos);
+      ospSet3fv(camera, "dir", cam_view);
+      ospSet3fv(camera, "up", cam_up);
+      ospCommit(camera); // commit each object to indicate modifications are done
+
+      // create and setup model and mesh
+      OSPGeometry mesh = ospNewGeometry("triangles");
+      OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
+      //OSPData data = ospNewData(4, OSP_FLOAT3A, vertex_example); // OSP_FLOAT3 format is also supported for vertex positions
+      ospCommit(data);
+      ospSetData(mesh, "vertex", data);
+
+      data = ospNewData(vertex.size() / 4, OSP_FLOAT4, &color[0]);
+      //data = ospNewData(4, OSP_FLOAT4, color_example);
+      ospCommit(data);
+      ospSetData(mesh, "vertex.color", data);
+
+      data = ospNewData(index.size() / 3, OSP_INT3, &index[0]); // OSP_INT4 format is also supported for triangle indices
+      //data = ospNewData(2, OSP_INT3, index_example); // OSP_INT4 format is also supported for triangle indices
+      ospCommit(data);
+      ospSetData(mesh, "index", data);
+
+      ospCommit(mesh);
+
+      OSPModel world = ospNewModel();
+      ospAddGeometry(world, mesh);
+      ospCommit(world);
+
+      // create renderer
+      OSPRenderer renderer = ospNewRenderer("scivis"); // choose Scientific Visualization renderer
+
+      // create and setup light for Ambient Occlusion
+      OSPLight light = ospNewLight(renderer, "ambient");
+      ospCommit(light);
+      OSPData lights = ospNewData(1, OSP_LIGHT, &light);
+      ospCommit(lights);
+
+      // complete setup of renderer
+      ospSet1i(renderer, "aoSamples", 1);
+      ospSet1f(renderer, "bgColor", 1.0f); // white, transparent
+      ospSetObject(renderer, "model", world);
+      ospSetObject(renderer, "camera", camera);
+      ospSetObject(renderer, "lights", lights);
+      ospCommit(renderer);
+
+      // create and setup framebuffer
+      OSPFrameBuffer framebuffer = ospNewFrameBuffer(imgSize, OSP_FB_SRGBA, OSP_FB_COLOR | /*OSP_FB_DEPTH |*/ OSP_FB_ACCUM);
+      ospFrameBufferClear(framebuffer, OSP_FB_COLOR | OSP_FB_ACCUM);
+
+      // render one frame
+      ospRenderFrame(framebuffer, renderer, OSP_FB_COLOR | OSP_FB_ACCUM);
+
+      // access framebuffer and write its content as PPM file
+      const uint32_t * fb = (uint32_t*)ospMapFrameBuffer(framebuffer, OSP_FB_COLOR);
+      ospUnmapFrameBuffer(fb, framebuffer);
+
+      // render 10 more frames, which are accumulated to result in a better converged image
+      for (int frames = 0; frames < 10; frames++)
+        ospRenderFrame(framebuffer, renderer, OSP_FB_COLOR | OSP_FB_ACCUM);
+
+      fb = (uint32_t*)ospMapFrameBuffer(framebuffer, OSP_FB_COLOR);
+
+      writePPM(filename.c_str(), imgSize, fb);
+      ospUnmapFrameBuffer(fb, framebuffer);
+    }
+  private:
+    void writePPM(const char *fileName, const osp::vec2i &size, const uint32_t *pixel)
+    {
+      FILE *file = fopen(fileName, "wb");
+      fprintf(file, "P6\n%i %i\n255\n", size.x, size.y);
+      unsigned char *out = (unsigned char *)alloca(3 * size.x);
+      for (int y = 0; y < size.y; y++) {
+        const unsigned char *in = (const unsigned char *)&pixel[(size.y - 1 - y)*size.x];
+        for (int x = 0; x < size.x; x++) {
+          out[3 * x + 0] = in[4 * x + 0];
+          out[3 * x + 1] = in[4 * x + 1];
+          out[3 * x + 2] = in[4 * x + 2];
+        }
+        fwrite(out, 3 * size.x, sizeof(char), file);
+      }
+      fprintf(file, "\n");
+      fclose(file);
+      std::cout << "wrote file " << fileName << std::endl;
+    }
+  };
+}
+
+
 void InterfaceWithOspray::execute()
 {
-  // auto field = getRequiredInput(Field);
-  // auto colorMap = getOptionalInput(ColorMapObject);
-  //
-  // if (needToExecute())
-  // {
-  //   updateAvailableRenderOptions(field);
-  //   auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);
-  //   sendOutput(SceneGraph, geom);
-  // }
+  auto field = getRequiredInput(Field);
+  auto colorMap = getOptionalInput(ColorMapObject);
+
+  if (needToExecute())
+  {
+    OsprayImpl impl;
+    // for (int inc : {1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
+    // {
+    //   osprayImpl::renderLatVol(latVol, inc*0.2, GetParam());
+    // }
+    impl.writeImage(field, "scirunOsprayOutput.ppm", 0.2);
+
+    //updateAvailableRenderOptions(field);
+    //auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);
+    //sendOutput(SceneGraph, geom);
+  }
 }
+
 #if 0
 RenderState GeometryBuilder::getNodeRenderState(
   boost::optional<boost::shared_ptr<ColorMap>> colorMap)
