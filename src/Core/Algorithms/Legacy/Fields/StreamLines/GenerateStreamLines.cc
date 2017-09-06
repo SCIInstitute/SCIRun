@@ -66,7 +66,7 @@ GenerateStreamLinesAlgo::GenerateStreamLinesAlgo()
   addParameter(Parameters::StreamlineMaxSteps, 2000);
   addOption(Parameters::StreamlineDirection, "Both", "Negative|Both|Positive");
   addOption(Parameters::StreamlineValue, "Seed index", "Seed value|Seed index|Integration index|Integration step|Distance from seed|Streamline length");
-  addParameter(Parameters::RemoveColinearPoints, false);
+  addParameter(Parameters::RemoveColinearPoints, true);
   addOption(Parameters::StreamlineMethod, "RungeKuttaFehlberg", "AdamsBashforth|Heun|RungeKutta|RungeKuttaFehlberg|CellWalk");
   // Estimate step size and tolerance automatically based on average edge length
   addParameter(Parameters::AutoParameters,false);
@@ -383,7 +383,7 @@ void GenerateStreamLinesAlgoP::parallel(int proc_num)
    if (success_[q] == false) return;
 	 
  const index_type start_gd = (global_dimension_ * proc_num)/numprocessors_+1;
- const index_type end_gd  = (global_dimension_ * (proc_num+1))/numprocessors_+1;
+ const index_type end_gd  = (global_dimension_ * (proc_num+1))/numprocessors_;
  
  outputs_[proc_num]=StreamLinesForCertainSeeds(start_gd, end_gd, proc_num);  
 }
@@ -401,16 +401,15 @@ bool GenerateStreamLinesAlgoP::run(FieldHandle input,
   omesh_ = output->vmesh();
   tolerance_ = algo_->get(Parameters::StreamlineTolerance).toDouble();
   step_size_ = algo_->get(Parameters::StreamlineStepSize).toDouble();
-  max_steps_ = algo_->get(Parameters::StreamlineMaxSteps).toInt();
+  max_steps_ = algo_->get(Parameters::StreamlineMaxSteps).toInt();  
   direction_ = convertDirectionOption(algo_->getOption(Parameters::StreamlineDirection));
   value_ = convertValue(algo_->getOption(Parameters::StreamlineValue));
   remove_colinear_pts_ = algo_->get(Parameters::RemoveColinearPoints).toBool();
   method_ = method;  
   input_=input;
-  
-  global_dimension_=seed_mesh_->num_nodes()-1;
-  if (global_dimension_<numprocessors_) numprocessors_=1;
-  if (numprocessors_>16) numprocessors_=16;
+  global_dimension_=seed_mesh_->num_nodes();
+  if (global_dimension_<numprocessors_ || numprocessors_<1) numprocessors_=1;
+  if (numprocessors_>16) numprocessors_=16;  // request from Dan White to limit the number of threads
   success_.resize(numprocessors_,true);
   outputs_.resize(numprocessors_, nullptr);
 
@@ -470,14 +469,11 @@ class GenerateStreamLinesAccAlgo {
 void GenerateStreamLinesAccAlgo::parallel(int proc_num)
 {
  success_[proc_num] = true;
- 
  for (int q=0; q<numprocessors_;q++)
-   if (success_[q] == false) return;
-	 
- const index_type start_gd = (global_dimension_ * proc_num)/numprocessors_+1;
- const index_type end_gd  = (global_dimension_ * (proc_num+1))/numprocessors_+1;
- 
- outputs_[proc_num]=StreamLinesForCertainSeeds(start_gd, end_gd, proc_num);  
+   if (success_[q] == false) return;	 
+ const index_type start_gd = (global_dimension_ * proc_num)/numprocessors_;
+ const index_type end_gd  = (global_dimension_ * (proc_num+1))/numprocessors_;
+ outputs_[proc_num]=StreamLinesForCertainSeeds(start_gd, end_gd, proc_num); 
 }
 
 
@@ -488,25 +484,21 @@ FieldHandle GenerateStreamLinesAccAlgo::StreamLinesForCertainSeeds(VMesh::Node::
   fi.make_lineardata();
   fi.make_linearmesh();
   fi.make_double();
-  FieldHandle out = CreateField(fi);
+  FieldHandle out;// = CreateField(fi);
   try
   {
     out = CreateField(fi);
     VField* ofield=out->vfield();
     VMesh*  omesh=out->vmesh();
-
     Point seed;
-
     VMesh::Elem::index_type elem;
     std::vector<Point> nodes;
     nodes.reserve(max_steps_);
-
     std::vector<Point>::iterator node_iter;
     VMesh::Node::index_type n1, n2;
     VMesh::Node::array_type newnodes(2);
 
     // Try to find the streamline for each seed point.
-
     for(VMesh::Node::index_type idx=from; idx<to; ++idx)
     { 
       seed_mesh_->get_center(seed, idx);
@@ -655,6 +647,7 @@ bool GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo, FieldHandle inpu
 {
   seed_field_ = seeds->vfield();
   seed_mesh_ = seeds->vmesh();
+  input_=input;
   field_ = input->vfield();
   mesh_ = input->vmesh();
   algo_=algo;
@@ -662,8 +655,9 @@ bool GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo, FieldHandle inpu
   direction_ = convertDirectionOption(algo_->getOption(Parameters::StreamlineDirection));
   value_ = convertValue(algo_->getOption(Parameters::StreamlineValue));
   remove_colinear_pts_ = algo_->get(Parameters::RemoveColinearPoints).toBool();  
-  global_dimension_=seed_mesh_->num_nodes()-1;
+  global_dimension_=seed_mesh_->num_nodes();
   if (global_dimension_<numprocessors_) numprocessors_=1;
+  if (numprocessors_>16) numprocessors_=16;
   success_.resize(numprocessors_,true);
   outputs_.resize(numprocessors_, nullptr);
   Parallel::RunTasks([this](int i) { parallel(i); }, numprocessors_);
@@ -673,6 +667,7 @@ bool GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo, FieldHandle inpu
     if (outputs_[j]  == nullptr) return false;
   }
   JoinFieldsAlgo JFalgo;
+  JFalgo.set(JoinFieldsAlgo::Tolerance,1e-8);
   JFalgo.set(JoinFieldsAlgo::MergeNodes,false);
   JFalgo.runImpl(outputs_, output);
   
