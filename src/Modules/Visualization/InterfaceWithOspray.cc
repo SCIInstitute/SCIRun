@@ -45,8 +45,8 @@ DEALINGS IN THE SOFTWARE.
 
 using namespace SCIRun;
 using namespace Modules::Visualization;
-// using namespace Core;
-// using namespace Datatypes;
+using namespace Core;
+using namespace Datatypes;
 // using namespace Thread;
 // using namespace Dataflow::Networks;
 // using namespace Algorithms;
@@ -60,80 +60,13 @@ using namespace Modules::Visualization;
 MODULE_INFO_DEF(InterfaceWithOspray, Visualization, SCIRun)
 
 #if 0
-namespace SCIRun {
-  namespace Modules {
-    namespace Visualization {
-namespace detail
-{
-class GeometryBuilder
-{
-public:
-  GeometryBuilder(const std::string& moduleId, ModuleStateHandle state) : moduleId_(moduleId), state_(state) {}
-  /// Constructs a geometry object (essentially a spire object) from the given
-  /// field data.
-  GeometryHandle buildGeometryObject(
-    FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
-    const GeometryIDGenerator& gid,
-    Interruptible* interruptible);
 
-  /// Mesh construction. Any of the functions below can modify the renderState.
-  /// This modified render state will be passed onto the renderer.
-  void renderNodes(
-    FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
-    Interruptible* interruptible,
-    RenderState state, GeometryHandle geom,
-    const std::string& id);
-
-  void renderFaces(
-    FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
-    Interruptible* interruptible,
-    RenderState state, GeometryHandle geom,
-    unsigned int approx_div,
-    const std::string& id);
-
-  void renderFacesLinear(
-    FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
-    Interruptible* interruptible,
-    RenderState state, GeometryHandle geom,
-    unsigned int approxDiv,
-    const std::string& id);
-
-  void addFaceGeom(
-    const std::vector<Point>  &points,
-    const std::vector<Vector> &normals,
-    bool withNormals,
-    uint32_t& iboBufferIndex,
-    spire::VarBuffer* iboBuffer,
-    spire::VarBuffer* vboBuffer,
-    ColorScheme colorScheme,
-    const std::vector<ColorRGB> &face_colors,
-    const RenderState& state);
-
-  void renderEdges(
-    FieldHandle field,
-    boost::optional<ColorMapHandle> colorMap,
-    Interruptible* interruptible,
-    RenderState state,
-    GeometryHandle geom,
-    const std::string& id);
-
-  RenderState getNodeRenderState(boost::optional<ColorMapHandle> colorMap);
-  RenderState getEdgeRenderState(boost::optional<ColorMapHandle> colorMap);
-  RenderState getFaceRenderState(boost::optional<ColorMapHandle> colorMap);
-private:
   float faceTransparencyValue_ = 0.65f;
   float edgeTransparencyValue_ = 0.65f;
   float nodeTransparencyValue_ = 0.65f;
   std::string moduleId_;
   ModuleStateHandle state_;
-};
-}}}}
 
-using namespace detail;
 #endif
 
 void InterfaceWithOspray::setStateDefaults()
@@ -204,7 +137,7 @@ namespace detail
         throw init_error;
     }
 
-    void writeImage(FieldHandle field, const std::string& filename, float cameraSteps)
+    void writeImage(FieldHandle field, const std::string& filename, float cameraSteps, boost::optional<ColorMapHandle> colorMap)
     {
       auto facade(field->mesh()->getFacade());
 
@@ -220,9 +153,10 @@ namespace detail
       float cam_up[] = { 0.f, 1.f, 0.f };
       float cam_view[] = { 0.5f, 0.5f, 1.f };
 
+      auto map = colorMap.value_or(nullptr);
       std::vector<float> vertex, color;
       auto vfield = field->vfield();
-      //float maxColor = max;
+
       {
         double value;
         for (const auto& node : facade->nodes())
@@ -234,11 +168,15 @@ namespace detail
           vertex.push_back(0);
 
           vfield->get_value(value, node.index());
-          //std::cout << "Node: " << node.index() << " value: " << value << std::endl;
 
-          color.push_back(value / 2.0f);
-          color.push_back(0.5f);
-          color.push_back(0.5f);
+          ColorRGB nodeColor(0.6, 0.2, 0.2);
+          if (map)
+          {
+            nodeColor = map->valueToColor(value);
+          }
+          color.push_back(nodeColor.r());
+          color.push_back(nodeColor.g());
+          color.push_back(nodeColor.b());
           color.push_back(1.0f);
         }
       }
@@ -362,7 +300,7 @@ void InterfaceWithOspray::execute()
     // {
     //   osprayImpl::renderLatVol(latVol, inc*0.2, GetParam());
     // }
-    impl_->writeImage(field, "scirunOsprayOutput.ppm", 0.2);
+    impl_->writeImage(field, "scirunOsprayOutput.ppm", 0.2, colorMap);
 
     //updateAvailableRenderOptions(field);
     //auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);
