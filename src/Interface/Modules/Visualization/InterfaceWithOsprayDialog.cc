@@ -34,8 +34,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Visualization;
-
-//using SCM = SCIRun::Modules::Visualization::ShowColorMap;
+using namespace SCIRun::Core::Algorithms::Visualization::Parameters;
 
 InterfaceWithOsprayDialog::InterfaceWithOsprayDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -44,67 +43,25 @@ InterfaceWithOsprayDialog::InterfaceWithOsprayDialog(const std::string& name, Mo
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-	// addRadioButtonGroupManager({ leftRadioButton_, bottomRadioButton_ }, SCM::DisplaySide);
-	// addRadioButtonGroupManager({ firstHalfRadioButton_, fullRadioButton_, secondHalfRadioButton_ }, SCM::DisplayLength);
-  // addSpinBoxManager(textSizeSpinner_, SCM::TextSize);
-	// addSpinBoxManager(ticksSpinner_, SCM::Labels);
-	// addDoubleSpinBoxManager(scaleSpinner_, SCM::Scale);
-	// addLineEditManager(unitsText_, SCM::Units);
-	// addSpinBoxManager(sigDigitsSpinner_, SCM::SignificantDigits);
-  //
-	// addSpinBoxManager(xTranslationSpin_, SCM::XTranslation);
-	// addSpinBoxManager(yTranslationSpin_, SCM::YTranslation);
-  //
-  // connect(textColorPushButton_, SIGNAL(clicked()), this, SLOT(getColor()));
-  // connectButtonsToExecuteSignal({ leftRadioButton_, bottomRadioButton_, firstHalfRadioButton_, fullRadioButton_, secondHalfRadioButton_, textColorPushButton_ } );
-  //
-  // addDoubleSpinBoxManager(&r_, SCM::TextRed);
-  // addDoubleSpinBoxManager(&g_, SCM::TextGreen);
-  // addDoubleSpinBoxManager(&b_, SCM::TextBlue);
-  //
-  // if (state_->getValue(SCM::TextRed).toDouble() < 0)
-  // {
-  //   text_color_ = QColor(255, 255, 255, 255);
-  //   r_.setValue(1.);
-  //   g_.setValue(1.);
-  //   b_.setValue(1.);
-  //   sigDigitsSpinner_->setValue(2);
-  //   textSizeSpinner_->setValue(8);
-  //   ticksSpinner_->setValue(10);
-  //   scaleSpinner_->setValue(1.);
-  //   xTranslationSpin_->setValue(0);
-  //   yTranslationSpin_->setValue(0);
-  // }
-  // else
-  // {
-  //   text_color_ = QColor(state_->getValue(SCM::TextRed).toDouble() * 255,
-  //     state_->getValue(SCM::TextGreen).toDouble() * 255,
-  //     state_->getValue(SCM::TextBlue).toDouble() * 255);
-  //   std::stringstream ss;
-  //   ss << "background-color: rgb(" << text_color_.red() << ", " <<
-  //     text_color_.green() << ", " << text_color_.blue() << ");";
-  //   textColorDisplayLabel_->setStyleSheet(QString::fromStdString(ss.str()));
-  // }
-  //
-  // createExecuteInteractivelyToggleAction();
-}
-/*
-void ShowColorMapDialog::pullSpecial()
-{
-  r_.setValue(state_->getValue(SCM::TextRed).toDouble());
-  g_.setValue(state_->getValue(SCM::TextGreen).toDouble());
-  b_.setValue(state_->getValue(SCM::TextBlue).toDouble());
-}
+  addSpinBoxManager(imageHeightSpinBox_, ImageHeight);
+  addSpinBoxManager(imageWidthSpinBox_, ImageWidth);
+  addSpinBoxManager(framesSpinBox_, FrameCount);
 
-void ShowColorMapDialog::getColor()
-{
-  text_color_ = QColorDialog::getColor(text_color_, this, "Choose text color");
-  std::stringstream ss;
-  ss << "background-color: rgb(" << text_color_.red() << ", " <<
-    text_color_.green() << ", " << text_color_.blue() << ");";
-  textColorDisplayLabel_->setStyleSheet(QString::fromStdString(ss.str()));
-  r_.setValue(text_color_.redF());
-  g_.setValue(text_color_.greenF());
-  b_.setValue(text_color_.blueF());
+  addDoubleSpinBoxManager(cameraPositionXDoubleSpinBox_, CameraPositionX);
+  addDoubleSpinBoxManager(cameraPositionYDoubleSpinBox_, CameraPositionY);
+  addDoubleSpinBoxManager(cameraPositionZDoubleSpinBox_, CameraPositionZ);
+  addDoubleSpinBoxManager(cameraUpXDoubleSpinBox_, CameraUpX);
+  addDoubleSpinBoxManager(cameraUpYDoubleSpinBox_, CameraUpY);
+  addDoubleSpinBoxManager(cameraUpZDoubleSpinBox_, CameraUpZ);
+  addDoubleSpinBoxManager(cameraViewXDoubleSpinBox_, CameraViewX);
+  addDoubleSpinBoxManager(cameraViewYDoubleSpinBox_, CameraViewY);
+  addDoubleSpinBoxManager(cameraViewZDoubleSpinBox_, CameraViewZ);
+  addDoubleSpinBoxManager(defaultColorRDoubleSpinBox_, DefaultColorR);
+  addDoubleSpinBoxManager(defaultColorGDoubleSpinBox_, DefaultColorG);
+  addDoubleSpinBoxManager(defaultColorBDoubleSpinBox_, DefaultColorB);
+  addDoubleSpinBoxManager(backgroundColorRDoubleSpinBox_, BackgroundColorR);
+  addDoubleSpinBoxManager(backgroundColorGDoubleSpinBox_, BackgroundColorG);
+  addDoubleSpinBoxManager(backgroundColorBDoubleSpinBox_, BackgroundColorB);
+
+  createExecuteInteractivelyToggleAction();
 }
-*/

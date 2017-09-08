@@ -118,7 +118,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -233,7 +233,7 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -267,8 +267,224 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>18</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>BackgroundColorB</name>
+								</first>
+								<second>
+									<name>BackgroundColorB</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>BackgroundColorG</name>
+								</first>
+								<second>
+									<name>BackgroundColorG</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>BackgroundColorR</name>
+								</first>
+								<second>
+									<name>BackgroundColorR</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraPositionX</name>
+								</first>
+								<second>
+									<name>CameraPositionX</name>
+									<value>
+										<which>1</which>
+										<value>-1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraPositionY</name>
+								</first>
+								<second>
+									<name>CameraPositionY</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraPositionZ</name>
+								</first>
+								<second>
+									<name>CameraPositionZ</name>
+									<value>
+										<which>1</which>
+										<value>-5.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraUpX</name>
+								</first>
+								<second>
+									<name>CameraUpX</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraUpY</name>
+								</first>
+								<second>
+									<name>CameraUpY</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraUpZ</name>
+								</first>
+								<second>
+									<name>CameraUpZ</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewX</name>
+								</first>
+								<second>
+									<name>CameraViewX</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-001</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewY</name>
+								</first>
+								<second>
+									<name>CameraViewY</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-001</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewZ</name>
+								</first>
+								<second>
+									<name>CameraViewZ</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DefaultColorB</name>
+								</first>
+								<second>
+									<name>DefaultColorB</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-001</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DefaultColorG</name>
+								</first>
+								<second>
+									<name>DefaultColorG</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-001</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DefaultColorR</name>
+								</first>
+								<second>
+									<name>DefaultColorR</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-001</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FrameCount</name>
+								</first>
+								<second>
+									<name>FrameCount</name>
+									<value>
+										<which>0</which>
+										<value>10</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ImageHeight</name>
+								</first>
+								<second>
+									<name>ImageHeight</name>
+									<value>
+										<which>0</which>
+										<value>4000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ImageWidth</name>
+								</first>
+								<second>
+									<name>ImageWidth</name>
+									<value>
+										<which>0</which>
+										<value>6000</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -305,7 +521,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+00</value>
+										<value>2.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -317,7 +533,7 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -433,50 +649,50 @@
 		<item class_id="17" tracking_level="0" version="0">
 			<first>ConvertQuadSurfToTriSurf:0</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>-3.04000000000000000e+02</first>
-				<second>-1.52000000000000000e+02</second>
+				<first>-3.04000000000000000e+002</first>
+				<second>-1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:0</first>
 			<second>
-				<first>-2.28000000000000000e+02</first>
-				<second>-3.80000000000000000e+02</second>
+				<first>-2.28000000000000000e+002</first>
+				<second>-3.80000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>-3.04000000000000000e+02</first>
-				<second>-5.32000000000000000e+02</second>
+				<first>-3.04000000000000000e+002</first>
+				<second>-5.32000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:0</first>
 			<second>
-				<first>5.00000000000000000e+01</first>
-				<second>5.00000000000000000e+01</second>
+				<first>5.00000000000000000e+001</first>
+				<second>5.00000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldBoundary:0</first>
 			<second>
-				<first>-7.60000000000000000e+01</first>
-				<second>-2.28000000000000000e+02</second>
+				<first>-7.60000000000000000e+001</first>
+				<second>-2.28000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>InterfaceWithOspray:0</first>
 			<second>
-				<first>-1.52000000000000000e+02</first>
-				<second>0.00000000000000000e+00</second>
+				<first>-5.32000000000000000e+002</first>
+				<second>7.60000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>RescaleColorMap:0</first>
 			<second>
-				<first>5.00000000000000000e+01</first>
-				<second>1.60000000000000000e+02</second>
+				<first>5.00000000000000000e+001</first>
+				<second>1.60000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>

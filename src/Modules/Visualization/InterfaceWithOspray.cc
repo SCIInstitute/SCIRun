@@ -29,95 +29,64 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Visualization/InterfaceWithOspray.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
-// #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/ColorMap.h>
-// #include <Core/GeometryPrimitives/Vector.h>
-// #include <Core/GeometryPrimitives/Tensor.h>
-// #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <ospray/ospray.h>
 
 using namespace SCIRun;
+using namespace Dataflow::Networks;
 using namespace Modules::Visualization;
 using namespace Core;
+using namespace Core::Algorithms;
+using namespace Visualization;
 using namespace Datatypes;
-// using namespace Thread;
-// using namespace Dataflow::Networks;
-// using namespace Algorithms;
-// using namespace Visualization;
-// using namespace Geometry;
-// using namespace Graphics;
-// using namespace Graphics::Datatypes;
 
-// ALGORITHM_PARAMETER_DEF(Visualization, CylinderRadius);
+ALGORITHM_PARAMETER_DEF(Visualization, ImageHeight);
+ALGORITHM_PARAMETER_DEF(Visualization, ImageWidth);
+ALGORITHM_PARAMETER_DEF(Visualization, CameraPositionX);
+ALGORITHM_PARAMETER_DEF(Visualization, CameraPositionY);
+ALGORITHM_PARAMETER_DEF(Visualization, CameraPositionZ);
+ALGORITHM_PARAMETER_DEF(Visualization, CameraUpX);
+ALGORITHM_PARAMETER_DEF(Visualization, CameraUpY);
+ALGORITHM_PARAMETER_DEF(Visualization, CameraUpZ);
+ALGORITHM_PARAMETER_DEF(Visualization, CameraViewX);
+ALGORITHM_PARAMETER_DEF(Visualization, CameraViewY);
+ALGORITHM_PARAMETER_DEF(Visualization, CameraViewZ);
+ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorR);
+ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorG);
+ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorB);
+ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorR);
+ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorG);
+ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorB);
+ALGORITHM_PARAMETER_DEF(Visualization, FrameCount);
 
 MODULE_INFO_DEF(InterfaceWithOspray, Visualization, SCIRun)
 
-#if 0
-
-  float faceTransparencyValue_ = 0.65f;
-  float edgeTransparencyValue_ = 0.65f;
-  float nodeTransparencyValue_ = 0.65f;
-  std::string moduleId_;
-  ModuleStateHandle state_;
-
-#endif
-
 void InterfaceWithOspray::setStateDefaults()
 {
-  // auto state = get_state();
-  // state->setValue(NodesAvailable, true);
-  // state->setValue(EdgesAvailable, true);
-  // state->setValue(FacesAvailable, true);
-  //
-  // state->setValue(ShowNodes, false);
-  // state->setValue(ShowEdges, true);
-  // state->setValue(ShowFaces, true);
-  // state->setValue(NodeTransparency, false);
-  // state->setValue(EdgeTransparency, false);
-  // state->setValue(FaceTransparency, false);
-  // state->setValue(DefaultMeshColor, ColorRGB(0.5, 0.5, 0.5).toString());
-  //
-  // //state->setValue(NodeAsPoints, true); //not used
-  // state->setValue(NodeAsSpheres, 0);
-  // //state->setValue(EdgesAsLines, true); //not used
-  // state->setValue(EdgesAsCylinders, 0);
-  // state->setValue(FaceTransparencyValue, 0.65f);
-  // state->setValue(EdgeTransparencyValue, 0.65f);
-  // state->setValue(NodeTransparencyValue, 0.65f);
-  // state->setValue(FacesColoring, 1);
-  // state->setValue(NodesColoring, 1);
-  // state->setValue(EdgesColoring, 1);
-  // state->setValue(SphereScaleValue, 0.03);
-  // state->setValue(SphereResolution, 5);
-  // state->setValue(CylinderRadius, 0.1);
-  // state->setValue(CylinderResolution, 5);
-  //
-  // state->setValue(DefaultTextColor, ColorRGB(1.0, 1.0, 1.0).toString());
-  // state->setValue(ShowText, false);
-  // state->setValue(ShowDataValues, true);
-  // state->setValue(ShowNodeIndices, false);
-  // state->setValue(ShowEdgeIndices, false);
-  // state->setValue(ShowFaceIndices, false);
-  // state->setValue(ShowCellIndices, false);
-  // state->setValue(CullBackfacingText, false);
-  // state->setValue(TextAlwaysVisible, false);
-  // state->setValue(RenderAsLocation, false);
-  // state->setValue(TextSize, 8);
-  // state->setValue(TextPrecision, 3);
-  // state->setValue(TextColoring, 0);
-  //
-  // state->setValue(UseFaceNormals, false);
-  // state->setValue(FaceInvertNormals, false);
-  //
-  // state->setValue(FieldName, std::string());
-  //
-  // // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
-  // // COLOR_CONVERT. USE_DEFAULT_COLOR is selected by default. COLOR_CONVERT
-  // // is more up in the air.
+  auto state = get_state();
+  state->setValue(Parameters::ImageHeight, 768);
+  state->setValue(Parameters::ImageWidth, 1024);
+  state->setValue(Parameters::CameraPositionX, 5.0);
+  state->setValue(Parameters::CameraPositionY, 5.0);
+  state->setValue(Parameters::CameraPositionZ, 5.0);
+  state->setValue(Parameters::CameraUpX, 0.0);
+  state->setValue(Parameters::CameraUpY, 0.0);
+  state->setValue(Parameters::CameraUpZ, 1.0);
+  state->setValue(Parameters::CameraViewX, 0.0);
+  state->setValue(Parameters::CameraViewY, 0.0);
+  state->setValue(Parameters::CameraViewZ, 0.0);
+  state->setValue(Parameters::DefaultColorR, 0.5);
+  state->setValue(Parameters::DefaultColorG, 0.5);
+  state->setValue(Parameters::DefaultColorB, 0.5);
+  state->setValue(Parameters::BackgroundColorR, 0.0);
+  state->setValue(Parameters::BackgroundColorG, 0.0);
+  state->setValue(Parameters::BackgroundColorB, 0.0);
+  state->setValue(Parameters::FrameCount, 10);
 }
 
 namespace detail
@@ -134,21 +103,19 @@ namespace detail
         throw init_error;
     }
 
-    void writeImage(FieldHandle field, const std::string& filename, float cameraSteps, boost::optional<ColorMapHandle> colorMap)
+    void writeImage(FieldHandle field, const std::string& filename, ModuleStateHandle state, boost::optional<ColorMapHandle> colorMap)
     {
       auto facade(field->mesh()->getFacade());
 
-      std::cout << "hello ospray" << std::endl;
       // image size
       osp::vec2i imgSize;
-      imgSize.x = 1024; // width
-      imgSize.y = 768; // height
+      imgSize.x = state->getValue(Parameters::ImageWidth).toInt(); 
+      imgSize.y = state->getValue(Parameters::ImageHeight).toInt();
 
       // camera
-      float cam_pos[] = { -1.f, 0.f, -5.f };
-      cam_pos[0] += cameraSteps;
-      float cam_up[] = { 0.f, 1.f, 0.f };
-      float cam_view[] = { 0.5f, 0.5f, 1.f };
+      float cam_pos[] = { state->getValue(Parameters::CameraPositionX).toDouble(), state->getValue(Parameters::CameraPositionY).toDouble(), state->getValue(Parameters::CameraPositionZ).toDouble() };
+      float cam_up[] = { state->getValue(Parameters::CameraUpX).toDouble(), state->getValue(Parameters::CameraUpY).toDouble(), state->getValue(Parameters::CameraUpZ).toDouble() };
+      float cam_view[] = { state->getValue(Parameters::CameraViewX).toDouble(), state->getValue(Parameters::CameraViewY).toDouble(), state->getValue(Parameters::CameraViewZ).toDouble() };
 
       auto map = colorMap.value_or(nullptr);
       std::vector<float> vertex, color;
@@ -166,14 +133,14 @@ namespace detail
 
           vfield->get_value(value, node.index());
 
-          ColorRGB nodeColor(0.6, 0.2, 0.2);
+          ColorRGB nodeColor(state->getValue(Parameters::DefaultColorR).toDouble(), state->getValue(Parameters::DefaultColorG).toDouble(), state->getValue(Parameters::DefaultColorB).toDouble());
           if (map)
           {
             nodeColor = map->valueToColor(value);
           }
-          color.push_back(nodeColor.r());
-          color.push_back(nodeColor.g());
-          color.push_back(nodeColor.b());
+          color.push_back(static_cast<float>(nodeColor.r()));
+          color.push_back(static_cast<float>(nodeColor.g()));
+          color.push_back(static_cast<float>(nodeColor.b()));
           color.push_back(1.0f);
         }
       }
@@ -200,17 +167,14 @@ namespace detail
       // create and setup model and mesh
       OSPGeometry mesh = ospNewGeometry("triangles");
       OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
-      //OSPData data = ospNewData(4, OSP_FLOAT3A, vertex_example); // OSP_FLOAT3 format is also supported for vertex positions
       ospCommit(data);
       ospSetData(mesh, "vertex", data);
 
       data = ospNewData(vertex.size() / 4, OSP_FLOAT4, &color[0]);
-      //data = ospNewData(4, OSP_FLOAT4, color_example);
       ospCommit(data);
       ospSetData(mesh, "vertex.color", data);
 
       data = ospNewData(index.size() / 3, OSP_INT3, &index[0]); // OSP_INT4 format is also supported for triangle indices
-      //data = ospNewData(2, OSP_INT3, index_example); // OSP_INT4 format is also supported for triangle indices
       ospCommit(data);
       ospSetData(mesh, "index", data);
 
@@ -231,7 +195,9 @@ namespace detail
 
       // complete setup of renderer
       ospSet1i(renderer, "aoSamples", 1);
-      ospSet1f(renderer, "bgColor", 1.0f); // white, transparent
+      ospSet3f(renderer, "bgColor", state->getValue(Parameters::BackgroundColorR).toDouble(),
+        state->getValue(Parameters::BackgroundColorG).toDouble(), 
+        state->getValue(Parameters::BackgroundColorB).toDouble());
       ospSetObject(renderer, "model", world);
       ospSetObject(renderer, "camera", camera);
       ospSetObject(renderer, "lights", lights);
@@ -244,16 +210,13 @@ namespace detail
       // render one frame
       ospRenderFrame(framebuffer, renderer, OSP_FB_COLOR | OSP_FB_ACCUM);
 
-      // access framebuffer and write its content as PPM file
-      const uint32_t * fb = (uint32_t*)ospMapFrameBuffer(framebuffer, OSP_FB_COLOR);
-      ospUnmapFrameBuffer(fb, framebuffer);
-
-      // render 10 more frames, which are accumulated to result in a better converged image
-      for (int frames = 0; frames < 10; frames++)
+      const int frameCount = state->getValue(Parameters::FrameCount).toInt();
+      // render N more frames, which are accumulated to result in a better converged image
+      for (int frames = 0; frames < frameCount-1; frames++)
         ospRenderFrame(framebuffer, renderer, OSP_FB_COLOR | OSP_FB_ACCUM);
 
-      fb = (uint32_t*)ospMapFrameBuffer(framebuffer, OSP_FB_COLOR);
-
+      // access framebuffer and write its content as PPM file
+      const uint32_t * fb = (uint32_t*)ospMapFrameBuffer(framebuffer, OSP_FB_COLOR);
       writePPM(filename.c_str(), imgSize, fb);
       ospUnmapFrameBuffer(fb, framebuffer);
     }
@@ -293,58 +256,12 @@ void InterfaceWithOspray::execute()
 
   if (needToExecute())
   {
-    // for (int inc : {1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
-    // {
-    //   osprayImpl::renderLatVol(latVol, inc*0.2, GetParam());
-    // }
-    impl_->writeImage(field, "scirunOsprayOutput.ppm", 0.2, colorMap);
+    
+    auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
 
-    //updateAvailableRenderOptions(field);
+    impl_->writeImage(field, "scirunOsprayOutput_" + isoString + ".ppm", get_state(), colorMap);
+    
     //auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);
     //sendOutput(SceneGraph, geom);
   }
 }
-
-#if 0
-
-const AlgorithmParameterName ShowField::FieldName("FieldName");
-const AlgorithmParameterName ShowField::ShowNodes("ShowNodes");
-const AlgorithmParameterName ShowField::ShowEdges("ShowEdges");
-const AlgorithmParameterName ShowField::ShowFaces("ShowFaces");
-const AlgorithmParameterName ShowField::NodesAvailable("NodesAvailable");
-const AlgorithmParameterName ShowField::EdgesAvailable("EdgesAvailable");
-const AlgorithmParameterName ShowField::FacesAvailable("FacesAvailable");
-const AlgorithmParameterName ShowField::NodeTransparency("NodeTransparency");
-const AlgorithmParameterName ShowField::EdgeTransparency("EdgeTransparency");
-const AlgorithmParameterName ShowField::FaceTransparency("FaceTransparency");
-const AlgorithmParameterName ShowField::FaceInvertNormals("FaceInvertNormals");
-const AlgorithmParameterName ShowField::NodeAsPoints("NodeAsPoints");
-const AlgorithmParameterName ShowField::NodeAsSpheres("NodeAsSpheres");
-const AlgorithmParameterName ShowField::EdgesAsLines("EdgesAsLines");
-const AlgorithmParameterName ShowField::EdgesAsCylinders("EdgesAsCylinders");
-const AlgorithmParameterName ShowField::DefaultMeshColor("DefaultMeshColor");
-const AlgorithmParameterName ShowField::FaceTransparencyValue("FaceTransparencyValue");
-const AlgorithmParameterName ShowField::EdgeTransparencyValue("EdgeTransparencyValue");
-const AlgorithmParameterName ShowField::NodeTransparencyValue("NodeTransparencyValue");
-const AlgorithmParameterName ShowField::FacesColoring("FacesColoring");
-const AlgorithmParameterName ShowField::NodesColoring("NodesColoring");
-const AlgorithmParameterName ShowField::EdgesColoring("EdgesColoring");
-const AlgorithmParameterName ShowField::SphereScaleValue("SphereScaleValue");
-const AlgorithmParameterName ShowField::CylinderRadius("CylinderRadius");
-const AlgorithmParameterName ShowField::CylinderResolution("CylinderResolution");
-const AlgorithmParameterName ShowField::SphereResolution("SphereResolution");
-const AlgorithmParameterName ShowField::DefaultTextColor("DefaultTextColor");
-const AlgorithmParameterName ShowField::ShowText("ShowText");
-const AlgorithmParameterName ShowField::ShowDataValues("ShowDataValues");
-const AlgorithmParameterName ShowField::ShowNodeIndices("ShowNodeIndices");
-const AlgorithmParameterName ShowField::ShowEdgeIndices("ShowEdgeIndices");
-const AlgorithmParameterName ShowField::ShowFaceIndices("ShowFaceIndices");
-const AlgorithmParameterName ShowField::ShowCellIndices("ShowCellIndices");
-const AlgorithmParameterName ShowField::CullBackfacingText("CullBackfacingText");
-const AlgorithmParameterName ShowField::TextAlwaysVisible("TextAlwaysVisible");
-const AlgorithmParameterName ShowField::RenderAsLocation("RenderAsLocation");
-const AlgorithmParameterName ShowField::TextSize("TextSize");
-const AlgorithmParameterName ShowField::TextPrecision("TextPrecision");
-const AlgorithmParameterName ShowField::TextColoring("TextColoring");
-const AlgorithmParameterName ShowField::UseFaceNormals("UseFaceNormals");
-#endif

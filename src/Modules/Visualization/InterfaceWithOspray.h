@@ -46,7 +46,24 @@ namespace SCIRun {
     {
       namespace Visualization
       {
-        ALGORITHM_PARAMETER_DECL(CylinderRadius);
+        ALGORITHM_PARAMETER_DECL(ImageHeight);
+        ALGORITHM_PARAMETER_DECL(ImageWidth);
+        ALGORITHM_PARAMETER_DECL(CameraPositionX);
+        ALGORITHM_PARAMETER_DECL(CameraPositionY);
+        ALGORITHM_PARAMETER_DECL(CameraPositionZ);
+        ALGORITHM_PARAMETER_DECL(CameraUpX);
+        ALGORITHM_PARAMETER_DECL(CameraUpY);
+        ALGORITHM_PARAMETER_DECL(CameraUpZ);
+        ALGORITHM_PARAMETER_DECL(CameraViewX);
+        ALGORITHM_PARAMETER_DECL(CameraViewY);
+        ALGORITHM_PARAMETER_DECL(CameraViewZ);
+        ALGORITHM_PARAMETER_DECL(DefaultColorR);
+        ALGORITHM_PARAMETER_DECL(DefaultColorG);
+        ALGORITHM_PARAMETER_DECL(DefaultColorB);
+        ALGORITHM_PARAMETER_DECL(BackgroundColorR);
+        ALGORITHM_PARAMETER_DECL(BackgroundColorG);
+        ALGORITHM_PARAMETER_DECL(BackgroundColorB);
+        ALGORITHM_PARAMETER_DECL(FrameCount);
       }
     }
   }
@@ -56,54 +73,11 @@ namespace SCIRun {
 
       class SCISHARE InterfaceWithOspray : public Dataflow::Networks::GeometryGeneratingModule,
         public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
-        public Has1OutputPort<GeometryPortTag>,
-        public Core::Thread::Interruptible
+        public Has1OutputPort<GeometryPortTag>
       {
       public:
         InterfaceWithOspray();
         virtual void execute() override;
-
-        // static const Core::Algorithms::AlgorithmParameterName FieldName;
-        // static const Core::Algorithms::AlgorithmParameterName NodesAvailable;
-        // static const Core::Algorithms::AlgorithmParameterName EdgesAvailable;
-        // static const Core::Algorithms::AlgorithmParameterName FacesAvailable;
-        // static const Core::Algorithms::AlgorithmParameterName ShowNodes;
-        // static const Core::Algorithms::AlgorithmParameterName ShowEdges;
-        // static const Core::Algorithms::AlgorithmParameterName ShowFaces;
-        // static const Core::Algorithms::AlgorithmParameterName NodeTransparency;
-        // static const Core::Algorithms::AlgorithmParameterName EdgeTransparency;
-        // static const Core::Algorithms::AlgorithmParameterName FaceTransparency;
-        // static const Core::Algorithms::AlgorithmParameterName FaceInvertNormals;
-        // static const Core::Algorithms::AlgorithmParameterName NodeAsPoints;
-        // static const Core::Algorithms::AlgorithmParameterName NodeAsSpheres;
-        // static const Core::Algorithms::AlgorithmParameterName EdgesAsLines;
-        // static const Core::Algorithms::AlgorithmParameterName EdgesAsCylinders;
-        // static const Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
-        // static const Core::Algorithms::AlgorithmParameterName FaceTransparencyValue;
-        // static const Core::Algorithms::AlgorithmParameterName EdgeTransparencyValue;
-        // static const Core::Algorithms::AlgorithmParameterName NodeTransparencyValue;
-        // static const Core::Algorithms::AlgorithmParameterName FacesColoring;
-        // static const Core::Algorithms::AlgorithmParameterName NodesColoring;
-        // static const Core::Algorithms::AlgorithmParameterName EdgesColoring;
-        // static const Core::Algorithms::AlgorithmParameterName SphereScaleValue;
-        // static const Core::Algorithms::AlgorithmParameterName CylinderResolution;
-        // static const Core::Algorithms::AlgorithmParameterName SphereResolution;
-        // static const Core::Algorithms::AlgorithmParameterName CylinderRadius;
-        // static const Core::Algorithms::AlgorithmParameterName DefaultTextColor;
-        // static const Core::Algorithms::AlgorithmParameterName ShowText;
-        // static const Core::Algorithms::AlgorithmParameterName ShowDataValues;
-        // static const Core::Algorithms::AlgorithmParameterName ShowNodeIndices;
-        // static const Core::Algorithms::AlgorithmParameterName ShowEdgeIndices;
-        // static const Core::Algorithms::AlgorithmParameterName ShowFaceIndices;
-        // static const Core::Algorithms::AlgorithmParameterName ShowCellIndices;
-        // static const Core::Algorithms::AlgorithmParameterName CullBackfacingText;
-        // static const Core::Algorithms::AlgorithmParameterName TextAlwaysVisible;
-        // static const Core::Algorithms::AlgorithmParameterName RenderAsLocation;
-        // static const Core::Algorithms::AlgorithmParameterName TextSize;
-        // static const Core::Algorithms::AlgorithmParameterName TextPrecision;
-        // static const Core::Algorithms::AlgorithmParameterName TextColoring;
-        // static const Core::Algorithms::AlgorithmParameterName UseFaceNormals;
-
 
         INPUT_PORT(0, Field, Field);
         INPUT_PORT(1, ColorMapObject, ColorMap);
@@ -116,10 +90,8 @@ namespace SCIRun {
         boost::shared_ptr<detail::OsprayImpl> impl_;
       };
 
-
-
-    } // Visualization
-  } // Modules
-} // SCIRun
+    } 
+  } 
+} 
 
 #endif
