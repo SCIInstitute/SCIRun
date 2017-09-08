@@ -29,11 +29,13 @@
 #include <Interface/Modules/Visualization/InterfaceWithOsprayDialog.h>
 #include <Modules/Visualization/InterfaceWithOspray.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Modules::Visualization;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Visualization::Parameters;
 
 InterfaceWithOsprayDialog::InterfaceWithOsprayDialog(const std::string& name, ModuleStateHandle state,
@@ -62,6 +64,29 @@ InterfaceWithOsprayDialog::InterfaceWithOsprayDialog(const std::string& name, Mo
   addDoubleSpinBoxManager(backgroundColorRDoubleSpinBox_, BackgroundColorR);
   addDoubleSpinBoxManager(backgroundColorGDoubleSpinBox_, BackgroundColorG);
   addDoubleSpinBoxManager(backgroundColorBDoubleSpinBox_, BackgroundColorB);
+  addCheckBoxManager(showImageCheckBox_, ShowImageInWindow);
 
   createExecuteInteractivelyToggleAction();
+
+  state_->connectSpecificStateChanged(Variables::Filename, [this]() { imageFilenameChanged(); });
+  connect(this, SIGNAL(imageFilenameChanged()), this, SLOT(showImage()));
+}
+
+void InterfaceWithOsprayDialog::showImage()
+{
+  if (state_->getValue(ShowImageInWindow).toBool())
+  {
+    auto filename(QString::fromStdString(transient_value_cast<std::string>(state_->getTransientValue(Variables::Filename))));
+    QImage image(filename);
+    auto myLabel = new QLabel(parentWidget());
+    myLabel->setPixmap(QPixmap::fromImage(image));
+    myLabel->resize(myLabel->pixmap()->size());
+
+    auto d = new QDialog;
+    d->setWindowTitle("Ospray Scene Image");
+    auto layout = new QHBoxLayout;
+    layout->addWidget(myLabel);
+    d->setLayout(layout);
+    d->show();
+  }
 }

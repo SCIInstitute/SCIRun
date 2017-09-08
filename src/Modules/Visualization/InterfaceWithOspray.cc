@@ -31,8 +31,11 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <ospray/ospray.h>
@@ -63,6 +66,7 @@ ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorR);
 ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorG);
 ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorB);
 ALGORITHM_PARAMETER_DEF(Visualization, FrameCount);
+ALGORITHM_PARAMETER_DEF(Visualization, ShowImageInWindow);
 
 MODULE_INFO_DEF(InterfaceWithOspray, Visualization, SCIRun)
 
@@ -87,6 +91,7 @@ void InterfaceWithOspray::setStateDefaults()
   state->setValue(Parameters::BackgroundColorG, 0.0);
   state->setValue(Parameters::BackgroundColorB, 0.0);
   state->setValue(Parameters::FrameCount, 10);
+  state->setValue(Parameters::ShowImageInWindow, true);
 }
 
 namespace detail
@@ -225,15 +230,17 @@ namespace detail
     {
       FILE *file = fopen(fileName, "wb");
       fprintf(file, "P6\n%i %i\n255\n", size.x, size.y);
-      unsigned char *out = (unsigned char *)alloca(3 * size.x);
-      for (int y = 0; y < size.y; y++) {
+      std::vector<unsigned char> out(3 * size.x);
+      for (int y = 0; y < size.y; y++) 
+      {
         const unsigned char *in = (const unsigned char *)&pixel[(size.y - 1 - y)*size.x];
-        for (int x = 0; x < size.x; x++) {
+        for (int x = 0; x < size.x; x++) 
+        {
           out[3 * x + 0] = in[4 * x + 0];
           out[3 * x + 1] = in[4 * x + 1];
           out[3 * x + 2] = in[4 * x + 2];
         }
-        fwrite(out, 3 * size.x, sizeof(char), file);
+        fwrite(&out[0], 3 * size.x, sizeof(char), file);
       }
       fprintf(file, "\n");
       fclose(file);
@@ -256,10 +263,16 @@ void InterfaceWithOspray::execute()
 
   if (needToExecute())
   {
-    
-    auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
+    FieldInformation info(field);
 
-    impl_->writeImage(field, "scirunOsprayOutput_" + isoString + ".ppm", get_state(), colorMap);
+    if (!info.is_trisurfmesh())
+      THROW_INVALID_ARGUMENT("Module currently only works with trisurfs.");
+
+    auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
+    auto filename = "scirunOsprayOutput_" + isoString + ".ppm";
+    remark("Saving output to " + filename);
+    impl_->writeImage(field, filename, get_state(), colorMap);
+    get_state()->setTransientValue(Variables::Filename, filename);
     
     //auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);
     //sendOutput(SceneGraph, geom);

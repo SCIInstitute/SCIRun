@@ -45,9 +45,11 @@ public:
   InterfaceWithOsprayDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
-protected:
-private Q_SLOTS:
 
+Q_SIGNALS:
+  void imageFilenameChanged();
+private Q_SLOTS:
+  void showImage();
 };
 
 }

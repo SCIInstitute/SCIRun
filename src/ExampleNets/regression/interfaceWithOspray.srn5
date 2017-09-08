@@ -267,7 +267,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>18</count>
+							<count>19</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -337,7 +337,7 @@
 									<name>CameraPositionZ</name>
 									<value>
 										<which>1</which>
-										<value>-5.00000000000000000e+000</value>
+										<value>-2.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -469,7 +469,7 @@
 									<name>ImageHeight</name>
 									<value>
 										<which>0</which>
-										<value>4000</value>
+										<value>600</value>
 									</value>
 								</second>
 							</item>
@@ -481,7 +481,19 @@
 									<name>ImageWidth</name>
 									<value>
 										<which>0</which>
-										<value>6000</value>
+										<value>800</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowImageInWindow</name>
+								</first>
+								<second>
+									<name>ShowImageInWindow</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
