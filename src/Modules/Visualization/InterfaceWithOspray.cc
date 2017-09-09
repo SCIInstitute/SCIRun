@@ -117,10 +117,12 @@ namespace detail
       imgSize.x = state->getValue(Parameters::ImageWidth).toInt(); 
       imgSize.y = state->getValue(Parameters::ImageHeight).toInt();
 
+      auto toFloat = [state](const Name& name) { return static_cast<float>(state->getValue(name).toDouble()); };
+
       // camera
-      float cam_pos[] = { state->getValue(Parameters::CameraPositionX).toDouble(), state->getValue(Parameters::CameraPositionY).toDouble(), state->getValue(Parameters::CameraPositionZ).toDouble() };
-      float cam_up[] = { state->getValue(Parameters::CameraUpX).toDouble(), state->getValue(Parameters::CameraUpY).toDouble(), state->getValue(Parameters::CameraUpZ).toDouble() };
-      float cam_view[] = { state->getValue(Parameters::CameraViewX).toDouble(), state->getValue(Parameters::CameraViewY).toDouble(), state->getValue(Parameters::CameraViewZ).toDouble() };
+      float cam_pos[] = { toFloat(Parameters::CameraPositionX), toFloat(Parameters::CameraPositionY), toFloat(Parameters::CameraPositionZ) };
+      float cam_up[] = { toFloat(Parameters::CameraUpX), toFloat(Parameters::CameraUpY), toFloat(Parameters::CameraUpZ) };
+      float cam_view[] = { toFloat(Parameters::CameraViewX), toFloat(Parameters::CameraViewY), toFloat(Parameters::CameraViewZ) };
 
       auto map = colorMap.value_or(nullptr);
       std::vector<float> vertex, color;
@@ -200,9 +202,9 @@ namespace detail
 
       // complete setup of renderer
       ospSet1i(renderer, "aoSamples", 1);
-      ospSet3f(renderer, "bgColor", state->getValue(Parameters::BackgroundColorR).toDouble(),
-        state->getValue(Parameters::BackgroundColorG).toDouble(), 
-        state->getValue(Parameters::BackgroundColorB).toDouble());
+      ospSet3f(renderer, "bgColor", toFloat(Parameters::BackgroundColorR),
+        toFloat(Parameters::BackgroundColorG), 
+        toFloat(Parameters::BackgroundColorB));
       ospSetObject(renderer, "model", world);
       ospSetObject(renderer, "camera", camera);
       ospSetObject(renderer, "lights", lights);
