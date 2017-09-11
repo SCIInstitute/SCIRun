@@ -26,31 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVDIALOG_H
-#define INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVDIALOG_H
+#ifndef INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVSVDDIALOG_H
+#define INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVSVDDIALOG_H
 
-#include "Interface/Modules/Inverse/ui_SolveInverseProblemWithTikhonov.h"
+#include <Interface/Modules/Inverse/ui_SolveInverseProblemWithTikhonovSVDDialog.h>
+#include <boost/shared_ptr.hpp>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Inverse/share.h>
 
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE SolveInverseProblemWithTikhonovDialog : public ModuleDialogGeneric,
-  public Ui::SolveInverseProblemWithTikhonov
+class SCISHARE SolveInverseProblemWithTikhonovSVDDialog : public ModuleDialogGeneric,
+  public Ui::SolveInverseProblemWithTikhonovSVDDialog
 {
 	Q_OBJECT
 
 public:
-  SolveInverseProblemWithTikhonovDialog(const std::string& name,
+  SolveInverseProblemWithTikhonovSVDDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
+
 private Q_SLOTS:
   void setSpinBoxValue(int value);
   void setSliderValue(double value);
   void setSliderMin(double value);
   void setSliderMax(double value);
   void setSliderStep(double value);
+private:
+  GuiStringTranslationMap lambdaMethod_;
 };
 
 }

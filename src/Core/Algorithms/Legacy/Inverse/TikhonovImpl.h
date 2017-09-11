@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,35 +25,38 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+//    File       : TikhonovImpl.h
+//    Author     : Jaume Coll-Font
+//    Date       : September 06th, 2017 (last update)
+#ifndef BioPSE_TikhonovImpl_H__
+#define BioPSE_TikhonovImpl_H__
 
-#ifndef INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVDIALOG_H
-#define INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVDIALOG_H
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Algorithms/Legacy/Inverse/share.h>
+#include <vector>
 
-#include "Interface/Modules/Inverse/ui_SolveInverseProblemWithTikhonov.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Inverse/share.h>
 
 namespace SCIRun {
-namespace Gui {
+namespace Core {
+namespace Algorithms {
+namespace Inverse {
 
-class SCISHARE SolveInverseProblemWithTikhonovDialog : public ModuleDialogGeneric,
-  public Ui::SolveInverseProblemWithTikhonov
-{
-	Q_OBJECT
 
-public:
-  SolveInverseProblemWithTikhonovDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-private Q_SLOTS:
-  void setSpinBoxValue(int value);
-  void setSliderValue(double value);
-  void setSliderMin(double value);
-  void setSliderMax(double value);
-  void setSliderStep(double value);
-};
+	class SCISHARE TikhonovImpl
+	{
 
-}
-}
+	public:
+
+		// constructor
+		TikhonovImpl() {};
+
+		virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation) const = 0;
+
+		// default lambda step. Can ve overriden if necessary (see TSVD as reference)
+		virtual std::vector<double> computeLambdaArray( double lambdaMin, double lambdaMax, int nLambda ) const;
+
+	};
+
+	}}}}
 
 #endif
