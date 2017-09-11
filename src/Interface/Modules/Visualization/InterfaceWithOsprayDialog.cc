@@ -82,7 +82,7 @@ void InterfaceWithOsprayDialog::showImage()
     myLabel->setPixmap(QPixmap::fromImage(image));
     myLabel->resize(myLabel->pixmap()->size());
 
-    auto d = new QDialog;
+    auto d = new QDialog(this);
     d->setWindowTitle("Ospray Scene Image");
     auto layout = new QHBoxLayout;
     layout->addWidget(myLabel);
