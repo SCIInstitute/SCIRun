@@ -54,10 +54,6 @@ SCIRUN_ADD_LIBRARY(Modules_Visualization
   ${Modules_Visualization_SRCS}
 )
 
-INCLUDE(${CMAKE_SOURCE_DIR}/CMake/Modules/FindOSPRay.cmake)
-
-INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
-
 TARGET_LINK_LIBRARIES(Modules_Visualization
   Dataflow_Network
   Core_Datatypes
@@ -67,8 +63,13 @@ TARGET_LINK_LIBRARIES(Modules_Visualization
   Graphics_Glyphs
   Graphics_Datatypes
   ${SCI_FREETYPE_LIBRARY}
-  ${OSPRAY_LIBRARIES}
 )
+
+IF(WITH_OSPRAY)
+  INCLUDE(${CMAKE_SOURCE_DIR}/CMake/Modules/FindOSPRay.cmake)
+  INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
+  TARGET_LINK_LIBRARIES(Modules_Visualization ${OSPRAY_LIBRARIES})
+ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Visualization)

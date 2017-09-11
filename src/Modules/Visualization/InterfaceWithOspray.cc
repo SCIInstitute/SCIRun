@@ -38,7 +38,9 @@ DEALINGS IN THE SOFTWARE.
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#ifdef WITH_OSPRAY
 #include <ospray/ospray.h>
+#endif
 
 using namespace SCIRun;
 using namespace Dataflow::Networks;
@@ -96,6 +98,7 @@ void InterfaceWithOspray::setStateDefaults()
 
 namespace detail
 {
+  #ifdef WITH_OSPRAY
   class OsprayImpl
   {
   public:
@@ -114,7 +117,7 @@ namespace detail
 
       // image size
       osp::vec2i imgSize;
-      imgSize.x = state->getValue(Parameters::ImageWidth).toInt(); 
+      imgSize.x = state->getValue(Parameters::ImageWidth).toInt();
       imgSize.y = state->getValue(Parameters::ImageHeight).toInt();
 
       auto toFloat = [state](const Name& name) { return static_cast<float>(state->getValue(name).toDouble()); };
@@ -203,7 +206,7 @@ namespace detail
       // complete setup of renderer
       ospSet1i(renderer, "aoSamples", 1);
       ospSet3f(renderer, "bgColor", toFloat(Parameters::BackgroundColorR),
-        toFloat(Parameters::BackgroundColorG), 
+        toFloat(Parameters::BackgroundColorG),
         toFloat(Parameters::BackgroundColorB));
       ospSetObject(renderer, "model", world);
       ospSetObject(renderer, "camera", camera);
@@ -233,10 +236,10 @@ namespace detail
       FILE *file = fopen(fileName, "wb");
       fprintf(file, "P6\n%i %i\n255\n", size.x, size.y);
       std::vector<unsigned char> out(3 * size.x);
-      for (int y = 0; y < size.y; y++) 
+      for (int y = 0; y < size.y; y++)
       {
         const unsigned char *in = (const unsigned char *)&pixel[(size.y - 1 - y)*size.x];
-        for (int x = 0; x < size.x; x++) 
+        for (int x = 0; x < size.x; x++)
         {
           out[3 * x + 0] = in[4 * x + 0];
           out[3 * x + 1] = in[4 * x + 1];
@@ -249,6 +252,9 @@ namespace detail
       std::cout << "wrote file " << fileName << std::endl;
     }
   };
+  #else
+  class OsprayImpl {};
+  #endif
 }
 
 InterfaceWithOspray::InterfaceWithOspray() : GeometryGeneratingModule(staticInfo_), impl_(new detail::OsprayImpl)
@@ -260,6 +266,7 @@ InterfaceWithOspray::InterfaceWithOspray() : GeometryGeneratingModule(staticInfo
 
 void InterfaceWithOspray::execute()
 {
+  #ifdef WITH_OSPRAY
   auto field = getRequiredInput(Field);
   auto colorMap = getOptionalInput(ColorMapObject);
 
@@ -275,8 +282,11 @@ void InterfaceWithOspray::execute()
     remark("Saving output to " + filename);
     impl_->writeImage(field, filename, get_state(), colorMap);
     get_state()->setTransientValue(Variables::Filename, filename);
-    
+
     //auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);
     //sendOutput(SceneGraph, geom);
   }
+  #else
+  error("Build SCIRun with WITH_OSPRAY set to true to enable this module.");
+  #endif
 }

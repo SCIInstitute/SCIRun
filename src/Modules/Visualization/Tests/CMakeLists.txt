@@ -34,8 +34,13 @@ SET(Modules_Visualization_Tests_SRCS
   ShowFieldTests.cc
   ShowMeshTests.cc
   ShowStringTests.cc
-  OsprayFieldRenderTests.cc
 )
+
+IF(WITH_OSPRAY)
+  SET(Modules_Visualization_Tests_SRCS ${Modules_Visualization_Tests_SRCS}
+    OsprayFieldRenderTests.cc
+  )
+ENDIF()
 
 SCIRUN_ADD_UNIT_TEST(Modules_Visualization_Tests
   ${Modules_Visualization_Tests_SRCS}
@@ -53,5 +58,8 @@ TARGET_LINK_LIBRARIES(Modules_Visualization_Tests
   gtest_main
   gtest
   gmock
-  ${OSPRAY_LIBRARIES}
 )
+
+IF(WITH_OSPRAY)
+  TARGET_LINK_LIBRARIES(Modules_Visualization_Tests ${OSPRAY_LIBRARIES})
+ENDIF()

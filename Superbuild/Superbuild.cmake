@@ -74,6 +74,11 @@ OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
 # Configure tetgen
 OPTION(WITH_TETGEN "Build Tetgen." OFF)
 
+
+###########################################
+# Configure ospray -- TODO: convert into real external
+OPTION(WITH_OSPRAY "Build with Ospray support." OFF)
+
 ###########################################
 # Configure data
 OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" OFF)
