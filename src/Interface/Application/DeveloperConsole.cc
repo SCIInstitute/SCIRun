@@ -41,6 +41,11 @@ DeveloperConsole::DeveloperConsole(QWidget* parent /* = 0 */) : QDockWidget(pare
   connect(globalPortCacheButton_, SIGNAL(stateChanged(int)), this, SLOT(globalPortCacheButtonClicked()));
 }
 
+void DeveloperConsole::updateNetworkViewLog(const QString& s)
+{
+  networkViewPlainTextEdit_->setPlainText(networkViewPlainTextEdit_->toPlainText() + "\n" + s);
+}
+
 void DeveloperConsole::executorButtonClicked()
 {
   if (serialExecutionRadioButton_->isChecked())

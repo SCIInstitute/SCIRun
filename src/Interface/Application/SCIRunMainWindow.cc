@@ -218,7 +218,6 @@ SCIRunMainWindow::SCIRunMainWindow()
   //TODO: will be a user or network setting
   makePipesEuclidean();
 
-
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
 
   connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
@@ -327,12 +326,16 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupVersionButton();
 
   WidgetStyleMixin::tabStyle(optionsTabWidget_);
+
+  devConsole_->updateNetworkViewLog("hello");
 }
 
 void SCIRunMainWindow::resizeEvent(QResizeEvent* event)
 {
   dockSpace_ = size().height();
   QMainWindow::resizeEvent(event);
+
+  devConsole_->updateNetworkViewLog(tr("resizeEvent to %1,%2").arg(size().width()).arg(size().height()));
 }
 
 void SCIRunMainWindow::createStandardToolbars()
