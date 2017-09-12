@@ -283,6 +283,9 @@ namespace Gui {
     using ConnectorFunc = std::function<void(NetworkEditor*)>;
     static void setConnectorFunc(ConnectorFunc func) { connectorFunc_ = func; }
 
+    using ViewUpdateFunc = std::function<void(const QString&)>;
+    static void setViewUpdateFunc(ViewUpdateFunc func) { viewUpdateFunc_ = func; }
+
     struct InEditingContext
     {
       explicit InEditingContext(NetworkEditor* ed)
@@ -403,6 +406,7 @@ namespace Gui {
     void dumpSubnetworksImpl(const QString& name, Dataflow::Networks::Subnetworks& data, Dataflow::Networks::ModuleFilter modFilter) const;
     QList<QGraphicsItem*> includeConnections(QList<QGraphicsItem*> items) const;
     QRectF visibleRect() const;
+    void alignViewport();
     void deleteImpl(QList<QGraphicsItem*> items);
     QPointF getModulePositionAdjustment(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
 
@@ -466,6 +470,8 @@ namespace Gui {
     static NetworkEditor* inEditingContext_;
 
     static ConnectorFunc connectorFunc_;
+    static ViewUpdateFunc viewUpdateFunc_;
+    void logViewerDims(const QString& msg);
     static std::function<QPointF(const QRectF&)> topSubnetPortHolderPositioner_;
     static std::function<QPointF(const QRectF&)> bottomSubnetPortHolderPositioner_;
   };

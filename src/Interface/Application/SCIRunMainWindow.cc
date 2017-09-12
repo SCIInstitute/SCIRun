@@ -327,7 +327,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   WidgetStyleMixin::tabStyle(optionsTabWidget_);
 
-  devConsole_->updateNetworkViewLog("hello");
+  //devConsole_->updateNetworkViewLog("hello");
 }
 
 void SCIRunMainWindow::resizeEvent(QResizeEvent* event)
@@ -335,7 +335,7 @@ void SCIRunMainWindow::resizeEvent(QResizeEvent* event)
   dockSpace_ = size().height();
   QMainWindow::resizeEvent(event);
 
-  devConsole_->updateNetworkViewLog(tr("resizeEvent to %1,%2").arg(size().width()).arg(size().height()));
+  //devConsole_->updateNetworkViewLog(tr("resizeEvent to %1,%2").arg(size().width()).arg(size().height()));
 }
 
 void SCIRunMainWindow::createStandardToolbars()
@@ -1068,6 +1068,7 @@ void SCIRunMainWindow::setupDevConsole()
   actionDevConsole_->setShortcut(QKeySequence("`"));
   connect(devConsole_, SIGNAL(executorChosen(int)), this, SLOT(setExecutor(int)));
   connect(devConsole_, SIGNAL(globalPortCachingChanged(bool)), this, SLOT(setGlobalPortCaching(bool)));
+  //NetworkEditor::setViewUpdateFunc([this](const QString& s) { devConsole_->updateNetworkViewLog(s); });
 }
 
 void SCIRunMainWindow::setExecutor(int type)
