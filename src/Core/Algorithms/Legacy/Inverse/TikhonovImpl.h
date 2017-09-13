@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,43 +25,38 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+//    File       : TikhonovImpl.h
+//    Author     : Jaume Coll-Font
+//    Date       : September 06th, 2017 (last update)
+#ifndef BioPSE_TikhonovImpl_H__
+#define BioPSE_TikhonovImpl_H__
 
-#include <Modules/Math/AppendMatrix.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Algorithms/Legacy/Inverse/share.h>
+#include <vector>
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun;
 
-AppendMatrix::AppendMatrix() : Module(ModuleLookupInfo("AppendMatrix", "Math", "SCIRun"))
-{
-  INITIALIZE_PORT(FirstMatrix);
-  INITIALIZE_PORT(SecondMatrix);
-  INITIALIZE_PORT(InputMatrices);
-  INITIALIZE_PORT(ResultMatrix);
-}
+namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+namespace Inverse {
 
-void AppendMatrix::setStateDefaults()
-{
-  auto state = get_state();
-  state->setValue(Variables::RowsOrColumns, 0);
-}
 
-void AppendMatrix::execute()
-{
-  auto matrixLHS = getRequiredInput(FirstMatrix);
-  auto matrixRHS = getRequiredInput(SecondMatrix);
-  auto param = get_state()->getValue(Variables::RowsOrColumns).toInt();
-  auto input_matrices = getOptionalDynamicInputs(InputMatrices);
-  algo().set(Variables::RowsOrColumns, param);
-  
-  if (needToExecute())
-  {
-   AlgorithmOutput output;
-   output = algo().run(withInputData((FirstMatrix, matrixLHS)(SecondMatrix, matrixRHS)(InputMatrices, input_matrices)));    
-   sendOutputFromAlgorithm(ResultMatrix, output);
-  }
-}
+	class SCISHARE TikhonovImpl
+	{
+
+	public:
+
+		// constructor
+		TikhonovImpl() {};
+
+		virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation) const = 0;
+
+		// default lambda step. Can ve overriden if necessary (see TSVD as reference)
+		virtual std::vector<double> computeLambdaArray( double lambdaMin, double lambdaMax, int nLambda ) const;
+
+	};
+
+	}}}}
+
+#endif

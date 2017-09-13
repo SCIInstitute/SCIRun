@@ -26,42 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Math/AppendMatrix.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#ifndef INTERFACE_MODULES_INVERSE_SolveInverseProblemWithTikhonovTSVDDIALOG_H
+#define INTERFACE_MODULES_INVERSE_SolveInverseProblemWithTikhonovTSVDDIALOG_H
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun;
+#include <Interface/Modules/Inverse/ui_SolveInverseProblemWithTikhonovTSVDDialog.h>
+#include <boost/shared_ptr.hpp>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Inverse/share.h>
 
-AppendMatrix::AppendMatrix() : Module(ModuleLookupInfo("AppendMatrix", "Math", "SCIRun"))
+namespace SCIRun {
+namespace Gui {
+
+class SCISHARE SolveInverseProblemWithTikhonovTSVDDialog : public ModuleDialogGeneric,
+  public Ui::SolveInverseProblemWithTikhonovTSVDDialog
 {
-  INITIALIZE_PORT(FirstMatrix);
-  INITIALIZE_PORT(SecondMatrix);
-  INITIALIZE_PORT(InputMatrices);
-  INITIALIZE_PORT(ResultMatrix);
+	Q_OBJECT
+
+public:
+  SolveInverseProblemWithTikhonovTSVDDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+
+private Q_SLOTS:
+  void setSpinBoxValue(int value);
+  void setSliderValue(double value);
+  void setSliderMin(double value);
+  void setSliderMax(double value);
+  void setSliderStep(double value);
+private:
+  GuiStringTranslationMap lambdaMethod_;
+};
+
+}
 }
 
-void AppendMatrix::setStateDefaults()
-{
-  auto state = get_state();
-  state->setValue(Variables::RowsOrColumns, 0);
-}
-
-void AppendMatrix::execute()
-{
-  auto matrixLHS = getRequiredInput(FirstMatrix);
-  auto matrixRHS = getRequiredInput(SecondMatrix);
-  auto param = get_state()->getValue(Variables::RowsOrColumns).toInt();
-  auto input_matrices = getOptionalDynamicInputs(InputMatrices);
-  algo().set(Variables::RowsOrColumns, param);
-  
-  if (needToExecute())
-  {
-   AlgorithmOutput output;
-   output = algo().run(withInputData((FirstMatrix, matrixLHS)(SecondMatrix, matrixRHS)(InputMatrices, input_matrices)));    
-   sendOutputFromAlgorithm(ResultMatrix, output);
-  }
-}
+#endif

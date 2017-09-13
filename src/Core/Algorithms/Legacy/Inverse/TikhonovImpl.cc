@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,33 +25,24 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+//    File       : TikhonovImpl.cc
+//    Author     : Jaume Coll-Font
+//    Date       : September 06th, 2017 (last update)
 
-#ifndef ALGORITHMS_MATH_APPENDMATRIX_H
-#define ALGORITHMS_MATH_APPENDMATRIX_H
+#include <Core/Algorithms/Legacy/Inverse/TikhonovImpl.h>
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/share.h>
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Math {
-  
-  class SCISHARE AppendMatrixAlgorithm : public AlgorithmBase
-  {
-  public:
-    enum Option { ROWS, COLUMNS };
-    typedef boost::tuple<SCIRun::Core::Datatypes::MatrixHandle, SCIRun::Core::Datatypes::MatrixHandle> Inputs;
-    typedef Option Parameters;  
-    typedef SCIRun::Core::Datatypes::MatrixHandle Outputs;
-    Outputs ConcatenateMatrices(const Datatypes::MatrixHandle base_matrix, const std::vector<boost::shared_ptr<Datatypes::Matrix>> input_matrices, const AppendMatrixAlgorithm::Parameters& params) const;
-    Outputs run(const Inputs& input, const Parameters& params) const;
-    bool check_dimensions(const Datatypes::Matrix& mat1, const Datatypes::Matrix& mat2, const Parameters& params) const;
-    AppendMatrixAlgorithm();
-    AlgorithmOutput run(const AlgorithmInput& input) const;
-    static const AlgorithmInputName InputMatrices;  
-  };
+	// default lambda step. Can ve overriden if necessary (see TSVD as reference)
+	std::vector<double> SCIRun::Core::Algorithms::Inverse::TikhonovImpl::computeLambdaArray( double lambdaMin, double lambdaMax, int nLambda ) const
+	{
+		std::vector<double> lambdaArray(nLambda,0.0);
+		double lam_step = (log10(lambdaMax) - log10(lambdaMin)) / (nLambda-1);
 
-}}}}
+		lambdaArray[0] = lambdaMin;
+		for (int j = 1; j < nLambda; j++)
+	    {
+	        lambdaArray[j] = lambdaArray[j-1] * pow(10.0,lam_step);
+		}
 
-#endif
+		return lambdaArray;
+	}
