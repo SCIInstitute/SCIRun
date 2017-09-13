@@ -187,8 +187,6 @@ namespace Gui {
     const int sceneHeight = 3200;
 
     const double highDPIExpandFactorDefault = 1.7;
-
-    QPointF keepInScene(const QPointF& p);
   }
 
   class NetworkEditor : public QGraphicsView,

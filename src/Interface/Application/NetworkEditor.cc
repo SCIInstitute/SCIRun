@@ -87,12 +87,8 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
 
   connect(scene_, SIGNAL(changed(const QList<QRectF>&)), this, SIGNAL(sceneChanged(const QList<QRectF>&)));
 
-  //old
   setSceneRect(QRectF(-1000, -1000, 2000, 2000));
   centerOn(100, 100);
-  //new
-  //setSceneRect(QRectF(0, 0, sceneWidth, sceneHeight));
-  //centerOn(sceneWidth / 2, sceneHeight / 4);
 
   setMouseAsDragMode();
 
@@ -150,26 +146,6 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
 boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEditorController() const
 {
   return controller_;
-}
-
-QPointF NetworkBoundaries::keepInScene(const QPointF& p)
-{
-  return p;
-  #if 0 //post-ibbm
-  auto adjusted = p;
-  if (adjusted.x() < 0)
-    adjusted.setX(0);
-  else if (adjusted.x() > NetworkBoundaries::sceneWidth)
-    adjusted.setX(NetworkBoundaries::sceneWidth);
-
-  if (adjusted.y() < 0)
-    adjusted.setY(0);
-  else if (adjusted.y() > NetworkBoundaries::sceneHeight)
-    adjusted.setY(NetworkBoundaries::sceneHeight);
-
-  return adjusted;
-  //return QPointF(static_cast<int>(p.x()) % sceneWidth, static_cast<int>(p.y()) % sceneHeight);
-  #endif
 }
 
 NetworkEditor::ViewUpdateFunc NetworkEditor::viewUpdateFunc_;
@@ -250,7 +226,7 @@ void NetworkEditor::duplicateModule(const ModuleHandle& module)
   InEditingContext iec(this);
 
   auto widget = findById(scene_->items(), module->get_id());
-  lastModulePosition_ = keepInScene(widget->scenePos() + QPointF(0, 110));
+  lastModulePosition_ = widget->scenePos() + QPointF(100, 0);
   //TODO: need better duplicate placement. hard code it for now.
   controller_->duplicateModule(module);
 }
@@ -273,7 +249,7 @@ void NetworkEditor::connectNewModuleImpl(const ModuleHandle& moduleToConnectTo, 
   {
     InEditingContext iec(this);
     QPointF increment(0, portToConnect->isInput() ? -110 : 50);
-    lastModulePosition_ = keepInScene(widget->scenePos() + increment);
+    lastModulePosition_ = widget->scenePos() + increment;
     moduleAddIncrement = { 20.0, portToConnect->isInput() ? -20.0 : 20.0 };
 
     PortWidget* newConnectionInputPort = nullptr;
@@ -310,7 +286,7 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
   InEditingContext iec(this);
 
   auto oldModule = findById(scene_->items(), moduleToReplace->get_id());
-  lastModulePosition_ = keepInScene(oldModule->scenePos() - QPointF(15, 15));
+  lastModulePosition_ = oldModule->scenePos() - QPointF(15, 15);
   controller_->addModule(newModuleName);
 
   // connect up same ports
@@ -416,12 +392,6 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
 
   proxy->setZValue(zLevelManager_->get_max());
-
-  while (!scene_->items(lastModulePosition_.x() - 20, lastModulePosition_.y() - 20, 40, 40).isEmpty())
-  {
-    lastModulePosition_ += moduleAddIncrement;
-  }
-  lastModulePosition_ = keepInScene(lastModulePosition_);
   proxy->setPos(lastModulePosition_);
 
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
@@ -765,7 +735,7 @@ void NetworkEditor::addNewModuleAtPosition(const QPointF& position)
 {
   InEditingContext iec(this);
 
-  lastModulePosition_ = keepInScene(position);
+  lastModulePosition_ = position;
   controller_->addModule(moduleSelectionGetter_->text().toStdString());
   Q_EMIT modified();
 }
@@ -777,8 +747,7 @@ void NetworkEditor::addModuleViaDoubleClickedTreeItem()
 
   if (moduleSelectionGetter_->isModule())
   {
-    auto upperLeft = mapToScene(viewport()->geometry()).boundingRect().topLeft() + QPointF(50,50);
-    addNewModuleAtPosition(upperLeft);
+    addNewModuleAtPosition(lastModulePosition_ + QPointF(0,100));
   }
   else if (moduleSelectionGetter_->isClipboardXML())
     pasteImpl(moduleSelectionGetter_->clipboardXML());
@@ -1288,7 +1257,6 @@ QPointF NetworkEditor::getModulePositionAdjustment(const ModulePositions& module
 
 void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions, bool selectAll)
 {
-  const auto adjustment = QPointF(); // TODO: after ibbm, work on resizing of network editor space
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
@@ -1297,7 +1265,7 @@ void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions
       if (posIter != modulePositions.modulePositions.end())
       {
         QPointF p {posIter->second.first, posIter->second.second};
-        w->setPos(p - adjustment);
+        w->setPos(p);
         ensureVisible(w);
         if (selectAll)
           w->setSelected(true);

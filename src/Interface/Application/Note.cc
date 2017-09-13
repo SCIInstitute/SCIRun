@@ -171,7 +171,7 @@ void NoteDisplayHelper::updateNotePosition()
 
 void NoteDisplayHelper::updateNoteSize()
 {
-  qDebug() << __FUNCTION__ << noteFontSize_ << defaultNoteFontSize_;
+  //qDebug() << __FUNCTION__ << noteFontSize_ << defaultNoteFontSize_;
   if (note_ && item_)
   {
     //qDebug() << note_ << item_ << note_->font() << note_->font().pointSizeF() << defaultNoteSize_;
