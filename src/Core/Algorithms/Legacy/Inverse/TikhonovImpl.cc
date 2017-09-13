@@ -25,38 +25,24 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-//    File       : TikhonovImpl.h
+//    File       : TikhonovImpl.cc
 //    Author     : Jaume Coll-Font
 //    Date       : September 06th, 2017 (last update)
-#ifndef BioPSE_TikhonovImpl_H__
-#define BioPSE_TikhonovImpl_H__
 
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Algorithms/Legacy/Inverse/share.h>
-#include <vector>
+#include <Core/Algorithms/Legacy/Inverse/TikhonovImpl.h>
 
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Inverse {
-
-
-	class SCISHARE TikhonovImpl
+	// default lambda step. Can ve overriden if necessary (see TSVD as reference)
+	std::vector<double> SCIRun::Core::Algorithms::Inverse::TikhonovImpl::computeLambdaArray( double lambdaMin, double lambdaMax, int nLambda ) const
 	{
+		std::vector<double> lambdaArray(nLambda,0.0);
+		double lam_step = (log10(lambdaMax) - log10(lambdaMin)) / (nLambda-1);
 
-	public:
+		lambdaArray[0] = lambdaMin;
+		for (int j = 1; j < nLambda; j++)
+	    {
+	        lambdaArray[j] = lambdaArray[j-1] * pow(10.0,lam_step);
+		}
 
-		// constructor
-		TikhonovImpl() {};
-
-		virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation) const = 0;
-
-		// default lambda step. Can ve overriden if necessary (see TSVD as reference)
-		virtual std::vector<double> computeLambdaArray( double lambdaMin, double lambdaMax, int nLambda ) const;
-
-	};
-
-	}}}}
-
-#endif
+		return lambdaArray;
+	}

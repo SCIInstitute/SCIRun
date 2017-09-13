@@ -26,9 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File       : SolveInverseProblemWithTikhonov.cc
-//    Author     : Moritz Dannhauer and Ayla Khan
-//    Date       : 15 Aug. 2012
+//    File       : SolveInverseProblemWithTikhonov.h
+//    Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White
+//    Date       : September 06th, 2017 (last update)
 
 #ifndef BioPSE_SolveInverseProblemWithTikhonovChild_H__
 #define BioPSE_SolveInverseProblemWithTikhonovChild_H__

@@ -1,34 +1,34 @@
 /*
-For more information, please see: http://software.sci.utah.edu
+   For more information, please see: http://software.sci.utah.edu
 
-The MIT License
+   The MIT License
 
-Copyright (c) 2015 Scientific Computing and Imaging Institute,
-University of Utah.
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   University of Utah.
 
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included
-in all copies or substantial portions of the Software.
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
 */
 
 //    File       : SolveInverseProblemWithTikhonov.cc
-//    Author     : Moritz Dannhauer, Ayla Khan, Dan White
-//    Date       : November 02th, 2012 (last update)
+//    Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White
+//    Date       : September 06th, 2017 (last update)
 
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
@@ -157,14 +157,15 @@ using namespace SCIRun::Core::Algorithms::Inverse;
                 }
 
                 // check if squared regularization matrix is invertible
-                if ( !RRtr.fullPivLu().isInvertible() )
+				auto LURRtr = RRtr.fullPivLu();
+                if ( !LURRtr.isInvertible() )
                 {
 
                     THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Regularization matrix in the source space is not invertible.");
                 }
 
                 // COMPUTE inverse
-                iRRtr = RRtr.inverse().eval();
+                iRRtr = LURRtr.inverse().eval();
 
             }
 
@@ -195,11 +196,12 @@ using namespace SCIRun::Core::Algorithms::Inverse;
                 }
 
                 // check if squared regularization matrix is invertible
-                if ( !CCtr.fullPivLu().isInvertible() )
+				auto LUCCtr = CCtr.fullPivLu();
+                if ( !LUCCtr.isInvertible() )
                 {
                     THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Residual covariance matrix is not invertible.");
                 }
-                iCCtr = CCtr.inverse().eval();
+                iCCtr = LUCCtr.inverse().eval();
 
 
 

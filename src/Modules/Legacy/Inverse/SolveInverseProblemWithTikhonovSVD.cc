@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,6 +25,10 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+//    File       : SolveInverseProblemWithTikhonovSVD.cc
+//    Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White
+//    Date       : September 06th, 2017 (last update)
 
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Scalar.h>
@@ -116,7 +120,17 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 		setAlgoStringFromState(Parameters::LCurveText);
 
 		// run
-		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,optionalAlgoInput(hMatrixRegMat))(WeightingInSensorSpace,optionalAlgoInput(hMatrixNoiseCov))(matrixU,optionalAlgoInput(hMatrixU))(singularValues,optionalAlgoInput(hSingularValues))(matrixV,optionalAlgoInput(hMatrixV))) );
+		auto output = algo().run(
+							withInputData(
+								(ForwardMatrix, forward_matrix_h)
+								(MeasuredPotentials,hMatrixMeasDat)
+								(MeasuredPotentials,hMatrixMeasDat)
+								(WeightingInSourceSpace,optionalAlgoInput(hMatrixRegMat))
+								(WeightingInSensorSpace,optionalAlgoInput(hMatrixNoiseCov))
+								(matrixU,optionalAlgoInput(hMatrixU))
+								(singularValues,optionalAlgoInput(hSingularValues))
+								(matrixV,optionalAlgoInput(hMatrixV)))
+							);
 
 		// update L-curve
 		/* NO EXISTE
