@@ -182,6 +182,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 	actionRunNewModuleWizard_->setDisabled(true);
 
   connect(actionAbout_, SIGNAL(triggered()), this, SLOT(displayAcknowledgement()));
+  connect(actionCreateToolkitFromDirectory_, SIGNAL(triggered()), this, SLOT(helpWithToolkitCreation()));
 
   connect(helpActionPythonAPI_, SIGNAL(triggered()), this, SLOT(loadPythonAPIDoc()));
   connect(helpActionSnippets_, SIGNAL(triggered()), this, SLOT(showSnippetHelp()));
@@ -1583,6 +1584,20 @@ void SCIRunMainWindow::displayAcknowledgement()
 {
   QMessageBox::information(this, "NIH/NIGMS Center for Integrative Biomedical Computing Acknowledgment",
     "CIBC software and the data sets provided on this web site are Open Source software projects that are principally funded through the SCI Institute's NIH/NCRR CIBC. For us to secure the funding that allows us to continue providing this software, we must have evidence of its utility. Thus we ask users of our software and data to acknowledge us in their publications and inform us of these publications. Please use the following acknowledgment and send us references to any publications, presentations, or successful funding applications that make use of the NIH/NCRR CIBC software or data sets we provide. <p> <i>This project was supported by the National Institute of General Medical Sciences of the National Institutes of Health under grant number P41GM103545.</i>");
+}
+
+void SCIRunMainWindow::helpWithToolkitCreation()
+{
+  QMessageBox::information(this, "Temp",
+    "<b>Help with toolkit creation--for power users</b>"
+    "<p> First, gather all network files for your toolkit into a single directory. This directory may contain "
+    "one level of subdirectories. Next, "
+    "in your build directory (you must SCIRun from source), locate the executable named <code>bundle_toolkit</code>. "
+    " The usage is:"
+    "<pre>bundle_toolkit OUTPUT_FILE [DIRECTORY_TO_SCAN]</pre>"
+    "where OUTPUT_FILE is the desired name of your toolkit bundle. If no directory is specified, the current directory is scanned."
+    "<p>For further assistance, visit https://github.com/SCIInstitute/FwdInvToolkit/wiki."
+);
 }
 
 void SCIRunMainWindow::setDataDirectory(const QString& dir)
