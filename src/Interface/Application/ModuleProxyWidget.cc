@@ -450,6 +450,7 @@ void ModuleProxyWidget::setDefaultNotePosition(NotePosition position)
 void ModuleProxyWidget::setDefaultNoteSize(int size)
 {
   setDefaultNoteSizeImpl(size);
+  module_->setDefaultNoteFontSize(size);
 }
 
 void ModuleProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event)

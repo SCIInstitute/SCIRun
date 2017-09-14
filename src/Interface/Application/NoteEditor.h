@@ -44,9 +44,10 @@ class NoteEditor : public QDialog, public Ui::NoteEditor
 public:
   explicit NoteEditor(const QString& moduleName, bool positionAdjustable = true, QWidget* parent = 0);
   void setNoteHtml(const QString& text);
-  void setNoteFontSize(int size);
 public Q_SLOTS:
   void changeNotePosition(int index);
+  void setNoteFontSize(int size);
+  void setDefaultNoteFontSize(int size);
 private Q_SLOTS:
   void changeTextColor();
   void changeFontSize(const QString& text);
@@ -60,7 +61,7 @@ private Q_SLOTS:
 Q_SIGNALS:
   void noteChanged(const Note& note);
 protected:
-  virtual void showEvent(QShowEvent* event);
+  void showEvent(QShowEvent* event) override;
 private:
   void setNoteColor(const QColor& color);
   QString moduleName_;
@@ -69,6 +70,7 @@ private:
   int fontSizeBackup_, positionBackup_;
   QColor previousColor_;
   NotePosition position_;
+  int defaultNoteFontSize_{ 20 };
 };
 
 }

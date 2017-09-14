@@ -68,6 +68,7 @@ void HasNotes::connectUpdateNote(QObject* obj)
 {
   QObject::connect(&noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SLOT(updateNote(const Note&)));
   QObject::connect(&noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SIGNAL(noteChanged()));
+  //QObject::connect(, SIGNAL(), &noteEditor_, SLOT(setDefaultNoteFontSize(int)));
 }
 
 void HasNotes::setCurrentNote(const Note& note, bool updateEditor)
@@ -78,6 +79,11 @@ void HasNotes::setCurrentNote(const Note& note, bool updateEditor)
     noteEditor_.setNoteHtml(note.html_);
     noteEditor_.setNoteFontSize(note.fontSize_);
   }
+}
+
+void HasNotes::setDefaultNoteFontSize(int size)
+{
+  noteEditor_.setDefaultNoteFontSize(size);
 }
 
 NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) :
@@ -157,7 +163,7 @@ void NoteDisplayHelper::setDefaultNotePositionImpl(NotePosition position)
 void NoteDisplayHelper::setDefaultNoteSizeImpl(int size)
 {
   defaultNoteFontSize_ = size;
-  updateNoteSize();
+  //updateDefaultNoteSize(defaultNoteFontSize_);
 }
 
 void NoteDisplayHelper::updateNotePosition()
@@ -171,10 +177,10 @@ void NoteDisplayHelper::updateNotePosition()
 
 void NoteDisplayHelper::updateNoteSize()
 {
-  //qDebug() << __FUNCTION__ << noteFontSize_ << defaultNoteFontSize_;
+  qDebug() << __FUNCTION__ << noteFontSize_ << defaultNoteFontSize_;
   if (note_ && item_)
   {
-    //qDebug() << note_ << item_ << note_->font() << note_->font().pointSizeF() << defaultNoteSize_;
+    qDebug() << note_ << item_ << note_->font() << note_->font().pointSizeF() << defaultNoteFontSize_;
     auto f = note_->font();
     f.setPointSizeF(noteFontSize_ == -1 ? defaultNoteFontSize_ : noteFontSize_);
     note_->setFont(f);
