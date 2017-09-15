@@ -334,26 +334,7 @@ void ModuleProxyWidget::snapToGrid()
   if (Preferences::Instance().modulesSnapToGrid)
   {
     setPos(snapTo(pos().x()), snapTo(pos().y()));
-    keepInScene();
   }
-}
-
-void ModuleProxyWidget::keepInScene()
-{
-  #if 0 //post-ibbm
-  //qDebug() << __FUNCTION__ << pos();
-  if (x() < 0)
-    setPos(10, y());
-  else if (x() > NetworkBoundaries::sceneWidth)
-    setPos(NetworkBoundaries::sceneWidth - 100, y());
-
-  if (y() < 0)
-    setPos(x(), 10);
-  else if (y() > NetworkBoundaries::sceneHeight)
-    setPos(x(), NetworkBoundaries::sceneHeight - 10);
-
-  //qDebug() << "~" << __FUNCTION__ << pos();
-  #endif
 }
 
 void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -382,8 +363,6 @@ void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     ensureThisVisible();
   QGraphicsItem::mouseMoveEvent(event);
   stackDepth_ = 0;
-
-  keepInScene();
 }
 
 bool ModuleProxyWidget::isSubwidget(QWidget* alienWidget) const
@@ -459,7 +438,7 @@ QPointF PassThroughPositioner::currentPosition() const
 void ModuleProxyWidget::setNoteGraphicsContext()
 {
   scene_ = scene();
-  item_ = this;
+  networkObjectWithNote_ = this;
   positioner_ = boost::make_shared<PassThroughPositioner>(this);
 }
 
@@ -471,6 +450,7 @@ void ModuleProxyWidget::setDefaultNotePosition(NotePosition position)
 void ModuleProxyWidget::setDefaultNoteSize(int size)
 {
   setDefaultNoteSizeImpl(size);
+  module_->setDefaultNoteFontSize(size);
 }
 
 void ModuleProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
