@@ -95,7 +95,7 @@ namespace Gui {
     void setDefaultNotePositionImpl(NotePosition position);
     void setDefaultNoteSizeImpl(int size);
     void clearNoteCursor();
-    QGraphicsItem* item_;
+    QGraphicsItem* networkObjectWithNote_;
     QGraphicsScene* scene_;
     PositionProviderPtr positioner_;
     void destroy();

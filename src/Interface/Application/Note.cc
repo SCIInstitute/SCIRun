@@ -68,7 +68,6 @@ void HasNotes::connectUpdateNote(QObject* obj)
 {
   QObject::connect(&noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SLOT(updateNote(const Note&)));
   QObject::connect(&noteEditor_, SIGNAL(noteChanged(const Note&)), obj, SIGNAL(noteChanged()));
-  //QObject::connect(, SIGNAL(), &noteEditor_, SLOT(setDefaultNoteFontSize(int)));
 }
 
 void HasNotes::setCurrentNote(const Note& note, bool updateEditor)
@@ -87,7 +86,7 @@ void HasNotes::setDefaultNoteFontSize(int size)
 }
 
 NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) :
-  item_(nullptr), scene_(nullptr), note_(nullptr),
+  networkObjectWithNote_(nullptr), scene_(nullptr), note_(nullptr),
   notePosition_(Default),
   defaultNotePosition_(Top), //TODO
   displayStrategy_(display),
@@ -128,7 +127,7 @@ void NoteDisplayHelper::updateNoteImpl(const Note& note)
   notePosition_ = note.position_;
   noteFontSize_ = note.fontSize_;
   updateNotePosition();
-  note_->setZValue(item_->zValue() - 1);
+  note_->setZValue(networkObjectWithNote_->zValue() - 1);
 }
 
 void NoteDisplayHelper::clearNoteCursor()
@@ -143,13 +142,13 @@ void NoteDisplayHelper::clearNoteCursor()
 
 QPointF NoteDisplayHelper::relativeNotePosition()
 {
-  if (note_ && item_)
+  if (note_ && networkObjectWithNote_)
   {
     auto position = notePosition_ == Default ? defaultNotePosition_ : notePosition_;
     note_->setVisible(!(Tooltip == position || None == position));
-    item_->setToolTip("");
+    networkObjectWithNote_->setToolTip("");
 
-    return displayStrategy_->relativeNotePosition(item_, note_, position);
+    return displayStrategy_->relativeNotePosition(networkObjectWithNote_, note_, position);
   }
   return QPointF();
 }
@@ -163,12 +162,11 @@ void NoteDisplayHelper::setDefaultNotePositionImpl(NotePosition position)
 void NoteDisplayHelper::setDefaultNoteSizeImpl(int size)
 {
   defaultNoteFontSize_ = size;
-  //updateDefaultNoteSize(defaultNoteFontSize_);
 }
 
 void NoteDisplayHelper::updateNotePosition()
 {
-  if (note_ && item_)
+  if (note_ && networkObjectWithNote_)
   {
     auto position = positioner_->currentPosition() + relativeNotePosition();
     note_->setPos(position);
@@ -177,10 +175,8 @@ void NoteDisplayHelper::updateNotePosition()
 
 void NoteDisplayHelper::updateNoteSize()
 {
-  qDebug() << __FUNCTION__ << noteFontSize_ << defaultNoteFontSize_;
-  if (note_ && item_)
+  if (note_ && networkObjectWithNote_)
   {
-    qDebug() << note_ << item_ << note_->font() << note_->font().pointSizeF() << defaultNoteFontSize_;
     auto f = note_->font();
     f.setPointSizeF(noteFontSize_ == -1 ? defaultNoteFontSize_ : noteFontSize_);
     note_->setFont(f);

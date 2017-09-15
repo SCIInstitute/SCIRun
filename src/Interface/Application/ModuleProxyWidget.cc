@@ -438,7 +438,7 @@ QPointF PassThroughPositioner::currentPosition() const
 void ModuleProxyWidget::setNoteGraphicsContext()
 {
   scene_ = scene();
-  item_ = this;
+  networkObjectWithNote_ = this;
   positioner_ = boost::make_shared<PassThroughPositioner>(this);
 }
 
