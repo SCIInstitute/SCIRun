@@ -91,7 +91,6 @@ namespace Gui {
     virtual void setNoteGraphicsContext() = 0;
     void updateNoteImpl(const Note& note);
     void updateNotePosition();
-    void updateNoteSize();
     void setDefaultNotePositionImpl(NotePosition position);
     void setDefaultNoteSizeImpl(int size);
     void clearNoteCursor();
@@ -102,7 +101,7 @@ namespace Gui {
   private:
     QGraphicsTextItem* note_;
     NotePosition notePosition_, defaultNotePosition_;
-    int noteFontSize_{-1}, defaultNoteFontSize_{ 20 };
+    int defaultNoteFontSize_{ 20 };
     NoteDisplayStrategyPtr displayStrategy_;
     bool destroyed_;
 

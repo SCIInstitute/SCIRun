@@ -71,6 +71,7 @@ private:
   QColor previousColor_;
   NotePosition position_;
   int defaultNoteFontSize_{ 20 };
+  int callCount_{ 0 };
 };
 
 }

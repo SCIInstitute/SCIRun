@@ -127,13 +127,21 @@ void NoteEditor::setNoteFontSize(int size)
 
 void NoteEditor::setDefaultNoteFontSize(int size)
 {
+  callCount_++;
   defaultNoteFontSize_ = size;
-  textEdit_->blockSignals(true);
 
-  textEdit_->setFontPointSize(size);
-  textEdit_->setPlainText(textEdit_->toPlainText());
+  if (fontSizeComboBox_->currentText() == "Default")
+  {
+    textEdit_->blockSignals(true);
 
-  textEdit_->blockSignals(false);
+    textEdit_->setFontPointSize(size);
+    textEdit_->setPlainText(textEdit_->toPlainText());
+    currentNote_.html_ = textEdit_->toHtml();
+    if (callCount_ > 1)
+      updateNote();
+
+    textEdit_->blockSignals(false);
+  }
 }
 
 void NoteEditor::setNoteColor(const QColor& color)

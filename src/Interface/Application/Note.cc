@@ -119,13 +119,12 @@ void NoteDisplayHelper::updateNoteImpl(const Note& note)
     setNoteGraphicsContext();
     if (!scene_)
       Log::get() << WARN << "Scene not set, network notes will not be displayed!" << std::endl;
-    note_ = new QGraphicsTextItem("", 0, scene_);
+    note_ = new QGraphicsTextItem("", nullptr, scene_);
     note_->setDefaultTextColor(Qt::white);
   }
 
   note_->setHtml(note.html_);
   notePosition_ = note.position_;
-  noteFontSize_ = note.fontSize_;
   updateNotePosition();
   note_->setZValue(networkObjectWithNote_->zValue() - 1);
 }
@@ -170,16 +169,6 @@ void NoteDisplayHelper::updateNotePosition()
   {
     auto position = positioner_->currentPosition() + relativeNotePosition();
     note_->setPos(position);
-  }
-}
-
-void NoteDisplayHelper::updateNoteSize()
-{
-  if (note_ && networkObjectWithNote_)
-  {
-    auto f = note_->font();
-    f.setPointSizeF(noteFontSize_ == -1 ? defaultNoteFontSize_ : noteFontSize_);
-    note_->setFont(f);
   }
 }
 
