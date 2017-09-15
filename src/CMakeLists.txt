@@ -360,6 +360,15 @@ IF(WITH_TETGEN)
 ENDIF()
 
 ########################################################################
+# Configure ospray module build-- TODO: convert into real external
+
+OPTION(WITH_OSPRAY "Build with Ospray support." OFF)
+MARK_AS_ADVANCED(WITH_OSPRAY)
+IF(WITH_OSPRAY)
+  ADD_DEFINITIONS(-DWITH_OSPRAY)
+ENDIF()
+
+########################################################################
 # Copy Spire-SCIRun specific assets and shaders
 
 set(OUTPUT_SHADER_DIR ${CMAKE_CURRENT_BINARY_DIR}/Shaders)
@@ -712,7 +721,7 @@ SET_PROPERTY(TARGET Testing_Utils PROPERTY FOLDER "Testing Support")
 SET_PROPERTY(TARGET Testing_ModuleTestBase PROPERTY FOLDER "Testing Support")
 
 IF(BUILD_TESTING)
- 
+
   #SET_PROPERTY(TARGET SCIRunTestData_external   PROPERTY FOLDER "Testing Support")
 
   SET_PROPERTY(TARGET Algorithms_Base_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
