@@ -26,16 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File       : SolveInverseProblemWithTikhonov.cc
+//    File       : SolveInverseProblemWithTikhonovSVD.cc
 //    Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White
 //    Date       : September 06th, 2017 (last update)
 
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Scalar.h>
-#include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h>
+#include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
+#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
 // #include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
@@ -48,26 +49,30 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Inverse;
 
 // Module definitions. Sets the info into the staticInfo_
-MODULE_INFO_DEF(SolveInverseProblemWithTikhonov, Inverse, SCIRun)
+MODULE_INFO_DEF(SolveInverseProblemWithTikhonovSVD, Inverse, SCIRun)
 
 // Constructor neeeds to have empty inputs and the parent's constructor has staticInfo_ as an input (adapted to thsi module in MODULE_INFO_DEF macro)
 // Constructor needs to initialize all input/output ports
-SolveInverseProblemWithTikhonov::SolveInverseProblemWithTikhonov() : Module(staticInfo_)
+SolveInverseProblemWithTikhonovSVD::SolveInverseProblemWithTikhonovSVD() : Module(staticInfo_)
 {
+	//inputs
 	INITIALIZE_PORT(ForwardMatrix);
 	INITIALIZE_PORT(WeightingInSourceSpace);
 	INITIALIZE_PORT(MeasuredPotentials);
 	INITIALIZE_PORT(WeightingInSensorSpace);
+	INITIALIZE_PORT(matrixU);
+	INITIALIZE_PORT(singularValues);
+	INITIALIZE_PORT(matrixV);
+	// outputs
 	INITIALIZE_PORT(InverseSolution);
 	INITIALIZE_PORT(RegularizationParameter);
 	INITIALIZE_PORT(RegInverse);
 }
 
-void SolveInverseProblemWithTikhonov::setStateDefaults()
+void SolveInverseProblemWithTikhonovSVD::setStateDefaults()
 {
 	setStateStringFromAlgo(Parameters::TikhonovImplementation);
 	setStateStringFromAlgoOption(Parameters::RegularizationMethod);
-	setStateIntFromAlgo(Parameters::regularizationChoice);
 	setStateDoubleFromAlgo(Parameters::LambdaFromDirectEntry);
 	setStateDoubleFromAlgo(Parameters::LambdaMin);
 	setStateDoubleFromAlgo(Parameters::LambdaMax);
@@ -76,48 +81,60 @@ void SolveInverseProblemWithTikhonov::setStateDefaults()
 	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
 	setStateIntFromAlgo(Parameters::LambdaCorner);
 	setStateStringFromAlgo(Parameters::LCurveText);
-	setStateIntFromAlgo(Parameters::regularizationSolutionSubcase);
-	setStateIntFromAlgo(Parameters::regularizationResidualSubcase);
 }
+
 // execute function
-void SolveInverseProblemWithTikhonov::execute()
+void SolveInverseProblemWithTikhonovSVD::execute()
 {
 
 	// load required inputs
 	auto forward_matrix_h = getRequiredInput(ForwardMatrix);
 	auto hMatrixMeasDat = getRequiredInput(MeasuredPotentials);
 
-	// load optional inputs
+	// load regularization optional inputs
 	auto hMatrixRegMat = getOptionalInput(WeightingInSourceSpace);
 	auto hMatrixNoiseCov = getOptionalInput(WeightingInSensorSpace);
 
+	// load SVD optional inputs
+	auto hMatrixU = getOptionalInput(matrixU);
+	auto hSingularValues = getOptionalInput(singularValues);
+	auto hMatrixV = getOptionalInput(matrixV);
+
+	std::cout << "gato" << std::endl;
 
 	if (needToExecute())
 	{
-
+		// set parameters
 		auto state = get_state();
 		// set parameters
-	    state->setValue( Parameters::TikhonovImplementation, std::string("standardTikhonov") );
+		state->setValue( Parameters::TikhonovImplementation, std::string("TikhonovSVD") );
 		setAlgoStringFromState(Parameters::TikhonovImplementation);
-	    setAlgoOptionFromState(Parameters::RegularizationMethod);
-	    setAlgoIntFromState(Parameters::regularizationChoice);
-	    setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
-	    setAlgoDoubleFromState(Parameters::LambdaMin);
-	    setAlgoDoubleFromState(Parameters::LambdaMax);
-	    setAlgoIntFromState(Parameters::LambdaNum);
-	    setAlgoDoubleFromState(Parameters::LambdaResolution);
-	    setAlgoDoubleFromState(Parameters::LambdaSliderValue);
-	    setAlgoIntFromState(Parameters::LambdaCorner);
-	    setAlgoStringFromState(Parameters::LCurveText);
-	    setAlgoIntFromState(Parameters::regularizationSolutionSubcase);
-	    setAlgoIntFromState(Parameters::regularizationResidualSubcase);
+		setAlgoOptionFromState(Parameters::RegularizationMethod);
+		setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
+		setAlgoDoubleFromState(Parameters::LambdaMin);
+		setAlgoDoubleFromState(Parameters::LambdaMax);
+		setAlgoIntFromState(Parameters::LambdaNum);
+		setAlgoDoubleFromState(Parameters::LambdaResolution);
+		setAlgoDoubleFromState(Parameters::LambdaSliderValue);
+		setAlgoIntFromState(Parameters::LambdaCorner);
+		setAlgoStringFromState(Parameters::LCurveText);
 
 		// run
-		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,optionalAlgoInput(hMatrixRegMat))(WeightingInSensorSpace,optionalAlgoInput(hMatrixNoiseCov))) );
+		auto output = algo().run(
+							withInputData(
+								(ForwardMatrix, forward_matrix_h)
+								(MeasuredPotentials,hMatrixMeasDat)
+								(MeasuredPotentials,hMatrixMeasDat)
+								(WeightingInSourceSpace,optionalAlgoInput(hMatrixRegMat))
+								(WeightingInSensorSpace,optionalAlgoInput(hMatrixNoiseCov))
+								(matrixU,optionalAlgoInput(hMatrixU))
+								(singularValues,optionalAlgoInput(hSingularValues))
+								(matrixV,optionalAlgoInput(hMatrixV)))
+							);
 
 		// update L-curve
 		/* NO EXISTE
-        SolveInverseProblemWithTikhonovImpl_child::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonov::update_lcurve_gui, this, _1, _2, _3);
+        SolveInverseProblemWithTikhonovSVD_impl::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonov::update_lcurve_gui, this, _1, _2, _3);
 		*/
 
 		// set outputs

@@ -26,31 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVDIALOG_H
-#define INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVDIALOG_H
+#ifndef INTERFACE_MODULES_InterfaceWithOsprayDIALOG_H
+#define INTERFACE_MODULES_InterfaceWithOsprayDIALOG_H
 
-#include "Interface/Modules/Inverse/ui_SolveInverseProblemWithTikhonov.h"
+#include "Interface/Modules/Visualization/ui_InterfaceWithOspray.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Inverse/share.h>
+#include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE SolveInverseProblemWithTikhonovDialog : public ModuleDialogGeneric,
-  public Ui::SolveInverseProblemWithTikhonov
+class SCISHARE InterfaceWithOsprayDialog : public ModuleDialogGeneric,
+	public Ui::InterfaceWithOspray
 {
 	Q_OBJECT
 
 public:
-  SolveInverseProblemWithTikhonovDialog(const std::string& name,
+  InterfaceWithOsprayDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    QWidget* parent = nullptr);
+
+Q_SIGNALS:
+  void imageFilenameChanged();
 private Q_SLOTS:
-  void setSpinBoxValue(int value);
-  void setSliderValue(double value);
-  void setSliderMin(double value);
-  void setSliderMax(double value);
-  void setSliderStep(double value);
+  void showImage();
 };
 
 }

@@ -26,17 +26,17 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Inverse/SolveInverseProblemWithTikhonovDialog.h>
-#include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h>
+#include <Interface/Modules/Inverse/SolveInverseProblemWithTikhonovTSVDDialog.h>
+#include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD.h>
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Inverse;
 
-typedef SCIRun::Modules::Inverse::SolveInverseProblemWithTikhonov SolveInverseProblemWithTikhonovModule;
+typedef SCIRun::Modules::Inverse::SolveInverseProblemWithTikhonovTSVD SolveInverseProblemWithTikhonovTSVDModule;
 
-SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(const std::string& name, ModuleStateHandle state,
+SolveInverseProblemWithTikhonovTSVDDialog::SolveInverseProblemWithTikhonovTSVDDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
@@ -49,8 +49,6 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   lambdaMethod_.insert(StringPair("Slider", "slider"));
   lambdaMethod_.insert(StringPair("L-curve", "lcurve"));
 
-  WidgetStyleMixin::tabStyle(inputTabWidget_);
-
   addDoubleLineEditManager(lCurveLambdaLineEdit_, Parameters::LambdaCorner);
   addSpinBoxManager(lambdaNumberSpinBox_, Parameters::LambdaNum);
   addDoubleSpinBoxManager(lambdaDoubleSpinBox_, Parameters::LambdaFromDirectEntry);
@@ -62,13 +60,9 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
 
   addDoubleSpinBoxManager(lambdaSliderDoubleSpinBox_, Parameters::LambdaSliderValue);
 
-  addRadioButtonGroupManager({ autoRadioButton_, underRadioButton_, overRadioButton_ }, Parameters::regularizationChoice);
-  addRadioButtonGroupManager({ solutionConstraintRadioButton_, squaredSolutionRadioButton_ }, Parameters::regularizationSolutionSubcase);
-  addRadioButtonGroupManager({ residualConstraintRadioButton_, squaredResidualSolutionRadioButton_ }, Parameters::regularizationResidualSubcase);
-
   addComboBoxManager(lambdaMethodComboBox_, Parameters::RegularizationMethod, lambdaMethod_);
   addTextEditManager(lCurveTextEdit_, Parameters::LCurveText);
-  
+
   connect(lambdaSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));
   connect(lambdaSliderDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderValue(double)));
   connect(lambdaMinDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMin(double)));
@@ -76,28 +70,29 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   connect(lambdaResolutionDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderStep(double)));
 }
 
-void SolveInverseProblemWithTikhonovDialog::setSpinBoxValue(int value)
+
+void SolveInverseProblemWithTikhonovTSVDDialog::setSpinBoxValue(int value)
 {
   lambdaSliderDoubleSpinBox_->setValue(value);
 }
 
-void SolveInverseProblemWithTikhonovDialog::setSliderValue(double value)
+void SolveInverseProblemWithTikhonovTSVDDialog::setSliderValue(double value)
 {
   if (value <= lambdaSlider_->maximum() && value >= lambdaSlider_->minimum())
     lambdaSlider_->setValue(static_cast<int>(value));
 }
 
-void SolveInverseProblemWithTikhonovDialog::setSliderMin(double value)
+void SolveInverseProblemWithTikhonovTSVDDialog::setSliderMin(double value)
 {
   lambdaSlider_->setMinimum(static_cast<int>(value));
 }
 
-void SolveInverseProblemWithTikhonovDialog::setSliderMax(double value)
+void SolveInverseProblemWithTikhonovTSVDDialog::setSliderMax(double value)
 {
   lambdaSlider_->setMaximum(static_cast<int>(value));
 }
 
-void SolveInverseProblemWithTikhonovDialog::setSliderStep(double value)
+void SolveInverseProblemWithTikhonovTSVDDialog::setSliderStep(double value)
 {
   lambdaSlider_->setSingleStep(static_cast<int>(value));
 }
