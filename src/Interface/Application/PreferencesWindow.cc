@@ -35,7 +35,8 @@
 
 using namespace SCIRun::Gui;
 
-PreferencesWindow::PreferencesWindow(NetworkEditor* editor, QWidget* parent /* = 0 */) : QDialog(parent), networkEditor_(editor)
+PreferencesWindow::PreferencesWindow(NetworkEditor* editor, std::function<void()> writeSettings,
+  QWidget* parent /* = 0 */) : QDialog(parent), networkEditor_(editor), writeSettings_(writeSettings)
 {
   setupUi(this);
   connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateSaveBeforeExecuteOption(int)));
@@ -107,4 +108,11 @@ bool PreferencesWindow::disableModuleErrorDialogs() const
 bool PreferencesWindow::saveBeforeExecute() const
 {
   return SCIRun::Core::Preferences::Instance().saveBeforeExecute;
+}
+
+void PreferencesWindow::hideEvent(QHideEvent * event)
+{
+  if (writeSettings_)
+    writeSettings_();
+  QDialog::hideEvent(event);
 }

@@ -45,6 +45,7 @@ namespace Gui {
     void connectUpdateNote(QObject* obj);
     void setCurrentNote(const Note& note, bool updateEditor);
     Note getCurrentNote() const { return currentNote_; }
+    void setDefaultNoteFontSize(int size);
   protected:
     void destroy();
   private:

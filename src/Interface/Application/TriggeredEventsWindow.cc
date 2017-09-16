@@ -79,7 +79,11 @@ namespace
     "# scirun_set_module_state(scirun_module_ids()[-1], 'FileTypeName', 'Matlab Matrix (*.mat)') if scirun_module_ids()[-1].startswith('ReadMatrix') else None\n"
     "\n"
     "# With the \"On network load\" event, this snippet will open the UIs for all the ViewScenes in the network :\n"
-    "# [scirun_set_module_state(id, '__UI__', True) for id in scirun_module_ids() if id.startswith('ViewScene')]\n";
+    "# [scirun_set_module_state(id, '__UI__', True) for id in scirun_module_ids() if id.startswith('ViewScene')]\n"
+    "\n"
+    "# With the \"Application start\" event, this snippet will print SCIRun's python library path, which one could then edit:\n"
+    "import sys\n\nprint(sys.path)"
+    ;
 }
 
 void TriggeredEventsWindow::updateScriptEditor()
@@ -113,18 +117,22 @@ void TriggeredEventsWindow::enableStateChanged(int state)
 
 void TriggeredEventsWindow::push()
 {
+  auto& prefs = Core::Preferences::Instance();
+  static std::map<QString, Core::TriggeredScriptInfo*> scriptInfos
+  {
+    { "Post module add", &prefs.postModuleAdd },
+    { "On network load", &prefs.onNetworkLoad },
+    { "Application start", &prefs.applicationStart }
+  };
+
   for (int i = 0; i < eventListWidget_->count(); ++i)
   {
     auto key = eventListWidget_->item(i)->text();
-    if (key == "Post module add")
+    auto trig = scriptInfos.find(key);
+    if (trig != scriptInfos.end())
     {
-      Core::Preferences::Instance().postModuleAddScript_temporarySolution.setValue(scripts_[key].toStdString());
-      Core::Preferences::Instance().postModuleAddScriptEnabled_temporarySolution.setValue(scriptEnabledFlags_[key]);
-    }
-    else if (key == "On network load")
-    {
-      Core::Preferences::Instance().onNetworkLoadScript_temporarySolution.setValue(scripts_[key].toStdString());
-      Core::Preferences::Instance().onNetworkLoadScriptEnabled_temporarySolution.setValue(scriptEnabledFlags_[key]);
+      trig->second->script.setValue(scripts_[key].toStdString());
+      trig->second->enabled.setValue(scriptEnabledFlags_[key]);
     }
   }
 }

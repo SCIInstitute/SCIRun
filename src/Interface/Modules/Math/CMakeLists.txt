@@ -73,12 +73,6 @@ SET(Interface_Modules_Math_HEADERS
   BooleanCompareDialog.h
 )
 
-IF(WITH_QWT_WIDGETS)
-  SET(Interface_Modules_Math_HEADERS ${Interface_Modules_Math_HEADERS}
-    qwt_global.h
-    qwt_plot.h)
-ENDIF()
-
 SET(Interface_Modules_Math_SOURCES
   SelectSubMatrixDialog.cc
   AppendMatrixDialog.cc
@@ -119,8 +113,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Math
   Interface_Modules_Base
 
   ${SCI_BOOST_LIBRARY}
-  ${QT_LIBRARIES}
-  ${qwt_libraries})
+  ${QT_LIBRARIES})
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Math)

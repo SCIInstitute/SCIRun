@@ -55,13 +55,15 @@ Preferences::Preferences() :
   highDPIAdjustment("highDPIAdjustment", false),
   modulesAreDockable("modulesAreDockable", true),
   networkBackgroundColor("backgroundColor", "#808080"),
-  postModuleAddScript_temporarySolution("postModuleAddScript_temporarySolution", ""),
-  postModuleAddScriptEnabled_temporarySolution("postModuleAddScriptEnabled_temporarySolution", false),
-  onNetworkLoadScript_temporarySolution("onNetworkLoadScript_temporarySolution", ""),
-  onNetworkLoadScriptEnabled_temporarySolution("onNetworkLoadScriptEnabled_temporarySolution", false)
+  postModuleAdd("postModuleAdd"),
+  onNetworkLoad("onNetworkLoad"),
+  applicationStart("applicationStart")
 {
 }
 
+TriggeredScriptInfo::TriggeredScriptInfo(const std::string& name) :
+  script(name + "_script", ""), enabled(name + "_enabled", false)
+{}
 
 boost::filesystem::path Preferences::dataDirectory() const
 {
