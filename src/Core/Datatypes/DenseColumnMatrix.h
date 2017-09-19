@@ -47,7 +47,7 @@ namespace Datatypes {
     typedef DenseColumnMatrixGeneric<T> this_type;
     typedef Eigen::Matrix<T, Eigen::Dynamic, 1> EigenBase;
 
-    DenseColumnMatrixGeneric(size_t nrows = 0) : EigenBase(nrows) {}
+    explicit DenseColumnMatrixGeneric(size_t nrows = 0) : EigenBase(nrows) {}
 
     /// This constructor allows you to construct DenseColumnMatrixGeneric from Eigen expressions
     template<typename OtherDerived>

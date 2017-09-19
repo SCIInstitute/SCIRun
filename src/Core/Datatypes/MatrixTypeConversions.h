@@ -34,69 +34,92 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <boost/type_traits.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {
-namespace Datatypes {
+  namespace Datatypes {
 
-  /// No conversion is done.
-  /// NULL is returned if the matrix is not of the appropriate type.
-  class SCISHARE castMatrix
-  {
-  public:
-    template <class ToType, typename T, template <typename> class MatrixType>
-    static SharedPointer<ToType> to(const SharedPointer<MatrixType<T>>& matrix, typename boost::enable_if<boost::is_same<T, typename ToType::value_type> >::type* = nullptr)
+    /// No conversion is done.
+    /// NULL is returned if the matrix is not of the appropriate type.
+    class SCISHARE castMatrix
     {
-      return boost::dynamic_pointer_cast<ToType>(matrix);
-    }
+    public:
+      template <class ToType, typename T, template <typename> class MatrixType>
+      static SharedPointer<ToType> to(const SharedPointer<MatrixType<T>>& matrix, typename boost::enable_if<boost::is_same<T, typename ToType::value_type> >::type* = nullptr)
+      {
+        return boost::dynamic_pointer_cast<ToType>(matrix);
+      }
 
-    template <typename T, template <typename> class MatrixType>
-    static SharedPointer<DenseMatrixGeneric<T>> toDense(const SharedPointer<MatrixType<T>>& mh)
+      template <typename T, template <typename> class MatrixType>
+      static SharedPointer<DenseMatrixGeneric<T>> toDense(const SharedPointer<MatrixType<T>>& mh)
+      {
+        return to<DenseMatrixGeneric<T>>(mh);
+      }
+
+      template <typename T, template <typename> class MatrixType>
+      static SharedPointer<SparseRowMatrixGeneric<T>> toSparse(const SharedPointer<MatrixType<T>>& mh)
+      {
+        return to<SparseRowMatrixGeneric<T>>(mh);
+      }
+
+      template <typename T, template <typename> class MatrixType>
+      static SharedPointer<DenseColumnMatrixGeneric<T>> toColumn(const SharedPointer<MatrixType<T>>& mh)
+      {
+        return to<DenseColumnMatrixGeneric<T>>(mh);
+      }
+
+      castMatrix() = delete;
+    };
+
+    class SCISHARE matrixIs
     {
-      return to<DenseMatrixGeneric<T>>(mh);
-    }
+    public:
+      // Test to see if the matrix is this subtype.
+      template <typename T>
+      static bool dense(const SharedPointer<MatrixBase<T>>& mh)
+      {
+        return castMatrix::toDense(mh) != nullptr;
+      }
 
-    template <typename T, template <typename> class MatrixType>
-    static SharedPointer<SparseRowMatrixGeneric<T>> toSparse(const SharedPointer<MatrixType<T>>& mh)
-    {
-      return to<SparseRowMatrixGeneric<T>>(mh);
-    }
+      template <typename T>
+      static bool sparse(const SharedPointer<MatrixBase<T>>& mh)
+      {
+        return castMatrix::toSparse(mh) != nullptr;
+      }
 
-    template <typename T, template <typename> class MatrixType>
-    static SharedPointer<DenseColumnMatrixGeneric<T>> toColumn(const SharedPointer<MatrixType<T>>& mh)
-    {
-      return to<DenseColumnMatrixGeneric<T>>(mh);
-    }
+      static bool column(const MatrixHandle& mh);
+      static std::string whatType(const MatrixHandle& mh);
+      static std::string whatType(const ComplexMatrixHandle& mh);
+      static MatrixTypeCode typeCode(const MatrixHandle& mh);
 
-    castMatrix() = delete;
-  };
+      matrixIs() = delete;
+    };
 
-  class SCISHARE matrixIs
-  {
-  public:
-    // Test to see if the matrix is this subtype.
+    const double zero_threshold{ 1.00000e-08 };  /// defines a threshold below that its a zero matrix element (sparsematrix)
+
     template <typename T>
-    static bool dense(const SharedPointer<MatrixBase<T>>& mh)
+    class NonZero
     {
-      return castMatrix::toDense(mh) != nullptr;
-    }
+    public:
+      bool operator()(const T& num) const
+      {
+        return std::fabs(num) > zero_threshold;
+      }
+    };
 
-    template <typename T>
-    static bool sparse(const SharedPointer<MatrixBase<T>>& mh)
+    template <>
+    class NonZero<complex>
     {
-      return castMatrix::toSparse(mh) != nullptr;
-    }
-
-    static bool column(const MatrixHandle& mh);
-    static std::string whatType(const MatrixHandle& mh);
-    static std::string whatType(const ComplexMatrixHandle& mh);
-    static MatrixTypeCode typeCode(const MatrixHandle& mh);
-
-    matrixIs() = delete;
-  };
+    public:
+      bool operator()(const complex& num) const
+      {
+        return NonZero<double>()(std::norm(num));
+      }
+    };
 
   /// @todo: move
   class SCISHARE convertMatrix
@@ -127,11 +150,21 @@ namespace Datatypes {
     }
     static DenseMatrixHandle toDense(const MatrixHandle& mh);
     static SparseRowMatrixHandle toSparse(const MatrixHandle& mh);
-    static SparseRowMatrixHandle fromDenseToSparse(const DenseMatrix& mh);
+
+    template <typename T, template <typename> class MatrixType>
+    static SharedPointer<SparseRowMatrixGeneric<T>> fromDenseToSparse(const MatrixType<T>& dense)
+    {
+      typename SparseRowMatrixFromMapGeneric<T>::Values data;
+      NonZero<T> nonZero;
+      for (auto i = 0; i < dense.nrows(); i++)
+        for (auto j = 0; j < dense.ncols(); j++)
+          if (nonZero(dense(i, j)))
+            data[i][j] = dense(i, j);
+
+      return SparseRowMatrixFromMapGeneric<T>::make(dense.nrows(), dense.ncols(), data);
+    }
 
     convertMatrix() = delete;
-  private:
-    static const double zero_threshold;  /// defines a threshold below that its a zero matrix element (sparsematrix)
   };
 
 }}}
