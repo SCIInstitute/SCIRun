@@ -88,11 +88,11 @@ namespace SCIRun {
 
         virtual void setStateDefaults() override;
       private:
-        boost::shared_ptr<detail::OsprayImpl> impl_;
+        static boost::shared_ptr<detail::OsprayImpl> impl_;
       };
 
-    } 
-  } 
-} 
+    }
+  }
+}
 
 #endif

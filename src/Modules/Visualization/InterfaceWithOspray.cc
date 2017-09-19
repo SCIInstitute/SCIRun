@@ -257,7 +257,9 @@ namespace detail
   #endif
 }
 
-InterfaceWithOspray::InterfaceWithOspray() : GeometryGeneratingModule(staticInfo_), impl_(new detail::OsprayImpl)
+boost::shared_ptr<detail::OsprayImpl> InterfaceWithOspray::impl_(new detail::OsprayImpl);
+
+InterfaceWithOspray::InterfaceWithOspray() : GeometryGeneratingModule(staticInfo_)
 {
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);

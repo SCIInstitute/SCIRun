@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>7</count>
+			<count>10</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>ConvertQuadSurfToTriSurf:0</first>
@@ -118,7 +118,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -233,7 +233,86 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateStandardColorMap:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>CreateStandardColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>5</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AlphaUserPointsVector</name>
+								</first>
+								<second>
+									<name>AlphaUserPointsVector</name>
+									<value>
+										<which>5</which>
+										<value>
+											<count>0</count>
+											<item_version>0</item_version>
+										</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapInvert</name>
+								</first>
+								<second>
+									<name>ColorMapInvert</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapName</name>
+								</first>
+								<second>
+									<name>ColorMapName</name>
+									<value>
+										<which>2</which>
+										<value>Orange,Black,Lime</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapResolution</name>
+								</first>
+								<second>
+									<name>ColorMapResolution</name>
+									<value>
+										<which>0</which>
+										<value>256</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ColorMapShift</name>
+								</first>
+								<second>
+									<name>ColorMapShift</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -277,7 +356,7 @@
 									<name>BackgroundColorB</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -289,7 +368,7 @@
 									<name>BackgroundColorG</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -301,7 +380,7 @@
 									<name>BackgroundColorR</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -313,7 +392,7 @@
 									<name>CameraPositionX</name>
 									<value>
 										<which>1</which>
-										<value>-1.00000000000000000e+000</value>
+										<value>-1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -325,7 +404,7 @@
 									<name>CameraPositionY</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -337,7 +416,7 @@
 									<name>CameraPositionZ</name>
 									<value>
 										<which>1</which>
-										<value>-2.00000000000000000e+000</value>
+										<value>-2.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -349,7 +428,7 @@
 									<name>CameraUpX</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -361,7 +440,7 @@
 									<name>CameraUpY</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -373,7 +452,7 @@
 									<name>CameraUpZ</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -385,7 +464,7 @@
 									<name>CameraViewX</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-001</value>
+										<value>5.00000000000000000e-01</value>
 									</value>
 								</second>
 							</item>
@@ -397,7 +476,7 @@
 									<name>CameraViewY</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-001</value>
+										<value>5.00000000000000000e-01</value>
 									</value>
 								</second>
 							</item>
@@ -409,7 +488,7 @@
 									<name>CameraViewZ</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -421,7 +500,7 @@
 									<name>DefaultColorB</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-001</value>
+										<value>5.00000000000000000e-01</value>
 									</value>
 								</second>
 							</item>
@@ -433,7 +512,7 @@
 									<name>DefaultColorG</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-001</value>
+										<value>5.00000000000000000e-01</value>
 									</value>
 								</second>
 							</item>
@@ -445,7 +524,7 @@
 									<name>DefaultColorR</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-001</value>
+										<value>5.00000000000000000e-01</value>
 									</value>
 								</second>
 							</item>
@@ -457,7 +536,7 @@
 									<name>FrameCount</name>
 									<value>
 										<which>0</which>
-										<value>10</value>
+										<value>9</value>
 									</value>
 								</second>
 							</item>
@@ -482,6 +561,250 @@
 									<value>
 										<which>0</which>
 										<value>800</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowImageInWindow</name>
+								</first>
+								<second>
+									<name>ShowImageInWindow</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>InterfaceWithOspray:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>InterfaceWithOspray</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>19</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>BackgroundColorB</name>
+								</first>
+								<second>
+									<name>BackgroundColorB</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>BackgroundColorG</name>
+								</first>
+								<second>
+									<name>BackgroundColorG</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>BackgroundColorR</name>
+								</first>
+								<second>
+									<name>BackgroundColorR</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraPositionX</name>
+								</first>
+								<second>
+									<name>CameraPositionX</name>
+									<value>
+										<which>1</which>
+										<value>-1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraPositionY</name>
+								</first>
+								<second>
+									<name>CameraPositionY</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraPositionZ</name>
+								</first>
+								<second>
+									<name>CameraPositionZ</name>
+									<value>
+										<which>1</which>
+										<value>-2.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraUpX</name>
+								</first>
+								<second>
+									<name>CameraUpX</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraUpY</name>
+								</first>
+								<second>
+									<name>CameraUpY</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraUpZ</name>
+								</first>
+								<second>
+									<name>CameraUpZ</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewX</name>
+								</first>
+								<second>
+									<name>CameraViewX</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewY</name>
+								</first>
+								<second>
+									<name>CameraViewY</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewZ</name>
+								</first>
+								<second>
+									<name>CameraViewZ</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DefaultColorB</name>
+								</first>
+								<second>
+									<name>DefaultColorB</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DefaultColorG</name>
+								</first>
+								<second>
+									<name>DefaultColorG</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DefaultColorR</name>
+								</first>
+								<second>
+									<name>DefaultColorR</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FrameCount</name>
+								</first>
+								<second>
+									<name>FrameCount</name>
+									<value>
+										<which>0</which>
+										<value>10</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ImageHeight</name>
+								</first>
+								<second>
+									<name>ImageHeight</name>
+									<value>
+										<which>0</which>
+										<value>768</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ImageWidth</name>
+								</first>
+								<second>
+									<name>ImageWidth</name>
+									<value>
+										<which>0</which>
+										<value>1024</value>
 									</value>
 								</second>
 							</item>
@@ -533,7 +856,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+000</value>
+										<value>2.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -545,7 +868,71 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Symmetric</name>
+								</first>
+								<second>
+									<name>Symmetric</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>RescaleColorMap:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>RescaleColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AutoScale</name>
+								</first>
+								<second>
+									<name>AutoScale</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMax</name>
+								</first>
+								<second>
+									<name>FixedMax</name>
+									<value>
+										<which>1</which>
+										<value>2.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMin</name>
+								</first>
+								<second>
+									<name>FixedMin</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -567,7 +954,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>7</count>
+			<count>11</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>ConvertQuadSurfToTriSurf:0</moduleId1_>
@@ -587,7 +974,31 @@
 					<name>TriSurf</name>
 					<id>0</id>
 				</port1_>
+				<moduleId2_>InterfaceWithOspray:1</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertQuadSurfToTriSurf:0</moduleId1_>
+				<port1_>
+					<name>TriSurf</name>
+					<id>0</id>
+				</port1_>
 				<moduleId2_>RescaleColorMap:0</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertQuadSurfToTriSurf:0</moduleId1_>
+				<port1_>
+					<name>TriSurf</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>RescaleColorMap:1</moduleId2_>
 				<port2_>
 					<name>Field</name>
 					<id>0</id>
@@ -630,6 +1041,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>CreateStandardColorMap:1</moduleId1_>
+				<port1_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>RescaleColorMap:1</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>GetFieldBoundary:0</moduleId1_>
 				<port1_>
 					<name>BoundaryField</name>
@@ -653,58 +1076,91 @@
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>RescaleColorMap:1</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>InterfaceWithOspray:1</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>7</count>
+		<count>10</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>ConvertQuadSurfToTriSurf:0</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>-3.04000000000000000e+002</first>
-				<second>-1.52000000000000000e+002</second>
+				<first>-3.04000000000000000e+02</first>
+				<second>-1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:0</first>
 			<second>
-				<first>-2.28000000000000000e+002</first>
-				<second>-3.80000000000000000e+002</second>
+				<first>-2.28000000000000000e+02</first>
+				<second>-3.80000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>-3.04000000000000000e+002</first>
-				<second>-5.32000000000000000e+002</second>
+				<first>-3.04000000000000000e+02</first>
+				<second>-5.32000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:0</first>
 			<second>
-				<first>5.00000000000000000e+001</first>
-				<second>5.00000000000000000e+001</second>
+				<first>2.00000000000000000e+00</first>
+				<second>3.40000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateStandardColorMap:1</first>
+			<second>
+				<first>3.04000000000000000e+02</first>
+				<second>-2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldBoundary:0</first>
 			<second>
-				<first>-7.60000000000000000e+001</first>
-				<second>-2.28000000000000000e+002</second>
+				<first>-7.60000000000000000e+01</first>
+				<second>-2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>InterfaceWithOspray:0</first>
 			<second>
-				<first>-5.32000000000000000e+002</first>
-				<second>7.60000000000000000e+001</second>
+				<first>-5.32000000000000000e+02</first>
+				<second>7.60000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>InterfaceWithOspray:1</first>
+			<second>
+				<first>3.48000000000000000e+02</first>
+				<second>5.60000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>RescaleColorMap:0</first>
 			<second>
-				<first>5.00000000000000000e+001</first>
-				<second>1.60000000000000000e+002</second>
+				<first>5.00000000000000000e+01</first>
+				<second>1.60000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>RescaleColorMap:1</first>
+			<second>
+				<first>3.80000000000000000e+02</first>
+				<second>-7.60000000000000000e+01</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -717,7 +1173,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="20" tracking_level="0" version="0">
-		<count>7</count>
+		<count>10</count>
 		<item_version>0</item_version>
 		<item class_id="21" tracking_level="0" version="0">
 			<first>ConvertQuadSurfToTriSurf:0</first>
@@ -736,6 +1192,10 @@
 			<second>-1</second>
 		</item>
 		<item>
+			<first>CreateStandardColorMap:1</first>
+			<second>-1</second>
+		</item>
+		<item>
 			<first>GetFieldBoundary:0</first>
 			<second>-1</second>
 		</item>
@@ -744,7 +1204,15 @@
 			<second>-1</second>
 		</item>
 		<item>
+			<first>InterfaceWithOspray:1</first>
+			<second>-1</second>
+		</item>
+		<item>
 			<first>RescaleColorMap:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>RescaleColorMap:1</first>
 			<second>-1</second>
 		</item>
 	</moduleTags>
