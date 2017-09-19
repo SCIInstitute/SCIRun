@@ -216,10 +216,19 @@ namespace detail
       {
         float lightColor[] = { toFloat(Parameters::LightColorR), toFloat(Parameters::LightColorG), toFloat(Parameters::LightColorB) };
         ospSet3fv(light, "color", lightColor);
+        ospSet1f(light, "intensity", toFloat(Parameters::LightIntensity));
+        ospSet1i(light, "isVisible", state->getValue(Parameters::LightVisible).toBool() ? 1 : 0);
         ospCommit(light);
         lights = ospNewData(1, OSP_LIGHT, &light);
         ospCommit(lights);
       }
+
+      //material
+      OSPMaterial material = ospNewMaterial(renderer, "OBJMaterial");
+      ospSet3f(material, "Kd", 0.2f, 0.2f, 0.2f);
+      ospSet3f(material, "Ks", 0.4f, 0.4f, 0.4f);
+      ospSet1f(material, "Ns", 100.0f);
+      ospCommit(renderer);
 
       // complete setup of renderer
       ospSet1i(renderer, "aoSamples", 1);
@@ -230,6 +239,7 @@ namespace detail
       ospSetObject(renderer, "camera", camera);
       if (light)
         ospSetObject(renderer, "lights", lights);
+      ospSetObject(renderer, "material", material);
       ospCommit(renderer);
 
       // create and setup framebuffer
