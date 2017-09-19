@@ -70,6 +70,7 @@ InterfaceWithOsprayDialog::InterfaceWithOsprayDialog(const std::string& name, Mo
 
   state_->connectSpecificStateChanged(Variables::Filename, [this]() { imageFilenameChanged(); });
   connect(this, SIGNAL(imageFilenameChanged()), this, SLOT(showImage()));
+  WidgetStyleMixin::tabStyle(tabWidget);
 }
 
 void InterfaceWithOsprayDialog::showImage()
