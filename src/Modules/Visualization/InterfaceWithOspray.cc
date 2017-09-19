@@ -128,38 +128,49 @@ namespace detail
       }
     }
 
-    OSPFrameBuffer frameBuffer_;
-    
+    ModuleStateHandle state_;
+    osp::vec2i imgSize_;
+    OSPCamera camera_;
+    OSPModel world_;
+    OSPRenderer renderer_;
+    OSPFrameBuffer framebuffer_;
+
+    float toFloat(const Name& name) const
+    {
+      return static_cast<float>(state_->getValue(name).toDouble());
+    }
+
+    struct FieldData
+    {
+      std::vector<float> vertex, color;
+      std::vector<int32_t> index;
+    };
+
+    std::vector<FieldData> fieldData_;
+
   public:
-    OsprayImpl()
+    explicit OsprayImpl(ModuleStateHandle state) : state_(state)
     {
       initialize();
     }
 
-    void setup(ModuleStateHandle state)
+    void setup()
     {
-      // image size
-      osp::vec2i imgSize;
-      imgSize.x = state->getValue(Parameters::ImageWidth).toInt();
-      imgSize.y = state->getValue(Parameters::ImageHeight).toInt();
-
-      auto toFloat = [state](const Name& name) { return static_cast<float>(state->getValue(name).toDouble()); };
-
+      imgSize_.x = state_->getValue(Parameters::ImageWidth).toInt();
+      imgSize_.y = state_->getValue(Parameters::ImageHeight).toInt();
 
       // camera
       float cam_pos[] = { toFloat(Parameters::CameraPositionX), toFloat(Parameters::CameraPositionY), toFloat(Parameters::CameraPositionZ) };
       float cam_up[] = { toFloat(Parameters::CameraUpX), toFloat(Parameters::CameraUpY), toFloat(Parameters::CameraUpZ) };
       float cam_view[] = { toFloat(Parameters::CameraViewX), toFloat(Parameters::CameraViewY), toFloat(Parameters::CameraViewZ) };
 
-
-
       // create and setup camera
-      OSPCamera camera = ospNewCamera("perspective");
-      ospSetf(camera, "aspect", imgSize.x / (float)imgSize.y);
-      ospSet3fv(camera, "pos", cam_pos);
-      ospSet3fv(camera, "dir", cam_view);
-      ospSet3fv(camera, "up", cam_up);
-      ospCommit(camera); // commit each object to indicate modifications are done
+      camera_ = ospNewCamera("perspective");
+      ospSetf(camera_, "aspect", imgSize_.x / (float)imgSize_.y);
+      ospSet3fv(camera_, "pos", cam_pos);
+      ospSet3fv(camera_, "dir", cam_view);
+      ospSet3fv(camera_, "up", cam_up);
+      ospCommit(camera_); // commit each object to indicate modifications are done
     }
 
     void addField(FieldHandle field, boost::optional<ColorMapHandle> colorMap)
@@ -167,11 +178,17 @@ namespace detail
       auto facade(field->mesh()->getFacade());
 
       auto map = colorMap.value_or(nullptr);
-      std::vector<float> vertex, color;
+      fieldData_.push_back({});
+      auto& fieldData = fieldData_.back();
+      auto& vertex = fieldData.vertex;
+      auto& color = fieldData.color;
+
       auto vfield = field->vfield();
 
       {
         double value;
+        ColorRGB nodeColor(state_->getValue(Parameters::DefaultColorR).toDouble(), state_->getValue(Parameters::DefaultColorG).toDouble(), state_->getValue(Parameters::DefaultColorB).toDouble());
+
         for (const auto& node : facade->nodes())
         {
           auto point = node.point();
@@ -181,8 +198,6 @@ namespace detail
           vertex.push_back(0);
 
           vfield->get_value(value, node.index());
-
-          ColorRGB nodeColor(state->getValue(Parameters::DefaultColorR).toDouble(), state->getValue(Parameters::DefaultColorG).toDouble(), state->getValue(Parameters::DefaultColorB).toDouble());
           if (map)
           {
             nodeColor = map->valueToColor(value);
@@ -194,7 +209,7 @@ namespace detail
         }
       }
 
-      std::vector<int32_t> index;
+      auto& index = fieldData.index;
       {
         for (const auto& face : facade->faces())
         {
@@ -220,79 +235,72 @@ namespace detail
       ospSetData(mesh, "index", data);
 
       ospCommit(mesh);
-
+      if (!world_)
+        world_ = ospNewModel();
+      ospAddGeometry(world_, mesh);
+      ospCommit(world_);
     }
 
-    void render(ModuleStateHandle state)
+    void render()
     {
+      // create renderer
+      renderer_ = ospNewRenderer("scivis"); // choose Scientific Visualization renderer
 
+      // create and setup light for Ambient Occlusion
+      OSPLight light = ospNewLight(renderer_, state_->getValue(Parameters::LightType).toString().c_str());
+      OSPData lights;
+      if (light)
+      {
+        float lightColor[] = { toFloat(Parameters::LightColorR), toFloat(Parameters::LightColorG), toFloat(Parameters::LightColorB) };
+        ospSet3fv(light, "color", lightColor);
+        ospSet1f(light, "intensity", toFloat(Parameters::LightIntensity));
+        ospSet1i(light, "isVisible", state_->getValue(Parameters::LightVisible).toBool() ? 1 : 0);
+        ospCommit(light);
+        lights = ospNewData(1, OSP_LIGHT, &light);
+        ospCommit(lights);
+      }
 
+      //material
+      OSPMaterial material = ospNewMaterial(renderer_, "OBJMaterial");
+      ospSet3f(material, "Kd", 0.2f, 0.2f, 0.2f);
+      ospSet3f(material, "Ks", 0.4f, 0.4f, 0.4f);
+      ospSet1f(material, "Ns", 100.0f);
+      ospCommit(renderer_);
 
+      // complete setup of renderer
+      ospSet1i(renderer_, "aoSamples", 1);
+      ospSet3f(renderer_, "bgColor", toFloat(Parameters::BackgroundColorR),
+        toFloat(Parameters::BackgroundColorG),
+        toFloat(Parameters::BackgroundColorB));
+      ospSetObject(renderer_, "model", world_);
+      ospSetObject(renderer_, "camera", camera_);
+      if (light)
+        ospSetObject(renderer_, "lights", lights);
+      ospSetObject(renderer_, "material", material);
+      ospCommit(renderer_);
 
+      // create and setup framebuffer
+      framebuffer_ = ospNewFrameBuffer(imgSize_, OSP_FB_SRGBA, OSP_FB_COLOR | /*OSP_FB_DEPTH |*/ OSP_FB_ACCUM);
+      ospFrameBufferClear(framebuffer_, OSP_FB_COLOR | OSP_FB_ACCUM);
 
-            OSPModel world = ospNewModel();
-            ospAddGeometry(world, mesh);
-            ospCommit(world);
+      // render one frame
+      ospRenderFrame(framebuffer_, renderer_, OSP_FB_COLOR | OSP_FB_ACCUM);
 
-            // create renderer
-            OSPRenderer renderer = ospNewRenderer("scivis"); // choose Scientific Visualization renderer
-
-            // create and setup light for Ambient Occlusion
-            OSPLight light = ospNewLight(renderer, state->getValue(Parameters::LightType).toString().c_str());
-            OSPData lights;
-            if (light)
-            {
-              float lightColor[] = { toFloat(Parameters::LightColorR), toFloat(Parameters::LightColorG), toFloat(Parameters::LightColorB) };
-              ospSet3fv(light, "color", lightColor);
-              ospSet1f(light, "intensity", toFloat(Parameters::LightIntensity));
-              ospSet1i(light, "isVisible", state->getValue(Parameters::LightVisible).toBool() ? 1 : 0);
-              ospCommit(light);
-              lights = ospNewData(1, OSP_LIGHT, &light);
-              ospCommit(lights);
-            }
-
-            //material
-            OSPMaterial material = ospNewMaterial(renderer, "OBJMaterial");
-            ospSet3f(material, "Kd", 0.2f, 0.2f, 0.2f);
-            ospSet3f(material, "Ks", 0.4f, 0.4f, 0.4f);
-            ospSet1f(material, "Ns", 100.0f);
-            ospCommit(renderer);
-
-            // complete setup of renderer
-            ospSet1i(renderer, "aoSamples", 1);
-            ospSet3f(renderer, "bgColor", toFloat(Parameters::BackgroundColorR),
-              toFloat(Parameters::BackgroundColorG),
-              toFloat(Parameters::BackgroundColorB));
-            ospSetObject(renderer, "model", world);
-            ospSetObject(renderer, "camera", camera);
-            if (light)
-              ospSetObject(renderer, "lights", lights);
-            ospSetObject(renderer, "material", material);
-            ospCommit(renderer);
-
-            // create and setup framebuffer
-            framebuffer_ = ospNewFrameBuffer(imgSize, OSP_FB_SRGBA, OSP_FB_COLOR | /*OSP_FB_DEPTH |*/ OSP_FB_ACCUM);
-            ospFrameBufferClear(framebuffer, OSP_FB_COLOR | OSP_FB_ACCUM);
-
-            // render one frame
-            ospRenderFrame(framebuffer, renderer, OSP_FB_COLOR | OSP_FB_ACCUM);
-
-            const int frameCount = state->getValue(Parameters::FrameCount).toInt();
-            // render N more frames, which are accumulated to result in a better converged image
-            for (int frames = 0; frames < frameCount-1; frames++)
-              ospRenderFrame(framebuffer, renderer, OSP_FB_COLOR | OSP_FB_ACCUM);
-
+      const int frameCount = state_->getValue(Parameters::FrameCount).toInt();
+      // render N more frames, which are accumulated to result in a better converged image
+      for (int frames = 0; frames < frameCount-1; frames++)
+        ospRenderFrame(framebuffer_, renderer_, OSP_FB_COLOR | OSP_FB_ACCUM);
     }
 
     void writeImage(const std::string& filename)
     {
       // access framebuffer and write its content as PPM file
-      const uint32_t * fb = (uint32_t*)ospMapFrameBuffer(framebuffer, OSP_FB_COLOR);
-      writePPM(filename.c_str(), imgSize, fb);
-      ospUnmapFrameBuffer(fb, framebuffer);
+      const uint32_t * fb = (uint32_t*)ospMapFrameBuffer(framebuffer_, OSP_FB_COLOR);
+      writePPM(filename.c_str(), imgSize_, fb);
+      ospUnmapFrameBuffer(fb, framebuffer_);
     }
   private:
-    void writePPM(const char *fileName, const osp::vec2i &size, const uint32_t *pixel)
+    void writePPM(const char *fileName, const osp::vec2i &size, const uint32_t *pixel) const
     {
       FILE *file = fopen(fileName, "wb");
       fprintf(file, "P6\n%i %i\n255\n", size.x, size.y);
@@ -321,7 +329,7 @@ namespace detail
   #endif
 }
 
-InterfaceWithOspray::InterfaceWithOspray() : GeometryGeneratingModule(staticInfo_), impl_(new detail::OsprayImpl)
+InterfaceWithOspray::InterfaceWithOspray() : GeometryGeneratingModule(staticInfo_)
 {
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
@@ -344,7 +352,17 @@ void InterfaceWithOspray::execute()
     auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
     auto filename = "scirunOsprayOutput_" + isoString + ".ppm";
     remark("Saving output to " + filename);
-    impl_->writeImage(field, filename, get_state(), colorMap);
+    std::cout << __FILE__ << " " << __LINE__ << std::endl;
+    detail::OsprayImpl ospray(get_state());
+    std::cout << __FILE__ << " " << __LINE__ << std::endl;
+    ospray.setup();
+    std::cout << __FILE__ << " " << __LINE__ << std::endl;
+    ospray.addField(field, colorMap);
+    std::cout << __FILE__ << " " << __LINE__ << std::endl;
+    ospray.render();
+    std::cout << __FILE__ << " " << __LINE__ << std::endl;
+    ospray.writeImage(filename);
+    std::cout << __FILE__ << " " << __LINE__ << std::endl;
     get_state()->setTransientValue(Variables::Filename, filename);
 
     //auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);

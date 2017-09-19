@@ -93,8 +93,6 @@ namespace SCIRun {
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
         virtual void setStateDefaults() override;
-      private:
-        boost::shared_ptr<detail::OsprayImpl> impl_;
       };
 
     }
