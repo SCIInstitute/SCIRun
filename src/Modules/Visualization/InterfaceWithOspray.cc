@@ -69,6 +69,12 @@ ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorG);
 ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorB);
 ALGORITHM_PARAMETER_DEF(Visualization, FrameCount);
 ALGORITHM_PARAMETER_DEF(Visualization, ShowImageInWindow);
+ALGORITHM_PARAMETER_DEF(Visualization, LightColorR);
+ALGORITHM_PARAMETER_DEF(Visualization, LightColorG);
+ALGORITHM_PARAMETER_DEF(Visualization, LightColorB);
+ALGORITHM_PARAMETER_DEF(Visualization, LightIntensity);
+ALGORITHM_PARAMETER_DEF(Visualization, LightVisible);
+ALGORITHM_PARAMETER_DEF(Visualization, LightType);
 
 MODULE_INFO_DEF(InterfaceWithOspray, Visualization, SCIRun)
 
@@ -94,6 +100,12 @@ void InterfaceWithOspray::setStateDefaults()
   state->setValue(Parameters::BackgroundColorB, 0.0);
   state->setValue(Parameters::FrameCount, 10);
   state->setValue(Parameters::ShowImageInWindow, true);
+  state->setValue(Parameters::LightColorR, 1.0);
+  state->setValue(Parameters::LightColorG, 1.0);
+  state->setValue(Parameters::LightColorB, 1.0);
+  state->setValue(Parameters::LightIntensity, 1.0);
+  state->setValue(Parameters::LightVisible, false);
+  state->setValue(Parameters::LightType, std::string("none"));
 }
 
 namespace detail
@@ -198,10 +210,16 @@ namespace detail
       OSPRenderer renderer = ospNewRenderer("scivis"); // choose Scientific Visualization renderer
 
       // create and setup light for Ambient Occlusion
-      OSPLight light = ospNewLight(renderer, "ambient");
-      ospCommit(light);
-      OSPData lights = ospNewData(1, OSP_LIGHT, &light);
-      ospCommit(lights);
+      OSPLight light = ospNewLight(renderer, state->getValue(Parameters::LightType).toString().c_str());
+      OSPData lights;
+      if (light)
+      {
+        float lightColor[] = { toFloat(Parameters::LightColorR), toFloat(Parameters::LightColorG), toFloat(Parameters::LightColorB) };
+        ospSet3fv(light, "color", lightColor);
+        ospCommit(light);
+        lights = ospNewData(1, OSP_LIGHT, &light);
+        ospCommit(lights);
+      }
 
       // complete setup of renderer
       ospSet1i(renderer, "aoSamples", 1);
@@ -210,7 +228,8 @@ namespace detail
         toFloat(Parameters::BackgroundColorB));
       ospSetObject(renderer, "model", world);
       ospSetObject(renderer, "camera", camera);
-      ospSetObject(renderer, "lights", lights);
+      if (light)
+        ospSetObject(renderer, "lights", lights);
       ospCommit(renderer);
 
       // create and setup framebuffer

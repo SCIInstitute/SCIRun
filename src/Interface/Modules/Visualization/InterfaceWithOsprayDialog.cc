@@ -66,6 +66,13 @@ InterfaceWithOsprayDialog::InterfaceWithOsprayDialog(const std::string& name, Mo
   addDoubleSpinBoxManager(backgroundColorBDoubleSpinBox_, BackgroundColorB);
   addCheckBoxManager(showImageCheckBox_, ShowImageInWindow);
 
+  addDoubleSpinBoxManager(lightColorRDoubleSpinBox_, LightColorR);
+  addDoubleSpinBoxManager(lightColorGDoubleSpinBox_, LightColorG);
+  addDoubleSpinBoxManager(lightColorBDoubleSpinBox_, LightColorB);
+  addDoubleSpinBoxManager(lightIntensityDoubleSpinBox_, LightIntensity);
+  addCheckBoxManager(lightVisibleCheckBox_, LightVisible);
+  addComboBoxManager(lightTypeComboBox_, LightType);
+
   createExecuteInteractivelyToggleAction();
 
   state_->connectSpecificStateChanged(Variables::Filename, [this]() { imageFilenameChanged(); });

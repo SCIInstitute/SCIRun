@@ -346,7 +346,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>19</count>
+							<count>25</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -566,6 +566,78 @@
 							</item>
 							<item>
 								<first>
+									<name>LightColorB</name>
+								</first>
+								<second>
+									<name>LightColorB</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>LightColorG</name>
+								</first>
+								<second>
+									<name>LightColorG</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>LightColorR</name>
+								</first>
+								<second>
+									<name>LightColorR</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>LightIntensity</name>
+								</first>
+								<second>
+									<name>LightIntensity</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>LightType</name>
+								</first>
+								<second>
+									<name>LightType</name>
+									<value>
+										<which>2</which>
+										<value>ambient</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>LightVisible</name>
+								</first>
+								<second>
+									<name>LightVisible</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>ShowImageInWindow</name>
 								</first>
 								<second>
@@ -590,7 +662,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>19</count>
+							<count>25</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -805,6 +877,78 @@
 									<value>
 										<which>0</which>
 										<value>1024</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>LightColorB</name>
+								</first>
+								<second>
+									<name>LightColorB</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>LightColorG</name>
+								</first>
+								<second>
+									<name>LightColorG</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>LightColorR</name>
+								</first>
+								<second>
+									<name>LightColorR</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>LightIntensity</name>
+								</first>
+								<second>
+									<name>LightIntensity</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>LightType</name>
+								</first>
+								<second>
+									<name>LightType</name>
+									<value>
+										<which>2</which>
+										<value>ambient</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>LightVisible</name>
+								</first>
+								<second>
+									<name>LightVisible</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>

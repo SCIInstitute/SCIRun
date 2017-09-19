@@ -526,6 +526,11 @@
             </item>
             <item>
              <property name="text">
+              <string>none</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
               <string>spot</string>
              </property>
             </item>

@@ -65,6 +65,12 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(BackgroundColorB);
         ALGORITHM_PARAMETER_DECL(FrameCount);
         ALGORITHM_PARAMETER_DECL(ShowImageInWindow);
+        ALGORITHM_PARAMETER_DECL(LightVisible);
+        ALGORITHM_PARAMETER_DECL(LightColorR);
+        ALGORITHM_PARAMETER_DECL(LightColorG);
+        ALGORITHM_PARAMETER_DECL(LightColorB);
+        ALGORITHM_PARAMETER_DECL(LightIntensity);
+        ALGORITHM_PARAMETER_DECL(LightType);
       }
     }
   }
