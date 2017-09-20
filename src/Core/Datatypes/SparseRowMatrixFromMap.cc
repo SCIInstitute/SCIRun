@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,13 +27,9 @@
 */
 
 #include <Core/Datatypes/SparseRowMatrixFromMap.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
+
 
 
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
-
-
-
-
