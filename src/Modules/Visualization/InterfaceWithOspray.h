@@ -79,20 +79,22 @@ namespace SCIRun {
     namespace Visualization {
 
       class SCISHARE InterfaceWithOspray : public Dataflow::Networks::GeometryGeneratingModule,
-        public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
+        public Has2InputPorts<DynamicPortTag<FieldPortTag>, DynamicPortTag<ColorMapPortTag>>,
         public Has1OutputPort<GeometryPortTag>
       {
       public:
         InterfaceWithOspray();
         virtual void execute() override;
 
-        INPUT_PORT(0, Field, Field);
-        INPUT_PORT(1, ColorMapObject, ColorMap);
+        INPUT_PORT_DYNAMIC(0, Field, Field);
+        INPUT_PORT_DYNAMIC(1, ColorMapObject, ColorMap);
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
         virtual void setStateDefaults() override;
+
+        HAS_DYNAMIC_PORTS
       };
 
     }

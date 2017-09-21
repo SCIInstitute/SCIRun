@@ -132,7 +132,7 @@ namespace detail
     osp::vec2i imgSize_;
     OSPCamera camera_;
     OSPModel world_;
-    OSPGeometry mesh_;
+    std::vector<OSPGeometry> meshes_;
     OSPRenderer renderer_;
     OSPFrameBuffer framebuffer_;
 
@@ -172,6 +172,9 @@ namespace detail
       ospSet3fv(camera_, "dir", cam_view);
       ospSet3fv(camera_, "up", cam_up);
       ospCommit(camera_); // commit each object to indicate modifications are done
+
+      world_ = ospNewModel();
+      ospCommit(world_);
     }
 
     void addField(FieldHandle field, boost::optional<ColorMapHandle> colorMap)
@@ -222,21 +225,20 @@ namespace detail
       }
 
       // create and setup model and mesh
-      mesh_ = ospNewGeometry("triangles");
+      OSPGeometry mesh = ospNewGeometry("triangles");
       OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
       ospCommit(data);
-      ospSetData(mesh_, "vertex", data);
+      ospSetData(mesh, "vertex", data);
       data = ospNewData(vertex.size() / 4, OSP_FLOAT4, &color[0]);
       ospCommit(data);
-      ospSetData(mesh_, "vertex.color", data);
+      ospSetData(mesh, "vertex.color", data);
       data = ospNewData(index.size() / 3, OSP_INT3, &index[0]); // OSP_INT4 format is also supported for triangle indices
-
       ospCommit(data);
-      ospSetData(mesh_, "index", data);
-      ospCommit(mesh_);
+      ospSetData(mesh, "index", data);
+      ospCommit(mesh);
 
-      world_ = ospNewModel();
-      ospAddGeometry(world_, mesh_);
+      meshes_.push_back(mesh);
+      ospAddGeometry(world_, mesh);
       ospCommit(world_);
     }
 
@@ -338,27 +340,34 @@ InterfaceWithOspray::InterfaceWithOspray() : GeometryGeneratingModule(staticInfo
 void InterfaceWithOspray::execute()
 {
   #ifdef WITH_OSPRAY
-  auto field = getRequiredInput(Field);
-  auto colorMap = getOptionalInput(ColorMapObject);
+  auto fields = getRequiredDynamicInputs(Field);
+  auto colorMaps = getOptionalDynamicInputs(ColorMapObject);
 
   if (needToExecute())
   {
-    FieldInformation info(field);
-
-    if (!info.is_trisurfmesh())
-      THROW_INVALID_ARGUMENT("Module currently only works with trisurfs.");
-
-    auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
-    auto filename = "scirunOsprayOutput_" + isoString + ".ppm";
-    remark("Saving output to " + filename);
-
     detail::OsprayImpl ospray(get_state());
     ospray.setup();
 
-    ospray.addField(field, colorMap);
+    for (auto&& fieldColor : zip(fields, colorMaps))
+    {
+      FieldHandle field;
+      boost::optional<ColorMapHandle> color;
+      boost::tie(field, color) = fieldColor;
 
+      FieldInformation info(field);
+
+      if (!info.is_trisurfmesh())
+        THROW_INVALID_ARGUMENT("Module currently only works with trisurfs.");
+
+      ospray.addField(field, color);
+    }
     ospray.render();
+
+    auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
+    auto filename = "scirunOsprayOutput_" + isoString + ".ppm";
     ospray.writeImage(filename);
+    remark("Saving output to " + filename);
+
     get_state()->setTransientValue(Variables::Filename, filename);
 
     //auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);
