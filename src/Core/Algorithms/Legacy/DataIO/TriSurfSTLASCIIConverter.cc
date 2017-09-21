@@ -26,45 +26,47 @@
  DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/DataIO/Legacy/TriSurfSTLASCIIConverter.h>
-#include <Core/Algorithms/DataIO/Legacy/STLUtils.h>
+#include <Core/Algorithms/Legacy/DataIO/TriSurfSTLASCIIConverter.h>
+#include <Core/Algorithms/Legacy/DataIO/STLUtils.h>
 
-#include <Core/Datatypes/VField.h>
-#include <Core/Datatypes/VMesh.h>
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Util/StringUtil.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 #include <iomanip>
 #include <fstream>
 #include <sstream>
-#include <string>
-#include <vector>
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/shared_array.hpp>
 
-#include <sci_debug.h>
+#include <Core/Utils/Legacy/StringUtil.h>
 
-namespace SCIRunAlgo {
+using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Geometry;
 
-namespace ASCII {
+namespace SCIRun {
+namespace Core {
+  namespace Algorithms {
 
-class ConverterPrivate
+class AsciiConverterPrivate
 {
 public:
 //  // point(vertex) lookup table
 //  typedef boost::unordered_map< Point, unsigned int, PointHash > PointTable;
 //  typedef std::list<Facet> FacetList;
 
-  ConverterPrivate(ProgressReporter* pr)
+  explicit AsciiConverterPrivate(LoggerHandle pr)
   : pr_(pr),
     CELL_SIZE(3)
   {}
 
   bool readFile(const std::string& filename, FieldHandle& field);
   bool writeFile(const std::string& filename, VMesh *vmesh);
-  void formatLine(std::string& line)
+  void formatLine(std::string& line) const
   {
     // replace comma's and tabs with white spaces
     for (size_t p = 0; p < line.size(); ++p)
@@ -74,20 +76,21 @@ public:
   }
 
   // assumes always length 3
-  inline Point vectorToPoint(const std::vector<float>& v)
+  inline Point vectorToPoint(const std::vector<float>& v) const
   {
     return Point( v[0], v[1], v[2] );
   }
 
 private:
-  ProgressReporter* pr_;
+  LoggerHandle pr_;
   const unsigned short CELL_SIZE;
 
   PointTable pointsLookupTable;
 };
+}}}
 
 bool
-ConverterPrivate::readFile(const std::string& filename, FieldHandle& field)
+AsciiConverterPrivate::readFile(const std::string& filename, FieldHandle& field)
 {
   std::ifstream inputfile;
   inputfile.exceptions( std::ifstream::failbit | std::ifstream::badbit );
@@ -108,7 +111,7 @@ ConverterPrivate::readFile(const std::string& filename, FieldHandle& field)
     std::string line;
     unsigned int pointIndex = 0, vertexCounter = 0, lineCounter = 0;
 
-    boost::shared_array< std::vector<float> > vertexArray(new std::vector<float>[CELL_SIZE]);
+    std::vector< std::vector<float> > vertexArray(CELL_SIZE);
     FacetList facetList;
 
     // loop until header
@@ -240,7 +243,7 @@ ConverterPrivate::readFile(const std::string& filename, FieldHandle& field)
 }
 
 bool
-ConverterPrivate::writeFile(const std::string& filename, VMesh *vmesh)
+AsciiConverterPrivate::writeFile(const std::string& filename, VMesh *vmesh)
 {
   std::ofstream outputfile;
   outputfile.exceptions( std::ofstream::failbit | std::ofstream::badbit );
@@ -297,7 +300,7 @@ ConverterPrivate::writeFile(const std::string& filename, VMesh *vmesh)
 
     outputfile.close();
   }
-  catch (std::ifstream::failure e)
+  catch (std::ifstream::failure& e)
   {
     if (this->pr_) this->pr_->error("Could not open and write to file " + filename);
     return false;
@@ -311,13 +314,8 @@ ConverterPrivate::writeFile(const std::string& filename, VMesh *vmesh)
   return true;
 }
 
-}
-
-TriSurfSTLASCIIConverter::TriSurfSTLASCIIConverter(ProgressReporter* pr) :
-  pr_(pr), converter_(new ASCII::ConverterPrivate(pr))
-{}
-
-TriSurfSTLASCIIConverter::~TriSurfSTLASCIIConverter()
+TriSurfSTLASCIIConverter::TriSurfSTLASCIIConverter(LoggerHandle pr) :
+  pr_(pr), converter_(new AsciiConverterPrivate(pr))
 {}
 
 bool
@@ -327,8 +325,7 @@ TriSurfSTLASCIIConverter::read(const std::string& filename, FieldHandle& field)
   FieldInformation fieldInfo("TriSurfMesh", -1, "double");
   field = CreateField(fieldInfo);
 
-  bool result = converter_->readFile(filename, field);
-  return result;
+  return converter_->readFile(filename, field);
 }
 
 bool
@@ -339,12 +336,10 @@ TriSurfSTLASCIIConverter::write(const std::string& filename, const FieldHandle& 
   // validate
   if (! vmesh->is_trisurfmesh() )
   {
-    if (this->pr_) this->pr_->error("STL ASCII converter only supports TriSurf mesh fields.");
+    if (pr_)
+      pr_->error("STL ASCII converter only supports TriSurf mesh fields.");
     return false;
   }
 
-  bool result = converter_->writeFile(filename, vmesh);
-  return result;
-}
-
+  return converter_->writeFile(filename, vmesh);
 }

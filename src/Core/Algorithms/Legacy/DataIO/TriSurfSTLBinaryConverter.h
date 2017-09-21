@@ -50,6 +50,7 @@ class SCISHARE TriSurfSTLBinaryConverter : public AlgorithmBase
 {
 public:
   explicit TriSurfSTLBinaryConverter(Core::Logging::LoggerHandle pr);
+  virtual AlgorithmOutput run(const AlgorithmInput&) const override { throw "not implemented"; }
 
   bool read(const std::string& filename, FieldHandle& field);
   bool write(const std::string& filename, const FieldHandle& field);

@@ -1098,47 +1098,50 @@ bool SCIRun::TriSurfFieldToExotxtBaseIndexOne_writer(LoggerHandle pr, FieldHandl
   return (true);
 }
 
-FieldHandle SCIRun::TriSurfFieldSTLASCII_reader(ProgressReporter *pr, const char *filename)
+FieldHandle SCIRun::TriSurfFieldSTLASCII_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle outputField = 0;
-  SCIRunAlgo::TriSurfSTLASCIIConverter reader(pr);
+  FieldHandle outputField;
+  TriSurfSTLASCIIConverter reader(pr);
 
-  if (! reader.read(filename, outputField) )
+  if (!reader.read(filename, outputField))
   {
-    if (pr) pr->error("Convert ASCII STL file to SCIRun TriSurf field failed.");
-    return FieldHandle(0);
+    if (pr)
+      pr->error("Convert ASCII STL file to SCIRun TriSurf field failed.");
+    return nullptr;
   }
   return outputField;
 }
 
-FieldHandle SCIRun::TriSurfFieldSTLBinary_reader(ProgressReporter *pr, const char *filename)
+FieldHandle SCIRun::TriSurfFieldSTLBinary_reader(LoggerHandle pr, const char *filename)
 {
-  FieldHandle outputField = 0;
-  SCIRunAlgo::TriSurfSTLBinaryConverter reader(pr);
+  FieldHandle outputField;
+  TriSurfSTLBinaryConverter reader(pr);
 
-  if (! reader.read(filename, outputField) )
+  if (!reader.read(filename, outputField))
   {
-    if (pr) pr->error("Convert Binary STL file to SCIRun TriSurf field failed.");
-    return FieldHandle(0);
+    if (pr)
+      pr->error("Convert Binary STL file to SCIRun TriSurf field failed.");
+    return nullptr;
   }
   return outputField;
 }
 
-bool SCIRun::TriSurfFieldSTLASCII_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+bool SCIRun::TriSurfFieldSTLASCII_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 {
-  SCIRunAlgo::TriSurfSTLASCIIConverter writer(pr);
-  if (! writer.write(filename, fh) )
+  TriSurfSTLASCIIConverter writer(pr);
+  if (!writer.write(filename, fh))
   {
-    if (pr) pr->error("Convert SCIRun TriSurf field to ASCII STL file failed.");
+    if (pr)
+      pr->error("Convert SCIRun TriSurf field to ASCII STL file failed.");
     return false;
   }
   return true;
 }
 
-bool SCIRun::TriSurfFieldSTLBinary_writer(ProgressReporter *pr, FieldHandle fh, const char *filename)
+bool SCIRun::TriSurfFieldSTLBinary_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
 {
-  SCIRunAlgo::TriSurfSTLBinaryConverter writer(pr);
-  if (! writer.write(filename, fh) )
+  TriSurfSTLBinaryConverter writer(pr);
+  if (!writer.write(filename, fh))
   {
     if (pr) pr->error("Convert SCIRun TriSurf field to Binary STL file failed.");
     return false;

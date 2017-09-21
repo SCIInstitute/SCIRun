@@ -33,7 +33,7 @@ SET(Core_Algorithms_Legacy_DataIO_SRCS
   ObjToFieldReader.cc
   VTKToTriSurfReader.cc
   TriSurfSTLBinaryConverter.cc
-  #TriSurfSTLASCIIConverter.cc
+  TriSurfSTLASCIIConverter.cc
   STLUtils.cc
 )
 
