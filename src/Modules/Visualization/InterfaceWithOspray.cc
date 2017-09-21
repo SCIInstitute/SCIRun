@@ -132,6 +132,7 @@ namespace detail
     osp::vec2i imgSize_;
     OSPCamera camera_;
     OSPModel world_;
+    OSPGeometry mesh_;
     OSPRenderer renderer_;
     OSPFrameBuffer framebuffer_;
 
@@ -221,23 +222,21 @@ namespace detail
       }
 
       // create and setup model and mesh
-      OSPGeometry mesh = ospNewGeometry("triangles");
+      mesh_ = ospNewGeometry("triangles");
       OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
       ospCommit(data);
-      ospSetData(mesh, "vertex", data);
-
+      ospSetData(mesh_, "vertex", data);
       data = ospNewData(vertex.size() / 4, OSP_FLOAT4, &color[0]);
       ospCommit(data);
-      ospSetData(mesh, "vertex.color", data);
-
+      ospSetData(mesh_, "vertex.color", data);
       data = ospNewData(index.size() / 3, OSP_INT3, &index[0]); // OSP_INT4 format is also supported for triangle indices
-      ospCommit(data);
-      ospSetData(mesh, "index", data);
 
-      ospCommit(mesh);
-      if (!world_)
-        world_ = ospNewModel();
-      ospAddGeometry(world_, mesh);
+      ospCommit(data);
+      ospSetData(mesh_, "index", data);
+      ospCommit(mesh_);
+
+      world_ = ospNewModel();
+      ospAddGeometry(world_, mesh_);
       ospCommit(world_);
     }
 
@@ -352,17 +351,14 @@ void InterfaceWithOspray::execute()
     auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
     auto filename = "scirunOsprayOutput_" + isoString + ".ppm";
     remark("Saving output to " + filename);
-    std::cout << __FILE__ << " " << __LINE__ << std::endl;
+
     detail::OsprayImpl ospray(get_state());
-    std::cout << __FILE__ << " " << __LINE__ << std::endl;
     ospray.setup();
-    std::cout << __FILE__ << " " << __LINE__ << std::endl;
+
     ospray.addField(field, colorMap);
-    std::cout << __FILE__ << " " << __LINE__ << std::endl;
+
     ospray.render();
-    std::cout << __FILE__ << " " << __LINE__ << std::endl;
     ospray.writeImage(filename);
-    std::cout << __FILE__ << " " << __LINE__ << std::endl;
     get_state()->setTransientValue(Variables::Filename, filename);
 
     //auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);
