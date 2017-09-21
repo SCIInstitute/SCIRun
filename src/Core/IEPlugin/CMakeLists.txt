@@ -92,19 +92,12 @@ SCIRUN_ADD_LIBRARY(Core_IEPlugin
 
 TARGET_LINK_LIBRARIES(Core_IEPlugin
   Core_Persistent
-  #Core_Exceptions
-  #Core_Thread
-  #Core_Geometry
-  #Core_Math
-  #Core_Util
   Core_Matlab
   Core_Datatypes
   Core_Datatypes_Legacy_Field
   Core_ImportExport
   Core_Algorithms_Legacy_DataIO
   Core_Algorithms_Legacy_Converter
-  #Core_Algorithms_Converter
-  #Core_Algorithms_Util
 )
 
 IF(BUILD_SHARED_LIBS)

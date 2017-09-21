@@ -30,25 +30,22 @@
 
 SET(Core_Algorithms_Legacy_DataIO_SRCS
   DataIOAlgo.cc
-  #MRCReader.cc
   ObjToFieldReader.cc
   VTKToTriSurfReader.cc
-  #StreamData/StreamACQFile.cc
+  TriSurfSTLBinaryConverter.cc
+  #TriSurfSTLASCIIConverter.cc
+  STLUtils.cc
 )
 
 SET(Core_Algorithms_Legacy_DataIO_HEADERS
   ObjToFieldReader.h
   VTKToTriSurfReader.h
   DataIOAlgo.h
+  TriSurfSTLBinaryConverter.h
+  TriSurfSTLASCIIConverter.h
+  STLUtils.h
+  share.h
 )
-
-#IF(ITK_FOUND)
-#  SET(Core_Algorithms_Legacy_DataIO_SRCS
-#      ${Core_Algorithms_DataIO_SRCS}
-#      AnalyzeImage.cc
-#      AnalyzeReader.cc
-#      AnalyzeSliceImageIO.cc)
-#ENDIF(ITK_FOUND)
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_DataIO
   ${Core_Algorithms_Legacy_DataIO_SRCS}
@@ -56,32 +53,14 @@ SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_DataIO
 )
 
 TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_DataIO
-  #Core_Algorithms_Util
   Algorithms_Base
   Core_Datatypes
   Core_Datatypes_Legacy_Field
   Core_Datatypes_Legacy_Nrrd
-  #Core_Thread
-  #Core_Exceptions
-  #Core_Geometry
-  #Core_Util
   Core_Math
   Core_Persistent
-  #Core_Geom
   Core_ImportExport
-  #Core_Volume
-  #${SCI_TEEM_LIBRARY}
-  #${SCI_ZLIB_LIBRARY}
-  #${M_LIBRARY}
 )
-
-#IF(ITK_FOUND)
-#  TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_DataIO
-#    ITKCommon
-#    ITKIO
-#    ${GDCM_LIBRARY}
-#    ${GL_LIBRARY})
-#ENDIF(ITK_FOUND)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_DataIO)

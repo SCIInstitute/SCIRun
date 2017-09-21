@@ -38,6 +38,8 @@ namespace SCIRun
   SCISHARE FieldHandle TextToTriSurfField_reader(Core::Logging::LoggerHandle pr, const char *filename);
   SCISHARE FieldHandle MToTriSurfField_reader(Core::Logging::LoggerHandle pr, const char *filename);
   SCISHARE FieldHandle VtkToTriSurfField_reader(Core::Logging::LoggerHandle pr, const char *filename);
+  SCISHARE FieldHandle TriSurfFieldSTLASCII_reader(Core::Logging::LoggerHandle pr, const char *filename);
+  SCISHARE FieldHandle TriSurfFieldSTLBinary_reader(Core::Logging::LoggerHandle pr, const char *filename);
 
   SCISHARE bool TriSurfFieldToTextBaseIndexZero_writer(Core::Logging::LoggerHandle pr, FieldHandle fh, const char *filename);
   SCISHARE bool TriSurfFieldToTextBaseIndexOne_writer(Core::Logging::LoggerHandle pr, FieldHandle fh, const char *filename);
@@ -45,6 +47,8 @@ namespace SCIRun
   SCISHARE bool TriSurfFieldToVtk_writer(Core::Logging::LoggerHandle pr, FieldHandle fh, const char *filename);
   SCISHARE bool TriSurfFieldToExotxt_writer(Core::Logging::LoggerHandle pr, FieldHandle fh, const char *filename);
   SCISHARE bool TriSurfFieldToExotxtBaseIndexOne_writer(Core::Logging::LoggerHandle pr, FieldHandle fh, const char *filename);
+  SCISHARE bool TriSurfFieldSTLASCII_writer(Core::Logging::LoggerHandle pr, FieldHandle fh, const char *filename);
+  SCISHARE bool TriSurfFieldSTLBinary_writer(Core::Logging::LoggerHandle pr, FieldHandle fh, const char *filename);
 }
 
 #endif
