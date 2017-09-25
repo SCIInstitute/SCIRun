@@ -167,6 +167,12 @@ namespace Core {
     convertMatrix() = delete;
   };
 
+  template <typename T, template <typename> class MatrixType>
+  auto splitByComponents(const MatrixType<T>& mat) -> decltype(std::make_tuple(mat.real(), mat.imag()))
+  {
+    return std::make_tuple(mat.real(), mat.imag());
+  }
+
 }}}
 
 

@@ -25,8 +25,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
-   author: Moritz Dannhauer & Kimia Shayestehfard
-   last change: 02/16/17
+author: Moritz Dannhauer & Kimia Shayestehfard
+last change: 02/16/17
 */
 
 #include <Modules/Math/ConvertComplexToRealMatrix.h>
@@ -41,11 +41,20 @@ using namespace SCIRun::Core::Datatypes;
 
 MODULE_INFO_DEF(ConvertComplexToRealMatrix, Converters, SCIRun)
 
-ConvertComplexToRealMatrix::ConvertComplexToRealMatrix() : Module(staticInfo_,false)
+ConvertComplexToRealMatrix::ConvertComplexToRealMatrix() : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(InputComplexMatrix);
   INITIALIZE_PORT(OutputRealPartMatrix);
   INITIALIZE_PORT(OutputComplexPartMatrix);
+}
+
+namespace
+{
+  template <class M, class T1, class T2>
+  std::tuple<boost::shared_ptr<M>, boost::shared_ptr<M>> moveToHeap(std::tuple<T1, T2>&& mats)
+  {
+    return std::make_tuple(boost::make_shared<M>(std::get<0>(mats)), boost::make_shared<M>(std::get<1>(mats)));
+  }
 }
 
 void ConvertComplexToRealMatrix::execute()
@@ -55,41 +64,38 @@ void ConvertComplexToRealMatrix::execute()
 
   if (needToExecute())
   {
-    auto input_dense = boost::dynamic_pointer_cast<ComplexDenseMatrix>(input_complex_matrix);
-    auto input_sparse = boost::dynamic_pointer_cast<ComplexSparseRowMatrix>(input_complex_matrix);
-    auto input_column = boost::dynamic_pointer_cast<ComplexDenseColumnMatrix>(input_complex_matrix);
+    if (input_complex_matrix->nrows() == 0 || input_complex_matrix->ncols() == 0)
+    {
+      error("Number of Rows or Columns are zero");
+      return;
+    }
+
+    auto input_dense = castMatrix::toDense(input_complex_matrix);
+    auto input_sparse = castMatrix::toSparse(input_complex_matrix);
+    auto input_column = castMatrix::toColumn(input_complex_matrix);
 
     if (!input_dense && !input_sparse && !input_column)
     {
-     error("Unknown matrix type");
-     return;
+      error("Unknown matrix type");
+      return;
     }
 
-    if (input_complex_matrix->nrows()==0 || input_complex_matrix->ncols()==0)
-    {
-     error("Number of Rows or Columns are zero");
-     return;
-    }
+    MatrixHandle output_realH, output_imagH;
 
-    MatrixHandle output_real,output_imag;
-
-    if(input_dense)
+    if (input_dense)
     {
-      output_real = boost::make_shared<DenseMatrix>(input_dense->real());
-      output_imag= boost::make_shared<DenseMatrix>(input_dense->imag());
+      std::tie(output_realH, output_imagH) = moveToHeap<DenseMatrix>(splitByComponents(*input_dense));
     }
-    else if(input_column)
+    else if (input_column)
     {
-      output_real = boost::make_shared<DenseColumnMatrix>(input_column->real());
-      output_imag= boost::make_shared<DenseColumnMatrix>(input_column->imag());
+      std::tie(output_realH, output_imagH) = moveToHeap<DenseColumnMatrix>(splitByComponents(*input_column));
     }
     else
     {
-     output_real = boost::make_shared<SparseRowMatrix>(input_sparse->real());
-     output_imag = boost::make_shared<SparseRowMatrix>(input_sparse->imag());
+      std::tie(output_realH, output_imagH) = moveToHeap<SparseRowMatrix>(splitByComponents(*input_sparse));
     }
 
-    sendOutput(OutputRealPartMatrix,output_real);
-    sendOutput(OutputComplexPartMatrix,output_imag);
+    sendOutput(OutputRealPartMatrix, output_realH);
+    sendOutput(OutputComplexPartMatrix, output_imagH);
   }
 }
