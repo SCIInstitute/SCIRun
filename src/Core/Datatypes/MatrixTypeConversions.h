@@ -173,6 +173,27 @@ namespace Core {
     return std::make_tuple(mat.real(), mat.imag());
   }
 
+  template <class T>
+  using MatrixTuple = std::tuple<DenseMatrixHandleGeneric<T>, SparseRowMatrixHandleGeneric<T>, DenseColumnMatrixHandleGeneric<T>>;
+
+  template <class T>
+  MatrixTuple<T> explodeBySubtype(MatrixHandleGeneric<T> m)
+  {
+    return std::make_tuple(castMatrix::toDense(m), castMatrix::toSparse(m), castMatrix::toColumn(m));
+  }
+
+  template <class T>
+  bool isKnownMatrixType(MatrixHandleGeneric<T> m)
+  {
+    if (castMatrix::toDense(m))
+      return true;
+    if (castMatrix::toSparse(m))
+      return true;
+    if (castMatrix::toColumn(m))
+      return true;
+    return false;
+  }
+
 }}}
 
 

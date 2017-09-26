@@ -33,7 +33,9 @@ last change: 02/16/17
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
+#include <deque>
 
+using namespace SCIRun;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
@@ -46,56 +48,128 @@ ConvertComplexToRealMatrix::ConvertComplexToRealMatrix() : Module(staticInfo_, f
   INITIALIZE_PORT(InputComplexMatrix);
   INITIALIZE_PORT(OutputRealPartMatrix);
   INITIALIZE_PORT(OutputComplexPartMatrix);
+  INITIALIZE_PORT(Magnitude);
+  INITIALIZE_PORT(Phase);
 }
 
 namespace
 {
-  template <class M, class T1, class T2>
-  std::tuple<boost::shared_ptr<M>, boost::shared_ptr<M>> moveToHeap(std::tuple<T1, T2>&& mats)
+  complex Arg(const complex& c)
   {
-    return std::make_tuple(boost::make_shared<M>(std::get<0>(mats)), boost::make_shared<M>(std::get<1>(mats)));
+    return { std::arg(c), 0 };
   }
+    
+  struct RealPart
+  {
+    template <class M>
+    auto operator()(const M& matrix) const -> decltype(matrix.real())
+    {
+      return matrix.real();
+    }
+  };
+
+  struct ImagPart
+  {
+    template <class M>
+    auto operator()(const M& matrix) const -> decltype(matrix.imag())
+    {
+      return matrix.imag();
+    }
+  };
+
+  struct MagnitudeFunc
+  {
+    template <class M>
+    auto operator()(const M& matrix) const -> decltype(matrix.cwiseAbs())
+    {
+      return matrix.cwiseAbs();
+    }
+  };
+
+  struct PhaseFunc
+  {
+    template <class M>
+    auto operator()(const M& matrix) const -> decltype(matrix.unaryExpr(&Arg).real())
+    {
+      return matrix.unaryExpr(&Arg).real();
+    }
+  };
+
+  template <class M>
+  struct MoveToHeap
+  {
+    template <class Expr>
+    MatrixHandleGeneric<typename M::value_type> operator()(Expr&& expr) const
+    {
+      return boost::make_shared<M>(expr);
+    }
+  };
+  
+  template <class Func, class T1, class T2>
+  struct MatrixFuncEvaluator
+  {
+    Func f;
+    
+    MatrixHandleGeneric<T2> operator()(const MatrixTuple<T1>& mats)
+    {
+      auto a = std::get<DENSE>(mats);
+      if (a)
+      {
+        MoveToHeap<DenseMatrixGeneric<T2>> m;
+        return m(f(*a));
+      }
+      auto b = std::get<SPARSE_ROW>(mats);
+      if (b)
+      {
+        MoveToHeap<SparseRowMatrixGeneric<T2>> m;
+        return m(f(*b));
+      }
+      auto c = std::get<COLUMN>(mats);
+      if (c)
+      {
+        MoveToHeap<DenseColumnMatrixGeneric<T2>> m;
+        return m(f(*c));
+      }
+      return nullptr;
+    }
+  };
+
+  template <class Func>
+  using ComplexToRealMatrixFuncEvaluator = MatrixFuncEvaluator<Func, complex, double>;
 }
 
 void ConvertComplexToRealMatrix::execute()
 {
-
-  auto input_complex_matrix = getRequiredInput(InputComplexMatrix);
+  auto complexMatrix = getRequiredInput(InputComplexMatrix);
 
   if (needToExecute())
   {
-    if (input_complex_matrix->nrows() == 0 || input_complex_matrix->ncols() == 0)
-    {
-      error("Number of Rows or Columns are zero");
-      return;
-    }
-
-    auto input_dense = castMatrix::toDense(input_complex_matrix);
-    auto input_sparse = castMatrix::toSparse(input_complex_matrix);
-    auto input_column = castMatrix::toColumn(input_complex_matrix);
-
-    if (!input_dense && !input_sparse && !input_column)
+    if (!isKnownMatrixType(complexMatrix))
     {
       error("Unknown matrix type");
       return;
     }
 
-    MatrixHandle output_realH, output_imagH;
-
-    if (input_dense)
-    {
-      std::tie(output_realH, output_imagH) = moveToHeap<DenseMatrix>(splitByComponents(*input_dense));
-    }
-    else if (input_column)
-    {
-      std::tie(output_realH, output_imagH) = moveToHeap<DenseColumnMatrix>(splitByComponents(*input_column));
-    }
-    else
-    {
-      std::tie(output_realH, output_imagH) = moveToHeap<SparseRowMatrix>(splitByComponents(*input_sparse));
-    }
-
-    sendOutput(OutputRealPartMatrix, output_realH);
-    sendOutput(OutputComplexPartMatrix, output_imagH);
+    auto subtypes = explodeBySubtype(complexMatrix);
+    computeOutputAndSendIfConnected(OutputRealPartMatrix, 
+      [subtypes]()
+      {
+        return ComplexToRealMatrixFuncEvaluator<RealPart>()(subtypes);
+      });
+    computeOutputAndSendIfConnected(OutputComplexPartMatrix,
+      [subtypes]()
+      {
+        return ComplexToRealMatrixFuncEvaluator<ImagPart>()(subtypes);
+      });
+    computeOutputAndSendIfConnected(Magnitude,
+      [subtypes]()
+      {
+        return ComplexToRealMatrixFuncEvaluator<MagnitudeFunc>()(subtypes);
+      });
+    computeOutputAndSendIfConnected(Phase,
+      [subtypes]()
+      {
+        return ComplexToRealMatrixFuncEvaluator<PhaseFunc>()(subtypes);
+      });
   }
 }

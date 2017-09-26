@@ -42,16 +42,20 @@ namespace Datatypes {
   template <typename T>
   class MatrixBase;
 
-  typedef MatrixBase<double> Matrix;
+  using Matrix = MatrixBase<double>;
   using ComplexMatrix = MatrixBase<complex>;
 
   typedef SharedPointer<Matrix> MatrixHandle;
   typedef SharedPointer<const Matrix> MatrixConstHandle;
+  template <typename T>
+  using MatrixHandleGeneric = SharedPointer<MatrixBase<T>>;
 
   typedef SharedPointer<ComplexMatrix> ComplexMatrixHandle;
 
   template <typename T>
   class DenseMatrixGeneric;
+  template <typename T>
+  using DenseMatrixHandleGeneric = SharedPointer<DenseMatrixGeneric<T>>;
 
   typedef DenseMatrixGeneric<double> DenseMatrix;
   using ComplexDenseMatrix = DenseMatrixGeneric<complex>;
@@ -62,6 +66,8 @@ namespace Datatypes {
 
   template <typename T>
   class DenseColumnMatrixGeneric;
+  template <typename T>
+  using DenseColumnMatrixHandleGeneric = SharedPointer<DenseColumnMatrixGeneric<T>>;
 
   typedef DenseColumnMatrixGeneric<double> DenseColumnMatrix;
   using ComplexDenseColumnMatrix = DenseColumnMatrixGeneric<complex>;
@@ -73,6 +79,8 @@ namespace Datatypes {
 
   template <typename T>
   class SparseRowMatrixGeneric;
+  template <typename T>
+  using SparseRowMatrixHandleGeneric = SharedPointer<SparseRowMatrixGeneric<T>>;
 
   typedef SparseRowMatrixGeneric<double> SparseRowMatrix;
   using ComplexSparseRowMatrix = SparseRowMatrixGeneric<complex>;
