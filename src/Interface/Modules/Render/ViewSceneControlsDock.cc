@@ -66,7 +66,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   visibleItems_.reset(new VisibleItemManager(objectListWidget_));
   connect(selectAllPushButton_, SIGNAL(clicked()), visibleItems_.get(), SLOT(selectAllClicked()));
   connect(deselectAllPushButton_, SIGNAL(clicked()), visibleItems_.get(), SLOT(deselectAllClicked()));
-  connect(objectListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), visibleItems_.get(), SLOT(slotChanged(QListWidgetItem*)));
+  connect(objectListWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), visibleItems_.get(), SLOT(updateVisible(QTreeWidgetItem*, int)));
   connect(visibleItems_.get(), SIGNAL(visibleItemChange()), parent, SIGNAL(newGeometryValueForwarder()));
 
   //-----------Render Tab-----------------//
@@ -331,7 +331,7 @@ QColor ViewSceneControlsDock::getLightColor(int index) const
 bool VisibleItemManager::isVisible(const QString& name) const
 {
   auto itemMatch = itemList_->findItems(name, Qt::MatchExactly);
-  return itemMatch.size() == 1 && (itemMatch[0]->checkState() == Qt::Checked);
+  return itemMatch.size() == 1 && (itemMatch[0]->checkState(0) == Qt::Checked);
 }
 
 bool VisibleItemManager::containsItem(const QString& name) const
@@ -345,10 +345,10 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
   std::vector<QString> displayNames;
   std::transform(geomList.begin(), geomList.end(), std::back_inserter(displayNames),
     [](const GeometryBaseHandle& geom) { return QString::fromStdString(geom->uniqueID()).split(GeometryObject::delimiter).at(1); });
-  for (int i = 0; i < itemList_->count(); ++i)
+  for (int i = 0; i < itemList_->topLevelItemCount(); ++i)
   {
-    if (std::find(displayNames.begin(), displayNames.end(), itemList_->item(i)->text()) == displayNames.end())
-      delete itemList_->takeItem(i);
+    if (std::find(displayNames.begin(), displayNames.end(), itemList_->topLevelItem(i)->text(0)) == displayNames.end())
+      delete itemList_->takeTopLevelItem(i);
   }
 
   for (const auto& name : displayNames)
@@ -356,7 +356,7 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
     if (!containsItem(name))
       addRenderItem(name, true);
   }
-  itemList_->sortItems();
+  itemList_->sortItems(0, Qt::AscendingOrder);
   return displayNames;
 }
 
@@ -368,28 +368,31 @@ void VisibleItemManager::addRenderItem(const QString& name, bool checked)
     return;
   }
 
-  auto item = new QListWidgetItem(name, itemList_);
+  QStringList names;
+  names << name;
+  auto item = new QTreeWidgetItem(itemList_, names);
 
+  // add nodes, edges, faces
   if (checked)
-    item->setCheckState(Qt::Checked);
+    item->setCheckState(0, Qt::Checked);
   else
-    item->setCheckState(Qt::Unchecked);
+    item->setCheckState(0, Qt::Unchecked);
 
-  itemList_->addItem(item);
+  itemList_->addTopLevelItem(item);
 }
 
 void VisibleItemManager::removeRenderItem(const QString& name)
 {
   auto items = itemList_->findItems(name, Qt::MatchExactly);
-  Q_FOREACH(QListWidgetItem* item, items)
+  Q_FOREACH(auto item, items)
   {
-    itemList_->removeItemWidget(item);
+    itemList_->removeItemWidget(item, 0);
   }
 }
 
 void VisibleItemManager::clear()
 {
-  if (itemList_->count() > 0)
+  if (itemList_->topLevelItemCount() > 0)
   {
     LOG_DEBUG("ViewScene items cleared" << std::endl);
     itemList_->clear();
@@ -399,9 +402,9 @@ void VisibleItemManager::clear()
 void VisibleItemManager::selectAllClicked()
 {
   itemList_->blockSignals(true);
-  for (int i = 0; i < itemList_->count(); ++i)
+  for (int i = 0; i < itemList_->topLevelItemCount(); ++i)
   {
-    itemList_->item(i)->setCheckState(Qt::Checked);
+    itemList_->topLevelItem(i)->setCheckState(0, Qt::Checked);
   }
   itemList_->blockSignals(false);
   Q_EMIT visibleItemChange();
@@ -410,21 +413,21 @@ void VisibleItemManager::selectAllClicked()
 void VisibleItemManager::deselectAllClicked()
 {
   itemList_->blockSignals(true);
-  for (int i = 0; i < itemList_->count(); ++i)
+  for (int i = 0; i < itemList_->topLevelItemCount(); ++i)
   {
-    itemList_->item(i)->setCheckState(Qt::Unchecked);
+    itemList_->topLevelItem(i)->setCheckState(0, Qt::Unchecked);
   }
   itemList_->blockSignals(false);
   Q_EMIT visibleItemChange();
 }
 
-void VisibleItemManager::slotChanged(QListWidgetItem* item)
+void VisibleItemManager::updateVisible(QTreeWidgetItem* item, int column)
 {
-  if (item->checkState() == Qt::Unchecked)
+  if (item->checkState(column) == Qt::Unchecked)
   {
     Q_EMIT visibleItemChange();
   }
-  else if (item->checkState() == Qt::Checked)
+  else if (item->checkState(column) == Qt::Checked)
   {
     Q_EMIT visibleItemChange();
   }

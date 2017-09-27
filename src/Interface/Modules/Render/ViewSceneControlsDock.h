@@ -78,7 +78,7 @@ namespace SCIRun {
     {
       Q_OBJECT
     public:
-      explicit VisibleItemManager(QListWidget* itemList) : itemList_(itemList) {}
+      explicit VisibleItemManager(QTreeWidget* itemList) : itemList_(itemList) {}
       std::vector<QString> synchronize(const std::vector<Core::Datatypes::GeometryBaseHandle>& geomList);
       bool isVisible(const QString& name) const;
       bool containsItem(const QString& name) const;
@@ -89,11 +89,11 @@ namespace SCIRun {
     Q_SIGNALS:
       void visibleItemChange();
     private Q_SLOTS:
-      void slotChanged(QListWidgetItem* item);
+      void updateVisible(QTreeWidgetItem* item, int column);
       void selectAllClicked();
       void deselectAllClicked();
     private:
-      QListWidget* itemList_;
+      QTreeWidget* itemList_;
     };
 
     class SCISHARE ViewSceneControlsDock : public QDockWidget, public Ui::ViewSceneControls

@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
-    <height>460</height>
+    <width>488</width>
+    <height>497</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>450</width>
-    <height>450</height>
+    <width>488</width>
+    <height>497</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -59,7 +59,7 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <widget class="QListWidget" name="objectListWidget_"/>
+            <widget class="QTreeWidget" name="objectListWidget_"/>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout">
