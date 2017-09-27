@@ -148,6 +148,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   resizeTimer_.setSingleShot(true);
   connect(&resizeTimer_, SIGNAL(timeout()), this, SLOT(resizingDone()));
+  resize(1000, 1000);
 }
 
 void ViewSceneDialog::pullSpecial()
@@ -1499,10 +1500,10 @@ void ViewSceneDialog::addControlLockButton()
   connect(lockZoom_, SIGNAL(triggered()), this, SLOT(lockZoomToggled()));
 
   menu->addSeparator();
-  
+
   auto lockAll = menu->addAction("Lock All");
   connect(lockAll, SIGNAL(triggered()), this, SLOT(lockAllTriggered()));
-  
+
   auto unlockAll = menu->addAction("Unlock All");
   connect(unlockAll, SIGNAL(triggered()), this, SLOT(unlockAllTriggered()));
 

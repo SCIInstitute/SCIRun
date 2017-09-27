@@ -59,7 +59,14 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <widget class="QTreeWidget" name="objectListWidget_"/>
+            <widget class="QTreeWidget" name="objectListWidget_">
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
+             <attribute name="headerVisible">
+              <bool>false</bool>
+             </attribute>
+            </widget>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout">

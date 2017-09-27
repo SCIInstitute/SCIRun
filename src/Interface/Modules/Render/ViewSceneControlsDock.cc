@@ -368,17 +368,15 @@ void VisibleItemManager::addRenderItem(const QString& name, bool checked)
     return;
   }
 
-  QStringList names;
-  names << name;
+  QStringList names(name);
   auto item = new QTreeWidgetItem(itemList_, names);
 
-  // add nodes, edges, faces
-  if (checked)
-    item->setCheckState(0, Qt::Checked);
-  else
-    item->setCheckState(0, Qt::Unchecked);
-
   itemList_->addTopLevelItem(item);
+  auto nodes = new QTreeWidgetItem(item, QStringList("Nodes"));
+  auto edges = new QTreeWidgetItem(item, QStringList("Edges"));
+  auto faces = new QTreeWidgetItem(item, QStringList("Faces"));
+  for (auto& i : { item, nodes, edges, faces })
+    i->setCheckState(0, checked ? Qt::Checked : Qt::Unchecked);
 }
 
 void VisibleItemManager::removeRenderItem(const QString& name)
@@ -404,7 +402,10 @@ void VisibleItemManager::selectAllClicked()
   itemList_->blockSignals(true);
   for (int i = 0; i < itemList_->topLevelItemCount(); ++i)
   {
-    itemList_->topLevelItem(i)->setCheckState(0, Qt::Checked);
+    auto item = itemList_->topLevelItem(i);
+    item->setCheckState(0, Qt::Checked);
+    for (int i = 0; i < item->childCount(); ++i)
+      item->child(i)->setCheckState(0, Qt::Checked);
   }
   itemList_->blockSignals(false);
   Q_EMIT visibleItemChange();
@@ -415,7 +416,10 @@ void VisibleItemManager::deselectAllClicked()
   itemList_->blockSignals(true);
   for (int i = 0; i < itemList_->topLevelItemCount(); ++i)
   {
-    itemList_->topLevelItem(i)->setCheckState(0, Qt::Unchecked);
+    auto item = itemList_->topLevelItem(i);
+    item->setCheckState(0, Qt::Unchecked);
+    for (int i = 0; i < item->childCount(); ++i)
+      item->child(i)->setCheckState(0, Qt::Unchecked);
   }
   itemList_->blockSignals(false);
   Q_EMIT visibleItemChange();
@@ -423,12 +427,25 @@ void VisibleItemManager::deselectAllClicked()
 
 void VisibleItemManager::updateVisible(QTreeWidgetItem* item, int column)
 {
+  auto parent = item->parent();
+  if (parent)
+  {
+    qDebug() << __FUNCTION__ << item << item->text(0);
+  }
+
   if (item->checkState(column) == Qt::Unchecked)
   {
+    for (int i = 0; i < item->childCount(); ++i)
+      item->child(i)->setCheckState(0, Qt::Unchecked);
     Q_EMIT visibleItemChange();
   }
   else if (item->checkState(column) == Qt::Checked)
   {
+    for (int i = 0; i < item->childCount(); ++i)
+      item->child(i)->setCheckState(0, Qt::Checked);
+
+    if (parent)
+      parent->setCheckState(0, Qt::Checked);
     Q_EMIT visibleItemChange();
   }
 }
