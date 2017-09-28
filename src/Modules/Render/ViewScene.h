@@ -45,6 +45,7 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(GeomData);
         ALGORITHM_PARAMETER_DECL(GeometryFeedbackInfo);
         ALGORITHM_PARAMETER_DECL(ScreenshotData);
+        ALGORITHM_PARAMETER_DECL(MeshComponentSelection);
       }
     }
   }
@@ -132,9 +133,9 @@ namespace Render {
     typedef std::map<Dataflow::Networks::PortId, Core::Datatypes::GeometryBaseHandle> ActiveGeometryMap;
   protected:
     virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
-    virtual void postStateChangeInternalSignalHookup() override;
   private:
     void processViewSceneObjectFeedback();
+    void processMeshComponentSelection();
     void updateTransientList();
     ActiveGeometryMap activeGeoms_;
     std::atomic<int> asyncUpdates_;

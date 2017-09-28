@@ -52,6 +52,7 @@ Mutex ViewScene::mutex_("ViewScene");
 ALGORITHM_PARAMETER_DEF(Render, GeomData);
 ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
 ALGORITHM_PARAMETER_DEF(Render, ScreenshotData);
+ALGORITHM_PARAMETER_DEF(Render, MeshComponentSelection);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true), asyncUpdates_(0)
 {
@@ -104,12 +105,8 @@ void ViewScene::setStateDefaults()
   state->setValue(Light3Color, ColorRGB(0.0, 0.0, 0.0).toString());
   state->setValue(ShowViewer, false);
 
-  postStateChangeInternalSignalHookup();
-}
-
-void ViewScene::postStateChangeInternalSignalHookup()
-{
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
+  get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
 }
 
 void ViewScene::portRemovedSlotImpl(const PortId& pid)
@@ -178,7 +175,6 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
   }
   get_state()->fireTransientStateChangeSignal();
   asyncUpdates_.fetch_add(1);
-  //std::cout << "asyncExecute " << asyncUpdates_ << std::endl;
 }
 
 void ViewScene::execute()
@@ -242,6 +238,17 @@ void ViewScene::processViewSceneObjectFeedback()
   if (newInfo)
   {
     auto vsInfo = transient_value_cast<ViewSceneFeedback>(newInfo);
+    sendFeedbackUpstreamAlongIncomingConnections(vsInfo);
+  }
+}
+
+void ViewScene::processMeshComponentSelection()
+{
+  auto state = get_state();
+  auto newInfo = state->getTransientValue(Parameters::MeshComponentSelection);
+  if (newInfo)
+  {
+    auto vsInfo = transient_value_cast<MeshComponentSelectionFeedback>(newInfo);
     sendFeedbackUpstreamAlongIncomingConnections(vsInfo);
   }
 }

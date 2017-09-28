@@ -68,6 +68,8 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(deselectAllPushButton_, SIGNAL(clicked()), visibleItems_.get(), SLOT(deselectAllClicked()));
   connect(objectListWidget_, SIGNAL(itemClicked(QTreeWidgetItem*, int)), visibleItems_.get(), SLOT(updateVisible(QTreeWidgetItem*, int)));
   connect(visibleItems_.get(), SIGNAL(visibleItemChange()), parent, SIGNAL(newGeometryValueForwarder()));
+  connect(visibleItems_.get(), SIGNAL(meshComponentSelectionChange(const QString&, const QString&, bool)),
+    parent, SLOT(updateMeshComponentSelection(const QString&, const QString&, bool)));
 
   //-----------Render Tab-----------------//
   connect(setBackgroundColorPushButton_, SIGNAL(clicked()), parent, SLOT(assignBackgroundColor()));
@@ -430,14 +432,15 @@ void VisibleItemManager::updateVisible(QTreeWidgetItem* item, int column)
   auto parent = item->parent();
   if (parent)
   {
-    qDebug() << __FUNCTION__ << item << item->text(0);
+    Q_EMIT meshComponentSelectionChange(parent->text(0), item->text(0), item->checkState(column) == Qt::Checked);
   }
 
   if (item->checkState(column) == Qt::Unchecked)
   {
     for (int i = 0; i < item->childCount(); ++i)
       item->child(i)->setCheckState(0, Qt::Unchecked);
-    Q_EMIT visibleItemChange();
+    if (!parent)
+      Q_EMIT visibleItemChange();
   }
   else if (item->checkState(column) == Qt::Checked)
   {
@@ -446,7 +449,8 @@ void VisibleItemManager::updateVisible(QTreeWidgetItem* item, int column)
 
     if (parent)
       parent->setCheckState(0, Qt::Checked);
-    Q_EMIT visibleItemChange();
+    else
+      Q_EMIT visibleItemChange();
   }
 }
 

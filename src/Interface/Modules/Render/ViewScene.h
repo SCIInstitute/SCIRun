@@ -92,6 +92,7 @@ namespace SCIRun {
       void screenshotClicked();
       void saveNewGeometryChanged(int state);
       void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
+      void updateMeshComponentSelection(const QString& moduleId, const QString& component, bool selected);
       //Clipping Plane
       void setClippingPlaneIndex(int index);
       void setClippingPlaneVisible(bool value);

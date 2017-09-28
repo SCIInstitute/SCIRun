@@ -189,6 +189,20 @@ void ShowField::setStateDefaults()
   // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
   // COLOR_CONVERT. USE_DEFAULT_COLOR is selected by default. COLOR_CONVERT
   // is more up in the air.
+
+  getOutputPort(SceneGraph)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processMeshComponentSelection(var); });
+}
+
+void ShowField::processMeshComponentSelection(const ModuleFeedback& var)
+{
+  auto sel = static_cast<const MeshComponentSelectionFeedback&>(var);
+  if (sel.moduleId == get_id().id_)
+  {
+    std::cout << "module feedback received: " << sel.component << " " << sel.selected << std::endl;
+    // widgetMoved_ = true;
+    // adjustGeometryFromTransform(vsf.transform);
+    // enqueueExecuteAgain(false);
+  }
 }
 
 void ShowField::execute()

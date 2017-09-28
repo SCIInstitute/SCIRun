@@ -1784,6 +1784,12 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y, const std::strin
   state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
 }
 
+void ViewSceneDialog::updateMeshComponentSelection(const QString& moduleId, const QString& component, bool selected)
+{
+  MeshComponentSelectionFeedback sel(moduleId.toStdString(), component.toStdString(), selected);
+  state_->setTransientValue(Parameters::MeshComponentSelection, sel);
+}
+
 void ViewSceneDialog::takeScreenshot()
 {
   if (!screenshotTaker_)
