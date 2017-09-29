@@ -29,12 +29,19 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Core/Application/Preferences/Preferences.h>
+#include <Dataflow/Network/NullModuleState.h>
+#include <Modules/Visualization/ShowField.h>
 #include <Core/Logging/Log.h>
+#include <Core/Utils/StringUtil.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Render;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Render;
+using namespace SCIRun::Modules::Visualization;
 
 ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent) : QDockWidget(parent)
 {
@@ -342,7 +349,8 @@ bool VisibleItemManager::containsItem(const QString& name) const
   return itemMatch.size() == 1;
 }
 
-std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryBaseHandle>& geomList)
+std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryBaseHandle>& geomList,
+  const ShowFieldStatesMap& showFieldStates)
 {
   std::vector<QString> displayNames;
   std::transform(geomList.begin(), geomList.end(), std::back_inserter(displayNames),
@@ -355,14 +363,22 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
 
   for (const auto& name : displayNames)
   {
+    auto stateIter = showFieldStates.find(name.toStdString());
+    auto state = stateIter != showFieldStates.end() ? stateIter->second : boost::make_shared<Engine::State::NullModuleState>();
+
     if (!containsItem(name))
-      addRenderItem(name, true);
+      addRenderItem(name);
+
+    updateCheckStates(name, {
+      state->getValue(ShowField::ShowNodes).toBool(),
+      state->getValue(ShowField::ShowEdges).toBool(),
+      state->getValue(ShowField::ShowFaces).toBool()});
   }
   itemList_->sortItems(0, Qt::AscendingOrder);
   return displayNames;
 }
 
-void VisibleItemManager::addRenderItem(const QString& name, bool checked)
+void VisibleItemManager::addRenderItem(const QString& name)
 {
   auto items = itemList_->findItems(name, Qt::MatchExactly);
   if (items.count() > 0)
@@ -374,21 +390,34 @@ void VisibleItemManager::addRenderItem(const QString& name, bool checked)
   auto item = new QTreeWidgetItem(itemList_, names);
 
   itemList_->addTopLevelItem(item);
-  auto nodes = new QTreeWidgetItem(item, QStringList("Nodes"));
-  auto edges = new QTreeWidgetItem(item, QStringList("Edges"));
-  auto faces = new QTreeWidgetItem(item, QStringList("Faces"));
-  for (auto& i : { item, nodes, edges, faces })
-    i->setCheckState(0, checked ? Qt::Checked : Qt::Unchecked);
+  item->setCheckState(0, Qt::Checked);
+  new QTreeWidgetItem(item, QStringList("Nodes"));
+  new QTreeWidgetItem(item, QStringList("Edges"));
+  new QTreeWidgetItem(item, QStringList("Faces"));
 }
 
-void VisibleItemManager::removeRenderItem(const QString& name)
+void VisibleItemManager::updateCheckStates(const QString& name, std::vector<bool> checked)
 {
   auto items = itemList_->findItems(name, Qt::MatchExactly);
-  Q_FOREACH(auto item, items)
+  if (items.count() > 1)
   {
-    itemList_->removeItemWidget(item, 0);
+    return;
+  }
+  auto item = items[0];
+  auto nodes = item->child(2);  //TODO: brittle sort order
+  auto edges = item->child(0);
+  auto faces = item->child(1);
+  std::vector<QTreeWidgetItem*> stuff{ nodes, edges, faces };
+
+  for (auto&& itemChecked : zip(stuff, checked))
+  {
+    QTreeWidgetItem* i;
+    bool isChecked;
+    boost::tie(i, isChecked) = itemChecked;
+    i->setCheckState(0, isChecked ? Qt::Checked : Qt::Unchecked);
   }
 }
+
 
 void VisibleItemManager::clear()
 {

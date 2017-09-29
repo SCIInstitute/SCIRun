@@ -46,6 +46,7 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(GeometryFeedbackInfo);
         ALGORITHM_PARAMETER_DECL(ScreenshotData);
         ALGORITHM_PARAMETER_DECL(MeshComponentSelection);
+        ALGORITHM_PARAMETER_DECL(ShowFieldStates);
       }
     }
   }
@@ -59,6 +60,8 @@ namespace Render {
     Core::Datatypes::DenseMatrixHandle green;
     Core::Datatypes::DenseMatrixHandle blue;
   };
+
+  using ShowFieldStatesMap = std::map<std::string, Dataflow::Networks::ModuleStateHandle>;
 
 /// @class ViewScene
 /// @brief The ViewScene displays interactive graphical output to the computer screen.

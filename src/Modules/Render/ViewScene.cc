@@ -53,6 +53,7 @@ ALGORITHM_PARAMETER_DEF(Render, GeomData);
 ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
 ALGORITHM_PARAMETER_DEF(Render, ScreenshotData);
 ALGORITHM_PARAMETER_DEF(Render, MeshComponentSelection);
+ALGORITHM_PARAMETER_DEF(Render, ShowFieldStates);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true), asyncUpdates_(0)
 {
@@ -173,7 +174,7 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     {
       auto iport = getInputPort(pid);
       auto connectedModuleId = iport->connectedModuleId();
-      if (connectedModuleId->find("ShowField"))
+      if (connectedModuleId->find("ShowField") != std::string::npos)
       {
         auto state = iport->stateFromConnectedModule();
         syncMeshComponentFlags(*connectedModuleId, state);
@@ -183,13 +184,16 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     activeGeoms_[pid] = geom;
     updateTransientList();
   }
+
   get_state()->fireTransientStateChangeSignal();
   asyncUpdates_.fetch_add(1);
 }
 
 void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, ModuleStateHandle state)
 {
-  std::cout << __FUNCTION__ << " " << connectedModuleId << std::endl;
+  auto map = transient_value_cast<ShowFieldStatesMap>(get_state()->getTransientValue(Parameters::ShowFieldStates));
+  map[connectedModuleId] = state;
+  get_state()->setTransientValue(Parameters::ShowFieldStates, map, false);
 }
 
 void ViewScene::execute()

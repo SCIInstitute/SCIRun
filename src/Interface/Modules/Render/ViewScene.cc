@@ -476,7 +476,8 @@ void ViewSceneDialog::newGeometryValue()
     allGeoms.push_back(plane);
   }
 
-  displayNames = mConfigurationDock->visibleItems().synchronize(allGeoms);
+  auto showFieldStates = transient_value_cast<ShowFieldStatesMap>(state_->getTransientValue(Parameters::ShowFieldStates));
+  displayNames = mConfigurationDock->visibleItems().synchronize(allGeoms, showFieldStates);
   int port = 0;
   for (auto it = allGeoms.begin(); it != allGeoms.end(); ++it, ++port)
   {
