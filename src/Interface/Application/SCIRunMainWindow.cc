@@ -182,6 +182,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 	actionRunNewModuleWizard_->setDisabled(true);
 
   connect(actionAbout_, SIGNAL(triggered()), this, SLOT(displayAcknowledgement()));
+  connect(actionCreateToolkitFromDirectory_, SIGNAL(triggered()), this, SLOT(helpWithToolkitCreation()));
 
   connect(helpActionPythonAPI_, SIGNAL(triggered()), this, SLOT(loadPythonAPIDoc()));
   connect(helpActionSnippets_, SIGNAL(triggered()), this, SLOT(showSnippetHelp()));
@@ -211,12 +212,12 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupPythonConsole();
 
   connect(prefsWindow_->defaultNotePositionComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNotePosition(int)));
+  connect(prefsWindow_->defaultNoteSizeComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNoteSize(int)));
   connect(prefsWindow_->cubicPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesCubicBezier()));
   connect(prefsWindow_->manhattanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesManhattan()));
   connect(prefsWindow_->euclideanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesEuclidean()));
   //TODO: will be a user or network setting
   makePipesEuclidean();
-
 
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
 
@@ -255,9 +256,9 @@ SCIRunMainWindow::SCIRunMainWindow()
   {
     ToolkitInfo fwdInv{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
     #ifdef __APPLE__
-      "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/v1.3",
+      "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/v1.4",
     #else
-      "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.3.zip",
+      "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.4.zip",
     #endif
       "FwdInvToolkit_stable.zip" };
     fwdInv.setupAction(actionForwardInverseStable_, this);
@@ -326,12 +327,16 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupVersionButton();
 
   WidgetStyleMixin::tabStyle(optionsTabWidget_);
+
+  //devConsole_->updateNetworkViewLog("hello");
 }
 
 void SCIRunMainWindow::resizeEvent(QResizeEvent* event)
 {
   dockSpace_ = size().height();
   QMainWindow::resizeEvent(event);
+
+  //devConsole_->updateNetworkViewLog(tr("resizeEvent to %1,%2").arg(size().width()).arg(size().height()));
 }
 
 void SCIRunMainWindow::createStandardToolbars()
@@ -343,6 +348,8 @@ void SCIRunMainWindow::createStandardToolbars()
   standardBar->addAction(actionLoad_);
   standardBar->addAction(actionSave_);
   standardBar->addAction(actionEnterWhatsThisMode_);
+  standardBar->addAction(actionDragMode_);
+  standardBar->addAction(actionSelectMode_);
 
   auto networkBar = addToolBar("Network");
   addNetworkActionsToBar(networkBar);
@@ -378,8 +385,6 @@ void SCIRunMainWindow::createAdvancedToolbar()
   advancedBar->setObjectName("AdvancedToolBar");
 
   advancedBar->addAction(actionRunScript_);
-  advancedBar->addAction(actionDragMode_);
-  advancedBar->addAction(actionSelectMode_);
   advancedBar->addAction(actionToggleMetadataLayer_);
   advancedBar->addAction(actionToggleTagLayer_);
   //TODO: turn back on after IBBM
@@ -579,7 +584,7 @@ void SCIRunMainWindow::executeAll()
 		auto timeout = Application::Instance().parameters()->developerParameters()->regressionTimeoutSeconds();
 		QTimer::singleShot(1000 * *timeout, this, SLOT(networkTimedOut()));
 	}
-
+  writeSettings();
   networkEditor_->executeAll();
 }
 
@@ -623,6 +628,7 @@ void SCIRunMainWindow::saveNetworkAs()
 
 void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
 {
+  writeSettings();
   NetworkSaveCommand save;
   save.set(Variables::Filename, fileName.toStdString());
   save.execute();
@@ -1063,6 +1069,7 @@ void SCIRunMainWindow::setupDevConsole()
   actionDevConsole_->setShortcut(QKeySequence("`"));
   connect(devConsole_, SIGNAL(executorChosen(int)), this, SLOT(setExecutor(int)));
   connect(devConsole_, SIGNAL(globalPortCachingChanged(bool)), this, SLOT(setGlobalPortCaching(bool)));
+  //NetworkEditor::setViewUpdateFunc([this](const QString& s) { devConsole_->updateNetworkViewLog(s); });
 }
 
 void SCIRunMainWindow::setExecutor(int type)
@@ -1083,12 +1090,17 @@ void SCIRunMainWindow::readDefaultNotePosition(int index)
   Q_EMIT defaultNotePositionChanged(defaultNotePositionGetter_->position()); //TODO: unit test.
 }
 
+void SCIRunMainWindow::readDefaultNoteSize(int index)
+{
+  Q_EMIT defaultNoteSizeChanged(defaultNotePositionGetter_->size()); //TODO: unit test.
+}
+
 void SCIRunMainWindow::setupPreferencesWindow()
 {
-  prefsWindow_ = new PreferencesWindow(networkEditor_, this);
+  prefsWindow_ = new PreferencesWindow(networkEditor_, [this]() { writeSettings(); }, this);
 
   connect(actionPreferences_, SIGNAL(triggered()), prefsWindow_, SLOT(show()));
-  //connect(prefs_, SIGNAL(visibilityChanged(bool)), actionPreferences_, SLOT(setChecked(bool)));
+
   prefsWindow_->setVisible(false);
 }
 
@@ -1572,6 +1584,20 @@ void SCIRunMainWindow::displayAcknowledgement()
 {
   QMessageBox::information(this, "NIH/NIGMS Center for Integrative Biomedical Computing Acknowledgment",
     "CIBC software and the data sets provided on this web site are Open Source software projects that are principally funded through the SCI Institute's NIH/NCRR CIBC. For us to secure the funding that allows us to continue providing this software, we must have evidence of its utility. Thus we ask users of our software and data to acknowledge us in their publications and inform us of these publications. Please use the following acknowledgment and send us references to any publications, presentations, or successful funding applications that make use of the NIH/NCRR CIBC software or data sets we provide. <p> <i>This project was supported by the National Institute of General Medical Sciences of the National Institutes of Health under grant number P41GM103545.</i>");
+}
+
+void SCIRunMainWindow::helpWithToolkitCreation()
+{
+  QMessageBox::information(this, "Temp",
+    "<b>Help with toolkit creation--for power users</b>"
+    "<p> First, gather all network files for your toolkit into a single directory. This directory may contain "
+    "one level of subdirectories. Next, "
+    "in your build directory (you must SCIRun from source), locate the executable named <code>bundle_toolkit</code>. "
+    " The usage is:"
+    "<pre>bundle_toolkit OUTPUT_FILE [DIRECTORY_TO_SCAN]</pre>"
+    "where OUTPUT_FILE is the desired name of your toolkit bundle. If no directory is specified, the current directory is scanned."
+    "<p>For further assistance, visit https://github.com/SCIInstitute/FwdInvToolkit/wiki."
+);
 }
 
 void SCIRunMainWindow::setDataDirectory(const QString& dir)
@@ -2129,7 +2155,8 @@ void FileDownloader::downloadProgress(qint64 received, qint64 total) const
 {
   if (statusBar_)
 	{
-    statusBar_->showMessage(tr("File progress: %1 / %2").arg(received).arg(total), 1000);
+    auto totalStr = total == -1 ? "?" : QString::number(total);
+    statusBar_->showMessage(tr("File progress: %1 / %2").arg(received).arg(totalStr), 1000);
 		if (received == total)
 			statusBar_->showMessage("File downloaded.", 1000);
 	}

@@ -502,7 +502,7 @@ ModuleIdPair ConnectionLine::getConnectedToModuleIds() const
 void ConnectionLine::setNoteGraphicsContext()
 {
   scene_ = scene();
-  item_ = this;
+  networkObjectWithNote_ = this;
   positioner_ = getPositionObject();
 }
 

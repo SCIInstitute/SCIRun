@@ -181,7 +181,7 @@ namespace
       if (!script_.empty())
       {
         PythonInterpreter::Instance().importSCIRunLibrary();
-        PythonInterpreter::Instance().run_string(script_);
+        PythonInterpreter::Instance().run_script(script_);
       }
       return true;
     }
@@ -199,9 +199,17 @@ namespace
       switch (type)
       {
       case NetworkEventCommands::PostModuleAdd:
-        return boost::make_shared<HardCodedPythonTestCommand>(prefs.postModuleAddScript_temporarySolution.val(), prefs.postModuleAddScriptEnabled_temporarySolution.val());
+        return boost::make_shared<HardCodedPythonTestCommand>(
+          prefs.postModuleAdd.script.val(),
+          prefs.postModuleAdd.enabled.val());
       case NetworkEventCommands::OnNetworkLoad:
-        return boost::make_shared<HardCodedPythonTestCommand>(prefs.onNetworkLoadScript_temporarySolution.val(), prefs.onNetworkLoadScriptEnabled_temporarySolution.val());
+        return boost::make_shared<HardCodedPythonTestCommand>(
+          prefs.onNetworkLoad.script.val(),
+          prefs.onNetworkLoad.enabled.val());
+      case NetworkEventCommands::ApplicationStart:
+        return boost::make_shared<HardCodedPythonTestCommand>(
+          prefs.applicationStart.script.val(),
+          prefs.applicationStart.enabled.val());
       }
       return nullptr;
     }
@@ -238,10 +246,6 @@ NetworkEditorControllerHandle Application::controller()
 
     /// @todo: sloppy way to initialize this but similar to v4, oh well
     IEPluginManager::Initialize();
-
-    /// @todo split out into separate piece
-    // TODO: turn off until Matlab services are converted.
-    // private_->start_eai();
   }
   return private_->controller_;
 }

@@ -39,6 +39,11 @@
          <widget class="QListWidget" name="eventListWidget_">
           <item>
            <property name="text">
+            <string>Application start</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
             <string>Pre module add</string>
            </property>
            <property name="font">

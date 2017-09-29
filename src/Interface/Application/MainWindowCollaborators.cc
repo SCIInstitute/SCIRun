@@ -381,6 +381,7 @@ void NetworkEditorBuilder::connectAll(NetworkEditor* editor)
   // for any network editor
   QObject::connect(editor, SIGNAL(modified()), mainWindow_, SLOT(networkModified()));
   QObject::connect(mainWindow_, SIGNAL(defaultNotePositionChanged(NotePosition)), editor, SIGNAL(defaultNotePositionChanged(NotePosition)));
+  QObject::connect(mainWindow_, SIGNAL(defaultNoteSizeChanged(int)), editor, SIGNAL(defaultNoteSizeChanged(int)));
 
   // for active network editor
   QObject::connect(mainWindow_->actionSelectAll_, SIGNAL(triggered()), editor, SLOT(selectAll()));
