@@ -210,6 +210,9 @@
    </item>
    <item row="8" column="0">
     <widget class="QCheckBox" name="filterColinearCheckBox_">
+    <property name="checked">
+     <bool>true</bool>
+    </property>
      <property name="text">
       <string>Filter colinear points</string>
      </property>
