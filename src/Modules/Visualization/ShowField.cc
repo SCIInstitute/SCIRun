@@ -199,9 +199,8 @@ void ShowField::processMeshComponentSelection(const ModuleFeedback& var)
   if (sel.moduleId == get_id().id_)
   {
     std::cout << "module feedback received: " << sel.component << " " << sel.selected << std::endl;
-    // widgetMoved_ = true;
-    // adjustGeometryFromTransform(vsf.transform);
-    // enqueueExecuteAgain(false);
+    get_state()->setValue(Name("Show" + sel.component), sel.selected);
+    enqueueExecuteAgain(false);
   }
 }
 

@@ -70,6 +70,7 @@ namespace Networks {
     void incrementIndex() { setIndex(getIndex() + 1); }
     void decrementIndex() { setIndex(getIndex() - 1); }
     virtual void setId(const PortId& id) = 0;
+    virtual ModuleStateHandle moduleState() const = 0;
   };
 
   typedef boost::signals2::signal<void(const PortId&, Core::Datatypes::DatatypeHandle)> DataOnPortHasChangedSignalType;
@@ -85,6 +86,8 @@ namespace Networks {
     virtual bool hasChanged() const = 0;
     virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber) = 0;
     virtual void resendNewDataSignal() = 0;
+    virtual boost::optional<std::string> connectedModuleId() const = 0;
+    virtual ModuleStateHandle stateFromConnectedModule() const = 0;
   };
 
   typedef boost::signals2::signal<void(const Core::Datatypes::ModuleFeedback&)> ConnectionFeedbackSignalType;

@@ -170,11 +170,26 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
       return;
     }
 
+    {
+      auto iport = getInputPort(pid);
+      auto connectedModuleId = iport->connectedModuleId();
+      if (connectedModuleId->find("ShowField"))
+      {
+        auto state = iport->stateFromConnectedModule();
+        syncMeshComponentFlags(*connectedModuleId, state);
+      }
+    }
+
     activeGeoms_[pid] = geom;
     updateTransientList();
   }
   get_state()->fireTransientStateChangeSignal();
   asyncUpdates_.fetch_add(1);
+}
+
+void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, ModuleStateHandle state)
+{
+  std::cout << __FUNCTION__ << " " << connectedModuleId << std::endl;
 }
 
 void ViewScene::execute()

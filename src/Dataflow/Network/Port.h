@@ -75,6 +75,7 @@ public:
   virtual void setIndex(size_t index) override;
 
   virtual boost::optional<ConnectionId> firstConnectionId() const override;
+  virtual ModuleStateHandle moduleState() const override;
 
   /// @todo:
   // light interface
@@ -111,6 +112,8 @@ public:
   virtual bool hasChanged() const override;
   virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber) override;
   virtual void resendNewDataSignal() override;
+  virtual boost::optional<std::string> connectedModuleId() const override;
+  virtual ModuleStateHandle stateFromConnectedModule() const override;
 private:
   bool shouldTriggerDataChange() const;
   DatatypeSinkInterfaceHandle sink_;
