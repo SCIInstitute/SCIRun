@@ -256,9 +256,9 @@ SCIRunMainWindow::SCIRunMainWindow()
   {
     ToolkitInfo fwdInv{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
     #ifdef __APPLE__
-      "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/v1.3",
+      "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/v1.4",
     #else
-      "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.3.zip",
+      "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.4.zip",
     #endif
       "FwdInvToolkit_stable.zip" };
     fwdInv.setupAction(actionForwardInverseStable_, this);
@@ -2154,7 +2154,8 @@ void FileDownloader::downloadProgress(qint64 received, qint64 total) const
 {
   if (statusBar_)
 	{
-    statusBar_->showMessage(tr("File progress: %1 / %2").arg(received).arg(total), 1000);
+    auto totalStr = total == -1 ? "?" : QString::number(total);
+    statusBar_->showMessage(tr("File progress: %1 / %2").arg(received).arg(totalStr), 1000);
 		if (received == total)
 			statusBar_->showMessage("File downloaded.", 1000);
 	}
