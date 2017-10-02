@@ -148,6 +148,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   resizeTimer_.setSingleShot(true);
   connect(&resizeTimer_, SIGNAL(timeout()), this, SLOT(resizingDone()));
+  resize(1000, 1000);
 }
 
 void ViewSceneDialog::pullSpecial()
@@ -475,7 +476,8 @@ void ViewSceneDialog::newGeometryValue()
     allGeoms.push_back(plane);
   }
 
-  displayNames = mConfigurationDock->visibleItems().synchronize(allGeoms);
+  auto showFieldStates = transient_value_cast<ShowFieldStatesMap>(state_->getTransientValue(Parameters::ShowFieldStates));
+  displayNames = mConfigurationDock->visibleItems().synchronize(allGeoms, showFieldStates);
   int port = 0;
   for (auto it = allGeoms.begin(); it != allGeoms.end(); ++it, ++port)
   {
@@ -1499,10 +1501,10 @@ void ViewSceneDialog::addControlLockButton()
   connect(lockZoom_, SIGNAL(triggered()), this, SLOT(lockZoomToggled()));
 
   menu->addSeparator();
-  
+
   auto lockAll = menu->addAction("Lock All");
   connect(lockAll, SIGNAL(triggered()), this, SLOT(lockAllTriggered()));
-  
+
   auto unlockAll = menu->addAction("Unlock All");
   connect(unlockAll, SIGNAL(triggered()), this, SLOT(unlockAllTriggered()));
 
@@ -1781,6 +1783,12 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y, const std::strin
   vsf.transform = toSciTransform(trans);
   vsf.selectionName = selName;
   state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
+}
+
+void ViewSceneDialog::updateMeshComponentSelection(const QString& moduleId, const QString& component, bool selected)
+{
+  MeshComponentSelectionFeedback sel(moduleId.toStdString(), component.toStdString(), selected);
+  state_->setTransientValue(Parameters::MeshComponentSelection, sel);
 }
 
 void ViewSceneDialog::takeScreenshot()

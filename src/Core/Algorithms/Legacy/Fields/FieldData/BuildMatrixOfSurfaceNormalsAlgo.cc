@@ -26,28 +26,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Legacy/Fields/FieldData/BuildMatrixOfSurfaceNormalsAlgo.h> 
+#include <Core/Algorithms/Legacy/Fields/FieldData/BuildMatrixOfSurfaceNormalsAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-//#include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/DenseMatrix.h> 
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/GeometryPrimitives/Vector.h>
-#include <Core/Datatypes/Legacy/Matrix/Matrix.h> 
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h> 
-
-//#include <Core/Datatypes/DenseMatrix.h> 
-//#include <Core/Datatypes/Legacy/Field/VMesh.h>
-
-//#include <iostream>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Core::Logging; 
-using namespace SCIRun::Core::Utility; 
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Utility;
 using namespace SCIRun;
 
 BuildMatrixOfSurfaceNormalsAlgo::BuildMatrixOfSurfaceNormalsAlgo() {}
@@ -61,19 +54,19 @@ bool BuildMatrixOfSurfaceNormalsAlgo::runImpl(FieldHandle input, DenseMatrixHand
     error("No input source field");
     return (false);
   }
-  
-  FieldInformation fi(input);  
+
+  FieldInformation fi(input);
   if (!(fi.is_surface()))
   {
     error("This algorithm only works on a surface mesh");
     return (false);
   }
-  
+
   VMesh* vmesh = input->vmesh();
   vmesh->synchronize(Mesh::NORMALS_E);
   VMesh::size_type num_nodes = vmesh->num_nodes();
 
-  output.reset(new DenseMatrix(num_nodes, 3)); 
+  output.reset(new DenseMatrix(num_nodes, 3));
 
   if (!output)
   {
@@ -86,10 +79,10 @@ bool BuildMatrixOfSurfaceNormalsAlgo::runImpl(FieldHandle input, DenseMatrixHand
   Vector norm;
   for (VMesh::Node::index_type i=0; i<num_nodes; ++i)
   {
-    vmesh->get_normal(norm,i); 
+    vmesh->get_normal(norm,i);
     (*output)(k) = norm.x();
 		(*output)(k+1) = norm.y();
-		(*output)(k+2) = norm.z(); 
+		(*output)(k+2) = norm.z();
     k += 3;
     cnt++; if (cnt == 400) {cnt=0; update_progress_max(i,num_nodes); }
   }
@@ -99,10 +92,10 @@ bool BuildMatrixOfSurfaceNormalsAlgo::runImpl(FieldHandle input, DenseMatrixHand
 AlgorithmOutput BuildMatrixOfSurfaceNormalsAlgo::run(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(Variables::InputField);
-	DenseMatrixHandle outputMatrix; 
+	DenseMatrixHandle outputMatrix;
 
 	if(!runImpl(field, outputMatrix))
-			THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy call."); 
+			THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy call.");
 
   AlgorithmOutput output;
   output[Variables::OutputMatrix] = outputMatrix;

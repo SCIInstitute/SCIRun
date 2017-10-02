@@ -37,7 +37,6 @@ SET(Core_Exceptions_Legacy_SRCS
   FileNotFound.cc 
   InvalidState.cc 
   InternalError.cc
-  LapackError.cc
 )
 
 SET(Core_Exceptions_Legacy_HEADERS
@@ -51,7 +50,6 @@ SET(Core_Exceptions_Legacy_HEADERS
   IllegalValue.h  
   InternalError.h
   InvalidState.h 
-  LapackError.h
   share.h
 )
 

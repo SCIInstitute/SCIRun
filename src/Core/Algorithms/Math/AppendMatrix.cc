@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   
+
    Author : Moritz Dannhauer (reimplementation)
    Date:   August 2017
 */
@@ -33,7 +33,6 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/SparseRowMatrixFromMap.h>
-#include <Core/Datatypes/Legacy/Matrix/MatrixOperations.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Eigen/Sparse>
@@ -58,16 +57,16 @@ bool AppendMatrixAlgorithm::check_dimensions(const Matrix& mat1, const Matrix& m
   if(cols_m1!=cols_m2) return false;
  } else
   if(rows_m1!=rows_m2) return false;
- 
+
  return true;
 }
 
 AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::ConcatenateMatrices(const MatrixHandle base_matrix, const std::vector<boost::shared_ptr<Matrix>> input_matrices, const AppendMatrixAlgorithm::Parameters& params) const
-{  
+{
 
  if (input_matrices.size()==0)
    return base_matrix;
-   
+
  Outputs outputs = run(boost::make_tuple(base_matrix, input_matrices[0]), params);
  for(Eigen::Index c=1; c<input_matrices.size(); c++)
  {
@@ -79,40 +78,40 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::ConcatenateMatrices(const 
 }
 
 AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgorithm::Inputs& input, const AppendMatrixAlgorithm::Parameters& params) const
-{ 
+{
   auto lhsPtr = input.get<0>();
   auto rhsPtr = input.get<1>();
   if (!lhsPtr || !rhsPtr)
    error(" At least two matrices are needed to run this module. ");
 
-  if (!((matrixIs::sparse(lhsPtr) && matrixIs::sparse(rhsPtr)) || (matrixIs::dense(lhsPtr) && matrixIs::dense(rhsPtr)) || (matrixIs::column(lhsPtr) && matrixIs::column(rhsPtr))))  
+  if (!((matrixIs::sparse(lhsPtr) && matrixIs::sparse(rhsPtr)) || (matrixIs::dense(lhsPtr) && matrixIs::dense(rhsPtr)) || (matrixIs::column(lhsPtr) && matrixIs::column(rhsPtr))))
   {
    error(" Mixing of different matrix types as inputs is not supported. ");
-   return Outputs(); 
+   return Outputs();
   }
-  
+
   if (!check_dimensions(*lhsPtr, *rhsPtr, params))
   {
     error(" Input matrix dimensions do not match. ");
     return Outputs();
   }
-  
+
   Eigen::MatrixXd result;
   if(matrixIs::dense(lhsPtr) || matrixIs::column(lhsPtr))
   {
    if(params == ROWS)
      result=Eigen::MatrixXd(lhsPtr->nrows()+rhsPtr->nrows(),lhsPtr->ncols());
     else
-     result=Eigen::MatrixXd(lhsPtr->nrows(),lhsPtr->ncols()+rhsPtr->ncols());  
-   
+     result=Eigen::MatrixXd(lhsPtr->nrows(),lhsPtr->ncols()+rhsPtr->ncols());
+
    if(matrixIs::dense(lhsPtr))
      result << *castMatrix::toDense(lhsPtr), *castMatrix::toDense(rhsPtr);
    else
     result << *castMatrix::toColumn(lhsPtr), *castMatrix::toColumn(rhsPtr);
- 
+
    if (matrixIs::column(lhsPtr) && (result.rows()==1 || result.cols()==1))
-    return boost::make_shared<DenseColumnMatrix>(result); 
-    
+    return boost::make_shared<DenseColumnMatrix>(result);
+
    return boost::make_shared<DenseMatrix>(result);
   } else
   if (matrixIs::sparse(lhsPtr))
@@ -120,8 +119,8 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgo
   else
   {
    error(" This matrix type is not supported");
-  } 
- 
+  }
+
  return Outputs();
 }
 
@@ -130,14 +129,14 @@ AlgorithmOutput AppendMatrixAlgorithm::run(const AlgorithmInput& input) const
   auto lhs = input.get<Matrix>(Variables::FirstMatrix);
   auto rhs = input.get<Matrix>(Variables::SecondMatrix);
   auto input_matrices = input.getList<Matrix>(AppendMatrixAlgorithm::InputMatrices);
-  
-  Outputs outputs; 
+
+  Outputs outputs;
   Parameters params=Option(get(Variables::RowsOrColumns).toInt());
   outputs = run(boost::make_tuple(lhs, rhs), params);
- 
+
   if (input_matrices.size()>0)
    outputs = ConcatenateMatrices(outputs, input_matrices, params);
-    
+
   AlgorithmOutput output;
   output[Variables::ResultMatrix] = outputs;
   return output;

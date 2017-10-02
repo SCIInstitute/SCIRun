@@ -32,8 +32,6 @@
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-const double convertMatrix::zero_threshold = 1.00000e-08f;
-
 bool matrixIs::column(const MatrixHandle& mh)
 {
   return castMatrix::toColumn(mh) != nullptr;
@@ -77,21 +75,6 @@ MatrixTypeCode matrixIs::typeCode(const MatrixHandle& mh)
     return SPARSE_ROW;
   return UNKNOWN;
 }
-
-/* Old Code - disabled
-DenseColumnMatrixHandle convertMatrix::toColumn(const MatrixHandle& mh)
-{
-auto col = castMatrix::toColumn(mh);
-if (col)
-return col;
-
-auto dense = castMatrix::toDense(mh);
-if (dense)
-return boost::make_shared<DenseColumnMatrix>(dense->col(0));
-
-return DenseColumnMatrixHandle();
-}
-*/
 
 DenseMatrixHandle convertMatrix::toDense(const MatrixHandle& mh)
 {
@@ -146,13 +129,3 @@ SparseRowMatrixHandle convertMatrix::toSparse(const MatrixHandle& mh)
   return SparseRowMatrixHandle();
 }
 
-SparseRowMatrixHandle convertMatrix::fromDenseToSparse(const DenseMatrix& dense)
-{
-  SparseRowMatrixFromMap::Values data;
-  for (auto i = 0; i < dense.nrows(); i++)
-    for (auto j = 0; j < dense.ncols(); j++)
-      if (fabs(dense(i, j))>zero_threshold)
-        data[i][j] = dense(i, j);
-
-  return SparseRowMatrixFromMap::make(dense.nrows(), dense.ncols(), data);
-}

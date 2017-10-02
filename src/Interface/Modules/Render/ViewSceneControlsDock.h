@@ -33,6 +33,7 @@ DEALINGS IN THE SOFTWARE.
 
 #ifndef Q_MOC_RUN
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Modules/Render/ViewScene.h>
 #include <boost/atomic.hpp>
 #endif
 #include <QGraphicsView>
@@ -78,22 +79,24 @@ namespace SCIRun {
     {
       Q_OBJECT
     public:
-      explicit VisibleItemManager(QListWidget* itemList) : itemList_(itemList) {}
-      std::vector<QString> synchronize(const std::vector<Core::Datatypes::GeometryBaseHandle>& geomList);
+      explicit VisibleItemManager(QTreeWidget* itemList) : itemList_(itemList) {}
+      std::vector<QString> synchronize(const std::vector<Core::Datatypes::GeometryBaseHandle>& geomList,
+        const Modules::Render::ShowFieldStatesMap& showFieldStates);
       bool isVisible(const QString& name) const;
       bool containsItem(const QString& name) const;
     public Q_SLOTS:
-      void addRenderItem(const QString& name, bool checked);
-      void removeRenderItem(const QString& name);
       void clear();
     Q_SIGNALS:
       void visibleItemChange();
+      void meshComponentSelectionChange(const QString& moduleId, const QString& component, bool selected);
     private Q_SLOTS:
-      void slotChanged(QListWidgetItem* item);
+      void updateVisible(QTreeWidgetItem* item, int column);
       void selectAllClicked();
       void deselectAllClicked();
     private:
-      QListWidget* itemList_;
+      void addRenderItem(const QString& name);
+      void updateCheckStates(const QString& name, std::vector<bool> checked);
+      QTreeWidget* itemList_;
     };
 
     class SCISHARE ViewSceneControlsDock : public QDockWidget, public Ui::ViewSceneControls

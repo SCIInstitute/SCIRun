@@ -189,6 +189,18 @@ void ShowField::setStateDefaults()
   // NOTE: We need to add radio buttons for USE_DEFAULT_COLOR, COLORMAP, and
   // COLOR_CONVERT. USE_DEFAULT_COLOR is selected by default. COLOR_CONVERT
   // is more up in the air.
+
+  getOutputPort(SceneGraph)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processMeshComponentSelection(var); });
+}
+
+void ShowField::processMeshComponentSelection(const ModuleFeedback& var)
+{
+  auto sel = static_cast<const MeshComponentSelectionFeedback&>(var);
+  if (sel.moduleId == get_id().id_)
+  {
+    get_state()->setValue(Name("Show" + sel.component), sel.selected);
+    enqueueExecuteAgain(false);
+  }
 }
 
 void ShowField::execute()
@@ -494,8 +506,6 @@ void GeometryBuilder::renderFacesLinear(
 
     std::vector<Point> points(nodes.size());
     std::vector<Vector> normals(nodes.size());
-
-    //std::cout << "Node Size: " << nodes.size() << std::endl;
 
     for (size_t i = 0; i < nodes.size(); i++)
     {
