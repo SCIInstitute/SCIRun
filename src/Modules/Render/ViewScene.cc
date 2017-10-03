@@ -191,9 +191,12 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 
 void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, ModuleStateHandle state)
 {
-  auto map = transient_value_cast<ShowFieldStatesMap>(get_state()->getTransientValue(Parameters::ShowFieldStates));
-  map[connectedModuleId] = state;
-  get_state()->setTransientValue(Parameters::ShowFieldStates, map, false);
+  if (connectedModuleId.find("ShowField:") != std::string::npos)
+  {
+    auto map = transient_value_cast<ShowFieldStatesMap>(get_state()->getTransientValue(Parameters::ShowFieldStates));
+    map[connectedModuleId] = state;
+    get_state()->setTransientValue(Parameters::ShowFieldStates, map, false);
+  }
 }
 
 void ViewScene::execute()

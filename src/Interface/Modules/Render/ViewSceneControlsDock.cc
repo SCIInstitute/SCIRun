@@ -363,16 +363,19 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
 
   for (const auto& name : displayNames)
   {
-    auto stateIter = showFieldStates.find(name.toStdString());
-    auto state = stateIter != showFieldStates.end() ? stateIter->second : boost::make_shared<Engine::State::NullModuleState>();
-
     if (!containsItem(name))
       addRenderItem(name);
 
-    updateCheckStates(name, {
-      state->getValue(ShowField::ShowNodes).toBool(),
-      state->getValue(ShowField::ShowEdges).toBool(),
-      state->getValue(ShowField::ShowFaces).toBool()});
+    auto stateIter = showFieldStates.find(name.toStdString());
+    if (stateIter != showFieldStates.end())
+    {
+      auto state = stateIter->second;
+
+      updateCheckStates(name, {
+        state->getValue(ShowField::ShowNodes).toBool(),
+        state->getValue(ShowField::ShowEdges).toBool(),
+        state->getValue(ShowField::ShowFaces).toBool() });
+    }
   }
   itemList_->sortItems(0, Qt::AscendingOrder);
   return displayNames;
@@ -391,9 +394,12 @@ void VisibleItemManager::addRenderItem(const QString& name)
 
   itemList_->addTopLevelItem(item);
   item->setCheckState(0, Qt::Checked);
-  new QTreeWidgetItem(item, QStringList("Nodes"));
-  new QTreeWidgetItem(item, QStringList("Edges"));
-  new QTreeWidgetItem(item, QStringList("Faces"));
+  if (name.startsWith("ShowField:"))
+  {
+    new QTreeWidgetItem(item, QStringList("Nodes"));
+    new QTreeWidgetItem(item, QStringList("Edges"));
+    new QTreeWidgetItem(item, QStringList("Faces"));
+  }
 }
 
 void VisibleItemManager::updateCheckStates(const QString& name, std::vector<bool> checked)
@@ -404,17 +410,20 @@ void VisibleItemManager::updateCheckStates(const QString& name, std::vector<bool
     return;
   }
   auto item = items[0];
-  auto nodes = item->child(2);  //TODO: brittle sort order
-  auto edges = item->child(0);
-  auto faces = item->child(1);
-  std::vector<QTreeWidgetItem*> stuff{ nodes, edges, faces };
-
-  for (auto&& itemChecked : zip(stuff, checked))
+  if (name.startsWith("ShowField:"))
   {
-    QTreeWidgetItem* i;
-    bool isChecked;
-    boost::tie(i, isChecked) = itemChecked;
-    i->setCheckState(0, isChecked ? Qt::Checked : Qt::Unchecked);
+    auto nodes = item->child(2);  //TODO: brittle sort order
+    auto edges = item->child(0);
+    auto faces = item->child(1);
+    std::vector<QTreeWidgetItem*> stuff{ nodes, edges, faces };
+
+    for (auto&& itemChecked : zip(stuff, checked))
+    {
+      QTreeWidgetItem* i;
+      bool isChecked;
+      boost::tie(i, isChecked) = itemChecked;
+      i->setCheckState(0, isChecked ? Qt::Checked : Qt::Unchecked);
+    }
   }
 }
 
