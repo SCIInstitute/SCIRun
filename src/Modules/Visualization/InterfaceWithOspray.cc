@@ -75,6 +75,7 @@ ALGORITHM_PARAMETER_DEF(Visualization, LightColorB);
 ALGORITHM_PARAMETER_DEF(Visualization, LightIntensity);
 ALGORITHM_PARAMETER_DEF(Visualization, LightVisible);
 ALGORITHM_PARAMETER_DEF(Visualization, LightType);
+ALGORITHM_PARAMETER_DEF(Visualization, AutoCameraView);
 
 MODULE_INFO_DEF(InterfaceWithOspray, Visualization, SCIRun)
 
@@ -106,6 +107,7 @@ void InterfaceWithOspray::setStateDefaults()
   state->setValue(Parameters::LightIntensity, 1.0);
   state->setValue(Parameters::LightVisible, false);
   state->setValue(Parameters::LightType, std::string("none"));
+  state->setValue(Parameters::AutoCameraView, true);
 }
 
 namespace detail
@@ -128,6 +130,7 @@ namespace detail
       }
     }
 
+    Core::Geometry::BBox imageBox_;
     ModuleStateHandle state_;
     osp::vec2i imgSize_;
     OSPCamera camera_;
@@ -179,6 +182,20 @@ namespace detail
 
     void addField(FieldHandle field, boost::optional<ColorMapHandle> colorMap)
     {
+      if (state_->getValue(Parameters::AutoCameraView).toBool())
+      {
+        auto vmesh = field->vmesh();
+        auto bbox = vmesh->get_bounding_box();
+        imageBox_.extend(bbox);
+        auto center = imageBox_.center();
+        float newCenter[] = { static_cast<float>(center.x()), static_cast<float>(center.y()), static_cast<float>(center.z()) };
+        state_->setValue(Parameters::CameraViewX, center.x());
+        state_->setValue(Parameters::CameraViewY, center.y());
+        state_->setValue(Parameters::CameraViewZ, center.z());
+        ospSet3fv(camera_, "dir", newCenter);
+        ospCommit(camera_);
+      }
+
       auto facade(field->mesh()->getFacade());
 
       auto map = colorMap.value_or(nullptr);

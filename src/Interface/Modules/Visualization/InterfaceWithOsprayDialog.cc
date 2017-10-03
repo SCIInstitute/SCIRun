@@ -72,6 +72,8 @@ InterfaceWithOsprayDialog::InterfaceWithOsprayDialog(const std::string& name, Mo
   addDoubleSpinBoxManager(lightIntensityDoubleSpinBox_, LightIntensity);
   addCheckBoxManager(lightVisibleCheckBox_, LightVisible);
   addComboBoxManager(lightTypeComboBox_, LightType);
+  addCheckBoxManager(automaticViewCheckBox_, AutoCameraView);
+  connect(automaticViewCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateViewWidgets(int)));
 
   createExecuteInteractivelyToggleAction();
 
@@ -97,4 +99,9 @@ void InterfaceWithOsprayDialog::showImage()
     d->setLayout(layout);
     d->show();
   }
+}
+
+void InterfaceWithOsprayDialog::updateViewWidgets(int state)
+{
+  manualViewGroupBox_->setEnabled(state == 0);
 }

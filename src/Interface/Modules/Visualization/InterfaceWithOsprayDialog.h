@@ -50,6 +50,7 @@ Q_SIGNALS:
   void imageFilenameChanged();
 private Q_SLOTS:
   void showImage();
+	void updateViewWidgets(int state);
 };
 
 }

@@ -346,8 +346,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>25</count>
+							<count>26</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AutoCameraView</name>
+								</first>
+								<second>
+									<name>AutoCameraView</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>BackgroundColorB</name>
@@ -404,7 +416,7 @@
 									<name>CameraPositionY</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>-1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -464,7 +476,7 @@
 									<name>CameraViewX</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-01</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -476,7 +488,7 @@
 									<name>CameraViewY</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-01</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
