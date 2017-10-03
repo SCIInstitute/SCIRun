@@ -102,13 +102,19 @@ impl_(new EditMeshBoundingBoxImpl), widgetMoved_(false)
 
 void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
 {
-  auto vsf = static_cast<const ViewSceneFeedback&>(var);
-  if (vsf.selectionName.find(get_id()) != std::string::npos &&
-    impl_->userWidgetTransform_ != vsf.transform)
+  try
   {
-    widgetMoved_ = true;
-    adjustGeometryFromTransform(vsf.transform);
-    enqueueExecuteAgain(false);
+    auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
+    if (vsf.selectionName.find(get_id()) != std::string::npos && impl_->userWidgetTransform_ != vsf.transform)
+    {
+      widgetMoved_ = true;
+      adjustGeometryFromTransform(vsf.transform);
+      enqueueExecuteAgain(false);
+    }
+  }
+  catch (std::bad_cast&)
+  {
+    //ignore
   }
 }
 
