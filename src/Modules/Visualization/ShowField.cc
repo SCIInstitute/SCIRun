@@ -195,11 +195,18 @@ void ShowField::setStateDefaults()
 
 void ShowField::processMeshComponentSelection(const ModuleFeedback& var)
 {
-  auto sel = static_cast<const MeshComponentSelectionFeedback&>(var);
-  if (sel.moduleId == get_id().id_)
+  try
   {
+    auto sel = dynamic_cast<const MeshComponentSelectionFeedback&>(var);
+    if (sel.moduleId == get_id().id_)
+    {
     get_state()->setValue(Name("Show" + sel.component), sel.selected);
     enqueueExecuteAgain(false);
+    }
+  }
+  catch (std::bad_cast&)
+  {
+    //ignore
   }
 }
 

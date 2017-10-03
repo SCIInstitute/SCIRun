@@ -82,12 +82,19 @@ void ShowString::setStateDefaults()
 
 void ShowString::processWindowResizeFeedback(const ModuleFeedback& var)
 {
-  auto vsf = static_cast<const ViewSceneFeedback&>(var);
-  if (lastWindowSize_ != vsf.windowSize)
+  try
   {
-    lastWindowSize_ = vsf.windowSize;
-    needReexecute_ = true;
-    enqueueExecuteAgain(false);
+    auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
+    if (lastWindowSize_ != vsf.windowSize)
+    {
+      lastWindowSize_ = vsf.windowSize;
+      needReexecute_ = true;
+      enqueueExecuteAgain(false);
+    }
+  }
+  catch (std::bad_cast&)
+  {
+    //ignore
   }
 }
 

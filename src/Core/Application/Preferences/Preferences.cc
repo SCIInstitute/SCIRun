@@ -32,6 +32,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #ifdef BUILD_WITH_PYTHON
 #include <Core/Python/PythonInterpreter.h>
@@ -90,7 +91,8 @@ void Preferences::setDataDirectory(const boost::filesystem::path& path, bool run
 #ifdef BUILD_WITH_PYTHON
   if (runPython)
   {
-    auto setDataDir = "import os; os.environ[\"SCIRUNDATADIR\"] = \"" + dataDir_.string() + "\"";
+    auto forwardSlashPath = boost::replace_all_copy(dataDir_.string(), "\\", "/");
+    auto setDataDir = "import os; os.environ[\"SCIRUNDATADIR\"] = \"" + forwardSlashPath + "\"";
     PythonInterpreter::Instance().run_string(setDataDir);
   }
 #endif
