@@ -1785,9 +1785,14 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y, const std::strin
   state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
 }
 
-void ViewSceneDialog::updateMeshComponentSelection(const QString& moduleId, const QString& component, bool selected)
+void ViewSceneDialog::updateMeshComponentSelection(const QString& showFieldName, const QString& component, bool selected)
 {
-  MeshComponentSelectionFeedback sel(moduleId.toStdString(), component.toStdString(), selected);
+  auto name = showFieldName.toStdString();
+  auto moduleId = name;
+  auto renamed = name.find("(from ");
+  if (renamed != std::string::npos)
+    moduleId.assign(name.begin() + renamed + 6, name.end() - 1);
+  MeshComponentSelectionFeedback sel(moduleId, component.toStdString(), selected);
   state_->setTransientValue(Parameters::MeshComponentSelection, sel);
 }
 

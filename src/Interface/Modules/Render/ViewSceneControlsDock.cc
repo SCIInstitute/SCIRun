@@ -366,7 +366,7 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
     if (!containsItem(name))
       addRenderItem(name);
 
-    auto stateIter = showFieldStates.find(name.toStdString());
+    auto stateIter = std::find_if(showFieldStates.begin(), showFieldStates.end(), [&name](const ShowFieldStatesMap::value_type& p) { return name.toStdString().find(p.first) != std::string::npos; });
     if (stateIter != showFieldStates.end())
     {
       auto state = stateIter->second;
@@ -394,7 +394,7 @@ void VisibleItemManager::addRenderItem(const QString& name)
 
   itemList_->addTopLevelItem(item);
   item->setCheckState(0, Qt::Checked);
-  if (name.startsWith("ShowField:"))
+  if (name.contains("ShowField:"))
   {
     new QTreeWidgetItem(item, QStringList("Nodes"));
     new QTreeWidgetItem(item, QStringList("Edges"));
@@ -410,7 +410,7 @@ void VisibleItemManager::updateCheckStates(const QString& name, std::vector<bool
     return;
   }
   auto item = items[0];
-  if (name.startsWith("ShowField:"))
+  if (name.contains("ShowField:"))
   {
     auto nodes = item->child(2);  //TODO: brittle sort order
     auto edges = item->child(0);
