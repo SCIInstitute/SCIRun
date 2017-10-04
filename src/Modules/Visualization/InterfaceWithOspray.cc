@@ -189,11 +189,20 @@ namespace detail
         auto bbox = vmesh->get_bounding_box();
         imageBox_.extend(bbox);
         auto center = imageBox_.center();
-        float newCenter[] = { static_cast<float>(center.x()), static_cast<float>(center.y()), static_cast<float>(center.z()) };
+        float position[] = { toFloat(Parameters::CameraPositionX), toFloat(Parameters::CameraPositionY), toFloat(Parameters::CameraPositionZ) };
+        float newDir[] = { static_cast<float>(center.x()) - position[0],
+           static_cast<float>(center.y()) - position[1],
+           static_cast<float>(center.z()) - position[2]};
+        //std::cout << "newDir " << newDir[0] << ", " << newDir[1] << ", " << newDir[2] << std::endl;
         state_->setValue(Parameters::CameraViewX, center.x());
         state_->setValue(Parameters::CameraViewY, center.y());
         state_->setValue(Parameters::CameraViewZ, center.z());
-        ospSet3fv(camera_, "dir", newCenter);
+        ospSet3fv(camera_, "dir", newDir);
+        float newUp[] = { newDir[0] / newDir[2], -(newDir[0]*newDir[0] + newDir[2]*newDir[2])/(newDir[1]*newDir[2]) , 1.0f };
+        state_->setValue(Parameters::CameraUpX, newUp[0]);
+        state_->setValue(Parameters::CameraUpY, newUp[1]);
+        state_->setValue(Parameters::CameraUpZ, newUp[2]);
+        ospSet3fv(camera_, "up", newUp);
         ospCommit(camera_);
       }
 

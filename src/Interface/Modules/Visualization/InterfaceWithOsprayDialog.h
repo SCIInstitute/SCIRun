@@ -56,6 +56,7 @@ private Q_SLOTS:
   void pushFileNameToState();
   void saveFile();
   void closeImageWindows();
+  void adjustZoom();
 };
 
 }

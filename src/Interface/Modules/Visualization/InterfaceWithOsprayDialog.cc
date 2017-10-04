@@ -30,10 +30,12 @@
 #include <Modules/Visualization/InterfaceWithOspray.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/GeometryPrimitives/Point.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Visualization::Parameters;
@@ -86,6 +88,28 @@ InterfaceWithOsprayDialog::InterfaceWithOsprayDialog(const std::string& name, Mo
   WidgetStyleMixin::tabStyle(tabWidget);
 
   connect(closeImageWindowsPushButton_, SIGNAL(clicked()), this, SLOT(closeImageWindows()));
+
+  connect(zoomHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(adjustZoom()));
+}
+
+void InterfaceWithOsprayDialog::adjustZoom()
+{
+  //qDebug() << __FUNCTION__ << zoomHorizontalSlider_->value() << zoomHorizontalSlider_->minimum() << zoomHorizontalSlider_->maximum();
+  Point camPos(state_->getValue(CameraPositionX).toDouble(), state_->getValue(CameraPositionY).toDouble(), state_->getValue(CameraPositionZ).toDouble());
+  //qDebug() << "camPos" << camPos.get_string().c_str();
+  Point camView(state_->getValue(CameraViewX).toDouble(), state_->getValue(CameraViewY).toDouble(), state_->getValue(CameraViewZ).toDouble());
+  //qDebug() << "camView" << camView.get_string().c_str();
+  auto a = camView - camPos;
+  //qDebug() << "distance: " << a.length();
+
+  auto zoomFactor = 2 * (zoomHorizontalSlider_->value() + 1.0) / (zoomHorizontalSlider_->maximum() + 1);
+  auto newPos = camView + zoomFactor*a;
+  state_->setValue(CameraPositionX, newPos.x());
+  state_->setValue(CameraPositionY, newPos.y());
+  state_->setValue(CameraPositionZ, newPos.z());
+
+  zoomHorizontalSlider_->setValue(5);
+  Q_EMIT executeFromStateChangeTriggered();
 }
 
 void InterfaceWithOsprayDialog::closeImageWindows()
@@ -120,6 +144,8 @@ void InterfaceWithOsprayDialog::showImage()
 void InterfaceWithOsprayDialog::updateViewWidgets(int state)
 {
   manualViewGroupBox_->setEnabled(state == 0);
+  manualUpGroupBox_->setEnabled(state == 0);
+  autoZoomGroupBox_->setDisabled(state == 0);
 }
 
 void InterfaceWithOsprayDialog::pullSpecial()
