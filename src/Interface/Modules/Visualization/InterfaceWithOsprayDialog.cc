@@ -75,11 +75,27 @@ InterfaceWithOsprayDialog::InterfaceWithOsprayDialog(const std::string& name, Mo
   addCheckBoxManager(automaticViewCheckBox_, AutoCameraView);
   connect(automaticViewCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateViewWidgets(int)));
 
+  connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
+  connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
+  connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
+
   createExecuteInteractivelyToggleAction();
 
   state_->connectSpecificStateChanged(Variables::Filename, [this]() { imageFilenameChanged(); });
   connect(this, SIGNAL(imageFilenameChanged()), this, SLOT(showImage()));
   WidgetStyleMixin::tabStyle(tabWidget);
+
+  connect(closeImageWindowsPushButton_, SIGNAL(clicked()), this, SLOT(closeImageWindows()));
+}
+
+void InterfaceWithOsprayDialog::closeImageWindows()
+{
+  for (auto& child : children())
+  {
+    auto dialog = qobject_cast<QDialog*>(child);
+    if (dialog)
+      dialog->close();
+  }
 }
 
 void InterfaceWithOsprayDialog::showImage()
@@ -93,7 +109,7 @@ void InterfaceWithOsprayDialog::showImage()
     myLabel->resize(myLabel->pixmap()->size());
 
     auto d = new QDialog(this);
-    d->setWindowTitle("Ospray Scene Image");
+    d->setWindowTitle("Ospray Scene Image: " + filename);
     auto layout = new QHBoxLayout;
     layout->addWidget(myLabel);
     d->setLayout(layout);
@@ -104,4 +120,24 @@ void InterfaceWithOsprayDialog::showImage()
 void InterfaceWithOsprayDialog::updateViewWidgets(int state)
 {
   manualViewGroupBox_->setEnabled(state == 0);
+}
+
+void InterfaceWithOsprayDialog::pullSpecial()
+{
+  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
+}
+
+void InterfaceWithOsprayDialog::pushFileNameToState()
+{
+  state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
+}
+
+void InterfaceWithOsprayDialog::saveFile()
+{
+  auto dir = QFileDialog::getExistingDirectory(this, "Choose Directory to save images", ".");
+  if (dir.length() > 0)
+  {
+    fileNameLineEdit_->setText(dir);
+    pushFileNameToState();
+  }
 }

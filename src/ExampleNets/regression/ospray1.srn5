@@ -346,7 +346,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>26</count>
+							<count>27</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -537,6 +537,18 @@
 									<value>
 										<which>1</which>
 										<value>5.00000000000000000e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>/Users/dan/Dropbox</value>
 									</value>
 								</second>
 							</item>

@@ -108,6 +108,7 @@ void InterfaceWithOspray::setStateDefaults()
   state->setValue(Parameters::LightVisible, false);
   state->setValue(Parameters::LightType, std::string("none"));
   state->setValue(Parameters::AutoCameraView, true);
+  state->setValue(Variables::Filename, std::string(""));
 }
 
 namespace detail
@@ -382,10 +383,11 @@ void InterfaceWithOspray::execute()
 
     auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
     auto filename = "scirunOsprayOutput_" + isoString + ".ppm";
-    ospray.writeImage(filename);
-    remark("Saving output to " + filename);
+    auto filePath = get_state()->getValue(Variables::Filename).toString() / boost::filesystem::path(filename);
+    ospray.writeImage(filePath.string());
+    remark("Saving output to " + filePath.string());
 
-    get_state()->setTransientValue(Variables::Filename, filename);
+    get_state()->setTransientValue(Variables::Filename, filePath.string());
 
     //auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);
     //sendOutput(SceneGraph, geom);

@@ -31,13 +31,14 @@
 
 #include "Interface/Modules/Visualization/ui_InterfaceWithOspray.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
 namespace Gui {
 
 class SCISHARE InterfaceWithOsprayDialog : public ModuleDialogGeneric,
-	public Ui::InterfaceWithOspray
+	public Ui::InterfaceWithOspray, public RemembersFileDialogDirectory
 {
 	Q_OBJECT
 
@@ -45,12 +46,16 @@ public:
   InterfaceWithOsprayDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
-
+protected:
+  virtual void pullSpecial() override;
 Q_SIGNALS:
   void imageFilenameChanged();
 private Q_SLOTS:
   void showImage();
 	void updateViewWidgets(int state);
+  void pushFileNameToState();
+  void saveFile();
+  void closeImageWindows();
 };
 
 }
