@@ -38,9 +38,6 @@ SCIRUN_ADD_UNIT_TEST(Core_Math_Tests
 
 TARGET_LINK_LIBRARIES(Core_Math_Tests
   Core_Math
-  #Core_Exceptions_Legacy
-  #Core_Utils_Legacy
-  #Core_Datatypes
   gtest_main
   gtest
   gmock

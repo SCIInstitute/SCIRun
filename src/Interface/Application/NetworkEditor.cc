@@ -1010,12 +1010,8 @@ void NetworkEditor::searchTextChanged(const QString& text)
 
 QPointF NetworkEditor::positionOfFloatingText(int num, bool top, int horizontalIndent, int verticalSpacing) const
 {
-  QPointF tl(horizontalScrollBar()->value(), verticalScrollBar()->value());
-  auto br = tl + viewport()->rect().bottomRight();
-  auto mat = matrix().inverted();
-  auto rect = mat.mapRect(QRectF(tl, br));
-
-  auto corner = top ? rect.topLeft() : rect.bottomLeft();
+  auto visibleRect = mapToScene(viewport()->geometry()).boundingRect();
+  auto corner = top ? visibleRect.topLeft() : visibleRect.bottomLeft();
   return (corner + QPointF(horizontalIndent, (top ? 1 : -1)* (verticalSpacing * num + 100)));
 }
 

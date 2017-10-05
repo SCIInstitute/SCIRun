@@ -72,6 +72,15 @@ std::string DescribeDatatype::describe(const DatatypeHandle& data) const
     return "[Complex Matrix Data] Info:\n" + ReportComplexMatrixInfoAlgo::summarize(info);
   }
 
+  auto cmatsp = boost::dynamic_pointer_cast<ComplexSparseRowMatrix>(data);
+  if (cmatsp)
+  {
+    ReportComplexMatrixInfoAlgo algo;
+    auto info = algo.runImpl(cmatsp);
+
+    return "[Complex Matrix Data] Info:\n" + ReportComplexMatrixInfoAlgo::summarize(info);
+  }
+
   auto field = boost::dynamic_pointer_cast<Field>(data);
   if (field)
   {

@@ -98,6 +98,11 @@ size_t Port::getIndex() const
   return index_;
 }
 
+ModuleStateHandle Port::moduleState() const
+{
+  return module_->get_state();
+}
+
 InputPort::InputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSinkInterfaceHandle sink)
   : Port(module, params), sink_(sink), isDynamic_(params.isDynamic_)
 {
@@ -171,6 +176,20 @@ bool InputPort::shouldTriggerDataChange() const
 void InputPort::resendNewDataSignal()
 {
   sink()->forceFireDataHasChanged();
+}
+
+boost::optional<std::string> InputPort::connectedModuleId() const
+{
+  if (connections_.empty())
+    return boost::none;
+  return connections_[0]->oport_->getUnderlyingModuleId().id_;
+}
+
+ModuleStateHandle InputPort::stateFromConnectedModule() const
+{
+  if (connections_.empty())
+    return nullptr;
+  return connections_[0]->oport_->moduleState();
 }
 
 OutputPort::OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source)

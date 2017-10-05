@@ -70,7 +70,7 @@ template<> std::string find_type_name(double*)
 
 template<> std::string find_type_name(std::complex<double>*)
 {
-  static const std::string name = "std::complex<double>";
+  static const std::string name = "complex";
   return name;
 }
 
