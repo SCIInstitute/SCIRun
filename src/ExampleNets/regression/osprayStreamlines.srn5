@@ -3508,7 +3508,7 @@
 									<name>ScaleBarFontSize</name>
 									<value>
 										<which>0</which>
-										<value>1</value>
+										<value>99</value>
 									</value>
 								</second>
 							</item>
@@ -3520,7 +3520,7 @@
 									<name>ScaleBarHeight</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>9.99899999999999949e+01</value>
 									</value>
 								</second>
 							</item>
@@ -3710,7 +3710,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>24</count>
+			<count>25</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CalculateGradients:0</moduleId1_>
@@ -3853,6 +3853,18 @@
 				<moduleId2_>RescaleColorMap:3</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GenerateStreamLines:0</moduleId1_>
+				<port1_>
+					<name>Streamlines</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>InterfaceWithOspray:0</moduleId2_>
+				<port2_>
+					<name>Streamlines</name>
 					<id>0</id>
 				</port2_>
 			</item>

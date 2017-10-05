@@ -183,7 +183,7 @@ namespace detail
       ospCommit(world_);
     }
 
-    void addField(FieldHandle field, boost::optional<ColorMapHandle> colorMap)
+    void adjustCameraPosition(FieldHandle field)
     {
       if (state_->getValue(Parameters::AutoCameraView).toBool())
       {
@@ -207,10 +207,12 @@ namespace detail
         ospSet3fv(camera_, "up", newUp);
         ospCommit(camera_);
       }
+    }
 
+    void fillDataBuffers(FieldHandle field, ColorMapHandle colorMap)
+    {
       auto facade(field->mesh()->getFacade());
 
-      auto map = colorMap.value_or(nullptr);
       fieldData_.push_back({});
       auto& fieldData = fieldData_.back();
       auto& vertex = fieldData.vertex;
@@ -232,9 +234,9 @@ namespace detail
           vertex.push_back(0);
 
           vfield->get_value(value, node.index());
-          if (map)
+          if (colorMap)
           {
-            nodeColor = map->valueToColor(value);
+            nodeColor = colorMap->valueToColor(value);
           }
           color.push_back(static_cast<float>(nodeColor.r()));
           color.push_back(static_cast<float>(nodeColor.g()));
@@ -254,6 +256,19 @@ namespace detail
         }
       }
 
+    }
+
+    void addField(FieldHandle field, ColorMapHandle colorMap)
+    {
+      adjustCameraPosition(field);
+
+      fillDataBuffers(field, colorMap);
+
+      const auto& fieldData = fieldData_.back();
+      const auto& vertex = fieldData.vertex;
+      const auto& color = fieldData.color;
+      const auto& index = fieldData.index;
+
       // create and setup model and mesh
       OSPGeometry mesh = ospNewGeometry("triangles");
       OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
@@ -272,9 +287,55 @@ namespace detail
       ospCommit(world_);
     }
 
+    void addStreamline(FieldHandle field)
+    {
+      auto vfield = field->vfield();
+      auto vmesh  = field->vmesh();
+      auto td = field->get_type_description();
+      if (td)
+      {
+        const auto& tname = td->get_name();
+        std::cout << __FUNCTION__ << " " << tname << std::endl;
+      }
+
+      adjustCameraPosition(field);
+
+      fillDataBuffers(field, nullptr);
+
+      const auto& fieldData = fieldData_.back();
+      const auto& vertex = fieldData.vertex;
+      const auto& color = fieldData.color;
+
+      auto& index = fieldData.index;
+      {
+        for (const auto& edge : facade->edges())
+        {
+          auto nodesFromEdge = edge.nodeIndices();
+          //auto nodePoints = edge.nodePoints();
+          std::cout << "Edge " << edge.index() << " nodes=[" << nodesFromEdge[0] << ", " << nodesFromEdge[1] << "]" << std::endl;
+        }
+      }
+
+      // create and setup model and mesh
+      OSPGeometry streamlines = ospNewGeometry("streamlines");
+      OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]);
+      ospCommit(data);
+      ospSetData(streamlines, "vertex", data);
+      data = ospNewData(vertex.size() / 4, OSP_FLOAT4, &color[0]);
+      ospCommit(data);
+      ospSetData(streamlines, "vertex.color", data);
+      // data = ospNewData(index.size() / 3, OSP_INT3, &index[0]);
+      // ospCommit(data);
+      // ospSetData(streamlines, "index", data);
+      ospCommit(mesh);
+
+      meshes_.push_back(mesh);
+      ospAddGeometry(world_, mesh);
+      ospCommit(world_);
+    }
+
     void render()
     {
-      // create renderer
       renderer_ = ospNewRenderer("scivis"); // choose Scientific Visualization renderer
 
       // create and setup light for Ambient Occlusion
@@ -373,6 +434,7 @@ void InterfaceWithOspray::execute()
   #ifdef WITH_OSPRAY
   auto fields = getRequiredDynamicInputs(Field);
   auto colorMaps = getOptionalDynamicInputs(ColorMapObject);
+  auto streamlines = getOptionalDynamicInputs(Streamlines);
 
   if (needToExecute())
   {
@@ -385,7 +447,7 @@ void InterfaceWithOspray::execute()
     for (auto&& fieldColor : zip(fields, colorMaps))
     {
       FieldHandle field;
-      boost::optional<ColorMapHandle> color;
+      ColorMapHandle color;
       boost::tie(field, color) = fieldColor;
 
       FieldInformation info(field);
@@ -395,6 +457,17 @@ void InterfaceWithOspray::execute()
 
       ospray.addField(field, color);
     }
+
+    for (auto& streamline : streamlines)
+    {
+      FieldInformation info(streamline);
+
+      if (!info.is_curvemesh())
+        THROW_INVALID_ARGUMENT("Module currently only works with curvemesh streamlines.");
+
+      ospray.addStreamline(streamline);
+    }
+
     ospray.render();
 
     auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
