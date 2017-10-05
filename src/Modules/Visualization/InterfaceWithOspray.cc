@@ -77,6 +77,7 @@ ALGORITHM_PARAMETER_DEF(Visualization, LightIntensity);
 ALGORITHM_PARAMETER_DEF(Visualization, LightVisible);
 ALGORITHM_PARAMETER_DEF(Visualization, LightType);
 ALGORITHM_PARAMETER_DEF(Visualization, AutoCameraView);
+ALGORITHM_PARAMETER_DEF(Visualization, StreamlineRadius);
 
 MODULE_INFO_DEF(InterfaceWithOspray, Visualization, SCIRun)
 
@@ -108,8 +109,9 @@ void InterfaceWithOspray::setStateDefaults()
   state->setValue(Parameters::LightColorB, 1.0);
   state->setValue(Parameters::LightIntensity, 1.0);
   state->setValue(Parameters::LightVisible, false);
-  state->setValue(Parameters::LightType, std::string("none"));
+  state->setValue(Parameters::LightType, std::string("ambient"));
   state->setValue(Parameters::AutoCameraView, true);
+  state->setValue(Parameters::StreamlineRadius, 0.1);
   state->setValue(Variables::Filename, std::string(""));
 }
 
@@ -120,6 +122,7 @@ namespace detail
   {
   private:
     static bool initialized_;
+    static Core::Thread::Mutex lock_;
     static void initialize()
     {
       if (!initialized_)
@@ -133,6 +136,7 @@ namespace detail
       }
     }
 
+    Core::Thread::Guard guard_;
     Core::Geometry::BBox imageBox_;
     ModuleStateHandle state_;
     osp::vec2i imgSize_;
@@ -156,7 +160,7 @@ namespace detail
     std::vector<FieldData> fieldData_;
 
   public:
-    explicit OsprayImpl(ModuleStateHandle state) : state_(state)
+    explicit OsprayImpl(ModuleStateHandle state) : guard_(lock_.get()), state_(state)
     {
       initialize();
     }
@@ -274,7 +278,7 @@ namespace detail
       OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
       ospCommit(data);
       ospSetData(mesh, "vertex", data);
-      data = ospNewData(vertex.size() / 4, OSP_FLOAT4, &color[0]);
+      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
       ospCommit(data);
       ospSetData(mesh, "vertex.color", data);
       data = ospNewData(index.size() / 3, OSP_INT3, &index[0]); // OSP_INT4 format is also supported for triangle indices
@@ -289,48 +293,43 @@ namespace detail
 
     void addStreamline(FieldHandle field)
     {
-      auto vfield = field->vfield();
-      auto vmesh  = field->vmesh();
-      auto td = field->get_type_description();
-      if (td)
-      {
-        const auto& tname = td->get_name();
-        std::cout << __FUNCTION__ << " " << tname << std::endl;
-      }
-
       adjustCameraPosition(field);
 
       fillDataBuffers(field, nullptr);
 
-      const auto& fieldData = fieldData_.back();
+      auto& fieldData = fieldData_.back();
       const auto& vertex = fieldData.vertex;
       const auto& color = fieldData.color;
 
       auto& index = fieldData.index;
       {
+        auto facade(field->mesh()->getFacade());
         for (const auto& edge : facade->edges())
         {
           auto nodesFromEdge = edge.nodeIndices();
-          //auto nodePoints = edge.nodePoints();
-          std::cout << "Edge " << edge.index() << " nodes=[" << nodesFromEdge[0] << ", " << nodesFromEdge[1] << "]" << std::endl;
+          index.push_back(nodesFromEdge[0]);
         }
       }
 
-      // create and setup model and mesh
       OSPGeometry streamlines = ospNewGeometry("streamlines");
       OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]);
       ospCommit(data);
       ospSetData(streamlines, "vertex", data);
-      data = ospNewData(vertex.size() / 4, OSP_FLOAT4, &color[0]);
+
+      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
       ospCommit(data);
       ospSetData(streamlines, "vertex.color", data);
-      // data = ospNewData(index.size() / 3, OSP_INT3, &index[0]);
-      // ospCommit(data);
-      // ospSetData(streamlines, "index", data);
-      ospCommit(mesh);
 
-      meshes_.push_back(mesh);
-      ospAddGeometry(world_, mesh);
+      data = ospNewData(index.size(), OSP_INT, &index[0]);
+      ospCommit(data);
+      ospSetData(streamlines, "index", data);
+
+      ospSet1f(streamlines, "radius", toFloat(Parameters::StreamlineRadius));
+
+      ospCommit(streamlines);
+
+      meshes_.push_back(streamlines);
+      ospAddGeometry(world_, streamlines);
       ospCommit(world_);
     }
 
@@ -410,11 +409,11 @@ namespace detail
       }
       fprintf(file, "\n");
       fclose(file);
-      std::cout << "wrote file " << fileName << std::endl;
     }
   };
 
   bool OsprayImpl::initialized_(false);
+  Core::Thread::Mutex OsprayImpl::lock_("ospray lock");
 
   #else
   class OsprayImpl {};
@@ -432,7 +431,7 @@ InterfaceWithOspray::InterfaceWithOspray() : GeometryGeneratingModule(staticInfo
 void InterfaceWithOspray::execute()
 {
   #ifdef WITH_OSPRAY
-  auto fields = getRequiredDynamicInputs(Field);
+  auto fields = getOptionalDynamicInputs(Field);
   auto colorMaps = getOptionalDynamicInputs(ColorMapObject);
   auto streamlines = getOptionalDynamicInputs(Streamlines);
 

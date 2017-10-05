@@ -73,6 +73,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(LightIntensity);
         ALGORITHM_PARAMETER_DECL(LightType);
         ALGORITHM_PARAMETER_DECL(AutoCameraView);
+        ALGORITHM_PARAMETER_DECL(StreamlineRadius);
       }
     }
   }

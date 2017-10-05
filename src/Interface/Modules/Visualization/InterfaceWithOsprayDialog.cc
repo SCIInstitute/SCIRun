@@ -67,6 +67,7 @@ InterfaceWithOsprayDialog::InterfaceWithOsprayDialog(const std::string& name, Mo
   addDoubleSpinBoxManager(backgroundColorRDoubleSpinBox_, BackgroundColorR);
   addDoubleSpinBoxManager(backgroundColorGDoubleSpinBox_, BackgroundColorG);
   addDoubleSpinBoxManager(backgroundColorBDoubleSpinBox_, BackgroundColorB);
+  addDoubleSpinBoxManager(streamlineRadiusDoubleSpinBox_, StreamlineRadius);
   addCheckBoxManager(showImageCheckBox_, ShowImageInWindow);
 
   addDoubleSpinBoxManager(lightColorRDoubleSpinBox_, LightColorR);
