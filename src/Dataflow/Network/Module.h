@@ -75,8 +75,6 @@ namespace Networks {
     void status(const std::string& msg) const override final { getLogger()->status(msg); }
     bool needToExecute() const override final;
     bool hasDynamicPorts() const override;
-    template <class T, class D, size_t N>
-    void sendOutput(const StaticPortName<T,N>& port, boost::shared_ptr<D> data);
 
     /*** public Dev-interface ****/
     boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) override final;
@@ -143,6 +141,12 @@ namespace Networks {
     std::vector<boost::shared_ptr<T>> getRequiredDynamicInputs(const DynamicPortName<T,N>& port);
     template <class T, size_t N>
     std::vector<boost::shared_ptr<T>> getOptionalDynamicInputs(const DynamicPortName<T,N>& port);
+  public: //for python
+    template <class T, class D, size_t N>
+    void sendOutput(const StaticPortName<T, N>& port, boost::shared_ptr<D> data);
+  protected:
+    template <class T, size_t N, typename F>
+    void computeOutputAndSendIfConnected(const StaticPortName<T, N>& port, F evalFunc);
     template <class T, size_t N>
     void sendOutputFromAlgorithm(const StaticPortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output);
 

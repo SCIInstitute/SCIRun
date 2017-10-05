@@ -8,11 +8,11 @@ tree by the configure script.
 You should include only the specific file that you are interested in.
 For example, you would use:
 
-#include <sci_defs/lapack_defs.h>
+#include <sci_defs/tetgen_defs.h>
 
 in any .cc or .h file that uses:
 
-#ifdef HAVE_LAPACK
+#ifdef HAVE_TETGEN
 
 
 

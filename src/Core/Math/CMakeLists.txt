@@ -37,7 +37,6 @@ SET(Core_Math_SRCS
   MusilRNG.cc
   PiecewiseInterp.cc
   TrigTable.cc
-  #sci_lapack.cc
   fft.c	
 )
 
@@ -53,7 +52,6 @@ SET(Core_Math_HEADERS
   MusilRNG.h
   PiecewiseInterp.h
   TrigTable.h
-  #sci_lapack.h
   fft.h
   MiscMath.h
   share.h
