@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>447</width>
-    <height>306</height>
+    <height>352</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>447</width>
-    <height>306</height>
+    <height>352</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -22,6 +22,12 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="1" column="1">
     <widget class="QComboBox" name="methodComboBox_">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>30</height>
+      </size>
+     </property>
      <item>
       <property name="text">
        <string>Cell Walk</string>
@@ -58,6 +64,12 @@
    </item>
    <item row="3" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBox">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>210</height>
+      </size>
+     </property>
      <property name="title">
       <string>Parameters</string>
      </property>
@@ -151,6 +163,12 @@
    </item>
    <item row="5" column="1">
     <widget class="QComboBox" name="directionComboBox_">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>30</height>
+      </size>
+     </property>
      <property name="currentIndex">
       <number>1</number>
      </property>
@@ -173,6 +191,12 @@
    </item>
    <item row="7" column="1">
     <widget class="QComboBox" name="valueComboBox_">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>30</height>
+      </size>
+     </property>
      <property name="currentIndex">
       <number>1</number>
      </property>

@@ -564,7 +564,7 @@
 									<name>CameraPositionX</name>
 									<value>
 										<which>1</which>
-										<value>3.00000000000000000e+00</value>
+										<value>5.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -576,7 +576,7 @@
 									<name>CameraPositionY</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000000e+00</value>
+										<value>5.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -600,7 +600,7 @@
 									<name>CameraUpX</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-01</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -612,7 +612,7 @@
 									<name>CameraUpY</name>
 									<value>
 										<which>1</which>
-										<value>-1.66666662693023682e+00</value>
+										<value>-2.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -720,7 +720,7 @@
 									<name>FrameCount</name>
 									<value>
 										<which>0</which>
-										<value>10</value>
+										<value>11</value>
 									</value>
 								</second>
 							</item>

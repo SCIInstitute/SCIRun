@@ -63,6 +63,7 @@ InterfaceWithOsprayDialog::InterfaceWithOsprayDialog(const std::string& name, Mo
   addDoubleSpinBoxManager(defaultColorRDoubleSpinBox_, DefaultColorR);
   addDoubleSpinBoxManager(defaultColorGDoubleSpinBox_, DefaultColorG);
   addDoubleSpinBoxManager(defaultColorBDoubleSpinBox_, DefaultColorB);
+  addDoubleSpinBoxManager(defaultColorADoubleSpinBox_, DefaultColorA);
   addDoubleSpinBoxManager(backgroundColorRDoubleSpinBox_, BackgroundColorR);
   addDoubleSpinBoxManager(backgroundColorGDoubleSpinBox_, BackgroundColorG);
   addDoubleSpinBoxManager(backgroundColorBDoubleSpinBox_, BackgroundColorB);

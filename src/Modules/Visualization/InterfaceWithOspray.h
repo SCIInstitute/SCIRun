@@ -60,6 +60,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(DefaultColorR);
         ALGORITHM_PARAMETER_DECL(DefaultColorG);
         ALGORITHM_PARAMETER_DECL(DefaultColorB);
+        ALGORITHM_PARAMETER_DECL(DefaultColorA);
         ALGORITHM_PARAMETER_DECL(BackgroundColorR);
         ALGORITHM_PARAMETER_DECL(BackgroundColorG);
         ALGORITHM_PARAMETER_DECL(BackgroundColorB);
@@ -80,7 +81,7 @@ namespace SCIRun {
     namespace Visualization {
 
       class SCISHARE InterfaceWithOspray : public Dataflow::Networks::GeometryGeneratingModule,
-        public Has2InputPorts<DynamicPortTag<FieldPortTag>, DynamicPortTag<ColorMapPortTag>>,
+        public Has3InputPorts<DynamicPortTag<FieldPortTag>, DynamicPortTag<ColorMapPortTag>, DynamicPortTag<FieldPortTag>>,
         public Has1OutputPort<GeometryPortTag>
       {
       public:
@@ -89,6 +90,7 @@ namespace SCIRun {
 
         INPUT_PORT_DYNAMIC(0, Field, Field);
         INPUT_PORT_DYNAMIC(1, ColorMapObject, ColorMap);
+        INPUT_PORT_DYNAMIC(2, Streamlines, Field);
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)

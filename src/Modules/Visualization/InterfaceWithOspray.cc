@@ -64,6 +64,7 @@ ALGORITHM_PARAMETER_DEF(Visualization, CameraViewZ);
 ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorR);
 ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorG);
 ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorB);
+ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorA);
 ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorR);
 ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorG);
 ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorB);
@@ -96,6 +97,7 @@ void InterfaceWithOspray::setStateDefaults()
   state->setValue(Parameters::DefaultColorR, 0.5);
   state->setValue(Parameters::DefaultColorG, 0.5);
   state->setValue(Parameters::DefaultColorB, 0.5);
+  state->setValue(Parameters::DefaultColorA, 1.0);
   state->setValue(Parameters::BackgroundColorR, 0.0);
   state->setValue(Parameters::BackgroundColorG, 0.0);
   state->setValue(Parameters::BackgroundColorB, 0.0);
@@ -219,6 +221,7 @@ namespace detail
       {
         double value;
         ColorRGB nodeColor(state_->getValue(Parameters::DefaultColorR).toDouble(), state_->getValue(Parameters::DefaultColorG).toDouble(), state_->getValue(Parameters::DefaultColorB).toDouble());
+        auto alpha = toFloat(Parameters::DefaultColorA);
 
         for (const auto& node : facade->nodes())
         {
@@ -236,7 +239,7 @@ namespace detail
           color.push_back(static_cast<float>(nodeColor.r()));
           color.push_back(static_cast<float>(nodeColor.g()));
           color.push_back(static_cast<float>(nodeColor.b()));
-          color.push_back(1.0f);
+          color.push_back(alpha);
         }
       }
 
@@ -361,6 +364,7 @@ InterfaceWithOspray::InterfaceWithOspray() : GeometryGeneratingModule(staticInfo
 {
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
+  INITIALIZE_PORT(Streamlines);
   INITIALIZE_PORT(SceneGraph);
 }
 
@@ -374,6 +378,9 @@ void InterfaceWithOspray::execute()
   {
     detail::OsprayImpl ospray(get_state());
     ospray.setup();
+
+    if (colorMaps.size() < fields.size())
+      colorMaps.resize(fields.size());
 
     for (auto&& fieldColor : zip(fields, colorMaps))
     {
