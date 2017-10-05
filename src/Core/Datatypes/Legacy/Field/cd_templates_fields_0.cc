@@ -100,23 +100,19 @@ namespace SCIRun
     FData3d<unsigned long, LVMesh> >;
 
   //Linear
-  template class GenericField<LVMesh, FDTensorBasis,  FData3d<Tensor, LVMesh> >;
-  template class GenericField<LVMesh, FDVectorBasis,  FData3d<Vector, LVMesh> >;
-  template class GenericField<LVMesh, FDdoubleBasis,  FData3d<double, LVMesh> >;
-  template class GenericField<LVMesh, FDComplexBasis, FData3d<std::complex<double>, LVMesh> >;
-  template class GenericField<LVMesh, FDfloatBasis,   FData3d<float, LVMesh> >;
-  template class GenericField<LVMesh, FDintBasis,     FData3d<int, LVMesh> >;
+  template class GenericField<LVMesh, FDTensorBasis,   FData3d<Tensor, LVMesh> >;
+  template class GenericField<LVMesh, FDVectorBasis,   FData3d<Vector, LVMesh> >;
+  template class GenericField<LVMesh, FDdoubleBasis,   FData3d<double, LVMesh> >;
+  template class GenericField<LVMesh, FDComplexBasis,  FData3d<std::complex<double>, LVMesh> >;
+  template class GenericField<LVMesh, FDfloatBasis,    FData3d<float, LVMesh> >;
+  template class GenericField<LVMesh, FDintBasis,      FData3d<int, LVMesh> >;
   template class GenericField<LVMesh, FDlonglongBasis, FData3d<long long, LVMesh> >;
-  template class GenericField<LVMesh, FDshortBasis,   FData3d<short, LVMesh> >;
-  template class GenericField<LVMesh, FDcharBasis,    FData3d<char, LVMesh> >;
-  template class GenericField<LVMesh, FDuintBasis,    
-    FData3d<unsigned int, LVMesh> >;
-  template class GenericField<LVMesh, FDushortBasis,  
-    FData3d<unsigned short, LVMesh> >;
-  template class GenericField<LVMesh, FDucharBasis,   
-    FData3d<unsigned char, LVMesh> >;
-  template class GenericField<LVMesh, FDulongBasis,   
-    FData3d<unsigned long, LVMesh> >;
+  template class GenericField<LVMesh, FDshortBasis,    FData3d<short, LVMesh> >;
+  template class GenericField<LVMesh, FDcharBasis,     FData3d<char, LVMesh> >;
+  template class GenericField<LVMesh, FDuintBasis,     FData3d<unsigned int, LVMesh> >;
+  template class GenericField<LVMesh, FDushortBasis,   FData3d<unsigned short, LVMesh> >;
+  template class GenericField<LVMesh, FDucharBasis,    FData3d<unsigned char, LVMesh> >;
+  template class GenericField<LVMesh, FDulongBasis,    FData3d<unsigned long, LVMesh> >;
 }
 
 PersistentTypeID backwards_compat_LVM("LatVolMesh", "Mesh",
@@ -144,7 +140,7 @@ backwards_compat_LVFd("LatVolField<double>", "Field",
 		      GenericField<LVMesh, NDBasis, 
 		      FData3d<double, LVMesh> >::maker);
 PersistentTypeID
-backwards_compat_LVFcd("LatVolField<std::complex<double>>", "Field",
+backwards_compat_LVFcd("LatVolField<complex>", "Field",
           GenericField<LVMesh, FDComplexBasis,
           FData3d<std::complex<double>, LVMesh> >::maker,
           GenericField<LVMesh, CFComplexdoubleBasis,

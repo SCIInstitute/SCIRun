@@ -37,17 +37,19 @@ namespace Modules {
 namespace Math {
 
   class SCISHARE ConvertComplexToRealMatrix : public Dataflow::Networks::Module,
-    public Has2OutputPorts<MatrixPortTag, MatrixPortTag>,
-    public Has1InputPort<ComplexMatrixPortTag>
+    public Has1InputPort<ComplexMatrixPortTag>,
+    public Has4OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>
   {
   public:
     ConvertComplexToRealMatrix();
-    virtual void execute() override;
-    virtual void setStateDefaults() override {}
+    void execute() override;
+    void setStateDefaults() override {}
 
     INPUT_PORT(0, InputComplexMatrix, ComplexMatrix);
     OUTPUT_PORT(0, OutputRealPartMatrix, Matrix);
     OUTPUT_PORT(1, OutputComplexPartMatrix, Matrix);
+    OUTPUT_PORT(2, Magnitude, Matrix);
+    OUTPUT_PORT(3, Phase, Matrix);
     MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
     NEW_HELP_WEBPAGE_ONLY
   };

@@ -102,13 +102,19 @@ GenerateSinglePointProbeFromField::GenerateSinglePointProbeFromField()
 
 void GenerateSinglePointProbeFromField::processWidgetFeedback(const ModuleFeedback& var)
 {
-  auto vsf = static_cast<const ViewSceneFeedback&>(var);
-
-  if (vsf.selectionName.find(get_id()) != std::string::npos &&
-    impl_->previousTransform_ != vsf.transform)
+  try
   {
-    adjustPositionFromTransform(vsf.transform);
-    enqueueExecuteAgain(false);
+    auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
+    if (vsf.selectionName.find(get_id()) != std::string::npos &&
+      impl_->previousTransform_ != vsf.transform)
+    {
+      adjustPositionFromTransform(vsf.transform);
+      enqueueExecuteAgain(false);
+    }
+  }
+  catch (std::bad_cast&)
+  {
+    //ignore
   }
 }
 

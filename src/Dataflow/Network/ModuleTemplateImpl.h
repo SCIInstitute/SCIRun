@@ -93,6 +93,15 @@
     send_output_handle(port.id_, data);
   }
 
+  template <class T, size_t N, typename F>
+  void Module::computeOutputAndSendIfConnected(const StaticPortName<T, N>& port, F evalFunc)
+  {
+    if (oport_connected(port))
+    {
+      sendOutput(port, evalFunc());
+    }
+  }
+
   template <class T, size_t N>
   void Module::sendOutputFromAlgorithm(const StaticPortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output)
   {

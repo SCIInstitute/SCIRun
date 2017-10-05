@@ -25,15 +25,17 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
-   author: Moritz Dannhauer & Kimia Shayestehfard
-   last change: 02/16/17
+author: Moritz Dannhauer & Kimia Shayestehfard
+last change: 02/16/17
 */
 
 #include <Modules/Math/ConvertComplexToRealMatrix.h>
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
+#include <deque>
 
+using namespace SCIRun;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
@@ -41,55 +43,133 @@ using namespace SCIRun::Core::Datatypes;
 
 MODULE_INFO_DEF(ConvertComplexToRealMatrix, Converters, SCIRun)
 
-ConvertComplexToRealMatrix::ConvertComplexToRealMatrix() : Module(staticInfo_,false)
+ConvertComplexToRealMatrix::ConvertComplexToRealMatrix() : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(InputComplexMatrix);
   INITIALIZE_PORT(OutputRealPartMatrix);
   INITIALIZE_PORT(OutputComplexPartMatrix);
+  INITIALIZE_PORT(Magnitude);
+  INITIALIZE_PORT(Phase);
+}
+
+namespace
+{
+  complex Arg(const complex& c)
+  {
+    return { std::arg(c), 0 };
+  }
+    
+  struct RealPart
+  {
+    template <class M>
+    auto operator()(const M& matrix) const -> decltype(matrix.real())
+    {
+      return matrix.real();
+    }
+  };
+
+  struct ImagPart
+  {
+    template <class M>
+    auto operator()(const M& matrix) const -> decltype(matrix.imag())
+    {
+      return matrix.imag();
+    }
+  };
+
+  struct MagnitudeFunc
+  {
+    template <class M>
+    auto operator()(const M& matrix) const -> decltype(matrix.cwiseAbs())
+    {
+      return matrix.cwiseAbs();
+    }
+  };
+
+  struct PhaseFunc
+  {
+    template <class M>
+    auto operator()(const M& matrix) const -> decltype(matrix.unaryExpr(&Arg).real())
+    {
+      return matrix.unaryExpr(&Arg).real();
+    }
+  };
+
+  template <class M>
+  struct MoveToHeap
+  {
+    template <class Expr>
+    MatrixHandleGeneric<typename M::value_type> operator()(Expr&& expr) const
+    {
+      return boost::make_shared<M>(expr);
+    }
+  };
+  
+  template <class Func, class T1, class T2>
+  struct MatrixFuncEvaluator
+  {
+    Func f;
+    
+    MatrixHandleGeneric<T2> operator()(const MatrixTuple<T1>& mats)
+    {
+      auto a = std::get<DENSE>(mats);
+      if (a)
+      {
+        MoveToHeap<DenseMatrixGeneric<T2>> m;
+        return m(f(*a));
+      }
+      auto b = std::get<SPARSE_ROW>(mats);
+      if (b)
+      {
+        MoveToHeap<SparseRowMatrixGeneric<T2>> m;
+        return m(f(*b));
+      }
+      auto c = std::get<COLUMN>(mats);
+      if (c)
+      {
+        MoveToHeap<DenseColumnMatrixGeneric<T2>> m;
+        return m(f(*c));
+      }
+      return nullptr;
+    }
+  };
+
+  template <class Func>
+  using ComplexToRealMatrixFuncEvaluator = MatrixFuncEvaluator<Func, complex, double>;
 }
 
 void ConvertComplexToRealMatrix::execute()
 {
-
-  auto input_complex_matrix = getRequiredInput(InputComplexMatrix);
+  auto complexMatrix = getRequiredInput(InputComplexMatrix);
 
   if (needToExecute())
   {
-    auto input_dense = boost::dynamic_pointer_cast<ComplexDenseMatrix>(input_complex_matrix);
-    auto input_sparse = boost::dynamic_pointer_cast<ComplexSparseRowMatrix>(input_complex_matrix);
-    auto input_column = boost::dynamic_pointer_cast<ComplexDenseColumnMatrix>(input_complex_matrix);
-
-    if (!input_dense && !input_sparse && !input_column)
+    if (!isKnownMatrixType(complexMatrix))
     {
-     error("Unknown matrix type");
-     return;
+      error("Unknown matrix type");
+      return;
     }
 
-    if (input_complex_matrix->nrows()==0 || input_complex_matrix->ncols()==0)
-    {
-     error("Number of Rows or Columns are zero");
-     return;
-    }
-
-    MatrixHandle output_real,output_imag;
-
-    if(input_dense)
-    {
-      output_real = boost::make_shared<DenseMatrix>(input_dense->real());
-      output_imag= boost::make_shared<DenseMatrix>(input_dense->imag());
-    }
-    else if(input_column)
-    {
-      output_real = boost::make_shared<DenseColumnMatrix>(input_column->real());
-      output_imag= boost::make_shared<DenseColumnMatrix>(input_column->imag());
-    }
-    else
-    {
-     output_real = boost::make_shared<SparseRowMatrix>(input_sparse->real());
-     output_imag = boost::make_shared<SparseRowMatrix>(input_sparse->imag());
-    }
-
-    sendOutput(OutputRealPartMatrix,output_real);
-    sendOutput(OutputComplexPartMatrix,output_imag);
+    auto subtypes = explodeBySubtype(complexMatrix);
+    computeOutputAndSendIfConnected(OutputRealPartMatrix, 
+      [subtypes]()
+      {
+        return ComplexToRealMatrixFuncEvaluator<RealPart>()(subtypes);
+      });
+    computeOutputAndSendIfConnected(OutputComplexPartMatrix,
+      [subtypes]()
+      {
+        return ComplexToRealMatrixFuncEvaluator<ImagPart>()(subtypes);
+      });
+    computeOutputAndSendIfConnected(Magnitude,
+      [subtypes]()
+      {
+        return ComplexToRealMatrixFuncEvaluator<MagnitudeFunc>()(subtypes);
+      });
+    computeOutputAndSendIfConnected(Phase,
+      [subtypes]()
+      {
+        return ComplexToRealMatrixFuncEvaluator<PhaseFunc>()(subtypes);
+      });
   }
 }
