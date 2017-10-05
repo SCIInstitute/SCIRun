@@ -66,10 +66,20 @@ InterfaceWithOsprayDialog::InterfaceWithOsprayDialog(const std::string& name, Mo
   addDoubleSpinBoxManager(backgroundColorBDoubleSpinBox_, BackgroundColorB);
   addCheckBoxManager(showImageCheckBox_, ShowImageInWindow);
 
+  addDoubleSpinBoxManager(lightColorRDoubleSpinBox_, LightColorR);
+  addDoubleSpinBoxManager(lightColorGDoubleSpinBox_, LightColorG);
+  addDoubleSpinBoxManager(lightColorBDoubleSpinBox_, LightColorB);
+  addDoubleSpinBoxManager(lightIntensityDoubleSpinBox_, LightIntensity);
+  addCheckBoxManager(lightVisibleCheckBox_, LightVisible);
+  addComboBoxManager(lightTypeComboBox_, LightType);
+  addCheckBoxManager(automaticViewCheckBox_, AutoCameraView);
+  connect(automaticViewCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateViewWidgets(int)));
+
   createExecuteInteractivelyToggleAction();
 
   state_->connectSpecificStateChanged(Variables::Filename, [this]() { imageFilenameChanged(); });
   connect(this, SIGNAL(imageFilenameChanged()), this, SLOT(showImage()));
+  WidgetStyleMixin::tabStyle(tabWidget);
 }
 
 void InterfaceWithOsprayDialog::showImage()
@@ -89,4 +99,9 @@ void InterfaceWithOsprayDialog::showImage()
     d->setLayout(layout);
     d->show();
   }
+}
+
+void InterfaceWithOsprayDialog::updateViewWidgets(int state)
+{
+  manualViewGroupBox_->setEnabled(state == 0);
 }
