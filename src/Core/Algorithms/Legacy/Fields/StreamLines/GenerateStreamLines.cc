@@ -24,8 +24,8 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-   
-   Extension: thread-based parallelization 
+
+   Extension: thread-based parallelization
    Author: Moritz Dannhauer
    Date: August 2017
 */
@@ -58,6 +58,7 @@ ALGORITHM_PARAMETER_DEF(Fields, RemoveColinearPoints);
 ALGORITHM_PARAMETER_DEF(Fields, StreamlineMethod);
 ALGORITHM_PARAMETER_DEF(Fields, AutoParameters);
 ALGORITHM_PARAMETER_DEF(Fields, NumStreamlines);
+ALGORITHM_PARAMETER_DEF(Fields, UseMultithreading);
 
 GenerateStreamLinesAlgo::GenerateStreamLinesAlgo()
 {
@@ -73,6 +74,8 @@ GenerateStreamLinesAlgo::GenerateStreamLinesAlgo()
 
   // For output
   addParameter(Parameters::NumStreamlines, 0);
+
+  addParameter(Parameters::UseMultithreading, true);
 }
 
 namespace detail
@@ -163,7 +166,7 @@ class GenerateStreamLinesAlgoP : public Core::Thread::Interruptible
 
   public:
      GenerateStreamLinesAlgoP(const AlgorithmBase* algo) :
-      algo_(algo), numprocessors_(Parallel::NumCores()), barrier_("FEMVolRHSBuilder Barrier", numprocessors_),  
+      algo_(algo), numprocessors_(Parallel::NumCores()), barrier_("FEMVolRHSBuilder Barrier", numprocessors_),
       tolerance_(0), step_size_(0), max_steps_(0), direction_(0), value_(SeedIndex), remove_colinear_pts_(false),
       method_(AdamsBashforth), seed_field_(0), seed_mesh_(0), field_(0), mesh_(0), ofield_(0), omesh_(0)
     {}
@@ -193,17 +196,17 @@ class GenerateStreamLinesAlgoP : public Core::Thread::Interruptible
 
     VField* ofield_;
     VMesh*  omesh_;
-    
+
     FieldHandle input_;
-    std::vector<bool> success_; 
-    FieldList outputs_; 
+    std::vector<bool> success_;
+    FieldList outputs_;
     VMesh::Node::index_type global_dimension_;
     void parallel(int proc);
     FieldHandle StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num);
 };
 
 FieldHandle GenerateStreamLinesAlgoP::StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num)
-{ 
+{
   FieldHandle out;
   try
   {
@@ -217,7 +220,7 @@ FieldHandle GenerateStreamLinesAlgoP::StreamLinesForCertainSeeds(VMesh::Node::in
     out = CreateField(fi);
     VField* ofield=out->vfield();
     VMesh*  omesh=out->vmesh();
-   
+
     StreamLineIntegrators BI;
     BI.nodes_.reserve(max_steps_);                  // storage for points
     BI.tolerance2_  = tolerance_ * tolerance_;      // square error tolerance
@@ -228,7 +231,7 @@ FieldHandle GenerateStreamLinesAlgoP::StreamLinesForCertainSeeds(VMesh::Node::in
     // Try to find the streamline for each seed point.
     //VMesh::size_type num_seeds = seed_mesh_->num_nodes();
     VMesh::Node::array_type newnodes(2);
-    
+
     for (VMesh::Node::index_type idx=from; idx<to; ++idx)
     {
       checkForInterruption();
@@ -344,7 +347,7 @@ FieldHandle GenerateStreamLinesAlgoP::StreamLinesForCertainSeeds(VMesh::Node::in
         }
       }
 
-	  if(proc_num==0) 
+	  if(proc_num==0)
 	    algo_->update_progress_max(idx,to);
     }
 
@@ -378,14 +381,14 @@ FieldHandle GenerateStreamLinesAlgoP::StreamLinesForCertainSeeds(VMesh::Node::in
 void GenerateStreamLinesAlgoP::parallel(int proc_num)
 {
  success_[proc_num] = true;
- 
+
  for (int q=0; q<numprocessors_;q++)
    if (success_[q] == false) return;
-	 
+
  const index_type start_gd = (global_dimension_ * proc_num)/numprocessors_+1;
  const index_type end_gd  = (global_dimension_ * (proc_num+1))/numprocessors_;
- 
- outputs_[proc_num]=StreamLinesForCertainSeeds(start_gd, end_gd, proc_num);  
+
+ outputs_[proc_num]=StreamLinesForCertainSeeds(start_gd, end_gd, proc_num);
 }
 
 bool GenerateStreamLinesAlgoP::run(FieldHandle input,
@@ -401,15 +404,17 @@ bool GenerateStreamLinesAlgoP::run(FieldHandle input,
   omesh_ = output->vmesh();
   tolerance_ = algo_->get(Parameters::StreamlineTolerance).toDouble();
   step_size_ = algo_->get(Parameters::StreamlineStepSize).toDouble();
-  max_steps_ = algo_->get(Parameters::StreamlineMaxSteps).toInt();  
+  max_steps_ = algo_->get(Parameters::StreamlineMaxSteps).toInt();
   direction_ = convertDirectionOption(algo_->getOption(Parameters::StreamlineDirection));
   value_ = convertValue(algo_->getOption(Parameters::StreamlineValue));
   remove_colinear_pts_ = algo_->get(Parameters::RemoveColinearPoints).toBool();
-  method_ = method;  
+  method_ = method;
   input_=input;
   global_dimension_=seed_mesh_->num_nodes();
   if (global_dimension_<numprocessors_ || numprocessors_<1) numprocessors_=1;
   if (numprocessors_>16) numprocessors_=16;  // request from Dan White to limit the number of threads
+  if (!algo_->get(Parameters::UseMultithreading).toBool())
+    numprocessors_ = 1;
   success_.resize(numprocessors_,true);
   outputs_.resize(numprocessors_, nullptr);
 
@@ -422,7 +427,7 @@ bool GenerateStreamLinesAlgoP::run(FieldHandle input,
   JoinFieldsAlgo algo;
   algo.set(JoinFieldsAlgo::MergeNodes,false);
   algo.runImpl(outputs_, output);
-  
+
   return true;
 }
 
@@ -458,9 +463,9 @@ class GenerateStreamLinesAccAlgo {
     VMesh*  mesh_;
 
     void parallel(int proc_num);
-    FieldHandle StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num); 
-    std::vector<bool> success_; 
-    FieldList outputs_; 
+    FieldHandle StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num);
+    std::vector<bool> success_;
+    FieldList outputs_;
     FieldHandle input_;
     VMesh::Node::index_type global_dimension_;
     const AlgorithmBase* algo_;
@@ -470,15 +475,15 @@ void GenerateStreamLinesAccAlgo::parallel(int proc_num)
 {
  success_[proc_num] = true;
  for (int q=0; q<numprocessors_;q++)
-   if (success_[q] == false) return;	 
+   if (success_[q] == false) return;
  const index_type start_gd = (global_dimension_ * proc_num)/numprocessors_;
  const index_type end_gd  = (global_dimension_ * (proc_num+1))/numprocessors_;
- outputs_[proc_num]=StreamLinesForCertainSeeds(start_gd, end_gd, proc_num); 
+ outputs_[proc_num]=StreamLinesForCertainSeeds(start_gd, end_gd, proc_num);
 }
 
 
 FieldHandle GenerateStreamLinesAccAlgo::StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num)
-{  
+{
   FieldInformation fi(input_);
   fi.make_curvemesh();
   fi.make_lineardata();
@@ -500,7 +505,7 @@ FieldHandle GenerateStreamLinesAccAlgo::StreamLinesForCertainSeeds(VMesh::Node::
 
     // Try to find the streamline for each seed point.
     for(VMesh::Node::index_type idx=from; idx<to; ++idx)
-    { 
+    {
       seed_mesh_->get_center(seed, idx);
 
       // Is the seed point inside the field?
@@ -654,10 +659,14 @@ bool GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo, FieldHandle inpu
   max_steps_ = algo_->get(Parameters::StreamlineMaxSteps).toInt();
   direction_ = convertDirectionOption(algo_->getOption(Parameters::StreamlineDirection));
   value_ = convertValue(algo_->getOption(Parameters::StreamlineValue));
-  remove_colinear_pts_ = algo_->get(Parameters::RemoveColinearPoints).toBool();  
+  remove_colinear_pts_ = algo_->get(Parameters::RemoveColinearPoints).toBool();
   global_dimension_=seed_mesh_->num_nodes();
-  if (global_dimension_<numprocessors_) numprocessors_=1;
-  if (numprocessors_>16) numprocessors_=16;
+  if (global_dimension_<numprocessors_)
+    numprocessors_ = 1;
+  if (!algo_->get(Parameters::UseMultithreading).toBool())
+    numprocessors_ = 1;
+  if (numprocessors_ > 16)
+    numprocessors_ = 16;
   success_.resize(numprocessors_,true);
   outputs_.resize(numprocessors_, nullptr);
   Parallel::RunTasks([this](int i) { parallel(i); }, numprocessors_);
@@ -670,8 +679,8 @@ bool GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo, FieldHandle inpu
   JFalgo.set(JoinFieldsAlgo::Tolerance,1e-8);
   JFalgo.set(JoinFieldsAlgo::MergeNodes,false);
   JFalgo.runImpl(outputs_, output);
-  
-  return true;   
+
+  return true;
 }
 
 
@@ -831,7 +840,7 @@ bool GenerateStreamLinesAlgo::runImpl(FieldHandle input, FieldHandle seeds, Fiel
   bool success = false;
 
   if (method == 5)
-  {  
+  {
     detail::GenerateStreamLinesAccAlgo algo;
     success = algo.run(this,input,seeds,output);
   }
