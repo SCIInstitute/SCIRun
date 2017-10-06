@@ -64,6 +64,7 @@ ALGORITHM_PARAMETER_DEF(Visualization, CameraViewZ);
 ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorR);
 ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorG);
 ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorB);
+ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorA);
 ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorR);
 ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorG);
 ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorB);
@@ -76,6 +77,7 @@ ALGORITHM_PARAMETER_DEF(Visualization, LightIntensity);
 ALGORITHM_PARAMETER_DEF(Visualization, LightVisible);
 ALGORITHM_PARAMETER_DEF(Visualization, LightType);
 ALGORITHM_PARAMETER_DEF(Visualization, AutoCameraView);
+ALGORITHM_PARAMETER_DEF(Visualization, StreamlineRadius);
 
 MODULE_INFO_DEF(InterfaceWithOspray, Visualization, SCIRun)
 
@@ -96,6 +98,7 @@ void InterfaceWithOspray::setStateDefaults()
   state->setValue(Parameters::DefaultColorR, 0.5);
   state->setValue(Parameters::DefaultColorG, 0.5);
   state->setValue(Parameters::DefaultColorB, 0.5);
+  state->setValue(Parameters::DefaultColorA, 1.0);
   state->setValue(Parameters::BackgroundColorR, 0.0);
   state->setValue(Parameters::BackgroundColorG, 0.0);
   state->setValue(Parameters::BackgroundColorB, 0.0);
@@ -106,8 +109,10 @@ void InterfaceWithOspray::setStateDefaults()
   state->setValue(Parameters::LightColorB, 1.0);
   state->setValue(Parameters::LightIntensity, 1.0);
   state->setValue(Parameters::LightVisible, false);
-  state->setValue(Parameters::LightType, std::string("none"));
+  state->setValue(Parameters::LightType, std::string("ambient"));
   state->setValue(Parameters::AutoCameraView, true);
+  state->setValue(Parameters::StreamlineRadius, 0.1);
+  state->setValue(Variables::Filename, std::string(""));
 }
 
 namespace detail
@@ -117,6 +122,7 @@ namespace detail
   {
   private:
     static bool initialized_;
+    static Core::Thread::Mutex lock_;
     static void initialize()
     {
       if (!initialized_)
@@ -130,6 +136,7 @@ namespace detail
       }
     }
 
+    Core::Thread::Guard guard_;
     Core::Geometry::BBox imageBox_;
     ModuleStateHandle state_;
     osp::vec2i imgSize_;
@@ -153,7 +160,7 @@ namespace detail
     std::vector<FieldData> fieldData_;
 
   public:
-    explicit OsprayImpl(ModuleStateHandle state) : state_(state)
+    explicit OsprayImpl(ModuleStateHandle state) : guard_(lock_.get()), state_(state)
     {
       initialize();
     }
@@ -180,7 +187,7 @@ namespace detail
       ospCommit(world_);
     }
 
-    void addField(FieldHandle field, boost::optional<ColorMapHandle> colorMap)
+    void adjustCameraPosition(FieldHandle field)
     {
       if (state_->getValue(Parameters::AutoCameraView).toBool())
       {
@@ -188,17 +195,28 @@ namespace detail
         auto bbox = vmesh->get_bounding_box();
         imageBox_.extend(bbox);
         auto center = imageBox_.center();
-        float newCenter[] = { static_cast<float>(center.x()), static_cast<float>(center.y()), static_cast<float>(center.z()) };
+        float position[] = { toFloat(Parameters::CameraPositionX), toFloat(Parameters::CameraPositionY), toFloat(Parameters::CameraPositionZ) };
+        float newDir[] = { static_cast<float>(center.x()) - position[0],
+           static_cast<float>(center.y()) - position[1],
+           static_cast<float>(center.z()) - position[2]};
+        //std::cout << "newDir " << newDir[0] << ", " << newDir[1] << ", " << newDir[2] << std::endl;
         state_->setValue(Parameters::CameraViewX, center.x());
         state_->setValue(Parameters::CameraViewY, center.y());
         state_->setValue(Parameters::CameraViewZ, center.z());
-        ospSet3fv(camera_, "dir", newCenter);
+        ospSet3fv(camera_, "dir", newDir);
+        float newUp[] = { newDir[0] / newDir[2], -(newDir[0]*newDir[0] + newDir[2]*newDir[2])/(newDir[1]*newDir[2]) , 1.0f };
+        state_->setValue(Parameters::CameraUpX, newUp[0]);
+        state_->setValue(Parameters::CameraUpY, newUp[1]);
+        state_->setValue(Parameters::CameraUpZ, newUp[2]);
+        ospSet3fv(camera_, "up", newUp);
         ospCommit(camera_);
       }
+    }
 
+    void fillDataBuffers(FieldHandle field, ColorMapHandle colorMap)
+    {
       auto facade(field->mesh()->getFacade());
 
-      auto map = colorMap.value_or(nullptr);
       fieldData_.push_back({});
       auto& fieldData = fieldData_.back();
       auto& vertex = fieldData.vertex;
@@ -209,6 +227,7 @@ namespace detail
       {
         double value;
         ColorRGB nodeColor(state_->getValue(Parameters::DefaultColorR).toDouble(), state_->getValue(Parameters::DefaultColorG).toDouble(), state_->getValue(Parameters::DefaultColorB).toDouble());
+        auto alpha = toFloat(Parameters::DefaultColorA);
 
         for (const auto& node : facade->nodes())
         {
@@ -219,14 +238,14 @@ namespace detail
           vertex.push_back(0);
 
           vfield->get_value(value, node.index());
-          if (map)
+          if (colorMap)
           {
-            nodeColor = map->valueToColor(value);
+            nodeColor = colorMap->valueToColor(value);
           }
           color.push_back(static_cast<float>(nodeColor.r()));
           color.push_back(static_cast<float>(nodeColor.g()));
           color.push_back(static_cast<float>(nodeColor.b()));
-          color.push_back(1.0f);
+          color.push_back(alpha);
         }
       }
 
@@ -241,12 +260,25 @@ namespace detail
         }
       }
 
+    }
+
+    void addField(FieldHandle field, ColorMapHandle colorMap)
+    {
+      adjustCameraPosition(field);
+
+      fillDataBuffers(field, colorMap);
+
+      const auto& fieldData = fieldData_.back();
+      const auto& vertex = fieldData.vertex;
+      const auto& color = fieldData.color;
+      const auto& index = fieldData.index;
+
       // create and setup model and mesh
       OSPGeometry mesh = ospNewGeometry("triangles");
       OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
       ospCommit(data);
       ospSetData(mesh, "vertex", data);
-      data = ospNewData(vertex.size() / 4, OSP_FLOAT4, &color[0]);
+      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
       ospCommit(data);
       ospSetData(mesh, "vertex.color", data);
       data = ospNewData(index.size() / 3, OSP_INT3, &index[0]); // OSP_INT4 format is also supported for triangle indices
@@ -259,9 +291,50 @@ namespace detail
       ospCommit(world_);
     }
 
+    void addStreamline(FieldHandle field)
+    {
+      adjustCameraPosition(field);
+
+      fillDataBuffers(field, nullptr);
+
+      auto& fieldData = fieldData_.back();
+      const auto& vertex = fieldData.vertex;
+      const auto& color = fieldData.color;
+
+      auto& index = fieldData.index;
+      {
+        auto facade(field->mesh()->getFacade());
+        for (const auto& edge : facade->edges())
+        {
+          auto nodesFromEdge = edge.nodeIndices();
+          index.push_back(nodesFromEdge[0]);
+        }
+      }
+
+      OSPGeometry streamlines = ospNewGeometry("streamlines");
+      OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]);
+      ospCommit(data);
+      ospSetData(streamlines, "vertex", data);
+
+      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
+      ospCommit(data);
+      ospSetData(streamlines, "vertex.color", data);
+
+      data = ospNewData(index.size(), OSP_INT, &index[0]);
+      ospCommit(data);
+      ospSetData(streamlines, "index", data);
+
+      ospSet1f(streamlines, "radius", toFloat(Parameters::StreamlineRadius));
+
+      ospCommit(streamlines);
+
+      meshes_.push_back(streamlines);
+      ospAddGeometry(world_, streamlines);
+      ospCommit(world_);
+    }
+
     void render()
     {
-      // create renderer
       renderer_ = ospNewRenderer("scivis"); // choose Scientific Visualization renderer
 
       // create and setup light for Ambient Occlusion
@@ -336,11 +409,11 @@ namespace detail
       }
       fprintf(file, "\n");
       fclose(file);
-      std::cout << "wrote file " << fileName << std::endl;
     }
   };
 
   bool OsprayImpl::initialized_(false);
+  Core::Thread::Mutex OsprayImpl::lock_("ospray lock");
 
   #else
   class OsprayImpl {};
@@ -351,24 +424,29 @@ InterfaceWithOspray::InterfaceWithOspray() : GeometryGeneratingModule(staticInfo
 {
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
+  INITIALIZE_PORT(Streamlines);
   INITIALIZE_PORT(SceneGraph);
 }
 
 void InterfaceWithOspray::execute()
 {
   #ifdef WITH_OSPRAY
-  auto fields = getRequiredDynamicInputs(Field);
+  auto fields = getOptionalDynamicInputs(Field);
   auto colorMaps = getOptionalDynamicInputs(ColorMapObject);
+  auto streamlines = getOptionalDynamicInputs(Streamlines);
 
   if (needToExecute())
   {
     detail::OsprayImpl ospray(get_state());
     ospray.setup();
 
+    if (colorMaps.size() < fields.size())
+      colorMaps.resize(fields.size());
+
     for (auto&& fieldColor : zip(fields, colorMaps))
     {
       FieldHandle field;
-      boost::optional<ColorMapHandle> color;
+      ColorMapHandle color;
       boost::tie(field, color) = fieldColor;
 
       FieldInformation info(field);
@@ -378,14 +456,26 @@ void InterfaceWithOspray::execute()
 
       ospray.addField(field, color);
     }
+
+    for (auto& streamline : streamlines)
+    {
+      FieldInformation info(streamline);
+
+      if (!info.is_curvemesh())
+        THROW_INVALID_ARGUMENT("Module currently only works with curvemesh streamlines.");
+
+      ospray.addStreamline(streamline);
+    }
+
     ospray.render();
 
     auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
     auto filename = "scirunOsprayOutput_" + isoString + ".ppm";
-    ospray.writeImage(filename);
-    remark("Saving output to " + filename);
+    auto filePath = get_state()->getValue(Variables::Filename).toString() / boost::filesystem::path(filename);
+    ospray.writeImage(filePath.string());
+    remark("Saving output to " + filePath.string());
 
-    get_state()->setTransientValue(Variables::Filename, filename);
+    get_state()->setTransientValue(Variables::Filename, filePath.string());
 
     //auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);
     //sendOutput(SceneGraph, geom);
