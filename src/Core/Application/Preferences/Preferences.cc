@@ -32,6 +32,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #ifdef BUILD_WITH_PYTHON
 #include <Core/Python/PythonInterpreter.h>
@@ -55,13 +56,15 @@ Preferences::Preferences() :
   highDPIAdjustment("highDPIAdjustment", false),
   modulesAreDockable("modulesAreDockable", true),
   networkBackgroundColor("backgroundColor", "#808080"),
-  postModuleAddScript_temporarySolution("postModuleAddScript_temporarySolution", ""),
-  postModuleAddScriptEnabled_temporarySolution("postModuleAddScriptEnabled_temporarySolution", false),
-  onNetworkLoadScript_temporarySolution("onNetworkLoadScript_temporarySolution", ""),
-  onNetworkLoadScriptEnabled_temporarySolution("onNetworkLoadScriptEnabled_temporarySolution", false)
+  postModuleAdd("postModuleAdd"),
+  onNetworkLoad("onNetworkLoad"),
+  applicationStart("applicationStart")
 {
 }
 
+TriggeredScriptInfo::TriggeredScriptInfo(const std::string& name) :
+  script(name + "_script", ""), enabled(name + "_enabled", false)
+{}
 
 boost::filesystem::path Preferences::dataDirectory() const
 {
@@ -88,7 +91,8 @@ void Preferences::setDataDirectory(const boost::filesystem::path& path, bool run
 #ifdef BUILD_WITH_PYTHON
   if (runPython)
   {
-    auto setDataDir = "import os; os.environ[\"SCIRUNDATADIR\"] = \"" + dataDir_.string() + "\"";
+    auto forwardSlashPath = boost::replace_all_copy(dataDir_.string(), "\\", "/");
+    auto setDataDir = "import os; os.environ[\"SCIRUNDATADIR\"] = \"" + forwardSlashPath + "\"";
     PythonInterpreter::Instance().run_string(setDataDir);
   }
 #endif

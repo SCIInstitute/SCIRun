@@ -45,6 +45,8 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(GeomData);
         ALGORITHM_PARAMETER_DECL(GeometryFeedbackInfo);
         ALGORITHM_PARAMETER_DECL(ScreenshotData);
+        ALGORITHM_PARAMETER_DECL(MeshComponentSelection);
+        ALGORITHM_PARAMETER_DECL(ShowFieldStates);
       }
     }
   }
@@ -58,6 +60,8 @@ namespace Render {
     Core::Datatypes::DenseMatrixHandle green;
     Core::Datatypes::DenseMatrixHandle blue;
   };
+
+  using ShowFieldStatesMap = std::map<std::string, Dataflow::Networks::ModuleStateHandle>;
 
 /// @class ViewScene
 /// @brief The ViewScene displays interactive graphical output to the computer screen.
@@ -132,10 +136,11 @@ namespace Render {
     typedef std::map<Dataflow::Networks::PortId, Core::Datatypes::GeometryBaseHandle> ActiveGeometryMap;
   protected:
     virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
-    virtual void postStateChangeInternalSignalHookup() override;
   private:
     void processViewSceneObjectFeedback();
+    void processMeshComponentSelection();
     void updateTransientList();
+    void syncMeshComponentFlags(const std::string& connectedModuleId, Dataflow::Networks::ModuleStateHandle state);
     ActiveGeometryMap activeGeoms_;
     std::atomic<int> asyncUpdates_;
   };

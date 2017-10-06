@@ -78,7 +78,7 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   zLevelManager_(new ZLevelManager(scene_))
 {
   setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-small.png"));
- 
+
   setHighResolutionExpandFactor(highResolutionExpandFactor_);
 
   setScene(scene_);
@@ -87,12 +87,8 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
 
   connect(scene_, SIGNAL(changed(const QList<QRectF>&)), this, SIGNAL(sceneChanged(const QList<QRectF>&)));
 
-  //old
   setSceneRect(QRectF(-1000, -1000, 2000, 2000));
   centerOn(100, 100);
-  //new
-  //setSceneRect(QRectF(0, 0, sceneWidth, sceneHeight));
-  //centerOn(sceneWidth / 2, sceneHeight / 4);
 
   setMouseAsDragMode();
 
@@ -109,9 +105,9 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   horizontalScrollBar()->setValue(0);
 }
 
-void  NetworkEditor::setHighResolutionExpandFactor(double factor)
-{ 
-  highResolutionExpandFactor_ = factor; 
+void NetworkEditor::setHighResolutionExpandFactor(double factor)
+{
+  highResolutionExpandFactor_ = factor;
   ModuleWidget::highResolutionExpandFactor_ = highResolutionExpandFactor_;
 }
 
@@ -152,25 +148,7 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
   return controller_;
 }
 
-QPointF NetworkBoundaries::keepInScene(const QPointF& p)
-{
-  return p;
-  #if 0 //post-ibbm
-  auto adjusted = p;
-  if (adjusted.x() < 0)
-    adjusted.setX(0);
-  else if (adjusted.x() > NetworkBoundaries::sceneWidth)
-    adjusted.setX(NetworkBoundaries::sceneWidth);
-
-  if (adjusted.y() < 0)
-    adjusted.setY(0);
-  else if (adjusted.y() > NetworkBoundaries::sceneHeight)
-    adjusted.setY(NetworkBoundaries::sceneHeight);
-
-  return adjusted;
-  //return QPointF(static_cast<int>(p.x()) % sceneWidth, static_cast<int>(p.y()) % sceneHeight);
-  #endif
-}
+NetworkEditor::ViewUpdateFunc NetworkEditor::viewUpdateFunc_;
 
 void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module, const ModuleCounter& count)
 {
@@ -192,6 +170,7 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
   count.increment();
   Q_EMIT modified();
   Q_EMIT newModule(QString::fromStdString(module->get_id()), module->has_ui());
+  alignViewport();
 }
 
 void NetworkEditor::connectionAddedQueued(const ConnectionDescription& cd)
@@ -247,7 +226,7 @@ void NetworkEditor::duplicateModule(const ModuleHandle& module)
   InEditingContext iec(this);
 
   auto widget = findById(scene_->items(), module->get_id());
-  lastModulePosition_ = keepInScene(widget->scenePos() + QPointF(0, 110));
+  lastModulePosition_ = widget->scenePos() + QPointF(100, 0);
   //TODO: need better duplicate placement. hard code it for now.
   controller_->duplicateModule(module);
 }
@@ -270,7 +249,7 @@ void NetworkEditor::connectNewModuleImpl(const ModuleHandle& moduleToConnectTo, 
   {
     InEditingContext iec(this);
     QPointF increment(0, portToConnect->isInput() ? -110 : 50);
-    lastModulePosition_ = keepInScene(widget->scenePos() + increment);
+    lastModulePosition_ = widget->scenePos() + increment;
     moduleAddIncrement = { 20.0, portToConnect->isInput() ? -20.0 : 20.0 };
 
     PortWidget* newConnectionInputPort = nullptr;
@@ -307,7 +286,7 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
   InEditingContext iec(this);
 
   auto oldModule = findById(scene_->items(), moduleToReplace->get_id());
-  lastModulePosition_ = keepInScene(oldModule->scenePos() - QPointF(15, 15));
+  lastModulePosition_ = oldModule->scenePos() - QPointF(15, 15);
   controller_->addModule(newModuleName);
 
   // connect up same ports
@@ -369,6 +348,8 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
 
 ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
 {
+  logViewerDims("Scene bounds pre-add:");
+
   auto proxy = new ModuleProxyWidget(module);
 
   connect(module, SIGNAL(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)), controller_.get(), SLOT(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)));
@@ -411,12 +392,6 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
 
   proxy->setZValue(zLevelManager_->get_max());
-
-  while (!scene_->items(lastModulePosition_.x() - 20, lastModulePosition_.y() - 20, 40, 40).isEmpty())
-  {
-    lastModulePosition_ += moduleAddIncrement;
-  }
-  lastModulePosition_ = keepInScene(lastModulePosition_);
   proxy->setPos(lastModulePosition_);
 
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
@@ -428,6 +403,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(highlightPorts(int)), proxy, SLOT(highlightPorts(int)));
   connect(this, SIGNAL(resetModulesDueToCycle()), module, SLOT(changeExecuteButtonToPlay()));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
+  connect(this, SIGNAL(defaultNoteSizeChanged(int)), proxy, SLOT(setDefaultNoteSize(int)));
   connect(module, SIGNAL(displayChanged()), this, SLOT(updateViewport()));
   connect(module, SIGNAL(displayChanged()), proxy, SLOT(createPortPositionProviders()));
   connect(proxy, SIGNAL(tagChanged(int)), this, SLOT(highlightTaggedItem(int)));
@@ -457,7 +433,37 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
 
   GuiLogger::Instance().logInfoStd("Module added: " + module->getModuleId());
 
+  logViewerDims("Scene bounds post-add:");
+
   return proxy;
+}
+
+void NetworkEditor::logViewerDims(const QString& msg)
+{
+  if (!viewUpdateFunc_)
+    return;
+
+  auto rect = sceneRect();
+  auto itemBound = scene_->itemsBoundingRect();
+  viewUpdateFunc_(msg + tr(" sceneRect topLeft %1,%2 bottomRight %3,%4")
+    .arg(rect.topLeft().x())
+    .arg(rect.topLeft().y())
+    .arg(rect.bottomRight().x())
+    .arg(rect.bottomRight().y())
+  );
+  viewUpdateFunc_(tr("\t itemsBoundingRect topLeft %1,%2 bottomRight %3,%4")
+    .arg(itemBound.topLeft().x())
+    .arg(itemBound.topLeft().y())
+    .arg(itemBound.bottomRight().x())
+    .arg(itemBound.bottomRight().y())
+  );
+  auto visibleRect = mapToScene(viewport()->geometry()).boundingRect();
+  viewUpdateFunc_(tr("\t visibleRect topLeft %1,%2 bottomRight %3,%4")
+    .arg(visibleRect.topLeft().x())
+    .arg(visibleRect.topLeft().y())
+    .arg(visibleRect.bottomRight().x())
+    .arg(visibleRect.bottomRight().y())
+  );
 }
 
 void NetworkEditor::setMouseAsDragMode()
@@ -595,6 +601,7 @@ void NetworkEditor::deleteImpl(QList<QGraphicsItem*> items)
     }
   }
   qDeleteAll(items);
+  alignViewport();
 }
 
 void NetworkEditor::cut()
@@ -677,6 +684,8 @@ void NetworkEditor::pasteImpl(const QString& xml)
   {
     QMessageBox::critical(this, "Paste error", "Invalid clipboard contents: " + xml);
   }
+
+  alignViewport();
 }
 
 void NetworkEditor::contextMenuEvent(QContextMenuEvent *event)
@@ -718,13 +727,15 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   }
   else if (moduleSelectionGetter_->isClipboardXML())
     pasteImpl(moduleSelectionGetter_->clipboardXML());
+
+  alignViewport();
 }
 
 void NetworkEditor::addNewModuleAtPosition(const QPointF& position)
 {
   InEditingContext iec(this);
 
-  lastModulePosition_ = keepInScene(position);
+  lastModulePosition_ = position;
   controller_->addModule(moduleSelectionGetter_->text().toStdString());
   Q_EMIT modified();
 }
@@ -736,8 +747,7 @@ void NetworkEditor::addModuleViaDoubleClickedTreeItem()
 
   if (moduleSelectionGetter_->isModule())
   {
-    auto upperLeft = mapToScene(viewport()->geometry()).boundingRect().topLeft() + QPointF(50,50);
-    addNewModuleAtPosition(upperLeft);
+    addNewModuleAtPosition(lastModulePosition_ + QPointF(0,100));
   }
   else if (moduleSelectionGetter_->isClipboardXML())
     pasteImpl(moduleSelectionGetter_->clipboardXML());
@@ -780,6 +790,7 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
       }
     }
   }
+  alignViewport();
   QGraphicsView::mouseMoveEvent(event);
 }
 
@@ -799,6 +810,17 @@ void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
   }
   modulesSelectedByCL_ = false;
   QGraphicsView::mouseReleaseEvent(event);
+
+  logViewerDims("mouseReleaseEvent:");
+
+  alignViewport();
+}
+
+void NetworkEditor::alignViewport()
+{
+  auto visibleRect = scene_->itemsBoundingRect();
+  visibleRect.adjust(-20, -20, 20, 20);
+  setSceneRect(visibleRect);
 }
 
 NetworkSearchWidget::NetworkSearchWidget(NetworkEditor* ned)
@@ -988,12 +1010,8 @@ void NetworkEditor::searchTextChanged(const QString& text)
 
 QPointF NetworkEditor::positionOfFloatingText(int num, bool top, int horizontalIndent, int verticalSpacing) const
 {
-  QPointF tl(horizontalScrollBar()->value(), verticalScrollBar()->value());
-  auto br = tl + viewport()->rect().bottomRight();
-  auto mat = matrix().inverted();
-  auto rect = mat.mapRect(QRectF(tl, br));
-
-  auto corner = top ? rect.topLeft() : rect.bottomLeft();
+  auto visibleRect = mapToScene(viewport()->geometry()).boundingRect();
+  auto corner = top ? visibleRect.topLeft() : visibleRect.bottomLeft();
   return (corner + QPointF(horizontalIndent, (top ? 1 : -1)* (verticalSpacing * num + 100)));
 }
 
@@ -1235,7 +1253,6 @@ QPointF NetworkEditor::getModulePositionAdjustment(const ModulePositions& module
 
 void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions, bool selectAll)
 {
-  const auto adjustment = QPointF(); // TODO: after ibbm, work on resizing of network editor space
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
@@ -1244,7 +1261,7 @@ void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions
       if (posIter != modulePositions.modulePositions.end())
       {
         QPointF p {posIter->second.first, posIter->second.second};
-        w->setPos(p - adjustment);
+        w->setPos(p);
         ensureVisible(w);
         if (selectAll)
           w->setSelected(true);
@@ -1628,6 +1645,7 @@ namespace
 
 void NetworkEditor::wheelEvent(QWheelEvent* event)
 {
+  logViewerDims("pre-zoom: ");
   if (event->modifiers() & Qt::ShiftModifier)
   {
     setTransformationAnchor(AnchorUnderMouse);
@@ -1645,6 +1663,8 @@ void NetworkEditor::wheelEvent(QWheelEvent* event)
   }
   else
     QGraphicsView::wheelEvent(event);
+
+  logViewerDims("post-zoom: ");
 }
 
 void NetworkEditor::resizeSubnetPortHolders(double scaleFactor)

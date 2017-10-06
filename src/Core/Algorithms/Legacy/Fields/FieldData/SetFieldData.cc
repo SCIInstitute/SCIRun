@@ -399,7 +399,7 @@ FieldHandle SetFieldDataAlgo::runImplRealComplex(FieldHandle input_field, DenseM
     found = verify_input_data(input_field, realData->nrows(), realData->ncols(), numvals, fi);
   else if (complexData)
   {
-    found = verify_input_data(input_field, complexData->nrows(), complexData->ncols(), numvals, fi, "std::complex<double>");
+    found = verify_input_data(input_field, complexData->nrows(), complexData->ncols(), numvals, fi, "complex");
   }
 
   if (!found)

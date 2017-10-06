@@ -61,7 +61,7 @@ namespace Datatypes
 
   struct SCISHARE ModuleFeedback
   {
-    // tag class
+    virtual ~ModuleFeedback() {}
   };
 
 }}}

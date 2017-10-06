@@ -115,6 +115,7 @@ namespace SCIRun {
         virtual void setStateDefaults() override;
       private:
         void updateAvailableRenderOptions(FieldHandle field);
+        void processMeshComponentSelection(const Core::Datatypes::ModuleFeedback& var);
 
         boost::shared_ptr<detail::GeometryBuilder> builder_;
       };

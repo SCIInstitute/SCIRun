@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_PREFERENCES_H
 
 #include "ui_Preferences.h"
+#include <functional>
 
 namespace SCIRun {
 namespace Gui {
@@ -41,7 +42,9 @@ class PreferencesWindow : public QDialog, public Ui::PreferencesDialog
 	Q_OBJECT
 
 public:
-  explicit PreferencesWindow(NetworkEditor* editor, QWidget* parent = nullptr);
+  PreferencesWindow(NetworkEditor* editor,
+    std::function<void()> writeSettings,
+    QWidget* parent = nullptr);
 
   bool saveBeforeExecute() const;
   void setSaveBeforeExecute(bool mode);
@@ -60,8 +63,12 @@ public Q_SLOTS:
   void updateAutoNotesState(int state);
   void updateHighDPIAdjust(int state);
 
+protected:
+  void hideEvent(QHideEvent * event) override;
+
 private:
   NetworkEditor* networkEditor_;
+  std::function<void()> writeSettings_;
 };
 
 }

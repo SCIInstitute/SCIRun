@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1440</width>
-    <height>852</height>
+    <height>851</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1093</width>
-         <height>482</height>
+         <width>1098</width>
+         <height>443</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -172,6 +172,7 @@
     <addaction name="menuDownload_toolkit"/>
     <addaction name="actionLoadToolkit_"/>
     <addaction name="separator"/>
+    <addaction name="actionCreateToolkitFromDirectory_"/>
    </widget>
    <widget class="QMenu" name="menuHelp_">
     <property name="title">
@@ -476,7 +477,10 @@
   </widget>
   <widget class="QDockWidget" name="configurationDockWidget_">
    <property name="whatsThis">
-    <string>Access application logs here.</string>
+    <string> </string>
+   </property>
+   <property name="accessibleName">
+    <string>b bb   v</string>
    </property>
    <property name="windowTitle">
     <string>Logs</string>
@@ -1208,6 +1212,11 @@
   <action name="actionBrainStimulatorStable_">
    <property name="text">
     <string>Stable</string>
+   </property>
+  </action>
+  <action name="actionCreateToolkitFromDirectory_">
+   <property name="text">
+    <string>Create toolkit from directory...</string>
    </property>
   </action>
  </widget>
