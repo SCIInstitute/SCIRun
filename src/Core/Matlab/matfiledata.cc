@@ -273,13 +273,13 @@ void matfiledata::putstring(const std::string& str)
   clear();
 	if (dsize > 0)
 	{
-		newdatabuffer(dsize,miUINT8);
+		newdatabuffer(dsize,miINT8);
 		ptr = static_cast<char *>(databuffer());
 		for (int p=0;p<dsize;p++) { ptr[p] = str[p];}
 	}
 	else
 	{
-		m_->type_ = miUINT8;
+		m_->type_ = miINT8;
 	}
 }
 
