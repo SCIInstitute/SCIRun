@@ -252,6 +252,8 @@ namespace Gui {
     std::deque<ModuleDialogGeneric*> collapseQueue_;
     int usedSpace() const;
   };
+
+  QString networkBackgroundImage();
 }
 }
 #endif
