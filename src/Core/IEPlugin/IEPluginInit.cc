@@ -85,4 +85,6 @@ void IEPluginManager::Initialize()
   static FieldIEPluginLegacyAdapter TetVolFieldBaseIndexOne_plugin("TetVolField[BaseIndex 1]", "*.tet *.pts", "", nullptr, TetVolFieldToTextBaseIndexOne_writer);
   static FieldIEPluginLegacyAdapter JHU_elemsPtsFileToTetVol_plugin("JHUFileToTetVol","*.elem *.tet *.pts *.pos", "", TextToTetVolField_reader, nullptr);
   static FieldIEPluginLegacyAdapter TetVolFieldVtk_plugin("TetVolFieldToVtk", "*.vtk", "", nullptr, TetVolFieldToVtk_writer);
+  static FieldIEPluginLegacyAdapter TriSurfFieldSTLASCII_plugin("TriSurfFieldSTL[ASCII]", "*.stl", "", TriSurfFieldSTLASCII_reader, TriSurfFieldSTLASCII_writer);
+  static FieldIEPluginLegacyAdapter TriSurfFieldSTLBinary_plugin("TriSurfFieldSTL[Binary]", "*.stl", "", TriSurfFieldSTLBinary_reader, TriSurfFieldSTLBinary_writer);
 }

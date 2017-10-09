@@ -33,6 +33,8 @@
 #include <Core/IEPlugin/TriSurfField_Plugin.h>
 #include <Core/Utils/Legacy/StringUtil.h>
 #include <Core/Algorithms/Legacy/DataIO/VTKToTriSurfReader.h>
+#include <Core/Algorithms/Legacy/DataIO/TriSurfSTLASCIIConverter.h>
+#include <Core/Algorithms/Legacy/DataIO/TriSurfSTLBinaryConverter.h>
 
 #include <iostream>
 #include <fstream>
@@ -1094,4 +1096,55 @@ bool SCIRun::TriSurfFieldToExotxtBaseIndexOne_writer(LoggerHandle pr, FieldHandl
   fclose(f_out);
 
   return (true);
+}
+
+FieldHandle SCIRun::TriSurfFieldSTLASCII_reader(LoggerHandle pr, const char *filename)
+{
+  FieldHandle outputField;
+  TriSurfSTLASCIIConverter reader(pr);
+
+  if (!reader.read(filename, outputField))
+  {
+    if (pr)
+      pr->error("Convert ASCII STL file to SCIRun TriSurf field failed.");
+    return nullptr;
+  }
+  return outputField;
+}
+
+FieldHandle SCIRun::TriSurfFieldSTLBinary_reader(LoggerHandle pr, const char *filename)
+{
+  FieldHandle outputField;
+  TriSurfSTLBinaryConverter reader(pr);
+
+  if (!reader.read(filename, outputField))
+  {
+    if (pr)
+      pr->error("Convert Binary STL file to SCIRun TriSurf field failed.");
+    return nullptr;
+  }
+  return outputField;
+}
+
+bool SCIRun::TriSurfFieldSTLASCII_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
+{
+  TriSurfSTLASCIIConverter writer(pr);
+  if (!writer.write(filename, fh))
+  {
+    if (pr)
+      pr->error("Convert SCIRun TriSurf field to ASCII STL file failed.");
+    return false;
+  }
+  return true;
+}
+
+bool SCIRun::TriSurfFieldSTLBinary_writer(LoggerHandle pr, FieldHandle fh, const char *filename)
+{
+  TriSurfSTLBinaryConverter writer(pr);
+  if (!writer.write(filename, fh))
+  {
+    if (pr) pr->error("Convert SCIRun TriSurf field to Binary STL file failed.");
+    return false;
+  }
+  return true;
 }
