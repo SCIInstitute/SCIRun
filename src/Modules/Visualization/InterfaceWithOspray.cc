@@ -459,23 +459,26 @@ void InterfaceWithOspray::execute()
     detail::OsprayImpl ospray(get_state());
     ospray.setup();
 
-    if (colorMaps.size() < fields.size())
-      colorMaps.resize(fields.size());
-
-    for (auto&& fieldColor : zip(fields, colorMaps))
+    if (!fields.empty())
     {
-      FieldHandle field;
-      ColorMapHandle color;
-      boost::tie(field, color) = fieldColor;
+      if (colorMaps.size() < fields.size())
+        colorMaps.resize(fields.size());
 
-      FieldInformation info(field);
+      for (auto&& fieldColor : zip(fields, colorMaps))
+      {
+        FieldHandle field;
+        ColorMapHandle color;
+        boost::tie(field, color) = fieldColor;
 
-      if (!info.is_trisurfmesh())
-        THROW_INVALID_ARGUMENT("Module currently only works with trisurfs.");
+        FieldInformation info(field);
 
-      ospray.addField(field, color);
+        if (!info.is_trisurfmesh())
+          THROW_INVALID_ARGUMENT("Module currently only works with trisurfs.");
+
+        ospray.addField(field, color);
+      }
     }
-
+    
     for (auto& streamline : streamlines)
     {
       FieldInformation info(streamline);
