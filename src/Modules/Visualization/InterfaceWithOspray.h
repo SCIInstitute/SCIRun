@@ -60,11 +60,20 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(DefaultColorR);
         ALGORITHM_PARAMETER_DECL(DefaultColorG);
         ALGORITHM_PARAMETER_DECL(DefaultColorB);
+        ALGORITHM_PARAMETER_DECL(DefaultColorA);
         ALGORITHM_PARAMETER_DECL(BackgroundColorR);
         ALGORITHM_PARAMETER_DECL(BackgroundColorG);
         ALGORITHM_PARAMETER_DECL(BackgroundColorB);
         ALGORITHM_PARAMETER_DECL(FrameCount);
         ALGORITHM_PARAMETER_DECL(ShowImageInWindow);
+        ALGORITHM_PARAMETER_DECL(LightVisible);
+        ALGORITHM_PARAMETER_DECL(LightColorR);
+        ALGORITHM_PARAMETER_DECL(LightColorG);
+        ALGORITHM_PARAMETER_DECL(LightColorB);
+        ALGORITHM_PARAMETER_DECL(LightIntensity);
+        ALGORITHM_PARAMETER_DECL(LightType);
+        ALGORITHM_PARAMETER_DECL(AutoCameraView);
+        ALGORITHM_PARAMETER_DECL(StreamlineRadius);
       }
     }
   }
@@ -73,26 +82,27 @@ namespace SCIRun {
     namespace Visualization {
 
       class SCISHARE InterfaceWithOspray : public Dataflow::Networks::GeometryGeneratingModule,
-        public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
+        public Has3InputPorts<DynamicPortTag<FieldPortTag>, DynamicPortTag<ColorMapPortTag>, DynamicPortTag<FieldPortTag>>,
         public Has1OutputPort<GeometryPortTag>
       {
       public:
         InterfaceWithOspray();
         virtual void execute() override;
 
-        INPUT_PORT(0, Field, Field);
-        INPUT_PORT(1, ColorMapObject, ColorMap);
+        INPUT_PORT_DYNAMIC(0, Field, Field);
+        INPUT_PORT_DYNAMIC(1, ColorMapObject, ColorMap);
+        INPUT_PORT_DYNAMIC(2, Streamlines, Field);
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
         virtual void setStateDefaults() override;
-      private:
-        boost::shared_ptr<detail::OsprayImpl> impl_;
+
+        HAS_DYNAMIC_PORTS
       };
 
-    } 
-  } 
-} 
+    }
+  }
+}
 
 #endif
