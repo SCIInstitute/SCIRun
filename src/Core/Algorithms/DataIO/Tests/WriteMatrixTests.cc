@@ -53,6 +53,14 @@ namespace
         m(i, j) = 3.0 * i + j + 1;
     return m;
   }
+  DenseMatrix matrixNonSquare()
+  {
+    DenseMatrix m (3, 4);
+    for (int i = 0; i < m.rows(); ++ i)
+      for (int j = 0; j < m.cols(); ++ j)
+        m(i, j) = 3.5 * i + j;
+    return m;
+  }
 }
 
 TEST(WriteMatrixTests, CanWriteToStream)

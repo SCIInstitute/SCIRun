@@ -46,12 +46,16 @@
 #endif
 
 #include <Core/Logging/ConsoleLogger.h>
+
 #include <Core/Utils/Legacy/StringUtil.h>
+#include <Core/Utils/Legacy/Endian.h>
+
 #include <Core/Thread/Mutex.h>
 
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 #include <sci_debug.h>
 
@@ -444,7 +448,12 @@ auto_istream(const std::string& filename, LoggerHandle pr)
     // Old versions of Pio used XDR which always wrote big endian so if
     // the version = 1, readHeader would return BIG, otherwise it will
     // read it from the header.
-    int machine_endian = Piostream::Little;
+    int machine_endian = Piostream::Big;
+    
+    if (isLittleEndian()) 
+    {
+      machine_endian = Piostream::Little;
+    }
 
     if (file_endian == machine_endian) 
       return PiostreamPtr(new BinaryPiostream(filename, Piostream::Read, version, pr));

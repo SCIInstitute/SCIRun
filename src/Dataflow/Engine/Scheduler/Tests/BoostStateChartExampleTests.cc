@@ -403,7 +403,7 @@ public:
     return moduleState_.currentStateValue();
   }
 
-  virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber) override
+  virtual boost::signals2::connection connectExecutionStateChanged(const ExecutionStateChangedSignalType::slot_type& subscriber)
   {
     return signal_.connect(subscriber);
   }

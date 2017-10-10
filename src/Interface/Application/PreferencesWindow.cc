@@ -48,7 +48,7 @@ PreferencesWindow::PreferencesWindow(NetworkEditor* editor, std::function<void()
 
 void PreferencesWindow::updateModuleErrorDialogOption(int state)
 {
-  SCIRun::Core::Preferences::Instance().showModuleErrorDialogs.setValueWithSignal(state == 0);
+  SCIRun::Core::Preferences::Instance().showModuleErrorDialogs.setValue(state == 0);
   LOG_DEBUG("showModuleErrorDialogs is " << (state == 0));
 }
 

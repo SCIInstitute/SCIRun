@@ -29,6 +29,7 @@
 #ifndef ALGORITHMS_BASE_ALGORITHMSTATUSREPORTER_H
 #define ALGORITHMS_BASE_ALGORITHMSTATUSREPORTER_H
 
+#include <string>
 #include <boost/function.hpp>
 #include <boost/noncopyable.hpp>
 #include <Core/Utils/ProgressReporter.h>
@@ -45,16 +46,16 @@ namespace Algorithms {
     AlgorithmStatusReporter();
     ~AlgorithmStatusReporter() {}
 
-    void report_start(const std::string&) const override {}
-    void report_end() const override {}
+    virtual void report_start(const std::string& tag) const {}
+    virtual void report_end() const {}
 
-    void update_progress(double percent) const override
+    virtual void update_progress(double percent) const
     {
       if (updaterFunc_)
         updaterFunc_(percent);
     }
 
-    using UpdaterFunc = boost::function<void(double)>;
+    typedef boost::function<void(double)> UpdaterFunc;
     void setUpdaterFunc(UpdaterFunc func) { updaterFunc_ = func; }
     UpdaterFunc getUpdaterFunc() const { return updaterFunc_; }
   private:

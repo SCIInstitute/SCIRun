@@ -387,8 +387,7 @@ void SCIRunMainWindow::createAdvancedToolbar()
   advancedBar->addAction(actionRunScript_);
   advancedBar->addAction(actionToggleMetadataLayer_);
   advancedBar->addAction(actionToggleTagLayer_);
-  //TODO: turn back on after IBBM
-  //advancedBar->addAction(actionMakeSubnetwork_);
+  advancedBar->addAction(actionMakeSubnetwork_);
   advancedBar->addActions(networkProgressBar_->advancedActions());
 
   connect(actionAdvancedBar_, SIGNAL(toggled(bool)), advancedBar, SLOT(setVisible(bool)));
@@ -1767,7 +1766,7 @@ void SCIRunMainWindow::adjustModuleDock(int state)
 {
   bool dockable = prefsWindow_->dockableModulesCheckBox_->isChecked();
   actionPinAllModuleUIs_->setEnabled(dockable);
-  Preferences::Instance().modulesAreDockable.setValueWithSignal(dockable);
+  Preferences::Instance().modulesAreDockable.setValue(dockable);
 }
 
 void SCIRunMainWindow::showEvent(QShowEvent* event)

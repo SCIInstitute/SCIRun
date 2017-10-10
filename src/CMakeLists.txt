@@ -273,11 +273,6 @@ IF(UNIX)
   ENDIF()
 
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_LANGUAGE_STANDARD_FLAG} -Wall")
-
-  if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth=1024")
-  endif()
-
   IF(NOT APPLE)
     SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--no-as-needed -ldl -lrt")
   ENDIF()
@@ -847,36 +842,26 @@ SET(CPACK_RESOURCE_FILE_WELCOME ${PACKAGING_WELCOME})
 SET(CPACK_PACKAGE_VERSION_MAJOR "${SCIRUN_VERSION_MAJOR}")
 SET(CPACK_PACKAGE_VERSION_MINOR "${SCIRUN_VERSION_MINOR}")
 SET(CPACK_PACKAGE_VERSION_PATCH "${SCIRUN_VERSION_PATCH}")
-SET(CPACK_PACKAGE_VERSION "${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}.${SCIRUN_VERSION_PATCH}")
 
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${APPLICATION_NAME}_${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")
+SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${APPLICATION_NAME} ${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")
 
 
 # other platform settings will be built up from here
 IF(APPLE)
-  SET(CPACK_GENERATOR "productbuild;TGZ")
-  SET(CPACK_TOPLEVEL_TAG "")
-  IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+
+ SET(CPACK_PACKAGE_DEFAULT_LOCATION "/Applications/")
+ SET(CPACK_TOPLEVEL_TAG "")
+
+ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
    SET(CPACK_INSTALL_PREFIX "/" CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
    SET(CMAKE_INSTALL_PREFIX "/" CACHE PATH "Install path prefix, prepended onto install directories." FORCE)
-  ENDIF()
-  # productbuild packaging repair hack
-  # call repair_package.sh after running package target in build
-  # Tip: can inspect packages using the pkgutil --expand command
-  IF(CPACK_GENERATOR MATCHES "productbuild")
-    # make sure there are paths to packaging tools
-    FIND_PROGRAM(PKGBUILD_EXE pkgbuild)
-    FIND_PROGRAM(PRODUCTBUILD_EXE productbuild)
-    FIND_PROGRAM(PKGUTIL_EXE pkgutil)
-    SET(PKG_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-Darwin")
-    SET(PKG_BUILD_DIR "${CMAKE_BINARY_DIR}/_CPack_Packages/productbuild/${PKG_FILE_NAME}")
-    SET(PKG_ROOT_DIR "${PKG_BUILD_DIR}/Applications")
+ ENDIF()
 
-    CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/CMake/Modules/CPack.Distribution.dist.in
-                   ${CMAKE_BINARY_DIR}/CPack.Distribution.dist)
-    CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/CMake/scripts/repair_package.sh.in
-                   ${CMAKE_BINARY_DIR}/repair_package.sh)
-  ENDIF()
+ SET(CPACK_PACKAGING_INSTALL_PREFIX "/")
+ SET(CPACK_STRIP_FILES TRUE)
+ SET(CPACK_SOURCE_STRIP_FILES TRUE)
+ SET(CPACK_PACKAGE_EXECUTABLES "${APPLICATION_NAME}.app" "${APPLICATION_NAME}")
+
 ELSEIF(WIN32 AND NOT UNIX)
 
   # There is a bug in NSIS that does not handle full unix paths properly. Make

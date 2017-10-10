@@ -98,7 +98,9 @@ void InterfaceWithOsprayDialog::adjustZoom()
 {
   Point camPos(state_->getValue(CameraPositionX).toDouble(), state_->getValue(CameraPositionY).toDouble(), state_->getValue(CameraPositionZ).toDouble());
   Point camView(state_->getValue(CameraViewX).toDouble(), state_->getValue(CameraViewY).toDouble(), state_->getValue(CameraViewZ).toDouble());
+  //qDebug() << "camView" << camView.get_string().c_str();
   auto a = camPos - camView;
+  //qDebug() << "distance: " << a.length();
 
   auto zoomFactor = 2 * (zoomHorizontalSlider_->value() + 1.0) / (zoomHorizontalSlider_->maximum() + 1);
   auto newPos = camView + zoomFactor*a;

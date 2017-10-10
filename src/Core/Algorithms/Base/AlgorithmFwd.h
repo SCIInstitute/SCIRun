@@ -38,10 +38,10 @@ namespace Core {
 namespace Algorithms {
 
   class AlgorithmBase;
-  using AlgorithmHandle = SharedPointer<AlgorithmBase>;
+  typedef SharedPointer<AlgorithmBase> AlgorithmHandle;
 
   class AlgorithmFactory;
-  using AlgorithmFactoryHandle = SharedPointer<AlgorithmFactory>;
+  typedef SharedPointer<AlgorithmFactory> AlgorithmFactoryHandle;
 
 }}}
 

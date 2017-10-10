@@ -40,6 +40,11 @@
 #include <Core/GeometryPrimitives/CompGeom.h>
 #include <iostream>
 
+namespace 
+{
+  const double TOLERANCE_MIN = 1.0e-12;
+}
+
 namespace SCIRun {
 namespace Core {
 namespace Geometry {
@@ -263,7 +268,7 @@ closest_point_on_tri(Point &result,
     {
       double tmp_dist1 = Vector(orig-result).length2();
       double tmp_dist2 = Vector(orig-tmp_r).length2();
-      if (tmp_dist2<tmp_dist1 || (((u+v-1)>fabs(v) || (u+v-1)>fabs(u)) && tmp_dist2==tmp_dist1) )
+      if (tmp_dist2<tmp_dist1 || (((u+v-1)>abs(v) || (u+v-1)>abs(u)) && tmp_dist2==tmp_dist1) )
       {
         result = tmp_r;
         if (tmp_node>=0) tmp_node = tmp_node + 1;

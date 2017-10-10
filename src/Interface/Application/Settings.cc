@@ -172,7 +172,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(dockable))
   {
     auto value = settings.value(dockable).toBool();
-    prefs.modulesAreDockable.setValueWithSignal(value);
+    prefs.modulesAreDockable.setValue(value);
     prefsWindow_->dockableModulesCheckBox_->setChecked(value);
     GuiLogger::Instance().logInfo("Setting read: modules are dockable = " + QString::number(prefs.modulesAreDockable));
   }
