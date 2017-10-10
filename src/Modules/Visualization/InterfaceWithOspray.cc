@@ -47,6 +47,7 @@ using namespace Dataflow::Networks;
 using namespace Modules::Visualization;
 using namespace Core;
 using namespace Core::Algorithms;
+using namespace Core::Geometry;
 using namespace Visualization;
 using namespace Datatypes;
 
@@ -151,6 +152,11 @@ namespace detail
       return static_cast<float>(state_->getValue(name).toDouble());
     }
 
+    std::array<float,3> toArray(const Vector& v) const
+    {
+      return { static_cast<float>(v.x()), static_cast<float>(v.y()), static_cast<float>(v.z()) };
+    }
+
     struct FieldData
     {
       std::vector<float> vertex, color;
@@ -196,21 +202,45 @@ namespace detail
         imageBox_.extend(bbox);
         auto center = imageBox_.center();
         float position[] = { toFloat(Parameters::CameraPositionX), toFloat(Parameters::CameraPositionY), toFloat(Parameters::CameraPositionZ) };
+        float cam_up[] = { toFloat(Parameters::CameraUpX), toFloat(Parameters::CameraUpY), toFloat(Parameters::CameraUpZ) };
         float newDir[] = { static_cast<float>(center.x()) - position[0],
            static_cast<float>(center.y()) - position[1],
            static_cast<float>(center.z()) - position[2]};
-        //std::cout << "newDir " << newDir[0] << ", " << newDir[1] << ", " << newDir[2] << std::endl;
+
         state_->setValue(Parameters::CameraViewX, center.x());
         state_->setValue(Parameters::CameraViewY, center.y());
         state_->setValue(Parameters::CameraViewZ, center.z());
         ospSet3fv(camera_, "dir", newDir);
-        float newUp[] = { newDir[0] / newDir[2], -(newDir[0]*newDir[0] + newDir[2]*newDir[2])/(newDir[1]*newDir[2]) , 1.0f };
-        state_->setValue(Parameters::CameraUpX, newUp[0]);
-        state_->setValue(Parameters::CameraUpY, newUp[1]);
-        state_->setValue(Parameters::CameraUpZ, newUp[2]);
-        ospSet3fv(camera_, "up", newUp);
+        auto newUp = getCameraUp(newDir, cam_up);
+        state_->setValue(Parameters::CameraUpX, newUp.x());
+        state_->setValue(Parameters::CameraUpY, newUp.y());
+        state_->setValue(Parameters::CameraUpZ, newUp.z());
+        ospSet3fv(camera_, "up", toArray(newUp).begin());
         ospCommit(camera_);
       }
+    }
+
+    Vector getCameraUp(float* newDir, float* cam_up)
+    {
+      Vector side(newDir[1]*cam_up[2] - newDir[2]*cam_up[1],
+        newDir[2]*cam_up[0] - newDir[0]*cam_up[2],
+        newDir[0]*cam_up[1] - newDir[1]*cam_up[0]);
+      auto norm_side = side.length();
+      if (norm_side <= 1e-3)
+      {
+        side = Vector(newDir[1], -newDir[0], 0.0);
+        norm_side = side.length();
+        if (norm_side <= 1e-3)
+        {
+          side = Vector(-newDir[2], 0.0, newDir[0]);
+          norm_side = side.length();
+        }
+      }
+      side /= norm_side;
+
+      return Vector(side[1]*newDir[2] - side[2]*newDir[1],
+        side[2]*newDir[0] - side[0]*newDir[2],
+        side[0]*newDir[1] - side[1]*newDir[0]);
     }
 
     void fillDataBuffers(FieldHandle field, ColorMapHandle colorMap)
@@ -440,21 +470,24 @@ void InterfaceWithOspray::execute()
     detail::OsprayImpl ospray(get_state());
     ospray.setup();
 
-    if (colorMaps.size() < fields.size())
-      colorMaps.resize(fields.size());
-
-    for (auto&& fieldColor : zip(fields, colorMaps))
+    if (!fields.empty())
     {
-      FieldHandle field;
-      ColorMapHandle color;
-      boost::tie(field, color) = fieldColor;
+      if (colorMaps.size() < fields.size())
+        colorMaps.resize(fields.size());
 
-      FieldInformation info(field);
+      for (auto&& fieldColor : zip(fields, colorMaps))
+      {
+        FieldHandle field;
+        ColorMapHandle color;
+        boost::tie(field, color) = fieldColor;
 
-      if (!info.is_trisurfmesh())
-        THROW_INVALID_ARGUMENT("Module currently only works with trisurfs.");
+        FieldInformation info(field);
 
-      ospray.addField(field, color);
+        if (!info.is_trisurfmesh())
+          THROW_INVALID_ARGUMENT("Module currently only works with trisurfs.");
+
+        ospray.addField(field, color);
+      }
     }
 
     for (auto& streamline : streamlines)
