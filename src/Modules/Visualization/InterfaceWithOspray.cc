@@ -196,6 +196,7 @@ namespace detail
         imageBox_.extend(bbox);
         auto center = imageBox_.center();
         float position[] = { toFloat(Parameters::CameraPositionX), toFloat(Parameters::CameraPositionY), toFloat(Parameters::CameraPositionZ) };
+        float cam_up[] = { toFloat(Parameters::CameraUpX), toFloat(Parameters::CameraUpY), toFloat(Parameters::CameraUpZ) };
         float newDir[] = { static_cast<float>(center.x()) - position[0],
            static_cast<float>(center.y()) - position[1],
            static_cast<float>(center.z()) - position[2]};
@@ -204,7 +205,25 @@ namespace detail
         state_->setValue(Parameters::CameraViewY, center.y());
         state_->setValue(Parameters::CameraViewZ, center.z());
         ospSet3fv(camera_, "dir", newDir);
-        float newUp[] = { newDir[0] / newDir[2], -(newDir[0]*newDir[0] + newDir[2]*newDir[2])/(newDir[1]*newDir[2]) , 1.0f };
+        //float newUp[] = { newDir[0] / newDir[2], -(newDir[0]*newDir[0] + newDir[2]*newDir[2])/(newDir[1]*newDir[2]) , 1.0f };
+        float side[] = {newDir[1]*cam_up[2] - newDir[2]*cam_up[1],newDir[2]*cam_up[0] - newDir[0]*cam_up[2], newDir[0]*cam_up[1] - newDir[1]*cam_up[0], 1.0f };
+        float norm_side = sqrt(side[0]*side[0]+side[1]*side[1]+side[2]*side[2]);
+        if (norm_side <= 1e-3)
+        {
+          float side[] = {newDir[1] ,- newDir[0], 0.0f, 1.0f };
+          norm_side = sqrt(side[0]*side[0]+side[1]*side[1]+side[2]*side[2]);
+          if (norm_side <= 1e-3)
+          {
+            float side[] = {- newDir[2],0.0f, newDir[0], 1.0f };
+            norm_side = sqrt(side[0]*side[0]+side[1]*side[1]+side[2]*side[2]);
+          }
+        }
+        side[0] = side[0]/norm_side;
+        side[1] = side[1]/norm_side;
+        side[2] = side[2]/norm_side;
+        
+        float newUp[] = {side[1]*newDir[2] - side[2]*newDir[1],side[2]*newDir[0] - side[0]*newDir[2],side[0]*newDir[1] - side[1]*newDir[0],1.0f};
+        
         state_->setValue(Parameters::CameraUpX, newUp[0]);
         state_->setValue(Parameters::CameraUpY, newUp[1]);
         state_->setValue(Parameters::CameraUpZ, newUp[2]);
