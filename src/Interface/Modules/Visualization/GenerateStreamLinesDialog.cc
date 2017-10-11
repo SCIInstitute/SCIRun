@@ -55,4 +55,5 @@ GenerateStreamLinesDialog::GenerateStreamLinesDialog(const std::string& name, Mo
   addComboBoxManager(methodComboBox_, Parameters::StreamlineMethod, streamlineMethod_);
   addCheckBoxManager(autoParameterCheckBox_, Parameters::AutoParameters);
   addCheckBoxManager(filterColinearCheckBox_, Parameters::RemoveColinearPoints);
+  addCheckBoxManager(multithreadedCheckBox_, Parameters::UseMultithreading);
 }
