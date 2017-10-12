@@ -77,7 +77,7 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   moduleEventProxy_(new ModuleEventProxy),
   zLevelManager_(new ZLevelManager(scene_))
 {
-  setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-small.png"));
+  setBackgroundBrush(QPixmap(networkBackgroundImage()));
 
   setHighResolutionExpandFactor(highResolutionExpandFactor_);
 
