@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -38,10 +38,10 @@ namespace
   {
     typename Array::const_iterator i;
     os << "[";
-    for (i = A.begin(); i != A.end(); ++i) 
+    for (i = A.begin(); i != A.end(); ++i)
     {
       print(os, *i);
-      if (boost::next(i) != A.end())
+      if (std::next(i) != A.end())
         os << ',';
     }
     os << "]";
@@ -74,7 +74,7 @@ TEST(Array2Test, CanAccessUnderlyingStorageWithSingleIndexer)
   for (int i = 0; i < 2; ++i)
     for (int j = 0; j < 3; ++j)
       aImpl[i][j] = 1 + i + j;
-  
+
   print(std::cout, aImpl);
   std::cout << std::endl;
 
