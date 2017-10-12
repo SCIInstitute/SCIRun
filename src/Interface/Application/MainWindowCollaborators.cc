@@ -442,3 +442,15 @@ int DockManager::usedSpace() const
   return std::accumulate(currentDialogs_.begin(), currentDialogs_.end(), 0,
     [](int height, ModuleDialogGeneric* d) { return height + (d->isCollapsed() ? 0 : d->size().height()); });
 }
+
+QString SCIRun::Gui::networkBackgroundImage()
+{
+  auto date = QDate::currentDate();
+  if (12 == date.month() && 20 < date.day() && date.day() < 28)
+    return ":/general/Resources/ski.png";
+  if (11 == date.month() && 20 < date.day() && date.day() < 31)
+    return ":/general/Resources/turkey.png";
+  if (10 == date.month() && 31 == date.day())
+    return ":/general/Resources/pumpkin.png";
+  return ":/general/Resources/SCIgrid-small.png";
+}
