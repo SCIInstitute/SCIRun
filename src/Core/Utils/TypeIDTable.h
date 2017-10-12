@@ -35,7 +35,7 @@
 #include <boost/optional.hpp>
 #include <Core/Utils/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
 namespace Core
 {
@@ -48,7 +48,7 @@ namespace Utility
   {
   public:
     typedef boost::optional<const CtorInfo&> CtorInfoOption;
-    
+
     //do locking internally
     CtorInfoOption findConstructorInfo(const std::string& key) const
     {
@@ -69,7 +69,7 @@ namespace Utility
         {
           /// @todo: improve for testing
           /// @todo: use real logger here
-          std::cerr << "WARNING: duplicate type exists: " << key << "\n";
+          //TODO inject new logger std::cerr << "WARNING: duplicate type exists: " << key << "\n";
           return false;
         }
       }
