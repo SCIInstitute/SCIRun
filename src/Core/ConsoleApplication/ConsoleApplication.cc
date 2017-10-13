@@ -34,6 +34,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/ConsoleApplication/ConsoleApplication.h>
 #include <Core/ConsoleApplication/ConsoleCommandFactory.h>
 #include <Core/Logging/Log.h>
+#include <iostream>
 
 using namespace SCIRun::Core::Console;
 using namespace SCIRun::Core::Logging;

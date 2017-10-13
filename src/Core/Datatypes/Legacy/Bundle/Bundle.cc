@@ -41,7 +41,6 @@
 
 #include <boost/range/algorithm/count_if.hpp>
 #include <boost/range/adaptors.hpp>
-#include <boost/bind/bind.hpp>
 #include <boost/range/algorithm/copy.hpp>
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -49,7 +48,7 @@
 #endif
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
+using namespace Core::Datatypes;
 
 static Persistent* make_Bundle() {
   return new Bundle;
@@ -632,18 +631,18 @@ bool Bundle::isField(const std::string& name) const
 
 size_t Bundle::numFields() const
 {
-  return boost::count_if(bundle_ | boost::adaptors::map_keys, boost::bind(&Bundle::isField, this, _1));
+  return boost::count_if(bundle_ | boost::adaptors::map_keys, [this](const std::string& name) { return isField(name); });
 }
 
 std::vector<FieldHandle> Bundle::getFields() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed(boost::bind(&Bundle::getField, this, _1)) | boost::adaptors::filtered([] (FieldHandle f) { return f != nullptr; });
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed([this](const std::string& name) { return getField(name); }) | boost::adaptors::filtered([](FieldHandle f) { return f != nullptr; });
   return std::vector<FieldHandle>(range.begin(), range.end());
 }
 
 std::vector<std::string> Bundle::getFieldNames() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered(boost::bind(&Bundle::isField, this, _1));
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered([this](const std::string& name) { return isField(name); });
   return std::vector<std::string>(range.begin(), range.end());
 }
 
@@ -659,18 +658,18 @@ bool Bundle::isMatrix(const std::string& name) const
 
 size_t Bundle::numMatrices() const
 {
-  return boost::count_if(bundle_ | boost::adaptors::map_keys, boost::bind(&Bundle::isMatrix, this, _1));
+  return boost::count_if(bundle_ | boost::adaptors::map_keys, [this](const std::string& name) { return isMatrix(name); });
 }
 
 std::vector<MatrixHandle> Bundle::getMatrices() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed(boost::bind(&Bundle::getMatrix, this, _1)) | boost::adaptors::filtered([] (MatrixHandle m) { return m != nullptr; });
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed([this](const std::string& name) { return getMatrix(name); }) | boost::adaptors::filtered([](MatrixHandle m) { return m != nullptr; });
   return std::vector<MatrixHandle>(range.begin(), range.end());
 }
 
 std::vector<std::string> Bundle::getMatrixNames() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered(boost::bind(&Bundle::isMatrix, this, _1));
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered([this](const std::string& name) { return isMatrix(name); });
   return std::vector<std::string>(range.begin(), range.end());
 }
 
@@ -686,18 +685,18 @@ bool Bundle::isString(const std::string& name) const
 
 size_t Bundle::numStrings() const
 {
-  return boost::count_if(bundle_ | boost::adaptors::map_keys, boost::bind(&Bundle::isString, this, _1));
+  return boost::count_if(bundle_ | boost::adaptors::map_keys, [this](const std::string& name) { return isString(name); });
 }
 
 std::vector<StringHandle> Bundle::getStrings() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed(boost::bind(&Bundle::getString, this, _1)) | boost::adaptors::filtered([] (StringHandle s) { return s != nullptr; });
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed([this](const std::string& name) { return getString(name); }) | boost::adaptors::filtered([](StringHandle s) { return s != nullptr; });
   return std::vector<StringHandle>(range.begin(), range.end());
 }
 
 std::vector<std::string> Bundle::getStringNames() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered(boost::bind(&Bundle::isString, this, _1));
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered([this](const std::string& name) { return isString(name); });
   return std::vector<std::string>(range.begin(), range.end());
 }
 

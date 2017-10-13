@@ -33,6 +33,7 @@
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Core/Application/Application.h>
 #include <boost/make_shared.hpp>
+#include <iostream>
 
 using namespace SCIRun::Gui;
 

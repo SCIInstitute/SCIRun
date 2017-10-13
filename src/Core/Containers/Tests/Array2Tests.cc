@@ -36,12 +36,11 @@ namespace
   template <typename Array>
   void print(std::ostream& os, const Array& A)
   {
-    typename Array::const_iterator i;
     os << "[";
-    for (i = A.begin(); i != A.end(); ++i)
+    for (auto i = A.begin(); i != A.end(); ++i)
     {
       print(os, *i);
-      if (std::next(i) != A.end())
+      if (i + 1 != A.end())
         os << ',';
     }
     os << "]";
@@ -69,7 +68,7 @@ TEST(Array2Test, CanResize)
 TEST(Array2Test, CanAccessUnderlyingStorageWithSingleIndexer)
 {
   Array2<double> a;
-  Array2<double>::impl_type& aImpl(a.getImpl());
+  auto& aImpl(a.getImpl());
   a.resize(2, 3);
   for (int i = 0; i < 2; ++i)
     for (int j = 0; j < 3; ++j)
@@ -78,8 +77,8 @@ TEST(Array2Test, CanAccessUnderlyingStorageWithSingleIndexer)
   print(std::cout, aImpl);
   std::cout << std::endl;
 
-  Array2<double> b(a);
-  Array2<double>::impl_type& bImpl(b.getImpl());
+  auto b(a);
+  auto& bImpl(b.getImpl());
 
   std::for_each(bImpl.origin(), bImpl.origin() + b.size(), [](double& d) {d *= 0.5;});
 

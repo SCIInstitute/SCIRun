@@ -33,6 +33,7 @@
 #include <Interface/Application/GuiApplication.h>
 #include <Core/ConsoleApplication/ConsoleApplication.h>
 #include <Core/Utils/Legacy/Environment.h>
+#include <iostream>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Core/Python/PythonInterpreter.h>
