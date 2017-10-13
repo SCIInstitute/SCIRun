@@ -88,15 +88,10 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Factory
   Interface_Modules_Matlab
   Interface_Modules_Teem
   Interface_Modules_Visualization
+  Interface_Modules_Python
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )
-
-IF(BUILD_WITH_PYTHON)
-  TARGET_LINK_LIBRARIES(Interface_Modules_Factory
-    Interface_Modules_Python
-  )
-ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Factory)
