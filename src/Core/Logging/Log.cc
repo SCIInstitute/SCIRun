@@ -508,3 +508,15 @@ ApplicationHelper::ApplicationHelper()
   if (dummy.string().empty())
     std::cout << dummy.string() << std::endl;
 }
+
+experimental::Logger2 experimental::moduleLog()
+{
+  static experimental::Logger2 console;
+  if (!console)
+  {
+    console = spdlog::stdout_color_mt("console");
+    console->info("Welcome to spdlog!") ;
+    console->info("An info message example {}..", 1);
+  }
+  return console;
+}

@@ -35,6 +35,7 @@
 #ifndef Q_MOC_RUN
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem/path.hpp>
+#include <spdlog/spdlog.h>
 #endif
 #include <Core/Logging/share.h>
 
@@ -140,6 +141,12 @@ namespace SCIRun
         bool get_user_desktop_directory( boost::filesystem::path& user_desktop_dir );
         bool get_user_name( std::string& user_name );
       };
+
+      namespace experimental
+      {
+        using Logger2 = std::shared_ptr<spdlog::logger>;
+        SCISHARE Logger2 moduleLog();
+      }
     }
   }
 }
