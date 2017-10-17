@@ -186,10 +186,6 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 	auto RegularizationMethod_gotten = getOption(Parameters::RegularizationMethod);
 	auto implOption = get(Parameters::TikhonovImplementation).toString();
 
-	DenseMatrix solution;
-  double lambda = 0;
-	double lambda_ = 0;
-
 	// check input MATRICES
 	checkInputMatrixSizes( input );
 
@@ -205,10 +201,6 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 	}
 	else if ( implOption ==  std::string("TikhonovSVD") )
   {
-		int  regularizationChoice_ = get(Parameters::regularizationChoice).toInt();
-		int regularizationSolutionSubcase_ = get(Parameters::regularizationSolutionSubcase).toInt();
-		int regularizationResidualSubcase_ = get(Parameters::regularizationResidualSubcase).toInt();
-
 		// get TikhonovSVD special inputs
 		auto matrixU_ = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixU);
 		auto singularValues_ = input.get<Matrix>(TikhonovAlgoAbstractBase::singularValues);
@@ -222,16 +214,10 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 	}
 	else if ( implOption ==  std::string("TikhonovTSVD") )
   {
-		// get Parameters
-		int  regularizationChoice_ = get(Parameters::regularizationChoice).toInt();
-		int regularizationSolutionSubcase_ = get(Parameters::regularizationSolutionSubcase).toInt();
-		int regularizationResidualSubcase_ = get(Parameters::regularizationResidualSubcase).toInt();
-
 		// get TikhonovSVD special inputs
 		auto matrixU_ = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixU);
 		auto singularValues_ = input.get<Matrix>(TikhonovAlgoAbstractBase::singularValues);
 		auto matrixV_ = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixV);
-
 
 		// If there is a missing matrix from the precomputed SVD input
 		if ( (matrixU_ == NULL) || 	 (singularValues_ == NULL) || ( matrixV_ == NULL)  )
@@ -244,39 +230,37 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 		THROW_ALGORITHM_PROCESSING_ERROR("Not a valid Tikhonov Implementation selection");
 	}
 
+  double lambda = 0;
   //Get Regularization parameter(s) : Lambda
   if ((RegularizationMethod_gotten == "single") || (RegularizationMethod_gotten == "slider"))
   {
     if (RegularizationMethod_gotten == "single")
     {
       // Use single fixed lambda value, entered in UI
-      lambda_ = get(Parameters::LambdaFromDirectEntry).toDouble();
+      lambda = get(Parameters::LambdaFromDirectEntry).toDouble();
     }
     else if (RegularizationMethod_gotten == "slider")
     {
       // Use single fixed lambda value, select via slider
-      lambda_ = get(Parameters::LambdaSliderValue).toDouble();
+      lambda = get(Parameters::LambdaSliderValue).toDouble();
     }
   }
   else if (RegularizationMethod_gotten == "lcurve")
   {
-    lambda_ = computeLcurve( algoImpl, input );
+    lambda = computeLcurve( algoImpl, input );
   }
 	else
 	{
 		THROW_ALGORITHM_PROCESSING_ERROR("Lambda selection was never set");
 	}
 
-	std::cout << "Lambda: "  << lambda_ << std::endl;
-  lambda = lambda_;
-
-    // compute final inverse solution
-	solution = algoImpl->computeInverseSolution(lambda, true);
+  // compute final inverse solution
+	auto solution = algoImpl->computeInverseSolution(lambda, true);
 
 	// Set outputs
 	AlgorithmOutput output;
 	output[InverseSolution] = boost::make_shared<DenseMatrix>(solution);
-	output[RegularizationParameter] = boost::make_shared<DenseMatrix>(lambda_);
+	output[RegularizationParameter] = boost::make_shared<DenseMatrix>(1, 1, lambda);
 
 	return output;
 }
