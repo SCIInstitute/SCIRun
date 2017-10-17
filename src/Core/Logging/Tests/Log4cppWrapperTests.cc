@@ -29,6 +29,11 @@
 #include <gtest/gtest.h>
 
 #include <Core/Logging/Log.h>
+#include <spdlog/spdlog.h>
+
+#include <iostream>
+#include <memory>
+#include <boost/filesystem.hpp>
 
 using namespace SCIRun::Core::Logging;
 
@@ -47,11 +52,6 @@ TEST(LogWrapperTests, LogNonString)
   Log::get().flush();
 }
 
-#include <spdlog/spdlog.h>
-
-#include <iostream>
-#include <memory>
-
 void async_example();
 void syslog_example();
 void user_defined_example();
@@ -60,6 +60,13 @@ void err_handler_example();
 namespace spd = spdlog;
 TEST(LogWrapperTests, SpdLogExample)
 {
+  {
+    boost::filesystem::path dir("logs");
+    if (boost::filesystem::create_directory(dir))
+    {
+      std::cout << "Success" << "\n";
+    }
+  }
     try
     {
         // Console logger with color
