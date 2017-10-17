@@ -562,6 +562,10 @@ void SCIRunMainWindow::setupNetworkEditor()
 
   builder_->connectAll(networkEditor_);
   NetworkEditor::setConnectorFunc([this](NetworkEditor* ed) { builder_->connectAll(ed); });
+
+  networkMiniviewGraphicsView_->setScene(networkEditor_->scene());
+  networkMiniviewGraphicsView_->scale(.1, .1);
+  networkMiniviewGraphicsView_->setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-large.png"));
 }
 
 void SCIRunMainWindow::executeCommandLineRequests()
@@ -1744,8 +1748,6 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
     prefsWindow_->userDataLineEdit_ <<
     prefsWindow_->userDataPushButton_ <<
     prefsWindow_->dataSetGroupBox_ <<
-    networkEditorMiniViewLabel_ <<
-    miniviewTextLabel_ <<
     prefsWindow_->scirunDataPathTextEdit_ <<
     prefsWindow_->addToPathButton_;
 
