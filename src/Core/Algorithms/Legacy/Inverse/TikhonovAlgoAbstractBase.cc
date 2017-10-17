@@ -178,10 +178,10 @@ bool TikhonovAlgoAbstractBase::checkInputMatrixSizes( const AlgorithmInput & inp
 
 AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) const
 {
-	auto forwardMatrix_ = input.get<Matrix>(TikhonovAlgoAbstractBase::ForwardMatrix);
-	auto measuredData_ = input.get<Matrix>(TikhonovAlgoAbstractBase::MeasuredPotentials);
-	auto sourceWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSourceSpace);
-	auto sensorWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSensorSpace);
+	auto forwardMatrix = input.get<Matrix>(TikhonovAlgoAbstractBase::ForwardMatrix);
+	auto measuredData = input.get<Matrix>(TikhonovAlgoAbstractBase::MeasuredPotentials);
+	auto sourceWeighting = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSourceSpace);
+	auto sensorWeighting = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSensorSpace);
 
 	auto RegularizationMethod_gotten = getOption(Parameters::RegularizationMethod);
 	auto implOption = get(Parameters::TikhonovImplementation).toString();
@@ -190,40 +190,40 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 	checkInputMatrixSizes( input );
 
 	// Determine specific Tikhonov Implementation
-	TikhonovImpl  *algoImpl;
+	std::unique_ptr<TikhonovImpl> algoImpl;
 	if (implOption == "standardTikhonov")
   {
-		int  regularizationChoice_ = get(Parameters::regularizationChoice).toInt();
-		int regularizationSolutionSubcase_ = get(Parameters::regularizationSolutionSubcase).toInt();
-		int regularizationResidualSubcase_ = get(Parameters::regularizationResidualSubcase).toInt();
+		int regularizationChoice = get(Parameters::regularizationChoice).toInt();
+		int regularizationSolutionSubcase = get(Parameters::regularizationSolutionSubcase).toInt();
+		int regularizationResidualSubcase = get(Parameters::regularizationResidualSubcase).toInt();
 
-		algoImpl = new SolveInverseProblemWithStandardTikhonovImpl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), regularizationChoice_, regularizationSolutionSubcase_, regularizationResidualSubcase_);
+		algoImpl.reset(new SolveInverseProblemWithStandardTikhonovImpl( *castMatrix::toDense(forwardMatrix), *castMatrix::toDense(measuredData), *castMatrix::toDense(sourceWeighting), *castMatrix::toDense(sensorWeighting), regularizationChoice, regularizationSolutionSubcase, regularizationResidualSubcase));
 	}
 	else if ( implOption ==  std::string("TikhonovSVD") )
   {
 		// get TikhonovSVD special inputs
-		auto matrixU_ = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixU);
-		auto singularValues_ = input.get<Matrix>(TikhonovAlgoAbstractBase::singularValues);
-		auto matrixV_ = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixV);
+		auto matrixU = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixU);
+		auto singularValues = input.get<Matrix>(TikhonovAlgoAbstractBase::singularValues);
+		auto matrixV = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixV);
 
 		// If there is a missing matrix from the precomputed SVD input
-		if ( (matrixU_ == NULL) || 	 (singularValues_ == NULL) || ( matrixV_ == NULL)  )
-			algoImpl = new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_) );
+		if ( (matrixU == NULL) || 	 (singularValues == NULL) || ( matrixV == NULL)  )
+			algoImpl.reset(new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix), *castMatrix::toDense(measuredData), *castMatrix::toDense(sourceWeighting), *castMatrix::toDense(sensorWeighting) ));
 		else
-			algoImpl = new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), *castMatrix::toDense(matrixU_), *castMatrix::toDense(singularValues_), *castMatrix::toDense(matrixV_) );
+			algoImpl.reset(new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix), *castMatrix::toDense(measuredData), *castMatrix::toDense(sourceWeighting), *castMatrix::toDense(sensorWeighting), *castMatrix::toDense(matrixU), *castMatrix::toDense(singularValues), *castMatrix::toDense(matrixV) ));
 	}
 	else if ( implOption ==  std::string("TikhonovTSVD") )
   {
 		// get TikhonovSVD special inputs
-		auto matrixU_ = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixU);
-		auto singularValues_ = input.get<Matrix>(TikhonovAlgoAbstractBase::singularValues);
-		auto matrixV_ = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixV);
+		auto matrixU = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixU);
+		auto singularValues = input.get<Matrix>(TikhonovAlgoAbstractBase::singularValues);
+		auto matrixV = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixV);
 
 		// If there is a missing matrix from the precomputed SVD input
-		if ( (matrixU_ == NULL) || 	 (singularValues_ == NULL) || ( matrixV_ == NULL)  )
-			algoImpl = new SolveInverseProblemWithTikhonovTSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_) );
+		if ( (matrixU == NULL) || 	 (singularValues == NULL) || ( matrixV == NULL)  )
+			algoImpl.reset(new SolveInverseProblemWithTikhonovTSVD_impl( *castMatrix::toDense(forwardMatrix), *castMatrix::toDense(measuredData), *castMatrix::toDense(sourceWeighting), *castMatrix::toDense(sensorWeighting) ));
 		else
-			algoImpl = new SolveInverseProblemWithTikhonovTSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), *castMatrix::toDense(matrixU_), *castMatrix::toDense(singularValues_), *castMatrix::toDense(matrixV_) );
+			algoImpl.reset(new SolveInverseProblemWithTikhonovTSVD_impl( *castMatrix::toDense(forwardMatrix), *castMatrix::toDense(measuredData), *castMatrix::toDense(sourceWeighting), *castMatrix::toDense(sensorWeighting), *castMatrix::toDense(matrixU), *castMatrix::toDense(singularValues), *castMatrix::toDense(matrixV) ));
 	}
 	else
   {
@@ -247,7 +247,7 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
   }
   else if (RegularizationMethod_gotten == "lcurve")
   {
-    lambda = computeLcurve( algoImpl, input );
+    lambda = computeLcurve( *algoImpl, input );
   }
 	else
 	{
@@ -265,7 +265,7 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 	return output;
 }
 
-double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl * algoImpl, const AlgorithmInput & input ) const
+double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl& algoImpl, const AlgorithmInput & input ) const
 {
 	// get inputs
 	auto forwardMatrix = input.get<Matrix>(TikhonovAlgoAbstractBase::ForwardMatrix);
@@ -282,7 +282,7 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
   std::vector<double> rho(nLambda, 0.0);
   std::vector<double> eta(nLambda, 0.0);
 
-  auto lambdaArray = algoImpl->computeLambdaArray( lambdaMin, lambdaMax, nLambda );
+  auto lambdaArray = algoImpl.computeLambdaArray( lambdaMin, lambdaMax, nLambda );
 
   DenseMatrix CAx, Rx;
   DenseMatrix solution;
@@ -292,7 +292,7 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
   // for all lambdas
   for (int j = 0; j < nLambda; j++)
   {
-    solution = algoImpl->computeInverseSolution( lambdaArray[j], false);
+    solution = algoImpl.computeInverseSolution( lambdaArray[j], false);
 
     // if using source regularization matrix, apply it to compute Rx (for the eta computations)
     if (sourceWeighting)
