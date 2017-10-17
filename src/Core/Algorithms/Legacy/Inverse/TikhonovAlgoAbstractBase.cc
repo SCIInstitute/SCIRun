@@ -91,11 +91,8 @@ ALGORITHM_PARAMETER_DEF( Inverse, LCurveText);
 ALGORITHM_PARAMETER_DEF( Inverse, regularizationSolutionSubcase);
 ALGORITHM_PARAMETER_DEF( Inverse, regularizationResidualSubcase);
 
-
 TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
 {
- 	using namespace Parameters;
-
 	addParameter(Parameters::TikhonovImplementation, std::string("NoMethodSelected") );
 	addOption(Parameters::RegularizationMethod, "lcurve", "single|slider|lcurve");
 	addParameter(Parameters::regularizationChoice, 0);
@@ -106,10 +103,9 @@ TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
 	addParameter(Parameters::LambdaResolution,1e-6);
 	addParameter(Parameters::LambdaSliderValue,0);
 	addParameter(Parameters::LambdaCorner,0);
-	addParameter(Parameters::LCurveText,"lcurve");
+	addParameter(Parameters::LCurveText, std::string("lcurve"));
 	addParameter(Parameters::regularizationSolutionSubcase,solution_constrained);
 	addParameter(Parameters::regularizationResidualSubcase,residual_constrained);
-
 }
 
 ////// CHECK IF INPUT MATRICES HAVE THE CORRECT SIZE
@@ -188,7 +184,7 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 	auto sensorWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSensorSpace);
 
 	auto RegularizationMethod_gotten = getOption(Parameters::RegularizationMethod);
-	auto TikhonovImplementation_gotten = get(Parameters::TikhonovImplementation).toString();
+	auto implOption = get(Parameters::TikhonovImplementation).toString();
 
 	DenseMatrix solution;
   double lambda = 0;
@@ -199,21 +195,16 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
 	// Determine specific Tikhonov Implementation
 	TikhonovImpl  *algoImpl;
-	if ( TikhonovImplementation_gotten ==  std::string("standardTikhonov") ){
-
-		// get Parameters
+	if (implOption == "standardTikhonov")
+  {
 		int  regularizationChoice_ = get(Parameters::regularizationChoice).toInt();
 		int regularizationSolutionSubcase_ = get(Parameters::regularizationSolutionSubcase).toInt();
 		int regularizationResidualSubcase_ = get(Parameters::regularizationResidualSubcase).toInt();
 
 		algoImpl = new SolveInverseProblemWithStandardTikhonovImpl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), regularizationChoice_, regularizationSolutionSubcase_, regularizationResidualSubcase_);
-
-
-
 	}
-	else if ( TikhonovImplementation_gotten ==  std::string("TikhonovSVD") ){
-
-		// get Parameters
+	else if ( implOption ==  std::string("TikhonovSVD") )
+  {
 		int  regularizationChoice_ = get(Parameters::regularizationChoice).toInt();
 		int regularizationSolutionSubcase_ = get(Parameters::regularizationSolutionSubcase).toInt();
 		int regularizationResidualSubcase_ = get(Parameters::regularizationResidualSubcase).toInt();
@@ -223,18 +214,14 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 		auto singularValues_ = input.get<Matrix>(TikhonovAlgoAbstractBase::singularValues);
 		auto matrixV_ = input.get<Matrix>(TikhonovAlgoAbstractBase::matrixV);
 
-
 		// If there is a missing matrix from the precomputed SVD input
 		if ( (matrixU_ == NULL) || 	 (singularValues_ == NULL) || ( matrixV_ == NULL)  )
 			algoImpl = new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_) );
 		else
 			algoImpl = new SolveInverseProblemWithTikhonovSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), *castMatrix::toDense(matrixU_), *castMatrix::toDense(singularValues_), *castMatrix::toDense(matrixV_) );
-
-
-
 	}
-	else if ( TikhonovImplementation_gotten ==  std::string("TikhonovTSVD") ){
-
+	else if ( implOption ==  std::string("TikhonovTSVD") )
+  {
 		// get Parameters
 		int  regularizationChoice_ = get(Parameters::regularizationChoice).toInt();
 		int regularizationSolutionSubcase_ = get(Parameters::regularizationSolutionSubcase).toInt();
@@ -251,47 +238,40 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 			algoImpl = new SolveInverseProblemWithTikhonovTSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_) );
 		else
 			algoImpl = new SolveInverseProblemWithTikhonovTSVD_impl( *castMatrix::toDense(forwardMatrix_), *castMatrix::toDense(measuredData_), *castMatrix::toDense(sourceWeighting_), *castMatrix::toDense(sensorWeighting_), *castMatrix::toDense(matrixU_), *castMatrix::toDense(singularValues_), *castMatrix::toDense(matrixV_) );
-
-
-
 	}
-	else{
+	else
+  {
 		THROW_ALGORITHM_PROCESSING_ERROR("Not a valid Tikhonov Implementation selection");
-
 	}
 
-
-
-
-    //Get Regularization parameter(s) : Lambda
-    if ((RegularizationMethod_gotten == "single") || (RegularizationMethod_gotten == "slider"))
+  //Get Regularization parameter(s) : Lambda
+  if ((RegularizationMethod_gotten == "single") || (RegularizationMethod_gotten == "slider"))
+  {
+    if (RegularizationMethod_gotten == "single")
     {
-        if (RegularizationMethod_gotten == "single")
-        {
-            // Use single fixed lambda value, entered in UI
-            lambda_ = get(Parameters::LambdaFromDirectEntry).toDouble();
-        }
-        else if (RegularizationMethod_gotten == "slider")
-        {
-            // Use single fixed lambda value, select via slider
-            lambda_ = get(Parameters::LambdaSliderValue).toDouble();
-        }
+      // Use single fixed lambda value, entered in UI
+      lambda_ = get(Parameters::LambdaFromDirectEntry).toDouble();
     }
-    else if (RegularizationMethod_gotten == "lcurve")
+    else if (RegularizationMethod_gotten == "slider")
     {
-        lambda_ = computeLcurve( algoImpl, input );
+      // Use single fixed lambda value, select via slider
+      lambda_ = get(Parameters::LambdaSliderValue).toDouble();
     }
+  }
+  else if (RegularizationMethod_gotten == "lcurve")
+  {
+    lambda_ = computeLcurve( algoImpl, input );
+  }
 	else
 	{
 		THROW_ALGORITHM_PROCESSING_ERROR("Lambda selection was never set");
 	}
 
 	std::cout << "Lambda: "  << lambda_ << std::endl;
-    lambda = lambda_;
+  lambda = lambda_;
 
     // compute final inverse solution
 	solution = algoImpl->computeInverseSolution(lambda, true);
-
 
 	// Set outputs
 	AlgorithmOutput output;
