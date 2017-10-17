@@ -268,26 +268,26 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl * algoImpl, const AlgorithmInput & input ) const
 {
 	// get inputs
-	auto forwardMatrix_ = input.get<Matrix>(TikhonovAlgoAbstractBase::ForwardMatrix);
-	auto measuredData_ = input.get<Matrix>(TikhonovAlgoAbstractBase::MeasuredPotentials);
-	auto sourceWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSourceSpace);
-	auto sensorWeighting_ = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSensorSpace);
+	auto forwardMatrix = input.get<Matrix>(TikhonovAlgoAbstractBase::ForwardMatrix);
+	auto measuredData = input.get<Matrix>(TikhonovAlgoAbstractBase::MeasuredPotentials);
+	auto sourceWeighting = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSourceSpace);
+	auto sensorWeighting = input.get<Matrix>(TikhonovAlgoAbstractBase::WeightingInSensorSpace);
   // define the step size of the lambda vector to be computed  (distance between min and max divided by number of desired lambdas in log scale)
   const int nLambda = get(Parameters::LambdaNum).toInt();
-	const double lambdaMin_ = get(Parameters::LambdaMin).toDouble();
-	const double lambdaMax_ = get(Parameters::LambdaMax).toDouble();
+	const double lambdaMin = get(Parameters::LambdaMin).toDouble();
+	const double lambdaMax = get(Parameters::LambdaMax).toDouble();
 	double lambda = 0;
 
 	// prealocate vector of lambdas and eta and rho
   std::vector<double> rho(nLambda, 0.0);
   std::vector<double> eta(nLambda, 0.0);
 
-  auto lambdaArray = algoImpl->computeLambdaArray( lambdaMin_, lambdaMax_, nLambda );
+  auto lambdaArray = algoImpl->computeLambdaArray( lambdaMin, lambdaMax, nLambda );
 
   DenseMatrix CAx, Rx;
   DenseMatrix solution;
 
-  lambdaArray[0] = lambdaMin_;
+  lambdaArray[0] = lambdaMin;
 
   // for all lambdas
   for (int j = 0; j < nLambda; j++)
@@ -295,10 +295,13 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
     solution = algoImpl->computeInverseSolution( lambdaArray[j], false);
 
     // if using source regularization matrix, apply it to compute Rx (for the eta computations)
-    if (sourceWeighting_)
+    if (sourceWeighting)
     {
-      if (solution.nrows() == sourceWeighting_->ncols()) // check that regularization matrix and solution match sizes
-        Rx = (*castMatrix::toDense(sourceWeighting_)) * solution;
+      if (solution.nrows() == sourceWeighting->ncols()) // check that regularization matrix and solution match sizes
+      {
+        auto sw = castMatrix::toDense(sourceWeighting);
+        Rx = (*sw) * solution;
+      }
       else
       {
         BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage(" Solution weighting matrix unexpectedly does not fit to compute the weighted solution norm. "));
@@ -307,12 +310,17 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
     else
       Rx = solution;
 
-    auto Ax = (*castMatrix::toDense(forwardMatrix_)) * solution;
-    auto residualSolution = Ax - (*castMatrix::toDense(measuredData_));
+    auto forward = castMatrix::toDense(forwardMatrix);
+    auto Ax = (*forward) * solution;
+    auto measured = castMatrix::toDense(measuredData);
+    auto residualSolution = Ax - (*measured);
 
     // if using source regularization matrix, apply it to compute Rx (for the eta computations)
-    if (sensorWeighting_)
-      CAx = (*castMatrix::toDense(sensorWeighting_)) * residualSolution;
+    if (sensorWeighting)
+    {
+      auto sw = castMatrix::toDense(sensorWeighting);
+      CAx = (*sw) * residualSolution;
+    }
     else
       CAx = residualSolution;
 
