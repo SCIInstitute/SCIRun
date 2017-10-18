@@ -73,19 +73,19 @@ void SolveInverseProblemWithTikhonovTSVD::setStateDefaults()
 {
 	auto state = get_state();
 
-	state->setValue( Parameters::TikhonovImplementation, std::string("TikhonovTSVD") );
+	/*
 	state->setValue(Parameters::LambdaMin,1);
 	state->setValue(Parameters::LambdaMax,1);
 	state->setValue(Parameters::LambdaNum, 1);
 	state->setValue( Parameters::LambdaResolution, 1);
-
-	// setStateStringFromAlgo(Parameters::TikhonovImplementation);
+*/
+	setStateStringFromAlgo(Parameters::TikhonovImplementation);
 	setStateStringFromAlgoOption(Parameters::RegularizationMethod);
 	setStateDoubleFromAlgo(Parameters::LambdaFromDirectEntry);
-	// setStateDoubleFromAlgo(Parameters::LambdaMin);
-	// setStateDoubleFromAlgo(Parameters::LambdaMax);
-	// setStateIntFromAlgo(Parameters::LambdaNum);
-	// setStateDoubleFromAlgo(Parameters::LambdaResolution);
+	setStateDoubleFromAlgo(Parameters::LambdaMin);
+	setStateDoubleFromAlgo(Parameters::LambdaMax);
+	setStateIntFromAlgo(Parameters::LambdaNum);
+	setStateDoubleFromAlgo(Parameters::LambdaResolution);
 	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
 	setStateIntFromAlgo(Parameters::LambdaCorner);
 	setStateStringFromAlgo(Parameters::LCurveText);
@@ -130,9 +130,9 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
 		setAlgoStringFromState(Parameters::TikhonovImplementation);
 		setAlgoOptionFromState(Parameters::RegularizationMethod);
 		setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
-		// state->setValue(Parameters::LambdaMin,1);
-		state->setValue(Parameters::LambdaMax,double(rank)); // casting to double to keep consistency across tikhonov types
-		state->setValue(Parameters::LambdaNum, rank);	// casting to double to keep consistency across tikhonov types
+		//state->setValue(Parameters::LambdaMin,1);
+		//state->setValue(Parameters::LambdaMax,double(rank)); // casting to double to keep consistency across tikhonov types
+		//state->setValue(Parameters::LambdaNum, rank);	// casting to double to keep consistency across tikhonov types
 		// state->setValue( Parameters::LambdaResolution, 1);
 		setAlgoDoubleFromState(Parameters::LambdaMin);
 		setAlgoDoubleFromState(Parameters::LambdaMax);

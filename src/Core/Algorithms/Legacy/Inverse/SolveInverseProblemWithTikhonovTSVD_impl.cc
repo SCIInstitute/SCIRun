@@ -86,7 +86,6 @@ void SolveInverseProblemWithTikhonovTSVD_impl::preAlocateInverseMatrices(const S
 
 		// determine rank
 	        rank = svd_SingularValues.nrows();
-
 }
 
 void SolveInverseProblemWithTikhonovTSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
@@ -121,7 +120,9 @@ SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovTSVD_impl::c
         DenseMatrix tempInverse(DenseMatrix::Zero(N,M));
 
 		const int truncationPoint = Min( int(lambda), rank, int(9999999999999) );
-
+  std::cout<<"lambda = "<<lambda<<std::endl;
+  std::cout<<"TP = "<<truncationPoint<<std::endl;
+  
     // Compute inverse SolveInverseProblemWithTikhonovTSVD
         for (int rr=0; rr < truncationPoint ; rr++)
         {
