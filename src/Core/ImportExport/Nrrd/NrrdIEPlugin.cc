@@ -47,11 +47,11 @@ IEPluginManagerManager::IEPluginManagerManager() {}
 
 std::string SCIRun::fileTypeDescriptionFromDialogBoxFilter(const std::string& fileFilter)
 {
-  LOG_DEBUG("fileTypeDescriptionFromDialogBoxFilter received " << fileFilter << std::endl);
+  LOG_DEBUG(("fileTypeDescriptionFromDialogBoxFilter received {}", fileFilter));
   boost::regex r("(.*) \\(\\*.*\\)");
   boost::smatch what;
   regex_match(fileFilter, what, r);
-  LOG_DEBUG("fileTypeDescriptionFromDialogBoxFilter returning " << what[1] << std::endl);
+  LOG_DEBUG(("fileTypeDescriptionFromDialogBoxFilter returning {}", what[1]));
   return what[1];
 }
 

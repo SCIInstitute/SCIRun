@@ -158,9 +158,9 @@ namespace SCIRun
           cppLogger_ << translate(level) << msg;
         }
 
-        Log::Stream& stream(LogLevel level)
+        Log1::Stream& stream(LogLevel level)
         {
-          latestStream_ = Log::Stream(new LogStreamImpl(cppLogger_ << translate(level)));
+          latestStream_ = Log1::Stream(new LogStreamImpl(cppLogger_ << translate(level)));
           return latestStream_;
         }
 
@@ -219,14 +219,14 @@ namespace SCIRun
       private:
         std::string name_;
         log4cpp::Category& cppLogger_;
-        Log::Stream latestStream_;
+        Log1::Stream latestStream_;
 
         void setBasicAppenders()
         {
           log4cpp::Appender *appender1 = new log4cpp::OstreamAppender("console", &std::cout);
           trySetPattern(appender1);
 
-          file_ = Log::logDirectory() / ("scirun5_" + name_ + ".log");
+          file_ = Log1::logDirectory() / ("scirun5_" + name_ + ".log");
           log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", file_.string());
           trySetPattern(appender2);
 
@@ -257,115 +257,115 @@ namespace SCIRun
   }
 }
 
-Log::Log() : impl_(new LogImpl)
+Log1::Log1() : impl_(new LogImpl)
 {
   init();
 }
 
-Log::Log(const std::string& name) : impl_(new LogImpl(name))
+Log1::Log1(const std::string& name) : impl_(new LogImpl(name))
 {
   init();
 }
 
-void Log::init()
+void Log1::init()
 {
   *this << DEBUG_LOG << "Logging to file: " << impl_->file_.string() << std::endl;
 }
 
-boost::filesystem::path Log::directory_(ApplicationHelper().configDirectory());
+boost::filesystem::path Log1::directory_(ApplicationHelper().configDirectory());
 
-boost::filesystem::path Log::logDirectory() { return directory_; }
-void Log::setLogDirectory(const boost::filesystem::path& dir)
+boost::filesystem::path Log1::logDirectory() { return directory_; }
+void Log1::setLogDirectory(const boost::filesystem::path& dir)
 {
   directory_ = dir;
 }
 
-Log& Log::get()
+Log1& Log1::get()
 {
-  static Log logger;
+  static Log1 logger;
   return logger;
 }
 
-Log& Log::get(const std::string& name)
+Log1& Log1::get(const std::string& name)
 {
   /// @todo: make thread safe
-  static std::map<std::string, boost::shared_ptr<Log>> logs;
+  static std::map<std::string, boost::shared_ptr<Log1>> logs;
   auto i = logs.find(name);
   if (i == logs.end())
   {
-    logs[name] = boost::shared_ptr<Log>(new Log(name));
+    logs[name] = boost::shared_ptr<Log1>(new Log1(name));
     return *logs[name];
   }
   return *i->second;
 }
 
-void Log::flush()
+void Log1::flush()
 {
   impl_->flush();
 }
 
-void Log::log(LogLevel level, const std::string& msg)
+void Log1::log(LogLevel level, const std::string& msg)
 {
   impl_->log(level, msg);
 }
 
-void Log::addCustomAppender(boost::shared_ptr<LogAppenderStrategy> appender)
+void Log1::addCustomAppender(boost::shared_ptr<LogAppenderStrategy> appender)
 {
   impl_->addCustomAppender(new Log4cppAppenderAdaptor(appender, "custom"));
 }
 
-void Log::clearAppenders()
+void Log1::clearAppenders()
 {
   impl_->clearAppenders();
 }
 
-Log::Stream& SCIRun::Core::Logging::operator<<(Log& log, LogLevel level)
+Log1::Stream& SCIRun::Core::Logging::operator<<(Log1& log, LogLevel level)
 {
   return log.impl_->stream(level);
 }
 
-void Log::Stream::stream(const std::string& msg)
+void Log1::Stream::stream(const std::string& msg)
 {
   impl_->stream_ << msg;
 }
 
-void Log::Stream::stream(double x)
+void Log1::Stream::stream(double x)
 {
   impl_->stream_ << x;
 }
 
-void Log::Stream::flush()
+void Log1::Stream::flush()
 {
   impl_->stream_.flush();
 }
 
-Log::Stream::Stream(LogStreamImpl* impl) : impl_(impl) {}
+Log1::Stream::Stream(LogStreamImpl* impl) : impl_(impl) {}
 
-Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, const std::string& msg)
+Log1::Stream& SCIRun::Core::Logging::operator<<(Log1::Stream& log, const std::string& msg)
 {
   log.stream(msg);
   return log;
 }
 
-Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, double x)
+Log1::Stream& SCIRun::Core::Logging::operator<<(Log1::Stream& log, double x)
 {
   log.stream(x);
   return log;
 }
 
 //super hacky and dumb. need to figure out proper way
-Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, std::ostream&(*func)(std::ostream&))
+Log1::Stream& SCIRun::Core::Logging::operator<<(Log1::Stream& log, std::ostream&(*func)(std::ostream&))
 {
   log.flush();
   return log;
 }
 
-void Log::setVerbose(bool v)
+void Log1::setVerbose(bool v)
 {
   impl_->setVerbose(v);
 }
 
-bool Log::verbose() const
+bool Log1::verbose() const
 {
   return impl_->verbose();
 }
@@ -510,8 +510,6 @@ ApplicationHelper::ApplicationHelper()
     std::cout << dummy.string() << std::endl;
 }
 
-std::vector<LogAppenderStrategyPtr> ModuleLog::appenders_;
-
 class ThreadedSink : public spdlog::sinks::base_sink<std::mutex>
 {
 public:
@@ -531,10 +529,10 @@ private:
   LogAppenderStrategyPtr appender_;
 };
 
-Logger2 ModuleLog::get()
+Logger2 Log2::get()
 {
   static Logger2 console;
-  static Thread::Mutex mutex("moduleLog");
+  static Thread::Mutex mutex(name_);
   if (!console)
   {
     Thread::Guard g(mutex.get());
@@ -546,15 +544,15 @@ Logger2 ModuleLog::get()
       sinks.push_back(consoleSink);
       std::transform(appenders_.begin(), appenders_.end(), std::back_inserter(sinks),
         [](LogAppenderStrategyPtr app) { return std::make_shared<ThreadedSink>(app); });
-      console = std::make_shared<spdlog::logger>("module", sinks.begin(), sinks.end());
-      console->info("Welcome to spdlog! This is the new experimental module log sink.");
+      console = std::make_shared<spdlog::logger>(name_, sinks.begin(), sinks.end());
+      console->info("Welcome to spdlog! This is the new experimental {} log sink.", name_);
     }
   }
   return console;
 }
 
 
-void ModuleLog::addCustomSink(LogAppenderStrategyPtr appender)
+void Log2::addCustomSink(LogAppenderStrategyPtr appender)
 {
   appenders_.push_back(appender);
 }

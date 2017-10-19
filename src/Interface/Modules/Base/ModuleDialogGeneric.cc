@@ -719,13 +719,13 @@ public:
         bool newValue = state_->getValue(stateKey_).toBool();
         if (newValue != checkable_->isChecked())
         {
-          LOG_DEBUG("In new version of pull code for checkable QAbstractButton: " << newValue);
+          LOG_DEBUG(("In new version of pull code for checkable QAbstractButton: {}", newValue));
           checkable_->setChecked(newValue);
         }
       }
       virtual void pushImpl() override
       {
-        LOG_DEBUG("In new version of push code for checkable QAbstractButton: " << checkable_->isChecked());
+        LOG_DEBUG(("In new version of push code for checkable QAbstractButton: {}", checkable_->isChecked()));
         state_->setValue(stateKey_, checkable_->isChecked());
       }
 private:
@@ -750,7 +750,7 @@ public:
     auto newValue = state_->getValue(stateKey_).toString();
     if (newValue != label_->text().toStdString())
     {
-      LOG_DEBUG("In new version of pull code for dynamic label: " << newValue);
+      LOG_DEBUG(("In new version of pull code for dynamic label: {}", newValue));
       label_->setText(QString::fromStdString(newValue));
     }
   }
@@ -779,7 +779,7 @@ public:
     auto newValue = state_->getValue(stateKey_).toInt();
     if (newValue != slider_->value())
     {
-      LOG_DEBUG("In new version of pull code for QSlider: " << newValue);
+      LOG_DEBUG(("In new version of pull code for QSlider: {}", newValue));
       slider_->setValue(newValue);
     }
   }
@@ -815,7 +815,7 @@ public:
     {
       if (!radioButtons_[checkedIndex]->isChecked())
       {
-        LOG_DEBUG("In new version of pull code for radio button group: " << checkedIndex);
+        LOG_DEBUG(("In new version of pull code for radio button group: {}", checkedIndex));
         radioButtons_[checkedIndex]->setChecked(true);
       }
     }

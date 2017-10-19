@@ -49,11 +49,11 @@ ScopedTimeRemarker::~ScopedTimeRemarker()
 ScopedTimeLogger::ScopedTimeLogger(const std::string& label, bool shouldLog): label_(label), shouldLog_(shouldLog)
 {
   if (shouldLog_)
-    Log::get() << DEBUG_LOG << label_ << " starting.";
+    Log1::get() << DEBUG_LOG << label_ << " starting.";
 }
 
 ScopedTimeLogger::~ScopedTimeLogger()
 {
   if (shouldLog_)
-    Log::get() << DEBUG_LOG << label_ << " took " << timer_.elapsed() << " seconds.";
+    Log1::get() << DEBUG_LOG << label_ << " took " << timer_.elapsed() << " seconds.";
 }

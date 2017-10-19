@@ -33,6 +33,7 @@
 #include <string>
 #include <Core/Logging/LoggerFwd.h>
 #ifndef Q_MOC_RUN
+#include <Core/Utils/Singleton.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem/path.hpp>
 #include <spdlog/spdlog.h>
@@ -72,11 +73,11 @@ namespace SCIRun
 
       typedef boost::shared_ptr<LogAppenderStrategy> LogAppenderStrategyPtr;
 
-      class SCISHARE Log final
+      class SCISHARE Log1 final
       {
       public:
-        static Log& get();
-        static Log& get(const std::string& name);
+        static Log1& get();
+        static Log1& get(const std::string& name);
 
         static void setLogDirectory(const boost::filesystem::path& dir);
         static boost::filesystem::path logDirectory();
@@ -95,7 +96,7 @@ namespace SCIRun
 
         void log(LogLevel level, const std::string& msg);
 
-        SCISHARE friend Stream& operator<<(Log& log, LogLevel level);
+        SCISHARE friend Stream& operator<<(Log1& log, LogLevel level);
 
         void setVerbose(bool v);
         bool verbose() const;
@@ -104,12 +105,12 @@ namespace SCIRun
         void clearAppenders();
 
       private:
-        Log();
-        explicit Log(const std::string& name);
-        Log(const Log&) = delete;
-        Log(Log&&) = delete;
-        Log& operator=(const Log&) = delete;
-        Log& operator=(Log&&) = delete;
+        Log1();
+        explicit Log1(const std::string& name);
+        Log1(const Log1&) = delete;
+        Log1(Log1&&) = delete;
+        Log1& operator=(const Log1&) = delete;
+        Log1& operator=(Log1&&) = delete;
 
         static boost::filesystem::path directory_;
       private:
@@ -118,17 +119,17 @@ namespace SCIRun
         void init();
       };
 
-      SCISHARE Log::Stream& operator<<(Log& log, LogLevel level);
-      SCISHARE Log::Stream& operator<<(Log::Stream& log, const std::string& msg);
-      SCISHARE Log::Stream& operator<<(Log::Stream& log, double x);
+      SCISHARE Log1::Stream& operator<<(Log1& log, LogLevel level);
+      SCISHARE Log1::Stream& operator<<(Log1::Stream& log, const std::string& msg);
+      SCISHARE Log1::Stream& operator<<(Log1::Stream& log, double x);
 
       template <typename T>
-      Log::Stream& operator<<(Log::Stream& log, const T& t)
+      Log1::Stream& operator<<(Log1::Stream& log, const T& t)
       {
         return log << boost::lexical_cast<std::string>(t);
       }
 
-      SCISHARE Log::Stream& operator<<(Log::Stream& log, std::ostream&(*func)(std::ostream&));
+      SCISHARE Log1::Stream& operator<<(Log1::Stream& log, std::ostream&(*func)(std::ostream&));
 
       class SCISHARE ApplicationHelper
       {
@@ -143,25 +144,36 @@ namespace SCIRun
 
       using Logger2 = std::shared_ptr<spdlog::logger>;
 
-      class SCISHARE ModuleLog final
+      class SCISHARE Log2 
       {
       public:
-        static Logger2 get();
-        static void addCustomSink(LogAppenderStrategyPtr appender);
+        explicit Log2(const std::string& name) : name_(name) {}
+        Logger2 get();
+        void addCustomSink(LogAppenderStrategyPtr appender);
       private:
-        static std::vector<LogAppenderStrategyPtr> appenders_;
+        std::string name_;
+        std::vector<LogAppenderStrategyPtr> appenders_;
+      };
+
+      class SCISHARE ModuleLog final : public Log2
+      {
+        CORE_SINGLETON(ModuleLog)
+      public:
+        ModuleLog() : Log2("module") {}
+      };
+
+      class SCISHARE GeneralLog final: public Log2
+      {
+        CORE_SINGLETON(GeneralLog)
+      public:
+        GeneralLog() : Log2("root") {}
       };
     }
   }
 }
 
-/// @todo: log4cpp crashes on Mac more easily, just macro these out on that platform for now.
-#ifdef _WIN32
-#define LOG_DEBUG(str) SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::DEBUG_LOG << str << std::endl
-#else
-#define LOG_DEBUG(str)
-#endif
+#define LOG_DEBUG(str) SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(str);
 
-#define LOG_DEBUG_TO(log, str) log << SCIRun::Core::Logging::DEBUG_LOG << str << std::endl
+//#define LOG_DEBUG_TO(log, str) log << SCIRun::Core::Logging::DEBUG_LOG << str << std::endl
 
 #endif
