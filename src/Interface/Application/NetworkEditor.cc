@@ -90,6 +90,7 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   setSceneRect(QRectF(-1000, -1000, 2000, 2000));
   centerOn(100, 100);
 
+  
   setMouseAsDragMode();
 
 #ifdef BUILD_WITH_PYTHON
@@ -103,6 +104,36 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   verticalScrollBar()->setValue(0);
   horizontalScrollBar()->setValue(0);
+
+  redrawBounds();
+  connect(scene_, SIGNAL(sceneRectChanged(const QRectF&)), this, SLOT(redrawBounds(const QRectF&)));
+  //connect(scene_, SIGNAL(selectionChanged()), this, SLOT(redrawBounds()));
+  //connect(scene_, SIGNAL(changed(const QList<QRectF>&)), this, SLOT(redrawBounds()));
+}
+
+void NetworkEditor::redrawBounds(const QRectF& rect)
+{
+  qDebug() << __FUNCTION__;
+  qDebug() << "parameter:" << rect;
+  qDebug() << viewport()->rect();
+  auto visible_scene_rect = mapToScene(viewport()->rect());
+  qDebug() << visible_scene_rect;
+  scene_->blockSignals(true);
+  delete visibleRectItem_;
+  visibleRectItem_ = scene_->addRect(visible_scene_rect.boundingRect());
+  scene_->blockSignals(false);
+}
+
+void NetworkEditor::redrawBounds()
+{
+  qDebug() << __FUNCTION__;
+  qDebug() << viewport()->rect();
+  auto visible_scene_rect = mapToScene(viewport()->rect());
+  qDebug() << visible_scene_rect;
+  scene_->blockSignals(true);
+  delete visibleRectItem_;
+  visibleRectItem_ = scene_->addRect(visible_scene_rect.boundingRect());
+  scene_->blockSignals(false);
 }
 
 void NetworkEditor::setHighResolutionExpandFactor(double factor)

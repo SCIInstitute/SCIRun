@@ -378,6 +378,8 @@ namespace Gui {
     void sendToBack();
     void searchTextChanged(const QString& text);
     void clearSiblingSelections();
+    void redrawBounds();
+    void redrawBounds(const QRectF& rect);
 
   private:
     using ModulePair = QPair<ModuleWidget*, ModuleWidget*>;
@@ -420,6 +422,7 @@ namespace Gui {
     QPointF lastModulePosition_{ 30, 30 };
     std::string latestModuleId_;
     std::map<int, std::string> tagLabelOverrides_;
+    QGraphicsRectItem* visibleRectItem_{ nullptr };
 
     // for subnets
     NetworkEditorParameters ctorParams_;

@@ -314,6 +314,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   actionProvenance_->setChecked(!provenanceWindow_->isHidden());
   actionTriggeredEvents_->setChecked(!triggeredEventsWindow_->isHidden());
   actionTagManager_->setChecked(!tagManagerWindow_->isHidden());
+  actionMiniview_->setChecked(!networkMiniViewDockWidget_->isHidden());
 
 	moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
 		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"

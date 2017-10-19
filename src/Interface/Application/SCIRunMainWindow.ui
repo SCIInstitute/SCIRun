@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1098</width>
-         <height>528</height>
+         <width>1093</width>
+         <height>544</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -220,6 +220,7 @@
     <addaction name="actionConfiguration_"/>
     <addaction name="actionModule_Selector"/>
     <addaction name="actionProvenance_"/>
+    <addaction name="actionMiniview_"/>
     <addaction name="separator"/>
     <addaction name="actionPythonConsole_"/>
     <addaction name="actionDevConsole_"/>
@@ -452,31 +453,6 @@
        </column>
       </widget>
      </item>
-     <item>
-      <widget class="QGroupBox" name="networkMiniviewGroupBox_">
-       <property name="title">
-        <string>Network Miniview</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QGraphicsView" name="networkMiniviewGraphicsView_">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>250</height>
-           </size>
-          </property>
-          <property name="interactive">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
     </layout>
    </widget>
   </widget>
@@ -562,6 +538,56 @@
         </layout>
        </widget>
       </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="networkMiniViewDockWidget_">
+   <property name="maximumSize">
+    <size>
+     <width>400</width>
+     <height>400</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>Network Miniview</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QGraphicsView" name="networkMiniviewGraphicsView_">
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>250</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>300</width>
+         <height>300</height>
+        </size>
+       </property>
+       <property name="interactive">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </widget>
@@ -1224,6 +1250,14 @@
     <string>Create toolkit from directory...</string>
    </property>
   </action>
+  <action name="actionMiniview_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Miniview</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -1300,6 +1334,38 @@
     <hint type="sourcelabel">
      <x>559</x>
      <y>696</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionMiniview_</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>networkMiniViewDockWidget_</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1283</x>
+     <y>220</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>networkMiniViewDockWidget_</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionMiniview_</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1283</x>
+     <y>220</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
