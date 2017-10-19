@@ -139,7 +139,7 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
     {
       int tmp = LambdaMax;
       LambdaMax=LambdaMin;
-      LambdaMin=LambdaMax;
+      LambdaMin=tmp;
     }
     
     int LambdaNum= LambdaMax - LambdaMin+1;
