@@ -366,12 +366,12 @@ template <typename T> struct DecayArray<T[]> {
 // will not really be executed (or we don't care if the statement
 // crashes).
 template <typename T>
-inline T Invalid(void* t = nullptr) {
+inline T Invalid() {
   return const_cast<typename remove_reference<T>::type&>(
-      *static_cast<volatile typename remove_reference<T>::type*>(t));
+      *static_cast<volatile typename remove_reference<T>::type*>(NULL));
 }
 template <>
-inline void Invalid<void>(void*) {}
+inline void Invalid<void>() {}
 
 // Given a raw type (i.e. having no top-level reference or const
 // modifier) RawContainer that's either an STL-style container or a

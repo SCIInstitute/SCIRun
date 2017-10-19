@@ -134,7 +134,7 @@ void ReportColumnMatrixMisfit::execute()
       error("Unknown ReportColumnMatrixMisfit method - " + meth);
       val = 0;
     }
-    std::cout << "Error val: " << val << std::endl;
+
     //sendOutput(Error_Out, boost::make_shared<Double>(val));
   }
 }

@@ -70,7 +70,7 @@ namespace Algorithms {
   protected:
     void addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue);
     void addOption(const AlgorithmParameterName& key, const std::string& defval, const std::string& options);
-    using ParameterMap = std::map<AlgorithmParameterName, AlgorithmParameter>;
+    typedef std::map<AlgorithmParameterName, AlgorithmParameter> ParameterMap;
     ParameterMap::const_iterator paramsBegin() const { return parameters_.begin(); }
     ParameterMap::const_iterator paramsEnd() const { return parameters_.end(); }
     void dumpAlgoState() const;

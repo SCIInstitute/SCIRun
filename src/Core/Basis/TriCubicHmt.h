@@ -82,7 +82,7 @@ public:
   template <class ElemData, class VECTOR>
   T interpolate(const VECTOR &coords, const ElemData &cd) const
   {
-    double w[12];
+    double w[10];
     get_cubic_weights(coords, w); 
 
     return (T)(w[0]  * cd.node0()

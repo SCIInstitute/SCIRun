@@ -183,8 +183,8 @@ namespace Gui {
 
   namespace NetworkBoundaries
   {
-    const int sceneWidth = 1600;
-    const int sceneHeight = 3200;
+    const int sceneWidth = 800;
+    const int sceneHeight = 2400;
 
     const double highDPIExpandFactorDefault = 1.7;
   }

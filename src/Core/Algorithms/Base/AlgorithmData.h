@@ -30,6 +30,7 @@
 #define ALGORITHMS_BASE_ALGORITHMDATA_H
 
 #include <map>
+#include <boost/filesystem/path.hpp>
 #include <boost/any.hpp>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Base/Name.h>
@@ -43,7 +44,7 @@ namespace Algorithms {
   class SCISHARE AlgorithmData
   {
   public:
-    using Map = std::map<Name, std::vector<Datatypes::DatatypeHandle>>;
+    typedef std::map<Name, std::vector<Datatypes::DatatypeHandle>> Map;
     AlgorithmData() {}
     explicit AlgorithmData(const Map& m) : data_(m) {}
 
@@ -96,8 +97,8 @@ namespace Algorithms {
     VariableHandle additionalAlgoOutput_;
   };
 
-  using AlgorithmInputHandle = SharedPointer<AlgorithmInput>;
-  using AlgorithmOutputHandle = SharedPointer<AlgorithmOutput>;
+  typedef SharedPointer<AlgorithmInput> AlgorithmInputHandle;
+  typedef SharedPointer<AlgorithmOutput> AlgorithmOutputHandle;
 
 }}}
 

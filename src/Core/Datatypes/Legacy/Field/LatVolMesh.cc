@@ -713,6 +713,9 @@ protected:
     const VMesh::index_type num_j_edges = this->ni_*(this->nj_-1)*this->nk_; // jki
     const VMesh::index_type num_k_edges = this->ni_*this->nj_*(this->nk_-1); // jki
 
+    VMesh::index_type facei, facej, facek;
+    VMesh::index_type edge = static_cast<VMesh::index_type>(idx);
+
     if (idx < num_i_edges)
     {
       VMesh::index_type k = idx/((this->nj_)*(this->ni_-1)); idx -= k*(this->nj_)*(this->ni_-1);
@@ -1724,48 +1727,18 @@ VLatVolMesh<MESH>::get_coords(VMesh::coords_type &coords,
   
   const double min_element_val = 1e-8;
   
-  if (static_cast<double>(coords[0]) < 0.0)
-  {
-    if (static_cast<double>(coords[0]) > -(min_element_val))
-      coords[0] = static_cast<VMesh::coords_type::value_type>(0.0);
-    else
-      return (false);
-  }
-  if (static_cast<double>(coords[0]) > 1.0)
-  {
-    if (static_cast<double>(coords[0]) < 1.0+(min_element_val))
-      coords[0] = static_cast<VMesh::coords_type::value_type>(1.0);
-    else
-      return (false);
-  }
-  if (static_cast<double>(coords[1]) < 0.0)
-  {
-    if (static_cast<double>(coords[1]) > -(min_element_val))
-      coords[1] = static_cast<VMesh::coords_type::value_type>(0.0);
-    else
-      return (false);
-  }
-  if (static_cast<double>(coords[1]) > 1.0)
-  {
-    if (static_cast<double>(coords[1]) < 1.0+(min_element_val))
-      coords[1] = static_cast<VMesh::coords_type::value_type>(1.0);
-    else
-      return (false);
-  }
-  if (static_cast<double>(coords[2]) < 0.0)
-  {
-    if (static_cast<double>(coords[2]) > -(min_element_val))
-      coords[2] = static_cast<VMesh::coords_type::value_type>(0.0);
-    else
-      return (false);
-  }
-  if (static_cast<double>(coords[2]) > 1.0)
-  {
-    if (static_cast<double>(coords[2]) < 1.0+(min_element_val))
-      coords[2] = static_cast<VMesh::coords_type::value_type>(1.0);
-    else
-      return (false);
-  }
+  if (static_cast<double>(coords[0]) < 0.0) if (static_cast<double>(coords[0]) > -(min_element_val)) 
+        coords[0] = static_cast<VMesh::coords_type::value_type>(0.0); else return (false);
+  if (static_cast<double>(coords[0]) > 1.0) if (static_cast<double>(coords[0]) < 1.0+(min_element_val)) 
+        coords[0] = static_cast<VMesh::coords_type::value_type>(1.0); else return (false);
+  if (static_cast<double>(coords[1]) < 0.0) if (static_cast<double>(coords[1]) > -(min_element_val)) 
+        coords[1] = static_cast<VMesh::coords_type::value_type>(0.0); else return (false);
+  if (static_cast<double>(coords[1]) > 1.0) if (static_cast<double>(coords[1]) < 1.0+(min_element_val)) 
+        coords[1] = static_cast<VMesh::coords_type::value_type>(1.0); else return (false);
+  if (static_cast<double>(coords[2]) < 0.0) if (static_cast<double>(coords[2]) > -(min_element_val)) 
+        coords[2] = static_cast<VMesh::coords_type::value_type>(0.0); else return (false);
+  if (static_cast<double>(coords[2]) > 1.0) if (static_cast<double>(coords[2]) < 1.0+(min_element_val)) 
+        coords[2] = static_cast<VMesh::coords_type::value_type>(1.0); else return (false);
   
   return (true);
 }  

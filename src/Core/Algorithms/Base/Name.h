@@ -55,9 +55,9 @@ namespace Algorithms {
   SCISHARE bool operator==(const Name& lhs, const Name& rhs);
   SCISHARE std::ostream& operator<<(std::ostream& out, const Name& name);
     
-  using AlgorithmParameterName = Name;
-  using AlgorithmInputName = Name;
-  using AlgorithmOutputName = Name;
+  typedef Name AlgorithmParameterName;
+  typedef Name AlgorithmInputName;
+  typedef Name AlgorithmOutputName;
   
 }}}
 

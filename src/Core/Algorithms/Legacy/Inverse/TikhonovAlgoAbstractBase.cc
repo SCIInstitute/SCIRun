@@ -375,8 +375,10 @@ double TikhonovAlgoAbstractBase::FindCorner( const std::vector<double>& rho, con
   int lambda_index = 0;
   for (int i = 0; i < nLambda; i++)
   {
+    
     kapa[i] = std::abs((drho[i] * ddeta[i] - ddrho[i] * deta[i]) /  //compute curvature
                        std::sqrt(std::pow((deta[i]*deta[i]+drho[i]*drho[i]), 3.0)));
+    
     if (kapa[i] > maxKapa) // find max curvature
     {
       maxKapa = kapa[i];

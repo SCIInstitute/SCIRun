@@ -100,8 +100,6 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 	auto hSingularValues = getOptionalInput(singularValues);
 	auto hMatrixV = getOptionalInput(matrixV);
 
-	std::cout << "gato" << std::endl;
-
 	if (needToExecute())
 	{
 		// set parameters
