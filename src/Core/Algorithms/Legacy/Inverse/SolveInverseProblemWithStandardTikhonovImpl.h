@@ -56,7 +56,7 @@ namespace SCIRun {
 			        SolveInverseProblemWithStandardTikhonovImpl(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const int regularizationChoice_, const int regularizationSolutionSubcase_, const int regularizationResidualSubcase_ )
 					{
 						preAlocateInverseMatrices( forwardMatrix_, measuredData_ , sourceWeighting_, sensorWeighting_, regularizationChoice_, regularizationSolutionSubcase_, regularizationResidualSubcase_);
-					};
+					}
 
 			    private:
 
@@ -66,11 +66,9 @@ namespace SCIRun {
 			        SCIRun::Core::Datatypes::DenseMatrix M4;
 			        SCIRun::Core::Datatypes::DenseMatrix y;
 
-					void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const int regularizationChoice_, const int regularizationSolutionSubcase_, const int regularizationResidualSubcase_ );
+							void preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const int regularizationChoice_, const int regularizationSolutionSubcase_, const int regularizationResidualSubcase_ );
 
 			        virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda, bool inverseCalculation) const;
-			//      bool checkInputMatrixSizes(); // DEFINED IN PARENT, MIGHT WANT TO OVERRIDE SOME OTHER TIME
-
 			    };
 			}
 		}
