@@ -120,8 +120,6 @@ SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovTSVD_impl::c
         DenseMatrix tempInverse(DenseMatrix::Zero(N,M));
 
 		const int truncationPoint = Min( int(lambda), rank, int(9999999999999) );
-  std::cout<<"lambda = "<<lambda<<std::endl;
-  std::cout<<"TP = "<<truncationPoint<<std::endl;
   
     // Compute inverse SolveInverseProblemWithTikhonovTSVD
         for (int rr=0; rr < truncationPoint ; rr++)
