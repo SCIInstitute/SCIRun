@@ -378,8 +378,7 @@ namespace Gui {
     void sendToBack();
     void searchTextChanged(const QString& text);
     void clearSiblingSelections();
-    void redrawBounds();
-    void redrawBounds(const QRectF& rect);
+    void redrawBounds(int scrollBarValue);
 
   private:
     using ModulePair = QPair<ModuleWidget*, ModuleWidget*>;

@@ -90,7 +90,7 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   setSceneRect(QRectF(-1000, -1000, 2000, 2000));
   centerOn(100, 100);
 
-  
+
   setMouseAsDragMode();
 
 #ifdef BUILD_WITH_PYTHON
@@ -105,35 +105,20 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   verticalScrollBar()->setValue(0);
   horizontalScrollBar()->setValue(0);
 
-  redrawBounds();
-  connect(scene_, SIGNAL(sceneRectChanged(const QRectF&)), this, SLOT(redrawBounds(const QRectF&)));
-  //connect(scene_, SIGNAL(selectionChanged()), this, SLOT(redrawBounds()));
-  //connect(scene_, SIGNAL(changed(const QList<QRectF>&)), this, SLOT(redrawBounds()));
+  redrawBounds(0);
+
+  connect(verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(redrawBounds(int)));
+  connect(horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(redrawBounds(int)));
 }
 
-void NetworkEditor::redrawBounds(const QRectF& rect)
+void NetworkEditor::redrawBounds(int value)
 {
-  qDebug() << __FUNCTION__;
-  qDebug() << "parameter:" << rect;
-  qDebug() << viewport()->rect();
+  //qDebug() << __FUNCTION__ << value;
+  //qDebug() << viewport()->rect();
   auto visible_scene_rect = mapToScene(viewport()->rect());
-  qDebug() << visible_scene_rect;
-  scene_->blockSignals(true);
-  delete visibleRectItem_;
-  visibleRectItem_ = scene_->addRect(visible_scene_rect.boundingRect());
-  scene_->blockSignals(false);
-}
-
-void NetworkEditor::redrawBounds()
-{
-  qDebug() << __FUNCTION__;
-  qDebug() << viewport()->rect();
-  auto visible_scene_rect = mapToScene(viewport()->rect());
-  qDebug() << visible_scene_rect;
-  scene_->blockSignals(true);
-  delete visibleRectItem_;
-  visibleRectItem_ = scene_->addRect(visible_scene_rect.boundingRect());
-  scene_->blockSignals(false);
+  //qDebug() << visible_scene_rect;
+  //delete visibleRectItem_;
+  //visibleRectItem_ = scene_->addRect(visible_scene_rect.boundingRect());
 }
 
 void NetworkEditor::setHighResolutionExpandFactor(double factor)
@@ -1440,6 +1425,9 @@ void NetworkEditor::removeModuleWidget(const ModuleId& id)
 
 void NetworkEditor::clear()
 {
+  delete visibleRectItem_;
+  visibleRectItem_ = nullptr;
+
   tagLabelOverrides_.clear();
   ModuleWidget::NetworkClearingScope clearing;
 
