@@ -58,9 +58,7 @@ namespace Inverse {
 
 	class SCISHARE TikhonovAlgoAbstractBase : virtual public AlgorithmBase
 	{
-
 	public:
-
 		// define input names
 		static const AlgorithmInputName ForwardMatrix;
 		static  const AlgorithmInputName MeasuredPotentials;
@@ -92,20 +90,13 @@ namespace Inverse {
 			residual_constrained_squared
 		};
 
-		// constructor
 		TikhonovAlgoAbstractBase();
-
-		// run function
 		virtual AlgorithmOutput run(const AlgorithmInput &) const override;
 
-		// defined public functions
-		// void update_graph( const AlgorithmInput & input,  double lambda, int lambda_index, double epsilon);
 		static double FindCorner( const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, const int nLambda );
-		// static double LambdaLookup(LCurveInput& input, double lambda, int& lambda_index, const double epsilon);
-		double computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl * algoImpl,   const AlgorithmInput & input ) const;
+		double computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl& algoImpl, const AlgorithmInput & input ) const;
 
 		bool checkInputMatrixSizes( const AlgorithmInput & input ) const;
-
 	};
 
 	}}}}
