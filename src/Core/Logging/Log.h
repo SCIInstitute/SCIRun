@@ -138,15 +138,19 @@ namespace SCIRun
         std::string applicationName();
         bool get_user_directory( boost::filesystem::path& user_dir, bool config_path);
         bool get_config_directory( boost::filesystem::path& config_dir );
-        bool get_user_desktop_directory( boost::filesystem::path& user_desktop_dir );
         bool get_user_name( std::string& user_name );
       };
 
-      namespace experimental
+      using Logger2 = std::shared_ptr<spdlog::logger>;
+
+      class SCISHARE ModuleLog final
       {
-        using Logger2 = std::shared_ptr<spdlog::logger>;
-        SCISHARE Logger2 moduleLog();
-      }
+      public:
+        static Logger2 get();
+        static void addCustomSink(LogAppenderStrategyPtr appender);
+      private:
+        static std::vector<LogAppenderStrategyPtr> appenders_;
+      };
     }
   }
 }

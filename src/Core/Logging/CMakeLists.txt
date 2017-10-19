@@ -34,7 +34,6 @@ SET(Core_Logging_SRCS
 
 SET(Core_Logging_HEADERS
   ConsoleLogger.h
-  DirectLogger.h
   Log.h
   LoggerInterface.h
   LoggerFwd.h
@@ -49,6 +48,7 @@ SCIRUN_ADD_LIBRARY(Core_Logging
 
 TARGET_LINK_LIBRARIES(Core_Logging
   Core_Utils
+  Core_Thread
   ${SCI_LOG4CPP_LIBRARY}
 )
 

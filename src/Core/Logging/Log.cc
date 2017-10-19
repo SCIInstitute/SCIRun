@@ -42,6 +42,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/filesystem.hpp>
 #include <Core/Utils/Exception.h>
+#include <Core/Thread/Mutex.h>
 
 // Includes for platform specific functions to get directory to store temp files and user data
 #ifdef _WIN32
@@ -509,14 +510,52 @@ ApplicationHelper::ApplicationHelper()
     std::cout << dummy.string() << std::endl;
 }
 
-experimental::Logger2 experimental::moduleLog()
+std::vector<LogAppenderStrategyPtr> ModuleLog::appenders_;
+
+class ThreadedSink : public spdlog::sinks::base_sink<std::mutex>
 {
-  static experimental::Logger2 console;
+public:
+  explicit ThreadedSink(LogAppenderStrategyPtr appender) : appender_(appender)
+  {
+  }
+protected:
+  void _sink_it(const spdlog::details::log_msg& msg) override
+  {
+    appender_->log4(msg.formatted.str());
+  }
+  void _flush() override
+  {
+    //??
+  }
+private:
+  LogAppenderStrategyPtr appender_;
+};
+
+Logger2 ModuleLog::get()
+{
+  static Logger2 console;
+  static Thread::Mutex mutex("moduleLog");
   if (!console)
   {
-    console = spdlog::stdout_color_mt("console");
-    console->info("Welcome to spdlog!") ;
-    console->info("An info message example {}..", 1);
+    Thread::Guard g(mutex.get());
+    if (!console)
+    {
+      spdlog::set_async_mode(1 << 10);
+      auto consoleSink = spdlog::stdout_color_mt("test")->sinks()[0];
+      std::vector<spdlog::sink_ptr> sinks;
+      sinks.push_back(consoleSink);
+      std::transform(appenders_.begin(), appenders_.end(), std::back_inserter(sinks),
+        [](LogAppenderStrategyPtr app) { return std::make_shared<ThreadedSink>(app); });
+      console = std::make_shared<spdlog::logger>("module", sinks.begin(), sinks.end());
+      console->info("Welcome to spdlog! This is the new experimental module log sink.");
+    }
   }
   return console;
 }
+
+
+void ModuleLog::addCustomSink(LogAppenderStrategyPtr appender)
+{
+  appenders_.push_back(appender);
+}
+
