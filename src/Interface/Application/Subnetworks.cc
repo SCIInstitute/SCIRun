@@ -58,9 +58,6 @@ using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::~NetworkEditor()
 {
-  disconnect(verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(redrawBounds(int)));
-  disconnect(horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(redrawBounds(int)));
-
   if (parentNetwork_)
     controller_.reset();
 

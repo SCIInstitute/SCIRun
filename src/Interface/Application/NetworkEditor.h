@@ -284,6 +284,8 @@ namespace Gui {
     using ViewUpdateFunc = std::function<void(const QString&)>;
     static void setViewUpdateFunc(ViewUpdateFunc func) { viewUpdateFunc_ = func; }
 
+    static void setMiniview(QGraphicsView* miniview) { miniview_ = miniview; }
+
     struct InEditingContext
     {
       explicit InEditingContext(NetworkEditor* ed)
@@ -378,7 +380,6 @@ namespace Gui {
     void sendToBack();
     void searchTextChanged(const QString& text);
     void clearSiblingSelections();
-    void redrawBounds(int scrollBarValue);
 
   private:
     using ModulePair = QPair<ModuleWidget*, ModuleWidget*>;
@@ -421,7 +422,6 @@ namespace Gui {
     QPointF lastModulePosition_{ 30, 30 };
     std::string latestModuleId_;
     std::map<int, std::string> tagLabelOverrides_;
-    QGraphicsRectItem* visibleRectItem_{ nullptr };
 
     // for subnets
     NetworkEditorParameters ctorParams_;
@@ -474,6 +474,7 @@ namespace Gui {
     void logViewerDims(const QString& msg);
     static std::function<QPointF(const QRectF&)> topSubnetPortHolderPositioner_;
     static std::function<QPointF(const QRectF&)> bottomSubnetPortHolderPositioner_;
+    static QGraphicsView* miniview_;
   };
 
   ModuleWidget* getModule(QGraphicsItem* item);

@@ -90,7 +90,6 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   setSceneRect(QRectF(-1000, -1000, 2000, 2000));
   centerOn(100, 100);
 
-
   setMouseAsDragMode();
 
 #ifdef BUILD_WITH_PYTHON
@@ -104,21 +103,6 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   verticalScrollBar()->setValue(0);
   horizontalScrollBar()->setValue(0);
-
-  redrawBounds(0);
-
-  connect(verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(redrawBounds(int)));
-  connect(horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(redrawBounds(int)));
-}
-
-void NetworkEditor::redrawBounds(int value)
-{
-  //qDebug() << __FUNCTION__ << value;
-  //qDebug() << viewport()->rect();
-  auto visible_scene_rect = mapToScene(viewport()->rect());
-  //qDebug() << visible_scene_rect;
-  //delete visibleRectItem_;
-  //visibleRectItem_ = scene_->addRect(visible_scene_rect.boundingRect());
 }
 
 void NetworkEditor::setHighResolutionExpandFactor(double factor)
@@ -165,6 +149,7 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 }
 
 NetworkEditor::ViewUpdateFunc NetworkEditor::viewUpdateFunc_;
+QGraphicsView* NetworkEditor::miniview_ {nullptr};
 
 void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module, const ModuleCounter& count)
 {
@@ -837,6 +822,7 @@ void NetworkEditor::alignViewport()
   auto visibleRect = scene_->itemsBoundingRect();
   visibleRect.adjust(-20, -20, 20, 20);
   setSceneRect(visibleRect);
+  miniview_->setSceneRect(visibleRect);
 }
 
 NetworkSearchWidget::NetworkSearchWidget(NetworkEditor* ned)
@@ -1425,9 +1411,6 @@ void NetworkEditor::removeModuleWidget(const ModuleId& id)
 
 void NetworkEditor::clear()
 {
-  delete visibleRectItem_;
-  visibleRectItem_ = nullptr;
-
   tagLabelOverrides_.clear();
   ModuleWidget::NetworkClearingScope clearing;
 

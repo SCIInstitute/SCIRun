@@ -563,6 +563,7 @@ void SCIRunMainWindow::setupNetworkEditor()
 
   builder_->connectAll(networkEditor_);
   NetworkEditor::setConnectorFunc([this](NetworkEditor* ed) { builder_->connectAll(ed); });
+  NetworkEditor::setMiniview(networkMiniviewGraphicsView_);
 
   networkMiniviewGraphicsView_->setScene(networkEditor_->scene());
   networkMiniviewGraphicsView_->scale(.1, .1);
