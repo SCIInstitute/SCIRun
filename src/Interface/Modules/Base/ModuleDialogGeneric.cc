@@ -970,7 +970,7 @@ ScopedWidgetSignalBlocker::~ScopedWidgetSignalBlocker()
 void SCIRun::Gui::openUrl(const QString& url, const std::string& name)
 {
   if (!QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode)))
-    Log::get() << ERROR_LOG << "Failed to open " << name;
+    GeneralLog::Instance().get()->error("Failed to open {}", name);
 }
 
 void SCIRun::Gui::openPythonAPIDoc()
