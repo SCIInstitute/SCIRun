@@ -44,6 +44,7 @@ using namespace Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Logging;
 
 MODULE_INFO_DEF(ViewScene, Render, SCIRun)
 

@@ -36,6 +36,7 @@
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Logging;
 
 DesktopExecutionStrategyFactory::DesktopExecutionStrategyFactory(const boost::optional<std::string>& threadMode) :
   threadMode_(threadMode),
@@ -65,7 +66,7 @@ ExecutionStrategyHandle DesktopExecutionStrategyFactory::createDefault() const
   const ExecutionStrategy::Type latestWorkingVersion = ExecutionStrategy::DYNAMIC_PARALLEL;
   if (threadMode_)
   {
-    LOG_DEBUG("found thread mode: " << *threadMode_);
+    LOG_DEBUG("found thread mode: ", *threadMode_);
     if (*threadMode_ == "serial")
       return create(ExecutionStrategy::SERIAL);
     if (*threadMode_ == "basicParallel")
@@ -78,6 +79,6 @@ ExecutionStrategyHandle DesktopExecutionStrategyFactory::createDefault() const
   else
   {
     LOG_DEBUG("no thread mode found, using dynamic parallel"); /// @todo: update this to best working version
-    return create(latestWorkingVersion);  
+    return create(latestWorkingVersion);
   }
 }

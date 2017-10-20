@@ -36,6 +36,7 @@
 #include <Core/Thread/Mutex.h>
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
+#include <spdlog/fmt/ostr.h>
 
 #include <Dataflow/Engine/Scheduler/share.h>
 
