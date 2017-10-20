@@ -113,7 +113,7 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
     return (false);
   }
 
-  LOG_DEBUG("Num Elems " << input->vmesh()->num_elems() << "; Num Tets " << selection->vfield()->num_values() << std::endl);
+  LOG_DEBUG("Num Elems {}; Num Tets {}", input->vmesh()->num_elems(), selection->vfield()->num_values());
 
   FieldInformation fo(input);
   fo.make_unstructuredmesh();
@@ -142,11 +142,6 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
 
   if (method == "Element Center")
   {
-    std::vector<index_type> node_mapping(imesh->num_nodes(),-1);
-    std::vector<index_type> elem_mapping(imesh->num_elems(),-1);
-    std::vector<index_type> node_mapping2(imesh->num_nodes(),-1);
-    std::vector<index_type> elem_mapping2(imesh->num_elems(),-1);
-
     LOG_DEBUG("Num Elems {}; Num Tets {}", imesh->num_elems(), sfield->num_values());
 
     if (imesh->num_elems() != sfield->num_values())
@@ -154,6 +149,11 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
       error("Number of elements in input mesh does not match number of values in selection mesh.");
       return (false);
     }
+
+    std::vector<index_type> node_mapping(imesh->num_nodes(),-1);
+    std::vector<index_type> elem_mapping(imesh->num_elems(),-1);
+    std::vector<index_type> node_mapping2(imesh->num_nodes(),-1);
+    std::vector<index_type> elem_mapping2(imesh->num_elems(),-1);
 
     VMesh::Node::array_type nodes;
     VMesh::points_type points;
@@ -260,8 +260,7 @@ ClipMeshBySelectionAlgo::runImpl(FieldHandle input,
     std::vector<index_type> node_mapping2(imesh->num_nodes(),-1);
     std::vector<index_type> elem_mapping2(imesh->num_elems(),-1);
 
-    LOG_DEBUG("Num Nodes " << imesh->num_nodes() << "; Num Tets " << sfield->num_values() << std::endl);
-
+    LOG_DEBUG("Num Nodes {}; Num Tets {}", imesh->num_nodes(), sfield->num_values());
 
     if (imesh->num_nodes() != sfield->num_values())
     {

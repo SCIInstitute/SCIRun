@@ -51,7 +51,7 @@ std::string SCIRun::fileTypeDescriptionFromDialogBoxFilter(const std::string& fi
   boost::regex r("(.*) \\(\\*.*\\)");
   boost::smatch what;
   regex_match(fileFilter, what, r);
-  Core::Logging::LOG_DEBUG("fileTypeDescriptionFromDialogBoxFilter returning {}", what[1]);
+  Core::Logging::LOG_DEBUG("fileTypeDescriptionFromDialogBoxFilter returning {}", std::string(what[1]));
   return what[1];
 }
 

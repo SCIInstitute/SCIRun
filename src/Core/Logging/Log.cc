@@ -557,3 +557,5 @@ void Log2::addCustomSink(LogAppenderStrategyPtr appender)
   appenders_.push_back(appender);
 }
 
+CORE_SINGLETON_IMPLEMENTATION(ModuleLog)
+CORE_SINGLETON_IMPLEMENTATION(GeneralLog)

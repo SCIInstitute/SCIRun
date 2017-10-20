@@ -214,17 +214,14 @@ Module::Module(const ModuleLookupInfo& info,
   setLogger(DefaultModuleFactories::defaultLogger_);
   setUpdaterFunc([](double x) {});
 
-  auto& log = Log::get();
-
-  log << DEBUG_LOG << "Module created: " << info.module_name_ << " with id: " << impl_->id_;
+  LOG_DEBUG("Module created: {} with id: {}", info.module_name_, impl_->id_.id_);
 
   if (algoFactory)
   {
     impl_->algo_ = algoFactory->create(get_module_name(), this);
     if (impl_->algo_)
-      log << DEBUG_LOG << "Module algorithm initialized: " << info.module_name_;
+      LOG_DEBUG("Module algorithm initialized: {}", info.module_name_);
   }
-  log.flush();
 
   initStateObserver(impl_->state_.get());
 
@@ -412,14 +409,14 @@ bool Module::executeWithSignals() NOEXCEPT
   catch (Core::ExceptionBase& e)
   {
     /// @todo: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
-    if (Log::get().verbose())
+    //if (Log::get().verbose())
     {
       std::ostringstream ostr;
       ostr << "Caught exception: " << e.typeName() << std::endl << "Message: " << e.what() << std::endl;
       error(ostr.str());
     }
 
-    if (Log::get().verbose())
+    //if (Log::get().verbose())
     {
       std::ostringstream ostrExtra;
       ostrExtra << boost::diagnostic_information(e) << std::endl;
@@ -576,11 +573,11 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
   }
 
   {
-    LOG_DEBUG(get_id() << " :: inputsChanged is " << impl_->inputsChanged_ << ", querying port for value.");
+    LOG_DEBUG("{} :: inputsChanged is {}, querying port for value.", get_id().id_, impl_->inputsChanged_);
     // NOTE: don't use short-circuited boolean OR here, we need to call hasChanged each time since it updates the port's cache flag.
     bool startingVal = impl_->inputsChanged_;
     impl_->inputsChanged_ = std::accumulate(portsWithName.begin(), portsWithName.end(), startingVal, [](bool acc, InputPortHandle input) { return input->hasChanged() || acc; });
-    LOG_DEBUG(get_id() << ":: inputsChanged is now " << impl_->inputsChanged_);
+    LOG_DEBUG("{} :: inputsChanged is now {}.", get_id().id_, impl_->inputsChanged_);
   }
 
   std::vector<DatatypeHandleOption> options;

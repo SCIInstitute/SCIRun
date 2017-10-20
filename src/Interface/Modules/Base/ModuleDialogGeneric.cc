@@ -341,7 +341,7 @@ public:
     auto qstring = toLabelConverter_(value);
     if (qstring != comboBox_->currentText())
     {
-      LOG_DEBUG(("In new version of pull code for combobox: {}", value));
+      LOG_DEBUG("In new version of pull code for combobox: {}", value);
       comboBox_->setCurrentIndex(comboBox_->findText(qstring));
     }
   }
@@ -350,7 +350,7 @@ public:
     auto label = fromLabelConverter_(comboBox_->currentText());
     if (label != state_->getValue(stateKey_).toString())
     {
-      LOG_DEBUG(("In new version of push code for combobox: {}", label));
+      LOG_DEBUG("In new version of push code for combobox: {}", label);
       state_->setValue(stateKey_, label);
     }
   }

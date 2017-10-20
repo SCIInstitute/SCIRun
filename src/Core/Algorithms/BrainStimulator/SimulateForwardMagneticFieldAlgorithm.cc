@@ -68,10 +68,10 @@ class CalcFMField
       np_(-1),efld_(0),ctfld_(0),dipfld_(0),detfld_(0),emsh_(0),ctmsh_(0),dipmsh_(0),detmsh_(0),magfld_(0),magmagfld_(0)
     {
     }
-  
-    boost::tuple<FieldHandle, FieldHandle> calc_forward_magnetic_field(FieldHandle efield, 
+
+    boost::tuple<FieldHandle, FieldHandle> calc_forward_magnetic_field(FieldHandle efield,
 					   FieldHandle ctfield,
-					   FieldHandle dipoles, 
+					   FieldHandle dipoles,
 					   FieldHandle detectors);
 
   private:
@@ -107,7 +107,7 @@ class CalcFMField
     VField* magmagfld_; // Magnetic Field Magnitudes
 };
 
-void CalcFMField::interpolate(int proc, Point p)  
+void CalcFMField::interpolate(int proc, Point p)
 {
   emsh_->synchronize(Mesh::ELEM_LOCATE_E);
 
@@ -117,16 +117,16 @@ void CalcFMField::interpolate(int proc, Point p)
   VMesh::size_type num_elems = emsh_->num_elems();
 
   for (VMesh::Elem::index_type idx; idx<num_elems; idx++)
-  {    
-    if (outside || idx != inside_cell) 
+  {
+    if (outside || idx != inside_cell)
     {
       per_cell_cache &c = cell_cache_[idx];
       Vector radius = p - c.center_;
-      
+
       Vector valueJXR = Cross(c.cur_density_, radius);
       double length = radius.length();
 
-      interp_value_[proc] += ((valueJXR / (length * length * length)) * c.volume_); 
+      interp_value_[proc] += ((valueJXR / (length * length * length)) * c.volume_);
     }
   }
 }
@@ -137,7 +137,7 @@ void CalcFMField::set_up_cell_cache()
   Vector elemField;
   cell_cache_.resize(num_elems);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (have_tensors_)
   {
     int material = -1;
@@ -147,14 +147,14 @@ void CalcFMField::set_up_cell_cache()
       emsh_->get_center(c.center_,idx);
       efld_->get_value(elemField,idx);
       ctfld_->get_value(material,idx);
-   
-      c.cur_density_ = tens_[material].second * -1 * elemField; 
+
+      c.cur_density_ = tens_[material].second * -1 * elemField;
       c.volume_ = emsh_->get_volume(idx);
-      cell_cache_[idx] = c;       
+      cell_cache_[idx] = c;
     }
-  } else 
+  } else
 #endif
-  
+
   if (ctfld_ && ctfld_->is_tensor())
   {
     Tensor ten;
@@ -164,11 +164,11 @@ void CalcFMField::set_up_cell_cache()
       emsh_->get_center(c.center_,idx);
       efld_->get_value(elemField,idx);
       ctfld_->get_value(ten,idx);
-   
-      c.cur_density_ = ten * -1 * elemField; 
+
+      c.cur_density_ = ten * -1 * elemField;
       c.volume_ = emsh_->get_volume(idx);
-      cell_cache_[idx] = c;       
-    }  
+      cell_cache_[idx] = c;
+    }
   }
   else
   {
@@ -178,11 +178,11 @@ void CalcFMField::set_up_cell_cache()
       per_cell_cache c;
       emsh_->get_center(c.center_,idx);
       efld_->get_value(elemField,idx);
-      ctfld_->get_value(val,idx);   
-      c.cur_density_ = val * -1 * elemField; 
+      ctfld_->get_value(val,idx);
+      c.cur_density_ = val * -1 * elemField;
       c.volume_ = emsh_->get_volume(idx);
-      cell_cache_[idx] = c;       
-    }    
+      cell_cache_[idx] = c;
+    }
   }
 }
 
@@ -191,7 +191,7 @@ void CalcFMField::calc_parallel(int proc)
 
   VMesh::size_type num_nodes = detmsh_->num_nodes();
   VMesh::size_type nodes_per_thread = num_nodes/np_;
-  
+
   VMesh::Node::index_type start = proc*nodes_per_thread;
   VMesh::Node::index_type end = (proc+1)*nodes_per_thread;
   if (proc == (np_-1)) end = num_nodes;
@@ -208,41 +208,41 @@ void CalcFMField::calc_parallel(int proc)
   for (VMesh::Node::index_type idx = start; idx < end; idx++ )
   {
     // finish loop iteration.
-    
+
     detmsh_->get_center(pt, idx);
 
-    // init the interp val to 0 
+    // init the interp val to 0
     interp_value_[proc] = Vector(0,0,0);
     interpolate(proc, pt);
 
     mag_field = interp_value_[proc];
 
     Vector normal;
-    detfld_->get_value(normal,idx); 
+    detfld_->get_value(normal,idx);
 
     // iterate over the dipoles.
     for (VMesh::Node::index_type dip_idx = 0; dip_idx < num_dipoles; dip_idx++)
     {
       dipmsh_->get_center(pt2, dip_idx);
       dipfld_->value(P,dip_idx);
-      
+
       Vector radius = pt - pt2; // detector - source
       Vector valuePXR = Cross(P, radius);
       double length = radius.length();
- 
+
       mag_field += valuePXR / (length * length * length);
     }
-    
+
     mag_field *= one_over_4_pi;
     magmagfld_->set_value(Dot(mag_field, normal),idx);
     magfld_->set_value(mag_field,idx);
 
     if (proc == 0)
     {
-      cnt++; 
-      if (cnt == 100) 
-      { 
-      	cnt = 0; 
+      cnt++;
+      if (cnt == 100)
+      {
+      	cnt = 0;
       	algo_->update_progress_max(idx,end);
       }
     }
@@ -251,7 +251,7 @@ void CalcFMField::calc_parallel(int proc)
 }
 
 boost::tuple<FieldHandle,FieldHandle> CalcFMField::calc_forward_magnetic_field(FieldHandle efield, FieldHandle ctfield, FieldHandle dipoles, FieldHandle detectors)
-{   
+{
   efld_ = efield->vfield();
   ctfld_ = ctfield->vfield();
   ctmsh_ = ctfield->vmesh();
@@ -262,33 +262,33 @@ boost::tuple<FieldHandle,FieldHandle> CalcFMField::calc_forward_magnetic_field(F
   detmsh_ = detectors->vmesh();
 
   if (!efld_ || !ctfld_ || !ctmsh_ || !dipfld_ || !detfld_ || !emsh_ || !dipmsh_ || !detmsh_)
-  { 
-     algo_->error("At least one required input field/mesh has a NULL pointer."); 
+  {
+     algo_->error("At least one required input field/mesh has a NULL pointer.");
   }
 
   have_tensors_=false; /// we dont support a conductivity_table in a FieldHandle (could not be set in SCIRun4 as well)
-  
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // this code should be able to handle Field<Tensor> as well
-  have_tensors_ = ctfld_->get_property("conductivity_table", tens_); 
+  have_tensors_ = ctfld_->get_property("conductivity_table", tens_);
 #endif
-  LOG_DEBUG(" Note: The original SCIRun4 module looked for a field attribute ''conductivity_table'' of the second module input which could only be set outside of SCIRun4. This function is not available in SCIrun5. " << std::endl);
+  LOG_DEBUG(" Note: The original SCIRun4 module looked for a field attribute ''conductivity_table'' of the second module input which could only be set outside of SCIRun4. This function is not available in SCIRun5. ");
 
   FieldInformation mfi(detectors);
   mfi.make_lineardata();
 
   mfi.make_double();
   FieldHandle magnetic_field_magnitudes = CreateField(mfi,detectors->mesh());
-  if (!magnetic_field_magnitudes) 
+  if (!magnetic_field_magnitudes)
   {
     algo_->error("Could not allocate field for magnetic field magnitudes");
   }
 
   magmagfld_ = magnetic_field_magnitudes->vfield();
   magmagfld_->resize_values();
-  mfi.make_vector();  
+  mfi.make_vector();
   FieldHandle magnetic_field = CreateField(mfi,detectors->mesh());
-  if (!magnetic_field) 
+  if (!magnetic_field)
   {
     algo_->error("Could not allocate field for magnetic field");
   }
@@ -303,15 +303,15 @@ boost::tuple<FieldHandle,FieldHandle> CalcFMField::calc_forward_magnetic_field(F
   // cache per cell calculations that are used over and over again.
   set_up_cell_cache();
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // do the parallel work.
   Thread::parallel(this, &CalcFMField::calc_parallel, np_, mod);
 #endif
-  
+
   Parallel::RunTasks([this](int i) { calc_parallel(i); }, np_);
-  
+
   return boost::make_tuple(magnetic_field, magnetic_field_magnitudes);
-  
+
 }
 
 boost::tuple<FieldHandle, FieldHandle> SimulateForwardMagneticFieldAlgo::run(FieldHandle ElectricField, FieldHandle ConductivityTensors, FieldHandle DipoleSources, FieldHandle DetectorLocations) const
@@ -320,26 +320,26 @@ boost::tuple<FieldHandle, FieldHandle> SimulateForwardMagneticFieldAlgo::run(Fie
   {
     THROW_ALGORITHM_INPUT_ERROR("At least one required input has a NULL pointer.");
   }
-  
-  if (!ElectricField->vfield()->is_vector()) 
+
+  if (!ElectricField->vfield()->is_vector())
   {
     THROW_ALGORITHM_INPUT_ERROR("Must have Vector field as Electric Field input");
   }
 
-  if (!DipoleSources->vfield()->is_vector()) 
+  if (!DipoleSources->vfield()->is_vector())
   {
     THROW_ALGORITHM_INPUT_ERROR("Must have Vector field as Dipole Sources input");
   }
-  
-  if (!DetectorLocations->vfield()->is_vector()) 
+
+  if (!DetectorLocations->vfield()->is_vector())
   {
     THROW_ALGORITHM_INPUT_ERROR("Must have Vector field as Detector Locations input");
   }
-  
+
   CalcFMField algo(this);
   FieldHandle MField, MFieldMagnitudes;
-  
-  boost::tie(MField,MFieldMagnitudes) = algo.calc_forward_magnetic_field(ElectricField, ConductivityTensors, DipoleSources, DetectorLocations); 
+
+  boost::tie(MField,MFieldMagnitudes) = algo.calc_forward_magnetic_field(ElectricField, ConductivityTensors, DipoleSources, DetectorLocations);
 
   return boost::make_tuple(MField, MFieldMagnitudes);
 }
@@ -347,18 +347,17 @@ boost::tuple<FieldHandle, FieldHandle> SimulateForwardMagneticFieldAlgo::run(Fie
 AlgorithmOutput SimulateForwardMagneticFieldAlgo::run(const AlgorithmInput& input) const
 {
   AlgorithmOutput output;
-  
+
   auto efield = input.get<Field>(ElectricField);
   auto condtensor = input.get<Field>(ConductivityTensor);
   auto dipoles = input.get<Field>(DipoleSources);
   auto detectors = input.get<Field>(DetectorLocations);
   FieldHandle MField, MFieldMagnitudes;
-   
+
   boost::tie(MField,MFieldMagnitudes) = run(efield, condtensor, dipoles, detectors);
-  
+
   output[MagneticField] = MField;
   output[MagneticFieldMagnitudes] = MFieldMagnitudes;
-  
+
   return output;
 }
-

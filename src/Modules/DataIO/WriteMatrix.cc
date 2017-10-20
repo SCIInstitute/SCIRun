@@ -37,6 +37,7 @@
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::DataIO;
 
@@ -105,7 +106,7 @@ void WriteMatrix::execute()
 bool WriteMatrix::useCustomExporter(const std::string& filename) const
 {
   auto ft = cstate()->getValue(Variables::FileTypeName).toString();
-  LOG_DEBUG("WriteMatrix with filetype " << ft);
+  LOG_DEBUG("WriteMatrix with filetype {}", ft);
 
   filetype_ = (ft == "SCIRun Matrix ASCII") ? "ASCII" : "Binary";
 
