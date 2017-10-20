@@ -38,6 +38,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 
@@ -97,12 +98,12 @@ AlgorithmOutput BooleanCompareAlgo::run(const AlgorithmInput& input) const
   std::string cond_statement = getOption(Parameters::Comparison_Option);
   std::string then_result = getOption(Parameters::Then_Option);
   std::string else_result = getOption(Parameters::Else_Option);
-  
-  LOG_DEBUG("valoptA =" <<valoptA<<std::endl);
-  LOG_DEBUG("valoptB ="<<valoptB<<std::endl);
-  LOG_DEBUG("cond_statement ="<<cond_statement<<std::endl);
-  LOG_DEBUG("then_result ="<<then_result<<std::endl);
-  LOG_DEBUG("else_result ="<<else_result<<std::endl);
+
+  log_debug("valoptA = {}", valoptA);
+  log_debug("valoptB ={}",valoptB);
+  log_debug("cond_statement ={}",cond_statement);
+  log_debug("then_result ={}" , then_result);
+  log_debug("else_result ={}" , else_result);
 
   if (!matb || cond_statement == "boolop")
   {

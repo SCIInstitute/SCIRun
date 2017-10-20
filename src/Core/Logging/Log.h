@@ -168,11 +168,22 @@ namespace SCIRun
       public:
         GeneralLog() : Log2("root") {}
       };
+
+      template <class... T>
+      void LOG_DEBUG(const char* fmt, T&&... args)
+      {
+        SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(fmt, args...);
+      }
+
+      inline void LOG_DEBUG(const std::string& str)
+      {
+        SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(str);
+      }
     }
   }
 }
 
-#define LOG_DEBUG(str) SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(str);
+#define LOG_DEBUG_OLD_MACRO(str) SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(str);
 
 //#define LOG_DEBUG_TO(log, str) log << SCIRun::Core::Logging::DEBUG_LOG << str << std::endl
 
