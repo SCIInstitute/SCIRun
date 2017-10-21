@@ -432,7 +432,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   bringToFront();
   proxy->setVisible(visibleItems_);
 
-  GuiLogger::logInfoStd("Module added: " + module->getModuleId());
+  guiLogDebug("Module added: {}", module->getModuleId());
 
   logViewerDims("Scene bounds post-add:");
 

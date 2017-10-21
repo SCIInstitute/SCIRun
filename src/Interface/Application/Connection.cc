@@ -300,7 +300,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
 
   trackNodes();
 
-  GuiLogger::logInfoStd("Connection made: " + id_.id_);
+  guiLogDebug("Connection made: {}", id_.id_);
 }
 
 ConnectionLine::~ConnectionLine()
@@ -320,7 +320,7 @@ void ConnectionLine::destroyConnection()
     }
     drawer_.reset();
     Q_EMIT deleted(id_);
-    //GuiLogger::Instance().log("Connection deleted.");
+    guiLogDebug("Connection deleted: {}", id_.id_);
     HasNotes::destroy();
     NoteDisplayHelper::destroy();
     destroyed_ = true;
