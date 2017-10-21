@@ -43,6 +43,7 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Logging;
 
 class EuclideanDrawStrategy : public ConnectionDrawStrategy
 {
@@ -269,13 +270,13 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
     fromPort_->addConnection(this);
   }
   else
-    LOG_DEBUG("NULL FROM PORT: " << id_.id_ << std::endl);
+    LOG_DEBUG("NULL FROM PORT: {}", id_.id_);
   if (toPort_)
   {
     toPort_->addConnection(this);
   }
   else
-    LOG_DEBUG("NULL TO PORT: " << id_.id_ << std::endl);
+    LOG_DEBUG("NULL TO PORT: {}", id_.id_);
 
   if (fromPort_ && toPort_)
   {

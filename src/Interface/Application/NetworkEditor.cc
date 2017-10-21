@@ -57,6 +57,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Gui::NetworkBoundaries;
@@ -385,7 +386,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
     connect(module, SIGNAL(dynamicPortChanged(const std::string&, bool)), proxy, SLOT(createPortPositionProviders()));
   }
 
-  LOG_DEBUG("NetworkEditor connecting to state" << std::endl);
+  LOG_DEBUG("NetworkEditor connecting to state.");
   module->getModule()->get_state()->connectStateChanged(boost::bind(&NetworkEditor::modified, this));
 
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));

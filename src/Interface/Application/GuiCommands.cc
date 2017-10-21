@@ -48,6 +48,7 @@ DEALINGS IN THE SOFTWARE.
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Logging;
 using namespace Commands;
 using namespace SCIRun::Dataflow::Networks;
 using namespace Algorithms;

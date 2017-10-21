@@ -87,6 +87,13 @@ SCIRunMainWindow::SCIRunMainWindow()
   builder_ = boost::make_shared<NetworkEditorBuilder>(this);
   dockManager_ = new DockManager(dockSpace_, this);
 
+  {
+    const bool regression = Application::Instance().parameters()->isRegressionMode();
+    boost::shared_ptr<TextEditAppender> logger(new TextEditAppender(logTextBrowser_, regression));
+    //GuiLogger::setInstance(logger);
+    GeneralLog::Instance().addCustomSink(logger);
+  }
+
   startup_ = true;
 
   QCoreApplication::setOrganizationName("SCI:CIBC Software");
@@ -518,7 +525,7 @@ SCIRunMainWindow* SCIRunMainWindow::Instance()
 
 SCIRunMainWindow::~SCIRunMainWindow()
 {
-  GuiLogger::setInstance(nullptr);
+  //GuiLogger::setInstance(nullptr);
   //Log::get().clearAppenders();
   //Log::get("Modules").clearAppenders();
   commandConverter_.reset();
@@ -539,10 +546,6 @@ void SCIRunMainWindow::setController(NetworkEditorControllerHandle controller)
 void SCIRunMainWindow::setupNetworkEditor()
 {
   boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
-	const bool regression = Application::Instance().parameters()->isRegressionMode();
-  boost::shared_ptr<TextEditAppender> logger(new TextEditAppender(logTextBrowser_, regression));
-  GuiLogger::setInstance(logger);
-  GeneralLog::Instance().addCustomSink(logger);
 
   //TODO: this logger will crash on Windows when the console is closed. See #1250. Need to figure out a better way to manage scope/lifetime of Qt widgets passed to global singletons...
   boost::shared_ptr<TextEditAppender> moduleLog(new TextEditAppender(moduleLogTextBrowser_));

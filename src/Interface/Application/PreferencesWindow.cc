@@ -34,6 +34,7 @@
 #include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Core::Logging;
 
 PreferencesWindow::PreferencesWindow(NetworkEditor* editor, std::function<void()> writeSettings,
   QWidget* parent /* = 0 */) : QDialog(parent), networkEditor_(editor), writeSettings_(writeSettings)

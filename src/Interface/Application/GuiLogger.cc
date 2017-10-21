@@ -26,32 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
 #include <Interface/Application/GuiLogger.h>
-#include <Core/Logging/LoggerInterface.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
 
 CORE_SINGLETON_IMPLEMENTATION(GuiLogger)
 
-LoggerHandle GuiLogger::loggerImpl_;
-
 GuiLogger::GuiLogger() {}
-
-void SCIRun::Gui::GuiLogger::setInstance(LoggerHandle logger)
-{
-  loggerImpl_ = logger;
-}
 
 void GuiLogger::logInfo(const QString& message) const
 {
-  if (loggerImpl_)
-    loggerImpl_->status(message.toStdString());
+  GeneralLog::Instance().get()->info(message.toStdString());
 }
 
 void GuiLogger::logError(const QString& message) const
 {
-  if (loggerImpl_)
-    loggerImpl_->error(message.toStdString());
+  GeneralLog::Instance().get()->error(message.toStdString());
 }
