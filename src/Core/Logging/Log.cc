@@ -47,21 +47,12 @@ void LogSettings::setVerbose(bool v)
   spdlog::set_level(v ? spdlog::level::debug : spdlog::level::info);
 }
 
-
-
-        // boost::filesystem::path file_;
-        //
-        // void setBasicAppenders()
-        // {
-        //
-        //   file_ = Log1::logDirectory() / ("scirun5_" + name_ + ".log");
-        //   log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", file_.string());
-        //   cppLogger_.addAppender(appender2);
-        // }
-
   //          static const std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} %c [%p] %m%n");
 
-//boost::filesystem::path LogSettings::directory_(ApplicationHelper().configDirectory());
+LogSettings::LogSettings()
+{
+  directory_ = ApplicationHelper().configDirectory();
+}
 
 boost::filesystem::path LogSettings::logDirectory()
 {
@@ -88,7 +79,6 @@ namespace
     }
     void _flush() override
     {
-      //??
     }
   private:
     LogAppenderStrategyPtr appender_;
@@ -97,24 +87,27 @@ namespace
 
 Logger2 Log2::get()
 {
-  static Logger2 logger;
   static Thread::Mutex mutex(name_);
-  if (!logger)
+  if (!logger_)
   {
     Thread::Guard g(mutex.get());
-    if (!logger)
+    if (!logger_)
     {
       spdlog::set_async_mode(1 << 10);
       std::transform(customSinks_.begin(), customSinks_.end(), std::back_inserter(sinks_),
         [](LogAppenderStrategyPtr app) { return std::make_shared<ThreadedSink>(app); });
-      logger = std::make_shared<spdlog::logger>(name_, sinks_.begin(), sinks_.end());
-      logger->info("Welcome to spdlog! This is the new experimental {} log sink.", name_);
+      logger_ = std::make_shared<spdlog::logger>(name_, sinks_.begin(), sinks_.end());
+      logger_->info("{} log initialized.", name_);
     }
   }
-  return logger;
+  return logger_;
 }
 
 Log2::Log2(const std::string& name) : name_(name)
+{
+}
+
+void Log2::addColorConsoleSink()
 {
   auto consoleSink = spdlog::stdout_color_mt("dummy" + name_)->sinks()[0];
   addSink(consoleSink);
@@ -122,6 +115,7 @@ Log2::Log2(const std::string& name) : name_(name)
 
 GeneralLog::GeneralLog() : Log2("root")
 {
+  addColorConsoleSink();
   auto rotating = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
     (LogSettings::Instance().logDirectory() / "scirun5_root_v2.log").string(), 1024*1024, 3);
   addSink(rotating);
@@ -129,3 +123,4 @@ GeneralLog::GeneralLog() : Log2("root")
 
 CORE_SINGLETON_IMPLEMENTATION(ModuleLog)
 CORE_SINGLETON_IMPLEMENTATION(GeneralLog)
+CORE_SINGLETON_IMPLEMENTATION(GuiLog)

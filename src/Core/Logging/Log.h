@@ -58,6 +58,7 @@ namespace SCIRun
       {
         CORE_SINGLETON(LogSettings)
       public:
+        LogSettings();
         void setLogDirectory(const boost::filesystem::path& dir);
         boost::filesystem::path logDirectory();
         void setVerbose(bool v);
@@ -82,7 +83,10 @@ namespace SCIRun
         {
           customSinks_.push_back(appender);
         }
+      protected:
+        void addColorConsoleSink();
       private:
+        Logger2 logger_;
         std::string name_;
         std::vector<spdlog::sink_ptr> sinks_;
         std::vector<LogAppenderStrategyPtr> customSinks_;
@@ -92,14 +96,21 @@ namespace SCIRun
       {
         CORE_SINGLETON(ModuleLog)
       public:
-        ModuleLog() : Log2("module") {}
+        ModuleLog() : Log2("module") { addColorConsoleSink(); }
       };
 
-      class SCISHARE GeneralLog final: public Log2
+      class SCISHARE GeneralLog final : public Log2
       {
         CORE_SINGLETON(GeneralLog)
       public:
         GeneralLog();
+      };
+
+      class SCISHARE GuiLog final : public Log2
+      {
+        CORE_SINGLETON(GuiLog)
+      public:
+        GuiLog() : Log2("ui") {}
       };
 
       template <class... T>

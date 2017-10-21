@@ -300,7 +300,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
 
   trackNodes();
 
-  GuiLogger::Instance().logInfoStd("Connection made: " + id_.id_);
+  GuiLogger::logInfoStd("Connection made: " + id_.id_);
 }
 
 ConnectionLine::~ConnectionLine()

@@ -32,16 +32,15 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
 
-CORE_SINGLETON_IMPLEMENTATION(GuiLogger)
-
-GuiLogger::GuiLogger() {}
-
-void GuiLogger::logInfo(const QString& message) const
+void GuiLogger::logInfo(const QString& message)
 {
-  GeneralLog::Instance().get()->info(message.toStdString());
+  GuiLog::Instance().get()->info(message.toStdString());
+  if (LogSettings::Instance().verbose())
+    GeneralLog::Instance().get()->info(message.toStdString());
 }
 
-void GuiLogger::logError(const QString& message) const
+void GuiLogger::logError(const QString& message)
 {
+  GuiLog::Instance().get()->error(message.toStdString());
   GeneralLog::Instance().get()->error(message.toStdString());
 }

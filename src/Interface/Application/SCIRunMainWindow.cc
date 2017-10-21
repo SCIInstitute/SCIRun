@@ -90,8 +90,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   {
     const bool regression = Application::Instance().parameters()->isRegressionMode();
     boost::shared_ptr<TextEditAppender> logger(new TextEditAppender(logTextBrowser_, regression));
-    //GuiLogger::setInstance(logger);
-    GeneralLog::Instance().addCustomSink(logger);
+    GuiLog::Instance().addCustomSink(logger);
   }
 
   startup_ = true;
@@ -525,7 +524,6 @@ SCIRunMainWindow* SCIRunMainWindow::Instance()
 
 SCIRunMainWindow::~SCIRunMainWindow()
 {
-  //GuiLogger::setInstance(nullptr);
   //Log::get().clearAppenders();
   //Log::get("Modules").clearAppenders();
   commandConverter_.reset();
@@ -1129,12 +1127,12 @@ void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 {
 #ifdef BUILD_WITH_PYTHON
   NetworkEditor::InEditingContext iec(networkEditor_);
-  GuiLogger::Instance().logInfo("RUNNING PYTHON SCRIPT: " + scriptFileName);
+  GuiLogger::logInfo("RUNNING PYTHON SCRIPT: " + scriptFileName);
   PythonInterpreter::Instance().importSCIRunLibrary();
   PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
   statusBar()->showMessage(tr("Script is running."), 2000);
 #else
-  GuiLogger::Instance().logInfo("Python not included in this build, cannot run " + scriptFileName);
+  GuiLogger::logInfo("Python not included in this build, cannot run " + scriptFileName);
 #endif
 }
 
@@ -1217,13 +1215,13 @@ namespace {
     QFile inputFile("patterns.txt");
     if (inputFile.open(QIODevice::ReadOnly))
     {
-      GuiLogger::Instance().logInfo("Pattern file opened: " + inputFile.fileName());
+      GuiLogger::logInfo("Pattern file opened: " + inputFile.fileName());
       QTextStream in(&inputFile);
       while (!in.atEnd())
       {
         QString line = in.readLine();
         addSnippet(line, snips);
-        GuiLogger::Instance().logInfo("Pattern read: " + line);
+        GuiLogger::logInfo("Pattern read: " + line);
       }
       inputFile.close();
     }

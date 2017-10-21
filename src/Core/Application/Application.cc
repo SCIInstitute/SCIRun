@@ -160,7 +160,7 @@ void Application::readCommandLine(int argc, const char* argv[])
     auto maxCoresOption = private_->parameters_->developerParameters()->maxCores();
     if (maxCoresOption)
       Thread::Parallel::SetMaximumCores(*maxCoresOption);
-
+      
     LogSettings::Instance().setVerbose(parameters()->verboseMode());
   }
 }

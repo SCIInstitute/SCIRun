@@ -39,14 +39,13 @@ namespace Gui {
 
   class GuiLogger : boost::noncopyable
   {
-    CORE_SINGLETON(GuiLogger)
   public:
-    void logInfo(const QString& message) const;
-    void logError(const QString& message) const;
-    void logInfoStd(const std::string& message) const { logInfo(QString::fromStdString(message)); }
-    void logErrorStd(const std::string& message) const { logError(QString::fromStdString(message)); }
+    static void logInfo(const QString& message);
+    static void logError(const QString& message);
+    static void logInfoStd(const std::string& message) { logInfo(QString::fromStdString(message)); }
+    static void logErrorStd(const std::string& message) { logError(QString::fromStdString(message)); }
   private:
-    GuiLogger();
+    GuiLogger() = delete;
   };
 
 }}

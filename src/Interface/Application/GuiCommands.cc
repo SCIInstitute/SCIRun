@@ -193,7 +193,7 @@ bool NetworkFileProcessCommand::execute()
 {
   auto filename = get(Variables::Filename).toFilename().string();
   auto tempFile = get(Name("temporary-file")).toBool();
-  GuiLogger::Instance().logInfo("Attempting load of " + QString::fromStdString(filename));
+  GuiLogger::logInfo("Attempting load of " + QString::fromStdString(filename));
 
   try
   {
@@ -230,24 +230,24 @@ bool NetworkFileProcessCommand::execute()
 
       if (!tempFile)
       {
-        GuiLogger::Instance().logInfoStd("File load done (" + filename + ").");
+        GuiLogger::logInfoStd("File load done (" + filename + ").");
         SCIRun::Core::setCurrentFileName(filename);
       }
       return true;
     }
-    GuiLogger::Instance().logErrorStd("File load failed (" + filename + "): null xml returned.");
+    GuiLogger::logErrorStd("File load failed (" + filename + "): null xml returned.");
   }
   catch (ExceptionBase& e)
   {
-    GuiLogger::Instance().logErrorStd("File load failed (" + filename + "): exception in load_xml, " + e.what());
+    GuiLogger::logErrorStd("File load failed (" + filename + "): exception in load_xml, " + e.what());
   }
   catch (std::exception& ex)
   {
-    GuiLogger::Instance().logErrorStd("File load failed(" + filename + "): exception in load_xml, " + ex.what());
+    GuiLogger::logErrorStd("File load failed(" + filename + "): exception in load_xml, " + ex.what());
   }
   catch (...)
   {
-    GuiLogger::Instance().logErrorStd("File load failed(" + filename + "): Unknown exception in load_xml.");
+    GuiLogger::logErrorStd("File load failed(" + filename + "): Unknown exception in load_xml.");
   }
   return false;
 }
@@ -302,7 +302,7 @@ bool NetworkSaveCommand::execute()
   {
     SCIRunMainWindow::Instance()->setCurrentFile(QString::fromStdString(fileNameWithExtension));
     SCIRunMainWindow::Instance()->statusBar()->showMessage("File saved: " + QString::fromStdString(filename), 2000);
-    GuiLogger::Instance().logInfo("File save done: " + QString::fromStdString(filename));
+    GuiLogger::logInfo("File save done: " + QString::fromStdString(filename));
     SCIRunMainWindow::Instance()->setWindowModified(false);
     setCurrentFileName(filename);
 
