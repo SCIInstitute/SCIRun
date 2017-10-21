@@ -286,7 +286,7 @@ bool RunPythonScriptCommandGui::execute()
 bool SetupDataDirectoryCommandGui::execute()
 {
   auto dir = Application::Instance().parameters()->dataDirectory().get();
-  LOG_DEBUG("Data dir set to: " << dir << std::endl);
+  LOG_DEBUG("Data dir set to: {}", dir.string());
 
   SCIRunMainWindow::Instance()->setDataDirectory(QString::fromStdString(dir.string()));
 

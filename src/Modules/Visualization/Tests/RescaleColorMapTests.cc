@@ -91,7 +91,7 @@ class RescaleColorMapModuleTest : public ModuleTest
 protected:
   virtual void SetUp()
   {
-    Log::get().setVerbose(false);
+    //Log::get().setVerbose(false);
     rescaleColorMap = makeModule("RescaleColorMap");
     rescaleColorMap->setStateDefaults();
     colorMap = StandardColorMapFactory::create();

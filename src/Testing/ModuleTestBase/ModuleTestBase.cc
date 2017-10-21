@@ -115,7 +115,7 @@ void ModuleTestBase::initModuleParameters(bool verbose)
   DefaultValue<const AlgorithmParameter&>::Set(algoParam_);
   DefaultValue<AlgorithmOutput>::Set(AlgorithmOutput());
   DefaultValue<AlgorithmInput>::Set(AlgorithmInput());
-  Core::Logging::Log::get().setVerbose(verbose);
+  //Core::Logging::Log::get().setVerbose(verbose);
 }
 
 ModuleHandle ModuleTestBase::makeModule(const std::string& name)

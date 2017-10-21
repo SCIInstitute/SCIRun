@@ -519,8 +519,8 @@ SCIRunMainWindow* SCIRunMainWindow::Instance()
 SCIRunMainWindow::~SCIRunMainWindow()
 {
   GuiLogger::setInstance(nullptr);
-  Log::get().clearAppenders();
-  Log::get("Modules").clearAppenders();
+  //Log::get().clearAppenders();
+  //Log::get("Modules").clearAppenders();
   commandConverter_.reset();
   networkEditor_->disconnect();
   networkEditor_->setNetworkEditorController(nullptr);
@@ -542,7 +542,7 @@ void SCIRunMainWindow::setupNetworkEditor()
 	const bool regression = Application::Instance().parameters()->isRegressionMode();
   boost::shared_ptr<TextEditAppender> logger(new TextEditAppender(logTextBrowser_, regression));
   GuiLogger::setInstance(logger);
-  Log::get().addCustomAppender(logger);
+  GeneralLog::Instance().addCustomSink(logger);
 
   //TODO: this logger will crash on Windows when the console is closed. See #1250. Need to figure out a better way to manage scope/lifetime of Qt widgets passed to global singletons...
   boost::shared_ptr<TextEditAppender> moduleLog(new TextEditAppender(moduleLogTextBrowser_));
@@ -1076,13 +1076,13 @@ void SCIRunMainWindow::setupDevConsole()
 
 void SCIRunMainWindow::setExecutor(int type)
 {
-  LOG_DEBUG("Executor of type " << type << " selected"  << std::endl);
+  LOG_DEBUG("Executor of type {} selected", type);
   networkEditor_->getNetworkEditorController()->setExecutorType(type);
 }
 
 void SCIRunMainWindow::setGlobalPortCaching(bool enable)
 {
-  LOG_DEBUG("Global port caching flag set to " << (enable ? "true" : "false") << std::endl);
+  LOG_DEBUG("Global port caching flag set to {}", (enable ? "true" : "false"));
   //TODO: encapsulate better
   SimpleSink::setGlobalPortCachingFlag(enable);
 }
@@ -1266,7 +1266,7 @@ namespace {
 
   QTreeWidgetItem* addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module)
   {
-    LOG_DEBUG("Adding item to favorites: " << module->text(0).toStdString() << std::endl);
+    LOG_DEBUG("Adding item to favorites: {}", module->text(0).toStdString());
     auto copy = new QTreeWidgetItem(*module);
     copy->setData(0, Qt::CheckStateRole, QVariant());
     if (copy->textColor(0) == CLIPBOARD_COLOR)

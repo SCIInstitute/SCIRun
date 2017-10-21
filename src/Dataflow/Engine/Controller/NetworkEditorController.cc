@@ -356,7 +356,7 @@ void NetworkEditorController::printNetwork() const
   if (false)
   {
     if (theNetwork_)
-      LOG_DEBUG(theNetwork_->toString() << std::endl);
+      LOG_DEBUG(theNetwork_->toString());
   }
 }
 
@@ -384,7 +384,7 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
     return id;
   }
 
-  Log::get() << NOTICE << "Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module." << std::endl;
+  GeneralLog::Instance().get()->warn("Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module.");
   invalidConnection_(desc);
   return boost::none;
 }
@@ -511,14 +511,14 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       else
       {
 #ifndef BUILD_HEADLESS
-        Log::get() << INFO << "module position editor unavailable, module positions at default" << std::endl;
+        GeneralLog::Instance().get()->info("module position editor unavailable, module positions at default");
 #endif
       }
       networkDoneLoading_(static_cast<int>(theNetwork_->nmodules()) + 1);
     }
     catch (ExceptionBase& e)
     {
-      Log::get() << ERROR_LOG << "File load failed: exception while processing xml network data: " << e.what() << std::endl;
+      GeneralLog::Instance().get()->error("File load failed: exception while processing xml network data: {}", e.what());
       theNetwork_->clear();
       throw;
     }
@@ -593,11 +593,11 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
         //TODO: need disabled here?
       }
       else
-        Log::get() << INFO << "module position editor unavailable, module positions at default" << std::endl;
+        GeneralLog::Instance().get()->info("module position editor unavailable, module positions at default");
     }
     catch (ExceptionBase& e)
     {
-      Log::get() << ERROR_LOG << "File load failed: exception while processing xml network data: " << e.what() << std::endl;
+      GeneralLog::Instance().get()->error("File load failed: exception while processing xml network data: {}", e.what());
       theNetwork_->clear();
       throw;
     }
@@ -606,7 +606,7 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
 
 void NetworkEditorController::clear()
 {
-  LOG_DEBUG("NetworkEditorController::clear()" << std::endl);
+  LOG_DEBUG("NetworkEditorController::clear()");
 }
 
 // TODO:
@@ -628,7 +628,7 @@ void NetworkEditorController::executeModule(const ModuleHandle& module, const Ex
   }
   catch (NetworkHasCyclesException&)
   {
-    SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::ERROR_LOG << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
+    SCIRun::Core::Logging::GeneralLog::Instance().get()->error("Cannot schedule execution: network has cycles. Please break all cycles and try again.");
     ExecutionContext::executionBounds_.executeFinishes_(-1);
     return;
   }

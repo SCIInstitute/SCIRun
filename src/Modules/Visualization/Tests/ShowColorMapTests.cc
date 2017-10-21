@@ -52,7 +52,7 @@ class ShowColorMapModuleTest : public ModuleTest
 protected:
   virtual void SetUp()
   {
-    Log::get().setVerbose(false);
+    //Log::get().setVerbose(false);
     showColorMap = makeModule("ShowColorMap");
     showColorMap->setStateDefaults();
     colorMap = StandardColorMapFactory::create();

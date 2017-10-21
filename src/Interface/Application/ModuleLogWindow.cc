@@ -94,19 +94,19 @@ ModuleLogger::ModuleLogger(ModuleLogWindow* window) : moduleName_(window->name()
   connect(this, SIGNAL(alert(const QColor&)), window, SIGNAL(messageReceived(const QColor&)));
   connect(this, SIGNAL(popup(const QString&)), window, SLOT(popupMessageBox(const QString&)));
 
-#ifdef __APPLE__
-  static bool printTODOMessageOnce = true;
-  if (printTODOMessageOnce)
-  {
-    Log::get("Modules") << NOTICE << formatWithColor(std::string("Coming soon on Mac: module logs will be consolidated here"), std::string("blue")) << std::endl;
-	  printTODOMessageOnce = false;
-  }
-#endif
+// #ifdef __APPLE__
+//   static bool printTODOMessageOnce = true;
+//   if (printTODOMessageOnce)
+//   {
+//     Log::get("Modules") << NOTICE << formatWithColor(std::string("Coming soon on Mac: module logs will be consolidated here"), std::string("blue")) << std::endl;
+// 	  printTODOMessageOnce = false;
+//   }
+// #endif
 }
 
 ModuleLogger::~ModuleLogger()
 {
-  Log::get("Modules").flush();
+  //Log::get("Modules").flush();
 }
 
 void ModuleLogger::error(const std::string& msg) const
@@ -117,7 +117,7 @@ void ModuleLogger::error(const std::string& msg) const
   alert(red);
   popup(qmsg);
 
-  ModuleLog::get()->error("[{0}] {1}", moduleName_, msg);
+  ModuleLog::Instance().get()->error("[{0}] {1}", moduleName_, msg);
 }
 
 void ModuleLogger::warning(const std::string& msg) const
@@ -126,7 +126,7 @@ void ModuleLogger::warning(const std::string& msg) const
   logSignal("WARNING: " + QString::fromStdString(msg), yellow);
   alert(yellow);
 
-  ModuleLog::get()->warn("[{0}] {1}", moduleName_, msg);
+  ModuleLog::Instance().get()->warn("[{0}] {1}", moduleName_, msg);
 }
 
 void ModuleLogger::remark(const std::string& msg) const
@@ -134,13 +134,13 @@ void ModuleLogger::remark(const std::string& msg) const
   const QColor blue = Qt::blue;
   logSignal("REMARK: " + QString::fromStdString(msg), blue);
   alert(blue);
-  
-  ModuleLog::get()->info("[{0}] NOTICE: {1}", moduleName_, msg);
+
+  ModuleLog::Instance().get()->info("[{0}] NOTICE: {1}", moduleName_, msg);
 }
 
 void ModuleLogger::status(const std::string& msg) const
 {
   logSignal(QString::fromStdString(msg), Qt::black);
- 
-  ModuleLog::get()->info("[{0}] {1}", moduleName_, msg);
+
+  ModuleLog::Instance().get()->info("[{0}] {1}", moduleName_, msg);
 }

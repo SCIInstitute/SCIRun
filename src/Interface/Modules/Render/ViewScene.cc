@@ -45,6 +45,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Thread;
@@ -71,9 +72,14 @@ namespace
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent), mConfigurationDock(nullptr), shown_(false),
-  shiftdown_(false), selected_(false),
-  clippingPlaneIndex_(0),screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false),
+  : ModuleDialogGeneric(state, parent),
+  mConfigurationDock(nullptr),
+  shown_(false),
+  shiftdown_(false),
+  selected_(false),
+  clippingPlaneIndex_(0),
+  screenshotTaker_(nullptr),
+  saveScreenshotOnNewGeometry_(false),
   gid_(new DialogIdGenerator(name))
 {
   counter_ = 1;
