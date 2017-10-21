@@ -41,6 +41,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
 using ::testing::NotNull;
@@ -52,7 +53,7 @@ class ConvertMeshToPointCloudMeshAlgoTests : public ::testing::Test
 protected:
   virtual void SetUp()
   {
-    //SCIRun::Core::Logging::Log::get().setVerbose(true);
+    LogSettings::Instance().setVerbose(true);
   }
 };
 
@@ -86,7 +87,7 @@ public:
   GetDomainBoundaryTestsParameterized()
   {
     latVol_ = loadFieldFromFile(TestResources::rootDir() / "latVolWithNormData.fld");
-    SCIRun::Core::Logging::Log::get().setVerbose(true);
+    LogSettings::Instance().setVerbose(true);
   }
 
 protected:

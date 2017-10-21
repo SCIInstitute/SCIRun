@@ -40,6 +40,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
@@ -52,7 +53,7 @@ class GetDomainBoundaryTests : public ::testing::Test
 protected:
   virtual void SetUp()
   {
-    //SCIRun::Core::Logging::Log::get().setVerbose(true);
+    LogSettings::Instance().setVerbose(true);
   }
 
   void runTest(bool includeOuterBoundary, bool useRange, int domainValue,
@@ -163,7 +164,7 @@ public:
   GetDomainBoundaryTestsParameterized()
   {
     latVol_ = loadFieldFromFile(TestResources::rootDir() / "Fields" / "latVolWithNormData.fld");
-    //SCIRun::Core::Logging::Log::get().setVerbose(true);
+    LogSettings::Instance().setVerbose(true);
   }
 
 protected:

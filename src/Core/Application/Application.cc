@@ -38,6 +38,7 @@
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 #include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
 #include <Core/Logging/Log.h>
+#include <Core/Logging/ApplicationHelper.h>
 #include <Core/IEPlugin/IEPluginInit.h>
 #include <Core/Utils/Exception.h>
 #include <Core/Application/Session/Session.h>
@@ -160,7 +161,7 @@ void Application::readCommandLine(int argc, const char* argv[])
     if (maxCoresOption)
       Thread::Parallel::SetMaximumCores(*maxCoresOption);
 
-    LogSetting::Instance().setVerbose(parameters()->verboseMode());
+    LogSettings::Instance().setVerbose(parameters()->verboseMode());
   }
 }
 

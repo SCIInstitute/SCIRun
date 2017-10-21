@@ -50,6 +50,7 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace SCIRun::Dataflow::State;
@@ -115,7 +116,7 @@ void ModuleTestBase::initModuleParameters(bool verbose)
   DefaultValue<const AlgorithmParameter&>::Set(algoParam_);
   DefaultValue<AlgorithmOutput>::Set(AlgorithmOutput());
   DefaultValue<AlgorithmInput>::Set(AlgorithmInput());
-  //Core::Logging::Log::get().setVerbose(verbose);
+  LogSettings::Instance().setVerbose(verbose);
 }
 
 ModuleHandle ModuleTestBase::makeModule(const std::string& name)

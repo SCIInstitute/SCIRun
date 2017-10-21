@@ -116,7 +116,7 @@ Logger2 Log2::get()
 
 Log2::Log2(const std::string& name) : name_(name)
 {
-  auto consoleSink = spdlog::stdout_color_mt("dummy")->sinks()[0];
+  auto consoleSink = spdlog::stdout_color_mt("dummy" + name_)->sinks()[0];
   addSink(consoleSink);
 }
 

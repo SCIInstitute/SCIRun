@@ -44,6 +44,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::TestUtils;
@@ -58,7 +59,7 @@ class JoinFieldsAlgoTests : public ::testing::Test
 protected:
   virtual void SetUp()
   {
-    //SCIRun::Core::Logging::Log::get().setVerbose(true);
+    LogSettings::Instance().setVerbose(true);
   }
 
   FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5, data_info_type type=DOUBLE_E)
@@ -141,7 +142,7 @@ public:
 protected:
   virtual void SetUp()
   {
-    //SCIRun::Core::Logging::Log::get().setVerbose(true);
+    LogSettings::Instance().setVerbose(true);
     // How to set parameters on an algorithm (that come from the GUI)
     algo_.set(JoinFieldsAlgo::MergeNodes,      ::std::tr1::get<0>(GetParam()));
     algo_.set(JoinFieldsAlgo::MergeElems,      ::std::tr1::get<1>(GetParam()));
