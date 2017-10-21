@@ -84,7 +84,7 @@ Application::Application() :
   private_->app_filepath_ = boost::filesystem::current_path();
   //std::cout << "exec path set to: " << private_->app_filepath_ << std::endl;
   auto configDir = configDirectory();
-  Log1::setLogDirectory(configDir);
+  LogSettings::Instance().setLogDirectory(configDir);
   SessionManager::Instance().initialize(configDir);
   SessionManager::Instance().session()->beginSession();
 }
@@ -160,7 +160,7 @@ void Application::readCommandLine(int argc, const char* argv[])
     if (maxCoresOption)
       Thread::Parallel::SetMaximumCores(*maxCoresOption);
 
-    //Log::get().setVerbose(parameters()->verboseMode());
+    LogSetting::Instance().setVerbose(parameters()->verboseMode());
   }
 }
 

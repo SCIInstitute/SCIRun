@@ -25,14 +25,14 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Core/Logging/ScopedTimeRemarker.h
 
-#ifndef CORE_LOGGING_SCOPEDTIMEREMARKER_H
-#define CORE_LOGGING_SCOPEDTIMEREMARKER_H
+#ifndef CORE_LOGGING_APPLICATION_HELPER_H
+#define CORE_LOGGING_APPLICATION_HELPER_H
 
 #include <string>
-#include <boost/timer.hpp>
-#include <Core/Logging/LoggerFwd.h>
+#ifndef Q_MOC_RUN
+#include <boost/filesystem/path.hpp>
+#endif
 #include <Core/Logging/share.h>
 
 namespace SCIRun
@@ -41,30 +41,16 @@ namespace SCIRun
   {
     namespace Logging
     {
-      class SCISHARE ScopedTimeRemarker
+      class SCISHARE ApplicationHelper
       {
       public:
-        ScopedTimeRemarker(LegacyLoggerInterface* log, const std::string& label);
-        ~ScopedTimeRemarker();
-      private:
-        LegacyLoggerInterface* log_;
-        std::string label_;
-        boost::timer timer_;
+        ApplicationHelper();
+        boost::filesystem::path configDirectory();
+        std::string applicationName();
+        bool get_user_directory( boost::filesystem::path& user_dir, bool config_path);
+        bool get_config_directory( boost::filesystem::path& config_dir );
+        bool get_user_name( std::string& user_name );
       };
-
-      class SCISHARE ScopedTimeLogger
-      {
-      public:
-        explicit ScopedTimeLogger(const std::string& label, bool shouldLog = true);
-        ~ScopedTimeLogger();
-      private:
-        std::string label_;
-        bool shouldLog_;
-        boost::timer timer_;
-      };
-    }
-  }
-}
-
+}}}
 
 #endif
