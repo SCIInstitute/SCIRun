@@ -93,20 +93,10 @@ ModuleLogger::ModuleLogger(ModuleLogWindow* window) : moduleName_(window->name()
   connect(this, SIGNAL(logSignal(const QString&, const QColor&)), window, SLOT(appendMessage(const QString&, const QColor&)));
   connect(this, SIGNAL(alert(const QColor&)), window, SIGNAL(messageReceived(const QColor&)));
   connect(this, SIGNAL(popup(const QString&)), window, SLOT(popupMessageBox(const QString&)));
-
-// #ifdef __APPLE__
-//   static bool printTODOMessageOnce = true;
-//   if (printTODOMessageOnce)
-//   {
-//     Log::get("Modules") << NOTICE << formatWithColor(std::string("Coming soon on Mac: module logs will be consolidated here"), std::string("blue")) << std::endl;
-// 	  printTODOMessageOnce = false;
-//   }
-// #endif
 }
 
 ModuleLogger::~ModuleLogger()
 {
-  //Log::get("Modules").flush();
 }
 
 void ModuleLogger::error(const std::string& msg) const

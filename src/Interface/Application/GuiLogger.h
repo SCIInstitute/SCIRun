@@ -30,12 +30,25 @@
 #define GUI_LOGGER_H
 
 #include <Core/Utils/Singleton.h>
-#include <Core/Logging/LoggerFwd.h>
+#include <Core/Logging/Log.h>
 #include <boost/shared_ptr.hpp>
 #include <QString>
 
 namespace SCIRun {
 namespace Gui {
+
+  class SCISHARE GuiLog final : public Core::Logging::Log2
+  {
+    CORE_SINGLETON(GuiLog)
+  public:
+    GuiLog() : Log2("ui") {}
+  };
+
+  template <class... T>
+  void guiLogDebug(const char* fmt, T&&... args)
+  {
+    GuiLog::Instance().get()->debug(fmt, args...);
+  }
 
   class GuiLogger : boost::noncopyable
   {

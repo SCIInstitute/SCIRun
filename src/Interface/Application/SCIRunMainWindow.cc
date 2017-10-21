@@ -548,6 +548,7 @@ void SCIRunMainWindow::setupNetworkEditor()
   //TODO: this logger will crash on Windows when the console is closed. See #1250. Need to figure out a better way to manage scope/lifetime of Qt widgets passed to global singletons...
   boost::shared_ptr<TextEditAppender> moduleLog(new TextEditAppender(moduleLogTextBrowser_));
   ModuleLog::Instance().addCustomSink(moduleLog);
+  GuiLog::Instance().setVerbose(LogSettings::Instance().verbose());
 
   defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(prefsWindow_->defaultNotePositionComboBox_, prefsWindow_->defaultNoteSizeComboBox_));
   auto tagColorFunc = [this](int tag) { return tagManagerWindow_->tagColor(tag); };

@@ -44,3 +44,5 @@ void GuiLogger::logError(const QString& message)
   GuiLog::Instance().get()->error(message.toStdString());
   GeneralLog::Instance().get()->error(message.toStdString());
 }
+
+CORE_SINGLETON_IMPLEMENTATION(GuiLog)

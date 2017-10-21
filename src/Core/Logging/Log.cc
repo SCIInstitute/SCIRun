@@ -98,6 +98,7 @@ Logger2 Log2::get()
         [](LogAppenderStrategyPtr app) { return std::make_shared<ThreadedSink>(app); });
       logger_ = std::make_shared<spdlog::logger>(name_, sinks_.begin(), sinks_.end());
       logger_->info("{} log initialized.", name_);
+      setVerbose(verbose());
     }
   }
   return logger_;
@@ -113,6 +114,18 @@ void Log2::addColorConsoleSink()
   addSink(consoleSink);
 }
 
+bool Log2::verbose() const
+{
+  return verbose_;
+}
+
+void Log2::setVerbose(bool v)
+{
+  verbose_ = v;
+  if (logger_)
+    logger_->set_level(v ? spdlog::level::debug : spdlog::level::info);
+}
+
 GeneralLog::GeneralLog() : Log2("root")
 {
   addColorConsoleSink();
@@ -123,4 +136,3 @@ GeneralLog::GeneralLog() : Log2("root")
 
 CORE_SINGLETON_IMPLEMENTATION(ModuleLog)
 CORE_SINGLETON_IMPLEMENTATION(GeneralLog)
-CORE_SINGLETON_IMPLEMENTATION(GuiLog)

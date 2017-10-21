@@ -83,11 +83,14 @@ namespace SCIRun
         {
           customSinks_.push_back(appender);
         }
+        void setVerbose(bool v);
+        bool verbose() const;
       protected:
         void addColorConsoleSink();
       private:
         Logger2 logger_;
         std::string name_;
+        bool verbose_{false};
         std::vector<spdlog::sink_ptr> sinks_;
         std::vector<LogAppenderStrategyPtr> customSinks_;
       };
@@ -104,13 +107,6 @@ namespace SCIRun
         CORE_SINGLETON(GeneralLog)
       public:
         GeneralLog();
-      };
-
-      class SCISHARE GuiLog final : public Log2
-      {
-        CORE_SINGLETON(GuiLog)
-      public:
-        GuiLog() : Log2("ui") {}
       };
 
       template <class... T>
