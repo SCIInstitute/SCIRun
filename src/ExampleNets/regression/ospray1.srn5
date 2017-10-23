@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>14</count>
+			<count>12</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>ConvertQuadSurfToTriSurf:0</first>
@@ -321,23 +321,23 @@
 				</second>
 			</item>
 			<item>
-				<first>EditMeshBoundingBox:0</first>
+				<first>GenerateSinglePointProbeFromField:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>ChangeMesh</category_name_>
-						<module_name_>EditMeshBoundingBox</module_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>GenerateSinglePointProbeFromField</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>24</count>
+							<count>12</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
-									<name>BoxMode</name>
+									<name>FieldElem</name>
 								</first>
 								<second>
-									<name>BoxMode</name>
+									<name>FieldElem</name>
 									<value>
 										<which>0</which>
 										<value>0</value>
@@ -346,277 +346,133 @@
 							</item>
 							<item>
 								<first>
-									<name>BoxRealScale</name>
+									<name>FieldNode</name>
 								</first>
 								<second>
-									<name>BoxRealScale</name>
+									<name>FieldNode</name>
 									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<which>0</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>InputCenterX</name>
+									<name>FieldValue</name>
 								</first>
 								<second>
-									<name>InputCenterX</name>
+									<name>FieldValue</name>
 									<value>
 										<which>2</which>
-										<value>  1.0000</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>InputCenterY</name>
+									<name>MoveMethod</name>
 								</first>
 								<second>
-									<name>InputCenterY</name>
+									<name>MoveMethod</name>
 									<value>
 										<which>2</which>
-										<value>  1.0000</value>
+										<value>Location</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>InputCenterZ</name>
+									<name>ProbeColor</name>
 								</first>
 								<second>
-									<name>InputCenterZ</name>
+									<name>ProbeColor</name>
 									<value>
 										<which>2</which>
-										<value>  1.0000</value>
+										<value>Color(1,1,1)</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>InputSizeX</name>
+									<name>ProbeLabel</name>
 								</first>
 								<second>
-									<name>InputSizeX</name>
+									<name>ProbeLabel</name>
 									<value>
 										<which>2</which>
-										<value>  2.0000</value>
+										<value></value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>InputSizeY</name>
+									<name>ProbeSize</name>
 								</first>
 								<second>
-									<name>InputSizeY</name>
-									<value>
-										<which>2</which>
-										<value>  2.0000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>InputSizeZ</name>
-								</first>
-								<second>
-									<name>InputSizeZ</name>
-									<value>
-										<which>2</which>
-										<value>  2.0000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NoTranslation</name>
-								</first>
-								<second>
-									<name>NoTranslation</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>OutputCenterX</name>
-								</first>
-								<second>
-									<name>OutputCenterX</name>
+									<name>ProbeSize</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+00</value>
+										<value>2.00000000000000150e-01</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>OutputCenterY</name>
+									<name>SnapToElement</name>
 								</first>
 								<second>
-									<name>OutputCenterY</name>
+									<name>SnapToElement</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SnapToNode</name>
+								</first>
+								<second>
+									<name>SnapToNode</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>XLocation</name>
+								</first>
+								<second>
+									<name>XLocation</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+00</value>
+										<value>-3.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>OutputCenterZ</name>
+									<name>YLocation</name>
 								</first>
 								<second>
-									<name>OutputCenterZ</name>
+									<name>YLocation</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+00</value>
+										<value>3.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>OutputSizeX</name>
+									<name>ZLocation</name>
 								</first>
 								<second>
-									<name>OutputSizeX</name>
+									<name>ZLocation</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>OutputSizeY</name>
-								</first>
-								<second>
-									<name>OutputSizeY</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>OutputSizeZ</name>
-								</first>
-								<second>
-									<name>OutputSizeZ</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>RDITranslation</name>
-								</first>
-								<second>
-									<name>RDITranslation</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>RestrictD</name>
-								</first>
-								<second>
-									<name>RestrictD</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>RestrictI</name>
-								</first>
-								<second>
-									<name>RestrictI</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>RestrictR</name>
-								</first>
-								<second>
-									<name>RestrictR</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>RestrictX</name>
-								</first>
-								<second>
-									<name>RestrictX</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>RestrictY</name>
-								</first>
-								<second>
-									<name>RestrictY</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>RestrictZ</name>
-								</first>
-								<second>
-									<name>RestrictZ</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Scale</name>
-								</first>
-								<second>
-									<name>Scale</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000006e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>XYZTranslation</name>
-								</first>
-								<second>
-									<name>XYZTranslation</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
+										<value>-3.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -650,10 +506,22 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>25</count>
+							<count>27</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
+									<name>AutoCameraView</name>
+								</first>
+								<second>
+									<name>AutoCameraView</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>BackgroundColorB</name>
 								</first>
 								<second>
@@ -696,7 +564,7 @@
 									<name>CameraPositionX</name>
 									<value>
 										<which>1</which>
-										<value>-1.00000000000000000e+00</value>
+										<value>5.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -708,7 +576,7 @@
 									<name>CameraPositionY</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>5.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -718,6 +586,30 @@
 								</first>
 								<second>
 									<name>CameraPositionZ</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraUpX</name>
+								</first>
+								<second>
+									<name>CameraUpX</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraUpY</name>
+								</first>
+								<second>
+									<name>CameraUpY</name>
 									<value>
 										<which>1</which>
 										<value>-2.00000000000000000e+00</value>
@@ -726,22 +618,10 @@
 							</item>
 							<item>
 								<first>
-									<name>CameraUpX</name>
+									<name>CameraUpZ</name>
 								</first>
 								<second>
-									<name>CameraUpX</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraUpY</name>
-								</first>
-								<second>
-									<name>CameraUpY</name>
+									<name>CameraUpZ</name>
 									<value>
 										<which>1</which>
 										<value>1.00000000000000000e+00</value>
@@ -750,25 +630,13 @@
 							</item>
 							<item>
 								<first>
-									<name>CameraUpZ</name>
-								</first>
-								<second>
-									<name>CameraUpZ</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
 									<name>CameraViewX</name>
 								</first>
 								<second>
 									<name>CameraViewX</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-01</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -780,7 +648,7 @@
 									<name>CameraViewY</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-01</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -829,6 +697,18 @@
 									<value>
 										<which>1</which>
 										<value>5.00000000000000000e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Filename</name>
+								</first>
+								<second>
+									<name>Filename</name>
+									<value>
+										<which>2</which>
+										<value>/Users/dan/Dropbox</value>
 									</value>
 								</second>
 							</item>
@@ -865,322 +745,6 @@
 									<value>
 										<which>0</which>
 										<value>800</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightColorB</name>
-								</first>
-								<second>
-									<name>LightColorB</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightColorG</name>
-								</first>
-								<second>
-									<name>LightColorG</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightColorR</name>
-								</first>
-								<second>
-									<name>LightColorR</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightIntensity</name>
-								</first>
-								<second>
-									<name>LightIntensity</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightType</name>
-								</first>
-								<second>
-									<name>LightType</name>
-									<value>
-										<which>2</which>
-										<value>ambient</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightVisible</name>
-								</first>
-								<second>
-									<name>LightVisible</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowImageInWindow</name>
-								</first>
-								<second>
-									<name>ShowImageInWindow</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>InterfaceWithOspray:1</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Visualization</category_name_>
-						<module_name_>InterfaceWithOspray</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>25</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>BackgroundColorB</name>
-								</first>
-								<second>
-									<name>BackgroundColorB</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>BackgroundColorG</name>
-								</first>
-								<second>
-									<name>BackgroundColorG</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>BackgroundColorR</name>
-								</first>
-								<second>
-									<name>BackgroundColorR</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraPositionX</name>
-								</first>
-								<second>
-									<name>CameraPositionX</name>
-									<value>
-										<which>1</which>
-										<value>-1.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraPositionY</name>
-								</first>
-								<second>
-									<name>CameraPositionY</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraPositionZ</name>
-								</first>
-								<second>
-									<name>CameraPositionZ</name>
-									<value>
-										<which>1</which>
-										<value>-2.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraUpX</name>
-								</first>
-								<second>
-									<name>CameraUpX</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraUpY</name>
-								</first>
-								<second>
-									<name>CameraUpY</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraUpZ</name>
-								</first>
-								<second>
-									<name>CameraUpZ</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraViewX</name>
-								</first>
-								<second>
-									<name>CameraViewX</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraViewY</name>
-								</first>
-								<second>
-									<name>CameraViewY</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraViewZ</name>
-								</first>
-								<second>
-									<name>CameraViewZ</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>DefaultColorB</name>
-								</first>
-								<second>
-									<name>DefaultColorB</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>DefaultColorG</name>
-								</first>
-								<second>
-									<name>DefaultColorG</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>DefaultColorR</name>
-								</first>
-								<second>
-									<name>DefaultColorR</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FrameCount</name>
-								</first>
-								<second>
-									<name>FrameCount</name>
-									<value>
-										<which>0</which>
-										<value>10</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ImageHeight</name>
-								</first>
-								<second>
-									<name>ImageHeight</name>
-									<value>
-										<which>0</which>
-										<value>768</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ImageWidth</name>
-								</first>
-								<second>
-									<name>ImageWidth</name>
-									<value>
-										<which>0</which>
-										<value>1024</value>
 									</value>
 								</second>
 							</item>
@@ -1720,479 +1284,7 @@
 									<name>ShowEdges</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowFaceIndices</name>
-								</first>
-								<second>
-									<name>ShowFaceIndices</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowFaces</name>
-								</first>
-								<second>
-									<name>ShowFaces</name>
-									<value>
-										<which>3</which>
 										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowNodeIndices</name>
-								</first>
-								<second>
-									<name>ShowNodeIndices</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowNodes</name>
-								</first>
-								<second>
-									<name>ShowNodes</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowText</name>
-								</first>
-								<second>
-									<name>ShowText</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>SphereResolution</name>
-								</first>
-								<second>
-									<name>SphereResolution</name>
-									<value>
-										<which>0</which>
-										<value>5</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>SphereScaleValue</name>
-								</first>
-								<second>
-									<name>SphereScaleValue</name>
-									<value>
-										<which>1</which>
-										<value>2.99999999999999989e-02</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>TextAlwaysVisible</name>
-								</first>
-								<second>
-									<name>TextAlwaysVisible</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>TextColoring</name>
-								</first>
-								<second>
-									<name>TextColoring</name>
-									<value>
-										<which>0</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>TextPrecision</name>
-								</first>
-								<second>
-									<name>TextPrecision</name>
-									<value>
-										<which>0</which>
-										<value>3</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>TextSize</name>
-								</first>
-								<second>
-									<name>TextSize</name>
-									<value>
-										<which>0</which>
-										<value>8</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>UseFaceNormals</name>
-								</first>
-								<second>
-									<name>UseFaceNormals</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ShowField:1</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Visualization</category_name_>
-						<module_name_>ShowField</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>38</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>CullBackfacingText</name>
-								</first>
-								<second>
-									<name>CullBackfacingText</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CylinderRadius</name>
-								</first>
-								<second>
-									<name>CylinderRadius</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000006e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CylinderResolution</name>
-								</first>
-								<second>
-									<name>CylinderResolution</name>
-									<value>
-										<which>0</which>
-										<value>5</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>DefaultMeshColor</name>
-								</first>
-								<second>
-									<name>DefaultMeshColor</name>
-									<value>
-										<which>2</which>
-										<value>Color(0.5,0.5,0.5)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>DefaultTextColor</name>
-								</first>
-								<second>
-									<name>DefaultTextColor</name>
-									<value>
-										<which>2</which>
-										<value>Color(1,1,1)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>EdgeTransparency</name>
-								</first>
-								<second>
-									<name>EdgeTransparency</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>EdgeTransparencyValue</name>
-								</first>
-								<second>
-									<name>EdgeTransparencyValue</name>
-									<value>
-										<which>1</which>
-										<value>6.49999976158142090e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>EdgesAsCylinders</name>
-								</first>
-								<second>
-									<name>EdgesAsCylinders</name>
-									<value>
-										<which>0</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>EdgesAvailable</name>
-								</first>
-								<second>
-									<name>EdgesAvailable</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>EdgesColoring</name>
-								</first>
-								<second>
-									<name>EdgesColoring</name>
-									<value>
-										<which>0</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FaceInvertNormals</name>
-								</first>
-								<second>
-									<name>FaceInvertNormals</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FaceTransparency</name>
-								</first>
-								<second>
-									<name>FaceTransparency</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FaceTransparencyValue</name>
-								</first>
-								<second>
-									<name>FaceTransparencyValue</name>
-									<value>
-										<which>1</which>
-										<value>6.49999976158142090e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FacesAvailable</name>
-								</first>
-								<second>
-									<name>FacesAvailable</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FacesColoring</name>
-								</first>
-								<second>
-									<name>FacesColoring</name>
-									<value>
-										<which>0</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FieldName</name>
-								</first>
-								<second>
-									<name>FieldName</name>
-									<value>
-										<which>2</which>
-										<value></value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeAsSpheres</name>
-								</first>
-								<second>
-									<name>NodeAsSpheres</name>
-									<value>
-										<which>0</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeTransparency</name>
-								</first>
-								<second>
-									<name>NodeTransparency</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeTransparencyValue</name>
-								</first>
-								<second>
-									<name>NodeTransparencyValue</name>
-									<value>
-										<which>1</which>
-										<value>6.49999976158142090e-01</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodesAvailable</name>
-								</first>
-								<second>
-									<name>NodesAvailable</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodesColoring</name>
-								</first>
-								<second>
-									<name>NodesColoring</name>
-									<value>
-										<which>0</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>RenderAsLocation</name>
-								</first>
-								<second>
-									<name>RenderAsLocation</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowCellIndices</name>
-								</first>
-								<second>
-									<name>ShowCellIndices</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowDataValues</name>
-								</first>
-								<second>
-									<name>ShowDataValues</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowEdgeIndices</name>
-								</first>
-								<second>
-									<name>ShowEdgeIndices</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowEdges</name>
-								</first>
-								<second>
-									<name>ShowEdges</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -2748,7 +1840,7 @@
 									<name>ShowViewer</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -2830,7 +1922,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>20</count>
+			<count>13</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>ConvertQuadSurfToTriSurf:0</moduleId1_>
@@ -2838,31 +1930,7 @@
 					<name>TriSurf</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>EditMeshBoundingBox:0</moduleId2_>
-				<port2_>
-					<name>InputField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ConvertQuadSurfToTriSurf:0</moduleId1_>
-				<port1_>
-					<name>TriSurf</name>
-					<id>0</id>
-				</port1_>
 				<moduleId2_>InterfaceWithOspray:0</moduleId2_>
-				<port2_>
-					<name>Field</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ConvertQuadSurfToTriSurf:0</moduleId1_>
-				<port1_>
-					<name>TriSurf</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>InterfaceWithOspray:1</moduleId2_>
 				<port2_>
 					<name>Field</name>
 					<id>0</id>
@@ -2953,27 +2021,15 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>EditMeshBoundingBox:0</moduleId1_>
+				<moduleId1_>GenerateSinglePointProbeFromField:0</moduleId1_>
 				<port1_>
-					<name>OutputField</name>
+					<name>GeneratedWidget</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>InterfaceWithOspray:0</moduleId2_>
+				<moduleId2_>ViewScene:0</moduleId2_>
 				<port2_>
-					<name>Field</name>
-					<id>2</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>EditMeshBoundingBox:0</moduleId1_>
-				<port1_>
-					<name>OutputField</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ShowField:1</moduleId2_>
-				<port2_>
-					<name>Field</name>
-					<id>0</id>
+					<name>GeneralGeom</name>
+					<id>1</id>
 				</port2_>
 			</item>
 			<item>
@@ -3013,42 +2069,6 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>RescaleColorMap:1</moduleId1_>
-				<port1_>
-					<name>ColorMapOutput</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>InterfaceWithOspray:0</moduleId2_>
-				<port2_>
-					<name>ColorMapObject</name>
-					<id>1</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>RescaleColorMap:1</moduleId1_>
-				<port1_>
-					<name>ColorMapOutput</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>InterfaceWithOspray:1</moduleId2_>
-				<port2_>
-					<name>ColorMapObject</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>RescaleColorMap:1</moduleId1_>
-				<port1_>
-					<name>ColorMapOutput</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ShowField:1</moduleId2_>
-				<port2_>
-					<name>ColorMapObject</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
 				<moduleId1_>ShowField:0</moduleId1_>
 				<port1_>
 					<name>SceneGraph</name>
@@ -3060,28 +2080,16 @@
 					<id>0</id>
 				</port2_>
 			</item>
-			<item>
-				<moduleId1_>ShowField:1</moduleId1_>
-				<port1_>
-					<name>SceneGraph</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
-				<port2_>
-					<name>GeneralGeom</name>
-					<id>1</id>
-				</port2_>
-			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>14</count>
+		<count>12</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>ConvertQuadSurfToTriSurf:0</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>-3.09000000000000000e+02</first>
-				<second>-1.60000000000000000e+02</second>
+				<first>-3.04000000000000000e+02</first>
+				<second>-1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -3101,8 +2109,8 @@
 		<item>
 			<first>CreateStandardColorMap:0</first>
 			<second>
-				<first>2.00000000000000000e+00</first>
-				<second>3.40000000000000000e+01</second>
+				<first>-4.56000000000000000e+02</first>
+				<second>-2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -3113,10 +2121,10 @@
 			</second>
 		</item>
 		<item>
-			<first>EditMeshBoundingBox:0</first>
+			<first>GenerateSinglePointProbeFromField:0</first>
 			<second>
-				<first>-4.49000000000000000e+02</first>
-				<second>5.40000000000000000e+01</second>
+				<first>3.04000000000000000e+02</first>
+				<second>0.00000000000000000e+00</second>
 			</second>
 		</item>
 		<item>
@@ -3129,22 +2137,15 @@
 		<item>
 			<first>InterfaceWithOspray:0</first>
 			<second>
-				<first>-3.85000000000000000e+02</first>
-				<second>1.44000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>InterfaceWithOspray:1</first>
-			<second>
-				<first>3.48000000000000000e+02</first>
-				<second>5.60000000000000000e+01</second>
+				<first>-5.32000000000000000e+02</first>
+				<second>7.60000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>RescaleColorMap:0</first>
 			<second>
-				<first>5.00000000000000000e+01</first>
-				<second>1.60000000000000000e+02</second>
+				<first>-4.56000000000000000e+02</first>
+				<second>-7.60000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
@@ -3157,22 +2158,15 @@
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>2.28000000000000000e+02</first>
-				<second>1.52000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ShowField:1</first>
-			<second>
-				<first>3.80000000000000000e+02</first>
-				<second>1.52000000000000000e+02</second>
+				<first>-2.28000000000000000e+02</first>
+				<second>7.60000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>2.28000000000000000e+02</first>
-				<second>3.04000000000000000e+02</second>
+				<first>-2.28000000000000000e+02</first>
+				<second>1.52000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -3185,7 +2179,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="20" tracking_level="0" version="0">
-		<count>14</count>
+		<count>12</count>
 		<item_version>0</item_version>
 		<item class_id="21" tracking_level="0" version="0">
 			<first>ConvertQuadSurfToTriSurf:0</first>
@@ -3208,7 +2202,7 @@
 			<second>-1</second>
 		</item>
 		<item>
-			<first>EditMeshBoundingBox:0</first>
+			<first>GenerateSinglePointProbeFromField:0</first>
 			<second>-1</second>
 		</item>
 		<item>
@@ -3217,10 +2211,6 @@
 		</item>
 		<item>
 			<first>InterfaceWithOspray:0</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>InterfaceWithOspray:1</first>
 			<second>-1</second>
 		</item>
 		<item>
@@ -3233,10 +2223,6 @@
 		</item>
 		<item>
 			<first>ShowField:0</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>ShowField:1</first>
 			<second>-1</second>
 		</item>
 		<item>
