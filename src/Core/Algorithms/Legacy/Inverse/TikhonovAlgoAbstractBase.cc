@@ -291,7 +291,7 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
   std::vector<double> rho(nLambda, 0.0);
   std::vector<double> eta(nLambda, 0.0);
   
-  lambdamatrix.reset(new DenseMatrix(3,nLambda,0.0));
+  lambdamatrix.reset(new DenseMatrix(nLambda,3,0.0));
   double *data = lambdamatrix->data();
 
   auto lambdaArray = algoImpl.computeLambdaArray( lambdaMin, lambdaMax, nLambda );
@@ -386,6 +386,7 @@ double TikhonovAlgoAbstractBase::FindCorner( const std::vector<double>& rho, con
   ddeta[0] = ddeta[2];
   ddeta[1] = ddeta[2];
 
+  //std::cout<<" eta rho kappa = [";
   lambda_index = 0;
   for (int i = 0; i < nLambda; i++)
   {
@@ -396,7 +397,9 @@ double TikhonovAlgoAbstractBase::FindCorner( const std::vector<double>& rho, con
       maxKapa = kapa[i];
       lambda_index = i;
     }
+    //std::cout<<eta[i]<<" "<<rho[i]<<" "<<kapa[i]<<std::endl;
   }
+  //std::cout<<"];"<<std::endl;
 
   return lambdaArray[lambda_index];
 }

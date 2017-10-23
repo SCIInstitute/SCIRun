@@ -98,20 +98,20 @@ void SolveInverseProblemWithTikhonov::execute()
 
 		auto state = get_state();
 		// set parameters
-	    state->setValue( Parameters::TikhonovImplementation, std::string("standardTikhonov") );
-		setAlgoStringFromState(Parameters::TikhonovImplementation);
-	    setAlgoOptionFromState(Parameters::RegularizationMethod);
-	    setAlgoIntFromState(Parameters::regularizationChoice);
-	    setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
-	    setAlgoDoubleFromState(Parameters::LambdaMin);
-	    setAlgoDoubleFromState(Parameters::LambdaMax);
-	    setAlgoIntFromState(Parameters::LambdaNum);
-	    setAlgoDoubleFromState(Parameters::LambdaResolution);
-	    setAlgoDoubleFromState(Parameters::LambdaSliderValue);
-	    setAlgoDoubleFromState(Parameters::LambdaCorner);
-	    //setAlgoStringFromState(Parameters::LCurveText);
-	    setAlgoIntFromState(Parameters::regularizationSolutionSubcase);
-	    setAlgoIntFromState(Parameters::regularizationResidualSubcase);
+    state->setValue( Parameters::TikhonovImplementation, std::string("standardTikhonov") );
+    setAlgoStringFromState(Parameters::TikhonovImplementation);
+    setAlgoOptionFromState(Parameters::RegularizationMethod);
+    setAlgoIntFromState(Parameters::regularizationChoice);
+    setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
+    setAlgoDoubleFromState(Parameters::LambdaMin);
+    setAlgoDoubleFromState(Parameters::LambdaMax);
+    setAlgoIntFromState(Parameters::LambdaNum);
+    setAlgoDoubleFromState(Parameters::LambdaResolution);
+    setAlgoDoubleFromState(Parameters::LambdaSliderValue);
+    setAlgoDoubleFromState(Parameters::LambdaCorner);
+    //setAlgoStringFromState(Parameters::LCurveText);
+    setAlgoIntFromState(Parameters::regularizationSolutionSubcase);
+    setAlgoIntFromState(Parameters::regularizationResidualSubcase);
 
 		// run
 		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,optionalAlgoInput(hMatrixRegMat))(WeightingInSensorSpace,optionalAlgoInput(hMatrixNoiseCov))) );
@@ -145,18 +145,18 @@ void SolveInverseProblemWithTikhonov::update_lcurve_gui(const  DenseMatrixHandle
   double *li_data = lambda->data();
   int lam_ind = static_cast<int>(li_data[0]);
   
-  std::cout<<"rows ="<<input->rows()<<"cols ="<<input->cols()<<std::endl;
-  std::cout<<"matrix = "<<input<<std::endl;
-  size_t nLambda = input->cols();
+  size_t nLambda = input->rows();
+  size_t nr = input->cols();
   std::vector<double> eta(nLambda);
   std::vector<double> rho(nLambda);
+  //std::vector<double> lambdaarray(nLambda);
   
   double *in_data = input->data();
-  std::cout<<"matrix = "<<in_data<<std::endl;
   for (int k=0; k<nLambda; k++)
   {
-    rho[k]=in_data[k*3+1];
-    eta[k]=in_data[k*3+2];
+    //lambdaarray=in_data[k*nr];
+    rho[k]=in_data[k*nr+1];
+    eta[k]=in_data[k*nr+2];
   }
   
   //estimate L curve corner
@@ -164,14 +164,13 @@ void SolveInverseProblemWithTikhonov::update_lcurve_gui(const  DenseMatrixHandle
   
   std::ostringstream str;
   str << get_id() << " plot_graph \" ";
-  for (int k = 0; k < nLambda; k++)
-  {
-    str << log10(rho[k]) << " " << log10(eta[k]) << " ";
-    str << "\" \" " << log10(rho[0] / 10.0) << " " << log10(eta[lam_ind]) << " ";
-    str << log10(rho[lam_ind]) << " " << log10(eta[lam_ind]) << " ";
-    str << log10(rho[lam_ind]) << " " << log10(lower_y) << " \" ";
-    str << lamb << " " << lam_ind << " ; \n";
-  }
+  for (int k = 0; k < nLambda; k++)    str << log10(rho[k]) << " " << log10(eta[k]) << " ";
+  
+  str << "\" \" " << log10(rho[0] / 10.0) << " " << log10(eta[lam_ind]) << " ";
+  str << log10(rho[lam_ind]) << " " << log10(eta[lam_ind]) << " ";
+  str << log10(rho[lam_ind]) << " " << log10(lower_y) << " \" ";
+  str << lamb << " " << lam_ind << " ; \n";
+    
   state->setValue(Parameters::LCurveText, str.str());
    
 }

@@ -48,6 +48,7 @@ namespace Inverse {
 		SolveInverseProblemWithTikhonovTSVD();
 		virtual void execute();
 		virtual void setStateDefaults();
+    
 
 		INPUT_PORT(0, ForwardMatrix, DenseMatrix);
 		INPUT_PORT(1, WeightingInSourceSpace, DenseMatrix);
@@ -63,7 +64,7 @@ namespace Inverse {
 		MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 
 	private:
-		// void update_lcurve_gui(const double lambda, const Core::Algorithms::Inverse::SolveInverseProblemWithTikhonovImpl_child::LCurveInput& input, const int lambda_index);
+		virtual void update_lcurve_gui(const SCIRun::Core::Datatypes::DenseMatrixHandle& lambda, const SCIRun::Core::Datatypes::DenseMatrixHandle& input, const SCIRun::Core::Datatypes::DenseMatrixHandle& lambda_index);
 	};
 }}}
 

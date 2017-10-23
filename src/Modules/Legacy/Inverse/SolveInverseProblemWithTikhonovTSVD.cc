@@ -89,7 +89,7 @@ void SolveInverseProblemWithTikhonovTSVD::setStateDefaults()
   //setStateDoubleFromAlgo(Parameters::LambdaResolution);
   setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
   setStateIntFromAlgo(Parameters::LambdaCorner);
-  //setStateStringFromAlgo(Parameters::LCurveText);
+  setStateStringFromAlgo(Parameters::LCurveText);
 }
 
 // execute function
@@ -176,6 +176,53 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
 		sendOutputFromAlgorithm(InverseSolution,output);
 		sendOutputFromAlgorithm(RegularizationParameter,output);
 		sendOutputFromAlgorithm(RegInverse,output);
+    auto lambda=output.get<DenseMatrix>(TikhonovAlgoAbstractBase::RegularizationParameter);
+    auto lambda_array=output.get<DenseMatrix>(TikhonovAlgoAbstractBase::LambdaArray);
+    auto lambda_index =output.get<DenseMatrix>(TikhonovAlgoAbstractBase::Lambda_Index);
+    
+    auto regularization_method  = state->getValue(Parameters::RegularizationMethod).toString();
+    
+    if (regularization_method== "lcurve") update_lcurve_gui(lambda,lambda_array,lambda_index);
 
 	}
+}
+
+void SolveInverseProblemWithTikhonovTSVD::update_lcurve_gui(const  DenseMatrixHandle& lambda, const DenseMatrixHandle& input, const  DenseMatrixHandle& lambda_index)
+{
+  double *l_data = lambda->data();
+  double lamb =l_data[0];
+  auto state = get_state();
+  state->setValue(Parameters::LambdaCorner, lamb);
+  double *li_data = lambda->data();
+  int lam_ind = static_cast<int>(li_data[0]);
+  
+  size_t nLambda = input->rows();
+  size_t nr = input->cols();
+  std::vector<double> eta(nLambda);
+  std::vector<double> rho(nLambda);
+  std::vector<double> kappa(nLambda);
+  //std::vector<double> lambdaarray(nLambda);
+  
+  double *in_data = input->data();
+  for (int k=0; k<nLambda; k++)
+  {
+    //lambdaarray=in_data[k*nr];
+    rho[k]=in_data[k*nr+1];
+    eta[k]=in_data[k*nr+2];
+  }
+  
+  //estimate L curve corner
+  const double lower_y = std::min(eta[0] / 10.0, eta[nLambda - 1]);
+  
+  std::ostringstream str;
+  str << get_id() << " plot_graph \" ";
+  for (int k = 0; k < nLambda; k++)    str << log10(rho[k]) << " " << log10(eta[k]) << " ";
+  
+  str << "\" \" " << log10(rho[0] / 10.0) << " " << log10(eta[lam_ind]) << " ";
+  str << log10(rho[lam_ind]) << " " << log10(eta[lam_ind]) << " ";
+  str << log10(rho[lam_ind]) << " " << log10(lower_y) << " \" ";
+  str << lamb << " " << lam_ind << " ; \n";
+  
+  state->setValue(Parameters::LCurveText, str.str());
+  
 }
