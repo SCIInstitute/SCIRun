@@ -37,7 +37,7 @@
 namespace SCIRun {
 namespace Gui {
 
-  class SCISHARE GuiLog final : public Core::Logging::Log2
+  class GuiLog final : public Core::Logging::Log2
   {
     CORE_SINGLETON(GuiLog)
   public:
