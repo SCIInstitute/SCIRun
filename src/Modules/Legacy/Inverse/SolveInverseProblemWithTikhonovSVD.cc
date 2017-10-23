@@ -80,7 +80,7 @@ void SolveInverseProblemWithTikhonovSVD::setStateDefaults()
 	setStateDoubleFromAlgo(Parameters::LambdaResolution);
 	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
 	setStateIntFromAlgo(Parameters::LambdaCorner);
-	setStateStringFromAlgo(Parameters::LCurveText);
+	//setStateStringFromAlgo(Parameters::LCurveText);
 }
 
 // execute function
@@ -117,7 +117,7 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 		setAlgoDoubleFromState(Parameters::LambdaResolution);
 		setAlgoDoubleFromState(Parameters::LambdaSliderValue);
 		setAlgoIntFromState(Parameters::LambdaCorner);
-		setAlgoStringFromState(Parameters::LCurveText);
+		//setAlgoStringFromState(Parameters::LCurveText);
 
 		// run
 		auto output = algo().run(

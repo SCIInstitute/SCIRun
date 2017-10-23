@@ -37,6 +37,7 @@
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
 // #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun;
@@ -74,7 +75,7 @@ void SolveInverseProblemWithTikhonov::setStateDefaults()
 	setStateIntFromAlgo(Parameters::LambdaNum);
 	setStateDoubleFromAlgo(Parameters::LambdaResolution);
 	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
-	setStateIntFromAlgo(Parameters::LambdaCorner);
+	setStateDoubleFromAlgo(Parameters::LambdaCorner);
 	setStateStringFromAlgo(Parameters::LCurveText);
 	setStateIntFromAlgo(Parameters::regularizationSolutionSubcase);
 	setStateIntFromAlgo(Parameters::regularizationResidualSubcase);
@@ -107,8 +108,8 @@ void SolveInverseProblemWithTikhonov::execute()
 	    setAlgoIntFromState(Parameters::LambdaNum);
 	    setAlgoDoubleFromState(Parameters::LambdaResolution);
 	    setAlgoDoubleFromState(Parameters::LambdaSliderValue);
-	    setAlgoIntFromState(Parameters::LambdaCorner);
-	    setAlgoStringFromState(Parameters::LCurveText);
+	    setAlgoDoubleFromState(Parameters::LambdaCorner);
+	    //setAlgoStringFromState(Parameters::LCurveText);
 	    setAlgoIntFromState(Parameters::regularizationSolutionSubcase);
 	    setAlgoIntFromState(Parameters::regularizationResidualSubcase);
 
@@ -124,6 +125,54 @@ void SolveInverseProblemWithTikhonov::execute()
 		sendOutputFromAlgorithm(InverseSolution,output);
 		sendOutputFromAlgorithm(RegularizationParameter,output);
 		sendOutputFromAlgorithm(RegInverse,output);
+    auto lambda=output.get<DenseMatrix>(TikhonovAlgoAbstractBase::RegularizationParameter);
+    auto lambda_array=output.get<DenseMatrix>(TikhonovAlgoAbstractBase::LambdaArray);
+    auto lambda_index =output.get<DenseMatrix>(TikhonovAlgoAbstractBase::Lambda_Index);
+    
+    auto regularization_method  = state->getValue(Parameters::RegularizationMethod).toString();
+
+    if (regularization_method== "lcurve") update_lcurve_gui(lambda,lambda_array,lambda_index);
 
 	}
 }
+
+void SolveInverseProblemWithTikhonov::update_lcurve_gui(const  DenseMatrixHandle& lambda, const DenseMatrixHandle& input, const  DenseMatrixHandle& lambda_index)
+{
+  double *l_data = lambda->data();
+  double lamb =l_data[0];
+  auto state = get_state();
+  state->setValue(Parameters::LambdaCorner, lamb);
+  double *li_data = lambda->data();
+  int lam_ind = static_cast<int>(li_data[0]);
+  
+  std::cout<<"rows ="<<input->rows()<<"cols ="<<input->cols()<<std::endl;
+  std::cout<<"matrix = "<<input<<std::endl;
+  size_t nLambda = input->cols();
+  std::vector<double> eta(nLambda);
+  std::vector<double> rho(nLambda);
+  
+  double *in_data = input->data();
+  std::cout<<"matrix = "<<in_data<<std::endl;
+  for (int k=0; k<nLambda; k++)
+  {
+    rho[k]=in_data[k*3+1];
+    eta[k]=in_data[k*3+2];
+  }
+  
+  //estimate L curve corner
+  const double lower_y = std::min(eta[0] / 10.0, eta[nLambda - 1]);
+  
+  std::ostringstream str;
+  str << get_id() << " plot_graph \" ";
+  for (int k = 0; k < nLambda; k++)
+  {
+    str << log10(rho[k]) << " " << log10(eta[k]) << " ";
+    str << "\" \" " << log10(rho[0] / 10.0) << " " << log10(eta[lam_ind]) << " ";
+    str << log10(rho[lam_ind]) << " " << log10(eta[lam_ind]) << " ";
+    str << log10(rho[lam_ind]) << " " << log10(lower_y) << " \" ";
+    str << lamb << " " << lam_ind << " ; \n";
+  }
+  state->setValue(Parameters::LCurveText, str.str());
+   
+}
+
