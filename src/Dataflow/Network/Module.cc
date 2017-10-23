@@ -363,7 +363,7 @@ bool Module::executeWithSignals() NOEXCEPT
   auto starting = "STARTING MODULE: " + get_id().id_;
 #ifdef BUILD_HEADLESS //TODO: better headless logging
   static Mutex executeLogLock("headlessExecution");
-  if (!Log::get().verbose())
+  if (!LogSettings::Instance().verbose())
   {
     Guard g(executeLogLock.get());
     std::cout << starting << std::endl;
@@ -450,7 +450,7 @@ bool Module::executeWithSignals() NOEXCEPT
     (returnCode ? "successfully " : "with errors ") << "in " << executionTime << " seconds.";
   status(finished.str());
 #ifdef BUILD_HEADLESS //TODO: better headless logging
-  if (!Log::get().verbose())
+  if (!LogSettings::Instance().verbose())
   {
     Guard g(executeLogLock.get());
     std::cout << finished.str() << std::endl;
