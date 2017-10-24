@@ -14,15 +14,22 @@
 #include "comp/IBO.hpp"
 #include "comp/VBO.hpp"
 
+#define SPDLOG_TRACE_ON
+#include <es-log/trace-log.h>
+
 namespace es = spire;
 namespace fs = spire;
+using namespace spire;
 
 namespace ren {
 
 GeomMan::GeomMan(int numRetries) :
     mNewUnfulfilledAssets(false),
     mNumRetries(numRetries)
-{}
+{
+  RENDERER_LOG_FUNCTION;
+  RENDERER_LOG("GeomMan ctor (numRetries={})", numRetries);
+}
 
 GeomMan::~GeomMan()
 {
@@ -34,6 +41,9 @@ GeomMan::~GeomMan()
 void GeomMan::loadGeometry(spire::CerealCore& core,
                     uint64_t entityID, const std::string& assetName)
 {
+  RENDERER_LOG_FUNCTION;
+  RENDERER_LOG("GeomMan::loadGeometry (entityID={}, assetName={})", entityID, assetName);
+
   // Ensure there is a file extension on the asset name. The texture loader
   // does also accept requests for png.
   std::string::size_type dotIdx = assetName.rfind('.');
@@ -43,7 +53,7 @@ void GeomMan::loadGeometry(spire::CerealCore& core,
     fullAssetName = assetName + ".geom";
   }
 
-  if (buildComponent(core, entityID, fullAssetName) == false)
+  if (!buildComponent(core, entityID, fullAssetName))
   {
     // We failed to build the component immediately. Initiate a promise for
     // the component.
@@ -58,18 +68,12 @@ void GeomMan::loadGeometry(spire::CerealCore& core,
 void GeomMan::requestAsset(spire::ESCoreBase& core, const std::string& assetName,
                            int32_t numRetries)
 {
+  RENDERER_LOG_FUNCTION;
+  RENDERER_LOG("{} (numRetries={}, assetName={})", LOG_FUNC, numRetries, assetName);
+  
   // Begin by attempting to load the vertex shader.
   fs::StaticFS* sfs = core.getStaticComponent<fs::StaticFS>();
 
-  /// \todo Remove IFDEF when we switch to emscripten's new compiler backend
-  ///       which will support std::bind (which I prefer over using lambdas).
-//#ifndef EMSCRIPTEN
-//  sfs->instance->readFile(assetName,
-//                         std::bind(&GeomMan::loadAssetCB, this,
-//                                   std::placeholders::_1, std::placeholders::_2,
-//                                   std::placeholders::_3, std::placeholders::_4,
-//                                   numRetries, std::ref(core)));
-//#else
   spire::ESCoreBase* refPtr = &core;
   auto callbackLambda = [this, numRetries, refPtr](
       const std::string& name, bool error, size_t bytesRead, uint8_t* buffer)
@@ -77,7 +81,6 @@ void GeomMan::requestAsset(spire::ESCoreBase& core, const std::string& assetName
     loadAssetCB(name, error, bytesRead, buffer, numRetries, *refPtr);
   };
   sfs->instance->readFile(assetName, callbackLambda);
-//#endif
 }
 
 void GeomMan::loadAssetCB(const std::string& assetName, bool error,
@@ -97,7 +100,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
       spire::CerealSerializeType<bool>::in(doc, "little_endian", littleEndian);
       if (littleEndian == false)
       {
-        std::cerr << "Big endian is not a supported geometry type." << std::endl;
+        logError("Big endian is not a supported geometry type.");
         Tny_free(doc);
         return;
       }
@@ -108,7 +111,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
       spire::CerealSerializeType<uint32_t>::in(doc, "num_meshes", numMeshes);
       if (numMeshes > 1)
       {
-        std::cerr << "There is no planned support for multiple meshes in a single geom file." << std::endl;
+        logError("There is no planned support for multiple meshes in a single geom file.");
       }
 
       std::string shaderName;
@@ -191,7 +194,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
 
                 if (vboID == 0)
                 {
-                  std::cerr << "GeomMan: Unable to generate appropriate VBO." << std::endl;
+                  logError("GeomMan: Unable to generate appropriate VBO.");
                 }
 
                 // Retrieve and create ibo (if not already created).
@@ -204,7 +207,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
 
                 if (iboID == 0)
                 {
-                  std::cerr << "GeomMan: Unable to generate appropriate IBO." << std::endl;
+                  logError("GeomMan: Unable to generate appropriate IBO.");
                 }
 
                 // We are done. Now the promise fulfillment system will locate and add
@@ -220,7 +223,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
     }
     else
     {
-      std::cerr << "GeomMan: Unable to generate Tny document from " << assetName << std::endl;
+      logError("GeomMan: Unable to generate Tny document from {}", assetName);
       if (numRetries > 0)
       {
         --numRetries;
@@ -228,7 +231,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
       }
       else
       {
-        std::cerr << "GeomMan: Failed promise for " << assetName << std::endl;
+        logError("GeomMan: Failed promise for {}", assetName);
       }
     }
   }
@@ -241,7 +244,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
     }
     else
     {
-      std::cerr << "GeomMan: Failed promise for " << assetName << std::endl;
+      logError("GeomMan: Failed promise for {}", assetName);
     }
   }
 }
@@ -288,14 +291,14 @@ bool GeomMan::buildComponent(spire::CerealCore& core,
             vbo.glid = vboMan->hasVBO(assetName);
             if (vbo.glid == 0)
             {
-              std::cerr << "GeomMan: Failed VBO promise. No VBO present." << std::endl;
+              logError("GeomMan: Failed VBO promise. No VBO present.");
             }
 
             ren::IBO ibo;
             ibo.glid = iboMan->hasIBO(assetName);
             if (ibo.glid == 0)
             {
-              std::cerr << "GeomMan: Failed VBO promise. No VBO present." << std::endl;
+              logError("GeomMan: Failed VBO promise. No VBO present.");
             }
 
             if (vbo.glid != 0 && ibo.glid != 0)
@@ -334,8 +337,7 @@ bool GeomMan::buildComponent(spire::CerealCore& core,
             }
             else
             {
-              std::cerr << "GeomMan: Failed asset promise. " <<
-                           "Couldn't find asset in map." << std::endl;
+              logError("GeomMan: Failed asset promise. Couldn't find asset in map.");
             }
 
             return true;  // We want to clear the promise regardless of failures.
@@ -396,8 +398,7 @@ public:
           }
         }
     } else {
-        std::cerr << "Unable to complete geom fulfillment. " <<
-                     "There is no StaticGeomMan." << std::endl;
+        logError("Unable to complete geom fulfillment. There is no StaticGeomMan.");
     }
   }
 
@@ -410,9 +411,9 @@ public:
 
         spire::CerealCore* ourCorePtr =
                 dynamic_cast<spire::CerealCore*>(&core);
-        if (ourCorePtr == nullptr)
+        if (!ourCorePtr)
         {
-          std::cerr << "Unable to execute geom promise fulfillment. Bad cast." << std::endl;
+          logError("Unable to execute geom promise fulfillment. Bad cast.");
           return;
         }
         spire::CerealCore& ourCore = *ourCorePtr;
@@ -474,8 +475,7 @@ void GeomMan::runGCAgainstVaidNames(const std::set<std::string>& validKeys)
 {
   if (mNewUnfulfilledAssets)
   {
-    std::cerr << "GeomMan: Terminating garbage collection. Orphan assets that"
-              << " have yet to be associated with entity ID's would be GC'd" << std::endl;
+    RendererLog::get()->error("GeomMan: Terminating garbage collection. Orphan assets that have yet to be associated with entity ID's would be GC'd");
     return;
   }
 
@@ -497,8 +497,7 @@ void GeomMan::runGCAgainstVaidNames(const std::set<std::string>& validKeys)
 
     if (it == mNameMap.end())
     {
-      std::cerr << "runGCAgainstVaidNames: terminating early, validKeys contains "
-                << "elements not in Geom map." << std::endl;
+      RendererLog::get()->error("runGCAgainstVaidNames: terminating early, validKeys contains elements not in Geom map.");
       break;
     }
 
@@ -507,7 +506,7 @@ void GeomMan::runGCAgainstVaidNames(const std::set<std::string>& validKeys)
     // component, this is not an error.
     if (it->first > asset)
     {
-      std::cerr << "runGCAgainstVaidNames: validKeys contains elements not in the Geom map." << std::endl;
+      RendererLog::get()->error("runGCAgainstVaidNames: validKeys contains elements not in the Geom map.");
     }
 
     ++it;
@@ -515,7 +514,7 @@ void GeomMan::runGCAgainstVaidNames(const std::set<std::string>& validKeys)
 
   while (it != mNameMap.end())
   {
-    std::cout << "Geom GC: " << it->first << std::endl;
+    RendererLog::get()->info("Geom GC: {}", it->first);
     mNameMap.erase(it++);
   }
 }
@@ -534,12 +533,14 @@ public:
   void postWalkComponents(spire::ESCoreBase& core) override
   {
     std::weak_ptr<GeomMan> gm = core.getStaticComponent<StaticGeomMan>()->instance_;
-    if (std::shared_ptr<GeomMan> geomMan = gm.lock()) {
+    if (std::shared_ptr<GeomMan> geomMan = gm.lock())
+    {
         geomMan->runGCAgainstVaidNames(mValidKeys);
         mValidKeys.clear();
-    } else {
-          std::cerr << "Unable to complete geom garbage collection. "
-                    << "There is no StaticGeomMan." << std::endl;
+    }
+    else
+    {
+        RendererLog::get()->error("Unable to complete geom garbage collection. There is no StaticGeomMan.");
     }
   }
 

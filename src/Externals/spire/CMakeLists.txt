@@ -212,6 +212,8 @@ ADD_LIBRARY ( ${SCI_SPIRE_LIBRARY}
   gl-state/GLState.cpp
   glm-aabb/AABB.cpp
   var-buffer/VarBuffer.cpp
+  es-log/trace-log.h
+  es-log/trace-log.cc
   )
 
 target_link_libraries(${SCI_SPIRE_LIBRARY}

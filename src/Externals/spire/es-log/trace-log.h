@@ -1,0 +1,67 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+#ifndef ES_TRACE_LOG_H
+#define ES_TRACE_LOG_H
+
+#include <Core/Logging/Log.h>
+
+namespace spire
+{
+  class RendererLog
+  {
+  public:
+    static SCIRun::Core::Logging::Logger2 get();
+  };
+
+  struct ScopedFunctionLogger
+  {
+    explicit ScopedFunctionLogger(const char* functionName);
+    ~ScopedFunctionLogger();
+  private:
+    const char* functionName_;
+  };
+}
+
+#ifdef WIN32
+#define LOG_FUNC __FUNCSIG__
+#else
+#define LOG_FUNC __PRETTY_FUNCTION__
+#endif
+
+#define RENDERER_LOG(...) SPDLOG_TRACE(spire::RendererLog::get(), __VA_ARGS__)
+#define RENDERER_LOG_ENTER_FUNCTION SPDLOG_TRACE(spire::RendererLog::get(), "Entering function: {}", LOG_FUNC);
+#define RENDERER_LOG_EXIT_FUNCTION SPDLOG_TRACE(spire::RendererLog::get(), "Leaving function: {}", LOG_FUNC);
+#define logError(...) spire::RendererLog::get()->error(__VA_ARGS__)
+
+//TODO: cmake controlled flag
+//#ifdef RENDERER_TRACE_MODE
+// windows: use __FUNCSIG__
+#define RENDERER_LOG_FUNCTION spire::ScopedFunctionLogger sfl ## __LINE__ (LOG_FUNC);
+
+#endif

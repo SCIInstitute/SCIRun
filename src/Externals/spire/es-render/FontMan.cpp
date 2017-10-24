@@ -13,6 +13,9 @@
 namespace es = spire;
 namespace fs = spire;
 
+//#define SPDLOG_TRACE_ON
+#include <es-log/trace-log.h>
+
 namespace ren {
 
 FontMan::FontMan(int numRetries) :
@@ -20,6 +23,8 @@ FontMan::FontMan(int numRetries) :
     mNumRetries(numRetries),
     mLastFontID(0)
 {
+  RENDERER_LOG_FUNCTION;
+  RENDERER_LOG("{} (numRetries={})", LOG_FUNC, numRetries);
 }
 
 FontMan::~FontMan()
@@ -91,7 +96,7 @@ void FontMan::loadFontCB(const std::string& assetName, bool error,
     }
     else
     {
-      std::cerr << "FontMan: Failed promise for " << assetName 
+      std::cerr << "FontMan: Failed promise for " << assetName
                 << ". Unable to find newly inserted value!" << std::endl;
     }
   }
@@ -181,7 +186,7 @@ bool FontMan::buildComponent(spire::CerealCore& core, uint64_t entityID,
     std::string::size_type slashIdx = assetName.rfind('/');
     std::string rootAssetName = "";
     if (slashIdx != std::string::npos)
-    { 
+    {
       rootAssetName = assetName.substr(0, slashIdx + 1);
     }
 
@@ -447,4 +452,3 @@ void FontMan::runGCCycle(spire::ESCoreBase& core)
 }
 
 } // namespace ren
-
