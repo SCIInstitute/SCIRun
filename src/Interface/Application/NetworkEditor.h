@@ -284,6 +284,8 @@ namespace Gui {
     using ViewUpdateFunc = std::function<void(const QString&)>;
     static void setViewUpdateFunc(ViewUpdateFunc func) { viewUpdateFunc_ = func; }
 
+    static void setMiniview(QGraphicsView* miniview) { miniview_ = miniview; }
+
     struct InEditingContext
     {
       explicit InEditingContext(NetworkEditor* ed)
@@ -472,6 +474,7 @@ namespace Gui {
     void logViewerDims(const QString& msg);
     static std::function<QPointF(const QRectF&)> topSubnetPortHolderPositioner_;
     static std::function<QPointF(const QRectF&)> bottomSubnetPortHolderPositioner_;
+    static QGraphicsView* miniview_;
   };
 
   ModuleWidget* getModule(QGraphicsItem* item);
