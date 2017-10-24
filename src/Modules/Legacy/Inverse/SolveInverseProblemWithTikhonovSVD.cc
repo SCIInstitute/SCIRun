@@ -162,18 +162,9 @@ void SolveInverseProblemWithTikhonovSVD::update_lcurve_gui(const  DenseMatrixHan
   int lam_ind = static_cast<int>(li_data[0]);
   
   size_t nLambda = input->rows();
-  size_t nr = input->cols();
-  std::vector<double> eta(nLambda);
-  std::vector<double> rho(nLambda);
-  //std::vector<double> lambdaarray(nLambda);
   
-  double *in_data = input->data();
-  for (int k=0; k<nLambda; k++)
-  {
-    //lambdaarray=in_data[k*nr];
-    rho[k]=in_data[k*nr+1];
-    eta[k]=in_data[k*nr+2];
-  }
+  auto eta = input->col(1);
+  auto rho = input->col(2);
   
   
   //estimate L curve corner
