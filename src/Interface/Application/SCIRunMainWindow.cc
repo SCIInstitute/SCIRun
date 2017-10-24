@@ -320,6 +320,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   actionProvenance_->setChecked(!provenanceWindow_->isHidden());
   actionTriggeredEvents_->setChecked(!triggeredEventsWindow_->isHidden());
   actionTagManager_->setChecked(!tagManagerWindow_->isHidden());
+  actionMiniview_->setChecked(!networkMiniViewDockWidget_->isHidden());
 
 	moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
 		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
@@ -566,6 +567,11 @@ void SCIRunMainWindow::setupNetworkEditor()
 
   builder_->connectAll(networkEditor_);
   NetworkEditor::setConnectorFunc([this](NetworkEditor* ed) { builder_->connectAll(ed); });
+  NetworkEditor::setMiniview(networkMiniviewGraphicsView_);
+
+  networkMiniviewGraphicsView_->setScene(networkEditor_->scene());
+  networkMiniviewGraphicsView_->scale(.1, .1);
+  networkMiniviewGraphicsView_->setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-large.png"));
 }
 
 void SCIRunMainWindow::executeCommandLineRequests()
@@ -1748,8 +1754,6 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
     prefsWindow_->userDataLineEdit_ <<
     prefsWindow_->userDataPushButton_ <<
     prefsWindow_->dataSetGroupBox_ <<
-    networkEditorMiniViewLabel_ <<
-    miniviewTextLabel_ <<
     prefsWindow_->scirunDataPathTextEdit_ <<
     prefsWindow_->addToPathButton_;
 
