@@ -149,6 +149,7 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 }
 
 NetworkEditor::ViewUpdateFunc NetworkEditor::viewUpdateFunc_;
+QGraphicsView* NetworkEditor::miniview_ {nullptr};
 
 void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module, const ModuleCounter& count)
 {
@@ -821,6 +822,7 @@ void NetworkEditor::alignViewport()
   auto visibleRect = scene_->itemsBoundingRect();
   visibleRect.adjust(-20, -20, 20, 20);
   setSceneRect(visibleRect);
+  miniview_->setSceneRect(visibleRect);
 }
 
 NetworkSearchWidget::NetworkSearchWidget(NetworkEditor* ned)
