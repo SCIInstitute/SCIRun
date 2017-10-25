@@ -13,7 +13,7 @@
 namespace es = spire;
 namespace fs = spire;
 
-//#define SPDLOG_TRACE_ON
+#define SPDLOG_TRACE_ON
 #include <es-log/trace-log.h>
 
 namespace ren {
@@ -23,7 +23,7 @@ FontMan::FontMan(int numRetries) :
     mNumRetries(numRetries),
     mLastFontID(0)
 {
-  RENDERER_LOG_FUNCTION;
+  RENDERER_LOG_FUNCTION_SCOPE;
   RENDERER_LOG("{} (numRetries={})", LOG_FUNC, numRetries);
 }
 

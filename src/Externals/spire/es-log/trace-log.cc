@@ -34,7 +34,7 @@ using namespace SCIRun::Core::Logging;
 Logger2 RendererLog::get()
 {
   static bool first = true;
-  static Logger2 logger(spdlog::basic_logger_mt("renderer", "renderer.log"));
+  static Logger2 logger(spdlog::basic_logger_mt(name(), "renderer.log"));
   logger->set_level(spdlog::level::trace);
   logger->flush_on(spdlog::level::info);
 
@@ -44,14 +44,4 @@ Logger2 RendererLog::get()
     logger->info("Start of Renderer log.");
   }
   return logger;
-}
-
-ScopedFunctionLogger::ScopedFunctionLogger(const char* functionName) : functionName_(functionName)
-{
-  RendererLog::get()->trace("Entering function: {}", functionName_);
-}
-
-ScopedFunctionLogger::~ScopedFunctionLogger()
-{
-  RendererLog::get()->trace("Leaving function: {}", functionName_);
 }

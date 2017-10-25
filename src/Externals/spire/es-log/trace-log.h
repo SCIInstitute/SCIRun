@@ -37,31 +37,18 @@ namespace spire
   {
   public:
     static SCIRun::Core::Logging::Logger2 get();
-  };
-
-  struct ScopedFunctionLogger
-  {
-    explicit ScopedFunctionLogger(const char* functionName);
-    ~ScopedFunctionLogger();
-  private:
-    const char* functionName_;
+    static const char* name() { return "renderer"; };
   };
 }
 
-#ifdef WIN32
-#define LOG_FUNC __FUNCSIG__
-#else
-#define LOG_FUNC __PRETTY_FUNCTION__
-#endif
 
-#define RENDERER_LOG(...) SPDLOG_TRACE(spire::RendererLog::get(), __VA_ARGS__)
-#define RENDERER_LOG_ENTER_FUNCTION SPDLOG_TRACE(spire::RendererLog::get(), "Entering function: {}", LOG_FUNC);
-#define RENDERER_LOG_EXIT_FUNCTION SPDLOG_TRACE(spire::RendererLog::get(), "Leaving function: {}", LOG_FUNC);
-#define logError(...) spire::RendererLog::get()->error(__VA_ARGS__)
+#define RENDERER_LOG(...) TRACE_LOG(spire::RendererLog::get(), __VA_ARGS__)
+#define logRendererError(...) spire::RendererLog::get()->error(__VA_ARGS__)
 
 //TODO: cmake controlled flag
 //#ifdef RENDERER_TRACE_MODE
-// windows: use __FUNCSIG__
-#define RENDERER_LOG_FUNCTION spire::ScopedFunctionLogger sfl ## __LINE__ (LOG_FUNC);
+
+#define RENDERER_LOG_FUNCTION_SCOPE LOG_FUNCTION_SCOPE(spire::RendererLog);
+
 
 #endif

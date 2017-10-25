@@ -27,7 +27,7 @@ GeomMan::GeomMan(int numRetries) :
     mNewUnfulfilledAssets(false),
     mNumRetries(numRetries)
 {
-  RENDERER_LOG_FUNCTION;
+  RENDERER_LOG_FUNCTION_SCOPE;
   RENDERER_LOG("GeomMan ctor (numRetries={})", numRetries);
 }
 
@@ -41,7 +41,7 @@ GeomMan::~GeomMan()
 void GeomMan::loadGeometry(spire::CerealCore& core,
                     uint64_t entityID, const std::string& assetName)
 {
-  RENDERER_LOG_FUNCTION;
+  RENDERER_LOG_FUNCTION_SCOPE;
   RENDERER_LOG("GeomMan::loadGeometry (entityID={}, assetName={})", entityID, assetName);
 
   // Ensure there is a file extension on the asset name. The texture loader
@@ -68,9 +68,9 @@ void GeomMan::loadGeometry(spire::CerealCore& core,
 void GeomMan::requestAsset(spire::ESCoreBase& core, const std::string& assetName,
                            int32_t numRetries)
 {
-  RENDERER_LOG_FUNCTION;
+  RENDERER_LOG_FUNCTION_SCOPE;
   RENDERER_LOG("{} (numRetries={}, assetName={})", LOG_FUNC, numRetries, assetName);
-  
+
   // Begin by attempting to load the vertex shader.
   fs::StaticFS* sfs = core.getStaticComponent<fs::StaticFS>();
 
@@ -100,7 +100,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
       spire::CerealSerializeType<bool>::in(doc, "little_endian", littleEndian);
       if (littleEndian == false)
       {
-        logError("Big endian is not a supported geometry type.");
+        logRendererError("Big endian is not a supported geometry type.");
         Tny_free(doc);
         return;
       }
@@ -111,7 +111,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
       spire::CerealSerializeType<uint32_t>::in(doc, "num_meshes", numMeshes);
       if (numMeshes > 1)
       {
-        logError("There is no planned support for multiple meshes in a single geom file.");
+        logRendererError("There is no planned support for multiple meshes in a single geom file.");
       }
 
       std::string shaderName;
@@ -194,7 +194,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
 
                 if (vboID == 0)
                 {
-                  logError("GeomMan: Unable to generate appropriate VBO.");
+                  logRendererError("GeomMan: Unable to generate appropriate VBO.");
                 }
 
                 // Retrieve and create ibo (if not already created).
@@ -207,7 +207,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
 
                 if (iboID == 0)
                 {
-                  logError("GeomMan: Unable to generate appropriate IBO.");
+                  logRendererError("GeomMan: Unable to generate appropriate IBO.");
                 }
 
                 // We are done. Now the promise fulfillment system will locate and add
@@ -223,7 +223,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
     }
     else
     {
-      logError("GeomMan: Unable to generate Tny document from {}", assetName);
+      logRendererError("GeomMan: Unable to generate Tny document from {}", assetName);
       if (numRetries > 0)
       {
         --numRetries;
@@ -231,7 +231,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
       }
       else
       {
-        logError("GeomMan: Failed promise for {}", assetName);
+        logRendererError("GeomMan: Failed promise for {}", assetName);
       }
     }
   }
@@ -244,7 +244,7 @@ void GeomMan::loadAssetCB(const std::string& assetName, bool error,
     }
     else
     {
-      logError("GeomMan: Failed promise for {}", assetName);
+      logRendererError("GeomMan: Failed promise for {}", assetName);
     }
   }
 }
@@ -291,14 +291,14 @@ bool GeomMan::buildComponent(spire::CerealCore& core,
             vbo.glid = vboMan->hasVBO(assetName);
             if (vbo.glid == 0)
             {
-              logError("GeomMan: Failed VBO promise. No VBO present.");
+              logRendererError("GeomMan: Failed VBO promise. No VBO present.");
             }
 
             ren::IBO ibo;
             ibo.glid = iboMan->hasIBO(assetName);
             if (ibo.glid == 0)
             {
-              logError("GeomMan: Failed VBO promise. No VBO present.");
+              logRendererError("GeomMan: Failed VBO promise. No VBO present.");
             }
 
             if (vbo.glid != 0 && ibo.glid != 0)
@@ -337,7 +337,7 @@ bool GeomMan::buildComponent(spire::CerealCore& core,
             }
             else
             {
-              logError("GeomMan: Failed asset promise. Couldn't find asset in map.");
+              logRendererError("GeomMan: Failed asset promise. Couldn't find asset in map.");
             }
 
             return true;  // We want to clear the promise regardless of failures.
@@ -398,7 +398,7 @@ public:
           }
         }
     } else {
-        logError("Unable to complete geom fulfillment. There is no StaticGeomMan.");
+        logRendererError("Unable to complete geom fulfillment. There is no StaticGeomMan.");
     }
   }
 
@@ -413,7 +413,7 @@ public:
                 dynamic_cast<spire::CerealCore*>(&core);
         if (!ourCorePtr)
         {
-          logError("Unable to execute geom promise fulfillment. Bad cast.");
+          logRendererError("Unable to execute geom promise fulfillment. Bad cast.");
           return;
         }
         spire::CerealCore& ourCore = *ourCorePtr;
