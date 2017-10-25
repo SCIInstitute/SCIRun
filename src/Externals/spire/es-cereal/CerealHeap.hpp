@@ -100,7 +100,7 @@ public:
     if (baseIndex == -1)
     {
       std::cerr << "Unable to find entityID " << entityID << " in " << getComponentName() << std::endl;
-      return NULL;
+      return nullptr;
     }
 
     Tny* compArray = Tny_add(NULL, TNY_ARRAY, NULL, NULL, 0);
@@ -162,7 +162,7 @@ public:
     deserializeCreateInternal(core, root);
   }
 
-  const char* getComponentName() override
+  const char* getComponentName() const
   {
     static_assert( has_member_getname<T>::value,
                   "Component does not have a getName function with signature: static const char* getName()" );
@@ -189,8 +189,14 @@ public:
     return std::string();
   }
 
-  bool isSerializable() override          {return mIsSerializable;}
+  bool isSerializable() const override          {return mIsSerializable;}
   void setSerializable(bool serializable) {mIsSerializable = serializable;}
+
+  std::string describe() const override
+  {
+    auto base = ComponentContainer<T>::describe();
+    return base + "\nCerealHeap()\n\t" + getComponentName();
+  }
 
 private:
 
@@ -210,7 +216,7 @@ private:
     }
 
     T value;
-    typename spire::ComponentContainer<T>::ComponentItem* array = 
+    typename spire::ComponentContainer<T>::ComponentItem* array =
         spire::ComponentContainer<T>::getComponentArray();
     Tny* cur = components;
     int componentIndex = 0;
@@ -344,4 +350,3 @@ private:
 } // namespace spire
 
 #endif
-

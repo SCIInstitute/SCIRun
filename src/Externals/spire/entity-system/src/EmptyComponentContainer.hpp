@@ -9,7 +9,7 @@ class EmptyComponentContainer : public BaseComponentContainer
 public:
   EmptyComponentContainer()           {}
   virtual ~EmptyComponentContainer()  {}
-  
+
   void renormalize(bool stableSort) override {}
   uint64_t getLowerSequence() const override {return 0;}
   uint64_t getUpperSequence() const override {return 0;}
@@ -23,8 +23,9 @@ public:
   void removeSequenceWithIndex(uint64_t, int32_t) override {}
   bool isStatic() const override {return false;}
   uint64_t getSequenceFromIndex(int) const override {return 0;}
+  std::string describe() const override { return "Empty"; }
 };
 
-} // namespace spire 
+} // namespace spire
 
-#endif 
+#endif

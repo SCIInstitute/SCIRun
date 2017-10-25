@@ -164,6 +164,7 @@ public:
     postWalkComponents(core);
   }
 
+  //TODO: log the **** out of this function
   void walkComponentsInternal(ESCoreBase& core)
   {
     if (sizeof...(Ts) == 0)

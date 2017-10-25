@@ -14,7 +14,6 @@
 #include "comp/IBO.hpp"
 #include "comp/VBO.hpp"
 
-#define SPDLOG_TRACE_ON
 #include <es-log/trace-log.h>
 
 namespace es = spire;
@@ -29,13 +28,6 @@ GeomMan::GeomMan(int numRetries) :
 {
   RENDERER_LOG_FUNCTION_SCOPE;
   RENDERER_LOG("GeomMan ctor (numRetries={})", numRetries);
-}
-
-GeomMan::~GeomMan()
-{
-  // There is nothing special that we need to do to clean up geometry,
-  // unlike shaders and textures.
-  mNameMap.clear();
 }
 
 void GeomMan::loadGeometry(spire::CerealCore& core,

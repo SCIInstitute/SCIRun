@@ -150,9 +150,9 @@ public:
   virtual Tny* serializeEntity(spire::ESCoreBase& core, uint64_t entity) = 0;
   virtual void deserializeMerge(spire::ESCoreBase& core, Tny* root, bool copyExisting) = 0;
   virtual void deserializeCreate(spire::ESCoreBase& core, Tny* root) = 0;
-  virtual bool isSerializable() {return true;}
+  virtual bool isSerializable() const {return true;}
 
-  virtual const char* getComponentName() = 0;
+  virtual const char* getComponentName() const = 0;
 };
 
 } // namespace spire

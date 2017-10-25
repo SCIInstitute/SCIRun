@@ -12,7 +12,7 @@
 namespace ren {
 
 /// Geometry manager. Will load geometry from a single file. Any shaders
-/// associated with the geometry will also be loaded alongside VBOs and IBOs. 
+/// associated with the geometry will also be loaded alongside VBOs and IBOs.
 class GeomMan
 {
 public:
@@ -21,7 +21,6 @@ public:
   ///                     and a load will be re-attempted again when
   ///                     serialized and deserialized.
   GeomMan(int numRetries = 2);
-  virtual ~GeomMan();
 
   /// Loads geometry from disk and associates any loaded VBOs, IBOs, and
   /// shaders with the given entityID.
@@ -106,6 +105,6 @@ private:
   int32_t mNumRetries;
 };
 
-} // namespace ren 
+} // namespace ren
 
-#endif 
+#endif

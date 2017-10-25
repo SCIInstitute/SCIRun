@@ -123,7 +123,8 @@ namespace SCIRun
       template <class LogType>
       struct ScopedFunctionLogger
       {
-        explicit ScopedFunctionLogger(const char* functionName) : logger_(spdlog::get(LogType::name())),
+        explicit ScopedFunctionLogger(const char* functionName) :
+          logger_(spdlog::get(LogType::name())),
           functionName_(functionName)
         {
           if (logger_)
@@ -135,8 +136,8 @@ namespace SCIRun
             logger_->trace("Leaving function: {}", functionName_);
         }
       private:
-        const char* functionName_;
         Logger2 logger_;
+        const char* functionName_;
       };
     }
   }

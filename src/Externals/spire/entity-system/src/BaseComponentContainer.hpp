@@ -2,6 +2,7 @@
 #define SPIRE_ENTITY_SYSTEM_BASECOMPONENTCONTAINER_HPP
 
 #include <cstdint>
+#include <string>
 
 namespace spire {
 
@@ -11,7 +12,7 @@ class BaseComponentContainer
 public:
   BaseComponentContainer()           {}
   virtual ~BaseComponentContainer()  {}
-  
+
   virtual void renormalize(bool stableSort) = 0;
 
   /// Get the least sequence held by the component.
@@ -62,9 +63,15 @@ public:
   /// related to if we have satisfied a particular system.
   virtual int getNumComponentsWithSequence(uint64_t sequence) const = 0;
 
+  uint64_t id() const { return id_; }
+  void setId(uint64_t n) { id_ = n; }
+  virtual std::string describe() const = 0;
+
   static const int StaticEntID;
+private:
+  uint64_t id_ {0};
 };
 
-} // namespace spire 
+} // namespace spire
 
-#endif 
+#endif
