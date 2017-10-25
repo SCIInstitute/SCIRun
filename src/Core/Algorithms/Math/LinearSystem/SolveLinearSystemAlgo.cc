@@ -1091,7 +1091,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   ENSURE_POSITIVE_DOUBLE(tolerance, "Tolerance out of range!");
   ENSURE_POSITIVE_INT(maxIterations, "Max iterations out of range!");
 
-  if (!matrixIs::sparse(A))
+  if (false/*!matrixIs::sparse(A)*/)
   {
     THROW_ALGORITHM_INPUT_ERROR("Matrix A is not sparse");
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -1104,7 +1104,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
 #endif
   }
 
-  if (!matrixIs::dense(b) && !matrixIs::column(b))
+  if (false)
   {
     THROW_ALGORITHM_INPUT_ERROR("Matrix b is not a dense or column matrix");
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -1120,16 +1120,11 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   if (!x0)
   {
     // create an x0 matrix
-    DenseColumnMatrixHandle temp(boost::make_shared<DenseColumnMatrix>(b->nrows()));
+    auto temp(boost::make_shared<DenseColumnMatrix>(b->nrows()));
     temp->setZero();
     x0 = temp;
   }
-
-  if (!matrixIs::dense(x0) && !matrixIs::column(x0))
-  {
-    THROW_ALGORITHM_INPUT_ERROR("Matrix x0 is not a dense or column matrix");
-  }
-
+  
   if ((x0->ncols() != 1) || (b->ncols() != 1))
   {
     THROW_ALGORITHM_INPUT_ERROR("Matrix x0 and b need to have the same number of rows");

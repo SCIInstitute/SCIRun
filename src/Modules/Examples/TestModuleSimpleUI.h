@@ -50,6 +50,8 @@ public:
   OUTPUT_PORT(0, OutputString, String);
 
   static const Core::Algorithms::AlgorithmParameterName FormatString;
+    
+  MODULE_TRAITS_AND_INFO(ModuleHasUI)
 };
 }}}
 

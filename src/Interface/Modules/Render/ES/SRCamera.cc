@@ -30,8 +30,6 @@
 /// \date   March 2013
 
 #include <gl-platform/GLPlatform.hpp>
-#include <Interface/Modules/Render/namespaces.h>
-
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
 namespace SCIRun {
@@ -40,13 +38,13 @@ namespace Render {
 //------------------------------------------------------------------------------
 SRCamera::SRCamera(SRInterface& iface) :
     mTrafoSeq(0),
-    mInvertVal(-1),
     mPerspective(true),
+    mInvertVal(-1),
     mFOV(getDefaultFOVY()),
     mZNear(getDefaultZNear()),
     mZFar(getDefaultZFar()),
     mInterface(iface),
-    mArcLookAt(new CPM_LOOK_AT_NS::ArcLookAt())
+    mArcLookAt(new spire::ArcLookAt())
 {
   setAsPerspective();
 
@@ -55,16 +53,11 @@ SRCamera::SRCamera(SRInterface& iface) :
 }
 
 //------------------------------------------------------------------------------
-SRCamera::~SRCamera()
-{
-}
-
-//------------------------------------------------------------------------------
 void SRCamera::setAsPerspective()
 {
   mPerspective = true;
 
-  float aspect = static_cast<float>(mInterface.getScreenWidthPixels()) / 
+  float aspect = static_cast<float>(mInterface.getScreenWidthPixels()) /
                  static_cast<float>(mInterface.getScreenHeightPixels());
   mP = glm::perspective(mFOV, aspect, mZNear, mZFar);
 }
@@ -74,8 +67,8 @@ void SRCamera::setAsOrthographic(float halfWidth, float halfHeight)
 {
   mPerspective = false;
 
-	mP = glm::ortho(-halfWidth, halfWidth, 
-                  -halfHeight, halfHeight, 
+	mP = glm::ortho(-halfWidth, halfWidth,
+                  -halfHeight, halfHeight,
                   mZNear, mZFar);
 }
 
@@ -109,14 +102,14 @@ void SRCamera::mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton bt
   switch (mInterface.getMouseMode())
   {
     case SRInterface::MOUSE_OLDSCIRUN:
-      if (btn == SRInterface::MOUSE_LEFT)    mArcLookAt->doPan(screenSpace);
-      if (btn == SRInterface::MOUSE_RIGHT)   mArcLookAt->doZoom(screenSpace);
-      if (btn == SRInterface::MOUSE_MIDDLE)  mArcLookAt->doRotation(screenSpace);
+      if (btn == SRInterface::MOUSE_LEFT && !lockPanning_)    mArcLookAt->doPan(screenSpace);
+      if (btn == SRInterface::MOUSE_RIGHT && !lockZoom_)   mArcLookAt->doZoom(screenSpace);
+      if (btn == SRInterface::MOUSE_MIDDLE && !lockRotation_)  mArcLookAt->doRotation(screenSpace);
       break;
 
     case SRInterface::MOUSE_NEWSCIRUN:
-      if (btn == SRInterface::MOUSE_LEFT)    mArcLookAt->doRotation(screenSpace);
-      if (btn == SRInterface::MOUSE_RIGHT)   mArcLookAt->doPan(screenSpace);
+      if (btn == SRInterface::MOUSE_LEFT && !lockRotation_)    mArcLookAt->doRotation(screenSpace);
+      if (btn == SRInterface::MOUSE_RIGHT && !lockPanning_)   mArcLookAt->doPan(screenSpace);
       break;
   }
 }
@@ -124,7 +117,7 @@ void SRCamera::mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton bt
 //------------------------------------------------------------------------------
 void SRCamera::mouseWheelEvent(int32_t delta, int zoomSpeed)
 {
-  if (mInterface.getMouseMode() != SRInterface::MOUSE_OLDSCIRUN)
+  if (mInterface.getMouseMode() != SRInterface::MOUSE_OLDSCIRUN && !lockZoom_)
   {
     //mArcLookAt->doZoom(-static_cast<float>(delta) / 100.0f, zoomSpeed);
     mArcLookAt->doZoom(mInvertVal*static_cast<float>(delta) / 100.0f, zoomSpeed);
@@ -140,7 +133,7 @@ void SRCamera::doAutoView(const Core::Geometry::BBox& bbox)
   glm::vec3 min(bboxMin.x(), bboxMin.y(), bboxMin.z());
   glm::vec3 max(bboxMax.x(), bboxMax.y(), bboxMax.z());
 
-  CPM_GLM_AABB_NS::AABB aabb(min, max);
+  spire::AABB aabb(min, max);
 
   /// \todo Use real FOV-Y when we allow the user to change the FOV.
   mArcLookAt->autoview(aabb, getDefaultFOVY());
@@ -169,7 +162,7 @@ glm::vec2 SRCamera::calculateScreenSpaceCoords(const glm::ivec2& mousePos)
 
   // Transform incoming mouse coordinates into screen space.
   glm::vec2 mouseScreenSpace;
-  mouseScreenSpace.x = 2.0f * (static_cast<float>(mousePos.x) - windowOriginX) 
+  mouseScreenSpace.x = 2.0f * (static_cast<float>(mousePos.x) - windowOriginX)
       / static_cast<float>(mInterface.getScreenWidthPixels()) - 1.0f;
   mouseScreenSpace.y = 2.0f * (static_cast<float>(mousePos.y) - windowOriginY)
       / static_cast<float>(mInterface.getScreenHeightPixels()) - 1.0f;
@@ -183,5 +176,4 @@ glm::vec2 SRCamera::calculateScreenSpaceCoords(const glm::ivec2& mousePos)
 }
 
 } // namespace Render
-} // namespace SCIRun 
-
+} // namespace SCIRun

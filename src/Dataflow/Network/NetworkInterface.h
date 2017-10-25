@@ -35,9 +35,7 @@
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
-#include <string>
 #include <vector>
-#include <map>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {

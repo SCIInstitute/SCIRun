@@ -59,8 +59,6 @@ void GetMeshQualityField::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     setAlgoOptionFromState(Metric);
 
     auto output = algo().run(withInputData((InputField,input)));

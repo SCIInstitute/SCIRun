@@ -795,9 +795,12 @@ public:
     node_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; if (bk < 0) bk = 0;
+    if (bi > ni) bi = ni; 
+    if (bi < 0) bi = 0;
+    if (bj > nj) bj = nj; 
+    if (bj < 0) bj = 0;
+    if (bk > nk) bk = nk; 
+    if (bk < 0) bk = 0;
 
     ei = bi; ej = bj; ek = bk;
 
@@ -889,13 +892,19 @@ public:
     node_grid_->unsafe_locate(ei, ej, ek, max);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; if (bk < 0) bk = 0;
+    if (bi > ni) bi = ni; 
+    if (bi < 0) bi = 0;
+    if (bj > nj) bj = nj; 
+    if (bj < 0) bj = 0;
+    if (bk > nk) bk = nk; 
+    if (bk < 0) bk = 0;
 
-    if (ei > ni) ei = ni; if (ei < 0) ei = 0;
-    if (ej > nj) ej = nj; if (ej < 0) ej = 0;
-    if (ek > nk) ek = nk; if (ek < 0) ek = 0;
+    if (ei > ni) ei = ni; 
+    if (ei < 0) ei = 0;
+    if (ej > nj) ej = nj; 
+    if (ej < 0) ej = 0;
+    if (ek > nk) ek = nk; 
+    if (ek < 0) ek = 0;
 
     double maxdist2 = maxdist*maxdist;
 
@@ -954,13 +963,19 @@ public:
     node_grid_->unsafe_locate(ei, ej, ek, max);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; if (bk < 0) bk = 0;
+    if (bi > ni) bi = ni; 
+    if (bi < 0) bi = 0;
+    if (bj > nj) bj = nj; 
+    if (bj < 0) bj = 0;
+    if (bk > nk) bk = nk; 
+    if (bk < 0) bk = 0;
 
-    if (ei > ni) ei = ni; if (ei < 0) ei = 0;
-    if (ej > nj) ej = nj; if (ej < 0) ej = 0;
-    if (ek > nk) ek = nk; if (ek < 0) ek = 0;
+    if (ei > ni) ei = ni;
+    if (ei < 0) ei = 0;
+    if (ej > nj) ej = nj;
+    if (ej < 0) ej = 0;
+    if (ek > nk) ek = nk; 
+    if (ek < 0) ek = 0;
 
     double maxdist2 = maxdist*maxdist;
 
@@ -1054,9 +1069,18 @@ public:
     elem_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; if (bk < 0) bk = 0;
+    if (bi > ni) 
+      bi = ni; 
+    if (bi < 0) 
+      bi = 0;
+    if (bj > nj) 
+      bj = nj; 
+    if (bj < 0) 
+      bj = 0;
+    if (bk > nk) 
+      bk = nk; 
+    if (bk < 0)
+      bk = 0;
 
     ei = bi; ej = bj; ek = bk;
 
@@ -1268,9 +1292,18 @@ public:
     elem_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; if (bk < 0) bk = 0;
+    if (bi > ni) 
+      bi = ni; 
+    if (bi < 0) 
+      bi = 0;
+    if (bj > nj) 
+      bj = nj; 
+    if (bj < 0) 
+      bj = 0;
+    if (bk > nk) 
+      bk = nk; 
+    if (bk < 0)
+      bk = 0;
 
     ei = bi; ej = bj; ek = bk;
 
@@ -1725,9 +1758,12 @@ protected:
     node_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi =ni; if (bi < 0) bi = 0;
-    if (bj > nj) bj =nj; if (bj < 0) bj = 0;
-    if (bk > nk) bk =nk; if (bk < 0) bk = 0;
+    if (bi > ni) bi =ni; 
+    if (bi < 0) bi = 0;
+    if (bj > nj) bj =nj; 
+    if (bj < 0) bj = 0;
+    if (bk > nk) bk =nk;
+    if (bk < 0) bk = 0;
 
     ei = bi;
     ej = bj;

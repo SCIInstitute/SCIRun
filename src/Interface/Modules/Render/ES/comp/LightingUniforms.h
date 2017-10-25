@@ -12,7 +12,8 @@ namespace Render {
 
 // Static world light. We may have multiple world lights inside this structure
 // eventually.
-#define LIGHT_NUM 4
+  const int LIGHT_NUM = 4;
+
 struct LightingUniforms
 {
   // -- Data --
@@ -30,7 +31,7 @@ struct LightingUniforms
   void applyUniform(const std::vector<glm::vec3>& lightDirs,
     const std::vector<glm::vec3>& lightColors) const;
 
-  bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
+  bool serialize(spire::ComponentSerialize& s, uint64_t /* entityID */)
   {
     return false;
   }

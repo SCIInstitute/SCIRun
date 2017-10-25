@@ -65,8 +65,6 @@ void JoinFields::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     bool forcepointcloud = get_state()->getValue(ForcePointCloud).toBool();
 
     setAlgoBoolFromState(JoinFieldsAlgo::MergeElems);

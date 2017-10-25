@@ -30,29 +30,35 @@
 #define ALGORITHMS_MATH_SOLVELINEARSYSTEMWITHEIGEN_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-/// @todo: move
-#include <Eigen/src/Core/util/Constants.h>
 #include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace Math {
-  
+
   /// @todo: this will be the base class of all the solvers. for now it will just contain the Eigen CG impl.
   class SCISHARE SolveLinearSystemAlgorithm : public AlgorithmBase
   {
   public:
-    typedef boost::tuple<SCIRun::Core::Datatypes::MatrixHandle, SCIRun::Core::Datatypes::DenseColumnMatrixHandle> Inputs;
-    typedef boost::tuple<double, int> Parameters;  
-    typedef boost::tuple<SCIRun::Core::Datatypes::DenseColumnMatrixHandle, double, int> Outputs;
+    typedef std::tuple<SCIRun::Core::Datatypes::MatrixHandle, SCIRun::Core::Datatypes::DenseColumnMatrixHandle> Inputs;
+    typedef std::tuple<SCIRun::Core::Datatypes::ComplexMatrixHandle, SCIRun::Core::Datatypes::ComplexDenseColumnMatrixHandle> ComplexInputs;
+    typedef std::tuple<double, int, std::string> Parameters;
+    typedef std::tuple<SCIRun::Core::Datatypes::DenseColumnMatrixHandle, double, int> Outputs;
+    typedef std::tuple<SCIRun::Core::Datatypes::ComplexDenseColumnMatrixHandle, double, int> ComplexOutputs;
 
     Outputs run(const Inputs& input, const Parameters& params) const;
+    ComplexOutputs run(const ComplexInputs& input, const Parameters& params) const;
 
-    AlgorithmOutput run(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const override;
+  private:
+    template <typename In, typename Out>
+    Out runImpl(const In& input, const Parameters& params) const;
+    template <typename SolverType, typename In, typename Out>
+    Out solve(const In& input, const Parameters& params) const;
   };
 
-  typedef boost::error_info<struct tag_eigen_computation, Eigen::ComputationInfo> EigenComputationInfo;
+  
 
 }}}}
 

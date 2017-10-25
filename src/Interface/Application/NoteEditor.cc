@@ -68,13 +68,18 @@ NoteEditor::NoteEditor(const QString& moduleName, bool positionAdjustable, QWidg
 
 void NoteEditor::changeNotePosition(int index)
 {
-  position_ = (NotePosition)index; //TODO: unit test;
+  position_ = static_cast<NotePosition>(index); //TODO: unit test;
   updateNote();
 }
 
 void NoteEditor::changeFontSize(const QString& text)
 {
-  textEdit_->setFontPointSize(text.toDouble());
+  double size;
+  if (text == "Default")
+    size = defaultNoteFontSize_;
+  else
+    size = text.toDouble();
+  textEdit_->setFontPointSize(size);
   textEdit_->setPlainText(textEdit_->toPlainText());
 }
 
@@ -118,6 +123,25 @@ void NoteEditor::setNoteFontSize(int size)
     fontSizeComboBox_->setCurrentIndex(index);
   textEdit_->blockSignals(false);
   fontSizeComboBox_->blockSignals(false);
+}
+
+void NoteEditor::setDefaultNoteFontSize(int size)
+{
+  callCount_++;
+  defaultNoteFontSize_ = size;
+
+  if (fontSizeComboBox_->currentText() == "Default")
+  {
+    textEdit_->blockSignals(true);
+
+    textEdit_->setFontPointSize(size);
+    textEdit_->setPlainText(textEdit_->toPlainText());
+    currentNote_.html_ = textEdit_->toHtml();
+    if (callCount_ > 1)
+      updateNote();
+
+    textEdit_->blockSignals(false);
+  }
 }
 
 void NoteEditor::setNoteColor(const QColor& color)

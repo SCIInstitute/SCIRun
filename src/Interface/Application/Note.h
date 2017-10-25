@@ -66,7 +66,7 @@ namespace Gui {
     QString plainText_;
     int fontSize_;
     NotePosition position_;
-    Note() : fontSize_(0), position_(Default) {}
+    Note() : fontSize_(-1), position_(Default) {}
     Note(const QString& html, const QString& plain, int font, int pos) : html_(html), plainText_(plain), fontSize_(font), position_(NotePosition(pos)) {}
   };
 
@@ -92,14 +92,16 @@ namespace Gui {
     void updateNoteImpl(const Note& note);
     void updateNotePosition();
     void setDefaultNotePositionImpl(NotePosition position);
+    void setDefaultNoteSizeImpl(int size);
     void clearNoteCursor();
-    QGraphicsItem* item_;
+    QGraphicsItem* networkObjectWithNote_;
     QGraphicsScene* scene_;
     PositionProviderPtr positioner_;
     void destroy();
   private:
     QGraphicsTextItem* note_;
     NotePosition notePosition_, defaultNotePosition_;
+    int defaultNoteFontSize_{ 20 };
     NoteDisplayStrategyPtr displayStrategy_;
     bool destroyed_;
 

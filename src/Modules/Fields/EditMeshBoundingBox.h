@@ -29,7 +29,7 @@
 #ifndef MODULES_FIELDS_EDITMESHBOUNDINGBOX_H
 #define MODULES_FIELDS_EDITMESHBOUNDINGBOX_H
 
-#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Modules/Fields/BoxWidgetTypes.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/GeometryPrimitives/BBox.h>

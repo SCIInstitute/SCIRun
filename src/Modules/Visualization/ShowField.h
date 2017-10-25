@@ -30,7 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #ifndef MODULES_VISUALIZATION_SHOW_FIELD_H
 #define MODULES_VISUALIZATION_SHOW_FIELD_H
 
-#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/Thread/Interruptible.h>
 #include <Modules/Visualization/share.h>
 
@@ -115,6 +115,7 @@ namespace SCIRun {
         virtual void setStateDefaults() override;
       private:
         void updateAvailableRenderOptions(FieldHandle field);
+        void processMeshComponentSelection(const Core::Datatypes::ModuleFeedback& var);
 
         boost::shared_ptr<detail::GeometryBuilder> builder_;
       };

@@ -39,6 +39,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/GeometryPrimitives/Transform.h>
+#include <boost/timer.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -144,8 +145,34 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   std::string sep;
   sep += boost::filesystem::path::preferred_separator;
   Modules::Visualization::TextBuilder::setFSStrings(filesystemRoot, sep);
+
+  resizeTimer_.setSingleShot(true);
+  connect(&resizeTimer_, SIGNAL(timeout()), this, SLOT(resizingDone()));
+  resize(1000, 1000);
 }
 
+void ViewSceneDialog::pullSpecial()
+{
+  auto show = state_->getValue(Modules::Render::ViewScene::ShowViewer).toBool();
+
+  if (show && parentWidget())
+    parentWidget()->show();
+
+  pulledSavedVisibility_ = true;
+}
+
+void ViewSceneDialog::adjustToolbar()
+{
+  for (auto& child : mToolBar->children())
+  {
+    auto button = qobject_cast<QPushButton*>(child);
+    if (button)
+    {
+      button->setFixedSize(button->size() * 2);
+      button->setIconSize(button->iconSize() * 2);
+    }
+  }
+}
 
 void ViewSceneDialog::setInitialLightValues()
 {
@@ -200,6 +227,19 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
     selectObject(event->x(), event->y());
     newGeometryValue();
   }
+}
+
+void ViewSceneDialog::resizeEvent(QResizeEvent *event)
+{
+  resizeTimer_.start(400);
+  ModuleDialogGeneric::resizeEvent(event);
+}
+
+void ViewSceneDialog::resizingDone()
+{
+  ViewSceneFeedback vsf;
+  vsf.windowSize = std::make_tuple(size().width(), size().height());
+  state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
 }
 
 std::string ViewSceneDialog::restoreObjColor()
@@ -333,7 +373,7 @@ void ViewSceneDialog::selectObject(const int x, const int y)
     {
       // Check if object is visible
       auto obj = *it; auto name = obj->uniqueID();
-      auto displayName = QString::fromStdString(name).split('_').at(1);
+      auto displayName = QString::fromStdString(name).split(GeometryObject::delimiter).at(1);
       if (mConfigurationDock->visibleItems().isVisible(displayName))
       {
         auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
@@ -396,6 +436,7 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
   // future. Kept for future reference.
   //glLayout->removeWidget(mGLWidget);
   mGLWidget->close();
+  state_->setValue(Modules::Render::ViewScene::ShowViewer, isVisible());
   ModuleDialogGeneric::closeEvent(evt);
 }
 
@@ -435,7 +476,8 @@ void ViewSceneDialog::newGeometryValue()
     allGeoms.push_back(plane);
   }
 
-  displayNames = mConfigurationDock->visibleItems().synchronize(allGeoms);
+  auto showFieldStates = transient_value_cast<ShowFieldStatesMap>(state_->getTransientValue(Parameters::ShowFieldStates));
+  displayNames = mConfigurationDock->visibleItems().synchronize(allGeoms, showFieldStates);
   int port = 0;
   for (auto it = allGeoms.begin(); it != allGeoms.end(); ++it, ++port)
   {
@@ -751,8 +793,7 @@ void ViewSceneDialog::invertZoomClicked(bool value)
 //--------------Clipping Plane Tools--------------------------------------------
 void ViewSceneDialog::setClippingPlaneIndex(int index)
 {
-  int indexOffset = 7;
-  clippingPlaneIndex_ = index + indexOffset;
+  clippingPlaneIndex_ = index;
   auto spire = mSpire.lock();
   if (spire)
     spire->setClippingPlaneIndex(clippingPlaneIndex_);
@@ -1021,7 +1062,7 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   oneline = ss.str();
   double text_len = 0.0;
   if (textBuilder_.isReady())
-    text_len = textBuilder_.getStringLen(oneline);
+    text_len = std::get<0>(textBuilder_.getStringDims(oneline));
   text_len += 5;//add a 5-pixel gap
 
   std::vector<Vector> points;
@@ -1051,13 +1092,13 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
   uint32_t iboSize = sizeof(uint32_t) * static_cast<uint32_t>(indices.size());
   uint32_t vboSize = sizeof(float) * 3 * static_cast<uint32_t>(points.size());
 
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr(
-    new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
-  std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr(
-    new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
+  std::shared_ptr<spire::VarBuffer> iboBufferSPtr(
+    new spire::VarBuffer(vboSize));
+  std::shared_ptr<spire::VarBuffer> vboBufferSPtr(
+    new spire::VarBuffer(iboSize));
 
-  CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer = iboBufferSPtr.get();
-  CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer = vboBufferSPtr.get();
+  spire::VarBuffer* iboBuffer = iboBufferSPtr.get();
+  spire::VarBuffer* vboBuffer = vboBufferSPtr.get();
 
   for (auto a : indices) iboBuffer->write(a);
 
@@ -1208,7 +1249,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
   renState.set(RenderState::USE_DEFAULT_COLOR, true);
   renState.set(RenderState::USE_NORMALS, true);
   renState.set(RenderState::IS_WIDGET, true);
-  GeometryHandle geom(new GeometryObjectSpire(*gid_, uniqueNodeID, false));
+  auto geom(boost::make_shared<GeometryObjectSpire>(*gid_, uniqueNodeID, false));
   glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
 
@@ -1223,7 +1264,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
   uniqueNodeID = ss.str();
   renState.set(RenderState::USE_TRANSPARENCY, true);
   renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
-  GeometryHandle geom2(new GeometryObjectSpire(*gid_, ss.str(), false));
+  auto geom2(boost::make_shared<GeometryObjectSpire>(*gid_, ss.str(), false));
   glyphs2.buildObject(geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
 
@@ -1404,43 +1445,121 @@ void ViewSceneDialog::addToolBar()
   addViewBar();
 }
 
+void ViewSceneDialog::addToolbarButton(QPushButton* button)
+{
+  button->setFixedSize(35,35);
+  button->setIconSize(QSize(25,25));
+  mToolBar->addWidget(button);
+}
+
 void ViewSceneDialog::addAutoViewButton()
 {
-  QPushButton* autoViewBtn = new QPushButton(this);
-  autoViewBtn->setToolTip("Fit Object to Screen");
-  autoViewBtn->setText("Auto View");
-  autoViewBtn->setAutoDefault(false);
-  autoViewBtn->setDefault(false);
-  autoViewBtn->setShortcut(Qt::Key_0);
-  connect(autoViewBtn, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
-  mToolBar->addWidget(autoViewBtn);
-  mToolBar->addSeparator();
+  autoViewButton_ = new QPushButton(this);
+  autoViewButton_->setToolTip("Auto View");
+  autoViewButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
+  autoViewButton_->setShortcut(Qt::Key_0);
+  connect(autoViewButton_, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
+  addToolbarButton(autoViewButton_);
 }
 
 void ViewSceneDialog::addScreenshotButton()
 {
   QPushButton* screenshotButton = new QPushButton(this);
   screenshotButton->setToolTip("Take screenshot");
-  screenshotButton->setText("Take screenshot");
-  screenshotButton->setAutoDefault(false);
-  screenshotButton->setDefault(false);
+  screenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
   screenshotButton->setShortcut(Qt::Key_F12);
   connect(screenshotButton, SIGNAL(clicked(bool)), this, SLOT(screenshotClicked()));
-  mToolBar->addWidget(screenshotButton);
-
-  mToolBar->addSeparator();
+  addToolbarButton(screenshotButton);
 }
 
 void ViewSceneDialog::addViewBarButton()
 {
   QPushButton* viewBarBtn = new QPushButton();
   viewBarBtn->setToolTip("Show View Options");
-  viewBarBtn->setText("Views");
-  viewBarBtn->setAutoDefault(false);
-  viewBarBtn->setDefault(false);
+  viewBarBtn->setIcon(QPixmap(":/general/Resources/ViewScene/views.png"));
   connect(viewBarBtn, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
-  mToolBar->addWidget(viewBarBtn);
-  mToolBar->addSeparator();
+  addToolbarButton(viewBarBtn);
+}
+
+void ViewSceneDialog::addControlLockButton()
+{
+  controlLock_ = new QPushButton();
+  controlLock_->setToolTip("Lock specific view controls");
+  controlLock_->setIcon(QPixmap(":/general/Resources/ViewScene/lockView.png"));
+  auto menu = new QMenu;
+
+  lockRotation_ = menu->addAction("Lock Rotation");
+  lockRotation_->setCheckable(true);
+  connect(lockRotation_, SIGNAL(triggered()), this, SLOT(lockRotationToggled()));
+
+  lockPan_ = menu->addAction("Lock Panning");
+  lockPan_->setCheckable(true);
+  connect(lockPan_, SIGNAL(triggered()), this, SLOT(lockPanningToggled()));
+
+  lockZoom_ = menu->addAction("Lock Zoom");
+  lockZoom_->setCheckable(true);
+  connect(lockZoom_, SIGNAL(triggered()), this, SLOT(lockZoomToggled()));
+
+  menu->addSeparator();
+
+  auto lockAll = menu->addAction("Lock All");
+  connect(lockAll, SIGNAL(triggered()), this, SLOT(lockAllTriggered()));
+
+  auto unlockAll = menu->addAction("Unlock All");
+  connect(unlockAll, SIGNAL(triggered()), this, SLOT(unlockAllTriggered()));
+
+  controlLock_->setMenu(menu);
+
+  addToolbarButton(controlLock_);
+  controlLock_->setFixedWidth(45);
+  toggleLockColor(false);
+}
+
+void ViewSceneDialog::lockRotationToggled()
+{
+  mGLWidget->setLockRotation(lockRotation_->isChecked());
+  toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
+}
+
+void ViewSceneDialog::toggleLockColor(bool locked)
+{
+  QString color = locked ? "red" : "rgb(66,66,69)";
+  controlLock_->setStyleSheet("QPushButton { background-color: " + color + "; }");
+  autoViewButton_->setDisabled(locked);
+}
+
+void ViewSceneDialog::lockPanningToggled()
+{
+  mGLWidget->setLockPanning(lockPan_->isChecked());
+  toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
+}
+
+void ViewSceneDialog::lockZoomToggled()
+{
+  mGLWidget->setLockZoom(lockZoom_->isChecked());
+  toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
+}
+
+void ViewSceneDialog::lockAllTriggered()
+{
+  lockRotation_->setChecked(true);
+  mGLWidget->setLockRotation(true);
+  lockPan_->setChecked(true);
+  mGLWidget->setLockPanning(true);
+  lockZoom_->setChecked(true);
+  mGLWidget->setLockZoom(true);
+  toggleLockColor(true);
+}
+
+void ViewSceneDialog::unlockAllTriggered()
+{
+  lockRotation_->setChecked(false);
+  mGLWidget->setLockRotation(false);
+  lockPan_->setChecked(false);
+  mGLWidget->setLockPanning(false);
+  lockZoom_->setChecked(false);
+  mGLWidget->setLockZoom(false);
+  toggleLockColor(false);
 }
 
 void ViewSceneDialog::addViewBar()
@@ -1455,6 +1574,7 @@ void ViewSceneDialog::addViewBar()
   glLayout->addWidget(mViewBar);
 
   addViewBarButton();
+  addControlLockButton();
 }
 
 void ViewSceneDialog::addViewOptions()
@@ -1486,20 +1606,16 @@ void ViewSceneDialog::addViewOptions()
   mUpVectorBox->addItem("------");
   connect(mUpVectorBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewVectorSelected(int)));
   mViewBar->addWidget(mUpVectorBox);
-  mViewBar->addSeparator();
 }
 
 void ViewSceneDialog::addConfigurationButton()
 {
   QPushButton* configurationButton = new QPushButton();
   configurationButton->setToolTip("Open/Close Configuration Menu");
-  configurationButton->setText("Configure");
-  configurationButton->setAutoDefault(false);
-  configurationButton->setDefault(false);
+  configurationButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
   configurationButton->setShortcut(Qt::Key_F5);
   connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
-  mToolBar->addWidget(configurationButton);
-  mToolBar->addSeparator();
+  addToolbarButton(configurationButton);
 }
 
 void ViewSceneDialog::addConfigurationDock()
@@ -1509,10 +1625,10 @@ void ViewSceneDialog::addConfigurationDock()
   mConfigurationDock->setHidden(true);
   mConfigurationDock->setVisible(false);
 
-    mConfigurationDock->setSampleColor(bgColor_);
-    mConfigurationDock->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
-      scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
-    setupMaterials();
+  mConfigurationDock->setSampleColor(bgColor_);
+  mConfigurationDock->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
+    scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
+  setupMaterials();
 }
 
 void ViewSceneDialog::setupClippingPlanes()
@@ -1618,6 +1734,12 @@ void ViewSceneDialog::showEvent(QShowEvent* evt)
     autoViewClicked();
     shown_ = true;
   }
+
+  if (pulledSavedVisibility_)
+  {
+    state_->setValue(Modules::Render::ViewScene::ShowViewer, true);
+  }
+
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
   ModuleDialogGeneric::showEvent(evt);
 }
@@ -1625,6 +1747,12 @@ void ViewSceneDialog::showEvent(QShowEvent* evt)
 void ViewSceneDialog::hideEvent(QHideEvent* evt)
 {
   mConfigurationDock->setVisible(false);
+
+  if (pulledSavedVisibility_)
+  {
+    state_->setValue(Modules::Render::ViewScene::ShowViewer, false);
+  }
+
   ModuleDialogGeneric::hideEvent(evt);
 }
 
@@ -1648,13 +1776,24 @@ namespace //TODO: move to appropriate location
 
 void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y, const std::string& selName)
 {
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
-  glm::mat4 trans = spire->getWidgetTransform().transform;
+  auto spire = mSpire.lock();
+  auto trans = spire->getWidgetTransform().transform;
 
   ViewSceneFeedback vsf;
   vsf.transform = toSciTransform(trans);
   vsf.selectionName = selName;
   state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
+}
+
+void ViewSceneDialog::updateMeshComponentSelection(const QString& showFieldName, const QString& component, bool selected)
+{
+  auto name = showFieldName.toStdString();
+  auto moduleId = name;
+  auto renamed = name.find("(from ");
+  if (renamed != std::string::npos)
+    moduleId.assign(name.begin() + renamed + 6, name.end() - 1);
+  MeshComponentSelectionFeedback sel(moduleId, component.toStdString(), selected);
+  state_->setTransientValue(Parameters::MeshComponentSelection, sel);
 }
 
 void ViewSceneDialog::takeScreenshot()

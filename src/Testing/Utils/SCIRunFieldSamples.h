@@ -30,6 +30,7 @@
 #define TESTING_UTIL_SCIRUNFIELDSAMPLES 1
 
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/GeometryPrimitives/Point.h>
 
 #include <Testing/Utils/share.h>
 
@@ -90,7 +91,9 @@ SCISHARE FieldHandle TetrahedronTriSurfConstantBasis(data_info_type type);
 SCISHARE FieldHandle TetrahedronTriSurfLinearBasis(data_info_type type);
 
 SCISHARE FieldHandle CreateEmptyLatVol();
-SCISHARE FieldHandle CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez, data_info_type type = DOUBLE_E);
+SCISHARE FieldHandle CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez, 
+  data_info_type type = DOUBLE_E,
+  const Core::Geometry::Point& minb = { -1, -1, -1 }, const Core::Geometry::Point& maxb = {1,1,1});
 
 }}
 

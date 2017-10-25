@@ -49,10 +49,7 @@ void CalculateVectorMagnitudes::execute()
 
   if(needToExecute())
   {
-    update_state(Executing);
-
     auto output = algo().run(withInputData((VectorField, input)));
-
     sendOutputFromAlgorithm(ScalarField, output);
   }
 }

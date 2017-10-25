@@ -36,22 +36,11 @@
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
-  
+
   class SCISHARE AlgorithmInterface : public HasIntegerId
   {
   public:
     virtual ~AlgorithmInterface() {}
-    
-    /*
- @todo idea: make it mockable
-  
-    virtual OutputDatatypeHandleOptions run(InputDatatypeHandleOptions, ModuleParameterState) = 0;
-
-      ModuleParameterState: essentially a map of GuiVars. but need hooks for undo/redo and serialization
-      Input: tuple/heterogeneous vector of Datatypes
-      Output: tuple of Datatypes, possibly delay-executed
-    */
-
     virtual AlgorithmOutput run(const AlgorithmInput& input) const = 0;
   };
 

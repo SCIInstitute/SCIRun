@@ -62,8 +62,6 @@ void ConvertRealToComplexMatrix::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     if (!input_matrix1 || !input_matrix2)
     {
       error("One of the input matrices is empty.");

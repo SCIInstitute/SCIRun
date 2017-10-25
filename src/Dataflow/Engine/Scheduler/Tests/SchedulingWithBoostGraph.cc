@@ -51,7 +51,6 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Logging/Log.h>
 
-#include <boost/assign.hpp>
 #include <boost/config.hpp> // put this first to suppress some VC++ warnings
 #include <boost/lockfree/spsc_queue.hpp>
 
@@ -59,6 +58,7 @@
 #include <iterator>
 #include <algorithm>
 #include <numeric>
+#include <queue>
 #include <ctime>
 
 #include <boost/utility.hpp>
@@ -88,9 +88,48 @@ using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
-using namespace std;
-using namespace boost;
-using namespace boost::assign;
+namespace
+{
+  class InstanceCountIdGenerator : public ModuleIdGenerator
+  {
+  public:
+    InstanceCountIdGenerator() : instanceCount_(0) {}
+    virtual int makeId(const std::string& /*name*/) override final
+    {
+      return instanceCount_++;
+    }
+    virtual bool takeId(const std::string& name, int id) override final
+    {
+      return false;
+    }
+    virtual void reset() override final
+    {
+      instanceCount_ = 0;
+    }
+  private:
+    std::atomic<int> instanceCount_;
+  };
+}
+  class UseGlobalInstanceCountIdGenerator
+  {
+  public:
+    UseGlobalInstanceCountIdGenerator();
+    ~UseGlobalInstanceCountIdGenerator();
+  private:
+    ModuleIdGeneratorHandle oldGenerator_;
+  };
+
+  UseGlobalInstanceCountIdGenerator::UseGlobalInstanceCountIdGenerator()
+  {
+    oldGenerator_ = DefaultModuleFactories::idGenerator_;
+    DefaultModuleFactories::idGenerator_.reset(new InstanceCountIdGenerator);
+  }
+
+  UseGlobalInstanceCountIdGenerator::~UseGlobalInstanceCountIdGenerator()
+  {
+    DefaultModuleFactories::idGenerator_ = oldGenerator_;
+  }
+
 
 class SchedulingWithBoostGraph : public ::testing::Test
 {
@@ -110,7 +149,7 @@ protected:
   ModuleHandle receive, report;
   DenseMatrix expected;
   UseGlobalInstanceCountIdGenerator switcher;
-  
+
   void setupBasicNetwork()
   {
     Module::resetIdGenerator();
@@ -266,16 +305,16 @@ TEST_F(SchedulingWithBoostGraph, SerialNetworkOrder)
   BoostGraphSerialScheduler scheduler;
   ModuleExecutionOrder order = scheduler.schedule(matrixMathNetwork);
 
-  std::list<ModuleId> expected = list_of
-    (ModuleId("CreateMatrix:1"))
-    (ModuleId("EvaluateLinearAlgebraUnary:4"))
-    (ModuleId("CreateMatrix:0"))
-    (ModuleId("EvaluateLinearAlgebraUnary:3"))
-    (ModuleId("EvaluateLinearAlgebraBinary:5"))
-    (ModuleId("EvaluateLinearAlgebraUnary:2"))
-    (ModuleId("EvaluateLinearAlgebraBinary:6"))
-    (ModuleId("ReportMatrixInfo:8"))
-    (ModuleId("ReportMatrixInfo:7"));
+  std::list<ModuleId> expected{
+    ModuleId("CreateMatrix:1"),
+    ModuleId("EvaluateLinearAlgebraUnary:4"),
+    ModuleId("CreateMatrix:0"),
+    ModuleId("EvaluateLinearAlgebraUnary:3"),
+    ModuleId("EvaluateLinearAlgebraBinary:5"),
+    ModuleId("EvaluateLinearAlgebraUnary:2"),
+    ModuleId("EvaluateLinearAlgebraBinary:6"),
+    ModuleId("ReportMatrixInfo:8"),
+    ModuleId("ReportMatrixInfo:7") };
   EXPECT_EQ(ModuleExecutionOrder(expected), order);
 }
 

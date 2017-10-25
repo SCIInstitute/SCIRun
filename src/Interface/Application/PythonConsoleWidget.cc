@@ -37,6 +37,7 @@
 #include <QScrollBar>
 #include <QVBoxLayout>
 
+#include <Interface/Application/NetworkEditor.h>
 #include <Core/Python/PythonInterpreter.h>
 #include <Interface/Application/PythonConsoleWidget.h>
 
@@ -49,7 +50,7 @@ typedef QPointer< PythonConsoleEdit > PythonConsoleEditQWeakPointer;
 class PythonConsoleEdit : public QTextEdit
 {
 public:
-  explicit PythonConsoleEdit(PythonConsoleWidget* parent);
+  PythonConsoleEdit(NetworkEditor* rootNetworkEditor, PythonConsoleWidget* parent);
 
   virtual void keyPressEvent(QKeyEvent* e);
   //virtual void focusOutEvent( QFocusEvent* e );
@@ -71,6 +72,8 @@ private:
   void print_errorImpl(const QString& text);
   void print_commandImpl(const QString& text);
 
+  NetworkEditor* rootNetworkEditor_;
+
 public:
   // The beginning of the area of interactive input, outside which
   // changes can't be made to the text edit contents.
@@ -87,8 +90,8 @@ public:
   //	static void PrintCommand( PythonConsoleEditQWeakPointer edit, const std::string& text );
 };
 
-PythonConsoleEdit::PythonConsoleEdit(PythonConsoleWidget* parent) :
-QTextEdit(parent)
+PythonConsoleEdit::PythonConsoleEdit(NetworkEditor* rootNetworkEditor, PythonConsoleWidget* parent) :
+QTextEdit(parent), rootNetworkEditor_(rootNetworkEditor)
 {
   this->interactive_position_ = this->document_end();
   this->setTabChangesFocus(false);
@@ -303,6 +306,7 @@ void PythonConsoleEdit::issue_command()
 
   this->interactive_position_ = this->document_end();
 
+  NetworkEditor::InEditingContext iec(rootNetworkEditor_);
   auto lines = command.split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
   for (const auto& line : lines)
   {
@@ -390,14 +394,14 @@ public:
   PythonConsoleEdit* console_edit_;
 };
 
-PythonConsoleWidget::PythonConsoleWidget(QWidget* parent) :
+PythonConsoleWidget::PythonConsoleWidget(NetworkEditor* rootNetworkEditor, QWidget* parent) :
 QDockWidget(parent),
 private_(new PythonConsoleWidgetPrivate)
 {
-  this->private_->console_edit_ = new PythonConsoleEdit(this);
-  setWidget(this->private_->console_edit_);
+  private_->console_edit_ = new PythonConsoleEdit(rootNetworkEditor, this);
+  setWidget(private_->console_edit_);
 
-  this->setMinimumSize(500, 500);
+  setMinimumSize(500, 500);
 
   setWindowTitle("Python console");
 

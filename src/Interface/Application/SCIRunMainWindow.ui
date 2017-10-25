@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1440</width>
-    <height>852</height>
+    <height>912</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,7 +45,7 @@
          <x>0</x>
          <y>0</y>
          <width>1093</width>
-         <height>482</height>
+         <height>544</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -88,8 +88,7 @@
     <addaction name="actionSave_"/>
     <addaction name="actionSave_As_"/>
     <addaction name="separator"/>
-    <addaction name="actionExecute_All_"/>
-    <addaction name="separator"/>
+    <addaction name="actionLaunchNewInstance_"/>
     <addaction name="actionRunNewModuleWizard_"/>
     <addaction name="separator"/>
     <addaction name="actionQuit_"/>
@@ -121,11 +120,26 @@
    </widget>
    <widget class="QMenu" name="menuSubnets_">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="title">
      <string>&amp;Subnets</string>
     </property>
+    <widget class="QMenu" name="menuCurrentSubnets_">
+     <property name="title">
+      <string>Current</string>
+     </property>
+    </widget>
+    <widget class="QMenu" name="menuSavedSubnets_">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Saved</string>
+     </property>
+    </widget>
+    <addaction name="menuCurrentSubnets_"/>
+    <addaction name="menuSavedSubnets_"/>
    </widget>
    <widget class="QMenu" name="menuToolkits_">
     <property name="enabled">
@@ -138,12 +152,27 @@
      <property name="title">
       <string>Download toolkit</string>
      </property>
-     <addaction name="actionForwardInverse_"/>
-     <addaction name="actionBrainStimulator_"/>
+     <widget class="QMenu" name="menuForwardInverse_">
+      <property name="title">
+       <string>Forward/Inverse</string>
+      </property>
+      <addaction name="actionForwardInverseStable_"/>
+      <addaction name="actionForwardInverseNightly_"/>
+     </widget>
+     <widget class="QMenu" name="menuBrainStimulator_">
+      <property name="title">
+       <string>Brain Stimulator</string>
+      </property>
+      <addaction name="actionBrainStimulatorStable_"/>
+      <addaction name="actionBrainStimulatorNightly_"/>
+     </widget>
+     <addaction name="menuForwardInverse_"/>
+     <addaction name="menuBrainStimulator_"/>
     </widget>
     <addaction name="menuDownload_toolkit"/>
     <addaction name="actionLoadToolkit_"/>
     <addaction name="separator"/>
+    <addaction name="actionCreateToolkitFromDirectory_"/>
    </widget>
    <widget class="QMenu" name="menuHelp_">
     <property name="title">
@@ -182,13 +211,16 @@
      <property name="title">
       <string>Toolbars</string>
      </property>
-     <addaction name="actionSearchBar_"/>
+     <addaction name="actionFileBar_"/>
      <addaction name="actionNetworkBar_"/>
      <addaction name="actionExecuteBar_"/>
+     <addaction name="actionSearchBar_"/>
+     <addaction name="actionAdvancedBar_"/>
     </widget>
     <addaction name="actionConfiguration_"/>
     <addaction name="actionModule_Selector"/>
     <addaction name="actionProvenance_"/>
+    <addaction name="actionMiniview_"/>
     <addaction name="separator"/>
     <addaction name="actionPythonConsole_"/>
     <addaction name="actionDevConsole_"/>
@@ -215,6 +247,8 @@
     <property name="title">
      <string>Network</string>
     </property>
+    <addaction name="actionExecuteAll_"/>
+    <addaction name="separator"/>
     <addaction name="actionPinAllModuleUIs_"/>
     <addaction name="actionHideAllModuleUIs_"/>
     <addaction name="actionRestoreAllModuleUIs_"/>
@@ -237,8 +271,8 @@
    </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuEdit"/>
-   <addaction name="menuModules_"/>
    <addaction name="menuNetwork"/>
+   <addaction name="menuModules_"/>
    <addaction name="menuSubnets_"/>
    <addaction name="menuToolkits_"/>
    <addaction name="menuWindow"/>
@@ -255,7 +289,7 @@
    <property name="minimumSize">
     <size>
      <width>299</width>
-     <height>364</height>
+     <height>554</height>
     </size>
    </property>
    <property name="features">
@@ -419,32 +453,15 @@
        </column>
       </widget>
      </item>
-     <item>
-      <widget class="QLabel" name="miniviewTextLabel_">
-       <property name="text">
-        <string>Network Miniview</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="networkEditorMiniViewLabel_">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>100</height>
-        </size>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
     </layout>
    </widget>
   </widget>
   <widget class="QDockWidget" name="configurationDockWidget_">
    <property name="whatsThis">
-    <string>Access application logs here.</string>
+    <string/>
+   </property>
+   <property name="accessibleName">
+    <string>b bb   v</string>
    </property>
    <property name="windowTitle">
     <string>Logs</string>
@@ -521,6 +538,56 @@
         </layout>
        </widget>
       </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="networkMiniViewDockWidget_">
+   <property name="maximumSize">
+    <size>
+     <width>400</width>
+     <height>400</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>Network Miniview</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QGraphicsView" name="networkMiniviewGraphicsView_">
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>250</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>300</width>
+         <height>300</height>
+        </size>
+       </property>
+       <property name="interactive">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </widget>
@@ -899,6 +966,9 @@
    <property name="shortcut">
     <string>+</string>
    </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
   <action name="actionZoomOut_">
    <property name="text">
@@ -906,6 +976,9 @@
    </property>
    <property name="shortcut">
     <string>-</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
   <action name="actionZoomBestFit_">
@@ -919,16 +992,6 @@
    </property>
    <property name="text">
     <string>Tag Manager</string>
-   </property>
-  </action>
-  <action name="actionForwardInverse_">
-   <property name="text">
-    <string>Forward/Inverse</string>
-   </property>
-  </action>
-  <action name="actionBrainStimulator_">
-   <property name="text">
-    <string>Brain Stimulator</string>
    </property>
   </action>
   <action name="actionToggleMetadataLayer_">
@@ -1073,7 +1136,7 @@
     <string>Search</string>
    </property>
   </action>
-  <action name="actionNetworkBar_">
+  <action name="actionFileBar_">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1081,7 +1144,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Network</string>
+    <string>File</string>
    </property>
   </action>
   <action name="actionExecuteBar_">
@@ -1118,6 +1181,81 @@
   <action name="actionAsd">
    <property name="text">
     <string>asd</string>
+   </property>
+  </action>
+  <action name="actionNetworkBar_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Network</string>
+   </property>
+  </action>
+  <action name="actionAdvancedBar_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Advanced</string>
+   </property>
+  </action>
+  <action name="actionX">
+   <property name="text">
+    <string>x</string>
+   </property>
+  </action>
+  <action name="actionA">
+   <property name="text">
+    <string>a</string>
+   </property>
+  </action>
+  <action name="actionExecuteAll_">
+   <property name="text">
+    <string>Execute All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionLaunchNewInstance_">
+   <property name="text">
+    <string>Launch new instance...</string>
+   </property>
+  </action>
+  <action name="actionForwardInverseNightly_">
+   <property name="text">
+    <string>Nightly (OSX only)</string>
+   </property>
+  </action>
+  <action name="actionBrainStimulatorNightly_">
+   <property name="text">
+    <string>Nightly (OSX only)</string>
+   </property>
+  </action>
+  <action name="actionForwardInverseStable_">
+   <property name="text">
+    <string>Stable</string>
+   </property>
+  </action>
+  <action name="actionBrainStimulatorStable_">
+   <property name="text">
+    <string>Stable</string>
+   </property>
+  </action>
+  <action name="actionCreateToolkitFromDirectory_">
+   <property name="text">
+    <string>Create toolkit from directory...</string>
+   </property>
+  </action>
+  <action name="actionMiniview_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Miniview</string>
    </property>
   </action>
  </widget>
@@ -1196,6 +1334,38 @@
     <hint type="sourcelabel">
      <x>559</x>
      <y>696</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionMiniview_</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>networkMiniViewDockWidget_</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1283</x>
+     <y>220</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>networkMiniViewDockWidget_</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionMiniview_</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1283</x>
+     <y>220</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -50,10 +50,10 @@ class BBox {
     enum { INSIDE, INTERSECT, OUTSIDE };
 
     BBox() : is_valid_(false) {}
-    
-    BBox(const BBox& copy) 
+
+    BBox(const BBox& copy)
     : cmin_(copy.cmin_), cmax_(copy.cmax_), is_valid_(copy.is_valid_) {}
-    
+
     BBox& operator=(const BBox& copy)
     {
       is_valid_ = copy.is_valid_;
@@ -63,26 +63,26 @@ class BBox {
     }
 
     BBox(const BBox& b1, const BBox& b2)
-      : cmin_(b1.cmin_), cmax_(b1.cmax_), is_valid_(true) 
+      : cmin_(b1.cmin_), cmax_(b1.cmax_), is_valid_(true)
     {
       extend(b2.cmin_);
       extend(b2.cmax_);
     }
 
-      
+
     BBox(const Point& p1, const Point& p2)
-      : cmin_(p1), cmax_(p1), is_valid_(true) 
+      : cmin_(p1), cmax_(p1), is_valid_(true)
     {
       extend(p2);
     }
 
     BBox(const Point& p1, const Point& p2, const Point& p3)
-      : cmin_(p1), cmax_(p1), is_valid_(true) 
+      : cmin_(p1), cmax_(p1), is_valid_(true)
     {
       extend(p2);
       extend(p3);
     }
-    
+
     explicit BBox(const std::vector<Point>& points) :
       is_valid_(false)
     {
@@ -90,8 +90,8 @@ class BBox {
       {
         extend(points[j]);
       }
-    }  
-          
+    }
+
     inline bool valid() const { return is_valid_; }
     inline void set_valid(bool v) { is_valid_ = v; }
     inline void reset() { is_valid_ = false; }
@@ -103,8 +103,8 @@ class BBox {
       {
         cmin_=Min(p, cmin_);
         cmax_=Max(p, cmax_);
-      } 
-      else 
+      }
+      else
       {
         cmin_=p;
         cmax_=p;
@@ -120,12 +120,12 @@ class BBox {
     {
       if (is_valid_)
       {
-        cmin_.x(cmin_.x()-val); 
-        cmin_.y(cmin_.y()-val); 
-        cmin_.z(cmin_.z()-val); 
-        cmax_.x(cmax_.x()+val); 
-        cmax_.y(cmax_.y()+val); 
-        cmax_.z(cmax_.z()+val);     
+        cmin_.x(cmin_.x()-val);
+        cmin_.y(cmin_.y()-val);
+        cmin_.z(cmin_.z()-val);
+        cmax_.x(cmax_.x()+val);
+        cmax_.y(cmax_.y()+val);
+        cmax_.z(cmax_.z()+val);
       }
     }
 
@@ -138,8 +138,8 @@ class BBox {
       {
         cmin_=Min(p-r, cmin_);
         cmax_=Max(p+r, cmax_);
-      } 
-      else 
+      }
+      else
       {
         cmin_=p-r;
         cmax_=p+r;
@@ -156,18 +156,18 @@ class BBox {
         extend(b.get_max());
       }
     }
-    
+
     /// Expand the bounding box to include a disk centered at cen,
     /// with normal normal, and radius r.
     SCISHARE void extend_disk(const Point& cen, const Vector& normal, double r);
 
-    inline Point center() const  
+    inline Point center() const
     {
       /// @todo: C assert: assert(is_valid_);
       Vector d = diagonal();
       return cmin_ + (d * 0.5);
     }
-    
+
     inline double longest_edge() const
     {
       /// @todo: C assert: assert(is_valid_);
@@ -185,7 +185,7 @@ class BBox {
     /// Check whether two BBoxes are similar
     SCISHARE bool is_similar_to(const BBox &b, double diff=0.5) const;
 
-    /// Move the bounding box 
+    /// Move the bounding box
     SCISHARE void translate(const Vector &v);
 
     /// Scale the bounding box by s, centered around o
@@ -193,22 +193,22 @@ class BBox {
 
     inline Point get_min() const
       { return cmin_; }
-    
+
     inline Point get_max() const
       { return cmax_; }
 
     inline Vector diagonal() const
-    { 
+    {
       //TODO: needs invariant check, or refactoring.
-      ASSERT(is_valid_); 
-      return cmax_-cmin_; 
+      ASSERT(is_valid_);
+      return cmax_-cmin_;
     }
 
-    inline bool inside(const Point &p) const 
+    inline bool inside(const Point &p) const
     {
-      return (is_valid_ && p.x() >= cmin_.x() && 
-        p.y() >= cmin_.y() && p.z() >= cmin_.z() && 
-        p.x() <= cmax_.x() && p.y() <= cmax_.y() && 
+      return (is_valid_ && p.x() >= cmin_.x() &&
+        p.y() >= cmin_.y() && p.z() >= cmin_.z() &&
+        p.x() <= cmax_.x() && p.y() <= cmax_.y() &&
         p.z() <= cmax_.z());
     }
 
@@ -216,19 +216,19 @@ class BBox {
     {
       if ((cmax_.x() < b.cmin_.x()) || (cmin_.x() > b.cmax_.x()) ||
           (cmax_.y() < b.cmin_.y()) || (cmin_.y() > b.cmax_.y()) ||
-          (cmax_.z() < b.cmin_.z()) || (cmin_.z() > b.cmax_.z())) 
+          (cmax_.z() < b.cmin_.z()) || (cmin_.z() > b.cmax_.z()))
       {
         return OUTSIDE;
       }
-      
+
       if ((cmin_.x() <= b.cmin_.x()) && (cmax_.x() >= b.cmax_.x()) &&
           (cmin_.y() <= b.cmin_.y()) && (cmax_.y() >= b.cmax_.y()) &&
-          (cmin_.z() <= b.cmin_.z()) && (cmax_.z() >= b.cmax_.z())) 
+          (cmin_.z() <= b.cmin_.z()) && (cmax_.z() >= b.cmax_.z()))
       {
         return INSIDE;
       }
-      
-      return INTERSECT;    
+
+      return INTERSECT;
     }
 
     inline double x_length() { return (cmax_.x() - cmin_.x()); }
@@ -244,7 +244,6 @@ class BBox {
     /// in hitNear
     SCISHARE bool intersect(const Point& e, const Vector& v, Point& hitNear) const;
 
-    friend std::ostream& operator<<(std::ostream& out, const BBox& b);
 
   private:
     Point cmin_;
@@ -252,6 +251,7 @@ class BBox {
     bool is_valid_;
 };
 
+SCISHARE std::ostream& operator<<(std::ostream& out, const BBox& b);
 SCISHARE void Pio( Piostream &, BBox& );
 
 }}}

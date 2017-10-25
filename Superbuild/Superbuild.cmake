@@ -75,6 +75,10 @@ OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
 OPTION(WITH_TETGEN "Build Tetgen." OFF)
 
 ###########################################
+# Configure data
+OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" OFF)
+
+###########################################
 # Configure Windows executable to run with
 # or without the console
 
@@ -93,10 +97,16 @@ OPTION(TRAVIS_BUILD "Slim build for Travis CI" OFF)
 MARK_AS_ADVANCED(TRAVIS_BUILD)
 
 IF(TRAVIS_BUILD)
-  SET(BUILD_TESTING OFF)
-  SET(DOWNLOAD_TOOLKITS OFF)
-  SET(BUILD_HEADLESS ON)
-  SET(BUILD_WITH_PYTHON OFF)
+  IF(CMAKE_C_COMPILER_ID MATCHES "GNU")
+    SET(BUILD_TESTING OFF)
+    SET(DOWNLOAD_TOOLKITS OFF)
+    SET(BUILD_HEADLESS ON)
+    SET(BUILD_WITH_PYTHON OFF)
+    SET(BUILD_WITH_SCIRUN_DATA OFF)
+  ELSE()
+    SET(BUILD_WITH_SCIRUN_DATA OFF)
+    # try building everything with clang!
+  ENDIF()
   ADD_DEFINITIONS(-DTRAVIS_BUILD)
 ENDIF()
 
@@ -159,9 +169,24 @@ ADD_EXTERNAL( ${SUPERBUILD_DIR}/SQLiteExternal.cmake SQLite_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/LibPNGExternal.cmake LibPNG_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/TeemExternal.cmake Teem_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/FreetypeExternal.cmake Freetype_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/GLMExternal.cmake GLM_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/TnyExternal.cmake Tny_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/LodePngExternal.cmake LodePng_external )
+
+IF(WIN32)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/GlewExternal.cmake Glew_external )
+ENDIF()
 
 IF(BUILD_WITH_PYTHON)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/PythonExternal.cmake Python_external )
+ENDIF()
+
+FIND_PACKAGE(Subversion)
+IF(NOT Subversion_FOUND)
+  SET(BUILD_WITH_SCIRUN_DATA OFF)
+ENDIF()
+IF(BUILD_WITH_SCIRUN_DATA)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/SCIRunDataExternal.cmake SCI_data_external)
 ENDIF()
 
 IF(WITH_TETGEN)
@@ -201,6 +226,11 @@ SET(SCIRUN_CACHE_ARGS
     "-DTeem_DIR:PATH=${Teem_DIR}"
     "-DTetgen_DIR:PATH=${Tetgen_DIR}"
     "-DFreetype_DIR:PATH=${Freetype_DIR}"
+	"-DGLM_DIR:PATH=${GLM_DIR}"
+    "-DTNY_DIR:PATH=${TNY_DIR}"
+	"-DGLEW_DIR:PATH=${Glew_DIR}"
+    "-DLODEPNG_DIR:PATH=${LODEPNG_DIR}"
+    "-DSCI_DATA_DIR:PATH=${SCI_DATA_DIR}"
 )
 
 IF(BUILD_WITH_PYTHON)

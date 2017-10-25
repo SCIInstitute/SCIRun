@@ -31,6 +31,7 @@ SET(Interface_Modules_Base_FORMS
   ModuleDialogBasic.ui
   ParserHelp.ui
   ModuleButtonBar.ui
+  SubnetDialog.ui
 )
 
 SET(Interface_Modules_Base_HEADERS

@@ -60,6 +60,9 @@ ALGORITHM_PARAMETER_DEF(Fields, Index_i);
 ALGORITHM_PARAMETER_DEF(Fields, Index_j);
 ALGORITHM_PARAMETER_DEF(Fields, Index_k);
 ALGORITHM_PARAMETER_DEF(Fields, Axis_ijk);
+ALGORITHM_PARAMETER_DEF(Fields, SpinBoxReexecute);
+ALGORITHM_PARAMETER_DEF(Fields, AxisReexecute);
+ALGORITHM_PARAMETER_DEF(Fields, SliderReexecute);
 
 MODULE_INFO_DEF(GetSliceFromStructuredFieldByIndices, NewField, SCIRun)
 
@@ -81,6 +84,9 @@ void GetSliceFromStructuredFieldByIndices::setStateDefaults()
   state->setValue(Index_j, 0);
   state->setValue(Index_k, 0);
   state->setValue(Axis_ijk, 2);
+  state->setValue(SpinBoxReexecute, false);
+  state->setValue(AxisReexecute, false);
+  state->setValue(SliderReexecute, false);
 }
 
 void GetSliceFromStructuredFieldByIndices::execute()
@@ -92,7 +98,6 @@ void GetSliceFromStructuredFieldByIndices::execute()
   auto inputMatrixOption = getOptionalInput(InputMatrix);
 
   bool indexesChanged = false;
-  update_state(Executing);
 
   VField* ifield = inputField->vfield();
   VMesh*  imesh = inputField->vmesh();
@@ -118,7 +123,6 @@ void GetSliceFromStructuredFieldByIndices::execute()
 
   imesh->get_dimensions(dims);
 
-  bool update_dims = false;
   auto state = get_state();
 
   /// Check to see if the gui dimensions are different than the field.
@@ -237,8 +241,6 @@ void GetSliceFromStructuredFieldByIndices::execute()
 
   if (indexesChanged || needToExecute())
   {
-    update_state(Executing);
-
     if (ifield->basis_order() == 0)
     {
       VMesh::index_type i_start = 0;

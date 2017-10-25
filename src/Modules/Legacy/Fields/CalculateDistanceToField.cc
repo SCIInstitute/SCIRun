@@ -70,8 +70,6 @@ CalculateDistanceToField::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     setAlgoBoolFromState(Parameters::Truncate);
     setAlgoDoubleFromState(Parameters::TruncateDistance);
     setAlgoOptionFromState(Parameters::BasisType);

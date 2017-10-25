@@ -62,6 +62,7 @@ SET(Interface_Application_SOURCES
   TreeViewCollaborators.cc
   ModuleWizard/ModuleWizard.cc
   TriggeredEventsWindow.cc
+  Subnetworks.cc
 )
 
 SET(Interface_Application_HEADERS
@@ -95,6 +96,7 @@ SET(Interface_Application_HEADERS
   NetworkEditorControllerGuiProxy.h
   TreeViewCollaborators.h
   Utility.h
+  Subnetworks.h
   ModuleWizard/ModuleWizard.h
   TriggeredEventsWindow.h
 )
@@ -111,6 +113,8 @@ SET(Interface_Application_FORMS
   ProvenanceWindow.ui
   SCIRunMainWindow.ui
   ShortcutsInterface.ui
+  SubnetEditor.ui
+  SubnetWindow.ui
   RenderWindow.ui
   TagManager.ui
   TriggeredEventsWindow.ui

@@ -102,13 +102,19 @@ impl_(new EditMeshBoundingBoxImpl), widgetMoved_(false)
 
 void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
 {
-  auto vsf = static_cast<const ViewSceneFeedback&>(var);
-  if (vsf.selectionName.find(get_id()) != std::string::npos &&
-    impl_->userWidgetTransform_ != vsf.transform)
+  try
   {
-    widgetMoved_ = true;
-    adjustGeometryFromTransform(vsf.transform);
-    enqueueExecuteAgain(false);
+    auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
+    if (vsf.selectionName.find(get_id()) != std::string::npos && impl_->userWidgetTransform_ != vsf.transform)
+    {
+      widgetMoved_ = true;
+      adjustGeometryFromTransform(vsf.transform);
+      enqueueExecuteAgain(false);
+    }
+  }
+  catch (std::bad_cast&)
+  {
+    //ignore
   }
 }
 
@@ -173,7 +179,6 @@ void EditMeshBoundingBox::execute()
   if (needToExecute())
   {
     clear_vals();
-    update_state(Executing);
     update_input_attributes(field);
     executeImpl(field);
   }
@@ -279,7 +284,7 @@ GeometryBaseHandle EditMeshBoundingBox::buildGeometryObject()
   renState.set(RenderState::USE_NORMALS, true);
   renState.set(RenderState::IS_WIDGET, true);
 
-  GeometryHandle geom(new GeometryObjectSpire(*this, "BoundingBox", true));
+  auto geom(boost::make_shared<GeometryObjectSpire>(*this, "BoundingBox", true));
 
   glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox_);
@@ -327,7 +332,7 @@ void EditMeshBoundingBox::computeWidgetBox(const BBox& box) const
   auto right(center + sizex / 2.);
   auto down(center + sizey / 2.);
   auto in(center + sizez / 2.);
-    
+
   box_->setPosition(center, right, down, in);
 }
 
@@ -370,9 +375,6 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
       impl_->field_initial_transform_.pre_trans(r_transformThatIsAppliedSomewhere);
       impl_->field_initial_transform_.pre_translate(Vector(initialWidgetCenter));
     }
-
-    const auto useUserEnteredSize = transient_value_cast<bool>(state->getTransientValue(SetOutputSize));
-    const auto useUserEnteredCenter = transient_value_cast<bool>(state->getTransientValue(SetOutputCenter));
 
     Vector outputFieldSizeX, outputFieldSizeY, outputFieldSizeZ;
     if (transient_value_cast<bool>(state->getTransientValue(ResetSize)))

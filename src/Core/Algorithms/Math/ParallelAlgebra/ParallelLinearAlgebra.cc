@@ -89,7 +89,6 @@ bool ParallelLinearAlgebra::add_vector(DenseColumnMatrixHandle mat, ParallelVect
   if (!mat) { return (false); }
   if (mat->ncols() != 1)  { return (false); }
   if (mat->nrows() != size_) { return (false); }
-  if (matrixIs::sparse(mat)) { return (false); }
 
   V.data_ = mat->data();
   V.size_ = size_;
@@ -800,11 +799,14 @@ void ParallelLinearAlgebraBase::run_parallel(ParallelLinearAlgebraSharedData& da
   data.setFlag(proc, parallel(PLA, data.inputs()));
 }
 
-ParallelLinearAlgebraSharedData::ParallelLinearAlgebraSharedData(const SolverInputs& inputs, int numProcs) : size_(inputs.A->nrows()),
+ParallelLinearAlgebraSharedData::ParallelLinearAlgebraSharedData(const SolverInputs& inputs, int numProcs) :
+  size_(inputs.A->nrows()),
   success_(numProcs),
+  imatrices_(inputs),
+  barrier_("Parallel Linear Algebra", numProcs),
+  numProcs_(numProcs),
   reduce1_(numProcs),
-  reduce2_(numProcs),
-  imatrices_(inputs), barrier_("Parallel Linear Algebra", numProcs), numProcs_(numProcs)
+  reduce2_(numProcs)
 {
   if (inputs.b->nrows() != size_
     || inputs.x->nrows() != size_

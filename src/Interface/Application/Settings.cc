@@ -33,6 +33,7 @@
 #include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/TagManagerWindow.h>
+#include <Interface/Application/ProvenanceWindow.h>
 #include <Interface/Application/TriggeredEventsWindow.h>
 #include <Core/Application/Preferences/Preferences.h>
 
@@ -171,7 +172,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(dockable))
   {
     auto value = settings.value(dockable).toBool();
-    prefs.modulesAreDockable.setValue(value);
+    prefs.modulesAreDockable.setValueWithSignal(value);
     prefsWindow_->dockableModulesCheckBox_->setChecked(value);
     GuiLogger::Instance().logInfo("Setting read: modules are dockable = " + QString::number(prefs.modulesAreDockable));
   }
@@ -199,6 +200,18 @@ void SCIRunMainWindow::readSettings()
     bool val = settings.value(showModuleErrorInlineMessagesKey).toBool();
     GuiLogger::Instance().logInfo("Setting read: show module inline error = " + QString::number(val));
     prefsWindow_->setModuleErrorInlineMessages(val);
+  }
+
+  {
+    const QString highDPIAdjustment = "highDPIAdjustment";
+    if (settings.contains(highDPIAdjustment))
+    {
+      bool val = settings.value(highDPIAdjustment).toBool();
+      GuiLogger::Instance().logInfo("Setting read: high DPI adjustment = " + QString::number(val));
+      prefsWindow_->setHighDPIAdjustment(val);
+      if (val)
+        networkEditor_->setHighResolutionExpandFactor();
+    }
   }
 
   const QString saveBeforeExecute = "saveBeforeExecute";
@@ -307,6 +320,14 @@ void SCIRunMainWindow::readSettings()
     toolkitFiles_ = toolkits;
   }
 
+  const QString undoMaxItems = "undoMaxItems";
+  if (settings.contains(undoMaxItems))
+  {
+    auto max = settings.value(undoMaxItems).toInt();
+    GuiLogger::Instance().logInfo("Setting read: undoMaxItems = " + QString::number(max));
+    provenanceWindow_->setMaxItems(max);
+  }
+
   restoreGeometry(settings.value("geometry").toByteArray());
   restoreState(settings.value("windowState").toByteArray());
 }
@@ -326,6 +347,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue(qname(prefs.autoNotes), prefs.autoNotes.val());
   settings.setValue(qname(prefs.highlightPorts), prefs.highlightPorts.val());
   settings.setValue(qname(prefs.showModuleErrorInlineMessages), prefs.showModuleErrorInlineMessages.val());
+  settings.setValue(qname(prefs.highDPIAdjustment), prefs.highDPIAdjustment.val());
   settings.setValue("defaultNotePositionIndex", prefsWindow_->defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
   settings.setValue("disableModuleErrorDialogs", prefsWindow_->disableModuleErrorDialogs());
@@ -342,6 +364,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("savedSubnetworksNames", savedSubnetworksNames_);
   settings.setValue("savedSubnetworksXml", savedSubnetworksXml_);
   settings.setValue("toolkitFiles", toolkitFiles_);
+  settings.setValue("undoMaxItems", provenanceWindow_->maxItems());
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());

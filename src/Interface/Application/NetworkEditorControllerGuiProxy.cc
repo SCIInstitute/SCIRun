@@ -37,18 +37,29 @@ using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
-NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_ptr<NetworkEditorController> controller)
-  : controller_(controller)
+NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_ptr<NetworkEditorController> controller, NetworkEditor* editor)
+  : controller_(controller), editor_(editor)
 {
-  controller_->connectModuleAdded(boost::bind(&NetworkEditorControllerGuiProxy::moduleAdded, this, _1, _2, _3));
-  controller_->connectModuleRemoved(boost::bind(&NetworkEditorControllerGuiProxy::moduleRemoved, this, _1));
-  controller_->connectConnectionAdded(boost::bind(&NetworkEditorControllerGuiProxy::connectionAdded, this, _1));
-  controller_->connectConnectionRemoved(boost::bind(&NetworkEditorControllerGuiProxy::connectionRemoved, this, _1));
-  controller_->connectPortAdded(boost::bind(&NetworkEditorControllerGuiProxy::portAdded, this, _1, _2));
-  controller_->connectPortRemoved(boost::bind(&NetworkEditorControllerGuiProxy::portRemoved, this, _1, _2));
-  controller_->connectNetworkExecutionStarts([&]() { executionStarted(); });
-  controller_->connectNetworkExecutionFinished(boost::bind(&NetworkEditorControllerGuiProxy::executionFinished, this, _1));
-  controller_->connectNetworkDoneLoading(boost::bind(&NetworkEditorControllerGuiProxy::networkDoneLoading, this, _1));
+  connections_.emplace_back(controller_->connectModuleAdded(boost::bind(&NetworkEditorControllerGuiProxy::moduleAdded, this, _1, _2, _3)));
+  connections_.emplace_back(controller_->connectModuleRemoved(boost::bind(&NetworkEditorControllerGuiProxy::moduleRemoved, this, _1)));
+  connections_.emplace_back(controller_->connectConnectionAdded(boost::bind(&NetworkEditorControllerGuiProxy::connectionAdded, this, _1)));
+  connections_.emplace_back(controller_->connectConnectionRemoved(boost::bind(&NetworkEditorControllerGuiProxy::connectionRemoved, this, _1)));
+  connections_.emplace_back(controller_->connectPortAdded(boost::bind(&NetworkEditorControllerGuiProxy::portAdded, this, _1, _2)));
+  connections_.emplace_back(controller_->connectPortRemoved(boost::bind(&NetworkEditorControllerGuiProxy::portRemoved, this, _1, _2)));
+  connections_.emplace_back(controller_->connectNetworkExecutionStarts([&]() { executionStarted(); }));
+  connections_.emplace_back(controller_->connectNetworkExecutionFinished(boost::bind(&NetworkEditorControllerGuiProxy::executionFinished, this, _1)));
+  connections_.emplace_back(controller_->connectNetworkDoneLoading(boost::bind(&NetworkEditorControllerGuiProxy::networkDoneLoading, this, _1)));
+}
+
+NetworkEditorControllerGuiProxy::~NetworkEditorControllerGuiProxy()
+{
+  for (auto& c : connections_)
+    c.disconnect();
+}
+
+boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditorControllerGuiProxy::withSubnet(NetworkEditor* subnet) const
+{
+  return boost::make_shared<NetworkEditorControllerGuiProxy>(controller_, subnet);
 }
 
 void NetworkEditorControllerGuiProxy::addModule(const std::string& moduleName)

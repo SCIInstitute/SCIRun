@@ -134,13 +134,13 @@ void ReportColumnMatrixMisfit::execute()
       error("Unknown ReportColumnMatrixMisfit method - " + meth);
       val = 0;
     }
-
+    std::cout << "Error val: " << val << std::endl;
     //sendOutput(Error_Out, boost::make_shared<Double>(val));
   }
 }
 
 
-void ReportColumnMatrixMisfit::showGraph(const DenseColumnMatrix& v1, const DenseColumnMatrix& v2, double ccInv, double rmsRel) const
+void ReportColumnMatrixMisfit::showGraph(const DenseColumnMatrix& v1, const DenseColumnMatrix& v2, double ccInv, double rmsRel)
 {
   if (containsInfiniteComponent(v1) || containsInfiniteComponent(v2))
     return;

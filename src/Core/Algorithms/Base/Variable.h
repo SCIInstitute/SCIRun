@@ -38,6 +38,7 @@
 #include <boost/iterator/counting_iterator.hpp>
 #endif
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Core/Algorithms/Base/Name.h>
 #include <Core/Algorithms/Base/Option.h>
 #include <Core/Algorithms/Base/share.h>
@@ -49,27 +50,24 @@ namespace Algorithms {
   class SCISHARE Variable
   {
   public:
-    typedef std::vector<Variable> List;
-
-    typedef boost::variant<
+    using List = std::vector<Variable>;
+    using Value = boost::variant<
       int,
       double,
       std::string,
       bool,
       AlgoOption,
       List
-    > Value;
+    >;
 
     Variable() {}
     Variable(const Name& name, const Value& value);
     enum DatatypeVariableDummyEnum { DATATYPE_VARIABLE };
     Variable(const Name& name, const Datatypes::DatatypeHandle& data, DatatypeVariableDummyEnum) : name_(name), data_(data) {}
-    virtual ~Variable() {}
 
     const Name& name() const { return name_; }
     const Value& value() const { return value_; }
-    //TODO: remove virtual on this class
-    virtual void setValue(const Value& val);
+    void setValue(const Value& val);
 
     int toInt() const;
     double toDouble() const;
@@ -85,7 +83,7 @@ namespace Algorithms {
     Value& valueForXml() { return value_; }
 
   private:
-    /*const*/ Name name_;
+    Name name_;
     Value value_;
     Datatypes::DatatypeHandleOption data_;
   };
@@ -109,7 +107,7 @@ namespace Algorithms {
   Variable::List makeNamedVariableList(const Name (&namesList)[N], Ts&&... params)
   {
     std::vector<Variable::Value> values{ params... };
-    
+
     auto namesIter = &namesList[0];
     Variable::List vars;
     std::transform(values.begin(), values.end(), std::back_inserter(vars),
@@ -139,7 +137,7 @@ namespace Algorithms {
 
   typedef Variable AlgorithmParameter;
   typedef Variable::List VariableList;
-  typedef Datatypes::SharedPointer<Variable> VariableHandle;
+  typedef SharedPointer<Variable> VariableHandle;
 
 }
 
@@ -148,28 +146,27 @@ template <typename T>
 class TypedVariable : public Algorithms::Variable
 {
 public:
-  typedef T value_type;
+  using value_type = T;
   TypedVariable(const std::string& name, const value_type& value) : Algorithms::Variable(Algorithms::Name(name), value) {}
 
-  operator value_type() const { return val(); }
-  value_type val() const { throw "unknown type"; }
+  operator value_type() const { return {}; }
 };
 
-#define TYPED_VARIABLE_CLASS(type, func) template <> \
-class TypedVariable<type> : public Algorithms::Variable \
+#define TYPED_VARIABLE_CLASS(varType, func) template <> \
+class TypedVariable<varType> : public Algorithms::Variable \
 {\
 public:\
-  typedef type value_type;\
+  using value_type = varType;\
   TypedVariable(const std::string& name, const value_type& value) : Algorithms::Variable(Algorithms::Name(name), value) {}\
   operator value_type() const { return val(); }\
   value_type val() const { return func(); }\
-};\
+};
 
 TYPED_VARIABLE_CLASS(bool, toBool)
 TYPED_VARIABLE_CLASS(std::string, toString)
 
-typedef TypedVariable<bool> BooleanVariable;
-typedef TypedVariable<std::string> StringVariable;
+using BooleanVariable = TypedVariable<bool>;
+using StringVariable = TypedVariable<std::string>;
 
 }}
 

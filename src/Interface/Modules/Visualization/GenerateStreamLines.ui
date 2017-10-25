@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>447</width>
-    <height>306</height>
+    <width>450</width>
+    <height>367</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>447</width>
-    <height>306</height>
+    <width>450</width>
+    <height>367</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -22,6 +22,12 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="1" column="1">
     <widget class="QComboBox" name="methodComboBox_">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>30</height>
+      </size>
+     </property>
      <item>
       <property name="text">
        <string>Cell Walk</string>
@@ -49,15 +55,116 @@
      </item>
     </widget>
    </item>
-   <item row="7" column="0">
+   <item row="8" column="0">
     <widget class="QLabel" name="label_6">
      <property name="text">
       <string>Value:</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="2">
+   <item row="6" column="0">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>Direction:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Streamline Computation Method:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QComboBox" name="directionComboBox_">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <item>
+      <property name="text">
+       <string>Negative</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Both</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Positive</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="8" column="1">
+    <widget class="QComboBox" name="valueComboBox_">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <item>
+      <property name="text">
+       <string>Seed value</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Seed index</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Integration index</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Integration step</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Distance from seed</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Streamline length</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="9" column="0">
+    <widget class="QCheckBox" name="filterColinearCheckBox_">
+     <property name="text">
+      <string>Filter colinear points</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBox">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>210</height>
+      </size>
+     </property>
      <property name="title">
       <string>Parameters</string>
      </property>
@@ -135,83 +242,10 @@
      </layout>
     </widget>
    </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="label_5">
+   <item row="2" column="1">
+    <widget class="QCheckBox" name="multithreadedCheckBox_">
      <property name="text">
-      <string>Direction:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Streamline Computation Method:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="QComboBox" name="directionComboBox_">
-     <property name="currentIndex">
-      <number>1</number>
-     </property>
-     <item>
-      <property name="text">
-       <string>Negative</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Both</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Positive</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="7" column="1">
-    <widget class="QComboBox" name="valueComboBox_">
-     <property name="currentIndex">
-      <number>1</number>
-     </property>
-     <item>
-      <property name="text">
-       <string>Seed value</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Seed index</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Integration index</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Integration step</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Distance from seed</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Streamline length</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="8" column="0">
-    <widget class="QCheckBox" name="filterColinearCheckBox_">
-     <property name="text">
-      <string>Filter colinear points</string>
+      <string>Use multithreaded algorithm</string>
      </property>
     </widget>
    </item>

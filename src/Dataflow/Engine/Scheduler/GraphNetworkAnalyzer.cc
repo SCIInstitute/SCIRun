@@ -137,6 +137,25 @@ ComponentMap NetworkGraphAnalyzer::connectedComponents()
   return componentMap;
 }
 
+namespace SCIRun
+{
+  namespace Dataflow
+  {
+    namespace Engine
+    {
+      class ExecuteSingleModuleImpl
+      {
+      public:
+        ParallelModuleExecutionOrder order_;
+        bool isDownstreamFrom(const ModuleId& toCheckId, const ModuleId& rootId) const
+        {
+          return order_.groupOf(toCheckId) >= order_.groupOf(rootId);
+        }
+      };
+    }
+  }
+}
+
 ExecuteSingleModule::ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod,
   const SCIRun::Dataflow::Networks::NetworkInterface& network,
   bool executeUpstream) : module_(mod), network_(network), executeUpstream_(executeUpstream)
@@ -144,6 +163,14 @@ ExecuteSingleModule::ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandl
   //TODO: composite with which filter?
   NetworkGraphAnalyzer analyze(network, ExecuteAllModules::Instance(), false);
   components_ = analyze.connectedComponents();
+
+  if (!executeUpstream_)
+  {
+    orderImpl_.reset(new ExecuteSingleModuleImpl);
+    auto all = boost::lambda::constant(true);
+    BoostGraphParallelScheduler scheduleAll(all);
+    orderImpl_->order_ = scheduleAll.schedule(network_);
+  }
 }
 
 bool ExecuteSingleModule::operator()(SCIRun::Dataflow::Networks::ModuleHandle mod) const
@@ -154,6 +181,8 @@ bool ExecuteSingleModule::operator()(SCIRun::Dataflow::Networks::ModuleHandle mo
     THROW_INVALID_ARGUMENT("Module not found in component map");
 
   auto rootId = module_->get_id();
+  if (rootId.name_ == "Subnet")
+    return false;
   auto rootIdIter = components_.find(rootId);
   if (rootIdIter == components_.end())
     THROW_INVALID_ARGUMENT("Current module not found in component map");
@@ -165,11 +194,8 @@ bool ExecuteSingleModule::operator()(SCIRun::Dataflow::Networks::ModuleHandle mo
   }
   else
   {
-    auto all = boost::lambda::constant(true);
-    BoostGraphParallelScheduler scheduleAll(all);
-    auto order = scheduleAll.schedule(network_);
-
     // should execute if in same connected component, and downstream only
-    return modIdIter->second == rootIdIter->second && order.groupOf(toCheckId) >= order.groupOf(rootId);
+    return modIdIter->second == rootIdIter->second
+      && orderImpl_->isDownstreamFrom(toCheckId, rootId);
   }
 }

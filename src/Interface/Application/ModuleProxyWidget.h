@@ -59,6 +59,7 @@ namespace SCIRun
     public Q_SLOTS:
       void highlightIfSelected();
       void setDefaultNotePosition(NotePosition position);
+      void setDefaultNoteSize(int size);
       void createPortPositionProviders();
       void snapToGrid();
       void highlightPorts(int state);
@@ -98,6 +99,15 @@ namespace SCIRun
       int stackDepth_;
       QSizeF originalSize_;
       QTimeLine* timeLine_;
+    };
+
+    class SubnetPortsBridgeProxyWidget : public QGraphicsProxyWidget
+    {
+    public:
+      explicit SubnetPortsBridgeProxyWidget(class SubnetPortsBridgeWidget* ports, QGraphicsItem* parent = nullptr);
+      void updateConnections();
+    private:
+      class SubnetPortsBridgeWidget* ports_;
     };
   }
 }

@@ -868,9 +868,12 @@ public:
     node_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; if (bk < 0) bk = 0;
+    if (bi > ni) bi = ni; 
+    if (bi < 0) bi = 0;
+    if (bj > nj) bj = nj;
+    if (bj < 0) bj = 0;
+    if (bk > nk) bk = nk; 
+    if (bk < 0) bk = 0;
 
     ei = bi; ej = bj; ek = bk;
     
@@ -961,13 +964,19 @@ public:
     node_grid_->unsafe_locate(ei, ej, ek, max);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; if (bk < 0) bk = 0;
+    if (bi > ni) bi = ni; 
+    if (bi < 0) bi = 0;
+    if (bj > nj) bj = nj; 
+    if (bj < 0) bj = 0;
+    if (bk > nk) bk = nk; 
+    if (bk < 0) bk = 0;
 
-    if (ei > ni) ei = ni; if (ei < 0) ei = 0;
-    if (ej > nj) ej = nj; if (ej < 0) ej = 0;
-    if (ek > nk) ek = nk; if (ek < 0) ek = 0;
+    if (ei > ni) ei = ni; 
+    if (ei < 0) ei = 0;
+    if (ej > nj) ej = nj; 
+    if (ej < 0) ej = 0;
+    if (ek > nk) ek = nk; 
+    if (ek < 0) ek = 0;
 
     double maxdist2 = maxdist*maxdist;
 
@@ -1025,13 +1034,19 @@ public:
     node_grid_->unsafe_locate(ei, ej, ek, max);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; if (bk < 0) bk = 0;
+    if (bi > ni) bi = ni; 
+    if (bi < 0) bi = 0;
+    if (bj > nj) bj = nj;
+    if (bj < 0) bj = 0;
+    if (bk > nk) bk = nk; 
+    if (bk < 0) bk = 0;
 
-    if (ei > ni) ei = ni; if (ei < 0) ei = 0;
-    if (ej > nj) ej = nj; if (ej < 0) ej = 0;
-    if (ek > nk) ek = nk; if (ek < 0) ek = 0;
+    if (ei > ni) ei = ni; 
+    if (ei < 0) ei = 0;
+    if (ej > nj) ej = nj; 
+    if (ej < 0) ej = 0;
+    if (ek > nk) ek = nk; 
+    if (ek < 0) ek = 0;
 
     double maxdist2 = maxdist*maxdist;
 
@@ -1141,9 +1156,12 @@ public:
     elem_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; if (bk < 0) bk = 0;
+    if (bi > ni) bi = ni; 
+    if (bi < 0) bi = 0;
+    if (bj > nj) bj = nj; 
+    if (bj < 0) bj = 0;
+    if (bk > nk) bk = nk;
+    if (bk < 0) bk = 0;
 
     ei = bi; ej = bj; ek = bk;
         
@@ -2408,9 +2426,9 @@ protected:
 
     /// These are for our own use (making the hash function.
     static const int sz_quarter_int = (int)(sz_int / 4);
-    static const int top4_mask = ((~((int)0)) << sz_quarter_int << sz_quarter_int << sz_quarter_int);
-    static const int up4_mask = top4_mask ^ (~((int)0) << sz_quarter_int << sz_quarter_int);
-    static const int mid4_mask =  top4_mask ^ (~((int)0) << sz_quarter_int);
+    static const int top4_mask = -(1 << sz_quarter_int << sz_quarter_int << sz_quarter_int);
+    static const int up4_mask = top4_mask ^ -(1 << sz_quarter_int << sz_quarter_int);
+    static const int mid4_mask =  top4_mask ^ -(1 << sz_quarter_int);
     static const int low4_mask = ~(top4_mask | mid4_mask);
 
     /// This is the hash function
@@ -2451,7 +2469,7 @@ protected:
     /// These are for our own use (making the hash function.
     static const int sz_int = sizeof(int) * 8; // in bits
     static const int sz_half_int = sizeof(int) << 2; // in bits
-    static const int up_mask = ((~((int)0)) << sz_half_int);
+    static const int up_mask = -(1 << sz_half_int);
     static const int low_mask = (~((int)0) ^ up_mask);
 
     /// This is the hash function

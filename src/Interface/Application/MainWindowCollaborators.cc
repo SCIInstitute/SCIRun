@@ -29,13 +29,18 @@
 #include <QtGui>
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/SCIRunMainWindow.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Core/Logging/Log.h>
+#include <Core/Application/Preferences/Preferences.h>
+#include <Interface/Application/NetworkEditorControllerGuiProxy.h>
+#include <numeric>
+
 #include "ui_ConnectionStyleWizardPage.h"
 #include "ui_OtherSettingsWizardPage.h"
-#include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Dataflow::Networks;
 
 void TextEditAppender::log(const QString& message) const
 {
@@ -83,7 +88,7 @@ bool TreeViewModuleGetter::isModule() const
 
 QString TreeViewModuleGetter::clipboardXML() const
 {
-  return tree_.currentItem()->toolTip(0);
+  return tree_.currentItem()->data(0, SCIRunMainWindow::clipboardKey).toString();
 }
 
 bool TreeViewModuleGetter::isClipboardXML() const
@@ -94,7 +99,12 @@ bool TreeViewModuleGetter::isClipboardXML() const
 
 NotePosition ComboBoxDefaultNotePositionGetter::position() const
 {
-  return NotePosition(combo_.currentIndex() + 1);
+  return NotePosition(positionCombo_->currentIndex() + 1);
+}
+
+int ComboBoxDefaultNotePositionGetter::size() const
+{
+  return sizeCombo_->currentText().toInt();
 }
 
 CORE_SINGLETON_IMPLEMENTATION( WidgetDisablingService )
@@ -260,10 +270,10 @@ QWizardPage* NewUserWizard::createDocPage()
   page->setSubTitle("For more information on SCIRun 5 functionality, documentation can be found at: ");
   auto layout = new QVBoxLayout;
   auto docLabel = new QLabel(
+    "<p><a href = \"http://sciinstitute.github.io/scirun.pages/\">SCIRun Doc Home Page</a>"
     "<p><a href = \"https://github.com/SCIInstitute/SCIRun/wiki\">New SCIRun Wiki</a>"
     "<p><a href = \"http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php5/CIBC:Documentation:SCIRun:Reference\">Old SCIRun Wiki</a>"
-    "<p><a href = \"http://sciinstitute.github.io/scirun.pages/\">SCIRun Doc Home Page</a>"
-    "<p><a href = \"mailto:scirun-users@sci.utah.edu\">SCIRun Users mailing list</a>"
+    "<p><a href = \"https://lists.sci.utah.edu/sympa/arc/scirun-users\">SCIRun Users mailing list</a>"
   );
   docLabel->setStyleSheet("QLabel { background-color : lightgray; color : blue; }");
   docLabel->setAlignment(Qt::AlignCenter);
@@ -305,7 +315,7 @@ QWizardPage* NewUserWizard::createConnectionChoicePage()
 class OtherSettingsWizardPage : public QWizardPage, public Ui::OtherSettingsWizardPage
 {
 public:
-  explicit OtherSettingsWizardPage(NewUserWizard* wiz) 
+  explicit OtherSettingsWizardPage(NewUserWizard* wiz)
   {
     setupUi(this);
     connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), SCIRunMainWindow::Instance(), SLOT(setSaveBeforeExecute(int)));
@@ -316,4 +326,131 @@ public:
 QWizardPage* NewUserWizard::createOtherSettingsPage()
 {
   return new OtherSettingsWizardPage(this);
+}
+
+void ToolkitInfo::setupAction(QAction* action, QObject* window) const
+{
+  QObject::connect(action, SIGNAL(triggered()), window, SLOT(toolkitDownload()));
+  action->setProperty(ToolkitIconURL, iconUrl);
+  action->setProperty(ToolkitURL, zipUrl);
+  action->setProperty(ToolkitFilename, filename);
+  action->setIcon(QPixmap(":/general/Resources/download.png"));
+}
+
+const char* ToolkitInfo::ToolkitIconURL{ "ToolkitIconURL" };
+const char* ToolkitInfo::ToolkitURL{ "ToolkitURL" };
+const char* ToolkitInfo::ToolkitFilename{ "ToolkitFilename" };
+
+size_t NetworkStatusImpl::total() const
+{
+  return ned_->numModules();
+}
+size_t NetworkStatusImpl::waiting() const
+{
+  return countState(ModuleExecutionState::Value::Waiting);
+}
+size_t NetworkStatusImpl::executing() const
+{
+  return countState(ModuleExecutionState::Value::Executing);
+}
+size_t NetworkStatusImpl::errored() const
+{
+  return countState(ModuleExecutionState::Value::Errored);
+}
+size_t NetworkStatusImpl::nonReexecuted() const
+{
+  return -1; // not available yet
+}
+size_t NetworkStatusImpl::finished() const
+{
+  return countState(ModuleExecutionState::Value::Completed);
+}
+size_t NetworkStatusImpl::unexecuted() const
+{
+  return countState(ModuleExecutionState::Value::NotExecuted);
+}
+
+size_t NetworkStatusImpl::countState(ModuleExecutionState::Value val) const
+{
+  auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
+  return std::count(allStates.begin(), allStates.end(), val);
+}
+
+void NetworkEditorBuilder::connectAll(NetworkEditor* editor)
+{
+  // for any network editor
+  QObject::connect(editor, SIGNAL(modified()), mainWindow_, SLOT(networkModified()));
+  QObject::connect(mainWindow_, SIGNAL(defaultNotePositionChanged(NotePosition)), editor, SIGNAL(defaultNotePositionChanged(NotePosition)));
+  QObject::connect(mainWindow_, SIGNAL(defaultNoteSizeChanged(int)), editor, SIGNAL(defaultNoteSizeChanged(int)));
+
+  // for active network editor
+  QObject::connect(mainWindow_->actionSelectAll_, SIGNAL(triggered()), editor, SLOT(selectAll()));
+  QObject::connect(mainWindow_->actionDelete_, SIGNAL(triggered()), editor, SLOT(del()));
+  QObject::connect(mainWindow_->actionCleanUpNetwork_, SIGNAL(triggered()), editor, SLOT(cleanUpNetwork()));
+  QObject::connect(editor, SIGNAL(zoomLevelChanged(int)), mainWindow_, SLOT(showZoomStatusMessage(int)));
+  QObject::connect(mainWindow_->actionCut_, SIGNAL(triggered()), editor, SLOT(cut()));
+  QObject::connect(mainWindow_->actionCopy_, SIGNAL(triggered()), editor, SLOT(copy()));
+  QObject::connect(mainWindow_->actionPaste_, SIGNAL(triggered()), editor, SLOT(paste()));
+
+  if (!editor->parentNetwork())
+  {
+    // root NetworkEditor only.
+    QObject::connect(mainWindow_, SIGNAL(moduleItemDoubleClicked()), editor, SLOT(addModuleViaDoubleClickedTreeItem()));
+    QObject::connect(mainWindow_->actionCenterNetworkViewer_, SIGNAL(triggered()), editor, SLOT(centerView()));
+    QObject::connect(mainWindow_->actionPinAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(pinAllModuleUIs()));
+    QObject::connect(mainWindow_->actionRestoreAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(restoreAllModuleUIs()));
+    QObject::connect(mainWindow_->actionHideAllModuleUIs_, SIGNAL(triggered()), editor, SLOT(hideAllModuleUIs()));
+    QObject::connect(mainWindow_->actionMakeSubnetwork_, SIGNAL(triggered()), editor, SLOT(makeSubnetwork()));
+  }
+  // children only
+  // addDockWidget(Qt::RightDockWidgetArea, subnet);
+}
+
+DockManager::DockManager(int& availableSize, QObject* parent) : QObject(parent),
+  availableHeight_(availableSize),
+  currentDialogs_(ModuleDialogGeneric::instances())
+{
+
+}
+
+void DockManager::requestShow(ModuleDialogGeneric* dialog)
+{
+  //clear out old pointers
+  collapseQueue_.erase(std::remove_if(collapseQueue_.begin(), collapseQueue_.end(),
+    [this](ModuleDialogGeneric* d) { return currentDialogs_.find(d) == currentDialogs_.end(); }),
+    collapseQueue_.end());
+
+  // collapse oldest until they fit
+  auto needToFit = availableHeight_ - dialog->size().height();
+  while (usedSpace() > needToFit)
+  {
+    auto firstNonCollapsed = std::find_if(collapseQueue_.begin(), collapseQueue_.end(),
+      [dialog](ModuleDialogGeneric* d) { return d != dialog && !d->isCollapsed(); });
+    if (firstNonCollapsed != collapseQueue_.end())
+      (*firstNonCollapsed)->collapse();
+    else
+      break;
+  }
+
+  // add latest
+  collapseQueue_.push_back(dialog);
+  dialog->expand();
+}
+
+int DockManager::usedSpace() const
+{
+  return std::accumulate(currentDialogs_.begin(), currentDialogs_.end(), 0,
+    [](int height, ModuleDialogGeneric* d) { return height + (d->isCollapsed() ? 0 : d->size().height()); });
+}
+
+QString SCIRun::Gui::networkBackgroundImage()
+{
+  auto date = QDate::currentDate();
+  if (12 == date.month() && 20 < date.day() && date.day() < 28)
+    return ":/general/Resources/ski.png";
+  if (11 == date.month() && 20 < date.day() && date.day() < 31)
+    return ":/general/Resources/turkey.png";
+  if (10 == date.month() && 31 == date.day())
+    return ":/general/Resources/pumpkin.png";
+  return ":/general/Resources/SCIgrid-small.png";
 }

@@ -52,6 +52,8 @@ Mutex ViewScene::mutex_("ViewScene");
 ALGORITHM_PARAMETER_DEF(Render, GeomData);
 ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
 ALGORITHM_PARAMETER_DEF(Render, ScreenshotData);
+ALGORITHM_PARAMETER_DEF(Render, MeshComponentSelection);
+ALGORITHM_PARAMETER_DEF(Render, ShowFieldStates);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true), asyncUpdates_(0)
 {
@@ -77,7 +79,7 @@ void ViewScene::setStateDefaults()
   state->setValue(FogEnd, 0.71);
   state->setValue(FogColor, ColorRGB(0.0, 0.0, 1.0).toString());
   state->setValue(ShowScaleBar, false);
-  state->setValue(ScaleBarUnitValue, "mm");
+  state->setValue(ScaleBarUnitValue, std::string("mm"));
   state->setValue(ScaleBarLength, 1.0);
   state->setValue(ScaleBarHeight, 1.0);
   state->setValue(ScaleBarMultiplier, 1.0);
@@ -102,13 +104,10 @@ void ViewScene::setStateDefaults()
   state->setValue(Light1Color, ColorRGB(0.0, 0.0, 0.0).toString());
   state->setValue(Light2Color, ColorRGB(0.0, 0.0, 0.0).toString());
   state->setValue(Light3Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(ShowViewer, false);
 
-  postStateChangeInternalSignalHookup();
-}
-
-void ViewScene::postStateChangeInternalSignalHookup()
-{
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
+  get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
 }
 
 void ViewScene::portRemovedSlotImpl(const PortId& pid)
@@ -172,12 +171,32 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
       return;
     }
 
+    {
+      auto iport = getInputPort(pid);
+      auto connectedModuleId = iport->connectedModuleId();
+      if (connectedModuleId->find("ShowField") != std::string::npos)
+      {
+        auto state = iport->stateFromConnectedModule();
+        syncMeshComponentFlags(*connectedModuleId, state);
+      }
+    }
+
     activeGeoms_[pid] = geom;
     updateTransientList();
   }
+
   get_state()->fireTransientStateChangeSignal();
   asyncUpdates_.fetch_add(1);
-  //std::cout << "asyncExecute " << asyncUpdates_ << std::endl;
+}
+
+void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, ModuleStateHandle state)
+{
+  if (connectedModuleId.find("ShowField:") != std::string::npos)
+  {
+    auto map = transient_value_cast<ShowFieldStatesMap>(get_state()->getTransientValue(Parameters::ShowFieldStates));
+    map[connectedModuleId] = state;
+    get_state()->setTransientValue(Parameters::ShowFieldStates, map, false);
+  }
 }
 
 void ViewScene::execute()
@@ -245,6 +264,17 @@ void ViewScene::processViewSceneObjectFeedback()
   }
 }
 
+void ViewScene::processMeshComponentSelection()
+{
+  auto state = get_state();
+  auto newInfo = state->getTransientValue(Parameters::MeshComponentSelection);
+  if (newInfo)
+  {
+    auto vsInfo = transient_value_cast<MeshComponentSelectionFeedback>(newInfo);
+    sendFeedbackUpstreamAlongIncomingConnections(vsInfo);
+  }
+}
+
 const AlgorithmParameterName ViewScene::BackgroundColor("BackgroundColor");
 const AlgorithmParameterName ViewScene::Ambient("Ambient");
 const AlgorithmParameterName ViewScene::Diffuse("Diffuse");
@@ -283,3 +313,4 @@ const AlgorithmParameterName ViewScene::HeadLightColor("HeadLightColor");
 const AlgorithmParameterName ViewScene::Light1Color("Light1Color");
 const AlgorithmParameterName ViewScene::Light2Color("Light2Color");
 const AlgorithmParameterName ViewScene::Light3Color("Light3Color");
+const AlgorithmParameterName ViewScene::ShowViewer("ShowViewer");

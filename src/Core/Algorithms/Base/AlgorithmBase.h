@@ -39,15 +39,15 @@
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
-  
-  class SCISHARE AlgorithmBase : public AlgorithmInterface, public AlgorithmParameterList, public AlgorithmLogger, public AlgorithmStatusReporter
+
+  class SCISHARE AlgorithmBase :
+    public AlgorithmInterface,
+    public AlgorithmParameterList,
+    public AlgorithmLogger,
+    public AlgorithmStatusReporter
   {
-  public:
-    virtual ~AlgorithmBase();
-  protected:
-    void dumpAlgoState() const;
   };
-  
+
 }}}
 
 #endif

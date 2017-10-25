@@ -65,7 +65,7 @@ public:
 
 protected:
   std::string filename_;
-  StaticPortName<typename HType::element_type, 0> objectPortName_;
+  Dataflow::Networks::StaticPortName<typename HType::element_type, 0> objectPortName_;
   virtual std::string defaultFileTypeName() const = 0;
   //GuiFilename gui_filename_;
   //GuiString gui_from_env_;
@@ -177,7 +177,6 @@ GenericReader<HType, PortTag>::execute()
 #endif
       )
   {
-    update_state(Executing);
     old_filemodification_ = new_filemodification;
 
     HType handle;

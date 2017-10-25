@@ -79,8 +79,6 @@ SetFieldDataToConstantValue::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     setAlgoDoubleFromState(Parameters::Value);
     setAlgoOptionFromState(Parameters::DataType);
     setAlgoOptionFromState(Parameters::BasisOrder);

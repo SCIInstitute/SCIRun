@@ -66,11 +66,12 @@ namespace SCIRun {
         Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
 
+      void adjustToolbar() override;
     Q_SIGNALS:
       void newGeometryValueForwarder();
       void mousePressSignalForTestingGeometryObjectFeedback(int x, int y, const std::string& selName);
 
-      protected Q_SLOTS:
+    protected Q_SLOTS:
       void menuMouseControlChanged(int index);
       void autoViewClicked();
       void newGeometryValue();
@@ -91,6 +92,7 @@ namespace SCIRun {
       void screenshotClicked();
       void saveNewGeometryChanged(int state);
       void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
+      void updateMeshComponentSelection(const QString& moduleId, const QString& component, bool selected);
       //Clipping Plane
       void setClippingPlaneIndex(int index);
       void setClippingPlaneVisible(bool value);
@@ -139,6 +141,14 @@ namespace SCIRun {
       void toggleLight1(bool value);
       void toggleLight2(bool value);
       void toggleLight3(bool value);
+      void resizingDone();
+
+      void lockRotationToggled();
+      void lockPanningToggled();
+      void lockZoomToggled();
+      void lockAllTriggered();
+      void unlockAllTriggered();
+      void toggleLockColor(bool locked);
 
     protected:
       void mousePressEvent(QMouseEvent* event) override;
@@ -151,6 +161,10 @@ namespace SCIRun {
       void showEvent(QShowEvent* evt) override;
       void hideEvent(QHideEvent* evt) override;
       void contextMenuEvent(QContextMenuEvent* evt) override {}
+      void resizeEvent(QResizeEvent *event) override;
+
+      void pullSpecial() override;
+
     private:
       struct ClippingPlane {
         bool visible, showFrame, reverseNormal;
@@ -174,6 +188,8 @@ namespace SCIRun {
       void addAutoViewButton();
       void addScreenshotButton();
       void addViewBarButton();
+      void addControlLockButton();
+      void addToolbarButton(QPushButton* button);
       void addViewBar();
       void addViewOptions();
       void addConfigurationButton();
@@ -227,11 +243,18 @@ namespace SCIRun {
       std::vector<ClippingPlane> clippingPlanes_;
       class Screenshot* screenshotTaker_;
       bool saveScreenshotOnNewGeometry_;
+      bool pulledSavedVisibility_ {false};
+      QTimer resizeTimer_;
 
       //geometries
       Modules::Visualization::TextBuilder textBuilder_;
       Graphics::Datatypes::GeometryHandle scaleBarGeom_;
       std::vector<Graphics::Datatypes::GeometryHandle> clippingPlaneGeoms_;
+      QAction* lockRotation_;
+      QAction* lockPan_;
+      QAction* lockZoom_;
+      QPushButton* controlLock_;
+      QPushButton* autoViewButton_;
 
       friend class ViewSceneControlsDock;
 
