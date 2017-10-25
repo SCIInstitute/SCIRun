@@ -27,53 +27,32 @@
 */
 /// @todo Documentation Modules/Legacy/Fields/RemoveUnusedNodes.cc
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Algorithms/Fields/Cleanup/RemoveUnusedNodes.h>
+#include <Modules/Legacy/Fields/RemoveUnusedNodes.h>
+//#include <Core/Algorithms/Legacy/Fields/Mapping/ApplyMappingMatrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Module.h>
-
-
-namespace SCIRun {
-
+using namespace SCIRun::Modules::Fields;
+//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-class RemoveUnusedNodes : public Module {
-  public:
-    RemoveUnusedNodes(GuiContext*);
-    virtual ~RemoveUnusedNodes() {}
-
-    virtual void execute();
-  
-  private:
-    SCIRunAlgo::RemoveUnusedNodesAlgo algo_;
-};
-
-
-DECLARE_MAKER(RemoveUnusedNodes)
-
-RemoveUnusedNodes::RemoveUnusedNodes(GuiContext* ctx) :
-  Module("RemoveUnusedNodes", ctx, Source, "ChangeMesh", "SCIRun")
+RemoveUnusedNodes::RemoveUnusedNodes()
+  : Module(ModuleLookupInfo("RemoveUnusedNodes", "ChangeMesh", "SCIRun"), false)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
 }
 
-void
-RemoveUnusedNodes::execute()
+void RemoveUnusedNodes::execute()
 {
-  FieldHandle input,output;
   
-  get_input_handle("Field",input,true);
-  
-  if (inputs_changed_)
+  auto input = getRequiredInput(RemoveUnusedNodes::InputField);
+
+  if (needToExecute())
   {
-    update_state(Executing);
-    
-    if (!(algo_.run(input,output))) return;
-    send_output_handle("Field",output);
+   auto out = algo().run(withInputData((InputField, input)));
+
+   sendOutputFromAlgorithm(OutputField, out);
   }
 }
-
-} // End namespace SCIRun
-
-
