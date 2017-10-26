@@ -104,8 +104,6 @@ TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
 	addParameter(Parameters::LambdaNum,200);
 	addParameter(Parameters::LambdaResolution,1e-6);
 	addParameter(Parameters::LambdaSliderValue,0);
-	//addParameter(Parameters::LambdaCorner,0);
-	//addParameter(Parameters::LCurveText, std::string(""));
 	addParameter(Parameters::regularizationSolutionSubcase,solution_constrained);
 	addParameter(Parameters::regularizationResidualSubcase,residual_constrained);
 }
@@ -384,8 +382,7 @@ double TikhonovAlgoAbstractBase::FindCorner( const std::vector<double>& rho, con
   ddrho[1] = ddrho[2];
   ddeta[0] = ddeta[2];
   ddeta[1] = ddeta[2];
-
-  //std::cout<<" eta rho kappa = [";
+  
   lambda_index = 0;
   for (int i = 0; i < nLambda; i++)
   {
@@ -396,9 +393,7 @@ double TikhonovAlgoAbstractBase::FindCorner( const std::vector<double>& rho, con
       maxKapa = kapa[i];
       lambda_index = i;
     }
-    //std::cout<<eta[i]<<" "<<rho[i]<<" "<<kapa[i]<<std::endl;
   }
-  //std::cout<<"];"<<std::endl;
 
   return lambdaArray[lambda_index];
 }

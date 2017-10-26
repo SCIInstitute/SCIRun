@@ -80,8 +80,6 @@ void SolveInverseProblemWithTikhonovSVD::setStateDefaults()
 	setStateIntFromAlgo(Parameters::LambdaNum);
 	setStateDoubleFromAlgo(Parameters::LambdaResolution);
 	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
-	//setStateDoubleFromAlgo(Parameters::LambdaCorner);
-	//setStateStringFromAlgo(Parameters::LCurveText);
 }
 
 // execute function
@@ -101,8 +99,6 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 	auto hSingularValues = getOptionalInput(singularValues);
 	auto hMatrixV = getOptionalInput(matrixV);
 
-	std::cout << "gato" << std::endl;
-
 	if (needToExecute())
 	{
 		// set parameters
@@ -117,8 +113,6 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 		setAlgoIntFromState(Parameters::LambdaNum);
 		setAlgoDoubleFromState(Parameters::LambdaResolution);
 		setAlgoDoubleFromState(Parameters::LambdaSliderValue);
-		//setAlgoIntFromState(Parameters::LambdaCorner);
-		//setAlgoStringFromState(Parameters::LCurveText);
 
 		// run
 		auto output = algo().run(
@@ -133,10 +127,6 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 								(matrixV,optionalAlgoInput(hMatrixV)))
 							);
 
-		// update L-curve
-		/* NO EXISTE
-        SolveInverseProblemWithTikhonovSVD_impl::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonov::update_lcurve_gui, this, _1, _2, _3);
-		*/
 
 		// set outputs
 		sendOutputFromAlgorithm(InverseSolution,output);

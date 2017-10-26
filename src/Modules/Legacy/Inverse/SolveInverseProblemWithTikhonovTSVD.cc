@@ -84,13 +84,7 @@ void SolveInverseProblemWithTikhonovTSVD::setStateDefaults()
   setStateStringFromAlgo(Parameters::TikhonovImplementation);
   setStateStringFromAlgoOption(Parameters::RegularizationMethod);
   setStateDoubleFromAlgo(Parameters::LambdaFromDirectEntry);
-  //setStateDoubleFromAlgo(Parameters::LambdaMin);
-  //setStateDoubleFromAlgo(Parameters::LambdaMax);
-  //setStateIntFromAlgo(Parameters::LambdaNum);
-  //setStateDoubleFromAlgo(Parameters::LambdaResolution);
   setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
-  //setStateIntFromAlgo(Parameters::LambdaCorner);
-  //setStateStringFromAlgo(Parameters::LCurveText);
 }
 
 // execute function
@@ -123,8 +117,7 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
 			Eigen::FullPivLU<SCIRun::Core::Datatypes::DenseMatrix::EigenBase> lu_decomp(*forward_matrix_h);
 			rank = lu_decomp.rank();
 		}
-
-		//std::cout << "Computed rank: " << rank << std::endl;
+    
 		// set parameters
 		auto state = get_state();
 
@@ -153,8 +146,6 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
 		setAlgoDoubleFromState(Parameters::LambdaMax);
 		setAlgoIntFromState(Parameters::LambdaNum);
 		setAlgoDoubleFromState(Parameters::LambdaSliderValue);
-		//setAlgoIntFromState(Parameters::LambdaCorner);
-		//setAlgoStringFromState(Parameters::LCurveText);
 
 		// run
 		auto output = algo().run(
@@ -168,10 +159,6 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
 								(matrixV,optionalAlgoInput(hMatrixV)))
 							);
 
-		// update L-curve
-		/* NO EXISTE
-        SolveInverseProblemWithTikhonovTSVD_impl::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonov::update_lcurve_gui, this, _1, _2, _3);
-		*/
 
 		// set outputs
 		sendOutputFromAlgorithm(InverseSolution,output);

@@ -76,8 +76,6 @@ void SolveInverseProblemWithTikhonov::setStateDefaults()
 	setStateIntFromAlgo(Parameters::LambdaNum);
 	setStateDoubleFromAlgo(Parameters::LambdaResolution);
 	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
-	//setStateDoubleFromAlgo(Parameters::LambdaCorner);
-	//setStateStringFromAlgo(Parameters::LCurveText);
 	setStateIntFromAlgo(Parameters::regularizationSolutionSubcase);
 	setStateIntFromAlgo(Parameters::regularizationResidualSubcase);
 }
@@ -109,18 +107,12 @@ void SolveInverseProblemWithTikhonov::execute()
     setAlgoIntFromState(Parameters::LambdaNum);
     setAlgoDoubleFromState(Parameters::LambdaResolution);
     setAlgoDoubleFromState(Parameters::LambdaSliderValue);
-    //setAlgoDoubleFromState(Parameters::LambdaCorner);
-    //setAlgoStringFromState(Parameters::LCurveText);
     setAlgoIntFromState(Parameters::regularizationSolutionSubcase);
     setAlgoIntFromState(Parameters::regularizationResidualSubcase);
 
 		// run
 		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,optionalAlgoInput(hMatrixRegMat))(WeightingInSensorSpace,optionalAlgoInput(hMatrixNoiseCov))) );
 
-		// update L-curve
-		/* NO EXISTE
-        SolveInverseProblemWithTikhonovImpl_child::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonov::update_lcurve_gui, this, _1, _2, _3);
-		*/
 
 		// set outputs
 		sendOutputFromAlgorithm(InverseSolution,output);
