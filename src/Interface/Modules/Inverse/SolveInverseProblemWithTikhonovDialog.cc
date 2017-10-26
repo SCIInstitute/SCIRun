@@ -51,7 +51,6 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
 
   WidgetStyleMixin::tabStyle(inputTabWidget_);
 
-  addDoubleLineEditManager(lCurveLambdaLineEdit_, Parameters::LambdaCorner);
   addSpinBoxManager(lambdaNumberSpinBox_, Parameters::LambdaNum);
   addDoubleSpinBoxManager(lambdaDoubleSpinBox_, Parameters::LambdaFromDirectEntry);
   addDoubleSpinBoxManager(lambdaMinDoubleSpinBox_, Parameters::LambdaMin);
@@ -67,7 +66,6 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   addRadioButtonGroupManager({ residualConstraintRadioButton_, squaredResidualSolutionRadioButton_ }, Parameters::regularizationResidualSubcase);
 
   addComboBoxManager(lambdaMethodComboBox_, Parameters::RegularizationMethod, lambdaMethod_);
-  addTextEditManager(lCurveTextEdit_, Parameters::LCurveText);
   
   connect(lambdaSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));
   connect(lambdaSliderDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderValue(double)));
@@ -100,4 +98,14 @@ void SolveInverseProblemWithTikhonovDialog::setSliderMax(double value)
 void SolveInverseProblemWithTikhonovDialog::setSliderStep(double value)
 {
   lambdaSlider_->setSingleStep(static_cast<int>(value));
+}
+
+void SolveInverseProblemWithTikhonovDialog::pullAndDisplayInfo()
+{
+  auto str = transient_value_cast<std::string>(state_->getTransientValue("LambdaCurveInfo"));
+  lCurveTextEdit_->setPlainText(QString::fromStdString(str));
+  auto lambda = transient_value_cast<std::string>(state_->getTransientValue("LambdaCorner"));
+  std::ostringstream str_l;
+  str_l << lambda;
+  lCurveLambdaLineEdit_->setText(QString::fromStdString(str_l.str()));
 }

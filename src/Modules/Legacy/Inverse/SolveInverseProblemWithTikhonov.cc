@@ -76,8 +76,8 @@ void SolveInverseProblemWithTikhonov::setStateDefaults()
 	setStateIntFromAlgo(Parameters::LambdaNum);
 	setStateDoubleFromAlgo(Parameters::LambdaResolution);
 	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
-	setStateDoubleFromAlgo(Parameters::LambdaCorner);
-	setStateStringFromAlgo(Parameters::LCurveText);
+	//setStateDoubleFromAlgo(Parameters::LambdaCorner);
+	//setStateStringFromAlgo(Parameters::LCurveText);
 	setStateIntFromAlgo(Parameters::regularizationSolutionSubcase);
 	setStateIntFromAlgo(Parameters::regularizationResidualSubcase);
 }
@@ -109,7 +109,7 @@ void SolveInverseProblemWithTikhonov::execute()
     setAlgoIntFromState(Parameters::LambdaNum);
     setAlgoDoubleFromState(Parameters::LambdaResolution);
     setAlgoDoubleFromState(Parameters::LambdaSliderValue);
-    setAlgoDoubleFromState(Parameters::LambdaCorner);
+    //setAlgoDoubleFromState(Parameters::LambdaCorner);
     //setAlgoStringFromState(Parameters::LCurveText);
     setAlgoIntFromState(Parameters::regularizationSolutionSubcase);
     setAlgoIntFromState(Parameters::regularizationResidualSubcase);
@@ -134,10 +134,9 @@ void SolveInverseProblemWithTikhonov::execute()
 
     if (regularization_method== "lcurve")
     {
-      std::string mod_id = get_id();
-      auto str = LCurvePlot::update_lcurve_gui(mod_id,lambda,lambda_array,lambda_index);
-      state->setValue(Parameters::LambdaCorner, lambda->get(0,0));
-      state->setValue(Parameters::LCurveText, str.str());
+      auto str = LCurvePlot::update_lcurve_gui(get_id(),lambda,lambda_array,lambda_index);
+      state->setTransientValue("LambdaCorner", lambda->get(0,0));
+      state->setTransientValue("LambdaCurveInfo", str.str());
     }
   }
 }

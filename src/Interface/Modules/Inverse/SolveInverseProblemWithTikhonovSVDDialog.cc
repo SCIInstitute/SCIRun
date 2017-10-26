@@ -49,7 +49,6 @@ SolveInverseProblemWithTikhonovSVDDialog::SolveInverseProblemWithTikhonovSVDDial
   lambdaMethod_.insert(StringPair("Slider", "slider"));
   lambdaMethod_.insert(StringPair("L-curve", "lcurve"));
 
-  addDoubleLineEditManager(lCurveLambdaLineEdit_, Parameters::LambdaCorner);
   addSpinBoxManager(lambdaNumberSpinBox_, Parameters::LambdaNum);
   addDoubleSpinBoxManager(lambdaDoubleSpinBox_, Parameters::LambdaFromDirectEntry);
   addDoubleSpinBoxManager(lambdaMinDoubleSpinBox_, Parameters::LambdaMin);
@@ -61,7 +60,6 @@ SolveInverseProblemWithTikhonovSVDDialog::SolveInverseProblemWithTikhonovSVDDial
   addDoubleSpinBoxManager(lambdaSliderDoubleSpinBox_, Parameters::LambdaSliderValue);
 
   addComboBoxManager(lambdaMethodComboBox_, Parameters::RegularizationMethod, lambdaMethod_);
-  addTextEditManager(lCurveTextEdit_, Parameters::LCurveText);
 
   connect(lambdaSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));
   connect(lambdaSliderDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderValue(double)));
@@ -95,4 +93,14 @@ void SolveInverseProblemWithTikhonovSVDDialog::setSliderMax(double value)
 void SolveInverseProblemWithTikhonovSVDDialog::setSliderStep(double value)
 {
   lambdaSlider_->setSingleStep(static_cast<int>(value));
+}
+
+void SolveInverseProblemWithTikhonovSVDDialog::pullAndDisplayInfo()
+{
+  auto str = transient_value_cast<std::string>(state_->getTransientValue("LambdaCurveInfo"));
+  lCurveTextEdit_->setPlainText(QString::fromStdString(str));
+  auto lambda = transient_value_cast<std::string>(state_->getTransientValue("LambdaCorner"));
+  std::ostringstream str_l;
+  str_l << lambda;
+  lCurveLambdaLineEdit_->setText(QString::fromStdString(str_l.str()));
 }

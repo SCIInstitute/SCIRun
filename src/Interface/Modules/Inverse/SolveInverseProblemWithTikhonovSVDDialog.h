@@ -46,6 +46,7 @@ public:
   SolveInverseProblemWithTikhonovSVDDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
+  virtual void moduleExecuted() override { pullAndDisplayInfo(); }
 
 private Q_SLOTS:
   void setSpinBoxValue(int value);
@@ -53,6 +54,7 @@ private Q_SLOTS:
   void setSliderMin(double value);
   void setSliderMax(double value);
   void setSliderStep(double value);
+  void pullAndDisplayInfo();
 private:
   GuiStringTranslationMap lambdaMethod_;
 };

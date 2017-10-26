@@ -53,8 +53,8 @@ namespace Inverse {
 	ALGORITHM_PARAMETER_DECL(LambdaNum);
 	ALGORITHM_PARAMETER_DECL(LambdaResolution);
 	ALGORITHM_PARAMETER_DECL(LambdaSliderValue);
-	ALGORITHM_PARAMETER_DECL(LambdaCorner);
-	ALGORITHM_PARAMETER_DECL(LCurveText);
+	//ALGORITHM_PARAMETER_DECL(LambdaCorner);
+	//ALGORITHM_PARAMETER_DECL(LCurveText);
 
 	class SCISHARE TikhonovAlgoAbstractBase : virtual public AlgorithmBase
 	{

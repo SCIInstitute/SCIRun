@@ -88,8 +88,8 @@ ALGORITHM_PARAMETER_DEF( Inverse, LambdaMax);
 ALGORITHM_PARAMETER_DEF( Inverse, LambdaNum);
 ALGORITHM_PARAMETER_DEF( Inverse, LambdaResolution);
 ALGORITHM_PARAMETER_DEF( Inverse, LambdaSliderValue);
-ALGORITHM_PARAMETER_DEF( Inverse, LambdaCorner);
-ALGORITHM_PARAMETER_DEF( Inverse, LCurveText);
+//ALGORITHM_PARAMETER_DEF( Inverse, LambdaCorner);
+//ALGORITHM_PARAMETER_DEF( Inverse, LCurveText);
 ALGORITHM_PARAMETER_DEF( Inverse, regularizationSolutionSubcase);
 ALGORITHM_PARAMETER_DEF( Inverse, regularizationResidualSubcase);
 
@@ -104,8 +104,8 @@ TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
 	addParameter(Parameters::LambdaNum,200);
 	addParameter(Parameters::LambdaResolution,1e-6);
 	addParameter(Parameters::LambdaSliderValue,0);
-	addParameter(Parameters::LambdaCorner,0);
-	addParameter(Parameters::LCurveText, std::string(""));
+	//addParameter(Parameters::LambdaCorner,0);
+	//addParameter(Parameters::LCurveText, std::string(""));
 	addParameter(Parameters::regularizationSolutionSubcase,solution_constrained);
 	addParameter(Parameters::regularizationResidualSubcase,residual_constrained);
 }
