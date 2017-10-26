@@ -1,6 +1,7 @@
 #ifndef SPIRE_COMMON_CEREALHEAP_HPP
 #define SPIRE_COMMON_CEREALHEAP_HPP
 
+#include <es-log/trace-log.h>
 #include <entity-system/ESCoreBase.hpp>
 #include <tny/tny.hpp>
 

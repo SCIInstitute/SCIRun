@@ -7,6 +7,7 @@
 // the BaseSystem interface to iterate over all systems with the
 // walkComponentsOver override.
 
+#include <es-log/trace-log.h>
 #include <iostream>
 #include <array>
 #include <set>          // Only used in a corner case of walkComponents where

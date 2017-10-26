@@ -1,6 +1,7 @@
 #ifndef SPIRE_ENTITY_SYSTEM_ESCORE_BASE_HPP
 #define SPIRE_ENTITY_SYSTEM_ESCORE_BASE_HPP
 
+#include <es-log/trace-log.h>
 #include <map>
 #include <list>
 #include <iostream>

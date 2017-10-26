@@ -1,6 +1,7 @@
 #ifndef SPIRE_COMMON_COMPONENTSERIALIZE_HPP
 #define SPIRE_COMMON_COMPONENTSERIALIZE_HPP
 
+#include <es-log/trace-log.h>
 #include <entity-system/ESCoreBase.hpp>
 #include "CerealTypeSerialize.hpp"
 

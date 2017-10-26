@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_COMPONENT_RENDER_SEQUENCE_HPP
 #define SPIRE_RENDER_COMPONENT_RENDER_SEQUENCE_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
 
@@ -23,4 +24,4 @@ struct RenderSequence
 
 } // namespace ren
 
-#endif 
+#endif

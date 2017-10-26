@@ -1,6 +1,8 @@
 #ifndef SPIRE_ES_GENERAL_STATIC_KEYBOARD_INPUT_HPP
 #define SPIRE_ES_GENERAL_STATIC_KEYBOARD_INPUT_HPP
 
+#include <es-log/trace-log.h>
+
 /// \note If you want to enter text from the keyboard, you should use the
 ///       character callbacks (glfw) not the keyboard input.
 ///       For example, you'll never see StaticKeyboardInput present on
@@ -108,7 +110,7 @@ struct StaticKeyboardInput
     }
     else
     {
-      std::cerr << "Eating keyboard event. Buffer too small." << std::endl;
+      logRendererError("Eating keyboard event. Buffer too small.");
     }
   }
 };

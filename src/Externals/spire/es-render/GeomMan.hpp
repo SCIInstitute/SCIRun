@@ -1,6 +1,7 @@
 #ifndef SPIRE_ES_RENDER_GEOMMAN_HPP
 #define SPIRE_ES_RENDER_GEOMMAN_HPP
 
+#include <es-log/trace-log.h>
 #include <map>
 #include <set>
 #include <es-cereal/CerealCore.hpp>

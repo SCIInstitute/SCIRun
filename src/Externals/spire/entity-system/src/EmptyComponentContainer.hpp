@@ -1,6 +1,8 @@
 #ifndef SPIRE_ENTITY_SYSTEM_EMPTYCOMPONENTCONTAINER_HPP
 #define SPIRE_ENTITY_SYSTEM_EMPTYCOMPONENTCONTAINER_HPP
 
+#include <es-log/trace-log.h>
+
 namespace spire {
 
 // Component base class, used to verify component types at run-time.

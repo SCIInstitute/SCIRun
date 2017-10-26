@@ -32,6 +32,7 @@
 #ifndef SPIRE_ENTITY_SYSTEM_EMPTYSYSTEM_HPP
 #define SPIRE_ENTITY_SYSTEM_EMPTYSYSTEM_HPP
 
+#include <es-log/trace-log.h>
 #include "BaseSystem.hpp"
 #include "ESCoreBase.hpp"
 
@@ -76,4 +77,4 @@ public:
 
 } // namespace spire
 
-#endif 
+#endif

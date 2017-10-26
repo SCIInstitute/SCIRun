@@ -1,6 +1,7 @@
 #ifndef SPIRE_ENTITY_SYSTEM_BASECOMPONENTCONTAINER_HPP
 #define SPIRE_ENTITY_SYSTEM_BASECOMPONENTCONTAINER_HPP
 
+#include <es-log/trace-log.h>
 #include <cstdint>
 #include <string>
 

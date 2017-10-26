@@ -1,6 +1,7 @@
 #ifndef SPIRE_ES_RENDER_UTIL_LINES_HPP
 #define SPIRE_ES_RENDER_UTIL_LINES_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 #include <es-cereal/CerealCore.hpp>
 #include "es-render/comp/VBO.hpp"
@@ -26,7 +27,6 @@ GLuint getColorLineShader(spire::CerealCore& core);
 // found in TexQuad.hpp. They are the same as this line unit square transform
 // would be.
 
-} // namespace ren 
+} // namespace ren
 
-#endif 
-
+#endif
