@@ -29,7 +29,7 @@
 #ifndef ES_TRACE_LOG_H
 #define ES_TRACE_LOG_H
 
-#include <Core/Logging/Log.h>
+#include <Core/Logging/LoggerFwd.h>
 
 namespace spire
 {
@@ -41,14 +41,21 @@ namespace spire
   };
 }
 
-
-#define RENDERER_LOG(...) TRACE_LOG(spire::RendererLog::get(), __VA_ARGS__)
 #define logRendererError(...) spire::RendererLog::get()->error(__VA_ARGS__)
 
 //TODO: cmake controlled flag
-//#ifdef RENDERER_TRACE_MODE
 
-#define RENDERER_LOG_FUNCTION_SCOPE LOG_FUNCTION_SCOPE(spire::RendererLog);
+#ifdef RENDERER_TRACE_ON
+  #define SPDLOG_TRACE_ON
+  #include <spdlog/spdlog.h>
+  #define RENDERER_LOG(...) SPDLOG_TRACE(spire::RendererLog::get(), __VA_ARGS__)
+  #define RENDERER_LOG_FUNCTION_SCOPE LOG_FUNCTION_SCOPE(spire::RendererLog);
+#else
+  #include <spdlog/spdlog.h>
+  #define RENDERER_LOG(...)
+  #define RENDERER_LOG_FUNCTION_SCOPE
+#endif
 
+#include <Core/Logging/ScopedFunctionLogger.h>
 
 #endif

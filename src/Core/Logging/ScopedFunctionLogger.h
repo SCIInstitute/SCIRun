@@ -26,15 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_LOGGING_LOGGERFWD_H
-#define CORE_LOGGING_LOGGERFWD_H
+#ifndef CORE_LOGGING_SCOPEDFUNCTIONLOGGER_H
+#define CORE_LOGGING_SCOPEDFUNCTIONLOGGER_H
 
-#include <boost/shared_ptr.hpp>
-
-namespace spdlog
-{
-  class logger;
-}
+#include <Core/Logging/LoggerFwd.h>
 
 namespace SCIRun
 {
@@ -42,18 +37,29 @@ namespace SCIRun
   {
     namespace Logging
     {
-      class LegacyLoggerInterface;
-      typedef boost::shared_ptr<LegacyLoggerInterface> LoggerHandle;
-
-      using Logger2 = std::shared_ptr<spdlog::logger>;
+      template <class LogType>
+      struct ScopedFunctionLogger
+      {
+        explicit ScopedFunctionLogger(const char* functionName) :
+          logger_(spdlog::get(LogType::name())),
+          functionName_(functionName)
+        {
+          if (logger_)
+            logger_->trace("Entering function: {}", functionName_);
+        }
+        ~ScopedFunctionLogger()
+        {
+          if (logger_)
+            logger_->trace("Leaving function: {}", functionName_);
+        }
+      private:
+        Logger2 logger_;
+        const char* functionName_;
+      };
     }
   }
 }
 
-#ifdef WIN32
-#define LOG_FUNC __FUNCSIG__
-#else
-#define LOG_FUNC __PRETTY_FUNCTION__
-#endif
+#define LOG_FUNCTION_SCOPE(LogType) SCIRun::Core::Logging::ScopedFunctionLogger<LogType> sfl ## __LINE__ (LOG_FUNC);
 
 #endif

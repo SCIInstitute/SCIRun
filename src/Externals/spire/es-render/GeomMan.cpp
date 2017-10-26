@@ -1,3 +1,4 @@
+#include <es-log/trace-log.h>
 #include <entity-system/GenericSystem.hpp>
 #include <tny/tny.hpp>
 #include <es-fs/Filesystem.hpp>
@@ -13,8 +14,6 @@
 #include "comp/StaticTextureMan.hpp"
 #include "comp/IBO.hpp"
 #include "comp/VBO.hpp"
-
-#include <es-log/trace-log.h>
 
 namespace es = spire;
 namespace fs = spire;

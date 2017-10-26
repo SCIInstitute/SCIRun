@@ -68,8 +68,6 @@ namespace SCIRun
         boost::filesystem::path directory_;
       };
 
-      using Logger2 = std::shared_ptr<spdlog::logger>;
-
       class SCISHARE Log2
       {
       public:
@@ -119,41 +117,8 @@ namespace SCIRun
       {
         SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(str);
       }
-
-      template <class LogType>
-      struct ScopedFunctionLogger
-      {
-        explicit ScopedFunctionLogger(const char* functionName) :
-          logger_(spdlog::get(LogType::name())),
-          functionName_(functionName)
-        {
-          if (logger_)
-            logger_->trace("Entering function: {}", functionName_);
-        }
-        ~ScopedFunctionLogger()
-        {
-          if (logger_)
-            logger_->trace("Leaving function: {}", functionName_);
-        }
-      private:
-        Logger2 logger_;
-        const char* functionName_;
-      };
     }
   }
 }
-
-#ifdef WIN32
-#define LOG_FUNC __FUNCSIG__
-#else
-#define LOG_FUNC __PRETTY_FUNCTION__
-#endif
-
-#define TRACE_LOG(log, ...) SPDLOG_TRACE(log, __VA_ARGS__)
-
-//TODO: cmake controlled flag
-//#ifdef RENDERER_TRACE_MODE
-
-#define LOG_FUNCTION_SCOPE(LogType) SCIRun::Core::Logging::ScopedFunctionLogger<LogType> sfl ## __LINE__ (LOG_FUNC);
 
 #endif
