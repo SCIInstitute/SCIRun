@@ -34,6 +34,7 @@
 #include <Core/Datatypes/Scalar.h>
 #include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Modules/Legacy/Inverse/LCurvePlot.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
 // #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
@@ -147,38 +148,13 @@ void SolveInverseProblemWithTikhonovSVD::execute()
     
     auto regularization_method  = state->getValue(Parameters::RegularizationMethod).toString();
     
-    if (regularization_method== "lcurve") update_lcurve_gui(lambda,lambda_array,lambda_index);
-
+    if (regularization_method== "lcurve")
+    {
+      std::string mod_id = get_id();
+      auto str = LCurvePlot::update_lcurve_gui(mod_id,lambda,lambda_array,lambda_index);
+      state->setValue(Parameters::LambdaCorner, lambda->get(0,0));
+      state->setValue(Parameters::LCurveText, str.str());
+    }
 	}
 }
 
-void SolveInverseProblemWithTikhonovSVD::update_lcurve_gui(const  DenseMatrixHandle& lambda, const DenseMatrixHandle& input, const  DenseMatrixHandle& lambda_index)
-{
-  double *l_data = lambda->data();
-  double lamb =l_data[0];
-  auto state = get_state();
-  state->setValue(Parameters::LambdaCorner, lamb);
-  double *li_data = lambda->data();
-  int lam_ind = static_cast<int>(li_data[0]);
-  
-  size_t nLambda = input->rows();
-  
-  auto eta = input->col(1);
-  auto rho = input->col(2);
-  
-  
-  //estimate L curve corner
-  const double lower_y = std::min(eta[0] / 10.0, eta[nLambda - 1]);
-  
-  std::ostringstream str;
-  str << get_id() << " plot_graph \" ";
-  for (int k = 0; k < nLambda; k++)    str << log10(rho[k]) << " " << log10(eta[k]) << " ";
-  
-  str << "\" \" " << log10(rho[0] / 10.0) << " " << log10(eta[lam_ind]) << " ";
-  str << log10(rho[lam_ind]) << " " << log10(eta[lam_ind]) << " ";
-  str << log10(rho[lam_ind]) << " " << log10(lower_y) << " \" ";
-  str << lamb << " " << lam_ind << " ; \n";
-  
-  state->setValue(Parameters::LCurveText, str.str());
-  
-}

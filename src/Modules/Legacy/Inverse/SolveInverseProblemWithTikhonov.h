@@ -62,7 +62,6 @@ namespace Inverse {
 		MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 
 	private:
-		virtual void update_lcurve_gui(const SCIRun::Core::Datatypes::DenseMatrixHandle& lambda, const SCIRun::Core::Datatypes::DenseMatrixHandle& input, const SCIRun::Core::Datatypes::DenseMatrixHandle& lambda_index);
 	};
 }}}
 

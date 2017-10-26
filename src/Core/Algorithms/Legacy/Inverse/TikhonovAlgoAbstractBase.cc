@@ -268,7 +268,7 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 	
 	output[InverseSolution] = boost::make_shared<DenseMatrix>(solution);
 	output[RegularizationParameter] = boost::make_shared<DenseMatrix>(1, 1, lambda);
-  output[LambdaArray] = boost::make_shared<DenseMatrix>(*lambdamatrix);
+  output[LambdaArray] = lambdamatrix;
   output[Lambda_Index]= boost::make_shared<DenseMatrix>(1, 1, lambda_index);
   
 	return output;
@@ -292,7 +292,6 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
   std::vector<double> eta(nLambda, 0.0);
   
   lambdamatrix.reset(new DenseMatrix(nLambda,3,0.0));
-  double *data = lambdamatrix->data();
 
   auto lambdaArray = algoImpl.computeLambdaArray( lambdaMin, lambdaMax, nLambda );
 
@@ -305,7 +304,7 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
   for (int j = 0; j < nLambda; j++)
   {
     solution = algoImpl.computeInverseSolution( lambdaArray[j], false);
-    data[j*3] = lambdaArray[j];
+    lambdamatrix->put(j,0,lambdaArray[j]);
 
     // if using source regularization matrix, apply it to compute Rx (for the eta computations)
     if (sourceWeighting)
@@ -340,8 +339,8 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
     // compute rho and eta. Using Frobenious norm when using matrices
     rho[j] = CAx.norm();
     eta[j] = Rx.norm();
-    data[j*3+1] = rho[j];
-    data[j*3+2] = eta[j];
+    lambdamatrix->put(j,1,rho[j]);
+    lambdamatrix->put(j,2,eta[j]);
   }
 
   // Find corner in L-curve
