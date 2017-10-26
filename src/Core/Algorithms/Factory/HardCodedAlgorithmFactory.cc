@@ -93,6 +93,7 @@
 #include <Core/Algorithms/Legacy/Converter/ConvertMatrixToString.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/ExtractSimpleIsosurfaceAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/ClipMesh/ClipMeshByIsovalue.h>
+#include <Core/Algorithms/Legacy/Fields/Cleanup/CleanupTetMesh.h>
 #include <boost/functional/factory.hpp>
 #include <boost/assign.hpp>
 #include <Core/Algorithms/Math/ComputePCA.h>
@@ -186,6 +187,7 @@ void HardCodedAlgorithmFactory::addToMakerMap()
 	    ADD_MODULE_ALGORITHM(RegisterWithCorrespondences, RegisterWithCorrespondencesAlgo)
       ADD_MODULE_ALGORITHM(ClipVolumeByIsovalue, ClipMeshByIsovalueAlgo)
       ADD_MODULE_ALGORITHM(RefineTetMeshLocally, RefineTetMeshLocallyAlgorithm)
+      ADD_MODULE_ALGORITHM(CleanupTetMesh, CleanupTetMeshAlgo)
      ;
   }
 }

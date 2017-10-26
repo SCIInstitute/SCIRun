@@ -36,17 +36,21 @@
 #include <Core/GeometryPrimitives/Point.h>
 
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 CleanupTetMeshAlgo::CleanupTetMeshAlgo()
 {
-
+  addParameter(Parameters::FixOrientationCheckBox, true);
+  addParameter(Parameters::RemoveDegenerateCheckBox, true);
 }
 
 AlgorithmInputName CleanupTetMeshAlgo::InputTetMesh("InputTetMesh");
 AlgorithmOutputName CleanupTetMeshAlgo::OutputTetMesh("OutputTetMesh");
+
+ALGORITHM_PARAMETER_DEF(Fields, FixOrientationCheckBox);
+ALGORITHM_PARAMETER_DEF(Fields, RemoveDegenerateCheckBox);
 
 bool CleanupTetMeshAlgo::run(FieldHandle input, FieldHandle& output) const
 { 
@@ -86,8 +90,8 @@ bool CleanupTetMeshAlgo::run(FieldHandle input, FieldHandle& output) const
   VMesh* omesh = output->vmesh();
   VField* ofield = output->vfield();
   
-  bool fix_orientation = true;//get_bool("fix_orientation");
-  bool remove_degenerate = true; //get_bool("remove_degenerate");
+  bool fix_orientation = get(Parameters::FixOrientationCheckBox).toBool();
+  bool remove_degenerate = get(Parameters::RemoveDegenerateCheckBox).toBool();
 
   omesh->copy_nodes(imesh);
   

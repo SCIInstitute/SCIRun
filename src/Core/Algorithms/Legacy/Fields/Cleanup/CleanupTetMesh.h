@@ -27,17 +27,21 @@
 */
 
 #ifndef CORE_ALGORITHMS_FIELDS_CLEANUP_CLEANUPTETMESH_H
-#define CORE_ALGORITHMS_FIELDS_CLEANUP_CLEANUPTETMESH_H
+#define CORE_ALGORITHMS_FIELDS_CLEANUP_CLEANUPTETMESH_H_1
 
-//#include <Core/Datatypes/Legacy/Base/Types.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
+#include <Core/Datatypes/Legacy/Base/Types.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
-namespace Math {
-
+namespace Fields {
+  
+  ALGORITHM_PARAMETER_DECL(FixOrientationCheckBox);
+  ALGORITHM_PARAMETER_DECL(RemoveDegenerateCheckBox);
+  
   class SCISHARE CleanupTetMeshAlgo : public AlgorithmBase
   {
   public:

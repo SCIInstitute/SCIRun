@@ -32,12 +32,24 @@
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
-CleanupTetMesh::CleanupTetMesh()
-  : Module(ModuleLookupInfo("CleanupTetMesh", "ChangeMesh", "SCIRun"), false)
+MODULE_INFO_DEF(CleanupTetMesh, ChangeFieldData, SCIRun)
+
+CleanupTetMesh::CleanupTetMesh() :  Module(staticInfo_)
 {
   INITIALIZE_PORT(InputTetMesh);
   INITIALIZE_PORT(OutputTetMesh);
+}
+
+void CleanupTetMesh::setStateDefaults()
+{
+  auto state = get_state();
+  setStateBoolFromAlgo(Parameters::FixOrientationCheckBox);
+  setStateBoolFromAlgo(Parameters::RemoveDegenerateCheckBox);
 }
 
 void CleanupTetMesh::execute()
@@ -47,6 +59,8 @@ void CleanupTetMesh::execute()
 
   if (needToExecute())
   {
+    setAlgoBoolFromState(Parameters::FixOrientationCheckBox);
+    setAlgoBoolFromState(Parameters::RemoveDegenerateCheckBox);
     auto output = algo().run(withInputData((InputTetMesh, ifield)));
 
     sendOutputFromAlgorithm(OutputTetMesh, output);
