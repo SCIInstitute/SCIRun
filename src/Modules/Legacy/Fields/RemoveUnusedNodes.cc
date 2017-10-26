@@ -28,7 +28,6 @@
 /// @todo Documentation Modules/Legacy/Fields/RemoveUnusedNodes.cc
 
 #include <Modules/Legacy/Fields/RemoveUnusedNodes.h>
-//#include <Core/Algorithms/Legacy/Fields/Mapping/ApplyMappingMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun::Modules::Fields;

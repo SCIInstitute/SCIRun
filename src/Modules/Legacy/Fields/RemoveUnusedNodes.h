@@ -27,7 +27,7 @@
 */
 
 ///@file RemoveUnusedNodes.h
-///@brief This module computes a volumetric right-hand-side. This module is needed for TMS simulations in the BrainStimulator package.
+///@brief This module ignores/removes all mesh nodes which are not part of any mesh element definition.
 ///
 ///@author
 /// ported by Moritz Dannhauer (10/24/2017) from SCIRun4
