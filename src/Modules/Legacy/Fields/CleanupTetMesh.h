@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,30 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Modules/Legacy/Fields/CleanupTetMesh.h>
-#include <Core/Algorithms/Legacy/Fields/Cleanup/CleanupTetMesh.h>
+#ifndef MODULES_LEGACY_FIELDS_CleanupTetMesh_H__
+#define MODULES_LEGACY_FIELDS_CleanupTetMesh_H__
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Dataflow::Networks;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-CleanupTetMesh::CleanupTetMesh()
-  : Module(ModuleLookupInfo("CleanupTetMesh", "ChangeMesh", "SCIRun"), false)
-{
-  INITIALIZE_PORT(InputTetMesh);
-  INITIALIZE_PORT(OutputTetMesh);
-}
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-void CleanupTetMesh::execute()
-{
-  
-  auto ifield = getRequiredInput(InputTetMesh);
+	/// @class CleanupTetMesh
+	/// @brief Repairs tetrahedral meshes: (1) removing regenerate elements, (2) fixing its orientation  
 
-  if (needToExecute())
-  {
-    auto output = algo().run(withInputData((InputTetMesh, ifield)));
+      class SCISHARE CleanupTetMesh : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        CleanupTetMesh();
 
-    sendOutputFromAlgorithm(OutputTetMesh, output);
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
+
+        INPUT_PORT(0, InputTetMesh, Field);
+        OUTPUT_PORT(0, OutputTetMesh, Field);
+
+        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+      };
+
+    }
   }
 }
 
+#endif

@@ -74,6 +74,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
 #include <Modules/Legacy/Fields/GeneratePointSamplesFromFieldOrWidget.h>
 #include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
+#include <Modules/Legacy/Fields/CleanupTetMesh.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Legacy/Math/BuildNoiseColumnMatrix.h>
 #include <Modules/Legacy/Math/ComputeSVD.h>
@@ -184,8 +185,8 @@ void ModuleDescriptionLookup::addEssentialModules()
   addModuleDesc<GeneratePointSamplesFromField>("Real ported module", "in progress");
   addModuleDesc<GeneratePointSamplesFromFieldOrWidget>("Real ported module", "in progress");
   addModuleDesc<GenerateSinglePointProbeFromField>("Real ported module", "in progress");
-
   addModuleDesc<CollectMatrices>("Real ported module", "...");
+  addModuleDesc<CleanupTetMesh>("CleanupTetMesh", "ChangeMesh", "SCIRun", "Real ported module", "...");
 }
 
 void ModuleDescriptionLookup::addTestingModules()

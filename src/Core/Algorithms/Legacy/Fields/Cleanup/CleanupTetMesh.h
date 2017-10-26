@@ -26,39 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #ifndef CORE_ALGORITHMS_FIELDS_CLEANUP_CLEANUPTETMESH_H
-#define CORE_ALGORITHMS_FIELDS_CLEANUP_CLEANUPTETMESH_H 1
+#define CORE_ALGORITHMS_FIELDS_CLEANUP_CLEANUPTETMESH_H
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+//#include <Core/Datatypes/Legacy/Base/Types.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+namespace Math {
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE CleanupTetMeshAlgo : public AlgoBase
-{
+  class SCISHARE CleanupTetMeshAlgo : public AlgorithmBase
+  {
   public:
-    /// Set defaults
-    CleanupTetMeshAlgo()
-    {
-      add_bool("fix_orientation",true);
-      add_bool("remove_degenerate",true);
-    }
-  
-    /// run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
-};
+    CleanupTetMeshAlgo();
+    AlgorithmOutput run(const AlgorithmInput& input) const; 
+    static AlgorithmInputName InputTetMesh;
+    static AlgorithmOutputName OutputTetMesh;
+    bool run(FieldHandle input, FieldHandle& output) const;
+  };
 
-} // end namespace SCIRunAlgo
+}}}}
+
 
 #endif
-
