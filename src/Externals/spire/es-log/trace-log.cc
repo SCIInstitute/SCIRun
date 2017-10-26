@@ -27,21 +27,25 @@
 */
 
 #include <es-log/trace-log.h>
+#include <iostream>
 
 using namespace spire;
 using namespace SCIRun::Core::Logging;
 
+SCIRun::Core::Logging::Logger2 RendererLog::logger_;
+
 Logger2 RendererLog::get()
 {
   static bool first = true;
-  static Logger2 logger(spdlog::basic_logger_mt(name(), "renderer.log"));
-  logger->set_level(spdlog::level::trace);
-  logger->flush_on(spdlog::level::info);
 
   if (first)
   {
     first = false;
-    logger->info("Start of Renderer log.");
+    //std::cout << "HELLO INIT LOG" << std::endl;
+    logger_ = spdlog::basic_logger_mt(name(), "renderer.log");
+    logger_->set_level(spdlog::level::trace);
+    logger_->flush_on(spdlog::level::info);
+    logger_->info("Start of Renderer log.");
   }
-  return logger;
+  return logger_;
 }

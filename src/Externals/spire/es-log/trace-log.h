@@ -38,6 +38,8 @@ namespace spire
   public:
     static SCIRun::Core::Logging::Logger2 get();
     static const char* name() { return "renderer"; };
+  private:
+    static SCIRun::Core::Logging::Logger2 logger_;
   };
 }
 
