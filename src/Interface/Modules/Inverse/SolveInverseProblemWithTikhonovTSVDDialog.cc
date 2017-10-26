@@ -99,7 +99,7 @@ void SolveInverseProblemWithTikhonovTSVDDialog::pullAndDisplayInfo()
 {
   auto str = transient_value_cast<std::string>(state_->getTransientValue("LambdaCurveInfo"));
   lCurveTextEdit_->setPlainText(QString::fromStdString(str));
-  auto lambda = transient_value_cast<std::string>(state_->getTransientValue("LambdaCorner"));
+  auto lambda = transient_value_cast<double>(state_->getTransientValue("LambdaCorner"));
   std::ostringstream str_l;
   str_l << lambda;
   lCurveLambdaLineEdit_->setText(QString::fromStdString(str_l.str()));
