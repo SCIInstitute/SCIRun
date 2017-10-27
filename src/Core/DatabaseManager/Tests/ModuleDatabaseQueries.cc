@@ -148,7 +148,8 @@ protected:
     // Visualization
     "('CreateStandardColorMap',         1,        1,                  1,              0,          1,              0,                    0,                  0,                              1,             0),"
     "('ExtractSimpleIsosurface',        1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
-    "('ClipVolumeByIsovalue',	        1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"   
+    "('ClipVolumeByIsovalue',	        1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0)," 
+    "('CleanupTetMesh',		        1,        0,                  0,              1,          1,              0,                    1,                  0,                              1,             1)," 
     "('ShowField',                      1,        1,                  1,              0,          0,              0,                    0,                  0,                              1,             0)";
 
     std::string error;
