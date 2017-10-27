@@ -75,6 +75,8 @@ const AlgorithmInputName TikhonovAlgoAbstractBase::matrixV("matrixV");
 // outputs
 const AlgorithmOutputName TikhonovAlgoAbstractBase::InverseSolution("InverseSolution");
 const AlgorithmOutputName TikhonovAlgoAbstractBase::RegularizationParameter("RegularizationParameter");
+const AlgorithmOutputName TikhonovAlgoAbstractBase::LambdaArray("LambdaArray");
+const AlgorithmOutputName TikhonovAlgoAbstractBase::Lambda_Index("Lambda_Index");
 const AlgorithmOutputName TikhonovAlgoAbstractBase::RegInverse("RegInverse");
 
 ALGORITHM_PARAMETER_DEF( Inverse, TikhonovImplementation);
@@ -86,8 +88,8 @@ ALGORITHM_PARAMETER_DEF( Inverse, LambdaMax);
 ALGORITHM_PARAMETER_DEF( Inverse, LambdaNum);
 ALGORITHM_PARAMETER_DEF( Inverse, LambdaResolution);
 ALGORITHM_PARAMETER_DEF( Inverse, LambdaSliderValue);
-ALGORITHM_PARAMETER_DEF( Inverse, LambdaCorner);
-ALGORITHM_PARAMETER_DEF( Inverse, LCurveText);
+//ALGORITHM_PARAMETER_DEF( Inverse, LambdaCorner);
+//ALGORITHM_PARAMETER_DEF( Inverse, LCurveText);
 ALGORITHM_PARAMETER_DEF( Inverse, regularizationSolutionSubcase);
 ALGORITHM_PARAMETER_DEF( Inverse, regularizationResidualSubcase);
 
@@ -102,8 +104,6 @@ TikhonovAlgoAbstractBase::TikhonovAlgoAbstractBase()
 	addParameter(Parameters::LambdaNum,200);
 	addParameter(Parameters::LambdaResolution,1e-6);
 	addParameter(Parameters::LambdaSliderValue,0);
-	addParameter(Parameters::LambdaCorner,0);
-	addParameter(Parameters::LCurveText, std::string("lcurve"));
 	addParameter(Parameters::regularizationSolutionSubcase,solution_constrained);
 	addParameter(Parameters::regularizationResidualSubcase,residual_constrained);
 }
@@ -185,7 +185,7 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
 	auto RegularizationMethod_gotten = getOption(Parameters::RegularizationMethod);
 	auto implOption = get(Parameters::TikhonovImplementation).toString();
-
+  
 	// check input MATRICES
 	checkInputMatrixSizes( input );
 
@@ -232,6 +232,9 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 	}
 
   double lambda = 0;
+  int lambda_index = 0;
+  AlgorithmOutput output;
+  DenseMatrixHandle lambdamatrix;
   //Get Regularization parameter(s) : Lambda
   if ((RegularizationMethod_gotten == "single") || (RegularizationMethod_gotten == "slider"))
   {
@@ -245,10 +248,11 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
       // Use single fixed lambda value, select via slider
       lambda = get(Parameters::LambdaSliderValue).toDouble();
     }
+    lambdamatrix.reset(new DenseMatrix(1,1,lambda));
   }
   else if (RegularizationMethod_gotten == "lcurve")
   {
-    lambda = computeLcurve( *algoImpl, input );
+    lambda = computeLcurve( *algoImpl, input,  lambdamatrix, lambda_index);
   }
 	else
 	{
@@ -259,14 +263,16 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 	auto solution = algoImpl->computeInverseSolution(lambda, true);
 
 	// Set outputs
-	AlgorithmOutput output;
+	
 	output[InverseSolution] = boost::make_shared<DenseMatrix>(solution);
 	output[RegularizationParameter] = boost::make_shared<DenseMatrix>(1, 1, lambda);
-
+  output[LambdaArray] = lambdamatrix;
+  output[Lambda_Index]= boost::make_shared<DenseMatrix>(1, 1, lambda_index);
+  
 	return output;
 }
 
-double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl& algoImpl, const AlgorithmInput & input ) const
+double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl& algoImpl, const AlgorithmInput & input , DenseMatrixHandle& lambdamatrix, int& lambda_index) const
 {
 	// get inputs
 	auto forwardMatrix = input.get<Matrix>(TikhonovAlgoAbstractBase::ForwardMatrix);
@@ -282,6 +288,8 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
 	// prealocate vector of lambdas and eta and rho
   std::vector<double> rho(nLambda, 0.0);
   std::vector<double> eta(nLambda, 0.0);
+  
+  lambdamatrix.reset(new DenseMatrix(nLambda,3,0.0));
 
   auto lambdaArray = algoImpl.computeLambdaArray( lambdaMin, lambdaMax, nLambda );
 
@@ -294,6 +302,7 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
   for (int j = 0; j < nLambda; j++)
   {
     solution = algoImpl.computeInverseSolution( lambdaArray[j], false);
+    lambdamatrix->put(j,0,lambdaArray[j]);
 
     // if using source regularization matrix, apply it to compute Rx (for the eta computations)
     if (sourceWeighting)
@@ -328,10 +337,12 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
     // compute rho and eta. Using Frobenious norm when using matrices
     rho[j] = CAx.norm();
     eta[j] = Rx.norm();
+    lambdamatrix->put(j,1,rho[j]);
+    lambdamatrix->put(j,2,eta[j]);
   }
 
   // Find corner in L-curve
-  lambda = FindCorner( rho, eta, lambdaArray, nLambda );
+  lambda = FindCorner( rho, eta, lambdaArray, nLambda,lambda_index);
 
   // TODO: update GUI
 
@@ -339,7 +350,7 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
 }
 
 ///// Find Corner, find the maximal curvature which corresponds to the L-curve corner
-double TikhonovAlgoAbstractBase::FindCorner( const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, const int nLambda )
+double TikhonovAlgoAbstractBase::FindCorner( const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, const int nLambda, int& lambda_index )
 {
   std::vector<double> deta(nLambda);
   std::vector<double> ddeta(nLambda);
@@ -371,8 +382,8 @@ double TikhonovAlgoAbstractBase::FindCorner( const std::vector<double>& rho, con
   ddrho[1] = ddrho[2];
   ddeta[0] = ddeta[2];
   ddeta[1] = ddeta[2];
-
-  int lambda_index = 0;
+  
+  lambda_index = 0;
   for (int i = 0; i < nLambda; i++)
   {
     kapa[i] = std::abs((drho[i] * ddeta[i] - ddrho[i] * deta[i]) /  //compute curvature

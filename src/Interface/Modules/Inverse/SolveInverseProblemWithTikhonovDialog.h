@@ -45,12 +45,14 @@ public:
   SolveInverseProblemWithTikhonovDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
+  virtual void moduleExecuted() override { pullAndDisplayInfo(); }
 private Q_SLOTS:
   void setSpinBoxValue(int value);
   void setSliderValue(double value);
   void setSliderMin(double value);
   void setSliderMax(double value);
   void setSliderStep(double value);
+  void pullAndDisplayInfo();
 };
 
 }
