@@ -63,7 +63,7 @@ namespace Inverse {
 		MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 
 	private:
-		// void update_lcurve_gui(const double lambda, const Core::Algorithms::Inverse::SolveInverseProblemWithTikhonovImpl_child::LCurveInput& input, const int lambda_index);
+		
 	};
 }}}
 
