@@ -104,11 +104,5 @@ TEST_F(RemoveUnusedNodesModuleTests, ShouldWork)
   triangleVField->set_all_values(0.0);
   stubPortNWithThisData(cg, 0, basicTriangleField_);
   EXPECT_NO_THROW(cg->execute());
-  auto output = getDataOnThisOutputPort(cg, 0);
-  ASSERT_TRUE(output != nullptr);
-  auto trisurf = boost::dynamic_pointer_cast<SCIRun::Field>(output); 
-  EXPECT_EQ(trisurf->vmesh()->num_nodes(),3);
-  EXPECT_EQ(trisurf->vmesh()->num_elems(),1);
-  EXPECT_EQ(trisurf->vfield()->num_values(),1);
 }
 
