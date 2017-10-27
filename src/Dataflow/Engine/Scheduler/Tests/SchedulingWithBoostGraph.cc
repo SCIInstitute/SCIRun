@@ -431,6 +431,7 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderExecutedFromAModuleInADisjo
   }
 }
 
+#if 0
 namespace ThreadingPrototype
 {
   struct Unit
@@ -803,3 +804,4 @@ namespace ThreadingPrototype
     }
   }
 }
+#endif

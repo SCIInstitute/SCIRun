@@ -60,7 +60,7 @@ unsigned int Parallel::NumCores()
 
 void Parallel::SetMaximumCores(unsigned int max)
 {
-  std::cout << "Maximum cores available for parallel algorithms set to " << max << std::endl;
+  //std::cout << "Maximum cores available for parallel algorithms set to " << max << std::endl;
   maximumCoresSetByUser_ = max;
 }
 

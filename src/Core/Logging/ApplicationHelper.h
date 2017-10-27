@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,22 +25,32 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Core/Logging/DirectLogger.h
 
-#ifndef CORE_LOGGING_DIRECTLOGGER_H
-#define CORE_LOGGING_DIRECTLOGGER_H 
+#ifndef CORE_LOGGING_APPLICATION_HELPER_H
+#define CORE_LOGGING_APPLICATION_HELPER_H
 
+#include <string>
+#ifndef Q_MOC_RUN
+#include <boost/filesystem/path.hpp>
+#endif
 #include <Core/Logging/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
   namespace Core
   {
     namespace Logging
     {
-    }
-  }
-}
-
+      class SCISHARE ApplicationHelper
+      {
+      public:
+        ApplicationHelper();
+        boost::filesystem::path configDirectory();
+        std::string applicationName();
+        bool get_user_directory( boost::filesystem::path& user_dir, bool config_path);
+        bool get_config_directory( boost::filesystem::path& config_dir );
+        bool get_user_name( std::string& user_name );
+      };
+}}}
 
 #endif
