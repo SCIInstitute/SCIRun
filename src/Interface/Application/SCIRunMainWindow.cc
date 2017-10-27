@@ -87,6 +87,12 @@ SCIRunMainWindow::SCIRunMainWindow()
   builder_ = boost::make_shared<NetworkEditorBuilder>(this);
   dockManager_ = new DockManager(dockSpace_, this);
 
+  {
+    const bool regression = Application::Instance().parameters()->isRegressionMode();
+    boost::shared_ptr<TextEditAppender> logger(new TextEditAppender(logTextBrowser_, regression));
+    GuiLog::Instance().addCustomSink(logger);
+  }
+
   startup_ = true;
 
   QCoreApplication::setOrganizationName("SCI:CIBC Software");
@@ -519,9 +525,8 @@ SCIRunMainWindow* SCIRunMainWindow::Instance()
 
 SCIRunMainWindow::~SCIRunMainWindow()
 {
-  GuiLogger::setInstance(nullptr);
-  Log::get().clearAppenders();
-  Log::get("Modules").clearAppenders();
+  //Log::get().clearAppenders();
+  //Log::get("Modules").clearAppenders();
   commandConverter_.reset();
   networkEditor_->disconnect();
   networkEditor_->setNetworkEditorController(nullptr);
@@ -540,13 +545,12 @@ void SCIRunMainWindow::setController(NetworkEditorControllerHandle controller)
 void SCIRunMainWindow::setupNetworkEditor()
 {
   boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
-	const bool regression = Application::Instance().parameters()->isRegressionMode();
-  boost::shared_ptr<TextEditAppender> logger(new TextEditAppender(logTextBrowser_, regression));
-  GuiLogger::setInstance(logger);
-  Log::get().addCustomAppender(logger);
+
   //TODO: this logger will crash on Windows when the console is closed. See #1250. Need to figure out a better way to manage scope/lifetime of Qt widgets passed to global singletons...
-  //boost::shared_ptr<TextEditAppender> moduleLog(new TextEditAppender(moduleLogTextBrowser_));
-  //Log::get("Modules").addCustomAppender(moduleLog);
+  boost::shared_ptr<TextEditAppender> moduleLog(new TextEditAppender(moduleLogTextBrowser_));
+  ModuleLog::Instance().addCustomSink(moduleLog);
+  GuiLog::Instance().setVerbose(LogSettings::Instance().verbose());
+
   defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(prefsWindow_->defaultNotePositionComboBox_, prefsWindow_->defaultNoteSizeComboBox_));
   auto tagColorFunc = [this](int tag) { return tagManagerWindow_->tagColor(tag); };
   auto tagNameFunc = [this](int tag) { return tagManagerWindow_->tagName(tag); };
@@ -1080,13 +1084,13 @@ void SCIRunMainWindow::setupDevConsole()
 
 void SCIRunMainWindow::setExecutor(int type)
 {
-  LOG_DEBUG("Executor of type " << type << " selected"  << std::endl);
+  LOG_DEBUG("Executor of type {} selected", type);
   networkEditor_->getNetworkEditorController()->setExecutorType(type);
 }
 
 void SCIRunMainWindow::setGlobalPortCaching(bool enable)
 {
-  LOG_DEBUG("Global port caching flag set to " << (enable ? "true" : "false") << std::endl);
+  LOG_DEBUG("Global port caching flag set to {}", (enable ? "true" : "false"));
   //TODO: encapsulate better
   SimpleSink::setGlobalPortCachingFlag(enable);
 }
@@ -1130,12 +1134,12 @@ void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 {
 #ifdef BUILD_WITH_PYTHON
   NetworkEditor::InEditingContext iec(networkEditor_);
-  GuiLogger::Instance().logInfo("RUNNING PYTHON SCRIPT: " + scriptFileName);
+  GuiLogger::logInfo("RUNNING PYTHON SCRIPT: " + scriptFileName);
   PythonInterpreter::Instance().importSCIRunLibrary();
   PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
   statusBar()->showMessage(tr("Script is running."), 2000);
 #else
-  GuiLogger::Instance().logInfo("Python not included in this build, cannot run " + scriptFileName);
+  GuiLogger::logInfo("Python not included in this build, cannot run " + scriptFileName);
 #endif
 }
 
@@ -1218,13 +1222,13 @@ namespace {
     QFile inputFile("patterns.txt");
     if (inputFile.open(QIODevice::ReadOnly))
     {
-      GuiLogger::Instance().logInfo("Pattern file opened: " + inputFile.fileName());
+      GuiLogger::logInfo("Pattern file opened: " + inputFile.fileName());
       QTextStream in(&inputFile);
       while (!in.atEnd())
       {
         QString line = in.readLine();
         addSnippet(line, snips);
-        GuiLogger::Instance().logInfo("Pattern read: " + line);
+        GuiLogger::logInfo("Pattern read: " + line);
       }
       inputFile.close();
     }
@@ -1270,7 +1274,7 @@ namespace {
 
   QTreeWidgetItem* addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module)
   {
-    LOG_DEBUG("Adding item to favorites: " << module->text(0).toStdString() << std::endl);
+    LOG_DEBUG("Adding item to favorites: {}", module->text(0).toStdString());
     auto copy = new QTreeWidgetItem(*module);
     copy->setData(0, Qt::CheckStateRole, QVariant());
     if (copy->textColor(0) == CLIPBOARD_COLOR)

@@ -106,15 +106,11 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
   bool noinnerboundary = get(NoInnerBoundary).toBool();
   bool disconnect = get(DisconnectBoundaries).toBool();
 
-  Log::get() << DEBUG_LOG << "GetDomainBoundaryAlgo parameters:"
-    << "\n\tminval = " << minval
-    << "\n\tmaxval = " << maxval
-    << "\n\tdomval = " << domval
-    << "\n\tuserange = " << userange
-    << "\n\taddouterboundary = " << addouterboundary
-    << "\n\tinnerboundaryonly = " << innerboundaryonly
-    << "\n\tnoinnerboundary = " << noinnerboundary
-    << "\n\tdisconnect = " << disconnect << std::endl;
+  LOG_DEBUG("GetDomainBoundaryAlgo parameters:\n\tminval = {}"
+    "\n\tmaxval = {}\n\tdomval = {}\n\tuserange = {}\n\taddouterboundary = {}"
+    "\n\tinnerboundaryonly = {}\n\tnoinnerboundary = {}\n\tdisconnect = {}",
+    minval, maxval, domval, userange, addouterboundary, innerboundaryonly,
+    noinnerboundary, disconnect);
 
   if (!input)
   {
@@ -410,7 +406,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
     for(VMesh::DElem::index_type delem = 0; delem < numdelems; ++delem)
     {
       checkForInterruption();
-      
+
       bool neighborexist = false;
       bool includeface = false;
 

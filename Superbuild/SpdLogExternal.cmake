@@ -1,4 +1,3 @@
-#
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
@@ -24,20 +23,22 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-#
 
-SET(Core_Logging_Tests_SRCS
-  LoggerTests.cc
-  Log4cppWrapperTests.cc
+SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+
+# If CMake ever allows overriding the checkout command or adding flags,
+# git checkout -q will silence message about detached head (harmless).
+ExternalProject_Add(SpdLog_external
+  GIT_REPOSITORY "https://github.com/gabime/spdlog"
+  GIT_TAG "v0.14.0"
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
+  CMAKE_CACHE_ARGS
+    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
 )
 
-SCIRUN_ADD_UNIT_TEST(Core_Logging_Tests
-  ${Core_Logging_Tests_SRCS}
-)
+ExternalProject_Get_Property(SpdLog_external SOURCE_DIR)
+SET(SPDLOG_DIR ${SOURCE_DIR})
 
-TARGET_LINK_LIBRARIES(Core_Logging_Tests
-  Core_Logging
-  gtest_main
-  gtest
-  gmock
-)
+MESSAGE(STATUS "SPDLOG_DIR: ${SPDLOG_DIR}")

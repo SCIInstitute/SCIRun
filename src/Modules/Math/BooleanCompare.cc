@@ -34,6 +34,7 @@
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Math/BooleanCompareAlgo.h>
 #include <Core/Logging/Log.h>
+#include <spdlog/fmt/ostr.h>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
@@ -42,6 +43,7 @@
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
@@ -77,43 +79,43 @@ BooleanCompare::execute()
 
   if (needToExecute())
   {
-      
+
     setAlgoOptionFromState(Parameters::Comparison_Option);
     setAlgoOptionFromState(Parameters::Value_Option_1);
     setAlgoOptionFromState(Parameters::Value_Option_2);
     setAlgoOptionFromState(Parameters::Then_Option);
     setAlgoOptionFromState(Parameters::Else_Option);
-    
+
 
     auto output = algo().run(withInputData((Variables::FirstMatrix, matrixA)(Variables::SecondMatrix, optionalAlgoInput(matrixB))(Variables::InputMatrix, optionalAlgoInput(possout))));
-    
+
 //    Check for quit condition and then quit.  Arguably the most useful part of the module
     auto state = get_state();
     std::string then_statement = state->getValue(Parameters::Then_Option).toString();
     std::string else_statement = state->getValue(Parameters::Else_Option).toString();
-    
+
     auto out_mat=output.get<DenseMatrix>(Variables::Solution);
     double *data=out_mat->data();
-    
+
     if ((data[0]==1 && then_statement == "quit") || (data[0]==0 && else_statement == "quit"))
     {
-      
-      
+
+
 #ifdef BUILD_WITH_PYTHON
 //      quit nicely
-      LOG_DEBUG("cond matrix :"<<*out_mat<<std::endl);
-      remark("ordered to quit.  Trying to quit.");
+      LOG_DEBUG("cond matrix : {}", *out_mat);
+      remark("Ordered to quit. Trying to quit.");
       std::ostringstream ostr;
-      std::string q_message=NetworkEditorPythonAPI::quit(false);
+      std::string q_message = NetworkEditorPythonAPI::quit(false);
       ostr << "Quit message = "<<q_message;
       remark(ostr.str());
 #else
       remark(" cannot quit without building with python");
 #endif
-      
-      
+
+
     }
-      
+
 
     sendOutputFromAlgorithm(OutputMatrix, output);
     sendOutput(BooleanResult, out_mat);

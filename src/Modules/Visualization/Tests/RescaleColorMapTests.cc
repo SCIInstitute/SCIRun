@@ -54,7 +54,7 @@ class ShowFieldScalingTest : public ParameterizedModuleTest<int>
 protected:
   virtual void SetUp()
   {
-    Log::get().setVerbose(false);
+    LogSettings::Instance().setVerbose(false);
     showField = makeModule("ShowField");
     showField->setStateDefaults();
     auto size = GetParam();
@@ -91,7 +91,7 @@ class RescaleColorMapModuleTest : public ModuleTest
 protected:
   virtual void SetUp()
   {
-    Log::get().setVerbose(false);
+    LogSettings::Instance().setVerbose(false);
     rescaleColorMap = makeModule("RescaleColorMap");
     rescaleColorMap->setStateDefaults();
     colorMap = StandardColorMapFactory::create();

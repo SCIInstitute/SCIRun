@@ -53,13 +53,13 @@ class ShowFieldScalingTest : public ParameterizedModuleTest<int>
 protected:
   virtual void SetUp()
   {
-    Log::get().setVerbose(false);
+    LogSettings::Instance().setVerbose(false);
     showField = makeModule("ShowField");
     showField->setStateDefaults();
     auto size = GetParam();
     latVol = CreateEmptyLatVol(size, size, size);
     stubPortNWithThisData(showField, 0, latVol);
-    Log::get() << INFO << "Setting up ShowField with size " << size << "^3 latvol" << std::endl;
+    LOG_DEBUG("Setting up ShowField with size {}^3 latvol", size);
   }
 
   UseRealModuleStateFactory f;
@@ -69,9 +69,9 @@ protected:
 
 TEST_P(ShowFieldScalingTest, ConstructLatVolGeometry)
 {
-  Log::get() << INFO << "Start ShowField::execute" << std::endl;
+  LOG_DEBUG("Start ShowField::execute");
   showField->execute();
-  Log::get() << INFO << "End ShowField::execute" << std::endl;
+  LOG_DEBUG("End ShowField::execute");
 }
 
 INSTANTIATE_TEST_CASE_P(
@@ -88,7 +88,7 @@ class ShowFieldStateGeometryNameSynchronizationTest : public ModuleTest
 protected:
   virtual void SetUp()
   {
-    Log::get().setVerbose(false);
+    LogSettings::Instance().setVerbose(false);
     showField = makeModule("ShowField");
     showField->setStateDefaults();
     auto size = 2;

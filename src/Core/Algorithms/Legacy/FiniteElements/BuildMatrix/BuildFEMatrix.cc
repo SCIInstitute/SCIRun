@@ -669,7 +669,7 @@ FEMBuilder<T>::setup()
     algo_->error("Mesh size < 0");
     success_[0] = false;
   }
-  Log::get() << DEBUG_LOG << "Allocating buffer for nonzero row indices of size: " << (global_dimension+1);
+  LOG_DEBUG("Allocating buffer for nonzero row indices of size: {}", global_dimension+1);
   rows_.reset(new index_type[global_dimension+1]);
 
   colidx_.resize(numprocessors_+1);

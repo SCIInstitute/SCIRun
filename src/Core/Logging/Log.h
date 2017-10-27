@@ -33,8 +33,9 @@
 #include <string>
 #include <Core/Logging/LoggerFwd.h>
 #ifndef Q_MOC_RUN
-#include <boost/lexical_cast.hpp>
+#include <Core/Utils/Singleton.h>
 #include <boost/filesystem/path.hpp>
+#include <spdlog/spdlog.h>
 #endif
 #include <Core/Logging/share.h>
 
@@ -44,24 +45,6 @@ namespace SCIRun
   {
     namespace Logging
     {
-      //Copied from http://jonblack.org/2013/01/27/wrapping-a-logging-framework-in-cpp/
-
-      /// Logging levels used by pix. Follows the same as for syslog, taken from
-      /// RFC 5424. Comments added for ease of reading.
-      /// @see http://en.wikipedia.org/wiki/Syslog.
-      enum LogLevel
-      {
-        EMERG,  // System is unusable (e.g. multiple parts down)
-        ALERT,  // System is unusable (e.g. single part down)
-        CRIT,   // Failure in non-primary system (e.g. backup site down)
-        ERROR_LOG,  // Non-urgent failures; relay to developers
-        WARN,   // Not an error, but indicates error will occur if nothing done.
-        NOTICE, // Events that are unusual, but not error conditions.
-        INFO,   // Normal operational messages. No action required.
-        DEBUG_LOG,  // Information useful during development for debugging.
-        NOTSET
-      };
-
       class SCISHARE LogAppenderStrategy
       {
       public:
@@ -71,86 +54,73 @@ namespace SCIRun
 
       typedef boost::shared_ptr<LogAppenderStrategy> LogAppenderStrategyPtr;
 
-      class SCISHARE Log final
+      class SCISHARE LogSettings final
       {
+        CORE_SINGLETON(LogSettings)
       public:
-        static Log& get();
-        static Log& get(const std::string& name);
-
-        static void setLogDirectory(const boost::filesystem::path& dir);
-        static boost::filesystem::path logDirectory();
-
-        class SCISHARE Stream
-        {
-        public:
-          explicit Stream(class LogStreamImpl* impl);
-          SCISHARE friend Stream& operator<<(Stream& log, const std::string& msg);
-          void stream(const std::string& msg);
-          void stream(double x);
-          void flush();
-        private:
-          boost::shared_ptr<class LogStreamImpl> impl_;
-        };
-
-        void log(LogLevel level, const std::string& msg);
-
-        SCISHARE friend Stream& operator<<(Log& log, LogLevel level);
-
+        LogSettings();
+        void setLogDirectory(const boost::filesystem::path& dir);
+        boost::filesystem::path logDirectory();
         void setVerbose(bool v);
         bool verbose() const;
-        void flush();
-        void addCustomAppender(LogAppenderStrategyPtr appender);
-        void clearAppenders();
-
       private:
-        Log();
-        explicit Log(const std::string& name);
-        Log(const Log&) = delete;
-        Log(Log&&) = delete;
-        Log& operator=(const Log&) = delete;
-        Log& operator=(Log&&) = delete;
-
-        static boost::filesystem::path directory_;
-      private:
-        friend class Stream;
-        boost::shared_ptr<class LogImpl> impl_;
-        void init();
+        bool verbose_{false};
+        boost::filesystem::path directory_;
       };
 
-      SCISHARE Log::Stream& operator<<(Log& log, LogLevel level);
-      SCISHARE Log::Stream& operator<<(Log::Stream& log, const std::string& msg);
-      SCISHARE Log::Stream& operator<<(Log::Stream& log, double x);
+      using Logger2 = std::shared_ptr<spdlog::logger>;
 
-      template <typename T>
-      Log::Stream& operator<<(Log::Stream& log, const T& t)
-      {
-        return log << boost::lexical_cast<std::string>(t);
-      }
-
-      SCISHARE Log::Stream& operator<<(Log::Stream& log, std::ostream&(*func)(std::ostream&));
-
-      class SCISHARE ApplicationHelper
+      class SCISHARE Log2
       {
       public:
-        ApplicationHelper();
-        boost::filesystem::path configDirectory();
-        std::string applicationName();
-        bool get_user_directory( boost::filesystem::path& user_dir, bool config_path);
-        bool get_config_directory( boost::filesystem::path& config_dir );
-        bool get_user_desktop_directory( boost::filesystem::path& user_desktop_dir );
-        bool get_user_name( std::string& user_name );
+        explicit Log2(const std::string& name);
+        Logger2 get();
+        void addSink(spdlog::sink_ptr sink)
+        {
+          sinks_.push_back(sink);
+        }
+        void addCustomSink(LogAppenderStrategyPtr appender)
+        {
+          customSinks_.push_back(appender);
+        }
+        void setVerbose(bool v);
+        bool verbose() const;
+      protected:
+        void addColorConsoleSink();
+      private:
+        Logger2 logger_;
+        std::string name_;
+        bool verbose_{false};
+        std::vector<spdlog::sink_ptr> sinks_;
+        std::vector<LogAppenderStrategyPtr> customSinks_;
       };
+
+      class SCISHARE ModuleLog final : public Log2
+      {
+        CORE_SINGLETON(ModuleLog)
+      public:
+        ModuleLog() : Log2("module") { addColorConsoleSink(); }
+      };
+
+      class SCISHARE GeneralLog final : public Log2
+      {
+        CORE_SINGLETON(GeneralLog)
+      public:
+        GeneralLog();
+      };
+
+      template <class... T>
+      void LOG_DEBUG(const char* fmt, T&&... args)
+      {
+        SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(fmt, args...);
+      }
+
+      inline void LOG_DEBUG(const std::string& str)
+      {
+        SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(str);
+      }
     }
   }
 }
-
-/// @todo: log4cpp crashes on Mac more easily, just macro these out on that platform for now.
-#ifdef _WIN32
-#define LOG_DEBUG(str) SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::DEBUG_LOG << str << std::endl
-#else
-#define LOG_DEBUG(str)
-#endif
-
-#define LOG_DEBUG_TO(log, str) log << SCIRun::Core::Logging::DEBUG_LOG << str << std::endl
 
 #endif
