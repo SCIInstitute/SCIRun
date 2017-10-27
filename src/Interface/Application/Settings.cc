@@ -119,11 +119,16 @@ void SCIRunMainWindow::readSettings()
 
   latestNetworkDirectory_ = settings.value("networkDirectory").toString();
   guiLogDebug("Setting read: default network directory = {}", latestNetworkDirectory_.path().toStdString());
-
   recentFiles_ = settings.value("recentFiles").toStringList();
   updateRecentFileActions();
   guiLogDebug("Setting read: recent network file list: \n\t{}",
-    QStringList(QList<QString>::fromStdList(std::list<QString>(recentFiles_.begin(), recentFiles_.begin() + 5))).join("\n\t").toStdString());
+    QStringList(
+      QList<QString>::fromStdList(
+        std::list<QString>(
+          recentFiles_.begin(),
+          recentFiles_.begin() + std::min(recentFiles_.size(), 5))))
+    .join("\n\t")
+    .toStdString());
 
   //TODO: make a separate class for these keys, bad duplication.
   const QString colorKey = qname(prefs.networkBackgroundColor);
