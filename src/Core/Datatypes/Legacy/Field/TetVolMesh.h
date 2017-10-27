@@ -63,7 +63,7 @@
 #include <boost/unordered_set.hpp>
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
-//#include <Core/Logging/ScopedTimeRemarker.h>
+#include <Core/Logging/Log.h>
 
 #include <set>
 
@@ -2343,9 +2343,9 @@ protected:
       cells_[1] = c1;
     }
 
-    bool shared() const 
-    { 
-      return cells_[0] != MESH_NO_NEIGHBOR && cells_[1] != MESH_NO_NEIGHBOR; 
+    bool shared() const
+    {
+      return cells_[0] != MESH_NO_NEIGHBOR && cells_[1] != MESH_NO_NEIGHBOR;
     }
 
     index_type  cells_[2];
@@ -2907,7 +2907,6 @@ TetVolMesh<Basis>::hash_face(typename Node::index_type n1,
   auto iter = table.find(f);
   if (iter == table.end())
   {
-    //f.cells_[0] = combined_index;
     table.insert(std::make_pair(f, PFaceCell(combined_index, MESH_NO_NEIGHBOR ))); // insert for the first time
   }
   else
@@ -2915,15 +2914,14 @@ TetVolMesh<Basis>::hash_face(typename Node::index_type n1,
     PFaceCell& cell = iter->second;
     if (cell.cells_[1] != MESH_NO_NEIGHBOR)
     {
-      std::cerr << "TetVolMesh - This Mesh has problems: Cells #"
-        << (cell.cells_[0] >> 2) << ", #" << (cell.cells_[1] >> 2) << ", and #"
-           << (combined_index>>2) << " are illegally adjacent." << std::endl;
+      //TODO: change already on different branch to make this look nicer.
+      Core::Logging::GeneralLog::Instance().get()->error("TetVolMesh - This Mesh has problems: Cells #{}, #{}, and #{} are illegally adjacent.",
+        (cell.cells_[0] >> 2), (cell.cells_[1] >> 2), (combined_index>>2));
     }
     else if ((cell.cells_[0] >> 2) == (combined_index >> 2))
     {
-      std::cerr << "TetVolMesh - This Mesh has problems: Cells #"
-        << (cell.cells_[0] >> 2) << " and #" << (combined_index >> 2)
-           << " are the same." << std::endl;
+      Core::Logging::GeneralLog::Instance().get()->error("TetVolMesh - This Mesh has problems: Cells #{} and #{} are the same.",
+        (cell.cells_[0] >> 2), (combined_index >> 2));
     }
     else
     {
@@ -2936,6 +2934,7 @@ template <class Basis>
 void
 TetVolMesh<Basis>::compute_faces()
 {
+  //TODO: other branch change will reintroduce these scoped loggers.
   //Core::Logging::ScopedTimeLogger str1("mesh sync compute_faces", true);
   typename Cell::iterator ci, cie;
   begin(ci); end(cie);
