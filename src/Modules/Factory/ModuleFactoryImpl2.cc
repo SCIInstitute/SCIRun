@@ -38,7 +38,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Fields/ApplyMappingMatrix.h>
 #include <Modules/Legacy/Fields/SplitFieldByConnectedRegion.h>
-#include <Modules/Legacy/Fields/RemoveUnusedNodes.h>
 #include <Modules/Legacy/Math/SelectSubMatrix.h>
 #include <Modules/Legacy/Math/ConvertMatrixType.h>
 #include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
@@ -98,5 +97,4 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<ClipVolumeByIsovalue>("ClipVolumeByIsovalue","NewField","SCIRun","...","...");
   addModuleDesc<RefineTetMeshLocally>("RefineTetMeshLocally","ChangeMesh","SCIRun","...","...");
   addModuleDesc<ShowString>("in progress--needs testing", "...");
-  addModuleDesc<RemoveUnusedNodes>("RemoveUnusedNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
 }
