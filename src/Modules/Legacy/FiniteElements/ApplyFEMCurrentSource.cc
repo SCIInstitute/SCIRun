@@ -46,6 +46,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Logging/Log.h>
+#include <spdlog/fmt/ostr.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -185,7 +186,7 @@ bool detail::ApplyFEMCurrentSourceImpl::execute_dipole(FieldHandle field,
 
     if (mesh->locate(loc, coords, pos))
     {
-      LOG_DEBUG("Source pos=" << pos << " dir=" << dir << " found in elem " << loc <<std::endl);
+      LOG_DEBUG("Source pos={} dir={} found in elem {}", pos, dir, loc);
 
       if (fabs(dir.x()) > 0.000001)
       {

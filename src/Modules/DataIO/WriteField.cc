@@ -52,6 +52,7 @@
 #include <Core/Logging/Log.h>
 
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Modules::DataIO;
 
 WriteField::WriteField()
@@ -118,7 +119,7 @@ void WriteField::execute()
 bool WriteField::useCustomExporter(const std::string& filename) const
 {
   auto ft = cstate()->getValue(Variables::FileTypeName).toString();
-  LOG_DEBUG("WriteField with filetype " << ft);
+  LOG_DEBUG("WriteField with filetype {}", ft);
   auto ret = boost::filesystem::extension(filename) != ".fld";
 
   filetype_ = ft.find("SCIRun Field ASCII") != std::string::npos ? "ASCII" : "Binary";

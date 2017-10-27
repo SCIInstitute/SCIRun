@@ -36,6 +36,7 @@
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Logging;
 
 NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_ptr<NetworkEditorController> controller, NetworkEditor* editor)
   : controller_(controller), editor_(editor)
@@ -70,8 +71,7 @@ void NetworkEditorControllerGuiProxy::addModule(const std::string& moduleName)
   }
   catch (SCIRun::Core::InvalidArgumentException& e)
   {
-    qDebug() << "CAUGHT EXCEPTION";
-    Core::Logging::Log::get() << Core::Logging::ERROR_LOG << e.what() << std::endl;
+    GeneralLog::Instance().get()->error("CAUGHT EXCEPTION: {}", e.what());
   }
 }
 

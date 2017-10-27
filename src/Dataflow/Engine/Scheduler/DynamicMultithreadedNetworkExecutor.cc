@@ -43,8 +43,9 @@ namespace SCIRun {
     namespace Engine {
       namespace DynamicExecutor
       {
-        Log& ModuleConsumer::log_ = Log::get("consumer");
-        Log& ModuleProducer::log_ = Log::get("producer");
+        Logger2 ModuleConsumer::log_ = spdlog::stdout_color_mt("consumer");
+        Logger2 ModuleProducer::log_ = spdlog::stdout_color_mt("producer");
+        Logger2 ModuleExecutor::log_ = spdlog::stdout_color_mt("executor");
       }
 
       /// @todo: templatize along with producer/consumer
@@ -90,24 +91,13 @@ namespace SCIRun {
 
         void interruptModule(const std::string& id) const
         {
-          //std::cout << this << " INTERRUPT ATTEMPT: MODULE ID " << id << std::endl;
           if (executeThreads_)
           {
             auto thread = executeThreads_->getThreadForModule(id);
             if (thread)
             {
-              //std::cout << "found thread for module, next step is to call interrupt." << std::endl;
               thread->interrupt();
-              //std::cout << "interrupt called on thread " << thread->get_id() << std::endl;
             }
-            else
-            {
-              //std::cout << "didn't find thread for module, umok..." << std::endl;
-            }
-          }
-          else
-          {
-            //std::cout << "executeThreads_ is null" << std::endl;
           }
         }
       private:
@@ -133,8 +123,8 @@ void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& contex
 {
   static Mutex lock("live-scheduler");
 
-  if (Log::get().verbose())
-    LOG_DEBUG("DMTNE::executeAll order received: " << order << std::endl);
+  //if (Log::get().verbose())
+    LOG_DEBUG("DMTNE::executeAll order received: {}", order);
 
   threadGroup_->clear();
   DynamicMultithreadedNetworkExecutorImpl runner(context, &network_, &lock, order.size(), &executionLock, threadGroup_);

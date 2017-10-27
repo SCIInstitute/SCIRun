@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -56,14 +56,14 @@ ALGORITHM_PARAMETER_DEF(Fields, ResampleYDimUseScalingFactor);
 ALGORITHM_PARAMETER_DEF(Fields, ResampleZDimUseScalingFactor);
 
 ResampleRegularMeshAlgo::ResampleRegularMeshAlgo()
-{ 
+{
   /// Option for selecting the resampling kernel
   addOption(Parameters::ResampleMethod, "Box","Box|Tent|Cubic (Catmull-Rom)|Cubic (B-Spline)|Gaussian");
   addParameter(Parameters::ResampleGaussianSigma, 1.0);
   addParameter(Parameters::ResampleGaussianExtend, 1.0);
 
   // resample none = keep as is, number= specify new number of samples
-  //          factor = multiply number of samples by a factor 
+  //          factor = multiply number of samples by a factor
 
   addParameter(Parameters::ResampleXDim, 0.5);
   addParameter(Parameters::ResampleYDim, 0.5);
@@ -74,9 +74,9 @@ ResampleRegularMeshAlgo::ResampleRegularMeshAlgo()
 }
 
 ///////////////////////////////////////////////////////
-// Refine elements for a TetVol 
+// Refine elements for a TetVol
 
-bool  
+bool
 ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "ReSampleRegularMesh");
@@ -88,13 +88,13 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   }
 
   FieldInformation fi(input);
-  
+
   if ((!(fi.is_latvolmesh()))&&(!(fi.is_imagemesh()))&&(!(fi.is_scanlinemesh())))
   {
     error("This algorithm only operates on regular grids");
     return (false);
   }
-  
+
   // Convert data to nrrd and run through teem resampler
   Nrrd* nin;
   Nrrd* nout;
@@ -122,15 +122,15 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   {
     nrrddims[0] = 6; nrrddim = 1; nrrdoffset = 1;
   }
-  
-  if (fi.is_lineardata()) vmesh->get_dimensions(dims);  
+
+  if (fi.is_lineardata()) vmesh->get_dimensions(dims);
   else vmesh->get_elem_dimensions(dims);
 
   int dimsSize = static_cast<int>(dims.size());
   for (int k = nrrddim; k < nrrddim + dimsSize; k++)
     nrrddims[k] = dims[k-nrrddim];
   nrrddim += dimsSize;
-  
+
   if (vfield->is_char())
   {
     nrrdAlloc_nva(nin,nrrdTypeChar,nrrddim,nrrddims);
@@ -150,7 +150,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   {
     nrrdAlloc_nva(nin,nrrdTypeUShort,nrrddim,nrrddims);
     vfield->get_values(reinterpret_cast<unsigned short *>(nin->data),num_values);
-  }  
+  }
   else if (vfield->is_int())
   {
     nrrdAlloc_nva(nin,nrrdTypeInt,nrrddim,nrrddims);
@@ -170,7 +170,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   {
     nrrdAlloc_nva(nin,nrrdTypeULLong,nrrddim,nrrddims);
     vfield->get_values(reinterpret_cast<unsigned long long *>(nin->data),num_values);
-  }  
+  }
   else if (vfield->is_longlong())
   {
     nrrdAlloc_nva(nin,nrrdTypeLLong,nrrddim,nrrddims);
@@ -180,7 +180,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   {
     nrrdAlloc_nva(nin,nrrdTypeULLong,nrrddim,nrrddims);
     vfield->get_values(reinterpret_cast<unsigned long long *>(nin->data),num_values);
-  }  
+  }
   else if (vfield->is_float())
   {
     nrrdAlloc_nva(nin,nrrdTypeFloat,nrrddim,nrrddims);
@@ -190,7 +190,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   {
     nrrdAlloc_nva(nin,nrrdTypeDouble,nrrddim,nrrddims);
     vfield->get_values(reinterpret_cast<double *>(nin->data),num_values);
-  }  
+  }
   else if (vfield->is_vector())
   {
     nrrdAlloc_nva(nin,nrrdTypeDouble,nrrddim,nrrddims);
@@ -217,62 +217,62 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
       ptr[k+3] = v.yy(); ptr[k+4] = v.yz(); ptr[k+5] = v.zz();
       k += 6;
     }
-  }  
+  }
   else
   {
     error("Unknown datatype.");
-    return (false);  
+    return (false);
   }
-  
+
   NrrdKernel *kern = 0;
-  
+
   double param[NRRD_KERNEL_PARMS_NUM]; param[0] =  1.0;
   for (int j=1; j<NRRD_KERNEL_PARMS_NUM; j++) param[j] = 0.0;
-  
-  if (checkOption(Parameters::ResampleMethod,"Box")) 
+
+  if (checkOption(Parameters::ResampleMethod,"Box"))
   {
     kern = nrrdKernelBox;
-  } 
+  }
   else if (checkOption(Parameters::ResampleMethod,"Tent"))
   {
     kern = nrrdKernelTent;
-  } 
-  else if (checkOption(Parameters::ResampleMethod,"Cubic (Catmull-Rom)")) 
-  { 
-    kern = nrrdKernelBCCubic; 
-    param[1] = 0.0; 
-    param[2] = 0.5; 
-  } 
+  }
+  else if (checkOption(Parameters::ResampleMethod,"Cubic (Catmull-Rom)"))
+  {
+    kern = nrrdKernelBCCubic;
+    param[1] = 0.0;
+    param[2] = 0.5;
+  }
   else if (checkOption(Parameters::ResampleMethod,"Cubic (B-Spline)"))
-  { 
-    kern = nrrdKernelBCCubic; 
-    param[1] = 1.0; 
-    param[2] = 0.0; 
-  } 
+  {
+    kern = nrrdKernelBCCubic;
+    param[1] = 1.0;
+    param[2] = 0.0;
+  }
   else if (checkOption(Parameters::ResampleMethod,"Gaussian"))
-  { 
-    kern = nrrdKernelGaussian; 
-    param[0] = get(Parameters::ResampleGaussianSigma).toDouble(); 
-    param[1] = get(Parameters::ResampleGaussianExtend).toDouble(); 
-  } 
-  else  
+  {
+    kern = nrrdKernelGaussian;
+    param[0] = get(Parameters::ResampleGaussianSigma).toDouble();
+    param[1] = get(Parameters::ResampleGaussianExtend).toDouble();
+  }
+  else
   { // default is quartic
-    LOG_DEBUG("ResampleRegularMeshAlgo defaulting to Quartic kernel." << std::endl);
-    kern = nrrdKernelAQuartic; 
+    LOG_DEBUG("ResampleRegularMeshAlgo defaulting to Quartic kernel.");
+    kern = nrrdKernelAQuartic;
     param[1] = 0.0834; // most accurate as per Teem documentation
-  }  
-  
+  }
+
   NrrdResampleInfo *info = nrrdResampleInfoNew();
-  
-  if (nrrdoffset) 
-  { 
+
+  if (nrrdoffset)
+  {
     info->kernel[0] = 0;
     nin->axis[0].min = 0.0;
     nin->axis[0].max = 1.0;
     info->min[0] = 0.0;
     info->max[0] = 1.0;
   }
-  
+
   Transform trans;
   vmesh->get_canonical_transform(trans);
 
@@ -289,14 +289,14 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   nin->axis[nrrdoffset+2].min = 0.0;
   info->max[nrrdoffset+2] = trans.project(Vector(0.0,0.0,1.0)).length();
   nin->axis[nrrdoffset+2].max = info->max[nrrdoffset+2];
-  
-  
-  for (int a = nrrdoffset; a < nrrddim; a++) 
+
+
+  for (int a = nrrdoffset; a < nrrddim; a++)
   {
     info->kernel[a] = kern;
     for (int b=0; b<NRRD_KERNEL_PARMS_NUM; b++) info->parm[a][b] = param[b];
-  }    
-  
+  }
+
   // Set the resampling options
   if (!get(Parameters::ResampleXDimUseScalingFactor).toBool())
   {
@@ -337,7 +337,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
     }
   }
 
-  if (nrrdSpatialResample(nout, nin, info)) 
+  if (nrrdSpatialResample(nout, nin, info))
   {
     char *err = biffGetDone(NRRD);
     error(std::string("Trouble resampling: ") +  err);
@@ -356,7 +356,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
     }
     else
     {
-      mesh = CreateMesh(fi,info->samples[nrrdoffset]+1 ,info->samples[nrrdoffset+1]+1,info->samples[nrrdoffset+2]+1,Point(0.0,0.0,0.0),Point(1.0,1.0,1.0));    
+      mesh = CreateMesh(fi,info->samples[nrrdoffset]+1 ,info->samples[nrrdoffset+1]+1,info->samples[nrrdoffset+2]+1,Point(0.0,0.0,0.0),Point(1.0,1.0,1.0));
     }
   }
   else if (dims.size() == 2)
@@ -367,7 +367,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
     }
     else
     {
-      mesh = CreateMesh(fi,info->samples[nrrdoffset]+1 ,info->samples[nrrdoffset+1]+1,Point(0.0,0.0,0.0),Point(1.0,1.0,0.0));    
+      mesh = CreateMesh(fi,info->samples[nrrdoffset]+1 ,info->samples[nrrdoffset+1]+1,Point(0.0,0.0,0.0),Point(1.0,1.0,0.0));
     }
   }
   else if (dims.size() == 1)
@@ -378,11 +378,11 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
     }
     else
     {
-      mesh = CreateMesh(fi,info->samples[nrrdoffset]+1 ,Point(0.0,0.0,0.0),Point(1.0,0.0,0.0));    
+      mesh = CreateMesh(fi,info->samples[nrrdoffset]+1 ,Point(0.0,0.0,0.0),Point(1.0,0.0,0.0));
     }
   }
 
-  
+
   if (!mesh)
   {
     error("Could not create output mesh");
@@ -414,7 +414,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   else if (vfield->is_unsigned_short())
   {
     vfield->set_values(reinterpret_cast<unsigned short *>(nout->data),num_values);
-  }  
+  }
   if (vfield->is_int())
   {
     vfield->set_values(reinterpret_cast<int *>(nout->data),num_values);
@@ -430,7 +430,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   else if (vfield->is_unsigned_long())
   {
     vfield->set_values(reinterpret_cast<unsigned long long *>(nout->data),num_values);
-  }  
+  }
   else if (vfield->is_longlong())
   {
     vfield->set_values(reinterpret_cast<long long *>(nout->data),num_values);
@@ -438,7 +438,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   else if (vfield->is_unsigned_longlong())
   {
     vfield->set_values(reinterpret_cast<unsigned long long *>(nout->data),num_values);
-  }  
+  }
   else if (vfield->is_float())
   {
     vfield->set_values(reinterpret_cast<float *>(nout->data),num_values);
@@ -446,7 +446,7 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
   else if (vfield->is_double())
   {
     vfield->set_values(reinterpret_cast<double *>(nout->data),num_values);
-  }  
+  }
   else if (vfield->is_vector())
   {
     double* ptr = reinterpret_cast<double *>(nout->data);
@@ -467,12 +467,12 @@ ResampleRegularMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
       vfield->set_value(v,idx);
       k += 6;
     }
-  }  
+  }
 
   nrrdNix(nout);
 
   return (true);
-}                           
+}
 
 AlgorithmOutput ResampleRegularMeshAlgo::run(const AlgorithmInput& input) const
 {
