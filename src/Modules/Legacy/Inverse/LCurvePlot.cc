@@ -47,7 +47,7 @@ LCurvePlot::LCurvePlot()
 {
 }
 
-std::ostringstream LCurvePlot::update_lcurve_gui(const std::string module_id, const  DenseMatrixHandle& lambda, const DenseMatrixHandle& input, const  DenseMatrixHandle& lambda_index)
+std::string LCurvePlot::update_lcurve_gui(const std::string module_id, const  DenseMatrixHandle& lambda, const DenseMatrixHandle& input, const  DenseMatrixHandle& lambda_index)
 {
   std::cout<<"function running"<<std::endl;
  
@@ -71,7 +71,7 @@ std::ostringstream LCurvePlot::update_lcurve_gui(const std::string module_id, co
   str << log10(rho[lam_ind]) << " " << log10(lower_y) << " \" ";
   str << lambda->get(0,0) << " " << lam_ind << " ; \n";
   
-  return str;
+  return str.str();
 }
 
 

@@ -174,7 +174,7 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
     {
       auto str = LCurvePlot::update_lcurve_gui(get_id(),lambda,lambda_array,lambda_index);
       state->setTransientValue("LambdaCorner", lambda->get(0,0));
-      state->setTransientValue("LambdaCurveInfo", str.str());
+      state->setTransientValue("LambdaCurveInfo", str);
     }
 
 	}
