@@ -86,7 +86,6 @@
 #include <Interface/Modules/Fields/SwapFieldDataWithMatrixEntriesDialog.h>
 #include <Interface/Modules/Fields/ConvertIndicesToFieldDataDialog.h>
 #include <Interface/Modules/Fields/RegisterWithCorrespondencesDialog.h>
-#include <Interface/Modules/Fields/CleanupTetMeshDialog.h>
 #include <Interface/Modules/Forward/BuildBEMatrixDialog.h>
 #include <Interface/Modules/Inverse/SolveInverseProblemWithTikhonovDialog.h>
 #include <Interface/Modules/FiniteElements/ApplyFEMCurrentSourceDialog.h>
@@ -200,7 +199,6 @@ void ModuleDialogFactory::addDialogsToMakerMap1()
     ADD_MODULE_DIALOG(RegisterWithCorrespondences, RegisterWithCorrespondencesDialog)
     ADD_MODULE_DIALOG(ClipVolumeByIsovalue, ClipVolumeByIsovalueDialog)
     ADD_MODULE_DIALOG(RefineTetMeshLocally, RefineTetMeshLocallyDialog)
-    ADD_MODULE_DIALOG(CleanupTetMesh, CleanupTetMeshDialog)
   ;
 }
 
