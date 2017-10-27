@@ -36,6 +36,7 @@
 #include <Core/Thread/Mutex.h>
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
+#include <spdlog/fmt/ostr.h>
 
 #include <Dataflow/Engine/Scheduler/share.h>
 
@@ -51,9 +52,10 @@ namespace SCIRun {
             const Networks::NetworkInterface* network, Core::Thread::Mutex* lock, ModuleWorkQueuePtr work, size_t numModules) :
             scheduler_(filter), network_(network), enqueueLock_(lock),
             work_(work), doneCount_(0), badGroup_(false),
-            shouldLog_(SCIRun::Core::Logging::Log::get().verbose()), numModules_(numModules)
+            //shouldLog_(SCIRun::Core::Logging::Log::get().verbose()),
+            numModules_(numModules)
           {
-            log_.setVerbose(shouldLog_);
+            //log_.setVerbose(shouldLog_);
           }
 
           virtual void enqueueReadyModules() const
@@ -64,10 +66,7 @@ namespace SCIRun {
               auto order = scheduler_.schedule(*network_);
               if (shouldLog_)
               {
-                std::ostringstream ostr;
-                ostr << "Producer received this ordering: \n" << order << std::endl;
-                log_ << Core::Logging::DEBUG_LOG << ostr.str() << std::endl;
-                log_ << Core::Logging::DEBUG_LOG << "Producer processing min group " << order.minGroup();
+                log_->debug("Producer received this ordering: \n{}\nProducer processing min group {}", order, order.minGroup());
               }
               if (order.minGroup() < 0)
               {
@@ -81,12 +80,12 @@ namespace SCIRun {
                 if (module->executionState().currentState() == Networks::ModuleExecutionState::Waiting)
                 {
                   if (shouldLog_)
-                    log_ << Core::Logging::DEBUG_LOG << "Producer pushing module " << mod.second << std::endl;
+                    log_->debug("Producer pushing module {}", mod.second);
 
                   if (doneIds_.find(mod.second) != doneIds_.end())
                   {
                     if (shouldLog_)
-                      SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::INFO << "Module producer: wants to enqueue module " << mod.second << " a second time." << id_ << " " << std::endl;
+                      log_->info("Module producer: wants to enqueue module {} a second time. {}", mod.second, id_);
                   }
                   else
                   {
@@ -95,7 +94,7 @@ namespace SCIRun {
                     doneCount_.fetch_add(1);
 
                     if (shouldLog_)
-                      log_ << Core::Logging::DEBUG_LOG << "Producer status: " << id_ << " " << doneCount_ << " out of " << numModules_ << std::endl;
+                      log_->debug("Producer status: {} {} out of {}", id_, doneCount_, numModules_);
                   }
                 }
               }
@@ -105,8 +104,8 @@ namespace SCIRun {
           void operator()() const
           {
             id_ = boost::this_thread::get_id();
-            if (shouldLog_)
-              log_ << Core::Logging::DEBUG_LOG << "Producer started " << id_ << std::endl;
+
+            log_->debug_if(shouldLog_, "Producer started {}", id_);
 
             enqueueReadyModules();
 
@@ -119,8 +118,7 @@ namespace SCIRun {
             if (badGroup_)
               std::cerr << "producer is done with bad group, something went wrong. probably a race condition..." << std::endl;
 
-            if (shouldLog_)
-              log_ << Core::Logging::DEBUG_LOG << "Producer is done. " << id_ << std::endl;
+            log_->debug_if(shouldLog_, "Producer is done. {}", id_);
           }
 
           bool isDone() const
@@ -135,7 +133,7 @@ namespace SCIRun {
           mutable boost::atomic<int> doneCount_;
           mutable bool badGroup_;
           mutable std::set<Networks::ModuleId> doneIds_;
-          static Core::Logging::Log& log_;
+          static Core::Logging::Logger2 log_;
           bool shouldLog_;
           size_t numModules_;
           mutable boost::thread::id id_;

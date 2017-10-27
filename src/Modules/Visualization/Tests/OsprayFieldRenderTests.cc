@@ -70,11 +70,11 @@ public:
 protected:
   virtual void SetUp() override
   {
-    Log::get().setVerbose(false);
+    LogSettings::Instance().setVerbose(false);
     auto size = GetParam();
     auto max = static_cast<double>(size);
     latVol = CreateEmptyLatVol(size, size, size, DOUBLE_E, { 0, 0, 0 }, { max, max, max });
-    Log::get() << INFO << "Setting up ShowField with size " << size << "^3 latvol" << std::endl;
+    GeneralLog::Instance().get()->info("Setting up ShowField with size {}^3 latvol", size);
   }
 
   UseRealModuleStateFactory f;

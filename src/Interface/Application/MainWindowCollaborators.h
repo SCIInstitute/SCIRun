@@ -57,18 +57,20 @@ namespace Gui {
   class SCIRunMainWindow;
   class ModuleDialogGeneric;
 
-  class TextEditAppender : public Core::Logging::LegacyLoggerInterface, public Core::Logging::LogAppenderStrategy
+  class TextEditAppender :
+    //public Core::Logging::LegacyLoggerInterface,
+    public Core::Logging::LogAppenderStrategy
   {
   public:
     explicit TextEditAppender(QTextEdit* text, bool regressionMode = false) :
       text_(text), regressionMode_(regressionMode) {}
 
     void log(const QString& message) const;
-
-    void error(const std::string& msg) const override;
-    void warning(const std::string& msg) const override;
-    void remark(const std::string& msg) const override;
-    void status(const std::string& msg) const override;
+    //
+    // void error(const std::string& msg) const override;
+    // void warning(const std::string& msg) const override;
+    // void remark(const std::string& msg) const override;
+    // void status(const std::string& msg) const override;
 
     virtual void log4(const std::string& message) const override;
   private:

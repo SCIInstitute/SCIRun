@@ -157,7 +157,7 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
 
   std::ostringstream ostr; /// sort element labels ascending 
   std::copy(labelSet.begin(), labelSet.end(), std::ostream_iterator<int>(ostr, ", "));
-  LOG_DEBUG("Sorted set of label numbers: " << ostr.str() << std::endl);
+  LOG_DEBUG("Sorted set of label numbers: {}", ostr.str());
 
   std::vector<double> value_avr(number_of_atlas_materials);
   std::vector<int> value_count(number_of_atlas_materials);
@@ -180,7 +180,7 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
       int Label = 0;
       vfield2->get_value(Label, i);   
 
-      for (VMesh::Elem::index_type j=0; j < number_of_atlas_materials; j++) /// loop over determined materials
+      for (VMesh::Elem::index_type j=0; j < number_of_atlas_materials; ++j) /// loop over determined materials
       {
         if (Label==labelVector[j] || (target_material==0 && number_of_atlas_materials==1) ) /// if label is known or if default situation precalculate sum, min, max, sum^2, number of selected elements
         {
@@ -198,7 +198,7 @@ boost::tuple<DenseMatrixHandle, VariableHandle> GenerateROIStatisticsAlgorithm::
   const double invalidDouble = std::numeric_limits<double>::quiet_NaN();
 
   /// efficient way to compute std dev. in just one loop over all mesh elements: sqrt ( 1/(n-1) (Sx^2 - avr Sx + n avr^2 )
-  for (VMesh::Elem::index_type j=0; j < number_of_atlas_materials; j++)
+  for (VMesh::Elem::index_type j=0; j < number_of_atlas_materials; ++j)
   {
     double Sx=value_avr[j];
 

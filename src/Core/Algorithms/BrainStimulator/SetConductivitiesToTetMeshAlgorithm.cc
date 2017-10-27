@@ -1,11 +1,11 @@
 /*
  For more information, please see: http://software.sci.utah.edu
- 
+
  The MIT License
- 
+
  Copyright (c) 2015 Scientific Computing and Imaging Institute,
  University of Utah.
- 
+
  License for the specific language governing rights and limitations under
  Permission is hereby granted, free of charge, to any person obtaining a
  copy of this software and associated documentation files (the "Software"),
@@ -13,10 +13,10 @@
  the rights to use, copy, modify, merge, publish, distribute, sublicense,
  and/or sell copies of the Software, and to permit persons to whom the
  Software is furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included
  in all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -24,7 +24,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
- 
+
  Author : Spencer Frisby, Moritz Dannhauer
  Date   : May 2014
 */
@@ -85,13 +85,13 @@ SetConductivitiesToMeshAlgorithm::SetConductivitiesToMeshAlgorithm()
 AlgorithmOutput SetConductivitiesToMeshAlgorithm::run(const AlgorithmInput& input) const
 {
   auto mesh  = input.get<Field>(InputField);
-  
+
   AlgorithmOutput output;
-  
+
   FieldHandle output_field = run(mesh);
-  
+
   output[OutputField] = output_field;
-  
+
   return output;
 }
 
@@ -100,32 +100,28 @@ FieldHandle SetConductivitiesToMeshAlgorithm::run(FieldHandle fh) const
   // making sure the field is not null
   if (!fh)
     THROW_ALGORITHM_INPUT_ERROR("Field supplied is empty ");
-  
+
   /// making sure the data is on the elem and not the nodes
   FieldInformation fi(fh);
   if (!fi.is_constantdata())
     THROW_ALGORITHM_INPUT_ERROR("This function requires the data to be on the elements ");
-  
+
   /// making sure the field contains data
   VField* vfield = fh->vfield();
   if (vfield->is_nodata())
     THROW_ALGORITHM_INPUT_ERROR("Field supplied contained no data ");
-  
+
   /// making sure the field is not in vector or tensor format
   if (!vfield->is_scalar())
     THROW_ALGORITHM_INPUT_ERROR("Function only supports scalar labels. ");
 
   using namespace Parameters;
 
-  Log::get() << DEBUG_LOG << "SetConductivitiesToTetMeshAlgorithm parameters:"
-  << "\n\tSkin = " << get(Skin).toDouble()
-  << "\n\tSoftBone = " << get(SoftBone).toDouble()
-  << "\n\tHardBone = " << get(HardBone).toDouble()
-  << "\n\tCSF = " << get(CSF).toDouble()
-  << "\n\tGM = " << get(GM).toDouble()
-  << "\n\tWM = " << get(WM).toDouble()
-  << "\n\tElectrode = " << get(Electrode).toDouble()
-  << "\n\tInternalAir = " << get(InternalAir).toDouble() << std::endl;
+  LOG_DEBUG("SetConductivitiesToTetMeshAlgorithm parameters:\n\tSkin = {}\n\tSoftBone = {}\n\tHardBone = {}"
+    "\n\tCSF = {}\n\tGM = {}\n\tWM = {}\n\tElectrode = {}\n\tInternalAir = {}",
+    get(Skin).toDouble(), get(SoftBone).toDouble(), get(HardBone).toDouble(),
+    get(CSF).toDouble(), get(GM).toDouble(), get(WM).toDouble(), get(Electrode).toDouble(),
+    get(InternalAir).toDouble());
 
   /// array holding conductivities
   /// @todo: enable when VS2013 is supported
@@ -140,17 +136,17 @@ FieldHandle SetConductivitiesToMeshAlgorithm::run(FieldHandle fh) const
   // check if defined conductivities and lookup table are consistent
   if (conductivities.size() != ElemLabelLookup.size())
     THROW_ALGORITHM_INPUT_ERROR("Defined conductivities and lookup table are inconsistent! ");
-  
+
   /// replacing field value with conductivity value
   FieldHandle output = CreateField(fi, fh->mesh());
   VField* ofield = output->vfield();
   int val = 0;
   int cnt = 0;
-  
+
   for (VMesh::Elem::index_type i = 0; i < vfield->vmesh()->num_elems(); i++) // loop over all tetrahedral elements
   {
     vfield->get_value(val, i);  //get the data value stored on the current element
-    
+
     bool found = false; // boolean that indicates if element label was found in lookup
 
      // loop over lookup table and check if the current element has one of the desired labels, if not error
@@ -163,7 +159,7 @@ FieldHandle SetConductivitiesToMeshAlgorithm::run(FieldHandle fh) const
         break;
       }
     }
-    
+
     if (!found)
     {
       THROW_ALGORITHM_INPUT_ERROR("Tetrahedral element label could not be found in lookup table. ");
@@ -176,6 +172,6 @@ FieldHandle SetConductivitiesToMeshAlgorithm::run(FieldHandle fh) const
       update_progress_max(i,vfield->vmesh()->num_elems());
     }
   }
-  
+
   return output;
 }

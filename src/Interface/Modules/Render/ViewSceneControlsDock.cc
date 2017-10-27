@@ -36,6 +36,7 @@ DEALINGS IN THE SOFTWARE.
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Render;
@@ -432,7 +433,7 @@ void VisibleItemManager::clear()
 {
   if (itemList_->topLevelItemCount() > 0)
   {
-    LOG_DEBUG("ViewScene items cleared" << std::endl);
+    LOG_DEBUG("ViewScene items cleared");
     itemList_->clear();
   }
 }
