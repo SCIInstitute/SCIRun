@@ -60,8 +60,10 @@
 
 #include <boost/thread.hpp>
 #include <boost/unordered_map.hpp>
+#include <boost/unordered_set.hpp>
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
+//#include <Core/Logging/ScopedTimeRemarker.h>
 
 #include <set>
 
@@ -2335,21 +2337,24 @@ protected:
   /// Face information.
   class PFaceCell {
   public:
-    PFaceCell()
+    explicit PFaceCell(index_type c0 = MESH_NO_NEIGHBOR, index_type c1 = MESH_NO_NEIGHBOR)
     {
-      cells_[0] = MESH_NO_NEIGHBOR;
-      cells_[1] = MESH_NO_NEIGHBOR;
+      cells_[0] = c0;
+      cells_[1] = c1;
     }
 
-    bool shared() const { return ((cells_[0] != MESH_NO_NEIGHBOR) &&
-                                  (cells_[1] != MESH_NO_NEIGHBOR)); }
+    bool shared() const 
+    { 
+      return cells_[0] != MESH_NO_NEIGHBOR && cells_[1] != MESH_NO_NEIGHBOR; 
+    }
+
     index_type  cells_[2];
   };
 
   class PFaceNode {
     public:
     // The order of nodes_ corresponds with cells_[0] for CW/CCW purposes.
-    typename Node::index_type         nodes_[3];  /// 3 nodes makes a face.
+    typename Node::index_type nodes_[3];  /// 3 nodes makes a face.
 
     PFaceNode() {
       nodes_[0] = MESH_NO_NEIGHBOR;
@@ -2359,40 +2364,12 @@ protected:
 
     // snodes_ must be sorted. See Hash Function below.
     PFaceNode(typename Node::index_type n1, typename Node::index_type n2,
-          typename Node::index_type n3)
+      typename Node::index_type n3)
     {
-      if (n2 < n1 && n2 < n3)
-      {
-        typename Node::index_type t;
-        if (n3 < n1)
-        {
-          t = n1; n1 = n2; n2 = n3; n3 = t;
-        }
-        else
-        {
-          t = n1; n1 = n2; n2 = t;
-        }
-      }
-      else if (n3 < n1 && n3 < n2)
-      {
-        typename Node::index_type t;
-        if (n1 < n2)
-        {
-          t = n1; n1 = n3; n3 = n2; n2 = t;
-        }
-        else
-        {
-          t = n1; n1 = n3; n3 = t;
-        }
-      }
-      else if (n3 < n2)
-      {
-        typename Node::index_type t;
-        t = n2; n2 = n3; n3 = t;
-      }
       nodes_[0] = n1;
       nodes_[1] = n2;
       nodes_[2] = n3;
+      std::sort(std::begin(nodes_), std::end(nodes_));
     }
 
     /// true if both have the same nodes (order does not matter)
@@ -2414,14 +2391,6 @@ protected:
       else
         return (nodes_[0] < f.nodes_[0]);
     }
-  };
-
-  class PFace : public PFaceNode, public PFaceCell
-  {
-    public:
-      PFace(typename Node::index_type n1, typename Node::index_type n2,
-          typename Node::index_type n3) :
-        PFaceNode(n1,n2,n3) {}
   };
 
   /// Edge information.
@@ -2485,29 +2454,17 @@ protected:
 
   /// hash the egde's node_indecies such that edges with the same nodes
   ///  hash to the same value. nodes are sorted on edge construction.
-  static const int sz_int = sizeof(int) * 8; // in bits
   struct FaceHash
   {
-    // These are needed by the hash_map particularly
-    // ANSI C++ allows us to initialize these variables in the
-    // declaration.  However there may be compilers which will complain
-    // about it.
-    static const size_t bucket_size = 4;
-    static const size_t min_buckets = 8;
-
-    /// These are for our own use (making the hash function).
-    static const int sz_third_int = (int)(sz_int / 3);
-    static const int up_mask = -(1 << sz_third_int << sz_third_int);
-    static const int mid_mask =  up_mask ^ -(1 << sz_third_int);
-    static const int low_mask = ~(up_mask | mid_mask);
-
-    /// This is the hash function
     template <class PFACE>
     size_t operator()(const PFACE &f) const
     {
-      return ((up_mask & (static_cast<int>(f.nodes_[0]) << sz_third_int << sz_third_int)) |
-              (mid_mask & (static_cast<int>(f.nodes_[1]) << sz_third_int)) |
-              (low_mask & static_cast<int>(f.nodes_[2])));
+      std::size_t seed = 0;
+      boost::hash_combine(seed, static_cast<index_type>(f.nodes_[0]));
+      boost::hash_combine(seed, static_cast<index_type>(f.nodes_[1]));
+      boost::hash_combine(seed, static_cast<index_type>(f.nodes_[2]));
+
+      return seed;
     }
     /// This should return less than rather than equal to.
 
@@ -2521,25 +2478,13 @@ protected:
   /// hash the egde's node_indecies such that edges with the same nodes
   ///  hash to the same value. nodes are sorted on edge construction.
   struct EdgeHash {
-    /// These are needed by the hash_map particularly
-    // ANSI C++ allows us to initialize these variables in the
-    // declaration.  However there may be compilers which will complain
-    // about it.
-    static const size_t bucket_size = 4;
-    static const size_t min_buckets = 8;
-
-    /// These are for our own use (making the hash function.
-    static const int sz_int = sizeof(int) * 8; // in bits
-    static const int sz_half_int = sizeof(int) << 2; // in bits
-    static const int up_mask = -(1 << sz_half_int);
-    static const int low_mask = (~((int)0) ^ up_mask);
-
-    /// This is the hash function
     template <class PEDGE>
     size_t operator()(const PEDGE &e) const
     {
-      return (static_cast<int>(e.nodes_[0]) << sz_half_int) |
-              (low_mask & static_cast<int>(e.nodes_[1]));
+      std::size_t seed = 0;
+      boost::hash_combine(seed, static_cast<index_type>(e.nodes_[0]));
+      boost::hash_combine(seed, static_cast<index_type>(e.nodes_[1]));
+      return seed;
     }
 
     ///  This should return less than rather than equal to.
@@ -2550,7 +2495,7 @@ protected:
     }
   };
 
-  using face_ht = boost::unordered_map<PFace, typename Face::index_type, FaceHash>;
+  using face_ht = boost::unordered_map<PFaceNode, PFaceCell, FaceHash>;
   using face_nt = boost::unordered_map<PFaceNode, typename Face::index_type, FaceHash>;
   using edge_ht = boost::unordered_map<PEdge, typename Edge::index_type, EdgeHash>;
   using edge_nt = boost::unordered_map<PEdgeNode, typename Edge::index_type, EdgeHash>;
@@ -2957,34 +2902,32 @@ TetVolMesh<Basis>::hash_face(typename Node::index_type n1,
                              index_type combined_index,
                              face_ht& table)
 {
-  PFace f(n1, n2, n3);
+  PFaceNode f(n1, n2, n3);
 
-  typename face_ht::iterator iter = table.find(f);
+  auto iter = table.find(f);
   if (iter == table.end())
   {
-    f.cells_[0] = combined_index;
-    table[f] = 0; // insert for the first time
+    //f.cells_[0] = combined_index;
+    table.insert(std::make_pair(f, PFaceCell(combined_index, MESH_NO_NEIGHBOR ))); // insert for the first time
   }
   else
   {
-    PFace f = (*iter).first;
-    if (f.cells_[1] != MESH_NO_NEIGHBOR)
+    PFaceCell& cell = iter->second;
+    if (cell.cells_[1] != MESH_NO_NEIGHBOR)
     {
       std::cerr << "TetVolMesh - This Mesh has problems: Cells #"
-           << (f.cells_[0]>>2) << ", #" << (f.cells_[1]>>2) << ", and #"
+        << (cell.cells_[0] >> 2) << ", #" << (cell.cells_[1] >> 2) << ", and #"
            << (combined_index>>2) << " are illegally adjacent." << std::endl;
     }
-    else if ((f.cells_[0]>>2) == (combined_index>>2))
+    else if ((cell.cells_[0] >> 2) == (combined_index >> 2))
     {
       std::cerr << "TetVolMesh - This Mesh has problems: Cells #"
-           << (f.cells_[0]>>2) << " and #" << (combined_index>>2)
+        << (cell.cells_[0] >> 2) << " and #" << (combined_index >> 2)
            << " are the same." << std::endl;
     }
     else
     {
-      f.cells_[1] = combined_index; // add this cell
-      table.erase(iter);
-      table[f] = 0;
+      cell.cells_[1] = combined_index; // add this cell
     }
   }
 }
@@ -2993,54 +2936,57 @@ template <class Basis>
 void
 TetVolMesh<Basis>::compute_faces()
 {
+  //Core::Logging::ScopedTimeLogger str1("mesh sync compute_faces", true);
   typename Cell::iterator ci, cie;
   begin(ci); end(cie);
   typename Node::array_type arr(4);
 
   face_ht table;
-
-  while (ci != cie)
   {
-    get_nodes(arr, *ci);
-    // 4 faces -- each is entered CCW from outside looking in
+    //Core::Logging::ScopedTimeLogger str2("mesh sync compute_faces first while loop", true);
+    while (ci != cie)
+    {
+      auto cell = *ci;
+      get_nodes(arr, cell);
+      // 4 faces -- each is entered CCW from outside looking in
 
-    index_type cell_index = (*ci)<<2;
-    hash_face(arr[0], arr[2], arr[1], cell_index, table);
-    hash_face(arr[1], arr[2], arr[3], cell_index + 1, table);
-    hash_face(arr[0], arr[1], arr[3], cell_index + 2, table);
-    hash_face(arr[0], arr[3], arr[2], cell_index + 3, table);
-    ++ci;
+      index_type cell_index = cell << 2;
+      hash_face(arr[0], arr[2], arr[1], cell_index, table);
+      hash_face(arr[1], arr[2], arr[3], cell_index + 1, table);
+      hash_face(arr[0], arr[1], arr[3], cell_index + 2, table);
+      hash_face(arr[0], arr[3], arr[2], cell_index + 3, table);
+      ++ci;
+    }
   }
 
   faces_.resize(table.size());
-
-  typename face_ht::iterator ht_iter = table.begin();
-  typename face_ht::iterator ht_iter_end = table.end();
-
   boundary_faces_.resize(cells_.size() >> 2);
 
   index_type uidx = 0;
-  while (ht_iter != ht_iter_end)
   {
-    const PFace& pface = (*ht_iter).first;
-    faces_[uidx].cells_[0] = pface.cells_[0];
-    faces_[uidx].cells_[1] = pface.cells_[1];
-    face_table_[PFaceNode(pface.nodes_[0],pface.nodes_[1],pface.nodes_[2])] = uidx;
+    //Core::Logging::ScopedTimeLogger str3("mesh sync compute_faces second while loop", true);
 
-    if (pface.cells_[1] == -1)
+    for (const auto& facePair : table)
     {
-      index_type cell = (pface.cells_[0]) >> 2;
-      index_type face = (pface.cells_[0]) & 0x3;
-      boundary_faces_[cell] |= 1 << face;
+      const auto& nodes = facePair.first;
+      const auto& cells = facePair.second;
+      faces_[uidx].cells_[0] = cells.cells_[0];
+      faces_[uidx].cells_[1] = cells.cells_[1];
+      face_table_[PFaceNode(nodes.nodes_[0], nodes.nodes_[1], nodes.nodes_[2])] = uidx;
+
+      if (cells.cells_[1] == -1)
+      {
+        index_type cell = (cells.cells_[0]) >> 2;
+        index_type face = (cells.cells_[0]) & 0x3;
+        boundary_faces_[cell] |= 1 << face;
+      }
+      uidx++;
     }
-    ++ht_iter; uidx++;
   }
 
   synchronize_lock_.lock();
   synchronized_ |= Mesh::FACES_E;
   synchronize_lock_.unlock();
-
-
 }
 
 
@@ -4423,7 +4369,7 @@ template <class Basis>
 const TypeDescription*
 TetVolMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((TetVolMesh<Basis> *)0);
+  return SCIRun::get_type_description(static_cast<TetVolMesh<Basis> *>(nullptr));
 }
 
 template <class Basis>
@@ -4434,7 +4380,7 @@ TetVolMesh<Basis>::node_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TetVolMesh<Basis> *)0);
+      SCIRun::get_type_description(static_cast<TetVolMesh<Basis> *>(nullptr));
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -4451,7 +4397,7 @@ TetVolMesh<Basis>::edge_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TetVolMesh<Basis> *)0);
+      SCIRun::get_type_description(static_cast<TetVolMesh<Basis> *>(nullptr));
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -4468,7 +4414,7 @@ TetVolMesh<Basis>::face_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TetVolMesh<Basis> *)0);
+      SCIRun::get_type_description(static_cast<TetVolMesh<Basis> *>(nullptr));
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -4485,7 +4431,7 @@ TetVolMesh<Basis>::cell_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TetVolMesh<Basis> *)0);
+      SCIRun::get_type_description(static_cast<TetVolMesh<Basis> *>(nullptr));
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",
