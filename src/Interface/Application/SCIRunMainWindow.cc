@@ -26,6 +26,7 @@
   DEALINGS IN THE SOFTWARE.
 */
 
+#include <es-log/trace-log.h>
 #include <QtGui>
 #include <functional>
 #include <boost/bind.hpp>
@@ -659,6 +660,7 @@ bool SCIRunMainWindow::loadNetworkFile(const QString& filename, bool isTemporary
 {
   if (!filename.isEmpty())
   {
+    RENDERER_LOG("Opening network file: {}", filename.toStdString());
     FileOpenCommand command;
     command.set(Variables::Filename, filename.toStdString());
     command.set(Name("temporary-file"), isTemporary);

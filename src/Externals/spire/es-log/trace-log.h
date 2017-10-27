@@ -44,6 +44,7 @@ namespace spire
 }
 
 #define logRendererError(...) spire::RendererLog::get()->error(__VA_ARGS__)
+#define logRendererInfo(...) spire::RendererLog::get()->info(__VA_ARGS__)
 
 //TODO: cmake controlled flag
 
