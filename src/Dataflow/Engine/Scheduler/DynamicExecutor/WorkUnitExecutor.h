@@ -42,15 +42,14 @@ namespace SCIRun {
         struct SCISHARE ModuleExecutor
         {
           ModuleExecutor(Networks::ModuleHandle mod, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer) :
-            module_(mod), lookup_(lookup), producer_(producer), shouldLog_(SCIRun::Core::Logging::Log::get().verbose())
+            module_(mod), lookup_(lookup), producer_(producer),
+            shouldLog_(false)//SCIRun::Core::Logging::Log::get().verbose())
           {
-            Core::Logging::Log::get("executor").setVerbose(shouldLog_);
+            //Core::Logging::Log::get("executor").setVerbose(shouldLog_);
           }
           void run()
           {
-            /// @todo: crashes on Mac
-            if (shouldLog_)
-              Core::Logging::Log::get("executor") << Core::Logging::DEBUG_LOG << "Module Executor: " << module_->get_id() << std::endl;
+            log_->debug_if(shouldLog_, "Module Executor: {}", module_->get_id().id_);
             auto exec = lookup_->lookupExecutable(module_->get_id());
             boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&ProducerInterface::enqueueReadyModules, boost::ref(*producer_))));
             exec->executeWithSignals();
@@ -60,6 +59,7 @@ namespace SCIRun {
           const Networks::ExecutableLookup* lookup_;
           ProducerInterfacePtr producer_;
           bool shouldLog_;
+          static Core::Logging::Logger2 log_;
         };
 
 

@@ -57,6 +57,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Gui::NetworkBoundaries;
@@ -149,6 +150,7 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 }
 
 NetworkEditor::ViewUpdateFunc NetworkEditor::viewUpdateFunc_;
+QGraphicsView* NetworkEditor::miniview_ {nullptr};
 
 void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module, const ModuleCounter& count)
 {
@@ -385,7 +387,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
     connect(module, SIGNAL(dynamicPortChanged(const std::string&, bool)), proxy, SLOT(createPortPositionProviders()));
   }
 
-  LOG_DEBUG("NetworkEditor connecting to state" << std::endl);
+  LOG_DEBUG("NetworkEditor connecting to state.");
   module->getModule()->get_state()->connectStateChanged(boost::bind(&NetworkEditor::modified, this));
 
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));
@@ -431,7 +433,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   bringToFront();
   proxy->setVisible(visibleItems_);
 
-  GuiLogger::Instance().logInfoStd("Module added: " + module->getModuleId());
+  guiLogDebug("Module added: {}", module->getModuleId());
 
   logViewerDims("Scene bounds post-add:");
 
@@ -821,6 +823,7 @@ void NetworkEditor::alignViewport()
   auto visibleRect = scene_->itemsBoundingRect();
   visibleRect.adjust(-20, -20, 20, 20);
   setSceneRect(visibleRect);
+  miniview_->setSceneRect(visibleRect);
 }
 
 NetworkSearchWidget::NetworkSearchWidget(NetworkEditor* ned)

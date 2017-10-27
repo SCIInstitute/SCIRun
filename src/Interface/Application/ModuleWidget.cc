@@ -584,7 +584,7 @@ void ModuleWidget::fillReplaceWithMenu(QMenu* menu)
     return;
 
   menu->clear();
-  LOG_DEBUG("Filling menu for " << theModule_->get_module_name() << std::endl);
+  LOG_DEBUG("Filling menu for {}", theModule_->get_module_name());
   auto replacements = Application::Instance().controller()->possibleReplacements(this->theModule_);
   auto isReplacement = [&](const ModuleDescription& md) { return replacements.find(md.lookupInfo_) != replacements.end(); };
   fillMenuWithFilteredModuleActions(menu, Application::Instance().controller()->getAllAvailableModuleDescriptions(),

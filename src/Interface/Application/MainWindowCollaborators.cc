@@ -49,27 +49,6 @@ void TextEditAppender::log(const QString& message) const
   text_->verticalScrollBar()->setValue(text_->verticalScrollBar()->maximum());
 }
 
-void TextEditAppender::error(const std::string& msg) const
-{
-  Log::get() << ERROR_LOG << msg << std::endl;
-}
-
-void TextEditAppender::warning(const std::string& msg) const
-{
-  Log::get() << WARN << msg << std::endl;
-}
-
-void TextEditAppender::remark(const std::string& msg) const
-{
-  Log::get() << NOTICE << msg << std::endl;
-}
-
-void TextEditAppender::status(const std::string& msg) const
-{
-  auto level = regressionMode_ ? INFO : DEBUG_LOG;
-  Log::get() << level << msg << std::endl;
-}
-
 void TextEditAppender::log4(const std::string& message) const
 {
   log(QString::fromStdString(message));
