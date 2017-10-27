@@ -152,7 +152,7 @@ bool CleanupTetMeshAlgo::run(FieldHandle input, FieldHandle& output) const
   {
     ofield->copy_values(ifield);
   }
-
+  
  return true;
 }
 
