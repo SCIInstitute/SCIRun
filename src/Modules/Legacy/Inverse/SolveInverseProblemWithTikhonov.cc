@@ -33,10 +33,12 @@
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Scalar.h>
 #include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h>
+#include <Modules/Legacy/Inverse/LCurvePlot.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
 // #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun;
@@ -74,8 +76,6 @@ void SolveInverseProblemWithTikhonov::setStateDefaults()
 	setStateIntFromAlgo(Parameters::LambdaNum);
 	setStateDoubleFromAlgo(Parameters::LambdaResolution);
 	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
-	setStateIntFromAlgo(Parameters::LambdaCorner);
-	setStateStringFromAlgo(Parameters::LCurveText);
 	setStateIntFromAlgo(Parameters::regularizationSolutionSubcase);
 	setStateIntFromAlgo(Parameters::regularizationResidualSubcase);
 }
@@ -97,33 +97,40 @@ void SolveInverseProblemWithTikhonov::execute()
 
 		auto state = get_state();
 		// set parameters
-	    state->setValue( Parameters::TikhonovImplementation, std::string("standardTikhonov") );
-		setAlgoStringFromState(Parameters::TikhonovImplementation);
-	    setAlgoOptionFromState(Parameters::RegularizationMethod);
-	    setAlgoIntFromState(Parameters::regularizationChoice);
-	    setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
-	    setAlgoDoubleFromState(Parameters::LambdaMin);
-	    setAlgoDoubleFromState(Parameters::LambdaMax);
-	    setAlgoIntFromState(Parameters::LambdaNum);
-	    setAlgoDoubleFromState(Parameters::LambdaResolution);
-	    setAlgoDoubleFromState(Parameters::LambdaSliderValue);
-	    setAlgoIntFromState(Parameters::LambdaCorner);
-	    setAlgoStringFromState(Parameters::LCurveText);
-	    setAlgoIntFromState(Parameters::regularizationSolutionSubcase);
-	    setAlgoIntFromState(Parameters::regularizationResidualSubcase);
+    state->setValue( Parameters::TikhonovImplementation, std::string("standardTikhonov") );
+    setAlgoStringFromState(Parameters::TikhonovImplementation);
+    setAlgoOptionFromState(Parameters::RegularizationMethod);
+    setAlgoIntFromState(Parameters::regularizationChoice);
+    setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
+    setAlgoDoubleFromState(Parameters::LambdaMin);
+    setAlgoDoubleFromState(Parameters::LambdaMax);
+    setAlgoIntFromState(Parameters::LambdaNum);
+    setAlgoDoubleFromState(Parameters::LambdaResolution);
+    setAlgoDoubleFromState(Parameters::LambdaSliderValue);
+    setAlgoIntFromState(Parameters::regularizationSolutionSubcase);
+    setAlgoIntFromState(Parameters::regularizationResidualSubcase);
 
 		// run
 		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,optionalAlgoInput(hMatrixRegMat))(WeightingInSensorSpace,optionalAlgoInput(hMatrixNoiseCov))) );
 
-		// update L-curve
-		/* NO EXISTE
-        SolveInverseProblemWithTikhonovImpl_child::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonov::update_lcurve_gui, this, _1, _2, _3);
-		*/
 
 		// set outputs
 		sendOutputFromAlgorithm(InverseSolution,output);
 		sendOutputFromAlgorithm(RegularizationParameter,output);
 		sendOutputFromAlgorithm(RegInverse,output);
+    auto lambda=output.get<DenseMatrix>(TikhonovAlgoAbstractBase::RegularizationParameter);
+    auto lambda_array=output.get<DenseMatrix>(TikhonovAlgoAbstractBase::LambdaArray);
+    auto lambda_index =output.get<DenseMatrix>(TikhonovAlgoAbstractBase::Lambda_Index);
+    
+    auto regularization_method  = state->getValue(Parameters::RegularizationMethod).toString();
 
-	}
+    if (regularization_method== "lcurve")
+    {
+      auto str = LCurvePlot::update_lcurve_gui(get_id(),lambda,lambda_array,lambda_index);
+      state->setTransientValue("LambdaCorner", lambda->get(0,0));
+      state->setTransientValue("LambdaCurveInfo", str);
+    }
+  }
 }
+
+

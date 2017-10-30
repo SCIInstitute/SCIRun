@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,40 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVSVDDIALOG_H
-#define INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVSVDDIALOG_H
+//    File       : LCurvePlot.h
+//    Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White, Jess Tate
+//    Date       : Oct 25th, 2017 (last update)
 
-#include <Interface/Modules/Inverse/ui_SolveInverseProblemWithTikhonovSVDDialog.h>
-#include <boost/shared_ptr.hpp>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Inverse/share.h>
+#ifndef MODULES_LEGACY_INVERSE_LCURVEPLOT_H__
+#define MODULES_LEGACY_INVERSE_LCURVEPLOT_H__
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Inverse/share.h>
 
 namespace SCIRun {
-namespace Gui {
+namespace Modules {
+namespace Inverse {
 
-class SCISHARE SolveInverseProblemWithTikhonovSVDDialog : public ModuleDialogGeneric,
-  public Ui::SolveInverseProblemWithTikhonovSVDDialog
-{
-	Q_OBJECT
+	class SCISHARE LCurvePlot
+	{
+	public:
+		LCurvePlot();
+    
+    static std::string update_lcurve_gui(const std::string module_id,  const SCIRun::Core::Datatypes::DenseMatrixHandle& lambda, const SCIRun::Core::Datatypes::DenseMatrixHandle& input, const SCIRun::Core::Datatypes::DenseMatrixHandle& lambda_index);
+	};
+}}}
 
-public:
-  SolveInverseProblemWithTikhonovSVDDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void moduleExecuted() override { pullAndDisplayInfo(); }
-
-private Q_SLOTS:
-  void setSpinBoxValue(int value);
-  void setSliderValue(double value);
-  void setSliderMin(double value);
-  void setSliderMax(double value);
-  void setSliderStep(double value);
-  void pullAndDisplayInfo();
-private:
-  GuiStringTranslationMap lambdaMethod_;
-};
-
-}
-}
 
 #endif
