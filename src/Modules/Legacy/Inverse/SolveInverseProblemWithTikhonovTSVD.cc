@@ -34,6 +34,7 @@
 #include <Core/Datatypes/Scalar.h>
 #include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Modules/Legacy/Inverse/LCurvePlot.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD_impl.h>
 // #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
@@ -71,24 +72,19 @@ SolveInverseProblemWithTikhonovTSVD::SolveInverseProblemWithTikhonovTSVD() : Mod
 
 void SolveInverseProblemWithTikhonovTSVD::setStateDefaults()
 {
-	auto state = get_state();
-
-	state->setValue( Parameters::TikhonovImplementation, std::string("TikhonovTSVD") );
-	state->setValue(Parameters::LambdaMin,1);
-	state->setValue(Parameters::LambdaMax,1);
-	state->setValue(Parameters::LambdaNum, 1);
-	state->setValue( Parameters::LambdaResolution, 1);
-
-	// setStateStringFromAlgo(Parameters::TikhonovImplementation);
-	setStateStringFromAlgoOption(Parameters::RegularizationMethod);
-	setStateDoubleFromAlgo(Parameters::LambdaFromDirectEntry);
-	// setStateDoubleFromAlgo(Parameters::LambdaMin);
-	// setStateDoubleFromAlgo(Parameters::LambdaMax);
-	// setStateIntFromAlgo(Parameters::LambdaNum);
-	// setStateDoubleFromAlgo(Parameters::LambdaResolution);
-	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
-	setStateIntFromAlgo(Parameters::LambdaCorner);
-	setStateStringFromAlgo(Parameters::LCurveText);
+  auto state = get_state();
+  
+  
+  state->setValue(Parameters::LambdaMin,1);
+  state->setValue(Parameters::LambdaMax,100);
+  state->setValue(Parameters::LambdaNum,100);
+  state->setValue(Parameters::LambdaResolution,1);
+  
+  
+  setStateStringFromAlgo(Parameters::TikhonovImplementation);
+  setStateStringFromAlgoOption(Parameters::RegularizationMethod);
+  setStateDoubleFromAlgo(Parameters::LambdaFromDirectEntry);
+  setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
 }
 
 // execute function
@@ -121,8 +117,7 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
 			Eigen::FullPivLU<SCIRun::Core::Datatypes::DenseMatrix::EigenBase> lu_decomp(*forward_matrix_h);
 			rank = lu_decomp.rank();
 		}
-
-		std::cout << "Computed rank: " << rank << std::endl;
+    
 		// set parameters
 		auto state = get_state();
 
@@ -130,16 +125,27 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
 		setAlgoStringFromState(Parameters::TikhonovImplementation);
 		setAlgoOptionFromState(Parameters::RegularizationMethod);
 		setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
-		// state->setValue(Parameters::LambdaMin,1);
-		state->setValue(Parameters::LambdaMax,double(rank)); // casting to double to keep consistency across tikhonov types
-		state->setValue(Parameters::LambdaNum, rank);	// casting to double to keep consistency across tikhonov types
-		// state->setValue( Parameters::LambdaResolution, 1);
+    
+    int LambdaMin= std::max(static_cast <int> (state->getValue(Parameters::LambdaMin).toDouble()),1);
+    int LambdaMax= std::min(static_cast <int> (state->getValue(Parameters::LambdaMax).toDouble()),rank);
+    
+    if (LambdaMax<LambdaMin)
+    {
+      int tmp = LambdaMax;
+      LambdaMax=LambdaMin;
+      LambdaMin=tmp;
+    }
+    
+    int LambdaNum= LambdaMax - LambdaMin+1;
+    
+    state->setValue(Parameters::LambdaNum, LambdaNum);
+    state->setValue(Parameters::LambdaMin, static_cast <double> (LambdaMin));
+    state->setValue(Parameters::LambdaMax, static_cast <double> (LambdaMax));
+    
 		setAlgoDoubleFromState(Parameters::LambdaMin);
 		setAlgoDoubleFromState(Parameters::LambdaMax);
 		setAlgoIntFromState(Parameters::LambdaNum);
 		setAlgoDoubleFromState(Parameters::LambdaSliderValue);
-		setAlgoIntFromState(Parameters::LambdaCorner);
-		setAlgoStringFromState(Parameters::LCurveText);
 
 		// run
 		auto output = algo().run(
@@ -153,15 +159,24 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
 								(matrixV,optionalAlgoInput(hMatrixV)))
 							);
 
-		// update L-curve
-		/* NO EXISTE
-        SolveInverseProblemWithTikhonovTSVD_impl::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonov::update_lcurve_gui, this, _1, _2, _3);
-		*/
 
 		// set outputs
 		sendOutputFromAlgorithm(InverseSolution,output);
 		sendOutputFromAlgorithm(RegularizationParameter,output);
 		sendOutputFromAlgorithm(RegInverse,output);
+    auto lambda=output.get<DenseMatrix>(TikhonovAlgoAbstractBase::RegularizationParameter);
+    auto lambda_array=output.get<DenseMatrix>(TikhonovAlgoAbstractBase::LambdaArray);
+    auto lambda_index =output.get<DenseMatrix>(TikhonovAlgoAbstractBase::Lambda_Index);
+    
+    auto regularization_method  = state->getValue(Parameters::RegularizationMethod).toString();
+    
+    if (regularization_method== "lcurve")
+    {
+      auto str = LCurvePlot::update_lcurve_gui(get_id(),lambda,lambda_array,lambda_index);
+      state->setTransientValue("LambdaCorner", lambda->get(0,0));
+      state->setTransientValue("LambdaCurveInfo", str);
+    }
 
 	}
 }
+

@@ -34,6 +34,7 @@
 #include <Core/Datatypes/Scalar.h>
 #include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Modules/Legacy/Inverse/LCurvePlot.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
 // #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
@@ -79,8 +80,6 @@ void SolveInverseProblemWithTikhonovSVD::setStateDefaults()
 	setStateIntFromAlgo(Parameters::LambdaNum);
 	setStateDoubleFromAlgo(Parameters::LambdaResolution);
 	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
-	setStateIntFromAlgo(Parameters::LambdaCorner);
-	setStateStringFromAlgo(Parameters::LCurveText);
 }
 
 // execute function
@@ -100,8 +99,6 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 	auto hSingularValues = getOptionalInput(singularValues);
 	auto hMatrixV = getOptionalInput(matrixV);
 
-	std::cout << "gato" << std::endl;
-
 	if (needToExecute())
 	{
 		// set parameters
@@ -116,8 +113,6 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 		setAlgoIntFromState(Parameters::LambdaNum);
 		setAlgoDoubleFromState(Parameters::LambdaResolution);
 		setAlgoDoubleFromState(Parameters::LambdaSliderValue);
-		setAlgoIntFromState(Parameters::LambdaCorner);
-		setAlgoStringFromState(Parameters::LCurveText);
 
 		// run
 		auto output = algo().run(
@@ -132,15 +127,23 @@ void SolveInverseProblemWithTikhonovSVD::execute()
 								(matrixV,optionalAlgoInput(hMatrixV)))
 							);
 
-		// update L-curve
-		/* NO EXISTE
-        SolveInverseProblemWithTikhonovSVD_impl::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonov::update_lcurve_gui, this, _1, _2, _3);
-		*/
 
 		// set outputs
 		sendOutputFromAlgorithm(InverseSolution,output);
 		sendOutputFromAlgorithm(RegularizationParameter,output);
 		sendOutputFromAlgorithm(RegInverse,output);
-
+    auto lambda=output.get<DenseMatrix>(TikhonovAlgoAbstractBase::RegularizationParameter);
+    auto lambda_array=output.get<DenseMatrix>(TikhonovAlgoAbstractBase::LambdaArray);
+    auto lambda_index =output.get<DenseMatrix>(TikhonovAlgoAbstractBase::Lambda_Index);
+    
+    auto regularization_method  = state->getValue(Parameters::RegularizationMethod).toString();
+    
+    if (regularization_method== "lcurve")
+    {
+      auto str = LCurvePlot::update_lcurve_gui(get_id(),lambda,lambda_array,lambda_index);
+      state->setTransientValue("LambdaCorner", lambda->get(0,0));
+      state->setTransientValue("LambdaCurveInfo", str);
+    }
 	}
 }
+
