@@ -3,8 +3,7 @@
     "name": "RemoveUnusedNodes",
     "namespace": "Fields",
     "status": "In progress: needs more testing",
-    "description": "Removes meshnodes that are not connected in any mesh
-    elements",
+    "description": "Removes meshnodes that are not connected in any mesh elements",
     "header": "Modules/Legacy/Fields/RemoveUnusedNodes.h"
   },
   "algorithm": {
