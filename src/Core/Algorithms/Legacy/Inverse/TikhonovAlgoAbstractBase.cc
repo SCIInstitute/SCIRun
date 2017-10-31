@@ -46,6 +46,7 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Math/MiscMath.h>
+#include <unsupported/Eigen/Splines>
 
 // SCIRun structural
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -285,6 +286,7 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
 
   auto lambdaArray = algoImpl.computeLambdaArray( lambdaMin, lambdaMax, nLambda );
 
+std::cout << "Lambda Array:" << lambdaArray << std::endl;
   DenseMatrix CAx, Rx;
   DenseMatrix solution;
 
@@ -330,9 +332,11 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
     eta[j] = Rx.norm();
   }
 
+	std::cout << "Eta: " << eta << "\n Rho: "<< rho << std::endl;
   // Find corner in L-curve
   lambda = FindCorner( rho, eta, lambdaArray, nLambda );
 
+	std::cout << "Lambda:" << lambda << std::endl;
   // TODO: update GUI
 
   return lambda;
@@ -341,48 +345,63 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
 ///// Find Corner, find the maximal curvature which corresponds to the L-curve corner
 double TikhonovAlgoAbstractBase::FindCorner( const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, const int nLambda )
 {
-  std::vector<double> deta(nLambda);
-  std::vector<double> ddeta(nLambda);
-  std::vector<double> drho(nLambda);
-  std::vector<double> ddrho(nLambda);
-  std::vector<double> lrho(nLambda);
-  std::vector<double> leta(nLambda);
-  DenseColumnMatrix kapa(nLambda);
 
-  double maxKapa = -1.0e10;
-  for (int i = 0; i < nLambda; i++)
-  {
-    lrho[i] = std::log10(rho[i]);
-    leta[i] = std::log10(eta[i]);
-    if(i>0)
-    {
-      deta[i] = (leta[i]-leta[i-1]) / (lambdaArray[i]-lambdaArray[i-1]); // compute first derivative
-      drho[i] = (lrho[i]-lrho[i-1]) / (lambdaArray[i]-lambdaArray[i-1]);
-    }
-    if(i>1)
-    {
-      ddeta[i] = (deta[i]-deta[i-1]) / (lambdaArray[i]-lambdaArray[i-1]); // compute second derivative from first
-      ddrho[i] = (drho[i]-drho[i-1]) / (lambdaArray[i]-lambdaArray[i-1]);
-    }
-  }
-  drho[0] = drho[1];
-  deta[0] = deta[1];
-  ddrho[0] = ddrho[2];
-  ddrho[1] = ddrho[2];
-  ddeta[0] = ddeta[2];
-  ddeta[1] = ddeta[2];
+	DenseColumnMatrix lrho(nLambda);
+	DenseColumnMatrix leta(nLambda);
 
-  int lambda_index = 0;
-  for (int i = 0; i < nLambda; i++)
-  {
-    kapa[i] = std::abs((drho[i] * ddeta[i] - ddrho[i] * deta[i]) /  //compute curvature
-                       std::sqrt(std::pow((deta[i]*deta[i]+drho[i]*drho[i]), 3.0)));
-    if (kapa[i] > maxKapa) // find max curvature
-    {
-      maxKapa = kapa[i];
-      lambda_index = i;
-    }
-  }
+	double maxKapa = -1.0e10;
+	for (int i = 0; i < nLambda; i++)
+	{
+		lrho[i] = std::log10(rho[i]);
+		leta[i] = std::log10(eta[i]);
+	}
 
-  return lambdaArray[lambda_index];
+	// create L-curve
+	DenseMatrix Gamma( 2, lrho.nrows());
+	Gamma.row(0) = lrho;
+	Gamma.row(1) = leta;//DenseColumnMatrix::LinSpaced(lrho.nrows(),0,1);
+
+	// fit spline and compute curvature
+	DenseColumnMatrix gato = TikhonovAlgoAbstractBase::InterpolateCurvatureWithSplines( Gamma );
+
+	// select maximum curvature
+	int lambda_index = 0;
+	gato.maxCoeff(&lambda_index);
+
+  	return lambdaArray[lambda_index];
+}
+
+SCIRun::Core::Datatypes::DenseColumnMatrix TikhonovAlgoAbstractBase::InterpolateCurvatureWithSplines( SCIRun::Core::Datatypes::DenseMatrix& samplePoints)
+{
+
+	// prealoate
+	int numSamples = samplePoints.ncols();
+	DenseColumnMatrix kappa = DenseMatrix::Zero( numSamples, 1 );
+
+	// typedefs needed for the spline
+	typedef Eigen::Spline<double,2> Spline2d;
+	typedef Spline2d::KnotVectorType KnotVectorType;
+
+	// fit cubic spline to data points
+	const Spline2d spline = Eigen::SplineFitting<Spline2d>::Interpolate(samplePoints,3);
+
+	// determine position of samples along the spline curve
+	KnotVectorType chord_lengths; // knot parameters
+	Eigen::ChordLengths(points, chord_lengths);
+
+	for (int i=0; i < numSamples; i++)
+	{
+		// compute derivatives up to 2nd order
+		auto dpt = spline.derivatives( chord_lengths(i), 2);
+
+		// compute curvature as:
+		//			abs( ( ddrho*ddeta - ddrho*deta ) /  sqrt(  ( deta^2 + drho^2  )^2)  )
+		kappa[i] = std::abs( (dpt(0,2) * dpt(1,2) - dpt(0,2) * dpt(1,1)) /  //compute curvature
+	                       std::sqrt( std::pow(dpt(1,1)*dpt(1,1)+dpt(0,1)*dpt(0,1) , 3.0)) );
+
+
+	}
+
+	// return curvature for all points on the Lcurve
+	return kappa;
 }
