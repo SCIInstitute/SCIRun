@@ -40,7 +40,11 @@ Logger2 RendererLog::get()
   if (first)
   {
     first = false;
+    #ifdef RENDERER_TRACE_ON
     logger_ = spdlog::basic_logger_mt(name(), "renderer.log");
+    #else
+    logger_ = spdlog::stdout_color_mt(name());
+    #endif
     logger_->set_level(spdlog::level::trace);
     logger_->flush_on(spdlog::level::info);
     logger_->info("Start of Renderer log.");

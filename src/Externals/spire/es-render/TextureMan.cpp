@@ -222,7 +222,7 @@ namespace ren {
       }
       else
       {
-        std::cerr << "TextureMan: Failed promise for " << assetName << std::endl;
+        logRendererError("TextureMan: Failed promise for {}", assetName);
       }
     }
   }
@@ -531,14 +531,15 @@ namespace ren {
 
     void postWalkComponents(spire::ESCoreBase& core) override
     {
-      StaticTextureMan* man = core.getStaticComponent<StaticTextureMan>();
-      if (man == nullptr)
+      auto man = core.getStaticComponent<StaticTextureMan>();
+      if (!man)
       {
-        std::cerr << "Unable to complete texture fulfillment. There is no StaticTextureMan." << std::endl;
+        logRendererError("Unable to complete texture fulfillment. There is no StaticTextureMan.");
         return;
       }
       std::weak_ptr<TextureMan> tm = man->instance_;
-      if (std::shared_ptr<TextureMan> textureMan = tm.lock()) {
+      if (std::shared_ptr<TextureMan> textureMan = tm.lock())
+      {
         textureMan->mNewUnfulfilledAssets = false;
 
         if (mAssetsAwaitingRequest.size() > 0)
@@ -565,11 +566,10 @@ namespace ren {
       std::weak_ptr<TextureMan> tm = textureManGroup.front().instance_;
       if (std::shared_ptr<TextureMan> textureMan = tm.lock()) {
 
-        spire::CerealCore* ourCorePtr =
-          dynamic_cast<spire::CerealCore*>(&core);
-        if (ourCorePtr == nullptr)
+        auto ourCorePtr = dynamic_cast<spire::CerealCore*>(&core);
+        if (!ourCorePtr)
         {
-          std::cerr << "Unable to execute texture promise fulfillment. Bad cast." << std::endl;
+          logRendererError("Unable to execute texture promise fulfillment. Bad cast.");
           return;
         }
         spire::CerealCore& ourCore = *ourCorePtr;
@@ -629,8 +629,8 @@ namespace ren {
   {
     if (mNewUnfulfilledAssets)
     {
-      std::cerr << "TextureMan: Terminating garbage collection. Orphan assets that"
-        << " have yet to be associated with entity ID's would be GC'd" << std::endl;
+      logRendererError("TextureMan: Terminating garbage collection. Orphan assets that"
+        " have yet to be associated with entity ID's would be GC'd");
       return;
     }
 
@@ -659,8 +659,8 @@ namespace ren {
 
       if (it == mGLToName.end())
       {
-        std::cerr << "runGCAgainstVaidIDs: terminating early, validKeys contains "
-          << "elements not in texture map." << std::endl;
+        logRendererError("runGCAgainstVaidIDs: terminating early, validKeys contains "
+          "elements not in texture map.");
         break;
       }
 
@@ -669,7 +669,7 @@ namespace ren {
       // texture component, this is not an error.
       if (it->first > id)
       {
-        std::cerr << "runGCAgainstVaidIDs: validKeys contains elements not in the texture map." << std::endl;
+        logRendererError("runGCAgainstValidIDs: validKeys contains elements not in the texture map.");
       }
 
       ++it;
@@ -706,10 +706,10 @@ namespace ren {
 
     void postWalkComponents(spire::ESCoreBase& core) override
     {
-      StaticTextureMan* man = core.getStaticComponent<StaticTextureMan>();
-      if (man == nullptr)
+      auto man = core.getStaticComponent<StaticTextureMan>();
+      if (!man)
       {
-        std::cerr << "Unable to complete texture garbage collection. There is no StaticTextureMan." << std::endl;
+        logRendererError("Unable to complete texture garbage collection. There is no StaticTextureMan.");
         return;
       }
       std::weak_ptr<TextureMan> tm = man->instance_;
