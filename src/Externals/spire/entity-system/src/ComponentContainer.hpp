@@ -271,7 +271,7 @@ public:
     // our vector.
     if (mComponents.size() > 0)
     {
-      if (mLastSortedSize != mComponents.size())
+      if (mLastSortedSize != static_cast<int>(mComponents.size()))
       {
        // Iterate through the components to-be-constructed array, and construct.
         auto it = mComponents.begin() + mLastSortedSize;

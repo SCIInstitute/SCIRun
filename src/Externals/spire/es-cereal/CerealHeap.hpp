@@ -111,7 +111,7 @@ public:
     typename spire::ComponentContainer<T>::ComponentItem* array =
         spire::ComponentContainer<T>::getComponentArray();
     int i = baseIndex;
-    size_t numComponents = spire::ComponentContainer<T>::getNumComponents();
+    auto numComponents = static_cast<int>(spire::ComponentContainer<T>::getNumComponents());
     while (i != numComponents && array[i].sequence == entityID)
     {
       // Serialize the entity at index 'i'.
@@ -272,7 +272,7 @@ private:
           trueIndex = baseIndex + componentIndex;
         }
 
-        if (trueIndex < spire::ComponentContainer<T>::getNumComponents())
+        if (trueIndex < static_cast<int>(spire::ComponentContainer<T>::getNumComponents()))
         {
           if (array[trueIndex].sequence == entityID)
           {

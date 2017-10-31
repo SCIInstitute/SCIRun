@@ -325,19 +325,18 @@ namespace ren {
       unsigned int decodedWidth, decodedHeight;
       unsigned char* decodedImage = nullptr;
 
-      unsigned int pngError;
       uint8_t* encodedBuffer = static_cast<uint8_t*>(docBaseTexData->value.ptr);
       size_t encodedBufferSize = docBaseTexData->size;
       GLenum glColorType = GL_RGBA;
       if (rgba)
       {
-        pngError = lodepng_decode32(&decodedImage, &decodedWidth, &decodedHeight,
+        lodepng_decode32(&decodedImage, &decodedWidth, &decodedHeight,
           encodedBuffer, encodedBufferSize);
         glColorType = GL_RGBA;
       }
       else
       {
-        pngError = lodepng_decode24(&decodedImage, &decodedWidth, &decodedHeight,
+        lodepng_decode24(&decodedImage, &decodedWidth, &decodedHeight,
           encodedBuffer, encodedBufferSize);
         glColorType = GL_RGB;
       }
@@ -384,12 +383,12 @@ namespace ren {
           encodedBufferSize = docBaseTexData->size;
           if (rgba)
           {
-            pngError = lodepng_decode32(&decodedImage, &decodedWidth, &decodedHeight,
+            lodepng_decode32(&decodedImage, &decodedWidth, &decodedHeight,
               encodedBuffer, encodedBufferSize);
           }
           else
           {
-            pngError = lodepng_decode24(&decodedImage, &decodedWidth, &decodedHeight,
+            lodepng_decode24(&decodedImage, &decodedWidth, &decodedHeight,
               encodedBuffer, encodedBufferSize);
           }
 

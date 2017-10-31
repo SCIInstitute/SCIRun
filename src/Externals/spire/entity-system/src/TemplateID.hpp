@@ -44,7 +44,7 @@ public:
     return mStaticTypeID;
   }
 
-  static uint64_t setID(uint64_t id)
+  static void setID(uint64_t id)
   {
     mStaticTypeID = id;
   }

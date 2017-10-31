@@ -112,9 +112,9 @@ public:
     AddComponentsToGroupInputs<0, Ts...>::exec(core, baseComponents, groupValues);
 
     bool execute = true;
-    for (int i = 0; i < sizeof...(Ts); i++)
+    for (size_t i = 0; i < sizeof...(Ts); i++)
     {
-      if (baseComponents[i] == nullptr)
+      if (!baseComponents[i])
         baseComponents[i] = ESCoreBase::getEmptyContainer();
 
       isStatic[i] = baseComponents[i]->isStatic();
@@ -142,7 +142,7 @@ public:
 
     if (execute)
     {
-      if (GroupComponents == false)
+      if (!GroupComponents)
         RecurseExecute<0, Ts...>::exec(core, this, componentArrays, numComponents,
                                        indices, optionalComponents, isStatic,
                                        nextIndices, values, entityID);
@@ -191,9 +191,9 @@ public:
     // the user about possible performance problems when doing this.
     uint64_t lowestUpperSequence = std::numeric_limits<uint64_t>::max();
     int leadingComponent = -1;
-    for (int i = 0; i < sizeof...(Ts); ++i)
+    for (size_t i = 0; i < sizeof...(Ts); ++i)
     {
-      if (baseComponents[i] == nullptr)
+      if (!baseComponents[i])
         baseComponents[i] = ESCoreBase::getEmptyContainer();
 
       bool optional = optionalComponents[i];
@@ -239,7 +239,7 @@ public:
       {
         // Find the target sequence in the other components.
         bool failed = false;
-        for (int i = 0; i < baseComponents.size(); ++i)
+        for (size_t i = 0; i < baseComponents.size(); ++i)
         {
           uint64_t curSequence = baseComponents[i]->getSequenceFromIndex(indices[i]);
           bool optional = optionalComponents[i];
@@ -283,7 +283,7 @@ public:
         {
           // Execute with indices. This recursive execute will perform a cartesian
           // product.
-          if (GroupComponents == false)
+          if (!GroupComponents)
           {
             if (!RecurseExecute<0, Ts...>::exec(core, this, componentArrays,
                                                 numComponents, indices,
@@ -352,7 +352,7 @@ public:
           uint64_t targetSequence = *it;
 
           // Find the target sequence in the components.
-          for (int i = 0; i < baseComponents.size(); ++i)
+          for (size_t i = 0; i < baseComponents.size(); ++i)
           {
             if (!isStatic[i])
             {
@@ -372,7 +372,7 @@ public:
 
           // Execute with indices. This recursive execute will perform a cartesian
           // product.
-          if (GroupComponents == false)
+          if (!GroupComponents)
           {
             if (!RecurseExecute<0, Ts...>::exec(core, this, componentArrays,
                                                 numComponents, indices,
@@ -407,9 +407,9 @@ public:
         // or recursively. If there are any optional components, then we don't
         // execute at all.
         bool allStatic = true;
-        for (int i = 0; i < sizeof...(Ts); ++i)
+        for (size_t i = 0; i < sizeof...(Ts); ++i)
         {
-          if (isStatic[i] == false)
+          if (!isStatic[i])
           {
             allStatic = false;
             break;
@@ -418,7 +418,7 @@ public:
 
         if (allStatic)
         {
-          if (GroupComponents == false)
+          if (!GroupComponents)
           {
             if (!RecurseExecute<0, Ts...>::exec(core, this, componentArrays,
                                                 numComponents, indices,
@@ -642,7 +642,8 @@ public:
           }
           else
           {
-            if (!optional) std::cerr << "Generic System: invalid sequence on non-optional component!!" << std::endl;
+            if (!optional)
+              std::cerr << "Generic System: invalid sequence on non-optional component!!" << std::endl;
             std::get<TupleIndex>(input) = nullptr;
           }
         }
@@ -678,10 +679,7 @@ public:
           // Terminate early in either case, but with different return values.
           // For optional components, reaching the end of the array does not
           // necessarily mean we should terminate the algorithm.
-          if (optional)
-            return true;
-          else
-            return false;
+          return optional;
         }
 
         // Loop until we find a sequence that is not in our target.
@@ -723,10 +721,7 @@ public:
         }
       }
 
-      if (reachedEnd)
-        return false;
-      else
-        return true;
+      return !reachedEnd;
     }
   };
 

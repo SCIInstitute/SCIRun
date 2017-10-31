@@ -57,7 +57,7 @@ public:
       // Check mLastIndex (if it exists), and see if it has same name
       // as the object we are trying to serialize.
       bool searchForName = true;
-      if (mLastIndex < mHeader.size())
+      if (mLastIndex < static_cast<int>(mHeader.size()))
       {
         if (mHeader[mLastIndex].name == name)
         {
