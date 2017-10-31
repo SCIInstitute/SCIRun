@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -29,11 +29,11 @@
 /// @todo Documentation Core/Logging/LoggerFwd.h
 
 #ifndef CORE_LOGGING_LOGGERFWD_H
-#define CORE_LOGGING_LOGGERFWD_H 
+#define CORE_LOGGING_LOGGERFWD_H
 
 #include <boost/shared_ptr.hpp>
 
-namespace SCIRun 
+namespace SCIRun
 {
   namespace Core
   {
@@ -41,8 +41,6 @@ namespace SCIRun
     {
       class LegacyLoggerInterface;
       typedef boost::shared_ptr<LegacyLoggerInterface> LoggerHandle;
-
-      class Log;
     }
   }
 }

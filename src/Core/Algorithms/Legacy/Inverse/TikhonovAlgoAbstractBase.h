@@ -53,8 +53,8 @@ namespace Inverse {
 	ALGORITHM_PARAMETER_DECL(LambdaNum);
 	ALGORITHM_PARAMETER_DECL(LambdaResolution);
 	ALGORITHM_PARAMETER_DECL(LambdaSliderValue);
-	ALGORITHM_PARAMETER_DECL(LambdaCorner);
-	ALGORITHM_PARAMETER_DECL(LCurveText);
+	//ALGORITHM_PARAMETER_DECL(LambdaCorner);
+	//ALGORITHM_PARAMETER_DECL(LCurveText);
 
 	class SCISHARE TikhonovAlgoAbstractBase : virtual public AlgorithmBase
 	{
@@ -74,6 +74,8 @@ namespace Inverse {
 		static const AlgorithmOutputName InverseSolution;
 		static const AlgorithmOutputName RegularizationParameter;
 		static const AlgorithmOutputName RegInverse;
+    static const AlgorithmOutputName LambdaArray;
+    static const AlgorithmOutputName Lambda_Index;
 
 		// Define algorithm choices
 		enum AlgorithmChoice {
@@ -93,8 +95,8 @@ namespace Inverse {
 		TikhonovAlgoAbstractBase();
 		virtual AlgorithmOutput run(const AlgorithmInput &) const override;
 
-		static double FindCorner( const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, const int nLambda );
-		double computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl& algoImpl, const AlgorithmInput & input ) const;
+		static double FindCorner( const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, const int nLambda,int& lambda_index );
+    double computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl& algoImpl, const AlgorithmInput & input,  SCIRun::Core::Datatypes::DenseMatrixHandle& lambdamatrix, int& lambda_index ) const;
 
 		bool checkInputMatrixSizes( const AlgorithmInput & input ) const;
 

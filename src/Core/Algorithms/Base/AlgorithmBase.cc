@@ -56,7 +56,7 @@ Name::Name(const std::string& name) : name_(name)
 {
   if (!std::all_of(name.begin(), name.end(), isalnum))
   {
-    LOG_DEBUG("AlgorithmParameterName not accessible from Python: " << name << std::endl);
+    LOG_DEBUG("AlgorithmParameterName not accessible from Python: {}", name);
   }
 }
 
@@ -147,7 +147,7 @@ boost::filesystem::path AlgorithmParameter::toFilename() const
     boost::this_thread::sleep(boost::posix_time::milliseconds(10));
     boost::filesystem::path::imbue( std::locale( "" ) );
     boost::filesystem::path dummy("boost bug workaround");
-    Log::get() << DEBUG_LOG << dummy.string() << std::endl;
+    LOG_DEBUG(dummy.string());
 #endif
   }
 

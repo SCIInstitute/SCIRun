@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,40 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVSVDDIALOG_H
-#define INTERFACE_MODULES_INVERSE_SOLVEINVERSEPROBLEMWITHTIKHONOVSVDDIALOG_H
+#ifndef CORE_LOGGING_APPLICATION_HELPER_H
+#define CORE_LOGGING_APPLICATION_HELPER_H
 
-#include <Interface/Modules/Inverse/ui_SolveInverseProblemWithTikhonovSVDDialog.h>
-#include <boost/shared_ptr.hpp>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Inverse/share.h>
+#include <string>
+#ifndef Q_MOC_RUN
+#include <boost/filesystem/path.hpp>
+#endif
+#include <Core/Logging/share.h>
 
-namespace SCIRun {
-namespace Gui {
-
-class SCISHARE SolveInverseProblemWithTikhonovSVDDialog : public ModuleDialogGeneric,
-  public Ui::SolveInverseProblemWithTikhonovSVDDialog
+namespace SCIRun
 {
-	Q_OBJECT
-
-public:
-  SolveInverseProblemWithTikhonovSVDDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void moduleExecuted() override { pullAndDisplayInfo(); }
-
-private Q_SLOTS:
-  void setSpinBoxValue(int value);
-  void setSliderValue(double value);
-  void setSliderMin(double value);
-  void setSliderMax(double value);
-  void setSliderStep(double value);
-  void pullAndDisplayInfo();
-private:
-  GuiStringTranslationMap lambdaMethod_;
-};
-
-}
-}
+  namespace Core
+  {
+    namespace Logging
+    {
+      class SCISHARE ApplicationHelper
+      {
+      public:
+        ApplicationHelper();
+        boost::filesystem::path configDirectory();
+        std::string applicationName();
+        bool get_user_directory( boost::filesystem::path& user_dir, bool config_path);
+        bool get_config_directory( boost::filesystem::path& config_dir );
+        bool get_user_name( std::string& user_name );
+      };
+}}}
 
 #endif

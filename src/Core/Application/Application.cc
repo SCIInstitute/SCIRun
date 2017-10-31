@@ -38,6 +38,7 @@
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 #include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
 #include <Core/Logging/Log.h>
+#include <Core/Logging/ApplicationHelper.h>
 #include <Core/IEPlugin/IEPluginInit.h>
 #include <Core/Utils/Exception.h>
 #include <Core/Application/Session/Session.h>
@@ -84,7 +85,7 @@ Application::Application() :
   private_->app_filepath_ = boost::filesystem::current_path();
   //std::cout << "exec path set to: " << private_->app_filepath_ << std::endl;
   auto configDir = configDirectory();
-  Log::setLogDirectory(configDir);
+  LogSettings::Instance().setLogDirectory(configDir);
   SessionManager::Instance().initialize(configDir);
   SessionManager::Instance().session()->beginSession();
 }
@@ -97,18 +98,18 @@ Application::~Application()
 void Application::shutdown()
 {
   if (!private_)
-    Log::get() << NOTICE << "Application shutdown called with null internals" << std::endl;
+    GeneralLog::Instance().get()->info("Application shutdown called with null internals");
   try
   {
     private_.reset();
   }
   catch (std::exception& e)
   {
-    Log::get() << EMERG << "Unhandled exception during application shutdown: " << e.what() << std::endl;
+    GeneralLog::Instance().get()->critical("Unhandled exception during application shutdown: {}", e.what());
   }
   catch (...)
   {
-    Log::get() << EMERG << "Unknown unhandled exception during application shutdown" << std::endl;
+    GeneralLog::Instance().get()->critical("Unknown unhandled exception during application shutdown");
   }
 }
 
@@ -159,8 +160,8 @@ void Application::readCommandLine(int argc, const char* argv[])
     auto maxCoresOption = private_->parameters_->developerParameters()->maxCores();
     if (maxCoresOption)
       Thread::Parallel::SetMaximumCores(*maxCoresOption);
-
-    Log::get().setVerbose(parameters()->verboseMode());
+      
+    LogSettings::Instance().setVerbose(parameters()->verboseMode());
   }
 }
 

@@ -1,11 +1,11 @@
 /*
  For more information, please see: http://software.sci.utah.edu
- 
+
  The MIT License
- 
+
  Copyright (c) 2015 Scientific Computing and Imaging Institute,
  University of Utah.
- 
+
  License for the specific language governing rights and limitations under
  Permission is hereby granted, free of charge, to any person obtaining a
  copy of this software and associated documentation files (the "Software"),
@@ -13,10 +13,10 @@
  the rights to use, copy, modify, merge, publish, distribute, sublicense,
  and/or sell copies of the Software, and to permit persons to whom the
  Software is furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included
  in all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -44,6 +44,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::TestUtils;
@@ -58,9 +59,9 @@ class JoinFieldsAlgoTests : public ::testing::Test
 protected:
   virtual void SetUp()
   {
-    SCIRun::Core::Logging::Log::get().setVerbose(true);
+    LogSettings::Instance().setVerbose(true);
   }
-  
+
   FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5, data_info_type type=DOUBLE_E)
   {
     FieldInformation lfi(LATVOLMESH_E, LINEARDATA_E, type);
@@ -90,7 +91,7 @@ TEST_F(JoinFieldsAlgoTests, CanLogErrorMessage)
 TEST_F(JoinFieldsAlgoTests, CanJoinMultipleLatVols)
 {
   JoinFieldsAlgo algo;
-  
+
   FieldList input;
   input.push_back(CreateEmptyLatVol(2,3,4, INT_E));
   EXPECT_EQ(2*3*4, input[0]->vmesh()->num_nodes());
@@ -98,11 +99,11 @@ TEST_F(JoinFieldsAlgoTests, CanJoinMultipleLatVols)
   EXPECT_EQ(5*6*7, input[1]->vmesh()->num_nodes());
   input.push_back(CreateEmptyLatVol(8,9,10, INT_E));
   EXPECT_EQ(8*9*10, input[2]->vmesh()->num_nodes());
-  
+
   FieldHandle output;
   EXPECT_TRUE(algo.runImpl(input, output));
   EXPECT_EQ(914, output->vmesh()->num_nodes());
-  
+
   input.push_back(CreateEmptyLatVol(11,12,13, INT_E));
   EXPECT_EQ(11*12*13, input[3]->vmesh()->num_nodes());
   EXPECT_TRUE(algo.runImpl(input, output));
@@ -112,14 +113,14 @@ TEST_F(JoinFieldsAlgoTests, CanJoinMultipleLatVols)
 TEST_F(JoinFieldsAlgoTests, CanJoinMultipleLatVolsGeneric)
 {
   JoinFieldsAlgo algo;
-  
+
   FieldList input;
   input.push_back(CreateEmptyLatVol(2,3,4));
   input.push_back(CreateEmptyLatVol(5,6,7));
   input.push_back(CreateEmptyLatVol(8,9,10));
-  
+
   auto outputObj = algo.run(withInputData((Variables::InputFields, input)));
-  
+
   FieldHandle output = outputObj.get<SCIRun::Field>(Variables::OutputField);
   EXPECT_EQ(914, output->vmesh()->num_nodes());
 }
@@ -141,7 +142,7 @@ public:
 protected:
   virtual void SetUp()
   {
-    SCIRun::Core::Logging::Log::get().setVerbose(true);
+    LogSettings::Instance().setVerbose(true);
     // How to set parameters on an algorithm (that come from the GUI)
     algo_.set(JoinFieldsAlgo::MergeNodes,      ::std::tr1::get<0>(GetParam()));
     algo_.set(JoinFieldsAlgo::MergeElems,      ::std::tr1::get<1>(GetParam()));
@@ -212,7 +213,7 @@ TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_generic)
   input.push_back(CreateEmptyLatVol(2,3,4));
   input.push_back(CreateEmptyLatVol(5,6,7));
   input.push_back(CreateEmptyLatVol(8,9,10));
-  
+
   auto outputObj = algo_.run(withInputData((Variables::InputFields, input)));
   FieldHandle output = outputObj.get<SCIRun::Field>(Variables::OutputField);
   EXPECT_EQ(output->vmesh()->num_nodes(),output->vmesh()->num_nodes());
