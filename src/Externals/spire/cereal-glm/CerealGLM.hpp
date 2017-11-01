@@ -1,6 +1,7 @@
 #ifndef SPIRE_CEREAL_GLM_CEREALTYPESERIALIZE_HPP
 #define SPIRE_CEREAL_GLM_CEREALTYPESERIALIZE_HPP
 
+#include <es-log/trace-log.h>
 #include <cstdint>
 #include <cstddef>
 #include <es-cereal/CerealTypeSerialize.hpp>

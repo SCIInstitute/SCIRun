@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_IBOMAN_HPP
 #define SPIRE_RENDER_IBOMAN_HPP
 
+#include <es-log/trace-log.h>
 #include <set>
 #include <map>
 #include <gl-platform/GLPlatform.hpp>
@@ -88,4 +89,4 @@ private:
 
 } // namespace ren
 
-#endif 
+#endif

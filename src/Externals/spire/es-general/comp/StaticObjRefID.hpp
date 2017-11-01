@@ -1,6 +1,7 @@
 #ifndef SPIRE_ES_GENERAL_COMP_STATICOBJREFID_HPP
 #define SPIRE_ES_GENERAL_COMP_STATICOBJREFID_HPP
 
+#include <es-log/trace-log.h>
 #include <cstdint>
 #include <entity-system/GenericSystem.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -83,4 +84,4 @@ private:
 
 } // namespace gen
 
-#endif 
+#endif

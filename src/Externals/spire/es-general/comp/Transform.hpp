@@ -1,6 +1,7 @@
 #ifndef SPIRE_ES_GENERAL_COMP_TRANSFORM_HPP
 #define SPIRE_ES_GENERAL_COMP_TRANSFORM_HPP
 
+#include <es-log/trace-log.h>
 #include <es-cereal/ComponentSerialize.hpp>
 #include <cereal-glm/CerealGLM.hpp>
 
@@ -33,6 +34,6 @@ struct Transform
   }
 };
 
-} // namespace gen 
+} // namespace gen
 
-#endif 
+#endif

@@ -1,6 +1,7 @@
 #ifndef SPIRE_GLM_AABB_HPP
 #define SPIRE_GLM_AABB_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 
 namespace spire {
@@ -104,6 +105,6 @@ private:
   glm::vec3 mMax;   ///< Maximum point.
 };
 
-} // namespace spire 
+} // namespace spire
 
-#endif 
+#endif

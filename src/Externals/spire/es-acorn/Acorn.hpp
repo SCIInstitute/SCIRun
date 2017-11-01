@@ -1,6 +1,7 @@
 #ifndef SPIRE_ES_ACORN_HPP
 #define SPIRE_ES_ACORN_HPP
 
+#include <es-log/trace-log.h>
 #include <entity-system/ESCoreBase.hpp>
 #include <es-cereal/CerealCore.hpp>
 #include <es-systems/SystemCore.hpp>
@@ -123,4 +124,4 @@ protected:
 
 } // namespace spire
 
-#endif 
+#endif

@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_COMPONENT_VBO_HPP
 #define SPIRE_RENDER_COMPONENT_VBO_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 #include <gl-platform/GLPlatform.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -32,4 +33,4 @@ struct VBO
 
 } // namespace ren
 
-#endif 
+#endif

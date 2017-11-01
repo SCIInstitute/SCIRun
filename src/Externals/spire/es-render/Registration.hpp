@@ -1,6 +1,7 @@
 #ifndef SPIRE_REN_REGISTRATION_HPP
 #define SPIRE_REN_REGISTRATION_HPP
 
+#include <es-log/trace-log.h>
 #include <es-acorn/Acorn.hpp>
 
 namespace ren {
@@ -15,4 +16,4 @@ void register3(spire::Acorn& core);
 
 } // namespace ren
 
-#endif 
+#endif
