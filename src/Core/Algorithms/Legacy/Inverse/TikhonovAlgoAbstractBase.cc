@@ -360,7 +360,6 @@ double TikhonovAlgoAbstractBase::FindCorner( const std::vector<double>& rho, con
 	DenseColumnMatrix lrho(nLambda);
 	DenseColumnMatrix leta(nLambda);
 
-	double maxKapa = -1.0e10;
 	for (int i = 0; i < nLambda; i++)
 	{
 		lrho[i] = std::log10(rho[i]);
@@ -373,11 +372,10 @@ double TikhonovAlgoAbstractBase::FindCorner( const std::vector<double>& rho, con
 	Gamma.row(1) = leta;//DenseColumnMatrix::LinSpaced(lrho.nrows(),0,1);
 
 	// fit spline and compute curvature
-	DenseColumnMatrix gato = TikhonovAlgoAbstractBase::InterpolateCurvatureWithSplines( Gamma );
+	DenseColumnMatrix kappa = TikhonovAlgoAbstractBase::InterpolateCurvatureWithSplines( Gamma );
 
 	// select maximum curvature
-	int lambda_index = 0;
-	gato.maxCoeff(&lambda_index);
+	kappa.maxCoeff(&lambda_index);
 
   	return lambdaArray[lambda_index];
 }
@@ -392,9 +390,11 @@ SCIRun::Core::Datatypes::DenseColumnMatrix TikhonovAlgoAbstractBase::Interpolate
 	// typedefs needed for the spline
 	typedef Eigen::Spline<double,2> Spline2d;
 	typedef Spline2d::KnotVectorType KnotVectorType;
+	typedef Spline2d::ControlPointVectorType ControlPointVectorType;
 
 	// fit cubic spline to data points
-	const Spline2d spline = Eigen::SplineFitting<Spline2d>::Interpolate(samplePoints,3);
+	ControlPointVectorType points = samplePoints;
+	const Spline2d spline = Eigen::SplineFitting<Spline2d>::Interpolate(points,3);
 
 	// determine position of samples along the spline curve
 	KnotVectorType chord_lengths; // knot parameters
