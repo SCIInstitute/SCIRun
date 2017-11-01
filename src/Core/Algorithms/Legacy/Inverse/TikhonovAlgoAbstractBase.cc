@@ -294,7 +294,6 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
 
   auto lambdaArray = algoImpl.computeLambdaArray( lambdaMin, lambdaMax, nLambda );
 
-std::cout << "Lambda Array:" << lambdaArray << std::endl;
   DenseMatrix CAx, Rx;
   DenseMatrix solution;
 
@@ -343,7 +342,6 @@ std::cout << "Lambda Array:" << lambdaArray << std::endl;
     lambdamatrix->put(j,2,eta[j]);
   }
 
-	std::cout << "Eta: " << eta << "\n Rho: "<< rho << std::endl;
   // Find corner in L-curve
   lambda = FindCorner( rho, eta, lambdaArray, nLambda,lambda_index);
 
