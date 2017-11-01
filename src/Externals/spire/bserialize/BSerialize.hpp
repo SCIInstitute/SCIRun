@@ -1,6 +1,7 @@
 #ifndef SPIRE_BSERIALIZE_H_
 #define SPIRE_BSERIALIZE_H_
 
+#include <es-log/trace-log.h>
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
@@ -68,4 +69,3 @@ private:
 } // namespace spire
 
 #endif
-

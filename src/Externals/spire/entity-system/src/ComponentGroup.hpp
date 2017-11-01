@@ -1,6 +1,7 @@
 #ifndef SPIRE_ENTITY_SYSTEM_COMPONENTGROUP_HPP
 #define SPIRE_ENTITY_SYSTEM_COMPONENTGROUP_HPP
 
+#include <es-log/trace-log.h>
 #include <iterator>
 
 #include "ComponentContainer.hpp"
@@ -164,6 +165,6 @@ struct ComponentGroup
   ComponentContainer<T>* container; // Can be a nullptr.
 };
 
-} // namespace spire 
+} // namespace spire
 
-#endif 
+#endif

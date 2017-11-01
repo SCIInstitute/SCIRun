@@ -32,6 +32,7 @@
 #ifndef SPIRE_ARC_LOOK_AT_H
 #define SPIRE_ARC_LOOK_AT_H
 
+#include <es-log/trace-log.h>
 #include <cstdint>
 #include <memory>
 

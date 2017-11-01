@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_COMPONENTS_STATIC_ARC_BALL_CAMERA_HPP
 #define SPIRE_RENDER_COMPONENTS_STATIC_ARC_BALL_CAMERA_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <es-cereal/ComponentSerialize.hpp>

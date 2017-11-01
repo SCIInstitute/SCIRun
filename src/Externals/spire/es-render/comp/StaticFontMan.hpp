@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_COMPONENT_STATIC_FONT_MAN_HPP
 #define SPIRE_RENDER_COMPONENT_STATIC_FONT_MAN_HPP
 
+#include <es-log/trace-log.h>
 #include <memory>
 #include <es-cereal/ComponentSerialize.hpp>
 #include "../FontMan.hpp"
@@ -13,8 +14,8 @@ struct StaticFontMan
     std::shared_ptr<FontMan> instance_;
 
     // -- Functions --
-    StaticFontMan() : instance_(std::shared_ptr<FontMan>(new FontMan)) {}
-    StaticFontMan(FontMan* s) : instance_(std::shared_ptr<FontMan>(s)) {}
+    StaticFontMan() : instance_(new FontMan) {}
+    explicit StaticFontMan(FontMan* s) : instance_(s) {}
 
     // This assignment operator is only used during modification calls inside
     // of the entity system. We don't care about those calls as they won't
@@ -23,7 +24,7 @@ struct StaticFontMan
     {
     // We don't care about the incoming object. We've already created oun own
     // shader man and will continue to use that.
-    return *this;
+      return *this;
     }
 
     static const char* getName() {return "ren:StaticFontMan";}
@@ -35,10 +36,10 @@ private:
     {
     // No need to serialize. But we do want that we were in the component
     // system to be serialized out.
-    return true;
+      return true;
     }
 };
 
 } // namespace ren
 
-#endif 
+#endif

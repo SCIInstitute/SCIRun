@@ -15,8 +15,8 @@ namespace ren {
 DebugRender::DebugRender() :
     mLines(0),
     mCurCircum(0),
-    mColorUniform("uColor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), VecUniform::VEC4),
-    mShaderID(0)
+    mShaderID(0),
+    mColorUniform("uColor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), VecUniform::VEC4)
 {}
 
 DebugRender::DebugRender(spire::CerealCore& core) :
@@ -24,9 +24,9 @@ DebugRender::DebugRender(spire::CerealCore& core) :
     mCurCircum(0),
     mColorUniform("uColor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), VecUniform::VEC4)
 {
-  reaquireShader(core);
+  reacquireShader(core);
 }
-  
+
 void DebugRender::clear()
 {
   mLines = 0;
@@ -39,7 +39,7 @@ void DebugRender::finalizeClosedObject()
   addLine(mFirstPoint, mLastPoint);
 }
 
-void DebugRender::reaquireShader(spire::CerealCore& core)
+void DebugRender::reacquireShader(spire::CerealCore& core)
 {
   mShaderID = getColorLineShader(core);
 
@@ -157,7 +157,7 @@ void DebugRender::render(const glm::mat4& trafo,
 	// glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, stride, lineMemory);
 	// glEnableVertexAttribArray(1);
 
-  if (triangleFan == false)
+  if (!triangleFan)
 		glDrawArrays(GL_LINES, 0, mLines * 2);
 	else
 		glDrawArrays(GL_TRIANGLE_FAN, 0, mLines * 2);

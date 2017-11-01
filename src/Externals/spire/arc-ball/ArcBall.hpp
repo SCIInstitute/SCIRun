@@ -1,6 +1,7 @@
 #ifndef SPIRE_ARC_BALL_H
 #define SPIRE_ARC_BALL_H
 
+#include <es-log/trace-log.h>
 #include <cstdint>
 
 #include <glm/glm.hpp>

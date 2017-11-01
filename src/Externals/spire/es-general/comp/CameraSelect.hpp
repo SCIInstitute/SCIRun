@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_COMPONENT_CAMERA_SELECT_HPP
 #define SPIRE_RENDER_COMPONENT_CAMERA_SELECT_HPP
 
+#include <es-log/trace-log.h>
 #include <es-cereal/ComponentSerialize.hpp>
 
 namespace gen {
@@ -43,4 +44,4 @@ struct CameraSelect
 
 } // namespace gen
 
-#endif 
+#endif

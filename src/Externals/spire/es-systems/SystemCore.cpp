@@ -9,6 +9,11 @@ void SystemCore::runSystems(spire::ESCoreBase& core, uint64_t referenceTime)
 {
   for (SystemItem& sys : mSystems)
   {
+    //auto name = sys.systemName;
+    //const auto p = name.find("GeomPromise") != std::string::npos;
+    //if (p)
+    //  std::cout << "runSystems: " << name << " " << &sys << std::endl;
+
     if (sys.shouldExecute(referenceTime))
     {
       sys.system->walkComponents(core);
@@ -158,7 +163,7 @@ void SystemCore::deserializeActiveSystems(Tny* root, uint64_t referenceTime)
     }
     Tny* val = Tny_get(comp, "interval");
     uint64_t interval = val->value.num;
-    
+
     Tny_get(comp, "stagger");
     uint64_t stagger = val->value.num;
 
@@ -176,7 +181,7 @@ Tny* SystemCore::serializeActiveSystems()
   // a TNY dictionary.
   Tny* root = Tny_add(NULL, TNY_DICT, NULL, NULL, 0);
 
-  for (SystemItem& item : mSystems)  
+  for (SystemItem& item : mSystems)
   {
     Tny* obj = Tny_add(NULL, TNY_DICT, NULL, NULL, 0);
     obj = Tny_add(obj, TNY_INT64, const_cast<char*>("interval"), static_cast<void*>(&item.interval), 0);
@@ -234,4 +239,3 @@ uint64_t SystemCore::SystemItem::calcNextExecutionTime(uint64_t referenceTime)
 }
 
 } // namespace spire
-
