@@ -1,6 +1,7 @@
 #ifndef SPIRE_VARBUFFER_HPP
 #define SPIRE_VARBUFFER_HPP
 
+#include <es-log/trace-log.h>
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -20,7 +21,7 @@ public:
 
   // Preallocate the variable buffer to the preset size.
   explicit VarBuffer(uint32_t size);
-  
+
   /// \todo Add flag which will swap bytes when reading out of or into buffer.
 
   /// Writes \p numBytes of \p bytes.
@@ -62,7 +63,7 @@ private:
   static bool serializeUInt16(char* msg, int msgLen, int* offset_out, uint16_t in);
   static uint16_t deserializeUInt16(const char* msg, int msgLen, int* offset_out);
 
-  std::vector<char>   mBuffer;      ///< buffer
+  std::vector<char> mBuffer;      ///< buffer
   int     mBufferSize;  ///< Absolute size of mBuffer in bytes.
 
   std::unique_ptr<spire::BSerialize> mSerializer;
@@ -70,4 +71,4 @@ private:
 
 } // namespace spire
 
-#endif 
+#endif

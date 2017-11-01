@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_FONTPROMISE_HPP
 #define SPIRE_RENDER_FONTPROMISE_HPP
 
+#include <es-log/trace-log.h>
 #include <cstring>
 #include <es-cereal/ComponentSerialize.hpp>
 
@@ -36,7 +37,7 @@ struct FontPromise
     }
     else
     {
-      std::cerr << "FontPromise: Unable to set name: " << name << " Name must be " 
+      std::cerr << "FontPromise: Unable to set name: " << name << " Name must be "
                 << (MaxAssetName - 1) << "characters or shorter." << std::endl;
     }
   }
@@ -59,6 +60,6 @@ struct FontPromise
 
 };
 
-} // namespace ren 
+} // namespace ren
 
-#endif 
+#endif

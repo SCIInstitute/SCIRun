@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,43 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef GUI_LOGGER_H
-#define GUI_LOGGER_H
+#include <es-log/trace-log.h>
 
-#include <Core/Utils/Singleton.h>
-#include <Core/Logging/Log.h>
-#include <boost/shared_ptr.hpp>
-#include <QString>
+using namespace spire;
+using namespace SCIRun::Core::Logging;
 
-namespace SCIRun {
-namespace Gui {
+SCIRun::Core::Logging::Logger2 RendererLog::logger_;
 
-  class GuiLog final : public Core::Logging::Log2
+Logger2 RendererLog::get()
+{
+  static bool first = true;
+
+  if (first)
   {
-    CORE_SINGLETON(GuiLog)
-  public:
-    GuiLog() : Log2("ui") {}
-  };
-
-  #define guiLog GuiLog::Instance().get()
-
-  template <class... T>
-  void guiLogDebug(const char* fmt, T&&... args)
-  {
-    guiLog->debug(fmt, args...);
+    first = false;
+    #ifdef RENDERER_TRACE_ON
+    logger_ = spdlog::basic_logger_mt(name(), "renderer.log");
+    #else
+    logger_ = spdlog::stdout_color_mt(name());
+    #endif
+    logger_->set_level(spdlog::level::trace);
+    logger_->flush_on(spdlog::level::info);
+    logger_->info("Start of Renderer log.");
   }
-
-  class GuiLogger : boost::noncopyable
-  {
-  public:
-    static void logInfo(const QString& message);
-    static void logError(const QString& message);
-    static void logInfoStd(const std::string& message) { logInfo(QString::fromStdString(message)); }
-    static void logErrorStd(const std::string& message) { logError(QString::fromStdString(message)); }
-  private:
-    GuiLogger() = delete;
-  };
-
-}}
-
-#endif
+  return logger_;
+}

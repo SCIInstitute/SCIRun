@@ -40,7 +40,7 @@ public:
 
   ren::VBO mVBO;
   ren::IBO mIBO;
-  
+
   RenderSimpleGeom  mAttribs;
   CommonUniforms    mCommonUniforms;
 
@@ -96,7 +96,7 @@ public:
 
   void postWalkComponents(spire::ESCoreBase& core)
   {
-    shaders::unbindPreappliedAttrib(mAttribs.appliedAttribs, 
+    shaders::unbindPreappliedAttrib(mAttribs.appliedAttribs,
                                     static_cast<size_t>(mAttribs.attribSize));
   }
 
@@ -110,8 +110,6 @@ public:
     for (const gen::ClickBox2D& box : clickBox)
     {
       // Bind any common uniforms.
-      gen::CameraSelect::Selection sel = gen::CameraSelect::ORTHOGONAL_CAMERA;
-
       glm::mat4 xformToUse;
       if (trafo.size() > 0)
         xformToUse = trafo.front().transform;
@@ -144,4 +142,3 @@ const char* getSystemName_DebugRenderClickBox2D()
 }
 
 } // namespace ren
-

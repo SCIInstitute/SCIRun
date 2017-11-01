@@ -68,8 +68,6 @@ namespace SCIRun
         boost::filesystem::path directory_;
       };
 
-      using Logger2 = std::shared_ptr<spdlog::logger>;
-
       class SCISHARE Log2
       {
       public:

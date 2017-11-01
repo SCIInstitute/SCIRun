@@ -1,7 +1,7 @@
-
 #ifndef SPIRE_RENDER_BMFONT_HPP
 #define SPIRE_RENDER_BMFONT_HPP
 
+#include <es-log/trace-log.h>
 #include <cstdint>
 #include <cstddef>
 #include <vector>
@@ -15,7 +15,7 @@ class BSerialize;
 
 namespace ren {
 
-/// \note The texture names are stored in the page block. 
+/// \note The texture names are stored in the page block.
 
 /// Loads a BMFont file from memory and stores relevant BMFont blocks.
 class BMFont
@@ -23,7 +23,7 @@ class BMFont
 public:
   BMFont();
   virtual ~BMFont();
-  
+
   void clear();
 
   void loadFromBuffer(uint8_t* buffer, size_t bytesRead);
@@ -105,7 +105,7 @@ public:
     /// For the absolute meaning of all of these values, please consult
     /// http://www.angelcode.com/products/bmfont/doc/render_text.html.
     /// @{
-    uint16_t x;         ///< The left position of the character image in the texture. 
+    uint16_t x;         ///< The left position of the character image in the texture.
     uint16_t y;         ///< The top position of the character image in the texture.
     uint16_t width;     ///< The width of the character image in the texture.
     uint16_t height;    ///< The height of the character image in the texture.
@@ -161,6 +161,6 @@ private:
   std::multimap<uint32_t, KernInfo> mKernMultiMap;
 };
 
-} // namespace ren 
+} // namespace ren
 
-#endif 
+#endif

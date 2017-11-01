@@ -1,6 +1,7 @@
 #ifndef SPIRE_ES_RENDER_UTIL_SHADER_HPP
 #define SPIRE_ES_RENDER_UTIL_SHADER_HPP
 
+#include <es-log/trace-log.h>
 #include <es-cereal/CerealCore.hpp>
 #include <gl-shaders/GLShader.hpp>
 
@@ -45,7 +46,7 @@ public:
   void unbind() const
   {
     if (isSetup()) {
-      spire::unbindPreappliedAttrib(mAppliedAttribs, 
+      spire::unbindPreappliedAttrib(mAppliedAttribs,
                                       static_cast<size_t>(mAttribSize));
     } else {
       std::cerr << "Attempted to unbind unitialized attributes!" << std::endl;
@@ -68,7 +69,7 @@ public:
     ///       we are looking up the shader's attributes using OpenGL), then
     ///       we can cache the attributes in the shader manager and import
     ///       them using the StaticShaderMan component.
-    std::vector<spire::ShaderAttribute> attribs = 
+    std::vector<spire::ShaderAttribute> attribs =
         spire::getProgramAttributes(shaderID);
     spire::sortAttributesAlphabetically(attribs);
 
@@ -113,4 +114,4 @@ private:
 
 } // namespace ren
 
-#endif 
+#endif

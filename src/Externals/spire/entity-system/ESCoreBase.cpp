@@ -1,5 +1,7 @@
 #include "ESCoreBase.hpp"
 
+#include <es-log/trace-log.h>
+
 namespace spire {
 
 EmptyComponentContainer ESCoreBase::mEmptyContainer;
@@ -14,11 +16,7 @@ ESCoreBase::ESCoreBase()
 
 bool ESCoreBase::hasComponentContainer(uint64_t componentID) const
 {
-  auto it = mComponents.find(componentID);
-  if (it == mComponents.end())
-    return false;
-  else
-    return true;
+  return mComponents.find(componentID) != mComponents.end();
 }
 
 /// When called, ESCoreBase takes ownership of \p component.
@@ -30,10 +28,11 @@ void ESCoreBase::addComponentContainer(BaseComponentContainer* componentCont, ui
   if (it == mComponents.end())
   {
     mComponents.insert(std::make_pair(componentID, componentCont));
+    componentCont->setId(componentID);
   }
   else
   {
-    std::cerr << "entity-system - Warning: Attempting to add pre-existing component container!" << std::endl;
+    logRendererError("entity-system - Warning: Attempting to add pre-existing component container!");
     delete componentCont;
   }
 }
@@ -73,7 +72,7 @@ void ESCoreBase::deleteAllComponentContainers()
 /// Call this function at the beginning or end of every frame. It renormalizes
 /// all your components (adds / removes components). To call a system, execute
 /// the walkComponents function on BaseSystem. Most systems don't need a
-/// stable sort. But if you need to guarantee the relative order of multiple 
+/// stable sort. But if you need to guarantee the relative order of multiple
 /// components with the same entity ID, use stable sort.
 void ESCoreBase::renormalize(bool stableSort)
 {
@@ -113,5 +112,3 @@ void ESCoreBase::removeAllComponents(uint64_t entityID, uint64_t compTemplateID)
 }
 
 } // namespace spire
-
-

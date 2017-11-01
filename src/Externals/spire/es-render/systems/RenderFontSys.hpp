@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_RENDERFONTSYS_HPP
 #define SPIRE_RENDER_RENDERFONTSYS_HPP
 
+#include <es-log/trace-log.h>
 #include <es-acorn/Acorn.hpp>
 
 namespace ren {
@@ -10,4 +11,4 @@ const char* getSystemName_RenderFont();
 
 } // namespace ren
 
-#endif 
+#endif
