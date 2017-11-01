@@ -27,14 +27,17 @@
 */
 /// @todo Documentation Modules/Legacy/Fields/RemoveUnusedNodes.cc
 
+#include <Core/Algorithms/Legacy/Fields/Cleanup/RemoveUnusedNodes.h>
 #include <Modules/Legacy/Fields/RemoveUnusedNodes.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun::Modules::Fields;
-//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
+
+MODULE_INFO_DEF(RemoveUnusedNodes, ChangeMesh, SCIRun)
 
 RemoveUnusedNodes::RemoveUnusedNodes()
   : Module(ModuleLookupInfo("RemoveUnusedNodes", "ChangeMesh", "SCIRun"), false)
