@@ -39,6 +39,8 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun;
 
+MODULE_INFO_DEF(BuildFESurfRHS, FiniteElements, SCIRun)
+
 BuildFESurfRHS::BuildFESurfRHS()
   : Module(ModuleLookupInfo("BuildFESurfRHS", "FiniteElements", "SCIRun"),false)
 {
