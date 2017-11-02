@@ -1,9 +1,11 @@
 #ifndef SPIRE_ENTITY_SYSTEM_COMPONENTCONTAINER_HPP
 #define SPIRE_ENTITY_SYSTEM_COMPONENTCONTAINER_HPP
 
+#include <es-log/trace-log.h>
 #include <cstdint>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 #include "TemplateID.hpp"
 #include "BaseComponentContainer.hpp"
 
@@ -198,7 +200,7 @@ public:
     // array because nullptr was not returned from the
     // getComponentItemWithSequence function.
     auto curIndex = item - &mComponents[0];
-    while (item->sequence == sequence 
+    while (item->sequence == sequence
       && curIndex < static_cast<int>(mComponents.size()))
     {
       ++numComponents;
@@ -269,7 +271,7 @@ public:
     // our vector.
     if (mComponents.size() > 0)
     {
-      if (mLastSortedSize != mComponents.size())
+      if (mLastSortedSize != static_cast<int>(mComponents.size()))
       {
        // Iterate through the components to-be-constructed array, and construct.
         auto it = mComponents.begin() + mLastSortedSize;
@@ -406,39 +408,19 @@ public:
     mComponents.emplace_back(sequence, component);
   }
 
-  //void addComponent(uint64_t sequence, T&& component)
-  //{
-  //  // Add the component to the end of mComponents and wait for a renormalize.
-  //  if (isStatic() == true)
-  //  {
-  //    std::cerr << "Attempting to add entityID component to a static component container!" << std::endl;
-  //    throw std::runtime_error("Attempting to add entityID component to static component container!");
-  //    return;
-  //  }
-  //  mComponents.emplace_back(sequence, std::forward<T>(component));
-  //}
-
-  // /// Returns the index the static component was added at.
-  // size_t addStaticComponent(const T& component)
-  // {
-  //   if (isStatic() == false)
-  //   {
-  //     if (mComponents.size() > 0)
-  //     {
-  //       std::cerr << "Cannot add static components to a container that already has";
-  //       std::cerr << " non-static\ncomponents!" << std::endl;
-  //       throw std::runtime_error("Cannot add static components to an entityID component container!");
-  //       return -1;
-  //     }
-  //     else
-  //     {
-  //       setStatic(true);
-  //     }
-  //   }
-  //   size_t newIndex = mComponents.size();
-  //   mComponents.emplace_back(StaticEntID, component);
-  //   return newIndex;
-  // }
+  virtual std::string describe() const override
+  {
+    std::ostringstream ostr;
+    ostr << "ComponentContainer(): " << "\n";
+    ostr << "\tmLastSortedSize: " << mLastSortedSize << "\n";
+    ostr << "\tmUpperSequence: " << mUpperSequence << "\n";
+    ostr << "\tmLowerSequence: " << mLowerSequence << "\n";
+    ostr << "\tmIsStatic: " << mIsStatic << "\n";
+    ostr << "\tmComponents.size: " << mComponents.size() << "\n";
+    ostr << "\tmRemovals.size: " << mRemovals.size() << "\n";
+    ostr << "\tmModifications.size: " << mModifications.size() << "\n";
+    return ostr.str();
+  }
 
   /// Returns the index the static component was added at.
   size_t addStaticComponent(const T& component)
@@ -551,11 +533,6 @@ public:
   {
     mModifications.emplace_back(val, index, priority);
   }
-
-  //void modifyIndex(T&& val, size_t index, int priority)
-  //{
-  //  mModifications.emplace_back(std::move(val), index, priority);
-  //}
 
   /// Retrieves the active size of the vector backing this component container.
   /// Used only for debugging purposes (see addStaticComponent in ESCore).

@@ -1,6 +1,7 @@
 #ifndef SPIRE_COMMON_COMPONENTSERIALIZE_HPP
 #define SPIRE_COMMON_COMPONENTSERIALIZE_HPP
 
+#include <es-log/trace-log.h>
 #include <entity-system/ESCoreBase.hpp>
 #include "CerealTypeSerialize.hpp"
 
@@ -56,7 +57,7 @@ public:
       // Check mLastIndex (if it exists), and see if it has same name
       // as the object we are trying to serialize.
       bool searchForName = true;
-      if (mLastIndex < mHeader.size())
+      if (mLastIndex < static_cast<int>(mHeader.size()))
       {
         if (mHeader[mLastIndex].name == name)
         {
@@ -150,9 +151,9 @@ public:
   virtual Tny* serializeEntity(spire::ESCoreBase& core, uint64_t entity) = 0;
   virtual void deserializeMerge(spire::ESCoreBase& core, Tny* root, bool copyExisting) = 0;
   virtual void deserializeCreate(spire::ESCoreBase& core, Tny* root) = 0;
-  virtual bool isSerializable() {return true;}
+  virtual bool isSerializable() const {return true;}
 
-  virtual const char* getComponentName() = 0;
+  virtual const char* getComponentName() const = 0;
 };
 
 } // namespace spire

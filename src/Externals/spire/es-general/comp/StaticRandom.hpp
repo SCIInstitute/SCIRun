@@ -1,6 +1,7 @@
 #ifndef SPIRE_GENERAL_COMP_STATIC_RANDOM_HPP
 #define SPIRE_GENERAL_COMP_STATIC_RANDOM_HPP
 
+#include <es-log/trace-log.h>
 #include <random>
 #include <ctime>
 
@@ -51,7 +52,7 @@ struct StaticRandom
     randEngine.seed(currentSeed);
 #endif
   }
-  
+
   static const char* getName() {return "gen:StaticRandom";}
 
   bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)

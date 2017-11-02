@@ -15,8 +15,3 @@ std::ostream& operator<< (std::ostream& os, const glm::quat& q);
 #define eieo(t)		( 0.5f * (1 - cosf( (t) * glm::pi<float>() )) )
 #define fieo(t)		( sinf( (t) * (glm::pi<float>() / 2.0f ) )
 #define eifo(t)		( 1.0f - sinf( (1.0f - (t)) * (glm::pi<float>() / 2.0f) ) )
-
-namespace util {
-
-} // namespace util
-
