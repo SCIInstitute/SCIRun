@@ -17,6 +17,7 @@
 #include "src/ComponentContainer.hpp"
 #include "src/TemplateID.hpp"
 #include "src/ComponentGroup.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 

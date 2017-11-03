@@ -2,6 +2,7 @@
 #define SPIRE_ENTITY_SYSTEM_EMPTYCOMPONENTCONTAINER_HPP
 
 #include <es-log/trace-log.h>
+#include <spire/scishare.h>
 
 namespace spire {
 

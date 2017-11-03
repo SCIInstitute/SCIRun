@@ -5,8 +5,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
-
 #include "src/BSerializeDetail.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 

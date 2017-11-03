@@ -3,8 +3,8 @@
 
 #include <es-log/trace-log.h>
 #include <es-cereal/CerealCore.hpp>
-
 #include <es-general/comp/CameraSelect.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 

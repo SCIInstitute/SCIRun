@@ -10,8 +10,8 @@
 #include <entity-system/BaseSystem.hpp>
 #include <es-systems/SystemCore.hpp>
 #include <es-acorn/Acorn.hpp>
-
 #include "comp/AssetPromise.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 

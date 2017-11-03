@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
 #include "StaticCamera.hpp"
+#include <spire/scishare.h>
 
 namespace gen {
 

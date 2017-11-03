@@ -7,6 +7,7 @@
 
 #include "../comp/StaticVBOMan.hpp"
 #include "../VBOMan.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 

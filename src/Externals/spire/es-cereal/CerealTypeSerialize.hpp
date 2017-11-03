@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstddef>
 #include <cstring>
+#include <spire/scishare.h>
 
 struct _Tny;
 typedef _Tny Tny;

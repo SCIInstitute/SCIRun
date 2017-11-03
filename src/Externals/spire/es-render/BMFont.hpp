@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <spire/scishare.h>
 
 // Forward declare a class that we need for parsing BMFont files.
 namespace spire {

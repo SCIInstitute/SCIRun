@@ -9,6 +9,7 @@
 #include <es-systems/SystemCore.hpp>
 #include <gl-platform/GLPlatform.hpp>
 #include <es-acorn/Acorn.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 

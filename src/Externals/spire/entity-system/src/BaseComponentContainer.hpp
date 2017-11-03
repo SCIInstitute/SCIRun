@@ -4,6 +4,7 @@
 #include <es-log/trace-log.h>
 #include <cstdint>
 #include <string>
+#include <spire/scishare.h>
 
 namespace spire {
 

@@ -4,6 +4,7 @@
 #include <es-log/trace-log.h>
 #include <entity-system/ESCoreBase.hpp>
 #include "CerealTypeSerialize.hpp"
+#include <spire/scishare.h>
 
 struct _Tny;
 typedef _Tny Tny;

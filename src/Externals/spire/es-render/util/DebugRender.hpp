@@ -7,6 +7,7 @@
 
 #include "../comp/VecUniform.hpp"
 #include "../comp/CommonUniforms.hpp"
+#include <spire/scishare.h>
 
 // Simple class to help render lines and triangle fans. Not made for speed,
 // just for debugging purposes.

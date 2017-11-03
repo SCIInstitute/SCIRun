@@ -5,6 +5,7 @@
 #include <cstring>
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 

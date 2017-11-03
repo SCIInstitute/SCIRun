@@ -11,6 +11,7 @@
 ///       types they really are.
 
 #include "ComponentSerialize.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 

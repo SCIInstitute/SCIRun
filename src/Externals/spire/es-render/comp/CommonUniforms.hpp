@@ -7,6 +7,7 @@
 
 #include <es-general/comp/StaticCamera.hpp>
 #include <es-general/comp/CameraSelect.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 

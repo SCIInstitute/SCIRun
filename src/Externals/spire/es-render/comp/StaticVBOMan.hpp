@@ -4,7 +4,8 @@
 #include <es-log/trace-log.h>
 #include <memory>
 #include <es-cereal/ComponentSerialize.hpp>
-#include "../VBOMan.hpp"
+#include <es-render/VBOMan.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 

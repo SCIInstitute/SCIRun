@@ -9,6 +9,7 @@
 #include "BaseSystem.hpp"
 #include "src/ComponentContainer.hpp"
 #include "src/EmptyComponentContainer.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 

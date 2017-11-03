@@ -9,6 +9,7 @@
 
 #include "CerealHeap.hpp"
 #include "ComponentSerialize.hpp"
+#include <spire/scishare.h>
 
 struct _Tny;
 typedef _Tny Tny;

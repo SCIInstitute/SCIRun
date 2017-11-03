@@ -42,6 +42,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <glm-aabb/AABB.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
   class ArcBall;

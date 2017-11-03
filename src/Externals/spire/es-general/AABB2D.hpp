@@ -3,6 +3,7 @@
 
 #include <es-log/trace-log.h>
 #include <glm/glm.hpp>
+#include <spire/scishare.h>
 
 namespace gen {
 

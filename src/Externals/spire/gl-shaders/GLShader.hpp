@@ -11,6 +11,7 @@
 #include <tuple>
 #include <cstdint>
 #include <gl-platform/GLPlatform.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
 

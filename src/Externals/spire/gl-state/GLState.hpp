@@ -1,4 +1,3 @@
-
 #ifndef SPIRE_GL_STATE_H
 #define SPIRE_GL_STATE_H
 
@@ -8,6 +7,7 @@
 #include <cstddef>
 #include <tuple>
 #include <gl-platform/GLPlatform.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
 

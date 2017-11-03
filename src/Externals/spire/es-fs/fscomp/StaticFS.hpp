@@ -6,6 +6,7 @@
 #include <memory>
 #include <es-cereal/ComponentSerialize.hpp>
 #include "../Filesystem.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 

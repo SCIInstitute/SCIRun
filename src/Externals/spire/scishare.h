@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,39 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ES_TRACE_LOG_H
-#define ES_TRACE_LOG_H
+#undef SCISHARE
 
-#include <Core/Logging/LoggerFwd.h>
-#include <spire/scishare.h>
-
-namespace spire
-{
-  class SCISHARE RendererLog
-  {
-  public:
-    static SCIRun::Core::Logging::Logger2 get();
-    static const char* name() { return "renderer"; };
-  private:
-    static SCIRun::Core::Logging::Logger2 logger_;
-  };
-}
-
-#define logRendererError(...) spire::RendererLog::get()->error(__VA_ARGS__)
-#define logRendererWarning(...) spire::RendererLog::get()->warn(__VA_ARGS__)
-#define logRendererInfo(...) spire::RendererLog::get()->info(__VA_ARGS__)
-
-#ifdef RENDERER_TRACE_ON
-  #define SPDLOG_TRACE_ON
-  #include <spdlog/spdlog.h>
-  #define RENDERER_LOG(...) SPDLOG_TRACE(spire::RendererLog::get(), __VA_ARGS__)
-  #define RENDERER_LOG_FUNCTION_SCOPE LOG_FUNCTION_SCOPE(spire::RendererLog);
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_spire_ES
+#define SCISHARE __declspec(dllexport)
 #else
-  #include <spdlog/spdlog.h>
-  #define RENDERER_LOG(...)
-  #define RENDERER_LOG_FUNCTION_SCOPE
+#define SCISHARE __declspec(dllimport)
 #endif
-
-#include <Core/Logging/ScopedFunctionLogger.h>
-
+#else
+#define SCISHARE
 #endif

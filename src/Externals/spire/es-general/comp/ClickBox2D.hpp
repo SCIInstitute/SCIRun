@@ -6,6 +6,7 @@
 #include <es-cereal/ComponentSerialize.hpp>
 #include <es-cereal/CerealCore.hpp>
 #include "../AABB2D.hpp"
+#include <spire/scishare.h>
 
 namespace gen {
 

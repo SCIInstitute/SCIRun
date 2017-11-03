@@ -6,6 +6,7 @@
 #include <es-cereal/CerealCore.hpp>
 #include <es-systems/SystemCore.hpp>
 #include <set>
+#include <spire/scishare.h>
 
 namespace spire {
 

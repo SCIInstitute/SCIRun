@@ -5,6 +5,7 @@
 #include <memory>
 #include <stdexcept>
 #include <entity-system/ESCoreBase.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
 

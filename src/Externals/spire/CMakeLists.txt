@@ -212,6 +212,7 @@ ADD_LIBRARY ( ${SCI_SPIRE_LIBRARY}
   var-buffer/VarBuffer.cpp
   es-log/trace-log.h
   es-log/trace-log.cc
+  scishare.h
   )
 
 target_link_libraries(${SCI_SPIRE_LIBRARY}
@@ -222,3 +223,7 @@ target_link_libraries(${SCI_SPIRE_LIBRARY}
 IF(WIN32)
   target_link_libraries(${SCI_SPIRE_LIBRARY} ${SCI_GLEW_LIBRARY})
 ENDIF()
+
+IF(BUILD_SHARED_LIBS)
+	ADD_DEFINITIONS(-DBUILD_spire_ES)
+ENDIF(BUILD_SHARED_LIBS)

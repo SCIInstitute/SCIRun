@@ -5,6 +5,7 @@
 #include <memory>
 #include <es-cereal/ComponentSerialize.hpp>
 #include "../TextureMan.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 

@@ -5,8 +5,8 @@
 #include <list>
 #include <entity-system/ESCoreBase.hpp>
 #include <tny/tny.hpp>
-
 #include "SystemFactory.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 

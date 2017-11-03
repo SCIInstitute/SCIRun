@@ -4,8 +4,8 @@
 #include <es-log/trace-log.h>
 #include <string>
 #include <functional>
-
 #include <es-acorn/Acorn.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
 
