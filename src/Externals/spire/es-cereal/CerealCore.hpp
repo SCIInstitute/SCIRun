@@ -16,7 +16,7 @@ typedef _Tny Tny;
 
 namespace spire {
 
-  class CerealCore : public spire::ESCoreBase
+class SCISHARE CerealCore : public spire::ESCoreBase
 {
 public:
   CerealCore();
