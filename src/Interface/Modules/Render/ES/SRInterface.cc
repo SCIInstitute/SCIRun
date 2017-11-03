@@ -26,6 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+#include <es-log/trace-log.h>
 // Needed for OpenGL include files on Travis:
 #include <gl-platform/GLPlatform.hpp>
 #include <Interface/Modules/Render/UndefiningX11Cruft.h>
@@ -764,14 +765,16 @@ namespace SCIRun {
     //------------------------------------------------------------------------------
     void SRInterface::handleGeomObject(GeometryHandle obj, int port)
     {
-      // Ensure our rendering context is current on our thread.
+      logRendererInfo("Handling geom object on port {}", port);
+      RENDERER_LOG_FUNCTION_SCOPE;
+      RENDERER_LOG("Ensure our rendering context is current on our thread.");
       mContext->makeCurrent();
 
       std::string objectName = obj->uniqueID();
       BBox bbox; // Bounding box containing all vertex buffer objects.
 
-      // Check to see if the object already exists in our list. If so, then
-      // remove the object. We will re-add it.
+      RENDERER_LOG("Check to see if the object already exists in our list. "
+        "If so, then remove the object. We will re-add it.");
       auto foundObject = std::find_if(
         mSRObjects.begin(), mSRObjects.end(),
         [&objectName](const SRObject& sro)
@@ -787,29 +790,28 @@ namespace SCIRun {
         {
           if (foundObject != mSRObjects.end())
           {
-            // Iterate through each of the passes and remove their associated
-            // entity ID.
+            RENDERER_LOG("Iterate through each of the passes and remove their associated entity ID.");
             for (const auto& pass : foundObject->mPasses)
             {
               uint64_t entityID = getEntityIDForName(pass.passName, port);
               mCore.removeEntity(entityID);
             }
 
-            // We need to renormalize the core after removing entities. We don't need
-            // to run a new pass however. Renormalization is enough to remove
-            // old entities from the system.
+            RENDERER_LOG("We need to renormalize the core after removing entities. We don't need"
+              "to run a new pass however. Renormalization is enough to remove"
+              "old entities from the system.");
             mCore.renormalize(true);
 
-            // Run a garbage collection cycle for the VBOs and IBOs. We will likely
-            // be using similar VBO and IBO names.
+            RENDERER_LOG("Run a garbage collection cycle for the VBOs and IBOs. We will likely"
+              " be using similar VBO and IBO names.");
             vboMan->runGCCycle(mCore);
             iboMan->runGCCycle(mCore);
 
-            // Remove the object from the entity system.
+            RENDERER_LOG("Remove the object from the entity system.");
             mSRObjects.erase(foundObject);
           }
 
-          // Add vertex buffer objects.
+          RENDERER_LOG("Add vertex buffer objects.");
           std::vector<char*> vbo_buffer;
           std::vector<size_t> stride_vbo;
 
@@ -820,7 +822,7 @@ namespace SCIRun {
 
             if (vbo.onGPU)
             {
-              // Generate vector of attributes to pass into the entity system.
+              RENDERER_LOG("Generate vector of attributes to pass into the entity system: {}, {}", nameIndex, vbo.name);
               std::vector<std::tuple<std::string, size_t, bool>> attributeData;
               for (const auto& attribData : vbo.attributes)
               {
@@ -839,7 +841,7 @@ namespace SCIRun {
             bbox.extend(vbo.boundingBox);
           }
 
-          // Add index buffer objects.
+          RENDERER_LOG("Add index buffer objects.");
           nameIndex = 0;
           for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
           {
@@ -861,6 +863,7 @@ namespace SCIRun {
 
             default:
               primType = GL_UNSIGNED_INT;
+              logRendererError("Unable to determine index buffer depth.");
               throw std::invalid_argument("Unable to determine index buffer depth.");
               break;
             }
@@ -884,7 +887,7 @@ namespace SCIRun {
 
             if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
             {
-              /// Create sorted lists of Buffers for transparency in each direction of the axis
+              RENDERER_LOG("Create sorted lists of Buffers for transparency in each direction of the axis.");
               uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(ibo.data->getBuffer());
               size_t num_triangles = ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
               Vector dir(0.0, 0.0, 0.0);
@@ -974,7 +977,7 @@ namespace SCIRun {
             }
           }
 
-          // Add default identity transform to the object globally (instead of per-pass)
+          RENDERER_LOG("Add default identity transform to the object globally (instead of per-pass)");
           glm::mat4 xform;
           mSRObjects.push_back(SRObject(objectName, xform, bbox, obj->mColorMap, port));
           SRObject& elem = mSRObjects.back();
@@ -982,7 +985,7 @@ namespace SCIRun {
           std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
           if (auto shaderMan = sm.lock())
           {
-            // Add passes
+            RENDERER_LOG("Add passes");
             for (auto& pass : obj->mPasses)
             {
               uint64_t entityID = getEntityIDForName(pass.passName, port);
@@ -1015,12 +1018,12 @@ namespace SCIRun {
                 {
                   addIBOToEntity(entityID, pass.iboName);
                 }
-                //add texture
+                RENDERER_LOG("add texture");
                 addTextToEntity(entityID, pass.text);
               }
               else
               {
-                // We will be constructing a render list from the VBO and IBO.
+                RENDERER_LOG("We will be constructing a render list from the VBO and IBO.");
                 RenderList list;
 
                 for (const auto& vbo : obj->mVBOs)
@@ -1036,8 +1039,8 @@ namespace SCIRun {
                   }
                 }
 
-                // Lookup the VBOs and IBOs associated with this particular draw list
-                // and add them to our entity in question.
+                RENDERER_LOG("Lookup the VBOs and IBOs associated with this particular draw list "
+                  "and add them to our entity in question.");
                 std::string assetName = "Assets/sphere.geom";
 
                 if (pass.renderType == RenderType::RENDER_RLIST_SPHERE)
@@ -1054,11 +1057,10 @@ namespace SCIRun {
                 addIBOToEntity(entityID, assetName);
               }
 
-              // Load vertex and fragment shader will use an already loaded program.
-              //addShaderToEntity(entityID, pass.programName);
+              RENDERER_LOG("Load vertex and fragment shader will use an already loaded program.");
               shaderMan->loadVertexAndFragmentShader(mCore, entityID, pass.programName);
 
-              // Add transformation
+              RENDERER_LOG("Add transformation");
               gen::Transform trafo;
 
               if (pass.renderState.get(RenderState::IS_WIDGET))
@@ -1079,20 +1081,20 @@ namespace SCIRun {
               }
               mCore.addComponent(entityID, trafo);
 
-              // Add lighting uniform checks
+              RENDERER_LOG("Add lighting uniform checks");
               LightingUniforms lightUniforms;
               mCore.addComponent(entityID, lightUniforms);
-              //plane uniforms
+              RENDERER_LOG("plane uniforms");
               ClippingPlaneUniforms clipplingPlaneUniforms;
               mCore.addComponent(entityID, clipplingPlaneUniforms);
 
-              // Add SCIRun render state.
+              RENDERER_LOG("Add SCIRun render state.");
               SRRenderState state;
               state.state = pass.renderState;
               mCore.addComponent(entityID, state);
               RenderBasicGeom geom;
               mCore.addComponent(entityID, geom);
-              // Ensure common uniforms are covered.
+              RENDERER_LOG("Ensure common uniforms are covered.");
               ren::CommonUniforms commonUniforms;
               mCore.addComponent(entityID, commonUniforms);
 
@@ -1102,7 +1104,6 @@ namespace SCIRun {
                 applyUniform(entityID, uniform);
               }
 
-              //if (mFogIntensity > 0.0)
               {
                 Graphics::Datatypes::SpireSubPass::Uniform uniform;
                 uniform.name = "uFogSettings";
@@ -1120,13 +1121,13 @@ namespace SCIRun {
               // we want on the objects in question in show field. This could lead to
               // much simpler customization.
 
-              // Add a pass to our local object.
+              RENDERER_LOG("Add a pass to our local object.");
               elem.mPasses.emplace_back(pass.passName, pass.renderType);
               pass.renderState.mSortType = mRenderSortType;
               mCore.addComponent(entityID, pass);
             }
 
-            // Recalculate scene bounding box. Should only be done when an object is added.
+            RENDERER_LOG("Recalculate scene bounding box. Should only be done when an object is added.");
             mSceneBBox.reset();
             for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
             {

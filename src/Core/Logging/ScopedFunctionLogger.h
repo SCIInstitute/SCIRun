@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,43 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef GUI_LOGGER_H
-#define GUI_LOGGER_H
+#ifndef CORE_LOGGING_SCOPEDFUNCTIONLOGGER_H
+#define CORE_LOGGING_SCOPEDFUNCTIONLOGGER_H
 
-#include <Core/Utils/Singleton.h>
-#include <Core/Logging/Log.h>
-#include <boost/shared_ptr.hpp>
-#include <QString>
+#include <Core/Logging/LoggerFwd.h>
 
-namespace SCIRun {
-namespace Gui {
-
-  class GuiLog final : public Core::Logging::Log2
+namespace SCIRun
+{
+  namespace Core
   {
-    CORE_SINGLETON(GuiLog)
-  public:
-    GuiLog() : Log2("ui") {}
-  };
-
-  #define guiLog GuiLog::Instance().get()
-
-  template <class... T>
-  void guiLogDebug(const char* fmt, T&&... args)
-  {
-    guiLog->debug(fmt, args...);
+    namespace Logging
+    {
+      template <class LogType>
+      struct ScopedFunctionLogger
+      {
+        explicit ScopedFunctionLogger(const char* functionName) :
+          logger_(spdlog::get(LogType::name())),
+          functionName_(functionName)
+        {
+          if (logger_)
+            logger_->trace("Entering function: {}", functionName_);
+        }
+        ~ScopedFunctionLogger()
+        {
+          if (logger_)
+            logger_->trace("Leaving function: {}", functionName_);
+        }
+      private:
+        Logger2 logger_;
+        const char* functionName_;
+      };
+    }
   }
+}
 
-  class GuiLogger : boost::noncopyable
-  {
-  public:
-    static void logInfo(const QString& message);
-    static void logError(const QString& message);
-    static void logInfoStd(const std::string& message) { logInfo(QString::fromStdString(message)); }
-    static void logErrorStd(const std::string& message) { logError(QString::fromStdString(message)); }
-  private:
-    GuiLogger() = delete;
-  };
-
-}}
+#define LOG_FUNCTION_SCOPE(LogType) SCIRun::Core::Logging::ScopedFunctionLogger<LogType> sfl ## __LINE__ (LOG_FUNC);
 
 #endif

@@ -4,6 +4,7 @@
 #ifndef SPIRE_ENTITY_SYSTEM_TEMPLATEID_HPP
 #define SPIRE_ENTITY_SYSTEM_TEMPLATEID_HPP
 
+#include <es-log/trace-log.h>
 #include <cstdint>
 
 namespace spire {
@@ -43,7 +44,7 @@ public:
     return mStaticTypeID;
   }
 
-  static uint64_t setID(uint64_t id)
+  static void setID(uint64_t id)
   {
     mStaticTypeID = id;
   }
@@ -55,4 +56,4 @@ template <typename T> uint64_t TemplateID<T>::mStaticTypeID = 0;
 
 } // namespace spire
 
-#endif 
+#endif

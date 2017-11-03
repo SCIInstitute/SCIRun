@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,43 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef GUI_LOGGER_H
-#define GUI_LOGGER_H
+#ifndef ES_TRACE_LOG_H
+#define ES_TRACE_LOG_H
 
-#include <Core/Utils/Singleton.h>
-#include <Core/Logging/Log.h>
-#include <boost/shared_ptr.hpp>
-#include <QString>
+#include <Core/Logging/LoggerFwd.h>
 
-namespace SCIRun {
-namespace Gui {
-
-  class GuiLog final : public Core::Logging::Log2
-  {
-    CORE_SINGLETON(GuiLog)
-  public:
-    GuiLog() : Log2("ui") {}
-  };
-
-  #define guiLog GuiLog::Instance().get()
-
-  template <class... T>
-  void guiLogDebug(const char* fmt, T&&... args)
-  {
-    guiLog->debug(fmt, args...);
-  }
-
-  class GuiLogger : boost::noncopyable
+namespace spire
+{
+  class RendererLog
   {
   public:
-    static void logInfo(const QString& message);
-    static void logError(const QString& message);
-    static void logInfoStd(const std::string& message) { logInfo(QString::fromStdString(message)); }
-    static void logErrorStd(const std::string& message) { logError(QString::fromStdString(message)); }
+    static SCIRun::Core::Logging::Logger2 get();
+    static const char* name() { return "renderer"; };
   private:
-    GuiLogger() = delete;
+    static SCIRun::Core::Logging::Logger2 logger_;
   };
+}
 
-}}
+#define logRendererError(...) spire::RendererLog::get()->error(__VA_ARGS__)
+#define logRendererWarning(...) spire::RendererLog::get()->warn(__VA_ARGS__)
+#define logRendererInfo(...) spire::RendererLog::get()->info(__VA_ARGS__)
+
+//TODO: cmake controlled flag
+
+#ifdef RENDERER_TRACE_ON
+  #define SPDLOG_TRACE_ON
+  #include <spdlog/spdlog.h>
+  #define RENDERER_LOG(...) SPDLOG_TRACE(spire::RendererLog::get(), __VA_ARGS__)
+  #define RENDERER_LOG_FUNCTION_SCOPE LOG_FUNCTION_SCOPE(spire::RendererLog);
+#else
+  #include <spdlog/spdlog.h>
+  #define RENDERER_LOG(...)
+  #define RENDERER_LOG_FUNCTION_SCOPE
+#endif
+
+#include <Core/Logging/ScopedFunctionLogger.h>
 
 #endif

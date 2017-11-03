@@ -4,6 +4,7 @@
 #ifndef SPIRE_GLSHADER_HPP
 #define SPIRE_GLSHADER_HPP
 
+#include <es-log/trace-log.h>
 // All functions below assume there is a valid OpenGL context active.
 #include <vector>
 #include <list>
@@ -109,7 +110,7 @@ struct ShaderAttributeApplied
   uint32_t    offset;       ///< Calculated offset into VBO's memory.
 };
 
-/// Builds a sequence of applied attributes. Use this to set set up a VBO for 
+/// Builds a sequence of applied attributes. Use this to set set up a VBO for
 /// rendering with a particular shader. If an error occurs, a runtime exception
 /// will be thrown, but the tuple <0,0> will be returned on systems that do not
 /// use exceptions.
@@ -162,6 +163,6 @@ bool operator!=(const ShaderUniform& a, const ShaderUniform& b);
 /// Collects all shader uniforms into a vector of ShaderUniform.
 std::vector<ShaderUniform> getProgramUniforms(GLuint program);
 
-} // namespace spire 
+} // namespace spire
 
-#endif 
+#endif
