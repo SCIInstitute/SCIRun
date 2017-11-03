@@ -86,8 +86,8 @@ SET(Modules_Legacy_Fields_HEADERS
   GeneratePointSamplesFromFieldOrWidget.h
   TransformMeshWithTransform.h
   GetMeshQualityField.h
-  CleanupTetMesh.h
   RemoveUnusedNodes.h
+  CleanupTetMesh.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
