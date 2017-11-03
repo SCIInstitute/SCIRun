@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,44 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Modules/Legacy/Fields/CleanupTetMesh.h>
+#include <Interface/Modules/Fields/CleanupTetMeshDialog.h>
 #include <Core/Algorithms/Legacy/Fields/Cleanup/CleanupTetMesh.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 
-using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun;
 
-MODULE_INFO_DEF(CleanupTetMesh, ChangeFieldData, SCIRun)
 
-CleanupTetMesh::CleanupTetMesh() :  Module(staticInfo_)
+CleanupTetMeshDialog::CleanupTetMeshDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  INITIALIZE_PORT(InputTetMesh);
-  INITIALIZE_PORT(OutputTetMesh);
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  addCheckBoxManager(FixOrientationCheckBox_, Parameters::FixOrientationCheckBox);
+  addCheckBoxManager(RemoveDegenerateCheckBox_, Parameters::RemoveDegenerateCheckBox);
 }
-
-void CleanupTetMesh::setStateDefaults()
-{
-  auto state = get_state();
-  setStateBoolFromAlgo(Parameters::FixOrientationCheckBox);
-  setStateBoolFromAlgo(Parameters::RemoveDegenerateCheckBox);
-}
-
-void CleanupTetMesh::execute()
-{
-  
-  auto ifield = getRequiredInput(InputTetMesh);
-
-  if (needToExecute())
-  {
-    setAlgoBoolFromState(Parameters::FixOrientationCheckBox);
-    setAlgoBoolFromState(Parameters::RemoveDegenerateCheckBox);
-    auto output = algo().run(withInputData((InputTetMesh, ifield)));
-
-    sendOutputFromAlgorithm(OutputTetMesh, output);
-  }
-}
-
