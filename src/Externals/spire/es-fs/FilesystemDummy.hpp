@@ -1,6 +1,7 @@
 #ifndef SPIRE_ASYNC_FILESYSTEMDUMMY_HPP
 #define SPIRE_ASYNC_FILESYSTEMDUMMY_HPP
 
+#include <es-log/trace-log.h>
 #include <vector>
 #include "Filesystem.hpp"
 
@@ -37,6 +38,6 @@ private:
   std::string             mPrefix;
 };
 
-} // namespace spire 
+} // namespace spire
 
-#endif 
+#endif

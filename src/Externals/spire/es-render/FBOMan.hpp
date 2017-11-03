@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_FBOMAN_HPP
 #define SPIRE_RENDER_FBOMAN_HPP
 
+#include <es-log/trace-log.h>
 #include <set>
 #include <map>
 #include <stack>
@@ -126,4 +127,4 @@ namespace ren {
 
 } // namespace ren
 
-#endif 
+#endif

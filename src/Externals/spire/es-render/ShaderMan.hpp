@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_SHADERMAN_HPP
 #define SPIRE_RENDER_SHADERMAN_HPP
 
+#include <es-log/trace-log.h>
 #include <map>
 #include <set>
 #include <es-cereal/CerealCore.hpp>
@@ -37,7 +38,7 @@ public:
   /// \param  core        Core base.
   /// \param  entityID    Entity ID which will receive the ren::Shader component.
   /// \param  assetName   Name of the asset which to load.
-  void loadVertexAndFragmentShader(spire::CerealCore& core, 
+  void loadVertexAndFragmentShader(spire::CerealCore& core,
                                    uint64_t entityID, const std::string& assetName);
 
   /// Add in-memory vertex and fragment shader. Associates the assets with
@@ -88,7 +89,7 @@ private:
                           std::string assetName, int32_t numRetries,
                           spire::ESCoreBase& core);
 
-  /// Callback issued to load fragment shader. 
+  /// Callback issued to load fragment shader.
   void loadFragmentShaderCB(const std::string& fsName, bool error,
                             size_t bytesRead, uint8_t* buffer,
                             std::string vertexShaderSource,
@@ -116,4 +117,4 @@ private:
 
 } // namespace ren
 
-#endif 
+#endif

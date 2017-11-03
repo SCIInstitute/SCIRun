@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_COMPONENT_STATIC_SHADER_MAN_HPP
 #define SPIRE_RENDER_COMPONENT_STATIC_SHADER_MAN_HPP
 
+#include <es-log/trace-log.h>
 #include <memory>
 #include <es-cereal/ComponentSerialize.hpp>
 #include "../ShaderMan.hpp"
@@ -43,4 +44,4 @@ private:
 
 } // namespace ren
 
-#endif 
+#endif

@@ -1,6 +1,7 @@
 #ifndef SPIRE_CEREALTYPESERIALIZE_HPP
 #define SPIRE_CEREALTYPESERIALIZE_HPP
 
+#include <es-log/trace-log.h>
 #include <cstdint>
 #include <cstddef>
 #include <cstring>
@@ -193,4 +194,4 @@ public:
 
 } // namespace spire
 
-#endif 
+#endif

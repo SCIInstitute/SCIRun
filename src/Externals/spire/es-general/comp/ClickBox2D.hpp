@@ -1,7 +1,7 @@
 #ifndef SPIRE_ES_GENERAL_COMP_CLICKBOX2D_HPP
 #define SPIRE_ES_GENERAL_COMP_CLICKBOX2D_HPP
 
-#include <cstdint>
+#include <es-log/trace-log.h>
 #include <entity-system/GenericSystem.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
 #include <es-cereal/CerealCore.hpp>
@@ -21,17 +21,10 @@ struct ClickBox2D
 
   // Data related to the hitbox.
   AABB2D hitBox;
-  bool hit;
+  bool hit {false};
 
   // User ID
-  int64_t userID;
-
-  // -- Functions --
-  ClickBox2D()
-  {
-    hit = false;
-    userID = 0;
-  }
+  int64_t userID {0};
 
   // Required functions (spire::CerealHeap)
   static const char* getName() {return "gp:ClickBox2D";}
@@ -46,4 +39,4 @@ struct ClickBox2D
 
 } // namespace gen
 
-#endif 
+#endif

@@ -1,6 +1,7 @@
 #ifndef SPIRE_COMPONENT_RENDER_TEXTURE_HPP
 #define SPIRE_COMPONENT_RENDER_TEXTURE_HPP
 
+#include <es-log/trace-log.h>
 #include <es-cereal/ComponentSerialize.hpp>
 
 #include <gl-platform/GLPlatform.hpp>
@@ -52,7 +53,7 @@ struct Texture
     }
     else
     {
-      std::cerr << "Texture: Unable to set uniform name: " << name << " Name must be " 
+      std::cerr << "Texture: Unable to set uniform name: " << name << " Name must be "
                 << (MaxUniformName - 1) << "characters or shorter." << std::endl;
     }
   }
@@ -74,7 +75,7 @@ struct Texture
       newPromise.textureUnit = tu;
       newPromise.setAssetName(assetName.c_str());
 
-      spire::CerealCore& core 
+      spire::CerealCore& core
           = dynamic_cast<spire::CerealCore&>(s.getCore());
       core.addComponent(entityID, newPromise);
 
@@ -83,7 +84,7 @@ struct Texture
     }
     else
     {
-      spire::CerealCore& core 
+      spire::CerealCore& core
           = dynamic_cast<spire::CerealCore&>(s.getCore());
       StaticTextureMan* staticTX = core.getStaticComponent<StaticTextureMan>();
       std::weak_ptr<TextureMan> texMan = staticTX->instance_;
@@ -102,4 +103,4 @@ struct Texture
 
 } // namespace ren
 
-#endif 
+#endif

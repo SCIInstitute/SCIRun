@@ -14,7 +14,7 @@ void RenderSimpleGeom::checkAttribArray(GLuint vboID, GLuint shaderID,
     ///       we are looking up the shader's attributes using OpenGL), then
     ///       we can cache the attributes in the shader manager and import
     ///       them using the StaticShaderMan component.
-    std::vector<spire::ShaderAttribute> attribs = 
+    std::vector<spire::ShaderAttribute> attribs =
         spire::getProgramAttributes(shaderID);
     spire::sortAttributesAlphabetically(attribs);
 
@@ -45,4 +45,3 @@ bool RenderSimpleGeom::isSetUp() const
 }
 
 } // namespace ren
-

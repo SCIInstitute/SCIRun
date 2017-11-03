@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_TEXTUREMAN_HPP
 #define SPIRE_RENDER_TEXTUREMAN_HPP
 
+#include <es-log/trace-log.h>
 #include <map>
 #include <set>
 #include <es-cereal/CerealCore.hpp>

@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_ARC_BALL_CAMERA_HPP
 #define SPIRE_RENDER_ARC_BALL_CAMERA_HPP
 
+#include <es-log/trace-log.h>
 #include <es-acorn/Acorn.hpp>
 
 namespace ren {
