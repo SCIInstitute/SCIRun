@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,44 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Modules/Legacy/Fields/CleanupTetMesh.h>
-#include <Core/Algorithms/Legacy/Fields/Cleanup/CleanupTetMesh.h>
+#ifndef MODULES_LEGACY_FIELDS_CleanupTetMesh_H__
+#define MODULES_LEGACY_FIELDS_CleanupTetMesh_H__
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-MODULE_INFO_DEF(CleanupTetMesh, ChangeFieldData, SCIRun)
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-CleanupTetMesh::CleanupTetMesh() :  Module(staticInfo_)
-{
-  INITIALIZE_PORT(InputTetMesh);
-  INITIALIZE_PORT(OutputTetMesh);
-}
+	/// @class CleanupTetMesh
+	/// @brief Repairs tetrahedral meshes: (1) removing regenerate elements, (2) fixing its orientation  
 
-void CleanupTetMesh::setStateDefaults()
-{
-  auto state = get_state();
-  setStateBoolFromAlgo(Parameters::FixOrientationCheckBox);
-  setStateBoolFromAlgo(Parameters::RemoveDegenerateCheckBox);
-}
+      class SCISHARE CleanupTetMesh : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        CleanupTetMesh();
 
-void CleanupTetMesh::execute()
-{
-  
-  auto ifield = getRequiredInput(InputTetMesh);
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
-  if (needToExecute())
-  {
-    setAlgoBoolFromState(Parameters::FixOrientationCheckBox);
-    setAlgoBoolFromState(Parameters::RemoveDegenerateCheckBox);
-    auto output = algo().run(withInputData((InputTetMesh, ifield)));
+        INPUT_PORT(0, InputTetMesh, Field);
+        OUTPUT_PORT(0, OutputTetMesh, Field);
 
-    sendOutputFromAlgorithm(OutputTetMesh, output);
+	MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+      };
+
+    }
   }
 }
 
+#endif

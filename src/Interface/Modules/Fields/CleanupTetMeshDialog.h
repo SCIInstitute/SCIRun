@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,44 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Modules/Legacy/Fields/CleanupTetMesh.h>
-#include <Core/Algorithms/Legacy/Fields/Cleanup/CleanupTetMesh.h>
+#ifndef INTERFACE_MODULES_CLEANUPTETMESH_H
+#define INTERFACE_MODULES_CLEANUPTETMESH_H
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun;
+#include "Interface/Modules/Fields/ui_CleanupTetMeshDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
-MODULE_INFO_DEF(CleanupTetMesh, ChangeFieldData, SCIRun)
+namespace SCIRun {
+namespace Gui {
 
-CleanupTetMesh::CleanupTetMesh() :  Module(staticInfo_)
+class SCISHARE CleanupTetMeshDialog : public ModuleDialogGeneric,
+  public Ui::CleanupTetMeshDialog
 {
-  INITIALIZE_PORT(InputTetMesh);
-  INITIALIZE_PORT(OutputTetMesh);
+	Q_OBJECT
+
+public:
+  CleanupTetMeshDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+};
+
+}
 }
 
-void CleanupTetMesh::setStateDefaults()
-{
-  auto state = get_state();
-  setStateBoolFromAlgo(Parameters::FixOrientationCheckBox);
-  setStateBoolFromAlgo(Parameters::RemoveDegenerateCheckBox);
-}
-
-void CleanupTetMesh::execute()
-{
-  
-  auto ifield = getRequiredInput(InputTetMesh);
-
-  if (needToExecute())
-  {
-    setAlgoBoolFromState(Parameters::FixOrientationCheckBox);
-    setAlgoBoolFromState(Parameters::RemoveDegenerateCheckBox);
-    auto output = algo().run(withInputData((InputTetMesh, ifield)));
-
-    sendOutputFromAlgorithm(OutputTetMesh, output);
-  }
-}
-
+#endif
