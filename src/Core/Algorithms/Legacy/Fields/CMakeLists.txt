@@ -101,13 +101,14 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   DistanceField/CalculateIsInsideField.h
   MeshData/GetMeshQualityFieldAlgo.h
   Cleanup/RemoveUnusedNodes.h
+  Cleanup/CleanupTetMesh.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
   RegisterWithCorrespondences.cc
   MeshData/FlipSurfaceNormals.cc
-  #Cleanup/CleanupTetMesh.cc
   Cleanup/RemoveUnusedNodes.cc
+  Cleanup/CleanupTetMesh.cc
   #ClipMesh/ClipMeshByIsovalue.cc
   ClipMesh/ClipMeshBySelection.cc
   ClipMesh/ClipMeshByIsovalue.cc

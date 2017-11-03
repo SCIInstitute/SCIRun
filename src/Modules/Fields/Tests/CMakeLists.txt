@@ -48,6 +48,7 @@ SET(Modules_Fields_Tests_SRCS
   ExtractSimpleIsoSurfaceTest.cc
   ClipVolumeByIsovalueTests.cc
   RemoveUnusedNodesTests.cc
+  CleanupTetMeshTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests
