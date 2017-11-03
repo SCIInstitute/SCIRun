@@ -345,7 +345,7 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
   // Find corner in L-curve
   lambda = FindCorner( rho, eta, lambdaArray, nLambda,lambda_index);
 
-	std::cout << "Lambda:" << lambda << std::endl;
+	LOG_DEBUG("Lambda: {}", lambda);
   // TODO: update GUI
 
   return lambda;
