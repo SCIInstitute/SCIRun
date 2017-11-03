@@ -55,6 +55,7 @@ SET(Algorithms_Field_Tests_SRCS
   ClipVolumeByIsovalueTests.cc
   RefineTetMeshLocallyAlgoTests.cc
   SetComplexFieldDataTests.cc
+  RemoveUnusedNodesTests.cc
   CleanupTetMeshTests.cc
 )
 
