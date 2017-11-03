@@ -374,6 +374,15 @@ IF(WITH_OSPRAY)
 ENDIF()
 
 ########################################################################
+# Detailed renderer logging
+
+OPTION(RENDERER_TRACE_ON "Enable detailed renderer logging." OFF)
+MARK_AS_ADVANCED(RENDERER_TRACE_ON)
+IF(RENDERER_TRACE_ON)
+  ADD_DEFINITIONS(-DRENDERER_TRACE_ON)
+ENDIF()
+
+########################################################################
 # Copy Spire-SCIRun specific assets and shaders
 
 set(OUTPUT_SHADER_DIR ${CMAKE_CURRENT_BINARY_DIR}/Shaders)

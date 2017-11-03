@@ -1,6 +1,7 @@
 #ifndef SPIRE_ES_RENDER_UTIL_TEXQUAD_HPP
 #define SPIRE_ES_RENDER_UTIL_TEXQUAD_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 #include <es-cereal/CerealCore.hpp>
 #include "es-render/comp/VBO.hpp"
@@ -49,7 +50,6 @@ void setTexQuadTransform(spire::CerealCore& core, uint64_t entityID,
 void setTexQuadTransform(spire::CerealCore& core, uint64_t entityID,
                          const glm::vec2& topLeft, const glm::vec2& bottomRight, float z);
 
-} // namespace ren 
+} // namespace ren
 
-#endif 
-
+#endif

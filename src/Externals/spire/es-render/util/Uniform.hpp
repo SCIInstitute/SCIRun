@@ -1,6 +1,7 @@
 #ifndef SPIRE_GP_REN_UTIL_UNIFORM_HPP
 #define SPIRE_GP_REN_UTIL_UNIFORM_HPP
 
+#include <es-log/trace-log.h>
 #include <es-cereal/CerealCore.hpp>
 #include "helper/TypeToGLUniform.hpp"
 
@@ -17,7 +18,7 @@ void addGLUniform(spire::CerealCore& core, uint64_t entityID,
 }
 
 // Detects appropriate uniform to add to the entity. Will attempt to find
-// a pre-existing uniform in its component list and modify it instead of 
+// a pre-existing uniform in its component list and modify it instead of
 // adding a new one. Not implemented yet, check the other ren-utils that
 // check components. For this implementation, iteration over the components
 // will be necessary. May need to add functionality for this.
@@ -26,4 +27,4 @@ void addGLUniform(spire::CerealCore& core, uint64_t entityID,
 
 } // namespace ren
 
-#endif 
+#endif

@@ -1,6 +1,7 @@
 #ifndef SPIRE_ASYNC_STATICFS_HPP
 #define SPIRE_ASYNC_STATICFS_HPP
 
+#include <es-log/trace-log.h>
 #include <stdexcept>
 #include <memory>
 #include <es-cereal/ComponentSerialize.hpp>
@@ -25,12 +26,11 @@ struct StaticFS
 
   bool serialize(spire::ComponentSerialize&, uint64_t /* entityID */)
   {
-    std::cerr << "No serialization sohuld be performed on StaticFS!" << std::endl;
+    logRendererError("No serialization should be performed on StaticFS!");
     throw std::runtime_error("Cannot serialize StaticFS!");
-    return true;
   }
 };
 
-} // namespace spire 
+} // namespace spire
 
-#endif 
+#endif

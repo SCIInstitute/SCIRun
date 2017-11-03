@@ -24,75 +24,74 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+   
+   author: Moritz Dannhauer
+   ported from SCIRun4 on 25/10/17
 */
 
-#include <Core/Algorithms/Fields/Cleanup/CleanupTetMesh.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/Cleanup/CleanupTetMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/GeometryPrimitives/Point.h>
 
-namespace SCIRunAlgo {
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-using namespace SCIRun;
-
-bool 
-CleanupTetMeshAlgo::
-run(FieldHandle input, FieldHandle& output)
+CleanupTetMeshAlgo::CleanupTetMeshAlgo()
 {
-  // Mark that we are starting the algorithm, but do not report progress
-  algo_start("CleanupTetMesh");
-  // Step 0:
-  // Safety test:
-  // Test whether we received actually a field. A handle can point to no object.
-  // Using a null handle will cause the program to crash. Hence it is a good
-  // policy to check all incoming handles and to see whether they point to actual
-  // objects.
-  
-  // Handle: the function get_rep() returns the pointer contained in the handle
-  if (input.get_rep() == 0)
-  {
-    // If we encounter a null pointer we return an error message and return to
-    // the program to deal with this error. 
-    error("No input field");
-    algo_end(); return (false);
-  }
+  addParameter(Parameters::FixOrientationCheckBox, true);
+  addParameter(Parameters::RemoveDegenerateCheckBox, true);
+}
 
-  // Step 1: determine the type of the input fields and determine what type the
-  // output field should be.
+AlgorithmInputName CleanupTetMeshAlgo::InputTetMesh("InputTetMesh");
+AlgorithmOutputName CleanupTetMeshAlgo::OutputTetMesh("OutputTetMesh");
 
+ALGORITHM_PARAMETER_DEF(Fields, FixOrientationCheckBox);
+ALGORITHM_PARAMETER_DEF(Fields, RemoveDegenerateCheckBox);
+
+bool CleanupTetMeshAlgo::run(FieldHandle input, FieldHandle& output) const
+{ 
   FieldInformation fi(input);
   FieldInformation fo(input);
-  // Here we test whether the class is part of any of these newly defined 
-  // non-linear classes. If so we return an error.
-  if (fi.is_nonlinear())
+  
+  if(fi.is_nonlinear())
   {
-    error("This algorithm has not yet been defined for non-linear elements yet");
-    algo_end(); return (false);
+   error("This algorithm has not yet been defined for non-linear elements yet");
+   return true;
   }
-
-  // This one
+  
   if (!(fi.is_tetvolmesh())) 
   {
-    // Notify the user that no action is done  
     error("This algorithm only works on a TetVolMesh");
-    // Copy input to output (output is a reference to the input)
-    algo_end(); return (false);
-  }
-
-
+    return true;
+  }  
+  
   VField* ifield = input->vfield();
   VMesh*  imesh  = input->vmesh();
-
-  output = CreateField(fo);  
-  if (output.get_rep() == 0)
+  
+  output = CreateField(fo);   
+  
+  if (!output)
   {
     error("Could not allocate output field");
-    algo_end(); return (false);
+    return true;
+  }
+   
+  
+  if (!output)
+  {
+    error("Could not allocate output field");
+    return true;
   }
   
   VMesh* omesh = output->vmesh();
   VField* ofield = output->vfield();
-
-  bool fix_orientation = get_bool("fix_orientation");
-  bool remove_degenerate = get_bool("remove_degenerate");
+  
+  bool fix_orientation = get(Parameters::FixOrientationCheckBox).toBool();
+  bool remove_degenerate = get(Parameters::RemoveDegenerateCheckBox).toBool();
 
   omesh->copy_nodes(imesh);
   
@@ -112,7 +111,7 @@ run(FieldHandle input, FieldHandle& output)
     if (cnt == 200)
     {
       cnt = 0;
-      update_progress(idx,num_elems);
+      this->update_progress(idx/num_elems);
     }
     
     imesh->get_nodes(nodes,idx);
@@ -153,12 +152,30 @@ run(FieldHandle input, FieldHandle& output)
   {
     ofield->copy_values(ifield);
   }
-    
-  /// Copy properties of the property manager
-	output->copy_properties(input.get_rep());
-   
-  // Success:
-  algo_end(); return (true);
+  
+ return true;
 }
 
-} // End namespace SCIRunAlgo
+AlgorithmOutput CleanupTetMeshAlgo::run(const AlgorithmInput& input) const
+{
+ 
+  auto input_tet_mesh = input.get<Field>(InputTetMesh);
+  FieldHandle output_mesh;
+  AlgorithmOutput output;
+  
+  if(!input_tet_mesh)
+  {
+   error("No input field");
+   return output;
+  }
+  
+  if(!run(input_tet_mesh, output_mesh))
+  {
+    error("Algorithm failed!");
+  }
+
+  output[OutputTetMesh] = output_mesh;
+  return output;
+  
+}
+

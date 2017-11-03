@@ -47,6 +47,7 @@ SET(Modules_Fields_Tests_SRCS
   SplitFieldByConnectedRegionTests.cc
   ExtractSimpleIsoSurfaceTest.cc
   ClipVolumeByIsovalueTests.cc
+  CleanupTetMeshTests.cc
   RemoveUnusedNodesTests.cc
 )
 

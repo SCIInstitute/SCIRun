@@ -1,6 +1,7 @@
 #ifndef SPIRE_ES_SYSTEMS_SYSTEMCORE_HPP
 #define SPIRE_ES_SYSTEMS_SYSTEMCORE_HPP
 
+#include <es-log/trace-log.h>
 #include <list>
 #include <entity-system/ESCoreBase.hpp>
 #include <tny/tny.hpp>

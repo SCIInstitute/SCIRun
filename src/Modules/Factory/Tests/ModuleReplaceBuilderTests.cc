@@ -56,7 +56,7 @@ const int NUM_MODULES = 143;
 #endif
 const int NUM_ALGORITHMS = 76;
 
-const int EXPECTED_RANGE = 15;   // Require updating these numbers every few modules
+const int EXPECTED_RANGE = 16;   // Require updating these numbers every few modules
 
 TEST(HardCodedModuleFactoryTests, ListAllModules)
 {

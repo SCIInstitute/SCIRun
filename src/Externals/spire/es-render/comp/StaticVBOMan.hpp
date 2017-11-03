@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_COMPONENT_STATIC_VBO_MAN_HPP
 #define SPIRE_RENDER_COMPONENT_STATIC_VBO_MAN_HPP
 
+#include <es-log/trace-log.h>
 #include <memory>
 #include <es-cereal/ComponentSerialize.hpp>
 #include "../VBOMan.hpp"
@@ -29,4 +30,4 @@ struct StaticVBOMan
 
 } // namespace ren
 
-#endif 
+#endif

@@ -4,6 +4,7 @@
 
 /// \todo Handle state relative to some default state?
 
+#include <es-log/trace-log.h>
 #include <cstddef>
 #include <tuple>
 #include <gl-platform/GLPlatform.hpp>
@@ -13,7 +14,7 @@ namespace spire {
 // Texture state is not managed. This GLState class is not for the fixed
 // function pipeline. See:
 // https://www.opengl.org/discussion_boards/showthread.php/163092-Passing-Multiple-Textures-from-OpenGL-to-GLSL-shader
-// You will 
+// You will
 
 class GLState
 {
@@ -21,7 +22,6 @@ public:
 
   GLState();
 
-  /// Equality operator.
   bool operator==(const GLState &other) const;
 
   /// String representation of entire GLState. String includes '\n' chars.
@@ -95,7 +95,7 @@ public:
   void    setFrontFace(GLenum value)  {mCullFrontFace = value;}
   GLenum  getFrontFace() const        {return mCullFrontFace;}
   void    applyFrontFace(bool force, const GLState* curState = nullptr) const;
-  
+
   /// Enable / disable blending.
   /// OpenGL: glEnable(GL_BLEND) or glDisable(GL_BLEND)
   void    setBlendEnable(bool value)   {mBlendEnable = value;}
@@ -174,6 +174,6 @@ private:
   void applyStateInternal(bool force, const GLState* state) const;
 };
 
-} // namespace spire 
+} // namespace spire
 
-#endif 
+#endif

@@ -26,6 +26,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
+#include <es-log/trace-log.h>
 #include <gl-platform/GLPlatform.hpp>
 
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
@@ -448,6 +449,7 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 
 void ViewSceneDialog::newGeometryValue()
 {
+  RENDERER_LOG_FUNCTION_SCOPE;
   Guard lock(Modules::Render::ViewScene::mutex_.get());
 
   auto spire = mSpire.lock();

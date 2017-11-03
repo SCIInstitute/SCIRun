@@ -1,6 +1,7 @@
 #ifndef SPIRE_ES_RENDER_UTIL_DEBUG_RENDER_HPP
 #define SPIRE_ES_RENDER_UTIL_DEBUG_RENDER_HPP
 
+#include <es-log/trace-log.h>
 #include <var-buffer/VarBuffer.hpp>
 #include <es-cereal/CerealCore.hpp>
 
@@ -16,22 +17,22 @@ namespace ren {
 class DebugRender
 {
 public:
-  
+
   /// If you use this constructor, be sure to call reaquire shader in order
   /// to setup the correct shader.
   DebugRender();
 
   // The constructor looks up the shader that will be used for rendering lines.
-  DebugRender(spire::CerealCore& core);
+  explicit DebugRender(spire::CerealCore& core);
 
   // Clear
   void clear();
 
-  // Reaquires the shader. You can do this instead of recreating the class
+  // Reacquires the shader. You can do this instead of recreating the class
   // every frame and save some dynamic memory allocation. You would generally
   // reaquire the shader every frame because we have no way of knowning whether
   // a GC cycle was run and GCed our shader.
-  void reaquireShader(spire::CerealCore& core);
+  void reacquireShader(spire::CerealCore& core);
 
   // Adds a line to the debug renderer.
   void addLine(const glm::vec3& a, const glm::vec3& b);
@@ -47,7 +48,7 @@ public:
               bool triangleFan);
 
 private:
-  
+
   int   mLines;     ///< Number of lines.
   float mCurCircum; ///< Current cicumfrence.
 
