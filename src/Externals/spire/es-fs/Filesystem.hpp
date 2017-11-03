@@ -1,6 +1,7 @@
 #ifndef ASYNC_SPIRE_FILESYSTEM_HPP
 #define ASYNC_SPIRE_FILESYSTEM_HPP
 
+#include <es-log/trace-log.h>
 #include <string>
 #include <functional>
 
@@ -17,7 +18,7 @@ class Filesystem
 public:
   Filesystem()            {}
   virtual ~Filesystem()   {}
-  
+
   /// Updates the filesystem (runs libuv loop and checks for existance of
   /// usable resources).
   virtual void update() = 0;
@@ -28,7 +29,7 @@ public:
   /// single files for efficient transmission over the web.
   virtual void readFile(const std::string& assetName, const FSCallback& cb) = 0;
 
-  /// Retrieves system name that is used to update the instantiated 
+  /// Retrieves system name that is used to update the instantiated
   /// static filesystem component which conforms to this abstract interface.
   /// All this system does is grab the StaticFS componenent, and call the
   /// abstract update function.
@@ -38,7 +39,6 @@ public:
   static void registerSystems(spire::Acorn& core);
 };
 
-} // namespace spire 
+} // namespace spire
 
 #endif
-

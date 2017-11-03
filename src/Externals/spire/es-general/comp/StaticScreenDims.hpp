@@ -1,6 +1,7 @@
 #ifndef SPIRE_ES_GENERAL_STATIC_SCREEN_DIMS_HPP
 #define SPIRE_ES_GENERAL_STATIC_SCREEN_DIMS_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
 
@@ -34,4 +35,4 @@ struct StaticScreenDims
 
 } // namespace gen
 
-#endif 
+#endif

@@ -1,6 +1,7 @@
 #ifndef SPIRE_ENTITY_SYSTEM_DUPLICATECOMPONENT_HPP
 #define SPIRE_ENTITY_SYSTEM_DUPLICATECOMPONENT_HPP
 
+#include <es-log/trace-log.h>
 #include "GenericSystem.hpp"
 
 namespace spire {
@@ -44,7 +45,6 @@ bool hasDuplicateComponent(ESCoreBase& core, uint64_t entityID, const T& compone
   return sys.hasFoundDuplicate();
 }
 
-} // namespace spire 
+} // namespace spire
 
-#endif 
-
+#endif

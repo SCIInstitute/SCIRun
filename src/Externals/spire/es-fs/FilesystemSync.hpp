@@ -1,6 +1,7 @@
 #ifndef SPIRE_ASYNC_FILESYSTEMSYNC_HPP
 #define SPIRE_ASYNC_FILESYSTEMSYNC_HPP
 
+#include <es-log/trace-log.h>
 #include <vector>
 #include "Filesystem.hpp"
 
@@ -39,4 +40,4 @@ private:
 
 } // namespace spire
 
-#endif 
+#endif

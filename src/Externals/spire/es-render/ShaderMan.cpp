@@ -151,8 +151,8 @@ void ShaderMan::loadVertexShaderCB(const std::string& /* vsName */, bool error,
     }
     else
     {
-      std::cerr << "ShaderMan: Failed promise for " << assetName << std::endl;
-      std::cerr << "Failed on vertex shader. Number of retries exceeded." << std::endl;
+      logRendererError("ShaderMan: Failed promise for {}", assetName);
+      logRendererError("Failed on vertex shader. Number of retries exceeded.");
     }
   }
 }
@@ -213,8 +213,8 @@ void ShaderMan::loadFragmentShaderCB(const std::string& /* fsName */, bool error
     }
     else
     {
-      std::cerr << "ShaderMan: Failed promise for " << assetName << std::endl;
-      std::cerr << "Failed on fragment shader. Number of retries exceeded." << std::endl;
+      logRendererError("ShaderMan: Failed promise for {}", assetName);
+      logRendererError("Failed on fragment shader. Number of retries exceeded.");
     }
   }
 }
@@ -315,8 +315,9 @@ public:
             man->requestVSandFS(core, asset, man->mNumRetries);
           }
         }
-    } else {
-        std::cerr << "Unable to complete shader fulfillment. There is no ShaderMan." << std::endl;
+    } else
+    {
+      logRendererError("Unable to complete shader fulfillment. There is no ShaderMan.");
     }
   }
 
@@ -325,11 +326,12 @@ public:
                const spire::ComponentGroup<StaticShaderMan>& shaderManGroup) override
   {
     std::weak_ptr<ShaderMan> sm = shaderManGroup.front().instance_;
-    if (std::shared_ptr<ShaderMan> shaderMan = sm.lock()) {
-        spire::CerealCore* ourCorePtr = dynamic_cast<spire::CerealCore*>(&core);
-        if (ourCorePtr == nullptr)
+    if (std::shared_ptr<ShaderMan> shaderMan = sm.lock())
+    {
+        auto ourCorePtr = dynamic_cast<spire::CerealCore*>(&core);
+        if (!ourCorePtr)
         {
-          std::cerr << "Unable to execute shader promise fulfillment. Bad cast." << std::endl;
+          logRendererError("Unable to execute shader promise fulfillment. Bad cast.");
           return;
         }
         spire::CerealCore& ourCore = *ourCorePtr;
@@ -391,8 +393,8 @@ void ShaderMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
 {
   if (mNewUnfulfilledAssets)
   {
-    std::cerr << "ShaderMan: Terminating garbage collection. Orphan assets that"
-              << " have yet to be associated with entity ID's would be GC'd" << std::endl;
+    logRendererError("ShaderMan: Terminating garbage collection. Orphan assets that"
+      " have yet to be associated with entity ID's would be GC'd");
     return;
   }
 
@@ -411,7 +413,7 @@ void ShaderMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
       // Find the asset name in mNameToGL and erase.
       mNameToGL.erase(mNameToGL.find(it->second));
 
-      std::cout << "Shader GC: " << it->second << std::endl;
+      RENDERER_LOG("Shader GC: {}", it->second);
 
       // Erase our iterator and move on. Ensure we delete the program.
       GLuint idToErase = it->first;
@@ -421,8 +423,8 @@ void ShaderMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
 
     if (it == mGLToName.end())
     {
-      std::cerr << "runGCAgainstVaidIDs: terminating early, validKeys contains "
-                << "elements not in Shader map." << std::endl;
+      logRendererError("runGCAgainstVaidIDs: terminating early, validKeys contains "
+                "elements not in Shader map.");
       break;
     }
 
@@ -431,7 +433,7 @@ void ShaderMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
     // component, this is not an error.
     if (it->first > id)
     {
-      std::cerr << "runGCAgainstVaidIDs: validKeys contains elements not in the Shader map." << std::endl;
+      logRendererError("runGCAgainstValidIDs: validKeys contains elements not in the Shader map.");
     }
 
     ++it;
@@ -443,7 +445,7 @@ void ShaderMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
     // Find the asset name in mNameToGL and erase.
     mNameToGL.erase(mNameToGL.find(it->second));
 
-    std::cout << "Shader GC: " << it->second << std::endl;
+    RENDERER_LOG("Shader GC: ", it->second);
 
     // Erase our iterator and move on. Ensure we delete the program.
     GLuint idToErase = it->first;
@@ -470,8 +472,7 @@ public:
         man->runGCAgainstVaidIDs(mValidKeys);
         mValidKeys.clear();
     } else {
-        std::cerr << "Unable to complete shader garbage collection. " <<
-                     "There is no ShaderMan." << std::endl;
+        logRendererError("Unable to complete shader garbage collection. There is no ShaderMan.");
 
     }
   }
