@@ -34,6 +34,7 @@ SET(Core_Algorithms_Legacy_FiniteElements_HEADERS
   BuildRHS/BuildFEVolRHS.h
   Mapping/BuildFEGridMapping.h
   Mapping/BuildNodeLink.h
+  BuildRHS/BuildFESurfRHS.h
 )
 
 # Sources of Core/Algorithms/Legacy/FiniteElements classes
@@ -45,7 +46,7 @@ SET(Core_Algorithms_Legacy_FiniteElements_SRCS
   BuildMatrix/BuildFEMatrix.cc
   BuildMatrix/BuildTDCSMatrix.cc
   BuildRHS/BuildFEVolRHS.cc
-  #BuildRHS/BuildFESurfRHS.cc
+  BuildRHS/BuildFESurfRHS.cc
 )
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_FiniteElements

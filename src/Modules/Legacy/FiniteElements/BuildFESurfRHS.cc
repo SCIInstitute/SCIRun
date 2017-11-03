@@ -25,8 +25,48 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation Modules/Legacy/FiniteElements/BuildFESurfRHS.cc
 
+#include <Modules/Legacy/FiniteElements/BuildFESurfRHS.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFESurfRHS.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+
+using namespace SCIRun::Modules::FiniteElements;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
+using namespace SCIRun;
+
+MODULE_INFO_DEF(BuildFESurfRHS, FiniteElements, SCIRun)
+
+BuildFESurfRHS::BuildFESurfRHS()
+  : Module(ModuleLookupInfo("BuildFESurfRHS", "FiniteElements", "SCIRun"),false)
+{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(BoundaryField);
+  INITIALIZE_PORT(RHSMatrix);
+}
+
+void BuildFESurfRHS::setStateDefaults()
+{
+
+}
+
+void BuildFESurfRHS::execute()
+{
+ auto input = getRequiredInput(InputField);
+ if (needToExecute())
+ {
+   auto output = algo().run(make_input((InputField, input)));
+   sendOutputFromAlgorithm(BoundaryField, output);
+   sendOutputFromAlgorithm(RHSMatrix, output);
+ }
+ 
+}
+
+/*
 // Include the algorithm
 #include <Core/Algorithms/FiniteElements/BuildRHS/BuildFESurfRHS.h>
 
@@ -90,3 +130,4 @@ BuildFESurfRHS::execute()
 }
 
 } // End namespace SCIRun
+*/
