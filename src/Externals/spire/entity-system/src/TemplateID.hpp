@@ -10,7 +10,7 @@
 
 namespace spire {
 
-class TemplateIDHelper
+class SCISHARE TemplateIDHelper
 {
 public:
 

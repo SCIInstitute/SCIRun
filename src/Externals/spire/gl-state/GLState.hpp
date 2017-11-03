@@ -16,7 +16,7 @@ namespace spire {
 // https://www.opengl.org/discussion_boards/showthread.php/163092-Passing-Multiple-Textures-from-OpenGL-to-GLSL-shader
 // You will
 
-class GLState
+class SCISHARE GLState
 {
 public:
 

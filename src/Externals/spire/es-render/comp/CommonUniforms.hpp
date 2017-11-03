@@ -11,7 +11,7 @@
 
 namespace ren {
 
-struct CommonUniforms
+struct SCISHARE CommonUniforms
 {
   // -- Data --
   static const int MaxNumCommonUniforms = 5;

@@ -17,7 +17,7 @@ namespace ren {
 
 class IBOGarbageCollector;
 
-class IBOMan
+class SCISHARE IBOMan
 {
 public:
   IBOMan();

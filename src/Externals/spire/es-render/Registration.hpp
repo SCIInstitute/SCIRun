@@ -7,8 +7,8 @@
 
 namespace ren {
 
-/// Registers all gameplay systems and components.
-void registerAll(spire::Acorn& core);
+/// Registers all systems and components.
+SCISHARE void registerAll(spire::Acorn& core);
 
 /// Functions split up due to file too big to compile in Windows/debug mode.
 void register1(spire::Acorn& core);

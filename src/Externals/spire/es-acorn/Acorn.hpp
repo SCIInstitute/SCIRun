@@ -10,7 +10,7 @@
 
 namespace spire {
 
-  class Acorn : public spire::CerealCore
+class SCISHARE Acorn : public spire::CerealCore
 {
 public:
   Acorn();

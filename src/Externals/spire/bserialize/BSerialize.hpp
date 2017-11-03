@@ -10,7 +10,7 @@
 
 namespace spire {
 
-class BSerialize
+class SCISHARE BSerialize
 {
 public:
   /// Use this constructor for either reading or writing.

@@ -17,7 +17,7 @@ namespace ren {
 
   class FBOGarbageCollector;
 
-  class FBOMan
+  class SCISHARE FBOMan
   {
   public:
     FBOMan();

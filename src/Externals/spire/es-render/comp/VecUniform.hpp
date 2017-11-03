@@ -9,7 +9,7 @@
 
 namespace ren {
 
-struct VecUniform
+struct SCISHARE VecUniform
 {
   // -- Data --
   static const int MaxUniformNameSize = 24;

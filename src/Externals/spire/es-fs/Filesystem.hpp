@@ -13,7 +13,7 @@ namespace spire {
 typedef std::function<void(const std::string& assetName, bool error,
                            size_t bytesRead, uint8_t* buffer)> FSCallback;
 
-class Filesystem
+class SCISHARE Filesystem
 {
 public:
   Filesystem()            {}

@@ -75,10 +75,10 @@ bool operator!=(const ShaderAttribute& a, const ShaderAttribute& b);
 int hasAttribute(const ShaderAttribute* array, size_t size, const std::string& name);
 
 /// Collects all shader attributes into a vector of ShaderAttribute.
-std::vector<ShaderAttribute> getProgramAttributes(GLuint program);
+SCISHARE std::vector<ShaderAttribute> getProgramAttributes(GLuint program);
 
 /// Sorts a vector of shader attributes alphabetically by 'nameInCode'.
-void sortAttributesAlphabetically(std::vector<ShaderAttribute>& attribs);
+SCISHARE void sortAttributesAlphabetically(std::vector<ShaderAttribute>& attribs);
 
 /// Binds all attributes in given ShaderAttribute array.
 /// Note: Be sure to set the normalize ShaderAttribute variable appropriately.
@@ -102,7 +102,7 @@ void unbindSubsetAttributes(const ShaderAttribute* superset, size_t supersetSize
                             const ShaderAttribute* subset, size_t subsetSize);
 
 /// Minimal structure based on the intersection between shader and VBO.
-struct ShaderAttributeApplied
+struct SCISHARE ShaderAttributeApplied
 {
   GLint       attribLoc;    ///< Attribute location from the shader.
   GLenum      baseType;     ///< Base OpenGL type of the attribute.
@@ -130,7 +130,7 @@ struct ShaderAttributeApplied
 ///         all components combined together.
 /// \note  *ONLY* the following attributes are used inside of super set (the
 ///         rest are ignored: nameInCode, sizeBytes, and normalize.
-std::tuple<size_t, size_t> buildPreappliedAttrib(
+SCISHARE std::tuple<size_t, size_t> buildPreappliedAttrib(
     const ShaderAttribute* superset, size_t supersetSize,
     const ShaderAttribute* subset, size_t subsetSize,
     ShaderAttributeApplied* out, size_t outMaxSize);
@@ -141,11 +141,11 @@ std::tuple<size_t, size_t> buildPreappliedAttrib(
 /// \param array  \p out from buildPreAppliedAttrib.
 /// \param size   First tuple parameter from buildPreAppliedAttrib.
 /// \param stride Second tuple parameter from buildPreAppliedAttrib.
-void bindPreappliedAttrib(const ShaderAttributeApplied* array, size_t size,
+SCISHARE void bindPreappliedAttrib(const ShaderAttributeApplied* array, size_t size,
                           size_t stride);
 
 /// Unbind all attributes bound in bindPreappliedAttrib.
-void unbindPreappliedAttrib(const ShaderAttributeApplied* array, size_t size);
+SCISHARE void unbindPreappliedAttrib(const ShaderAttributeApplied* array, size_t size);
 
 /// Generic structure for holding a shader uniform.
 struct SCISHARE ShaderUniform
@@ -162,7 +162,7 @@ bool operator==(const ShaderUniform& a, const ShaderUniform& b);
 bool operator!=(const ShaderUniform& a, const ShaderUniform& b);
 
 /// Collects all shader uniforms into a vector of ShaderUniform.
-std::vector<ShaderUniform> getProgramUniforms(GLuint program);
+SCISHARE std::vector<ShaderUniform> getProgramUniforms(GLuint program);
 
 } // namespace spire
 

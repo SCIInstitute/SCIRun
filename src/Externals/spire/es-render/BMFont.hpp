@@ -19,7 +19,7 @@ namespace ren {
 /// \note The texture names are stored in the page block.
 
 /// Loads a BMFont file from memory and stores relevant BMFont blocks.
-class BMFont
+class SCISHARE BMFont
 {
 public:
   BMFont();

@@ -8,7 +8,7 @@
 
 namespace ren {
 
-struct MatUniform
+struct SCISHARE MatUniform
 {
   // -- Data --
   static const int MaxUniformNameSize = 24;

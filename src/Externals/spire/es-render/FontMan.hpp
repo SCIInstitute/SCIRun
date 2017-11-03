@@ -18,7 +18,7 @@ class FontGarbageCollector;
 class FontPromiseVFFulfillment;
 
 ///
-class FontMan
+class SCISHARE FontMan
 {
 public:
   /// \param  numRetries  The number of retries we have to load the asset.

@@ -17,15 +17,15 @@ class ShaderGarbageCollector;
 class ShaderPromiseVFFulfillment;
 
 /// Basic shader manager.
-class ShaderMan
+class SCISHARE ShaderMan
 {
 public:
   /// \param  numRetries  The number of retries we have to load the asset.
   ///                     Zombie promises will remain present in the system
   ///                     and a load will be re-attempted again when
   ///                     serialized and deserialized.
-  ShaderMan(int numRetries = 2);
-  virtual ~ShaderMan();
+  explicit ShaderMan(int numRetries = 2);
+  ~ShaderMan();
 
   static void setShaderHeaderCode(const std::string& header);
 
