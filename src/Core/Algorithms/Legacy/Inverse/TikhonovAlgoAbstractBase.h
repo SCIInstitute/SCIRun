@@ -99,6 +99,10 @@ namespace Inverse {
     double computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl& algoImpl, const AlgorithmInput & input,  SCIRun::Core::Datatypes::DenseMatrixHandle& lambdamatrix, int& lambda_index ) const;
 
 		bool checkInputMatrixSizes( const AlgorithmInput & input ) const;
+
+	private:
+		static SCIRun::Core::Datatypes::DenseColumnMatrix InterpolateCurvatureWithSplines( SCIRun::Core::Datatypes::DenseMatrix& samplePoints);
+	// 	SCIRun::Core::Datatypes::DenseMatrix  createBspline(int numKnots, int basisSize);
 	};
 
 	}}}}
