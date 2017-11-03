@@ -15,7 +15,7 @@
 
 namespace spire {
 
-struct ShaderSource
+struct SCISHARE ShaderSource
 {
   /// \p source     Sources for the shader. Input directly into 'glShaderSource'.
   /// \p shaderType One of: GL_COMPUTE_SHADER, GL_VERTEX_SHADER,
@@ -35,7 +35,7 @@ struct ShaderSource
 /// important information regarding errors.
 GLuint loadShaderProgram(const std::list<ShaderSource>& shaders);
 
-struct ShaderAttribute
+struct SCISHARE ShaderAttribute
 {
   ShaderAttribute();
 
@@ -148,7 +148,7 @@ void bindPreappliedAttrib(const ShaderAttributeApplied* array, size_t size,
 void unbindPreappliedAttrib(const ShaderAttributeApplied* array, size_t size);
 
 /// Generic structure for holding a shader uniform.
-struct ShaderUniform
+struct SCISHARE ShaderUniform
 {
   ShaderUniform(const std::string& name, GLint s, GLenum t, GLint loc);
 

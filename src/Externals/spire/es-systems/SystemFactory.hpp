@@ -9,8 +9,7 @@
 
 namespace spire {
 
-/// System factory.
-class SystemFactory
+class SCISHARE SystemFactory
 {
   typedef std::shared_ptr<spire::BaseSystem> (*ClassFactoryFunPtr)();
 public:

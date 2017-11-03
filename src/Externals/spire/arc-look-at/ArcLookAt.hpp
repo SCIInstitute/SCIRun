@@ -55,7 +55,7 @@ namespace spire {
 /// AABB is in the view of the frustum (zooming only).
 /// All coordinates, unless otherwise specified, are in 2D screen space
 /// coordinates.
-class ArcLookAt
+class SCISHARE ArcLookAt
 {
 public:
   ArcLookAt();

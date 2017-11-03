@@ -27,7 +27,7 @@ uint64_t getESTypeID()
 /// for an example implementation. I cannot enforce the existence of template
 /// functions in a derived class, but this class is fairly useless without
 /// the ability to add components.
-class ESCoreBase
+class SCISHARE ESCoreBase
 {
 public:
   ESCoreBase();

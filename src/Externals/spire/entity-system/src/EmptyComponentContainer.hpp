@@ -7,7 +7,7 @@
 namespace spire {
 
 // Component base class, used to verify component types at run-time.
-class EmptyComponentContainer : public BaseComponentContainer
+class SCISHARE EmptyComponentContainer : public BaseComponentContainer
 {
 public:
   EmptyComponentContainer()           {}

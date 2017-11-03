@@ -15,15 +15,15 @@ namespace ren {
 
   struct Texture;
   /// Basic texture manager. Very similar to the shader manager.
-  class TextureMan
+  class SCISHARE TextureMan
   {
   public:
     /// \param  numRetries  The number of retries we have to load the asset.
     ///                     Zombie promises will remain present in the system
     ///                     and a load will be re-attempted again when
     ///                     serialized and deserialized.
-    TextureMan(int numRetries = 2);
-    virtual ~TextureMan();
+    explicit TextureMan(int numRetries = 2);
+    ~TextureMan();
 
     /// Loads texture onto the given entityID.
     /// \param  core        Core base.

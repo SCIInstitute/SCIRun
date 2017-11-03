@@ -20,7 +20,7 @@ namespace spire {
 
 
 // Class that supports basic type serialization with the tny library.
-class ComponentSerialize
+class SCISHARE ComponentSerialize
 {
 public:
 

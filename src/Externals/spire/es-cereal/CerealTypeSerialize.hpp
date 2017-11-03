@@ -16,59 +16,59 @@ namespace spire {
 namespace CST_detail
 {
   // Basic types stored in a dictionary (TNY_DICT).
-  bool inBool(Tny* root, const char* name, bool& b);
-  bool inInt8(Tny* root, const char* name, int8_t& c);
-  bool inUInt8(Tny* root, const char* name, uint8_t& c);
-  bool inInt32(Tny* root, const char* name, int32_t& v);
-  bool inUInt32(Tny* root, const char* name, uint32_t& v);
-  bool inInt64(Tny* root, const char* name, int64_t& v);
-  bool inUInt64(Tny* root, const char* name, uint64_t& v);
-  bool inFloat(Tny* root, const char* name, float& v);
-  bool inDouble(Tny* root, const char* name, double& v);
-  bool inString(Tny* root, const char* name, char* str, size_t maxSize);
-  bool inStringStd(Tny* root, const char* name, std::string& str);
-  bool inBinary(Tny* root, const char* name, void* data, size_t size);
-  bool inBinaryMalloc(Tny* root, const char* name, void** data);
+ SCISHARE bool inBool(Tny* root, const char* name, bool& b);
+ SCISHARE bool inInt8(Tny* root, const char* name, int8_t& c);
+ SCISHARE bool inUInt8(Tny* root, const char* name, uint8_t& c);
+ SCISHARE bool inInt32(Tny* root, const char* name, int32_t& v);
+ SCISHARE bool inUInt32(Tny* root, const char* name, uint32_t& v);
+ SCISHARE bool inInt64(Tny* root, const char* name, int64_t& v);
+ SCISHARE bool inUInt64(Tny* root, const char* name, uint64_t& v);
+ SCISHARE bool inFloat(Tny* root, const char* name, float& v);
+ SCISHARE bool inDouble(Tny* root, const char* name, double& v);
+ SCISHARE bool inString(Tny* root, const char* name, char* str, size_t maxSize);
+ SCISHARE bool inStringStd(Tny* root, const char* name, std::string& str);
+ SCISHARE bool inBinary(Tny* root, const char* name, void* data, size_t size);
+ SCISHARE bool inBinaryMalloc(Tny* root, const char* name, void** data);
 
-  Tny* outBool(Tny* root, const char* name, const bool& b);
-  Tny* outInt8(Tny* root, const char* name, const int8_t& c);
-  Tny* outUInt8(Tny* root, const char* name, const uint8_t& c);
-  Tny* outInt32(Tny* root, const char* name, const int32_t& v);
-  Tny* outUInt32(Tny* root, const char* name, const uint32_t& v);
-  Tny* outInt64(Tny* root, const char* name, const int64_t& v);
-  Tny* outUInt64(Tny* root, const char* name, const uint64_t& v);
-  Tny* outFloat(Tny* root, const char* name, const float& v);
-  Tny* outDouble(Tny* root, const char* name, const double& v);
-  Tny* outString(Tny* root, const char* name, const char* str);
-  Tny* outBinary(Tny* root, const char* name, const void* data, size_t size);
-  Tny* outBinaryMalloc(Tny* root, const char* name, const void* data, size_t size);
+  SCISHARE Tny* outBool(Tny* root, const char* name, const bool& b);
+  SCISHARE Tny* outInt8(Tny* root, const char* name, const int8_t& c);
+  SCISHARE Tny* outUInt8(Tny* root, const char* name, const uint8_t& c);
+  SCISHARE Tny* outInt32(Tny* root, const char* name, const int32_t& v);
+  SCISHARE Tny* outUInt32(Tny* root, const char* name, const uint32_t& v);
+  SCISHARE Tny* outInt64(Tny* root, const char* name, const int64_t& v);
+  SCISHARE Tny* outUInt64(Tny* root, const char* name, const uint64_t& v);
+  SCISHARE Tny* outFloat(Tny* root, const char* name, const float& v);
+  SCISHARE Tny* outDouble(Tny* root, const char* name, const double& v);
+  SCISHARE Tny* outString(Tny* root, const char* name, const char* str);
+  SCISHARE Tny* outBinary(Tny* root, const char* name, const void* data, size_t size);
+  SCISHARE Tny* outBinaryMalloc(Tny* root, const char* name, const void* data, size_t size);
 
   // Basic types stored in an array (TNY_ARRAY).
-  Tny* inBoolArray(Tny* root, bool& b);
-  Tny* inInt8Array(Tny* root, int8_t& c);
-  Tny* inUInt8Array(Tny* root, uint8_t& c);
-  Tny* inInt32Array(Tny* root, int32_t& v);
-  Tny* inUInt32Array(Tny* root, uint32_t& v);
-  Tny* inInt64Array(Tny* root, int64_t& v);
-  Tny* inUInt64Array(Tny* root, uint64_t& v);
-  Tny* inFloatArray(Tny* root, float& v);
-  Tny* inDoubleArray(Tny* root, double& v);
-  Tny* inStringArray(Tny* root, char* str, size_t maxSize);
-  Tny* inBinaryArray(Tny* root, void* data, size_t size);
-  Tny* inBinaryMallocArray(Tny* root, void** data);
+  SCISHARE Tny* inBoolArray(Tny* root, bool& b);
+  SCISHARE Tny* inInt8Array(Tny* root, int8_t& c);
+  SCISHARE Tny* inUInt8Array(Tny* root, uint8_t& c);
+  SCISHARE Tny* inInt32Array(Tny* root, int32_t& v);
+  SCISHARE Tny* inUInt32Array(Tny* root, uint32_t& v);
+  SCISHARE Tny* inInt64Array(Tny* root, int64_t& v);
+  SCISHARE Tny* inUInt64Array(Tny* root, uint64_t& v);
+  SCISHARE Tny* inFloatArray(Tny* root, float& v);
+  SCISHARE Tny* inDoubleArray(Tny* root, double& v);
+  SCISHARE Tny* inStringArray(Tny* root, char* str, size_t maxSize);
+  SCISHARE Tny* inBinaryArray(Tny* root, void* data, size_t size);
+  SCISHARE Tny* inBinaryMallocArray(Tny* root, void** data);
 
-  Tny* outBoolArray(Tny* root, const bool& b);
-  Tny* outInt8Array(Tny* root, const int8_t& c);
-  Tny* outUInt8Array(Tny* root, const uint8_t& c);
-  Tny* outInt32Array(Tny* root, const int32_t& v);
-  Tny* outUInt32Array(Tny* root, const uint32_t& v);
-  Tny* outInt64Array(Tny* root, const int64_t& v);
-  Tny* outUInt64Array(Tny* root, const uint64_t& v);
-  Tny* outFloatArray(Tny* root, const float& v);
-  Tny* outDoubleArray(Tny* root, const double& v);
-  Tny* outStringArray(Tny* root, const char* str);
-  Tny* outBinaryArray(Tny* root, const void* data, size_t size);
-  Tny* outBinaryMallocArray(Tny* root, const void* data, size_t size);
+  SCISHARE Tny* outBoolArray(Tny* root, const bool& b);
+  SCISHARE Tny* outInt8Array(Tny* root, const int8_t& c);
+  SCISHARE Tny* outUInt8Array(Tny* root, const uint8_t& c);
+  SCISHARE Tny* outInt32Array(Tny* root, const int32_t& v);
+  SCISHARE Tny* outUInt32Array(Tny* root, const uint32_t& v);
+  SCISHARE Tny* outInt64Array(Tny* root, const int64_t& v);
+  SCISHARE Tny* outUInt64Array(Tny* root, const uint64_t& v);
+  SCISHARE Tny* outFloatArray(Tny* root, const float& v);
+  SCISHARE Tny* outDoubleArray(Tny* root, const double& v);
+  SCISHARE Tny* outStringArray(Tny* root, const char* str);
+  SCISHARE Tny* outBinaryArray(Tny* root, const void* data, size_t size);
+  SCISHARE Tny* outBinaryMallocArray(Tny* root, const void* data, size_t size);
 }
 
 template <typename T>
