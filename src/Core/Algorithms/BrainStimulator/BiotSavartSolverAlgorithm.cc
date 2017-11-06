@@ -792,8 +792,6 @@ AlgorithmOutput BiotSavartSolverAlgorithm::run(const AlgorithmInput& input) cons
  
  auto oports = get(Parameters::OutType).toInt();
  
- std::cout << "O:" << oports << std::endl;
- 
  if (oports==3) //both are output ports
  {
   if(!run(mesh, coil, outdata1, 1))

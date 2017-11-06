@@ -67,11 +67,6 @@ void SolveBiotSavartContour::execute()
   if (oport_connected(VectorBField) || oport_connected(VectorAField))
   {
       setAlgoIntFromState(Parameters::OutType);
-      if (oport_connected(VectorBField) && oport_connected(VectorAField))
-      {
-       error(" This module only compute the first or the second module output depending if connected to another module. It does not compute both at the same time.");
-       return;
-      }
       
       if(oport_connected(VectorBField) && oport_connected(VectorAField))
       {
