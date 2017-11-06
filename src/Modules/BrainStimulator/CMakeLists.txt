@@ -32,6 +32,7 @@ SET(Modules_BrainStimulator_SRCS
   GenerateROIStatistics.cc
   SetupRHSforTDCSandTMS.cc
   SimulateForwardMagneticField.cc
+  SolveBiotSavartContour.cc
 )
 
 SET(Modules_BrainStimulator_HEADERS
@@ -40,6 +41,7 @@ SET(Modules_BrainStimulator_HEADERS
   GenerateROIStatistics.h
   SetupRHSforTDCSandTMS.h
   SimulateForwardMagneticField.h
+  SolveBiotSavartContour.h
   share.h
 )
 
