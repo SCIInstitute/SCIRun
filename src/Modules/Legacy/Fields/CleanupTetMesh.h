@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,36 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MODULES_LEGACY_FIELDS_CleanupTetMesh_H__
+#define MODULES_LEGACY_FIELDS_CleanupTetMesh_H__
 
-#ifndef CORE_ALGORITHMS_FIELDS_CLEANUP_REMOVEUNUSEDNODES_H
-#define CORE_ALGORITHMS_FIELDS_CLEANUP_REMOVEUNUSEDNODES_H 1
-
-// Datatypes that the algorithm uses
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-namespace Core  {
-namespace Algorithms {
-namespace Fields {
-   
-class SCISHARE RemoveUnusedNodesAlgo : public AlgorithmBase
-{
-  public:
-    /// Set defaults
-    RemoveUnusedNodesAlgo()
-    {}
-    static AlgorithmInputName InputField;
-    static AlgorithmInputName OutputField;
-    /// run the algorithm
-    bool run(FieldHandle input, FieldHandle& output) const;
-    
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const; 
-};
+  namespace Modules {
+    namespace Fields {
 
-}}}}
+	/// @class CleanupTetMesh
+	/// @brief Repairs tetrahedral meshes: (1) removing regenerate elements, (2) fixing its orientation  
+
+      class SCISHARE CleanupTetMesh : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        CleanupTetMesh();
+
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
+
+        INPUT_PORT(0, InputTetMesh, Field);
+        OUTPUT_PORT(0, OutputTetMesh, Field);
+
+	MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+      };
+
+    }
+  }
+}
+
 #endif
-
-
-
-

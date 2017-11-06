@@ -29,6 +29,7 @@
 SET(Algorithms_FiniteElements_Tests_SRCS
   BuildFEMatrixTests.cc
   BuildTDCSMatrixTests.cc
+  BuildFESurfRHSTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_FiniteElements_Tests

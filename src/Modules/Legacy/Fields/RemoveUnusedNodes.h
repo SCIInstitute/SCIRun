@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,36 +26,44 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///@file RemoveUnusedNodes.h
+///@brief This module ignores/removes all mesh nodes which are not part of any mesh element definition.
+///
+///@author
+/// ported by Moritz Dannhauer (10/24/2017) from SCIRun4
+///
+///@details
+///
 
-#ifndef CORE_ALGORITHMS_FIELDS_CLEANUP_REMOVEUNUSEDNODES_H
-#define CORE_ALGORITHMS_FIELDS_CLEANUP_REMOVEUNUSEDNODES_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#ifndef MODULES_LEGACY_FIELDS_RemoveUnusedNodes_H__
+#define MODULES_LEGACY_FIELDS_RemoveUnusedNodes_H__
+
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-namespace Core  {
-namespace Algorithms {
-namespace Fields {
-   
-class SCISHARE RemoveUnusedNodesAlgo : public AlgorithmBase
-{
-  public:
-    /// Set defaults
-    RemoveUnusedNodesAlgo()
-    {}
-    static AlgorithmInputName InputField;
-    static AlgorithmInputName OutputField;
-    /// run the algorithm
-    bool run(FieldHandle input, FieldHandle& output) const;
-    
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const; 
-};
+  namespace Modules {
+    namespace Fields {
 
-}}}}
+      class SCISHARE RemoveUnusedNodes : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        RemoveUnusedNodes();
+
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
+
+        INPUT_PORT(0, InputField, Field);
+        OUTPUT_PORT(0, OutputField, Field);
+
+        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+      };
+
+    }
+  }
+}
+
 #endif
-
-
-
-

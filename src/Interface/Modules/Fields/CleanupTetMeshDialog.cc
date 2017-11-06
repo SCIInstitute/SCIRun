@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,36 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Interface/Modules/Fields/CleanupTetMeshDialog.h>
+#include <Core/Algorithms/Legacy/Fields/Cleanup/CleanupTetMesh.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 
-#ifndef CORE_ALGORITHMS_FIELDS_CLEANUP_REMOVEUNUSEDNODES_H
-#define CORE_ALGORITHMS_FIELDS_CLEANUP_REMOVEUNUSEDNODES_H 1
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-// Datatypes that the algorithm uses
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
 
-namespace SCIRun {
-namespace Core  {
-namespace Algorithms {
-namespace Fields {
-   
-class SCISHARE RemoveUnusedNodesAlgo : public AlgorithmBase
+CleanupTetMeshDialog::CleanupTetMeshDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  public:
-    /// Set defaults
-    RemoveUnusedNodesAlgo()
-    {}
-    static AlgorithmInputName InputField;
-    static AlgorithmInputName OutputField;
-    /// run the algorithm
-    bool run(FieldHandle input, FieldHandle& output) const;
-    
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const; 
-};
-
-}}}}
-#endif
-
-
-
-
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  addCheckBoxManager(FixOrientationCheckBox_, Parameters::FixOrientationCheckBox);
+  addCheckBoxManager(RemoveDegenerateCheckBox_, Parameters::RemoveDegenerateCheckBox);
+}

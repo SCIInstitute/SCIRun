@@ -46,6 +46,7 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Math/MiscMath.h>
+#include <unsupported/Eigen/Splines>
 
 // SCIRun structural
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -185,7 +186,7 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
 	auto RegularizationMethod_gotten = getOption(Parameters::RegularizationMethod);
 	auto implOption = get(Parameters::TikhonovImplementation).toString();
-  
+
 	// check input MATRICES
 	checkInputMatrixSizes( input );
 
@@ -263,12 +264,12 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 	auto solution = algoImpl->computeInverseSolution(lambda, true);
 
 	// Set outputs
-	
+
 	output[InverseSolution] = boost::make_shared<DenseMatrix>(solution);
 	output[RegularizationParameter] = boost::make_shared<DenseMatrix>(1, 1, lambda);
   output[LambdaArray] = lambdamatrix;
   output[Lambda_Index]= boost::make_shared<DenseMatrix>(1, 1, lambda_index);
-  
+
 	return output;
 }
 
@@ -288,7 +289,7 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
 	// prealocate vector of lambdas and eta and rho
   std::vector<double> rho(nLambda, 0.0);
   std::vector<double> eta(nLambda, 0.0);
-  
+
   lambdamatrix.reset(new DenseMatrix(nLambda,3,0.0));
 
   auto lambdaArray = algoImpl.computeLambdaArray( lambdaMin, lambdaMax, nLambda );
@@ -344,6 +345,7 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
   // Find corner in L-curve
   lambda = FindCorner( rho, eta, lambdaArray, nLambda,lambda_index);
 
+	LOG_DEBUG("Lambda: {}", lambda);
   // TODO: update GUI
 
   return lambda;
@@ -352,48 +354,63 @@ double TikhonovAlgoAbstractBase::computeLcurve( const SCIRun::Core::Algorithms::
 ///// Find Corner, find the maximal curvature which corresponds to the L-curve corner
 double TikhonovAlgoAbstractBase::FindCorner( const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, const int nLambda, int& lambda_index )
 {
-  std::vector<double> deta(nLambda);
-  std::vector<double> ddeta(nLambda);
-  std::vector<double> drho(nLambda);
-  std::vector<double> ddrho(nLambda);
-  std::vector<double> lrho(nLambda);
-  std::vector<double> leta(nLambda);
-  DenseColumnMatrix kapa(nLambda);
 
-  double maxKapa = -1.0e10;
-  for (int i = 0; i < nLambda; i++)
-  {
-    lrho[i] = std::log10(rho[i]);
-    leta[i] = std::log10(eta[i]);
-    if(i>0)
-    {
-      deta[i] = (leta[i]-leta[i-1]) / (lambdaArray[i]-lambdaArray[i-1]); // compute first derivative
-      drho[i] = (lrho[i]-lrho[i-1]) / (lambdaArray[i]-lambdaArray[i-1]);
-    }
-    if(i>1)
-    {
-      ddeta[i] = (deta[i]-deta[i-1]) / (lambdaArray[i]-lambdaArray[i-1]); // compute second derivative from first
-      ddrho[i] = (drho[i]-drho[i-1]) / (lambdaArray[i]-lambdaArray[i-1]);
-    }
-  }
-  drho[0] = drho[1];
-  deta[0] = deta[1];
-  ddrho[0] = ddrho[2];
-  ddrho[1] = ddrho[2];
-  ddeta[0] = ddeta[2];
-  ddeta[1] = ddeta[2];
-  
-  lambda_index = 0;
-  for (int i = 0; i < nLambda; i++)
-  {
-    kapa[i] = std::abs((drho[i] * ddeta[i] - ddrho[i] * deta[i]) /  //compute curvature
-                       std::sqrt(std::pow((deta[i]*deta[i]+drho[i]*drho[i]), 3.0)));
-    if (kapa[i] > maxKapa) // find max curvature
-    {
-      maxKapa = kapa[i];
-      lambda_index = i;
-    }
-  }
+	DenseColumnMatrix lrho(nLambda);
+	DenseColumnMatrix leta(nLambda);
 
-  return lambdaArray[lambda_index];
+	for (int i = 0; i < nLambda; i++)
+	{
+		lrho[i] = std::log10(rho[i]);
+		leta[i] = std::log10(eta[i]);
+	}
+
+	// create L-curve
+	DenseMatrix Gamma( 2, lrho.nrows());
+	Gamma.row(0) = lrho;
+	Gamma.row(1) = leta;//DenseColumnMatrix::LinSpaced(lrho.nrows(),0,1);
+
+	// fit spline and compute curvature
+	DenseColumnMatrix kappa = TikhonovAlgoAbstractBase::InterpolateCurvatureWithSplines( Gamma );
+
+	// select maximum curvature
+	kappa.maxCoeff(&lambda_index);
+
+  	return lambdaArray[lambda_index];
+}
+
+SCIRun::Core::Datatypes::DenseColumnMatrix TikhonovAlgoAbstractBase::InterpolateCurvatureWithSplines( SCIRun::Core::Datatypes::DenseMatrix& samplePoints)
+{
+
+	// prealoate
+	int numSamples = samplePoints.ncols();
+	DenseColumnMatrix kappa = DenseMatrix::Zero( numSamples, 1 );
+
+	// typedefs needed for the spline
+	typedef Eigen::Spline<double,2> Spline2d;
+	typedef Spline2d::KnotVectorType KnotVectorType;
+	typedef Spline2d::ControlPointVectorType ControlPointVectorType;
+
+	// fit cubic spline to data points
+	ControlPointVectorType points = samplePoints;
+	const Spline2d spline = Eigen::SplineFitting<Spline2d>::Interpolate(points,3);
+
+	// determine position of samples along the spline curve
+	KnotVectorType chord_lengths; // knot parameters
+	Eigen::ChordLengths(points, chord_lengths);
+
+	for (int i=0; i < numSamples; i++)
+	{
+		// compute derivatives up to 2nd order
+		auto dpt = spline.derivatives( chord_lengths(i), 2);
+
+		// compute curvature as:
+		//			abs( ( ddrho*ddeta - ddrho*deta ) /  sqrt(  ( deta^2 + drho^2  )^2)  )
+		kappa[i] = std::abs( (dpt(0,2) * dpt(1,2) - dpt(0,2) * dpt(1,1)) /  //compute curvature
+	                       std::sqrt( std::pow(dpt(1,1)*dpt(1,1)+dpt(0,1)*dpt(0,1) , 3.0)) );
+
+
+	}
+
+	// return curvature for all points on the Lcurve
+	return kappa;
 }

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,36 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_CLEANUPTETMESH_H
+#define INTERFACE_MODULES_CLEANUPTETMESH_H
 
-#ifndef CORE_ALGORITHMS_FIELDS_CLEANUP_REMOVEUNUSEDNODES_H
-#define CORE_ALGORITHMS_FIELDS_CLEANUP_REMOVEUNUSEDNODES_H 1
-
-// Datatypes that the algorithm uses
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include "Interface/Modules/Fields/ui_CleanupTetMeshDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-namespace Core  {
-namespace Algorithms {
-namespace Fields {
-   
-class SCISHARE RemoveUnusedNodesAlgo : public AlgorithmBase
+namespace Gui {
+
+class SCISHARE CleanupTetMeshDialog : public ModuleDialogGeneric,
+  public Ui::CleanupTetMeshDialog
 {
-  public:
-    /// Set defaults
-    RemoveUnusedNodesAlgo()
-    {}
-    static AlgorithmInputName InputField;
-    static AlgorithmInputName OutputField;
-    /// run the algorithm
-    bool run(FieldHandle input, FieldHandle& output) const;
-    
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const; 
+	Q_OBJECT
+
+public:
+  CleanupTetMeshDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
 };
 
-}}}}
+}
+}
+
 #endif
-
-
-
-
