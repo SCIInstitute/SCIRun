@@ -6,6 +6,7 @@
 #include <entity-system/GenericSystem.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
 #include <es-cereal/CerealCore.hpp>
+#include <spire/scishare.h>
 
 namespace gen {
 

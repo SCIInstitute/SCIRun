@@ -2,6 +2,7 @@
 #define SPIRE_GL_PLATFORM_HPP
 
 #include <es-log/trace-log.h>
+#include <spire/scishare.h>
 
 namespace spire {
 
@@ -9,7 +10,7 @@ namespace spire {
 /// call GLEW init somewhere else) and it only calls glewInit(). It's best to
 /// call it on all platforms to maintain consistency. But calling it is *not*
 /// mandatory.
-void glPlatformInit();
+SCISHARE void glPlatformInit();
 
 } // namespace spire
 

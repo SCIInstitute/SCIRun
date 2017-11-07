@@ -11,15 +11,16 @@
 ///       types they really are.
 
 #include "ComponentSerialize.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 
 namespace heap_detail {
 
-bool checkTnyType(Tny* root, TnyType type);
-Tny* addSerializedComponent(Tny* cur, Tny* component, uint64_t entityID);
-Tny* writeSerializedHeap(ComponentSerialize& s, Tny* compArray);
-Tny* readSerializedHeap(ComponentSerialize& s, Tny* compArray,
+  SCISHARE bool checkTnyType(Tny* root, TnyType type);
+  SCISHARE Tny* addSerializedComponent(Tny* cur, Tny* component, uint64_t entityID);
+  SCISHARE Tny* writeSerializedHeap(ComponentSerialize& s, Tny* compArray);
+  SCISHARE Tny* readSerializedHeap(ComponentSerialize& s, Tny* compArray,
                         std::vector<ComponentSerialize::HeaderItem>& typeHeaders);
 }
 

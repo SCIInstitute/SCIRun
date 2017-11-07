@@ -26,14 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <es-log/trace-log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Logging/Log.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/DenseMatrix.h>
-
-#define SPDLOG_TRACE_ON
-#include <es-log/trace-log.h>
 
 // Needed to fix conflict between define in X11 header
 // and eigen enum member.

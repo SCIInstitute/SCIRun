@@ -145,7 +145,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   setInitialLightValues();
 
-  state->connectStateChanged(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
+  state->connectStateChanged([this]() { Q_EMIT newGeometryValueForwarder(); });
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
 
   std::string filesystemRoot = Application::Instance().executablePath().string();
@@ -1745,6 +1745,7 @@ void ViewSceneDialog::showEvent(QShowEvent* evt)
 
   if (pulledSavedVisibility_)
   {
+    ScopedWidgetSignalBlocker ssb(this);
     state_->setValue(Modules::Render::ViewScene::ShowViewer, true);
   }
 
@@ -1758,6 +1759,7 @@ void ViewSceneDialog::hideEvent(QHideEvent* evt)
 
   if (pulledSavedVisibility_)
   {
+    ScopedWidgetSignalBlocker ssb(this);
     state_->setValue(Modules::Render::ViewScene::ShowViewer, false);
   }
 

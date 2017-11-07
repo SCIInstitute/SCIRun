@@ -5,6 +5,7 @@
 #include <memory>
 #include <es-cereal/ComponentSerialize.hpp>
 #include "../FBOMan.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 

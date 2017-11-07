@@ -4,6 +4,7 @@
 #include <es-log/trace-log.h>
 #include <es-cereal/ComponentSerialize.hpp>
 #include <cereal-glm/CerealGLM.hpp>
+#include <spire/scishare.h>
 
 namespace gen {
 

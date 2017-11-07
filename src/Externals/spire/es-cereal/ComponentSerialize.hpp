@@ -4,6 +4,7 @@
 #include <es-log/trace-log.h>
 #include <entity-system/ESCoreBase.hpp>
 #include "CerealTypeSerialize.hpp"
+#include <spire/scishare.h>
 
 struct _Tny;
 typedef _Tny Tny;
@@ -19,7 +20,7 @@ namespace spire {
 
 
 // Class that supports basic type serialization with the tny library.
-class ComponentSerialize
+class SCISHARE ComponentSerialize
 {
 public:
 

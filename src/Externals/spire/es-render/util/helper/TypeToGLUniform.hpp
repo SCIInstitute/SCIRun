@@ -4,6 +4,7 @@
 #include <es-log/trace-log.h>
 #include <gl-platform/GLPlatform.hpp>
 #include "es-render/comp/VecUniform.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 

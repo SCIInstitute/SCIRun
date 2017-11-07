@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
 #include <tuple>
+#include <spire/scishare.h>
 
 namespace gen {
 
