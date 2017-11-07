@@ -28,6 +28,8 @@
 
 #undef SCISHARE
 
+#if 0 //TODO: problems with shared lib on windows. probably due to glew.
+
 #if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
 #ifdef BUILD_spire_ES
 #define SCISHARE __declspec(dllexport)
@@ -37,3 +39,7 @@
 #else
 #define SCISHARE
 #endif
+
+#endif // 0
+
+#define SCISHARE

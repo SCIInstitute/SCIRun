@@ -33,6 +33,11 @@ using namespace SCIRun::Core::Logging;
 
 SCIRun::Core::Logging::Logger2 RendererLog::logger_;
 
+const char* RendererLog::name() 
+{ 
+  return "renderer"; 
+}
+
 Logger2 RendererLog::get()
 {
   static bool first = true;

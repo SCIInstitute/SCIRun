@@ -60,6 +60,10 @@ namespace SCIRun
   }
 }
 
+#ifndef WIN32
 #define LOG_FUNCTION_SCOPE(LogType) SCIRun::Core::Logging::ScopedFunctionLogger<LogType> sfl ## __LINE__ (LOG_FUNC);
+#else
+#define LOG_FUNCTION_SCOPE(LogType)
+#endif
 
 #endif
