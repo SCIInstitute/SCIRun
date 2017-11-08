@@ -230,7 +230,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, OutType);
 
 				void SetIntegrationStep(double step)
 				{
-					assert(step >= 0.0d);
+					assert(step >= 0.0);
 					extstep = step;
 				}
 
