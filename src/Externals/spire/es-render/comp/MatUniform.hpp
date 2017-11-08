@@ -4,10 +4,11 @@
 #include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 
-struct MatUniform
+struct SCISHARE MatUniform
 {
   // -- Data --
   static const int MaxUniformNameSize = 24;

@@ -4,6 +4,7 @@
 #include <es-log/trace-log.h>
 #include <vector>
 #include "Filesystem.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 

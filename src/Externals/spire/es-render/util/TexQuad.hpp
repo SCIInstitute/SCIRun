@@ -6,6 +6,7 @@
 #include <es-cereal/CerealCore.hpp>
 #include "es-render/comp/VBO.hpp"
 #include "es-render/comp/IBO.hpp"
+#include <spire/scishare.h>
 
 /// Utilities related to constructing and attaching textured quads to entity
 /// ids.

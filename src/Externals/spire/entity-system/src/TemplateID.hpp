@@ -6,10 +6,11 @@
 
 #include <es-log/trace-log.h>
 #include <cstdint>
+#include <spire/scishare.h>
 
 namespace spire {
 
-class TemplateIDHelper
+class SCISHARE TemplateIDHelper
 {
 public:
 

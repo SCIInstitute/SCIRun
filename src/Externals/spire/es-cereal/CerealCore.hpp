@@ -9,13 +9,14 @@
 
 #include "CerealHeap.hpp"
 #include "ComponentSerialize.hpp"
+#include <spire/scishare.h>
 
 struct _Tny;
 typedef _Tny Tny;
 
 namespace spire {
 
-  class CerealCore : public spire::ESCoreBase
+class SCISHARE CerealCore : public spire::ESCoreBase
 {
 public:
   CerealCore();

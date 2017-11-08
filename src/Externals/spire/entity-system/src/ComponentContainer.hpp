@@ -8,6 +8,7 @@
 #include <sstream>
 #include "TemplateID.hpp"
 #include "BaseComponentContainer.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 

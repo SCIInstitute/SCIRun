@@ -30,14 +30,15 @@
 #define ES_TRACE_LOG_H
 
 #include <Core/Logging/LoggerFwd.h>
+#include <spire/scishare.h>
 
 namespace spire
 {
-  class RendererLog
+  class SCISHARE RendererLog
   {
   public:
     static SCIRun::Core::Logging::Logger2 get();
-    static const char* name() { return "renderer"; };
+    static const char* name();
   private:
     static SCIRun::Core::Logging::Logger2 logger_;
   };
@@ -46,8 +47,6 @@ namespace spire
 #define logRendererError(...) spire::RendererLog::get()->error(__VA_ARGS__)
 #define logRendererWarning(...) spire::RendererLog::get()->warn(__VA_ARGS__)
 #define logRendererInfo(...) spire::RendererLog::get()->info(__VA_ARGS__)
-
-//TODO: cmake controlled flag
 
 #ifdef RENDERER_TRACE_ON
   #define SPDLOG_TRACE_ON

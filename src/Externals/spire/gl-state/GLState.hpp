@@ -1,4 +1,3 @@
-
 #ifndef SPIRE_GL_STATE_H
 #define SPIRE_GL_STATE_H
 
@@ -8,6 +7,7 @@
 #include <cstddef>
 #include <tuple>
 #include <gl-platform/GLPlatform.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
 
@@ -16,7 +16,7 @@ namespace spire {
 // https://www.opengl.org/discussion_boards/showthread.php/163092-Passing-Multiple-Textures-from-OpenGL-to-GLSL-shader
 // You will
 
-class GLState
+class SCISHARE GLState
 {
 public:
 

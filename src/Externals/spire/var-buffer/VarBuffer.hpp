@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 #include <bserialize/BSerialize.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
 
@@ -13,7 +14,7 @@ namespace spire {
 /// layer over the BSerialize code. To read data from a buffer, simply wrap
 /// the buffer using BSerialize. There is no need to automatically extend
 /// the buffer size when reading.
-class VarBuffer final
+class SCISHARE VarBuffer final
 {
 public:
   /// Initialize an empty buffer.

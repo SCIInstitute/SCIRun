@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,44 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_LOGGING_SCOPEDFUNCTIONLOGGER_H
-#define CORE_LOGGING_SCOPEDFUNCTIONLOGGER_H
+#undef SCISHARE
 
-#include <Core/Logging/LoggerFwd.h>
+#if 0 //TODO: problems with shared lib on windows. probably due to glew.
 
-namespace SCIRun
-{
-  namespace Core
-  {
-    namespace Logging
-    {
-      template <class LogType>
-      struct ScopedFunctionLogger
-      {
-        explicit ScopedFunctionLogger(const char* functionName) :
-          logger_(spdlog::get(LogType::name())),
-          functionName_(functionName)
-        {
-          if (logger_)
-            logger_->trace("Entering function: {}", functionName_);
-        }
-        ~ScopedFunctionLogger()
-        {
-          if (logger_)
-            logger_->trace("Leaving function: {}", functionName_);
-        }
-      private:
-        Logger2 logger_;
-        const char* functionName_;
-      };
-    }
-  }
-}
-
-#ifndef WIN32
-#define LOG_FUNCTION_SCOPE(LogType) SCIRun::Core::Logging::ScopedFunctionLogger<LogType> sfl ## __LINE__ (LOG_FUNC);
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_spire_ES
+#define SCISHARE __declspec(dllexport)
 #else
-#define LOG_FUNCTION_SCOPE(LogType)
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif
 
-#endif
+#endif // 0
+
+#define SCISHARE

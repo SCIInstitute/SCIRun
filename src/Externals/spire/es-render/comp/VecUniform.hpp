@@ -5,10 +5,11 @@
 #include <cstring>
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 
-struct VecUniform
+struct SCISHARE VecUniform
 {
   // -- Data --
   static const int MaxUniformNameSize = 24;

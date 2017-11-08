@@ -9,8 +9,8 @@
 #include <es-systems/SystemCore.hpp>
 #include <gl-platform/GLPlatform.hpp>
 #include <es-acorn/Acorn.hpp>
-
 #include "BMFont.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 
@@ -18,7 +18,7 @@ class FontGarbageCollector;
 class FontPromiseVFFulfillment;
 
 ///
-class FontMan
+class SCISHARE FontMan
 {
 public:
   /// \param  numRetries  The number of retries we have to load the asset.

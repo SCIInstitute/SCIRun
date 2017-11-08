@@ -7,6 +7,7 @@
 #include <cstring>
 #include <string>
 #include <stdexcept>
+#include <spire/scishare.h>
 
 namespace spire {
 
