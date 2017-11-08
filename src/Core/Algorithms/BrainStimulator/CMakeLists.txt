@@ -33,6 +33,7 @@ SET(Algorithms_BrainStimulator_SRCS
   SetupRHSforTDCSandTMSAlgorithm.cc
   SimulateForwardMagneticFieldAlgorithm.cc
   BiotSavartSolverAlgorithm.cc
+  ModelGenericCoilAlgorithm.cc
 )
 
 SET(Algorithms_BrainStimulator_HEADERS
@@ -42,6 +43,7 @@ SET(Algorithms_BrainStimulator_HEADERS
   SetupRHSforTDCSandTMSAlgorithm.h
   SimulateForwardMagneticFieldAlgorithm.h
   BiotSavartSolverAlgorithm.h
+  ModelGenericCoilAlgorithm.h
   share.h
 )
 
