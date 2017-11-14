@@ -1,6 +1,7 @@
 #ifndef SPIRE_CEREALCORE_HPP
 #define SPIRE_CEREALCORE_HPP
 
+#include <es-log/trace-log.h>
 #include <set>
 #include <iostream>
 #include <stdexcept>
@@ -8,13 +9,14 @@
 
 #include "CerealHeap.hpp"
 #include "ComponentSerialize.hpp"
+#include <spire/scishare.h>
 
 struct _Tny;
 typedef _Tny Tny;
 
 namespace spire {
 
-  class CerealCore : public spire::ESCoreBase
+class SCISHARE CerealCore : public spire::ESCoreBase
 {
 public:
   CerealCore();
@@ -49,7 +51,7 @@ public:
   /// Serializes a single entity into CerealSerialize.
   /// The caller is responsible for calling Tny_free on the returned Tny*.
   Tny* serializeEntity(uint64_t entityID);
-  
+
   /// Serializes a Tny pointer as if it were an entity. Useful in constructing
   /// change sets. Output can be used in conjunction with
   /// deserializeComponentMerge. The caller is responsible for calling Tny_free
@@ -61,9 +63,9 @@ public:
   template <typename T>
   Tny* serializeValue(T& value, uint64_t entityID, int32_t componentIndex = -1)
   {
-    // Grab the CerealHeap based off of the 
+    // Grab the CerealHeap based off of the
     spire::BaseComponentContainer* cont = ensureComponentArrayExists<T, CerealHeap<T>>();
-    
+
     // Convert value into a TNY_DICT, then call the necessary function to
     // slap on a valid serialization header.
     CerealHeap<T>* heap = dynamic_cast<CerealHeap<T>*>(cont);
@@ -161,9 +163,9 @@ public:
   template <typename T>
   void disableComponentSerialization()
   {
-    // Grab the CerealHeap based off of the 
+    // Grab the CerealHeap based off of the
     spire::BaseComponentContainer* cont = ensureComponentArrayExists<T, CerealHeap<T>>();
-    
+
     CerealHeap<T>* heap = dynamic_cast<CerealHeap<T>*>(cont);
     heap->setSerializable(false);
   }
@@ -186,5 +188,4 @@ protected:
 
 } // namespace spire
 
-#endif 
-
+#endif

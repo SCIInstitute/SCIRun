@@ -1,7 +1,9 @@
 #ifndef SPIRE_RENDER_SYSTEMS_DEBUG_CLICKBOX2D_HPP
 #define SPIRE_RENDER_SYSTEMS_DEBUG_CLICKBOX2D_HPP
 
+#include <es-log/trace-log.h>
 #include <es-acorn/Acorn.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 
@@ -10,4 +12,4 @@ const char* getSystemName_DebugRenderClickBox2D();
 
 } // namespace ren
 
-#endif 
+#endif

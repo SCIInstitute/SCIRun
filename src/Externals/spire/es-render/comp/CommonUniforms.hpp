@@ -1,19 +1,21 @@
 #ifndef SPIRE_RENDER_COMPONENT_COMMON_UNIFORMS_HPP
 #define SPIRE_RENDER_COMPONENT_COMMON_UNIFORMS_HPP
 
+#include <es-log/trace-log.h>
 #include <gl-platform/GLPlatform.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
 
 #include <es-general/comp/StaticCamera.hpp>
 #include <es-general/comp/CameraSelect.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 
-struct CommonUniforms
+struct SCISHARE CommonUniforms
 {
   // -- Data --
   static const int MaxNumCommonUniforms = 5;
-  
+
   enum COMMON_UNIFORMS
   {
     OBJ_PROJECTION_INVERSE_VIEW_OBJECT,   // uProjIVObject  - Object -> World -> View -> Projection
@@ -71,4 +73,4 @@ struct CommonUniforms
 
 } // namespace ren
 
-#endif 
+#endif

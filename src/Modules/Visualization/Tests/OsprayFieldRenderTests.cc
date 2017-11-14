@@ -251,7 +251,7 @@ namespace osprayImpl
 
 TEST_P(OsprayFieldRenderTest, RenderLatVolWithOspray)
 {
-  Log::get() << INFO << "Start ShowField::execute" << std::endl;
+  //Log::get() << INFO << "Start ShowField::execute" << std::endl;
 
   for (int inc : {1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
   {
@@ -261,7 +261,7 @@ TEST_P(OsprayFieldRenderTest, RenderLatVolWithOspray)
   FAIL() << "todo";
 
 
-  Log::get() << INFO << "End ShowField::execute" << std::endl;
+  //Log::get() << INFO << "End ShowField::execute" << std::endl;
 }
 
 INSTANTIATE_TEST_CASE_P(

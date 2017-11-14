@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_VBOMAN_HPP
 #define SPIRE_RENDER_VBOMAN_HPP
 
+#include <es-log/trace-log.h>
 #include <set>
 #include <map>
 #include <gl-platform/GLPlatform.hpp>
@@ -10,17 +11,18 @@
 #include <es-acorn/Acorn.hpp>
 
 #include "comp/AssetPromise.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 
 class VBOGarbageCollector;
 
-class VBOMan
+class SCISHARE VBOMan
 {
 public:
   VBOMan();
   virtual ~VBOMan();
-  
+
   //struct MinimalAttribData
   //{
   //  MinimalAttribData(const std::tuple<std::string, size_t, bool>& data) :
@@ -113,4 +115,4 @@ private:
 
 } // namespace ren
 
-#endif 
+#endif

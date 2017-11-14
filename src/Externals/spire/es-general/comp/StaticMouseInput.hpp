@@ -1,8 +1,10 @@
 #ifndef SPIRE_ES_GENERAL_STATIC_MOUSE_INPUT_HPP
 #define SPIRE_ES_GENERAL_STATIC_MOUSE_INPUT_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
+#include <spire/scishare.h>
 
 namespace gen {
 
@@ -197,4 +199,4 @@ private:
 
 } // namespace ren
 
-#endif 
+#endif

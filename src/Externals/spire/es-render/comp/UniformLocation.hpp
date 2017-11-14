@@ -1,7 +1,9 @@
 #ifndef SPIRE_RENDER_COMPONENT_UNIFORMLOCATION_HPP
 #define SPIRE_RENDER_COMPONENT_UNIFORMLOCATION_HPP
 
+#include <es-log/trace-log.h>
 #include <es-cereal/ComponentSerialize.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 
@@ -23,6 +25,6 @@ struct UniformLocation
   }
 };
 
-} // namespace ren 
+} // namespace ren
 
-#endif 
+#endif

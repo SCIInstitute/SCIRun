@@ -1,6 +1,7 @@
 #ifndef SPIRE_ARC_BALL_H
 #define SPIRE_ARC_BALL_H
 
+#include <es-log/trace-log.h>
 #include <cstdint>
 
 #include <glm/glm.hpp>
@@ -8,6 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
 
@@ -22,7 +24,7 @@ namespace spire {
 /// matrix then all values are given in screen coordinates.
 /// Screen coordinates are (x \in [-1,1]) and (y \in [-1,1]) where (0,0) is the
 /// center of the screen.
-class ArcBall
+class SCISHARE ArcBall
 {
 public:
   /// \param center         Center of the arcball in TCS (screen coordinates if

@@ -34,7 +34,7 @@ using namespace Core::Algorithms;
 
 const int NUM_ALGORITHMS = 76;
 
-const int EXPECTED_RANGE = 5;   // Require updating these numbers every few modules
+const int EXPECTED_RANGE = 15;   // Require updating these numbers every few modules
 
 TEST(AlgorithmLayerTests, ListAllAlgorithms)
 {

@@ -1,9 +1,11 @@
 #ifndef SPIRE_RENDER_COMPONENT_STATIC_IBO_MAN_HPP
 #define SPIRE_RENDER_COMPONENT_STATIC_IBO_MAN_HPP
 
+#include <es-log/trace-log.h>
 #include <memory>
 #include <es-cereal/ComponentSerialize.hpp>
 #include "../IBOMan.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 
@@ -13,8 +15,8 @@ struct StaticIBOMan
     std::shared_ptr<IBOMan> instance_;
 
     // -- Functions --
-    StaticIBOMan() : instance_(std::shared_ptr<IBOMan>(new IBOMan)) {}
-    StaticIBOMan(IBOMan* s) : instance_(std::shared_ptr<IBOMan>(s)) {}
+    StaticIBOMan() : instance_(new IBOMan) {}
+    explicit StaticIBOMan(IBOMan* s) : instance_(s) {}
     static const char* getName() {return "ren:StaticIBOMan";}
 
     bool serialize(spire::ComponentSerialize& /* s */, uint64_t /* entityID */)
@@ -26,4 +28,4 @@ struct StaticIBOMan
 
 } // namespace ren
 
-#endif 
+#endif

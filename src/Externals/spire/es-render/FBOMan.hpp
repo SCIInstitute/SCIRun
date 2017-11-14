@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_FBOMAN_HPP
 #define SPIRE_RENDER_FBOMAN_HPP
 
+#include <es-log/trace-log.h>
 #include <set>
 #include <map>
 #include <stack>
@@ -9,14 +10,14 @@
 #include <entity-system/BaseSystem.hpp>
 #include <es-systems/SystemCore.hpp>
 #include <es-acorn/Acorn.hpp>
-
 #include "comp/AssetPromise.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 
   class FBOGarbageCollector;
 
-  class FBOMan
+  class SCISHARE FBOMan
   {
   public:
     FBOMan();
@@ -126,4 +127,4 @@ namespace ren {
 
 } // namespace ren
 
-#endif 
+#endif

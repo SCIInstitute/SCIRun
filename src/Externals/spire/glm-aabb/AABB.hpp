@@ -1,12 +1,14 @@
 #ifndef SPIRE_GLM_AABB_HPP
 #define SPIRE_GLM_AABB_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
 
 /// Standalone axis aligned bounding box implemented built on top of GLM.
-class AABB
+class SCISHARE AABB
 {
 public:
   /// Builds a null AABB.
@@ -104,6 +106,6 @@ private:
   glm::vec3 mMax;   ///< Maximum point.
 };
 
-} // namespace spire 
+} // namespace spire
 
-#endif 
+#endif

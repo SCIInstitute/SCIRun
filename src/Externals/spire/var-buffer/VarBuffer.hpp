@@ -1,10 +1,12 @@
 #ifndef SPIRE_VARBUFFER_HPP
 #define SPIRE_VARBUFFER_HPP
 
+#include <es-log/trace-log.h>
 #include <cstdint>
 #include <memory>
 #include <vector>
 #include <bserialize/BSerialize.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
 
@@ -12,7 +14,7 @@ namespace spire {
 /// layer over the BSerialize code. To read data from a buffer, simply wrap
 /// the buffer using BSerialize. There is no need to automatically extend
 /// the buffer size when reading.
-class VarBuffer final
+class SCISHARE VarBuffer final
 {
 public:
   /// Initialize an empty buffer.
@@ -20,7 +22,7 @@ public:
 
   // Preallocate the variable buffer to the preset size.
   explicit VarBuffer(uint32_t size);
-  
+
   /// \todo Add flag which will swap bytes when reading out of or into buffer.
 
   /// Writes \p numBytes of \p bytes.
@@ -62,7 +64,7 @@ private:
   static bool serializeUInt16(char* msg, int msgLen, int* offset_out, uint16_t in);
   static uint16_t deserializeUInt16(const char* msg, int msgLen, int* offset_out);
 
-  std::vector<char>   mBuffer;      ///< buffer
+  std::vector<char> mBuffer;      ///< buffer
   int     mBufferSize;  ///< Absolute size of mBuffer in bytes.
 
   std::unique_ptr<spire::BSerialize> mSerializer;
@@ -70,4 +72,4 @@ private:
 
 } // namespace spire
 
-#endif 
+#endif

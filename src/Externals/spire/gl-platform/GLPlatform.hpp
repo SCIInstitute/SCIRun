@@ -1,13 +1,16 @@
 #ifndef SPIRE_GL_PLATFORM_HPP
 #define SPIRE_GL_PLATFORM_HPP
 
+#include <es-log/trace-log.h>
+#include <spire/scishare.h>
+
 namespace spire {
 
 /// This function is only required on Windows (due to GLEW -- unless you alerady
 /// call GLEW init somewhere else) and it only calls glewInit(). It's best to
 /// call it on all platforms to maintain consistency. But calling it is *not*
 /// mandatory.
-void glPlatformInit();
+SCISHARE void glPlatformInit();
 
 } // namespace spire
 
@@ -52,7 +55,7 @@ void glPlatformInit();
     #if defined(USE_CORE_PROFILE_3) || defined(USE_CORE_PROFILE_4)
       // Currently mac places gl4 specific definitions in the gl3 header. Change
       // when they update this.
-      #include <OpenGL/gl3.h> 
+      #include <OpenGL/gl3.h>
     #endif
   #else
     #error Apple GLPlatform logic error
@@ -80,7 +83,7 @@ void glPlatformInit();
 #include <iostream>
 
 // Misc GL debugging.
-#define MAX_GL_ERROR_COUNT 10 
+#define MAX_GL_ERROR_COUNT 10
 #ifdef SPIRE_GLDEBUG_DEBUG
 # define GL(stmt)                                                      \
   do {                                                                 \
@@ -114,9 +117,9 @@ void glPlatformInit();
   } while(0)
 #else
 # define GL(stmt) do { stmt; } while(0)
-# define GL_CHECK() 
+# define GL_CHECK()
 #endif
 
 #endif // #ifndef GL_PLATFORM_NO_DEBUGGING
 
-#endif 
+#endif

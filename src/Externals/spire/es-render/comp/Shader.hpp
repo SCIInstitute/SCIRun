@@ -1,19 +1,21 @@
 #ifndef SPIRE_COMPONENT_RENDER_SHADER_HPP
 #define SPIRE_COMPONENT_RENDER_SHADER_HPP
 
+#include <es-log/trace-log.h>
 #include <gl-platform/GLPlatform.hpp>
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
 #include <es-cereal/CerealCore.hpp>
 #include "ShaderPromiseVF.hpp"
 #include "StaticShaderMan.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 
 struct Shader
 {
   // -- Data --
-  GLuint          glid;     // glid associated with shader program.
+  GLuint glid;     // glid associated with shader program.
 
   // -- Functions --
   static const char* getName() {return "ren:shader";}
@@ -32,14 +34,14 @@ struct Shader
       newPromise.requestInitiated = false;
       newPromise.setAssetName(assetName.c_str());
 
-      spire::CerealCore& core 
+      spire::CerealCore& core
           = dynamic_cast<spire::CerealCore&>(s.getCore());
       core.addComponent(entityID, newPromise);
 
       return false; // We do not want to add this shader component back into the components.
                     // Instead we rely on the shader promise we created above.
     } else {
-      spire::CerealCore& core 
+      spire::CerealCore& core
           = dynamic_cast<spire::CerealCore&>(s.getCore());
       std::weak_ptr<ShaderMan> sm = core.getStaticComponent<StaticShaderMan>()->instance_;
       if (std::shared_ptr<ShaderMan> shaderMan = sm.lock()) {
@@ -55,4 +57,4 @@ struct Shader
 
 } // namespace ren
 
-#endif 
+#endif

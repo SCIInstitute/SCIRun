@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <es-log/trace-log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Logging/Log.h>
@@ -58,6 +59,7 @@ ALGORITHM_PARAMETER_DEF(Render, ShowFieldStates);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true), asyncUpdates_(0)
 {
+  RENDERER_LOG_FUNCTION_SCOPE;
   INITIALIZE_PORT(GeneralGeom);
   INITIALIZE_PORT(ScreenshotDataRed);
   INITIALIZE_PORT(ScreenshotDataGreen);

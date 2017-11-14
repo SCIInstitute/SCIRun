@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ModelTMSCoilSpiral",
+    "namespace": "BrainStimulator",
+    "status": "converted based on code from Petar Petrov",
+    "description": "Creates geometry of a Spiral coil",
+    "header": "Modules/BrainStimulator/ModelTMSCoilSpiral.h"
+  },
+  "algorithm": {
+    "name": "ModelTMSCoilSpiralAlgorithm",
+    "namespace": "BrainStimulator",
+    "header": "Core/Algorithms/BrainStimulator/ModelGenericCoilAlgorithm.h"
+  },
+  "UI": {
+    "name": "ModelTMSCoilSpiralDialog",
+    "header": "Interface/Modules/BrainStimulator/ModelTMSCoilSpiralDialog.h"
+  }
+}

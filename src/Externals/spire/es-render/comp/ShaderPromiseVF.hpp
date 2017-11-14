@@ -1,8 +1,10 @@
 #ifndef SPIRE_RENDER_SHADERPROMISE_VF_HPP
 #define SPIRE_RENDER_SHADERPROMISE_VF_HPP
 
+#include <es-log/trace-log.h>
 #include <cstring>
 #include <es-cereal/ComponentSerialize.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 
@@ -36,7 +38,7 @@ struct ShaderPromiseVF
     }
     else
     {
-      std::cerr << "ShaderPromiseVF: Unable to set name: " << name << " Name must be " 
+      std::cerr << "ShaderPromiseVF: Unable to set name: " << name << " Name must be "
                 << (MaxAssetName - 1) << "characters or shorter." << std::endl;
     }
   }
@@ -55,6 +57,6 @@ struct ShaderPromiseVF
 
 };
 
-} // namespace ren 
+} // namespace ren
 
-#endif 
+#endif

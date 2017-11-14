@@ -1,8 +1,10 @@
 #ifndef SPIRE_ES_GENERAL_STATIC_GLOBAL_TIME_HPP
 #define SPIRE_ES_GENERAL_STATIC_GLOBAL_TIME_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
+#include <spire/scishare.h>
 
 namespace gen {
 
@@ -34,4 +36,4 @@ struct StaticGlobalTime
 
 } // namespace gen
 
-#endif 
+#endif

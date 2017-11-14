@@ -34,6 +34,7 @@ SET(Modules_Legacy_FiniteElements_HEADERS
   BuildFEMatrix.h
   BuildTDCSMatrix.h
   BuildFEVolRHS.h
+  BuildFESurfRHS.h 
 )
 
 SET(Modules_Legacy_FiniteElements_SRCS
@@ -44,7 +45,7 @@ SET(Modules_Legacy_FiniteElements_SRCS
   #BuildFEGridMappingByDomain.cc
   BuildFEMatrix.cc
   BuildTDCSMatrix.cc
-  #BuildFESurfRHS.cc
+  BuildFESurfRHS.cc
   BuildFEVolRHS.cc
 )
     

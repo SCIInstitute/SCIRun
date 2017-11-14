@@ -1,9 +1,11 @@
 #ifndef SPIRE_RENDER_COMPONENT_IBO_HPP
 #define SPIRE_RENDER_COMPONENT_IBO_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 #include <gl-platform/GLPlatform.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 
@@ -35,4 +37,4 @@ struct IBO
 
 } // namespace ren
 
-#endif 
+#endif

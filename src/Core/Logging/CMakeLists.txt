@@ -40,6 +40,7 @@ SET(Core_Logging_HEADERS
   LoggerFwd.h
   ScopedTimeRemarker.h
   ApplicationHelper.h
+  ScopedFunctionLogger.h
   share.h
 )
 

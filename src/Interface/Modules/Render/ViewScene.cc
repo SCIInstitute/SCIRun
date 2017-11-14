@@ -26,6 +26,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
+#include <es-log/trace-log.h>
 #include <gl-platform/GLPlatform.hpp>
 
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
@@ -144,7 +145,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   setInitialLightValues();
 
-  state->connectStateChanged(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
+  state->connectStateChanged([this]() { Q_EMIT newGeometryValueForwarder(); });
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
 
   std::string filesystemRoot = Application::Instance().executablePath().string();
@@ -448,6 +449,7 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 
 void ViewSceneDialog::newGeometryValue()
 {
+  RENDERER_LOG_FUNCTION_SCOPE;
   Guard lock(Modules::Render::ViewScene::mutex_.get());
 
   auto spire = mSpire.lock();
@@ -1743,6 +1745,7 @@ void ViewSceneDialog::showEvent(QShowEvent* evt)
 
   if (pulledSavedVisibility_)
   {
+    ScopedWidgetSignalBlocker ssb(this);
     state_->setValue(Modules::Render::ViewScene::ShowViewer, true);
   }
 
@@ -1756,6 +1759,7 @@ void ViewSceneDialog::hideEvent(QHideEvent* evt)
 
   if (pulledSavedVisibility_)
   {
+    ScopedWidgetSignalBlocker ssb(this);
     state_->setValue(Modules::Render::ViewScene::ShowViewer, false);
   }
 

@@ -1,9 +1,10 @@
 #ifndef SPIRE_ES_RENDER_UTIL_CAMERA_HPP
 #define SPIRE_ES_RENDER_UTIL_CAMERA_HPP
 
+#include <es-log/trace-log.h>
 #include <es-cereal/CerealCore.hpp>
-
 #include <es-general/comp/CameraSelect.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 
@@ -16,6 +17,6 @@ namespace ren {
 void selectCamera(spire::CerealCore& core, uint64_t entityID,
                   gen::CameraSelect::Selection sel, bool newComponent = false);
 
-} // namespace ren 
+} // namespace ren
 
-#endif 
+#endif

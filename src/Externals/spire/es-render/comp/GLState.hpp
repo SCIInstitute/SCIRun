@@ -1,15 +1,17 @@
 #ifndef SPIRE_RENDER_COMPONENTS_GLSTATE_HPP
 #define SPIRE_RENDER_COMPONENTS_GLSTATE_HPP
 
+#include <es-log/trace-log.h>
 #include <gl-state/GLState.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 
 struct GLState
 {
   // -- Data --
-  spire::GLState state;  
+  spire::GLState state;
 
   // -- Functions --
 
@@ -27,4 +29,4 @@ struct GLState
 
 } // namespace ren
 
-#endif 
+#endif

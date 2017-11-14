@@ -44,10 +44,12 @@ namespace Gui {
     GuiLog() : Log2("ui") {}
   };
 
+  #define guiLog GuiLog::Instance().get()
+
   template <class... T>
   void guiLogDebug(const char* fmt, T&&... args)
   {
-    GuiLog::Instance().get()->debug(fmt, args...);
+    guiLog->debug(fmt, args...);
   }
 
   class GuiLogger : boost::noncopyable

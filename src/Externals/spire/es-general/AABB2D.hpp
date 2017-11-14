@@ -1,7 +1,9 @@
 #ifndef SPIRE_ES_GENERAL_COMP_AABB2D_HPP
 #define SPIRE_ES_GENERAL_COMP_AABB2D_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
+#include <spire/scishare.h>
 
 namespace gen {
 
@@ -86,4 +88,3 @@ inline bool aabb2DTestOverlap(const AABB2D& a, const AABB2D& b)
 } // namespace gen
 
 #endif
-
