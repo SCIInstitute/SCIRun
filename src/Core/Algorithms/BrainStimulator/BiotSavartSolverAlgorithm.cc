@@ -700,7 +700,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, OutType);
 				}
 		};
 	
-bool BiotSavartSolverAlgorithm::run(FieldHandle mesh, FieldHandle coil, Datatypes::MatrixHandle &outdata, int outtype) const
+bool BiotSavartSolverAlgorithm::run(FieldHandle mesh, FieldHandle coil, MatrixHandle &outdata, int outtype) const
 {
   if (!mesh)
   {
