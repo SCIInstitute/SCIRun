@@ -268,6 +268,8 @@ private:
   QString name_;
   class ModuleDialogGeneric* dialog_;
   QDockWidget* dockable_;
+  bool firstTimeShown_{ true };
+  static QList<QPoint> positions_;
   void makeOptionsDialog();
   int buildDisplay(ModuleWidgetDisplayBase* display, const QString& name);
   void setupDisplayWidgets(ModuleWidgetDisplayBase* display, const QString& name);
