@@ -409,18 +409,11 @@ bool Module::executeWithSignals() NOEXCEPT
   catch (Core::ExceptionBase& e)
   {
     /// @todo: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
-    //if (Log::get().verbose())
+    if (LogSettings::Instance().verbose())
     {
       std::ostringstream ostr;
-      ostr << "Caught exception: " << e.typeName() << std::endl << "Message: " << e.what() << std::endl;
+      ostr << "Caught exception: " << e.typeName() << std::endl << "Message: " << e.what() << "\n" << boost::diagnostic_information(e) << std::endl;
       error(ostr.str());
-    }
-
-    //if (Log::get().verbose())
-    {
-      std::ostringstream ostrExtra;
-      ostrExtra << boost::diagnostic_information(e) << std::endl;
-      error(ostrExtra.str());
     }
   }
   catch (const std::exception& e)
@@ -954,7 +947,8 @@ OutputPortsCachedCheckerImpl::OutputPortsCachedCheckerImpl(const Module& module)
 
 bool OutputPortsCachedCheckerImpl::outputPortsCached() const
 {
-  module_.outputPorts();
+  std::cout << "hello is this called?" << std::endl;
+  //module_.outputPorts();
   return true;
   //TODO: need a way to filter optional input ports
   /*
@@ -972,7 +966,7 @@ DynamicReexecutionStrategyFactory::DynamicReexecutionStrategyFactory(const boost
 
 ModuleReexecutionStrategyHandle DynamicReexecutionStrategyFactory::create(const Module& module) const
 {
-  if (reexecuteMode_ && ((*reexecuteMode_) == "always"))
+  if (reexecuteMode_ && *reexecuteMode_ == "always")
   {
     LOG_DEBUG("Using Always reexecute mode for module execution.");
     return boost::make_shared<AlwaysReexecuteStrategy>();

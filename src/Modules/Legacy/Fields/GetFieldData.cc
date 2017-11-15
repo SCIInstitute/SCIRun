@@ -61,7 +61,7 @@ void GetFieldData::execute()
   bool need_complex_matrix_data = oport_connected(OutputComplexMatrix);
 
   //TODO: need to integrate "output port connection status changed" into needToExecute()
-  if (needToExecute() || need_nrrd_data)
+  if (needToExecute())
   {
     algo().set(Parameters::CalcMatrix, need_matrix_data);
     algo().set(Parameters::CalcNrrd, need_nrrd_data);

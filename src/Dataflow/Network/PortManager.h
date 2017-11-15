@@ -66,6 +66,7 @@ public:
   bool hasPort(const PortId& id) const;
   void set_module(ModuleInterface* mod) { module_ = mod; }
   std::vector<T> view() const;
+  bool hasConnectionCountChanged() const;
 private:
   int checkDynamicPortInvariant(const std::string& name);
   void throwForPortNotFound(const PortId& id) const;
@@ -78,13 +79,14 @@ private:
   PortMap ports_;
   DynamicMap isDynamic_;
   ModuleInterface* module_;
+  mutable bool numConnectionsChangedFlag_;
 };
 
 struct SCISHARE PortOutOfBoundsException : virtual Core::ExceptionBase {};
 
 template<class T>
 PortManager<T>::PortManager() :
-  module_(nullptr)
+  module_(nullptr), numConnectionsChangedFlag_(false)
 {
 }
 
@@ -283,6 +285,14 @@ template <class T>
 bool PortManager<T>::hasPort(const PortId& id) const
 {
   return ports_.find(id) != ports_.end();
+}
+
+template <class T>
+bool PortManager<T>::hasConnectionCountChanged() const
+{
+  auto ret = numConnectionsChangedFlag_;
+  numConnectionsChangedFlag_ = false;
+  return ret;
 }
 
 }}}
