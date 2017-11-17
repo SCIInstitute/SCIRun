@@ -44,7 +44,7 @@ bool LogSettings::verbose() const
 void LogSettings::setVerbose(bool v)
 {
   verbose_ = v;
-  spdlog::set_level(v ? spdlog::level::debug : spdlog::level::info);
+  spdlog::set_level(v ? spdlog::level::debug : spdlog::level::warn);
 }
 
   //          static const std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} %c [%p] %m%n");
@@ -123,7 +123,7 @@ void Log2::setVerbose(bool v)
 {
   verbose_ = v;
   if (logger_)
-    logger_->set_level(v ? spdlog::level::debug : spdlog::level::info);
+    logger_->set_level(v ? spdlog::level::debug : spdlog::level::warn);
 }
 
 GeneralLog::GeneralLog() : Log2("root")
@@ -132,6 +132,11 @@ GeneralLog::GeneralLog() : Log2("root")
   auto rotating = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
     (LogSettings::Instance().logDirectory() / "scirun5_root_v2.log").string(), 1024*1024, 3);
   addSink(rotating);
+}
+
+ModuleLog::ModuleLog() : Log2("module")
+{
+  addColorConsoleSink();
 }
 
 CORE_SINGLETON_IMPLEMENTATION(ModuleLog)
