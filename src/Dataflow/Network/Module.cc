@@ -926,6 +926,7 @@ InputsChangedCheckerImpl::InputsChangedCheckerImpl(const Module& module) : modul
 bool InputsChangedCheckerImpl::inputsChanged() const
 {
   auto ret = module_.inputsChanged();
+  //std::cout << __FUNCTION__ << " returning " << ret << std::endl;
   //Log::get() << DEBUG_LOG << module_.get_id() << " InputsChangedCheckerImpl returns " << ret << std::endl;
   return ret;
 }
@@ -937,6 +938,7 @@ StateChangedCheckerImpl::StateChangedCheckerImpl(const Module& module) : module_
 bool StateChangedCheckerImpl::newStatePresent() const
 {
   auto ret = module_.newStatePresent();
+  //std::cout << __FUNCTION__ << " returning " << ret << std::endl;
   //Log::get() << DEBUG_LOG << module_.get_id() << " StateChangedCheckerImpl returns " << ret << std::endl;
   return ret;
 }
@@ -947,9 +949,16 @@ OutputPortsCachedCheckerImpl::OutputPortsCachedCheckerImpl(const Module& module)
 
 bool OutputPortsCachedCheckerImpl::outputPortsCached() const
 {
-  std::cout << "hello is this called?" << std::endl;
-  //module_.outputPorts();
-  return true;
+  auto value = true;
+  for (const auto& output : module_.outputPorts())
+  {
+    if (output->hasConnectionCountIncreased())
+      value = false;
+  }
+  //std::cout << __FUNCTION__ << " returning " << value << std::endl;
+  return value;
+
+
   //TODO: need a way to filter optional input ports
   /*
   auto outputs = module_.outputPorts();

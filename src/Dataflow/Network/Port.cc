@@ -42,7 +42,8 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Logging;
 
 Port::Port(ModuleInterface* module, const ConstructionParams& params)
-  : module_(module), index_(0), id_(params.id_), typeName_(params.type_name), portName_(params.port_name), colorName_(PortColorLookup::toColor(params.type_name))
+  : module_(module), index_(0), id_(params.id_), typeName_(params.type_name), portName_(params.port_name), colorName_(PortColorLookup::toColor(params.type_name)),
+  connectionCountIncreasedFlag_(false)
 {
   ENSURE_NOT_NULL(module_, "port cannot have null module");
   if (typeName_.empty() || portName_.empty() || colorName_.empty())
@@ -57,6 +58,14 @@ Port::~Port()
 void Port::attach(Connection* conn)
 {
   connections_.push_back(conn);
+  connectionCountIncreasedFlag_ = true;
+}
+
+bool Port::hasConnectionCountIncreased() const
+{
+  auto val = connectionCountIncreasedFlag_;
+  connectionCountIncreasedFlag_ = false;
+  return val;
 }
 
 void Port::detach(Connection* conn)
