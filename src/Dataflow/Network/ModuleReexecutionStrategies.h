@@ -29,21 +29,8 @@
 #ifndef DATAFLOW_NETWORK_MODULEREEXECUTIONSTRATEGIES_H
 #define DATAFLOW_NETWORK_MODULEREEXECUTIONSTRATEGIES_H
 
-#include <boost/noncopyable.hpp>
-#include <boost/static_assert.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/atomic.hpp>
-#include <atomic>
-#include <vector>
-#include <Core/Logging/LoggerInterface.h>
-#include <Core/Datatypes/DatatypeFwd.h>
-// ReSharper disable once CppUnusedIncludeDirective
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Algorithms/Base/AlgorithmFwd.h>
-#include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ModuleInterface.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
-#include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/PortManager.h>
 #include <Dataflow/Network/share.h>
 
@@ -54,7 +41,7 @@ namespace Networks {
   class SCISHARE AlwaysReexecuteStrategy : public ModuleReexecutionStrategy
   {
   public:
-    virtual bool needToExecute() const override { return true; }
+    bool needToExecute() const override { return true; }
   };
 
   class SCISHARE InputsChangedChecker

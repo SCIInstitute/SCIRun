@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 #include <Modules/BrainStimulator/SolveBiotSavart.h>
 #include <iostream>
 #include <Core/Datatypes/String.h>
@@ -44,18 +44,18 @@ using namespace SCIRun::Dataflow::Networks;
 
 MODULE_INFO_DEF(SolveBiotSavart, BrainStimulator, SCIRun)
 
-SolveBiotSavart::SolveBiotSavart() : Module(ModuleLookupInfo("SolveBiotSavart", "BrainStimulator", "SCIRun"),false)
+SolveBiotSavart::SolveBiotSavart() : Module(ModuleLookupInfo("SolveBiotSavart", "BrainStimulator", "SCIRun"), false)
 {
- INITIALIZE_PORT(Mesh);
- INITIALIZE_PORT(Coil);
- INITIALIZE_PORT(VectorBField);
- INITIALIZE_PORT(VectorAField);
+  INITIALIZE_PORT(Mesh);
+  INITIALIZE_PORT(Coil);
+  INITIALIZE_PORT(VectorBField);
+  INITIALIZE_PORT(VectorAField);
 }
 
 void SolveBiotSavart::setStateDefaults()
 {
   auto state = get_state();
-  setStateIntFromAlgo(Parameters::OutType); 
+  setStateIntFromAlgo(Parameters::OutType);
 }
 
 void SolveBiotSavart::execute()
@@ -66,34 +66,35 @@ void SolveBiotSavart::execute()
 
   if (oport_connected(VectorBField) || oport_connected(VectorAField))
   {
-      setAlgoIntFromState(Parameters::OutType);
-      
-      if(oport_connected(VectorBField) && oport_connected(VectorAField))
-      {
-	 algo().set(Parameters::OutType, 3);
-      } else
-      {
-       if (oport_connected(VectorBField))
-	 algo().set(Parameters::OutType, 1);
-       
-       if (oport_connected(VectorAField)) 
-         algo().set(Parameters::OutType, 2);
+    setAlgoIntFromState(Parameters::OutType);
 
-      }
-   }
-   
- if (needToExecute())  //newStatePresent
- {  
-   auto input = make_input((Mesh, mesh)(Coil, coil));
-   
-   if ((oport_connected(VectorBField) || oport_connected(VectorAField)))
-      output = algo().run(input);  
-   
-   if(oport_connected(VectorBField))
-        sendOutputFromAlgorithm(VectorBField, output);
-   
-   if(oport_connected(VectorAField))
-        sendOutputFromAlgorithm(VectorAField, output);
- }
+    if (oport_connected(VectorBField) && oport_connected(VectorAField))
+    {
+      algo().set(Parameters::OutType, 3);
+    }
+    else
+    {
+      if (oport_connected(VectorBField))
+        algo().set(Parameters::OutType, 1);
+
+      if (oport_connected(VectorAField))
+        algo().set(Parameters::OutType, 2);
+
+    }
+  }
+
+  if (needToExecute())  //newStatePresent
+  {
+    auto input = make_input((Mesh, mesh)(Coil, coil));
+
+    if ((oport_connected(VectorBField) || oport_connected(VectorAField)))
+      output = algo().run(input);
+
+    if (oport_connected(VectorBField))
+      sendOutputFromAlgorithm(VectorBField, output);
+
+    if (oport_connected(VectorAField))
+      sendOutputFromAlgorithm(VectorAField, output);
+  }
 
 }

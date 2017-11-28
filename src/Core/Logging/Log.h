@@ -97,7 +97,7 @@ namespace SCIRun
       {
         CORE_SINGLETON(ModuleLog)
       public:
-        ModuleLog() : Log2("module") { addColorConsoleSink(); }
+        ModuleLog();
       };
 
       class SCISHARE GeneralLog final : public Log2
