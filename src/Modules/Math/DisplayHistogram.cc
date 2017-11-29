@@ -21,37 +21,27 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#include <Modules/Math/ComputePCA.h>
-#include <Core/Algorithms/Math/ComputePCA.h>
+#include <Modules/Math/DisplayHistogram.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
+MODULE_INFO_DEF(DisplayHistogram, Math, SCIRun)
 
-ComputePCA::ComputePCA() : Module(ModuleLookupInfo("ComputePCA", "Math", "SCIRun"),false)
+DisplayHistogram::DisplayHistogram() : Module(staticInfo_)
 {
-    INITIALIZE_PORT(InputMatrix);
-    INITIALIZE_PORT(LeftPrincipalMatrix);
-    INITIALIZE_PORT(PrincipalValues);
-    INITIALIZE_PORT(RightPrincipalMatrix);
+  INITIALIZE_PORT(InputMatrix);
 }
 
-void ComputePCA::execute()
+void DisplayHistogram::execute()
 {
-    auto input_matrix = getRequiredInput(InputMatrix);
+  auto input_matrix = getRequiredInput(InputMatrix);
 
-    if(needToExecute())
-    {        
-        auto output = algo().run(withInputData((InputMatrix,input_matrix)));
+  if (needToExecute())
+  {        
 
-        sendOutputFromAlgorithm(LeftPrincipalMatrix, output);
-        sendOutputFromAlgorithm(PrincipalValues, output);
-        sendOutputFromAlgorithm(RightPrincipalMatrix, output);
-
-    }
+  }
 }

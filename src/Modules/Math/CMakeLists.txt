@@ -48,6 +48,7 @@ SET(Modules_Math_SRCS
   ConvertRealToComplexMatrix.cc
   ConvertComplexToRealMatrix.cc
   BooleanCompare.cc
+  DisplayHistogram.cc
 )
 
 SET(Modules_Math_HEADERS
@@ -73,6 +74,7 @@ SET(Modules_Math_HEADERS
   ConvertRealToComplexMatrix.h
   ConvertComplexToRealMatrix.h
   BooleanCompare.h
+  DisplayHistogram.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Math

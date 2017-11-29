@@ -214,7 +214,7 @@ public:
 
       if (baseComponents[i]->getUpperSequence() < lowestUpperSequence)
       {
-        leadingComponent = i;
+        leadingComponent = static_cast<int>(i);
         lowestUpperSequence = baseComponents[i]->getUpperSequence();
       }
     }

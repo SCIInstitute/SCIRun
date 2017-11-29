@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "DisplayHistogram",
+    "namespace": "Math",
+    "status": "New",
+    "description": "...",
+    "header": "Modules/Math/DisplayHistogram.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "DisplayHistogramDialog",
+    "header": "Interface/Modules/Math/DisplayHistogramDialog.h"
+  }
+}
