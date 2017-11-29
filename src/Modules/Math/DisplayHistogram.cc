@@ -23,11 +23,13 @@
 
 #include <Modules/Math/DisplayHistogram.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
 
 MODULE_INFO_DEF(DisplayHistogram, Math, SCIRun)
 
@@ -41,7 +43,16 @@ void DisplayHistogram::execute()
   auto input_matrix = getRequiredInput(InputMatrix);
 
   if (needToExecute())
-  {        
-
+  { 
+    if (input_matrix->ncols() == 0)
+    {
+      THROW_INVALID_ARGUMENT("Empty matrix input.");
+    }
+    auto dense = castMatrix::toDense(input_matrix);
+    std::vector<double> data(dense->nrows());
+    auto col0 = dense->col(0);
+    for (auto i = 0; i < dense->nrows(); ++i)
+      data[i] = col0[i];
+    get_state()->setTransientValue(Variables::InputMatrix, data);
   }
 }

@@ -24,7 +24,7 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
 #ifndef INTERFACE_MODULES_MATH_DISPLAYHISTOGRAM_H
 #define INTERFACE_MODULES_MATH_DISPLAYHISTOGRAM_H 
@@ -34,20 +34,21 @@
 #include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
-	namespace Gui {
-		class SCISHARE DisplayHistogramDialog : public ModuleDialogGeneric,
-			public Ui::DisplayHistogram
-		{
-			Q_OBJECT
+  namespace Gui {
+    class SCISHARE DisplayHistogramDialog : public ModuleDialogGeneric,
+      public Ui::DisplayHistogram
+    {
+      Q_OBJECT
 
-			public:
-				DisplayHistogramDialog(const std::string& name,
-					SCIRun::Dataflow::Networks::ModuleStateHandle state,
-					QWidget* parent = nullptr);
+    public:
+      DisplayHistogramDialog(const std::string& name,
+        SCIRun::Dataflow::Networks::ModuleStateHandle state,
+        QWidget* parent = nullptr);
+    protected:
+      virtual void pullSpecial() override;
 
-			
 
-		};
-	}
+    };
+  }
 }
 #endif

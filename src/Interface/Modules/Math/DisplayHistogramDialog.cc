@@ -28,12 +28,13 @@
 
 #include <Interface/Modules/Math/DisplayHistogramDialog.h>
 #include <Modules/Math/DisplayHistogram.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <QtGui>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Math;
-
+using namespace SCIRun::Core::Algorithms;
 
 DisplayHistogramDialog::DisplayHistogramDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent/* = 0*/)
@@ -47,4 +48,13 @@ DisplayHistogramDialog::DisplayHistogramDialog(const std::string& name, ModuleSt
 	
 	// connect(noiseSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBox()));
 	// connect(noiseSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSlider()));
+}
+
+void DisplayHistogramDialog::pullSpecial()
+{
+  qDebug() << __FUNCTION__;
+
+  auto data = transient_value_cast<std::vector<double>>(state_->getTransientValue(Variables::InputMatrix));
+  qDebug() << "Data size from module: " << data.size();
+
 }
