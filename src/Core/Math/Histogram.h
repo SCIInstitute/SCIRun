@@ -31,6 +31,7 @@
 #define CORE_DATABLOCK_HISTOGRAM_H
 
 #include <vector>
+#include <cstddef>
 #include <Core/Math/share.h>
 
 namespace SCIRun
