@@ -1,22 +1,22 @@
 /*
  For more information, please see: http://software.sci.utah.edu
- 
+
  The MIT License
- 
+
  Copyright (c) 2016 Scientific Computing and Imaging Institute,
  University of Utah.
- 
- 
+
+
  Permission is hereby granted, free of charge, to any person obtaining a
  copy of this software and associated documentation files (the "Software"),
  to deal in the Software without restriction, including without limitation
  the rights to use, copy, modify, merge, publish, distribute, sublicense,
  and/or sell copies of the Software, and to permit persons to whom the
  Software is furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included
  in all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -30,6 +30,7 @@
 #include <QLinearGradient>
 #include <QStyle>
 #include <QStyleOption>
+#include <cmath>
 
 #include <Interface/Modules/Base/CustomWidgets/QtHistogramGraph.h>
 
@@ -67,11 +68,11 @@ void QtHistogramGraph::paintEvent(QPaintEvent * event )
   style()->drawPrimitive(QStyle::PE_Widget, &opt, &painter, this);
 
   if ( ! this->histogram_.is_valid() ) return;
-  
+
     double histogram_width = this->width();
     double bins_size = this->histogram_.get_size();
     const std::vector<size_t>& bins = this->histogram_.get_bins();
-    
+
   if( !logarithmic_ )
   {
     double percent_of_max = this->height() /
@@ -86,7 +87,7 @@ void QtHistogramGraph::paintEvent(QPaintEvent * event )
       int rect_width = histogram_width / bins_size;
       int rect_height = adjusted_bin_size;
 
-      QLinearGradient linearGradient( QPointF( rect_left, rect_top ), 
+      QLinearGradient linearGradient( QPointF( rect_left, rect_top ),
         QPointF( rect_left+rect_width, this->height() ) );
       linearGradient.setColorAt( 0.0, Qt::lightGray );
       linearGradient.setColorAt( 0.5, Qt::darkGray );
@@ -97,19 +98,19 @@ void QtHistogramGraph::paintEvent(QPaintEvent * event )
   }
   else
   {
-    double log_of_max = log( static_cast< double >( this->histogram_.get_max_bin() ) + 1.0 );
+    double log_of_max = std::log( static_cast< double >( this->histogram_.get_max_bin() ) + 1.0 );
     double percent_of_max = this->height() / log_of_max;
-    
+
     for( int i = 0; i < bins_size; ++i )
     {
       // Break it down so it's easier to understand
-      int adjusted_bin_size =log( static_cast< double >( bins[ i ] ) + 1 ) * percent_of_max;
+      int adjusted_bin_size = std::log( static_cast< double >( bins[ i ] ) + 1 ) * percent_of_max;
       int rect_left =  i * ( histogram_width / bins_size );
       int rect_top = this->height() - adjusted_bin_size;
       int rect_width = histogram_width / bins_size;
       int rect_height = adjusted_bin_size;
 
-      QLinearGradient linearGradient( QPointF( rect_left, rect_top ), 
+      QLinearGradient linearGradient( QPointF( rect_left, rect_top ),
         QPointF( rect_left+rect_width, this->height() ) );
       linearGradient.setColorAt( 0.0, Qt::lightGray );
       linearGradient.setColorAt( 0.5, Qt::darkGray );
@@ -117,9 +118,9 @@ void QtHistogramGraph::paintEvent(QPaintEvent * event )
       painter.setBrush( linearGradient );
       painter.drawRect( rect_left, rect_top, rect_width, rect_height );
     }
-    
+
   }
-  
+
 }
 
 void QtHistogramGraph::mousePressEvent( QMouseEvent* e )
