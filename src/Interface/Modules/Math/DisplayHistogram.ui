@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>614</width>
-    <height>336</height>
+    <width>700</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,14 +18,22 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>280</width>
-    <height>85</height>
+    <width>700</width>
+    <height>700</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout"/>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Histogram</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

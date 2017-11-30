@@ -33,8 +33,15 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
 
-namespace SCIRun {
-  namespace Gui {
+namespace SCIRun 
+{
+  namespace QtUtils
+  {
+    class QtHistogramWidget;
+  }
+
+  namespace Gui 
+  {
     class SCISHARE DisplayHistogramDialog : public ModuleDialogGeneric,
       public Ui::DisplayHistogram
     {
@@ -47,7 +54,8 @@ namespace SCIRun {
     protected:
       virtual void pullSpecial() override;
 
-
+    private:
+      QtUtils::QtHistogramWidget* histoWidget_;
     };
   }
 }

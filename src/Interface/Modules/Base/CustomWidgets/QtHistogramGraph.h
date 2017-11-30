@@ -36,6 +36,7 @@
 #include <QMouseEvent>
 #include <QPoint>
 #include <Core/Math/Histogram.h>
+#include <Interface/Modules/Base/share.h>
 
 #endif
 
@@ -44,7 +45,7 @@ namespace SCIRun
   namespace QtUtils
   {
 
-    class QtHistogramGraph : public QWidget
+    class SCISHARE QtHistogramGraph : public QWidget
     {
       Q_OBJECT
 

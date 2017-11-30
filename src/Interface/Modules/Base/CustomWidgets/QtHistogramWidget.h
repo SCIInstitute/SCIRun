@@ -34,6 +34,7 @@
 #include <boost/shared_ptr.hpp>
 #include <QWidget>
 #include <Core/Math/Histogram.h>
+#include <Interface/Modules/Base/share.h>
 
 // QtUtils includes
 //#include <QtUtils/Widgets/QtSliderDoubleCombo.h>
@@ -44,13 +45,10 @@ namespace SCIRun
 {
   namespace QtUtils
   {
-
-    // Forward declaration
     class QtHistogramWidgetPrivate;
     typedef boost::shared_ptr< QtHistogramWidgetPrivate > QtHistogramWidgetPrivateHandle;
 
-    // Class definition
-    class QtHistogramWidget : public QWidget
+    class SCISHARE QtHistogramWidget : public QWidget
     {
       Q_OBJECT
 
@@ -66,9 +64,7 @@ namespace SCIRun
         );
       virtual ~QtHistogramWidget();
 
-      public Q_SLOTS:
-      /// SET_HISTOGRAM:
-      /// Set the histogram of the graph
+    public Q_SLOTS:
       void set_histogram(const Core::Math::Histogram& histogram);
 
       void set_min(double);

@@ -27,6 +27,7 @@
 */
 
 #include <Interface/Modules/Math/DisplayHistogramDialog.h>
+#include <Interface/Modules/Base/CustomWidgets/QtHistogramWidget.h>
 #include <Modules/Math/DisplayHistogram.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <QtGui>
@@ -35,6 +36,8 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Math;
+using namespace SCIRun::QtUtils;
 
 DisplayHistogramDialog::DisplayHistogramDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent/* = 0*/)
@@ -44,17 +47,15 @@ DisplayHistogramDialog::DisplayHistogramDialog(const std::string& name, ModuleSt
 	setWindowTitle(QString::fromStdString(name));
 	fixSize();
 
-	// addDoubleSpinBoxManager(noiseSpinBox_,SCIRun::Core::Algorithms::Math::BuildNoiseColumnMatrixAlgorithm::SignalToNoiseRatio());
-	
-	// connect(noiseSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBox()));
-	// connect(noiseSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSlider()));
+  auto layout = new QVBoxLayout;
+  histoWidget_ = new QtHistogramWidget(this);
+  layout->addWidget(histoWidget_);
+  groupBox->setLayout(layout);
 }
 
 void DisplayHistogramDialog::pullSpecial()
 {
-  qDebug() << __FUNCTION__;
-
   auto data = transient_value_cast<std::vector<double>>(state_->getTransientValue(Variables::InputMatrix));
-  qDebug() << "Data size from module: " << data.size();
-
+  Histogram h(&data[0], data.size());
+  histoWidget_->set_histogram(h);
 }
