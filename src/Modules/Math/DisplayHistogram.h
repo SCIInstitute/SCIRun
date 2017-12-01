@@ -21,37 +21,34 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#include <Modules/Math/ComputePCA.h>
-#include <Core/Algorithms/Math/ComputePCA.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#ifndef MODULES_MATH_DISPLAYHISTOGRAM_H
+#define MODULES_MATH_DISPLAYHISTOGRAM_H
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Math;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
+namespace SCIRun {
+  namespace Modules {
+    namespace Math {
 
-ComputePCA::ComputePCA() : Module(ModuleLookupInfo("ComputePCA", "Math", "SCIRun"),false)
-{
-    INITIALIZE_PORT(InputMatrix);
-    INITIALIZE_PORT(LeftPrincipalMatrix);
-    INITIALIZE_PORT(PrincipalValues);
-    INITIALIZE_PORT(RightPrincipalMatrix);
-}
+      class SCISHARE DisplayHistogram : public Dataflow::Networks::Module,
+        public Has1InputPort<MatrixPortTag>,
+        public HasNoOutputPorts
+      {
+      public:
+        DisplayHistogram();
+        virtual void setStateDefaults() override {}
+        virtual void execute() override;
 
-void ComputePCA::execute()
-{
-    auto input_matrix = getRequiredInput(InputMatrix);
+        INPUT_PORT(0, InputMatrix, Matrix);
 
-    if(needToExecute())
-    {        
-        auto output = algo().run(withInputData((InputMatrix,input_matrix)));
-
-        sendOutputFromAlgorithm(LeftPrincipalMatrix, output);
-        sendOutputFromAlgorithm(PrincipalValues, output);
-        sendOutputFromAlgorithm(RightPrincipalMatrix, output);
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        NEW_HELP_WEBPAGE_ONLY
+      };
 
     }
-}
+  }
+};
+
+
+#endif

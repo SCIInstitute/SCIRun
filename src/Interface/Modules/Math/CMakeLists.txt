@@ -47,6 +47,7 @@ SET(Interface_Modules_Math_FORMS
   ReportMatrixSliceMeasureDialog.ui
   SetSubmatrix.ui
   BooleanCompareDialog.ui
+  DisplayHistogram.ui
 )
 
 SET(Interface_Modules_Math_HEADERS
@@ -71,6 +72,7 @@ SET(Interface_Modules_Math_HEADERS
   SetSubmatrixDialog.h
   SolveComplexLinearSystemDialog.h
   BooleanCompareDialog.h
+  DisplayHistogramDialog.h
 )
 
 SET(Interface_Modules_Math_SOURCES
@@ -94,6 +96,7 @@ SET(Interface_Modules_Math_SOURCES
   SetSubmatrixDialog.cc
   SolveComplexLinearSystemDialog.cc
   BooleanCompareDialog.cc
+  DisplayHistogramDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS ${Interface_Modules_Math_FORMS})
