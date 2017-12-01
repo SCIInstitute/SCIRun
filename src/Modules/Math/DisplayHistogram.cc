@@ -43,16 +43,17 @@ void DisplayHistogram::execute()
   auto input_matrix = getRequiredInput(InputMatrix);
 
   if (needToExecute())
-  { 
-    if (input_matrix->ncols() == 0)
+  {
+    if (input_matrix->empty())
     {
       THROW_INVALID_ARGUMENT("Empty matrix input.");
     }
     auto dense = castMatrix::toDense(input_matrix);
-    std::vector<double> data(dense->nrows());
-    auto col0 = dense->col(0);
+    std::vector<double> data;
+    data.reserve(dense->size());
     for (auto i = 0; i < dense->nrows(); ++i)
-      data[i] = col0[i];
+      for (auto j = 0; j < dense->ncols(); ++j)
+        data.push_back((*dense)(i,j));
     get_state()->setTransientValue(Variables::InputMatrix, data);
   }
 }

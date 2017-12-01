@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>7</count>
+			<count>9</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>BuildNoiseColumnMatrix:0</first>
@@ -26,7 +26,7 @@
 									<name>SignalToNoiseRatio</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>1</which>
-										<value>1.50000000000000000e+001</value>
+										<value>1.50000000000000000e+01</value>
 									</value>
 								</second>
 							</item>
@@ -130,7 +130,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -241,6 +241,37 @@
 				</second>
 			</item>
 			<item>
+				<first>CreateMatrix:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>TextEntry</name>
+								</first>
+								<second>
+									<name>TextEntry</name>
+									<value>
+										<which>2</which>
+										<value>1 2 3 4 5
+2 3 4 5 6
+3 4 5 6 7
+4 5 6 7 8</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>DisplayHistogram:0</first>
 				<second>
 					<module>
@@ -273,6 +304,22 @@
 				</second>
 			</item>
 			<item>
+				<first>DisplayHistogram:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>DisplayHistogram</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>GetFieldData:0</first>
 				<second>
 					<module>
@@ -290,7 +337,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>5</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>BuildNoiseColumnMatrix:0</moduleId1_>
@@ -341,6 +388,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>CreateMatrix:1</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>DisplayHistogram:2</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>GetFieldData:0</moduleId1_>
 				<port1_>
 					<name>OutputMatrix</name>
@@ -355,55 +414,69 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>7</count>
+		<count>9</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>BuildNoiseColumnMatrix:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-8.36000000000000000e+002</first>
-				<second>-6.84000000000000000e+002</second>
+				<first>-8.36000000000000000e+02</first>
+				<second>-6.84000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:0</first>
 			<second>
-				<first>-8.36000000000000000e+002</first>
-				<second>-9.38000000000000000e+002</second>
+				<first>-8.36000000000000000e+02</first>
+				<second>-9.38000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>-8.36000000000000000e+002</first>
-				<second>-1.06400000000000000e+003</second>
+				<first>-8.36000000000000000e+02</first>
+				<second>-1.06400000000000000e+03</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix:0</first>
 			<second>
-				<first>-2.59000000000000000e+002</first>
-				<second>-5.85000000000000000e+002</second>
+				<first>-2.59000000000000000e+02</first>
+				<second>-5.85000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateMatrix:1</first>
+			<second>
+				<first>4.10000000000000000e+01</first>
+				<second>-5.85000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>DisplayHistogram:0</first>
 			<second>
-				<first>-1.64000000000000000e+002</first>
-				<second>-3.25000000000000000e+002</second>
+				<first>-1.64000000000000000e+02</first>
+				<second>-3.25000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>DisplayHistogram:1</first>
 			<second>
-				<first>-7.60000000000000000e+002</first>
-				<second>-4.56000000000000000e+002</second>
+				<first>-7.60000000000000000e+02</first>
+				<second>-4.56000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>DisplayHistogram:2</first>
+			<second>
+				<first>1.36000000000000000e+02</first>
+				<second>-3.25000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldData:0</first>
 			<second>
-				<first>-8.36000000000000000e+002</first>
-				<second>-8.36000000000000000e+002</second>
+				<first>-8.36000000000000000e+02</first>
+				<second>-8.36000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -416,7 +489,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>7</count>
+		<count>9</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>BuildNoiseColumnMatrix:0</first>
@@ -435,11 +508,19 @@
 			<second>-1</second>
 		</item>
 		<item>
+			<first>CreateMatrix:1</first>
+			<second>-1</second>
+		</item>
+		<item>
 			<first>DisplayHistogram:0</first>
 			<second>-1</second>
 		</item>
 		<item>
 			<first>DisplayHistogram:1</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>DisplayHistogram:2</first>
 			<second>-1</second>
 		</item>
 		<item>
