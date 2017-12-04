@@ -30,7 +30,6 @@
 #include <Core/Logging/ApplicationHelper.h>
 #include <boost/filesystem.hpp>
 #include <Core/Utils/Exception.h>
-#include <Core/Thread/Mutex.h>
 
 using namespace SCIRun::Core::Logging;
 
@@ -87,10 +86,10 @@ namespace
 
 Logger2 Log2::get()
 {
-  static Thread::Mutex mutex(name_);
+  static std::mutex mutex;
   if (!logger_)
   {
-    Thread::Guard g(mutex.get());
+    std::lock_guard<std::mutex> g(mutex);
     if (!logger_)
     {
       spdlog::set_async_mode(1 << 10);
