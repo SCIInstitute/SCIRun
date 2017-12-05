@@ -61,7 +61,15 @@ unsigned int Parallel::NumCores()
 
 void Parallel::SetMaximumCores(unsigned int max)
 {
-  GeneralLog::Instance().get()->warn("Maximum cores available for parallel algorithms set to {}", max);
+  if (max == 0)
+  {
+    max = std::numeric_limits<unsigned int>::max();
+    GeneralLog::Instance().get()->warn("Maximum cores available for parallel algorithms set to unlimited");
+  }
+  else
+  {
+    GeneralLog::Instance().get()->warn("Maximum cores available for parallel algorithms set to {}", max);
+  }
   maximumCoresSetByUser_ = max;
 }
 

@@ -61,6 +61,7 @@
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
+#include <Core/Thread/Parallel.h>
 #include <Core/Application/Version.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Core/Utils/CurrentFileName.h>
@@ -223,6 +224,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(prefsWindow_->cubicPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesCubicBezier()));
   connect(prefsWindow_->manhattanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesManhattan()));
   connect(prefsWindow_->euclideanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesEuclidean()));
+  connect(prefsWindow_->maxCoresSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(maxCoreValueChanged(int)));
   //TODO: will be a user or network setting
   makePipesEuclidean();
 
@@ -237,7 +239,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   makeFilterButtonMenu();
 
   connect(prefsWindow_->scirunDataPushButton_, SIGNAL(clicked()), this, SLOT(setDataDirectoryFromGUI()));
-  connect(prefsWindow_->addToPathButton_, SIGNAL(clicked()), this, SLOT(addToPathFromGUI()));
+  //connect(prefsWindow_->addToPathButton_, SIGNAL(clicked()), this, SLOT(addToPathFromGUI()));
   connect(actionFilter_modules_, SIGNAL(triggered()), this, SLOT(setFocusOnFilterLine()));
   connect(actionAddModule_, SIGNAL(triggered()), this, SLOT(addModuleKeyboardAction()));
   actionAddModule_->setVisible(false);
@@ -1629,8 +1631,8 @@ void SCIRunMainWindow::setDataPath(const QString& dirs)
 {
 	if (!dirs.isEmpty())
 	{
-    prefsWindow_->scirunDataPathTextEdit_->setPlainText(dirs);
-    prefsWindow_->scirunDataPathTextEdit_->setToolTip(dirs);
+    //prefsWindow_->scirunDataPathTextEdit_->setPlainText(dirs);
+    //prefsWindow_->scirunDataPathTextEdit_->setToolTip(dirs);
 
 		Preferences::Instance().setDataPath(dirs.toStdString());
 	}
@@ -1640,12 +1642,12 @@ void SCIRunMainWindow::addToDataDirectory(const QString& dir)
 {
 	if (!dir.isEmpty())
 	{
-    auto text = prefsWindow_->scirunDataPathTextEdit_->toPlainText();
-		if (!text.isEmpty())
-			text += ";\n";
-		text += dir;
-    prefsWindow_->scirunDataPathTextEdit_->setPlainText(text);
-    prefsWindow_->scirunDataPathTextEdit_->setToolTip(prefsWindow_->scirunDataPathTextEdit_->toPlainText());
+    // auto text = prefsWindow_->scirunDataPathTextEdit_->toPlainText();
+		// if (!text.isEmpty())
+		// 	text += ";\n";
+		// text += dir;
+    // prefsWindow_->scirunDataPathTextEdit_->setPlainText(text);
+    // prefsWindow_->scirunDataPathTextEdit_->setToolTip(prefsWindow_->scirunDataPathTextEdit_->toPlainText());
 
 		RemembersFileDialogDirectory::setStartingDir(dir);
 		Preferences::Instance().addToDataPath(dir.toStdString());
@@ -1746,18 +1748,7 @@ void SCIRunMainWindow::hideNonfunctioningWidgets()
   nonfunctioningActions <<
     actionInsert_;
   QList<QMenu*> nonfunctioningMenus;
-  //nonfunctioningMenus <<  menuSubnets_;
   QList<QWidget*> nonfunctioningWidgets;
-  nonfunctioningWidgets <<
-    prefsWindow_->scirunNetsLabel_ <<
-    prefsWindow_->scirunNetsLineEdit_ <<
-    prefsWindow_->scirunNetsPushButton_ <<
-    prefsWindow_->userDataLabel_ <<
-    prefsWindow_->userDataLineEdit_ <<
-    prefsWindow_->userDataPushButton_ <<
-    prefsWindow_->dataSetGroupBox_ <<
-    prefsWindow_->scirunDataPathTextEdit_ <<
-    prefsWindow_->addToPathButton_;
 
   Q_FOREACH(QAction* a, nonfunctioningActions)
     a->setVisible(false);
@@ -2426,4 +2417,10 @@ void SCIRunMainWindow::launchNewInstance()
   system( command.c_str() );
 
   #endif
+}
+
+void SCIRunMainWindow::maxCoreValueChanged(int value)
+{
+  qDebug() << __FUNCTION__ << value;
+  Core::Thread::Parallel::SetMaximumCores(value);
 }

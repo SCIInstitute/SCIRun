@@ -335,6 +335,14 @@ void SCIRunMainWindow::readSettings()
     provenanceWindow_->setMaxItems(max);
   }
 
+  const QString maxCores = "maxCores";
+  if (settings.contains(maxCores))
+  {
+    auto max = settings.value(maxCores).toInt();
+    guiLogDebug("Setting read: maxCores = {}", max);
+    prefsWindow_->maxCoresSpinBox_->setValue(max);
+  }
+
   restoreGeometry(settings.value("geometry").toByteArray());
   restoreState(settings.value("windowState").toByteArray());
 }
@@ -372,6 +380,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("savedSubnetworksXml", savedSubnetworksXml_);
   settings.setValue("toolkitFiles", toolkitFiles_);
   settings.setValue("undoMaxItems", provenanceWindow_->maxItems());
+  settings.setValue("maxCores", prefsWindow_->maxCoresSpinBox_->value());
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());
