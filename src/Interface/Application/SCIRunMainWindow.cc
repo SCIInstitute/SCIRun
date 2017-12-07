@@ -1278,7 +1278,7 @@ namespace {
 
   QTreeWidgetItem* addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module)
   {
-    LOG_DEBUG("Adding item to favorites: {}", module->text(0).toStdString());
+    guiLogDebug("Adding item to favorites: {}", module->text(0).toStdString());
     auto copy = new QTreeWidgetItem(*module);
     copy->setData(0, Qt::CheckStateRole, QVariant());
     if (copy->textColor(0) == CLIPBOARD_COLOR)

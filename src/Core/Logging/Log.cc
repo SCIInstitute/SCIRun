@@ -43,7 +43,10 @@ bool LogSettings::verbose() const
 void LogSettings::setVerbose(bool v)
 {
   verbose_ = v;
+  //std::cout << "@@@ global setVerbose " << v << std::endl;
   spdlog::set_level(v ? spdlog::level::debug : spdlog::level::warn);
+
+  GeneralLog::Instance().setVerbose(v);
 }
 
   //          static const std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} %c [%p] %m%n");
@@ -120,9 +123,13 @@ bool Log2::verbose() const
 
 void Log2::setVerbose(bool v)
 {
+  //std::cout << "@@@ local setVerbose " << v << " on " << name_ << std::endl;
   verbose_ = v;
   if (logger_)
+  {
     logger_->set_level(v ? spdlog::level::debug : spdlog::level::warn);
+    //std::cout << "@@@ local setVerbose " << v << " on " << name_ << " logger object received" << std::endl;
+  }
 }
 
 GeneralLog::GeneralLog() : Log2("root")

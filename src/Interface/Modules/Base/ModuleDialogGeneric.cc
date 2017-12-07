@@ -58,7 +58,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* paren
 
   if (state_)
   {
-    LOG_DEBUG(("ModuleDialogGeneric connecting to state"));
+    LOG_TRACE(("ModuleDialogGeneric connecting to state"));
     stateConnection_ = state_->connectStateChanged([this]() { pullSignal(); });
   }
   connect(this, SIGNAL(pullSignal()), this, SLOT(pull()));
@@ -341,7 +341,7 @@ public:
     auto qstring = toLabelConverter_(value);
     if (qstring != comboBox_->currentText())
     {
-      LOG_DEBUG("In new version of pull code for combobox: {}", value);
+      LOG_TRACE("In new version of pull code for combobox: {}", value);
       comboBox_->setCurrentIndex(comboBox_->findText(qstring));
     }
   }
@@ -350,7 +350,7 @@ public:
     auto label = fromLabelConverter_(comboBox_->currentText());
     if (label != state_->getValue(stateKey_).toString())
     {
-      LOG_DEBUG("In new version of push code for combobox: {}", label);
+      LOG_TRACE("In new version of push code for combobox: {}", label);
       state_->setValue(stateKey_, label);
     }
   }
@@ -416,7 +416,7 @@ public:
     auto index = value ? 1 : 0;
     if (index != comboBox_->currentIndex())
     {
-      LOG_DEBUG("In new version of pull code for combobox, boolean mode: {}", index);
+      LOG_TRACE("In new version of pull code for combobox, boolean mode: {}", index);
       comboBox_->setCurrentIndex(index);
     }
   }
@@ -425,7 +425,7 @@ public:
     auto index = comboBox_->currentIndex();
     if (index != (state_->getValue(stateKey_).toBool() ? 1 : 0))
     {
-      LOG_DEBUG("In new version of push code for combobox, boolean mode: {}", index);
+      LOG_TRACE("In new version of push code for combobox, boolean mode: {}", index);
       state_->setValue(stateKey_, index == 1);
     }
   }
@@ -453,12 +453,12 @@ public:
     if (newValue != textEdit_->toPlainText())
     {
       textEdit_->setPlainText(newValue);
-      LOG_DEBUG("In new version of pull code for TextEdit: {}", newValue.toStdString());
+      LOG_TRACE("In new version of pull code for TextEdit: {}", newValue.toStdString());
     }
   }
   virtual void pushImpl() override
   {
-    LOG_DEBUG("In new version of push code for TextEdit: {}", textEdit_->toPlainText().toStdString());
+    LOG_TRACE("In new version of push code for TextEdit: {}", textEdit_->toPlainText().toStdString());
     state_->setValue(stateKey_, textEdit_->toPlainText().toStdString());
   }
 private:
@@ -485,12 +485,12 @@ public:
     if (newValue != textEdit_->toPlainText())
     {
       textEdit_->setPlainText(newValue);
-      LOG_DEBUG("In new version of pull code for PlainTextEdit: {}", newValue.toStdString());
+      LOG_TRACE("In new version of pull code for PlainTextEdit: {}", newValue.toStdString());
     }
   }
   virtual void pushImpl() override
   {
-    LOG_DEBUG("In new version of push code for PlainTextEdit: {}", textEdit_->toPlainText().toStdString());
+    LOG_TRACE("In new version of push code for PlainTextEdit: {}", textEdit_->toPlainText().toStdString());
     state_->setValue(stateKey_, textEdit_->toPlainText().toStdString());
   }
 private:
@@ -517,12 +517,12 @@ public:
     if (newValue != lineEdit_->text())
     {
       lineEdit_->setText(newValue);
-      LOG_DEBUG("In new version of pull code for LineEdit: {}", newValue.toStdString());
+      LOG_TRACE("In new version of pull code for LineEdit: {}", newValue.toStdString());
     }
   }
   virtual void pushImpl() override
   {
-    LOG_DEBUG("In new version of push code for LineEdit: {}", lineEdit_->text().toStdString());
+    LOG_TRACE("In new version of push code for LineEdit: {}", lineEdit_->text().toStdString());
     state_->setValue(stateKey_, lineEdit_->text().toStdString());
   }
 private:
@@ -553,7 +553,7 @@ public:
         if (tabWidget_->tabText(i) == newValue)
         {
           tabWidget_->setCurrentIndex(i);
-          LOG_DEBUG("In new version of pull code for LineEdit: {}", newValue.toStdString());
+          LOG_TRACE("In new version of pull code for LineEdit: {}", newValue.toStdString());
           return;
         }
       }
@@ -561,7 +561,7 @@ public:
   }
   virtual void pushImpl() override
   {
-    LOG_DEBUG("In new version of push code for QTabWidget: {}", tabWidget_->tabText(tabWidget_->currentIndex()).toStdString());
+    LOG_TRACE("In new version of push code for QTabWidget: {}", tabWidget_->tabText(tabWidget_->currentIndex()).toStdString());
     state_->setValue(stateKey_, tabWidget_->tabText(tabWidget_->currentIndex()).toStdString());
   }
 private:
@@ -589,12 +589,12 @@ public:
         if (newValue != lineEdit_->text())
         {
           lineEdit_->setText(newValue);
-          LOG_DEBUG("In new version of pull code for DoubleLineEdit: {}", newValue.toStdString());
+          LOG_TRACE("In new version of pull code for DoubleLineEdit: {}", newValue.toStdString());
         }
       }
       virtual void pushImpl() override
       {
-        LOG_DEBUG("In new version of push code for LineEdit: {}", lineEdit_->text().toStdString());
+        LOG_TRACE("In new version of push code for LineEdit: {}", lineEdit_->text().toStdString());
         bool ok;
         auto value = lineEdit_->text().toDouble(&ok);
         if (ok)
@@ -624,12 +624,12 @@ public:
     if (newValue != spinBox_->value())
     {
       spinBox_->setValue(newValue);
-      LOG_DEBUG("In new version of pull code for SpinBox: {}", newValue);
+      LOG_TRACE("In new version of pull code for SpinBox: {}", newValue);
     }
   }
   virtual void pushImpl() override
   {
-    LOG_DEBUG("In new version of push code for SpinBox: {}", spinBox_->value());
+    LOG_TRACE("In new version of push code for SpinBox: {}", spinBox_->value());
     state_->setValue(stateKey_, spinBox_->value());
   }
 private:
@@ -656,12 +656,12 @@ public:
     if (newValue != spinBox_->value())
     {
       spinBox_->setValue(newValue);
-      LOG_DEBUG("In new version of pull code for DoubleSpinBox: {}", newValue);
+      LOG_TRACE("In new version of pull code for DoubleSpinBox: {}", newValue);
     }
   }
   virtual void pushImpl() override
   {
-    LOG_DEBUG("In new version of push code for DoubleSpinBox: {}", spinBox_->value());
+    LOG_TRACE("In new version of push code for DoubleSpinBox: {}", spinBox_->value());
     state_->setValue(stateKey_, spinBox_->value());
   }
 private:
@@ -687,13 +687,13 @@ public:
     bool newValue = state_->getValue(stateKey_).toBool();
     if (newValue != checkBox_->isChecked())
     {
-      LOG_DEBUG("In new version of pull code for CheckBox: {}", newValue);
+      LOG_TRACE("In new version of pull code for CheckBox: {}", newValue);
       checkBox_->setChecked(newValue);
     }
   }
   virtual void pushImpl() override
   {
-    LOG_DEBUG("In new version of push code for CheckBox: {}", checkBox_->isChecked());
+    LOG_TRACE("In new version of push code for CheckBox: {}", checkBox_->isChecked());
     state_->setValue(stateKey_, checkBox_->isChecked());
   }
 private:
@@ -719,13 +719,13 @@ public:
         bool newValue = state_->getValue(stateKey_).toBool();
         if (newValue != checkable_->isChecked())
         {
-          LOG_DEBUG("In new version of pull code for checkable QAbstractButton: {}", newValue);
+          LOG_TRACE("In new version of pull code for checkable QAbstractButton: {}", newValue);
           checkable_->setChecked(newValue);
         }
       }
       virtual void pushImpl() override
       {
-        LOG_DEBUG("In new version of push code for checkable QAbstractButton: {}", checkable_->isChecked());
+        LOG_TRACE("In new version of push code for checkable QAbstractButton: {}", checkable_->isChecked());
         state_->setValue(stateKey_, checkable_->isChecked());
       }
 private:
@@ -750,7 +750,7 @@ public:
     auto newValue = state_->getValue(stateKey_).toString();
     if (newValue != label_->text().toStdString())
     {
-      LOG_DEBUG("In new version of pull code for dynamic label: {}", newValue);
+      LOG_TRACE("In new version of pull code for dynamic label: {}", newValue);
       label_->setText(QString::fromStdString(newValue));
     }
   }
@@ -779,7 +779,7 @@ public:
     auto newValue = state_->getValue(stateKey_).toInt();
     if (newValue != slider_->value())
     {
-      LOG_DEBUG("In new version of pull code for QSlider: {}", newValue);
+      LOG_TRACE("In new version of pull code for QSlider: {}", newValue);
       slider_->setValue(newValue);
     }
   }
@@ -815,7 +815,7 @@ public:
     {
       if (!radioButtons_[checkedIndex]->isChecked())
       {
-        LOG_DEBUG("In new version of pull code for radio button group: {}", checkedIndex);
+        LOG_TRACE("In new version of pull code for radio button group: {}", checkedIndex);
         radioButtons_[checkedIndex]->setChecked(true);
       }
     }

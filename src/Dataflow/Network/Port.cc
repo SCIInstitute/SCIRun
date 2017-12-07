@@ -234,7 +234,7 @@ bool OutputPort::hasData() const
   if (!source_)
     return false;
   auto ret = source_->hasData();
-  LOG_DEBUG("{} OutputPort::hasData returns {}", id().toString(), ret);
+  LOG_TRACE("{} OutputPort::hasData returns {}", id().toString(), ret);
   return ret;
 }
 

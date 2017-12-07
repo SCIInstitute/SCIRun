@@ -56,16 +56,6 @@ namespace
     return strs;
   }
 
-  // QStringList valueListAsString(const QList<QVariant>& qvs)
-  // {
-  //   QStringList qsl;
-  //   for (const auto& qv : qvs)
-  //   {
-  //     qsl.append(qv.toString());
-  //   }
-  //   return qsl;
-  // }
-
   QMap<QString, QString> toStrMap(const QMap<QString, QVariant>& m)
   {
     QMap<QString, QString> ss;

@@ -157,6 +157,12 @@ void ViewScene::updateTransientList()
 
 void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
+  // SCIRun::Core::Logging::GeneralLog::Instance().get()->warn("warn ViewScene");
+  // SCIRun::Core::Logging::GeneralLog::Instance().get()->critical("critical ViewScene");
+  // SCIRun::Core::Logging::GeneralLog::Instance().get()->error("error ViewScene");
+  // SCIRun::Core::Logging::GeneralLog::Instance().get()->debug("debug ViewScene");
+  // SCIRun::Core::Logging::GeneralLog::Instance().get()->info("info ViewScene");
+
   if (!data)
     return;
   //lock for state modification

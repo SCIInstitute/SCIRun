@@ -117,6 +117,12 @@ namespace SCIRun
       {
         SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(str);
       }
+
+      template <class... T>
+      void LOG_TRACE(const char* fmt, T&&... args)
+      {
+        SCIRun::Core::Logging::GeneralLog::Instance().get()->trace(fmt, args...);
+      }
     }
   }
 }
