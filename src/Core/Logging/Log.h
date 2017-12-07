@@ -137,6 +137,8 @@ namespace SCIRun
   {
     SCIRun::Core::Logging::GeneralLog::Instance().get()->warn(fmt, args...);
   }
+
+  #define DEBUG_LOG_LINE_INFO LOG_DEBUG("Debugging info: file {} line {} function {}", __FILE__, __LINE__, LOG_FUNC);
 }
 
 #endif

@@ -143,6 +143,7 @@ namespace Render {
     void syncMeshComponentFlags(const std::string& connectedModuleId, Dataflow::Networks::ModuleStateHandle state);
     ActiveGeometryMap activeGeoms_;
     std::atomic<int> asyncUpdates_;
+    bool waitedAlready_{false};
   };
 }}}
 

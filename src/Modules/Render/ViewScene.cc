@@ -32,6 +32,7 @@
 #include <Core/Logging/Log.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <boost/thread.hpp>
 
 // Needed to fix conflict between define in X11 header
 // and eigen enum member.
@@ -157,21 +158,39 @@ void ViewScene::updateTransientList()
 
 void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
+
+
+  {
+    if (!waitedAlready_)
+    {
+      logWarning("Waiting for rendering system initialization in asyncExecute....");
+      boost::this_thread::sleep(boost::posix_time::milliseconds(3000));
+      logWarning("Done waiting.");
+      waitedAlready_ = true;
+    }
+  }
+
+
+
+
+
+
   // SCIRun::Core::Logging::GeneralLog::Instance().get()->warn("warn ViewScene");
   // SCIRun::Core::Logging::GeneralLog::Instance().get()->critical("critical ViewScene");
   // SCIRun::Core::Logging::GeneralLog::Instance().get()->error("error ViewScene");
   // SCIRun::Core::Logging::GeneralLog::Instance().get()->debug("debug ViewScene");
   // SCIRun::Core::Logging::GeneralLog::Instance().get()->info("info ViewScene");
+  DEBUG_LOG_LINE_INFO
 
   if (!data)
     return;
   //lock for state modification
   {
-    LOG_DEBUG("ViewScene::asyncExecute before locking");
+    LOG_DEBUG("ViewScene::asyncExecute {} before locking", get_id().id_);
     Guard lock(mutex_.get());
     get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
 
-    LOG_DEBUG("ViewScene::asyncExecute after locking");
+    LOG_DEBUG("ViewScene::asyncExecute {} after locking", get_id().id_);
 
     auto geom = boost::dynamic_pointer_cast<GeometryObject>(data);
     if (!geom)
