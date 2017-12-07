@@ -34,6 +34,7 @@
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
 
+using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;

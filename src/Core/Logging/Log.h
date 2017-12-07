@@ -106,24 +106,36 @@ namespace SCIRun
       public:
         GeneralLog();
       };
-
-      template <class... T>
-      void LOG_DEBUG(const char* fmt, T&&... args)
-      {
-        SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(fmt, args...);
-      }
-
-      inline void LOG_DEBUG(const std::string& str)
-      {
-        SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(str);
-      }
-
-      template <class... T>
-      void LOG_TRACE(const char* fmt, T&&... args)
-      {
-        SCIRun::Core::Logging::GeneralLog::Instance().get()->trace(fmt, args...);
-      }
     }
+  }
+
+  template <class... T>
+  void LOG_DEBUG(const char* fmt, T&&... args)
+  {
+    SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(fmt, args...);
+  }
+
+  inline void LOG_DEBUG(const std::string& str)
+  {
+    SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(str);
+  }
+
+  template <class... T>
+  void LOG_TRACE(const char* fmt, T&&... args)
+  {
+    SCIRun::Core::Logging::GeneralLog::Instance().get()->trace(fmt, args...);
+  }
+
+  template <class... T>
+  void logInfo(const char* fmt, T&&... args)
+  {
+    SCIRun::Core::Logging::GeneralLog::Instance().get()->info(fmt, args...);
+  }
+
+  template <class... T>
+  void logWarning(const char* fmt, T&&... args)
+  {
+    SCIRun::Core::Logging::GeneralLog::Instance().get()->warn(fmt, args...);
   }
 }
 
