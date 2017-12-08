@@ -99,7 +99,7 @@ Logger2 Log2::get()
       std::transform(customSinks_.begin(), customSinks_.end(), std::back_inserter(sinks_),
         [](LogAppenderStrategyPtr app) { return std::make_shared<ThreadedSink>(app); });
       logger_ = std::make_shared<spdlog::logger>(name_, sinks_.begin(), sinks_.end());
-      logger_->info("{} log initialized.", name_);
+      logger_->trace("{} log initialized.", name_);
       setVerbose(verbose());
     }
   }
