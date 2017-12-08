@@ -240,8 +240,10 @@ bool OutputPort::hasData() const
 
 void OutputPort::attach(Connection* conn)
 {
-  if (hasData() && conn && conn->iport_)
+  if (hasData() && conn && conn->iport_ && get_typename() != "Geometry")
+  {
     source_->send(conn->iport_->sink());
+  }
 
   Port::attach(conn);
 }

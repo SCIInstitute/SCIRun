@@ -158,30 +158,6 @@ void ViewScene::updateTransientList()
 
 void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
-
-
-  {
-    if (!waitedAlready_)
-    {
-      logWarning("Waiting for rendering system initialization in asyncExecute....");
-      boost::this_thread::sleep(boost::posix_time::milliseconds(3000));
-      logWarning("Done waiting.");
-      waitedAlready_ = true;
-    }
-  }
-
-
-
-
-
-
-  // SCIRun::Core::Logging::GeneralLog::Instance().get()->warn("warn ViewScene");
-  // SCIRun::Core::Logging::GeneralLog::Instance().get()->critical("critical ViewScene");
-  // SCIRun::Core::Logging::GeneralLog::Instance().get()->error("error ViewScene");
-  // SCIRun::Core::Logging::GeneralLog::Instance().get()->debug("debug ViewScene");
-  // SCIRun::Core::Logging::GeneralLog::Instance().get()->info("info ViewScene");
-  DEBUG_LOG_LINE_INFO
-
   if (!data)
     return;
   //lock for state modification
