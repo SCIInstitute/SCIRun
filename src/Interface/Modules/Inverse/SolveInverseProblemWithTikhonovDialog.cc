@@ -30,6 +30,12 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h>
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 
+#include <qwt_plot.h>
+#include <qwt_plot_curve.h>
+#include <qwt_plot_grid.h>
+#include <qwt_symbol.h>
+#include <qwt_legend.h>
+
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Inverse;
@@ -66,12 +72,51 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   addRadioButtonGroupManager({ residualConstraintRadioButton_, squaredResidualSolutionRadioButton_ }, Parameters::regularizationResidualSubcase);
 
   addComboBoxManager(lambdaMethodComboBox_, Parameters::RegularizationMethod, lambdaMethod_);
-  
+
   connect(lambdaSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));
   connect(lambdaSliderDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderValue(double)));
   connect(lambdaMinDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMin(double)));
   connect(lambdaMaxDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMax(double)));
   connect(lambdaResolutionDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderStep(double)));
+
+
+  {
+    auto plot = new QwtPlot;
+    plot->setTitle( "Plot Demo" );
+    plot->setCanvasBackground( Qt::white );
+    plot->setAxisScale( QwtPlot::yLeft, 0.0, 10.0 );
+    plot->insertLegend( new QwtLegend() );
+
+    auto grid = new QwtPlotGrid();
+    grid->attach( plot );
+
+    auto curve = new QwtPlotCurve();
+    curve->setTitle( "Some Points" );
+    curve->setPen( Qt::blue, 4 ),
+    curve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+
+    auto symbol = new QwtSymbol( QwtSymbol::Ellipse,
+        QBrush( Qt::yellow ), QPen( Qt::red, 2 ), QSize( 8, 8 ) );
+    curve->setSymbol( symbol );
+
+    QPolygonF points;
+    points << QPointF( 0.0, 4.4 ) << QPointF( 1.0, 3.0 )
+        << QPointF( 2.0, 4.5 ) << QPointF( 3.0, 6.8 )
+        << QPointF( 4.0, 7.9 ) << QPointF( 5.0, 7.1 );
+    curve->setSamples( points );
+
+    curve->attach( plot );
+
+    plot->resize( 600, 400 );
+    //plot->show();
+
+    auto l = new QHBoxLayout;
+    l->addWidget(plot);
+    plotGroupBox_->setLayout(l);
+  }
+
+
+
 }
 
 void SolveInverseProblemWithTikhonovDialog::setSpinBoxValue(int value)

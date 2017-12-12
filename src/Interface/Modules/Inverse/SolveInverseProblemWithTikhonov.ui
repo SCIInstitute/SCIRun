@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>396</width>
-    <height>531</height>
+    <width>501</width>
+    <height>916</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,7 +23,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="inputTabWidget_">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="problemTab_">
       <attribute name="title">
@@ -267,14 +267,7 @@
          </widget>
          <widget class="QWidget" name="page_3">
           <layout class="QGridLayout" name="gridLayout_5">
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_9">
-             <property name="text">
-              <string>Lambda Maximum:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0" colspan="3">
+           <item row="5" column="0" colspan="3">
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
               <widget class="QLabel" name="label_7">
@@ -292,7 +285,30 @@
              </item>
             </layout>
            </item>
-           <item row="3" column="0" colspan="3">
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_9">
+             <property name="text">
+              <string>Lambda Maximum:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
+            <widget class="QLineEdit" name="lCurveMaxLineEdit_"/>
+           </item>
+           <item row="1" column="2">
+            <widget class="QLineEdit" name="lCurveMinLineEdit_"/>
+           </item>
+           <item row="0" column="2">
+            <widget class="QSpinBox" name="lambdaNumberSpinBox_">
+             <property name="maximum">
+              <number>9999999</number>
+             </property>
+             <property name="value">
+              <number>10</number>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0" colspan="3">
             <widget class="QTextEdit" name="lCurveTextEdit_">
              <property name="readOnly">
               <bool>true</bool>
@@ -313,21 +329,18 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="2">
-            <widget class="QSpinBox" name="lambdaNumberSpinBox_">
-             <property name="maximum">
-              <number>9999999</number>
+           <item row="3" column="0">
+            <widget class="QGroupBox" name="plotGroupBox_">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>200</height>
+              </size>
              </property>
-             <property name="value">
-              <number>10</number>
+             <property name="title">
+              <string>Plot</string>
              </property>
             </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QLineEdit" name="lCurveMinLineEdit_"/>
-           </item>
-           <item row="2" column="2">
-            <widget class="QLineEdit" name="lCurveMaxLineEdit_"/>
            </item>
           </layout>
          </widget>

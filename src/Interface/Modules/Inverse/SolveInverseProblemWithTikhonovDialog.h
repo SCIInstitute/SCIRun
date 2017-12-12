@@ -53,6 +53,8 @@ private Q_SLOTS:
   void setSliderMax(double value);
   void setSliderStep(double value);
   void pullAndDisplayInfo();
+private:
+
 };
 
 }
