@@ -81,8 +81,8 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
 
 
   {
-    auto plot = new QwtPlot;
-    plot->setTitle( "Plot Demo" );
+    auto plot = new QwtPlot(this);
+    plot->setTitle( "L Curve" );
     plot->setCanvasBackground( Qt::white );
     plot->setAxisScale( QwtPlot::yLeft, 0.0, 10.0 );
     plot->insertLegend( new QwtLegend() );
@@ -91,7 +91,7 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
     grid->attach( plot );
 
     auto curve = new QwtPlotCurve();
-    curve->setTitle( "Some Points" );
+    //curve->setTitle( "Lambda points" );
     curve->setPen( Qt::blue, 4 ),
     curve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 
@@ -107,12 +107,14 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
 
     curve->attach( plot );
 
-    plot->resize( 600, 400 );
+    auto l = plotTab_->layout();
+
+    l->addWidget(plot);
+    //plot->resize( 600, 400 );
     //plot->show();
 
-    auto l = new QHBoxLayout;
-    l->addWidget(plot);
-    plotGroupBox_->setLayout(l);
+
+
   }
 
 
