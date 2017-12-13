@@ -258,7 +258,7 @@ ENDIF()
 
 IF(NOT BUILD_HEADLESS)
   CONFIG_STANDARD_EXTERNAL( Qwt QwtConfig.cmake ${QWT_DIR} )
-  #INCLUDE(${GLEW_USE_FILE})
+  INCLUDE(${QWT_USE_FILE})
 ENDIF()
 
 ########################################################################
@@ -477,9 +477,6 @@ ENDIF()
 # Includes
 
 SET(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
-
-MESSAGE(${SCI_QWT_INCLUDE})
-MESSAGE(${SCI_QWT_LIBRARY})
 
 INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_BINARY_DIR}
