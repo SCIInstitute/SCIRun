@@ -118,10 +118,10 @@ void SolveInverseProblemWithTikhonov::execute()
 		sendOutputFromAlgorithm(InverseSolution,output);
 		sendOutputFromAlgorithm(RegularizationParameter,output);
 		sendOutputFromAlgorithm(RegInverse,output);
-    auto lambda=output.get<DenseMatrix>(TikhonovAlgoAbstractBase::RegularizationParameter);
-    auto lambda_array=output.get<DenseMatrix>(TikhonovAlgoAbstractBase::LambdaArray);
-    auto lambda_index =output.get<DenseMatrix>(TikhonovAlgoAbstractBase::Lambda_Index);
-    
+    auto lambda = output.get<DenseMatrix>(TikhonovAlgoAbstractBase::RegularizationParameter);
+    auto lambda_array = output.get<DenseMatrix>(TikhonovAlgoAbstractBase::LambdaArray);
+    auto lambda_index = output.get<DenseMatrix>(TikhonovAlgoAbstractBase::Lambda_Index);
+
     auto regularization_method  = state->getValue(Parameters::RegularizationMethod).toString();
 
     if (regularization_method== "lcurve")
@@ -129,8 +129,7 @@ void SolveInverseProblemWithTikhonov::execute()
       auto str = LCurvePlot::update_lcurve_gui(get_id(),lambda,lambda_array,lambda_index);
       state->setTransientValue("LambdaCorner", lambda->get(0,0));
       state->setTransientValue("LambdaCurveInfo", str);
+      state->setTransientValue("LambdaCurve", lambda_array);
     }
   }
 }
-
-

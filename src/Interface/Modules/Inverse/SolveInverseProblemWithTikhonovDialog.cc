@@ -39,6 +39,7 @@ DEALINGS IN THE SOFTWARE.
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Inverse;
+using namespace SCIRun::Core::Datatypes;
 
 typedef SCIRun::Modules::Inverse::SolveInverseProblemWithTikhonov SolveInverseProblemWithTikhonovModule;
 
@@ -85,40 +86,25 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
     plot->setTitle( "L Curve" );
     plot->setCanvasBackground( Qt::white );
     plot->setAxisScale( QwtPlot::yLeft, 0.0, 10.0 );
+    plot->setAxisScale( QwtPlot::xLeft, 0.0, 10.0 );
     plot->insertLegend( new QwtLegend() );
 
     auto grid = new QwtPlotGrid();
     grid->attach( plot );
 
-    auto curve = new QwtPlotCurve();
+    curve_ = new QwtPlotCurve();
     //curve->setTitle( "Lambda points" );
-    curve->setPen( Qt::blue, 4 ),
-    curve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+    curve_->setPen( Qt::blue, 4 ),
+    curve_->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 
     auto symbol = new QwtSymbol( QwtSymbol::Ellipse,
         QBrush( Qt::yellow ), QPen( Qt::red, 2 ), QSize( 8, 8 ) );
-    curve->setSymbol( symbol );
+    curve_->setSymbol( symbol );
 
-    QPolygonF points;
-    points << QPointF( 0.0, 4.4 ) << QPointF( 1.0, 3.0 )
-        << QPointF( 2.0, 4.5 ) << QPointF( 3.0, 6.8 )
-        << QPointF( 4.0, 7.9 ) << QPointF( 5.0, 7.1 );
-    curve->setSamples( points );
+    curve_->attach( plot );
 
-    curve->attach( plot );
-
-    auto l = plotTab_->layout();
-
-    l->addWidget(plot);
-    //plot->resize( 600, 400 );
-    //plot->show();
-
-
-
+    plotTab_->layout()->addWidget(plot);
   }
-
-
-
 }
 
 void SolveInverseProblemWithTikhonovDialog::setSpinBoxValue(int value)
@@ -155,4 +141,17 @@ void SolveInverseProblemWithTikhonovDialog::pullAndDisplayInfo()
   std::ostringstream str_l;
   str_l << lambda;
   lCurveLambdaLineEdit_->setText(QString::fromStdString(str_l.str()));
+
+  {
+    auto data = transient_value_cast<DenseMatrixHandle>(state_->getTransientValue("LambdaCurve"));
+    // qDebug() << "lambda matrix:" << data->nrows() << data->ncols();
+    QPolygonF points;
+    for (int i = 0; i < data->nrows(); ++i)
+    {
+      //qDebug() << (*data)(i,0) << log10((*data)(i,1)) << log10((*data)(i,2));
+      points << QPointF( log10((*data)(i,1)), log10((*data)(i,2)) );
+    }
+
+    curve_->setSamples( points );
+  }
 }

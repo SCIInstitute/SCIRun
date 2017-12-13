@@ -77,6 +77,6 @@ void WaitsForStartupInitialization::waitForStartupInit(const ExecutableLookup& l
   }
   else
   {
-    logWarning("NOT waiting for init");
+    //logWarning("NOT waiting for init");
   }
 }
