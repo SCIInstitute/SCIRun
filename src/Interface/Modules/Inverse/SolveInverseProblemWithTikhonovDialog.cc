@@ -112,9 +112,7 @@ void SolveInverseProblemWithTikhonovDialog::pullAndDisplayInfo()
   auto str = transient_value_cast<std::string>(state_->getTransientValue("LambdaCurveInfo"));
   lCurveTextEdit_->setPlainText(QString::fromStdString(str));
   auto lambda = transient_value_cast<double>(state_->getTransientValue("LambdaCorner"));
-  std::ostringstream str_l;
-  str_l << lambda;
-  lCurveLambdaLineEdit_->setText(QString::fromStdString(str_l.str()));
+  lCurveLambdaLineEdit_->setText(QString::number(lambda));
 
   {
     auto data = transient_value_cast<DenseMatrixHandle>(state_->getTransientValue("LambdaCurve"));
@@ -142,19 +140,37 @@ void SolveInverseProblemWithTikhonovDialog::pullAndDisplayInfo()
         }
 
         plot_ = new QwtPlot(this);
-        plot_->setTitle( "L Curve" );
         plot_->setCanvasBackground( Qt::white );
         plot_->setAxisScale( QwtPlot::xBottom, minX * 0.9, maxX * 1.1 );
+        plot_->setAxisTitle( QwtPlot::xBottom, QString::fromStdWString(L"log \u2016Ax - y\u2016"));
         plot_->setAxisScale( QwtPlot::yLeft, minY * 0.9, maxY * 1.1 );
+        plot_->setAxisTitle( QwtPlot::yLeft, QString::fromStdWString(L"log \u2016Rx\u2016"));
+        plot_->insertLegend( new QwtLegend() );
 
         auto grid = new QwtPlotGrid();
         grid->attach( plot_ );
 
-        curve_ = new QwtPlotCurve();
-        curve_->setPen( Qt::yellow, 2 ),
-        curve_->setRenderHint( QwtPlotItem::RenderAntialiased, true );
-        curve_->attach( plot_ );
-        curve_->setSamples( points );
+        auto curve = new QwtPlotCurve();
+        curve->setPen( Qt::yellow, 2 ),
+        curve->setTitle( "L Curve" );
+        curve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+        curve->attach( plot_ );
+        curve->setSamples( points );
+
+        auto cornerData = transient_value_cast<std::vector<double>>(state_->getTransientValue("LambdaCornerPlot"));
+        auto corner = new QwtPlotCurve();
+        corner->setPen( Qt::green, 2 ),
+        corner->setTitle( "L Corner" );
+        corner->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+        corner->attach( plot_ );
+        QPolygonF cornerPoints;
+        if (cornerData.size() == 6)
+        {
+          cornerPoints << QPointF(0, cornerData[2]);
+          cornerPoints << QPointF(cornerData[3], cornerData[2]);
+          cornerPoints << QPointF(cornerData[3], 0);
+        }
+        corner->setSamples(cornerPoints);
 
         plotTab_->layout()->addWidget(plot_);
       }

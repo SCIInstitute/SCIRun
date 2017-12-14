@@ -64,9 +64,11 @@ std::string LCurvePlot::update_lcurve_gui(const std::string& module_id,
   str << module_id << " plot_graph \" ";
   for (int k = 0; k < nLambda; k++)    str << log10(rho[k]) << " " << log10(eta[k]) << " ";
 
-  str << "\" \" " << log10(rho[0] / 10.0) << " " << log10(eta[lam_ind]) << " ";
-  str << log10(rho[lam_ind]) << " " << log10(eta[lam_ind]) << " ";
-  str << log10(rho[lam_ind]) << " " << log10(lower_y) << " \" ";
+  cornerPlot_.assign({log10(rho[0] / 10.0), log10(eta[lam_ind]), log10(rho[lam_ind]), log10(eta[lam_ind]), log10(rho[lam_ind]), log10(lower_y)});
+
+  str << "\" \" " << cornerPlot_[0] << " " << cornerPlot_[1] << " ";
+  str << cornerPlot_[2] << " " << cornerPlot_[3] << " ";
+  str << cornerPlot_[4] << " " << cornerPlot_[5] << " \" ";
   str << lambda->get(0,0) << " " << lam_ind << " ; \n";
 
   return str.str();

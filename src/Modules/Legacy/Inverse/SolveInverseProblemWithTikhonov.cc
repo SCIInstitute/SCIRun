@@ -113,7 +113,6 @@ void SolveInverseProblemWithTikhonov::execute()
 		// run
 		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,optionalAlgoInput(hMatrixRegMat))(WeightingInSensorSpace,optionalAlgoInput(hMatrixNoiseCov))) );
 
-
 		// set outputs
 		sendOutputFromAlgorithm(InverseSolution,output);
 		sendOutputFromAlgorithm(RegularizationParameter,output);
@@ -126,10 +125,12 @@ void SolveInverseProblemWithTikhonov::execute()
 
     if (regularization_method== "lcurve")
     {
-      auto str = LCurvePlot::update_lcurve_gui(get_id(),lambda,lambda_array,lambda_index);
+			LCurvePlot lCurvePlot;
+      auto str = lCurvePlot.update_lcurve_gui(get_id(),lambda,lambda_array,lambda_index);
       state->setTransientValue("LambdaCorner", lambda->get(0,0));
       state->setTransientValue("LambdaCurveInfo", str);
       state->setTransientValue("LambdaCurve", lambda_array);
+			state->setTransientValue("LambdaCornerPlot", lCurvePlot.cornerPlot());
     }
   }
 }

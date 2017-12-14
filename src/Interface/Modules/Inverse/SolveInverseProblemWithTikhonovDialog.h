@@ -57,7 +57,6 @@ private Q_SLOTS:
   void setSliderStep(double value);
   void pullAndDisplayInfo();
 private:
-  QwtPlotCurve* curve_ {nullptr};
   QwtPlot* plot_ {nullptr};
 };
 
