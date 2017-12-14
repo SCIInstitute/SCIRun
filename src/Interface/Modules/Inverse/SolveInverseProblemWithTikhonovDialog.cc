@@ -119,41 +119,45 @@ void SolveInverseProblemWithTikhonovDialog::pullAndDisplayInfo()
   {
     auto data = transient_value_cast<DenseMatrixHandle>(state_->getTransientValue("LambdaCurve"));
 
-
-
-    QPolygonF points;
-    double maxX = 0, maxY = 0;
-    for (int i = 0; i < data->nrows(); ++i)
+    if (data)
     {
-      auto x = log10((*data)(i,1));
-      auto y = log10((*data)(i,2));
-      points << QPointF(x, y);
-      maxX = std::max(maxX, x);
-      maxY = std::max(maxY, y);
-    }
+      QPolygonF points;
+      auto log10L = [](double d) { return log10(d); };
+      auto logX = data->col(1).unaryExpr(log10L);
+      auto logY = data->col(2).unaryExpr(log10L);
+      double maxX = logX.maxCoeff();
+      double maxY = logY.maxCoeff();
+      double minX = logX.minCoeff();
+      double minY = logY.minCoeff();
 
-    {
-      if (plot_)
+      for (int i = 0; i < data->nrows(); ++i)
       {
-        plotTab_->layout()->removeWidget(plot_);
+        points << QPointF(logX(i), logY(i));
       }
 
-      plot_ = new QwtPlot(this);
-      plot_->setTitle( "L Curve" );
-      plot_->setCanvasBackground( Qt::white );
-      plot_->setAxisScale( QwtPlot::xBottom, 0.0, maxX * 1.1 );
-      plot_->setAxisScale( QwtPlot::yLeft, 0.0, maxY * 1.1 );
+      {
+        if (plot_)
+        {
+          plotTab_->layout()->removeWidget(plot_);
+        }
 
-      auto grid = new QwtPlotGrid();
-      grid->attach( plot_ );
+        plot_ = new QwtPlot(this);
+        plot_->setTitle( "L Curve" );
+        plot_->setCanvasBackground( Qt::white );
+        plot_->setAxisScale( QwtPlot::xBottom, minX * 0.9, maxX * 1.1 );
+        plot_->setAxisScale( QwtPlot::yLeft, minY * 0.9, maxY * 1.1 );
 
-      curve_ = new QwtPlotCurve();
-      curve_->setPen( Qt::yellow, 2 ),
-      curve_->setRenderHint( QwtPlotItem::RenderAntialiased, true );
-      curve_->attach( plot_ );
-      curve_->setSamples( points );
+        auto grid = new QwtPlotGrid();
+        grid->attach( plot_ );
 
-      plotTab_->layout()->addWidget(plot_);
+        curve_ = new QwtPlotCurve();
+        curve_->setPen( Qt::yellow, 2 ),
+        curve_->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+        curve_->attach( plot_ );
+        curve_->setSamples( points );
+
+        plotTab_->layout()->addWidget(plot_);
+      }
     }
   }
 }
