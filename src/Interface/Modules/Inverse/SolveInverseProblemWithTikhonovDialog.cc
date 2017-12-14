@@ -79,32 +79,6 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   connect(lambdaMinDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMin(double)));
   connect(lambdaMaxDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMax(double)));
   connect(lambdaResolutionDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderStep(double)));
-
-
-  {
-    auto plot = new QwtPlot(this);
-    plot->setTitle( "L Curve" );
-    plot->setCanvasBackground( Qt::white );
-    plot->setAxisScale( QwtPlot::yLeft, 0.0, 10.0 );
-    plot->setAxisScale( QwtPlot::xLeft, 0.0, 10.0 );
-    plot->insertLegend( new QwtLegend() );
-
-    auto grid = new QwtPlotGrid();
-    grid->attach( plot );
-
-    curve_ = new QwtPlotCurve();
-    //curve->setTitle( "Lambda points" );
-    curve_->setPen( Qt::blue, 4 ),
-    curve_->setRenderHint( QwtPlotItem::RenderAntialiased, true );
-
-    auto symbol = new QwtSymbol( QwtSymbol::Ellipse,
-        QBrush( Qt::yellow ), QPen( Qt::red, 2 ), QSize( 8, 8 ) );
-    curve_->setSymbol( symbol );
-
-    curve_->attach( plot );
-
-    plotTab_->layout()->addWidget(plot);
-  }
 }
 
 void SolveInverseProblemWithTikhonovDialog::setSpinBoxValue(int value)
@@ -144,14 +118,42 @@ void SolveInverseProblemWithTikhonovDialog::pullAndDisplayInfo()
 
   {
     auto data = transient_value_cast<DenseMatrixHandle>(state_->getTransientValue("LambdaCurve"));
-    // qDebug() << "lambda matrix:" << data->nrows() << data->ncols();
+
+
+
     QPolygonF points;
+    double maxX = 0, maxY = 0;
     for (int i = 0; i < data->nrows(); ++i)
     {
-      //qDebug() << (*data)(i,0) << log10((*data)(i,1)) << log10((*data)(i,2));
-      points << QPointF( log10((*data)(i,1)), log10((*data)(i,2)) );
+      auto x = log10((*data)(i,1));
+      auto y = log10((*data)(i,2));
+      points << QPointF(x, y);
+      maxX = std::max(maxX, x);
+      maxY = std::max(maxY, y);
     }
 
-    curve_->setSamples( points );
+    {
+      if (plot_)
+      {
+        plotTab_->layout()->removeWidget(plot_);
+      }
+
+      plot_ = new QwtPlot(this);
+      plot_->setTitle( "L Curve" );
+      plot_->setCanvasBackground( Qt::white );
+      plot_->setAxisScale( QwtPlot::xBottom, 0.0, maxX * 1.1 );
+      plot_->setAxisScale( QwtPlot::yLeft, 0.0, maxY * 1.1 );
+
+      auto grid = new QwtPlotGrid();
+      grid->attach( plot_ );
+
+      curve_ = new QwtPlotCurve();
+      curve_->setPen( Qt::yellow, 2 ),
+      curve_->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+      curve_->attach( plot_ );
+      curve_->setSamples( points );
+
+      plotTab_->layout()->addWidget(plot_);
+    }
   }
 }

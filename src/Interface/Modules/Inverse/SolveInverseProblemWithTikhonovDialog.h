@@ -33,6 +33,7 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Inverse/share.h>
 
+class QwtPlot;
 class QwtPlotCurve;
 
 namespace SCIRun {
@@ -56,7 +57,8 @@ private Q_SLOTS:
   void setSliderStep(double value);
   void pullAndDisplayInfo();
 private:
-  QwtPlotCurve* curve_;
+  QwtPlotCurve* curve_ {nullptr};
+  QwtPlot* plot_ {nullptr};
 };
 
 }
