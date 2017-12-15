@@ -36,7 +36,6 @@
 #include <Modules/Legacy/Inverse/LCurvePlot.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
-// #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -125,12 +124,12 @@ void SolveInverseProblemWithTikhonov::execute()
 
     if (regularization_method== "lcurve")
     {
-			LCurvePlot lCurvePlot;
-      auto str = lCurvePlot.update_lcurve_gui(get_id(),lambda,lambda_array,lambda_index);
+			LCurvePlot helper;
+      auto str = helper.update_lcurve_gui(get_id(),lambda,lambda_array,lambda_index);
       state->setTransientValue("LambdaCorner", lambda->get(0,0));
       state->setTransientValue("LambdaCurveInfo", str);
       state->setTransientValue("LambdaCurve", lambda_array);
-			state->setTransientValue("LambdaCornerPlot", lCurvePlot.cornerPlot());
+			state->setTransientValue("LambdaCornerPlot", helper.cornerPlot());
     }
   }
 }

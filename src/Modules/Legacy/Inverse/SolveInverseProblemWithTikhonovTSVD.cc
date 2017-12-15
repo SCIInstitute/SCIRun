@@ -36,7 +36,6 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Modules/Legacy/Inverse/LCurvePlot.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD_impl.h>
-// #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -176,7 +175,8 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
       auto str = helper.update_lcurve_gui(get_id(),lambda,lambda_array,lambda_index);
       state->setTransientValue("LambdaCorner", lambda->get(0,0));
       state->setTransientValue("LambdaCurveInfo", str);
+      state->setTransientValue("LambdaCurve", lambda_array);
+      state->setTransientValue("LambdaCornerPlot", helper.cornerPlot());
     }
-
 	}
 }
