@@ -22,8 +22,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/BrainStimulator/ModelTMSCoilSingle.h>
-#include <Interface/Modules/BrainStimulator/ModelTMSCoilSingleDialog.h>
+#include <Modules/BrainStimulator/ModelTMSCoil.h>
+#include <Interface/Modules/BrainStimulator/ModelTMSCoilDialog.h>
 #include <Core/Algorithms/BrainStimulator/ModelGenericCoilAlgorithm.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 
@@ -32,19 +32,23 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 
-ModelTMSCoilSingleDialog::ModelTMSCoilSingleDialog(const std::string& name, ModuleStateHandle state,
+ModelTMSCoilDialog::ModelTMSCoilDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+  
+  addComboBoxManager(Type_,Parameters::Type);
   addRadioButtonGroupManager({ CircularRadioButton_, Fig8RadioButton_}, Parameters::FigureOf8CoilShape);
   addDoubleSpinBoxManager(Current_, Parameters::Current);
-  addDoubleSpinBoxManager(Radius_, Parameters::Radius);
+  addDoubleSpinBoxManager(InnerRadius_, Parameters::InnerRadius);
+  addDoubleSpinBoxManager(OuterRadius_, Parameters::OuterRadius);
   addDoubleSpinBoxManager(Distance_, Parameters::Distance);
-  addSpinBoxManager(Layers_, Parameters::Layers);
   addDoubleSpinBoxManager(LayerStepSize_, Parameters::LayerStepSize);
+  addSpinBoxManager(Rings_, Parameters::Rings); 
+  addSpinBoxManager(Layers_, Parameters::Layers);
   addSpinBoxManager(LevelOfDetail_, Parameters::LevelOfDetail);
 }
 

@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-#include <Modules/BrainStimulator/ModelTMSCoilDipole.h>
+#include <Modules/BrainStimulator/ModelTMSCoil.h>
 #include <iostream>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Scalar.h>
@@ -42,41 +42,45 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Dataflow::Networks;
 
-MODULE_INFO_DEF(ModelTMSCoilDipole, BrainStimulator, SCIRun)
+MODULE_INFO_DEF(ModelTMSCoil, BrainStimulator, SCIRun)
 
-ModelTMSCoilDipole::ModelTMSCoilDipole() : Module(ModuleLookupInfo("ModelTMSCoilDipole", "BrainStimulator", "SCIRun"),true)
+ModelTMSCoil::ModelTMSCoil() : Module(ModuleLookupInfo("ModelTMSCoil", "BrainStimulator", "SCIRun"),true)
 {
  INITIALIZE_PORT(Mesh);
 }
 
-void ModelTMSCoilDipole::setStateDefaults()
+void ModelTMSCoil::setStateDefaults()
 {
-  auto state = get_state();
+  auto state = get_state(); 
+  setStateStringFromAlgo(Parameters::Type);
   setStateIntFromAlgo(Parameters::FigureOf8CoilShape);
   setStateDoubleFromAlgo(Parameters::Current);
-  setStateIntFromAlgo(Parameters::Segments);
+  setStateIntFromAlgo(Parameters::Rings);
   setStateDoubleFromAlgo(Parameters::InnerRadius);
   setStateDoubleFromAlgo(Parameters::OuterRadius);
-  setStateDoubleFromAlgo(Parameters::OuterDistance);
+  setStateDoubleFromAlgo(Parameters::Distance);
   setStateIntFromAlgo(Parameters::Layers);
+  setStateDoubleFromAlgo(Parameters::LayerStepSize);
   setStateIntFromAlgo(Parameters::LevelOfDetail);
 }
 
-void ModelTMSCoilDipole::execute()
+void ModelTMSCoil::execute()
 {
   AlgorithmOutput output;
    
  if (needToExecute())  //newStatePresent
  {   
    auto state = get_state();
+   setAlgoStringFromState(Parameters::Type);
    setAlgoIntFromState(Parameters::FigureOf8CoilShape);
-   setAlgoIntFromState(Parameters::Segments);
-   setAlgoIntFromState(Parameters::Layers);
-   setAlgoIntFromState(Parameters::LevelOfDetail);
    setAlgoDoubleFromState(Parameters::Current);
+   setAlgoIntFromState(Parameters::Rings);
    setAlgoDoubleFromState(Parameters::InnerRadius);
    setAlgoDoubleFromState(Parameters::OuterRadius);
-   setAlgoDoubleFromState(Parameters::OuterDistance);
+   setAlgoDoubleFromState(Parameters::Distance);
+   setAlgoIntFromState(Parameters::Layers);
+   setAlgoDoubleFromState(Parameters::LayerStepSize);
+   setAlgoIntFromState(Parameters::LevelOfDetail);
    
    output = algo().run(AlgorithmInput()); 
    

@@ -36,13 +36,16 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/BrainStimulator/share.h>
 
+#include <string>
+
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace BrainStimulator {
 
+ALGORITHM_PARAMETER_DECL(Type);
 ALGORITHM_PARAMETER_DECL(FigureOf8CoilShape);
-ALGORITHM_PARAMETER_DECL(Windings);
+ALGORITHM_PARAMETER_DECL(Rings);
 ALGORITHM_PARAMETER_DECL(Current);
 ALGORITHM_PARAMETER_DECL(Radius);
 ALGORITHM_PARAMETER_DECL(InnerRadius);
@@ -51,9 +54,58 @@ ALGORITHM_PARAMETER_DECL(Distance);
 ALGORITHM_PARAMETER_DECL(Layers);
 ALGORITHM_PARAMETER_DECL(LayerStepSize);
 ALGORITHM_PARAMETER_DECL(LevelOfDetail); 
-ALGORITHM_PARAMETER_DECL(OuterDistance);
-ALGORITHM_PARAMETER_DECL(Segments);
 
+
+  class SCISHARE ModelTMSCoilAlgorithm : public AlgorithmBase
+  {
+      public:
+        ModelTMSCoilAlgorithm()
+	{
+	 addParameter(Parameters::Type,"");
+	 addParameter(Parameters::FigureOf8CoilShape,2);
+	 addParameter(Parameters::Current,1);
+	 addParameter(Parameters::Rings,9);
+	 addParameter(Parameters::InnerRadius,26);
+	 addParameter(Parameters::OuterRadius,44);
+	 addParameter(Parameters::Distance,2);
+	 addParameter(Parameters::Layers,1);
+	 addParameter(Parameters::LayerStepSize,1);
+	 addParameter(Parameters::LevelOfDetail,6);
+	}
+	
+        struct Args
+        {
+        	double current;
+        	double coilRadiusInner;
+        	double coilRadiusOuter;
+            double coilDistance;
+        	size_t coilLevelDetails;
+            size_t coilLayers;
+            double coilLayersStep;
+            size_t rings;
+        	int type;
+        	
+        	inline bool operator==(const Args& rhs)
+        	{ 
+    			return current == rhs.current && 
+    			coilRadiusInner == rhs.coilRadiusInner && 
+    			coilRadiusOuter == rhs.coilRadiusOuter && 
+    			coilLevelDetails == rhs.coilLevelDetails &&
+                coilDistance == rhs.coilDistance &&
+                coilLayers == rhs.coilLayers &&
+                coilLayersStep == rhs.coilLayersStep &&
+                rings == rhs.rings &&
+    			type == rhs.type;
+        	}
+    		inline bool operator!=( const Args& rhs){return !( (*this) == rhs );}
+        };
+        
+        //! Generate the coil geometry
+        AlgorithmOutput run(const AlgorithmInput& input) const override;       
+        
+    };
+    
+/*
   class SCISHARE ModelTMSCoilSingleAlgorithm : public AlgorithmBase
   {
       public:
@@ -101,15 +153,15 @@ ALGORITHM_PARAMETER_DECL(Segments);
       public:
         ModelTMSCoilSpiralAlgorithm()
         {
-	 addParameter(Parameters::FigureOf8CoilShape,2);
-	 addParameter(Parameters::Current,1);
-	 addParameter(Parameters::Windings,9);
-	 addParameter(Parameters::InnerRadius,0.026);
-	 addParameter(Parameters::OuterRadius,0.044);
-	 addParameter(Parameters::OuterDistance,0.002);
-	 addParameter(Parameters::Layers,1);
-	 addParameter(Parameters::LayerStepSize,0.001);
-	 addParameter(Parameters::LevelOfDetail,6);
+	// addParameter(Parameters::FigureOf8CoilShape,2);
+	// addParameter(Parameters::Current,1);
+	// addParameter(Parameters::Windings,9);
+	// addParameter(Parameters::InnerRadius,0.026);
+	// addParameter(Parameters::OuterRadius,0.044);
+	// addParameter(Parameters::OuterDistance,0.002);
+	// addParameter(Parameters::Layers,1);
+	// addParameter(Parameters::LayerStepSize,0.001);
+	// addParameter(Parameters::LevelOfDetail,6);
 	}
 
         struct Args
@@ -141,7 +193,6 @@ ALGORITHM_PARAMETER_DECL(Segments);
         
         //! Generate the coil geom
         bool run(FieldHandle& mesh, Args& args) const; 
-	AlgorithmOutput run(const AlgorithmInput& input) const override;
     };
     
     class SCISHARE ModelTMSCoilDipoleAlgorithm : public AlgorithmBase
@@ -189,6 +240,8 @@ ALGORITHM_PARAMETER_DECL(Segments);
         bool run(FieldHandle& mesh, Args& args) const; 
 	AlgorithmOutput run(const AlgorithmInput& input) const override;
     };
+    
+    */
 
 }}}}
 

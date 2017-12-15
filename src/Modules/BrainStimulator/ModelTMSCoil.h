@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,29 +25,44 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+///@file ModelTMSCoil
+///@brief 
+/// Generates 
+/// a) spiral wire segments of single/figure-of-8 TMS coil with repsective current values
+/// b) Generates wire segments of single/figure-of-8 TMS coil (one ring wire for each wing) with repsective current values
+/// c) Point cloud with vector data (= magnetic dipoles) describing magnetic field output of single/figure-of-8 TMS coil
+/// 
+///@author
+/// Implementation: Petar Petrov for SCIRun 4.7
+/// Converted to SCIRun5 by Moritz Dannhauer
 
-#ifndef INTERFACE_MODULES_ModelTMSCoilSingleDialog_H
-#define INTERFACE_MODULES_ModelTMSCoilSingleDialog_H
+#ifndef MODULES_BRAINSTIMULATOR_ModelTMSCoil_H
+#define MODULES_BRAINSTIMULATOR_ModelTMSCoil_H
 
-#include "Interface/Modules/BrainStimulator/ui_ModelTMSCoilSingleDialog.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/BrainStimulator/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/BrainStimulator/share.h>
 
 namespace SCIRun {
-namespace Gui {
+  namespace Modules {
+    namespace BrainStimulator {
 
-class SCISHARE ModelTMSCoilSingleDialog : public ModuleDialogGeneric,
-  public Ui::ModelTMSCoilSingleDialog
+class SCISHARE ModelTMSCoil : public SCIRun::Dataflow::Networks::Module,
+  public HasNoInputPorts,
+  public Has1OutputPort<FieldPortTag>
 {
-	Q_OBJECT
+  public:
+    ModelTMSCoil();
 
-public:
-  ModelTMSCoilSingleDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
+
+    OUTPUT_PORT(0, Mesh, Field);
+
+    NEW_BRAIN_STIMULATOR_MODULE
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 };
 
-}
-}
+}}}
 
 #endif
