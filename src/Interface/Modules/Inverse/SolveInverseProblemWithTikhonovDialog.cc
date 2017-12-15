@@ -107,6 +107,7 @@ void SolveInverseProblemWithTikhonovDialog::setSliderStep(double value)
   lambdaSlider_->setSingleStep(static_cast<int>(value));
 }
 
+//TODO: refactor and add to other two Tikhonov modules
 void SolveInverseProblemWithTikhonovDialog::pullAndDisplayInfo()
 {
   auto str = transient_value_cast<std::string>(state_->getTransientValue("LambdaCurveInfo"));
