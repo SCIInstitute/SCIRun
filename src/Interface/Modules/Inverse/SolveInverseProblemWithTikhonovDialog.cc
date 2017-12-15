@@ -79,6 +79,8 @@ SolveInverseProblemWithTikhonovDialog::SolveInverseProblemWithTikhonovDialog(con
   connect(lambdaMinDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMin(double)));
   connect(lambdaMaxDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMax(double)));
   connect(lambdaResolutionDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderStep(double)));
+
+  WidgetStyleMixin::tabStyle(tabWidget);
 }
 
 void SolveInverseProblemWithTikhonovDialog::setSpinBoxValue(int value)
@@ -107,74 +109,75 @@ void SolveInverseProblemWithTikhonovDialog::setSliderStep(double value)
   lambdaSlider_->setSingleStep(static_cast<int>(value));
 }
 
-//TODO: refactor and add to other two Tikhonov modules
 void SolveInverseProblemWithTikhonovDialog::pullAndDisplayInfo()
 {
   auto str = transient_value_cast<std::string>(state_->getTransientValue("LambdaCurveInfo"));
   lCurveTextEdit_->setPlainText(QString::fromStdString(str));
   auto lambda = transient_value_cast<double>(state_->getTransientValue("LambdaCorner"));
   lCurveLambdaLineEdit_->setText(QString::number(lambda));
+  lCurvePlotWidgetHelper_.updatePlot(state_, plotTab_);
+}
 
+void LCurvePlotWidgetHelper::updatePlot(ModuleStateHandle state, QWidget* plotTab)
+{
+  auto data = transient_value_cast<DenseMatrixHandle>(state->getTransientValue("LambdaCurve"));
+  auto cornerData = transient_value_cast<std::vector<double>>(state->getTransientValue("LambdaCornerPlot"));
+
+  if (data)
   {
-    auto data = transient_value_cast<DenseMatrixHandle>(state_->getTransientValue("LambdaCurve"));
+    QPolygonF points;
+    auto log10L = [](double d) { return log10(d); };
+    auto logX = data->col(1).unaryExpr(log10L);
+    auto logY = data->col(2).unaryExpr(log10L);
+    double maxX = logX.maxCoeff();
+    double maxY = logY.maxCoeff();
+    double minX = logX.minCoeff();
+    double minY = logY.minCoeff();
 
-    if (data)
+    for (int i = 0; i < data->nrows(); ++i)
     {
-      QPolygonF points;
-      auto log10L = [](double d) { return log10(d); };
-      auto logX = data->col(1).unaryExpr(log10L);
-      auto logY = data->col(2).unaryExpr(log10L);
-      double maxX = logX.maxCoeff();
-      double maxY = logY.maxCoeff();
-      double minX = logX.minCoeff();
-      double minY = logY.minCoeff();
-
-      for (int i = 0; i < data->nrows(); ++i)
-      {
-        points << QPointF(logX(i), logY(i));
-      }
-
-      {
-        if (plot_)
-        {
-          plotTab_->layout()->removeWidget(plot_);
-        }
-
-        plot_ = new QwtPlot(this);
-        plot_->setCanvasBackground( Qt::white );
-        plot_->setAxisScale( QwtPlot::xBottom, minX * 0.9, maxX * 1.1 );
-        plot_->setAxisTitle( QwtPlot::xBottom, QString::fromStdWString(L"log \u2016Ax - y\u2016"));
-        plot_->setAxisScale( QwtPlot::yLeft, minY * 0.9, maxY * 1.1 );
-        plot_->setAxisTitle( QwtPlot::yLeft, QString::fromStdWString(L"log \u2016Rx\u2016"));
-        plot_->insertLegend( new QwtLegend() );
-
-        auto grid = new QwtPlotGrid();
-        grid->attach( plot_ );
-
-        auto curve = new QwtPlotCurve();
-        curve->setPen( Qt::yellow, 2 ),
-        curve->setTitle( "L Curve" );
-        curve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
-        curve->attach( plot_ );
-        curve->setSamples( points );
-
-        auto cornerData = transient_value_cast<std::vector<double>>(state_->getTransientValue("LambdaCornerPlot"));
-        auto corner = new QwtPlotCurve();
-        corner->setPen( Qt::green, 2 ),
-        corner->setTitle( "L Corner" );
-        corner->setRenderHint( QwtPlotItem::RenderAntialiased, true );
-        corner->attach( plot_ );
-        QPolygonF cornerPoints;
-        if (cornerData.size() == 6)
-        {
-          cornerPoints << QPointF(0, cornerData[2]);
-          cornerPoints << QPointF(cornerData[3], cornerData[2]);
-          cornerPoints << QPointF(cornerData[3], 0);
-        }
-        corner->setSamples(cornerPoints);
-
-        plotTab_->layout()->addWidget(plot_);
-      }
+      points << QPointF(logX(i), logY(i));
     }
+
+
+    if (plot_)
+    {
+      plotTab->layout()->removeWidget(plot_);
+    }
+
+    plot_ = new QwtPlot(plotTab);
+    plot_->setCanvasBackground( Qt::white );
+    plot_->setAxisScale( QwtPlot::xBottom, minX * 0.9, maxX * 1.1 );
+    plot_->setAxisTitle( QwtPlot::xBottom, QString::fromStdWString(L"log \u2016Ax - y\u2016"));
+    plot_->setAxisScale( QwtPlot::yLeft, minY * 0.9, maxY * 1.1 );
+    plot_->setAxisTitle( QwtPlot::yLeft, QString::fromStdWString(L"log \u2016Rx\u2016"));
+    plot_->insertLegend( new QwtLegend() );
+
+    auto grid = new QwtPlotGrid();
+    grid->attach( plot_ );
+
+    auto curve = new QwtPlotCurve();
+    curve->setPen( Qt::yellow, 2 ),
+    curve->setTitle( "L Curve" );
+    curve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+    curve->attach( plot_ );
+    curve->setSamples( points );
+
+    if (cornerData.size() == 6)
+    {
+      auto corner = new QwtPlotCurve();
+      corner->setPen( Qt::green, 2 ),
+      corner->setTitle( "L Corner" );
+      corner->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+      corner->attach( plot_ );
+      QPolygonF cornerPoints;
+      cornerPoints << QPointF(0, cornerData[2]);
+      cornerPoints << QPointF(cornerData[3], cornerData[2]);
+      cornerPoints << QPointF(cornerData[3], 0);
+
+      corner->setSamples(cornerPoints);
+    }
+
+    plotTab->layout()->addWidget(plot_);
   }
 }
