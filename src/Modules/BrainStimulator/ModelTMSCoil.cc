@@ -56,6 +56,7 @@ void ModelTMSCoil::setStateDefaults()
   setStateIntFromAlgo(Parameters::FigureOf8CoilShape);
   setStateDoubleFromAlgo(Parameters::Current);
   setStateIntFromAlgo(Parameters::Rings);
+  setStateDoubleFromAlgo(Parameters::WingsAngle);
   setStateDoubleFromAlgo(Parameters::InnerRadius);
   setStateDoubleFromAlgo(Parameters::OuterRadius);
   setStateDoubleFromAlgo(Parameters::Distance);
@@ -75,6 +76,7 @@ void ModelTMSCoil::execute()
    setAlgoIntFromState(Parameters::FigureOf8CoilShape);
    setAlgoDoubleFromState(Parameters::Current);
    setAlgoIntFromState(Parameters::Rings);
+   setAlgoDoubleFromState(Parameters::WingsAngle);
    setAlgoDoubleFromState(Parameters::InnerRadius);
    setAlgoDoubleFromState(Parameters::OuterRadius);
    setAlgoDoubleFromState(Parameters::Distance);

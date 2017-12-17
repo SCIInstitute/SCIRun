@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>22</count>
+			<count>23</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CalculateFieldData:1</first>
@@ -264,7 +264,7 @@
 									<name>ColorMapResolution</name>
 									<value>
 										<which>0</which>
-										<value>256</value>
+										<value>2</value>
 									</value>
 								</second>
 							</item>
@@ -405,7 +405,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>10</count>
+							<count>11</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -451,7 +451,7 @@
 									<name>InnerRadius</name>
 									<value>
 										<which>1</which>
-										<value>2.50000000000000000e+01</value>
+										<value>3.50000000000000000e+01</value>
 									</value>
 								</second>
 							</item>
@@ -511,7 +511,7 @@
 									<name>Rings</name>
 									<value>
 										<which>0</which>
-										<value>9</value>
+										<value>3</value>
 									</value>
 								</second>
 							</item>
@@ -524,6 +524,18 @@
 									<value>
 										<which>2</which>
 										<value>Thin Circular Wires</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>WingsAngle</name>
+								</first>
+								<second>
+									<name>WingsAngle</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -643,7 +655,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>1.60350521888757913e+00</value>
+										<value>6.51788885535136142e-01</value>
 									</value>
 								</second>
 							</item>
@@ -655,7 +667,7 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>1.01138303614076892e-02</value>
+										<value>4.46340102260840525e-03</value>
 									</value>
 								</second>
 							</item>
@@ -668,6 +680,70 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>RescaleColorMap:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>RescaleColorMap</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>4</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AutoScale</name>
+								</first>
+								<second>
+									<name>AutoScale</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMax</name>
+								</first>
+								<second>
+									<name>FixedMax</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+06</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FixedMin</name>
+								</first>
+								<second>
+									<name>FixedMin</name>
+									<value>
+										<which>1</which>
+										<value>-1.00000000000000000e+06</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Symmetric</name>
+								</first>
+								<second>
+									<name>Symmetric</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -751,7 +827,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000002e-02</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -823,7 +899,7 @@
 									<name>EdgesAsCylinders</name>
 									<value>
 										<which>0</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -1123,7 +1199,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.50000000000000044e+00</value>
 									</value>
 								</second>
 							</item>
@@ -2193,7 +2269,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>25</count>
+			<count>27</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CalculateFieldData:1</moduleId1_>
@@ -2249,7 +2325,7 @@
 					<name>ColorMapObject</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:0</moduleId2_>
+				<moduleId2_>RescaleColorMap:1</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
@@ -2321,6 +2397,18 @@
 					<name>Mesh</name>
 					<id>0</id>
 				</port1_>
+				<moduleId2_>RescaleColorMap:1</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ModelTMSCoil:0</moduleId1_>
+				<port1_>
+					<name>Mesh</name>
+					<id>0</id>
+				</port1_>
 				<moduleId2_>ShowField:0</moduleId2_>
 				<port2_>
 					<name>Field</name>
@@ -2346,6 +2434,18 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowField:5</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>RescaleColorMap:1</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:0</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
@@ -2498,7 +2598,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>22</count>
+		<count>23</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>CalculateFieldData:1</first>
@@ -2606,6 +2706,13 @@
 			</second>
 		</item>
 		<item>
+			<first>RescaleColorMap:1</first>
+			<second>
+				<first>-6.08000000000000000e+02</first>
+				<second>-3.04000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
 			<first>SetFieldData:0</first>
 			<second>
 				<first>-3.80000000000000000e+02</first>
@@ -2664,7 +2771,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="20" tracking_level="0" version="0">
-		<count>22</count>
+		<count>23</count>
 		<item_version>0</item_version>
 		<item class_id="21" tracking_level="0" version="0">
 			<first>CalculateFieldData:1</first>
@@ -2724,6 +2831,10 @@
 		</item>
 		<item>
 			<first>RescaleColorMap:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>RescaleColorMap:1</first>
 			<second>-1</second>
 		</item>
 		<item>

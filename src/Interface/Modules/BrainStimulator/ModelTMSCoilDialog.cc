@@ -43,6 +43,7 @@ ModelTMSCoilDialog::ModelTMSCoilDialog(const std::string& name, ModuleStateHandl
   addComboBoxManager(Type_,Parameters::Type);
   addRadioButtonGroupManager({ CircularRadioButton_, Fig8RadioButton_}, Parameters::FigureOf8CoilShape);
   addDoubleSpinBoxManager(Current_, Parameters::Current);
+  addDoubleSpinBoxManager(WingsAngle_, Parameters::WingsAngle);
   addDoubleSpinBoxManager(InnerRadius_, Parameters::InnerRadius);
   addDoubleSpinBoxManager(OuterRadius_, Parameters::OuterRadius);
   addDoubleSpinBoxManager(Distance_, Parameters::Distance);
