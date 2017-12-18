@@ -38,6 +38,7 @@
 #include <Core/Thread/Parallel.h>
 #include <string>
 #include <cassert>
+#include <memory>
 #include <Core/Logging/Log.h>
 #include <boost/lexical_cast.hpp>
 
@@ -60,10 +61,10 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, OutType);
 
 		public:
 			KernelBase(const AlgorithmBase* algo, int t) :
+			  ref_cnt(0),
 			  algo_(algo),
 			  numprocessors_(Parallel::NumCores()),
 			  barrier_("BSV KernelBase Barrier", numprocessors_),
-			  ref_cnt(0),
 			  typeOut(t),
 			  matOut(0)
 			{
@@ -83,8 +84,9 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, OutType);
 		protected:
 
 			//! ref to the executing algorithm context
-		        const AlgorithmBase* algo_;
-                        unsigned int numprocessors_;
+			const AlgorithmBase* algo_;
+			unsigned int numprocessors_;
+			
 			//! model miscs.
 			VMesh* vmesh;
 			VField* vfield;
@@ -121,7 +123,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, OutType);
 
 					this->numprocessors_ = Parallel::NumCores();
 
-                                        int numproc = Parallel::NumCores();
+                    int numproc = Parallel::NumCores();
 
 					if (numproc > 0) 
 					{ 
@@ -129,8 +131,8 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, OutType);
 					}
 					
 					#ifdef _DEBUG
-					//! DEBUG when we want to test with one CPU only
-          numprocessors_ = 1;
+						//! DEBUG when we want to test with one CPU only
+						numprocessors_ = 1;
 					#endif
 					
 					algo_->remark("number of processors:  " + boost::lexical_cast<std::string>(this->numprocessors_));
@@ -233,7 +235,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, OutType);
 					assert(step >= 0.0);
 					extstep = step;
 				}
-
+                
 				double GetIntegrationStep() const
 				{
 					return extstep;
@@ -724,8 +726,8 @@ bool BiotSavartSolverAlgorithm::run(FieldHandle mesh, FieldHandle coil, MatrixHa
   {
     if(coil->vfield()->is_constantdata() && coil->vfield()->is_scalar())
     {
-      auto pwk = new PieceWiseKernel(this, outtype);
-      pwk->SetIntegrationStep(this->istep);
+      auto pwk = std::unique_ptr<KernelBase>(new PieceWiseKernel(this, outtype));
+      //pwk->SetIntegrationStep(this->istep);
       if( !pwk->Integrate(mesh,coil,outdata) )
       {
        error("Aborted during integration");
@@ -742,7 +744,7 @@ bool BiotSavartSolverAlgorithm::run(FieldHandle mesh, FieldHandle coil, MatrixHa
   {
    if((coil->vfield()->is_lineardata() || coil->vfield()->is_constantdata() ) && coil->vfield()->is_vector())
    {
-    auto dp = new DipolesKernel(this, outtype);
+    auto dp = std::unique_ptr<KernelBase>(new DipolesKernel(this, outtype));
     if( !dp->Integrate(mesh,coil,outdata) )
       {
        error("Aborted during integration");
@@ -751,7 +753,7 @@ bool BiotSavartSolverAlgorithm::run(FieldHandle mesh, FieldHandle coil, MatrixHa
    }
    else
    {
-    error("pointcloud expected with linear vector data.");
+    error("Pointcloud expected with linear vector data.");
     return (false);
    }
   }
@@ -759,7 +761,7 @@ bool BiotSavartSolverAlgorithm::run(FieldHandle mesh, FieldHandle coil, MatrixHa
   {
    if(  coil->vfield()->is_constantdata() && coil->vfield()->is_vector() )
    {
-   auto vp = new VolumetricKernel(this, outtype);
+   auto vp = std::unique_ptr<KernelBase>(new VolumetricKernel(this, outtype));
    if( !vp->Integrate(mesh,coil,outdata) )
       {
        error("Aborted during integration");
