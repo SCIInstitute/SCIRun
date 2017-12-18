@@ -164,7 +164,7 @@ public:
     deserializeCreateInternal(core, root);
   }
 
-  const char* getComponentName() const
+  const char* getComponentName() const override
   {
     static_assert( has_member_getname<T>::value,
                   "Component does not have a getName function with signature: static const char* getName()" );

@@ -32,6 +32,7 @@ SET(Interface_Modules_Base_FORMS
   ParserHelp.ui
   ModuleButtonBar.ui
   SubnetDialog.ui
+  CustomWidgets/QtHistogramWidget.ui
 )
 
 SET(Interface_Modules_Base_HEADERS
@@ -41,6 +42,8 @@ SET(Interface_Modules_Base_HEADERS
   WidgetSlotManagers.h
   HasParserHelpDialog.h
   ModuleButtonBar.h
+  CustomWidgets/QtHistogramWidget.h
+  CustomWidgets/QtHistogramGraph.h
   share.h
 )
 
@@ -51,6 +54,8 @@ SET(Interface_Modules_Base_SOURCES
   WidgetSlotManagers.cc
   HasParserHelpDialog.cc
   ModuleButtonBar.cc
+  CustomWidgets/QtHistogramWidget.cc
+  CustomWidgets/QtHistogramGraph.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Base_FORMS_HEADERS ${Interface_Modules_Base_FORMS})
@@ -66,6 +71,7 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Base
 TARGET_LINK_LIBRARIES(Interface_Modules_Base
   Algorithms_Base
   Core_Logging
+  Core_Math
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )

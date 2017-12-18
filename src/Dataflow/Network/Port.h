@@ -60,6 +60,7 @@ public:
 
   size_t nconnections() const override;
   Connection* connection(size_t) const override;
+  bool hasConnectionCountIncreased() const override;
 
   virtual PortId id() const override { return id_; }
   virtual void setId(const PortId& id) override { id_ = id; }
@@ -89,6 +90,7 @@ protected:
   const std::string typeName_;
   const std::string portName_;
   const std::string colorName_;
+  mutable bool connectionCountIncreasedFlag_;
 };
 
 #ifdef WIN32

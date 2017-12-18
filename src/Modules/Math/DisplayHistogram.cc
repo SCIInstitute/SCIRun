@@ -21,37 +21,39 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#include <Modules/Math/ComputePCA.h>
-#include <Core/Algorithms/Math/ComputePCA.h>
+#include <Modules/Math/DisplayHistogram.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
 
+MODULE_INFO_DEF(DisplayHistogram, Math, SCIRun)
 
-ComputePCA::ComputePCA() : Module(ModuleLookupInfo("ComputePCA", "Math", "SCIRun"),false)
+DisplayHistogram::DisplayHistogram() : Module(staticInfo_)
 {
-    INITIALIZE_PORT(InputMatrix);
-    INITIALIZE_PORT(LeftPrincipalMatrix);
-    INITIALIZE_PORT(PrincipalValues);
-    INITIALIZE_PORT(RightPrincipalMatrix);
+  INITIALIZE_PORT(InputMatrix);
 }
 
-void ComputePCA::execute()
+void DisplayHistogram::execute()
 {
-    auto input_matrix = getRequiredInput(InputMatrix);
+  auto input_matrix = getRequiredInput(InputMatrix);
 
-    if(needToExecute())
-    {        
-        auto output = algo().run(withInputData((InputMatrix,input_matrix)));
-
-        sendOutputFromAlgorithm(LeftPrincipalMatrix, output);
-        sendOutputFromAlgorithm(PrincipalValues, output);
-        sendOutputFromAlgorithm(RightPrincipalMatrix, output);
-
+  if (needToExecute())
+  {
+    if (input_matrix->empty())
+    {
+      THROW_INVALID_ARGUMENT("Empty matrix input.");
     }
+    auto dense = castMatrix::toDense(input_matrix);
+    std::vector<double> data;
+    data.reserve(dense->size());
+    for (auto i = 0; i < dense->nrows(); ++i)
+      for (auto j = 0; j < dense->ncols(); ++j)
+        data.push_back((*dense)(i,j));
+    get_state()->setTransientValue(Variables::InputMatrix, data);
+  }
 }

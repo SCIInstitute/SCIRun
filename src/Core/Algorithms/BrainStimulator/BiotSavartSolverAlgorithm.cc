@@ -130,7 +130,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, OutType);
 					
 					#ifdef _DEBUG
 					//! DEBUG when we want to test with one CPU only
-					numprocessors = 1;
+          numprocessors_ = 1;
 					#endif
 					
 					algo_->remark("number of processors:  " + boost::lexical_cast<std::string>(this->numprocessors_));
@@ -700,7 +700,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, OutType);
 				}
 		};
 	
-bool BiotSavartSolverAlgorithm::run(FieldHandle mesh, FieldHandle coil, Datatypes::MatrixHandle &outdata, int outtype) const
+bool BiotSavartSolverAlgorithm::run(FieldHandle mesh, FieldHandle coil, MatrixHandle &outdata, int outtype) const
 {
   if (!mesh)
   {

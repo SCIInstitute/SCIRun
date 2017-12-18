@@ -118,7 +118,8 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   grabbedByWidget_(false),
   isSelected_(false),
   pressedSubWidget_(nullptr),
-  doHighlight_(false)
+  doHighlight_(false),
+  timeLine_(nullptr)
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);

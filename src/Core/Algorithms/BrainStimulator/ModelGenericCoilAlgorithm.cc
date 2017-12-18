@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Math/MiscMath.h>
 #include <Core/Algorithms/BrainStimulator/ModelGenericCoilAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/BiotSavartSolverAlgorithm.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -36,7 +37,6 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
-#include <vector>
 #include <cassert>
 #include <boost/lexical_cast.hpp>
 

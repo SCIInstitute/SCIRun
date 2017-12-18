@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,35 +24,39 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
-#ifndef CORE_ALGORITHMS_FIELDS_CLEANUP_CLEANUPTETMESH_H
-#define CORE_ALGORITHMS_FIELDS_CLEANUP_CLEANUPTETMESH_H
+#ifndef INTERFACE_MODULES_MATH_DISPLAYHISTOGRAM_H
+#define INTERFACE_MODULES_MATH_DISPLAYHISTOGRAM_H 
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
-#include <Core/Datatypes/Legacy/Base/Types.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include "Interface/Modules/Math/ui_DisplayHistogram.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Fields {
-
-  ALGORITHM_PARAMETER_DECL(FixOrientationCheckBox);
-  ALGORITHM_PARAMETER_DECL(RemoveDegenerateCheckBox);
-
-  class SCISHARE CleanupTetMeshAlgo : public AlgorithmBase
+namespace SCIRun 
+{
+  namespace QtUtils
   {
-  public:
-    CleanupTetMeshAlgo();
-    AlgorithmOutput run(const AlgorithmInput& input) const;
-    static AlgorithmInputName InputTetMesh;
-    static AlgorithmOutputName OutputTetMesh;
-    bool run(FieldHandle input, FieldHandle& output) const;
-  };
+    class QtHistogramWidget;
+  }
 
-}}}}
+  namespace Gui 
+  {
+    class SCISHARE DisplayHistogramDialog : public ModuleDialogGeneric,
+      public Ui::DisplayHistogram
+    {
+      Q_OBJECT
 
+    public:
+      DisplayHistogramDialog(const std::string& name,
+        SCIRun::Dataflow::Networks::ModuleStateHandle state,
+        QWidget* parent = nullptr);
+    protected:
+      virtual void pullSpecial() override;
 
+    private:
+      QtUtils::QtHistogramWidget* histoWidget_;
+    };
+  }
+}
 #endif
