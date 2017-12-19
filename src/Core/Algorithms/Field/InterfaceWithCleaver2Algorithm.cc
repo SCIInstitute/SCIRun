@@ -30,15 +30,16 @@ DEALINGS IN THE SOFTWARE.
 ///TODO: fix include path to remove Externals/ part
 
 #include <Core/Algorithms/Field/InterfaceWithCleaver2Algorithm.h>
+#include <Core/Algorithms/Field/InterfaceWithCleaverAlgorithm.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#if 0
-#include <Externals/cleaver/lib/FloatField.h>
-#include <Externals/cleaver/lib/vec3.h>
-#include <Externals/cleaver/lib/BoundingBox.h>
-#include <Externals/cleaver/lib/Cleaver.h>
-#include <Externals/cleaver/lib/InverseField.h>
-#include <Externals/cleaver/lib/PaddedVolume.h>
-#include <Externals/cleaver/lib/Volume.h>
+
+//#include <cleaver/FloatField.h>
+#include <cleaver/vec3.h>
+#include <cleaver/BoundingBox.h>
+#include <cleaver/Cleaver.h>
+#include <cleaver/InverseField.h>
+//#include <cleaver/PaddedVolume.h>
+#include <cleaver/Volume.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 #include <Core/GeometryPrimitives/Vector.h>
@@ -52,12 +53,12 @@ DEALINGS IN THE SOFTWARE.
 #include <boost/scoped_ptr.hpp>
 #include <Core/Logging/Log.h>
 #include <Core/Math/MiscMath.h>
-#endif
-//
+
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
-// using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Geometry;
 using namespace SCIRun;
+
 // using namespace SCIRun::Core;
 // using namespace SCIRun::Core::Logging;
 //
@@ -78,33 +79,7 @@ InterfaceWithCleaver2Algorithm::InterfaceWithCleaver2Algorithm()
   // addParameter(VolumeScalingZ,1.0);
 }
 
-#if 0
-boost::shared_ptr<Cleaver::ScalarField> InterfaceWithCleaverAlgorithm::makeCleaverFieldFromLatVol(FieldHandle field )
-{
-  VMesh*  vmesh   = field->vmesh();
-  VField* vfield = field->vfield();
-  VMesh::dimension_type dims;
-  vmesh->get_dimensions( dims );
-
-  float* ptr = static_cast<float*>(vfield->fdata_pointer());
-
-  auto cleaverField = boost::make_shared<Cleaver::FloatField>(dims[0], dims[1], dims[2], ptr);
-  Cleaver::BoundingBox bb(Cleaver::vec3::zero, Cleaver::vec3(dims[0],dims[1],dims[2]));
-  cleaverField->setBounds(bb);
-  const Transform &transform = vmesh->get_transform();
-
-  int x_spacing=fabs(transform.get_mat_val(0,0)), y_spacing=fabs(transform.get_mat_val(1,1)), z_spacing=fabs(transform.get_mat_val(2,2));
-
-  if (IsNan(x_spacing) || x_spacing<=0) x_spacing=1; /// dont allow negative or zero scaling of the bounding box
-  if (IsNan(y_spacing) || y_spacing<=0) y_spacing=1;
-  if (IsNan(z_spacing) || z_spacing<=0) z_spacing=1;
-
-  cleaverField->setScale(Cleaver::vec3(x_spacing,y_spacing,z_spacing));
-
-  return cleaverField;
-}
-
-FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& input) const
+FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& input) const
 {
   FieldHandle output;
   std::vector<FieldHandle> inputs;
@@ -178,9 +153,9 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
       if (vfield1->is_float())
       {
         float* ptr = static_cast<float*>(vfield1->fdata_pointer());
-	if (ptr)
+	      if (ptr)
         {
-          fields.push_back(makeCleaverFieldFromLatVol(input));
+          fields.push_back(InterfaceWithCleaverAlgorithm::makeCleaverFieldFromLatVol(input));
         }
         else
         {
@@ -198,57 +173,57 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
 
   boost::shared_ptr<Cleaver::Volume> volume(new Cleaver::Volume(toVectorOfRawPointers(fields)));
 
-  const double xScale = get(VolumeScalingX).toDouble();
-  const double yScale = get(VolumeScalingY).toDouble();
-  const double zScale = get(VolumeScalingZ).toDouble();
-
-  if (xScale > 0 && yScale > 0 && zScale > 0)
-  {
-    const std::string scaling = getOption(VolumeScalingOption);
-    if ("Absolute size" == scaling)
-    {
-      volume->setSize(xScale, yScale, zScale);
-    }
-    else if ("Relative size" == scaling)
-    {
-      double newX = xScale*volume->size().x;
-      double newY = yScale*volume->size().y;
-      double newZ = zScale*volume->size().z;
-      volume->setSize(newX, newY, newZ);
-    }
-    else // None
-    {
-      volume->setSize(dims[0],dims[1],dims[2]);
-      std::ostringstream ostr1,ostr2;
-      ostr1 << "Scaling 'None' .... using " << "Scaling " << dims[0] << "x" << dims[1] << "x" << dims[2] << std::endl;
-      remark(ostr1.str());
-    }
-  }
-  else
-  {
-    THROW_ALGORITHM_INPUT_ERROR(" Invalid Scaling. Use Input sizes.");
-  }
+  // const double xScale = get(VolumeScalingX).toDouble();
+  // const double yScale = get(VolumeScalingY).toDouble();
+  // const double zScale = get(VolumeScalingZ).toDouble();
+  //
+  // if (xScale > 0 && yScale > 0 && zScale > 0)
+  // {
+  //   const std::string scaling = getOption(VolumeScalingOption);
+  //   if ("Absolute size" == scaling)
+  //   {
+  //     volume->setSize(xScale, yScale, zScale);
+  //   }
+  //   else if ("Relative size" == scaling)
+  //   {
+  //     double newX = xScale*volume->size().x;
+  //     double newY = yScale*volume->size().y;
+  //     double newZ = zScale*volume->size().z;
+  //     volume->setSize(newX, newY, newZ);
+  //   }
+  //   else // None
+  //   {
+  //     volume->setSize(dims[0],dims[1],dims[2]);
+  //     std::ostringstream ostr1,ostr2;
+  //     ostr1 << "Scaling 'None' .... using " << "Scaling " << dims[0] << "x" << dims[1] << "x" << dims[2] << std::endl;
+  //     remark(ostr1.str());
+  //   }
+  // }
+  // else
+  // {
+  //   THROW_ALGORITHM_INPUT_ERROR(" Invalid Scaling. Use Input sizes.");
+  // }
 
   /// Padding is now optional!
   boost::shared_ptr<Cleaver::AbstractVolume> paddedVolume(volume);
-  const bool verbose = get(Verbose).toBool();
-  const bool pad = get(Padding).toBool();
+  // const bool verbose = get(Verbose).toBool();
+  // const bool pad = get(Padding).toBool();
+  //
+  // if (pad)
+  // {
+  //   paddedVolume.reset(new Cleaver::PaddedVolume(volume.get()));
+  // }
+  //
+  // if (verbose)
+  // {
+  //  std::cout << "Input Dimensions: " << dims[0] << " x " << dims[1] << " x " << dims[2] << std::endl;
+  //  if (pad)
+  //   std::cout << "Padded Mesh with Volume Size " << paddedVolume->size().toString() << std::endl;
+  //      else
+  //         std::cout << "Creating Mesh with Volume Size " << volume->size().toString() << std::endl;
+  // }
 
-  if (pad)
-  {
-    paddedVolume.reset(new Cleaver::PaddedVolume(volume.get()));
-  }
-
-  if (verbose)
-  {
-   std::cout << "Input Dimensions: " << dims[0] << " x " << dims[1] << " x " << dims[2] << std::endl;
-   if (pad)
-    std::cout << "Padded Mesh with Volume Size " << paddedVolume->size().toString() << std::endl;
-       else
-          std::cout << "Creating Mesh with Volume Size " << volume->size().toString() << std::endl;
-  }
-
-  boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(pad ? paddedVolume.get() : volume.get(), verbose));
+  boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(volume.get(), false));
 
   auto nr_of_tets  = mesh->tets.size();
   auto nr_of_verts = mesh->verts.size();
@@ -299,16 +274,15 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& i
 
   return output;
 }
-#endif
 
 AlgorithmOutput InterfaceWithCleaver2Algorithm::run(const AlgorithmInput& input) const
 {
-  // auto inputfields = input.getList<Field>(Variables::InputFields);
-  //
-  // FieldHandle output_fld = run(inputfields);
-  // if ( !output_fld )
-  //   THROW_ALGORITHM_PROCESSING_ERROR("Null returned on legacy run call.");
-  //
+  auto inputfields = input.getList<Field>(Variables::InputFields);
+
+  auto output_fld = run(inputfields);
+  if ( !output_fld )
+    THROW_ALGORITHM_PROCESSING_ERROR("Null returned on legacy run call.");
+
   AlgorithmOutput output;
   output[Variables::OutputField] = nullptr;
   return output;
