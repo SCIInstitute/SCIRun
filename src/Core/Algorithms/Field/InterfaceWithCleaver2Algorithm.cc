@@ -27,19 +27,17 @@ DEALINGS IN THE SOFTWARE.
 
 */
 
-///TODO: fix include path to remove Externals/ part
-
 #include <Core/Algorithms/Field/InterfaceWithCleaver2Algorithm.h>
 #include <Core/Algorithms/Field/InterfaceWithCleaverAlgorithm.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 //#include <cleaver/FloatField.h>
-#include <cleaver/vec3.h>
-#include <cleaver/BoundingBox.h>
-#include <cleaver/Cleaver.h>
-#include <cleaver/InverseField.h>
+#include <cleaver2/vec3.h>
+#include <cleaver2/BoundingBox.h>
+#include <cleaver2/Cleaver.h>
+#include <cleaver2/InverseField.h>
 //#include <cleaver/PaddedVolume.h>
-#include <cleaver/Volume.h>
+#include <cleaver2/Volume.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 #include <Core/GeometryPrimitives/Vector.h>
@@ -79,6 +77,34 @@ InterfaceWithCleaver2Algorithm::InterfaceWithCleaver2Algorithm()
   // addParameter(VolumeScalingZ,1.0);
 }
 
+namespace
+{
+  boost::shared_ptr<cleaver2::ScalarField<float>> makeCleaver2FieldFromLatVol(FieldHandle field)
+  {
+    VMesh*  vmesh   = field->vmesh();
+    VField* vfield = field->vfield();
+    VMesh::dimension_type dims;
+    vmesh->get_dimensions( dims );
+
+    float* ptr = static_cast<float*>(vfield->fdata_pointer());
+
+    auto cleaverField = boost::make_shared<cleaver2::ScalarField<float>>(ptr, dims[0], dims[1], dims[2]);
+    cleaver2::BoundingBox bb(cleaver2::vec3::zero, cleaver2::vec3(dims[0],dims[1],dims[2]));
+    cleaverField->setBounds(bb);
+    const Transform &transform = vmesh->get_transform();
+
+    int x_spacing=fabs(transform.get_mat_val(0,0)), y_spacing=fabs(transform.get_mat_val(1,1)), z_spacing=fabs(transform.get_mat_val(2,2));
+
+    if (IsNan(x_spacing) || x_spacing<=0) x_spacing=1; /// dont allow negative or zero scaling of the bounding box
+    if (IsNan(y_spacing) || y_spacing<=0) y_spacing=1;
+    if (IsNan(z_spacing) || z_spacing<=0) z_spacing=1;
+
+    cleaverField->setScale(cleaver2::vec3(x_spacing,y_spacing,z_spacing));
+
+    return cleaverField;
+  }
+}
+
 FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& input) const
 {
   FieldHandle output;
@@ -88,19 +114,17 @@ FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& 
   if (inputs.empty())
   {
     THROW_ALGORITHM_INPUT_ERROR(" No input fields given ");
-    return FieldHandle();
   }
   if (inputs.size()<2)
   {
     THROW_ALGORITHM_INPUT_ERROR(" At least 2 indicator functions stored as float values are needed to run cleaver! " );
-    return FieldHandle();
   }
 
   std::ostringstream ostr0;
   ostr0 << "Be aware that inside and outside of materials (to be meshed) need to be defined as positive and negative (e.g. surface distance) values across all module inputs. The zero crossings represents material boundaries." << std::endl;
   remark(ostr0.str());
 
-  std::vector<boost::shared_ptr<Cleaver::ScalarField>> fields;
+  std::vector<boost::shared_ptr<cleaver2::AbstractScalarField>> fields;
 
   VMesh::dimension_type dims; int x=0,y=0,z=0;
   for (size_t p=0; p<inputs.size(); p++)
@@ -118,7 +142,6 @@ FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& 
       if (!vfield1->is_scalar())
       {
         THROW_ALGORITHM_INPUT_ERROR("values at the node needs to be scalar!");
-        return FieldHandle();
       }
 
       imesh1->get_dimensions( dims );
@@ -141,7 +164,6 @@ FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& 
       if (dims.size()!=3)
       {
         THROW_ALGORITHM_INPUT_ERROR("need a three dimensional indicator function");
-        return FieldHandle();
       }
 
       //0 = constant, 1 = linear
@@ -155,12 +177,11 @@ FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& 
         float* ptr = static_cast<float*>(vfield1->fdata_pointer());
 	      if (ptr)
         {
-          fields.push_back(InterfaceWithCleaverAlgorithm::makeCleaverFieldFromLatVol(input));
+          fields.push_back(makeCleaver2FieldFromLatVol(input));
         }
         else
         {
           THROW_ALGORITHM_INPUT_ERROR(" float field is NULL pointer");
-          return FieldHandle();
         }
       } else
       {
@@ -171,7 +192,7 @@ FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& 
 
   }
 
-  boost::shared_ptr<Cleaver::Volume> volume(new Cleaver::Volume(toVectorOfRawPointers(fields)));
+  boost::shared_ptr<cleaver2::Volume> volume(new cleaver2::Volume(toVectorOfRawPointers(fields)));
 
   // const double xScale = get(VolumeScalingX).toDouble();
   // const double yScale = get(VolumeScalingY).toDouble();
@@ -205,7 +226,7 @@ FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& 
   // }
 
   /// Padding is now optional!
-  boost::shared_ptr<Cleaver::AbstractVolume> paddedVolume(volume);
+  boost::shared_ptr<cleaver2::AbstractVolume> paddedVolume(volume);
   // const bool verbose = get(Verbose).toBool();
   // const bool pad = get(Padding).toBool();
   //
@@ -223,7 +244,7 @@ FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& 
   //         std::cout << "Creating Mesh with Volume Size " << volume->size().toString() << std::endl;
   // }
 
-  boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(volume.get(), false));
+  boost::scoped_ptr<cleaver2::TetMesh> mesh(cleaver2::createMeshFromVolume(volume.get(), false));
 
   auto nr_of_tets  = mesh->tets.size();
   auto nr_of_verts = mesh->verts.size();

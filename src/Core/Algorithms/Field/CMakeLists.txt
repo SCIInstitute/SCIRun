@@ -55,6 +55,7 @@ TARGET_LINK_LIBRARIES(Algorithms_Field
   cleaver
   Core_Algorithms_Legacy_Fields
   ${SCI_BOOST_LIBRARY}
+  ${SCI_CLEAVER2_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
