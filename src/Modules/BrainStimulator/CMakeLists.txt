@@ -33,9 +33,7 @@ SET(Modules_BrainStimulator_SRCS
   SetupRHSforTDCSandTMS.cc
   SimulateForwardMagneticField.cc
   SolveBiotSavart.cc
-  ModelTMSCoilSingle.cc
-  ModelTMSCoilSpiral.cc
-  ModelTMSCoilDipole.cc
+  ModelTMSCoil.cc
 )
 
 SET(Modules_BrainStimulator_HEADERS
@@ -45,9 +43,7 @@ SET(Modules_BrainStimulator_HEADERS
   SetupRHSforTDCSandTMS.h
   SimulateForwardMagneticField.h
   SolveBiotSavart.h
-  ModelTMSCoilSingle.h
-  ModelTMSCoilSpiral.h
-  ModelTMSCoilDipole.h
+  ModelTMSCoil.h
   share.h
 )
 

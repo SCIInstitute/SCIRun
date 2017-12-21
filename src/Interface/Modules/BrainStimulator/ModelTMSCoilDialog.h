@@ -26,23 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_ModelTMSCoilSingleDialog_H
-#define INTERFACE_MODULES_ModelTMSCoilSingleDialog_H
+#ifndef INTERFACE_MODULES_ModelTMSCoilDialog_H
+#define INTERFACE_MODULES_ModelTMSCoilDialog_H
 
-#include "Interface/Modules/BrainStimulator/ui_ModelTMSCoilSingleDialog.h"
+#include "Interface/Modules/BrainStimulator/ui_ModelTMSCoilDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/BrainStimulator/share.h>
 
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE ModelTMSCoilSingleDialog : public ModuleDialogGeneric,
-  public Ui::ModelTMSCoilSingleDialog
+class SCISHARE ModelTMSCoilDialog : public ModuleDialogGeneric,
+  public Ui::ModelTMSCoilDialog
 {
 	Q_OBJECT
 
 public:
-  ModelTMSCoilSingleDialog(const std::string& name,
+  ModelTMSCoilDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
 };
