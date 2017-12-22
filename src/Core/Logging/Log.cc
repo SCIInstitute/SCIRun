@@ -30,7 +30,6 @@
 #include <Core/Logging/ApplicationHelper.h>
 #include <boost/filesystem.hpp>
 #include <Core/Utils/Exception.h>
-#include <Core/Thread/Mutex.h>
 
 using namespace SCIRun::Core::Logging;
 
@@ -44,7 +43,10 @@ bool LogSettings::verbose() const
 void LogSettings::setVerbose(bool v)
 {
   verbose_ = v;
+  //std::cout << "@@@ global setVerbose " << v << std::endl;
   spdlog::set_level(v ? spdlog::level::debug : spdlog::level::warn);
+
+  GeneralLog::Instance().setVerbose(v);
 }
 
   //          static const std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} %c [%p] %m%n");
@@ -87,17 +89,17 @@ namespace
 
 Logger2 Log2::get()
 {
-  static Thread::Mutex mutex(name_);
+  static std::mutex mutex;
   if (!logger_)
   {
-    Thread::Guard g(mutex.get());
+    std::lock_guard<std::mutex> g(mutex);
     if (!logger_)
     {
       spdlog::set_async_mode(1 << 10);
       std::transform(customSinks_.begin(), customSinks_.end(), std::back_inserter(sinks_),
         [](LogAppenderStrategyPtr app) { return std::make_shared<ThreadedSink>(app); });
       logger_ = std::make_shared<spdlog::logger>(name_, sinks_.begin(), sinks_.end());
-      logger_->info("{} log initialized.", name_);
+      logger_->trace("{} log initialized.", name_);
       setVerbose(verbose());
     }
   }
@@ -121,9 +123,13 @@ bool Log2::verbose() const
 
 void Log2::setVerbose(bool v)
 {
+  //std::cout << "@@@ local setVerbose " << v << " on " << name_ << std::endl;
   verbose_ = v;
   if (logger_)
+  {
     logger_->set_level(v ? spdlog::level::debug : spdlog::level::warn);
+    //std::cout << "@@@ local setVerbose " << v << " on " << name_ << " logger object received" << std::endl;
+  }
 }
 
 GeneralLog::GeneralLog() : Log2("root")

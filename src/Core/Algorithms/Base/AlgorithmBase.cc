@@ -54,7 +54,7 @@ using namespace SCIRun::Core::Thread;
 
 Name::Name(const std::string& name) : name_(name)
 {
-  if (!std::all_of(name.begin(), name.end(), isalnum))
+  if (!std::all_of(name.begin(), name.end(), [](char c) { return isalnum(c) || c == '_'; }))
   {
     LOG_DEBUG("AlgorithmParameterName not accessible from Python: {}", name);
   }

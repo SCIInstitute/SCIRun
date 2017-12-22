@@ -222,6 +222,7 @@ private Q_SLOTS:
   void openToolkitNetwork();
   void alertForNetworkCycles(int code);
   void updateDockWidgetProperties(bool isFloating);
+  void maxCoreValueChanged(int value);
   void toolkitDownload();
   void addToPathFromGUI();
   void removeSavedSubnetwork();

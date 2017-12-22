@@ -77,28 +77,28 @@ bool PortConnectionDeterminer::canBeConnected(const PortDescriptionInterface& po
 {
   if (isFullInputPort(port1) || isFullInputPort(port2))
   {
-    LOG_DEBUG("can't connect since input ports can only take one connection");
+    LOG_TRACE("can't connect since input ports can only take one connection");
     return false;
   }
   if (port1.isInput() == port2.isInput())
   {
-    LOG_DEBUG("can't connect since input/output not compatible");
+    LOG_TRACE("can't connect since input/output not compatible");
     return false;
   }
   if (sharesParentModule(port1, port2))
   {
-    LOG_DEBUG("can't connect since it's the same module");
+    LOG_TRACE("can't connect since it's the same module");
     return false;
   }
   if (isWildPort(port1) || isWildPort(port2))
   {
-    LOG_DEBUG("found wild port");
+    LOG_TRACE("found wild port");
     /// @todo: trying out "wildcard" ports
     return true;
   }
   if (port1.get_typename() != port2.get_typename())
   {
-    LOG_DEBUG("can't connect since colors don't match");
+    LOG_TRACE("can't connect since colors don't match");
     return false;
   }
   return true;

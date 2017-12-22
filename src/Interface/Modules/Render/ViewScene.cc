@@ -449,6 +449,8 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 
 void ViewSceneDialog::newGeometryValue()
 {
+  DEBUG_LOG_LINE_INFO
+  LOG_DEBUG("ViewSceneDialog::newGeometryValue {} before locking", windowTitle().toStdString());
   RENDERER_LOG_FUNCTION_SCOPE;
   Guard lock(Modules::Render::ViewScene::mutex_.get());
 
@@ -496,6 +498,7 @@ void ViewSceneDialog::newGeometryValue()
       auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
       if (realObj)
       {
+        DEBUG_LOG_LINE_INFO
         spire->handleGeomObject(realObj, port);
         validObjects.push_back(obj->uniqueID());
       }

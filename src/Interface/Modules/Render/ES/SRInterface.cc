@@ -35,6 +35,7 @@
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
 
+#include <Core/Logging/Log.h>
 #include <Core/Application/Application.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 
@@ -63,6 +64,7 @@
 #include "comp/LightingUniforms.h"
 #include "comp/ClippingPlaneUniforms.h"
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
@@ -768,6 +770,7 @@ namespace SCIRun {
       logRendererInfo("Handling geom object on port {}", port);
       RENDERER_LOG_FUNCTION_SCOPE;
       RENDERER_LOG("Ensure our rendering context is current on our thread.");
+      DEBUG_LOG_LINE_INFO
       mContext->makeCurrent();
 
       std::string objectName = obj->uniqueID();
@@ -782,14 +785,20 @@ namespace SCIRun {
         return (sro.mName == objectName);
       });
 
+      DEBUG_LOG_LINE_INFO
+      
       std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
       std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
       if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock())
       {
+        DEBUG_LOG_LINE_INFO
         if (std::shared_ptr<ren::IBOMan> iboMan = im.lock())
         {
+          DEBUG_LOG_LINE_INFO
           if (foundObject != mSRObjects.end())
           {
+            DEBUG_LOG_LINE_INFO
+
             RENDERER_LOG("Iterate through each of the passes and remove their associated entity ID.");
             for (const auto& pass : foundObject->mPasses)
             {
@@ -811,6 +820,7 @@ namespace SCIRun {
             mSRObjects.erase(foundObject);
           }
 
+          DEBUG_LOG_LINE_INFO
           RENDERER_LOG("Add vertex buffer objects.");
           std::vector<char*> vbo_buffer;
           std::vector<size_t> stride_vbo;
@@ -841,6 +851,7 @@ namespace SCIRun {
             bbox.extend(vbo.boundingBox);
           }
 
+          DEBUG_LOG_LINE_INFO
           RENDERER_LOG("Add index buffer objects.");
           nameIndex = 0;
           for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
@@ -1139,6 +1150,7 @@ namespace SCIRun {
           }
         }
       }
+      DEBUG_LOG_LINE_INFO
     }
 
     //------------------------------------------------------------------------------

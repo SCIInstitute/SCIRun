@@ -256,6 +256,11 @@ IF(WIN32)
   INCLUDE(${GLEW_USE_FILE})
 ENDIF()
 
+IF(NOT BUILD_HEADLESS)
+  CONFIG_STANDARD_EXTERNAL( Qwt QwtConfig.cmake ${QWT_DIR} )
+  INCLUDE(${QWT_USE_FILE})
+ENDIF()
+
 ########################################################################
 # Custom compiler flags and definitions
 
@@ -492,6 +497,7 @@ INCLUDE_DIRECTORIES(
   ${SPDLOG_DIR}/include
   ${SCI_TNY_INCLUDE}
   ${SCI_LODEPNG_INCLUDE}
+  ${SCI_QWT_INCLUDE}
 )
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})

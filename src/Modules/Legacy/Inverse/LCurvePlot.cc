@@ -47,31 +47,29 @@ LCurvePlot::LCurvePlot()
 {
 }
 
-std::string LCurvePlot::update_lcurve_gui(const std::string module_id, const  DenseMatrixHandle& lambda, const DenseMatrixHandle& input, const  DenseMatrixHandle& lambda_index)
+std::string LCurvePlot::update_lcurve_gui(const std::string& module_id,
+  const DenseMatrixHandle& lambda, const DenseMatrixHandle& input, const DenseMatrixHandle& lambda_index)
 {
-  std::cout<<"function running"<<std::endl;
- 
   int lam_ind = static_cast<int>(lambda_index->get(0,0));
-  
+
   size_t nLambda = input->rows();
-  
-  
+
   auto eta = input->col(1);
   auto rho = input->col(2);
-  
+
   //estimate L curve corner
   const double lower_y = std::min(eta[0] / 10.0, eta[nLambda - 1]);
-  
+
   std::ostringstream str;
   str << module_id << " plot_graph \" ";
   for (int k = 0; k < nLambda; k++)    str << log10(rho[k]) << " " << log10(eta[k]) << " ";
-  
-  str << "\" \" " << log10(rho[0] / 10.0) << " " << log10(eta[lam_ind]) << " ";
-  str << log10(rho[lam_ind]) << " " << log10(eta[lam_ind]) << " ";
-  str << log10(rho[lam_ind]) << " " << log10(lower_y) << " \" ";
+
+  cornerPlot_.assign({log10(rho[0] / 10.0), log10(eta[lam_ind]), log10(rho[lam_ind]), log10(eta[lam_ind]), log10(rho[lam_ind]), log10(lower_y)});
+
+  str << "\" \" " << cornerPlot_[0] << " " << cornerPlot_[1] << " ";
+  str << cornerPlot_[2] << " " << cornerPlot_[3] << " ";
+  str << cornerPlot_[4] << " " << cornerPlot_[5] << " \" ";
   str << lambda->get(0,0) << " " << lam_ind << " ; \n";
-  
+
   return str.str();
 }
-
-

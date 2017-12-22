@@ -43,8 +43,14 @@ namespace Inverse {
 	{
 	public:
 		LCurvePlot();
-    
-    static std::string update_lcurve_gui(const std::string module_id,  const SCIRun::Core::Datatypes::DenseMatrixHandle& lambda, const SCIRun::Core::Datatypes::DenseMatrixHandle& input, const SCIRun::Core::Datatypes::DenseMatrixHandle& lambda_index);
+
+    std::string update_lcurve_gui(const std::string& module_id,
+      const SCIRun::Core::Datatypes::DenseMatrixHandle& lambda,
+      const SCIRun::Core::Datatypes::DenseMatrixHandle& input,
+      const SCIRun::Core::Datatypes::DenseMatrixHandle& lambda_index);
+		const std::vector<double>& cornerPlot() const { return cornerPlot_; }
+	private:
+		std::vector<double> cornerPlot_;
 	};
 }}}
 

@@ -195,6 +195,10 @@ IF(WITH_TETGEN)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TetgenExternal.cmake Tetgen_external )
 ENDIF()
 
+IF(NOT BUILD_HEADLESS)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/QwtExternal.cmake Qwt_external )
+ENDIF()
+
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )
 
 ###########################################
@@ -259,6 +263,7 @@ IF(NOT BUILD_HEADLESS)
     "-DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}"
     "-DQT_USE_QTOPENGL:BOOL=${QT_USE_QTOPENGL}"
     "-DQT_MIN_VERSION:STRING=${QT_MIN_VERSION}"
+    "-DQWT_DIR:PATH=${QWT_DIR}"
   )
 ENDIF()
 

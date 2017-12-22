@@ -1,4 +1,3 @@
-#
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
@@ -25,35 +24,25 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
+SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+SET(qwt_GIT_TAG "origin/master")
 
-SET(Core_Thread_SRCS
-  Barrier.cc
-  ConditionVariable.cc
-  Mutex.cc
-  Parallel.cc
+# If CMake ever allows overriding the checkout command or adding flags,
+# git checkout -q will silence message about detached head (harmless).
+ExternalProject_Add(Qwt_external
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/Qwt.git"
+  GIT_TAG ${qwt_GIT_TAG}
+  PATCH_COMMAND ""
+  INSTALL_DIR ""
+  INSTALL_COMMAND ""
+  CMAKE_CACHE_ARGS
+    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
+    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+    -DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}
 )
 
-SET(Core_Thread_HEADERS
-  Barrier.h
-  ConditionVariable.h
-  Mutex.h
-  Parallel.h
-  share.h
-)
+ExternalProject_Get_Property(Qwt_external BINARY_DIR)
+SET(QWT_DIR ${BINARY_DIR} CACHE PATH "")
 
-SCIRUN_ADD_LIBRARY(Core_Thread
-  ${Core_Thread_SRCS}
-  ${Core_Thread_HEADERS}
-)
-
-TARGET_LINK_LIBRARIES(Core_Thread
-  Core_Logging
-  ${SCI_BOOST_LIBRARY}
-)
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Thread)
-ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_TEST_DIR(Tests)
-ADD_SUBDIRECTORY(Legacy)
+MESSAGE(STATUS "QWT_DIR: ${QWT_DIR}")

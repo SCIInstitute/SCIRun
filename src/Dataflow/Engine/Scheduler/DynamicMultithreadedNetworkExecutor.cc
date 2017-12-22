@@ -124,7 +124,7 @@ void DynamicMultithreadedNetworkExecutor::execute(const ExecutionContext& contex
   static Mutex lock("live-scheduler");
 
   //if (Log::get().verbose())
-    LOG_DEBUG("DMTNE::executeAll order received: {}", order);
+    LOG_TRACE("DMTNE::executeAll order received: {}", order);
 
   threadGroup_->clear();
   DynamicMultithreadedNetworkExecutorImpl runner(context, &network_, &lock, order.size(), &executionLock, threadGroup_);

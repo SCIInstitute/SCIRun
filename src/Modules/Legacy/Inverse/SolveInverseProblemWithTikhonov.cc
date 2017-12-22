@@ -36,7 +36,6 @@
 #include <Modules/Legacy/Inverse/LCurvePlot.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
-// #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -113,24 +112,24 @@ void SolveInverseProblemWithTikhonov::execute()
 		// run
 		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,optionalAlgoInput(hMatrixRegMat))(WeightingInSensorSpace,optionalAlgoInput(hMatrixNoiseCov))) );
 
-
 		// set outputs
 		sendOutputFromAlgorithm(InverseSolution,output);
 		sendOutputFromAlgorithm(RegularizationParameter,output);
 		sendOutputFromAlgorithm(RegInverse,output);
-    auto lambda=output.get<DenseMatrix>(TikhonovAlgoAbstractBase::RegularizationParameter);
-    auto lambda_array=output.get<DenseMatrix>(TikhonovAlgoAbstractBase::LambdaArray);
-    auto lambda_index =output.get<DenseMatrix>(TikhonovAlgoAbstractBase::Lambda_Index);
-    
+    auto lambda = output.get<DenseMatrix>(TikhonovAlgoAbstractBase::RegularizationParameter);
+    auto lambda_array = output.get<DenseMatrix>(TikhonovAlgoAbstractBase::LambdaArray);
+    auto lambda_index = output.get<DenseMatrix>(TikhonovAlgoAbstractBase::Lambda_Index);
+
     auto regularization_method  = state->getValue(Parameters::RegularizationMethod).toString();
 
     if (regularization_method== "lcurve")
     {
-      auto str = LCurvePlot::update_lcurve_gui(get_id(),lambda,lambda_array,lambda_index);
+			LCurvePlot helper;
+      auto str = helper.update_lcurve_gui(get_id(),lambda,lambda_array,lambda_index);
       state->setTransientValue("LambdaCorner", lambda->get(0,0));
       state->setTransientValue("LambdaCurveInfo", str);
+      state->setTransientValue("LambdaCurve", lambda_array);
+			state->setTransientValue("LambdaCornerPlot", helper.cornerPlot());
     }
   }
 }
-
-

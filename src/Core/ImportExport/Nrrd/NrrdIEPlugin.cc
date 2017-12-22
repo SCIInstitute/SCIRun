@@ -47,11 +47,11 @@ IEPluginManagerManager::IEPluginManagerManager() {}
 
 std::string SCIRun::fileTypeDescriptionFromDialogBoxFilter(const std::string& fileFilter)
 {
-  Core::Logging::LOG_DEBUG("fileTypeDescriptionFromDialogBoxFilter received {}", fileFilter);
+  LOG_DEBUG("fileTypeDescriptionFromDialogBoxFilter received {}", fileFilter);
   boost::regex r("(.*) \\(\\*.*\\)");
   boost::smatch what;
   regex_match(fileFilter, what, r);
-  Core::Logging::LOG_DEBUG("fileTypeDescriptionFromDialogBoxFilter returning {}", std::string(what[1]));
+  LOG_DEBUG("fileTypeDescriptionFromDialogBoxFilter returning {}", std::string(what[1]));
   return what[1];
 }
 
@@ -223,7 +223,7 @@ NrrdIEPluginManager::get_exporter_list(std::vector<std::string> &results)
   if (matrix_plugin_table == NULL) return;
 
   nrrdIEPluginMutex.lock();
-  std::map<std::string, NrrdIEPlugin *>::const_iterator itr = matrix_plugin_table->begin();
+  auto itr = matrix_plugin_table->begin();
   while (itr != matrix_plugin_table->end())
   {
     if ((*itr).second->fileWriter_ != NULL)
@@ -242,10 +242,10 @@ NrrdIEPluginManager::get_plugin(const std::string &name)
   if (matrix_plugin_table == NULL) return NULL;
 
   // Should check for invalid name.
-  std::map<std::string, NrrdIEPlugin *>::iterator loc = matrix_plugin_table->find(name);
+  auto loc = matrix_plugin_table->find(name);
   if (loc == matrix_plugin_table->end())
   {
-    return NULL;
+    return nullptr;
   }
   else
   {

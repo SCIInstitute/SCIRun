@@ -51,7 +51,6 @@ SCIRUN_ADD_LIBRARY(Core_Logging
 
 TARGET_LINK_LIBRARIES(Core_Logging
   Core_Utils
-  Core_Thread
 )
 
 IF(BUILD_SHARED_LIBS)
