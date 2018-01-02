@@ -107,6 +107,8 @@ namespace
 
 FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& input) const
 {
+  DEBUG_LOG_LINE_INFO
+
   FieldHandle output;
   std::vector<FieldHandle> inputs;
   std::copy_if(input.begin(), input.end(), std::back_inserter(inputs), [](FieldHandle f) { return f; });
@@ -244,8 +246,10 @@ FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& 
   //         std::cout << "Creating Mesh with Volume Size " << volume->size().toString() << std::endl;
   // }
 
-  boost::scoped_ptr<cleaver2::TetMesh> mesh(cleaver2::createMeshFromVolume(volume.get(), false));
+DEBUG_LOG_LINE_INFO
 
+  boost::scoped_ptr<cleaver2::TetMesh> mesh(cleaver2::createMeshFromVolume(volume.get(), SCIRun::Core::Logging::GeneralLog::Instance().verbose()));
+DEBUG_LOG_LINE_INFO
   auto nr_of_tets  = mesh->tets.size();
   auto nr_of_verts = mesh->verts.size();
 
@@ -253,7 +257,7 @@ FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& 
   {
     THROW_ALGORITHM_INPUT_ERROR(" Number of resulting tetrahedral nodes or elements is 0. If you disabled padding enable it and execute again. ");
   }
-
+DEBUG_LOG_LINE_INFO
   FieldInformation fi("TetVolMesh",0,"double");   ///create output field
 
   output = CreateField(fi);
@@ -298,6 +302,7 @@ FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& 
 
 AlgorithmOutput InterfaceWithCleaver2Algorithm::run(const AlgorithmInput& input) const
 {
+  DEBUG_LOG_LINE_INFO
   auto inputfields = input.getList<Field>(Variables::InputFields);
 
   auto output_fld = run(inputfields);
