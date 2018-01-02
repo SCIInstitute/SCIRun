@@ -26,17 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/FiniteElements/BuildRHS/BuildFESurfRHS.h>
-
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildRHS/BuildFESurfRHS.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/MatrixOperations.h>
-
-namespace SCIRunAlgo {
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
+//using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
+using namespace SCIRun::Core::Logging;
+
+ALGORITHM_PARAMETER_DEF(FiniteElements, InputField);
+ALGORITHM_PARAMETER_DEF(FiniteElements, BoundaryField);
+ALGORITHM_PARAMETER_DEF(FiniteElements, RHSMatrix);
 
 struct IndexHash {
   static const size_t bucket_size = 4;
@@ -49,17 +61,10 @@ struct IndexHash {
     { return (i1 < i2); }
 };
 
-
-
-/// A copy of the algorithm without creating the mapping matrix. 
-/// Need this for the various algorithms that only use the boundary to
-/// project nodes on.
-
-bool 
-BuildFESurfRHSAlgo::
-run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
+bool BuildFESurfRHSAlgo::run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output) const
 {
-  /// Define types we need for mapping
+ 
+   /// Define types we need for mapping
 #ifdef HAVE_HASH_MAP
   typedef hash_map<index_type,index_type,IndexHash> hash_map_type;
 #else
@@ -68,16 +73,13 @@ run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
   hash_map_type node_map;
   hash_map_type elem_map;
   
-  algo_start("BuildFESurfRHS");
-  
   /// Check whether we have an input field
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return false;
   }
-
-  /// Figure out what the input type and output type have to be
+ 
   FieldInformation fi(input);
   FieldInformation fo(input);
   
@@ -85,7 +87,7 @@ run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
-    algo_end(); return (false);
+    return false;
   }
   
   /// Figure out which type of field the output is:
@@ -98,23 +100,24 @@ run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
   if (fi.is_pnt_element())
   {
     remark("The field boundary of a point cloud is the same point cloud");
-    output = input;
-    algo_end(); return (true);
+    output=input;
+    return true;
   }
   
   /// Check whether we could make a conversion
   if (!found_method)
   {
     error("No method available for mesh of type: " + fi.get_mesh_type());
-    algo_end(); return (false);
+    output=input;
+    return false;
   }
 
   /// Create the output field
   output = CreateField(fo);
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return false;
   }
   
   /// Get the virtual interfaces:
@@ -124,8 +127,7 @@ run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
   VField* ofield = output->vfield();
   
   imesh->synchronize(Mesh::DELEMS_E|Mesh::ELEM_NEIGHBORS_E);
-  
-  /// These are all virtual iterators, virtual index_types and array_types
+ /// These are all virtual iterators, virtual index_types and array_types
   VMesh::Elem::iterator be, ee;
   VMesh::Elem::index_type nci, ci;
   VMesh::DElem::array_type delems; 
@@ -154,7 +156,8 @@ run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
   const int dim = omesh->dimensionality();
   if(dim < 1 || dim > 3){
     error("Surface mesh dimension is 0 or larger than 3, for which no FE implementation is available");
-    algo_end(); return (false);
+    output=input;
+    return false;
   }
     
   imesh->begin(be); 
@@ -163,26 +166,24 @@ run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
   // Set up output matrix
   VMesh::Node::size_type mns;
   DenseMatrix *rhsmatrix_;
-  MatrixHandle rhsmatrixhandle_;
   
   imesh->size(mns);  // this assumes basis order < 2
-  try
+   try
   {
     rhsmatrix_ = new DenseMatrix(mns, 1);
-    rhsmatrixhandle_ = rhsmatrix_;
   }
   catch (...)
   {
     error("Error alocating output matrix");
-    algo_end(); return (false);
+    return false;
   }
   
   // Loop over output values and zero
   for(index_type i = 0; i < mns; i++){
     rhsmatrix_->put(i, 0, 0.0);
   }
-  
-  while (be != ee) 
+   
+   while (be != ee) 
   {
     ci = *be;
     imesh->get_delems(delems,ci);
@@ -240,7 +241,8 @@ run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
             // If Jacobian is negative, there is a problem with the mesh
             if (detJ <= 0.0){
               error("Mesh has elements with negative jacobians, check the order of the nodes that define an element");
-              algo_end(); return (false);
+	      output=input;
+              return false;
             }
             
             // Volume associated with the local Gaussian Quadrature point:
@@ -259,7 +261,7 @@ run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
             l_val += Dot(V, normal) * Wip * detJ;
           }
           
-          rhsmatrix_->add(inodes[q], 0, l_val);
+	  (*rhsmatrix_)(inodes[q],0)+=l_val;  // in SCIRun4 it used to be: rhsmatrix_->add(inodes[q], 0, l_val);  
         }            
       }
     }
@@ -299,12 +301,26 @@ run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
     }
   }
   
-  // copy property manager
-	output->copy_properties(input.get_rep());
-  mat_output = rhsmatrixhandle_;
-  
-  algo_end(); return (true);
+ mat_output = (MatrixHandle)rhsmatrix_;
+ return true;
+
 }
 
 
-} // End namespace SCIRunAlgo
+AlgorithmOutput BuildFESurfRHSAlgo::run(const AlgorithmInput& input) const
+{
+  auto input_field = input.get<Field>(Parameters::InputField);
+
+  FieldHandle out;
+  MatrixHandle rhs;
+  if(!run(input_field, out,  rhs))
+  {
+    error("Error: Algorithm of BuildFESurfRHS failed.");
+  }
+  AlgorithmOutput output;
+  output[Parameters::BoundaryField] = out;
+  output[Parameters::RHSMatrix] = rhs;
+
+  return output;
+}
+

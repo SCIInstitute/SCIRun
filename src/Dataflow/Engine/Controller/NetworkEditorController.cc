@@ -85,6 +85,8 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::setImpl(boost::make_shared<PythonImpl>(*this, cmdFactory_));
 #endif
+
+  eventCmdFactory_->create(NetworkEventCommands::ApplicationStart)->execute();
 }
 
 NetworkEditorController::NetworkEditorController(NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, NetworkEditorSerializationManager* nesm)
@@ -120,10 +122,16 @@ namespace
 
       ModulePositions positions;
       int i = 0;
-      const double moduleVerticalSpacing = 110;
-      const double moduleHorizontalSpacing = 264;
-      const double moduleSpacingOffset = 10;
+      const double MODULE_VERTICAL_SPACING = 110;
+      const double MODULE_HORIZONTAL_SPACING = 264;
+      const double MODULE_SPACING_OFFSET = 10;
+      const double INITIAL_SNIPPET_LOC = 50;
+      static double snippetSpacer = 50;
       static int numSnips = 0;
+      if (0 == nec_.getNetwork()->nmodules())
+      {
+        snippetSpacer = INITIAL_SNIPPET_LOC;
+      }
       for (auto m : modsNeeded)
       {
         bool uiVisible = false;
@@ -136,9 +144,15 @@ namespace
         if (mod->has_ui())
           mod->setUiVisible(uiVisible);
         mods_.push_back(mod);
-        positions.modulePositions[mod->get_id().id_] = std::make_pair(moduleSpacingOffset + numSnips*moduleHorizontalSpacing, moduleVerticalSpacing * i++ + moduleSpacingOffset);
+        positions.modulePositions[mod->get_id().id_] =
+          { snippetSpacer + numSnips * MODULE_HORIZONTAL_SPACING,
+            snippetSpacer + MODULE_VERTICAL_SPACING * i++ };
       }
-      numSnips++;
+      numSnips = (numSnips + 1) % 3;
+      if (0 == numSnips)
+      {
+        snippetSpacer += MODULE_SPACING_OFFSET;
+      }
 
       auto connsNeeded = parseConnections(label);
       for (const auto& c : connsNeeded)
@@ -342,7 +356,7 @@ void NetworkEditorController::printNetwork() const
   if (false)
   {
     if (theNetwork_)
-      LOG_DEBUG(theNetwork_->toString() << std::endl);
+      LOG_DEBUG(theNetwork_->toString());
   }
 }
 
@@ -370,7 +384,7 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
     return id;
   }
 
-  Log::get() << NOTICE << "Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module." << std::endl;
+  GeneralLog::Instance().get()->warn("Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module.");
   invalidConnection_(desc);
   return boost::none;
 }
@@ -487,23 +501,24 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       }
       if (serializationManager_)
       {
-        serializationManager_->updateModulePositions(xml->modulePositions, false);
         serializationManager_->updateModuleNotes(xml->moduleNotes);
         serializationManager_->updateConnectionNotes(xml->connectionNotes);
-        serializationManager_->updateModuleTags(xml->moduleTags);
         serializationManager_->updateDisabledComponents(xml->disabledComponents);
+        serializationManager_->updateSubnetworks(xml->subnetworks);
+        serializationManager_->updateModulePositions(xml->modulePositions, false);
+        serializationManager_->updateModuleTags(xml->moduleTags);
       }
       else
       {
 #ifndef BUILD_HEADLESS
-        Log::get() << INFO << "module position editor unavailable, module positions at default" << std::endl;
+        GeneralLog::Instance().get()->info("module position editor unavailable, module positions at default");
 #endif
       }
       networkDoneLoading_(static_cast<int>(theNetwork_->nmodules()) + 1);
     }
     catch (ExceptionBase& e)
     {
-      Log::get() << ERROR_LOG << "File load failed: exception while processing xml network data: " << e.what() << std::endl;
+      GeneralLog::Instance().get()->error("File load failed: exception while processing xml network data: {}", e.what());
       theNetwork_->clear();
       throw;
     }
@@ -578,11 +593,11 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
         //TODO: need disabled here?
       }
       else
-        Log::get() << INFO << "module position editor unavailable, module positions at default" << std::endl;
+        GeneralLog::Instance().get()->info("module position editor unavailable, module positions at default");
     }
     catch (ExceptionBase& e)
     {
-      Log::get() << ERROR_LOG << "File load failed: exception while processing xml network data: " << e.what() << std::endl;
+      GeneralLog::Instance().get()->error("File load failed: exception while processing xml network data: {}", e.what());
       theNetwork_->clear();
       throw;
     }
@@ -591,7 +606,7 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
 
 void NetworkEditorController::clear()
 {
-  LOG_DEBUG("NetworkEditorController::clear()" << std::endl);
+  LOG_DEBUG("NetworkEditorController::clear()");
 }
 
 // TODO:
@@ -606,8 +621,17 @@ boost::shared_ptr<boost::thread> NetworkEditorController::executeAll(const Execu
 
 void NetworkEditorController::executeModule(const ModuleHandle& module, const ExecutableLookup* lookup, bool executeUpstream)
 {
-  ExecuteSingleModule filter(module, *theNetwork_, executeUpstream);
-  executeGeneric(lookup, filter);
+  try
+  {
+    ExecuteSingleModule filter(module, *theNetwork_, executeUpstream);
+    executeGeneric(lookup, filter);
+  }
+  catch (NetworkHasCyclesException&)
+  {
+    SCIRun::Core::Logging::GeneralLog::Instance().get()->error("Cannot schedule execution: network has cycles. Please break all cycles and try again.");
+    ExecutionContext::executionBounds_.executeFinishes_(-1);
+    return;
+  }
 }
 
 void NetworkEditorController::initExecutor()
@@ -624,7 +648,6 @@ boost::shared_ptr<boost::thread> NetworkEditorController::executeGeneric(const E
 {
   initExecutor();
   auto context = createExecutionContext(lookup, filter);
-
   return executionManager_.enqueueContext(context);
 }
 

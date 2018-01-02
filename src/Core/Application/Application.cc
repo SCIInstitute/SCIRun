@@ -34,10 +34,11 @@
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
-#include <Dataflow/Network/Module.h>  //TODO move Reex
+#include <Dataflow/Network/ModuleReexecutionStrategies.h>
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 #include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
 #include <Core/Logging/Log.h>
+#include <Core/Logging/ApplicationHelper.h>
 #include <Core/IEPlugin/IEPluginInit.h>
 #include <Core/Utils/Exception.h>
 #include <Core/Application/Session/Session.h>
@@ -84,7 +85,7 @@ Application::Application() :
   private_->app_filepath_ = boost::filesystem::current_path();
   //std::cout << "exec path set to: " << private_->app_filepath_ << std::endl;
   auto configDir = configDirectory();
-  Log::setLogDirectory(configDir);
+  LogSettings::Instance().setLogDirectory(configDir);
   SessionManager::Instance().initialize(configDir);
   SessionManager::Instance().session()->beginSession();
 }
@@ -97,18 +98,18 @@ Application::~Application()
 void Application::shutdown()
 {
   if (!private_)
-    Log::get() << NOTICE << "Application shutdown called with null internals" << std::endl;
+    GeneralLog::Instance().get()->info("Application shutdown called with null internals");
   try
   {
     private_.reset();
   }
   catch (std::exception& e)
   {
-    Log::get() << EMERG << "Unhandled exception during application shutdown: " << e.what() << std::endl;
+    GeneralLog::Instance().get()->critical("Unhandled exception during application shutdown: {}", e.what());
   }
   catch (...)
   {
-    Log::get() << EMERG << "Unknown unhandled exception during application shutdown" << std::endl;
+    GeneralLog::Instance().get()->critical("Unknown unhandled exception during application shutdown");
   }
 }
 
@@ -159,8 +160,8 @@ void Application::readCommandLine(int argc, const char* argv[])
     auto maxCoresOption = private_->parameters_->developerParameters()->maxCores();
     if (maxCoresOption)
       Thread::Parallel::SetMaximumCores(*maxCoresOption);
-
-    Log::get().setVerbose(parameters()->verboseMode());
+      
+    LogSettings::Instance().setVerbose(parameters()->verboseMode());
   }
 }
 
@@ -181,7 +182,7 @@ namespace
       if (!script_.empty())
       {
         PythonInterpreter::Instance().importSCIRunLibrary();
-        PythonInterpreter::Instance().run_string(script_);
+        PythonInterpreter::Instance().run_script(script_);
       }
       return true;
     }
@@ -199,9 +200,17 @@ namespace
       switch (type)
       {
       case NetworkEventCommands::PostModuleAdd:
-        return boost::make_shared<HardCodedPythonTestCommand>(prefs.postModuleAddScript_temporarySolution.val(), prefs.postModuleAddScriptEnabled_temporarySolution.val());
+        return boost::make_shared<HardCodedPythonTestCommand>(
+          prefs.postModuleAdd.script.val(),
+          prefs.postModuleAdd.enabled.val());
       case NetworkEventCommands::OnNetworkLoad:
-        return boost::make_shared<HardCodedPythonTestCommand>(prefs.onNetworkLoadScript_temporarySolution.val(), prefs.onNetworkLoadScriptEnabled_temporarySolution.val());
+        return boost::make_shared<HardCodedPythonTestCommand>(
+          prefs.onNetworkLoad.script.val(),
+          prefs.onNetworkLoad.enabled.val());
+      case NetworkEventCommands::ApplicationStart:
+        return boost::make_shared<HardCodedPythonTestCommand>(
+          prefs.applicationStart.script.val(),
+          prefs.applicationStart.enabled.val());
       }
       return nullptr;
     }
@@ -238,10 +247,6 @@ NetworkEditorControllerHandle Application::controller()
 
     /// @todo: sloppy way to initialize this but similar to v4, oh well
     IEPluginManager::Initialize();
-
-    /// @todo split out into separate piece
-    // TODO: turn off until Matlab services are converted.
-    // private_->start_eai();
   }
   return private_->controller_;
 }
@@ -295,6 +300,23 @@ std::string Application::moduleList()
     }
   }
   return ostr.str();
+}
+
+bool Application::moduleNameExists(const std::string& name)
+{
+  auto map = controller()->getAllAvailableModuleDescriptions();
+  for (const auto& p1 : map)
+  {
+    for (const auto& p2 : p1.second)
+    {
+      for (const auto& p3 : p2.second)
+      {
+        if (boost::iequals(name, p3.first))
+          return true;
+      }
+    }
+  }
+  return false;
 }
 
 boost::filesystem::path Application::configDirectory() const

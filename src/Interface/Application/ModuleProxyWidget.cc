@@ -118,7 +118,8 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   grabbedByWidget_(false),
   isSelected_(false),
   pressedSubWidget_(nullptr),
-  doHighlight_(false)
+  doHighlight_(false),
+  timeLine_(nullptr)
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
@@ -135,12 +136,7 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
 
   originalSize_ = size();
 
-  // {
-  //   const int fadeInSeconds = 1;
-  //   timeLine_ = new QTimeLine(fadeInSeconds * 1000, this);
-  //   connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(loadAnimate(qreal)));
-  //   timeLine_->start();
-  // }
+  module_->setupPortSceneCollaborator(this);
 }
 
 ModuleProxyWidget::~ModuleProxyWidget()
@@ -154,6 +150,9 @@ void ModuleProxyWidget::showAndColor(const QColor& color)
 
 void ModuleProxyWidget::showAndColorImpl(const QColor& color, int milliseconds)
 {
+  if (timeLine_)
+    return;
+
   animateColor_ = color;
   timeLine_ = new QTimeLine(milliseconds, this);
   connect(timeLine_, SIGNAL(valueChanged(qreal)), this, SLOT(colorAnimate(qreal)));
@@ -191,7 +190,11 @@ void ModuleProxyWidget::colorAnimate(qreal val)
     }
   }
   else // 1 = done coloring
+  {
     setGraphicsEffect(nullptr);
+    delete timeLine_;
+    timeLine_ = nullptr;
+  }
 }
 
 void ModuleProxyWidget::adjustHeight(int delta)
@@ -330,7 +333,9 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 void ModuleProxyWidget::snapToGrid()
 {
   if (Preferences::Instance().modulesSnapToGrid)
+  {
     setPos(snapTo(pos().x()), snapTo(pos().y()));
+  }
 }
 
 void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -354,7 +359,8 @@ void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   }
   if (stackDepth_ > 1)
     return;
-  if (stackDepth_ == 0)
+
+  if (stackDepth_ == 1)
     ensureThisVisible();
   QGraphicsItem::mouseMoveEvent(event);
   stackDepth_ = 0;
@@ -400,14 +406,16 @@ void ModuleProxyWidget::createPortPositionProviders()
   const int firstPortXPos = 5;
   Q_FOREACH(PortWidget* p, module_->ports().getAllPorts())
   {
-    //qDebug() << "Setting position provider for port " << QString::fromStdString(p->id().toString()) << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (p->properWidth() + getModuleWidget()->portSpacing())) << "," << p->pos().y();
+    //qDebug() << "Setting position provider for port " << QString::fromStdString(p->realId().toString()) << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (p->properWidth() + getModuleWidget()->portSpacing())) << "," << p->pos().y();
     //qDebug() << firstPortXPos << static_cast<int>(p->getIndex()) << p->properWidth() << getModuleWidget()->portSpacing();
 
     QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (p->properWidth() + getModuleWidget()->portSpacing())), p->pos().y());
 
     int extraPadding = p->isHighlighted() ? 4 : 0;
-    boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5)));
+    auto pp(boost::make_shared<ProxyWidgetPosition>(this, realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5)));
+
     //qDebug() << "PWP real " << realPosition + QPointF(p->properWidth() / 2 + extraPadding, 5);
+
     p->setPositionObject(pp);
   }
   if (pos() == QPointF(0, 0) && cachedPosition_ != pos())
@@ -431,13 +439,19 @@ QPointF PassThroughPositioner::currentPosition() const
 void ModuleProxyWidget::setNoteGraphicsContext()
 {
   scene_ = scene();
-  item_ = this;
+  networkObjectWithNote_ = this;
   positioner_ = boost::make_shared<PassThroughPositioner>(this);
 }
 
 void ModuleProxyWidget::setDefaultNotePosition(NotePosition position)
 {
   setDefaultNotePositionImpl(position);
+}
+
+void ModuleProxyWidget::setDefaultNoteSize(int size)
+{
+  setDefaultNoteSizeImpl(size);
+  module_->setDefaultNoteFontSize(size);
 }
 
 void ModuleProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
@@ -472,4 +486,16 @@ ProxyWidgetPosition::ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPo
 QPointF ProxyWidgetPosition::currentPosition() const
 {
   return widget_->pos() + offset_;
+}
+
+SubnetPortsBridgeProxyWidget::SubnetPortsBridgeProxyWidget(SubnetPortsBridgeWidget* ports, QGraphicsItem* parent) : QGraphicsProxyWidget(parent), ports_(ports)
+{
+}
+
+void SubnetPortsBridgeProxyWidget::updateConnections()
+{
+  for (auto& port : ports_->ports())
+  {
+    port->trackConnections();
+  }
 }

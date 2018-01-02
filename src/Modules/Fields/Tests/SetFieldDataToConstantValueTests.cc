@@ -55,18 +55,18 @@ class SetFieldDataToConstantValueModuleTests : public ModuleTest
 
 namespace
 {
-  FieldHandle CreateTriSurfScalarOnNode()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "Fields/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
-  }
+  // FieldHandle CreateTriSurfScalarOnNode()
+  // {
+  //   return loadFieldFromFile(TestResources::rootDir() / "Fields/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
+  // }
   FieldHandle CreateTetMeshScalarOnNode()
   {
     return loadFieldFromFile(TestResources::rootDir() / "Fields/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
   }
-  FieldHandle CreatePointCloudeScalar()
-  {
-    return loadFieldFromFile(TestResources::rootDir() / "Fields/point_cloud/scalar/pts_scalar.fld");
-  }
+  // FieldHandle CreatePointCloudeScalar()
+  // {
+  //   return loadFieldFromFile(TestResources::rootDir() / "Fields/point_cloud/scalar/pts_scalar.fld");
+  // }
 }
 
 TEST_F(SetFieldDataToConstantValueModuleTests, TetMeshOnPortZero)

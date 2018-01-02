@@ -51,8 +51,6 @@ InsertEnvironmentIntoBundle::execute()
 {
   if (needToExecute())
   {
-    update_state(Executing);
-
     BundleHandle bundle;
     bundle.reset(new Bundle());
 

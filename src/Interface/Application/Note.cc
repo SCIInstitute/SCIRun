@@ -80,8 +80,13 @@ void HasNotes::setCurrentNote(const Note& note, bool updateEditor)
   }
 }
 
+void HasNotes::setDefaultNoteFontSize(int size)
+{
+  noteEditor_.setDefaultNoteFontSize(size);
+}
+
 NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) :
-  item_(0), scene_(0), note_(0),
+  networkObjectWithNote_(nullptr), scene_(nullptr), note_(nullptr),
   notePosition_(Default),
   defaultNotePosition_(Top), //TODO
   displayStrategy_(display),
@@ -113,15 +118,15 @@ void NoteDisplayHelper::updateNoteImpl(const Note& note)
   {
     setNoteGraphicsContext();
     if (!scene_)
-      Log::get() << WARN << "Scene not set, network notes will not be displayed!" << std::endl;
-    note_ = new QGraphicsTextItem("", 0, scene_);
+      GeneralLog::Instance().get()->warn("Scene not set, network notes will not be displayed.");
+    note_ = new QGraphicsTextItem("", nullptr, scene_);
     note_->setDefaultTextColor(Qt::white);
   }
 
   note_->setHtml(note.html_);
   notePosition_ = note.position_;
   updateNotePosition();
-  note_->setZValue(item_->zValue() - 1);
+  note_->setZValue(networkObjectWithNote_->zValue() - 1);
 }
 
 void NoteDisplayHelper::clearNoteCursor()
@@ -136,13 +141,13 @@ void NoteDisplayHelper::clearNoteCursor()
 
 QPointF NoteDisplayHelper::relativeNotePosition()
 {
-  if (note_ && item_)
+  if (note_ && networkObjectWithNote_)
   {
     auto position = notePosition_ == Default ? defaultNotePosition_ : notePosition_;
     note_->setVisible(!(Tooltip == position || None == position));
-    item_->setToolTip("");
+    networkObjectWithNote_->setToolTip("");
 
-    return displayStrategy_->relativeNotePosition(item_, note_, position);
+    return displayStrategy_->relativeNotePosition(networkObjectWithNote_, note_, position);
   }
   return QPointF();
 }
@@ -153,9 +158,14 @@ void NoteDisplayHelper::setDefaultNotePositionImpl(NotePosition position)
   updateNotePosition();
 }
 
+void NoteDisplayHelper::setDefaultNoteSizeImpl(int size)
+{
+  defaultNoteFontSize_ = size;
+}
+
 void NoteDisplayHelper::updateNotePosition()
 {
-  if (note_ && item_)
+  if (note_ && networkObjectWithNote_)
   {
     auto position = positioner_->currentPosition() + relativeNotePosition();
     note_->setPos(position);

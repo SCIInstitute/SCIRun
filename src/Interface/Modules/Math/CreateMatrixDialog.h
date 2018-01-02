@@ -44,13 +44,17 @@ public:
   CreateMatrixDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
+public Q_SLOTS:
+  void moduleExecuted() override;
 protected:
   virtual void pullSpecial() override;
+  void hideEvent(QHideEvent* event) override;
 
 private Q_SLOTS:
   void pushMatrixToState(int state);
   void editBoxUnsaved();
   void editBoxSaved();
+  void remindAboutUnsavedMatrix();
 private:
   bool firstPull_;
 };

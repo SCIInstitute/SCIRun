@@ -100,21 +100,21 @@ namespace
 		return m;
 	}
 	// non symmetric LHS (stiff) matrix
-	SparseRowMatrixHandle LHS_not_sym()
-	{
-		SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
-		m->insert(0,0) = 1;
-		m->insert(0,1) = 8;
-		m->insert(0,2) = 3;
-		m->insert(1,0) = 7;
-		m->insert(1,1) = 4;
-		m->insert(1,2) = -12;
-		m->insert(2,0) = 3;
-		m->insert(2,1) = -5;
-		m->insert(2,2) = 6;
-		m->makeCompressed();
-		return m;
-	}
+	// SparseRowMatrixHandle LHS_not_sym()
+	// {
+	// 	SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(3,3));
+	// 	m->insert(0,0) = 1;
+	// 	m->insert(0,1) = 8;
+	// 	m->insert(0,2) = 3;
+	// 	m->insert(1,0) = 7;
+	// 	m->insert(1,1) = 4;
+	// 	m->insert(1,2) = -12;
+	// 	m->insert(2,0) = 3;
+	// 	m->insert(2,1) = -5;
+	// 	m->insert(2,2) = 6;
+	// 	m->makeCompressed();
+	// 	return m;
+	// }
 	// non square LHS (Stiff) matrix
 	SparseRowMatrixHandle LHS_non_sqr()
 	{

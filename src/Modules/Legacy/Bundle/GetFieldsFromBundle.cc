@@ -78,8 +78,6 @@ void GetFieldsFromBundle::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     auto state = get_state();
     state->setTransientValue(FieldNameList.name(), bundle->getFieldNames());
 

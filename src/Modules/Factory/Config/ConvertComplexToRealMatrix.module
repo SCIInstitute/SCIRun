@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ConvertComplexToRealMatrix",
+    "namespace": "Math",
+    "status": "New module.  Needs testing.",
+    "description": "Converts two real-valued to a complex-valued matrix",
+    "header": "Modules/Math/ConvertComplexToRealMatrix.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

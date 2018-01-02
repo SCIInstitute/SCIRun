@@ -37,7 +37,6 @@
 
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/copy.hpp>
-#include <string>
 #include <map>
 
 #ifdef LOG_DYNAMIC_PORT_CREATION

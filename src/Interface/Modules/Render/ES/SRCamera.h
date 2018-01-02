@@ -43,8 +43,7 @@ namespace Render {
 class SRCamera
 {
 public:
-  SRCamera(SRInterface& iface);
-  virtual ~SRCamera();
+  explicit SRCamera(SRInterface& iface);
 
   // V  = View matrix
   // IV = Inverse view matrix
@@ -90,6 +89,10 @@ public:
   static float getDefaultZFar()   {return 100000.0f;}
   /// @}
 
+  void setLockZoom(bool lock) { lockZoom_ = lock; }
+  void setLockPanning(bool lock) { lockPanning_ = lock; }
+  void setLockRotation(bool lock) { lockRotation_ = lock; }
+
 private:
 
   void buildTransform();
@@ -102,20 +105,23 @@ private:
   size_t                mTrafoSeq;    ///< Current sequence of the view transform.
                                       ///< Helps us determine when a camera is 'dirty'.
 
-  bool                  mPerspective; ///< True if we are using a perspective 
-                                      ///< transformation. 
+  bool                  mPerspective; ///< True if we are using a perspective
+                                      ///< transformation.
   int                   mInvertVal;   ///< Invert multiplier
   float                 mFOV;         ///< Field of view.
   float                 mZNear;       ///< Position of near plane along view vec.
   float                 mZFar;        ///< Position of far plane along view vec.
 
   SRInterface&          mInterface;   ///< SRInterface.
-  
-  std::shared_ptr<CPM_LOOK_AT_NS::ArcLookAt>  mArcLookAt;
 
+  std::shared_ptr<spire::ArcLookAt>  mArcLookAt;
+
+  bool lockRotation_{false};
+  bool lockZoom_{false};
+  bool lockPanning_{false};
 };
 
 } // namespace Render
-} // namespace SCIRun 
+} // namespace SCIRun
 
-#endif 
+#endif

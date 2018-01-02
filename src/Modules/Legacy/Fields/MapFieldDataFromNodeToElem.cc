@@ -60,8 +60,6 @@ void MapFieldDataFromNodeToElem::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     setAlgoOptionFromState(MapFieldDataFromNodeToElemAlgo::Method);
 
     auto output = algo().run(withInputData((InputField, input)));

@@ -34,7 +34,7 @@
 namespace SCIRun {
 namespace Render {
 
-void        registerSystem_RenderBasicTransGeom(CPM_ES_ACORN_NS::Acorn& core);
+void        registerSystem_RenderBasicTransGeom(spire::Acorn& core);
 const char* getSystemName_RenderBasicTransGeom();
 
 } // namespace Render

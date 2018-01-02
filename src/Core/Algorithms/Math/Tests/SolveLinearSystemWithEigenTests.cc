@@ -344,19 +344,19 @@ TEST(EigenSparseSolverTest, DISABLED_CanSolveBigSystem)
     ScopedTimer t("using algorithm object");
     SolveLinearSystemAlgorithm algo;
 
-    x = algo.run(boost::make_tuple(A, bCol), boost::make_tuple(1e-20, 4000));
-    MatrixHandle solution = x.get<0>();
+    x = algo.run(std::make_tuple(A, bCol), std::make_tuple(1e-20, 4000, "cg"));
+    MatrixHandle solution = std::get<0>(x);
 
     ASSERT_TRUE(solution.get() != nullptr);
-    std::cout << "error: " << x.get<1>() << std::endl;
-    std::cout << "iterations: " << x.get<2>() << std::endl;
+    std::cout << "error: " << std::get<1>(x) << std::endl;
+    std::cout << "iterations: " << std::get<2>(x) << std::endl;
   }
 
   {
     ScopedTimer t("comparing solutions.");
     auto xFileEigen = TestResources::rootDir() / "CGDarrell" / "xEigenNEW.txt";
     std::ofstream output(xFileEigen.string());
-    auto solution = *x.get<0>();
+    auto solution = *std::get<0>(x);
     output << std::setprecision(15) << solution << std::endl;
 
     auto xFileScirun = TestResources::rootDir() / "CGDarrell" / "xScirunColumn.mat";

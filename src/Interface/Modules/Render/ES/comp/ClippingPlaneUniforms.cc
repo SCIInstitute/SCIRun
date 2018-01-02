@@ -6,7 +6,7 @@
 #include <sstream>
 #include <glm/gtc/matrix_inverse.hpp>
 
-namespace shaders = CPM_GL_SHADERS_NS;
+namespace shaders = spire;
 
 namespace SCIRun {
   namespace Render {

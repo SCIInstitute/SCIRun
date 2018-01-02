@@ -297,14 +297,14 @@ FieldHandle SCIRun::TestUtils::CreateEmptyLatVol()
   return CreateEmptyLatVol(sizex, sizey, sizez);
 }
 
-FieldHandle SCIRun::TestUtils::CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez, data_info_type type)
+FieldHandle SCIRun::TestUtils::CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez, data_info_type type,
+  const Core::Geometry::Point& minb, const Core::Geometry::Point& maxb)
 {
   FieldInformation lfi(LATVOLMESH_E, LINEARDATA_E, type);
 
-  Point minb(-1.0, -1.0, -1.0);
-  Point maxb(1.0, 1.0, 1.0);
   MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
   FieldHandle ofh = CreateField(lfi, mesh);
   ofh->vfield()->clear_all_values();
   return ofh;
 }
+

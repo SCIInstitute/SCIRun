@@ -52,11 +52,9 @@ void CalculateSignedDistanceToField::execute()
   FieldHandle object = getRequiredInput(ObjectField);
 
   bool value_connected = oport_connected(ValueField);
-   
+
   if (needToExecute())
   {
-    update_state(Executing);
-
     auto inputs = make_input((InputField, input)(ObjectField, object));
 
     algo().set(CalculateSignedDistanceFieldAlgo::OutputValueField, value_connected);

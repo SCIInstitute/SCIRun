@@ -60,6 +60,7 @@ public:
 
   size_t nconnections() const override;
   Connection* connection(size_t) const override;
+  bool hasConnectionCountIncreased() const override;
 
   virtual PortId id() const override { return id_; }
   virtual void setId(const PortId& id) override { id_ = id; }
@@ -75,6 +76,7 @@ public:
   virtual void setIndex(size_t index) override;
 
   virtual boost::optional<ConnectionId> firstConnectionId() const override;
+  virtual ModuleStateHandle moduleState() const override;
 
   /// @todo:
   // light interface
@@ -88,6 +90,7 @@ protected:
   const std::string typeName_;
   const std::string portName_;
   const std::string colorName_;
+  mutable bool connectionCountIncreasedFlag_;
 };
 
 #ifdef WIN32
@@ -111,6 +114,8 @@ public:
   virtual bool hasChanged() const override;
   virtual boost::signals2::connection connectDataOnPortHasChanged(const DataOnPortHasChangedSignalType::slot_type& subscriber) override;
   virtual void resendNewDataSignal() override;
+  virtual boost::optional<std::string> connectedModuleId() const override;
+  virtual ModuleStateHandle stateFromConnectedModule() const override;
 private:
   bool shouldTriggerDataChange() const;
   DatatypeSinkInterfaceHandle sink_;

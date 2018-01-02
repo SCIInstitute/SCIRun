@@ -45,12 +45,15 @@ ModuleButtonBar::ModuleButtonBar(ModuleDialogGeneric* parent) : QWidget(parent)
   executeToolButton_->setIcon(QPixmap(":/general/Resources/new/modules/run_all.png"));
   findToolButton_->setIcon(QPixmap(":/general/Resources/zoom_reset.png"));
   helpToolButton_->setIcon(QPixmap(":/general/Resources/new/modules/help.png"));
+  collapseToolButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_ToolBarVerticalExtensionButton));
 
   connect(executeDownOnlyToolButton_, SIGNAL(clicked()), parent->getExecuteDownstreamAction(), SIGNAL(triggered()));
   connect(executeToolButton_, SIGNAL(clicked()), parent->getExecuteAction(), SIGNAL(triggered()));
   connect(closeToolButton_, SIGNAL(clicked()), parent, SIGNAL(closeButtonClicked()));
   connect(helpToolButton_, SIGNAL(clicked()), parent, SIGNAL(helpButtonClicked()));
   connect(findToolButton_, SIGNAL(clicked()), parent, SIGNAL(findButtonClicked()));
+  connect(collapseToolButton_, SIGNAL(clicked()), parent, SLOT(toggleCollapse()));
+  connect(collapseToolButton_, SIGNAL(clicked()), this, SLOT(switchIcons()));
 }
 
 void ModuleButtonBar::setTitle(const QString& title)
@@ -61,4 +64,11 @@ void ModuleButtonBar::setTitle(const QString& title)
 void ModuleButtonBar::setTitleVisible(bool visible)
 {
   titleLabel_->setVisible(visible);
+}
+
+void ModuleButtonBar::switchIcons()
+{
+  //TODO
+  //collapseToolButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_TitleBarShadeButton));
+  //collapseToolButton_->setIcon(QApplication::style()->standardIcon(QStyle::SP_TitleBarUnshadeButton));
 }

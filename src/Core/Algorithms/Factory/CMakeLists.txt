@@ -71,6 +71,7 @@ ENDIF()
 TARGET_LINK_LIBRARIES(Algorithms_Factory
   Algorithms_Base
   Algorithms_BrainStimulator
+  Algorithms_Legacy_Inverse
   Core_Algorithms_Legacy_Fields
   Algorithms_Math
   Algorithms_DataIO

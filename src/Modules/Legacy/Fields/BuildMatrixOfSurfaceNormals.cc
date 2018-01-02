@@ -55,7 +55,6 @@ BuildMatrixOfSurfaceNormals::execute()
 
   if (input)
 	{
-    update_state(Executing);
 		auto output = algo().run(withInputData((InputField, input)));
 		sendOutputFromAlgorithm(OutputMatrix, output);
   }

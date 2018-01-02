@@ -202,13 +202,13 @@ void TextBuilder::printString(const std::string& oneline,
     uint32_t iboSize = sizeof(uint32_t) * static_cast<uint32_t>(indices.size());
     uint32_t vboSize = sizeof(float) * 5 * static_cast<uint32_t>(points.size());
 
-    std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> iboBufferSPtr2(
-      new CPM_VAR_BUFFER_NS::VarBuffer(vboSize));
-    std::shared_ptr<CPM_VAR_BUFFER_NS::VarBuffer> vboBufferSPtr2(
-      new CPM_VAR_BUFFER_NS::VarBuffer(iboSize));
+    std::shared_ptr<spire::VarBuffer> iboBufferSPtr2(
+      new spire::VarBuffer(vboSize));
+    std::shared_ptr<spire::VarBuffer> vboBufferSPtr2(
+      new spire::VarBuffer(iboSize));
 
-    CPM_VAR_BUFFER_NS::VarBuffer* iboBuffer2 = iboBufferSPtr2.get();
-    CPM_VAR_BUFFER_NS::VarBuffer* vboBuffer2 = vboBufferSPtr2.get();
+    spire::VarBuffer* iboBuffer2 = iboBufferSPtr2.get();
+    spire::VarBuffer* vboBuffer2 = vboBufferSPtr2.get();
 
     for (auto a : indices) iboBuffer2->write(a);
     for (size_t i = 0; i < points.size(); i++) {
@@ -260,10 +260,10 @@ void TextBuilder::printString(const std::string& oneline,
   }
 }
 
-double TextBuilder::getStringLen(const std::string& oneline) const
+std::tuple<double, double> TextBuilder::getStringDims(const std::string& oneline) const
 {
   if (!ftValid_)
-    return 0.0;
+    return {};
 
   auto len = 0.0;
   auto rows = 0;
@@ -275,7 +275,7 @@ double TextBuilder::getStringLen(const std::string& oneline) const
     len += g->bitmap.width;
     rows = g->bitmap.rows;
   }
-  return len;
+  return std::make_tuple(len, rows);
 }
 
 bool TextBuilder::initialize(size_t textSize)

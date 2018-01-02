@@ -34,7 +34,9 @@
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Singleton.h>
 #include <set>
+#include <deque>
 #include <Interface/Application/NetworkEditor.h>  //TODO
+#include <Interface/Application/NetworkExecutionProgressBar.h>
 #endif
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -52,18 +54,23 @@ class QStatusBar;
 namespace SCIRun {
 namespace Gui {
 
-  class TextEditAppender : public Core::Logging::LegacyLoggerInterface, public Core::Logging::LogAppenderStrategy
+  class SCIRunMainWindow;
+  class ModuleDialogGeneric;
+
+  class TextEditAppender :
+    //public Core::Logging::LegacyLoggerInterface,
+    public Core::Logging::LogAppenderStrategy
   {
   public:
     explicit TextEditAppender(QTextEdit* text, bool regressionMode = false) :
       text_(text), regressionMode_(regressionMode) {}
 
     void log(const QString& message) const;
-
-    void error(const std::string& msg) const override;
-    void warning(const std::string& msg) const override;
-    void remark(const std::string& msg) const override;
-    void status(const std::string& msg) const override;
+    //
+    // void error(const std::string& msg) const override;
+    // void warning(const std::string& msg) const override;
+    // void remark(const std::string& msg) const override;
+    // void status(const std::string& msg) const override;
 
     virtual void log4(const std::string& message) const override;
   private:
@@ -87,10 +94,12 @@ namespace Gui {
   class ComboBoxDefaultNotePositionGetter : public DefaultNotePositionGetter
   {
   public:
-    explicit ComboBoxDefaultNotePositionGetter(QComboBox& combo) : combo_(combo) {}
-    virtual NotePosition position() const override;
+    ComboBoxDefaultNotePositionGetter(QComboBox* positionCombo, QComboBox* sizeCombo) : positionCombo_(positionCombo), sizeCombo_(sizeCombo) {}
+    NotePosition position() const override;
+    int size() const override;
   private:
-    QComboBox& combo_;
+    QComboBox* positionCombo_;
+    QComboBox* sizeCombo_;
   };
 
   typedef boost::variant<QAction*, QWidget*> InputWidget;
@@ -195,6 +204,58 @@ namespace Gui {
     QLineEdit* pathWidget_;
     bool showPrefs_{ false };
   };
+
+  struct ToolkitInfo
+  {
+    static const char* ToolkitIconURL;
+    static const char* ToolkitURL;
+    static const char* ToolkitFilename;
+
+    QString iconUrl, zipUrl, filename;
+
+    void setupAction(QAction* action, QObject* window) const;
+  };
+
+  class NetworkStatusImpl : public NetworkStatus
+  {
+  public:
+    explicit NetworkStatusImpl(NetworkEditor* ned) : ned_(ned) {}
+    size_t total() const override;
+    size_t waiting() const override;
+    size_t executing() const override;
+    size_t errored() const override;
+    size_t nonReexecuted() const override;
+    size_t finished() const override;
+    size_t unexecuted() const override;
+  private:
+    NetworkEditor* ned_;
+    size_t countState(Dataflow::Networks::ModuleExecutionState::Value val) const;
+  };
+
+  class NetworkEditorBuilder
+  {
+  public:
+    explicit NetworkEditorBuilder(SCIRunMainWindow* mainWindow) : mainWindow_(mainWindow) {}
+    void connectAll(NetworkEditor* editor);
+  private:
+    SCIRunMainWindow* mainWindow_;
+  };
+
+  class DockManager : public QObject
+  {
+    Q_OBJECT
+  public:
+    explicit DockManager(int& availableSize, QObject* parent);
+  public Q_SLOTS:
+    void requestShow(ModuleDialogGeneric* dialog);
+  private:
+    int& availableHeight_;
+    const std::set<ModuleDialogGeneric*>& currentDialogs_;
+    std::deque<ModuleDialogGeneric*> collapseQueue_;
+    int usedSpace() const;
+  };
+
+  QString networkBackgroundImage();
 }
 }
 #endif

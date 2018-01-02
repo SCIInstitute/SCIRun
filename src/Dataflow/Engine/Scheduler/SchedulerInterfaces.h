@@ -118,7 +118,7 @@ namespace Engine {
     catch (NetworkHasCyclesException&)
     {
       /// @todo: use real logger here--or just let this exception bubble up--needs testing.
-      SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::ERROR_LOG << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
+      SCIRun::Core::Logging::GeneralLog::Instance().get()->error("Cannot schedule execution: network has cycles. Please break all cycles and try again.");
       context.bounds().executeFinishes_(-1);
       return;
     }
@@ -137,6 +137,8 @@ namespace Engine {
     static const ModuleWaitingFilter& Instance();
   };
 
+  class ExecuteSingleModuleImpl;
+
   struct SCISHARE ExecuteSingleModule
   {
     ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandle mod,
@@ -147,6 +149,7 @@ namespace Engine {
     const SCIRun::Dataflow::Networks::NetworkInterface& network_;
     std::map<std::string, int> components_;
     bool executeUpstream_;
+    boost::shared_ptr<ExecuteSingleModuleImpl> orderImpl_;
   };
 
   class SCISHARE WaitsForStartupInitialization

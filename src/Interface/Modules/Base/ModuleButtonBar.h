@@ -45,6 +45,8 @@ namespace Gui {
     explicit ModuleButtonBar(ModuleDialogGeneric* parent = nullptr);
     void setTitle(const QString& title);
     void setTitleVisible(bool visible);
+  private Q_SLOTS:
+    void switchIcons();
   };
 
 

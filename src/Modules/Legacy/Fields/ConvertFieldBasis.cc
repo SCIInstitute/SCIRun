@@ -71,8 +71,6 @@ ConvertFieldBasis::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     pushInputFieldInfo(input);
 
     setAlgoOptionFromState(Parameters::OutputType);
@@ -97,7 +95,7 @@ ConvertFieldBasis::execute()
   }
 }
 
-void ConvertFieldBasis::pushInputFieldInfo(FieldHandle input) const
+void ConvertFieldBasis::pushInputFieldInfo(FieldHandle input)
 {
   auto state = get_state();
   std::string name = input->properties().get_name();

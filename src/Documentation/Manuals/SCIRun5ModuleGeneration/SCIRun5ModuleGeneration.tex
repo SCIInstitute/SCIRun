@@ -1648,7 +1648,28 @@ ConvertMeshToPointCloudDialog.h:32:10: fatal error:
       'Interface/Modules/Field/ui_ConvertMeshToPointCloudDialog.h' file not found
 \end{verbatim}
 In this instance, the path to the header is misspelled.  Check for the correct path and filename.  Make sure the file you want to include exists.  If the code was converted from SCIRun4, some of the dependent header files are renamed, combined with other files, or deprecated.  
-
+\item
+\begin{verbatim}
+/Users/jess/software/SCIRun_mine/bin/SCIRun/Core/Algorithms/Factory/AlgorithmFactoryImpl_Generated.cc:4:10: error: empty filename
+#include <>
+         ^
+/Users/jess/software/SCIRun_mine/bin/SCIRun/Core/Algorithms/Factory/AlgorithmFactoryImpl_Generated.cc:21:43: error: expected namespace name
+using namespace SCIRun::Core::Algorithms::;
+                                          ^
+/Users/jess/software/SCIRun_mine/bin/SCIRun/Core/Algorithms/Factory/AlgorithmFactoryImpl_Generated.cc:39:3: error: expected expression
+  ADD_MODULE_ALGORITHM_GENERATED(, );
+\end{verbatim}
+This is a result of something wrong with the module configuration file.  Check the spelling and syntax of the new file.  Specifically, check the quotation characters used, as they may be different (for instance on mac TextEdit).  This may also be caused if the Algorithm and other files have not been added to the `CMakeList.txt' file.  
+\item
+\begin{verbatim}
+/Users/jess/software/SCIRun_mine/src/Interface/Modules/Base/ModuleDialogGeneric.h:71:5: warning: 'metaObject' overrides a member function but is not marked
+      'override' [-Winconsistent-missing-override]
+    Q_OBJECT
+    ^
+/usr/local/Cellar/qt/4.8.7_3/lib/QtCore.framework/Headers/qobjectdefs.h:162:32: note: expanded from macro 'Q_OBJECT'
+    virtual const QMetaObject *metaObject() const; \
+\end{verbatim}
+Errors that involve qt and qt objects deal with the gui code.  Make sure that the gui name is spelled correctly.  Also make sure that the Qobject name is set properly.  
 \end{itemize}
       
 

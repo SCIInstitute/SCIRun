@@ -761,7 +761,7 @@ DenseMatrixHandle BuildFEVolRHSAlgo::run(FieldHandle input) const
   }
  #endif
 
- LOG_DEBUG(" Note: The original SCIRun4 module looked for a field attribute ''conductivity_table'' of the second module input which could only be set outside of SCIRun4. This function is not available in SCIRun5. " << std::endl);
+ LOG_DEBUG(" Note: The original SCIRun4 module looked for a field attribute ''conductivity_table'' of the second module input which could only be set outside of SCIRun4. This function is not available in SCIRun5. ");
 
  FEMVolRHSBuilder builder(this);
 

@@ -43,6 +43,7 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Logging;
 
 class EuclideanDrawStrategy : public ConnectionDrawStrategy
 {
@@ -205,14 +206,14 @@ namespace SCIRun
       {
         deleteAction_ = addAction(deleteAction);
         addWidgetToExecutionDisableList(deleteAction_);
-        insertAction_ = addAction(insertModuleAction);
-        addWidgetToExecutionDisableList(insertAction_);
-
-
-        auto insertable = new QMenu;
-        fillInsertModuleMenu(insertable, Application::Instance().controller()->getAllAvailableModuleDescriptions(), conn->connectedPorts().first, conn);
-        insertAction_->setMenu(insertable);
-
+        if (!eitherPortDynamic(conn->connectedPorts()))
+        {
+          insertAction_ = addAction(insertModuleAction);
+          addWidgetToExecutionDisableList(insertAction_);
+          auto insertable = new QMenu;
+          fillInsertModuleMenu(insertable, Application::Instance().controller()->getAllAvailableModuleDescriptions(), conn->connectedPorts().first, conn);
+          insertAction_->setMenu(insertable);
+        }
         disableAction_ = addAction(disableEnableAction);
         addWidgetToExecutionDisableList(disableAction_);
         notesAction_ = addAction(editNotesAction);
@@ -220,13 +221,20 @@ namespace SCIRun
       ~ConnectionMenu()
       {
         removeWidgetFromExecutionDisableList(deleteAction_);
-        removeWidgetFromExecutionDisableList(insertAction_);
+        if (insertAction_)
+          removeWidgetFromExecutionDisableList(insertAction_);
         removeWidgetFromExecutionDisableList(disableAction_);
       }
-      QAction* notesAction_;
-      QAction* deleteAction_;
-      QAction* disableAction_;
-      QAction* insertAction_;
+      QAction* notesAction_{ nullptr };
+      QAction* deleteAction_{ nullptr };
+      QAction* disableAction_{ nullptr };
+      QAction* insertAction_{ nullptr };
+
+    private:
+      bool eitherPortDynamic(const std::pair<PortWidget*, PortWidget*>& ports) const
+      {
+        return ports.first->isDynamic() || ports.second->isDynamic();
+      }
     };
   }
 }
@@ -262,13 +270,13 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
     fromPort_->addConnection(this);
   }
   else
-    LOG_DEBUG("NULL FROM PORT: " << id_.id_ << std::endl);
+    LOG_DEBUG("NULL FROM PORT: {}", id_.id_);
   if (toPort_)
   {
     toPort_->addConnection(this);
   }
   else
-    LOG_DEBUG("NULL TO PORT: " << id_.id_ << std::endl);
+    LOG_DEBUG("NULL TO PORT: {}", id_.id_);
 
   if (fromPort_ && toPort_)
   {
@@ -277,27 +285,22 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
   }
 
   setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsGeometryChanges | ItemIsFocusable);
-
   setZValue(defaultZValue());
   setToolTip("<font color=\"#EEEEEE\" size=2>Left - Highlight<br>Double-Left - Menu<br>i - Datatype info");
   setAcceptHoverEvents(true);
-
   menu_ = new ConnectionMenu(this);
   connectNoteEditorToAction(menu_->notesAction_);
   connectUpdateNote(this);
-
   NeedsScenePositionProvider::setPositionObject(boost::make_shared<MidpointPositionerFromPorts>(fromPort_, toPort_));
-
   connect(menu_->disableAction_, SIGNAL(triggered()), this, SLOT(toggleDisabled()));
-
   connect(this, SIGNAL(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)),
     fromPort_, SLOT(insertNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)));
   setProperty(addNewModuleActionTypePropertyName(), QString("insertModule"));
-
   menu_->setStyleSheet(fromPort->styleSheet());
 
   trackNodes();
-  GuiLogger::Instance().logInfoStd("Connection made: " + id_.id_);
+
+  guiLogDebug("Connection made: {}", id_.id_);
 }
 
 ConnectionLine::~ConnectionLine()
@@ -317,7 +320,7 @@ void ConnectionLine::destroyConnection()
     }
     drawer_.reset();
     Q_EMIT deleted(id_);
-    //GuiLogger::Instance().log("Connection deleted.");
+    guiLogDebug("Connection deleted: {}", id_.id_);
     HasNotes::destroy();
     NoteDisplayHelper::destroy();
     destroyed_ = true;
@@ -374,6 +377,35 @@ void ConnectionLine::trackNodes()
   }
   else
     BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection: " + id_.id_));
+}
+
+void ConnectionLine::addSubnetCompanion(PortWidget* subnetPort)
+{
+  setVisible(false);
+  ConnectionFactory f(subnetPort->sceneFunc());
+
+  auto out = subnetPort->isInput() ? fromPort_ : subnetPort;
+  auto in = subnetPort->isInput() ? subnetPort : toPort_;
+
+  ConnectionDescription cd{ { out->getUnderlyingModuleId(), out->id() }, { in->getUnderlyingModuleId(), in->id() } };
+  subnetCompanion_ = f.makeFinishedConnection(out, in, ConnectionId::create(cd));
+
+  connect(subnetPort, SIGNAL(portMoved()), subnetCompanion_, SLOT(trackNodes()));
+
+  subnetCompanion_->isCompanion_ = true;
+  subnetCompanion_->trackNodes();
+  subnetCompanion_->setVisible(true);
+}
+
+void ConnectionLine::deleteCompanion()
+{
+  if (subnetCompanion_)
+  {
+    subnetCompanion_->blockSignals(true);
+    scene()->removeItem(subnetCompanion_);
+    delete subnetCompanion_;
+    subnetCompanion_ = nullptr;
+  }
 }
 
 void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
@@ -471,7 +503,7 @@ ModuleIdPair ConnectionLine::getConnectedToModuleIds() const
 void ConnectionLine::setNoteGraphicsContext()
 {
   scene_ = scene();
-  item_ = this;
+  networkObjectWithNote_ = this;
   positioner_ = getPositionObject();
 }
 
@@ -512,6 +544,7 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
   auto msgBox = new QMessageBox(SCIRunMainWindow::Instance());
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
   msgBox->setStandardButtons(QMessageBox::Ok);
+  msgBox->setEscapeButton(QMessageBox::Ok);
 
 #if 0
   auto viewButton = new QPushButton("View...");
@@ -521,6 +554,7 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
   msgBox->addButton(viewButton, QMessageBox::HelpRole);
 #endif
 
+  msgBox->setDetailedText("The above datatype info is displayed for the current run only. Hit i again after executing to display updated info. Keep this window open to compare info between runs.");
   msgBox->setWindowTitle(label + " Data info: " + QString::fromStdString(id));
   msgBox->setText(info);
   msgBox->setModal(false);
@@ -531,6 +565,7 @@ void ConnectionLine::keyPressEvent(QKeyEvent* event)
 {
   if (event->key() == Qt::Key_I)
     DataInfoDialog::show(fromPort_->getPortDataDescriber(), "Connection", id_.id_);
+  QGraphicsPathItem::keyPressEvent(event);
 }
 
 ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port, ConnectionDrawStrategyPtr drawer)
@@ -583,32 +618,37 @@ QPointF MidpointPositionerFromPorts::currentPosition() const
   return (p1_->getPositionObject()->currentPosition() + p2_->getPositionObject()->currentPosition()) / 2;
 }
 
-ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) :
-  currentType_(EUCLIDEAN),
-  visible_(true),
-  scene_(scene),
-  euclidean_(new EuclideanDrawStrategy),
-  cubic_(new CubicBezierDrawStrategy),
-  manhattan_(new ManhattanDrawStrategy)
+ConnectionFactory::ConnectionFactory(QGraphicsProxyWidget* module) :
+  module_(module)
 {}
+
+ConnectionFactory::ConnectionFactory(SceneFunc func) :
+  func_(func)
+{}
+
+bool ConnectionFactory::visible_(true);
+ConnectionDrawType ConnectionFactory::currentType_(ConnectionDrawType::EUCLIDEAN);
+ConnectionDrawStrategyPtr ConnectionFactory::euclidean_(new EuclideanDrawStrategy);
+ConnectionDrawStrategyPtr ConnectionFactory::cubic_(new CubicBezierDrawStrategy);
+ConnectionDrawStrategyPtr ConnectionFactory::manhattan_(new ManhattanDrawStrategy);
 
 ConnectionInProgress* ConnectionFactory::makeConnectionInProgress(PortWidget* port) const
 {
   switch (currentType_)
   {
-    case EUCLIDEAN:
+    case ConnectionDrawType::EUCLIDEAN:
     {
       auto c = new ConnectionInProgressStraight(port, getCurrentDrawer());
       activate(c);
       return c;
     }
-    case CUBIC:
+    case ConnectionDrawType::CUBIC:
     {
       auto c = new ConnectionInProgressCurved(port, getCurrentDrawer());
       activate(c);
       return c;
     }
-    case MANHATTAN:
+    case ConnectionDrawType::MANHATTAN:
     {
       auto c = new ConnectionInProgressManhattan(port, getCurrentDrawer());
       activate(c);
@@ -627,13 +667,24 @@ ConnectionInProgress* ConnectionFactory::makePotentialConnection(PortWidget* por
   return conn;
 }
 
+QGraphicsScene* ConnectionFactory::getScene() const
+{
+  if (module_)
+    return module_->scene();
+  else if (func_ && func_())
+    return func_();
+
+  qDebug() << "No graphics scene getter available!";
+  return nullptr;
+}
 
 void ConnectionFactory::activate(QGraphicsItem* item) const
 {
   if (item)
   {
-    if (scene_)
-      scene_->addItem(item);
+    auto scene = getScene();
+    if (scene)
+      scene->addItem(item);
     item->setVisible(visible_);
   }
 }
@@ -643,28 +694,27 @@ void ConnectionFactory::setType(ConnectionDrawType type)
   if (type != currentType_)
   {
     currentType_ = type;
-    Q_EMIT typeChanged(getCurrentDrawer());
   }
 }
 
-ConnectionDrawType ConnectionFactory::getType() const
+ConnectionDrawType ConnectionFactory::getType()
 {
   return currentType_;
 }
 
-ConnectionDrawStrategyPtr ConnectionFactory::getCurrentDrawer() const
+ConnectionDrawStrategyPtr ConnectionFactory::getCurrentDrawer()
 {
   switch (currentType_)
   {
-  case EUCLIDEAN:
+  case ConnectionDrawType::EUCLIDEAN:
     return euclidean_;
-  case CUBIC:
+  case ConnectionDrawType::CUBIC:
     return cubic_;
-  case MANHATTAN:
+  case ConnectionDrawType::MANHATTAN:
     return manhattan_;
   default:
     std::cerr << "Unknown connection type." << std::endl;
-    return ConnectionDrawStrategyPtr();
+    return nullptr;
   }
 }
 
@@ -672,6 +722,5 @@ ConnectionLine* ConnectionFactory::makeFinishedConnection(PortWidget* fromPort, 
 {
   auto c = new ConnectionLine(fromPort, toPort, id, getCurrentDrawer());
   activate(c);
-  connect(this, SIGNAL(typeChanged(ConnectionDrawStrategyPtr)), c, SLOT(setDrawStrategy(ConnectionDrawStrategyPtr)));
   return c;
 }

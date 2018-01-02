@@ -33,11 +33,11 @@ MESSAGE(STATUS "Configuring External Packages")
 MESSAGE(STATUS "Configuring google-mock")
 ADD_SUBDIRECTORY(gmock)
 
-MESSAGE(STATUS "Configuring log4cpp")
-ADD_SUBDIRECTORY(log4cpp)
-
 MESSAGE(STATUS "Configuring cleaver 1")
 ADD_SUBDIRECTORY(cleaver)
 
 MESSAGE(STATUS "Configuring libxml2")
 ADD_SUBDIRECTORY(libxml2)
+
+MESSAGE(STATUS "Configuring spire")
+ADD_SUBDIRECTORY(spire)

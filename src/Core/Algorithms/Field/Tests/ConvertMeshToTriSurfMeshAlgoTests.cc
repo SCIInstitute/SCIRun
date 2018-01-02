@@ -41,12 +41,6 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
 
-namespace 
-{
-  void runTest(...)
-  {
-  }
-}
 
 TEST(ConvertMeshToTriSurfAlgoTests, DISABLED_Foo)
 {

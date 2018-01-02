@@ -64,7 +64,6 @@ void FairMesh::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
     auto state = get_state();
     setAlgoIntFromState(Parameters::NumIterations);
     setAlgoDoubleFromState(Parameters::Lambda);

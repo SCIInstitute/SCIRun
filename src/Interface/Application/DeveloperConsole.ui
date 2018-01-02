@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>308</height>
+    <width>600</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>400</width>
-    <height>308</height>
+    <width>600</width>
+    <height>800</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -144,6 +144,13 @@ USE AT YOUR OWN RISK!</string>
         </widget>
        </item>
       </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPlainTextEdit" name="networkViewPlainTextEdit_">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
    </layout>

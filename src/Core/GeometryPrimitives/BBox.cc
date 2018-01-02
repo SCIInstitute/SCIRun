@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -33,7 +33,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 
-void 
+void
 BBox::extend_disk(const Point& cen, const Vector& normal, double r)
 {
   if (normal.length2() < 1.e-12) { extend(cen); return; }
@@ -66,14 +66,14 @@ BBox::is_similar_to(const BBox &b, double diff) const
   return true;
 }
 
-void 
+void
 BBox::translate(const Vector &v)
 {
   cmin_+=v;
   cmax_+=v;
 }
 
-void 
+void
 BBox::scale(double s, const Vector&o)
 {
   cmin_-=o;
@@ -84,7 +84,7 @@ BBox::scale(double s, const Vector&o)
   cmax_+=o;
 }
 
-bool 
+bool
 BBox::overlaps(const BBox & bb) const
 {
   if( bb.cmin_.x() > cmax_.x() || bb.cmax_.x() < cmin_.x())
@@ -97,7 +97,7 @@ BBox::overlaps(const BBox & bb) const
   return true;
 }
 
-bool 
+bool
 BBox::overlaps_inside(const BBox & bb) const
 {
   if( bb.cmin_.x() >= cmax_.x() || bb.cmax_.x() <= cmin_.x())
@@ -110,7 +110,7 @@ BBox::overlaps_inside(const BBox & bb) const
   return true;
 }
 
-bool 
+bool
 BBox::intersect(const Point& origin, const Vector& dir, Point& hitPoint) const
 {
   Vector t1 = (cmin_ - origin) / dir;
@@ -123,36 +123,41 @@ BBox::intersect(const Point& origin, const Vector& dir, Point& hitPoint) const
   {
     hitPoint = origin + dir*tnear;
     return true;
-  } 
-  else 
+  }
+  else
   {
     return false;
   }
 }
 
-void Pio(Piostream &stream, BBox & box)
+void SCIRun::Core::Geometry::Pio(Piostream &stream, BBox & box)
 {
   stream.begin_cheap_delim();
-    
+
   // Store the valid flag as an int to be backwards compatible.
   int tmp = box.valid();
   Point min = box.get_min();
   Point max = box.get_max();
   Pio(stream, tmp);
-  if (tmp) 
+  if (tmp)
   {
     Pio(stream, min);
     Pio(stream, max);
   }
 
-  if(stream.reading()) 
+  if(stream.reading())
   {
     box.set_valid(tmp);
-    if (tmp) 
+    if (tmp)
     {
       box.extend(min);
       box.extend(max);
     }
   }
   stream.end_cheap_delim();
+}
+
+std::ostream& SCIRun::Core::Geometry::operator<<(std::ostream& out, const BBox& b)
+{
+  return out << b.get_min() << " : " << b.get_max();
 }

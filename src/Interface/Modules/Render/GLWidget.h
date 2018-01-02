@@ -45,7 +45,6 @@
 #include <Interface/Modules/Render/QtGLContext.h>
 
 #include <Interface/Modules/Render/ES/SRInterface.h>
-#include <Interface/Modules/Render/namespaces.h>
 #endif
 #include <QtOpenGL/QGLWidget>
 
@@ -67,6 +66,10 @@ public:
   /// Required function for single threaded interfaces that have multiple
   /// contexts running on the same thread.
   void makeCurrent();
+
+  void setLockZoom(bool lock) { mGraphics->setLockZoom(lock); }
+  void setLockPanning(bool lock) { mGraphics->setLockPanning(lock); }
+  void setLockRotation(bool lock) { mGraphics->setLockRotation(lock); }
 
 Q_SIGNALS:
   void fatalError(const QString& message);

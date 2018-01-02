@@ -41,6 +41,7 @@ DEALINGS IN THE SOFTWARE.
 using namespace SCIRun::Core;
 using namespace Commands;
 using namespace Console;
+using namespace Logging;
 using namespace SCIRun::Dataflow::Networks;
 using namespace Algorithms;
 
@@ -55,7 +56,7 @@ namespace
   void quietModulesIfNotVerbose()
   {
     if (!Application::Instance().parameters()->verboseMode())
-      Module::defaultLogger_.reset(new SCIRun::Core::Logging::NullLogger);
+      DefaultModuleFactories::defaultLogger_.reset(new Logging::NullLogger);
   }
 }
 
@@ -189,6 +190,7 @@ bool InteractiveModeCommandConsole::execute()
     if (!PythonInterpreter::Instance().run_string(line))
       break;
   }
+  std::cout << std::endl;
   LOG_CONSOLE("~~~~~~~");
   LOG_CONSOLE("Goodbye!");
   LOG_CONSOLE("~~~~~~~");
@@ -223,13 +225,13 @@ bool RunPythonScriptCommandConsole::execute()
     }
 
     LOG_CONSOLE("Done running Python script.");
-    
+
     if (!app.parameters()->quitAfterOneScriptedExecution())
     {
       InteractiveModeCommandConsole interactive;
       return interactive.execute();
     }
-    
+
     return true;
 #else
     LOG_CONSOLE("Python disabled, cannot run script " << *script);
@@ -242,7 +244,7 @@ bool RunPythonScriptCommandConsole::execute()
 bool SetupDataDirectoryCommand::execute()
 {
   auto dir = Application::Instance().parameters()->dataDirectory().get();
-  LOG_DEBUG("Data dir set to: " << dir << std::endl);
+  LOG_DEBUG("Data dir set to: {}", dir.string());
 
   Preferences::Instance().setDataDirectory(dir);
   return true;

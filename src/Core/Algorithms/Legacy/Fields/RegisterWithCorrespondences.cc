@@ -834,10 +834,6 @@ bool RegisterWithCorrespondencesAlgo::runP(FieldHandle input, FieldHandle Cors1,
     double traceA;
     traceA=SVMat(0,0)+SVMat(1,0)+SVMat(2,0);
     
-    //std::cout<<"Tmat " << Tmat <<std::endl;
-    
-    double scaling=traceA*norm1/norm2;
-    
     std::vector<double> coefs = {
       Tmat(0, 0)*traceA*norm1,
       Tmat(0, 1)*traceA*norm1,

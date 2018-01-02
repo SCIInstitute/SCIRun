@@ -52,8 +52,6 @@ void ConvertMatrixToScalar::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     if (!matrixIs::dense(input_matrix))
     {
       //TODO implement something with sparse
@@ -72,7 +70,7 @@ void ConvertMatrixToScalar::execute()
     dataptr = dense->data();
     int datavalue= dataptr[0];
 
-    boost::shared_ptr<SCIRun::Core::Datatypes::Int32> out(new SCIRun::Core::Datatypes::Int32(datavalue));
+    boost::shared_ptr<Int32> out(new Int32(datavalue));
 
     sendOutput(Output,out);
   }

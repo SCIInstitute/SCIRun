@@ -110,7 +110,7 @@ void GeneratePointSamplesFromField::setStateDefaults()
 
 void GeneratePointSamplesFromField::execute()
 {
-  FieldHandle field = GenerateOutputField();
+  auto field = GenerateOutputField();
   sendOutput(GeneratedPoints, field);
 
   auto geom = impl_->buildWidgetObject(field, get_state()->getValue(Parameters::ProbeScale).toDouble(), *this);
@@ -120,9 +120,6 @@ void GeneratePointSamplesFromField::execute()
 FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
 {
   auto ifieldhandle = getRequiredInput(InputField);
-
-  update_state(Executing);
-
   bool input_field_p = true;
   /// @todo: It looks like the input field is meant to be optional even
   // though it is not.
@@ -294,9 +291,9 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
 
 GeometryHandle GeneratePointSamplesFromFieldImpl::buildWidgetObject(FieldHandle field, double radius, const GeometryIDGenerator& idGenerator)
 {
-  GeometryHandle geom(new GeometryObjectSpire(idGenerator, "EntireSinglePointProbeFromField", true));
+  auto geom(boost::make_shared<GeometryObjectSpire>(idGenerator, "EntireSinglePointProbeFromField", true));
 
-  VMesh*  mesh = field->vmesh();
+  auto mesh = field->vmesh();
 
   ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
   ColorRGB node_color;

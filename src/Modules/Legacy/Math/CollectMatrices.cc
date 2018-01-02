@@ -93,8 +93,6 @@ void CollectMatrices::postStateChangeInternalSignalHookup()
 void
 CollectMatrices::execute()
 {
-  update_state(NeedData);
-
   auto aHOpt = getOptionalInput(Optional_BaseMatrix);
   auto bH = getRequiredInput(SubMatrix);
 
