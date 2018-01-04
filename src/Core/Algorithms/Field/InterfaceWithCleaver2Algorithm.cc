@@ -35,10 +35,12 @@ DEALINGS IN THE SOFTWARE.
 #include <cleaver2/vec3.h>
 #include <cleaver2/BoundingBox.h>
 #include <cleaver2/Cleaver.h>
+#include <cleaver2/CleaverMesher.h>
 #include <cleaver2/InverseField.h>
 #include <cleaver2/SizingFieldCreator.h>
 //#include <cleaver/PaddedVolume.h>
 #include <cleaver2/Volume.h>
+#include <cleaver2/TetMesh.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 #include <Core/GeometryPrimitives/Vector.h>
@@ -80,6 +82,12 @@ InterfaceWithCleaver2Algorithm::InterfaceWithCleaver2Algorithm()
 
 namespace
 {
+  //TODO: move to algo params
+  enum cleaver2::MeshType mesh_mode = cleaver2::Structured;
+  const double kDefaultAlphaLong = 0.357;
+  const double kDefaultAlphaShort = 0.203;
+
+
   //TODO dan: need run-time check for float or double field data
   boost::shared_ptr<cleaver2::AbstractScalarField> makeCleaver2FieldFromLatVol(FieldHandle field)
   {
@@ -123,16 +131,13 @@ void addSizingFieldToVolume(boost::shared_ptr<cleaver2::Volume> volume)
     //cleaver::Timer sizing_field_timer;
     //sizing_field_timer.start();
     //TODO: expose all these in GUI--these are the defaults from CLI
-    const double kDefaultAlpha = 0.4;
-const double kDefaultAlphaLong = 0.357;
-const double kDefaultAlphaShort = 0.203;
+
 const double kDefaultScale = 1.0;
 const double kDefaultLipschitz = 0.2;
 const double kDefaultMultiplier = 1.0;
 const int    kDefaultPadding = 0;
 const int    kDefaultMaxIterations = 1000;
 const double kDefaultSigma = 1.;
-enum cleaver2::MeshType mesh_mode = cleaver2::Structured;
 
     float scaling = kDefaultScale;
     float lipschitz = kDefaultLipschitz;
@@ -159,6 +164,8 @@ enum cleaver2::MeshType mesh_mode = cleaver2::Structured;
 
 FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& input) const
 {
+  const double kDefaultAlpha = 0.4;
+
   DEBUG_LOG_LINE_INFO
 
   FieldHandle output;
@@ -248,36 +255,6 @@ FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& 
 
   boost::shared_ptr<cleaver2::Volume> volume(new cleaver2::Volume(toVectorOfRawPointers(fields)));
 
-  // const double xScale = get(VolumeScalingX).toDouble();
-  // const double yScale = get(VolumeScalingY).toDouble();
-  // const double zScale = get(VolumeScalingZ).toDouble();
-  //
-  // if (xScale > 0 && yScale > 0 && zScale > 0)
-  // {
-  //   const std::string scaling = getOption(VolumeScalingOption);
-  //   if ("Absolute size" == scaling)
-  //   {
-  //     volume->setSize(xScale, yScale, zScale);
-  //   }
-  //   else if ("Relative size" == scaling)
-  //   {
-  //     double newX = xScale*volume->size().x;
-  //     double newY = yScale*volume->size().y;
-  //     double newZ = zScale*volume->size().z;
-  //     volume->setSize(newX, newY, newZ);
-  //   }
-  //   else // None
-  //   {
-  //     volume->setSize(dims[0],dims[1],dims[2]);
-  //     std::ostringstream ostr1,ostr2;
-  //     ostr1 << "Scaling 'None' .... using " << "Scaling " << dims[0] << "x" << dims[1] << "x" << dims[2] << std::endl;
-  //     remark(ostr1.str());
-  //   }
-  // }
-  // else
-  // {
-  //   THROW_ALGORITHM_INPUT_ERROR(" Invalid Scaling. Use Input sizes.");
-  // }
 
   // TODO DAN: add optional padding to sizing field...
   /// Padding is now optional!
@@ -303,10 +280,58 @@ DEBUG_LOG_LINE_INFO
 
   addSizingFieldToVolume(volume);
 
+bool verbose = SCIRun::Core::Logging::GeneralLog::Instance().verbose();  //TODO: expose
+//old way.
+  //boost::scoped_ptr<cleaver2::TetMesh> mesh(cleaver2::createMeshFromVolume(volume.get(), SCIRun::Core::Logging::GeneralLog::Instance().verbose()));
+// new way
+  bool simple = false; //TODO expose
+  cleaver2::CleaverMesher mesher(simple);
+  mesher.setVolume(volume.get());
+  const double alpha = kDefaultAlpha; //no expose
+  mesher.setAlphaInit(alpha);
 
-  boost::scoped_ptr<cleaver2::TetMesh> mesh(cleaver2::createMeshFromVolume(volume.get(), SCIRun::Core::Logging::GeneralLog::Instance().verbose()));
+  //TODO: if fixed grid is checked, expose alpha short and long--see CLI line 454
 
-DEBUG_LOG_LINE_INFO
+  //-----------------------------------
+  // Load background mesh if provided--TODO: copy from CLI:400
+//-----------------------------------
+  cleaver2::TetMesh *bgMesh = nullptr;
+  switch (mesh_mode)
+  {
+    case cleaver2::Regular:
+    {
+      double alpha_long = kDefaultAlphaLong;
+      double alpha_short = kDefaultAlphaShort;
+      mesher.setAlphas(alpha_long, alpha_short);
+      mesher.setRegular(true);
+      bgMesh = mesher.createBackgroundMesh(verbose);
+      break;
+    }
+    case cleaver2::Structured:
+    {
+      mesher.setRegular(false);
+      bgMesh = mesher.createBackgroundMesh(verbose);
+      break;
+    }
+  }
+
+//TODO--add output ports for background (bgMesh) and sizing field
+
+  mesher.buildAdjacency(verbose);
+  mesher.sampleVolume(verbose);
+  mesher.computeAlphas(verbose);
+  mesher.computeInterfaces(verbose);
+  mesher.generalizeTets(verbose);
+  mesher.snapsAndWarp(verbose);
+  mesher.stencilTets(verbose);
+
+  auto mesh(boost::shared_ptr<cleaver2::TetMesh>(mesher.getTetMesh()));
+
+  //-----------------------------------------------------------
+  // Fix jacobians if requested.--TODO expose: [x] reverse Jacobian
+  //-----------------------------------------------------------
+  bool fix_tets = true;
+  if (fix_tets) mesh->fixVertexWindup(verbose);
 
   auto nr_of_tets  = mesh->tets.size();
   auto nr_of_verts = mesh->verts.size();
@@ -315,7 +340,9 @@ DEBUG_LOG_LINE_INFO
   {
     THROW_ALGORITHM_INPUT_ERROR(" Number of resulting tetrahedral nodes or elements is 0. If you disabled padding enable it and execute again. ");
   }
-DEBUG_LOG_LINE_INFO
+
+  //TODO: extract cleaverMesh->fld code, write inverse function for sizing field input mesh
+  
   FieldInformation fi("TetVolMesh",0,"double");   ///create output field
 
   output = CreateField(fi);
