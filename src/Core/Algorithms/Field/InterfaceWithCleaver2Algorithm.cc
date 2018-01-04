@@ -36,6 +36,7 @@ DEALINGS IN THE SOFTWARE.
 #include <cleaver2/BoundingBox.h>
 #include <cleaver2/Cleaver.h>
 #include <cleaver2/InverseField.h>
+#include <cleaver2/SizingFieldCreator.h>
 //#include <cleaver/PaddedVolume.h>
 #include <cleaver2/Volume.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -79,7 +80,8 @@ InterfaceWithCleaver2Algorithm::InterfaceWithCleaver2Algorithm()
 
 namespace
 {
-  boost::shared_ptr<cleaver2::ScalarField<float>> makeCleaver2FieldFromLatVol(FieldHandle field)
+  //TODO dan: need run-time check for float or double field data
+  boost::shared_ptr<cleaver2::AbstractScalarField> makeCleaver2FieldFromLatVol(FieldHandle field)
   {
     VMesh*  vmesh   = field->vmesh();
     VField* vfield = field->vfield();
@@ -103,6 +105,56 @@ namespace
 
     return cleaverField;
   }
+
+void addSizingFieldToVolume(boost::shared_ptr<cleaver2::Volume> volume)
+{
+  cleaver2::AbstractScalarField* sizingField;
+  #if 0 //TODO: add optional sizing field port--convert from latvol
+  if (have_sizing_field)
+  {
+    std::cout << "Loading sizing field: " << sizing_field << std::endl;
+    std::vector<std::string> tmp(1,sizing_field);
+    sizingField = NRRDTools::loadNRRDFiles(tmp);
+    // todo(jon): add error handling
+  }
+  else
+  #endif
+  {
+    //cleaver::Timer sizing_field_timer;
+    //sizing_field_timer.start();
+    //TODO: expose all these in GUI--these are the defaults from CLI
+    const double kDefaultAlpha = 0.4;
+const double kDefaultAlphaLong = 0.357;
+const double kDefaultAlphaShort = 0.203;
+const double kDefaultScale = 1.0;
+const double kDefaultLipschitz = 0.2;
+const double kDefaultMultiplier = 1.0;
+const int    kDefaultPadding = 0;
+const int    kDefaultMaxIterations = 1000;
+const double kDefaultSigma = 1.;
+enum cleaver2::MeshType mesh_mode = cleaver2::Structured;
+
+    float scaling = kDefaultScale;
+    float lipschitz = kDefaultLipschitz;
+    float multiplier = kDefaultMultiplier;
+    bool verbose = false;
+
+    sizingField = cleaver2::SizingFieldCreator::createSizingFieldFromVolume(
+      volume.get(),
+      (float)(1.0 / lipschitz),
+      (float)scaling,
+      (float)multiplier,
+      0, // padding--off
+      (mesh_mode == cleaver2::Regular ? false : true),
+      verbose);
+    //sizing_field_timer.stop();
+    //sizing_field_time = sizing_field_timer.time();
+  }
+  //TODO DAN: fix ptr ownership
+  volume->setSizingField(sizingField);
+}
+
+
 }
 
 FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& input) const
@@ -227,8 +279,9 @@ FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& 
   //   THROW_ALGORITHM_INPUT_ERROR(" Invalid Scaling. Use Input sizes.");
   // }
 
+  // TODO DAN: add optional padding to sizing field...
   /// Padding is now optional!
-  boost::shared_ptr<cleaver2::AbstractVolume> paddedVolume(volume);
+  //boost::shared_ptr<cleaver2::AbstractVolume> paddedVolume(volume);
   // const bool verbose = get(Verbose).toBool();
   // const bool pad = get(Padding).toBool();
   //
@@ -248,8 +301,13 @@ FieldHandle InterfaceWithCleaver2Algorithm::run(const std::vector<FieldHandle>& 
 
 DEBUG_LOG_LINE_INFO
 
+  addSizingFieldToVolume(volume);
+
+
   boost::scoped_ptr<cleaver2::TetMesh> mesh(cleaver2::createMeshFromVolume(volume.get(), SCIRun::Core::Logging::GeneralLog::Instance().verbose()));
+
 DEBUG_LOG_LINE_INFO
+
   auto nr_of_tets  = mesh->tets.size();
   auto nr_of_verts = mesh->verts.size();
 
@@ -310,6 +368,6 @@ AlgorithmOutput InterfaceWithCleaver2Algorithm::run(const AlgorithmInput& input)
     THROW_ALGORITHM_PROCESSING_ERROR("Null returned on legacy run call.");
 
   AlgorithmOutput output;
-  output[Variables::OutputField] = nullptr;
+  output[Variables::OutputField] = output_fld;
   return output;
 }
