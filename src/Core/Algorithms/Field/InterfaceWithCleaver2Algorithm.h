@@ -33,29 +33,21 @@
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Field/share.h>
 
-// namespace Cleaver
-// {
-//   class ScalarField;
-// }
-
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace Fields {
 
+  ALGORITHM_PARAMETER_DECL(Verbose);
+  ALGORITHM_PARAMETER_DECL(VolumeScaling);
+  ALGORITHM_PARAMETER_DECL(Lipschitz);
+  ALGORITHM_PARAMETER_DECL(Padding);
+
   class SCISHARE InterfaceWithCleaver2Algorithm : public AlgorithmBase
   {
   public:
     InterfaceWithCleaver2Algorithm();
-
-    // static AlgorithmParameterName Verbose;
-    // static AlgorithmParameterName Padding;
-    // static AlgorithmParameterName VolumeScalingOption;
-    // static AlgorithmParameterName VolumeScalingX;
-    // static AlgorithmParameterName VolumeScalingY;
-    // static AlgorithmParameterName VolumeScalingZ;
-
-    FieldHandle run(const FieldList& input) const;
+    FieldHandle runImpl(const FieldList& input) const;
     virtual AlgorithmOutput run(const AlgorithmInput &) const override;
   };
 
