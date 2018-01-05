@@ -85,9 +85,9 @@ namespace detail
     cleaver2::MeshType mesh_mode;
     double alphaLong;
     double alphaShort;
-    float scaling;
-    float lipschitz;
-    float multiplier;
+    double scaling;
+    double lipschitz;
+    double multiplier;
     bool verbose;
   };
 
@@ -296,6 +296,8 @@ InterfaceWithCleaver2Algorithm::InterfaceWithCleaver2Algorithm()
   // addParameter(Padding,true);
   // addOption(VolumeScalingOption, "Relative size", "Absolute size|Relative size|None");
   addParameter(Parameters::VolumeScaling, detail::kDefaultScale);
+  addParameter(Parameters::Lipschitz, detail::kDefaultLipschitz);
+  addParameter(Parameters::Padding, detail::kDefaultPadding);
 }
 
 FieldHandle InterfaceWithCleaver2Algorithm::runImpl(const FieldList& input) const

@@ -75,7 +75,7 @@ namespace Visualization {
     static bool containsDescenderLetter(const std::string& text);
     boost::shared_ptr<class TextBuilder> textBuilder_;
     std::tuple<int,int> lastWindowSize_ { 450, 1000 };
-    bool needReexecute_ {true};
+    bool needReexecute_{ true }, executedOnce_{ false };
   };
 }}}
 
