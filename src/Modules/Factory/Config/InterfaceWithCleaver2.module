@@ -12,7 +12,7 @@
     "header": "Core/Algorithms/Field/InterfaceWithCleaver2Algorithm.h"
   },
   "UI": {
-    "name": "N/A",
-    "header": "N/A"
+    "name": "InterfaceWithCleaver2Dialog",
+    "header": "Interface/Modules/Fields/InterfaceWithCleaver2Dialog.h"
   }
 }

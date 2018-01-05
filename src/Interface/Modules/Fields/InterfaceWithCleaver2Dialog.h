@@ -26,35 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_INTERFACEWITHCLEAVER2_H
-#define ALGORITHMS_MATH_INTERFACEWITHCLEAVER2_H
+#ifndef INTERFACE_MODULES_INTERFACEWITHCLEAVER2_H
+#define INTERFACE_MODULES_INTERFACEWITHCLEAVER2_H
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Field/share.h>
+#include "Interface/Modules/Fields/ui_InterfaceWithCleaver2.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Fields {
+namespace Gui {
 
-  ALGORITHM_PARAMETER_DECL(Verbose);
-  ALGORITHM_PARAMETER_DECL(VolumeScaling);
-  ALGORITHM_PARAMETER_DECL(VolumeMultiplier);
-  ALGORITHM_PARAMETER_DECL(Lipschitz);
-  ALGORITHM_PARAMETER_DECL(Padding);
-  ALGORITHM_PARAMETER_DECL(AlphaLong);
-  ALGORITHM_PARAMETER_DECL(AlphaShort);
-  ALGORITHM_PARAMETER_DECL(SimpleMode);
+class SCISHARE InterfaceWithCleaver2Dialog : public ModuleDialogGeneric,
+  public Ui::InterfaceWithCleaver2
+{
+	Q_OBJECT
 
-  class SCISHARE InterfaceWithCleaver2Algorithm : public AlgorithmBase
-  {
-  public:
-    InterfaceWithCleaver2Algorithm();
-    FieldHandle runImpl(const FieldList& input, FieldHandle backgroundMesh = nullptr, FieldHandle sizingField = nullptr) const;
-    virtual AlgorithmOutput run(const AlgorithmInput &) const override;
-  };
+public:
+  InterfaceWithCleaver2Dialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+};
 
-}}}}
+}
+}
 
 #endif

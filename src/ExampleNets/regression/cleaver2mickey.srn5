@@ -447,8 +447,92 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>7</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AlphaLong</name>
+								</first>
+								<second>
+									<name>AlphaLong</name>
+									<value>
+										<which>1</which>
+										<value>3.56999999999999984e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>AlphaShort</name>
+								</first>
+								<second>
+									<name>AlphaShort</name>
+									<value>
+										<which>1</which>
+										<value>2.03000000000000014e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Lipschitz</name>
+								</first>
+								<second>
+									<name>Lipschitz</name>
+									<value>
+										<which>1</which>
+										<value>2.00000000000000011e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SimpleMode</name>
+								</first>
+								<second>
+									<name>SimpleMode</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Verbose</name>
+								</first>
+								<second>
+									<name>Verbose</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>VolumeMultiplier</name>
+								</first>
+								<second>
+									<name>VolumeMultiplier</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>VolumeScaling</name>
+								</first>
+								<second>
+									<name>VolumeScaling</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -3257,7 +3341,7 @@
 									<name>ShowViewer</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -3741,7 +3825,7 @@
 									<name>ShowViewer</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>

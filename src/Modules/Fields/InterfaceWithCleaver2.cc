@@ -48,12 +48,13 @@ InterfaceWithCleaver2::InterfaceWithCleaver2() : Module(staticInfo_)
 
 void InterfaceWithCleaver2::setStateDefaults()
 {
-  // setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::Verbose);
-  // setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::Padding);
-  // setStateStringFromAlgoOption(InterfaceWithCleaverAlgorithm::VolumeScalingOption);
-  // setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingX);
-  // setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingY);
-  // setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingZ);
+  setStateBoolFromAlgo(Parameters::Verbose);
+  setStateBoolFromAlgo(Parameters::SimpleMode);
+  setStateDoubleFromAlgo(Parameters::Lipschitz);
+  setStateDoubleFromAlgo(Parameters::AlphaLong);
+  setStateDoubleFromAlgo(Parameters::AlphaShort);
+  setStateDoubleFromAlgo(Parameters::VolumeScaling);
+  setStateDoubleFromAlgo(Parameters::VolumeMultiplier);
 }
 
 void InterfaceWithCleaver2::execute()
@@ -62,12 +63,13 @@ void InterfaceWithCleaver2::execute()
 
   if (needToExecute())
   {
-    // setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::Verbose);
-    // setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::Padding);
-    // setAlgoOptionFromState(InterfaceWithCleaverAlgorithm::VolumeScalingOption);
-    // setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingX);
-    // setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingY);
-    // setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingZ);
+    setAlgoBoolFromState(Parameters::Verbose);
+    setAlgoBoolFromState(Parameters::SimpleMode);
+    setAlgoDoubleFromState(Parameters::Lipschitz);
+    setAlgoDoubleFromState(Parameters::AlphaLong);
+    setAlgoDoubleFromState(Parameters::AlphaShort);
+    setAlgoDoubleFromState(Parameters::VolumeScaling);
+    setAlgoDoubleFromState(Parameters::VolumeMultiplier);
 
     auto output = algo().run(withInputData((InputFields, fields)));
 

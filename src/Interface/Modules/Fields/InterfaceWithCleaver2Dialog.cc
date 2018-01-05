@@ -26,35 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_INTERFACEWITHCLEAVER2_H
-#define ALGORITHMS_MATH_INTERFACEWITHCLEAVER2_H
+#include <Interface/Modules/Fields/InterfaceWithCleaver2Dialog.h>
+#include <Core/Algorithms/Field/InterfaceWithCleaver2Algorithm.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Field/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Fields {
+InterfaceWithCleaver2Dialog::InterfaceWithCleaver2Dialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-  ALGORITHM_PARAMETER_DECL(Verbose);
-  ALGORITHM_PARAMETER_DECL(VolumeScaling);
-  ALGORITHM_PARAMETER_DECL(VolumeMultiplier);
-  ALGORITHM_PARAMETER_DECL(Lipschitz);
-  ALGORITHM_PARAMETER_DECL(Padding);
-  ALGORITHM_PARAMETER_DECL(AlphaLong);
-  ALGORITHM_PARAMETER_DECL(AlphaShort);
-  ALGORITHM_PARAMETER_DECL(SimpleMode);
-
-  class SCISHARE InterfaceWithCleaver2Algorithm : public AlgorithmBase
-  {
-  public:
-    InterfaceWithCleaver2Algorithm();
-    FieldHandle runImpl(const FieldList& input, FieldHandle backgroundMesh = nullptr, FieldHandle sizingField = nullptr) const;
-    virtual AlgorithmOutput run(const AlgorithmInput &) const override;
-  };
-
-}}}}
-
-#endif
+  addDoubleSpinBoxManager(alphaLongDoubleSpinBox_, Parameters::AlphaLong);
+  addDoubleSpinBoxManager(alphaShortDoubleSpinBox_, Parameters::AlphaShort);
+  addDoubleSpinBoxManager(multiplierDoubleSpinBox_, Parameters::VolumeMultiplier);
+  addDoubleSpinBoxManager(scalingDoubleSpinBox_, Parameters::VolumeScaling);
+  addDoubleSpinBoxManager(lipschitzDoubleSpinBox_, Parameters::Lipschitz);
+  addCheckBoxManager(verboseCheckBox_, Parameters::Verbose);
+  addCheckBoxManager(simpleModeCheckBox_, Parameters::SimpleMode);
+}

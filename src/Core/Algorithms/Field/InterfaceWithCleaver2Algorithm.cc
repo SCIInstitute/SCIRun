@@ -63,8 +63,12 @@ using namespace SCIRun::Core::Geometry;
 
 ALGORITHM_PARAMETER_DEF(Fields, Verbose);
 ALGORITHM_PARAMETER_DEF(Fields, VolumeScaling);
+ALGORITHM_PARAMETER_DEF(Fields, VolumeMultiplier);
 ALGORITHM_PARAMETER_DEF(Fields, Lipschitz);
 ALGORITHM_PARAMETER_DEF(Fields, Padding);
+ALGORITHM_PARAMETER_DEF(Fields, AlphaShort);
+ALGORITHM_PARAMETER_DEF(Fields, AlphaLong);
+ALGORITHM_PARAMETER_DEF(Fields, SimpleMode);
 
 namespace detail
 {
@@ -76,9 +80,9 @@ namespace detail
   static const double kDefaultScale = 1.0;
   static const double kDefaultLipschitz = 0.2;
   static const double kDefaultMultiplier = 1.0;
-  static const int    kDefaultPadding = 0;
-  static const int    kDefaultMaxIterations = 1000;
-  static const double kDefaultSigma = 1.;
+  //static const int    kDefaultPadding = 0;
+  //static const int    kDefaultMaxIterations = 1000;
+  //static const double kDefaultSigma = 1.;
 
   struct Cleaver2Parameters
   {
@@ -89,17 +93,23 @@ namespace detail
     double lipschitz;
     double multiplier;
     bool verbose;
+    bool simpleMode;
   };
 
   class Cleaver2Impl
   {
   public:
-    Cleaver2Impl(const AlgorithmBase* algo, const Cleaver2Parameters& params) : algo_(algo), params_(params) {}
+    Cleaver2Impl(const AlgorithmBase* algo, const Cleaver2Parameters& params) : algo_(algo), params_(params)
+    {
+      LOG_DEBUG("Cleaver 2 parameters: \n\tmesh_mode: {}\n\talphaLong: {}\n\talphaShort: {}\n\tscaling: {}\n\tlipschitz: {}\n\tmultiplier: {}\n\tverbose: {}\n\tsimpleMode: {}",
+        params_.mesh_mode, params_.alphaLong, params_.alphaShort,
+        params_.scaling, params_.lipschitz, params_.multiplier,
+        params_.verbose, params_.simpleMode);
+    }
 
-    FieldHandle doit(CleaverInputFieldList fields)
+    FieldHandle cleave(CleaverInputFieldList fields)
     {
       volume_.reset(new cleaver2::Volume(toVectorOfRawPointers(fields)));
-
 
       // TODO DAN: add optional padding to sizing field...
       /// Padding is now optional!
@@ -123,12 +133,12 @@ namespace detail
 
       addSizingFieldToVolume();
 
-      bool verbose = SCIRun::Core::Logging::GeneralLog::Instance().verbose();  //TODO: expose
+      bool verbose = params_.verbose;
 
-      bool simple = false; //TODO expose
+      bool simple = params_.simpleMode;
       cleaver2::CleaverMesher mesher(simple);
       mesher.setVolume(volume_.get());
-      const double alpha = kDefaultAlpha; //no expose
+      const double alpha = kDefaultAlpha; // do not expose
       mesher.setAlphaInit(alpha);
 
       //TODO: if fixed grid is checked, expose alpha short and long--see CLI line 454
@@ -217,7 +227,6 @@ namespace detail
       else
 #endif
       {
-       //TODO: expose all these in GUI--these are the defaults from CLI
         sizingField_.reset(cleaver2::SizingFieldCreator::createSizingFieldFromVolume(
           volume_.get(),
           (float)(1.0 / params_.lipschitz),
@@ -293,14 +302,17 @@ namespace detail
 InterfaceWithCleaver2Algorithm::InterfaceWithCleaver2Algorithm()
 {
   addParameter(Parameters::Verbose, true);
-  // addParameter(Padding,true);
-  // addOption(VolumeScalingOption, "Relative size", "Absolute size|Relative size|None");
+  addParameter(Parameters::SimpleMode, false);
   addParameter(Parameters::VolumeScaling, detail::kDefaultScale);
+  addParameter(Parameters::VolumeMultiplier, detail::kDefaultMultiplier);
   addParameter(Parameters::Lipschitz, detail::kDefaultLipschitz);
-  addParameter(Parameters::Padding, detail::kDefaultPadding);
+  //addParameter(Parameters::Padding, detail::kDefaultPadding);
+  addParameter(Parameters::AlphaLong, detail::kDefaultAlphaLong);
+  addParameter(Parameters::AlphaShort, detail::kDefaultAlphaShort);
 }
 
-FieldHandle InterfaceWithCleaver2Algorithm::runImpl(const FieldList& input) const
+//TODO: handle bgMesh and sizingField inputs
+FieldHandle InterfaceWithCleaver2Algorithm::runImpl(const FieldList& input, FieldHandle backgroundMesh, FieldHandle sizingField) const
 {
   std::vector<FieldHandle> inputs;
   std::copy_if(input.begin(), input.end(), std::back_inserter(inputs), [](FieldHandle f) { return f; });
@@ -382,23 +394,22 @@ FieldHandle InterfaceWithCleaver2Algorithm::runImpl(const FieldList& input) cons
       {
         THROW_ALGORITHM_INPUT_ERROR("Input field needs to be a structured mesh (best would be a LatVol) with float values defined on mesh nodes. ");
       }
-
     }
-
   }
 
   detail::Cleaver2Parameters params
   {
     cleaver2::MeshType::Regular,
-    detail::kDefaultAlphaLong,
-    detail::kDefaultAlphaShort,
+    get(Parameters::AlphaLong).toDouble(),
+    get(Parameters::AlphaShort).toDouble(),
     get(Parameters::VolumeScaling).toDouble(),
     get(Parameters::Lipschitz).toDouble(),
-    detail::kDefaultMultiplier,
-    true
+    get(Parameters::VolumeMultiplier).toDouble(),
+    get(Parameters::Verbose).toBool(),
+    get(Parameters::SimpleMode).toBool()
   };
   detail::Cleaver2Impl impl(this, params);
-  return impl.doit(fields);
+  return impl.cleave(fields);
 }
 
 AlgorithmOutput InterfaceWithCleaver2Algorithm::run(const AlgorithmInput& input) const
