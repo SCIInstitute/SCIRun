@@ -37,8 +37,8 @@ namespace Modules {
 namespace Fields {
 
   class SCISHARE InterfaceWithCleaver2 : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<DynamicPortTag<FieldPortTag>>,
-    public Has1OutputPort<FieldPortTag>
+    public Has3InputPorts<DynamicPortTag<FieldPortTag>, FieldPortTag, FieldPortTag>,
+    public Has3OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag>
   {
   public:
     InterfaceWithCleaver2();
@@ -47,7 +47,11 @@ namespace Fields {
 
     HAS_DYNAMIC_PORTS
     INPUT_PORT_DYNAMIC(0, InputFields, Field);
+    INPUT_PORT(1, SizingField, Field);
+    INPUT_PORT(2, BackgroundField, Field);
     OUTPUT_PORT(0, OutputField, Field);
+    OUTPUT_PORT(1, SizingFieldUsed, Field);
+    OUTPUT_PORT(2, BackgroundFieldUsed, Field);
 
     MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };

@@ -44,6 +44,10 @@ InterfaceWithCleaver2::InterfaceWithCleaver2() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputFields);
   INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(SizingField);
+  INITIALIZE_PORT(BackgroundField);
+  INITIALIZE_PORT(SizingFieldUsed);
+  INITIALIZE_PORT(BackgroundFieldUsed);
 }
 
 void InterfaceWithCleaver2::setStateDefaults()
