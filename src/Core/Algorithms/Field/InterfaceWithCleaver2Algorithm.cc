@@ -375,7 +375,7 @@ namespace detail
     const AlgorithmBase* algo_;
     Cleaver2Parameters params_;
     FieldHandle inputSizingField_, outputSizingField_;
-    boost::shared_ptr<cleaver2::ScalarField<float>> sizingField_;
+    boost::shared_ptr<cleaver2::AbstractScalarField> sizingField_;
     boost::shared_ptr<cleaver2::Volume> volume_;
     int x_ = 0, y_ = 0, z_ = 0;
   };
