@@ -70,9 +70,15 @@ ALGORITHM_PARAMETER_DEF(Fields, AlphaShort);
 ALGORITHM_PARAMETER_DEF(Fields, AlphaLong);
 ALGORITHM_PARAMETER_DEF(Fields, SimpleMode);
 
+const AlgorithmInputName InterfaceWithCleaver2Algorithm::SizingField("SizingField");
+const AlgorithmInputName InterfaceWithCleaver2Algorithm::BackgroundField("BackgroundField");
+const AlgorithmOutputName InterfaceWithCleaver2Algorithm::SizingFieldUsed("SizingFieldUsed");
+const AlgorithmOutputName InterfaceWithCleaver2Algorithm::BackgroundFieldUsed("BackgroundFieldUsed");
+
 namespace detail
 {
-  using CleaverInputFieldList = std::vector<boost::shared_ptr<cleaver2::AbstractScalarField>>;
+  using CleaverInputField = boost::shared_ptr<cleaver2::AbstractScalarField>;
+  using CleaverInputFieldList = std::vector<CleaverInputField>;
 
   static const double kDefaultAlpha = 0.4;
   static const double kDefaultAlphaLong = 0.357;
@@ -99,7 +105,7 @@ namespace detail
   class Cleaver2Impl
   {
   public:
-    Cleaver2Impl(const AlgorithmBase* algo, const Cleaver2Parameters& params) : algo_(algo), params_(params)
+    Cleaver2Impl(const AlgorithmBase* algo, const Cleaver2Parameters& params, FieldHandle sizingField) : algo_(algo), params_(params), inputSizingField_(sizingField)
     {
       LOG_DEBUG("Cleaver 2 parameters: \n\tmesh_mode: {}\n\talphaLong: {}\n\talphaShort: {}\n\tscaling: {}\n\tlipschitz: {}\n\tmultiplier: {}\n\tverbose: {}\n\tsimpleMode: {}",
         params_.mesh_mode, params_.alphaLong, params_.alphaShort,
@@ -188,6 +194,81 @@ namespace detail
       return convertCleaverOutputToField(mesh);
     }
 
+    FieldHandle run(FieldList inputs)
+    {
+      detail::CleaverInputFieldList fields;
+
+      for (auto& input : inputs)
+      {
+        fields.push_back(check(input));
+      }
+      return cleave(fields);
+    }
+
+    CleaverInputField check(FieldHandle input)
+    {
+      VMesh::dimension_type dims; 
+      auto imesh1 = input->vmesh();
+
+      if (!imesh1->is_structuredmesh())
+      {
+        THROW_ALGORITHM_INPUT_ERROR_WITH(algo_, "needs to be structured mesh!");
+      }
+      else
+      {
+        auto vfield1 = input->vfield();
+        if (!vfield1->is_scalar())
+        {
+          THROW_ALGORITHM_INPUT_ERROR_WITH(algo_, "values at the node needs to be scalar!");
+        }
+
+        imesh1->get_dimensions(dims);
+        if (x_ == 0)
+        {
+          x_ = dims[0]; y_ = dims[1]; z_ = dims[2];
+          if (x_ < 1 || y_ < 1 || z_ < 1)
+          {
+            THROW_ALGORITHM_INPUT_ERROR_WITH(algo_, " Size of input fields should be non-zero !");
+          }
+        }
+        else
+        {
+          if (dims[0] != x_ || dims[1] != y_ || dims[2] != z_)
+          {
+            THROW_ALGORITHM_INPUT_ERROR_WITH(algo_, " Size of input fields is inconsistent !");
+          }
+        }
+
+        if (dims.size() != 3)
+        {
+          THROW_ALGORITHM_INPUT_ERROR_WITH(algo_, "need a three dimensional indicator function");
+        }
+
+        //0 = constant, 1 = linear
+        if (1 != vfield1->basis_order())
+        {
+          THROW_ALGORITHM_INPUT_ERROR_WITH(algo_, "Input data need to be defined on input mesh nodes.");
+        }
+
+        if (vfield1->is_float())
+        {
+          auto ptr = static_cast<float*>(vfield1->fdata_pointer());
+          if (ptr)
+          {
+            return makeCleaver2FieldFromLatVol(input);
+          }
+          else
+          {
+            THROW_ALGORITHM_INPUT_ERROR_WITH(algo_, "float field is NULL pointer");
+          }
+        }
+        else
+        {
+          THROW_ALGORITHM_INPUT_ERROR_WITH(algo_, "Input field needs to be a structured mesh (best would be a LatVol) with float values defined on mesh nodes. ");
+        }
+      }
+    }
+
     //TODO dan: need run-time check for float or double field data
     static boost::shared_ptr<cleaver2::AbstractScalarField> makeCleaver2FieldFromLatVol(FieldHandle field)
     {
@@ -216,16 +297,13 @@ namespace detail
 
     void addSizingFieldToVolume()
     {
-#if 0 //TODO: add optional sizing field port--convert from latvol
-      if (have_sizing_field)
+     //TODO: add optional sizing field port--convert from latvol
+      if (inputSizingField_)
       {
-        std::cout << "Loading sizing field: " << sizing_field << std::endl;
-        std::vector<std::string> tmp(1,sizing_field);
-        sizingField = NRRDTools::loadNRRDFiles(tmp);
-        // todo(jon): add error handling
+        sizingField_ = makeCleaver2FieldFromLatVol(inputSizingField_);
+        outputSizingField_ = inputSizingField_;
       }
       else
-#endif
       {
         sizingField_.reset(cleaver2::SizingFieldCreator::createSizingFieldFromVolume(
           volume_.get(),
@@ -291,11 +369,15 @@ namespace detail
       algo_->remark(ostr2.str());
       return output;
     }
+
+    FieldHandle sizingFieldUsed() const { return outputSizingField_; }
   private:
     const AlgorithmBase* algo_;
     Cleaver2Parameters params_;
+    FieldHandle inputSizingField_, outputSizingField_;
     boost::shared_ptr<cleaver2::ScalarField<float>> sizingField_;
     boost::shared_ptr<cleaver2::Volume> volume_;
+    int x_ = 0, y_ = 0, z_ = 0;
   };
 }
 
@@ -312,90 +394,23 @@ InterfaceWithCleaver2Algorithm::InterfaceWithCleaver2Algorithm()
 }
 
 //TODO: handle bgMesh and sizingField inputs
-FieldHandle InterfaceWithCleaver2Algorithm::runImpl(const FieldList& input, FieldHandle backgroundMesh, FieldHandle sizingField) const
+AlgorithmOutput InterfaceWithCleaver2Algorithm::runImpl(const FieldList& input, FieldHandle backgroundMesh, FieldHandle sizingField) const
 {
-  std::vector<FieldHandle> inputs;
+  FieldList inputs;
   std::copy_if(input.begin(), input.end(), std::back_inserter(inputs), [](FieldHandle f) { return f; });
 
   if (inputs.empty())
   {
-    THROW_ALGORITHM_INPUT_ERROR(" No input fields given ");
+    THROW_ALGORITHM_INPUT_ERROR("No input fields given");
   }
   if (inputs.size() < 2)
   {
-    THROW_ALGORITHM_INPUT_ERROR(" At least 2 indicator functions stored as float values are needed to run cleaver! ");
+    THROW_ALGORITHM_INPUT_ERROR("At least 2 indicator functions stored as float values are needed to run cleaver!");
   }
 
   std::ostringstream ostr0;
   ostr0 << "Be aware that inside and outside of materials (to be meshed) need to be defined as positive and negative (e.g. surface distance) values across all module inputs. The zero crossings represents material boundaries." << std::endl;
   remark(ostr0.str());
-
-  detail::CleaverInputFieldList fields;
-
-  VMesh::dimension_type dims; int x = 0, y = 0, z = 0;
-  for (size_t p = 0; p < inputs.size(); p++)
-  {
-    auto input = inputs[p];
-    auto imesh1 = input->vmesh();
-
-    if (!imesh1->is_structuredmesh())
-    {
-      THROW_ALGORITHM_INPUT_ERROR("needs to be structured mesh!");
-    }
-    else
-    {
-      auto vfield1 = input->vfield();
-      if (!vfield1->is_scalar())
-      {
-        THROW_ALGORITHM_INPUT_ERROR("values at the node needs to be scalar!");
-      }
-
-      imesh1->get_dimensions(dims);
-      if (p == 0)
-      {
-        x = dims[0]; y = dims[1]; z = dims[2];
-        if (x < 1 || y < 1 || z < 1)
-        {
-          THROW_ALGORITHM_INPUT_ERROR(" Size of input fields should be non-zero !");
-        }
-      }
-      else
-      {
-        if (dims[0] != x || dims[1] != y || dims[2] != z)
-        {
-          THROW_ALGORITHM_INPUT_ERROR(" Size of input fields is inconsistent !");
-        }
-      }
-
-      if (dims.size() != 3)
-      {
-        THROW_ALGORITHM_INPUT_ERROR("need a three dimensional indicator function");
-      }
-
-      //0 = constant, 1 = linear
-      if (1 != vfield1->basis_order())
-      {
-        THROW_ALGORITHM_INPUT_ERROR("Input data need to be defined on input mesh nodes.");
-      }
-
-      if (vfield1->is_float())
-      {
-        auto ptr = static_cast<float*>(vfield1->fdata_pointer());
-        if (ptr)
-        {
-          fields.push_back(detail::Cleaver2Impl::makeCleaver2FieldFromLatVol(input));
-        }
-        else
-        {
-          THROW_ALGORITHM_INPUT_ERROR("float field is NULL pointer");
-        }
-      }
-      else
-      {
-        THROW_ALGORITHM_INPUT_ERROR("Input field needs to be a structured mesh (best would be a LatVol) with float values defined on mesh nodes. ");
-      }
-    }
-  }
 
   detail::Cleaver2Parameters params
   {
@@ -408,19 +423,22 @@ FieldHandle InterfaceWithCleaver2Algorithm::runImpl(const FieldList& input, Fiel
     get(Parameters::Verbose).toBool(),
     get(Parameters::SimpleMode).toBool()
   };
-  detail::Cleaver2Impl impl(this, params);
-  return impl.cleave(fields);
+  detail::Cleaver2Impl impl(this, params, sizingField);
+  auto tetmesh = impl.run(inputs);
+  auto sizing = impl.sizingFieldUsed();
+
+  AlgorithmOutput output;
+  output[Variables::OutputField] = tetmesh;
+  output[SizingFieldUsed] = sizing;
+  return output;
 }
 
 AlgorithmOutput InterfaceWithCleaver2Algorithm::run(const AlgorithmInput& input) const
 {
   auto inputfields = input.getList<Field>(Variables::InputFields);
+  auto sizingField = input.get<Field>(SizingField);
 
-  auto output_fld = runImpl(inputfields);
-  if (!output_fld)
-    THROW_ALGORITHM_PROCESSING_ERROR("Null returned on legacy run call.");
+  return runImpl(inputfields, nullptr, sizingField);
 
-  AlgorithmOutput output;
-  output[Variables::OutputField] = output_fld;
-  return output;
+  
 }

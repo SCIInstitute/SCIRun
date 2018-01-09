@@ -51,7 +51,12 @@ namespace Fields {
   {
   public:
     InterfaceWithCleaver2Algorithm();
-    FieldHandle runImpl(const FieldList& input, FieldHandle backgroundMesh = nullptr, FieldHandle sizingField = nullptr) const;
+    static const AlgorithmInputName SizingField;
+    static const AlgorithmInputName BackgroundField;
+    static const AlgorithmOutputName SizingFieldUsed;
+    static const AlgorithmOutputName BackgroundFieldUsed;
+    
+    AlgorithmOutput runImpl(const FieldList& input, FieldHandle backgroundMesh = nullptr, FieldHandle sizingField = nullptr) const;
     virtual AlgorithmOutput run(const AlgorithmInput &) const override;
   };
 
