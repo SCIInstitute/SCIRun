@@ -207,7 +207,7 @@ namespace detail
 
     CleaverInputField check(FieldHandle input)
     {
-      VMesh::dimension_type dims; 
+      VMesh::dimension_type dims;
       auto imesh1 = input->vmesh();
 
       if (!imesh1->is_structuredmesh())
@@ -439,6 +439,4 @@ AlgorithmOutput InterfaceWithCleaver2Algorithm::run(const AlgorithmInput& input)
   auto sizingField = input.get<Field>(SizingField);
 
   return runImpl(inputfields, nullptr, sizingField);
-
-  
 }

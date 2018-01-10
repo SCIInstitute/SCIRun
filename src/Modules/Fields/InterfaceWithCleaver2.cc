@@ -36,6 +36,7 @@
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
 MODULE_INFO_DEF(InterfaceWithCleaver2, NewField, SCIRun)
@@ -64,6 +65,7 @@ void InterfaceWithCleaver2::setStateDefaults()
 void InterfaceWithCleaver2::execute()
 {
   auto fields = getRequiredDynamicInputs(InputFields);
+  auto sizing = getOptionalInput(SizingField);
 
   if (needToExecute())
   {
@@ -75,8 +77,9 @@ void InterfaceWithCleaver2::execute()
     setAlgoDoubleFromState(Parameters::VolumeScaling);
     setAlgoDoubleFromState(Parameters::VolumeMultiplier);
 
-    auto output = algo().run(withInputData((InputFields, fields)));
+    auto output = algo().run(withInputData((InputFields, fields)(SizingField, optionalAlgoInput(sizing))));
 
-    sendOutputFromAlgorithm(OutputField,output);
+    sendOutputFromAlgorithm(OutputField, output);
+    sendOutputFromAlgorithm(SizingFieldUsed, output);
   }
 }
