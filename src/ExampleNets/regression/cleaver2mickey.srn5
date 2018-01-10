@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>27</count>
+			<count>28</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CalculateFieldData:0</first>
@@ -159,6 +159,58 @@
 									<value>
 										<which>2</which>
 										<value>DATA1 == 1;</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateFieldData:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>CreateFieldData</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>3</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>BasisString</name>
+								</first>
+								<second>
+									<name>BasisString</name>
+									<value>
+										<which>2</which>
+										<value>Linear</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FormatString</name>
+								</first>
+								<second>
+									<name>FormatString</name>
+									<value>
+										<which>2</which>
+										<value>float</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>RESULT = 1;</value>
 									</value>
 								</second>
 							</item>
@@ -4175,7 +4227,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>30</count>
+			<count>32</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CalculateFieldData:0</moduleId1_>
@@ -4286,12 +4338,36 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<moduleId1_>CreateFieldData:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>InterfaceWithCleaver2:1</moduleId2_>
+				<port2_>
+					<name>SizingField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateFieldData:0</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportFieldInfo:4</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CreateFieldData:0</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
@@ -4540,7 +4616,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>27</count>
+		<count>28</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>CalculateFieldData:0</first>
@@ -4568,6 +4644,13 @@
 			<second>
 				<first>-5.32000000000000000e+02</first>
 				<second>3.80000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateFieldData:0</first>
+			<second>
+				<first>3.48000000000000000e+02</first>
+				<second>2.94000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -4664,8 +4747,8 @@
 		<item>
 			<first>ReportFieldInfo:4</first>
 			<second>
-				<first>2.83000000000000000e+02</first>
-				<second>3.26000000000000000e+02</second>
+				<first>3.80000000000000000e+02</first>
+				<second>4.56000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -4741,7 +4824,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="20" tracking_level="0" version="0">
-		<count>27</count>
+		<count>28</count>
 		<item_version>0</item_version>
 		<item class_id="21" tracking_level="0" version="0">
 			<first>CalculateFieldData:0</first>
@@ -4757,6 +4840,10 @@
 		</item>
 		<item>
 			<first>ClipFieldByFunction:1</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>CreateFieldData:0</first>
 			<second>-1</second>
 		</item>
 		<item>

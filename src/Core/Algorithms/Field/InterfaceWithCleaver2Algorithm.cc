@@ -200,12 +200,17 @@ namespace detail
 
       for (auto& input : inputs)
       {
-        fields.push_back(check(input));
+        fields.push_back(convertToCleaverFormat(input));
       }
       return cleave(fields);
     }
 
-    CleaverInputField check(FieldHandle input)
+    void resetLatVolConverter()
+    {
+      x_ = y_ = z_ = 0;
+    }
+
+    CleaverInputField convertToCleaverFormat(FieldHandle input)
     {
       VMesh::dimension_type dims;
       auto imesh1 = input->vmesh();
@@ -300,7 +305,14 @@ namespace detail
      //TODO: add optional sizing field port--convert from latvol
       if (inputSizingField_)
       {
-        sizingField_ = makeCleaver2FieldFromLatVol(inputSizingField_);
+        double min;
+        inputSizingField_->vfield()->min(min);
+        if (min <= 0)
+          THROW_ALGORITHM_INPUT_ERROR_WITH(algo_, "Sizing field must contain only positive values.");
+
+        //TODO: sloppy--need a const version
+        resetLatVolConverter();
+        sizingField_ = convertToCleaverFormat(inputSizingField_);
         outputSizingField_ = inputSizingField_;
       }
       else
