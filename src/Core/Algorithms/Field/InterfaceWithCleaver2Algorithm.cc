@@ -103,6 +103,15 @@ namespace detail
     bool simpleMode;
   };
 
+  int dataSize(CleaverScalarField field)
+  {
+    auto databounds = field->dataBounds();
+    int w = (int)databounds.size.x;
+    int h = (int)databounds.size.y;
+    int d = (int)databounds.size.z;
+    return w * h * d;
+  }
+
   class Cleaver2Impl
   {
   public:
@@ -308,9 +317,6 @@ namespace detail
 
     static FieldHandle makeLatVolFromCleaver2Field(CleaverScalarField cfield)
     {
-      // FieldHandle SCIRun::TestUtils::CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez, data_info_type type,
-      //   const Core::Geometry::Point& minb, const Core::Geometry::Point& maxb)
-      // {
       FieldInformation lfi(LATVOLMESH_E, CONSTANTDATA_E, FLOAT_E);
 
       auto cbbox = cfield->bounds();
@@ -324,17 +330,11 @@ namespace detail
       auto mesh = CreateMesh(lfi, cdatabbox.size.x, cdatabbox.size.y, cdatabbox.size.z, toPoint(cbbox.minCorner()), toPoint(cbbox.maxCorner()));
       auto field = CreateField(lfi, mesh);
 
-
-      // auto vmesh = field->vmesh();
-      // auto vfield = field->vfield();
-      // VMesh::dimension_type dims;
-      // vmesh->get_dimensions(dims);
-      //
-      // auto ptr = static_cast<float*>(vfield->fdata_pointer());
-      //
-      // auto cleaverField = boost::make_shared<cleaver2::ScalarField<float>>(ptr, dims[0], dims[1], dims[2]);
-      // cleaver2::BoundingBox bb(cleaver2::vec3::zero, cleaver2::vec3(dims[0], dims[1], dims[2]));
-      // cleaverField->setBounds(bb);
+      auto vfield = field->vfield();
+      
+      vfield->resize_values();
+      vfield->set_values(cfield->data(), dataSize(cfield));
+      
       // const auto& transform = vmesh->get_transform();
       //
       // int x_spacing = fabs(transform.get_mat_val(0, 0)), y_spacing = fabs(transform.get_mat_val(1, 1)), z_spacing = fabs(transform.get_mat_val(2, 2));
