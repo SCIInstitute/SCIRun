@@ -77,6 +77,7 @@ const AlgorithmOutputName InterfaceWithCleaver2Algorithm::BackgroundFieldUsed("B
 
 namespace detail
 {
+  using CleaverScalarField = boost::shared_ptr<cleaver2::ScalarField<float>>;
   using CleaverInputField = boost::shared_ptr<cleaver2::AbstractScalarField>;
   using CleaverInputFieldList = std::vector<CleaverInputField>;
 
@@ -210,7 +211,7 @@ namespace detail
       x_ = y_ = z_ = 0;
     }
 
-    CleaverInputField convertToCleaverFormat(FieldHandle input)
+    CleaverScalarField convertToCleaverFormat(FieldHandle input)
     {
       VMesh::dimension_type dims;
       auto imesh1 = input->vmesh();
@@ -275,7 +276,7 @@ namespace detail
     }
 
     //TODO dan: need run-time check for float or double field data
-    static boost::shared_ptr<cleaver2::AbstractScalarField> makeCleaver2FieldFromLatVol(FieldHandle field)
+    static CleaverScalarField makeCleaver2FieldFromLatVol(FieldHandle field)
     {
       auto vmesh = field->vmesh();
       auto vfield = field->vfield();
@@ -298,6 +299,53 @@ namespace detail
       cleaverField->setScale(cleaver2::vec3(x_spacing, y_spacing, z_spacing));
 
       return cleaverField;
+    }
+
+    static Point toPoint(const cleaver2::vec3& v)
+    {
+      return Point(v.x, v.y, v.z);
+    }
+
+    static FieldHandle makeLatVolFromCleaver2Field(CleaverScalarField cfield)
+    {
+      // FieldHandle SCIRun::TestUtils::CreateEmptyLatVol(size_type sizex, size_type sizey, size_type sizez, data_info_type type,
+      //   const Core::Geometry::Point& minb, const Core::Geometry::Point& maxb)
+      // {
+      FieldInformation lfi(LATVOLMESH_E, CONSTANTDATA_E, FLOAT_E);
+
+      auto cbbox = cfield->bounds();
+      auto cdatabbox = cfield->dataBounds();
+
+      logInfo("Cleaver sizing field: CenteringType {}, bounds {},{}; dataBounds {},{}", cfield->getCenterType(),
+        cbbox.origin.toString(), cbbox.size.toString(),
+        cdatabbox.origin.toString(), cdatabbox.size.toString()
+      );
+
+      auto mesh = CreateMesh(lfi, cdatabbox.size.x, cdatabbox.size.y, cdatabbox.size.z, toPoint(cbbox.minCorner()), toPoint(cbbox.maxCorner()));
+      auto field = CreateField(lfi, mesh);
+
+
+      // auto vmesh = field->vmesh();
+      // auto vfield = field->vfield();
+      // VMesh::dimension_type dims;
+      // vmesh->get_dimensions(dims);
+      //
+      // auto ptr = static_cast<float*>(vfield->fdata_pointer());
+      //
+      // auto cleaverField = boost::make_shared<cleaver2::ScalarField<float>>(ptr, dims[0], dims[1], dims[2]);
+      // cleaver2::BoundingBox bb(cleaver2::vec3::zero, cleaver2::vec3(dims[0], dims[1], dims[2]));
+      // cleaverField->setBounds(bb);
+      // const auto& transform = vmesh->get_transform();
+      //
+      // int x_spacing = fabs(transform.get_mat_val(0, 0)), y_spacing = fabs(transform.get_mat_val(1, 1)), z_spacing = fabs(transform.get_mat_val(2, 2));
+      //
+      // if (IsNan(x_spacing) || x_spacing <= 0) x_spacing = 1; /// dont allow negative or zero scaling of the bounding box
+      // if (IsNan(y_spacing) || y_spacing <= 0) y_spacing = 1;
+      // if (IsNan(z_spacing) || z_spacing <= 0) z_spacing = 1;
+      //
+      // cleaverField->setScale(cleaver2::vec3(x_spacing, y_spacing, z_spacing));
+
+      return field;
     }
 
     void addSizingFieldToVolume()
@@ -325,6 +373,7 @@ namespace detail
           0, // padding--off
           (params_.mesh_mode != cleaver2::Regular),
           params_.verbose));
+        outputSizingField_ = makeLatVolFromCleaver2Field(sizingField_);
       }
       volume_->setSizingField(sizingField_.get());
     }
@@ -387,7 +436,7 @@ namespace detail
     const AlgorithmBase* algo_;
     Cleaver2Parameters params_;
     FieldHandle inputSizingField_, outputSizingField_;
-    boost::shared_ptr<cleaver2::AbstractScalarField> sizingField_;
+    CleaverScalarField sizingField_;
     boost::shared_ptr<cleaver2::Volume> volume_;
     int x_ = 0, y_ = 0, z_ = 0;
   };
@@ -405,7 +454,7 @@ InterfaceWithCleaver2Algorithm::InterfaceWithCleaver2Algorithm()
   addParameter(Parameters::AlphaShort, detail::kDefaultAlphaShort);
 }
 
-//TODO: handle bgMesh and sizingField inputs
+//TODO: handle bgMesh inputs
 AlgorithmOutput InterfaceWithCleaver2Algorithm::runImpl(const FieldList& input, FieldHandle backgroundMesh, FieldHandle sizingField) const
 {
   FieldList inputs;
