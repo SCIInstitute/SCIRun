@@ -115,7 +115,8 @@ namespace detail
   class Cleaver2Impl
   {
   public:
-    Cleaver2Impl(const AlgorithmBase* algo, const Cleaver2Parameters& params, FieldHandle sizingField) : algo_(algo), params_(params), inputSizingField_(sizingField)
+    Cleaver2Impl(const AlgorithmBase* algo, const Cleaver2Parameters& params, FieldHandle sizingField, FieldHandle backgroundMesh) :
+      algo_(algo), params_(params), inputSizingField_(sizingField), inputBackgroundMesh_(backgroundMesh)
     {
       LOG_DEBUG("Cleaver 2 parameters: \n\tmesh_mode: {}\n\talphaLong: {}\n\talphaShort: {}\n\tscaling: {}\n\tlipschitz: {}\n\tmultiplier: {}\n\tverbose: {}\n\tsimpleMode: {}",
         params_.mesh_mode, params_.alphaLong, params_.alphaShort,
@@ -157,29 +158,38 @@ namespace detail
       const double alpha = kDefaultAlpha; // do not expose
       mesher.setAlphaInit(alpha);
 
-      //TODO: if fixed grid is checked, expose alpha short and long--see CLI line 454
-
       //-----------------------------------
-      // Load background mesh if provided--TODO: copy from CLI:400
+      // Load background mesh if provided
       //-----------------------------------
-      cleaver2::TetMesh *bgMesh = nullptr;
-      switch (params_.mesh_mode)
+      cleaver2::TetMesh* bgMesh = nullptr;
+      if (inputBackgroundMesh_)
       {
-        case cleaver2::Regular:
+        bgMesh = makeCleaver2TetVolFromSCIRunTetVol(inputBackgroundMesh_);
+        mesher.setBackgroundMesh(bgMesh);
+        outputBackgroundMesh_ = inputBackgroundMesh_;
+      }
+      else
+      {
+        switch (params_.mesh_mode)
         {
-          double alpha_long = kDefaultAlphaLong;
-          double alpha_short = kDefaultAlphaShort;
-          mesher.setAlphas(alpha_long, alpha_short);
-          mesher.setRegular(true);
-          bgMesh = mesher.createBackgroundMesh(verbose);
-          break;
+          //TODO: if fixed grid is checked, expose alpha short and long--see CLI line 454
+          case cleaver2::Regular:
+          {
+            double alpha_long = kDefaultAlphaLong;
+            double alpha_short = kDefaultAlphaShort;
+            mesher.setAlphas(alpha_long, alpha_short);
+            mesher.setRegular(true);
+            bgMesh = mesher.createBackgroundMesh(verbose);
+            break;
+          }
+          case cleaver2::Structured:
+          {
+            mesher.setRegular(false);
+            bgMesh = mesher.createBackgroundMesh(verbose);
+            break;
+          }
         }
-        case cleaver2::Structured:
-        {
-          mesher.setRegular(false);
-          bgMesh = mesher.createBackgroundMesh(verbose);
-          break;
-        }
+        outputBackgroundMesh_ = convertCleaverOutputToField(bgMesh);
       }
 
       //TODO--add output ports for background (bgMesh) and sizing field
@@ -201,7 +211,7 @@ namespace detail
       if (fix_tets)
         mesh->fixVertexWindup(verbose);
 
-      return convertCleaverOutputToField(mesh);
+      return convertCleaverOutputToField(mesh.get());
     }
 
     FieldHandle run(FieldList inputs)
@@ -310,6 +320,64 @@ namespace detail
       return cleaverField;
     }
 
+    static cleaver2::TetMesh* makeCleaver2TetVolFromSCIRunTetVol(FieldHandle field)
+    {
+      FieldInformation info(field);
+      if (!info.is_tetvol())
+        return nullptr;
+
+      auto vmesh = field->vmesh();
+      const int numVertices = vmesh->num_nodes();
+
+      double xmin = 1.0e16, xmax = -1.0e16,
+                 ymin = 1.0e16, ymax = -1.0e16,
+                 zmin = 1.0e16, zmax = -1.0e16;
+
+      using namespace cleaver2;
+      std::vector<Vertex*> verts(numVertices);
+
+      for(VMesh::Node::index_type i = 0; i < numVertices; ++i)
+      {
+        auto point = vmesh->get_point(i);
+        auto x = static_cast<float>(point.x());
+        auto y = static_cast<float>(point.y());
+        auto z = static_cast<float>(point.z());
+
+        if (x < xmin) xmin = x;
+        if (x > xmax) xmax = x;
+
+        if (y < ymin) ymin = y;
+        if (y > ymax) ymax = y;
+
+        if (z < zmin) zmin = z;
+        if (z > zmax) zmax = z;
+
+        verts[i] = new Vertex();
+        verts[i]->pos() = vec3(x,y,z);
+        verts[i]->tm_v_index = i;
+      }
+
+      std::unique_ptr<TetMesh> mesh(new TetMesh(verts, {}));
+
+      mesh->bounds = BoundingBox(xmin, ymin, zmin, xmax - xmin, ymax - ymin, zmax - zmin);
+
+      int numElements = vmesh->num_elems();
+
+      for (VMesh::Elem::index_type i = 0; i < numElements; ++i)
+      {
+        VMesh::Elem::array_type tetidx;
+        vmesh->get_elems( tetidx, i );
+        mesh->createTet(
+            verts[tetidx[0]],
+            verts[tetidx[1]],
+            verts[tetidx[2]],
+            verts[tetidx[3]],
+            0);
+      }
+
+      return mesh.release();
+    }
+
     static Point toPoint(const cleaver2::vec3& v)
     {
       return Point(v.x, v.y, v.z);
@@ -331,10 +399,10 @@ namespace detail
       auto field = CreateField(lfi, mesh);
 
       auto vfield = field->vfield();
-      
+
       vfield->resize_values();
       vfield->set_values(cfield->data(), dataSize(cfield));
-      
+
       // const auto& transform = vmesh->get_transform();
       //
       // int x_spacing = fabs(transform.get_mat_val(0, 0)), y_spacing = fabs(transform.get_mat_val(1, 1)), z_spacing = fabs(transform.get_mat_val(2, 2));
@@ -378,7 +446,7 @@ namespace detail
       volume_->setSizingField(sizingField_.get());
     }
 
-    FieldHandle convertCleaverOutputToField(boost::shared_ptr<cleaver2::TetMesh> mesh)
+    FieldHandle convertCleaverOutputToField(cleaver2::TetMesh* mesh)
     {
       auto nr_of_tets = mesh->tets.size();
       auto nr_of_verts = mesh->verts.size();
@@ -432,11 +500,13 @@ namespace detail
     }
 
     FieldHandle sizingFieldUsed() const { return outputSizingField_; }
+    FieldHandle backgroundMeshUsed() const { return outputBackgroundMesh_; }
   private:
     const AlgorithmBase* algo_;
     Cleaver2Parameters params_;
-    FieldHandle inputSizingField_, outputSizingField_;
+    FieldHandle inputSizingField_, outputSizingField_, inputBackgroundMesh_, outputBackgroundMesh_;
     CleaverScalarField sizingField_;
+    boost::shared_ptr<cleaver2::TetMesh> backgroundMesh_;
     boost::shared_ptr<cleaver2::Volume> volume_;
     int x_ = 0, y_ = 0, z_ = 0;
   };
@@ -484,13 +554,15 @@ AlgorithmOutput InterfaceWithCleaver2Algorithm::runImpl(const FieldList& input, 
     get(Parameters::Verbose).toBool(),
     get(Parameters::SimpleMode).toBool()
   };
-  detail::Cleaver2Impl impl(this, params, sizingField);
+  detail::Cleaver2Impl impl(this, params, sizingField, backgroundMesh);
   auto tetmesh = impl.run(inputs);
   auto sizing = impl.sizingFieldUsed();
+  auto background = impl.backgroundMeshUsed();
 
   AlgorithmOutput output;
   output[Variables::OutputField] = tetmesh;
   output[SizingFieldUsed] = sizing;
+  output[BackgroundFieldUsed] = background;
   return output;
 }
 

@@ -81,5 +81,6 @@ void InterfaceWithCleaver2::execute()
 
     sendOutputFromAlgorithm(OutputField, output);
     sendOutputFromAlgorithm(SizingFieldUsed, output);
+    sendOutputFromAlgorithm(BackgroundFieldUsed, output);
   }
 }
