@@ -68,6 +68,7 @@ ALGORITHM_PARAMETER_DEF(Fields, AlphaShort);
 ALGORITHM_PARAMETER_DEF(Fields, AlphaLong);
 ALGORITHM_PARAMETER_DEF(Fields, SimpleMode);
 ALGORITHM_PARAMETER_DEF(Fields, MeshMode);
+ALGORITHM_PARAMETER_DEF(Fields, ReverseJacobians);
 
 const AlgorithmInputName InterfaceWithCleaver2Algorithm::SizingField("SizingField");
 const AlgorithmInputName InterfaceWithCleaver2Algorithm::BackgroundField("BackgroundField");
@@ -100,6 +101,7 @@ namespace detail
     double multiplier;
     bool verbose;
     bool simpleMode;
+    bool reverseJacobians;
   };
 
   int dataSize(CleaverScalarField field)
@@ -171,7 +173,6 @@ namespace detail
       {
         switch (params_.mesh_mode)
         {
-          //TODO: if fixed grid is checked, expose alpha short and long--see CLI line 454
           case cleaver2::Regular:
           {
             double alpha_long = kDefaultAlphaLong;
@@ -201,11 +202,7 @@ namespace detail
 
       auto mesh(boost::shared_ptr<cleaver2::TetMesh>(mesher.getTetMesh()));
 
-      //-----------------------------------------------------------
-      // Fix jacobians if requested.--TODO expose: [x] reverse Jacobian
-      //-----------------------------------------------------------
-      bool fix_tets = true;
-      if (fix_tets)
+      if (params_.reverseJacobians)
         mesh->fixVertexWindup(verbose);
 
       return convertCleaverOutputToField(mesh.get());
@@ -510,6 +507,7 @@ InterfaceWithCleaver2Algorithm::InterfaceWithCleaver2Algorithm()
 {
   addParameter(Parameters::Verbose, true);
   addParameter(Parameters::SimpleMode, false);
+  addParameter(Parameters::ReverseJacobians, true);
   addParameter(Parameters::VolumeScaling, detail::kDefaultScale);
   addParameter(Parameters::VolumeMultiplier, detail::kDefaultMultiplier);
   addParameter(Parameters::Lipschitz, detail::kDefaultLipschitz);
@@ -546,7 +544,8 @@ AlgorithmOutput InterfaceWithCleaver2Algorithm::runImpl(const FieldList& input, 
     get(Parameters::Lipschitz).toDouble(),
     get(Parameters::VolumeMultiplier).toDouble(),
     get(Parameters::Verbose).toBool(),
-    get(Parameters::SimpleMode).toBool()
+    get(Parameters::SimpleMode).toBool(),
+    get(Parameters::ReverseJacobians).toBool()
   };
   detail::Cleaver2Impl impl(this, params, sizingField, backgroundMesh);
   auto tetmesh = impl.run(inputs);

@@ -47,6 +47,7 @@ namespace Fields {
   ALGORITHM_PARAMETER_DECL(AlphaShort);
   ALGORITHM_PARAMETER_DECL(SimpleMode);
   ALGORITHM_PARAMETER_DECL(MeshMode);
+  ALGORITHM_PARAMETER_DECL(ReverseJacobians);
 
   class SCISHARE InterfaceWithCleaver2Algorithm : public AlgorithmBase
   {

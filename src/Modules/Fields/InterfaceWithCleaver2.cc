@@ -55,6 +55,7 @@ void InterfaceWithCleaver2::setStateDefaults()
 {
   setStateBoolFromAlgo(Parameters::Verbose);
   setStateBoolFromAlgo(Parameters::SimpleMode);
+  setStateBoolFromAlgo(Parameters::ReverseJacobians);
   setStateDoubleFromAlgo(Parameters::Lipschitz);
   setStateDoubleFromAlgo(Parameters::AlphaLong);
   setStateDoubleFromAlgo(Parameters::AlphaShort);
@@ -72,6 +73,7 @@ void InterfaceWithCleaver2::execute()
   {
     setAlgoBoolFromState(Parameters::Verbose);
     setAlgoBoolFromState(Parameters::SimpleMode);
+    setAlgoBoolFromState(Parameters::ReverseJacobians);
     setAlgoDoubleFromState(Parameters::Lipschitz);
     setAlgoDoubleFromState(Parameters::AlphaLong);
     setAlgoDoubleFromState(Parameters::AlphaShort);
