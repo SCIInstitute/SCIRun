@@ -60,6 +60,7 @@ void InterfaceWithCleaver2::setStateDefaults()
   setStateDoubleFromAlgo(Parameters::AlphaShort);
   setStateDoubleFromAlgo(Parameters::VolumeScaling);
   setStateDoubleFromAlgo(Parameters::VolumeMultiplier);
+  setStateIntFromAlgo(Parameters::MeshMode);
 }
 
 void InterfaceWithCleaver2::execute()
@@ -76,6 +77,7 @@ void InterfaceWithCleaver2::execute()
     setAlgoDoubleFromState(Parameters::AlphaShort);
     setAlgoDoubleFromState(Parameters::VolumeScaling);
     setAlgoDoubleFromState(Parameters::VolumeMultiplier);
+    setAlgoIntFromState(Parameters::MeshMode);
 
     auto output = algo().run(withInputData((InputFields, fields)(SizingField, optionalAlgoInput(sizing))));
 

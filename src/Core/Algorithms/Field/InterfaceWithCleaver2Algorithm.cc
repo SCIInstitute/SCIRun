@@ -31,14 +31,12 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Algorithms/Field/InterfaceWithCleaverAlgorithm.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
-//#include <cleaver/FloatField.h>
 #include <cleaver2/vec3.h>
 #include <cleaver2/BoundingBox.h>
 #include <cleaver2/Cleaver.h>
 #include <cleaver2/CleaverMesher.h>
 #include <cleaver2/InverseField.h>
 #include <cleaver2/SizingFieldCreator.h>
-//#include <cleaver/PaddedVolume.h>
 #include <cleaver2/Volume.h>
 #include <cleaver2/TetMesh.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -69,6 +67,7 @@ ALGORITHM_PARAMETER_DEF(Fields, Padding);
 ALGORITHM_PARAMETER_DEF(Fields, AlphaShort);
 ALGORITHM_PARAMETER_DEF(Fields, AlphaLong);
 ALGORITHM_PARAMETER_DEF(Fields, SimpleMode);
+ALGORITHM_PARAMETER_DEF(Fields, MeshMode);
 
 const AlgorithmInputName InterfaceWithCleaver2Algorithm::SizingField("SizingField");
 const AlgorithmInputName InterfaceWithCleaver2Algorithm::BackgroundField("BackgroundField");
@@ -191,8 +190,6 @@ namespace detail
         }
         outputBackgroundMesh_ = convertCleaverOutputToField(bgMesh);
       }
-
-      //TODO--add output ports for background (bgMesh) and sizing field
 
       mesher.buildAdjacency(verbose);
       mesher.sampleVolume(verbose);
@@ -418,7 +415,6 @@ namespace detail
 
     void addSizingFieldToVolume()
     {
-     //TODO: add optional sizing field port--convert from latvol
       if (inputSizingField_)
       {
         double min;
@@ -455,8 +451,6 @@ namespace detail
       {
         THROW_ALGORITHM_INPUT_ERROR_WITH(algo_, " Number of resulting tetrahedral nodes or elements is 0. If you disabled padding enable it and execute again. ");
       }
-
-      //TODO: extract cleaverMesh->fld code, write inverse function for sizing field input mesh
 
       FieldInformation fi("TetVolMesh", 0, "double");   ///create output field
 
@@ -522,9 +516,9 @@ InterfaceWithCleaver2Algorithm::InterfaceWithCleaver2Algorithm()
   //addParameter(Parameters::Padding, detail::kDefaultPadding);
   addParameter(Parameters::AlphaLong, detail::kDefaultAlphaLong);
   addParameter(Parameters::AlphaShort, detail::kDefaultAlphaShort);
+  addParameter(Parameters::MeshMode, static_cast<int>(cleaver2::MeshType::Regular));
 }
 
-//TODO: handle bgMesh inputs
 AlgorithmOutput InterfaceWithCleaver2Algorithm::runImpl(const FieldList& input, FieldHandle backgroundMesh, FieldHandle sizingField) const
 {
   FieldList inputs;
@@ -545,7 +539,7 @@ AlgorithmOutput InterfaceWithCleaver2Algorithm::runImpl(const FieldList& input, 
 
   detail::Cleaver2Parameters params
   {
-    cleaver2::MeshType::Regular,
+    cleaver2::MeshType(get(Parameters::MeshMode).toInt()),
     get(Parameters::AlphaLong).toDouble(),
     get(Parameters::AlphaShort).toDouble(),
     get(Parameters::VolumeScaling).toDouble(),

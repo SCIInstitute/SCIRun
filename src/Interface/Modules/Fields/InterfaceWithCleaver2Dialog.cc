@@ -49,4 +49,6 @@ InterfaceWithCleaver2Dialog::InterfaceWithCleaver2Dialog(const std::string& name
   addDoubleSpinBoxManager(lipschitzDoubleSpinBox_, Parameters::Lipschitz);
   addCheckBoxManager(verboseCheckBox_, Parameters::Verbose);
   addCheckBoxManager(simpleModeCheckBox_, Parameters::SimpleMode);
+  addRadioButtonGroupManager({ regularMeshRadioButton_, structuredMeshRadioButton_ },
+    Parameters::MeshMode);
 }

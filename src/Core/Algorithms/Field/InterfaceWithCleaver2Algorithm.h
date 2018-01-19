@@ -46,6 +46,7 @@ namespace Fields {
   ALGORITHM_PARAMETER_DECL(AlphaLong);
   ALGORITHM_PARAMETER_DECL(AlphaShort);
   ALGORITHM_PARAMETER_DECL(SimpleMode);
+  ALGORITHM_PARAMETER_DECL(MeshMode);
 
   class SCISHARE InterfaceWithCleaver2Algorithm : public AlgorithmBase
   {
@@ -55,7 +56,7 @@ namespace Fields {
     static const AlgorithmInputName BackgroundField;
     static const AlgorithmOutputName SizingFieldUsed;
     static const AlgorithmOutputName BackgroundFieldUsed;
-    
+
     AlgorithmOutput runImpl(const FieldList& input, FieldHandle backgroundMesh = nullptr, FieldHandle sizingField = nullptr) const;
     virtual AlgorithmOutput run(const AlgorithmInput &) const override;
   };

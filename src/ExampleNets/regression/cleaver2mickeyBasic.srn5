@@ -96,7 +96,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>7</count>
+							<count>8</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -131,6 +131,18 @@
 									<value>
 										<which>1</which>
 										<value>2.00000000000000011e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>MeshMode</name>
+								</first>
+								<second>
+									<name>MeshMode</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
