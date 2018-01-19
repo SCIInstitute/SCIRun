@@ -96,7 +96,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>8</count>
+							<count>9</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -143,6 +143,18 @@
 									<value>
 										<which>0</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ReverseJacobians</name>
+								</first>
+								<second>
+									<name>ReverseJacobians</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
