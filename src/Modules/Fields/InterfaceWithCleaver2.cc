@@ -68,6 +68,7 @@ void InterfaceWithCleaver2::execute()
 {
   auto fields = getRequiredDynamicInputs(InputFields);
   auto sizing = getOptionalInput(SizingField);
+  auto background = getOptionalInput(BackgroundField);
 
   if (needToExecute())
   {
@@ -81,7 +82,10 @@ void InterfaceWithCleaver2::execute()
     setAlgoDoubleFromState(Parameters::VolumeMultiplier);
     setAlgoIntFromState(Parameters::MeshMode);
 
-    auto output = algo().run(withInputData((InputFields, fields)(SizingField, optionalAlgoInput(sizing))));
+    auto output = algo().run(withInputData((InputFields, fields)
+      (SizingField, optionalAlgoInput(sizing))
+      (BackgroundField, optionalAlgoInput(background))
+    ));
 
     sendOutputFromAlgorithm(OutputField, output);
     sendOutputFromAlgorithm(SizingFieldUsed, output);
