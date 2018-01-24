@@ -62,6 +62,13 @@ class FileDownloader;
 class TriggeredEventsWindow;
 class NetworkEditorBuilder;
 
+class MainWindowCommands
+{
+public:
+  virtual ~MainWindowCommands() {}
+  
+};
+
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
 	Q_OBJECT

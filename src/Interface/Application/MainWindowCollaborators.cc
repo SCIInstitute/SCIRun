@@ -433,3 +433,13 @@ QString SCIRun::Gui::networkBackgroundImage()
     return ":/general/Resources/pumpkin.png";
   return ":/general/Resources/SCIgrid-small.png";
 }
+
+QString SCIRun::Gui::scirunStylesheet()
+{
+  return SCIRunMainWindow::Instance()->styleSheet();
+}
+
+QWidget* SCIRun::Gui::mainWindowWidget()
+{
+  return SCIRunMainWindow::Instance();
+}

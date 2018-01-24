@@ -256,6 +256,10 @@ namespace Gui {
   };
 
   QString networkBackgroundImage();
+
+  //TODO: global function replacements for SCIRunMainWindow access. extract into new file/namespace
+  QString scirunStylesheet();
+  QWidget* mainWindowWidget();
 }
 }
 #endif

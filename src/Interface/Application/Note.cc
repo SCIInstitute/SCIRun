@@ -33,7 +33,7 @@
 #include <Interface/Application/Note.h>
 #include <Interface/Application/HasNotes.h>
 #include <Interface/Application/NoteEditor.h>
-#include <Interface/Application/SCIRunMainWindow.h>
+#include <Interface/Application/MainWindowCollaborators.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
@@ -42,7 +42,7 @@ HasNotes::HasNotes(const std::string& name, bool positionAdjustable) :
   noteEditor_(QString::fromStdString(name), positionAdjustable, 0),
   destroyed_(false)
 {
-  noteEditor_.setStyleSheet(SCIRunMainWindow::Instance()->styleSheet());
+  noteEditor_.setStyleSheet(scirunStylesheet());
 }
 
 HasNotes::~HasNotes()
