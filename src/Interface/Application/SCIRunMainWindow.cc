@@ -200,6 +200,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(helpActionNewUserWizard_, SIGNAL(triggered()), this, SLOT(launchNewUserWizard()));
 
   connect(actionReset_Window_Layout, SIGNAL(triggered()), this, SLOT(resetWindowLayout()));
+  connect(actionToggleFullScreenMode_, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
 
 #ifndef BUILD_WITH_PYTHON
   actionRunScript_->setEnabled(false);
@@ -2423,4 +2424,10 @@ void SCIRunMainWindow::maxCoreValueChanged(int value)
 {
   qDebug() << __FUNCTION__ << value;
   Core::Thread::Parallel::SetMaximumCores(value);
+}
+
+void SCIRunMainWindow::toggleFullScreen()
+{
+  qDebug() << __FUNCTION__;
+  //showFullScreen();
 }

@@ -66,7 +66,7 @@ class MainWindowCommands
 {
 public:
   virtual ~MainWindowCommands() {}
-  
+
 };
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
@@ -269,6 +269,7 @@ private Q_SLOTS:
   void toggleTagLayer(bool toggle);
   void toggleMetadataLayer(bool toggle);
   void adjustModuleDock(int state);
+  void toggleFullScreen();
   void reportIssue();
   void exitApplication(int code);
 };
