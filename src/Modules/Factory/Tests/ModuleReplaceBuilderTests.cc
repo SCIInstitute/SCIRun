@@ -50,9 +50,9 @@ class ModuleReplaceTests : public ModuleTest
 };
 
 #ifdef BUILD_TESTING
-const int NUM_MODULES = 150;
+const int NUM_MODULES = 155;
 #else
-const int NUM_MODULES = 143;
+const int NUM_MODULES = 145;
 #endif
 const int NUM_ALGORITHMS = 76;
 

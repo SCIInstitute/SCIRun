@@ -192,7 +192,7 @@ std::ostream& operator<<(std::ostream& o, const std::pair<T1,T2>& p)
 bool NetworkFileProcessCommand::execute()
 {
   auto filename = get(Variables::Filename).toFilename().string();
-  auto tempFile = get(Name("temporary-file")).toBool();
+  auto tempFile = get(Name("temporaryFile")).toBool();
   GuiLogger::logInfo("Attempting load of " + QString::fromStdString(filename));
 
   try
@@ -261,7 +261,7 @@ int NetworkFileProcessCommand::guiProcess(const NetworkFileHandle& file)
 
 FileOpenCommand::FileOpenCommand()
 {
-  addParameter(Name("temporary-file"), false);
+  addParameter(Name("temporaryFile"), false);
 }
 
 NetworkFileHandle FileOpenCommand::processXmlFile(const std::string& filename)

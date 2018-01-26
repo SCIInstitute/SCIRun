@@ -1,4 +1,3 @@
-#
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
@@ -24,42 +23,25 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-#
 
-SET(Algorithms_Field_SRCS
-  ReportFieldInfoAlgorithm.cc
-  InterfaceWithCleaverAlgorithm.cc
-  InterfaceWithCleaver2Algorithm.cc
-  CalculateNodeLocationFrequencyAlgorithm.cc
-  RefineTetMeshLocallyAlgorithm.cc
+SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+SET(cleaver2_GIT_TAG "origin/master")
+
+# If CMake ever allows overriding the checkout command or adding flags,
+# git checkout -q will silence message about detached head (harmless).
+ExternalProject_Add(Cleaver2_external
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/Cleaver2Library.git"
+  GIT_TAG ${cleaver2_GIT_TAG}
+  PATCH_COMMAND ""
+  INSTALL_DIR ""
+  INSTALL_COMMAND ""
+  CMAKE_CACHE_ARGS
+    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
+    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
 )
 
-SET(Algorithms_Field_HEADERS
-  ReportFieldInfoAlgorithm.h
-  InterfaceWithCleaverAlgorithm.h
-  InterfaceWithCleaver2Algorithm.h
-  CalculateNodeLocationFrequencyAlgorithm.h
-  RefineTetMeshLocallyAlgorithm.h
-  share.h
-)
+ExternalProject_Get_Property(Cleaver2_external BINARY_DIR)
+SET(CLEAVER2_DIR ${BINARY_DIR} CACHE PATH "")
 
-SCIRUN_ADD_LIBRARY(Algorithms_Field
-  ${Algorithms_Field_HEADERS}
-  ${Algorithms_Field_SRCS}
-)
-
-TARGET_LINK_LIBRARIES(Algorithms_Field
-  Core_Datatypes
-  Core_Datatypes_Legacy_Field
-  Algorithms_Base
-  cleaver
-  Core_Algorithms_Legacy_Fields
-  ${SCI_BOOST_LIBRARY}
-  ${SCI_CLEAVER2_LIBRARY}
-)
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Algorithms_Field)
-ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_TEST_DIR(Tests)
+MESSAGE(STATUS "CLEAVER2_DIR: ${CLEAVER2_DIR}")
