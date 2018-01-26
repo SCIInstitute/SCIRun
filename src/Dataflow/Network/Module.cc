@@ -214,13 +214,13 @@ Module::Module(const ModuleLookupInfo& info,
   setLogger(DefaultModuleFactories::defaultLogger_);
   setUpdaterFunc([](double x) {});
 
-  LOG_DEBUG("Module created: {} with id: {}", info.module_name_, impl_->id_.id_);
+  LOG_TRACE("Module created: {} with id: {}", info.module_name_, impl_->id_.id_);
 
   if (algoFactory)
   {
     impl_->algo_ = algoFactory->create(get_module_name(), this);
     if (impl_->algo_)
-      LOG_DEBUG("Module algorithm initialized: {}", info.module_name_);
+      LOG_TRACE("Module algorithm initialized: {}", info.module_name_);
   }
 
   initStateObserver(impl_->state_.get());
@@ -566,11 +566,11 @@ std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId
   }
 
   {
-    LOG_DEBUG("{} :: inputsChanged is {}, querying port for value.", get_id().id_, impl_->inputsChanged_);
+    LOG_TRACE("{} :: inputsChanged is {}, querying port for value.", get_id().id_, impl_->inputsChanged_);
     // NOTE: don't use short-circuited boolean OR here, we need to call hasChanged each time since it updates the port's cache flag.
     bool startingVal = impl_->inputsChanged_;
     impl_->inputsChanged_ = std::accumulate(portsWithName.begin(), portsWithName.end(), startingVal, [](bool acc, InputPortHandle input) { return input->hasChanged() || acc; });
-    LOG_DEBUG("{} :: inputsChanged is now {}.", get_id().id_, impl_->inputsChanged_);
+    LOG_TRACE("{} :: inputsChanged is now {}.", get_id().id_, impl_->inputsChanged_);
   }
 
   std::vector<DatatypeHandleOption> options;
@@ -844,7 +844,7 @@ bool Module::needToExecute() const
     if (impl_->threadStopped_)
       return true;
     auto val = impl_->reexecute_->needToExecute();
-    //Log::get() << DEBUG_LOG << id_ << " Using real needToExecute strategy object, value is: " << val << std::endl;
+    LOG_DEBUG("Module reexecute of {} returns {}", get_id().id_, val);
     return val;
   }
 
@@ -926,8 +926,7 @@ InputsChangedCheckerImpl::InputsChangedCheckerImpl(const Module& module) : modul
 bool InputsChangedCheckerImpl::inputsChanged() const
 {
   auto ret = module_.inputsChanged();
-  //std::cout << __FUNCTION__ << " returning " << ret << std::endl;
-  //Log::get() << DEBUG_LOG << module_.get_id() << " InputsChangedCheckerImpl returns " << ret << std::endl;
+  LOG_DEBUG("reexecute {}?--inputs changed: {}", module_.get_id().id_, ret);
   return ret;
 }
 
@@ -938,8 +937,7 @@ StateChangedCheckerImpl::StateChangedCheckerImpl(const Module& module) : module_
 bool StateChangedCheckerImpl::newStatePresent() const
 {
   auto ret = module_.newStatePresent();
-  //std::cout << __FUNCTION__ << " returning " << ret << std::endl;
-  //Log::get() << DEBUG_LOG << module_.get_id() << " StateChangedCheckerImpl returns " << ret << std::endl;
+  LOG_DEBUG("reexecute {}?--state changed: {}", module_.get_id().id_, ret);
   return ret;
 }
 
@@ -955,7 +953,7 @@ bool OutputPortsCachedCheckerImpl::outputPortsCached() const
     if (output->hasConnectionCountIncreased())
       value = false;
   }
-  //std::cout << __FUNCTION__ << " returning " << value << std::endl;
+  LOG_DEBUG("reexecute {}?--output ports cached: {}", module_.get_id().id_, value);
   return value;
 
 

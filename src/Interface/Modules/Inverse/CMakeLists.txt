@@ -56,6 +56,10 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Inverse
   ${Interface_Modules_Inverse_SOURCES}
 )
 
+IF(WIN32)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:wchar_t-")
+ENDIF()
+
 TARGET_LINK_LIBRARIES(Interface_Modules_Inverse
   Modules_Legacy_Inverse
   Interface_Modules_Base
