@@ -3,6 +3,7 @@
 
 #include <es-log/trace-log.h>
 #include "ESCoreBase.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 

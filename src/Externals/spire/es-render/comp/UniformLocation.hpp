@@ -3,6 +3,7 @@
 
 #include <es-log/trace-log.h>
 #include <es-cereal/ComponentSerialize.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 

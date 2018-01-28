@@ -4,8 +4,8 @@
 #include <es-log/trace-log.h>
 #include <gl-shaders/GLShader.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
-
 #include "StaticVBOMan.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 

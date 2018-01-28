@@ -7,6 +7,7 @@
 #include <es-cereal/CerealTypeSerialize.hpp>
 #include <glm/glm.hpp>
 #include <tny/tny.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
 

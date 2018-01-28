@@ -17,6 +17,7 @@
 #include "src/ComponentContainer.hpp"
 #include "src/TemplateID.hpp"
 #include "src/ComponentGroup.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 
@@ -213,7 +214,7 @@ public:
 
       if (baseComponents[i]->getUpperSequence() < lowestUpperSequence)
       {
-        leadingComponent = i;
+        leadingComponent = static_cast<int>(i);
         lowestUpperSequence = baseComponents[i]->getUpperSequence();
       }
     }

@@ -26,14 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <es-log/trace-log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Logging/Log.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/DenseMatrix.h>
-
-#define SPDLOG_TRACE_ON
-#include <es-log/trace-log.h>
+#include <boost/thread.hpp>
 
 // Needed to fix conflict between define in X11 header
 // and eigen enum member.
@@ -163,11 +162,11 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     return;
   //lock for state modification
   {
-    LOG_DEBUG("ViewScene::asyncExecute before locking");
+    LOG_DEBUG("ViewScene::asyncExecute {} before locking", get_id().id_);
     Guard lock(mutex_.get());
     get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
 
-    LOG_DEBUG("ViewScene::asyncExecute after locking");
+    LOG_DEBUG("ViewScene::asyncExecute {} after locking", get_id().id_);
 
     auto geom = boost::dynamic_pointer_cast<GeometryObject>(data);
     if (!geom)

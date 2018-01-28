@@ -4,8 +4,8 @@
 #include <es-log/trace-log.h>
 #include <string>
 #include <functional>
-
 #include <es-acorn/Acorn.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
 
@@ -13,7 +13,7 @@ namespace spire {
 typedef std::function<void(const std::string& assetName, bool error,
                            size_t bytesRead, uint8_t* buffer)> FSCallback;
 
-class Filesystem
+class SCISHARE Filesystem
 {
 public:
   Filesystem()            {}

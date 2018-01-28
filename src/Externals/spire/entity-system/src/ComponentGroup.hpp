@@ -3,8 +3,8 @@
 
 #include <es-log/trace-log.h>
 #include <iterator>
-
 #include "ComponentContainer.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 

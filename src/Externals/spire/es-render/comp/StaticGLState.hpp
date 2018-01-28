@@ -4,6 +4,7 @@
 #include <es-log/trace-log.h>
 #include <gl-state/GLState.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 

@@ -82,6 +82,9 @@ void ShowString::setStateDefaults()
 
 void ShowString::processWindowResizeFeedback(const ModuleFeedback& var)
 {
+  if (!executedOnce_)
+    return;
+
   try
   {
     auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
@@ -107,6 +110,7 @@ void ShowString::execute()
     auto geom = buildGeometryObject(str->value());
     sendOutput(RenderedString, geom);
     needReexecute_ = false;
+    executedOnce_ = true;
   }
 }
 

@@ -145,7 +145,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   setInitialLightValues();
 
-  state->connectStateChanged(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
+  state->connectStateChanged([this]() { Q_EMIT newGeometryValueForwarder(); });
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
 
   std::string filesystemRoot = Application::Instance().executablePath().string();
@@ -449,6 +449,8 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 
 void ViewSceneDialog::newGeometryValue()
 {
+  DEBUG_LOG_LINE_INFO
+  LOG_DEBUG("ViewSceneDialog::newGeometryValue {} before locking", windowTitle().toStdString());
   RENDERER_LOG_FUNCTION_SCOPE;
   Guard lock(Modules::Render::ViewScene::mutex_.get());
 
@@ -496,6 +498,7 @@ void ViewSceneDialog::newGeometryValue()
       auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
       if (realObj)
       {
+        DEBUG_LOG_LINE_INFO
         spire->handleGeomObject(realObj, port);
         validObjects.push_back(obj->uniqueID());
       }
@@ -1745,6 +1748,7 @@ void ViewSceneDialog::showEvent(QShowEvent* evt)
 
   if (pulledSavedVisibility_)
   {
+    ScopedWidgetSignalBlocker ssb(this);
     state_->setValue(Modules::Render::ViewScene::ShowViewer, true);
   }
 
@@ -1758,6 +1762,7 @@ void ViewSceneDialog::hideEvent(QHideEvent* evt)
 
   if (pulledSavedVisibility_)
   {
+    ScopedWidgetSignalBlocker ssb(this);
     state_->setValue(Modules::Render::ViewScene::ShowViewer, false);
   }
 

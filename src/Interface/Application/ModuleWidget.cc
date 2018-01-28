@@ -665,7 +665,7 @@ public:
           && std::find_if(inputs.cbegin() + justAddedIndex + 1, inputs.cend(), nameMatches) != inputs.cend();
         if (isNotLastDynamicPortOfThisName)
           portConstructionType = DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD;
-        widget->dialog_->updateFromPortChange(i, port->id().toString(), portConstructionType);
+        widget->dialog_->updateFromPortChange(static_cast<int>(i), port->id().toString(), portConstructionType);
       }
     }
   }
@@ -898,7 +898,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
 
-    const int newPortIndex = port->getIndex();
+    const auto newPortIndex = static_cast<int>(port->getIndex());
 
     ports_->insertPort(newPortIndex, w);
     ports_->reindexInputs();
@@ -1210,7 +1210,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)
 {
   if (dialog_ && !deleting_ && !networkBeingCleared_)
-    dialog_->updateFromPortChange(numInputPorts(), portId, adding ? DynamicPortChange::USER_ADDED_PORT : DynamicPortChange::USER_REMOVED_PORT);
+    dialog_->updateFromPortChange(static_cast<int>(numInputPorts()), portId, adding ? DynamicPortChange::USER_ADDED_PORT : DynamicPortChange::USER_REMOVED_PORT);
 }
 
 Qt::DockWidgetArea ModuleWidget::allowedDockArea() const
@@ -1235,12 +1235,25 @@ void ModuleWidget::adjustDockState(bool dockEnabled)
   }
 }
 
+QList<QPoint> ModuleWidget::positions_;
+
 void ModuleWidget::toggleOptionsDialog()
 {
   if (dialog_)
   {
     if (dockable_->isHidden())
     {
+      if (firstTimeShown_)
+      {
+        firstTimeShown_ = false;
+        if (!positions_.empty())
+        {
+          auto maxX = *std::max_element(positions_.begin(), positions_.end(), [](const QPoint& p1, const QPoint& p2) { return p1.x() < p2.x(); });
+          auto maxY = *std::max_element(positions_.begin(), positions_.end(), [](const QPoint& p1, const QPoint& p2) { return p1.y() < p2.y(); });
+          dockable_->move(maxX.x() + 30, maxY.y() + 30);
+        }
+        positions_.append(dockable_->pos());
+      }
       dockable_->show();
       Q_EMIT showUIrequested(dialog_);
       dockable_->raise();

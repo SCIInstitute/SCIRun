@@ -2,11 +2,12 @@
 #define SPIRE_ENTITY_SYSTEM_EMPTYCOMPONENTCONTAINER_HPP
 
 #include <es-log/trace-log.h>
+#include <spire/scishare.h>
 
 namespace spire {
 
 // Component base class, used to verify component types at run-time.
-class EmptyComponentContainer : public BaseComponentContainer
+class SCISHARE EmptyComponentContainer : public BaseComponentContainer
 {
 public:
   EmptyComponentContainer()           {}

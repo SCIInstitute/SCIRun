@@ -8,6 +8,7 @@
 #include <es-cereal/CerealCore.hpp>
 #include "FontPromise.hpp"
 #include "StaticFontMan.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 

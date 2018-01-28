@@ -102,7 +102,7 @@ void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Cor
 
   if (newValue)
   {
-    LOG_DEBUG("----signaling from state map: ({}, {}), num_slots = {}", parameterName.name_,
+    LOG_TRACE("----signaling from state map: ({}, {}), num_slots = {}", parameterName.name_,
       SCIRun::Core::to_string(value), stateChangedSignal_.num_slots());
     stateChangedSignal_();
     auto specSig = specificStateChangeSignalMap_.find(parameterName);
@@ -114,7 +114,7 @@ void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Cor
 boost::signals2::connection SimpleMapModuleState::connectStateChanged(state_changed_sig_t::slot_function_type subscriber)
 {
   auto conn = stateChangedSignal_.connect(subscriber);
-  LOG_DEBUG("SimpleMapModuleState::connectStateChanged, num_slots = {}", stateChangedSignal_.num_slots());
+  LOG_TRACE("SimpleMapModuleState::connectStateChanged, num_slots = {}", stateChangedSignal_.num_slots());
   return conn;
 }
 

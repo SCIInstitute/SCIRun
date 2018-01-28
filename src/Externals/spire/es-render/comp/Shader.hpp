@@ -8,6 +8,7 @@
 #include <es-cereal/CerealCore.hpp>
 #include "ShaderPromiseVF.hpp"
 #include "StaticShaderMan.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 

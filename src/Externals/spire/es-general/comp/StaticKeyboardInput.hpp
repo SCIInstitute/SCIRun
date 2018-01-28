@@ -2,6 +2,7 @@
 #define SPIRE_ES_GENERAL_STATIC_KEYBOARD_INPUT_HPP
 
 #include <es-log/trace-log.h>
+#include <spire/scishare.h>
 
 /// \note If you want to enter text from the keyboard, you should use the
 ///       character callbacks (glfw) not the keyboard input.

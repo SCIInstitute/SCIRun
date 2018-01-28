@@ -23,8 +23,6 @@
 
 #include <Modules/Math/ComputePCA.h>
 #include <Core/Algorithms/Math/ComputePCA.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::Math;

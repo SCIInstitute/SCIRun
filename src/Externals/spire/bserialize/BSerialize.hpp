@@ -5,12 +5,12 @@
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
-
 #include "src/BSerializeDetail.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 
-class BSerialize
+class SCISHARE BSerialize
 {
 public:
   /// Use this constructor for either reading or writing.

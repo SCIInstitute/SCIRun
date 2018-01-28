@@ -11,12 +11,13 @@
 #include <es-acorn/Acorn.hpp>
 
 #include "comp/AssetPromise.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 
 class VBOGarbageCollector;
 
-class VBOMan
+class SCISHARE VBOMan
 {
 public:
   VBOMan();

@@ -5,8 +5,8 @@
 #include <list>
 #include <entity-system/ESCoreBase.hpp>
 #include <tny/tny.hpp>
-
 #include "SystemFactory.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 
@@ -27,7 +27,7 @@ public:
 
 } // namespace core_detail
 
-class SystemCore
+class SCISHARE SystemCore
 {
 public:
 
@@ -128,7 +128,7 @@ private:
 
   struct SystemItem
   {
-    SystemItem(const std::string& n) :
+    explicit SystemItem(const std::string& n) :
         systemName(n),
         interval(0),
         stagger(0),

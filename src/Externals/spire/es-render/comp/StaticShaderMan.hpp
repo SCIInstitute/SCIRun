@@ -5,6 +5,7 @@
 #include <memory>
 #include <es-cereal/ComponentSerialize.hpp>
 #include "../ShaderMan.hpp"
+#include <spire/scishare.h>
 
 class ShaderMan;
 

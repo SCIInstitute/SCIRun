@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "InterfaceWithCleaver2",
+    "namespace": "Fields",
+    "status": "...",
+    "description": "",
+    "header": "Modules/Fields/InterfaceWithCleaver2.h"
+  },
+  "algorithm": {
+    "name": "InterfaceWithCleaver2Algorithm",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Field/InterfaceWithCleaver2Algorithm.h"
+  },
+  "UI": {
+    "name": "InterfaceWithCleaver2Dialog",
+    "header": "Interface/Modules/Fields/InterfaceWithCleaver2Dialog.h"
+  }
+}

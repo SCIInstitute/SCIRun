@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
 #include <arc-look-at/ArcLookAt.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 

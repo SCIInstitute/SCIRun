@@ -5,11 +5,11 @@
 #include <memory>
 #include <stdexcept>
 #include <entity-system/ESCoreBase.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
 
-/// System factory.
-class SystemFactory
+class SCISHARE SystemFactory
 {
   typedef std::shared_ptr<spire::BaseSystem> (*ClassFactoryFunPtr)();
 public:

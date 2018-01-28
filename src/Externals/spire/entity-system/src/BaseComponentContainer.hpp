@@ -4,11 +4,12 @@
 #include <es-log/trace-log.h>
 #include <cstdint>
 #include <string>
+#include <spire/scishare.h>
 
 namespace spire {
 
 // Component base class, used to verify component types at run-time.
-class BaseComponentContainer
+class SCISHARE BaseComponentContainer
 {
 public:
   BaseComponentContainer()           {}

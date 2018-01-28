@@ -9,19 +9,20 @@
 #include <entity-system/BaseSystem.hpp>
 #include <es-systems/SystemCore.hpp>
 #include <es-acorn/Acorn.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 
 /// Geometry manager. Will load geometry from a single file. Any shaders
 /// associated with the geometry will also be loaded alongside VBOs and IBOs.
-class GeomMan
+class SCISHARE GeomMan
 {
 public:
   /// \param  numRetries  The number of retries we have to load the asset.
   ///                     Zombie promises will remain present in the system
   ///                     and a load will be re-attempted again when
   ///                     serialized and deserialized.
-  GeomMan(int numRetries = 2);
+  explicit GeomMan(int numRetries = 2);
 
   /// Loads geometry from disk and associates any loaded VBOs, IBOs, and
   /// shaders with the given entityID.

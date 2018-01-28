@@ -49,7 +49,7 @@ namespace SCIRun {
           }
           void run()
           {
-            log_->debug_if(shouldLog_, "Module Executor: {}", module_->get_id().id_);
+            log_->trace_if(shouldLog_, "Module Executor: {}", module_->get_id().id_);
             auto exec = lookup_->lookupExecutable(module_->get_id());
             boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&ProducerInterface::enqueueReadyModules, boost::ref(*producer_))));
             exec->executeWithSignals();

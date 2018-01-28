@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <spire/scishare.h>
 
 // Forward declare a class that we need for parsing BMFont files.
 namespace spire {
@@ -18,7 +19,7 @@ namespace ren {
 /// \note The texture names are stored in the page block.
 
 /// Loads a BMFont file from memory and stores relevant BMFont blocks.
-class BMFont
+class SCISHARE BMFont
 {
 public:
   BMFont();

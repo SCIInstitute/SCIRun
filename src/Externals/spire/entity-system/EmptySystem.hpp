@@ -35,6 +35,7 @@
 #include <es-log/trace-log.h>
 #include "BaseSystem.hpp"
 #include "ESCoreBase.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 

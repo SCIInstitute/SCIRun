@@ -6,10 +6,11 @@
 #include <es-cereal/CerealCore.hpp>
 #include <es-systems/SystemCore.hpp>
 #include <set>
+#include <spire/scishare.h>
 
 namespace spire {
 
-  class Acorn : public spire::CerealCore
+class SCISHARE Acorn : public spire::CerealCore
 {
 public:
   Acorn();

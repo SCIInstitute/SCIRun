@@ -32,6 +32,7 @@ SET(Interface_Modules_BrainStimulator_FORMS
   SetConductivitiesToTetMeshDialog.ui
   GenerateROIStatisticsDialog.ui
   SetupRHSforTDCSandTMSDialog.ui
+  ModelTMSCoilDialog.ui
 )
 
 SET(Interface_Modules_BrainStimulator_HEADERS
@@ -39,6 +40,7 @@ SET(Interface_Modules_BrainStimulator_HEADERS
   SetConductivitiesToTetMeshDialog.h
   GenerateROIStatisticsDialog.h
   SetupRHSforTDCSandTMSDialog.h
+  ModelTMSCoilDialog.h
   share.h
 )
 
@@ -47,6 +49,7 @@ SET(Interface_Modules_BrainStimulator_SOURCES
   SetConductivitiesToTetMeshDialog.cc
   GenerateROIStatisticsDialog.cc
   SetupRHSforTDCSandTMSDialog.cc
+  ModelTMSCoilDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_BrainStimulator_FORMS_HEADERS ${Interface_Modules_BrainStimulator_FORMS})

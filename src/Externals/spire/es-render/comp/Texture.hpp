@@ -8,6 +8,7 @@
 #include <es-cereal/CerealCore.hpp>
 #include "TexturePromise.hpp"
 #include "StaticTextureMan.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 

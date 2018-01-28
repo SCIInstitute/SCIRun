@@ -35,6 +35,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/GeometryPrimitives/Point.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
