@@ -46,9 +46,6 @@
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Application/PortWidgetManager.h>
 #include <Core/Application/Preferences/Preferences.h>
-
-//TODO: BAD, or will we have some sort of Application global anyway?
-#include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/MainWindowCollaborators.h>
 
 using namespace SCIRun;
@@ -101,12 +98,11 @@ namespace
   //TODO: make run-time configurable
   int moduleAlpha()
   {
-    //TODO: becky's alpha number didn't look good here, it may be a Qt/coloring problem. Will wait until I get correct background.
-    return SCIRunMainWindow::Instance()->newInterface() ? 100 : 255;
+    return 100;
   }
   int portAlpha()
   {
-    return SCIRunMainWindow::Instance()->newInterface() ? 230 : 255;
+    return 230;
   }
   QString moduleRGBA(int r, int g, int b)
   {
@@ -400,7 +396,7 @@ int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& 
 
 void ModuleWidget::setupLogging(ModuleErrorDisplayer* displayer)
 {
-  logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), displayer, dialogErrorControl_, SCIRunMainWindow::Instance());
+  logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), displayer, dialogErrorControl_, mainWindowWidget());
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(show()));
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(raise()));
   connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
@@ -1013,7 +1009,7 @@ ModuleWidget::~ModuleWidget()
     {
       if (isViewScene_) // see bug #808
         dockable_->setFloating(false);
-      SCIRunMainWindow::Instance()->removeDockWidget(dockable_);
+      mainWindowWidget()->removeDockWidget(dockable_);
       delete dockable_;
     }
 
@@ -1165,7 +1161,7 @@ void ModuleWidget::makeOptionsDialog()
       dockable_->setMinimumSize(dialog_->minimumSize());
       dockable_->setAllowedAreas(allowedDockArea());
       dockable_->setAutoFillBackground(true);
-      SCIRunMainWindow::Instance()->addDockWidget(Qt::RightDockWidgetArea, dockable_);
+      mainWindowWidget()->addDockWidget(Qt::RightDockWidgetArea, dockable_);
       dockable_->setFloating(true);
       dockable_->hide();
       connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));

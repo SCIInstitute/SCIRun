@@ -90,8 +90,8 @@ SCIRunMainWindow::SCIRunMainWindow()
   dockManager_ = new DockManager(dockSpace_, this);
 
   {
-    const bool regression = Application::Instance().parameters()->isRegressionMode();
-    boost::shared_ptr<TextEditAppender> logger(new TextEditAppender(logTextBrowser_, regression));
+    //const bool regression = Application::Instance().parameters()->isRegressionMode();
+    boost::shared_ptr<TextEditAppender> logger(new TextEditAppender(logTextBrowser_));
     GuiLog::Instance().addCustomSink(logger);
   }
 
@@ -102,8 +102,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   setAttribute(Qt::WA_DeleteOnClose);
 
-  if (newInterface())
-    setStyleSheet(
+  setStyleSheet(
     "background-color: rgb(66,66,69);"
     "color: white;"
     "selection-color: yellow;"
@@ -128,7 +127,7 @@ SCIRunMainWindow::SCIRunMainWindow()
     "QPushButton:default {"
     "border - color: navy; /* make the default button prominent */"
     "}"
-    );
+  );
 
   menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
 
@@ -1161,15 +1160,15 @@ namespace {
 
   QColor favesColor()
   {
-    return SCIRunMainWindow::Instance()->newInterface() ? Qt::yellow : Qt::darkYellow;
+    return Qt::yellow;
   }
   QColor packageColor()
   {
-    return SCIRunMainWindow::Instance()->newInterface() ? Qt::yellow : Qt::darkYellow;
+    return Qt::yellow;
   }
   QColor categoryColor()
   {
-    return SCIRunMainWindow::Instance()->newInterface() ? Qt::green : Qt::darkGreen;
+    return Qt::green;
   }
 
   const QString bullet = "* ";
@@ -1679,11 +1678,6 @@ void SCIRunMainWindow::reportIssue()
   {
     QDesktopServices::openUrl(QUrl("https://github.com/SCIInstitute/SCIRun/issues/new", QUrl::TolerantMode));
   }
-}
-
-bool SCIRunMainWindow::newInterface() const
-{
-  return Application::Instance().parameters()->entireCommandLine().find("--originalGUI") == std::string::npos;
 }
 
 void SCIRunMainWindow::printStyleSheet() const

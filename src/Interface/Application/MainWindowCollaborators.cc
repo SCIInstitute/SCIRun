@@ -439,7 +439,7 @@ QString SCIRun::Gui::scirunStylesheet()
   return SCIRunMainWindow::Instance()->styleSheet();
 }
 
-QWidget* SCIRun::Gui::mainWindowWidget()
+QMainWindow* SCIRun::Gui::mainWindowWidget()
 {
   return SCIRunMainWindow::Instance();
 }

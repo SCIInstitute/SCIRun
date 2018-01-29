@@ -94,7 +94,6 @@ public:
   //TODO: extract another interface for command objects
   NetworkEditor* networkEditor() { return networkEditor_; }
 
-  bool newInterface() const;
   bool isInFavorites(const QString& module) const;
   const QMap<QString,QMap<QString,QString>>& styleSheetDetails() const { return styleSheetDetails_; }
 
