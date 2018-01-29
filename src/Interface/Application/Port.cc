@@ -38,7 +38,6 @@
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
-#include <Interface/Application/SCIRunMainWindow.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
@@ -118,7 +117,8 @@ namespace SCIRun {
     class PortActionsMenu : public QMenu
     {
     public:
-      explicit PortActionsMenu(PortWidget* parent) : QMenu("Actions", parent), parent_(parent), faves_(nullptr)
+      explicit PortActionsMenu(PortWidget* parent) :
+        QMenu("Actions", parent), parent_(parent)
       {
 #if SCIRUN4_CODE_TO_BE_ENABLED_LATER
         QList<QAction*> actions;
@@ -138,21 +138,20 @@ namespace SCIRun {
 #endif
 
         base_ = new QMenu("Connect Module", parent);
-        faves_ = new QMenu("Favorites", parent);
-        base_->addMenu(faves_);
         compatibleModuleActions_ = fillConnectToEmptyPortMenu(base_, Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
 
         connectModuleAction_ = addAction("Connect Module...");
         connect(connectModuleAction_, SIGNAL(triggered()), parent, SLOT(pickConnectModule()));
       }
 
-      void filterFavorites()
-      {
-        faves_->clear();
-        for (const auto& action : compatibleModuleActions_)
-          if (SCIRunMainWindow::Instance()->isInFavorites(action->text())) // TODO: break out predicate
-            faves_->addAction(action);
-      }
+      //TODO: might add back as a feature later
+      // void filterFavorites()
+      // {
+      //   faves_->clear();
+      //   for (const auto& action : compatibleModuleActions_)
+      //     if (isInFavorites_(action->text()))
+      //       faves_->addAction(action);
+      // }
 
       QStringList compatibleModules() const
       {
@@ -184,7 +183,6 @@ namespace SCIRun {
     private:
       PortWidget* parent_;
       QMenu* base_;
-      QMenu* faves_;
       QList<QAction*> compatibleModuleActions_;
       QAction* connectModuleAction_;
     };
@@ -334,7 +332,6 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos, Qt::
   }
   else if (button == Qt::RightButton && (!isConnected() || !isInput()))
   {
-    menu_->filterFavorites();
     showMenu();
   }
   else
