@@ -50,7 +50,7 @@ SET(Interface_Application_SOURCES
   SCIRunMainWindowSlotsPublic.cc
   SCIRunMainWindowSlotsPrivate.cc
   SCIRunMainWindowQtOverrides.cc
-  #SCIRunMainWindowCommandInterface.cc
+  SCIRunMainWindowCommandInterface.cc
   Node.cc
   Note.cc
   NoteEditor.cc
