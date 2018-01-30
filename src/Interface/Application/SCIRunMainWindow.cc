@@ -184,6 +184,12 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   actionQuit_->setShortcut(QKeySequence::Quit);
 
+#ifdef __APPLE__
+  actionToggleFullScreenMode_->setShortcut(QApplication::translate("SCIRunMainWindow", "Meta+Ctrl+F", 0, QApplication::UnicodeUTF8));
+#else
+  actionToggleFullScreenMode_->setShortcut(Qt::Key_F11);
+#endif
+
   actionDelete_->setShortcuts(QList<QKeySequence>() << QKeySequence::Delete << Qt::Key_Backspace);
 
 	connect(actionRunNewModuleWizard_, SIGNAL(triggered()), this, SLOT(runNewModuleWizard()));

@@ -872,6 +872,8 @@ void SCIRunMainWindow::maxCoreValueChanged(int value)
 
 void SCIRunMainWindow::toggleFullScreen()
 {
-  qDebug() << __FUNCTION__;
-  //showFullScreen();
+  if (isFullScreen())
+    showNormal();
+  else
+    showFullScreen();
 }

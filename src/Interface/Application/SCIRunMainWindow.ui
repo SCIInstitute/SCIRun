@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1098</width>
-         <height>839</height>
+         <width>1093</width>
+         <height>853</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -1264,7 +1264,7 @@
     <string>Toggle Full Screen Mode</string>
    </property>
    <property name="shortcut">
-    <string>Meta+Ctrl+F</string>
+    <string/>
    </property>
   </action>
  </widget>
