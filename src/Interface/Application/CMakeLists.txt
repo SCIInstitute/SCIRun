@@ -52,6 +52,7 @@ SET(Interface_Application_SOURCES
   SCIRunMainWindowQtOverrides.cc
   SCIRunMainWindowCommandInterface.cc
   SCIRunMainWindowTreeFunctions.cc
+  SCIRunMainWindowSetup.cc
   Node.cc
   Note.cc
   NoteEditor.cc
