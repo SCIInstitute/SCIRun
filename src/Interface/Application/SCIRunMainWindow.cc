@@ -580,17 +580,6 @@ void SCIRunMainWindow::preexecute()
 	}
 }
 
-void SCIRunMainWindow::executeAll()
-{
-	if (Application::Instance().parameters()->isRegressionMode())
-	{
-		auto timeout = Application::Instance().parameters()->developerParameters()->regressionTimeoutSeconds();
-		QTimer::singleShot(1000 * *timeout, this, SLOT(networkTimedOut()));
-	}
-  writeSettings();
-  networkEditor_->executeAll();
-}
-
 void SCIRunMainWindow::setupQuitAfterExecute()
 {
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(exitApplication(int)));
@@ -907,33 +896,6 @@ void SCIRunMainWindow::makePipesManhattan()
   networkEditor_->setConnectionPipelineType(static_cast<int>(ConnectionDrawType::MANHATTAN));
 }
 
-void SCIRunMainWindow::setConnectionPipelineType(int type)
-{
-	networkEditor_->setConnectionPipelineType(type);
-  switch (ConnectionDrawType(type))
-	{
-  case ConnectionDrawType::MANHATTAN:
-		prefsWindow_->manhattanPipesRadioButton_->setChecked(true);
-		break;
-  case ConnectionDrawType::CUBIC:
-		prefsWindow_->cubicPipesRadioButton_->setChecked(true);
-		break;
-  case ConnectionDrawType::EUCLIDEAN:
-		prefsWindow_->euclideanPipesRadioButton_->setChecked(true);
-		break;
-	}
-
-  {
-    QSettings settings;
-    settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
-  }
-}
-
-void SCIRunMainWindow::setSaveBeforeExecute(int state)
-{
-  prefsWindow_->setSaveBeforeExecute(state != 0);
-}
-
 void SCIRunMainWindow::setDragMode(bool toggle)
 {
   if (toggle)
@@ -995,11 +957,6 @@ void SCIRunMainWindow::zoomNetwork()
   {
     qDebug() << "Sender was null or not an action";
   }
-}
-
-void SCIRunMainWindow::showZoomStatusMessage(int zoomLevel)
-{
-  statusBar()->showMessage(tr("Zoom: %1%").arg(zoomLevel), 2000);
 }
 
 void SCIRunMainWindow::setupScriptedEventsWindow()
@@ -1620,17 +1577,6 @@ void SCIRunMainWindow::addToDataDirectory(const QString& dir)
 	}
 }
 
-void SCIRunMainWindow::setDataDirectoryFromGUI()
-{
-  auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), QString::fromStdString(Core::Preferences::Instance().dataDirectory().parent_path().string()));
-  setDataDirectory(dir);
-
-  {
-    QSettings settings;
-    settings.setValue("dataDirectory", QString::fromStdString(Preferences::Instance().dataDirectory().string()));
-  }
-}
-
 void SCIRunMainWindow::addToPathFromGUI()
 {
   auto dir = QFileDialog::getExistingDirectory(this, tr("Add Directory to Data Path"), ".");
@@ -1870,10 +1816,6 @@ void SCIRunMainWindow::showStatusMessage(const QString& str)
 void SCIRunMainWindow::showStatusMessage(const QString& str, int timeInMsec)
 {
 	statusBar()->showMessage(str, timeInMsec);
-}
-
-void SCIRunMainWindow::showExtendedDataInfo()
-{
 }
 
 void SCIRunMainWindow::toggleMetadataLayer(bool toggle)

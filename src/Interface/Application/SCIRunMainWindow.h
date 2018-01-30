@@ -111,7 +111,6 @@ public Q_SLOTS:
   void setDataDirectoryFromGUI();
   void setConnectionPipelineType(int type);
   void setSaveBeforeExecute(int state);
-  void showExtendedDataInfo();
 protected:
   virtual void closeEvent(QCloseEvent* event) override;
   virtual void keyPressEvent(QKeyEvent *event) override;
