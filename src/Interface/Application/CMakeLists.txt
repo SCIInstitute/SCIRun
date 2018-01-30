@@ -51,6 +51,7 @@ SET(Interface_Application_SOURCES
   SCIRunMainWindowSlotsPrivate.cc
   SCIRunMainWindowQtOverrides.cc
   SCIRunMainWindowCommandInterface.cc
+  SCIRunMainWindowTreeFunctions.cc
   Node.cc
   Note.cc
   NoteEditor.cc
