@@ -59,11 +59,11 @@ namespace SCIRun
 
         switch (position)
         {
-        case None:
+          case NotePosition::None:
           {
             break;
           }
-        case Top:
+          case NotePosition::Top:
           {
             auto noteBottomMidpoint = (noteRect.bottomRight() + noteRect.bottomLeft()) / 2;
             auto noteBottomMidpointShift = noteRect.topLeft() - noteBottomMidpoint;
@@ -72,7 +72,7 @@ namespace SCIRun
             noteBottomMidpointShift.ry() -= noteMargin;
             return noteBottomMidpointShift;
           }
-        case Bottom:
+          case NotePosition::Bottom:
           {
             auto noteTopMidpoint = (noteRect.topRight() + noteRect.topLeft()) / 2;
             auto noteTopMidpointShift = noteRect.topLeft() - noteTopMidpoint;
@@ -81,7 +81,7 @@ namespace SCIRun
             noteTopMidpointShift.ry() += thisRect.height() + noteMargin;
             return noteTopMidpointShift;
           }
-        case Left:
+          case NotePosition::Left:
           {
             auto noteRightMidpoint = (noteRect.topRight() + noteRect.bottomRight()) / 2;
             auto noteRightMidpointShift = noteRect.topLeft() - noteRightMidpoint;
@@ -90,7 +90,7 @@ namespace SCIRun
             noteRightMidpointShift.ry() += moduleSideHalfLength;
             return noteRightMidpointShift;
           }
-        case Right:
+          case NotePosition::Right:
           {
             auto noteLeftMidpoint = (noteRect.topLeft() + noteRect.bottomLeft()) / 2;
             auto noteLeftMidpointShift = noteRect.topLeft() - noteLeftMidpoint;
@@ -99,10 +99,10 @@ namespace SCIRun
             noteLeftMidpointShift.ry() += moduleSideHalfLength;
             return noteLeftMidpointShift;
           }
-        case Tooltip:
+          case NotePosition::Tooltip:
           item->setToolTip(note->toHtml());
           break;
-        case Default:
+          case NotePosition::Default:
           break;
         }
         return QPointF();

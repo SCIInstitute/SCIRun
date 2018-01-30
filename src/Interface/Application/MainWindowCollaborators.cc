@@ -461,3 +461,113 @@ int SCIRunGuiRunner::returnCode()
 {
   return SCIRunMainWindow::Instance()->returnCode();
 }
+
+FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent) : QObject(parent), reply_(nullptr), statusBar_(statusBar)
+{
+  connect(&webCtrl_, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
+
+  QNetworkRequest request(imageUrl);
+  reply_ = webCtrl_.get(request);
+  connect(reply_, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
+}
+
+void FileDownloader::fileDownloaded(QNetworkReply* reply)
+{
+  downloadedData_ = reply->readAll();
+  reply->deleteLater();
+  Q_EMIT downloaded();
+}
+
+void FileDownloader::downloadProgress(qint64 received, qint64 total) const
+{
+  if (statusBar_)
+  {
+    auto totalStr = total == -1 ? "?" : QString::number(total);
+    statusBar_->showMessage(tr("File progress: %1 / %2").arg(received).arg(totalStr), 1000);
+    if (received == total)
+      statusBar_->showMessage("File downloaded.", 1000);
+  }
+}
+
+ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar, QWidget* parent) : QObject(parent), iconDownloader_(nullptr), zipDownloader_(nullptr), statusBar_(statusBar)
+{
+  if (infoObject)
+  {
+    iconUrl_ = infoObject->property(ToolkitInfo::ToolkitIconURL).toString();
+    fileUrl_ = infoObject->property(ToolkitInfo::ToolkitURL).toString();
+    filename_ = infoObject->property(ToolkitInfo::ToolkitFilename).toString();
+
+    iconKey_ = ToolkitInfo::ToolkitIconURL + QString("--") + iconUrl_;
+
+    downloadIcon();
+  }
+}
+
+void ToolkitDownloader::downloadIcon()
+{
+  QSettings settings;
+  if (!settings.contains(iconKey_))
+  {
+    iconDownloader_ = new FileDownloader(iconUrl_, nullptr, this);
+    connect(iconDownloader_, SIGNAL(downloaded()), this, SLOT(showMessageBox()));
+  }
+  else
+    showMessageBox();
+}
+
+void ToolkitDownloader::showMessageBox()
+{
+  QPixmap image;
+
+  QSettings settings;
+
+  if (settings.contains(iconKey_))
+  {
+    image.loadFromData(settings.value(iconKey_).toByteArray());
+  }
+  else
+  {
+    if (!iconDownloader_)
+      return;
+
+    image.loadFromData(iconDownloader_->downloadedData());
+    settings.setValue(iconKey_, iconDownloader_->downloadedData());
+  }
+
+  QMessageBox toolkitInfo;
+#ifdef WIN32
+  toolkitInfo.setWindowTitle("Toolkit information");
+#else
+  toolkitInfo.setText("Toolkit information");
+#endif
+  toolkitInfo.setInformativeText("Click OK to download the latest version of this toolkit:\n\n" + fileUrl_);
+  toolkitInfo.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+  toolkitInfo.setIconPixmap(image);
+  toolkitInfo.setDefaultButton(QMessageBox::Ok);
+  toolkitInfo.show();
+  auto choice = toolkitInfo.exec();
+
+  if (choice == QMessageBox::Ok)
+  {
+    auto dir = QFileDialog::getExistingDirectory(qobject_cast<QWidget*>(parent()), "Select toolkit directory", ".");
+    if (!dir.isEmpty())
+    {
+      toolkitDir_ = dir;
+      zipDownloader_ = new FileDownloader(fileUrl_, statusBar_, this);
+      connect(zipDownloader_, SIGNAL(downloaded()), this, SLOT(saveToolkit()));
+    }
+  }
+}
+
+void ToolkitDownloader::saveToolkit() const
+{
+  if (!zipDownloader_)
+    return;
+
+  auto fullFilename = toolkitDir_.filePath(filename_);
+  QFile file(fullFilename);
+  file.open(QIODevice::WriteOnly);
+  file.write(zipDownloader_->downloadedData());
+  file.close();
+  statusBar_->showMessage("Toolkit file saved.", 1000);
+}

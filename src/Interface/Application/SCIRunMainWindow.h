@@ -31,9 +31,8 @@
 
 #include <QDialog>
 #include <QDir>
-#include <boost/shared_ptr.hpp>
-#include <boost/variant.hpp>
-#include <Interface/Application/Note.h>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Interface/Application/PositionProvider.h>
 #include "ui_SCIRunMainWindow.h"
 
 class QToolButton;
@@ -173,6 +172,20 @@ private:
   void showStatusMessage(const QString& str, int timeInMsec);
   void addFragmentsToMenu(const QMap<QString, QVariant>& names, const QMap<QString, QVariant>& xmls);
 
+  void addFavoriteMenu(QTreeWidget* tree);
+  QTreeWidgetItem* getTreeMenu(QTreeWidget* tree, const QString& text);
+  QTreeWidgetItem* getFavoriteMenu(QTreeWidget* tree);
+  QTreeWidgetItem* getClipboardHistoryMenu(QTreeWidget* tree);
+  QTreeWidgetItem* getSavedSubnetworksMenu(QTreeWidget* tree);
+  void addSnippet(const QString& code, QTreeWidgetItem* snips);
+  void readCustomSnippets(QTreeWidgetItem* snips);
+  void addSnippetMenu(QTreeWidget* tree);
+  void addSavedSubnetworkMenu(QTreeWidget* tree);
+  void addClipboardHistoryMenu(QTreeWidget* tree);
+  QTreeWidgetItem* addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module);
+  void fillTreeWidget(QTreeWidget* tree, const Dataflow::Networks::ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames);
+  void sortFavorites(QTreeWidget* tree);
+
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
   QStringList recentFiles_;
@@ -192,6 +205,7 @@ private:
   boost::shared_ptr<NetworkEditorBuilder> builder_;
   int dockSpace_{0};
   class DockManager* dockManager_;
+  static const QString saveFragmentData_;
 
 Q_SIGNALS:
   void moduleItemDoubleClicked();
@@ -199,77 +213,77 @@ Q_SIGNALS:
   void defaultNoteSizeChanged(int size);
   void dataDirectorySet(const QString& dir);
 private Q_SLOTS:
-  void saveNetworkAs();
-  void saveNetwork();
-  void loadNetwork();
+  void addModuleKeyboardAction();
+  void addModuleToWindowList(const QString& id, bool hasUI);
+  void addToPathFromGUI();
+  void adjustExecuteButtonAppearance();
+  void adjustModuleDock(int state);
+  void alertForNetworkCycles(int code);
+  void changeExecuteActionIconToPlay();
+  void changeExecuteActionIconToStop();
   void checkAndLoadNetworkFile(const QString& filename);
-  void loadRecentNetwork();
-  void loadToolkitsFromFile(const QString& filename);
-  void loadToolkit();
-  void removeToolkit();
-  bool newNetwork();
-  void runScript();
-  void importLegacyNetwork();
-  void networkModified();
-  void switchMouseMode();
-  void filterModuleNamesInTreeView(const QString& start);
-  void makePipesEuclidean();
-  void makePipesCubicBezier();
-  void makePipesManhattan();
-  void launchNewInstance();
+  void clearFragmentList();
+  void copyVersionToClipboard();
+  void displayAcknowledgement();
+  void exitApplication(int code);
+  void exportFragmentList();
   void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);
+  void filterModuleNamesInTreeView(const QString& start);
   void handleCheckedModuleEntry(QTreeWidgetItem* item, int column);
-  void setExecutor(int type);
-  void setGlobalPortCaching(bool enable);
-  void readDefaultNotePosition(int index);
-  void readDefaultNoteSize(int index);
+  void helpWithToolkitCreation();
+  void highlightPortsChanged();
+  void importFragmentList();
+  void importLegacyNetwork();
+  void launchNewInstance();
+  void launchNewUserWizard();
+  void loadNetwork();
+  void loadPythonAPIDoc();
+  void loadRecentNetwork();
+  void loadToolkit();
+  void loadToolkitsFromFile(const QString& filename);
+  void makePipesCubicBezier();
+  void makePipesEuclidean();
+  void makePipesManhattan();
+  void maxCoreValueChanged(int value);
+  void modulesSnapToChanged();
+  void networkModified();
+  void networkTimedOut();
+  bool newNetwork();
+  void openLogFolder();
   void openToolkitFolder();
   void openToolkitNetwork();
-  void alertForNetworkCycles(int code);
-  void updateDockWidgetProperties(bool isFloating);
-  void maxCoreValueChanged(int value);
-  void toolkitDownload();
-  void addToPathFromGUI();
+  void readDefaultNotePosition(int index);
+  void readDefaultNoteSize(int index);
+  void removeModuleFromWindowList(const SCIRun::Dataflow::Networks::ModuleId& modId);
   void removeSavedSubnetwork();
+  void removeToolkit();
   void renameSavedSubnetwork();
-  void displayAcknowledgement();
-  void helpWithToolkitCreation();
-  void setFocusOnFilterLine();
-  void addModuleKeyboardAction();
-  void showKeyboardShortcutsDialog();
-  void selectModuleKeyboardAction();
-  void modulesSnapToChanged();
-  void highlightPortsChanged();
-  void openLogFolder();
-  void runNewModuleWizard();
+  void reportIssue();
   void resetWindowLayout();
-  void zoomNetwork();
-  void networkTimedOut();
-  void exportFragmentList();
-  void importFragmentList();
-  void clearFragmentList();
-  void loadPythonAPIDoc();
-  void showSnippetHelp();
+  void runNewModuleWizard();
+  void runScript();
+  void saveNetwork();
+  void saveNetworkAs();
+  void selectModuleKeyboardAction();
+  void setDragMode(bool toggle);
+  void setExecutor(int type);
+  void setFocusOnFilterLine();
+  void setGlobalPortCaching(bool enable);
+  void setSelectMode(bool toggle);
   void showClipboardHelp();
+  void showKeyboardShortcutsDialog();
+  void showModuleSelectorContextMenu(const QPoint& p);
+  void showSnippetHelp();
   void showTagHelp();
   void showTriggerHelp();
-  void launchNewUserWizard();
-  void copyVersionToClipboard();
-  void updateClipboardHistory(const QString& xml);
-  void showModuleSelectorContextMenu(const QPoint& p);
-  void changeExecuteActionIconToStop();
-  void changeExecuteActionIconToPlay();
-  void adjustExecuteButtonAppearance();
-  void addModuleToWindowList(const QString& id, bool hasUI);
-  void removeModuleFromWindowList(const SCIRun::Dataflow::Networks::ModuleId& modId);
-  void setDragMode(bool toggle);
-  void setSelectMode(bool toggle);
-  void toggleTagLayer(bool toggle);
-  void toggleMetadataLayer(bool toggle);
-  void adjustModuleDock(int state);
+  void switchMouseMode();
   void toggleFullScreen();
-  void reportIssue();
-  void exitApplication(int code);
+  void toggleMetadataLayer(bool toggle);
+  void toggleTagLayer(bool toggle);
+  void toolkitDownload();
+  void updateClipboardHistory(const QString& xml);
+  void updateDockWidgetProperties(bool isFloating);
+  void zoomNetwork();
 };
 
 }

@@ -87,8 +87,8 @@ void HasNotes::setDefaultNoteFontSize(int size)
 
 NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) :
   networkObjectWithNote_(nullptr), scene_(nullptr), note_(nullptr),
-  notePosition_(Default),
-  defaultNotePosition_(Top), //TODO
+  notePosition_(NotePosition::Default),
+  defaultNotePosition_(NotePosition::Top), //TODO
   displayStrategy_(display),
   destroyed_(false)
 {
@@ -143,8 +143,8 @@ QPointF NoteDisplayHelper::relativeNotePosition()
 {
   if (note_ && networkObjectWithNote_)
   {
-    auto position = notePosition_ == Default ? defaultNotePosition_ : notePosition_;
-    note_->setVisible(!(Tooltip == position || None == position));
+    auto position = notePosition_ == NotePosition::Default ? defaultNotePosition_ : notePosition_;
+    note_->setVisible(!(NotePosition::Tooltip == position || NotePosition::None == position));
     networkObjectWithNote_->setToolTip("");
 
     return displayStrategy_->relativeNotePosition(networkObjectWithNote_, note_, position);

@@ -48,7 +48,7 @@ SET(Interface_Application_SOURCES
   ProvenanceWindow.cc
   SCIRunMainWindow.cc
   SCIRunMainWindowSlotsPublic.cc
-  #SCIRunMainWindowSlotsPrivate.cc
+  SCIRunMainWindowSlotsPrivate.cc
   SCIRunMainWindowQtOverrides.cc
   #SCIRunMainWindowCommandInterface.cc
   Node.cc

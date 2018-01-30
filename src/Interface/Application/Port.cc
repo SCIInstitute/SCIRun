@@ -504,7 +504,7 @@ void PortWidget::MakeTheConnection(const ConnectionDescription& cd)
 
 void PortWidget::connectionDisabled(bool disabled)
 {
-  Q_EMIT incomingConnectionStateChange(disabled, getIndex());
+  Q_EMIT incomingConnectionStateChange(disabled, static_cast<int>(getIndex()));
 }
 
 void PortWidget::setConnectionsDisabled(bool disabled)
