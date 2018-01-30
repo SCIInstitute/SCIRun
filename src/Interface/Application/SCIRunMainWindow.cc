@@ -528,8 +528,6 @@ SCIRunMainWindow* SCIRunMainWindow::Instance()
 
 SCIRunMainWindow::~SCIRunMainWindow()
 {
-  //Log::get().clearAppenders();
-  //Log::get("Modules").clearAppenders();
   commandConverter_.reset();
   networkEditor_->disconnect();
   networkEditor_->setNetworkEditorController(nullptr);

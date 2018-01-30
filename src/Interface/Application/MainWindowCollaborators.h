@@ -249,6 +249,13 @@ namespace Gui {
   //TODO: global function replacements for SCIRunMainWindow access. extract into new file/namespace
   QString scirunStylesheet();
   QMainWindow* mainWindowWidget();
+
+  class SCIRunGuiRunner
+  {
+  public:
+    explicit SCIRunGuiRunner(QApplication& app);
+    int returnCode();
+  };
 }
 }
 #endif

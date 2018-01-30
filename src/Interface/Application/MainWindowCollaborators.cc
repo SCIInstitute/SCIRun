@@ -33,6 +33,8 @@
 #include <Core/Logging/Log.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
+#include <Interface/Application/GuiCommandFactory.h>
+#include <Core/Application/Application.h>
 #include <numeric>
 
 #include "ui_ConnectionStyleWizardPage.h"
@@ -442,4 +444,20 @@ QString SCIRun::Gui::scirunStylesheet()
 QMainWindow* SCIRun::Gui::mainWindowWidget()
 {
   return SCIRunMainWindow::Instance();
+}
+
+SCIRunGuiRunner::SCIRunGuiRunner(QApplication& app)
+{
+  auto mainWin = SCIRunMainWindow::Instance();
+
+  Core::Application::Instance().setCommandFactory(boost::make_shared<GuiGlobalCommandFactory>());
+  mainWin->setController(Core::Application::Instance().controller());
+  mainWin->initialize();
+
+  app.exec();
+}
+
+int SCIRunGuiRunner::returnCode()
+{
+  return SCIRunMainWindow::Instance()->returnCode();
 }
