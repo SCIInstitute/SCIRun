@@ -47,6 +47,10 @@ SET(Interface_Application_SOURCES
   NetworkExecutionProgressBar.cc
   ProvenanceWindow.cc
   SCIRunMainWindow.cc
+  #SCIRunMainWindowSlotsPublic.cc
+  #SCIRunMainWindowSlotsPrivate.cc
+  SCIRunMainWindowQtOverrides.cc
+  #SCIRunMainWindowCommandInterface.cc
   Node.cc
   Note.cc
   NoteEditor.cc

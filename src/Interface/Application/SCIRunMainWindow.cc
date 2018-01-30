@@ -341,14 +341,6 @@ SCIRunMainWindow::SCIRunMainWindow()
   //devConsole_->updateNetworkViewLog("hello");
 }
 
-void SCIRunMainWindow::resizeEvent(QResizeEvent* event)
-{
-  dockSpace_ = size().height();
-  QMainWindow::resizeEvent(event);
-
-  //devConsole_->updateNetworkViewLog(tr("resizeEvent to %1,%2").arg(size().width()).arg(size().height()));
-}
-
 void SCIRunMainWindow::createStandardToolbars()
 {
   auto standardBar = addToolBar("File");
@@ -605,18 +597,6 @@ void SCIRunMainWindow::setupQuitAfterExecute()
   quitAfterExecute_ = true;
 }
 
-void SCIRunMainWindow::exitApplication(int code)
-{
-  close();
-  returnCode_ = code;
-  qApp->exit(code);
-}
-
-void SCIRunMainWindow::quit()
-{
-  exitApplication(0);
-}
-
 void SCIRunMainWindow::networkTimedOut()
 {
 	exitApplication(2);
@@ -816,18 +796,6 @@ void SCIRunMainWindow::loadRecentNetwork()
     if (action)
       loadNetworkFile(action->data().toString());
   }
-}
-
-void SCIRunMainWindow::closeEvent(QCloseEvent* event)
-{
-  windowState_ = saveState();
-  if (okToContinue())
-  {
-    writeSettings();
-    event->accept();
-  }
-  else
-    event->ignore();
 }
 
 bool SCIRunMainWindow::okToContinue()
@@ -1764,18 +1732,6 @@ void SCIRunMainWindow::adjustModuleDock(int state)
   Preferences::Instance().modulesAreDockable.setValueWithSignal(dockable);
 }
 
-void SCIRunMainWindow::showEvent(QShowEvent* event)
-{
-  restoreState(windowState_);
-  QMainWindow::showEvent(event);
-}
-
-void SCIRunMainWindow::hideEvent(QHideEvent * event)
-{
-  windowState_ = saveState();
-  QMainWindow::hideEvent(event);
-}
-
 void SCIRunMainWindow::updateDockWidgetProperties(bool isFloating)
 {
   auto dock = qobject_cast<QDockWidget*>(sender());
@@ -1784,120 +1740,6 @@ void SCIRunMainWindow::updateDockWidgetProperties(bool isFloating)
     dock->setWindowFlags(Qt::Window);
     dock->show();
   }
-}
-
-#ifdef __APPLE__
-static const Qt::Key MetadataShiftKey = Qt::Key_Meta;
-#else
-static const Qt::Key MetadataShiftKey = Qt::Key_CapsLock;
-#endif
-
-void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
-{
-	if (event->key() == Qt::Key_Shift)
-	{
-		showStatusMessage("Network zoom active");
-    networkEditor_->adjustExecuteButtonsToDownstream(true);
-	}
-  else if (event->key() == MetadataShiftKey)
-  {
-    networkEditor_->metadataLayer(true);
-		showStatusMessage("Metadata layer active");
-  }
-  else if (event->key() == Qt::Key_Alt)
-  {
-		if (!actionToggleTagLayer_->isChecked())
-		{
-	 		networkEditor_->tagLayer(true, NoTag);
-			showStatusMessage("Tag layer active: none");
-		}
-  }
-	else if (event->key() == Qt::Key_A)
-	{
-		if (!actionToggleTagLayer_->isChecked())
-		{
-    	if (networkEditor_->tagLayerActive())
-    	{
-      	networkEditor_->tagLayer(true, AllTags);
-				showStatusMessage("Tag layer active: All");
-    	}
-		}
-	}
-  else if (event->key() == Qt::Key_G && (event->modifiers() & Qt::ShiftModifier))
-  {
-    if (!actionToggleTagLayer_->isChecked())
-    {
-      if (networkEditor_->tagLayerActive())
-      {
-        networkEditor_->tagLayer(true, HideGroups);
-        showStatusMessage("Tag layer active: Groups hidden");
-      }
-    }
-  }
-	else if (event->key() == Qt::Key_G)
-	{
-		if (!actionToggleTagLayer_->isChecked())
-		{
-    	if (networkEditor_->tagLayerActive())
-    	{
-      	networkEditor_->tagLayer(true, ShowGroups);
-				showStatusMessage("Tag layer active: Groups shown");
-    	}
-		}
-	}
-	else if (event->key() == Qt::Key_J)
-	{
-		if (!actionToggleTagLayer_->isChecked())
-		{
-    	if (networkEditor_->tagLayerActive())
-    	{
-      	networkEditor_->tagLayer(true, ClearTags);
-				showStatusMessage("Tag layer active: selected modules' tags cleared");
-    	}
-	  }
-	}
-  else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)
-  {
-		if (!actionToggleTagLayer_->isChecked())
-		{
-    	if (networkEditor_->tagLayerActive())
-    	{
-      	auto key = event->key() - Qt::Key_0;
-      	networkEditor_->tagLayer(true, key);
-				showStatusMessage("Tag layer active: " + QString::number(key));
-    	}
-		}
-  }
-  else if (event->key() == Qt::Key_Period)
-	{
-    switchMouseMode();
-	}
-
-  QMainWindow::keyPressEvent(event);
-}
-
-void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
-{
-	if (event->key() == Qt::Key_Shift)
-	{
-		showStatusMessage("Network zoom inactive", 1000);
-    networkEditor_->adjustExecuteButtonsToDownstream(false);
-	}
-  else if (event->key() == MetadataShiftKey)
-  {
-    networkEditor_->metadataLayer(false);
-		showStatusMessage("Metadata layer inactive", 1000);
-  }
-  else if (event->key() == Qt::Key_Alt)
-  {
-		if (!actionToggleTagLayer_->isChecked())
-		{
-    	networkEditor_->tagLayer(false, -1);
-			showStatusMessage("Tag layer inactive", 1000);
-		}
-  }
-
-  QMainWindow::keyPressEvent(event);
 }
 
 void SCIRunMainWindow::changeExecuteActionIconToStop()
