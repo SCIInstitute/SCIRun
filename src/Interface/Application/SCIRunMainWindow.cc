@@ -84,7 +84,7 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
-SCIRunMainWindow::SCIRunMainWindow() 
+SCIRunMainWindow::SCIRunMainWindow()
 {
   setupUi(this);
   builder_ = boost::make_shared<NetworkEditorBuilder>(this);
@@ -272,9 +272,9 @@ SCIRunMainWindow::SCIRunMainWindow()
   {
     ToolkitInfo fwdInv{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
     #ifdef __APPLE__
-      "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/v1.4",
+      "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/v1.4.1",
     #else
-      "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.4.zip",
+      "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.4.1.zip",
     #endif
       "FwdInvToolkit_stable.zip" };
     fwdInv.setupAction(actionForwardInverseStable_, this);

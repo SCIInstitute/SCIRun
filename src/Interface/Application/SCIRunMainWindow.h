@@ -65,7 +65,7 @@ class MainWindowCommands
 {
 public:
   virtual ~MainWindowCommands() {}
-
+  //TODO: #643
 };
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
