@@ -37,17 +37,25 @@ void RemembersFileDialogDirectory::setStartingDir(const QString& dir)
 }
 
 QString RemembersFileDialogDirectory::startingDirectory_(".");
+QString RemembersFileDialogDirectory::lastUsedDirectory_;
 
 QString RemembersFileDialogDirectory::dialogDirectory()
 {
   if (currentDirectory_.isEmpty())
   {
-    currentDirectory_ = startingDirectory_;
+    if (!lastUsedDirectory_.isEmpty())
+    {
+      currentDirectory_ = lastUsedDirectory_;
+    }
+    else
+    {
+      currentDirectory_ = startingDirectory_;
+    }
   }
   return currentDirectory_;
 }
 
 void RemembersFileDialogDirectory::updateRecentFile(const QString& recentFile)
 {
-  currentDirectory_ = QDir(recentFile).absolutePath();
+  lastUsedDirectory_ = currentDirectory_ = QDir(recentFile).absolutePath();
 }

@@ -46,6 +46,7 @@ namespace Gui {
   private:
     QString currentDirectory_;
     static QString startingDirectory_;
+    static QString lastUsedDirectory_;
   };
 
 }}
