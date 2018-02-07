@@ -55,7 +55,7 @@ WriteMatrixDialog::WriteMatrixDialog(const std::string& name, ModuleStateHandle 
 
 void WriteMatrixDialog::pullSpecial()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
+  pullFilename(state_, fileNameLineEdit_, {});
 }
 
 void WriteMatrixDialog::pushFileNameToState()

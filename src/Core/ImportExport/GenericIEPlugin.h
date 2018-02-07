@@ -351,6 +351,12 @@ std::string dialogBoxFilterFromFileTypeDescription(const GenericIEPluginManager<
 }
 
 template <class Data>
+std::function<std::string(const std::string&)> dialogBoxFilterFromFileTypeDescription(const GenericIEPluginManager<Data>& mgr)
+{
+  return [&mgr](const std::string& name) { return dialogBoxFilterFromFileTypeDescription(mgr, name); };
+}
+
+template <class Data>
 std::string printPluginDescriptionsForFilter(const GenericIEPluginManager<Data>& mgr, const std::string& defaultType, const std::vector<std::string>& pluginNames)
 {
   std::ostringstream types;
