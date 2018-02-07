@@ -1116,7 +1116,7 @@ ModuleNotesHandle NetworkEditor::dumpModuleNotes(ModuleFilter filter) const
       auto note = w->currentNote();
       if (filter(w->getModuleWidget()->getModule()) &&
         !note.plainText_.isEmpty())
-        notes->notes[w->getModuleWidget()->getModuleId()] = NoteXML(note.html_.toStdString(), note.position_, note.plainText_.toStdString(), note.fontSize_);
+        notes->notes[w->getModuleWidget()->getModuleId()] = NoteXML(note.html_.toStdString(), static_cast<int>(note.position_), note.plainText_.toStdString(), note.fontSize_);
     }
   }
   return notes;
@@ -1172,7 +1172,7 @@ ConnectionNotesHandle NetworkEditor::dumpConnectionNotes(ConnectionFilter filter
       {
         //TODO hacky
         auto id = connectionNoteId(conn->getConnectedToModuleIds());
-        notes->notes[id] = NoteXML(note.html_.toStdString(), note.position_, note.plainText_.toStdString(), note.fontSize_);
+        notes->notes[id] = NoteXML(note.html_.toStdString(), static_cast<int>(note.position_), note.plainText_.toStdString(), note.fontSize_);
       }
     }
   }
@@ -1287,7 +1287,7 @@ void NetworkEditor::updateModuleNotes(const ModuleNotes& moduleNotes)
       if (noteIter != moduleNotes.notes.end())
       {
         auto noteXML = noteIter->second;
-        Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, noteXML.position);
+        Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, NotePosition(noteXML.position));
         w->getModuleWidget()->updateNoteFromFile(note);
       }
     }
@@ -1327,7 +1327,7 @@ void NetworkEditor::updateConnectionNotes(const ConnectionNotes& notes)
       if (noteIter != notes.notes.end())
       {
         auto noteXML = noteIter->second;
-        Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, noteXML.position);
+        Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, NotePosition(noteXML.position));
         conn->updateNoteFromFile(note);
       }
     }

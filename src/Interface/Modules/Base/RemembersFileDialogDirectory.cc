@@ -27,9 +27,14 @@
 */
 
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <QDir>
+#include <QLineEdit>
+#include <QDebug>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
 void RemembersFileDialogDirectory::setStartingDir(const QString& dir)
 {
@@ -37,17 +42,38 @@ void RemembersFileDialogDirectory::setStartingDir(const QString& dir)
 }
 
 QString RemembersFileDialogDirectory::startingDirectory_(".");
+QString RemembersFileDialogDirectory::lastUsedDirectory_;
 
 QString RemembersFileDialogDirectory::dialogDirectory()
 {
   if (currentDirectory_.isEmpty())
   {
-    currentDirectory_ = startingDirectory_;
+    if (!lastUsedDirectory_.isEmpty())
+    {
+      currentDirectory_ = lastUsedDirectory_;
+    }
+    else
+    {
+      currentDirectory_ = startingDirectory_;
+    }
   }
   return currentDirectory_;
 }
 
 void RemembersFileDialogDirectory::updateRecentFile(const QString& recentFile)
 {
-  currentDirectory_ = QDir(recentFile).absolutePath();
+  lastUsedDirectory_ = currentDirectory_ = QDir(recentFile).absolutePath();
+}
+
+QString RemembersFileDialogDirectory::pullFilename(ModuleStateHandle state, QLineEdit* fileNameLineEdit, std::function<std::string(const std::string&)> filterFromFiletype)
+{
+  auto filenameVar = state->getValue(Variables::Filename);
+  auto file = QString::fromStdString(filenameVar.toString());
+  fileNameLineEdit->setText(file);
+  if (!file.isEmpty())
+    updateRecentFile(QString::fromStdString(filenameVar.toFilename().string()));
+
+  if (filterFromFiletype)
+    return QString::fromStdString(filterFromFiletype(state->getValue(Variables::FileTypeName).toString()));
+  return "";
 }

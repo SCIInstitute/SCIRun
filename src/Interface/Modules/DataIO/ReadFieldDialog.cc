@@ -60,9 +60,8 @@ ReadFieldDialog::ReadFieldDialog(const std::string& name, ModuleStateHandle stat
 
 void ReadFieldDialog::pullSpecial()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
   static FieldIEPluginManager mgr;
-  selectedFilter_ = QString::fromStdString(dialogBoxFilterFromFileTypeDescription(mgr, state_->getValue(Variables::FileTypeName).toString()));
+  selectedFilter_ = pullFilename(state_, fileNameLineEdit_, dialogBoxFilterFromFileTypeDescription(mgr));
 }
 
 void ReadFieldDialog::pushFileNameToState()

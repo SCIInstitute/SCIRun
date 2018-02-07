@@ -29,7 +29,6 @@
 #include <QtGui>
 #include <iostream>
 #include <Interface/Application/ModuleLogWindow.h>
-#include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/DialogErrorControl.h>
 #include <Core/Logging/Log.h>

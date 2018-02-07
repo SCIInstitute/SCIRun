@@ -36,7 +36,6 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/MainWindowCollaborators.h>
-#include <Interface/Application/SCIRunMainWindow.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
 
@@ -541,7 +540,7 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
 {
   auto info = eval(portDataDescriber);
 
-  auto msgBox = new QMessageBox(SCIRunMainWindow::Instance());
+  auto msgBox = new QMessageBox(mainWindowWidget());
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
   msgBox->setStandardButtons(QMessageBox::Ok);
   msgBox->setEscapeButton(QMessageBox::Ok);
