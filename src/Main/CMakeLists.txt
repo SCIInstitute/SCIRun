@@ -104,8 +104,8 @@ ELSEIF(WIN32)
    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME} 
 	POST_BUILD       
     COMMAND ${CMAKE_COMMAND} -E copy_if_different  
-        "${SCI_QWT_LIBRARY_DIR}/${SCI_QWT_LIBRARY}.dll"      
-        ${SCIRun_BINARY_DIR}/$<CONFIGURATION>/)                 # <--this is out-file path
+        "${SCI_QWT_LIBRARY_DIR}/$<CONFIGURATION>/${SCI_QWT_LIBRARY}.dll"      
+        ${SCIRun_BINARY_DIR}/$<CONFIGURATION>/)       
   ENDIF()
 
 ELSE()
