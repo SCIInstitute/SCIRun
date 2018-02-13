@@ -124,13 +124,6 @@ ENDIF()
 MESSAGE(STATUS "Building Mac OS X bundle")
 
 ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
- POST_BUILD
- COMMAND ${CMAKE_COMMAND} -E copy_if_different
-     "${SCI_QWT_LIBRARY_DIR}/lib${SCI_QWT_LIBRARY}.dylib"
-     ${SCIRun_BINARY_DIR}/lib)
-
-
-ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
   POST_BUILD
   # configure Qt libs
   # Note: macdeployqt also processes SCIRun dynamically linked libraries under the lib directory
