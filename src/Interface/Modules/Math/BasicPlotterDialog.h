@@ -46,11 +46,14 @@ namespace SCIRun
       BasicPlotterDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
+      ~BasicPlotterDialog();
     protected:
       virtual void pullSpecial() override;
 
     private:
-      //QtUtils::QtHistogramWidget* histoWidget_;
+      QDialog* plotDialog_ {nullptr};
+    private Q_SLOTS:
+      void showPlot();
     };
   }
 }

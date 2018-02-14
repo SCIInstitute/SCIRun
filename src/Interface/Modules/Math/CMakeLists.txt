@@ -117,9 +117,10 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Math
   Modules_Math
   Modules_Legacy_Math
   Interface_Modules_Base
-
   ${SCI_BOOST_LIBRARY}
-  ${QT_LIBRARIES})
+  ${QT_LIBRARIES}
+  ${SCI_QWT_LIBRARY}
+  )
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Math)
