@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BasicPlotter</class>
+ <widget class="QDialog" name="BasicPlotter">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>316</width>
+    <height>366</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>316</width>
+    <height>366</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Basic Plotter</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>132</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="title">
+      <string>Labels</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="2" column="2">
+       <widget class="QLineEdit" name="lineEdit_2"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>x-axis</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>y-axis</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLineEdit" name="lineEdit"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLineEdit" name="lineEdit_3">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Title</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="title">
+      <string>Axis Lines</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="title">
+         <string>Vertical</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>X = </string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QDoubleSpinBox" name="outputCenterXSpinBox_">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="decimals">
+            <number>5</number>
+           </property>
+           <property name="minimum">
+            <double>-9999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>9999999.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_5">
+        <property name="title">
+         <string>Horizontal</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string>Y =</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QDoubleSpinBox" name="outputSizeYSpinBox_">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="decimals">
+            <number>5</number>
+           </property>
+           <property name="minimum">
+            <double>-9999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>9999999.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton">
+     <property name="text">
+      <string>Show Plot</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>outputCenterXSpinBox_</tabstop>
+  <tabstop>outputSizeYSpinBox_</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+ <slots>
+  <slot>ScaleUpPush()</slot>
+  <slot>ScaleDoubleUpPush()</slot>
+  <slot>ScaleDownPush()</slot>
+  <slot>ScaleDoubleDownPush()</slot>
+ </slots>
+</ui>

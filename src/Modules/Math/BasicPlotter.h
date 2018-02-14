@@ -21,43 +21,34 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#include <Modules/Math/DisplayHistogram.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/MatrixTypeConversions.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#ifndef MODULES_MATH_BASICPLOTTER_H
+#define MODULES_MATH_BASICPLOTTER_H
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
-MODULE_INFO_DEF(DisplayHistogram, Math, SCIRun)
+namespace SCIRun {
+  namespace Modules {
+    namespace Math {
 
-DisplayHistogram::DisplayHistogram() : Module(staticInfo_)
-{
-  INITIALIZE_PORT(InputMatrix);
-}
+      class SCISHARE BasicPlotter : public Dataflow::Networks::Module,
+        public Has1InputPort<MatrixPortTag>,
+        public HasNoOutputPorts
+      {
+      public:
+        BasicPlotter();
+        virtual void setStateDefaults() override;
+        virtual void execute() override;
 
-void DisplayHistogram::execute()
-{
-  auto input_matrix = getRequiredInput(InputMatrix);
+        INPUT_PORT(0, InputMatrix, Matrix);
 
-  if (needToExecute())
-  {
-    if (input_matrix->empty())
-    {
-      THROW_INVALID_ARGUMENT("Empty matrix input.");
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        NEW_HELP_WEBPAGE_ONLY
+      };
+
     }
-    auto dense = castMatrix::toDense(input_matrix);
-    if (!dense)
-    {
-      THROW_INVALID_ARGUMENT("Matrix input must be dense.");
-    }
-    std::vector<double> data;
-    data.reserve(dense->size());
-    for (auto i = 0; i < dense->nrows(); ++i)
-      for (auto j = 0; j < dense->ncols(); ++j)
-        data.push_back((*dense)(i,j));
-    get_state()->setTransientValue(Variables::InputMatrix, data);
   }
-}
+};
+
+
+#endif

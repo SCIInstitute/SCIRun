@@ -21,7 +21,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#include <Modules/Math/DisplayHistogram.h>
+#include <Modules/Math/BasicPlotter.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -31,14 +31,19 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
-MODULE_INFO_DEF(DisplayHistogram, Math, SCIRun)
+MODULE_INFO_DEF(BasicPlotter, Math, SCIRun)
 
-DisplayHistogram::DisplayHistogram() : Module(staticInfo_)
+BasicPlotter::BasicPlotter() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
 }
 
-void DisplayHistogram::execute()
+void BasicPlotter::setStateDefaults()
+{
+
+}
+
+void BasicPlotter::execute()
 {
   auto input_matrix = getRequiredInput(InputMatrix);
 
@@ -53,11 +58,6 @@ void DisplayHistogram::execute()
     {
       THROW_INVALID_ARGUMENT("Matrix input must be dense.");
     }
-    std::vector<double> data;
-    data.reserve(dense->size());
-    for (auto i = 0; i < dense->nrows(); ++i)
-      for (auto j = 0; j < dense->ncols(); ++j)
-        data.push_back((*dense)(i,j));
-    get_state()->setTransientValue(Variables::InputMatrix, data);
+    get_state()->setTransientValue(Variables::InputMatrix, dense);
   }
 }

@@ -48,6 +48,7 @@ SET(Interface_Modules_Math_FORMS
   SetSubmatrix.ui
   BooleanCompareDialog.ui
   DisplayHistogram.ui
+  BasicPlotter.ui
 )
 
 SET(Interface_Modules_Math_HEADERS
@@ -73,6 +74,7 @@ SET(Interface_Modules_Math_HEADERS
   SolveComplexLinearSystemDialog.h
   BooleanCompareDialog.h
   DisplayHistogramDialog.h
+  BasicPlotterDialog.h
 )
 
 SET(Interface_Modules_Math_SOURCES
@@ -97,6 +99,7 @@ SET(Interface_Modules_Math_SOURCES
   SolveComplexLinearSystemDialog.cc
   BooleanCompareDialog.cc
   DisplayHistogramDialog.cc
+  BasicPlotterDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS ${Interface_Modules_Math_FORMS})
