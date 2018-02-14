@@ -28,6 +28,19 @@
 #include <Modules/Math/share.h>
 
 namespace SCIRun {
+
+  namespace Core {
+    namespace Algorithms {
+      namespace Math {
+        ALGORITHM_PARAMETER_DECL(PlotTitle);
+        ALGORITHM_PARAMETER_DECL(XAxisLabel);
+        ALGORITHM_PARAMETER_DECL(YAxisLabel);
+        ALGORITHM_PARAMETER_DECL(VerticalAxisVisible);
+        ALGORITHM_PARAMETER_DECL(HorizontalAxisVisible);
+        ALGORITHM_PARAMETER_DECL(VerticalAxisPosition);
+        ALGORITHM_PARAMETER_DECL(HorizontalAxisPosition);
+      }}}
+
   namespace Modules {
     namespace Math {
 

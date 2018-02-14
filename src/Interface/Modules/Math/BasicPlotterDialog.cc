@@ -37,9 +37,8 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
-//using namespace SCIRun::Core::Math;
-//using namespace SCIRun::QtUtils;
 
 BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent/* = 0*/)
@@ -49,10 +48,13 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
 	setWindowTitle(QString::fromStdString(name));
 	fixSize();
 
-  // auto layout = new QVBoxLayout;
-  // histoWidget_ = new QtHistogramWidget(this);
-  // layout->addWidget(histoWidget_);
-  // groupBox->setLayout(layout);
+	addDoubleSpinBoxManager(verticalAxisSpinBox_, Parameters::VerticalAxisPosition);
+  addDoubleSpinBoxManager(horizontalAxisSpinBox_, Parameters::HorizontalAxisPosition);
+	//addCheckBoxManager(verticalAxisGroupBox_, Parameters::VerticalAxisVisible);
+  //addCheckBoxManager(horizontalAxisGroupBox_, Parameters::HorizontalAxisVisible);
+	addLineEditManager(titleLineEdit_, Parameters::PlotTitle);
+	addLineEditManager(xAxisLineEdit_, Parameters::XAxisLabel);
+	addLineEditManager(yAxisLineEdit_, Parameters::YAxisLabel);
 }
 
 void BasicPlotterDialog::pullSpecial()

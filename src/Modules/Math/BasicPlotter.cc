@@ -30,8 +30,17 @@ using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Math;
 
 MODULE_INFO_DEF(BasicPlotter, Math, SCIRun)
+
+ALGORITHM_PARAMETER_DEF(Math, PlotTitle);
+ALGORITHM_PARAMETER_DEF(Math, XAxisLabel);
+ALGORITHM_PARAMETER_DEF(Math, YAxisLabel);
+ALGORITHM_PARAMETER_DEF(Math, VerticalAxisVisible);
+ALGORITHM_PARAMETER_DEF(Math, HorizontalAxisVisible);
+ALGORITHM_PARAMETER_DEF(Math, VerticalAxisPosition);
+ALGORITHM_PARAMETER_DEF(Math, HorizontalAxisPosition);
 
 BasicPlotter::BasicPlotter() : Module(staticInfo_)
 {
@@ -40,7 +49,14 @@ BasicPlotter::BasicPlotter() : Module(staticInfo_)
 
 void BasicPlotter::setStateDefaults()
 {
-
+  auto state = get_state();
+  state->setValue(Parameters::PlotTitle, std::string("Plot title"));
+  state->setValue(Parameters::XAxisLabel, std::string("x axis"));
+  state->setValue(Parameters::YAxisLabel, std::string("y axis"));
+  state->setValue(Parameters::VerticalAxisVisible, true);
+  state->setValue(Parameters::HorizontalAxisVisible, true);
+  state->setValue(Parameters::VerticalAxisPosition, 0.0);
+  state->setValue(Parameters::HorizontalAxisPosition, 0.0);
 }
 
 void BasicPlotter::execute()

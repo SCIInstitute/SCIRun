@@ -23,7 +23,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="minimumSize">
       <size>
@@ -42,7 +42,11 @@
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="2" column="2">
-       <widget class="QLineEdit" name="lineEdit_2"/>
+       <widget class="QLineEdit" name="yAxisLineEdit_">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_2">
@@ -71,12 +75,16 @@
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QLineEdit" name="lineEdit"/>
+       <widget class="QLineEdit" name="xAxisLineEdit_">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QLineEdit" name="lineEdit_3">
+       <widget class="QLineEdit" name="titleLineEdit_">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -112,7 +120,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QGroupBox" name="groupBox_4">
+       <widget class="QGroupBox" name="verticalAxisGroupBox_">
         <property name="title">
          <string>Vertical</string>
         </property>
@@ -131,7 +139,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QDoubleSpinBox" name="outputCenterXSpinBox_">
+          <widget class="QDoubleSpinBox" name="verticalAxisSpinBox_">
            <property name="enabled">
             <bool>true</bool>
            </property>
@@ -156,7 +164,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QGroupBox" name="groupBox_5">
+       <widget class="QGroupBox" name="horizontalAxisGroupBox_">
         <property name="title">
          <string>Horizontal</string>
         </property>
@@ -175,7 +183,7 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QDoubleSpinBox" name="outputSizeYSpinBox_">
+          <widget class="QDoubleSpinBox" name="horizontalAxisSpinBox_">
            <property name="font">
             <font>
              <weight>50</weight>
@@ -200,7 +208,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="showPlotPushButton_">
      <property name="text">
       <string>Show Plot</string>
      </property>
@@ -209,8 +217,8 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>outputCenterXSpinBox_</tabstop>
-  <tabstop>outputSizeYSpinBox_</tabstop>
+  <tabstop>verticalAxisSpinBox_</tabstop>
+  <tabstop>horizontalAxisSpinBox_</tabstop>
  </tabstops>
  <resources/>
  <connections/>
