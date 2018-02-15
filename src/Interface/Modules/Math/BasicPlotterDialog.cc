@@ -35,6 +35,7 @@
 #include <qwt_plot_marker.h>
 #include <qwt_plot_curve.h>
 #include <qwt_legend.h>
+#include <qwt_legend_label.h>
 #include <qwt_point_data.h>
 #include <qwt_plot_canvas.h>
 #include <qwt_plot_panner.h>
@@ -121,7 +122,10 @@ Plot::Plot(QWidget *parent) : QwtPlot( parent )
 {
   setAutoFillBackground( true );
 
-  insertLegend( new QwtLegend(), QwtPlot::RightLegend );
+	auto legend = new QwtLegend();
+	legend->setDefaultItemMode(QwtLegendData::Checkable);
+  insertLegend(legend, QwtPlot::RightLegend);
+	connect(legend, SIGNAL(checked(const QVariant&, bool, int)), SLOT(showItem(const QVariant&, bool)));
 
   auto canvas = new QwtPlotCanvas(this);
   canvas->setLineWidth( 1 );
@@ -135,6 +139,17 @@ Plot::Plot(QWidget *parent) : QwtPlot( parent )
 
   // zoom in/out with the wheel
   ( void ) new QwtPlotMagnifier( canvas );
+
+	setAutoReplot(true);
+}
+
+void Plot::showItem(const QVariant& itemInfo, bool on)
+{
+  auto plotItem = infoToItem(itemInfo);
+  if (plotItem)
+	{
+    plotItem->setVisible(on);
+	}
 }
 
 void Plot::makeVerticalAxis(bool show, double position)
@@ -205,8 +220,18 @@ void Plot::makeCurve(DenseMatrixHandle data, const QString& title, const QColor&
   curve_->setTitle(title);
   curve_->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 	curve_->setLegendAttribute( QwtPlotCurve::LegendShowLine, true );
+	curve_->setLegendAttribute( QwtPlotCurve::LegendShowLine, true );
   curve_->attach(this);
   curve_->setSamples( points );
+
+	auto items = itemList( QwtPlotItem::Rtti_PlotCurve );
+	for ( int i = 0; i < items.size(); i++ )
+	{
+		const QVariant itemInfo = itemToInfo( items[i] );
+		auto legendLabel = qobject_cast<QwtLegendLabel*>(qobject_cast<QwtLegend*>(legend())->legendWidget(itemInfo));
+		if (legendLabel)
+			legendLabel->setChecked( true );
+	}
 }
 
 void BasicPlotterDialog::assignDataColor()

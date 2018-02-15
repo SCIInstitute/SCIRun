@@ -65,11 +65,14 @@ namespace SCIRun
 
     class Plot : public QwtPlot
     {
+      Q_OBJECT 
     public:
       explicit Plot( QWidget *parent = nullptr );
       void makeVerticalAxis(bool show, double position);
       void makeHorizontalAxis(bool show, double position);
       void makeCurve(Core::Datatypes::DenseMatrixHandle data, const QString& title, const QColor& color);
+    private Q_SLOTS:
+      void showItem(const QVariant&, bool on);
     private:
       QwtPlotMarker* verticalAxis_ {nullptr};
       QwtPlotMarker* horizontalAxis_ {nullptr};
