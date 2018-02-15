@@ -43,6 +43,7 @@
 #include <qwt_text.h>
 #include <qwt_symbol.h>
 #include <qwt_math.h>
+#include <qwt_plot_renderer.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -69,6 +70,7 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
 	addLineEditManager(yAxisLineEdit_, Parameters::YAxisLabel);
 
 	connect(showPlotPushButton_, SIGNAL(clicked()), this, SLOT(showPlot()));
+	connect(exportPlotPushButton_, SIGNAL(clicked()), this, SLOT(exportPlot()));
 	connect(dataColorPushButton_, SIGNAL(clicked()), this, SLOT(assignDataColor()));
 
 	dataColors_.push_back(Qt::red);
@@ -242,4 +244,10 @@ void BasicPlotterDialog::assignDataColor()
 		dataColors_[0] = newColor;
 		updatePlot();
   }
+}
+
+void BasicPlotterDialog::exportPlot()
+{
+	QwtPlotRenderer renderer;
+	renderer.exportTo(plot_, "scirunplot.pdf");
 }

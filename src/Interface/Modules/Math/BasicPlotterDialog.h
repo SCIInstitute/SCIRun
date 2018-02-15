@@ -56,6 +56,7 @@ namespace SCIRun
     private Q_SLOTS:
       void showPlot();
       void updatePlot();
+      void exportPlot();
       void assignDataColor();
     private:
       QDialog* plotDialog_ {nullptr};
@@ -65,7 +66,7 @@ namespace SCIRun
 
     class Plot : public QwtPlot
     {
-      Q_OBJECT 
+      Q_OBJECT
     public:
       explicit Plot( QWidget *parent = nullptr );
       void makeVerticalAxis(bool show, double position);

@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>316</width>
-    <height>543</height>
+    <height>567</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>316</width>
-    <height>543</height>
+    <height>567</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -260,6 +260,13 @@
     <widget class="QPushButton" name="showPlotPushButton_">
      <property name="text">
       <string>Show/Update Plot</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="exportPlotPushButton_">
+     <property name="text">
+      <string>Export Plot</string>
      </property>
     </widget>
    </item>
