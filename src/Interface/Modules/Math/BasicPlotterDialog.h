@@ -53,13 +53,14 @@ namespace SCIRun
       ~BasicPlotterDialog();
     protected:
       virtual void pullSpecial() override;
-
-    private:
-      QDialog* plotDialog_ {nullptr};
-      class Plot* plot_{nullptr};
     private Q_SLOTS:
       void showPlot();
       void updatePlot();
+      void assignDataColor();
+    private:
+      QDialog* plotDialog_ {nullptr};
+      class Plot* plot_{nullptr};
+      std::vector<QColor> dataColors_;
     };
 
     class Plot : public QwtPlot
@@ -68,7 +69,7 @@ namespace SCIRun
       explicit Plot( QWidget *parent = nullptr );
       void makeVerticalAxis(bool show, double position);
       void makeHorizontalAxis(bool show, double position);
-      void makeCurve(Core::Datatypes::DenseMatrixHandle data, const QString& title);
+      void makeCurve(Core::Datatypes::DenseMatrixHandle data, const QString& title, const QColor& color);
     private:
       QwtPlotMarker* verticalAxis_ {nullptr};
       QwtPlotMarker* horizontalAxis_ {nullptr};

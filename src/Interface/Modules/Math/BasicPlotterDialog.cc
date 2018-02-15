@@ -68,6 +68,9 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
 	addLineEditManager(yAxisLineEdit_, Parameters::YAxisLabel);
 
 	connect(showPlotPushButton_, SIGNAL(clicked()), this, SLOT(showPlot()));
+	connect(dataColorPushButton_, SIGNAL(clicked()), this, SLOT(assignDataColor()));
+
+	dataColors_.push_back(Qt::red);
 }
 
 BasicPlotterDialog::~BasicPlotterDialog()
@@ -82,7 +85,6 @@ void BasicPlotterDialog::pullSpecial()
 	if (plotDialog_ && plotDialog_->isVisible())
 		updatePlot();
 }
-
 
 void BasicPlotterDialog::showPlot()
 {
@@ -111,7 +113,7 @@ void BasicPlotterDialog::updatePlot()
 	plot_->makeVerticalAxis(verticalAxisGroupBox_->isChecked(), verticalAxisSpinBox_->value());
 	auto data = transient_value_cast<DenseMatrixHandle>(state_->getTransientValue(Variables::InputMatrix));
 	if (data)
-		plot_->makeCurve(data, dataLineEdit_->text());
+		plot_->makeCurve(data, dataLineEdit_->text(), dataColors_[0]);
 	plot_->replot();
 }
 
@@ -175,7 +177,7 @@ void Plot::makeHorizontalAxis(bool show, double position)
 	}
 }
 
-void Plot::makeCurve(DenseMatrixHandle data, const QString& title)
+void Plot::makeCurve(DenseMatrixHandle data, const QString& title, const QColor& color)
 {
 	if (curve_)
 	{
@@ -199,10 +201,20 @@ void Plot::makeCurve(DenseMatrixHandle data, const QString& title)
   }
 
   curve_ = new QwtPlotCurve();
-  curve_->setPen( Qt::red, 2 ),
+  curve_->setPen(color, 2),
   curve_->setTitle(title);
   curve_->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 	curve_->setLegendAttribute( QwtPlotCurve::LegendShowLine, true );
   curve_->attach(this);
   curve_->setSamples( points );
+}
+
+void BasicPlotterDialog::assignDataColor()
+{
+  auto newColor = QColorDialog::getColor(dataColors_[0], this, "Choose data color");
+  if (newColor.isValid())
+  {
+		dataColors_[0] = newColor;
+		updatePlot();
+  }
 }
