@@ -35,6 +35,7 @@
 #include <Interface/Modules/Math/share.h>
 
 class QwtPlotMarker;
+class QwtPlotCurve;
 
 namespace SCIRun
 {
@@ -67,10 +68,11 @@ namespace SCIRun
       explicit Plot( QWidget *parent = nullptr );
       void makeVerticalAxis(bool show, double position);
       void makeHorizontalAxis(bool show, double position);
+      void makeCurve(Core::Datatypes::DenseMatrixHandle data, const QString& title);
     private:
-      void populate();
       QwtPlotMarker* verticalAxis_ {nullptr};
       QwtPlotMarker* horizontalAxis_ {nullptr};
+      QwtPlotCurve* curve_ {nullptr};
     };
   }
 }

@@ -78,8 +78,9 @@ BasicPlotterDialog::~BasicPlotterDialog()
 void BasicPlotterDialog::pullSpecial()
 {
   auto data = transient_value_cast<DenseMatrixHandle>(state_->getTransientValue(Variables::InputMatrix));
-	if (data)
-		qDebug() << "received data matrix of size" << data->nrows() << "by" << data->ncols();
+
+	if (plotDialog_ && plotDialog_->isVisible())
+		updatePlot();
 }
 
 
@@ -108,36 +109,18 @@ void BasicPlotterDialog::updatePlot()
 	plot_->setAxisTitle(QwtPlot::yLeft, yAxisLineEdit_->text());
 	plot_->makeHorizontalAxis(horizontalAxisGroupBox_->isChecked(), horizontalAxisSpinBox_->value());
 	plot_->makeVerticalAxis(verticalAxisGroupBox_->isChecked(), verticalAxisSpinBox_->value());
+	auto data = transient_value_cast<DenseMatrixHandle>(state_->getTransientValue(Variables::InputMatrix));
+	if (data)
+		plot_->makeCurve(data, dataLineEdit_->text());
 	plot_->replot();
 }
-
-class FunctionData: public QwtSyntheticPointData
-{
-public:
-    FunctionData( double( *y )( double ) ):
-        QwtSyntheticPointData( 100 ),
-        d_y( y )
-    {
-    }
-
-    virtual double y( double x ) const
-    {
-        return d_y( x );
-    }
-
-private:
-    double( *d_y )( double );
-};
 
 Plot::Plot(QWidget *parent) : QwtPlot( parent )
 {
   setAutoFillBackground( true );
 
   insertLegend( new QwtLegend(), QwtPlot::RightLegend );
-  setAxisScale( xBottom, 0.0, 10.0 );
-  setAxisScale( yLeft, -1.0, 1.0 );
 
-  // canvas
   auto canvas = new QwtPlotCanvas(this);
   canvas->setLineWidth( 1 );
   canvas->setFrameStyle( QFrame::Box | QFrame::Plain );
@@ -150,28 +133,6 @@ Plot::Plot(QWidget *parent) : QwtPlot( parent )
 
   // zoom in/out with the wheel
   ( void ) new QwtPlotMagnifier( canvas );
-
-  populate();
-}
-
-void Plot::populate()
-{
-    // Insert new curves
-    QwtPlotCurve *cSin = new QwtPlotCurve( "y = sin(x)" );
-    cSin->setRenderHint( QwtPlotItem::RenderAntialiased );
-    cSin->setLegendAttribute( QwtPlotCurve::LegendShowLine, true );
-    cSin->setPen( Qt::red );
-    cSin->attach( this );
-
-    QwtPlotCurve *cCos = new QwtPlotCurve( "y = cos(x)" );
-    cCos->setRenderHint( QwtPlotItem::RenderAntialiased );
-    cCos->setLegendAttribute( QwtPlotCurve::LegendShowLine, true );
-    cCos->setPen( Qt::blue );
-    cCos->attach( this );
-
-    // Create sin and cos data
-    cSin->setData( new FunctionData( ::sin ) );
-    cCos->setData( new FunctionData( ::cos ) );
 }
 
 void Plot::makeVerticalAxis(bool show, double position)
@@ -212,4 +173,36 @@ void Plot::makeHorizontalAxis(bool show, double position)
 		if (horizontalAxis_)
 			horizontalAxis_->detach();
 	}
+}
+
+void Plot::makeCurve(DenseMatrixHandle data, const QString& title)
+{
+	if (curve_)
+	{
+		curve_->detach();
+		delete curve_;
+	}
+
+  auto x = data->col(0);
+  auto y = data->col(1);
+  double maxX = x.maxCoeff();
+  double maxY = y.maxCoeff();
+  double minX = x.minCoeff();
+  double minY = y.minCoeff();
+	setAxisScale( xBottom, minX, maxX );
+  setAxisScale( yLeft, minY, maxY );
+
+	QPolygonF points;
+  for (int i = 0; i < data->nrows(); ++i)
+  {
+    points << QPointF(x(i), y(i));
+  }
+
+  curve_ = new QwtPlotCurve();
+  curve_->setPen( Qt::red, 2 ),
+  curve_->setTitle(title);
+  curve_->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+	curve_->setLegendAttribute( QwtPlotCurve::LegendShowLine, true );
+  curve_->attach(this);
+  curve_->setSamples( points );
 }
