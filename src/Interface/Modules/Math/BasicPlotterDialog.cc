@@ -27,13 +27,11 @@
 */
 
 #include <Interface/Modules/Math/BasicPlotterDialog.h>
-//#include <Interface/Modules/Base/CustomWidgets/QtHistogramWidget.h>
 #include <Modules/Math/BasicPlotter.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <QtGui>
 
-#include <qwt_plot.h>
 #include <qwt_plot_marker.h>
 #include <qwt_plot_curve.h>
 #include <qwt_legend.h>
@@ -65,6 +63,7 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
 	//addCheckBoxManager(verticalAxisGroupBox_, Parameters::VerticalAxisVisible);
   //addCheckBoxManager(horizontalAxisGroupBox_, Parameters::HorizontalAxisVisible);
 	addLineEditManager(titleLineEdit_, Parameters::PlotTitle);
+	addLineEditManager(dataLineEdit_, Parameters::DataTitle);
 	addLineEditManager(xAxisLineEdit_, Parameters::XAxisLabel);
 	addLineEditManager(yAxisLineEdit_, Parameters::YAxisLabel);
 
@@ -83,13 +82,6 @@ void BasicPlotterDialog::pullSpecial()
 		qDebug() << "received data matrix of size" << data->nrows() << "by" << data->ncols();
 }
 
-class Plot : public QwtPlot
-{
-public:
-  explicit Plot( QWidget *parent = nullptr );
-private:
-  void populate();
-};
 
 void BasicPlotterDialog::showPlot()
 {
@@ -99,13 +91,24 @@ void BasicPlotterDialog::showPlot()
 		plotDialog_->setStyleSheet(styleSheet());
 		auto layout = new QHBoxLayout( plotDialog_ );
 		layout->setContentsMargins( 5, 5, 5, 5 );
-		auto plot = new Plot(this);
-		layout->addWidget( plot );
+		plot_ = new Plot(this);
+		layout->addWidget( plot_ );
 		plotDialog_->resize( 600, 400 );
 	}
 
+	updatePlot();
 	plotDialog_->show();
 	plotDialog_->raise();
+}
+
+void BasicPlotterDialog::updatePlot()
+{
+	plot_->setTitle(titleLineEdit_->text());
+	plot_->setAxisTitle(QwtPlot::xBottom, xAxisLineEdit_->text());
+	plot_->setAxisTitle(QwtPlot::yLeft, yAxisLineEdit_->text());
+	plot_->makeHorizontalAxis(horizontalAxisGroupBox_->isChecked(), horizontalAxisSpinBox_->value());
+	plot_->makeVerticalAxis(verticalAxisGroupBox_->isChecked(), verticalAxisSpinBox_->value());
+	plot_->replot();
 }
 
 class FunctionData: public QwtSyntheticPointData
@@ -126,40 +129,29 @@ private:
     double( *d_y )( double );
 };
 
-Plot::Plot( QWidget *parent ):
-    QwtPlot( parent )
+Plot::Plot(QWidget *parent) : QwtPlot( parent )
 {
-    setAutoFillBackground( true );
+  setAutoFillBackground( true );
 
-    setTitle( "A Simple QwtPlot Demonstration" );
-    insertLegend( new QwtLegend(), QwtPlot::RightLegend );
+  insertLegend( new QwtLegend(), QwtPlot::RightLegend );
+  setAxisScale( xBottom, 0.0, 10.0 );
+  setAxisScale( yLeft, -1.0, 1.0 );
 
-    // axes
-    setAxisTitle( xBottom, "x -->" );
-    setAxisScale( xBottom, 0.0, 10.0 );
+  // canvas
+  auto canvas = new QwtPlotCanvas(this);
+  canvas->setLineWidth( 1 );
+  canvas->setFrameStyle( QFrame::Box | QFrame::Plain );
+  canvas->setBorderRadius( 15 );
 
-    setAxisTitle( yLeft, "y -->" );
-    setAxisScale( yLeft, -1.0, 1.0 );
+  setCanvas( canvas );
 
-    // canvas
-    QwtPlotCanvas *canvas = new QwtPlotCanvas(this);
-    canvas->setLineWidth( 1 );
-    canvas->setFrameStyle( QFrame::Box | QFrame::Plain );
-    canvas->setBorderRadius( 15 );
+  // panning with the left mouse button
+  ( void ) new QwtPlotPanner( canvas );
 
-    //QPalette canvasPalette( Qt::white );
-    //canvasPalette.setColor( QPalette::Foreground, QColor( 133, 190, 232 ) );
-    //canvas->setPalette( canvasPalette );
+  // zoom in/out with the wheel
+  ( void ) new QwtPlotMagnifier( canvas );
 
-    setCanvas( canvas );
-
-    // panning with the left mouse button
-    ( void ) new QwtPlotPanner( canvas );
-
-    // zoom in/out with the wheel
-    ( void ) new QwtPlotMagnifier( canvas );
-
-    populate();
+  populate();
 }
 
 void Plot::populate()
@@ -180,24 +172,44 @@ void Plot::populate()
     // Create sin and cos data
     cSin->setData( new FunctionData( ::sin ) );
     cCos->setData( new FunctionData( ::cos ) );
+}
 
-    // Insert markers
+void Plot::makeVerticalAxis(bool show, double position)
+{
+	if (show)
+	{
+		delete verticalAxis_;
+		verticalAxis_ = new QwtPlotMarker();
+		verticalAxis_->setLabel("x = " + QString::number(position));
+		verticalAxis_->setLabelAlignment( Qt::AlignLeft | Qt::AlignBottom );
+		verticalAxis_->setLabelOrientation( Qt::Vertical );
+		verticalAxis_->setLineStyle( QwtPlotMarker::VLine );
+		verticalAxis_->setLinePen( Qt::black, 0, Qt::DashDotLine );
+		verticalAxis_->setXValue( position );
+		verticalAxis_->attach( this );
+	}
+	else
+	{
+		if (verticalAxis_)
+			verticalAxis_->detach();
+	}
+}
 
-    //  ...a horizontal line at y = 0...
-    QwtPlotMarker *mY = new QwtPlotMarker();
-    mY->setLabel( QString::fromLatin1( "y = 0" ) );
-    mY->setLabelAlignment( Qt::AlignRight | Qt::AlignTop );
-    mY->setLineStyle( QwtPlotMarker::HLine );
-    mY->setYValue( 0.0 );
-    mY->attach( this );
-
-    //  ...a vertical line at x = 2 * pi
-    QwtPlotMarker *mX = new QwtPlotMarker();
-    mX->setLabel( QString::fromLatin1( "x = 2 pi" ) );
-    mX->setLabelAlignment( Qt::AlignLeft | Qt::AlignBottom );
-    mX->setLabelOrientation( Qt::Vertical );
-    mX->setLineStyle( QwtPlotMarker::VLine );
-    mX->setLinePen( Qt::black, 0, Qt::DashDotLine );
-    mX->setXValue( 2.0 * M_PI );
-    mX->attach( this );
+void Plot::makeHorizontalAxis(bool show, double position)
+{
+	if (show)
+	{
+		delete horizontalAxis_;
+		horizontalAxis_ = new QwtPlotMarker();
+		horizontalAxis_->setLabel("y = " + QString::number(position));
+		horizontalAxis_->setLabelAlignment( Qt::AlignRight | Qt::AlignTop );
+		horizontalAxis_->setLineStyle( QwtPlotMarker::HLine );
+		horizontalAxis_->setYValue( position );
+		horizontalAxis_->attach( this );
+	}
+	else
+	{
+		if (horizontalAxis_)
+			horizontalAxis_->detach();
+	}
 }

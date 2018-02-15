@@ -31,7 +31,10 @@
 
 #include "Interface/Modules/Math/ui_BasicPlotter.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <qwt_plot.h>
 #include <Interface/Modules/Math/share.h>
+
+class QwtPlotMarker;
 
 namespace SCIRun
 {
@@ -52,8 +55,22 @@ namespace SCIRun
 
     private:
       QDialog* plotDialog_ {nullptr};
+      class Plot* plot_{nullptr};
     private Q_SLOTS:
       void showPlot();
+      void updatePlot();
+    };
+
+    class Plot : public QwtPlot
+    {
+    public:
+      explicit Plot( QWidget *parent = nullptr );
+      void makeVerticalAxis(bool show, double position);
+      void makeHorizontalAxis(bool show, double position);
+    private:
+      void populate();
+      QwtPlotMarker* verticalAxis_ {nullptr};
+      QwtPlotMarker* horizontalAxis_ {nullptr};
     };
   }
 }

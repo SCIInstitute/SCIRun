@@ -33,6 +33,7 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Math {
         ALGORITHM_PARAMETER_DECL(PlotTitle);
+        ALGORITHM_PARAMETER_DECL(DataTitle);
         ALGORITHM_PARAMETER_DECL(XAxisLabel);
         ALGORITHM_PARAMETER_DECL(YAxisLabel);
         ALGORITHM_PARAMETER_DECL(VerticalAxisVisible);

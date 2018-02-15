@@ -35,6 +35,7 @@ using namespace SCIRun::Core::Algorithms::Math;
 MODULE_INFO_DEF(BasicPlotter, Math, SCIRun)
 
 ALGORITHM_PARAMETER_DEF(Math, PlotTitle);
+ALGORITHM_PARAMETER_DEF(Math, DataTitle);
 ALGORITHM_PARAMETER_DEF(Math, XAxisLabel);
 ALGORITHM_PARAMETER_DEF(Math, YAxisLabel);
 ALGORITHM_PARAMETER_DEF(Math, VerticalAxisVisible);
@@ -51,6 +52,7 @@ void BasicPlotter::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(Parameters::PlotTitle, std::string("Plot title"));
+  state->setValue(Parameters::DataTitle, std::string("Data title"));
   state->setValue(Parameters::XAxisLabel, std::string("x axis"));
   state->setValue(Parameters::YAxisLabel, std::string("y axis"));
   state->setValue(Parameters::VerticalAxisVisible, true);
