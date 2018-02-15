@@ -46,7 +46,7 @@ namespace SCIRun {
     namespace Math {
 
       class SCISHARE BasicPlotter : public Dataflow::Networks::Module,
-        public Has1InputPort<MatrixPortTag>,
+        public Has3InputPorts<MatrixPortTag, DynamicPortTag<MatrixPortTag>, DynamicPortTag<MatrixPortTag>>,
         public HasNoOutputPorts
       {
       public:
@@ -54,10 +54,13 @@ namespace SCIRun {
         virtual void setStateDefaults() override;
         virtual void execute() override;
 
-        INPUT_PORT(0, InputMatrix, Matrix);
+        INPUT_PORT(0, InputMatrix, DenseMatrix);
+        INPUT_PORT_DYNAMIC(1, IndependentVariable, DenseMatrix);
+        INPUT_PORT_DYNAMIC(2, DependentVariables, DenseMatrix);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
         NEW_HELP_WEBPAGE_ONLY
+        HAS_DYNAMIC_PORTS
       };
 
     }

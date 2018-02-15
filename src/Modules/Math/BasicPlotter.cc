@@ -46,6 +46,8 @@ ALGORITHM_PARAMETER_DEF(Math, HorizontalAxisPosition);
 BasicPlotter::BasicPlotter() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(IndependentVariable);
+  INITIALIZE_PORT(DependentVariables);
 }
 
 void BasicPlotter::setStateDefaults()
@@ -71,11 +73,6 @@ void BasicPlotter::execute()
     {
       THROW_INVALID_ARGUMENT("Empty matrix input.");
     }
-    auto dense = castMatrix::toDense(input_matrix);
-    if (!dense)
-    {
-      THROW_INVALID_ARGUMENT("Matrix input must be dense.");
-    }
-    get_state()->setTransientValue(Variables::InputMatrix, dense);
+    get_state()->setTransientValue(Variables::InputMatrix, input_matrix);
   }
 }
