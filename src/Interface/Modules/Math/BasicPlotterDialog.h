@@ -71,13 +71,16 @@ namespace SCIRun
       explicit Plot( QWidget *parent = nullptr );
       void makeVerticalAxis(bool show, double position);
       void makeHorizontalAxis(bool show, double position);
-      void makeCurve(Core::Datatypes::DenseMatrixHandle data, const QString& title, const QColor& color);
+      void addCurve(Core::Datatypes::DenseMatrixHandle data, const QString& title, const QColor& color);
+      template <typename Column>
+      void addCurve(const Column& x, const Column& y, const QString& title, const QColor& color);
+      void clearCurves();
     private Q_SLOTS:
       void showItem(const QVariant&, bool on);
     private:
       QwtPlotMarker* verticalAxis_ {nullptr};
       QwtPlotMarker* horizontalAxis_ {nullptr};
-      QwtPlotCurve* curve_ {nullptr};
+      std::vector<QwtPlotCurve*> curves_;
     };
   }
 }

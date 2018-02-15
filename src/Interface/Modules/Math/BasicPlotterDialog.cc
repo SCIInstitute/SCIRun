@@ -44,6 +44,9 @@
 #include <qwt_symbol.h>
 #include <qwt_math.h>
 #include <qwt_plot_renderer.h>
+#ifndef Q_MOC_RUN
+#include <Core/Utils/StringUtil.h>
+#endif
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -116,7 +119,25 @@ void BasicPlotterDialog::updatePlot()
 	plot_->makeVerticalAxis(verticalAxisGroupBox_->isChecked(), verticalAxisSpinBox_->value());
 	auto data = transient_value_cast<DenseMatrixHandle>(state_->getTransientValue(Variables::InputMatrix));
 	if (data)
-		plot_->makeCurve(data, dataLineEdit_->text(), dataColors_[0]);
+	{
+		plot_->clearCurves();
+		plot_->addCurve(data, dataLineEdit_->text(), dataColors_[0]);
+	}
+	else
+	{
+		auto independents = transient_value_cast<std::vector<DenseMatrixHandle>>(state_->getTransientValue(Parameters::IndependentVariablesVector));
+		auto dependents = transient_value_cast<std::vector<DenseMatrixHandle>>(state_->getTransientValue(Parameters::DependentVariablesVector));
+		//qDebug() << "dynamic version:" << independents.size() << dependents.size();
+		plot_->clearCurves();
+		for (auto&& tup : zip(independents, dependents))
+		{
+			DenseMatrixHandle x, y;
+			boost::tie(x, y) = tup;
+			//qDebug() << "\tx size:" << x->nrows() << x->ncols() << "y size:" << y->nrows() << y->ncols();
+			for (int c = 0; c < y->ncols(); ++c)
+				plot_->addCurve(x->col(0), y->col(c), "data " + QString::number(c), "red");
+		}
+	}
 	plot_->replot();
 }
 
@@ -194,16 +215,9 @@ void Plot::makeHorizontalAxis(bool show, double position)
 	}
 }
 
-void Plot::makeCurve(DenseMatrixHandle data, const QString& title, const QColor& color)
+template <typename Column>
+void Plot::addCurve(const Column& x, const Column& y, const QString& title, const QColor& color)
 {
-	if (curve_)
-	{
-		curve_->detach();
-		delete curve_;
-	}
-
-  auto x = data->col(0);
-  auto y = data->col(1);
   double maxX = x.maxCoeff();
   double maxY = y.maxCoeff();
   double minX = x.minCoeff();
@@ -212,19 +226,20 @@ void Plot::makeCurve(DenseMatrixHandle data, const QString& title, const QColor&
   setAxisScale( yLeft, minY, maxY );
 
 	QPolygonF points;
-  for (int i = 0; i < data->nrows(); ++i)
+  for (int i = 0; i < x.size(); ++i)
   {
     points << QPointF(x(i), y(i));
   }
 
-  curve_ = new QwtPlotCurve();
-  curve_->setPen(color, 2),
-  curve_->setTitle(title);
-  curve_->setRenderHint( QwtPlotItem::RenderAntialiased, true );
-	curve_->setLegendAttribute( QwtPlotCurve::LegendShowLine, true );
-	curve_->setLegendAttribute( QwtPlotCurve::LegendShowLine, true );
-  curve_->attach(this);
-  curve_->setSamples( points );
+	auto curve = new QwtPlotCurve();
+	curves_.push_back(curve);
+  curve->setPen(color, 2),
+  curve->setTitle(title);
+  curve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
+	curve->setLegendAttribute( QwtPlotCurve::LegendShowLine, true );
+	curve->setLegendAttribute( QwtPlotCurve::LegendShowLine, true );
+  curve->attach(this);
+  curve->setSamples( points );
 
 	auto items = itemList( QwtPlotItem::Rtti_PlotCurve );
 	for ( int i = 0; i < items.size(); i++ )
@@ -234,6 +249,21 @@ void Plot::makeCurve(DenseMatrixHandle data, const QString& title, const QColor&
 		if (legendLabel)
 			legendLabel->setChecked( true );
 	}
+}
+
+void Plot::addCurve(DenseMatrixHandle data, const QString& title, const QColor& color)
+{
+	addCurve(data->col(0), data->col(1), title, color);
+}
+
+void Plot::clearCurves()
+{
+	for (auto& curve : curves_)
+	{
+		curve->detach();
+		delete curve;
+	}
+	curves_.clear();
 }
 
 void BasicPlotterDialog::assignDataColor()

@@ -42,6 +42,8 @@ ALGORITHM_PARAMETER_DEF(Math, VerticalAxisVisible);
 ALGORITHM_PARAMETER_DEF(Math, HorizontalAxisVisible);
 ALGORITHM_PARAMETER_DEF(Math, VerticalAxisPosition);
 ALGORITHM_PARAMETER_DEF(Math, HorizontalAxisPosition);
+ALGORITHM_PARAMETER_DEF(Math, IndependentVariablesVector);
+ALGORITHM_PARAMETER_DEF(Math, DependentVariablesVector);
 
 BasicPlotter::BasicPlotter() : Module(staticInfo_)
 {
@@ -65,14 +67,31 @@ void BasicPlotter::setStateDefaults()
 
 void BasicPlotter::execute()
 {
-  auto input_matrix = getRequiredInput(InputMatrix);
+  auto basicInputOpt = getOptionalInput(InputMatrix);
+  auto independents = getOptionalDynamicInputs(IndependentVariable);
+  auto dependents = getOptionalDynamicInputs(DependentVariables);
 
   if (needToExecute())
   {
-    if (input_matrix->empty())
+    if (basicInputOpt)
     {
-      THROW_INVALID_ARGUMENT("Empty matrix input.");
+      auto basicInput = *basicInputOpt;
+      if (!basicInput || basicInput->empty())
+      {
+        error("Empty basic matrix input.");
+        return;
+      }
+      get_state()->setTransientValue(Variables::InputMatrix, basicInput);
     }
-    get_state()->setTransientValue(Variables::InputMatrix, input_matrix);
+    else
+    {
+      if (independents.empty())
+      {
+        error("Empty matrix input.");
+        return;
+      }
+      get_state()->setTransientValue(Parameters::IndependentVariablesVector, independents);
+      get_state()->setTransientValue(Parameters::DependentVariablesVector, dependents);
+    }
   }
 }
