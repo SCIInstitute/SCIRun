@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>7</count>
+			<count>8</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>BasicPlotter:0</first>
@@ -16,7 +16,7 @@
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>8</count>
+							<count>9</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
@@ -63,6 +63,18 @@
 									<value>
 										<which>2</which>
 										<value>First Plot</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowPointSymbols</name>
+								</first>
+								<second>
+									<name>ShowPointSymbols</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -128,7 +140,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>8</count>
+							<count>9</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -175,6 +187,18 @@
 									<value>
 										<which>2</which>
 										<value>Second Plot</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowPointSymbols</name>
+								</first>
+								<second>
+									<name>ShowPointSymbols</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -240,7 +264,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>8</count>
+							<count>9</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -287,6 +311,18 @@
 									<value>
 										<which>2</which>
 										<value>Plot title</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowPointSymbols</name>
+								</first>
+								<second>
+									<name>ShowPointSymbols</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -442,6 +478,58 @@
 				</second>
 			</item>
 			<item>
+				<first>EvaluateLinearAlgebraUnary:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>EvaluateLinearAlgebraUnary</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>3</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>x+10</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Operator</name>
+								</first>
+								<second>
+									<name>Operator</name>
+									<value>
+										<which>0</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ScalarValue</name>
+								</first>
+								<second>
+									<name>ScalarValue</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>ReadMatrix:0</first>
 				<second>
 					<module>
@@ -495,7 +583,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>4</count>
+			<count>5</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateMatrix:0</moduleId1_>
@@ -534,21 +622,33 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ReadMatrix:0</moduleId1_>
+				<moduleId1_>EvaluateLinearAlgebraUnary:0</moduleId1_>
 				<port1_>
-					<name>Matrix</name>
+					<name>Result</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>BasicPlotter:2</moduleId2_>
 				<port2_>
 					<name>DependentVariables</name>
+					<id>1</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ReadMatrix:0</moduleId1_>
+				<port1_>
+					<name>Matrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraUnary:0</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>7</count>
+		<count>8</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>BasicPlotter:0</first>
@@ -567,8 +667,8 @@
 		<item>
 			<first>BasicPlotter:2</first>
 			<second>
-				<first>8.40000000000000000e+01</first>
-				<second>-9.20000000000000000e+01</second>
+				<first>7.60000000000000000e+01</first>
+				<second>0.00000000000000000e+00</second>
 			</second>
 		</item>
 		<item>
@@ -593,6 +693,13 @@
 			</second>
 		</item>
 		<item>
+			<first>EvaluateLinearAlgebraUnary:0</first>
+			<second>
+				<first>2.32000000000000000e+02</first>
+				<second>-1.40000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
 			<first>ReadMatrix:0</first>
 			<second>
 				<first>7.60000000000000000e+01</first>
@@ -609,7 +716,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>7</count>
+		<count>8</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>BasicPlotter:0</first>
@@ -633,6 +740,10 @@
 		</item>
 		<item>
 			<first>CreateMatrix:2</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>EvaluateLinearAlgebraUnary:0</first>
 			<second>-1</second>
 		</item>
 		<item>

@@ -71,6 +71,7 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
 	addLineEditManager(dataLineEdit_, Parameters::DataTitle);
 	addLineEditManager(xAxisLineEdit_, Parameters::XAxisLabel);
 	addLineEditManager(yAxisLineEdit_, Parameters::YAxisLabel);
+	addCheckBoxManager(showPointsCheckBox_, Parameters::ShowPointSymbols);
 
 	connect(showPlotPushButton_, SIGNAL(clicked()), this, SLOT(showPlot()));
 	connect(exportPlotPushButton_, SIGNAL(clicked()), this, SLOT(exportPlot()));
@@ -119,26 +120,25 @@ void BasicPlotterDialog::updatePlot()
 	plot_->makeHorizontalAxis(horizontalAxisGroupBox_->isChecked(), horizontalAxisSpinBox_->value());
 	plot_->makeVerticalAxis(verticalAxisGroupBox_->isChecked(), verticalAxisSpinBox_->value());
 	auto data = transient_value_cast<DenseMatrixHandle>(state_->getTransientValue(Variables::InputMatrix));
+	auto showPoints = showPointsCheckBox_->isChecked();
 	if (data)
 	{
 		plot_->clearCurves();
-		plot_->addCurve(data, dataLineEdit_->text(), dataColors_[0], true);
+		plot_->addCurve(data, dataLineEdit_->text(), dataColors_[0], true, showPoints);
 		plot_->addLegend();
 	}
 	else
 	{
 		auto independents = transient_value_cast<std::vector<DenseMatrixHandle>>(state_->getTransientValue(Parameters::IndependentVariablesVector));
 		auto dependents = transient_value_cast<std::vector<DenseMatrixHandle>>(state_->getTransientValue(Parameters::DependentVariablesVector));
-		//qDebug() << "dynamic version:" << independents.size() << dependents.size();
 		plot_->clearCurves();
 		bool addLegend = true;
 		for (auto&& tup : zip(independents, dependents))
 		{
 			DenseMatrixHandle x, y;
 			boost::tie(x, y) = tup;
-			//qDebug() << "\tx size:" << x->nrows() << x->ncols() << "y size:" << y->nrows() << y->ncols();
 			for (int c = 0; c < y->ncols(); ++c)
-				plot_->addCurve(x->col(0), y->col(c), "data " + QString::number(c), "red", c < 5);
+				plot_->addCurve(x->col(0), y->col(c), "data " + QString::number(c), "red", c < 5, showPoints);
 			if (y->ncols() > 5)
 				addLegend = false;
 		}
@@ -235,7 +235,7 @@ void Plot::makeHorizontalAxis(bool show, double position)
 }
 
 template <typename Column>
-void Plot::addCurve(const Column& x, const Column& y, const QString& title, const QColor& color, bool showLegend)
+void Plot::addCurve(const Column& x, const Column& y, const QString& title, const QColor& color, bool showLegend, bool showPoints)
 {
   double maxX = x.maxCoeff();
   double maxY = y.maxCoeff();
@@ -256,13 +256,15 @@ void Plot::addCurve(const Column& x, const Column& y, const QString& title, cons
   curve->setTitle(title);
   curve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
 	curve->setLegendAttribute( QwtPlotCurve::LegendShowLine, showLegend );
+	if (showPoints)
+		curve->setSymbol(new QwtSymbol(QwtSymbol::Ellipse, Qt::yellow, QPen(Qt::blue), QSize(3, 3)));
   curve->attach(this);
   curve->setSamples( points );
 }
 
-void Plot::addCurve(DenseMatrixHandle data, const QString& title, const QColor& color, bool showLegend)
+void Plot::addCurve(DenseMatrixHandle data, const QString& title, const QColor& color, bool showLegend, bool showPoints)
 {
-	addCurve(data->col(0), data->col(1), title, color, showLegend);
+	addCurve(data->col(0), data->col(1), title, color, showLegend, showPoints);
 }
 
 void Plot::clearCurves()

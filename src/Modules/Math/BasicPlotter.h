@@ -42,6 +42,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(HorizontalAxisPosition);
         ALGORITHM_PARAMETER_DECL(IndependentVariablesVector);
         ALGORITHM_PARAMETER_DECL(DependentVariablesVector);
+        ALGORITHM_PARAMETER_DECL(ShowPointSymbols);
       }}}
 
   namespace Modules {

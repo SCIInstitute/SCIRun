@@ -44,6 +44,7 @@ ALGORITHM_PARAMETER_DEF(Math, VerticalAxisPosition);
 ALGORITHM_PARAMETER_DEF(Math, HorizontalAxisPosition);
 ALGORITHM_PARAMETER_DEF(Math, IndependentVariablesVector);
 ALGORITHM_PARAMETER_DEF(Math, DependentVariablesVector);
+ALGORITHM_PARAMETER_DEF(Math, ShowPointSymbols);
 
 BasicPlotter::BasicPlotter() : Module(staticInfo_)
 {
@@ -63,6 +64,7 @@ void BasicPlotter::setStateDefaults()
   state->setValue(Parameters::HorizontalAxisVisible, true);
   state->setValue(Parameters::VerticalAxisPosition, 0.0);
   state->setValue(Parameters::HorizontalAxisPosition, 0.0);
+  state->setValue(Parameters::ShowPointSymbols, true);
 }
 
 void BasicPlotter::execute()

@@ -72,9 +72,9 @@ namespace SCIRun
       explicit Plot( QWidget *parent = nullptr );
       void makeVerticalAxis(bool show, double position);
       void makeHorizontalAxis(bool show, double position);
-      void addCurve(Core::Datatypes::DenseMatrixHandle data, const QString& title, const QColor& color, bool showLegend);
+      void addCurve(Core::Datatypes::DenseMatrixHandle data, const QString& title, const QColor& color, bool showLegend, bool showPoints);
       template <typename Column>
-      void addCurve(const Column& x, const Column& y, const QString& title, const QColor& color, bool showLegend);
+      void addCurve(const Column& x, const Column& y, const QString& title, const QColor& color, bool showLegend, bool showPoints);
       void clearCurves();
       void addLegend();
     private Q_SLOTS:
