@@ -103,6 +103,7 @@ void BasicPlotterDialog::showPlot()
 		plot_ = new Plot(this);
 		layout->addWidget( plot_ );
 		plotDialog_->resize( 600, 400 );
+		plotDialog_->move(10, 10);
 	}
 
 	updatePlot();
@@ -121,7 +122,8 @@ void BasicPlotterDialog::updatePlot()
 	if (data)
 	{
 		plot_->clearCurves();
-		plot_->addCurve(data, dataLineEdit_->text(), dataColors_[0]);
+		plot_->addCurve(data, dataLineEdit_->text(), dataColors_[0], true);
+		plot_->addLegend();
 	}
 	else
 	{
@@ -129,14 +131,19 @@ void BasicPlotterDialog::updatePlot()
 		auto dependents = transient_value_cast<std::vector<DenseMatrixHandle>>(state_->getTransientValue(Parameters::DependentVariablesVector));
 		//qDebug() << "dynamic version:" << independents.size() << dependents.size();
 		plot_->clearCurves();
+		bool addLegend = true;
 		for (auto&& tup : zip(independents, dependents))
 		{
 			DenseMatrixHandle x, y;
 			boost::tie(x, y) = tup;
 			//qDebug() << "\tx size:" << x->nrows() << x->ncols() << "y size:" << y->nrows() << y->ncols();
 			for (int c = 0; c < y->ncols(); ++c)
-				plot_->addCurve(x->col(0), y->col(c), "data " + QString::number(c), "red");
+				plot_->addCurve(x->col(0), y->col(c), "data " + QString::number(c), "red", c < 5);
+			if (y->ncols() > 5)
+				addLegend = false;
 		}
+		if (addLegend)
+			plot_->addLegend();
 	}
 	plot_->replot();
 }
@@ -144,11 +151,6 @@ void BasicPlotterDialog::updatePlot()
 Plot::Plot(QWidget *parent) : QwtPlot( parent )
 {
   setAutoFillBackground( true );
-
-	auto legend = new QwtLegend();
-	legend->setDefaultItemMode(QwtLegendData::Checkable);
-  insertLegend(legend, QwtPlot::RightLegend);
-	connect(legend, SIGNAL(checked(const QVariant&, bool, int)), SLOT(showItem(const QVariant&, bool)));
 
   auto canvas = new QwtPlotCanvas(this);
   canvas->setLineWidth( 1 );
@@ -164,6 +166,23 @@ Plot::Plot(QWidget *parent) : QwtPlot( parent )
   ( void ) new QwtPlotMagnifier( canvas );
 
 	setAutoReplot(true);
+}
+
+void Plot::addLegend()
+{
+	auto legend = new QwtLegend();
+	legend->setDefaultItemMode(QwtLegendData::Checkable);
+  insertLegend(legend, QwtPlot::RightLegend);
+	connect(legend, SIGNAL(checked(const QVariant&, bool, int)), SLOT(showItem(const QVariant&, bool)));
+
+	auto items = itemList( QwtPlotItem::Rtti_PlotCurve );
+	for ( int i = 0; i < items.size(); i++ )
+	{
+		const QVariant itemInfo = itemToInfo( items[i] );
+		auto legendLabel = qobject_cast<QwtLegendLabel*>(legend->legendWidget(itemInfo));
+		if (legendLabel)
+			legendLabel->setChecked( true );
+	}
 }
 
 void Plot::showItem(const QVariant& itemInfo, bool on)
@@ -216,7 +235,7 @@ void Plot::makeHorizontalAxis(bool show, double position)
 }
 
 template <typename Column>
-void Plot::addCurve(const Column& x, const Column& y, const QString& title, const QColor& color)
+void Plot::addCurve(const Column& x, const Column& y, const QString& title, const QColor& color, bool showLegend)
 {
   double maxX = x.maxCoeff();
   double maxY = y.maxCoeff();
@@ -236,24 +255,14 @@ void Plot::addCurve(const Column& x, const Column& y, const QString& title, cons
   curve->setPen(color, 2),
   curve->setTitle(title);
   curve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
-	curve->setLegendAttribute( QwtPlotCurve::LegendShowLine, true );
-	curve->setLegendAttribute( QwtPlotCurve::LegendShowLine, true );
+	curve->setLegendAttribute( QwtPlotCurve::LegendShowLine, showLegend );
   curve->attach(this);
   curve->setSamples( points );
-
-	auto items = itemList( QwtPlotItem::Rtti_PlotCurve );
-	for ( int i = 0; i < items.size(); i++ )
-	{
-		const QVariant itemInfo = itemToInfo( items[i] );
-		auto legendLabel = qobject_cast<QwtLegendLabel*>(qobject_cast<QwtLegend*>(legend())->legendWidget(itemInfo));
-		if (legendLabel)
-			legendLabel->setChecked( true );
-	}
 }
 
-void Plot::addCurve(DenseMatrixHandle data, const QString& title, const QColor& color)
+void Plot::addCurve(DenseMatrixHandle data, const QString& title, const QColor& color, bool showLegend)
 {
-	addCurve(data->col(0), data->col(1), title, color);
+	addCurve(data->col(0), data->col(1), title, color, showLegend);
 }
 
 void Plot::clearCurves()

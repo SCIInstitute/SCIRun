@@ -85,10 +85,22 @@ void BasicPlotter::execute()
     }
     else
     {
+      if (dependents.empty())
+      {
+        error("Empty matrix input: dependent variable data");
+        return;
+      }
       if (independents.empty())
       {
-        error("Empty matrix input.");
-        return;
+        remark("Independent variable input not provided: using row index of dependent data as independent variable.");
+        for (const auto& dependent : dependents)
+        {
+          auto rowCount = dependent->nrows();
+          auto indexMatrix(boost::make_shared<DenseMatrix>(rowCount, 1));
+          for (int i = 0; i < rowCount; ++i)
+            (*indexMatrix)(i, 0) = i;
+          independents.push_back(indexMatrix);
+        }
       }
       get_state()->setTransientValue(Parameters::IndependentVariablesVector, independents);
       get_state()->setTransientValue(Parameters::DependentVariablesVector, dependents);

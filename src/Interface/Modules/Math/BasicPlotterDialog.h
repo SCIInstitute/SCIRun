@@ -62,6 +62,7 @@ namespace SCIRun
       QDialog* plotDialog_ {nullptr};
       class Plot* plot_{nullptr};
       std::vector<QColor> dataColors_;
+      std::vector<QString> dataLabels_;
     };
 
     class Plot : public QwtPlot
@@ -71,10 +72,11 @@ namespace SCIRun
       explicit Plot( QWidget *parent = nullptr );
       void makeVerticalAxis(bool show, double position);
       void makeHorizontalAxis(bool show, double position);
-      void addCurve(Core::Datatypes::DenseMatrixHandle data, const QString& title, const QColor& color);
+      void addCurve(Core::Datatypes::DenseMatrixHandle data, const QString& title, const QColor& color, bool showLegend);
       template <typename Column>
-      void addCurve(const Column& x, const Column& y, const QString& title, const QColor& color);
+      void addCurve(const Column& x, const Column& y, const QString& title, const QColor& color, bool showLegend);
       void clearCurves();
+      void addLegend();
     private Q_SLOTS:
       void showItem(const QVariant&, bool on);
     private:

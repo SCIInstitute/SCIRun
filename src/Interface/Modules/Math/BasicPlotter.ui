@@ -46,6 +46,12 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
        </widget>
       </item>
       <item row="3" column="0">
@@ -86,12 +92,24 @@
         <property name="enabled">
          <bool>true</bool>
         </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
        </widget>
       </item>
       <item row="3" column="2">
        <widget class="QLineEdit" name="xAxisLineEdit_">
         <property name="enabled">
          <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
         </property>
        </widget>
       </item>
@@ -143,6 +161,12 @@
            <property name="enabled">
             <bool>true</bool>
            </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <weight>50</weight>
@@ -184,6 +208,12 @@
          </item>
          <item row="0" column="1">
           <widget class="QDoubleSpinBox" name="horizontalAxisSpinBox_">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>24</height>
+            </size>
+           </property>
            <property name="font">
             <font>
              <weight>50</weight>
@@ -220,10 +250,49 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="1" column="1">
-       <widget class="QLineEdit" name="dataLineEdit_"/>
+       <widget class="QLineEdit" name="dataLineEdit_">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
+       </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QComboBox" name="dataSeriesComboBox_"/>
+       <widget class="QComboBox" name="dataSeriesComboBox_">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
+        <item>
+         <property name="text">
+          <string>Column 1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Column 2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Column 3</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Column 4</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Column 5</string>
+         </property>
+        </item>
+       </widget>
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_6">
@@ -235,7 +304,7 @@
       <item row="1" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Data</string>
+         <string>Label</string>
         </property>
        </widget>
       </item>
@@ -248,6 +317,12 @@
       </item>
       <item row="2" column="1">
        <widget class="QPushButton" name="dataColorPushButton_">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>35</height>
+         </size>
+        </property>
         <property name="text">
          <string>Choose...</string>
         </property>
@@ -258,6 +333,12 @@
    </item>
    <item>
     <widget class="QPushButton" name="showPlotPushButton_">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>35</height>
+      </size>
+     </property>
      <property name="text">
       <string>Show/Update Plot</string>
      </property>
@@ -265,6 +346,12 @@
    </item>
    <item>
     <widget class="QPushButton" name="exportPlotPushButton_">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>35</height>
+      </size>
+     </property>
      <property name="text">
       <string>Export Plot</string>
      </property>
