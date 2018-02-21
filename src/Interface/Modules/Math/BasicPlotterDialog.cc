@@ -87,8 +87,6 @@ BasicPlotterDialog::~BasicPlotterDialog()
 
 void BasicPlotterDialog::pullSpecial()
 {
-  auto data = transient_value_cast<DenseMatrixHandle>(state_->getTransientValue(Variables::InputMatrix));
-
 	if (plotDialog_ && plotDialog_->isVisible())
 		updatePlot();
 }
@@ -126,24 +124,6 @@ void BasicPlotterDialog::updatePlot()
 		plot_->clearCurves();
 		plot_->addCurve(data, dataLineEdit_->text(), dataColors_[0], true, showPoints);
 		plot_->addLegend();
-	}
-	else
-	{
-		auto independents = transient_value_cast<std::vector<DenseMatrixHandle>>(state_->getTransientValue(Parameters::IndependentVariablesVector));
-		auto dependents = transient_value_cast<std::vector<DenseMatrixHandle>>(state_->getTransientValue(Parameters::DependentVariablesVector));
-		plot_->clearCurves();
-		bool addLegend = true;
-		for (auto&& tup : zip(independents, dependents))
-		{
-			DenseMatrixHandle x, y;
-			boost::tie(x, y) = tup;
-			for (int c = 0; c < y->ncols(); ++c)
-				plot_->addCurve(x->col(0), y->col(c), "data " + QString::number(c), "red", c < 5, showPoints);
-			if (y->ncols() > 5)
-				addLegend = false;
-		}
-		if (addLegend)
-			plot_->addLegend();
 	}
 	plot_->replot();
 }
@@ -289,6 +269,11 @@ void BasicPlotterDialog::assignDataColor()
 
 void BasicPlotterDialog::exportPlot()
 {
-	QwtPlotRenderer renderer;
-	renderer.exportTo(plot_, "scirunplot.pdf");
+  plot_->exportPlot();
+}
+
+void Plot::exportPlot()
+{
+  QwtPlotRenderer renderer;
+	renderer.exportTo(this, "scirunplot.pdf");
 }

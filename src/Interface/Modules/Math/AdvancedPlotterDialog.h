@@ -26,31 +26,28 @@
    DEALINGS IN THE SOFTWARE.
    */
 
-#ifndef INTERFACE_MODULES_MATH_BASICPLOTTER_H
-#define INTERFACE_MODULES_MATH_BASICPLOTTER_H
+#ifndef INTERFACE_MODULES_MATH_ADVANCEDPLOTTER_H
+#define INTERFACE_MODULES_MATH_ADVANCEDPLOTTER_H
 
-#include "Interface/Modules/Math/ui_BasicPlotter.h"
+#include "Interface/Modules/Math/ui_AdvancedPlotter.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <qwt_plot.h>
+#include <Interface/Modules/Math/BasicPlotterDialog.h>
 #include <Interface/Modules/Math/share.h>
-
-class QwtPlotMarker;
-class QwtPlotCurve;
 
 namespace SCIRun
 {
   namespace Gui
   {
-    class SCISHARE BasicPlotterDialog : public ModuleDialogGeneric,
-      public Ui::BasicPlotter
+    class SCISHARE AdvancedPlotterDialog : public ModuleDialogGeneric,
+      public Ui::AdvancedPlotter
     {
       Q_OBJECT
 
     public:
-      BasicPlotterDialog(const std::string& name,
+      AdvancedPlotterDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
-      ~BasicPlotterDialog();
+      ~AdvancedPlotterDialog();
     protected:
       virtual void pullSpecial() override;
     private Q_SLOTS:
@@ -60,30 +57,9 @@ namespace SCIRun
       void assignDataColor();
     private:
       QDialog* plotDialog_ {nullptr};
-      class Plot* plot_{nullptr};
+      Plot* plot_{nullptr};
       std::vector<QColor> dataColors_;
       std::vector<QString> dataLabels_;
-    };
-
-    class Plot : public QwtPlot
-    {
-      Q_OBJECT
-    public:
-      explicit Plot( QWidget *parent = nullptr );
-      void makeVerticalAxis(bool show, double position);
-      void makeHorizontalAxis(bool show, double position);
-      void addCurve(Core::Datatypes::DenseMatrixHandle data, const QString& title, const QColor& color, bool showLegend, bool showPoints);
-      template <typename Column>
-      void addCurve(const Column& x, const Column& y, const QString& title, const QColor& color, bool showLegend, bool showPoints);
-      void clearCurves();
-      void addLegend();
-      void exportPlot();
-    private Q_SLOTS:
-      void showItem(const QVariant&, bool on);
-    private:
-      QwtPlotMarker* verticalAxis_ {nullptr};
-      QwtPlotMarker* horizontalAxis_ {nullptr};
-      std::vector<QwtPlotCurve*> curves_;
     };
   }
 }

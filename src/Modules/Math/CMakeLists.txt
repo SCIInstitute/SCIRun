@@ -50,6 +50,7 @@ SET(Modules_Math_SRCS
   BooleanCompare.cc
   DisplayHistogram.cc
   BasicPlotter.cc
+  AdvancedPlotter.cc
 )
 
 SET(Modules_Math_HEADERS
@@ -77,6 +78,7 @@ SET(Modules_Math_HEADERS
   BooleanCompare.h
   DisplayHistogram.h
   BasicPlotter.h
+  AdvancedPlotter.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Math

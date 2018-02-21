@@ -22,6 +22,7 @@
  */
 
 #include <Modules/Math/BasicPlotter.h>
+#include <Modules/Math/AdvancedPlotter.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -32,24 +33,18 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 
-MODULE_INFO_DEF(BasicPlotter, Math, SCIRun)
+MODULE_INFO_DEF(AdvancedPlotter, Math, SCIRun)
 
-ALGORITHM_PARAMETER_DEF(Math, PlotTitle);
-ALGORITHM_PARAMETER_DEF(Math, DataTitle);
-ALGORITHM_PARAMETER_DEF(Math, XAxisLabel);
-ALGORITHM_PARAMETER_DEF(Math, YAxisLabel);
-ALGORITHM_PARAMETER_DEF(Math, VerticalAxisVisible);
-ALGORITHM_PARAMETER_DEF(Math, HorizontalAxisVisible);
-ALGORITHM_PARAMETER_DEF(Math, VerticalAxisPosition);
-ALGORITHM_PARAMETER_DEF(Math, HorizontalAxisPosition);
-ALGORITHM_PARAMETER_DEF(Math, ShowPointSymbols);
+ALGORITHM_PARAMETER_DEF(Math, IndependentVariablesVector);
+ALGORITHM_PARAMETER_DEF(Math, DependentVariablesVector);
 
-BasicPlotter::BasicPlotter() : Module(staticInfo_)
+AdvancedPlotter::AdvancedPlotter() : Module(staticInfo_)
 {
-  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(IndependentVariable);
+  INITIALIZE_PORT(DependentVariables);
 }
 
-void BasicPlotter::setStateDefaults()
+void AdvancedPlotter::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(Parameters::PlotTitle, std::string("Plot title"));
@@ -63,17 +58,31 @@ void BasicPlotter::setStateDefaults()
   state->setValue(Parameters::ShowPointSymbols, true);
 }
 
-void BasicPlotter::execute()
+void AdvancedPlotter::execute()
 {
-  auto basicInput = getRequiredInput(InputMatrix);
+  auto independents = getOptionalDynamicInputs(IndependentVariable);
+  auto dependents = getOptionalDynamicInputs(DependentVariables);
 
   if (needToExecute())
   {
-    if (!basicInput || basicInput->empty())
+    if (dependents.empty())
     {
-      error("Empty basic matrix input.");
+      error("Empty matrix input: dependent variable data");
       return;
     }
-    get_state()->setTransientValue(Variables::InputMatrix, basicInput);
+    if (independents.empty())
+    {
+      remark("Independent variable input not provided: using row index of dependent data as independent variable.");
+      for (const auto& dependent : dependents)
+      {
+        auto rowCount = dependent->nrows();
+        auto indexMatrix(boost::make_shared<DenseMatrix>(rowCount, 1));
+        for (int i = 0; i < rowCount; ++i)
+          (*indexMatrix)(i, 0) = i;
+        independents.push_back(indexMatrix);
+      }
+    }
+    get_state()->setTransientValue(Parameters::IndependentVariablesVector, independents);
+    get_state()->setTransientValue(Parameters::DependentVariablesVector, dependents);
   }
 }

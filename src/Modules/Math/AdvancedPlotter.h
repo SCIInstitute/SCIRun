@@ -21,8 +21,8 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef MODULES_MATH_BASICPLOTTER_H
-#define MODULES_MATH_BASICPLOTTER_H
+#ifndef MODULES_MATH_ADVANCEDPLOTTER_H
+#define MODULES_MATH_ADVANCEDPLOTTER_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Math/share.h>
@@ -32,30 +32,24 @@ namespace SCIRun {
   namespace Core {
     namespace Algorithms {
       namespace Math {
-        ALGORITHM_PARAMETER_DECL(PlotTitle);
-        ALGORITHM_PARAMETER_DECL(DataTitle);
-        ALGORITHM_PARAMETER_DECL(XAxisLabel);
-        ALGORITHM_PARAMETER_DECL(YAxisLabel);
-        ALGORITHM_PARAMETER_DECL(VerticalAxisVisible);
-        ALGORITHM_PARAMETER_DECL(HorizontalAxisVisible);
-        ALGORITHM_PARAMETER_DECL(VerticalAxisPosition);
-        ALGORITHM_PARAMETER_DECL(HorizontalAxisPosition);
-        ALGORITHM_PARAMETER_DECL(ShowPointSymbols);
+        ALGORITHM_PARAMETER_DECL(IndependentVariablesVector);
+        ALGORITHM_PARAMETER_DECL(DependentVariablesVector);
       }}}
 
   namespace Modules {
     namespace Math {
 
-      class SCISHARE BasicPlotter : public Dataflow::Networks::Module,
-        public Has1InputPort<MatrixPortTag>,
+      class SCISHARE AdvancedPlotter : public Dataflow::Networks::Module,
+        public Has2InputPorts<DynamicPortTag<MatrixPortTag>, DynamicPortTag<MatrixPortTag>>,
         public HasNoOutputPorts
       {
       public:
-        BasicPlotter();
+        AdvancedPlotter();
         virtual void setStateDefaults() override;
         virtual void execute() override;
 
-        INPUT_PORT(0, InputMatrix, DenseMatrix);
+        INPUT_PORT_DYNAMIC(0, IndependentVariable, DenseMatrix);
+        INPUT_PORT_DYNAMIC(1, DependentVariables, DenseMatrix);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
         NEW_HELP_WEBPAGE_ONLY

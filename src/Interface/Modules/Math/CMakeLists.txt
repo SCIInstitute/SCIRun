@@ -49,6 +49,7 @@ SET(Interface_Modules_Math_FORMS
   BooleanCompareDialog.ui
   DisplayHistogram.ui
   BasicPlotter.ui
+  AdvancedPlotter.ui
 )
 
 SET(Interface_Modules_Math_HEADERS
@@ -75,6 +76,7 @@ SET(Interface_Modules_Math_HEADERS
   BooleanCompareDialog.h
   DisplayHistogramDialog.h
   BasicPlotterDialog.h
+  AdvancedPlotterDialog.h
 )
 
 SET(Interface_Modules_Math_SOURCES
@@ -100,6 +102,7 @@ SET(Interface_Modules_Math_SOURCES
   BooleanCompareDialog.cc
   DisplayHistogramDialog.cc
   BasicPlotterDialog.cc
+  AdvancedPlotterDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS ${Interface_Modules_Math_FORMS})
