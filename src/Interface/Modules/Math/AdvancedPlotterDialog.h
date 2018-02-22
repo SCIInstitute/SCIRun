@@ -38,8 +38,7 @@ namespace SCIRun
 {
   namespace Gui
   {
-    class SCISHARE AdvancedPlotterDialog : public ModuleDialogGeneric,
-      public Ui::AdvancedPlotter
+    class SCISHARE AdvancedPlotterDialog : public BasicPlotterDialog
     {
       Q_OBJECT
 
@@ -47,19 +46,8 @@ namespace SCIRun
       AdvancedPlotterDialog(const std::string& name,
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
-      ~AdvancedPlotterDialog();
     protected:
-      virtual void pullSpecial() override;
-      virtual void plotData();
-    private Q_SLOTS:
-      void showPlot();
-      void updatePlot();
-      void exportPlot();
-      void assignDataColor();
-    private:
-      PlotDialog* plotDialog_ {nullptr};
-      std::vector<QColor> dataColors_;
-      std::vector<QString> dataLabels_;
+      virtual void plotData() override;
     };
   }
 }

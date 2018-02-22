@@ -33,10 +33,6 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <QtGui>
 
-#ifndef Q_MOC_RUN
-#include <Core/Utils/StringUtil.h>
-#endif
-
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Math;
@@ -46,59 +42,8 @@ using namespace SCIRun::Core::Datatypes;
 
 AdvancedPlotterDialog::AdvancedPlotterDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent/* = 0*/)
-	: ModuleDialogGeneric(state, parent)
+	: BasicPlotterDialog(name, state, parent)
 {
-	setupUi(this);
-	setWindowTitle(QString::fromStdString(name));
-	fixSize();
-
-	addDoubleSpinBoxManager(verticalAxisSpinBox_, Parameters::VerticalAxisPosition);
-  addDoubleSpinBoxManager(horizontalAxisSpinBox_, Parameters::HorizontalAxisPosition);
-	//addCheckBoxManager(verticalAxisGroupBox_, Parameters::VerticalAxisVisible);
-  //addCheckBoxManager(horizontalAxisGroupBox_, Parameters::HorizontalAxisVisible);
-	addLineEditManager(titleLineEdit_, Parameters::PlotTitle);
-	addLineEditManager(dataLineEdit_, Parameters::DataTitle);
-	addLineEditManager(xAxisLineEdit_, Parameters::XAxisLabel);
-	addLineEditManager(yAxisLineEdit_, Parameters::YAxisLabel);
-	addCheckBoxManager(showPointsCheckBox_, Parameters::ShowPointSymbols);
-
-	connect(showPlotPushButton_, SIGNAL(clicked()), this, SLOT(showPlot()));
-	connect(exportPlotPushButton_, SIGNAL(clicked()), this, SLOT(exportPlot()));
-	connect(dataColorPushButton_, SIGNAL(clicked()), this, SLOT(assignDataColor()));
-
-	dataColors_.push_back(Qt::red);
-}
-
-AdvancedPlotterDialog::~AdvancedPlotterDialog()
-{
-	delete plotDialog_;
-}
-
-void AdvancedPlotterDialog::pullSpecial()
-{
-	if (plotDialog_ && plotDialog_->isVisible())
-		updatePlot();
-}
-
-void AdvancedPlotterDialog::showPlot()
-{
-  if (!plotDialog_)
-	{
-		plotDialog_ = new PlotDialog(this);
-	}
-
-	updatePlot();
-	plotDialog_->show();
-	plotDialog_->raise();
-}
-
-void AdvancedPlotterDialog::updatePlot()
-{
-  plotData();
-
-  plotDialog_->updatePlot(titleLineEdit_->text(), xAxisLineEdit_->text(), yAxisLineEdit_->text(),
-    boost::make_optional(horizontalAxisGroupBox_->isChecked(), horizontalAxisSpinBox_->value()),
-    boost::make_optional(verticalAxisGroupBox_->isChecked(), verticalAxisSpinBox_->value()));
 }
 
 void AdvancedPlotterDialog::plotData()
@@ -120,19 +65,4 @@ void AdvancedPlotterDialog::plotData()
   }
   if (addLegend)
     plot->addLegend();
-}
-
-void AdvancedPlotterDialog::assignDataColor()
-{
-  auto newColor = QColorDialog::getColor(dataColors_[0], this, "Choose data color");
-  if (newColor.isValid())
-  {
-		dataColors_[0] = newColor;
-		updatePlot();
-  }
-}
-
-void AdvancedPlotterDialog::exportPlot()
-{
-	plotDialog_->plot()->exportPlot();
 }

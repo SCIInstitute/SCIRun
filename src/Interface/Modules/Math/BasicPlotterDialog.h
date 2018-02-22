@@ -54,14 +54,14 @@ namespace SCIRun
     protected:
       virtual void pullSpecial() override;
       virtual void plotData();
+      class PlotDialog* plotDialog_ {nullptr};
+
     private Q_SLOTS:
       void showPlot();
       void updatePlot();
       void exportPlot();
       void assignDataColor();
     private:
-      class PlotDialog* plotDialog_ {nullptr};
-
       std::vector<QColor> dataColors_;
       std::vector<QString> dataLabels_;
     };
