@@ -53,16 +53,32 @@ namespace SCIRun
       ~BasicPlotterDialog();
     protected:
       virtual void pullSpecial() override;
+      virtual void plotData();
     private Q_SLOTS:
       void showPlot();
       void updatePlot();
       void exportPlot();
       void assignDataColor();
     private:
-      QDialog* plotDialog_ {nullptr};
-      class Plot* plot_{nullptr};
+      class PlotDialog* plotDialog_ {nullptr};
+
       std::vector<QColor> dataColors_;
       std::vector<QString> dataLabels_;
+    };
+
+    class Plot;
+
+    class PlotDialog : public QDialog
+    {
+    public:
+      explicit PlotDialog(QWidget* parent = nullptr);
+      void updatePlot(const QString& title, const QString& xAxis, const QString& yAxis,
+        const boost::optional<double>& horizAxisOpt,
+        const boost::optional<double>& vertAxisOpt);
+      ~PlotDialog();
+      Plot* plot() { return plot_; }
+    private:
+      Plot* plot_{nullptr};
     };
 
     class Plot : public QwtPlot

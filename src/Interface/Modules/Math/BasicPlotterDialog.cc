@@ -95,14 +95,7 @@ void BasicPlotterDialog::showPlot()
 {
 	if (!plotDialog_)
 	{
-		plotDialog_ = new QDialog;
-		plotDialog_->setStyleSheet(styleSheet());
-		auto layout = new QHBoxLayout( plotDialog_ );
-		layout->setContentsMargins( 5, 5, 5, 5 );
-		plot_ = new Plot(this);
-		layout->addWidget( plot_ );
-		plotDialog_->resize( 600, 400 );
-		plotDialog_->move(10, 10);
+		plotDialog_ = new PlotDialog(this);
 	}
 
 	updatePlot();
@@ -110,22 +103,55 @@ void BasicPlotterDialog::showPlot()
 	plotDialog_->raise();
 }
 
+PlotDialog::PlotDialog(QWidget* parent)
+{
+  setStyleSheet(styleSheet());
+  auto layout = new QHBoxLayout;
+  layout->setContentsMargins( 5, 5, 5, 5 );
+  plot_ = new Plot(parent);
+  layout->addWidget( plot_ );
+  setLayout(layout);
+  resize( 600, 400 );
+  move(10, 10);
+}
+
+PlotDialog::~PlotDialog()
+{
+  delete plot_;
+}
+
 void BasicPlotterDialog::updatePlot()
 {
-	plot_->setTitle(titleLineEdit_->text());
-	plot_->setAxisTitle(QwtPlot::xBottom, xAxisLineEdit_->text());
-	plot_->setAxisTitle(QwtPlot::yLeft, yAxisLineEdit_->text());
-	plot_->makeHorizontalAxis(horizontalAxisGroupBox_->isChecked(), horizontalAxisSpinBox_->value());
-	plot_->makeVerticalAxis(verticalAxisGroupBox_->isChecked(), verticalAxisSpinBox_->value());
-	auto data = transient_value_cast<DenseMatrixHandle>(state_->getTransientValue(Variables::InputMatrix));
-	auto showPoints = showPointsCheckBox_->isChecked();
+  plotData();
+
+  plotDialog_->updatePlot(titleLineEdit_->text(), xAxisLineEdit_->text(), yAxisLineEdit_->text(),
+    boost::make_optional(horizontalAxisGroupBox_->isChecked(), horizontalAxisSpinBox_->value()),
+    boost::make_optional(verticalAxisGroupBox_->isChecked(), verticalAxisSpinBox_->value()));
+}
+
+void PlotDialog::updatePlot(const QString& title, const QString& xAxis, const QString& yAxis,
+  const boost::optional<double>& horizAxisOpt,
+  const boost::optional<double>& vertAxisOpt)
+{
+  plot_->setTitle(title);
+  plot_->setAxisTitle(QwtPlot::xBottom, xAxis);
+  plot_->setAxisTitle(QwtPlot::yLeft, yAxis);
+  plot_->makeHorizontalAxis(static_cast<bool>(horizAxisOpt), horizAxisOpt.value_or(0));
+  plot_->makeVerticalAxis(static_cast<bool>(vertAxisOpt), vertAxisOpt.value_or(0));
+  plot_->replot();
+}
+
+void BasicPlotterDialog::plotData()
+{
+  auto showPoints = showPointsCheckBox_->isChecked();
+  auto data = transient_value_cast<DenseMatrixHandle>(state_->getTransientValue(Variables::InputMatrix));
 	if (data)
 	{
-		plot_->clearCurves();
-		plot_->addCurve(data, dataLineEdit_->text(), dataColors_[0], true, showPoints);
-		plot_->addLegend();
+    auto plot = plotDialog_->plot();
+		plot->clearCurves();
+		plot->addCurve(data, dataLineEdit_->text(), dataColors_[0], true, showPoints);
+		plot->addLegend();
 	}
-	plot_->replot();
 }
 
 Plot::Plot(QWidget *parent) : QwtPlot( parent )
@@ -269,7 +295,7 @@ void BasicPlotterDialog::assignDataColor()
 
 void BasicPlotterDialog::exportPlot()
 {
-  plot_->exportPlot();
+  plotDialog_->plot()->exportPlot();
 }
 
 void Plot::exportPlot()

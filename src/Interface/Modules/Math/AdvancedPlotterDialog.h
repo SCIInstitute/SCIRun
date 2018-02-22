@@ -50,14 +50,14 @@ namespace SCIRun
       ~AdvancedPlotterDialog();
     protected:
       virtual void pullSpecial() override;
+      virtual void plotData();
     private Q_SLOTS:
       void showPlot();
       void updatePlot();
       void exportPlot();
       void assignDataColor();
     private:
-      QDialog* plotDialog_ {nullptr};
-      Plot* plot_{nullptr};
+      PlotDialog* plotDialog_ {nullptr};
       std::vector<QColor> dataColors_;
       std::vector<QString> dataLabels_;
     };

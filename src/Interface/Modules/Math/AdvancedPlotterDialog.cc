@@ -82,16 +82,9 @@ void AdvancedPlotterDialog::pullSpecial()
 
 void AdvancedPlotterDialog::showPlot()
 {
-	if (!plotDialog_)
+  if (!plotDialog_)
 	{
-		plotDialog_ = new QDialog;
-		plotDialog_->setStyleSheet(styleSheet());
-		auto layout = new QHBoxLayout( plotDialog_ );
-		layout->setContentsMargins( 5, 5, 5, 5 );
-		plot_ = new Plot(this);
-		layout->addWidget( plot_ );
-		plotDialog_->resize( 600, 400 );
-		plotDialog_->move(10, 10);
+		plotDialog_ = new PlotDialog(this);
 	}
 
 	updatePlot();
@@ -101,31 +94,32 @@ void AdvancedPlotterDialog::showPlot()
 
 void AdvancedPlotterDialog::updatePlot()
 {
-	plot_->setTitle(titleLineEdit_->text());
-	plot_->setAxisTitle(QwtPlot::xBottom, xAxisLineEdit_->text());
-	plot_->setAxisTitle(QwtPlot::yLeft, yAxisLineEdit_->text());
-	plot_->makeHorizontalAxis(horizontalAxisGroupBox_->isChecked(), horizontalAxisSpinBox_->value());
-	plot_->makeVerticalAxis(verticalAxisGroupBox_->isChecked(), verticalAxisSpinBox_->value());
-	auto showPoints = showPointsCheckBox_->isChecked();
+  plotData();
 
-	{
-		auto independents = transient_value_cast<std::vector<DenseMatrixHandle>>(state_->getTransientValue(Parameters::IndependentVariablesVector));
-		auto dependents = transient_value_cast<std::vector<DenseMatrixHandle>>(state_->getTransientValue(Parameters::DependentVariablesVector));
-		plot_->clearCurves();
-		bool addLegend = true;
-		for (auto&& tup : zip(independents, dependents))
-		{
-			DenseMatrixHandle x, y;
-			boost::tie(x, y) = tup;
-			for (int c = 0; c < y->ncols(); ++c)
-				plot_->addCurve(x->col(0), y->col(c), "data " + QString::number(c), "red", c < 5, showPoints);
-			if (y->ncols() > 5)
-				addLegend = false;
-		}
-		if (addLegend)
-			plot_->addLegend();
-	}
-	plot_->replot();
+  plotDialog_->updatePlot(titleLineEdit_->text(), xAxisLineEdit_->text(), yAxisLineEdit_->text(),
+    boost::make_optional(horizontalAxisGroupBox_->isChecked(), horizontalAxisSpinBox_->value()),
+    boost::make_optional(verticalAxisGroupBox_->isChecked(), verticalAxisSpinBox_->value()));
+}
+
+void AdvancedPlotterDialog::plotData()
+{
+  auto independents = transient_value_cast<std::vector<DenseMatrixHandle>>(state_->getTransientValue(Parameters::IndependentVariablesVector));
+  auto dependents = transient_value_cast<std::vector<DenseMatrixHandle>>(state_->getTransientValue(Parameters::DependentVariablesVector));
+  auto plot = plotDialog_->plot();
+  auto showPoints = showPointsCheckBox_->isChecked();
+  plot->clearCurves();
+  bool addLegend = true;
+  for (auto&& tup : zip(independents, dependents))
+  {
+    DenseMatrixHandle x, y;
+    boost::tie(x, y) = tup;
+    for (int c = 0; c < y->ncols(); ++c)
+      plot->addCurve(x->col(0), y->col(c), "data " + QString::number(c), "red", c < 5, showPoints);
+    if (y->ncols() > 5)
+      addLegend = false;
+  }
+  if (addLegend)
+    plot->addLegend();
 }
 
 void AdvancedPlotterDialog::assignDataColor()
@@ -140,5 +134,5 @@ void AdvancedPlotterDialog::assignDataColor()
 
 void AdvancedPlotterDialog::exportPlot()
 {
-	plot_->exportPlot();
+	plotDialog_->plot()->exportPlot();
 }
