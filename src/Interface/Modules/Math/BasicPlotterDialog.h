@@ -53,6 +53,7 @@ namespace SCIRun
 
       class PlotDialog* plotDialog_ {nullptr};
       std::vector<QColor> dataColors_;
+      QColor backgroundColor_;
       Core::Algorithms::VariableList dataLabels_;
       int dataSeriesIndex_ {0};
       static const int labelColorMax_ = 5;
@@ -62,6 +63,7 @@ namespace SCIRun
       void updatePlot();
       void exportPlot();
       void assignDataColor();
+      void assignBackgroundColor();
       void switchDataSeries(int index);
       void assignDataLabel(const QString& label);
     };

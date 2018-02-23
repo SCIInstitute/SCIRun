@@ -44,6 +44,7 @@ ALGORITHM_PARAMETER_DEF(Math, VerticalAxisPosition);
 ALGORITHM_PARAMETER_DEF(Math, HorizontalAxisPosition);
 ALGORITHM_PARAMETER_DEF(Math, ShowPointSymbols);
 ALGORITHM_PARAMETER_DEF(Math, PlotColors);
+ALGORITHM_PARAMETER_DEF(Math, PlotBackgroundColor);
 
 BasicPlotter::BasicPlotter() : Module(staticInfo_)
 {
@@ -63,6 +64,7 @@ void BasicPlotter::setStateDefaults()
   state->setValue(Parameters::HorizontalAxisPosition, 0.0);
   state->setValue(Parameters::ShowPointSymbols, true);
   state->setValue(Parameters::PlotColors, std::string());
+  state->setValue(Parameters::PlotBackgroundColor, std::string());
 }
 
 void BasicPlotter::execute()

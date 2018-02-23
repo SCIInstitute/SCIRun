@@ -57,7 +57,6 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
 	//addCheckBoxManager(verticalAxisGroupBox_, Parameters::VerticalAxisVisible);
   //addCheckBoxManager(horizontalAxisGroupBox_, Parameters::HorizontalAxisVisible);
 	addLineEditManager(titleLineEdit_, Parameters::PlotTitle);
-	//addLineEditManager(dataLineEdit_, Parameters::DataTitle);
 	addLineEditManager(xAxisLineEdit_, Parameters::XAxisLabel);
 	addLineEditManager(yAxisLineEdit_, Parameters::YAxisLabel);
 	addCheckBoxManager(showPointsCheckBox_, Parameters::ShowPointSymbols);
@@ -65,6 +64,7 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
 	connect(showPlotPushButton_, SIGNAL(clicked()), this, SLOT(showPlot()));
 	connect(exportPlotPushButton_, SIGNAL(clicked()), this, SLOT(exportPlot()));
 	connect(dataColorPushButton_, SIGNAL(clicked()), this, SLOT(assignDataColor()));
+  connect(backgroundColorPushButton_, SIGNAL(clicked()), this, SLOT(assignBackgroundColor()));
   connect(dataSeriesComboBox_, SIGNAL(activated(int)), this, SLOT(switchDataSeries(int)));
   connect(dataLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(assignDataLabel(const QString&)));
   dataSeriesComboBox_->setDisabled(true);
@@ -87,6 +87,8 @@ void BasicPlotterDialog::pullSpecial()
     ScopedWidgetSignalBlocker q(dataLineEdit_);
     dataLineEdit_->setText(QString::fromStdString(dataLabels_[dataSeriesIndex_].toString()));
   }
+  backgroundColor_ = colorFromState(Parameters::PlotBackgroundColor);
+  plotDialog_->plot()->setCanvasBackground(backgroundColor_);
 
 	if (plotDialog_ && plotDialog_->isVisible())
 		updatePlot();
@@ -129,6 +131,17 @@ void BasicPlotterDialog::assignDataColor()
 		dataColors_[dataSeriesIndex_] = newColor;
     colorsToState(Parameters::PlotColors, dataColors_);
 		updatePlot();
+  }
+}
+
+void BasicPlotterDialog::assignBackgroundColor()
+{
+  auto newColor = QColorDialog::getColor(backgroundColor_, this, "Choose background color");
+  if (newColor.isValid())
+  {
+		backgroundColor_ = newColor;
+    colorToState(Parameters::PlotBackgroundColor, backgroundColor_);
+    plotDialog_->plot()->setCanvasBackground(backgroundColor_);
   }
 }
 

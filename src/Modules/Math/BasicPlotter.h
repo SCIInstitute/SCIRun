@@ -42,6 +42,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(HorizontalAxisPosition);
         ALGORITHM_PARAMETER_DECL(ShowPointSymbols);
         ALGORITHM_PARAMETER_DECL(PlotColors);
+        ALGORITHM_PARAMETER_DECL(PlotBackgroundColor);
       }}}
 
   namespace Modules {
