@@ -35,6 +35,7 @@
 
 class QwtPlotMarker;
 class QwtPlotCurve;
+class QwtPlotMagnifier;
 
 namespace SCIRun
 {
@@ -73,6 +74,8 @@ namespace SCIRun
       void clearCurves();
       void addLegend();
       void exportPlot();
+    public Q_SLOTS:
+      void adjustZoom(const QString& type);
     private Q_SLOTS:
       void showItem(const QVariant&, bool on);
     private:
@@ -100,6 +103,7 @@ namespace SCIRun
 
       QwtPlotMarker* verticalAxis_ {nullptr};
       QwtPlotMarker* horizontalAxis_ {nullptr};
+      QwtPlotMagnifier* magnifier_ {nullptr};
       std::vector<QwtPlotCurve*> curves_;
     };
   }

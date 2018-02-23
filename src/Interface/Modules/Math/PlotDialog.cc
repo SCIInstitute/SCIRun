@@ -50,10 +50,21 @@ using namespace SCIRun::Core::Datatypes;
 PlotDialog::PlotDialog(QWidget* parent)
 {
   setStyleSheet(styleSheet());
-  auto layout = new QHBoxLayout;
+  auto layout = new QVBoxLayout;
   layout->setContentsMargins( 5, 5, 5, 5 );
+
+  auto zoomBox = new QComboBox(parent);
+  zoomBox->addItem("Zoom both axes");
+  zoomBox->addItem("Zoom vertical axis");
+  zoomBox->addItem("Zoom horizontal axis");
+  zoomBox->setMaximumWidth(180);
+  layout->addWidget(zoomBox);
+
   plot_ = new Plot(parent);
   layout->addWidget( plot_ );
+
+  connect(zoomBox, SIGNAL(activated(const QString&)), plot_, SLOT(adjustZoom(const QString&)));
+
   setLayout(layout);
   resize( 600, 400 );
   move(10, 10);
@@ -91,9 +102,17 @@ Plot::Plot(QWidget *parent) : QwtPlot( parent )
   ( void ) new QwtPlotPanner( canvas );
 
   // zoom in/out with the wheel
-  ( void ) new QwtPlotMagnifier( canvas );
+  magnifier_ = new QwtPlotMagnifier( canvas );
 
 	setAutoReplot(true);
+}
+
+void Plot::adjustZoom(const QString& type)
+{
+  auto zoomVertical = type.contains("both") || type.contains("vertical");
+  auto zoomHorizontal = type.contains("both") || type.contains("horizontal");
+  magnifier_->setAxisEnabled(QwtPlot::xBottom, zoomHorizontal);
+  magnifier_->setAxisEnabled(QwtPlot::yLeft, zoomVertical);
 }
 
 void Plot::addLegend()
