@@ -1024,3 +1024,10 @@ void ModuleDialogGeneric::colorsToState(const AlgorithmParameterName& stateKey, 
     [](const QColor& color) { return makeVariable("color", detail::fromColor(color)); });
   state_->setValue(stateKey, vars);
 }
+
+std::vector<QString> SCIRun::Gui::toQStringVector(const std::vector<std::string>& strVec)
+{
+  std::vector<QString> qv;
+  std::transform(strVec.begin(), strVec.end(), back_inserter(qv), QString::fromStdString);
+  return qv;
+}

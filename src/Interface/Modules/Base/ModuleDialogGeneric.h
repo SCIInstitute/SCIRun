@@ -207,6 +207,7 @@ namespace Gui {
 
   SCISHARE void openUrl(const QString& url, const std::string& name);
   SCISHARE void openPythonAPIDoc();
+  SCISHARE std::vector<QString> toQStringVector(const std::vector<std::string>& strVec);
 }
 }
 

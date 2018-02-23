@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>8</count>
+			<count>9</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>AdvancedPlotter:1</first>
@@ -25,8 +25,46 @@
 								<second class_id="10" tracking_level="0" version="0">
 									<name>DataTitle</name>
 									<value class_id="11" tracking_level="0" version="0">
-										<which>2</which>
-										<value>Exponential</value>
+										<which>5</which>
+										<value class_id="12" tracking_level="0" version="0">
+											<count>5</count>
+											<item_version>0</item_version>
+											<item>
+												<name>_unspecified_</name>
+												<value>
+													<which>2</which>
+													<value>Linear</value>
+												</value>
+											</item>
+											<item>
+												<name>_unspecified_</name>
+												<value>
+													<which>2</which>
+													<value>Exponential</value>
+												</value>
+											</item>
+											<item>
+												<name>_unspecified_</name>
+												<value>
+													<which>0</which>
+													<value>0</value>
+												</value>
+											</item>
+											<item>
+												<name>_unspecified_</name>
+												<value>
+													<which>0</which>
+													<value>0</value>
+												</value>
+											</item>
+											<item>
+												<name>_unspecified_</name>
+												<value>
+													<which>0</which>
+													<value>0</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -61,8 +99,46 @@
 								<second>
 									<name>PlotColors</name>
 									<value>
-										<which>2</which>
-										<value></value>
+										<which>5</which>
+										<value>
+											<count>5</count>
+											<item_version>0</item_version>
+											<item>
+												<name>color</name>
+												<value>
+													<which>2</which>
+													<value>Color(0.984314,0,0.0431373)</value>
+												</value>
+											</item>
+											<item>
+												<name>color</name>
+												<value>
+													<which>2</which>
+													<value>Color(0.348638,1,0.233478)</value>
+												</value>
+											</item>
+											<item>
+												<name>color</name>
+												<value>
+													<which>2</which>
+													<value>Color(0,0,0)</value>
+												</value>
+											</item>
+											<item>
+												<name>color</name>
+												<value>
+													<which>2</which>
+													<value>Color(0,0,0)</value>
+												</value>
+											</item>
+											<item>
+												<name>color</name>
+												<value>
+													<which>2</which>
+													<value>Color(0,0,0)</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -297,8 +373,46 @@
 								<second>
 									<name>DataTitle</name>
 									<value>
-										<which>2</which>
-										<value>Exponential</value>
+										<which>5</which>
+										<value>
+											<count>5</count>
+											<item_version>0</item_version>
+											<item>
+												<name>_unspecified_</name>
+												<value>
+													<which>2</which>
+													<value>Exponential</value>
+												</value>
+											</item>
+											<item>
+												<name>_unspecified_</name>
+												<value>
+													<which>0</which>
+													<value>0</value>
+												</value>
+											</item>
+											<item>
+												<name>_unspecified_</name>
+												<value>
+													<which>0</which>
+													<value>0</value>
+												</value>
+											</item>
+											<item>
+												<name>_unspecified_</name>
+												<value>
+													<which>0</which>
+													<value>0</value>
+												</value>
+											</item>
+											<item>
+												<name>_unspecified_</name>
+												<value>
+													<which>0</which>
+													<value>0</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -333,8 +447,46 @@
 								<second>
 									<name>PlotColors</name>
 									<value>
-										<which>2</which>
-										<value></value>
+										<which>5</which>
+										<value>
+											<count>5</count>
+											<item_version>0</item_version>
+											<item>
+												<name>color</name>
+												<value>
+													<which>2</which>
+													<value>Color(1,0.788556,0.154238)</value>
+												</value>
+											</item>
+											<item>
+												<name>color</name>
+												<value>
+													<which>2</which>
+													<value>Color(0,0,0)</value>
+												</value>
+											</item>
+											<item>
+												<name>color</name>
+												<value>
+													<which>2</which>
+													<value>Color(0,0,0)</value>
+												</value>
+											</item>
+											<item>
+												<name>color</name>
+												<value>
+													<which>2</which>
+													<value>Color(0,0,0)</value>
+												</value>
+											</item>
+											<item>
+												<name>color</name>
+												<value>
+													<which>2</which>
+													<value>Color(0,0,0)</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -617,13 +769,101 @@
 					</state>
 				</second>
 			</item>
+			<item>
+				<first>SelectSubMatrix:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>SelectSubMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>6</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>columnCheckBox</name>
+								</first>
+								<second>
+									<name>columnCheckBox</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>columnEndSpinBox</name>
+								</first>
+								<second>
+									<name>columnEndSpinBox</name>
+									<value>
+										<which>0</which>
+										<value>20</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>columnStartSpinBox</name>
+								</first>
+								<second>
+									<name>columnStartSpinBox</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>rowCheckBox</name>
+								</first>
+								<second>
+									<name>rowCheckBox</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>rowEndSpinBox</name>
+								</first>
+								<second>
+									<name>rowEndSpinBox</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>rowStartSpinBox</name>
+								</first>
+								<second>
+									<name>rowStartSpinBox</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
 		</modules>
-		<connections class_id="12" tracking_level="0" version="0">
-			<count>5</count>
+		<connections class_id="13" tracking_level="0" version="0">
+			<count>6</count>
 			<item_version>0</item_version>
-			<item class_id="13" tracking_level="0" version="0">
+			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CreateMatrix:0</moduleId1_>
-				<port1_ class_id="14" tracking_level="0" version="0">
+				<port1_ class_id="15" tracking_level="0" version="0">
 					<name>EnteredMatrix</name>
 					<id>0</id>
 				</port1_>
@@ -663,10 +903,10 @@
 					<name>Result</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>AdvancedPlotter:2</moduleId2_>
+				<moduleId2_>SelectSubMatrix:0</moduleId2_>
 				<port2_>
-					<name>DependentVariables</name>
-					<id>1</id>
+					<name>InputMatrix</name>
+					<id>0</id>
 				</port2_>
 			</item>
 			<item>
@@ -681,14 +921,26 @@
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>SelectSubMatrix:0</moduleId1_>
+				<port1_>
+					<name>ResultMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>AdvancedPlotter:2</moduleId2_>
+				<port2_>
+					<name>DependentVariables</name>
+					<id>2</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>8</count>
+	<modulePositions class_id="16" tracking_level="0" version="0">
+		<count>9</count>
 		<item_version>0</item_version>
-		<item class_id="16" tracking_level="0" version="0">
+		<item class_id="17" tracking_level="0" version="0">
 			<first>AdvancedPlotter:1</first>
-			<second class_id="17" tracking_level="0" version="0">
+			<second class_id="18" tracking_level="0" version="0">
 				<first>-2.38000000000000000e+02</first>
 				<second>-8.40000000000000000e+01</second>
 			</second>
@@ -697,7 +949,7 @@
 			<first>AdvancedPlotter:2</first>
 			<second>
 				<first>7.60000000000000000e+01</first>
-				<second>0.00000000000000000e+00</second>
+				<second>7.60000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
@@ -742,8 +994,15 @@
 				<second>-2.28000000000000000e+02</second>
 			</second>
 		</item>
+		<item>
+			<first>SelectSubMatrix:0</first>
+			<second>
+				<first>0.00000000000000000e+00</first>
+				<second>-7.60000000000000000e+01</second>
+			</second>
+		</item>
 	</modulePositions>
-	<moduleNotes class_id="18" tracking_level="0" version="0">
+	<moduleNotes class_id="19" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</moduleNotes>
@@ -751,10 +1010,10 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>8</count>
+	<moduleTags class_id="20" tracking_level="0" version="0">
+		<count>9</count>
 		<item_version>0</item_version>
-		<item class_id="20" tracking_level="0" version="0">
+		<item class_id="21" tracking_level="0" version="0">
 			<first>AdvancedPlotter:1</first>
 			<second>-1</second>
 		</item>
@@ -786,8 +1045,12 @@
 			<first>ReadMatrix:0</first>
 			<second>-1</second>
 		</item>
+		<item>
+			<first>SelectSubMatrix:0</first>
+			<second>-1</second>
+		</item>
 	</moduleTags>
-	<disabledModules class_id="21" tracking_level="0" version="0">
+	<disabledModules class_id="22" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledModules>
@@ -795,12 +1058,12 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledConnections>
-	<moduleTagLabels class_id="22" tracking_level="0" version="0">
+	<moduleTagLabels class_id="23" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</moduleTagLabels>
 	<loadTagGroups>0</loadTagGroups>
-	<subnetworks class_id="23" tracking_level="0" version="0">
+	<subnetworks class_id="24" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</subnetworks>

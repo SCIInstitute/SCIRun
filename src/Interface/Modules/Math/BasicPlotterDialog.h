@@ -50,7 +50,12 @@ namespace SCIRun
     protected:
       virtual void pullSpecial() override;
       virtual void plotData();
+
       class PlotDialog* plotDialog_ {nullptr};
+      std::vector<QColor> dataColors_;
+      Core::Algorithms::VariableList dataLabels_;
+      int dataSeriesIndex_ {0};
+      static const int labelColorMax_ = 5;
 
     private Q_SLOTS:
       void showPlot();
@@ -58,10 +63,7 @@ namespace SCIRun
       void exportPlot();
       void assignDataColor();
       void switchDataSeries(int index);
-    private:
-      std::vector<QColor> dataColors_;
-      std::vector<QString> dataLabels_;
-      int dataSeriesIndex_ {0};
+      void assignDataLabel(const QString& label);
     };
   }
 }

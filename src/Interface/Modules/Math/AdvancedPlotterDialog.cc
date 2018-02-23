@@ -61,8 +61,9 @@ void AdvancedPlotterDialog::plotData()
     DenseMatrixHandle x, y;
     boost::tie(x, y) = tup;
     for (int c = 0; c < y->ncols(); ++c)
-      plot->addCurve(x->col(0), y->col(c), "data " + QString::number(c), "red", c < 5, showPoints);
-    if (y->ncols() > 5)
+      plot->addCurve(x->col(0), y->col(c), QString::fromStdString(dataLabels_[c % labelColorMax_].toString()),
+        dataColors_[c % labelColorMax_], c < labelColorMax_, showPoints);
+    if (y->ncols() > labelColorMax_)
       addLegend = false;
   }
   if (addLegend)

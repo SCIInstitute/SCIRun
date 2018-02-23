@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2018 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -46,7 +46,7 @@ using namespace SCIRun::Core::Datatypes;
 
 BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent/* = 0*/)
-	: ModuleDialogGeneric(state, parent), dataColors_(5), dataLabels_(5)
+	: ModuleDialogGeneric(state, parent), dataColors_(labelColorMax_), dataLabels_(labelColorMax_)
 {
 	setupUi(this);
 	setWindowTitle(QString::fromStdString(name));
@@ -66,7 +66,10 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
 	connect(exportPlotPushButton_, SIGNAL(clicked()), this, SLOT(exportPlot()));
 	connect(dataColorPushButton_, SIGNAL(clicked()), this, SLOT(assignDataColor()));
   connect(dataSeriesComboBox_, SIGNAL(activated(int)), this, SLOT(switchDataSeries(int)));
+  connect(dataLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(assignDataLabel(const QString&)));
   dataSeriesComboBox_->setDisabled(true);
+
+  plotDialog_ = new PlotDialog(this);
 }
 
 BasicPlotterDialog::~BasicPlotterDialog()
@@ -76,9 +79,14 @@ BasicPlotterDialog::~BasicPlotterDialog()
 
 void BasicPlotterDialog::pullSpecial()
 {
-  auto colors = colorsFromState(Parameters::PlotColors);
-  for (const auto& c : colors)
-    qDebug() << "Color from state:" << c;
+  dataColors_ = colorsFromState(Parameters::PlotColors);
+  dataColors_.resize(labelColorMax_);
+  dataLabels_ = state_->getValue(Parameters::DataTitle).toVector();
+  dataLabels_.resize(labelColorMax_);
+  {
+    ScopedWidgetSignalBlocker q(dataLineEdit_);
+    dataLineEdit_->setText(QString::fromStdString(dataLabels_[dataSeriesIndex_].toString()));
+  }
 
 	if (plotDialog_ && plotDialog_->isVisible())
 		updatePlot();
@@ -86,11 +94,6 @@ void BasicPlotterDialog::pullSpecial()
 
 void BasicPlotterDialog::showPlot()
 {
-	if (!plotDialog_)
-	{
-		plotDialog_ = new PlotDialog(this);
-	}
-
 	updatePlot();
 	plotDialog_->show();
 	plotDialog_->raise();
@@ -120,12 +123,20 @@ void BasicPlotterDialog::plotData()
 
 void BasicPlotterDialog::assignDataColor()
 {
-  auto newColor = QColorDialog::getColor(dataColors_[0], this, "Choose data color");
+  auto newColor = QColorDialog::getColor(dataColors_[dataSeriesIndex_], this, "Choose data color");
   if (newColor.isValid())
   {
 		dataColors_[dataSeriesIndex_] = newColor;
+    colorsToState(Parameters::PlotColors, dataColors_);
 		updatePlot();
   }
+}
+
+void BasicPlotterDialog::assignDataLabel(const QString& label)
+{
+  dataLabels_[dataSeriesIndex_].setValue(label.toStdString());
+  state_->setValue(Parameters::DataTitle, dataLabels_);
+  updatePlot();
 }
 
 void BasicPlotterDialog::exportPlot()
@@ -135,6 +146,9 @@ void BasicPlotterDialog::exportPlot()
 
 void BasicPlotterDialog::switchDataSeries(int index)
 {
-  qDebug() << __FUNCTION__ << index;
   dataSeriesIndex_ = index;
+  {
+    ScopedWidgetSignalBlocker q(dataLineEdit_);
+    dataLineEdit_->setText(QString::fromStdString(dataLabels_[dataSeriesIndex_].toString()));
+  }
 }
