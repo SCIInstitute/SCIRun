@@ -27,23 +27,12 @@
 */
 
 #include <Interface/Modules/Math/BasicPlotterDialog.h>
+#include <Interface/Modules/Math/PlotDialog.h>
 #include <Modules/Math/BasicPlotter.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <QtGui>
 
-#include <qwt_plot_marker.h>
-#include <qwt_plot_curve.h>
-#include <qwt_legend.h>
-#include <qwt_legend_label.h>
-#include <qwt_point_data.h>
-#include <qwt_plot_canvas.h>
-#include <qwt_plot_panner.h>
-#include <qwt_plot_magnifier.h>
-#include <qwt_text.h>
-#include <qwt_symbol.h>
-#include <qwt_math.h>
-#include <qwt_plot_renderer.h>
 #ifndef Q_MOC_RUN
 #include <Core/Utils/StringUtil.h>
 #endif
@@ -103,23 +92,6 @@ void BasicPlotterDialog::showPlot()
 	plotDialog_->raise();
 }
 
-PlotDialog::PlotDialog(QWidget* parent)
-{
-  setStyleSheet(styleSheet());
-  auto layout = new QHBoxLayout;
-  layout->setContentsMargins( 5, 5, 5, 5 );
-  plot_ = new Plot(parent);
-  layout->addWidget( plot_ );
-  setLayout(layout);
-  resize( 600, 400 );
-  move(10, 10);
-}
-
-PlotDialog::~PlotDialog()
-{
-  delete plot_;
-}
-
 void BasicPlotterDialog::updatePlot()
 {
   plotData();
@@ -127,18 +99,6 @@ void BasicPlotterDialog::updatePlot()
   plotDialog_->updatePlot(titleLineEdit_->text(), xAxisLineEdit_->text(), yAxisLineEdit_->text(),
     boost::make_optional(horizontalAxisGroupBox_->isChecked(), horizontalAxisSpinBox_->value()),
     boost::make_optional(verticalAxisGroupBox_->isChecked(), verticalAxisSpinBox_->value()));
-}
-
-void PlotDialog::updatePlot(const QString& title, const QString& xAxis, const QString& yAxis,
-  const boost::optional<double>& horizAxisOpt,
-  const boost::optional<double>& vertAxisOpt)
-{
-  plot_->setTitle(title);
-  plot_->setAxisTitle(QwtPlot::xBottom, xAxis);
-  plot_->setAxisTitle(QwtPlot::yLeft, yAxis);
-  plot_->makeHorizontalAxis(static_cast<bool>(horizAxisOpt), horizAxisOpt.value_or(0));
-  plot_->makeVerticalAxis(static_cast<bool>(vertAxisOpt), vertAxisOpt.value_or(0));
-  plot_->replot();
 }
 
 void BasicPlotterDialog::plotData()
@@ -154,135 +114,6 @@ void BasicPlotterDialog::plotData()
 	}
 }
 
-Plot::Plot(QWidget *parent) : QwtPlot( parent )
-{
-  setAutoFillBackground( true );
-
-  auto canvas = new QwtPlotCanvas(this);
-  canvas->setLineWidth( 1 );
-  canvas->setFrameStyle( QFrame::Box | QFrame::Plain );
-  canvas->setBorderRadius( 15 );
-
-  setCanvas( canvas );
-
-  // panning with the left mouse button
-  ( void ) new QwtPlotPanner( canvas );
-
-  // zoom in/out with the wheel
-  ( void ) new QwtPlotMagnifier( canvas );
-
-	setAutoReplot(true);
-}
-
-void Plot::addLegend()
-{
-	auto legend = new QwtLegend();
-	legend->setDefaultItemMode(QwtLegendData::Checkable);
-  insertLegend(legend, QwtPlot::RightLegend);
-	connect(legend, SIGNAL(checked(const QVariant&, bool, int)), SLOT(showItem(const QVariant&, bool)));
-
-	auto items = itemList( QwtPlotItem::Rtti_PlotCurve );
-	for ( int i = 0; i < items.size(); i++ )
-	{
-		const QVariant itemInfo = itemToInfo( items[i] );
-		auto legendLabel = qobject_cast<QwtLegendLabel*>(legend->legendWidget(itemInfo));
-		if (legendLabel)
-			legendLabel->setChecked( true );
-	}
-}
-
-void Plot::showItem(const QVariant& itemInfo, bool on)
-{
-  auto plotItem = infoToItem(itemInfo);
-  if (plotItem)
-	{
-    plotItem->setVisible(on);
-	}
-}
-
-void Plot::makeVerticalAxis(bool show, double position)
-{
-	if (show)
-	{
-		delete verticalAxis_;
-		verticalAxis_ = new QwtPlotMarker();
-		verticalAxis_->setLabel("x = " + QString::number(position));
-		verticalAxis_->setLabelAlignment( Qt::AlignLeft | Qt::AlignBottom );
-		verticalAxis_->setLabelOrientation( Qt::Vertical );
-		verticalAxis_->setLineStyle( QwtPlotMarker::VLine );
-		verticalAxis_->setLinePen( Qt::black, 0, Qt::DashDotLine );
-		verticalAxis_->setXValue( position );
-		verticalAxis_->attach( this );
-	}
-	else
-	{
-		if (verticalAxis_)
-			verticalAxis_->detach();
-	}
-}
-
-void Plot::makeHorizontalAxis(bool show, double position)
-{
-	if (show)
-	{
-		delete horizontalAxis_;
-		horizontalAxis_ = new QwtPlotMarker();
-		horizontalAxis_->setLabel("y = " + QString::number(position));
-		horizontalAxis_->setLabelAlignment( Qt::AlignRight | Qt::AlignTop );
-		horizontalAxis_->setLineStyle( QwtPlotMarker::HLine );
-		horizontalAxis_->setYValue( position );
-		horizontalAxis_->attach( this );
-	}
-	else
-	{
-		if (horizontalAxis_)
-			horizontalAxis_->detach();
-	}
-}
-
-template <typename Column>
-void Plot::addCurve(const Column& x, const Column& y, const QString& title, const QColor& color, bool showLegend, bool showPoints)
-{
-  double maxX = x.maxCoeff();
-  double maxY = y.maxCoeff();
-  double minX = x.minCoeff();
-  double minY = y.minCoeff();
-	setAxisScale( xBottom, minX, maxX );
-  setAxisScale( yLeft, minY, maxY );
-
-	QPolygonF points;
-  for (int i = 0; i < x.size(); ++i)
-  {
-    points << QPointF(x(i), y(i));
-  }
-
-	auto curve = new QwtPlotCurve();
-	curves_.push_back(curve);
-  curve->setPen(color, 2),
-  curve->setTitle(title);
-  curve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
-	curve->setLegendAttribute( QwtPlotCurve::LegendShowLine, showLegend );
-	if (showPoints)
-		curve->setSymbol(new QwtSymbol(QwtSymbol::Ellipse, Qt::yellow, QPen(Qt::blue), QSize(3, 3)));
-  curve->attach(this);
-  curve->setSamples( points );
-}
-
-void Plot::addCurve(DenseMatrixHandle data, const QString& title, const QColor& color, bool showLegend, bool showPoints)
-{
-	addCurve(data->col(0), data->col(1), title, color, showLegend, showPoints);
-}
-
-void Plot::clearCurves()
-{
-	for (auto& curve : curves_)
-	{
-		curve->detach();
-		delete curve;
-	}
-	curves_.clear();
-}
-
 void BasicPlotterDialog::assignDataColor()
 {
   auto newColor = QColorDialog::getColor(dataColors_[0], this, "Choose data color");
@@ -296,10 +127,4 @@ void BasicPlotterDialog::assignDataColor()
 void BasicPlotterDialog::exportPlot()
 {
   plotDialog_->plot()->exportPlot();
-}
-
-void Plot::exportPlot()
-{
-  QwtPlotRenderer renderer;
-	renderer.exportTo(this, "scirunplot.pdf");
 }

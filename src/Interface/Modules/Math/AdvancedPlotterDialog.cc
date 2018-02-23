@@ -27,6 +27,7 @@
 */
 
 #include <Interface/Modules/Math/AdvancedPlotterDialog.h>
+#include <Interface/Modules/Math/PlotDialog.h>
 #include <Modules/Math/BasicPlotter.h>
 #include <Modules/Math/AdvancedPlotter.h>
 #include <Core/Datatypes/DenseMatrix.h>

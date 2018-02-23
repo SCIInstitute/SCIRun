@@ -77,6 +77,7 @@ SET(Interface_Modules_Math_HEADERS
   DisplayHistogramDialog.h
   BasicPlotterDialog.h
   AdvancedPlotterDialog.h
+  PlotDialog.h
 )
 
 SET(Interface_Modules_Math_SOURCES
@@ -103,6 +104,7 @@ SET(Interface_Modules_Math_SOURCES
   DisplayHistogramDialog.cc
   BasicPlotterDialog.cc
   AdvancedPlotterDialog.cc
+  PlotDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS ${Interface_Modules_Math_FORMS})

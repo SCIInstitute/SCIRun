@@ -31,11 +31,7 @@
 
 #include "Interface/Modules/Math/ui_BasicPlotter.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <qwt_plot.h>
 #include <Interface/Modules/Math/share.h>
-
-class QwtPlotMarker;
-class QwtPlotCurve;
 
 namespace SCIRun
 {
@@ -64,42 +60,6 @@ namespace SCIRun
     private:
       std::vector<QColor> dataColors_;
       std::vector<QString> dataLabels_;
-    };
-
-    class Plot;
-
-    class PlotDialog : public QDialog
-    {
-    public:
-      explicit PlotDialog(QWidget* parent = nullptr);
-      void updatePlot(const QString& title, const QString& xAxis, const QString& yAxis,
-        const boost::optional<double>& horizAxisOpt,
-        const boost::optional<double>& vertAxisOpt);
-      ~PlotDialog();
-      Plot* plot() { return plot_; }
-    private:
-      Plot* plot_{nullptr};
-    };
-
-    class Plot : public QwtPlot
-    {
-      Q_OBJECT
-    public:
-      explicit Plot( QWidget *parent = nullptr );
-      void makeVerticalAxis(bool show, double position);
-      void makeHorizontalAxis(bool show, double position);
-      void addCurve(Core::Datatypes::DenseMatrixHandle data, const QString& title, const QColor& color, bool showLegend, bool showPoints);
-      template <typename Column>
-      void addCurve(const Column& x, const Column& y, const QString& title, const QColor& color, bool showLegend, bool showPoints);
-      void clearCurves();
-      void addLegend();
-      void exportPlot();
-    private Q_SLOTS:
-      void showItem(const QVariant&, bool on);
-    private:
-      QwtPlotMarker* verticalAxis_ {nullptr};
-      QwtPlotMarker* horizontalAxis_ {nullptr};
-      std::vector<QwtPlotCurve*> curves_;
     };
   }
 }
