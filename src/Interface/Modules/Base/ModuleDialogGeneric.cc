@@ -30,6 +30,7 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Base/ModuleButtonBar.h>
 #include <Core/Logging/Log.h>
+#include <Core/Datatypes/Color.h>
 #include <Core/Utils/Exception.h>
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
@@ -39,6 +40,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Datatypes;
 
 ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerAdd_;
 ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerRemove_;
@@ -977,4 +979,48 @@ void SCIRun::Gui::openUrl(const QString& url, const std::string& name)
 void SCIRun::Gui::openPythonAPIDoc()
 {
   openUrl("https://github.com/SCIInstitute/SCIRun/wiki/SCIRun-Python-API-0.2", "SCIRun Python API page");
+}
+
+namespace detail
+{
+  QColor toColor(const std::string& str)
+  {
+    ColorRGB textColor(str);
+    return QColor(
+      static_cast<int>(textColor.r() > 1 ? textColor.r() : textColor.r() * 255.0),
+      static_cast<int>(textColor.g() > 1 ? textColor.g() : textColor.g() * 255.0),
+      static_cast<int>(textColor.b() > 1 ? textColor.b() : textColor.b() * 255.0));
+  }
+
+  std::string fromColor(const QColor& color)
+  {
+    return ColorRGB(color.redF(), color.greenF(), color.blueF()).toString();
+  }
+}
+
+QColor ModuleDialogGeneric::colorFromState(const AlgorithmParameterName& stateKey) const
+{
+  return detail::toColor(state_->getValue(stateKey).toString());
+}
+
+void ModuleDialogGeneric::colorToState(const AlgorithmParameterName& stateKey, const QColor& color)
+{
+  state_->setValue(stateKey, detail::fromColor(color));
+}
+
+std::vector<QColor> ModuleDialogGeneric::colorsFromState(const AlgorithmParameterName& stateKey) const
+{
+  auto conv = [](const Variable& var) -> QColor { return detail::toColor(var.toString()); };
+  std::vector<QColor> colors;
+  auto vars = state_->getValue(stateKey).toVector();
+  std::transform(vars.begin(), vars.end(), std::back_inserter(colors), conv);
+  return colors;
+}
+
+void ModuleDialogGeneric::colorsToState(const AlgorithmParameterName& stateKey, const std::vector<QColor>& colors)
+{
+  VariableList vars;
+  std::transform(colors.begin(), colors.end(), std::back_inserter(vars),
+    [](const QColor& color) { return makeVariable("color", detail::fromColor(color)); });
+  state_->setValue(stateKey, vars);
 }

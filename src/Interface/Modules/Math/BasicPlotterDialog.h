@@ -57,9 +57,11 @@ namespace SCIRun
       void updatePlot();
       void exportPlot();
       void assignDataColor();
+      void switchDataSeries(int index);
     private:
       std::vector<QColor> dataColors_;
       std::vector<QString> dataLabels_;
+      int dataSeriesIndex_ {0};
     };
   }
 }

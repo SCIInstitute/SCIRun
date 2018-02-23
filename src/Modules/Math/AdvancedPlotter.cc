@@ -56,6 +56,7 @@ void AdvancedPlotter::setStateDefaults()
   state->setValue(Parameters::VerticalAxisPosition, 0.0);
   state->setValue(Parameters::HorizontalAxisPosition, 0.0);
   state->setValue(Parameters::ShowPointSymbols, true);
+  state->setValue(Parameters::PlotColors, std::string());
 }
 
 void AdvancedPlotter::execute()

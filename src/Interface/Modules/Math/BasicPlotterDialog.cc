@@ -46,7 +46,7 @@ using namespace SCIRun::Core::Datatypes;
 
 BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent/* = 0*/)
-	: ModuleDialogGeneric(state, parent)
+	: ModuleDialogGeneric(state, parent), dataColors_(5), dataLabels_(5)
 {
 	setupUi(this);
 	setWindowTitle(QString::fromStdString(name));
@@ -57,7 +57,7 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
 	//addCheckBoxManager(verticalAxisGroupBox_, Parameters::VerticalAxisVisible);
   //addCheckBoxManager(horizontalAxisGroupBox_, Parameters::HorizontalAxisVisible);
 	addLineEditManager(titleLineEdit_, Parameters::PlotTitle);
-	addLineEditManager(dataLineEdit_, Parameters::DataTitle);
+	//addLineEditManager(dataLineEdit_, Parameters::DataTitle);
 	addLineEditManager(xAxisLineEdit_, Parameters::XAxisLabel);
 	addLineEditManager(yAxisLineEdit_, Parameters::YAxisLabel);
 	addCheckBoxManager(showPointsCheckBox_, Parameters::ShowPointSymbols);
@@ -65,8 +65,8 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
 	connect(showPlotPushButton_, SIGNAL(clicked()), this, SLOT(showPlot()));
 	connect(exportPlotPushButton_, SIGNAL(clicked()), this, SLOT(exportPlot()));
 	connect(dataColorPushButton_, SIGNAL(clicked()), this, SLOT(assignDataColor()));
-
-	dataColors_.push_back(Qt::red);
+  connect(dataSeriesComboBox_, SIGNAL(activated(int)), this, SLOT(switchDataSeries(int)));
+  dataSeriesComboBox_->setDisabled(true);
 }
 
 BasicPlotterDialog::~BasicPlotterDialog()
@@ -76,6 +76,10 @@ BasicPlotterDialog::~BasicPlotterDialog()
 
 void BasicPlotterDialog::pullSpecial()
 {
+  auto colors = colorsFromState(Parameters::PlotColors);
+  for (const auto& c : colors)
+    qDebug() << "Color from state:" << c;
+
 	if (plotDialog_ && plotDialog_->isVisible())
 		updatePlot();
 }
@@ -109,7 +113,7 @@ void BasicPlotterDialog::plotData()
 	{
     auto plot = plotDialog_->plot();
 		plot->clearCurves();
-		plot->addCurve(data, dataLineEdit_->text(), dataColors_[0], true, showPoints);
+		plot->addCurve(data, dataLineEdit_->text(), dataColors_[dataSeriesIndex_], true, showPoints);
 		plot->addLegend();
 	}
 }
@@ -119,7 +123,7 @@ void BasicPlotterDialog::assignDataColor()
   auto newColor = QColorDialog::getColor(dataColors_[0], this, "Choose data color");
   if (newColor.isValid())
   {
-		dataColors_[0] = newColor;
+		dataColors_[dataSeriesIndex_] = newColor;
 		updatePlot();
   }
 }
@@ -127,4 +131,10 @@ void BasicPlotterDialog::assignDataColor()
 void BasicPlotterDialog::exportPlot()
 {
   plotDialog_->plot()->exportPlot();
+}
+
+void BasicPlotterDialog::switchDataSeries(int index)
+{
+  qDebug() << __FUNCTION__ << index;
+  dataSeriesIndex_ = index;
 }

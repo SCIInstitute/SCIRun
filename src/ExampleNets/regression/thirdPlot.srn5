@@ -16,7 +16,7 @@
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>9</count>
+							<count>10</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
@@ -51,6 +51,18 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PlotColors</name>
+								</first>
+								<second>
+									<name>PlotColors</name>
+									<value>
+										<which>2</which>
+										<value></value>
 									</value>
 								</second>
 							</item>
@@ -140,7 +152,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>9</count>
+							<count>10</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -175,6 +187,18 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PlotColors</name>
+								</first>
+								<second>
+									<name>PlotColors</name>
+									<value>
+										<which>2</which>
+										<value></value>
 									</value>
 								</second>
 							</item>
@@ -264,7 +288,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>9</count>
+							<count>10</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -299,6 +323,18 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PlotColors</name>
+								</first>
+								<second>
+									<name>PlotColors</name>
+									<value>
+										<which>2</which>
+										<value></value>
 									</value>
 								</second>
 							</item>

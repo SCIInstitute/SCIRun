@@ -45,6 +45,7 @@ AdvancedPlotterDialog::AdvancedPlotterDialog(const std::string& name, ModuleStat
 	QWidget* parent/* = 0*/)
 	: BasicPlotterDialog(name, state, parent)
 {
+  dataSeriesComboBox_->setDisabled(false);
 }
 
 void AdvancedPlotterDialog::plotData()
