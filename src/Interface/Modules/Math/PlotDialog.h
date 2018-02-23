@@ -68,7 +68,6 @@ namespace SCIRun
       template <typename Column>
       void addCurve(const Column& x, const Column& y, const QString& title, const QColor& color, bool showLegend, bool showPoints)
       {
-        setBounds(x, y);
         addCurveImpl(makePoints(x, y), title, color, showLegend, showPoints);
       }
       void clearCurves();

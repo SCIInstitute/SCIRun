@@ -273,8 +273,46 @@
 								<second>
 									<name>PlotColors</name>
 									<value>
-										<which>2</which>
-										<value></value>
+										<which>5</which>
+										<value>
+											<count>5</count>
+											<item_version>0</item_version>
+											<item>
+												<name>color</name>
+												<value>
+													<which>2</which>
+													<value>Color(1,0.027451,0.0431373)</value>
+												</value>
+											</item>
+											<item>
+												<name>color</name>
+												<value>
+													<which>2</which>
+													<value>Color(0.203922,1,0.129412)</value>
+												</value>
+											</item>
+											<item>
+												<name>color</name>
+												<value>
+													<which>2</which>
+													<value>Color(1,0.964706,0.109804)</value>
+												</value>
+											</item>
+											<item>
+												<name>color</name>
+												<value>
+													<which>2</which>
+													<value>Color(0.0666667,0.137255,0.980392)</value>
+												</value>
+											</item>
+											<item>
+												<name>color</name>
+												<value>
+													<which>2</which>
+													<value>Color(1,0.129046,0.982803)</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -286,7 +324,7 @@
 									<name>PlotTitle</name>
 									<value>
 										<which>2</which>
-										<value>Plot title</value>
+										<value>Jess Data[0..20]</value>
 									</value>
 								</second>
 							</item>
@@ -298,7 +336,7 @@
 									<name>ShowPointSymbols</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -334,7 +372,7 @@
 									<name>XAxisLabel</name>
 									<value>
 										<which>2</which>
-										<value>x axis</value>
+										<value>time</value>
 									</value>
 								</second>
 							</item>
@@ -346,7 +384,7 @@
 									<name>YAxisLabel</name>
 									<value>
 										<which>2</which>
-										<value>y axis</value>
+										<value>signal ºª¡£¢§</value>
 									</value>
 								</second>
 							</item>
