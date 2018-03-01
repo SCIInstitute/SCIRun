@@ -371,12 +371,17 @@
         </property>
         <item>
          <property name="text">
-          <string>Line</string>
+          <string>Lines</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Smooth</string>
+          <string>Steps</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Dots</string>
          </property>
         </item>
         <item>

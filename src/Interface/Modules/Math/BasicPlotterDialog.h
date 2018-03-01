@@ -65,6 +65,7 @@ namespace SCIRun
       void assignDataColor();
       void assignBackgroundColor();
       void switchDataSeries(int index);
+      void setCurveStyle(const QString& style);
       void assignDataLabel(const QString& label);
     };
   }

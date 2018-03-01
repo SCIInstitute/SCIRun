@@ -60,6 +60,8 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
 	addLineEditManager(xAxisLineEdit_, Parameters::XAxisLabel);
 	addLineEditManager(yAxisLineEdit_, Parameters::YAxisLabel);
 	addCheckBoxManager(showPointsCheckBox_, Parameters::ShowPointSymbols);
+	addComboBoxManager(curveStyleComboBox_, Parameters::CurveStyle);
+	connect(curveStyleComboBox_, SIGNAL(activated(const QString&)), this, SLOT(setCurveStyle(const QString&)));
 
 	connect(showPlotPushButton_, SIGNAL(clicked()), this, SLOT(showPlot()));
 	connect(exportPlotPushButton_, SIGNAL(clicked()), this, SLOT(exportPlot()));
@@ -164,4 +166,9 @@ void BasicPlotterDialog::switchDataSeries(int index)
     ScopedWidgetSignalBlocker q(dataLineEdit_);
     dataLineEdit_->setText(QString::fromStdString(dataLabels_[dataSeriesIndex_].toString()));
   }
+}
+
+void BasicPlotterDialog::setCurveStyle(const QString& style)
+{
+	plotDialog_->plot()->setCurveStyle(style);
 }

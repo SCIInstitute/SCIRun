@@ -43,6 +43,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(ShowPointSymbols);
         ALGORITHM_PARAMETER_DECL(PlotColors);
         ALGORITHM_PARAMETER_DECL(PlotBackgroundColor);
+        ALGORITHM_PARAMETER_DECL(CurveStyle);
       }}}
 
   namespace Modules {

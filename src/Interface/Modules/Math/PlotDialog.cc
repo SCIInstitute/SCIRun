@@ -198,6 +198,7 @@ void Plot::addCurveImpl(const QPolygonF& points, const QString& title, const QCo
 		curve->setSymbol(new QwtSymbol(QwtSymbol::Ellipse, Qt::yellow, QPen(Qt::blue), QSize(3, 3)));
   curve->attach(this);
   curve->setSamples( points );
+  updateCurveStyle(curve);
 }
 
 void Plot::clearCurves()
@@ -214,4 +215,25 @@ void Plot::exportPlot()
 {
   QwtPlotRenderer renderer;
 	renderer.exportTo(this, "scirunplot.pdf");
+}
+
+void Plot::setCurveStyle(const QString& style)
+{
+  curveStyle_ = style;
+  for (auto& curve : curves_)
+	{
+    updateCurveStyle(curve);
+  }
+}
+
+void Plot::updateCurveStyle(QwtPlotCurve* curve)
+{
+  if (curveStyle_ == "Lines")
+    curve->setStyle(QwtPlotCurve::Lines);
+  else if (curveStyle_ == "Steps")
+    curve->setStyle(QwtPlotCurve::Steps);
+  else if (curveStyle_ == "None")
+    curve->setStyle(QwtPlotCurve::NoCurve);
+  else if (curveStyle_ == "Dots")
+    curve->setStyle(QwtPlotCurve::Dots);
 }

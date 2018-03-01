@@ -57,6 +57,7 @@ void AdvancedPlotter::setStateDefaults()
   state->setValue(Parameters::VerticalAxisPosition, 0.0);
   state->setValue(Parameters::HorizontalAxisPosition, 0.0);
   state->setValue(Parameters::ShowPointSymbols, true);
+  state->setValue(Parameters::CurveStyle, std::string("Lines"));
   auto colors = makeAnonymousVariableList(
     ColorRGB(0x27213c).toString(),
     ColorRGB(0x5A352A).toString(),

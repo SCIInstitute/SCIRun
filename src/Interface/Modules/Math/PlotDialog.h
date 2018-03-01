@@ -73,6 +73,7 @@ namespace SCIRun
       void clearCurves();
       void addLegend();
       void exportPlot();
+      void setCurveStyle(const QString& style);
     public Q_SLOTS:
       void adjustZoom(const QString& type);
     private Q_SLOTS:
@@ -99,11 +100,13 @@ namespace SCIRun
         setAxisScale( yLeft, minY, maxY );
       }
       void addCurveImpl(const QPolygonF& points, const QString& title, const QColor& color, bool showLegend, bool showPoints);
+      void updateCurveStyle(QwtPlotCurve* curve);
 
       QwtPlotMarker* verticalAxis_ {nullptr};
       QwtPlotMarker* horizontalAxis_ {nullptr};
       QwtPlotMagnifier* magnifier_ {nullptr};
       std::vector<QwtPlotCurve*> curves_;
+      QString curveStyle_;
     };
   }
 }
