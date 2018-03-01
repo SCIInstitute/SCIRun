@@ -24,6 +24,7 @@
 #include <Modules/Math/BasicPlotter.h>
 #include <Modules/Math/AdvancedPlotter.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
@@ -56,7 +57,14 @@ void AdvancedPlotter::setStateDefaults()
   state->setValue(Parameters::VerticalAxisPosition, 0.0);
   state->setValue(Parameters::HorizontalAxisPosition, 0.0);
   state->setValue(Parameters::ShowPointSymbols, true);
-  state->setValue(Parameters::PlotColors, std::string());
+  auto colors = makeAnonymousVariableList(
+    ColorRGB(0x27213c).toString(),
+    ColorRGB(0x5A352A).toString(),
+    ColorRGB(0xA33B20).toString(),
+    ColorRGB(0xA47963).toString(),
+    ColorRGB(0xA6A57A).toString()
+  );
+  state->setValue(Parameters::PlotColors, colors);
   state->setValue(Parameters::PlotBackgroundColor, std::string());
 }
 
