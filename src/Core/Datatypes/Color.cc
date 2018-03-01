@@ -71,6 +71,11 @@ ColorRGB::ColorRGB(const std::string& rgb) : r_(1.0), g_(1.0), b_(1.0), a_(1.0)
   }
 }
 
+ColorRGB::ColorRGB(unsigned long int rgbHexValue) : r_(1.0), g_(1.0), b_(1.0), a_(1.0)
+{
+  //TODO
+}
+
 std::string ColorRGB::toString() const
 {
   std::ostringstream ostr;
