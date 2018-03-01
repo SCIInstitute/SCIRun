@@ -60,8 +60,9 @@ void AdvancedPlotterDialog::plotData()
   {
     DenseMatrixHandle x, y;
     boost::tie(x, y) = tup;
+		auto independentColumn = [&x,&y](int c) { if (x->ncols() == y->ncols()) return c; else return 0; }
     for (int c = 0; c < y->ncols(); ++c)
-      plot->addCurve(x->col(0), y->col(c), QString::fromStdString(dataLabels_[c % labelColorMax_].toString()),
+      plot->addCurve(x->col(independentColumn(c)), y->col(c), QString::fromStdString(dataLabels_[c % labelColorMax_].toString()),
         dataColors_[c % labelColorMax_], c < labelColorMax_, showPoints);
     if (y->ncols() > labelColorMax_)
       addLegend = false;

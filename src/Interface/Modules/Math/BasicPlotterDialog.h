@@ -47,6 +47,8 @@ namespace SCIRun
         SCIRun::Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
       ~BasicPlotterDialog();
+    public Q_SLOTS:
+      virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) override;
     protected:
       virtual void pullSpecial() override;
       virtual void plotData();

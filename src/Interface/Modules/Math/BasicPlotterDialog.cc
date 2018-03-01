@@ -172,3 +172,16 @@ void BasicPlotterDialog::setCurveStyle(const QString& style)
 {
 	plotDialog_->plot()->setCurveStyle(style);
 }
+
+void BasicPlotterDialog::updateFromPortChange(int, const std::string&, DynamicPortChange type)
+{
+  if (type == DynamicPortChange::INITIAL_PORT_CONSTRUCTION)
+    return;
+
+	if (type == DynamicPortChange::USER_REMOVED_PORT)
+	{
+		state_->setTransientValue(Variables::InputMatrix, nullptr);
+		plotDialog_->plot()->clearCurves();
+		QMessageBox::warning(this, "Warning: Curves and plot data cleared", "Curves and plot data cleared. Re-execute to replot connected data.");
+	}
+}
