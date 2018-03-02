@@ -110,7 +110,15 @@ void LinePlotter::execute()
         error(ostr.str());
         return;
       }
+
+      if (independents[i]->ncols() != dependents[i]->ncols())
+      {
+        std::ostringstream ostr;
+        ostr << "Due to different numbers of columns in input pair " << i << ", all dependent data columns will be plotted against the first independent data column for that input.";
+        warning(ostr.str());
+      }
     }
+
     get_state()->setTransientValue(Parameters::IndependentVariablesVector, independents);
     get_state()->setTransientValue(Parameters::DependentVariablesVector, dependents);
   }

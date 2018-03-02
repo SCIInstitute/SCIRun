@@ -56,13 +56,11 @@ void AdvancedPlotterDialog::plotData()
   auto showPoints = showPointsCheckBox_->isChecked();
   plot->clearCurves();
   bool addLegend = true;
-	bool unmatchedColumns = false;
   for (auto&& tup : zip(independents, dependents))
   {
     DenseMatrixHandle x, y;
     boost::tie(x, y) = tup;
 		bool useFirstXColumnOnly = x->ncols() != y->ncols();
-		unmatchedColumns |= useFirstXColumnOnly;
 		auto independentColumn = [useFirstXColumnOnly](int c)
 		{
 			return useFirstXColumnOnly ? 0 : c;
@@ -75,6 +73,4 @@ void AdvancedPlotterDialog::plotData()
   }
   if (addLegend)
     plot->addLegend();
-	if (unmatchedColumns)
-		QMessageBox::warning(this, "Warning: Unmatched columns", "Due to different numbers of columns in some pairs of inputs, all dependent data columns were plotted against the first independent data column.");
 }
