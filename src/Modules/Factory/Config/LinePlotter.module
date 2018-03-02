@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "AdvancedPlotter",
+    "name": "LinePlotter",
     "namespace": "Math",
     "status": "New",
     "description": "...",

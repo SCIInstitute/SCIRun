@@ -7,12 +7,12 @@
 			<count>11</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>AdvancedPlotter:1</first>
+				<first>LinePlotter:1</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
 						<category_name_>Math</category_name_>
-						<module_name_>AdvancedPlotter</module_name_>
+						<module_name_>LinePlotter</module_name_>
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
@@ -231,12 +231,12 @@
 				</second>
 			</item>
 			<item>
-				<first>AdvancedPlotter:2</first>
+				<first>LinePlotter:2</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>Math</category_name_>
-						<module_name_>AdvancedPlotter</module_name_>
+						<module_name_>LinePlotter</module_name_>
 					</module>
 					<state>
 						<stateMap>
@@ -408,7 +408,7 @@
 									<name>YAxisLabel</name>
 									<value>
 										<which>2</which>
-										<value>signal ºª¡£¢§</value>
+										<value>signal ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</value>
 									</value>
 								</second>
 							</item>
@@ -417,12 +417,12 @@
 				</second>
 			</item>
 			<item>
-				<first>AdvancedPlotter:3</first>
+				<first>LinePlotter:3</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>Math</category_name_>
-						<module_name_>AdvancedPlotter</module_name_>
+						<module_name_>LinePlotter</module_name_>
 					</module>
 					<state>
 						<stateMap>
@@ -1265,7 +1265,7 @@
 					<name>EnteredMatrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>AdvancedPlotter:1</moduleId2_>
+				<moduleId2_>LinePlotter:1</moduleId2_>
 				<port2_>
 					<name>IndependentVariable</name>
 					<id>0</id>
@@ -1277,7 +1277,7 @@
 					<name>EnteredMatrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>AdvancedPlotter:1</moduleId2_>
+				<moduleId2_>LinePlotter:1</moduleId2_>
 				<port2_>
 					<name>DependentVariables</name>
 					<id>0</id>
@@ -1325,7 +1325,7 @@
 					<name>ResultMatrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>AdvancedPlotter:2</moduleId2_>
+				<moduleId2_>LinePlotter:2</moduleId2_>
 				<port2_>
 					<name>DependentVariables</name>
 					<id>2</id>
@@ -1337,7 +1337,7 @@
 					<name>ResultMatrix</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>AdvancedPlotter:3</moduleId2_>
+				<moduleId2_>LinePlotter:3</moduleId2_>
 				<port2_>
 					<name>DependentVariables</name>
 					<id>0</id>
@@ -1349,21 +1349,21 @@
 		<count>11</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
-			<first>AdvancedPlotter:1</first>
+			<first>LinePlotter:1</first>
 			<second class_id="18" tracking_level="0" version="0">
 				<first>-2.38000000000000000e+02</first>
 				<second>-8.40000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
-			<first>AdvancedPlotter:2</first>
+			<first>LinePlotter:2</first>
 			<second>
 				<first>7.60000000000000000e+01</first>
 				<second>7.60000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
-			<first>AdvancedPlotter:3</first>
+			<first>LinePlotter:3</first>
 			<second>
 				<first>3.04000000000000000e+02</first>
 				<second>1.52000000000000000e+02</second>
@@ -1438,15 +1438,15 @@
 		<count>11</count>
 		<item_version>0</item_version>
 		<item class_id="21" tracking_level="0" version="0">
-			<first>AdvancedPlotter:1</first>
+			<first>LinePlotter:1</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>AdvancedPlotter:2</first>
+			<first>LinePlotter:2</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>AdvancedPlotter:3</first>
+			<first>LinePlotter:3</first>
 			<second>-1</second>
 		</item>
 		<item>
@@ -1501,4 +1501,3 @@
 	</subnetworks>
 </networkFile>
 </boost_serialization>
-

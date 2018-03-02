@@ -21,8 +21,8 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef MODULES_MATH_ADVANCEDPLOTTER_H
-#define MODULES_MATH_ADVANCEDPLOTTER_H
+#ifndef MODULES_MATH_LinePlotter_H
+#define MODULES_MATH_LinePlotter_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Math/share.h>
@@ -39,12 +39,12 @@ namespace SCIRun {
   namespace Modules {
     namespace Math {
 
-      class SCISHARE AdvancedPlotter : public Dataflow::Networks::Module,
+      class SCISHARE LinePlotter : public Dataflow::Networks::Module,
         public Has2InputPorts<DynamicPortTag<MatrixPortTag>, DynamicPortTag<MatrixPortTag>>,
         public HasNoOutputPorts
       {
       public:
-        AdvancedPlotter();
+        LinePlotter();
         virtual void setStateDefaults() override;
         virtual void execute() override;
 

@@ -34,18 +34,18 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 
-MODULE_INFO_DEF(AdvancedPlotter, Math, SCIRun)
+MODULE_INFO_DEF(LinePlotter, Math, SCIRun);
 
 ALGORITHM_PARAMETER_DEF(Math, IndependentVariablesVector);
 ALGORITHM_PARAMETER_DEF(Math, DependentVariablesVector);
 
-AdvancedPlotter::AdvancedPlotter() : Module(staticInfo_)
+LinePlotter::LinePlotter() : Module(staticInfo_)
 {
   INITIALIZE_PORT(IndependentVariable);
   INITIALIZE_PORT(DependentVariables);
 }
 
-void AdvancedPlotter::setStateDefaults()
+void LinePlotter::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(Parameters::PlotTitle, std::string("Plot title"));
@@ -69,7 +69,7 @@ void AdvancedPlotter::setStateDefaults()
   state->setValue(Parameters::PlotBackgroundColor, std::string());
 }
 
-void AdvancedPlotter::execute()
+void LinePlotter::execute()
 {
   auto independents = getOptionalDynamicInputs(IndependentVariable);
   auto dependents = getOptionalDynamicInputs(DependentVariables);
