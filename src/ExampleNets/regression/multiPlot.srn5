@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>8</count>
+			<count>13</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>AdvancedPlotter:0</first>
@@ -403,6 +403,402 @@
 				</second>
 			</item>
 			<item>
+				<first>AdvancedPlotter:2</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>AdvancedPlotter</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>12</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>CurveStyle</name>
+								</first>
+								<second>
+									<name>CurveStyle</name>
+									<value>
+										<which>2</which>
+										<value>Lines</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DataTitle</name>
+								</first>
+								<second>
+									<name>DataTitle</name>
+									<value>
+										<which>2</which>
+										<value>Data title</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>HorizontalAxisPosition</name>
+								</first>
+								<second>
+									<name>HorizontalAxisPosition</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>HorizontalAxisVisible</name>
+								</first>
+								<second>
+									<name>HorizontalAxisVisible</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PlotBackgroundColor</name>
+								</first>
+								<second>
+									<name>PlotBackgroundColor</name>
+									<value>
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PlotColors</name>
+								</first>
+								<second>
+									<name>PlotColors</name>
+									<value>
+										<which>5</which>
+										<value>
+											<count>5</count>
+											<item_version>0</item_version>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>2</which>
+													<value>Color(0.152941,0.129412,0.235294)</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>2</which>
+													<value>Color(0.352941,0.207843,0.164706)</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>2</which>
+													<value>Color(0.639216,0.231373,0.12549)</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>2</which>
+													<value>Color(0.643137,0.47451,0.388235)</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>2</which>
+													<value>Color(0.65098,0.647059,0.478431)</value>
+												</value>
+											</item>
+										</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PlotTitle</name>
+								</first>
+								<second>
+									<name>PlotTitle</name>
+									<value>
+										<which>2</which>
+										<value>Plot title</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowPointSymbols</name>
+								</first>
+								<second>
+									<name>ShowPointSymbols</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>VerticalAxisPosition</name>
+								</first>
+								<second>
+									<name>VerticalAxisPosition</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>VerticalAxisVisible</name>
+								</first>
+								<second>
+									<name>VerticalAxisVisible</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>XAxisLabel</name>
+								</first>
+								<second>
+									<name>XAxisLabel</name>
+									<value>
+										<which>2</which>
+										<value>x axis</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>YAxisLabel</name>
+								</first>
+								<second>
+									<name>YAxisLabel</name>
+									<value>
+										<which>2</which>
+										<value>y axis</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>AdvancedPlotter:3</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>AdvancedPlotter</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>12</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>CurveStyle</name>
+								</first>
+								<second>
+									<name>CurveStyle</name>
+									<value>
+										<which>2</which>
+										<value>Lines</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DataTitle</name>
+								</first>
+								<second>
+									<name>DataTitle</name>
+									<value>
+										<which>2</which>
+										<value>Data title</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>HorizontalAxisPosition</name>
+								</first>
+								<second>
+									<name>HorizontalAxisPosition</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>HorizontalAxisVisible</name>
+								</first>
+								<second>
+									<name>HorizontalAxisVisible</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PlotBackgroundColor</name>
+								</first>
+								<second>
+									<name>PlotBackgroundColor</name>
+									<value>
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PlotColors</name>
+								</first>
+								<second>
+									<name>PlotColors</name>
+									<value>
+										<which>5</which>
+										<value>
+											<count>5</count>
+											<item_version>0</item_version>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>2</which>
+													<value>Color(0.152941,0.129412,0.235294)</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>2</which>
+													<value>Color(0.352941,0.207843,0.164706)</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>2</which>
+													<value>Color(0.639216,0.231373,0.12549)</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>2</which>
+													<value>Color(0.643137,0.47451,0.388235)</value>
+												</value>
+											</item>
+											<item>
+												<name>listElement</name>
+												<value>
+													<which>2</which>
+													<value>Color(0.65098,0.647059,0.478431)</value>
+												</value>
+											</item>
+										</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PlotTitle</name>
+								</first>
+								<second>
+									<name>PlotTitle</name>
+									<value>
+										<which>2</which>
+										<value>Plot title</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowPointSymbols</name>
+								</first>
+								<second>
+									<name>ShowPointSymbols</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>VerticalAxisPosition</name>
+								</first>
+								<second>
+									<name>VerticalAxisPosition</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>VerticalAxisVisible</name>
+								</first>
+								<second>
+									<name>VerticalAxisVisible</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>XAxisLabel</name>
+								</first>
+								<second>
+									<name>XAxisLabel</name>
+									<value>
+										<which>2</which>
+										<value>x axis</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>YAxisLabel</name>
+								</first>
+								<second>
+									<name>YAxisLabel</name>
+									<value>
+										<which>2</which>
+										<value>y axis</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>CreateMatrix:0</first>
 				<second>
 					<module>
@@ -576,9 +972,96 @@
 					</state>
 				</second>
 			</item>
+			<item>
+				<first>CreateMatrix:6</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>TextEntry</name>
+								</first>
+								<second>
+									<name>TextEntry</name>
+									<value>
+										<which>2</which>
+										<value>2 4
+3 10</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateMatrix:7</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>TextEntry</name>
+								</first>
+								<second>
+									<name>TextEntry</name>
+									<value>
+										<which>2</which>
+										<value>3
+4</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateMatrix:8</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>TextEntry</name>
+								</first>
+								<second>
+									<name>TextEntry</name>
+									<value>
+										<which>2</which>
+										<value>10
+20</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>6</count>
+			<count>12</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CreateMatrix:0</moduleId1_>
@@ -652,10 +1135,82 @@
 					<id>0</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>CreateMatrix:6</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>AdvancedPlotter:2</moduleId2_>
+				<port2_>
+					<name>DependentVariables</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateMatrix:6</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>AdvancedPlotter:3</moduleId2_>
+				<port2_>
+					<name>DependentVariables</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateMatrix:7</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>AdvancedPlotter:2</moduleId2_>
+				<port2_>
+					<name>IndependentVariable</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateMatrix:7</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>AdvancedPlotter:3</moduleId2_>
+				<port2_>
+					<name>IndependentVariable</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateMatrix:7</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>AdvancedPlotter:3</moduleId2_>
+				<port2_>
+					<name>IndependentVariable</name>
+					<id>1</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateMatrix:8</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>AdvancedPlotter:2</moduleId2_>
+				<port2_>
+					<name>DependentVariables</name>
+					<id>1</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>8</count>
+		<count>13</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>AdvancedPlotter:0</first>
@@ -669,6 +1224,20 @@
 			<second>
 				<first>-1.16900000000000000e+03</first>
 				<second>-2.44000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>AdvancedPlotter:2</first>
+			<second>
+				<first>-8.91000000000000000e+02</first>
+				<second>1.20000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
+			<first>AdvancedPlotter:3</first>
+			<second>
+				<first>-1.09500000000000000e+03</first>
+				<second>1.31000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -713,6 +1282,27 @@
 				<second>-3.84000000000000000e+02</second>
 			</second>
 		</item>
+		<item>
+			<first>CreateMatrix:6</first>
+			<second>
+				<first>-9.10000000000000000e+02</first>
+				<second>-1.22000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateMatrix:7</first>
+			<second>
+				<first>-1.15100000000000000e+03</first>
+				<second>-1.17000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateMatrix:8</first>
+			<second>
+				<first>-7.60000000000000000e+02</first>
+				<second>-7.60000000000000000e+01</second>
+			</second>
+		</item>
 	</modulePositions>
 	<moduleNotes class_id="19" tracking_level="0" version="0">
 		<count>0</count>
@@ -723,7 +1313,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="20" tracking_level="0" version="0">
-		<count>8</count>
+		<count>13</count>
 		<item_version>0</item_version>
 		<item class_id="21" tracking_level="0" version="0">
 			<first>AdvancedPlotter:0</first>
@@ -731,6 +1321,14 @@
 		</item>
 		<item>
 			<first>AdvancedPlotter:1</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>AdvancedPlotter:2</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>AdvancedPlotter:3</first>
 			<second>-1</second>
 		</item>
 		<item>
@@ -755,6 +1353,18 @@
 		</item>
 		<item>
 			<first>CreateMatrix:5</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>CreateMatrix:6</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>CreateMatrix:7</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>CreateMatrix:8</first>
 			<second>-1</second>
 		</item>
 	</moduleTags>

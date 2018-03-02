@@ -81,16 +81,34 @@ void AdvancedPlotter::execute()
       error("Empty matrix input: dependent variable data");
       return;
     }
-    if (independents.empty())
+    if (independents.size() < dependents.size())
     {
-      remark("Independent variable input not provided: using row index of dependent data as independent variable.");
-      for (const auto& dependent : dependents)
+      remark("Independent variable input insufficient: using row index of dependent data as independent variable.");
+      for (int m = independents.size(); m < dependents.size(); ++m)
       {
-        auto rowCount = dependent->nrows();
+        auto rowCount = dependents[m]->nrows();
         auto indexMatrix(boost::make_shared<DenseMatrix>(rowCount, 1));
         for (int i = 0; i < rowCount; ++i)
           (*indexMatrix)(i, 0) = i;
         independents.push_back(indexMatrix);
+      }
+    }
+    else if (independents.size() > dependents.size())
+    {
+      independents.resize(dependents.size());
+      remark("Ignoring unmatched independent variable matrices.");
+    }
+    for (int i = 0; i < independents.size(); ++i)
+    {
+      auto expectedRows = independents[i]->nrows();
+      auto actualRows = dependents[i]->nrows();
+      if (actualRows != expectedRows)
+      {
+        std::ostringstream ostr;
+        ostr << "Dependent variable matrix size inconsistency. Input matrices at index " << i << " have unequal row counts: independent matrix has " << expectedRows
+          << " but dependent matrix has " << actualRows << ".";
+        error(ostr.str());
+        return;
       }
     }
     get_state()->setTransientValue(Parameters::IndependentVariablesVector, independents);
