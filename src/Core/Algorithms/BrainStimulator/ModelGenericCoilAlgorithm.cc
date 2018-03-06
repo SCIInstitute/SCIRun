@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -64,13 +64,13 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LayerStepSize);
 ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 
 
-		
+
 
 
 		class BaseSegments
 		{
 			public:
-				BaseSegments(				
+				BaseSegments(
 					std::vector<Vector>& p,
 					std::vector<size_t>& i,
 					std::vector<double>& v):
@@ -80,7 +80,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					pc(0),
 					start_idx(0),
 					end_idx(0)
-					
+
 				{
 				}
 				virtual ~BaseSegments()
@@ -93,7 +93,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					points.push_back(point);
 
 					size_t psize = points.size();
-						
+
 					if( pc > 0)
 					{
 
@@ -104,11 +104,11 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					else
 					{
 						start_idx = psize - 1;
-					}				
+					}
 
 					++pc;
 				}
-				
+
 				void Transform(Transform& t)
 				{
 					for(size_t i = start_idx; i < start_idx + pc; ++i)
@@ -155,12 +155,12 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					}
 
 					//std::cout << "~ClosedSegments() Points Indices Values: " <<  points.size() << " " << indices.size() << " " << values.size() << std::endl;
-					
+
 					//assert(points.size() > 0);
 					//assert(points.size() == values.size());
 					//assert(points.size()*2 == indices.size());
 				}
-				
+
 				void Terminate()
 				{
 					size_t psize = points.size();
@@ -171,7 +171,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 
 					values.push_back(values[values.size()-1]);
 
-					//std::cout << "ClosedSegment-Teminate-> psize:" << psize << " pc:" << pc << "    " << std::endl; 
+					//std::cout << "ClosedSegment-Teminate-> psize:" << psize << " pc:" << pc << "    " << std::endl;
 
 					pc = 0;
 				}
@@ -201,12 +201,12 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 				BaseCoilgen(const AlgorithmBase* algo, ModelTMSCoilAlgorithm::Args& args) :
 				  ref_cnt(0),
 				  algo(algo),
-				  
+
 				  coilLOD(args.coilLevelDetails),
 				  coilType(args.type),
 				  coilLayers(args.coilLayers),
 				  rings(args.rings),
-				  
+
 				  coilLayersStep(args.coilLayersStep),
 				  wingsAngle(args.wingsAngle),
 				  current(args.current),
@@ -215,27 +215,27 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 				  outerD(args.coilDistance)
 
 				{
-					  	
+
 				}
-				
+
 				virtual ~BaseCoilgen()
 				{
 				}
-							
 
-				
+
+
 				void Execute(FieldHandle& meshFieldHandle) const
 				{
-					
+
 					std::vector<Vector> coilPoints;
 					std::vector<size_t> coilIndices;
 
 					this->Generate(meshFieldHandle);
-				}	
-		
+				}
+
 				//! Global reference counting
 				int ref_cnt;
-			
+
 			protected:
 
 				//! ref to the executing algorithm context
@@ -250,29 +250,29 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 				const double innerR;
 				const double outerR;
 				const double outerD;
-				
+
 				//! Local entry function, must be implemented by each specific kernel
 				virtual void Generate(FieldHandle& meshHandle) const = 0;
 
 				void GenPointsCircular(
 					BaseSegments& segments,
-					Vector origin, 
+					Vector origin,
 					double radius,
 					double value,
 					double fromPI,
-					double toPI, 
+					double toPI,
 					double extLOD = 0.0) const
 				{
 
-					double dPI = abs(toPI - fromPI);
-					
+					double dPI = fabs(toPI - fromPI);
+
 					double minPI = M_PI /  ( 8.0 * coilLOD + coilLOD * extLOD );
-					
+
 					assert(dPI > minPI);
-					
+
 					size_t nsegments = 2;
 					double iPI = dPI / nsegments;
-					
+
 					while(iPI > minPI)
 					{
 						nsegments++;
@@ -280,9 +280,9 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					}
 
 					//algo->remark("#Segments(LOD):  " +  boost::lexical_cast<std::string>(nsegments) );
-					
+
 					dPI = toPI - fromPI;
-					
+
 					iPI = dPI / nsegments;
 
 					for(size_t i = 0; i < nsegments; i++)
@@ -291,14 +291,14 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 						segments.AddPoint(point,value);
 					}
 				}
-				
+
 				void BuildScirunMesh(
-						const std::vector<Vector>& points, 
-						const std::vector<size_t>& indices, 
+						const std::vector<Vector>& points,
+						const std::vector<size_t>& indices,
 						const std::vector<double>& values,
 						FieldHandle& meshHandle) const
 				{
-					
+
 					VMesh* mesh = meshHandle->vmesh();
 
 
@@ -331,40 +331,40 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					field->resize_values();
 					field->set_values(values);
 				}
-						
-				
+
+
 		};
-		
+
 		//! piece-wise wire discretization
 		class CircularWireCoilgen : public BaseCoilgen
 		{
-				
+
 			public:
-			
-				CircularWireCoilgen( 
-					const AlgorithmBase* algo, 
+
+				CircularWireCoilgen(
+					const AlgorithmBase* algo,
 					ModelTMSCoilAlgorithm::Args& args )
-					: 
+					:
 					BaseCoilgen( algo, args )
 				{
 					coilLayers = coilLayers == 0 ? 1 : coilLayers;
 				}
-				
+
 				~CircularWireCoilgen()
 				{
 				}
-				
-				
+
+
 				virtual void Generate(FieldHandle& meshHandle) const
-				{					
+				{
 					std::vector<Vector> coilPoints;
 					std::vector<size_t> coilIndices;
 					std::vector<double> coilValues;
-					
+
 
 
 					Vector step(0,0,coilLayersStep);
-					
+
 					double dr = (outerR - innerR) / rings;
 
 					if(coilType == 1)
@@ -376,7 +376,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 						{
 							ClosedSegments segments(coilPoints,coilIndices,coilValues);
 							GenPointsCircular(segments, origin, outerR, current, 0.0, 2.0*M_PI);
-							
+
 							origin += step;
 						}
 
@@ -385,29 +385,29 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					{
 						Vector originLeft ( -outerR - (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
 						Vector originRight(  outerR + (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
-						
+
 						auto transLeft = Transform::Identity();
 						transLeft.post_rotate(M_PI*(wingsAngle/180),{0,1,0});
-						
+
 						auto transRight = Transform::Identity();
 						transRight.post_rotate(M_PI*(-wingsAngle/180),{0,1,0});
-					
+
 
 						for(size_t l = 0; l < coilLayers; l++)
 						{
-							
+
 							for (size_t i = 0; i < rings; i++)
 							{
 								ClosedSegments segments(coilPoints,coilIndices,coilValues);
 								GenPointsCircular(segments, originLeft, innerR + dr + i*dr, current, 0.0 , 2*M_PI );
 								segments.Transform(transLeft);
 							}
-							
+
 							originLeft += step;
 						}
 
 						for(size_t l = coilLayers; l < 2*coilLayers; l++)
-						{	
+						{
 
 							for (size_t i = 0; i < rings; i++)
 							{
@@ -415,11 +415,11 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 								GenPointsCircular(segments, originRight, innerR + dr + i*dr, -current, 0.0 , 2*M_PI);
 								segments.Transform(transRight);
 							}
-							
+
 							originRight += step;
 						}
-						
-						
+
+
 
 					}
 					else
@@ -427,8 +427,8 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 						algo->error("coil type value expeced: 1/2 (0-shape/8-shape)");
 						return;
 					}
-				
-										
+
+
 					//SCIrun API creating a new mesh
 					//0 data on elements; 1 data on nodes
 					FieldInformation fi("CurveMesh",0,"double");
@@ -437,21 +437,21 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					fi.make_scalar();
 
 					meshHandle = CreateField(fi);
-					
+
 					BuildScirunMesh(coilPoints,coilIndices,coilValues,meshHandle);
-				}		
-				
+				}
+
 		};
-		
+
 		//! piece-wise wire discretization
 		class MultiloopsCoilgen : public BaseCoilgen
 		{
 			public:
-			
-				MultiloopsCoilgen( 
-					const AlgorithmBase* algo, 
+
+				MultiloopsCoilgen(
+					const AlgorithmBase* algo,
 					ModelTMSCoilAlgorithm::Args args )
-					: 
+					:
 					BaseCoilgen( algo, args )
 				{
 					coilLayers = coilLayers == 0 ? 1 : coilLayers;
@@ -461,11 +461,11 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					//leave it up to users judgment
 
 				}
-				
+
 				~MultiloopsCoilgen()
 				{
 				}
-				
+
 				virtual void Generate(FieldHandle& meshHandle) const
 				{
 					std::vector<Vector> coilPoints;
@@ -507,12 +507,12 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 						}
 
 						for(size_t l = coilLayers; l < 2*coilLayers; l++)
-						{	
+						{
 							OpenSegments segments( coilPoints, coilIndices, coilValues );
 
 							//RIGHT coil
 							GenPointsSpiralRight(segments, originRight);
-							
+
 							originRight += step;
 						}
 
@@ -523,8 +523,8 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 						return;
 					}
 
-					
-										
+
+
 					//SCIrun API creating a new mesh
 					//0 data on elements; 1 data on nodes
 					FieldInformation fi("CurveMesh",0,"double");
@@ -533,26 +533,26 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					fi.make_scalar();
 
 					meshHandle = CreateField(fi);
-					
+
 					BuildScirunMesh(coilPoints,coilIndices,coilValues,meshHandle);
 				}
-				
+
 			protected:
-	
+
 				void GenPointsSpiralLeft(OpenSegments& segments, Vector center) const
 
 				{
-					double dr = (outerR - innerR) / rings;		
-					
+					double dr = (outerR - innerR) / rings;
+
 					Vector center_offset (center.x() + dr/2, center.y(), center.z() );
-					
+
 					for (size_t i = 0; i < rings; i++)
 					{
 						GenPointsCircular(segments, center, innerR + i*dr, current, 0   , M_PI, i );
 
-						GenPointsCircular(segments, center_offset, innerR + i*dr + dr/2, current, M_PI, 2*M_PI, i );	
+						GenPointsCircular(segments, center_offset, innerR + i*dr + dr/2, current, M_PI, 2*M_PI, i );
 					}
-				
+
 					//TODO refactor to avoid this
 					Vector endp(center.x() + outerR * cos(2*M_PI), center.y() + outerR * sin(2*M_PI), center.z());
 					segments.AddPoint(endp, current);
@@ -560,31 +560,31 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 
 				void GenPointsSpiralRight(OpenSegments& segments, Vector center) const
 				{
-					double dr = (outerR - innerR) / rings;		
-					
+					double dr = (outerR - innerR) / rings;
+
 					Vector center_offset( center.x() + dr/2, center.y(), center.z() );
 
 					for (size_t i = rings; i > 0; i--)
 					{
 						GenPointsCircular(segments, center, innerR + i*dr, -current, M_PI, 2*M_PI, i );
 
-						GenPointsCircular(segments, center_offset, innerR + i*dr - dr/2, -current, 0, M_PI, i );	
+						GenPointsCircular(segments, center_offset, innerR + i*dr - dr/2, -current, 0, M_PI, i );
 					}
-				
+
 					//TODO refactor to avoid this
 					Vector endp(center.x() + innerR * cos(M_PI), center.y() + innerR * sin(M_PI), center.z());
 					segments.AddPoint(endp, -current);
 				}
 
-				/// this is tricky but doable, the idea is to distribute the current along each coil winding 
+				/// this is tricky but doable, the idea is to distribute the current along each coil winding
 				/// so that the top surface flux is not linear but curved (bell shaped like)
 				/// this is required since in the AC profile there is inter-winding coupling increasing the resistivity of the net
 				/// please see: https://en.wikipedia.org/wiki/Proximity_effect_%28electromagnetism%29
 				void AdjustForProximityEffect()
 				{
-					
+
 				}
-				
+
 		};
 
 
@@ -594,57 +594,57 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 		class DipolesCoilgen : public BaseCoilgen
 		{
 			public:
-			
-				DipolesCoilgen( 
+
+				DipolesCoilgen(
 					const AlgorithmBase* algo,
 					ModelTMSCoilAlgorithm::Args args )
-					: 
+					:
 					BaseCoilgen( algo, args )
-					  	
+
 				{
 					coilLayers = coilLayers == 0 ? 1 : coilLayers;
-			
+
 				}
-				
+
 				~DipolesCoilgen()
 				{
 				}
-				
+
 				virtual void Generate(FieldHandle& meshHandle) const
 				{
 					std::vector<Vector> dipolePoints;
 					std::vector<Vector> dipoleValues;
 					std::vector<size_t> coilIndices;
-					
+
 					std::vector<double> radiiInner = preRadiiInner();
 					std::vector<double> radiiOuter = preRadiiOuter();
 					//std::vector<double> numElements = preNumElem(radiiInner);
 					std::vector<double> numCoupling = preNumAdjElem(radiiInner);
 
-					
+
 					//print_vector(radiiInner);
 					//print_vector(radiiOuter);
-					
+
 					//print_vector(numElements);
 					//print_vector(numCoupling);
-					
+
 					assert(radiiInner.size() == radiiOuter.size());
-					
-					
+
+
 					//algo->remark("#Rings:  " +  boost::lexical_cast<std::string>(radiiOuter.size()) + " ring-step:" + boost::lexical_cast<std::string>(lod_step_m));
-					
-					
+
+
 					if(coilType == 1)
 					{
 						Vector center(0, 0, 0);
 
 						for (size_t i = 0; i < radiiInner.size(); i++)
 						{
-							double ringRad = radiiInner[i] + (radiiOuter[i] - radiiInner[i]) / 2.0;						
-							
-							/// SINGLE COIL								
+							double ringRad = radiiInner[i] + (radiiOuter[i] - radiiInner[i]) / 2.0;
+
+							/// SINGLE COIL
 							size_t numElements = GenPointsCircular2(dipolePoints, center, ringRad, 0.0, 2*M_PI, rings);
-							double ringArea = M_PI * ( radiiOuter[i] * radiiOuter[i] - radiiInner[i] * radiiInner[i] );							
+							double ringArea = M_PI * ( radiiOuter[i] * radiiOuter[i] - radiiInner[i] * radiiInner[i] );
 							double dipoleMoment = (  current * ringArea * numCoupling[i] ) / numElements;
 							Vector dipoleNormL(0,0,1.0*dipoleMoment);
 							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
@@ -654,15 +654,15 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					{
 						Vector originL( -radiiOuter[radiiOuter.size()-1] - outerD / 2.0, 0, 0);
 						Vector originR( radiiOuter[radiiOuter.size()-1] + outerD / 2.0, 0, 0 );
-						
+
 						for (size_t i = 0; i < radiiInner.size(); i++)
 						{
 							double ringRad = radiiInner[i] + (radiiOuter[i] - radiiInner[i]) / 2.0;
 							double ringArea = M_PI * ( radiiOuter[i] * radiiOuter[i] - radiiInner[i] * radiiInner[i] );
-							
+
 							/// LEFT COIL
 							size_t numElementsL = GenPointsCircular2(dipolePoints, originL, ringRad, 0.0, 2*M_PI, rings);
-							
+
 							double dipoleMomentL = ( current * ringArea * numCoupling[i] ) / numElementsL;
 							Vector dipoleNormL(0,0,1.0*dipoleMomentL);
 							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
@@ -681,13 +681,13 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 						algo->error("coil type value expeced: 1/2 (0-shape/8-shape)");
 						return;
 					}
-					
-					
+
+
 					///basic topoly assumptions needs to be correct
 					assert(dipolePoints.size() > 0);
 					assert(dipolePoints.size() == dipoleValues.size());
 
-										
+
 					///SCIrun API creating a new mesh
 					///0 data on elements; 1 data on nodes
 					FieldInformation fi("PointCloudMesh",1,"vector");
@@ -696,70 +696,70 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					fi.make_vector();
 
 					meshHandle = CreateField(fi);
-					
+
 					BuildScirunMesh(dipolePoints,dipoleValues,meshHandle);
 				}
-				
+
 		protected:
 
-			
+
 				void print_vector(const std::vector<double>& v) const
 				{
 					std::cout << std::endl;
 					for(int i=0;i<v.size();++i)
 					{
-						std::cout << v[i] << " "; 
+						std::cout << v[i] << " ";
 					}
 					std::cout << std::endl;
 				}
-				
+
 				const std::vector<double> preRadiiInner() const
 				{
 					std::vector<double> preRadii;
-					
+
 					double step = (outerR - innerR) / rings;
-					
+
 					double d = innerR;
-					
+
 					//add first element
 					//preRadii.push_back(0.00d);
-					
+
 					while( d < outerR)
 					{
 						preRadii.push_back(d);
 						d += step;
 					}
-					
-										
+
+
 					//const double vals[16] = {0.00d, 0.003d, 0.007d, 0.011d, 0.015d, 0.019d, 0.023d, 0.026d, 0.028d, 0.030d, 0.032d, 0.034d, 0.036d, 0.038d, 0.040d, 0.042d};
 					//std::vector<double> preRadii(vals,vals+16);
 					return preRadii;
 				}
-				
+
 				const std::vector<double> preRadiiOuter() const
 				{
 					std::vector<double> preRadii;
-					
+
 					double step = (outerR - innerR) / rings;
-					
+
 					double d = innerR;
-					
+
 					//add first element
 					//preRadii.push_back(d);
-					
+
 					while( d < outerR)
 					{
 						d += step;
 						preRadii.push_back(d);
 					}
-					
+
 					//add last
 					//preRadii.push_back(outerR);
-					
-					//override last to fill to exacct outer radius 
+
+					//override last to fill to exacct outer radius
 					preRadii[preRadii.size()-1u] = outerR;
-					
-					
+
+
 					//const double vals[16] = {0.003d, 0.007d, 0.011d, 0.015d, 0.019d, 0.023d, 0.026d, 0.028d, 0.030d, 0.032d, 0.034d, 0.036d, 0.038d, 0.040d, 0.042d, 0.044d};
 					//std::vector<double> preRadii(vals,vals+16);
 					return preRadii;
@@ -768,16 +768,16 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 				const std::vector<double> preNumElem(std::vector<double>& radii) const
 				{
 					std::vector<double> preNumElem;
-					
+
 					for(size_t i = 1; i <= radii.size(); ++i)
 					{
-						
+
 						size_t n = M_PI_2 / (1.0 / ( radii[i]* coilLOD ) );
-						
+
 						//size_t n = segments +  ( pow(i,1.5) / coilLOD );
 						preNumElem.push_back(n);
 					}
-					
+
 					//const double vals[16] = {3.0d, 9.0d, 12.0d, 16.0d, 20.0d, 24.0d, 28.0d, 30.0d, 32.0d, 34.0d, 36.0d, 38.0d, 40.0d, 42.0d, 44.0d, 44.0d};
 					//std::vector<double> preNumElem(vals,vals+16);
 					return preNumElem;
@@ -787,21 +787,21 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 				const std::vector<double> preNumAdjElem(std::vector<double>& radii) const
 				{
 					std::vector<double> preNumAdjElem;
-					
+
 					for(size_t i = 1; i <= radii.size(); ++i)
 					{
 						preNumAdjElem.push_back(1.0);
 					}
-					
+
 					//const double vals[16] = {9.0d, 9.0d, 9.0d, 9.0d, 9.0d, 9.0d, 9.0d, 9.0d, 8.0d, 7.0d, 6.0d, 5.0d, 4.0d, 3.0d, 2.0d, 1.0d};
 					//std::vector<double> preNumAdjElem(vals,vals+16);
 					return preNumAdjElem;
 				}
-					
+
 				void GenSegmentValues(const std::vector<Vector>& points, std::vector<Vector>& values, Vector val) const
 				{
 					assert(points.size() > 0);
-					
+
 					for(size_t i = values.size(); i < points.size(); i++)
 					{
 						values.push_back(val);
@@ -810,22 +810,22 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 
 				size_t GenPointsCircular2(
 					std::vector<Vector>& points,
-					Vector origin, 
+					Vector origin,
 					double radius,
 					double fromPI,
-					double toPI, 
+					double toPI,
 					double extLOD) const
 				{
 
-					double dPI = abs(toPI - fromPI);
-					
+					double dPI = fabs(toPI - fromPI);
+
 					double minPI = M_PI /  ( 8.0 * coilLOD + coilLOD * extLOD );
-					
+
 					assert(dPI > minPI);
-					
+
 					size_t nsegments = 2;
 					double iPI = dPI / nsegments;
-					
+
 					while(iPI > minPI)
 					{
 						nsegments++;
@@ -833,9 +833,9 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					}
 
 					//algo->remark("#Segments(LOD):  " +  boost::lexical_cast<std::string>(nsegments) );
-					
+
 					dPI = toPI - fromPI;
-					
+
 					iPI = dPI / nsegments;
 
 					for(size_t i = 0; i < nsegments; i++)
@@ -844,15 +844,15 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 						//segments.AddPoint(point,value);
 						points.push_back(point);
 					}
-					
+
 					return nsegments;
 				}
-				
-				void BuildScirunMesh(const std::vector<Vector>& points, 
+
+				void BuildScirunMesh(const std::vector<Vector>& points,
 						const std::vector<Vector>& values,
 						FieldHandle& meshHandle) const
 				{
-					
+
 					VMesh* mesh = meshHandle->vmesh();
 
 					//! add nodes to the new mesh
@@ -876,19 +876,19 @@ int ResolveAlgoName(std::string& name)
 	{
 		return 0;
 	}
-	
+
 	if(name == "Thin Spiral Wires")
 	{
 		return 1;
 	}
-	
+
 	if(name == "Magnetic Dipoles")
 	{
 		return 2;
 	}
-	
+
 	return 0;
-	
+
 }
 
 
@@ -901,7 +901,7 @@ std::unique_ptr<BaseCoilgen> AlgoSelector(int idx,const AlgorithmBase* scirunAlg
 		case 2: return std::unique_ptr<BaseCoilgen>(new DipolesCoilgen(scirunAlgoBase,args));
 		default: return std::unique_ptr<BaseCoilgen>(new CircularWireCoilgen(scirunAlgoBase,args));
 	}
-	
+
 }
 
 
@@ -930,7 +930,7 @@ AlgorithmOutput ModelTMSCoilAlgorithm::run(const AlgorithmInput& input) const
 	//auto algo = AlgoSelector(model_type,this,algoArgs);
 
 	algo->Execute(ofield);
-  
+
 	output[Parameters::Mesh] = ofield;
-	return output; 
+	return output;
 }

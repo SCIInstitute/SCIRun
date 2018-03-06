@@ -21,43 +21,44 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#include <Modules/Math/DisplayHistogram.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/MatrixTypeConversions.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#ifndef MODULES_MATH_LinePlotter_H
+#define MODULES_MATH_LinePlotter_H
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
-MODULE_INFO_DEF(DisplayHistogram, Math, SCIRun)
+namespace SCIRun {
 
-DisplayHistogram::DisplayHistogram() : Module(staticInfo_)
-{
-  INITIALIZE_PORT(InputMatrix);
-}
+  namespace Core {
+    namespace Algorithms {
+      namespace Math {
+        ALGORITHM_PARAMETER_DECL(IndependentVariablesVector);
+        ALGORITHM_PARAMETER_DECL(DependentVariablesVector);
+      }}}
 
-void DisplayHistogram::execute()
-{
-  auto input_matrix = getRequiredInput(InputMatrix);
+  namespace Modules {
+    namespace Math {
 
-  if (needToExecute())
-  {
-    if (input_matrix->empty())
-    {
-      THROW_INVALID_ARGUMENT("Empty matrix input.");
+      class SCISHARE LinePlotter : public Dataflow::Networks::Module,
+        public Has2InputPorts<DynamicPortTag<MatrixPortTag>, DynamicPortTag<MatrixPortTag>>,
+        public HasNoOutputPorts
+      {
+      public:
+        LinePlotter();
+        virtual void setStateDefaults() override;
+        virtual void execute() override;
+
+        INPUT_PORT_DYNAMIC(0, IndependentVariable, DenseMatrix);
+        INPUT_PORT_DYNAMIC(1, DependentVariables, DenseMatrix);
+
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        NEW_HELP_WEBPAGE_ONLY
+        HAS_DYNAMIC_PORTS
+      };
+
     }
-    auto dense = castMatrix::toDense(input_matrix);
-    if (!dense)
-    {
-      THROW_INVALID_ARGUMENT("Matrix input must be dense.");
-    }
-    std::vector<double> data;
-    data.reserve(dense->size());
-    for (auto i = 0; i < dense->nrows(); ++i)
-      for (auto j = 0; j < dense->ncols(); ++j)
-        data.push_back((*dense)(i,j));
-    get_state()->setTransientValue(Variables::InputMatrix, data);
   }
-}
+};
+
+
+#endif

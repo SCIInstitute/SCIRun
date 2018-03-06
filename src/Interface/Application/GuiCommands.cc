@@ -269,6 +269,11 @@ NetworkFileHandle FileOpenCommand::processXmlFile(const std::string& filename)
   return XMLSerializer::load_xml<NetworkFile>(filename);
 }
 
+FileImportCommand::FileImportCommand()
+{
+  addParameter(Name("temporaryFile"), false);
+}
+
 NetworkFileHandle FileImportCommand::processXmlFile(const std::string& filename)
 {
   auto dtdpath = Core::Application::Instance().executablePath();
