@@ -30,6 +30,7 @@
 #include <Interface/Modules/Math/PlotDialog.h>
 #include <Modules/Math/BasicPlotter.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Logging/Log.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <QtGui>
 
@@ -43,6 +44,7 @@ using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Logging;
 
 BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandle state,
 	QWidget* parent/* = 0*/)
@@ -182,6 +184,6 @@ void BasicPlotterDialog::updateFromPortChange(int, const std::string&, DynamicPo
 	{
 		state_->setTransientValue(Variables::InputMatrix, nullptr);
 		plotDialog_->plot()->clearCurves();
-		QMessageBox::warning(this, "Warning: Curves and plot data cleared", "Curves and plot data cleared. Re-execute to replot connected data.");
+		ModuleLog::Instance().get()->warn("[{}] Curves and plot data cleared. Re-execute to replot connected data.", windowTitle().toStdString());
 	}
 }
