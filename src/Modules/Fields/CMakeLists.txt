@@ -40,7 +40,6 @@ SET(Modules_Fields_HEADERS
   InterfaceWithCleaver2.h
   ReportFieldInfo.h
   EditMeshBoundingBox.h
-  BoxWidgetTypes.h
   CalculateNodeLocationFrequency.h
   RefineTetMeshLocally.h
   share.h
@@ -59,6 +58,7 @@ TARGET_LINK_LIBRARIES(Modules_Fields
   Core_Datatypes_Legacy_Field
   Graphics_Glyphs
   Graphics_Datatypes
+  Graphics_Widgets
   ${OPENGL_LIBRARIES}
 )
 

@@ -29,18 +29,44 @@ DEALINGS IN THE SOFTWARE.
 #ifndef Graphics_Graphics_Widgets_Widget_H
 #define Graphics_Graphics_Widgets_Widget_H
 
-#include <Graphics/Glyphs/share.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Graphics/Widgets/share.h>
 
-namespace SCIRun {
-  namespace Graphics {
-
-    class SCISHARE Widget
+namespace SCIRun
+{
+  namespace Graphics
+  {
+    namespace Datatypes
     {
-    public:
-      Widget();
 
-    };// class Widget
-  }// Graphics
-} // SCIRun
-#endif // Graphics_Graphics_Widgets_Widget_H
+      class SCISHARE WidgetBase : public GeometryObjectSpire
+      {
+      public:
+        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable);
 
+      };
+
+      using WidgetHandle = SharedPointer<WidgetBase>;
+
+      struct SCISHARE BoxPosition
+      {
+        Core::Geometry::Point center_, right_, down_, in_;
+
+        void setPosition(const Core::Geometry::Point& center, const Core::Geometry::Point& right,
+          const Core::Geometry::Point& down, const Core::Geometry::Point& in);
+        void getPosition(Core::Geometry::Point& center, Core::Geometry::Point& right,
+          Core::Geometry::Point& down, Core::Geometry::Point& in) const;
+      };
+
+      class SCISHARE WidgetFactory
+      {
+      public:
+        static WidgetHandle createBox(const Core::GeometryIDGenerator& idGenerator, double scale,
+          const BoxPosition& pos, const Core::Geometry::BBox& bbox);
+      };
+    }
+  }
+}
+
+#endif

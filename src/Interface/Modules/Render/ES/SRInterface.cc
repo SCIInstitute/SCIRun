@@ -767,7 +767,7 @@ namespace SCIRun {
     //------------------------------------------------------------------------------
     void SRInterface::handleGeomObject(GeometryHandle obj, int port)
     {
-      logRendererInfo("Handling geom object on port {}", port);
+      //logRendererInfo("Handling geom object on port {}", port);
       RENDERER_LOG_FUNCTION_SCOPE;
       RENDERER_LOG("Ensure our rendering context is current on our thread.");
       DEBUG_LOG_LINE_INFO
@@ -786,7 +786,7 @@ namespace SCIRun {
       });
 
       DEBUG_LOG_LINE_INFO
-      
+
       std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
       std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
       if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock())

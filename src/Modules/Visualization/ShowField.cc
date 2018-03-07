@@ -1289,7 +1289,7 @@ void GeometryBuilder::renderNodes(
     ++eiter;
   }
 
-  glyphs.buildObject(geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_NODES), nodeTransparencyValue_,
+  glyphs.buildObject(*geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_NODES), nodeTransparencyValue_,
     colorScheme, state, primIn, mesh->get_bounding_box());
 }
 
@@ -1421,7 +1421,7 @@ void GeometryBuilder::renderEdges(
     ++eiter;
   }
 
-  glyphs.buildObject(geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_EDGES), edgeTransparencyValue_,
+  glyphs.buildObject(*geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_EDGES), edgeTransparencyValue_,
     colorScheme, state, primIn, mesh->get_bounding_box());
 }
 

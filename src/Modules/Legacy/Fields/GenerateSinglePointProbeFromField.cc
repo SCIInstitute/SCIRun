@@ -511,7 +511,7 @@ GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHan
 
   auto renState = getWidgetRenderState(state);
 
-  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, primIn, mesh->get_bounding_box());
 
   return geom;
