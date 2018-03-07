@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_INVERSE_SolveInverseProblemWithTikhonovTSVDDIALOG_H
-#define INTERFACE_MODULES_INVERSE_SolveInverseProblemWithTikhonovTSVDDIALOG_H
+#ifndef INTERFACE_MODULES_INVERSE_SolveInverseProblemWithTSVDDIALOG_H
+#define INTERFACE_MODULES_INVERSE_SolveInverseProblemWithTSVDDIALOG_H
 
-#include <Interface/Modules/Inverse/ui_SolveInverseProblemWithTikhonovTSVDDialog.h>
+#include <Interface/Modules/Inverse/ui_SolveInverseProblemWithTSVDDialog.h>
 #include <Interface/Modules/Inverse/SolveInverseProblemWithTikhonovDialog.h>
 #include <boost/shared_ptr.hpp>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
@@ -38,13 +38,13 @@
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE SolveInverseProblemWithTikhonovTSVDDialog : public ModuleDialogGeneric,
-  public Ui::SolveInverseProblemWithTikhonovTSVDDialog
+class SCISHARE SolveInverseProblemWithTSVDDialog : public ModuleDialogGeneric,
+  public Ui::SolveInverseProblemWithTSVDDialog
 {
 	Q_OBJECT
 
 public:
-  SolveInverseProblemWithTikhonovTSVDDialog(const std::string& name,
+  SolveInverseProblemWithTSVDDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
   virtual void moduleExecuted() override { pullAndDisplayInfo(); }

@@ -30,26 +30,24 @@
 //    Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White
 //    Date       : September 06th, 2017 (last update)
 
-#ifndef MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonovTSVD_H__
-#define MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonovTSVD_H__
+#ifndef MODULES_LEGACY_INVERSE_SolveInverseProblemWithTSVD_H__
+#define MODULES_LEGACY_INVERSE_SolveInverseProblemWithTSVD_H__
 
 #include <Dataflow/Network/Module.h>
-#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD_impl.h>
 #include <Modules/Legacy/Inverse/share.h>
 
 namespace SCIRun {
 namespace Modules {
 namespace Inverse {
 
-	class SCISHARE SolveInverseProblemWithTikhonovTSVD : public SCIRun::Dataflow::Networks::Module,
+	class SCISHARE SolveInverseProblemWithTSVD : public SCIRun::Dataflow::Networks::Module,
 		public Has7InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
 		public Has3OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>
 	{
 	public:
-		SolveInverseProblemWithTikhonovTSVD();
+		SolveInverseProblemWithTSVD();
 		virtual void execute();
 		virtual void setStateDefaults();
-
 
 		INPUT_PORT(0, ForwardMatrix, DenseMatrix);
 		INPUT_PORT(1, WeightingInSourceSpace, DenseMatrix);
@@ -63,9 +61,6 @@ namespace Inverse {
 		OUTPUT_PORT(2, RegInverse, DenseMatrix);
 
 		MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
-
-	private:
-
 	};
 }}}
 

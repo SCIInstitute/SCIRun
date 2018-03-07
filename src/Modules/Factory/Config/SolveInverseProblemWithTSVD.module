@@ -1,10 +1,10 @@
 {
   "module": {
-    "name": "SolveInverseProblemWithTikhonovTSVD",
+    "name": "SolveInverseProblemWithTSVD",
     "namespace": "Inverse",
     "status": "Ported module",
     "description": "...",
-    "header": "Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD.h"
+    "header": "Modules/Legacy/Inverse/SolveInverseProblemWithTSVD.h"
   },
   "algorithm": {
     "name": "TikhonovAlgoAbstractBase",
@@ -12,7 +12,7 @@
     "header": "Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h"
   },
   "UI": {
-    "name": "SolveInverseProblemWithTikhonovTSVDDialog",
-    "header": "Interface/Modules/Inverse/SolveInverseProblemWithTikhonovTSVDDialog.h"
+    "name": "SolveInverseProblemWithTSVDDialog",
+    "header": "Interface/Modules/Inverse/SolveInverseProblemWithTSVDDialog.h"
   }
 }

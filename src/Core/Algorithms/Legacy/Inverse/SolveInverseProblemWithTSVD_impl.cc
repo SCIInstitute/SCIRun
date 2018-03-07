@@ -45,7 +45,7 @@
 
 // Tikhonov inverse libraries
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
-#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD_impl.h>
+#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTSVD_impl.h>
 
 // EIGEN LIBRARY
 #include <Eigen/Eigen>
@@ -66,7 +66,7 @@ using namespace SCIRun::Core::Algorithms::Inverse;
 /////// prealocate Matrices for inverse compuation
 ///     This function precalcualtes the SVD of the forward matrix and prepares singular vectors and values for posterior computations
 ///////////////////////////////////////////////////////////////////
-void SolveInverseProblemWithTikhonovTSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& matrixU_, const SCIRun::Core::Datatypes::DenseMatrix& singularValues_, const SCIRun::Core::Datatypes::DenseMatrix& matrixV_)
+void SolveInverseProblemWithTSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& matrixU_, const SCIRun::Core::Datatypes::DenseMatrix& singularValues_, const SCIRun::Core::Datatypes::DenseMatrix& matrixV_)
 {
 
 		// alocate U and V matrices
@@ -89,7 +89,7 @@ void SolveInverseProblemWithTikhonovTSVD_impl::preAlocateInverseMatrices(const S
 
 }
 
-void SolveInverseProblemWithTikhonovTSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
+void SolveInverseProblemWithTSVD_impl::preAlocateInverseMatrices(const SCIRun::Core::Datatypes::DenseMatrix& forwardMatrix_, const SCIRun::Core::Datatypes::DenseMatrix& measuredData_ , const SCIRun::Core::Datatypes::DenseMatrix& sourceWeighting_, const SCIRun::Core::Datatypes::DenseMatrix& sensorWeighting_)
 {
 
 	    // Compute the SVD of the forward matrix
@@ -110,7 +110,7 @@ void SolveInverseProblemWithTikhonovTSVD_impl::preAlocateInverseMatrices(const S
 //////////////////////////////////////////////////////////////////////
 // THIS FUNCTION returns regularized solution by tikhonov method
 //////////////////////////////////////////////////////////////////////
-SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovTSVD_impl::computeInverseSolution( double lambda, bool inverseCalculation ) const
+SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTSVD_impl::computeInverseSolution( double lambda, bool inverseCalculation ) const
 {
 
     // prealocate matrices
@@ -122,7 +122,7 @@ SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovTSVD_impl::c
 
 		const int truncationPoint = Min( int(lambda), rank, int(9999999999999) );
 
-    // Compute inverse SolveInverseProblemWithTikhonovTSVD
+    // Compute inverse SolveInverseProblemWithTSVD
         for (int rr=0; rr < truncationPoint ; rr++)
         {
             // evaluate filter factor
@@ -147,7 +147,7 @@ SCIRun::Core::Datatypes::DenseMatrix SolveInverseProblemWithTikhonovTSVD_impl::c
 //////////////////////////////////////////////////////////////////////
 // THIS FUNCTION returns a string of lambdas from which the L-curve is computed
 //////////////////////////////////////////////////////////////////////
-std::vector<double> SolveInverseProblemWithTikhonovTSVD_impl::computeLambdaArray( double lambdaMin, double lambdaMax, int nLambda ) const
+std::vector<double> SolveInverseProblemWithTSVD_impl::computeLambdaArray( double lambdaMin, double lambdaMax, int nLambda ) const
 {
 	std::vector<double> lambdaArray(nLambda,0.0);
 	const double lam_step = 1;

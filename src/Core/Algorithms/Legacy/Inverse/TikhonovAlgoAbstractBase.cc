@@ -37,7 +37,7 @@
 #include <Core/Algorithms/Legacy/Inverse/TikhonovImpl.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
-#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD_impl.h>
+#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTSVD_impl.h>
 
 // Datatypes
 #include <Core/Datatypes/Matrix.h>
@@ -214,7 +214,7 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 		else
 			algoImpl = std::make_shared<SolveInverseProblemWithTikhonovSVD_impl>(*forwardMatrix, *measuredData, *sourceWeighting, *sensorWeighting, *matrixU, *singularValues, *matrixV);
 	}
-	else if (implOption == "TikhonovTSVD")
+	else if (implOption == "TSVD")
   {
 		// get TikhonovSVD special inputs
 		auto matrixU = castMatrix::toDense(input.get<Matrix>(TikhonovAlgoAbstractBase::matrixU));
@@ -223,9 +223,9 @@ AlgorithmOutput TikhonovAlgoAbstractBase::run(const AlgorithmInput & input) cons
 
 		// If there is a missing matrix from the precomputed SVD input
 		if (!matrixU || !singularValues || !matrixV)
-			algoImpl = std::make_shared<SolveInverseProblemWithTikhonovTSVD_impl>(*forwardMatrix, *measuredData, *sourceWeighting, *sensorWeighting);
+			algoImpl = std::make_shared<SolveInverseProblemWithTSVD_impl>(*forwardMatrix, *measuredData, *sourceWeighting, *sensorWeighting);
 		else
-			algoImpl = std::make_shared<SolveInverseProblemWithTikhonovTSVD_impl>(*forwardMatrix, *measuredData, *sourceWeighting, *sensorWeighting, *matrixU, *singularValues, *matrixV);
+			algoImpl = std::make_shared<SolveInverseProblemWithTSVD_impl>(*forwardMatrix, *measuredData, *sourceWeighting, *sensorWeighting, *matrixU, *singularValues, *matrixV);
 	}
 	else
   {

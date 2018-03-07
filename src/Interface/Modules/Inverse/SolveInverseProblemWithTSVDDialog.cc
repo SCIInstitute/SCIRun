@@ -26,17 +26,17 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Inverse/SolveInverseProblemWithTikhonovTSVDDialog.h>
-#include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD.h>
+#include <Interface/Modules/Inverse/SolveInverseProblemWithTSVDDialog.h>
+#include <Modules/Legacy/Inverse/SolveInverseProblemWithTSVD.h>
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Inverse;
 
-typedef SCIRun::Modules::Inverse::SolveInverseProblemWithTikhonovTSVD SolveInverseProblemWithTikhonovTSVDModule;
+typedef SCIRun::Modules::Inverse::SolveInverseProblemWithTSVD SolveInverseProblemWithTSVDModule;
 
-SolveInverseProblemWithTikhonovTSVDDialog::SolveInverseProblemWithTikhonovTSVDDialog(const std::string& name, ModuleStateHandle state,
+SolveInverseProblemWithTSVDDialog::SolveInverseProblemWithTSVDDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
@@ -71,33 +71,33 @@ SolveInverseProblemWithTikhonovTSVDDialog::SolveInverseProblemWithTikhonovTSVDDi
 }
 
 
-void SolveInverseProblemWithTikhonovTSVDDialog::setSpinBoxValue(int value)
+void SolveInverseProblemWithTSVDDialog::setSpinBoxValue(int value)
 {
   lambdaSliderDoubleSpinBox_->setValue(value);
 }
 
-void SolveInverseProblemWithTikhonovTSVDDialog::setSliderValue(double value)
+void SolveInverseProblemWithTSVDDialog::setSliderValue(double value)
 {
   if (value <= lambdaSlider_->maximum() && value >= lambdaSlider_->minimum())
     lambdaSlider_->setValue(static_cast<int>(value));
 }
 
-void SolveInverseProblemWithTikhonovTSVDDialog::setSliderMin(double value)
+void SolveInverseProblemWithTSVDDialog::setSliderMin(double value)
 {
   lambdaSlider_->setMinimum(static_cast<int>(value));
 }
 
-void SolveInverseProblemWithTikhonovTSVDDialog::setSliderMax(double value)
+void SolveInverseProblemWithTSVDDialog::setSliderMax(double value)
 {
   lambdaSlider_->setMaximum(static_cast<int>(value));
 }
 
-void SolveInverseProblemWithTikhonovTSVDDialog::setSliderStep(double value)
+void SolveInverseProblemWithTSVDDialog::setSliderStep(double value)
 {
   lambdaSlider_->setSingleStep(static_cast<int>(value));
 }
 
-void SolveInverseProblemWithTikhonovTSVDDialog::pullAndDisplayInfo()
+void SolveInverseProblemWithTSVDDialog::pullAndDisplayInfo()
 {
   auto str = transient_value_cast<std::string>(state_->getTransientValue("LambdaCurveInfo"));
   lCurveTextEdit_->setPlainText(QString::fromStdString(str));

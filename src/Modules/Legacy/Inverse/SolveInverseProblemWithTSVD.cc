@@ -32,10 +32,10 @@
 
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Scalar.h>
-#include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD.h>
+#include <Modules/Legacy/Inverse/SolveInverseProblemWithTSVD.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Modules/Legacy/Inverse/LCurvePlot.h>
-#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovTSVD_impl.h>
+#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTSVD_impl.h>
 #include <Core/Algorithms/Legacy/Inverse/TikhonovAlgoAbstractBase.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -49,11 +49,11 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Inverse;
 
 // Module definitions. Sets the info into the staticInfo_
-MODULE_INFO_DEF(SolveInverseProblemWithTikhonovTSVD, Inverse, SCIRun)
+MODULE_INFO_DEF(SolveInverseProblemWithTSVD, Inverse, SCIRun)
 
 // Constructor neeeds to have empty inputs and the parent's constructor has staticInfo_ as an input (adapted to thsi module in MODULE_INFO_DEF macro)
 // Constructor needs to initialize all input/output ports
-SolveInverseProblemWithTikhonovTSVD::SolveInverseProblemWithTikhonovTSVD() : Module(staticInfo_)
+SolveInverseProblemWithTSVD::SolveInverseProblemWithTSVD() : Module(staticInfo_)
 {
 	//inputs
 	INITIALIZE_PORT(ForwardMatrix);
@@ -69,16 +69,14 @@ SolveInverseProblemWithTikhonovTSVD::SolveInverseProblemWithTikhonovTSVD() : Mod
 	INITIALIZE_PORT(RegInverse);
 }
 
-void SolveInverseProblemWithTikhonovTSVD::setStateDefaults()
+void SolveInverseProblemWithTSVD::setStateDefaults()
 {
   auto state = get_state();
-
 
   state->setValue(Parameters::LambdaMin,1);
   state->setValue(Parameters::LambdaMax,100);
   state->setValue(Parameters::LambdaNum,100);
   state->setValue(Parameters::LambdaResolution,1);
-
 
   setStateStringFromAlgo(Parameters::TikhonovImplementation);
   setStateStringFromAlgoOption(Parameters::RegularizationMethod);
@@ -86,10 +84,8 @@ void SolveInverseProblemWithTikhonovTSVD::setStateDefaults()
   setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
 }
 
-// execute function
-void SolveInverseProblemWithTikhonovTSVD::execute()
+void SolveInverseProblemWithTSVD::execute()
 {
-
 	// load required inputs
 	auto forward_matrix_h = getRequiredInput(ForwardMatrix);
 	auto hMatrixMeasDat = getRequiredInput(MeasuredPotentials);
@@ -106,7 +102,6 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
 
 	if (needToExecute())
 	{
-
 		// Obtain rank of forward matrix
 		int rank;
 		if ( hSingularValues ) {
@@ -120,7 +115,7 @@ void SolveInverseProblemWithTikhonovTSVD::execute()
 		// set parameters
 		auto state = get_state();
 
-		state->setValue( Parameters::TikhonovImplementation, std::string("TikhonovTSVD") );
+		state->setValue( Parameters::TikhonovImplementation, std::string("TSVD") );
 		setAlgoStringFromState(Parameters::TikhonovImplementation);
 		setAlgoOptionFromState(Parameters::RegularizationMethod);
 		setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
