@@ -61,12 +61,6 @@ ALGORITHM_PARAMETER_DEF(Fields, ProbeScale);
 
 MODULE_INFO_DEF(GeneratePointSamplesFromField, NewField, SCIRun)
 
-#if SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: include real PointWidget header here
-#include <Core/Thread/CrowdMonitor.h>
-#include <Dataflow/Widgets/PointWidget.h>
-#endif
-
-
 namespace SCIRun
 {
   namespace Modules
@@ -77,12 +71,10 @@ namespace SCIRun
       class GeneratePointSamplesFromFieldImpl
       {
       public:
-        //CrowdMonitor widget_lock_;
         BBox last_bounds_;
 
         std::vector<size_t>              widget_id_;
-        //std::vector<GeomHandle>       widget_switch_;
-        std::vector<PointWidgetPtr>     pointWidgets_;
+        std::vector<SphereWidgetHandle>     pointWidgets_;
         double l2norm_;
 
         GeometryHandle buildWidgetObject(FieldHandle field, double radius, const GeometryIDGenerator& idGenerator);
@@ -166,17 +158,6 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
 
     center = bmin + Vector(bmax - bmin) * 0.5;
     impl_->l2norm_ = (bmax - bmin).length();
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: don't worry about this yet
-    GeometryOPortHandle ogport;
-    if (!(get_oport_handle("GeneratePointSamplesFromField Widget",ogport)))
-    {
-      error("Unable to initialize " + module_name_ + "'s oport.");
-      return;
-    }
-    ogport->flushViews();
-#endif
-
     impl_->last_bounds_ = bbox;
   }
 
@@ -186,30 +167,9 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
 
   if (impl_->widget_id_.size() != numSeeds)
   {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: don't worry about this yet
-    GeometryOPortHandle ogport;
-    if (!(get_oport_handle("GeneratePointSamplesFromField Widget",ogport)))
-    {
-      error("Unable to initialize " + module_name_ + "'s oport.");
-      return;
-    }
-#endif
-
     if (numSeeds < impl_->widget_id_.size())
     {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: remove point widgets from viewscene
-      for (int i = numSeeds; i < (int)widget_id_.size(); i++)
-      {
-        ((GeomSwitch *)(widget_switch_[i].get_rep()))->set_state(0);
-        ogport->delObj(widget_id_[i]);
-        ogport->flushViews();
-
-        //delete in tcl side
-        ostringstream str;
-        str << i;
-        TCLInterface::execute(get_id().c_str() + std::string(" clear_seed " + str.str()));
-      }
-#endif
+      // remove current composite widget
       impl_->widget_id_.resize(numSeeds);
       impl_->pointWidgets_.resize(numSeeds);
     }
@@ -217,43 +177,8 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
     {
       for (size_t i = impl_->widget_id_.size(); i < numSeeds; i++)
       {
-        PointWidgetPtr seed(new PointWidgetStub());  //@cbrightsci: replace with real PointWidget instance
-
         impl_->pointWidgets_.push_back(seed);
         impl_->widget_id_.push_back(i);
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: place new point widget on viewscene
-        // input saved out positions
-        std::ostringstream strX, strY, strZ;
-
-        strX << "seedX" << i;
-        GuiDouble* gui_locx = new GuiDouble(get_ctx()->subVar(strX.str()));
-        seeds_.push_back(gui_locx);
-
-        strY << "seedY" << i;
-        GuiDouble* gui_locy = new GuiDouble(get_ctx()->subVar(strY.str()));
-        seeds_.push_back(gui_locy);
-
-        strZ << "seedZ" << i;
-        GuiDouble* gui_locz = new GuiDouble(get_ctx()->subVar(strZ.str()));
-        seeds_.push_back(gui_locz);
-
-        Point curloc(gui_locx->get(),gui_locy->get(),gui_locz->get());
-
-        if (curloc.x() >= bmin.x() && curloc.x() <= bmax.x() &&
-          curloc.y() >= bmin.y() && curloc.y() <= bmax.y() &&
-          curloc.z() >= bmin.z() && curloc.z() <= bmax.z() ||
-          !input_field_p)
-        {
-          center = curloc;
-        }
-        else
-        {
-          TCLInterface::execute(get_id().c_str() + std::string(" make_seed " + to_string((int)i)));
-        }
-
-        TCLInterface::execute(get_id().c_str() + std::string(" set_seed " + to_string((int)i) + " " + to_string((double)center.x()) + " " + to_string((double)center.y()) + " " + to_string((double)center.z())));
-#endif
         seed->setPosition(center);
         seed->setScale(scale * impl_->l2norm_ * 0.003);
       }
@@ -263,12 +188,6 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
   for (int i = 0; i < numSeeds; i++)
   {
     impl_->pointWidgets_[i]->setScale(scale * impl_->l2norm_ * 0.003);
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  //@cbrightsci: i think this adjusts the point/sphere scale
-    TCLInterface::execute(get_id().c_str() + std::string(" set_seed " +
-      to_string((int)i) + " " + to_string((double)location.x()) + " " +
-      to_string((double)location.y()) + " " + to_string((double)location.z())));
-#endif
   }
 
   //when push send button--TODO: for now, always update seed mesh
@@ -291,88 +210,5 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
 
 GeometryHandle GeneratePointSamplesFromFieldImpl::buildWidgetObject(FieldHandle field, double radius, const GeometryIDGenerator& idGenerator)
 {
-  auto geom(boost::make_shared<GeometryObjectSpire>(idGenerator, "EntireSinglePointProbeFromField", true));
 
-  auto mesh = field->vmesh();
-
-  ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
-  ColorRGB node_color;
-
-  mesh->synchronize(Mesh::NODES_E);
-
-  VMesh::Node::iterator eiter, eiter_end;
-  mesh->begin(eiter);
-  mesh->end(eiter_end);
-
-  double num_strips = 10;
-  if (radius < 0) radius = 1.;
-  if (num_strips < 0) num_strips = 10.;
-  std::stringstream ss;
-  ss << radius << num_strips << static_cast<int>(colorScheme);
-
-  std::string uniqueNodeID = geom->uniqueID() + "widget" + ss.str();
-
-  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::TRIANGLES;
-
-  Graphics::GlyphGeom glyphs;
-  while (eiter != eiter_end)
-  {
-    //checkForInterruption();
-
-    Point p;
-    mesh->get_point(p, *eiter);
-
-    glyphs.addSphere(p, radius, num_strips, node_color);
-
-    ++eiter;
-  }
-
-  RenderState renState = getWidgetRenderState();
-
-  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, primIn, mesh->get_bounding_box());
-
-  return geom;
 }
-
-RenderState GeneratePointSamplesFromFieldImpl::getWidgetRenderState() const
-{
-  RenderState renState;
-
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::USE_TRANSPARENCY, false);
-
-  renState.defaultColor = ColorRGB(0.5, 0.5, 0.5);
-  renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
-    renState.defaultColor.g() > 1.0 ||
-    renState.defaultColor.b() > 1.0) ?
-    ColorRGB(
-    renState.defaultColor.r() / 255.,
-    renState.defaultColor.g() / 255.,
-    renState.defaultColor.b() / 255.)
-    : renState.defaultColor;
-
-  renState.set(RenderState::USE_DEFAULT_COLOR, true);
-  renState.set(RenderState::USE_NORMALS, true);
-  renState.set(RenderState::IS_WIDGET, true);
-
-  return renState;
-}
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: this will be part 3, with interactive widgets
-void
-GeneratePointSamplesFromField::widget_moved(bool last, BaseWidget*)
-{
-  if (last)
-  {
-    if (gui_auto_execute_.get() == 1)
-    {
-      want_to_execute();
-    }
-  }
-}
-
-} // End namespace SCIRun
-
-
-#endif

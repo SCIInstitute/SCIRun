@@ -70,10 +70,6 @@ namespace SCIRun
   {
     namespace Fields
     {
-      PointWidgetStub::PointWidgetStub() : scale_(1) {}
-      Point PointWidgetStub::position() const { return pos_; }
-      void PointWidgetStub::setPosition(const Point& p) { pos_ = p; }
-
       class GenerateSinglePointProbeFromFieldImpl
       {
       public:

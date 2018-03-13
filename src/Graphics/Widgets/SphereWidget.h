@@ -45,6 +45,8 @@ namespace SCIRun {
       private:
         RenderState getWidgetRenderState(const std::string& defaultColor);
       };
+
+      using SphereWidgetHandle = SharedPointer<SphereWidget>;
     }
   }
 }
