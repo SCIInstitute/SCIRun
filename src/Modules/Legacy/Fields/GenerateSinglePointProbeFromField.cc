@@ -34,7 +34,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Graphics/Glyphs/GlyphGeom.h>
+#include <Graphics/Widgets/Widget.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Scalar.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -474,69 +474,7 @@ index_type GenerateSinglePointProbeFromField::GenerateIndex()
 
 GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHandle field, ModuleStateHandle state, const GeometryIDGenerator& idGenerator)
 {
-  auto geom(boost::make_shared<GeometryObjectSpire>(idGenerator, "EntireSinglePointProbeFromField", true));
-
-  auto mesh = field->vmesh();
-
-  auto colorScheme = ColorScheme::COLOR_UNIFORM;
-  ColorRGB node_color;
-
-  mesh->synchronize(Mesh::NODES_E);
-
-  VMesh::Node::iterator eiter, eiter_end;
-  mesh->begin(eiter);
-  mesh->end(eiter_end);
-
   using namespace Parameters;
   double radius = state->getValue(ProbeSize).toDouble();
-  double num_strips = 10;
-  if (radius < 0) radius = 1.;
-  if (num_strips < 0) num_strips = 10.;
-  std::stringstream ss;
-  ss << radius << num_strips << static_cast<int>(colorScheme);
-
-  auto uniqueNodeID = geom->uniqueID() + "widget" + ss.str();
-
-  auto primIn = SpireIBO::PRIMITIVE::TRIANGLES;
-
-  Graphics::GlyphGeom glyphs;
-  while (eiter != eiter_end)
-  {
-    Point p;
-    mesh->get_point(p, *eiter);
-    glyphs.addSphere(p, radius, num_strips, node_color);
-
-    ++eiter;
-  }
-
-  auto renState = getWidgetRenderState(state);
-
-  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, primIn, mesh->get_bounding_box());
-
-  return geom;
-}
-
-RenderState GenerateSinglePointProbeFromFieldImpl::getWidgetRenderState(ModuleStateHandle state)
-{
-  RenderState renState;
-
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::USE_TRANSPARENCY, false);
-
-  renState.defaultColor = ColorRGB(state->getValue(Parameters::ProbeColor).toString());
-  renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
-    renState.defaultColor.g() > 1.0 ||
-    renState.defaultColor.b() > 1.0) ?
-    ColorRGB(
-    renState.defaultColor.r() / 255.,
-    renState.defaultColor.g() / 255.,
-    renState.defaultColor.b() / 255.)
-    : renState.defaultColor;
-
-  renState.set(RenderState::USE_DEFAULT_COLOR, true);
-  renState.set(RenderState::USE_NORMALS, true);
-  renState.set(RenderState::IS_WIDGET, true);
-
-  return renState;
+  return WidgetFactory::createSphere(idGenerator, radius, state->getValue(Parameters::ProbeColor).toString(), field);
 }

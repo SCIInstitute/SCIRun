@@ -6,7 +6,7 @@ The MIT License
 Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
-License for the specific language governing rights and limitations under
+
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
 to deal in the Software without restriction, including without limitation
@@ -26,26 +26,26 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef Graphics_Widgets_SphereWidget_H
+#define Graphics_Widgets_SphereWidget_H
+
+#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
 #include <Graphics/Widgets/Widget.h>
-#include <Graphics/Widgets/BoundingBoxWidget.h>
-#include <Graphics/Widgets/SphereWidget.h>
+#include <Graphics/Widgets/share.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Graphics::Datatypes;
+namespace SCIRun {
+  namespace Graphics {
+    namespace Datatypes {
 
-WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable)
-  : GeometryObjectSpire(idGenerator, tag, isClippable)
-{
+      class SCISHARE SphereWidget : public WidgetBase
+      {
+      public:
+        SphereWidget(const Core::GeometryIDGenerator& idGenerator, double radius, const std::string& defaultColor, FieldHandle field);
+      private:
+        RenderState getWidgetRenderState(const std::string& defaultColor);
+      };
+    }
+  }
 }
-
-WidgetHandle WidgetFactory::createBox(const Core::GeometryIDGenerator& idGenerator, double scale,
-  const BoxPosition& pos, const BBox& bbox)
-{
-  return boost::make_shared<BoundingBoxWidget>(idGenerator, scale, pos, bbox);
-}
-
-WidgetHandle WidgetFactory::createSphere(const Core::GeometryIDGenerator& idGenerator, double scale, const std::string& defaultColor, FieldHandle field)
-{
-  return boost::make_shared<SphereWidget>(idGenerator, scale, defaultColor, field);
-}
+#endif

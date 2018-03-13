@@ -44,7 +44,6 @@ namespace SCIRun
       {
       public:
         WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable);
-
       };
 
       using WidgetHandle = SharedPointer<WidgetBase>;
@@ -64,6 +63,8 @@ namespace SCIRun
       public:
         static WidgetHandle createBox(const Core::GeometryIDGenerator& idGenerator, double scale,
           const BoxPosition& pos, const Core::Geometry::BBox& bbox);
+        static WidgetHandle createSphere(const Core::GeometryIDGenerator& idGenerator, double radius, const std::string& defaultColor,
+          FieldHandle field);
       };
     }
   }
