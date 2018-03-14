@@ -373,7 +373,13 @@ namespace detail
       if (light)
       {
         float lightColor[] = { toFloat(Parameters::LightColorR), toFloat(Parameters::LightColorG), toFloat(Parameters::LightColorB) };
+        float lightPosition[] = { toFloat(Parameters::CameraPositionX), toFloat(Parameters::CameraPositionY), toFloat(Parameters::CameraPositionZ) };
+        float lightDirection[] = { toFloat(Parameters::CameraViewX), toFloat(Parameters::CameraViewY), toFloat(Parameters::CameraViewZ) };
+        
+        
         ospSet3fv(light, "color", lightColor);
+        ospSet3fv(light, "position", lightPosition);
+        ospSet3fv(light, "direction", lightDirection);
         ospSet1f(light, "intensity", toFloat(Parameters::LightIntensity));
         ospSet1i(light, "isVisible", state_->getValue(Parameters::LightVisible).toBool() ? 1 : 0);
         ospCommit(light);
