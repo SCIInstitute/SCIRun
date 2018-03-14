@@ -108,9 +108,9 @@ void InterfaceWithOspray::setStateDefaults()
   state->setValue(Parameters::LightColorR, 1.0);
   state->setValue(Parameters::LightColorG, 1.0);
   state->setValue(Parameters::LightColorB, 1.0);
-  state->setValue(Parameters::LightIntensity, 1.0);
+  state->setValue(Parameters::LightIntensity, 50.0);
   state->setValue(Parameters::LightVisible, false);
-  state->setValue(Parameters::LightType, std::string("ambient"));
+  state->setValue(Parameters::LightType, std::string("spot"));
   state->setValue(Parameters::AutoCameraView, true);
   state->setValue(Parameters::StreamlineRadius, 0.1);
   state->setValue(Variables::Filename, std::string(""));
@@ -300,6 +300,7 @@ namespace detail
 
       const auto& fieldData = fieldData_.back();
       const auto& vertex = fieldData.vertex;
+      const auto& vertex = fieldData.vertex_normal;
       const auto& color = fieldData.color;
       const auto& index = fieldData.index;
 
