@@ -46,9 +46,11 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Graphics/Widgets/SphereWidget.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun;
 using namespace Core;
+using namespace Logging;
 using namespace Datatypes;
 using namespace Dataflow::Networks;
 using namespace Modules::Fields;
@@ -72,7 +74,6 @@ namespace SCIRun
       {
       public:
         BBox last_bounds_;
-        std::vector<size_t> widget_id_;
         std::vector<SphereWidgetHandle> pointWidgets_;
         double l2norm_;
 
@@ -117,9 +118,10 @@ void GeneratePointSamplesFromField::setStateDefaults()
 
 void GeneratePointSamplesFromField::execute()
 {
+  logInfo("executing GPSFF");
   sendOutput(GeneratedPoints, GenerateOutputField());
 
-  auto geom = WidgetFactory::createComposite(impl_->pointWidgets_.begin(), impl_->pointWidgets_.end());
+  auto geom = WidgetFactory::createComposite(*this, "multiple_spheres", impl_->pointWidgets_.begin(), impl_->pointWidgets_.end());
   sendOutput(GeneratedWidget, geom);
 }
 
@@ -162,22 +164,24 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
   auto numSeeds = state->getValue(Parameters::NumSeeds).toInt();
   auto scale = state->getValue(Parameters::ProbeScale).toDouble();
 
-  if (impl_->widget_id_.size() != numSeeds)
+  logInfo("numSeeds: {}, size of widgets vector: {}", numSeeds, impl_->pointWidgets_.size());
+  auto oldScale = scale * impl_->l2norm_ * 0.003;
+  logInfo("old scale: {}; new scale: {}", oldScale, scale);
+  if (impl_->pointWidgets_.size() != numSeeds)
   {
-    if (numSeeds < impl_->widget_id_.size())
+    if (numSeeds < impl_->pointWidgets_.size())
     {
       // remove current composite widget
-      impl_->widget_id_.resize(numSeeds);
       impl_->pointWidgets_.resize(numSeeds);
     }
     else
     {
-      for (size_t i = impl_->widget_id_.size(); i < numSeeds; i++)
+      for (size_t i = impl_->pointWidgets_.size(); i < numSeeds; i++)
       {
+        logInfo("adding new seed at {}", center.get_string());
         auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this,
-          scale * impl_->l2norm_ * 0.003, "Color(0.5,0.5,0.5)", center, bbox));
+          scale, "Color(0.5,0.5,0.5)", center, bbox));
         impl_->pointWidgets_.push_back(seed);
-        impl_->widget_id_.push_back(i);
         //seed->setPosition(center);
         //seed->setScale(scale * impl_->l2norm_ * 0.003);
       }

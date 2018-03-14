@@ -277,7 +277,7 @@ namespace SCIRun {
         IBOList mIBOs;  ///< Array of index buffer objects.
 
         /// List of passes to setup.
-        std::list<SpireSubPass>  mPasses;
+        PassList  mPasses;
 
         /// Optional colormap name.
         boost::optional<std::string> mColorMap;

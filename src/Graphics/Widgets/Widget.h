@@ -58,6 +58,25 @@ namespace SCIRun
           Core::Geometry::Point& down, Core::Geometry::Point& in) const;
       };
 
+      class SCISHARE CompositeWidget : public WidgetBase
+      {
+      public:
+        template <typename WidgetIter>
+        CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
+          : WidgetBase(idGenerator, tag, true)
+        {
+          while (begin != end)
+          {
+            auto widget = *begin;
+            std::copy(widget->vbos().begin(), widget->vbos().end(), std::back_inserter(vbos()));
+            std::copy(widget->ibos().begin(), widget->ibos().end(), std::back_inserter(ibos()));
+            std::copy(widget->passes().begin(), widget->passes().end(), std::back_inserter(passes()));
+            ++begin;
+          }
+        }
+        ~CompositeWidget();
+      };
+
       class SCISHARE WidgetFactory
       {
       public:
@@ -65,10 +84,10 @@ namespace SCIRun
           const BoxPosition& pos, const Core::Geometry::BBox& bbox);
         static WidgetHandle createSphere(const Core::GeometryIDGenerator& idGenerator, double radius, const std::string& defaultColor,
           const Core::Geometry::Point& point, const Core::Geometry::BBox& bbox);
-        template <typename Iter>
-        static WidgetHandle createComposite(Iter begin, Iter end)
+        template <typename WidgetIter>
+        static WidgetHandle createComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
         {
-          return nullptr;
+          return boost::make_shared<CompositeWidget>(idGenerator, tag, begin, end);
         }
       };
     }

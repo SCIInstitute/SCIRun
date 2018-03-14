@@ -50,3 +50,7 @@ WidgetHandle WidgetFactory::createSphere(const Core::GeometryIDGenerator& idGene
 {
   return boost::make_shared<SphereWidget>(idGenerator, scale, defaultColor, point, bbox);
 }
+
+CompositeWidget::~CompositeWidget()
+{
+}
