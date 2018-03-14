@@ -215,7 +215,7 @@ namespace detail
         state_->setValue(Parameters::CameraUpX, newUp.x());
         state_->setValue(Parameters::CameraUpY, newUp.y());
         state_->setValue(Parameters::CameraUpZ, newUp.z());
-        ospSet3fv(camera_, "up", toArray(newUp).begin());
+        ospSet3fv(camera_, "up", &toArray(newUp)[0]);
         ospCommit(camera_);
       }
     }
