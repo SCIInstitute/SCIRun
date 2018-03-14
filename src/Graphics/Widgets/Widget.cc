@@ -45,7 +45,8 @@ WidgetHandle WidgetFactory::createBox(const Core::GeometryIDGenerator& idGenerat
   return boost::make_shared<BoundingBoxWidget>(idGenerator, scale, pos, bbox);
 }
 
-WidgetHandle WidgetFactory::createSphere(const Core::GeometryIDGenerator& idGenerator, double scale, const std::string& defaultColor, FieldHandle field)
+WidgetHandle WidgetFactory::createSphere(const Core::GeometryIDGenerator& idGenerator, double scale,
+  const std::string& defaultColor, const Point& point, const BBox& bbox)
 {
-  return boost::make_shared<SphereWidget>(idGenerator, scale, defaultColor, field);
+  return boost::make_shared<SphereWidget>(idGenerator, scale, defaultColor, point, bbox);
 }

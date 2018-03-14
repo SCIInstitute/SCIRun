@@ -74,10 +74,9 @@ namespace SCIRun
       {
       public:
         GenerateSinglePointProbeFromFieldImpl() :
-          widget_(new PointWidgetStub),
           widgetid_(0), l2norm_(0), color_changed_(false) {}
-        PointWidgetPtr widget_;
         BBox last_bounds_;
+        Point widgetLocation_;
         int widgetid_;
         double l2norm_;
         bool color_changed_;
@@ -254,7 +253,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
       center = curloc;
     }
 
-    impl_->widget_->setPosition(center);
+    impl_->widgetLocation_ = center;
 
     impl_->last_bounds_ = bbox;
   }
@@ -265,7 +264,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
   if (moveto == "Location")
   {
     const auto newloc = currentLocation();
-    impl_->widget_->setPosition(newloc);
+    impl_->widgetLocation_ = newloc;
     moved_p = true;
   }
   else if (moveto == "Center")
@@ -293,7 +292,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
 
     auto center = bmin + Vector(bmax - bmin) * 0.5;
 
-    impl_->widget_->setPosition(center);
+    impl_->widgetLocation_ = center;
     moved_p = true;
   }
   else if (!moveto.empty() && ifieldOption)
@@ -305,7 +304,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
       {
         Point p;
         ifield->vmesh()->get_center(p, VMesh::Node::index_type(idx));
-        impl_->widget_->setPosition(p);
+        impl_->widgetLocation_ = p;
         moved_p = true;
       }
     }
@@ -316,7 +315,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
       {
         Point p;
         ifield->vmesh()->get_center(p, VMesh::Elem::index_type(idx));
-        impl_->widget_->setPosition(p);
+        impl_->widgetLocation_ = p;
         moved_p = true;
       }
     }
@@ -331,7 +330,7 @@ FieldHandle GenerateSinglePointProbeFromField::GenerateOutputField(boost::option
 #endif
   }
 
-  const auto location = impl_->widget_->position();
+  const auto location = impl_->widgetLocation_;
 
   FieldInformation fi("PointCloudMesh", 0, "double");
   auto mesh = CreateMesh(fi);
@@ -472,5 +471,14 @@ GeometryHandle GenerateSinglePointProbeFromFieldImpl::buildWidgetObject(FieldHan
 {
   using namespace Parameters;
   double radius = state->getValue(ProbeSize).toDouble();
-  return WidgetFactory::createSphere(idGenerator, radius, state->getValue(Parameters::ProbeColor).toString(), field);
+  auto mesh = field->vmesh();
+  mesh->synchronize(Mesh::NODES_E);
+
+  // todo: quicker way to get a single point
+  VMesh::Node::iterator eiter;
+  mesh->begin(eiter);
+  Point point;
+  mesh->get_point(point, *eiter);
+  return WidgetFactory::createSphere(idGenerator, radius, state->getValue(Parameters::ProbeColor).toString(),
+    point, mesh->get_bounding_box());
 }

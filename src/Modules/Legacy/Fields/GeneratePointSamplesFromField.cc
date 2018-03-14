@@ -45,7 +45,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/BBox.h>
-#include <Graphics/Glyphs/GlyphGeom.h>
+#include <Graphics/Widgets/SphereWidget.h>
 
 using namespace SCIRun;
 using namespace Core;
@@ -72,13 +72,28 @@ namespace SCIRun
       {
       public:
         BBox last_bounds_;
-
-        std::vector<size_t>              widget_id_;
-        std::vector<SphereWidgetHandle>     pointWidgets_;
+        std::vector<size_t> widget_id_;
+        std::vector<SphereWidgetHandle> pointWidgets_;
         double l2norm_;
 
-        GeometryHandle buildWidgetObject(FieldHandle field, double radius, const GeometryIDGenerator& idGenerator);
-        RenderState getWidgetRenderState() const;
+        FieldHandle makePointCloud()
+        {
+          //when push send button--TODO: for now, always update seed mesh
+          FieldInformation fi("PointCloudMesh", 1, "double");
+          auto ofield = CreateField(fi);
+          auto mesh = ofield->vmesh();
+          auto field = ofield->vfield();
+
+          for (int i = 0; i < pointWidgets_.size(); i++)
+          {
+            const Point location = pointWidgets_[i]->position();
+
+            VMesh::Node::index_type pcindex = mesh->add_point(location);
+            field->resize_fdata();
+            field->set_value(static_cast<double>(i), pcindex);
+          }
+          return ofield;
+        }
       };
     }
   }
@@ -102,35 +117,17 @@ void GeneratePointSamplesFromField::setStateDefaults()
 
 void GeneratePointSamplesFromField::execute()
 {
-  auto field = GenerateOutputField();
-  sendOutput(GeneratedPoints, field);
+  sendOutput(GeneratedPoints, GenerateOutputField());
 
-  auto geom = impl_->buildWidgetObject(field, get_state()->getValue(Parameters::ProbeScale).toDouble(), *this);
+  auto geom = WidgetFactory::createComposite(impl_->pointWidgets_.begin(), impl_->pointWidgets_.end());
   sendOutput(GeneratedWidget, geom);
 }
 
 FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
 {
   auto ifieldhandle = getRequiredInput(InputField);
-  bool input_field_p = true;
-  /// @todo: It looks like the input field is meant to be optional even
-  // though it is not.
-  //  if (!(ifp->get(ifieldhandle) && ifieldhandle.get_rep()))
-  //  {
-  //    input_field_p = false;
-  //    return;
-  //  }
 
-  BBox bbox;
-  if (input_field_p)
-  {
-    bbox = ifieldhandle->vmesh()->get_bounding_box();
-  }
-  else
-  {
-    bbox.extend(Point(-1.0, -1.0, -1.0));
-    bbox.extend(Point(1.0, 1.0, 1.0));
-  }
+  auto bbox = ifieldhandle->vmesh()->get_bounding_box();
 
   Point center;
   Point bmin = bbox.get_min();
@@ -162,7 +159,7 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
   }
 
   auto state = get_state();
-  size_t numSeeds = state->getValue(Parameters::NumSeeds).toInt();
+  auto numSeeds = state->getValue(Parameters::NumSeeds).toInt();
   auto scale = state->getValue(Parameters::ProbeScale).toDouble();
 
   if (impl_->widget_id_.size() != numSeeds)
@@ -177,38 +174,20 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
     {
       for (size_t i = impl_->widget_id_.size(); i < numSeeds; i++)
       {
+        auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this,
+          scale * impl_->l2norm_ * 0.003, "Color(0.5,0.5,0.5)", center, bbox));
         impl_->pointWidgets_.push_back(seed);
         impl_->widget_id_.push_back(i);
-        seed->setPosition(center);
-        seed->setScale(scale * impl_->l2norm_ * 0.003);
+        //seed->setPosition(center);
+        //seed->setScale(scale * impl_->l2norm_ * 0.003);
       }
     }
   }
 
-  for (int i = 0; i < numSeeds; i++)
-  {
-    impl_->pointWidgets_[i]->setScale(scale * impl_->l2norm_ * 0.003);
-  }
+  // for (auto& point : impl_->pointWidgets_)
+  // {
+  //   point->setScale(scale * impl_->l2norm_ * 0.003);
+  // }
 
-  //when push send button--TODO: for now, always update seed mesh
-  FieldInformation fi("PointCloudMesh", 1, "double");
-  FieldHandle ofield = CreateField(fi);
-  VMesh* mesh = ofield->vmesh();
-  VField* field = ofield->vfield();
-
-  for (int i = 0; i < numSeeds; i++)
-  {
-    const Point location = impl_->pointWidgets_[i]->position();
-
-    VMesh::Node::index_type pcindex = mesh->add_point(location);
-    field->resize_fdata();
-    field->set_value(static_cast<double>(i), pcindex);
-  }
-
-  return ofield;
-}
-
-GeometryHandle GeneratePointSamplesFromFieldImpl::buildWidgetObject(FieldHandle field, double radius, const GeometryIDGenerator& idGenerator)
-{
-
+  return impl_->makePointCloud();
 }

@@ -40,16 +40,9 @@ using namespace SCIRun::Core::Geometry;
 
 SphereWidget::SphereWidget(const Core::GeometryIDGenerator& idGenerator,
   double radius, const std::string& defaultColor,
-  FieldHandle field)
+  const Point& point, const BBox& bbox)
   : WidgetBase(idGenerator, "EntireSinglePointProbeFromField", true)
 {
-  auto mesh = field->vmesh();
-  mesh->synchronize(Mesh::NODES_E);
-
-  VMesh::Node::iterator eiter, eiter_end;
-  mesh->begin(eiter);
-  mesh->end(eiter_end);
-
   double num_strips = 10;
   if (radius < 0) radius = 1.;
   if (num_strips < 0) num_strips = 10.;
@@ -62,19 +55,17 @@ SphereWidget::SphereWidget(const Core::GeometryIDGenerator& idGenerator,
 
   Graphics::GlyphGeom glyphs;
   ColorRGB node_color;
-  while (eiter != eiter_end)
-  {
-    Point p;
-    mesh->get_point(p, *eiter);
-    glyphs.addSphere(p, radius, num_strips, node_color);
-
-    ++eiter;
-  }
+  glyphs.addSphere(point, radius, num_strips, node_color);
 
   auto renState = getWidgetRenderState(defaultColor);
 
   glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, mesh->get_bounding_box());
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
+}
+
+Point SphereWidget::position() const
+{
+  return {};
 }
 
 RenderState SphereWidget::getWidgetRenderState(const std::string& defaultColor)

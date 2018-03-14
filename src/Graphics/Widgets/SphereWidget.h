@@ -41,7 +41,9 @@ namespace SCIRun {
       class SCISHARE SphereWidget : public WidgetBase
       {
       public:
-        SphereWidget(const Core::GeometryIDGenerator& idGenerator, double radius, const std::string& defaultColor, FieldHandle field);
+        SphereWidget(const Core::GeometryIDGenerator& idGenerator, double radius, const std::string& defaultColor,
+          const Core::Geometry::Point& point, const Core::Geometry::BBox& bbox);
+        Core::Geometry::Point position() const;
       private:
         RenderState getWidgetRenderState(const std::string& defaultColor);
       };
