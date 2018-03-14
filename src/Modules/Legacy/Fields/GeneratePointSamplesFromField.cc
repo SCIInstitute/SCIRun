@@ -46,6 +46,7 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Graphics/Widgets/SphereWidget.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Logging/Log.h>
 
 using namespace SCIRun;
@@ -75,6 +76,7 @@ namespace SCIRun
       public:
         BBox last_bounds_;
         std::vector<SphereWidgetHandle> pointWidgets_;
+        std::vector<Transform> previousTransforms_;
         double l2norm_;
 
         FieldHandle makePointCloud()
@@ -114,6 +116,7 @@ void GeneratePointSamplesFromField::setStateDefaults()
   auto state = get_state();
   state->setValue(Parameters::NumSeeds, 1);
   state->setValue(Parameters::ProbeScale, 0.23);
+  getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
 
 void GeneratePointSamplesFromField::execute()
@@ -123,6 +126,63 @@ void GeneratePointSamplesFromField::execute()
 
   auto geom = WidgetFactory::createComposite(*this, "multiple_spheres", impl_->pointWidgets_.begin(), impl_->pointWidgets_.end());
   sendOutput(GeneratedWidget, geom);
+}
+
+void GeneratePointSamplesFromField::processWidgetFeedback(const ModuleFeedback& var)
+{
+  try
+  {
+    auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
+    if (vsf.selectionName.find(get_id()) != std::string::npos 
+      //&& impl_->previousTransform_ != vsf.transform
+      )
+    {
+      std::cout << vsf.selectionName << std::endl;
+      adjustPositionFromTransform(vsf.transform);
+      enqueueExecuteAgain(false);
+    }
+  }
+  catch (std::bad_cast&)
+  {
+    //ignore
+  }
+}
+
+void GeneratePointSamplesFromField::adjustPositionFromTransform(const Transform& transformMatrix)
+{
+#if 0
+  DenseMatrix center(4, 1);
+  auto currLoc = currentLocation();
+  center << currLoc.x(), currLoc.y(), currLoc.z(), 1.0;
+  DenseMatrix newTransform(DenseMatrix(transformMatrix) * center);
+
+  Point newLocation(newTransform(0, 0) / newTransform(3, 0),
+    newTransform(1, 0) / newTransform(3, 0),
+    newTransform(2, 0) / newTransform(3, 0));
+
+  //auto state = get_state();
+
+  //state->setValue(XLocation, newLocation.x());
+  //state->setValue(YLocation, newLocation.y());
+  //state->setValue(ZLocation, newLocation.z());
+
+  //if (get_state()->getValue(MoveMethod).toString() == "Node" &&
+  //  get_state()->getValue(SnapToNode).toBool())
+  //{
+  //  setNearestNode(newLocation);
+  //}
+
+  //if (get_state()->getValue(MoveMethod).toString() == "Element" &&
+  //  get_state()->getValue(SnapToElement).toBool())
+  //{
+  //  setNearestElement(newLocation);
+  //}
+
+  //auto oldMoveMethod = state->getValue(MoveMethod).toString();
+  //state->setValue(MoveMethod, std::string("Location"));
+  //state->setValue(MoveMethod, oldMoveMethod);
+  impl_->previousTransform_ = transformMatrix;
+#endif
 }
 
 FieldHandle GeneratePointSamplesFromField::GenerateOutputField()

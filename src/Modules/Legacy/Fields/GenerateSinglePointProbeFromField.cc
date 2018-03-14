@@ -103,6 +103,7 @@ void GenerateSinglePointProbeFromField::processWidgetFeedback(const ModuleFeedba
     if (vsf.selectionName.find(get_id()) != std::string::npos &&
       impl_->previousTransform_ != vsf.transform)
     {
+      std::cout << vsf.selectionName << std::endl;
       adjustPositionFromTransform(vsf.transform);
       enqueueExecuteAgain(false);
     }

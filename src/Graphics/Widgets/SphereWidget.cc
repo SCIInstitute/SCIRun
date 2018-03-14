@@ -41,7 +41,7 @@ using namespace SCIRun::Core::Geometry;
 SphereWidget::SphereWidget(const Core::GeometryIDGenerator& idGenerator,
   double radius, const std::string& defaultColor,
   const Point& point, const BBox& bbox)
-  : WidgetBase(idGenerator, "EntireSinglePointProbeFromField", true)
+  : WidgetBase(idGenerator, "EntireSinglePointProbeFromField", true), position_(point)
 {
   double num_strips = 10;
   if (radius < 0) radius = 1.;
@@ -65,7 +65,12 @@ SphereWidget::SphereWidget(const Core::GeometryIDGenerator& idGenerator,
 
 Point SphereWidget::position() const
 {
-  return {};
+  return position_;
+}
+
+void SphereWidget::setPosition(const Point& p)
+{
+  position_ = p;
 }
 
 RenderState SphereWidget::getWidgetRenderState(const std::string& defaultColor)
