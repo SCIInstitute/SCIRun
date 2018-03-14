@@ -332,7 +332,7 @@ namespace SCIRun {
         std::vector<size_t> stride_vbo;
 
         int nameIndex = 0;
-        for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it, ++nameIndex)
+        for (auto it = obj->vbos().cbegin(); it != obj->vbos().cend(); ++it, ++nameIndex)
         {
           const auto& vbo = *it;
 
@@ -357,7 +357,7 @@ namespace SCIRun {
 
         // Add index buffer objects.
         nameIndex = 0;
-        for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
+        for (auto it = obj->ibos().cbegin(); it != obj->ibos().cend(); ++it, ++nameIndex)
         {
           const auto& ibo = *it;
           GLenum primType = GL_UNSIGNED_SHORT;
@@ -406,7 +406,7 @@ namespace SCIRun {
         if (auto shaderMan = sm.lock())
         {
           // Add passes
-          for (auto& pass : obj->mPasses)
+          for (auto& pass : obj->passes())
           {
             uint64_t entityID = getEntityIDForName(pass.passName, port);
 
@@ -420,7 +420,7 @@ namespace SCIRun {
               // We will be constructing a render list from the VBO and IBO.
               RenderList list;
 
-              for (const auto& vbo : obj->mVBOs)
+              for (const auto& vbo : obj->vbos())
               {
                 if (vbo.name == pass.vboName)
                 {
@@ -826,7 +826,7 @@ namespace SCIRun {
           std::vector<size_t> stride_vbo;
 
           int nameIndex = 0;
-          for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it, ++nameIndex)
+          for (auto it = obj->vbos().cbegin(); it != obj->vbos().cend(); ++it, ++nameIndex)
           {
             const auto& vbo = *it;
 
@@ -854,7 +854,7 @@ namespace SCIRun {
           DEBUG_LOG_LINE_INFO
           RENDERER_LOG("Add index buffer objects.");
           nameIndex = 0;
-          for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it, ++nameIndex)
+          for (auto it = obj->ibos().cbegin(); it != obj->ibos().cend(); ++it, ++nameIndex)
           {
             const auto& ibo = *it;
             GLenum primType = GL_UNSIGNED_SHORT;
@@ -990,14 +990,14 @@ namespace SCIRun {
 
           RENDERER_LOG("Add default identity transform to the object globally (instead of per-pass)");
           glm::mat4 xform;
-          mSRObjects.push_back(SRObject(objectName, xform, bbox, obj->mColorMap, port));
+          mSRObjects.push_back(SRObject(objectName, xform, bbox, obj->colorMap(), port));
           SRObject& elem = mSRObjects.back();
 
           std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
           if (auto shaderMan = sm.lock())
           {
             RENDERER_LOG("Add passes");
-            for (auto& pass : obj->mPasses)
+            for (auto& pass : obj->passes())
             {
               uint64_t entityID = getEntityIDForName(pass.passName, port);
 
@@ -1037,7 +1037,7 @@ namespace SCIRun {
                 RENDERER_LOG("We will be constructing a render list from the VBO and IBO.");
                 RenderList list;
 
-                for (const auto& vbo : obj->mVBOs)
+                for (const auto& vbo : obj->vbos())
                 {
                   if (vbo.name == pass.vboName)
                   {

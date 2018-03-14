@@ -251,13 +251,30 @@ namespace SCIRun {
         }
       };
 
+      using VBOList = std::list<SpireVBO>;
+      using IBOList = std::list<SpireIBO>;
+      using PassList = std::list<SpireSubPass>;
+
       class SCISHARE GeometryObjectSpire : public Core::Datatypes::GeometryObject
       {
       public:
         GeometryObjectSpire(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable);
 
-        std::list<SpireVBO> mVBOs;  ///< Array of vertex buffer objects.
-        std::list<SpireIBO> mIBOs;  ///< Array of index buffer objects.
+        //encapsulation phase 1: dumb get/set
+        const VBOList& vbos() const { return mVBOs; }
+        VBOList& vbos() { return mVBOs; }
+        const IBOList& ibos() const { return mIBOs; }
+        IBOList& ibos() { return mIBOs; }
+        const PassList& passes() const { return mPasses; }
+        PassList& passes() { return mPasses; }
+
+        bool isClippable() const { return isClippable_; }
+
+        void setColorMap(const std::string& name) { mColorMap = name; }
+        boost::optional<std::string> colorMap() const { return mColorMap; }
+      private:
+        VBOList mVBOs;  ///< Array of vertex buffer objects.
+        IBOList mIBOs;  ///< Array of index buffer objects.
 
         /// List of passes to setup.
         std::list<SpireSubPass>  mPasses;
@@ -265,12 +282,6 @@ namespace SCIRun {
         /// Optional colormap name.
         boost::optional<std::string> mColorMap;
 
-        double mLowestValue;    ///< Lowest value a field takes on.
-        double mHighestValue;   ///< Highest value a field takes on.
-
-        bool isVisible;
-        bool isClippable() const { return isClippable_; }
-      private:
         bool isClippable_;
       };
 

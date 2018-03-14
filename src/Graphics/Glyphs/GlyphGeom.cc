@@ -201,9 +201,9 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-  geom.mVBOs.push_back(geomVBO);
-  geom.mIBOs.push_back(geomIBO);
-  geom.mPasses.push_back(pass);
+  geom.vbos().push_back(geomVBO);
+  geom.ibos().push_back(geomIBO);
+  geom.passes().push_back(pass);
 }
 
 void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double resolution,

@@ -857,13 +857,13 @@ void GeometryBuilder::renderFacesLinear(
   SpireVBO geomVBO(vboName, attribs, vboBufferSPtr,
     numVBOElements, mesh->get_bounding_box(), true);
 
-  geom->mVBOs.push_back(geomVBO);
+  geom->vbos().push_back(geomVBO);
 
   // Construct IBO.
 
   SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
 
-  geom->mIBOs.push_back(geomIBO);
+  geom->ibos().push_back(geomIBO);
 
   SpireText text;
 
@@ -873,7 +873,7 @@ void GeometryBuilder::renderFacesLinear(
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-  geom->mPasses.push_back(pass);
+  geom->passes().push_back(pass);
 
   /// \todo Add spheres and other glyphs as display lists. Will want to
   ///       build up to geometry / tessellation shaders if support is present.
