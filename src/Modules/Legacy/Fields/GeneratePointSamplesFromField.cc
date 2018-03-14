@@ -119,13 +119,25 @@ void GeneratePointSamplesFromField::setStateDefaults()
   getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
 
+bool testOutput = false;
+
 void GeneratePointSamplesFromField::execute()
 {
   logInfo("executing GPSFF");
   sendOutput(GeneratedPoints, GenerateOutputField());
 
-  auto geom = WidgetFactory::createComposite(*this, "multiple_spheres", impl_->pointWidgets_.begin(), impl_->pointWidgets_.end());
-  sendOutput(GeneratedWidget, geom);
+  if (!testOutput)
+  {
+    auto geom = WidgetFactory::createComposite(*this, "multiple_spheres", impl_->pointWidgets_.begin(), impl_->pointWidgets_.end());
+    sendOutput(GeneratedWidget, geom);
+  }
+  else
+  {
+    auto geom = WidgetFactory::createComposite(*this, "dummy", impl_->pointWidgets_.begin(), impl_->pointWidgets_.begin());
+    sendOutput(GeneratedWidget, geom);
+    geom = WidgetFactory::createComposite(*this, "multiple_spheres", impl_->pointWidgets_.begin(), impl_->pointWidgets_.end());
+    sendOutput(GeneratedWidget, geom);
+  }
 }
 
 void GeneratePointSamplesFromField::processWidgetFeedback(const ModuleFeedback& var)
@@ -150,9 +162,9 @@ void GeneratePointSamplesFromField::processWidgetFeedback(const ModuleFeedback& 
 
 void GeneratePointSamplesFromField::adjustPositionFromTransform(const Transform& transformMatrix)
 {
-#if 0
   DenseMatrix center(4, 1);
-  auto currLoc = currentLocation();
+  impl_->previousTransforms_.resize(impl_->pointWidgets_.size());
+  auto currLoc = impl_->pointWidgets_[0]->position();
   center << currLoc.x(), currLoc.y(), currLoc.z(), 1.0;
   DenseMatrix newTransform(DenseMatrix(transformMatrix) * center);
 
@@ -160,29 +172,9 @@ void GeneratePointSamplesFromField::adjustPositionFromTransform(const Transform&
     newTransform(1, 0) / newTransform(3, 0),
     newTransform(2, 0) / newTransform(3, 0));
 
-  //auto state = get_state();
+  impl_->pointWidgets_[0]->setPosition(newLocation);
 
-  //state->setValue(XLocation, newLocation.x());
-  //state->setValue(YLocation, newLocation.y());
-  //state->setValue(ZLocation, newLocation.z());
-
-  //if (get_state()->getValue(MoveMethod).toString() == "Node" &&
-  //  get_state()->getValue(SnapToNode).toBool())
-  //{
-  //  setNearestNode(newLocation);
-  //}
-
-  //if (get_state()->getValue(MoveMethod).toString() == "Element" &&
-  //  get_state()->getValue(SnapToElement).toBool())
-  //{
-  //  setNearestElement(newLocation);
-  //}
-
-  //auto oldMoveMethod = state->getValue(MoveMethod).toString();
-  //state->setValue(MoveMethod, std::string("Location"));
-  //state->setValue(MoveMethod, oldMoveMethod);
-  impl_->previousTransform_ = transformMatrix;
-#endif
+  impl_->previousTransforms_[0] = transformMatrix;
 }
 
 FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
@@ -239,19 +231,34 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
       for (size_t i = impl_->pointWidgets_.size(); i < numSeeds; i++)
       {
         logInfo("adding new seed at {}", center.get_string());
+        std::cout << "adding new seed at " << center.get_string() << " with bbox " << bbox << std::endl;
         auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this,
           scale, "Color(0.5,0.5,0.5)", center, bbox));
         impl_->pointWidgets_.push_back(seed);
-        //seed->setPosition(center);
-        //seed->setScale(scale * impl_->l2norm_ * 0.003);
       }
     }
   }
+  else
+  {
+    std::cout << "re-execute from widget move! try remaking all widgets. scale change code below" << std::endl;
+    std::vector<SphereWidgetHandle> newWidgets;
+    for (const auto& oldWidget : impl_->pointWidgets_)
+    {
+      logInfo("adding redo seed at {}", oldWidget->position().get_string());
+      std::cout << "adding redo seed at " << oldWidget->position().get_string() << " with bbox " << bbox << std::endl;
+      auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this,
+        scale, "Color(0.5,0.5,0.5)", oldWidget->position(), bbox));
+      newWidgets.push_back(seed);
+    }
+    impl_->pointWidgets_ = newWidgets;
+    testOutput = true;
 
-  // for (auto& point : impl_->pointWidgets_)
-  // {
-  //   point->setScale(scale * impl_->l2norm_ * 0.003);
-  // }
+  }
+
+  //for (auto& point : impl_->pointWidgets_)
+    // {
+    //   point->setScale(scale * impl_->l2norm_ * 0.003);
+    // }
 
   return impl_->makePointCloud();
 }

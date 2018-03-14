@@ -114,7 +114,7 @@
 									<name>NumSeeds</name>
 									<value>
 										<which>0</which>
-										<value>5</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -202,7 +202,7 @@
 									<name>RNGSeed</name>
 									<value>
 										<which>0</which>
-										<value>4</value>
+										<value>5</value>
 									</value>
 								</second>
 							</item>
@@ -230,7 +230,7 @@
 									<name>FieldElem</name>
 									<value>
 										<which>0</which>
-										<value>7</value>
+										<value>3</value>
 									</value>
 								</second>
 							</item>
@@ -242,7 +242,7 @@
 									<name>FieldNode</name>
 									<value>
 										<which>0</which>
-										<value>17</value>
+										<value>8</value>
 									</value>
 								</second>
 							</item>
@@ -338,7 +338,7 @@
 									<name>XLocation</name>
 									<value>
 										<which>1</which>
-										<value>9.65327889774472810e-001</value>
+										<value>8.34184835660396580e-001</value>
 									</value>
 								</second>
 							</item>
@@ -350,7 +350,7 @@
 									<name>YLocation</name>
 									<value>
 										<which>1</which>
-										<value>6.68068106865870260e-001</value>
+										<value>7.90806910016908840e-001</value>
 									</value>
 								</second>
 							</item>
@@ -362,7 +362,7 @@
 									<name>ZLocation</name>
 									<value>
 										<which>1</which>
-										<value>3.12437567804718370e-002</value>
+										<value>-6.41553516015683000e-001</value>
 									</value>
 								</second>
 							</item>
