@@ -74,7 +74,6 @@ namespace SCIRun
   {
     namespace Fields
     {
-
       class GeneratePointSamplesFromFieldImpl
       {
       public:
@@ -85,7 +84,6 @@ namespace SCIRun
 
         FieldHandle makePointCloud()
         {
-          //when push send button--TODO: for now, always update seed mesh
           FieldInformation fi("PointCloudMesh", 1, "double");
           auto ofield = CreateField(fi);
           auto mesh = ofield->vmesh();
@@ -139,8 +137,6 @@ void GeneratePointSamplesFromField::processWidgetFeedback(const ModuleFeedback& 
     auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
     if (vsf.selectionName.find(get_id()) != std::string::npos)
     {
-
-      //std::cout << "!@!@!: " << vsf.selectionName << std::endl;
       int widgetIndex = -1;
       try
       {
@@ -220,16 +216,11 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
   auto state = get_state();
   auto numSeeds = state->getValue(Parameters::NumSeeds).toInt();
   auto scale = state->getValue(Parameters::ProbeScale).toDouble();
-
-  //logInfo("numSeeds: {}, size of widgets vector: {}", numSeeds, impl_->pointWidgets_.size());
-  //auto oldScale = scale * impl_->l2norm_ * 0.003;
-  //logInfo("old scale: {}; new scale: {}", oldScale, scale);
   auto widgetName = [](int i) { return "GPSFF(" + std::to_string(i) + ")"; };
   if (impl_->pointWidgets_.size() != numSeeds)
   {
     if (numSeeds < impl_->pointWidgets_.size())
     {
-      // remove current composite widget
       impl_->pointWidgets_.resize(numSeeds);
     }
     else
@@ -237,9 +228,6 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
       auto positions = state->getValue(Parameters::PointPositions).toVector();
       for (size_t i = impl_->pointWidgets_.size(); i < numSeeds; i++)
       {
-        //logInfo("adding new seed at {}", center.get_string());
-        //std::cout << "adding new seed at " << center.get_string() << " with bbox " << bbox << std::endl;
-
         auto location = center;
         if (i < positions.size())
           location = pointFromString(positions[i].toString());
@@ -254,14 +242,11 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
   }
   else
   {
-    //std::cout << "re-execute from widget move! try remaking all widgets. scale change code below" << std::endl;
     std::vector<SphereWidgetHandle> newWidgets;
     int counter = 0;
     moveCount_++;
     for (const auto& oldWidget : impl_->pointWidgets_)
     {
-      //logInfo("adding redo seed at {}", oldWidget->position().get_string());
-      //std::cout << "adding redo seed at " << oldWidget->position().get_string() << " with bbox " << bbox << std::endl;
       auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this,
         widgetName(counter++) + std::string(moveCount_, ' '),
         scale, "Color(0.5,0.5,0.5)", oldWidget->position(), bbox));
