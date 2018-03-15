@@ -159,7 +159,7 @@ namespace detail
 
     struct FieldData
     {
-      std::vector<float> vertex, color;
+      std::vector<float> vertex, color, vertex_normal;
       std::vector<int32_t> index;
     };
 
@@ -251,8 +251,11 @@ namespace detail
       auto& fieldData = fieldData_.back();
       auto& vertex = fieldData.vertex;
       auto& color = fieldData.color;
+      auto& vertex_normal = fieldData.vertex_normal;
 
       auto vfield = field->vfield();
+      
+      Vector norm;
 
       {
         double value;
@@ -276,6 +279,13 @@ namespace detail
           color.push_back(static_cast<float>(nodeColor.g()));
           color.push_back(static_cast<float>(nodeColor.b()));
           color.push_back(alpha);
+          
+          field->vmesh()->get_normal(norm,node.index());
+          
+          vertex_normal.push_back(static_cast<float>(norm.x()));
+          vertex_normal.push_back(static_cast<float>(norm.y()));
+          vertex_normal.push_back(static_cast<float>(norm.y()));
+          vertex_normal.push_back(0);
         }
       }
 
@@ -300,7 +310,7 @@ namespace detail
 
       const auto& fieldData = fieldData_.back();
       const auto& vertex = fieldData.vertex;
-      const auto& vertex = fieldData.vertex_normal;
+      const auto& vertex_normal = fieldData.vertex_normal;
       const auto& color = fieldData.color;
       const auto& index = fieldData.index;
 
@@ -309,6 +319,11 @@ namespace detail
       OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
       ospCommit(data);
       ospSetData(mesh, "vertex", data);
+      
+      data = ospNewData(vertex_normal.size() / 4, OSP_FLOAT3A, &vertex_normal[0]); // OSP_FLOAT3 format is also supported for vertex normals
+      ospCommit(data);
+      ospSetData(mesh, "vertex.normal", data);
+      
       data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
       ospCommit(data);
       ospSetData(mesh, "vertex.color", data);
