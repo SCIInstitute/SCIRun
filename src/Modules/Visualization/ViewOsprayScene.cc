@@ -88,7 +88,7 @@ void ViewOsprayScene::setStateDefaults()
   state->setValue(Variables::Filename, std::string(""));
 }
 
-ViewOsprayScene::ViewOsprayScene() : Module(staticInfo_), impl_(new OsprayImpl)
+ViewOsprayScene::ViewOsprayScene() : Module(staticInfo_)
 {
   INITIALIZE_PORT(OspraySceneGraph);
 }
@@ -98,29 +98,16 @@ void ViewOsprayScene::execute()
   #ifdef WITH_OSPRAY
   auto geoms = getOptionalDynamicInputs(OspraySceneGraph);
 
-#if 0
   if (needToExecute())
   {
-    detail::OsprayImpl ospray(get_state());
+    OsprayImpl ospray(get_state());
     ospray.setup();
-
-    if (!fields.empty())
+    for (auto& geom : geoms)
     {
-      if (colorMaps.size() < fields.size())
-        colorMaps.resize(fields.size());
+      auto g = boost::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
+      if (g)
+        ospray.render(*g);
     }
-
-    for (auto& streamline : streamlines)
-    {
-      FieldInformation info(streamline);
-
-      if (!info.is_curvemesh())
-        THROW_INVALID_ARGUMENT("Module currently only works with curvemesh streamlines.");
-
-      ospray.addStreamline(streamline);
-    }
-
-    ospray.render();
 
     auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
     auto filename = "scirunOsprayOutput_" + isoString + ".ppm";
@@ -129,11 +116,7 @@ void ViewOsprayScene::execute()
     remark("Saving output to " + filePath.string());
 
     get_state()->setTransientValue(Variables::Filename, filePath.string());
-
-    //auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);
-    //sendOutput(SceneGraph, geom);
   }
-  #endif
   #else
   error("Build SCIRun with WITH_OSPRAY set to true to enable this module.");
   #endif

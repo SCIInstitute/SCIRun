@@ -99,14 +99,16 @@ namespace SCIRun {
         virtual void setStateDefaults() override;
 
         HAS_DYNAMIC_PORTS
-      private:
-        SharedPointer<class OsprayImpl> impl_;
       };
 
       class SCISHARE OsprayImpl
       {
         #ifdef WITH_OSPRAY
       public:
+        explicit OsprayImpl(Dataflow::Networks::ModuleStateHandle state);
+        void setup();
+        void render(const Core::Datatypes::CompositeOsprayGeometryObject& objList);
+        void writeImage(const std::string& filename);
       private:
         SharedPointer<detail::OsprayImplImpl> impl_;
         #endif

@@ -51,8 +51,6 @@ namespace SCIRun {
         virtual void setStateDefaults() override;
 
         HAS_DYNAMIC_PORTS
-      private:
-        SharedPointer<class OsprayImpl> impl_;
       };
 
     }

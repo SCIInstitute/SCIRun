@@ -133,7 +133,10 @@ namespace detail
         int argc = 0;
         int init_error = ospInit(&argc, argv);
         if (init_error != OSP_NO_ERROR)
+        {
+          std::cerr << "OSPRAY ERROR" << std::endl;
           throw init_error;
+        }
         initialized_ = true;
       }
     }
@@ -393,7 +396,6 @@ namespace detail
 
         adjustCameraPosition(obj->box);
       }
-
       renderer_ = ospNewRenderer("scivis"); // choose Scientific Visualization renderer
 
       // create and setup light for Ambient Occlusion
@@ -428,7 +430,6 @@ namespace detail
         ospSetObject(renderer_, "lights", lights);
       ospSetObject(renderer_, "material", material);
       ospCommit(renderer_);
-
       // create and setup framebuffer
       framebuffer_ = ospNewFrameBuffer(imgSize_, OSP_FB_SRGBA, OSP_FB_COLOR | /*OSP_FB_DEPTH |*/ OSP_FB_ACCUM);
       ospFrameBufferClear(framebuffer_, OSP_FB_COLOR | OSP_FB_ACCUM);
@@ -479,7 +480,26 @@ namespace detail
   #endif
 }
 
-InterfaceWithOspray::InterfaceWithOspray() : GeometryGeneratingModule(staticInfo_)
+OsprayImpl::OsprayImpl(ModuleStateHandle state) : impl_(new detail::OsprayImplImpl(state))
+{
+}
+
+void OsprayImpl::setup()
+{
+  impl_->setup();
+}
+
+void OsprayImpl::render(const CompositeOsprayGeometryObject& objList)
+{
+  impl_->render(objList);
+}
+
+void OsprayImpl::writeImage(const std::string& filename)
+{
+  impl_->writeImage(filename);
+}
+
+InterfaceWithOspray::InterfaceWithOspray() : GeometryGeneratingModule(staticInfo_)//, impl_(new OsprayImpl(get_state()))
 {
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
@@ -530,15 +550,6 @@ void InterfaceWithOspray::execute()
     }
     
     auto geom = boost::make_shared<CompositeOsprayGeometryObject>(ospray.allObjectsToRender());
-    ospray.render(*geom);
-
-    auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
-    auto filename = "scirunOsprayOutput_" + isoString + ".ppm";
-    auto filePath = get_state()->getValue(Variables::Filename).toString() / boost::filesystem::path(filename);
-    ospray.writeImage(filePath.string());
-    remark("Saving output to " + filePath.string());
-
-    get_state()->setTransientValue(Variables::Filename, filePath.string());
     
     sendOutput(SceneGraph, geom);
   }
