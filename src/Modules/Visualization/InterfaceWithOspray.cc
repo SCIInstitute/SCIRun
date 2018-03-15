@@ -320,7 +320,7 @@ namespace detail
       ospCommit(data);
       ospSetData(mesh, "vertex", data);
       
-      data = ospNewData(vertex_normal.size() / 4, OSP_FLOAT3A, &vertex_normal[0]); // OSP_FLOAT3 format is also supported for vertex normals
+      data = ospNewData(vertex_normal.size() / 4, OSP_FLOAT3A, &vertex_normal[0]);
       ospCommit(data);
       ospSetData(mesh, "vertex.normal", data);
       
