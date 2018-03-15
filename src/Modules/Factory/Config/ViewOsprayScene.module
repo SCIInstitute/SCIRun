@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ViewOsprayScene",
+    "namespace": "Visualization",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Visualization/ViewOsprayScene.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ViewOspraySceneDialog",
+    "header": "Interface/Modules/Visualization/ViewOspraySceneDialog.h"
+  }
+}
