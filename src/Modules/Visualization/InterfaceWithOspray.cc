@@ -37,6 +37,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/range/join.hpp>
 
 #ifdef WITH_OSPRAY
 #include <ospray/ospray.h>
@@ -152,18 +153,22 @@ namespace detail
       return static_cast<float>(state_->getValue(name).toDouble());
     }
 
+    OsprayGeometryObjectHandle makeObject(FieldHandle field)
+    {
+      OsprayGeometryObjectHandle obj(new OsprayGeometryObject);
+      auto vmesh = field->vmesh();
+      auto bbox = vmesh->get_bounding_box();
+      obj->box = bbox;
+      return obj;
+    }
+
     std::array<float,3> toArray(const Vector& v) const
     {
       return { static_cast<float>(v.x()), static_cast<float>(v.y()), static_cast<float>(v.z()) };
     }
 
-    struct FieldData
-    {
-      std::vector<float> vertex, color;
-      std::vector<int32_t> index;
-    };
-
-    std::vector<FieldData> fieldData_;
+    std::vector<OsprayGeometryObjectHandle> scalarFields_;
+    std::vector<OsprayGeometryObjectHandle> streamlines_;
 
   public:
     explicit OsprayImplImpl(ModuleStateHandle state) : guard_(lock_.get()), state_(state)
@@ -193,12 +198,10 @@ namespace detail
       ospCommit(world_);
     }
 
-    void adjustCameraPosition(FieldHandle field)
+    void adjustCameraPosition(const BBox& bbox)
     {
       if (state_->getValue(Parameters::AutoCameraView).toBool())
       {
-        auto vmesh = field->vmesh();
-        auto bbox = vmesh->get_bounding_box();
         imageBox_.extend(bbox);
         auto center = imageBox_.center();
         float position[] = { toFloat(Parameters::CameraPositionX), toFloat(Parameters::CameraPositionY), toFloat(Parameters::CameraPositionZ) };
@@ -243,12 +246,12 @@ namespace detail
         side[0]*newDir[1] - side[1]*newDir[0]);
     }
 
-    void fillDataBuffers(FieldHandle field, ColorMapHandle colorMap)
+    OsprayGeometryObjectHandle fillDataBuffers(FieldHandle field, ColorMapHandle colorMap)
     {
       auto facade(field->mesh()->getFacade());
 
-      fieldData_.push_back({});
-      auto& fieldData = fieldData_.back();
+      auto obj = makeObject(field);
+      auto& fieldData = obj->data;
       auto& vertex = fieldData.vertex;
       auto& color = fieldData.color;
 
@@ -289,16 +292,17 @@ namespace detail
           index.push_back(static_cast<int32_t>(nodes[2]));
         }
       }
-
+      return obj;
     }
 
     void addField(FieldHandle field, ColorMapHandle colorMap)
     {
-      adjustCameraPosition(field);
+      scalarFields_.push_back(fillDataBuffers(field, colorMap));
+    }
 
-      fillDataBuffers(field, colorMap);
-
-      const auto& fieldData = fieldData_.back();
+    void visualizeScalarField(OsprayGeometryObjectHandle obj)
+    {
+      const auto& fieldData = obj->data;
       const auto& vertex = fieldData.vertex;
       const auto& color = fieldData.color;
       const auto& index = fieldData.index;
@@ -323,11 +327,9 @@ namespace detail
 
     void addStreamline(FieldHandle field)
     {
-      adjustCameraPosition(field);
+      streamlines_.push_back(fillDataBuffers(field, nullptr));
 
-      fillDataBuffers(field, nullptr);
-
-      auto& fieldData = fieldData_.back();
+      auto& fieldData = streamlines_.back()->data;
       const auto& vertex = fieldData.vertex;
       const auto& color = fieldData.color;
 
@@ -340,6 +342,15 @@ namespace detail
           index.push_back(nodesFromEdge[0]);
         }
       }
+    }
+
+    void visualizeStreamline(OsprayGeometryObjectHandle obj)
+    {
+      auto& fieldData = obj->data;
+      const auto& vertex = fieldData.vertex;
+      const auto& color = fieldData.color;
+
+      auto& index = fieldData.index;
 
       OSPGeometry streamlines = ospNewGeometry("streamlines");
       OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]);
@@ -365,6 +376,14 @@ namespace detail
 
     void render()
     {
+      for (auto& field : scalarFields_)
+        visualizeScalarField(field);
+      for (auto& line : streamlines_)
+        visualizeStreamline(line);
+
+      for (auto& obj : boost::join(scalarFields_, streamlines_))
+        adjustCameraPosition(obj->box);
+
       renderer_ = ospNewRenderer("scivis"); // choose Scientific Visualization renderer
 
       // create and setup light for Ambient Occlusion

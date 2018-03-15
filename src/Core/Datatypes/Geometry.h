@@ -30,6 +30,7 @@
 #define CORE_DATATYPES_GEOMETRY_H
 
 #include <Core/Datatypes/Datatype.h>
+#include <Core/GeometryPrimitives/BBox.h>
 #include <set>
 #include <Core/Datatypes/share.h>
 
@@ -73,13 +74,26 @@ namespace Datatypes
   class SCISHARE OsprayGeometryObject : public Datatype
   {
   public:
+    OsprayGeometryObject() {}
     OsprayGeometryObject(const OsprayGeometryObject& other) = delete;
     OsprayGeometryObject& operator=(const OsprayGeometryObject& other) = delete;
 
     virtual OsprayGeometryObject* clone() const override;
 
     virtual std::string dynamic_type_name() const override { return "OsprayGeometryObject"; }
+
+    //TODO: 
+    Core::Geometry::BBox box;
+    struct FieldData
+    {
+      std::vector<float> vertex, color;
+      std::vector<int32_t> index;
+    };
+
+    FieldData data;
   };
+
+  using OsprayGeometryObjectHandle = SharedPointer<OsprayGeometryObject>;
 
 }}}
 
