@@ -57,7 +57,7 @@ namespace SCIRun {
 
       class SCISHARE ShowField : public Dataflow::Networks::GeometryGeneratingModule,
         public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
-        public Has1OutputPort<GeometryPortTag>,
+        public Has2OutputPorts<GeometryPortTag, OsprayGeometryPortTag>,
         public Core::Thread::Interruptible
       {
       public:
@@ -109,6 +109,7 @@ namespace SCIRun {
         INPUT_PORT(0, Field, Field);
         INPUT_PORT(1, ColorMapObject, ColorMap);
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
+        OUTPUT_PORT(1, OspraySceneGraph, OsprayGeometryObject);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 

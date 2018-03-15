@@ -135,6 +135,7 @@ ShowField::ShowField() : GeometryGeneratingModule(staticInfo_),
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
   INITIALIZE_PORT(SceneGraph);
+  INITIALIZE_PORT(OspraySceneGraph);
 }
 
 void ShowField::setStateDefaults()

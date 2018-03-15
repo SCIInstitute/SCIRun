@@ -70,6 +70,17 @@ namespace Datatypes
     virtual ~ModuleFeedback() {}
   };
 
+  class SCISHARE OsprayGeometryObject : public Datatype
+  {
+  public:
+    OsprayGeometryObject(const OsprayGeometryObject& other) = delete;
+    OsprayGeometryObject& operator=(const OsprayGeometryObject& other) = delete;
+
+    virtual OsprayGeometryObject* clone() const override;
+
+    virtual std::string dynamic_type_name() const override { return "OsprayGeometryObject"; }
+  };
+
 }}}
 
 
