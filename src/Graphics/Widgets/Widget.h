@@ -82,7 +82,9 @@ namespace SCIRun
       public:
         static WidgetHandle createBox(const Core::GeometryIDGenerator& idGenerator, double scale,
           const BoxPosition& pos, const Core::Geometry::BBox& bbox);
-        static WidgetHandle createSphere(const Core::GeometryIDGenerator& idGenerator, double radius, const std::string& defaultColor,
+        static WidgetHandle createSphere(const Core::GeometryIDGenerator& idGenerator,
+          const std::string& name,
+          double radius, const std::string& defaultColor,
           const Core::Geometry::Point& point, const Core::Geometry::BBox& bbox);
         template <typename WidgetIter>
         static WidgetHandle createComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)

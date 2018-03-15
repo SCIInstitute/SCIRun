@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>7</count>
+			<count>8</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CreateLatVol:0</first>
@@ -50,7 +50,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -87,6 +87,310 @@
 									<value>
 										<which>0</which>
 										<value>3</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>EditMeshBoundingBox:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeMesh</category_name_>
+						<module_name_>EditMeshBoundingBox</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>24</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>BoxMode</name>
+								</first>
+								<second>
+									<name>BoxMode</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>BoxRealScale</name>
+								</first>
+								<second>
+									<name>BoxRealScale</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputCenterX</name>
+								</first>
+								<second>
+									<name>InputCenterX</name>
+									<value>
+										<which>2</which>
+										<value>  0.0000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputCenterY</name>
+								</first>
+								<second>
+									<name>InputCenterY</name>
+									<value>
+										<which>2</which>
+										<value>  0.0000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputCenterZ</name>
+								</first>
+								<second>
+									<name>InputCenterZ</name>
+									<value>
+										<which>2</which>
+										<value>  0.0000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputSizeX</name>
+								</first>
+								<second>
+									<name>InputSizeX</name>
+									<value>
+										<which>2</which>
+										<value>  2.0000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputSizeY</name>
+								</first>
+								<second>
+									<name>InputSizeY</name>
+									<value>
+										<which>2</which>
+										<value>  2.0000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputSizeZ</name>
+								</first>
+								<second>
+									<name>InputSizeZ</name>
+									<value>
+										<which>2</which>
+										<value>  2.0000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NoTranslation</name>
+								</first>
+								<second>
+									<name>NoTranslation</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputCenterX</name>
+								</first>
+								<second>
+									<name>OutputCenterX</name>
+									<value>
+										<which>1</which>
+										<value>3.14573216568439884e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputCenterY</name>
+								</first>
+								<second>
+									<name>OutputCenterY</name>
+									<value>
+										<which>1</which>
+										<value>-7.33682011167104742e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputCenterZ</name>
+								</first>
+								<second>
+									<name>OutputCenterZ</name>
+									<value>
+										<which>1</which>
+										<value>2.04019338361838304e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputSizeX</name>
+								</first>
+								<second>
+									<name>OutputSizeX</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputSizeY</name>
+								</first>
+								<second>
+									<name>OutputSizeY</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000044e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>OutputSizeZ</name>
+								</first>
+								<second>
+									<name>OutputSizeZ</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RDITranslation</name>
+								</first>
+								<second>
+									<name>RDITranslation</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RestrictD</name>
+								</first>
+								<second>
+									<name>RestrictD</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RestrictI</name>
+								</first>
+								<second>
+									<name>RestrictI</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RestrictR</name>
+								</first>
+								<second>
+									<name>RestrictR</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RestrictX</name>
+								</first>
+								<second>
+									<name>RestrictX</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RestrictY</name>
+								</first>
+								<second>
+									<name>RestrictY</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RestrictZ</name>
+								</first>
+								<second>
+									<name>RestrictZ</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Scale</name>
+								</first>
+								<second>
+									<name>Scale</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000006e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>XYZTranslation</name>
+								</first>
+								<second>
+									<name>XYZTranslation</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -126,7 +430,7 @@
 									<name>ProbeScale</name>
 									<value>
 										<which>1</which>
-										<value>3.30000000000000020e-001</value>
+										<value>3.30000000000000016e-01</value>
 									</value>
 								</second>
 							</item>
@@ -135,74 +439,38 @@
 				</second>
 			</item>
 			<item>
-				<first>GeneratePointSamplesFromFieldOrWidget:0</first>
+				<first>GeneratePointSamplesFromField:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>NewField</category_name_>
-						<module_name_>GeneratePointSamplesFromFieldOrWidget</module_name_>
+						<module_name_>GeneratePointSamplesFromField</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>5</count>
+							<count>2</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
-									<name>ClampToNodes</name>
+									<name>NumSeeds</name>
 								</first>
 								<second>
-									<name>ClampToNodes</name>
+									<name>NumSeeds</name>
 									<value>
-										<which>3</which>
+										<which>0</which>
 										<value>1</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>DistributionType</name>
+									<name>ProbeScale</name>
 								</first>
 								<second>
-									<name>DistributionType</name>
+									<name>ProbeScale</name>
 									<value>
-										<which>2</which>
-										<value>uniuni</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>IncrementRNGSeed</name>
-								</first>
-								<second>
-									<name>IncrementRNGSeed</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NumSamples</name>
-								</first>
-								<second>
-									<name>NumSamples</name>
-									<value>
-										<which>0</which>
-										<value>10</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>RNGSeed</name>
-								</first>
-								<second>
-									<name>RNGSeed</name>
-									<value>
-										<which>0</which>
-										<value>5</value>
+										<which>1</which>
+										<value>2.30000000000000010e-01</value>
 									</value>
 								</second>
 							</item>
@@ -230,7 +498,7 @@
 									<name>FieldElem</name>
 									<value>
 										<which>0</which>
-										<value>3</value>
+										<value>4</value>
 									</value>
 								</second>
 							</item>
@@ -242,7 +510,7 @@
 									<name>FieldNode</name>
 									<value>
 										<which>0</which>
-										<value>8</value>
+										<value>19</value>
 									</value>
 								</second>
 							</item>
@@ -302,7 +570,7 @@
 									<name>ProbeSize</name>
 									<value>
 										<which>1</which>
-										<value>3.00000000000000160e-001</value>
+										<value>3.00000000000000155e-01</value>
 									</value>
 								</second>
 							</item>
@@ -338,7 +606,7 @@
 									<name>XLocation</name>
 									<value>
 										<which>1</which>
-										<value>8.34184835660396580e-001</value>
+										<value>-4.00268281205900939e-02</value>
 									</value>
 								</second>
 							</item>
@@ -350,7 +618,7 @@
 									<name>YLocation</name>
 									<value>
 										<which>1</which>
-										<value>7.90806910016908840e-001</value>
+										<value>-9.08730660940272550e-01</value>
 									</value>
 								</second>
 							</item>
@@ -362,7 +630,7 @@
 									<name>ZLocation</name>
 									<value>
 										<which>1</which>
-										<value>-6.41553516015683000e-001</value>
+										<value>1.14604672173206046e+00</value>
 									</value>
 								</second>
 							</item>
@@ -402,7 +670,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000010e-001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -462,7 +730,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -534,7 +802,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -606,7 +874,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -774,7 +1042,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999990e-002</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -874,7 +1142,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000010e-001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -934,7 +1202,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1006,7 +1274,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1078,7 +1346,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1246,7 +1514,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>2.30000000000000010e-001</value>
+										<value>2.30000000000000010e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1315,7 +1583,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ViewScene:0</first>
+				<first>ViewScene:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -1334,7 +1602,7 @@
 									<name>Ambient</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000010e-001</value>
+										<value>2.00000000000000011e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1370,7 +1638,7 @@
 									<name>Diffuse</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1394,7 +1662,7 @@
 									<name>Emission</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1430,7 +1698,7 @@
 									<name>FogEnd</name>
 									<value>
 										<which>1</which>
-										<value>7.09999999999999960e-001</value>
+										<value>7.09999999999999964e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1454,7 +1722,7 @@
 									<name>FogStart</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1586,7 +1854,7 @@
 									<name>PolygonOffset</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1610,7 +1878,7 @@
 									<name>ScaleBarHeight</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>9.99899999999999949e+01</value>
 									</value>
 								</second>
 							</item>
@@ -1622,7 +1890,7 @@
 									<name>ScaleBarLength</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1634,7 +1902,7 @@
 									<name>ScaleBarLineWidth</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1646,7 +1914,7 @@
 									<name>ScaleBarMultiplier</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1682,7 +1950,7 @@
 									<name>Shine</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1730,7 +1998,7 @@
 									<name>Specular</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000020e-001</value>
+										<value>4.00000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1754,7 +2022,7 @@
 									<name>StereoFusion</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000020e-001</value>
+										<value>4.00000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1766,7 +2034,7 @@
 									<name>TextOffset</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1808,7 +2076,7 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>GeneratePointSamplesFromField:0</moduleId2_>
+				<moduleId2_>EditMeshBoundingBox:0</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
@@ -1820,7 +2088,7 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>GeneratePointSamplesFromFieldOrWidget:0</moduleId2_>
+				<moduleId2_>GeneratePointSamplesFromField:0</moduleId2_>
 				<port2_>
 					<name>InputField</name>
 					<id>0</id>
@@ -1851,6 +2119,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>EditMeshBoundingBox:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GeneratePointSamplesFromField:1</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>GeneratePointSamplesFromField:0</moduleId1_>
 				<port1_>
 					<name>GeneratedPoints</name>
@@ -1868,19 +2148,7 @@
 					<name>GeneratedWidget</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
-				<port2_>
-					<name>GeneralGeom</name>
-					<id>2</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>GenerateSinglePointProbeFromField:0</moduleId1_>
-				<port1_>
-					<name>GeneratedWidget</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
+				<moduleId2_>ViewScene:1</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>1</id>
@@ -1892,7 +2160,7 @@
 					<name>SceneGraph</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
+				<moduleId2_>ViewScene:1</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>0</id>
@@ -1904,64 +2172,71 @@
 					<name>SceneGraph</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewScene:0</moduleId2_>
+				<moduleId2_>ViewScene:1</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
-					<id>3</id>
+					<id>2</id>
 				</port2_>
 			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>7</count>
+		<count>8</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-7.60000000000000000e+001</first>
-				<second>0.00000000000000000e+000</second>
+				<first>-7.60000000000000000e+01</first>
+				<second>0.00000000000000000e+00</second>
+			</second>
+		</item>
+		<item>
+			<first>EditMeshBoundingBox:0</first>
+			<second>
+				<first>3.66000000000000000e+02</first>
+				<second>3.50000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GeneratePointSamplesFromField:0</first>
 			<second>
-				<first>0.00000000000000000e+000</first>
-				<second>2.28000000000000000e+002</second>
+				<first>0.00000000000000000e+00</first>
+				<second>2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>GeneratePointSamplesFromFieldOrWidget:0</first>
+			<first>GeneratePointSamplesFromField:1</first>
 			<second>
-				<first>3.04000000000000000e+002</first>
-				<second>2.28000000000000000e+002</second>
+				<first>4.01000000000000000e+02</first>
+				<second>4.87000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>GenerateSinglePointProbeFromField:0</first>
 			<second>
-				<first>-3.04000000000000000e+002</first>
-				<second>2.28000000000000000e+002</second>
+				<first>-3.04000000000000000e+02</first>
+				<second>2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>-5.10000000000000000e+001</first>
-				<second>3.67000000000000000e+002</second>
+				<first>-5.10000000000000000e+01</first>
+				<second>3.67000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:1</first>
 			<second>
-				<first>1.52000000000000000e+002</first>
-				<second>3.80000000000000000e+002</second>
+				<first>1.52000000000000000e+02</first>
+				<second>3.80000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>ViewScene:0</first>
+			<first>ViewScene:1</first>
 			<second>
-				<first>1.90000000000000000e+001</first>
-				<second>5.03000000000000000e+002</second>
+				<first>3.00000000000000000e+00</first>
+				<second>5.40000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -1974,10 +2249,14 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>7</count>
+		<count>8</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>EditMeshBoundingBox:0</first>
 			<second>-1</second>
 		</item>
 		<item>
@@ -1985,7 +2264,7 @@
 			<second>-1</second>
 		</item>
 		<item>
-			<first>GeneratePointSamplesFromFieldOrWidget:0</first>
+			<first>GeneratePointSamplesFromField:1</first>
 			<second>-1</second>
 		</item>
 		<item>
@@ -2001,7 +2280,7 @@
 			<second>-1</second>
 		</item>
 		<item>
-			<first>ViewScene:0</first>
+			<first>ViewScene:1</first>
 			<second>-1</second>
 		</item>
 	</moduleTags>

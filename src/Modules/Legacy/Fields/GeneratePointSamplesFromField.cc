@@ -119,25 +119,12 @@ void GeneratePointSamplesFromField::setStateDefaults()
   getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
 
-bool testOutput = false;
-
 void GeneratePointSamplesFromField::execute()
 {
-  logInfo("executing GPSFF");
   sendOutput(GeneratedPoints, GenerateOutputField());
 
-  if (!testOutput)
-  {
-    auto geom = WidgetFactory::createComposite(*this, "multiple_spheres", impl_->pointWidgets_.begin(), impl_->pointWidgets_.end());
-    sendOutput(GeneratedWidget, geom);
-  }
-  else
-  {
-    auto geom = WidgetFactory::createComposite(*this, "dummy", impl_->pointWidgets_.begin(), impl_->pointWidgets_.begin());
-    sendOutput(GeneratedWidget, geom);
-    geom = WidgetFactory::createComposite(*this, "multiple_spheres", impl_->pointWidgets_.begin(), impl_->pointWidgets_.end());
-    sendOutput(GeneratedWidget, geom);
-  }
+  auto geom = WidgetFactory::createComposite(*this, "multiple_spheres", impl_->pointWidgets_.begin(), impl_->pointWidgets_.end());
+  sendOutput(GeneratedWidget, geom);
 }
 
 void GeneratePointSamplesFromField::processWidgetFeedback(const ModuleFeedback& var)
@@ -145,7 +132,7 @@ void GeneratePointSamplesFromField::processWidgetFeedback(const ModuleFeedback& 
   try
   {
     auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
-    if (vsf.selectionName.find(get_id()) != std::string::npos 
+    if (vsf.selectionName.find(get_id()) != std::string::npos
       //&& impl_->previousTransform_ != vsf.transform
       )
     {
@@ -232,7 +219,7 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
       {
         logInfo("adding new seed at {}", center.get_string());
         std::cout << "adding new seed at " << center.get_string() << " with bbox " << bbox << std::endl;
-        auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this,
+        auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this, "GPSFF#" + std::to_string(i),
           scale, "Color(0.5,0.5,0.5)", center, bbox));
         impl_->pointWidgets_.push_back(seed);
       }
@@ -242,17 +229,17 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
   {
     std::cout << "re-execute from widget move! try remaking all widgets. scale change code below" << std::endl;
     std::vector<SphereWidgetHandle> newWidgets;
+    static int counter = 0;
+    counter += impl_->pointWidgets_.size();
     for (const auto& oldWidget : impl_->pointWidgets_)
     {
       logInfo("adding redo seed at {}", oldWidget->position().get_string());
       std::cout << "adding redo seed at " << oldWidget->position().get_string() << " with bbox " << bbox << std::endl;
-      auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this,
+      auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this, "GPSFF#" + std::to_string(++counter),
         scale, "Color(0.5,0.5,0.5)", oldWidget->position(), bbox));
       newWidgets.push_back(seed);
     }
     impl_->pointWidgets_ = newWidgets;
-    testOutput = true;
-
   }
 
   //for (auto& point : impl_->pointWidgets_)
