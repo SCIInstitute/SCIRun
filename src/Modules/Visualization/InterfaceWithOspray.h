@@ -35,7 +35,7 @@ DEALINGS IN THE SOFTWARE.
 
 namespace detail
 {
-  class OsprayImpl;
+  class OsprayImplImpl;
 }
 
 namespace SCIRun {
@@ -83,7 +83,7 @@ namespace SCIRun {
 
       class SCISHARE InterfaceWithOspray : public Dataflow::Networks::GeometryGeneratingModule,
         public Has3InputPorts<DynamicPortTag<FieldPortTag>, DynamicPortTag<ColorMapPortTag>, DynamicPortTag<FieldPortTag>>,
-        public Has1OutputPort<GeometryPortTag>
+        public Has1OutputPort<OsprayGeometryPortTag>
       {
       public:
         InterfaceWithOspray();
@@ -92,15 +92,25 @@ namespace SCIRun {
         INPUT_PORT_DYNAMIC(0, Field, Field);
         INPUT_PORT_DYNAMIC(1, ColorMapObject, ColorMap);
         INPUT_PORT_DYNAMIC(2, Streamlines, Field);
-        OUTPUT_PORT(0, SceneGraph, GeometryObject);
+        OUTPUT_PORT(0, SceneGraph, OsprayGeometryObject);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
         virtual void setStateDefaults() override;
 
         HAS_DYNAMIC_PORTS
+      private:
+        SharedPointer<class OsprayImpl> impl_;
       };
 
+      class SCISHARE OsprayImpl
+      {
+        #ifdef WITH_OSPRAY
+      public:
+      private:
+        SharedPointer<detail::OsprayImplImpl> impl_;
+        #endif
+      };
     }
   }
 }

@@ -46,3 +46,8 @@ void GeometryObject::addToList(GeometryBaseHandle handle, GeomList& list)
   if (handle.get() == this)
     list.insert(handle);
 }
+
+OsprayGeometryObject* OsprayGeometryObject::clone() const
+{
+  return nullptr; //TODO
+}

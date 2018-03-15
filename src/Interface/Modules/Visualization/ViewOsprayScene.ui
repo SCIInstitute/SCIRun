@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>InterfaceWithOspray</class>
- <widget class="QDialog" name="InterfaceWithOspray">
+ <class>ViewOsprayScene</class>
+ <widget class="QDialog" name="ViewOsprayScene">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>InterfaceWithOspray</string>
+   <string>ViewOsprayScene</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_7">
    <item row="0" column="0">

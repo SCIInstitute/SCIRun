@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_InterfaceWithOsprayDIALOG_H
-#define INTERFACE_MODULES_InterfaceWithOsprayDIALOG_H
+#ifndef INTERFACE_MODULES_ViewOspraySceneDIALOG_H
+#define INTERFACE_MODULES_ViewOspraySceneDIALOG_H
 
-#include "Interface/Modules/Visualization/ui_InterfaceWithOspray.h"
+#include "Interface/Modules/Visualization/ui_ViewOsprayScene.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/Visualization/share.h>
@@ -37,13 +37,13 @@
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE InterfaceWithOsprayDialog : public ModuleDialogGeneric,
-	public Ui::InterfaceWithOspray, public RemembersFileDialogDirectory
+class SCISHARE ViewOspraySceneDialog : public ModuleDialogGeneric,
+	public Ui::ViewOsprayScene, public RemembersFileDialogDirectory
 {
 	Q_OBJECT
 
 public:
-  InterfaceWithOsprayDialog(const std::string& name,
+  ViewOspraySceneDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
 protected:

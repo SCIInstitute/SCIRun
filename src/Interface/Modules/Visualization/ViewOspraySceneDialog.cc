@@ -26,7 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Visualization/InterfaceWithOsprayDialog.h>
+#include <Interface/Modules/Visualization/ViewOspraySceneDialog.h>
+#include <Modules/Visualization/ViewOsprayScene.h>
 #include <Modules/Visualization/InterfaceWithOspray.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -40,7 +41,7 @@ using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Visualization::Parameters;
 
-InterfaceWithOsprayDialog::InterfaceWithOsprayDialog(const std::string& name, ModuleStateHandle state,
+ViewOspraySceneDialog::ViewOspraySceneDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
@@ -94,7 +95,7 @@ InterfaceWithOsprayDialog::InterfaceWithOsprayDialog(const std::string& name, Mo
   connect(zoomHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(adjustZoom()));
 }
 
-void InterfaceWithOsprayDialog::adjustZoom()
+void ViewOspraySceneDialog::adjustZoom()
 {
   Point camPos(state_->getValue(CameraPositionX).toDouble(), state_->getValue(CameraPositionY).toDouble(), state_->getValue(CameraPositionZ).toDouble());
   Point camView(state_->getValue(CameraViewX).toDouble(), state_->getValue(CameraViewY).toDouble(), state_->getValue(CameraViewZ).toDouble());
@@ -110,7 +111,7 @@ void InterfaceWithOsprayDialog::adjustZoom()
   Q_EMIT executeFromStateChangeTriggered();
 }
 
-void InterfaceWithOsprayDialog::closeImageWindows()
+void ViewOspraySceneDialog::closeImageWindows()
 {
   for (auto& child : children())
   {
@@ -120,7 +121,7 @@ void InterfaceWithOsprayDialog::closeImageWindows()
   }
 }
 
-void InterfaceWithOsprayDialog::showImage()
+void ViewOspraySceneDialog::showImage()
 {
   if (state_->getValue(ShowImageInWindow).toBool())
   {
@@ -139,24 +140,24 @@ void InterfaceWithOsprayDialog::showImage()
   }
 }
 
-void InterfaceWithOsprayDialog::updateViewWidgets(int state)
+void ViewOspraySceneDialog::updateViewWidgets(int state)
 {
   manualViewGroupBox_->setEnabled(state == 0);
   manualUpGroupBox_->setEnabled(state == 0);
   autoZoomGroupBox_->setDisabled(state == 0);
 }
 
-void InterfaceWithOsprayDialog::pullSpecial()
+void ViewOspraySceneDialog::pullSpecial()
 {
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
 }
 
-void InterfaceWithOsprayDialog::pushFileNameToState()
+void ViewOspraySceneDialog::pushFileNameToState()
 {
   state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }
 
-void InterfaceWithOsprayDialog::saveFile()
+void ViewOspraySceneDialog::saveFile()
 {
   auto dir = QFileDialog::getExistingDirectory(this, "Choose Directory to save images", ".");
   if (dir.length() > 0)

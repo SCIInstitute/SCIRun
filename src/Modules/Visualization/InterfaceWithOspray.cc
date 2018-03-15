@@ -119,7 +119,7 @@ void InterfaceWithOspray::setStateDefaults()
 namespace detail
 {
   #ifdef WITH_OSPRAY
-  class OsprayImpl
+  class OsprayImplImpl
   {
   private:
     static bool initialized_;
@@ -166,7 +166,7 @@ namespace detail
     std::vector<FieldData> fieldData_;
 
   public:
-    explicit OsprayImpl(ModuleStateHandle state) : guard_(lock_.get()), state_(state)
+    explicit OsprayImplImpl(ModuleStateHandle state) : guard_(lock_.get()), state_(state)
     {
       initialize();
     }
@@ -442,11 +442,11 @@ namespace detail
     }
   };
 
-  bool OsprayImpl::initialized_(false);
-  Core::Thread::Mutex OsprayImpl::lock_("ospray lock");
+  bool OsprayImplImpl::initialized_(false);
+  Core::Thread::Mutex OsprayImplImpl::lock_("ospray lock");
 
   #else
-  class OsprayImpl {};
+  class OsprayImplImpl {};
   #endif
 }
 
@@ -467,7 +467,7 @@ void InterfaceWithOspray::execute()
 
   if (needToExecute())
   {
-    detail::OsprayImpl ospray(get_state());
+    detail::OsprayImplImpl ospray(get_state());
     ospray.setup();
 
     if (!fields.empty())
