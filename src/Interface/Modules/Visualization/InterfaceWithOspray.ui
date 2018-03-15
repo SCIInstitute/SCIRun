@@ -29,7 +29,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -822,6 +822,41 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>fileNameLineEdit_</tabstop>
+  <tabstop>saveFileButton_</tabstop>
+  <tabstop>framesSpinBox_</tabstop>
+  <tabstop>imageHeightSpinBox_</tabstop>
+  <tabstop>imageWidthSpinBox_</tabstop>
+  <tabstop>showImageCheckBox_</tabstop>
+  <tabstop>closeImageWindowsPushButton_</tabstop>
+  <tabstop>defaultColorRDoubleSpinBox_</tabstop>
+  <tabstop>defaultColorGDoubleSpinBox_</tabstop>
+  <tabstop>defaultColorBDoubleSpinBox_</tabstop>
+  <tabstop>defaultColorADoubleSpinBox_</tabstop>
+  <tabstop>backgroundColorRDoubleSpinBox_</tabstop>
+  <tabstop>backgroundColorGDoubleSpinBox_</tabstop>
+  <tabstop>backgroundColorBDoubleSpinBox_</tabstop>
+  <tabstop>streamlineRadiusDoubleSpinBox_</tabstop>
+  <tabstop>cameraPositionXDoubleSpinBox_</tabstop>
+  <tabstop>cameraPositionYDoubleSpinBox_</tabstop>
+  <tabstop>cameraPositionZDoubleSpinBox_</tabstop>
+  <tabstop>automaticViewCheckBox_</tabstop>
+  <tabstop>zoomHorizontalSlider_</tabstop>
+  <tabstop>cameraViewXDoubleSpinBox_</tabstop>
+  <tabstop>cameraViewYDoubleSpinBox_</tabstop>
+  <tabstop>cameraViewZDoubleSpinBox_</tabstop>
+  <tabstop>cameraUpXDoubleSpinBox_</tabstop>
+  <tabstop>cameraUpYDoubleSpinBox_</tabstop>
+  <tabstop>cameraUpZDoubleSpinBox_</tabstop>
+  <tabstop>lightTypeComboBox_</tabstop>
+  <tabstop>lightColorRDoubleSpinBox_</tabstop>
+  <tabstop>lightColorBDoubleSpinBox_</tabstop>
+  <tabstop>lightColorGDoubleSpinBox_</tabstop>
+  <tabstop>lightIntensityDoubleSpinBox_</tabstop>
+  <tabstop>lightVisibleCheckBox_</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
