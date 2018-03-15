@@ -43,6 +43,7 @@ namespace SCIRun {
       {
         ALGORITHM_PARAMETER_DECL(NumSeeds);
         ALGORITHM_PARAMETER_DECL(ProbeScale);
+        ALGORITHM_PARAMETER_DECL(PointPositions);
       }
     }
   }

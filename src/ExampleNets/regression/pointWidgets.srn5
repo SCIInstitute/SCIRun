@@ -408,7 +408,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>3</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -419,6 +419,63 @@
 									<value>
 										<which>0</which>
 										<value>6</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PointPositions</name>
+								</first>
+								<second>
+									<name>PointPositions</name>
+									<value>
+										<which>5</which>
+										<value class_id="12" tracking_level="0" version="0">
+											<count>6</count>
+											<item_version>0</item_version>
+											<item>
+												<name>widget_i</name>
+												<value>
+													<which>2</which>
+													<value>[-0.482377, 0.395979, 1.11247]</value>
+												</value>
+											</item>
+											<item>
+												<name>widget_i</name>
+												<value>
+													<which>2</which>
+													<value>[0.118401, 0.614587, 0.709002]</value>
+												</value>
+											</item>
+											<item>
+												<name>widget_i</name>
+												<value>
+													<which>2</which>
+													<value>[0.0454074, -0.628868, -1.01361]</value>
+												</value>
+											</item>
+											<item>
+												<name>widget_i</name>
+												<value>
+													<which>2</which>
+													<value>[-0.953433, -0.661825, 0.668294]</value>
+												</value>
+											</item>
+											<item>
+												<name>widget_i</name>
+												<value>
+													<which>2</which>
+													<value>[0.434559, 0.289685, 0.0896959]</value>
+												</value>
+											</item>
+											<item>
+												<name>widget_i</name>
+												<value>
+													<which>2</which>
+													<value>[-1.03656, -1.18731, 0.0306988]</value>
+												</value>
+											</item>
+										</value>
 									</value>
 								</second>
 							</item>
@@ -2187,12 +2244,12 @@
 				</second>
 			</item>
 		</modules>
-		<connections class_id="12" tracking_level="0" version="0">
+		<connections class_id="13" tracking_level="0" version="0">
 			<count>11</count>
 			<item_version>0</item_version>
-			<item class_id="13" tracking_level="0" version="0">
+			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:0</moduleId1_>
-				<port1_ class_id="14" tracking_level="0" version="0">
+				<port1_ class_id="15" tracking_level="0" version="0">
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
@@ -2324,12 +2381,12 @@
 			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="15" tracking_level="0" version="0">
+	<modulePositions class_id="16" tracking_level="0" version="0">
 		<count>8</count>
 		<item_version>0</item_version>
-		<item class_id="16" tracking_level="0" version="0">
+		<item class_id="17" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
-			<second class_id="17" tracking_level="0" version="0">
+			<second class_id="18" tracking_level="0" version="0">
 				<first>-7.60000000000000000e+01</first>
 				<second>0.00000000000000000e+00</second>
 			</second>
@@ -2384,7 +2441,7 @@
 			</second>
 		</item>
 	</modulePositions>
-	<moduleNotes class_id="18" tracking_level="0" version="0">
+	<moduleNotes class_id="19" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</moduleNotes>
@@ -2392,10 +2449,10 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="19" tracking_level="0" version="0">
+	<moduleTags class_id="20" tracking_level="0" version="0">
 		<count>8</count>
 		<item_version>0</item_version>
-		<item class_id="20" tracking_level="0" version="0">
+		<item class_id="21" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
 			<second>-1</second>
 		</item>
@@ -2428,7 +2485,7 @@
 			<second>-1</second>
 		</item>
 	</moduleTags>
-	<disabledModules class_id="21" tracking_level="0" version="0">
+	<disabledModules class_id="22" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledModules>
@@ -2436,12 +2493,12 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledConnections>
-	<moduleTagLabels class_id="22" tracking_level="0" version="0">
+	<moduleTagLabels class_id="23" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</moduleTagLabels>
 	<loadTagGroups>0</loadTagGroups>
-	<subnetworks class_id="23" tracking_level="0" version="0">
+	<subnetworks class_id="24" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</subnetworks>

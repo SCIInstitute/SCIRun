@@ -58,11 +58,13 @@ using namespace Datatypes;
 using namespace Dataflow::Networks;
 using namespace Modules::Fields;
 using namespace Geometry;
+using namespace Algorithms;
 using namespace Algorithms::Fields;
 using namespace Graphics::Datatypes;
 
 ALGORITHM_PARAMETER_DEF(Fields, NumSeeds);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeScale);
+ALGORITHM_PARAMETER_DEF(Fields, PointPositions);
 
 MODULE_INFO_DEF(GeneratePointSamplesFromField, NewField, SCIRun)
 
@@ -118,6 +120,7 @@ void GeneratePointSamplesFromField::setStateDefaults()
   auto state = get_state();
   state->setValue(Parameters::NumSeeds, 1);
   state->setValue(Parameters::ProbeScale, 0.23);
+  state->setValue(Parameters::PointPositions, VariableList());
   getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
 
@@ -231,13 +234,19 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
     }
     else
     {
+      auto positions = state->getValue(Parameters::PointPositions).toVector();
       for (size_t i = impl_->pointWidgets_.size(); i < numSeeds; i++)
       {
         //logInfo("adding new seed at {}", center.get_string());
         //std::cout << "adding new seed at " << center.get_string() << " with bbox " << bbox << std::endl;
+
+        auto location = center;
+        if (i < positions.size())
+          location = pointFromString(positions[i].toString());
+
         auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this,
           widgetName(i),
-          scale, "Color(0.5,0.5,0.5)", center, bbox));
+          scale, "Color(0.5,0.5,0.5)", location, bbox));
         impl_->pointWidgets_.push_back(seed);
       }
     }
@@ -261,10 +270,12 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
     impl_->pointWidgets_ = newWidgets;
   }
 
-  //for (auto& point : impl_->pointWidgets_)
-    // {
-    //   point->setScale(scale * impl_->l2norm_ * 0.003);
-    // }
+  VariableList positions;
+  for (const auto& widget : impl_->pointWidgets_)
+  {
+    positions.push_back(makeVariable("widget_i", widget->position().get_string()));
+  }
+  state->setValue(Parameters::PointPositions, positions);
 
   return impl_->makePointCloud();
 }
