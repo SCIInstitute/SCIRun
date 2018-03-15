@@ -32,6 +32,7 @@ DEALINGS IN THE SOFTWARE.
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 
 WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable)
@@ -55,4 +56,12 @@ WidgetHandle WidgetFactory::createSphere(const Core::GeometryIDGenerator& idGene
 
 CompositeWidget::~CompositeWidget()
 {
+}
+
+void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
+{
+  if (handle.get() == this)
+  {
+    list.insert(widgets_.begin(), widgets_.end());
+  }
 }

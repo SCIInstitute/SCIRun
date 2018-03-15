@@ -40,3 +40,9 @@ GeometryObject* GeometryObject::clone() const
 {
   return nullptr; //TODO
 }
+
+void GeometryObject::addToList(GeometryBaseHandle handle, GeomList& list)
+{
+  if (handle.get() == this)
+    list.insert(handle);
+}

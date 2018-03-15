@@ -44,7 +44,7 @@ SphereWidget::SphereWidget(const Core::GeometryIDGenerator& idGenerator,
   const Point& point, const BBox& bbox)
   : WidgetBase(idGenerator, "SphereWidget::" + name, true), position_(point)
 {
-  std::cout << "SphereWidget() point: " << point.get_string() << std::endl;
+  //std::cout << "SphereWidget() point: " << point.get_string() << std::endl;
   double num_strips = 10;
   if (radius < 0) radius = 1.;
   if (num_strips < 0) num_strips = 10.;

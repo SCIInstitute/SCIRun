@@ -218,7 +218,7 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
       for (size_t i = impl_->pointWidgets_.size(); i < numSeeds; i++)
       {
         logInfo("adding new seed at {}", center.get_string());
-        std::cout << "adding new seed at " << center.get_string() << " with bbox " << bbox << std::endl;
+        //std::cout << "adding new seed at " << center.get_string() << " with bbox " << bbox << std::endl;
         auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this, "GPSFF#" + std::to_string(i),
           scale, "Color(0.5,0.5,0.5)", center, bbox));
         impl_->pointWidgets_.push_back(seed);
@@ -227,14 +227,14 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
   }
   else
   {
-    std::cout << "re-execute from widget move! try remaking all widgets. scale change code below" << std::endl;
+    //std::cout << "re-execute from widget move! try remaking all widgets. scale change code below" << std::endl;
     std::vector<SphereWidgetHandle> newWidgets;
     static int counter = 0;
     counter += impl_->pointWidgets_.size();
     for (const auto& oldWidget : impl_->pointWidgets_)
     {
       logInfo("adding redo seed at {}", oldWidget->position().get_string());
-      std::cout << "adding redo seed at " << oldWidget->position().get_string() << " with bbox " << bbox << std::endl;
+      //std::cout << "adding redo seed at " << oldWidget->position().get_string() << " with bbox " << bbox << std::endl;
       auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this, "GPSFF#" + std::to_string(++counter),
         scale, "Color(0.5,0.5,0.5)", oldWidget->position(), bbox));
       newWidgets.push_back(seed);
