@@ -51,3 +51,8 @@ OsprayGeometryObject* OsprayGeometryObject::clone() const
 {
   return nullptr; //TODO
 }
+
+CompositeOsprayGeometryObject::CompositeOsprayGeometryObject(const std::vector<OsprayGeometryObjectHandle>& objs) : objs_(objs)
+{
+
+}

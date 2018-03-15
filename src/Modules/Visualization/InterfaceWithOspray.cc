@@ -176,6 +176,13 @@ namespace detail
       initialize();
     }
 
+    std::vector<OsprayGeometryObjectHandle> allObjectsToRender()
+    {
+      auto all = boost::join(scalarFields_, streamlines_);
+      std::vector<OsprayGeometryObjectHandle> objs(boost::begin(all), boost::end(all));
+      return objs;
+    }
+
     void setup()
     {
       imgSize_.x = state_->getValue(Parameters::ImageWidth).toInt();
@@ -328,7 +335,8 @@ namespace detail
     void addStreamline(FieldHandle field)
     {
       streamlines_.push_back(fillDataBuffers(field, nullptr));
-
+      
+      streamlines_.back()->isStreamline = true;
       auto& fieldData = streamlines_.back()->data;
       const auto& vertex = fieldData.vertex;
       const auto& color = fieldData.color;
@@ -374,15 +382,17 @@ namespace detail
       ospCommit(world_);
     }
 
-    void render()
+    void render(const CompositeOsprayGeometryObject& objList)
     {
-      for (auto& field : scalarFields_)
-        visualizeScalarField(field);
-      for (auto& line : streamlines_)
-        visualizeStreamline(line);
+      for (auto& obj : objList.objects())
+      {
+        if (obj->isStreamline)
+          visualizeStreamline(obj);
+        else
+          visualizeScalarField(obj);
 
-      for (auto& obj : boost::join(scalarFields_, streamlines_))
         adjustCameraPosition(obj->box);
+      }
 
       renderer_ = ospNewRenderer("scivis"); // choose Scientific Visualization renderer
 
@@ -518,8 +528,9 @@ void InterfaceWithOspray::execute()
 
       ospray.addStreamline(streamline);
     }
-
-    ospray.render();
+    
+    auto geom = boost::make_shared<CompositeOsprayGeometryObject>(ospray.allObjectsToRender());
+    ospray.render(*geom);
 
     auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
     auto filename = "scirunOsprayOutput_" + isoString + ".ppm";
@@ -528,9 +539,8 @@ void InterfaceWithOspray::execute()
     remark("Saving output to " + filePath.string());
 
     get_state()->setTransientValue(Variables::Filename, filePath.string());
-
-    //auto geom = builder_->buildGeometryObject(field, colorMap, *this, this);
-    //sendOutput(SceneGraph, geom);
+    
+    sendOutput(SceneGraph, geom);
   }
   #else
   error("Build SCIRun with WITH_OSPRAY set to true to enable this module.");

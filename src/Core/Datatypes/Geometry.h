@@ -32,6 +32,7 @@
 #include <Core/Datatypes/Datatype.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <set>
+#include <vector>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun
@@ -91,9 +92,20 @@ namespace Datatypes
     };
 
     FieldData data;
+
+    bool isStreamline{ false };
   };
 
   using OsprayGeometryObjectHandle = SharedPointer<OsprayGeometryObject>;
+
+  class SCISHARE CompositeOsprayGeometryObject : public OsprayGeometryObject
+  {
+  public:
+    explicit CompositeOsprayGeometryObject(const std::vector<OsprayGeometryObjectHandle>& objs);
+    const std::vector<OsprayGeometryObjectHandle>& objects() const { return objs_; }
+  private:
+    std::vector<OsprayGeometryObjectHandle> objs_;
+  };
 
 }}}
 
