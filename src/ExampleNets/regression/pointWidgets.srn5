@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>9</count>
+			<count>8</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CreateLatVol:0</first>
@@ -418,7 +418,7 @@
 									<name>NumSeeds</name>
 									<value>
 										<which>0</which>
-										<value>2</value>
+										<value>6</value>
 									</value>
 								</second>
 							</item>
@@ -431,46 +431,6 @@
 									<value>
 										<which>1</which>
 										<value>3.30000000000000016e-01</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>GeneratePointSamplesFromField:1</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>NewField</category_name_>
-						<module_name_>GeneratePointSamplesFromField</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>2</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>NumSeeds</name>
-								</first>
-								<second>
-									<name>NumSeeds</name>
-									<value>
-										<which>0</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ProbeScale</name>
-								</first>
-								<second>
-									<name>ProbeScale</name>
-									<value>
-										<which>1</which>
-										<value>2.30000000000000010e-01</value>
 									</value>
 								</second>
 							</item>
@@ -510,7 +470,7 @@
 									<name>FieldNode</name>
 									<value>
 										<which>0</which>
-										<value>20</value>
+										<value>23</value>
 									</value>
 								</second>
 							</item>
@@ -606,7 +566,7 @@
 									<name>XLocation</name>
 									<value>
 										<which>1</which>
-										<value>7.16789680793585404e-01</value>
+										<value>7.16838146747922345e-01</value>
 									</value>
 								</second>
 							</item>
@@ -618,7 +578,7 @@
 									<name>YLocation</name>
 									<value>
 										<which>1</which>
-										<value>-9.07309673711685583e-01</value>
+										<value>-3.45234940716750982e-01</value>
 									</value>
 								</second>
 							</item>
@@ -630,7 +590,7 @@
 									<name>ZLocation</name>
 									<value>
 										<which>1</which>
-										<value>2.21215455609259060e+00</value>
+										<value>2.47452868830787320e+00</value>
 									</value>
 								</second>
 							</item>
@@ -670,7 +630,7 @@
 									<name>FieldNode</name>
 									<value>
 										<which>0</which>
-										<value>2</value>
+										<value>10</value>
 									</value>
 								</second>
 							</item>
@@ -766,7 +726,7 @@
 									<name>XLocation</name>
 									<value>
 										<which>1</which>
-										<value>1.51380363439040466e+00</value>
+										<value>4.01747965458541745e-01</value>
 									</value>
 								</second>
 							</item>
@@ -778,7 +738,7 @@
 									<name>YLocation</name>
 									<value>
 										<which>1</which>
-										<value>-1.24285988067998621e+00</value>
+										<value>-1.64627129351751833e+00</value>
 									</value>
 								</second>
 							</item>
@@ -790,7 +750,7 @@
 									<name>ZLocation</name>
 									<value>
 										<which>1</which>
-										<value>-5.73714405754464529e-01</value>
+										<value>-2.90305917392976620e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2228,7 +2188,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>12</count>
+			<count>11</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:0</moduleId1_>
@@ -2287,18 +2247,6 @@
 				<moduleId2_>ShowField:0</moduleId2_>
 				<port2_>
 					<name>Field</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>EditMeshBoundingBox:0</moduleId1_>
-				<port1_>
-					<name>OutputField</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>GeneratePointSamplesFromField:1</moduleId2_>
-				<port2_>
-					<name>InputField</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2377,7 +2325,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>9</count>
+		<count>8</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
@@ -2398,13 +2346,6 @@
 			<second>
 				<first>0.00000000000000000e+00</first>
 				<second>2.28000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>GeneratePointSamplesFromField:1</first>
-			<second>
-				<first>4.01000000000000000e+02</first>
-				<second>4.87000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -2452,7 +2393,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>9</count>
+		<count>8</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
@@ -2464,10 +2405,6 @@
 		</item>
 		<item>
 			<first>GeneratePointSamplesFromField:0</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>GeneratePointSamplesFromField:1</first>
 			<second>-1</second>
 		</item>
 		<item>

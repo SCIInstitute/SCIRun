@@ -48,6 +48,8 @@
 #include <Graphics/Widgets/SphereWidget.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Logging/Log.h>
+#include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun;
 using namespace Core;
@@ -132,13 +134,27 @@ void GeneratePointSamplesFromField::processWidgetFeedback(const ModuleFeedback& 
   try
   {
     auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
-    if (vsf.selectionName.find(get_id()) != std::string::npos
-      //&& impl_->previousTransform_ != vsf.transform
-      )
+    if (vsf.selectionName.find(get_id()) != std::string::npos)
     {
-      std::cout << vsf.selectionName << std::endl;
-      adjustPositionFromTransform(vsf.transform);
-      enqueueExecuteAgain(false);
+
+      //std::cout << "!@!@!: " << vsf.selectionName << std::endl;
+      int widgetIndex = -1;
+      try
+      {
+        static boost::regex r("SphereWidget::GPSFF\\((.+)\\).+");
+        boost::smatch what;
+        regex_match(vsf.selectionName, what, r);
+        widgetIndex = boost::lexical_cast<int>(what[1]);
+      }
+      catch (...)
+      {
+        logWarning("Failure parsing widget id");
+      }
+      if (impl_->previousTransforms_[widgetIndex] != vsf.transform)
+      {
+        adjustPositionFromTransform(vsf.transform, widgetIndex);
+        enqueueExecuteAgain(false);
+      }
     }
   }
   catch (std::bad_cast&)
@@ -147,11 +163,11 @@ void GeneratePointSamplesFromField::processWidgetFeedback(const ModuleFeedback& 
   }
 }
 
-void GeneratePointSamplesFromField::adjustPositionFromTransform(const Transform& transformMatrix)
+void GeneratePointSamplesFromField::adjustPositionFromTransform(const Transform& transformMatrix, int index)
 {
   DenseMatrix center(4, 1);
-  impl_->previousTransforms_.resize(impl_->pointWidgets_.size());
-  auto currLoc = impl_->pointWidgets_[0]->position();
+
+  auto currLoc = impl_->pointWidgets_[index]->position();
   center << currLoc.x(), currLoc.y(), currLoc.z(), 1.0;
   DenseMatrix newTransform(DenseMatrix(transformMatrix) * center);
 
@@ -159,9 +175,8 @@ void GeneratePointSamplesFromField::adjustPositionFromTransform(const Transform&
     newTransform(1, 0) / newTransform(3, 0),
     newTransform(2, 0) / newTransform(3, 0));
 
-  impl_->pointWidgets_[0]->setPosition(newLocation);
-
-  impl_->previousTransforms_[0] = transformMatrix;
+  impl_->pointWidgets_[index]->setPosition(newLocation);
+  impl_->previousTransforms_[index] = transformMatrix;
 }
 
 FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
@@ -203,9 +218,10 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
   auto numSeeds = state->getValue(Parameters::NumSeeds).toInt();
   auto scale = state->getValue(Parameters::ProbeScale).toDouble();
 
-  logInfo("numSeeds: {}, size of widgets vector: {}", numSeeds, impl_->pointWidgets_.size());
-  auto oldScale = scale * impl_->l2norm_ * 0.003;
-  logInfo("old scale: {}; new scale: {}", oldScale, scale);
+  //logInfo("numSeeds: {}, size of widgets vector: {}", numSeeds, impl_->pointWidgets_.size());
+  //auto oldScale = scale * impl_->l2norm_ * 0.003;
+  //logInfo("old scale: {}; new scale: {}", oldScale, scale);
+  auto widgetName = [](int i) { return "GPSFF(" + std::to_string(i) + ")"; };
   if (impl_->pointWidgets_.size() != numSeeds)
   {
     if (numSeeds < impl_->pointWidgets_.size())
@@ -217,25 +233,28 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
     {
       for (size_t i = impl_->pointWidgets_.size(); i < numSeeds; i++)
       {
-        logInfo("adding new seed at {}", center.get_string());
+        //logInfo("adding new seed at {}", center.get_string());
         //std::cout << "adding new seed at " << center.get_string() << " with bbox " << bbox << std::endl;
-        auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this, "GPSFF#" + std::to_string(i),
+        auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this,
+          widgetName(i),
           scale, "Color(0.5,0.5,0.5)", center, bbox));
         impl_->pointWidgets_.push_back(seed);
       }
     }
+    impl_->previousTransforms_.resize(impl_->pointWidgets_.size());
   }
   else
   {
     //std::cout << "re-execute from widget move! try remaking all widgets. scale change code below" << std::endl;
     std::vector<SphereWidgetHandle> newWidgets;
-    static int counter = 0;
-    counter += impl_->pointWidgets_.size();
+    int counter = 0;
+    moveCount_++;
     for (const auto& oldWidget : impl_->pointWidgets_)
     {
-      logInfo("adding redo seed at {}", oldWidget->position().get_string());
+      //logInfo("adding redo seed at {}", oldWidget->position().get_string());
       //std::cout << "adding redo seed at " << oldWidget->position().get_string() << " with bbox " << bbox << std::endl;
-      auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this, "GPSFF#" + std::to_string(++counter),
+      auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this,
+        widgetName(counter++) + std::string(moveCount_, ' '),
         scale, "Color(0.5,0.5,0.5)", oldWidget->position(), bbox));
       newWidgets.push_back(seed);
     }
