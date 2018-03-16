@@ -100,7 +100,7 @@ void ViewOsprayScene::execute()
 
   if (needToExecute())
   {
-    OsprayImpl ospray(get_state());
+    OsprayAlgorithm ospray(get_state());
     ospray.setup();
     for (auto& geom : geoms)
     {

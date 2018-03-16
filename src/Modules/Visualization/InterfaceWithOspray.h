@@ -39,45 +39,6 @@ namespace detail
 }
 
 namespace SCIRun {
-
-  namespace Core
-  {
-    namespace Algorithms
-    {
-      namespace Visualization
-      {
-        ALGORITHM_PARAMETER_DECL(ImageHeight);
-        ALGORITHM_PARAMETER_DECL(ImageWidth);
-        ALGORITHM_PARAMETER_DECL(CameraPositionX);
-        ALGORITHM_PARAMETER_DECL(CameraPositionY);
-        ALGORITHM_PARAMETER_DECL(CameraPositionZ);
-        ALGORITHM_PARAMETER_DECL(CameraUpX);
-        ALGORITHM_PARAMETER_DECL(CameraUpY);
-        ALGORITHM_PARAMETER_DECL(CameraUpZ);
-        ALGORITHM_PARAMETER_DECL(CameraViewX);
-        ALGORITHM_PARAMETER_DECL(CameraViewY);
-        ALGORITHM_PARAMETER_DECL(CameraViewZ);
-        ALGORITHM_PARAMETER_DECL(DefaultColorR);
-        ALGORITHM_PARAMETER_DECL(DefaultColorG);
-        ALGORITHM_PARAMETER_DECL(DefaultColorB);
-        ALGORITHM_PARAMETER_DECL(DefaultColorA);
-        ALGORITHM_PARAMETER_DECL(BackgroundColorR);
-        ALGORITHM_PARAMETER_DECL(BackgroundColorG);
-        ALGORITHM_PARAMETER_DECL(BackgroundColorB);
-        ALGORITHM_PARAMETER_DECL(FrameCount);
-        ALGORITHM_PARAMETER_DECL(ShowImageInWindow);
-        ALGORITHM_PARAMETER_DECL(LightVisible);
-        ALGORITHM_PARAMETER_DECL(LightColorR);
-        ALGORITHM_PARAMETER_DECL(LightColorG);
-        ALGORITHM_PARAMETER_DECL(LightColorB);
-        ALGORITHM_PARAMETER_DECL(LightIntensity);
-        ALGORITHM_PARAMETER_DECL(LightType);
-        ALGORITHM_PARAMETER_DECL(AutoCameraView);
-        ALGORITHM_PARAMETER_DECL(StreamlineRadius);
-      }
-    }
-  }
-
   namespace Modules {
     namespace Visualization {
 
@@ -99,19 +60,6 @@ namespace SCIRun {
         virtual void setStateDefaults() override;
 
         HAS_DYNAMIC_PORTS
-      };
-
-      class SCISHARE OsprayImpl
-      {
-        #ifdef WITH_OSPRAY
-      public:
-        explicit OsprayImpl(Dataflow::Networks::ModuleStateHandle state);
-        void setup();
-        void render(const Core::Datatypes::CompositeOsprayGeometryObject& objList);
-        void writeImage(const std::string& filename);
-      private:
-        SharedPointer<detail::OsprayImplImpl> impl_;
-        #endif
       };
     }
   }
