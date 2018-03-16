@@ -492,7 +492,7 @@
           <item>
            <widget class="QGroupBox" name="manualViewGroupBox_">
             <property name="title">
-             <string>Manual: main view camera direction</string>
+             <string>Manual: center of the view</string>
             </property>
             <property name="checkable">
              <bool>false</bool>
@@ -670,11 +670,6 @@
               <height>30</height>
              </size>
             </property>
-            <item>
-             <property name="text">
-              <string>ambient</string>
-             </property>
-            </item>
             <item>
              <property name="text">
               <string>spot</string>

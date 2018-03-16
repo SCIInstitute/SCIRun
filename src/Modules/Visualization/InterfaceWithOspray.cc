@@ -79,6 +79,18 @@ ALGORITHM_PARAMETER_DEF(Visualization, LightVisible);
 ALGORITHM_PARAMETER_DEF(Visualization, LightType);
 ALGORITHM_PARAMETER_DEF(Visualization, AutoCameraView);
 ALGORITHM_PARAMETER_DEF(Visualization, StreamlineRadius);
+ALGORITHM_PARAMETER_DEF(Visualization, OneSidedLighting);
+ALGORITHM_PARAMETER_DEF(Visualization, ShadowsEnabled);
+ALGORITHM_PARAMETER_DEF(Visualization, UseNormals);
+ALGORITHM_PARAMETER_DEF(Visualization, LightPositionX);
+ALGORITHM_PARAMETER_DEF(Visualization, LightPositionY);
+ALGORITHM_PARAMETER_DEF(Visualization, LightPositionZ);
+ALGORITHM_PARAMETER_DEF(Visualization, LightDirectionX);
+ALGORITHM_PARAMETER_DEF(Visualization, LightDirectionY);
+ALGORITHM_PARAMETER_DEF(Visualization, LightDirectionZ);
+ALGORITHM_PARAMETER_DEF(Visualization, LightAngle);
+ALGORITHM_PARAMETER_DEF(Visualization, LightRadius);
+ALGORITHM_PARAMETER_DEF(Visualization, LightLockCamera);
 
 MODULE_INFO_DEF(InterfaceWithOspray, Visualization, SCIRun)
 
@@ -110,10 +122,22 @@ void InterfaceWithOspray::setStateDefaults()
   state->setValue(Parameters::LightColorB, 1.0);
   state->setValue(Parameters::LightIntensity, 50.0);
   state->setValue(Parameters::LightVisible, false);
-  state->setValue(Parameters::LightType, std::string("spot"));
+  state->setValue(Parameters::LightLockCamera, false);
+  state->setValue(Parameters::LightType, std::string("distant"));
   state->setValue(Parameters::AutoCameraView, true);
+  state->setValue(Parameters::OneSidedLighting, false);
+  state->setValue(Parameters::ShadowsEnabled, true);
+  state->setValue(Parameters::UseNormals, false);
   state->setValue(Parameters::StreamlineRadius, 0.1);
   state->setValue(Variables::Filename, std::string(""));
+  state->setValue(Parameters::LightPositionX, 0.0);
+  state->setValue(Parameters::LightPositionY, 0.0);
+  state->setValue(Parameters::LightPositionZ, 500.0);
+  state->setValue(Parameters::LightDirectionX, 0.0);
+  state->setValue(Parameters::LightDirectionY, 0.0);
+  state->setValue(Parameters::LightDirectionZ, -1);
+  state->setValue(Parameters::LightAngle, 60);
+  state->setValue(Parameters::LightRadius, 1.0);
 }
 
 namespace detail
@@ -251,11 +275,10 @@ namespace detail
       auto& fieldData = fieldData_.back();
       auto& vertex = fieldData.vertex;
       auto& color = fieldData.color;
-      auto& vertex_normal = fieldData.vertex_normal;
 
       auto vfield = field->vfield();
       
-      Vector norm;
+      
 
       {
         double value;
@@ -279,13 +302,6 @@ namespace detail
           color.push_back(static_cast<float>(nodeColor.g()));
           color.push_back(static_cast<float>(nodeColor.b()));
           color.push_back(alpha);
-          
-          field->vmesh()->get_normal(norm,node.index());
-          
-          vertex_normal.push_back(static_cast<float>(norm.x()));
-          vertex_normal.push_back(static_cast<float>(norm.y()));
-          vertex_normal.push_back(static_cast<float>(norm.y()));
-          vertex_normal.push_back(0);
         }
       }
 
@@ -299,7 +315,25 @@ namespace detail
           index.push_back(static_cast<int32_t>(nodes[2]));
         }
       }
-
+      
+      FieldInformation info(field);
+      if (state_->getValue(Parameters::UseNormals).toBool() && info.is_trisurfmesh())
+      {
+        auto& vertex_normal = fieldData.vertex_normal;
+        {
+          Vector norm;
+          
+          for (const auto& node : facade->nodes())
+          {
+            field->vmesh()->get_normal(norm,node.index());
+            
+            vertex_normal.push_back(static_cast<float>(norm.x()));
+            vertex_normal.push_back(static_cast<float>(norm.y()));
+            vertex_normal.push_back(static_cast<float>(norm.y()));
+            vertex_normal.push_back(0);
+          }
+        }
+      }
     }
 
     void addField(FieldHandle field, ColorMapHandle colorMap)
@@ -310,7 +344,7 @@ namespace detail
 
       const auto& fieldData = fieldData_.back();
       const auto& vertex = fieldData.vertex;
-      const auto& vertex_normal = fieldData.vertex_normal;
+      
       const auto& color = fieldData.color;
       const auto& index = fieldData.index;
 
@@ -320,9 +354,14 @@ namespace detail
       ospCommit(data);
       ospSetData(mesh, "vertex", data);
       
-      data = ospNewData(vertex_normal.size() / 4, OSP_FLOAT3A, &vertex_normal[0]);
-      ospCommit(data);
-      ospSetData(mesh, "vertex.normal", data);
+      FieldInformation info(field);
+      if (state_->getValue(Parameters::UseNormals).toBool() && info.is_trisurfmesh())
+      {
+        const auto& vertex_normal = fieldData.vertex_normal;
+        data = ospNewData(vertex_normal.size() / 4, OSP_FLOAT3A, &vertex_normal[0]);
+        ospCommit(data);
+        ospSetData(mesh, "vertex.normal", data);
+      }
       
       data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
       ospCommit(data);
@@ -336,6 +375,44 @@ namespace detail
       ospAddGeometry(world_, mesh);
       ospCommit(world_);
     }
+    
+    void addSpheres(FieldHandle field, ColorMapHandle colorMap)
+    {
+      adjustCameraPosition(field);
+      
+      fillDataBuffers(field, colorMap);
+      
+      const auto& fieldData = fieldData_.back();
+      const auto& vertex = fieldData.vertex;
+      const auto& color = fieldData.color;
+      
+      std::cout<<"data buffers filled"<<std::endl;
+      
+      OSPGeometry spheres = ospNewGeometry("spheres");
+      OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]);
+      ospCommit(data);
+      ospSetData(spheres, "spheres", data);
+      
+      std::cout<<"centers added"<<std::endl;
+      
+      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
+      ospCommit(data);
+      ospSetData(spheres, "color", data);
+      
+      std::cout<<"colours added"<<std::endl;
+      
+      ospSet1f(spheres, "radius", toFloat(Parameters::StreamlineRadius));
+      
+      ospCommit(spheres);
+      
+      std::cout<<"spheres commited"<<std::endl;
+      
+      meshes_.push_back(spheres);
+      ospAddGeometry(world_, spheres);
+      ospCommit(world_);
+      
+    }
+    
 
     void addStreamline(FieldHandle field)
     {
@@ -383,20 +460,50 @@ namespace detail
     {
       renderer_ = ospNewRenderer("scivis"); // choose Scientific Visualization renderer
 
-      // create and setup light for Ambient Occlusion
-      OSPLight light = ospNewLight(renderer_, state_->getValue(Parameters::LightType).toString().c_str());
       OSPData lights;
+      
+      // create and setup light for Ambient Occlusion
+      OSPLight a_light = ospNewLight(renderer_, "ambient");
+      
+      float lightColor[] = { toFloat(Parameters::LightColorR), toFloat(Parameters::LightColorG), toFloat(Parameters::LightColorB) };
+      
+      ospSet3fv(a_light, "color", lightColor);
+      ospSet1f(a_light, "intensity", 1.0);
+      ospCommit(a_light);
+      lights = ospNewData(1, OSP_LIGHT, &a_light);
+      
+      ospCommit(lights);
+      
+      OSPLight light = ospNewLight(renderer_, state_->getValue(Parameters::LightType).toString().c_str());
       if (light)
       {
         float lightColor[] = { toFloat(Parameters::LightColorR), toFloat(Parameters::LightColorG), toFloat(Parameters::LightColorB) };
-        float lightPosition[] = { toFloat(Parameters::CameraPositionX), toFloat(Parameters::CameraPositionY), toFloat(Parameters::CameraPositionZ) };
-        float lightDirection[] = { toFloat(Parameters::CameraViewX), toFloat(Parameters::CameraViewY), toFloat(Parameters::CameraViewZ) };
+        
+        if (state_->getValue(Parameters::LightLockCamera).toBool())
+        {
+          state_->setValue(Parameters::LightPositionX,toFloat(Parameters::CameraPositionX));
+          state_->setValue(Parameters::LightPositionY,toFloat(Parameters::CameraPositionY));
+          state_->setValue(Parameters::LightPositionZ,toFloat(Parameters::CameraPositionZ));
+          state_->setValue(Parameters::LightDirectionX,toFloat(Parameters::CameraViewX)-toFloat(Parameters::CameraPositionX));
+          state_->setValue(Parameters::LightDirectionY,toFloat(Parameters::CameraViewY)-toFloat(Parameters::CameraPositionY));
+          state_->setValue(Parameters::LightDirectionZ,toFloat(Parameters::CameraViewZ)-toFloat(Parameters::CameraPositionZ));
+        }
+        
+        float lightPosition[] = { toFloat(Parameters::LightPositionX), toFloat(Parameters::LightPositionY), toFloat(Parameters::LightPositionZ) };
+        float lightDirection[] = { toFloat(Parameters::LightDirectionX), toFloat(Parameters::LightDirectionY), toFloat(Parameters::LightDirectionZ) };
+        
+        //float lightPosition[] =  { 0.0, 0.0, 500.0 };
+        //float lightDirection[] = { 0.0, 0.0, -1.0 };
         
         
         ospSet3fv(light, "color", lightColor);
         ospSet3fv(light, "position", lightPosition);
         ospSet3fv(light, "direction", lightDirection);
         ospSet1f(light, "intensity", toFloat(Parameters::LightIntensity));
+        ospSet1f(light, "angularDiameter", toFloat(Parameters::LightRadius)/2.0);
+        ospSet1f(light, "penumbraAngle", toFloat(Parameters::LightAngle)/5.0);
+        ospSet1f(light, "openingAngle", toFloat(Parameters::LightAngle));
+        ospSet1f(light, "radius", toFloat(Parameters::LightRadius));
         ospSet1i(light, "isVisible", state_->getValue(Parameters::LightVisible).toBool() ? 1 : 0);
         ospCommit(light);
         lights = ospNewData(1, OSP_LIGHT, &light);
@@ -411,16 +518,23 @@ namespace detail
       ospCommit(renderer_);
 
       // complete setup of renderer
-      ospSet1i(renderer_, "aoSamples", 1);
+      ospSet1i(renderer_, "aoSamples", 10);
+      ospSet1i(renderer_, "oneSidedLighting",state_->getValue(Parameters::OneSidedLighting).toBool() ? 1 : 0);
+      ospSet1i(renderer_, "shadowsEnabled",state_->getValue(Parameters::ShadowsEnabled).toBool() ? 1 : 0);
       ospSet3f(renderer_, "bgColor", toFloat(Parameters::BackgroundColorR),
         toFloat(Parameters::BackgroundColorG),
         toFloat(Parameters::BackgroundColorB));
+      std::cout<<"setup complete"<<std::endl;
       ospSetObject(renderer_, "model", world_);
+      std::cout<<"model added"<<std::endl;
       ospSetObject(renderer_, "camera", camera_);
       if (light)
         ospSetObject(renderer_, "lights", lights);
+      std::cout<<"lights added"<<std::endl;
       ospSetObject(renderer_, "material", material);
+      std::cout<<"material added"<<std::endl;
       ospCommit(renderer_);
+      std::cout<<"renderer committed"<<std::endl;
 
       // create and setup framebuffer
       framebuffer_ = ospNewFrameBuffer(imgSize_, OSP_FB_SRGBA, OSP_FB_COLOR | /*OSP_FB_DEPTH |*/ OSP_FB_ACCUM);
@@ -505,10 +619,20 @@ void InterfaceWithOspray::execute()
 
         FieldInformation info(field);
 
-        if (!info.is_trisurfmesh())
-          THROW_INVALID_ARGUMENT("Module currently only works with trisurfs.");
-
-        ospray.addField(field, color);
+        if (info.is_trisurfmesh())
+        {
+          ospray.addField(field, color);
+        }
+        else if (info.is_pointcloudmesh())
+        {
+          ospray.addSpheres(field, color);
+          std::cout<<"added Spheres"<<std::endl;
+        }
+        else
+        {
+          THROW_INVALID_ARGUMENT("Module currently only works with trisurfs or pointclouds.");
+        }
+        
       }
     }
 
@@ -522,7 +646,9 @@ void InterfaceWithOspray::execute()
       ospray.addStreamline(streamline);
     }
 
+    std::cout<<"rederer ready"<<std::endl;
     ospray.render();
+    std::cout<<"rederer done"<<std::endl;
 
     auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
     auto filename = "scirunOsprayOutput_" + isoString + ".ppm";

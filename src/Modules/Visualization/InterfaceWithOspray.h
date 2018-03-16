@@ -74,6 +74,18 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(LightType);
         ALGORITHM_PARAMETER_DECL(AutoCameraView);
         ALGORITHM_PARAMETER_DECL(StreamlineRadius);
+        ALGORITHM_PARAMETER_DECL(OneSidedLighting);
+        ALGORITHM_PARAMETER_DECL(ShadowsEnabled);
+        ALGORITHM_PARAMETER_DECL(UseNormals);
+        ALGORITHM_PARAMETER_DECL(LightPositionX);
+        ALGORITHM_PARAMETER_DECL(LightPositionY);
+        ALGORITHM_PARAMETER_DECL(LightPositionZ);
+        ALGORITHM_PARAMETER_DECL(LightDirectionX);
+        ALGORITHM_PARAMETER_DECL(LightDirectionY);
+        ALGORITHM_PARAMETER_DECL(LightDirectionZ);
+        ALGORITHM_PARAMETER_DECL(LightAngle);
+        ALGORITHM_PARAMETER_DECL(LightRadius);
+        ALGORITHM_PARAMETER_DECL(LightLockCamera);
       }
     }
   }
