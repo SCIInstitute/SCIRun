@@ -27,7 +27,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Modules/Visualization/ViewOsprayScene.h>
-#include <Modules/Visualization/InterfaceWithOspray.h>
+#include <Modules/Visualization/OsprayAlgorithm.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/ColorMap.h>
@@ -38,10 +38,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
-
-#ifdef WITH_OSPRAY
-#include <ospray/ospray.h>
-#endif
 
 using namespace SCIRun;
 using namespace Dataflow::Networks;
@@ -100,7 +96,7 @@ void ViewOsprayScene::execute()
 
   if (needToExecute())
   {
-    OsprayAlgorithm ospray(get_state());
+    OsprayAlgorithm ospray;
     ospray.setup();
     for (auto& geom : geoms)
     {

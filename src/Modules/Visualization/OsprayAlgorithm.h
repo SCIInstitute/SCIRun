@@ -30,9 +30,15 @@ DEALINGS IN THE SOFTWARE.
 #define MODULES_VISUALIZATION_OSPRAYALGORITHM_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/Geometry.h>
 #include <Modules/Visualization/share.h>
 
-namespace SCIRun 
+namespace detail
+{
+  class OsprayImpl;
+}
+
+namespace SCIRun
 {
   namespace Core
   {
@@ -68,19 +74,25 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(LightType);
         ALGORITHM_PARAMETER_DECL(AutoCameraView);
         ALGORITHM_PARAMETER_DECL(StreamlineRadius);
-  
+
 #ifdef WITH_OSPRAY
-      class SCISHARE OsprayAlgorithm : public AlgorithmBase
-      {
-      public:
-        explicit OsprayAlgorithm(Dataflow::Networks::ModuleStateHandle state);
-        void setup();
-        void render(const Core::Datatypes::CompositeOsprayGeometryObject& objList);
-        void writeImage(const std::string& filename);
-      private:
-        SharedPointer<class OsprayImpl> impl_;
-      };
+        class SCISHARE OsprayAlgorithm : public AlgorithmBase
+        {
+        public:
+          OsprayAlgorithm();
+          void setup();
+          void render(const Core::Datatypes::CompositeOsprayGeometryObject& objList);
+          void writeImage(const std::string& filename);
+          std::vector<Core::Datatypes::OsprayGeometryObjectHandle> allObjectsToRender() const;
+          void addField(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap);
+          void addStreamline(FieldHandle field);
+
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const override { return {}; }
+        private:
+          SharedPointer<detail::OsprayImpl> impl_;
+        };
 #endif
+      }
     }
   }
 }

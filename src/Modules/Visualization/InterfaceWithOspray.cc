@@ -89,7 +89,7 @@ void InterfaceWithOspray::setStateDefaults()
   state->setValue(Variables::Filename, std::string(""));
 }
 
-InterfaceWithOspray::InterfaceWithOspray() : GeometryGeneratingModule(staticInfo_)//, impl_(new OsprayImpl(get_state()))
+InterfaceWithOspray::InterfaceWithOspray() : Module(staticInfo_)
 {
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
@@ -106,7 +106,7 @@ void InterfaceWithOspray::execute()
 
   if (needToExecute())
   {
-    OsprayAlgorithm ospray(get_state());
+    OsprayAlgorithm ospray;
     ospray.setup();
 
     if (!fields.empty())

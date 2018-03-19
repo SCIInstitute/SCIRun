@@ -29,20 +29,15 @@ DEALINGS IN THE SOFTWARE.
 #ifndef MODULES_VISUALIZATION_INTERFACEWITHOSPRAY_H
 #define MODULES_VISUALIZATION_INTERFACEWITHOSPRAY_H
 
-#include <Dataflow/Network/GeometryGeneratingModule.h>
+#include <Dataflow/Network/Module.h>
 #include <Core/Thread/Interruptible.h>
 #include <Modules/Visualization/share.h>
-
-namespace detail
-{
-  class OsprayImplImpl;
-}
 
 namespace SCIRun {
   namespace Modules {
     namespace Visualization {
 
-      class SCISHARE InterfaceWithOspray : public Dataflow::Networks::GeometryGeneratingModule,
+      class SCISHARE InterfaceWithOspray : public Dataflow::Networks::Module,
         public Has3InputPorts<DynamicPortTag<FieldPortTag>, DynamicPortTag<ColorMapPortTag>, DynamicPortTag<FieldPortTag>>,
         public Has1OutputPort<OsprayGeometryPortTag>
       {
