@@ -58,35 +58,10 @@ MODULE_INFO_DEF(InterfaceWithOspray, Visualization, SCIRun)
 void InterfaceWithOspray::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(Parameters::ImageHeight, 768);
-  state->setValue(Parameters::ImageWidth, 1024);
-  state->setValue(Parameters::CameraPositionX, 5.0);
-  state->setValue(Parameters::CameraPositionY, 5.0);
-  state->setValue(Parameters::CameraPositionZ, 5.0);
-  state->setValue(Parameters::CameraUpX, 0.0);
-  state->setValue(Parameters::CameraUpY, 0.0);
-  state->setValue(Parameters::CameraUpZ, 1.0);
-  state->setValue(Parameters::CameraViewX, 0.0);
-  state->setValue(Parameters::CameraViewY, 0.0);
-  state->setValue(Parameters::CameraViewZ, 0.0);
   state->setValue(Parameters::DefaultColorR, 0.5);
   state->setValue(Parameters::DefaultColorG, 0.5);
   state->setValue(Parameters::DefaultColorB, 0.5);
   state->setValue(Parameters::DefaultColorA, 1.0);
-  state->setValue(Parameters::BackgroundColorR, 0.0);
-  state->setValue(Parameters::BackgroundColorG, 0.0);
-  state->setValue(Parameters::BackgroundColorB, 0.0);
-  state->setValue(Parameters::FrameCount, 10);
-  state->setValue(Parameters::ShowImageInWindow, true);
-  state->setValue(Parameters::LightColorR, 1.0);
-  state->setValue(Parameters::LightColorG, 1.0);
-  state->setValue(Parameters::LightColorB, 1.0);
-  state->setValue(Parameters::LightIntensity, 1.0);
-  state->setValue(Parameters::LightVisible, false);
-  state->setValue(Parameters::LightType, std::string("ambient"));
-  state->setValue(Parameters::AutoCameraView, true);
-  state->setValue(Parameters::StreamlineRadius, 0.1);
-  state->setValue(Variables::Filename, std::string(""));
 }
 
 InterfaceWithOspray::InterfaceWithOspray() : Module(staticInfo_)
@@ -106,8 +81,12 @@ void InterfaceWithOspray::execute()
 
   if (needToExecute())
   {
-    OsprayAlgorithm ospray;
-    ospray.setup();
+    OsprayDataAlgorithm ospray;
+    //TODO
+    ospray.set(Parameters::DefaultColorR, get_state()->getValue(Parameters::DefaultColorR).toDouble());
+    ospray.set(Parameters::DefaultColorG, get_state()->getValue(Parameters::DefaultColorR).toDouble());
+    ospray.set(Parameters::DefaultColorB, get_state()->getValue(Parameters::DefaultColorR).toDouble());
+    ospray.set(Parameters::DefaultColorA, get_state()->getValue(Parameters::DefaultColorR).toDouble());
 
     if (!fields.empty())
     {

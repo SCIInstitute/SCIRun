@@ -64,10 +64,6 @@ void ViewOsprayScene::setStateDefaults()
   state->setValue(Parameters::CameraViewX, 0.0);
   state->setValue(Parameters::CameraViewY, 0.0);
   state->setValue(Parameters::CameraViewZ, 0.0);
-  state->setValue(Parameters::DefaultColorR, 0.5);
-  state->setValue(Parameters::DefaultColorG, 0.5);
-  state->setValue(Parameters::DefaultColorB, 0.5);
-  state->setValue(Parameters::DefaultColorA, 1.0);
   state->setValue(Parameters::BackgroundColorR, 0.0);
   state->setValue(Parameters::BackgroundColorG, 0.0);
   state->setValue(Parameters::BackgroundColorB, 0.0);
@@ -96,7 +92,33 @@ void ViewOsprayScene::execute()
 
   if (needToExecute())
   {
-    OsprayAlgorithm ospray;
+    OsprayRenderAlgorithm ospray;
+    setAlgoIntFromState(Parameters::ImageHeight);
+    setAlgoIntFromState(Parameters::ImageWidth);
+    setAlgoDoubleFromState(Parameters::CameraPositionX);
+    setAlgoDoubleFromState(Parameters::CameraPositionY);
+    setAlgoDoubleFromState(Parameters::CameraPositionZ);
+    setAlgoDoubleFromState(Parameters::CameraUpX);
+    setAlgoDoubleFromState(Parameters::CameraUpY);
+    setAlgoDoubleFromState(Parameters::CameraUpZ);
+    setAlgoDoubleFromState(Parameters::CameraViewX);
+    setAlgoDoubleFromState(Parameters::CameraViewY);
+    setAlgoDoubleFromState(Parameters::CameraViewZ);
+    setAlgoDoubleFromState(Parameters::BackgroundColorR);
+    setAlgoDoubleFromState(Parameters::BackgroundColorG);
+    setAlgoDoubleFromState(Parameters::BackgroundColorB);
+    setAlgoIntFromState(Parameters::FrameCount);
+    setAlgoBoolFromState(Parameters::ShowImageInWindow);
+    setAlgoDoubleFromState(Parameters::LightColorR);
+    setAlgoDoubleFromState(Parameters::LightColorG);
+    setAlgoDoubleFromState(Parameters::LightColorB);
+    setAlgoDoubleFromState(Parameters::LightIntensity);
+    setAlgoBoolFromState(Parameters::LightVisible);
+    setAlgoStringFromState(Parameters::LightType);
+    setAlgoBoolFromState(Parameters::AutoCameraView);
+    setAlgoDoubleFromState(Parameters::StreamlineRadius);
+    setAlgoStringFromState(Variables::Filename);
+
     ospray.setup();
     for (auto& geom : geoms)
     {
@@ -104,6 +126,8 @@ void ViewOsprayScene::execute()
       if (g)
         ospray.render(*g);
     }
+
+    // copy camera settings back 
 
     auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
     auto filename = "scirunOsprayOutput_" + isoString + ".ppm";

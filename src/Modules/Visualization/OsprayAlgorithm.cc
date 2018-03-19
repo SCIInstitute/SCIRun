@@ -95,26 +95,21 @@ namespace detail
     OSPRenderer renderer_;
     OSPFrameBuffer framebuffer_;
     AlgorithmBase* algo_;
-    std::vector<OsprayGeometryObjectHandle> scalarFields_;
-    std::vector<OsprayGeometryObjectHandle> streamlines_;
+   
 
     float toFloat(const Name& name) const;
     OsprayGeometryObjectHandle makeObject(FieldHandle field);
     std::array<float, 3> toArray(const Vector& v) const;
     void writePPM(const char *fileName, const osp::vec2i &size, const uint32_t *pixel) const;
     OsprayGeometryObjectHandle fillDataBuffers(FieldHandle field, ColorMapHandle colorMap);
-    
+    void visualizeScalarField(OsprayGeometryObjectHandle obj);
+    void visualizeStreamline(OsprayGeometryObjectHandle obj);
+    void adjustCameraPosition(const BBox& bbox);
+    Vector getCameraUp(float* newDir, float* cam_up);
+
   public:
     explicit OsprayImpl(AlgorithmBase* algo);
     void setup();
-    std::vector<OsprayGeometryObjectHandle> allObjectsToRender() const;
-    void adjustCameraPosition(const BBox& bbox);
-    Vector getCameraUp(float* newDir, float* cam_up);
-    
-    void addField(FieldHandle field, ColorMapHandle colorMap);
-    void visualizeScalarField(OsprayGeometryObjectHandle obj);
-    void addStreamline(FieldHandle field);
-    void visualizeStreamline(OsprayGeometryObjectHandle obj);
     void render(const CompositeOsprayGeometryObject& objList);
     void writeImage(const std::string& filename);
   };
@@ -140,16 +135,7 @@ namespace detail
   {
     return static_cast<float>(algo_->get(name).toDouble());
   }
-
-  OsprayGeometryObjectHandle OsprayImpl::makeObject(FieldHandle field)
-  {
-    OsprayGeometryObjectHandle obj(new OsprayGeometryObject);
-    auto vmesh = field->vmesh();
-    auto bbox = vmesh->get_bounding_box();
-    obj->box = bbox;
-    return obj;
-  }
-
+  
   std::array<float, 3> OsprayImpl::toArray(const Vector& v) const
   {
     return { static_cast<float>(v.x()), static_cast<float>(v.y()), static_cast<float>(v.z()) };
@@ -159,14 +145,7 @@ namespace detail
   {
     initialize();
   }
-
-  std::vector<OsprayGeometryObjectHandle> OsprayImpl::allObjectsToRender() const
-  {
-    auto all = boost::join(scalarFields_, streamlines_);
-    std::vector<OsprayGeometryObjectHandle> objs(boost::begin(all), boost::end(all));
-    return objs;
-  }
-
+  
   void OsprayImpl::setup()
   {
     imgSize_.x = algo_->get(Parameters::ImageWidth).toInt();
@@ -237,62 +216,7 @@ namespace detail
       side[0]*newDir[1] - side[1]*newDir[0]);
   }
 
-  OsprayGeometryObjectHandle OsprayImpl::fillDataBuffers(FieldHandle field, ColorMapHandle colorMap)
-  {
-    auto facade(field->mesh()->getFacade());
-
-    auto obj = makeObject(field);
-    auto& fieldData = obj->data;
-    auto& vertex = fieldData.vertex;
-    auto& color = fieldData.color;
-
-    auto vfield = field->vfield();
-
-    {
-      double value;
-      ColorRGB nodeColor(algo_->get(Parameters::DefaultColorR).toDouble(), 
-        algo_->get(Parameters::DefaultColorG).toDouble(), 
-        algo_->get(Parameters::DefaultColorB).toDouble());
-      auto alpha = toFloat(Parameters::DefaultColorA);
-
-      for (const auto& node : facade->nodes())
-      {
-        auto point = node.point();
-        vertex.push_back(static_cast<float>(point.x()));
-        vertex.push_back(static_cast<float>(point.y()));
-        vertex.push_back(static_cast<float>(point.z()));
-        vertex.push_back(0);
-
-        vfield->get_value(value, node.index());
-        if (colorMap)
-        {
-          nodeColor = colorMap->valueToColor(value);
-        }
-        color.push_back(static_cast<float>(nodeColor.r()));
-        color.push_back(static_cast<float>(nodeColor.g()));
-        color.push_back(static_cast<float>(nodeColor.b()));
-        color.push_back(alpha);
-      }
-    }
-
-    auto& index = fieldData.index;
-    {
-      for (const auto& face : facade->faces())
-      {
-        auto nodes = face.nodeIndices();
-        index.push_back(static_cast<int32_t>(nodes[0]));
-        index.push_back(static_cast<int32_t>(nodes[1]));
-        index.push_back(static_cast<int32_t>(nodes[2]));
-      }
-    }
-    return obj;
-  }
-
-  void OsprayImpl::addField(FieldHandle field, ColorMapHandle colorMap)
-  {
-    scalarFields_.push_back(fillDataBuffers(field, colorMap));
-  }
-
+ 
   void OsprayImpl::visualizeScalarField(OsprayGeometryObjectHandle obj)
   {
     const auto& fieldData = obj->data;
@@ -316,26 +240,6 @@ namespace detail
     meshes_.push_back(mesh);
     ospAddGeometry(world_, mesh);
     ospCommit(world_);
-  }
-
-  void OsprayImpl::addStreamline(FieldHandle field)
-  {
-    streamlines_.push_back(fillDataBuffers(field, nullptr));
-      
-    streamlines_.back()->isStreamline = true;
-    auto& fieldData = streamlines_.back()->data;
-    const auto& vertex = fieldData.vertex;
-    const auto& color = fieldData.color;
-
-    auto& index = fieldData.index;
-    {
-      auto facade(field->mesh()->getFacade());
-      for (const auto& edge : facade->edges())
-      {
-        auto nodesFromEdge = edge.nodeIndices();
-        index.push_back(nodesFromEdge[0]);
-      }
-    }
   }
 
   void OsprayImpl::visualizeStreamline(OsprayGeometryObjectHandle obj)
@@ -458,38 +362,120 @@ namespace detail
   Core::Thread::Mutex OsprayImpl::lock_("ospray lock");
 }
 
-OsprayAlgorithm::OsprayAlgorithm()
+OsprayRenderAlgorithm::OsprayRenderAlgorithm()
 {
   impl_.reset(new detail::OsprayImpl(this));
 }
 
-void OsprayAlgorithm::setup()
+void OsprayRenderAlgorithm::setup()
 {
   impl_->setup();
 }
 
-void OsprayAlgorithm::render(const CompositeOsprayGeometryObject& objList)
+void OsprayRenderAlgorithm::render(const CompositeOsprayGeometryObject& objList)
 {
   impl_->render(objList);
 }
 
-void OsprayAlgorithm::writeImage(const std::string& filename)
+void OsprayRenderAlgorithm::writeImage(const std::string& filename)
 {
   impl_->writeImage(filename);
 }
-
-void OsprayAlgorithm::addStreamline(FieldHandle field)
-{
-  impl_->addStreamline(field);
-}
-
-void OsprayAlgorithm::addField(FieldHandle field, ColorMapHandle colorMap)
-{
-  impl_->addField(field, colorMap);
-}
-
-std::vector<OsprayGeometryObjectHandle> OsprayAlgorithm::allObjectsToRender() const
-{
-  return impl_->allObjectsToRender();
-}
 #endif
+
+OsprayDataAlgorithm::OsprayDataAlgorithm()
+{
+  addParameter(Parameters::DefaultColorR, 0.5);
+}
+
+void OsprayDataAlgorithm::addStreamline(FieldHandle field)
+{
+  streamlines_.push_back(fillDataBuffers(field, nullptr));
+
+  streamlines_.back()->isStreamline = true;
+  auto& fieldData = streamlines_.back()->data;
+  const auto& vertex = fieldData.vertex;
+  const auto& color = fieldData.color;
+
+  auto& index = fieldData.index;
+  {
+    auto facade(field->mesh()->getFacade());
+    for (const auto& edge : facade->edges())
+    {
+      auto nodesFromEdge = edge.nodeIndices();
+      index.push_back(nodesFromEdge[0]);
+    }
+  }
+}
+
+void OsprayDataAlgorithm::addField(FieldHandle field, ColorMapHandle colorMap)
+{
+  scalarFields_.push_back(fillDataBuffers(field, colorMap));
+}
+
+std::vector<OsprayGeometryObjectHandle> OsprayDataAlgorithm::allObjectsToRender() const
+{
+  auto all = boost::join(scalarFields_, streamlines_);
+  std::vector<OsprayGeometryObjectHandle> objs(boost::begin(all), boost::end(all));
+  return objs;
+}
+
+OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle field, ColorMapHandle colorMap)
+{
+  auto facade(field->mesh()->getFacade());
+
+  auto obj = makeObject(field);
+  auto& fieldData = obj->data;
+  auto& vertex = fieldData.vertex;
+  auto& color = fieldData.color;
+
+  auto vfield = field->vfield();
+
+  {
+    double value;
+    ColorRGB nodeColor(get(Parameters::DefaultColorR).toDouble(),
+      get(Parameters::DefaultColorG).toDouble(),
+      get(Parameters::DefaultColorB).toDouble());
+    auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
+
+    for (const auto& node : facade->nodes())
+    {
+      auto point = node.point();
+      vertex.push_back(static_cast<float>(point.x()));
+      vertex.push_back(static_cast<float>(point.y()));
+      vertex.push_back(static_cast<float>(point.z()));
+      vertex.push_back(0);
+
+      vfield->get_value(value, node.index());
+      if (colorMap)
+      {
+        nodeColor = colorMap->valueToColor(value);
+      }
+      color.push_back(static_cast<float>(nodeColor.r()));
+      color.push_back(static_cast<float>(nodeColor.g()));
+      color.push_back(static_cast<float>(nodeColor.b()));
+      color.push_back(alpha);
+    }
+  }
+
+  auto& index = fieldData.index;
+  {
+    for (const auto& face : facade->faces())
+    {
+      auto nodes = face.nodeIndices();
+      index.push_back(static_cast<int32_t>(nodes[0]));
+      index.push_back(static_cast<int32_t>(nodes[1]));
+      index.push_back(static_cast<int32_t>(nodes[2]));
+    }
+  }
+  return obj;
+}
+
+OsprayGeometryObjectHandle OsprayDataAlgorithm::makeObject(FieldHandle field) const
+{
+  OsprayGeometryObjectHandle obj(new OsprayGeometryObject);
+  auto vmesh = field->vmesh();
+  auto bbox = vmesh->get_bounding_box();
+  obj->box = bbox;
+  return obj;
+}

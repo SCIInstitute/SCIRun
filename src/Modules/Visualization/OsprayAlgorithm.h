@@ -75,17 +75,30 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(AutoCameraView);
         ALGORITHM_PARAMETER_DECL(StreamlineRadius);
 
-#ifdef WITH_OSPRAY
-        class SCISHARE OsprayAlgorithm : public AlgorithmBase
+        class SCISHARE OsprayDataAlgorithm : public AlgorithmBase
         {
         public:
-          OsprayAlgorithm();
-          void setup();
-          void render(const Core::Datatypes::CompositeOsprayGeometryObject& objList);
-          void writeImage(const std::string& filename);
+          OsprayDataAlgorithm();
           std::vector<Core::Datatypes::OsprayGeometryObjectHandle> allObjectsToRender() const;
           void addField(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap);
           void addStreamline(FieldHandle field);
+
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const override { return{}; }
+        private:
+          Core::Datatypes::OsprayGeometryObjectHandle fillDataBuffers(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap);
+          Core::Datatypes::OsprayGeometryObjectHandle makeObject(FieldHandle field) const;
+          std::vector<Core::Datatypes::OsprayGeometryObjectHandle> scalarFields_;
+          std::vector<Core::Datatypes::OsprayGeometryObjectHandle> streamlines_;
+        };
+
+#ifdef WITH_OSPRAY
+        class SCISHARE OsprayRenderAlgorithm : public AlgorithmBase
+        {
+        public:
+          OsprayRenderAlgorithm();
+          void setup();
+          void render(const Core::Datatypes::CompositeOsprayGeometryObject& objList);
+          void writeImage(const std::string& filename);
 
           virtual AlgorithmOutput run(const AlgorithmInput& input) const override { return {}; }
         private:

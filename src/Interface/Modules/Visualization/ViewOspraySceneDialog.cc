@@ -61,10 +61,6 @@ ViewOspraySceneDialog::ViewOspraySceneDialog(const std::string& name, ModuleStat
   addDoubleSpinBoxManager(cameraViewXDoubleSpinBox_, CameraViewX);
   addDoubleSpinBoxManager(cameraViewYDoubleSpinBox_, CameraViewY);
   addDoubleSpinBoxManager(cameraViewZDoubleSpinBox_, CameraViewZ);
-  addDoubleSpinBoxManager(defaultColorRDoubleSpinBox_, DefaultColorR);
-  addDoubleSpinBoxManager(defaultColorGDoubleSpinBox_, DefaultColorG);
-  addDoubleSpinBoxManager(defaultColorBDoubleSpinBox_, DefaultColorB);
-  addDoubleSpinBoxManager(defaultColorADoubleSpinBox_, DefaultColorA);
   addDoubleSpinBoxManager(backgroundColorRDoubleSpinBox_, BackgroundColorR);
   addDoubleSpinBoxManager(backgroundColorGDoubleSpinBox_, BackgroundColorG);
   addDoubleSpinBoxManager(backgroundColorBDoubleSpinBox_, BackgroundColorB);

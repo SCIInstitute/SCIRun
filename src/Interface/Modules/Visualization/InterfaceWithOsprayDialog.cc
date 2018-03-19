@@ -53,7 +53,4 @@ InterfaceWithOsprayDialog::InterfaceWithOsprayDialog(const std::string& name, Mo
   addDoubleSpinBoxManager(defaultColorGDoubleSpinBox_, DefaultColorG);
   addDoubleSpinBoxManager(defaultColorBDoubleSpinBox_, DefaultColorB);
   addDoubleSpinBoxManager(defaultColorADoubleSpinBox_, DefaultColorA);
-  addDoubleSpinBoxManager(streamlineRadiusDoubleSpinBox_, StreamlineRadius);
-
-  WidgetStyleMixin::tabStyle(tabWidget);
 }
