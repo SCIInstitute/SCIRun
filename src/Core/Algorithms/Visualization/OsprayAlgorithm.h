@@ -26,12 +26,12 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_VISUALIZATION_OSPRAYALGORITHM_H
-#define MODULES_VISUALIZATION_OSPRAYALGORITHM_H
+#ifndef CORE_ALGORITHMS_VISUALIZATION_OSPRAYALGORITHM_H
+#define CORE_ALGORITHMS_VISUALIZATION_OSPRAYALGORITHM_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/Geometry.h>
-#include <Modules/Visualization/share.h>
+#include <Core/Algorithms/Visualization/share.h>
 
 namespace detail
 {

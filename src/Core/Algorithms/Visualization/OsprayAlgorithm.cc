@@ -1,4 +1,3 @@
-#ifdef WITH_OSPRAY
 /*
 For more information, please see: http://software.sci.utah.edu
 
@@ -27,7 +26,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Visualization/OsprayAlgorithm.h>
+#include <Core/Algorithms/Visualization/OsprayAlgorithm.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/ColorMap.h>
@@ -39,8 +38,6 @@ DEALINGS IN THE SOFTWARE.
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/range/join.hpp>
-
-#include <ospray/ospray.h>
 
 using namespace SCIRun;
 using namespace Core::Algorithms;
@@ -76,6 +73,10 @@ ALGORITHM_PARAMETER_DEF(Visualization, LightVisible);
 ALGORITHM_PARAMETER_DEF(Visualization, LightType);
 ALGORITHM_PARAMETER_DEF(Visualization, AutoCameraView);
 ALGORITHM_PARAMETER_DEF(Visualization, StreamlineRadius);
+
+#ifdef WITH_OSPRAY
+
+#include <ospray/ospray.h>
 
 namespace detail
 {

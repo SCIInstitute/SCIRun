@@ -27,7 +27,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Modules/Visualization/InterfaceWithOspray.h>
-#include <Modules/Visualization/OsprayAlgorithm.h>
+#include <Core/Algorithms/Visualization/OsprayAlgorithm.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/ColorMap.h>
@@ -39,10 +39,6 @@ DEALINGS IN THE SOFTWARE.
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/range/join.hpp>
-
-#ifdef WITH_OSPRAY
-#include <ospray/ospray.h>
-#endif
 
 using namespace SCIRun;
 using namespace Dataflow::Networks;

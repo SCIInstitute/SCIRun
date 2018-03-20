@@ -27,7 +27,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Modules/Visualization/ViewOsprayScene.h>
-#include <Modules/Visualization/OsprayAlgorithm.h>
+#include <Core/Algorithms/Visualization/OsprayAlgorithm.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/ColorMap.h>
