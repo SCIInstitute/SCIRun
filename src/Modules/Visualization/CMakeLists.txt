@@ -36,7 +36,6 @@ SET(Modules_Visualization_SRCS
   TextBuilder.cc
   InterfaceWithOspray.cc
   ViewOsprayScene.cc
-  OsprayAlgorithm.cc
 )
 
 SET(Modules_Visualization_HEADERS
@@ -49,7 +48,6 @@ SET(Modules_Visualization_HEADERS
   TextBuilder.h
   InterfaceWithOspray.h
   ViewOsprayScene.h
-  OsprayAlgorithm.h
   share.h
 )
 
@@ -68,12 +66,6 @@ TARGET_LINK_LIBRARIES(Modules_Visualization
   Graphics_Datatypes
   ${SCI_FREETYPE_LIBRARY}
 )
-
-IF(WITH_OSPRAY)
-  INCLUDE(${CMAKE_SOURCE_DIR}/CMake/Modules/FindOSPRay.cmake)
-  INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
-  TARGET_LINK_LIBRARIES(Modules_Visualization ${OSPRAY_LIBRARIES})
-ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Visualization)

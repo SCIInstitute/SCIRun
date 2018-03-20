@@ -7,9 +7,9 @@
     "header": "Modules/Visualization/ViewOsprayScene.h"
   },
   "algorithm": {
-    "name": "N/A",
-    "namespace": "N/A",
-    "header": "N/A"
+    "name": "OsprayRenderAlgorithm",
+    "namespace": "Visualization",
+    "header": "Core/Algorithms/Visualization/OsprayAlgorithm.h"
   },
   "UI": {
     "name": "ViewOspraySceneDialog",
