@@ -79,16 +79,11 @@ namespace SCIRun
         {
         public:
           OsprayDataAlgorithm();
-          std::vector<Core::Datatypes::OsprayGeometryObjectHandle> allObjectsToRender() const;
-          void addField(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap);
-          void addStreamline(FieldHandle field);
-
-          virtual AlgorithmOutput run(const AlgorithmInput& input) const override { return{}; }
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
         private:
-          Core::Datatypes::OsprayGeometryObjectHandle fillDataBuffers(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap);
+          Core::Datatypes::OsprayGeometryObjectHandle addStreamline(FieldHandle field) const;
+          Core::Datatypes::OsprayGeometryObjectHandle fillDataBuffers(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
           Core::Datatypes::OsprayGeometryObjectHandle makeObject(FieldHandle field) const;
-          std::vector<Core::Datatypes::OsprayGeometryObjectHandle> scalarFields_;
-          std::vector<Core::Datatypes::OsprayGeometryObjectHandle> streamlines_;
         };
 
 #ifdef WITH_OSPRAY

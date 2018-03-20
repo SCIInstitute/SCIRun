@@ -35,6 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/range/join.hpp>
@@ -387,14 +388,17 @@ void OsprayRenderAlgorithm::writeImage(const std::string& filename)
 OsprayDataAlgorithm::OsprayDataAlgorithm()
 {
   addParameter(Parameters::DefaultColorR, 0.5);
+  addParameter(Parameters::DefaultColorG, 0.5);
+  addParameter(Parameters::DefaultColorB, 0.5);
+  addParameter(Parameters::DefaultColorA, 1.0);
 }
 
-void OsprayDataAlgorithm::addStreamline(FieldHandle field)
+OsprayGeometryObjectHandle OsprayDataAlgorithm::addStreamline(FieldHandle field) const
 {
-  streamlines_.push_back(fillDataBuffers(field, nullptr));
+  auto obj = fillDataBuffers(field, nullptr);
 
-  streamlines_.back()->isStreamline = true;
-  auto& fieldData = streamlines_.back()->data;
+  obj->isStreamline = true;
+  auto& fieldData = obj->data;
   const auto& vertex = fieldData.vertex;
   const auto& color = fieldData.color;
 
@@ -407,21 +411,10 @@ void OsprayDataAlgorithm::addStreamline(FieldHandle field)
       index.push_back(nodesFromEdge[0]);
     }
   }
+  return obj;
 }
 
-void OsprayDataAlgorithm::addField(FieldHandle field, ColorMapHandle colorMap)
-{
-  scalarFields_.push_back(fillDataBuffers(field, colorMap));
-}
-
-std::vector<OsprayGeometryObjectHandle> OsprayDataAlgorithm::allObjectsToRender() const
-{
-  auto all = boost::join(scalarFields_, streamlines_);
-  std::vector<OsprayGeometryObjectHandle> objs(boost::begin(all), boost::end(all));
-  return objs;
-}
-
-OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle field, ColorMapHandle colorMap)
+OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle field, ColorMapHandle colorMap) const
 {
   auto facade(field->mesh()->getFacade());
 
@@ -479,4 +472,44 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::makeObject(FieldHandle field) co
   auto bbox = vmesh->get_bounding_box();
   obj->box = bbox;
   return obj;
+}
+
+AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
+{ 
+  auto fields = input.getList<Field>(Name("Field"));
+  auto colorMaps = input.getList<ColorMap>(Name("ColorMapObject"));
+  auto streamlines = input.getList<Field>(Name("Streamlines"));
+
+  std::vector<OsprayGeometryObjectHandle> renderables;
+
+  for (auto&& fieldColor : zip(fields, colorMaps))
+  {
+    FieldHandle field;
+    ColorMapHandle colorMap;
+    boost::tie(field, colorMap) = fieldColor;
+
+    FieldInformation info(field);
+
+    if (!info.is_trisurfmesh())
+    {
+      THROW_ALGORITHM_INPUT_ERROR("Ospray rendering currently only works with trisurfs.");
+    }
+
+    renderables.push_back(fillDataBuffers(field, colorMap));
+  }
+
+  for (auto& streamline : streamlines)
+  {
+    FieldInformation info(streamline);
+
+    if (!info.is_curvemesh())
+      THROW_ALGORITHM_INPUT_ERROR("Ospray rendering currently only works with curvemesh streamlines.");
+
+    renderables.push_back(addStreamline(streamline));
+  }
+
+  auto geom = boost::make_shared<CompositeOsprayGeometryObject>(renderables);
+  AlgorithmOutput output;
+  output[Name("SceneGraph")] = geom;
+  return output;
 }

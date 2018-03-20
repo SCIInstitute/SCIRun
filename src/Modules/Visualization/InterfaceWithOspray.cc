@@ -29,16 +29,9 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Visualization/InterfaceWithOspray.h>
 #include <Core/Algorithms/Visualization/OsprayAlgorithm.h>
 #include <Core/Datatypes/Geometry.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/range/join.hpp>
 
 using namespace SCIRun;
 using namespace Dataflow::Networks;
@@ -53,11 +46,10 @@ MODULE_INFO_DEF(InterfaceWithOspray, Visualization, SCIRun)
 
 void InterfaceWithOspray::setStateDefaults()
 {
-  auto state = get_state();
-  state->setValue(Parameters::DefaultColorR, 0.5);
-  state->setValue(Parameters::DefaultColorG, 0.5);
-  state->setValue(Parameters::DefaultColorB, 0.5);
-  state->setValue(Parameters::DefaultColorA, 1.0);
+  setStateDoubleFromAlgo(Parameters::DefaultColorR);
+  setStateDoubleFromAlgo(Parameters::DefaultColorG);
+  setStateDoubleFromAlgo(Parameters::DefaultColorB);
+  setStateDoubleFromAlgo(Parameters::DefaultColorA);
 }
 
 InterfaceWithOspray::InterfaceWithOspray() : Module(staticInfo_)
@@ -70,55 +62,24 @@ InterfaceWithOspray::InterfaceWithOspray() : Module(staticInfo_)
 
 void InterfaceWithOspray::execute()
 {
-  #ifdef WITH_OSPRAY
   auto fields = getOptionalDynamicInputs(Field);
   auto colorMaps = getOptionalDynamicInputs(ColorMapObject);
   auto streamlines = getOptionalDynamicInputs(Streamlines);
 
   if (needToExecute())
   {
-    OsprayDataAlgorithm ospray;
-    //TODO
-    ospray.set(Parameters::DefaultColorR, get_state()->getValue(Parameters::DefaultColorR).toDouble());
-    ospray.set(Parameters::DefaultColorG, get_state()->getValue(Parameters::DefaultColorR).toDouble());
-    ospray.set(Parameters::DefaultColorB, get_state()->getValue(Parameters::DefaultColorR).toDouble());
-    ospray.set(Parameters::DefaultColorA, get_state()->getValue(Parameters::DefaultColorR).toDouble());
+    setAlgoDoubleFromState(Parameters::DefaultColorR);
+    setAlgoDoubleFromState(Parameters::DefaultColorG);
+    setAlgoDoubleFromState(Parameters::DefaultColorB);
+    setAlgoDoubleFromState(Parameters::DefaultColorA);
 
     if (!fields.empty())
     {
       if (colorMaps.size() < fields.size())
         colorMaps.resize(fields.size());
-
-      for (auto&& fieldColor : zip(fields, colorMaps))
-      {
-        FieldHandle field;
-        ColorMapHandle color;
-        boost::tie(field, color) = fieldColor;
-
-        FieldInformation info(field);
-
-        if (!info.is_trisurfmesh())
-          THROW_INVALID_ARGUMENT("Module currently only works with trisurfs.");
-
-        ospray.addField(field, color);
-      }
-    }
-
-    for (auto& streamline : streamlines)
-    {
-      FieldInformation info(streamline);
-
-      if (!info.is_curvemesh())
-        THROW_INVALID_ARGUMENT("Module currently only works with curvemesh streamlines.");
-
-      ospray.addStreamline(streamline);
     }
     
-    auto geom = boost::make_shared<CompositeOsprayGeometryObject>(ospray.allObjectsToRender());
-    
-    sendOutput(SceneGraph, geom);
+    auto output = algo().run(withInputData((Field, fields)(ColorMapObject, colorMaps)(Streamlines, streamlines)));
+    sendOutputFromAlgorithm(SceneGraph, output);
   }
-  #else
-  error("Build SCIRun with WITH_OSPRAY set to true to enable this module.");
-  #endif
 }
