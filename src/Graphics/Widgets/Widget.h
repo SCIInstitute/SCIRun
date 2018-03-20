@@ -64,16 +64,7 @@ namespace SCIRun
         template <typename WidgetIter>
         CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
           : WidgetBase(idGenerator, tag, true), widgets_(begin, end)
-        {
-          // while (begin != end)
-          // {
-          //   auto widget = *begin;
-          //   std::copy(widget->vbos().begin(), widget->vbos().end(), std::back_inserter(vbos()));
-          //   std::copy(widget->ibos().begin(), widget->ibos().end(), std::back_inserter(ibos()));
-          //   std::copy(widget->passes().begin(), widget->passes().end(), std::back_inserter(passes()));
-          //   ++begin;
-          // }
-        }
+        {}
         ~CompositeWidget();
         void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
       private:
