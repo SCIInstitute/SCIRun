@@ -50,7 +50,7 @@ namespace SCIRun {
         INPUT_PORT_DYNAMIC(2, Streamlines, Field);
         OUTPUT_PORT(0, SceneGraph, OsprayGeometryObject);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 
         virtual void setStateDefaults() override;
 
