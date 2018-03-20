@@ -26,8 +26,9 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Visualization/OsprayAlgorithm.h>
+#include <Core/Algorithms/Visualization/OsprayRenderAlgorithm.h>
 #include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -38,7 +39,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/range/join.hpp>
 
 using namespace SCIRun;
 using namespace Core::Algorithms;
@@ -57,10 +57,6 @@ ALGORITHM_PARAMETER_DEF(Visualization, CameraUpZ);
 ALGORITHM_PARAMETER_DEF(Visualization, CameraViewX);
 ALGORITHM_PARAMETER_DEF(Visualization, CameraViewY);
 ALGORITHM_PARAMETER_DEF(Visualization, CameraViewZ);
-ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorR);
-ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorG);
-ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorB);
-ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorA);
 ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorR);
 ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorG);
 ALGORITHM_PARAMETER_DEF(Visualization, BackgroundColorB);
@@ -363,153 +359,79 @@ namespace detail
   bool OsprayImpl::initialized_(false);
   Core::Thread::Mutex OsprayImpl::lock_("ospray lock");
 }
+#endif
 
 OsprayRenderAlgorithm::OsprayRenderAlgorithm()
 {
+  addParameter(Parameters::ImageHeight, 768);
+  addParameter(Parameters::ImageWidth, 1024);
+  addParameter(Parameters::CameraPositionX, 5.0);
+  addParameter(Parameters::CameraPositionY, 5.0);
+  addParameter(Parameters::CameraPositionZ, 5.0);
+  addParameter(Parameters::CameraUpX, 0.0);
+  addParameter(Parameters::CameraUpY, 0.0);
+  addParameter(Parameters::CameraUpZ, 1.0);
+  addParameter(Parameters::CameraViewX, 0.0);
+  addParameter(Parameters::CameraViewY, 0.0);
+  addParameter(Parameters::CameraViewZ, 0.0);
+  addParameter(Parameters::BackgroundColorR, 0.0);
+  addParameter(Parameters::BackgroundColorG, 0.0);
+  addParameter(Parameters::BackgroundColorB, 0.0);
+  addParameter(Parameters::FrameCount, 10);
+  addParameter(Parameters::ShowImageInWindow, true);
+  addParameter(Parameters::LightColorR, 1.0);
+  addParameter(Parameters::LightColorG, 1.0);
+  addParameter(Parameters::LightColorB, 1.0);
+  addParameter(Parameters::LightIntensity, 1.0);
+  addParameter(Parameters::LightVisible, false);
+  addParameter(Parameters::LightType, std::string("ambient"));
+  addParameter(Parameters::AutoCameraView, true);
+  addParameter(Parameters::StreamlineRadius, 0.1);
+  addParameter(Variables::Filename, std::string(""));
+
+#ifdef WITH_OSPRAY
   impl_.reset(new detail::OsprayImpl(this));
-}
-
-void OsprayRenderAlgorithm::setup()
-{
   impl_->setup();
-}
-
-void OsprayRenderAlgorithm::render(const CompositeOsprayGeometryObject& objList)
-{
-  impl_->render(objList);
-}
-
-void OsprayRenderAlgorithm::writeImage(const std::string& filename)
-{
-  impl_->writeImage(filename);
-}
 #endif
-
-OsprayDataAlgorithm::OsprayDataAlgorithm()
-{
-  addParameter(Parameters::DefaultColorR, 0.5);
-  addParameter(Parameters::DefaultColorG, 0.5);
-  addParameter(Parameters::DefaultColorB, 0.5);
-  addParameter(Parameters::DefaultColorA, 1.0);
 }
 
-OsprayGeometryObjectHandle OsprayDataAlgorithm::addStreamline(FieldHandle field) const
+#ifdef WITH_OSPRAY
+void OsprayRenderAlgorithm::render(const AlgorithmInput& input) const
 {
-  auto obj = fillDataBuffers(field, nullptr);
+  auto geoms = input.getList<OsprayGeometryObject>(Name("OspraySceneGraph"));
 
-  obj->isStreamline = true;
-  auto& fieldData = obj->data;
-  const auto& vertex = fieldData.vertex;
-  const auto& color = fieldData.color;
-
-  auto& index = fieldData.index;
+  for (auto& geom : geoms)
   {
-    auto facade(field->mesh()->getFacade());
-    for (const auto& edge : facade->edges())
-    {
-      auto nodesFromEdge = edge.nodeIndices();
-      index.push_back(nodesFromEdge[0]);
-    }
+    auto g = boost::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
+    if (g)
+      impl_->render(*g);
   }
-  return obj;
 }
 
-OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle field, ColorMapHandle colorMap) const
+std::string OsprayRenderAlgorithm::writeImage() const
 {
-  auto facade(field->mesh()->getFacade());
+  auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
+  auto filename = "scirunOsprayOutput_" + isoString + ".ppm";
+  auto filePath = get(Variables::Filename).toString() / boost::filesystem::path(filename);
+  auto filePathStr = filePath.string();
+  remark("Saving output to " + filePathStr);
 
-  auto obj = makeObject(field);
-  auto& fieldData = obj->data;
-  auto& vertex = fieldData.vertex;
-  auto& color = fieldData.color;
-
-  auto vfield = field->vfield();
-
-  {
-    double value;
-    ColorRGB nodeColor(get(Parameters::DefaultColorR).toDouble(),
-      get(Parameters::DefaultColorG).toDouble(),
-      get(Parameters::DefaultColorB).toDouble());
-    auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
-
-    for (const auto& node : facade->nodes())
-    {
-      auto point = node.point();
-      vertex.push_back(static_cast<float>(point.x()));
-      vertex.push_back(static_cast<float>(point.y()));
-      vertex.push_back(static_cast<float>(point.z()));
-      vertex.push_back(0);
-
-      vfield->get_value(value, node.index());
-      if (colorMap)
-      {
-        nodeColor = colorMap->valueToColor(value);
-      }
-      color.push_back(static_cast<float>(nodeColor.r()));
-      color.push_back(static_cast<float>(nodeColor.g()));
-      color.push_back(static_cast<float>(nodeColor.b()));
-      color.push_back(alpha);
-    }
-  }
-
-  auto& index = fieldData.index;
-  {
-    for (const auto& face : facade->faces())
-    {
-      auto nodes = face.nodeIndices();
-      index.push_back(static_cast<int32_t>(nodes[0]));
-      index.push_back(static_cast<int32_t>(nodes[1]));
-      index.push_back(static_cast<int32_t>(nodes[2]));
-    }
-  }
-  return obj;
+  impl_->writeImage(filePathStr);
+  return filePathStr;
 }
 
-OsprayGeometryObjectHandle OsprayDataAlgorithm::makeObject(FieldHandle field) const
+AlgorithmOutput OsprayRenderAlgorithm::run(const AlgorithmInput& input) const
 {
-  OsprayGeometryObjectHandle obj(new OsprayGeometryObject);
-  auto vmesh = field->vmesh();
-  auto bbox = vmesh->get_bounding_box();
-  obj->box = bbox;
-  return obj;
-}
-
-AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
-{ 
-  auto fields = input.getList<Field>(Name("Field"));
-  auto colorMaps = input.getList<ColorMap>(Name("ColorMapObject"));
-  auto streamlines = input.getList<Field>(Name("Streamlines"));
-
-  std::vector<OsprayGeometryObjectHandle> renderables;
-
-  for (auto&& fieldColor : zip(fields, colorMaps))
-  {
-    FieldHandle field;
-    ColorMapHandle colorMap;
-    boost::tie(field, colorMap) = fieldColor;
-
-    FieldInformation info(field);
-
-    if (!info.is_trisurfmesh())
-    {
-      THROW_ALGORITHM_INPUT_ERROR("Ospray rendering currently only works with trisurfs.");
-    }
-
-    renderables.push_back(fillDataBuffers(field, colorMap));
-  }
-
-  for (auto& streamline : streamlines)
-  {
-    FieldInformation info(streamline);
-
-    if (!info.is_curvemesh())
-      THROW_ALGORITHM_INPUT_ERROR("Ospray rendering currently only works with curvemesh streamlines.");
-
-    renderables.push_back(addStreamline(streamline));
-  }
-
-  auto geom = boost::make_shared<CompositeOsprayGeometryObject>(renderables);
+  render(input);
+ 
+  StringHandle fileStrObj(new String(writeImage()));
   AlgorithmOutput output;
-  output[Name("SceneGraph")] = geom;
+  output[Variables::Filename] = fileStrObj;
   return output;
 }
+#else
+AlgorithmOutput OsprayRenderAlgorithm::run(const AlgorithmInput& input) const
+{
+  THROW_ALGORITHM_PROCESSING_ERROR("Must compile WITH_OSPRAY to enable this module.");
+}
+#endif

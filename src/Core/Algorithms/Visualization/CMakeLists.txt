@@ -28,13 +28,15 @@
 
 SET(Algorithms_Visualization_SRCS
   DataConversions.cc
-  OsprayAlgorithm.cc
+  OsprayRenderAlgorithm.cc
+  OsprayDataAlgorithm.cc
 )
 
 SET(Algorithms_Visualization_HEADERS
   DataConversions.h
   RenderFieldState.h
-  OsprayAlgorithm.h
+  OsprayRenderAlgorithm.h
+  OsprayDataAlgorithm.h
 )
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Visualization 

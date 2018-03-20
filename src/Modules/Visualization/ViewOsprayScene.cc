@@ -27,17 +27,10 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Modules/Visualization/ViewOsprayScene.h>
-#include <Core/Algorithms/Visualization/OsprayAlgorithm.h>
+#include <Core/Algorithms/Visualization/OsprayRenderAlgorithm.h>
 #include <Core/Datatypes/Geometry.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/ColorMap.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
+#include <Core/Datatypes/String.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-
-#include <boost/date_time/posix_time/posix_time.hpp>
 
 using namespace SCIRun;
 using namespace Dataflow::Networks;
@@ -52,32 +45,31 @@ MODULE_INFO_DEF(ViewOsprayScene, Visualization, SCIRun)
 
 void ViewOsprayScene::setStateDefaults()
 {
-  auto state = get_state();
-  state->setValue(Parameters::ImageHeight, 768);
-  state->setValue(Parameters::ImageWidth, 1024);
-  state->setValue(Parameters::CameraPositionX, 5.0);
-  state->setValue(Parameters::CameraPositionY, 5.0);
-  state->setValue(Parameters::CameraPositionZ, 5.0);
-  state->setValue(Parameters::CameraUpX, 0.0);
-  state->setValue(Parameters::CameraUpY, 0.0);
-  state->setValue(Parameters::CameraUpZ, 1.0);
-  state->setValue(Parameters::CameraViewX, 0.0);
-  state->setValue(Parameters::CameraViewY, 0.0);
-  state->setValue(Parameters::CameraViewZ, 0.0);
-  state->setValue(Parameters::BackgroundColorR, 0.0);
-  state->setValue(Parameters::BackgroundColorG, 0.0);
-  state->setValue(Parameters::BackgroundColorB, 0.0);
-  state->setValue(Parameters::FrameCount, 10);
-  state->setValue(Parameters::ShowImageInWindow, true);
-  state->setValue(Parameters::LightColorR, 1.0);
-  state->setValue(Parameters::LightColorG, 1.0);
-  state->setValue(Parameters::LightColorB, 1.0);
-  state->setValue(Parameters::LightIntensity, 1.0);
-  state->setValue(Parameters::LightVisible, false);
-  state->setValue(Parameters::LightType, std::string("ambient"));
-  state->setValue(Parameters::AutoCameraView, true);
-  state->setValue(Parameters::StreamlineRadius, 0.1);
-  state->setValue(Variables::Filename, std::string(""));
+  setStateIntFromAlgo(Parameters::ImageHeight);
+  setStateIntFromAlgo(Parameters::ImageWidth);
+  setStateDoubleFromAlgo(Parameters::CameraPositionX);
+  setStateDoubleFromAlgo(Parameters::CameraPositionY);
+  setStateDoubleFromAlgo(Parameters::CameraPositionZ);
+  setStateDoubleFromAlgo(Parameters::CameraUpX);
+  setStateDoubleFromAlgo(Parameters::CameraUpY);
+  setStateDoubleFromAlgo(Parameters::CameraUpZ);
+  setStateDoubleFromAlgo(Parameters::CameraViewX);
+  setStateDoubleFromAlgo(Parameters::CameraViewY);
+  setStateDoubleFromAlgo(Parameters::CameraViewZ);
+  setStateDoubleFromAlgo(Parameters::BackgroundColorR);
+  setStateDoubleFromAlgo(Parameters::BackgroundColorG);
+  setStateDoubleFromAlgo(Parameters::BackgroundColorB);
+  setStateIntFromAlgo(Parameters::FrameCount);
+  setStateBoolFromAlgo(Parameters::ShowImageInWindow);
+  setStateDoubleFromAlgo(Parameters::LightColorR);
+  setStateDoubleFromAlgo(Parameters::LightColorG);
+  setStateDoubleFromAlgo(Parameters::LightColorB);
+  setStateDoubleFromAlgo(Parameters::LightIntensity);
+  setStateBoolFromAlgo(Parameters::LightVisible);
+  setStateStringFromAlgo(Parameters::LightType);
+  setStateBoolFromAlgo(Parameters::AutoCameraView);
+  setStateDoubleFromAlgo(Parameters::StreamlineRadius);
+  setStateStringFromAlgo(Variables::Filename);
 }
 
 ViewOsprayScene::ViewOsprayScene() : Module(staticInfo_)
@@ -87,12 +79,10 @@ ViewOsprayScene::ViewOsprayScene() : Module(staticInfo_)
 
 void ViewOsprayScene::execute()
 {
-  #ifdef WITH_OSPRAY
   auto geoms = getOptionalDynamicInputs(OspraySceneGraph);
 
   if (needToExecute())
   {
-    OsprayRenderAlgorithm ospray;
     setAlgoIntFromState(Parameters::ImageHeight);
     setAlgoIntFromState(Parameters::ImageWidth);
     setAlgoDoubleFromState(Parameters::CameraPositionX);
@@ -119,25 +109,15 @@ void ViewOsprayScene::execute()
     setAlgoDoubleFromState(Parameters::StreamlineRadius);
     setAlgoStringFromState(Variables::Filename);
 
-    ospray.setup();
-    for (auto& geom : geoms)
-    {
-      auto g = boost::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
-      if (g)
-        ospray.render(*g);
-    }
+    auto output = algo().run(withInputData((OspraySceneGraph, geoms)));
+    get_state()->setTransientValue(Variables::Filename, output.get<String>(Variables::Filename)->value());
 
-    // copy camera settings back 
-
-    auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
-    auto filename = "scirunOsprayOutput_" + isoString + ".ppm";
-    auto filePath = get_state()->getValue(Variables::Filename).toString() / boost::filesystem::path(filename);
-    ospray.writeImage(filePath.string());
-    remark("Saving output to " + filePath.string());
-
-    get_state()->setTransientValue(Variables::Filename, filePath.string());
+    // algo adjusts camera based on rendered objects
+    setStateDoubleFromAlgo(Parameters::CameraViewX);
+    setStateDoubleFromAlgo(Parameters::CameraViewY);
+    setStateDoubleFromAlgo(Parameters::CameraViewZ);
+    setStateDoubleFromAlgo(Parameters::CameraUpX);
+    setStateDoubleFromAlgo(Parameters::CameraUpY);
+    setStateDoubleFromAlgo(Parameters::CameraUpZ);
   }
-  #else
-  error("Build SCIRun with WITH_OSPRAY set to true to enable this module.");
-  #endif
 }

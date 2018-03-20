@@ -9,7 +9,7 @@
   "algorithm": {
     "name": "OsprayRenderAlgorithm",
     "namespace": "Visualization",
-    "header": "Core/Algorithms/Visualization/OsprayAlgorithm.h"
+    "header": "Core/Algorithms/Visualization/OsprayRenderAlgorithm.h"
   },
   "UI": {
     "name": "ViewOspraySceneDialog",

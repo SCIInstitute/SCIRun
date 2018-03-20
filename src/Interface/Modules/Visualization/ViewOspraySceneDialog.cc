@@ -28,7 +28,7 @@
 
 #include <Interface/Modules/Visualization/ViewOspraySceneDialog.h>
 #include <Modules/Visualization/ViewOsprayScene.h>
-#include <Core/Algorithms/Visualization/OsprayAlgorithm.h>
+#include <Core/Algorithms/Visualization/OsprayRenderAlgorithm.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/GeometryPrimitives/Point.h>

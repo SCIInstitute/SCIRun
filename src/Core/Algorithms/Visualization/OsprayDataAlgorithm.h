@@ -26,17 +26,12 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_VISUALIZATION_OSPRAYALGORITHM_H
-#define CORE_ALGORITHMS_VISUALIZATION_OSPRAYALGORITHM_H
+#ifndef CORE_ALGORITHMS_VISUALIZATION_OSPRAYDATAALGORITHM_H
+#define CORE_ALGORITHMS_VISUALIZATION_OSPRAYDATAALGORITHM_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Algorithms/Visualization/share.h>
-
-namespace detail
-{
-  class OsprayImpl;
-}
 
 namespace SCIRun
 {
@@ -46,34 +41,10 @@ namespace SCIRun
     {
       namespace Visualization
       {
-        ALGORITHM_PARAMETER_DECL(ImageHeight);
-        ALGORITHM_PARAMETER_DECL(ImageWidth);
-        ALGORITHM_PARAMETER_DECL(CameraPositionX);
-        ALGORITHM_PARAMETER_DECL(CameraPositionY);
-        ALGORITHM_PARAMETER_DECL(CameraPositionZ);
-        ALGORITHM_PARAMETER_DECL(CameraUpX);
-        ALGORITHM_PARAMETER_DECL(CameraUpY);
-        ALGORITHM_PARAMETER_DECL(CameraUpZ);
-        ALGORITHM_PARAMETER_DECL(CameraViewX);
-        ALGORITHM_PARAMETER_DECL(CameraViewY);
-        ALGORITHM_PARAMETER_DECL(CameraViewZ);
         ALGORITHM_PARAMETER_DECL(DefaultColorR);
         ALGORITHM_PARAMETER_DECL(DefaultColorG);
         ALGORITHM_PARAMETER_DECL(DefaultColorB);
         ALGORITHM_PARAMETER_DECL(DefaultColorA);
-        ALGORITHM_PARAMETER_DECL(BackgroundColorR);
-        ALGORITHM_PARAMETER_DECL(BackgroundColorG);
-        ALGORITHM_PARAMETER_DECL(BackgroundColorB);
-        ALGORITHM_PARAMETER_DECL(FrameCount);
-        ALGORITHM_PARAMETER_DECL(ShowImageInWindow);
-        ALGORITHM_PARAMETER_DECL(LightVisible);
-        ALGORITHM_PARAMETER_DECL(LightColorR);
-        ALGORITHM_PARAMETER_DECL(LightColorG);
-        ALGORITHM_PARAMETER_DECL(LightColorB);
-        ALGORITHM_PARAMETER_DECL(LightIntensity);
-        ALGORITHM_PARAMETER_DECL(LightType);
-        ALGORITHM_PARAMETER_DECL(AutoCameraView);
-        ALGORITHM_PARAMETER_DECL(StreamlineRadius);
 
         class SCISHARE OsprayDataAlgorithm : public AlgorithmBase
         {
@@ -85,21 +56,6 @@ namespace SCIRun
           Core::Datatypes::OsprayGeometryObjectHandle fillDataBuffers(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
           Core::Datatypes::OsprayGeometryObjectHandle makeObject(FieldHandle field) const;
         };
-
-#ifdef WITH_OSPRAY
-        class SCISHARE OsprayRenderAlgorithm : public AlgorithmBase
-        {
-        public:
-          OsprayRenderAlgorithm();
-          void setup();
-          void render(const Core::Datatypes::CompositeOsprayGeometryObject& objList);
-          void writeImage(const std::string& filename);
-
-          virtual AlgorithmOutput run(const AlgorithmInput& input) const override { return {}; }
-        private:
-          SharedPointer<detail::OsprayImpl> impl_;
-        };
-#endif
       }
     }
   }
