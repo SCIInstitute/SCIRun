@@ -14,9 +14,10 @@
 ## limitations under the License.                                           ##
 ## ======================================================================== ##
 
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/ospray/include)
+INCLUDE(${CMAKE_SOURCE_DIR}/CMake/Modules/FindOSPRay.cmake)
+INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
 
-ADD_SUBDIRECTORY(glUtil)
+#ADD_SUBDIRECTORY(glUtil)
 
 # setup dependencies
 SET(LIBS ${LIBS} ospray)
@@ -75,9 +76,11 @@ SET(MOC_HEADERS
 
 QT4_WRAP_CPP(MOC_OUTFILES ${MOC_HEADERS})
 
-OSPRAY_CREATE_APPLICATION(ospVolumeViewer
+ADD_EXECUTABLE(ospVolumeViewer
   ${SRCS}
   ${MOC_OUTFILES}
-LINK
+)
+
+TARGET_LINK_LIBRARIES(ospVolumeViewer
   ${LIBS} 
 )

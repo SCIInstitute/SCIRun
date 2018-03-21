@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "ospray/ospray.h"
+#include <ospray/ospray.h>
 
 #ifdef _WIN32
 #  ifdef ospray_module_opengl_EXPORTS
