@@ -39,14 +39,14 @@ class LinearTransferFunctionWidget : public QWidget
   QVector<QPointF> getPoints() { return points; }
 
   //! Set transfer function control points.
-  void setPoints(const QVector<QPointF> &points) { this->points = points; repaint(); emit(updated()); }
+  void setPoints(const QVector<QPointF> &points) { this->points = points; repaint(); Q_EMIT(updated()); }
 
   //! Set background image for the widget (for example to show a color map).
   void setBackgroundImage(const QImage &image);
 
 Q_SIGNALS:
 
-  //! Signal emitted when this widget is updated.
+  //! Signal Q_EMITted when this widget is updated.
   void updated();
 
 protected:
@@ -83,6 +83,6 @@ protected:
   //! Drawing properties: line pixel width.
   static float linePixelWidth;
 
-  //! If true, will emit update Q_SIGNALS during transfer function change; otherwise, will wait until change is complete (mouse release).
+  //! If true, will Q_EMIT update Q_SIGNALS during transfer function change; otherwise, will wait until change is complete (mouse release).
   static bool updateDuringChange;
 };

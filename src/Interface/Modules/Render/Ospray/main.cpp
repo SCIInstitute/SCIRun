@@ -47,7 +47,7 @@ void printUsage(const char *exeName)
               << "    -vp <x> <y> <z>                            set camera position ('x', 'y', 'z')\n"
               << "    -vi <x> <y> <z>                            set look at position ('x', 'y', 'z')\n"
               << "    -r,--renderer <renderer>                   set renderer to use\n"
-              << "    --writeframes <filename>                   emit frames to 'filename_xxxxx.ppm'\n"
+              << "    --writeframes <filename>                   Q_EMIT frames to 'filename_xxxxx.ppm'\n"
               << "    -h,--help                                  print this message\n"
               << " \n";
 }

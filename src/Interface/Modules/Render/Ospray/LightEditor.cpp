@@ -66,7 +66,7 @@ void LightEditor::ambientLightChanged()
 {
   ospSet1f(ambientLight, "intensity", float(ambientLightIntensitySpinBox.value()*3.14));
   ospCommit(ambientLight);
-  emit lightsChanged();
+  Q_EMIT lightsChanged();
 }
 
 void LightEditor::directionalLightChanged()
@@ -87,7 +87,7 @@ void LightEditor::directionalLightChanged()
   // Update OSPRay light direction.
   ospSet3f(directionalLight, "direction", lightX, lightY, lightZ);
 
-  // Commit and emit signal.
+  // Commit and Q_EMIT signal.
   ospCommit(directionalLight);
-  emit lightsChanged();
+  Q_EMIT lightsChanged();
 }

@@ -146,8 +146,8 @@ void LinearTransferFunctionWidget::mousePressEvent(QMouseEvent * event)
       // Trigger repaint.
       repaint();
 
-      // Emit signal.
-      emit updated();
+      // Q_EMIT signal.
+      Q_EMIT updated();
     }
 
     selectedPointIndex = -1;
@@ -158,12 +158,12 @@ void LinearTransferFunctionWidget::mouseReleaseEvent(QMouseEvent * event)
 {
   QWidget::mouseReleaseEvent(event);
 
-  // Emit signal if we were manipulating a point.
+  // Q_EMIT signal if we were manipulating a point.
   if(selectedPointIndex != -1) {
 
     selectedPointIndex = -1;
 
-    emit updated();
+    Q_EMIT updated();
   }
 }
 
@@ -202,7 +202,7 @@ void LinearTransferFunctionWidget::mouseMoveEvent(QMouseEvent * event)
     repaint();
 
     if(updateDuringChange == true)
-      emit updated();
+      Q_EMIT updated();
   }
 }
 

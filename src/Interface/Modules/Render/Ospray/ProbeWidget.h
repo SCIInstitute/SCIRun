@@ -68,7 +68,7 @@ Q_SIGNALS:
 public Q_SLOTS:
 
   void setEnabled(bool value);
-  void setVolume(OSPVolume volume) { this->volume = volume; emit(probeChanged()); }
+  void setVolume(OSPVolume volume) { this->volume = volume; Q_EMIT(probeChanged()); }
   void updateProbe();
   void render();
 

@@ -156,7 +156,7 @@ SliceWidget::SliceWidget(SliceEditor *sliceEditor, ospcommon::box3f boundingBox)
 
 SliceWidget::~SliceWidget()
 {
-  emit(sliceDeleted(this));
+  Q_EMIT(sliceDeleted(this));
 }
 
 SliceParameters SliceWidget::getSliceParameters()
@@ -218,7 +218,7 @@ void SliceWidget::load(std::string filename)
 
 void SliceWidget::apply()
 {
-  emit(sliceChanged());
+  Q_EMIT(sliceChanged());
 }
 
 void SliceWidget::save() {

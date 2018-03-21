@@ -378,8 +378,8 @@ void QOSPRayWindow::renderGL()
             viewport.at.x, viewport.at.y, viewport.at.z,
             viewport.up.x, viewport.up.y, viewport.up.z);
 
-  // emit signal to render all OpenGL components; the Q_SLOTS will execute in the order they were registered
-  emit(renderGLComponents());
+  // Q_EMIT signal to render all OpenGL components; the Q_SLOTS will execute in the order they were registered
+  Q_EMIT(renderGLComponents());
 }
 
 void QOSPRayWindow::writeFrameBufferToFile(std::string filename, const uint32_t *pixelData)

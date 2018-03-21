@@ -15,7 +15,7 @@
 // ======================================================================== //
 
 #include "TransferFunctionEditor.h"
-#include <tfn_lib/tfn_lib.h>
+//#include <tfn_lib/tfn_lib.h>
 #include <algorithm>
 #include <iostream>
 
@@ -127,7 +127,7 @@ void TransferFunctionEditor::load(std::string filename)
 
   if(filename.empty())
     return;
-
+#if 0
   // Get serialized transfer function state from file.
   bool invalidIdentificationHeader = false;
   try {
@@ -148,7 +148,7 @@ void TransferFunctionEditor::load(std::string filename)
       index = colorMaps.size() - 1;
     }
 
-    // Commit and emit signal.
+    // Commit and Q_EMIT signal.
     setDataValueRange(ospcommon::vec2f(loadedTfn.dataValueMin, loadedTfn.dataValueMax), true);
     // Convert over to QPointF to pass to the widget
     QVector<QPointF> points;
@@ -198,8 +198,9 @@ void TransferFunctionEditor::load(std::string filename)
       throw e;
     }
   }
+#endif
   ospCommit(transferFunction);
-  emit committed();
+  Q_EMIT committed();
 }
 
 void TransferFunctionEditor::setDataValueRange(ospcommon::vec2f dataValueRange, bool force)
@@ -240,9 +241,9 @@ void TransferFunctionEditor::updateOpacityValues()
   OSPData opacityValuesData = ospNewData(opacityValues.size(), OSP_FLOAT, opacityValues.data());
   ospSetData(transferFunction, "opacities", opacityValuesData);
 
-  // Commit and emit signal.
+  // Commit and Q_EMIT signal.
   ospCommit(transferFunction);
-  emit committed();
+  Q_EMIT committed();
 }
 
 void TransferFunctionEditor::save()
@@ -268,9 +269,11 @@ void TransferFunctionEditor::save()
   const float valMax = dataValueScale * dataValueMaxSpinBox.value();
   const float opacityScaling = opacityScalingSlider.value()
     / float(opacityScalingSlider.maximum() - opacityScalingSlider.minimum());
+#if 0
   ospcommon::FileName ospFname{filename.toStdString()};
   tfn::TransferFunction saveTfn(ospFname.name(), colors, opacityValues, valMin, valMax, opacityScaling);
   saveTfn.save(ospFname);
+#endif
 }
 
 void TransferFunctionEditor::setColorMapIndex(int index)
@@ -284,9 +287,9 @@ void TransferFunctionEditor::setColorMapIndex(int index)
   // Set transfer function widget background image.
   opacityValuesWidget.setBackgroundImage(colorMaps[index].getImage());
 
-  // Commit and emit signal.
+  // Commit and Q_EMIT signal.
   ospCommit(transferFunction);
-  emit committed();
+  Q_EMIT committed();
 }
 
 void TransferFunctionEditor::updateDataValueRange()
@@ -298,9 +301,9 @@ void TransferFunctionEditor::updateDataValueRange()
   ospcommon::vec2f range(dataValueScale * float(dataValueMinSpinBox.value()), dataValueScale * float(dataValueMaxSpinBox.value()));
   ospSet2f(transferFunction, "valueRange", range.x, range.y);
 
-  // Commit and emit signal.
+  // Commit and Q_EMIT signal.
   ospCommit(transferFunction);
-  emit committed();
+  Q_EMIT committed();
 }
 
 void TransferFunctionEditor::loadColorMaps()

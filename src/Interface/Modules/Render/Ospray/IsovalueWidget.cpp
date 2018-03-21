@@ -49,9 +49,9 @@ void IsovalueWidget::setDataValueRange(ospcommon::vec2f dataValueRange)
   this->dataValueRange = dataValueRange;
 
   if(!dataRangeSet) {
-    isovalueSpinBox.blockQ_SIGNALS(true);
+    isovalueSpinBox.blockSignals(true);
     isovalueSpinBox.setRange(dataValueRange.x, dataValueRange.y);
-    isovalueSpinBox.blockQ_SIGNALS(false);
+    isovalueSpinBox.blockSignals(false);
 
     // Get isovalue based on slider position.
     float sliderPosition = float(isovalueSlider.value() - isovalueSlider.minimum()) / float(isovalueSlider.maximum() - isovalueSlider.minimum());
@@ -72,9 +72,9 @@ void IsovalueWidget::setDataValueRange(ospcommon::vec2f dataValueRange)
 
     float sliderPosition = float(isovalueSlider.minimum()) + (isovalue - dataValueRange.x) / (dataValueRange.y - dataValueRange.x) * float(isovalueSlider.maximum() - isovalueSlider.minimum());
 
-    isovalueSlider.blockQ_SIGNALS(true);
+    isovalueSlider.blockSignals(true);
     isovalueSlider.setValue(int(sliderPosition));
-    isovalueSlider.blockQ_SIGNALS(false);
+    isovalueSlider.blockSignals(false);
   }
 
   apply();
@@ -86,19 +86,19 @@ void IsovalueWidget::apply()
     float sliderPosition = float(isovalueSlider.value() - isovalueSlider.minimum()) / float(isovalueSlider.maximum() - isovalueSlider.minimum());
     float isovalue = dataValueRange.x + sliderPosition * (dataValueRange.y - dataValueRange.x);
 
-    isovalueSpinBox.blockQ_SIGNALS(true);
+    isovalueSpinBox.blockSignals(true);
     isovalueSpinBox.setValue(isovalue);
-    isovalueSpinBox.blockQ_SIGNALS(false);
+    isovalueSpinBox.blockSignals(false);
   }
   else if(sender() == &isovalueSpinBox) {
     float isovalue = isovalueSpinBox.value();
 
     float sliderPosition = float(isovalueSlider.minimum()) + (isovalue - dataValueRange.x) / (dataValueRange.y - dataValueRange.x) * float(isovalueSlider.maximum() - isovalueSlider.minimum());
 
-    isovalueSlider.blockQ_SIGNALS(true);
+    isovalueSlider.blockSignals(true);
     isovalueSlider.setValue(int(sliderPosition));
-    isovalueSlider.blockQ_SIGNALS(false);
+    isovalueSlider.blockSignals(false);
   }
 
-  emit isovalueChanged();
+  Q_EMIT isovalueChanged();
 }

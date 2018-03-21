@@ -16,6 +16,7 @@
 
 #pragma once
 
+#define NOMINMAX
 #include "ColorMap.h"
 #include "LinearTransferFunctionWidget.h"
 #include <ospray/ospray.h>
@@ -32,7 +33,7 @@ class TransferFunctionEditor : public QWidget
 
 Q_SIGNALS:
 
-  //! Signal emitted whenever the transfer function has been changed and committed.
+  //! Signal Q_EMITted whenever the transfer function has been changed and committed.
   void committed();
 
 public Q_SLOTS:

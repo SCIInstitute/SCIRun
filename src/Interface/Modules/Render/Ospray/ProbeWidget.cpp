@@ -46,21 +46,21 @@ void ProbeCoordinateWidget::updateValue()
   if (sender() == &slider) {
     float value = range.x + float(slider.value() - slider.minimum()) / float(slider.maximum() - slider.minimum()) * (range.y - range.x);
 
-    spinBox.blockQ_SIGNALS(true);
+    spinBox.blockSignals(true);
     spinBox.setValue(value);
-    spinBox.blockQ_SIGNALS(false);
+    spinBox.blockSignals(false);
   }
   else if (sender() == &spinBox) {
     float value = spinBox.value();
 
-    slider.blockQ_SIGNALS(true);
+    slider.blockSignals(true);
     slider.setValue(slider.minimum() + (value - range.x) / (range.y - range.x) * (slider.maximum() - slider.minimum()));
-    slider.blockQ_SIGNALS(false);
+    slider.blockSignals(false);
   }
   else
     throw std::runtime_error("slot executed from unknown sender");
 
-  emit probeCoordinateChanged();
+  Q_EMIT probeCoordinateChanged();
 }
 
 
@@ -106,7 +106,7 @@ ProbeWidget::ProbeWidget(VolumeViewer *volumeViewer) : volumeViewer(volumeViewer
   connect(this, SIGNAL(probeChanged()), this, SLOT(updateProbe()), Qt::UniqueConnection);
 
   // Probe disabled by default
-  emit enabled(false);
+  Q_EMIT enabled(false);
 }
 
 void ProbeWidget::setEnabled(bool value)
@@ -119,8 +119,8 @@ void ProbeWidget::setEnabled(bool value)
   else
     disconnect(osprayWindow, SIGNAL(renderGLComponents()), this, SLOT(render()));
 
-  emit probeChanged();
-  emit enabled(value);
+  Q_EMIT probeChanged();
+  Q_EMIT enabled(value);
 }
 
 void ProbeWidget::updateProbe()

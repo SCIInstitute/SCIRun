@@ -49,7 +49,7 @@ void SliceEditor::apply()
     sliceParameters.push_back(sliceWidgets[i]->getSliceParameters());
   }
 
-  emit(slicesChanged(sliceParameters));
+  Q_EMIT(slicesChanged(sliceParameters));
 }
 
 void SliceEditor::deleteSlice(SliceWidget *sliceWidget)

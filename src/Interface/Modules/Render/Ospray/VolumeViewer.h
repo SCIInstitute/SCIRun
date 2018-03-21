@@ -16,6 +16,7 @@
 
 #pragma once
 
+#define NOMINMAX
 #include "ospcommon/box.h"
 #include "QOSPRayWindow.h"
 #include "SliceWidget.h"
@@ -242,12 +243,12 @@ protected:
   QLabel currentFilenameInfoLabel;
 
   //! Print an error message.
-  void emitMessage(const std::string &kind, const std::string &message) const
+  void Q_EMITMessage(const std::string &kind, const std::string &message) const
   { std::cerr << "  " + toString() + "  " + kind + ": " + message + "." << std::endl; }
 
   //! Error checking.
   void exitOnCondition(bool condition, const std::string &message) const
-  { if (!condition) return;  emitMessage("ERROR", message);  exit(1); }
+  { if (!condition) return;  Q_EMITMessage("ERROR", message);  exit(1); }
 
   //! Load an OSPRay model from a file.
   void importObjectsFromFile(const std::string &filename);

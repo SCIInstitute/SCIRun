@@ -46,7 +46,7 @@ void IsosurfaceEditor::apply()
       isovalues.push_back(isovalueWidgets[i]->getIsovalue());
   }
 
-  emit(isovaluesChanged(isovalues));
+  Q_EMIT(isovaluesChanged(isovalues));
 }
 
 void IsosurfaceEditor::addIsovalue()
