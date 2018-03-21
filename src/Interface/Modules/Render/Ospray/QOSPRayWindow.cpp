@@ -62,13 +62,13 @@ QOSPRayWindow::QOSPRayWindow(QMainWindow *parent,
   this->renderer = renderer;
 
   // setup camera
-  auto cameraFromEnv = ospcommon::getEnvVar<std::string>("OSPRAY_USE_CAMERA_TYPE");
+  //auto cameraFromEnv = ospcommon::getEnvVar<std::string>("OSPRAY_USE_CAMERA_TYPE");
 
-  if (cameraFromEnv.first) {
-    camera = ospNewCamera(cameraFromEnv.second.c_str());
-  } else {
+  //if (cameraFromEnv.first) {
+  //  camera = ospNewCamera(cameraFromEnv.second.c_str());
+  //} else {
     camera = ospNewCamera("perspective");
-  }
+ // }
 
   if(!camera)
     throw std::runtime_error("QOSPRayWindow: could not create camera type 'perspective'");

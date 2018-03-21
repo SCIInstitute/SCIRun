@@ -22,13 +22,13 @@
 #include "PreferencesDialog.h"
 #include "ProbeWidget.h"
 #include "OpenGLAnnotationRenderer.h"
-#include "commandline/SceneParser/trianglemesh/TriangleMeshSceneParser.h"
-#include <common/miniSG/miniSG.h>
+//#include "commandline/SceneParser/trianglemesh/TriangleMeshSceneParser.h"
+//#include <common/miniSG/miniSG.h>
 #include "ospcommon/FileName.h"
 
-#include "importer/Importer.h"
+//#include "importer/Importer.h"
 
-using namespace ospray;
+//using namespace ospray;
 using namespace ospcommon;
 
 VolumeViewer::VolumeViewer(const std::vector<std::string> &objectFileFilenames,
@@ -192,6 +192,7 @@ void VolumeViewer::addSlice(std::string filename)
 
 void VolumeViewer::addGeometry(std::string filename)
 {
+#if 0
   // For now we assume PLY geometry files. Later we can support other geometry formats.
 
   // Get filename if not specified.
@@ -304,6 +305,7 @@ void VolumeViewer::addGeometry(std::string filename)
   
   // Force render.
   render();
+#endif
 }
 
 void VolumeViewer::screenshot(std::string filename)
@@ -673,6 +675,7 @@ void VolumeViewer::setIsovalues(std::vector<float> isovalues)
 
 void VolumeViewer::importObjectsFromFile(const std::string &filename)
 {
+#if 0
   if (!ownModelPerObject)
     // Create an OSPRay model and its associated model state.
     modelStates.push_back(ModelState(ospNewModel()));
@@ -762,6 +765,7 @@ void VolumeViewer::importObjectsFromFile(const std::string &filename)
   if (!ownModelPerObject)
     // Commit the model.
     ospCommit(modelStates.back().model);
+#endif
 }
 
 void VolumeViewer::initObjects(const std::string &renderer_type)
@@ -797,13 +801,13 @@ void VolumeViewer::initObjects(const std::string &renderer_type)
   ospSetData(renderer, "lights", ospNewData(lights.size(), OSP_OBJECT, &lights[0]));
 
   // Create an OSPRay transfer function.
-  auto tfFromEnv = getEnvVar<std::string>("OSPRAY_USE_TF_TYPE");
+  //auto tfFromEnv = getEnvVar<std::string>("OSPRAY_USE_TF_TYPE");
 
-  if (tfFromEnv.first) {
-    transferFunction = ospNewTransferFunction(tfFromEnv.second.c_str());
-  } else {
+  //if (tfFromEnv.first) {
+  //  transferFunction = ospNewTransferFunction(tfFromEnv.second.c_str());
+  //} else {
     transferFunction = ospNewTransferFunction("piecewise_linear");
-  }
+//  }
   exitOnCondition(transferFunction == NULL, "could not create OSPRay transfer function object");
   ospCommit(transferFunction);
 
