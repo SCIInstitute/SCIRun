@@ -1,7 +1,9 @@
 #ifndef SPIRE_ENTITY_SYSTEM_ESCORE_HPP
 #define SPIRE_ENTITY_SYSTEM_ESCORE_HPP
 
+#include <es-log/trace-log.h>
 #include "ESCoreBase.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 
@@ -17,12 +19,6 @@ public:
     coreAddComponent(entityID, component);
   }
 
-  //template <typename T>
-  //void addComponent(uint64_t entityID, T&& component)
-  //{
-  //  coreAddComponent(entityID, std::forward<T>(component));
-  //}
-
   template <typename T>
   size_t addStaticComponent(T&& component)
   {
@@ -33,4 +29,3 @@ public:
 } // namespace spire
 
 #endif
-

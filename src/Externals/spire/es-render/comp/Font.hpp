@@ -1,12 +1,14 @@
 #ifndef SPIRE_COMPONENT_RENDER_FONT_HPP
 #define SPIRE_COMPONENT_RENDER_FONT_HPP
 
+#include <es-log/trace-log.h>
 #include <es-cereal/ComponentSerialize.hpp>
 
 #include <gl-platform/GLPlatform.hpp>
 #include <es-cereal/CerealCore.hpp>
 #include "FontPromise.hpp"
 #include "StaticFontMan.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 
@@ -79,4 +81,4 @@ struct Font
 
 } // namespace ren
 
-#endif 
+#endif

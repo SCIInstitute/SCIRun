@@ -87,7 +87,7 @@ TEST_F(ConvertComplexToRealMatrixModuleTests, DenseMatrixOnInputPort)
   (*m)(2) = 3;
   auto csdf = makeModule("ConvertComplexToRealMatrix");
   stubPortNWithThisData(csdf, 0, m);
-  EXPECT_THROW(csdf->execute(), WrongDatatypeOnPortException); 
+  EXPECT_THROW(csdf->execute(), WrongDatatypeOnPortException);
 }
 
 TEST_F(ConvertComplexToRealMatrixModuleTests, ColumnMatrixOnInputPort)
@@ -103,7 +103,7 @@ TEST_F(ConvertComplexToRealMatrixModuleTests, ColumnMatrixOnInputPort)
 
 
 TEST_F(ConvertComplexToRealMatrixModuleTests, ThisShouldWork_dense)
-{  
+{
   DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2,2));
   (*m)(0,0) = 1;
   (*m)(0,1) = 2;
@@ -119,22 +119,24 @@ TEST_F(ConvertComplexToRealMatrixModuleTests, ThisShouldWork_dense)
   stubPortNWithThisData(real2complex, 1, n);
   EXPECT_NO_THROW(real2complex->execute());
   auto real2complex_output = getDataOnThisOutputPort(real2complex, 0);
-  
+
   ASSERT_TRUE(real2complex_output != nullptr);
   auto  real2complex_result = boost::dynamic_pointer_cast<ComplexDenseMatrix>(real2complex_output);
-    
+
   auto complex2real = makeModule("ConvertComplexToRealMatrix");
   stubPortNWithThisData(complex2real, 0, real2complex_result);
+  connectDummyOutputConnection(complex2real, 0);
+  connectDummyOutputConnection(complex2real, 1);
   EXPECT_NO_THROW(complex2real->execute());
-  auto complex2real_output1 = getDataOnThisOutputPort(complex2real, 0);  
-  auto complex2real_output2 = getDataOnThisOutputPort(complex2real, 1); 
-  
+  auto complex2real_output1 = getDataOnThisOutputPort(complex2real, 0);
+  auto complex2real_output2 = getDataOnThisOutputPort(complex2real, 1);
+
   ASSERT_TRUE(complex2real_output1 != nullptr);
   ASSERT_TRUE(complex2real_output2 != nullptr);
-  
+
   auto  complex2real_result1 = boost::dynamic_pointer_cast<DenseMatrix>(complex2real_output1);
   auto  complex2real_result2 = boost::dynamic_pointer_cast<DenseMatrix>(complex2real_output2);
-  
+
   for(int x=0; x<complex2real_result1->nrows(); x++)
    for (int y=0; y<complex2real_result1->ncols(); y++)
     {
@@ -169,39 +171,39 @@ TEST_F(ConvertComplexToRealMatrixModuleTests, ThisShouldWork_sparse)
   auto real2complex_output = getDataOnThisOutputPort(real2complex, 0);
   ASSERT_TRUE(real2complex_output != nullptr);
   auto  real2complex_result = boost::dynamic_pointer_cast<ComplexSparseRowMatrix>(real2complex_output);
-  
+
   auto complex2real = makeModule("ConvertComplexToRealMatrix");
   stubPortNWithThisData(complex2real, 0, real2complex_result);
+  connectDummyOutputConnection(complex2real, 0);
+  connectDummyOutputConnection(complex2real, 1);
   EXPECT_NO_THROW(complex2real->execute());
-  
-  auto complex2real_output1 = getDataOnThisOutputPort(complex2real, 0);  
-  auto complex2real_output2 = getDataOnThisOutputPort(complex2real, 1); 
-  
+
+  auto complex2real_output1 = getDataOnThisOutputPort(complex2real, 0);
+  auto complex2real_output2 = getDataOnThisOutputPort(complex2real, 1);
+
   ASSERT_TRUE(complex2real_output1 != nullptr);
   ASSERT_TRUE(complex2real_output2 != nullptr);
-  
+
   auto  complex2real_result1 = boost::dynamic_pointer_cast<SparseRowMatrix>(complex2real_output1);
   auto  complex2real_result2 = boost::dynamic_pointer_cast<SparseRowMatrix>(complex2real_output2);
- 
+
   for (int k = 0; k <complex2real_result1 ->outerSize(); ++k)
   {
-    for (SparseRowMatrix::InnerIterator it(*complex2real_result1, k); it; ++it)  
+    for (SparseRowMatrix::InnerIterator it(*complex2real_result1, k); it; ++it)
     {
       auto tmp = it.value();
-      ASSERT_TRUE(m->coeffRef(it.row(), it.col()) == tmp);      
-    }   
+      ASSERT_TRUE(m->coeffRef(it.row(), it.col()) == tmp);
+    }
   }
-  
+
   for (int k = 0; k <complex2real_result2 ->outerSize(); ++k)
   {
-    for (SparseRowMatrix::InnerIterator it(*complex2real_result2, k); it; ++it)  
+    for (SparseRowMatrix::InnerIterator it(*complex2real_result2, k); it; ++it)
     {
       auto tmp = it.value();
-      ASSERT_TRUE(n->coeffRef(it.row(), it.col()) == tmp); 
-           
-    }   
+      ASSERT_TRUE(n->coeffRef(it.row(), it.col()) == tmp);
+
+    }
   }
-  
+
 }
-
-

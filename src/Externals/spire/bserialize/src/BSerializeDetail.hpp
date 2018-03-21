@@ -1,11 +1,13 @@
 #ifndef SPIRE_BSERIALIZEDETAIL_HPP
 #define SPIRE_BSERIALIZEDETAIL_HPP
 
+#include <es-log/trace-log.h>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <string>
 #include <stdexcept>
+#include <spire/scishare.h>
 
 namespace spire {
 
@@ -313,4 +315,4 @@ public:
 
 } // namespace spire
 
-#endif 
+#endif

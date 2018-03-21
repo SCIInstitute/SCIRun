@@ -99,53 +99,47 @@ namespace DynamicExecutor {
       ExecutionThreadGroupPtr executeThreadGroup) :
     work_(workQueue), producer_(producer), lookup_(lookup),
     executeThreadGroup_(executeThreadGroup),
-    shouldLog_(SCIRun::Core::Logging::Log::get().verbose())
+    shouldLog_(false)//SCIRun::Core::Logging::Log::get().verbose())
     {
-      log_.setVerbose(shouldLog_);
-      if (shouldLog_)
-        log_ << Core::Logging::DEBUG_LOG << "Consumer created." << std::endl;
+      //log_.setVerbose(shouldLog_);
+      log_->trace_if(shouldLog_, "Consumer created.");
     }
     void operator()() const
     {
       if (!producer_)
       {
-        if (shouldLog_)
-          log_ << Core::Logging::DEBUG_LOG << "Consumer quitting due to no producer pointer." << std::endl;
+        log_->trace_if(shouldLog_, "Consumer quitting due to no producer pointer.");
         return;
       }
 
-      log_ << Core::Logging::DEBUG_LOG << "Consumer started." << std::endl;
+      log_->trace_if(shouldLog_, "Consumer started.");
 
       while (!producer_->isDone() || moreWork())
       {
         if (moreWork())
         {
-          if (shouldLog_)
-            log_ << Core::Logging::DEBUG_LOG << "\tConsumer thinks work queue is not empty.";
+          log_->trace_if(shouldLog_, "\tConsumer thinks work queue is not empty.");
+          log_->trace_if(shouldLog_, "\tConsumer accessing front of work queue.");
 
-          if (shouldLog_)
-            log_ << Core::Logging::DEBUG_LOG << "\tConsumer accessing front of work queue.";
           Networks::ModuleHandle unit;
           work_->pop(unit);
-          if (shouldLog_)
-            log_ << Core::Logging::DEBUG_LOG << "\tConsumer popping front of work queue.";
+
+          log_->trace_if(shouldLog_, "\tConsumer popping front of work queue.");
 
           if (unit)
           {
-            if (shouldLog_)
-              log_ << Core::Logging::DEBUG_LOG << "~~~Processing " << unit->get_id();
+            log_->trace_if(shouldLog_, "~~~Processing {}", unit->get_id());
 
             ModuleExecutor executor(unit, lookup_, producer_);
             executeThreadGroup_->startExecution(executor);
           }
           else
           {
-            if (shouldLog_)
-              log_ << Core::Logging::DEBUG_LOG << "\tConsumer received null module";
+            log_->trace_if(shouldLog_, "\tConsumer received null module");
           }
         }
       }
-      log_ << Core::Logging::DEBUG_LOG << "Consumer done." << std::endl;
+      log_->trace_if(shouldLog_, "Consumer done.");
     }
 
     bool moreWork() const
@@ -159,7 +153,7 @@ namespace DynamicExecutor {
     const Networks::ExecutableLookup* lookup_;
     ExecutionThreadGroupPtr executeThreadGroup_;
 
-    static Core::Logging::Log& log_;
+    static Core::Logging::Logger2 log_;
     bool shouldLog_;
   };
 

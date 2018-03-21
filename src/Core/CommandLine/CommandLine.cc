@@ -45,7 +45,7 @@ namespace CommandLine {
 class CommandLineParserInternal
 {
 public:
-  CommandLineParserInternal() : desc_("SCIRun5 basic options")
+  CommandLineParserInternal() : desc_("SCIRun 5 command line options")
   {
       desc_.add_options()
       ("help,h", "prints usage information")
@@ -54,7 +54,7 @@ public:
       ("Execute,E", "executes the given network on startup and quits when done")
       ("datadir,d", po::value<std::string>(), "scirun data directory")
       ("regression,r", po::value<int>(), "regression test a network")
-      ("logfile,l", po::value<std::string>(), "add output messages to a logfile--TODO")
+      //("logfile,l", po::value<std::string>(), "add output messages to a logfile--TODO")
       ("most-recent,1", "load the most recently used file")
       ("interactive,i", "interactive mode")
       ("headless,x", "disable GUI")
@@ -63,9 +63,9 @@ public:
       ("Script,S", po::value<std::string>(), "Python script--interpret and quit after one SCIRun execution pass")
       ("no_splash,0", "Turn off splash screen")
       ("verbose", "Turn on debug log information")
-      ("threadMode", po::value<std::string>(), "network execution threading mode--DEVELOPER USE ONLY")
-      ("reexecuteMode", po::value<std::string>(), "network reexecution mode--DEVELOPER USE ONLY")
-      ("frameInitLimit", po::value<int>(), "ViewScene frame init limit--increase if renderer fails")
+      //("threadMode", po::value<std::string>(), "network execution threading mode--DEVELOPER USE ONLY")
+      //("reexecuteMode", po::value<std::string>(), "network reexecution mode--DEVELOPER USE ONLY")
+      //("frameInitLimit", po::value<int>(), "ViewScene frame init limit--increase if renderer fails")
       ("guiExpandFactor", po::value<double>(), "Expansion factor for high resolution displays")
       ("max-cores", po::value<unsigned int>(), "Limit the number of cores used by multithreaded algorithms")
       ("list-modules", "print list of available modules")
@@ -118,7 +118,7 @@ public:
     const boost::optional<int>& regressionTimeout,
     const boost::optional<unsigned int>& maxCores,
     const boost::optional<double>& guiExpandFactor
-    ) : threadMode_(threadMode), reexecuteMode_(reexecuteMode), frameInitLimit_(frameInitLimit), 
+    ) : threadMode_(threadMode), reexecuteMode_(reexecuteMode), frameInitLimit_(frameInitLimit),
     regressionTimeout_(regressionTimeout), maxCores_(maxCores), guiExpandFactor_(guiExpandFactor)
   {}
   boost::optional<int> regressionTimeoutSeconds() const override
@@ -177,9 +177,9 @@ public:
       isVerboseMode_(isVerboseMode),
       printModules_(printModules)
     {}
-    bool help_, version_, executeNetwork_, executeNetworkAndQuit_, 
-      disableGui_, disableSplash_, isRegressionMode_, interactiveMode_, 
-      quitAfterOneScriptedExecution_, 
+    bool help_, version_, executeNetwork_, executeNetworkAndQuit_,
+      disableGui_, disableSplash_, isRegressionMode_, interactiveMode_,
+      quitAfterOneScriptedExecution_,
       loadMostRecentFile_, isVerboseMode_, printModules_;
   };
   ApplicationParametersImpl(

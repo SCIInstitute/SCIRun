@@ -38,6 +38,7 @@ SET(Core_Math_SRCS
   PiecewiseInterp.cc
   TrigTable.cc
   fft.c	
+  Histogram.cc
 )
 
 SET(Core_Math_HEADERS
@@ -54,6 +55,7 @@ SET(Core_Math_HEADERS
   TrigTable.h
   fft.h
   MiscMath.h
+  Histogram.h
   share.h
 )
 

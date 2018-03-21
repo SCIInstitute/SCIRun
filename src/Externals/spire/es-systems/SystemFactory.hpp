@@ -1,14 +1,15 @@
 #ifndef SPIRE_SYSTEM_SYSTEMFACTORY_HPP
 #define SPIRE_SYSTEM_SYSTEMFACTORY_HPP
 
+#include <es-log/trace-log.h>
 #include <memory>
 #include <stdexcept>
 #include <entity-system/ESCoreBase.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
 
-/// System factory.
-class SystemFactory
+class SCISHARE SystemFactory
 {
   typedef std::shared_ptr<spire::BaseSystem> (*ClassFactoryFunPtr)();
 public:
@@ -46,6 +47,6 @@ private:
   std::map<std::string, ClassFactoryFunPtr> mMap;
 };
 
-} // namespace spire 
+} // namespace spire
 
-#endif 
+#endif

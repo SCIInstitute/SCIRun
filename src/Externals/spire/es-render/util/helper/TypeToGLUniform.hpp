@@ -1,8 +1,10 @@
 #ifndef SPIRE_GP_REN_UTIL_TYPE_TO_GL_UNIFORM_HPP
 #define SPIRE_GP_REN_UTIL_TYPE_TO_GL_UNIFORM_HPP
 
+#include <es-log/trace-log.h>
 #include <gl-platform/GLPlatform.hpp>
 #include "es-render/comp/VecUniform.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 
@@ -17,7 +19,6 @@ public:
   static_assert(true, "TypeToGLUniform type specialization not defined.");
   static void addUniform(spire::CerealCore& core, uint64_t entityID,
                          const char* uniformName, const Type& v);
-  //static void setUniform(Core& core, uint64_t entityId, const char* uniformName, const Type& v);
 };
 
 template<>

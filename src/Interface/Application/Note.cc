@@ -33,7 +33,7 @@
 #include <Interface/Application/Note.h>
 #include <Interface/Application/HasNotes.h>
 #include <Interface/Application/NoteEditor.h>
-#include <Interface/Application/SCIRunMainWindow.h>
+#include <Interface/Application/MainWindowCollaborators.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
@@ -42,7 +42,7 @@ HasNotes::HasNotes(const std::string& name, bool positionAdjustable) :
   noteEditor_(QString::fromStdString(name), positionAdjustable, 0),
   destroyed_(false)
 {
-  noteEditor_.setStyleSheet(SCIRunMainWindow::Instance()->styleSheet());
+  noteEditor_.setStyleSheet(scirunStylesheet());
 }
 
 HasNotes::~HasNotes()
@@ -87,8 +87,8 @@ void HasNotes::setDefaultNoteFontSize(int size)
 
 NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) :
   networkObjectWithNote_(nullptr), scene_(nullptr), note_(nullptr),
-  notePosition_(Default),
-  defaultNotePosition_(Top), //TODO
+  notePosition_(NotePosition::Default),
+  defaultNotePosition_(NotePosition::Top), //TODO
   displayStrategy_(display),
   destroyed_(false)
 {
@@ -118,7 +118,7 @@ void NoteDisplayHelper::updateNoteImpl(const Note& note)
   {
     setNoteGraphicsContext();
     if (!scene_)
-      Log::get() << WARN << "Scene not set, network notes will not be displayed!" << std::endl;
+      GeneralLog::Instance().get()->warn("Scene not set, network notes will not be displayed.");
     note_ = new QGraphicsTextItem("", nullptr, scene_);
     note_->setDefaultTextColor(Qt::white);
   }
@@ -143,8 +143,8 @@ QPointF NoteDisplayHelper::relativeNotePosition()
 {
   if (note_ && networkObjectWithNote_)
   {
-    auto position = notePosition_ == Default ? defaultNotePosition_ : notePosition_;
-    note_->setVisible(!(Tooltip == position || None == position));
+    auto position = notePosition_ == NotePosition::Default ? defaultNotePosition_ : notePosition_;
+    note_->setVisible(!(NotePosition::Tooltip == position || NotePosition::None == position));
     networkObjectWithNote_->setToolTip("");
 
     return displayStrategy_->relativeNotePosition(networkObjectWithNote_, note_, position);

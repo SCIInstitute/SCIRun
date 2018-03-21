@@ -46,9 +46,6 @@
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 #include <Interface/Application/PortWidgetManager.h>
 #include <Core/Application/Preferences/Preferences.h>
-
-//TODO: BAD, or will we have some sort of Application global anyway?
-#include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/MainWindowCollaborators.h>
 
 using namespace SCIRun;
@@ -101,12 +98,11 @@ namespace
   //TODO: make run-time configurable
   int moduleAlpha()
   {
-    //TODO: becky's alpha number didn't look good here, it may be a Qt/coloring problem. Will wait until I get correct background.
-    return SCIRunMainWindow::Instance()->newInterface() ? 100 : 255;
+    return 100;
   }
   int portAlpha()
   {
-    return SCIRunMainWindow::Instance()->newInterface() ? 230 : 255;
+    return 230;
   }
   QString moduleRGBA(int r, int g, int b)
   {
@@ -400,7 +396,7 @@ int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& 
 
 void ModuleWidget::setupLogging(ModuleErrorDisplayer* displayer)
 {
-  logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), displayer, dialogErrorControl_, SCIRunMainWindow::Instance());
+  logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), displayer, dialogErrorControl_, mainWindowWidget());
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(show()));
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(raise()));
   connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
@@ -584,7 +580,7 @@ void ModuleWidget::fillReplaceWithMenu(QMenu* menu)
     return;
 
   menu->clear();
-  LOG_DEBUG("Filling menu for " << theModule_->get_module_name() << std::endl);
+  LOG_DEBUG("Filling menu for {}", theModule_->get_module_name());
   auto replacements = Application::Instance().controller()->possibleReplacements(this->theModule_);
   auto isReplacement = [&](const ModuleDescription& md) { return replacements.find(md.lookupInfo_) != replacements.end(); };
   fillMenuWithFilteredModuleActions(menu, Application::Instance().controller()->getAllAvailableModuleDescriptions(),
@@ -665,7 +661,7 @@ public:
           && std::find_if(inputs.cbegin() + justAddedIndex + 1, inputs.cend(), nameMatches) != inputs.cend();
         if (isNotLastDynamicPortOfThisName)
           portConstructionType = DynamicPortChange::USER_ADDED_PORT_DURING_FILE_LOAD;
-        widget->dialog_->updateFromPortChange(i, port->id().toString(), portConstructionType);
+        widget->dialog_->updateFromPortChange(static_cast<int>(i), port->id().toString(), portConstructionType);
       }
     }
   }
@@ -898,7 +894,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
 
-    const int newPortIndex = port->getIndex();
+    const auto newPortIndex = static_cast<int>(port->getIndex());
 
     ports_->insertPort(newPortIndex, w);
     ports_->reindexInputs();
@@ -1013,7 +1009,7 @@ ModuleWidget::~ModuleWidget()
     {
       if (isViewScene_) // see bug #808
         dockable_->setFloating(false);
-      SCIRunMainWindow::Instance()->removeDockWidget(dockable_);
+      mainWindowWidget()->removeDockWidget(dockable_);
       delete dockable_;
     }
 
@@ -1165,7 +1161,7 @@ void ModuleWidget::makeOptionsDialog()
       dockable_->setMinimumSize(dialog_->minimumSize());
       dockable_->setAllowedAreas(allowedDockArea());
       dockable_->setAutoFillBackground(true);
-      SCIRunMainWindow::Instance()->addDockWidget(Qt::RightDockWidgetArea, dockable_);
+      mainWindowWidget()->addDockWidget(Qt::RightDockWidgetArea, dockable_);
       dockable_->setFloating(true);
       dockable_->hide();
       connect(dockable_, SIGNAL(visibilityChanged(bool)), this, SLOT(colorOptionsButton(bool)));
@@ -1210,7 +1206,7 @@ void ModuleWidget::updateDockWidgetProperties(bool isFloating)
 void ModuleWidget::updateDialogForDynamicPortChange(const std::string& portId, bool adding)
 {
   if (dialog_ && !deleting_ && !networkBeingCleared_)
-    dialog_->updateFromPortChange(numInputPorts(), portId, adding ? DynamicPortChange::USER_ADDED_PORT : DynamicPortChange::USER_REMOVED_PORT);
+    dialog_->updateFromPortChange(static_cast<int>(numInputPorts()), portId, adding ? DynamicPortChange::USER_ADDED_PORT : DynamicPortChange::USER_REMOVED_PORT);
 }
 
 Qt::DockWidgetArea ModuleWidget::allowedDockArea() const
@@ -1235,12 +1231,25 @@ void ModuleWidget::adjustDockState(bool dockEnabled)
   }
 }
 
+QList<QPoint> ModuleWidget::positions_;
+
 void ModuleWidget::toggleOptionsDialog()
 {
   if (dialog_)
   {
     if (dockable_->isHidden())
     {
+      if (firstTimeShown_)
+      {
+        firstTimeShown_ = false;
+        if (!positions_.empty())
+        {
+          auto maxX = *std::max_element(positions_.begin(), positions_.end(), [](const QPoint& p1, const QPoint& p2) { return p1.x() < p2.x(); });
+          auto maxY = *std::max_element(positions_.begin(), positions_.end(), [](const QPoint& p1, const QPoint& p2) { return p1.y() < p2.y(); });
+          dockable_->move(maxX.x() + 30, maxY.y() + 30);
+        }
+        positions_.append(dockable_->pos());
+      }
       dockable_->show();
       Q_EMIT showUIrequested(dialog_);
       dockable_->raise();

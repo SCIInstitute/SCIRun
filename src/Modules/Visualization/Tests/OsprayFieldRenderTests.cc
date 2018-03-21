@@ -70,11 +70,11 @@ public:
 protected:
   virtual void SetUp() override
   {
-    Log::get().setVerbose(false);
+    LogSettings::Instance().setVerbose(false);
     auto size = GetParam();
     auto max = static_cast<double>(size);
     latVol = CreateEmptyLatVol(size, size, size, DOUBLE_E, { 0, 0, 0 }, { max, max, max });
-    Log::get() << INFO << "Setting up ShowField with size " << size << "^3 latvol" << std::endl;
+    GeneralLog::Instance().get()->info("Setting up ShowField with size {}^3 latvol", size);
   }
 
   UseRealModuleStateFactory f;
@@ -251,7 +251,7 @@ namespace osprayImpl
 
 TEST_P(OsprayFieldRenderTest, RenderLatVolWithOspray)
 {
-  Log::get() << INFO << "Start ShowField::execute" << std::endl;
+  //Log::get() << INFO << "Start ShowField::execute" << std::endl;
 
   for (int inc : {1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
   {
@@ -261,7 +261,7 @@ TEST_P(OsprayFieldRenderTest, RenderLatVolWithOspray)
   FAIL() << "todo";
 
 
-  Log::get() << INFO << "End ShowField::execute" << std::endl;
+  //Log::get() << INFO << "End ShowField::execute" << std::endl;
 }
 
 INSTANTIATE_TEST_CASE_P(

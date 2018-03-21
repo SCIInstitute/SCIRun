@@ -232,6 +232,9 @@ INCLUDE(${Teem_USE_FILE})
 CONFIG_STANDARD_EXTERNAL( Freetype FreetypeConfig.cmake ${Freetype_DIR} )
 INCLUDE(${FREETYPE_USE_FILE})
 
+CONFIG_STANDARD_EXTERNAL( Cleaver2 Cleaver2Config.cmake ${CLEAVER2_DIR} )
+INCLUDE(${CLEAVER2_USE_FILE})
+
 IF(BUILD_WITH_PYTHON)
   CONFIG_STANDARD_EXTERNAL( Python PythonConfig.cmake ${Python_DIR} )
   INCLUDE(${SCI_PYTHON_USE_FILE})
@@ -254,6 +257,11 @@ ENDIF()
 IF(WIN32)
   CONFIG_STANDARD_EXTERNAL( Glew GlewConfig.cmake ${GLEW_DIR} )
   INCLUDE(${GLEW_USE_FILE})
+ENDIF()
+
+IF(NOT BUILD_HEADLESS)
+  CONFIG_STANDARD_EXTERNAL( Qwt QwtConfig.cmake ${QWT_DIR} )
+  INCLUDE(${QWT_USE_FILE})
 ENDIF()
 
 ########################################################################
@@ -374,6 +382,15 @@ IF(WITH_OSPRAY)
 ENDIF()
 
 ########################################################################
+# Detailed renderer logging
+
+OPTION(RENDERER_TRACE_ON "Enable detailed renderer logging." OFF)
+MARK_AS_ADVANCED(RENDERER_TRACE_ON)
+IF(RENDERER_TRACE_ON)
+  ADD_DEFINITIONS(-DRENDERER_TRACE_ON)
+ENDIF()
+
+########################################################################
 # Copy Spire-SCIRun specific assets and shaders
 
 set(OUTPUT_SHADER_DIR ${CMAKE_CURRENT_BINARY_DIR}/Shaders)
@@ -438,7 +455,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 
 # TODO: exclude for headless
 IF(NOT BUILD_HEADLESS)
-  FIND_PACKAGE(Qt4 COMPONENTS QtMain QtCore QtGui QtNetwork QtOpenGL REQUIRED)
+  FIND_PACKAGE(Qt4 COMPONENTS QtMain QtCore QtGui QtNetwork QtOpenGL QtSvg REQUIRED)
 
   IF(QT_FOUND)
     INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
@@ -477,13 +494,14 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_BINARY_DIR}/
   ${SCIRun_BINARY_DIR}/include
   ${SCIRun_SOURCE_DIR}/Externals/eigen
-  # TODO: set up include variable in log4cpp project
-  ${SCIRun_SOURCE_DIR}/Externals/log4cpp/include
   ${SCI_TEEM_INCLUDE}
   ${SCI_ZLIB_INCLUDE}
   ${GLM_DIR}
+  ${SPDLOG_DIR}/include
   ${SCI_TNY_INCLUDE}
   ${SCI_LODEPNG_INCLUDE}
+  ${SCI_QWT_INCLUDE}
+  ${SCI_CLEAVER2_INCLUDE}
 )
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
@@ -671,7 +689,7 @@ SET_PROPERTY(TARGET bundle_toolkit         PROPERTY FOLDER "Dataflow/Serializati
 SET_PROPERTY(TARGET Engine_Network         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Engine_Scheduler         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Dataflow_State         PROPERTY FOLDER "Dataflow")
-SET_PROPERTY(TARGET spire PROPERTY FOLDER "Graphics")
+SET_PROPERTY(TARGET ${SPIRE_LIBRARY_NAME} PROPERTY FOLDER "Graphics")
 
 IF(NOT BUILD_HEADLESS)
   SET_PROPERTY(TARGET Interface_Modules_Base   PROPERTY FOLDER "Interface/Modules")
@@ -793,7 +811,6 @@ IF(BUILD_TESTING)
   ENDIF()
 ENDIF()
 
-SET_PROPERTY(TARGET ${SCI_LOG4CPP_LIBRARY} PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET cleaver PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
 

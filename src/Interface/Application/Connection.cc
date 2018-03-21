@@ -36,13 +36,13 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/MainWindowCollaborators.h>
-#include <Interface/Application/SCIRunMainWindow.h>
 #include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Logging;
 
 class EuclideanDrawStrategy : public ConnectionDrawStrategy
 {
@@ -269,13 +269,13 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
     fromPort_->addConnection(this);
   }
   else
-    LOG_DEBUG("NULL FROM PORT: " << id_.id_ << std::endl);
+    LOG_DEBUG("NULL FROM PORT: {}", id_.id_);
   if (toPort_)
   {
     toPort_->addConnection(this);
   }
   else
-    LOG_DEBUG("NULL TO PORT: " << id_.id_ << std::endl);
+    LOG_DEBUG("NULL TO PORT: {}", id_.id_);
 
   if (fromPort_ && toPort_)
   {
@@ -299,7 +299,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const C
 
   trackNodes();
 
-  GuiLogger::Instance().logInfoStd("Connection made: " + id_.id_);
+  guiLogDebug("Connection made: {}", id_.id_);
 }
 
 ConnectionLine::~ConnectionLine()
@@ -319,7 +319,7 @@ void ConnectionLine::destroyConnection()
     }
     drawer_.reset();
     Q_EMIT deleted(id_);
-    //GuiLogger::Instance().log("Connection deleted.");
+    guiLogDebug("Connection deleted: {}", id_.id_);
     HasNotes::destroy();
     NoteDisplayHelper::destroy();
     destroyed_ = true;
@@ -540,7 +540,7 @@ void DataInfoDialog::show(PortDataDescriber portDataDescriber, const QString& la
 {
   auto info = eval(portDataDescriber);
 
-  auto msgBox = new QMessageBox(SCIRunMainWindow::Instance());
+  auto msgBox = new QMessageBox(mainWindowWidget());
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
   msgBox->setStandardButtons(QMessageBox::Ok);
   msgBox->setEscapeButton(QMessageBox::Ok);

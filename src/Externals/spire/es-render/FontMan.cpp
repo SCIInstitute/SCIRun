@@ -13,6 +13,8 @@
 namespace es = spire;
 namespace fs = spire;
 
+#include <es-log/trace-log.h>
+
 namespace ren {
 
 FontMan::FontMan(int numRetries) :
@@ -20,17 +22,15 @@ FontMan::FontMan(int numRetries) :
     mNumRetries(numRetries),
     mLastFontID(0)
 {
-}
-
-FontMan::~FontMan()
-{
+  RENDERER_LOG_FUNCTION_SCOPE;
+  RENDERER_LOG("{} (numRetries={})", LOG_FUNC, numRetries);
 }
 
 void FontMan::loadFont(
     spire::CerealCore& core, uint64_t entityID,
     const std::string& assetName)
 {
-  if (buildComponent(core, entityID, assetName) == false)
+  if (!buildComponent(core, entityID, assetName))
   {
     FontPromise newPromise;
     newPromise.requestInitiated = false;
@@ -91,8 +91,8 @@ void FontMan::loadFontCB(const std::string& assetName, bool error,
     }
     else
     {
-      std::cerr << "FontMan: Failed promise for " << assetName 
-                << ". Unable to find newly inserted value!" << std::endl;
+      logRendererError("FontMan: Failed promise for {}. Unable to find newly inserted value!",
+        assetName);
     }
   }
   else
@@ -105,7 +105,7 @@ void FontMan::loadFontCB(const std::string& assetName, bool error,
     }
     else
     {
-      std::cerr << "FontMan: Failed promise for " << assetName << std::endl;
+      logRendererError("FontMan: Failed promise for {}", assetName);
     }
   }
 }
@@ -146,6 +146,7 @@ const BMFont& FontMan::getBMFontInfo(uint64_t id) const
   }
   else
   {
+    logRendererError("FontMan: unable to find font {}", id);
     throw std::runtime_error("FontMan: unable to find font.");
   }
 }
@@ -159,6 +160,7 @@ const FontMan::FontInfo& FontMan::getFontInfo(uint64_t id)
   }
   else
   {
+    logRendererError("FontMan: unable to find font {}", id);
     throw std::runtime_error("FontMan: unable to find font.");
   }
 }
@@ -181,7 +183,7 @@ bool FontMan::buildComponent(spire::CerealCore& core, uint64_t entityID,
     std::string::size_type slashIdx = assetName.rfind('/');
     std::string rootAssetName = "";
     if (slashIdx != std::string::npos)
-    { 
+    {
       rootAssetName = assetName.substr(0, slashIdx + 1);
     }
 
@@ -242,18 +244,18 @@ public:
   /// request should not be attempted.
   std::set<std::string> mAssetsAlreadyRequested;
 
-  void preWalkComponents(spire::ESCoreBase&)
+  void preWalkComponents(spire::ESCoreBase&) override
   {
     mAssetsAwaitingRequest.clear();
     mAssetsAlreadyRequested.clear();
   }
 
-  void postWalkComponents(spire::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core) override 
   {
     StaticFontMan* man = core.getStaticComponent<StaticFontMan>();
-    if (man == nullptr)
+    if (!man)
     {
-      std::cerr << "Unable to complete font fulfillment. There is no StaticFontMan." << std::endl;
+      logRendererError("Unable to complete font fulfillment. There is no StaticFontMan.");
       return;
     }
     std::weak_ptr<FontMan>  fm = man->instance_;
@@ -286,9 +288,9 @@ public:
 
         spire::CerealCore* ourCorePtr =
                 dynamic_cast<spire::CerealCore*>(&core);
-        if (ourCorePtr == nullptr)
+        if (!ourCorePtr)
         {
-          std::cerr << "Unable to execute font promise fulfillment. Bad cast." << std::endl;
+          logRendererError("Unable to execute font promise fulfillment. Bad cast.");
           return;
         }
         spire::CerealCore& ourCore = *ourCorePtr;
@@ -350,8 +352,7 @@ void FontMan::runGCAgainstVaidIDs(const std::set<uint64_t>& validKeys)
 {
   if (mNewUnfulfilledAssets)
   {
-    std::cerr << "FontMan: Terminating garbage collection. Orphan assets that"
-              << " have yet to be associated with entity ID's would be GC'd" << std::endl;
+    logRendererError("FontMan: Terminating garbage collection. Orphan assets that have yet to be associated with entity ID's would be GC'd");
     return;
   }
 
@@ -373,8 +374,7 @@ void FontMan::runGCAgainstVaidIDs(const std::set<uint64_t>& validKeys)
 
     if (it == mIDToFont.end())
     {
-      std::cerr << "runGCAgainstVaidIDs: terminating early, validKeys contains "
-                << "elements not in texture map." << std::endl;
+      logRendererError("runGCAgainstVaidIDs: terminating early, validKeys contains elements not in texture map.");
       break;
     }
 
@@ -383,7 +383,7 @@ void FontMan::runGCAgainstVaidIDs(const std::set<uint64_t>& validKeys)
     // texture component, this is not an error.
     if (it->first > id)
     {
-      std::cerr << "runGCAgainstVaidIDs: validKeys contains elements not in the texture map." << std::endl;
+      logRendererError("runGCAgainstVaidIDs: validKeys contains elements not in the texture map.");
     }
 
     ++it;
@@ -405,19 +405,20 @@ public:
 
   std::set<uint64_t> mValidKeys;
 
-  void preWalkComponents(spire::ESCoreBase&) {mValidKeys.clear();}
+  void preWalkComponents(spire::ESCoreBase&) override {mValidKeys.clear();}
 
-  void postWalkComponents(spire::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core) override
   {
     StaticFontMan* man = core.getStaticComponent<StaticFontMan>();
-    if (man == nullptr)
+    if (!man)
     {
-      std::cerr << "Unable to complete texture garbage collection. There is no StaticFontMan." << std::endl;
+      logRendererError("Unable to complete texture garbage collection. There is no StaticFontMan.");
       return;
     }
     std::weak_ptr<FontMan>  fm = man->instance_;
 
-    if (std::shared_ptr<FontMan> fontMan = fm.lock()) {
+    if (std::shared_ptr<FontMan> fontMan = fm.lock())
+    {
         fontMan->runGCAgainstVaidIDs(mValidKeys);
         mValidKeys.clear();
     }
@@ -447,4 +448,3 @@ void FontMan::runGCCycle(spire::ESCoreBase& core)
 }
 
 } // namespace ren
-

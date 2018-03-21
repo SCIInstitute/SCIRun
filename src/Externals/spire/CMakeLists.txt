@@ -212,12 +212,20 @@ ADD_LIBRARY ( ${SCI_SPIRE_LIBRARY}
   gl-state/GLState.cpp
   glm-aabb/AABB.cpp
   var-buffer/VarBuffer.cpp
+  es-log/trace-log.h
+  es-log/trace-log.cc
+  scishare.h
   )
 
 target_link_libraries(${SCI_SPIRE_LIBRARY}
   ${SCI_LODEPNG_LIBRARY}
-  ${SCI_TNY_LIBRARY})
+  ${SCI_TNY_LIBRARY}
+  ${OPENGL_LIBRARIES})
 
 IF(WIN32)
   target_link_libraries(${SCI_SPIRE_LIBRARY} ${SCI_GLEW_LIBRARY})
 ENDIF()
+
+IF(BUILD_SHARED_LIBS)
+	ADD_DEFINITIONS(-DBUILD_spire_ES)
+ENDIF(BUILD_SHARED_LIBS)

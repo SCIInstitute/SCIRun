@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_SHADERMAN_HPP
 #define SPIRE_RENDER_SHADERMAN_HPP
 
+#include <es-log/trace-log.h>
 #include <map>
 #include <set>
 #include <es-cereal/CerealCore.hpp>
@@ -8,6 +9,7 @@
 #include <es-systems/SystemCore.hpp>
 #include <gl-platform/GLPlatform.hpp>
 #include <es-acorn/Acorn.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 
@@ -15,15 +17,15 @@ class ShaderGarbageCollector;
 class ShaderPromiseVFFulfillment;
 
 /// Basic shader manager.
-class ShaderMan
+class SCISHARE ShaderMan
 {
 public:
   /// \param  numRetries  The number of retries we have to load the asset.
   ///                     Zombie promises will remain present in the system
   ///                     and a load will be re-attempted again when
   ///                     serialized and deserialized.
-  ShaderMan(int numRetries = 2);
-  virtual ~ShaderMan();
+  explicit ShaderMan(int numRetries = 2);
+  ~ShaderMan();
 
   static void setShaderHeaderCode(const std::string& header);
 
@@ -37,7 +39,7 @@ public:
   /// \param  core        Core base.
   /// \param  entityID    Entity ID which will receive the ren::Shader component.
   /// \param  assetName   Name of the asset which to load.
-  void loadVertexAndFragmentShader(spire::CerealCore& core, 
+  void loadVertexAndFragmentShader(spire::CerealCore& core,
                                    uint64_t entityID, const std::string& assetName);
 
   /// Add in-memory vertex and fragment shader. Associates the assets with
@@ -88,7 +90,7 @@ private:
                           std::string assetName, int32_t numRetries,
                           spire::ESCoreBase& core);
 
-  /// Callback issued to load fragment shader. 
+  /// Callback issued to load fragment shader.
   void loadFragmentShaderCB(const std::string& fsName, bool error,
                             size_t bytesRead, uint8_t* buffer,
                             std::string vertexShaderSource,
@@ -116,4 +118,4 @@ private:
 
 } // namespace ren
 
-#endif 
+#endif

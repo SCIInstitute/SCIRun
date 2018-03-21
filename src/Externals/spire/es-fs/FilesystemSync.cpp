@@ -30,14 +30,14 @@ void FilesystemSync::update()
       }
       else
       {
-        std::cerr << "Failed to read contents of file " << filename << std::endl;
+        logRendererError("Failed to read contents of file {}", filename);
         item.callback(item.assetName, true, 0, nullptr);
       }
       std::free(buffer);
     }
     else
     {
-      std::cerr << "Failed to open file " << filename << std::endl;
+      logRendererWarning("Failed to open file {}", filename);
       item.callback(item.assetName, true, 0, nullptr);
     }
   }
@@ -52,4 +52,3 @@ void FilesystemSync::readFile(const std::string& assetName, const FSCallback& cb
 }
 
 } // namespace spire
-

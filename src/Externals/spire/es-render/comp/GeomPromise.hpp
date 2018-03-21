@@ -1,8 +1,10 @@
 #ifndef SPIRE_RENDER_GEOMPROMISE_HPP
 #define SPIRE_RENDER_GEOMPROMISE_HPP
 
+#include <es-log/trace-log.h>
 #include <cstring>
 #include <es-cereal/ComponentSerialize.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 
@@ -36,8 +38,8 @@ struct GeomPromise
     }
     else
     {
-      std::cerr << "GeomPromise: Unable to set name: " << name << " Name must be " 
-                << (MaxAssetName - 1) << "characters or shorter." << std::endl;
+      logRendererError("GeomPromise: Unable to set name: {}. Name must be {} characters or shorter.",
+        name, MaxAssetName - 1);
     }
   }
 
@@ -55,6 +57,6 @@ struct GeomPromise
 
 };
 
-} // namespace ren 
+} // namespace ren
 
-#endif 
+#endif

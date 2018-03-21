@@ -95,7 +95,7 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   connectButtonToExecuteSignal(useFaceNormalsCheckBox_);
 
   createExecuteInteractivelyToggleAction();
-  
+
   /////Set unused widgets to be not visible
   //Nodes Tab
   //label_4->setVisible(false); // Sphere scale lable
@@ -139,19 +139,8 @@ void ShowFieldDialog::createStartupNote()
 
 void ShowFieldDialog::pullSpecial()
 {
-  ColorRGB color(state_->getValue(ShowField::DefaultMeshColor).toString());
-  //std::cout << "pull color: " << color.r() << " " << color.g() << " " << color.b() << std::endl;
-  // check for old saved color format: integers 0-255.
-  defaultMeshColor_ = QColor(
-    static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
-    static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
-    static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
-
-  ColorRGB textColor(state_->getValue(ShowField::DefaultTextColor).toString());
-  defaultTextColor_ = QColor(
-    static_cast<int>(textColor.r() > 1 ? textColor.r() : textColor.r() * 255.0),
-    static_cast<int>(textColor.g() > 1 ? textColor.g() : textColor.g() * 255.0),
-    static_cast<int>(textColor.b() > 1 ? textColor.b() : textColor.b() * 255.0));
+  defaultMeshColor_ = colorFromState(ShowField::DefaultMeshColor);
+  defaultTextColor_ = colorFromState(ShowField::DefaultTextColor);
 
   QString styleSheet = "QLabel{ background: rgb(" + QString::number(defaultTextColor_.red()) + "," +
     QString::number(defaultTextColor_.green()) + "," + QString::number(defaultTextColor_.blue()) + "); }";
@@ -191,8 +180,8 @@ void ShowFieldDialog::assignDefaultTextColor()
 
 void ShowFieldDialog::pushColor()
 {
-  state_->setValue(ShowField::DefaultTextColor, ColorRGB(defaultTextColor_.redF(), defaultTextColor_.greenF(), defaultTextColor_.blueF()).toString());
-  state_->setValue(ShowField::DefaultMeshColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
+  colorToState(ShowField::DefaultTextColor, defaultTextColor_);
+  colorToState(ShowField::DefaultMeshColor, defaultMeshColor_);
 
   QString styleSheet = "QLabel{ background: rgb(" + QString::number(defaultTextColor_.red()) + "," +
     QString::number(defaultTextColor_.green()) + "," + QString::number(defaultTextColor_.blue()) + "); }";

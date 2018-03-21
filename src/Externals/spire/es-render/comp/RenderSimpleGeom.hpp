@@ -1,10 +1,11 @@
 #ifndef SPIRE_RENDER_COMPONENT_RENDER_SIMPLE_GEOM_HPP
 #define SPIRE_RENDER_COMPONENT_RENDER_SIMPLE_GEOM_HPP
 
+#include <es-log/trace-log.h>
 #include <gl-shaders/GLShader.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
-
 #include "StaticVBOMan.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 
@@ -14,10 +15,10 @@ struct RenderSimpleGeom
 {
   // -- Data --
   static const int MaxNumAttributes = 5;
-  
+
   int attribSize;     ///< How many elements in 'appliedAttribs' are valid.
   size_t stride;      ///< Stride between elements vertex buffer.
-  spire::ShaderAttributeApplied appliedAttribs[MaxNumAttributes]; 
+  spire::ShaderAttributeApplied appliedAttribs[MaxNumAttributes];
 
   // -- Functions --
 
@@ -53,4 +54,4 @@ struct RenderSimpleGeom
 
 } // namespace ren
 
-#endif 
+#endif

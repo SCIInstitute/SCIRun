@@ -96,6 +96,17 @@ private:
   std::function<QPointF()> pointFunc_;
 };
 
+enum class NotePosition
+{
+  Default,
+  None,
+  Tooltip,
+  Top,
+  Left,
+  Right,
+  Bottom
+};
+
 }
 }
 

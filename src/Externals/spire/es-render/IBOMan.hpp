@@ -1,6 +1,7 @@
 #ifndef SPIRE_RENDER_IBOMAN_HPP
 #define SPIRE_RENDER_IBOMAN_HPP
 
+#include <es-log/trace-log.h>
 #include <set>
 #include <map>
 #include <gl-platform/GLPlatform.hpp>
@@ -10,12 +11,13 @@
 #include <es-acorn/Acorn.hpp>
 
 #include "comp/AssetPromise.hpp"
+#include <spire/scishare.h>
 
 namespace ren {
 
 class IBOGarbageCollector;
 
-class IBOMan
+class SCISHARE IBOMan
 {
 public:
   IBOMan();
@@ -88,4 +90,4 @@ private:
 
 } // namespace ren
 
-#endif 
+#endif

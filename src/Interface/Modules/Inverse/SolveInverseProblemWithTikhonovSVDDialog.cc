@@ -49,7 +49,6 @@ SolveInverseProblemWithTikhonovSVDDialog::SolveInverseProblemWithTikhonovSVDDial
   lambdaMethod_.insert(StringPair("Slider", "slider"));
   lambdaMethod_.insert(StringPair("L-curve", "lcurve"));
 
-  addDoubleLineEditManager(lCurveLambdaLineEdit_, Parameters::LambdaCorner);
   addSpinBoxManager(lambdaNumberSpinBox_, Parameters::LambdaNum);
   addDoubleSpinBoxManager(lambdaDoubleSpinBox_, Parameters::LambdaFromDirectEntry);
   addDoubleSpinBoxManager(lambdaMinDoubleSpinBox_, Parameters::LambdaMin);
@@ -61,13 +60,14 @@ SolveInverseProblemWithTikhonovSVDDialog::SolveInverseProblemWithTikhonovSVDDial
   addDoubleSpinBoxManager(lambdaSliderDoubleSpinBox_, Parameters::LambdaSliderValue);
 
   addComboBoxManager(lambdaMethodComboBox_, Parameters::RegularizationMethod, lambdaMethod_);
-  addTextEditManager(lCurveTextEdit_, Parameters::LCurveText);
 
   connect(lambdaSlider_, SIGNAL(valueChanged(int)), this, SLOT(setSpinBoxValue(int)));
   connect(lambdaSliderDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderValue(double)));
   connect(lambdaMinDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMin(double)));
   connect(lambdaMaxDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderMax(double)));
   connect(lambdaResolutionDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setSliderStep(double)));
+
+  WidgetStyleMixin::tabStyle(tabWidget);
 }
 
 
@@ -95,4 +95,13 @@ void SolveInverseProblemWithTikhonovSVDDialog::setSliderMax(double value)
 void SolveInverseProblemWithTikhonovSVDDialog::setSliderStep(double value)
 {
   lambdaSlider_->setSingleStep(static_cast<int>(value));
+}
+
+void SolveInverseProblemWithTikhonovSVDDialog::pullAndDisplayInfo()
+{
+  auto str = transient_value_cast<std::string>(state_->getTransientValue("LambdaCurveInfo"));
+  lCurveTextEdit_->setPlainText(QString::fromStdString(str));
+  auto lambda = transient_value_cast<double>(state_->getTransientValue("LambdaCorner"));
+  lCurveLambdaLineEdit_->setText(QString::number(lambda));
+  lCurvePlotWidgetHelper_.updatePlot(state_, plotTab_);
 }

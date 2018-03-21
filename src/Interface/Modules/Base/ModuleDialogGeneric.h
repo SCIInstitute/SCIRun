@@ -163,6 +163,10 @@ namespace Gui {
     static std::tuple<std::string, int> getConnectedDynamicPortId(const std::string& portId, const std::string& type, bool isLoadingFile);
 
     void createExecuteInteractivelyToggleAction();
+    QColor colorFromState(const Core::Algorithms::AlgorithmParameterName& stateKey) const;
+    void colorToState(const Core::Algorithms::AlgorithmParameterName& stateKey, const QColor& color);
+    std::vector<QColor> colorsFromState(const Core::Algorithms::AlgorithmParameterName& stateKey) const;
+    void colorsToState(const Core::Algorithms::AlgorithmParameterName& stateKey, const std::vector<QColor>& colors);
   private Q_SLOTS:
     void executeInteractivelyToggled(bool toggle);
   private:
@@ -190,6 +194,8 @@ namespace Gui {
     static std::set<ModuleDialogGeneric*> instances_;
   };
 
+  SCISHARE QColor colorFromState(const Core::Algorithms::AlgorithmParameterName& stateKey);
+
   class SCISHARE ScopedWidgetSignalBlocker
   {
   public:
@@ -201,6 +207,7 @@ namespace Gui {
 
   SCISHARE void openUrl(const QString& url, const std::string& name);
   SCISHARE void openPythonAPIDoc();
+  SCISHARE std::vector<QString> toQStringVector(const std::vector<std::string>& strVec);
 }
 }
 

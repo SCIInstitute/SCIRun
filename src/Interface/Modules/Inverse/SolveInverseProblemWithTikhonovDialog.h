@@ -33,8 +33,19 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Inverse/share.h>
 
+class QwtPlot;
+class QwtPlotCurve;
+
 namespace SCIRun {
 namespace Gui {
+
+class LCurvePlotWidgetHelper
+{
+public:
+  void updatePlot(Dataflow::Networks::ModuleStateHandle state, QWidget* plotTab);
+private:
+  QwtPlot* plot_ {nullptr};
+};
 
 class SCISHARE SolveInverseProblemWithTikhonovDialog : public ModuleDialogGeneric,
   public Ui::SolveInverseProblemWithTikhonov
@@ -45,12 +56,16 @@ public:
   SolveInverseProblemWithTikhonovDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
+  virtual void moduleExecuted() override { pullAndDisplayInfo(); }
 private Q_SLOTS:
   void setSpinBoxValue(int value);
   void setSliderValue(double value);
   void setSliderMin(double value);
   void setSliderMax(double value);
   void setSliderStep(double value);
+  void pullAndDisplayInfo();
+private:
+  LCurvePlotWidgetHelper lCurvePlotWidgetHelper_;
 };
 
 }

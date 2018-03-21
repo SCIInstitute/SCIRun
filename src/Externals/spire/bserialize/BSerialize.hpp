@@ -1,15 +1,16 @@
 #ifndef SPIRE_BSERIALIZE_H_
 #define SPIRE_BSERIALIZE_H_
 
+#include <es-log/trace-log.h>
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
-
 #include "src/BSerializeDetail.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 
-class BSerialize
+class SCISHARE BSerialize
 {
 public:
   /// Use this constructor for either reading or writing.
@@ -68,4 +69,3 @@ private:
 } // namespace spire
 
 #endif
-

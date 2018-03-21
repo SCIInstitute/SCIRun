@@ -53,6 +53,10 @@ namespace Algorithms {
 #define THROW_ALGORITHM_INPUT_ERROR(message) THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE(SCIRun::Core::ErrorMessage, message)
 #define THROW_ALGORITHM_INPUT_ERROR_SIMPLE(message) BOOST_THROW_EXCEPTION(SCIRun::Core::Algorithms::AlgorithmInputException() << SCIRun::Core::ErrorMessage((message)));
 
+#define THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE_AND_MESSAGE_WITH(algo, type, messageToPrint, messageForErrorObject) { algo->error(messageToPrint); BOOST_THROW_EXCEPTION(SCIRun::Core::Algorithms::AlgorithmInputException() << type((messageForErrorObject))); }
+#define THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE_WITH(algo, type, message) THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE_AND_MESSAGE_WITH(algo, type, message, message)
+#define THROW_ALGORITHM_INPUT_ERROR_WITH(algo, message) THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE_WITH(algo, SCIRun::Core::ErrorMessage, message)
+
 #define THROW_ALGORITHM_PROCESSING_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(SCIRun::Core::Algorithms::AlgorithmProcessingException() << type((message))); }
 #define THROW_ALGORITHM_PROCESSING_ERROR(message) THROW_ALGORITHM_PROCESSING_ERROR_WITH_TYPE(SCIRun::Core::ErrorMessage, message)
 

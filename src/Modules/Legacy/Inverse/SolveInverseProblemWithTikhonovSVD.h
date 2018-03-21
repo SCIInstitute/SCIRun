@@ -32,6 +32,7 @@
 
 #ifndef MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonovSVD_H__
 #define MODULES_LEGACY_INVERSE_SolveInverseProblemWithTikhonovSVD_H__
+
 #include <Dataflow/Network/Module.h>
 #include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithTikhonovSVD_impl.h>
 #include <Modules/Legacy/Inverse/share.h>
@@ -63,7 +64,7 @@ namespace Inverse {
 		MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 
 	private:
-		// void update_lcurve_gui(const double lambda, const Core::Algorithms::Inverse::SolveInverseProblemWithTikhonovImpl_child::LCurveInput& input, const int lambda_index);
+
 	};
 }}}
 

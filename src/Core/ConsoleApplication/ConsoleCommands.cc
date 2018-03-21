@@ -41,6 +41,7 @@ DEALINGS IN THE SOFTWARE.
 using namespace SCIRun::Core;
 using namespace Commands;
 using namespace Console;
+using namespace Logging;
 using namespace SCIRun::Dataflow::Networks;
 using namespace Algorithms;
 
@@ -243,7 +244,7 @@ bool RunPythonScriptCommandConsole::execute()
 bool SetupDataDirectoryCommand::execute()
 {
   auto dir = Application::Instance().parameters()->dataDirectory().get();
-  LOG_DEBUG("Data dir set to: " << dir << std::endl);
+  LOG_DEBUG("Data dir set to: {}", dir.string());
 
   Preferences::Instance().setDataDirectory(dir);
   return true;

@@ -170,8 +170,10 @@ ADD_EXTERNAL( ${SUPERBUILD_DIR}/LibPNGExternal.cmake LibPNG_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/TeemExternal.cmake Teem_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/FreetypeExternal.cmake Freetype_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/GLMExternal.cmake GLM_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/SpdLogExternal.cmake SpdLog_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/TnyExternal.cmake Tny_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/LodePngExternal.cmake LodePng_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/Cleaver2External.cmake Cleaver2_external )
 
 IF(WIN32)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/GlewExternal.cmake Glew_external )
@@ -192,6 +194,10 @@ ENDIF()
 IF(WITH_TETGEN)
   MESSAGE(STATUS "Configuring Tetgen library under GPL. The SCIRun InterfaceWithTetGen module can be disabled by setting the CMake build variable WITH_TETGEN to OFF.")
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TetgenExternal.cmake Tetgen_external )
+ENDIF()
+
+IF(NOT BUILD_HEADLESS)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/QwtExternal.cmake Qwt_external )
 ENDIF()
 
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/BoostExternal.cmake Boost_external )
@@ -226,10 +232,12 @@ SET(SCIRUN_CACHE_ARGS
     "-DTeem_DIR:PATH=${Teem_DIR}"
     "-DTetgen_DIR:PATH=${Tetgen_DIR}"
     "-DFreetype_DIR:PATH=${Freetype_DIR}"
-	"-DGLM_DIR:PATH=${GLM_DIR}"
+	  "-DGLM_DIR:PATH=${GLM_DIR}"
+    "-DSPDLOG_DIR:PATH=${SPDLOG_DIR}"
     "-DTNY_DIR:PATH=${TNY_DIR}"
-	"-DGLEW_DIR:PATH=${Glew_DIR}"
+	  "-DGLEW_DIR:PATH=${Glew_DIR}"
     "-DLODEPNG_DIR:PATH=${LODEPNG_DIR}"
+    "-DCLEAVER2_DIR:PATH=${CLEAVER2_DIR}"
     "-DSCI_DATA_DIR:PATH=${SCI_DATA_DIR}"
 )
 
@@ -257,6 +265,7 @@ IF(NOT BUILD_HEADLESS)
     "-DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}"
     "-DQT_USE_QTOPENGL:BOOL=${QT_USE_QTOPENGL}"
     "-DQT_MIN_VERSION:STRING=${QT_MIN_VERSION}"
+    "-DQWT_DIR:PATH=${QWT_DIR}"
   )
 ENDIF()
 

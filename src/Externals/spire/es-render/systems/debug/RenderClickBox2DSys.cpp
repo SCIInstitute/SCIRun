@@ -40,7 +40,7 @@ public:
 
   ren::VBO mVBO;
   ren::IBO mIBO;
-  
+
   RenderSimpleGeom  mAttribs;
   CommonUniforms    mCommonUniforms;
 
@@ -51,10 +51,10 @@ public:
     return spire::OptionalComponents<gen::Transform>(type);
   }
 
-  void preWalkComponents(spire::ESCoreBase& coreIn)
+  void preWalkComponents(spire::ESCoreBase& coreIn) override
   {
-    spire::CerealCore* ourCorePtr = dynamic_cast<spire::CerealCore*>(&coreIn);
-    if (ourCorePtr == nullptr)
+    auto ourCorePtr = dynamic_cast<spire::CerealCore*>(&coreIn);
+    if (!ourCorePtr)
     {
       std::cerr << "Unable to execute clickbox promise fulfillment. Bad cast." << std::endl;
       return;
@@ -94,9 +94,9 @@ public:
                                   mAttribs.stride);
   }
 
-  void postWalkComponents(spire::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core) override 
   {
-    shaders::unbindPreappliedAttrib(mAttribs.appliedAttribs, 
+    shaders::unbindPreappliedAttrib(mAttribs.appliedAttribs,
                                     static_cast<size_t>(mAttribs.attribSize));
   }
 
@@ -110,8 +110,6 @@ public:
     for (const gen::ClickBox2D& box : clickBox)
     {
       // Bind any common uniforms.
-      gen::CameraSelect::Selection sel = gen::CameraSelect::ORTHOGONAL_CAMERA;
-
       glm::mat4 xformToUse;
       if (trafo.size() > 0)
         xformToUse = trafo.front().transform;
@@ -144,4 +142,3 @@ const char* getSystemName_DebugRenderClickBox2D()
 }
 
 } // namespace ren
-
