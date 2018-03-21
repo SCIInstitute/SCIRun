@@ -36,7 +36,7 @@ IsovalueWidget::IsovalueWidget(IsosurfaceEditor *isosurfaceEditor) : dataRangeSe
   isovalueSpinBox.setValue(0.5f);
   layout->addWidget(&isovalueSpinBox);
 
-  // Connect signals and slots.
+  // Connect Q_SIGNALS and Q_SLOTS.
   connect(&isovalueCheckBox, SIGNAL(toggled(bool)), this, SLOT(apply()));
   connect(&isovalueSlider, SIGNAL(valueChanged(int)), this, SLOT(apply()));
   connect(&isovalueSpinBox, SIGNAL(valueChanged(double)), this, SLOT(apply()));
@@ -49,9 +49,9 @@ void IsovalueWidget::setDataValueRange(ospcommon::vec2f dataValueRange)
   this->dataValueRange = dataValueRange;
 
   if(!dataRangeSet) {
-    isovalueSpinBox.blockSignals(true);
+    isovalueSpinBox.blockQ_SIGNALS(true);
     isovalueSpinBox.setRange(dataValueRange.x, dataValueRange.y);
-    isovalueSpinBox.blockSignals(false);
+    isovalueSpinBox.blockQ_SIGNALS(false);
 
     // Get isovalue based on slider position.
     float sliderPosition = float(isovalueSlider.value() - isovalueSlider.minimum()) / float(isovalueSlider.maximum() - isovalueSlider.minimum());
@@ -72,9 +72,9 @@ void IsovalueWidget::setDataValueRange(ospcommon::vec2f dataValueRange)
 
     float sliderPosition = float(isovalueSlider.minimum()) + (isovalue - dataValueRange.x) / (dataValueRange.y - dataValueRange.x) * float(isovalueSlider.maximum() - isovalueSlider.minimum());
 
-    isovalueSlider.blockSignals(true);
+    isovalueSlider.blockQ_SIGNALS(true);
     isovalueSlider.setValue(int(sliderPosition));
-    isovalueSlider.blockSignals(false);
+    isovalueSlider.blockQ_SIGNALS(false);
   }
 
   apply();
@@ -86,18 +86,18 @@ void IsovalueWidget::apply()
     float sliderPosition = float(isovalueSlider.value() - isovalueSlider.minimum()) / float(isovalueSlider.maximum() - isovalueSlider.minimum());
     float isovalue = dataValueRange.x + sliderPosition * (dataValueRange.y - dataValueRange.x);
 
-    isovalueSpinBox.blockSignals(true);
+    isovalueSpinBox.blockQ_SIGNALS(true);
     isovalueSpinBox.setValue(isovalue);
-    isovalueSpinBox.blockSignals(false);
+    isovalueSpinBox.blockQ_SIGNALS(false);
   }
   else if(sender() == &isovalueSpinBox) {
     float isovalue = isovalueSpinBox.value();
 
     float sliderPosition = float(isovalueSlider.minimum()) + (isovalue - dataValueRange.x) / (dataValueRange.y - dataValueRange.x) * float(isovalueSlider.maximum() - isovalueSlider.minimum());
 
-    isovalueSlider.blockSignals(true);
+    isovalueSlider.blockQ_SIGNALS(true);
     isovalueSlider.setValue(int(sliderPosition));
-    isovalueSlider.blockSignals(false);
+    isovalueSlider.blockQ_SIGNALS(false);
   }
 
   emit isovalueChanged();

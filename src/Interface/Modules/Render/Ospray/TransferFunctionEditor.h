@@ -30,12 +30,12 @@ class TransferFunctionEditor : public QWidget
   //! Construct the transfer function editor with the given OSPRay transfer function object. The editor will manipulate the OSPRay object directly.
   TransferFunctionEditor(OSPTransferFunction transferFunction);
 
-signals:
+Q_SIGNALS:
 
   //! Signal emitted whenever the transfer function has been changed and committed.
   void committed();
 
-public slots:
+public Q_SLOTS:
 
   //! Load transfer function from file. If no filename given, a file selection dialog is created.
   void load(std::string filename = std::string());
@@ -46,7 +46,7 @@ public slots:
   //! Slot called to update transfer function opacity values based on widget values.
   void updateOpacityValues();
 
-protected slots:
+protected Q_SLOTS:
 
   //! Save transfer function to file.
   void save();

@@ -16,6 +16,7 @@
 
 #pragma once
 
+#define NOMINMAX
 #include <ospray/ospray.h>
 #include "ospcommon/vec.h"
 #include <QtGui>
@@ -31,17 +32,17 @@ public:
 
   IsosurfaceEditor();
 
-signals:
+Q_SIGNALS:
 
   void isovaluesChanged(std::vector<float> values);
 
-public slots:
+public Q_SLOTS:
 
   void setDataValueRange(ospcommon::vec2f dataValueRange);
 
   void apply();
 
-protected slots:
+protected Q_SLOTS:
 
   void addIsovalue();
 

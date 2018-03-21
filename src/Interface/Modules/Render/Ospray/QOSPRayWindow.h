@@ -16,6 +16,7 @@
 
 #pragma once
 
+#define NOMINMAX
 // ospray public
 #include <ospray/ospray.h>
 // ospcommon
@@ -98,9 +99,9 @@ public:
 
   void resetAccumulationBuffer() { ospFrameBufferClear(frameBuffer, OSP_FB_ACCUM); }
 
-signals:
+Q_SIGNALS:
 
-  /*! slots can be connected to this signal to enable rendering of OpenGL components of the scene */
+  /*! Q_SLOTS can be connected to this signal to enable rendering of OpenGL components of the scene */
   void renderGLComponents();
 
 protected:

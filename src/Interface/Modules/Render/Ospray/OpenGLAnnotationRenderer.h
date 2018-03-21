@@ -28,7 +28,7 @@ public:
 
   OpenGLAnnotationRenderer(VolumeViewer *volumeViewer) : volumeViewer(volumeViewer) { }
 
-public slots:
+public Q_SLOTS:
 
   void render();
 

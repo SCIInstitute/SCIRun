@@ -77,7 +77,7 @@ QOSPRayWindow::QOSPRayWindow(QMainWindow *parent,
 
   ospSetObject(renderer, "camera", camera);
 
-  // connect signals and slots
+  // connect Q_SIGNALS and Q_SLOTS
   connect(&renderTimer, SIGNAL(timeout()), this, SLOT(updateGL()));
   connect(&renderRestartTimer, SIGNAL(timeout()), &renderTimer, SLOT(start()));
 }
@@ -157,7 +157,7 @@ void QOSPRayWindow::paintGL()
 
   renderFrameTimer.start();
 
-  // we have OpenGL components if any slots are connected to the renderGLComponents() signal
+  // we have OpenGL components if any Q_SLOTS are connected to the renderGLComponents() signal
   // if so, render these first and then composite the OSPRay-rendered content on top
   bool haveOpenGLComponents = receivers(SIGNAL(renderGLComponents())) > 0;
 
@@ -378,7 +378,7 @@ void QOSPRayWindow::renderGL()
             viewport.at.x, viewport.at.y, viewport.at.z,
             viewport.up.x, viewport.up.y, viewport.up.z);
 
-  // emit signal to render all OpenGL components; the slots will execute in the order they were registered
+  // emit signal to render all OpenGL components; the Q_SLOTS will execute in the order they were registered
   emit(renderGLComponents());
 }
 

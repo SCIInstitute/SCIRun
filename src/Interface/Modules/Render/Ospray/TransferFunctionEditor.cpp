@@ -133,7 +133,7 @@ void TransferFunctionEditor::load(std::string filename)
   try {
     tfn::TransferFunction loadedTfn{ospcommon::FileName(filename)};
 
-    // Update transfer function state. Update values of the UI elements directly to signal appropriate slots.
+    // Update transfer function state. Update values of the UI elements directly to signal appropriate Q_SLOTS.
     std::vector<ColorMap>::iterator fnd = std::find_if(colorMaps.begin(), colorMaps.end(),
         [&](const ColorMap &m) {
         return m.getName() == loadedTfn.name;
@@ -186,7 +186,7 @@ void TransferFunctionEditor::load(std::string filename)
       int opacityScalingIndex;
       in >> opacityScalingIndex;
 
-      // Update transfer function state. Update values of the UI elements directly to signal appropriate slots.
+      // Update transfer function state. Update values of the UI elements directly to signal appropriate Q_SLOTS.
       colorMapComboBox.setCurrentIndex(colorMapIndex);
       setDataValueRange(ospcommon::vec2f(dataValueMin, dataValueMax), true);
       opacityValuesWidget.setPoints(points);

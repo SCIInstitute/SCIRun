@@ -16,6 +16,7 @@
 
 #pragma once
 
+#define NOMINMAX
 #include <ospray/ospray.h>
 #include "ospcommon/vec.h"
 #include <QtGui>
@@ -35,11 +36,11 @@ public:
 
   void setDataValueRange(ospcommon::vec2f dataValueRange);
 
-signals:
+Q_SIGNALS:
 
   void isovalueChanged();
 
-protected slots:
+protected Q_SLOTS:
 
   void apply();
 

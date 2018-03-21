@@ -16,6 +16,7 @@
 
 #pragma once
 
+#define NOMINMAX
 #include <ospray/ospray.h>
 #include <QtGui>
 #include <stdexcept>
@@ -43,7 +44,7 @@ class LinearTransferFunctionWidget : public QWidget
   //! Set background image for the widget (for example to show a color map).
   void setBackgroundImage(const QImage &image);
 
-signals:
+Q_SIGNALS:
 
   //! Signal emitted when this widget is updated.
   void updated();
@@ -82,6 +83,6 @@ protected:
   //! Drawing properties: line pixel width.
   static float linePixelWidth;
 
-  //! If true, will emit update signals during transfer function change; otherwise, will wait until change is complete (mouse release).
+  //! If true, will emit update Q_SIGNALS during transfer function change; otherwise, will wait until change is complete (mouse release).
   static bool updateDuringChange;
 };

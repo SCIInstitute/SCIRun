@@ -16,6 +16,7 @@
 
 #pragma once
 
+#define NOMINMAX
 #include <ospray/ospray.h>
 #include "ospcommon/box.h"
 #include <QtGui>
@@ -40,16 +41,16 @@ public:
 
   SliceParameters getSliceParameters();
 
-signals:
+Q_SIGNALS:
 
   void sliceChanged();
   void sliceDeleted(SliceWidget *);
 
-public slots:
+public Q_SLOTS:
 
   void load(std::string filename = std::string());
 
-protected slots:
+protected Q_SLOTS:
 
   void apply();
   void save();

@@ -16,6 +16,7 @@
 
 #pragma once
 
+#define NOMINMAX
 #include <ospray/ospray.h>
 #include "ospcommon/box.h"
 #include <QtGui>
@@ -34,11 +35,11 @@ public:
 
   float getValue() { return spinBox.value(); }
 
-signals:
+Q_SIGNALS:
 
   void probeCoordinateChanged();
 
-protected slots:
+protected Q_SLOTS:
 
   void updateValue();
 
@@ -59,12 +60,12 @@ public:
 
   ProbeWidget(VolumeViewer *volumeViewer);
 
-signals:
+Q_SIGNALS:
 
   void enabled(bool);
   void probeChanged();
 
-public slots:
+public Q_SLOTS:
 
   void setEnabled(bool value);
   void setVolume(OSPVolume volume) { this->volume = volume; emit(probeChanged()); }

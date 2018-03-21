@@ -16,6 +16,8 @@
 
 #pragma once
 
+#define NOMINMAX
+
 // ospray public
 #include <ospray/ospray.h>
 // ospcommon

@@ -146,7 +146,7 @@ SliceWidget::SliceWidget(SliceEditor *sliceEditor, ospcommon::box3f boundingBox)
   // Minimum width for the widget.
   setMinimumWidth(240);
 
-  // Connect signals to trigger updates in the slice editor.
+  // Connect Q_SIGNALS to trigger updates in the slice editor.
   connect(this, SIGNAL(sliceChanged()), sliceEditor, SLOT(apply()));
   connect(this, SIGNAL(sliceDeleted(SliceWidget *)), sliceEditor, SLOT(deleteSlice(SliceWidget *)));
 
@@ -205,7 +205,7 @@ void SliceWidget::load(std::string filename)
 
   in >> originSliderAnimationDirection;
 
-  // Update slice state. Update values of the UI elements directly to signal appropriate slots.
+  // Update slice state. Update values of the UI elements directly to signal appropriate Q_SLOTS.
   originXSpinBox.setValue(originX);
   originYSpinBox.setValue(originY);
   originZSpinBox.setValue(originZ);

@@ -31,11 +31,11 @@ public:
 
   SliceEditor(ospcommon::box3f boundingBox);
 
-signals:
+Q_SIGNALS:
 
   void slicesChanged(std::vector<SliceParameters> sliceParameters);
 
-public slots:
+public Q_SLOTS:
 
   void addSlice(std::string filename = std::string());
   void apply();

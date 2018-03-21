@@ -44,6 +44,7 @@ SET(LIBS ${LIBS} ${OPENGL_LIBRARIES} ${TBB_LIBRARY_MALLOC} ${TBB_LIBRARY})
 
 SET(SRCS ${SRCS}
   main.cpp
+  ColorMap.h
   ColorMap.cpp
   IsosurfaceEditor.cpp
   IsovalueWidget.cpp
@@ -78,6 +79,7 @@ QT4_WRAP_CPP(MOC_OUTFILES ${MOC_HEADERS})
 
 ADD_EXECUTABLE(ospVolumeViewer
   ${SRCS}
+  ${MOC_HEADERS}
   ${MOC_OUTFILES}
 )
 

@@ -16,6 +16,7 @@
 
 #pragma once
 
+#define NOMINMAX
 #include <ospray/ospray.h>
 #include <QtGui>
 #include <stdexcept>
@@ -40,11 +41,11 @@ public:
   void setDirectionalLightAzimuth(float v) { directionalLightAzimuthSlider.setValue(v); }
   void setDirectionalLightElevation(float v) { directionalLightElevationSlider.setValue(v); }
 
-signals:
+Q_SIGNALS:
 
   void lightsChanged();
 
-protected slots:
+protected Q_SLOTS:
 
   void ambientLightChanged();
   void directionalLightChanged();

@@ -92,7 +92,7 @@ public:
   //! A string description of this class.
   std::string toString() const;
 
-public slots:
+public Q_SLOTS:
 
   //! Toggle auto-rotation of the view.
   void autoRotate(bool set);

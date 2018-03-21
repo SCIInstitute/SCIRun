@@ -46,16 +46,16 @@ void ProbeCoordinateWidget::updateValue()
   if (sender() == &slider) {
     float value = range.x + float(slider.value() - slider.minimum()) / float(slider.maximum() - slider.minimum()) * (range.y - range.x);
 
-    spinBox.blockSignals(true);
+    spinBox.blockQ_SIGNALS(true);
     spinBox.setValue(value);
-    spinBox.blockSignals(false);
+    spinBox.blockQ_SIGNALS(false);
   }
   else if (sender() == &spinBox) {
     float value = spinBox.value();
 
-    slider.blockSignals(true);
+    slider.blockQ_SIGNALS(true);
     slider.setValue(slider.minimum() + (value - range.x) / (range.y - range.x) * (slider.maximum() - slider.minimum()));
-    slider.blockSignals(false);
+    slider.blockQ_SIGNALS(false);
   }
   else
     throw std::runtime_error("slot executed from unknown sender");
