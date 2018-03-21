@@ -29,6 +29,8 @@ DEALINGS IN THE SOFTWARE.
 #ifndef MODULES_VISUALIZATION_INTERFACEWITHOSPRAY_H
 #define MODULES_VISUALIZATION_INTERFACEWITHOSPRAY_H
 
+
+#include <boost/graph/adjacency_list.hpp>
 #include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/Thread/Interruptible.h>
 #include <Modules/Visualization/share.h>
@@ -92,6 +94,14 @@ namespace SCIRun {
 
   namespace Modules {
     namespace Visualization {
+      
+      typedef std::pair<int,int> Edge;
+      typedef std::vector<Edge> EdgeVector;
+      typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS> DirectedGraph;
+//      typedef boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS, boost::no_property, boost::property<boost::edge_color_t, boost::default_color_type> > UndirectedGraph;
+      typedef boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS> UndirectedGraph;
+      typedef boost::graph_traits<DirectedGraph>::vertex_descriptor Vertex;
+      typedef std::map<int, int> ComponentMap;
 
       class SCISHARE InterfaceWithOspray : public Dataflow::Networks::GeometryGeneratingModule,
         public Has3InputPorts<DynamicPortTag<FieldPortTag>, DynamicPortTag<ColorMapPortTag>, DynamicPortTag<FieldPortTag>>,

@@ -37,6 +37,14 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/utility.hpp>
+#include <boost/graph/topological_sort.hpp>
+#include <boost/graph/undirected_dfs.hpp>
+#include <boost/cstdlib.hpp>
+#include <boost/graph/copy.hpp>
+#include <boost/graph/connected_components.hpp>
+#include <boost/lambda/lambda.hpp>
+
 
 #ifdef WITH_OSPRAY
 #include <ospray/ospray.h>
@@ -186,6 +194,16 @@ namespace detail
       std::vector<float> vertex, color, vertex_normal;
       std::vector<int32_t> index;
     };
+    
+    struct detect_loops : public boost::dfs_visitor<>
+    {
+      template <class Edge, class Graph>
+      void back_edge(Edge e, const Graph& g) {
+        std::cout << source(e, g)
+        << " -- "
+        << target(e, g) << "\n";
+      }
+    };
 
     std::vector<FieldData> fieldData_;
 
@@ -292,6 +310,9 @@ namespace detail
           vertex.push_back(static_cast<float>(point.y()));
           vertex.push_back(static_cast<float>(point.z()));
           vertex.push_back(0);
+          
+          auto edges = node.edgeIndices();
+//          std::cout << "Node " << node.index() << " point=" << node.point().get_string() << " edges=[" << edges << "]" << std::endl;
 
           vfield->get_value(value, node.index());
           if (colorMap)
@@ -329,7 +350,7 @@ namespace detail
             
             vertex_normal.push_back(static_cast<float>(norm.x()));
             vertex_normal.push_back(static_cast<float>(norm.y()));
-            vertex_normal.push_back(static_cast<float>(norm.y()));
+            vertex_normal.push_back(static_cast<float>(norm.z()));
             vertex_normal.push_back(0);
           }
         }
@@ -386,26 +407,18 @@ namespace detail
       const auto& vertex = fieldData.vertex;
       const auto& color = fieldData.color;
       
-      std::cout<<"data buffers filled"<<std::endl;
-      
       OSPGeometry spheres = ospNewGeometry("spheres");
       OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]);
       ospCommit(data);
       ospSetData(spheres, "spheres", data);
       
-      std::cout<<"centers added"<<std::endl;
-      
       data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
       ospCommit(data);
       ospSetData(spheres, "color", data);
       
-      std::cout<<"colours added"<<std::endl;
-      
       ospSet1f(spheres, "radius", toFloat(Parameters::StreamlineRadius));
       
       ospCommit(spheres);
-      
-      std::cout<<"spheres commited"<<std::endl;
       
       meshes_.push_back(spheres);
       ospAddGeometry(world_, spheres);
@@ -424,15 +437,130 @@ namespace detail
       const auto& vertex = fieldData.vertex;
       const auto& color = fieldData.color;
 
-      auto& index = fieldData.index;
+      EdgeVector all_edges;
+      std::list<Vertex> order, order_test;
+      
+//      std::vector<int32_t> check_edges(field->mesh()->getFacade()->numEdges(),0);
+//       std::list<int32_t> index_list;
+      //bool connected = false;
+      
+      auto& v_index = fieldData.index;
       {
         auto facade(field->mesh()->getFacade());
         for (const auto& edge : facade->edges())
         {
+        
+          //check_edges[edge.index()]=1;
           auto nodesFromEdge = edge.nodeIndices();
-          index.push_back(nodesFromEdge[0]);
+          v_index.push_back(nodesFromEdge[0]);
+          auto nodePoints = edge.nodePoints();
+          
+//          std::cout << "Edge " << edge.index() << " nodes=[" << nodesFromEdge[0] << " point=" << nodePoints[0].get_string()
+//          << ", " << nodesFromEdge[1] << " point=" << nodePoints[1].get_string() << "]" << std::endl;
+//
+          all_edges.push_back(std::make_pair(nodesFromEdge[0],nodesFromEdge[1]));
+
         }
       }
+      
+      UndirectedGraph graph = UndirectedGraph(all_edges.begin(), all_edges.end(), field->mesh()->getFacade()->numEdges());
+      std::vector<int> component(boost::num_vertices(graph));
+      boost::connected_components(graph, &component[0]);
+      std::cout<<"conn comp ="<<component<<std::endl;
+      
+      int max_comp=0;
+      for (size_t i = 0; i < component.size(); ++i) if (component[i]>max_comp) max_comp = component[i];
+      std::vector<int> size_regions(max_comp+1,0);
+      for (size_t i = 0; i < component.size(); ++i) size_regions[component[i]]++;
+      
+      std::cout<<"num of cc = "<<max_comp+1<<std::endl;
+      std::cout<<"size of ccs = "<<size_regions<<std::endl;
+      
+      std::vector<EdgeVector> subsets(max_comp+1);
+      boost::graph_traits<UndirectedGraph>::edge_iterator ei, ei_end;
+      for (tie(ei,ei_end)= edges(graph); ei != ei_end; ++ei)
+      {
+//        std::cout <<"edge["<<*ei<< "]=(" << source(*ei, graph)
+//        << "," << target(*ei, graph) << ") ";
+        subsets[component[source(*ei, graph)]].push_back(std::make_pair(source(*ei, graph),target(*ei, graph)));
+        
+      }
+      std::cout<<"Subsets created.  Size = "<<subsets.size()<<std::endl;
+//      std::cout << std::endl;
+      int cnt=-1;
+      for (auto edges_subset : subsets)
+      {
+        std::list<Vertex> order_subset,order_tmp;
+        
+        cnt++;
+        
+//        if (cnt!=3) continue;
+        
+        std::cout<<"subset size ="<<edges_subset.size()<<std::endl;
+        std::cout<<"edge_subset["<<cnt<<"] = [ ";
+        for (auto e : edges_subset)
+        {
+          std::cout<<" ["<<e.first<<","<<e.second<<"]";
+        }
+        std::cout<<" ]"<<std::endl;
+        
+        DirectedGraph graph_subset = DirectedGraph(edges_subset.begin(), edges_subset.end(), edges_subset.size());
+        std::cout<<"graph constructed"<<std::endl;
+
+        std::cout<<"original order size ="<<order_subset.size()<<std::endl;
+        order_subset.clear();
+        try
+        {
+          std::cout<<"trying sort"<<std::endl;
+          boost::topological_sort(graph_subset, std::front_inserter(order_tmp));
+          std::cout<<"sort complete"<<std::endl;
+          int cnt_list=0;
+          for (auto it = order_tmp.begin(); it !=order_tmp.end();++it)
+          {
+            order_subset.push_back(*it);
+            cnt_list++;
+            if (cnt_list>=(size_regions[cnt]-1)) break;
+          }
+          
+        }
+        catch (std::invalid_argument& e)
+        {
+          std::cout<<"cycle"<<std::endl;
+          
+//          std::cout << "back edges:\n";
+//          detect_loops vis;
+//          boost::undirected_dfs(graph_subset, boost::root_vertex(Vertex(0)).visitor(vis).edge_color_map(get(boost::edge_color, graph_subset)));
+//          std::cout << std::endl;
+          
+        }
+        
+
+        std::cout<<"order size ="<<order_subset.size()<<std::endl;
+        std::cout<<"order_subset["<<cnt<<"] = [ ";
+        for (auto o : order_subset)
+        {
+          std::cout<<" "<<o;
+        }
+        
+        std::cout<<" ]"<<std::endl;
+        std::cout<<"splicing lists"<<std::endl;
+        order.splice(order.end(), order_subset);
+        
+//        order= order_subset;
+      }
+      
+      
+      std::vector<int32_t> index{ std::make_move_iterator(std::begin(order)),
+        std::make_move_iterator(std::end(order)) };
+      
+      
+      std::cout<<"index size ="<<index.size()<<std::endl;
+      std::cout<<"index size = [";
+      for (auto i : index)
+      {
+        std::cout<<" "<<i;
+      }
+      std::cout<<" ]"<<std::endl;
 
       OSPGeometry streamlines = ospNewGeometry("streamlines");
       OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]);
@@ -492,9 +620,6 @@ namespace detail
         float lightPosition[] = { toFloat(Parameters::LightPositionX), toFloat(Parameters::LightPositionY), toFloat(Parameters::LightPositionZ) };
         float lightDirection[] = { toFloat(Parameters::LightDirectionX), toFloat(Parameters::LightDirectionY), toFloat(Parameters::LightDirectionZ) };
         
-        //float lightPosition[] =  { 0.0, 0.0, 500.0 };
-        //float lightDirection[] = { 0.0, 0.0, -1.0 };
-        
         
         ospSet3fv(light, "color", lightColor);
         ospSet3fv(light, "position", lightPosition);
@@ -524,17 +649,12 @@ namespace detail
       ospSet3f(renderer_, "bgColor", toFloat(Parameters::BackgroundColorR),
         toFloat(Parameters::BackgroundColorG),
         toFloat(Parameters::BackgroundColorB));
-      std::cout<<"setup complete"<<std::endl;
       ospSetObject(renderer_, "model", world_);
-      std::cout<<"model added"<<std::endl;
       ospSetObject(renderer_, "camera", camera_);
       if (light)
         ospSetObject(renderer_, "lights", lights);
-      std::cout<<"lights added"<<std::endl;
       ospSetObject(renderer_, "material", material);
-      std::cout<<"material added"<<std::endl;
       ospCommit(renderer_);
-      std::cout<<"renderer committed"<<std::endl;
 
       // create and setup framebuffer
       framebuffer_ = ospNewFrameBuffer(imgSize_, OSP_FB_SRGBA, OSP_FB_COLOR | /*OSP_FB_DEPTH |*/ OSP_FB_ACCUM);
@@ -626,7 +746,6 @@ void InterfaceWithOspray::execute()
         else if (info.is_pointcloudmesh())
         {
           ospray.addSpheres(field, color);
-          std::cout<<"added Spheres"<<std::endl;
         }
         else
         {
@@ -646,9 +765,7 @@ void InterfaceWithOspray::execute()
       ospray.addStreamline(streamline);
     }
 
-    std::cout<<"rederer ready"<<std::endl;
     ospray.render();
-    std::cout<<"rederer done"<<std::endl;
 
     auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
     auto filename = "scirunOsprayOutput_" + isoString + ".ppm";
