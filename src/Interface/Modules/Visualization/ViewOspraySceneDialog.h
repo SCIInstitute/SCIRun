@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,33 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Geometry.h>
+#ifndef INTERFACE_MODULES_ViewOspraySceneDIALOG_H
+#define INTERFACE_MODULES_ViewOspraySceneDIALOG_H
 
-using namespace SCIRun::Core;
-using namespace Datatypes;
+#include "Interface/Modules/Visualization/ui_ViewOsprayScene.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
+#include <Interface/Modules/Visualization/share.h>
 
-GeometryObject::GeometryObject(const GeometryIDGenerator& idGenerator, const std::string& tag) :
-  objectName_(idGenerator.generateGeometryID(tag))
+namespace SCIRun {
+namespace Gui {
+
+class SCISHARE ViewOspraySceneDialog : public ModuleDialogGeneric,
+	public Ui::ViewOsprayScene, public RemembersFileDialogDirectory
 {
+	Q_OBJECT
+
+public:
+  ViewOspraySceneDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+protected:
+  virtual void pullSpecial() override;
+Q_SIGNALS:
+  void imageFilenameChanged();
+private Q_SLOTS:
+  void showImage();
+	void updateViewWidgets(int state);
+  void pushFileNameToState();
+  void saveFile();
+  void closeImageWindows();
+  void adjustZoom();
+};
+
+}
 }
 
-GeometryObject* GeometryObject::clone() const
-{
-  return nullptr; //TODO
-}
-
-void GeometryObject::addToList(GeometryBaseHandle handle, GeomList& list)
-{
-  if (handle.get() == this)
-    list.insert(handle);
-}
-
-OsprayGeometryObject* OsprayGeometryObject::clone() const
-{
-  return nullptr; //TODO
-}
-
-CompositeOsprayGeometryObject::CompositeOsprayGeometryObject(const std::vector<OsprayGeometryObjectHandle>& objs) : objs_(objs)
-{
-
-}
+#endif

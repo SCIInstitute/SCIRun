@@ -26,29 +26,25 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_VISUALIZATION_INTERFACEWITHOSPRAY_H
-#define MODULES_VISUALIZATION_INTERFACEWITHOSPRAY_H
+#ifndef MODULES_VISUALIZATION_VIEWOSPRAYSCENE_H
+#define MODULES_VISUALIZATION_VIEWOSPRAYSCENE_H
 
 #include <Dataflow/Network/Module.h>
-#include <Core/Thread/Interruptible.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Visualization {
 
-      class SCISHARE InterfaceWithOspray : public Dataflow::Networks::Module,
-        public Has3InputPorts<DynamicPortTag<FieldPortTag>, DynamicPortTag<ColorMapPortTag>, DynamicPortTag<FieldPortTag>>,
-        public Has1OutputPort<OsprayGeometryPortTag>
+      class SCISHARE ViewOsprayScene : public Dataflow::Networks::Module,
+        public Has1InputPort<DynamicPortTag<OsprayGeometryPortTag>>,
+        public HasNoOutputPorts
       {
       public:
-        InterfaceWithOspray();
+        ViewOsprayScene();
         virtual void execute() override;
 
-        INPUT_PORT_DYNAMIC(0, Field, Field);
-        INPUT_PORT_DYNAMIC(1, ColorMapObject, ColorMap);
-        INPUT_PORT_DYNAMIC(2, Streamlines, Field);
-        OUTPUT_PORT(0, SceneGraph, OsprayGeometryObject);
+        INPUT_PORT_DYNAMIC(0, OspraySceneGraph, OsprayGeometryObject);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
 
@@ -56,6 +52,7 @@ namespace SCIRun {
 
         HAS_DYNAMIC_PORTS
       };
+
     }
   }
 }

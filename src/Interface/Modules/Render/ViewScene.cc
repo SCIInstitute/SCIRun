@@ -279,8 +279,7 @@ std::string ViewSceneDialog::restoreObjColor()
         auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
         if (realObj->uniqueID() == selName)
         {
-          //selected_ = true;
-          for (auto& pass : realObj->mPasses)
+          for (auto& pass : realObj->passes())
           {
             pass.addUniform("uAmbientColor",
               glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -388,7 +387,7 @@ void ViewSceneDialog::selectObject(const int x, const int y)
         {
           //filter objs
           bool isWidget = false;
-          for (auto& pass : realObj->mPasses)
+          for (const auto& pass : realObj->passes())
           {
             if (pass.renderState.get(RenderState::IS_WIDGET))
             {
@@ -412,7 +411,7 @@ void ViewSceneDialog::selectObject(const int x, const int y)
         if (obj->uniqueID() == selName)
         {
           selected_ = true;
-          for (auto& pass : obj->mPasses)
+          for (auto& pass : obj->passes())
           {
             pass.addUniform("uAmbientColor",
               glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
@@ -1158,9 +1157,9 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
 
   auto geom(boost::make_shared<GeometryObjectSpire>(*gid_, uniqueNodeID, false));
 
-  geom->mIBOs.push_back(geomIBO);
-  geom->mVBOs.push_back(geomVBO);
-  geom->mPasses.push_back(pass);
+  geom->ibos().push_back(geomIBO);
+  geom->vbos().push_back(geomVBO);
+  geom->passes().push_back(pass);
 
   //text
   if (textBuilder_.isReady())
@@ -1261,7 +1260,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
   renState.set(RenderState::USE_NORMALS, true);
   renState.set(RenderState::IS_WIDGET, true);
   auto geom(boost::make_shared<GeometryObjectSpire>(*gid_, uniqueNodeID, false));
-  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
 
   Graphics::GlyphGeom glyphs2;
@@ -1276,7 +1275,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
   renState.set(RenderState::USE_TRANSPARENCY, true);
   renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
   auto geom2(boost::make_shared<GeometryObjectSpire>(*gid_, ss.str(), false));
-  glyphs2.buildObject(geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
+  glyphs2.buildObject(*geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
 
   clippingPlaneGeoms_.push_back(geom);

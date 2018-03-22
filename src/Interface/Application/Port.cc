@@ -808,6 +808,7 @@ static std::map<std::string, QColor> guiColorMap =
   { "darkGreen", QColor(0, 175, 70) },
   { "cyan", Qt::cyan },
   { "magenta", QColor(255, 75, 240) },
+  { "darkMagenta", QColor(230, 67, 216) },
   { "white", Qt::white },
   { "yellow", QColor(234, 255, 55) },
   { "darkYellow", Qt::darkYellow },

@@ -6,7 +6,7 @@ The MIT License
 Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
-License for the specific language governing rights and limitations under
+
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
 to deal in the Software without restriction, including without limitation
@@ -26,38 +26,32 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_VISUALIZATION_INTERFACEWITHOSPRAY_H
-#define MODULES_VISUALIZATION_INTERFACEWITHOSPRAY_H
+#ifndef Graphics_Widgets_SphereWidget_H
+#define Graphics_Widgets_SphereWidget_H
 
-#include <Dataflow/Network/Module.h>
-#include <Core/Thread/Interruptible.h>
-#include <Modules/Visualization/share.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
+#include <Graphics/Widgets/Widget.h>
+#include <Graphics/Widgets/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Visualization {
+  namespace Graphics {
+    namespace Datatypes {
 
-      class SCISHARE InterfaceWithOspray : public Dataflow::Networks::Module,
-        public Has3InputPorts<DynamicPortTag<FieldPortTag>, DynamicPortTag<ColorMapPortTag>, DynamicPortTag<FieldPortTag>>,
-        public Has1OutputPort<OsprayGeometryPortTag>
+      class SCISHARE SphereWidget : public WidgetBase
       {
       public:
-        InterfaceWithOspray();
-        virtual void execute() override;
-
-        INPUT_PORT_DYNAMIC(0, Field, Field);
-        INPUT_PORT_DYNAMIC(1, ColorMapObject, ColorMap);
-        INPUT_PORT_DYNAMIC(2, Streamlines, Field);
-        OUTPUT_PORT(0, SceneGraph, OsprayGeometryObject);
-
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
-
-        virtual void setStateDefaults() override;
-
-        HAS_DYNAMIC_PORTS
+        SphereWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& name, double radius, const std::string& defaultColor,
+          const Core::Geometry::Point& point, const Core::Geometry::BBox& bbox);
+        Core::Geometry::Point position() const;
+        void setPosition(const Core::Geometry::Point& p);
+      private:
+        RenderState getWidgetRenderState(const std::string& defaultColor);
+        Core::Geometry::Point position_;
       };
+
+      using SphereWidgetHandle = SharedPointer<SphereWidget>;
     }
   }
 }
-
 #endif

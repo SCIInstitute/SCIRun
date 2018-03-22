@@ -88,21 +88,6 @@ namespace SCIRun {
         void setNearestNode(const Core::Geometry::Point& location);
         void setNearestElement(const Core::Geometry::Point& location);
       };
-
-      class SCISHARE PointWidgetStub
-      {
-      public:
-        PointWidgetStub();
-        Core::Geometry::Point position() const;
-        void setPosition(const Core::Geometry::Point& p);
-        double scale() const { return scale_; }
-        void setScale(double s) { scale_ = s; }
-      private:
-        Core::Geometry::Point pos_;
-        double scale_;
-      };
-
-      typedef boost::shared_ptr<PointWidgetStub> PointWidgetPtr;
     }
   }
 }

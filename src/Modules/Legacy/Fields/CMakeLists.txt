@@ -229,7 +229,7 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
   Core_Math
   Core_Parser
   Core_Util_Legacy
-  Graphics_Glyphs
+  Graphics_Widgets
   Graphics_Datatypes
 )
 

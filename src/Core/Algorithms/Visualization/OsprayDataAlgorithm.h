@@ -26,36 +26,37 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_VISUALIZATION_INTERFACEWITHOSPRAY_H
-#define MODULES_VISUALIZATION_INTERFACEWITHOSPRAY_H
+#ifndef CORE_ALGORITHMS_VISUALIZATION_OSPRAYDATAALGORITHM_H
+#define CORE_ALGORITHMS_VISUALIZATION_OSPRAYDATAALGORITHM_H
 
-#include <Dataflow/Network/Module.h>
-#include <Core/Thread/Interruptible.h>
-#include <Modules/Visualization/share.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/Geometry.h>
+#include <Core/Algorithms/Visualization/share.h>
 
-namespace SCIRun {
-  namespace Modules {
-    namespace Visualization {
-
-      class SCISHARE InterfaceWithOspray : public Dataflow::Networks::Module,
-        public Has3InputPorts<DynamicPortTag<FieldPortTag>, DynamicPortTag<ColorMapPortTag>, DynamicPortTag<FieldPortTag>>,
-        public Has1OutputPort<OsprayGeometryPortTag>
+namespace SCIRun
+{
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Visualization
       {
-      public:
-        InterfaceWithOspray();
-        virtual void execute() override;
+        ALGORITHM_PARAMETER_DECL(DefaultColorR);
+        ALGORITHM_PARAMETER_DECL(DefaultColorG);
+        ALGORITHM_PARAMETER_DECL(DefaultColorB);
+        ALGORITHM_PARAMETER_DECL(DefaultColorA);
 
-        INPUT_PORT_DYNAMIC(0, Field, Field);
-        INPUT_PORT_DYNAMIC(1, ColorMapObject, ColorMap);
-        INPUT_PORT_DYNAMIC(2, Streamlines, Field);
-        OUTPUT_PORT(0, SceneGraph, OsprayGeometryObject);
-
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
-
-        virtual void setStateDefaults() override;
-
-        HAS_DYNAMIC_PORTS
-      };
+        class SCISHARE OsprayDataAlgorithm : public AlgorithmBase
+        {
+        public:
+          OsprayDataAlgorithm();
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+        private:
+          Core::Datatypes::OsprayGeometryObjectHandle addStreamline(FieldHandle field) const;
+          Core::Datatypes::OsprayGeometryObjectHandle fillDataBuffers(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
+          Core::Datatypes::OsprayGeometryObjectHandle makeObject(FieldHandle field) const;
+        };
+      }
     }
   }
 }

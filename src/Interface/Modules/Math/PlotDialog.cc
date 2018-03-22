@@ -126,7 +126,7 @@ void Plot::addLegend()
 	for ( int i = 0; i < items.size(); i++ )
 	{
 		const QVariant itemInfo = itemToInfo( items[i] );
-		auto legendLabel = qobject_cast<QwtLegendLabel*>(legend->legendWidget(itemInfo));
+		auto legendLabel = dynamic_cast<QwtLegendLabel*>(legend->legendWidget(itemInfo));
 		if (legendLabel)
 			legendLabel->setChecked( true );
 	}

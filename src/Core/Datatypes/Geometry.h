@@ -30,14 +30,19 @@
 #define CORE_DATATYPES_GEOMETRY_H
 
 #include <Core/Datatypes/Datatype.h>
+#include <Core/GeometryPrimitives/BBox.h>
+#include <set>
+#include <vector>
 #include <Core/Datatypes/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
-namespace Core 
+namespace Core
 {
-namespace Datatypes 
+namespace Datatypes
 {
+
+  using GeomList = std::set<GeometryBaseHandle>;
 
   class SCISHARE GeometryObject : public Datatype
   {
@@ -49,12 +54,15 @@ namespace Datatypes
 
     virtual GeometryObject* clone() const override;
 
+    //weird signature--need to avoid raw ptrs and shared_from_this for now
+    virtual void addToList(GeometryBaseHandle handle, GeomList& list);
+
     const std::string& uniqueID() const { return objectName_; }
 
     virtual std::string dynamic_type_name() const override { return "GeometryObject"; }
 
     static const char delimiter = '\t';
-    
+
   private:
     const std::string objectName_;     ///< Name of this object. Should be unique across all modules in the network.
   };
@@ -62,6 +70,41 @@ namespace Datatypes
   struct SCISHARE ModuleFeedback
   {
     virtual ~ModuleFeedback() {}
+  };
+
+  class SCISHARE OsprayGeometryObject : public Datatype
+  {
+  public:
+    OsprayGeometryObject() {}
+    OsprayGeometryObject(const OsprayGeometryObject& other) = delete;
+    OsprayGeometryObject& operator=(const OsprayGeometryObject& other) = delete;
+
+    virtual OsprayGeometryObject* clone() const override;
+
+    virtual std::string dynamic_type_name() const override { return "OsprayGeometryObject"; }
+
+    //TODO: 
+    Core::Geometry::BBox box;
+    struct FieldData
+    {
+      std::vector<float> vertex, color;
+      std::vector<int32_t> index;
+    };
+
+    FieldData data;
+
+    bool isStreamline{ false };
+  };
+
+  using OsprayGeometryObjectHandle = SharedPointer<OsprayGeometryObject>;
+
+  class SCISHARE CompositeOsprayGeometryObject : public OsprayGeometryObject
+  {
+  public:
+    explicit CompositeOsprayGeometryObject(const std::vector<OsprayGeometryObjectHandle>& objs);
+    const std::vector<OsprayGeometryObjectHandle>& objects() const { return objs_; }
+  private:
+    std::vector<OsprayGeometryObjectHandle> objs_;
   };
 
 }}}

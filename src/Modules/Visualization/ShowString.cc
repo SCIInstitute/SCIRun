@@ -193,9 +193,9 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
 
   auto geom(boost::make_shared<GeometryObjectSpire>(*this, "ShowString", false));
 
-  geom->mIBOs.push_back(geomIBO);
-  geom->mVBOs.push_back(geomVBO);
-  geom->mPasses.push_back(pass);
+  geom->ibos().push_back(geomIBO);
+  geom->vbos().push_back(geomVBO);
+  geom->passes().push_back(pass);
 
   auto state = get_state();
   auto fontSize = state->getValue(Parameters::FontSize).toInt();

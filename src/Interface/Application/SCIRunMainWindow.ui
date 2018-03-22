@@ -1033,6 +1033,9 @@
    </property>
   </action>
   <action name="actionImportNetwork_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>*Import 4.x network file...</string>
    </property>
