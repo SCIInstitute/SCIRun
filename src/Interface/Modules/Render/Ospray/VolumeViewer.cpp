@@ -26,7 +26,7 @@
 //#include <common/miniSG/miniSG.h>
 #include "ospcommon/FileName.h"
 
-//#include "importer/Importer.h"
+#include "importer/Importer.h"
 
 //using namespace ospray;
 using namespace ospcommon;
@@ -675,7 +675,6 @@ void VolumeViewer::setIsovalues(std::vector<float> isovalues)
 
 void VolumeViewer::importObjectsFromFile(const std::string &filename)
 {
-#if 0
   if (!ownModelPerObject)
     // Create an OSPRay model and its associated model state.
     modelStates.push_back(ModelState(ospNewModel()));
@@ -765,7 +764,6 @@ void VolumeViewer::importObjectsFromFile(const std::string &filename)
   if (!ownModelPerObject)
     // Commit the model.
     ospCommit(modelStates.back().model);
-#endif
 }
 
 void VolumeViewer::initObjects(const std::string &renderer_type)
