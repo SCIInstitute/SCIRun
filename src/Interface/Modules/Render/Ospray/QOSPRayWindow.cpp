@@ -17,7 +17,7 @@
 #include <string>
 
 #include "QOSPRayWindow.h"
-#include "glUtil/util.h"
+#include "util.h"
 
 #include "ospcommon/common.h"
 

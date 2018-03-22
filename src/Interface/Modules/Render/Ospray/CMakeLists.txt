@@ -17,22 +17,6 @@
 INCLUDE(${CMAKE_SOURCE_DIR}/CMake/Modules/FindOSPRay.cmake)
 INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
 
-#ADD_SUBDIRECTORY(glUtil)
-
-# setup dependencies
-#SET(LIBS ${LIBS} ospray)
-#SET(LIBS ${LIBS} ospray_common)
-#SET(LIBS ${LIBS} ospray_importer)
-#SET(LIBS ${LIBS} ospray_opengl_util)
-#SET(LIBS ${LIBS} ospray_tfn)
-#SET(LIBS ${LIBS} ospray_minisg)
-#SET(LIBS ${LIBS} ospray_commandline)
-
-# link optional loaders-based modules if built
-#IF (OSPRAY_MODULE_SEISMIC)
-  #SET(LIBS ${LIBS} ospray_module_seismic)
-#ENDIF (OSPRAY_MODULE_SEISMIC)
-
 FIND_PACKAGE(Qt4 REQUIRED QtGui QtOpenGL)
 SET(QT_USE_QTOPENGL TRUE)
 INCLUDE(${QT_USE_FILE})
@@ -58,6 +42,8 @@ SET(SRCS ${SRCS}
   SliceWidget.cpp
   TransferFunctionEditor.cpp
   VolumeViewer.cpp
+  util.h
+  util.cpp
 )
 
 SET(MOC_HEADERS

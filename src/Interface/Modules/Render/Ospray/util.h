@@ -16,6 +16,7 @@
 
 #pragma once
 
+#define NOMINMAX
 #include <ospray/ospray.h>
 
 #ifdef _WIN32
