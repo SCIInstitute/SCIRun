@@ -458,130 +458,24 @@ namespace detail
         }
       }
       
-      UndirectedGraph graph = UndirectedGraph(all_edges.begin(), all_edges.end(), field->mesh()->getFacade()->numEdges());
-      std::vector<int> component(boost::num_vertices(graph));
-      boost::connected_components(graph, &component[0]);
-      std::cout<<"conn comp ="<<component<<std::endl;
+      std::vector<int32_t> index = sort_points(all_edges);
       
-      int max_comp=0;
-      for (size_t i = 0; i < component.size(); ++i) if (component[i]>max_comp) max_comp = component[i];
-      std::vector<int> size_regions(max_comp+1,0);
-      for (size_t i = 0; i < component.size(); ++i) size_regions[component[i]]++;
       
-      std::cout<<"num of cc = "<<max_comp+1<<std::endl;
-      std::cout<<"size of ccs = "<<size_regions<<std::endl;
-      
-      std::vector<EdgeVector> subsets(max_comp+1);
-      boost::graph_traits<UndirectedGraph>::edge_iterator ei, ei_end;
-      for (tie(ei,ei_end)= edges(graph); ei != ei_end; ++ei)
-      {
-//        std::cout <<"edge["<<*ei<< "]=(" << source(*ei, graph)
-//        << "," << target(*ei, graph) << ") ";
-        subsets[component[source(*ei, graph)]].push_back(std::make_pair(source(*ei, graph),target(*ei, graph)));
-        
-      }
-      std::cout<<"Subsets created.  Size = "<<subsets.size()<<std::endl;
+//      std::vector<Vertex_u> source_vertex_tot;
+//      detect_loops vis1(source_vertex_tot);
+//      std::vector<boost::default_color_type> vertex_color( boost::num_vertices(graph) );
+//      auto idmap = boost::get( boost::vertex_index, graph );
+//      auto vcmap = make_iterator_property_map( vertex_color.begin(), idmap );
+//      std::map<typename UndirectedGraph::edge_descriptor, boost::default_color_type> edge_color;
+//      auto ecmap = boost::make_assoc_property_map( edge_color );
+//
+//      boost::undirected_dfs(graph,vis1,vcmap,ecmap);
 //      std::cout << std::endl;
-      int cnt=-1;
-      for (auto edges_subset : subsets)
-      {
-        std::list<Vertex> order_subset,order_tmp;
-        
-        cnt++;
-        
-//        if (cnt!=3) continue;
-        
-        std::cout<<"subset size ="<<edges_subset.size()<<std::endl;
-        std::cout<<"edge_subset["<<cnt<<"] = [ ";
-        for (auto e : edges_subset)
-        {
-          std::cout<<" ["<<e.first<<","<<e.second<<"]";
-        }
-        std::cout<<" ]"<<std::endl;
-        
-       
-
-        std::cout<<"original order size ="<<order_subset.size()<<std::endl;
-        order_subset.clear();
-        
-        UndirectedGraph graph_subset_u = UndirectedGraph(edges_subset.begin(), edges_subset.end(), edges_subset.size());
-        std::cout << "back edges:\n";
-        std::vector<Vertex_u> source_vertex;
-        
-        detect_loops vis(source_vertex);
-        std::vector<boost::default_color_type> vertex_color( boost::num_vertices(graph_subset_u) );
-        auto idmap = boost::get( boost::vertex_index, graph_subset_u );
-        auto vcmap = make_iterator_property_map( vertex_color.begin(), idmap );
-        std::map<typename UndirectedGraph::edge_descriptor, boost::default_color_type> edge_color;
-        auto ecmap = boost::make_assoc_property_map( edge_color );
-        
-        boost::undirected_dfs(graph_subset_u,vis,vcmap,ecmap);
-        std::cout << std::endl;
-        
-        std::cout<<"loop detected? "<<vis.LoopDetected()<<std::endl;
-        std::cout<<"source_vertex = " << source_vertex<<std::endl;
-        
-        if (vis.LoopDetected())
-        {
-          std::cout<<"-----------cycle---------"<<std::endl;
-          
-          DirectedGraph graph_subset = DirectedGraph(edges_subset.begin(), edges_subset.end()-1, edges_subset.size()-1);
-          std::cout<<"graph constructed"<<std::endl;
-          std::cout<<"trying sort"<<std::endl;
-          boost::topological_sort(graph_subset, std::front_inserter(order_tmp));
-          std::cout<<"sort complete"<<std::endl;
-          int cnt_list=0;
-          for (auto it = order_tmp.begin(); it !=order_tmp.end();++it)
-          {
-            order_subset.push_back(*it);
-            cnt_list++;
-            if (cnt_list>=(size_regions[cnt]-1)) break;
-          }
-          
-          
-        }
-        else
-        {
-          std::cout<<"----------not a loop---------"<<std::endl;
-          
-          
-          DirectedGraph graph_subset = DirectedGraph(edges_subset.begin(), edges_subset.end(), edges_subset.size());
-          std::cout<<"graph constructed"<<std::endl;
-          std::cout<<"trying sort"<<std::endl;
-          boost::topological_sort(graph_subset, std::front_inserter(order_tmp));
-          std::cout<<"sort complete"<<std::endl;
-          int cnt_list=0;
-          for (auto it = order_tmp.begin(); it !=order_tmp.end();++it)
-          {
-            order_subset.push_back(*it);
-            cnt_list++;
-            if (cnt_list>=(size_regions[cnt]-1)) break;
-          }
-          
-        }
-        
-        
-
-        
-
-        std::cout<<"order size ="<<order_subset.size()<<std::endl;
-        std::cout<<"order_subset["<<cnt<<"] = [ ";
-        for (auto o : order_subset)
-        {
-          std::cout<<" "<<o;
-        }
-        
-        std::cout<<" ]"<<std::endl;
-        std::cout<<"splicing lists"<<std::endl;
-        order.splice(order.end(), order_subset);
-        
-//        order= order_subset;
-      }
-      
-      
-      std::vector<int32_t> index{ std::make_move_iterator(std::begin(order)),
-        std::make_move_iterator(std::end(order)) };
-      
+//
+//      std::cout<<"total points "<<vis1.LoopDetected()<<std::endl;
+//      std::cout<<"loop detected? "<<vis1.LoopDetected()<<std::endl;
+//      std::cout<<"source_vertex = " << source_vertex_tot<<std::endl;
+//
       
       std::cout<<"index size ="<<index.size()<<std::endl;
       std::cout<<"index size = [";
@@ -613,6 +507,150 @@ namespace detail
       ospCommit(world_);
     }
     
+    void connected_component_edges(EdgeVector all_edges, std::vector<EdgeVector> subsets, std::vector<int> size_regions)
+    {
+      UndirectedGraph graph = UndirectedGraph(all_edges.begin(), all_edges.end(), all_edges.size());
+      std::vector<int> component(boost::num_vertices(graph));
+      boost::connected_components(graph, &component[0]);
+      std::cout<<"conn comp ="<<component<<std::endl;
+      
+      int max_comp=0;
+      for (size_t i = 0; i < component.size(); ++i) if (component[i]>max_comp) max_comp = component[i];
+      size_regions.clear();
+      size_regions.resize(max_comp+1,0);
+      for (size_t i = 0; i < component.size(); ++i) size_regions[component[i]]++;
+      
+      std::cout<<"num of cc = "<<max_comp+1<<std::endl;
+      std::cout<<"size of ccs = "<<size_regions<<std::endl;
+      
+      subsets.clear();
+      subsets.resize(max_comp+1);
+      boost::graph_traits<UndirectedGraph>::edge_iterator ei, ei_end;
+      for (tie(ei,ei_end)= edges(graph); ei != ei_end; ++ei)
+      {
+        //        std::cout <<"edge["<<*ei<< "]=(" << source(*ei, graph)
+        //        << "," << target(*ei, graph) << ") ";
+        subsets[component[source(*ei, graph)]].push_back(std::make_pair(source(*ei, graph),target(*ei, graph)));
+        
+      }
+      std::cout<<"Subsets created.  Size = "<<subsets.size()<<std::endl;
+      //      std::cout << std::endl;
+      
+      
+    }
+    
+    std::list<Vertex_u> sort_cc(EdgeVector sub_edges,Vertex_u vend)
+    {
+      UndirectedGraph graph = UndirectedGraph(sub_edges.begin(), sub_edges.end(), sub_edges.size());
+      std::cout << "back edges:\n";
+      std::vector<Vertex_u> source_vertex;
+      
+      detect_loops vis(source_vertex);
+      std::vector<boost::default_color_type> vertex_color( boost::num_vertices(graph) );
+      auto idmap = boost::get( boost::vertex_index, graph );
+      auto vcmap = make_iterator_property_map( vertex_color.begin(), idmap );
+      std::map<typename UndirectedGraph::edge_descriptor, boost::default_color_type> edge_color;
+      auto ecmap = boost::make_assoc_property_map( edge_color );
+      boost::undirected_dfs(graph,vis,vcmap,ecmap);
+      std::cout << std::endl;
+      
+      std::cout<<"loop detected? "<<vis.LoopDetected()<<std::endl;
+      std::cout<<"source_vertex = " << source_vertex<<std::endl;
+      
+      
+      std::list<Vertex_u> v_path;
+      v_path.push_back(vend);
+      
+      FindPath(graph,vend,v_path);
+      
+      return v_path;
+      
+    }
+    
+    bool FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std::list<Vertex_u>& v_path)
+    {
+      typename boost::graph_traits<UndirectedGraph>::out_edge_iterator ei, ei_end;
+      size_t edge_idx = 0;
+      int cnt = 0;
+      for ( tie(ei, ei_end)=out_edges( curr_v, graph ); ei != ei_end; ++ei, ++edge_idx )
+      {
+        cnt++;
+        Vertex_u v2a = source(*ei, graph);
+        Vertex_u v2b = target(*ei, graph);
+        std::cout<<"edge = (" << v2a<<","<<v2b<<")"<<std::endl;
+        
+        if (cnt>2)
+        {
+          std::cout<<"branch detected"<<std::endl;
+          continue;
+        }
+        
+        if ( std::find( v_path.cbegin(), v_path.cend(), v2b ) != v_path.cend() )
+        {
+          v_path.push_back(v2b);
+          FindPath(graph, v2b, v_path);
+        }
+      }
+      
+      return true;
+    }
+    
+    
+    std::vector<int32_t> sort_points(EdgeVector edges)
+    {
+      std::vector<EdgeVector> subsets;
+      std::vector<int> size_regions;
+      connected_component_edges(edges, subsets, size_regions);
+      std::list<Vertex> order;
+      
+      int cnt=-1;
+      for (auto edges_subset : subsets)
+      {
+        //std::list<Vertex> order_subset,order_tmp;
+        
+        cnt++;
+        
+        std::cout<<"subset size ="<<edges_subset.size()<<std::endl;
+        std::cout<<"edge_subset["<<cnt<<"] = [ ";
+        for (auto e : edges_subset)
+        {
+          std::cout<<" ["<<e.first<<","<<e.second<<"]";
+        }
+        std::cout<<" ]"<<std::endl;
+        
+        int sum_regions = 0;
+        for (int it=0; it<=cnt; it++) { sum_regions+=size_regions[it];}
+        Vertex_u vend=sum_regions-1;
+        std::cout<<"ending vertex = "<<vend<<std::endl;
+        
+        
+        std::list<Vertex_u> order_subset = sort_cc(edges_subset,vend);
+
+        
+        
+        std::cout<<"order size ="<<order_subset.size()<<std::endl;
+        std::cout<<"order_subset["<<cnt<<"] = [ ";
+        for (auto o : order_subset)
+        {
+          std::cout<<" "<<o;
+        }
+        
+        std::cout<<" ]"<<std::endl;
+        std::cout<<"splicing lists"<<std::endl;
+        order.splice(order.end(), order_subset);
+        
+        //        order= order_subset;
+      }
+      
+      
+      std::vector<int32_t> index{ std::make_move_iterator(std::begin(order)),
+        std::make_move_iterator(std::end(order)) };
+      
+      return index;
+      
+      
+    }
+    
     struct detect_loops : public boost::dfs_visitor<>
     {
       detect_loops(std::vector<Vertex_u>& _source_vertex) : source_vertex(_source_vertex) { }
@@ -625,8 +663,8 @@ namespace detail
         
         source_vertex.push_back( source(e, g) );
         std::cout << source(e, g)<< " -- " << target(e, g) << "\n";
-        std::cout<<"source_vertex = " << source_vertex<<std::endl;
-        std::cout<<"source_vertex empty?" << source_vertex.empty()<<std::endl;
+//        std::cout<<"source_vertex = " << source_vertex<<std::endl;
+//        std::cout<<"source_vertex empty?" << source_vertex.empty()<<std::endl;
         
       }
       std::vector<Vertex_u>& source_vertex;
