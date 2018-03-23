@@ -91,8 +91,8 @@ namespace ospray {
                       Group *group,
                       const tinyxml2::XMLNode *root)
     {
-      auto dpFromEnv = getEnvVar<std::string>("OSPRAY_DATA_PARALLEL");
-      
+      auto dpFromEnv = std::make_pair(false, std::string());//getEnvVar<std::string>("OSPRAY_DATA_PARALLEL");
+
       Volume *volume = new Volume;
       if (dpFromEnv.first) {
         // Create the OSPRay object.
@@ -114,7 +114,7 @@ namespace ospray {
         // Create the OSPRay object.
         std::string volumeType = "block_bricked_volume";
 
-        auto volTypeFromEnv = getEnvVar<std::string>("OSPRAY_USE_VOLUME_TYPE");
+        auto volTypeFromEnv = std::make_pair(false, std::string());//getEnvVar<std::string>("OSPRAY_USE_VOLUME_TYPE");
         if (volTypeFromEnv.first)
           volumeType = volTypeFromEnv.second;
 
@@ -125,41 +125,41 @@ namespace ospray {
         throw std::runtime_error("#loaders.ospObjectFile: could not create "
                                  "volume ...");
       }
-      
+
       // Temporary storage for the file name attribute if specified.
       const char *volumeFilename = nullptr;
-      
+
       // Iterate over object attributes.
       for (const tinyxml2::XMLNode *node = root->FirstChild();
            node;
            node = node->NextSibling()) {
-        
+
         // Volume size in voxels per dimension.
         if (!strcmp(node->ToElement()->Name(), "dimensions")) {
           volume->dimensions = parseInt3(node);
           continue;
         }
-        
+
         // File containing a volume specification and / or voxel data.
         if (!strcmp(node->ToElement()->Name(), "filename")) {
           volumeFilename = node->ToElement()->GetText();
           continue;
         }
-        
+
         // Grid origin in world coordinates.
         if (!strcmp(node->ToElement()->Name(), "gridOrigin")) {
           volume->gridOrigin = parseFloat3(node);
           ospSetVec3f(volume->handle, "gridOrigin", (osp::vec3f&)volume->gridOrigin);
           continue;
         }
-        
+
         // Grid spacing in each dimension in world coordinates.
         if (!strcmp(node->ToElement()->Name(), "gridSpacing")) {
           volume->gridSpacing = parseFloat3(node);
           ospSetVec3f(volume->handle, "gridSpacing", (osp::vec3f&)volume->gridSpacing);
           continue;
         }
-        
+
         // Sampling rate for ray casting based renderers.
         if (!strcmp(node->ToElement()->Name(), "samplingRate")) {
           volume->samplingRate = parseFloat1(node);
@@ -174,56 +174,56 @@ namespace ospray {
           ospSetVec3f(volume->handle, "scaleFactor", (osp::vec3f&)volume->scaleFactor);
           continue;
         }
-        
+
         // Subvolume offset from origin within the full volume.
         if (!strcmp(node->ToElement()->Name(), "subvolumeOffsets")) {
           volume->subVolumeOffsets = parseInt3(node);
           continue;
         }
-        
+
         // Subvolume dimensions within the full volume.
         if (!strcmp(node->ToElement()->Name(), "subvolumeDimensions")) {
           volume->subVolumeDimensions = parseInt3(node);
           continue;
         }
-        
+
         // Subvolume steps in each dimension; can be used to subsample.
         if (!strcmp(node->ToElement()->Name(), "subvolumeSteps")) {
           volume->subVolumeSteps = parseInt3(node);
           continue;
         }
-        
+
         // Voxel value range.
         if (!strcmp(node->ToElement()->Name(), "voxelRange")) {
           volume->voxelRange = parseFloat2(node);
           continue;
         }
-        
+
         // Voxel type string.
         if (!strcmp(node->ToElement()->Name(), "voxelType")) {
           volume->voxelType = node->ToElement()->GetText();
           continue;
         }
-        
+
         // Error check.
-        exitOnCondition(true, "unrecognized XML element type '" + 
+        exitOnCondition(true, "unrecognized XML element type '" +
                         std::string(node->ToElement()->Name()) + "'");
       }
-      
+
       // Load the contents of the volume file if specified.
       if (volumeFilename != nullptr) {
         // The volume file path is absolute.
-        if (volumeFilename[0] == '/') 
+        if (volumeFilename[0] == '/')
           importVolume(volumeFilename, volume);
         else {
-          importVolume((orgFileName.path().str()
+          importVolume((orgFileName.path()
                         + "/" + volumeFilename).c_str(), volume);
         }
       }
-      
+
       group->volume.push_back(volume);
     }
-    
+
     void importTriangleMesh(Group *group, const tinyxml2::XMLNode *node)
     {
       throw std::runtime_error("importTriangleMesh: not yet implemented");
@@ -233,46 +233,46 @@ namespace ospray {
     {
       throw std::runtime_error("importLight: not yet implemented");
     }
-    
+
     void importObject(const FileName &orgFileName,
                       Group *group,
                       const tinyxml2::XMLNode *node)
     {
       // OSPRay light object.
-      if (!strcmp(node->ToElement()->Name(), "light")) 
+      if (!strcmp(node->ToElement()->Name(), "light"))
         importLight(group,node);
-      
+
       // OSPRay triangle mesh object.
-      else if (!strcmp(node->ToElement()->Name(), "triangleMesh")) 
+      else if (!strcmp(node->ToElement()->Name(), "triangleMesh"))
         importTriangleMesh(group,node);
-      
+
       // OSPRay volume object.
-      else if (!strcmp(node->ToElement()->Name(), "volume")) 
+      else if (!strcmp(node->ToElement()->Name(), "volume"))
         importVolume(orgFileName,group,node);
-      
+
       // No other object types are currently supported.
-      else 
-        exitOnCondition(true, "unrecognized XML element type '" 
-                        + std::string(node->ToElement()->Name()) + "'");  
+      else
+        exitOnCondition(true, "unrecognized XML element type '"
+                        + std::string(node->ToElement()->Name()) + "'");
     }
 
     void importOSP(const FileName &fileName, Group *existingGroupToAddTo)
     {
       // The XML document container.
       tinyxml2::XMLDocument xml(true, tinyxml2::COLLAPSE_WHITESPACE);
-      
+
       // Read the XML object file.
-      exitOnCondition(xml.LoadFile(fileName.str().c_str()) != tinyxml2::XML_SUCCESS, 
+      exitOnCondition(xml.LoadFile(fileName.str().c_str()) != tinyxml2::XML_SUCCESS,
                       "unable to read object file '" + fileName.str() + "'");
-      
+
       Group *group = existingGroupToAddTo ? existingGroupToAddTo : new Group;
 
       // Iterate over the object entries, skip the XML declaration and comments.
       for (const tinyxml2::XMLNode *node = xml.FirstChild();
            node;
            node = node->NextSibling()) {
-        if (node->ToElement()) 
-          importObject(fileName,group,node); 
+        if (node->ToElement())
+          importObject(fileName,group,node);
       }
 
       // post-checks:
