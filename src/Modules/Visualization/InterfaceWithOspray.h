@@ -98,9 +98,10 @@ namespace SCIRun {
       typedef std::pair<int,int> Edge;
       typedef std::vector<Edge> EdgeVector;
       typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS> DirectedGraph;
-//      typedef boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS, boost::no_property, boost::property<boost::edge_color_t, boost::default_color_type> > UndirectedGraph;
-      typedef boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS> UndirectedGraph;
+      typedef boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS, boost::no_property, boost::property<boost::edge_color_t, boost::default_color_type> > UndirectedGraph;
+//      typedef boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS> UndirectedGraph;
       typedef boost::graph_traits<DirectedGraph>::vertex_descriptor Vertex;
+      typedef boost::graph_traits<UndirectedGraph>::vertex_descriptor Vertex_u;
       typedef std::map<int, int> ComponentMap;
 
       class SCISHARE InterfaceWithOspray : public Dataflow::Networks::GeometryGeneratingModule,

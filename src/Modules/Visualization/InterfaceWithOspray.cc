@@ -195,17 +195,11 @@ namespace detail
       std::vector<int32_t> index;
     };
     
-    struct detect_loops : public boost::dfs_visitor<>
-    {
-      template <class Edge, class Graph>
-      void back_edge(Edge e, const Graph& g) {
-        std::cout << source(e, g)
-        << " -- "
-        << target(e, g) << "\n";
-      }
-    };
-
     std::vector<FieldData> fieldData_;
+    
+    
+    
+
 
   public:
     explicit OsprayImpl(ModuleStateHandle state) : guard_(lock_.get()), state_(state)
@@ -311,8 +305,9 @@ namespace detail
           vertex.push_back(static_cast<float>(point.z()));
           vertex.push_back(0);
           
-          auto edges = node.edgeIndices();
+//          auto edges = node.edgeIndices();
 //          std::cout << "Node " << node.index() << " point=" << node.point().get_string() << " edges=[" << edges << "]" << std::endl;
+          std::cout << "Node " << node.index() << " point=" << node.point().get_string() << std::endl;
 
           vfield->get_value(value, node.index());
           if (colorMap)
@@ -416,7 +411,7 @@ namespace detail
       ospCommit(data);
       ospSetData(spheres, "color", data);
       
-      ospSet1f(spheres, "radius", toFloat(Parameters::StreamlineRadius));
+      ospSet1f(spheres, "radius", toFloat(Parameters::StreamlineRadius)*1.3);
       
       ospCommit(spheres);
       
@@ -427,11 +422,11 @@ namespace detail
     }
     
 
-    void addStreamline(FieldHandle field)
+    void addStreamline(FieldHandle field, ColorMapHandle colorMap)
     {
       adjustCameraPosition(field);
 
-      fillDataBuffers(field, nullptr);
+      fillDataBuffers(field, colorMap);
 
       auto& fieldData = fieldData_.back();
       const auto& vertex = fieldData.vertex;
@@ -504,13 +499,54 @@ namespace detail
         }
         std::cout<<" ]"<<std::endl;
         
-        DirectedGraph graph_subset = DirectedGraph(edges_subset.begin(), edges_subset.end(), edges_subset.size());
-        std::cout<<"graph constructed"<<std::endl;
+       
 
         std::cout<<"original order size ="<<order_subset.size()<<std::endl;
         order_subset.clear();
-        try
+        
+        UndirectedGraph graph_subset_u = UndirectedGraph(edges_subset.begin(), edges_subset.end(), edges_subset.size());
+        std::cout << "back edges:\n";
+        std::vector<Vertex_u> source_vertex;
+        
+        detect_loops vis(source_vertex);
+        std::vector<boost::default_color_type> vertex_color( boost::num_vertices(graph_subset_u) );
+        auto idmap = boost::get( boost::vertex_index, graph_subset_u );
+        auto vcmap = make_iterator_property_map( vertex_color.begin(), idmap );
+        std::map<typename UndirectedGraph::edge_descriptor, boost::default_color_type> edge_color;
+        auto ecmap = boost::make_assoc_property_map( edge_color );
+        
+        boost::undirected_dfs(graph_subset_u,vis,vcmap,ecmap);
+        std::cout << std::endl;
+        
+        std::cout<<"loop detected? "<<vis.LoopDetected()<<std::endl;
+        std::cout<<"source_vertex = " << source_vertex<<std::endl;
+        
+        if (vis.LoopDetected())
         {
+          std::cout<<"-----------cycle---------"<<std::endl;
+          
+          DirectedGraph graph_subset = DirectedGraph(edges_subset.begin(), edges_subset.end()-1, edges_subset.size()-1);
+          std::cout<<"graph constructed"<<std::endl;
+          std::cout<<"trying sort"<<std::endl;
+          boost::topological_sort(graph_subset, std::front_inserter(order_tmp));
+          std::cout<<"sort complete"<<std::endl;
+          int cnt_list=0;
+          for (auto it = order_tmp.begin(); it !=order_tmp.end();++it)
+          {
+            order_subset.push_back(*it);
+            cnt_list++;
+            if (cnt_list>=(size_regions[cnt]-1)) break;
+          }
+          
+          
+        }
+        else
+        {
+          std::cout<<"----------not a loop---------"<<std::endl;
+          
+          
+          DirectedGraph graph_subset = DirectedGraph(edges_subset.begin(), edges_subset.end(), edges_subset.size());
+          std::cout<<"graph constructed"<<std::endl;
           std::cout<<"trying sort"<<std::endl;
           boost::topological_sort(graph_subset, std::front_inserter(order_tmp));
           std::cout<<"sort complete"<<std::endl;
@@ -523,16 +559,9 @@ namespace detail
           }
           
         }
-        catch (std::invalid_argument& e)
-        {
-          std::cout<<"cycle"<<std::endl;
-          
-//          std::cout << "back edges:\n";
-//          detect_loops vis;
-//          boost::undirected_dfs(graph_subset, boost::root_vertex(Vertex(0)).visitor(vis).edge_color_map(get(boost::edge_color, graph_subset)));
-//          std::cout << std::endl;
-          
-        }
+        
+        
+
         
 
         std::cout<<"order size ="<<order_subset.size()<<std::endl;
@@ -583,6 +612,25 @@ namespace detail
       ospAddGeometry(world_, streamlines);
       ospCommit(world_);
     }
+    
+    struct detect_loops : public boost::dfs_visitor<>
+    {
+      detect_loops(std::vector<Vertex_u>& _source_vertex) : source_vertex(_source_vertex) { }
+      
+      bool LoopDetected() const {return !source_vertex.empty();}
+    
+      template <class Edge, class Graph>
+      void back_edge(Edge e, const Graph& g)
+      {
+        
+        source_vertex.push_back( source(e, g) );
+        std::cout << source(e, g)<< " -- " << target(e, g) << "\n";
+        std::cout<<"source_vertex = " << source_vertex<<std::endl;
+        std::cout<<"source_vertex empty?" << source_vertex.empty()<<std::endl;
+        
+      }
+      std::vector<Vertex_u>& source_vertex;
+    };
 
     void render()
     {
@@ -747,6 +795,10 @@ void InterfaceWithOspray::execute()
         {
           ospray.addSpheres(field, color);
         }
+        else if (info.is_curvemesh())
+        {
+          ospray.addStreamline(field,color);
+        }
         else
         {
           THROW_INVALID_ARGUMENT("Module currently only works with trisurfs or pointclouds.");
@@ -762,7 +814,7 @@ void InterfaceWithOspray::execute()
       if (!info.is_curvemesh())
         THROW_INVALID_ARGUMENT("Module currently only works with curvemesh streamlines.");
 
-      ospray.addStreamline(streamline);
+      ospray.addStreamline(streamline,nullptr);
     }
 
     ospray.render();
