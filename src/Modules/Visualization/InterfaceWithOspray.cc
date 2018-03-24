@@ -487,7 +487,7 @@ namespace detail
 //        std::cout<<" "<<i;
 //      }
 //      std::cout<<" ]"<<std::endl;
-//      
+//
       
       
 //      std::vector<Vertex_u> source_vertex_tot;
@@ -672,11 +672,11 @@ namespace detail
         
 //        std::cout<<"subset size ="<<edges_subset.size()<<std::endl;
 //        std::cout<<"edge_subset["<<cnt<<"] = [ ";
-        for (auto e : edges_subset)
-        {
-          std::cout<<" ["<<e.first<<","<<e.second<<"]";
-        }
-        std::cout<<" ]"<<std::endl;
+//        for (auto e : edges_subset)
+//        {
+//          std::cout<<" ["<<e.first<<","<<e.second<<"]";
+//        }
+//        std::cout<<" ]"<<std::endl;
         
         int sum_regions = 0;
         for (int it=0; it<=cnt; it++) { sum_regions+=size_regions[it];}
@@ -924,6 +924,7 @@ void InterfaceWithOspray::execute()
     auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
     auto filename = "scirunOsprayOutput_" + isoString + ".ppm";
     auto filePath = get_state()->getValue(Variables::Filename).toString() / boost::filesystem::path(filename);
+    std::cout<<"filename = "<<filePath.string()<<std::endl;
     ospray.writeImage(filePath.string());
     remark("Saving output to " + filePath.string());
 
