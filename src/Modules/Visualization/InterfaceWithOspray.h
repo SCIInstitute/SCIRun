@@ -74,8 +74,10 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(LightColorB);
         ALGORITHM_PARAMETER_DECL(LightIntensity);
         ALGORITHM_PARAMETER_DECL(LightType);
+        ALGORITHM_PARAMETER_DECL(RendererType);
         ALGORITHM_PARAMETER_DECL(AutoCameraView);
         ALGORITHM_PARAMETER_DECL(StreamlineRadius);
+        ALGORITHM_PARAMETER_DECL(SphereRadius);
         ALGORITHM_PARAMETER_DECL(OneSidedLighting);
         ALGORITHM_PARAMETER_DECL(ShadowsEnabled);
         ALGORITHM_PARAMETER_DECL(UseNormals);

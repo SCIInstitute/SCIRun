@@ -85,8 +85,10 @@ ALGORITHM_PARAMETER_DEF(Visualization, LightColorB);
 ALGORITHM_PARAMETER_DEF(Visualization, LightIntensity);
 ALGORITHM_PARAMETER_DEF(Visualization, LightVisible);
 ALGORITHM_PARAMETER_DEF(Visualization, LightType);
+ALGORITHM_PARAMETER_DEF(Visualization, RendererType);
 ALGORITHM_PARAMETER_DEF(Visualization, AutoCameraView);
 ALGORITHM_PARAMETER_DEF(Visualization, StreamlineRadius);
+ALGORITHM_PARAMETER_DEF(Visualization, SphereRadius);
 ALGORITHM_PARAMETER_DEF(Visualization, OneSidedLighting);
 ALGORITHM_PARAMETER_DEF(Visualization, ShadowsEnabled);
 ALGORITHM_PARAMETER_DEF(Visualization, UseNormals);
@@ -132,11 +134,13 @@ void InterfaceWithOspray::setStateDefaults()
   state->setValue(Parameters::LightVisible, false);
   state->setValue(Parameters::LightLockCamera, false);
   state->setValue(Parameters::LightType, std::string("distant"));
+  state->setValue(Parameters::RendererType, std::string("scivis"));
   state->setValue(Parameters::AutoCameraView, true);
   state->setValue(Parameters::OneSidedLighting, false);
   state->setValue(Parameters::ShadowsEnabled, true);
   state->setValue(Parameters::UseNormals, false);
   state->setValue(Parameters::StreamlineRadius, 0.1);
+  state->setValue(Parameters::SphereRadius, 0.3);
   state->setValue(Variables::Filename, std::string(""));
   state->setValue(Parameters::LightPositionX, 0.0);
   state->setValue(Parameters::LightPositionY, 0.0);
@@ -307,7 +311,7 @@ namespace detail
           
 //          auto edges = node.edgeIndices();
 //          std::cout << "Node " << node.index() << " point=" << node.point().get_string() << " edges=[" << edges << "]" << std::endl;
-          std::cout << "Node " << node.index() << " point=" << node.point().get_string() << std::endl;
+//          std::cout << "Node " << node.index() << " point=" << node.point().get_string() << std::endl;
 
           vfield->get_value(value, node.index());
           if (colorMap)
@@ -458,7 +462,32 @@ namespace detail
         }
       }
       
-      std::vector<int32_t> index = sort_points(all_edges);
+      
+      std::vector<int32_t> cc_index;
+      std::vector<int32_t> index = sort_points(all_edges,cc_index);
+//      std::cout<<"cc_index = "<<cc_index<<std::endl;
+      
+      std::vector<float> vertex_new, color_new;
+      std::vector<int32_t> index_new;
+      
+//      std::cout<<"index size ="<<index.size()<<std::endl;
+//      std::cout<<"index = [";
+//      for (auto i : index)
+//      {
+//        std::cout<<" "<<i;
+//      }
+//      std::cout<<" ]"<<std::endl;
+      
+      ReorderNodes(index, cc_index, vertex, color, index_new, vertex_new, color_new);
+      
+//      std::cout<<"index_new size ="<<index_new.size()<<std::endl;
+//      std::cout<<"index_new = [";
+//      for (auto i : index_new)
+//      {
+//        std::cout<<" "<<i;
+//      }
+//      std::cout<<" ]"<<std::endl;
+//      
       
       
 //      std::vector<Vertex_u> source_vertex_tot;
@@ -477,24 +506,18 @@ namespace detail
 //      std::cout<<"source_vertex = " << source_vertex_tot<<std::endl;
 //
       
-      std::cout<<"index size ="<<index.size()<<std::endl;
-      std::cout<<"index size = [";
-      for (auto i : index)
-      {
-        std::cout<<" "<<i;
-      }
-      std::cout<<" ]"<<std::endl;
+      
 
       OSPGeometry streamlines = ospNewGeometry("streamlines");
-      OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]);
+      OSPData data = ospNewData(vertex_new.size() / 4, OSP_FLOAT3A, &vertex_new[0]);
       ospCommit(data);
       ospSetData(streamlines, "vertex", data);
 
-      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
+      data = ospNewData(color_new.size() / 4, OSP_FLOAT4, &color_new[0]);
       ospCommit(data);
       ospSetData(streamlines, "vertex.color", data);
 
-      data = ospNewData(index.size(), OSP_INT, &index[0]);
+      data = ospNewData(index_new.size(), OSP_INT, &index_new[0]);
       ospCommit(data);
       ospSetData(streamlines, "index", data);
 
@@ -507,12 +530,44 @@ namespace detail
       ospCommit(world_);
     }
     
-    void connected_component_edges(EdgeVector all_edges, std::vector<EdgeVector> subsets, std::vector<int> size_regions)
+    void ReorderNodes(std::vector<int32_t> index, std::vector<int32_t> cc_index, std::vector<float> vertex, std::vector<float> color, std::vector<int32_t>& index_new, std::vector<float>& vertex_new,std::vector<float>& color_new)
+    {
+//      std::cout<<"Reordering nodes"<<std::endl;
+      
+      int cc_cnt = 0;
+      for (size_t k=0;k<index.size();k++)
+      {
+        if (k!=cc_index[cc_cnt])
+        {
+          index_new.push_back(k);
+        }
+        else
+        {
+//          std::cout<<"end point"<<std::endl;
+          cc_cnt++;
+        }
+        
+//        std::cout<<k<<std::endl;
+//        std::cout<<"vertex = [ "<<vertex[k*4]<<" , "<<vertex[k*4+1]<<" , "<<vertex[k*4+2]<<" ]"<<std::endl;
+//        std::cout<<"color = [ "<<color[k*4]<<" , "<<color[k*4+1]<<" , "<<color[k*4+2]<<" , "<<color[k*4+3]<<" ]"<<std::endl;
+        
+        vertex_new.push_back(vertex[index[k]*4]);
+        vertex_new.push_back(vertex[index[k]*4+1]);
+        vertex_new.push_back(vertex[index[k]*4+2]);
+        vertex_new.push_back(0);
+        color_new.push_back(color[index[k]*4]);
+        color_new.push_back(color[index[k]*4+1]);
+        color_new.push_back(color[index[k]*4+2]);
+        color_new.push_back(color[index[k]*4+3]);
+      }
+    }
+    
+    void connected_component_edges(EdgeVector all_edges, std::vector<EdgeVector>& subsets, std::vector<int>& size_regions)
     {
       UndirectedGraph graph = UndirectedGraph(all_edges.begin(), all_edges.end(), all_edges.size());
       std::vector<int> component(boost::num_vertices(graph));
       boost::connected_components(graph, &component[0]);
-      std::cout<<"conn comp ="<<component<<std::endl;
+//      std::cout<<"conn comp ="<<component<<std::endl;
       
       int max_comp=0;
       for (size_t i = 0; i < component.size(); ++i) if (component[i]>max_comp) max_comp = component[i];
@@ -520,8 +575,8 @@ namespace detail
       size_regions.resize(max_comp+1,0);
       for (size_t i = 0; i < component.size(); ++i) size_regions[component[i]]++;
       
-      std::cout<<"num of cc = "<<max_comp+1<<std::endl;
-      std::cout<<"size of ccs = "<<size_regions<<std::endl;
+//      std::cout<<"num of cc = "<<max_comp+1<<std::endl;
+//      std::cout<<"size of ccs = "<<size_regions<<std::endl;
       
       subsets.clear();
       subsets.resize(max_comp+1);
@@ -533,7 +588,7 @@ namespace detail
         subsets[component[source(*ei, graph)]].push_back(std::make_pair(source(*ei, graph),target(*ei, graph)));
         
       }
-      std::cout<<"Subsets created.  Size = "<<subsets.size()<<std::endl;
+//      std::cout<<"Subsets created.  Size = "<<subsets.size()<<std::endl;
       //      std::cout << std::endl;
       
       
@@ -542,7 +597,7 @@ namespace detail
     std::list<Vertex_u> sort_cc(EdgeVector sub_edges,Vertex_u vend)
     {
       UndirectedGraph graph = UndirectedGraph(sub_edges.begin(), sub_edges.end(), sub_edges.size());
-      std::cout << "back edges:\n";
+//      std::cout << "back edges:\n";
       std::vector<Vertex_u> source_vertex;
       
       detect_loops vis(source_vertex);
@@ -552,16 +607,22 @@ namespace detail
       std::map<typename UndirectedGraph::edge_descriptor, boost::default_color_type> edge_color;
       auto ecmap = boost::make_assoc_property_map( edge_color );
       boost::undirected_dfs(graph,vis,vcmap,ecmap);
-      std::cout << std::endl;
+//      std::cout << std::endl;
       
-      std::cout<<"loop detected? "<<vis.LoopDetected()<<std::endl;
-      std::cout<<"source_vertex = " << source_vertex<<std::endl;
+//      std::cout<<"loop detected? "<<vis.LoopDetected()<<std::endl;
+//      std::cout<<"source_vertex = " << source_vertex<<std::endl;
       
       
       std::list<Vertex_u> v_path;
       v_path.push_back(vend);
       
       FindPath(graph,vend,v_path);
+      
+      if (vis.LoopDetected())
+      {
+        v_path.push_back(v_path.front());
+      }
+      
       
       return v_path;
       
@@ -577,7 +638,7 @@ namespace detail
         cnt++;
         Vertex_u v2a = source(*ei, graph);
         Vertex_u v2b = target(*ei, graph);
-        std::cout<<"edge = (" << v2a<<","<<v2b<<")"<<std::endl;
+//        std::cout<<"edge = (" << v2a<<","<<v2b<<")"<<std::endl;
         
         if (cnt>2)
         {
@@ -585,7 +646,7 @@ namespace detail
           continue;
         }
         
-        if ( std::find( v_path.cbegin(), v_path.cend(), v2b ) != v_path.cend() )
+        if ( std::find( v_path.cbegin(), v_path.cend(), v2b ) == v_path.cend() )
         {
           v_path.push_back(v2b);
           FindPath(graph, v2b, v_path);
@@ -596,7 +657,7 @@ namespace detail
     }
     
     
-    std::vector<int32_t> sort_points(EdgeVector edges)
+    std::vector<int32_t> sort_points(EdgeVector edges, std::vector<int32_t>& cc_index)
     {
       std::vector<EdgeVector> subsets;
       std::vector<int> size_regions;
@@ -606,12 +667,11 @@ namespace detail
       int cnt=-1;
       for (auto edges_subset : subsets)
       {
-        //std::list<Vertex> order_subset,order_tmp;
         
         cnt++;
         
-        std::cout<<"subset size ="<<edges_subset.size()<<std::endl;
-        std::cout<<"edge_subset["<<cnt<<"] = [ ";
+//        std::cout<<"subset size ="<<edges_subset.size()<<std::endl;
+//        std::cout<<"edge_subset["<<cnt<<"] = [ ";
         for (auto e : edges_subset)
         {
           std::cout<<" ["<<e.first<<","<<e.second<<"]";
@@ -621,25 +681,29 @@ namespace detail
         int sum_regions = 0;
         for (int it=0; it<=cnt; it++) { sum_regions+=size_regions[it];}
         Vertex_u vend=sum_regions-1;
-        std::cout<<"ending vertex = "<<vend<<std::endl;
+//        std::cout<<"ending vertex = "<<vend<<std::endl;
         
         
         std::list<Vertex_u> order_subset = sort_cc(edges_subset,vend);
 
         
         
-        std::cout<<"order size ="<<order_subset.size()<<std::endl;
-        std::cout<<"order_subset["<<cnt<<"] = [ ";
-        for (auto o : order_subset)
-        {
-          std::cout<<" "<<o;
-        }
+//        std::cout<<"order size ="<<order_subset.size()<<std::endl;
+//        std::cout<<"order_subset["<<cnt<<"] = [ ";
+//        for (auto o : order_subset)
+//        {
+//          std::cout<<" "<<o;
+//        }
+//
+//        std::cout<<" ]"<<std::endl;
+//        std::cout<<"splicing lists"<<std::endl;
         
-        std::cout<<" ]"<<std::endl;
-        std::cout<<"splicing lists"<<std::endl;
+        order_subset.reverse();
+        if (cnt ==0) cc_index.push_back(order_subset.size()-1);
+        else cc_index.push_back(cc_index.back()+order_subset.size());
+//        std::cout<<"cc_index = "<<cc_index.back()<<std::endl;
+//        order_subset.pop_back();
         order.splice(order.end(), order_subset);
-        
-        //        order= order_subset;
       }
       
       
@@ -662,7 +726,7 @@ namespace detail
       {
         
         source_vertex.push_back( source(e, g) );
-        std::cout << source(e, g)<< " -- " << target(e, g) << "\n";
+//        std::cout << source(e, g)<< " -- " << target(e, g) << "\n";
 //        std::cout<<"source_vertex = " << source_vertex<<std::endl;
 //        std::cout<<"source_vertex empty?" << source_vertex.empty()<<std::endl;
         
@@ -672,7 +736,7 @@ namespace detail
 
     void render()
     {
-      renderer_ = ospNewRenderer("scivis"); // choose Scientific Visualization renderer
+      renderer_ = ospNewRenderer(state_->getValue(Parameters::RendererType).toString().c_str()); // choose Scientific Visualization renderer
 
       OSPData lights;
       
