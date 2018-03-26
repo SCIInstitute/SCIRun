@@ -90,6 +90,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(LightAngle);
         ALGORITHM_PARAMETER_DECL(LightRadius);
         ALGORITHM_PARAMETER_DECL(LightLockCamera);
+        ALGORITHM_PARAMETER_DECL(Filename_root);
       }
     }
   }

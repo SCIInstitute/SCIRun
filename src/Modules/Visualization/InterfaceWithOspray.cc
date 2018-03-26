@@ -101,6 +101,7 @@ ALGORITHM_PARAMETER_DEF(Visualization, LightDirectionZ);
 ALGORITHM_PARAMETER_DEF(Visualization, LightAngle);
 ALGORITHM_PARAMETER_DEF(Visualization, LightRadius);
 ALGORITHM_PARAMETER_DEF(Visualization, LightLockCamera);
+ALGORITHM_PARAMETER_DEF(Visualization, Filename_root);
 
 MODULE_INFO_DEF(InterfaceWithOspray, Visualization, SCIRun)
 
@@ -142,6 +143,7 @@ void InterfaceWithOspray::setStateDefaults()
   state->setValue(Parameters::StreamlineRadius, 0.1);
   state->setValue(Parameters::SphereRadius, 0.3);
   state->setValue(Variables::Filename, std::string(""));
+  state->setValue(Parameters::Filename_root, std::string(""));
   state->setValue(Parameters::LightPositionX, 0.0);
   state->setValue(Parameters::LightPositionY, 0.0);
   state->setValue(Parameters::LightPositionZ, 500.0);
@@ -415,7 +417,7 @@ namespace detail
       ospCommit(data);
       ospSetData(spheres, "color", data);
       
-      ospSet1f(spheres, "radius", toFloat(Parameters::StreamlineRadius)*1.3);
+      ospSet1f(spheres, "radius", toFloat(Parameters::SphereRadius));
       
       ospCommit(spheres);
       
@@ -454,8 +456,8 @@ namespace detail
           v_index.push_back(nodesFromEdge[0]);
           auto nodePoints = edge.nodePoints();
           
-//          std::cout << "Edge " << edge.index() << " nodes=[" << nodesFromEdge[0] << " point=" << nodePoints[0].get_string()
-//          << ", " << nodesFromEdge[1] << " point=" << nodePoints[1].get_string() << "]" << std::endl;
+          std::cout << "Edge " << edge.index() << " nodes=[" << nodesFromEdge[0] << " point=" << nodePoints[0].get_string()
+          << ", " << nodesFromEdge[1] << " point=" << nodePoints[1].get_string() << "]" << std::endl;
 //
           all_edges.push_back(std::make_pair(nodesFromEdge[0],nodesFromEdge[1]));
 
@@ -465,29 +467,29 @@ namespace detail
       
       std::vector<int32_t> cc_index;
       std::vector<int32_t> index = sort_points(all_edges,cc_index);
-//      std::cout<<"cc_index = "<<cc_index<<std::endl;
+      std::cout<<"cc_index = "<<cc_index<<std::endl;
       
       std::vector<float> vertex_new, color_new;
       std::vector<int32_t> index_new;
       
-//      std::cout<<"index size ="<<index.size()<<std::endl;
-//      std::cout<<"index = [";
-//      for (auto i : index)
-//      {
-//        std::cout<<" "<<i;
-//      }
-//      std::cout<<" ]"<<std::endl;
+      std::cout<<"index size ="<<index.size()<<std::endl;
+      std::cout<<"index = [";
+      for (auto i : index)
+      {
+        std::cout<<" "<<i;
+      }
+      std::cout<<" ]"<<std::endl;
       
       ReorderNodes(index, cc_index, vertex, color, index_new, vertex_new, color_new);
       
-//      std::cout<<"index_new size ="<<index_new.size()<<std::endl;
-//      std::cout<<"index_new = [";
-//      for (auto i : index_new)
-//      {
-//        std::cout<<" "<<i;
-//      }
-//      std::cout<<" ]"<<std::endl;
-//
+      std::cout<<"index_new size ="<<index_new.size()<<std::endl;
+      std::cout<<"index_new = [";
+      for (auto i : index_new)
+      {
+        std::cout<<" "<<i;
+      }
+      std::cout<<" ]"<<std::endl;
+
       
       
 //      std::vector<Vertex_u> source_vertex_tot;
@@ -543,13 +545,13 @@ namespace detail
         }
         else
         {
-//          std::cout<<"end point"<<std::endl;
+          std::cout<<"end point"<<std::endl;
           cc_cnt++;
         }
         
-//        std::cout<<k<<std::endl;
-//        std::cout<<"vertex = [ "<<vertex[k*4]<<" , "<<vertex[k*4+1]<<" , "<<vertex[k*4+2]<<" ]"<<std::endl;
-//        std::cout<<"color = [ "<<color[k*4]<<" , "<<color[k*4+1]<<" , "<<color[k*4+2]<<" , "<<color[k*4+3]<<" ]"<<std::endl;
+        std::cout<<k<<std::endl;
+        std::cout<<"vertex = [ "<<vertex[k*4]<<" , "<<vertex[k*4+1]<<" , "<<vertex[k*4+2]<<" ]"<<std::endl;
+        std::cout<<"color = [ "<<color[k*4]<<" , "<<color[k*4+1]<<" , "<<color[k*4+2]<<" , "<<color[k*4+3]<<" ]"<<std::endl;
         
         vertex_new.push_back(vertex[index[k]*4]);
         vertex_new.push_back(vertex[index[k]*4+1]);
@@ -575,16 +577,16 @@ namespace detail
       size_regions.resize(max_comp+1,0);
       for (size_t i = 0; i < component.size(); ++i) size_regions[component[i]]++;
       
-//      std::cout<<"num of cc = "<<max_comp+1<<std::endl;
-//      std::cout<<"size of ccs = "<<size_regions<<std::endl;
+      std::cout<<"num of cc = "<<max_comp+1<<std::endl;
+      std::cout<<"size of ccs = "<<size_regions<<std::endl;
       
       subsets.clear();
       subsets.resize(max_comp+1);
       boost::graph_traits<UndirectedGraph>::edge_iterator ei, ei_end;
       for (tie(ei,ei_end)= edges(graph); ei != ei_end; ++ei)
       {
-        //        std::cout <<"edge["<<*ei<< "]=(" << source(*ei, graph)
-        //        << "," << target(*ei, graph) << ") ";
+                std::cout <<"edge["<<*ei<< "]=(" << source(*ei, graph)
+                << "," << target(*ei, graph) << ") ";
         subsets[component[source(*ei, graph)]].push_back(std::make_pair(source(*ei, graph),target(*ei, graph)));
         
       }
@@ -609,8 +611,8 @@ namespace detail
       boost::undirected_dfs(graph,vis,vcmap,ecmap);
 //      std::cout << std::endl;
       
-//      std::cout<<"loop detected? "<<vis.LoopDetected()<<std::endl;
-//      std::cout<<"source_vertex = " << source_vertex<<std::endl;
+      std::cout<<"loop detected? "<<vis.LoopDetected()<<std::endl;
+      std::cout<<"source_vertex = " << source_vertex<<std::endl;
       
       
       std::list<Vertex_u> v_path;
@@ -638,7 +640,7 @@ namespace detail
         cnt++;
         Vertex_u v2a = source(*ei, graph);
         Vertex_u v2b = target(*ei, graph);
-//        std::cout<<"edge = (" << v2a<<","<<v2b<<")"<<std::endl;
+        std::cout<<"edge = (" << v2a<<","<<v2b<<")";
         
         if (cnt>2)
         {
@@ -652,7 +654,7 @@ namespace detail
           FindPath(graph, v2b, v_path);
         }
       }
-      
+      std::cout<<std::endl;
       return true;
     }
     
@@ -670,13 +672,13 @@ namespace detail
         
         cnt++;
         
-//        std::cout<<"subset size ="<<edges_subset.size()<<std::endl;
-//        std::cout<<"edge_subset["<<cnt<<"] = [ ";
-//        for (auto e : edges_subset)
-//        {
-//          std::cout<<" ["<<e.first<<","<<e.second<<"]";
-//        }
-//        std::cout<<" ]"<<std::endl;
+        std::cout<<"subset size ="<<edges_subset.size()<<std::endl;
+        std::cout<<"edge_subset["<<cnt<<"] = [ ";
+        for (auto e : edges_subset)
+        {
+          std::cout<<" ["<<e.first<<","<<e.second<<"]";
+        }
+        std::cout<<" ]"<<std::endl;
         
         int sum_regions = 0;
         for (int it=0; it<=cnt; it++) { sum_regions+=size_regions[it];}
@@ -688,20 +690,20 @@ namespace detail
 
         
         
-//        std::cout<<"order size ="<<order_subset.size()<<std::endl;
-//        std::cout<<"order_subset["<<cnt<<"] = [ ";
-//        for (auto o : order_subset)
-//        {
-//          std::cout<<" "<<o;
-//        }
-//
-//        std::cout<<" ]"<<std::endl;
-//        std::cout<<"splicing lists"<<std::endl;
+        std::cout<<"order size ="<<order_subset.size()<<std::endl;
+        std::cout<<"order_subset["<<cnt<<"] = [ ";
+        for (auto o : order_subset)
+        {
+          std::cout<<" "<<o;
+        }
+
+        std::cout<<" ]"<<std::endl;
+        std::cout<<"splicing lists"<<std::endl;
         
         order_subset.reverse();
         if (cnt ==0) cc_index.push_back(order_subset.size()-1);
         else cc_index.push_back(cc_index.back()+order_subset.size());
-//        std::cout<<"cc_index = "<<cc_index.back()<<std::endl;
+        std::cout<<"cc_index = "<<cc_index.back()<<std::endl;
 //        order_subset.pop_back();
         order.splice(order.end(), order_subset);
       }
@@ -746,7 +748,7 @@ namespace detail
       float lightColor[] = { toFloat(Parameters::LightColorR), toFloat(Parameters::LightColorG), toFloat(Parameters::LightColorB) };
       
       ospSet3fv(a_light, "color", lightColor);
-      ospSet1f(a_light, "intensity", 1.0);
+      ospSet1f(a_light, "intensity", 0.0);
       ospCommit(a_light);
       lights = ospNewData(1, OSP_LIGHT, &a_light);
       
@@ -920,11 +922,23 @@ void InterfaceWithOspray::execute()
     }
 
     ospray.render();
+    
+    std::string fname_root = get_state()->getValue(Parameters::Filename_root).toString();
+    std::string isoString;
 
-    auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
+    if (fname_root=="")
+    {
+//      std::cout<<"using default name "<<std::endl;
+      isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
+    }
+    else
+    {
+//      std::cout<<"using input = "<<fname_root<<std::endl;
+      isoString = fname_root;
+    }
     auto filename = "scirunOsprayOutput_" + isoString + ".ppm";
     auto filePath = get_state()->getValue(Variables::Filename).toString() / boost::filesystem::path(filename);
-    std::cout<<"filename = "<<filePath.string()<<std::endl;
+//    std::cout<<"filename = "<<filePath.string()<<std::endl;
     ospray.writeImage(filePath.string());
     remark("Saving output to " + filePath.string());
 
