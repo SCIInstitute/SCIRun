@@ -87,7 +87,7 @@ void ExtractSimpleIsosurface::execute()
         std::ostringstream ostr;
         for (size_t k=0; k<(mat_iso->get_dense_size()-1); k++)
         {
-          ostr << data[k] <<", ";
+          ostr << data[k] <<" ";
         }
         ostr<< data[mat_iso->get_dense_size()-1];
         state->setValue(Parameters::ListOfIsovalues, ostr.str());
@@ -106,17 +106,11 @@ void ExtractSimpleIsosurface::execute()
       auto isoList = state->getValue(Parameters::ListOfIsovalues).toString();
       std::vector<std::string> tokens;
       boost::split(tokens, isoList, boost::is_any_of(", "));
-      
-      for (std::string t : tokens)
-      {
-        std::cout<<"t = "<<t<<std::endl;
-      }
 
       std::transform(tokens.begin(), tokens.end(), std::back_inserter(isoDoubles), [](const std::string& s)
       {
         try { return boost::lexical_cast<double>(s); } catch (boost::bad_lexical_cast&) { return 0.0; }
       });
-      std::cout<<"tokens= "<< tokens <<std::endl;
     }
     else if (state->getValue(Parameters::IsovalueChoice).toString() == "Quantity")
     {
@@ -146,8 +140,6 @@ void ExtractSimpleIsosurface::execute()
     std::transform(isoDoubles.begin(), isoDoubles.end(), std::back_inserter(isos), [](double x) { return makeVariable("iso", x); });
     algo().set(Parameters::Isovalues, isos);
     
-    std::cout<<"isovalues= "<< isos <<std::endl;
-
     auto output = algo().run(withInputData((InputField, field)));
     sendOutputFromAlgorithm(OutputField, output);
     sendOutputFromAlgorithm(OutputMatrix, output);

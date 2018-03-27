@@ -88,8 +88,6 @@ AlgorithmOutput ExtractSimpleIsosurfaceAlgo::run(const AlgorithmInput& input) co
   if (!run(field, iso_value_vector, output_field))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
   
-  std::cout<<"vector size= "<<iso_value_vector.size()<<std::endl;
-  
   DenseMatrixHandle output_matrix( new DenseMatrix(iso_value_vector.size(),1,0.0));
   double *data = output_matrix->data();
   for (size_t k=0;k<iso_value_vector.size();k++) {data[k]=iso_value_vector[k];}

@@ -456,9 +456,9 @@ namespace detail
           v_index.push_back(nodesFromEdge[0]);
           auto nodePoints = edge.nodePoints();
           
-          std::cout << "Edge " << edge.index() << " nodes=[" << nodesFromEdge[0] << " point=" << nodePoints[0].get_string()
-          << ", " << nodesFromEdge[1] << " point=" << nodePoints[1].get_string() << "]" << std::endl;
-//
+//          std::cout << "Edge " << edge.index() << " nodes=[" << nodesFromEdge[0] << " point=" << nodePoints[0].get_string()
+//          << ", " << nodesFromEdge[1] << " point=" << nodePoints[1].get_string() << "]" << std::endl;
+////
           all_edges.push_back(std::make_pair(nodesFromEdge[0],nodesFromEdge[1]));
 
         }
@@ -467,28 +467,28 @@ namespace detail
       
       std::vector<int32_t> cc_index;
       std::vector<int32_t> index = sort_points(all_edges,cc_index);
-      std::cout<<"cc_index = "<<cc_index<<std::endl;
+//      std::cout<<"cc_index = "<<cc_index<<std::endl;
       
       std::vector<float> vertex_new, color_new;
       std::vector<int32_t> index_new;
       
-      std::cout<<"index size ="<<index.size()<<std::endl;
-      std::cout<<"index = [";
-      for (auto i : index)
-      {
-        std::cout<<" "<<i;
-      }
-      std::cout<<" ]"<<std::endl;
+//      std::cout<<"index size ="<<index.size()<<std::endl;
+//      std::cout<<"index = [";
+//      for (auto i : index)
+//      {
+//        std::cout<<" "<<i;
+//      }
+//      std::cout<<" ]"<<std::endl;
       
       ReorderNodes(index, cc_index, vertex, color, index_new, vertex_new, color_new);
       
-      std::cout<<"index_new size ="<<index_new.size()<<std::endl;
-      std::cout<<"index_new = [";
-      for (auto i : index_new)
-      {
-        std::cout<<" "<<i;
-      }
-      std::cout<<" ]"<<std::endl;
+//      std::cout<<"index_new size ="<<index_new.size()<<std::endl;
+//      std::cout<<"index_new = [";
+//      for (auto i : index_new)
+//      {
+//        std::cout<<" "<<i;
+//      }
+//      std::cout<<" ]"<<std::endl;
 
       
       
@@ -545,13 +545,13 @@ namespace detail
         }
         else
         {
-          std::cout<<"end point"<<std::endl;
+//          std::cout<<"end point"<<std::endl;
           cc_cnt++;
         }
         
-        std::cout<<k<<std::endl;
-        std::cout<<"vertex = [ "<<vertex[k*4]<<" , "<<vertex[k*4+1]<<" , "<<vertex[k*4+2]<<" ]"<<std::endl;
-        std::cout<<"color = [ "<<color[k*4]<<" , "<<color[k*4+1]<<" , "<<color[k*4+2]<<" , "<<color[k*4+3]<<" ]"<<std::endl;
+//        std::cout<<k<<std::endl;
+//        std::cout<<"vertex = [ "<<vertex[k*4]<<" , "<<vertex[k*4+1]<<" , "<<vertex[k*4+2]<<" ]"<<std::endl;
+//        std::cout<<"color = [ "<<color[k*4]<<" , "<<color[k*4+1]<<" , "<<color[k*4+2]<<" , "<<color[k*4+3]<<" ]"<<std::endl;
         
         vertex_new.push_back(vertex[index[k]*4]);
         vertex_new.push_back(vertex[index[k]*4+1]);
@@ -577,16 +577,16 @@ namespace detail
       size_regions.resize(max_comp+1,0);
       for (size_t i = 0; i < component.size(); ++i) size_regions[component[i]]++;
       
-      std::cout<<"num of cc = "<<max_comp+1<<std::endl;
-      std::cout<<"size of ccs = "<<size_regions<<std::endl;
+//      std::cout<<"num of cc = "<<max_comp+1<<std::endl;
+//      std::cout<<"size of ccs = "<<size_regions<<std::endl;
       
       subsets.clear();
       subsets.resize(max_comp+1);
       boost::graph_traits<UndirectedGraph>::edge_iterator ei, ei_end;
       for (tie(ei,ei_end)= edges(graph); ei != ei_end; ++ei)
       {
-                std::cout <<"edge["<<*ei<< "]=(" << source(*ei, graph)
-                << "," << target(*ei, graph) << ") ";
+//                std::cout <<"edge["<<*ei<< "]=(" << source(*ei, graph)
+//                << "," << target(*ei, graph) << ") ";
         subsets[component[source(*ei, graph)]].push_back(std::make_pair(source(*ei, graph),target(*ei, graph)));
         
       }
@@ -596,7 +596,7 @@ namespace detail
       
     }
     
-    std::list<Vertex_u> sort_cc(EdgeVector sub_edges,Vertex_u vend)
+    std::list<Vertex_u> sort_cc(EdgeVector sub_edges)
     {
       UndirectedGraph graph = UndirectedGraph(sub_edges.begin(), sub_edges.end(), sub_edges.size());
 //      std::cout << "back edges:\n";
@@ -610,15 +610,18 @@ namespace detail
       auto ecmap = boost::make_assoc_property_map( edge_color );
       boost::undirected_dfs(graph,vis,vcmap,ecmap);
 //      std::cout << std::endl;
-      
-      std::cout<<"loop detected? "<<vis.LoopDetected()<<std::endl;
-      std::cout<<"source_vertex = " << source_vertex<<std::endl;
+//
+//      std::cout<<"loop detected? "<<vis.LoopDetected()<<std::endl;
+//      std::cout<<"source_vertex = " << source_vertex<<std::endl;
       
       
       std::list<Vertex_u> v_path;
-      v_path.push_back(vend);
+      Vertex_u v1 = sub_edges[0].first;
+      v_path.push_back(v1);
       
-      FindPath(graph,vend,v_path);
+//      std::cout<<"starting point  = "<<v1<<std::endl;
+      
+      FindPath(graph,v1,v_path,false);
       
       if (vis.LoopDetected())
       {
@@ -630,32 +633,45 @@ namespace detail
       
     }
     
-    bool FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std::list<Vertex_u>& v_path)
+    bool FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std::list<Vertex_u>& v_path,bool front)
     {
+      bool no_branch = true;
       typename boost::graph_traits<UndirectedGraph>::out_edge_iterator ei, ei_end;
       size_t edge_idx = 0;
       int cnt = 0;
+      int neigh_cnt=0;
       for ( tie(ei, ei_end)=out_edges( curr_v, graph ); ei != ei_end; ++ei, ++edge_idx )
       {
         cnt++;
         Vertex_u v2a = source(*ei, graph);
         Vertex_u v2b = target(*ei, graph);
-        std::cout<<"edge = (" << v2a<<","<<v2b<<")";
+//        std::cout<<"edge = (" << v2a<<","<<v2b<<")" <<std::endl;
         
-        if (cnt>2)
+        if (cnt ==2)
+        {
+          
+        }
+        else if (cnt>2)
         {
           std::cout<<"branch detected"<<std::endl;
+          no_branch = false;
           continue;
         }
         
         if ( std::find( v_path.cbegin(), v_path.cend(), v2b ) == v_path.cend() )
         {
-          v_path.push_back(v2b);
-          FindPath(graph, v2b, v_path);
+          neigh_cnt++;
+          if (neigh_cnt ==2) front = true;
+          
+          if (front) v_path.push_front(v2b);
+          else v_path.push_back(v2b);
+          
+          FindPath(graph, v2b, v_path,front);
+          front = false;
         }
       }
-      std::cout<<std::endl;
-      return true;
+//      std::cout<<std::endl;
+      return no_branch;
     }
     
     
@@ -672,38 +688,36 @@ namespace detail
         
         cnt++;
         
-        std::cout<<"subset size ="<<edges_subset.size()<<std::endl;
-        std::cout<<"edge_subset["<<cnt<<"] = [ ";
-        for (auto e : edges_subset)
-        {
-          std::cout<<" ["<<e.first<<","<<e.second<<"]";
-        }
-        std::cout<<" ]"<<std::endl;
+//        std::cout<<"subset size ="<<edges_subset.size()<<std::endl;
+//        std::cout<<"edge_subset["<<cnt<<"] = [ ";
+//        for (auto e : edges_subset)
+//        {
+//          std::cout<<" ["<<e.first<<","<<e.second<<"]";
+//        }
+//        std::cout<<" ]"<<std::endl;
         
         int sum_regions = 0;
         for (int it=0; it<=cnt; it++) { sum_regions+=size_regions[it];}
-        Vertex_u vend=sum_regions-1;
-//        std::cout<<"ending vertex = "<<vend<<std::endl;
         
         
-        std::list<Vertex_u> order_subset = sort_cc(edges_subset,vend);
+        std::list<Vertex_u> order_subset = sort_cc(edges_subset);
 
         
         
-        std::cout<<"order size ="<<order_subset.size()<<std::endl;
-        std::cout<<"order_subset["<<cnt<<"] = [ ";
-        for (auto o : order_subset)
-        {
-          std::cout<<" "<<o;
-        }
-
-        std::cout<<" ]"<<std::endl;
-        std::cout<<"splicing lists"<<std::endl;
+//        std::cout<<"order size ="<<order_subset.size()<<std::endl;
+//        std::cout<<"order_subset["<<cnt<<"] = [ ";
+//        for (auto o : order_subset)
+//        {
+//          std::cout<<" "<<o;
+//        }
+//
+//        std::cout<<" ]"<<std::endl;
+//        std::cout<<"splicing lists"<<std::endl;
         
         order_subset.reverse();
         if (cnt ==0) cc_index.push_back(order_subset.size()-1);
         else cc_index.push_back(cc_index.back()+order_subset.size());
-        std::cout<<"cc_index = "<<cc_index.back()<<std::endl;
+//        std::cout<<"cc_index = "<<cc_index.back()<<std::endl;
 //        order_subset.pop_back();
         order.splice(order.end(), order_subset);
       }
