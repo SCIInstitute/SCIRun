@@ -17,10 +17,10 @@
 #pragma once
 
 #define NOMINMAX
-#include "ospcommon/box.h"
-#include "QOSPRayWindow.h"
-#include "SliceWidget.h"
-#include "LightEditor.h"
+#include <components/ospcommon/box.h>
+#include <Interface/Modules/Render/Ospray/QOSPRayWindow.h>
+#include <Interface/Modules/Render/Ospray/SliceWidget.h>
+#include <Interface/Modules/Render/Ospray/LightEditor.h>
 #include <QtGui>
 #include <string>
 #include <vector>

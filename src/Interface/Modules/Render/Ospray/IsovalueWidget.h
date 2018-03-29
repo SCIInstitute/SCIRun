@@ -18,7 +18,7 @@
 
 #define NOMINMAX
 #include <ospray/ospray.h>
-#include "ospcommon/vec.h"
+#include <components/ospcommon/vec.h>
 #include <QtGui>
 
 class IsosurfaceEditor;

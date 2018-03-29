@@ -21,7 +21,7 @@
 // ospray public
 #include <ospray/ospray.h>
 // ospcommon
-#include "ospcommon/vec.h"
+#include <components/ospcommon/vec.h>
 // std
 #include <string>
 #include <vector>

@@ -20,7 +20,7 @@
 // ospray API
 #include "ospray/ospray.h"
 // ospcommon
-#include "ospcommon/box.h"
+#include <components/ospcommon/box.h>
 // ospray
 #include "ospray/common/OSPCommon.h"
 // std
@@ -104,7 +104,7 @@ namespace ospray {
       float samplingRate {1.f};
       //! world space bounding box of this volume
       box3f bounds;
-      
+
       size_t fileOffset {0};
       vec3f gridOrigin {0};
       vec3f gridSpacing {1};
@@ -116,7 +116,7 @@ namespace ospray {
 
       std::string voxelType;
     };
-    
+
     struct Group {
       std::vector<Geometry *> geometry;
       std::vector<Volume *>   volume;
@@ -127,21 +127,21 @@ namespace ospray {
   }
 
   //! Print an error message.
-  inline void emitMessage(const std::string &kind, const std::string &message) 
+  inline void emitMessage(const std::string &kind, const std::string &message)
   { std::cerr << "#osp:vv:importer " + kind + ": " + message + "." << std::endl; }
-  
+
   //! Error checking.
-  inline void exitOnCondition(bool condition, const std::string &message) 
+  inline void exitOnCondition(bool condition, const std::string &message)
   { if (!condition) return;  emitMessage("ERROR", message);  exit(1); }
-  
+
   //! Warning condition.
-  inline void warnOnCondition(bool condition, const std::string &message) 
+  inline void warnOnCondition(bool condition, const std::string &message)
   { if (!condition) return;  emitMessage("WARNING", message); }
-  
+
 #if 0
   //! Get the absolute file path.
   static std::string getFullFilePath(const std::string &filename)
-  { 
+  {
 #ifdef _WIN32
     //getfullpathname
     throw std::runtime_error("no realpath() under windows");

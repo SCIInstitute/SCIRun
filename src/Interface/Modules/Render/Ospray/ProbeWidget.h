@@ -18,7 +18,7 @@
 
 #define NOMINMAX
 #include <ospray/ospray.h>
-#include "ospcommon/box.h"
+#include <components/ospcommon/box.h>
 #include <QtGui>
 #include <vector>
 

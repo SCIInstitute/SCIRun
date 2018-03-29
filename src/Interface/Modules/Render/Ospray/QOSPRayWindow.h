@@ -20,7 +20,7 @@
 // ospray public
 #include <ospray/ospray.h>
 // ospcommon
-#include "ospcommon/AffineSpace.h"
+#include <components/ospcommon/AffineSpace.h>
 // qt
 #include <QtGui>
 #include <QGLWidget>

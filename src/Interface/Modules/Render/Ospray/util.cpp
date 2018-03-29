@@ -15,7 +15,7 @@
 // ======================================================================== //
 
 #include "util.h"
-#include "ospcommon/vec.h"
+#include <components/ospcommon/vec.h>
 
 #ifdef _WIN32
 #  ifndef WIN32_LEAN_AND_MEAN
@@ -74,8 +74,8 @@ namespace ospray {
 
       // get an OSPRay depth texture from the OpenGL depth buffer
       OSPTexture2D depthTexture
-        = getOSPDepthTextureFromOpenGLPerspective(fovy, aspect, zNear, zFar, 
-                                                  (osp::vec3f&)cameraDir, (osp::vec3f&)cameraUp, 
+        = getOSPDepthTextureFromOpenGLPerspective(fovy, aspect, zNear, zFar,
+                                                  (osp::vec3f&)cameraDir, (osp::vec3f&)cameraUp,
                                                   glDepthBuffer, width, height);
 
       // free allocated depth buffer
@@ -106,7 +106,7 @@ namespace ospray {
         const double z_n = 2.0 * glDepthBuffer[i] - 1.0;
         ospDepth[i] = 2.0 * zNear * zFar / (zFar + zNear - z_n * (zFar - zNear));
       }
-      
+
       // transform from orthogonal Z depth to ray distance t
       ospray::vec3f dir_du = normalize(cross(cameraDir, cameraUp));
       ospray::vec3f dir_dv = normalize(cross(dir_du, cameraDir));
@@ -168,8 +168,8 @@ namespace ospray {
 
       // get OpenGL depth from OSPRay depth
       float *glDepth
-        = getOpenGLDepthFromOSPPerspective(fovy, aspect, zNear, zFar, 
-                                           (osp::vec3f&)cameraDir, (osp::vec3f&)cameraUp, 
+        = getOpenGLDepthFromOSPPerspective(fovy, aspect, zNear, zFar,
+                                           (osp::vec3f&)cameraDir, (osp::vec3f&)cameraUp,
                                            ospDepthBuffer, frameBufferSize);
 
       // unmap OSPRay depth buffer
@@ -191,7 +191,7 @@ namespace ospray {
       ospray::vec3f cameraDir = (ospray::vec3f&)_cameraDir;
       ospray::vec3f cameraUp = (ospray::vec3f&)_cameraUp;
       // this should later be done in ISPC...
-      
+
       const size_t ospDepthBufferWidth =  (size_t)frameBufferSize.x;
       const size_t ospDepthBufferHeight = (size_t)frameBufferSize.y;
 

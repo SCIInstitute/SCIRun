@@ -19,7 +19,7 @@
 #include "QOSPRayWindow.h"
 #include "util.h"
 
-#include "ospcommon/common.h"
+#include <components/ospcommon/common.h>
 
 #ifdef __APPLE__
   #include <OpenGL/glu.h>
@@ -38,19 +38,19 @@ std::ostream &operator<<(std::ostream &o, const Viewport &viewport)
 }
 
 
-QOSPRayWindow::QOSPRayWindow(QMainWindow *parent, 
-                             OSPRenderer renderer, 
+QOSPRayWindow::QOSPRayWindow(QMainWindow *parent,
+                             OSPRenderer renderer,
                              bool showFrameRate,
                              std::string writeFramesFilename)
-  : parent(parent), 
-    showFrameRate(showFrameRate), 
-    frameCount(0), 
-    renderingEnabled(false), 
-    rotationRate(0.f), 
-    benchmarkWarmUpFrames(0), 
-    benchmarkFrames(0), 
-    frameBuffer(NULL), 
-    renderer(NULL), 
+  : parent(parent),
+    showFrameRate(showFrameRate),
+    frameCount(0),
+    renderingEnabled(false),
+    rotationRate(0.f),
+    benchmarkWarmUpFrames(0),
+    benchmarkFrames(0),
+    frameBuffer(NULL),
+    renderer(NULL),
     camera(NULL),
     maxDepthTexture(NULL),
     writeFramesFilename(writeFramesFilename)
