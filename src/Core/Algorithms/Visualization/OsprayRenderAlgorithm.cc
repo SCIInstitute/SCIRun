@@ -82,7 +82,7 @@ namespace detail
   private:
     static bool initialized_;
     static Core::Thread::Mutex lock_;
-    static void initialize();
+    static void initialize(AlgorithmBase* algo);
 
     Core::Thread::Guard guard_;
     Core::Geometry::BBox imageBox_;
@@ -113,7 +113,7 @@ namespace detail
   };
 
 
-  void OsprayImpl::initialize()
+  void OsprayImpl::initialize(AlgorithmBase* algo)
   {
     if (!initialized_)
     {
@@ -122,8 +122,7 @@ namespace detail
       int init_error = ospInit(&argc, argv);
       if (init_error != OSP_NO_ERROR)
       {
-        std::cerr << "OSPRAY ERROR" << std::endl;
-        throw init_error;
+        THROW_ALGORITHM_INPUT_ERROR_WITH(algo, "Ospray initialization error code: " + std::to_string(init_error));
       }
       initialized_ = true;
     }
@@ -141,7 +140,7 @@ namespace detail
 
   OsprayImpl::OsprayImpl(AlgorithmBase* algo) : guard_(lock_.get()), algo_(algo)
   {
-    initialize();
+    initialize(algo_);
   }
   
   void OsprayImpl::setup()
