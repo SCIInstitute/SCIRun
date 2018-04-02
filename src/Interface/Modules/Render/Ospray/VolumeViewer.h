@@ -71,12 +71,12 @@ Q_OBJECT
 public:
 
   //! Constructor.
-  VolumeViewer(const std::vector<std::string> &objectFileFilenames,
-               std::string renderer_type,
-               bool ownModelPerObject,
-               bool showFrameRate,
-               bool fullScreen,
-               std::string writeFramesFilename);
+  explicit VolumeViewer(const std::vector<std::string> &objectFileFilenames,
+               const std::string& renderer_type = "scivis",
+               bool ownModelPerObject = false,
+               bool showFrameRate = false,
+               bool fullScreen = false,
+               const std::string& writeFramesFilename = "");
 
   //! Get the volume bounding box.
   ospcommon::box3f getBoundingBox();
@@ -243,12 +243,12 @@ protected:
   QLabel currentFilenameInfoLabel;
 
   //! Print an error message.
-  void Q_EMITMessage(const std::string &kind, const std::string &message) const
+  void errorMessage(const std::string &kind, const std::string &message) const
   { std::cerr << "  " + toString() + "  " + kind + ": " + message + "." << std::endl; }
 
   //! Error checking.
   void exitOnCondition(bool condition, const std::string &message) const
-  { if (!condition) return;  Q_EMITMessage("ERROR", message);  exit(1); }
+  { if (!condition) return;  errorMessage("ERROR", message);  exit(1); }
 
   //! Load an OSPRay model from a file.
   void importObjectsFromFile(const std::string &filename);

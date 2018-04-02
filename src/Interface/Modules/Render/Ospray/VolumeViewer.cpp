@@ -32,11 +32,11 @@
 using namespace ospcommon;
 
 VolumeViewer::VolumeViewer(const std::vector<std::string> &objectFileFilenames,
-                           std::string renderer_type,
+                           const std::string& renderer_type,
                            bool ownModelPerObject,
                            bool showFrameRate,
                            bool fullScreen,
-                           std::string writeFramesFilename)
+                           const std::string& writeFramesFilename)
   : objectFileFilenames(objectFileFilenames),
     modelIndex(0),
     ownModelPerObject(ownModelPerObject),

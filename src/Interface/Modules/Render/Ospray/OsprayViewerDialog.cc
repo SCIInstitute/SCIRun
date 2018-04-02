@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <es-log/trace-log.h>
 #include <Interface/Modules/Render/Ospray/OsprayViewerDialog.h>
+#include <Interface/Modules/Render/Ospray/VolumeViewer.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -36,4 +37,6 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
+  auto volumeViewer = new VolumeViewer({});
+  volumeViewer->show();
 }
