@@ -15,8 +15,8 @@
 // ======================================================================== //
 
 // own
-#include "VolumeViewer.h"
-#include "TransferFunctionEditor.h"
+#include "../VolumeViewer.h"
+#include "../TransferFunctionEditor.h"
 // ospray public
 #include "ospray/ospray.h"
 // std

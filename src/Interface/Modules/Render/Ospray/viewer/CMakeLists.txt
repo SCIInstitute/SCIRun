@@ -26,65 +26,15 @@ FIND_PACKAGE(OpenGL REQUIRED)
 INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIRS})
 SET(LIBS ${LIBS} ${OPENGL_LIBRARIES} ${TBB_LIBRARY_MALLOC} ${TBB_LIBRARY})
 
-SET(SRCS ${SRCS}
-  ColorMap.h
-  ColorMap.cpp
-  IsosurfaceEditor.cpp
-  IsovalueWidget.cpp
-  LightEditor.cpp
-  LinearTransferFunctionWidget.cpp
-  OpenGLAnnotationRenderer.cpp
-  PreferencesDialog.cpp
-  ProbeWidget.cpp
-  QOSPRayWindow.cpp
-  SliceEditor.cpp
-  SliceWidget.cpp
-  TransferFunctionEditor.cpp
-  VolumeViewer.cpp
-  util.h
-  util.cpp
-  OsprayViewerDialog.cc
-  importer/Importer.h
-  importer/Importer.cpp
-  importer/importOSP.cpp
-  importer/importRAW.cpp
-  importer/importRM.cpp
-  importer/TinyXML2.cpp
-  importer/TinyXML2.h
+SET(SRCS
+  main.cpp
 )
 
-SET(MOC_HEADERS
-  IsosurfaceEditor.h
-  IsovalueWidget.h
-  LightEditor.h
-  LinearTransferFunctionWidget.h
-  OpenGLAnnotationRenderer.h
-  PreferencesDialog.h
-  ProbeWidget.h
-  QOSPRayWindow.h
-  SliceEditor.h
-  SliceWidget.h
-  TransferFunctionEditor.h
-  VolumeViewer.h
-  OsprayViewerDialog.h
-  share.h
-)
-
-QT4_WRAP_CPP(MOC_OUTFILES ${MOC_HEADERS})
-
-SCIRUN_ADD_LIBRARY(Interface_Modules_Render_Ospray
+ADD_EXECUTABLE(ospVolumeViewer
   ${SRCS}
-  ${MOC_HEADERS}
-  ${MOC_OUTFILES}
 )
 
-TARGET_LINK_LIBRARIES(Interface_Modules_Render_Ospray
-  Interface_Modules_Base
+TARGET_LINK_LIBRARIES(ospVolumeViewer
   ${LIBS}
+  Interface_Modules_Render_Ospray
 )
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Interface_Modules_Render_Ospray)
-ENDIF(BUILD_SHARED_LIBS)
-
-ADD_SUBDIRECTORY(viewer)
