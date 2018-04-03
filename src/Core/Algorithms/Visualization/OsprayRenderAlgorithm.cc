@@ -93,7 +93,7 @@ namespace detail
     OSPRenderer renderer_;
     OSPFrameBuffer framebuffer_;
     AlgorithmBase* algo_;
-   
+
 
     float toFloat(const Name& name) const;
     OsprayGeometryObjectHandle makeObject(FieldHandle field);
@@ -124,6 +124,8 @@ namespace detail
       {
         THROW_ALGORITHM_INPUT_ERROR_WITH(algo, "Ospray initialization error code: " + std::to_string(init_error));
       }
+      auto device = ospGetCurrentDevice();
+      ospDeviceSetErrorMsgFunc(device, [](const char *msg) { std::cerr << msg << std::endl; });
       initialized_ = true;
     }
   }
@@ -132,7 +134,7 @@ namespace detail
   {
     return static_cast<float>(algo_->get(name).toDouble());
   }
-  
+
   std::array<float, 3> OsprayImpl::toArray(const Vector& v) const
   {
     return { static_cast<float>(v.x()), static_cast<float>(v.y()), static_cast<float>(v.z()) };
@@ -142,7 +144,7 @@ namespace detail
   {
     initialize(algo_);
   }
-  
+
   void OsprayImpl::setup()
   {
     imgSize_.x = algo_->get(Parameters::ImageWidth).toInt();
@@ -213,7 +215,7 @@ namespace detail
       side[0]*newDir[1] - side[1]*newDir[0]);
   }
 
- 
+
   void OsprayImpl::visualizeScalarField(OsprayGeometryObjectHandle obj)
   {
     const auto& fieldData = obj->data;
@@ -354,7 +356,7 @@ namespace detail
     fprintf(file, "\n");
     fclose(file);
   }
-  
+
   bool OsprayImpl::initialized_(false);
   Core::Thread::Mutex OsprayImpl::lock_("ospray lock");
 }
@@ -422,7 +424,7 @@ std::string OsprayRenderAlgorithm::writeImage() const
 AlgorithmOutput OsprayRenderAlgorithm::run(const AlgorithmInput& input) const
 {
   render(input);
- 
+
   StringHandle fileStrObj(new String(writeImage()));
   AlgorithmOutput output;
   output[Variables::Filename] = fileStrObj;

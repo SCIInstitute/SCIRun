@@ -72,9 +72,9 @@ public:
 
   //! Constructor.
   explicit VolumeViewer(const std::vector<std::string> &objectFileFilenames,
+               bool showFrameRate = false,
                const std::string& renderer_type = "scivis",
                bool ownModelPerObject = false,
-               bool showFrameRate = false,
                bool fullScreen = false,
                const std::string& writeFramesFilename = "");
 

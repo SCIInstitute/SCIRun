@@ -34,6 +34,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/share.h>
 
+class VolumeViewer;
+
 namespace SCIRun {
 
   namespace Gui {
@@ -47,6 +49,9 @@ namespace SCIRun {
       OsprayViewerDialog(const std::string& name,
         Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
+      ~OsprayViewerDialog();
+    private:
+      VolumeViewer* viewer_ {nullptr};
     };
   }
 }
