@@ -249,9 +249,9 @@ int main(int argc, char *argv[])
 
   // Create the OSPRay state and viewer window.
   VolumeViewer *volumeViewer = new VolumeViewer(inFileName,
-                                                renderer,
+    showFrameRate,                                               renderer,
                                                 ownModelPerObject,
-                                                showFrameRate,
+
                                                 fullScreen,
                                                 writeFramesFilename);
 

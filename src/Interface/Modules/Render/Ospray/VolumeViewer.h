@@ -185,8 +185,8 @@ public Q_SLOTS:
 protected:
 
   //! OSPRay object file filenames, one for each model / time step.
-  std::vector<std::string> objectFileFilenames;
-  bool ownModelPerObject; // create a separate model for each object (not not only for each file)
+  std::vector<std::string> objectFileFilenames_;
+  bool ownModelPerObject_; // create a separate model for each object (not not only for each file)
 
   //! OSPRay models and their volumes / geometries.
   std::vector<ModelState> modelStates;

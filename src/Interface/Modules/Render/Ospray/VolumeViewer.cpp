@@ -37,9 +37,9 @@ VolumeViewer::VolumeViewer(const std::vector<std::string> &objectFileFilenames,
                            bool ownModelPerObject,
                            bool fullScreen,
                            const std::string& writeFramesFilename)
-  : objectFileFilenames(objectFileFilenames),
+  : objectFileFilenames_(objectFileFilenames),
     modelIndex(0),
-    ownModelPerObject(ownModelPerObject),
+    ownModelPerObject_(ownModelPerObject),
     boundingBox(ospcommon::vec3f(0.f), ospcommon::vec3f(1.f)),
     renderer(NULL),
     rendererInitialized(false),
@@ -135,10 +135,10 @@ void VolumeViewer::setModel(size_t index)
     probeWidget->setVolume(modelStates[index].volumes[0]->handle);
 
     // Update current filename information label.
-    if (ownModelPerObject)
+    if (ownModelPerObject_)
       currentFilenameInfoLabel.setText("<b>Timestep " + QString::number(index) + QString("</b>: Data value range: [") + QString::number(voxelRange.x) + ", " + QString::number(voxelRange.y) + "]");
     else
-      currentFilenameInfoLabel.setText("<b>Timestep " + QString::number(index) + QString("</b>: ") + QString(objectFileFilenames[index].c_str()).split('/').back() + ". Data value range: [" + QString::number(voxelRange.x) + ", " + QString::number(voxelRange.y) + "]");
+      currentFilenameInfoLabel.setText("<b>Timestep " + QString::number(index) + QString("</b>: ") + QString(objectFileFilenames_[index].c_str()).split('/').back() + ". Data value range: [" + QString::number(voxelRange.x) + ", " + QString::number(voxelRange.y) + "]");
   }
   // Enable rendering on the OSPRay window.
   osprayWindow->setRenderingEnabled(true);
@@ -675,7 +675,7 @@ void VolumeViewer::setIsovalues(std::vector<float> isovalues)
 
 void VolumeViewer::importObjectsFromFile(const std::string &filename)
 {
-  if (!ownModelPerObject)
+  if (!ownModelPerObject_)
     // Create an OSPRay model and its associated model state.
     modelStates.push_back(ModelState(ospNewModel()));
 
@@ -690,7 +690,7 @@ void VolumeViewer::importObjectsFromFile(const std::string &filename)
   PRINT(imported->geometry.size());
 
   for (size_t i=0 ; i < imported->geometry.size() ; i++) {
-    if (ownModelPerObject)
+    if (ownModelPerObject_)
       modelStates.push_back(ModelState(ospNewModel()));
 
     // Commit the geometry.
@@ -699,12 +699,12 @@ void VolumeViewer::importObjectsFromFile(const std::string &filename)
     // Add the loaded geometry to the model.
     ospAddGeometry(modelStates.back().model, imported->geometry[i]->handle);
 
-    if (ownModelPerObject)
+    if (ownModelPerObject_)
       ospCommit(modelStates.back().model);
   }
   // Iterate over the objects contained in the object list.
   for (size_t i=0 ; i < imported->volume.size() ; i++) {
-    if (ownModelPerObject)
+    if (ownModelPerObject_)
       modelStates.push_back(ModelState(ospNewModel()));
 
     ospray::importer::Volume *vol = imported->volume[i];
@@ -723,13 +723,13 @@ void VolumeViewer::importObjectsFromFile(const std::string &filename)
                                                                 vol->voxelRange
                                                                 ));
 
-    if (ownModelPerObject)
+    if (ownModelPerObject_)
       ospCommit(modelStates.back().model);
   }
 #else
   // Iterate over the objects contained in the object list.
   for (size_t i=0 ; objects[i] ; i++) {
-    if (ownModelPerObject)
+    if (ownModelPerObject_)
       modelStates.push_back(ModelState(ospNewModel()));
 
     OSPDataType type;
@@ -756,12 +756,12 @@ void VolumeViewer::importObjectsFromFile(const std::string &filename)
       modelStates.back().volumes.push_back((OSPVolume) objects[i]);
     }
 
-    if (ownModelPerObject)
+    if (ownModelPerObject_)
       ospCommit(modelStates.back().model);
   }
 #endif
 
-  if (!ownModelPerObject)
+  if (!ownModelPerObject_)
     // Commit the model.
     ospCommit(modelStates.back().model);
 }
@@ -799,20 +799,14 @@ void VolumeViewer::initObjects(const std::string &renderer_type)
   ospSetData(renderer, "lights", ospNewData(lights.size(), OSP_OBJECT, &lights[0]));
 
   // Create an OSPRay transfer function.
-  //auto tfFromEnv = getEnvVar<std::string>("OSPRAY_USE_TF_TYPE");
 
-  //if (tfFromEnv.first) {
-  //  transferFunction = ospNewTransferFunction(tfFromEnv.second.c_str());
-  //} else {
-    transferFunction = ospNewTransferFunction("piecewise_linear");
-//  }
+  transferFunction = ospNewTransferFunction("piecewise_linear");
   exitOnCondition(transferFunction == NULL, "could not create OSPRay transfer function object");
   ospCommit(transferFunction);
 
   // Load OSPRay objects from files.
-  for (size_t i=0 ; i < objectFileFilenames.size() ; i++)
-    importObjectsFromFile(objectFileFilenames[i]);
-
+  for (const auto& file : objectFileFilenames_)
+    importObjectsFromFile(file);
 
   boundingBox = ospcommon::empty;
   if (!modelStates.empty()) {
@@ -831,17 +825,11 @@ void VolumeViewer::initObjects(const std::string &renderer_type)
   osp::vec3f *vertices = new osp::vec3f[4];
   float ps = 100000.f;
   float py = boundingBox.upper.y+1.f;
-#if 1
+
   vertices[0] = osp::vec3f{-ps, -ps, py};
   vertices[1] = osp::vec3f{-ps,  ps, py};
   vertices[2] = osp::vec3f{ ps, -ps, py};
   vertices[3] = osp::vec3f{ ps,  ps, py};
-#else
-  vertices[0] = osp::vec3f{-ps, py, -ps};
-  vertices[1] = osp::vec3f{-ps, py, ps};
-  vertices[2] = osp::vec3f{ps, py, -ps};
-  vertices[3] = osp::vec3f{ps, py, ps};
-#endif
 
   planeMesh = ospNewGeometry("triangles");
   OSPData position = ospNewData(4, OSP_FLOAT3, &vertices[0]);
