@@ -40,27 +40,26 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   : ModuleDialogGeneric(state, parent)
 {
   OsprayRenderAlgorithm algo; // for ospray init
-  viewer_= new VolumeViewer({"/Users/dan/Downloads/csafe-heptane-302-volume/csafe-heptane-302-volume.osp"}, true);
-  viewer_->setModel(0);
 
-  float dt = 0.0f;
-  std::vector<std::string> plyFilenames;
-  float rotationRate = 0.0f;
-  std::vector<std::string> sliceFilenames;
-  std::string transferFunctionFilename;
-  int benchmarkWarmUpFrames = 0;
-  int benchmarkFrames = 0;
-  std::string benchmarkFilename;
-  int viewSizeWidth = 0;
-  int viewSizeHeight = 0;
-  ospcommon::vec3f viewUp(0.f);
-  ospcommon::vec3f viewAt(0.f), viewFrom(0.f);
-  bool showFrameRate = false;
+
+  //float dt = 0.0f;
+  //std::vector<std::string> plyFilenames;
+  //float rotationRate = 0.0f;
+  //std::vector<std::string> sliceFilenames;
+  //std::string transferFunctionFilename;
+  //int benchmarkWarmUpFrames = 0;
+  //int benchmarkFrames = 0;
+  //std::string benchmarkFilename;
+  //int viewSizeWidth = 0;
+  //int viewSizeHeight = 0;
+  //ospcommon::vec3f viewUp(0.f);
+  //ospcommon::vec3f viewAt(0.f), viewFrom(0.f);
+  bool showFrameRate = true;
   bool fullScreen = false;
   bool ownModelPerObject = false;
   std::string renderer = "scivis";//"dvr";
-  std::string writeFramesFilename;
-  bool usePlane = true;
+  //std::string writeFramesFilename;
+  //bool usePlane = true;
   float ambientLightIntensity = 0.2f;
   float directionalLightIntensity = 1.7f;
   float directionalLightAzimuth = 80;
@@ -73,6 +72,16 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   bool preIntegration = true;
   bool gradientShading = true;
   bool adaptiveSampling = true;
+
+  viewer_= new VolumeViewer({"/Users/dan/Downloads/csafe-heptane-302-volume/csafe-heptane-302-volume.osp"},
+    showFrameRate,
+    renderer,
+    ownModelPerObject,
+    fullScreen
+  );
+
+  
+  viewer_->setModel(0);
 
   viewer_->getLightEditor()->setAmbientLightIntensity(ambientLightIntensity);
   viewer_->getLightEditor()->setDirectionalLightIntensity(directionalLightIntensity);

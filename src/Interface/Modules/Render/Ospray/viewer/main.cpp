@@ -249,11 +249,7 @@ int main(int argc, char *argv[])
 
   // Create the OSPRay state and viewer window.
   VolumeViewer *volumeViewer = new VolumeViewer(inFileName,
-    showFrameRate,                                               renderer,
-                                                ownModelPerObject,
-
-                                                fullScreen,
-                                                writeFramesFilename);
+    showFrameRate, renderer, ownModelPerObject, fullScreen, writeFramesFilename);
 
   volumeViewer->getLightEditor()->setAmbientLightIntensity(ambientLightIntensity);
   volumeViewer->getLightEditor()->setDirectionalLightIntensity(directionalLightIntensity);

@@ -32,9 +32,10 @@ class OpenGLAnnotationRenderer;
 class PreferencesDialog;
 
 //! OSPRay model and its volumes / geometries
-struct ModelState {
-
-  struct Volume {
+struct ModelState
+{
+  struct Volume
+  {
     Volume(OSPVolume handle,
            const ospcommon::box3f &boundingBox,
            const ospcommon::vec2f &voxelRange)
@@ -50,35 +51,38 @@ struct ModelState {
     ospcommon::box3f boundingBox;
   };
 
-  struct Geometry {
+  using VolumePtr = std::shared_ptr<Volume>;
+
+  struct Geometry
+  {
     Geometry(OSPGeometry handle=NULL) : handle(handle) {}
     OSPGeometry handle;
   };
+
+  using GeometryPtr = std::shared_ptr<Geometry>;
 
   ModelState(OSPModel model) : model(model) { }
 
   OSPModel model; //!< the OSPRay model
 
-  std::vector<Volume *> volumes; //!< OSPRay volumes for the model
-  std::vector<Geometry *> slices; //! OSPRay slice geometries for the model
-  std::vector<Geometry *> isosurfaces; //! OSPRay isosurface geometries for the model
+  std::vector<VolumePtr> volumes; //!< OSPRay volumes for the model
+  std::vector<GeometryPtr> slices; //! OSPRay slice geometries for the model
+  std::vector<GeometryPtr> isosurfaces; //! OSPRay isosurface geometries for the model
 };
 
-class VolumeViewer : public QMainWindow {
+class VolumeViewer : public QMainWindow
+{
 
 Q_OBJECT
 
 public:
-
-  //! Constructor.
   explicit VolumeViewer(const std::vector<std::string> &objectFileFilenames,
-               bool showFrameRate = false,
-               const std::string& renderer_type = "scivis",
-               bool ownModelPerObject = false,
-               bool fullScreen = false,
+               bool showFrameRate,
+               const std::string& renderer_type,
+               bool ownModelPerObject,
+               bool fullScreen,
                const std::string& writeFramesFilename = "");
 
-  //! Get the volume bounding box.
   ospcommon::box3f getBoundingBox();
 
   //! Get the OSPRay output window.
@@ -92,6 +96,8 @@ public:
 
   //! A string description of this class.
   std::string toString() const;
+
+  void loadObjectsFromFiles();
 
 public Q_SLOTS:
 
@@ -167,7 +173,7 @@ public Q_SLOTS:
   void setSlices(std::vector<SliceParameters> sliceParameters);
 
   //! Set isosurfaces on all volumes.
-  void setIsovalues(std::vector<float> isovalues);
+  void setIsovalues(const std::vector<float>& isovalues);
 
   void setPlane(bool st);
   bool getPlane() { return usePlane; }
@@ -186,16 +192,16 @@ protected:
 
   //! OSPRay object file filenames, one for each model / time step.
   std::vector<std::string> objectFileFilenames_;
-  bool ownModelPerObject_; // create a separate model for each object (not not only for each file)
+  bool ownModelPerObject_; // create a separate model for each object (not only for each file)
 
   //! OSPRay models and their volumes / geometries.
-  std::vector<ModelState> modelStates;
+  std::vector<ModelState> modelStates_;
 
   //! Active OSPRay model index (time step).
   size_t modelIndex;
 
   //! Bounding box of the (first) volume.
-  ospcommon::box3f boundingBox;
+  ospcommon::box3f boundingBox_;
 
   //! OSPRay renderer.
   OSPRenderer renderer;
@@ -255,6 +261,9 @@ protected:
 
   //! Create and configure the OSPRay state.
   void initObjects(const std::string &renderer_type);
+  void globalInit(const std::string &renderer_type);
+  void initPostObjects();
+  void addInitialPlane();
 
   //! Create and configure the user interface widgets and callbacks.
   void initUserInterfaceWidgets();
