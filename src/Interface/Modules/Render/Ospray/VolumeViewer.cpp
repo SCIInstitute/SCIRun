@@ -684,91 +684,63 @@ void VolumeViewer::importObjectsFromFile(const std::string &filename)
 {
   PRINT(ownModelPerObject_);
   if (!ownModelPerObject_)
+  {
     // Create an OSPRay model and its associated model state.
     modelStates_.push_back(ModelState(ospNewModel()));
+  }
 
   std::unique_ptr<ospray::importer::Group> imported(ospray::importer::import(filename));
   assert(imported);
 
-#if 1
-  PING;
-  // Iterate over the GEOMETREIS contained in the object list.
   PRINT(imported->geometry.size());
 
   for (const auto& geom : imported->geometry)
   {
-    if (ownModelPerObject_)
-      modelStates_.push_back(ModelState(ospNewModel()));
-
-    // Commit the geometry.
-    ospCommit(geom->handle);
-
-    // Add the loaded geometry to the model.
-    ospAddGeometry(modelStates_.back().model, geom->handle);
-
-    if (ownModelPerObject_)
-      ospCommit(modelStates_.back().model);
+    loadGeometry(geom->handle);
   }
-  // Iterate over the objects contained in the object list.
+
   for (const auto& vol : imported->volume)
   {
-    if (ownModelPerObject_)
-      modelStates_.push_back(ModelState(ospNewModel()));
-
-    assert(vol);
-    // For now we set the same transfer function on all volumes.
-    ospSetObject(vol->handle, "transferFunction", transferFunction);
-    ospCommit(vol->handle);
-
-    // Add the loaded volume(s) to the model.
-    ospAddVolume(modelStates_.back().model, vol->handle);
-
-    assert(!vol->bounds.empty());
-    // Add to volumes vector for the current model.
-    modelStates_.back().volumes.push_back(std::make_shared<ModelState::Volume>(vol->handle,
-                                                                vol->bounds,
-                                                                vol->voxelRange
-                                                                ));
-
-    if (ownModelPerObject_)
-      ospCommit(modelStates_.back().model);
+    loadVolume(vol->handle, vol->voxelRange, vol->bounds);
   }
-#else
-  // Iterate over the objects contained in the object list.
-  for (size_t i=0 ; objects[i] ; i++) {
-    if (ownModelPerObject_)
-      modelStates_.push_back(ModelState(ospNewModel()));
-
-    OSPDataType type;
-    ospGetType(objects[i], NULL, &type);
-
-    if (type == OSP_GEOMETRY) {
-
-      // Commit the geometry.
-      ospCommit(objects[i]);
-
-      // Add the loaded geometry to the model.
-      ospAddGeometry(modelStates_.back().model, (OSPGeometry) objects[i]);
-
-    } else if (type == OSP_VOLUME) {
-
-      // For now we set the same transfer function on all volumes.
-      ospSetObject(objects[i], "transferFunction", transferFunction);
-      ospCommit(objects[i]);
-
-      // Add the loaded volume(s) to the model.
-      ospAddVolume(modelStates_.back().model, (OSPVolume) objects[i]);
-
-      // Add to volumes vector for the current model.
-      modelStates_.back().volumes.push_back((OSPVolume) objects[i]);
-    }
-
-    if (ownModelPerObject_)
-      ospCommit(modelStates_.back().model);
-  }
-#endif
 
   if (!ownModelPerObject_)
+    ospCommit(modelStates_.back().model);
+}
+
+void VolumeViewer::loadGeometry(OSPGeometry geom)
+{
+  if (ownModelPerObject_)
+    modelStates_.push_back(ModelState(ospNewModel()));
+
+  // Commit the geometry.
+  ospCommit(geom);
+
+  // Add the loaded geometry to the model.
+  ospAddGeometry(modelStates_.back().model, geom);
+
+  if (ownModelPerObject_)
+    ospCommit(modelStates_.back().model);
+}
+
+void VolumeViewer::loadVolume(OSPVolume vol, const vec2f& voxelRange, const box3f& bounds)
+{
+  if (ownModelPerObject_)
+    modelStates_.push_back(ModelState(ospNewModel()));
+
+  assert(vol);
+  // For now we set the same transfer function on all volumes.
+  ospSetObject(vol, "transferFunction", transferFunction);
+  ospCommit(vol);
+
+  // Add the loaded volume(s) to the model.
+  ospAddVolume(modelStates_.back().model, vol);
+
+  assert(!bounds.empty());
+  // Add to volumes vector for the current model.
+  modelStates_.back().volumes.push_back(std::make_shared<ModelState::Volume>(vol, bounds, voxelRange));
+
+  if (ownModelPerObject_)
     ospCommit(modelStates_.back().model);
 }
 

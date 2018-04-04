@@ -98,6 +98,8 @@ public:
   std::string toString() const;
 
   void loadObjectsFromFiles();
+  void loadGeometry(OSPGeometry geom);
+  void loadVolume(OSPVolume vol, const ospcommon::vec2f& voxelRange, const ospcommon::box3f& bounds);
 
 public Q_SLOTS:
 
