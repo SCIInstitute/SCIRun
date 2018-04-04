@@ -28,11 +28,8 @@
 
 #include <es-log/trace-log.h>
 #include <Modules/Render/OsprayViewer.h>
-// #include <Core/Datatypes/Geometry.h>
-// #include <Core/Logging/Log.h>
-// #include <Core/Datatypes/Color.h>
-// #include <Core/Datatypes/DenseMatrix.h>
-// #include <boost/thread.hpp>
+#include <Modules/Render/ViewScene.h>
+
 
 using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Core::Algorithms;
@@ -40,10 +37,9 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Algorithms::Render;
 
 MODULE_INFO_DEF(OsprayViewer, Render, SCIRun)
-
-//Mutex ViewScene::mutex_("ViewScene");
 
 OsprayViewer::OsprayViewer() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -64,6 +60,14 @@ void OsprayViewer::portRemovedSlotImpl(const PortId& pid)
 
 void OsprayViewer::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
+  auto geom = boost::dynamic_pointer_cast<OsprayGeometryObject>(data);
+  if (!geom)
+  {
+    error("Logical error: not a geometry object on ViewScene");
+    return;
+  }
+
+  get_state()->setTransientValue(Parameters::GeomData, geom, true);
 }
 
 

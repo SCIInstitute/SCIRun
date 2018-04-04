@@ -81,6 +81,7 @@ public:
                const std::string& renderer_type,
                bool ownModelPerObject,
                bool fullScreen,
+               const std::vector<OSPGeometry>& moreObjects = {},
                const std::string& writeFramesFilename = "");
 
   ospcommon::box3f getBoundingBox();
@@ -194,6 +195,7 @@ protected:
 
   //! OSPRay object file filenames, one for each model / time step.
   std::vector<std::string> objectFileFilenames_;
+  std::vector<OSPGeometry> additionalObjects_;
   bool ownModelPerObject_; // create a separate model for each object (not only for each file)
 
   //! OSPRay models and their volumes / geometries.
@@ -261,11 +263,13 @@ protected:
   //! Load an OSPRay model from a file.
   void importObjectsFromFile(const std::string &filename);
 
+  void postInitObjectConstruction(bool showFrameRate, const std::string& writeFramesFilename, bool fullScreen);
   //! Create and configure the OSPRay state.
   void initObjects(const std::string &renderer_type);
   void globalInit(const std::string &renderer_type);
   void initPostObjects();
   void addInitialPlane();
+  void loadAdditionalGeometries();
 
   //! Create and configure the user interface widgets and callbacks.
   void initUserInterfaceWidgets();

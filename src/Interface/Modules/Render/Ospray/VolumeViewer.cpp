@@ -36,8 +36,10 @@ VolumeViewer::VolumeViewer(const std::vector<std::string> &objectFileFilenames,
                            const std::string& renderer_type,
                            bool ownModelPerObject,
                            bool fullScreen,
+                           const std::vector<OSPGeometry>& moreObjects,
                            const std::string& writeFramesFilename)
   : objectFileFilenames_(objectFileFilenames),
+    additionalObjects_(moreObjects),
     modelIndex(0),
     ownModelPerObject_(ownModelPerObject),
     boundingBox_(ospcommon::vec3f(0.f), ospcommon::vec3f(1.f)),
@@ -69,6 +71,11 @@ VolumeViewer::VolumeViewer(const std::vector<std::string> &objectFileFilenames,
   // Create and configure the OSPRay state.
   initObjects(renderer_type);
 
+  postInitObjectConstruction(showFrameRate, writeFramesFilename, fullScreen);
+}
+
+void VolumeViewer::postInitObjectConstruction(bool showFrameRate, const std::string& writeFramesFilename, bool fullScreen)
+{
   // Create an OSPRay window and set it as the central widget, but don't let it start rendering until we're done with setup.
   osprayWindow = new QOSPRayWindow(this, this->renderer,
                                    showFrameRate, writeFramesFilename);
@@ -82,9 +89,6 @@ VolumeViewer::VolumeViewer(const std::vector<std::string> &objectFileFilenames,
 
   if (fullScreen)
     setWindowState(windowState() | Qt::WindowFullScreen);
-
-  // Show the window.
-  show();
 
   setGradientShadingEnabled(true);
   setAOSamples(1);
@@ -749,8 +753,17 @@ void VolumeViewer::initObjects(const std::string &renderer_type)
   globalInit(renderer_type);
 
   loadObjectsFromFiles();
+  loadAdditionalGeometries();
 
   initPostObjects();
+}
+
+void VolumeViewer::loadAdditionalGeometries()
+{
+  for (const auto& geom : additionalObjects_)
+  {
+    loadGeometry(geom);
+  }
 }
 
 void VolumeViewer::globalInit(const std::string &renderer_type)

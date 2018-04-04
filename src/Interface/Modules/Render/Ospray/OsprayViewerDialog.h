@@ -32,6 +32,7 @@ DEALINGS IN THE SOFTWARE.
 /// \todo Make this definition specific to windows.
 #define NOMINMAX
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Core/Datatypes/Geometry.h>
 #include <Interface/Modules/Render/share.h>
 
 class VolumeViewer;
@@ -50,7 +51,12 @@ namespace SCIRun {
         Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
       ~OsprayViewerDialog();
+    Q_SIGNALS:
+      void newGeometryValueForwarder();
+    protected Q_SLOTS:
+      void newGeometryValue();
     private:
+      void createViewer(Core::Datatypes::OsprayGeometryObjectHandle obj);
       VolumeViewer* viewer_ {nullptr};
     };
   }
