@@ -81,6 +81,7 @@ void VolumeViewer::postInitObjectConstruction(bool showFrameRate, const std::str
                                    showFrameRate, writeFramesFilename);
   setCentralWidget(osprayWindow);
 
+  PRINT(boundingBox_);
   // Set the window bounds based on the OSPRay world bounds.
   osprayWindow->setWorldBounds(boundingBox_);
 
@@ -124,12 +125,14 @@ void VolumeViewer::setModel(size_t index)
   rendererInitialized = true;
 
   PRINT(modelStates_[index].volumes.size());
-  if (!modelStates_[index].volumes.empty()) {
+  if (!modelStates_[index].volumes.empty())
+  {
     // Update transfer function and isosurface editor data value range with the voxel range of the current model's first volume.
     OSPVolume volume = modelStates_[index].volumes[0]->handle;
     ospcommon::vec2f voxelRange = modelStates_[index].volumes[0]->voxelRange;
 
-    if(voxelRange != ospcommon::vec2f(0.f)) {
+    if(voxelRange != ospcommon::vec2f(0.f))
+    {
       transferFunctionEditor->setDataValueRange(voxelRange);
       isosurfaceEditor->setDataValueRange(voxelRange);
     }
@@ -714,17 +717,20 @@ void VolumeViewer::importObjectsFromFile(const std::string &filename)
 
 void VolumeViewer::loadGeometry(OSPGeometry geom)
 {
+  PRINT(ownModelPerObject_);
+  PRINT(modelStates_.size());
+
   if (ownModelPerObject_)
     modelStates_.push_back(ModelState(ospNewModel()));
 
-  // Commit the geometry.
   ospCommit(geom);
-
   // Add the loaded geometry to the model.
   ospAddGeometry(modelStates_.back().model, geom);
 
   if (ownModelPerObject_)
     ospCommit(modelStates_.back().model);
+
+  PRINT(modelStates_.size());
 }
 
 void VolumeViewer::loadVolume(OSPVolume vol, const vec2f& voxelRange, const box3f& bounds)
@@ -804,6 +810,8 @@ void VolumeViewer::globalInit(const std::string &renderer_type)
   ospCommit(transferFunction);
 }
 
+const float b = 3;
+
 void VolumeViewer::initPostObjects()
 {
   boundingBox_ = ospcommon::empty;
@@ -811,7 +819,17 @@ void VolumeViewer::initPostObjects()
   {
     for (const auto& vol : modelStates_[0].volumes)
       boundingBox_.extend(vol->boundingBox);
+
+    if (modelStates_[0].volumes.empty())
+    {
+      boundingBox_ = {{b,b,b},{-b,-b,-b}};
+    }
   }
+  else
+  {
+    boundingBox_ = {{b,b,b},{-b,-b,-b}};
+  }
+  PING;
   PRINT(boundingBox_);
 
   addInitialPlane();

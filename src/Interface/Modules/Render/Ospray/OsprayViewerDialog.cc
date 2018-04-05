@@ -108,18 +108,20 @@ namespace
     data = ospNewData(index.size() / 3, OSP_INT3, &index[0]); // OSP_INT4 format is also supported for triangle indices
     ospCommit(data);
     ospSetData(mesh, "index", data);
-    ospCommit(mesh);
     return mesh;
-
-    // meshes_.push_back(mesh);
-    // ospAddGeometry(world_, mesh);
-    // ospCommit(world_);
   }
 }
 
+class OsprayObjectImpl
+{
+public:
+  std::vector<OSPGeometry> geoms_;
+};
+
 OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+  : ModuleDialogGeneric(state, parent),
+  impl_(new OsprayObjectImpl)
 {
   OsprayRenderAlgorithm algo; // for ospray init
 
@@ -154,10 +156,10 @@ void OsprayViewerDialog::createViewer(OsprayGeometryObjectHandle obj)
 
   bool showFrameRate = true;
   bool fullScreen = false;
-  bool ownModelPerObject = false;
+  bool ownModelPerObject = true;
   std::string renderer = "scivis";
 
-  std::vector<OSPGeometry> objects { duplicatedCodeFromAlgorithm(obj) };
+  impl_->geoms_ = { duplicatedCodeFromAlgorithm(obj) };
 
   viewer_ = new VolumeViewer({},
     //{"/Users/dan/Downloads/csafe-heptane-302-volume/csafe-heptane-302-volume.osp"},
@@ -165,7 +167,7 @@ void OsprayViewerDialog::createViewer(OsprayGeometryObjectHandle obj)
     renderer,
     ownModelPerObject,
     fullScreen,
-    objects
+    impl_->geoms_
   );
 
   setupViewer(viewer_);

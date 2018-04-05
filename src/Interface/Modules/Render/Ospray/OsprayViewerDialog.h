@@ -35,6 +35,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Geometry.h>
 #include <Interface/Modules/Render/share.h>
 
+class OsprayObjectImpl;
 class VolumeViewer;
 
 namespace SCIRun {
@@ -42,7 +43,6 @@ namespace SCIRun {
   namespace Gui {
 
     class SCISHARE OsprayViewerDialog : public ModuleDialogGeneric
-      //public Ui::ViewScene
     {
       Q_OBJECT
 
@@ -58,6 +58,7 @@ namespace SCIRun {
     private:
       void createViewer(Core::Datatypes::OsprayGeometryObjectHandle obj);
       VolumeViewer* viewer_ {nullptr};
+      boost::shared_ptr<OsprayObjectImpl> impl_;
     };
   }
 }
