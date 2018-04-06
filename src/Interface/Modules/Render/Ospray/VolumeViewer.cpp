@@ -927,15 +927,11 @@ void VolumeViewer::initUserInterfaceWidgets()
   // Connect the "play timesteps" timer.
   connect(&playTimeStepsTimer, SIGNAL(timeout()), this, SLOT(nextTimeStep()));
 
+#if 0
   // Add the "add geometry" widget and callback.
   QAction *addGeometryAction = new QAction("Add geometry", this);
   connect(addGeometryAction, SIGNAL(triggered()), this, SLOT(addGeometry()));
   toolbar->addAction(addGeometryAction);
-
-  // Add the "screenshot" widget and callback.
-  QAction *screenshotAction = new QAction("Screenshot", this);
-  connect(screenshotAction, SIGNAL(triggered()), this, SLOT(screenshot()));
-  toolbar->addAction(screenshotAction);
 
   // Create the transfer function editor dock widget, this widget modifies the transfer function directly.
   QDockWidget *transferFunctionEditorDockWidget = new QDockWidget("Transfer Function", this);
@@ -962,6 +958,21 @@ void VolumeViewer::initUserInterfaceWidgets()
   connect(isosurfaceEditor, SIGNAL(isovaluesChanged(std::vector<float>)), this, SLOT(setIsovalues(std::vector<float>)));
   addDockWidget(Qt::LeftDockWidgetArea, isosurfaceEditorDockWidget);
 
+  // Default to showing transfer function tab widget.
+  transferFunctionEditorDockWidget->raise();
+  // Tabify dock widgets.
+  tabifyDockWidget(transferFunctionEditorDockWidget, sliceEditorDockWidget);
+  tabifyDockWidget(transferFunctionEditorDockWidget, isosurfaceEditorDockWidget);
+  tabifyDockWidget(transferFunctionEditorDockWidget, lightEditorDockWidget);
+  tabifyDockWidget(transferFunctionEditorDockWidget, probeDockWidget);
+
+#endif
+
+  // Add the "screenshot" widget and callback.
+  QAction *screenshotAction = new QAction("Screenshot", this);
+  connect(screenshotAction, SIGNAL(triggered()), this, SLOT(screenshot()));
+  toolbar->addAction(screenshotAction);
+
   // Create the light editor dock widget, this widget modifies the light directly.
   QDockWidget *lightEditorDockWidget = new QDockWidget("Lights", this);
   lightEditor = new LightEditor(ambientLight, directionalLight);
@@ -975,17 +986,8 @@ void VolumeViewer::initUserInterfaceWidgets()
   probeDockWidget->setWidget(probeWidget);
   addDockWidget(Qt::LeftDockWidgetArea, probeDockWidget);
 
-  // Tabify dock widgets.
-  tabifyDockWidget(transferFunctionEditorDockWidget, sliceEditorDockWidget);
-  tabifyDockWidget(transferFunctionEditorDockWidget, isosurfaceEditorDockWidget);
-  tabifyDockWidget(transferFunctionEditorDockWidget, lightEditorDockWidget);
-  tabifyDockWidget(transferFunctionEditorDockWidget, probeDockWidget);
-
   // Tabs on top.
   setTabPosition(Qt::LeftDockWidgetArea, QTabWidget::North);
-
-  // Default to showing transfer function tab widget.
-  transferFunctionEditorDockWidget->raise();
 
   // Add the current OSPRay object file label to the bottom status bar.
   statusBar()->addWidget(&currentFilenameInfoLabel);
