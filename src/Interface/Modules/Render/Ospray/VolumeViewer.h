@@ -82,6 +82,7 @@ public:
                bool ownModelPerObject,
                bool fullScreen,
                const std::vector<OSPGeometry>& moreObjects = {},
+               const ospcommon::box3f& presetBoundingBox = {},
                const std::string& writeFramesFilename = "");
 
   ospcommon::box3f getBoundingBox();
@@ -206,6 +207,7 @@ protected:
 
   //! Bounding box of the (first) volume.
   ospcommon::box3f boundingBox_;
+  ospcommon::box3f presetBoundingBox_;
 
   //! OSPRay renderer.
   OSPRenderer renderer;

@@ -37,6 +37,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Visualization;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
 namespace
 {
@@ -110,6 +111,20 @@ namespace
     ospSetData(mesh, "index", data);
     return mesh;
   }
+
+  ospcommon::box3f toOsprayBox(const BBox& box)
+  {
+    auto min = box.get_min();
+    auto max = box.get_max();
+    return {
+      { static_cast<float>(min.x()),
+        static_cast<float>(min.y()),
+        static_cast<float>(min.z())},
+      { static_cast<float>(max.x()),
+        static_cast<float>(max.y()),
+        static_cast<float>(max.z())}
+    };
+  }
 }
 
 class OsprayObjectImpl
@@ -140,17 +155,17 @@ void OsprayViewerDialog::newGeometryValue()
   auto geomDataTransient = state_->getTransientValue(SCIRun::Core::Algorithms::Render::Parameters::GeomData);
   if (geomDataTransient && !geomDataTransient->empty())
   {
-    auto geom = transient_value_cast<OsprayGeometryObjectHandle>(geomDataTransient);
+    auto geom = transient_value_cast<boost::shared_ptr<CompositeOsprayGeometryObject>>(geomDataTransient);
     if (!geom)
     {
       LOG_DEBUG("Logical error: ViewSceneDialog received an empty object.");
       return;
     }
-    createViewer(geom);
+    createViewer(*geom);
   }
 }
 
-void OsprayViewerDialog::createViewer(OsprayGeometryObjectHandle obj)
+void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 {
   delete viewer_;
 
@@ -158,8 +173,10 @@ void OsprayViewerDialog::createViewer(OsprayGeometryObjectHandle obj)
   bool fullScreen = false;
   bool ownModelPerObject = true;
   std::string renderer = "scivis";
+  impl_->geoms_.clear();
 
-  impl_->geoms_ = { duplicatedCodeFromAlgorithm(obj) };
+  for (const auto& obj : geom.objects())
+    impl_->geoms_.push_back(duplicatedCodeFromAlgorithm(obj));
 
   viewer_ = new VolumeViewer({},
     //{"/Users/dan/Downloads/csafe-heptane-302-volume/csafe-heptane-302-volume.osp"},
@@ -167,7 +184,8 @@ void OsprayViewerDialog::createViewer(OsprayGeometryObjectHandle obj)
     renderer,
     ownModelPerObject,
     fullScreen,
-    impl_->geoms_
+    impl_->geoms_,
+    toOsprayBox(geom.box)
   );
 
   setupViewer(viewer_);

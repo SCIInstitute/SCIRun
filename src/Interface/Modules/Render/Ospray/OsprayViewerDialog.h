@@ -56,7 +56,7 @@ namespace SCIRun {
     protected Q_SLOTS:
       void newGeometryValue();
     private:
-      void createViewer(Core::Datatypes::OsprayGeometryObjectHandle obj);
+      void createViewer(const Core::Datatypes::CompositeOsprayGeometryObject& obj);
       VolumeViewer* viewer_ {nullptr};
       boost::shared_ptr<OsprayObjectImpl> impl_;
     };

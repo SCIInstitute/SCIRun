@@ -68,7 +68,7 @@ void OsprayViewer::asyncExecute(const PortId& pid, DatatypeHandle data)
     return;
   }
 
-  get_state()->setTransientValue(Parameters::GeomData, geom->objects()[0], true);
+  get_state()->setTransientValue(Parameters::GeomData, geom, true);
 }
 
 

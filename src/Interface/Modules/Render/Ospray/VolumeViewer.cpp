@@ -37,12 +37,14 @@ VolumeViewer::VolumeViewer(const std::vector<std::string> &objectFileFilenames,
                            bool ownModelPerObject,
                            bool fullScreen,
                            const std::vector<OSPGeometry>& moreObjects,
+                           const ospcommon::box3f& presetBoundingBox,
                            const std::string& writeFramesFilename)
   : objectFileFilenames_(objectFileFilenames),
     additionalObjects_(moreObjects),
     modelIndex(0),
     ownModelPerObject_(ownModelPerObject),
     boundingBox_(ospcommon::vec3f(0.f), ospcommon::vec3f(1.f)),
+    presetBoundingBox_(presetBoundingBox),
     renderer(NULL),
     rendererInitialized(false),
     transferFunction(NULL),
@@ -822,7 +824,7 @@ void VolumeViewer::initPostObjects()
 
     if (modelStates_[0].volumes.empty())
     {
-      boundingBox_ = {{b,b,b},{-b,-b,-b}};
+      boundingBox_ = presetBoundingBox_;
     }
   }
   else
