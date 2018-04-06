@@ -810,7 +810,7 @@ void VolumeViewer::globalInit(const std::string &renderer_type)
   ospCommit(transferFunction);
 }
 
-const float b = 3;
+const float b = -3;
 
 void VolumeViewer::initPostObjects()
 {
@@ -829,7 +829,7 @@ void VolumeViewer::initPostObjects()
   {
     boundingBox_ = {{b,b,b},{-b,-b,-b}};
   }
-  PING;
+  //PING;
   PRINT(boundingBox_);
 
   addInitialPlane();

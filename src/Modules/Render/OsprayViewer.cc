@@ -29,6 +29,7 @@
 #include <es-log/trace-log.h>
 #include <Modules/Render/OsprayViewer.h>
 #include <Modules/Render/ViewScene.h>
+#include <Core/Logging/Log.h>
 
 
 using namespace SCIRun::Modules::Render;
@@ -60,14 +61,14 @@ void OsprayViewer::portRemovedSlotImpl(const PortId& pid)
 
 void OsprayViewer::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
-  auto geom = boost::dynamic_pointer_cast<OsprayGeometryObject>(data);
+  auto geom = boost::dynamic_pointer_cast<CompositeOsprayGeometryObject>(data);
   if (!geom)
   {
-    error("Logical error: not a geometry object on ViewScene");
+    error("Logical error: not a geometry object on OsprayViewer");
     return;
   }
 
-  get_state()->setTransientValue(Parameters::GeomData, geom, true);
+  get_state()->setTransientValue(Parameters::GeomData, geom->objects()[0], true);
 }
 
 
