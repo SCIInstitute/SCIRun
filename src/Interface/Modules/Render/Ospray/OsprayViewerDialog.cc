@@ -171,7 +171,7 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 
   bool showFrameRate = true;
   bool fullScreen = false;
-  bool ownModelPerObject = true;
+  bool ownModelPerObject = false;
   std::string renderer = "scivis";
   impl_->geoms_.clear();
 

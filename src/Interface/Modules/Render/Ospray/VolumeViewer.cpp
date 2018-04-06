@@ -126,7 +126,7 @@ void VolumeViewer::setModel(size_t index)
   ospCommit(renderer);
   rendererInitialized = true;
 
-  PRINT(modelStates_[index].volumes.size());
+  //PRINT(modelStates_[index].volumes.size());
   if (!modelStates_[index].volumes.empty())
   {
     // Update transfer function and isosurface editor data value range with the voxel range of the current model's first volume.
@@ -691,7 +691,7 @@ void VolumeViewer::setIsovalues(const std::vector<float>& isovalues)
 
 void VolumeViewer::importObjectsFromFile(const std::string &filename)
 {
-  PRINT(ownModelPerObject_);
+  //PRINT(ownModelPerObject_);
   if (!ownModelPerObject_)
   {
     // Create an OSPRay model and its associated model state.
@@ -701,7 +701,7 @@ void VolumeViewer::importObjectsFromFile(const std::string &filename)
   std::unique_ptr<ospray::importer::Group> imported(ospray::importer::import(filename));
   assert(imported);
 
-  PRINT(imported->geometry.size());
+  //PRINT(imported->geometry.size());
 
   for (const auto& geom : imported->geometry)
   {
@@ -719,8 +719,8 @@ void VolumeViewer::importObjectsFromFile(const std::string &filename)
 
 void VolumeViewer::loadGeometry(OSPGeometry geom)
 {
-  PRINT(ownModelPerObject_);
-  PRINT(modelStates_.size());
+  //PRINT(ownModelPerObject_);
+  //PRINT(modelStates_.size());
 
   if (ownModelPerObject_)
     modelStates_.push_back(ModelState(ospNewModel()));
@@ -732,7 +732,7 @@ void VolumeViewer::loadGeometry(OSPGeometry geom)
   if (ownModelPerObject_)
     ospCommit(modelStates_.back().model);
 
-  PRINT(modelStates_.size());
+  //PRINT(modelStates_.size());
 }
 
 void VolumeViewer::loadVolume(OSPVolume vol, const vec2f& voxelRange, const box3f& bounds)
@@ -768,6 +768,11 @@ void VolumeViewer::initObjects(const std::string &renderer_type)
 
 void VolumeViewer::loadAdditionalGeometries()
 {
+  if (!ownModelPerObject_)
+  {
+    modelStates_.push_back(ModelState(ospNewModel()));
+  }
+
   for (const auto& geom : additionalObjects_)
   {
     loadGeometry(geom);
