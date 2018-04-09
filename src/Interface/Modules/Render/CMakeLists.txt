@@ -46,6 +46,7 @@ SET(Interface_Modules_Render_HEADERS_TO_MOC
   GLContextPlatformCompatibility.h
   QtGLContext.h
   Screenshot.h
+  OsprayViewerDialog.h
 )
 
 SET(Interface_Modules_Render_HEADERS_NO_MOC
@@ -77,6 +78,7 @@ SET(Interface_Modules_Render_SOURCES
   GLContext.cc
   QtGLContext.cc
   Screenshot.cc
+  OsprayViewerDialog.cc
   ES/SRCamera.cc
   ES/SRInterface.cc
   ES/SRUtil.cc

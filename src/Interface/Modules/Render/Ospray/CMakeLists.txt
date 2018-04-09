@@ -43,7 +43,6 @@ SET(SRCS ${SRCS}
   VolumeViewer.cpp
   util.h
   util.cpp
-  OsprayViewerDialog.cc
   importer/Importer.h
   importer/Importer.cpp
   importer/importOSP.cpp
@@ -66,7 +65,6 @@ SET(MOC_HEADERS
   SliceWidget.h
   TransferFunctionEditor.h
   VolumeViewer.h
-  OsprayViewerDialog.h
   share.h
 )
 
