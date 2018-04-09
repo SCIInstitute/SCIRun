@@ -13,6 +13,6 @@
   },
   "UI": {
     "name": "OsprayViewerDialog",
-    "header": "Interface/Modules/Render/Ospray/OsprayViewerDialog.h"
+    "header": "Interface/Modules/Render/OsprayViewerDialog.h"
   }
 }

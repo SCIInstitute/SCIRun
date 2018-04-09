@@ -27,11 +27,14 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <es-log/trace-log.h>
-#include <Interface/Modules/Render/Ospray/OsprayViewerDialog.h>
-#include <Interface/Modules/Render/Ospray/VolumeViewer.h>
+#include <Interface/Modules/Render/OsprayViewerDialog.h>
 #include <Core/Algorithms/Visualization/OsprayRenderAlgorithm.h>
 #include <Modules/Render/ViewScene.h>
 #include <Core/Logging/Log.h>
+
+#ifdef WITH_OSPRAY
+#include <Interface/Modules/Render/Ospray/VolumeViewer.h>
+#endif
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -39,6 +42,7 @@ using namespace SCIRun::Core::Algorithms::Visualization;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
+#ifdef WITH_OSPRAY
 namespace
 {
 
@@ -132,6 +136,11 @@ class OsprayObjectImpl
 public:
   std::vector<OSPGeometry> geoms_;
 };
+#else
+class OsprayObjectImpl
+{
+};
+#endif
 
 OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -147,11 +156,14 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
 
 OsprayViewerDialog::~OsprayViewerDialog()
 {
+#ifdef WITH_OSPRAY
   delete viewer_;
+#endif
 }
 
 void OsprayViewerDialog::newGeometryValue()
 {
+#ifdef WITH_OSPRAY
   auto geomDataTransient = state_->getTransientValue(SCIRun::Core::Algorithms::Render::Parameters::GeomData);
   if (geomDataTransient && !geomDataTransient->empty())
   {
@@ -163,10 +175,12 @@ void OsprayViewerDialog::newGeometryValue()
     }
     createViewer(*geom);
   }
+#endif
 }
 
 void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 {
+#ifdef WITH_OSPRAY
   delete viewer_;
 
   bool showFrameRate = true;
@@ -191,6 +205,7 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
   setupViewer(viewer_);
 
   viewer_->show();
+#endif
 }
 
 
