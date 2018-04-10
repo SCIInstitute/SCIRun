@@ -195,14 +195,19 @@ void QOSPRayWindow::paintGL()
   }
 
   ospRenderFrame(frameBuffer, renderer, OSP_FB_COLOR | OSP_FB_ACCUM);
-  double framesPerSecond = 1000.0 / renderFrameTimer.elapsed();
-  char title[1024];  sprintf(title, "OSPRay Volume Viewer (%.4f fps)", framesPerSecond);
-  if (showFrameRate == true) parent->setWindowTitle(title);
+
+  if (showFrameRate)
+  {
+    double framesPerSecond = 1000.0 / renderFrameTimer.elapsed();
+    parent->setWindowTitle(tr("OSPRay Volume Viewer (%1 fps)").arg(framesPerSecond, 0, 'f', 4));
+  }
 
   uint32_t *mappedFrameBuffer = (unsigned int *) ospMapFrameBuffer(frameBuffer);
 
   glDrawPixels(windowSize.x, windowSize.y, GL_RGBA, GL_UNSIGNED_BYTE, mappedFrameBuffer);
-  if (writeFramesFilename.length()) {
+
+  if (writeFramesFilename.length())
+  {
     std::string filename = writeFramesFilename + std::to_string(static_cast<long long>(frameCount));
     writeFrameBufferToFile(filename, mappedFrameBuffer);
   }
@@ -210,7 +215,8 @@ void QOSPRayWindow::paintGL()
   ospUnmapFrameBuffer(mappedFrameBuffer, frameBuffer);
 
   // automatic rotation
-  if(rotationRate != 0.f) {
+  if(rotationRate != 0.f)
+  {
     resetAccumulationBuffer();
     rotateCenter(rotationRate, 0.f);
   }
@@ -219,8 +225,8 @@ void QOSPRayWindow::paintGL()
   frameCount++;
 
   // quit if we're benchmarking and have exceeded the needed number of frames
-  if(benchmarkFrames > 0 && frameCount >= benchmarkWarmUpFrames + benchmarkFrames) {
-
+  if(benchmarkFrames > 0 && frameCount >= benchmarkWarmUpFrames + benchmarkFrames)
+  {
     float elapsedSeconds = float(benchmarkTimer.elapsed()) / 1000.f;
 
     std::cout << "benchmark: " << elapsedSeconds << " elapsed seconds ==> "
