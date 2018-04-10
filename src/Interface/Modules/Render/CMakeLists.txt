@@ -36,6 +36,7 @@ ENDIF()
 SET(Interface_Modules_Render_FORMS
   ViewScene.ui
   ViewSceneControls.ui
+  OsprayViewer.ui
 )
 
 SET(Interface_Modules_Render_HEADERS_TO_MOC

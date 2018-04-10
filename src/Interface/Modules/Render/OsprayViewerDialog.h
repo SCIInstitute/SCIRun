@@ -29,6 +29,7 @@ DEALINGS IN THE SOFTWARE.
 #ifndef INTERFACE_MODULES_RENDER_OSPRAYVIEWERDIALOG_H
 #define INTERFACE_MODULES_RENDER_OSPRAYVIEWERDIALOG_H
 
+#include "Interface/Modules/Render/ui_OsprayViewer.h"
 /// \todo Make this definition specific to windows.
 #define NOMINMAX
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
@@ -42,7 +43,7 @@ namespace SCIRun {
 
   namespace Gui {
 
-    class SCISHARE OsprayViewerDialog : public ModuleDialogGeneric
+    class SCISHARE OsprayViewerDialog : public ModuleDialogGeneric, public Ui::OsprayViewer
     {
       Q_OBJECT
 

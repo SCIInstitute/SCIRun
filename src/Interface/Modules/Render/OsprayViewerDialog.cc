@@ -147,6 +147,10 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   : ModuleDialogGeneric(state, parent),
   impl_(new OsprayObjectImpl)
 {
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  WidgetStyleMixin::tabStyle(tabWidget);
+
   OsprayRenderAlgorithm algo; // for ospray init
 
   state->connectStateChanged([this]() { Q_EMIT newGeometryValueForwarder(); });
