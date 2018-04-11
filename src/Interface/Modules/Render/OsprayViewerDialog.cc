@@ -187,8 +187,8 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 #ifdef WITH_OSPRAY
   delete viewer_;
 
-  bool showFrameRate = true;
-  bool fullScreen = true;
+  bool showFrameRate = false;
+  bool fullScreen = false;
   bool ownModelPerObject = true;
   std::string renderer = "scivis";
   impl_->geoms_.clear();
@@ -196,17 +196,24 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
   for (const auto& obj : geom.objects())
     impl_->geoms_.push_back(duplicatedCodeFromAlgorithm(obj));
 
-  viewer_ = new VolumeViewer({},
+  OsprayViewerParameters params
+  {
+    {},
     showFrameRate,
     renderer,
     ownModelPerObject,
     fullScreen,
     impl_->geoms_,
-    toOsprayBox(geom.box)
-  );
+    toOsprayBox(geom.box),
+    "",
+    1024,
+    768
+  };
+  viewer_ = new VolumeViewer(params, this);
 
   setupViewer(viewer_);
 
+  osprayLayout->addWidget(viewer_);
   viewer_->show();
 #endif
 }

@@ -31,30 +31,24 @@
 //using namespace ospray;
 using namespace ospcommon;
 
-VolumeViewer::VolumeViewer(const std::vector<std::string> &objectFileFilenames,
-                           bool showFrameRate,
-                           const std::string& renderer_type,
-                           bool ownModelPerObject,
-                           bool fullScreen,
-                           const std::vector<OSPGeometry>& moreObjects,
-                           const ospcommon::box3f& presetBoundingBox,
-                           const std::string& writeFramesFilename)
-  : objectFileFilenames_(objectFileFilenames),
-    additionalObjects_(moreObjects),
+VolumeViewer::VolumeViewer(const OsprayViewerParameters& params, QWidget* parent)
+  : QWidget(parent),
+    objectFileFilenames_(params.objectFileFilenames),
+    additionalObjects_(params.moreObjects),
     modelIndex(0),
-    ownModelPerObject_(ownModelPerObject),
+    ownModelPerObject_(params.ownModelPerObject),
     boundingBox_(ospcommon::vec3f(0.f), ospcommon::vec3f(1.f)),
-    presetBoundingBox_(presetBoundingBox),
-    renderer(NULL),
+    presetBoundingBox_(params.presetBoundingBox),
+    renderer(nullptr),
     rendererInitialized(false),
-    transferFunction(NULL),
-    ambientLight(NULL),
-    directionalLight(NULL),
-    osprayWindow(NULL),
-    annotationRenderer(NULL),
-    transferFunctionEditor(NULL),
-    isosurfaceEditor(NULL),
-    autoRotateAction(NULL),
+    transferFunction(nullptr),
+    ambientLight(nullptr),
+    directionalLight(nullptr),
+    osprayWindow(nullptr),
+    annotationRenderer(nullptr),
+    transferFunctionEditor(nullptr),
+    isosurfaceEditor(nullptr),
+    autoRotateAction(nullptr),
     autoRotationRate(0.025f),
     usePlane(-1),
     samplingRate(-1),
@@ -67,21 +61,22 @@ VolumeViewer::VolumeViewer(const std::vector<std::string> &objectFileFilenames,
     adaptiveSampling(-1),
     gradientShadingEnabled(-1)
 {
+  setLayout(new QVBoxLayout);
+
   // Default window size.
-  resize(1024, 768);
+  resize(params.width, params.height);
 
   // Create and configure the OSPRay state.
-  initObjects(renderer_type);
+  initObjects(params.rendererType);
 
-  postInitObjectConstruction(showFrameRate, writeFramesFilename, fullScreen);
+  postInitObjectConstruction(params.showFrameRate, params.writeFramesFilename, params.fullScreen);
 }
 
 void VolumeViewer::postInitObjectConstruction(bool showFrameRate, const std::string& writeFramesFilename, bool fullScreen)
 {
   // Create an OSPRay window and set it as the central widget, but don't let it start rendering until we're done with setup.
-  osprayWindow = new QOSPRayWindow(this, this->renderer,
-                                   showFrameRate, writeFramesFilename);
-  setCentralWidget(osprayWindow);
+  osprayWindow = new QOSPRayWindow(renderer, showFrameRate, writeFramesFilename, this);
+  layout()->addWidget(osprayWindow);
 
   PRINT(boundingBox_);
   // Set the window bounds based on the OSPRay world bounds.
@@ -896,6 +891,7 @@ void VolumeViewer::loadObjectsFromFiles()
 
 void VolumeViewer::initUserInterfaceWidgets()
 {
+#if 0  //TODO: add these buttons to new toolbar
   // Create a toolbar at the top of the window.
   QToolBar *toolbar = addToolBar("toolbar");
 
@@ -926,7 +922,7 @@ void VolumeViewer::initUserInterfaceWidgets()
 
   // Connect the "play timesteps" timer.
   connect(&playTimeStepsTimer, SIGNAL(timeout()), this, SLOT(nextTimeStep()));
-
+#endif
 #if 0
   // Add the "add geometry" widget and callback.
   QAction *addGeometryAction = new QAction("Add geometry", this);
@@ -966,8 +962,6 @@ void VolumeViewer::initUserInterfaceWidgets()
   tabifyDockWidget(transferFunctionEditorDockWidget, lightEditorDockWidget);
   tabifyDockWidget(transferFunctionEditorDockWidget, probeDockWidget);
 
-#endif
-
   // Add the "screenshot" widget and callback.
   QAction *screenshotAction = new QAction("Screenshot", this);
   connect(screenshotAction, SIGNAL(triggered()), this, SLOT(screenshot()));
@@ -975,14 +969,14 @@ void VolumeViewer::initUserInterfaceWidgets()
 
   // Create the light editor dock widget, this widget modifies the light directly.
   QDockWidget *lightEditorDockWidget = new QDockWidget("Lights", this);
-  lightEditor = new LightEditor(ambientLight, directionalLight);
+
   lightEditorDockWidget->setWidget(lightEditor);
-  connect(lightEditor, SIGNAL(lightsChanged()), this, SLOT(render()));
+
   addDockWidget(Qt::LeftDockWidgetArea, lightEditorDockWidget);
 
   // Create the probe dock widget.
   QDockWidget *probeDockWidget = new QDockWidget("Probe", this);
-  probeWidget = new ProbeWidget(this);
+
   probeDockWidget->setWidget(probeWidget);
   addDockWidget(Qt::LeftDockWidgetArea, probeDockWidget);
 
@@ -991,4 +985,12 @@ void VolumeViewer::initUserInterfaceWidgets()
 
   // Add the current OSPRay object file label to the bottom status bar.
   statusBar()->addWidget(&currentFilenameInfoLabel);
+#endif
+
+  {
+    //TODO: connect to new config widgets
+    lightEditor = new LightEditor(ambientLight, directionalLight);
+    connect(lightEditor, SIGNAL(lightsChanged()), this, SLOT(render()));
+    probeWidget = new ProbeWidget(this);
+  }
 }

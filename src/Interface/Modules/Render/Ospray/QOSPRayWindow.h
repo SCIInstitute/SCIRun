@@ -84,8 +84,7 @@ class QOSPRayWindow : public QGLWidget
 Q_OBJECT
 
 public:
-
-  QOSPRayWindow(QMainWindow *parent, OSPRenderer renderer, bool showFrameRate, std::string writeFramesFilename);
+  QOSPRayWindow(OSPRenderer renderer, bool showFrameRate, const std::string& writeFramesFilename, QWidget *parent);
   virtual ~QOSPRayWindow();
 
   void setRenderingEnabled(bool renderingEnabled);
@@ -105,10 +104,6 @@ Q_SIGNALS:
   void renderGLComponents();
 
 protected:
-
-  /*! Parent Qt window. */
-  QMainWindow *parent;
-
   /*! Display the frame rate in the main window title bar. */
   bool showFrameRate;
 

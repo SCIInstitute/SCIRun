@@ -38,11 +38,11 @@ std::ostream &operator<<(std::ostream &o, const Viewport &viewport)
 }
 
 
-QOSPRayWindow::QOSPRayWindow(QMainWindow *parent,
-                             OSPRenderer renderer,
+QOSPRayWindow::QOSPRayWindow(OSPRenderer renderer,
                              bool showFrameRate,
-                             std::string writeFramesFilename)
-  : parent(parent),
+                             const std::string& writeFramesFilename
+                           , QWidget *parent)
+  : QGLWidget(parent),
     showFrameRate(showFrameRate),
     frameCount(0),
     renderingEnabled(false),
@@ -61,16 +61,9 @@ QOSPRayWindow::QOSPRayWindow(QMainWindow *parent,
 
   this->renderer = renderer;
 
-  // setup camera
-  //auto cameraFromEnv = ospcommon::getEnvVar<std::string>("OSPRAY_USE_CAMERA_TYPE");
+  camera = ospNewCamera("perspective");
 
-  //if (cameraFromEnv.first) {
-  //  camera = ospNewCamera(cameraFromEnv.second.c_str());
-  //} else {
-    camera = ospNewCamera("perspective");
- // }
-
-  if(!camera)
+  if (!camera)
     throw std::runtime_error("QOSPRayWindow: could not create camera type 'perspective'");
 
   ospCommit(camera);
@@ -199,7 +192,7 @@ void QOSPRayWindow::paintGL()
   if (showFrameRate)
   {
     double framesPerSecond = 1000.0 / renderFrameTimer.elapsed();
-    parent->setWindowTitle(tr("OSPRay Volume Viewer (%1 fps)").arg(framesPerSecond, 0, 'f', 4));
+    qobject_cast<QDialog*>(parent()->parent())->setWindowTitle(tr("OSPRay Viewer (%1 fps)").arg(framesPerSecond, 0, 'f', 4));
   }
 
   uint32_t *mappedFrameBuffer = (unsigned int *) ospMapFrameBuffer(frameBuffer);

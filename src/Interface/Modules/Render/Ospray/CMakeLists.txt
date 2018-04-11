@@ -87,4 +87,5 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Render_Ospray)
 ENDIF(BUILD_SHARED_LIBS)
 
-ADD_SUBDIRECTORY(viewer)
+#Disable standalone viewer for now
+#ADD_SUBDIRECTORY(viewer)

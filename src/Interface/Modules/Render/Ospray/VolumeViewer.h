@@ -70,20 +70,26 @@ struct ModelState
   std::vector<GeometryPtr> isosurfaces; //! OSPRay isosurface geometries for the model
 };
 
-class VolumeViewer : public QMainWindow
+struct OsprayViewerParameters
+{
+  std::vector<std::string> objectFileFilenames;
+  bool showFrameRate;
+  std::string rendererType;
+  bool ownModelPerObject;
+  bool fullScreen;
+  std::vector<OSPGeometry> moreObjects;
+  ospcommon::box3f presetBoundingBox;
+  std::string writeFramesFilename;
+  int width, height;
+};
+
+class VolumeViewer : public QWidget
 {
 
 Q_OBJECT
 
 public:
-  explicit VolumeViewer(const std::vector<std::string> &objectFileFilenames,
-               bool showFrameRate,
-               const std::string& renderer_type,
-               bool ownModelPerObject,
-               bool fullScreen,
-               const std::vector<OSPGeometry>& moreObjects = {},
-               const ospcommon::box3f& presetBoundingBox = {},
-               const std::string& writeFramesFilename = "");
+  explicit VolumeViewer(const OsprayViewerParameters& params, QWidget* parent = nullptr);
 
   ospcommon::box3f getBoundingBox();
 
