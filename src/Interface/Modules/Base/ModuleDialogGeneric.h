@@ -115,6 +115,7 @@ namespace Gui {
     void connectComboToExecuteSignal(QComboBox* box);
     void connectSpinBoxToExecuteSignal(QSpinBox* box);
     void connectSpinBoxToExecuteSignal(QDoubleSpinBox* box);
+    void adjustToolbarForHighResolution(QToolBar* toolbar);
 
     void pullManagedWidgets();
     // Dialog classes should override this method to provide pull behavior not available from the widget managers.

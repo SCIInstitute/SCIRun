@@ -155,6 +155,10 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
 
   state->connectStateChanged([this]() { Q_EMIT newGeometryValueForwarder(); });
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
+
+  addToolBar();
+
+  resize(1200, 800);
 }
 
 
@@ -265,3 +269,55 @@ if(viewUp != ospcommon::vec3f(0.f)) {
   volumeViewer->getWindow()->resetAccumulationBuffer();
 }
 #endif
+
+void OsprayViewerDialog::addToolBar()
+{
+  toolBar_ = new QToolBar(this);
+  WidgetStyleMixin::toolbarStyle(toolBar_);
+
+  addConfigurationButton();
+  //addConfigurationDock();
+  //addAutoViewButton();
+  //addAutoRotateButton();
+  //addTimestepButtons();
+  //addScreenshotButton();
+
+  osprayLayout->addWidget(toolBar_);
+
+  //addViewBar();
+}
+
+void OsprayViewerDialog::adjustToolbar()
+{
+  adjustToolbarForHighResolution(toolBar_);
+}
+
+void OsprayViewerDialog::addConfigurationButton()
+{
+  auto configurationButton = new QPushButton();
+  configurationButton->setToolTip("Open/Close Configuration Menu");
+  configurationButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
+  configurationButton->setShortcut(Qt::Key_F5);
+  connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  addToolbarButton(configurationButton);
+}
+
+void OsprayViewerDialog::addConfigurationDock()
+{
+  // QString name = windowTitle() + " Configuration";
+  // mConfigurationDock = new ViewSceneControlsDock(name, this);
+  // mConfigurationDock->setHidden(true);
+  // mConfigurationDock->setVisible(false);
+  //
+  // mConfigurationDock->setSampleColor(bgColor_);
+  // mConfigurationDock->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
+  //   scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
+  // setupMaterials();
+}
+
+void OsprayViewerDialog::addToolbarButton(QPushButton* button)
+{
+  button->setFixedSize(35,35);
+  button->setIconSize(QSize(25,25));
+  toolBar_->addWidget(button);
+}

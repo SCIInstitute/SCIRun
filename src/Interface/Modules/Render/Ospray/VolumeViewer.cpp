@@ -64,7 +64,8 @@ VolumeViewer::VolumeViewer(const OsprayViewerParameters& params, QWidget* parent
   setLayout(new QVBoxLayout);
 
   // Default window size.
-  resize(params.width, params.height);
+  resize(params.height, params.width);
+  parent->resize(params.height, params.width);
 
   // Create and configure the OSPRay state.
   initObjects(params.rendererType);

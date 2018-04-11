@@ -52,14 +52,30 @@ namespace SCIRun {
         Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
       ~OsprayViewerDialog();
+      void adjustToolbar() override;
     Q_SIGNALS:
       void newGeometryValueForwarder();
     protected Q_SLOTS:
       void newGeometryValue();
     private:
+      void addToolBar();
+      void addConfigurationButton();
+      void addConfigurationDock();
+      void addAutoViewButton();
+      void addAutoRotateButton();
+      void addTimestepButtons();
+      void addScreenshotButton();
+      void addToolbarButton(QPushButton* button);
+
       void createViewer(const Core::Datatypes::CompositeOsprayGeometryObject& obj);
       VolumeViewer* viewer_ {nullptr};
       boost::shared_ptr<OsprayObjectImpl> impl_;
+
+      QToolBar* toolBar_{nullptr};
+      //QToolBar*                             viewBar_;
+      //QComboBox*                            mDownViewBox;
+      //QComboBox*                            mUpVectorBox;
+      //ViewSceneControlsDock*                mConfigurationDock;
     };
   }
 }
