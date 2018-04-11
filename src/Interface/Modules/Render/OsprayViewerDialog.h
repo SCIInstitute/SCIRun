@@ -62,10 +62,13 @@ namespace SCIRun {
       void addConfigurationButton();
       void addConfigurationDock();
       void addAutoViewButton();
+      void addViewBarButton();
       void addAutoRotateButton();
       void addTimestepButtons();
       void addScreenshotButton();
+      void addControlLockButton();
       void addToolbarButton(QPushButton* button);
+      void toggleLockColor(bool locked);
 
       void createViewer(const Core::Datatypes::CompositeOsprayGeometryObject& obj);
       VolumeViewer* viewer_ {nullptr};
@@ -76,6 +79,11 @@ namespace SCIRun {
       //QComboBox*                            mDownViewBox;
       //QComboBox*                            mUpVectorBox;
       //ViewSceneControlsDock*                mConfigurationDock;
+      QAction* lockRotation_;
+      QAction* lockPan_;
+      QAction* lockZoom_;
+      QPushButton* controlLock_;
+      QPushButton* autoViewButton_;
     };
   }
 }

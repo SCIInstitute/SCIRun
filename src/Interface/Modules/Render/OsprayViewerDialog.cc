@@ -277,14 +277,16 @@ void OsprayViewerDialog::addToolBar()
 
   addConfigurationButton();
   //addConfigurationDock();
-  //addAutoViewButton();
-  //addAutoRotateButton();
-  //addTimestepButtons();
-  //addScreenshotButton();
+  addAutoViewButton();
+  addAutoRotateButton();
+  addTimestepButtons();
+  addScreenshotButton();
 
   osprayLayout->addWidget(toolBar_);
 
   //addViewBar();
+  //addViewBarButton();
+  addControlLockButton();
 }
 
 void OsprayViewerDialog::adjustToolbar()
@@ -321,3 +323,145 @@ void OsprayViewerDialog::addToolbarButton(QPushButton* button)
   button->setIconSize(QSize(25,25));
   toolBar_->addWidget(button);
 }
+
+void OsprayViewerDialog::addAutoViewButton()
+{
+  autoViewButton_ = new QPushButton(this);
+  autoViewButton_->setToolTip("Auto View");
+  autoViewButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
+  autoViewButton_->setShortcut(Qt::Key_0);
+  connect(autoViewButton_, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
+  addToolbarButton(autoViewButton_);
+}
+
+void OsprayViewerDialog::addAutoRotateButton()
+{
+  auto autoRotateButton = new QPushButton(this);
+  autoRotateButton->setText("Auto Rotate");
+  autoRotateButton->setToolTip("Auto Rotate");
+  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
+  //autoRotateButton->setShortcut(Qt::Key_0);
+  connect(autoRotateButton, SIGNAL(clicked(bool)), this, SLOT(autoRotateClicked()));
+  addToolbarButton(autoRotateButton);
+}
+
+void OsprayViewerDialog::addTimestepButtons()
+{
+  auto nextTimestep = new QPushButton(this);
+  nextTimestep->setText("Next timestep");
+  nextTimestep->setToolTip("Next timestep");
+  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
+  //autoRotateButton->setShortcut(Qt::Key_0);
+  //connect(nextTimestep, SIGNAL(clicked(bool)), this, SLOT(autoRotateClicked()));
+  addToolbarButton(nextTimestep);
+
+  auto playTimesteps = new QPushButton(this);
+  playTimesteps->setText("Play timesteps");
+  playTimesteps->setToolTip("Play timesteps");
+  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
+  //autoRotateButton->setShortcut(Qt::Key_0);
+  //connect(playTimesteps, SIGNAL(clicked(bool)), this, SLOT(autoRotateClicked()));
+  addToolbarButton(playTimesteps);
+}
+
+void OsprayViewerDialog::addScreenshotButton()
+{
+  auto screenshotButton = new QPushButton(this);
+  screenshotButton->setToolTip("Take screenshot");
+  screenshotButton->setIcon(QPixmap(":/general/Resources/ViewScene/screenshot.png"));
+  screenshotButton->setShortcut(Qt::Key_F12);
+  connect(screenshotButton, SIGNAL(clicked(bool)), this, SLOT(screenshotClicked()));
+  addToolbarButton(screenshotButton);
+}
+
+void OsprayViewerDialog::addViewBarButton()
+{
+  auto viewBarBtn = new QPushButton();
+  viewBarBtn->setToolTip("Show View Options");
+  viewBarBtn->setIcon(QPixmap(":/general/Resources/ViewScene/views.png"));
+  connect(viewBarBtn, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
+  addToolbarButton(viewBarBtn);
+}
+
+void OsprayViewerDialog::addControlLockButton()
+{
+  controlLock_ = new QPushButton();
+  controlLock_->setToolTip("Lock specific view controls");
+  controlLock_->setIcon(QPixmap(":/general/Resources/ViewScene/lockView.png"));
+  auto menu = new QMenu;
+
+  lockRotation_ = menu->addAction("Lock Rotation");
+  lockRotation_->setCheckable(true);
+  connect(lockRotation_, SIGNAL(triggered()), this, SLOT(lockRotationToggled()));
+
+  lockPan_ = menu->addAction("Lock Panning");
+  lockPan_->setCheckable(true);
+  connect(lockPan_, SIGNAL(triggered()), this, SLOT(lockPanningToggled()));
+
+  lockZoom_ = menu->addAction("Lock Zoom");
+  lockZoom_->setCheckable(true);
+  connect(lockZoom_, SIGNAL(triggered()), this, SLOT(lockZoomToggled()));
+
+  menu->addSeparator();
+
+  auto lockAll = menu->addAction("Lock All");
+  connect(lockAll, SIGNAL(triggered()), this, SLOT(lockAllTriggered()));
+
+  auto unlockAll = menu->addAction("Unlock All");
+  connect(unlockAll, SIGNAL(triggered()), this, SLOT(unlockAllTriggered()));
+
+  controlLock_->setMenu(menu);
+
+  addToolbarButton(controlLock_);
+  controlLock_->setFixedWidth(45);
+  toggleLockColor(false);
+}
+
+void OsprayViewerDialog::toggleLockColor(bool locked)
+{
+  QString color = locked ? "red" : "rgb(66,66,69)";
+  controlLock_->setStyleSheet("QPushButton { background-color: " + color + "; }");
+  autoViewButton_->setDisabled(locked);
+}
+
+#if 0
+void OsprayViewerDialog::lockRotationToggled()
+{
+  mGLWidget->setLockRotation(lockRotation_->isChecked());
+  toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
+}
+
+void OsprayViewerDialog::lockPanningToggled()
+{
+  mGLWidget->setLockPanning(lockPan_->isChecked());
+  toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
+}
+
+void OsprayViewerDialog::lockZoomToggled()
+{
+  mGLWidget->setLockZoom(lockZoom_->isChecked());
+  toggleLockColor(lockRotation_->isChecked() || lockPan_->isChecked() || lockZoom_->isChecked());
+}
+
+void OsprayViewerDialog::lockAllTriggered()
+{
+  lockRotation_->setChecked(true);
+  mGLWidget->setLockRotation(true);
+  lockPan_->setChecked(true);
+  mGLWidget->setLockPanning(true);
+  lockZoom_->setChecked(true);
+  mGLWidget->setLockZoom(true);
+  toggleLockColor(true);
+}
+
+void OsprayViewerDialog::unlockAllTriggered()
+{
+  lockRotation_->setChecked(false);
+  mGLWidget->setLockRotation(false);
+  lockPan_->setChecked(false);
+  mGLWidget->setLockPanning(false);
+  lockZoom_->setChecked(false);
+  mGLWidget->setLockZoom(false);
+  toggleLockColor(false);
+}
+#endif
