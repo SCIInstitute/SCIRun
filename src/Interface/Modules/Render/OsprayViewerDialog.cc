@@ -47,19 +47,19 @@ namespace
 {
 
 
-    //float dt = 0.0f;
+    //float dt = 0.0f;   //EXPOSE
     //std::vector<std::string> plyFilenames;
-    //float rotationRate = 0.0f;
+    //float rotationRate = 0.0f;    //EXPOSE
     //std::vector<std::string> sliceFilenames;
     //std::string transferFunctionFilename;
     //int benchmarkWarmUpFrames = 0;
     //int benchmarkFrames = 0;
     //std::string benchmarkFilename;
-    //int viewSizeWidth = 0;
-    //int viewSizeHeight = 0;
+    //int viewSizeWidth = 0;    //EXPOSE
+    //int viewSizeHeight = 0;    //EXPOSE
     //ospcommon::vec3f viewUp(0.f);
     //ospcommon::vec3f viewAt(0.f), viewFrom(0.f);
-    //std::string writeFramesFilename;
+    //std::string writeFramesFilename;     //EXPOSE
     //bool usePlane = true;
 
   void setupViewer(VolumeViewer* viewer)
@@ -149,7 +149,7 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  WidgetStyleMixin::tabStyle(tabWidget);
+  //WidgetStyleMixin::tabStyle(tabWidget);
 
   OsprayRenderAlgorithm algo; // for ospray init
 
@@ -188,8 +188,8 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
   delete viewer_;
 
   bool showFrameRate = true;
-  bool fullScreen = false;
-  bool ownModelPerObject = false;
+  bool fullScreen = true;
+  bool ownModelPerObject = true;
   std::string renderer = "scivis";
   impl_->geoms_.clear();
 
@@ -197,7 +197,6 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
     impl_->geoms_.push_back(duplicatedCodeFromAlgorithm(obj));
 
   viewer_ = new VolumeViewer({},
-    //{"/Users/dan/Downloads/csafe-heptane-302-volume/csafe-heptane-302-volume.osp"},
     showFrameRate,
     renderer,
     ownModelPerObject,

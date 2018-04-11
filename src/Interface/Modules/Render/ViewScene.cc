@@ -1448,7 +1448,6 @@ void ViewSceneDialog::addToolBar()
   addConfigurationDock();
   addAutoViewButton();
   addScreenshotButton();
-  //addObjectToggleMenu();
 
   glLayout->addWidget(mToolBar);
 
