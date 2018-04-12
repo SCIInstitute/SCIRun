@@ -31,6 +31,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Algorithms/Visualization/OsprayRenderAlgorithm.h>
 #include <Interface/Modules/Render/ViewOspraySceneConfig.h>
 #include <Modules/Render/ViewScene.h>
+#include <Modules/Render/OsprayViewer.h>
 #include <Core/Logging/Log.h>
 
 #ifdef WITH_OSPRAY
@@ -39,7 +40,7 @@ DEALINGS IN THE SOFTWARE.
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Visualization;
+using namespace SCIRun::Core::Algorithms::Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
@@ -151,20 +152,25 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
 
-  OsprayRenderAlgorithm algo; // for ospray init
+  SCIRun::Core::Algorithms::Visualization::OsprayRenderAlgorithm algo; // for ospray init
 
-  state->connectStateChanged([this]() { Q_EMIT newGeometryValueForwarder(); });
+  state->connectSpecificStateChanged(Parameters::GeomData, [this]() { Q_EMIT newGeometryValueForwarder(); });
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
 
+  addConfigurationDialog();
   addToolBar();
 
   setMinimumSize(200, 200);
+
+  addCheckBoxManager(configDialog_->showPlaneCheckBox_, Parameters::ShowPlane);
+  addDoubleSpinBoxManager(configDialog_->autoRotationRateDoubleSpinBox_, Parameters::AutoRotationRate);
+
 }
 
 void OsprayViewerDialog::newGeometryValue()
 {
 #ifdef WITH_OSPRAY
-  auto geomDataTransient = state_->getTransientValue(SCIRun::Core::Algorithms::Render::Parameters::GeomData);
+  auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
   if (geomDataTransient && !geomDataTransient->empty())
   {
     auto geom = transient_value_cast<boost::shared_ptr<CompositeOsprayGeometryObject>>(geomDataTransient);
@@ -208,6 +214,10 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
   viewer_ = new VolumeViewer(params, this);
 
   setupViewer(viewer_);
+
+  // TODO: need to move this to dialog ctor--create viewer once, and just change state.
+  connect(configDialog_->autoRotationRateDoubleSpinBox_, SIGNAL(valueChanged(double)),
+    viewer_, SLOT(setAutoRotationRate(double)));
 
   osprayLayout->addWidget(viewer_);
   viewer_->show();
@@ -268,7 +278,6 @@ void OsprayViewerDialog::addToolBar()
   WidgetStyleMixin::toolbarStyle(toolBar_);
 
   addConfigurationButton();
-  addConfigurationDialog();
   addAutoViewButton();
   addAutoRotateButton();
   addTimestepButtons();

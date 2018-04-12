@@ -35,6 +35,19 @@
 #include <Modules/Render/share.h>
 
 namespace SCIRun {
+
+  namespace Core
+  {
+    namespace Algorithms
+    {
+      namespace Render
+      {
+        ALGORITHM_PARAMETER_DECL(ShowPlane);
+        ALGORITHM_PARAMETER_DECL(AutoRotationRate);
+      }
+    }
+  }
+
 namespace Modules {
 namespace Render {
 

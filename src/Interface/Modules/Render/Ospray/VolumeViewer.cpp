@@ -75,7 +75,7 @@ void VolumeViewer::postInitObjectConstruction(bool showFrameRate, const std::str
   osprayWindow = new QOSPRayWindow(renderer, showFrameRate, writeFramesFilename, this);
   layout()->addWidget(osprayWindow);
 
-  PRINT(boundingBox_);
+  //PRINT(boundingBox_);
   // Set the window bounds based on the OSPRay world bounds.
   osprayWindow->setWorldBounds(boundingBox_);
 
@@ -165,7 +165,7 @@ void VolumeViewer::autoRotate(bool set)
   }
 }
 
-void VolumeViewer::setAutoRotationRate(float rate)
+void VolumeViewer::setAutoRotationRate(double rate)
 {
   autoRotationRate = rate;
 }
@@ -836,7 +836,7 @@ void VolumeViewer::initPostObjects()
     boundingBox_ = {{b,b,b},{-b,-b,-b}};
   }
   //PING;
-  PRINT(boundingBox_);
+  //PRINT(boundingBox_);
 
   addInitialPlane();
 

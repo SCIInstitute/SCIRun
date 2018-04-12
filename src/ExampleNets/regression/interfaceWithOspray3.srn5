@@ -1378,8 +1378,32 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>2</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>AutoRotationRate</name>
+								</first>
+								<second>
+									<name>AutoRotationRate</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000002e-03</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowPlane</name>
+								</first>
+								<second>
+									<name>ShowPlane</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>

@@ -42,6 +42,9 @@ using namespace SCIRun::Core::Algorithms::Render;
 
 MODULE_INFO_DEF(OsprayViewer, Render, SCIRun)
 
+ALGORITHM_PARAMETER_DEF(Render, ShowPlane);
+ALGORITHM_PARAMETER_DEF(Render, AutoRotationRate);
+
 OsprayViewer::OsprayViewer() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
   RENDERER_LOG_FUNCTION_SCOPE;
@@ -51,7 +54,8 @@ OsprayViewer::OsprayViewer() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 void OsprayViewer::setStateDefaults()
 {
   auto state = get_state();
-
+  state->setValue(Parameters::ShowPlane, true);
+  state->setValue(Parameters::AutoRotationRate, 0.025);
 }
 
 void OsprayViewer::portRemovedSlotImpl(const PortId& pid)

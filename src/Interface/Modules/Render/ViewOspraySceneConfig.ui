@@ -91,7 +91,7 @@
            <widget class="QSpinBox" name="spinBox"/>
           </item>
           <item row="3" column="0">
-           <widget class="QCheckBox" name="checkBox_9">
+           <widget class="QCheckBox" name="showPlaneCheckBox_">
             <property name="text">
              <string>Plane</string>
             </property>
@@ -1146,6 +1146,9 @@
       <layout class="QVBoxLayout" name="verticalLayout_8">
        <item>
         <widget class="QFrame" name="materialsFrame_">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="font">
           <font>
            <weight>50</weight>
@@ -1270,6 +1273,9 @@
        </item>
        <item>
         <widget class="QGroupBox" name="fogGroupBox_">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="font">
           <font>
            <weight>50</weight>
@@ -1281,6 +1287,9 @@
          </property>
          <property name="checkable">
           <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
          </property>
          <layout class="QGridLayout" name="gridLayout_10">
           <item row="0" column="0" colspan="2">
@@ -1428,22 +1437,6 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="0" colspan="3">
-           <widget class="QCheckBox" name="autoRotateCheckBox_">
-            <property name="font">
-             <font>
-              <weight>50</weight>
-              <bold>false</bold>
-             </font>
-            </property>
-            <property name="toolTip">
-             <string>Toggle Auto Rotate</string>
-            </property>
-            <property name="text">
-             <string>Auto Rotate</string>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="3">
            <widget class="QPushButton" name="rotateRightButton_">
             <property name="toolTip">
@@ -1529,15 +1522,44 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="0">
+          <item row="6" column="0">
            <widget class="QLabel" name="label_41">
             <property name="text">
              <string>Rotation rate</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_12"/>
+          <item row="6" column="1">
+           <widget class="QDoubleSpinBox" name="autoRotationRateDoubleSpinBox_">
+            <property name="prefix">
+             <string/>
+            </property>
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="maximum">
+             <double>9999.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.010000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QCheckBox" name="autoRotateCheckBox_">
+            <property name="font">
+             <font>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="toolTip">
+             <string>Toggle Auto Rotate</string>
+            </property>
+            <property name="text">
+             <string>Auto Rotate</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

@@ -115,7 +115,7 @@ public Q_SLOTS:
   void autoRotate(bool set);
 
   //! Set auto-rotation rate
-  void setAutoRotationRate(float rate);
+  void setAutoRotationRate(double rate);
 
   //! Draw the model associated with the next time step.
   void nextTimeStep();
@@ -249,7 +249,7 @@ protected:
   ProbeWidget *probeWidget;
 
   //! Auto-rotation rate
-  float autoRotationRate;
+  double autoRotationRate;
 
   //! Timer for use when stepping through multiple models.
   QTimer playTimeStepsTimer;
