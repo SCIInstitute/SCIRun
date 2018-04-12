@@ -44,6 +44,40 @@ namespace SCIRun {
       {
         ALGORITHM_PARAMETER_DECL(ShowPlane);
         ALGORITHM_PARAMETER_DECL(AutoRotationRate);
+        ALGORITHM_PARAMETER_DECL(RendererChoice);
+        ALGORITHM_PARAMETER_DECL(SeparateModelPerObject);
+        ALGORITHM_PARAMETER_DECL(ShowShadows);
+        ALGORITHM_PARAMETER_DECL(ShowFrameRate);
+        ALGORITHM_PARAMETER_DECL(ShowRenderAnnotations);
+        ALGORITHM_PARAMETER_DECL(SubsampleDuringInteraction);
+        ALGORITHM_PARAMETER_DECL(AOSamples);
+        ALGORITHM_PARAMETER_DECL(ViewerHeight);
+        ALGORITHM_PARAMETER_DECL(ViewerWidth);
+        ALGORITHM_PARAMETER_DECL(CameraViewAtX);
+        ALGORITHM_PARAMETER_DECL(CameraViewAtY);
+        ALGORITHM_PARAMETER_DECL(CameraViewAtZ);
+        ALGORITHM_PARAMETER_DECL(CameraViewFromX);
+        ALGORITHM_PARAMETER_DECL(CameraViewFromY);
+        ALGORITHM_PARAMETER_DECL(CameraViewFromZ);
+        ALGORITHM_PARAMETER_DECL(CameraViewUpX);
+        ALGORITHM_PARAMETER_DECL(CameraViewUpY);
+        ALGORITHM_PARAMETER_DECL(CameraViewUpZ);
+        ALGORITHM_PARAMETER_DECL(FrameWriterFilename);
+        ALGORITHM_PARAMETER_DECL(BackgroundColor);
+        ALGORITHM_PARAMETER_DECL(ShowAmbientLight);
+        ALGORITHM_PARAMETER_DECL(AmbientLightColor);
+        ALGORITHM_PARAMETER_DECL(AmbientLightIntensity);
+        ALGORITHM_PARAMETER_DECL(ShowDirectionalLight);
+        ALGORITHM_PARAMETER_DECL(DirectionalLightColor);
+        ALGORITHM_PARAMETER_DECL(DirectionalLightIntensity);
+        ALGORITHM_PARAMETER_DECL(DirectionalLightAzimuth);
+        ALGORITHM_PARAMETER_DECL(DirectionalLightElevation);
+        ALGORITHM_PARAMETER_DECL(ShowProbe);
+        ALGORITHM_PARAMETER_DECL(ProbeX);
+        ALGORITHM_PARAMETER_DECL(ProbeY);
+        ALGORITHM_PARAMETER_DECL(ProbeZ);
+        ALGORITHM_PARAMETER_DECL(InvertZoom);
+        ALGORITHM_PARAMETER_DECL(ZoomSpeed);
       }
     }
   }

@@ -44,6 +44,40 @@ MODULE_INFO_DEF(OsprayViewer, Render, SCIRun)
 
 ALGORITHM_PARAMETER_DEF(Render, ShowPlane);
 ALGORITHM_PARAMETER_DEF(Render, AutoRotationRate);
+ALGORITHM_PARAMETER_DEF(Render, RendererChoice);
+ALGORITHM_PARAMETER_DEF(Render, SeparateModelPerObject);
+ALGORITHM_PARAMETER_DEF(Render, ShowShadows);
+ALGORITHM_PARAMETER_DEF(Render, ShowFrameRate);
+ALGORITHM_PARAMETER_DEF(Render, ShowRenderAnnotations);
+ALGORITHM_PARAMETER_DEF(Render, SubsampleDuringInteraction);
+ALGORITHM_PARAMETER_DEF(Render, AOSamples);
+ALGORITHM_PARAMETER_DEF(Render, ViewerHeight);
+ALGORITHM_PARAMETER_DEF(Render, ViewerWidth);
+ALGORITHM_PARAMETER_DEF(Render, CameraViewAtX);
+ALGORITHM_PARAMETER_DEF(Render, CameraViewAtY);
+ALGORITHM_PARAMETER_DEF(Render, CameraViewAtZ);
+ALGORITHM_PARAMETER_DEF(Render, CameraViewFromX);
+ALGORITHM_PARAMETER_DEF(Render, CameraViewFromY);
+ALGORITHM_PARAMETER_DEF(Render, CameraViewFromZ);
+ALGORITHM_PARAMETER_DEF(Render, CameraViewUpX);
+ALGORITHM_PARAMETER_DEF(Render, CameraViewUpY);
+ALGORITHM_PARAMETER_DEF(Render, CameraViewUpZ);
+ALGORITHM_PARAMETER_DEF(Render, FrameWriterFilename);
+ALGORITHM_PARAMETER_DEF(Render, BackgroundColor);
+ALGORITHM_PARAMETER_DEF(Render, ShowAmbientLight);
+ALGORITHM_PARAMETER_DEF(Render, AmbientLightColor);
+ALGORITHM_PARAMETER_DEF(Render, AmbientLightIntensity);
+ALGORITHM_PARAMETER_DEF(Render, ShowDirectionalLight);
+ALGORITHM_PARAMETER_DEF(Render, DirectionalLightColor);
+ALGORITHM_PARAMETER_DEF(Render, DirectionalLightIntensity);
+ALGORITHM_PARAMETER_DEF(Render, DirectionalLightAzimuth);
+ALGORITHM_PARAMETER_DEF(Render, DirectionalLightElevation);
+ALGORITHM_PARAMETER_DEF(Render, ShowProbe);
+ALGORITHM_PARAMETER_DEF(Render, ProbeX);
+ALGORITHM_PARAMETER_DEF(Render, ProbeY);
+ALGORITHM_PARAMETER_DEF(Render, ProbeZ);
+ALGORITHM_PARAMETER_DEF(Render, InvertZoom);
+ALGORITHM_PARAMETER_DEF(Render, ZoomSpeed);
 
 OsprayViewer::OsprayViewer() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
@@ -56,6 +90,40 @@ void OsprayViewer::setStateDefaults()
   auto state = get_state();
   state->setValue(Parameters::ShowPlane, true);
   state->setValue(Parameters::AutoRotationRate, 0.025);
+  state->setValue(Parameters::RendererChoice, std::string("scivis"));
+  state->setValue(Parameters::SeparateModelPerObject, false);
+  state->setValue(Parameters::ShowShadows, true);
+  state->setValue(Parameters::ShowFrameRate, false);
+  state->setValue(Parameters::ShowRenderAnnotations, false);
+  state->setValue(Parameters::SubsampleDuringInteraction, false);
+  state->setValue(Parameters::AOSamples, 1);
+  state->setValue(Parameters::ViewerHeight, 600);
+  state->setValue(Parameters::ViewerWidth, 800);
+  state->setValue(Parameters::CameraViewAtX, 0.0);
+  state->setValue(Parameters::CameraViewAtY, 0.0);
+  state->setValue(Parameters::CameraViewAtZ, 0.0);
+  state->setValue(Parameters::CameraViewFromX, 10.0);
+  state->setValue(Parameters::CameraViewFromY, 10.0);
+  state->setValue(Parameters::CameraViewFromZ, 0.0);
+  state->setValue(Parameters::CameraViewUpX, 0.0);
+  state->setValue(Parameters::CameraViewUpY, 0.0);
+  state->setValue(Parameters::CameraViewUpZ, 1.0);
+  state->setValue(Parameters::FrameWriterFilename, std::string("frames.png"));
+  state->setValue(Parameters::BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(Parameters::ShowAmbientLight, true);
+  state->setValue(Parameters::AmbientLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(Parameters::AmbientLightIntensity, 0.1);
+  state->setValue(Parameters::ShowDirectionalLight, true);
+  state->setValue(Parameters::DirectionalLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
+  state->setValue(Parameters::DirectionalLightIntensity, 0.1);
+  state->setValue(Parameters::DirectionalLightAzimuth, 0.1);
+  state->setValue(Parameters::DirectionalLightElevation, 0.1);
+  state->setValue(Parameters::ShowProbe, false);
+  state->setValue(Parameters::ProbeX, 0.0);
+  state->setValue(Parameters::ProbeY, 0.0);
+  state->setValue(Parameters::ProbeZ, 0.0);
+  state->setValue(Parameters::InvertZoom, false);
+  state->setValue(Parameters::ZoomSpeed, 1.0);
 }
 
 void OsprayViewer::portRemovedSlotImpl(const PortId& pid)

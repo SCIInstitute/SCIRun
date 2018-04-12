@@ -446,8 +446,10 @@ void OsprayViewerDialog::toggleLockColor(bool locked)
 
 void OsprayViewerDialog::autoRotateClicked()
 {
+#ifdef WITH_OSPRAY
   if (viewer_)
     viewer_->autoRotate(autoRotateButton_->isChecked());
+#endif
 }
 
 void OsprayViewerDialog::autoViewClicked()
@@ -457,20 +459,26 @@ void OsprayViewerDialog::autoViewClicked()
 
 void OsprayViewerDialog::screenshotClicked()
 {
+#ifdef WITH_OSPRAY
   if (viewer_)
     viewer_->screenshot();
+#endif
 }
 
 void OsprayViewerDialog::nextTimestepClicked()
 {
+#ifdef WITH_OSPRAY
   if (viewer_)
     viewer_->nextTimeStep();
+#endif
 }
 
 void OsprayViewerDialog::playTimestepsClicked()
 {
+#ifdef WITH_OSPRAY
   if (viewer_)
     viewer_->playTimeSteps(playTimestepsButton_->isChecked());
+#endif
 }
 
 #if 0
