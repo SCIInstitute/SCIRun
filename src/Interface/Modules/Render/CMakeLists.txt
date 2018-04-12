@@ -36,12 +36,14 @@ ENDIF()
 SET(Interface_Modules_Render_FORMS
   ViewScene.ui
   ViewSceneControls.ui
+  ViewOspraySceneConfig.ui
   OsprayViewer.ui
 )
 
 SET(Interface_Modules_Render_HEADERS_TO_MOC
   ViewScene.h
   ViewSceneControlsDock.h
+  ViewOspraySceneConfig.h
   GLWidget.h
   GLContext.h
   GLContextPlatformCompatibility.h
@@ -80,6 +82,7 @@ SET(Interface_Modules_Render_SOURCES
   QtGLContext.cc
   Screenshot.cc
   OsprayViewerDialog.cc
+  ViewOspraySceneConfig.cc
   ES/SRCamera.cc
   ES/SRInterface.cc
   ES/SRUtil.cc

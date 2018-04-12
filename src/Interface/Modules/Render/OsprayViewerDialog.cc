@@ -29,6 +29,7 @@ DEALINGS IN THE SOFTWARE.
 #include <es-log/trace-log.h>
 #include <Interface/Modules/Render/OsprayViewerDialog.h>
 #include <Core/Algorithms/Visualization/OsprayRenderAlgorithm.h>
+#include <Interface/Modules/Render/ViewOspraySceneConfig.h>
 #include <Modules/Render/ViewScene.h>
 #include <Core/Logging/Log.h>
 
@@ -157,15 +158,7 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
 
   addToolBar();
 
-  resize(1200, 800);
-}
-
-
-OsprayViewerDialog::~OsprayViewerDialog()
-{
-#ifdef WITH_OSPRAY
-  delete viewer_;
-#endif
+  setMinimumSize(200, 200);
 }
 
 void OsprayViewerDialog::newGeometryValue()
@@ -275,7 +268,7 @@ void OsprayViewerDialog::addToolBar()
   WidgetStyleMixin::toolbarStyle(toolBar_);
 
   addConfigurationButton();
-  //addConfigurationDock();
+  addConfigurationDialog();
   addAutoViewButton();
   addAutoRotateButton();
   addTimestepButtons();
@@ -299,19 +292,22 @@ void OsprayViewerDialog::addConfigurationButton()
   configurationButton->setToolTip("Open/Close Configuration Menu");
   configurationButton->setIcon(QPixmap(":/general/Resources/ViewScene/configure.png"));
   configurationButton->setShortcut(Qt::Key_F5);
-  connect(configurationButton, SIGNAL(clicked(bool)), this, SLOT(configurationButtonClicked()));
+  connect(configurationButton, SIGNAL(clicked()), this, SLOT(configButtonClicked()));
   addToolbarButton(configurationButton);
 }
 
-void OsprayViewerDialog::addConfigurationDock()
+void OsprayViewerDialog::configButtonClicked()
 {
-  // QString name = windowTitle() + " Configuration";
-  // mConfigurationDock = new ViewSceneControlsDock(name, this);
-  // mConfigurationDock->setHidden(true);
-  // mConfigurationDock->setVisible(false);
-  //
-  // mConfigurationDock->setSampleColor(bgColor_);
-  // mConfigurationDock->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
+  configDialog_->setVisible(!configDialog_->isVisible());
+}
+
+void OsprayViewerDialog::addConfigurationDialog()
+{
+  auto name = windowTitle() + " Configuration";
+  configDialog_ = new ViewOspraySceneConfigDialog(name, this);
+
+  // configDialog_->setSampleColor(bgColor_);
+  // configDialog_->setScaleBarValues(scaleBar_.visible, scaleBar_.fontSize, scaleBar_.length, scaleBar_.height,
   //   scaleBar_.multiplier, scaleBar_.numTicks, scaleBar_.visible, QString::fromStdString(scaleBar_.unit));
   // setupMaterials();
 }
@@ -326,6 +322,10 @@ void OsprayViewerDialog::addToolbarButton(QPushButton* button)
 void OsprayViewerDialog::addAutoViewButton()
 {
   autoViewButton_ = new QPushButton(this);
+
+  //TODO
+  autoViewButton_->setDisabled(true);
+
   autoViewButton_->setToolTip("Auto View");
   autoViewButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
   autoViewButton_->setShortcut(Qt::Key_0);
@@ -386,6 +386,11 @@ void OsprayViewerDialog::addViewBarButton()
 void OsprayViewerDialog::addControlLockButton()
 {
   controlLock_ = new QPushButton();
+
+  //TODO
+  controlLock_->setDisabled(true);
+
+#if 0
   controlLock_->setToolTip("Lock specific view controls");
   controlLock_->setIcon(QPixmap(":/general/Resources/ViewScene/lockView.png"));
   auto menu = new QMenu;
@@ -415,13 +420,14 @@ void OsprayViewerDialog::addControlLockButton()
   addToolbarButton(controlLock_);
   controlLock_->setFixedWidth(45);
   toggleLockColor(false);
+  #endif
 }
 
 void OsprayViewerDialog::toggleLockColor(bool locked)
 {
   QString color = locked ? "red" : "rgb(66,66,69)";
   controlLock_->setStyleSheet("QPushButton { background-color: " + color + "; }");
-  autoViewButton_->setDisabled(locked);
+  //autoViewButton_->setDisabled(locked);
 }
 
 void OsprayViewerDialog::autoRotateClicked()
@@ -432,7 +438,7 @@ void OsprayViewerDialog::autoRotateClicked()
 
 void OsprayViewerDialog::autoViewClicked()
 {
-  qDebug() << __FUNCTION__;
+  qDebug() << "TODO" << __FUNCTION__;
 }
 
 void OsprayViewerDialog::screenshotClicked()

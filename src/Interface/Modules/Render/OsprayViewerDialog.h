@@ -43,6 +43,8 @@ namespace SCIRun {
 
   namespace Gui {
 
+    class ViewOspraySceneConfigDialog;
+
     class SCISHARE OsprayViewerDialog : public ModuleDialogGeneric, public Ui::OsprayViewer
     {
       Q_OBJECT
@@ -51,10 +53,11 @@ namespace SCIRun {
       OsprayViewerDialog(const std::string& name,
         Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
-      ~OsprayViewerDialog();
       void adjustToolbar() override;
     Q_SIGNALS:
       void newGeometryValueForwarder();
+    protected:
+      void contextMenuEvent(QContextMenuEvent* evt) override {}
     private Q_SLOTS:
       void newGeometryValue();
       void autoViewClicked();
@@ -62,10 +65,11 @@ namespace SCIRun {
       void screenshotClicked();
       void nextTimestepClicked();
       void playTimestepsClicked();
+      void configButtonClicked();
     private:
       void addToolBar();
       void addConfigurationButton();
-      void addConfigurationDock();
+      void addConfigurationDialog();
       void addAutoViewButton();
       void addViewBarButton();
       void addAutoRotateButton();
@@ -83,7 +87,7 @@ namespace SCIRun {
       //QToolBar*                             viewBar_;
       //QComboBox*                            mDownViewBox;
       //QComboBox*                            mUpVectorBox;
-      //ViewSceneControlsDock*                mConfigurationDock;
+      ViewOspraySceneConfigDialog* configDialog_;
       QAction* lockRotation_;
       QAction* lockPan_;
       QAction* lockZoom_;
