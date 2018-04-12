@@ -60,6 +60,8 @@ namespace SCIRun {
       void autoViewClicked();
       void autoRotateClicked();
       void screenshotClicked();
+      void nextTimestepClicked();
+      void playTimestepsClicked();
     private:
       void addToolBar();
       void addConfigurationButton();
@@ -88,6 +90,7 @@ namespace SCIRun {
       QPushButton* controlLock_;
       QPushButton* autoViewButton_;
       QPushButton* autoRotateButton_;
+      QPushButton* playTimestepsButton_;
     };
   }
 }

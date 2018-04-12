@@ -179,7 +179,7 @@ void VolumeViewer::nextTimeStep()
 
 void VolumeViewer::playTimeSteps(bool animate)
 {
-  if (animate == true)
+  if (animate)
     playTimeStepsTimer.start(500);
   else
     playTimeStepsTimer.stop();
@@ -337,14 +337,17 @@ void VolumeViewer::screenshot(const QString& file)
 
 void VolumeViewer::keyPressEvent(QKeyEvent * event)
 {
-  if (event->key() == Qt::Key_Escape){
+  if (event->key() == Qt::Key_Escape)
+  {
     close();
   }
-  else if (event->key() == Qt::Key_P){
+  else if (event->key() == Qt::Key_P)
+  {
     std::cout << "View parameters (use on command line to reproduce view): " << std::endl
             << "  " << *(osprayWindow->getViewport()) << std::endl;
   }
-  else if (event->key() == Qt::Key_L){
+  else if (event->key() == Qt::Key_L)
+  {
     std::cout << "Light parameters (use on command line to reproduce view): " << std::endl
             << "  " << *lightEditor << std::endl;
   }
@@ -359,7 +362,8 @@ void VolumeViewer::commitVolumes()
 
 void VolumeViewer::render()
 {
-  if (osprayWindow != NULL) {
+  if (osprayWindow)
+  {
     osprayWindow->resetAccumulationBuffer();
     osprayWindow->updateGL();
   }
@@ -367,13 +371,15 @@ void VolumeViewer::render()
 
 void VolumeViewer::setRenderAnnotationsEnabled(bool value)
 {
-  if (value) {
+  if (value)
+  {
     if (!annotationRenderer)
       annotationRenderer = new OpenGLAnnotationRenderer(this);
 
     connect(osprayWindow, SIGNAL(renderGLComponents()), annotationRenderer, SLOT(render()), Qt::UniqueConnection);
   }
-  else {
+  else
+  {
     delete annotationRenderer;
     annotationRenderer = NULL;
   }
@@ -901,26 +907,10 @@ void VolumeViewer::initUserInterfaceWidgets()
   preferencesDialog->setSamplingRate(samplingRate);
   preferencesDialog->setAdaptiveMaxSamplingRate(adaptiveMaxSamplingRate);
 
-  // Add the "auto rotate" widget and callback.
-  autoRotateAction = new QAction("Auto rotate", this);
-  autoRotateAction->setCheckable(true);
-  connect(autoRotateAction, SIGNAL(toggled(bool)), this, SLOT(autoRotate(bool)));
-  toolbar->addAction(autoRotateAction);
-
-  // Add the "next timestep" widget and callback.
-  QAction *nextTimeStepAction = new QAction("Next timestep", this);
-  connect(nextTimeStepAction, SIGNAL(triggered()), this, SLOT(nextTimeStep()));
-  toolbar->addAction(nextTimeStepAction);
-
-  // Add the "play timesteps" widget and callback.
-  QAction *playTimeStepsAction = new QAction("Play timesteps", this);
-  playTimeStepsAction->setCheckable(true);
-  connect(playTimeStepsAction, SIGNAL(toggled(bool)), this, SLOT(playTimeSteps(bool)));
-  toolbar->addAction(playTimeStepsAction);
-
+#endif
   // Connect the "play timesteps" timer.
   connect(&playTimeStepsTimer, SIGNAL(timeout()), this, SLOT(nextTimeStep()));
-#endif
+
 #if 0
   // Add the "add geometry" widget and callback.
   QAction *addGeometryAction = new QAction("Add geometry", this);
