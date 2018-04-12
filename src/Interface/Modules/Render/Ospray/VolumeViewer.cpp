@@ -22,13 +22,10 @@
 #include "PreferencesDialog.h"
 #include "ProbeWidget.h"
 #include "OpenGLAnnotationRenderer.h"
-//#include "commandline/SceneParser/trianglemesh/TriangleMeshSceneParser.h"
-//#include <common/miniSG/miniSG.h>
 #include <components/ospcommon/FileName.h>
 
 #include "importer/Importer.h"
 
-//using namespace ospray;
 using namespace ospcommon;
 
 VolumeViewer::VolumeViewer(const OsprayViewerParameters& params, QWidget* parent)
@@ -48,7 +45,6 @@ VolumeViewer::VolumeViewer(const OsprayViewerParameters& params, QWidget* parent
     annotationRenderer(nullptr),
     transferFunctionEditor(nullptr),
     isosurfaceEditor(nullptr),
-    autoRotateAction(nullptr),
     autoRotationRate(0.025f),
     usePlane(-1),
     samplingRate(-1),
@@ -150,23 +146,23 @@ void VolumeViewer::setModel(size_t index)
 
 std::string VolumeViewer::toString() const
 {
-  return("VolumeViewer");
+  return "VolumeViewer";
 }
 
 void VolumeViewer::autoRotate(bool set)
 {
-  if(osprayWindow == NULL)
+  if (!osprayWindow)
     return;
 
-  if(autoRotateAction != NULL)
-    autoRotateAction->setChecked(set);
-
-  if(set) {
+  if (set)
+  {
     osprayWindow->setRotationRate(autoRotationRate);
     osprayWindow->updateGL();
   }
   else
+  {
     osprayWindow->setRotationRate(0.);
+  }
 }
 
 void VolumeViewer::setAutoRotationRate(float rate)

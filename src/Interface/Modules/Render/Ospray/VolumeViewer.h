@@ -248,9 +248,6 @@ protected:
   //! The probe widget.
   ProbeWidget *probeWidget;
 
-  //! Auto-rotate button.
-  QAction *autoRotateAction;
-
   //! Auto-rotation rate
   float autoRotationRate;
 

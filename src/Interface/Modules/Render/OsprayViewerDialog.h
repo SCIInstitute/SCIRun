@@ -87,6 +87,7 @@ namespace SCIRun {
       QAction* lockZoom_;
       QPushButton* controlLock_;
       QPushButton* autoViewButton_;
+      QPushButton* autoRotateButton_;
     };
   }
 }

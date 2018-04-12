@@ -335,13 +335,13 @@ void OsprayViewerDialog::addAutoViewButton()
 
 void OsprayViewerDialog::addAutoRotateButton()
 {
-  auto autoRotateButton = new QPushButton(this);
-  autoRotateButton->setText("AR");
-  autoRotateButton->setToolTip("Auto Rotate");
-  //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
+  autoRotateButton_ = new QPushButton(this);
+  autoRotateButton_->setToolTip("Auto Rotate");
+  autoRotateButton_->setCheckable(true);
+  autoRotateButton_->setIcon(QPixmap(":/general/Resources/ViewScene/autorotate.png"));
   //autoRotateButton->setShortcut(Qt::Key_0);
-  connect(autoRotateButton, SIGNAL(clicked(bool)), this, SLOT(autoRotateClicked()));
-  addToolbarButton(autoRotateButton);
+  connect(autoRotateButton_, SIGNAL(clicked(bool)), this, SLOT(autoRotateClicked()));
+  addToolbarButton(autoRotateButton_);
 }
 
 void OsprayViewerDialog::addTimestepButtons()
@@ -425,7 +425,8 @@ void OsprayViewerDialog::toggleLockColor(bool locked)
 
 void OsprayViewerDialog::autoRotateClicked()
 {
-  qDebug() << __FUNCTION__;
+  if (viewer_)
+    viewer_->autoRotate(autoRotateButton_->isChecked());
 }
 
 void OsprayViewerDialog::autoViewClicked()

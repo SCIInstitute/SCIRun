@@ -41,6 +41,7 @@
     <file>Resources/timepiece-512.png</file>
     <file>Resources/scirunWizard.png</file>
     <file>Resources/ViewScene/autoview.png</file>
+    <file>Resources/ViewScene/autorotate.png</file>
     <file>Resources/ViewScene/configure.png</file>
     <file>Resources/ViewScene/views.png</file>
     <file>Resources/ViewScene/lockView.png</file>
