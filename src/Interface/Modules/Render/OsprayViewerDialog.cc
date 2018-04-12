@@ -149,7 +149,6 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  //WidgetStyleMixin::tabStyle(tabWidget);
 
   OsprayRenderAlgorithm algo; // for ospray init
 
@@ -337,7 +336,7 @@ void OsprayViewerDialog::addAutoViewButton()
 void OsprayViewerDialog::addAutoRotateButton()
 {
   auto autoRotateButton = new QPushButton(this);
-  autoRotateButton->setText("Auto Rotate");
+  autoRotateButton->setText("AR");
   autoRotateButton->setToolTip("Auto Rotate");
   //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
   //autoRotateButton->setShortcut(Qt::Key_0);
@@ -348,7 +347,7 @@ void OsprayViewerDialog::addAutoRotateButton()
 void OsprayViewerDialog::addTimestepButtons()
 {
   auto nextTimestep = new QPushButton(this);
-  nextTimestep->setText("Next timestep");
+  nextTimestep->setText("Next");
   nextTimestep->setToolTip("Next timestep");
   //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
   //autoRotateButton->setShortcut(Qt::Key_0);
@@ -356,7 +355,7 @@ void OsprayViewerDialog::addTimestepButtons()
   addToolbarButton(nextTimestep);
 
   auto playTimesteps = new QPushButton(this);
-  playTimesteps->setText("Play timesteps");
+  playTimesteps->setText("Play");
   playTimesteps->setToolTip("Play timesteps");
   //autoRotateButton->setIcon(QPixmap(":/general/Resources/ViewScene/autoview.png"));
   //autoRotateButton->setShortcut(Qt::Key_0);
@@ -422,6 +421,22 @@ void OsprayViewerDialog::toggleLockColor(bool locked)
   QString color = locked ? "red" : "rgb(66,66,69)";
   controlLock_->setStyleSheet("QPushButton { background-color: " + color + "; }");
   autoViewButton_->setDisabled(locked);
+}
+
+void OsprayViewerDialog::autoRotateClicked()
+{
+  qDebug() << __FUNCTION__;
+}
+
+void OsprayViewerDialog::autoViewClicked()
+{
+  qDebug() << __FUNCTION__;
+}
+
+void OsprayViewerDialog::screenshotClicked()
+{
+  if (viewer_)
+    viewer_->screenshot();
 }
 
 #if 0

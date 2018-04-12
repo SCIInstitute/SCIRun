@@ -55,8 +55,11 @@ namespace SCIRun {
       void adjustToolbar() override;
     Q_SIGNALS:
       void newGeometryValueForwarder();
-    protected Q_SLOTS:
+    private Q_SLOTS:
       void newGeometryValue();
+      void autoViewClicked();
+      void autoRotateClicked();
+      void screenshotClicked();
     private:
       void addToolBar();
       void addConfigurationButton();

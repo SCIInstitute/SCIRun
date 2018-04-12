@@ -130,7 +130,7 @@ public Q_SLOTS:
   void addGeometry(std::string filename = std::string());
 
   //! Save screenshot.
-  void screenshot(std::string filename = std::string());
+  void screenshot(const QString& filename = {});
 
   //! Quit the volume viewer when pressing escape
   virtual void keyPressEvent(QKeyEvent * event);

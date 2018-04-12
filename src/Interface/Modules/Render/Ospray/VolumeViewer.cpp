@@ -312,30 +312,31 @@ void VolumeViewer::addGeometry(std::string filename)
 #endif
 }
 
-void VolumeViewer::screenshot(std::string filename)
+void VolumeViewer::screenshot(const QString& file)
 {
   // Print current camera view parameters (can be used on command line to recreate view)
-  std::cout << "screenshot view parameters (use on command line to reproduce view): " << std::endl
-            << "  " << *(osprayWindow->getViewport()) << std::endl;
+  qDebug() << "screenshot view parameters (use on command line to reproduce view): \n"
+            << "  " << osprayWindow->getViewport()->toString();
 
+  QString filename(file);
   // Get filename if not specified.
-  if(filename.empty())
-    filename = QFileDialog::getSaveFileName(this, tr("Save screenshot"), ".", "PNG files (*.png)").toStdString();
+  if (filename.isEmpty())
+    filename = QFileDialog::getSaveFileName(this, tr("Save screenshot"), ".", "PNG files (*.png)");
 
-  if(filename.empty())
+  if (filename.isEmpty())
     return;
 
   // Make sure the filename has the proper extension.
-  if(QString(filename.c_str()).endsWith(".png") != true)
+  if (!filename.endsWith(".png"))
     filename += ".png";
 
   // Grab the image.
-  QImage image = osprayWindow->grabFrameBuffer();
+  auto image = osprayWindow->grabFrameBuffer();
 
   // Save the screenshot.
-  bool success = image.save(filename.c_str());
+  bool success = image.save(filename);
 
-  std::cout << (success ? "saved screenshot to " : "failed saving screenshot ") << filename << std::endl;
+  qDebug() << (success ? "saved screenshot to " : "failed saving screenshot ") << filename;
 }
 
 void VolumeViewer::keyPressEvent(QKeyEvent * event)

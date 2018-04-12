@@ -74,6 +74,8 @@ struct Viewport
     frame.l.vz = normalize(cross(frame.l.vx,frame.l.vy));
     frame.l.vy = normalize(cross(frame.l.vz,frame.l.vx));
   }
+
+  QString toString() const;
 };
 
 std::ostream &operator<<(std::ostream &o, const Viewport &viewport);

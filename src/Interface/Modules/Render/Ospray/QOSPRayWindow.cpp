@@ -37,6 +37,12 @@ std::ostream &operator<<(std::ostream &o, const Viewport &viewport)
   return o;
 }
 
+QString Viewport::toString() const
+{
+  std::ostringstream o;
+  o << *this;
+  return QString::fromStdString(o.str());
+}
 
 QOSPRayWindow::QOSPRayWindow(OSPRenderer renderer,
                              bool showFrameRate,
