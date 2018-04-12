@@ -215,9 +215,14 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 
   setupViewer(viewer_);
 
-  // TODO: need to move this to dialog ctor--create viewer once, and just change state.
-  connect(configDialog_->autoRotationRateDoubleSpinBox_, SIGNAL(valueChanged(double)),
-    viewer_, SLOT(setAutoRotationRate(double)));
+  {
+    // TODO: need to move this to dialog ctor--create viewer once, and just change state.
+    connect(configDialog_->autoRotationRateDoubleSpinBox_, SIGNAL(valueChanged(double)),
+      viewer_, SLOT(setAutoRotationRate(double)));
+
+    connect(configDialog_->showPlaneCheckBox_, SIGNAL(toggled(bool)),
+      viewer_, SLOT(setPlane(bool)));
+  }
 
   osprayLayout->addWidget(viewer_);
   viewer_->show();
