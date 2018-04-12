@@ -395,6 +395,9 @@
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <widget class="QGroupBox" name="groupBox_7">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="font">
           <font>
            <weight>50</weight>
@@ -507,6 +510,9 @@
        </item>
        <item row="2" column="0" colspan="3">
         <widget class="QGroupBox" name="globalSettingsGroupBox_">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="title">
           <string>Global Settings</string>
          </property>
@@ -628,7 +634,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox_3">
          <property name="enabled">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="font">
           <font>
@@ -681,7 +687,7 @@
           <item row="2" column="1">
            <widget class="QRadioButton" name="plane6RadioButton_">
             <property name="enabled">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="text">
              <string>Plane 6</string>
@@ -696,6 +702,9 @@
        </item>
        <item>
         <widget class="QGroupBox" name="groupBox_4">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="font">
           <font>
            <weight>50</weight>
@@ -732,6 +741,9 @@
        </item>
        <item>
         <widget class="QGroupBox" name="groupBox_5">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="font">
           <font>
            <weight>50</weight>
@@ -998,6 +1010,9 @@
        </item>
        <item row="0" column="0">
         <widget class="QGroupBox" name="groupBox_8">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="title">
           <string>Type</string>
          </property>
@@ -1005,7 +1020,7 @@
           <item row="0" column="0">
            <widget class="QComboBox" name="lightTypeComboBox_">
             <property name="enabled">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="minimumSize">
              <size>
@@ -1425,6 +1440,9 @@
             <property name="text">
              <string>Left</string>
             </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item row="0" column="1" colspan="2">
@@ -1435,6 +1453,9 @@
             <property name="text">
              <string>Up</string>
             </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item row="1" column="3">
@@ -1444,6 +1465,9 @@
             </property>
             <property name="text">
              <string>Right</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -1520,6 +1544,9 @@
             <property name="text">
              <string>Down</string>
             </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
           <item row="6" column="0">
@@ -1566,6 +1593,9 @@
        </item>
        <item>
         <widget class="QGroupBox" name="viewOptionsGroupBox_">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="font">
           <font>
            <weight>50</weight>
@@ -1615,6 +1645,9 @@
        </item>
        <item>
         <widget class="QGroupBox" name="showScaleBarTextGroupBox_">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="font">
           <font>
            <weight>50</weight>
@@ -1949,7 +1982,7 @@
        <string>Controls</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_7">
-       <item row="4" column="0">
+       <item row="3" column="0">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -1961,13 +1994,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-       <item row="0" column="1">
-        <widget class="QCheckBox" name="invertZoomCheckBox_">
-         <property name="text">
-          <string>Invert Zoom</string>
-         </property>
-        </widget>
        </item>
        <item row="1" column="0" colspan="2">
         <widget class="QCheckBox" name="saveScreenShotOnUpdateCheckBox_">
@@ -1982,6 +2008,13 @@
          </property>
          <property name="text">
           <string>Save screenshot on update</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="invertZoomCheckBox_">
+         <property name="text">
+          <string>Invert Zoom</string>
          </property>
         </widget>
        </item>
@@ -2055,51 +2088,6 @@
             </property>
             <property name="tickInterval">
              <number>10</number>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="3" column="0" colspan="2">
-        <widget class="QGroupBox" name="transparencyGroupBox_">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="font">
-          <font>
-           <weight>50</weight>
-           <bold>false</bold>
-          </font>
-         </property>
-         <property name="title">
-          <string>Transparency Rendering</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <widget class="QRadioButton" name="contSortRadioButton_">
-            <property name="text">
-             <string>Continuous Sort</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="updateSortRadioButton_">
-            <property name="text">
-             <string>Intermittent Sort</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QRadioButton" name="listSortRadioButton_">
-            <property name="text">
-             <string>List Sort</string>
             </property>
            </widget>
           </item>
