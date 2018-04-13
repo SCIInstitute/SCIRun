@@ -1044,3 +1044,13 @@ void ModuleDialogGeneric::adjustToolbarForHighResolution(QToolBar* toolbar)
     }
   }
 }
+
+void ModuleDialogGeneric::keyPressEvent(QKeyEvent* e)
+{
+  if (e->key() != Qt::Key_Escape)
+    QDialog::keyPressEvent(e);
+  else //Esc = close dialog
+  {
+    Q_EMIT closeButtonClicked();
+  }
+}

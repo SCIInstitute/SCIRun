@@ -109,6 +109,7 @@ namespace Gui {
   protected:
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
     void contextMenuEvent(QContextMenuEvent* e) override;
+    void keyPressEvent(QKeyEvent* e) override;
     void fixSize();
     void connectButtonToExecuteSignal(QAbstractButton* button);
     void connectButtonsToExecuteSignal(std::initializer_list<QAbstractButton*> buttons);
