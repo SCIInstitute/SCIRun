@@ -29,6 +29,7 @@
 #include <es-log/trace-log.h>
 #include <Modules/Render/OsprayViewer.h>
 #include <Modules/Render/ViewScene.h>
+#include <Core/Datatypes/Color.h>
 #include <Core/Logging/Log.h>
 
 
