@@ -213,50 +213,53 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
     statusBar_->setMaximumHeight(20);
   }
 
-  OsprayViewerParameters params
+  if (!impl_->geoms_.empty())
   {
-    {},
-    showFrameRate,
-    renderer,
-    ownModelPerObject,
-    fullScreen,
-    impl_->geoms_,
-    toOsprayBox(geom.box),
-    "",
-    1024,
-    768,
-    statusBar_
-  };
-  viewer_ = new VolumeViewer(params, this);
+    OsprayViewerParameters params
+    {
+      {},
+      showFrameRate,
+      renderer,
+      ownModelPerObject,
+      fullScreen,
+      impl_->geoms_,
+      toOsprayBox(geom.box),
+      "",
+      1024,
+      768,
+      statusBar_
+    };
+    viewer_ = new VolumeViewer(params, this);
 
-  setupViewer(viewer_);
+    setupViewer(viewer_);
 
-  osprayLayout->addWidget(viewer_);
-  osprayLayout->addWidget(statusBar_);
-  statusBar_->showMessage("Ospray viewer initialized.", 5000);
+    osprayLayout->addWidget(viewer_);
+    osprayLayout->addWidget(statusBar_);
+    statusBar_->showMessage("Ospray viewer initialized.", 5000);
 
-  {
-    // TODO: need to move this to dialog ctor--create viewer once, and just change state.
-    connect(configDialog_->autoRotationRateDoubleSpinBox_, SIGNAL(valueChanged(double)),
-      viewer_, SLOT(setAutoRotationRate(double)));
+    {
+      // TODO: need to move this to dialog ctor--create viewer once, and just change state.
+      connect(configDialog_->autoRotationRateDoubleSpinBox_, SIGNAL(valueChanged(double)),
+        viewer_, SLOT(setAutoRotationRate(double)));
 
-    connect(configDialog_->showPlaneCheckBox_, SIGNAL(toggled(bool)),
-      viewer_, SLOT(setPlane(bool)));
-    connect(configDialog_->shadowsCheckBox_, SIGNAL(toggled(bool)),
-      viewer_, SLOT(setShadows(bool)));
-    connect(configDialog_->renderAnnotationsCheckBox_, SIGNAL(toggled(bool)),
-      viewer_, SLOT(setRenderAnnotationsEnabled(bool)));
-    connect(configDialog_->subsampleCheckBox_, SIGNAL(toggled(bool)),
-      viewer_, SLOT(setSubsamplingInteractionEnabled(bool)));
+      connect(configDialog_->showPlaneCheckBox_, SIGNAL(toggled(bool)),
+        viewer_, SLOT(setPlane(bool)));
+      connect(configDialog_->shadowsCheckBox_, SIGNAL(toggled(bool)),
+        viewer_, SLOT(setShadows(bool)));
+      connect(configDialog_->renderAnnotationsCheckBox_, SIGNAL(toggled(bool)),
+        viewer_, SLOT(setRenderAnnotationsEnabled(bool)));
+      connect(configDialog_->subsampleCheckBox_, SIGNAL(toggled(bool)),
+        viewer_, SLOT(setSubsamplingInteractionEnabled(bool)));
 
-    connect(configDialog_->samplesPerPixelSpinBox_, SIGNAL(valueChanged(int)),
-      viewer_, SLOT(setSPP(int)));
+      connect(configDialog_->samplesPerPixelSpinBox_, SIGNAL(valueChanged(int)),
+        viewer_, SLOT(setSPP(int)));
 
-    connect(configDialog_->showFrameRateCheckBox_, SIGNAL(toggled(bool)),
-      viewer_, SLOT(setShowFrameRate(bool)));
+      connect(configDialog_->showFrameRateCheckBox_, SIGNAL(toggled(bool)),
+        viewer_, SLOT(setShowFrameRate(bool)));
+    }
+
+    viewer_->show();
   }
-
-  viewer_->show();
 #endif
 }
 
