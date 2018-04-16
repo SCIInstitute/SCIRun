@@ -82,6 +82,10 @@ struct OsprayViewerParameters
   std::string writeFramesFilename;
   int width, height;
   QStatusBar* frameRateWidget;
+  QDoubleSpinBox* ambientLightIntensitySpinBox;
+  QDoubleSpinBox* directionalLightIntensitySpinBox;
+  QSlider* directionalLightAzimuthSlider;
+  QSlider* directionalLightElevationSlider;
 };
 
 class VolumeViewer : public QWidget
@@ -271,7 +275,7 @@ protected:
   //! Load an OSPRay model from a file.
   void importObjectsFromFile(const std::string &filename);
 
-  void postInitObjectConstruction(bool showFrameRate, const std::string& writeFramesFilename, bool fullScreen, QStatusBar* frameRateWidget);
+  void postInitObjectConstruction(const OsprayViewerParameters& params);
   //! Create and configure the OSPRay state.
   void initObjects(const std::string &renderer_type);
   void globalInit(const std::string &renderer_type);

@@ -64,23 +64,31 @@ VolumeViewer::VolumeViewer(const OsprayViewerParameters& params, QWidget* parent
   // Create and configure the OSPRay state.
   initObjects(params.rendererType);
 
-  postInitObjectConstruction(params.showFrameRate, params.writeFramesFilename, params.fullScreen, params.frameRateWidget);
+  postInitObjectConstruction(params);
 }
 
-void VolumeViewer::postInitObjectConstruction(bool showFrameRate, const std::string& writeFramesFilename, bool fullScreen, QStatusBar* frameRateWidget)
+void VolumeViewer::postInitObjectConstruction(const OsprayViewerParameters& params)
+//  bool showFrameRate, const std::string& writeFramesFilename, bool fullScreen, QStatusBar* frameRateWidget)
 {
   // Create an OSPRay window and set it as the central widget, but don't let it start rendering until we're done with setup.
-  osprayWindow_ = new QOSPRayWindow(renderer, showFrameRate, writeFramesFilename, this, frameRateWidget);
+  osprayWindow_ = new QOSPRayWindow(renderer, params.showFrameRate, params.writeFramesFilename, this, params.frameRateWidget);
   layout()->addWidget(osprayWindow_);
 
   //PRINT(boundingBox_);
   // Set the window bounds based on the OSPRay world bounds.
   osprayWindow_->setWorldBounds(boundingBox_);
 
-  // Configure the user interface widgets and callbacks.
-  initUserInterfaceWidgets();
+  // Connect the "play timesteps" timer.
+  connect(&playTimeStepsTimer, SIGNAL(timeout()), this, SLOT(nextTimeStep()));
+  {
+    //TODO: connect to new config widgets
+    lightEditor = new LightEditor(ambientLight, directionalLight,
+      params.ambientLightIntensitySpinBox, params.directionalLightIntensitySpinBox, params.directionalLightAzimuthSlider, params.directionalLightElevationSlider);
+    connect(lightEditor, SIGNAL(lightsChanged()), this, SLOT(render()));
+    probeWidget = new ProbeWidget(this);
+  }
 
-  if (fullScreen)
+  if (params.fullScreen)
     setWindowState(windowState() | Qt::WindowFullScreen);
 
   setGradientShadingEnabled(true);
@@ -884,8 +892,7 @@ void VolumeViewer::loadObjectsFromFiles()
 
 void VolumeViewer::initUserInterfaceWidgets()
 {
-  // Connect the "play timesteps" timer.
-  connect(&playTimeStepsTimer, SIGNAL(timeout()), this, SLOT(nextTimeStep()));
+
 
 #if 0
   // Add the "add geometry" widget and callback.
@@ -951,10 +958,5 @@ void VolumeViewer::initUserInterfaceWidgets()
   statusBar()->addWidget(&currentFilenameInfoLabel);
 #endif
 
-  {
-    //TODO: connect to new config widgets
-    lightEditor = new LightEditor(ambientLight, directionalLight);
-    connect(lightEditor, SIGNAL(lightsChanged()), this, SLOT(render()));
-    probeWidget = new ProbeWidget(this);
-  }
+
 }

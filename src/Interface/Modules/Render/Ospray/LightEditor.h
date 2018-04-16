@@ -22,24 +22,30 @@
 #include <stdexcept>
 #include <iostream>
 
-class LightEditor : public QWidget {
+class LightEditor : public QObject
+{
 
 Q_OBJECT
 
 public:
 
-  LightEditor(OSPLight ambientLight, OSPLight directionalLight);
+  LightEditor(OSPLight ambientLight, OSPLight directionalLight,
+    QDoubleSpinBox* ambientLightIntensitySpinBox,
+    QDoubleSpinBox* directionalLightIntensitySpinBox,
+    QSlider* directionalLightAzimuthSlider,
+    QSlider* directionalLightElevationSlider
+  );
 
   friend std::ostream& operator<< (std::ostream& out, LightEditor& v)
   {
-    return out << "--ambientLight " << v.ambientLightIntensitySpinBox.value() << " --directionalLight "
-        << v.directionalLightIntensitySpinBox.value() << " " << v.directionalLightAzimuthSlider.value()
-        << " " << v.directionalLightElevationSlider.value();
+    return out << "--ambientLight " << v.ambientLightIntensitySpinBox_->value() << " --directionalLight "
+        << v.directionalLightIntensitySpinBox_->value() << " " << v.directionalLightAzimuthSlider_->value()
+        << " " << v.directionalLightElevationSlider_->value();
   }
-  void setAmbientLightIntensity(float v) { ambientLightIntensitySpinBox.setValue(v); }
-  void setDirectionalLightIntensity(float v) { directionalLightIntensitySpinBox.setValue(v); }
-  void setDirectionalLightAzimuth(float v) { directionalLightAzimuthSlider.setValue(v); }
-  void setDirectionalLightElevation(float v) { directionalLightElevationSlider.setValue(v); }
+  void setAmbientLightIntensity(float v) { ambientLightIntensitySpinBox_->setValue(v); }
+  void setDirectionalLightIntensity(float v) { directionalLightIntensitySpinBox_->setValue(v); }
+  void setDirectionalLightAzimuth(float v) { directionalLightAzimuthSlider_->setValue(v); }
+  void setDirectionalLightElevation(float v) { directionalLightElevationSlider_->setValue(v); }
 
 Q_SIGNALS:
 
@@ -59,11 +65,11 @@ public:
   OSPLight directionalLight;
 
   // Ambient light UI elements.
-  QDoubleSpinBox ambientLightIntensitySpinBox;
+  QDoubleSpinBox* ambientLightIntensitySpinBox_ {nullptr};
 
   // Directional light UI elements.
-  QDoubleSpinBox directionalLightIntensitySpinBox;
-  QSlider directionalLightAzimuthSlider;
-  QSlider directionalLightElevationSlider;
+  QDoubleSpinBox* directionalLightIntensitySpinBox_{nullptr};
+  QSlider* directionalLightAzimuthSlider_{nullptr};
+  QSlider* directionalLightElevationSlider_{nullptr};
 
 };

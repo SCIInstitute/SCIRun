@@ -247,7 +247,11 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
       "",
       1024,
       768,
-      statusBar_
+      statusBar_,
+      configDialog_->ambientLightIntensityDoubleSpinBox_,
+      configDialog_->directionalLightIntensityDoubleSpinBox_,
+      configDialog_->directionalLightAzimuthSlider_,
+      configDialog_->directionalLightElevationSlider_
     };
     viewer_ = new VolumeViewer(params, this);
 
