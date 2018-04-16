@@ -1064,14 +1064,14 @@
           <property name="fieldGrowthPolicy">
            <enum>QFormLayout::FieldsStayAtSizeHint</enum>
           </property>
-          <item row="0" column="0">
+          <item row="1" column="0">
            <widget class="QLabel" name="label_27">
             <property name="text">
              <string>Ambient intensity</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
+          <item row="1" column="1">
            <widget class="QDoubleSpinBox" name="ambientLightIntensityDoubleSpinBox_">
             <property name="maximum">
              <double>3.000000000000000</double>
@@ -1081,14 +1081,14 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
+          <item row="3" column="0">
            <widget class="QLabel" name="label_28">
             <property name="text">
              <string>Directional intensity</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
+          <item row="3" column="1">
            <widget class="QDoubleSpinBox" name="directionalLightIntensityDoubleSpinBox_">
             <property name="maximum">
              <double>3.000000000000000</double>
@@ -1098,31 +1098,45 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
+          <item row="4" column="0">
            <widget class="QLabel" name="label_29">
             <property name="text">
              <string>Directional azimuth</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
+          <item row="4" column="1">
            <widget class="QSlider" name="directionalLightAzimuthSlider_">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="5" column="0">
            <widget class="QLabel" name="label_30">
             <property name="text">
              <string>Directional elevation</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
+          <item row="5" column="1">
            <widget class="QSlider" name="directionalLightElevationSlider_">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="ambientVisibleCheckBox_">
+            <property name="text">
+             <string>Ambient visible</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="directionalVisibleCheckBox_">
+            <property name="text">
+             <string>Directional visible</string>
             </property>
            </widget>
           </item>

@@ -168,6 +168,8 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   addCheckBoxManager(configDialog_->subsampleCheckBox_, Parameters::SubsampleDuringInteraction);
   addCheckBoxManager(configDialog_->showFrameRateCheckBox_, Parameters::ShowFrameRate);
   addCheckBoxManager(configDialog_->separateModelPerObjectCheckBox_, Parameters::SeparateModelPerObject);
+  addCheckBoxManager(configDialog_->ambientVisibleCheckBox_, Parameters::ShowAmbientLight);
+  addCheckBoxManager(configDialog_->directionalVisibleCheckBox_, Parameters::ShowDirectionalLight);
   addDoubleSpinBoxManager(configDialog_->autoRotationRateDoubleSpinBox_, Parameters::AutoRotationRate);
   addDoubleSpinBoxManager(configDialog_->cameraViewAtXDoubleSpinBox_, Parameters::CameraViewAtX);
   addDoubleSpinBoxManager(configDialog_->cameraViewAtYDoubleSpinBox_, Parameters::CameraViewAtY);
@@ -180,8 +182,11 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   addDoubleSpinBoxManager(configDialog_->cameraViewUpZDoubleSpinBox_, Parameters::CameraViewUpZ);
   addDoubleSpinBoxManager(configDialog_->directionalLightIntensityDoubleSpinBox_, Parameters::DirectionalLightIntensity);
   addDoubleSpinBoxManager(configDialog_->ambientLightIntensityDoubleSpinBox_, Parameters::AmbientLightIntensity);
+
+  //?? these lead to weird camera swings
   //addSliderManager(configDialog_->directionalLightAzimuthSlider_, Parameters::DirectionalLightAzimuth);
   //addSliderManager(configDialog_->directionalLightElevationSlider_, Parameters::DirectionalLightElevation);
+
   addSpinBoxManager(configDialog_->samplesPerPixelSpinBox_, Parameters::SamplesPerPixel);
   addSpinBoxManager(configDialog_->viewerHeightSpinBox_, Parameters::ViewerHeight);
   addSpinBoxManager(configDialog_->viewerWidthSpinBox_, Parameters::ViewerWidth);
@@ -284,6 +289,12 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 
       connect(configDialog_->showFrameRateCheckBox_, SIGNAL(toggled(bool)),
         viewer_, SLOT(setShowFrameRate(bool)));
+
+      connect(configDialog_->ambientVisibleCheckBox_, SIGNAL(toggled(bool)),
+        viewer_, SLOT(setAmbientLightVisible(bool)));
+
+      connect(configDialog_->directionalVisibleCheckBox_, SIGNAL(toggled(bool)),
+        viewer_, SLOT(setDirectionalLightVisible(bool)));
 
       connect(viewer_->getWindow(), SIGNAL(cameraChanged()), this, SLOT(setCameraWidgets()));
     }

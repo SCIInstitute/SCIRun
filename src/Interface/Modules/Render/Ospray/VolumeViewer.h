@@ -205,6 +205,9 @@ public Q_SLOTS:
 
   LightEditor* getLightEditor() { return lightEditor; }
 
+  void setAmbientLightVisible(bool visible);
+  void setDirectionalLightVisible(bool visible);
+
 protected:
 
   //! OSPRay object file filenames, one for each model / time step.

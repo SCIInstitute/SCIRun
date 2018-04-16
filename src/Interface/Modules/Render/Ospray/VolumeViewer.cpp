@@ -960,3 +960,17 @@ void VolumeViewer::initUserInterfaceWidgets()
 
 
 }
+
+void VolumeViewer::setAmbientLightVisible(bool visible)
+{
+  ospSet1i(ambientLight, "isVisible", visible);
+  ospCommit(ambientLight);
+  render();
+}
+
+void VolumeViewer::setDirectionalLightVisible(bool visible)
+{
+  ospSet1i(directionalLight, "isVisible", visible);
+  ospCommit(directionalLight);
+  render();
+}
