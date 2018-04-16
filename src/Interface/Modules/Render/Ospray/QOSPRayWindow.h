@@ -86,7 +86,7 @@ class QOSPRayWindow : public QGLWidget
 Q_OBJECT
 
 public:
-  QOSPRayWindow(OSPRenderer renderer, bool showFrameRate, const std::string& writeFramesFilename, QWidget *parent);
+  QOSPRayWindow(OSPRenderer renderer, bool showFrameRate, const std::string& writeFramesFilename, QWidget *parent, QStatusBar* frameRateWidget);
   virtual ~QOSPRayWindow();
 
   void setRenderingEnabled(bool renderingEnabled);
@@ -98,6 +98,8 @@ public:
 
   OSPFrameBuffer getFrameBuffer() { return frameBuffer; }
 
+  void setShowFrameRate(bool on) { showFrameRate = on; }
+
   void resetAccumulationBuffer() { ospFrameBufferClear(frameBuffer, OSP_FB_ACCUM); }
 
 Q_SIGNALS:
@@ -108,6 +110,7 @@ Q_SIGNALS:
 protected:
   /*! Display the frame rate in the main window title bar. */
   bool showFrameRate;
+  QStatusBar* frameRateWidget_;
 
   virtual void paintGL();
   virtual void resizeGL(int width, int height);

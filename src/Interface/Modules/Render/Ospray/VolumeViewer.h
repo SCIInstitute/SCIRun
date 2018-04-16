@@ -81,6 +81,7 @@ struct OsprayViewerParameters
   ospcommon::box3f presetBoundingBox;
   std::string writeFramesFilename;
   int width, height;
+  QStatusBar* frameRateWidget;
 };
 
 class VolumeViewer : public QWidget
@@ -179,6 +180,8 @@ public Q_SLOTS:
   //! Set volume clipping box on all volumes.
   void setVolumeClippingBox(ospcommon::box3f value);
 
+  void setShowFrameRate(bool on);
+
   //! Set slices on all volumes.
   void setSlices(std::vector<SliceParameters> sliceParameters);
 
@@ -231,7 +234,7 @@ protected:
   OSPLight directionalLight;
 
   //! The OSPRay output window.
-  QOSPRayWindow *osprayWindow;
+  QOSPRayWindow *osprayWindow_;
 
   //! The OpenGL annotation renderer.
   OpenGLAnnotationRenderer *annotationRenderer;
@@ -268,7 +271,7 @@ protected:
   //! Load an OSPRay model from a file.
   void importObjectsFromFile(const std::string &filename);
 
-  void postInitObjectConstruction(bool showFrameRate, const std::string& writeFramesFilename, bool fullScreen);
+  void postInitObjectConstruction(bool showFrameRate, const std::string& writeFramesFilename, bool fullScreen, QStatusBar* frameRateWidget);
   //! Create and configure the OSPRay state.
   void initObjects(const std::string &renderer_type);
   void globalInit(const std::string &renderer_type);

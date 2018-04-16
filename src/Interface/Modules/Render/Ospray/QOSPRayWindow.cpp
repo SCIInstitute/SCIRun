@@ -47,9 +47,10 @@ QString Viewport::toString() const
 QOSPRayWindow::QOSPRayWindow(OSPRenderer renderer,
                              bool showFrameRate,
                              const std::string& writeFramesFilename
-                           , QWidget *parent)
+                           , QWidget *parent, QStatusBar* frameRateWidget)
   : QGLWidget(parent),
     showFrameRate(showFrameRate),
+    frameRateWidget_(frameRateWidget),
     frameCount(0),
     renderingEnabled(false),
     rotationRate(0.f),
@@ -195,10 +196,10 @@ void QOSPRayWindow::paintGL()
 
   ospRenderFrame(frameBuffer, renderer, OSP_FB_COLOR | OSP_FB_ACCUM);
 
-  if (showFrameRate)
+  if (showFrameRate && frameRateWidget_)
   {
     double framesPerSecond = 1000.0 / renderFrameTimer.elapsed();
-    qobject_cast<QDialog*>(parent()->parent())->setWindowTitle(tr("OSPRay Viewer (%1 fps)").arg(framesPerSecond, 0, 'f', 4));
+    frameRateWidget_->showMessage(tr("FPS: %1").arg(framesPerSecond, 0, 'f', 4), 10);
   }
 
   uint32_t *mappedFrameBuffer = (unsigned int *) ospMapFrameBuffer(frameBuffer);

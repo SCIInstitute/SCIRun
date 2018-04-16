@@ -53,7 +53,7 @@
            </widget>
           </item>
           <item row="4" column="0">
-           <widget class="QCheckBox" name="checkBox_11">
+           <widget class="QCheckBox" name="showFrameRateCheckBox_">
             <property name="text">
              <string>Show frame rate</string>
             </property>

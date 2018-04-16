@@ -166,6 +166,7 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   addCheckBoxManager(configDialog_->shadowsCheckBox_, Parameters::ShowShadows);
   addCheckBoxManager(configDialog_->renderAnnotationsCheckBox_, Parameters::ShowRenderAnnotations);
   addCheckBoxManager(configDialog_->subsampleCheckBox_, Parameters::SubsampleDuringInteraction);
+  addCheckBoxManager(configDialog_->showFrameRateCheckBox_, Parameters::ShowFrameRate);
   addDoubleSpinBoxManager(configDialog_->autoRotationRateDoubleSpinBox_, Parameters::AutoRotationRate);
   addSpinBoxManager(configDialog_->samplesPerPixelSpinBox_, Parameters::SamplesPerPixel);
   addSpinBoxManager(configDialog_->viewerHeightSpinBox_, Parameters::ViewerHeight);
@@ -206,6 +207,12 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
   for (const auto& obj : geom.objects())
     impl_->geoms_.push_back(duplicatedCodeFromAlgorithm(obj));
 
+  if (!statusBar_)
+  {
+    statusBar_ = new QStatusBar(this);
+    statusBar_->setMaximumHeight(20);
+  }
+
   OsprayViewerParameters params
   {
     {},
@@ -217,11 +224,16 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
     toOsprayBox(geom.box),
     "",
     1024,
-    768
+    768,
+    statusBar_
   };
   viewer_ = new VolumeViewer(params, this);
 
   setupViewer(viewer_);
+
+  osprayLayout->addWidget(viewer_);
+  osprayLayout->addWidget(statusBar_);
+  statusBar_->showMessage("Ospray viewer initialized.", 5000);
 
   {
     // TODO: need to move this to dialog ctor--create viewer once, and just change state.
@@ -239,9 +251,11 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 
     connect(configDialog_->samplesPerPixelSpinBox_, SIGNAL(valueChanged(int)),
       viewer_, SLOT(setSPP(int)));
+
+    connect(configDialog_->showFrameRateCheckBox_, SIGNAL(toggled(bool)),
+      viewer_, SLOT(setShowFrameRate(bool)));
   }
 
-  osprayLayout->addWidget(viewer_);
   viewer_->show();
 #endif
 }

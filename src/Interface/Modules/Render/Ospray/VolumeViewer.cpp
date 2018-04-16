@@ -40,7 +40,7 @@ VolumeViewer::VolumeViewer(const OsprayViewerParameters& params, QWidget* parent
     transferFunction(nullptr),
     ambientLight(nullptr),
     directionalLight(nullptr),
-    osprayWindow(nullptr),
+    osprayWindow_(nullptr),
     annotationRenderer(nullptr),
     transferFunctionEditor(nullptr),
     isosurfaceEditor(nullptr),
@@ -64,18 +64,18 @@ VolumeViewer::VolumeViewer(const OsprayViewerParameters& params, QWidget* parent
   // Create and configure the OSPRay state.
   initObjects(params.rendererType);
 
-  postInitObjectConstruction(params.showFrameRate, params.writeFramesFilename, params.fullScreen);
+  postInitObjectConstruction(params.showFrameRate, params.writeFramesFilename, params.fullScreen, params.frameRateWidget);
 }
 
-void VolumeViewer::postInitObjectConstruction(bool showFrameRate, const std::string& writeFramesFilename, bool fullScreen)
+void VolumeViewer::postInitObjectConstruction(bool showFrameRate, const std::string& writeFramesFilename, bool fullScreen, QStatusBar* frameRateWidget)
 {
   // Create an OSPRay window and set it as the central widget, but don't let it start rendering until we're done with setup.
-  osprayWindow = new QOSPRayWindow(renderer, showFrameRate, writeFramesFilename, this);
-  layout()->addWidget(osprayWindow);
+  osprayWindow_ = new QOSPRayWindow(renderer, showFrameRate, writeFramesFilename, this, frameRateWidget);
+  layout()->addWidget(osprayWindow_);
 
   //PRINT(boundingBox_);
   // Set the window bounds based on the OSPRay world bounds.
-  osprayWindow->setWorldBounds(boundingBox_);
+  osprayWindow_->setWorldBounds(boundingBox_);
 
   // Configure the user interface widgets and callbacks.
   initUserInterfaceWidgets();
@@ -99,7 +99,7 @@ ospcommon::box3f VolumeViewer::getBoundingBox()
 
 QOSPRayWindow *VolumeViewer::getWindow()
 {
-  return osprayWindow;
+  return osprayWindow_;
 }
 
 TransferFunctionEditor *VolumeViewer::getTransferFunctionEditor()
@@ -139,7 +139,7 @@ void VolumeViewer::setModel(size_t index)
       currentFilenameInfoLabel.setText("<b>Timestep " + QString::number(index) + QString("</b>: ") + QString(objectFileFilenames_[index].c_str()).split('/').back() + ". Data value range: [" + QString::number(voxelRange.x) + ", " + QString::number(voxelRange.y) + "]");
   }
   // Enable rendering on the OSPRay window.
-  osprayWindow->setRenderingEnabled(true);
+  osprayWindow_->setRenderingEnabled(true);
 }
 
 std::string VolumeViewer::toString() const
@@ -149,17 +149,17 @@ std::string VolumeViewer::toString() const
 
 void VolumeViewer::autoRotate(bool set)
 {
-  if (!osprayWindow)
+  if (!osprayWindow_)
     return;
 
   if (set)
   {
-    osprayWindow->setRotationRate(autoRotationRate);
-    osprayWindow->updateGL();
+    osprayWindow_->setRotationRate(autoRotationRate);
+    osprayWindow_->updateGL();
   }
   else
   {
-    osprayWindow->setRotationRate(0.);
+    osprayWindow_->setRotationRate(0.);
   }
 }
 
@@ -186,6 +186,12 @@ void VolumeViewer::playTimeSteps(bool animate)
 void VolumeViewer::addSlice(std::string filename)
 {
   sliceEditor->addSlice(filename);
+}
+
+void VolumeViewer::setShowFrameRate(bool on)
+{
+  if (osprayWindow_)
+    osprayWindow_->setShowFrameRate(on);
 }
 
 void VolumeViewer::addGeometry(std::string filename)
@@ -310,7 +316,7 @@ void VolumeViewer::screenshot(const QString& file)
 {
   // Print current camera view parameters (can be used on command line to recreate view)
   qDebug() << "screenshot view parameters (use on command line to reproduce view): \n"
-            << "  " << osprayWindow->getViewport()->toString();
+            << "  " << osprayWindow_->getViewport()->toString();
 
   QString filename(file);
   // Get filename if not specified.
@@ -325,7 +331,7 @@ void VolumeViewer::screenshot(const QString& file)
     filename += ".png";
 
   // Grab the image.
-  auto image = osprayWindow->grabFrameBuffer();
+  auto image = osprayWindow_->grabFrameBuffer();
 
   // Save the screenshot.
   bool success = image.save(filename);
@@ -342,7 +348,7 @@ void VolumeViewer::keyPressEvent(QKeyEvent * event)
   else if (event->key() == Qt::Key_P)
   {
     std::cout << "View parameters (use on command line to reproduce view): " << std::endl
-            << "  " << *(osprayWindow->getViewport()) << std::endl;
+            << "  " << *(osprayWindow_->getViewport()) << std::endl;
   }
   else if (event->key() == Qt::Key_L)
   {
@@ -360,10 +366,10 @@ void VolumeViewer::commitVolumes()
 
 void VolumeViewer::render()
 {
-  if (osprayWindow)
+  if (osprayWindow_)
   {
-    osprayWindow->resetAccumulationBuffer();
-    osprayWindow->updateGL();
+    osprayWindow_->resetAccumulationBuffer();
+    osprayWindow_->updateGL();
   }
 }
 
@@ -374,7 +380,7 @@ void VolumeViewer::setRenderAnnotationsEnabled(bool value)
     if (!annotationRenderer)
       annotationRenderer = new OpenGLAnnotationRenderer(this);
 
-    connect(osprayWindow, SIGNAL(renderGLComponents()), annotationRenderer, SLOT(render()), Qt::UniqueConnection);
+    connect(osprayWindow_, SIGNAL(renderGLComponents()), annotationRenderer, SLOT(render()), Qt::UniqueConnection);
   }
   else
   {

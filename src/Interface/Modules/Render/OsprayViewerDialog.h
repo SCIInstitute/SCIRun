@@ -83,6 +83,7 @@ namespace SCIRun {
 
       void createViewer(const Core::Datatypes::CompositeOsprayGeometryObject& obj);
       VolumeViewer* viewer_ {nullptr};
+      QStatusBar* statusBar_ {nullptr};
       boost::shared_ptr<OsprayObjectImpl> impl_;
 
       QToolBar* toolBar_{nullptr};
