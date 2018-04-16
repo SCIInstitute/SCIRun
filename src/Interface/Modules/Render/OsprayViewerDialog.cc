@@ -178,6 +178,10 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   addDoubleSpinBoxManager(configDialog_->cameraViewUpXDoubleSpinBox_, Parameters::CameraViewUpX);
   addDoubleSpinBoxManager(configDialog_->cameraViewUpYDoubleSpinBox_, Parameters::CameraViewUpY);
   addDoubleSpinBoxManager(configDialog_->cameraViewUpZDoubleSpinBox_, Parameters::CameraViewUpZ);
+  addDoubleSpinBoxManager(configDialog_->directionalLightIntensityDoubleSpinBox_, Parameters::DirectionalLightIntensity);
+  addDoubleSpinBoxManager(configDialog_->ambientLightIntensityDoubleSpinBox_, Parameters::AmbientLightIntensity);
+  //addSliderManager(configDialog_->directionalLightAzimuthSlider_, Parameters::DirectionalLightAzimuth);
+  //addSliderManager(configDialog_->directionalLightElevationSlider_, Parameters::DirectionalLightElevation);
   addSpinBoxManager(configDialog_->samplesPerPixelSpinBox_, Parameters::SamplesPerPixel);
   addSpinBoxManager(configDialog_->viewerHeightSpinBox_, Parameters::ViewerHeight);
   addSpinBoxManager(configDialog_->viewerWidthSpinBox_, Parameters::ViewerWidth);

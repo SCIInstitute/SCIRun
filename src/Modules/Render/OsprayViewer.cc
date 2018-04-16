@@ -115,12 +115,12 @@ void OsprayViewer::setStateDefaults()
   state->setValue(Parameters::BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
   state->setValue(Parameters::ShowAmbientLight, true);
   state->setValue(Parameters::AmbientLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
-  state->setValue(Parameters::AmbientLightIntensity, 0.1);
+  state->setValue(Parameters::AmbientLightIntensity, 0.2);
   state->setValue(Parameters::ShowDirectionalLight, true);
   state->setValue(Parameters::DirectionalLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
-  state->setValue(Parameters::DirectionalLightIntensity, 0.1);
-  state->setValue(Parameters::DirectionalLightAzimuth, 0.1);
-  state->setValue(Parameters::DirectionalLightElevation, 0.1);
+  state->setValue(Parameters::DirectionalLightIntensity, 1.7);
+  state->setValue(Parameters::DirectionalLightAzimuth, 0);
+  state->setValue(Parameters::DirectionalLightElevation, 45);
   state->setValue(Parameters::ShowProbe, false);
   state->setValue(Parameters::ProbeX, 0.0);
   state->setValue(Parameters::ProbeY, 0.0);

@@ -33,26 +33,14 @@ LightEditor::LightEditor(OSPLight ambientLight, OSPLight directionalLight,
     throw std::runtime_error("LightEditor: must be constructed with an existing lights");
 
   // Ambient light intensity.
-  ambientLightIntensitySpinBox_->setRange(0.0, 3.0);
-  ambientLightIntensitySpinBox_->setSingleStep(0.01);
   connect(ambientLightIntensitySpinBox_, SIGNAL(valueChanged(double)), this, SLOT(ambientLightChanged()));
 
   // Directional light intensity.
-  directionalLightIntensitySpinBox_->setRange(0.0, 3.0);
-  directionalLightIntensitySpinBox_->setSingleStep(0.01);
   connect(directionalLightIntensitySpinBox_, SIGNAL(valueChanged(double)), this, SLOT(directionalLightChanged()));
 
   // Directional light: azimuth and elevation angles for direction.
   connect(directionalLightAzimuthSlider_, SIGNAL(valueChanged(int)), this, SLOT(directionalLightChanged()));
   connect(directionalLightElevationSlider_, SIGNAL(valueChanged(int)), this, SLOT(directionalLightChanged()));
-
-  // Set default light parameters.
-  ambientLightIntensitySpinBox_->setValue(0.1);  //doesn't seem to fire if it's 0 first
-  ambientLightIntensitySpinBox_->setValue(0.2);
-
-  directionalLightIntensitySpinBox_->setValue(1.7);
-  directionalLightAzimuthSlider_->setValue(0.8 * (directionalLightAzimuthSlider_->minimum() + directionalLightAzimuthSlider_->maximum())); // 45 degrees azimuth
-  directionalLightElevationSlider_->setValue(0.65 * (directionalLightElevationSlider_->minimum() + directionalLightElevationSlider_->maximum())); // 45 degrees elevation
 }
 
 void LightEditor::ambientLightChanged()
