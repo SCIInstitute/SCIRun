@@ -107,6 +107,8 @@ Q_SIGNALS:
   /*! Q_SLOTS can be connected to this signal to enable rendering of OpenGL components of the scene */
   void renderGLComponents();
 
+  void cameraChanged();
+
 protected:
   /*! Display the frame rate in the main window title bar. */
   bool showFrameRate;

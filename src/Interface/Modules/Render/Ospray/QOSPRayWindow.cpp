@@ -272,6 +272,8 @@ void QOSPRayWindow::mouseReleaseEvent(QMouseEvent * event)
 
   // restart continuous rendering immediately
   renderTimer.start();
+
+  Q_EMIT cameraChanged();
 }
 
 void QOSPRayWindow::mouseMoveEvent(QMouseEvent * event)

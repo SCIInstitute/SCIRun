@@ -185,15 +185,15 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   connect(configDialog_->viewerHeightSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setHeight(int)));
   connect(configDialog_->viewerWidthSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setWidth(int)));
 
-  connect(configDialog_->cameraViewAtXDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
-  connect(configDialog_->cameraViewAtYDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
-  connect(configDialog_->cameraViewAtZDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
-  connect(configDialog_->cameraViewFromXDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
-  connect(configDialog_->cameraViewFromYDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
-  connect(configDialog_->cameraViewFromZDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
-  connect(configDialog_->cameraViewUpXDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
-  connect(configDialog_->cameraViewUpYDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
-  connect(configDialog_->cameraViewUpZDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
+  connect(configDialog_->cameraViewAtXDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
+  connect(configDialog_->cameraViewAtYDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
+  connect(configDialog_->cameraViewAtZDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
+  connect(configDialog_->cameraViewFromXDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
+  connect(configDialog_->cameraViewFromYDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
+  connect(configDialog_->cameraViewFromZDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
+  connect(configDialog_->cameraViewUpXDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
+  connect(configDialog_->cameraViewUpYDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
+  connect(configDialog_->cameraViewUpZDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
 }
 
 void OsprayViewerDialog::newGeometryValue()
@@ -276,6 +276,8 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 
       connect(configDialog_->showFrameRateCheckBox_, SIGNAL(toggled(bool)),
         viewer_, SLOT(setShowFrameRate(bool)));
+
+      connect(viewer_->getWindow(), SIGNAL(cameraChanged()), this, SLOT(setCameraWidgets()));
     }
 
     viewer_->show();
@@ -572,7 +574,7 @@ void OsprayViewerDialog::unlockAllTriggered()
 }
 #endif
 
-void OsprayViewerDialog::setCamera()
+void OsprayViewerDialog::setViewportCamera()
 {
   if (viewer_)
   {
@@ -609,4 +611,41 @@ void OsprayViewerDialog::setCamera()
 float OsprayViewerDialog::getFloat(const Core::Algorithms::Name& name) const
 {
   return static_cast<float>(state_->getValue(name).toDouble());
+}
+
+void OsprayViewerDialog::setCameraWidgets()
+{
+  if (viewer_)
+  {
+    {
+      ScopedWidgetSignalBlocker x(configDialog_->cameraViewAtXDoubleSpinBox_);
+      ScopedWidgetSignalBlocker y(configDialog_->cameraViewAtYDoubleSpinBox_);
+      ScopedWidgetSignalBlocker z(configDialog_->cameraViewAtZDoubleSpinBox_);
+
+      auto viewAt = viewer_->getWindow()->getViewport()->at;
+      configDialog_->cameraViewAtXDoubleSpinBox_->setValue(viewAt.x);
+      configDialog_->cameraViewAtYDoubleSpinBox_->setValue(viewAt.y);
+      configDialog_->cameraViewAtZDoubleSpinBox_->setValue(viewAt.z);
+    }
+    {
+      ScopedWidgetSignalBlocker x(configDialog_->cameraViewFromXDoubleSpinBox_);
+      ScopedWidgetSignalBlocker y(configDialog_->cameraViewFromYDoubleSpinBox_);
+      ScopedWidgetSignalBlocker z(configDialog_->cameraViewFromZDoubleSpinBox_);
+
+      auto viewFrom = viewer_->getWindow()->getViewport()->from;
+      configDialog_->cameraViewFromXDoubleSpinBox_->setValue(viewFrom.x);
+      configDialog_->cameraViewFromYDoubleSpinBox_->setValue(viewFrom.y);
+      configDialog_->cameraViewFromZDoubleSpinBox_->setValue(viewFrom.z);
+    }
+    {
+      ScopedWidgetSignalBlocker x(configDialog_->cameraViewUpXDoubleSpinBox_);
+      ScopedWidgetSignalBlocker y(configDialog_->cameraViewUpYDoubleSpinBox_);
+      ScopedWidgetSignalBlocker z(configDialog_->cameraViewUpZDoubleSpinBox_);
+
+      auto viewUp = viewer_->getWindow()->getViewport()->up;
+      configDialog_->cameraViewUpXDoubleSpinBox_->setValue(viewUp.x);
+      configDialog_->cameraViewUpYDoubleSpinBox_->setValue(viewUp.y);
+      configDialog_->cameraViewUpZDoubleSpinBox_->setValue(viewUp.z);
+    }
+  }
 }

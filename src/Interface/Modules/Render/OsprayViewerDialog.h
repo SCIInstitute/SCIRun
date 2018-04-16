@@ -68,7 +68,8 @@ namespace SCIRun {
       void configButtonClicked();
       void setHeight(int h);
       void setWidth(int w);
-      void setCamera();
+      void setViewportCamera();
+      void setCameraWidgets();
     private:
       void addToolBar();
       void addConfigurationButton();
