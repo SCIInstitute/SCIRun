@@ -50,6 +50,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(ShowFrameRate);
         ALGORITHM_PARAMETER_DECL(ShowRenderAnnotations);
         ALGORITHM_PARAMETER_DECL(SubsampleDuringInteraction);
+        ALGORITHM_PARAMETER_DECL(SamplesPerPixel);
         ALGORITHM_PARAMETER_DECL(AOSamples);
         ALGORITHM_PARAMETER_DECL(ViewerHeight);
         ALGORITHM_PARAMETER_DECL(ViewerWidth);

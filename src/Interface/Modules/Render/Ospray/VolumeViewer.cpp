@@ -19,7 +19,6 @@
 #include "TransferFunctionEditor.h"
 #include "IsosurfaceEditor.h"
 #include "SliceEditor.h"
-#include "PreferencesDialog.h"
 #include "ProbeWidget.h"
 #include "OpenGLAnnotationRenderer.h"
 #include <components/ospcommon/FileName.h>
@@ -49,7 +48,6 @@ VolumeViewer::VolumeViewer(const OsprayViewerParameters& params, QWidget* parent
     usePlane(-1),
     samplingRate(-1),
     adaptiveMaxSamplingRate(-1),
-    preferencesDialog(nullptr),
     spp(-1),
     shadows(-1),
     preIntegration(-1),
@@ -406,8 +404,6 @@ void VolumeViewer::setGradientShadingEnabled(bool value)
 
       render();
       gradientShadingEnabled = value;
-      if (preferencesDialog)
-        preferencesDialog->setGradientShadingEnabled(value);
     }
 }
 
@@ -421,8 +417,6 @@ void VolumeViewer::setPreIntegration(bool value)
 
     render();
     preIntegration = value;
-    if (preferencesDialog)
-      preferencesDialog->setPreIntegration(value);
   }
 }
 
@@ -448,8 +442,6 @@ void VolumeViewer::setShadows(bool value)
 
     render();
     shadows = value;
-    if (preferencesDialog)
-      preferencesDialog->setShadows(value);
   }
 }
 
@@ -471,8 +463,6 @@ void VolumeViewer::setPlane(bool st)
       }
     }
     render();
-    if (preferencesDialog)
-      preferencesDialog->setPlane(st);
   }
 }
 
@@ -493,8 +483,6 @@ void VolumeViewer::setAOSamples(int value)
       ospCommit(renderer);
     render();
     aoSamples = value;
-    if (preferencesDialog)
-      preferencesDialog->setAOSamples(value);
   }
 }
 
@@ -507,8 +495,6 @@ void VolumeViewer::setSPP(int value)
       ospCommit(renderer);
     render();
     spp = value;
-    if (preferencesDialog)
-      preferencesDialog->setSPP(value);
   }
 }
 
@@ -536,8 +522,6 @@ void VolumeViewer::setAdaptiveMaxSamplingRate(double value)
     }
     render();
     adaptiveMaxSamplingRate = value;
-    if (preferencesDialog)
-      preferencesDialog->setAdaptiveMaxSamplingRate(value);
   }
 }
 
@@ -567,8 +551,6 @@ void VolumeViewer::setAdaptiveSampling(bool value)
 
       render();
       adaptiveSampling = value;
-      if (preferencesDialog)
-        preferencesDialog->setAdaptiveSampling(value);
   }
 }
 
@@ -576,23 +558,24 @@ void VolumeViewer::setSamplingRate(double value)
 {
   if (samplingRate != value)
   {
-  for(size_t i=0; i<modelStates_.size(); i++)
-    for(size_t j=0; j<modelStates_[i].volumes.size(); j++) {
-      ospSet1f(modelStates_[i].volumes[j]->handle, "samplingRate", value);
-      ospCommit(modelStates_[i].volumes[j]->handle);
+    for(size_t i=0; i<modelStates_.size(); i++)
+    {
+      for(size_t j=0; j<modelStates_[i].volumes.size(); j++)
+      {
+        ospSet1f(modelStates_[i].volumes[j]->handle, "samplingRate", value);
+        ospCommit(modelStates_[i].volumes[j]->handle);
+      }
     }
-
-  render();
-  samplingRate = value;
-  if (preferencesDialog)
-    preferencesDialog->setSamplingRate(value);
-}
+    render();
+    samplingRate = value;
+  }
 }
 
 void VolumeViewer::setVolumeClippingBox(ospcommon::box3f value)
 {
   for(size_t i=0; i<modelStates_.size(); i++)
-    for(size_t j=0; j<modelStates_[i].volumes.size(); j++) {
+    for(size_t j=0; j<modelStates_[i].volumes.size(); j++)
+    {
       ospSet3fv(modelStates_[i].volumes[j]->handle, "volumeClippingBoxLower", &value.lower.x);
       ospSet3fv(modelStates_[i].volumes[j]->handle, "volumeClippingBoxUpper", &value.upper.x);
       ospCommit(modelStates_[i].volumes[j]->handle);
@@ -895,19 +878,6 @@ void VolumeViewer::loadObjectsFromFiles()
 
 void VolumeViewer::initUserInterfaceWidgets()
 {
-#if 0  //TODO: add these buttons to new toolbar
-  // Create a toolbar at the top of the window.
-  QToolBar *toolbar = addToolBar("toolbar");
-
-  // Add preferences widget and callback.
-  preferencesDialog = new PreferencesDialog(this, boundingBox_);
-  QAction *showPreferencesAction = new QAction("Preferences", this);
-  connect(showPreferencesAction, SIGNAL(triggered()), preferencesDialog, SLOT(show()));
-  toolbar->addAction(showPreferencesAction);
-  preferencesDialog->setSamplingRate(samplingRate);
-  preferencesDialog->setAdaptiveMaxSamplingRate(adaptiveMaxSamplingRate);
-
-#endif
   // Connect the "play timesteps" timer.
   connect(&playTimeStepsTimer, SIGNAL(timeout()), this, SLOT(nextTimeStep()));
 

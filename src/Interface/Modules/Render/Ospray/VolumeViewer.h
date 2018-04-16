@@ -286,7 +286,6 @@ protected:
   LightEditor* lightEditor;
   float samplingRate;
   float adaptiveMaxSamplingRate;
-  PreferencesDialog* preferencesDialog;
   int spp;
   int aoSamples;
   int shadows;

@@ -45,17 +45,17 @@
           <string>Basic</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_18">
+          <item row="9" column="0">
+           <widget class="QLabel" name="label_42">
+            <property name="text">
+             <string>Viewer height</string>
+            </property>
+           </widget>
+          </item>
           <item row="4" column="0">
            <widget class="QCheckBox" name="checkBox_11">
             <property name="text">
              <string>Show frame rate</string>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="0">
-           <widget class="QLabel" name="label_42">
-            <property name="text">
-             <string>Viewer height</string>
             </property>
            </widget>
           </item>
@@ -66,17 +66,10 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
-           <widget class="QCheckBox" name="checkBox_8">
+          <item row="5" column="0">
+           <widget class="QCheckBox" name="checkBox_2">
             <property name="text">
-             <string>Shadows</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="0">
-           <widget class="QLabel" name="label_37">
-            <property name="text">
-             <string>AOSamples (TODO: use simpler name)</string>
+             <string>Render annotations</string>
             </property>
            </widget>
           </item>
@@ -87,8 +80,25 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="1">
-           <widget class="QSpinBox" name="spinBox"/>
+          <item row="10" column="0">
+           <widget class="QLabel" name="label_43">
+            <property name="text">
+             <string>Viewer width</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="1">
+           <widget class="QSpinBox" name="spinBox_3"/>
+          </item>
+          <item row="10" column="1">
+           <widget class="QSpinBox" name="spinBox_4"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="checkBox_8">
+            <property name="text">
+             <string>Shadows</string>
+            </property>
+           </widget>
           </item>
           <item row="3" column="0">
            <widget class="QCheckBox" name="showPlaneCheckBox_">
@@ -97,25 +107,15 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="0">
-           <widget class="QCheckBox" name="checkBox_2">
+          <item row="7" column="0">
+           <widget class="QLabel" name="label_38">
             <property name="text">
-             <string>Render annotations</string>
+             <string>Samples per pixel</string>
             </property>
            </widget>
           </item>
-          <item row="9" column="0">
-           <widget class="QLabel" name="label_43">
-            <property name="text">
-             <string>Viewer width</string>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="1">
-           <widget class="QSpinBox" name="spinBox_3"/>
-          </item>
-          <item row="9" column="1">
-           <widget class="QSpinBox" name="spinBox_4"/>
+          <item row="7" column="1">
+           <widget class="QSpinBox" name="samplesPerPixelSpinBox_"/>
           </item>
          </layout>
         </widget>
@@ -129,70 +129,6 @@
           <string>Advanced</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_19">
-          <item row="5" column="0">
-           <widget class="QLabel" name="label_32">
-            <property name="text">
-             <string>Adaptive scalar</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_8"/>
-          </item>
-          <item row="6" column="0">
-           <widget class="QLabel" name="label_33">
-            <property name="text">
-             <string>Adaptive max sampling rate</string>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_9"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="checkBox_4">
-            <property name="text">
-             <string>Volume gradient shading (lighting)</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_7"/>
-          </item>
-          <item row="2" column="0">
-           <widget class="QCheckBox" name="checkBox_5">
-            <property name="text">
-             <string>Adaptive sampling</string>
-            </property>
-           </widget>
-          </item>
-          <item row="9" column="0">
-           <widget class="QLabel" name="label_36">
-            <property name="text">
-             <string>AOWeight</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QCheckBox" name="checkBox_7">
-            <property name="text">
-             <string>Single shading calculation</string>
-            </property>
-           </widget>
-          </item>
-          <item row="10" column="0">
-           <widget class="QLabel" name="label_38">
-            <property name="text">
-             <string>spp (TODO)</string>
-            </property>
-           </widget>
-          </item>
-          <item row="9" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_10"/>
-          </item>
-          <item row="10" column="1">
-           <widget class="QSpinBox" name="spinBox_2"/>
-          </item>
           <item row="8" column="0">
            <widget class="QLabel" name="label_35">
             <property name="text">
@@ -225,7 +161,77 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QComboBox" name="comboBox"/>
+           <widget class="QComboBox" name="comboBox">
+            <item>
+             <property name="text">
+              <string>scivis</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_32">
+            <property name="text">
+             <string>Adaptive scalar</string>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_10"/>
+          </item>
+          <item row="4" column="0">
+           <widget class="QCheckBox" name="checkBox_7">
+            <property name="text">
+             <string>Single shading calculation</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="checkBox_5">
+            <property name="text">
+             <string>Adaptive sampling</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_8"/>
+          </item>
+          <item row="8" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_9"/>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_33">
+            <property name="text">
+             <string>Adaptive max sampling rate</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="checkBox_4">
+            <property name="text">
+             <string>Volume gradient shading (lighting)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QDoubleSpinBox" name="doubleSpinBox_7"/>
+          </item>
+          <item row="10" column="0">
+           <widget class="QLabel" name="label_36">
+            <property name="text">
+             <string>AOWeight</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="0">
+           <widget class="QLabel" name="label_37">
+            <property name="text">
+             <string>Ambient occlusion samples</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="1">
+           <widget class="QSpinBox" name="spinBox"/>
           </item>
          </layout>
         </widget>

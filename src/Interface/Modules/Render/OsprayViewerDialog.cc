@@ -164,7 +164,7 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
 
   addCheckBoxManager(configDialog_->showPlaneCheckBox_, Parameters::ShowPlane);
   addDoubleSpinBoxManager(configDialog_->autoRotationRateDoubleSpinBox_, Parameters::AutoRotationRate);
-
+  addSpinBoxManager(configDialog_->samplesPerPixelSpinBox_, Parameters::SamplesPerPixel);
 }
 
 void OsprayViewerDialog::newGeometryValue()
@@ -222,6 +222,9 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 
     connect(configDialog_->showPlaneCheckBox_, SIGNAL(toggled(bool)),
       viewer_, SLOT(setPlane(bool)));
+
+    connect(configDialog_->samplesPerPixelSpinBox_, SIGNAL(valueChanged(int)),
+      viewer_, SLOT(setSPP(int)));
   }
 
   osprayLayout->addWidget(viewer_);

@@ -51,6 +51,7 @@ ALGORITHM_PARAMETER_DEF(Render, ShowShadows);
 ALGORITHM_PARAMETER_DEF(Render, ShowFrameRate);
 ALGORITHM_PARAMETER_DEF(Render, ShowRenderAnnotations);
 ALGORITHM_PARAMETER_DEF(Render, SubsampleDuringInteraction);
+ALGORITHM_PARAMETER_DEF(Render, SamplesPerPixel);
 ALGORITHM_PARAMETER_DEF(Render, AOSamples);
 ALGORITHM_PARAMETER_DEF(Render, ViewerHeight);
 ALGORITHM_PARAMETER_DEF(Render, ViewerWidth);
@@ -97,6 +98,7 @@ void OsprayViewer::setStateDefaults()
   state->setValue(Parameters::ShowFrameRate, false);
   state->setValue(Parameters::ShowRenderAnnotations, false);
   state->setValue(Parameters::SubsampleDuringInteraction, false);
+  state->setValue(Parameters::SamplesPerPixel, 1);
   state->setValue(Parameters::AOSamples, 1);
   state->setValue(Parameters::ViewerHeight, 600);
   state->setValue(Parameters::ViewerWidth, 800);
