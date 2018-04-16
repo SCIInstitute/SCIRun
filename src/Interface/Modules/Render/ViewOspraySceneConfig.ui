@@ -29,7 +29,7 @@
       <enum>QTabWidget::West</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <property name="movable">
       <bool>true</bool>
@@ -74,9 +74,9 @@
            </widget>
           </item>
           <item row="0" column="0">
-           <widget class="QCheckBox" name="checkBox_10">
+           <widget class="QCheckBox" name="separateModelPerObjectCheckBox_">
             <property name="text">
-             <string>Render objects into separate models</string>
+             <string>Render objects into separate models (requires network reload)</string>
             </property>
            </widget>
           </item>
@@ -265,10 +265,30 @@
            </widget>
           </item>
           <item row="4" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_15"/>
+           <widget class="QDoubleSpinBox" name="cameraViewAtZDoubleSpinBox_">
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="minimum">
+             <double>-999999.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>999999.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="3" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_14"/>
+           <widget class="QDoubleSpinBox" name="cameraViewAtYDoubleSpinBox_">
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="minimum">
+             <double>-999999.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>999999.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="label_46">
@@ -285,7 +305,17 @@
            </widget>
           </item>
           <item row="2" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_13"/>
+           <widget class="QDoubleSpinBox" name="cameraViewAtXDoubleSpinBox_">
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="minimum">
+             <double>-999999.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>999999.000000000000000</double>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -304,10 +334,30 @@
            </widget>
           </item>
           <item row="4" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_19"/>
+           <widget class="QDoubleSpinBox" name="cameraViewFromZDoubleSpinBox_">
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="minimum">
+             <double>-999999.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>999999.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="3" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_20"/>
+           <widget class="QDoubleSpinBox" name="cameraViewFromYDoubleSpinBox_">
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="minimum">
+             <double>-999999.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>999999.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="label_51">
@@ -324,7 +374,17 @@
            </widget>
           </item>
           <item row="2" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_21"/>
+           <widget class="QDoubleSpinBox" name="cameraViewFromXDoubleSpinBox_">
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="minimum">
+             <double>-999999.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>999999.000000000000000</double>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -343,10 +403,30 @@
            </widget>
           </item>
           <item row="4" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_16"/>
+           <widget class="QDoubleSpinBox" name="cameraViewUpZDoubleSpinBox_">
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="minimum">
+             <double>-999999.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>999999.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="3" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_17"/>
+           <widget class="QDoubleSpinBox" name="cameraViewUpYDoubleSpinBox_">
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="minimum">
+             <double>-999999.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>999999.000000000000000</double>
+            </property>
+           </widget>
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="label_48">
@@ -363,7 +443,17 @@
            </widget>
           </item>
           <item row="2" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_18"/>
+           <widget class="QDoubleSpinBox" name="cameraViewUpXDoubleSpinBox_">
+            <property name="decimals">
+             <number>4</number>
+            </property>
+            <property name="minimum">
+             <double>-999999.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>999999.000000000000000</double>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

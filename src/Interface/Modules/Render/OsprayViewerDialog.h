@@ -68,6 +68,7 @@ namespace SCIRun {
       void configButtonClicked();
       void setHeight(int h);
       void setWidth(int w);
+      void setCamera();
     private:
       void addToolBar();
       void addConfigurationButton();
@@ -80,6 +81,8 @@ namespace SCIRun {
       void addControlLockButton();
       void addToolbarButton(QPushButton* button);
       void toggleLockColor(bool locked);
+
+      float getFloat(const Core::Algorithms::Name& name) const;
 
       void createViewer(const Core::Datatypes::CompositeOsprayGeometryObject& obj);
       VolumeViewer* viewer_ {nullptr};

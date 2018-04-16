@@ -167,13 +167,33 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   addCheckBoxManager(configDialog_->renderAnnotationsCheckBox_, Parameters::ShowRenderAnnotations);
   addCheckBoxManager(configDialog_->subsampleCheckBox_, Parameters::SubsampleDuringInteraction);
   addCheckBoxManager(configDialog_->showFrameRateCheckBox_, Parameters::ShowFrameRate);
+  addCheckBoxManager(configDialog_->separateModelPerObjectCheckBox_, Parameters::SeparateModelPerObject);
   addDoubleSpinBoxManager(configDialog_->autoRotationRateDoubleSpinBox_, Parameters::AutoRotationRate);
+  addDoubleSpinBoxManager(configDialog_->cameraViewAtXDoubleSpinBox_, Parameters::CameraViewAtX);
+  addDoubleSpinBoxManager(configDialog_->cameraViewAtYDoubleSpinBox_, Parameters::CameraViewAtY);
+  addDoubleSpinBoxManager(configDialog_->cameraViewAtZDoubleSpinBox_, Parameters::CameraViewAtZ);
+  addDoubleSpinBoxManager(configDialog_->cameraViewFromXDoubleSpinBox_, Parameters::CameraViewFromX);
+  addDoubleSpinBoxManager(configDialog_->cameraViewFromYDoubleSpinBox_, Parameters::CameraViewFromY);
+  addDoubleSpinBoxManager(configDialog_->cameraViewFromZDoubleSpinBox_, Parameters::CameraViewFromZ);
+  addDoubleSpinBoxManager(configDialog_->cameraViewUpXDoubleSpinBox_, Parameters::CameraViewUpX);
+  addDoubleSpinBoxManager(configDialog_->cameraViewUpYDoubleSpinBox_, Parameters::CameraViewUpY);
+  addDoubleSpinBoxManager(configDialog_->cameraViewUpZDoubleSpinBox_, Parameters::CameraViewUpZ);
   addSpinBoxManager(configDialog_->samplesPerPixelSpinBox_, Parameters::SamplesPerPixel);
   addSpinBoxManager(configDialog_->viewerHeightSpinBox_, Parameters::ViewerHeight);
   addSpinBoxManager(configDialog_->viewerWidthSpinBox_, Parameters::ViewerWidth);
 
   connect(configDialog_->viewerHeightSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setHeight(int)));
   connect(configDialog_->viewerWidthSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setWidth(int)));
+
+  connect(configDialog_->cameraViewAtXDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
+  connect(configDialog_->cameraViewAtYDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
+  connect(configDialog_->cameraViewAtZDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
+  connect(configDialog_->cameraViewFromXDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
+  connect(configDialog_->cameraViewFromYDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
+  connect(configDialog_->cameraViewFromZDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
+  connect(configDialog_->cameraViewUpXDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
+  connect(configDialog_->cameraViewUpYDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
+  connect(configDialog_->cameraViewUpZDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setCamera()));
 }
 
 void OsprayViewerDialog::newGeometryValue()
@@ -198,10 +218,10 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 #ifdef WITH_OSPRAY
   delete viewer_;
 
-  bool showFrameRate = false;
+  bool showFrameRate = state_->getValue(Parameters::ShowFrameRate).toBool();
   bool fullScreen = false;
-  bool ownModelPerObject = true;
-  std::string renderer = "scivis";
+  bool ownModelPerObject = state_->getValue(Parameters::SeparateModelPerObject).toBool();
+  std::string renderer = state_->getValue(Parameters::RendererChoice).toString();
   impl_->geoms_.clear();
 
   for (const auto& obj : geom.objects())
@@ -304,20 +324,6 @@ if(transferFunctionFilename.empty() != true)
 volumeViewer->getWindow()->setBenchmarkParameters(benchmarkWarmUpFrames,
     benchmarkFrames, benchmarkFilename);
 
-if (viewAt != viewFrom) {
-  volumeViewer->getWindow()->getViewport()->at = viewAt;
-  volumeViewer->getWindow()->getViewport()->from = viewFrom;
-}
-
-// Set the window size if specified.
-if (viewSizeWidth != 0 && viewSizeHeight != 0) volumeViewer->getWindow()->setFixedSize(viewSizeWidth, viewSizeHeight);
-
-
-// Set the view up vector if specified.
-if(viewUp != ospcommon::vec3f(0.f)) {
-  volumeViewer->getWindow()->getViewport()->setUp(viewUp);
-  volumeViewer->getWindow()->resetAccumulationBuffer();
-}
 #endif
 
 void OsprayViewerDialog::addToolBar()
@@ -565,3 +571,42 @@ void OsprayViewerDialog::unlockAllTriggered()
   toggleLockColor(false);
 }
 #endif
+
+void OsprayViewerDialog::setCamera()
+{
+  if (viewer_)
+  {
+    ospcommon::vec3f viewAt {
+      getFloat(Parameters::CameraViewAtX),
+      getFloat(Parameters::CameraViewAtY),
+      getFloat(Parameters::CameraViewAtZ)
+    };
+    ospcommon::vec3f viewFrom {
+      getFloat(Parameters::CameraViewFromX),
+      getFloat(Parameters::CameraViewFromY),
+      getFloat(Parameters::CameraViewFromZ)
+    };
+
+    if (viewAt != viewFrom)
+    {
+      viewer_->getWindow()->getViewport()->at = viewAt;
+      viewer_->getWindow()->getViewport()->from = viewFrom;
+    }
+
+    ospcommon::vec3f viewUp {
+      getFloat(Parameters::CameraViewUpX),
+      getFloat(Parameters::CameraViewUpY),
+      getFloat(Parameters::CameraViewUpZ)
+    };
+    if (viewUp != ospcommon::vec3f(0.f))
+    {
+      viewer_->getWindow()->getViewport()->setUp(viewUp);
+      viewer_->getWindow()->resetAccumulationBuffer();
+    }
+  }
+}
+
+float OsprayViewerDialog::getFloat(const Core::Algorithms::Name& name) const
+{
+  return static_cast<float>(state_->getValue(name).toDouble());
+}
