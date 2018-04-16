@@ -437,7 +437,7 @@ void VolumeViewer::setShadows(bool value)
   if (shadows != value)
   {
     ospSet1i(renderer, "shadowsEnabled", value);
-    if(rendererInitialized)
+    if (rendererInitialized)
       ospCommit(renderer);
 
     render();

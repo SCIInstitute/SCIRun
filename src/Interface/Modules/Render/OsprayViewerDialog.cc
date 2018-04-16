@@ -163,6 +163,9 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   setMinimumSize(200, 200);
 
   addCheckBoxManager(configDialog_->showPlaneCheckBox_, Parameters::ShowPlane);
+  addCheckBoxManager(configDialog_->shadowsCheckBox_, Parameters::ShowShadows);
+  addCheckBoxManager(configDialog_->renderAnnotationsCheckBox_, Parameters::ShowRenderAnnotations);
+  addCheckBoxManager(configDialog_->subsampleCheckBox_, Parameters::SubsampleDuringInteraction);
   addDoubleSpinBoxManager(configDialog_->autoRotationRateDoubleSpinBox_, Parameters::AutoRotationRate);
   addSpinBoxManager(configDialog_->samplesPerPixelSpinBox_, Parameters::SamplesPerPixel);
 }
@@ -222,6 +225,12 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 
     connect(configDialog_->showPlaneCheckBox_, SIGNAL(toggled(bool)),
       viewer_, SLOT(setPlane(bool)));
+    connect(configDialog_->shadowsCheckBox_, SIGNAL(toggled(bool)),
+      viewer_, SLOT(setShadows(bool)));
+    connect(configDialog_->renderAnnotationsCheckBox_, SIGNAL(toggled(bool)),
+      viewer_, SLOT(setRenderAnnotationsEnabled(bool)));
+    connect(configDialog_->subsampleCheckBox_, SIGNAL(toggled(bool)),
+      viewer_, SLOT(setSubsamplingInteractionEnabled(bool)));
 
     connect(configDialog_->samplesPerPixelSpinBox_, SIGNAL(valueChanged(int)),
       viewer_, SLOT(setSPP(int)));
