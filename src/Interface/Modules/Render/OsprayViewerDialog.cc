@@ -595,6 +595,7 @@ void OsprayViewerDialog::unlockAllTriggered()
 
 void OsprayViewerDialog::setViewportCamera()
 {
+#ifdef WITH_OSPRAY
   if (viewer_)
   {
     ospcommon::vec3f viewAt {
@@ -625,6 +626,7 @@ void OsprayViewerDialog::setViewportCamera()
       viewer_->getWindow()->resetAccumulationBuffer();
     }
   }
+#endif
 }
 
 float OsprayViewerDialog::getFloat(const Core::Algorithms::Name& name) const
@@ -634,6 +636,7 @@ float OsprayViewerDialog::getFloat(const Core::Algorithms::Name& name) const
 
 void OsprayViewerDialog::setCameraWidgets()
 {
+#ifdef WITH_OSPRAY
   if (viewer_)
   {
     {
@@ -667,4 +670,5 @@ void OsprayViewerDialog::setCameraWidgets()
       configDialog_->cameraViewUpZDoubleSpinBox_->setValue(viewUp.z);
     }
   }
+#endif
 }
