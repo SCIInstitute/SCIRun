@@ -66,6 +66,8 @@ namespace SCIRun {
       void nextTimestepClicked();
       void playTimestepsClicked();
       void configButtonClicked();
+      void setHeight(int h);
+      void setWidth(int w);
     private:
       void addToolBar();
       void addConfigurationButton();

@@ -168,6 +168,11 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   addCheckBoxManager(configDialog_->subsampleCheckBox_, Parameters::SubsampleDuringInteraction);
   addDoubleSpinBoxManager(configDialog_->autoRotationRateDoubleSpinBox_, Parameters::AutoRotationRate);
   addSpinBoxManager(configDialog_->samplesPerPixelSpinBox_, Parameters::SamplesPerPixel);
+  addSpinBoxManager(configDialog_->viewerHeightSpinBox_, Parameters::ViewerHeight);
+  addSpinBoxManager(configDialog_->viewerWidthSpinBox_, Parameters::ViewerWidth);
+
+  connect(configDialog_->viewerHeightSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setHeight(int)));
+  connect(configDialog_->viewerWidthSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(setWidth(int)));
 }
 
 void OsprayViewerDialog::newGeometryValue()
@@ -241,6 +246,15 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 #endif
 }
 
+void OsprayViewerDialog::setHeight(int h)
+{
+  parentWidget()->resize(width(), h);
+}
+
+void OsprayViewerDialog::setWidth(int w)
+{
+  parentWidget()->resize(w, height());
+}
 
 // code from viewer main.cc
 #if 0

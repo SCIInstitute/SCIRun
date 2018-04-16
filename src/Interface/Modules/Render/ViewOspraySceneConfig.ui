@@ -88,10 +88,18 @@
            </widget>
           </item>
           <item row="9" column="1">
-           <widget class="QSpinBox" name="spinBox_3"/>
+           <widget class="QSpinBox" name="viewerHeightSpinBox_">
+            <property name="maximum">
+             <number>9999</number>
+            </property>
+           </widget>
           </item>
           <item row="10" column="1">
-           <widget class="QSpinBox" name="spinBox_4"/>
+           <widget class="QSpinBox" name="viewerWidthSpinBox_">
+            <property name="maximum">
+             <number>9999</number>
+            </property>
+           </widget>
           </item>
           <item row="2" column="0">
            <widget class="QCheckBox" name="shadowsCheckBox_">
