@@ -81,7 +81,7 @@ void RescaleColorMap::execute()
 
     //set the min/max values to the actual min/max if we choose auto
     double actual_min = std::numeric_limits<double>::max();
-    double actual_max = std::numeric_limits<double>::min();
+    double actual_max = -std::numeric_limits<double>::max();
     double min,max;
 
     for (const auto& field : fields)
