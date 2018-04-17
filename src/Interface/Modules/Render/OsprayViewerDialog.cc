@@ -306,7 +306,7 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 
       connect(viewer_->getWindow(), SIGNAL(cameraChanged()), this, SLOT(setCameraWidgets()));
     }
-
+    setLightColor();
     viewer_->show();
   }
 #endif
@@ -699,4 +699,17 @@ void OsprayViewerDialog::setLightColor()
     state_->setValue(Parameters::DirectionalLightColor, ColorRGB(dirR, dirG, dirB).toString());
   }
   #endif
+}
+
+void OsprayViewerDialog::pullSpecial()
+{
+  auto ambient = colorFromState(Parameters::AmbientLightColor);
+  configDialog_->ambientLightColorRDoubleSpinBox_->setValue(ambient.redF());
+  configDialog_->ambientLightColorGDoubleSpinBox_->setValue(ambient.greenF());
+  configDialog_->ambientLightColorBDoubleSpinBox_->setValue(ambient.blueF());
+
+  auto directional = colorFromState(Parameters::DirectionalLightColor);
+  configDialog_->directionalLightColorRDoubleSpinBox_->setValue(directional.redF());
+  configDialog_->directionalLightColorGDoubleSpinBox_->setValue(directional.greenF());
+  configDialog_->directionalLightColorBDoubleSpinBox_->setValue(directional.blueF());
 }

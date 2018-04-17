@@ -1400,7 +1400,7 @@
 									<name>AmbientLightColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(1,1,1)</value>
+										<value>Color(0.5,0,1)</value>
 									</value>
 								</second>
 							</item>
@@ -1412,7 +1412,7 @@
 									<name>AmbientLightIntensity</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<value>2.00000000000000011e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1592,7 +1592,7 @@
 									<name>DirectionalLightIntensity</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<value>1.69999999999999996e+00</value>
 									</value>
 								</second>
 							</item>

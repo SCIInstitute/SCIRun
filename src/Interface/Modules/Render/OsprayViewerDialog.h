@@ -57,6 +57,7 @@ namespace SCIRun {
     Q_SIGNALS:
       void newGeometryValueForwarder();
     protected:
+      virtual void pullSpecial() override;
       void contextMenuEvent(QContextMenuEvent* evt) override {}
     private Q_SLOTS:
       void newGeometryValue();
