@@ -31,6 +31,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Algorithms/Visualization/OsprayRenderAlgorithm.h>
 #include <Interface/Modules/Render/ViewOspraySceneConfig.h>
 #include <Modules/Render/ViewScene.h>
+#include <Core/Datatypes/Color.h>
 #include <Modules/Render/OsprayViewer.h>
 #include <Core/Logging/Log.h>
 
@@ -203,6 +204,13 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   connect(configDialog_->cameraViewUpXDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
   connect(configDialog_->cameraViewUpYDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
   connect(configDialog_->cameraViewUpZDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setViewportCamera()));
+
+  connect(configDialog_->ambientLightColorRDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
+  connect(configDialog_->ambientLightColorGDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
+  connect(configDialog_->ambientLightColorBDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
+  connect(configDialog_->directionalLightColorRDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
+  connect(configDialog_->directionalLightColorGDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
+  connect(configDialog_->directionalLightColorBDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
 }
 
 void OsprayViewerDialog::newGeometryValue()
@@ -671,4 +679,24 @@ void OsprayViewerDialog::setCameraWidgets()
     }
   }
 #endif
+}
+
+void OsprayViewerDialog::setLightColor()
+{
+  #ifdef WITH_OSPRAY
+  if (viewer_)
+  {
+    auto ambR = configDialog_->ambientLightColorRDoubleSpinBox_->value();
+    auto ambG = configDialog_->ambientLightColorGDoubleSpinBox_->value();
+    auto ambB = configDialog_->ambientLightColorBDoubleSpinBox_->value();
+    viewer_->setAmbientLightColor(ambR, ambG, ambB);
+    state_->setValue(Parameters::AmbientLightColor, ColorRGB(ambR, ambG, ambB).toString());
+
+    auto dirR = configDialog_->directionalLightColorRDoubleSpinBox_->value();
+    auto dirG = configDialog_->directionalLightColorGDoubleSpinBox_->value();
+    auto dirB = configDialog_->directionalLightColorBDoubleSpinBox_->value();
+    viewer_->setDirectionalLightColor(dirR, dirG, dirB);
+    state_->setValue(Parameters::DirectionalLightColor, ColorRGB(dirR, dirG, dirB).toString());
+  }
+  #endif
 }

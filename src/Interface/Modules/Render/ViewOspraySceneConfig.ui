@@ -29,7 +29,7 @@
       <enum>QTabWidget::West</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>5</number>
      </property>
      <property name="movable">
       <bool>true</bool>
@@ -1226,7 +1226,7 @@
             </property>
             <layout class="QGridLayout" name="gridLayout">
              <item row="3" column="2">
-              <widget class="QDoubleSpinBox" name="lightColorBDoubleSpinBox_">
+              <widget class="QDoubleSpinBox" name="ambientLightColorBDoubleSpinBox_">
                <property name="maximum">
                 <double>1.000000000000000</double>
                </property>
@@ -1236,7 +1236,7 @@
               </widget>
              </item>
              <item row="0" column="2">
-              <widget class="QDoubleSpinBox" name="lightColorRDoubleSpinBox_">
+              <widget class="QDoubleSpinBox" name="ambientLightColorRDoubleSpinBox_">
                <property name="maximum">
                 <double>1.000000000000000</double>
                </property>
@@ -1260,7 +1260,7 @@
               </widget>
              </item>
              <item row="2" column="2">
-              <widget class="QDoubleSpinBox" name="lightColorGDoubleSpinBox_">
+              <widget class="QDoubleSpinBox" name="ambientLightColorGDoubleSpinBox_">
                <property name="maximum">
                 <double>1.000000000000000</double>
                </property>
@@ -1293,7 +1293,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QDoubleSpinBox" name="lightColorRDoubleSpinBox_1">
+              <widget class="QDoubleSpinBox" name="directionalLightColorRDoubleSpinBox_">
                <property name="maximum">
                 <double>1.000000000000000</double>
                </property>
@@ -1310,7 +1310,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QDoubleSpinBox" name="lightColorGDoubleSpinBox_1">
+              <widget class="QDoubleSpinBox" name="directionalLightColorGDoubleSpinBox_">
                <property name="maximum">
                 <double>1.000000000000000</double>
                </property>
@@ -1327,7 +1327,7 @@
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QDoubleSpinBox" name="lightColorBDoubleSpinBox_1">
+              <widget class="QDoubleSpinBox" name="directionalLightColorBDoubleSpinBox_">
                <property name="maximum">
                 <double>1.000000000000000</double>
                </property>

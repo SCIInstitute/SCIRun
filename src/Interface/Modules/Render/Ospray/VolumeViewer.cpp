@@ -974,3 +974,17 @@ void VolumeViewer::setDirectionalLightVisible(bool visible)
   ospCommit(directionalLight);
   render();
 }
+
+void VolumeViewer::setAmbientLightColor(float r, float g, float b)
+{
+  ospSet3f(ambientLight, "color", r, g, b);
+  ospCommit(ambientLight);
+  render();
+}
+
+void VolumeViewer::setDirectionalLightColor(float r, float g, float b)
+{
+  ospSet3f(directionalLight, "color", r, g, b);
+  ospCommit(directionalLight);
+  render();
+}

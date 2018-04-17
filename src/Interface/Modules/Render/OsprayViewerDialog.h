@@ -69,6 +69,7 @@ namespace SCIRun {
       void setHeight(int h);
       void setWidth(int w);
       void setViewportCamera();
+      void setLightColor();
       void setCameraWidgets();
     private:
       void addToolBar();
