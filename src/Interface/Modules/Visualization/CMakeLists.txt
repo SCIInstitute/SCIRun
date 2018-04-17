@@ -41,6 +41,7 @@ SET(Interface_Modules_Visualization_FORMS
   RescaleColorMap.ui
   InterfaceWithOspray.ui
   ViewOsprayScene.ui
+  ShowFieldWithOspray.ui
 )
 
 SET(Interface_Modules_Visualization_HEADERS
@@ -57,6 +58,7 @@ SET(Interface_Modules_Visualization_HEADERS
   RescaleColorMapDialog.h
   InterfaceWithOsprayDialog.h
   ViewOspraySceneDialog.h
+  ShowFieldWithOsprayDialog.h
 )
 
 SET(Interface_Modules_Visualization_SOURCES
@@ -72,6 +74,7 @@ SET(Interface_Modules_Visualization_SOURCES
   RescaleColorMapDialog.cc
   InterfaceWithOsprayDialog.cc
   ViewOspraySceneDialog.cc
+  ShowFieldWithOsprayDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Visualization_FORMS_HEADERS ${Interface_Modules_Visualization_FORMS})
