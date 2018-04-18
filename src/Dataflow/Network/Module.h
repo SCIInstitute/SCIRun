@@ -141,6 +141,9 @@ namespace Networks {
     std::vector<boost::shared_ptr<T>> getRequiredDynamicInputs(const DynamicPortName<T,N>& port);
     template <class T, size_t N>
     std::vector<boost::shared_ptr<T>> getOptionalDynamicInputs(const DynamicPortName<T,N>& port);
+    // does not throw, only returns non-null
+    template <class T, size_t N>
+    std::vector<boost::shared_ptr<T>> getValidDynamicInputs(const DynamicPortName<T,N>& port);
   public: //for python
     template <class T, class D, size_t N>
     void sendOutput(const StaticPortName<T, N>& port, boost::shared_ptr<D> data);

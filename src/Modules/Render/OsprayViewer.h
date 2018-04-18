@@ -102,6 +102,8 @@ namespace Render {
 
   protected:
     virtual void portRemovedSlotImpl(const Dataflow::Networks::PortId& pid) override;
+  private:
+    void sendCompositeGeometry();
   };
 }}}
 

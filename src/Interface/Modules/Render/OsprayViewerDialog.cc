@@ -215,23 +215,32 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
 
 void OsprayViewerDialog::newGeometryValue()
 {
+  //logWarning("newGeometryValue");
 #ifdef WITH_OSPRAY
+  //logWarning("newGeometryValue wtf1");
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
+  //logWarning("newGeometryValue wtf2");
   if (geomDataTransient && !geomDataTransient->empty())
   {
-    auto geom = transient_value_cast<boost::shared_ptr<CompositeOsprayGeometryObject>>(geomDataTransient);
+    //logWarning("newGeometryValue wtf3");
+    //logWarning("composite ptr {}", geomDataTransient->get());
+    auto geom = transient_value_cast<OsprayGeometryObjectHandle>(geomDataTransient);
     if (!geom)
     {
-      LOG_DEBUG("Logical error: ViewSceneDialog received an empty object.");
+      //logWarning("newGeometryValue wtf4 null");
+      logWarning("Logical error: ViewSceneDialog received an empty object.");
       return;
     }
-    createViewer(*geom);
+    auto compGeom = boost::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
+    //logWarning("createViewer");
+    createViewer(*compGeom);
   }
 #endif
 }
 
 void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 {
+  //logWarning("createViewer impl");
 #ifdef WITH_OSPRAY
   delete viewer_;
 
@@ -240,6 +249,8 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
   bool ownModelPerObject = state_->getValue(Parameters::SeparateModelPerObject).toBool();
   std::string renderer = state_->getValue(Parameters::RendererChoice).toString();
   impl_->geoms_.clear();
+
+  //qDebug() << "objs:" << geom.objects().size();
 
   for (const auto& obj : geom.objects())
     impl_->geoms_.push_back(duplicatedCodeFromAlgorithm(obj));

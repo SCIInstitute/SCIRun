@@ -68,6 +68,26 @@ struct ModelState
   std::vector<VolumePtr> volumes; //!< OSPRay volumes for the model
   std::vector<GeometryPtr> slices; //! OSPRay slice geometries for the model
   std::vector<GeometryPtr> isosurfaces; //! OSPRay isosurface geometries for the model
+
+  void release()
+  {
+    ospRelease(model);
+    for (auto& v : volumes)
+    {
+      if (v && v->handle)
+        ospRelease(v->handle);
+    }
+    for (auto& s : slices)
+    {
+      if (s && s->handle)
+        ospRelease(s->handle);
+    }
+    for (auto& i : isosurfaces)
+    {
+      if (i && i->handle)
+        ospRelease(i->handle);
+    }
+  }
 };
 
 struct OsprayViewerParameters
@@ -95,6 +115,7 @@ Q_OBJECT
 
 public:
   explicit VolumeViewer(const OsprayViewerParameters& params, QWidget* parent = nullptr);
+  ~VolumeViewer();
 
   ospcommon::box3f getBoundingBox();
 

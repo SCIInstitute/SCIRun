@@ -67,6 +67,22 @@ VolumeViewer::VolumeViewer(const OsprayViewerParameters& params, QWidget* parent
   postInitObjectConstruction(params);
 }
 
+VolumeViewer::~VolumeViewer()
+{
+  ospRelease(renderer);
+  //camera.release();
+  ospRelease(planeMesh);
+  ospRelease(ambientLight);
+  ospRelease(directionalLight);
+  //framebuffer.release();
+  //world.release();
+  ospRelease(transferFunction);
+  for (auto& m : modelStates_)
+    m.release();
+  for (auto& obj : additionalObjects_)
+    ospRelease(obj);
+}
+
 void VolumeViewer::postInitObjectConstruction(const OsprayViewerParameters& params)
 //  bool showFrameRate, const std::string& writeFramesFilename, bool fullScreen, QStatusBar* frameRateWidget)
 {
