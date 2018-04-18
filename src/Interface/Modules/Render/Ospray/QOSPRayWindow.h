@@ -119,6 +119,7 @@ protected:
   virtual void mousePressEvent(QMouseEvent * event);
   virtual void mouseReleaseEvent(QMouseEvent * event);
   virtual void mouseMoveEvent(QMouseEvent * event);
+  virtual void wheelEvent(QWheelEvent* event);
 
   /*! rotate about center point */
   virtual void rotateCenter(float du, float dv);

@@ -297,8 +297,8 @@ void QOSPRayWindow::mouseMoveEvent(QMouseEvent * event)
 
     rotateCenter(du, dv);
   }
-  else if(event->buttons() & Qt::MidButton) {
-
+  else if(event->buttons() & Qt::RightButton)
+  {
     // camera strafe of from / at point
     const float strafeSpeed = 0.001f * length(worldBounds.size());
 
@@ -307,25 +307,43 @@ void QOSPRayWindow::mouseMoveEvent(QMouseEvent * event)
 
     strafe(du, dv);
   }
-  else if(event->buttons() & Qt::RightButton) {
-
-    // camera distance from center point
-    const float motionSpeed = 0.012f;
-
-    float forward = dy * motionSpeed * length(worldBounds.size());
-    float oldDistance = length(viewport.at - viewport.from);
-    float newDistance = oldDistance - forward;
-
-    if(newDistance < 1e-3f)
-      return;
-
-    viewport.from = viewport.at - newDistance * viewport.frame.l.vy;
-    viewport.frame.p = viewport.from;
-
-    viewport.modified = true;
-  }
 
   lastMousePosition = event->pos();
+
+  updateGL();
+
+  // after a 0.5s delay, restart continuous rendering.
+  renderRestartTimer.setSingleShot(true);
+  renderRestartTimer.start(500);
+}
+
+void QOSPRayWindow::wheelEvent(QWheelEvent* event)
+{
+  renderTimer.stop();
+  renderRestartTimer.stop();
+
+  resetAccumulationBuffer();
+
+  //TODO: zoom speed applied here
+  auto dy = event->delta() > 0 ? 1.5 : -1.5;
+  // camera distance from center point
+  const float motionSpeed = 0.012f;
+
+  float forward = dy * motionSpeed * length(worldBounds.size());
+  float oldDistance = length(viewport.at - viewport.from);
+  float newDistance = oldDistance - forward;
+  //
+  // qDebug() << "wheelEvent" << "dy" << dy << "oldDistance" << oldDistance
+  //   << "newDistance" << newDistance;
+
+  if(newDistance < 1e-3f)
+    return;
+
+  viewport.from = viewport.at - newDistance * viewport.frame.l.vy;
+  viewport.frame.p = viewport.from;
+
+  viewport.modified = true;
+  //event->ignore();
 
   updateGL();
 
