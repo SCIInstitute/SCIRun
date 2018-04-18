@@ -218,24 +218,19 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
 
 void OsprayViewerDialog::newGeometryValue()
 {
-  //logWarning("newGeometryValue");
 #ifdef WITH_OSPRAY
-  //logWarning("newGeometryValue wtf1");
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
-  //logWarning("newGeometryValue wtf2");
   if (geomDataTransient && !geomDataTransient->empty())
   {
-    //logWarning("newGeometryValue wtf3");
-
     auto geom = transient_value_cast<OsprayGeometryObjectHandle>(geomDataTransient);
     if (!geom)
     {
-      //logWarning("newGeometryValue wtf4 null");
       logWarning("Logical error: ViewSceneDialog received an empty object.");
       return;
     }
     auto compGeom = boost::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
-    //logWarning("updateViewer");
+
+    //TODO
     delete viewer_;
     createViewer(*compGeom);
   }
@@ -244,7 +239,6 @@ void OsprayViewerDialog::newGeometryValue()
 
 void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 {
-  //logWarning("createViewer impl");
 #ifdef WITH_OSPRAY
   bool showFrameRate = state_->getValue(Parameters::ShowFrameRate).toBool();
   bool fullScreen = false;
@@ -272,8 +266,6 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
     };
 
     impl_->geoms_.clear();
-
-    //qDebug() << "objs:" << geom.objects().size();
 
     for (const auto& obj : geom.objects())
       impl_->geoms_.push_back(duplicatedCodeFromAlgorithm(obj));
@@ -333,18 +325,6 @@ void OsprayViewerDialog::setWidth(int w)
 // code from viewer main.cc
 #if 0
 // Default values for the optional command line arguments.
-
-volumeViewer->setPlane(usePlane);
-
-// Load PLY geometries from file.
-for(unsigned int i=0; i<plyFilenames.size(); i++)
-  volumeViewer->addGeometry(plyFilenames[i]);
-
-// Set rotation rate to use in animation mode.
-if(rotationRate != 0.f) {
-  volumeViewer->setAutoRotationRate(rotationRate);
-  volumeViewer->autoRotate(true);
-}
 
 if (dt > 0.0f)
   volumeViewer->setSamplingRate(dt);
