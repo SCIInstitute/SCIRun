@@ -211,6 +211,9 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   connect(configDialog_->directionalLightColorRDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
   connect(configDialog_->directionalLightColorGDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
   connect(configDialog_->directionalLightColorBDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
+
+  statusBar_ = new QStatusBar(this);
+  statusBar_->setMaximumHeight(20);
 }
 
 void OsprayViewerDialog::newGeometryValue()
@@ -255,12 +258,6 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
   for (const auto& obj : geom.objects())
     impl_->geoms_.push_back(duplicatedCodeFromAlgorithm(obj));
 
-  if (!statusBar_)
-  {
-    statusBar_ = new QStatusBar(this);
-    statusBar_->setMaximumHeight(20);
-  }
-
   if (!impl_->geoms_.empty())
   {
     OsprayViewerParameters params
@@ -273,6 +270,9 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
       impl_->geoms_,
       toOsprayBox(geom.box),
       "",
+    };
+    OsprayGUIParameters guiParams
+    {
       1024,
       768,
       statusBar_,
@@ -281,7 +281,7 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
       configDialog_->directionalLightAzimuthSlider_,
       configDialog_->directionalLightElevationSlider_
     };
-    viewer_ = new VolumeViewer(params, this);
+    viewer_ = new VolumeViewer(params, guiParams, this);
 
     setupViewer(viewer_);
 

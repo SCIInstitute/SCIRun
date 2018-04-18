@@ -100,6 +100,10 @@ struct OsprayViewerParameters
   std::vector<OSPGeometry> moreObjects;
   ospcommon::box3f presetBoundingBox;
   std::string writeFramesFilename;
+};
+
+struct OsprayGUIParameters
+{
   int width, height;
   QStatusBar* frameRateWidget;
   QDoubleSpinBox* ambientLightIntensitySpinBox;
@@ -114,7 +118,7 @@ class VolumeViewer : public QWidget
 Q_OBJECT
 
 public:
-  explicit VolumeViewer(const OsprayViewerParameters& params, QWidget* parent = nullptr);
+  explicit VolumeViewer(const OsprayViewerParameters& params, const OsprayGUIParameters& guiParams, QWidget* parent = nullptr);
   ~VolumeViewer();
 
   ospcommon::box3f getBoundingBox();
@@ -301,7 +305,7 @@ protected:
   //! Load an OSPRay model from a file.
   void importObjectsFromFile(const std::string &filename);
 
-  void postInitObjectConstruction(const OsprayViewerParameters& params);
+  void postInitObjectConstruction(const OsprayViewerParameters& params, const OsprayGUIParameters& guiParams);
   //! Create and configure the OSPRay state.
   void initObjects(const std::string &renderer_type);
   void globalInit(const std::string &renderer_type);

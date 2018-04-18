@@ -27,7 +27,7 @@
 
 using namespace ospcommon;
 
-VolumeViewer::VolumeViewer(const OsprayViewerParameters& params, QWidget* parent)
+VolumeViewer::VolumeViewer(const OsprayViewerParameters& params, const OsprayGUIParameters& guiParams, QWidget* parent)
   : QWidget(parent),
     objectFileFilenames_(params.objectFileFilenames),
     additionalObjects_(params.moreObjects),
@@ -58,24 +58,21 @@ VolumeViewer::VolumeViewer(const OsprayViewerParameters& params, QWidget* parent
   setLayout(new QVBoxLayout);
 
   // Default window size.
-  resize(params.height, params.width);
-  parent->resize(params.height, params.width);
+  resize(guiParams.height, guiParams.width);
+  parent->resize(guiParams.height, guiParams.width);
 
   // Create and configure the OSPRay state.
   initObjects(params.rendererType);
 
-  postInitObjectConstruction(params);
+  postInitObjectConstruction(params, guiParams);
 }
 
 VolumeViewer::~VolumeViewer()
 {
   ospRelease(renderer);
-  //camera.release();
   ospRelease(planeMesh);
   ospRelease(ambientLight);
   ospRelease(directionalLight);
-  //framebuffer.release();
-  //world.release();
   ospRelease(transferFunction);
   for (auto& m : modelStates_)
     m.release();
@@ -83,11 +80,10 @@ VolumeViewer::~VolumeViewer()
     ospRelease(obj);
 }
 
-void VolumeViewer::postInitObjectConstruction(const OsprayViewerParameters& params)
-//  bool showFrameRate, const std::string& writeFramesFilename, bool fullScreen, QStatusBar* frameRateWidget)
+void VolumeViewer::postInitObjectConstruction(const OsprayViewerParameters& params, const OsprayGUIParameters& guiParams)
 {
   // Create an OSPRay window and set it as the central widget, but don't let it start rendering until we're done with setup.
-  osprayWindow_ = new QOSPRayWindow(renderer, params.showFrameRate, params.writeFramesFilename, this, params.frameRateWidget);
+  osprayWindow_ = new QOSPRayWindow(renderer, params.showFrameRate, params.writeFramesFilename, this, guiParams.frameRateWidget);
   layout()->addWidget(osprayWindow_);
 
   //PRINT(boundingBox_);
@@ -99,7 +95,7 @@ void VolumeViewer::postInitObjectConstruction(const OsprayViewerParameters& para
   {
     //TODO: connect to new config widgets
     lightEditor = new LightEditor(ambientLight, directionalLight,
-      params.ambientLightIntensitySpinBox, params.directionalLightIntensitySpinBox, params.directionalLightAzimuthSlider, params.directionalLightElevationSlider);
+      guiParams.ambientLightIntensitySpinBox, guiParams.directionalLightIntensitySpinBox, guiParams.directionalLightAzimuthSlider, guiParams.directionalLightElevationSlider);
     connect(lightEditor, SIGNAL(lightsChanged()), this, SLOT(render()));
     probeWidget = new ProbeWidget(this);
   }
