@@ -226,7 +226,7 @@ void OsprayViewerDialog::newGeometryValue()
   if (geomDataTransient && !geomDataTransient->empty())
   {
     //logWarning("newGeometryValue wtf3");
-    //logWarning("composite ptr {}", geomDataTransient->get());
+
     auto geom = transient_value_cast<OsprayGeometryObjectHandle>(geomDataTransient);
     if (!geom)
     {
@@ -235,7 +235,8 @@ void OsprayViewerDialog::newGeometryValue()
       return;
     }
     auto compGeom = boost::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
-    //logWarning("createViewer");
+    //logWarning("updateViewer");
+    delete viewer_;
     createViewer(*compGeom);
   }
 #endif
@@ -245,30 +246,18 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 {
   //logWarning("createViewer impl");
 #ifdef WITH_OSPRAY
-  delete viewer_;
-
   bool showFrameRate = state_->getValue(Parameters::ShowFrameRate).toBool();
   bool fullScreen = false;
   bool ownModelPerObject = state_->getValue(Parameters::SeparateModelPerObject).toBool();
   std::string renderer = state_->getValue(Parameters::RendererChoice).toString();
-  impl_->geoms_.clear();
 
-  //qDebug() << "objs:" << geom.objects().size();
-
-  for (const auto& obj : geom.objects())
-    impl_->geoms_.push_back(duplicatedCodeFromAlgorithm(obj));
-
-  if (!impl_->geoms_.empty())
   {
     OsprayViewerParameters params
     {
-      {},
       showFrameRate,
       renderer,
       ownModelPerObject,
       fullScreen,
-      impl_->geoms_,
-      toOsprayBox(geom.box),
       "",
     };
     OsprayGUIParameters guiParams
@@ -281,7 +270,15 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
       configDialog_->directionalLightAzimuthSlider_,
       configDialog_->directionalLightElevationSlider_
     };
-    viewer_ = new VolumeViewer(params, guiParams, this);
+
+    impl_->geoms_.clear();
+
+    //qDebug() << "objs:" << geom.objects().size();
+
+    for (const auto& obj : geom.objects())
+      impl_->geoms_.push_back(duplicatedCodeFromAlgorithm(obj));
+
+    viewer_ = new VolumeViewer(params, guiParams, { impl_->geoms_, toOsprayBox(geom.box) }, this);
 
     setupViewer(viewer_);
 

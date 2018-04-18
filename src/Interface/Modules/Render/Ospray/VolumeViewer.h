@@ -92,14 +92,17 @@ struct ModelState
 
 struct OsprayViewerParameters
 {
-  std::vector<std::string> objectFileFilenames;
   bool showFrameRate;
   std::string rendererType;
   bool ownModelPerObject;
   bool fullScreen;
+  std::string writeFramesFilename;
+};
+
+struct OsprayObjectParameters
+{
   std::vector<OSPGeometry> moreObjects;
   ospcommon::box3f presetBoundingBox;
-  std::string writeFramesFilename;
 };
 
 struct OsprayGUIParameters
@@ -118,8 +121,11 @@ class VolumeViewer : public QWidget
 Q_OBJECT
 
 public:
-  explicit VolumeViewer(const OsprayViewerParameters& params, const OsprayGUIParameters& guiParams, QWidget* parent = nullptr);
+  explicit VolumeViewer(const OsprayViewerParameters& params, const OsprayGUIParameters& guiParams,
+    const OsprayObjectParameters& objParams,
+    QWidget* parent = nullptr);
   ~VolumeViewer();
+  //void setParameters(const OsprayObjectParameters& params);
 
   ospcommon::box3f getBoundingBox();
 
@@ -135,7 +141,6 @@ public:
   //! A string description of this class.
   std::string toString() const;
 
-  void loadObjectsFromFiles();
   void loadGeometry(OSPGeometry geom);
   void loadVolume(OSPVolume vol, const ospcommon::vec2f& voxelRange, const ospcommon::box3f& bounds);
 
@@ -238,7 +243,6 @@ public Q_SLOTS:
 protected:
 
   //! OSPRay object file filenames, one for each model / time step.
-  std::vector<std::string> objectFileFilenames_;
   std::vector<OSPGeometry> additionalObjects_;
   bool ownModelPerObject_; // create a separate model for each object (not only for each file)
 

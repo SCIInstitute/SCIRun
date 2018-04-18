@@ -168,14 +168,14 @@ void OsprayViewer::execute()
 void OsprayViewer::sendCompositeGeometry()
 {
   auto allGeom = getValidDynamicInputs(GeneralGeom);
-  logWarning("allGeom size {}", allGeom.size());
+  //logWarning("allGeom size {}", allGeom.size());
   if (!allGeom.empty())
   {
     std::vector<OsprayGeometryObjectHandle> flattened;
     for (auto& obj : allGeom)
       addToList(flattened, obj);
 
-    logWarning("flattened size {}", flattened.size());
+    //logWarning("flattened size {}", flattened.size());
     OsprayGeometryObjectHandle composite(new CompositeOsprayGeometryObject(flattened));
     //logWarning("composite ptr {}", composite.get());
     get_state()->setTransientValue(Parameters::GeomData, composite, true);

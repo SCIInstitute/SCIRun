@@ -86,7 +86,7 @@ class QOSPRayWindow : public QGLWidget
 Q_OBJECT
 
 public:
-  QOSPRayWindow(OSPRenderer renderer, bool showFrameRate, const std::string& writeFramesFilename, QWidget *parent, QStatusBar* frameRateWidget);
+  QOSPRayWindow(OSPRenderer renderer, const std::string& writeFramesFilename, QWidget *parent, QStatusBar* frameRateWidget);
   virtual ~QOSPRayWindow();
 
   void setRenderingEnabled(bool renderingEnabled);

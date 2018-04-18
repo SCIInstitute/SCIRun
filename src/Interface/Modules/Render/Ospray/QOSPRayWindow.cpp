@@ -45,11 +45,10 @@ QString Viewport::toString() const
 }
 
 QOSPRayWindow::QOSPRayWindow(OSPRenderer renderer,
-                             bool showFrameRate,
                              const std::string& writeFramesFilename
                            , QWidget *parent, QStatusBar* frameRateWidget)
   : QGLWidget(parent),
-    showFrameRate(showFrameRate),
+    showFrameRate(false),
     frameRateWidget_(frameRateWidget),
     frameCount(0),
     renderingEnabled(false),
