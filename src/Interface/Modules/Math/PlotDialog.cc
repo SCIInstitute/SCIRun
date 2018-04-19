@@ -182,6 +182,11 @@ void Plot::addLegend()
 	}
 }
 
+void Plot::removeLegend()
+{
+  insertLegend(nullptr);
+}
+
 void Plot::showItem(const QVariant& itemInfo, bool on)
 {
   auto plotItem = infoToItem(itemInfo);

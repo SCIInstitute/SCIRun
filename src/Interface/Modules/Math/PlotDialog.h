@@ -105,6 +105,7 @@ namespace SCIRun
       }
       void clearCurves();
       void addLegend();
+      void removeLegend();
       void exportPlot();
       void setCurveStyle(const QString& style);
     public Q_SLOTS:
