@@ -67,6 +67,7 @@ void LinePlotter::setStateDefaults()
   );
   state->setValue(Parameters::PlotColors, colors);
   state->setValue(Parameters::PlotBackgroundColor, std::string());
+  state->setValue(Parameters::TransposeData, false);
 }
 
 void LinePlotter::execute()
