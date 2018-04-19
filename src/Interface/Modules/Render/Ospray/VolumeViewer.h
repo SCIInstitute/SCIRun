@@ -68,18 +68,45 @@ struct ModelState
   std::vector<VolumePtr> volumes; //!< OSPRay volumes for the model
   std::vector<GeometryPtr> slices; //! OSPRay slice geometries for the model
   std::vector<GeometryPtr> isosurfaces; //! OSPRay isosurface geometries for the model
+
+  void release()
+  {
+    ospRelease(model);
+    for (auto& v : volumes)
+    {
+      if (v && v->handle)
+        ospRelease(v->handle);
+    }
+    for (auto& s : slices)
+    {
+      if (s && s->handle)
+        ospRelease(s->handle);
+    }
+    for (auto& i : isosurfaces)
+    {
+      if (i && i->handle)
+        ospRelease(i->handle);
+    }
+  }
 };
 
 struct OsprayViewerParameters
 {
-  std::vector<std::string> objectFileFilenames;
   bool showFrameRate;
   std::string rendererType;
   bool ownModelPerObject;
   bool fullScreen;
+  std::string writeFramesFilename;
+};
+
+struct OsprayObjectParameters
+{
   std::vector<OSPGeometry> moreObjects;
   ospcommon::box3f presetBoundingBox;
-  std::string writeFramesFilename;
+};
+
+struct OsprayGUIParameters
+{
   int width, height;
   QStatusBar* frameRateWidget;
   QDoubleSpinBox* ambientLightIntensitySpinBox;
@@ -94,7 +121,11 @@ class VolumeViewer : public QWidget
 Q_OBJECT
 
 public:
-  explicit VolumeViewer(const OsprayViewerParameters& params, QWidget* parent = nullptr);
+  explicit VolumeViewer(const OsprayViewerParameters& params, const OsprayGUIParameters& guiParams,
+    const OsprayObjectParameters& objParams,
+    QWidget* parent = nullptr);
+  ~VolumeViewer();
+  //void setParameters(const OsprayObjectParameters& params);
 
   ospcommon::box3f getBoundingBox();
 
@@ -110,7 +141,6 @@ public:
   //! A string description of this class.
   std::string toString() const;
 
-  void loadObjectsFromFiles();
   void loadGeometry(OSPGeometry geom);
   void loadVolume(OSPVolume vol, const ospcommon::vec2f& voxelRange, const ospcommon::box3f& bounds);
 
@@ -213,7 +243,6 @@ public Q_SLOTS:
 protected:
 
   //! OSPRay object file filenames, one for each model / time step.
-  std::vector<std::string> objectFileFilenames_;
   std::vector<OSPGeometry> additionalObjects_;
   bool ownModelPerObject_; // create a separate model for each object (not only for each file)
 
@@ -280,7 +309,7 @@ protected:
   //! Load an OSPRay model from a file.
   void importObjectsFromFile(const std::string &filename);
 
-  void postInitObjectConstruction(const OsprayViewerParameters& params);
+  void postInitObjectConstruction(const OsprayViewerParameters& params, const OsprayGUIParameters& guiParams);
   //! Create and configure the OSPRay state.
   void initObjects(const std::string &renderer_type);
   void globalInit(const std::string &renderer_type);

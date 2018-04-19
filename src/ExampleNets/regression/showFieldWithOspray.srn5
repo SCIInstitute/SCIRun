@@ -1005,7 +1005,7 @@
 				</second>
 			</item>
 			<item>
-				<first>OsprayViewer:0</first>
+				<first>OsprayViewer:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -1036,7 +1036,7 @@
 									<name>AmbientLightColor</name>
 									<value>
 										<which>2</which>
-										<value>Color(0.5,0,1)</value>
+										<value>Color(1,1,1)</value>
 									</value>
 								</second>
 							</item>
@@ -1060,7 +1060,7 @@
 									<name>AutoRotationRate</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000002e-03</value>
+										<value>2.50000000000000014e-02</value>
 									</value>
 								</second>
 							</item>
@@ -1084,7 +1084,7 @@
 									<name>CameraViewAtX</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1096,7 +1096,7 @@
 									<name>CameraViewAtY</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1108,7 +1108,7 @@
 									<name>CameraViewAtZ</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1120,7 +1120,7 @@
 									<name>CameraViewFromX</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e+00</value>
+										<value>1.00000000000000000e+01</value>
 									</value>
 								</second>
 							</item>
@@ -1132,7 +1132,7 @@
 									<name>CameraViewFromY</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e+00</value>
+										<value>1.00000000000000000e+01</value>
 									</value>
 								</second>
 							</item>
@@ -1144,7 +1144,7 @@
 									<name>CameraViewFromZ</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1180,7 +1180,7 @@
 									<name>CameraViewUpZ</name>
 									<value>
 										<which>1</which>
-										<value>-1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1191,8 +1191,8 @@
 								<second>
 									<name>DirectionalLightAzimuth</name>
 									<value>
-										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<which>0</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1215,8 +1215,8 @@
 								<second>
 									<name>DirectionalLightElevation</name>
 									<value>
-										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<which>0</which>
+										<value>45</value>
 									</value>
 								</second>
 							</item>
@@ -1432,7 +1432,7 @@
 									<name>ViewerHeight</name>
 									<value>
 										<which>0</which>
-										<value>615</value>
+										<value>600</value>
 									</value>
 								</second>
 							</item>
@@ -1444,7 +1444,7 @@
 									<name>ViewerWidth</name>
 									<value>
 										<which>0</which>
-										<value>779</value>
+										<value>800</value>
 									</value>
 								</second>
 							</item>
@@ -3068,7 +3068,7 @@
 									<name>ShowViewer</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -3398,10 +3398,10 @@
 					<name>SceneGraph</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>OsprayViewer:0</moduleId2_>
+				<moduleId2_>OsprayViewer:1</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
-					<id>1</id>
+					<id>0</id>
 				</port2_>
 			</item>
 			<item>
@@ -3410,10 +3410,10 @@
 					<name>SceneGraph</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>OsprayViewer:0</moduleId2_>
+				<moduleId2_>OsprayViewer:1</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
-					<id>2</id>
+					<id>1</id>
 				</port2_>
 			</item>
 		</connections>
@@ -3478,10 +3478,10 @@
 			</second>
 		</item>
 		<item>
-			<first>OsprayViewer:0</first>
+			<first>OsprayViewer:1</first>
 			<second>
-				<first>-3.48000000000000000e+02</first>
-				<second>2.72000000000000000e+02</second>
+				<first>-3.27000000000000000e+02</first>
+				<second>3.08000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -3578,7 +3578,7 @@
 			<second>-1</second>
 		</item>
 		<item>
-			<first>OsprayViewer:0</first>
+			<first>OsprayViewer:1</first>
 			<second>-1</second>
 		</item>
 		<item>

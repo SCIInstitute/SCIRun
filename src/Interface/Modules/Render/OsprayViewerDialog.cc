@@ -41,6 +41,7 @@ DEALINGS IN THE SOFTWARE.
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
@@ -211,6 +212,9 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
   connect(configDialog_->directionalLightColorRDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
   connect(configDialog_->directionalLightColorGDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
   connect(configDialog_->directionalLightColorBDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(setLightColor()));
+
+  statusBar_ = new QStatusBar(this);
+  statusBar_->setMaximumHeight(20);
 }
 
 void OsprayViewerDialog::newGeometryValue()
@@ -219,13 +223,17 @@ void OsprayViewerDialog::newGeometryValue()
   auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
   if (geomDataTransient && !geomDataTransient->empty())
   {
-    auto geom = transient_value_cast<boost::shared_ptr<CompositeOsprayGeometryObject>>(geomDataTransient);
+    auto geom = transient_value_cast<OsprayGeometryObjectHandle>(geomDataTransient);
     if (!geom)
     {
-      LOG_DEBUG("Logical error: ViewSceneDialog received an empty object.");
+      logWarning("Logical error: ViewSceneDialog received an empty object.");
       return;
     }
-    createViewer(*geom);
+    auto compGeom = boost::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
+
+    //TODO
+    delete viewer_;
+    createViewer(*compGeom);
   }
 #endif
 }
@@ -233,35 +241,22 @@ void OsprayViewerDialog::newGeometryValue()
 void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 {
 #ifdef WITH_OSPRAY
-  delete viewer_;
-
   bool showFrameRate = state_->getValue(Parameters::ShowFrameRate).toBool();
   bool fullScreen = false;
   bool ownModelPerObject = state_->getValue(Parameters::SeparateModelPerObject).toBool();
   std::string renderer = state_->getValue(Parameters::RendererChoice).toString();
-  impl_->geoms_.clear();
 
-  for (const auto& obj : geom.objects())
-    impl_->geoms_.push_back(duplicatedCodeFromAlgorithm(obj));
-
-  if (!statusBar_)
-  {
-    statusBar_ = new QStatusBar(this);
-    statusBar_->setMaximumHeight(20);
-  }
-
-  if (!impl_->geoms_.empty())
   {
     OsprayViewerParameters params
     {
-      {},
       showFrameRate,
       renderer,
       ownModelPerObject,
       fullScreen,
-      impl_->geoms_,
-      toOsprayBox(geom.box),
       "",
+    };
+    OsprayGUIParameters guiParams
+    {
       1024,
       768,
       statusBar_,
@@ -270,7 +265,13 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
       configDialog_->directionalLightAzimuthSlider_,
       configDialog_->directionalLightElevationSlider_
     };
-    viewer_ = new VolumeViewer(params, this);
+
+    impl_->geoms_.clear();
+
+    for (const auto& obj : geom.objects())
+      impl_->geoms_.push_back(duplicatedCodeFromAlgorithm(obj));
+
+    viewer_ = new VolumeViewer(params, guiParams, { impl_->geoms_, toOsprayBox(geom.box) }, this);
 
     setupViewer(viewer_);
 
@@ -325,18 +326,6 @@ void OsprayViewerDialog::setWidth(int w)
 // code from viewer main.cc
 #if 0
 // Default values for the optional command line arguments.
-
-volumeViewer->setPlane(usePlane);
-
-// Load PLY geometries from file.
-for(unsigned int i=0; i<plyFilenames.size(); i++)
-  volumeViewer->addGeometry(plyFilenames[i]);
-
-// Set rotation rate to use in animation mode.
-if(rotationRate != 0.f) {
-  volumeViewer->setAutoRotationRate(rotationRate);
-  volumeViewer->autoRotate(true);
-}
 
 if (dt > 0.0f)
   volumeViewer->setSamplingRate(dt);
@@ -637,7 +626,7 @@ void OsprayViewerDialog::setViewportCamera()
 #endif
 }
 
-float OsprayViewerDialog::getFloat(const Core::Algorithms::Name& name) const
+float OsprayViewerDialog::getFloat(const Name& name) const
 {
   return static_cast<float>(state_->getValue(name).toDouble());
 }

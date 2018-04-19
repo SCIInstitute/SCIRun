@@ -27,14 +27,15 @@
 
 using namespace ospcommon;
 
-VolumeViewer::VolumeViewer(const OsprayViewerParameters& params, QWidget* parent)
+VolumeViewer::VolumeViewer(const OsprayViewerParameters& params, const OsprayGUIParameters& guiParams,
+  const OsprayObjectParameters& objParams,
+  QWidget* parent)
   : QWidget(parent),
-    objectFileFilenames_(params.objectFileFilenames),
-    additionalObjects_(params.moreObjects),
+    additionalObjects_(objParams.moreObjects),
     modelIndex(0),
     ownModelPerObject_(params.ownModelPerObject),
     boundingBox_(ospcommon::vec3f(0.f), ospcommon::vec3f(1.f)),
-    presetBoundingBox_(params.presetBoundingBox),
+    presetBoundingBox_(objParams.presetBoundingBox),
     renderer(nullptr),
     rendererInitialized(false),
     transferFunction(nullptr),
@@ -58,20 +59,46 @@ VolumeViewer::VolumeViewer(const OsprayViewerParameters& params, QWidget* parent
   setLayout(new QVBoxLayout);
 
   // Default window size.
-  resize(params.height, params.width);
-  parent->resize(params.height, params.width);
+  resize(guiParams.height, guiParams.width);
+  parent->resize(guiParams.height, guiParams.width);
 
   // Create and configure the OSPRay state.
   initObjects(params.rendererType);
 
-  postInitObjectConstruction(params);
+  postInitObjectConstruction(params, guiParams);
 }
 
-void VolumeViewer::postInitObjectConstruction(const OsprayViewerParameters& params)
-//  bool showFrameRate, const std::string& writeFramesFilename, bool fullScreen, QStatusBar* frameRateWidget)
+VolumeViewer::~VolumeViewer()
+{
+  ospRelease(renderer);
+  ospRelease(planeMesh);
+  ospRelease(ambientLight);
+  ospRelease(directionalLight);
+  ospRelease(transferFunction);
+  for (auto& m : modelStates_)
+    m.release();
+  for (auto& obj : additionalObjects_)
+    ospRelease(obj);
+}
+
+#if 0
+void VolumeViewer::setParameters(const OsprayObjectParameters& params)
+{
+  additionalObjects_ = params.moreObjects;
+  qDebug() << "additionalObjects_" << additionalObjects_.size();
+  presetBoundingBox_ = params.presetBoundingBox;
+
+  loadAdditionalGeometries();
+  initPostObjects();
+
+  osprayWindow_->setWorldBounds(boundingBox_);
+}
+#endif
+
+void VolumeViewer::postInitObjectConstruction(const OsprayViewerParameters& params, const OsprayGUIParameters& guiParams)
 {
   // Create an OSPRay window and set it as the central widget, but don't let it start rendering until we're done with setup.
-  osprayWindow_ = new QOSPRayWindow(renderer, params.showFrameRate, params.writeFramesFilename, this, params.frameRateWidget);
+  osprayWindow_ = new QOSPRayWindow(renderer, params.writeFramesFilename, this, guiParams.frameRateWidget);
   layout()->addWidget(osprayWindow_);
 
   //PRINT(boundingBox_);
@@ -83,7 +110,7 @@ void VolumeViewer::postInitObjectConstruction(const OsprayViewerParameters& para
   {
     //TODO: connect to new config widgets
     lightEditor = new LightEditor(ambientLight, directionalLight,
-      params.ambientLightIntensitySpinBox, params.directionalLightIntensitySpinBox, params.directionalLightAzimuthSlider, params.directionalLightElevationSlider);
+      guiParams.ambientLightIntensitySpinBox, guiParams.directionalLightIntensitySpinBox, guiParams.directionalLightAzimuthSlider, guiParams.directionalLightElevationSlider);
     connect(lightEditor, SIGNAL(lightsChanged()), this, SLOT(render()));
     probeWidget = new ProbeWidget(this);
   }
@@ -140,11 +167,13 @@ void VolumeViewer::setModel(size_t index)
     // Update active volume on probe widget.
     probeWidget->setVolume(modelStates_[index].volumes[0]->handle);
 
+#if 0
     // Update current filename information label.
     if (ownModelPerObject_)
       currentFilenameInfoLabel.setText("<b>Timestep " + QString::number(index) + QString("</b>: Data value range: [") + QString::number(voxelRange.x) + ", " + QString::number(voxelRange.y) + "]");
     else
       currentFilenameInfoLabel.setText("<b>Timestep " + QString::number(index) + QString("</b>: ") + QString(objectFileFilenames_[index].c_str()).split('/').back() + ". Data value range: [" + QString::number(voxelRange.x) + ", " + QString::number(voxelRange.y) + "]");
+#endif
   }
   // Enable rendering on the OSPRay window.
   osprayWindow_->setRenderingEnabled(true);
@@ -756,7 +785,6 @@ void VolumeViewer::initObjects(const std::string &renderer_type)
 {
   globalInit(renderer_type);
 
-  loadObjectsFromFiles();
   loadAdditionalGeometries();
 
   initPostObjects();
@@ -827,15 +855,13 @@ void VolumeViewer::initPostObjects()
     {
       boundingBox_ = presetBoundingBox_;
     }
+
+    addInitialPlane();
   }
   else
   {
     boundingBox_ = {{b,b,b},{-b,-b,-b}};
   }
-  //PING;
-  //PRINT(boundingBox_);
-
-  addInitialPlane();
 
   osp::vec3f specular = osp::vec3f{0.135f,0.135f,0.135f};
   for (const auto& model : modelStates_)
@@ -884,11 +910,13 @@ void VolumeViewer::addInitialPlane()
   ospRelease(index);
 }
 
+#if 0
 void VolumeViewer::loadObjectsFromFiles()
 {
   for (const auto& file : objectFileFilenames_)
     importObjectsFromFile(file);
 }
+#endif
 
 void VolumeViewer::initUserInterfaceWidgets()
 {
