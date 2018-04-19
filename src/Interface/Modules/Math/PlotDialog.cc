@@ -60,7 +60,12 @@ PlotDialog::PlotDialog(QWidget* parent)
   layout->addWidget(zoomBox);
 
   plot_ = new Plot(parent);
-  layout->addWidget( plot_ );
+  connect(plot_, SIGNAL(hasMessage(const QString&)), this, SLOT(message(const QString&)));
+  layout->addWidget(plot_);
+
+  statusBar_ = new QStatusBar(this);
+  statusBar_->setMaximumHeight(20);
+  layout->addWidget(statusBar_);
 
   connect(zoomBox, SIGNAL(activated(const QString&)), plot_, SLOT(adjustZoom(const QString&)));
 
@@ -86,26 +91,32 @@ void PlotDialog::updatePlot(const QString& title, const QString& xAxis, const QS
   plot_->replot();
 }
 
+void PlotDialog::message(const QString& s)
+{
+  statusBar_->showMessage(s, 2000);
+}
+
 void SpecialMapPlotCanvas::mousePressEvent(QMouseEvent* event)
 {
   QWidget::mousePressEvent(event);
-  double x = plot() -> invTransform (plot() -> xBottom, event -> pos().x());
-  double y = plot() -> invTransform (plot() -> yLeft, event -> pos().y());
+  double x = plot()->invTransform(plot()->xBottom, event->pos().x());
+  double y = plot()->invTransform(plot()->yLeft, event->pos().y());
   if (!pointCurveMap_.empty())
   {
     QPointF toFind(x, y);
     auto compare = [&toFind](const std::pair<QPointF, int>& p1, const std::pair<QPointF, int>& p2)
     { return (p1.first - toFind).manhattanLength() < (p2.first - toFind).manhattanLength(); };
     auto minPointIter = std::min_element(pointCurveMap_.cbegin(), pointCurveMap_.cend(), compare);
-    qDebug() << "Found closest point: " << minPointIter->first << "from curve" << minPointIter->second;
-    Q_EMIT curveSelected(minPointIter->second);
+    auto message = tr("Closest point: (%1,%2) from curve %3")
+      .arg(minPointIter->first.x()).arg(minPointIter->first.y()).arg(minPointIter->second);
+    Q_EMIT curveSelected(minPointIter->second, message);
   }
 }
 
 void SpecialMapPlotCanvas::mouseReleaseEvent(QMouseEvent* event)
 {
   QWidget::mousePressEvent(event);
-  Q_EMIT curveSelected(-1);
+  Q_EMIT curveSelected(-1, "");
 }
 
 
@@ -114,7 +125,7 @@ Plot::Plot(QWidget *parent) : QwtPlot( parent )
   setAutoFillBackground( true );
 
   auto canvas = new SpecialMapPlotCanvas(pointCurveMap_, this);
-  connect(canvas, SIGNAL(curveSelected(int)), this, SLOT(highlightCurve(int)));
+  connect(canvas, SIGNAL(curveSelected(int, const QString&)), this, SLOT(highlightCurve(int, const QString&)));
   canvas->setLineWidth( 1 );
   canvas->setFrameStyle( QFrame::Box | QFrame::Plain );
   canvas->setBorderRadius( 15 );
@@ -138,7 +149,7 @@ void Plot::adjustZoom(const QString& type)
   magnifier_->setAxisEnabled(QwtPlot::yLeft, zoomVertical);
 }
 
-void Plot::highlightCurve(int index)
+void Plot::highlightCurve(int index, const QString& message)
 {
   if (index < curves_.size())
   {
@@ -151,6 +162,7 @@ void Plot::highlightCurve(int index)
     curves_[justSelected_]->setPen(previousPen_);
   }
   replot();
+  Q_EMIT hasMessage(message);
 }
 
 void Plot::addLegend()
