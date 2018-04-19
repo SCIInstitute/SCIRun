@@ -83,13 +83,20 @@ void ExtractSimpleIsosurface::execute()
         if (!matrixIs::dense(*isovalueOption)) error("Isovalue input matrix should be dense type");
         
         auto mat_iso = castMatrix::toDense (*isovalueOption);
-        double *data = mat_iso->data();
-        std::ostringstream ostr;
-        for (size_t k=0; k<(mat_iso->get_dense_size()-1); k++)
+        if (mat_iso->nrows()>1)
         {
-          ostr << data[k] <<" ";
+          if (mat_iso->ncols()>1)
+          {
+            warning("input matrix will work better as a row matrix");
+          }
+          else
+          {
+            mat_iso->transposeInPlace();
+          }
         }
-        ostr<< data[mat_iso->get_dense_size()-1];
+        
+        std::ostringstream ostr;
+        ostr << *mat_iso;
         state->setValue(Parameters::ListOfIsovalues, ostr.str());
       }
     }
