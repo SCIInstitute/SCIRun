@@ -41,6 +41,7 @@ DEALINGS IN THE SOFTWARE.
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
@@ -625,7 +626,7 @@ void OsprayViewerDialog::setViewportCamera()
 #endif
 }
 
-float OsprayViewerDialog::getFloat(const Core::Algorithms::Name& name) const
+float OsprayViewerDialog::getFloat(const Name& name) const
 {
   return static_cast<float>(state_->getValue(name).toDouble());
 }
