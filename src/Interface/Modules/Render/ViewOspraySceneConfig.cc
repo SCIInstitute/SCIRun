@@ -144,6 +144,7 @@ ViewOspraySceneConfigDialog::ViewOspraySceneConfigDialog(const QString& name, Os
   // setSampleColor(Qt::black);
 
   WidgetStyleMixin::tabStyle(tabWidget);
+  move(10, 10);
 }
 #if 0
 void ViewSceneControlsDock::setSampleColor(const QColor& color)

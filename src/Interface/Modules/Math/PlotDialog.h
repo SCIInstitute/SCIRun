@@ -46,6 +46,7 @@ namespace SCIRun
 
     class PlotDialog : public QDialog
     {
+      Q_OBJECT
     public:
       explicit PlotDialog(QWidget* parent = nullptr);
       void updatePlot(const QString& title, const QString& xAxis, const QString& yAxis,
@@ -53,8 +54,11 @@ namespace SCIRun
         const boost::optional<double>& vertAxisOpt);
       ~PlotDialog();
       Plot* plot() { return plot_; }
+    public Q_SLOTS:
+      void message(const QString& s);
     private:
       Plot* plot_{nullptr};
+      QStatusBar* statusBar_{nullptr};
     };
 
     struct PointLess
@@ -77,7 +81,7 @@ namespace SCIRun
         : QwtPlotCanvas(plot), pointCurveMap_(pointCurveMap)
       {}
     Q_SIGNALS:
-      void curveSelected(int index);
+      void curveSelected(int index, const QString& message);
     protected:
       void mousePressEvent(QMouseEvent* event) override;
       void mouseReleaseEvent(QMouseEvent* event) override;
@@ -101,11 +105,14 @@ namespace SCIRun
       }
       void clearCurves();
       void addLegend();
+      void removeLegend();
       void exportPlot();
       void setCurveStyle(const QString& style);
     public Q_SLOTS:
       void adjustZoom(const QString& type);
-      void highlightCurve(int index);
+      void highlightCurve(int index, const QString& message);
+    Q_SIGNALS:
+      void hasMessage(const QString& message);
     private Q_SLOTS:
       void showItem(const QVariant&, bool on);
     private:
