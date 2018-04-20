@@ -54,5 +54,9 @@ OsprayGeometryObject* OsprayGeometryObject::clone() const
 
 CompositeOsprayGeometryObject::CompositeOsprayGeometryObject(const std::vector<OsprayGeometryObjectHandle>& objs) : objs_(objs)
 {
-
+  for (const auto& obj : objs_)
+  {
+    if (obj)
+      box.extend(obj->box);
+  }
 }

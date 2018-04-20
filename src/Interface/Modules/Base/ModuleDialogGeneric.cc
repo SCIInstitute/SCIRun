@@ -1031,3 +1031,26 @@ std::vector<QString> SCIRun::Gui::toQStringVector(const std::vector<std::string>
   std::transform(strVec.begin(), strVec.end(), back_inserter(qv), QString::fromStdString);
   return qv;
 }
+
+void ModuleDialogGeneric::adjustToolbarForHighResolution(QToolBar* toolbar)
+{
+  for (auto& child : toolbar->children())
+  {
+    auto button = qobject_cast<QPushButton*>(child);
+    if (button)
+    {
+      button->setFixedSize(button->size() * 2);
+      button->setIconSize(button->iconSize() * 2);
+    }
+  }
+}
+
+void ModuleDialogGeneric::keyPressEvent(QKeyEvent* e)
+{
+  if (e->key() != Qt::Key_Escape)
+    QDialog::keyPressEvent(e);
+  else //Esc = close dialog
+  {
+    Q_EMIT closeButtonClicked();
+  }
+}

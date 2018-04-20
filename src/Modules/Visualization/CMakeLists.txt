@@ -36,6 +36,7 @@ SET(Modules_Visualization_SRCS
   TextBuilder.cc
   InterfaceWithOspray.cc
   ViewOsprayScene.cc
+  ShowFieldWithOspray.cc
 )
 
 SET(Modules_Visualization_HEADERS
@@ -48,6 +49,7 @@ SET(Modules_Visualization_HEADERS
   TextBuilder.h
   InterfaceWithOspray.h
   ViewOsprayScene.h
+  ShowFieldWithOspray.h
   share.h
 )
 

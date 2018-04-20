@@ -33,7 +33,6 @@
 #include <qwt_legend.h>
 #include <qwt_legend_label.h>
 #include <qwt_point_data.h>
-#include <qwt_plot_canvas.h>
 #include <qwt_plot_panner.h>
 #include <qwt_plot_magnifier.h>
 #include <qwt_text.h>
@@ -87,11 +86,35 @@ void PlotDialog::updatePlot(const QString& title, const QString& xAxis, const QS
   plot_->replot();
 }
 
+void SpecialMapPlotCanvas::mousePressEvent(QMouseEvent* event)
+{
+  QWidget::mousePressEvent(event);
+  double x = plot() -> invTransform (plot() -> xBottom, event -> pos().x());
+  double y = plot() -> invTransform (plot() -> yLeft, event -> pos().y());
+  if (!pointCurveMap_.empty())
+  {
+    QPointF toFind(x, y);
+    auto compare = [&toFind](const std::pair<QPointF, int>& p1, const std::pair<QPointF, int>& p2)
+    { return (p1.first - toFind).manhattanLength() < (p2.first - toFind).manhattanLength(); };
+    auto minPointIter = std::min_element(pointCurveMap_.cbegin(), pointCurveMap_.cend(), compare);
+    qDebug() << "Found closest point: " << minPointIter->first << "from curve" << minPointIter->second;
+    Q_EMIT curveSelected(minPointIter->second);
+  }
+}
+
+void SpecialMapPlotCanvas::mouseReleaseEvent(QMouseEvent* event)
+{
+  QWidget::mousePressEvent(event);
+  Q_EMIT curveSelected(-1);
+}
+
+
 Plot::Plot(QWidget *parent) : QwtPlot( parent )
 {
   setAutoFillBackground( true );
 
-  auto canvas = new QwtPlotCanvas(this);
+  auto canvas = new SpecialMapPlotCanvas(pointCurveMap_, this);
+  connect(canvas, SIGNAL(curveSelected(int)), this, SLOT(highlightCurve(int)));
   canvas->setLineWidth( 1 );
   canvas->setFrameStyle( QFrame::Box | QFrame::Plain );
   canvas->setBorderRadius( 15 );
@@ -113,6 +136,21 @@ void Plot::adjustZoom(const QString& type)
   auto zoomHorizontal = type.contains("both") || type.contains("horizontal");
   magnifier_->setAxisEnabled(QwtPlot::xBottom, zoomHorizontal);
   magnifier_->setAxisEnabled(QwtPlot::yLeft, zoomVertical);
+}
+
+void Plot::highlightCurve(int index)
+{
+  if (index < curves_.size())
+  {
+    justSelected_ = index;
+    previousPen_ = curves_[index]->pen();
+    curves_[index]->setPen(Qt::black, 2);
+  }
+  else if (index == -1 && justSelected_ < curves_.size())
+  {
+    curves_[justSelected_]->setPen(previousPen_);
+  }
+  replot();
 }
 
 void Plot::addLegend()
@@ -199,6 +237,10 @@ void Plot::addCurveImpl(const QPolygonF& points, const QString& title, const QCo
   curve->attach(this);
   curve->setSamples( points );
   updateCurveStyle(curve);
+  for (const auto& point : points)
+  {
+    pointCurveMap_[point] = curves_.size() - 1;
+  }
 }
 
 void Plot::clearCurves()
@@ -209,6 +251,7 @@ void Plot::clearCurves()
 		delete curve;
 	}
 	curves_.clear();
+  pointCurveMap_.clear();
 }
 
 void Plot::exportPlot()

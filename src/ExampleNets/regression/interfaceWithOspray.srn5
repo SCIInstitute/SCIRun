@@ -2441,12 +2441,12 @@
 				</second>
 			</item>
 			<item>
-				<first>ViewOsprayScene:0</first>
+				<first>OsprayViewer:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>Visualization</category_name_>
-						<module_name_>ViewOsprayScene</module_name_>
+						<category_name_>Render</category_name_>
+						<module_name_>OsprayViewer</module_name_>
 					</module>
 					<state>
 						<stateMap>
@@ -3454,9 +3454,9 @@
 					<name>SceneGraph</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewOsprayScene:0</moduleId2_>
+				<moduleId2_>OsprayViewer:0</moduleId2_>
 				<port2_>
-					<name>OspraySceneGraph</name>
+					<name>GeneralGeom</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -3641,7 +3641,7 @@
 			</second>
 		</item>
 		<item>
-			<first>ViewOsprayScene:0</first>
+			<first>OsprayViewer:0</first>
 			<second>
 				<first>-3.20000000000000000e+002</first>
 				<second>2.65000000000000000e+002</second>
@@ -3719,7 +3719,7 @@
 			<second>-1</second>
 		</item>
 		<item>
-			<first>ViewOsprayScene:0</first>
+			<first>OsprayViewer:0</first>
 			<second>-1</second>
 		</item>
 		<item>
@@ -3746,4 +3746,3 @@
 	</subnetworks>
 </networkFile>
 </boost_serialization>
-

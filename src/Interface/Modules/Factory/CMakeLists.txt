@@ -98,6 +98,12 @@ IF(BUILD_WITH_PYTHON)
   )
 ENDIF()
 
+IF(WITH_OSPRAY)
+  TARGET_LINK_LIBRARIES(Interface_Modules_Factory
+    Interface_Modules_Render_Ospray
+  )
+ENDIF()
+
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Factory)
 ENDIF()
