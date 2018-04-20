@@ -38,7 +38,7 @@ namespace SCIRun {
 
       class SCISHARE ExtractSimpleIsosurface : public Dataflow::Networks::Module,
         public Has2InputPorts<FieldPortTag, MatrixPortTag>,
-        public Has1OutputPort<FieldPortTag>
+        public Has2OutputPorts<FieldPortTag, MatrixPortTag>
       {
         CONVERTED_VERSION_OF_MODULE(ExtractIsosurface)
       public:
@@ -50,6 +50,7 @@ namespace SCIRun {
         INPUT_PORT(0, InputField, Field);
         INPUT_PORT(1, Isovalue, Matrix);
         OUTPUT_PORT(0, OutputField, Field);
+        OUTPUT_PORT(1, OutputMatrix, Matrix);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       };
