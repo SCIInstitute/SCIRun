@@ -33,7 +33,6 @@
 #include <qwt_legend.h>
 #include <qwt_legend_label.h>
 #include <qwt_point_data.h>
-#include <qwt_plot_canvas.h>
 #include <qwt_plot_panner.h>
 #include <qwt_plot_magnifier.h>
 #include <qwt_text.h>
@@ -61,7 +60,12 @@ PlotDialog::PlotDialog(QWidget* parent)
   layout->addWidget(zoomBox);
 
   plot_ = new Plot(parent);
-  layout->addWidget( plot_ );
+  connect(plot_, SIGNAL(hasMessage(const QString&)), this, SLOT(message(const QString&)));
+  layout->addWidget(plot_);
+
+  statusBar_ = new QStatusBar(this);
+  statusBar_->setMaximumHeight(20);
+  layout->addWidget(statusBar_);
 
   connect(zoomBox, SIGNAL(activated(const QString&)), plot_, SLOT(adjustZoom(const QString&)));
 
@@ -87,11 +91,41 @@ void PlotDialog::updatePlot(const QString& title, const QString& xAxis, const QS
   plot_->replot();
 }
 
+void PlotDialog::message(const QString& s)
+{
+  statusBar_->showMessage(s, 2000);
+}
+
+void SpecialMapPlotCanvas::mousePressEvent(QMouseEvent* event)
+{
+  QWidget::mousePressEvent(event);
+  double x = plot()->invTransform(plot()->xBottom, event->pos().x());
+  double y = plot()->invTransform(plot()->yLeft, event->pos().y());
+  if (!pointCurveMap_.empty())
+  {
+    QPointF toFind(x, y);
+    auto compare = [&toFind](const std::pair<QPointF, int>& p1, const std::pair<QPointF, int>& p2)
+    { return (p1.first - toFind).manhattanLength() < (p2.first - toFind).manhattanLength(); };
+    auto minPointIter = std::min_element(pointCurveMap_.cbegin(), pointCurveMap_.cend(), compare);
+    auto message = tr("Closest point: (%1,%2) from curve %3")
+      .arg(minPointIter->first.x()).arg(minPointIter->first.y()).arg(minPointIter->second);
+    Q_EMIT curveSelected(minPointIter->second, message);
+  }
+}
+
+void SpecialMapPlotCanvas::mouseReleaseEvent(QMouseEvent* event)
+{
+  QWidget::mousePressEvent(event);
+  Q_EMIT curveSelected(-1, "");
+}
+
+
 Plot::Plot(QWidget *parent) : QwtPlot( parent )
 {
   setAutoFillBackground( true );
 
-  auto canvas = new QwtPlotCanvas(this);
+  auto canvas = new SpecialMapPlotCanvas(pointCurveMap_, this);
+  connect(canvas, SIGNAL(curveSelected(int, const QString&)), this, SLOT(highlightCurve(int, const QString&)));
   canvas->setLineWidth( 1 );
   canvas->setFrameStyle( QFrame::Box | QFrame::Plain );
   canvas->setBorderRadius( 15 );
@@ -115,6 +149,22 @@ void Plot::adjustZoom(const QString& type)
   magnifier_->setAxisEnabled(QwtPlot::yLeft, zoomVertical);
 }
 
+void Plot::highlightCurve(int index, const QString& message)
+{
+  if (index < curves_.size())
+  {
+    justSelected_ = index;
+    previousPen_ = curves_[index]->pen();
+    curves_[index]->setPen(Qt::black, 2);
+  }
+  else if (index == -1 && justSelected_ < curves_.size())
+  {
+    curves_[justSelected_]->setPen(previousPen_);
+  }
+  replot();
+  Q_EMIT hasMessage(message);
+}
+
 void Plot::addLegend()
 {
 	auto legend = new QwtLegend();
@@ -126,10 +176,15 @@ void Plot::addLegend()
 	for ( int i = 0; i < items.size(); i++ )
 	{
 		const QVariant itemInfo = itemToInfo( items[i] );
-		auto legendLabel = qobject_cast<QwtLegendLabel*>(legend->legendWidget(itemInfo));
+		auto legendLabel = dynamic_cast<QwtLegendLabel*>(legend->legendWidget(itemInfo));
 		if (legendLabel)
 			legendLabel->setChecked( true );
 	}
+}
+
+void Plot::removeLegend()
+{
+  insertLegend(nullptr);
 }
 
 void Plot::showItem(const QVariant& itemInfo, bool on)
@@ -199,6 +254,10 @@ void Plot::addCurveImpl(const QPolygonF& points, const QString& title, const QCo
   curve->attach(this);
   curve->setSamples( points );
   updateCurveStyle(curve);
+  for (const auto& point : points)
+  {
+    pointCurveMap_[point] = curves_.size() - 1;
+  }
 }
 
 void Plot::clearCurves()
@@ -209,6 +268,7 @@ void Plot::clearCurves()
 		delete curve;
 	}
 	curves_.clear();
+  pointCurveMap_.clear();
 }
 
 void Plot::exportPlot()

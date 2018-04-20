@@ -62,6 +62,7 @@ BasicPlotterDialog::BasicPlotterDialog(const std::string& name, ModuleStateHandl
 	addLineEditManager(xAxisLineEdit_, Parameters::XAxisLabel);
 	addLineEditManager(yAxisLineEdit_, Parameters::YAxisLabel);
 	addCheckBoxManager(showPointsCheckBox_, Parameters::ShowPointSymbols);
+	addCheckBoxManager(transposeDataCheckBox_, Parameters::TransposeData);
 	addComboBoxManager(curveStyleComboBox_, Parameters::CurveStyle);
 	connect(curveStyleComboBox_, SIGNAL(activated(const QString&)), this, SLOT(setCurveStyle(const QString&)));
 

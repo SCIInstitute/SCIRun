@@ -37,6 +37,7 @@ SET(Modules_Visualization_Tests_SRCS
 )
 
 IF(WITH_OSPRAY)
+  INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
   SET(Modules_Visualization_Tests_SRCS ${Modules_Visualization_Tests_SRCS}
     OsprayFieldRenderTests.cc
   )

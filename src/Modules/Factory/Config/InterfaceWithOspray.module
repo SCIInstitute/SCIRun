@@ -7,9 +7,9 @@
     "header": "Modules/Visualization/InterfaceWithOspray.h"
   },
   "algorithm": {
-    "name": "N/A",
-    "namespace": "N/A",
-    "header": "N/A"
+    "name": "OsprayDataAlgorithm",
+    "namespace": "Visualization",
+    "header": "Core/Algorithms/Visualization/OsprayDataAlgorithm.h"
   },
   "UI": {
     "name": "InterfaceWithOsprayDialog",

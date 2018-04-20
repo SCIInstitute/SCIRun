@@ -44,6 +44,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(PlotColors);
         ALGORITHM_PARAMETER_DECL(PlotBackgroundColor);
         ALGORITHM_PARAMETER_DECL(CurveStyle);
+        ALGORITHM_PARAMETER_DECL(TransposeData);
       }}}
 
   namespace Modules {

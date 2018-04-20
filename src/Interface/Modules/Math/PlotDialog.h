@@ -31,6 +31,7 @@
 
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <qwt_plot.h>
+#include <qwt_plot_canvas.h>
 #include <Interface/Modules/Math/share.h>
 
 class QwtPlotMarker;
@@ -45,6 +46,7 @@ namespace SCIRun
 
     class PlotDialog : public QDialog
     {
+      Q_OBJECT
     public:
       explicit PlotDialog(QWidget* parent = nullptr);
       void updatePlot(const QString& title, const QString& xAxis, const QString& yAxis,
@@ -52,8 +54,39 @@ namespace SCIRun
         const boost::optional<double>& vertAxisOpt);
       ~PlotDialog();
       Plot* plot() { return plot_; }
+    public Q_SLOTS:
+      void message(const QString& s);
     private:
       Plot* plot_{nullptr};
+      QStatusBar* statusBar_{nullptr};
+    };
+
+    struct PointLess
+    {
+      bool operator()(const QPointF& p1, const QPointF& p2) const
+      {
+        if (p1.x() == p2.x())
+          return p1.y() < p2.y();
+        return p1.x() < p2.x();
+      }
+    };
+
+    using PlotPointMap = std::map<QPointF, int, PointLess>;
+
+    class SpecialMapPlotCanvas : public QwtPlotCanvas
+    {
+      Q_OBJECT
+    public:
+      explicit SpecialMapPlotCanvas(const PlotPointMap& pointCurveMap, QwtPlot* plot = nullptr)
+        : QwtPlotCanvas(plot), pointCurveMap_(pointCurveMap)
+      {}
+    Q_SIGNALS:
+      void curveSelected(int index, const QString& message);
+    protected:
+      void mousePressEvent(QMouseEvent* event) override;
+      void mouseReleaseEvent(QMouseEvent* event) override;
+    private:
+      const PlotPointMap& pointCurveMap_;
     };
 
     class Plot : public QwtPlot
@@ -72,10 +105,14 @@ namespace SCIRun
       }
       void clearCurves();
       void addLegend();
+      void removeLegend();
       void exportPlot();
       void setCurveStyle(const QString& style);
     public Q_SLOTS:
       void adjustZoom(const QString& type);
+      void highlightCurve(int index, const QString& message);
+    Q_SIGNALS:
+      void hasMessage(const QString& message);
     private Q_SLOTS:
       void showItem(const QVariant&, bool on);
     private:
@@ -106,6 +143,10 @@ namespace SCIRun
       QwtPlotMarker* horizontalAxis_ {nullptr};
       QwtPlotMagnifier* magnifier_ {nullptr};
       std::vector<QwtPlotCurve*> curves_;
+
+      PlotPointMap pointCurveMap_;
+      int justSelected_{-1};
+      QPen previousPen_;
       QString curveStyle_;
     };
   }

@@ -414,6 +414,16 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="transposeDataCheckBox_">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>Transpose data</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QPushButton" name="showPlotPushButton_">
      <property name="maximumSize">
       <size>

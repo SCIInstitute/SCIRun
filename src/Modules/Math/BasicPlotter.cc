@@ -47,6 +47,7 @@ ALGORITHM_PARAMETER_DEF(Math, ShowPointSymbols);
 ALGORITHM_PARAMETER_DEF(Math, PlotColors);
 ALGORITHM_PARAMETER_DEF(Math, PlotBackgroundColor);
 ALGORITHM_PARAMETER_DEF(Math, CurveStyle);
+ALGORITHM_PARAMETER_DEF(Math, TransposeData);
 
 BasicPlotter::BasicPlotter() : Module(staticInfo_)
 {
@@ -67,6 +68,7 @@ void BasicPlotter::setStateDefaults()
   state->setValue(Parameters::ShowPointSymbols, true);
   state->setValue(Parameters::PlotBackgroundColor, std::string());
   state->setValue(Parameters::CurveStyle, std::string("Lines"));
+  state->setValue(Parameters::TransposeData, false);
 
   auto colors = makeAnonymousVariableList(
     ColorRGB(0x27213c).toString(),
