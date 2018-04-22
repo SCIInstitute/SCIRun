@@ -55,6 +55,7 @@ void AdvancedPlotterDialog::plotData()
   auto plot = plotDialog_->plot();
   auto showPoints = showPointsCheckBox_->isChecked();
   plot->clearCurves();
+	plot->removeLegend();
   bool addLegend = true;
   for (auto&& tup : zip(independents, dependents))
   {
