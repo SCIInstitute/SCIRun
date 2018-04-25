@@ -51,7 +51,7 @@ void ShowFieldWithOspray::setStateDefaults()
   setStateDoubleFromAlgo(Parameters::DefaultColorB);
   setStateDoubleFromAlgo(Parameters::DefaultColorA);
   setStateDoubleFromAlgo(Parameters::Radius);
-  setStateDoubleFromAlgo(Parameters::UseNormals);
+  setStateBoolFromAlgo(Parameters::UseNormals);
 }
 
 ShowFieldWithOspray::ShowFieldWithOspray() : Module(staticInfo_)
@@ -72,8 +72,8 @@ void ShowFieldWithOspray::execute()
     setAlgoDoubleFromState(Parameters::DefaultColorG);
     setAlgoDoubleFromState(Parameters::DefaultColorB);
     setAlgoDoubleFromState(Parameters::DefaultColorA);
-    setStateDoubleFromAlgo(Parameters::Radius);
-    setAlgoDoubleFromState(Parameters::UseNormals);
+    setAlgoDoubleFromState(Parameters::Radius);
+    setAlgoBoolFromState(Parameters::UseNormals);
 
     auto output = algo().run(withInputData((Field, field)(ColorMapObject, optionalAlgoInput(colorMap))));
     sendOutputFromAlgorithm(SceneGraph, output);

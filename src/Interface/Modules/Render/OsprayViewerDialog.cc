@@ -34,6 +34,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Color.h>
 #include <Modules/Render/OsprayViewer.h>
 #include <Core/Logging/Log.h>
+#include <boost/algorithm/string/predicate.hpp>
 
 #ifdef WITH_OSPRAY
 #include <Interface/Modules/Render/Ospray/VolumeViewer.h>
@@ -107,10 +108,14 @@ namespace
     const auto& color = fieldData.color;
     const auto& index = fieldData.index;
     const auto& radius = obj->radius;
+    const auto& geom_type = obj->GeomType;
 
+    SCIRun::LOG_DEBUG("geom_type");
+    
     // create and setup model and mesh
-//    if (obj->isSurface)
-//    {
+    if (boost::iequals(geom_type, "Surface"))
+    {
+      SCIRun::LOG_DEBUG("adding surface");
       OSPGeometry mesh = ospNewGeometry("triangles");
       OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
       ospCommit(data);
@@ -128,38 +133,40 @@ namespace
         ospSetData(mesh, "vertex.normal", data);
       }
       return mesh;
-//    }
-//    if (obj->isSphere)
-//    {
-//      OSPGeometry mesh = ospNewGeometry("spheres");
-//      OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
-//      ospCommit(data);
-//      ospSetData(mesh, "vertex", data);
-//      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
-//      ospCommit(data);
-//      ospSetData(mesh, "vertex.color", data);
-//      ospSet1f(mesh, "radius", radius);
-//      return mesh;
-//    }
-//    if (obj->isStreamline)
-//    {
-//      OSPGeometry mesh = ospNewGeometry("streamlines");
-//      OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
-//      ospCommit(data);
-//      ospSetData(mesh, "vertex", data);
-//      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
-//      ospCommit(data);
-//      ospSetData(mesh, "vertex.color", data);
-//      data = ospNewData(index.size(), OSP_INT, &index[0]);
-//      ospCommit(data);
-//      ospSetData(mesh, "index", data);
-//      ospSet1f(mesh, "radius", radius);
-//      return mesh;
-//    }
-//    else
-//    {
-//      SCIRun::LOG_DEBUG("something went wrong.  File type not supported");
-//    }
+    }
+    else if (boost::iequals(geom_type, "Spheres"))
+    {
+      SCIRun::LOG_DEBUG("adding spheres");
+      OSPGeometry mesh = ospNewGeometry("spheres");
+      OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
+      ospCommit(data);
+      ospSetData(mesh, "vertex", data);
+      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
+      ospCommit(data);
+      ospSetData(mesh, "vertex.color", data);
+      ospSet1f(mesh, "radius", radius);
+      return mesh;
+    }
+    else if (boost::iequals(geom_type, "Streamlines"))
+    {
+      SCIRun::LOG_DEBUG("adding streamlines");
+      OSPGeometry mesh = ospNewGeometry("streamlines");
+      OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
+      ospCommit(data);
+      ospSetData(mesh, "vertex", data);
+      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
+      ospCommit(data);
+      ospSetData(mesh, "vertex.color", data);
+      data = ospNewData(index.size(), OSP_INT, &index[0]);
+      ospCommit(data);
+      ospSetData(mesh, "index", data);
+      ospSet1f(mesh, "radius", radius);
+      return mesh;
+    }
+    else
+    {
+      SCIRun::LOG_DEBUG("something went wrong.  File type not supported");
+    }
   }
 
   ospcommon::box3f toOsprayBox(const BBox& box)

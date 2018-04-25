@@ -49,23 +49,11 @@ ShowFieldWithOsprayDialog::ShowFieldWithOsprayDialog(const std::string& name, Mo
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addDoubleSpinBoxManager(defaultColorRDoubleSpinB0ox_, DefaultColorR);
+  addDoubleSpinBoxManager(defaultColorRDoubleSpinBox_, DefaultColorR);
   addDoubleSpinBoxManager(defaultColorGDoubleSpinBox_, DefaultColorG);
   addDoubleSpinBoxManager(defaultColorBDoubleSpinBox_, DefaultColorB);
   addDoubleSpinBoxManager(defaultColorADoubleSpinBox_, DefaultColorA);
   addDoubleSpinBoxManager(RadiusSpinBox_, Radius);
   addCheckBoxManager(UseNormalCheckBox_, UseNormals);
-}
-
-void ShowFieldWithOsprayDialog::assignDefaultMeshColor()
-{
-//  auto newColor = QColorDialog::getColor(defaultMeshColor_, this, "Choose default mesh color");
-//  if (newColor.isValid())
-//  {
-//    defaultMeshColor_ = newColor;
-//    //TODO: set color of button to this color
-//    //defaultMeshColorButton_->set
-//    colorToState(ShowWithOsprayField::DefaultMeshColor, defaultMeshColor_);
-//  }
 }
 
