@@ -50,6 +50,9 @@ void InterfaceWithOspray::setStateDefaults()
   setStateDoubleFromAlgo(Parameters::DefaultColorG);
   setStateDoubleFromAlgo(Parameters::DefaultColorB);
   setStateDoubleFromAlgo(Parameters::DefaultColorA);
+  setStateDoubleFromAlgo(Parameters::Radius);
+  setStateDoubleFromAlgo(Parameters::UseNormals);
+  
 }
 
 InterfaceWithOspray::InterfaceWithOspray() : Module(staticInfo_)
@@ -72,6 +75,8 @@ void InterfaceWithOspray::execute()
     setAlgoDoubleFromState(Parameters::DefaultColorG);
     setAlgoDoubleFromState(Parameters::DefaultColorB);
     setAlgoDoubleFromState(Parameters::DefaultColorA);
+    setStateDoubleFromAlgo(Parameters::Radius);
+    setAlgoDoubleFromState(Parameters::UseNormals);
 
     if (!fields.empty())
     {

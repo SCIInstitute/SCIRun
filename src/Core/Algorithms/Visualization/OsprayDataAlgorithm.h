@@ -31,6 +31,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/Geometry.h>
+#include <boost/graph/adjacency_list.hpp>
 #include <Core/Algorithms/Visualization/share.h>
 
 namespace SCIRun
@@ -62,35 +63,18 @@ namespace SCIRun
           OsprayDataAlgorithm();
           virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
         private:
-          Core::Datatypes::OsprayGeometryObjectHandle addStreamline(FieldHandle field) const;
-          Core::Datatypes::OsprayGeometryObjectHandle addSphere(FieldHandle field) const;
-          Core::Datatypes::OsprayGeometryObjectHandle addSurface(FieldHandle field) const;
-          void connected_component_edges(EdgeVector all_edges, std::vector<EdgeVector>& subsets, std::vector<int>& size_regions) const;
+          Core::Datatypes::OsprayGeometryObjectHandle addStreamline(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
+          Core::Datatypes::OsprayGeometryObjectHandle addSphere(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
+          Core::Datatypes::OsprayGeometryObjectHandle addSurface(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
+          void connected_component_edges(EdgeVector all_edges, std::vector<EdgeVector>& subsets, std::vector<int>& size_regions)const;
           void ReorderNodes(std::vector<int32_t> index, std::vector<int32_t> cc_index, std::vector<float> vertex, std::vector<float> color, std::vector<int32_t>& index_new, std::vector<float>& vertex_new,std::vector<float>& color_new) const;
           std::list<Vertex_u> sort_cc(EdgeVector sub_edges) const;
-          bool FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std::list<Vertex_u>& v_path,bool front) const;
+          bool FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std::list<Vertex_u>& v_path, bool front) const;
           std::vector<int32_t> sort_points(EdgeVector edges, std::vector<int32_t>& cc_index) const;
           Core::Datatypes::OsprayGeometryObjectHandle fillDataBuffers(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
           Core::Datatypes::OsprayGeometryObjectHandle makeObject(FieldHandle field) const;
           
-          struct detect_loops : public boost::dfs_visitor<>
-          {
-            detect_loops(std::vector<Vertex_u>& _source_vertex) : source_vertex(_source_vertex) { }
-            
-            bool LoopDetected() const {return !source_vertex.empty();}
-            
-            template <class Edge, class Graph>
-            void back_edge(Edge e, const Graph& g)
-            {
-              
-              source_vertex.push_back( source(e, g) );
-              //        std::cout << source(e, g)<< " -- " << target(e, g) << "\n";
-              //        std::cout<<"source_vertex = " << source_vertex<<std::endl;
-              //        std::cout<<"source_vertex empty?" << source_vertex.empty()<<std::endl;
-              
-            }
-            std::vector<Vertex_u>& source_vertex;
-          };
+          
         };
       }
     }

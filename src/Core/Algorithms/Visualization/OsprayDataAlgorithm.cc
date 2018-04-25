@@ -38,6 +38,15 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/utility.hpp>
+#include <boost/graph/topological_sort.hpp>
+#include <boost/graph/undirected_dfs.hpp>
+#include <boost/cstdlib.hpp>
+#include <boost/graph/copy.hpp>
+#include <boost/graph/connected_components.hpp>
+#include <boost/lambda/lambda.hpp>
+
 using namespace SCIRun;
 using namespace Core::Algorithms;
 using namespace Core::Geometry;
@@ -58,54 +67,70 @@ OsprayDataAlgorithm::OsprayDataAlgorithm()
   addParameter(Parameters::DefaultColorB, 0.5);
   addParameter(Parameters::DefaultColorA, 1.0);
   addParameter(Parameters::Radius, 0.1);
-  addParameter(Parameters::UseNormals, false);
+  addParameter(Parameters::UseNormals, true);
 }
 
-OsprayGeometryObjectHandle OsprayDataAlgorithm::addStreamline(FieldHandle field) const
+struct detect_loops : public boost::dfs_visitor<>
 {
-  auto obj = fillDataBuffers(field, nullptr);
+  detect_loops(std::vector<Vertex_u>& _source_vertex) : source_vertex(_source_vertex) { }
+  
+  bool LoopDetected() const {return !source_vertex.empty();}
+  
+  template <class Edge, class Graph>
+  void back_edge(Edge e, const Graph& g)
+  {
+    
+    source_vertex.push_back( source(e, g) );
+    //        std::cout << source(e, g)<< " -- " << target(e, g) << "\n";
+    //        std::cout<<"source_vertex = " << source_vertex<<std::endl;
+    //        std::cout<<"source_vertex empty?" << source_vertex.empty()<<std::endl;
+    
+  }
+  std::vector<Vertex_u>& source_vertex;
+};
+
+
+OsprayGeometryObjectHandle OsprayDataAlgorithm::addStreamline(FieldHandle field, ColorMapHandle colorMap) const
+{
+  auto obj = fillDataBuffers(field, colorMap);
 
   obj->isStreamline = true;
   auto& fieldData = obj->data;
-  const auto& vertex = fieldData.vertex;
-  const auto& color = fieldData.color;
-  obj->radius = get(Parameters::Radius).toDouble();
+  std::vector<float> vertex_orig, color_orig;
+  auto& vertex = fieldData.vertex;
+  auto& color = fieldData.color;
+  auto& index = fieldData.index;
+  std::cout<<"streamline radius = "<<static_cast<float> (get(Parameters::Radius).toDouble())<<std::endl;
+  obj->radius = static_cast<float>(get(Parameters::Radius).toDouble());
   
   EdgeVector all_edges;
   std::list<Vertex> order, order_test;
   
 
-  auto& index = fieldData.index;
+  std::vector<int32_t> index_orig;
   {
     auto facade(field->mesh()->getFacade());
     for (const auto& edge : facade->edges())
     {
       auto nodesFromEdge = edge.nodeIndices();
-      index.push_back(nodesFromEdge[0]);
+      index_orig.push_back(nodesFromEdge[0]);
       auto nodePoints = edge.nodePoints();
       all_edges.push_back(std::make_pair(nodesFromEdge[0],nodesFromEdge[1]));
     }
   }
   
   std::vector<int32_t> cc_index;
-  std::vector<int32_t> index = sort_points(all_edges,cc_index);
-  //      std::cout<<"cc_index = "<<cc_index<<std::endl;
+  std::vector<int32_t> index_sort = sort_points(all_edges,cc_index);
+//  std::cout<<"cc_index = "<<cc_index<<std::endl;
   
-  std::vector<float> vertex_new, color_new;
-  std::vector<int32_t> index_new;
-  
-  ReorderNodes(index, cc_index, vertex, color, index_new, vertex_new, color_new);
-  
-  vertex = vertex_new;
-  index = index_new;
-  color = color_new;
-  
+  ReorderNodes(index_sort, cc_index, vertex, color, index, vertex, color);
   return obj;
 }
 
-void ReorderNodes(std::vector<int32_t> index, std::vector<int32_t> cc_index, std::vector<float> vertex, std::vector<float> color, std::vector<int32_t>& index_new, std::vector<float>& vertex_new,std::vector<float>& color_new)
+void OsprayDataAlgorithm::ReorderNodes(std::vector<int32_t> index, std::vector<int32_t> cc_index, std::vector<float> vertex, std::vector<float> color, std::vector<int32_t>& index_new, std::vector<float>& vertex_new,std::vector<float>& color_new) const
 {
-  //      std::cout<<"Reordering nodes"<<std::endl;
+//  std::cout<<"Reordering nodes"<<std::endl;
+//  std::cout<<"vertex = "<<vertex<<std::endl;
   
   int cc_cnt = 0;
   for (size_t k=0;k<index.size();k++)
@@ -116,13 +141,13 @@ void ReorderNodes(std::vector<int32_t> index, std::vector<int32_t> cc_index, std
     }
     else
     {
-      //          std::cout<<"end point"<<std::endl;
+//      std::cout<<"end point"<<std::endl;
       cc_cnt++;
     }
     
-    //        std::cout<<k<<std::endl;
-    //        std::cout<<"vertex = [ "<<vertex[k*4]<<" , "<<vertex[k*4+1]<<" , "<<vertex[k*4+2]<<" ]"<<std::endl;
-    //        std::cout<<"color = [ "<<color[k*4]<<" , "<<color[k*4+1]<<" , "<<color[k*4+2]<<" , "<<color[k*4+3]<<" ]"<<std::endl;
+//    std::cout<<k<<std::endl;
+//    std::cout<<"vertex = [ "<<vertex[k*4]<<" , "<<vertex[k*4+1]<<" , "<<vertex[k*4+2]<<" ]"<<std::endl;
+//    std::cout<<"color = [ "<<color[k*4]<<" , "<<color[k*4+1]<<" , "<<color[k*4+2]<<" , "<<color[k*4+3]<<" ]"<<std::endl;
     
     vertex_new.push_back(vertex[index[k]*4]);
     vertex_new.push_back(vertex[index[k]*4+1]);
@@ -135,12 +160,12 @@ void ReorderNodes(std::vector<int32_t> index, std::vector<int32_t> cc_index, std
   }
 }
 
-void connected_component_edges(EdgeVector all_edges, std::vector<EdgeVector>& subsets, std::vector<int>& size_regions)
+void OsprayDataAlgorithm::connected_component_edges(EdgeVector all_edges, std::vector<EdgeVector>& subsets, std::vector<int>& size_regions) const
 {
   UndirectedGraph graph = UndirectedGraph(all_edges.begin(), all_edges.end(), all_edges.size());
   std::vector<int> component(boost::num_vertices(graph));
   boost::connected_components(graph, &component[0]);
-  //      std::cout<<"conn comp ="<<component<<std::endl;
+//  std::cout<<"conn comp ="<<component<<std::endl;
   
   int max_comp=0;
   for (size_t i = 0; i < component.size(); ++i) if (component[i]>max_comp) max_comp = component[i];
@@ -148,9 +173,9 @@ void connected_component_edges(EdgeVector all_edges, std::vector<EdgeVector>& su
   size_regions.resize(max_comp+1,0);
   for (size_t i = 0; i < component.size(); ++i) size_regions[component[i]]++;
   
-  //      std::cout<<"num of cc = "<<max_comp+1<<std::endl;
-  //      std::cout<<"size of ccs = "<<size_regions<<std::endl;
-  
+//  std::cout<<"num of cc = "<<max_comp+1<<std::endl;
+//  std::cout<<"size of ccs = "<<size_regions<<std::endl;
+//
   subsets.clear();
   subsets.resize(max_comp+1);
   boost::graph_traits<UndirectedGraph>::edge_iterator ei, ei_end;
@@ -161,13 +186,13 @@ void connected_component_edges(EdgeVector all_edges, std::vector<EdgeVector>& su
     subsets[component[source(*ei, graph)]].push_back(std::make_pair(source(*ei, graph),target(*ei, graph)));
     
   }
-  //      std::cout<<"Subsets created.  Size = "<<subsets.size()<<std::endl;
-  //      std::cout << std::endl;
+//  std::cout<<"Subsets created.  Size = "<<subsets.size()<<std::endl;
+//  std::cout << std::endl;
   
   
 }
 
-std::list<Vertex_u> sort_cc(EdgeVector sub_edges)
+std::list<Vertex_u> OsprayDataAlgorithm::sort_cc(EdgeVector sub_edges) const
 {
   UndirectedGraph graph = UndirectedGraph(sub_edges.begin(), sub_edges.end(), sub_edges.size());
   //      std::cout << "back edges:\n";
@@ -199,12 +224,11 @@ std::list<Vertex_u> sort_cc(EdgeVector sub_edges)
     v_path.push_back(v_path.front());
   }
   
-  
   return v_path;
   
 }
 
-bool FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std::list<Vertex_u>& v_path,bool front)
+bool OsprayDataAlgorithm::FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std::list<Vertex_u>& v_path, bool front) const
 {
   bool no_branch = true;
   typename boost::graph_traits<UndirectedGraph>::out_edge_iterator ei, ei_end;
@@ -237,7 +261,7 @@ bool FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std::list<Vertex_u>& v_p
       if (front) v_path.push_front(v2b);
       else v_path.push_back(v2b);
       
-      FindPath(graph, v2b, v_path,front);
+      FindPath( graph, v2b, v_path,front);
       front = false;
     }
   }
@@ -246,7 +270,7 @@ bool FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std::list<Vertex_u>& v_p
 }
 
 
-std::vector<int32_t> sort_points(EdgeVector edges, std::vector<int32_t>& cc_index)
+std::vector<int32_t> OsprayDataAlgorithm::sort_points(EdgeVector edges, std::vector<int32_t>& cc_index) const
 {
   std::vector<EdgeVector> subsets;
   std::vector<int> size_regions;
@@ -302,17 +326,18 @@ std::vector<int32_t> sort_points(EdgeVector edges, std::vector<int32_t>& cc_inde
   
 }
 
-OsprayGeometryObjectHandle OsprayDataAlgorithm::addSurface(FieldHandle field) const
+OsprayGeometryObjectHandle OsprayDataAlgorithm::addSurface(FieldHandle field, ColorMapHandle colorMap) const
 {
-  auto obj = fillDataBuffers(field, nullptr);
+  auto obj = fillDataBuffers(field, colorMap);
   return obj;
 }
 
-OsprayGeometryObjectHandle OsprayDataAlgorithm::addSpheres(FieldHandle field) const
+OsprayGeometryObjectHandle OsprayDataAlgorithm::addSphere(FieldHandle field, ColorMapHandle colorMap) const
 {
-  auto obj = fillDataBuffers(field, nullptr);
+  auto obj = fillDataBuffers(field, colorMap);
   obj->isSphere = true;
-  obj->radius = get(Parameters::Radius).toDouble();
+std::cout<<"sphere radius = "<<static_cast<float> (get(Parameters::Radius).toDouble())<<std::endl;
+  obj->radius = static_cast<float>(get(Parameters::Radius).toDouble());
   
   return obj;
 }
@@ -326,6 +351,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle fiel
   auto& fieldData = obj->data;
   auto& vertex = fieldData.vertex;
   auto& color = fieldData.color;
+  auto& vertex_normal = fieldData.vertex_normal;
 
   auto vfield = field->vfield();
 
@@ -366,6 +392,29 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle fiel
       index.push_back(static_cast<int32_t>(nodes[2]));
     }
   }
+  
+  FieldInformation info(field);
+  std::cout<<"useNormals = "<<get(Parameters::UseNormals).toBool()<<std::endl;
+  std::cout<<"is trisurf ="<<info.is_trisurfmesh()<<std::endl;
+  
+  if (get(Parameters::UseNormals).toBool() && info.is_trisurfmesh())
+  {
+    std::cout<<"using normals"<<std::endl;
+    {
+      Vector norm;
+      
+      for (const auto& node : facade->nodes())
+      {
+        field->vmesh()->get_normal(norm,node.index());
+        
+        vertex_normal.push_back(static_cast<float>(norm.x()));
+        vertex_normal.push_back(static_cast<float>(norm.y()));
+        vertex_normal.push_back(static_cast<float>(norm.z()));
+        vertex_normal.push_back(0);
+      }
+    }
+  }
+  
   return obj;
 }
 
@@ -408,21 +457,21 @@ AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
     }
     else
     {
-      THROW_ALGORITHM_INPUT_ERROR("Ospray rendering currently only works with trisurfs.");
+      THROW_ALGORITHM_INPUT_ERROR("field type not supported.");
     }
 
     
   }
 
-  for (auto& streamline : streamlines)
-  {
-    FieldInformation info(streamline);
-
-    if (!info.is_curvemesh())
-      THROW_ALGORITHM_INPUT_ERROR("Ospray rendering currently only works with curvemesh streamlines.");
-
-    renderables.push_back(addStreamline(streamline));
-  }
+//  for (auto& streamline : streamlines)
+//  {
+//    FieldInformation info(streamline);
+//
+//    if (!info.is_curvemesh())
+//      THROW_ALGORITHM_INPUT_ERROR("Ospray rendering currently only works with curvemesh streamlines.");
+//
+//    renderables.push_back(addStreamline(streamline, colorMap));
+//  }
 
   auto geom = boost::make_shared<CompositeOsprayGeometryObject>(renderables);
   AlgorithmOutput output;
