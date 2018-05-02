@@ -194,7 +194,7 @@ std::list<Vertex_u> OsprayDataAlgorithm::sort_cc(EdgeVector sub_edges) const
   std::vector<boost::default_color_type> vertex_color( boost::num_vertices(graph) );
   auto idmap = boost::get( boost::vertex_index, graph );
   auto vcmap = make_iterator_property_map( vertex_color.begin(), idmap );
-  std::map<typename UndirectedGraph::edge_descriptor, boost::default_color_type> edge_color;
+  std::map<UndirectedGraph::edge_descriptor, boost::default_color_type> edge_color;
   auto ecmap = boost::make_assoc_property_map( edge_color );
   boost::undirected_dfs(graph,vis,vcmap,ecmap);
   
@@ -217,7 +217,7 @@ std::list<Vertex_u> OsprayDataAlgorithm::sort_cc(EdgeVector sub_edges) const
 bool OsprayDataAlgorithm::FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std::list<Vertex_u>& v_path, bool front) const
 {
   bool no_branch = true;
-  typename boost::graph_traits<UndirectedGraph>::out_edge_iterator ei, ei_end;
+  boost::graph_traits<UndirectedGraph>::out_edge_iterator ei, ei_end;
   size_t edge_idx = 0;
   int cnt = 0;
   int neigh_cnt=0;
