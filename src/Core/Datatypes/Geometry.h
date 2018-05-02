@@ -100,7 +100,7 @@ namespace Datatypes
     bool isSphere{ false };
     bool isEdge{ false };
     bool isVolume{ false };
-    std::string GeomType {""};
+    std::string GeomType;
   };
 
   using OsprayGeometryObjectHandle = SharedPointer<OsprayGeometryObject>;
