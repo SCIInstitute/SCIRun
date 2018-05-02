@@ -111,21 +111,48 @@ IF(TRAVIS_BUILD)
 ENDIF()
 
 ###########################################
+# Travis CI build needs to be as slim as possible
+OPTION(QT5_BUILD "Qt 5 compatible build" OFF)
+MARK_AS_ADVANCED(QT5_BUILD)
+
+###########################################
 # Configure Qt
 IF(NOT BUILD_HEADLESS)
-  SET(QT_MIN_VERSION "4.8.1")
-  INCLUDE(FindQt4)
-  FIND_PACKAGE(Qt4 COMPONENTS QtMain QtCore QtGui QtNetwork REQUIRED)
-  SET(QT_USE_QTOPENGL TRUE)
+  IF (NOT QT5_BUILD)
+    SET(QT_MIN_VERSION "4.8.1")
+    INCLUDE(FindQt4)
+    FIND_PACKAGE(Qt4 COMPONENTS QtMain QtCore QtGui QtNetwork REQUIRED)
+    SET(QT_USE_QTOPENGL TRUE)
 
-  IF(QT4_FOUND)
-    MESSAGE(STATUS "QTVERSION=${QTVERSION}")
-    MESSAGE(STATUS "Found use file: ${QT_USE_FILE}")
-    IF(APPLE AND ${QTVERSION} VERSION_EQUAL 4.8 AND ${QTVERSION} VERSION_LESS 4.8.5)
-      MESSAGE(WARNING "Qt 4.8 versions earlier than 4.8.3 contain a bug that disables menu items under some circumstances. Upgrade to a more recent version.")
+    IF(QT4_FOUND)
+      MESSAGE(STATUS "QTVERSION=${QTVERSION}")
+      MESSAGE(STATUS "Found use file: ${QT_USE_FILE}")
+      IF(APPLE AND ${QTVERSION} VERSION_EQUAL 4.8 AND ${QTVERSION} VERSION_LESS 4.8.5)
+        MESSAGE(WARNING "Qt 4.8 versions earlier than 4.8.3 contain a bug that disables menu items under some circumstances. Upgrade to a more recent version.")
+      ENDIF()
+    ELSE()
+      MESSAGE(FATAL_ERROR "QT ${QT_MIN_VERSION} or later is required for building the SCIRun GUI")
     ENDIF()
   ELSE()
-    MESSAGE(FATAL_ERROR "QT ${QT_MIN_VERSION} or later is required for building the SCIRun GUI")
+    SET(QT_MIN_VERSION "5.9")
+
+    SET(Qt5_PATH "" CACHE PATH "Path to directory where Qt 5 is installed. Directory should contain lib and bin subdirectories.")
+
+    IF(IS_DIRECTORY ${Qt5_PATH})
+      FIND_PACKAGE(Qt5Core REQUIRED HINTS ${Qt5_PATH})
+      FIND_PACKAGE(Qt5Gui REQUIRED HINTS ${Qt5_PATH})
+  	  FIND_PACKAGE(Qt5Widgets REQUIRED HINTS ${Qt5_PATH})
+  	  FIND_PACKAGE(Qt5Network REQUIRED HINTS ${Qt5_PATH})
+      FIND_PACKAGE(Qt5OpenGL REQUIRED HINTS ${Qt5_PATH})
+  	  FIND_PACKAGE(Qt5Concurrent REQUIRED HINTS ${Qt5_PATH})
+    ELSE()
+      MESSAGE(SEND_ERROR "Set Qt5_PATH to directory where Qt 5 is installed (containing lib and bin subdirectories) or set BUILD_HEADLESS to ON.")
+    ENDIF()
+
+    IF(APPLE)
+      SET(MACDEPLOYQT_OUTPUT_LEVEL 0 CACHE STRING "Set macdeployqt output level (0-3)")
+      MARK_AS_ADVANCED(MACDEPLOYQT_OUTPUT_LEVEL)
+    ENDIF()
   ENDIF()
 ELSE()
   ADD_DEFINITIONS(-DBUILD_HEADLESS)
@@ -223,6 +250,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DSCIRUN_TEST_RESOURCE_DIR:PATH=${SCIRUN_TEST_RESOURCE_DIR}"
     "-DBUILD_WITH_PYTHON:BOOL=${BUILD_WITH_PYTHON}"
     "-DWITH_TETGEN:BOOL=${WITH_TETGEN}"
+    "-DQT5_BUILD:BOOL=${QT5_BUILD}"
     "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=${REGENERATE_MODULE_FACTORY_CODE}"
     "-DGENERATE_MODULE_FACTORY_CODE:BOOL=${GENERATE_MODULE_FACTORY_CODE}"
     "-DZlib_DIR:PATH=${Zlib_DIR}"
@@ -261,12 +289,25 @@ IF(WIN32)
 ENDIF()
 
 IF(NOT BUILD_HEADLESS)
-  LIST(APPEND SCIRUN_CACHE_ARGS
-    "-DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}"
-    "-DQT_USE_QTOPENGL:BOOL=${QT_USE_QTOPENGL}"
-    "-DQT_MIN_VERSION:STRING=${QT_MIN_VERSION}"
-    "-DQWT_DIR:PATH=${QWT_DIR}"
-  )
+  IF(QT5_BUILD)
+    LIST(APPEND SCIRUN_CACHE_ARGS
+      "-DQt5_PATH:PATH=${Qt5_PATH}"
+      "-DQt5Core_DIR:PATH=${Qt5Core_DIR}"
+      "-DQt5Gui_DIR:PATH=${Qt5Gui_DIR}"
+      "-DQt5OpenGL_DIR:PATH=${Qt5OpenGL_DIR}"
+  	  "-DQt5Network_DIR:PATH=${Qt5Network_DIR}"
+   	  "-DQt5Widgets_DIR:PATH=${Qt5Widgets_DIR}"
+  	  "-DQt5Concurrent_DIR:PATH=${Qt5Concurrent_DIR}"
+      "-DMACDEPLOYQT_OUTPUT_LEVEL:STRING=${MACDEPLOYQT_OUTPUT_LEVEL}"
+    )
+  ELSE()
+    LIST(APPEND SCIRUN_CACHE_ARGS
+      "-DQT_QMAKE_EXECUTABLE:FILEPATH=${QT_QMAKE_EXECUTABLE}"
+      "-DQT_USE_QTOPENGL:BOOL=${QT_USE_QTOPENGL}"
+      "-DQT_MIN_VERSION:STRING=${QT_MIN_VERSION}"
+      "-DQWT_DIR:PATH=${QWT_DIR}"
+    )
+  ENDIF()
 ENDIF()
 
 ExternalProject_Add( SCIRun_external
