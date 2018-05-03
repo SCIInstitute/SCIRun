@@ -40,6 +40,7 @@ ExternalProject_Add(Qwt_external
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
     -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DQt5_PATH:PATH=${Qt5_PATH}
+    -DQt5Core_DIR:PATH=${Qt5Core_DIR}
 )
 
 ExternalProject_Get_Property(Qwt_external BINARY_DIR)
