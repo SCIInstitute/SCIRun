@@ -27,11 +27,6 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-##################################################
-# Set sources
-##################################################
-
-
 SET(Interface_Application_SOURCES
   ClosestPortFinder.cc
   DeveloperConsole.cc
@@ -130,9 +125,9 @@ SET(Interface_Application_RESOURCES
 scirun5.qrc
 )
 
-QT4_WRAP_UI(Interface_Application_FORMS_HEADERS ${Interface_Application_FORMS})
-QT4_WRAP_CPP(Interface_Application_HEADERS_MOC ${Interface_Application_HEADERS})
-QT4_ADD_RESOURCES(Interface_Application_RESOURCES_RCC ${Interface_Application_RESOURCES})
+QT_WRAP_UI(Interface_Application_FORMS_HEADERS "${Interface_Application_FORMS}")
+QT_WRAP_CPP(Interface_Application_HEADERS_MOC "${Interface_Application_HEADERS}")
+QT_ADD_RESOURCES(Interface_Application_RESOURCES_RCC "${Interface_Application_RESOURCES}")
 
 SCIRUN_ADD_LIBRARY(Interface_Application
   ${Interface_Application_SOURCES}

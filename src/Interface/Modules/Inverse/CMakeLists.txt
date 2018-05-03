@@ -28,7 +28,7 @@
 #
 
 SET(Interface_Modules_Inverse_FORMS
-SolveInverseProblemWithTikhonovSVDDialog.ui
+  SolveInverseProblemWithTikhonovSVDDialog.ui
   SolveInverseProblemWithTikhonov.ui
   SolveInverseProblemWithTSVDDialog.ui
 )
@@ -46,8 +46,8 @@ SET(Interface_Modules_Inverse_SOURCES
   SolveInverseProblemWithTSVDDialog.cc
 )
 
-QT4_WRAP_UI(Interface_Modules_Inverse_FORMS_HEADERS ${Interface_Modules_Inverse_FORMS})
-QT4_WRAP_CPP(Interface_Modules_Inverse_HEADERS_MOC ${Interface_Modules_Inverse_HEADERS})
+QT_WRAP_UI(Interface_Modules_Inverse_FORMS_HEADERS "${Interface_Modules_Inverse_FORMS}")
+QT_WRAP_CPP(Interface_Modules_Inverse_HEADERS_MOC "${Interface_Modules_Inverse_HEADERS}")
 
 SCIRUN_ADD_LIBRARY(Interface_Modules_Inverse
   ${Interface_Modules_Inverse_HEADERS}
