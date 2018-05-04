@@ -34,6 +34,7 @@
 #include <QPointer>
 #include <QTextCursor>
 #include <QTextEdit>
+#include <QMimeData>
 #include <QScrollBar>
 #include <QVBoxLayout>
 
@@ -162,7 +163,7 @@ void PythonConsoleEdit::keyPressEvent(QKeyEvent* e)
   {
     if (!history_area)
     {
-      const QMimeData* const clipboard = QApplication::clipboard()->mimeData();
+      auto clipboard = QApplication::clipboard()->mimeData();
       const QString text = clipboard->text();
       if (!text.isNull())
       {

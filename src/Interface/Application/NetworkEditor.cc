@@ -28,6 +28,9 @@
 
 #include <sstream>
 #include <Interface/qt_include.h>
+#ifdef QT5_BUILD
+#include <QtConcurrent>
+#endif
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/Node.h>
 #include <Interface/Application/Connection.h>
@@ -979,6 +982,14 @@ private:
   TagColorFunc tagColor_;
 };
 
+void scaleTextItem(QGraphicsTextItem* item, double textScale)
+{
+  #ifdef QT5_BUILD
+  item->setTransform(QTransform::fromScale(textScale, textScale));
+  #else
+  item->scale(textScale, textScale);
+  #endif
+}
 void NetworkEditor::searchTextChanged(const QString& text)
 {
   if (text.isEmpty())
@@ -993,12 +1004,13 @@ void NetworkEditor::searchTextChanged(const QString& text)
     NetworkSearchEngine engine(scene(), tagColor_);
     auto results = engine.search(text);
     auto textScale = 1.0 / currentScale_;
+
     if (!results.empty())
     {
       auto title = new SearchResultItem("Search results:", Qt::green, {});
       title->setPos(positionOfFloatingText(title->num(), true, 20, textScale * 22));
       scene()->addItem(title);
-      title->scale(textScale, textScale);
+      scaleTextItem(title, textScale);
     }
     for (const auto& result : results)
     {
@@ -1006,7 +1018,7 @@ void NetworkEditor::searchTextChanged(const QString& text)
         std::get<ItemColor>(result), std::get<ItemAction>(result));
       searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 50, textScale * 22));
       scene()->addItem(searchItem);
-      searchItem->scale(textScale, textScale);
+      scaleTextItem(searchItem, textScale);
     }
   }
 }
