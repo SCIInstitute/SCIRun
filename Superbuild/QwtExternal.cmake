@@ -25,7 +25,11 @@
 #  DEALINGS IN THE SOFTWARE.
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
-SET(qwt_GIT_TAG "origin/qt5-static")
+IF(QT5_BUILD)
+  SET(qwt_GIT_TAG "origin/qt5-static")
+ELSE()
+  SET(qwt_GIT_TAG "origin/static-build")
+ENDIF()
 
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
