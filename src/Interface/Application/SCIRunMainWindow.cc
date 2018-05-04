@@ -27,7 +27,7 @@
 */
 
 #include <es-log/trace-log.h>
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <functional>
 #include <boost/bind.hpp>
 #include <boost/assign.hpp>
@@ -185,7 +185,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   actionQuit_->setShortcut(QKeySequence::Quit);
 
 #ifdef __APPLE__
-  actionToggleFullScreenMode_->setShortcut(QApplication::translate("SCIRunMainWindow", "Meta+Ctrl+F", 0, QApplication::UnicodeUTF8));
+  actionToggleFullScreenMode_->setShortcut(QApplication::translate("SCIRunMainWindow", "Meta+Ctrl+F", 0));
 #else
   actionToggleFullScreenMode_->setShortcut(Qt::Key_F11);
 #endif

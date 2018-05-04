@@ -27,7 +27,7 @@
 */
 
 #include <sstream>
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/Node.h>
 #include <Interface/Application/Connection.h>
