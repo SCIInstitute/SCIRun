@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,37 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_SCREENSHOT_H
-#define INTERFACE_MODULES_SCREENSHOT_H
-
-#include <Interface/qt_include.h>
-#ifndef Q_MOC_RUN
-#include <Modules/Render/ViewScene.h>
+#ifdef QT5_BUILD
+#include <QtWidgets>
+#else
+#include <QtGui>
 #endif
-
-class QGLWidget;
-
-namespace SCIRun
-{
-  namespace Gui
-  {
-    class Screenshot : public QObject
-    {
-      Q_OBJECT
-    public:
-      explicit Screenshot(QGLWidget *glwidget, QObject *parent = nullptr);
-      void takeScreenshot();
-      void saveScreenshot();
-      QString screenshotFile() const;
-
-
-      Modules::Render::RGBMatrices toMatrix() const;
-    private:
-      QGLWidget* viewport_;
-      QImage screenshot_;
-      uint index_;
-    };
-  }
-}
-
-#endif // SPIRE_GLWIDGET_H

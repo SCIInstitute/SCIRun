@@ -29,7 +29,7 @@
 #ifndef INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 #define INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 
-#include <QtGui>
+#include <Interface/qt_include.h>
 #ifndef Q_MOC_RUN
 #include <Interface/Modules/Base/WidgetSlotManagers.h>
 #include <Dataflow/Network/ModuleStateInterface.h>

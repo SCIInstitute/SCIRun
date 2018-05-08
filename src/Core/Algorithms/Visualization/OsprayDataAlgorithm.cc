@@ -194,7 +194,7 @@ std::list<Vertex_u> OsprayDataAlgorithm::sort_cc(EdgeVector sub_edges) const
   std::vector<boost::default_color_type> vertex_color( boost::num_vertices(graph) );
   auto idmap = boost::get( boost::vertex_index, graph );
   auto vcmap = make_iterator_property_map( vertex_color.begin(), idmap );
-  std::map<typename UndirectedGraph::edge_descriptor, boost::default_color_type> edge_color;
+  std::map<UndirectedGraph::edge_descriptor, boost::default_color_type> edge_color;
   auto ecmap = boost::make_assoc_property_map( edge_color );
   boost::undirected_dfs(graph,vis,vcmap,ecmap);
   
@@ -217,7 +217,7 @@ std::list<Vertex_u> OsprayDataAlgorithm::sort_cc(EdgeVector sub_edges) const
 bool OsprayDataAlgorithm::FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std::list<Vertex_u>& v_path, bool front) const
 {
   bool no_branch = true;
-  typename boost::graph_traits<UndirectedGraph>::out_edge_iterator ei, ei_end;
+  boost::graph_traits<UndirectedGraph>::out_edge_iterator ei, ei_end;
   size_t edge_idx = 0;
   int cnt = 0;
   int neigh_cnt=0;
@@ -311,9 +311,9 @@ std::vector<int32_t> OsprayDataAlgorithm::sort_points(EdgeVector edges, std::vec
 OsprayGeometryObjectHandle OsprayDataAlgorithm::addSurface(FieldHandle field, ColorMapHandle colorMap) const
 {
   auto obj = fillDataBuffers(field, colorMap);
-  return obj;
   obj->isSurface = true;
   obj->GeomType="Surface";
+  return obj;
 }
 
 OsprayGeometryObjectHandle OsprayDataAlgorithm::addSphere(FieldHandle field, ColorMapHandle colorMap) const
@@ -355,7 +355,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle fiel
       vertex.push_back(static_cast<float>(point.x()));
       vertex.push_back(static_cast<float>(point.y()));
       vertex.push_back(static_cast<float>(point.z()));
-      vertex.push_back(0);
+      vertex.push_back(1);
 
       vfield->get_value(value, node.index());
       if (colorMap)
@@ -383,6 +383,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle fiel
   FieldInformation info(field);
   std::cout<<"useNormals = "<<get(Parameters::UseNormals).toBool()<<std::endl;
   std::cout<<"is trisurf ="<<info.is_trisurfmesh()<<std::endl;
+  std::cout<<"is pointcloud ="<<info.is_pointcloudmesh()<<std::endl;
   
   if (get(Parameters::UseNormals).toBool() && info.is_trisurfmesh())
   {
