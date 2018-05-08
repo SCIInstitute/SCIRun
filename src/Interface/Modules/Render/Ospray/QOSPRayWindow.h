@@ -22,7 +22,7 @@
 // ospcommon
 #include <components/ospcommon/AffineSpace.h>
 // qt
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <QGLWidget>
 
 struct Viewport

@@ -20,7 +20,7 @@
 #include <ospray/ospray.h>
 
 #include "SliceWidget.h"
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <vector>
 #include <string>
 

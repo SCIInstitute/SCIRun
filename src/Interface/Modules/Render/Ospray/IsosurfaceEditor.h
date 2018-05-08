@@ -19,7 +19,7 @@
 #define NOMINMAX
 #include <ospray/ospray.h>
 #include <components/ospcommon/vec.h>
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <vector>
 
 class IsovalueWidget;
