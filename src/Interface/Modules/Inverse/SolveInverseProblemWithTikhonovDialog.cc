@@ -148,9 +148,9 @@ void LCurvePlotWidgetHelper::updatePlot(ModuleStateHandle state, QWidget* plotTa
     plot_ = new QwtPlot(plotTab);
     plot_->setCanvasBackground( Qt::white );
     plot_->setAxisScale( QwtPlot::xBottom, minX * 0.9, maxX * 1.1 );
-    plot_->setAxisTitle( QwtPlot::xBottom, QString::fromStdWString(L"log \u2016Ax - y\u2016"));
+    plot_->setAxisTitle(QwtPlot::xBottom, QString::fromUtf16(L"log \u2016Ax - y\u2016"));
     plot_->setAxisScale( QwtPlot::yLeft, minY * 0.9, maxY * 1.1 );
-    plot_->setAxisTitle( QwtPlot::yLeft, QString::fromStdWString(L"log \u2016Rx\u2016"));
+    plot_->setAxisTitle(QwtPlot::yLeft, QString::fromUtf16(L"log \u2016Rx\u2016"));
     plot_->insertLegend( new QwtLegend() );
 
     auto grid = new QwtPlotGrid();
