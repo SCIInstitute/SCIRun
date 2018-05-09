@@ -45,7 +45,7 @@ SET(SRCS ${SRCS}
   QOSPRayWindow.cpp
   SliceEditor.cpp
   SliceWidget.cpp
-  TransferFunctionEditor.cpp
+  #TransferFunctionEditor.cpp
   VolumeViewer.cpp
   util.h
   util.cpp
@@ -69,12 +69,12 @@ SET(MOC_HEADERS
   QOSPRayWindow.h
   SliceEditor.h
   SliceWidget.h
-  TransferFunctionEditor.h
+  #TransferFunctionEditor.h
   VolumeViewer.h
   share.h
 )
 
-QT_WRAP_CPP(MOC_OUTFILES ${MOC_HEADERS})
+QT_WRAP_CPP(MOC_OUTFILES "${MOC_HEADERS}")
 
 SCIRUN_ADD_LIBRARY(Interface_Modules_Render_Ospray
   ${SRCS}
