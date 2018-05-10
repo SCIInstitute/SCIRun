@@ -18,7 +18,7 @@
 
 #define NOMINMAX
 #include <ospray/ospray.h>
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <stdexcept>
 
 class LinearTransferFunctionWidget : public QWidget

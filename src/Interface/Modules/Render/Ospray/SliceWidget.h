@@ -19,7 +19,7 @@
 #define NOMINMAX
 #include <ospray/ospray.h>
 #include <components/ospcommon/box.h>
-#include <QtGui>
+#include <Interface/qt_include.h>
 
 struct SliceParameters
 {

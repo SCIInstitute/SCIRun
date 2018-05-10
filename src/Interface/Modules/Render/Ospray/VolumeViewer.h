@@ -21,11 +21,11 @@
 #include <Interface/Modules/Render/Ospray/QOSPRayWindow.h>
 #include <Interface/Modules/Render/Ospray/SliceWidget.h>
 #include <Interface/Modules/Render/Ospray/LightEditor.h>
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <string>
 #include <vector>
 
-class TransferFunctionEditor;
+//class TransferFunctionEditor;
 class IsosurfaceEditor;
 class ProbeWidget;
 class OpenGLAnnotationRenderer;
@@ -133,7 +133,7 @@ public:
   QOSPRayWindow *getWindow();
 
   //! Get the transfer function editor.
-  TransferFunctionEditor *getTransferFunctionEditor();
+//  TransferFunctionEditor *getTransferFunctionEditor();
 
   //! Select the model (time step) to be displayed.
   void setModel(size_t index);
@@ -278,7 +278,7 @@ protected:
   OpenGLAnnotationRenderer *annotationRenderer;
 
   //! The transfer function editor.
-  TransferFunctionEditor *transferFunctionEditor;
+  //TransferFunctionEditor *transferFunctionEditor;
 
   //! The slice editor.
   SliceEditor *sliceEditor;
