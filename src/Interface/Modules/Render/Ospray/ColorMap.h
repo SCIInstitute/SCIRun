@@ -25,7 +25,7 @@
 // std
 #include <string>
 #include <vector>
-#include <QtGui>
+#include <Interface/qt_include.h>
 
 class ColorMap
 {

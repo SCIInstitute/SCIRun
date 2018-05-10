@@ -65,7 +65,7 @@
 **
 ****************************************************************************/
 
-#include <QtGui>
+#include <Interface/qt_include.h>
 
 #include <Interface/Application/ModuleWizard/ModuleWizard.h>
 

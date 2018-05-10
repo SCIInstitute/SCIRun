@@ -26,7 +26,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <numeric>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Application/Preferences/Preferences.h>
