@@ -311,9 +311,9 @@ std::vector<int32_t> OsprayDataAlgorithm::sort_points(EdgeVector edges, std::vec
 OsprayGeometryObjectHandle OsprayDataAlgorithm::addSurface(FieldHandle field, ColorMapHandle colorMap) const
 {
   auto obj = fillDataBuffers(field, colorMap);
-  return obj;
   obj->isSurface = true;
   obj->GeomType="Surface";
+  return obj;
 }
 
 OsprayGeometryObjectHandle OsprayDataAlgorithm::addSphere(FieldHandle field, ColorMapHandle colorMap) const
@@ -355,7 +355,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle fiel
       vertex.push_back(static_cast<float>(point.x()));
       vertex.push_back(static_cast<float>(point.y()));
       vertex.push_back(static_cast<float>(point.z()));
-      vertex.push_back(0);
+      vertex.push_back(1);
 
       vfield->get_value(value, node.index());
       if (colorMap)
@@ -383,6 +383,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle fiel
   FieldInformation info(field);
   std::cout<<"useNormals = "<<get(Parameters::UseNormals).toBool()<<std::endl;
   std::cout<<"is trisurf ="<<info.is_trisurfmesh()<<std::endl;
+  std::cout<<"is pointcloud ="<<info.is_pointcloudmesh()<<std::endl;
   
   if (get(Parameters::UseNormals).toBool() && info.is_trisurfmesh())
   {
