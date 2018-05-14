@@ -474,6 +474,11 @@ void SCIRunMainWindow::setupTagManagerWindow()
 void SCIRunMainWindow::setupVersionButton()
 {
   auto qVersion = QString::fromStdString(VersionInfo::GIT_VERSION_TAG);
+  #ifdef QT5_BUILD
+  qVersion += "+Qt5";
+  #else
+  qVersion += "+Qt4";
+  #endif
   versionButton_ = new QPushButton("Version: " + qVersion);
   versionButton_->setFlat(true);
   versionButton_->setToolTip("Click to copy version tag to clipboard");
