@@ -180,6 +180,11 @@ void GLWidget::updateRenderer()
 {
   mCurrentTime += updateTime;
 
+#ifdef QT5_BUILD
+  if (!isExposed())
+    return;
+#endif
+
   try
   {
     mGraphics->doFrame(mCurrentTime, updateTime);
