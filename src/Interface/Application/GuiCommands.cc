@@ -240,6 +240,11 @@ bool NetworkFileProcessCommand::execute()
   catch (ExceptionBase& e)
   {
     GuiLogger::logErrorStd("File load failed (" + filename + "): exception in load_xml, " + e.what());
+    if (std::string(e.what()).find("InterfaceWithTetGen"))
+    {
+      QMessageBox::warning(SCIRunMainWindow::Instance(), "TetGen module not found",
+        "TetGen module not found, please rebuild with TetGen enabled or find a TetGen-enabled build.");
+    }
   }
   catch (std::exception& ex)
   {
