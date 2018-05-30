@@ -73,7 +73,7 @@ IF(WIN32)
   SET(FORCE_64BIT_BUILD ON)
 ENDIF()
 
-SET(boost_GIT_TAG "origin/v1.65.1")
+SET(boost_GIT_TAG "origin/v1.67.0")
 SET(boost_GIT_URL "https://github.com/CIBC-Internal/boost.git")
 
 # TODO: fix install step
