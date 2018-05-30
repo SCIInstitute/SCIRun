@@ -57,11 +57,12 @@ int mainImpl(int argc, const char* argv[], char **environment)
   Application::Instance().readCommandLine(argc, argv);
 
 #ifdef BUILD_WITH_PYTHON
-  SCIRun::Core::PythonInterpreter::Instance().initialize(true, Application::Instance().parameters()->entireCommandLine(), Application::Instance().executablePath());
+  SCIRun::Core::PythonInterpreter::Instance().initialize(true,
+    Application::Instance().parameters()->entireCommandLine(),
+    Application::Instance().executablePath());
 #endif
 
   //TODO: must read --headless flag here, or try pushing command queue building all the way up here
-
 #ifndef BUILD_HEADLESS
   return GuiApplication::run(argc, argv);
 #else

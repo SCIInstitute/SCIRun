@@ -1,10 +1,12 @@
 #ifndef SPIRE_RENDER_COMPONENT_FBO_HPP
 #define SPIRE_RENDER_COMPONENT_FBO_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 #include <gl-platform/GLPlatform.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
 #include <es-render/comp/Texture.hpp>
+#include <spire/scishare.h>
 
 namespace ren {
 
@@ -42,4 +44,4 @@ namespace ren {
 
 } // namespace ren
 
-#endif 
+#endif

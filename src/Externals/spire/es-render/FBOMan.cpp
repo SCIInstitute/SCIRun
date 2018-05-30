@@ -379,8 +379,8 @@ namespace ren {
 
     std::set<GLuint> mValidKeys;
 
-    void preWalkComponents(spire::ESCoreBase&) { mValidKeys.clear(); }
-    void postWalkComponents(spire::ESCoreBase& core)
+    void preWalkComponents(spire::ESCoreBase&) override { mValidKeys.clear(); }
+    void postWalkComponents(spire::ESCoreBase& core) override 
     {
       std::weak_ptr<FBOMan> im = core.getStaticComponent<StaticFBOMan>()->instance_;
       if (std::shared_ptr<FBOMan> man = im.lock()) {
@@ -417,4 +417,3 @@ namespace ren {
   }
 
 } // namespace ren
-

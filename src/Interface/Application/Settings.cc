@@ -56,16 +56,6 @@ namespace
     return strs;
   }
 
-  QStringList valueListAsString(const QList<QVariant>& qvs)
-  {
-    QStringList qsl;
-    for (const auto& qv : qvs)
-    {
-      qsl.append(qv.toString());
-    }
-    return qsl;
-  }
-
   QMap<QString, QString> toStrMap(const QMap<QString, QVariant>& m)
   {
     QMap<QString, QString> ss;
@@ -118,11 +108,17 @@ void SCIRunMainWindow::readSettings()
   //TODO: set up signal/slot for each prefs variable to make it easy to track changes from arbitrary widgets
 
   latestNetworkDirectory_ = settings.value("networkDirectory").toString();
-  GuiLogger::Instance().logInfo("Setting read: default network directory = " + latestNetworkDirectory_.path());
-
+  guiLogDebug("Setting read: default network directory = {}", latestNetworkDirectory_.path().toStdString());
   recentFiles_ = settings.value("recentFiles").toStringList();
   updateRecentFileActions();
-  GuiLogger::Instance().logInfo("Setting read: recent network file list");
+  guiLogDebug("Setting read: recent network file list: \n\t{}",
+    QStringList(
+      QList<QString>::fromStdList(
+        std::list<QString>(
+          recentFiles_.begin(),
+          recentFiles_.begin() + std::min(recentFiles_.size(), 5))))
+    .join("\n\t")
+    .toStdString());
 
   //TODO: make a separate class for these keys, bad duplication.
   const QString colorKey = qname(prefs.networkBackgroundColor);
@@ -131,7 +127,7 @@ void SCIRunMainWindow::readSettings()
     auto value = settings.value(colorKey).toString();
     prefs.networkBackgroundColor.setValue(value.toStdString());
     networkEditor_->setBackground(QColor(value));
-    GuiLogger::Instance().logInfo("Setting read: background color = " + networkEditor_->background().color().name());
+    guiLogDebug("Setting read: background color = {}", networkEditor_->background().color().name().toStdString());
   }
 
   const QString notePositionKey = "defaultNotePositionIndex";
@@ -139,7 +135,7 @@ void SCIRunMainWindow::readSettings()
   {
     int notePositionIndex = settings.value(notePositionKey).toInt();
     prefsWindow_->defaultNotePositionComboBox_->setCurrentIndex(notePositionIndex);
-    GuiLogger::Instance().logInfo("Setting read: default note position = " + QString::number(notePositionIndex));
+    guiLogDebug("Setting read: default note position = {}", notePositionIndex);
   }
 
   const QString pipeTypeKey = "connectionPipeType";
@@ -147,7 +143,7 @@ void SCIRunMainWindow::readSettings()
   {
     int pipeType = settings.value(pipeTypeKey).toInt();
     setConnectionPipelineType(pipeType);
-    GuiLogger::Instance().logInfo("Setting read: connection pipe style = " + QString::number(pipeType));
+    guiLogDebug("Setting read: connection pipe style = {}", pipeType);
   }
 
   const auto snapTo = qname(prefs.modulesSnapToGrid);
@@ -156,7 +152,7 @@ void SCIRunMainWindow::readSettings()
     auto value = settings.value(snapTo).toBool();
     prefs.modulesSnapToGrid.setValue(value);
     prefsWindow_->modulesSnapToCheckBox_->setChecked(value);
-    GuiLogger::Instance().logInfo("Setting read: modules snap to grid = " + QString::number(prefs.modulesSnapToGrid));
+    guiLogDebug("Setting read: modules snap to grid = {}", prefs.modulesSnapToGrid);
   }
 
   const QString portHighlight = qname(prefs.highlightPorts);
@@ -165,7 +161,7 @@ void SCIRunMainWindow::readSettings()
     auto value = settings.value(portHighlight).toBool();
     prefs.highlightPorts.setValue(value);
     prefsWindow_->portSizeEffectsCheckBox_->setChecked(value);
-    GuiLogger::Instance().logInfo("Setting read: highlight ports on hover = " + QString::number(prefs.highlightPorts));
+    guiLogDebug("Setting read: highlight ports on hover = {}", prefs.highlightPorts);
   }
 
   const QString dockable = qname(prefs.modulesAreDockable);
@@ -174,7 +170,7 @@ void SCIRunMainWindow::readSettings()
     auto value = settings.value(dockable).toBool();
     prefs.modulesAreDockable.setValueWithSignal(value);
     prefsWindow_->dockableModulesCheckBox_->setChecked(value);
-    GuiLogger::Instance().logInfo("Setting read: modules are dockable = " + QString::number(prefs.modulesAreDockable));
+    guiLogDebug("Setting read: modules are dockable = {}", prefs.modulesAreDockable);
   }
 
   const QString autoNotes = qname(prefs.autoNotes);
@@ -183,14 +179,14 @@ void SCIRunMainWindow::readSettings()
     auto value = settings.value(autoNotes).toBool();
     prefs.autoNotes.setValue(value);
     prefsWindow_->autoModuleNoteCheckbox_->setChecked(value);
-    GuiLogger::Instance().logInfo("Setting read: automatic module notes = " + QString::number(prefs.autoNotes));
+    guiLogDebug("Setting read: automatic module notes = {}", prefs.autoNotes);
   }
 
   const QString disableModuleErrorDialogsKey = "disableModuleErrorDialogs";
   if (settings.contains(disableModuleErrorDialogsKey))
   {
     bool disableModuleErrorDialogs = settings.value(disableModuleErrorDialogsKey).toBool();
-    GuiLogger::Instance().logInfo("Setting read: disable module error dialogs = " + QString::number(disableModuleErrorDialogs));
+    guiLogDebug("Setting read: disable module error dialogs = {}", disableModuleErrorDialogs);
     prefsWindow_->setDisableModuleErrorDialogs(disableModuleErrorDialogs);
   }
 
@@ -198,7 +194,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(showModuleErrorInlineMessagesKey))
   {
     bool val = settings.value(showModuleErrorInlineMessagesKey).toBool();
-    GuiLogger::Instance().logInfo("Setting read: show module inline error = " + QString::number(val));
+    guiLogDebug("Setting read: show module inline error = {}", val);
     prefsWindow_->setModuleErrorInlineMessages(val);
   }
 
@@ -207,7 +203,7 @@ void SCIRunMainWindow::readSettings()
     if (settings.contains(highDPIAdjustment))
     {
       bool val = settings.value(highDPIAdjustment).toBool();
-      GuiLogger::Instance().logInfo("Setting read: high DPI adjustment = " + QString::number(val));
+      guiLogDebug("Setting read: high DPI adjustment = {}", val);
       prefsWindow_->setHighDPIAdjustment(val);
       if (val)
         networkEditor_->setHighResolutionExpandFactor();
@@ -218,7 +214,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(saveBeforeExecute))
   {
     bool mode = settings.value(saveBeforeExecute).toBool();
-    GuiLogger::Instance().logInfo("Setting read: save before execute = " + QString::number(mode));
+    guiLogDebug("Setting read: save before execute = {}", mode);
     prefsWindow_->setSaveBeforeExecute(mode);
   }
 
@@ -226,7 +222,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(newViewSceneMouseControls))
   {
     bool mode = settings.value(newViewSceneMouseControls).toBool();
-    GuiLogger::Instance().logInfo("Setting read: newViewSceneMouseControls = " + QString::number(mode));
+    guiLogDebug("Setting read: newViewSceneMouseControls = {}", mode);
     Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(mode);
   }
 
@@ -234,7 +230,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(invertMouseZoom))
   {
     bool mode = settings.value(invertMouseZoom).toBool();
-    GuiLogger::Instance().logInfo("Setting read: invertMouseZoom = " + QString::number(mode));
+    guiLogDebug("Setting read: invertMouseZoom = {}", mode);
     Core::Preferences::Instance().invertMouseZoom.setValue(mode);
   }
 
@@ -242,7 +238,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(favoriteModules))
   {
     auto faves = settings.value(favoriteModules).toStringList();
-    GuiLogger::Instance().logInfo("Setting read: favoriteModules = " + faves.join(", "));
+    guiLogDebug("Setting read: favoriteModules = {}", faves.join(", ").toStdString());
     favoriteModuleNames_ = faves;
   }
 
@@ -250,7 +246,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(dataDirectory))
   {
     auto dataDir = settings.value(dataDirectory).toString();
-    GuiLogger::Instance().logInfo("Setting read: dataDirectory = " + dataDir);
+    guiLogDebug("Setting read: dataDirectory = {}", dataDir.toStdString());
     setDataDirectory(dataDir);
   }
 
@@ -258,7 +254,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(dataPath))
   {
     auto path = settings.value(dataPath).toStringList().join(";");
-    GuiLogger::Instance().logInfo("Setting read: dataPath = " + path);
+    guiLogDebug("Setting read: dataPath = {}", path.toStdString());
     setDataPath(path);
   }
 
@@ -266,7 +262,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(tagNamesKey))
   {
     auto tagNames = settings.value(tagNamesKey).toStringList();
-    GuiLogger::Instance().logInfo("Setting read: tagNames = " + tagNames.join(";"));
+    guiLogDebug("Setting read: tagNames = {}", tagNames.join(";").toStdString());
     tagManagerWindow_->setTagNames(tagNames.toVector());
   }
 
@@ -274,7 +270,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(tagColorsKey))
   {
     auto tagColors = settings.value(tagColorsKey).toStringList();
-    GuiLogger::Instance().logInfo("Setting read: tagColors = " + tagColors.join(";"));
+    guiLogDebug("Setting read: tagColors = {}", tagColors.join(";").toStdString());
     tagManagerWindow_->setTagColors(tagColors.toVector());
   }
   else
@@ -284,7 +280,8 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(triggeredScripts))
   {
     auto scriptsMap = settings.value(triggeredScripts).toMap();
-    GuiLogger::Instance().logInfo("Setting read: triggeredScripts = " + QStringList(scriptsMap.keys()).join(";") + " -> " + valueListAsString(scriptsMap.values()).join(";"));
+    // guiLogDebug("Setting read: triggeredScripts = {}",
+    //  + QStringList(scriptsMap.keys()).join(";") + " -> " + valueListAsString(scriptsMap.values()).join(";"));
     triggeredEventsWindow_->setScripts(toStrMap(scriptsMap));
   }
 
@@ -292,7 +289,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(triggeredScriptEnableFlags))
   {
     auto scriptsMap = settings.value(triggeredScriptEnableFlags).toMap();
-    GuiLogger::Instance().logInfo("Setting read: triggeredScriptEnableFlags = " + QString::number(scriptsMap.size()));
+    guiLogDebug("Setting read: triggeredScriptEnableFlags = {} [size]", scriptsMap.size());
     triggeredEventsWindow_->setScriptEnabledFlags(toBoolMap(scriptsMap));
   }
 
@@ -300,7 +297,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(savedSubnetworksNames))
   {
     auto subnetMap = settings.value(savedSubnetworksNames).toMap();
-    GuiLogger::Instance().logInfo("Setting read: savedSubnetworksNames = " + QString::number(subnetMap.size()));
+    guiLogDebug("Setting read: savedSubnetworksNames = {} [size]", subnetMap.size());
     savedSubnetworksNames_ = subnetMap;
   }
 
@@ -308,7 +305,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(savedSubnetworksXml))
   {
     auto subnetMap = settings.value(savedSubnetworksXml).toMap();
-    GuiLogger::Instance().logInfo("Setting read: savedSubnetworksXml = " + QString::number(subnetMap.size()));
+    guiLogDebug("Setting read: savedSubnetworksXml = {} [size]", subnetMap.size());
     savedSubnetworksXml_ = subnetMap;
   }
 
@@ -316,7 +313,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(toolkitFiles))
   {
     auto toolkits = settings.value(toolkitFiles).toStringList();
-    GuiLogger::Instance().logInfo("Setting read: toolkitFiles = " + QString::number(toolkits.size()));
+    guiLogDebug("Setting read: toolkitFiles = {} [size]", toolkits.size());
     toolkitFiles_ = toolkits;
   }
 
@@ -324,8 +321,16 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(undoMaxItems))
   {
     auto max = settings.value(undoMaxItems).toInt();
-    GuiLogger::Instance().logInfo("Setting read: undoMaxItems = " + QString::number(max));
+    guiLogDebug("Setting read: undoMaxItems = {}", max);
     provenanceWindow_->setMaxItems(max);
+  }
+
+  const QString maxCores = "maxCores";
+  if (settings.contains(maxCores))
+  {
+    auto max = settings.value(maxCores).toInt();
+    guiLogDebug("Setting read: maxCores = {}", max);
+    prefsWindow_->maxCoresSpinBox_->setValue(max);
   }
 
   restoreGeometry(settings.value("geometry").toByteArray());
@@ -365,6 +370,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("savedSubnetworksXml", savedSubnetworksXml_);
   settings.setValue("toolkitFiles", toolkitFiles_);
   settings.setValue("undoMaxItems", provenanceWindow_->maxItems());
+  settings.setValue("maxCores", prefsWindow_->maxCoresSpinBox_->value());
 
   settings.setValue("geometry", saveGeometry());
   settings.setValue("windowState", saveState());

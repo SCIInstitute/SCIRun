@@ -27,18 +27,19 @@
  */
 
 #include <Core/Thread/Parallel.h>
-
+#include <Core/Logging/Log.h>
 #include <boost/thread/thread.hpp>
 #include <vector>
 #include <iostream>
 
 using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Logging;
 
 void Parallel::RunTasks(IndexedTask task, int numProcs)
 {
   boost::thread_group threads;
 
-  for (int i = 0; i < numProcs; ++i)
+  for (int i = 0; i < capByUserCoreCount(numProcs); ++i)
   {
     threads.create_thread(boost::bind(task, i));
   }
@@ -56,13 +57,26 @@ void Parallel::RunTasks(IndexedTask task, int numProcs)
 
 unsigned int Parallel::NumCores()
 {
-  return std::min(boost::thread::hardware_concurrency(), maximumCoresSetByUser_);
+  return capByUserCoreCount(boost::thread::hardware_concurrency());
 }
 
 void Parallel::SetMaximumCores(unsigned int max)
 {
-  std::cout << "Maximum cores available for parallel algorithms set to " << max << std::endl;
+  if (max == 0)
+  {
+    max = std::numeric_limits<unsigned int>::max();
+    GeneralLog::Instance().get()->warn("Maximum cores available for parallel algorithms set to unlimited");
+  }
+  else
+  {
+    GeneralLog::Instance().get()->warn("Maximum cores available for parallel algorithms set to {}", max);
+  }
   maximumCoresSetByUser_ = max;
+}
+
+unsigned int Parallel::capByUserCoreCount(unsigned int numProcs)
+{
+  return std::min(numProcs, maximumCoresSetByUser_);
 }
 
 unsigned int Parallel::maximumCoresSetByUser_(std::numeric_limits<unsigned int>::max());

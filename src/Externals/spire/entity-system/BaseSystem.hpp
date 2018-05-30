@@ -1,8 +1,10 @@
 #ifndef SPIRE_ENTITY_SYSTEM_BASESYSTEM_HPP
 #define SPIRE_ENTITY_SYSTEM_BASESYSTEM_HPP
 
+#include <es-log/trace-log.h>
 #include <vector>
 #include <cstdint>
+#include <spire/scishare.h>
 
 namespace spire {
 
@@ -13,7 +15,7 @@ class BaseSystem
 public:
   BaseSystem()          {}
   virtual ~BaseSystem() {}
-  
+
   // The following two functions may be convertable to const functions.
   virtual void walkComponents(ESCoreBase& core) = 0;
   virtual bool walkEntity(ESCoreBase& core, uint64_t entityID) = 0;
@@ -26,4 +28,4 @@ public:
 
 } // namespace spire
 
-#endif 
+#endif

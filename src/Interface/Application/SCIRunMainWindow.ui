@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1440</width>
-    <height>851</height>
+    <height>1223</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1098</width>
-         <height>443</height>
+         <width>1093</width>
+         <height>853</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -220,6 +220,7 @@
     <addaction name="actionConfiguration_"/>
     <addaction name="actionModule_Selector"/>
     <addaction name="actionProvenance_"/>
+    <addaction name="actionMiniview_"/>
     <addaction name="separator"/>
     <addaction name="actionPythonConsole_"/>
     <addaction name="actionDevConsole_"/>
@@ -228,6 +229,7 @@
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Window_Layout"/>
+    <addaction name="actionToggleFullScreenMode_"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -288,7 +290,7 @@
    <property name="minimumSize">
     <size>
      <width>299</width>
-     <height>364</height>
+     <height>554</height>
     </size>
    </property>
    <property name="features">
@@ -452,32 +454,12 @@
        </column>
       </widget>
      </item>
-     <item>
-      <widget class="QLabel" name="miniviewTextLabel_">
-       <property name="text">
-        <string>Network Miniview</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="networkEditorMiniViewLabel_">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>100</height>
-        </size>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
     </layout>
    </widget>
   </widget>
   <widget class="QDockWidget" name="configurationDockWidget_">
    <property name="whatsThis">
-    <string> </string>
+    <string/>
    </property>
    <property name="accessibleName">
     <string>b bb   v</string>
@@ -557,6 +539,56 @@
         </layout>
        </widget>
       </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="networkMiniViewDockWidget_">
+   <property name="maximumSize">
+    <size>
+     <width>400</width>
+     <height>400</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>Network Miniview</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QGraphicsView" name="networkMiniviewGraphicsView_">
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>250</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>300</width>
+         <height>300</height>
+        </size>
+       </property>
+       <property name="interactive">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </widget>
@@ -1001,6 +1033,9 @@
    </property>
   </action>
   <action name="actionImportNetwork_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>*Import 4.x network file...</string>
    </property>
@@ -1219,6 +1254,22 @@
     <string>Create toolkit from directory...</string>
    </property>
   </action>
+  <action name="actionMiniview_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Miniview</string>
+   </property>
+  </action>
+  <action name="actionToggleFullScreenMode_">
+   <property name="text">
+    <string>Toggle Full Screen Mode</string>
+   </property>
+   <property name="shortcut">
+    <string/>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -1295,6 +1346,38 @@
     <hint type="sourcelabel">
      <x>559</x>
      <y>696</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionMiniview_</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>networkMiniViewDockWidget_</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1283</x>
+     <y>220</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>networkMiniViewDockWidget_</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionMiniview_</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1283</x>
+     <y>220</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>

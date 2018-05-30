@@ -32,6 +32,7 @@
 #ifndef SPIRE_ARC_LOOK_AT_H
 #define SPIRE_ARC_LOOK_AT_H
 
+#include <es-log/trace-log.h>
 #include <cstdint>
 #include <memory>
 
@@ -41,6 +42,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <glm-aabb/AABB.hpp>
+#include <spire/scishare.h>
 
 namespace spire {
   class ArcBall;
@@ -53,7 +55,7 @@ namespace spire {
 /// AABB is in the view of the frustum (zooming only).
 /// All coordinates, unless otherwise specified, are in 2D screen space
 /// coordinates.
-class ArcLookAt
+class SCISHARE ArcLookAt
 {
 public:
   ArcLookAt();

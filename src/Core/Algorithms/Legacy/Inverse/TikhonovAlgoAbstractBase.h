@@ -53,14 +53,12 @@ namespace Inverse {
 	ALGORITHM_PARAMETER_DECL(LambdaNum);
 	ALGORITHM_PARAMETER_DECL(LambdaResolution);
 	ALGORITHM_PARAMETER_DECL(LambdaSliderValue);
-	ALGORITHM_PARAMETER_DECL(LambdaCorner);
-	ALGORITHM_PARAMETER_DECL(LCurveText);
+	//ALGORITHM_PARAMETER_DECL(LambdaCorner);
+	//ALGORITHM_PARAMETER_DECL(LCurveText);
 
 	class SCISHARE TikhonovAlgoAbstractBase : virtual public AlgorithmBase
 	{
-
 	public:
-
 		// define input names
 		static const AlgorithmInputName ForwardMatrix;
 		static  const AlgorithmInputName MeasuredPotentials;
@@ -76,6 +74,8 @@ namespace Inverse {
 		static const AlgorithmOutputName InverseSolution;
 		static const AlgorithmOutputName RegularizationParameter;
 		static const AlgorithmOutputName RegInverse;
+    static const AlgorithmOutputName LambdaArray;
+    static const AlgorithmOutputName Lambda_Index;
 
 		// Define algorithm choices
 		enum AlgorithmChoice {
@@ -92,20 +92,17 @@ namespace Inverse {
 			residual_constrained_squared
 		};
 
-		// constructor
 		TikhonovAlgoAbstractBase();
-
-		// run function
 		virtual AlgorithmOutput run(const AlgorithmInput &) const override;
 
-		// defined public functions
-		// void update_graph( const AlgorithmInput & input,  double lambda, int lambda_index, double epsilon);
-		static double FindCorner( const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, const int nLambda );
-		// static double LambdaLookup(LCurveInput& input, double lambda, int& lambda_index, const double epsilon);
-		double computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl * algoImpl,   const AlgorithmInput & input ) const;
+		static double FindCorner( const std::vector<double>& rho, const std::vector<double>& eta, const std::vector<double>& lambdaArray, const int nLambda,int& lambda_index );
+    double computeLcurve( const SCIRun::Core::Algorithms::Inverse::TikhonovImpl& algoImpl, const AlgorithmInput & input,  SCIRun::Core::Datatypes::DenseMatrixHandle& lambdamatrix, int& lambda_index ) const;
 
 		bool checkInputMatrixSizes( const AlgorithmInput & input ) const;
 
+	private:
+		static SCIRun::Core::Datatypes::DenseColumnMatrix InterpolateCurvatureWithSplines( SCIRun::Core::Datatypes::DenseMatrix& samplePoints);
+	// 	SCIRun::Core::Datatypes::DenseMatrix  createBspline(int numKnots, int basisSize);
 	};
 
 	}}}}

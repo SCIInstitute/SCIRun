@@ -43,6 +43,7 @@ namespace SCIRun {
       {
         ALGORITHM_PARAMETER_DECL(NumSeeds);
         ALGORITHM_PARAMETER_DECL(ProbeScale);
+        ALGORITHM_PARAMETER_DECL(PointPositions);
       }
     }
   }
@@ -68,6 +69,9 @@ namespace SCIRun {
       private:
         boost::shared_ptr<class GeneratePointSamplesFromFieldImpl> impl_;
         FieldHandle GenerateOutputField();
+        void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
+        void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, int index);
+        int moveCount_ {0};
       };
 
     }

@@ -30,14 +30,17 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Base/ModuleButtonBar.h>
 #include <Core/Logging/Log.h>
+#include <Core/Datatypes/Color.h>
 #include <Core/Utils/Exception.h>
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
 
+using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Datatypes;
 
 ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerAdd_;
 ExecutionDisablingServiceFunction ModuleDialogGeneric::disablerRemove_;
@@ -58,7 +61,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* paren
 
   if (state_)
   {
-    LOG_DEBUG("ModuleDialogGeneric connecting to state" << std::endl);
+    LOG_TRACE(("ModuleDialogGeneric connecting to state"));
     stateConnection_ = state_->connectStateChanged([this]() { pullSignal(); });
   }
   connect(this, SIGNAL(pullSignal()), this, SLOT(pull()));
@@ -341,7 +344,7 @@ public:
     auto qstring = toLabelConverter_(value);
     if (qstring != comboBox_->currentText())
     {
-      LOG_DEBUG("In new version of pull code for combobox: " << value);
+      LOG_TRACE("In new version of pull code for combobox: {}", value);
       comboBox_->setCurrentIndex(comboBox_->findText(qstring));
     }
   }
@@ -350,7 +353,7 @@ public:
     auto label = fromLabelConverter_(comboBox_->currentText());
     if (label != state_->getValue(stateKey_).toString())
     {
-      LOG_DEBUG("In new version of push code for combobox: " << label);
+      LOG_TRACE("In new version of push code for combobox: {}", label);
       state_->setValue(stateKey_, label);
     }
   }
@@ -368,7 +371,7 @@ private:
     if (iter == map.end())
     {
       const std::string& first = map.begin()->second;
-      Log::get() << NOTICE << "Combo box state error: key not found (" << key << "), replacing with " << first << std::endl;
+      GeneralLog::Instance().get()->warn("Combo box state error: key not found ({}), replacing with {}", key, first);
       return first;
     }
     return iter->second;
@@ -416,7 +419,7 @@ public:
     auto index = value ? 1 : 0;
     if (index != comboBox_->currentIndex())
     {
-      LOG_DEBUG("In new version of pull code for combobox, boolean mode: " << index);
+      LOG_TRACE("In new version of pull code for combobox, boolean mode: {}", index);
       comboBox_->setCurrentIndex(index);
     }
   }
@@ -425,7 +428,7 @@ public:
     auto index = comboBox_->currentIndex();
     if (index != (state_->getValue(stateKey_).toBool() ? 1 : 0))
     {
-      LOG_DEBUG("In new version of push code for combobox, boolean mode: " << index);
+      LOG_TRACE("In new version of push code for combobox, boolean mode: {}", index);
       state_->setValue(stateKey_, index == 1);
     }
   }
@@ -453,12 +456,12 @@ public:
     if (newValue != textEdit_->toPlainText())
     {
       textEdit_->setPlainText(newValue);
-      LOG_DEBUG("In new version of pull code for TextEdit: " << newValue.toStdString());
+      LOG_TRACE("In new version of pull code for TextEdit: {}", newValue.toStdString());
     }
   }
   virtual void pushImpl() override
   {
-    LOG_DEBUG("In new version of push code for TextEdit: " << textEdit_->toPlainText().toStdString());
+    LOG_TRACE("In new version of push code for TextEdit: {}", textEdit_->toPlainText().toStdString());
     state_->setValue(stateKey_, textEdit_->toPlainText().toStdString());
   }
 private:
@@ -485,12 +488,12 @@ public:
     if (newValue != textEdit_->toPlainText())
     {
       textEdit_->setPlainText(newValue);
-      LOG_DEBUG("In new version of pull code for PlainTextEdit: " << newValue.toStdString());
+      LOG_TRACE("In new version of pull code for PlainTextEdit: {}", newValue.toStdString());
     }
   }
   virtual void pushImpl() override
   {
-    LOG_DEBUG("In new version of push code for PlainTextEdit: " << textEdit_->toPlainText().toStdString());
+    LOG_TRACE("In new version of push code for PlainTextEdit: {}", textEdit_->toPlainText().toStdString());
     state_->setValue(stateKey_, textEdit_->toPlainText().toStdString());
   }
 private:
@@ -517,12 +520,12 @@ public:
     if (newValue != lineEdit_->text())
     {
       lineEdit_->setText(newValue);
-      LOG_DEBUG("In new version of pull code for LineEdit: " << newValue.toStdString());
+      LOG_TRACE("In new version of pull code for LineEdit: {}", newValue.toStdString());
     }
   }
   virtual void pushImpl() override
   {
-    LOG_DEBUG("In new version of push code for LineEdit: " << lineEdit_->text().toStdString());
+    LOG_TRACE("In new version of push code for LineEdit: {}", lineEdit_->text().toStdString());
     state_->setValue(stateKey_, lineEdit_->text().toStdString());
   }
 private:
@@ -553,7 +556,7 @@ public:
         if (tabWidget_->tabText(i) == newValue)
         {
           tabWidget_->setCurrentIndex(i);
-          LOG_DEBUG("In new version of pull code for LineEdit: " << newValue.toStdString());
+          LOG_TRACE("In new version of pull code for LineEdit: {}", newValue.toStdString());
           return;
         }
       }
@@ -561,7 +564,7 @@ public:
   }
   virtual void pushImpl() override
   {
-    LOG_DEBUG("In new version of push code for QTabWidget: " << tabWidget_->tabText(tabWidget_->currentIndex()).toStdString());
+    LOG_TRACE("In new version of push code for QTabWidget: {}", tabWidget_->tabText(tabWidget_->currentIndex()).toStdString());
     state_->setValue(stateKey_, tabWidget_->tabText(tabWidget_->currentIndex()).toStdString());
   }
 private:
@@ -589,12 +592,12 @@ public:
         if (newValue != lineEdit_->text())
         {
           lineEdit_->setText(newValue);
-          LOG_DEBUG("In new version of pull code for DoubleLineEdit: " << newValue.toStdString());
+          LOG_TRACE("In new version of pull code for DoubleLineEdit: {}", newValue.toStdString());
         }
       }
       virtual void pushImpl() override
       {
-        LOG_DEBUG("In new version of push code for LineEdit: " << lineEdit_->text().toStdString());
+        LOG_TRACE("In new version of push code for LineEdit: {}", lineEdit_->text().toStdString());
         bool ok;
         auto value = lineEdit_->text().toDouble(&ok);
         if (ok)
@@ -624,12 +627,12 @@ public:
     if (newValue != spinBox_->value())
     {
       spinBox_->setValue(newValue);
-      LOG_DEBUG("In new version of pull code for SpinBox: " << newValue);
+      LOG_TRACE("In new version of pull code for SpinBox: {}", newValue);
     }
   }
   virtual void pushImpl() override
   {
-    LOG_DEBUG("In new version of push code for SpinBox: " << spinBox_->value());
+    LOG_TRACE("In new version of push code for SpinBox: {}", spinBox_->value());
     state_->setValue(stateKey_, spinBox_->value());
   }
 private:
@@ -656,12 +659,12 @@ public:
     if (newValue != spinBox_->value())
     {
       spinBox_->setValue(newValue);
-      LOG_DEBUG("In new version of pull code for DoubleSpinBox: " << newValue);
+      LOG_TRACE("In new version of pull code for DoubleSpinBox: {}", newValue);
     }
   }
   virtual void pushImpl() override
   {
-    LOG_DEBUG("In new version of push code for DoubleSpinBox: " << spinBox_->value());
+    LOG_TRACE("In new version of push code for DoubleSpinBox: {}", spinBox_->value());
     state_->setValue(stateKey_, spinBox_->value());
   }
 private:
@@ -687,13 +690,13 @@ public:
     bool newValue = state_->getValue(stateKey_).toBool();
     if (newValue != checkBox_->isChecked())
     {
-      LOG_DEBUG("In new version of pull code for CheckBox: " << newValue);
+      LOG_TRACE("In new version of pull code for CheckBox: {}", newValue);
       checkBox_->setChecked(newValue);
     }
   }
   virtual void pushImpl() override
   {
-    LOG_DEBUG("In new version of push code for CheckBox: " << checkBox_->isChecked());
+    LOG_TRACE("In new version of push code for CheckBox: {}", checkBox_->isChecked());
     state_->setValue(stateKey_, checkBox_->isChecked());
   }
 private:
@@ -719,13 +722,13 @@ public:
         bool newValue = state_->getValue(stateKey_).toBool();
         if (newValue != checkable_->isChecked())
         {
-          LOG_DEBUG("In new version of pull code for checkable QAbstractButton: " << newValue);
+          LOG_TRACE("In new version of pull code for checkable QAbstractButton: {}", newValue);
           checkable_->setChecked(newValue);
         }
       }
       virtual void pushImpl() override
       {
-        LOG_DEBUG("In new version of push code for checkable QAbstractButton: " << checkable_->isChecked());
+        LOG_TRACE("In new version of push code for checkable QAbstractButton: {}", checkable_->isChecked());
         state_->setValue(stateKey_, checkable_->isChecked());
       }
 private:
@@ -750,7 +753,7 @@ public:
     auto newValue = state_->getValue(stateKey_).toString();
     if (newValue != label_->text().toStdString())
     {
-      LOG_DEBUG("In new version of pull code for dynamic label: " << newValue);
+      LOG_TRACE("In new version of pull code for dynamic label: {}", newValue);
       label_->setText(QString::fromStdString(newValue));
     }
   }
@@ -779,7 +782,7 @@ public:
     auto newValue = state_->getValue(stateKey_).toInt();
     if (newValue != slider_->value())
     {
-      LOG_DEBUG("In new version of pull code for QSlider: " << newValue);
+      LOG_TRACE("In new version of pull code for QSlider: {}", newValue);
       slider_->setValue(newValue);
     }
   }
@@ -815,7 +818,7 @@ public:
     {
       if (!radioButtons_[checkedIndex]->isChecked())
       {
-        LOG_DEBUG("In new version of pull code for radio button group: " << checkedIndex);
+        LOG_TRACE("In new version of pull code for radio button group: {}", checkedIndex);
         radioButtons_[checkedIndex]->setChecked(true);
       }
     }
@@ -970,10 +973,84 @@ ScopedWidgetSignalBlocker::~ScopedWidgetSignalBlocker()
 void SCIRun::Gui::openUrl(const QString& url, const std::string& name)
 {
   if (!QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode)))
-    Log::get() << ERROR_LOG << "Failed to open " << name;
+    GeneralLog::Instance().get()->error("Failed to open {}", name);
 }
 
 void SCIRun::Gui::openPythonAPIDoc()
 {
   openUrl("https://github.com/SCIInstitute/SCIRun/wiki/SCIRun-Python-API-0.2", "SCIRun Python API page");
+}
+
+namespace detail
+{
+  QColor toColor(const std::string& str)
+  {
+    ColorRGB textColor(str);
+    return QColor(
+      static_cast<int>(textColor.r() > 1 ? textColor.r() : textColor.r() * 255.0),
+      static_cast<int>(textColor.g() > 1 ? textColor.g() : textColor.g() * 255.0),
+      static_cast<int>(textColor.b() > 1 ? textColor.b() : textColor.b() * 255.0));
+  }
+
+  std::string fromColor(const QColor& color)
+  {
+    return ColorRGB(color.redF(), color.greenF(), color.blueF()).toString();
+  }
+}
+
+QColor ModuleDialogGeneric::colorFromState(const AlgorithmParameterName& stateKey) const
+{
+  return detail::toColor(state_->getValue(stateKey).toString());
+}
+
+void ModuleDialogGeneric::colorToState(const AlgorithmParameterName& stateKey, const QColor& color)
+{
+  state_->setValue(stateKey, detail::fromColor(color));
+}
+
+std::vector<QColor> ModuleDialogGeneric::colorsFromState(const AlgorithmParameterName& stateKey) const
+{
+  auto conv = [](const Variable& var) -> QColor { return detail::toColor(var.toString()); };
+  std::vector<QColor> colors;
+  auto vars = state_->getValue(stateKey).toVector();
+  std::transform(vars.begin(), vars.end(), std::back_inserter(colors), conv);
+  return colors;
+}
+
+void ModuleDialogGeneric::colorsToState(const AlgorithmParameterName& stateKey, const std::vector<QColor>& colors)
+{
+  VariableList vars;
+  std::transform(colors.begin(), colors.end(), std::back_inserter(vars),
+    [](const QColor& color) { return makeVariable("color", detail::fromColor(color)); });
+  state_->setValue(stateKey, vars);
+}
+
+std::vector<QString> SCIRun::Gui::toQStringVector(const std::vector<std::string>& strVec)
+{
+  std::vector<QString> qv;
+  std::transform(strVec.begin(), strVec.end(), back_inserter(qv), QString::fromStdString);
+  return qv;
+}
+
+void ModuleDialogGeneric::adjustToolbarForHighResolution(QToolBar* toolbar)
+{
+  for (auto& child : toolbar->children())
+  {
+    auto button = qobject_cast<QPushButton*>(child);
+    if (button)
+    {
+      button->setFixedSize(button->size() * 2);
+      button->setIconSize(button->iconSize() * 2);
+    }
+  }
+}
+
+void ModuleDialogGeneric::keyPressEvent(QKeyEvent* e)
+{
+  if (e->key() != Qt::Key_Escape)
+    QDialog::keyPressEvent(e);
+  else //Esc = close dialog
+  {
+    Q_EMIT closeButtonClicked();
+  }
 }

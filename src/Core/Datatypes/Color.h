@@ -51,6 +51,7 @@ namespace Datatypes {
     explicit ColorRGB(const std::string& rgb);
     ColorRGB(double r, double g, double b);
     ColorRGB(double r, double g, double b, double a);
+    explicit ColorRGB(unsigned long int rgbHexValue);
     //adjust alpha while copying
     //ColorRGB(const ColorRGB& color, double a);
 

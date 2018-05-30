@@ -69,6 +69,19 @@
   }
 
   template <class T, size_t N>
+  std::vector<boost::shared_ptr<T>> Module::getValidDynamicInputs(const DynamicPortName<T,N>& port)
+  {
+    auto handleOptions = get_dynamic_input_handles(port.id_);
+    std::vector<boost::shared_ptr<T>> handles;
+    for (auto& opt : handleOptions)
+    {
+      if (opt && *opt)
+        handles.push_back(boost::dynamic_pointer_cast<T>(*opt));
+    }
+    return handles;
+  }
+
+  template <class T, size_t N>
   std::vector<boost::shared_ptr<T>> Module::getOptionalDynamicInputs(const DynamicPortName<T,N>& port)
   {
     auto handleOptions = get_dynamic_input_handles(port.id_);

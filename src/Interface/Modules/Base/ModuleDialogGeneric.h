@@ -29,7 +29,7 @@
 #ifndef INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 #define INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 
-#include <QtGui>
+#include <Interface/qt_include.h>
 #ifndef Q_MOC_RUN
 #include <Interface/Modules/Base/WidgetSlotManagers.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
@@ -109,12 +109,14 @@ namespace Gui {
   protected:
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
     void contextMenuEvent(QContextMenuEvent* e) override;
+    void keyPressEvent(QKeyEvent* e) override;
     void fixSize();
     void connectButtonToExecuteSignal(QAbstractButton* button);
     void connectButtonsToExecuteSignal(std::initializer_list<QAbstractButton*> buttons);
     void connectComboToExecuteSignal(QComboBox* box);
     void connectSpinBoxToExecuteSignal(QSpinBox* box);
     void connectSpinBoxToExecuteSignal(QDoubleSpinBox* box);
+    void adjustToolbarForHighResolution(QToolBar* toolbar);
 
     void pullManagedWidgets();
     // Dialog classes should override this method to provide pull behavior not available from the widget managers.
@@ -163,6 +165,10 @@ namespace Gui {
     static std::tuple<std::string, int> getConnectedDynamicPortId(const std::string& portId, const std::string& type, bool isLoadingFile);
 
     void createExecuteInteractivelyToggleAction();
+    QColor colorFromState(const Core::Algorithms::AlgorithmParameterName& stateKey) const;
+    void colorToState(const Core::Algorithms::AlgorithmParameterName& stateKey, const QColor& color);
+    std::vector<QColor> colorsFromState(const Core::Algorithms::AlgorithmParameterName& stateKey) const;
+    void colorsToState(const Core::Algorithms::AlgorithmParameterName& stateKey, const std::vector<QColor>& colors);
   private Q_SLOTS:
     void executeInteractivelyToggled(bool toggle);
   private:
@@ -190,6 +196,8 @@ namespace Gui {
     static std::set<ModuleDialogGeneric*> instances_;
   };
 
+  SCISHARE QColor colorFromState(const Core::Algorithms::AlgorithmParameterName& stateKey);
+
   class SCISHARE ScopedWidgetSignalBlocker
   {
   public:
@@ -201,6 +209,7 @@ namespace Gui {
 
   SCISHARE void openUrl(const QString& url, const std::string& name);
   SCISHARE void openPythonAPIDoc();
+  SCISHARE std::vector<QString> toQStringVector(const std::vector<std::string>& strVec);
 }
 }
 

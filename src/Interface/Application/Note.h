@@ -44,18 +44,7 @@ class QGraphicsScene;
 
 namespace SCIRun {
 namespace Gui {
-
-  enum NotePosition
-  {
-    Default,
-    None,
-    Tooltip,
-    Top,
-    Left,
-    Right,
-    Bottom
-  };
-
+  
   // TODO: refactor. Combine with ModuleNoteXML, and bring together various Note-related classes to support consistent read/write.
   // IDEA: subclass QGraphicsTextItem properly and add a way to associate with a HasNotes object (either module or connection).
   // Then serialization will be uniform for all notes.
@@ -66,8 +55,8 @@ namespace Gui {
     QString plainText_;
     int fontSize_;
     NotePosition position_;
-    Note() : fontSize_(-1), position_(Default) {}
-    Note(const QString& html, const QString& plain, int font, int pos) : html_(html), plainText_(plain), fontSize_(font), position_(NotePosition(pos)) {}
+    Note() : fontSize_(-1), position_(NotePosition::Default) {}
+    Note(const QString& html, const QString& plain, int font, NotePosition pos) : html_(html), plainText_(plain), fontSize_(font), position_(pos) {}
   };
 
   class NoteDisplayStrategy

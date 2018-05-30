@@ -27,7 +27,10 @@
 */
 
 #include <sstream>
-#include <QtGui>
+#include <Interface/qt_include.h>
+#ifdef QT5_BUILD
+#include <QtConcurrent>
+#endif
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/Node.h>
 #include <Interface/Application/Connection.h>
@@ -57,6 +60,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Gui::NetworkBoundaries;
@@ -149,6 +153,7 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 }
 
 NetworkEditor::ViewUpdateFunc NetworkEditor::viewUpdateFunc_;
+QGraphicsView* NetworkEditor::miniview_ {nullptr};
 
 void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module, const ModuleCounter& count)
 {
@@ -306,11 +311,11 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
           [&](const PortWidget* port) { return port->get_typename() == iport->get_typename() && port->getIndex() >= nextInputIndex; });
         if (toConnect == newInputs.end())
         {
-          qDebug() << "Logical error: could not find input port to connect to" << iport << nextInputIndex;
+          guiLog->critical("Logical error: could not find input port to connect to {}, {}", iport->name().toStdString(), nextInputIndex);
           break;
         }
-        requestConnection(iport->connectedPorts()[0], *toConnect);
         nextInputIndex = (*toConnect)->getIndex() + 1;
+        requestConnection(iport->connectedPorts()[0], *toConnect);
       }
     }
   }
@@ -326,7 +331,7 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
           [&](const PortWidget* port) { return port->get_typename() == oport->get_typename() && port->getIndex() >= nextOutputIndex; });
         if (toConnect == newOutputs.end())
         {
-          qDebug() << "Logical error: could not find output port to connect to" << oport;
+          guiLog->critical("Logical error: could not find output port to connect to {}", oport->name().toStdString());
           break;
         }
         auto connectedPorts = oport->connectedPorts();
@@ -385,7 +390,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
     connect(module, SIGNAL(dynamicPortChanged(const std::string&, bool)), proxy, SLOT(createPortPositionProviders()));
   }
 
-  LOG_DEBUG("NetworkEditor connecting to state" << std::endl);
+  LOG_TRACE("NetworkEditor connecting to state.");
   module->getModule()->get_state()->connectStateChanged(boost::bind(&NetworkEditor::modified, this));
 
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));
@@ -431,7 +436,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   bringToFront();
   proxy->setVisible(visibleItems_);
 
-  GuiLogger::Instance().logInfoStd("Module added: " + module->getModuleId());
+  guiLogDebug("Module added: {}", module->getModuleId());
 
   logViewerDims("Scene bounds post-add:");
 
@@ -821,6 +826,7 @@ void NetworkEditor::alignViewport()
   auto visibleRect = scene_->itemsBoundingRect();
   visibleRect.adjust(-20, -20, 20, 20);
   setSceneRect(visibleRect);
+  miniview_->setSceneRect(visibleRect);
 }
 
 NetworkSearchWidget::NetworkSearchWidget(NetworkEditor* ned)
@@ -976,6 +982,14 @@ private:
   TagColorFunc tagColor_;
 };
 
+void scaleTextItem(QGraphicsTextItem* item, double textScale)
+{
+  #ifdef QT5_BUILD
+  item->setTransform(QTransform::fromScale(textScale, textScale));
+  #else
+  item->scale(textScale, textScale);
+  #endif
+}
 void NetworkEditor::searchTextChanged(const QString& text)
 {
   if (text.isEmpty())
@@ -990,12 +1004,13 @@ void NetworkEditor::searchTextChanged(const QString& text)
     NetworkSearchEngine engine(scene(), tagColor_);
     auto results = engine.search(text);
     auto textScale = 1.0 / currentScale_;
+
     if (!results.empty())
     {
       auto title = new SearchResultItem("Search results:", Qt::green, {});
       title->setPos(positionOfFloatingText(title->num(), true, 20, textScale * 22));
       scene()->addItem(title);
-      title->scale(textScale, textScale);
+      scaleTextItem(title, textScale);
     }
     for (const auto& result : results)
     {
@@ -1003,7 +1018,7 @@ void NetworkEditor::searchTextChanged(const QString& text)
         std::get<ItemColor>(result), std::get<ItemAction>(result));
       searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 50, textScale * 22));
       scene()->addItem(searchItem);
-      searchItem->scale(textScale, textScale);
+      scaleTextItem(searchItem, textScale);
     }
   }
 }
@@ -1113,7 +1128,7 @@ ModuleNotesHandle NetworkEditor::dumpModuleNotes(ModuleFilter filter) const
       auto note = w->currentNote();
       if (filter(w->getModuleWidget()->getModule()) &&
         !note.plainText_.isEmpty())
-        notes->notes[w->getModuleWidget()->getModuleId()] = NoteXML(note.html_.toStdString(), note.position_, note.plainText_.toStdString(), note.fontSize_);
+        notes->notes[w->getModuleWidget()->getModuleId()] = NoteXML(note.html_.toStdString(), static_cast<int>(note.position_), note.plainText_.toStdString(), note.fontSize_);
     }
   }
   return notes;
@@ -1169,7 +1184,7 @@ ConnectionNotesHandle NetworkEditor::dumpConnectionNotes(ConnectionFilter filter
       {
         //TODO hacky
         auto id = connectionNoteId(conn->getConnectedToModuleIds());
-        notes->notes[id] = NoteXML(note.html_.toStdString(), note.position_, note.plainText_.toStdString(), note.fontSize_);
+        notes->notes[id] = NoteXML(note.html_.toStdString(), static_cast<int>(note.position_), note.plainText_.toStdString(), note.fontSize_);
       }
     }
   }
@@ -1284,7 +1299,7 @@ void NetworkEditor::updateModuleNotes(const ModuleNotes& moduleNotes)
       if (noteIter != moduleNotes.notes.end())
       {
         auto noteXML = noteIter->second;
-        Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, noteXML.position);
+        Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, NotePosition(noteXML.position));
         w->getModuleWidget()->updateNoteFromFile(note);
       }
     }
@@ -1324,7 +1339,7 @@ void NetworkEditor::updateConnectionNotes(const ConnectionNotes& notes)
       if (noteIter != notes.notes.end())
       {
         auto noteXML = noteIter->second;
-        Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, noteXML.position);
+        Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, NotePosition(noteXML.position));
         conn->updateNoteFromFile(note);
       }
     }

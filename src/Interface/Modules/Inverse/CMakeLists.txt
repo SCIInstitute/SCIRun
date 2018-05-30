@@ -28,26 +28,26 @@
 #
 
 SET(Interface_Modules_Inverse_FORMS
-SolveInverseProblemWithTikhonovSVDDialog.ui
+  SolveInverseProblemWithTikhonovSVDDialog.ui
   SolveInverseProblemWithTikhonov.ui
-  SolveInverseProblemWithTikhonovTSVDDialog.ui
+  SolveInverseProblemWithTSVDDialog.ui
 )
 
 SET(Interface_Modules_Inverse_HEADERS
   SolveInverseProblemWithTikhonovSVDDialog.h
   SolveInverseProblemWithTikhonovDialog.h
-  SolveInverseProblemWithTikhonovTSVDDialog.h
+  SolveInverseProblemWithTSVDDialog.h
   share.h
 )
 
 SET(Interface_Modules_Inverse_SOURCES
   SolveInverseProblemWithTikhonovSVDDialog.cc
   SolveInverseProblemWithTikhonovDialog.cc
-  SolveInverseProblemWithTikhonovTSVDDialog.cc
+  SolveInverseProblemWithTSVDDialog.cc
 )
 
-QT4_WRAP_UI(Interface_Modules_Inverse_FORMS_HEADERS ${Interface_Modules_Inverse_FORMS})
-QT4_WRAP_CPP(Interface_Modules_Inverse_HEADERS_MOC ${Interface_Modules_Inverse_HEADERS})
+QT_WRAP_UI(Interface_Modules_Inverse_FORMS_HEADERS "${Interface_Modules_Inverse_FORMS}")
+QT_WRAP_CPP(Interface_Modules_Inverse_HEADERS_MOC "${Interface_Modules_Inverse_HEADERS}")
 
 SCIRUN_ADD_LIBRARY(Interface_Modules_Inverse
   ${Interface_Modules_Inverse_HEADERS}
@@ -56,11 +56,16 @@ SCIRUN_ADD_LIBRARY(Interface_Modules_Inverse
   ${Interface_Modules_Inverse_SOURCES}
 )
 
+IF(WIN32)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:wchar_t-")
+ENDIF()
+
 TARGET_LINK_LIBRARIES(Interface_Modules_Inverse
   Modules_Legacy_Inverse
   Interface_Modules_Base
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
+  ${SCI_QWT_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

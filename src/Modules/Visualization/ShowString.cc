@@ -82,6 +82,9 @@ void ShowString::setStateDefaults()
 
 void ShowString::processWindowResizeFeedback(const ModuleFeedback& var)
 {
+  if (!executedOnce_)
+    return;
+
   try
   {
     auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
@@ -107,6 +110,7 @@ void ShowString::execute()
     auto geom = buildGeometryObject(str->value());
     sendOutput(RenderedString, geom);
     needReexecute_ = false;
+    executedOnce_ = true;
   }
 }
 
@@ -189,9 +193,9 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
 
   auto geom(boost::make_shared<GeometryObjectSpire>(*this, "ShowString", false));
 
-  geom->mIBOs.push_back(geomIBO);
-  geom->mVBOs.push_back(geomVBO);
-  geom->mPasses.push_back(pass);
+  geom->ibos().push_back(geomIBO);
+  geom->vbos().push_back(geomVBO);
+  geom->passes().push_back(pass);
 
   auto state = get_state();
   auto fontSize = state->getValue(Parameters::FontSize).toInt();

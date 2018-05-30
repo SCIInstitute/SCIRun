@@ -29,9 +29,8 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <Interface/Application/GuiApplication.h>
-#include <Interface/Application/GuiCommandFactory.h>
-#include <Interface/Application/SCIRunMainWindow.h>
-#include <Core/Application/Application.h>
+#include <Interface/Application/MainWindowCollaborators.h>
+#include <Core/Logging/Log.h>
 #include <boost/make_shared.hpp>
 #include <iostream>
 
@@ -43,25 +42,19 @@ int GuiApplication::run(int argc, const char* argv[])
 
   try
   {
-    auto mainWin = SCIRunMainWindow::Instance();
-
-    Core::Application::Instance().setCommandFactory(boost::make_shared<GuiGlobalCommandFactory>());
-    mainWin->setController(Core::Application::Instance().controller());
-    mainWin->initialize();
-
-    app.exec();
-    return mainWin->returnCode();
+    SCIRunGuiRunner gui(app);
+    return gui.returnCode();
   }
   catch (std::exception& e)
   {
     QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
-    std::cerr << "Unhandled exception: " << e.what() << std::endl;
+    SCIRun::Core::Logging::GeneralLog::Instance().get()->critical("Unhandled exception: {}", e.what());
     return 1;
   }
   catch (...)
   {
     QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: exiting now.");
-    std::cerr << "Unhandled exception: Unknown" << std::endl;
+    SCIRun::Core::Logging::GeneralLog::Instance().get()->critical("Unhandled exception: Unknown type");
     return 1;
   }
 }

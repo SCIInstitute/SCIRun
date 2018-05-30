@@ -6,7 +6,7 @@
    Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -35,9 +35,11 @@
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Math/MiscMath.h>
 #include <Core/Logging/Log.h>
+#include <spdlog/fmt/ostr.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 
@@ -51,7 +53,7 @@ BooleanCompareAlgo::BooleanCompareAlgo()
 {
   //set parameter defaults for UI
   using namespace Parameters;
-    
+
   addOption(Comparison_Option, "boolop", "boolop|andop|orop|lessop|lesseqop|eqop|greateqop|greatop");
   addOption(Value_Option_1, "value", "value|size|norm");
   addOption(Value_Option_2, "value", "value|size|norm");
@@ -62,13 +64,13 @@ BooleanCompareAlgo::BooleanCompareAlgo()
 
 AlgorithmOutput BooleanCompareAlgo::run(const AlgorithmInput& input) const
 {
-  
+
   auto matrixa = input.get<Matrix>(Variables::FirstMatrix);
   auto matrixb = input.get<Matrix>(Variables::SecondMatrix);
   auto possout = input.get<Matrix>(Variables::InputMatrix);
-    
+
   AlgorithmOutput output;
-  
+
   //sparse support not fully implemented yet.
   if (!matrixIs::dense(matrixa) || (matrixb && !matrixIs::dense(matrixb)))
   {
@@ -78,31 +80,28 @@ AlgorithmOutput BooleanCompareAlgo::run(const AlgorithmInput& input) const
     output[Variables::Solution] = 0;
     return output;
   }
-  
+
   auto mata  = castMatrix::toDense (matrixa);
   auto matb  = castMatrix::toDense (matrixb);
-  
-  
-    
+
   MatrixHandle out_matrix;
   DenseMatrixHandle cond_matrix;
   cond_matrix.reset(new DenseMatrix(1,1,0.0));
-  
-  
+
   int cond_state = 0;
-  
+
   //pull parameter from UI
   std::string valoptA = getOption(Parameters::Value_Option_1);
   std::string valoptB = getOption(Parameters::Value_Option_2);
   std::string cond_statement = getOption(Parameters::Comparison_Option);
   std::string then_result = getOption(Parameters::Then_Option);
   std::string else_result = getOption(Parameters::Else_Option);
-  
-  LOG_DEBUG("valoptA =" <<valoptA<<std::endl);
-  LOG_DEBUG("valoptB ="<<valoptB<<std::endl);
-  LOG_DEBUG("cond_statement ="<<cond_statement<<std::endl);
-  LOG_DEBUG("then_result ="<<then_result<<std::endl);
-  LOG_DEBUG("else_result ="<<else_result<<std::endl);
+
+  LOG_DEBUG("valoptA = {}", valoptA);
+  LOG_DEBUG("valoptB = {}", valoptB);
+  LOG_DEBUG("cond_statement = {}",cond_statement);
+  LOG_DEBUG("then_result = {}" , then_result);
+  LOG_DEBUG("else_result = {}" , else_result);
 
   if (!matb || cond_statement == "boolop")
   {
@@ -115,10 +114,10 @@ AlgorithmOutput BooleanCompareAlgo::run(const AlgorithmInput& input) const
     if (!runImpl(mata, matb, valoptA, valoptB, cond_statement, cond_state))
       THROW_ALGORITHM_PROCESSING_ERROR("Error running conditional matrix algorithm. Probable bad combination of parameters");
   }
-  
+
   //  after testing the statement, determine the module output
   return_check(cond_state,cond_matrix,out_matrix,then_result,else_result,matrixa,matrixb,possout);
-  
+
   output[Variables::OutputMatrix] = out_matrix;
   output[Variables::Solution] = cond_matrix;
   return output;
@@ -127,16 +126,16 @@ AlgorithmOutput BooleanCompareAlgo::run(const AlgorithmInput& input) const
 bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, std::string valoptA, std::string& cond_statement, int& cond_state) const
 {
 //  if only need to check one matrix, run this version
-  
+
   size_t nrA = mata->nrows();
   size_t ncA = mata->ncols();
-  
+
   if (cond_statement!="boolop")
   {
     warning("no second input, only checking for non-zero comparison of A");
     cond_statement="boolop";
   }
-  
+
   DenseMatrixHandle compa;
   if (valoptA == "size")
   {
@@ -156,9 +155,9 @@ bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, std::string valoptA, st
     compa=mata;
   }
   else THROW_ALGORITHM_PROCESSING_ERROR("Choosen options do not make sense.");
-  
+
   if (!CompareMatrix(compa,cond_state)) return false;
-  
+
   return true;
 }
 
@@ -168,15 +167,15 @@ bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, std::string valoptA, st
 bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle matb, std::string valoptA, std::string valoptB, std::string& cond_statement, int& cond_state) const
 {
 // this is for two marix imputs. the comparison is trickier
-  
-  
+
+
   size_t nrA = mata->nrows();
   size_t ncA = mata->ncols();
   size_t nrB = matb->nrows();
   size_t ncB = matb->ncols();
 
   DenseMatrixHandle compa, compb;
-  
+
 //  check the various quantities to check make sure the checks make since.
   if ((valoptA == "size" && valoptB == "norm") || (valoptB == "size" && valoptA == "norm"))
   {
@@ -186,13 +185,13 @@ bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle matb,
   {
     compa.reset(new DenseMatrix(2,1,0.0));
     compb.reset(new DenseMatrix(2,1,0.0));
-    
+
     double *data = compa->data();
     double *datb = compb->data();
-    
+
     data[0] = static_cast<double>(nrA);
     data[1] = static_cast<double>(ncA);
-    
+
     datb[0] = static_cast<double>(nrB);
     datb[1] = static_cast<double>(ncB);
   }
@@ -204,7 +203,7 @@ bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle matb,
     }
     compa.reset(new DenseMatrix(nrB,ncB,0.0));
     compb=matb;
-    
+
     double *data = compa->data();
     data[0] = static_cast<double>(nrA);
     data[1] = static_cast<double>(ncA);
@@ -217,11 +216,11 @@ bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle matb,
     }
     compa=mata;
     compb.reset(new DenseMatrix(nrA,ncA,0.0));
-    
+
     double *datb = compb->data();
     datb[0] = static_cast<double>(nrB);
     datb[1] = static_cast<double>(ncB);
-    
+
   }
   else if (valoptA == "norm" && valoptB == "value")
   {
@@ -231,7 +230,7 @@ bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle matb,
     }
     compa.reset(new DenseMatrix(1,1,0.0));
     compb=matb;
-    
+
     double *data = compa->data();
     data[0] = ComputeNorm(mata);
   }
@@ -241,10 +240,10 @@ bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle matb,
     {
       THROW_ALGORITHM_PROCESSING_ERROR("Must compare size of norm matrix to matrix with 1 elements");
     }
-    
+
     compa=mata;
     compb.reset(new DenseMatrix(1,1,0.0));
-    
+
     double *datb = compb->data();
     datb[0] = ComputeNorm(matb);
   }
@@ -252,10 +251,10 @@ bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle matb,
   {
     compa.reset(new DenseMatrix(1,1,0.0));
     compb.reset(new DenseMatrix(1,1,0.0));
-    
+
     double *data = compa->data();
     double *datb = compb->data();
-    
+
     data[0] = ComputeNorm(mata);
     datb[0] = ComputeNorm(matb);
   }
@@ -270,9 +269,9 @@ bool BooleanCompareAlgo::runImpl(DenseMatrixHandle mata, DenseMatrixHandle matb,
   }
   else return false;
   if (!CompareMatrix(compa, compb, cond_statement,cond_state)) return false;
-  
+
   return true;
-    
+
 }
 
 
@@ -282,9 +281,9 @@ double BooleanCompareAlgo::ComputeNorm(DenseMatrixHandle mat) const
   size_type n = mat->nrows();
   size_type m = mat->ncols();
   double *data = mat->data();
-  
+
   double sumation = 0;
-  
+
   for (index_type k=0;  k<(m*n);k++)
   {
     sumation+=data[k]*data[k];
@@ -296,11 +295,11 @@ double BooleanCompareAlgo::ComputeNorm(DenseMatrixHandle mat) const
 bool BooleanCompareAlgo::CompareMatrix(DenseMatrixHandle mata, int& cond_state) const
 {
   //   check for non-zero entries of single matrix
-  
+
   size_type n = mata->nrows();
   size_type m = mata->ncols();
   double *data = mata->data();
-  
+
   for (index_type k=0; k<(m*n);k++)
   {
     if (data[k]!=0)
@@ -321,15 +320,15 @@ bool BooleanCompareAlgo::CompareMatrix(DenseMatrixHandle mata, DenseMatrixHandle
   size_type ma = mata->ncols();
   size_type nb = matb->nrows();
   size_type mb = matb->ncols();
-  
+
   double *data = mata->data();
   double *datb = matb->data();
-  
-  LOG_DEBUG("mata ="<<*mata<<std::endl);
-  LOG_DEBUG("matb ="<<*matb<<std::endl);
-  
+
+  LOG_DEBUG("mata = {}", *mata);
+  LOG_DEBUG("matb = {}", *matb);
+
   if ((na!=nb) || (ma!=mb)) THROW_ALGORITHM_PROCESSING_ERROR("Matrices must be the same size");
-  
+
   if (cond_statement == "eqop")
   {
     //   check for non-equal values entries of matrix
@@ -376,13 +375,13 @@ bool BooleanCompareAlgo::CompareMatrix(DenseMatrixHandle mata, DenseMatrixHandle
   {
     //  These cases are tricky to compare with multiple entries, because some entries could
     //  greater, less, or equal to the the corresponding etries.
-    
-    
+
+
     int great=0;
     int less=0;
     int eq=0;
     double sumation=0;
-    
+
     for (index_type k=0; k<(ma*na);k++)
     {
       if (data[k]<datb[k]) less+=1;
@@ -390,17 +389,15 @@ bool BooleanCompareAlgo::CompareMatrix(DenseMatrixHandle mata, DenseMatrixHandle
       if (data[k]>datb[k]) great+=1;
       sumation += data[k]-datb[k];
     }
-    
-    LOG_DEBUG("greater ="<<great<<std::endl);
-    LOG_DEBUG("less ="<<less<<std::endl);
-    LOG_DEBUG("equal"<<eq<<std::endl);
-    LOG_DEBUG("sumation ="<<sumation<<std::endl);
-    
-    
-    
+
+    LOG_DEBUG("greater = {}", great);
+    LOG_DEBUG("less = {}", less);
+    LOG_DEBUG("equal = {}", eq);
+    LOG_DEBUG("sumation = {}", sumation);
+
 //    if there are both greater and less than, need some extra checking. compare the number of
 //    entries that fulfill the condition, and the magnitude of the difference.
-    
+
     if (great>0 && less>0)
     {
       warning("Matrices have entries that are both greater and less than the other.  Attempting to compare based on number of elements and magnitude of the difference.");
@@ -457,7 +454,7 @@ bool BooleanCompareAlgo::CompareMatrix(DenseMatrixHandle mata, DenseMatrixHandle
     }
   }
   else return false;
-  
+
   return true;
 }
 
@@ -466,7 +463,7 @@ bool BooleanCompareAlgo::CompareMatrix(DenseMatrixHandle mata, DenseMatrixHandle
 bool BooleanCompareAlgo::return_check(int& cond_state, DenseMatrixHandle& cond_matrix, MatrixHandle& out_matrix, std::string then_result, std::string else_result, MatrixHandle matrixa, MatrixHandle matrixb, MatrixHandle possout) const
 {
   double *data = cond_matrix->data();
-  
+
   if (cond_state==1)
   {
     data[0] = 1;
@@ -494,12 +491,12 @@ bool BooleanCompareAlgo::return_value(MatrixHandle& out_matrix,std::string resul
     result_statement = "null";
     warning("no input for third matrix, cannot use it as an output.");
   }
-  
+
   if (result_statement == "first") out_matrix = first;
   else if (result_statement == "second") out_matrix = second;
   else if (result_statement == "third") out_matrix = possout;
   else if (result_statement == "null" || result_statement == "quit") out_matrix = 0;
   else return false;
-  
+
   return true;
 }

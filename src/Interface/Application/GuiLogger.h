@@ -30,25 +30,37 @@
 #define GUI_LOGGER_H
 
 #include <Core/Utils/Singleton.h>
-#include <Core/Logging/LoggerFwd.h>
+#include <Core/Logging/Log.h>
 #include <boost/shared_ptr.hpp>
 #include <QString>
 
 namespace SCIRun {
 namespace Gui {
 
+  class GuiLog final : public Core::Logging::Log2
+  {
+    CORE_SINGLETON(GuiLog)
+  public:
+    GuiLog() : Log2("ui") {}
+  };
+
+  #define guiLog GuiLog::Instance().get()
+
+  template <class... T>
+  void guiLogDebug(const char* fmt, T&&... args)
+  {
+    guiLog->debug(fmt, args...);
+  }
+
   class GuiLogger : boost::noncopyable
   {
-    CORE_SINGLETON(GuiLogger)
   public:
-    void logInfo(const QString& message) const;
-    void logError(const QString& message) const;
-    void logInfoStd(const std::string& message) const { logInfo(QString::fromStdString(message)); }
-    void logErrorStd(const std::string& message) const { logError(QString::fromStdString(message)); }
-    static void setInstance(Core::Logging::LoggerHandle logger);
+    static void logInfo(const QString& message);
+    static void logError(const QString& message);
+    static void logInfoStd(const std::string& message) { logInfo(QString::fromStdString(message)); }
+    static void logErrorStd(const std::string& message) { logError(QString::fromStdString(message)); }
   private:
-    GuiLogger();
-    static Core::Logging::LoggerHandle loggerImpl_;
+    GuiLogger() = delete;
   };
 
 }}

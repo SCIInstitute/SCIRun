@@ -66,6 +66,13 @@ TEST(ColorTests, EmptyStringYieldsWhite)
   EXPECT_EQ(c, c2);
 }
 
+TEST(ColorTests, CanParseHexValue)
+{
+  ColorRGB c(0x27213c);
+  ColorRGB c2(39/255.0, 33/255.0, 60/255.0);
+  EXPECT_EQ(c, c2);
+}
+
 TEST(BasicDatatypeIOTests, AssertSizesOfFieldDatatypesAreConsistent)
 {
   ASSERT_EQ(1, sizeof(char));

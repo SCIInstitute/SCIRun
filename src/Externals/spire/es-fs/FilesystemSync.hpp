@@ -1,17 +1,19 @@
 #ifndef SPIRE_ASYNC_FILESYSTEMSYNC_HPP
 #define SPIRE_ASYNC_FILESYSTEMSYNC_HPP
 
+#include <es-log/trace-log.h>
 #include <vector>
 #include "Filesystem.hpp"
+#include <spire/scishare.h>
 
 namespace spire {
 
 // Use this system if you want to provide synchronous operations on disk.
 // Only used when disk is present.
-class FilesystemSync : public Filesystem
+class SCISHARE FilesystemSync : public Filesystem
 {
 public:
-  FilesystemSync(const std::string& prefix = "")  {mPrefix = prefix;}
+  explicit FilesystemSync(const std::string& prefix = "")  {mPrefix = prefix;}
   virtual ~FilesystemSync()                       {}
 
   void update() override;
@@ -39,4 +41,4 @@ private:
 
 } // namespace spire
 
-#endif 
+#endif

@@ -26,6 +26,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
+#include <es-log/trace-log.h>
 #include <gl-platform/GLPlatform.hpp>
 
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
@@ -45,6 +46,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Thread;
@@ -71,9 +73,14 @@ namespace
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent), mConfigurationDock(nullptr), shown_(false),
-  shiftdown_(false), selected_(false),
-  clippingPlaneIndex_(0),screenshotTaker_(nullptr), saveScreenshotOnNewGeometry_(false),
+  : ModuleDialogGeneric(state, parent),
+  mConfigurationDock(nullptr),
+  shown_(false),
+  shiftdown_(false),
+  selected_(false),
+  clippingPlaneIndex_(0),
+  screenshotTaker_(nullptr),
+  saveScreenshotOnNewGeometry_(false),
   gid_(new DialogIdGenerator(name))
 {
   counter_ = 1;
@@ -138,7 +145,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   setInitialLightValues();
 
-  state->connectStateChanged(boost::bind(&ViewSceneDialog::newGeometryValueForwarder, this));
+  state->connectStateChanged([this]() { Q_EMIT newGeometryValueForwarder(); });
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
 
   std::string filesystemRoot = Application::Instance().executablePath().string();
@@ -163,15 +170,7 @@ void ViewSceneDialog::pullSpecial()
 
 void ViewSceneDialog::adjustToolbar()
 {
-  for (auto& child : mToolBar->children())
-  {
-    auto button = qobject_cast<QPushButton*>(child);
-    if (button)
-    {
-      button->setFixedSize(button->size() * 2);
-      button->setIconSize(button->iconSize() * 2);
-    }
-  }
+  adjustToolbarForHighResolution(mToolBar);
 }
 
 void ViewSceneDialog::setInitialLightValues()
@@ -272,8 +271,7 @@ std::string ViewSceneDialog::restoreObjColor()
         auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
         if (realObj->uniqueID() == selName)
         {
-          //selected_ = true;
-          for (auto& pass : realObj->mPasses)
+          for (auto& pass : realObj->passes())
           {
             pass.addUniform("uAmbientColor",
               glm::vec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -381,7 +379,7 @@ void ViewSceneDialog::selectObject(const int x, const int y)
         {
           //filter objs
           bool isWidget = false;
-          for (auto& pass : realObj->mPasses)
+          for (const auto& pass : realObj->passes())
           {
             if (pass.renderState.get(RenderState::IS_WIDGET))
             {
@@ -405,7 +403,7 @@ void ViewSceneDialog::selectObject(const int x, const int y)
         if (obj->uniqueID() == selName)
         {
           selected_ = true;
-          for (auto& pass : obj->mPasses)
+          for (auto& pass : obj->passes())
           {
             pass.addUniform("uAmbientColor",
               glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
@@ -442,6 +440,9 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 
 void ViewSceneDialog::newGeometryValue()
 {
+  DEBUG_LOG_LINE_INFO
+  LOG_DEBUG("ViewSceneDialog::newGeometryValue {} before locking", windowTitle().toStdString());
+  RENDERER_LOG_FUNCTION_SCOPE;
   Guard lock(Modules::Render::ViewScene::mutex_.get());
 
   auto spire = mSpire.lock();
@@ -488,6 +489,7 @@ void ViewSceneDialog::newGeometryValue()
       auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
       if (realObj)
       {
+        DEBUG_LOG_LINE_INFO
         spire->handleGeomObject(realObj, port);
         validObjects.push_back(obj->uniqueID());
       }
@@ -1147,9 +1149,9 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
 
   auto geom(boost::make_shared<GeometryObjectSpire>(*gid_, uniqueNodeID, false));
 
-  geom->mIBOs.push_back(geomIBO);
-  geom->mVBOs.push_back(geomVBO);
-  geom->mPasses.push_back(pass);
+  geom->ibos().push_back(geomIBO);
+  geom->vbos().push_back(geomVBO);
+  geom->passes().push_back(pass);
 
   //text
   if (textBuilder_.isReady())
@@ -1250,7 +1252,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
   renState.set(RenderState::USE_NORMALS, true);
   renState.set(RenderState::IS_WIDGET, true);
   auto geom(boost::make_shared<GeometryObjectSpire>(*gid_, uniqueNodeID, false));
-  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
 
   Graphics::GlyphGeom glyphs2;
@@ -1265,7 +1267,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
   renState.set(RenderState::USE_TRANSPARENCY, true);
   renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
   auto geom2(boost::make_shared<GeometryObjectSpire>(*gid_, ss.str(), false));
-  glyphs2.buildObject(geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
+  glyphs2.buildObject(*geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
 
   clippingPlaneGeoms_.push_back(geom);
@@ -1438,7 +1440,6 @@ void ViewSceneDialog::addToolBar()
   addConfigurationDock();
   addAutoViewButton();
   addScreenshotButton();
-  //addObjectToggleMenu();
 
   glLayout->addWidget(mToolBar);
 
@@ -1737,6 +1738,7 @@ void ViewSceneDialog::showEvent(QShowEvent* evt)
 
   if (pulledSavedVisibility_)
   {
+    ScopedWidgetSignalBlocker ssb(this);
     state_->setValue(Modules::Render::ViewScene::ShowViewer, true);
   }
 
@@ -1750,6 +1752,7 @@ void ViewSceneDialog::hideEvent(QHideEvent* evt)
 
   if (pulledSavedVisibility_)
   {
+    ScopedWidgetSignalBlocker ssb(this);
     state_->setValue(Modules::Render::ViewScene::ShowViewer, false);
   }
 

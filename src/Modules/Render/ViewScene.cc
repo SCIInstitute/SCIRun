@@ -26,11 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <es-log/trace-log.h>
 #include <Modules/Render/ViewScene.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Logging/Log.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <boost/thread.hpp>
 
 // Needed to fix conflict between define in X11 header
 // and eigen enum member.
@@ -44,6 +46,7 @@ using namespace Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Logging;
 
 MODULE_INFO_DEF(ViewScene, Render, SCIRun)
 
@@ -57,6 +60,7 @@ ALGORITHM_PARAMETER_DEF(Render, ShowFieldStates);
 
 ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true), asyncUpdates_(0)
 {
+  RENDERER_LOG_FUNCTION_SCOPE;
   INITIALIZE_PORT(GeneralGeom);
   INITIALIZE_PORT(ScreenshotDataRed);
   INITIALIZE_PORT(ScreenshotDataGreen);
@@ -132,9 +136,13 @@ void ViewScene::updateTransientList()
   {
     geoms.reset(new GeomList());
   }
-  auto activeHandles = activeGeoms_ | boost::adaptors::map_values;
+
   geoms->clear();
-  geoms->insert(activeHandles.begin(), activeHandles.end());
+  for (const auto& geomPair : activeGeoms_)
+  {
+    auto geom = geomPair.second;
+    geom->addToList(geom, *geoms);
+  }
 
   // Grab geometry inputs and pass them along in a transient value to the GUI
   // thread where they will be transported to Spire.
@@ -158,11 +166,11 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     return;
   //lock for state modification
   {
-    LOG_DEBUG("ViewScene::asyncExecute before locking");
+    LOG_DEBUG("ViewScene::asyncExecute {} before locking", get_id().id_);
     Guard lock(mutex_.get());
     get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
 
-    LOG_DEBUG("ViewScene::asyncExecute after locking");
+    LOG_DEBUG("ViewScene::asyncExecute {} after locking", get_id().id_);
 
     auto geom = boost::dynamic_pointer_cast<GeometryObject>(data);
     if (!geom)

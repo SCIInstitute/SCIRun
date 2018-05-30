@@ -51,7 +51,7 @@ void GlyphGeom::getBufferInfo(int64_t& numVBOElements, std::vector<Vector>& poin
   indices = indices_;
 }
 
-void GlyphGeom::buildObject(GeometryHandle geom, const std::string& uniqueNodeID, const bool isTransparent, const double transparencyValue,
+void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& uniqueNodeID, const bool isTransparent, const double transparencyValue,
   const ColorScheme& colorScheme, RenderState state, const SpireIBO::PRIMITIVE& primIn, const BBox& bbox)
 {
   std::string vboName = uniqueNodeID + "VBO";
@@ -113,7 +113,7 @@ void GlyphGeom::buildObject(GeometryHandle geom, const std::string& uniqueNodeID
     ColorRGB dft = state.defaultColor;
     if (useTriangles)
     {
-      if (geom->isClippable())
+      if (geom.isClippable())
         shader = "Shaders/DirPhong";
       else
         shader = "Shaders/DirPhongNoClipping";
@@ -201,9 +201,9 @@ void GlyphGeom::buildObject(GeometryHandle geom, const std::string& uniqueNodeID
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-  geom->mVBOs.push_back(geomVBO);
-  geom->mIBOs.push_back(geomIBO);
-  geom->mPasses.push_back(pass);
+  geom.vbos().push_back(geomVBO);
+  geom.ibos().push_back(geomIBO);
+  geom.passes().push_back(pass);
 }
 
 void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double resolution,
@@ -229,7 +229,7 @@ void GlyphGeom::addEllipsoid(const Point& p, double radius1, double radius2, dou
 
 void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, double resolution,
                             const ColorRGB& color1, const ColorRGB& color2)
-{  
+{
   generateCylinder(p1, p2, radius, radius, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
 }
 
@@ -319,7 +319,7 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
 }
 
 void GlyphGeom::generateSphere(const Point& center, double radius1, double radius2,
-  double resolution, const ColorRGB& color, int64_t& numVBOElements, std::vector<Vector>& points, 
+  double resolution, const ColorRGB& color, int64_t& numVBOElements, std::vector<Vector>& points,
   std::vector<Vector>& normals, std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
 {
   double num_strips = resolution;
@@ -496,14 +496,14 @@ void GlyphGeom::addArrow(const Point& center, const Vector& t,
   Transform trans;
   Transform rotate;
   generateTransforms(center, t, trans, rotate);
-  
+
   Vector offset = rotate * Vector(0,0,1);
   offset.safe_normalize();
   offset *= length * ratio;
-  
+
   generateCylinder(center, t, radius/10.0, radius/10.0, length*ratio, nu, nv, quadstrips);
   generateCylinder(center+offset, t, radius, 0.0, length, nu, nv, quadstrips);
-  
+
   // add strips to the object
 }
 
@@ -513,7 +513,7 @@ void GlyphGeom::addBox(const Point& center, const Vector& t,
 {
   std::vector<QuadStrip> quadstrips;
   generateBox(center, t, x_side, y_side, z_side, quadstrips);
-  
+
   // add strips to object
 }
 
@@ -523,7 +523,7 @@ void GlyphGeom::addCylinder(const Point& center, const Vector& t,
 {
   std::vector<QuadStrip> quadstrips;
   generateCylinder(center, t, radius1, radius1, length, nu, nv, quadstrips);
-  
+
   // add the strips to the object
 }
 
@@ -533,7 +533,7 @@ void GlyphGeom::addSphere(const Point& center, double radius,
 {
   std::vector<QuadStrip> quadstrips;
   generateEllipsoid(center, Vector(0, 0, 1), radius, nu, nv, half, quadstrips);
-  
+
   // add strips to the object
 
 }
@@ -754,7 +754,7 @@ void GlyphGeom::generateTransforms(const Point& center, const Vector& normal,
   axis.normalize();
 
   Vector z(0, 0, 1), zrotaxis;
-  
+
   if((Abs(axis.x()) + Abs(axis.y())) < 1.e-5)
   {
     // Only x-z plane...
@@ -765,7 +765,7 @@ void GlyphGeom::generateTransforms(const Point& center, const Vector& normal,
     zrotaxis = Cross(axis, z);
     zrotaxis.normalize();
   }
-  
+
   double cangle = Dot(z, axis);
   double zrotangle = -acos(cangle);
 

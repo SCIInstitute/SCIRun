@@ -45,27 +45,28 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/BBox.h>
-#include <Graphics/Glyphs/GlyphGeom.h>
+#include <Graphics/Widgets/SphereWidget.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Logging/Log.h>
+#include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun;
 using namespace Core;
+using namespace Logging;
 using namespace Datatypes;
 using namespace Dataflow::Networks;
 using namespace Modules::Fields;
 using namespace Geometry;
+using namespace Algorithms;
 using namespace Algorithms::Fields;
 using namespace Graphics::Datatypes;
 
 ALGORITHM_PARAMETER_DEF(Fields, NumSeeds);
 ALGORITHM_PARAMETER_DEF(Fields, ProbeScale);
+ALGORITHM_PARAMETER_DEF(Fields, PointPositions);
 
 MODULE_INFO_DEF(GeneratePointSamplesFromField, NewField, SCIRun)
-
-#if SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: include real PointWidget header here
-#include <Core/Thread/CrowdMonitor.h>
-#include <Dataflow/Widgets/PointWidget.h>
-#endif
-
 
 namespace SCIRun
 {
@@ -73,20 +74,31 @@ namespace SCIRun
   {
     namespace Fields
     {
-
       class GeneratePointSamplesFromFieldImpl
       {
       public:
-        //CrowdMonitor widget_lock_;
         BBox last_bounds_;
-
-        std::vector<size_t>              widget_id_;
-        //std::vector<GeomHandle>       widget_switch_;
-        std::vector<PointWidgetPtr>     pointWidgets_;
+        std::vector<SphereWidgetHandle> pointWidgets_;
+        std::vector<Transform> previousTransforms_;
         double l2norm_;
 
-        GeometryHandle buildWidgetObject(FieldHandle field, double radius, const GeometryIDGenerator& idGenerator);
-        RenderState getWidgetRenderState() const;
+        FieldHandle makePointCloud()
+        {
+          FieldInformation fi("PointCloudMesh", 1, "double");
+          auto ofield = CreateField(fi);
+          auto mesh = ofield->vmesh();
+          auto field = ofield->vfield();
+
+          for (int i = 0; i < pointWidgets_.size(); i++)
+          {
+            const Point location = pointWidgets_[i]->position();
+
+            VMesh::Node::index_type pcindex = mesh->add_point(location);
+            field->resize_fdata();
+            field->set_value(static_cast<double>(i), pcindex);
+          }
+          return ofield;
+        }
       };
     }
   }
@@ -106,39 +118,71 @@ void GeneratePointSamplesFromField::setStateDefaults()
   auto state = get_state();
   state->setValue(Parameters::NumSeeds, 1);
   state->setValue(Parameters::ProbeScale, 0.23);
+  state->setValue(Parameters::PointPositions, VariableList());
+  getOutputPort(GeneratedWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
 
 void GeneratePointSamplesFromField::execute()
 {
-  auto field = GenerateOutputField();
-  sendOutput(GeneratedPoints, field);
+  sendOutput(GeneratedPoints, GenerateOutputField());
 
-  auto geom = impl_->buildWidgetObject(field, get_state()->getValue(Parameters::ProbeScale).toDouble(), *this);
+  auto geom = WidgetFactory::createComposite(*this, "multiple_spheres", impl_->pointWidgets_.begin(), impl_->pointWidgets_.end());
   sendOutput(GeneratedWidget, geom);
+}
+
+void GeneratePointSamplesFromField::processWidgetFeedback(const ModuleFeedback& var)
+{
+  try
+  {
+    auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
+    if (vsf.selectionName.find(get_id()) != std::string::npos)
+    {
+      int widgetIndex = -1;
+      try
+      {
+        static boost::regex r("SphereWidget::GPSFF\\((.+)\\).+");
+        boost::smatch what;
+        regex_match(vsf.selectionName, what, r);
+        widgetIndex = boost::lexical_cast<int>(what[1]);
+      }
+      catch (...)
+      {
+        logWarning("Failure parsing widget id");
+      }
+      if (impl_->previousTransforms_[widgetIndex] != vsf.transform)
+      {
+        adjustPositionFromTransform(vsf.transform, widgetIndex);
+        enqueueExecuteAgain(false);
+      }
+    }
+  }
+  catch (std::bad_cast&)
+  {
+    //ignore
+  }
+}
+
+void GeneratePointSamplesFromField::adjustPositionFromTransform(const Transform& transformMatrix, int index)
+{
+  DenseMatrix center(4, 1);
+
+  auto currLoc = impl_->pointWidgets_[index]->position();
+  center << currLoc.x(), currLoc.y(), currLoc.z(), 1.0;
+  DenseMatrix newTransform(DenseMatrix(transformMatrix) * center);
+
+  Point newLocation(newTransform(0, 0) / newTransform(3, 0),
+    newTransform(1, 0) / newTransform(3, 0),
+    newTransform(2, 0) / newTransform(3, 0));
+
+  impl_->pointWidgets_[index]->setPosition(newLocation);
+  impl_->previousTransforms_[index] = transformMatrix;
 }
 
 FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
 {
   auto ifieldhandle = getRequiredInput(InputField);
-  bool input_field_p = true;
-  /// @todo: It looks like the input field is meant to be optional even
-  // though it is not.
-  //  if (!(ifp->get(ifieldhandle) && ifieldhandle.get_rep()))
-  //  {
-  //    input_field_p = false;
-  //    return;
-  //  }
 
-  BBox bbox;
-  if (input_field_p)
-  {
-    bbox = ifieldhandle->vmesh()->get_bounding_box();
-  }
-  else
-  {
-    bbox.extend(Point(-1.0, -1.0, -1.0));
-    bbox.extend(Point(1.0, 1.0, 1.0));
-  }
+  auto bbox = ifieldhandle->vmesh()->get_bounding_box();
 
   Point center;
   Point bmin = bbox.get_min();
@@ -166,213 +210,57 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
 
     center = bmin + Vector(bmax - bmin) * 0.5;
     impl_->l2norm_ = (bmax - bmin).length();
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: don't worry about this yet
-    GeometryOPortHandle ogport;
-    if (!(get_oport_handle("GeneratePointSamplesFromField Widget",ogport)))
-    {
-      error("Unable to initialize " + module_name_ + "'s oport.");
-      return;
-    }
-    ogport->flushViews();
-#endif
-
     impl_->last_bounds_ = bbox;
   }
 
   auto state = get_state();
-  size_t numSeeds = state->getValue(Parameters::NumSeeds).toInt();
+  auto numSeeds = state->getValue(Parameters::NumSeeds).toInt();
   auto scale = state->getValue(Parameters::ProbeScale).toDouble();
-
-  if (impl_->widget_id_.size() != numSeeds)
+  auto widgetName = [](int i) { return "GPSFF(" + std::to_string(i) + ")"; };
+  if (impl_->pointWidgets_.size() != numSeeds)
   {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: don't worry about this yet
-    GeometryOPortHandle ogport;
-    if (!(get_oport_handle("GeneratePointSamplesFromField Widget",ogport)))
+    if (numSeeds < impl_->pointWidgets_.size())
     {
-      error("Unable to initialize " + module_name_ + "'s oport.");
-      return;
-    }
-#endif
-
-    if (numSeeds < impl_->widget_id_.size())
-    {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: remove point widgets from viewscene
-      for (int i = numSeeds; i < (int)widget_id_.size(); i++)
-      {
-        ((GeomSwitch *)(widget_switch_[i].get_rep()))->set_state(0);
-        ogport->delObj(widget_id_[i]);
-        ogport->flushViews();
-
-        //delete in tcl side
-        ostringstream str;
-        str << i;
-        TCLInterface::execute(get_id().c_str() + std::string(" clear_seed " + str.str()));
-      }
-#endif
-      impl_->widget_id_.resize(numSeeds);
       impl_->pointWidgets_.resize(numSeeds);
     }
     else
     {
-      for (size_t i = impl_->widget_id_.size(); i < numSeeds; i++)
+      auto positions = state->getValue(Parameters::PointPositions).toVector();
+      for (size_t i = impl_->pointWidgets_.size(); i < numSeeds; i++)
       {
-        PointWidgetPtr seed(new PointWidgetStub());  //@cbrightsci: replace with real PointWidget instance
+        auto location = center;
+        if (i < positions.size())
+          location = pointFromString(positions[i].toString());
 
+        auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this,
+          widgetName(i),
+          scale, "Color(0.5,0.5,0.5)", location, bbox));
         impl_->pointWidgets_.push_back(seed);
-        impl_->widget_id_.push_back(i);
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: place new point widget on viewscene
-        // input saved out positions
-        std::ostringstream strX, strY, strZ;
-
-        strX << "seedX" << i;
-        GuiDouble* gui_locx = new GuiDouble(get_ctx()->subVar(strX.str()));
-        seeds_.push_back(gui_locx);
-
-        strY << "seedY" << i;
-        GuiDouble* gui_locy = new GuiDouble(get_ctx()->subVar(strY.str()));
-        seeds_.push_back(gui_locy);
-
-        strZ << "seedZ" << i;
-        GuiDouble* gui_locz = new GuiDouble(get_ctx()->subVar(strZ.str()));
-        seeds_.push_back(gui_locz);
-
-        Point curloc(gui_locx->get(),gui_locy->get(),gui_locz->get());
-
-        if (curloc.x() >= bmin.x() && curloc.x() <= bmax.x() &&
-          curloc.y() >= bmin.y() && curloc.y() <= bmax.y() &&
-          curloc.z() >= bmin.z() && curloc.z() <= bmax.z() ||
-          !input_field_p)
-        {
-          center = curloc;
-        }
-        else
-        {
-          TCLInterface::execute(get_id().c_str() + std::string(" make_seed " + to_string((int)i)));
-        }
-
-        TCLInterface::execute(get_id().c_str() + std::string(" set_seed " + to_string((int)i) + " " + to_string((double)center.x()) + " " + to_string((double)center.y()) + " " + to_string((double)center.z())));
-#endif
-        seed->setPosition(center);
-        seed->setScale(scale * impl_->l2norm_ * 0.003);
       }
     }
+    impl_->previousTransforms_.resize(impl_->pointWidgets_.size());
   }
-
-  for (int i = 0; i < numSeeds; i++)
+  else
   {
-    impl_->pointWidgets_[i]->setScale(scale * impl_->l2norm_ * 0.003);
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  //@cbrightsci: i think this adjusts the point/sphere scale
-    TCLInterface::execute(get_id().c_str() + std::string(" set_seed " +
-      to_string((int)i) + " " + to_string((double)location.x()) + " " +
-      to_string((double)location.y()) + " " + to_string((double)location.z())));
-#endif
-  }
-
-  //when push send button--TODO: for now, always update seed mesh
-  FieldInformation fi("PointCloudMesh", 1, "double");
-  FieldHandle ofield = CreateField(fi);
-  VMesh* mesh = ofield->vmesh();
-  VField* field = ofield->vfield();
-
-  for (int i = 0; i < numSeeds; i++)
-  {
-    const Point location = impl_->pointWidgets_[i]->position();
-
-    VMesh::Node::index_type pcindex = mesh->add_point(location);
-    field->resize_fdata();
-    field->set_value(static_cast<double>(i), pcindex);
-  }
-
-  return ofield;
-}
-
-GeometryHandle GeneratePointSamplesFromFieldImpl::buildWidgetObject(FieldHandle field, double radius, const GeometryIDGenerator& idGenerator)
-{
-  auto geom(boost::make_shared<GeometryObjectSpire>(idGenerator, "EntireSinglePointProbeFromField", true));
-
-  auto mesh = field->vmesh();
-
-  ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
-  ColorRGB node_color;
-
-  mesh->synchronize(Mesh::NODES_E);
-
-  VMesh::Node::iterator eiter, eiter_end;
-  mesh->begin(eiter);
-  mesh->end(eiter_end);
-
-  double num_strips = 10;
-  if (radius < 0) radius = 1.;
-  if (num_strips < 0) num_strips = 10.;
-  std::stringstream ss;
-  ss << radius << num_strips << static_cast<int>(colorScheme);
-
-  std::string uniqueNodeID = geom->uniqueID() + "widget" + ss.str();
-
-  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::TRIANGLES;
-
-  Graphics::GlyphGeom glyphs;
-  while (eiter != eiter_end)
-  {
-    //checkForInterruption();
-
-    Point p;
-    mesh->get_point(p, *eiter);
-
-    glyphs.addSphere(p, radius, num_strips, node_color);
-
-    ++eiter;
-  }
-
-  RenderState renState = getWidgetRenderState();
-
-  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, primIn, mesh->get_bounding_box());
-
-  return geom;
-}
-
-RenderState GeneratePointSamplesFromFieldImpl::getWidgetRenderState() const
-{
-  RenderState renState;
-
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::USE_TRANSPARENCY, false);
-
-  renState.defaultColor = ColorRGB(0.5, 0.5, 0.5);
-  renState.defaultColor = (renState.defaultColor.r() > 1.0 ||
-    renState.defaultColor.g() > 1.0 ||
-    renState.defaultColor.b() > 1.0) ?
-    ColorRGB(
-    renState.defaultColor.r() / 255.,
-    renState.defaultColor.g() / 255.,
-    renState.defaultColor.b() / 255.)
-    : renState.defaultColor;
-
-  renState.set(RenderState::USE_DEFAULT_COLOR, true);
-  renState.set(RenderState::USE_NORMALS, true);
-  renState.set(RenderState::IS_WIDGET, true);
-
-  return renState;
-}
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER //@cbrightsci: this will be part 3, with interactive widgets
-void
-GeneratePointSamplesFromField::widget_moved(bool last, BaseWidget*)
-{
-  if (last)
-  {
-    if (gui_auto_execute_.get() == 1)
+    std::vector<SphereWidgetHandle> newWidgets;
+    int counter = 0;
+    moveCount_++;
+    for (const auto& oldWidget : impl_->pointWidgets_)
     {
-      want_to_execute();
+      auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this,
+        widgetName(counter++) + std::string(moveCount_, ' '),
+        scale, "Color(0.5,0.5,0.5)", oldWidget->position(), bbox));
+      newWidgets.push_back(seed);
     }
+    impl_->pointWidgets_ = newWidgets;
   }
+
+  VariableList positions;
+  for (const auto& widget : impl_->pointWidgets_)
+  {
+    positions.push_back(makeVariable("widget_i", widget->position().get_string()));
+  }
+  state->setValue(Parameters::PointPositions, positions);
+
+  return impl_->makePointCloud();
 }
-
-} // End namespace SCIRun
-
-
-#endif

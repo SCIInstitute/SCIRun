@@ -30,6 +30,7 @@
 #include <Modules/Basic/SendComplexScalar.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Logging/Log.h>
+#include <spdlog/fmt/ostr.h>
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Core::Datatypes;
@@ -55,6 +56,6 @@ void SendComplexScalar::execute()
   }
   else
   {
-    LOG_DEBUG("Executing SendComplexMatrix with old value, not sending anything: " << data_);
+    LOG_DEBUG("Executing SendComplexMatrix with old value, not sending anything: {}", data_);
   }
 }

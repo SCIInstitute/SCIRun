@@ -125,6 +125,7 @@ namespace Gui {
   class FileImportCommand : public NetworkFileProcessCommand
   {
   public:
+    FileImportCommand();
     std::string logContents() const { return logContents_.str(); }
   protected:
     Dataflow::Networks::NetworkFileHandle processXmlFile(const std::string& filename) override;

@@ -57,24 +57,15 @@ namespace Gui {
   class SCIRunMainWindow;
   class ModuleDialogGeneric;
 
-  class TextEditAppender : public Core::Logging::LegacyLoggerInterface, public Core::Logging::LogAppenderStrategy
+  class TextEditAppender : public Core::Logging::LogAppenderStrategy
   {
   public:
-    explicit TextEditAppender(QTextEdit* text, bool regressionMode = false) :
-      text_(text), regressionMode_(regressionMode) {}
-
+    explicit TextEditAppender(QTextEdit* text) : text_(text) {}
     void log(const QString& message) const;
-
-    void error(const std::string& msg) const override;
-    void warning(const std::string& msg) const override;
-    void remark(const std::string& msg) const override;
-    void status(const std::string& msg) const override;
-
     virtual void log4(const std::string& message) const override;
   private:
     QTextEdit* text_;
     mutable QMutex mutex_;
-    bool regressionMode_;
   };
 
   class TreeViewModuleGetter : public CurrentModuleSelection
@@ -254,6 +245,17 @@ namespace Gui {
   };
 
   QString networkBackgroundImage();
+
+  //TODO: global function replacements for SCIRunMainWindow access. extract into new file/namespace
+  QString scirunStylesheet();
+  QMainWindow* mainWindowWidget();
+
+  class SCIRunGuiRunner
+  {
+  public:
+    explicit SCIRunGuiRunner(QApplication& app);
+    int returnCode();
+  };
 }
 }
 #endif

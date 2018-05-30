@@ -1,9 +1,11 @@
 #ifndef SPIRE_ES_GENERAL_CONSTANT_ROTATION_HPP
 #define SPIRE_ES_GENERAL_CONSTANT_ROTATION_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
 #include <cereal-glm/CerealGLM.hpp>
+#include <spire/scishare.h>
 
 namespace gen {
 
@@ -40,4 +42,4 @@ struct ConstantRotation
 
 } // namespace gen
 
-#endif 
+#endif

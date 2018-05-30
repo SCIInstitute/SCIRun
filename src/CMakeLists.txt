@@ -232,6 +232,9 @@ INCLUDE(${Teem_USE_FILE})
 CONFIG_STANDARD_EXTERNAL( Freetype FreetypeConfig.cmake ${Freetype_DIR} )
 INCLUDE(${FREETYPE_USE_FILE})
 
+CONFIG_STANDARD_EXTERNAL( Cleaver2 Cleaver2Config.cmake ${CLEAVER2_DIR} )
+INCLUDE(${CLEAVER2_USE_FILE})
+
 IF(BUILD_WITH_PYTHON)
   CONFIG_STANDARD_EXTERNAL( Python PythonConfig.cmake ${Python_DIR} )
   INCLUDE(${SCI_PYTHON_USE_FILE})
@@ -254,6 +257,11 @@ ENDIF()
 IF(WIN32)
   CONFIG_STANDARD_EXTERNAL( Glew GlewConfig.cmake ${GLEW_DIR} )
   INCLUDE(${GLEW_USE_FILE})
+ENDIF()
+
+IF(NOT BUILD_HEADLESS)
+  CONFIG_STANDARD_EXTERNAL( Qwt QwtConfig.cmake ${QWT_DIR} )
+  INCLUDE(${QWT_USE_FILE})
 ENDIF()
 
 ########################################################################
@@ -374,6 +382,15 @@ IF(WITH_OSPRAY)
 ENDIF()
 
 ########################################################################
+# Detailed renderer logging
+
+OPTION(RENDERER_TRACE_ON "Enable detailed renderer logging." OFF)
+MARK_AS_ADVANCED(RENDERER_TRACE_ON)
+IF(RENDERER_TRACE_ON)
+  ADD_DEFINITIONS(-DRENDERER_TRACE_ON)
+ENDIF()
+
+########################################################################
 # Copy Spire-SCIRun specific assets and shaders
 
 set(OUTPUT_SHADER_DIR ${CMAKE_CURRENT_BINARY_DIR}/Shaders)
@@ -436,19 +453,91 @@ FIND_PACKAGE(OpenGL REQUIRED)
 ########################################################################
 # Find and configure Qt
 
+IF(QT5_BUILD)
+  ADD_DEFINITIONS(-DQT5_BUILD)
+ENDIF()
+
 # TODO: exclude for headless
 IF(NOT BUILD_HEADLESS)
-  FIND_PACKAGE(Qt4 COMPONENTS QtMain QtCore QtGui QtNetwork QtOpenGL REQUIRED)
+  IF(NOT QT5_BUILD)
+    FIND_PACKAGE(Qt4 COMPONENTS QtMain QtCore QtGui QtNetwork QtOpenGL QtSvg REQUIRED)
 
-  IF(QT_FOUND)
-    INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
-    INCLUDE(${QT_USE_FILE})
-    ADD_DEFINITIONS(${QT_DEFINITIONS})
+    IF(QT_FOUND)
+      INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
+      INCLUDE(${QT_USE_FILE})
+      ADD_DEFINITIONS(${QT_DEFINITIONS})
+    ELSE()
+      MESSAGE(FATAL_ERROR "QT 4.8 or greater is required to build SCIRun")
+    ENDIF()
+
   ELSE()
-    MESSAGE(FATAL_ERROR "QT 4.8 or greater is required to build SCIRun")
+    FIND_PACKAGE(Qt5Core REQUIRED HINTS ${Qt5_PATH})
+    FIND_PACKAGE(Qt5Gui REQUIRED HINTS ${Qt5_PATH})
+    FIND_PACKAGE(Qt5Widgets REQUIRED HINTS ${Qt5_PATH})
+    FIND_PACKAGE(Qt5Network REQUIRED HINTS ${Qt5_PATH})
+    FIND_PACKAGE(Qt5OpenGL REQUIRED HINTS ${Qt5_PATH})
+    FIND_PACKAGE(Qt5Concurrent REQUIRED HINTS ${Qt5_PATH})
+	FIND_PACKAGE(Qt5PrintSupport REQUIRED HINTS ${Qt5_PATH})
+	FIND_PACKAGE(Qt5Svg REQUIRED HINTS ${Qt5_PATH})
+
+    IF(Qt5Core_FOUND)
+      MESSAGE(STATUS "Found Qt version: ${Qt5Core_VERSION_STRING}")
+    	INCLUDE_DIRECTORIES(${Qt5Core_INCLUDE_DIRS})
+  	  INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDE_DIRS})
+      INCLUDE_DIRECTORIES(${Qt5Gui_INCLUDE_DIRS})
+      INCLUDE_DIRECTORIES(${Qt5Network_INCLUDE_DIRS})
+      INCLUDE_DIRECTORIES(${Qt5OpenGL_INCLUDE_DIRS})
+      INCLUDE_DIRECTORIES(${Qt5Concurrent_INCLUDE_DIRS})
+	  INCLUDE_DIRECTORIES(${Qt5PrintSupport_INCLUDE_DIRS})
+      INCLUDE_DIRECTORIES(${Qt5Svg_INCLUDE_DIRS})
+      ADD_DEFINITIONS(${Qt5Core_DEFINITIONS})
+      ADD_DEFINITIONS(${Qt5Widgets_DEFINITIONS})
+      ADD_DEFINITIONS(${Qt5Gui_DEFINITIONS})
+      ADD_DEFINITIONS(${Qt5Network_DEFINITIONS})
+      ADD_DEFINITIONS(${Qt5OpenGL_DEFINITIONS})
+      ADD_DEFINITIONS(${Qt5Concurrent_DEFINITIONS})
+	  ADD_DEFINITIONS(${Qt5PrintSupport_DEFINITIONS})
+	  ADD_DEFINITIONS(${Qt5Svg_DEFINITIONS})
+      SET(QT_LIBRARIES Qt5::Widgets)
+    ELSE()
+      MESSAGE(FATAL_ERROR "Qt5 is required for building the SCIRun GUI")
+    ENDIF()
+
+    IF(Qt5Core_FOUND)
+      INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
+      #INCLUDE(${QT_USE_FILE})
+      ADD_DEFINITIONS(${QT_DEFINITIONS})
+    ELSE()
+      MESSAGE(FATAL_ERROR "QT 5.8 or greater is required to build SCIRun")
+    ENDIF()
   ENDIF()
 
   ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
+
+  MACRO(QT_WRAP_UI arg1 arg2)
+    IF(QT5_BUILD)
+      QT5_WRAP_UI(${arg1} ${arg2})
+    ELSE()
+      QT4_WRAP_UI(${arg1} ${arg2})
+    ENDIF()
+  ENDMACRO(QT_WRAP_UI)
+
+  MACRO(QT_WRAP_CPP arg1 arg2)
+    IF(QT5_BUILD)
+      QT5_WRAP_CPP(${arg1} ${arg2})
+    ELSE()
+      QT4_WRAP_CPP(${arg1} ${arg2})
+    ENDIF()
+  ENDMACRO(QT_WRAP_CPP)
+
+  MACRO(QT_ADD_RESOURCES arg1 arg2)
+    IF(QT5_BUILD)
+      QT5_ADD_RESOURCES(${arg1} ${arg2})
+    ELSE()
+      QT4_ADD_RESOURCES(${arg1} ${arg2})
+    ENDIF()
+  ENDMACRO(QT_ADD_RESOURCES)
+
 ENDIF()
 
 ########################################################################
@@ -477,13 +566,14 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_BINARY_DIR}/
   ${SCIRun_BINARY_DIR}/include
   ${SCIRun_SOURCE_DIR}/Externals/eigen
-  # TODO: set up include variable in log4cpp project
-  ${SCIRun_SOURCE_DIR}/Externals/log4cpp/include
   ${SCI_TEEM_INCLUDE}
   ${SCI_ZLIB_INCLUDE}
   ${GLM_DIR}
+  ${SPDLOG_DIR}/include
   ${SCI_TNY_INCLUDE}
   ${SCI_LODEPNG_INCLUDE}
+  ${SCI_QWT_INCLUDE}
+  ${SCI_CLEAVER2_INCLUDE}
 )
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
@@ -671,7 +761,7 @@ SET_PROPERTY(TARGET bundle_toolkit         PROPERTY FOLDER "Dataflow/Serializati
 SET_PROPERTY(TARGET Engine_Network         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Engine_Scheduler         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Dataflow_State         PROPERTY FOLDER "Dataflow")
-SET_PROPERTY(TARGET spire PROPERTY FOLDER "Graphics")
+SET_PROPERTY(TARGET ${SPIRE_LIBRARY_NAME} PROPERTY FOLDER "Graphics")
 
 IF(NOT BUILD_HEADLESS)
   SET_PROPERTY(TARGET Interface_Modules_Base   PROPERTY FOLDER "Interface/Modules")
@@ -793,7 +883,6 @@ IF(BUILD_TESTING)
   ENDIF()
 ENDIF()
 
-SET_PROPERTY(TARGET ${SCI_LOG4CPP_LIBRARY} PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET cleaver PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET xml2 PROPERTY FOLDER "Externals")
 

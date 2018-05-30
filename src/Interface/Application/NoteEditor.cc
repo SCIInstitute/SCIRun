@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <iostream>
 #include <Interface/Application/NoteEditor.h>
 
@@ -63,7 +63,7 @@ NoteEditor::NoteEditor(const QString& moduleName, bool positionAdjustable, QWidg
 
   //TODO: settable notes
   previousColor_ = Qt::white;
-  position_ = Default;
+  position_ = NotePosition::Default;
 }
 
 void NoteEditor::changeNotePosition(int index)

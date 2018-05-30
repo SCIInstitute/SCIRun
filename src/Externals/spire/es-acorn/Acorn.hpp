@@ -1,14 +1,16 @@
 #ifndef SPIRE_ES_ACORN_HPP
 #define SPIRE_ES_ACORN_HPP
 
+#include <es-log/trace-log.h>
 #include <entity-system/ESCoreBase.hpp>
 #include <es-cereal/CerealCore.hpp>
 #include <es-systems/SystemCore.hpp>
 #include <set>
+#include <spire/scishare.h>
 
 namespace spire {
 
-  class Acorn : public spire::CerealCore
+class SCISHARE Acorn : public spire::CerealCore
 {
 public:
   Acorn();
@@ -123,4 +125,4 @@ protected:
 
 } // namespace spire
 
-#endif 
+#endif

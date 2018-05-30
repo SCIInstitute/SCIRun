@@ -76,9 +76,9 @@ void Preferences::setDataDirectory(const boost::filesystem::path& path, bool run
   dataDir_ = path;
 
   if (!boost::filesystem::exists(path))
-    Log::get() << WARN << "Data directory " << path << " does not exist." << std::endl;
+    GeneralLog::Instance().get()->warn("Data directory {} does not exist.", path.string());
   if (!boost::filesystem::is_directory(path))
-    Log::get() << WARN << "Data directory " << path << " is not a directory." << std::endl;
+    GeneralLog::Instance().get()->warn("Data directory {} is not a directory.", path.string());
 
   if (dataDir_.string().back() == boost::filesystem::path::preferred_separator)
   {

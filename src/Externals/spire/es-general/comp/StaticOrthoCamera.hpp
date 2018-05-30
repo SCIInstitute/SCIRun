@@ -1,9 +1,11 @@
 #ifndef SPIRE_RENDER_COMPONENTS_STATIC_ORTHO_CAMERA_HPP
 #define SPIRE_RENDER_COMPONENTS_STATIC_ORTHO_CAMERA_HPP
 
+#include <es-log/trace-log.h>
 #include <glm/glm.hpp>
 #include <es-cereal/ComponentSerialize.hpp>
 #include "StaticCamera.hpp"
+#include <spire/scishare.h>
 
 namespace gen {
 
@@ -27,4 +29,4 @@ struct StaticOrthoCamera
 
 } // namespace gen
 
-#endif 
+#endif
