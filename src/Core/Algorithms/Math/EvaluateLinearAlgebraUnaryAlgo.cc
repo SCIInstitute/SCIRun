@@ -73,7 +73,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
   ENSURE_ALGORITHM_INPUT_NOT_NULL(matrix, "matrix");
   MatrixHandle result;
 
-  Operator oper = params.get<0>();
+  Operator oper = params.op;
 
   /// @todo: absolutely need matrix move semantics here!!!!!!!
   switch (oper)
@@ -94,10 +94,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
   }
   case SCALAR_MULTIPLY:
   {
-    boost::optional<double> scalarOption = params.get<1>();
-    if (!scalarOption)
-      THROW_ALGORITHM_INPUT_ERROR("No scalar value available to multiply!");
-    double scalar = scalarOption.get();
+    auto scalar = params.scalar;
     result.reset(matrix->clone());
     ScalarMultiplyMatrix mult(scalar);
     result->accept(mult);
@@ -117,8 +114,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
     if (!(engine.add_input_fullmatrix("x", matrix)))
       THROW_ALGORITHM_INPUT_ERROR("Error setting up parser");
 
-    boost::optional<std::string> func = params.get<2>();
-    std::string function_string = func.get();
+    auto function_string = params.func;
 
     function_string = "RESULT=" + function_string;
     engine.add_expressions(function_string);
@@ -143,10 +139,10 @@ AlgorithmOutput EvaluateLinearAlgebraUnaryAlgorithm::run(const AlgorithmInput& i
 {
   auto matrix = input.get<Matrix>(Variables::InputMatrix);
 
-  auto scalar = boost::make_optional(get(Variables::ScalarValue).toDouble());
-	auto function = boost::make_optional(get(Variables::FunctionString).toString());
+  auto scalar = get(Variables::ScalarValue).toDouble();
+	auto function = get(Variables::FunctionString).toString();
 
-  auto result = run(matrix, boost::make_tuple(Operator(get(Variables::Operator).toInt()), scalar, function));
+  auto result = run(matrix, { Operator(get(Variables::Operator).toInt()), scalar, function });
 
   AlgorithmOutput output;
   output[Variables::Result] = result;
