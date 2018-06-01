@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -58,8 +58,8 @@ Point::Point(double x, double y, double z, double w)
     d_[0]=0.0;
     d_[1]=0.0;
     d_[2]=0.0;
-  } 
-  else 
+  }
+  else
   {
     d_[0]=x/w;
     d_[1]=y/w;
@@ -111,8 +111,16 @@ std::istream& SCIRun::Core::Geometry::operator>>( std::istream& is, Point& v)
   return is;
 }
 
+Point SCIRun::Core::Geometry::pointFromString(const std::string& str)
+{
+  std::istringstream istr(str);
+  Point p;
+  istr >> p;
+  return p;
+}
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-Point 
+Point
 centroid(const std::vector<Point>& points)
 {
 	double cx = 0.0;
@@ -122,7 +130,7 @@ centroid(const std::vector<Point>& points)
   size_t size = points.size();
   if (size)
   {
-    for (size_t i = 0; i < size; i++) 
+    for (size_t i = 0; i < size; i++)
     {
       cx += points[i].x();
       cy += points[i].y();
@@ -137,12 +145,12 @@ centroid(const std::vector<Point>& points)
 }
 #endif
 
-void 
+void
 SCIRun::Core::Geometry::Pio(Piostream& stream, Point& p)
 {
   stream.begin_cheap_delim();
   double x,y,z;
-  if (! stream.reading()) 
+  if (! stream.reading())
   {
     x = p.x();
     y = p.y();
@@ -151,7 +159,7 @@ SCIRun::Core::Geometry::Pio(Piostream& stream, Point& p)
   Pio(stream, x);
   Pio(stream, y);
   Pio(stream, z);
-  if (stream.reading()) 
+  if (stream.reading())
   {
     p.x(x);
     p.y(y);
@@ -161,8 +169,8 @@ SCIRun::Core::Geometry::Pio(Piostream& stream, Point& p)
 }
 
 
-const std::string& 
-SCIRun::Point_get_h_file_path() 
+const std::string&
+SCIRun::Point_get_h_file_path()
 {
   static const std::string path(TypeDescription::cc_to_h(__FILE__));
   return path;
@@ -172,7 +180,7 @@ const TypeDescription* SCIRun::get_type_description(Core::Geometry::Point*)
 {
   static TypeDescription* td = 0;
   if(!td){
-    td = new TypeDescription("Point", Point_get_h_file_path(), 
+    td = new TypeDescription("Point", Point_get_h_file_path(),
 				"SCIRun", TypeDescription::DATA_E);
   }
   return td;

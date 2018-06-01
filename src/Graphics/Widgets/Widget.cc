@@ -27,10 +27,41 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Graphics/Widgets/Widget.h>
+#include <Graphics/Widgets/BoundingBoxWidget.h>
+#include <Graphics/Widgets/SphereWidget.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Graphics;
-Widget::Widget()
-{
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Graphics::Datatypes;
 
+WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable)
+  : GeometryObjectSpire(idGenerator, tag, isClippable)
+{
+}
+
+WidgetHandle WidgetFactory::createBox(const Core::GeometryIDGenerator& idGenerator, double scale,
+  const BoxPosition& pos, const BBox& bbox)
+{
+  return boost::make_shared<BoundingBoxWidget>(idGenerator, scale, pos, bbox);
+}
+
+WidgetHandle WidgetFactory::createSphere(const Core::GeometryIDGenerator& idGenerator,
+  const std::string& name,
+  double scale,
+  const std::string& defaultColor, const Point& point, const BBox& bbox)
+{
+  return boost::make_shared<SphereWidget>(idGenerator, name, scale, defaultColor, point, bbox);
+}
+
+CompositeWidget::~CompositeWidget()
+{
+}
+
+void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
+{
+  if (handle.get() == this)
+  {
+    list.insert(widgets_.begin(), widgets_.end());
+  }
 }

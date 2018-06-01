@@ -27,7 +27,7 @@
 */
 
 #include <iostream>
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <boost/lambda/lambda.hpp>
 #include <boost/regex.hpp>
 #include <Dataflow/Network/Port.h>
@@ -38,7 +38,6 @@
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
-#include <Interface/Application/SCIRunMainWindow.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
@@ -118,7 +117,8 @@ namespace SCIRun {
     class PortActionsMenu : public QMenu
     {
     public:
-      explicit PortActionsMenu(PortWidget* parent) : QMenu("Actions", parent), parent_(parent), faves_(nullptr)
+      explicit PortActionsMenu(PortWidget* parent) :
+        QMenu("Actions", parent), parent_(parent)
       {
 #if SCIRUN4_CODE_TO_BE_ENABLED_LATER
         QList<QAction*> actions;
@@ -138,21 +138,20 @@ namespace SCIRun {
 #endif
 
         base_ = new QMenu("Connect Module", parent);
-        faves_ = new QMenu("Favorites", parent);
-        base_->addMenu(faves_);
         compatibleModuleActions_ = fillConnectToEmptyPortMenu(base_, Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
 
         connectModuleAction_ = addAction("Connect Module...");
         connect(connectModuleAction_, SIGNAL(triggered()), parent, SLOT(pickConnectModule()));
       }
 
-      void filterFavorites()
-      {
-        faves_->clear();
-        for (const auto& action : compatibleModuleActions_)
-          if (SCIRunMainWindow::Instance()->isInFavorites(action->text())) // TODO: break out predicate
-            faves_->addAction(action);
-      }
+      //TODO: might add back as a feature later
+      // void filterFavorites()
+      // {
+      //   faves_->clear();
+      //   for (const auto& action : compatibleModuleActions_)
+      //     if (isInFavorites_(action->text()))
+      //       faves_->addAction(action);
+      // }
 
       QStringList compatibleModules() const
       {
@@ -184,7 +183,6 @@ namespace SCIRun {
     private:
       PortWidget* parent_;
       QMenu* base_;
-      QMenu* faves_;
       QList<QAction*> compatibleModuleActions_;
       QAction* connectModuleAction_;
     };
@@ -334,7 +332,6 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos, Qt::
   }
   else if (button == Qt::RightButton && (!isConnected() || !isInput()))
   {
-    menu_->filterFavorites();
     showMenu();
   }
   else
@@ -507,7 +504,7 @@ void PortWidget::MakeTheConnection(const ConnectionDescription& cd)
 
 void PortWidget::connectionDisabled(bool disabled)
 {
-  Q_EMIT incomingConnectionStateChange(disabled, getIndex());
+  Q_EMIT incomingConnectionStateChange(disabled, static_cast<int>(getIndex()));
 }
 
 void PortWidget::setConnectionsDisabled(bool disabled)
@@ -800,87 +797,38 @@ std::vector<PortWidget*> PortWidget::connectedPorts() const
   return otherPorts;
 }
 
+static std::map<std::string, QColor> guiColorMap =
+{
+  { "red", Qt::red },
+  { "blue", QColor(14, 139, 255) },
+  { "lightblue", QColor(153, 204, 255) },
+  { "darkBlue", Qt::darkBlue },
+  { "cyan", QColor(27, 207, 207) },
+  { "darkCyan", Qt::darkCyan },
+  { "darkGreen", QColor(0, 175, 70) },
+  { "cyan", Qt::cyan },
+  { "magenta", QColor(255, 75, 240) },
+  { "darkMagenta", QColor(230, 67, 216) },
+  { "white", Qt::white },
+  { "yellow", QColor(234, 255, 55) },
+  { "darkYellow", Qt::darkYellow },
+  { "lightGray", Qt::lightGray },
+  { "darkGray", Qt::darkGray },
+  { "black", Qt::black },
+  { "purple", QColor(122, 119, 226) },
+  { "orange", QColor(254, 139, 38) },
+  { "brown", QColor(160, 82, 45) }
+};
+
 QColor SCIRun::Gui::to_color(const std::string& str, int alpha)
 {
   QColor result;
-  if (SCIRunMainWindow::Instance()->newInterface())
-  {
-    if (str == "red")
-      result = Qt::red;
-    else if (str == "blue")
-      result = QColor(14, 139, 255);
-    else if (str == "lightblue")
-      result = QColor(153, 204, 255);
-    else if (str == "darkBlue")
-      result = Qt::darkBlue;
-    else if (str == "cyan")
-      result = QColor(27, 207, 207);
-    else if (str == "darkCyan")
-      result = Qt::darkCyan;
-    else if (str == "darkGreen")
-      result = QColor(0, 175, 70);
-    else if (str == "cyan")
-      result = Qt::cyan;
-    else if (str == "magenta")
-      result = QColor(255, 75, 240);
-    else if (str == "white")
-      result = Qt::white;
-    else if (str == "yellow")
-      result = QColor(234, 255, 55);
-    else if (str == "darkYellow")
-      result = Qt::darkYellow;
-    else if (str == "lightGray")
-      result = Qt::lightGray;
-    else if (str == "darkGray")
-      result = Qt::darkGray;
-    else if (str == "black")
-      result = Qt::black;
-    else if (str == "purple")
-      result = QColor(122, 119, 226);
-    else if (str == "orange")
-      result = QColor(254, 139, 38);
-    else if (str == "brown")
-      result = QColor(160, 82, 45);
-    else
-      result = Qt::black;
-  }
+  auto color = guiColorMap.find(str);
+  if (color != guiColorMap.end())
+    result = color->second;
   else
-  {
-    if (str == "red")
-      result = Qt::red;
-    else if (str == "blue")
-      result = Qt::blue;
-    else if (str == "darkBlue")
-      result = Qt::darkBlue;
-    else if (str == "cyan")
-      result = Qt::cyan;
-    else if (str == "darkCyan")
-      result = Qt::darkCyan;
-    else if (str == "darkGreen")
-      result = Qt::darkGreen;
-    else if (str == "cyan")
-      result = Qt::cyan;
-    else if (str == "magenta")
-      result = Qt::magenta;
-    else if (str == "white")
-      result = Qt::white;
-    else if (str == "yellow")
-      result = Qt::yellow;
-    else if (str == "darkYellow")
-      result = Qt::darkYellow;
-    else if (str == "lightGray")
-      result = Qt::lightGray;
-    else if (str == "darkGray")
-      result = Qt::darkGray;
-    else if (str == "black")
-      result = Qt::black;
-    else if (str == "purple")
-      result = Qt::darkMagenta;
-    else if (str == "orange")
-      result = QColor(255, 165, 0);
-    else
-      result = Qt::black;
-  }
+    result = Qt::black;
+
   result.setAlpha(alpha);
   return result;
 }

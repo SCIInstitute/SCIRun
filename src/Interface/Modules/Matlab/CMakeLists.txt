@@ -46,8 +46,8 @@ SET(Interface_Modules_Matlab_SOURCES
   ExportFieldsToMatlabDialog.cc
 )
 
-QT4_WRAP_UI(Interface_Modules_Matlab_FORMS_HEADERS ${Interface_Modules_Matlab_FORMS})
-QT4_WRAP_CPP(Interface_Modules_Matlab_HEADERS_MOC ${Interface_Modules_Matlab_HEADERS})
+QT_WRAP_UI(Interface_Modules_Matlab_FORMS_HEADERS "${Interface_Modules_Matlab_FORMS}")
+QT_WRAP_CPP(Interface_Modules_Matlab_HEADERS_MOC "${Interface_Modules_Matlab_HEADERS}")
 
 SCIRUN_ADD_LIBRARY(Interface_Modules_Matlab
   ${Interface_Modules_Matlab_HEADERS}

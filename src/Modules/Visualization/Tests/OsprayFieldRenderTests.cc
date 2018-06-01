@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#if 0 //TODO: move to algo layer later
+
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -272,3 +274,4 @@ INSTANTIATE_TEST_CASE_P(
   //, 256 // probably runs out of memory
   )
   );
+#endif

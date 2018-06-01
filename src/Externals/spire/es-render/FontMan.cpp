@@ -244,13 +244,13 @@ public:
   /// request should not be attempted.
   std::set<std::string> mAssetsAlreadyRequested;
 
-  void preWalkComponents(spire::ESCoreBase&)
+  void preWalkComponents(spire::ESCoreBase&) override
   {
     mAssetsAwaitingRequest.clear();
     mAssetsAlreadyRequested.clear();
   }
 
-  void postWalkComponents(spire::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core) override 
   {
     StaticFontMan* man = core.getStaticComponent<StaticFontMan>();
     if (!man)
@@ -405,9 +405,9 @@ public:
 
   std::set<uint64_t> mValidKeys;
 
-  void preWalkComponents(spire::ESCoreBase&) {mValidKeys.clear();}
+  void preWalkComponents(spire::ESCoreBase&) override {mValidKeys.clear();}
 
-  void postWalkComponents(spire::ESCoreBase& core)
+  void postWalkComponents(spire::ESCoreBase& core) override
   {
     StaticFontMan* man = core.getStaticComponent<StaticFontMan>();
     if (!man)

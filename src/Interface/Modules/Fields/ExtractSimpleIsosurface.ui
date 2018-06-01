@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -69,7 +69,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Type list of desired values, comma-delimited.</string>
+          <string>Type list of desired values, space-delimited.</string>
          </property>
         </widget>
        </item>

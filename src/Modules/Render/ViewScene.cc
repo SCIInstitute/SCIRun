@@ -136,9 +136,13 @@ void ViewScene::updateTransientList()
   {
     geoms.reset(new GeomList());
   }
-  auto activeHandles = activeGeoms_ | boost::adaptors::map_values;
+
   geoms->clear();
-  geoms->insert(activeHandles.begin(), activeHandles.end());
+  for (const auto& geomPair : activeGeoms_)
+  {
+    auto geom = geomPair.second;
+    geom->addToList(geom, *geoms);
+  }
 
   // Grab geometry inputs and pass them along in a transient value to the GUI
   // thread where they will be transported to Spire.

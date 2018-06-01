@@ -27,7 +27,10 @@
 */
 
 #include <sstream>
-#include <QtGui>
+#include <Interface/qt_include.h>
+#ifdef QT5_BUILD
+#include <QtConcurrent>
+#endif
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/Node.h>
 #include <Interface/Application/Connection.h>
@@ -979,6 +982,14 @@ private:
   TagColorFunc tagColor_;
 };
 
+void scaleTextItem(QGraphicsTextItem* item, double textScale)
+{
+  #ifdef QT5_BUILD
+  item->setTransform(QTransform::fromScale(textScale, textScale));
+  #else
+  item->scale(textScale, textScale);
+  #endif
+}
 void NetworkEditor::searchTextChanged(const QString& text)
 {
   if (text.isEmpty())
@@ -993,12 +1004,13 @@ void NetworkEditor::searchTextChanged(const QString& text)
     NetworkSearchEngine engine(scene(), tagColor_);
     auto results = engine.search(text);
     auto textScale = 1.0 / currentScale_;
+
     if (!results.empty())
     {
       auto title = new SearchResultItem("Search results:", Qt::green, {});
       title->setPos(positionOfFloatingText(title->num(), true, 20, textScale * 22));
       scene()->addItem(title);
-      title->scale(textScale, textScale);
+      scaleTextItem(title, textScale);
     }
     for (const auto& result : results)
     {
@@ -1006,7 +1018,7 @@ void NetworkEditor::searchTextChanged(const QString& text)
         std::get<ItemColor>(result), std::get<ItemAction>(result));
       searchItem->setPos(positionOfFloatingText(searchItem->num(), true, 50, textScale * 22));
       scene()->addItem(searchItem);
-      searchItem->scale(textScale, textScale);
+      scaleTextItem(searchItem, textScale);
     }
   }
 }
@@ -1116,7 +1128,7 @@ ModuleNotesHandle NetworkEditor::dumpModuleNotes(ModuleFilter filter) const
       auto note = w->currentNote();
       if (filter(w->getModuleWidget()->getModule()) &&
         !note.plainText_.isEmpty())
-        notes->notes[w->getModuleWidget()->getModuleId()] = NoteXML(note.html_.toStdString(), note.position_, note.plainText_.toStdString(), note.fontSize_);
+        notes->notes[w->getModuleWidget()->getModuleId()] = NoteXML(note.html_.toStdString(), static_cast<int>(note.position_), note.plainText_.toStdString(), note.fontSize_);
     }
   }
   return notes;
@@ -1172,7 +1184,7 @@ ConnectionNotesHandle NetworkEditor::dumpConnectionNotes(ConnectionFilter filter
       {
         //TODO hacky
         auto id = connectionNoteId(conn->getConnectedToModuleIds());
-        notes->notes[id] = NoteXML(note.html_.toStdString(), note.position_, note.plainText_.toStdString(), note.fontSize_);
+        notes->notes[id] = NoteXML(note.html_.toStdString(), static_cast<int>(note.position_), note.plainText_.toStdString(), note.fontSize_);
       }
     }
   }
@@ -1287,7 +1299,7 @@ void NetworkEditor::updateModuleNotes(const ModuleNotes& moduleNotes)
       if (noteIter != moduleNotes.notes.end())
       {
         auto noteXML = noteIter->second;
-        Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, noteXML.position);
+        Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, NotePosition(noteXML.position));
         w->getModuleWidget()->updateNoteFromFile(note);
       }
     }
@@ -1327,7 +1339,7 @@ void NetworkEditor::updateConnectionNotes(const ConnectionNotes& notes)
       if (noteIter != notes.notes.end())
       {
         auto noteXML = noteIter->second;
-        Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, noteXML.position);
+        Note note(QString::fromStdString(noteXML.noteHTML), QString::fromStdString(noteXML.noteText), noteXML.fontSize, NotePosition(noteXML.position));
         conn->updateNoteFromFile(note);
       }
     }
