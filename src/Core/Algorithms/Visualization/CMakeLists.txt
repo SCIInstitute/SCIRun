@@ -28,11 +28,15 @@
 
 SET(Algorithms_Visualization_SRCS
   DataConversions.cc
+  OsprayRenderAlgorithm.cc
+  OsprayDataAlgorithm.cc
 )
 
 SET(Algorithms_Visualization_HEADERS
   DataConversions.h
   RenderFieldState.h
+  OsprayRenderAlgorithm.h
+  OsprayDataAlgorithm.h
 )
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Visualization 
@@ -42,10 +46,17 @@ SCIRUN_ADD_LIBRARY(Core_Algorithms_Visualization
 
 TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization
   Core_Datatypes
+  Core_Datatypes_Legacy_Field
   Algorithms_Base
-  ${CPM_LIBRARIES}
+  Graphics_Datatypes
   ${SCI_BOOST_LIBRARY}
 )
+
+IF(WITH_OSPRAY)
+  INCLUDE(${CMAKE_SOURCE_DIR}/CMake/Modules/FindOSPRay.cmake)
+  INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
+  TARGET_LINK_LIBRARIES(Core_Algorithms_Visualization ${OSPRAY_LIBRARIES})
+ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Algorithms_Visualization)

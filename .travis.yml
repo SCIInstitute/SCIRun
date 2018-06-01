@@ -10,22 +10,18 @@ matrix:
       dist: trusty
       sudo: required
       compiler: clang
-#   - os: osx
-#     osx_image: xcode7.2
+#    - os: osx
+#      osx_image: xcode7.2
 
-# check environment (copied from libgit2sharp)
 before_install:
 - date -u
 - uname -a
-#- sudo apt-get update -qq
+- sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build libqt4-dev qt4-qmake libqt4-opengl-dev
 
-# TODO: could move script to separate file
-# Not running unit tests at the moment, so turn off testing, which will
-# hopefully make OS X builds a bit faster
 script:
   - cd bin
-  - cmake -DTRAVIS_BUILD:BOOL=ON ../Superbuild
-  - make -j4 1> /dev/null
+  - cmake -GNinja -DTRAVIS_BUILD:BOOL=ON ../Superbuild
+  - travis_wait 80 ninja
   - cd SCIRun
   - ./Algorithm_Layer_Test
   - ./Modules_Factory_Tests --gtest_filter=*HardCodedModuleFactoryTests*

@@ -57,8 +57,6 @@ void BuildSurfaceLaplacianMatrix::execute()
 
 	if (needToExecute())
 	{
-		update_state(Executing);
-
     FieldInformation fis(source);
 
     if (!fis.is_trisurfmesh())

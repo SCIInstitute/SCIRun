@@ -75,7 +75,7 @@ namespace
    (*expected_result)(0, 1) = 0.2023192248404992;  (*expected_result)(1, 1) = std::numeric_limits<double>::quiet_NaN();  (*expected_result)(2, 1) = 0.270036948169627;  (*expected_result)(3, 1) = 0.2819928747450936;  (*expected_result)(4, 1) = 0.2464919130115238;  (*expected_result)(5, 1) = 0.348358459345021;  (*expected_result)(6, 1) = 0.3382031144990396;  (*expected_result)(7, 1) = 0.1699586184078796;
    (*expected_result)(0, 2) = 0.1868726045543786;  (*expected_result)(1, 2) = 0.7546866819823609; (*expected_result)(2, 2) = 0.1189976815583766; (*expected_result)(3, 2) = 0.223811939491137;  (*expected_result)(4, 2) = 0.2550951154592691;     (*expected_result)(5, 2) = 0.1386244428286791;  (*expected_result)(6, 2) = 0.2435249687249893;  (*expected_result)(7, 2) = 0.1965952504312082;
    (*expected_result)(0, 3) = 0.7951999011370632;  (*expected_result)(1, 3) = 0.7546866819823609;  (*expected_result)(2, 3) = 0.6797026768536748;  (*expected_result)(3, 3) = 0.9597439585160811;  (*expected_result)(4, 3) = 0.8909032525357985;  (*expected_result)(5, 3) = 0.9592914252054443;  (*expected_result)(6, 3) = 0.9292636231872278;  (*expected_result)(7, 3) = 0.6160446761466392;
-   (*expected_result)(0, 4) = 9;  (*expected_result)(1, 4) = 1;  (*expected_result)(2, 4) = 5;    (*expected_result)(3, 4) = 5;  (*expected_result)(4, 4) = 5;  (*expected_result)(5, 4) = 5;  (*expected_result)(6, 4) = 5;    (*expected_result)(7, 4) = 5; 
+   (*expected_result)(0, 4) = 9;  (*expected_result)(1, 4) = 1;  (*expected_result)(2, 4) = 5;    (*expected_result)(3, 4) = 5;  (*expected_result)(4, 4) = 5;  (*expected_result)(5, 4) = 5;  (*expected_result)(6, 4) = 5;    (*expected_result)(7, 4) = 5;
 
     return expected_result;
   }
@@ -153,7 +153,7 @@ TEST(GenerateROIStatisticsAlgorithm, ValidInput_TestCoordinateSpace)
   FieldHandle atlas = CreateAtlas();
   FieldHandle createcoordcubesshiftby10 = CreateCoordinatesCubesShiftedBy10();
   FieldHandle createmeshsolution = CreateGetMeshSolution();
-  const std::string& atlasMeshLabelsStr = std::string("Region1;Region2;Region3;Region4;Region5;Region6;Region7;Region8");
+  std::string atlasMeshLabelsStr("Region1;Region2;Region3;Region4;Region5;Region6;Region7;Region8");
   DenseMatrixHandle specROI(new DenseMatrix(5, 1));
   (*specROI)(0, 0) = 10.5;
   (*specROI)(1, 0) = 10.5;

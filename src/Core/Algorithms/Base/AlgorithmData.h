@@ -30,7 +30,6 @@
 #define ALGORITHMS_BASE_ALGORITHMDATA_H
 
 #include <map>
-#include <boost/filesystem/path.hpp>
 #include <boost/any.hpp>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Base/Name.h>
@@ -44,7 +43,7 @@ namespace Algorithms {
   class SCISHARE AlgorithmData
   {
   public:
-    typedef std::map<Name, std::vector<Datatypes::DatatypeHandle>> Map;
+    using Map = std::map<Name, std::vector<Datatypes::DatatypeHandle>>;
     AlgorithmData() {}
     explicit AlgorithmData(const Map& m) : data_(m) {}
 
@@ -55,7 +54,7 @@ namespace Algorithms {
     {
       auto it = data_.find(name);
       /// @todo: log incorrect type if present but wrong type
-      return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(it->second[0]);
+      return it == data_.end() ? nullptr : boost::dynamic_pointer_cast<T>(it->second[0]);
     }
 
     template <typename T>
@@ -81,11 +80,11 @@ namespace Algorithms {
     boost::any transient_;
   };
 
-  class SCISHARE AlgorithmInput : public AlgorithmData 
+  class SCISHARE AlgorithmInput : public AlgorithmData
   {
   public:
     AlgorithmInput() {}
-    AlgorithmInput(const Map& m) : AlgorithmData(m) {}
+    explicit AlgorithmInput(const Map& m) : AlgorithmData(m) {}
   };
 
   class SCISHARE AlgorithmOutput : public AlgorithmData
@@ -97,9 +96,9 @@ namespace Algorithms {
     VariableHandle additionalAlgoOutput_;
   };
 
-  typedef Datatypes::SharedPointer<AlgorithmInput> AlgorithmInputHandle;
-  typedef Datatypes::SharedPointer<AlgorithmOutput> AlgorithmOutputHandle;
-  
+  using AlgorithmInputHandle = SharedPointer<AlgorithmInput>;
+  using AlgorithmOutputHandle = SharedPointer<AlgorithmOutput>;
+
 }}}
 
 #endif

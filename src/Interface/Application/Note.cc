@@ -28,12 +28,12 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <Core/Logging/Log.h>
 #include <Interface/Application/Note.h>
 #include <Interface/Application/HasNotes.h>
 #include <Interface/Application/NoteEditor.h>
-#include <Interface/Application/SCIRunMainWindow.h>
+#include <Interface/Application/MainWindowCollaborators.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
@@ -42,7 +42,7 @@ HasNotes::HasNotes(const std::string& name, bool positionAdjustable) :
   noteEditor_(QString::fromStdString(name), positionAdjustable, 0),
   destroyed_(false)
 {
-  noteEditor_.setStyleSheet(SCIRunMainWindow::Instance()->styleSheet());
+  noteEditor_.setStyleSheet(scirunStylesheet());
 }
 
 HasNotes::~HasNotes()
@@ -80,10 +80,15 @@ void HasNotes::setCurrentNote(const Note& note, bool updateEditor)
   }
 }
 
+void HasNotes::setDefaultNoteFontSize(int size)
+{
+  noteEditor_.setDefaultNoteFontSize(size);
+}
+
 NoteDisplayHelper::NoteDisplayHelper(NoteDisplayStrategyPtr display) :
-  item_(0), scene_(0), note_(0),
-  notePosition_(Default),
-  defaultNotePosition_(Top), //TODO
+  networkObjectWithNote_(nullptr), scene_(nullptr), note_(nullptr),
+  notePosition_(NotePosition::Default),
+  defaultNotePosition_(NotePosition::Top), //TODO
   displayStrategy_(display),
   destroyed_(false)
 {
@@ -113,15 +118,21 @@ void NoteDisplayHelper::updateNoteImpl(const Note& note)
   {
     setNoteGraphicsContext();
     if (!scene_)
-      Log::get() << WARN << "Scene not set, network notes will not be displayed!" << std::endl;
-    note_ = new QGraphicsTextItem("", 0, scene_);
+      GeneralLog::Instance().get()->warn("Scene not set, network notes will not be displayed.");
+
+    #ifdef QT5_BUILD
+    note_ = new QGraphicsTextItem("");
+    #else
+    note_ = new QGraphicsTextItem("", nullptr, scene_);
+    #endif
+
     note_->setDefaultTextColor(Qt::white);
   }
 
   note_->setHtml(note.html_);
   notePosition_ = note.position_;
   updateNotePosition();
-  note_->setZValue(item_->zValue() - 1);
+  note_->setZValue(networkObjectWithNote_->zValue() - 1);
 }
 
 void NoteDisplayHelper::clearNoteCursor()
@@ -136,13 +147,13 @@ void NoteDisplayHelper::clearNoteCursor()
 
 QPointF NoteDisplayHelper::relativeNotePosition()
 {
-  if (note_ && item_)
+  if (note_ && networkObjectWithNote_)
   {
-    auto position = notePosition_ == Default ? defaultNotePosition_ : notePosition_;
-    note_->setVisible(!(Tooltip == position || None == position));
-    item_->setToolTip("");
+    auto position = notePosition_ == NotePosition::Default ? defaultNotePosition_ : notePosition_;
+    note_->setVisible(!(NotePosition::Tooltip == position || NotePosition::None == position));
+    networkObjectWithNote_->setToolTip("");
 
-    return displayStrategy_->relativeNotePosition(item_, note_, position);
+    return displayStrategy_->relativeNotePosition(networkObjectWithNote_, note_, position);
   }
   return QPointF();
 }
@@ -153,9 +164,14 @@ void NoteDisplayHelper::setDefaultNotePositionImpl(NotePosition position)
   updateNotePosition();
 }
 
+void NoteDisplayHelper::setDefaultNoteSizeImpl(int size)
+{
+  defaultNoteFontSize_ = size;
+}
+
 void NoteDisplayHelper::updateNotePosition()
 {
-  if (note_ && item_)
+  if (note_ && networkObjectWithNote_)
   {
     auto position = positioner_->currentPosition() + relativeNotePosition();
     note_->setPos(position);

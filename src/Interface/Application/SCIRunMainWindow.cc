@@ -26,7 +26,8 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-#include <QtGui>
+#include <es-log/trace-log.h>
+#include <Interface/qt_include.h>
 #include <functional>
 #include <boost/bind.hpp>
 #include <boost/assign.hpp>
@@ -49,6 +50,7 @@
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Interface/Application/DialogErrorControl.h>
+#include <Interface/Application/TriggeredEventsWindow.h>
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Interface/Application/ModuleWizard/ModuleWizard.h>
@@ -56,9 +58,11 @@
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
 #include <Dataflow/Network/SimpleSourceSink.h>  //TODO: encapsulate!!!
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Core/Logging/Log.h>
+#include <Core/Thread/Parallel.h>
 #include <Core/Application/Version.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Core/Utils/CurrentFileName.h>
@@ -67,7 +71,8 @@
 #include <Interface/Application/PythonConsoleWidget.h>
 #include <Core/Python/PythonInterpreter.h>
 #endif
-#include "TriggeredEventsWindow.h"
+
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
@@ -79,82 +84,26 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
-
-struct ToolkitInfo
-{
-  static const char* ToolkitIconURL;
-  static const char* ToolkitURL;
-  static const char* ToolkitFilename;
-
-  QString iconUrl, zipUrl, filename;
-
-  void setupAction(QAction* action, QObject* window) const
-  {
-    QObject::connect(action, SIGNAL(triggered()), window, SLOT(toolkitDownload()));
-    action->setProperty(ToolkitIconURL, iconUrl);
-    action->setProperty(ToolkitURL, zipUrl);
-    action->setProperty(ToolkitFilename, filename);
-    action->setIcon(QPixmap(":/general/Resources/download.png"));
-  }
-};
-
-const char* ToolkitInfo::ToolkitIconURL{ "ToolkitIconURL" };
-const char* ToolkitInfo::ToolkitURL{ "ToolkitURL" };
-const char* ToolkitInfo::ToolkitFilename{ "ToolkitFilename" };
-
-class NetworkStatusImpl : public NetworkStatus
-{
-public:
-  explicit NetworkStatusImpl(NetworkEditor* ned) : ned_(ned) {}
-
-  size_t total() const override
-  {
-    return ned_->numModules();
-  }
-  size_t waiting() const override
-  {
-    return countState(ModuleExecutionState::Value::Waiting);
-  }
-  size_t executing() const override
-  {
-    return countState(ModuleExecutionState::Value::Executing);
-  }
-  size_t errored() const override
-  {
-    return countState(ModuleExecutionState::Value::Errored);
-  }
-  size_t nonReexecuted() const override
-  {
-    return -1; // not available yet
-  }
-  size_t finished() const override
-  {
-    return countState(ModuleExecutionState::Value::Completed);
-  }
-  size_t unexecuted() const override
-  {
-    return countState(ModuleExecutionState::Value::NotExecuted);
-  }
-private:
-  NetworkEditor* ned_;
-  
-  size_t countState(ModuleExecutionState::Value val) const
-  {
-    auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
-    return std::count(allStates.begin(), allStates.end(), val);
-  }
-};
-
-SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quitAfterExecute_(false)
+SCIRunMainWindow::SCIRunMainWindow()
 {
   setupUi(this);
+  builder_ = boost::make_shared<NetworkEditorBuilder>(this);
+  dockManager_ = new DockManager(dockSpace_, this);
+
+  {
+    //const bool regression = Application::Instance().parameters()->isRegressionMode();
+    boost::shared_ptr<TextEditAppender> logger(new TextEditAppender(logTextBrowser_));
+    GuiLog::Instance().addCustomSink(logger);
+  }
+
+  startup_ = true;
 
   QCoreApplication::setOrganizationName("SCI:CIBC Software");
   QCoreApplication::setApplicationName("SCIRun5");
 
   setAttribute(Qt::WA_DeleteOnClose);
-  if (newInterface())
-    setStyleSheet(
+
+  setStyleSheet(
     "background-color: rgb(66,66,69);"
     "color: white;"
     "selection-color: yellow;"
@@ -179,72 +128,34 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
     "QPushButton:default {"
     "border - color: navy; /* make the default button prominent */"
     "}"
-    );
+  );
+
   menubar_->setStyleSheet("QMenuBar::item::selected{background-color : rgb(66, 66, 69); } QMenuBar::item::!selected{ background-color : rgb(66, 66, 69); } ");
+
   dialogErrorControl_.reset(new DialogErrorControl(this));
   setupTagManagerWindow();
-  tagManagerWindow_->hide();
+
   setupPreferencesWindow();
+
   setupNetworkEditor();
 
   setTipsAndWhatsThis();
 
-  connect(actionExecute_All_, SIGNAL(triggered()), this, SLOT(executeAll()));
+  connect(actionExecuteAll_, SIGNAL(triggered()), this, SLOT(executeAll()));
   connect(actionNew_, SIGNAL(triggered()), this, SLOT(newNetwork()));
-  connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
-
-  gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 
   setActionIcons();
 
-  {
-    auto standardBar = addToolBar("Standard");
-    WidgetStyleMixin::toolbarStyle(standardBar);
-    standardBar->setObjectName("StandardToolBar");
-    standardBar->addAction(actionNew_);
-    standardBar->addAction(actionLoad_);
-    standardBar->addAction(actionSave_);
-    standardBar->addAction(actionRunScript_);
-    standardBar->addAction(actionEnterWhatsThisMode_);
-    standardBar->addSeparator();
-    standardBar->addAction(actionPinAllModuleUIs_);
-    standardBar->addAction(actionRestoreAllModuleUIs_);
-    standardBar->addAction(actionHideAllModuleUIs_);
-    standardBar->addSeparator();
-    standardBar->addAction(actionCenterNetworkViewer_);
-    standardBar->addAction(actionZoomIn_);
-    standardBar->addAction(actionZoomOut_);
-    //standardBar->addAction(actionZoomBestFit_);
-    actionZoomBestFit_->setDisabled(true);
-    standardBar->addAction(actionResetNetworkZoom_);
-    standardBar->addAction(actionDragMode_);
-    standardBar->addAction(actionSelectMode_);
-    standardBar->addAction(actionToggleMetadataLayer_);
-    standardBar->addAction(actionToggleTagLayer_);
-    //standardBar->addAction(actionMakeSubnetwork_);  //TODO: work in progress
-    connect(actionNetworkBar_, SIGNAL(toggled(bool)), standardBar, SLOT(setVisible(bool)));
-    connect(standardBar, SIGNAL(visibilityChanged(bool)), actionNetworkBar_, SLOT(setChecked(bool)));
-    //setUnifiedTitleAndToolBarOnMac(true);
-  }
-  {
-    auto executeBar = addToolBar(tr("&Execute"));
-    executeBar->setObjectName("ExecuteToolBar");
+  createStandardToolbars();
+  createExecuteToolbar();
+  createAdvancedToolbar();
 
-    executeButton_ = new QToolButton;
-    executeButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    executeButton_->addAction(actionExecute_All_);
-    executeButton_->setDefaultAction(actionExecute_All_);
-    executeBar->addWidget(executeButton_);
+  #ifdef __APPLE__
+  connect(actionLaunchNewInstance_, SIGNAL(triggered()), this, SLOT(launchNewInstance()));
+  #else
+  menuFile_->removeAction(actionLaunchNewInstance_);
+  #endif
 
-    networkProgressBar_.reset(new NetworkExecutionProgressBar(boost::make_shared<NetworkStatusImpl>(networkEditor_), this));
-    executeBar->addActions(networkProgressBar_->actions());
-    executeBar->setStyleSheet("QToolBar { background-color: rgb(66,66,69); border: 1px solid black; color: black }"
-      "QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
-      );
-    executeBar->setAutoFillBackground(true);
-    connect(actionExecuteBar_, SIGNAL(toggled(bool)), executeBar, SLOT(setVisible(bool)));
-    connect(executeBar, SIGNAL(visibilityChanged(bool)), actionExecuteBar_, SLOT(setChecked(bool)));
-  }
   {
     auto searchAction = new QWidgetAction(this);
     searchAction->setDefaultWidget(new NetworkSearchWidget(networkEditor_));
@@ -258,22 +169,6 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
     searchBar->setVisible(false);
   }
 
-  networkEditor_->addAction(actionExecute_All_);
-  auto sep = new QAction(this);
-  sep->setSeparator(true);
-  networkEditor_->addAction(sep);
-  networkEditor_->addAction(actionCut_);
-  networkEditor_->addAction(actionCopy_);
-  networkEditor_->addAction(actionPaste_);
-	sep = new QAction(this);
-  sep->setSeparator(true);
-	networkEditor_->addAction(sep);
-	networkEditor_->addAction(actionResetNetworkZoom_);
-	networkEditor_->addAction(actionDragMode_);
-  networkEditor_->addAction(actionSelectMode_);
-  networkEditor_->addAction(actionToggleMetadataLayer_);
-  networkEditor_->addAction(actionToggleTagLayer_);
-
   setContextMenuPolicy(Qt::NoContextMenu);
 
   scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
@@ -286,18 +181,22 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   connect(actionImportNetwork_, SIGNAL(triggered()), this, SLOT(importLegacyNetwork()));
   connect(actionQuit_, SIGNAL(triggered()), this, SLOT(close()));
   connect(actionRunScript_, SIGNAL(triggered()), this, SLOT(runScript()));
-  connect(actionSelectAll_, SIGNAL(triggered()), networkEditor_, SLOT(selectAll()));
+
   actionQuit_->setShortcut(QKeySequence::Quit);
-  connect(actionDelete_, SIGNAL(triggered()), networkEditor_, SLOT(del()));
+
+#ifdef __APPLE__
+  actionToggleFullScreenMode_->setShortcut(QApplication::translate("SCIRunMainWindow", "Meta+Ctrl+F", 0));
+#else
+  actionToggleFullScreenMode_->setShortcut(Qt::Key_F11);
+#endif
+
   actionDelete_->setShortcuts(QList<QKeySequence>() << QKeySequence::Delete << Qt::Key_Backspace);
-	connect(actionCleanUpNetwork_, SIGNAL(triggered()), networkEditor_, SLOT(cleanUpNetwork()));
+
 	connect(actionRunNewModuleWizard_, SIGNAL(triggered()), this, SLOT(runNewModuleWizard()));
 	actionRunNewModuleWizard_->setDisabled(true);
 
   connect(actionAbout_, SIGNAL(triggered()), this, SLOT(displayAcknowledgement()));
-  connect(actionPinAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(pinAllModuleUIs()));
-  connect(actionRestoreAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(restoreAllModuleUIs()));
-  connect(actionHideAllModuleUIs_, SIGNAL(triggered()), networkEditor_, SLOT(hideAllModuleUIs()));
+  connect(actionCreateToolkitFromDirectory_, SIGNAL(triggered()), this, SLOT(helpWithToolkitCreation()));
 
   connect(helpActionPythonAPI_, SIGNAL(triggered()), this, SLOT(loadPythonAPIDoc()));
   connect(helpActionSnippets_, SIGNAL(triggered()), this, SLOT(showSnippetHelp()));
@@ -307,6 +206,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   connect(helpActionNewUserWizard_, SIGNAL(triggered()), this, SLOT(launchNewUserWizard()));
 
   connect(actionReset_Window_Layout, SIGNAL(triggered()), this, SLOT(resetWindowLayout()));
+  connect(actionToggleFullScreenMode_, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
 
 #ifndef BUILD_WITH_PYTHON
   actionRunScript_->setEnabled(false);
@@ -327,62 +227,41 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   setupPythonConsole();
 
   connect(prefsWindow_->defaultNotePositionComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNotePosition(int)));
-  connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), networkEditor_, SIGNAL(defaultNotePositionChanged(NotePosition)));
-
+  connect(prefsWindow_->defaultNoteSizeComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNoteSize(int)));
   connect(prefsWindow_->cubicPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesCubicBezier()));
   connect(prefsWindow_->manhattanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesManhattan()));
   connect(prefsWindow_->euclideanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesEuclidean()));
+  connect(prefsWindow_->maxCoresSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(maxCoreValueChanged(int)));
   //TODO: will be a user or network setting
   makePipesEuclidean();
 
-  connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
-
-#if 0 //TODO: decide on modifiable background color
-  connect(chooseBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(chooseBackgroundColor()));
-  connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
-#endif
 
   connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(modulesSnapToChanged()));
   connect(prefsWindow_->modulesSnapToCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(snapToModules()));
-
   connect(prefsWindow_->portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(highlightPortsChanged()));
   connect(prefsWindow_->portSizeEffectsCheckBox_, SIGNAL(stateChanged(int)), networkEditor_, SIGNAL(highlightPorts(int)));
-
   connect(prefsWindow_->dockableModulesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(adjustModuleDock(int)));
 
   makeFilterButtonMenu();
 
-  if (newInterface())
-    networkEditor_->setBackgroundBrush(QPixmap(":/general/Resources/SCIgrid-small.png"));
-
   connect(prefsWindow_->scirunDataPushButton_, SIGNAL(clicked()), this, SLOT(setDataDirectoryFromGUI()));
-  connect(prefsWindow_->addToPathButton_, SIGNAL(clicked()), this, SLOT(addToPathFromGUI()));
+  //connect(prefsWindow_->addToPathButton_, SIGNAL(clicked()), this, SLOT(addToPathFromGUI()));
   connect(actionFilter_modules_, SIGNAL(triggered()), this, SLOT(setFocusOnFilterLine()));
   connect(actionAddModule_, SIGNAL(triggered()), this, SLOT(addModuleKeyboardAction()));
   actionAddModule_->setVisible(false);
   connect(actionSelectModule_, SIGNAL(triggered()), this, SLOT(selectModuleKeyboardAction()));
   actionSelectModule_->setVisible(false);
-
   connect(actionReportIssue_, SIGNAL(triggered()), this, SLOT(reportIssue()));
-
   connect(actionSelectMode_, SIGNAL(toggled(bool)), this, SLOT(setSelectMode(bool)));
   connect(actionDragMode_, SIGNAL(toggled(bool)), this, SLOT(setDragMode(bool)));
-
 	connect(actionToggleTagLayer_, SIGNAL(toggled(bool)), this, SLOT(toggleTagLayer(bool)));
   connect(actionToggleMetadataLayer_, SIGNAL(toggled(bool)), this, SLOT(toggleMetadataLayer(bool)));
-  connect(actionMakeSubnetwork_, SIGNAL(triggered()), networkEditor_, SLOT(makeSubnetwork()));
-
   connect(actionResetNetworkZoom_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomIn_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomOut_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
   connect(actionZoomBestFit_, SIGNAL(triggered()), this, SLOT(zoomNetwork()));
-  connect(networkEditor_, SIGNAL(zoomLevelChanged(int)), this, SLOT(showZoomStatusMessage(int)));
-  connect(actionCenterNetworkViewer_, SIGNAL(triggered()), networkEditor_, SLOT(centerView()));
 
-	connect(actionCut_, SIGNAL(triggered()), networkEditor_, SLOT(cut()));
-	connect(actionCopy_, SIGNAL(triggered()), networkEditor_, SLOT(copy()));
-	connect(actionPaste_, SIGNAL(triggered()), networkEditor_, SLOT(paste()));
   actionCut_->setIcon(QPixmap(":/general/Resources/cut.png"));
   actionCopy_->setIcon(QPixmap(":/general/Resources/copy.png"));
   actionPaste_->setIcon(QPixmap(":/general/Resources/paste.png"));
@@ -390,23 +269,46 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   connect(actionKeyboardShortcuts_, SIGNAL(triggered()), this, SLOT(showKeyboardShortcutsDialog()));
 
   //TODO: store in xml file, add to app resources
-  ToolkitInfo fwdInv{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
-    "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.2.zip",
-    "FwdInvToolkit_v1.2.zip" };
-  fwdInv.setupAction(actionForwardInverse_, this);
-
-  ToolkitInfo brainStim{ "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png",
-    "http://sci.utah.edu/devbuilds/scirun5/toolkits/BrainStimulator_v1.2.zip",
-    "BrainStimulator_v1.2.zip" };
-  brainStim.setupAction(actionBrainStimulator_, this);
+  {
+    ToolkitInfo fwdInv{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
+    #ifdef __APPLE__
+      "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/v1.4.1",
+    #else
+      "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.4.1.zip",
+    #endif
+      "FwdInvToolkit_stable.zip" };
+    fwdInv.setupAction(actionForwardInverseStable_, this);
+  }
+  {
+    ToolkitInfo fwdInvNightly{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
+      "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/master",
+      "FwdInvToolkit_nightly.zip" };
+    fwdInvNightly.setupAction(actionForwardInverseNightly_, this);
+  }
+  {
+    ToolkitInfo brainStim{ "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png",
+    #ifdef __APPLE__
+      "https://codeload.github.com/SCIInstitute/BrainStimulator/zip/BrainStimulator_v1.3",
+    #else
+      "http://sci.utah.edu/devbuilds/scirun5/toolkits/BrainStimulator_v1.3.zip",
+    #endif
+      "BrainStimulator_stable.zip" };
+    brainStim.setupAction(actionBrainStimulatorStable_, this);
+  }
+  {
+    ToolkitInfo brainStimNightly{ "http://www.sci.utah.edu/images/software/BrainStimulator/brain-stimulator-mod.png",
+      "https://codeload.github.com/SCIInstitute/BrainStimulator/zip/master",
+      "BrainStimulator_nightly.zip" };
+    brainStimNightly.setupAction(actionBrainStimulatorNightly_, this);
+  }
+  connect(actionLoadToolkit_, SIGNAL(triggered()), this, SLOT(loadToolkit()));
 
   connect(networkEditor_, SIGNAL(networkExecuted()), networkProgressBar_.get(), SLOT(resetModulesDone()));
   connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(double, const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone(double, const std::string&)));
-
   connect(networkEditor_, SIGNAL(networkExecuted()), dialogErrorControl_.get(), SLOT(resetCounter()));
 	connect(networkEditor_, SIGNAL(requestLoadNetwork(const QString&)), this, SLOT(checkAndLoadNetworkFile(const QString&)));
-
   connect(networkEditor_, SIGNAL(networkExecuted()), this, SLOT(changeExecuteActionIconToStop()));
+
   connect(prefsWindow_->actionTextIconCheckBox_, SIGNAL(clicked()), this, SLOT(adjustExecuteButtonAppearance()));
   prefsWindow_->actionTextIconCheckBox_->setCheckState(Qt::PartiallyChecked);
   adjustExecuteButtonAppearance();
@@ -428,6 +330,7 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   actionProvenance_->setChecked(!provenanceWindow_->isHidden());
   actionTriggeredEvents_->setChecked(!triggeredEventsWindow_->isHidden());
   actionTagManager_->setChecked(!tagManagerWindow_->isHidden());
+  actionMiniview_->setChecked(!networkMiniViewDockWidget_->isHidden());
 
 	moduleSelectorDockWidget_->setStyleSheet("QDockWidget {background: rgb(66,66,69); background-color: rgb(66,66,69) }"
 		"QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }"
@@ -441,90 +344,11 @@ SCIRunMainWindow::SCIRunMainWindow() : shortcuts_(nullptr), returnCode_(0), quit
   setupVersionButton();
 
   WidgetStyleMixin::tabStyle(optionsTabWidget_);
+
+  //devConsole_->updateNetworkViewLog("hello");
 }
 
-void SCIRunMainWindow::initialize()
-{
-  postConstructionSignalHookup();
-
-  fillModuleSelector();
-
-  executeCommandLineRequests();
-}
-
-void SCIRunMainWindow::postConstructionSignalHookup()
-{
-  connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(filterDoubleClickedModuleSelectorItem(QTreeWidgetItem*)));
-	moduleSelectorTreeWidget_->setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(moduleSelectorTreeWidget_, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(showModuleSelectorContextMenu(const QPoint&)));
-
-  WidgetDisablingService::Instance().addNetworkEditor(networkEditor_);
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), &WidgetDisablingService::Instance(), SLOT(disableInputWidgets()));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), &WidgetDisablingService::Instance(), SLOT(enableInputWidgets()));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(changeExecuteActionIconToPlay()));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(alertForNetworkCycles(int)));
-
-	connect(networkEditor_, SIGNAL(disableWidgetDisabling()), &WidgetDisablingService::Instance(), SLOT(temporarilyDisableService()));
-  connect(networkEditor_, SIGNAL(reenableWidgetDisabling()), &WidgetDisablingService::Instance(), SLOT(temporarilyEnableService()));
-
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
-    networkEditor_, SLOT(removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId&)));
-
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle, const SCIRun::Dataflow::Engine::ModuleCounter&)),
-    commandConverter_.get(), SLOT(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
-    commandConverter_.get(), SLOT(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)),
-    commandConverter_.get(), SLOT(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId&)),
-    commandConverter_.get(), SLOT(connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId&)));
-  connect(networkEditor_, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)),
-    commandConverter_.get(), SLOT(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
-  connect(provenanceWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByProvenanceManager(bool)));
-  connect(networkEditor_, SIGNAL(newModule(const QString&, bool)), this, SLOT(addModuleToWindowList(const QString&, bool)));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)),
-    this, SLOT(removeModuleFromWindowList(const SCIRun::Dataflow::Networks::ModuleId&)));
-}
-
-void SCIRunMainWindow::setTipsAndWhatsThis()
-{
-  actionExecute_All_->setStatusTip(tr("Execute all modules"));
-  actionExecute_All_->setWhatsThis(tr("Click this option to execute all modules in the current network editor."));
-  actionNew_->setStatusTip(tr("New network"));
-  actionNew_->setWhatsThis(tr("Click this option to start editing a blank network file."));
-  actionSave_->setStatusTip(tr("Save network"));
-  actionSave_->setWhatsThis(tr("Click this option to save the current network to disk."));
-  actionLoad_->setStatusTip(tr("Load network"));
-  actionLoad_->setWhatsThis(tr("Click this option to load a new network file from disk."));
-  actionEnterWhatsThisMode_ = QWhatsThis::createAction(this);
-  actionEnterWhatsThisMode_->setStatusTip(tr("Enter What's This? Mode"));
-  actionEnterWhatsThisMode_->setShortcuts(QList<QKeySequence>() << tr("Ctrl+H") << tr("F1"));
-  actionHideAllModuleUIs_->setWhatsThis("Hides all module UI windows.");
-  actionRestoreAllModuleUIs_->setWhatsThis("Restores all module UI windows.");
-  actionPinAllModuleUIs_->setWhatsThis("Pins all module UI windows to right side of main window.");
-  //todo: zoom actions, etc
-}
-
-void SCIRunMainWindow::setupInputWidgets()
-{
-  // will be slicker in C++11
-  using namespace boost::assign;
-  std::vector<InputWidget> widgets;
-  widgets += actionExecute_All_,
-    actionSave_,
-    actionLoad_,
-    actionSave_As_,
-    actionNew_,
-    actionDelete_,
-    moduleSelectorTreeWidget_,
-    actionRunScript_;
-//#ifdef BUILD_WITH_PYTHON
-//  widgets += pythonConsole_;
-//#endif
-
-  WidgetDisablingService::Instance().addWidgets(widgets.begin(), widgets.end());
-  WidgetDisablingService::Instance().addWidgets(recentFileActions_.begin(), recentFileActions_.end());
-}
+const QString SCIRunMainWindow::saveFragmentData_("fragmentTree");
 
 SCIRunMainWindow* SCIRunMainWindow::instance_ = nullptr;
 
@@ -539,50 +363,11 @@ SCIRunMainWindow* SCIRunMainWindow::Instance()
 
 SCIRunMainWindow::~SCIRunMainWindow()
 {
-  GuiLogger::setInstance(nullptr);
-  Log::get().clearAppenders();
-  Log::get("Modules").clearAppenders();
+  commandConverter_.reset();
   networkEditor_->disconnect();
   networkEditor_->setNetworkEditorController(nullptr);
   networkEditor_->clear();
   Application::Instance().shutdown();
-}
-
-void SCIRunMainWindow::setController(NetworkEditorControllerHandle controller)
-{
-  boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
-  networkEditor_->setNetworkEditorController(controllerProxy);
-  //TODO: need better way to wire this up
-  controller->setSerializationManager(networkEditor_);
-}
-
-void SCIRunMainWindow::setupNetworkEditor()
-{
-  boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
-	const bool regression = Application::Instance().parameters()->isRegressionMode();
-  boost::shared_ptr<TextEditAppender> logger(new TextEditAppender(logTextBrowser_, regression));
-  GuiLogger::setInstance(logger);
-  Log::get().addCustomAppender(logger);
-  //TODO: this logger will crash on Windows when the console is closed. See #1250. Need to figure out a better way to manage scope/lifetime of Qt widgets passed to global singletons...
-  //boost::shared_ptr<TextEditAppender> moduleLog(new TextEditAppender(moduleLogTextBrowser_));
-  //Log::get("Modules").addCustomAppender(moduleLog);
-  defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*prefsWindow_->defaultNotePositionComboBox_));
-  auto tagColorFunc = [this](int tag) { return tagManagerWindow_->tagColor(tag); };
-  auto tagNameFunc = [this](int tag) { return tagManagerWindow_->tagName(tag); };
-	auto preexecuteFunc = [this]() { preexecute(); };
-  auto highResolutionExpandFactor = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().get_value_or(1.0);
-  {
-    auto screen = QApplication::desktop()->screenGeometry();
-    if (screen.height() * screen.width() > 5000000)
-      highResolutionExpandFactor *= 1.5;
-  }
-  networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, dialogErrorControl_, preexecuteFunc,
-    tagColorFunc, tagNameFunc, highResolutionExpandFactor, scrollAreaWidgetContents_);
-  networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
-  networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-  networkEditor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-  networkEditor_->verticalScrollBar()->setValue(0);
-  networkEditor_->horizontalScrollBar()->setValue(0);
 }
 
 void SCIRunMainWindow::executeCommandLineRequests()
@@ -590,187 +375,9 @@ void SCIRunMainWindow::executeCommandLineRequests()
   Application::Instance().executeCommandLineRequests();
 }
 
-void SCIRunMainWindow::preexecute()
-{
-	if (Preferences::Instance().saveBeforeExecute && !Application::Instance().parameters()->isRegressionMode())
-	{
-		saveNetwork();
-	}
-}
-
-void SCIRunMainWindow::executeAll()
-{
-	if (Application::Instance().parameters()->isRegressionMode())
-	{
-		auto timeout = Application::Instance().parameters()->developerParameters()->regressionTimeoutSeconds();
-		QTimer::singleShot(1000 * *timeout, this, SLOT(networkTimedOut()));
-	}
-
-  networkEditor_->executeAll();
-}
-
-void SCIRunMainWindow::setupQuitAfterExecute()
-{
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(exitApplication(int)));
-  quitAfterExecute_ = true;
-}
-
-void SCIRunMainWindow::exitApplication(int code)
-{
-  close();
-  returnCode_ = code;
-  qApp->exit(code);
-}
-
-void SCIRunMainWindow::quit()
-{
-  exitApplication(0);
-}
-
 void SCIRunMainWindow::networkTimedOut()
 {
 	exitApplication(2);
-}
-
-void SCIRunMainWindow::saveNetwork()
-{
-  if (currentFile_.isEmpty())
-    saveNetworkAs();
-  else
-    saveNetworkFile(currentFile_);
-}
-
-void SCIRunMainWindow::saveNetworkAs()
-{
-  auto filename = QFileDialog::getSaveFileName(this, "Save Network...", latestNetworkDirectory_.path(), "*.srn5");
-  if (!filename.isEmpty())
-    saveNetworkFile(filename);
-}
-
-void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
-{
-  NetworkSaveCommand save;
-  save.set(Variables::Filename, fileName.toStdString());
-  save.execute();
-}
-
-void SCIRunMainWindow::loadNetwork()
-{
-  if (okToContinue())
-  {
-    auto filename = QFileDialog::getOpenFileName(this, "Load Network...", latestNetworkDirectory_.path(), "*.srn5");
-    loadNetworkFile(filename);
-  }
-}
-
-void SCIRunMainWindow::checkAndLoadNetworkFile(const QString& filename)
-{
-  if (okToContinue())
-  {
-    loadNetworkFile(filename);
-  }
-}
-
-bool SCIRunMainWindow::loadNetworkFile(const QString& filename)
-{
-  if (!filename.isEmpty())
-  {
-    FileOpenCommand command;
-    command.set(Variables::Filename, filename.toStdString());
-    if (command.execute())
-    {
-      setCurrentFile(filename);
-      statusBar()->showMessage(tr("File loaded: ") + filename, 2000);
-      networkProgressBar_->updateTotalModules(networkEditor_->numModules());
-      provenanceWindow_->clear();
-      provenanceWindow_->showFile(command.file_);
-			networkEditor_->viewport()->update();
-      return true;
-    }
-    else
-    {
-      if (Application::Instance().parameters()->isRegressionMode())
-        exit(7);
-      //TODO: set error code to non-0 so regression tests fail!
-      // probably want to control this with a --regression flag.
-    }
-  }
-  return false;
-}
-
-void SCIRunMainWindow::importLegacyNetwork()
-{
-  if (okToContinue())
-  {
-    auto filename = QFileDialog::getOpenFileName(this, "Import Old Network...", latestNetworkDirectory_.path(), "*.srn");
-    importLegacyNetworkFile(filename);
-  }
-}
-
-bool SCIRunMainWindow::importLegacyNetworkFile(const QString& filename)
-{
-	bool success = false;
-  if (!filename.isEmpty())
-  {
-    FileImportCommand command;
-    command.set(Variables::Filename, filename.toStdString());
-    if (command.execute())
-    {
-      statusBar()->showMessage(tr("File imported: ") + filename, 2000);
-      networkProgressBar_->updateTotalModules(networkEditor_->numModules());
-      networkEditor_->viewport()->update();
-      success = true;
-    }
-    else
-    {
-      statusBar()->showMessage(tr("File import failed: ") + filename, 2000);
-    }
-		auto log = QString::fromStdString(command.logContents());
-		auto logFileName = latestNetworkDirectory_.path() + "/" + ("importLog_" + strippedName(filename) + ".log");
-		QFile logFile(logFileName); //todo: add timestamp
-    if (logFile.open(QFile::WriteOnly | QFile::Text))
-		{
-			QTextStream stream(&logFile);
-			stream << log;
-			QMessageBox::information(this, "SRN File Import", "SRN File Import log file can be found here: " + logFileName
-				+ "\n\nAdditionally, check the log directory for a list of missing modules (look for file missingModules.log)");
-    }
-		else
-		{
-			QMessageBox::information(this, "SRN File Import", "Failed to write SRN File Import log file: " + logFileName);
-		}
-  }
-  return success;
-}
-
-bool SCIRunMainWindow::newNetwork()
-{
-  if (okToContinue())
-  {
-    networkEditor_->clear();
-    provenanceWindow_->clear();
-    setCurrentFile("");
-		networkEditor_->viewport()->update();
-    return true;
-  }
-  return false;
-}
-
-void SCIRunMainWindow::setCurrentFile(const QString& fileName)
-{
-  currentFile_ = fileName;
-  setCurrentFileName(currentFile_.toStdString());
-  setWindowModified(false);
-  QString shownName = tr("Untitled");
-  if (!currentFile_.isEmpty())
-  {
-    shownName = strippedName(currentFile_);
-    latestNetworkDirectory_ = QFileInfo(currentFile_).dir();
-    recentFiles_.removeAll(currentFile_);
-    recentFiles_.prepend(currentFile_);
-    updateRecentFileActions();
-  }
-  setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("SCIRun")));
 }
 
 QString SCIRunMainWindow::strippedName(const QString& fullFileName)
@@ -791,7 +398,7 @@ void SCIRunMainWindow::updateRecentFileActions()
   {
     if (j < recentFiles_.count())
     {
-      QString text = tr("&%1 %2")
+      auto text = tr("&%1 %2")
         .arg(j + 1)
         .arg(strippedName(recentFiles_[j]));
 
@@ -804,28 +411,6 @@ void SCIRunMainWindow::updateRecentFileActions()
       recentFileActions_[j]->setVisible(false);
     }
   }
-}
-
-void SCIRunMainWindow::loadRecentNetwork()
-{
-  if (okToContinue())
-  {
-    QAction *action = qobject_cast<QAction *>(sender());
-    if (action)
-      loadNetworkFile(action->data().toString());
-  }
-}
-
-void SCIRunMainWindow::closeEvent(QCloseEvent* event)
-{
-  windowState_ = saveState();
-  if (okToContinue())
-  {
-    writeSettings();
-    event->accept();
-  }
-  else
-    event->ignore();
 }
 
 bool SCIRunMainWindow::okToContinue()
@@ -848,579 +433,9 @@ bool SCIRunMainWindow::okToContinue()
   return true;
 }
 
-//TODO: hook up to modules' state_changed_sig_t via GlobalStateManager
-//TODO: pass a boolean here to avoid updating total modules when only connections are made--saves a lock
-void SCIRunMainWindow::networkModified()
-{
-  setWindowModified(true);
-  networkProgressBar_->updateTotalModules(networkEditor_->numModules());
-}
-
 QString SCIRunMainWindow::mostRecentFile() const
 {
   return !recentFiles_.empty() ? recentFiles_[0] : "";
-}
-
-void SCIRunMainWindow::setActionIcons()
-{
-  actionNew_->setIcon(QPixmap(":/general/Resources/new/general/new.png"));
-  actionLoad_->setIcon(QPixmap(":/general/Resources/new/general/folder.png"));
-  actionSave_->setIcon(QPixmap(":/general/Resources/new/general/save.png"));
-  actionRunScript_->setIcon(QPixmap(":/general/Resources/new/general/wand.png"));
-  //actionSave_As_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveCDIcon));  //TODO?
-  actionExecute_All_->setIcon(QPixmap(":/general/Resources/new/general/run.png"));
-  actionUndo_->setIcon(QPixmap(":/general/Resources/undo.png"));
-  actionRedo_->setIcon(QPixmap(":/general/Resources/redo.png"));
-
-  actionHideAllModuleUIs_->setIcon(QPixmap(":/general/Resources/new/general/hideAll.png"));
-  actionPinAllModuleUIs_->setIcon(QPixmap(":/general/Resources/new/general/rightAll.png"));
-  actionRestoreAllModuleUIs_->setIcon(QPixmap(":/general/Resources/new/general/showAll.png"));
-
-  actionCenterNetworkViewer_->setIcon(QPixmap(":/general/Resources/align_center.png"));
-  actionResetNetworkZoom_->setIcon(QPixmap(":/general/Resources/zoom_reset.png"));
-  actionZoomIn_->setIcon(QPixmap(":/general/Resources/zoom_in.png"));
-  actionZoomOut_->setIcon(QPixmap(":/general/Resources/zoom_out.png"));
-  actionZoomBestFit_->setIcon(QPixmap(":/general/Resources/zoom_fit.png"));
-  actionDragMode_->setIcon(QPixmap(":/general/Resources/cursor_hand_icon.png"));
-  actionSelectMode_->setIcon(QPixmap(":/general/Resources/select.png"));
-
-  actionToggleMetadataLayer_->setIcon(QPixmap(":/general/Resources/metadataLayer.png"));
-  actionToggleTagLayer_->setIcon(QPixmap(":/general/Resources/tagLayer.png"));
-  actionMakeSubnetwork_->setIcon(QPixmap(":/general/Resources/network.png"));
-}
-
-void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
-{
-  ShowAll show;
-  visitTree(moduleSelectorTreeWidget_, show);
-
-  bool regexSelected = filterActionGroup_->checkedAction()->text().contains("wildcards");
-
-  HideItemsNotMatchingString func(regexSelected, start);
-
-  //note: goofy double call, first to hide the leaves, then hide the categories.
-  visitTree(moduleSelectorTreeWidget_, func);
-  visitTree(moduleSelectorTreeWidget_, func);
-}
-
-void SCIRunMainWindow::makeFilterButtonMenu()
-{
-  auto filterMenu = new QMenu(filterButton_);
-  filterActionGroup_ = new QActionGroup(filterMenu);
-  auto startsWithAction = new QAction("Starts with", filterButton_);
-  startsWithAction->setCheckable(true);
-  filterActionGroup_->addAction(startsWithAction);
-  filterMenu->addAction(startsWithAction);
-
-  auto wildcardAction = new QAction("Use wildcards", filterButton_);
-  wildcardAction->setCheckable(true);
-  filterActionGroup_->addAction(wildcardAction);
-  wildcardAction->setChecked(true);
-  filterMenu->addAction(wildcardAction);
-
-  filterButton_->setMenu(filterMenu);
-}
-
-void SCIRunMainWindow::makePipesCubicBezier()
-{
-  networkEditor_->setConnectionPipelineType(CUBIC);
-}
-
-void SCIRunMainWindow::makePipesEuclidean()
-{
-  networkEditor_->setConnectionPipelineType(EUCLIDEAN);
-}
-
-void SCIRunMainWindow::makePipesManhattan()
-{
-  networkEditor_->setConnectionPipelineType(MANHATTAN);
-}
-
-void SCIRunMainWindow::setConnectionPipelineType(int type)
-{
-	networkEditor_->setConnectionPipelineType(type);
-	switch (type)
-	{
-	case MANHATTAN:
-		prefsWindow_->manhattanPipesRadioButton_->setChecked(true);
-		break;
-	case CUBIC:
-		prefsWindow_->cubicPipesRadioButton_->setChecked(true);
-		break;
-	case EUCLIDEAN:
-		prefsWindow_->euclideanPipesRadioButton_->setChecked(true);
-		break;
-	}
-}
-
-void SCIRunMainWindow::setSaveBeforeExecute(int state)
-{
-  prefsWindow_->setSaveBeforeExecute(state != 0);
-}
-
-void SCIRunMainWindow::chooseBackgroundColor()
-{
-  auto brush = networkEditor_->background();
-  auto oldColor = brush.color();
-
-  auto newColor = QColorDialog::getColor(oldColor, this, "Choose background color");
-  if (newColor.isValid())
-  {
-    networkEditor_->setBackground(newColor);
-    GuiLogger::Instance().logInfo("Background color set to " + newColor.name());
-  }
-}
-
-void SCIRunMainWindow::setDragMode(bool toggle)
-{
-  if (toggle)
-  {
-    networkEditor_->setMouseAsDragMode();
-    statusBar()->showMessage("Mouse in drag mode", 2000);
-  }
-  actionSelectMode_->setChecked(!actionDragMode_->isChecked());
-}
-
-void SCIRunMainWindow::setSelectMode(bool toggle)
-{
-  if (toggle)
-  {
-    networkEditor_->setMouseAsSelectMode();
-    statusBar()->showMessage("Mouse in select mode", 2000);
-  }
-  actionDragMode_->setChecked(!actionSelectMode_->isChecked());
-}
-
-void SCIRunMainWindow::switchMouseMode()
-{
-  if (actionDragMode_->isChecked())
-  {
-    setSelectMode(true);
-    actionSelectMode_->setChecked(true);
-  }
-  else // select->drag
-  {
-    setDragMode(true);
-    actionDragMode_->setChecked(true);
-  }
-}
-
-void SCIRunMainWindow::zoomNetwork()
-{
-  auto action = qobject_cast<QAction*>(sender());
-  if (action)
-  {
-    const QString name = action->text();
-    if (name == "Zoom In")
-    {
-      networkEditor_->zoomIn();
-    }
-    else if (name == "Zoom Out")
-    {
-      networkEditor_->zoomOut();
-    }
-    else if (name == "Reset Network Zoom")
-    {
-      networkEditor_->zoomReset();
-    }
-    else if (name == "Zoom Best Fit")
-    {
-      networkEditor_->zoomBestFit();
-    }
-  }
-  else
-  {
-    qDebug() << "Sender was null or not an action";
-  }
-}
-
-void SCIRunMainWindow::showZoomStatusMessage(int zoomLevel)
-{
-  statusBar()->showMessage(tr("Zoom: %1%").arg(zoomLevel), 2000);
-}
-
-void SCIRunMainWindow::resetBackgroundColor()
-{
-  //TODO: standardize these defaults
-  QColor defaultColor(Qt::darkGray);
-  networkEditor_->setBackground(defaultColor);
-  GuiLogger::Instance().logInfo("Background color set to " + defaultColor.name());
-}
-
-void SCIRunMainWindow::setupScriptedEventsWindow()
-{
-  triggeredEventsWindow_ = new TriggeredEventsWindow(this);
-  connect(actionTriggeredEvents_, SIGNAL(toggled(bool)), triggeredEventsWindow_, SLOT(setVisible(bool)));
-  connect(triggeredEventsWindow_, SIGNAL(visibilityChanged(bool)), actionTriggeredEvents_, SLOT(setChecked(bool)));
-  triggeredEventsWindow_->hide();
-}
-
-void SCIRunMainWindow::setupProvenanceWindow()
-{
-  ProvenanceManagerHandle provenanceManager(new ProvenanceManager<NetworkFileHandle>(networkEditor_));
-  provenanceWindow_ = new ProvenanceWindow(provenanceManager, this);
-  connect(actionProvenance_, SIGNAL(toggled(bool)), provenanceWindow_, SLOT(setVisible(bool)));
-  connect(provenanceWindow_, SIGNAL(visibilityChanged(bool)), actionProvenance_, SLOT(setChecked(bool)));
-
-  connect(actionUndo_, SIGNAL(triggered()), provenanceWindow_, SLOT(undo()));
-  connect(actionRedo_, SIGNAL(triggered()), provenanceWindow_, SLOT(redo()));
-  actionUndo_->setEnabled(false);
-  actionRedo_->setEnabled(false);
-  connect(provenanceWindow_, SIGNAL(undoStateChanged(bool)), actionUndo_, SLOT(setEnabled(bool)));
-  connect(provenanceWindow_, SIGNAL(redoStateChanged(bool)), actionRedo_, SLOT(setEnabled(bool)));
-  connect(provenanceWindow_, SIGNAL(networkModified()), networkEditor_, SLOT(updateViewport()));
-
-  commandConverter_.reset(new GuiActionProvenanceConverter(networkEditor_));
-
-  connect(commandConverter_.get(), SIGNAL(provenanceItemCreated(SCIRun::Dataflow::Engine::ProvenanceItemHandle)), provenanceWindow_, SLOT(addProvenanceItem(SCIRun::Dataflow::Engine::ProvenanceItemHandle)));
-
-	provenanceWindow_->hide();
-}
-
-void SCIRunMainWindow::filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item)
-{
-  if (item && item->childCount() == 0)
-    Q_EMIT moduleItemDoubleClicked();
-}
-
-void SCIRunMainWindow::setupDevConsole()
-{
-  devConsole_ = new DeveloperConsole(this);
-  connect(actionDevConsole_, SIGNAL(toggled(bool)), devConsole_, SLOT(setVisible(bool)));
-  connect(devConsole_, SIGNAL(visibilityChanged(bool)), actionDevConsole_, SLOT(setChecked(bool)));
-  devConsole_->setVisible(false);
-  devConsole_->setFloating(true);
-  addDockWidget(Qt::TopDockWidgetArea, devConsole_);
-  actionDevConsole_->setShortcut(QKeySequence("`"));
-  connect(devConsole_, SIGNAL(executorChosen(int)), this, SLOT(setExecutor(int)));
-  connect(devConsole_, SIGNAL(globalPortCachingChanged(bool)), this, SLOT(setGlobalPortCaching(bool)));
-}
-
-void SCIRunMainWindow::setExecutor(int type)
-{
-  LOG_DEBUG("Executor of type " << type << " selected"  << std::endl);
-  networkEditor_->getNetworkEditorController()->setExecutorType(type);
-}
-
-void SCIRunMainWindow::setGlobalPortCaching(bool enable)
-{
-  LOG_DEBUG("Global port caching flag set to " << (enable ? "true" : "false") << std::endl);
-  //TODO: encapsulate better
-  SimpleSink::setGlobalPortCachingFlag(enable);
-}
-
-void SCIRunMainWindow::readDefaultNotePosition(int index)
-{
-  Q_EMIT defaultNotePositionChanged(defaultNotePositionGetter_->position()); //TODO: unit test.
-}
-
-void SCIRunMainWindow::setupPreferencesWindow()
-{
-  prefsWindow_ = new PreferencesWindow(networkEditor_, this);
-
-  connect(actionPreferences_, SIGNAL(triggered()), prefsWindow_, SLOT(show()));
-  //connect(prefs_, SIGNAL(visibilityChanged(bool)), actionPreferences_, SLOT(setChecked(bool)));
-  prefsWindow_->setVisible(false);
-}
-
-void SCIRunMainWindow::setupPythonConsole()
-{
-#ifdef BUILD_WITH_PYTHON
-  pythonConsole_ = new PythonConsoleWidget(this);
-  connect(actionPythonConsole_, SIGNAL(toggled(bool)), pythonConsole_, SLOT(setVisible(bool)));
-  actionPythonConsole_->setIcon(QPixmap(":/general/Resources/terminal.png"));
-  connect(pythonConsole_, SIGNAL(visibilityChanged(bool)), actionPythonConsole_, SLOT(setChecked(bool)));
-  pythonConsole_->setVisible(false);
-  pythonConsole_->setFloating(true);
-	pythonConsole_->setObjectName("PythonConsole");
-  addDockWidget(Qt::TopDockWidgetArea, pythonConsole_);
-#else
-  actionPythonConsole_->setEnabled(false);
-#endif
-}
-
-void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
-{
-#ifdef BUILD_WITH_PYTHON
-  GuiLogger::Instance().logInfo("RUNNING PYTHON SCRIPT: " + scriptFileName);
-  PythonInterpreter::Instance().importSCIRunLibrary();
-  PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
-  statusBar()->showMessage(tr("Script is running."), 2000);
-#else
-  GuiLogger::Instance().logInfo("Python not included in this build, cannot run " + scriptFileName);
-#endif
-}
-
-void SCIRunMainWindow::runScript()
-{
-  if (okToContinue())
-  {
-    QString filename = QFileDialog::getOpenFileName(this, "Load Script...", latestNetworkDirectory_.path(), "*.py");
-    runPythonScript(filename);
-  }
-}
-
-void SCIRunMainWindow::updateMiniView()
-{
-  //networkEditorMiniViewLabel_->setText("+" + networkEditorMiniViewLabel_->text());
-  QPixmap network = networkEditor_->sceneGrab();
-  networkEditorMiniViewLabel_->setPixmap(network.scaled(networkEditorMiniViewLabel_->size(),
-    Qt::KeepAspectRatio,
-    Qt::SmoothTransformation));
-}
-
-namespace {
-
-  QColor favesColor()
-  {
-    return SCIRunMainWindow::Instance()->newInterface() ? Qt::yellow : Qt::darkYellow;
-  }
-  QColor packageColor()
-  {
-    return SCIRunMainWindow::Instance()->newInterface() ? Qt::yellow : Qt::darkYellow;
-  }
-  QColor categoryColor()
-  {
-    return SCIRunMainWindow::Instance()->newInterface() ? Qt::green : Qt::darkGreen;
-  }
-
-  const QString bullet = "* ";
-  const QString favoritesText = bullet + "Favorites";
-  const QString clipboardHistoryText = bullet + "Clipboard History";
-  const QString savedSubsText = bullet + "Saved Subnetworks";
-
-  void addFavoriteMenu(QTreeWidget* tree)
-  {
-    auto faves = new QTreeWidgetItem();
-    faves->setText(0, favoritesText);
-    faves->setForeground(0, favesColor());
-
-    tree->addTopLevelItem(faves);
-  }
-
-  QTreeWidgetItem* getTreeMenu(QTreeWidget* tree, const QString& text)
-  {
-    for (int i = 0; i < tree->topLevelItemCount(); ++i)
-    {
-      auto top = tree->topLevelItem(i);
-      if (top->text(0) == text)
-      {
-        return top;
-      }
-    }
-    return nullptr;
-  }
-
-  QTreeWidgetItem* getFavoriteMenu(QTreeWidget* tree)
-  {
-    return getTreeMenu(tree, favoritesText);
-  }
-
-  QTreeWidgetItem* getClipboardHistoryMenu(QTreeWidget* tree)
-  {
-    return getTreeMenu(tree, clipboardHistoryText);
-  }
-
-  QTreeWidgetItem* getSavedSubnetworksMenu(QTreeWidget* tree)
-  {
-    return getTreeMenu(tree, savedSubsText);
-  }
-
-  void addSnippet(const QString& code, QTreeWidgetItem* snips)
-  {
-    auto snipItem = new QTreeWidgetItem();
-    snipItem->setText(0, code);
-    snips->addChild(snipItem);
-  }
-
-  void readCustomSnippets(QTreeWidgetItem* snips)
-  {
-    QFile inputFile("snippets.txt");
-    if (inputFile.open(QIODevice::ReadOnly))
-    {
-      GuiLogger::Instance().logInfo("Snippet file opened: " + inputFile.fileName());
-      QTextStream in(&inputFile);
-      while (!in.atEnd())
-      {
-        QString line = in.readLine();
-        addSnippet(line, snips);
-        GuiLogger::Instance().logInfo("Snippet read: " + line);
-      }
-      inputFile.close();
-    }
-  }
-
-  void addSnippetMenu(QTreeWidget* tree)
-	{
-		auto snips = new QTreeWidgetItem();
-    snips->setText(0, bullet + "Snippets");
-		snips->setForeground(0, favesColor());
-
-		//hard-code a few popular ones.
-
-    addSnippet("[ReadField*->ShowField->ViewScene]", snips);
-    addSnippet("[CreateLatVol->ShowField->ViewScene]", snips);
-    addSnippet("[ReadField*->ReportFieldInfo]", snips);
-    addSnippet("[ReadMatrix*->ReportMatrixInfo]", snips);
-    addSnippet("[CreateStandardColorMap->RescaleColorMap->ShowField->ViewScene]", snips);
-    addSnippet("[GetFieldBoundary->FairMesh->ShowField]", snips);
-
-	  readCustomSnippets(snips);
-
-	  tree->addTopLevelItem(snips);
-	}
-
-  void addSavedSubnetworkMenu(QTreeWidget* tree)
-  {
-    auto savedSubnetworks = new QTreeWidgetItem();
-    savedSubnetworks->setText(0, savedSubsText);
-    savedSubnetworks->setForeground(0, favesColor());
-    tree->addTopLevelItem(savedSubnetworks);
-  }
-
-
-
-  void addClipboardHistoryMenu(QTreeWidget* tree)
-  {
-    auto clips = new QTreeWidgetItem();
-    clips->setText(0, clipboardHistoryText);
-    clips->setForeground(0, favesColor());
-    tree->addTopLevelItem(clips);
-  }
-
-  QTreeWidgetItem* addFavoriteItem(QTreeWidgetItem* faves, QTreeWidgetItem* module)
-  {
-    LOG_DEBUG("Adding item to favorites: " << module->text(0).toStdString() << std::endl);
-    auto copy = new QTreeWidgetItem(*module);
-    copy->setData(0, Qt::CheckStateRole, QVariant());
-    if (copy->textColor(0) == CLIPBOARD_COLOR)
-    {
-      copy->setFlags(copy->flags() | Qt::ItemIsEditable);
-    }
-    faves->addChild(copy);
-    return copy;
-  }
-
-  void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap, const QStringList& favoriteModuleNames)
-  {
-    auto faves = getFavoriteMenu(tree);
-		for (const auto& package : moduleMap)
-    {
-      const auto& packageName = package.first;
-      auto packageItem = new QTreeWidgetItem();
-      packageItem->setText(0, QString::fromStdString(packageName));
-      packageItem->setForeground(0, packageColor());
-      tree->addTopLevelItem(packageItem);
-      size_t totalModules = 0;
-      for (const auto& category : package.second)
-      {
-        const auto& categoryName = category.first;
-        auto categoryItem = new QTreeWidgetItem();
-        categoryItem->setText(0, QString::fromStdString(categoryName));
-        categoryItem->setForeground(0, categoryColor());
-        packageItem->addChild(categoryItem);
-				for (const auto& module : category.second)
-        {
-          const auto& moduleName = module.first;
-          auto moduleItem = new QTreeWidgetItem();
-          auto name = QString::fromStdString(moduleName);
-          moduleItem->setText(0, name);
-          if (favoriteModuleNames.contains(name))
-          {
-            moduleItem->setCheckState(0, Qt::Checked);
-            addFavoriteItem(faves, moduleItem);
-          }
-          else
-          {
-            moduleItem->setCheckState(0, Qt::Unchecked);
-          }
-          moduleItem->setText(1, QString::fromStdString(module.second.moduleStatus_));
-          moduleItem->setForeground(1, Qt::lightGray);
-          moduleItem->setText(2, QString::fromStdString(module.second.moduleInfo_));
-          moduleItem->setForeground(2, Qt::lightGray);
-          categoryItem->addChild(moduleItem);
-          totalModules++;
-        }
-        categoryItem->setText(1, "Category Module Count = " + QString::number(category.second.size()));
-        categoryItem->setForeground(1, Qt::magenta);
-      }
-      packageItem->setText(1, "Package Module Count = " + QString::number(totalModules));
-      packageItem->setForeground(1, Qt::magenta);
-    }
-  }
-
-  void sortFavorites(QTreeWidget* tree)
-  {
-    auto faves = getFavoriteMenu(tree);
-    faves->sortChildren(0, Qt::AscendingOrder);
-  }
-
-}
-
-void SCIRunMainWindow::showModuleSelectorContextMenu(const QPoint& pos)
-{
-  auto globalPos = moduleSelectorTreeWidget_->mapToGlobal(pos);
-	auto item = moduleSelectorTreeWidget_->selectedItems()[0];
-	auto subnetData = item->data(0, Qt::UserRole).toString();
-	if (!subnetData.isEmpty())
-	{
-  	QMenu menu;
-		menu.addAction("Rename", this, SLOT(renameSavedSubnetwork()))->setProperty("ID", subnetData);
-		menu.addAction("Delete", this, SLOT(removeSavedSubnetwork()))->setProperty("ID", subnetData);
-  	menu.exec(globalPos);
-	}
-}
-
-void SCIRunMainWindow::fillSavedSubnetworkMenu()
-{
-	auto savedSubnetworks = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
-  if (savedSubnetworksNames_.size() != savedSubnetworksXml_.size())
-  {
-    qDebug() << "invalid subnet saved settings: sizes don't match" << savedSubnetworksNames_.size() << "," << savedSubnetworksXml_.size() << ',' << savedSubnetworksNames_.keys().size() << savedSubnetworksNames_.keys();
-    return;
-  }
-  auto keys = savedSubnetworksNames_.keys(); // don't inline this into the zip call! temporary containers don't work with zip.
-  for (auto&& tup : zip(savedSubnetworksNames_, savedSubnetworksXml_, keys))
-  {
-    auto subnet = new QTreeWidgetItem();
-    QVariant name, xml;
-    QString key;
-    boost::tie(name, xml, key) = tup;
-    subnet->setText(0, name.toString());
-    subnet->setToolTip(0, xml.toString());
-		subnet->setTextColor(0, CLIPBOARD_COLOR);
-		savedSubnetworks->addChild(subnet);
-		setupSubnetItem(subnet, false, key);
-  }
-}
-
-void SCIRunMainWindow::fillModuleSelector()
-{
-  moduleSelectorTreeWidget_->clear();
-
-  auto moduleDescs = networkEditor_->getNetworkEditorController()->getAllAvailableModuleDescriptions();
-
-  addFavoriteMenu(moduleSelectorTreeWidget_);
-	addSnippetMenu(moduleSelectorTreeWidget_);
-	addSavedSubnetworkMenu(moduleSelectorTreeWidget_);
-  fillSavedSubnetworkMenu();
-	addClipboardHistoryMenu(moduleSelectorTreeWidget_);
-  fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs, favoriteModuleNames_);
-  sortFavorites(moduleSelectorTreeWidget_);
-
-  GrabNameAndSetFlags visitor;
-  visitTree(moduleSelectorTreeWidget_, visitor);
-
-  moduleSelectorTreeWidget_->expandAll();
-  moduleSelectorTreeWidget_->resizeColumnToContents(0);
-  moduleSelectorTreeWidget_->resizeColumnToContents(1);
-  moduleSelectorTreeWidget_->sortByColumn(0, Qt::AscendingOrder);
-
-  connect(moduleSelectorTreeWidget_, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(handleCheckedModuleEntry(QTreeWidgetItem*, int)));
-
-  moduleSelectorTreeWidget_->setStyleSheet(
-    "QTreeWidget::indicator:unchecked {image: url(:/general/Resources/faveNo.png);}"
-    "QTreeWidget::indicator:checked {image: url(:/general/Resources/faveYes.png);}");
 }
 
 template <class T>
@@ -1440,162 +455,10 @@ void SCIRunMainWindow::setupSubnetItem(QTreeWidgetItem* fave, bool addToMap, con
 
   if (addToMap)
   {
-    savedSubnetworksXml_[id] = fave->toolTip(0);
+    savedSubnetworksXml_[id] = fave->data(0, clipboardKey).toString();
     savedSubnetworksNames_[id] = fave->text(0);
+    fave->setFlags(fave->flags() & ~Qt::ItemIsEditable);
   }
-}
-
-void SCIRunMainWindow::handleCheckedModuleEntry(QTreeWidgetItem* item, int column)
-{
-  if (item && 0 == column)
-  {
-    moduleSelectorTreeWidget_->setCurrentItem(item);
-
-    auto faves = item->textColor(0) == CLIPBOARD_COLOR ? getSavedSubnetworksMenu(moduleSelectorTreeWidget_) : getFavoriteMenu(moduleSelectorTreeWidget_);
-
-    if (item->checkState(0) == Qt::Checked)
-    {
-      if (faves)
-      {
-        auto fave = addFavoriteItem(faves, item);
-        faves->sortChildren(0, Qt::AscendingOrder);
-        if (item->textColor(0) != CLIPBOARD_COLOR)
-          favoriteModuleNames_ << item->text(0);
-        else
-        {
-					setupSubnetItem(fave, true, "");
-        }
-      }
-    }
-    else
-    {
-      if (faves && item->textColor(0) != CLIPBOARD_COLOR)
-      {
-        favoriteModuleNames_.removeAll(item->text(0));
-        for (int i = 0; i < faves->childCount(); ++i)
-        {
-          auto child = faves->child(i);
-          if (child->text(0) == item->text(0))
-            faves->removeChild(child);
-        }
-      }
-    }
-  }
-}
-
-void SCIRunMainWindow::removeSavedSubnetwork()
-{
-	auto toDelete = sender()->property("ID").toString();
-  savedSubnetworksNames_.remove(toDelete);
-  savedSubnetworksXml_.remove(toDelete);
-	auto tree = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
-	for (int i = 0; i < tree->childCount(); ++i)
-	{
-		auto subnet = tree->child(i);
-		if (toDelete == subnet->data(0, Qt::UserRole).toString())
-		{
-			delete tree->takeChild(i);
-			break;
-		}
-	}
-}
-
-void SCIRunMainWindow::renameSavedSubnetwork()
-{
-  auto toRename = sender()->property("ID").toString();
-  bool ok;
-  auto text = QInputDialog::getText(this, tr("Rename subnet"), tr("Enter new subnet name:"), QLineEdit::Normal, savedSubnetworksNames_[toRename].toString(), &ok);
-  if (ok && !text.isEmpty())
-  {
-    savedSubnetworksNames_[toRename] = text;
-    auto tree = getSavedSubnetworksMenu(moduleSelectorTreeWidget_);
-    for (int i = 0; i < tree->childCount(); ++i)
-    {
-      auto subnet = tree->child(i);
-      if (toRename == subnet->data(0, Qt::UserRole).toString())
-      {
-				subnet->setText(0, text);
-        break;
-      }
-    }
-  }
-}
-
-bool SCIRunMainWindow::isInFavorites(const QString& module) const
-{
-	return favoriteModuleNames_.contains(module);
-}
-
-void SCIRunMainWindow::displayAcknowledgement()
-{
-  QMessageBox::information(this, "NIH/NIGMS Center for Integrative Biomedical Computing Acknowledgment",
-    "CIBC software and the data sets provided on this web site are Open Source software projects that are principally funded through the SCI Institute's NIH/NCRR CIBC. For us to secure the funding that allows us to continue providing this software, we must have evidence of its utility. Thus we ask users of our software and data to acknowledge us in their publications and inform us of these publications. Please use the following acknowledgment and send us references to any publications, presentations, or successful funding applications that make use of the NIH/NCRR CIBC software or data sets we provide. <p> <i>This project was supported by the National Institute of General Medical Sciences of the National Institutes of Health under grant number P41GM103545.</i>");
-}
-
-void SCIRunMainWindow::setDataDirectory(const QString& dir)
-{
-  if (!dir.isEmpty())
-  {
-    prefsWindow_->scirunDataLineEdit_->setText(dir);
-    prefsWindow_->scirunDataLineEdit_->setToolTip(dir);
-
-    RemembersFileDialogDirectory::setStartingDir(dir);
-    Preferences::Instance().setDataDirectory(dir.toStdString());
-    Q_EMIT dataDirectorySet(dir);
-  }
-}
-
-void SCIRunMainWindow::setDataPath(const QString& dirs)
-{
-	if (!dirs.isEmpty())
-	{
-    prefsWindow_->scirunDataPathTextEdit_->setPlainText(dirs);
-    prefsWindow_->scirunDataPathTextEdit_->setToolTip(dirs);
-
-		Preferences::Instance().setDataPath(dirs.toStdString());
-	}
-}
-
-void SCIRunMainWindow::addToDataDirectory(const QString& dir)
-{
-	if (!dir.isEmpty())
-	{
-    auto text = prefsWindow_->scirunDataPathTextEdit_->toPlainText();
-		if (!text.isEmpty())
-			text += ";\n";
-		text += dir;
-    prefsWindow_->scirunDataPathTextEdit_->setPlainText(text);
-    prefsWindow_->scirunDataPathTextEdit_->setToolTip(prefsWindow_->scirunDataPathTextEdit_->toPlainText());
-
-		RemembersFileDialogDirectory::setStartingDir(dir);
-		Preferences::Instance().addToDataPath(dir.toStdString());
-	}
-}
-
-void SCIRunMainWindow::setDataDirectoryFromGUI()
-{
-  auto dir = QFileDialog::getExistingDirectory(this, tr("Choose Data Directory"), QString::fromStdString(Core::Preferences::Instance().dataDirectory().parent_path().string()));
-  setDataDirectory(dir);
-}
-
-void SCIRunMainWindow::addToPathFromGUI()
-{
-  auto dir = QFileDialog::getExistingDirectory(this, tr("Add Directory to Data Path"), ".");
-	addToDataDirectory(dir);
-}
-
-void SCIRunMainWindow::reportIssue()
-{
-  if (QMessageBox::Ok == QMessageBox::information(this, "Report Issue",
-    "Click OK to be taken to SCIRun's Github issue reporting page.\n\nFor bug reports, please follow the template.", QMessageBox::Ok|QMessageBox::Cancel))
-  {
-    QDesktopServices::openUrl(QUrl("https://github.com/SCIInstitute/SCIRun/issues/new", QUrl::TolerantMode));
-  }
-}
-
-bool SCIRunMainWindow::newInterface() const
-{
-  return Application::Instance().parameters()->entireCommandLine().find("--originalGUI") == std::string::npos;
 }
 
 void SCIRunMainWindow::printStyleSheet() const
@@ -1611,316 +474,6 @@ void SCIRunMainWindow::printStyleSheet() const
   }
 }
 
-void SCIRunMainWindow::setFocusOnFilterLine()
-{
-  moduleFilterLineEdit_->setFocus(Qt::ShortcutFocusReason);
-  statusBar()->showMessage(tr("Module filter activated"), 2000);
-}
-
-//disable these
-void SCIRunMainWindow::addModuleKeyboardAction()
-{
-  //TODO
-  auto item = moduleSelectorTreeWidget_->currentItem();
-  if (item && item->childCount() == 0)
-    std::cout << "Current module: " << item->text(0).toStdString() << std::endl;
-}
-
-void SCIRunMainWindow::selectModuleKeyboardAction()
-{
-  moduleSelectorTreeWidget_->setFocus(Qt::ShortcutFocusReason);
-  statusBar()->showMessage(tr("Module selection activated"), 2000);
-}
-
-void SCIRunMainWindow::modulesSnapToChanged()
-{
-  bool snapTo = prefsWindow_->modulesSnapToCheckBox_->isChecked();
-  Preferences::Instance().modulesSnapToGrid.setValue(snapTo);
-}
-
-void SCIRunMainWindow::highlightPortsChanged()
-{
-  bool val = prefsWindow_->portSizeEffectsCheckBox_->isChecked();
-  Preferences::Instance().highlightPorts.setValue(val);
-}
-
-void SCIRunMainWindow::resetWindowLayout()
-{
-  configurationDockWidget_->hide();
-  devConsole_->hide();
-  provenanceWindow_->hide();
-  moduleSelectorDockWidget_->show();
-  moduleSelectorDockWidget_->setFloating(false);
-  addDockWidget(Qt::LeftDockWidgetArea, moduleSelectorDockWidget_);
-
-  qDebug() << "TODO: toolbars";
-}
-
-void SCIRunMainWindow::hideNonfunctioningWidgets()
-{
-	//TODO: make issues to implement these, as I don't want to forget they are there.
-  QList<QAction*> nonfunctioningActions;
-  nonfunctioningActions <<
-    actionInsert_;
-  QList<QMenu*> nonfunctioningMenus;
-  nonfunctioningMenus <<
-    menuSubnets_;
-  QList<QWidget*> nonfunctioningWidgets;
-  nonfunctioningWidgets <<
-    prefsWindow_->scirunNetsLabel_ <<
-    prefsWindow_->scirunNetsLineEdit_ <<
-    prefsWindow_->scirunNetsPushButton_ <<
-    prefsWindow_->userDataLabel_ <<
-    prefsWindow_->userDataLineEdit_ <<
-    prefsWindow_->userDataPushButton_ <<
-    prefsWindow_->dataSetGroupBox_ <<
-    networkEditorMiniViewLabel_ <<
-    miniviewTextLabel_ <<
-    prefsWindow_->scirunDataPathTextEdit_ <<
-    prefsWindow_->addToPathButton_;
-
-  Q_FOREACH(QAction* a, nonfunctioningActions)
-    a->setVisible(false);
-  Q_FOREACH(QMenu* m, nonfunctioningMenus)
-    m->menuAction()->setVisible(false);
-  Q_FOREACH(QWidget* w, nonfunctioningWidgets)
-    w->setVisible(false);
-}
-
-void SCIRunMainWindow::launchNewUserWizard()
-{
-  NewUserWizard wiz(this);
-  wiz.exec();
-}
-
-void SCIRunMainWindow::adjustModuleDock(int state)
-{
-  bool dockable = prefsWindow_->dockableModulesCheckBox_->isChecked();
-  actionPinAllModuleUIs_->setEnabled(dockable);
-  Preferences::Instance().modulesAreDockable.setValue(dockable);
-}
-
-void SCIRunMainWindow::showEvent(QShowEvent* event)
-{
-  restoreState(windowState_);
-  QMainWindow::showEvent(event);
-}
-
-void SCIRunMainWindow::hideEvent(QHideEvent * event)
-{
-  windowState_ = saveState();
-  QMainWindow::hideEvent(event);
-}
-
-void SCIRunMainWindow::updateDockWidgetProperties(bool isFloating)
-{
-  auto dock = qobject_cast<QDockWidget*>(sender());
-  if (dock && isFloating)
-  {
-    dock->setWindowFlags(Qt::Window);
-    dock->show();
-  }
-}
-
-#ifdef __APPLE__
-static const Qt::Key MetadataShiftKey = Qt::Key_Meta;
-#else
-static const Qt::Key MetadataShiftKey = Qt::Key_CapsLock;
-#endif
-
-void SCIRunMainWindow::keyPressEvent(QKeyEvent *event)
-{
-	if (event->key() == Qt::Key_Shift)
-	{
-		showStatusMessage("Network zoom active");
-    networkEditor_->adjustExecuteButtonsToDownstream(true);
-	}
-  else if (event->key() == MetadataShiftKey)
-  {
-    networkEditor_->metadataLayer(true);
-		showStatusMessage("Metadata layer active");
-  }
-  else if (event->key() == Qt::Key_Alt)
-  {
-		if (!actionToggleTagLayer_->isChecked())
-		{
-	 		networkEditor_->tagLayer(true, NoTag);
-			showStatusMessage("Tag layer active: none");
-		}
-  }
-	else if (event->key() == Qt::Key_A)
-	{
-		if (!actionToggleTagLayer_->isChecked())
-		{
-    	if (networkEditor_->tagLayerActive())
-    	{
-      	networkEditor_->tagLayer(true, AllTags);
-				showStatusMessage("Tag layer active: All");
-    	}
-		}
-	}
-  else if (event->key() == Qt::Key_G && (event->modifiers() & Qt::ShiftModifier))
-  {
-    if (!actionToggleTagLayer_->isChecked())
-    {
-      if (networkEditor_->tagLayerActive())
-      {
-        networkEditor_->tagLayer(true, HideGroups);
-        showStatusMessage("Tag layer active: Groups hidden");
-      }
-    }
-  }
-	else if (event->key() == Qt::Key_G)
-	{
-		if (!actionToggleTagLayer_->isChecked())
-		{
-    	if (networkEditor_->tagLayerActive())
-    	{
-      	networkEditor_->tagLayer(true, ShowGroups);
-				showStatusMessage("Tag layer active: Groups shown");
-    	}
-		}
-	}
-	else if (event->key() == Qt::Key_J)
-	{
-		if (!actionToggleTagLayer_->isChecked())
-		{
-    	if (networkEditor_->tagLayerActive())
-    	{
-      	networkEditor_->tagLayer(true, ClearTags);
-				showStatusMessage("Tag layer active: selected modules' tags cleared");
-    	}
-	  }
-	}
-  else if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9)
-  {
-		if (!actionToggleTagLayer_->isChecked())
-		{
-    	if (networkEditor_->tagLayerActive())
-    	{
-      	auto key = event->key() - Qt::Key_0;
-      	networkEditor_->tagLayer(true, key);
-				showStatusMessage("Tag layer active: " + QString::number(key));
-    	}
-		}
-  }
-
-  QMainWindow::keyPressEvent(event);
-}
-
-void SCIRunMainWindow::keyReleaseEvent(QKeyEvent *event)
-{
-	if (event->key() == Qt::Key_Shift)
-	{
-		showStatusMessage("Network zoom inactive", 1000);
-    networkEditor_->adjustExecuteButtonsToDownstream(false);
-	}
-  else if (event->key() == MetadataShiftKey)
-  {
-    networkEditor_->metadataLayer(false);
-		showStatusMessage("Metadata layer inactive", 1000);
-  }
-  else if (event->key() == Qt::Key_Alt)
-  {
-		if (!actionToggleTagLayer_->isChecked())
-		{
-    	networkEditor_->tagLayer(false, -1);
-			showStatusMessage("Tag layer inactive", 1000);
-		}
-  }
-
-  QMainWindow::keyPressEvent(event);
-}
-
-void SCIRunMainWindow::changeExecuteActionIconToStop()
-{
-  actionExecute_All_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaStop));
-	actionExecute_All_->setText("Halt Execution");
-}
-
-void SCIRunMainWindow::changeExecuteActionIconToPlay()
-{
-  actionExecute_All_->setIcon(QPixmap(":/general/Resources/new/general/run.png"));
-	actionExecute_All_->setText("Execute All");
-}
-
-void SCIRunMainWindow::openLogFolder()
-{
-  auto logPath = QString::fromStdString(Application::Instance().logDirectory().string());
-  QDesktopServices::openUrl(QUrl::fromLocalFile(logPath));
-}
-
-void SCIRunMainWindow::adjustExecuteButtonAppearance()
-{
-  switch (prefsWindow_->actionTextIconCheckBox_->checkState())
-  {
-  case 0:
-    prefsWindow_->actionTextIconCheckBox_->setText("Execute Button Text");
-		executeButton_->setToolButtonStyle(Qt::ToolButtonTextOnly);
-    break;
-  case 1:
-    prefsWindow_->actionTextIconCheckBox_->setText("Execute Button Icon");
-		executeButton_->setToolButtonStyle(Qt::ToolButtonIconOnly);
-    break;
-  case 2:
-    prefsWindow_->actionTextIconCheckBox_->setText("Execute Button Text+Icon");
-		executeButton_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    break;
-  }
-}
-
-void SCIRunMainWindow::alertForNetworkCycles(int code)
-{
-  if (code == -1)
-  {
-    QMessageBox::warning(this, "Network graph has a cycle", "Your network contains a cycle. The execution scheduler cannot handle cycles at this time. Please ensure all cycles are broken before executing.");
-    networkEditor_->resetNetworkDueToCycle();
-  }
-}
-
-void SCIRunMainWindow::addModuleToWindowList(const QString& modId, bool hasUI)
-{
-  if (menuCurrent_->actions().isEmpty())
-    menuCurrent_->setEnabled(true);
-  auto modAction = new QAction(this);
-  modAction->setText(modId);
-  modAction->setEnabled(hasUI);
-  connect(modAction, SIGNAL(triggered()), networkEditor_, SLOT(moduleWindowAction()));
-  currentModuleActions_.insert(modId, modAction);
-  menuCurrent_->addAction(modAction);
-}
-
-void SCIRunMainWindow::removeModuleFromWindowList(const ModuleId& modId)
-{
-  auto name = QString::fromStdString(modId.id_);
-  auto action = currentModuleActions_[name];
-  menuCurrent_->removeAction(action);
-  currentModuleActions_.remove(name);
-  if (menuCurrent_->actions().isEmpty())
-    menuCurrent_->setEnabled(false);
-}
-
-void SCIRunMainWindow::setupTagManagerWindow()
-{
-  tagManagerWindow_ = new TagManagerWindow(this);
-  connect(actionTagManager_, SIGNAL(toggled(bool)), tagManagerWindow_, SLOT(setVisible(bool)));
-  connect(tagManagerWindow_, SIGNAL(visibilityChanged(bool)), actionTagManager_, SLOT(setChecked(bool)));
-}
-
-void SCIRunMainWindow::showTagHelp()
-{
-	TagManagerWindow::showHelp(this);
-}
-
-void SCIRunMainWindow::toggleTagLayer(bool toggle)
-{
-	networkEditor_->tagLayer(toggle, AllTags);
-	if (toggle)
-		showStatusMessage("Tag layer active: all");
-	else
-		showStatusMessage("Tag layer inactive", 1000);
-}
-
 void SCIRunMainWindow::showStatusMessage(const QString& str)
 {
 	statusBar()->showMessage(str);
@@ -1929,221 +482,4 @@ void SCIRunMainWindow::showStatusMessage(const QString& str)
 void SCIRunMainWindow::showStatusMessage(const QString& str, int timeInMsec)
 {
 	statusBar()->showMessage(str, timeInMsec);
-}
-
-void SCIRunMainWindow::showExtendedDataInfo()
-{
-  qDebug() << "showExtendedDataInfo";
-}
-
-void SCIRunMainWindow::toggleMetadataLayer(bool toggle)
-{
-	networkEditor_->metadataLayer(toggle);
-	//TODO: extract methods
-	if (toggle)
-		showStatusMessage("Metadata layer active");
-	else
-		showStatusMessage("Metadata layer inactive", 1000);
-}
-
-void SCIRunMainWindow::showKeyboardShortcutsDialog()
-{
-  if (!shortcuts_)
-  {
-    shortcuts_ = new ShortcutsInterface(this);
-  }
-  shortcuts_->show();
-}
-
-void SCIRunMainWindow::runNewModuleWizard()
-{
-  auto wizard = new ClassWizard(this);
-	wizard->show();
-}
-
-void SCIRunMainWindow::setupVersionButton()
-{
-  auto qVersion = QString::fromStdString(VersionInfo::GIT_VERSION_TAG);
-  versionButton_ = new QPushButton("Version: " + qVersion);
-  versionButton_->setFlat(true);
-  versionButton_->setToolTip("Click to copy version tag to clipboard");
-  versionButton_->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
-  connect(versionButton_, SIGNAL(clicked()), this, SLOT(copyVersionToClipboard()));
-  statusBar()->addPermanentWidget(versionButton_);
-}
-
-void SCIRunMainWindow::copyVersionToClipboard()
-{
-  QApplication::clipboard()->setText(QString::fromStdString(VersionInfo::GIT_VERSION_TAG));
-  statusBar()->showMessage("Version string copied to clipboard.", 2000);
-}
-
-void SCIRunMainWindow::updateClipboardHistory(const QString& xml)
-{
-  auto clips = getClipboardHistoryMenu(moduleSelectorTreeWidget_);
-
-  auto clip = new QTreeWidgetItem();
-  clip->setText(0, "clipboard " + QDateTime::currentDateTime().toString("ddd MMMM d yyyy hh:mm:ss.zzz"));
-  clip->setToolTip(0, xml);
-  clip->setTextColor(0, CLIPBOARD_COLOR);
-
-  const int clipMax = 5;
-  if (clips->childCount() == clipMax)
-    clips->removeChild(clips->child(0));
-
-  clip->setCheckState(0, Qt::Unchecked);
-  clips->addChild(clip);
-}
-
-void SCIRunMainWindow::showSnippetHelp()
-{
-  QMessageBox::information(this, "Snippets",
-    "Snippets are strings that encode a linear subnetwork. They can vastly shorten network construction time. They take the form [A->B->...->C] where A, B, C, etc are module names, and the arrow represents a connection between adjacent modules. "
-    "\n\nThey are available in the module selector and work just like the single module entries there: double-click or drag onto the "
-    "network editor to insert the entire snippet. A '*' at the end of the module name will open the UI for that module.\n\nCustom snippets can be created by editing the file snippets.txt (if not present, create it) in the same folder as the SCIRun executable. Enter one snippet per line in the prescribed format, then restart SCIRun for them to appear."
-    "\n\nFeatures coming soon include: hotkeys."
-    "\n\nFor feedback, please comment on this issue: https://github.com/SCIInstitute/SCIRun/issues/1263"
-    );
-}
-
-void SCIRunMainWindow::showClipboardHelp()
-{
-  QMessageBox::information(this, "Clipboard",
-    "The network editor clipboard works on arbitrary network selections (modules and connections). A history of five copied items is kept under \"Clipboard History\" in the module selector. "
-    "\n\nTo cut/copy/paste, see the Edit menu and the corresponding hotkeys."
-    "\n\nClipboard history items can be starred like module favorites. When starred, they are saved as fragments under \"Saved Subnetworks,\" which are preserved in application settings. "
-    "\n\nThe user may edit the text of the saved subnetwork items to give them informative names, which are also saved. Hover over them to see a tooltip representation of the saved fragment."
-    "\n\nCurrently there is no way to delete a saved subnetwork in the GUI."
-    );
-}
-
-void SCIRunMainWindow::loadPythonAPIDoc()
-{
-  openPythonAPIDoc();
-}
-
-void SCIRunMainWindow::showTriggerHelp()
-{
-	QMessageBox::information(this, "Triggered Scripts",
-    "The triggered scripts interface allows the user to inject Python code that executes whenever a specific event happens. Currently the available events are post-module-add (manually, not "
-    "via network loading), and post-network-load (after user loads a file)."
-    "\n\nExamples can be found in the GUI when you first load the dialog. The scripts are saved at the application level and can be enabled/disabled."
-     );
-}
-
-FileDownloader::FileDownloader(QUrl imageUrl, QStatusBar* statusBar, QObject *parent) : QObject(parent), reply_(nullptr), statusBar_(statusBar)
-{
- 	connect(&webCtrl_, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
-
- 	QNetworkRequest request(imageUrl);
-	reply_ = webCtrl_.get(request);
-  connect(reply_, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64, qint64)));
-}
-
-void FileDownloader::fileDownloaded(QNetworkReply* reply)
-{
-  downloadedData_ = reply->readAll();
-	reply->deleteLater();
-  Q_EMIT downloaded();
-}
-
-void FileDownloader::downloadProgress(qint64 received, qint64 total) const
-{
-  if (statusBar_)
-	{
-    statusBar_->showMessage(tr("File progress: %1 / %2").arg(received).arg(total), 1000);
-		if (received == total)
-			statusBar_->showMessage("File downloaded.", 1000);
-	}
-}
-
-void SCIRunMainWindow::toolkitDownload()
-{
-  auto action = qobject_cast<QAction*>(sender());
-
-	static std::vector<ToolkitDownloader*> downloaders;
-  downloaders.push_back(new ToolkitDownloader(action, statusBar(), this));
-}
-
-ToolkitDownloader::ToolkitDownloader(QObject* infoObject, QStatusBar* statusBar, QWidget* parent) : QObject(parent), iconDownloader_(nullptr), zipDownloader_(nullptr), statusBar_(statusBar)
-{
-  if (infoObject)
-  {
-    iconUrl_ = infoObject->property(ToolkitInfo::ToolkitIconURL).toString();
-    fileUrl_ = infoObject->property(ToolkitInfo::ToolkitURL).toString();
-    filename_ = infoObject->property(ToolkitInfo::ToolkitFilename).toString();
-
-    iconKey_ = ToolkitInfo::ToolkitIconURL + QString("--") + iconUrl_;
-
-    downloadIcon();
-  }
-}
-
-void ToolkitDownloader::downloadIcon()
-{
-  QSettings settings;
-  if (!settings.contains(iconKey_))
-  {
-    iconDownloader_ = new FileDownloader(iconUrl_, nullptr, this);
-    connect(iconDownloader_, SIGNAL(downloaded()), this, SLOT(showMessageBox()));
-  }
-  else
-    showMessageBox();
-}
-
-void ToolkitDownloader::showMessageBox()
-{
-  QPixmap image;
-
-  QSettings settings;
-  
-  if (settings.contains(iconKey_))
-  {
-    image.loadFromData(settings.value(iconKey_).toByteArray());
-  }
-  else
-  {
-    if (!iconDownloader_)
-      return;
-
-    image.loadFromData(iconDownloader_->downloadedData());
-    settings.setValue(iconKey_, iconDownloader_->downloadedData());
-  }
-
-  QMessageBox toolkitInfo;
-#ifdef WIN32
-  toolkitInfo.setWindowTitle("Toolkit information");
-#else
-  toolkitInfo.setText("Toolkit information");
-#endif
-  toolkitInfo.setInformativeText("Click OK to download the latest version of this toolkit:\n\n" + fileUrl_);
-  toolkitInfo.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-  toolkitInfo.setIconPixmap(image);
-  toolkitInfo.setDefaultButton(QMessageBox::Ok);
-  toolkitInfo.show();
-  auto choice = toolkitInfo.exec();
-
-  if (choice == QMessageBox::Ok)
-  {
-    auto dir = QFileDialog::getExistingDirectory(qobject_cast<QWidget*>(parent()), "Select toolkit directory", ".");
-    if (!dir.isEmpty())
-    {
-      toolkitDir_ = dir;
-      zipDownloader_ = new FileDownloader(fileUrl_, statusBar_, this);
-      connect(zipDownloader_, SIGNAL(downloaded()), this, SLOT(saveToolkit()));
-    }
-  }
-}
-
-void ToolkitDownloader::saveToolkit() const
-{
-  if (!zipDownloader_)
-    return;
-
-  auto fullFilename = toolkitDir_.filePath(filename_);
-  QFile file(fullFilename);
-  file.open(QIODevice::WriteOnly);
-  file.write(zipDownloader_->downloadedData());
-  file.close();
-	statusBar_->showMessage("Toolkit file saved.", 1000);
 }

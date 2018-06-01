@@ -51,6 +51,7 @@ namespace Datatypes {
     explicit ColorRGB(const std::string& rgb);
     ColorRGB(double r, double g, double b);
     ColorRGB(double r, double g, double b, double a);
+    explicit ColorRGB(unsigned long int rgbHexValue);
     //adjust alpha while copying
     //ColorRGB(const ColorRGB& color, double a);
 
@@ -82,6 +83,17 @@ namespace Datatypes {
   {
     Geometry::Transform transform;
     std::string selectionName;
+    std::tuple<int,int> windowSize;
+  };
+
+  struct SCISHARE MeshComponentSelectionFeedback : ModuleFeedback
+  {
+    MeshComponentSelectionFeedback() {}
+    MeshComponentSelectionFeedback(const std::string& mod, const std::string& comp, bool sel) :
+      moduleId(mod), component(comp), selected(sel) {}
+    std::string moduleId;
+    std::string component;
+    bool selected {false};
   };
 
 }}}

@@ -68,8 +68,6 @@ void ScaleFieldMeshAndData::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
-
     if (dataScale && *dataScale)
     {
       double scale = (*dataScale)->value();

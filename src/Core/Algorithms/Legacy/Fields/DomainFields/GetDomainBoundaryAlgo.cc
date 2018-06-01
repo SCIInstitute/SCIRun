@@ -85,7 +85,6 @@ bool
 GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainlink, FieldHandle& output) const
 {
   typedef boost::unordered_multimap<index_type,pointtype> pointhash_map_type;
-  typedef boost::unordered_map<index_type,VMesh::Node::index_type> hash_map_type;
 
   ScopedAlgorithmStatusReporter asr(this, "GetDomainBoundary");
   using namespace Parameters;
@@ -107,15 +106,11 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
   bool noinnerboundary = get(NoInnerBoundary).toBool();
   bool disconnect = get(DisconnectBoundaries).toBool();
 
-  Log::get() << DEBUG_LOG << "GetDomainBoundaryAlgo parameters:"
-    << "\n\tminval = " << minval
-    << "\n\tmaxval = " << maxval
-    << "\n\tdomval = " << domval
-    << "\n\tuserange = " << userange
-    << "\n\taddouterboundary = " << addouterboundary
-    << "\n\tinnerboundaryonly = " << innerboundaryonly
-    << "\n\tnoinnerboundary = " << noinnerboundary
-    << "\n\tdisconnect = " << disconnect << std::endl;
+  LOG_DEBUG("GetDomainBoundaryAlgo parameters:\n\tminval = {}"
+    "\n\tmaxval = {}\n\tdomval = {}\n\tuserange = {}\n\taddouterboundary = {}"
+    "\n\tinnerboundaryonly = {}\n\tnoinnerboundary = {}\n\tdisconnect = {}",
+    minval, maxval, domval, userange, addouterboundary, innerboundaryonly,
+    noinnerboundary, disconnect);
 
   if (!input)
   {
@@ -177,21 +172,18 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
     return false;
   }
 
-
-  VField *ifield = input->vfield();
-  VField *ofield = output->vfield();
-  VMesh  *imesh =  input->vmesh();
-  VMesh  *omesh =  output->vmesh();
+  auto ifield = input->vfield();
+  auto ofield = output->vfield();
+  auto imesh =  input->vmesh();
+  auto omesh =  output->vmesh();
 
   imesh->synchronize(Mesh::DELEMS_E|Mesh::ELEM_NEIGHBORS_E|Mesh::NODE_NEIGHBORS_E);
 
-  VMesh::Node::size_type numnodes = imesh->num_nodes();
-  VMesh::Node::size_type numelems = imesh->num_elems();
   VMesh::DElem::size_type numdelems = imesh->num_delems();
 
   bool isdomlink = false;
-  const index_type* domlinkrr = 0;
-  const index_type* domlinkcc = 0;
+  const index_type* domlinkrr = nullptr;
+  const index_type* domlinkcc = nullptr;
 
   std::vector<int> newvalues;
 
@@ -224,7 +216,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
 
     index_type cnt = 0;
 
-    for(VMesh::DElem::index_type delem = 0; delem < numdelems; delem++)
+    for(VMesh::DElem::index_type delem = 0; delem < numdelems; ++delem)
     {
       checkForInterruption();
 
@@ -241,7 +233,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
 
       if ((!neighborexist)&&(isdomlink))
       {
-        for (index_type rr = domlinkrr[delem]; rr < domlinkrr[delem+1]; rr++)
+        for (auto rr = domlinkrr[delem]; rr < domlinkrr[delem+1]; rr++)
         {
           VMesh::DElem::index_type idx = domlinkcc[rr];
           VMesh::Node::array_type nodes;
@@ -411,10 +403,10 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
 
     index_type cnt = 0;
 
-    for(VMesh::DElem::index_type delem = 0; delem < numdelems; delem++)
+    for(VMesh::DElem::index_type delem = 0; delem < numdelems; ++delem)
     {
       checkForInterruption();
-      
+
       bool neighborexist = false;
       bool includeface = false;
 
@@ -428,7 +420,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
 
       if ((!neighborexist)&&(isdomlink))
       {
-        for (index_type rr = domlinkrr[delem]; rr < domlinkrr[delem+1]; rr++)
+        for (auto rr = domlinkrr[delem]; rr < domlinkrr[delem+1]; rr++)
         {
           VMesh::DElem::index_type idx = domlinkcc[rr];
           VMesh::Node::array_type nodes;

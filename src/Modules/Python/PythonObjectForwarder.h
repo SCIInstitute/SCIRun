@@ -106,7 +106,7 @@ namespace SCIRun
               }
               else if (var.name().name() == Core::Python::pyFieldLabel())
               {
-                auto field = boost::dynamic_pointer_cast<Core::Datatypes::LegacyField>(var.getDatatype());
+                auto field = boost::dynamic_pointer_cast<Core::Datatypes::Field>(var.getDatatype());
                 if (field)
                   module_.sendOutput(fieldPort, field);
               }
@@ -136,7 +136,7 @@ namespace SCIRun
         virtual void execute() override;
         virtual void setStateDefaults() override;
         OUTPUT_PORT(0, PythonMatrix, Matrix);
-        OUTPUT_PORT(1, PythonField, LegacyField);
+        OUTPUT_PORT(1, PythonField, Field);
         OUTPUT_PORT(2, PythonString, String);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)

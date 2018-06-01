@@ -59,6 +59,7 @@ namespace SCIRun
     public Q_SLOTS:
       void highlightIfSelected();
       void setDefaultNotePosition(NotePosition position);
+      void setDefaultNoteSize(int size);
       void createPortPositionProviders();
       void snapToGrid();
       void highlightPorts(int state);
@@ -82,7 +83,9 @@ namespace SCIRun
       void disableModuleGUI(bool disabled);
       void loadAnimate(qreal val);
       void colorAnimate(qreal val);
+      void findInNetwork();
     private:
+      void showAndColorImpl(const QColor& color, int milliseconds);
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
 
@@ -96,6 +99,15 @@ namespace SCIRun
       int stackDepth_;
       QSizeF originalSize_;
       QTimeLine* timeLine_;
+    };
+
+    class SubnetPortsBridgeProxyWidget : public QGraphicsProxyWidget
+    {
+    public:
+      explicit SubnetPortsBridgeProxyWidget(class SubnetPortsBridgeWidget* ports, QGraphicsItem* parent = nullptr);
+      void updateConnections();
+    private:
+      class SubnetPortsBridgeWidget* ports_;
     };
   }
 }

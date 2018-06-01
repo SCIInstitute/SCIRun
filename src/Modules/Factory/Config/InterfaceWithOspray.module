@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "InterfaceWithOspray",
+    "namespace": "Visualization",
+    "status": "...",
+    "description": "...",
+    "header": "Modules/Visualization/InterfaceWithOspray.h"
+  },
+  "algorithm": {
+    "name": "OsprayDataAlgorithm",
+    "namespace": "Visualization",
+    "header": "Core/Algorithms/Visualization/OsprayDataAlgorithm.h"
+  },
+  "UI": {
+    "name": "InterfaceWithOsprayDialog",
+    "header": "Interface/Modules/Visualization/InterfaceWithOsprayDialog.h"
+  }
+}

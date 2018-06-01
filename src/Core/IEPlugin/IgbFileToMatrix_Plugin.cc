@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -35,33 +35,20 @@
  *   University of Utah
  *
  */
- 
 
-#include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
 #include <Core/IEPlugin/IgbFileToMatrix_Plugin.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Utils/Legacy/StringUtil.h>
 #include <Core/Logging/LoggerInterface.h>
-#include <Core/ImportExport/Matrix/MatrixIEPlugin.h>
-#include <Core/Datatypes/DenseMatrix.h>
 
-#include <string.h>
-#include <stdlib.h>
-#include <string>
-#include <stdio.h>
-#include <vector>
 #include <boost/tokenizer.hpp>
-#include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/iter_find.hpp>
-#include <cmath>
 
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
-using namespace std;
 using namespace SCIRun;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
@@ -69,111 +56,75 @@ using namespace SCIRun::Core::Datatypes;
 
 MatrixHandle SCIRun::IgbFileMatrix_reader(LoggerHandle pr, const char *filename)
 {
-     
-    string line;
-    vector<string> strs;
-    int x_size=0;
-    int t_size=0;
-    int count=0;
-   
-    
-    ifstream myfile (filename);
-    if (myfile.is_open())
+  std::string line;
+  std::vector<std::string> strs;
+  int x_size=0;
+  int t_size=0;
+  int count=0;
+
+  std::ifstream myfile(filename);
+  if (myfile.is_open())
+  {
+    for (int i=0; i<5; i++)
     {
-        //while ( myfile.good() )
-        for(int i=0; i<5; i++)
+      std::getline(myfile,line);
+      boost::split(strs,line,boost::is_any_of(":, "));
+      size_t sz = line.size();
+
+      for (int p=0;p<sz;p++)
+      {
+        if (boost::iequals(strs[p], "x"))
         {
-            getline (myfile,line);
-            
-            boost::split(strs,line,boost::is_any_of(":, "));
-            size_t sz;
-            sz=line.size();
-            
-            
-            for(int p=0;p<sz;p++)
-            {
-             
-               std::cout << p << std::endl; 	
-             
-                if (boost::iequals(strs[p], "x"))
-                {
-                    x_size=atoi(strs[p+1].c_str());
-                    count += 1;
-                    
-                }
-                if (boost::iequals(strs[p], "t"))
-                {
-                    t_size=atoi(strs[p+1].c_str());
-                    count +=1;
-                     
-                }
-                
-                if (count ==2 ) break;
-                
-  
-            }
-        
-                     
-        	}
-        myfile.close();
+          x_size=atoi(strs[p+1].c_str());
+          count += 1;
+        }
+        if (boost::iequals(strs[p], "t"))
+        {
+          t_size=atoi(strs[p+1].c_str());
+          count += 1;
+        }
+        if (count == 2)
+          break;
+      }
+  	}
+    myfile.close();
+  }
+
+  std::streamoff length=0;
+  std::streamsize numbyts=0;
+
+  std::ifstream is;
+  is.open(filename, std::ios::in | std::ios::binary );
+  if (is.is_open())
+  {
+    // get length of file:
+    is.seekg(0, std::ios::end);
+    length = is.tellg();
+    is.seekg(1024, std::ios::beg);
+    length -= 1024;
+
+    std::vector<float> vec;
+    vec.resize(length);
+    is.read((char*)&vec[0],length);
+
+    if (!is)
+    {
+      numbyts = is.gcount();
+      std::cerr << "Error reading binary data. Number of bytes read: " << numbyts << std::endl;
+    }
+    is.close();
+
+    auto result(boost::make_shared<DenseMatrix>(x_size,t_size));
+
+    for(size_t p=0;p<t_size;p++ )
+    {
+      for(size_t pp=0;pp<x_size;pp++ )
+      {
+        (*result)(pp, p) = vec[(p*x_size)+pp];
+      }
     }
 
-            
-        streamoff length=0;
-        streamsize numbyts=0;
-        //char * buffer;
-        
-        
-        
-        
-        ifstream is;
-        is.open (filename, ios::in |  ios::binary );
-        if (is.is_open())
-        {
-            // get length of file:
-            is.seekg (0, ios::end);
-            length = is.tellg();
-            is.seekg (1024, ios::beg);
-             t_size=t_size;
-            length=length-1024;
-
-            vector<float> vec;
-            vec.resize(length);
-            is.read ((char*)&vec[0],length);
-            
-            if (!is)
-            {
-                numbyts=is.gcount();
-                cout << "Error reading binary data. Number of bytes read: " << numbyts << endl;
-
-            }
-            is.close();
-        
-        
-           auto result(boost::make_shared<DenseMatrix>(x_size,t_size));
-            
-        
-            
-                for(size_t p=0;p<t_size;p++ )
-                {
-                
-                    for(size_t pp=0;pp<x_size;pp++ )
-                    {
-            
-                	
-                        (*result)(pp, p) = vec[(p*x_size)+pp];
-                		
-                    }
-                }
-           
-    
-        return(result);
-        }
+    return result;
+  }
+  return nullptr;
 }
-  
-  
-  
-
-
-
-

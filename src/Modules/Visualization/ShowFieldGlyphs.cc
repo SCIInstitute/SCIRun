@@ -247,7 +247,7 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
   bool showScalars = state->getValue(ShowFieldGlyphs::ShowScalars).toBool();
   bool showTensors = state->getValue(ShowFieldGlyphs::ShowTensors).toBool();
 
-  GeometryHandle geom(new GeometryObjectSpire(idgen, "EntireGlyphField", true));
+  auto geom(boost::make_shared<GeometryObjectSpire>(idgen, "EntireGlyphField", true));
 
   FieldInformation finfo(field);
 
@@ -502,7 +502,7 @@ void GlyphBuilder::renderVectors(
 
   std::string uniqueNodeID = id + "vector_glyphs" + ss.str();
 
-  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENT_EDGES),
+  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENT_EDGES),
     state->getValue(ShowFieldGlyphs::VectorsTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
 }
 
@@ -664,7 +664,7 @@ void GlyphBuilder::renderScalars(
 
   std::string uniqueNodeID = id + "scalar_glyphs" + ss.str();
 
-  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENT_NODES),
+  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENT_NODES),
     state->getValue(ShowFieldGlyphs::ScalarsTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
 }
 
@@ -793,7 +793,7 @@ void GlyphBuilder::renderTensors(
     }
   }
 
-  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY),
+  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY),
     state->getValue(ShowFieldGlyphs::TensorsTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
 }
 

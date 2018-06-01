@@ -29,6 +29,8 @@
 #include <Modules/Legacy/Fields/ExtractSimpleIsosurface.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/ExtractSimpleIsosurfaceAlgo.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <boost/algorithm/string/predicate.hpp>
@@ -48,6 +50,7 @@ ExtractSimpleIsosurface::ExtractSimpleIsosurface()
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(Isovalue);
   INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(OutputMatrix);
 }
 
 void ExtractSimpleIsosurface::setStateDefaults()
@@ -66,14 +69,36 @@ void ExtractSimpleIsosurface::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
     auto state = get_state();
 
     if (isovalueOption && *isovalueOption && !(*isovalueOption)->empty())
     {
-      //TODO: pass entire first column for multiple isovalues
-      double iso = (*isovalueOption)->get(0,0);
-      state->setValue(Parameters::SingleIsoValue, iso);
+      if (state->getValue(Parameters::IsovalueChoice).toString() == "Single")
+      {
+        double iso = (*isovalueOption)->get(0,0);
+        state->setValue(Parameters::SingleIsoValue, iso);
+      }
+      else if (state->getValue(Parameters::IsovalueChoice).toString() == "List")
+      {
+        if (!matrixIs::dense(*isovalueOption)) error("Isovalue input matrix should be dense type");
+        
+        auto mat_iso = castMatrix::toDense (*isovalueOption);
+        if (mat_iso->nrows()>1)
+        {
+          if (mat_iso->ncols()>1)
+          {
+            warning("input matrix will work better as a row matrix");
+          }
+          else
+          {
+            mat_iso->transposeInPlace();
+          }
+        }
+        
+        std::ostringstream ostr;
+        ostr << *mat_iso;
+        state->setValue(Parameters::ListOfIsovalues, ostr.str());
+      }
     }
 
     std::vector<double> isoDoubles;
@@ -121,8 +146,9 @@ void ExtractSimpleIsosurface::execute()
     VariableList isos;
     std::transform(isoDoubles.begin(), isoDoubles.end(), std::back_inserter(isos), [](double x) { return makeVariable("iso", x); });
     algo().set(Parameters::Isovalues, isos);
-
+    
     auto output = algo().run(withInputData((InputField, field)));
     sendOutputFromAlgorithm(OutputField, output);
+    sendOutputFromAlgorithm(OutputMatrix, output);
   }
 }

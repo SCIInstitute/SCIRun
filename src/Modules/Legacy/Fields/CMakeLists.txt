@@ -86,6 +86,8 @@ SET(Modules_Legacy_Fields_HEADERS
   GeneratePointSamplesFromFieldOrWidget.h
   TransformMeshWithTransform.h
   GetMeshQualityField.h
+  RemoveUnusedNodes.h
+  CleanupTetMesh.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -100,10 +102,10 @@ SET(Modules_Legacy_Fields_SRCS
   RegisterWithCorrespondences.cc
   #SmoothVecFieldMedian.cc
   SetFieldDataToConstantValue.cc
-  #RemoveUnusedNodes.cc
+  RemoveUnusedNodes.cc
   MapFieldDataOntoNodes.cc
   MapFieldDataOntoElems.cc
-  #CleanupTetMesh.cc
+  CleanupTetMesh.cc
   #MatchDomainLabels.cc
   SplitFieldByDomain.cc
   AlignMeshBoundingBoxes.cc
@@ -227,7 +229,7 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Fields
   Core_Math
   Core_Parser
   Core_Util_Legacy
-  Graphics_Glyphs
+  Graphics_Widgets
   Graphics_Datatypes
 )
 

@@ -99,7 +99,8 @@ namespace SCIRun
       enum class NetworkEventCommands
       {
         PostModuleAdd,
-        OnNetworkLoad
+        OnNetworkLoad,
+        ApplicationStart
         //TODO: add more based on user request
       };
 

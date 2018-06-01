@@ -30,6 +30,7 @@
 #define ALGORITHMS_BASE_ALGORITHMFWD_H
 
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Utils/SmartPointers.h>
 #include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
@@ -37,10 +38,10 @@ namespace Core {
 namespace Algorithms {
 
   class AlgorithmBase;
-  typedef Datatypes::SharedPointer<AlgorithmBase> AlgorithmHandle;
+  using AlgorithmHandle = SharedPointer<AlgorithmBase>;
 
   class AlgorithmFactory;
-  typedef Datatypes::SharedPointer<AlgorithmFactory> AlgorithmFactoryHandle;
+  using AlgorithmFactoryHandle = SharedPointer<AlgorithmFactory>;
 
 }}}
 

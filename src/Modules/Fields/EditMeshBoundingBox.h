@@ -29,17 +29,11 @@
 #ifndef MODULES_FIELDS_EDITMESHBOUNDINGBOX_H
 #define MODULES_FIELDS_EDITMESHBOUNDINGBOX_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/BoxWidgetTypes.h>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/Datatypes/Geometry.h>
-#include <Core/GeometryPrimitives/BBox.h>
 #include <Modules/Fields/share.h>
 
 namespace SCIRun {
-
-  class BoxWidgetInterface;
-  using BoxWidgetPtr = boost::shared_ptr<BoxWidgetInterface>;
-
   namespace Modules {
     namespace Fields {
 
@@ -88,8 +82,8 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName BoxMode;
         static const Core::Algorithms::AlgorithmParameterName BoxRealScale;
 
-        INPUT_PORT(0, InputField, LegacyField);
-        OUTPUT_PORT(0, OutputField, LegacyField);
+        INPUT_PORT(0, InputField, Field);
+        OUTPUT_PORT(0, OutputField, Field);
         OUTPUT_PORT(1, Transformation_Widget, GeometryObject);
         OUTPUT_PORT(2, Transformation_Matrix, Matrix);
 
@@ -100,13 +94,10 @@ namespace SCIRun {
         void clear_vals();
         void update_input_attributes(FieldHandle);
         void computeWidgetBox(const Core::Geometry::BBox& box) const;
-        void createBoxWidget();
         Core::Datatypes::GeometryBaseHandle buildGeometryObject();
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
         void adjustGeometryFromTransform(const Core::Geometry::Transform& transformMatrix);
-        Core::Geometry::BBox bbox_;
 
-        BoxWidgetPtr box_;
         boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;
         bool widgetMoved_;
       };

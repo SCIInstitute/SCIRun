@@ -122,7 +122,7 @@ ColorMapHandle StandardColorMapFactory::create(const std::string& name, const si
     color.reset(maker->second());
   else
   {
-    Log::get() << ERROR_LOG << "Color map name not implemented/recognized. Returning Rainbow." << std::endl;
+    GeneralLog::Instance().get()->error("Color map name not implemented/recognized. Returning Rainbow.");
     color.reset(new Rainbow);
   }
 

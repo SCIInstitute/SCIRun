@@ -44,7 +44,7 @@ namespace SCIRun {
       public:
         HardCodedModuleFactory();
         virtual Dataflow::Networks::ModuleDescription lookupDescription(const Dataflow::Networks::ModuleLookupInfo& info) const override;
-        virtual Dataflow::Networks::ModuleHandle create(const Dataflow::Networks::ModuleDescription& info) override;
+        virtual Dataflow::Networks::ModuleHandle create(const Dataflow::Networks::ModuleDescription& info) const override;
         virtual void setStateFactory(Dataflow::Networks::ModuleStateFactoryHandle stateFactory) override;
         virtual void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory) override;
         virtual void setReexecutionFactory(Dataflow::Networks::ReexecuteStrategyFactoryHandle reexFactory) override;

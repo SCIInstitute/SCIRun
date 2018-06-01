@@ -44,8 +44,8 @@ namespace StringProcessing {
   {
   public:
     NetworkNotes();
-    virtual void execute();
-    virtual void setStateDefaults();
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
     OUTPUT_PORT(0, NewString, String);
     static const Core::Algorithms::AlgorithmParameterName InputString;
     MODULE_TRAITS_AND_INFO(ModuleHasUI)

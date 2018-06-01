@@ -61,9 +61,8 @@ ReadMatrixClassicDialog::ReadMatrixClassicDialog(const std::string& name, Module
 
 void ReadMatrixClassicDialog::pullSpecial()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
   static MatrixIEPluginManager mgr;
-  selectedFilter_ = QString::fromStdString(dialogBoxFilterFromFileTypeDescription(mgr, state_->getValue(Variables::FileTypeName).toString()));
+  selectedFilter_ = pullFilename(state_, fileNameLineEdit_, dialogBoxFilterFromFileTypeDescription(mgr));
 }
 
 void ReadMatrixClassicDialog::pushFileNameToState()

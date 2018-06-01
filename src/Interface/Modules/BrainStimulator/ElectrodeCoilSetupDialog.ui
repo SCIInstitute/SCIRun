@@ -19,197 +19,135 @@
   <property name="windowTitle">
    <string>ElectrodeCoilSetupDialog</string>
   </property>
-  <widget class="QTabWidget" name="tabWidget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>731</width>
-     <height>311</height>
-    </rect>
-   </property>
-   <property name="currentIndex">
-    <number>0</number>
-   </property>
-   <widget class="QWidget" name="Electrode Sponge">
-    <attribute name="title">
-     <string>Electrode/Coil Setup</string>
-    </attribute>
-    <widget class="QTableWidget" name="electrode_coil_tableWidget">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>721</width>
-       <height>271</height>
-      </rect>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0" colspan="4">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
      </property>
-     <row>
-      <property name="text">
-       <string>1</string>
-      </property>
-     </row>
+     <widget class="QWidget" name="Electrode Sponge">
+      <attribute name="title">
+       <string>Electrode/Coil Setup</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QTableWidget" name="electrode_coil_tableWidget">
+         <row>
+          <property name="text">
+           <string>1</string>
+          </property>
+         </row>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
-   </widget>
-  </widget>
-  <widget class="QCheckBox" name="AllInputsTDCS_">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>330</y>
-     <width>211</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>All inputs are tDCS electrodes</string>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="ProtoTypeInputCheckbox_">
-   <property name="geometry">
-    <rect>
-     <x>390</x>
-     <y>330</y>
-     <width>221</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Only use this prototype input:</string>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="ProtoTypeInputComboBox_">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>610</x>
-     <y>330</y>
-     <width>111</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <item>
-    <property name="text">
-     <string>???</string>
-    </property>
    </item>
-  </widget>
-  <widget class="QCheckBox" name="electrodethicknessCheckBox_">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>360</y>
-     <width>201</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Electrode-sponge thickness:</string>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QDoubleSpinBox" name="electrodethicknessSpinBox_">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>230</x>
-     <y>360</y>
-     <width>69</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="decimals">
-    <number>1</number>
-   </property>
-   <property name="maximum">
-    <double>1000000000.000000000000000</double>
-   </property>
-   <property name="singleStep">
-    <double>1.000000000000000</double>
-   </property>
-   <property name="value">
-    <double>1.000000000000000</double>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="invertNormalsCheckBox_">
-   <property name="geometry">
-    <rect>
-     <x>390</x>
-     <y>360</y>
-     <width>321</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Invert normals to position electrodes on scalp</string>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="OrientTMSCoilRadialToScalpCheckBox_">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>390</y>
-     <width>271</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Force TMS coil to be radial to scalp</string>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="PutElectrodesOnScalpCheckBox_">
-   <property name="geometry">
-    <rect>
-     <x>390</x>
-     <y>390</y>
-     <width>341</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Compute 3rd module output (might take a while)</string>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="InterpolateElectrodeShapeCheckbox_">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="geometry">
-    <rect>
-     <x>430</x>
-     <y>410</y>
-     <width>281</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Interpolate electrode sponge edges</string>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-  </widget>
+   <item row="1" column="0">
+    <widget class="QCheckBox" name="AllInputsTDCS_">
+     <property name="text">
+      <string>All inputs are tDCS electrodes</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QCheckBox" name="ProtoTypeInputCheckbox_">
+     <property name="text">
+      <string>Only use this prototype input:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3">
+    <widget class="QComboBox" name="ProtoTypeInputComboBox_">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <item>
+      <property name="text">
+       <string>???</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QCheckBox" name="electrodethicknessCheckBox_">
+     <property name="text">
+      <string>Electrode-sponge thickness:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QDoubleSpinBox" name="electrodethicknessSpinBox_">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="decimals">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <double>1000000000.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>1.000000000000000</double>
+     </property>
+     <property name="value">
+      <double>1.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2" colspan="2">
+    <widget class="QCheckBox" name="invertNormalsCheckBox_">
+     <property name="text">
+      <string>Invert normals to position electrodes on scalp</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QCheckBox" name="OrientTMSCoilRadialToScalpCheckBox_">
+     <property name="text">
+      <string>Force TMS coil to be radial to scalp</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2" colspan="2">
+    <widget class="QCheckBox" name="PutElectrodesOnScalpCheckBox_">
+     <property name="text">
+      <string>Compute 3rd module output (might take a while)</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="2" colspan="2">
+    <widget class="QCheckBox" name="InterpolateElectrodeShapeCheckbox_">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>Interpolate electrode sponge edges</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
@@ -245,7 +183,7 @@
      <y>371</y>
     </hint>
    </hints>
-  </connection>  
+  </connection>
   <connection>
    <sender>PutElectrodesOnScalpCheckBox_</sender>
    <signal>toggled(bool)</signal>
@@ -261,6 +199,6 @@
      <y>371</y>
     </hint>
    </hints>
-  </connection>  
+  </connection>
  </connections>
 </ui>

@@ -36,7 +36,7 @@ namespace SCIRun {
 namespace Render {
 
 /// Entity system core sitting on top of Acorn.
-class ESCore : public CPM_ES_ACORN_NS::Acorn
+  class ESCore : public spire::Acorn
 {
 public:
   ESCore();
@@ -48,7 +48,7 @@ public:
 private:
 
   int64_t                   mCoreSequence;    ///< Sequence number (frame) since start.
-  CPM_GL_STATE_NS::GLState  mDefaultGLState;  ///< Default OpenGL state.
+  spire::GLState  mDefaultGLState;  ///< Default OpenGL state.
   double                    mCurrentTime;     ///< Current system time calculated from constant frame time.
 
   float                     mFPS;             ///< Actual FPS of system.

@@ -29,7 +29,7 @@
 #ifndef INTERFACE_APPLICATION_TREEVIEWCOLLABORATORS_H
 #define INTERFACE_APPLICATION_TREEVIEWCOLLABORATORS_H
 
-#include <QtGui>
+#include <Interface/qt_include.h>
 
 namespace SCIRun {
 namespace Gui {
@@ -49,7 +49,7 @@ namespace Gui {
   }
 
   template <class Func>
-  void visitTree(QTreeWidget* tree, Func& itemFunc) 
+  void visitTree(QTreeWidget* tree, Func& itemFunc)
   {
     for (int i = 0; i < tree->topLevelItemCount(); ++i)
       visitItem(tree->topLevelItem(i), itemFunc);

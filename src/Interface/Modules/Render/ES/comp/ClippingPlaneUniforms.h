@@ -30,7 +30,7 @@ namespace SCIRun {
       void applyUniforms(const glm::mat4 &transform, const std::vector<glm::vec4> &clippingPlanes,
         const std::vector<glm::vec4> &clippingPlaneCtrls) const;
 
-      bool serialize(CPM_ES_CEREAL_NS::ComponentSerialize& s, uint64_t /* entityID */)
+      bool serialize(spire::ComponentSerialize& s, uint64_t /* entityID */)
       {
         return false;
       }

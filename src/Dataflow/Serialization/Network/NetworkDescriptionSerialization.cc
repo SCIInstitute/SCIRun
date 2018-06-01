@@ -27,5 +27,64 @@
 */
 
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
+#include <boost/filesystem/operations.hpp>
 
 using namespace SCIRun::Dataflow::Networks;
+
+void ToolkitFile::load(std::istream& istr)
+{
+  auto xmlPtr = XMLSerializer::load_xml<ToolkitFile>(istr);
+  if (xmlPtr)
+    (*this) = *xmlPtr;
+}
+
+void ToolkitFile::save(std::ostream& ostr) const
+{
+  XMLSerializer::save_xml(*this, ostr, "toolkit");
+}
+
+namespace
+{
+  namespace fs = boost::filesystem;
+
+  fs::path addSlash(const fs::path& p)
+  {
+    auto fullBasePath(p);
+    if ("." != fullBasePath.filename())
+      fullBasePath += fs::path::preferred_separator;
+    return fullBasePath;
+  }
+
+  fs::path diffPath(const fs::path& basePath, const fs::path& newPath)
+  {
+    auto fullBasePath = addSlash(basePath);
+    auto tmpPath = newPath;
+    fs::path diffpath;
+    while (addSlash(tmpPath) != fullBasePath)
+    {
+      diffpath = tmpPath.stem() / diffpath;
+      tmpPath = tmpPath.parent_path();
+    }
+
+    auto filename = diffpath.leaf().string() + newPath.extension().string();
+    diffpath.remove_leaf() /= filename;
+    return diffpath;
+  }
+}
+
+ToolkitFile SCIRun::Dataflow::Networks::makeToolkitFromDirectory(const boost::filesystem::path& toolkitPath)
+{
+  ToolkitFile toolkit;
+
+  for (const auto& p : boost::filesystem::recursive_directory_iterator(toolkitPath))
+  {
+    if (p.path().extension() == ".srn5")
+    {
+      auto path = diffPath(toolkitPath, p.path()).string();
+      std::replace(path.begin(), path.end(), '\\', '/');
+      toolkit.networks[path] = *XMLSerializer::load_xml<NetworkFile>(p.path().string());
+    }
+  }
+  return toolkit;
+}

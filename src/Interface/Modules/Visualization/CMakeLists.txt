@@ -1,23 +1,23 @@
 
 #
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
+#
 #  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
-# 
+#  in all copies or substantial portions of the Software.
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -39,13 +39,16 @@ SET(Interface_Modules_Visualization_FORMS
   ShowString.ui
   ShowColorMap.ui
   RescaleColorMap.ui
+  InterfaceWithOspray.ui
+  ViewOsprayScene.ui
+  ShowFieldWithOspray.ui
 )
 
 SET(Interface_Modules_Visualization_HEADERS
   CreateStandardColorMapDialog.h
   GenerateStreamLinesDialog.h
   share.h
-  ShowFieldDialog.h  
+  ShowFieldDialog.h
   ShowFieldGlyphsDialog.h
   ShowFieldGlyphsScalarTabDialog.h
   ShowFieldGlyphsVectorTabDialog.h
@@ -53,9 +56,12 @@ SET(Interface_Modules_Visualization_HEADERS
   ShowStringDialog.h
   ShowColorMapDialog.h
   RescaleColorMapDialog.h
+  InterfaceWithOsprayDialog.h
+  ViewOspraySceneDialog.h
+  ShowFieldWithOsprayDialog.h
 )
 
-SET(Interface_Modules_Visualization_SOURCES 
+SET(Interface_Modules_Visualization_SOURCES
   CreateStandardColorMapDialog.cc
   GenerateStreamLinesDialog.cc
   ShowFieldDialog.cc
@@ -66,22 +72,26 @@ SET(Interface_Modules_Visualization_SOURCES
   ShowStringDialog.cc
   ShowColorMapDialog.cc
   RescaleColorMapDialog.cc
+  InterfaceWithOsprayDialog.cc
+  ViewOspraySceneDialog.cc
+  ShowFieldWithOsprayDialog.cc
 )
 
-QT4_WRAP_UI(Interface_Modules_Visualization_FORMS_HEADERS ${Interface_Modules_Visualization_FORMS})
-QT4_WRAP_CPP(Interface_Modules_Visualization_HEADERS_MOC ${Interface_Modules_Visualization_HEADERS})
+QT_WRAP_UI(Interface_Modules_Visualization_FORMS_HEADERS "${Interface_Modules_Visualization_FORMS}")
+QT_WRAP_CPP(Interface_Modules_Visualization_HEADERS_MOC "${Interface_Modules_Visualization_HEADERS}")
 
-SCIRUN_ADD_LIBRARY(Interface_Modules_Visualization 
+SCIRUN_ADD_LIBRARY(Interface_Modules_Visualization
   ${Interface_Modules_Visualization_HEADERS}
   ${Interface_Modules_Visualization_FORMS_HEADERS}
   ${Interface_Modules_Visualization_HEADERS_MOC}
   ${Interface_Modules_Visualization_SOURCES}
 )
 
-TARGET_LINK_LIBRARIES(Interface_Modules_Visualization 
+TARGET_LINK_LIBRARIES(Interface_Modules_Visualization
   Modules_Visualization
   Core_Algorithms_Legacy_Fields
   Interface_Modules_Base
+  Core_Application
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )
@@ -89,5 +99,5 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Visualization
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Visualization)
 ENDIF(BUILD_SHARED_LIBS)
-  
+
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

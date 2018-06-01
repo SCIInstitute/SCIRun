@@ -62,3 +62,4 @@ TARGET_LINK_LIBRARIES(Core_Serialization_Network
 )
 
 ADD_SUBDIRECTORY(Importer)
+ADD_SUBDIRECTORY(Tools)

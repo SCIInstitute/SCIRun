@@ -71,10 +71,12 @@ ENDIF()
 TARGET_LINK_LIBRARIES(Algorithms_Factory
   Algorithms_Base
   Algorithms_BrainStimulator
+  Algorithms_Legacy_Inverse
   Core_Algorithms_Legacy_Fields
   Algorithms_Math
   Algorithms_DataIO
   Algorithms_Field
+  Core_Algorithms_Visualization
   Core_Algorithms_Legacy_FiniteElements
   Core_Algorithms_Legacy_Converter
   ${SCI_BOOST_LIBRARY}

@@ -43,12 +43,15 @@ namespace SCIRun {
       {
       public:
         CalculateCurrentDensity();
-        virtual void setStateDefaults() {}
-        virtual void execute();
 
-        INPUT_PORT(0, TetMesh_EField, LegacyField);
-        INPUT_PORT(1, TetMesh_Sigmas, LegacyField);
-        OUTPUT_PORT(0, Currents, LegacyField);
+        void setStateDefaults() override
+        {}
+
+        void execute() override;
+
+        INPUT_PORT(0, TetMesh_EField, Field);
+        INPUT_PORT(1, TetMesh_Sigmas, Field);
+        OUTPUT_PORT(0, Currents, Field);
 
         LEGACY_BIOPSE_MODULE
 

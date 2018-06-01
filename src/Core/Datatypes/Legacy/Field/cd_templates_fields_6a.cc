@@ -64,6 +64,7 @@ namespace SCIRun {
   typedef ConstantBasis<Vector>             CFDVectorBasis;
   typedef ConstantBasis<double>             CFDdoubleBasis;
   typedef ConstantBasis<float>              CFDfloatBasis;
+  typedef ConstantBasis<complex>            CFDcomplexBasis;
   typedef ConstantBasis<int>                CFDintBasis;
   typedef ConstantBasis<long long>          CFDlonglongBasis;
   typedef ConstantBasis<short>              CFDshortBasis;
@@ -78,6 +79,7 @@ namespace SCIRun {
   typedef QuadBilinearLgn<Vector>             FDVectorBasis;
   typedef QuadBilinearLgn<double>             FDdoubleBasis;
   typedef QuadBilinearLgn<float>              FDfloatBasis;
+  typedef QuadBilinearLgn<complex>            FDcomplexBasis;
   typedef QuadBilinearLgn<int>                FDintBasis;
   typedef QuadBilinearLgn<long long>          FDlonglongBasis;
   typedef QuadBilinearLgn<short>              FDshortBasis;
@@ -92,6 +94,7 @@ typedef HexTrilinearLgn<Tensor>                FDHTensorBasis;
 typedef HexTrilinearLgn<Vector>                FDHVectorBasis;
 typedef HexTrilinearLgn<double>                FDHdoubleBasis;
 typedef HexTrilinearLgn<float>                 FDHfloatBasis;
+typedef HexTrilinearLgn<complex>               FDHcomplexBasis;
 typedef HexTrilinearLgn<int>                   FDHintBasis;
 typedef HexTrilinearLgn<long long>             FDHlonglongBasis;
 typedef HexTrilinearLgn<short>                 FDHshortBasis;
@@ -114,36 +117,30 @@ template class GenericField<SHMesh, CFDTensorBasis, FData3d<Tensor,SHMesh> >;
 template class GenericField<SHMesh, CFDVectorBasis, FData3d<Vector,SHMesh> >;
 template class GenericField<SHMesh, CFDdoubleBasis, FData3d<double,SHMesh> >;
 template class GenericField<SHMesh, CFDfloatBasis,  FData3d<float,SHMesh> >;
+template class GenericField<SHMesh, CFDcomplexBasis, FData3d<complex, SHMesh> >;
 template class GenericField<SHMesh, CFDintBasis,    FData3d<int,SHMesh> >;
 template class GenericField<SHMesh, CFDlonglongBasis,FData3d<long long,SHMesh> >;
 template class GenericField<SHMesh, CFDshortBasis,  FData3d<short,SHMesh> >;
 template class GenericField<SHMesh, CFDcharBasis,   FData3d<char,SHMesh> >;
-template class GenericField<SHMesh, CFDuintBasis,   FData3d<unsigned int,
-							     SHMesh> >;
-template class GenericField<SHMesh, CFDushortBasis, FData3d<unsigned short,
-							     SHMesh> >;
-template class GenericField<SHMesh, CFDucharBasis,  FData3d<unsigned char,
-							     SHMesh> >;
-template class GenericField<SHMesh, CFDulongBasis,  FData3d<unsigned long,
-							     SHMesh> >;
+template class GenericField<SHMesh, CFDuintBasis,   FData3d<unsigned int,SHMesh> >;
+template class GenericField<SHMesh, CFDushortBasis, FData3d<unsigned short,SHMesh> >;
+template class GenericField<SHMesh, CFDucharBasis,  FData3d<unsigned char,SHMesh> >;
+template class GenericField<SHMesh, CFDulongBasis,  FData3d<unsigned long,SHMesh> >;
 
 //Linear
 template class GenericField<SHMesh, FDHTensorBasis, FData3d<Tensor,SHMesh> >;
 template class GenericField<SHMesh, FDHVectorBasis, FData3d<Vector,SHMesh> >;
 template class GenericField<SHMesh, FDHdoubleBasis, FData3d<double,SHMesh> >;
 template class GenericField<SHMesh, FDHfloatBasis,  FData3d<float,SHMesh> >;
+template class GenericField<SHMesh, FDHcomplexBasis, FData3d<complex, SHMesh> >;
 template class GenericField<SHMesh, FDHintBasis,    FData3d<int,SHMesh> >;
 template class GenericField<SHMesh, FDHlonglongBasis,FData3d<long long,SHMesh> >;
 template class GenericField<SHMesh, FDHshortBasis,  FData3d<short,SHMesh> >;
 template class GenericField<SHMesh, FDHcharBasis,   FData3d<char,SHMesh> >;
-template class GenericField<SHMesh, FDHuintBasis,   FData3d<unsigned int,
-							    SHMesh> >;
-template class GenericField<SHMesh, FDHushortBasis, FData3d<unsigned short,
-							    SHMesh> >;
-template class GenericField<SHMesh, FDHucharBasis,  FData3d<unsigned char,
-							    SHMesh> >;
-template class GenericField<SHMesh, FDHulongBasis,  FData3d<unsigned long,
-							    SHMesh> >;
+template class GenericField<SHMesh, FDHuintBasis,   FData3d<unsigned int,SHMesh> >;
+template class GenericField<SHMesh, FDHushortBasis, FData3d<unsigned short,SHMesh> >;
+template class GenericField<SHMesh, FDHucharBasis,  FData3d<unsigned char,SHMesh> >;
+template class GenericField<SHMesh, FDHulongBasis,  FData3d<unsigned long,SHMesh> >;
 
 
 PersistentTypeID 
@@ -172,6 +169,12 @@ backwards_compat_SHVFf("StructHexVolField<float>", "Field",
 		       FData3d<float, SHMesh> >::maker,
 		       GenericField<SHMesh, CFDfloatBasis, 
 		       FData3d<float, SHMesh> >::maker);
+PersistentTypeID
+          backwards_compat_SHVFco("StructHexVolField<complex>", "Field",
+          GenericField<SHMesh, FDHcomplexBasis,
+          FData3d<complex, SHMesh> >::maker,
+          GenericField<SHMesh, CFDcomplexBasis,
+          FData3d<complex, SHMesh> >::maker);
 PersistentTypeID 
 backwards_compat_SHVFi("StructHexVolField<int>", "Field",
 		       GenericField<SHMesh, FDHintBasis, 

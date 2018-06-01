@@ -64,7 +64,7 @@ protected:
   std::string filename_;
   mutable std::string filetype_;
   Core::Algorithms::AlgorithmParameterName stateFilename_;
-  StaticPortName<typename HType::element_type, 0>* objectPortName_;
+  Dataflow::Networks::StaticPortName<typename HType::element_type, 0>* objectPortName_;
 
   virtual std::string defaultFileTypeName() const = 0;
 

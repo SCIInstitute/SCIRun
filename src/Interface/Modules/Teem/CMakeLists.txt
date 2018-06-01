@@ -52,8 +52,8 @@ SET(Interface_Modules_Teem_SOURCES
   SplitFieldIntoNrrdDataDialog.cc
 )
 
-QT4_WRAP_UI(Interface_Modules_Teem_FORMS_HEADERS ${Interface_Modules_Teem_FORMS})
-QT4_WRAP_CPP(Interface_Modules_Teem_HEADERS_MOC ${Interface_Modules_Teem_HEADERS})
+QT_WRAP_UI(Interface_Modules_Teem_FORMS_HEADERS "${Interface_Modules_Teem_FORMS}")
+QT_WRAP_CPP(Interface_Modules_Teem_HEADERS_MOC "${Interface_Modules_Teem_HEADERS}")
 
 SCIRUN_ADD_LIBRARY(Interface_Modules_Teem
   ${Interface_Modules_Teem_HEADERS}

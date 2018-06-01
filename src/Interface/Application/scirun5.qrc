@@ -16,6 +16,9 @@
     <file>Resources/SCIgrid-large.png</file>
     <file>Resources/SCIgrid-medium.png</file>
     <file>Resources/SCIgrid-small.png</file>
+    <file>Resources/pumpkin.png</file>
+    <file>Resources/turkey.png</file>
+    <file>Resources/ski.png</file>
     <file>Resources/cursor_hand_icon.png</file>
     <file>Resources/redo.png</file>
     <file>Resources/undo.png</file>
@@ -37,7 +40,15 @@
     <file>Resources/manhattanPipe.png</file>
     <file>Resources/timepiece-512.png</file>
     <file>Resources/scirunWizard.png</file>
+    <file>Resources/ViewScene/autoview.png</file>
+    <file>Resources/ViewScene/autorotate.png</file>
+    <file>Resources/ViewScene/configure.png</file>
+    <file>Resources/ViewScene/views.png</file>
+    <file>Resources/ViewScene/lockView.png</file>
+    <file>Resources/ViewScene/screenshot.png</file>
     <file>Resources/network.png</file>
+    <file>Resources/subnet3.png</file>
+    <file>Resources/editSubnet.png</file>
     <file>Resources/new/general/folder.png</file>
     <file>Resources/new/general/header-divider.png</file>
     <file>Resources/new/general/help.png</file>

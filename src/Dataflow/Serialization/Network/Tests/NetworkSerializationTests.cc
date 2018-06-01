@@ -346,3 +346,118 @@ TEST(SerializeNetworkTest, FullTestWithDynamicPorts)
   EXPECT_EQ(showFields.size() + 1, deserialized->nmodules());
   EXPECT_NE(net.get(), deserialized.get());
 }
+
+TEST(ToolkitSerializationTest, Experimenting)
+{
+  ToolkitFile toolkit;
+
+  {
+    ModuleFactoryHandle mf(new HardCodedModuleFactory);
+    ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+    ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(boost::optional<std::string>()));
+    NetworkEditorController controller(mf, sf, exe, nullptr, nullptr, nullptr, nullptr);
+
+    Module::resetIdGenerator();
+    auto matrix1Send = controller.addModule("CreateMatrix");
+    auto matrix2Send = controller.addModule("CreateMatrix");
+
+    auto transpose = controller.addModule("EvaluateLinearAlgebraUnary");
+    auto negate = controller.addModule("EvaluateLinearAlgebraUnary");
+    auto scalar = controller.addModule("EvaluateLinearAlgebraUnary");
+
+    auto multiply = controller.addModule("EvaluateLinearAlgebraBinary");
+    auto add = controller.addModule("EvaluateLinearAlgebraBinary");
+
+    auto report = controller.addModule("ReportMatrixInfo");
+    auto receive = controller.addModule("ReportMatrixInfo");
+
+    auto matrixMathNetwork = controller.getNetwork();
+    EXPECT_EQ(9, matrixMathNetwork->nmodules());
+
+    EXPECT_EQ(0, matrixMathNetwork->nconnections());
+    matrixMathNetwork->connect(ConnectionOutputPort(matrix1Send, 0), ConnectionInputPort(transpose, 0));
+    matrixMathNetwork->connect(ConnectionOutputPort(matrix1Send, 0), ConnectionInputPort(negate, 0));
+    matrixMathNetwork->connect(ConnectionOutputPort(matrix2Send, 0), ConnectionInputPort(scalar, 0));
+    matrixMathNetwork->connect(ConnectionOutputPort(negate, 0), ConnectionInputPort(multiply, 0));
+    matrixMathNetwork->connect(ConnectionOutputPort(scalar, 0), ConnectionInputPort(multiply, 1));
+    matrixMathNetwork->connect(ConnectionOutputPort(transpose, 0), ConnectionInputPort(add, 0));
+    matrixMathNetwork->connect(ConnectionOutputPort(multiply, 0), ConnectionInputPort(add, 1));
+    matrixMathNetwork->connect(ConnectionOutputPort(add, 0), ConnectionInputPort(report, 0));
+    matrixMathNetwork->connect(ConnectionOutputPort(add, 0), ConnectionInputPort(receive, 0));
+    EXPECT_EQ(9, matrixMathNetwork->nconnections());
+
+    //Set module parameters.
+    matrix1Send->get_state()->setValue(Parameters::TextEntry, TestUtils::matrix1str());
+    matrix2Send->get_state()->setValue(Parameters::TextEntry, TestUtils::matrix2str());
+    transpose->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+    negate->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+    scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+    scalar->get_state()->setValue(Variables::ScalarValue, 4.0);
+    multiply->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
+    add->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
+
+    auto xml = controller.saveNetwork();
+    toolkit.networks["dir/first.srn5"] = *xml;
+  }
+
+  {
+    ModuleFactoryHandle mf(new HardCodedModuleFactory);
+    ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+    ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(boost::optional<std::string>()));
+    NetworkEditorController controller(mf, sf, exe, nullptr, nullptr, nullptr, nullptr);
+
+    Module::resetIdGenerator();
+    auto matrix1Send = controller.addModule("CreateMatrix");
+    auto matrix2Send = controller.addModule("CreateMatrix");
+
+    auto xml = controller.saveNetwork();
+    toolkit.networks["dir/second.srn5"] = *xml;
+  }
+
+  std::ostringstream ostr;
+  XMLSerializer::save_xml(toolkit.networks, ostr, "toolkit");
+
+  std::cout << ostr.str() << std::endl;
+}
+
+#ifdef WIN32
+boost::filesystem::path toolkitPath("C:\\Users\\Dan\\Downloads\\FwdInvToolkit-1.2.1\\Networks");
+#else
+boost::filesystem::path toolkitPath("/Users/dwhite/Desktop/Dev/FwdInvToolkit/Networks");
+#endif
+
+TEST(ToolkitSerializationTest, CanCreateFromFolders)
+{
+  auto toolkit = makeToolkitFromDirectory(toolkitPath);
+
+  std::ostringstream ostr;
+  toolkit.save(ostr);
+
+  EXPECT_NE(0, ostr.str().size());
+}
+
+TEST(ToolkitSerializationTest, DISABLED_ManuallyCreate)
+{
+  std::ofstream f("FwdInvToolkit.toolkit");
+  makeToolkitFromDirectory("C:\\_\\SCIRun\\FwdInvToolkit_v1.2\\FwdInvToolkit-1.2.1\\Networks").save(f);
+}
+
+TEST(ToolkitSerializationTest, RoundTripFromFolders)
+{
+  auto toolkit = makeToolkitFromDirectory(toolkitPath);
+
+  std::ostringstream ostr;
+  toolkit.save(ostr);
+
+  std::ofstream f("toolkit1.toolkit");
+  toolkit.save(f);
+
+  auto toolkitString = ostr.str();
+  ToolkitFile copy;
+  std::istringstream istr(toolkitString);
+  copy.load(istr);
+  for (const auto& toolkitPair : copy.networks)
+  {
+    std::cout << toolkitPair.first << " -> #modules=" << toolkitPair.second.network.modules.size() << std::endl;
+  }
+}

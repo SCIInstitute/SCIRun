@@ -30,7 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #ifndef MODULES_VISUALIZATION_SHOW_FIELD_GLYPHS_H
 #define MODULES_VISUALIZATION_SHOW_FIELD_GLYPHS_H
 
-#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/Thread/Interruptible.h>
 #include <Modules/Visualization/share.h>
 
@@ -85,11 +85,11 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName ShowSecondaryTab;
         static const Core::Algorithms::AlgorithmParameterName ShowTertiaryTab;
 
-        INPUT_PORT(0, PrimaryData, LegacyField);
+        INPUT_PORT(0, PrimaryData, Field);
         INPUT_PORT(1, PrimaryColorMap, ColorMap);
-        //INPUT_PORT(2, SecondaryData, LegacyField);
+        //INPUT_PORT(2, SecondaryData, Field);
         //INPUT_PORT(3, SecondaryColorMap, ColorMap);
-        //INPUT_PORT(4, TertiaryData, LegacyField);
+        //INPUT_PORT(4, TertiaryData, Field);
         //INPUT_PORT(5, TertiaryColorMap, ColorMap);
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
 

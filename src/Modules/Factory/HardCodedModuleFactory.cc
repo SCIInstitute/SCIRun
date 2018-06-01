@@ -33,6 +33,7 @@
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/ModuleBuilder.h>
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <Modules/Factory/ModuleDescriptionLookup.h>
 
@@ -93,28 +94,28 @@ namespace SCIRun {
 
 HardCodedModuleFactory::HardCodedModuleFactory() : impl_(new HardCodedModuleFactoryImpl)
 {
-  Module::Builder::use_sink_type(boost::factory<SimpleSink*>());
-  Module::Builder::use_source_type(boost::factory<SimpleSource*>());
+  ModuleBuilder::use_sink_type(boost::factory<SimpleSink*>());
+  ModuleBuilder::use_source_type(boost::factory<SimpleSource*>());
 }
 
 void HardCodedModuleFactory::setStateFactory(ModuleStateFactoryHandle stateFactory)
 {
-  Module::defaultStateFactory_ = stateFactory_ = stateFactory;
+  DefaultModuleFactories::defaultStateFactory_ = stateFactory_ = stateFactory;
 }
 
 void HardCodedModuleFactory::setAlgorithmFactory(AlgorithmFactoryHandle algoFactory)
 {
-  Module::defaultAlgoFactory_ = algoFactory;
+  DefaultModuleFactories::defaultAlgoFactory_ = algoFactory;
 }
 
 void HardCodedModuleFactory::setReexecutionFactory(ReexecuteStrategyFactoryHandle reexFactory)
 {
-  Module::defaultReexFactory_ = reexFactory;
+  DefaultModuleFactories::defaultReexFactory_ = reexFactory;
 }
 
-ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
+ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc) const
 {
-  Module::Builder builder;
+  ModuleBuilder builder;
 
   if (desc.maker_)
     builder.using_func(desc.maker_);

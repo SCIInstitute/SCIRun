@@ -81,7 +81,7 @@ TEST_F(LatticeVolumeMeshTests, BasicCubeTest)
   ASSERT_TRUE(mesh_.get() != nullptr);
   
   auto latVolVMesh = mesh_->vmesh();
-  ASSERT_TRUE(latVolVMesh);
+  ASSERT_TRUE(latVolVMesh != nullptr);
 
   VMesh::dimension_type dims;
   latVolVMesh->get_dimensions(dims);

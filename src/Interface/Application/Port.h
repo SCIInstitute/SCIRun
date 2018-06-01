@@ -52,6 +52,7 @@ class ConnectionInProgress;
 class ConnectionFactory;
 class ClosestPortFinder;
 class PortActionsMenu;
+using SceneFunc = std::function<QGraphicsScene*()>;
 
 class PortWidgetBase : public QPushButton, public SCIRun::Dataflow::Networks::PortDescriptionInterface
 {
@@ -64,13 +65,16 @@ public:
   virtual bool isDynamic() const override = 0;
   virtual SCIRun::Dataflow::Networks::ModuleId getUnderlyingModuleId() const override = 0;
   virtual size_t getIndex() const override = 0;
-  virtual boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const = 0;
+  virtual boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override = 0;
 
   virtual QColor color() const = 0;
   virtual bool isLightOn() const = 0;
 
   bool isHighlighted() const { return isHighlighted_; }
   int properWidth() const { return sizeHint().width(); }
+  void setSceneFunc(SceneFunc getScene) { getScene_ = getScene; }
+  SceneFunc sceneFunc() const { return getScene_; }
+  bool sameScene(const PortWidgetBase* other) const;
 
 protected:
   static const int DEFAULT_WIDTH = 11;
@@ -78,6 +82,7 @@ protected:
   virtual QSize sizeHint() const override;
   virtual void paintEvent(QPaintEvent* event) override;
   bool isHighlighted_;
+  SceneFunc getScene_;
 };
 
 class PortWidget : public PortWidgetBase, public NeedsScenePositionProvider
@@ -87,8 +92,8 @@ class PortWidget : public PortWidgetBase, public NeedsScenePositionProvider
 public:
   PortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId,
     const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isInput, bool isDynamic,
-    boost::shared_ptr<ConnectionFactory> connectionFactory,
-    boost::shared_ptr<ClosestPortFinder> closestPortFinder,
+    boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
+    boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
     SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber,
     QWidget* parent = nullptr);
   virtual ~PortWidget();
@@ -100,12 +105,15 @@ public:
   bool isConnected() const { return isConnected_; }
   void setConnected(bool connected) { isConnected_ = connected; }
 
+  virtual Dataflow::Networks::PortDescriptionInterface* getRealPort() { return this; }
+
   virtual size_t nconnections() const override;
   virtual std::string get_typename() const override;
   virtual std::string get_portname() const override;
   virtual Dataflow::Networks::ModuleId getUnderlyingModuleId() const override;
   virtual size_t getIndex() const override;
   void setIndex(size_t i);
+  Dataflow::Networks::PortId realId() const { return portId_; }
 
   virtual SCIRun::Dataflow::Networks::PortId id() const override;
 
@@ -113,6 +121,7 @@ public:
   void turn_on_light();
   void turn_off_light();
   virtual bool isLightOn() const override { return lightOn_; }
+  void connectToSubnetPort(PortWidget* subnetPort);
 
   void setHighlight(bool on, bool individual = false);
   virtual void setPositionObject(PositionProviderPtr provider) override;
@@ -147,6 +156,8 @@ public:
   virtual boost::optional<Dataflow::Networks::ConnectionId> firstConnectionId() const override;
 
   QGraphicsTextItem* makeNameLabel() const;
+
+  const std::set<ConnectionLine*>& connections() const { return connections_; }
 
 protected:
   virtual void moveEvent(QMoveEvent * event) override;
@@ -195,8 +206,8 @@ private:
   ConnectionInProgress* currentConnection_;
   friend struct DeleteCurrentConnectionAtEndOfBlock;
   std::set<ConnectionLine*> connections_;
-  boost::shared_ptr<ConnectionFactory> connectionFactory_;
-  boost::shared_ptr<ClosestPortFinder> closestPortFinder_;
+  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory_;
+  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder_;
   PortActionsMenu* menu_;
   SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber_;
   //TODO
@@ -233,8 +244,8 @@ class InputPortWidget : public PortWidget
 public:
   InputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId,
     const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isDynamic,
-    boost::shared_ptr<ConnectionFactory> connectionFactory,
-    boost::shared_ptr<ClosestPortFinder> closestPortFinder,
+    boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
+    boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
     SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber,
     QWidget* parent = nullptr);
 };
@@ -244,10 +255,38 @@ class OutputPortWidget : public PortWidget
 public:
   OutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId,
     const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isDynamic,
-    boost::shared_ptr<ConnectionFactory> connectionFactory,
-    boost::shared_ptr<ClosestPortFinder> closestPortFinder,
+    boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
+    boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
     SCIRun::Dataflow::Networks::PortDataDescriber portDataDescriber,
     QWidget* parent = nullptr);
+};
+
+struct SubnetPortWidgetCtorArgs
+{
+  QString name;
+  QColor color;
+  std::string datatype;
+  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory;
+  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder;
+  Dataflow::Networks::PortDescriptionInterface* realPort;
+};
+
+class SubnetInputPortWidget : public InputPortWidget
+{
+public:
+  SubnetInputPortWidget(const SubnetPortWidgetCtorArgs& args, QWidget* parent = nullptr);
+  virtual Dataflow::Networks::PortDescriptionInterface* getRealPort() override { return realPort_; }
+private:
+  Dataflow::Networks::PortDescriptionInterface* realPort_;
+};
+
+class SubnetOutputPortWidget : public OutputPortWidget
+{
+public:
+  SubnetOutputPortWidget(const SubnetPortWidgetCtorArgs& args, QWidget* parent = nullptr);
+  virtual Dataflow::Networks::PortDescriptionInterface* getRealPort() override { return realPort_; }
+private:
+  Dataflow::Networks::PortDescriptionInterface* realPort_;
 };
 
 class DataInfoDialog

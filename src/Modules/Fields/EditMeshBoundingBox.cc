@@ -27,10 +27,11 @@
 */
 
 #include <Modules/Fields/EditMeshBoundingBox.h>
+#include <Core/GeometryPrimitives/BBox.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Graphics/Glyphs/GlyphGeom.h>
+#include <Graphics/Widgets/Widget.h>
 #include <Core/Datatypes/Color.h>
 #include <boost/format.hpp>
 
@@ -45,34 +46,6 @@ using namespace Datatypes;
 
 MODULE_INFO_DEF(EditMeshBoundingBox, ChangeMesh, SCIRun)
 
-class BoxWidgetNull : public BoxWidgetInterface
-{
-public:
-  void setPosition(const Point& center, const Point& right, const Point& down, const Point& in) override
-  {
-    center_ = center;
-    right_ = right;
-    down_ = down;
-    in_ = in;
-  }
-  void getPosition(Point& center, Point& right, Point& down, Point& in) const override
-  {
-    center = center_;
-    right = right_;
-    down = down_;
-    in = in_;
-  }
-
-private:
-  Point center_, right_, down_, in_;
-};
-
-class WidgetFactory
-{
-public:
-  static BoxWidgetPtr createBox();
-};
-
 namespace SCIRun
 {
   namespace Modules
@@ -85,6 +58,8 @@ namespace SCIRun
         Transform userWidgetTransform_;
         Transform field_initial_transform_;
         BBox box_initial_bounds_;
+        BBox bbox_;
+        BoxPosition position_;
       };
     }
   }
@@ -102,20 +77,26 @@ impl_(new EditMeshBoundingBoxImpl), widgetMoved_(false)
 
 void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
 {
-  auto vsf = static_cast<const ViewSceneFeedback&>(var);
-  if (vsf.selectionName.find(get_id()) != std::string::npos &&
-    impl_->userWidgetTransform_ != vsf.transform)
+  try
   {
-    widgetMoved_ = true;
-    adjustGeometryFromTransform(vsf.transform);
-    enqueueExecuteAgain();
+    auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
+    if (vsf.selectionName.find(get_id()) != std::string::npos && impl_->userWidgetTransform_ != vsf.transform)
+    {
+      widgetMoved_ = true;
+      adjustGeometryFromTransform(vsf.transform);
+      enqueueExecuteAgain(false);
+    }
+  }
+  catch (std::bad_cast&)
+  {
+    //ignore
   }
 }
 
 void EditMeshBoundingBox::adjustGeometryFromTransform(const Transform& transformMatrix)
 {
   Point currCenter, right, down, in;
-  box_->getPosition(currCenter, right, down, in);
+  impl_->position_.getPosition(currCenter, right, down, in);
 
   DenseMatrix center(4, 1);
   center << currCenter.x(), currCenter.y(), currCenter.z(), 1.0;
@@ -131,11 +112,6 @@ void EditMeshBoundingBox::adjustGeometryFromTransform(const Transform& transform
   state->setValue(OutputCenterZ, newLocation.z());
 
   impl_->userWidgetTransform_ = transformMatrix;
-}
-
-void EditMeshBoundingBox::createBoxWidget()
-{
-  box_ = WidgetFactory::createBox();
 }
 
 void EditMeshBoundingBox::setStateDefaults()
@@ -161,8 +137,6 @@ void EditMeshBoundingBox::setStateDefaults()
   state->setValue(BoxRealScale, 0.0);
   state->setValue(BoxMode, 0);
 
-  createBoxWidget();
-
   getOutputPort(Transformation_Widget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
 }
 
@@ -173,7 +147,6 @@ void EditMeshBoundingBox::execute()
   if (needToExecute())
   {
     clear_vals();
-    update_state(Executing);
     update_input_attributes(field);
     executeImpl(field);
   }
@@ -201,16 +174,16 @@ namespace
 
 void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
 {
-  bbox_ = f->vmesh()->get_bounding_box();
+  impl_->bbox_ = f->vmesh()->get_bounding_box();
 
-  if (!bbox_.valid())
+  if (!impl_->bbox_.valid())
   {
     warning("Input field is empty -- using unit cube.");
-    bbox_.extend(Point(0, 0, 0));
-    bbox_.extend(Point(1, 1, 1));
+    impl_->bbox_.extend(Point(0, 0, 0));
+    impl_->bbox_.extend(Point(1, 1, 1));
   }
-  auto size = bbox_.diagonal();
-  auto center = bbox_.center();
+  auto size = impl_->bbox_.diagonal();
+  auto center = impl_->bbox_.center();
 
   auto state = get_state();
   state->setValue(InputCenterX, convertForLabel(center.x()));
@@ -223,68 +196,8 @@ void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
 
 GeometryBaseHandle EditMeshBoundingBox::buildGeometryObject()
 {
-  auto colorScheme(ColorScheme::COLOR_UNIFORM);
-  //get all the bbox edges
-  Point c,r,d,b;
-  box_->getPosition(c,r,d,b);
-  auto x = r - c, y = d - c, z = b - c;
-  std::vector<Point> points;
-  points.resize(8);
-  points.at(0) = c + x + y + z;
-  points.at(1) = c + x + y - z;
-  points.at(2) = c + x - y + z;
-  points.at(3) = c + x - y - z;
-  points.at(4) = c - x + y + z;
-  points.at(5) = c - x + y - z;
-  points.at(6) = c - x - y + z;
-  points.at(7) = c - x - y - z;
-  uint32_t point_indicies[] = {
-    0, 1, 0, 2, 0, 4,
-    7, 6, 7, 5, 3, 7,
-    4, 5, 4, 6, 1, 5,
-    3, 2, 3, 1, 2, 6
-  };
-  auto state = get_state();
-  auto scale = state->getValue(Scale).toDouble();
-  auto num_strips = 50;
-  std::vector<Vector> tri_points;
-  std::vector<Vector> tri_normals;
-  std::vector<uint32_t> tri_indices;
-  std::vector<ColorRGB> colors;
-  GlyphGeom glyphs;
-  //generate triangles for the cylinders.
-  for (auto edge = 0; edge < 24; edge += 2)
-  {
-    glyphs.addCylinder(points[point_indicies[edge]], points[point_indicies[edge + 1]], scale, num_strips, ColorRGB(), ColorRGB());
-  }
-  //generate triangles for the spheres
-  for (const auto& a : points)
-  {
-    glyphs.addSphere(a, scale, num_strips, ColorRGB(1, 0, 0));
-  }
-
-  std::stringstream ss;
-  ss << scale;
-  for (const auto& a : points) ss << a.x() << a.y() << a.z();
-
-  auto uniqueNodeID = "bounding_box_cylinders" + ss.str();
-
-  RenderState renState;
-
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::USE_TRANSPARENCY, false);
-
-  renState.defaultColor = ColorRGB(1, 1, 1);
-  renState.set(RenderState::USE_DEFAULT_COLOR, true);
-  renState.set(RenderState::USE_NORMALS, true);
-  renState.set(RenderState::IS_WIDGET, true);
-
-  GeometryHandle geom(new GeometryObjectSpire(*this, "BoundingBox", true));
-
-  glyphs.buildObject(geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox_);
-
-  return geom;
+  return WidgetFactory::createBox(*this, get_state()->getValue(Scale).toDouble(),
+    impl_->position_, impl_->bbox_);
 }
 
 void EditMeshBoundingBox::computeWidgetBox(const BBox& box) const
@@ -327,8 +240,8 @@ void EditMeshBoundingBox::computeWidgetBox(const BBox& box) const
   auto right(center + sizex / 2.);
   auto down(center + sizey / 2.);
   auto in(center + sizez / 2.);
-    
-  box_->setPosition(center, right, down, in);
+
+  impl_->position_.setPosition(center, right, down, in);
 }
 
 namespace
@@ -349,7 +262,7 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
     computeWidgetBox(inputField->vmesh()->get_bounding_box());
 
     Point initialWidgetCenter, initialWidgetRight, initialWidgetDown, initialWidgetIn;
-    box_->getPosition(initialWidgetCenter, initialWidgetRight, initialWidgetDown, initialWidgetIn);
+    impl_->position_.getPosition(initialWidgetCenter, initialWidgetRight, initialWidgetDown, initialWidgetIn);
 
     auto initialXSize = (initialWidgetRight - initialWidgetCenter).length();
     auto initialYSize = (initialWidgetDown - initialWidgetCenter).length();
@@ -370,9 +283,6 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
       impl_->field_initial_transform_.pre_trans(r_transformThatIsAppliedSomewhere);
       impl_->field_initial_transform_.pre_translate(Vector(initialWidgetCenter));
     }
-
-    const auto useUserEnteredSize = transient_value_cast<bool>(state->getTransientValue(SetOutputSize));
-    const auto useUserEnteredCenter = transient_value_cast<bool>(state->getTransientValue(SetOutputCenter));
 
     Vector outputFieldSizeX, outputFieldSizeY, outputFieldSizeZ;
     if (transient_value_cast<bool>(state->getTransientValue(ResetSize)))
@@ -404,7 +314,7 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
     auto newWidgetDown(newWidgetCenter + outputFieldSizeY / 2.);
     auto newWidgetIn(newWidgetCenter + outputFieldSizeZ / 2.);
 
-    box_->setPosition(newWidgetCenter, newWidgetRight, newWidgetDown, newWidgetIn);
+    impl_->position_.setPosition(newWidgetCenter, newWidgetRight, newWidgetDown, newWidgetIn);
 
     r_transformThatIsAppliedSomewhere.load_frame((newWidgetRight - newWidgetCenter).safe_normal(),
       (newWidgetDown - newWidgetCenter).safe_normal(),
@@ -453,11 +363,6 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
   state->setTransientValue(ResetSize, false);
 
   sendOutput(Transformation_Widget, buildGeometryObject());
-}
-
-BoxWidgetPtr WidgetFactory::createBox()
-{
-  return boost::make_shared<BoxWidgetNull>();
 }
 
 const AlgorithmParameterName EditMeshBoundingBox::ResetCenter("ResetCenter");

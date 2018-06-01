@@ -49,10 +49,10 @@ namespace SCIRun {
         virtual void setStateDefaults() override;
         HAS_DYNAMIC_PORTS
 
-        INPUT_PORT_DYNAMIC(0, InputFields, LegacyField);
+        INPUT_PORT_DYNAMIC(0, InputFields, Field);
         INPUT_PORT(1, Function, String);
         INPUT_PORT_DYNAMIC(2, InputArrays, Matrix);
-        OUTPUT_PORT(0, OutputField, LegacyField);
+        OUTPUT_PORT(0, OutputField, Field);
 
         static const Core::Algorithms::AlgorithmParameterName FunctionString;
         static const Core::Algorithms::AlgorithmParameterName FormatString;

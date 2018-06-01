@@ -29,7 +29,7 @@
 #ifndef MODULES_LEGACY_FIELDS_GenerateSinglePointProbeFromField_H__
 #define MODULES_LEGACY_FIELDS_GenerateSinglePointProbeFromField_H__
 
-#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Modules/Legacy/Fields/share.h>
@@ -46,15 +46,14 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(YLocation);
         ALGORITHM_PARAMETER_DECL(ZLocation);
         ALGORITHM_PARAMETER_DECL(MoveMethod);
-        ALGORITHM_PARAMETER_DECL(DisplayValue);
-        ALGORITHM_PARAMETER_DECL(DisplayNode);
-        ALGORITHM_PARAMETER_DECL(DisplayElem);
         ALGORITHM_PARAMETER_DECL(FieldValue);
         ALGORITHM_PARAMETER_DECL(FieldNode);
         ALGORITHM_PARAMETER_DECL(FieldElem);
         ALGORITHM_PARAMETER_DECL(ProbeSize);
         ALGORITHM_PARAMETER_DECL(ProbeLabel);
         ALGORITHM_PARAMETER_DECL(ProbeColor);
+        ALGORITHM_PARAMETER_DECL(SnapToNode);
+        ALGORITHM_PARAMETER_DECL(SnapToElement);
       }
     }
   }
@@ -72,9 +71,9 @@ namespace SCIRun {
         virtual void execute() override;
         virtual void setStateDefaults() override;
 
-        INPUT_PORT(0, InputField, LegacyField);
+        INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, GeneratedWidget, GeometryObject);
-        OUTPUT_PORT(1, GeneratedPoint, LegacyField);
+        OUTPUT_PORT(1, GeneratedPoint, Field);
         OUTPUT_PORT(2, ElementIndex, Int32);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
@@ -86,22 +85,9 @@ namespace SCIRun {
 
         FieldHandle GenerateOutputField(boost::optional<FieldHandle> ifieldOption);
         index_type GenerateIndex();
+        void setNearestNode(const Core::Geometry::Point& location);
+        void setNearestElement(const Core::Geometry::Point& location);
       };
-
-      class SCISHARE PointWidgetStub
-      {
-      public:
-        PointWidgetStub();
-        Core::Geometry::Point position() const;
-        void setPosition(const Core::Geometry::Point& p);
-        double scale() const { return scale_; }
-        void setScale(double s) { scale_ = s; }
-      private:
-        Core::Geometry::Point pos_;
-        double scale_;
-      };
-
-      typedef boost::shared_ptr<PointWidgetStub> PointWidgetPtr;
     }
   }
 }

@@ -101,6 +101,7 @@ void InterfaceWithPythonDialog::updateFromPortChange(int numPorts, const std::st
 
   if (type == DynamicPortChange::USER_REMOVED_PORT)
   {
+    //TODO: add checkbox for "don't show this again"
     QMessageBox::warning(this, "Warning: possible Python code update required", windowTitle() +
       ": The connection to port " + QString::fromStdString(portId) + " was deleted. The variable name \"" +
       QString::fromStdString(state_->getValue(SCIRun::Core::Algorithms::Name(portId)).toString()) + "\" is no longer valid."
@@ -363,7 +364,6 @@ void Highlighter::highlightBlock(const QString &text)
 
 void Highlighter::highlightBlockParens(const QString &text)
 {
-  //qDebug() << "highlightBlockParens" << text;
   auto data = new TextBlockData;
   int leftPos = text.indexOf('(');
   while (leftPos != -1)

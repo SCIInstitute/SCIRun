@@ -90,7 +90,7 @@ boost::tuple<MatrixHandle, int> GetMatrixSliceAlgo::runImpl(MatrixHandle matrix,
       if (sparse)
       {
         //TODO: makes a copy of the transpose. Not good. Should test out manually copying elements, trade speed for memory.
-        return boost::make_tuple(boost::make_shared<SparseRowMatrix>(std::move(sparse->getColumn(index))), max);
+        return boost::make_tuple(boost::make_shared<SparseRowMatrix>(sparse->getColumn(index)), max);
       }
       return boost::make_tuple(nullptr, 0);
     }

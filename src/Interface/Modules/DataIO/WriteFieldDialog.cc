@@ -57,7 +57,7 @@ WriteFieldDialog::WriteFieldDialog(const std::string& name, ModuleStateHandle st
 
 void WriteFieldDialog::pullSpecial()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
+  pullFilename(state_, fileNameLineEdit_, {});
 }
 
 void WriteFieldDialog::pushFileNameToState()

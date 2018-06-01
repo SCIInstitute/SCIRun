@@ -129,5 +129,5 @@ void GetMatrixSlice::playAgain(int nextIndex)
   int delay = state->getValue(Parameters::PlayModeDelay).toInt();
   //std::cout << "delaying here for " << delay << " milliseconds" << std::endl;
   boost::this_thread::sleep(boost::posix_time::milliseconds(delay));
-  enqueueExecuteAgain();
+  enqueueExecuteAgain(false);
 }

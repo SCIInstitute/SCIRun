@@ -90,8 +90,10 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
       }
       catch (Core::InvalidArgumentException& e)
       {
-        static std::ofstream missingModulesFile((Core::Logging::Log::logDirectory() / "missingModules.log").string());
+        static std::ofstream missingModulesFile((Core::Logging::LogSettings::Instance().logDirectory() / "missingModules.log").string());
         missingModulesFile << "File load problem: " << e.what() << std::endl;
+        Core::Logging::GeneralLog::Instance().get()->critical("File load problem: {}", e.what());
+        throw;
       }
     }
   }
@@ -107,7 +109,9 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
       controller_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
     else
     {
-      Core::Logging::Log::get() << Core::Logging::ERROR_LOG << "File load error: connection not created between modules " << conn.out_.moduleId_ << " and " << conn.in_.moduleId_ << std::endl;
+      Core::Logging::GeneralLog::Instance().get()->error(
+        "File load error: connection not created between modules {} and {}.",
+        conn.out_.moduleId_.id_, conn.in_.moduleId_.id_);
     }
   }
 
@@ -201,6 +205,7 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network, Module
     file->connectionNotes = *nesm_->dumpConnectionNotes(connFilter);
     file->moduleTags = *nesm_->dumpModuleTags(modFilter);
     file->disabledComponents = *nesm_->dumpDisabledComponents(modFilter, connFilter);
+    file->subnetworks = *nesm_->dumpSubnetworks(modFilter);
   }
   return file;
 }

@@ -29,7 +29,7 @@
 #ifndef MODULES_LEGACY_FIELDS_GeneratePointSamplesFromField_H__
 #define MODULES_LEGACY_FIELDS_GeneratePointSamplesFromField_H__
 
-#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Modules/Legacy/Fields/share.h>
 
@@ -43,6 +43,7 @@ namespace SCIRun {
       {
         ALGORITHM_PARAMETER_DECL(NumSeeds);
         ALGORITHM_PARAMETER_DECL(ProbeScale);
+        ALGORITHM_PARAMETER_DECL(PointPositions);
       }
     }
   }
@@ -60,14 +61,17 @@ namespace SCIRun {
         virtual void execute() override;
         virtual void setStateDefaults() override;
 
-        INPUT_PORT(0, InputField, LegacyField);
+        INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, GeneratedWidget, GeometryObject);
-        OUTPUT_PORT(1, GeneratedPoints, LegacyField);
+        OUTPUT_PORT(1, GeneratedPoints, Field);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
       private:
         boost::shared_ptr<class GeneratePointSamplesFromFieldImpl> impl_;
         FieldHandle GenerateOutputField();
+        void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
+        void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, int index);
+        int moveCount_ {0};
       };
 
     }

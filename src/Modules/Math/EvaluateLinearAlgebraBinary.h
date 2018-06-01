@@ -44,8 +44,8 @@ namespace SCIRun {
         CONVERTED_VERSION_OF_MODULE(EvaluateLinAlgBinary)
       public:
         EvaluateLinearAlgebraBinary();
-        virtual void execute();
-        virtual void setStateDefaults();
+        void execute() override;
+        void setStateDefaults() override;
 
         INPUT_PORT(0, LHS, Matrix);
         INPUT_PORT(1, RHS, Matrix);

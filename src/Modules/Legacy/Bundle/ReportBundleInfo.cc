@@ -29,6 +29,8 @@
 #include <Modules/Legacy/Bundle/ReportBundleInfo.h>
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Matrix.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Bundles;
@@ -49,24 +51,36 @@ void ReportBundleInfo::execute()
 
   if (needToExecute())
   {
-    update_state(Executing);
     std::ostringstream infostring;
 
     for (const auto& nameHandlePair : *bundle)
     {
       std::string name = nameHandlePair.first;
       infostring << " {" << name << " (";
-      std::string type = typeid(*nameHandlePair.second).name(); //nameHandlePair.second->dynamic_type_name();
-      if (type.find("String"))
+      auto obj = nameHandlePair.second;
+      if (obj)
       {
-        auto str = boost::dynamic_pointer_cast<Core::Datatypes::String>(nameHandlePair.second);
+        auto str = boost::dynamic_pointer_cast<Core::Datatypes::String>(obj);
         if (str)
+        {
           infostring << str->value();
+        }
         else
-          infostring << type;
+        {
+          auto mat = boost::dynamic_pointer_cast<Core::Datatypes::Matrix>(obj);
+          if (mat)
+            infostring << "Matrix (" << mat->nrows() << "x" << mat->ncols() << ")";
+          else
+          {
+            auto field = boost::dynamic_pointer_cast<Field>(obj);
+            if (field)
+              infostring << "Field (" << field->dynamic_type_name() << ")";
+          }
+        }
       }
       else
-        infostring << type;
+        infostring << "null";
+
       infostring << ") }\n";
     }
 

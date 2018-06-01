@@ -46,6 +46,7 @@ namespace SCIRun {
         ALGORITHM_PARAMETER_DECL(StreamlineMethod);
         ALGORITHM_PARAMETER_DECL(AutoParameters);
         ALGORITHM_PARAMETER_DECL(NumStreamlines);
+        ALGORITHM_PARAMETER_DECL(UseMultithreading);
 
 class SCISHARE GenerateStreamLinesAlgo : public AlgorithmBase
 {

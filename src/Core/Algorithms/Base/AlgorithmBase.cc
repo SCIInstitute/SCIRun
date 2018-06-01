@@ -54,13 +54,11 @@ using namespace SCIRun::Core::Thread;
 
 Name::Name(const std::string& name) : name_(name)
 {
-  if (!std::all_of(name.begin(), name.end(), isalnum))
+  if (!std::all_of(name.begin(), name.end(), [](char c) { return isalnum(c) || c == '_'; }))
   {
-    LOG_DEBUG("AlgorithmParameterName not accessible from Python: " << name << std::endl);
+    LOG_DEBUG("AlgorithmParameterName not accessible from Python: {}", name);
   }
 }
-
-AlgorithmBase::~AlgorithmBase() {}
 
 namespace
 {
@@ -149,7 +147,7 @@ boost::filesystem::path AlgorithmParameter::toFilename() const
     boost::this_thread::sleep(boost::posix_time::milliseconds(10));
     boost::filesystem::path::imbue( std::locale( "" ) );
     boost::filesystem::path dummy("boost bug workaround");
-    Log::get() << DEBUG_LOG << dummy.string() << std::endl;
+    LOG_DEBUG(dummy.string());
 #endif
   }
 
@@ -381,10 +379,10 @@ bool AlgorithmParameterList::checkOption(const AlgorithmParameterName& key, cons
   return boost::iequals(value, currentValue);
 }
 
-void AlgorithmBase::dumpAlgoState() const
+void AlgorithmParameterList::dumpAlgoState() const
 {
   std::ostringstream ostr;
-  ostr << "Algorithm state for " << typeid(*this).name() << " id#" << id() << std::endl;
+  ostr << "Algorithm state for " << typeid(*this).name() << std::endl;
 
   auto range = std::make_pair(paramsBegin(), paramsEnd());
   BOOST_FOREACH(const ParameterMap::value_type& pair, range)

@@ -40,3 +40,23 @@ GeometryObject* GeometryObject::clone() const
 {
   return nullptr; //TODO
 }
+
+void GeometryObject::addToList(GeometryBaseHandle handle, GeomList& list)
+{
+  if (handle.get() == this)
+    list.insert(handle);
+}
+
+OsprayGeometryObject* OsprayGeometryObject::clone() const
+{
+  return nullptr; //TODO
+}
+
+CompositeOsprayGeometryObject::CompositeOsprayGeometryObject(const std::vector<OsprayGeometryObjectHandle>& objs) : objs_(objs)
+{
+  for (const auto& obj : objs_)
+  {
+    if (obj)
+      box.extend(obj->box);
+  }
+}

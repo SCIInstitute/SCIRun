@@ -9,7 +9,7 @@ namespace Render {
 
 // Two required functions for systems. Technically, systems could
 // register themselves.
-void        registerSystem_CoreBootstrap(CPM_ES_ACORN_NS::Acorn& core);
+void        registerSystem_CoreBootstrap(spire::Acorn& core);
 const char* getSystemName_CoreBootstrap();
 
 } // namespace Render

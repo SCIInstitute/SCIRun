@@ -26,134 +26,110 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+//    File       : SolveInverseProblemWithTikhonov.cc
+//    Author     : Jaume Coll-Font, Moritz Dannhauer, Ayla Khan, Dan White
+//    Date       : September 06th, 2017 (last update)
+
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Scalar.h>
 #include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonov.h>
-#include <Modules/Legacy/Inverse/SolveInverseProblemWithTikhonovImpl.h>
-#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Modules/Legacy/Inverse/LCurvePlot.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Inverse/SolveInverseProblemWithStandardTikhonovImpl.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules;
 using namespace SCIRun::Modules::Inverse;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Inverse;
 
-ALGORITHM_PARAMETER_DEF(Inverse, TikhonovSolutionSubcase);
-ALGORITHM_PARAMETER_DEF(Inverse, TikhonovResidualSubcase);
-
+// Module definitions. Sets the info into the staticInfo_
 MODULE_INFO_DEF(SolveInverseProblemWithTikhonov, Inverse, SCIRun)
 
+// Constructor neeeds to have empty inputs and the parent's constructor has staticInfo_ as an input (adapted to thsi module in MODULE_INFO_DEF macro)
+// Constructor needs to initialize all input/output ports
 SolveInverseProblemWithTikhonov::SolveInverseProblemWithTikhonov() : Module(staticInfo_)
 {
-  INITIALIZE_PORT(ForwardMatrix);
-  INITIALIZE_PORT(WeightingInSourceSpace);
-  INITIALIZE_PORT(MeasuredPotentials);
-  INITIALIZE_PORT(WeightingInSensorSpace);
-  INITIALIZE_PORT(InverseSolution);
-  INITIALIZE_PORT(RegularizationParameter);
-  INITIALIZE_PORT(RegInverse);
+	INITIALIZE_PORT(ForwardMatrix);
+	INITIALIZE_PORT(WeightingInSourceSpace);
+	INITIALIZE_PORT(MeasuredPotentials);
+	INITIALIZE_PORT(WeightingInSensorSpace);
+	INITIALIZE_PORT(InverseSolution);
+	INITIALIZE_PORT(RegularizationParameter);
+	INITIALIZE_PORT(RegInverse);
 }
 
 void SolveInverseProblemWithTikhonov::setStateDefaults()
 {
-  auto state = get_state();
-  state->setValue(LambdaFromDirectEntry, 0.02);
-  state->setValue(RegularizationMethod, std::string("lcurve"));
-  state->setValue(LambdaMin, 1e-2);
-  state->setValue(LambdaMax, 1e6);
-  state->setValue(LambdaNum, 10);
-  state->setValue(LambdaResolution, 1e-6);
-  state->setValue(LambdaSliderValue, 0.0);
-  state->setValue(TikhonovCase, 0);
-  state->setValue(Parameters::TikhonovSolutionSubcase, 0);
-  state->setValue(Parameters::TikhonovResidualSubcase, 0);
-  state->setValue(LambdaCorner, 0.0);
-  state->setValue(LCurveText, std::string());
+	setStateStringFromAlgo(Parameters::TikhonovImplementation);
+	setStateStringFromAlgoOption(Parameters::RegularizationMethod);
+	setStateIntFromAlgo(Parameters::regularizationChoice);
+	setStateDoubleFromAlgo(Parameters::LambdaFromDirectEntry);
+	setStateDoubleFromAlgo(Parameters::LambdaMin);
+	setStateDoubleFromAlgo(Parameters::LambdaMax);
+	setStateIntFromAlgo(Parameters::LambdaNum);
+	setStateDoubleFromAlgo(Parameters::LambdaResolution);
+	setStateDoubleFromAlgo(Parameters::LambdaSliderValue);
+	setStateIntFromAlgo(Parameters::regularizationSolutionSubcase);
+	setStateIntFromAlgo(Parameters::regularizationResidualSubcase);
 }
-
+// execute function
 void SolveInverseProblemWithTikhonov::execute()
 {
-  auto forward_matrix_h = getRequiredInput(ForwardMatrix);
-  auto hMatrixMeasDat = getRequiredInput(MeasuredPotentials);
 
-  auto hMatrixRegMat = getOptionalInput(WeightingInSourceSpace);
-  auto hMatrixNoiseCov = getOptionalInput(WeightingInSensorSpace);
+	// load required inputs
+	auto forward_matrix_h = getRequiredInput(ForwardMatrix);
+	auto hMatrixMeasDat = getRequiredInput(MeasuredPotentials);
 
-  const bool computeRegularizedInverse = oport_connected(InverseSolution);
-
-  if (needToExecute())
-  {
-    using namespace BioPSE;
-    auto state = get_state();
-    auto gui_tikhonov_case = static_cast<TikhonovAlgorithmImpl::AlgorithmChoice>(state->getValue(TikhonovCase).toInt());
-    auto gui_tikhonov_solution_subcase = static_cast<TikhonovAlgorithmImpl::AlgorithmSolutionSubcase>(state->getValue(Parameters::TikhonovSolutionSubcase).toInt());
-    auto gui_tikhonov_residual_subcase = static_cast<TikhonovAlgorithmImpl::AlgorithmResidualSubcase>(state->getValue(Parameters::TikhonovResidualSubcase).toInt());
-
-    auto denseForward = castMatrix::toDense(forward_matrix_h);
-    auto measuredDense = convertMatrix::toDense(hMatrixMeasDat);
-    auto regMatDense = castMatrix::toDense(hMatrixRegMat.get_value_or(nullptr));
-    auto noiseCovDense = castMatrix::toDense(hMatrixNoiseCov.get_value_or(nullptr));
-    TikhonovAlgorithmImpl algo(denseForward,
-      measuredDense,
-      gui_tikhonov_case,
-      gui_tikhonov_solution_subcase,
-      gui_tikhonov_residual_subcase,
-      regMatDense,
-      noiseCovDense,
-      computeRegularizedInverse, this);
-
-    TikhonovAlgorithmImpl::Input::lcurveGuiUpdate update = boost::bind(&SolveInverseProblemWithTikhonov::update_lcurve_gui, this, _1, _2, _3);
-
-    TikhonovAlgorithmImpl::Input input(
-      state->getValue(RegularizationMethod).toString(),
-      state->getValue(LambdaFromDirectEntry).toDouble(),
-      state->getValue(LambdaSliderValue).toDouble(),
-      state->getValue(LambdaNum).toInt(),
-      state->getValue(LambdaMin).toDouble(),
-      state->getValue(LambdaMax).toDouble(),
-      update);
+	// load optional inputs
+	auto hMatrixRegMat = getOptionalInput(WeightingInSourceSpace);
+	auto hMatrixNoiseCov = getOptionalInput(WeightingInSensorSpace);
 
 
-    algo.run(input);
+	if (needToExecute())
+	{
 
-    if (computeRegularizedInverse)
+		auto state = get_state();
+		// set parameters
+    state->setValue( Parameters::TikhonovImplementation, std::string("standardTikhonov") );
+    setAlgoStringFromState(Parameters::TikhonovImplementation);
+    setAlgoOptionFromState(Parameters::RegularizationMethod);
+    setAlgoIntFromState(Parameters::regularizationChoice);
+    setAlgoDoubleFromState(Parameters::LambdaFromDirectEntry);
+    setAlgoDoubleFromState(Parameters::LambdaMin);
+    setAlgoDoubleFromState(Parameters::LambdaMax);
+    setAlgoIntFromState(Parameters::LambdaNum);
+    setAlgoDoubleFromState(Parameters::LambdaResolution);
+    setAlgoDoubleFromState(Parameters::LambdaSliderValue);
+    setAlgoIntFromState(Parameters::regularizationSolutionSubcase);
+    setAlgoIntFromState(Parameters::regularizationResidualSubcase);
+
+		// run
+		auto output = algo().run( withInputData((ForwardMatrix, forward_matrix_h)(MeasuredPotentials,hMatrixMeasDat)(MeasuredPotentials,hMatrixMeasDat)(WeightingInSourceSpace,optionalAlgoInput(hMatrixRegMat))(WeightingInSensorSpace,optionalAlgoInput(hMatrixNoiseCov))) );
+
+		// set outputs
+		sendOutputFromAlgorithm(InverseSolution,output);
+		sendOutputFromAlgorithm(RegularizationParameter,output);
+		sendOutputFromAlgorithm(RegInverse,output);
+    auto lambda = output.get<DenseMatrix>(TikhonovAlgoAbstractBase::RegularizationParameter);
+    auto lambda_array = output.get<DenseMatrix>(TikhonovAlgoAbstractBase::LambdaArray);
+    auto lambda_index = output.get<DenseMatrix>(TikhonovAlgoAbstractBase::Lambda_Index);
+
+    auto regularization_method  = state->getValue(Parameters::RegularizationMethod).toString();
+
+    if (regularization_method== "lcurve")
     {
-      sendOutput(RegInverse, algo.get_inverse_matrix());
+			LCurvePlot helper;
+      auto str = helper.update_lcurve_gui(get_id(),lambda,lambda_array,lambda_index);
+      state->setTransientValue("LambdaCorner", lambda->get(0,0));
+      state->setTransientValue("LambdaCurveInfo", str);
+      state->setTransientValue("LambdaCurve", lambda_array);
+			state->setTransientValue("LambdaCornerPlot", helper.cornerPlot());
     }
-
-    sendOutput(InverseSolution, algo.get_inverse_solution());
-
-    sendOutput(RegularizationParameter, algo.get_regularization_parameter());
   }
 }
-
-void SolveInverseProblemWithTikhonov::update_lcurve_gui(const double lambda, const BioPSE::TikhonovAlgorithm::LCurveInput& input, const int lambda_index)
-{
-  auto state = get_state();
-  state->setValue(LambdaCorner, lambda);
-  //estimate L curve corner
-  const double lower_y = std::min(input.eta_[0] / 10.0, input.eta_[input.nLambda_ - 1]);
-
-  std::ostringstream str;
-  str << get_id() << " plot_graph \" ";
-  for (int i = 0; i < input.nLambda_; i++)
-    str << log10(input.rho_[i]) << " " << log10(input.eta_[i]) << " ";
-  str << "\" \" " << log10(input.rho_[0] / 10.0) << " " << log10(input.eta_[lambda_index]) << " ";
-  str << log10(input.rho_[lambda_index]) << " " << log10(input.eta_[lambda_index]) << " ";
-  str << log10(input.rho_[lambda_index]) << " " << log10(lower_y) << " \" ";
-  str << lambda << " " << lambda_index << " ; \n";
-
-  state->setValue(LCurveText, str.str());
-}
-
-const AlgorithmParameterName SolveInverseProblemWithTikhonov::LambdaFromDirectEntry("LambdaFromDirectEntry");
-const AlgorithmParameterName SolveInverseProblemWithTikhonov::RegularizationMethod("RegularizationMethod");
-const AlgorithmParameterName SolveInverseProblemWithTikhonov::LambdaMin("LambdaMin");
-const AlgorithmParameterName SolveInverseProblemWithTikhonov::LambdaMax("LambdaMax");
-const AlgorithmParameterName SolveInverseProblemWithTikhonov::LambdaNum("LambdaNum");
-const AlgorithmParameterName SolveInverseProblemWithTikhonov::LambdaResolution("LambdaResolution");
-const AlgorithmParameterName SolveInverseProblemWithTikhonov::TikhonovCase("TikhonovCase");
-const AlgorithmParameterName SolveInverseProblemWithTikhonov::LambdaSliderValue("LambdaSliderValue");
-const AlgorithmParameterName SolveInverseProblemWithTikhonov::LambdaCorner("LambdaCorner");
-const AlgorithmParameterName SolveInverseProblemWithTikhonov::LCurveText("LCurveText");

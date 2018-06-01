@@ -34,6 +34,7 @@
 #include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Logging;
 
 PortDescriptionInterface::~PortDescriptionInterface()
 {
@@ -76,28 +77,28 @@ bool PortConnectionDeterminer::canBeConnected(const PortDescriptionInterface& po
 {
   if (isFullInputPort(port1) || isFullInputPort(port2))
   {
-    LOG_DEBUG("can't connect since input ports can only take one connection" << std::endl);
+    LOG_TRACE("can't connect since input ports can only take one connection");
     return false;
   }
   if (port1.isInput() == port2.isInput())
   {
-    LOG_DEBUG("can't connect since input/output not compatible" << std::endl);
+    LOG_TRACE("can't connect since input/output not compatible");
     return false;
   }
   if (sharesParentModule(port1, port2))
   {
-    LOG_DEBUG("can't connect since it's the same module" << std::endl);
+    LOG_TRACE("can't connect since it's the same module");
     return false;
   }
   if (isWildPort(port1) || isWildPort(port2))
   {
-    LOG_DEBUG("found wild port" << std::endl);
+    LOG_TRACE("found wild port");
     /// @todo: trying out "wildcard" ports
     return true;
   }
   if (port1.get_typename() != port2.get_typename())
   {
-    LOG_DEBUG("can't connect since colors don't match" << std::endl);
+    LOG_TRACE("can't connect since colors don't match");
     return false;
   }
   return true;

@@ -27,8 +27,9 @@
 */
 
 #include <iostream>
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <boost/lambda/lambda.hpp>
+#include <boost/regex.hpp>
 #include <Dataflow/Network/Port.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/Connection.h>
@@ -37,7 +38,6 @@
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
-#include <Interface/Application/SCIRunMainWindow.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core;
@@ -83,10 +83,8 @@ namespace SCIRun {
 
           for (const auto& module : category.second)
           {
-            //qDebug() << module.second.lookupInfo_.module_name_.c_str();
             if (modulePred(module.second))
             {
-              //qDebug() << "is compatible";
               const auto& moduleName = module.first;
               auto qname = QString::fromStdString(moduleName);
               auto action = new QAction(qname, menu);
@@ -97,7 +95,6 @@ namespace SCIRun {
           }
           if (!actions.empty())
           {
-            //qDebug() << "action list not empty, adding to submenu" << categoryName.c_str();
             auto m = new QMenu(QString::fromStdString(categoryName), parent);
             m->addActions(actions);
             packageMenus.append(m);
@@ -105,7 +102,6 @@ namespace SCIRun {
         }
         if (!packageMenus.isEmpty())
         {
-          //qDebug() << "package menu not empty, adding to menu" << packageName.c_str();
           auto p = new QMenu(QString::fromStdString(packageName), parent);
           for (auto pm : packageMenus)
             p->addMenu(pm);
@@ -121,7 +117,8 @@ namespace SCIRun {
     class PortActionsMenu : public QMenu
     {
     public:
-      explicit PortActionsMenu(PortWidget* parent) : QMenu("Actions", parent), parent_(parent), faves_(nullptr)
+      explicit PortActionsMenu(PortWidget* parent) :
+        QMenu("Actions", parent), parent_(parent)
       {
 #if SCIRUN4_CODE_TO_BE_ENABLED_LATER
         QList<QAction*> actions;
@@ -141,21 +138,20 @@ namespace SCIRun {
 #endif
 
         base_ = new QMenu("Connect Module", parent);
-        faves_ = new QMenu("Favorites", parent);
-        base_->addMenu(faves_);
         compatibleModuleActions_ = fillConnectToEmptyPortMenu(base_, Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
 
         connectModuleAction_ = addAction("Connect Module...");
         connect(connectModuleAction_, SIGNAL(triggered()), parent, SLOT(pickConnectModule()));
       }
 
-      void filterFavorites()
-      {
-        faves_->clear();
-        for (const auto& action : compatibleModuleActions_)
-          if (SCIRunMainWindow::Instance()->isInFavorites(action->text())) // TODO: break out predicate
-            faves_->addAction(action);
-      }
+      //TODO: might add back as a feature later
+      // void filterFavorites()
+      // {
+      //   faves_->clear();
+      //   for (const auto& action : compatibleModuleActions_)
+      //     if (isInFavorites_(action->text()))
+      //       faves_->addAction(action);
+      // }
 
       QStringList compatibleModules() const
       {
@@ -187,7 +183,6 @@ namespace SCIRun {
     private:
       PortWidget* parent_;
       QMenu* base_;
-      QMenu* faves_;
       QList<QAction*> compatibleModuleActions_;
       QAction* connectModuleAction_;
     };
@@ -201,8 +196,8 @@ PortWidgetBase::PortWidgetBase(QWidget* parent) : QPushButton(parent), isHighlig
 PortWidget::PortWidget(const QString& name, const QColor& color, const std::string& datatype, const ModuleId& moduleId,
   const PortId& portId, size_t index,
   bool isInput, bool isDynamic,
-  boost::shared_ptr<ConnectionFactory> connectionFactory,
-  boost::shared_ptr<ClosestPortFinder> closestPortFinder,
+  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
+  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
   : PortWidgetBase(parent),
@@ -292,7 +287,6 @@ void PortWidget::doMousePress(Qt::MouseButton button, const QPointF& pos)
   }
   else
   {
-    //qDebug() << "mouse press sth else";
   }
 }
 
@@ -311,7 +305,6 @@ QGraphicsItem* PortWidget::doMouseMove(Qt::MouseButtons buttons, const QPointF& 
   }
   else
   {
-    //qDebug() << "mouse move sth else";
   }
   return nullptr;
 }
@@ -339,12 +332,10 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos, Qt::
   }
   else if (button == Qt::RightButton && (!isConnected() || !isInput()))
   {
-    menu_->filterFavorites();
     showMenu();
   }
   else
   {
-    //qDebug() << "mouse release sth else";
   }
 }
 
@@ -387,6 +378,15 @@ void PortWidget::pickConnectModule()
   }
 }
 
+bool PortWidgetBase::sameScene(const PortWidgetBase* other) const
+{
+  if (getScene_ && other && other->getScene_)
+  {
+    return getScene_() == other->getScene_();
+  }
+  return true;
+}
+
 size_t PortWidget::getIndex() const
 {
   return index_;
@@ -394,6 +394,14 @@ size_t PortWidget::getIndex() const
 
 PortId PortWidget::id() const
 {
+  if (moduleId_.id_.find("Subnet") != std::string::npos)
+  {
+    static boost::regex r("(.+)\\[.+\\]");
+    boost::smatch what;
+    regex_match(portId_.name, what, r);
+    return PortId(0, std::string(what[1]));
+  }
+
   return portId_;
 }
 
@@ -458,8 +466,24 @@ void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port, double thr
   int distance = (pos - port->position()).manhattanLength();     //GUI concern: needs unit test
   if (distance <= threshold)                 //GUI concern: needs unit test
   {
-    Q_EMIT requestConnection(this, port);
+    Q_EMIT requestConnection(getRealPort(), port->getRealPort());
   }
+}
+
+void PortWidget::connectToSubnetPort(PortWidget* subnetPort)
+{
+  auto out = isInput_ ? subnetPort : this;
+  auto in = isInput_ ? this : subnetPort;
+
+  ConnectionDescription cd { { out->moduleId_, out->portId_ }, { in->moduleId_, in->portId_ } };
+  if (connectionFactory_ && connectionFactory_())
+    connectionFactory_()->makeFinishedConnection(out, in, ConnectionId::create(cd));
+  else
+  {
+    qDebug() << "NO CONNECTION FACTORY AVAILABLE!!";
+  }
+  //TODO: position provider needs adjustment
+  //TODO: management of return value?
 }
 
 void PortWidget::MakeTheConnection(const ConnectionDescription& cd)
@@ -469,7 +493,7 @@ void PortWidget::MakeTheConnection(const ConnectionDescription& cd)
     auto out = portWidgetMap_[cd.out_.moduleId_][false][cd.out_.portId_];
     auto in = portWidgetMap_[cd.in_.moduleId_][true][cd.in_.portId_];
     auto id = ConnectionId::create(cd);
-    auto c = connectionFactory_->makeFinishedConnection(out, in, id);
+    auto c = connectionFactory_()->makeFinishedConnection(out, in, id);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
     connect(c, SIGNAL(noteChanged()), this, SIGNAL(connectionNoteChanged()));
     connect(out, SIGNAL(portMoved()), c, SLOT(trackNodes()));
@@ -480,7 +504,7 @@ void PortWidget::MakeTheConnection(const ConnectionDescription& cd)
 
 void PortWidget::connectionDisabled(bool disabled)
 {
-  Q_EMIT incomingConnectionStateChange(disabled, getIndex());
+  Q_EMIT incomingConnectionStateChange(disabled, static_cast<int>(getIndex()));
 }
 
 void PortWidget::setConnectionsDisabled(bool disabled)
@@ -497,7 +521,7 @@ void PortWidget::setPositionObject(PositionProviderPtr provider)
   Q_EMIT portMoved();
 }
 
-void PortWidget::moveEvent(QMoveEvent * event)
+void PortWidget::moveEvent(QMoveEvent* event)
 {
   QPushButton::moveEvent(event);
   Q_EMIT portMoved();
@@ -523,7 +547,7 @@ QGraphicsItem* PortWidget::dragImpl(const QPointF& endPos)
 {
   if (!currentConnection_)
   {
-    currentConnection_ = connectionFactory_->makeConnectionInProgress(this);
+    currentConnection_ = connectionFactory_()->makeConnectionInProgress(this);
   }
   currentConnection_->update(endPos);
 
@@ -576,11 +600,14 @@ void PortWidget::forEachPort(Func func, Pred pred)
 
 void PortWidget::makePotentialConnectionLine(PortWidget* other)
 {
+  if (other && getScene_ && other->getScene_ && getScene_() != other->getScene_())
+    return;
+
   auto potentials = potentialConnectionsMap_[this];
   if (potentials.find(other) == potentials.end())
   {
     potentialConnectionsMap_[this][other] = true;
-    auto potential = connectionFactory_->makePotentialConnection(this);
+    auto potential = connectionFactory_()->makePotentialConnection(this);
     potential->update(other->position());
     potential->setReceiver(other);
     auto label = other->makeNameLabel();
@@ -605,7 +632,7 @@ QGraphicsTextItem* PortWidget::makeNameLabel() const
     portNameTextItem->setRotation(45);
     portNameTextItem->setPos(getPositionObject()->currentPosition());
   }
-  connectionFactory_->activate(portNameTextItem);
+  connectionFactory_()->activate(portNameTextItem);
   return portNameTextItem;
 }
 
@@ -671,6 +698,13 @@ std::string PortWidget::get_portname() const
 
 ModuleId PortWidget::getUnderlyingModuleId() const
 {
+  if (moduleId_.id_.find("Subnet") != std::string::npos)
+  {
+    static boost::regex r(".+\\[[A-Za-z]+:(.+)\\]");
+    boost::smatch what;
+    regex_match(portId_.name, what, r);
+    return ModuleId(std::string(what[1]));
+  }
   return moduleId_;
 }
 
@@ -715,8 +749,8 @@ void PortWidget::insertNewModule(const PortDescriptionInterface* output, const s
 
 InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
   const ModuleId& moduleId, const PortId& portId, size_t index, bool isDynamic,
-  boost::shared_ptr<ConnectionFactory> connectionFactory,
-  boost::shared_ptr<ClosestPortFinder> closestPortFinder,
+  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
+  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
   : PortWidget(name, color, datatype, moduleId, portId, index, true, isDynamic, connectionFactory, closestPortFinder, portDataDescriber, parent)
@@ -725,8 +759,8 @@ InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const
 
 OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
   const ModuleId& moduleId, const PortId& portId, size_t index, bool isDynamic,
-  boost::shared_ptr<ConnectionFactory> connectionFactory,
-  boost::shared_ptr<ClosestPortFinder> closestPortFinder,
+  boost::function<boost::shared_ptr<ConnectionFactory>()> connectionFactory,
+  boost::function<boost::shared_ptr<ClosestPortFinder>()> closestPortFinder,
   PortDataDescriber portDataDescriber,
   QWidget* parent /* = 0 */)
   : PortWidget(name, color, datatype, moduleId, portId, index, false, isDynamic, connectionFactory, closestPortFinder, portDataDescriber, parent)
@@ -763,87 +797,38 @@ std::vector<PortWidget*> PortWidget::connectedPorts() const
   return otherPorts;
 }
 
+static std::map<std::string, QColor> guiColorMap =
+{
+  { "red", Qt::red },
+  { "blue", QColor(14, 139, 255) },
+  { "lightblue", QColor(153, 204, 255) },
+  { "darkBlue", Qt::darkBlue },
+  { "cyan", QColor(27, 207, 207) },
+  { "darkCyan", Qt::darkCyan },
+  { "darkGreen", QColor(0, 175, 70) },
+  { "cyan", Qt::cyan },
+  { "magenta", QColor(255, 75, 240) },
+  { "darkMagenta", QColor(230, 67, 216) },
+  { "white", Qt::white },
+  { "yellow", QColor(234, 255, 55) },
+  { "darkYellow", Qt::darkYellow },
+  { "lightGray", Qt::lightGray },
+  { "darkGray", Qt::darkGray },
+  { "black", Qt::black },
+  { "purple", QColor(122, 119, 226) },
+  { "orange", QColor(254, 139, 38) },
+  { "brown", QColor(160, 82, 45) }
+};
+
 QColor SCIRun::Gui::to_color(const std::string& str, int alpha)
 {
   QColor result;
-  if (SCIRunMainWindow::Instance()->newInterface())
-  {
-    if (str == "red")
-      result = Qt::red;
-    else if (str == "blue")
-      result = QColor(14, 139, 255);
-    else if (str == "lightblue")
-      result = QColor(153, 204, 255);
-    else if (str == "darkBlue")
-      result = Qt::darkBlue;
-    else if (str == "cyan")
-      result = QColor(27, 207, 207);
-    else if (str == "darkCyan")
-      result = Qt::darkCyan;
-    else if (str == "darkGreen")
-      result = QColor(0, 175, 70);
-    else if (str == "cyan")
-      result = Qt::cyan;
-    else if (str == "magenta")
-      result = QColor(255, 75, 240);
-    else if (str == "white")
-      result = Qt::white;
-    else if (str == "yellow")
-      result = QColor(234, 255, 55);
-    else if (str == "darkYellow")
-      result = Qt::darkYellow;
-    else if (str == "lightGray")
-      result = Qt::lightGray;
-    else if (str == "darkGray")
-      result = Qt::darkGray;
-    else if (str == "black")
-      result = Qt::black;
-    else if (str == "purple")
-      result = QColor(122, 119, 226);
-    else if (str == "orange")
-      result = QColor(254, 139, 38);
-    else if (str == "brown")
-      result = QColor(160, 82, 45);
-    else
-      result = Qt::black;
-  }
+  auto color = guiColorMap.find(str);
+  if (color != guiColorMap.end())
+    result = color->second;
   else
-  {
-    if (str == "red")
-      result = Qt::red;
-    else if (str == "blue")
-      result = Qt::blue;
-    else if (str == "darkBlue")
-      result = Qt::darkBlue;
-    else if (str == "cyan")
-      result = Qt::cyan;
-    else if (str == "darkCyan")
-      result = Qt::darkCyan;
-    else if (str == "darkGreen")
-      result = Qt::darkGreen;
-    else if (str == "cyan")
-      result = Qt::cyan;
-    else if (str == "magenta")
-      result = Qt::magenta;
-    else if (str == "white")
-      result = Qt::white;
-    else if (str == "yellow")
-      result = Qt::yellow;
-    else if (str == "darkYellow")
-      result = Qt::darkYellow;
-    else if (str == "lightGray")
-      result = Qt::lightGray;
-    else if (str == "darkGray")
-      result = Qt::darkGray;
-    else if (str == "black")
-      result = Qt::black;
-    else if (str == "purple")
-      result = Qt::darkMagenta;
-    else if (str == "orange")
-      result = QColor(255, 165, 0);
-    else
-      result = Qt::black;
-  }
+    result = Qt::black;
+
   result.setAlpha(alpha);
   return result;
 }

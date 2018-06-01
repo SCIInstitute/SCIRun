@@ -58,7 +58,7 @@ ReadBundleDialog::ReadBundleDialog(const std::string& name, ModuleStateHandle st
 
 void ReadBundleDialog::pullSpecial()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
+  pullFilename(state_, fileNameLineEdit_, {});
 }
 
 void ReadBundleDialog::pushFileNameToState()

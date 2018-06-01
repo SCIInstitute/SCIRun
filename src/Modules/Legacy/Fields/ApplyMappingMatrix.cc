@@ -58,8 +58,6 @@ void ApplyMappingMatrix::execute()
 
   if (needToExecute())
   {
-   update_state(Executing);
-
    auto out = algo().run(withInputData((Source, src)(Destination, dest)(Mapping, mapp)));
 
    sendOutputFromAlgorithm(Output, out);

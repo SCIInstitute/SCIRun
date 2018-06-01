@@ -49,6 +49,7 @@ typedef ConstantBasis<Tensor>                CFDTensorBasis;
 typedef ConstantBasis<Vector>                CFDVectorBasis;
 typedef ConstantBasis<double>                CFDdoubleBasis;
 typedef ConstantBasis<float>                 CFDfloatBasis;
+typedef ConstantBasis<complex>               CFDcomplexBasis;
 typedef ConstantBasis<int>                   CFDintBasis;
 typedef ConstantBasis<long long>             CFDlonglongBasis;
 typedef ConstantBasis<short>                 CFDshortBasis;
@@ -60,8 +61,7 @@ typedef ConstantBasis<unsigned long>         CFDulongBasis;
 
 typedef ScanlineMesh<CrvLinearLgn<Point> > SLMesh;
 
-PersistentTypeID backwards_compat_SLM("ScanlineMesh", "Mesh",
-				      SLMesh::maker, SLMesh::maker);
+PersistentTypeID backwards_compat_SLM("ScanlineMesh", "Mesh", SLMesh::maker, SLMesh::maker);
 
 namespace SCIRun {
   
@@ -75,6 +75,7 @@ template class GenericField<SLMesh, CFDTensorBasis, std::vector<Tensor> >;
 template class GenericField<SLMesh, CFDVectorBasis, std::vector<Vector> >;       
 template class GenericField<SLMesh, CFDdoubleBasis, std::vector<double> >;       
 template class GenericField<SLMesh, CFDfloatBasis,  std::vector<float> >;        
+template class GenericField<SLMesh, CFDcomplexBasis, std::vector<complex> >;
 template class GenericField<SLMesh, CFDintBasis,    std::vector<int> >;
 template class GenericField<SLMesh, CFDlonglongBasis,std::vector<long long> >;
 template class GenericField<SLMesh, CFDshortBasis,  std::vector<short> >;        
@@ -101,6 +102,7 @@ template class GenericField<PCMesh, CFDTensorBasis, std::vector<Tensor> >;
 template class GenericField<PCMesh, CFDVectorBasis, std::vector<Vector> >;       
 template class GenericField<PCMesh, CFDdoubleBasis, std::vector<double> >;       
 template class GenericField<PCMesh, CFDfloatBasis,  std::vector<float> >;        
+template class GenericField<PCMesh, CFDcomplexBasis, std::vector<complex> >;
 template class GenericField<PCMesh, CFDintBasis,    std::vector<int> >;
 template class GenericField<PCMesh, CFDlonglongBasis,std::vector<long long> >;
 template class GenericField<PCMesh, CFDshortBasis,  std::vector<short> >;        
@@ -135,6 +137,12 @@ backwards_compat_PCFf("PointCloudField<float>", "Field",
 		      std::vector<float> >::maker, 
 		      GenericField<PCMesh, CFDfloatBasis, 
 		      std::vector<float> >::maker);
+PersistentTypeID
+backwards_compat_PCFco("PointCloudField<complex>", "Field",
+          GenericField<PCMesh, CFDcomplexBasis,
+          std::vector<complex> >::maker,
+          GenericField<PCMesh, CFDcomplexBasis,
+          std::vector<complex> >::maker);
 PersistentTypeID 
 backwards_compat_PCFi("PointCloudField<int>", "Field",
 		      GenericField<PCMesh, CFDintBasis, 

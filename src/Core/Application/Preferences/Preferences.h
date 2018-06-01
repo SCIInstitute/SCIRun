@@ -53,7 +53,7 @@ namespace SCIRun
 
       TrackedVariable(const std::string& name, const typename Var::value_type& value) : Var(name, value) {}
 
-      virtual void setValue(const typename Var::Value& val) override
+      void setValueWithSignal(const typename Var::Value& val)
       {
         Var::setValue(val);
         valueChanged_(this->val());
@@ -62,8 +62,12 @@ namespace SCIRun
       ValueChangedSignal valueChanged_;
     };
 
-
-
+    struct TriggeredScriptInfo
+    {
+      explicit TriggeredScriptInfo(const std::string& name);
+      StringVariable script;
+      BooleanVariable enabled;
+    };
 
     class SCISHARE Preferences : boost::noncopyable
     {
@@ -73,8 +77,6 @@ namespace SCIRun
 	    Preferences();
 
     public:
-      /// @todo: reuse Seg3D state vars
-
       TrackedVariable<BooleanVariable> showModuleErrorDialogs;
       BooleanVariable saveBeforeExecute;
       BooleanVariable showModuleErrorInlineMessages;
@@ -83,14 +85,13 @@ namespace SCIRun
       BooleanVariable modulesSnapToGrid;
       BooleanVariable highlightPorts;
       BooleanVariable autoNotes;
+      BooleanVariable highDPIAdjustment;
       TrackedVariable<BooleanVariable> modulesAreDockable;
       StringVariable networkBackgroundColor;
 
-      //super duper ugly.
-      StringVariable postModuleAddScript_temporarySolution;
-      BooleanVariable postModuleAddScriptEnabled_temporarySolution;
-      StringVariable onNetworkLoadScript_temporarySolution;
-      BooleanVariable onNetworkLoadScriptEnabled_temporarySolution;
+      TriggeredScriptInfo postModuleAdd;
+      TriggeredScriptInfo onNetworkLoad;
+      TriggeredScriptInfo applicationStart;
 
       std::string dataDirectoryPlaceholder() const;
 
@@ -100,13 +101,8 @@ namespace SCIRun
       std::vector<boost::filesystem::path> dataPath() const;
       void addToDataPath(const boost::filesystem::path& path);
       void setDataPath(const std::string& dirs); // ;-delimited
-      //TODO: remove path entry
-
-
-	    //void save_state();
 
     private:
-	    //void initialize_states();
 	    boost::filesystem::path dataDir_;
       std::vector<boost::filesystem::path> dataPath_;
     };

@@ -46,12 +46,19 @@ GetSliceFromStructuredFieldByIndicesDialog::GetSliceFromStructuredFieldByIndices
   addSpinBoxManager(jAxisSpinBox_, Index_j);
   addSpinBoxManager(kAxisSpinBox_, Index_k);
   addRadioButtonGroupManager({ iAxisRadioButton_, jAxisRadioButton_, kAxisRadioButton_ }, Axis_ijk);
+  addCheckBoxManager(spinBoxExecuteCheckBox_, SpinBoxReexecute);
+  addCheckBoxManager(axisExecuteCheckBox_, AxisReexecute);
+  addCheckBoxManager(sliderExecuteCheckBox_, SliderReexecute);
 
-  //TODO: test whether users want live execution for this module
-  //createExecuteInteractivelyToggleAction();
-  //connect(iAxisHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executeFromStateChangeTriggered()));
-  //connect(jAxisHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executeFromStateChangeTriggered()));
-  //connect(kAxisHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executeFromStateChangeTriggered()));
+  connect(iAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderIndexChanged()));
+  connect(jAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderIndexChanged()));
+  connect(kAxisHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderIndexChanged()));
+  connect(iAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
+  connect(jAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
+  connect(kAxisSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(spinBoxClicked(int)));
+  connect(iAxisRadioButton_, SIGNAL(clicked()), this, SLOT(axisButtonClicked()));
+  connect(jAxisRadioButton_, SIGNAL(clicked()), this, SLOT(axisButtonClicked()));
+  connect(kAxisRadioButton_, SIGNAL(clicked()), this, SLOT(axisButtonClicked()));
 }
 
 void GetSliceFromStructuredFieldByIndicesDialog::pullSpecial()
@@ -59,10 +66,84 @@ void GetSliceFromStructuredFieldByIndicesDialog::pullSpecial()
   using namespace Parameters;
 
   iAxisSpinBox_->setMaximum(state_->getValue(Dim_i).toInt());
+  iAxisSpinBox_->setEnabled(iAxisRadioButton_->isChecked());
   jAxisSpinBox_->setMaximum(state_->getValue(Dim_j).toInt());
+  jAxisSpinBox_->setEnabled(jAxisRadioButton_->isChecked());
   kAxisSpinBox_->setMaximum(state_->getValue(Dim_k).toInt());
+  kAxisSpinBox_->setEnabled(kAxisRadioButton_->isChecked());
 
   iAxisHorizontalSlider_->setMaximum(state_->getValue(Dim_i).toInt());
+  iAxisHorizontalSlider_->setEnabled(iAxisRadioButton_->isChecked());
   jAxisHorizontalSlider_->setMaximum(state_->getValue(Dim_j).toInt());
+  jAxisHorizontalSlider_->setEnabled(jAxisRadioButton_->isChecked());
   kAxisHorizontalSlider_->setMaximum(state_->getValue(Dim_k).toInt());
+  kAxisHorizontalSlider_->setEnabled(kAxisRadioButton_->isChecked());
+}
+
+void GetSliceFromStructuredFieldByIndicesDialog::axisButtonClicked()
+{
+  auto axisButton = qobject_cast<QRadioButton*>(sender());
+
+  {
+    auto i = axisButton->objectName().contains("iAxis");
+    iAxisSpinBox_->setEnabled(i);
+    iAxisHorizontalSlider_->setEnabled(i);
+  }
+  {
+    auto j = axisButton->objectName().contains("jAxis");
+    jAxisSpinBox_->setEnabled(j);
+    jAxisHorizontalSlider_->setEnabled(j);
+  }
+  {
+    auto k = axisButton->objectName().contains("kAxis");
+    kAxisSpinBox_->setEnabled(k);
+    kAxisHorizontalSlider_->setEnabled(k);
+  }
+  if (axisExecuteCheckBox_->isChecked())
+    Q_EMIT executeFromStateChangeTriggered();
+}
+
+void GetSliceFromStructuredFieldByIndicesDialog::spinBoxClicked(int value)
+{
+  auto spinBox = qobject_cast<QSpinBox*>(sender());
+  bool reexecute = false;
+  if (spinBox->objectName().contains("iAxis"))
+    reexecute = iAxisRadioButton_->isChecked();
+  else if (spinBox->objectName().contains("jAxis"))
+    reexecute = jAxisRadioButton_->isChecked();
+  else if (spinBox->objectName().contains("kAxis"))
+    reexecute = kAxisRadioButton_->isChecked();
+
+  if (!pulling_ && spinBoxExecuteCheckBox_->isChecked() && reexecute)
+    Q_EMIT executeFromStateChangeTriggered();
+}
+
+void GetSliceFromStructuredFieldByIndicesDialog::sliderIndexChanged()
+{
+  auto slider = qobject_cast<QSlider*>(sender());
+  bool reexecute = false;
+  if (slider->objectName().contains("iAxis"))
+  {
+    ScopedWidgetSignalBlocker i(iAxisSpinBox_);
+    iAxisSpinBox_->setValue(slider->value());
+    state_->setValue(Parameters::Index_i, slider->value());
+    reexecute |= iAxisRadioButton_->isChecked();
+  }
+  else if (slider->objectName().contains("jAxis"))
+  {
+    ScopedWidgetSignalBlocker j(jAxisSpinBox_);
+    jAxisSpinBox_->setValue(slider->value());
+    state_->setValue(Parameters::Index_j, slider->value());
+    reexecute |= jAxisRadioButton_->isChecked();
+  }
+  else if (slider->objectName().contains("kAxis"))
+  {
+    ScopedWidgetSignalBlocker k(kAxisSpinBox_);
+    kAxisSpinBox_->setValue(slider->value());
+    state_->setValue(Parameters::Index_k, slider->value());
+    reexecute |= kAxisRadioButton_->isChecked();
+  }
+
+  if (sliderExecuteCheckBox_->isChecked() && reexecute)
+    Q_EMIT executeFromStateChangeTriggered();
 }

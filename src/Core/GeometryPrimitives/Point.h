@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -46,7 +46,7 @@ namespace Geometry {
 
   class Vector;
 
-class Point 
+class Point
 {
 private:
   double d_[3];
@@ -81,16 +81,16 @@ public:
   inline void z(const double);
   inline double z() const;
 
-  inline double& operator[](int idx) 
+  inline double& operator[](int idx)
   {
     return d_[idx];
   }
 
-  inline double operator[](int idx) const 
+  inline double operator[](int idx) const
   {
     return d_[idx];
-  }      
-        
+  }
+
   SCISHARE std::string get_string() const;
 
   SCISHARE friend std::ostream& operator<<(std::ostream& os, const Point& p);
@@ -99,11 +99,12 @@ public:
 
 SCISHARE bool operator==(const Point& p1, const Point& p2);
 SCISHARE bool operator!=(const Point& p1, const Point& p2);
+SCISHARE Point pointFromString(const std::string& str);
 
 inline Point::Point(const Point& p)
 {
   d_[0] = p.d_[0];
-  d_[1] = p.d_[1]; 
+  d_[1] = p.d_[1];
   d_[2] = p.d_[2];
 }
 
@@ -117,7 +118,7 @@ inline Point::Point()
 inline Point& Point::operator=(const Point& p)
 {
   d_[0] = p.d_[0];
-  d_[1] = p.d_[1]; 
+  d_[1] = p.d_[1];
   d_[2] = p.d_[2];
   return *this;
 }
@@ -172,17 +173,17 @@ inline Point& Point::operator+=(const Point& v)
 // (depending on the compiler) actually declare them.
 SCISHARE Point AffineCombination(const Point&, double, const Point&, double,
 				  const Point&, double, const Point&, double);
-SCISHARE Point AffineCombination(const Point&, double, const Point&, double, 
+SCISHARE Point AffineCombination(const Point&, double, const Point&, double,
 				  const Point&, double);
 SCISHARE Point AffineCombination(const Point&, double, const Point&, double);
 
 SCISHARE void Pio( Piostream&, Point& );
 
-inline 
+inline
 Point operator*(double d, const Point &p) {
   return p*d;
 }
-inline 
+inline
 Point operator+(const Vector &v, const Point &p) {
   return p+v;
 }
