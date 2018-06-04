@@ -57,7 +57,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName Coloring;
         static const Core::Algorithms::AlgorithmParameterName DefaultColor;
 
-        INPUT_PORT(0, FieldToWrite, LegacyField);
+        INPUT_PORT(0, FieldToWrite, Field);
         //INPUT_PORT(1, ColorMapObject, ColorMap);
 
         virtual void setStateDefaults() override;

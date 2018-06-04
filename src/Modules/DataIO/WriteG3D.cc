@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -57,7 +57,7 @@ WriteG3D::WriteG3D()
   //INITIALIZE_PORT(ColorMapObject);
   filetype_ = "Binary";
   objectPortName_ = &FieldToWrite;
-  
+
   FieldIEPluginManager mgr;
   //TODO: change from hard coded types to getting the correct group from the list exporter
   auto types = makeGuiTypesListForExport(mgr);
@@ -90,23 +90,23 @@ void WriteG3D::execute()
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //get the current file name
   const std::string oldfilename=filename_.get();
-  
+
   //determine if we should increment an index in the file name
-  if (gui_increment_.get()) 
+  if (gui_increment_.get())
   {
 
-    //warn the user if they try to use 'Increment' incorrectly	
+    //warn the user if they try to use 'Increment' incorrectly
     const std::string::size_type loc2 = oldfilename.find("%d");
-    if(loc2 == std::string::npos) 
+    if(loc2 == std::string::npos)
     {
       remark("To use the increment function, there must be a '%d' in the file name.");
     }
-    
+
     char buf[1024];
-   
+
     int current=gui_current_.get();
     sprintf(buf, filename_.get().c_str(), current);
-    
+
     filename_.set(buf);
     gui_current_.set(current+1);
   }
@@ -140,7 +140,6 @@ void WriteG3D::calculateColors()
     VField* fld = field->vfield();
     VMesh*  mesh = field->vmesh();
 
-    double sval;
     Vector vval;
     Tensor tval;
 
