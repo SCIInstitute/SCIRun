@@ -32,6 +32,7 @@
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Core/Logging/Log.h>
 #include <boost/make_shared.hpp>
+#include <iostream>
 
 using namespace SCIRun::Gui;
 

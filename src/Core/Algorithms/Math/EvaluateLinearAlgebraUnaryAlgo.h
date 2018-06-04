@@ -89,7 +89,7 @@ namespace Math {
     };
 
     typedef SCIRun::Core::Datatypes::MatrixHandle Inputs;
-    typedef boost::tuple<Operator, boost::optional<double>, boost::optional<std::string> > Parameters;
+    struct Parameters { Operator op; double scalar; std::string func; };
     typedef SCIRun::Core::Datatypes::MatrixHandle Outputs;
 
     EvaluateLinearAlgebraUnaryAlgorithm();

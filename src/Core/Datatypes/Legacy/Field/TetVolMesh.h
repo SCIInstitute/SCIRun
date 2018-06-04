@@ -2970,15 +2970,20 @@ TetVolMesh<Basis>::hash_face(typename Node::index_type n1,
     PFace f = (*iter).first;
     if (f.cells_[1] != MESH_NO_NEIGHBOR)
     {
+      //TODO: inject new logger
+      /*
       std::cerr << "TetVolMesh - This Mesh has problems: Cells #"
            << (f.cells_[0]>>2) << ", #" << (f.cells_[1]>>2) << ", and #"
            << (combined_index>>2) << " are illegally adjacent." << std::endl;
+           */
     }
     else if ((f.cells_[0]>>2) == (combined_index>>2))
     {
+      //TODO: inject new logger
+      /*
       std::cerr << "TetVolMesh - This Mesh has problems: Cells #"
            << (f.cells_[0]>>2) << " and #" << (combined_index>>2)
-           << " are the same." << std::endl;
+           << " are the same." << std::endl;*/
     }
     else
     {

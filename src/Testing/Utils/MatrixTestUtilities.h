@@ -61,7 +61,7 @@ inline bool equal_size(const Core::Datatypes::Matrix& m1, const Core::Datatypes:
 //TODO improve error reporting
 inline bool compare_with_tolerance(const Core::Datatypes::DenseMatrix& m1, const Core::Datatypes::DenseMatrix& m2, double percentTolerance = DEFAULT_MATRIX_PERCENT_TOLERANCE)
 {
-  using namespace boost::test_tools;
+  using namespace boost::math::fpc;
   return equal_size(m1, m2) &&
     std::equal(m1.data(), m1.data() + m1.size(), m2.data(),
     close_at_tolerance<double>(percent_tolerance(percentTolerance)));
@@ -69,7 +69,7 @@ inline bool compare_with_tolerance(const Core::Datatypes::DenseMatrix& m1, const
 
 inline bool compare_with_tolerance(const Core::Datatypes::SparseRowMatrix& m1, const Core::Datatypes::SparseRowMatrix& m2, double percentTolerance = DEFAULT_MATRIX_PERCENT_TOLERANCE)
 {
-  using namespace boost::test_tools;
+  using namespace boost::math::fpc;
   return equal_size(m1, m2) &&
     std::equal(m1.valuePtr(), m1.valuePtr() + m1.nonZeros(), m2.valuePtr(),
     close_at_tolerance<double>(percent_tolerance(percentTolerance)));
