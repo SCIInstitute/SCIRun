@@ -212,7 +212,6 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
   VMesh *mesh = result->vmesh();
   VField *field = result->vfield();
 
-
   // Elements file
 
   {
@@ -242,7 +241,6 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
                if (line[k]==' '){ break;}
                else {
                        elem_type += line[k];
-
                    }
             }
 
@@ -322,7 +320,6 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
   
   FieldInformation fi(fh);
   
-    
 
   // Points file
   {
@@ -412,23 +409,22 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
       mesh->begin(cellIter);
       mesh->end(cellIterEnd);
       mesh->size(cellSize);
-	
-      
+
+
 
 #if DEBUG
       std::cerr << "Number of tets = " << cellSize << std::endl;
 #endif
 
 	outputfile << cellSize << std::endl;
-	
-	 if (fi.is_tetvolmesh())
+
+    if (fi.is_tetvolmesh())
   		{
-	
 	    VMesh::Node::array_type cellNodes(4);
 	    
 		double scalaroutput;
 		
-      while (cellIter != cellIterEnd) {
+    while (cellIter != cellIterEnd) {
       
       	field->get_value(scalaroutput,*cellIter);
       	mesh->get_nodes(cellNodes, *cellIter);
@@ -437,10 +433,26 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
         ++cellIter;
       		}
       	}
-	
-      	else 
+    else if (fi.is_trisurfmesh())
+       {
+
+	    VMesh::Node::array_type faceNodes(3);
+
+		double scalaroutput;
+
+      while (cellIter != cellIterEnd) {
+
+      	field->get_value(scalaroutput,*cellIter);
+      	mesh->get_nodes(faceNodes, *cellIter);
+
+        outputfile << "Tr" << " " << faceNodes[0] << " " << faceNodes[1] << " " << faceNodes[2] << " " << scalaroutput << std::endl;
+        ++cellIter;
+      		}
+      	}
+     else
 		{
-      if (pr) pr->error("Please convert to Tetvol ");
+
+      if (pr) pr->error("Please convert to either TriSurf or TetVol mesh ");
       return false;
     	}
       

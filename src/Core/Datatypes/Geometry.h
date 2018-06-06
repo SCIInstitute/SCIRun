@@ -87,13 +87,20 @@ namespace Datatypes
     Core::Geometry::BBox box;
     struct FieldData
     {
-      std::vector<float> vertex, color;
+      std::vector<float> vertex, color, vertex_normal;
       std::vector<int32_t> index;
     };
 
     FieldData data;
+    
+    double radius;
 
     bool isStreamline{ false };
+    bool isSurface{ false };
+    bool isSphere{ false };
+    bool isEdge{ false };
+    bool isVolume{ false };
+    std::string GeomType;
   };
 
   using OsprayGeometryObjectHandle = SharedPointer<OsprayGeometryObject>;

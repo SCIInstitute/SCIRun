@@ -31,6 +31,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/Geometry.h>
+#include <boost/graph/adjacency_list.hpp>
 #include <Core/Algorithms/Visualization/share.h>
 
 namespace SCIRun
@@ -45,6 +46,16 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(DefaultColorG);
         ALGORITHM_PARAMETER_DECL(DefaultColorB);
         ALGORITHM_PARAMETER_DECL(DefaultColorA);
+        ALGORITHM_PARAMETER_DECL(Radius);
+        ALGORITHM_PARAMETER_DECL(UseNormals);
+        
+        typedef std::pair<int,int> Edge;
+        typedef std::vector<Edge> EdgeVector;
+        typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS> DirectedGraph;
+        typedef boost::adjacency_list<boost::setS, boost::vecS, boost::undirectedS, boost::no_property, boost::property<boost::edge_color_t, boost::default_color_type> > UndirectedGraph;
+        typedef boost::graph_traits<DirectedGraph>::vertex_descriptor Vertex;
+        typedef boost::graph_traits<UndirectedGraph>::vertex_descriptor Vertex_u;
+        typedef std::map<int, int> ComponentMap;
 
         class SCISHARE OsprayDataAlgorithm : public AlgorithmBase
         {
@@ -52,9 +63,18 @@ namespace SCIRun
           OsprayDataAlgorithm();
           virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
         private:
-          Core::Datatypes::OsprayGeometryObjectHandle addStreamline(FieldHandle field) const;
+          Core::Datatypes::OsprayGeometryObjectHandle addStreamline(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
+          Core::Datatypes::OsprayGeometryObjectHandle addSphere(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
+          Core::Datatypes::OsprayGeometryObjectHandle addSurface(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
+          void connected_component_edges(EdgeVector all_edges, std::vector<EdgeVector>& subsets, std::vector<int>& size_regions)const;
+          void ReorderNodes(std::vector<int32_t> index, std::vector<int32_t> cc_index, std::vector<float> vertex, std::vector<float> color, std::vector<int32_t>& index_new, std::vector<float>& vertex_new,std::vector<float>& color_new) const;
+          std::list<Vertex_u> sort_cc(EdgeVector sub_edges) const;
+          bool FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std::list<Vertex_u>& v_path, bool front) const;
+          std::vector<int32_t> sort_points(EdgeVector edges, std::vector<int32_t>& cc_index) const;
           Core::Datatypes::OsprayGeometryObjectHandle fillDataBuffers(FieldHandle field, Core::Datatypes::ColorMapHandle colorMap) const;
           Core::Datatypes::OsprayGeometryObjectHandle makeObject(FieldHandle field) const;
+          
+          
         };
       }
     }

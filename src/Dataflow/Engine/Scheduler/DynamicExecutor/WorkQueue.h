@@ -30,6 +30,7 @@
 #define ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKQUEUE_H
 
 #include <Dataflow/Network/NetworkFwd.h>
+#include <boost/next_prior.hpp>
 #include <boost/lockfree/spsc_queue.hpp>
 #include <Dataflow/Engine/Scheduler/share.h>
 

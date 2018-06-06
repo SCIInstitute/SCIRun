@@ -27,6 +27,7 @@
 */
 
 #include <Core/IEPlugin/ObjToField_Plugin.h>
+#include <Core/IEPlugin/G3DToField_Plugin.h>
 #include <Core/IEPlugin/NrrdField_Plugin.h>
 #include <Core/IEPlugin/MatlabFiles_Plugin.h>
 #include <Core/IEPlugin/SimpleTextFileToMatrix_Plugin.h>
@@ -48,6 +49,8 @@ using namespace SCIRun::Core::Logging;
 void IEPluginManager::Initialize()
 {
   static FieldIEPluginLegacyAdapter ObjToField_plugin("ObjToField", "*.obj", "", ObjToField_reader, FieldToObj_writer);
+
+  static FieldIEPluginLegacyAdapter G3DToField_plugin("IV3D", "*.g3d", "", nullptr, FieldToG3D_writer);
 
   static FieldIEPluginLegacyAdapter NrrdToField_plugin("NrrdFile","*.nhdr *.nrrd", "*.nrrd", NrrdToField_reader, FieldToNrrd_writer);
   static FieldIEPluginLegacyAdapter NodalNrrdToField_plugin("NrrdFile[DataOnNodes]","*.nhdr *.nrrd", "", Nodal_NrrdToField_reader, nullptr);

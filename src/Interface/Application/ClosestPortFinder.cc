@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/ModuleWidget.h>
@@ -70,4 +70,3 @@ bool ClosestPortFinder::lessPort(const QPointF& pos, PortWidget* lhs, PortWidget
 {
   return distance(pos, lhs) < distance(pos, rhs);
 }
-

@@ -21,20 +21,21 @@
 #include <Interface/Modules/Render/Ospray/QOSPRayWindow.h>
 #include <Interface/Modules/Render/Ospray/SliceWidget.h>
 #include <Interface/Modules/Render/Ospray/LightEditor.h>
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <string>
 #include <vector>
+#include <Interface/Modules/Render/Ospray/share.h>
 
-class TransferFunctionEditor;
+//class TransferFunctionEditor;
 class IsosurfaceEditor;
 class ProbeWidget;
 class OpenGLAnnotationRenderer;
 class PreferencesDialog;
 
 //! OSPRay model and its volumes / geometries
-struct ModelState
+struct SCISHARE ModelState
 {
-  struct Volume
+  struct SCISHARE Volume
   {
     Volume(OSPVolume handle,
            const ospcommon::box3f &boundingBox,
@@ -53,7 +54,7 @@ struct ModelState
 
   using VolumePtr = std::shared_ptr<Volume>;
 
-  struct Geometry
+  struct SCISHARE Geometry
   {
     Geometry(OSPGeometry handle=NULL) : handle(handle) {}
     OSPGeometry handle;
@@ -90,7 +91,7 @@ struct ModelState
   }
 };
 
-struct OsprayViewerParameters
+struct SCISHARE OsprayViewerParameters
 {
   bool showFrameRate;
   std::string rendererType;
@@ -99,13 +100,13 @@ struct OsprayViewerParameters
   std::string writeFramesFilename;
 };
 
-struct OsprayObjectParameters
+struct SCISHARE OsprayObjectParameters
 {
   std::vector<OSPGeometry> moreObjects;
   ospcommon::box3f presetBoundingBox;
 };
 
-struct OsprayGUIParameters
+struct SCISHARE OsprayGUIParameters
 {
   int width, height;
   QStatusBar* frameRateWidget;
@@ -115,7 +116,7 @@ struct OsprayGUIParameters
   QSlider* directionalLightElevationSlider;
 };
 
-class VolumeViewer : public QWidget
+class SCISHARE VolumeViewer : public QWidget
 {
 
 Q_OBJECT
@@ -133,7 +134,7 @@ public:
   QOSPRayWindow *getWindow();
 
   //! Get the transfer function editor.
-  TransferFunctionEditor *getTransferFunctionEditor();
+//  TransferFunctionEditor *getTransferFunctionEditor();
 
   //! Select the model (time step) to be displayed.
   void setModel(size_t index);
@@ -278,7 +279,7 @@ protected:
   OpenGLAnnotationRenderer *annotationRenderer;
 
   //! The transfer function editor.
-  TransferFunctionEditor *transferFunctionEditor;
+  //TransferFunctionEditor *transferFunctionEditor;
 
   //! The slice editor.
   SliceEditor *sliceEditor;

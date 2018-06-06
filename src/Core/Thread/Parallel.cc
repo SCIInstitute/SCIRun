@@ -30,6 +30,7 @@
 #include <Core/Logging/Log.h>
 #include <boost/thread/thread.hpp>
 #include <vector>
+#include <iostream>
 
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Logging;

@@ -16,7 +16,7 @@
 
 #include <algorithm>
 #include "VolumeViewer.h"
-#include "TransferFunctionEditor.h"
+//#include "TransferFunctionEditor.h"
 #include "IsosurfaceEditor.h"
 #include "SliceEditor.h"
 #include "ProbeWidget.h"
@@ -43,7 +43,7 @@ VolumeViewer::VolumeViewer(const OsprayViewerParameters& params, const OsprayGUI
     directionalLight(nullptr),
     osprayWindow_(nullptr),
     annotationRenderer(nullptr),
-    transferFunctionEditor(nullptr),
+    //transferFunctionEditor(nullptr),
     isosurfaceEditor(nullptr),
     autoRotationRate(0.025f),
     usePlane(-1),
@@ -136,11 +136,11 @@ QOSPRayWindow *VolumeViewer::getWindow()
 {
   return osprayWindow_;
 }
-
-TransferFunctionEditor *VolumeViewer::getTransferFunctionEditor()
-{
-  return transferFunctionEditor;
-}
+//
+// TransferFunctionEditor *VolumeViewer::getTransferFunctionEditor()
+// {
+//   return transferFunctionEditor;
+// }
 
 void VolumeViewer::setModel(size_t index)
 {
@@ -160,7 +160,7 @@ void VolumeViewer::setModel(size_t index)
 
     if(voxelRange != ospcommon::vec2f(0.f))
     {
-      transferFunctionEditor->setDataValueRange(voxelRange);
+      //transferFunctionEditor->setDataValueRange(voxelRange);
       isosurfaceEditor->setDataValueRange(voxelRange);
     }
 

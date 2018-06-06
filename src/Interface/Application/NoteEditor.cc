@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <iostream>
 #include <Interface/Application/NoteEditor.h>
 

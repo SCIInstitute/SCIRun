@@ -53,4 +53,7 @@ ShowFieldWithOsprayDialog::ShowFieldWithOsprayDialog(const std::string& name, Mo
   addDoubleSpinBoxManager(defaultColorGDoubleSpinBox_, DefaultColorG);
   addDoubleSpinBoxManager(defaultColorBDoubleSpinBox_, DefaultColorB);
   addDoubleSpinBoxManager(defaultColorADoubleSpinBox_, DefaultColorA);
+  addDoubleSpinBoxManager(RadiusSpinBox_, Radius);
+  addCheckBoxManager(UseNormalCheckBox_, UseNormals);
 }
+

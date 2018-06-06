@@ -17,10 +17,16 @@
 INCLUDE(${CMAKE_SOURCE_DIR}/CMake/Modules/FindOSPRay.cmake)
 INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
 
-FIND_PACKAGE(Qt4 REQUIRED QtGui QtOpenGL)
-SET(QT_USE_QTOPENGL TRUE)
-INCLUDE(${QT_USE_FILE})
-SET(LIBS ${LIBS} Qt4::QtGui Qt4::QtOpenGL ${OSPRAY_LIBRARIES})
+IF(QT5_BUILD)
+  SET(QT_USE_QTOPENGL TRUE)
+  #INCLUDE(${QT_USE_FILE})
+  SET(LIBS ${LIBS} Qt5::OpenGL ${QT_LIBRARIES} ${OSPRAY_LIBRARIES})
+ELSE()
+  FIND_PACKAGE(Qt4 REQUIRED QtGui QtOpenGL)
+  SET(QT_USE_QTOPENGL TRUE)
+  INCLUDE(${QT_USE_FILE})
+  SET(LIBS ${LIBS} Qt4::QtGui Qt4::QtOpenGL ${QT_LIBRARIES} ${OSPRAY_LIBRARIES})
+ENDIF()
 
 FIND_PACKAGE(OpenGL REQUIRED)
 INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIRS})
@@ -32,14 +38,14 @@ SET(SRCS ${SRCS}
   IsosurfaceEditor.cpp
   IsovalueWidget.cpp
   LightEditor.cpp
-  LinearTransferFunctionWidget.cpp
+  #LinearTransferFunctionWidget.cpp
   OpenGLAnnotationRenderer.cpp
   PreferencesDialog.cpp
   ProbeWidget.cpp
   QOSPRayWindow.cpp
   SliceEditor.cpp
   SliceWidget.cpp
-  TransferFunctionEditor.cpp
+  #TransferFunctionEditor.cpp
   VolumeViewer.cpp
   util.h
   util.cpp
@@ -56,19 +62,19 @@ SET(MOC_HEADERS
   IsosurfaceEditor.h
   IsovalueWidget.h
   LightEditor.h
-  LinearTransferFunctionWidget.h
+  #LinearTransferFunctionWidget.h
   OpenGLAnnotationRenderer.h
   PreferencesDialog.h
   ProbeWidget.h
   QOSPRayWindow.h
   SliceEditor.h
   SliceWidget.h
-  TransferFunctionEditor.h
+  #TransferFunctionEditor.h
   VolumeViewer.h
   share.h
 )
 
-QT4_WRAP_CPP(MOC_OUTFILES ${MOC_HEADERS})
+QT_WRAP_CPP(MOC_OUTFILES "${MOC_HEADERS}")
 
 SCIRUN_ADD_LIBRARY(Interface_Modules_Render_Ospray
   ${SRCS}

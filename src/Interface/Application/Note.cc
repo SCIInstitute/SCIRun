@@ -28,7 +28,7 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <QtGui>
+#include <Interface/qt_include.h>
 #include <Core/Logging/Log.h>
 #include <Interface/Application/Note.h>
 #include <Interface/Application/HasNotes.h>
@@ -119,7 +119,13 @@ void NoteDisplayHelper::updateNoteImpl(const Note& note)
     setNoteGraphicsContext();
     if (!scene_)
       GeneralLog::Instance().get()->warn("Scene not set, network notes will not be displayed.");
+
+    #ifdef QT5_BUILD
+    note_ = new QGraphicsTextItem("");
+    #else
     note_ = new QGraphicsTextItem("", nullptr, scene_);
+    #endif
+
     note_->setDefaultTextColor(Qt::white);
   }
 
