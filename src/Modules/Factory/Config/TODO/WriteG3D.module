@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "WriteG3D",
+    "namespace": "DataIO",
+    "status": "In progress",
+    "description": "Convert field to g3d with color options",
+    "header": "Modules/DataIO/WriteG3D.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "WriteG3DDialog",
+    "header": "Interface/Modules/DataIO/WriteG3DDialog.h"
+  }
+}
