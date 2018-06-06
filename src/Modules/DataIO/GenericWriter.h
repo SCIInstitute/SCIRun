@@ -46,15 +46,15 @@ namespace SCIRun {
   namespace Modules {
     namespace DataIO {
 
-template <class HType, class PortTag>
+template <class HType, class PortTag, class PortDescriber = Has2InputPorts<PortTag, StringPortTag>>
 class GenericWriter : public Dataflow::Networks::Module,
-  public Has2InputPorts<PortTag, StringPortTag>,
+  public PortDescriber,
   public HasNoOutputPorts
 {
 public:
   GenericWriter(const std::string &name, const std::string &category, const std::string &package, const std::string& stateFilename);
 
-  virtual void setStateDefaults() override final;
+  virtual void setStateDefaults() override;
   virtual void execute() override;
 
   INPUT_PORT(1, Filename, String);
@@ -78,8 +78,8 @@ protected:
 };
 
 
-template <class HType, class PortTag>
-GenericWriter<HType, PortTag>::GenericWriter(const std::string &name, const std::string &cat, const std::string &pack, const std::string& stateFilename)
+template <class HType, class PortTag, class PortDescriber>
+GenericWriter<HType, PortTag, PortDescriber>::GenericWriter(const std::string &name, const std::string &cat, const std::string &pack, const std::string& stateFilename)
   : SCIRun::Dataflow::Networks::Module(SCIRun::Dataflow::Networks::ModuleLookupInfo(name, cat, pack)),
     //confirm_(get_ctx()->subVar("confirm"), sci_getenv_p("SCIRUN_CONFIRM_OVERWRITE")),
 		//confirm_once_(get_ctx()->subVar("confirm-once"),0),
@@ -89,8 +89,8 @@ GenericWriter<HType, PortTag>::GenericWriter(const std::string &name, const std:
   INITIALIZE_PORT(Filename);
 }
 
-template <class HType, class PortTag>
-void GenericWriter<HType, PortTag>::setStateDefaults()
+template <class HType, class PortTag, class PortDescriber>
+void GenericWriter<HType, PortTag, PortDescriber>::setStateDefaults()
 {
   get_state()->setValue(stateFilename_, std::string());
   get_state()->setValue(SCIRun::Core::Algorithms::Variables::FileTypeName, defaultFileTypeName());
@@ -112,9 +112,8 @@ GenericWriter<HType, PortTag>::overwrite()
 }
 #endif
 
-template <class HType, class PortTag>
-void
-GenericWriter<HType, PortTag>::execute()
+template <class HType, class PortTag, class PortDescriber>
+void GenericWriter<HType, PortTag, PortDescriber>::execute()
 {
   // If there is an optional input string set the filename to it in the GUI.
   /// @todo: this will be a common pattern for file loading. Perhaps it will be a base class method someday...

@@ -30,6 +30,7 @@
 
 SET(Core_Algorithms_Legacy_DataIO_SRCS
   DataIOAlgo.cc
+  G3DToFieldReader.cc
   ObjToFieldReader.cc
   VTKToTriSurfReader.cc
   TriSurfSTLBinaryConverter.cc
@@ -38,6 +39,7 @@ SET(Core_Algorithms_Legacy_DataIO_SRCS
 )
 
 SET(Core_Algorithms_Legacy_DataIO_HEADERS
+  G3DToFieldReader.h
   ObjToFieldReader.h
   VTKToTriSurfReader.h
   DataIOAlgo.h
@@ -57,6 +59,7 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_DataIO
   Core_Datatypes
   Core_Datatypes_Legacy_Field
   Core_Datatypes_Legacy_Nrrd
+
   Core_Math
   Core_Persistent
   Core_ImportExport
