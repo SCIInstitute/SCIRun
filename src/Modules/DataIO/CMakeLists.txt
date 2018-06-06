@@ -31,6 +31,7 @@ SET(Modules_DataIO_SRCS
   ReadBundle.cc
   ReadMatrixClassic.cc
   WriteField.cc
+  WriteG3D.cc
   WriteMatrix.cc
 )
 
@@ -41,6 +42,7 @@ SET(Modules_DataIO_HEADERS
   ReadBundle.h
   ReadMatrixClassic.h
   WriteField.h
+  WriteG3D.h
   WriteMatrix.h
 )
 
@@ -55,6 +57,7 @@ TARGET_LINK_LIBRARIES(Modules_DataIO
   Core_Datatypes_Legacy_Field
   Core_Datatypes_Legacy_Bundle
   Algorithms_DataIO
+  Core_Algorithms_Legacy_DataIO
   Core_ImportExport
   ${SCI_BOOST_LIBRARY}
 )
