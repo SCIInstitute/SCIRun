@@ -34,8 +34,9 @@ using namespace SCIRun;
 
 TEST(FloatComparisonTest, BoostCheck)
 {
-  using namespace boost::math::fpc;
-  close_at_tolerance<double> comp(percent_tolerance(1e-5));
+  namespace btt = boost::test_tools;
+  //namespace btt = boost::math::fpc;
+  btt::close_at_tolerance<double> comp(btt::percent_tolerance(1e-5));
   EXPECT_TRUE(comp(1, 1));
   EXPECT_FALSE(comp(1.0/3, 0.33333));
   EXPECT_TRUE(comp(1.0/3, 0.333333333));
