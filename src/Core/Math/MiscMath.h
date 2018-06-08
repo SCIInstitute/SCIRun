@@ -55,7 +55,8 @@ namespace SCIRun {
 template<typename T>
 inline bool nonzero(T d)
 {
-  namespace btt = boost::math::fpc;
+	namespace btt = boost::test_tools;
+  //namespace btt = boost::math::fpc;
   btt::close_at_tolerance<T> comp(btt::percent_tolerance(std::numeric_limits<T>::epsilon()));
   return(! comp(d, 0));
 }

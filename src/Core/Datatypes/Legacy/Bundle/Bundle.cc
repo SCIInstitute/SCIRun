@@ -1,22 +1,16 @@
 /*
   For more information, please see: http://software.sci.utah.edu
-
   The MIT License
-
   Copyright (c) 2015 Scientific Computing and Imaging Institute,
   University of Utah.
-
-
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
   to deal in the Software without restriction, including without limitation
   the rights to use, copy, modify, merge, publish, distribute, sublicense,
   and/or sell copies of the Software, and to permit persons to whom the
   Software is furnished to do so, subject to the following conditions:
-
   The above copyright notice and this permission notice shall be included
   in all copies or substantial portions of the Software.
-
   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -41,6 +35,7 @@
 
 #include <boost/range/algorithm/count_if.hpp>
 #include <boost/range/adaptors.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/range/algorithm/copy.hpp>
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -48,7 +43,7 @@
 #endif
 
 using namespace SCIRun;
-using namespace Core::Datatypes;
+using namespace SCIRun::Core::Datatypes;
 
 static Persistent* make_Bundle() {
   return new Bundle;
@@ -631,18 +626,18 @@ bool Bundle::isField(const std::string& name) const
 
 size_t Bundle::numFields() const
 {
-  return boost::count_if(bundle_ | boost::adaptors::map_keys, [this](const std::string& name) { return isField(name); });
+  return boost::count_if(bundle_ | boost::adaptors::map_keys, boost::bind(&Bundle::isField, this, _1));
 }
 
 std::vector<FieldHandle> Bundle::getFields() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed([this](const std::string& name) { return getField(name); }) | boost::adaptors::filtered([](FieldHandle f) { return f != nullptr; });
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed(boost::bind(&Bundle::getField, this, _1)) | boost::adaptors::filtered([] (FieldHandle f) { return f != nullptr; });
   return std::vector<FieldHandle>(range.begin(), range.end());
 }
 
 std::vector<std::string> Bundle::getFieldNames() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered([this](const std::string& name) { return isField(name); });
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered(boost::bind(&Bundle::isField, this, _1));
   return std::vector<std::string>(range.begin(), range.end());
 }
 
@@ -658,18 +653,18 @@ bool Bundle::isMatrix(const std::string& name) const
 
 size_t Bundle::numMatrices() const
 {
-  return boost::count_if(bundle_ | boost::adaptors::map_keys, [this](const std::string& name) { return isMatrix(name); });
+  return boost::count_if(bundle_ | boost::adaptors::map_keys, boost::bind(&Bundle::isMatrix, this, _1));
 }
 
 std::vector<MatrixHandle> Bundle::getMatrices() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed([this](const std::string& name) { return getMatrix(name); }) | boost::adaptors::filtered([](MatrixHandle m) { return m != nullptr; });
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed(boost::bind(&Bundle::getMatrix, this, _1)) | boost::adaptors::filtered([] (MatrixHandle m) { return m != nullptr; });
   return std::vector<MatrixHandle>(range.begin(), range.end());
 }
 
 std::vector<std::string> Bundle::getMatrixNames() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered([this](const std::string& name) { return isMatrix(name); });
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered(boost::bind(&Bundle::isMatrix, this, _1));
   return std::vector<std::string>(range.begin(), range.end());
 }
 
@@ -685,18 +680,18 @@ bool Bundle::isString(const std::string& name) const
 
 size_t Bundle::numStrings() const
 {
-  return boost::count_if(bundle_ | boost::adaptors::map_keys, [this](const std::string& name) { return isString(name); });
+  return boost::count_if(bundle_ | boost::adaptors::map_keys, boost::bind(&Bundle::isString, this, _1));
 }
 
 std::vector<StringHandle> Bundle::getStrings() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed([this](const std::string& name) { return getString(name); }) | boost::adaptors::filtered([](StringHandle s) { return s != nullptr; });
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed(boost::bind(&Bundle::getString, this, _1)) | boost::adaptors::filtered([] (StringHandle s) { return s != nullptr; });
   return std::vector<StringHandle>(range.begin(), range.end());
 }
 
 std::vector<std::string> Bundle::getStringNames() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered([this](const std::string& name) { return isString(name); });
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered(boost::bind(&Bundle::isString, this, _1));
   return std::vector<std::string>(range.begin(), range.end());
 }
 
