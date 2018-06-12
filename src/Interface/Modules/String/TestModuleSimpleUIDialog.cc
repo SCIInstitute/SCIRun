@@ -26,26 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_MATH_SortMatrixDIALOG_H
-#define INTERFACE_MODULES_MATH_SortMatrixDIALOG_H
+#include <Interface/Modules/String/TestModuleSimpleUIDialog.h>
 
-#include "Interface/Modules/Math/ui_SortMatrixDialog.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/share.h>
+#include <Modules/String/TestModuleSimpleUI.h>
 
-namespace SCIRun {
-	namespace Gui {
-		class SCISHARE SortMatrixDialog : public ModuleDialogGeneric,
-			public Ui::SortMatrixDialog
-		{
-			Q_OBJECT
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::StringManip;
 
-		public:
-			SortMatrixDialog(const std::string& name,
-						SCIRun::Dataflow::Networks::ModuleStateHandle state,
-						QWidget* parent = 0);
-		};
-	}
+TestModuleSimpleUIDialog::TestModuleSimpleUIDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+    addLineEditManager(inputstring_,TestModuleSimpleUI::FormatString);
+  //addCheckBoxManager(knob1CheckBox_, Parameters::Knob1);
+  //addDoubleSpinBoxManager(knob2SpinBox_, Parameters::Knob2);
 }
 
-#endif

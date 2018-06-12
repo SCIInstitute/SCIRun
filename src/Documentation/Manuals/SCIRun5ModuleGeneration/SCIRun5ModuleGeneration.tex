@@ -138,7 +138,7 @@ The following is an example that reflects the template files included in the sou
 This config file example would not build.  
 We will include specific examples that will build and work in following chapters of this tutorial (Chapters~\ref{sec:ex_simple}, ~\ref{sec:ex_UI}, and ~\ref{sec:ex_algo}).
 
-As mentioned before, the UI and algorithm files are not required to generated a module, therefore the subfields for the \verb|"algorithm"| or \verb|"UI"| fields can changed to \verb|"N/A"| to indicate that these files do not exist.  
+As mentioned before, the UI and algorithm files are not required to generate a module, therefore the subfields for the \verb|"algorithm"| or \verb|"UI"| fields can changed to \verb|"N/A"| to indicate that these files do not exist.  
 Please refer to Section~\ref{sec:examp_config} for an example. 
 
 \section{Module Source Code}
@@ -287,7 +287,7 @@ void @ModuleName@::execute()
 }
 \end{verbatim}
 
-As shown in this template example, the model.cc file contains mostly constructors and sends the inputs to the SCIRun algorithm.
+As shown in this template example, the module.cc file contains mostly constructors and sends the inputs to the SCIRun algorithm.
 Most modules should follow this practice, which allows for easier maintenance of common algorithms.   
 
 
@@ -317,7 +317,7 @@ With the Object Inspector window, the hierarchy and organization of the UI can b
 
 When using the editor to make a module UI, there are a few things to consider.
 First, make sure all the relevant objects, including the name of UI (QDialog) is consistent with module dialog code.  
-You can change the size and placement of objects with the property manager, but make sure that you leave some buffer space as some operating systmes will interpret the file slightly differently.  
+You can change the size and placement of objects with the property manager, but make sure that you leave some buffer space as some operating systems will interpret the file slightly differently.  
 The structure of the UI can be changed or destroyed.
 Look at some of the existing modules for examples.
 
@@ -446,7 +446,7 @@ Parameters and options for the algorithm may need to be declared here if they ar
 \subsection{Module Algorithm Code}
 
 The module algorithm .cc file should contain the majority of the computation necessary for the module.
-Shown here is the example \emph{AlgorithmTemplate.h} in the \emph{\seqsplit{src/Core/Algorithm/Template/}} folder.
+Shown here is the example \emph{AlgorithmTemplate.cc} in the \emph{\seqsplit{src/Core/Algorithm/Template/}} folder.
 \begin{verbatim}
 #include <Core/Algorithms/Field/@AlgorithmName@Algo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -500,7 +500,7 @@ Also of note, the default values for the UI are set in the \verb|@AlgorithmName@
 This only works if the algorithm files are linked in the module configuration file. 
 
 There are several algorithms already implemented in SCIRun.  
-If there there are modules that have similar functionality you may be able to use some of the functionality already implemented.  
+If there are modules that have similar functionality you may be able to use some of the functionality already implemented.  
 The module may still need it's own algorithm file.  
 
 
@@ -584,7 +584,8 @@ public:
   
   OUTPUT_PORT(0, OutputString, String);
   
-  static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+  MODULE_TRAITS_AND_INFO(NoAlgoOrUI);
+  
 };
 }}}
 #endif
@@ -613,8 +614,7 @@ using namespace SCIRun::Dataflow::Networks;
 /// @class TestModuleSimple
 /// @brief This module splits out a string. 
 
-const ModuleLookupInfo TestModuleSimple::staticInfo_("TestModuleSimple", 
-       "String", "SCIRun");
+MODULE_INFO_DEF(TestModuleSimple, String, SCIRun) ;
 
 TestModuleSimple::TestModuleSimple() : Module(staticInfo_,false)
 {
@@ -721,20 +721,16 @@ For the \emph{TestModuleSimpleUI.cc} file:
 \begin{verbatim}
 #include <Modules/String/TestModuleSimpleUI.h>
 
-É
 
 const ModuleLookupInfo TestModuleSimpleUI::staticInfo_("TestModuleSimpleUI", 
        "String", "SCIRun");
 
 TestModuleSimpleUI::TestModuleSimpleUI() : Module(staticInfo_)
 
-É
 
 void
 TestModuleSimpleUI::execute()
 {  
-  
-  É
   
 \end{verbatim}
 Another change you may notice is to remove the \verb|'false'| input in the constructor line:
@@ -837,7 +833,6 @@ For now, we can build SCIRun to test the UI design.
 Make sure that these three new files are added to the \emph{CMakeList.txt} in the \emph{\seqsplit{src/Interface/Modules/String/}} directory:
 \begin{verbatim}
 
-É
 
 SET(Interface_Modules_String_FORMS
   
@@ -848,7 +843,7 @@ SET(Interface_Modules_String_FORMS
 
 SET(Interface_Modules_String_HEADERS
 
-É
+
 
   TestModuleSimpleUIDialog.h
 )
@@ -860,7 +855,7 @@ SET(Interface_Modules_String_SOURCES
   TestModuleSimpleUIDialog.cc
 )
 
-É
+
 
 \end{verbatim}
 
@@ -883,7 +878,7 @@ We will need to include it as such, by adding it as a public function in the \em
 \begin{verbatim}
 static Core::Algorithms::AlgorithmParameterName FormatString;
 \end{verbatim}
-This should be the final declaration in the public list (after the \verb|staticInfo_| declaration).
+This should be the final declaration in the public list (after \verb|MODULE_TRAITS_AND_INFO(ModuleHasUI)_| ).
 Another change in this file is to modify the \verb|setStateDefault| function so that it is not empty.  
 Remove the curly brackets from this:
 \begin{verbatim}
@@ -894,7 +889,7 @@ so that it is:
 virtual void setStateDefaults();
 \end{verbatim}
 We need a couple more additions to make the value from the UI available for use in the main function code.  
-In the \emph{TestModuleSimpleUI.cc} file, add the following line to the before the main execute function, i.e., right after declaring the namespaces.
+In the \emph{TestModuleSimpleUI.cc} file, add the following line before the main execute function, i.e., right after declaring the namespaces.
 \begin{verbatim}
 SCIRun::Core::Algorithms::AlgorithmParameterName 
     TestModuleSimpleUI::FormatString("FormatString");
@@ -1027,7 +1022,7 @@ There are some implementations for vector sorting in the STL algorithm library, 
 
 There are eight files needed in total for this module: a module configuration file, module code and header file, a UI design file with UI code and header files, and algorithm code and header files.  
 The first six were used in the previous example, but this chapter will show how to incorporate the algorithm code and how it interacts with the module and UI code. 
-Each file is also describe in the general in Chapter~\ref{sec:files} with templates.
+Each file is also described in the general in Chapter~\ref{sec:files} with templates.
 
 \section{Module Configuration File}
 \label{sec:algoconfig}
@@ -1083,10 +1078,12 @@ namespace Math {
     SortMatrix();
     virtual void execute();
     virtual void setStateDefaults();
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+   
     
     INPUT_PORT(0, InputMatrix, Matrix);
     OUTPUT_PORT(0, OutputMatrix, Matrix);
+    
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
   };
 }}}
 #endif
@@ -1112,8 +1109,7 @@ using namespace SCIRun::Core::Datatypes;
 /// @brief This module sorts the matrix entries 
 /// into ascending or descending order.
 
-const ModuleLookupInfo SortMatrix::staticInfo_("SortMatrix", "Math",
-    "SCIRun");
+MODULE_INFO_DEF(SortMatrix,Math,SCIRun);
 
 SortMatrix::SortMatrix() : Module(staticInfo_)
 {
@@ -1133,7 +1129,7 @@ SortMatrix::execute()
   if (needToExecute())
   {
     setAlgoIntFromState(Variables::Method);
-    auto output = algo().run_generic(withInputData((InputMatrix, input)));   
+    auto output = algo().run(withInputData((InputMatrix, input)));   
     sendOutputFromAlgorithm(OutputMatrix, output);
   }
 }
@@ -1170,7 +1166,7 @@ The UI should look similar to Figure~\ref{fig:algoUI}.
 The \emph{SortMatrixDialog.h} is virtually identical to the header in the previous example (Chapter~\ref{sec:ex_UI}), except for the names, as shown here:
 \begin{verbatim}
 #ifndef INTERFACE_MODULES_MATH_SortMatrixDIALOG_H
-#define INTERFACE_MODULES_MATH_SortMatrixDIALOG_H 1
+#define INTERFACE_MODULES_MATH_SortMatrixDIALOG_H
 
 #include "Interface/Modules/Math/ui_SortMatrixDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
@@ -1225,7 +1221,7 @@ The final module UI code files are included in the source code in \emph{\seqspli
 \label{sec:algo}
 
 The final step in creating the SortMatrix module is to create the module algorithm code.  
-Two files are needed for the algorithm, \emph{SortMatrixAlgo.h} and \emph{SortMatrixAlgo.h}, which should be located in \emph{\seqsplit{src/Core/Algorithms/Math/}}. 
+Two files are needed for the algorithm, \emph{SortMatrixAlgo.h} and \emph{SortMatrixAlgo.cc}, which should be located in \emph{\seqsplit{src/Core/Algorithms/Math/}}. 
 The header file contains all the declarations for the functions needed in the algorithm and should be as follows:
 \begin{verbatim}
 #ifndef CORE_ALGORITHMS_MATH_SortMatrixALGO_H
@@ -1268,7 +1264,7 @@ class SCISHARE SortMatrixAlgo : public AlgorithmBase
 \end{verbatim}
 In this algorithm, we have three functions to help implement the sorting algorithm, which will be called in the \verb|run_generic| function.  
 
-The \emph{SortMatrixAlgo.cc} file contains the computation code for he module.
+The \emph{SortMatrixAlgo.cc} file contains the computation code for the module.
 There are five functions in it.
 The first \verb|SortMatrixAlgo()| sets up the defaults for the parameters that are set in the module UI.
 \verb|run\_generic| is the main function of the algorithm and the module.  
@@ -1300,14 +1296,14 @@ AlgorithmOutput SortMatrixAlgo::run_generic(const AlgorithmInput& input) const
   AlgorithmOutput output;
   
   //sparse support not fully implemented yet.
-  if (!matrix_is::dense(input_matrix))
+  if (!matrixIS::dense(input_matrix))
   {
     //TODO implement something with sparse
     error("SortMatrix: Currently only works with dense matrices");
     output[Variables::OutputMatrix] = 0;
     return output;
   }
-  auto mat  = matrix_cast::as_dense (input_matrix);
+  auto mat  = castMatrix::toDense (input_matrix);
   DenseMatrixHandle return_matrix;
   
   //pull parameter from UI

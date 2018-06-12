@@ -26,26 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_MATH_SortMatrixDIALOG_H
-#define INTERFACE_MODULES_MATH_SortMatrixDIALOG_H
+#include <Interface/Modules/Math/SortMatrixDialog.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <boost/shared_ptr.hpp>
 
-#include "Interface/Modules/Math/ui_SortMatrixDialog.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-namespace SCIRun {
-	namespace Gui {
-		class SCISHARE SortMatrixDialog : public ModuleDialogGeneric,
-			public Ui::SortMatrixDialog
-		{
-			Q_OBJECT
+SortMatrixDialog::SortMatrixDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-		public:
-			SortMatrixDialog(const std::string& name,
-						SCIRun::Dataflow::Networks::ModuleStateHandle state,
-						QWidget* parent = 0);
-		};
-	}
-}
+    addRadioButtonGroupManager({ascendButton_, descendButton_},Variables::Method);
+  }
 
-#endif

@@ -39,7 +39,7 @@ using namespace SCIRun::Core::Datatypes;
 /// @class SortMatrix
 /// @brief This module sorts the matrix entries into ascending or descending order.
 
-MODULE_INFO_DEF(SortMatrix, Math, SCIRun)
+MODULE_INFO_DEF(SortMatrix, Math, SCIRun);
 
 SortMatrix::SortMatrix() : Module(staticInfo_)
 {

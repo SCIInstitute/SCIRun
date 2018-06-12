@@ -27,8 +27,8 @@
  */
 
 
-#ifndef MODULES_STRING_TestModuleSimpleUI_H
-#define MODULES_STRING_TestModuleSimpleUI_H
+#ifndef MODULES_STRING_TestModuleSimple_H
+#define MODULES_STRING_TestModuleSimple_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Fields/share.h>
@@ -37,22 +37,17 @@ namespace SCIRun {
 namespace Modules {
 namespace StringManip {
 
-class SCISHARE TestModuleSimpleUI : public SCIRun::Dataflow::Networks::Module,
-public Has1InputPort<StringPortTag>,
+class SCISHARE TestModuleSimple : public SCIRun::Dataflow::Networks::Module,
+public HasNoInputPorts,
 public Has1OutputPort<StringPortTag>
 {
 public:
-  TestModuleSimpleUI();
+  TestModuleSimple();
   virtual void execute();
-  virtual void setStateDefaults();
+  virtual void setStateDefaults() {}
 
-  INPUT_PORT(0, InputString, String);
   OUTPUT_PORT(0, OutputString, String);
-
-    MODULE_TRAITS_AND_INFO(ModuleHasUI);
-    static Core::Algorithms::AlgorithmParameterName FormatString;
-    
-  
+    MODULE_TRAITS_AND_INFO(NoAlgoOrUI);
 };
 }}}
 

@@ -51,6 +51,7 @@ SET(Modules_Math_SRCS
   DisplayHistogram.cc
   BasicPlotter.cc
   AdvancedPlotter.cc
+  SortMatrix.cc
 )
 
 SET(Modules_Math_HEADERS
@@ -79,6 +80,7 @@ SET(Modules_Math_HEADERS
   DisplayHistogram.h
   BasicPlotter.h
   AdvancedPlotter.h
+  SortMatrix.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Math
