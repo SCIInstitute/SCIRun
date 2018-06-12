@@ -566,163 +566,87 @@ void ViewSceneDialog::viewBarButtonClicked()
 {
   hideViewBar_ = !hideViewBar_;
   mViewBar->setHidden(hideViewBar_);
+  QString color = hideViewBar_ ? "rgb(66,66,69)" : "lightGray";
+  viewBarBtn_->setStyleSheet("QPushButton { background-color: " + color + "; }");
   mDownViewBox->setCurrentIndex(0);
+  mUpVectorBox->clear();
 }
 
 //------------------------------------------------------------------------------
-void ViewSceneDialog::viewAxisSelected(int index)
+void ViewSceneDialog::viewAxisSelected(const QString& name)
 {
   mUpVectorBox->clear();
   mUpVectorBox->addItem("------");
-  switch (index)
-  {
-  case 0: //default selection no value
-    break;
-  case 1: //Look down on +X Vector
-    mUpVectorBox->addItem("+Y");
-    mUpVectorBox->addItem("-Y");
-    mUpVectorBox->addItem("+Z");
-    mUpVectorBox->addItem("-Z");
-    break;
-  case 2: //Look down on +Y Vector
-    mUpVectorBox->addItem("+X");
-    mUpVectorBox->addItem("-X");
-    mUpVectorBox->addItem("+Z");
-    mUpVectorBox->addItem("-Z");
-    break;
-  case 3: //Look down on +Z Vector
-    mUpVectorBox->addItem("+X");
-    mUpVectorBox->addItem("-X");
-    mUpVectorBox->addItem("+Y");
-    mUpVectorBox->addItem("-Y");
-    break;
-  case 4: //Look down on -X Vector
-    mUpVectorBox->addItem("+Y");
-    mUpVectorBox->addItem("-Y");
-    mUpVectorBox->addItem("+Z");
-    mUpVectorBox->addItem("-Z");
-    break;
-  case 5: //Look down on -Y Vector
-    mUpVectorBox->addItem("+X");
-    mUpVectorBox->addItem("-X");
-    mUpVectorBox->addItem("+Z");
-    mUpVectorBox->addItem("-Z");
-    break;
-  case 6: //Look down on -Z Vector
-    mUpVectorBox->addItem("+X");
-    mUpVectorBox->addItem("-X");
-    mUpVectorBox->addItem("+Y");
-    mUpVectorBox->addItem("-Y");
-    break;
-  }
 
+  if (!name.contains("X"))
+  {
+    mUpVectorBox->addItem("+X");
+    mUpVectorBox->addItem("-X");
+  }
+  if (!name.contains("Y"))
+  {
+    mUpVectorBox->addItem("+Y");
+    mUpVectorBox->addItem("-Y");
+  }
+  if (!name.contains("Z"))
+  {
+    mUpVectorBox->addItem("+Z");
+    mUpVectorBox->addItem("-Z");
+  }
+}
+
+using InnerMap = std::map<QString, std::tuple<glm::vec3, glm::vec3>>;
+static std::map<QString, InnerMap> axisViewParams;
+
+static void initAxisViewParams()
+{
+  axisViewParams["+X"] = {
+    { "+Y", { glm::vec3(-1,0,0), glm::vec3(0,1,0)  }},
+    { "-Y", { glm::vec3(1,0,0), glm::vec3(0,-1,0) }},
+    { "+Z", { glm::vec3(0,1,0), glm::vec3(1,0,0)  }},
+    { "-Z", { glm::vec3(0,-1,0), glm::vec3(-1,0,0) }}
+  };
+  axisViewParams["-X"] = {
+    { "+Y", { glm::vec3(1,0,0), glm::vec3(0,1,0)  }},
+    { "-Y", { glm::vec3(-1,0,0), glm::vec3(0,-1,0) }},
+    { "+Z", { glm::vec3(0,1,0), glm::vec3(-1,0,0)  }},
+    { "-Z", { glm::vec3(0,-1,0), glm::vec3(1,0,0) }}
+  };
+  axisViewParams["+Y"] = {
+    { "+X", { glm::vec3(1,0,0), glm::vec3(0,0,1) }},
+    { "-X", { glm::vec3(-1,0,0), glm::vec3(0,0,1) }},
+    { "+Z", { glm::vec3(0,1,0), glm::vec3(0,0,1)  }},
+    { "-Z", { glm::vec3(0,-1,0), glm::vec3(0,0,1) }}
+  };
+  axisViewParams["-Y"] = {
+    { "+X", { glm::vec3(-1,0,0), glm::vec3(0,0,-1)  }},
+    { "-X", { glm::vec3(1,0,0), glm::vec3(0,0,-1) }},
+    { "+Z", { glm::vec3(0,1,0), glm::vec3(0,0,-1)  }},
+    { "-Z", { glm::vec3(0,-1,0), glm::vec3(0,0,-1) }}
+  };
+  axisViewParams["+Z"] = {
+    { "+Y", { glm::vec3(0,0,1), glm::vec3(0,1,0)  }},
+    { "-Y", { glm::vec3(0,0,1), glm::vec3(0,-1,0) }},
+    { "+X", { glm::vec3(0,0,1), glm::vec3(-1,0,0)  }},
+    { "-X", { glm::vec3(0,0,1), glm::vec3(1,0,0) }}
+  };
+  axisViewParams["-Z"] = {
+    { "+Y", { glm::vec3(0,0,-1), glm::vec3(0,1,0)  }},
+    { "-Y", { glm::vec3(0,0,-1), glm::vec3(0,-1,0) }},
+    { "+X", { glm::vec3(0,0,-1), glm::vec3(1,0,0)  }},
+    { "-X", { glm::vec3(0,0,-1), glm::vec3(-1,0,0) }}
+  };
 }
 
 //------------------------------------------------------------------------------
-void ViewSceneDialog::viewVectorSelected(int index)
+void ViewSceneDialog::viewVectorSelected(const QString& name)
 {
-  int downIndex = mDownViewBox->currentIndex();
-  glm::vec3 up = glm::vec3(0.0f, 0.0f, 0.0f);
-  glm::vec3 view = glm::vec3(0.0f, 0.0f, 0.0f);
-  switch (downIndex)
-  {
-  case 0:
-    break;
-  case 1:	//+X axis view
-    view.x = 1.0f;
-    lookDownAxisX(index, up);
-    break;
-  case 2:	//+Y axis view
-    view.y = 1.0f;
-    lookDownAxisY(index, up);
-    break;
-  case 3:	//+Z axis view
-    view.z = 1.0f;
-    lookDownAxisZ(index, up);
-    break;
-  case 4:	//-X axis view
-    view.x = -1.0f;
-    lookDownAxisX(index, up);
-    break;
-  case 5:	//-Y axis view
-    view.y = 1.0f;
-    lookDownAxisY(index, up);
-    break;
-  case 6:	//-Z axis view
-    view.z = -1.0f;
-    lookDownAxisZ(index, up);
-    break;
-  }
-  if (index > 0)
-  {
-    std::shared_ptr<SRInterface> spire = mSpire.lock();
-    spire->setView(view, up);
-    viewBarButtonClicked();
-  }
-}
+  glm::vec3 up, view;
+  std::tie(view, up) = axisViewParams[mDownViewBox->currentText()][name];
 
-//------------------------------------------------------------------------------
-void ViewSceneDialog::lookDownAxisX(int upIndex, glm::vec3& up)
-{
-  switch (upIndex)
-  {
-  case 0:
-    break;
-  case 1: //+Y axis
-    up.y = 1.0f;
-    break;
-  case 2: //-Y axis
-    up.y = -1.0f;
-    break;
-  case 3: //+Z axis
-    up.z = 1.0f;
-    break;
-  case 4: //-Z axis
-    up.z = -1.0f;
-    break;
-  }
-}
+  std::shared_ptr<SRInterface> spire = mSpire.lock();
 
-void ViewSceneDialog::lookDownAxisY(int upIndex, glm::vec3& up)
-{
-  switch (upIndex)
-  {
-  case 0:
-    break;
-  case 1: //+X axis
-    up.x = 1.0f;
-    break;
-  case 2: //-X axis
-    up.x = -1.0f;
-    break;
-  case 3: //+Z axis
-    up.z = 1.0f;
-    break;
-  case 4: //-Z axis
-    up.z = -1.0f;
-    break;
-  }
-}
-
-void ViewSceneDialog::lookDownAxisZ(int upIndex, glm::vec3& up)
-{
-  switch (upIndex)
-  {
-  case 0:
-    break;
-  case 1: //+X axis
-    up.x = 1.0f;
-    break;
-  case 2: //-X axis
-    up.x = -1.0f;
-    break;
-  case 3: //+Y axis
-    up.y = 1.0f;
-    break;
-  case 4: //-Y axis
-    up.y = -1.0f;
-    break;
-  }
+  spire->setView(view, up);
 }
 
 //------------------------------------------------------------------------------
@@ -1475,11 +1399,11 @@ void ViewSceneDialog::addScreenshotButton()
 
 void ViewSceneDialog::addViewBarButton()
 {
-  QPushButton* viewBarBtn = new QPushButton();
-  viewBarBtn->setToolTip("Show View Options");
-  viewBarBtn->setIcon(QPixmap(":/general/Resources/ViewScene/views.png"));
-  connect(viewBarBtn, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
-  addToolbarButton(viewBarBtn);
+  viewBarBtn_ = new QPushButton();
+  viewBarBtn_->setToolTip("Show View Options");
+  viewBarBtn_->setIcon(QPixmap(":/general/Resources/ViewScene/views.png"));
+  connect(viewBarBtn_, SIGNAL(clicked(bool)), this, SLOT(viewBarButtonClicked()));
+  addToolbarButton(viewBarBtn_);
 }
 
 void ViewSceneDialog::addControlLockButton()
@@ -1585,6 +1509,7 @@ void ViewSceneDialog::addViewOptions()
   mViewBar->addWidget(axisLabel);
 
   mDownViewBox = new QComboBox();
+  mDownViewBox->setMinimumHeight(25);
   mDownViewBox->setToolTip("Vector pointing out of the screen");
   mDownViewBox->addItem("------");
   mDownViewBox->addItem("+X");
@@ -1594,7 +1519,7 @@ void ViewSceneDialog::addViewOptions()
   mDownViewBox->addItem("-Y");
   mDownViewBox->addItem("-Z");
   WidgetStyleMixin::toolbarStyle(mViewBar);
-  connect(mDownViewBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewAxisSelected(int)));
+  connect(mDownViewBox, SIGNAL(activated(const QString&)), this, SLOT(viewAxisSelected(const QString&)));
   mViewBar->addWidget(mDownViewBox);
   mViewBar->addSeparator();
 
@@ -1603,10 +1528,13 @@ void ViewSceneDialog::addViewOptions()
   mViewBar->addWidget(vectorLabel);
 
   mUpVectorBox = new QComboBox();
+  mUpVectorBox->setMinimumHeight(25);
   mUpVectorBox->setToolTip("Vector pointing up");
   mUpVectorBox->addItem("------");
-  connect(mUpVectorBox, SIGNAL(currentIndexChanged(int)), this, SLOT(viewVectorSelected(int)));
+  connect(mUpVectorBox, SIGNAL(activated(const QString&)), this, SLOT(viewVectorSelected(const QString&)));
   mViewBar->addWidget(mUpVectorBox);
+  mViewBar->setMinimumHeight(35);
+  initAxisViewParams();
 }
 
 void ViewSceneDialog::addConfigurationButton()
