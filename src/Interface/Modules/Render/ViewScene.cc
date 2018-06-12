@@ -595,46 +595,48 @@ void ViewSceneDialog::viewAxisSelected(const QString& name)
   }
 }
 
-using InnerMap = std::map<QString, std::tuple<glm::vec3, glm::vec3>>;
+using V = glm::vec3;
+using P = std::tuple<V, V>;
+using InnerMap = std::map<QString, P>;
 static std::map<QString, InnerMap> axisViewParams;
 
 static void initAxisViewParams()
 {
-  axisViewParams["+X"] = {
-    { "+Y", { glm::vec3(-1,0,0), glm::vec3(0,1,0)  }},
-    { "-Y", { glm::vec3(1,0,0), glm::vec3(0,-1,0) }},
-    { "+Z", { glm::vec3(0,1,0), glm::vec3(1,0,0)  }},
-    { "-Z", { glm::vec3(0,-1,0), glm::vec3(-1,0,0) }}
+  axisViewParams["+X"] = InnerMap {
+    { "+Y", P(V(-1, 0, 0), V( 0, 1, 0)) },
+    { "-Y", P(V( 1, 0, 0), V( 0,-1, 0)) },
+    { "+Z", P(V( 0, 1, 0), V( 1, 0, 0)) },
+    { "-Z", P(V( 0,-1, 0), V(-1, 0, 0)) }
   };
-  axisViewParams["-X"] = {
-    { "+Y", { glm::vec3(1,0,0), glm::vec3(0,1,0)  }},
-    { "-Y", { glm::vec3(-1,0,0), glm::vec3(0,-1,0) }},
-    { "+Z", { glm::vec3(0,1,0), glm::vec3(-1,0,0)  }},
-    { "-Z", { glm::vec3(0,-1,0), glm::vec3(1,0,0) }}
+  axisViewParams["-X"] = InnerMap {
+    { "+Y", P(V( 1, 0, 0), V( 0, 1, 0)) },
+    { "-Y", P(V(-1, 0, 0), V( 0,-1, 0)) },
+    { "+Z", P(V( 0, 1, 0), V(-1, 0, 0)) },
+    { "-Z", P(V( 0,-1, 0), V( 1, 0, 0)) }
   };
-  axisViewParams["+Y"] = {
-    { "+X", { glm::vec3(1,0,0), glm::vec3(0,0,1) }},
-    { "-X", { glm::vec3(-1,0,0), glm::vec3(0,0,1) }},
-    { "+Z", { glm::vec3(0,1,0), glm::vec3(0,0,1)  }},
-    { "-Z", { glm::vec3(0,-1,0), glm::vec3(0,0,1) }}
+  axisViewParams["+Y"] = InnerMap {
+    { "+X", P(V( 1, 0, 0), V(0, 0, 1)) },
+    { "-X", P(V(-1, 0, 0), V(0, 0, 1)) },
+    { "+Z", P(V( 0, 1, 0), V(0, 0, 1)) },
+    { "-Z", P(V( 0,-1, 0), V(0, 0, 1)) }
   };
-  axisViewParams["-Y"] = {
-    { "+X", { glm::vec3(-1,0,0), glm::vec3(0,0,-1)  }},
-    { "-X", { glm::vec3(1,0,0), glm::vec3(0,0,-1) }},
-    { "+Z", { glm::vec3(0,1,0), glm::vec3(0,0,-1)  }},
-    { "-Z", { glm::vec3(0,-1,0), glm::vec3(0,0,-1) }}
+  axisViewParams["-Y"] = InnerMap {
+    { "+X", P(V(-1, 0, 0), V(0, 0,-1)) },
+    { "-X", P(V( 1, 0, 0), V(0, 0,-1)) },
+    { "+Z", P(V( 0, 1, 0), V(0, 0,-1)) },
+    { "-Z", P(V( 0,-1, 0), V(0, 0,-1)) }
   };
-  axisViewParams["+Z"] = {
-    { "+Y", { glm::vec3(0,0,1), glm::vec3(0,1,0)  }},
-    { "-Y", { glm::vec3(0,0,1), glm::vec3(0,-1,0) }},
-    { "+X", { glm::vec3(0,0,1), glm::vec3(-1,0,0)  }},
-    { "-X", { glm::vec3(0,0,1), glm::vec3(1,0,0) }}
+  axisViewParams["+Z"] = InnerMap {
+    { "+Y", P(V(0, 0, 1), V( 0, 1, 0)) },
+    { "-Y", P(V(0, 0, 1), V( 0,-1, 0)) },
+    { "+X", P(V(0, 0, 1), V(-1, 0, 0)) },
+    { "-X", P(V(0, 0, 1), V( 1, 0, 0)) }
   };
-  axisViewParams["-Z"] = {
-    { "+Y", { glm::vec3(0,0,-1), glm::vec3(0,1,0)  }},
-    { "-Y", { glm::vec3(0,0,-1), glm::vec3(0,-1,0) }},
-    { "+X", { glm::vec3(0,0,-1), glm::vec3(1,0,0)  }},
-    { "-X", { glm::vec3(0,0,-1), glm::vec3(-1,0,0) }}
+  axisViewParams["-Z"] = InnerMap {
+    { "+Y", P(V(0, 0,-1), V( 0, 1, 0)) },
+    { "-Y", P(V(0, 0,-1), V( 0,-1, 0)) },
+    { "+X", P(V(0, 0,-1), V( 1, 0, 0)) },
+    { "-X", P(V(0, 0,-1), V(-1, 0, 0)) }
   };
 }
 
