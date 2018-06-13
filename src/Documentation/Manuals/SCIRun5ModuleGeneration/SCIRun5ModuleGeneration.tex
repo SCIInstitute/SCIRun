@@ -1251,7 +1251,7 @@ class SCISHARE SortMatrixAlgo : public AlgorithmBase
 
   public:
     SortMatrixAlgo();
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    AlgorithmOutput run(const AlgorithmInput& input) const;
   
     bool Sort(Datatypes::DenseMatrixHandle input, 
         Datatypes::DenseMatrixHandle& output, int method) const;
@@ -1290,13 +1290,13 @@ SortMatrixAlgo::SortMatrixAlgo()
 }
 
 
-AlgorithmOutput SortMatrixAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SortMatrixAlgo::run(const AlgorithmInput& input) const
 {
   auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
   AlgorithmOutput output;
   
   //sparse support not fully implemented yet.
-  if (!matrixIS::dense(input_matrix))
+  if (!matrixIs::dense(input_matrix))
   {
     //TODO implement something with sparse
     error("SortMatrix: Currently only works with dense matrices");

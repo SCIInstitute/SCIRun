@@ -42,7 +42,7 @@ SortMatrixAlgo::SortMatrixAlgo()
     addParameter(Variables::Method,0);
 }
 
-AlgorithmOutput SortMatrixAlgo::run_generic(const AlgorithmInput& input) const{
+AlgorithmOutput SortMatrixAlgo::run(const AlgorithmInput& input) const{
     auto input_matrix=input.get<Matrix>(Variables::InputMatrix);
     AlgorithmOutput output;
     

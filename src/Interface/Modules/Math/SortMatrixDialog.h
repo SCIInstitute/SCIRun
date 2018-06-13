@@ -30,7 +30,7 @@
 #define INTERFACE_MODULES_MATH_SortMatrixDIALOG_H
 
 #include <Interface/Modules/Math/ui_SortMatrixDialog.h>
-//#include <boost/shared_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
 

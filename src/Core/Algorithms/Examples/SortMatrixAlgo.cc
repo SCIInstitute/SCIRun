@@ -42,20 +42,20 @@ SortMatrixAlgo::SortMatrixAlgo()
 }
 
 
-AlgorithmOutput SortMatrixAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SortMatrixAlgo::run(const AlgorithmInput& input) const
 {
   auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
   AlgorithmOutput output;
   
   //sparse support not fully implemented yet.
-  if (!matrix_is::dense(input_matrix))
+  if (!matrixIs::dense(input_matrix))
   {
     //TODO implement something with sparse
     error("SortMatrix: Currently only works with dense matrices");
     output[Variables::OutputMatrix] = 0;
     return output;
   }
-  auto mat  = matrix_cast::as_dense (input_matrix);
+  auto mat  = castMatrix::toDense (input_matrix);
   DenseMatrixHandle return_matrix;
   
   //pull parameter from UI
