@@ -26,13 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Module.h>
-
-#include <Core/Datatypes/FieldInformation.h>
-
-#include <float.h>
+#include <Modules/Legacy/Fields/MapFieldDataOntoNodesRadialbasis.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -43,9 +40,12 @@
 #include <vector>
 #include <sstream>
 
-#include <Core/Exceptions/Exception.h>
-
-namespace SCIRun {
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
 /// @todo: code cleanup needed
 // documentation needed
@@ -54,6 +54,7 @@ namespace SCIRun {
 /// @class MapFieldDataOntoNodesRadialbasis
 /// @brief Maps data centered on the nodes to another set of nodes using a radial basis.
 
+/*
 class MapFieldDataOntoNodesRadialbasis : public Module {
   public:
     MapFieldDataOntoNodesRadialbasis(GuiContext*);
@@ -71,18 +72,24 @@ class MapFieldDataOntoNodesRadialbasis : public Module {
   bool interp_on_mesh(VMesh* points, VMesh* Cors, std::vector<double>& coefs,  FieldHandle& output);
     //SCIRunAlgo::MapFieldDataOntoNodesRadialbasisAlgo algo_;
 };
+*/
 
+MODULE_INFO_DEF(MapFieldDataOntoNodesRadialbasis, ChangeFieldData, SCIRun)
 
-DECLARE_MAKER(MapFieldDataOntoNodesRadialbasis)
-
-MapFieldDataOntoNodesRadialbasis::MapFieldDataOntoNodesRadialbasis(GuiContext* ctx) :
-  Module("MapFieldDataOntoNodesRadialbasis", ctx, Source, "ChangeFieldData", "SCIRun"),
-  gui_quantity_(get_ctx()->subVar("quantity"),"value"),
-  gui_value_(get_ctx()->subVar("value"),"thin-plate-spline"),
-  gui_outside_value_(get_ctx()->subVar("outside-value"),0.0),
-  gui_max_distance_(get_ctx()->subVar("max-distance"),DBL_MAX)
+MapFieldDataOntoNodesRadialbasis::MapFieldDataOntoNodesRadialbasis() : Module(staticInfo_)
 {
-  //algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(Source);
+  INITIALIZE_PORT(Destination);
+  INITIALIZE_PORT(Output);
+}
+
+void MapFieldDataOntoNodesRadialbasis::setStateDefaults()
+{
+  auto state = get_state();
+  state->setValue(Parameters::OutsideValue, 0.0);
+  state->setValue(Parameters::MaxDistance, std::numeric_limits<double>::max());
+  state->setValue(Parameters::InterpolationModel, std::string("thin-plate-spline"));
+  state->setValue(Parameters::Quantity, std::string("value"));
 }
 
 void
