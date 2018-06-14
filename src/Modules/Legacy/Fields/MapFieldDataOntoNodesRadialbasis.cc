@@ -54,25 +54,12 @@ using namespace SCIRun;
 /// @class MapFieldDataOntoNodesRadialbasis
 /// @brief Maps data centered on the nodes to another set of nodes using a radial basis.
 
-/*
-class MapFieldDataOntoNodesRadialbasis : public Module {
-  public:
-    MapFieldDataOntoNodesRadialbasis(GuiContext*);
-    virtual ~MapFieldDataOntoNodesRadialbasis() {}
-
-    virtual void execute();
-
-  private:
-    GuiString gui_quantity_;
-    GuiString gui_value_;
-    GuiDouble gui_outside_value_;
-    GuiDouble gui_max_distance_;
-
+class MapFieldDataOntoNodesRadialbasisImpl
+{
+public:
 	bool radial_basis_func(VMesh* Cors, VMesh* points, FieldHandle& output, FieldHandle& input_s, FieldHandle& input_d);
   bool interp_on_mesh(VMesh* points, VMesh* Cors, std::vector<double>& coefs,  FieldHandle& output);
-    //SCIRunAlgo::MapFieldDataOntoNodesRadialbasisAlgo algo_;
 };
-*/
 
 MODULE_INFO_DEF(MapFieldDataOntoNodesRadialbasis, ChangeFieldData, SCIRun)
 
@@ -92,47 +79,23 @@ void MapFieldDataOntoNodesRadialbasis::setStateDefaults()
   state->setValue(Parameters::Quantity, std::string("value"));
 }
 
-void
-MapFieldDataOntoNodesRadialbasis::execute()
+void MapFieldDataOntoNodesRadialbasis::execute()
 {
-  FieldHandle source, destination, output;
+  auto source = getRequiredInput(Source);
+  auto destination = getRequiredInput(Destination);
 
-  get_input_handle("Source",source,true);
-  get_input_handle("Destination",destination,true);
-
-
-  if (inputs_changed_ || !oport_cached("Output") ||
-    gui_quantity_.changed() || gui_value_.changed() ||
-    gui_outside_value_.changed() || gui_max_distance_.changed())
+  if (needToExecute())
   {
-    update_state(Executing);
-
-
-      if (source.get_rep() == 0)
-      {
-        error("No source field");
-        return;
-      }
-
-      if (destination.get_rep() == 0)
-      {
-        error("No destination field");
-        return;
-      }
-
-
-
-      VMesh* imesh = source->vmesh();
-      VMesh* dmesh = destination->vmesh();
-      radial_basis_func(imesh, dmesh, output,source,destination);
-
-      send_output_handle("Output",output,true);
+    auto imesh = source->vmesh();
+    auto dmesh = destination->vmesh();
+    FieldHandle output;
+    radial_basis_func(imesh, dmesh, output,source,destination);
+    sendOutput(Output, output);
   }
 }
 
 
-bool
-MapFieldDataOntoNodesRadialbasis:: radial_basis_func(VMesh* Cors, VMesh* points, FieldHandle& output, FieldHandle& input_s, FieldHandle& input_d)
+bool MapFieldDataOntoNodesRadialbasisImpl::radial_basis_func(VMesh* Cors, VMesh* points, FieldHandle& output, FieldHandle& input_s, FieldHandle& input_d)
 {
     FieldHandle input_cp;
     FieldInformation fi(input_d);
@@ -272,8 +235,7 @@ MapFieldDataOntoNodesRadialbasis:: radial_basis_func(VMesh* Cors, VMesh* points,
   return true;
 }
 
-bool
-MapFieldDataOntoNodesRadialbasis::interp_on_mesh(VMesh* points, VMesh* Cors, std::vector<double>& coefs, FieldHandle& output)
+bool MapFieldDataOntoNodesRadialbasisImpl::interp_on_mesh(VMesh* points, VMesh* Cors, std::vector<double>& coefs, FieldHandle& output)
 {
   VMesh::Node::size_type num_cors, num_pts;
   VMesh::Node::iterator it,itp,iti,itj;
@@ -353,6 +315,3 @@ MapFieldDataOntoNodesRadialbasis::interp_on_mesh(VMesh* points, VMesh* Cors, std
 
   return true;
 }
-
-
-} // End namespace SCIRun
