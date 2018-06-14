@@ -33,9 +33,9 @@
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/ColumnMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Geometry/Vector.h>
+#include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Math/MiscMath.h>
 #include <vector>
 #include <sstream>
