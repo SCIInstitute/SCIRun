@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MapFieldDataOntoNodes</class>
- <widget class="QDialog" name="MapFieldDataOntoNodes">
+ <class>MapFieldDataOntoNodesRadialbasis</class>
+ <widget class="QDialog" name="MapFieldDataOntoNodesRadialbasis">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -37,10 +37,7 @@
      <property name="title">
       <string/>
      </property>
-     <layout class="QFormLayout" name="formLayout">
-      <property name="fieldGrowthPolicy">
-       <enum>QFormLayout::FieldsStayAtSizeHint</enum>
-      </property>
+     <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
        <widget class="QLabel" name="label_3">
         <property name="text">
@@ -50,6 +47,9 @@
       </item>
       <item row="0" column="1">
        <widget class="QComboBox" name="quantityComboBox_">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -59,21 +59,6 @@
         <item>
          <property name="text">
           <string>value</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>gradient</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>gradientnorm</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>flux</string>
          </property>
         </item>
        </widget>
@@ -87,6 +72,9 @@
       </item>
       <item row="1" column="1">
        <widget class="QComboBox" name="interpolationComboBox_">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -95,22 +83,7 @@
         </property>
         <item>
          <property name="text">
-          <string>interpolateddata</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>interpolatedataonly</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>closestnodedata</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>closestinterpolatedata</string>
+          <string>thin-plate-spline</string>
          </property>
         </item>
        </widget>
@@ -135,28 +108,15 @@
         </property>
        </widget>
       </item>
-      <item row="5" column="0">
+      <item row="3" column="0">
        <widget class="QLabel" name="label_6">
         <property name="text">
          <string>Maximum Distance:</string>
         </property>
        </widget>
       </item>
-      <item row="5" column="1">
-       <widget class="QLineEdit" name="maximumDistanceLineEdit_"/>
-      </item>
       <item row="3" column="1">
-       <widget class="QCheckBox" name="useNanForUnassignedValuesCheckBox_">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Use NaN</string>
-        </property>
-       </widget>
+       <widget class="QLineEdit" name="maximumDistanceLineEdit_"/>
       </item>
      </layout>
     </widget>
@@ -170,22 +130,5 @@
   <tabstop>maximumDistanceLineEdit_</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>useNanForUnassignedValuesCheckBox_</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>outsideValueDoubleSpinBox_</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>242</x>
-     <y>104</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>255</x>
-     <y>78</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
