@@ -48,11 +48,13 @@ ScopedTimeRemarker::~ScopedTimeRemarker()
 
 ScopedTimeLogger::ScopedTimeLogger(const std::string& label, bool shouldLog): label_(label), shouldLog_(shouldLog)
 {
-  GeneralLog::Instance().get()->debug_if(shouldLog_, "{} starting.", label_);
+  if (shouldLog_)
+    GeneralLog::Instance().get()->debug("{} starting.", label_);
 }
 
 ScopedTimeLogger::~ScopedTimeLogger()
 {
   auto time = timer_.elapsed();
-  GeneralLog::Instance().get()->debug_if(shouldLog_, "{} took {} seconds.", label_, time);
+  if (shouldLog_)
+    GeneralLog::Instance().get()->debug("{} took {} seconds.", label_, time);
 }

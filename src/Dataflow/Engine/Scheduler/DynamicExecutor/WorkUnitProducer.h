@@ -105,7 +105,7 @@ namespace SCIRun {
           {
             id_ = boost::this_thread::get_id();
 
-            log_->trace_if(shouldLog_, "Producer started {}", id_);
+            //log_->trace_if(shouldLog_, "Producer started {}", id_);
 
             enqueueReadyModules();
 
@@ -118,7 +118,7 @@ namespace SCIRun {
             if (badGroup_)
               std::cerr << "producer is done with bad group, something went wrong. probably a race condition..." << std::endl;
 
-            log_->trace_if(shouldLog_, "Producer is done. {}", id_);
+            //log_->trace_if(shouldLog_, "Producer is done. {}", id_);
           }
 
           bool isDone() const

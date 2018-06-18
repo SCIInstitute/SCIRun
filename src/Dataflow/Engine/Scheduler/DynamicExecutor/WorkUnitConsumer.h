@@ -102,44 +102,44 @@ namespace DynamicExecutor {
     shouldLog_(false)//SCIRun::Core::Logging::Log::get().verbose())
     {
       //log_.setVerbose(shouldLog_);
-      log_->trace_if(shouldLog_, "Consumer created.");
+      //log_->trace_if(shouldLog_, "Consumer created.");
     }
     void operator()() const
     {
       if (!producer_)
       {
-        log_->trace_if(shouldLog_, "Consumer quitting due to no producer pointer.");
+        //log_->trace_if(shouldLog_, "Consumer quitting due to no producer pointer.");
         return;
       }
 
-      log_->trace_if(shouldLog_, "Consumer started.");
+      //log_->trace_if(shouldLog_, "Consumer started.");
 
       while (!producer_->isDone() || moreWork())
       {
         if (moreWork())
         {
-          log_->trace_if(shouldLog_, "\tConsumer thinks work queue is not empty.");
-          log_->trace_if(shouldLog_, "\tConsumer accessing front of work queue.");
+          //log_->trace_if(shouldLog_, "\tConsumer thinks work queue is not empty.");
+          //log_->trace_if(shouldLog_, "\tConsumer accessing front of work queue.");
 
           Networks::ModuleHandle unit;
           work_->pop(unit);
 
-          log_->trace_if(shouldLog_, "\tConsumer popping front of work queue.");
+          //log_->trace_if(shouldLog_, "\tConsumer popping front of work queue.");
 
           if (unit)
           {
-            log_->trace_if(shouldLog_, "~~~Processing {}", unit->get_id());
+            //log_->trace_if(shouldLog_, "~~~Processing {}", unit->get_id());
 
             ModuleExecutor executor(unit, lookup_, producer_);
             executeThreadGroup_->startExecution(executor);
           }
           else
           {
-            log_->trace_if(shouldLog_, "\tConsumer received null module");
+            //log_->trace_if(shouldLog_, "\tConsumer received null module");
           }
         }
       }
-      log_->trace_if(shouldLog_, "Consumer done.");
+     // log_->trace_if(shouldLog_, "Consumer done.");
     }
 
     bool moreWork() const
