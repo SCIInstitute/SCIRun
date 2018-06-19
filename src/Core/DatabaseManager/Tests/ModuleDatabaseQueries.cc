@@ -94,7 +94,7 @@ protected:
     // ChangeMesh
     "('AlignMeshBoundingBoxes',         1,        0,                  0,              0,          1,              0,                    1,                  0,                              1,             0),"
     "('ConvertQuadSurfToTriSurf',       1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
-    "('ConvertHexVolToTetVol',          1,        1,                  0,              0,          1,              0,                    1,                  0,                              1,             1),"   
+    "('ConvertHexVolToTetVol',          1,        1,                  0,              0,          1,              0,                    1,                  0,                              1,             1),"
     "('GetFieldNodes',                  1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
     "('SetFieldNodes',                  1,        0,                  0,              0,          1,              0,                    0,                  0,                              1,             0),"
     // DataIO
@@ -148,8 +148,8 @@ protected:
     // Visualization
     "('CreateStandardColorMap',         1,        1,                  1,              0,          1,              0,                    0,                  0,                              1,             0),"
     "('ExtractSimpleIsosurface',        1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
-    "('ClipVolumeByIsovalue',	        1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0)," 
-    "('RemoveUnsedNodes',	        1,        0,                  0,              0,          1,              0,                    1,                  0,                              0,             1),"  
+    "('ClipVolumeByIsovalue',	        1,        0,                  0,              0,          0,              0,                    0,                  0,                              0,             0),"
+    "('RemoveUnsedNodes',	        1,        0,                  0,              0,          1,              0,                    1,                  0,                              0,             1),"
     "('ShowField',                      1,        1,                  1,              0,          0,              0,                    0,                  0,                              1,             0)";
 
     std::string error;
@@ -213,17 +213,18 @@ protected:
 
 DatabaseManager ModuleDatabaseQueries::moduleDb_;
 
-TEST_F(ModuleDatabaseQueries, CountEnabledModules)
-{
-  auto count = countEnabledModules();
-  std::cout << "# of enabled modules: " << count << std::endl;
-  EXPECT_EQ(57, count);
-}
-
 //TODO: figure out better way to generate a report from these tests. Need a process to enforce keeping them up to date (special branch?)
 namespace
 {
   bool assertTestStatistics = false;
+}
+
+TEST_F(ModuleDatabaseQueries, CountEnabledModules)
+{
+  auto count = countEnabledModules();
+  std::cout << "# of enabled modules: " << count << std::endl;
+  if (assertTestStatistics)
+    EXPECT_EQ(57, count);
 }
 
 TEST_F(ModuleDatabaseQueries, AllModulesUnitTested)

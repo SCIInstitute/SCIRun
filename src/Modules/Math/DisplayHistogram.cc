@@ -49,6 +49,10 @@ void DisplayHistogram::execute()
       THROW_INVALID_ARGUMENT("Empty matrix input.");
     }
     auto dense = castMatrix::toDense(input_matrix);
+    if (!dense)
+    {
+      THROW_INVALID_ARGUMENT("Matrix input must be dense.");
+    }
     std::vector<double> data;
     data.reserve(dense->size());
     for (auto i = 0; i < dense->nrows(); ++i)

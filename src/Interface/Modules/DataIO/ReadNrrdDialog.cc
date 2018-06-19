@@ -56,7 +56,7 @@ ReadNrrdDialog::ReadNrrdDialog(const std::string& name, ModuleStateHandle state,
 
 void ReadNrrdDialog::pullSpecial()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).toString()));
+  pullFilename(state_, fileNameLineEdit_, {});
 }
 
 void ReadNrrdDialog::pushFileNameToState()

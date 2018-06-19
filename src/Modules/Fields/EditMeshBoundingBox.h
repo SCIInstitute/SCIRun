@@ -30,16 +30,10 @@
 #define MODULES_FIELDS_EDITMESHBOUNDINGBOX_H
 
 #include <Dataflow/Network/GeometryGeneratingModule.h>
-#include <Modules/Fields/BoxWidgetTypes.h>
 #include <Core/Datatypes/Geometry.h>
-#include <Core/GeometryPrimitives/BBox.h>
 #include <Modules/Fields/share.h>
 
 namespace SCIRun {
-
-  class BoxWidgetInterface;
-  using BoxWidgetPtr = boost::shared_ptr<BoxWidgetInterface>;
-
   namespace Modules {
     namespace Fields {
 
@@ -100,13 +94,10 @@ namespace SCIRun {
         void clear_vals();
         void update_input_attributes(FieldHandle);
         void computeWidgetBox(const Core::Geometry::BBox& box) const;
-        void createBoxWidget();
         Core::Datatypes::GeometryBaseHandle buildGeometryObject();
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
         void adjustGeometryFromTransform(const Core::Geometry::Transform& transformMatrix);
-        Core::Geometry::BBox bbox_;
 
-        BoxWidgetPtr box_;
         boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;
         bool widgetMoved_;
       };

@@ -36,16 +36,20 @@ ENDIF()
 SET(Interface_Modules_Render_FORMS
   ViewScene.ui
   ViewSceneControls.ui
+  ViewOspraySceneConfig.ui
+  OsprayViewer.ui
 )
 
 SET(Interface_Modules_Render_HEADERS_TO_MOC
   ViewScene.h
   ViewSceneControlsDock.h
+  ViewOspraySceneConfig.h
   GLWidget.h
   GLContext.h
   GLContextPlatformCompatibility.h
   QtGLContext.h
   Screenshot.h
+  OsprayViewerDialog.h
 )
 
 SET(Interface_Modules_Render_HEADERS_NO_MOC
@@ -77,6 +81,8 @@ SET(Interface_Modules_Render_SOURCES
   GLContext.cc
   QtGLContext.cc
   Screenshot.cc
+  OsprayViewerDialog.cc
+  ViewOspraySceneConfig.cc
   ES/SRCamera.cc
   ES/SRInterface.cc
   ES/SRUtil.cc
@@ -91,8 +97,8 @@ SET(Interface_Modules_Render_SOURCES
   ES/systems/RenderTransText.cc
 )
 
-QT4_WRAP_UI(Interface_Modules_Render_FORMS_HEADERS ${Interface_Modules_Render_FORMS})
-QT4_WRAP_CPP(Interface_Modules_Render_HEADERS_MOC ${Interface_Modules_Render_HEADERS_TO_MOC})
+QT_WRAP_UI(Interface_Modules_Render_FORMS_HEADERS "${Interface_Modules_Render_FORMS}")
+QT_WRAP_CPP(Interface_Modules_Render_HEADERS_MOC "${Interface_Modules_Render_HEADERS_TO_MOC}")
 
 SCIRUN_ADD_LIBRARY(Interface_Modules_Render
   ${Interface_Modules_Render_HEADERS_TO_MOC}
@@ -116,6 +122,10 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Render
   ${SCI_TNY_LIBRARY}
 )
 
+IF(QT5_BUILD)
+  TARGET_LINK_LIBRARIES(Interface_Modules_Render Qt5::OpenGL)
+ENDIF()
+
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Render)
 ENDIF(BUILD_SHARED_LIBS)
@@ -123,3 +133,12 @@ ENDIF(BUILD_SHARED_LIBS)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 SCIRUN_ADD_TEST_DIR(Tests)
+
+IF(WITH_OSPRAY)
+  ADD_SUBDIRECTORY(Ospray)
+  INCLUDE(${CMAKE_SOURCE_DIR}/CMake/Modules/FindOSPRay.cmake)
+  INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
+  TARGET_LINK_LIBRARIES(Interface_Modules_Render
+    Interface_Modules_Render_Ospray
+  )
+ENDIF()

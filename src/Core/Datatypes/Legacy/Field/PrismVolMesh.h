@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -152,21 +152,21 @@ public:
 
   /// Elem refers to the most complex topological object
   /// DElem refers to object just below Elem in the topological hierarchy
-  
+
   typedef Cell Elem;
   typedef Face DElem;
 
   /// Somehow the information of how to interpolate inside an element
   /// ended up in a separate class, as they need to share information
-  /// this construction was created to transfer data. 
+  /// this construction was created to transfer data.
   /// Hopefully in the future this class will disappear again.
   friend class ElemData;
-  
+
   class ElemData
   {
   public:
     typedef typename PrismVolMesh<Basis>::index_type  index_type;
-  
+
     ElemData(const PrismVolMesh<Basis>& msh, const index_type ind) :
       mesh_(msh),
       index_(ind)
@@ -277,20 +277,20 @@ public:
   };
 
   friend class Synchronize;
-  
+
   class Synchronize //: public Runnable
   {
     public:
       Synchronize(PrismVolMesh<Basis>* mesh, mask_type sync) :
         mesh_(mesh), sync_(sync) {}
-        
+
         void operator()()
         {
           run();
         }
 
       void run()
-      {      
+      {
         mesh_->synchronize_lock_.lock();
         // block out all the tables that are already synchronized
         sync_ &= ~(mesh_->synchronized_);
@@ -301,34 +301,34 @@ public:
         mesh_->synchronizing_ |= sync_;
         // Other threads now know what this tread will be doing
         mesh_->synchronize_lock_.unlock();
-        
+
         // Sync node neighbors
         if (sync_ & (Mesh::NODE_NEIGHBORS_E))
         {
           {
             Core::Thread::UniqueLock lock(mesh_->synchronize_lock_.get());
-            while(!(mesh_->synchronized_&Mesh::EDGES_E)) 
+            while(!(mesh_->synchronized_&Mesh::EDGES_E))
               mesh_->synchronize_cond_.wait(lock);
           }
           if (sync_ & Mesh::NODE_NEIGHBORS_E) mesh_->compute_node_neighbors();
         }
-        
+
         if (sync_ & Mesh::EDGES_E) mesh_->compute_edges();
         if (sync_ & Mesh::FACES_E) mesh_->compute_faces();
         if (sync_ & Mesh::BOUNDING_BOX_E) mesh_->compute_bounding_box();
-        
+
         // These depend on the bounding box being synchronized
         if (sync_ & (Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E))
         {
           {
             Core::Thread::UniqueLock lock(mesh_->synchronize_lock_.get());
-            while(!(mesh_->synchronized_&Mesh::BOUNDING_BOX_E)) 
+            while(!(mesh_->synchronized_&Mesh::BOUNDING_BOX_E))
               mesh_->synchronize_cond_.wait(lock);
           }
           if (sync_ & Mesh::NODE_LOCATE_E) mesh_->compute_node_grid();
           if (sync_ & Mesh::ELEM_LOCATE_E) mesh_->compute_elem_grid();
         }
-        
+
         mesh_->synchronize_lock_.lock();
         // Mark the ones that were just synchronized
         mesh_->synchronized_ |= sync_;
@@ -338,25 +338,25 @@ public:
         mesh_->synchronize_cond_.conditionBroadcast();
         mesh_->synchronize_lock_.unlock();
       }
-    
+
     private:
       PrismVolMesh<Basis>* mesh_;
       mask_type  sync_;
   };
 
   //////////////////////////////////////////////////////////////////
-  
+
   /// Construct a new mesh
   PrismVolMesh();
-  
-  /// Copy a mesh, needed for detaching the mesh from a field   
+
+  /// Copy a mesh, needed for detaching the mesh from a field
   PrismVolMesh(const PrismVolMesh &copy);
-  
+
   /// Clone function for detaching the mesh and automatically generating
-  /// a new version if needed.    
+  /// a new version if needed.
   virtual PrismVolMesh *clone() const { return new PrismVolMesh(*this); }
 
-  /// Destructor 
+  /// Destructor
   virtual ~PrismVolMesh();
 
   /// Access point to virtual interface
@@ -371,31 +371,31 @@ public:
   /// virtual interface
   virtual int basis_order() { return (basis_.polynomial_order()); }
 
-  /// Topological dimension  
+  /// Topological dimension
   virtual int dimensionality() const { return 3; }
 
-  /// What kind of mesh is this 
+  /// What kind of mesh is this
   /// structured = no connectivity data
-  /// regular    = no node location data  
+  /// regular    = no node location data
   virtual int topology_geometry() const
   { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
 
-  /// Get the bounding box of the field    
+  /// Get the bounding box of the field
   virtual Core::Geometry::BBox get_bounding_box() const;
-  
-  /// Return the transformation that takes a 0-1 space bounding box 
-  /// to the current bounding box of this mesh.  
+
+  /// Return the transformation that takes a 0-1 space bounding box
+  /// to the current bounding box of this mesh.
   virtual void get_canonical_transform(Core::Geometry::Transform &t) const;
-  
-  /// Core::Geometry::Transform a field (transform all nodes using this transformation matrix)  
+
+  /// Core::Geometry::Transform a field (transform all nodes using this transformation matrix)
   virtual void transform(const Core::Geometry::Transform &t);
-   
+
   /// Check whether mesh can be altered by adding nodes or elements
   virtual bool is_editable() const { return true; }
-  
+
   /// Has this mesh normals.
-  virtual bool has_normals() const { return (false); } 
- 
+  virtual bool has_normals() const { return (false); }
+
   /// Has this mesh face normals
   virtual bool has_face_normals() const { return (true); }
 
@@ -406,11 +406,11 @@ public:
   virtual bool synchronize(mask_type mask);
   virtual bool unsynchronize(mask_type mask);
   bool clear_synchronization();
-     
-  /// Get the basis class.    
+
+  /// Get the basis class.
   Basis& get_basis() { return basis_; }
 
-  /// begin/end iterators 
+  /// begin/end iterators
   void begin(typename Node::iterator &) const;
   void begin(typename Edge::iterator &) const;
   void begin(typename Face::iterator &) const;
@@ -432,33 +432,33 @@ public:
   /// dimensional indices in some fields, these functions
   /// should deal with different pointer types.
   /// Use the virtual interface to avoid all this non sense.
-  void to_index(typename Node::index_type &index, index_type i) const 
+  void to_index(typename Node::index_type &index, index_type i) const
   { index = i; }
-  void to_index(typename Edge::index_type &index, index_type i) const 
+  void to_index(typename Edge::index_type &index, index_type i) const
   { index = i; }
-  void to_index(typename Face::index_type &index, index_type i) const 
+  void to_index(typename Face::index_type &index, index_type i) const
   { index = i; }
-  void to_index(typename Cell::index_type &index, index_type i) const 
+  void to_index(typename Cell::index_type &index, index_type i) const
   { index = i; }
 
   /// Get the child topology elements of the given topology
-  void get_nodes(typename Node::array_type &array, 
+  void get_nodes(typename Node::array_type &array,
                  typename Node::index_type idx) const
   { array.resize(1); array[0]= idx; }
-  void get_nodes(typename Node::array_type &array, 
+  void get_nodes(typename Node::array_type &array,
                  typename Edge::index_type idx) const
   { get_nodes_from_edge(array,idx); }
-  void get_nodes(typename Node::array_type &array, 
+  void get_nodes(typename Node::array_type &array,
                  typename Face::index_type idx) const
   { get_nodes_from_face(array,idx); }
-  void get_nodes(typename Node::array_type &array, 
+  void get_nodes(typename Node::array_type &array,
                  typename Cell::index_type idx) const
   { get_nodes_from_cell(array,idx); }
 
-  void get_edges(typename Edge::array_type&, 
+  void get_edges(typename Edge::array_type&,
                  typename Node::index_type) const
   { ASSERTFAIL("PrismVolMesh: get_edges has not been implemented for nodes"); }
-  void get_edges(typename Edge::array_type &array, 
+  void get_edges(typename Edge::array_type &array,
                  typename Edge::index_type idx) const
   { array.resize(1); array[0]= idx; }
   void get_edges(typename Edge::array_type &array,
@@ -478,20 +478,20 @@ public:
   void get_faces(typename Face::array_type &array,
                  typename Face::index_type idx) const
   { array.resize(1); array[0]= idx; }
-  void get_faces(typename Face::array_type &array, 
+  void get_faces(typename Face::array_type &array,
                  typename Cell::index_type idx) const
   { get_faces_from_cell(array,idx); }
 
-  void get_cells(typename Cell::array_type &array, 
+  void get_cells(typename Cell::array_type &array,
                  typename Node::index_type idx) const
   { get_cells_from_node(array,idx); }
-  void get_cells(typename Cell::array_type &array, 
+  void get_cells(typename Cell::array_type &array,
                  typename Edge::index_type idx) const
   { get_cells_from_edge(array,idx); }
   void get_cells(typename Cell::array_type &array,
                  typename Face::index_type idx) const
   { get_cells_from_face(array,idx); }
-  void get_cells(typename Cell::array_type &array, 
+  void get_cells(typename Cell::array_type &array,
                  typename Cell::index_type idx) const
   { array.resize(1); array[0]= idx; }
 
@@ -504,7 +504,7 @@ public:
   void get_elems(typename Elem::array_type &array,
                  typename Face::index_type idx) const
   { get_cells_from_face(array,idx); }
-  void get_elems(typename Elem::array_type &array, 
+  void get_elems(typename Elem::array_type &array,
                  typename Cell::index_type idx) const
   { array.resize(1); array[0]= idx; }
 
@@ -514,7 +514,7 @@ public:
   void get_delems(typename DElem::array_type&,
                   typename Edge::index_type) const
   { ASSERTFAIL("PrismVolMesh: get_faces has not been implemented for edges"); }
-  void get_delems(typename DElem::array_type &array, 
+  void get_delems(typename DElem::array_type &array,
                   typename Face::index_type idx) const
   { array.resize(1); array[0]= idx; }
   void get_delems(typename DElem::array_type &array,
@@ -541,9 +541,9 @@ public:
                        unsigned int div_per_unit) const
   {
     basis_.approx_face(which_face, div_per_unit, coords);
-  }  
-  
-  /// get the center point (in object space) of an element  
+  }
+
+  /// get the center point (in object space) of an element
   void get_center(Core::Geometry::Point &result, typename Node::index_type idx) const
   { get_node_center(result, idx); }
   void get_center(Core::Geometry::Point &result, typename Edge::index_type idx) const
@@ -554,7 +554,7 @@ public:
   { get_cell_center(result, idx); }
 
   /// Get the size of an elemnt (length, area, volume)
-  double get_size(typename Node::index_type) const 
+  double get_size(typename Node::index_type) const
   { return 0.0; }
 
   double get_size(typename Edge::index_type idx) const
@@ -589,17 +589,17 @@ public:
     ElemData ed(*this,idx);
     return (basis_.get_volume(ed));
   }
-  
+
   /// More specific names for get_size
-  double get_length(typename Edge::index_type idx) const 
+  double get_length(typename Edge::index_type idx) const
   { return get_size(idx); };
-  double get_area  (typename Face::index_type idx) const 
+  double get_area  (typename Face::index_type idx) const
   { return get_size(idx); };
-  double get_volume(typename Cell::index_type idx) const 
+  double get_volume(typename Cell::index_type idx) const
   { return get_size(idx); };
 
   /// Get neighbors of an element or a node
-  
+
   /// THIS ONE IS FLAWED AS IN 3D SPACE FOR AND ELEMENT TYPE THAT
   /// IS NOT A VOLUME. HENCE IT WORKS HERE, BUT GENERALLY IT IS FLAWED
   /// AS IT ASSUMES ONLY ONE NEIGHBOR, WHEREAS FOR ANYTHING ELSE THAN
@@ -607,16 +607,16 @@ public:
   bool get_neighbor(typename Elem::index_type &neighbor,
                     typename Elem::index_type elem,
                     typename DElem::index_type delem) const
-  { return(get_elem_neighbor(neighbor,elem,delem)); }       
-  
-  /// These are more general implementations                      
+  { return(get_elem_neighbor(neighbor,elem,delem)); }
+
+  /// These are more general implementations
   void get_neighbors(std::vector<typename Node::index_type> &array,
                      typename Node::index_type node) const
   { get_node_neighbors(array,node); }
   bool get_neighbors(std::vector<typename Elem::index_type> &array,
                      typename Elem::index_type elem,
-                     typename DElem::index_type delem) const 
-  { return(get_elem_neighbors(array,elem,delem)); }                     
+                     typename DElem::index_type delem) const
+  { return(get_elem_neighbors(array,elem,delem)); }
   void get_neighbors(typename Elem::array_type &array,
                      typename Elem::index_type elem) const
   { get_elem_neighbors(array,elem); }
@@ -631,11 +631,11 @@ public:
   bool locate(typename Cell::index_type &cell, const Core::Geometry::Point &p) const
   { return (locate_elem(cell,p)); }
 
-  bool locate(typename Elem::index_type &elem, 
+  bool locate(typename Elem::index_type &elem,
               std::vector<double>& coords,
               const Core::Geometry::Point &p) const
   { return (locate_elem(elem,coords,p)); }
-    
+
   /// These should become obsolete soon, they do not follow the concept
   /// of the basis functions....
   int get_weights(const Core::Geometry::Point &p, typename Node::array_type &l, double *w) const;
@@ -645,14 +645,14 @@ public:
     { ASSERTFAIL("PrismVolMesh::get_weights for faces isn't supported"); }
   int get_weights(const Core::Geometry::Point &p, typename Cell::array_type &l, double *w) const;
 
-   /// Access the nodes of the mesh 
+   /// Access the nodes of the mesh
   void get_point(Core::Geometry::Point &result, typename Node::index_type index) const
     { result = points_[index]; }
   void set_point(const Core::Geometry::Point &point, typename Node::index_type index)
     { points_[index] = point; }
   void get_random_point(Core::Geometry::Point &p, typename Elem::index_type i, FieldRNG &r) const;
 
-  /// Function for getting node normals  
+  /// Function for getting node normals
   void get_normal(Core::Geometry::Vector &, typename Node::index_type) const
     { ASSERTFAIL("This mesh type does not have node normals."); }
 
@@ -663,11 +663,11 @@ public:
   {
     // Improved algorithm, which should be faster as it is fully
     // on the stack.
-            
+
     // Obtain the inverse jacobian
     double Ji[9];
     inverse_jacobian(coords,eidx,Ji);
-      
+
     // Get the normal in local coordinates
     const double un0 = basis_.unit_face_normals[fidx][0];
     const double un1 = basis_.unit_face_normals[fidx][1];
@@ -677,14 +677,14 @@ public:
     result.x(Ji[0]*un0+Ji[1]*un1+Ji[2]*un2);
     result.y(Ji[3]*un0+Ji[4]*un1+Ji[5]*un2);
     result.z(Ji[6]*un0+Ji[7]*un1+Ji[8]*un2);
-      
+
     // normalize vector
     result.normalize();
   }
 
-  /// Add a new node to the mesh  
+  /// Add a new node to the mesh
   typename Node::index_type add_point(const Core::Geometry::Point &p);
-  typename Node::index_type add_node(const Core::Geometry::Point &p) 
+  typename Node::index_type add_node(const Core::Geometry::Point &p)
   { return(add_point(p)); }
 
   /// Add a new element to the mesh
@@ -702,12 +702,12 @@ public:
   }
 
   /// Functions to improve memory management. Often one knows how many
-  /// nodes/elements one needs, prereserving memory is often possible. 
+  /// nodes/elements one needs, prereserving memory is often possible.
   void node_reserve(size_type s) { points_.reserve(static_cast<std::vector<Core::Geometry::Point>::size_type>(s)); }
   void elem_reserve(size_type s) { cells_.reserve(static_cast<std::vector<index_type>::size_type>(s*6)); }
   void resize_nodes(size_type s) { points_.resize(static_cast<std::vector<Core::Geometry::Point>::size_type>(s)); }
   void resize_elems(size_type s) { cells_.resize(static_cast<std::vector<index_type>::size_type>(s*6)); }
-  
+
   /// Get the local coordinates for a certain point within an element
   /// This function uses a couple of newton iterations to find the local
   /// coordinate of a point
@@ -749,7 +749,7 @@ public:
   }
 
   /// Get the jacobian of the transformation. In case one wants the non inverted
-  /// version of this matrix. This is currentl here for completeness of the 
+  /// version of this matrix. This is currentl here for completeness of the
   /// interface
   template<class VECTOR, class INDEX>
   void jacobian(const VECTOR& coords, INDEX idx, double* J) const
@@ -768,10 +768,10 @@ public:
     J[8] = Jv[2].z();
   }
 
-  /// Get the inverse jacobian of the transformation. This one is needed to 
+  /// Get the inverse jacobian of the transformation. This one is needed to
   /// translate local gradients into global gradients. Hence it is crucial for
-  /// calculating gradients of fields, or constructing finite elements.             
-  template<class VECTOR, class INDEX> 
+  /// calculating gradients of fields, or constructing finite elements.
+  template<class VECTOR, class INDEX>
   double inverse_jacobian(const VECTOR& coords, INDEX idx, double* Ji) const
   {
     StackVector<Core::Geometry::Point,3> Jv;
@@ -790,7 +790,7 @@ public:
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     double min_jacobian = ScaledDetMatrix3P(Jv);
-    
+
     size_t num_vertices = basis_.number_of_vertices();
     for (size_t j=0;j < num_vertices;j++)
     {
@@ -798,7 +798,7 @@ public:
       temp = ScaledDetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
     }
-      
+
     return (min_jacobian);
   }
 
@@ -812,7 +812,7 @@ public:
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     double min_jacobian = DetMatrix3P(Jv);
-    
+
     size_t num_vertices = basis_.number_of_vertices();
     for (size_t j=0;j < num_vertices;j++)
     {
@@ -820,19 +820,19 @@ public:
       temp = DetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
     }
-      
+
     return (min_jacobian);
   }
 
   template <class INDEX>
-  bool find_closest_node(double& pdist, Core::Geometry::Point &result, 
+  bool find_closest_node(double& pdist, Core::Geometry::Point &result,
                          INDEX &node, const Core::Geometry::Point &p) const
   {
     return find_closest_node(pdist,result,node,p,-1.0);
   }
 
   template <class INDEX>
-  bool find_closest_node(double& pdist, Core::Geometry::Point &result, 
+  bool find_closest_node(double& pdist, Core::Geometry::Point &result,
                          INDEX &node, const Core::Geometry::Point &p,
                          double maxdist) const
   {
@@ -841,20 +841,20 @@ public:
 
     /// If there are no nodes we cannot find the closest one
     if (sz == 0) return (false);
-    
+
     if (node >= 0 && node < sz)
     {
-      Core::Geometry::Point point = points_[node]; 
+      Core::Geometry::Point point = points_[node];
       double dist = (point-p).length2();
-      
+
       if ( dist < epsilon2_ )
       {
         result = point;
         pdist = sqrt(dist);
         return (true);
-      }           
-    } 
-    
+      }
+    }
+
     ASSERTMSG(synchronized_ & Mesh::NODE_LOCATE_E,
 	      "PrismVolMesh::find_closest_node requires synchronize(NODE_LOCATE_E).")
 
@@ -868,25 +868,25 @@ public:
     node_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; 
+    if (bi > ni) bi = ni;
     if (bi < 0) bi = 0;
     if (bj > nj) bj = nj;
     if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; 
+    if (bk > nk) bk = nk;
     if (bk < 0) bk = 0;
 
     ei = bi; ej = bj; ek = bk;
-    
+
     double dmin = maxdist;
     bool found = true;
     bool found_one = false;
-    
-    do 
+
+    do
     {
-      found = true; 
+      found = true;
       /// We need to do a full shell without any elements that are closer
       /// to make sure there no closer elements in neighboring searchgrid cells
-    
+
       for (index_type i = bi; i <= ei; i++)
       {
         if (i < 0 || i > ni) continue;
@@ -908,15 +908,15 @@ public:
                 {
                   const Core::Geometry::Point point = points_[*it];
                   const double dist = (p-point).length2();
-                  
-                  if (dist < dmin) 
-                  { 
+
+                  if (dist < dmin)
+                  {
                     found_one = true;
-                    result = point; 
-                    node = INDEX(*it); 
-                    dmin = dist; 
+                    result = point;
+                    node = INDEX(*it);
+                    dmin = dist;
                     /// If we are closer than eps^2 we found a node close enough
-                    if (dmin < epsilon2_) 
+                    if (dmin < epsilon2_)
                     {
                       pdist = sqrt(dmin);
                       return (true);
@@ -932,11 +932,11 @@ public:
       bi--;ei++;
       bj--;ej++;
       bk--;ek++;
-    } 
+    }
     while (!found) ;
 
     if (!found_one) return (false);
-    
+
     pdist = sqrt(dmin);
     return (true);
   }
@@ -945,7 +945,7 @@ public:
   bool find_closest_nodes(ARRAY &nodes, const Core::Geometry::Point &p, double maxdist) const
   {
     nodes.clear();
-    
+
     ASSERTMSG(synchronized_ & Mesh::NODE_LOCATE_E,
         "PrismVolMesh::find_closest_node requires synchronize(NODE_LOCATE_E).")
 
@@ -964,18 +964,18 @@ public:
     node_grid_->unsafe_locate(ei, ej, ek, max);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; 
+    if (bi > ni) bi = ni;
     if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; 
+    if (bj > nj) bj = nj;
     if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; 
+    if (bk > nk) bk = nk;
     if (bk < 0) bk = 0;
 
-    if (ei > ni) ei = ni; 
+    if (ei > ni) ei = ni;
     if (ei < 0) ei = 0;
-    if (ej > nj) ej = nj; 
+    if (ej > nj) ej = nj;
     if (ej < 0) ej = 0;
-    if (ek > nk) ek = nk; 
+    if (ek > nk) ek = nk;
     if (ek < 0) ek = 0;
 
     double maxdist2 = maxdist*maxdist;
@@ -996,8 +996,8 @@ public:
               const Core::Geometry::Point point = points_[*it];
               const double dist  = (p-point).length2();
 
-              if (dist < maxdist2) 
-              { 
+              if (dist < maxdist2)
+              {
                 nodes.push_back(*it);
               }
               ++it;
@@ -1006,7 +1006,7 @@ public:
         }
       }
     }
-      
+
     return(nodes.size() > 0);
   }
 
@@ -1015,7 +1015,7 @@ public:
   bool find_closest_nodes(ARRAY1 &distances, ARRAY2 &nodes, const Core::Geometry::Point &p, double maxdist) const
   {
     nodes.clear();
-    
+
     ASSERTMSG(synchronized_ & Mesh::NODE_LOCATE_E,
         "PrismVolMesh::find_closest_node requires synchronize(NODE_LOCATE_E).")
 
@@ -1034,18 +1034,18 @@ public:
     node_grid_->unsafe_locate(ei, ej, ek, max);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; 
+    if (bi > ni) bi = ni;
     if (bi < 0) bi = 0;
     if (bj > nj) bj = nj;
     if (bj < 0) bj = 0;
-    if (bk > nk) bk = nk; 
+    if (bk > nk) bk = nk;
     if (bk < 0) bk = 0;
 
-    if (ei > ni) ei = ni; 
+    if (ei > ni) ei = ni;
     if (ei < 0) ei = 0;
-    if (ej > nj) ej = nj; 
+    if (ej > nj) ej = nj;
     if (ej < 0) ej = 0;
-    if (ek > nk) ek = nk; 
+    if (ek > nk) ek = nk;
     if (ek < 0) ek = 0;
 
     double maxdist2 = maxdist*maxdist;
@@ -1066,8 +1066,8 @@ public:
               const Core::Geometry::Point point = points_[*it];
               const double dist  = (p-point).length2();
 
-              if (dist < maxdist2) 
-              { 
+              if (dist < maxdist2)
+              {
                 nodes.push_back(*it);
                 distances.push_back(dist);
               }
@@ -1077,17 +1077,17 @@ public:
         }
       }
     }
-      
+
     return(nodes.size() > 0);
   }
 
 
   /// Find the closest element to a point
   template <class INDEX, class ARRAY>
-  bool find_closest_elem(double& pdist, 
-                         Core::Geometry::Point &result, 
+  bool find_closest_elem(double& pdist,
+                         Core::Geometry::Point &result,
                          ARRAY &coords,
-                         INDEX &elem, 
+                         INDEX &elem,
                          const Core::Geometry::Point &p) const
   {
     return(find_closest_elem(pdist,result,coords,elem,p,-1.0));
@@ -1095,10 +1095,10 @@ public:
 
   /// Find the closest element to a point
   template <class INDEX, class ARRAY>
-  bool find_closest_elem(double& pdist, 
-                         Core::Geometry::Point &result, 
+  bool find_closest_elem(double& pdist,
+                         Core::Geometry::Point &result,
                          ARRAY &coords,
-                         INDEX &elem, 
+                         INDEX &elem,
                          const Core::Geometry::Point &p,
                          double maxdist) const
   {
@@ -1108,7 +1108,7 @@ public:
     /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
 
-    /// Check whether the estimate given in idx is the point we are looking for    
+    /// Check whether the estimate given in idx is the point we are looking for
     if ((elem > 0)&&(elem < sz))
     {
       if (inside(elem,p))
@@ -1138,13 +1138,13 @@ public:
           result = p;
           elem = static_cast<INDEX>(*it);
           ElemData ed(*this, elem);
-          basis_.get_coords(coords, p, ed);          
+          basis_.get_coords(coords, p, ed);
           return (true);
         }
         ++it;
       }
     }
-    
+
     // If not start searching for the closest outer boundary
     // get grid sizes
     const size_type ni = elem_grid_->get_ni()-1;
@@ -1156,22 +1156,22 @@ public:
     elem_grid_->unsafe_locate(bi, bj, bk, p);
 
     // Clamp to closest point on the grid.
-    if (bi > ni) bi = ni; 
+    if (bi > ni) bi = ni;
     if (bi < 0) bi = 0;
-    if (bj > nj) bj = nj; 
+    if (bj > nj) bj = nj;
     if (bj < 0) bj = 0;
     if (bk > nk) bk = nk;
     if (bk < 0) bk = 0;
 
     ei = bi; ej = bj; ek = bk;
-        
+
     double dmin = maxdist;
     bool found = true;
     bool found_one = false;
-    
-    do 
+
+    do
     {
-      found = true; 
+      found = true;
       /// We need to do a full shell without any elements that are closer
       /// to make sure there no closer elements in neighboring searchgrid cells
       for (index_type i = bi; i <= ei; i++)
@@ -1197,7 +1197,7 @@ public:
                   index_type cidx = (*it);
                   index_type idx = cidx*8;
                   unsigned char b = boundary_faces_[cidx];
-                                    
+
                   if (b)
                   {
                     if (b & 0x1)
@@ -1213,7 +1213,7 @@ public:
                         result = r;
                         elem = INDEX(cidx);
                         dmin = dtmp;
-                        
+
                         if (dmin < epsilon2_)
                         {
                           ElemData ed(*this,elem);
@@ -1239,7 +1239,7 @@ public:
                         result = r;
                         elem = INDEX(cidx);
                         dmin = dtmp;
-                        
+
                         if (dmin < epsilon2_)
                         {
                           ElemData ed(*this,elem);
@@ -1266,7 +1266,7 @@ public:
                         result = r;
                         elem = INDEX(cidx);
                         dmin = dtmp;
-                        
+
                         if (dmin < epsilon2_)
                         {
                           ElemData ed(*this,elem);
@@ -1293,7 +1293,7 @@ public:
                         result = r;
                         elem = INDEX(cidx);
                         dmin = dtmp;
-                        
+
                         if (dmin < epsilon2_)
                         {
                           ElemData ed(*this,elem);
@@ -1320,7 +1320,7 @@ public:
                         result = r;
                         elem = INDEX(cidx);
                         dmin = dtmp;
-                        
+
                         if (dmin < epsilon2_)
                         {
                           ElemData ed(*this,elem);
@@ -1333,7 +1333,7 @@ public:
                         }
                       }
                     }
-                    
+
                   }
                   ++it;
                 }
@@ -1345,11 +1345,11 @@ public:
       bi--;ei++;
       bj--;ej++;
       bk--;ek++;
-    } 
+    }
     while (!found);
 
     if (!found_one) return (false);
-    
+
     ElemData ed(*this,elem);
     basis_.get_coords(coords,result,ed);
 
@@ -1360,37 +1360,37 @@ public:
   }
 
   template <class INDEX>
-  bool find_closest_elem(double& pdist, Core::Geometry::Point &result, 
+  bool find_closest_elem(double& pdist, Core::Geometry::Point &result,
                          INDEX &elem, const Core::Geometry::Point &p) const
   {
     StackVector<double,3> coords;
     return(find_closest_elem(pdist,result,coords,elem,p,-1.0));
   }
 
-  /// Find the closest elements to a point  
+  /// Find the closest elements to a point
   template<class ARRAY>
   bool find_closest_elems(double& /*pdist*/, Core::Geometry::Point& /*result*/,
                           ARRAY& /*faces*/, const Core::Geometry::Point& /*p*/) const
-  {  
-    ASSERTFAIL("PrismVolMesh: Find closest element has not yet been implemented.");  
+  {
+    ASSERTFAIL("PrismVolMesh: Find closest element has not yet been implemented.");
     return (false);
   }
 
   /// Export this class using the old Pio system
   virtual void io(Piostream&);
-  
+
   ///////////////////////////////////////////////////
   // STATIC VARIABLES AND FUNCTIONS
-    
+
   /// This ID is created as soon as this class will be instantiated
   static PersistentTypeID prismvol_typeid;
 
   /// Core functionality for getting the name of a templated mesh class
   static  const std::string type_name(int n = -1);
   virtual std::string dynamic_type_name() const { return prismvol_typeid.type; }
-  
+
   /// Type description, used for finding names of the mesh class for
-  /// dynamic compilation purposes. Some of this should be obsolete   
+  /// dynamic compilation purposes. Some of this should be obsolete
   virtual const TypeDescription *get_type_description() const;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
@@ -1408,9 +1408,9 @@ public:
   // Mesh specific functions (these are not implemented in every mesh)
   /// Trying figure out which face is made out of 3/4 nodes (?)
   bool get_face(typename Face::index_type &array,
-                typename Node::index_type n1, 
+                typename Node::index_type n1,
                 typename Node::index_type n2,
-                typename Node::index_type n3, 
+                typename Node::index_type n3,
                 typename Node::index_type n4=PRISM_DUMMY_NODE_INDEX) const;
 
   /// Functions for Cubit
@@ -1425,7 +1425,7 @@ public:
   typename Node::index_type add_find_point(const Core::Geometry::Point &p,
 					   double err = 1.0e-3);
 
-  // Short cut for generating an element....                                                        
+  // Short cut for generating an element....
   typename Elem::index_type add_prism(typename Node::index_type a, typename Node::index_type b,
 				      typename Node::index_type c, typename Node::index_type d,
 				      typename Node::index_type e, typename Node::index_type f);
@@ -1436,7 +1436,7 @@ public:
 
   /// must detach, if altering points!
   std::vector<Core::Geometry::Point>& get_points() { return points_; }
- 
+
   int compute_checksum();
 
 protected:
@@ -1525,13 +1525,13 @@ protected:
 
     if (f.nodes_[0] != f.nodes_[1])
     {
-      PEdge e(f.nodes_[0], f.nodes_[1]);  
+      PEdge e(f.nodes_[0], f.nodes_[1]);
       array.push_back(static_cast<typename ARRAY::value_type>(
                                             (*(edge_table_.find(e))).second));
     }
     if (f.nodes_[1] != f.nodes_[2])
     {
-      PEdge e(f.nodes_[1], f.nodes_[2]);  
+      PEdge e(f.nodes_[1], f.nodes_[2]);
       array.push_back(static_cast<typename ARRAY::value_type>(
                                             (*(edge_table_.find(e))).second));
     }
@@ -1541,7 +1541,7 @@ protected:
     {
       if (f.nodes_[2] != f.nodes_[0])
       {
-        PEdge e(f.nodes_[2], f.nodes_[0]);  
+        PEdge e(f.nodes_[2], f.nodes_[0]);
         array.push_back(static_cast<typename ARRAY::value_type>(
                                             (*(edge_table_.find(e))).second));
       }
@@ -1550,13 +1550,13 @@ protected:
     {
       if (f.nodes_[2] != f.nodes_[3])
       {
-        PEdge e(f.nodes_[2], f.nodes_[3]);  
+        PEdge e(f.nodes_[2], f.nodes_[3]);
         array.push_back(static_cast<typename ARRAY::value_type>(
                                             (*(edge_table_.find(e))).second));
       }
       if (f.nodes_[3] != f.nodes_[0])
       {
-        PEdge e(f.nodes_[3], f.nodes_[0]);  
+        PEdge e(f.nodes_[3], f.nodes_[0]);
         array.push_back(static_cast<typename ARRAY::value_type>(
                                             (*(edge_table_.find(e))).second));
       }
@@ -1576,60 +1576,60 @@ protected:
     typedef typename ARRAY::value_type T;
 
     n1 = cells_[off    ]; n2 = cells_[off + 1];
-    if (n1 != n2) 
-    { 
-      PEdge e(n1,n2); 
-      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
+    if (n1 != n2)
+    {
+      PEdge e(n1,n2);
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second));
     }
     n1 = cells_[off + 1]; n2 = cells_[off + 2];
-    if (n1 != n2) 
-    { 
-      PEdge e(n1,n2); 
-      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
+    if (n1 != n2)
+    {
+      PEdge e(n1,n2);
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second));
     }
     n1 = cells_[off + 2]; n2 = cells_[off    ];
-    if (n1 != n2) 
-    { 
-      PEdge e(n1,n2); 
-      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
+    if (n1 != n2)
+    {
+      PEdge e(n1,n2);
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second));
     }
 
     n1 = cells_[off + 3]; n2 = cells_[off + 4];
-    if (n1 != n2) 
-    { 
-      PEdge e(n1,n2); 
-      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
+    if (n1 != n2)
+    {
+      PEdge e(n1,n2);
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second));
     }
     n1 = cells_[off + 4]; n2 = cells_[off + 5];
-    if (n1 != n2) 
-    { 
-      PEdge e(n1,n2); 
-      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
+    if (n1 != n2)
+    {
+      PEdge e(n1,n2);
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second));
     }
     n1 = cells_[off + 5]; n2 = cells_[off + 3];
-    if (n1 != n2) 
-    { 
-      PEdge e(n1,n2); 
-      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
+    if (n1 != n2)
+    {
+      PEdge e(n1,n2);
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second));
     }
 
     n1 = cells_[off    ]; n2 = cells_[off + 3];
-    if (n1 != n2) 
-    { 
-      PEdge e(n1,n2); 
-      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
+    if (n1 != n2)
+    {
+      PEdge e(n1,n2);
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second));
     }
     n1 = cells_[off + 4]; n2 = cells_[off + 1];
-    if (n1 != n2) 
-    { 
-      PEdge e(n1,n2); 
-      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
+    if (n1 != n2)
+    {
+      PEdge e(n1,n2);
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second));
     }
     n1 = cells_[off + 2]; n2 = cells_[off + 5];
-    if (n1 != n2) 
-    { 
-      PEdge e(n1,n2); 
-      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
+    if (n1 != n2)
+    {
+      PEdge e(n1,n2);
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second));
     }
   }
 
@@ -1647,14 +1647,14 @@ protected:
 
     array.clear();
     array.reserve(5);
-    
+
     const index_type off = idx * 6;
     typename Node::index_type n1,n2,n3,n4=PRISM_DUMMY_NODE_INDEX;
 
     // Put faces in node ordering from smallest node and then following CW or CCW
     // ordering. Test for degenerate elements. Degenerate faces are only added if they
     // are valid (only two neighboring nodes are equal)
-    n1 = cells_[off    ]; n2 = cells_[off + 1]; 
+    n1 = cells_[off    ]; n2 = cells_[off + 1];
     n3 = cells_[off + 2];
     if (order_face_nodes(n1,n2,n3,n4))
     {
@@ -1662,7 +1662,7 @@ protected:
       array.push_back(static_cast<typename ARRAY::value_type>(
                                             (*(face_table_.find(f))).second));
     }
-    n1 = cells_[off + 5]; n2 = cells_[off + 4]; 
+    n1 = cells_[off + 5]; n2 = cells_[off + 4];
     n3 = cells_[off + 3];
     if (order_face_nodes(n1,n2,n3,n4))
     {
@@ -1670,7 +1670,7 @@ protected:
       array.push_back(static_cast<typename ARRAY::value_type>(
                                             (*(face_table_.find(f))).second));
     }
-    n1 = cells_[off    ]; n2 = cells_[off + 3]; 
+    n1 = cells_[off    ]; n2 = cells_[off + 3];
     n3 = cells_[off + 4]; n4 = cells_[off + 1];
     if (order_face_nodes(n1,n2,n3,n4))
     {
@@ -1678,7 +1678,7 @@ protected:
       array.push_back(static_cast<typename ARRAY::value_type>(
                                             (*(face_table_.find(f))).second));
     }
-    n1 = cells_[off + 1]; n2 = cells_[off + 4]; 
+    n1 = cells_[off + 1]; n2 = cells_[off + 4];
     n3 = cells_[off + 5]; n4 = cells_[off + 2];
     if (order_face_nodes(n1,n2,n3,n4))
     {
@@ -1686,7 +1686,7 @@ protected:
       array.push_back(static_cast<typename ARRAY::value_type>(
                                             (*(face_table_.find(f))).second));
     }
-    n1 = cells_[off + 2]; n2 = cells_[off + 5]; 
+    n1 = cells_[off + 2]; n2 = cells_[off + 5];
     n3 = cells_[off + 3]; n4 = cells_[off    ];
     if (order_face_nodes(n1,n2,n3,n4))
     {
@@ -1726,7 +1726,7 @@ protected:
 
     // Copy the unique set of cells to our Cells array return argument
     array.resize(unique_cells.size());
-    copy(unique_cells.begin(), unique_cells.end(), array.begin());  
+    copy(unique_cells.begin(), unique_cells.end(), array.begin());
   }
 
   template <class ARRAY, class INDEX>
@@ -1771,11 +1771,11 @@ protected:
 
     const PFace &f = faces_[delem];
 
-    if (static_cast<typename Cell::index_type>(elem) == (f.cells_[0]>>3)) 
+    if (static_cast<typename Cell::index_type>(elem) == (f.cells_[0]>>3))
     {
       neighbor = static_cast<INDEX1>((f.cells_[1]>>3));
-    } 
-    else 
+    }
+    else
     {
       neighbor = static_cast<INDEX1>((f.cells_[0]>>3));
     }
@@ -1791,12 +1791,12 @@ protected:
 
     const PFace &f = faces_[delem];
 
-    if (elem == static_cast<INDEX1>(f.cells_[0])) 
+    if (elem == static_cast<INDEX1>(f.cells_[0]))
     {
       array.resize(1);
       array[0] = static_cast<typename ARRAY::value_type>((f.cells_[1]>>3));
-    } 
-    else 
+    }
+    else
     {
       array.resize(1);
       array[0] = static_cast<typename ARRAY::value_type>((f.cells_[0]>>3));
@@ -1814,13 +1814,13 @@ protected:
   {
     typename Face::array_type faces;
     get_faces_from_cell(faces, elem);
-    
+
     array.clear();
     typename Face::array_type::iterator iter = faces.begin();
-    while(iter != faces.end()) 
+    while(iter != faces.end())
     {
       typename ARRAY::value_type nbor;
-      if (get_elem_neighbor(nbor, elem, *iter)) 
+      if (get_elem_neighbor(nbor, elem, *iter))
       {
         array.push_back(nbor);
       }
@@ -1849,13 +1849,13 @@ protected:
 
     /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
-    
+
     /// Check first guess
-    if (node >= 0 && node < sz) 
+    if (node >= 0 && node < sz)
     {
       if ((p - points_[node]).length2() < epsilon2_) return (true);
-    }    
-    
+    }
+
     ASSERTMSG(synchronized_ & Mesh::NODE_LOCATE_E,
               "PrismVolMesh::locate_node requires synchronize(NODE_LOCATE_E).")
 
@@ -1873,18 +1873,18 @@ protected:
     if (bj > nj) bj =nj; if (bj < 0) bj = 0;
     if (bk > nk) bk =nk; if (bk < 0) bk = 0;
 
-    ei = bi; 
-    ej = bj; 
+    ei = bi;
+    ej = bj;
     ek = bk;
-    
+
     double dmin = DBL_MAX;
     bool found;
-    do 
+    do
     {
-      found = true; 
+      found = true;
       /// We need to do a full shell without any elements that are closer
       /// to make sure there no closer elements in neighboring searchgrid cells
-    
+
       for (index_type i = bi; i <= ei; i++)
       {
         if (i < 0 || i > ni) continue;
@@ -1907,10 +1907,10 @@ protected:
                   const Core::Geometry::Point point = points_[*it];
                   const double dist = (p-point).length2();
 
-                  if (dist < dmin) 
-                  { 
-                    node = INDEX(*it);   
-                    dmin = dist; 
+                  if (dist < dmin)
+                  {
+                    node = INDEX(*it);
+                    dmin = dist;
 
                     if (dist < epsilon2_) return (true);
                   }
@@ -1924,10 +1924,10 @@ protected:
       bi--;ei++;
       bj--;ej++;
       bk--;ek++;
-    } 
+    }
     while ((!found)||(dmin == DBL_MAX)) ;
 
-    return (true); 
+    return (true);
   }
 
   /// @todo: Fix this function, needs to use search grid
@@ -1999,7 +1999,7 @@ protected:
     /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
 
-    /// Check whether the estimate given in idx is the point we are looking for    
+    /// Check whether the estimate given in idx is the point we are looking for
     if ((elem > 0)&&(elem < sz))
     {
       if (inside(elem,p)) return (true);
@@ -2027,9 +2027,9 @@ protected:
   template <class ARRAY>
   inline bool locate_elems(ARRAY &array, const Core::Geometry::BBox &b) const
   {
-  
+
     ASSERTMSG(synchronized_ & Mesh::ELEM_LOCATE_E,
-              "PrismVolMesh::locate_elems requires synchronize(ELEM_LOCATE_E).")  
+              "PrismVolMesh::locate_elems requires synchronize(ELEM_LOCATE_E).")
 
     array.clear();
     index_type is,js,ks;
@@ -2040,7 +2040,7 @@ protected:
       for (index_type j=js; j<je;j++)
         for (index_type k=ks; k<ke; k++)
         {
-          typename SearchGridT<index_type>::iterator it, eit;        
+          typename SearchGridT<index_type>::iterator it, eit;
           elem_grid_->lookup_ijk(it, eit, i, j, k);
           while (it != eit)
           {
@@ -2050,7 +2050,7 @@ protected:
             ++it;
           }
         }
-        
+
     return (array.size() > 0);
   }
 
@@ -2067,10 +2067,10 @@ protected:
     /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
 
-    /// Check whether the estimate given in idx is the point we are looking for    
+    /// Check whether the estimate given in idx is the point we are looking for
     if ((elem > 0)&&(elem < sz))
     {
-      if (inside(elem,p)) 
+      if (inside(elem,p))
       {
         ElemData ed(*this, elem);
         basis_.get_coords(coords, p, ed);
@@ -2090,7 +2090,7 @@ protected:
         {
           elem = static_cast<INDEX>(*it);
           ElemData ed(*this, elem);
-          basis_.get_coords(coords, p, ed);      
+          basis_.get_coords(coords, p, ed);
           return (true);
         }
         ++it;
@@ -2170,7 +2170,7 @@ protected:
   void compute_node_grid();
   void compute_elem_grid();
   void compute_bounding_box();
-  
+
   void insert_elem_into_grid(typename Elem::index_type ci);
   void remove_elem_from_grid(typename Elem::index_type ci);
   void insert_node_into_grid(typename Node::index_type ci);
@@ -2181,25 +2181,25 @@ protected:
   template<class INDEX>
   bool inside(INDEX idx, const Core::Geometry::Point &p) const
   {
-    // rewrote this function to more accurately deal with hexes that do not have 
+    // rewrote this function to more accurately deal with hexes that do not have
     // face aligned with the axes of the coordinate system
-    
-    // First a fast test to see whether we are inside the bounding box 
+
+    // First a fast test to see whether we are inside the bounding box
     // (this code could be faster, by testing axis by axis)
     // Then if it is inside a tight bounding box compute the local coordinates
     // using the Newton search, this way we account for not planar surfaces of
     // the prisms.
-    
+
     typename Node::array_type nodes;
     get_nodes_from_elem(nodes,idx);
-    
+
     Core::Geometry::BBox bbox;
     bbox.extend(points_[nodes[0]]);
     bbox.extend(points_[nodes[1]]);
-    bbox.extend(points_[nodes[2]]);  
-    bbox.extend(points_[nodes[3]]);  
-    bbox.extend(points_[nodes[4]]);  
-    bbox.extend(points_[nodes[5]]);  
+    bbox.extend(points_[nodes[2]]);
+    bbox.extend(points_[nodes[3]]);
+    bbox.extend(points_[nodes[4]]);
+    bbox.extend(points_[nodes[5]]);
     bbox.extend(epsilon_);
 
     if (bbox.inside(p))
@@ -2208,7 +2208,7 @@ protected:
       ElemData ed(*this, idx);
       if(basis_.get_coords(coords, p, ed)) return (true);
     }
-    
+
     return (false);
   }
 
@@ -2221,7 +2221,7 @@ protected:
   struct PFace {
     typename Node::index_type         nodes_[4];   /// 4 nodes makes a face.
     typename Cell::index_type         cells_[2];   /// 2 cells may have this face is in common.
- 
+
     PFace() {
       nodes_[0] = MESH_NO_NEIGHBOR;
       nodes_[1] = MESH_NO_NEIGHBOR;
@@ -2230,7 +2230,7 @@ protected:
       cells_[0] = MESH_NO_NEIGHBOR;
       cells_[1] = MESH_NO_NEIGHBOR;
     }
-    
+
     // snodes_ must be sorted. See Hash Function below.
     PFace(typename Node::index_type n1, typename Node::index_type n2,
           typename Node::index_type n3, typename Node::index_type n4) {
@@ -2251,7 +2251,7 @@ protected:
       {
         return ((nodes_[0] == f.nodes_[0]) &&
                 (((nodes_[1]==f.nodes_[1])&&(nodes_[2] == f.nodes_[2]))||
-		 ((nodes_[1]==f.nodes_[2])&&(nodes_[2] == f.nodes_[1]))));      
+		 ((nodes_[1]==f.nodes_[2])&&(nodes_[2] == f.nodes_[1]))));
       }
       else
       {
@@ -2284,7 +2284,7 @@ protected:
             else
               return (nodes_[1] < f.nodes_[2]);
           else
-            return (nodes_[0] < f.nodes_[0]);      
+            return (nodes_[0] < f.nodes_[0]);
         }
         else if ((nodes_[1] >= nodes_[2]) && (f.nodes_[1] < f.nodes_[2]))
         {
@@ -2294,7 +2294,7 @@ protected:
             else
               return (nodes_[2] < f.nodes_[1]);
           else
-            return (nodes_[0] < f.nodes_[0]);        
+            return (nodes_[0] < f.nodes_[0]);
         }
         else
         {
@@ -2304,7 +2304,7 @@ protected:
             else
               return (nodes_[2] < f.nodes_[2]);
           else
-            return (nodes_[0] < f.nodes_[0]);           
+            return (nodes_[0] < f.nodes_[0]);
         }
       }
       else
@@ -2333,7 +2333,7 @@ protected:
             else
               return (nodes_[1] < f.nodes_[3]);
           else
-            return (nodes_[0] < f.nodes_[0]);      
+            return (nodes_[0] < f.nodes_[0]);
         }
         else if ((nodes_[1] >= nodes_[3]) && (f.nodes_[1] < f.nodes_[3]))
         {
@@ -2346,7 +2346,7 @@ protected:
             else
               return (nodes_[3] < f.nodes_[1]);
           else
-            return (nodes_[0] < f.nodes_[0]);      
+            return (nodes_[0] < f.nodes_[0]);
         }
         else
         {
@@ -2359,11 +2359,11 @@ protected:
             else
               return (nodes_[3] < f.nodes_[3]);
           else
-            return (nodes_[0] < f.nodes_[0]);      
+            return (nodes_[0] < f.nodes_[0]);
         }
       }
     }
-    
+
   };
 
   /// Edge information.
@@ -2413,7 +2413,7 @@ protected:
   };
 
   /// hash the egde's node_indecies such that edges with the same nodes
-  ///  hash to the same value. nodes are sorted on edge construction. 
+  ///  hash to the same value. nodes are sorted on edge construction.
   static const int sz_int = sizeof(int) * 8; // in bits
   struct FaceHash
   {
@@ -2457,7 +2457,7 @@ protected:
   friend struct FaceHash; // needed by the gcc-2.95.3 compiler
 
   /// hash the egde's node_indecies such that edges with the same nodes
-  ///  hash to the same value. nodes are sorted on edge construction. 
+  ///  hash to the same value. nodes are sorted on edge construction.
   struct EdgeHash {
     /// These are needed by the hash_map particularly
     // ANSI C++ allows us to initialize these variables in the
@@ -2490,11 +2490,11 @@ protected:
   using edge_ht = boost::unordered_map<PEdge, typename Edge::index_type, EdgeHash>;
 
   /// container for face storage. Must be computed each time
-  ///  nodes or cells change. 
+  ///  nodes or cells change.
   std::vector<PFace>            faces_;
   face_ht                  face_table_;
   /// container for edge storage. Must be computed each time
-  ///  nodes or cells change. 
+  ///  nodes or cells change.
   std::vector<PEdge>            edges_;
   edge_ht                  edge_table_;
 
@@ -2519,7 +2519,7 @@ protected:
 
     // Face must have three unique identifiers otherwise it was condition
     // n1==n3 || n2==n4 would be met.
-   
+
     if ((n1 < n2)&&(n1 < n3)&&(n1 < n4))
     {
     }
@@ -2527,7 +2527,7 @@ protected:
     {
       INDEX t;
       // shift one position to left
-      t = n1; n1 = n2; n2 = n3; n3 = n4; n4 = t;  
+      t = n1; n1 = n2; n2 = n3; n3 = n4; n4 = t;
     }
     else if (n3 < n4)
     {
@@ -2539,13 +2539,13 @@ protected:
     {
       INDEX t;
       // shift one positions to right
-      t = n4; n4 = n3; n3 = n2; n2 = n1; n1 = t;    
+      t = n4; n4 = n3; n3 = n2; n2 = n1; n1 = t;
     }
-         
+
     if (n1==n2)
     {
       if (n3==n4) return (false); // this is a line not a face
-       n2 = n3; n3 = n4; 
+       n2 = n3; n3 = n4;
     }
     else if (n2 == n3)
     {
@@ -2592,19 +2592,19 @@ protected:
   // Lock and Condition Variable for hand shaking
   mutable Core::Thread::Mutex                 synchronize_lock_;
   Core::Thread::ConditionVariable             synchronize_cond_;
-  
+
   // Which tables have been computed
   mask_type                     synchronized_;
   // Which tables are currently being computed
   mask_type                     synchronizing_;
-  
+
   Basis                         basis_;
-  Core::Geometry::BBox                          bbox_; 
+  Core::Geometry::BBox                          bbox_;
   double                        epsilon_;
   double                        epsilon2_;
   double                        epsilon3_;
-  
-  /// Pointer to virtual interface  
+
+  /// Pointer to virtual interface
   boost::shared_ptr<VMesh>                 vmesh_;
 };
 
@@ -2634,7 +2634,7 @@ PrismVolMesh<Basis>::PrismVolMesh() :
   epsilon2_(0.0),
   epsilon3_(0.0)
 {
-  DEBUG_CONSTRUCTOR("PrismVolMesh") 
+  DEBUG_CONSTRUCTOR("PrismVolMesh")
 
   /// Initialize the virtual interface when the mesh is created
   vmesh_.reset(CreateVPrismVolMesh(this));
@@ -2657,25 +2657,25 @@ PrismVolMesh<Basis>::PrismVolMesh(const PrismVolMesh &copy):
   epsilon2_(0.0),
   epsilon3_(0.0)
 {
-  DEBUG_CONSTRUCTOR("PrismVolMesh") 
+  DEBUG_CONSTRUCTOR("PrismVolMesh")
 
   /// We need to lock before we can copy these as these
   /// structures are generate dynamically when they are
   /// needed.
   copy.synchronize_lock_.lock();
-  
+
   points_ = copy.points_;
   cells_ = copy.cells_;
-  
+
   // Epsilon does not require much space, hence copy those
   synchronized_ |= copy.synchronized_ & Mesh::BOUNDING_BOX_E;
   bbox_     = copy.bbox_;
   epsilon_  = copy.epsilon_;
   epsilon2_ = copy.epsilon2_;
   epsilon3_ = copy.epsilon3_;
-  
+
   copy.synchronize_lock_.unlock();
-  
+
   /// Create a new virtual interface for this copy
   /// all pointers have changed hence create a new
   /// virtual interface class
@@ -2685,7 +2685,7 @@ PrismVolMesh<Basis>::PrismVolMesh(const PrismVolMesh &copy):
 template <class Basis>
 PrismVolMesh<Basis>::~PrismVolMesh()
 {
-  DEBUG_DESTRUCTOR("PrismVolMesh") 
+  DEBUG_DESTRUCTOR("PrismVolMesh")
 }
 
 template <class Basis>
@@ -2697,7 +2697,7 @@ PrismVolMesh<Basis>::fill_points(Iter begin, Iter end, Functor fill_ftor)
   Iter iter = begin;
   points_.resize(end - begin); // resize to the new size
   std::vector<Core::Geometry::Point>::iterator piter = points_.begin();
-  while (iter != end) 
+  while (iter != end)
   {
     *piter = fill_ftor(*iter);
     ++piter; ++iter;
@@ -2714,11 +2714,11 @@ PrismVolMesh<Basis>::fill_cells(Iter begin, Iter end, Functor fill_ftor)
   Iter iter = begin;
   cells_.resize((end - begin) * 6); // resize to the new size
   std::vector<under_type>::iterator citer = cells_.begin();
-  while (iter != end) 
+  while (iter != end)
   {
     int *nodes = fill_ftor(*iter); // returns an array of length NNODES
 
-    for( int i=0; i<6; i++ ) 
+    for( int i=0; i<6; i++ )
     {
       *citer = nodes[i];
       ++citer;
@@ -2776,7 +2776,7 @@ PrismVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
   const double a2 = tetrahedra_volume(p0, p2, p4, p5);
 
   const double w = rng() * (a0 + a1 + a2);
-  
+
   double t = rng();
   double u = rng();
   double v = rng();
@@ -2804,7 +2804,7 @@ PrismVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
 
   // Convert to Barycentric and compute new point.
   const double a = 1.0 - t - u - v;
-  
+
   if (w > (a0 + a1))
   {
     p = Core::Geometry::Point(p0*a + p2*t + p4*u + p5*v);
@@ -2827,7 +2827,7 @@ PrismVolMesh<Basis>::get_bounding_box() const
   typename Node::iterator ni, nie;
   begin(ni);
   end(nie);
-  while (ni != nie) 
+  while (ni != nie)
   {
     result.extend(points_[*ni]);
     ++ni;
@@ -2836,7 +2836,7 @@ PrismVolMesh<Basis>::get_bounding_box() const
 }
 
 template <class Basis>
-void 
+void
 PrismVolMesh<Basis>::get_canonical_transform(Core::Geometry::Transform &t) const
 {
   t.load_identity();
@@ -2853,7 +2853,7 @@ PrismVolMesh<Basis>::transform(const Core::Geometry::Transform &t)
 
   std::vector<Core::Geometry::Point>::iterator itr = points_.begin();
   std::vector<Core::Geometry::Point>::iterator eitr = points_.end();
-  while (itr != eitr) 
+  while (itr != eitr)
   {
     *itr = t.project(*itr);
     ++itr;
@@ -2899,7 +2899,7 @@ PrismVolMesh<Basis>::hash_face(typename Node::index_type n1,
   // Check for degenerate faces, if faces has degeneracy it
   // will be ignored (e.g. nodes on opposite corners are equal,
   // or more then two nodes are equal)
-   
+
   if (!(order_face_nodes(n1,n2,n3,n4))) return;
   PFace f(n1, n2, n3, n4);
 
@@ -2914,15 +2914,20 @@ PrismVolMesh<Basis>::hash_face(typename Node::index_type n1,
     PFace f = (*iter).first;
     if (f.cells_[1] != MESH_NO_NEIGHBOR)
     {
+      //TODO: inject new logger
+      /*
       std::cerr << "PrismVolMesh - This Mesh has problems: Cells #"
            << (f.cells_[0]>>3) << ", #" << (f.cells_[1]>>3) << ", and #" << (combined_index >> 3)
-           << " are illegally adjacent." << std::endl;
+           << " are illegally adjacent." << std::endl;*/
     }
     else if ((f.cells_[0]>>3) == (combined_index>>3))
     {
+      //TODO: inject new logger
+      /*
       std::cerr << "PrismVolMesh - This Mesh has problems: Cells #"
            << (f.cells_[0]>>3) << " and #" << (combined_index>>3)
            << " are the same." << std::endl;
+           */
     }
     else
     {
@@ -2967,8 +2972,8 @@ PrismVolMesh<Basis>::compute_faces()
   while (ht_iter != face_table_.end())
   {
     *f_iter = (*ht_iter).first;
-    (*ht_iter).second = i;  
-    
+    (*ht_iter).second = i;
+
     if ((*f_iter).cells_[1] == -1)
     {
       index_type cell = ((*f_iter).cells_[0]) >> 3;
@@ -3054,7 +3059,7 @@ bool
 PrismVolMesh<Basis>::synchronize(mask_type sync)
 {
   // Conversion table
-  if (sync & (Mesh::ELEM_NEIGHBORS_E|Mesh::DELEMS_E)) 
+  if (sync & (Mesh::ELEM_NEIGHBORS_E|Mesh::DELEMS_E))
   { sync |= Mesh::FACES_E; sync &= ~(Mesh::ELEM_NEIGHBORS_E|Mesh::DELEMS_E); }
 
   if (sync & Mesh::FIND_CLOSEST_NODE_E)
@@ -3075,7 +3080,7 @@ PrismVolMesh<Basis>::synchronize(mask_type sync)
 
   // Only sync was hasn't been synched
   sync &= (~synchronized_);
-  
+
   if (sync == Mesh::EDGES_E)
   {
     Synchronize Synchronize(this,sync);
@@ -3182,7 +3187,7 @@ PrismVolMesh<Basis>::clear_synchronization()
 {
   synchronize_lock_.lock();
 
-  // Undo marking the synchronization 
+  // Undo marking the synchronization
   synchronized_ = Mesh::NODES_E | Mesh::ELEMS_E | Mesh::CELLS_E;
 
   // Free memory where possible
@@ -3192,12 +3197,12 @@ PrismVolMesh<Basis>::clear_synchronization()
   faces_.clear();
   face_table_.clear();
   boundary_faces_.clear();
-  
+
   node_grid_.reset();
   elem_grid_.reset();
 
   synchronize_lock_.unlock();
-  
+
   return (true);
 }
 
@@ -3313,9 +3318,9 @@ PrismVolMesh<Basis>::size(typename PrismVolMesh::Cell::size_type &s) const
 template <class Basis>
 bool
 PrismVolMesh<Basis>::get_face(typename Face::index_type &face,
-			      typename Node::index_type n1, 
+			      typename Node::index_type n1,
 			      typename Node::index_type n2,
-			      typename Node::index_type n3, 
+			      typename Node::index_type n3,
 			      typename Node::index_type n4) const
 {
   ASSERTMSG(synchronized_ & Mesh::FACES_E,
@@ -3438,10 +3443,10 @@ PrismVolMesh<Basis>::compute_elem_grid()
   if (bbox_.valid())
   {
     // Cubed root of number of cells to get a subdivision ballpark.
-    
+
     typename Elem::size_type esz;  size(esz);
-    
-    const size_type s = 
+
+    const size_type s =
       3*static_cast<size_type>((ceil(pow(static_cast<double>(esz) , (1.0/3.0))))/2.0 + 1.0);
 
     Core::Geometry::Vector diag  = bbox_.diagonal();
@@ -3449,7 +3454,7 @@ PrismVolMesh<Basis>::compute_elem_grid()
     size_type sx = static_cast<size_type>(ceil(diag.x()/trace*s));
     size_type sy = static_cast<size_type>(ceil(diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
-    
+
     Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
     elem_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.get_min(), b.get_max()));
 
@@ -3475,9 +3480,9 @@ PrismVolMesh<Basis>::compute_node_grid()
   if (bbox_.valid())
   {
     // Cubed root of number of cells to get a subdivision ballpark.
-    
+
     typename Elem::size_type esz;  size(esz);
-    
+
     const size_type s =  3*static_cast<size_type>
                   ((ceil(pow(static_cast<double>(esz) , (1.0/3.0))))/2.0 + 1.0);
 
@@ -3486,7 +3491,7 @@ PrismVolMesh<Basis>::compute_node_grid()
     size_type sx = static_cast<size_type>(ceil(diag.x()/trace*s));
     size_type sy = static_cast<size_type>(ceil(diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
-    
+
     Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
     node_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.get_min(), b.get_max()));
 
@@ -3596,13 +3601,13 @@ PrismVolMesh<Basis>::io(Piostream &stream)
 
   SCIRun::Pio(stream, points_);
   SCIRun::Pio_index(stream, cells_);
-  if (version == 1) 
+  if (version == 1)
   {
     std::vector<int> neighbors;
     SCIRun::Pio(stream, neighbors);
   }
 
-  if (version >= 2) 
+  if (version >= 2)
   {
     basis_.io(stream);
   }
@@ -3621,7 +3626,7 @@ template <class Basis>
 const TypeDescription* get_type_description(PrismVolMesh<Basis> *)
 {
   static TypeDescription *td = 0;
-  if (!td) 
+  if (!td)
   {
     const TypeDescription *sub = get_type_description((Basis*)0);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
@@ -3646,7 +3651,7 @@ const TypeDescription*
 PrismVolMesh<Basis>::node_type_description()
 {
   static TypeDescription *td = 0;
-  if (!td) 
+  if (!td)
   {
     const TypeDescription *me =
       SCIRun::get_type_description((PrismVolMesh<Basis> *)0);

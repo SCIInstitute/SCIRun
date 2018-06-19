@@ -62,7 +62,7 @@ ALGORITHM_PARAMETER_DECL(LevelOfDetail);
       public:
         ModelTMSCoilAlgorithm()
 	{
-	 addParameter(Parameters::Type,"");
+	 addParameter(Parameters::Type,std::string());
 	 addParameter(Parameters::FigureOf8CoilShape,2);
 	 addParameter(Parameters::Current,1);
 	 addParameter(Parameters::Rings,9);

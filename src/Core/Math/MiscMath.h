@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -55,11 +55,12 @@ namespace SCIRun {
 template<typename T>
 inline bool nonzero(T d)
 {
-  namespace btt = boost::test_tools;
+	namespace btt = boost::test_tools;
+  //namespace btt = boost::math::fpc;
   btt::close_at_tolerance<T> comp(btt::percent_tolerance(std::numeric_limits<T>::epsilon()));
   return(! comp(d, 0));
 }
-  
+
 // 3 unsigned long long values
 inline unsigned long long Min(unsigned long long d1, unsigned long long d2, unsigned long long d3)
 {
@@ -91,7 +92,7 @@ inline double Min(double d1, double d2, double d3)
 
 inline double Mid(double a, double b, double c)
 {
-  return ((a > b) ? ((a < c) ? a : ((b > c) ? b : c)) : 
+  return ((a > b) ? ((a < c) ? a : ((b > c) ? b : c)) :
 	            ((b < c) ? b : ((a > c) ? a : c)));
 }
 
@@ -112,7 +113,7 @@ inline int Min(int d1, int d2, int d3)
 
 inline int Mid(int a, int b, int c)
 {
-  return ((a > b) ? ((a < c) ? a : ((b > c) ? b : c)) : 
+  return ((a > b) ? ((a < c) ? a : ((b > c) ? b : c)) :
 	            ((b < c) ? b : ((a > c) ? a : c)));
 }
 
@@ -137,7 +138,7 @@ inline unsigned int Mid(unsigned int a,
 			unsigned int b,
 			unsigned int c)
 {
-  return ((a > b) ? ((a < c) ? a : ((b > c) ? b : c)) : 
+  return ((a > b) ? ((a < c) ? a : ((b > c) ? b : c)) :
 	            ((b < c) ? b : ((a > c) ? a : c)));
 }
 
@@ -160,7 +161,7 @@ inline long  Min(long  d1, long  d2, long  d3)
 
 inline long Mid(long a, long b, long c)
 {
-  return ((a > b) ? ((a < c) ? a : ((b > c) ? b : c)) : 
+  return ((a > b) ? ((a < c) ? a : ((b > c) ? b : c)) :
 	            ((b < c) ? b : ((a > c) ? a : c)));
 }
 
@@ -182,7 +183,7 @@ inline long long  Min(long long  d1, long long  d2, long long  d3)
 
 inline long long Mid(long long a, long long b, long long c)
 {
-  return ((a > b) ? ((a < c) ? a : ((b > c) ? b : c)) : 
+  return ((a > b) ? ((a < c) ? a : ((b > c) ? b : c)) :
 	            ((b < c) ? b : ((a > c) ? a : c)));
 }
 
@@ -261,8 +262,8 @@ inline int Floor(double d)
       return i;
     else
       return i-1;
-  } 
-  else 
+  }
+  else
   {
     return (static_cast<int>(d));
   }
@@ -277,8 +278,8 @@ inline int Floor(float f)
       return (i);
     else
       return (i-1);
-  } 
-  else 
+  }
+  else
   {
     return (static_cast<int>(f));
   }
@@ -301,8 +302,8 @@ inline bool IsInfinite(double val)
 
 inline bool is_integral_value(double x)
 {
-  return std::numeric_limits<SCIRun::size_type>::min() <= x && 
-    x <= std::numeric_limits<SCIRun::size_type>::max() && 
+  return std::numeric_limits<SCIRun::size_type>::min() <= x &&
+    x <= std::numeric_limits<SCIRun::size_type>::max() &&
     x == static_cast<SCIRun::size_type>(x);
 }
 

@@ -237,12 +237,12 @@ void TextBuilder::printString(const std::string& oneline,
     auto geomVBO = SpireVBO(vboName, attribs, vboBufferSPtr2,
       numVBOElements, BBox(), true);
 
-    geom.mVBOs.push_back(geomVBO);
+    geom.vbos().push_back(geomVBO);
 
     // Construct IBO.
 
     SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr2);
-    geom.mIBOs.push_back(geomIBO);
+    geom.ibos().push_back(geomIBO);
     RenderState renState;
     renState.set(RenderState::USE_COLORMAP, false);
     renState.set(RenderState::USE_TRANSPARENCY, false);
@@ -256,7 +256,7 @@ void TextBuilder::printString(const std::string& oneline,
     // Add all uniforms generated above to the pass.
     for (const auto& uniform : uniforms) { pass2.addUniform(uniform); }
 
-    geom.mPasses.push_back(pass2);
+    geom.passes().push_back(pass2);
   }
 }
 

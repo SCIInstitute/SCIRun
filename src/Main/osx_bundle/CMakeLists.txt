@@ -123,7 +123,6 @@ ENDIF()
 
 MESSAGE(STATUS "Building Mac OS X bundle")
 
-
 ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
   POST_BUILD
   # configure Qt libs

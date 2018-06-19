@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1440</width>
-    <height>912</height>
+    <height>1223</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,7 +45,7 @@
          <x>0</x>
          <y>0</y>
          <width>1093</width>
-         <height>544</height>
+         <height>853</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -229,6 +229,7 @@
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Window_Layout"/>
+    <addaction name="actionToggleFullScreenMode_"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -1032,6 +1033,9 @@
    </property>
   </action>
   <action name="actionImportNetwork_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>*Import 4.x network file...</string>
    </property>
@@ -1256,6 +1260,14 @@
    </property>
    <property name="text">
     <string>Miniview</string>
+   </property>
+  </action>
+  <action name="actionToggleFullScreenMode_">
+   <property name="text">
+    <string>Toggle Full Screen Mode</string>
+   </property>
+   <property name="shortcut">
+    <string/>
    </property>
   </action>
  </widget>

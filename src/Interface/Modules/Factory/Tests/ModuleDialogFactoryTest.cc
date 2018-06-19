@@ -44,7 +44,7 @@ using namespace Testing;
 using namespace Modules::Factory;
 using namespace Dataflow::Networks;
 
-const int NUM_DIALOGS = 104;
+const int NUM_DIALOGS = 114;
 const int EXPECTED_RANGE = 5;   // Require updating these numbers every few modules
 
 TEST(ModuleDialogFactoryTests, ListAllDialogs)

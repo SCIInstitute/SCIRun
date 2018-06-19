@@ -55,7 +55,7 @@ namespace Math {
 
     EvaluateLinearAlgebraBinaryAlgorithm();
     typedef boost::tuple<SCIRun::Core::Datatypes::MatrixHandle, SCIRun::Core::Datatypes::MatrixHandle> Inputs;
-    typedef boost::tuple<Operator, boost::optional<std::string> > Parameters;
+    struct Parameters { Operator op; std::string func; };
     typedef SCIRun::Core::Datatypes::MatrixHandle Outputs;
 
     Outputs run(const Inputs& inputs, const Parameters& params) const;

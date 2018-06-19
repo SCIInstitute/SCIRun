@@ -140,8 +140,8 @@ public:
 
   std::set<GLuint> mValidKeys;
 
-  void preWalkComponents(spire::ESCoreBase&) {mValidKeys.clear();}
-  void postWalkComponents(spire::ESCoreBase& core)
+  void preWalkComponents(spire::ESCoreBase&) override {mValidKeys.clear();}
+  void postWalkComponents(spire::ESCoreBase& core) override 
   {
     std::weak_ptr<IBOMan> im = core.getStaticComponent<StaticIBOMan>()->instance_;
     if (std::shared_ptr<IBOMan> man = im.lock()) {
@@ -178,4 +178,3 @@ const char* IBOMan::getGCName()
 }
 
 } // namespace ren
-

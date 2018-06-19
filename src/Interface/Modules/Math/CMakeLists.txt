@@ -48,6 +48,8 @@ SET(Interface_Modules_Math_FORMS
   SetSubmatrix.ui
   BooleanCompareDialog.ui
   DisplayHistogram.ui
+  BasicPlotter.ui
+  AdvancedPlotter.ui
 )
 
 SET(Interface_Modules_Math_HEADERS
@@ -73,6 +75,9 @@ SET(Interface_Modules_Math_HEADERS
   SolveComplexLinearSystemDialog.h
   BooleanCompareDialog.h
   DisplayHistogramDialog.h
+  BasicPlotterDialog.h
+  AdvancedPlotterDialog.h
+  PlotDialog.h
 )
 
 SET(Interface_Modules_Math_SOURCES
@@ -97,10 +102,13 @@ SET(Interface_Modules_Math_SOURCES
   SolveComplexLinearSystemDialog.cc
   BooleanCompareDialog.cc
   DisplayHistogramDialog.cc
+  BasicPlotterDialog.cc
+  AdvancedPlotterDialog.cc
+  PlotDialog.cc
 )
 
-QT4_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS ${Interface_Modules_Math_FORMS})
-QT4_WRAP_CPP(Interface_Modules_Math_HEADERS_MOC ${Interface_Modules_Math_HEADERS})
+QT_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS "${Interface_Modules_Math_FORMS}")
+QT_WRAP_CPP(Interface_Modules_Math_HEADERS_MOC "${Interface_Modules_Math_HEADERS}")
 
 SCIRUN_ADD_LIBRARY(Interface_Modules_Math
   ${Interface_Modules_Math_HEADERS}
@@ -114,9 +122,14 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Math
   Modules_Math
   Modules_Legacy_Math
   Interface_Modules_Base
-
   ${SCI_BOOST_LIBRARY}
-  ${QT_LIBRARIES})
+  ${QT_LIBRARIES}
+  ${SCI_QWT_LIBRARY}
+  )
+
+IF(QT5_BUILD)
+  ADD_DEFINITIONS(-DQWT_DLL)
+ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Math)

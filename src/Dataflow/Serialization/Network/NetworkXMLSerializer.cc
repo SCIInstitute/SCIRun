@@ -92,6 +92,8 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
       {
         static std::ofstream missingModulesFile((Core::Logging::LogSettings::Instance().logDirectory() / "missingModules.log").string());
         missingModulesFile << "File load problem: " << e.what() << std::endl;
+        Core::Logging::GeneralLog::Instance().get()->critical("File load problem: {}", e.what());
+        throw;
       }
     }
   }
