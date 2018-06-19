@@ -227,6 +227,7 @@ void OutputPort::sendData(DatatypeHandle data)
       source_->send(c->iport_->sink());
     }
   }
+  connectionCountIncreasedFlag_ = false;
 }
 
 bool OutputPort::hasData() const
