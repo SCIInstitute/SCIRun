@@ -33,6 +33,11 @@
 
 using namespace SCIRun::Core::Logging;
 
+#ifdef WIN32
+#include <windows.h>
+#include <VersionHelpers.h>
+#endif
+
 CORE_SINGLETON_IMPLEMENTATION(LogSettings)
 
 bool LogSettings::verbose() const
@@ -43,10 +48,18 @@ bool LogSettings::verbose() const
 void LogSettings::setVerbose(bool v)
 {
   verbose_ = v;
-  //std::cout << "@@@ global setVerbose " << v << std::endl;
   spdlog::set_level(v ? spdlog::level::debug : spdlog::level::warn);
 
   GeneralLog::Instance().setVerbose(v);
+}
+
+bool SCIRun::Core::Logging::useLogCheckForWindows7()
+{
+#ifdef WIN32
+  return IsWindows7OrGreater() && !IsWindows8OrGreater();
+#else
+  return true;
+#endif
 }
 
   //          static const std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} %c [%p] %m%n");
@@ -89,31 +102,37 @@ namespace
 
 Logger2 Log2::get()
 {
-  static std::mutex mutex;
-  if (!logger_)
+  if (useLog_)
   {
-    std::lock_guard<std::mutex> g(mutex);
+    static std::mutex mutex;
     if (!logger_)
     {
-      spdlog::set_async_mode(1 << 10);
-      std::transform(customSinks_.begin(), customSinks_.end(), std::back_inserter(sinks_),
-        [](LogAppenderStrategyPtr app) { return std::make_shared<ThreadedSink>(app); });
-      logger_ = std::make_shared<spdlog::logger>(name_, sinks_.begin(), sinks_.end());
-      logger_->trace("{} log initialized.", name_);
-      setVerbose(verbose());
+      std::lock_guard<std::mutex> g(mutex);
+      if (!logger_)
+      {
+        spdlog::set_async_mode(1 << 10);
+        std::transform(customSinks_.begin(), customSinks_.end(), std::back_inserter(sinks_),
+          [](LogAppenderStrategyPtr app) { return std::make_shared<ThreadedSink>(app); });
+        logger_ = std::make_shared<spdlog::logger>(name_, sinks_.begin(), sinks_.end());
+        logger_->trace("{} log initialized.", name_);
+        setVerbose(verbose());
+      }
     }
   }
   return logger_;
 }
 
-Log2::Log2(const std::string& name) : name_(name)
+Log2::Log2(const std::string& name, bool useLog) : useLog_(useLog), name_(name)
 {
 }
 
 void Log2::addColorConsoleSink()
 {
-  auto consoleSink = spdlog::stdout_color_mt("dummy" + name_)->sinks()[0];
-  addSink(consoleSink);
+  if (useLog_)
+  {
+    auto consoleSink = spdlog::stdout_color_mt("dummy" + name_)->sinks()[0];
+    addSink(consoleSink);
+  }
 }
 
 bool Log2::verbose() const
@@ -132,17 +151,23 @@ void Log2::setVerbose(bool v)
   }
 }
 
-GeneralLog::GeneralLog() : Log2("root")
+GeneralLog::GeneralLog() : Log2("root", useLogCheckForWindows7())
 {
-  addColorConsoleSink();
-  auto rotating = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-    (LogSettings::Instance().logDirectory() / "scirun5_root_v2.log").string(), 1024*1024, 3);
-  addSink(rotating);
+  if (useLog_)
+  {
+    addColorConsoleSink();
+    auto rotating = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+      (LogSettings::Instance().logDirectory() / "scirun5_root_v2.log").string(), 1024 * 1024, 3);
+    addSink(rotating);
+  }
 }
 
-ModuleLog::ModuleLog() : Log2("module")
+ModuleLog::ModuleLog() : Log2("module", useLogCheckForWindows7())
 {
-  addColorConsoleSink();
+  if (useLog_)
+  {
+    addColorConsoleSink();
+  }
 }
 
 CORE_SINGLETON_IMPLEMENTATION(ModuleLog)
