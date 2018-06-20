@@ -56,7 +56,7 @@ void LogSettings::setVerbose(bool v)
 bool SCIRun::Core::Logging::useLogCheckForWindows7()
 {
 #ifdef WIN32
-  return IsWindows7OrGreater() && !IsWindows8OrGreater();
+  return !(IsWindows7OrGreater() && !IsWindows8OrGreater());
 #else
   return true;
 #endif
