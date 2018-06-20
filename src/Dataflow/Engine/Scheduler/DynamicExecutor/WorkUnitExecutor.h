@@ -59,7 +59,7 @@ namespace SCIRun {
           const Networks::ExecutableLookup* lookup_;
           ProducerInterfacePtr producer_;
           bool shouldLog_;
-          static Core::Logging::Logger2 log_;
+          //static Core::Logging::Logger2 log_;
         };
 
 

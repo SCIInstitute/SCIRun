@@ -311,7 +311,7 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
           [&](const PortWidget* port) { return port->get_typename() == iport->get_typename() && port->getIndex() >= nextInputIndex; });
         if (toConnect == newInputs.end())
         {
-          guiLog->critical("Logical error: could not find input port to connect to {}, {}", iport->name().toStdString(), nextInputIndex);
+          guiLogCritical("Logical error: could not find input port to connect to {}, {}", iport->name().toStdString(), nextInputIndex);
           break;
         }
         nextInputIndex = (*toConnect)->getIndex() + 1;
@@ -331,7 +331,7 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
           [&](const PortWidget* port) { return port->get_typename() == oport->get_typename() && port->getIndex() >= nextOutputIndex; });
         if (toConnect == newOutputs.end())
         {
-          guiLog->critical("Logical error: could not find output port to connect to {}", oport->name().toStdString());
+          guiLogCritical("Logical error: could not find output port to connect to {}", oport->name().toStdString());
           break;
         }
         auto connectedPorts = oport->connectedPorts();

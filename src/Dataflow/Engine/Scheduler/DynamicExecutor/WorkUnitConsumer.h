@@ -153,7 +153,7 @@ namespace DynamicExecutor {
     const Networks::ExecutableLookup* lookup_;
     ExecutionThreadGroupPtr executeThreadGroup_;
 
-    static Core::Logging::Logger2 log_;
+    //static Core::Logging::Logger2 log_;
     bool shouldLog_;
   };
 
