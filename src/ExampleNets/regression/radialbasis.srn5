@@ -38,7 +38,7 @@
 									<name>MaxDistance</name>
 									<value>
 										<which>1</which>
-										<value>1.79769313486231571e+308</value>
+										<value>1.79769313486231570e+308</value>
 									</value>
 								</second>
 							</item>
@@ -50,7 +50,7 @@
 									<name>OutsideValue</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -102,7 +102,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/dan/Downloads/For_SCIRun5 (1)/inputLhs.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/radial_basis/inputSource.fld</value>
 									</value>
 								</second>
 							</item>
@@ -154,7 +154,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/dan/Downloads/For_SCIRun5 (1)/inpoutRHS.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/radial_basis/inputDest.fld</value>
 									</value>
 								</second>
 							</item>
@@ -206,7 +206,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/dan/Downloads/For_SCIRun5 (1)/result.fld</value>
+										<value>%SCIRUNDATADIR%/Fields/radial_basis/result.fld</value>
 									</value>
 								</second>
 							</item>
@@ -374,57 +374,57 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>MapFieldDataOntoNodesRadialbasis:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>2.28000000000000000e+02</first>
-				<second>2.28000000000000000e+02</second>
+				<first>2.28000000000000000e+002</first>
+				<second>2.28000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:0</first>
 			<second>
-				<first>5.00000000000000000e+01</first>
-				<second>5.00000000000000000e+01</second>
+				<first>5.00000000000000000e+001</first>
+				<second>5.00000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:1</first>
 			<second>
-				<first>3.14000000000000000e+02</first>
-				<second>5.00000000000000000e+01</second>
+				<first>3.14000000000000000e+002</first>
+				<second>5.00000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadField:2</first>
 			<second>
-				<first>5.78000000000000000e+02</first>
-				<second>5.00000000000000000e+01</second>
+				<first>5.78000000000000000e+002</first>
+				<second>5.00000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:0</first>
 			<second>
-				<first>5.00000000000000000e+01</first>
-				<second>1.60000000000000000e+02</second>
+				<first>0.00000000000000000e+000</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:1</first>
 			<second>
-				<first>3.14000000000000000e+02</first>
-				<second>1.60000000000000000e+02</second>
+				<first>3.04000000000000000e+002</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:2</first>
 			<second>
-				<first>5.78000000000000000e+02</first>
-				<second>1.60000000000000000e+02</second>
+				<first>5.78000000000000000e+002</first>
+				<second>1.60000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:3</first>
 			<second>
-				<first>1.08000000000000000e+02</first>
-				<second>3.61000000000000000e+02</second>
+				<first>1.08000000000000000e+002</first>
+				<second>3.61000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>

@@ -39,6 +39,7 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Math/MiscMath.h>
+#include <Core/Logging/Log.h>
 #include <vector>
 #include <sstream>
 
@@ -48,6 +49,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun;
 
 /// @todo: code cleanup needed
@@ -99,7 +101,6 @@ void MapFieldDataOntoNodesRadialbasis::execute()
   }
 }
 
-
 bool MapFieldDataOntoNodesRadialbasisImpl::radial_basis_func(FieldHandle& output, FieldHandle source, FieldHandle destination)
 {
   auto cors = source->vmesh();
@@ -107,8 +108,6 @@ bool MapFieldDataOntoNodesRadialbasisImpl::radial_basis_func(FieldHandle& output
 
   FieldInformation fi(destination);
   FieldInformation fis(source);
-
-  FieldHandle input_cp(source->deep_clone());
 
   VMesh::Node::size_type num_cors, num_pts;
   VMesh::Node::iterator iti,itj;
@@ -152,7 +151,7 @@ bool MapFieldDataOntoNodesRadialbasisImpl::radial_basis_func(FieldHandle& output
   //create the right side of the equation
   DenseMatrix rsideMat(num_cors, 1);
 
-  auto ifield = input_cp->vfield();
+  auto ifield = source->vfield();
   //TODO: NOT how to iterate through nodes
   for(int i = 0; i < num_cors; ++i)
   {
@@ -162,16 +161,14 @@ bool MapFieldDataOntoNodesRadialbasisImpl::radial_basis_func(FieldHandle& output
     rsideMat(i, 0) = elec_val;
   }
 
-  DenseMatrix Um, Vm, Sm;
-
   //run SVD
   Eigen::JacobiSVD<DenseMatrix::EigenBase> svd_mat(sigma, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
-  Um = svd_mat.matrixU();
-  Sm = svd_mat.singularValues();
-  Vm = svd_mat.matrixV();
+  DenseMatrix Um = svd_mat.matrixU();
+  DenseMatrix Sm = svd_mat.singularValues();
+  DenseMatrix Vm = svd_mat.matrixV();
 
-  auto coefMat = Vm.transpose() * (Um.transpose() * rsideMat).cwiseQuotient(Sm);
+  auto coefMat = Vm * (Um.transpose() * rsideMat).cwiseQuotient(Sm);
 
   //done with solve, make the new field
   return interp_on_mesh(points, cors, coefMat, output);
@@ -197,7 +194,7 @@ bool MapFieldDataOntoNodesRadialbasisImpl::interp_on_mesh(VMesh* points, VMesh* 
   for (int i = 0; i < num_pts; ++i)
   {
     sumer = 0;
-    max_dist = 0.0;
+    max_dist = 0;
     for (int j = 0; j<num_cors; ++j)
     {
       iti = i;
