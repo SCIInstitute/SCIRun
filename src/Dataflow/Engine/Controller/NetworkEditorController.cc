@@ -384,7 +384,7 @@ boost::optional<ConnectionId> NetworkEditorController::requestConnection(const P
     return id;
   }
 
-  GeneralLog::Instance().get()->warn("Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module.");
+  logWarning("Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module.");
   invalidConnection_(desc);
   return boost::none;
 }
@@ -511,14 +511,14 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       else
       {
 #ifndef BUILD_HEADLESS
-        GeneralLog::Instance().get()->info("module position editor unavailable, module positions at default");
+        logInfo("module position editor unavailable, module positions at default");
 #endif
       }
       networkDoneLoading_(static_cast<int>(theNetwork_->nmodules()) + 1);
     }
     catch (ExceptionBase& e)
     {
-      GeneralLog::Instance().get()->error("File load failed: exception while processing xml network data: {}", e.what());
+      logError("File load failed: exception while processing xml network data: {}", e.what());
       theNetwork_->clear();
       throw;
     }
@@ -593,11 +593,11 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
         //TODO: need disabled here?
       }
       else
-        GeneralLog::Instance().get()->info("module position editor unavailable, module positions at default");
+        logInfo("module position editor unavailable, module positions at default");
     }
     catch (ExceptionBase& e)
     {
-      GeneralLog::Instance().get()->error("File load failed: exception while processing xml network data: {}", e.what());
+      logError("File load failed: exception while processing xml network data: {}", e.what());
       theNetwork_->clear();
       throw;
     }
@@ -628,7 +628,7 @@ void NetworkEditorController::executeModule(const ModuleHandle& module, const Ex
   }
   catch (NetworkHasCyclesException&)
   {
-    SCIRun::Core::Logging::GeneralLog::Instance().get()->error("Cannot schedule execution: network has cycles. Please break all cycles and try again.");
+    logError("Cannot schedule execution: network has cycles. Please break all cycles and try again.");
     ExecutionContext::executionBounds_.executeFinishes_(-1);
     return;
   }

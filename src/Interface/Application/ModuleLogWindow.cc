@@ -106,7 +106,9 @@ void ModuleLogger::error(const std::string& msg) const
   alert(red);
   popup(qmsg);
 
-  ModuleLog::Instance().get()->error("[{0}] {1}", moduleName_, msg);
+  auto log = ModuleLog::Instance().get();
+  if (log)
+    log->error("[{0}] {1}", moduleName_, msg);
 }
 
 void ModuleLogger::warning(const std::string& msg) const
@@ -115,7 +117,9 @@ void ModuleLogger::warning(const std::string& msg) const
   logSignal("WARNING: " + QString::fromStdString(msg), yellow);
   alert(yellow);
 
-  ModuleLog::Instance().get()->warn("[{0}] {1}", moduleName_, msg);
+  auto log = ModuleLog::Instance().get();
+  if (log)
+    log->warn("[{0}] {1}", moduleName_, msg);
 }
 
 void ModuleLogger::remark(const std::string& msg) const
@@ -124,12 +128,16 @@ void ModuleLogger::remark(const std::string& msg) const
   logSignal("REMARK: " + QString::fromStdString(msg), blue);
   alert(blue);
 
-  ModuleLog::Instance().get()->info("[{0}] NOTICE: {1}", moduleName_, msg);
+  auto log = ModuleLog::Instance().get();
+  if (log)
+    log->info("[{0}] NOTICE: {1}", moduleName_, msg);
 }
 
 void ModuleLogger::status(const std::string& msg) const
 {
   logSignal(QString::fromStdString(msg), Qt::black);
 
-  ModuleLog::Instance().get()->info("[{0}] {1}", moduleName_, msg);
+  auto log = ModuleLog::Instance().get();
+  if (log)
+    log->info("[{0}] {1}", moduleName_, msg);
 }

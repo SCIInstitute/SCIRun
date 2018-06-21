@@ -371,7 +371,7 @@ private:
     if (iter == map.end())
     {
       const std::string& first = map.begin()->second;
-      GeneralLog::Instance().get()->warn("Combo box state error: key not found ({}), replacing with {}", key, first);
+      logWarning("Combo box state error: key not found ({}), replacing with {}", key, first);
       return first;
     }
     return iter->second;
@@ -973,7 +973,7 @@ ScopedWidgetSignalBlocker::~ScopedWidgetSignalBlocker()
 void SCIRun::Gui::openUrl(const QString& url, const std::string& name)
 {
   if (!QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode)))
-    GeneralLog::Instance().get()->error("Failed to open {}", name);
+    logError("Failed to open {}", name);
 }
 
 void SCIRun::Gui::openPythonAPIDoc()

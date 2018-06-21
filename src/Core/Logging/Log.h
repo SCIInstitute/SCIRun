@@ -54,6 +54,8 @@ namespace SCIRun
 
       typedef boost::shared_ptr<LogAppenderStrategy> LogAppenderStrategyPtr;
 
+      SCISHARE bool useLogCheckForWindows7();
+
       class SCISHARE LogSettings final
       {
         CORE_SINGLETON(LogSettings)
@@ -71,7 +73,7 @@ namespace SCIRun
       class SCISHARE Log2
       {
       public:
-        explicit Log2(const std::string& name);
+        Log2(const std::string& name, bool useLog);
         Logger2 get();
         void addSink(spdlog::sink_ptr sink)
         {
@@ -85,6 +87,7 @@ namespace SCIRun
         bool verbose() const;
       protected:
         void addColorConsoleSink();
+        bool useLog_;
       private:
         Logger2 logger_;
         std::string name_;
@@ -112,30 +115,56 @@ namespace SCIRun
   template <class... T>
   void LOG_DEBUG(const char* fmt, T&&... args)
   {
-    SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(fmt, args...);
+    auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
+    if (log)
+      log->debug(fmt, args...);
   }
 
   inline void LOG_DEBUG(const std::string& str)
   {
-    SCIRun::Core::Logging::GeneralLog::Instance().get()->debug(str);
+    auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
+    if (log)
+      log->debug(str);
   }
 
   template <class... T>
   void LOG_TRACE(const char* fmt, T&&... args)
   {
-    SCIRun::Core::Logging::GeneralLog::Instance().get()->trace(fmt, args...);
+    auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
+    if (log)
+      log->trace(fmt, args...);
   }
 
   template <class... T>
   void logInfo(const char* fmt, T&&... args)
   {
-    SCIRun::Core::Logging::GeneralLog::Instance().get()->info(fmt, args...);
+    auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
+    if (log)
+      log->info(fmt, args...);
   }
 
   template <class... T>
   void logWarning(const char* fmt, T&&... args)
   {
-    SCIRun::Core::Logging::GeneralLog::Instance().get()->warn(fmt, args...);
+    auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
+    if (log)
+      log->warn(fmt, args...);
+  }
+
+  template <class... T>
+  void logError(const char* fmt, T&&... args)
+  {
+    auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
+    if (log)
+      log->error(fmt, args...);
+  }
+
+  template <class... T>
+  void logCritical(const char* fmt, T&&... args)
+  {
+    auto log = SCIRun::Core::Logging::GeneralLog::Instance().get();
+    if (log)
+      log->critical(fmt, args...);
   }
 
   #define DEBUG_LOG_LINE_INFO LOG_DEBUG("Debugging info: file {} line {} function {}", __FILE__, __LINE__, LOG_FUNC);
