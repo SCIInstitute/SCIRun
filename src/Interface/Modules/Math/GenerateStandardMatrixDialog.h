@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_MATH_SortMatrixDIALOG_H
-#define INTERFACE_MODULES_MATH_SortMatrixDIALOG_H
+#ifndef INTERFACE_MODULES_MATH_GenerateStandardMatrixDIALOG_H
+#define INTERFACE_MODULES_MATH_GenerateStandardMatrixDIALOG_H
 
-#include <Interface/Modules/Math/ui_SortMatrixDialog.h>
+#include <Interface/Modules/Math/ui_GenerateStandardMatrixDialog.h>
 //#include <boost/shared_ptr.hpp>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
@@ -37,16 +37,20 @@
 namespace SCIRun {
 namespace Gui {
   
-class SCISHARE SortMatrixDialog : public ModuleDialogGeneric,
-    public Ui::SortMatrixDialog
+class SCISHARE GenerateStandardMatrixDialog : public ModuleDialogGeneric,
+    public Ui::GenerateStandardMatrixDialog
 {
 	Q_OBJECT
 	
 public:
-  SortMatrixDialog(const std::string& name,
+  GenerateStandardMatrixDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   
+private:
+     
+     boost::shared_ptr<class GenerateStandardMatrixDialogImpl> impl_;
+    
 };
 
 }

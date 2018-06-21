@@ -52,6 +52,7 @@ SET(Modules_Math_SRCS
   BasicPlotter.cc
   AdvancedPlotter.cc
   SortMatrix.cc
+  GenerateStandardMatrix.cc
 )
 
 SET(Modules_Math_HEADERS
@@ -81,6 +82,7 @@ SET(Modules_Math_HEADERS
   BasicPlotter.h
   AdvancedPlotter.h
   SortMatrix.h
+  GenerateStandardMatrix.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Math

@@ -189,7 +189,8 @@ namespace Fields {
     OUTPUT_PORT(0, OutputField, Field);
   
     // this is needed for the module factory
-    static const Dataflow::Networks::ModuleLookupInfo staticInfo_;
+    // the arguments of this function could vary as NoAlgoOrUI or ModuleHasUIAndAlgorithm
+    MODULE_TRAITS_AND_INFO(NoAlgoOrUI);
   };
 }}}
 #endif
@@ -256,8 +257,9 @@ using namespace SCIRun::Core::Algorithms::Fields;
 
 // this defines the location of the module in the module list.  
 // "NewField" is the catagory and "SCIRun" is the package.
-const ModuleLookupInfo @ModuleName@::staticInfo_("@ModuleName@", 
-          "NewField", "SCIRun");
+
+MODULE_INFO_DEF(@ModuleName@, NewField, SCIRun) ;
+
 
 @ModuleName@::@ModuleName@() : Module(staticInfo_)
 {
@@ -435,7 +437,7 @@ namespace SCIRun {
         {
         public:
           @AlgorithmName@Algo();
-          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const; 
         };
       }}}}
 #endif 
@@ -471,7 +473,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 }
 
 //main algorithm function
-AlgorithmOutput @AlgorithmName@Algo::run_generic(const 
+AlgorithmOutput @AlgorithmName@Algo::run(const 
      AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
@@ -892,7 +894,7 @@ We need a couple more additions to make the value from the UI available for use 
 In the \emph{TestModuleSimpleUI.cc} file, add the following line before the main execute function, i.e., right after declaring the namespaces.
 \begin{verbatim}
 SCIRun::Core::Algorithms::AlgorithmParameterName 
-    TestModuleSimpleUI::FormatString("FormatString");
+   	 TestModuleSimpleUI::FormatString("FormatString");
 \end{verbatim}
 
 Next we need to be able to set the state defaults by creating context for the 'setStateDefault' function we just exposed.
@@ -1262,12 +1264,12 @@ class SCISHARE SortMatrixAlgo : public AlgorithmBase
       }}}}
 #endif
 \end{verbatim}
-In this algorithm, we have three functions to help implement the sorting algorithm, which will be called in the \verb|run_generic| function.  
+In this algorithm, we have three functions to help implement the sorting algorithm, which will be called in the \verb|run| function.  
 
 The \emph{SortMatrixAlgo.cc} file contains the computation code for the module.
 There are five functions in it.
 The first \verb|SortMatrixAlgo()| sets up the defaults for the parameters that are set in the module UI.
-\verb|run\_generic| is the main function of the algorithm and the module.  
+\verb|run| is the main function of the algorithm and the module.  
 It mostly takes the inputs from the module and sends the data to use in the helper functions.
 \verb|Sort| is the main helper function, which further processes the data into a format that be quickly sorted.  
 \verb|Quicksort| uses the output of \verb|Partition| to spilt the matrix into smaller and smaller chunks and recursively calls itself until the matrix is sorted.
@@ -1406,7 +1408,7 @@ Be sure to added all eight files to the appropriate \emph{CMakeList.txt} files i
 Just add each of the filenames to the appropriate lists within the \emph{CMakeList.txt} file, as shown in the previous examples (Sections~\ref{sec:testing},~\ref{sec:duplicate},~\&~\ref{sec:addUI})
 
 When creating new modules, it can be easier to added the code in a piecemeal fashion.
-This would entail geting SCIRun to build with just the bare minimum of the algorithm code (only \verb|run_generic| with no calls other functions) then to add the other functions in a step by step manner.  
+This would entail geting SCIRun to build with just the bare minimum of the algorithm code (only \verb|run| with no calls other functions) then to add the other functions in a step by step manner.  
 This allows for easier debugging and a more systematic process to get the module working.  
 Check Section~\ref{sec:errors} for common build problems.
 
@@ -1504,7 +1506,7 @@ void @ModuleName@::setStateDefaults()
 or, if there is no module UI planned, add empty curly brackets to the header file declaration as discussed in Section~\ref{sec:header}.  
 
 The only code that will carry over is probably the \verb|execute()| and other functions coded in the module, so everything else can be removed. 
-Any helper functions will be should moved to an algorithm file later, but for now comment them out.
+Any helper functions should be moved to an algorithm file later, but for now comment them out.
 Also comment out the content of the executable for now.  
 
 In this state, the three module files (config, header, and .cc file) should be similar to the simplest example (Chapter~\ref{sec:ex_simple}), but the execute function will empty for now. 
@@ -1578,7 +1580,7 @@ If there is algorithm code, these default definitions can be passed to the algor
 If there is no algorithm code, the state variables may need to be declared in the module code, as in UI example (Chapter~\ref{sec:ex_UI}).
 After setting the state defaults (and building the code), the module UI should display the defaults.
 
-When converting the module code, if may be easier to start on the more standardized code, then work toward the more specific code, as we have been doing through this tutorial.  
+When converting the module code, it may be easier to start on the more standardized code, then work toward the more specific code, as we have been doing through this tutorial.  
 For example, it may be easier to get the input and output calls working (as in Chapter~\ref{sec:ex_simple}), and then work on making the output what it needs to.  
 Then, if there is algorithm code for the module, start by getting the algorithm call in the module code working with the algorithm code commented out, then work on the algorithm code.
 See Sections~\ref{sec:changes}~\&~\ref{sec:errors} for ideas to convert and fix specific functions and pieces of code.  
@@ -1588,7 +1590,7 @@ Commit all changes to the local branch.
 
 Testing for a new module should occur intermittently while converting the code to make debugging easier, as we described in earlier steps.  
 As you are trying to convert the module, test the module regularly to make sure that the output of module is as expected.  
-Before finishing and submitting the module, test several types of inputs into make sure that the module behaves as intended.  
+Before finishing and submitting the module, test several types of inputs to make sure that the module behaves as intended.  
 Since the module is converted from SCIRun 4, compare the outputs of the different  versions.  
 
 In addition to making sure that the module works as expected, the module will need to be tested regularly for regression testing.  

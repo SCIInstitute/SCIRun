@@ -26,30 +26,46 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_MATH_SortMatrixDIALOG_H
-#define INTERFACE_MODULES_MATH_SortMatrixDIALOG_H
+#ifndef CORE_ALGORITHMS_MATH_GenerateStandardMatrixALGO_H
+#define CORE_ALGORITHMS_MATH_GenerateStandardMatrixALGO_H
 
-#include <Interface/Modules/Math/ui_SortMatrixDialog.h>
-//#include <boost/shared_ptr.hpp>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/share.h>
+#include<Core/Datatypes/Matrix.h>
+#include<Core/Datatypes/DenseMatrix.h>
+#include<Core/Datatypes/DenseColumnMatrix.h>
+#include <Eigen/Dense>
 
-namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE SortMatrixDialog : public ModuleDialogGeneric,
-    public Ui::SortMatrixDialog
-{
-	Q_OBJECT
-	
-public:
-  SortMatrixDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  
-};
+#include<string>
+#include<sstream>
+#include<vector>
+#include<algorithm>
 
-}
+#include<Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include<Core/Algorithms/Base/AlgorithmBase.h>
+#include<Core/Algorithms/Math/share.h>
+
+namespace SCIRun{
+    namespace Core{
+        namespace Algorithms{
+            namespace Math{
+                
+                ALGORITHM_PARAMETER_DECL(MatrixType);
+                ALGORITHM_PARAMETER_DECL(Rows);
+                ALGORITHM_PARAMETER_DECL(Columns);
+                
+                
+                class SCISHARE GenerateStandardMatrixAlgo : public AlgorithmBase
+                {
+                public:
+                    GenerateStandardMatrixAlgo();
+                    
+                    AlgorithmOutput run(const AlgorithmInput& input) const;
+                    
+                    Datatypes::DenseMatrixHandle generateMatrix(std::string matrixType, int row, int col) const;
+                    
+                };
+            }
+        }
+    }
 }
 
 #endif
