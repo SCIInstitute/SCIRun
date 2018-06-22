@@ -40,7 +40,7 @@ namespace Datatypes {
 
   using ScalarValue = boost::variant<int, double>;
 
-  class Scalar : public Datatype
+  class SCISHARE Scalar : public Datatype
   {
   public:
     explicit Scalar(const ScalarValue& val) : value_(val) {}
@@ -51,7 +51,7 @@ namespace Datatypes {
     ScalarValue value_;
   };
 
-  class Double : public Scalar
+  class SCISHARE Double : public Scalar
   {
   public:
     explicit Double(double value) : Scalar(value) {}
@@ -60,7 +60,7 @@ namespace Datatypes {
     double doubleValue() const override { return toDouble(); }
   };
 
-  class Int32 : public Scalar
+  class SCISHARE Int32 : public Scalar
   {
   public:
     explicit Int32(int value) : Scalar(value) {}
