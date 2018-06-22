@@ -45,12 +45,9 @@ namespace Datatypes {
   typedef SharedPointer<const Datatype> DatatypeConstHandle;
   typedef boost::optional<DatatypeHandle> DatatypeHandleOption;
 
-  template <typename T>
   class Scalar;
-
-  typedef Scalar<int> Int32;
-  typedef Scalar<double> Double;
-
+  class Double;
+  class Int32;
   class String;
   class GeometryObject;
   class ColorMap;

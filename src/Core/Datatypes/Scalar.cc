@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,7 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Core/Datatypes/Scalar.h>
 
+using namespace SCIRun::Core::Datatypes;
 
+int Int32::toInt() const
+{
+  auto v = boost::get<int>(&value_);
+  return v ? *v : 0;
+}
+
+double Double::toDouble() const
+{
+  auto v = boost::get<double>(&value_);
+  return v ? *v : 0;
+}
