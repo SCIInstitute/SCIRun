@@ -83,7 +83,7 @@ Datatypes::DenseMatrixHandle GenerateStandardMatrixAlgo::generateMatrix(std::str
         return output;
     }
     
-    MatrixXd outputArray;
+    DenseMatrix outputArray;
     
     if(matrixType=="Zero")
     {

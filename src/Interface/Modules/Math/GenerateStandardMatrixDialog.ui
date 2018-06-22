@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>542</width>
-    <height>344</height>
+    <width>791</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -25,55 +25,66 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string/>
      </property>
-     <layout class="QFormLayout" name="formLayout">
-      <property name="fieldGrowthPolicy">
-       <enum>QFormLayout::FieldsStayAtSizeHint</enum>
-      </property>
-      <item row="1" column="0">
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
        <widget class="QLabel" name="Type">
         <property name="text">
          <string>Choose Matrix Type:</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
+      <item row="0" column="1">
        <widget class="QComboBox" name="matrixType_"/>
       </item>
-      <item row="9" column="1">
-       <widget class="QLabel" name="Columns">
-        <property name="text">
-         <string>Enter Columns</string>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="0">
+      <item row="1" column="0">
        <widget class="QLabel" name="Rows">
         <property name="text">
          <string>Enter Rows</string>
         </property>
        </widget>
       </item>
-      <item row="11" column="1">
-       <widget class="QDoubleSpinBox" name="StepSize"/>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="StepSize">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>999999999</number>
+        </property>
+       </widget>
       </item>
-      <item row="11" column="0">
-       <widget class="QDoubleSpinBox" name="noOfColumns_"/>
-      </item>
-      <item row="15" column="0">
+      <item row="3" column="0">
        <widget class="QLabel" name="StepSize_2">
         <property name="text">
          <string>Enter Step Size</string>
         </property>
        </widget>
       </item>
-      <item row="15" column="1">
-       <widget class="QDoubleSpinBox" name="noOfRows_"/>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="noOfColumns_">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>999999999</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="Columns">
+        <property name="text">
+         <string>Enter Columns</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QSpinBox" name="noOfRows_"/>
       </item>
      </layout>
     </widget>

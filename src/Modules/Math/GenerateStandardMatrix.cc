@@ -23,7 +23,7 @@ GenerateStandardMatrix::GenerateStandardMatrix() : Module(staticInfo_)
 void GenerateStandardMatrix::setStateDefaults()
 {
    
-    setStateIntFromAlgo(Parameters::MatrixType);
+    setStateStringFromAlgoOption(Parameters::MatrixType);
     setStateIntFromAlgo(Parameters::Rows);
     setStateIntFromAlgo(Parameters::Columns);
     
@@ -35,6 +35,11 @@ void GenerateStandardMatrix::execute()
     //auto input=getRequiredInput(InputMatrix);
     if(needToExecute())
     {
+        setAlgoOptionFromState(Parameters::MatrixType);
+        setAlgoIntFromState(Parameters::Rows);
+        setAlgoIntFromState(Parameters::Columns);
+        
+    
         AlgorithmInput input;
         auto output=algo().run(input);
         sendOutputFromAlgorithm(OutputMatrix,output);
