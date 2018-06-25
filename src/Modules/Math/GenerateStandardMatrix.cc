@@ -26,6 +26,7 @@ void GenerateStandardMatrix::setStateDefaults()
     setStateStringFromAlgoOption(Parameters::MatrixType);
     setStateIntFromAlgo(Parameters::Rows);
     setStateIntFromAlgo(Parameters::Columns);
+    setStateIntFromAlgo(Parameters::Size);
     
 }
 
@@ -38,6 +39,7 @@ void GenerateStandardMatrix::execute()
         setAlgoOptionFromState(Parameters::MatrixType);
         setAlgoIntFromState(Parameters::Rows);
         setAlgoIntFromState(Parameters::Columns);
+        setAlgoIntFromState(Parameters::Size);
         
     
         AlgorithmInput input;

@@ -43,6 +43,7 @@ using namespace SCIRun::Core::Algorithms::Math::Parameters;
 ALGORITHM_PARAMETER_DEF(Math, MatrixType);
 ALGORITHM_PARAMETER_DEF(Math, Rows);
 ALGORITHM_PARAMETER_DEF(Math, Columns);
+ALGORITHM_PARAMETER_DEF(Math, Size);
 
 GenerateStandardMatrixAlgo::GenerateStandardMatrixAlgo()
 {
@@ -52,7 +53,7 @@ GenerateStandardMatrixAlgo::GenerateStandardMatrixAlgo()
     //using namespace Parameters;
     addParameter(Parameters::Rows, 1);
     addParameter(Parameters::Columns, 1);
-
+    addParameter(Parameters::Size, 1);
 
     
     }
@@ -67,14 +68,15 @@ AlgorithmOutput GenerateStandardMatrixAlgo::run(const AlgorithmInput& input) con
     
     int rows = get(Parameters::Rows).toInt();
     int columns = get(Parameters::Columns).toInt();
-    auto outputMatrix=generateMatrix(matrixType, rows, columns);
+    int size = get(Parameters::Size).toInt();
+    auto outputMatrix=generateMatrix(matrixType, rows, columns,size);
      AlgorithmOutput output;
     output[Variables::OutputMatrix]=outputMatrix;
     
     return output;
 }
 
-Datatypes::DenseMatrixHandle GenerateStandardMatrixAlgo::generateMatrix(std::string matrixType, int rows, int columns) const
+Datatypes::DenseMatrixHandle GenerateStandardMatrixAlgo::generateMatrix(std::string matrixType, int rows, int columns, int size) const
 {
     if(rows<=0 || columns<=0)
     {
@@ -83,8 +85,8 @@ Datatypes::DenseMatrixHandle GenerateStandardMatrixAlgo::generateMatrix(std::str
         return output;
     }
     
-    DenseMatrix outputArray;
     
+    DenseMatrix outputArray;
     if(matrixType=="Zero")
     {
         outputArray=MatrixXd::Constant(rows, columns, 0);
@@ -97,7 +99,10 @@ Datatypes::DenseMatrixHandle GenerateStandardMatrixAlgo::generateMatrix(std::str
     
     if(matrixType=="NaN")
     {
-        error("Not yet developed");
+        DenseMatrix outputArray(rows,columns, std::numeric_limits<double>::quiet_NaN());
+        DenseMatrixHandle outputMatrix(new DenseMatrix(outputArray.matrix()));
+        return outputMatrix;
+        
     }
 
     if(matrixType=="Identity")
@@ -108,7 +113,17 @@ Datatypes::DenseMatrixHandle GenerateStandardMatrixAlgo::generateMatrix(std::str
     if(matrixType=="Series")
     {
         
-        error("Not yet developed");
+        auto outputArray=boost::make_shared<DenseMatrix>(rows,columns);
+        int inc=0;
+        for(int i=0;i<rows;i++)
+        {
+            for(int j=0;j<columns;j++)
+            {
+                inc+=size;
+                (*outputArray)(i,j)=inc;
+            }
+        }
+        return outputArray;
     }
     
     

@@ -71,5 +71,6 @@ GenerateStandardMatrixDialog::GenerateStandardMatrixDialog(const std::string& na
     addComboBoxManager(matrixType_, Parameters::MatrixType,impl_->value_);
     addSpinBoxManager(noOfRows_, Parameters::Rows);
     addSpinBoxManager(noOfColumns_, Parameters::Columns);
+    addSpinBoxManager(sizeOfStep_,Parameters::Size);
   }
 

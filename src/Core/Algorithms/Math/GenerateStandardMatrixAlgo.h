@@ -51,6 +51,7 @@ namespace SCIRun{
                 ALGORITHM_PARAMETER_DECL(MatrixType);
                 ALGORITHM_PARAMETER_DECL(Rows);
                 ALGORITHM_PARAMETER_DECL(Columns);
+                ALGORITHM_PARAMETER_DECL(Size);
                 
                 
                 class SCISHARE GenerateStandardMatrixAlgo : public AlgorithmBase
@@ -60,7 +61,7 @@ namespace SCIRun{
                     
                     AlgorithmOutput run(const AlgorithmInput& input) const;
                     
-                    Datatypes::DenseMatrixHandle generateMatrix(std::string matrixType, int row, int col) const;
+                    Datatypes::DenseMatrixHandle generateMatrix(std::string matrixType, int row, int col, int size) const;
                     
                 };
             }
