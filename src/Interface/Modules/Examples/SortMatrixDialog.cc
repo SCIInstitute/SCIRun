@@ -28,19 +28,20 @@
 
 #include <Interface/Modules/Math/SortMatrixDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <QtGui>
+#include <boost/shared_ptr.hpp>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
 SortMatrixDialog::SortMatrixDialog(const std::string& name, ModuleStateHandle state,
-	QWidget* parent/* = 0*/)
-	: ModuleDialogGeneric(state, parent)
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-	setupUi(this);
-	setWindowTitle(QString::fromStdString(name));
-	fixSize();
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-  addRadioButtonGroupManager({ ascendButton_, descendButton_ }, Variables::Method);
-}
+    addRadioButtonGroupManager({ascendButton_, descendButton_},Variables::Method);
+  }
+

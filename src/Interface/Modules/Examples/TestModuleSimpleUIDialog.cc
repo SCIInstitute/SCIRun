@@ -27,8 +27,8 @@
 */
 
 #include <Interface/Modules/String/TestModuleSimpleUIDialog.h>
+
 #include <Modules/String/TestModuleSimpleUI.h>
-//#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -41,7 +41,8 @@ TestModuleSimpleUIDialog::TestModuleSimpleUIDialog(const std::string& name, Modu
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-
-  addLineEditManager(inputstring_,TestModuleSimpleUI::FormatString);
+    addLineEditManager(inputstring_,TestModuleSimpleUI::FormatString);
+  //addCheckBoxManager(knob1CheckBox_, Parameters::Knob1);
+  //addDoubleSpinBoxManager(knob2SpinBox_, Parameters::Knob2);
 }
 

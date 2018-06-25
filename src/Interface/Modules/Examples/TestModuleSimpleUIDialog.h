@@ -30,6 +30,7 @@
 #define INTERFACE_MODULES_STRING_TestModuleSimpleUIDialog_H
 
 #include <Interface/Modules/String/ui_TestModuleSimpleUIDialog.h>
+//#include <boost/shared_ptr.hpp>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/String/share.h>
 
@@ -45,6 +46,7 @@ public:
   TestModuleSimpleUIDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
+  
 };
 
 }

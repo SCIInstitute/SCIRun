@@ -47,7 +47,7 @@ public:
   virtual void setStateDefaults() {}
 
   OUTPUT_PORT(0, OutputString, String);
-  MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+    MODULE_TRAITS_AND_INFO(NoAlgoOrUI);
 };
 }}}
 

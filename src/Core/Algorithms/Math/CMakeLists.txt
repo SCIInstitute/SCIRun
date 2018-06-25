@@ -46,7 +46,6 @@ SET(Algorithms_Math_SRCS
   CollectMatrices/CollectMatricesAlgorithm.cc
   ReportMatrixSliceMeasureAlgo.cc
   BooleanCompareAlgo.cc
-  SortMatrixAlgo.cc
   GenerateStandardMatrixAlgo.cc
 )
 
@@ -71,7 +70,6 @@ SET(Algorithms_Math_HEADERS
   CollectMatrices/CollectMatricesAlgorithm.h
   ReportMatrixSliceMeasureAlgo.h
   BooleanCompareAlgo.h
-  SortMatrixAlgo.h
   GenerateStandardMatrixAlgo.h
 )
 
