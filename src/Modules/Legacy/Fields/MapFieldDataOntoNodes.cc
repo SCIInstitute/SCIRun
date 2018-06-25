@@ -66,9 +66,6 @@ MapFieldDataOntoNodes::execute()
   auto destination = getRequiredInput(Destination);
   auto weights = getOptionalInput(Weights);
 
-//   if (inputs_changed_ || !oport_cached("Output") ||
-//     gui_quantity_.changed() || gui_value_.changed() ||
-//     gui_outside_value_.changed() || gui_max_distance_.changed())
   if (needToExecute())
   {
     setAlgoOptionFromState(Parameters::Quantity);

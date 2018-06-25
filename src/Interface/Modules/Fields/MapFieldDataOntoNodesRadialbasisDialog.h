@@ -26,31 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_CONVERTSCALARTOMATRIX_H
-#define MODULES_MATH_CONVERTSCALARTOMATRIX_H
+#ifndef INTERFACE_MODULES_MapFieldDataOntoNodesRadialbasisDialog_H
+#define INTERFACE_MODULES_MapFieldDataOntoNodesRadialbasisDialog_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include "Interface/Modules/Fields/ui_MapFieldDataOntoNodesRadialbasis.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Math {
+namespace Gui {
 
-  class SCISHARE ConvertScalarToMatrix : public Dataflow::Networks::Module,
-    public Has1InputPort<ScalarPortTag>,
-    public Has1OutputPort<MatrixPortTag>
-  {
-  public:
-    ConvertScalarToMatrix();
-    virtual void execute() override;
-    virtual void setStateDefaults() override {}
+class SCISHARE MapFieldDataOntoNodesRadialbasisDialog : public ModuleDialogGeneric,
+  public Ui::MapFieldDataOntoNodesRadialbasis
+{
+  Q_OBJECT
 
-    INPUT_PORT(0, Input, Scalar);
-    OUTPUT_PORT(0, Output, Matrix);
+public:
+  MapFieldDataOntoNodesRadialbasisDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+};
 
-    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
-    NEW_HELP_WEBPAGE_ONLY
-  };
-}}}
+}
+}
 
 #endif

@@ -91,13 +91,13 @@ void GetDomainBoundary::execute()
   {
     if (minValue && *minValue)
     {
-      double minrange = (*minValue)->value();
+      double minrange = (*minValue)->toDouble();
       get_state()->setValue(Parameters::MinRange, minrange);
       get_state()->setValue(Parameters::Domain, minrange);  //??
     }
     if (maxValue && *maxValue)
     {
-      double maxrange = (*maxValue)->value();
+      double maxrange = (*maxValue)->toDouble();
       get_state()->setValue(Parameters::MaxRange, maxrange);
     }
 

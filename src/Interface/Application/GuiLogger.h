@@ -41,15 +41,23 @@ namespace Gui {
   {
     CORE_SINGLETON(GuiLog)
   public:
-    GuiLog() : Log2("ui") {}
+    GuiLog() : Log2("ui", Core::Logging::useLogCheckForWindows7()) {}
   };
-
-  #define guiLog GuiLog::Instance().get()
 
   template <class... T>
   void guiLogDebug(const char* fmt, T&&... args)
   {
-    guiLog->debug(fmt, args...);
+    auto log = GuiLog::Instance().get();
+    if (log)
+      log->debug(fmt, args...);
+  }
+
+  template <class... T>
+  void guiLogCritical(const char* fmt, T&&... args)
+  {
+    auto log = GuiLog::Instance().get();
+    if (log)
+      log->critical(fmt, args...);
   }
 
   class GuiLogger : boost::noncopyable

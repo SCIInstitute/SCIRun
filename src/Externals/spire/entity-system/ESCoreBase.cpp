@@ -32,7 +32,7 @@ void ESCoreBase::addComponentContainer(BaseComponentContainer* componentCont, ui
   }
   else
   {
-    logRendererError("entity-system - Warning: Attempting to add pre-existing component container!");
+    //logRendererError("entity-system - Warning: Attempting to add pre-existing component container!");
     delete componentCont;
   }
 }

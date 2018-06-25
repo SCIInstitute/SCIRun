@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,31 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_CONVERTSCALARTOMATRIX_H
-#define MODULES_MATH_CONVERTSCALARTOMATRIX_H
+#ifndef MODULES_LEGACY_FIELDS_MapFieldDataOntoNodesRadialbasis_H__
+#define MODULES_LEGACY_FIELDS_MapFieldDataOntoNodesRadialbasis_H__
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+#include <Core/Thread/Interruptible.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
 namespace Modules {
-namespace Math {
+namespace Fields {
 
-  class SCISHARE ConvertScalarToMatrix : public Dataflow::Networks::Module,
-    public Has1InputPort<ScalarPortTag>,
-    public Has1OutputPort<MatrixPortTag>
+  class SCISHARE MapFieldDataOntoNodesRadialbasis : public Dataflow::Networks::Module,
+    public Has2InputPorts<FieldPortTag, FieldPortTag>,
+    public Has1OutputPort<FieldPortTag>,
+    public Core::Thread::Interruptible
   {
   public:
-    ConvertScalarToMatrix();
+    MapFieldDataOntoNodesRadialbasis();
+
     virtual void execute() override;
-    virtual void setStateDefaults() override {}
+    virtual void setStateDefaults() override;
 
-    INPUT_PORT(0, Input, Scalar);
-    OUTPUT_PORT(0, Output, Matrix);
+    INPUT_PORT(0, Source, Field);
+    INPUT_PORT(1, Destination, Field);
+    OUTPUT_PORT(0, Output, Field);
 
-    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
-    NEW_HELP_WEBPAGE_ONLY
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
   };
+
 }}}
 
 #endif

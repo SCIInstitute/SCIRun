@@ -26,31 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_CONVERTSCALARTOMATRIX_H
-#define MODULES_MATH_CONVERTSCALARTOMATRIX_H
+#include <Interface/Modules/Fields/MapFieldDataOntoNodesRadialbasisDialog.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
+#include <Core/Logging/Log.h>
+#include <Core/Math/MiscMath.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Math/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun {
-namespace Modules {
-namespace Math {
-
-  class SCISHARE ConvertScalarToMatrix : public Dataflow::Networks::Module,
-    public Has1InputPort<ScalarPortTag>,
-    public Has1OutputPort<MatrixPortTag>
-  {
-  public:
-    ConvertScalarToMatrix();
-    virtual void execute() override;
-    virtual void setStateDefaults() override {}
-
-    INPUT_PORT(0, Input, Scalar);
-    OUTPUT_PORT(0, Output, Matrix);
-
-    MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
-    NEW_HELP_WEBPAGE_ONLY
-  };
-}}}
-
-#endif
+MapFieldDataOntoNodesRadialbasisDialog::MapFieldDataOntoNodesRadialbasisDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  addComboBoxManager(quantityComboBox_, Parameters::Quantity);
+  addComboBoxManager(interpolationComboBox_, Parameters::InterpolationModel);
+  addDoubleSpinBoxManager(outsideValueDoubleSpinBox_, Parameters::OutsideValue);
+  addDoubleLineEditManager(maximumDistanceLineEdit_, Parameters::MaxDistance);
+}
