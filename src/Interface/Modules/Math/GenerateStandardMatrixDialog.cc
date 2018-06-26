@@ -83,11 +83,11 @@ GenerateStandardMatrixDialog::GenerateStandardMatrixDialog(const std::string& na
 
 void GenerateStandardMatrixDialog::enableWidgets(const QString& mode)
 {
-    sizeOfStep_->setReadOnly(mode!="Matrix with Series");
-    startPointer_->setReadOnly(mode!="Matrix with Series");
+    sizeOfStep_->setReadOnly(mode!="Matrix with Series" && mode!="Series");
+    startPointer_->setReadOnly(mode!="Matrix with Series" && mode!="Series");
     }
 
 void GenerateStandardMatrixDialog::pullSpecial()
 {
-    enableWidgets(QString::fromStdString(state_->getValue(Parameters::StartPointer).toString()));
+    enableWidgets(QString::fromStdString(state_->getValue(Parameters::MatrixType).toString()));
 }
