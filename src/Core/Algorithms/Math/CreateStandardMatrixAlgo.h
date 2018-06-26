@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_MATH_GenerateStandardMatrixALGO_H
-#define CORE_ALGORITHMS_MATH_GenerateStandardMatrixALGO_H
+#ifndef CORE_ALGORITHMS_MATH_CreateStandardMatrixALGO_H
+#define CORE_ALGORITHMS_MATH_CreateStandardMatrixALGO_H
 
 #include<Core/Datatypes/Matrix.h>
 #include<Core/Datatypes/DenseMatrix.h>
@@ -55,14 +55,14 @@ namespace SCIRun{
                 ALGORITHM_PARAMETER_DECL(StartPointer);
                 
                 
-                class SCISHARE GenerateStandardMatrixAlgo : public AlgorithmBase
+                class SCISHARE CreateStandardMatrixAlgo : public AlgorithmBase
                 {
                 public:
-                    GenerateStandardMatrixAlgo();
+                    CreateStandardMatrixAlgo();
                     
                     AlgorithmOutput run(const AlgorithmInput& input) const;
                     
-                    Datatypes::DenseMatrixHandle generateMatrix(std::string matrixType, int row, int col, int size) const;
+                    Datatypes::DenseMatrixHandle generateMatrix(std::string matrixType, int row, int col) const;
                     
                 };
             }

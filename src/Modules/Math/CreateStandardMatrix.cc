@@ -1,8 +1,8 @@
-#include<Modules/Math/GenerateStandardMatrix.h>
+#include<Modules/Math/CreateStandardMatrix.h>
 #include<Core/Datatypes/Matrix.h>
 #include<Core/Datatypes/DenseMatrix.h>
 #include<Dataflow/Network/Module.h>
-#include<Core/Algorithms/Math/GenerateStandardMatrixAlgo.h>
+#include<Core/Algorithms/Math/CreateStandardMatrixAlgo.h>
 
 
 using namespace SCIRun::Modules::Math;
@@ -12,15 +12,15 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 
 
-MODULE_INFO_DEF(GenerateStandardMatrix,Math,SCIRun);
+MODULE_INFO_DEF(CreateStandardMatrix,Math,SCIRun);
 
-GenerateStandardMatrix::GenerateStandardMatrix() : Module(staticInfo_)
+CreateStandardMatrix::CreateStandardMatrix() : Module(staticInfo_)
 {
     //INITIALIZE_PORT(InputMatrix);
     INITIALIZE_PORT(OutputMatrix);
 }
 
-void GenerateStandardMatrix::setStateDefaults()
+void CreateStandardMatrix::setStateDefaults()
 {
    
     setStateStringFromAlgoOption(Parameters::MatrixType);
@@ -31,7 +31,7 @@ void GenerateStandardMatrix::setStateDefaults()
     
 }
 
-void GenerateStandardMatrix::execute()
+void CreateStandardMatrix::execute()
 
 {
     //auto input=getRequiredInput(InputMatrix);

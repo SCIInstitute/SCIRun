@@ -27,7 +27,7 @@
 */
 
 
-#include <Core/Algorithms/Math/GenerateStandardMatrixAlgo.h>
+#include <Core/Algorithms/Math/CreateStandardMatrixAlgo.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Math/MiscMath.h>
@@ -46,7 +46,7 @@ ALGORITHM_PARAMETER_DEF(Math, Columns);
 ALGORITHM_PARAMETER_DEF(Math, Size);
 ALGORITHM_PARAMETER_DEF(Math, StartPointer);
 
-GenerateStandardMatrixAlgo::GenerateStandardMatrixAlgo()
+CreateStandardMatrixAlgo::CreateStandardMatrixAlgo()
 {
     //set parameter defaults for UI
     addOption(Parameters::MatrixType,"One","Zero|One|NaN|Identity|Series");
@@ -59,25 +59,22 @@ GenerateStandardMatrixAlgo::GenerateStandardMatrixAlgo()
     
     }
 
-AlgorithmOutput GenerateStandardMatrixAlgo::run(const AlgorithmInput& input) const{
+AlgorithmOutput CreateStandardMatrixAlgo::run(const AlgorithmInput& input) const{
     
     //pull parameter from UI
     std::string matrixType=getOption(Parameters::MatrixType);
     
-    //int rows = state->getValue(Parameters::Rows).toInt();
-    //int columns = state->getValue(Parameters::Columns).toInt();
     
     int rows = get(Parameters::Rows).toInt();
     int columns = get(Parameters::Columns).toInt();
-    int size = get(Parameters::Size).toInt();
-    auto outputMatrix=generateMatrix(matrixType, rows, columns,size);
+    auto outputMatrix=generateMatrix(matrixType, rows, columns);
      AlgorithmOutput output;
     output[Variables::OutputMatrix]=outputMatrix;
     
     return output;
 }
 
-Datatypes::DenseMatrixHandle GenerateStandardMatrixAlgo::generateMatrix(std::string matrixType, int rows, int columns, int size) const
+Datatypes::DenseMatrixHandle CreateStandardMatrixAlgo::generateMatrix(std::string matrixType, int rows, int columns) const
 {
     if(rows<=0 || columns<=0)
     {
@@ -113,6 +110,7 @@ Datatypes::DenseMatrixHandle GenerateStandardMatrixAlgo::generateMatrix(std::str
 
     if(matrixType=="Series")
     {
+        int size = get(Parameters::Size).toInt();
         int inc = get(Parameters::StartPointer).toInt();
         auto outputArray=boost::make_shared<DenseMatrix>(rows,columns);
         for(int i=0;i<rows;i++)

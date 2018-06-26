@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_MATH_GenerateStandardMatrixDIALOG_H
-#define INTERFACE_MODULES_MATH_GenerateStandardMatrixDIALOG_H
+#ifndef INTERFACE_MODULES_MATH_CreateStandardMatrixDIALOG_H
+#define INTERFACE_MODULES_MATH_CreateStandardMatrixDIALOG_H
 
-#include <Interface/Modules/Math/ui_GenerateStandardMatrixDialog.h>
+#include <Interface/Modules/Math/ui_CreateStandardMatrixDialog.h>
 //#include <boost/shared_ptr.hpp>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
@@ -37,13 +37,13 @@
 namespace SCIRun {
 namespace Gui {
   
-class SCISHARE GenerateStandardMatrixDialog : public ModuleDialogGeneric,
-    public Ui::GenerateStandardMatrixDialog
+class SCISHARE CreateStandardMatrixDialog : public ModuleDialogGeneric,
+    public Ui::CreateStandardMatrixDialog
 {
 	Q_OBJECT
 	
 public:
-  GenerateStandardMatrixDialog(const std::string& name,
+    CreateStandardMatrixDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
     
@@ -54,7 +54,7 @@ private Q_SLOTS:
     void enableWidgets(const QString& mode);
 private:
     
-     boost::shared_ptr<class GenerateStandardMatrixDialogImpl> impl_;
+     boost::shared_ptr<class CreateStandardMatrixDialogImpl> impl_;
     
 };
 

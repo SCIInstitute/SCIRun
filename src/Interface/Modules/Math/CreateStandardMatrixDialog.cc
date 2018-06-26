@@ -26,13 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Math/GenerateStandardMatrixDialog.h>
+#include <Interface/Modules/Math/CreateStandardMatrixDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-// #include <Core/Algorithms/Base/GenerateStandardMatrixAlgo.h> ----Make this algo file
-#include <Core/Algorithms/Math/GenerateStandardMatrixAlgo.h>
+#include <Core/Algorithms/Math/CreateStandardMatrixAlgo.h>
 #include <boost/shared_ptr.hpp>
 #include <Dataflow/Network/ModuleStateInterface.h>
-
 #include <QtGui>
 
 using namespace SCIRun::Gui;
@@ -43,10 +41,10 @@ using namespace SCIRun::Core::Algorithms::Math;
 
 namespace SCIRun {
     namespace Gui{
-        class GenerateStandardMatrixDialogImpl
+        class CreateStandardMatrixDialogImpl
         {
         public:
-            GenerateStandardMatrixDialogImpl()
+            CreateStandardMatrixDialogImpl()
             {
                 value_.insert(StringPair("Matrix with Zeros","Zero"));
                 value_.insert(StringPair("Matrix with Ones","One"));
@@ -62,10 +60,10 @@ namespace SCIRun {
     }
 }
 
-GenerateStandardMatrixDialog::GenerateStandardMatrixDialog(const std::string& name, ModuleStateHandle state,
+CreateStandardMatrixDialog::CreateStandardMatrixDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent),
-   impl_(new GenerateStandardMatrixDialogImpl)
+   impl_(new CreateStandardMatrixDialogImpl)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -81,13 +79,13 @@ GenerateStandardMatrixDialog::GenerateStandardMatrixDialog(const std::string& na
     connect(matrixType_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
   }
 
-void GenerateStandardMatrixDialog::enableWidgets(const QString& mode)
+void CreateStandardMatrixDialog::enableWidgets(const QString& mode)
 {
     sizeOfStep_->setReadOnly(mode!="Matrix with Series" && mode!="Series");
     startPointer_->setReadOnly(mode!="Matrix with Series" && mode!="Series");
     }
 
-void GenerateStandardMatrixDialog::pullSpecial()
+void CreateStandardMatrixDialog::pullSpecial()
 {
     enableWidgets(QString::fromStdString(state_->getValue(Parameters::MatrixType).toString()));
 }

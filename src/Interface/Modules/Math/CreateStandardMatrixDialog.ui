@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GenerateStandardMatrixDialog</class>
- <widget class="QDialog" name="GenerateStandardMatrixDialog">
+ <class>CreateStandardMatrixDialog</class>
+ <widget class="QDialog" name="CreateStandardMatrixDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>600</width>
-    <height>600</height>
+    <width>450</width>
+    <height>300</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -30,8 +30,8 @@
     <widget class="QGroupBox" name="groupBox">
      <property name="minimumSize">
       <size>
-       <width>500</width>
-       <height>500</height>
+       <width>400</width>
+       <height>250</height>
       </size>
      </property>
      <property name="autoFillBackground">
@@ -58,8 +58,8 @@
        <widget class="QComboBox" name="matrixType_">
         <property name="minimumSize">
          <size>
-          <width>15</width>
-          <height>10</height>
+          <width>10</width>
+          <height>7</height>
          </size>
         </property>
        </widget>
@@ -75,8 +75,8 @@
        <widget class="QSpinBox" name="noOfRows_">
         <property name="minimumSize">
          <size>
-          <width>15</width>
-          <height>10</height>
+          <width>10</width>
+          <height>7</height>
          </size>
         </property>
         <property name="minimum">
@@ -98,8 +98,8 @@
        <widget class="QSpinBox" name="noOfColumns_">
         <property name="minimumSize">
          <size>
-          <width>15</width>
-          <height>10</height>
+          <width>10</width>
+          <height>7</height>
          </size>
         </property>
         <property name="minimum">
@@ -121,8 +121,8 @@
        <widget class="QSpinBox" name="sizeOfStep_">
         <property name="minimumSize">
          <size>
-          <width>15</width>
-          <height>10</height>
+          <width>10</width>
+          <height>7</height>
          </size>
         </property>
        </widget>
@@ -138,8 +138,8 @@
        <widget class="QSpinBox" name="startPointer_">
         <property name="minimumSize">
          <size>
-          <width>15</width>
-          <height>10</height>
+          <width>10</width>
+          <height>7</height>
          </size>
         </property>
         <property name="minimum">
