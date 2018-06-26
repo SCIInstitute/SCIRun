@@ -32,7 +32,7 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
 
-void GuiLogger::logInfo(const QString& message)
+void GuiLogger::logInfoQ(const QString& message)
 {
   auto log = GuiLog::Instance().get();
   if (log)
@@ -41,7 +41,7 @@ void GuiLogger::logInfo(const QString& message)
     logInfo(message.toStdString().c_str());
 }
 
-void GuiLogger::logError(const QString& message)
+void GuiLogger::logErrorQ(const QString& message)
 {
   auto log = GuiLog::Instance().get();
   if (log)

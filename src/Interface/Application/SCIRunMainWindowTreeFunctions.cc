@@ -155,13 +155,13 @@ void SCIRunMainWindow::readCustomSnippets(QTreeWidgetItem* snips)
   QFile inputFile("patterns.txt");
   if (inputFile.open(QIODevice::ReadOnly))
   {
-    GuiLogger::logInfo("Pattern file opened: " + inputFile.fileName());
+    GuiLogger::logInfoQ("Pattern file opened: " + inputFile.fileName());
     QTextStream in(&inputFile);
     while (!in.atEnd())
     {
       QString line = in.readLine();
       addSnippet(line, snips);
-      GuiLogger::logInfo("Pattern read: " + line);
+      GuiLogger::logInfoQ("Pattern read: " + line);
     }
     inputFile.close();
   }

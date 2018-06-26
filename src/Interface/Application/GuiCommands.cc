@@ -193,7 +193,7 @@ bool NetworkFileProcessCommand::execute()
 {
   auto filename = get(Variables::Filename).toFilename().string();
   auto tempFile = get(Name("temporaryFile")).toBool();
-  GuiLogger::logInfo("Attempting load of " + QString::fromStdString(filename));
+  GuiLogger::logInfoQ("Attempting load of " + QString::fromStdString(filename));
 
   try
   {
@@ -312,7 +312,7 @@ bool NetworkSaveCommand::execute()
   {
     SCIRunMainWindow::Instance()->setCurrentFile(QString::fromStdString(fileNameWithExtension));
     SCIRunMainWindow::Instance()->statusBar()->showMessage("File saved: " + QString::fromStdString(filename), 2000);
-    GuiLogger::logInfo("File save done: " + QString::fromStdString(filename));
+    GuiLogger::logInfoQ("File save done: " + QString::fromStdString(filename));
     SCIRunMainWindow::Instance()->setWindowModified(false);
     setCurrentFileName(filename);
 
