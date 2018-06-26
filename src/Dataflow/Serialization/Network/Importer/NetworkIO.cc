@@ -182,7 +182,7 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     {"CreateStandardColorMaps", "CreateStandardColorMap"},
     { "EvaluateLinAlgBinary", "EvaluateLinearAlgebraBinary" },
     { "EvaluateLinAlgUnary", "EvaluateLinearAlgebraUnary" },
-    { "ExtractIsosurface", "ExtractSimpleIsosurface" },
+    { "ExtractIsosurface", "ExtractSimpleIsosurface" }, //TODO: needs rename after issue
     { "CalculateFieldData2", "CalculateFieldData" },
     { "CalculateFieldData3", "CalculateFieldData" },
     { "CalculateFieldData4", "CalculateFieldData" },
