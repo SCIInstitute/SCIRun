@@ -30,7 +30,7 @@ SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 # git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(SpdLog_external
   GIT_REPOSITORY "https://github.com/gabime/spdlog"
-  GIT_TAG "v0.17.0"
+  GIT_TAG "v0.14.0"
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
