@@ -55,9 +55,8 @@ namespace Matlab {
     explicit MatlabFileIndexModule(const Dataflow::Networks::ModuleLookupInfo& info) : Dataflow::Networks::Module(info) {}
   protected:
     void indexmatlabfile();
-    void executeImpl();
+    void executeImpl(const SCIRun::Dataflow::Networks::StaticPortName<Core::Datatypes::String, 0>& filename);
     virtual SCIRun::Core::Datatypes::DatatypeHandle processMatlabData(const SCIRun::MatlabIO::matlabarray&) const = 0;
-    //virtual SCIRun::Core::Datatypes::DatatypeHandle processMatlabData(const SCIRun::MatlabIO::matlabarray&) const = 0;
   };
 
   class SCISHARE ImportFieldsFromMatlab : public MatlabFileIndexModule,
@@ -84,7 +83,7 @@ namespace Matlab {
 
   protected:
     virtual void postStateChangeInternalSignalHookup() override;
-  
+    virtual SCIRun::Core::Datatypes::DatatypeHandle processMatlabData(const SCIRun::MatlabIO::matlabarray&) const override;
   };
 
 }}}

@@ -60,6 +60,7 @@ namespace Matlab {
 
   protected:
     virtual void postStateChangeInternalSignalHookup() override;
+    virtual SCIRun::Core::Datatypes::DatatypeHandle processMatlabData(const SCIRun::MatlabIO::matlabarray&) const override;
   };
 }}}
 

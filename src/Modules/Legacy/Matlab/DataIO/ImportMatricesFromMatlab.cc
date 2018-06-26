@@ -78,88 +78,13 @@ void ImportMatricesFromMatlab::postStateChangeInternalSignalHookup()
 
 void ImportMatricesFromMatlab::execute()
 {
-  auto fileOption = getOptionalInput(Filename);
-  auto state = get_state();
-  if (fileOption && *fileOption)
-	{
-    state->setValue(Variables::Filename, (*fileOption)->value());
-	}
+  executeImpl(Filename);
+}
 
-  auto filename = state->getValue(Variables::Filename).toFilename().string();
-
-  if (filename.empty())
-  {
-    error("ImportMatricesFromMatlab: No file name was specified");
-    return;
-  }
-
-  indexmatlabfile();
-
-  auto choices = toStringVector(state->getValue(Parameters::PortChoices).toVector());
-
-  try
-  {
-    ScopedMatlabFileReader smfr(filename);
-    for (int p=0; p < NUMPORTS; ++p)
-    {
-      // Now read the matrix from file
-      // The next function will open, read, and close the file
-      // Any error will be exported as an exception.
-      // The matlab classes are all based in the matfilebase class
-      // which carries the definitions of the exceptions. These
-      // definitions are inherited by all other "matlab classes"
-
-      auto ma = readmatlabarray(smfr.mfile, choices[p]);
-
-      // An empty array means something must have gone wrong
-      // Or there is no data to put on this port.
-      // Do not translate empty arrays, but continue to the
-      // next output port.
-
-      if (ma.isempty())
-      {
-        continue;
-      }
-
-      // The data is still in matlab format and the next function
-      // creates a SCIRun matrix object
-
-      MatrixHandle mh;
-      matlabconverter translate(getLogger());
-      translate.mlArrayTOsciMatrix(ma, mh);
-
-      send_output_handle(outputPorts()[p]->id(), mh);
-    }
-
-    StringHandle filenameH(new String(filename));
-    sendOutput(Filename, filenameH);
-  }
-  catch (matlabfile::could_not_open_file&)
-  {
-    error("Could not open file");
-  }
-  catch (matlabfile::invalid_file_format&)
-  {
-    error("Invalid file format");
-  }
-  catch (matlabfile::io_error&)
-  {
-    error("IO error");
-  }
-  catch (matlabfile::out_of_range&)
-  {
-    error("Out of range");
-  }
-  catch (matlabfile::invalid_file_access&)
-  {
-    error("Invalid file access");
-  }
-  catch (matlabfile::empty_matlabarray&)
-  {
-    error("Empty matlab array");
-  }
-  catch (matlabfile::matfileerror&)
-  {
-    error("Internal error in reader");
-  }
+DatatypeHandle ImportFieldsFromMatlab::processMatlabData(const matlabarray& ma) const
+{
+  MatrixHandle mh;
+  matlabconverter translate(getLogger());
+  translate.mlArrayTOsciMatrix(ma, mh);
+  return mh;
 }

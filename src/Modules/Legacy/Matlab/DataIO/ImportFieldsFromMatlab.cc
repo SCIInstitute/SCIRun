@@ -80,9 +80,22 @@ void ImportFieldsFromMatlab::postStateChangeInternalSignalHookup()
   indexmatlabfile();
 }
 
-void MatlabFileIndexModule::executeImpl()
+void ImportFieldsFromMatlab::execute()
 {
-  auto fileOption = getOptionalInput(ImportFieldsFromMatlab::Filename);
+  executeImpl(Filename);
+}
+
+DatatypeHandle ImportFieldsFromMatlab::processMatlabData(const matlabarray& ma) const
+{
+  FieldHandle mh;
+  matlabconverter translate(getLogger());
+  translate.mlArrayTOsciField(ma, mh);
+  return mh;
+}
+
+void MatlabFileIndexModule::executeImpl(const StaticPortName<String, 0>& filenamePort)
+{
+  auto fileOption = getOptionalInput(filenamePort);
   auto state = get_state();
   if (fileOption && *fileOption)
 	{
@@ -134,7 +147,7 @@ void MatlabFileIndexModule::executeImpl()
     }
 
     StringHandle filenameH(new String(filename));
-    sendOutput(Filename, filenameH);
+    sendOutput(filenamePort, filenameH);
   }
   catch (matlabfile::could_not_open_file&)
   {
