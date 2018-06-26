@@ -31,6 +31,8 @@
 // #include <Core/Algorithms/Base/GenerateStandardMatrixAlgo.h> ----Make this algo file
 #include <Core/Algorithms/Math/GenerateStandardMatrixAlgo.h>
 #include <boost/shared_ptr.hpp>
+#include <Dataflow/Network/ModuleStateInterface.h>
+
 #include <QtGui>
 
 using namespace SCIRun::Gui;
@@ -54,6 +56,7 @@ namespace SCIRun {
     
             }
             
+            
             GuiStringTranslationMap value_;
         };
     }
@@ -72,5 +75,19 @@ GenerateStandardMatrixDialog::GenerateStandardMatrixDialog(const std::string& na
     addSpinBoxManager(noOfRows_, Parameters::Rows);
     addSpinBoxManager(noOfColumns_, Parameters::Columns);
     addSpinBoxManager(sizeOfStep_,Parameters::Size);
+    addSpinBoxManager(startPointer_,Parameters::StartPointer);
+
+    
+    connect(matrixType_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
   }
 
+void GenerateStandardMatrixDialog::enableWidgets(const QString& mode)
+{
+    sizeOfStep_->setReadOnly(mode!="Matrix with Series");
+    startPointer_->setReadOnly(mode!="Matrix with Series");
+    }
+
+void GenerateStandardMatrixDialog::pullSpecial()
+{
+    enableWidgets(QString::fromStdString(state_->getValue(Parameters::StartPointer).toString()));
+}

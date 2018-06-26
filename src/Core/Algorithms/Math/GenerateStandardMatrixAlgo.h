@@ -52,6 +52,7 @@ namespace SCIRun{
                 ALGORITHM_PARAMETER_DECL(Rows);
                 ALGORITHM_PARAMETER_DECL(Columns);
                 ALGORITHM_PARAMETER_DECL(Size);
+                ALGORITHM_PARAMETER_DECL(StartPointer);
                 
                 
                 class SCISHARE GenerateStandardMatrixAlgo : public AlgorithmBase

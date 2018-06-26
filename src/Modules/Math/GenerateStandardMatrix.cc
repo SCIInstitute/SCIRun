@@ -27,6 +27,7 @@ void GenerateStandardMatrix::setStateDefaults()
     setStateIntFromAlgo(Parameters::Rows);
     setStateIntFromAlgo(Parameters::Columns);
     setStateIntFromAlgo(Parameters::Size);
+    setStateIntFromAlgo(Parameters::StartPointer);
     
 }
 
@@ -40,7 +41,7 @@ void GenerateStandardMatrix::execute()
         setAlgoIntFromState(Parameters::Rows);
         setAlgoIntFromState(Parameters::Columns);
         setAlgoIntFromState(Parameters::Size);
-        
+        setAlgoIntFromState(Parameters::StartPointer);
     
         AlgorithmInput input;
         auto output=algo().run(input);
