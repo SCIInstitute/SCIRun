@@ -27,16 +27,15 @@
 */
 
 /*
- * This module reads a matlab file and converts it to a SCIRun field
+ * This module reads a matlab file and converts it to a SCIRun matrix
  *
  */
 
-#include <Modules/Legacy/Matlab/DataIO/ImportFieldsFromMatlab.h>
-#include <vector>
+#include <Modules/Legacy/Matlab/DataIO/ImportMatricesFromMatlab.h>
 
 // ReSharper disable once CppUnusedIncludeDirective
-#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Matrix.h>
 
 #include <Core/Matlab/matlabfile.h>
 #include <Core/Matlab/matlabarray.h>
@@ -51,38 +50,35 @@ using namespace SCIRun::MatlabIO;
 using namespace Algorithms;
 using namespace Matlab;
 
-ALGORITHM_PARAMETER_DEF(Matlab, FieldInfoStrings);
-ALGORITHM_PARAMETER_DEF(Matlab, PortChoices);
+MODULE_INFO_DEF(ImportMatricesFromMatlab, Matlab, SCIRun)
 
-MODULE_INFO_DEF(ImportFieldsFromMatlab, Matlab, SCIRun)
-
-ImportFieldsFromMatlab::ImportFieldsFromMatlab() : MatlabFileIndexModule(staticInfo_)
+ImportMatricesFromMatlab::ImportMatricesFromMatlab() : MatlabFileIndexModule(staticInfo_)
 {
-  INITIALIZE_PORT(Field1);
-  INITIALIZE_PORT(Field2);
-  INITIALIZE_PORT(Field3);
-  INITIALIZE_PORT(Field4);
-  INITIALIZE_PORT(Field5);
-  INITIALIZE_PORT(Field6);
+  INITIALIZE_PORT(Matrix1);
+  INITIALIZE_PORT(Matrix2);
+  INITIALIZE_PORT(Matrix3);
+  INITIALIZE_PORT(Matrix4);
+  INITIALIZE_PORT(Matrix5);
+  INITIALIZE_PORT(Matrix6);
   INITIALIZE_PORT(Filename);
   INITIALIZE_PORT(FilenameOut);
 }
 
-void ImportFieldsFromMatlab::setStateDefaults()
+void ImportMatricesFromMatlab::setStateDefaults()
 {
   auto nones = makeHomogeneousVariableList([](size_t) { return std::string("<none>"); }, NUMPORTS);
   get_state()->setValue(Parameters::PortChoices, nones);
   get_state()->setValue(Variables::Filename, std::string());
 }
 
-void ImportFieldsFromMatlab::postStateChangeInternalSignalHookup()
+void ImportMatricesFromMatlab::postStateChangeInternalSignalHookup()
 {
   indexmatlabfile();
 }
 
-void MatlabFileIndexModule::executeImpl()
+void ImportMatricesFromMatlab::execute()
 {
-  auto fileOption = getOptionalInput(ImportFieldsFromMatlab::Filename);
+  auto fileOption = getOptionalInput(Filename);
   auto state = get_state();
   if (fileOption && *fileOption)
 	{
@@ -93,7 +89,7 @@ void MatlabFileIndexModule::executeImpl()
 
   if (filename.empty())
   {
-    error("No file name was specified");
+    error("ImportMatricesFromMatlab: No file name was specified");
     return;
   }
 
@@ -104,7 +100,7 @@ void MatlabFileIndexModule::executeImpl()
   try
   {
     ScopedMatlabFileReader smfr(filename);
-    for (int p=0; p < num_output_ports() - 1; ++p)
+    for (int p=0; p < NUMPORTS; ++p)
     {
       // Now read the matrix from file
       // The next function will open, read, and close the file
@@ -128,9 +124,11 @@ void MatlabFileIndexModule::executeImpl()
       // The data is still in matlab format and the next function
       // creates a SCIRun matrix object
 
-      auto data = processMatlabData(ma);
+      MatrixHandle mh;
+      matlabconverter translate(getLogger());
+      translate.mlArrayTOsciMatrix(ma, mh);
 
-      send_output_handle(outputPorts()[p]->id(), data);
+      send_output_handle(outputPorts()[p]->id(), mh);
     }
 
     StringHandle filenameH(new String(filename));
@@ -163,82 +161,5 @@ void MatlabFileIndexModule::executeImpl()
   catch (matlabfile::matfileerror&)
   {
     error("Internal error in reader");
-  }
-}
-
-void MatlabFileIndexModule::indexmatlabfile()
-{
-  auto state = get_state();
-  auto filename = state->getValue(Variables::Filename).toFilename().string();
-  if (!filename.empty())
-  {
-    Variable::List matrixinfotexts;
-    matlabconverter translate(getLogger());
-    try
-    {
-      matlabfile mfile;
-      // Open the .mat file
-      // This function also scans through the file and makes
-      // sure it is amat file and counts the number of arrays
-
-      mfile.open(filename, "r");
-
-      // all matlab data is stored in a matlabarray object
-      matlabarray ma;
-      int cindex = 0;		// compability index, which matlab array fits the SCIRun matrix best?
-      int maxindex = 0;		// highest index found so far
-
-      // Scan the file and see which matrices are compatible
-      // Only those will be shown (you cannot select incompatible matrices).
-
-      for (int p = 0; p < mfile.getnummatlabarrays(); p++)
-      {
-        ma = mfile.getmatlabarrayinfo(p); // do not load all the data fields
-        std::string infotext;
-        if ((cindex = translate.sciFieldCompatible(ma, infotext)))
-        {
-          // in case we need to propose a matrix to load, select
-          // the one that is most compatible with the data
-          if (cindex > maxindex)
-          {
-            maxindex = cindex;
-          }
-
-          matrixinfotexts.emplace_back(Name(ma.getname()), infotext);
-        }
-      }
-
-      mfile.close();
-
-      state->setTransientValue(Parameters::FieldInfoStrings, matrixinfotexts);
-    }
-    catch (matlabfile::could_not_open_file&)
-    {
-      warning("ImportFieldsFromMatlab: Could not open file");
-    }
-    catch (matlabfile::invalid_file_format&)
-    {
-      warning("ImportFieldsFromMatlab: Invalid file format");
-    }
-    catch (matlabfile::io_error&)
-    {
-      warning("ImportFieldsFromMatlab: IO error");
-    }
-    catch (matlabfile::out_of_range&)
-    {
-      warning("ImportFieldsFromMatlab: Out of range");
-    }
-    catch (matlabfile::invalid_file_access&)
-    {
-      warning("ImportFieldsFromMatlab: Invalid file access");
-    }
-    catch (matlabfile::empty_matlabarray&)
-    {
-      warning("ImportFieldsFromMatlab: Empty matlab array");
-    }
-    catch (matlabfile::matfileerror&)
-    {
-      warning("ImportFieldsFromMatlab: Internal error in reader");
-    }
   }
 }

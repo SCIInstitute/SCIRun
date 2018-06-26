@@ -26,55 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_MATLAB_DATAIO_IMPORTFIELDSFROMMATLAB_H
-#define MODULES_LEGACY_MATLAB_DATAIO_IMPORTFIELDSFROMMATLAB_H
+#ifndef MODULES_LEGACY_MATLAB_DATAIO_IMPORTMATRICESFROMMATLAB_H
+#define MODULES_LEGACY_MATLAB_DATAIO_IMPORTMATRICESFROMMATLAB_H
 
-#include <Dataflow/Network/Module.h>
-#include <Core/Matlab/matfilebase.h>
+#include <Modules/Legacy/Matlab/DataIO/ImportFieldsFromMatlab.h>
 #include <Modules/Legacy/Matlab/DataIO/share.h>
 
 namespace SCIRun {
-  namespace Core
-  {
-    namespace Algorithms
-    {
-      namespace Matlab
-      {
-        ALGORITHM_PARAMETER_DECL(FieldInfoStrings);
-        ALGORITHM_PARAMETER_DECL(PortChoices);
-      }
-    }
-  }
-
 namespace Modules {
 namespace Matlab {
 
-  class SCISHARE MatlabFileIndexModule : public Dataflow::Networks::Module
-  {
-  public:
-    explicit MatlabFileIndexModule(const Dataflow::Networks::ModuleLookupInfo& info) : Dataflow::Networks::Module(info) {}
-  protected:
-    void indexmatlabfile();
-    void executeImpl();
-    virtual SCIRun::Core::Datatypes::DatatypeHandle processMatlabData(const SCIRun::MatlabIO::matlabarray&) const = 0;
-    //virtual SCIRun::Core::Datatypes::DatatypeHandle processMatlabData(const SCIRun::MatlabIO::matlabarray&) const = 0;
-  };
-
-  class SCISHARE ImportFieldsFromMatlab : public MatlabFileIndexModule,
+  class SCISHARE ImportMatricesFromMatlab : public MatlabFileIndexModule,
     public Has1InputPort<StringPortTag>,
-    public Has7OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, StringPortTag>
+    public Has7OutputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, StringPortTag>
   {
   public:
-    ImportFieldsFromMatlab();
+    ImportMatricesFromMatlab();
     virtual void execute() override;
     virtual void setStateDefaults() override;
     INPUT_PORT(0, Filename, String);
-    OUTPUT_PORT(0, Field1, Field);
-    OUTPUT_PORT(1, Field2, Field);
-    OUTPUT_PORT(2, Field3, Field);
-    OUTPUT_PORT(3, Field4, Field);
-    OUTPUT_PORT(4, Field5, Field);
-    OUTPUT_PORT(5, Field6, Field);
+    OUTPUT_PORT(0, Matrix1, Matrix);
+    OUTPUT_PORT(1, Matrix2, Matrix);
+    OUTPUT_PORT(2, Matrix3, Matrix);
+    OUTPUT_PORT(3, Matrix4, Matrix);
+    OUTPUT_PORT(4, Matrix5, Matrix);
+    OUTPUT_PORT(5, Matrix6, Matrix);
     OUTPUT_PORT(6, FilenameOut, String);
     enum { NUMPORTS = 6 };
 
@@ -84,9 +60,7 @@ namespace Matlab {
 
   protected:
     virtual void postStateChangeInternalSignalHookup() override;
-  
   };
-
 }}}
 
 #endif
