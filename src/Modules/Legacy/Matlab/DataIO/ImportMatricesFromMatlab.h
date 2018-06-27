@@ -61,6 +61,7 @@ namespace Matlab {
   protected:
     virtual void postStateChangeInternalSignalHookup() override;
     virtual SCIRun::Core::Datatypes::DatatypeHandle processMatlabData(const SCIRun::MatlabIO::matlabarray&) const override;
+    virtual int indexMatlabFile(MatlabIO::matlabconverter& converter, const MatlabIO::matlabarray& mlarray, std::string& infostring) const override;
   };
 }}}
 

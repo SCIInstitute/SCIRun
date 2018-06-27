@@ -78,7 +78,7 @@ void ImportMatricesFromMatlab::postStateChangeInternalSignalHookup()
 
 void ImportMatricesFromMatlab::execute()
 {
-  executeImpl(Filename);
+  executeImpl(Filename, FilenameOut);
 }
 
 DatatypeHandle ImportMatricesFromMatlab::processMatlabData(const matlabarray& ma) const
@@ -87,4 +87,9 @@ DatatypeHandle ImportMatricesFromMatlab::processMatlabData(const matlabarray& ma
   matlabconverter translate(getLogger());
   translate.mlArrayTOsciMatrix(ma, mh);
   return mh;
+}
+
+int ImportMatricesFromMatlab::indexMatlabFile(matlabconverter& converter, const matlabarray& mlarray, std::string& infostring) const
+{
+  return converter.sciMatrixCompatible(mlarray, infostring);
 }

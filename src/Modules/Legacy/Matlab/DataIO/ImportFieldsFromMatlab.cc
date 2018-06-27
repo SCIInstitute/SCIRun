@@ -43,6 +43,7 @@
 #include <Core/Matlab/matlabconverter.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Modules::Matlab;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
@@ -82,7 +83,7 @@ void ImportFieldsFromMatlab::postStateChangeInternalSignalHookup()
 
 void ImportFieldsFromMatlab::execute()
 {
-  executeImpl(Filename);
+  executeImpl(Filename, FilenameOut);
 }
 
 DatatypeHandle ImportFieldsFromMatlab::processMatlabData(const matlabarray& ma) const
@@ -93,9 +94,14 @@ DatatypeHandle ImportFieldsFromMatlab::processMatlabData(const matlabarray& ma) 
   return mh;
 }
 
-void MatlabFileIndexModule::executeImpl(const StaticPortName<String, 0>& filenamePort)
+int ImportFieldsFromMatlab::indexMatlabFile(matlabconverter& converter, const matlabarray& mlarray, std::string& infostring) const
 {
-  auto fileOption = getOptionalInput(filenamePort);
+  return converter.sciFieldCompatible(mlarray, infostring);
+}
+
+void MatlabFileIndexModule::executeImpl(const StringPortName<0>& filenameIn, const StringPortName<6>& filenameOut)
+{
+  auto fileOption = getOptionalInput(filenameIn);
   auto state = get_state();
   if (fileOption && *fileOption)
 	{
@@ -147,7 +153,7 @@ void MatlabFileIndexModule::executeImpl(const StaticPortName<String, 0>& filenam
     }
 
     StringHandle filenameH(new String(filename));
-    sendOutput(filenamePort, filenameH);
+    sendOutput(filenameOut, filenameH);
   }
   catch (matlabfile::could_not_open_file&)
   {
@@ -208,7 +214,7 @@ void MatlabFileIndexModule::indexmatlabfile()
       {
         ma = mfile.getmatlabarrayinfo(p); // do not load all the data fields
         std::string infotext;
-        if ((cindex = translate.sciFieldCompatible(ma, infotext)))
+        if (cindex = indexMatlabFile(translate, ma, infotext))
         {
           // in case we need to propose a matrix to load, select
           // the one that is most compatible with the data
@@ -227,31 +233,31 @@ void MatlabFileIndexModule::indexmatlabfile()
     }
     catch (matlabfile::could_not_open_file&)
     {
-      warning("ImportFieldsFromMatlab: Could not open file");
+      warning("Could not open file");
     }
     catch (matlabfile::invalid_file_format&)
     {
-      warning("ImportFieldsFromMatlab: Invalid file format");
+      warning("Invalid file format");
     }
     catch (matlabfile::io_error&)
     {
-      warning("ImportFieldsFromMatlab: IO error");
+      warning("IO error");
     }
     catch (matlabfile::out_of_range&)
     {
-      warning("ImportFieldsFromMatlab: Out of range");
+      warning("Out of range");
     }
     catch (matlabfile::invalid_file_access&)
     {
-      warning("ImportFieldsFromMatlab: Invalid file access");
+      warning("Invalid file access");
     }
     catch (matlabfile::empty_matlabarray&)
     {
-      warning("ImportFieldsFromMatlab: Empty matlab array");
+      warning("Empty matlab array");
     }
     catch (matlabfile::matfileerror&)
     {
-      warning("ImportFieldsFromMatlab: Internal error in reader");
+      warning("Internal error in reader");
     }
   }
 }
