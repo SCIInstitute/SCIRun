@@ -81,7 +81,7 @@ void ImportMatricesFromMatlab::execute()
   executeImpl(Filename);
 }
 
-DatatypeHandle ImportFieldsFromMatlab::processMatlabData(const matlabarray& ma) const
+DatatypeHandle ImportMatricesFromMatlab::processMatlabData(const matlabarray& ma) const
 {
   MatrixHandle mh;
   matlabconverter translate(getLogger());
