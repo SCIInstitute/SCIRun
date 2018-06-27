@@ -214,7 +214,7 @@ void MatlabFileIndexModule::indexmatlabfile()
       {
         ma = mfile.getmatlabarrayinfo(p); // do not load all the data fields
         std::string infotext;
-        if (cindex = indexMatlabFile(translate, ma, infotext))
+        if ((cindex = indexMatlabFile(translate, ma, infotext)))
         {
           // in case we need to propose a matrix to load, select
           // the one that is most compatible with the data
