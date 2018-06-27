@@ -258,7 +258,7 @@ void SCIRunMainWindow::setupNetworkEditor()
   {
     auto screen = QApplication::desktop()->screenGeometry();
     if (screen.height() * screen.width() > 4096000) // 2560x1600
-     highResolutionExpandFactor = NetworkBoundaries::highDPIExpandFactorDefault;
+      highResolutionExpandFactor = NetworkBoundaries::highDPIExpandFactorDefault;
   }
   networkEditor_ = new NetworkEditor({ getter, defaultNotePositionGetter_, dialogErrorControl_, preexecuteFunc,
     tagColorFunc, tagNameFunc, highResolutionExpandFactor, dockManager_ }, scrollAreaWidgetContents_);
