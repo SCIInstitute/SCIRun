@@ -67,9 +67,9 @@ AlgorithmOutput CreateStandardMatrixAlgo::run(const AlgorithmInput& input) const
     
     int rows = get(Parameters::Rows).toInt();
     int columns = get(Parameters::Columns).toInt();
-    auto outputMatrix=generateMatrix(matrixType, rows, columns);
+    auto result=generateMatrix(matrixType, rows, columns);
      AlgorithmOutput output;
-    output[Variables::OutputMatrix]=outputMatrix;
+    output[Variables::OutputMatrix]=result;
     
     return output;
 }
@@ -98,8 +98,8 @@ Datatypes::DenseMatrixHandle CreateStandardMatrixAlgo::generateMatrix(std::strin
     if(matrixType=="NaN")
     {
         DenseMatrix outputArray(rows,columns, std::numeric_limits<double>::quiet_NaN());
-        DenseMatrixHandle outputMatrix(new DenseMatrix(outputArray.matrix()));
-        return outputMatrix;
+        DenseMatrixHandle output(new DenseMatrix(outputArray.matrix()));
+        return output;
         
     }
 
@@ -125,8 +125,8 @@ Datatypes::DenseMatrixHandle CreateStandardMatrixAlgo::generateMatrix(std::strin
     }
     
     
-    DenseMatrixHandle outputMatrix(new DenseMatrix(outputArray.matrix()));
-    return outputMatrix;
+    DenseMatrixHandle output(new DenseMatrix(outputArray.matrix()));
+    return output;
     
     
 }
