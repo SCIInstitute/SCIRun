@@ -97,8 +97,7 @@ Datatypes::DenseMatrixHandle CreateStandardMatrixAlgo::generateMatrix(std::strin
     
     if(matrixType=="NaN")
     {
-        DenseMatrix outputArray(rows,columns, std::numeric_limits<double>::quiet_NaN());
-        DenseMatrixHandle output(new DenseMatrix(outputArray.matrix()));
+        DenseMatrixHandle output=boost::make_shared<DenseMatrix>(rows, columns, std::numeric_limits<double>::quiet_NaN());
         return output;
         
     }
