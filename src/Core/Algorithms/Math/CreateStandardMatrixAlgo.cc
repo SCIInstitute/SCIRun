@@ -54,8 +54,8 @@ CreateStandardMatrixAlgo::CreateStandardMatrixAlgo()
     //using namespace Parameters;
     addParameter(Parameters::Rows, 1);
     addParameter(Parameters::Columns, 1);
-    addParameter(Parameters::Size, 1);
-    addParameter(Parameters::StartPointer,0);
+    addParameter(Parameters::Size, 1.0);
+    addParameter(Parameters::StartPointer,0.0);
     
     }
 
@@ -109,15 +109,15 @@ Datatypes::DenseMatrixHandle CreateStandardMatrixAlgo::generateMatrix(std::strin
 
     if(matrixType=="Series")
     {
-        int size = get(Parameters::Size).toInt();
-        int inc = get(Parameters::StartPointer).toInt();
+        double size = get(Parameters::Size).toDouble();
+        double startPtr = get(Parameters::StartPointer).toDouble();
         auto outputArray=boost::make_shared<DenseMatrix>(rows,columns);
         for(int i=0;i<rows;i++)
         {
             for(int j=0;j<columns;j++)
             {
-                (*outputArray)(i,j)=inc;
-                inc+=size;
+                (*outputArray)(i,j)=startPtr;
+                startPtr+=size;
             }
         }
         return outputArray;
