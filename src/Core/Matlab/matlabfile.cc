@@ -744,3 +744,22 @@ void matlabfile::putmatlabarray(matlabarray& ma,const std::string& matrixname)
   ma.setname(matrixname);
   exportmatlabarray(ma);
 }
+
+matlabarray SCIRun::MatlabIO::readmatlabarray(matlabfile& mfile, const std::string& matlabName)
+{
+  matlabarray marray;
+
+  if (matlabName.empty())
+  {
+    // return an empty array
+    return(marray);
+  }
+
+  if (matlabName == "<none>")
+  {
+    // return an empty array
+    return(marray);
+  }
+
+  return mfile.getmatlabarray(matlabName);
+}

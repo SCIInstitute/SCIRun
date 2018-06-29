@@ -129,13 +129,22 @@
             <property name="minimumSize">
              <size>
               <width>0</width>
-              <height>90</height>
+              <height>100</height>
              </size>
             </property>
             <property name="title">
              <string>Node Coloring</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_5">
+             <property name="topMargin">
+              <number>2</number>
+             </property>
+             <property name="rightMargin">
+              <number>2</number>
+             </property>
+             <property name="bottomMargin">
+              <number>2</number>
+             </property>
              <item row="0" column="0">
               <widget class="QRadioButton" name="defaultNodeColoringButton_">
                <property name="text">
@@ -176,10 +185,25 @@
             <property name="enabled">
              <bool>true</bool>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>80</height>
+             </size>
+            </property>
             <property name="title">
              <string>Node Display Type</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_4">
+             <property name="topMargin">
+              <number>2</number>
+             </property>
+             <property name="rightMargin">
+              <number>2</number>
+             </property>
+             <property name="bottomMargin">
+              <number>2</number>
+             </property>
              <item row="0" column="0">
               <widget class="QRadioButton" name="nodesAsPointsButton_">
                <property name="text">
@@ -326,10 +350,22 @@
             <property name="enabled">
              <bool>true</bool>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>100</height>
+             </size>
+            </property>
             <property name="title">
              <string>Edge Coloring</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
+             <property name="topMargin">
+              <number>2</number>
+             </property>
+             <property name="bottomMargin">
+              <number>2</number>
+             </property>
              <item>
               <widget class="QRadioButton" name="defaultEdgeColoringButton_">
                <property name="text">
@@ -370,10 +406,22 @@
             <property name="enabled">
              <bool>true</bool>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>80</height>
+             </size>
+            </property>
             <property name="title">
              <string>Edge Display Type</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_3">
+             <property name="topMargin">
+              <number>2</number>
+             </property>
+             <property name="bottomMargin">
+              <number>2</number>
+             </property>
              <item>
               <widget class="QRadioButton" name="edgesAsLinesButton_">
                <property name="text">
@@ -534,10 +582,22 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>100</height>
+             </size>
+            </property>
             <property name="title">
              <string>Face Coloring</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_16">
+             <property name="topMargin">
+              <number>2</number>
+             </property>
+             <property name="bottomMargin">
+              <number>2</number>
+             </property>
              <item>
               <widget class="QRadioButton" name="defaultFaceColoringButton_">
                <property name="font">

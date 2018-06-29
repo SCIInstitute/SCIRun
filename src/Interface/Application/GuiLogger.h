@@ -63,10 +63,10 @@ namespace Gui {
   class GuiLogger : boost::noncopyable
   {
   public:
-    static void logInfo(const QString& message);
-    static void logError(const QString& message);
-    static void logInfoStd(const std::string& message) { logInfo(QString::fromStdString(message)); }
-    static void logErrorStd(const std::string& message) { logError(QString::fromStdString(message)); }
+    static void logInfoQ(const QString& message);
+    static void logErrorQ(const QString& message);
+    static void logInfoStd(const std::string& message) { logInfoQ(QString::fromStdString(message)); }
+    static void logErrorStd(const std::string& message) { logErrorQ(QString::fromStdString(message)); }
   private:
     GuiLogger() = delete;
   };

@@ -181,12 +181,15 @@ bool MapFieldDataOntoNodesRadialbasisImpl::interp_on_mesh(VMesh* points, VMesh* 
 
   auto ofield = output->vfield();
 
+  if (ofield->is_nodata())
+    return false;
+
   cors->size(num_cors);
   points->size(num_pts);
 
   double sumer=0.0;
   double sigma=0.0;
-  int max_dist=0;
+  bool max_dist = false;
 
   double guiMD = state_->getValue(Parameters::MaxDistance).toDouble();
   double guiOV = state_->getValue(Parameters::OutsideValue).toDouble();
@@ -194,7 +197,7 @@ bool MapFieldDataOntoNodesRadialbasisImpl::interp_on_mesh(VMesh* points, VMesh* 
   for (int i = 0; i < num_pts; ++i)
   {
     sumer = 0;
-    max_dist = 0;
+    max_dist = false;
     for (int j = 0; j<num_cors; ++j)
     {
       iti = i;
@@ -213,7 +216,7 @@ bool MapFieldDataOntoNodesRadialbasisImpl::interp_on_mesh(VMesh* points, VMesh* 
       if (mag > guiMD)
       {
         j = num_cors - 1;
-        max_dist = 1;
+        max_dist = true;
       }
 
       if (mag == 0)
@@ -232,15 +235,12 @@ bool MapFieldDataOntoNodesRadialbasisImpl::interp_on_mesh(VMesh* points, VMesh* 
       sumer += coefs(j, 0) * sigma;
     }
     itp = i;
-    if (max_dist == 0)
-    {
-      ofield->set_value(sumer,*(itp));
-    }
-    else
+    
+    if (max_dist)
     {
       sumer = guiOV;
-      ofield->set_value(sumer,*(itp));
     }
+    ofield->set_value(sumer, *(itp));
   }
 
   return true;

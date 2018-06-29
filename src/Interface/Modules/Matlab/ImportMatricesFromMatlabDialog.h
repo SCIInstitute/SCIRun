@@ -24,29 +24,43 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
-#include <Interface/Application/GuiLogger.h>
-#include <Core/Logging/Log.h>
+#ifndef INTERFACE_MODULES_MATLAB_ImportMatricesFromMatlabDialog_H
+#define INTERFACE_MODULES_MATLAB_ImportMatricesFromMatlabDialog_H
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Core::Logging;
+#include "Interface/Modules/Matlab/ui_ImportMatricesFromMatlab.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
+#include <Interface/Modules/Matlab/share.h>
 
-void GuiLogger::logInfoQ(const QString& message)
-{
-  auto log = GuiLog::Instance().get();
-  if (log)
-    log->info(message.toStdString());
-  if (LogSettings::Instance().verbose())
-    logInfo(message.toStdString().c_str());
+namespace SCIRun {
+  namespace Gui {
+
+    class SCISHARE ImportMatricesFromMatlabDialog : public ModuleDialogGeneric,
+      public Ui::ImportMatricesFromMatlab, public RemembersFileDialogDirectory
+    {
+      Q_OBJECT
+
+    public:
+      ImportMatricesFromMatlabDialog(const std::string& name,
+        Dataflow::Networks::ModuleStateHandle state,
+        QWidget* parent = nullptr);
+    protected:
+      virtual void pullSpecial() override;
+    private Q_SLOTS:
+      void openFile();
+      void pushFileNameToState();
+      void pushPortChoices();
+      void portItemClicked(int index);
+      void matlabItemClicked(int row);
+    private:
+      enum { NONE_CHOICE = -1 };
+      std::vector<int> portChoices_;
+      std::vector<std::string> fieldNames_;
+    };
+
+  }
 }
 
-void GuiLogger::logErrorQ(const QString& message)
-{
-  auto log = GuiLog::Instance().get();
-  if (log)
-    log->error(message.toStdString());
-  logError(message.toStdString().c_str());
-}
-
-CORE_SINGLETON_IMPLEMENTATION(GuiLog)
+#endif
