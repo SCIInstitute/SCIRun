@@ -75,6 +75,10 @@ OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
 OPTION(WITH_TETGEN "Build Tetgen." OFF)
 
 ###########################################
+# Configure ospray
+OPTION(WITH_OSPRAY "Build Ospray." ON)
+
+###########################################
 # Configure data
 OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" OFF)
 
@@ -230,6 +234,13 @@ ENDIF()
 IF(WITH_TETGEN)
   MESSAGE(STATUS "Configuring Tetgen library under GPL. The SCIRun InterfaceWithTetGen module can be disabled by setting the CMake build variable WITH_TETGEN to OFF.")
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TetgenExternal.cmake Tetgen_external )
+ENDIF()
+
+IF(WITH_OSPRAY)
+  #MESSAGE(STATUS "Configuring Tetgen library under GPL. The SCIRun InterfaceWithTetGen module can be disabled by setting the CMake build variable WITH_TETGEN to OFF.")
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/TbbExternal.cmake Tbb_external )
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/EmbreeExternal.cmake Embree_external )
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/IspcExternal.cmake Ispc_external )
 ENDIF()
 
 IF(NOT BUILD_HEADLESS)
