@@ -420,7 +420,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
 
   if (highResolutionExpandFactor_ > 1)
   {
-    auto multiplier = std::min(highResolutionExpandFactor_, 1.5);
+    auto multiplier = std::min(highResolutionExpandFactor_, 1.2);
     module->setFixedHeight(proxy->size().height() * multiplier);
     proxy->setMaximumHeight(proxy->size().height() * multiplier);
     module->setFixedWidth(proxy->size().width() * std::max(multiplier*0.9, 1.0));
