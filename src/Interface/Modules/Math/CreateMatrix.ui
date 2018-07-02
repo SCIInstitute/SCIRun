@@ -59,8 +59,7 @@
    <item row="5" column="0">
     <widget class="QLabel" name="label">
      <property name="toolTip">
-      <string>Non-numeric text at end of each line will be ignored; 
-use this for row notes.</string>
+      <string/>
      </property>
      <property name="text">
       <string>Non-numeric text at end of each line will be ignored; 
