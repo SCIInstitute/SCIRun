@@ -62,7 +62,7 @@ namespace SCIRun{
                     
                     AlgorithmOutput run(const AlgorithmInput& input) const;
                     
-                    Datatypes::DenseMatrixHandle generateMatrix(std::string matrixType, int row, int col) const;
+                    Datatypes::DenseMatrixHandle generateMatrix(const std::string& matrixType, int row, int col) const;
                     
                 };
             }

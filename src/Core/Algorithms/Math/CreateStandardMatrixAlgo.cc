@@ -74,7 +74,7 @@ AlgorithmOutput CreateStandardMatrixAlgo::run(const AlgorithmInput& input) const
     return output;
 }
 
-Datatypes::DenseMatrixHandle CreateStandardMatrixAlgo::generateMatrix(std::string matrixType, int rows, int columns) const
+Datatypes::DenseMatrixHandle CreateStandardMatrixAlgo::generateMatrix(const std::string& matrixType, int rows, int columns) const
 {
     if(rows<=0 || columns<=0)
     {
