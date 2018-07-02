@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>244</width>
+    <width>250</width>
     <height>47</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>244</width>
+    <width>250</width>
     <height>47</height>
    </size>
   </property>
@@ -22,6 +22,12 @@
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
     <widget class="QCheckBox" name="keepTypeCheckBox_">
+     <property name="minimumSize">
+      <size>
+       <width>250</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="text">
       <string>Keep scalar field input type</string>
      </property>
