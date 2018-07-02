@@ -45,7 +45,7 @@ ExternalProject_Get_Property(Ispc_external INSTALL_DIR)
 #SET(TETGEN_USE_FILE ${INSTALL_DIR}/UseTetgen.cmake)
 # see Tetgen CMakeLists.txt file
 #SET(TETGEN_LIBRARY "tet")
-SET(Ispc_DIR ${INSTALL_DIR} CACHE PATH "")
+SET(Ispc_DIR ${SOURCE_DIR} CACHE PATH "")
 
 # Boost is special case - normally this should be handled in external library repo
 #CONFIGURE_FILE(${SUPERBUILD_DIR}/TetgenConfig.cmake.in ${INSTALL_DIR}/TetgenConfig.cmake @ONLY)

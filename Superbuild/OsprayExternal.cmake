@@ -59,6 +59,7 @@ ExternalProject_Add(Ospray_external
     -DOSPRAY_SG_CHOMBO:BOOL=OFF
     -DOSPRAY_SG_OPENIMAGEIO:BOOL=OFF
     -DOSPRAY_SG_VTK:BOOL=OFF
+    -DISPC_EXECUTABLE:PATH=${Ispc_DIR}/ispc
 )
 
 ExternalProject_Get_Property(Ospray_external BINARY_DIR)
