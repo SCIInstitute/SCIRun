@@ -241,6 +241,7 @@ IF(WITH_OSPRAY)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TbbExternal.cmake Tbb_external )
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/EmbreeExternal.cmake Embree_external )
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/IspcExternal.cmake Ispc_external )
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external )
 ENDIF()
 
 IF(NOT BUILD_HEADLESS)
