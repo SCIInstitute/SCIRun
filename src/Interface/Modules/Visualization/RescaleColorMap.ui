@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>429</width>
-    <height>159</height>
+    <width>541</width>
+    <height>140</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>429</width>
-    <height>159</height>
+    <width>541</width>
+    <height>140</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -34,6 +34,12 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="1" column="0">
     <widget class="QGroupBox" name="autoGroupBox_">
+     <property name="minimumSize">
+      <size>
+       <width>190</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="title">
       <string/>
      </property>

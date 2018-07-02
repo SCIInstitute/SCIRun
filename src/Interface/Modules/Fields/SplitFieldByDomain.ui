@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>153</width>
+    <width>243</width>
     <height>100</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>150</width>
+    <width>243</width>
     <height>100</height>
    </size>
   </property>
@@ -22,6 +22,12 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QCheckBox" name="sortBySizeCheckBox_">
+     <property name="minimumSize">
+      <size>
+       <width>230</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="text">
       <string>Sort Domains by size</string>
      </property>
@@ -29,6 +35,12 @@
    </item>
    <item row="1" column="0">
     <widget class="QCheckBox" name="sortAscendingCheckBox_">
+     <property name="minimumSize">
+      <size>
+       <width>230</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="text">
       <string>Sort Ascending</string>
      </property>
