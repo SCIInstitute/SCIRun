@@ -34,7 +34,7 @@ SET(Modules_Visualization_SRCS
   ShowColorMapModule.cc
   RescaleColorMap.cc
   TextBuilder.cc
-  InterfaceWithOspray.cc
+  #InterfaceWithOspray.cc
   ViewOsprayScene.cc
   ShowFieldWithOspray.cc
 )
@@ -47,7 +47,7 @@ SET(Modules_Visualization_HEADERS
   ShowColorMapModule.h
   RescaleColorMap.h
   TextBuilder.h
-  InterfaceWithOspray.h
+  #InterfaceWithOspray.h
   ViewOsprayScene.h
   ShowFieldWithOspray.h
   share.h
