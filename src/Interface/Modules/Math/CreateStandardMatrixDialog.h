@@ -24,8 +24,7 @@
 #ifndef INTERFACE_MODULES_MATH_CreateStandardMatrixDIALOG_H
 #define INTERFACE_MODULES_MATH_CreateStandardMatrixDIALOG_H
 
-#include <Interface/Modules/Math/ui_CreateStandardMatrixDialogcd .h>
-//#include <boost/shared_ptr.hpp>
+#include <Interface/Modules/Math/ui_CreateStandardMatrixDialog.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
 

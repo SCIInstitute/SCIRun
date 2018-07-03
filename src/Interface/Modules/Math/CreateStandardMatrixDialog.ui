@@ -129,6 +129,15 @@
           <height>7</height>
          </size>
         </property>
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="minimum">
+         <double>-9999999.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>9999999.000000000000000</double>
+        </property>
        </widget>
       </item>
       <item row="5" column="1">
@@ -139,8 +148,14 @@
           <height>7</height>
          </size>
         </property>
+        <property name="decimals">
+         <number>5</number>
+        </property>
+        <property name="minimum">
+         <double>-9999999.000000000000000</double>
+        </property>
         <property name="maximum">
-         <double>99999.990000000005239</double>
+         <double>9999999.000000000000000</double>
         </property>
        </widget>
       </item>
