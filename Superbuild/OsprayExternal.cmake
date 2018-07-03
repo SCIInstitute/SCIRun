@@ -63,6 +63,6 @@ ExternalProject_Add(Ospray_external
 )
 
 ExternalProject_Get_Property(Ospray_external BINARY_DIR)
-SET(Ospray_DIR ${BINARY_DIR} CACHE PATH "")
+SET(OSPRAY_BUILD_DIR ${BINARY_DIR} CACHE PATH "")
 
-MESSAGE(STATUS "Ospray_DIR: ${Ospray_DIR}")
+MESSAGE(STATUS "OSPRAY_BUILD_DIR: ${OSPRAY_BUILD_DIR}")
