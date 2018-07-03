@@ -118,7 +118,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -233,7 +233,7 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -312,7 +312,7 @@
 									<name>ColorMapShift</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -352,7 +352,7 @@
 									<name>BoxRealScale</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -448,7 +448,7 @@
 									<name>OutputCenterX</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+000</value>
+										<value>2.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -460,7 +460,7 @@
 									<name>OutputCenterY</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+000</value>
+										<value>2.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -472,7 +472,7 @@
 									<name>OutputCenterZ</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+000</value>
+										<value>2.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -484,7 +484,7 @@
 									<name>OutputSizeX</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -496,7 +496,7 @@
 									<name>OutputSizeY</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -508,7 +508,7 @@
 									<name>OutputSizeZ</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -604,7 +604,7 @@
 									<name>Scale</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000010e-001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -641,23 +641,335 @@
 				</second>
 			</item>
 			<item>
-				<first>InterfaceWithOspray:0</first>
+				<first>OsprayViewer:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>Visualization</category_name_>
-						<module_name_>InterfaceWithOspray</module_name_>
+						<category_name_>Render</category_name_>
+						<module_name_>OsprayViewer</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>29</count>
+							<count>37</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
-									<name>AutoCameraView</name>
+									<name>AOSamples</name>
 								</first>
 								<second>
-									<name>AutoCameraView</name>
+									<name>AOSamples</name>
+									<value>
+										<which>0</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>AmbientLightColor</name>
+								</first>
+								<second>
+									<name>AmbientLightColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(1,1,1)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>AmbientLightIntensity</name>
+								</first>
+								<second>
+									<name>AmbientLightIntensity</name>
+									<value>
+										<which>1</which>
+										<value>2.00000000000000011e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>AutoRotationRate</name>
+								</first>
+								<second>
+									<name>AutoRotationRate</name>
+									<value>
+										<which>1</which>
+										<value>2.50000000000000014e-02</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>BackgroundColor</name>
+								</first>
+								<second>
+									<name>BackgroundColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(0,0,0)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewAtX</name>
+								</first>
+								<second>
+									<name>CameraViewAtX</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewAtY</name>
+								</first>
+								<second>
+									<name>CameraViewAtY</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewAtZ</name>
+								</first>
+								<second>
+									<name>CameraViewAtZ</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewFromX</name>
+								</first>
+								<second>
+									<name>CameraViewFromX</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewFromY</name>
+								</first>
+								<second>
+									<name>CameraViewFromY</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewFromZ</name>
+								</first>
+								<second>
+									<name>CameraViewFromZ</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewUpX</name>
+								</first>
+								<second>
+									<name>CameraViewUpX</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewUpY</name>
+								</first>
+								<second>
+									<name>CameraViewUpY</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>CameraViewUpZ</name>
+								</first>
+								<second>
+									<name>CameraViewUpZ</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DirectionalLightAzimuth</name>
+								</first>
+								<second>
+									<name>DirectionalLightAzimuth</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DirectionalLightColor</name>
+								</first>
+								<second>
+									<name>DirectionalLightColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(1,1,1)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DirectionalLightElevation</name>
+								</first>
+								<second>
+									<name>DirectionalLightElevation</name>
+									<value>
+										<which>0</which>
+										<value>45</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DirectionalLightIntensity</name>
+								</first>
+								<second>
+									<name>DirectionalLightIntensity</name>
+									<value>
+										<which>1</which>
+										<value>1.69999999999999996e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FrameWriterFilename</name>
+								</first>
+								<second>
+									<name>FrameWriterFilename</name>
+									<value>
+										<which>2</which>
+										<value>frames.png</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InvertZoom</name>
+								</first>
+								<second>
+									<name>InvertZoom</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProbeX</name>
+								</first>
+								<second>
+									<name>ProbeX</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProbeY</name>
+								</first>
+								<second>
+									<name>ProbeY</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProbeZ</name>
+								</first>
+								<second>
+									<name>ProbeZ</name>
+									<value>
+										<which>1</which>
+										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RendererChoice</name>
+								</first>
+								<second>
+									<name>RendererChoice</name>
+									<value>
+										<which>2</which>
+										<value>scivis</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SamplesPerPixel</name>
+								</first>
+								<second>
+									<name>SamplesPerPixel</name>
+									<value>
+										<which>0</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SeparateModelPerObject</name>
+								</first>
+								<second>
+									<name>SeparateModelPerObject</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowAmbientLight</name>
+								</first>
+								<second>
+									<name>ShowAmbientLight</name>
 									<value>
 										<which>3</which>
 										<value>1</value>
@@ -666,226 +978,94 @@
 							</item>
 							<item>
 								<first>
-									<name>BackgroundColorB</name>
+									<name>ShowDirectionalLight</name>
 								</first>
 								<second>
-									<name>BackgroundColorB</name>
+									<name>ShowDirectionalLight</name>
 									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>BackgroundColorG</name>
+									<name>ShowFrameRate</name>
 								</first>
 								<second>
-									<name>BackgroundColorG</name>
+									<name>ShowFrameRate</name>
 									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>BackgroundColorR</name>
+									<name>ShowPlane</name>
 								</first>
 								<second>
-									<name>BackgroundColorR</name>
+									<name>ShowPlane</name>
 									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>CameraPositionX</name>
+									<name>ShowProbe</name>
 								</first>
 								<second>
-									<name>CameraPositionX</name>
+									<name>ShowProbe</name>
 									<value>
-										<which>1</which>
-										<value>-1.00000000000000000e+000</value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>CameraPositionY</name>
+									<name>ShowRenderAnnotations</name>
 								</first>
 								<second>
-									<name>CameraPositionY</name>
+									<name>ShowRenderAnnotations</name>
 									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>CameraPositionZ</name>
+									<name>ShowShadows</name>
 								</first>
 								<second>
-									<name>CameraPositionZ</name>
+									<name>ShowShadows</name>
 									<value>
-										<which>1</which>
-										<value>-2.00000000000000000e+000</value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>CameraUpX</name>
+									<name>SubsampleDuringInteraction</name>
 								</first>
 								<second>
-									<name>CameraUpX</name>
+									<name>SubsampleDuringInteraction</name>
 									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>CameraUpY</name>
+									<name>ViewerHeight</name>
 								</first>
 								<second>
-									<name>CameraUpY</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraUpZ</name>
-								</first>
-								<second>
-									<name>CameraUpZ</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraViewX</name>
-								</first>
-								<second>
-									<name>CameraViewX</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e-001</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraViewY</name>
-								</first>
-								<second>
-									<name>CameraViewY</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e-001</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraViewZ</name>
-								</first>
-								<second>
-									<name>CameraViewZ</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>DefaultColorA</name>
-								</first>
-								<second>
-									<name>DefaultColorA</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>DefaultColorB</name>
-								</first>
-								<second>
-									<name>DefaultColorB</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e-001</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>DefaultColorG</name>
-								</first>
-								<second>
-									<name>DefaultColorG</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e-001</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>DefaultColorR</name>
-								</first>
-								<second>
-									<name>DefaultColorR</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e-001</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value></value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FrameCount</name>
-								</first>
-								<second>
-									<name>FrameCount</name>
-									<value>
-										<which>0</which>
-										<value>11</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ImageHeight</name>
-								</first>
-								<second>
-									<name>ImageHeight</name>
+									<name>ViewerHeight</name>
 									<value>
 										<which>0</which>
 										<value>600</value>
@@ -894,10 +1074,10 @@
 							</item>
 							<item>
 								<first>
-									<name>ImageWidth</name>
+									<name>ViewerWidth</name>
 								</first>
 								<second>
-									<name>ImageWidth</name>
+									<name>ViewerWidth</name>
 									<value>
 										<which>0</which>
 										<value>800</value>
@@ -906,461 +1086,13 @@
 							</item>
 							<item>
 								<first>
-									<name>LightColorB</name>
+									<name>ZoomSpeed</name>
 								</first>
 								<second>
-									<name>LightColorB</name>
+									<name>ZoomSpeed</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightColorG</name>
-								</first>
-								<second>
-									<name>LightColorG</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightColorR</name>
-								</first>
-								<second>
-									<name>LightColorR</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightIntensity</name>
-								</first>
-								<second>
-									<name>LightIntensity</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightType</name>
-								</first>
-								<second>
-									<name>LightType</name>
-									<value>
-										<which>2</which>
-										<value>ambient</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightVisible</name>
-								</first>
-								<second>
-									<name>LightVisible</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowImageInWindow</name>
-								</first>
-								<second>
-									<name>ShowImageInWindow</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>StreamlineRadius</name>
-								</first>
-								<second>
-									<name>StreamlineRadius</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000010e-001</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>InterfaceWithOspray:1</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Visualization</category_name_>
-						<module_name_>InterfaceWithOspray</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>29</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>AutoCameraView</name>
-								</first>
-								<second>
-									<name>AutoCameraView</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>BackgroundColorB</name>
-								</first>
-								<second>
-									<name>BackgroundColorB</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>BackgroundColorG</name>
-								</first>
-								<second>
-									<name>BackgroundColorG</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>BackgroundColorR</name>
-								</first>
-								<second>
-									<name>BackgroundColorR</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraPositionX</name>
-								</first>
-								<second>
-									<name>CameraPositionX</name>
-									<value>
-										<which>1</which>
-										<value>-1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraPositionY</name>
-								</first>
-								<second>
-									<name>CameraPositionY</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraPositionZ</name>
-								</first>
-								<second>
-									<name>CameraPositionZ</name>
-									<value>
-										<which>1</which>
-										<value>-2.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraUpX</name>
-								</first>
-								<second>
-									<name>CameraUpX</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraUpY</name>
-								</first>
-								<second>
-									<name>CameraUpY</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraUpZ</name>
-								</first>
-								<second>
-									<name>CameraUpZ</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraViewX</name>
-								</first>
-								<second>
-									<name>CameraViewX</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e-001</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraViewY</name>
-								</first>
-								<second>
-									<name>CameraViewY</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e-001</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraViewZ</name>
-								</first>
-								<second>
-									<name>CameraViewZ</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>DefaultColorA</name>
-								</first>
-								<second>
-									<name>DefaultColorA</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>DefaultColorB</name>
-								</first>
-								<second>
-									<name>DefaultColorB</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e-001</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>DefaultColorG</name>
-								</first>
-								<second>
-									<name>DefaultColorG</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e-001</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>DefaultColorR</name>
-								</first>
-								<second>
-									<name>DefaultColorR</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e-001</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value></value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FrameCount</name>
-								</first>
-								<second>
-									<name>FrameCount</name>
-									<value>
-										<which>0</which>
-										<value>10</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ImageHeight</name>
-								</first>
-								<second>
-									<name>ImageHeight</name>
-									<value>
-										<which>0</which>
-										<value>768</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ImageWidth</name>
-								</first>
-								<second>
-									<name>ImageWidth</name>
-									<value>
-										<which>0</which>
-										<value>1024</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightColorB</name>
-								</first>
-								<second>
-									<name>LightColorB</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightColorG</name>
-								</first>
-								<second>
-									<name>LightColorG</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightColorR</name>
-								</first>
-								<second>
-									<name>LightColorR</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightIntensity</name>
-								</first>
-								<second>
-									<name>LightIntensity</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightType</name>
-								</first>
-								<second>
-									<name>LightType</name>
-									<value>
-										<which>2</which>
-										<value>ambient</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightVisible</name>
-								</first>
-								<second>
-									<name>LightVisible</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowImageInWindow</name>
-								</first>
-								<second>
-									<name>ShowImageInWindow</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>StreamlineRadius</name>
-								</first>
-								<second>
-									<name>StreamlineRadius</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000010e-001</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1400,7 +1132,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+000</value>
+										<value>2.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1412,7 +1144,7 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1464,7 +1196,7 @@
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000000e+000</value>
+										<value>2.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1476,7 +1208,7 @@
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -1528,7 +1260,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000010e-001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1588,7 +1320,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1660,7 +1392,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1732,7 +1464,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1900,7 +1632,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999990e-002</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -2000,7 +1732,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000010e-001</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2060,7 +1792,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2132,7 +1864,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2204,7 +1936,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-001</value>
+										<value>6.49999976158142090e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2372,7 +2104,7 @@
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999990e-002</value>
+										<value>2.99999999999999989e-02</value>
 									</value>
 								</second>
 							</item>
@@ -2441,182 +2173,26 @@
 				</second>
 			</item>
 			<item>
-				<first>OsprayViewer:0</first>
+				<first>ShowFieldWithOspray:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>Render</category_name_>
-						<module_name_>OsprayViewer</module_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowFieldWithOspray</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>29</count>
+							<count>6</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
-									<name>AutoCameraView</name>
-								</first>
-								<second>
-									<name>AutoCameraView</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>BackgroundColorB</name>
-								</first>
-								<second>
-									<name>BackgroundColorB</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>BackgroundColorG</name>
-								</first>
-								<second>
-									<name>BackgroundColorG</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>BackgroundColorR</name>
-								</first>
-								<second>
-									<name>BackgroundColorR</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraPositionX</name>
-								</first>
-								<second>
-									<name>CameraPositionX</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraPositionY</name>
-								</first>
-								<second>
-									<name>CameraPositionY</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraPositionZ</name>
-								</first>
-								<second>
-									<name>CameraPositionZ</name>
-									<value>
-										<which>1</which>
-										<value>5.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraUpX</name>
-								</first>
-								<second>
-									<name>CameraUpX</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraUpY</name>
-								</first>
-								<second>
-									<name>CameraUpY</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraUpZ</name>
-								</first>
-								<second>
-									<name>CameraUpZ</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraViewX</name>
-								</first>
-								<second>
-									<name>CameraViewX</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraViewY</name>
-								</first>
-								<second>
-									<name>CameraViewY</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>CameraViewZ</name>
-								</first>
-								<second>
-									<name>CameraViewZ</name>
-									<value>
-										<which>1</which>
-										<value>0.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
 									<name>DefaultColorA</name>
 								</first>
 								<second>
 									<name>DefaultColorA</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -2628,7 +2204,7 @@
 									<name>DefaultColorB</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-001</value>
+										<value>5.00000000000000000e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2640,7 +2216,7 @@
 									<name>DefaultColorG</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-001</value>
+										<value>5.00000000000000000e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2652,151 +2228,119 @@
 									<name>DefaultColorR</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-001</value>
+										<value>5.00000000000000000e-01</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>Filename</name>
+									<name>Radius</name>
 								</first>
 								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value></value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FrameCount</name>
-								</first>
-								<second>
-									<name>FrameCount</name>
-									<value>
-										<which>0</which>
-										<value>10</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ImageHeight</name>
-								</first>
-								<second>
-									<name>ImageHeight</name>
-									<value>
-										<which>0</which>
-										<value>768</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ImageWidth</name>
-								</first>
-								<second>
-									<name>ImageWidth</name>
-									<value>
-										<which>0</which>
-										<value>1024</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightColorB</name>
-								</first>
-								<second>
-									<name>LightColorB</name>
+									<name>Radius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
 							<item>
 								<first>
-									<name>LightColorG</name>
+									<name>UseNormals</name>
 								</first>
 								<second>
-									<name>LightColorG</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightColorR</name>
-								</first>
-								<second>
-									<name>LightColorR</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightIntensity</name>
-								</first>
-								<second>
-									<name>LightIntensity</name>
-									<value>
-										<which>1</which>
-										<value>1.00000000000000000e+000</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightType</name>
-								</first>
-								<second>
-									<name>LightType</name>
-									<value>
-										<which>2</which>
-										<value>ambient</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>LightVisible</name>
-								</first>
-								<second>
-									<name>LightVisible</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowImageInWindow</name>
-								</first>
-								<second>
-									<name>ShowImageInWindow</name>
+									<name>UseNormals</name>
 									<value>
 										<which>3</which>
 										<value>1</value>
 									</value>
 								</second>
 							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ShowFieldWithOspray:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Visualization</category_name_>
+						<module_name_>ShowFieldWithOspray</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>6</count>
+							<item_version>0</item_version>
 							<item>
 								<first>
-									<name>StreamlineRadius</name>
+									<name>DefaultColorA</name>
 								</first>
 								<second>
-									<name>StreamlineRadius</name>
+									<name>DefaultColorA</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000010e-001</value>
+										<value>1.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DefaultColorB</name>
+								</first>
+								<second>
+									<name>DefaultColorB</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DefaultColorG</name>
+								</first>
+								<second>
+									<name>DefaultColorG</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>DefaultColorR</name>
+								</first>
+								<second>
+									<name>DefaultColorR</name>
+									<value>
+										<which>1</which>
+										<value>5.00000000000000000e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Radius</name>
+								</first>
+								<second>
+									<name>Radius</name>
+									<value>
+										<which>1</which>
+										<value>1.00000000000000006e-01</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>UseNormals</name>
+								</first>
+								<second>
+									<name>UseNormals</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -2824,7 +2368,7 @@
 									<name>Ambient</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000010e-001</value>
+										<value>2.00000000000000011e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2860,7 +2404,7 @@
 									<name>Diffuse</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -2884,7 +2428,7 @@
 									<name>Emission</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -2920,7 +2464,7 @@
 									<name>FogEnd</name>
 									<value>
 										<which>1</which>
-										<value>7.09999999999999960e-001</value>
+										<value>7.09999999999999964e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2944,7 +2488,7 @@
 									<name>FogStart</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -3076,7 +2620,7 @@
 									<name>PolygonOffset</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -3100,7 +2644,7 @@
 									<name>ScaleBarHeight</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -3112,7 +2656,7 @@
 									<name>ScaleBarLength</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -3124,7 +2668,7 @@
 									<name>ScaleBarLineWidth</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -3136,7 +2680,7 @@
 									<name>ScaleBarMultiplier</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>9.99899999999999949e+01</value>
 									</value>
 								</second>
 							</item>
@@ -3172,7 +2716,7 @@
 									<name>Shine</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+000</value>
+										<value>1.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -3220,7 +2764,7 @@
 									<name>Specular</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000020e-001</value>
+										<value>4.00000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -3244,7 +2788,7 @@
 									<name>StereoFusion</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000020e-001</value>
+										<value>4.00000000000000022e-01</value>
 									</value>
 								</second>
 							</item>
@@ -3256,7 +2800,7 @@
 									<name>TextOffset</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -3290,7 +2834,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>21</count>
+			<count>20</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>ConvertQuadSurfToTriSurf:0</moduleId1_>
@@ -3301,30 +2845,6 @@
 				<moduleId2_>EditMeshBoundingBox:0</moduleId2_>
 				<port2_>
 					<name>InputField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ConvertQuadSurfToTriSurf:0</moduleId1_>
-				<port1_>
-					<name>TriSurf</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>InterfaceWithOspray:0</moduleId2_>
-				<port2_>
-					<name>Field</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ConvertQuadSurfToTriSurf:0</moduleId1_>
-				<port1_>
-					<name>TriSurf</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>InterfaceWithOspray:1</moduleId2_>
-				<port2_>
-					<name>Field</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -3359,6 +2879,18 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowField:0</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ConvertQuadSurfToTriSurf:0</moduleId1_>
+				<port1_>
+					<name>TriSurf</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowFieldWithOspray:0</moduleId2_>
 				<port2_>
 					<name>Field</name>
 					<id>0</id>
@@ -3418,10 +2950,10 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>InterfaceWithOspray:0</moduleId2_>
+				<moduleId2_>ShowField:1</moduleId2_>
 				<port2_>
 					<name>Field</name>
-					<id>2</id>
+					<id>0</id>
 				</port2_>
 			</item>
 			<item>
@@ -3430,7 +2962,7 @@
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowField:1</moduleId2_>
+				<moduleId2_>ShowFieldWithOspray:1</moduleId2_>
 				<port2_>
 					<name>Field</name>
 					<id>0</id>
@@ -3449,30 +2981,6 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>InterfaceWithOspray:0</moduleId1_>
-				<port1_>
-					<name>SceneGraph</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>OsprayViewer:0</moduleId2_>
-				<port2_>
-					<name>GeneralGeom</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>RescaleColorMap:0</moduleId1_>
-				<port1_>
-					<name>ColorMapOutput</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>InterfaceWithOspray:0</moduleId2_>
-				<port2_>
-					<name>ColorMapObject</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
 				<moduleId1_>RescaleColorMap:0</moduleId1_>
 				<port1_>
 					<name>ColorMapOutput</name>
@@ -3485,24 +2993,12 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>RescaleColorMap:1</moduleId1_>
+				<moduleId1_>RescaleColorMap:0</moduleId1_>
 				<port1_>
 					<name>ColorMapOutput</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>InterfaceWithOspray:0</moduleId2_>
-				<port2_>
-					<name>ColorMapObject</name>
-					<id>1</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>RescaleColorMap:1</moduleId1_>
-				<port1_>
-					<name>ColorMapOutput</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>InterfaceWithOspray:1</moduleId2_>
+				<moduleId2_>ShowFieldWithOspray:0</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
@@ -3515,6 +3011,18 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowField:1</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>RescaleColorMap:1</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowFieldWithOspray:1</moduleId2_>
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
@@ -3544,6 +3052,30 @@
 					<id>1</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>ShowFieldWithOspray:0</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>OsprayViewer:1</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowFieldWithOspray:1</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>OsprayViewer:1</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>1</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
@@ -3552,106 +3084,106 @@
 		<item class_id="17" tracking_level="0" version="0">
 			<first>ConvertQuadSurfToTriSurf:0</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>-3.09000000000000000e+002</first>
-				<second>-1.60000000000000000e+002</second>
+				<first>-3.09000000000000000e+02</first>
+				<second>-1.60000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:0</first>
 			<second>
-				<first>-2.28000000000000000e+002</first>
-				<second>-3.80000000000000000e+002</second>
+				<first>-2.28000000000000000e+02</first>
+				<second>-3.80000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>-3.04000000000000000e+002</first>
-				<second>-5.32000000000000000e+002</second>
+				<first>-3.04000000000000000e+02</first>
+				<second>-5.32000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:0</first>
 			<second>
-				<first>2.00000000000000000e+000</first>
-				<second>3.40000000000000000e+001</second>
+				<first>2.00000000000000000e+00</first>
+				<second>3.40000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateStandardColorMap:1</first>
 			<second>
-				<first>3.04000000000000000e+002</first>
-				<second>-2.28000000000000000e+002</second>
+				<first>3.04000000000000000e+02</first>
+				<second>-2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>EditMeshBoundingBox:0</first>
 			<second>
-				<first>-4.49000000000000000e+002</first>
-				<second>5.40000000000000000e+001</second>
+				<first>-4.49000000000000000e+02</first>
+				<second>5.40000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldBoundary:0</first>
 			<second>
-				<first>-7.60000000000000000e+001</first>
-				<second>-2.28000000000000000e+002</second>
+				<first>-7.60000000000000000e+01</first>
+				<second>-2.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>InterfaceWithOspray:0</first>
+			<first>OsprayViewer:1</first>
 			<second>
-				<first>-3.85000000000000000e+002</first>
-				<second>1.44000000000000000e+002</second>
-			</second>
-		</item>
-		<item>
-			<first>InterfaceWithOspray:1</first>
-			<second>
-				<first>3.48000000000000000e+002</first>
-				<second>5.60000000000000000e+001</second>
+				<first>-2.28000000000000000e+02</first>
+				<second>4.56000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>RescaleColorMap:0</first>
 			<second>
-				<first>5.00000000000000000e+001</first>
-				<second>1.60000000000000000e+002</second>
+				<first>5.00000000000000000e+01</first>
+				<second>1.60000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>RescaleColorMap:1</first>
 			<second>
-				<first>3.80000000000000000e+002</first>
-				<second>-7.60000000000000000e+001</second>
+				<first>3.80000000000000000e+02</first>
+				<second>-7.60000000000000000e+01</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>2.28000000000000000e+002</first>
-				<second>1.52000000000000000e+002</second>
+				<first>2.28000000000000000e+02</first>
+				<second>1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:1</first>
 			<second>
-				<first>3.80000000000000000e+002</first>
-				<second>1.52000000000000000e+002</second>
+				<first>3.80000000000000000e+02</first>
+				<second>1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>OsprayViewer:0</first>
+			<first>ShowFieldWithOspray:0</first>
 			<second>
-				<first>-3.20000000000000000e+002</first>
-				<second>2.65000000000000000e+002</second>
+				<first>-3.57000000000000000e+02</first>
+				<second>2.71000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ShowFieldWithOspray:1</first>
+			<second>
+				<first>-7.50000000000000000e+01</first>
+				<second>2.81000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>2.28000000000000000e+002</first>
-				<second>3.04000000000000000e+002</second>
+				<first>2.28000000000000000e+02</first>
+				<second>3.04000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -3695,11 +3227,7 @@
 			<second>-1</second>
 		</item>
 		<item>
-			<first>InterfaceWithOspray:0</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>InterfaceWithOspray:1</first>
+			<first>OsprayViewer:1</first>
 			<second>-1</second>
 		</item>
 		<item>
@@ -3719,7 +3247,11 @@
 			<second>-1</second>
 		</item>
 		<item>
-			<first>OsprayViewer:0</first>
+			<first>ShowFieldWithOspray:0</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ShowFieldWithOspray:1</first>
 			<second>-1</second>
 		</item>
 		<item>
@@ -3746,3 +3278,4 @@
 	</subnetworks>
 </networkFile>
 </boost_serialization>
+
