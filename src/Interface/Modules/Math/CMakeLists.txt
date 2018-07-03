@@ -50,8 +50,7 @@ SET(Interface_Modules_Math_FORMS
   DisplayHistogram.ui
   BasicPlotter.ui
   AdvancedPlotter.ui
-  CreateStandardMatrix.ui
-  ResizeMatrix.ui
+  CreateStandardMatrixDialog.ui
 )
 
 SET(Interface_Modules_Math_HEADERS
@@ -81,7 +80,6 @@ SET(Interface_Modules_Math_HEADERS
   AdvancedPlotterDialog.h
   PlotDialog.h
   CreateStandardMatrixDialog.h
-  ResizeMatrixDialog.h
 )
 
 SET(Interface_Modules_Math_SOURCES
@@ -110,7 +108,6 @@ SET(Interface_Modules_Math_SOURCES
   AdvancedPlotterDialog.cc
   PlotDialog.cc
   CreateStandardMatrixDialog.cc
-  ResizeMatrixDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS "${Interface_Modules_Math_FORMS}")

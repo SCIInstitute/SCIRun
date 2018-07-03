@@ -47,7 +47,6 @@ SET(Algorithms_Math_SRCS
   ReportMatrixSliceMeasureAlgo.cc
   BooleanCompareAlgo.cc
   CreateStandardMatrixAlgo.cc
-  ResizeMatrixAlgo.cc
 )
 
 SET(Algorithms_Math_HEADERS
@@ -72,7 +71,7 @@ SET(Algorithms_Math_HEADERS
   ReportMatrixSliceMeasureAlgo.h
   BooleanCompareAlgo.h
   CreateStandardMatrixAlgo.h
-  ResizeMatrixAlgo.h
+
 )
 
 SCIRUN_ADD_LIBRARY(Algorithms_Math 

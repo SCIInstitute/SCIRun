@@ -24,7 +24,7 @@
 #ifndef INTERFACE_MODULES_MATH_CreateStandardMatrixDIALOG_H
 #define INTERFACE_MODULES_MATH_CreateStandardMatrixDIALOG_H
 
-#include <Interface/Modules/Math/ui_CreateStandardMatrix.h>
+#include <Interface/Modules/Math/ui_CreateStandardMatrixDialogcd .h>
 //#include <boost/shared_ptr.hpp>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
@@ -33,7 +33,7 @@ namespace SCIRun {
     namespace Gui {
         
         class SCISHARE CreateStandardMatrixDialog : public ModuleDialogGeneric,
-        public Ui::CreateStandardMatrix
+        public Ui::CreateStandardMatrixDialog
         {
             Q_OBJECT
             

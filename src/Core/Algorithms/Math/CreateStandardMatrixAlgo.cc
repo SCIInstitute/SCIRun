@@ -83,31 +83,37 @@ Datatypes::DenseMatrixHandle CreateStandardMatrixAlgo::generateMatrix(const std:
         return output;
     }
     
-    
-    DenseMatrix outputArray;
     if(matrixType=="Zero")
     {
+        DenseMatrix outputArray;
         outputArray=MatrixXd::Constant(rows, columns, 0);
+        DenseMatrixHandle output(new DenseMatrix(outputArray.matrix()));
+        return output;
     }
     
-    if(matrixType=="One")
+    else if(matrixType=="One")
     {
+        DenseMatrix outputArray;
         outputArray=MatrixXd::Constant(rows, columns, 1);
+        DenseMatrixHandle output(new DenseMatrix(outputArray.matrix()));
+        return output;
     }
     
-    if(matrixType=="NaN")
+    else if(matrixType=="NaN")
     {
         DenseMatrixHandle output=boost::make_shared<DenseMatrix>(rows, columns, std::numeric_limits<double>::quiet_NaN());
         return output;
-        
     }
 
-    if(matrixType=="Identity")
+    else if(matrixType=="Identity")
     {
+        DenseMatrix outputArray;
         outputArray=MatrixXd::Identity(rows,columns);
+        DenseMatrixHandle output(new DenseMatrix(outputArray.matrix()));
+        return output;
     }
 
-    if(matrixType=="Series")
+    else if(matrixType=="Series")
     {
         double size = get(Parameters::Size).toDouble();
         double startPtr = get(Parameters::StartPointer).toDouble();
@@ -124,9 +130,4 @@ Datatypes::DenseMatrixHandle CreateStandardMatrixAlgo::generateMatrix(const std:
     }
     
     
-    DenseMatrixHandle output(new DenseMatrix(outputArray.matrix()));
-    return output;
-    
-    
 }
-
