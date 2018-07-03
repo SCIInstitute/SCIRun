@@ -52,6 +52,7 @@ SET(Interface_Modules_Math_FORMS
   AdvancedPlotter.ui
   SortMatrixDialog.ui
   GenerateStandardMatrixDialog.ui
+  ResizeMatrixDialog.ui
 )
 
 SET(Interface_Modules_Math_HEADERS
@@ -82,6 +83,7 @@ SET(Interface_Modules_Math_HEADERS
   PlotDialog.h
   SortMatrixDialog.h
   GenerateStandardMatrixDialog.h
+  ResizeMatrixDialog.h
 )
 
 SET(Interface_Modules_Math_SOURCES
@@ -111,6 +113,7 @@ SET(Interface_Modules_Math_SOURCES
   PlotDialog.cc
   SortMatrixDialog.cc
   GenerateStandardMatrixDialog.cc
+  ResizeMatrixDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS "${Interface_Modules_Math_FORMS}")

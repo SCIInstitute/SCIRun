@@ -48,6 +48,7 @@ SET(Algorithms_Math_SRCS
   BooleanCompareAlgo.cc
   SortMatrixAlgo.cc
   GenerateStandardMatrixAlgo.cc
+  ResizeMatrixAlgo.cc
 )
 
 SET(Algorithms_Math_HEADERS
@@ -73,6 +74,7 @@ SET(Algorithms_Math_HEADERS
   BooleanCompareAlgo.h
   SortMatrixAlgo.h
   GenerateStandardMatrixAlgo.h
+  ResizeMatrixAlgo.h
 )
 
 SCIRUN_ADD_LIBRARY(Algorithms_Math 
