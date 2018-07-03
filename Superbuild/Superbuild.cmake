@@ -279,7 +279,6 @@ SET(SCIRUN_CACHE_ARGS
     "-DSQLite_DIR:PATH=${SQLite_DIR}"
     "-DBoost_DIR:PATH=${Boost_DIR}"
     "-DTeem_DIR:PATH=${Teem_DIR}"
-    "-DTetgen_DIR:PATH=${Tetgen_DIR}"
     "-DFreetype_DIR:PATH=${Freetype_DIR}"
 	  "-DGLM_DIR:PATH=${GLM_DIR}"
     "-DSPDLOG_DIR:PATH=${SPDLOG_DIR}"
@@ -300,6 +299,12 @@ ENDIF()
 IF(WITH_TETGEN)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DTetgen_DIR:PATH=${Tetgen_DIR}"
+  )
+ENDIF()
+
+IF(WITH_OSPRAY)
+  LIST(APPEND SCIRUN_CACHE_ARGS
+    "-DOspray_DIR:PATH=${Ospray_DIR}"
   )
 ENDIF()
 

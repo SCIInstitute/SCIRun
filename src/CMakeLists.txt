@@ -254,6 +254,11 @@ IF(WITH_TETGEN)
   INCLUDE(${TETGEN_USE_FILE})
 ENDIF()
 
+IF(WITH_OSPRAY)
+  CONFIG_STANDARD_EXTERNAL( Ospray OsprayConfig.cmake ${Ospray_DIR} )
+  INCLUDE(${OSPRAY_USE_FILE})
+ENDIF()
+
 IF(WIN32)
   CONFIG_STANDARD_EXTERNAL( Glew GlewConfig.cmake ${GLEW_DIR} )
   INCLUDE(${GLEW_USE_FILE})
@@ -375,8 +380,6 @@ ENDIF()
 ########################################################################
 # Configure ospray module build-- TODO: convert into real external
 
-OPTION(WITH_OSPRAY "Build with Ospray support." OFF)
-MARK_AS_ADVANCED(WITH_OSPRAY)
 IF(WITH_OSPRAY)
   ADD_DEFINITIONS(-DWITH_OSPRAY)
 ENDIF()
