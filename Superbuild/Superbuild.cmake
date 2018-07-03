@@ -77,6 +77,9 @@ OPTION(WITH_TETGEN "Build Tetgen." OFF)
 ###########################################
 # Configure ospray
 OPTION(WITH_OSPRAY "Build Ospray." ON)
+IF(WIN32) # needs VS2017--turn off for now
+  SET(WITH_OSPRAY OFF)
+ENDIF()
 
 ###########################################
 # Configure data
@@ -106,16 +109,15 @@ IF(TRAVIS_BUILD)
     SET(DOWNLOAD_TOOLKITS OFF)
     SET(BUILD_WITH_SCIRUN_DATA OFF)
   ELSE()
+    SET(WITH_OSPRAY OFF)
+	SET(BUILD_TESTING OFF)
+	SET(DOWNLOAD_TOOLKITS OFF)
+	SET(BUILD_WITH_SCIRUN_DATA OFF)
+	
     IF(CMAKE_C_COMPILER_ID MATCHES "GNU")
-      SET(BUILD_TESTING OFF)
-      SET(DOWNLOAD_TOOLKITS OFF)
       SET(BUILD_HEADLESS ON)
       SET(BUILD_WITH_PYTHON OFF)
-      SET(BUILD_WITH_SCIRUN_DATA OFF)
     ELSE()
-      SET(BUILD_TESTING OFF)
-      SET(DOWNLOAD_TOOLKITS OFF)
-      SET(BUILD_WITH_SCIRUN_DATA OFF)
       # try building everything with clang!
     ENDIF()
   ENDIF()
