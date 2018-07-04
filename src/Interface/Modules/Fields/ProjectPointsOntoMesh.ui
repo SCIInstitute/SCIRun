@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>391</width>
-    <height>132</height>
+    <width>551</width>
+    <height>204</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -24,7 +24,7 @@
     <widget class="QGroupBox" name="groupBox">
      <property name="font">
       <font>
-       <pointsize>12</pointsize>
+       <pointsize>8</pointsize>
        <weight>50</weight>
        <bold>false</bold>
       </font>
