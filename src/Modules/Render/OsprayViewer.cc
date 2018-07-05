@@ -148,7 +148,9 @@ void OsprayViewer::asyncExecute(const PortId& pid, DatatypeHandle data)
 
 void OsprayViewer::execute()
 {
-
+#ifndef WITH_OSPRAY
+  error("Must compile WITH_OSPRAY to enable this module.");
+#endif
 }
 
 void OsprayViewer::sendCompositeGeometry()
