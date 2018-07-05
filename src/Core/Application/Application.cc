@@ -98,18 +98,18 @@ Application::~Application()
 void Application::shutdown()
 {
   if (!private_)
-    GeneralLog::Instance().get()->info("Application shutdown called with null internals");
+    logInfo("Application shutdown called with null internals");
   try
   {
     private_.reset();
   }
   catch (std::exception& e)
   {
-    GeneralLog::Instance().get()->critical("Unhandled exception during application shutdown: {}", e.what());
+    logCritical("Unhandled exception during application shutdown: {}", e.what());
   }
   catch (...)
   {
-    GeneralLog::Instance().get()->critical("Unknown unhandled exception during application shutdown");
+    logCritical("Unknown unhandled exception during application shutdown");
   }
 }
 

@@ -217,7 +217,7 @@ void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 {
 #ifdef BUILD_WITH_PYTHON
   NetworkEditor::InEditingContext iec(networkEditor_);
-  GuiLogger::logInfo("RUNNING PYTHON SCRIPT: " + scriptFileName);
+  GuiLogger::logInfoQ("RUNNING PYTHON SCRIPT: " + scriptFileName);
   PythonInterpreter::Instance().importSCIRunLibrary();
   PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
   statusBar()->showMessage(tr("Script is running."), 2000);

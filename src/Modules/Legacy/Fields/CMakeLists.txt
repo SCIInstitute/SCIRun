@@ -74,6 +74,7 @@ SET(Modules_Legacy_Fields_HEADERS
   MapFieldDataOntoElems.h
   MapFieldDataOntoNodes.h
   MapFieldDataFromSourceToDestination.h
+  MapFieldDataOntoNodesRadialbasis.h
   ReportFieldGeometryMeasures.h
   FlipSurfaceNormals.h
   SwapFieldDataWithMatrixEntries.h
@@ -187,7 +188,7 @@ SET(Modules_Legacy_Fields_SRCS
   SetFieldData.cc
   GetFieldNodes.cc
   SetFieldNodes.cc
-  #MapFieldDataOntoNodesRadialbasis.cc
+  MapFieldDataOntoNodesRadialbasis.cc
   #SelectAndSetFieldData.cc
   #SelectAndSetFieldData3.cc
   #SplitNodesByDomain.cc

@@ -80,8 +80,8 @@ namespace SCIRun {
       void showOrientationChecked(bool value);
       void showAxisChecked(bool value);
       void viewBarButtonClicked();
-      void viewAxisSelected(int index);
-      void viewVectorSelected(int index);
+      void viewAxisSelected(const QString& name);
+      void viewVectorSelected(const QString& name);
       void configurationButtonClicked();
       void assignBackgroundColor();
       void setTransparencySortTypeContinuous(bool index);
@@ -201,10 +201,6 @@ namespace SCIRun {
       void takeScreenshot();
       void sendScreenshotDownstreamForTesting();
 
-      void lookDownAxisX(int upIndex, glm::vec3& up);
-      void lookDownAxisY(int upIndex, glm::vec3& up);
-      void lookDownAxisZ(int upIndex, glm::vec3& up);
-
       void toggleLightOnOff(int index, bool value);
 
       // update scale bar geometries
@@ -255,6 +251,7 @@ namespace SCIRun {
       QAction* lockZoom_;
       QPushButton* controlLock_;
       QPushButton* autoViewButton_;
+      QPushButton* viewBarBtn_;
 
       friend class ViewSceneControlsDock;
 

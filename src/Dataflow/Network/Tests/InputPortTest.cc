@@ -51,7 +51,7 @@ protected:
   {
     DefaultValue<InputPortHandle>::Set(InputPortHandle());
     DefaultValue<OutputPortHandle>::Set(OutputPortHandle());
-    
+
     inputModule.reset(new NiceMock<MockModule>);
     outputModule.reset(new NiceMock<MockModule>);
   }
@@ -97,10 +97,10 @@ TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
   const int dataValue = 2;
   DatatypeHandle dataToPush(new Int32(dataValue));
   outputPort->sendData(dataToPush);
-  
+
   DatatypeHandleOption data = inputPort->getData();
   EXPECT_TRUE(data.is_initialized());
-  EXPECT_EQ(dataValue, (*data)->as<Int32>()->value());
+  EXPECT_EQ(dataValue, (*data)->as<Int32>()->toInt());
 }
 
 TEST_F(InputPortTest, CanClone)
@@ -115,7 +115,7 @@ TEST_F(InputPortTest, CanClone)
   ASSERT_TRUE(inputPort != nullptr);
 
   InputPortHandle clone(inputPort->clone());
-  
+
   ASSERT_TRUE(clone != nullptr);
   ASSERT_NE(clone, inputPort);
   EXPECT_EQ(inputPort->get_portname(), clone->get_portname());

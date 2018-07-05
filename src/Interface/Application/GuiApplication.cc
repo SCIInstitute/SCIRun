@@ -48,13 +48,13 @@ int GuiApplication::run(int argc, const char* argv[])
   catch (std::exception& e)
   {
     QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
-    SCIRun::Core::Logging::GeneralLog::Instance().get()->critical("Unhandled exception: {}", e.what());
+    logCritical("Unhandled exception: {}", e.what());
     return 1;
   }
   catch (...)
   {
     QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: exiting now.");
-    SCIRun::Core::Logging::GeneralLog::Instance().get()->critical("Unhandled exception: Unknown type");
+    logCritical("Unhandled exception: Unknown type");
     return 1;
   }
 }

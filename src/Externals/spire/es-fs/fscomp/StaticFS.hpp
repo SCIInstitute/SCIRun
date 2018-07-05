@@ -27,7 +27,7 @@ struct StaticFS
 
   bool serialize(spire::ComponentSerialize&, uint64_t /* entityID */)
   {
-    logRendererError("No serialization should be performed on StaticFS!");
+    //logRendererError("No serialization should be performed on StaticFS!");
     throw std::runtime_error("Cannot serialize StaticFS!");
   }
 };

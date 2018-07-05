@@ -118,7 +118,7 @@ void NoteDisplayHelper::updateNoteImpl(const Note& note)
   {
     setNoteGraphicsContext();
     if (!scene_)
-      GeneralLog::Instance().get()->warn("Scene not set, network notes will not be displayed.");
+      logWarning("Scene not set, network notes will not be displayed.");
 
     #ifdef QT5_BUILD
     note_ = new QGraphicsTextItem("");

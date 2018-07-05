@@ -311,7 +311,7 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
           [&](const PortWidget* port) { return port->get_typename() == iport->get_typename() && port->getIndex() >= nextInputIndex; });
         if (toConnect == newInputs.end())
         {
-          guiLog->critical("Logical error: could not find input port to connect to {}, {}", iport->name().toStdString(), nextInputIndex);
+          guiLogCritical("Logical error: could not find input port to connect to {}, {}", iport->name().toStdString(), nextInputIndex);
           break;
         }
         nextInputIndex = (*toConnect)->getIndex() + 1;
@@ -331,7 +331,7 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
           [&](const PortWidget* port) { return port->get_typename() == oport->get_typename() && port->getIndex() >= nextOutputIndex; });
         if (toConnect == newOutputs.end())
         {
-          guiLog->critical("Logical error: could not find output port to connect to {}", oport->name().toStdString());
+          guiLogCritical("Logical error: could not find output port to connect to {}", oport->name().toStdString());
           break;
         }
         auto connectedPorts = oport->connectedPorts();
@@ -420,7 +420,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
 
   if (highResolutionExpandFactor_ > 1)
   {
-    auto multiplier = std::min(highResolutionExpandFactor_, 1.5);
+    auto multiplier = std::min(highResolutionExpandFactor_, 1.2);
     module->setFixedHeight(proxy->size().height() * multiplier);
     proxy->setMaximumHeight(proxy->size().height() * multiplier);
     module->setFixedWidth(proxy->size().width() * std::max(multiplier*0.9, 1.0));

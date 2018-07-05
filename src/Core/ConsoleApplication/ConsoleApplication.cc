@@ -49,12 +49,12 @@ int ConsoleApplication::run(int argc, const char* argv[])
   }
   catch (std::exception& e)
   {
-    GeneralLog::Instance().get()->critical("Critical error! Unhandled exception: {}\nExiting now.", e.what());
+    logCritical("Critical error! Unhandled exception: {}\nExiting now.", e.what());
     return 1;
   }
   catch (...)
   {
-    GeneralLog::Instance().get()->critical("Critical error! Unknown unhandled exception: exiting now.");
+    logCritical("Critical error! Unknown unhandled exception: exiting now.");
     return 1;
   }
 
