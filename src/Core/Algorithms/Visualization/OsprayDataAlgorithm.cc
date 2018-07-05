@@ -409,37 +409,31 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::makeObject(FieldHandle field) co
 
 AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
 {
-  auto fields = input.getList<Field>(Name("Field"));
-  auto colorMaps = input.getList<ColorMap>(Name("ColorMapObject"));
-  auto streamlines = input.getList<Field>(Name("Streamlines"));
-  std::vector<OsprayGeometryObjectHandle> renderables;
-  for (auto&& fieldColor : zip(fields, colorMaps))
+  auto field = input.get<Field>(Name("Field"));
+  auto colorMap = input.get<ColorMap>(Name("ColorMapObject"));
+
+  OsprayGeometryObjectHandle renderable;
+
+  FieldInformation info(field);
+
+  if (info.is_trisurfmesh())
   {
-    FieldHandle field;
-    ColorMapHandle colorMap;
-    boost::tie(field, colorMap) = fieldColor;
-
-    FieldInformation info(field);
-
-    if (info.is_trisurfmesh())
-    {
-      renderables.push_back(addSurface(field, colorMap));
-    }
-    else if (info.is_pointcloudmesh())
-    {
-      renderables.push_back(addSphere(field, colorMap));
-    }
-    else if (info.is_curvemesh())
-    {
-      renderables.push_back(addStreamline(field, colorMap));
-    }
-    else
-    {
-      THROW_ALGORITHM_INPUT_ERROR("field type not supported.");
-    }
+    renderable = addSurface(field, colorMap);
   }
-  auto geom = boost::make_shared<CompositeOsprayGeometryObject>(renderables);
+  else if (info.is_pointcloudmesh())
+  {
+    renderable = addSphere(field, colorMap);
+  }
+  else if (info.is_curvemesh())
+  {
+    renderable = addStreamline(field, colorMap);
+  }
+  else
+  {
+    THROW_ALGORITHM_INPUT_ERROR("field type not supported.");
+  }
+
   AlgorithmOutput output;
-  output[Name("SceneGraph")] = geom;
+  output[Name("SceneGraph")] = renderable;
   return output;
 }
