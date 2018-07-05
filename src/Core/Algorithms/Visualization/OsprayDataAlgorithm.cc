@@ -224,7 +224,7 @@ bool OsprayDataAlgorithm::FindPath(UndirectedGraph& graph, Vertex_u& curr_v, std
   for ( tie(ei, ei_end)=out_edges( curr_v, graph ); ei != ei_end; ++ei, ++edge_idx )
   {
     cnt++;
-    Vertex_u v2a = source(*ei, graph);
+    source(*ei, graph);
     Vertex_u v2b = target(*ei, graph);
 
     if (cnt ==2)
@@ -321,7 +321,6 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addSphere(FieldHandle field, Col
   auto obj = fillDataBuffers(field, colorMap);
   obj->isSphere = true;
   obj->GeomType="Spheres";
-  //std::cout<<"sphere radius = "<<static_cast<float> (get(Parameters::Radius).toDouble())<<std::endl;
   obj->radius = static_cast<float>(get(Parameters::Radius).toDouble());
 
   return obj;
@@ -331,15 +330,12 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addSphere(FieldHandle field, Col
 OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle field, ColorMapHandle colorMap) const
 {
   auto facade(field->mesh()->getFacade());
-
   auto obj = makeObject(field);
   auto& fieldData = obj->data;
   auto& vertex = fieldData.vertex;
   auto& color = fieldData.color;
   auto& vertex_normal = fieldData.vertex_normal;
-
   auto vfield = field->vfield();
-
   {
     double value;
     ColorRGB nodeColor(get(Parameters::DefaultColorR).toDouble(),
@@ -381,20 +377,15 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle fiel
   }
 
   FieldInformation info(field);
-  //std::cout<<"useNormals = "<<get(Parameters::UseNormals).toBool()<<std::endl;
-  //std::cout<<"is trisurf ="<<info.is_trisurfmesh()<<std::endl;
-  //std::cout<<"is pointcloud ="<<info.is_pointcloudmesh()<<std::endl;
-
   if (get(Parameters::UseNormals).toBool() && info.is_trisurfmesh())
   {
-    //std::cout<<"using normals"<<std::endl;
+    auto mesh = field->vmesh();
+    mesh->synchronize(Mesh::NORMALS_E);
     {
       Vector norm;
-
       for (const auto& node : facade->nodes())
       {
-        field->vmesh()->get_normal(norm, node.index());
-
+        mesh->get_normal(norm, node.index());
         vertex_normal.push_back(static_cast<float>(norm.x()));
         vertex_normal.push_back(static_cast<float>(norm.y()));
         vertex_normal.push_back(static_cast<float>(norm.z()));
@@ -402,7 +393,6 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle fiel
       }
     }
   }
-
   return obj;
 }
 
@@ -415,14 +405,14 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::makeObject(FieldHandle field) co
   return obj;
 }
 
+
+
 AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
 {
   auto fields = input.getList<Field>(Name("Field"));
   auto colorMaps = input.getList<ColorMap>(Name("ColorMapObject"));
   auto streamlines = input.getList<Field>(Name("Streamlines"));
-
   std::vector<OsprayGeometryObjectHandle> renderables;
-
   for (auto&& fieldColor : zip(fields, colorMaps))
   {
     FieldHandle field;
@@ -447,10 +437,7 @@ AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
     {
       THROW_ALGORITHM_INPUT_ERROR("field type not supported.");
     }
-
-
   }
-
   auto geom = boost::make_shared<CompositeOsprayGeometryObject>(renderables);
   AlgorithmOutput output;
   output[Name("SceneGraph")] = geom;
