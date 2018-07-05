@@ -21,14 +21,6 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-//
-//  TestModuleSimple.h
-//  Sample Module
-//
-//  Created by Barad-dûr on 6/8/18.
-//  Copyright © 2018 Barad-dûr. All rights reserved.
-//
-
 #ifndef MODULES_STRING_TestModuleSimpleUI_h
 #define MODULES_STRING_TestModuleSimpleUI_h
 
