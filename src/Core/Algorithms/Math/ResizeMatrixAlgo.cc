@@ -67,17 +67,16 @@ AlgorithmOutput ResizeMatrixAlgo::run(const AlgorithmInput& input) const{
     if(dense->rows()*dense->cols() != rows*columns)
     {
         warning("size you input and the size of you matrix dont match");
-        Map<MatrixXd> tempResult(dense->data(),dense->rows(),dense->cols());
+
+        Map<MatrixXd> result(dense->data(),rows,columns);
         auto outputArray=boost::make_shared<DenseMatrix>(rows,columns);
-        
-        for(int i=0;i<dense->rows();i++)
+        /*for(int i=0;i<rows;i++)
         {
-            for(int j=0;j<dense->cols();j++)
+            for(int j=0;j<columns;j++)
             {
-                (*outputArray)(i,j)=tempResult(i,j);
+                
             }
         }
-        
         if(dense->rows()==rows && dense->cols()!=columns)
         {
             for(int i=0;i<rows;i++)
@@ -99,19 +98,26 @@ AlgorithmOutput ResizeMatrixAlgo::run(const AlgorithmInput& input) const{
                     }
                 }
             }
-            else{
+            else{*/
                 if(dense->rows()!=rows && dense->cols()!=columns)
                 {
-                    for(int i=dense->rows();i<rows;i++)
+                    int counter=0;
+                    for(int j=0;j<columns;j++)
                     {
-                        for(int j=dense->cols();j<columns;j++)
-                        {
-                            (*outputArray)(i,j)=0;
+                        for(int i=0;i<rows;i++)
+                        {   counter=counter+1;
+                            if(counter>(dense->rows()*dense->cols()))
+                            {
+                                (*outputArray)(i,j)=0;
+                            }
+                            else{
+                                    (*outputArray)(i,j)=result(i,j);
+                            }
                         }
                     }
                 }
-            }
-        }
+        //    }
+      //  }
         
         AlgorithmOutput output;
         output[Variables::OutputMatrix]=outputArray;
@@ -121,8 +127,9 @@ AlgorithmOutput ResizeMatrixAlgo::run(const AlgorithmInput& input) const{
     
     else{
         Map<MatrixXd> result(dense->data(),rows,columns);
+    
         
-        DenseMatrixHandle outputArray(new DenseMatrix(result.matrix()));
+       DenseMatrixHandle outputArray(new DenseMatrix(result.matrix()));
         
         AlgorithmOutput output;
         output[Variables::OutputMatrix]=outputArray;
