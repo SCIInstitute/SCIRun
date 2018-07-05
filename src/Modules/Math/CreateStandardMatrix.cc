@@ -21,38 +21,53 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#include<Modules/Math/SortMatrix.h>
+#include<Modules/Math/CreateStandardMatrix.h>
 #include<Core/Datatypes/Matrix.h>
+#include<Core/Datatypes/DenseMatrix.h>
 #include<Dataflow/Network/Module.h>
-#include<Core/Algorithms/Math/SortMatrixAlgo.h>
+#include<Core/Algorithms/Math/CreateStandardMatrixAlgo.h>
+
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 
-MODULE_INFO_DEF(SortMatrix,Math,SCIRun);
 
-SortMatrix::SortMatrix() : Module(staticInfo_)
+MODULE_INFO_DEF(CreateStandardMatrix,Math,SCIRun);
+
+CreateStandardMatrix::CreateStandardMatrix() : Module(staticInfo_)
 {
-    INITIALIZE_PORT(InputMatrix);
+    //INITIALIZE_PORT(InputMatrix);
     INITIALIZE_PORT(OutputMatrix);
 }
 
-void SortMatrix::setStateDefaults()
+void CreateStandardMatrix::setStateDefaults()
 {
-    setStateIntFromAlgo(Variables::Method);
-
+   
+    setStateStringFromAlgoOption(Parameters::MatrixType);
+    setStateIntFromAlgo(Parameters::Rows);
+    setStateIntFromAlgo(Parameters::Columns);
+    setStateDoubleFromAlgo(Parameters::Size);
+    setStateDoubleFromAlgo(Parameters::StartPointer);
+    
 }
 
-void SortMatrix::execute()
+void CreateStandardMatrix::execute()
+
 {
-    auto input=getRequiredInput(InputMatrix);
-    
+    //auto input=getRequiredInput(InputMatrix);
     if(needToExecute())
     {
-        setAlgoIntFromState(Variables::Method);
-        auto output = algo().run(withInputData((InputMatrix, input)));
+        setAlgoOptionFromState(Parameters::MatrixType);
+        setAlgoIntFromState(Parameters::Rows);
+        setAlgoIntFromState(Parameters::Columns);
+        setAlgoDoubleFromState(Parameters::Size);
+        setAlgoDoubleFromState(Parameters::StartPointer);
+        
+        AlgorithmInput input;
+        auto output=algo().run(input);
         sendOutputFromAlgorithm(OutputMatrix,output);
     }
 }

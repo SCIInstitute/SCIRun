@@ -21,27 +21,35 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#include <Modules/String/TestModuleSimple.h>
-#include <Core/Datatypes/String.h>
+#ifndef INTERFACE_MODULES_MATH_CreateStandardMatrixDIALOG_H
+#define INTERFACE_MODULES_MATH_CreateStandardMatrixDIALOG_H
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::StringManip;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+#include <Interface/Modules/Math/ui_CreateStandardMatrixDialog.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/share.h>
 
-const ModuleLookupInfo TestModuleSimple::staticInfo_("TestModuleSimple","String","SCIRun");
-
-TestModuleSimple::TestModuleSimple () : Module(staticInfo_,false)
-{
-    INITIALIZE_PORT(OutputString);
+namespace SCIRun {
+    namespace Gui {
+        
+        class SCISHARE CreateStandardMatrixDialog : public ModuleDialogGeneric,
+        public Ui::CreateStandardMatrixDialog
+        {
+            Q_OBJECT
+            
+        public:
+            CreateStandardMatrixDialog(const std::string& name,
+                                       SCIRun::Dataflow::Networks::ModuleStateHandle state,
+                                       QWidget* parent = 0);
+            
+        protected:
+            virtual void pullSpecial() override;
+            
+            private Q_SLOTS:
+            void enableWidgets(const QString& mode);
+     
+        };
+        
+    }
 }
 
-void TestModuleSimple::execute()
-{
-    std::string message_string;
-    message_string="Trying to develop a Module";
-    
-    StringHandle msH(new String(message_string));
-    sendOutput(OutputString,msH);
-}
-
+#endif

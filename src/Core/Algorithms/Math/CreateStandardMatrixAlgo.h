@@ -25,12 +25,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_MATH_SortMatrixALGO_H
-#define CORE_ALGORITHMS_MATH_SortMatrixALGO_H
+#ifndef CORE_ALGORITHMS_MATH_CreateStandardMatrixALGO_H
+#define CORE_ALGORITHMS_MATH_CreateStandardMatrixALGO_H
 
 #include<Core/Datatypes/Matrix.h>
 #include<Core/Datatypes/DenseMatrix.h>
 #include<Core/Datatypes/DenseColumnMatrix.h>
+#include <Eigen/Dense>
 
 #include<string>
 #include<sstream>
@@ -45,18 +46,23 @@ namespace SCIRun{
     namespace Core{
         namespace Algorithms{
             namespace Math{
-                class SCISHARE SortMatrixAlgo : public AlgorithmBase
+                
+                ALGORITHM_PARAMETER_DECL(MatrixType);
+                ALGORITHM_PARAMETER_DECL(Rows);
+                ALGORITHM_PARAMETER_DECL(Columns);
+                ALGORITHM_PARAMETER_DECL(Size);
+                ALGORITHM_PARAMETER_DECL(StartPointer);
+                
+                
+                class SCISHARE CreateStandardMatrixAlgo : public AlgorithmBase
                 {
                 public:
-                    SortMatrixAlgo();
+                    CreateStandardMatrixAlgo();
                     
                     AlgorithmOutput run(const AlgorithmInput& input) const;
                     
-                    bool Sort(Datatypes::DenseMatrixHandle input, Datatypes::DenseMatrixHandle& output, int method) const;
+                    Datatypes::DenseMatrixHandle generateMatrix(const std::string& matrixType, int row, int col) const;
                     
-                    bool Quicksort(double* input, index_type lo, index_type hi) const;
-                    
-                    index_type Partition(double* input, index_type lo, index_type hi) const;
                 };
             }
         }

@@ -21,27 +21,33 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#include <Modules/String/TestModuleSimple.h>
-#include <Core/Datatypes/String.h>
+#ifndef MODULES_MATH_CreateStandardMatrix_H
+#define MODULES_MATH_CreateStandardMatrix_H
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::StringManip;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
-const ModuleLookupInfo TestModuleSimple::staticInfo_("TestModuleSimple","String","SCIRun");
 
-TestModuleSimple::TestModuleSimple () : Module(staticInfo_,false)
-{
-    INITIALIZE_PORT(OutputString);
+namespace SCIRun{
+    namespace Modules{
+        namespace Math{
+            class SCISHARE CreateStandardMatrix:public SCIRun::Dataflow::Networks::Module,
+            public HasNoInputPorts,
+            public Has1OutputPort<MatrixPortTag>
+            {
+            public:
+                CreateStandardMatrix();
+                virtual void execute();
+                virtual void setStateDefaults();
+                
+                
+                //INPUT_PORT(0,InputMatrix, Matrix);
+                OUTPUT_PORT(0,OutputMatrix, Matrix);
+            
+                MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm);
+            };
+        }
+    }
 }
-
-void TestModuleSimple::execute()
-{
-    std::string message_string;
-    message_string="Trying to develop a Module";
-    
-    StringHandle msH(new String(message_string));
-    sendOutput(OutputString,msH);
-}
+#endif
 
