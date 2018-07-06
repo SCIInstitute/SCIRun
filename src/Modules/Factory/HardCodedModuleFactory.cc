@@ -148,3 +148,9 @@ const DirectModuleDescriptionLookupMap& HardCodedModuleFactory::getDirectModuleD
 {
   return impl_->lookup.lookup_;
 }
+
+bool HardCodedModuleFactory::moduleImplementationExists(const std::string& name) const
+{
+  auto map = getDirectModuleDescriptionLookupMap();
+  return map.find(ModuleLookupInfo(name, "", "")) != map.end();
+}

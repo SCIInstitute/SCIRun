@@ -90,7 +90,8 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
       }
       catch (Core::InvalidArgumentException& e)
       {
-        static std::ofstream missingModulesFile((Core::Logging::LogSettings::Instance().logDirectory() / "missingModules.log").string());
+        static std::ofstream missingModulesFile(
+          (Core::Logging::LogSettings::Instance().logDirectory() / "missingModules.log").string(), std::ios_base::out | std::ios_base::app);
         missingModulesFile << "File load problem: " << e.what() << std::endl;
         logCritical("File load problem: {}", e.what());
         throw;
