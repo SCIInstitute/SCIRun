@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,6 +29,7 @@
 #define INTERFACE_MODULES_STRING_TestModuleSimpleUIDialog_H
 
 #include <Interface/Modules/String/ui_TestModuleSimpleUIDialog.h>
+//#include <boost/shared_ptr.hpp>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/String/share.h>
 
@@ -45,6 +45,7 @@ public:
   TestModuleSimpleUIDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
+  
 };
 
 }

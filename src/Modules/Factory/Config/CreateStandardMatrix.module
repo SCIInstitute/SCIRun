@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CreateStandardMatrix",
+    "namespace": "Math",
+    "status": "new module",
+    "description": "Generates Several different Types of Standard Matrices",
+    "header": "Modules/Math/CreateStandardMatrix.h"
+  },
+  "algorithm": {
+    "name": "CreateStandardMatrixAlgo",
+    "namespace": "Math",
+    "header": "Core/Algorithms/Math/CreateStandardMatrixAlgo.h"
+  },
+  "UI": {
+    "name": "CreateStandardMatrixDialog",
+    "header": "Interface/Modules/Math/CreateStandardMatrixDialog.h"
+  }
+}
