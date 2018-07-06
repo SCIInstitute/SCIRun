@@ -21,9 +21,9 @@ ResizeMatrix::ResizeMatrix() : Module(staticInfo_)
 
 void ResizeMatrix::setStateDefaults()
 {
-   
     setStateIntFromAlgo(Parameters::NoOfRows);
     setStateIntFromAlgo(Parameters::NoOfColumns);
+    setStateStringFromAlgoOption(Parameters::Major);
     
 }
 
@@ -36,6 +36,7 @@ void ResizeMatrix::execute()
     {
         setAlgoIntFromState(Parameters::NoOfRows);
         setAlgoIntFromState(Parameters::NoOfColumns);
+        setAlgoOptionFromState(Parameters::Major);
         
         auto output=algo().run(withInputData((InputMatrix,input)));
         sendOutputFromAlgorithm(OutputMatrix,output);

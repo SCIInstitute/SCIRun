@@ -44,44 +44,54 @@ using namespace SCIRun::Core::Algorithms::Math::Parameters;
 
 ALGORITHM_PARAMETER_DEF(Math, NoOfRows);
 ALGORITHM_PARAMETER_DEF(Math, NoOfColumns);
+ALGORITHM_PARAMETER_DEF(Math, Major);
 
 ResizeMatrixAlgo::ResizeMatrixAlgo()
 {
     //set parameter defaults for UI
     addParameter(Parameters::NoOfRows, 1);
     addParameter(Parameters::NoOfColumns, 1);
-
+    addOption(Parameters::Major,"Row","Row|Column");
+    
 }
 
 AlgorithmOutput ResizeMatrixAlgo::run(const AlgorithmInput& input) const{
     
     auto inputMatrix=input.get<Datatypes::Matrix>(Variables::InputMatrix);
     
-    //pull parameter from UI
     
+    //pull parameter from UI
     int rows = get(Parameters::NoOfRows).toInt();
     int columns = get(Parameters::NoOfColumns).toInt();
+    std::string major=getOption(Parameters::Major);
+    DenseMatrixHandle dense=castMatrix::toDense(inputMatrix);
+    DenseMatrixHandle denseMat(new DenseMatrix(*dense));
+
     
-    auto dense=castMatrix::toDense(inputMatrix);
-    Map<MatrixXd> result(dense->data(),columns,rows);
-    DenseMatrixHandle outputArray(new DenseMatrix(result.matrix()));
-    outputArray->transposeInPlace();
-    
-    if(dense->rows()*dense->cols() != rows*columns)
+    if(major=="Column")
     {
-        warning("size you input and the size of you matrix dont match");
-
-        double *resultMatrix=outputArray->data();
-        for(int i=dense->rows()*dense->cols();i<rows*columns;i++)
-        {
-            resultMatrix[i]=0;
-        }
+    //    dense=castMatrix::toDense(inputMatrix);
+        denseMat->transposeInPlace();
     }
+    
+    
+        Map<MatrixXd> result(denseMat->data(),columns,rows);
+        DenseMatrixHandle outputArray(new DenseMatrix(result.matrix()));
+        outputArray->transposeInPlace();
+    
+        if(denseMat->rows()*denseMat->cols() != rows*columns)
+        {
+            warning("size you input and the size of you matrix dont match");
 
+            double *resultMatrix=outputArray->data();
+            for(int i=denseMat->rows()*denseMat->cols();i<rows*columns;i++)
+            {
+                resultMatrix[i]=0;
+            }
+        }
         AlgorithmOutput output;
         output[Variables::OutputMatrix]=outputArray;
-        
         return output;
-    
+
     
 }
