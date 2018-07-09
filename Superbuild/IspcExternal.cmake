@@ -1,4 +1,3 @@
-#
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
@@ -24,53 +23,32 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-#
 
-SET(Modules_Visualization_SRCS
-  CreateStandardColorMap.cc
-  ShowField.cc
-  ShowFieldGlyphs.cc
-  ShowString.cc
-  ShowColorMapModule.cc
-  RescaleColorMap.cc
-  TextBuilder.cc
-  #InterfaceWithOspray.cc
-  #ViewOsprayScene.cc
-  ShowFieldWithOspray.cc
+SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+ExternalProject_Add(Ispc_external
+  URL "https://downloads.sourceforge.net/project/ispcmirror/v1.9.2/ispc-v1.9.2-osx.tar.gz"
+  PATCH_COMMAND ""
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
+  CMAKE_CACHE_ARGS
+    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
+    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
 )
 
-SET(Modules_Visualization_HEADERS
-  CreateStandardColorMap.h
-  ShowField.h
-  ShowFieldGlyphs.h
-  ShowString.h
-  ShowColorMapModule.h
-  RescaleColorMap.h
-  TextBuilder.h
-  #InterfaceWithOspray.h
-  #ViewOsprayScene.h
-  ShowFieldWithOspray.h
-  share.h
-)
+ExternalProject_Get_Property(Ispc_external SOURCE_DIR)
+ExternalProject_Get_Property(Ispc_external BINARY_DIR)
+ExternalProject_Get_Property(Ispc_external INSTALL_DIR)
+#SET(TETGEN_INCLUDE ${SOURCE_DIR})
+#SET(TETGEN_LIBRARY_DIR ${BINARY_DIR})
+#SET(TETGEN_USE_FILE ${INSTALL_DIR}/UseTetgen.cmake)
+# see Tetgen CMakeLists.txt file
+#SET(TETGEN_LIBRARY "tet")
+SET(Ispc_DIR ${SOURCE_DIR} CACHE PATH "")
 
-SCIRUN_ADD_LIBRARY(Modules_Visualization
-  ${Modules_Visualization_HEADERS}
-  ${Modules_Visualization_SRCS}
-)
+# Boost is special case - normally this should be handled in external library repo
+#CONFIGURE_FILE(${SUPERBUILD_DIR}/TetgenConfig.cmake.in ${INSTALL_DIR}/TetgenConfig.cmake @ONLY)
+#CONFIGURE_FILE(${SUPERBUILD_DIR}/UseTetgen.cmake ${TETGEN_USE_FILE} COPYONLY)
 
-TARGET_LINK_LIBRARIES(Modules_Visualization
-  Dataflow_Network
-  Core_Datatypes
-  Core_Datatypes_Mesh
-  Core_Datatypes_Legacy_Field
-  Core_Algorithms_Visualization
-  Graphics_Glyphs
-  Graphics_Datatypes
-  ${SCI_FREETYPE_LIBRARY}
-)
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Modules_Visualization)
-ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_TEST_DIR(Tests)
+MESSAGE(STATUS "Ispc_DIR: ${Ispc_DIR}")
