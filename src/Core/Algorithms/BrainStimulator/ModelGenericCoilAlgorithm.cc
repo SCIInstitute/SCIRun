@@ -365,7 +365,9 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 
 					Vector step(0,0,coilLayersStep);
 
-					double dr = (outerR - innerR) / rings;
+					double dr = 0.0;
+					if(rings > 1)
+						dr = (outerR - innerR) / (rings - 1);
 
 					if(coilType == 1)
 					{
@@ -374,8 +376,11 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 
 						for(size_t l = 0; l < coilLayers; l++)
 						{
-							ClosedSegments segments(coilPoints,coilIndices,coilValues);
-							GenPointsCircular(segments, origin, outerR, current, 0.0, 2.0*M_PI);
+							for (size_t i = 0; i < rings; i++)
+							{
+								ClosedSegments segments(coilPoints,coilIndices,coilValues);
+								GenPointsCircular(segments, origin, innerR + i*dr, current, 0.0 , 2*M_PI );
+							}
 
 							origin += step;
 						}
@@ -399,7 +404,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 							for (size_t i = 0; i < rings; i++)
 							{
 								ClosedSegments segments(coilPoints,coilIndices,coilValues);
-								GenPointsCircular(segments, originLeft, innerR + dr + i*dr, current, 0.0 , 2*M_PI );
+								GenPointsCircular(segments, originLeft, innerR + i*dr, current, 0.0 , 2*M_PI );
 								segments.Transform(transLeft);
 							}
 
@@ -412,7 +417,7 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 							for (size_t i = 0; i < rings; i++)
 							{
 								ClosedSegments segments(coilPoints,coilIndices,coilValues);
-								GenPointsCircular(segments, originRight, innerR + dr + i*dr, -current, 0.0 , 2*M_PI);
+								GenPointsCircular(segments, originRight, innerR + i*dr, -current, 0.0 , 2*M_PI);
 								segments.Transform(transRight);
 							}
 
@@ -614,12 +619,12 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 				{
 					std::vector<Vector> dipolePoints;
 					std::vector<Vector> dipoleValues;
-					std::vector<size_t> coilIndices;
+					//std::vector<size_t> coilIndices;
 
-					std::vector<double> radiiInner = preRadiiInner();
-					std::vector<double> radiiOuter = preRadiiOuter();
+					//std::vector<double> radiiInner = preRadiiInner();
+					//std::vector<double> radiiOuter = preRadiiOuter();
 					//std::vector<double> numElements = preNumElem(radiiInner);
-					std::vector<double> numCoupling = preNumAdjElem(radiiInner);
+					//std::vector<double> numCoupling = preNumAdjElem(radiiInner);
 
 
 					//print_vector(radiiInner);
@@ -628,51 +633,80 @@ ALGORITHM_PARAMETER_DEF(BrainStimulator, LevelOfDetail);
 					//print_vector(numElements);
 					//print_vector(numCoupling);
 
-					assert(radiiInner.size() == radiiOuter.size());
+					//assert(radiiInner.size() == radiiOuter.size());
 
 
 					//algo->remark("#Rings:  " +  boost::lexical_cast<std::string>(radiiOuter.size()) + " ring-step:" + boost::lexical_cast<std::string>(lod_step_m));
 
+					Vector step(0,0,coilLayersStep);
+
+					double dr = 0.0;
+					if(rings > 1)
+						dr = (outerR - innerR) / (rings - 1);
+
 
 					if(coilType == 1)
 					{
-						Vector center(0, 0, 0);
+						Vector origin(0, 0, -coilLayersStep*(coilLayers/2) );
 
-						for (size_t i = 0; i < radiiInner.size(); i++)
+						for(size_t l = 0; l < coilLayers; l++)
 						{
-							double ringRad = radiiInner[i] + (radiiOuter[i] - radiiInner[i]) / 2.0;
-
-							/// SINGLE COIL
-							size_t numElements = GenPointsCircular2(dipolePoints, center, ringRad, 0.0, 2*M_PI, rings);
-							double ringArea = M_PI * ( radiiOuter[i] * radiiOuter[i] - radiiInner[i] * radiiInner[i] );
-							double dipoleMoment = (  current * ringArea * numCoupling[i] ) / numElements;
+							double dipoleMoment = 0;
+							for (size_t i = 0; i < rings; i++)
+							{
+								double ringArea = M_PI * (innerR + i*dr) * (innerR + i*dr);
+								dipoleMoment += current * ringArea;
+							}
 							Vector dipoleNormL(0,0,1.0*dipoleMoment);
-							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
+							dipolePoints.push_back(origin);
+							dipoleValues.push_back(dipoleNormL);
+
+							origin += step;
 						}
 					}
 					else if(coilType == 2)
 					{
-						Vector originL( -radiiOuter[radiiOuter.size()-1] - outerD / 2.0, 0, 0);
-						Vector originR( radiiOuter[radiiOuter.size()-1] + outerD / 2.0, 0, 0 );
+						Vector originLeft ( -outerR - (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
+						Vector originRight(  outerR + (outerD/2), 0.0, -coilLayersStep*(coilLayers/2) );
 
-						for (size_t i = 0; i < radiiInner.size(); i++)
+						auto transLeft = Transform::Identity();
+						transLeft.post_rotate(M_PI*(wingsAngle/180),{0,1,0});
+
+						auto transRight = Transform::Identity();
+						transRight.post_rotate(M_PI*(-wingsAngle/180),{0,1,0});
+
+						for(size_t l = 0; l < coilLayers; l++)
 						{
-							double ringRad = radiiInner[i] + (radiiOuter[i] - radiiInner[i]) / 2.0;
-							double ringArea = M_PI * ( radiiOuter[i] * radiiOuter[i] - radiiInner[i] * radiiInner[i] );
+							double dipoleMoment = 0;
+							for (size_t i = 0; i < rings; i++)
+							{
+								double ringArea = M_PI * (innerR + i*dr) * (innerR + i*dr);
+								dipoleMoment += current * ringArea;
+							}
+							Vector dipoleNormL(0,0,1.0*dipoleMoment);
+							dipoleNormL = transLeft * dipoleNormL;
+							Vector originLeftTrans = transLeft * originLeft;
+							dipolePoints.push_back(originLeftTrans);
+							dipoleValues.push_back(dipoleNormL);
 
-							/// LEFT COIL
-							size_t numElementsL = GenPointsCircular2(dipolePoints, originL, ringRad, 0.0, 2*M_PI, rings);
+							originLeft += step;
+						}
 
-							double dipoleMomentL = ( current * ringArea * numCoupling[i] ) / numElementsL;
-							Vector dipoleNormL(0,0,1.0*dipoleMomentL);
-							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormL );
+						for(size_t l = 0; l < coilLayers; l++)
+						{
+							double dipoleMoment = 0;
+							for (size_t i = 0; i < rings; i++)
+							{
+								double ringArea = M_PI * (innerR + i*dr) * (innerR + i*dr);
+								dipoleMoment += current * ringArea;
+							}
+							Vector dipoleNormR(0,0,-1.0*dipoleMoment);
+							dipoleNormR = transRight * dipoleNormR;
+							Vector originRightTrans = transRight * originRight;
+							dipolePoints.push_back(originRightTrans);
+							dipoleValues.push_back(dipoleNormR);
 
-
-							/// RIGHT COIL
-							size_t numElementsR = GenPointsCircular2(dipolePoints, originR, ringRad, 0.0, 2*M_PI, rings);
-							double dipoleMomentR = ( current * ringArea * numCoupling[i] ) / numElementsR;
-							Vector dipoleNormR(0,0,-1.0*dipoleMomentR);
-							GenSegmentValues(dipolePoints, dipoleValues, dipoleNormR );
+							originRight += step;
 						}
 
 					}

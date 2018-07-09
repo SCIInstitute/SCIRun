@@ -129,20 +129,6 @@ void OsprayViewer::setStateDefaults()
   state->setValue(Parameters::ZoomSpeed, 1.0);
 }
 
-void addToList(std::vector<OsprayGeometryObjectHandle>& vec, OsprayGeometryObjectHandle geom)
-{
-  auto comp = boost::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
-  if (comp)
-  {
-    for (auto& sub : comp->objects())
-      addToList(vec, sub);
-  }
-  else
-  {
-    vec.push_back(geom);
-  }
-}
-
 void OsprayViewer::portRemovedSlotImpl(const PortId& pid)
 {
   sendCompositeGeometry();
@@ -162,7 +148,9 @@ void OsprayViewer::asyncExecute(const PortId& pid, DatatypeHandle data)
 
 void OsprayViewer::execute()
 {
-
+#ifndef WITH_OSPRAY
+  error("Must compile WITH_OSPRAY to enable this module.");
+#endif
 }
 
 void OsprayViewer::sendCompositeGeometry()
@@ -171,12 +159,8 @@ void OsprayViewer::sendCompositeGeometry()
   //logWarning("allGeom size {}", allGeom.size());
   if (!allGeom.empty())
   {
-    std::vector<OsprayGeometryObjectHandle> flattened;
-    for (auto& obj : allGeom)
-      addToList(flattened, obj);
-
     //logWarning("flattened size {}", flattened.size());
-    OsprayGeometryObjectHandle composite(new CompositeOsprayGeometryObject(flattened));
+    OsprayGeometryObjectHandle composite(new CompositeOsprayGeometryObject(allGeom));
     //logWarning("composite ptr {}", composite.get());
     get_state()->setTransientValue(Parameters::GeomData, composite, true);
   }
