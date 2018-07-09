@@ -92,7 +92,7 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
       {
         static std::ofstream missingModulesFile((Core::Logging::LogSettings::Instance().logDirectory() / "missingModules.log").string());
         missingModulesFile << "File load problem: " << e.what() << std::endl;
-        Core::Logging::GeneralLog::Instance().get()->critical("File load problem: {}", e.what());
+        logCritical("File load problem: {}", e.what());
         throw;
       }
     }
@@ -109,7 +109,7 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
       controller_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
     else
     {
-      Core::Logging::GeneralLog::Instance().get()->error(
+      logError(
         "File load error: connection not created between modules {} and {}.",
         conn.out_.moduleId_.id_, conn.in_.moduleId_.id_);
     }

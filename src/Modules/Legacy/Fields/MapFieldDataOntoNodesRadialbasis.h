@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,30 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_STRING_TestModuleSimpleUIDialog_H
-#define INTERFACE_MODULES_STRING_TestModuleSimpleUIDialog_H
+#ifndef MODULES_LEGACY_FIELDS_MapFieldDataOntoNodesRadialbasis_H__
+#define MODULES_LEGACY_FIELDS_MapFieldDataOntoNodesRadialbasis_H__
 
-#include <Interface/Modules/String/ui_TestModuleSimpleUIDialog.h>
-//#include <boost/shared_ptr.hpp>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/String/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Core/Thread/Interruptible.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE TestModuleSimpleUIDialog : public ModuleDialogGeneric,
-  public Ui::TestModuleSimpleUIDialog
-{
-	Q_OBJECT
-	
-public:
-  TestModuleSimpleUIDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  
-};
+namespace Modules {
+namespace Fields {
 
-}
-}
+  class SCISHARE MapFieldDataOntoNodesRadialbasis : public Dataflow::Networks::Module,
+    public Has2InputPorts<FieldPortTag, FieldPortTag>,
+    public Has1OutputPort<FieldPortTag>,
+    public Core::Thread::Interruptible
+  {
+  public:
+    MapFieldDataOntoNodesRadialbasis();
+
+    virtual void execute() override;
+    virtual void setStateDefaults() override;
+
+    INPUT_PORT(0, Source, Field);
+    INPUT_PORT(1, Destination, Field);
+    OUTPUT_PORT(0, Output, Field);
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+  };
+
+}}}
 
 #endif

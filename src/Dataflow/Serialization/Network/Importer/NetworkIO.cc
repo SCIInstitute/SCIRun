@@ -179,7 +179,14 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
   {
     {"MapFieldDataOntoElems", "MapFieldDataOntoElements"},
     {"GetColumnOrRowFromMatrix", "GetMatrixSlice"},
-    {"CreateStandardColorMaps", "CreateStandardColorMap"}
+    {"CreateStandardColorMaps", "CreateStandardColorMap"},
+    { "EvaluateLinAlgBinary", "EvaluateLinearAlgebraBinary" },
+    { "EvaluateLinAlgUnary", "EvaluateLinearAlgebraUnary" },
+    { "ExtractIsosurface", "ExtractSimpleIsosurface" }, //TODO: needs rename after issue
+    { "CalculateFieldData2", "CalculateFieldData" },
+    { "CalculateFieldData3", "CalculateFieldData" },
+    { "CalculateFieldData4", "CalculateFieldData" },
+    { "CalculateFieldData5", "CalculateFieldData" }
   };
 
 std::string LegacyNetworkIO::checkForModuleRename(const std::string& originalName)

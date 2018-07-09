@@ -64,10 +64,10 @@ namespace SCIRun {
             if (!isDone())
             {
               auto order = scheduler_.schedule(*network_);
-              if (shouldLog_)
-              {
-                log_->trace("Producer received this ordering: \n{}\nProducer processing min group {}", order, order.minGroup());
-              }
+              //if (shouldLog_)
+              //{
+              //  log_->trace("Producer received this ordering: \n{}\nProducer processing min group {}", order, order.minGroup());
+              //}
               if (order.minGroup() < 0)
               {
                 badGroup_ = true;
@@ -79,13 +79,13 @@ namespace SCIRun {
 
                 if (module->executionState().currentState() == Networks::ModuleExecutionState::Waiting)
                 {
-                  if (shouldLog_)
-                    log_->trace("Producer pushing module {}", mod.second);
+                  //if (shouldLog_)
+                  //  log_->trace("Producer pushing module {}", mod.second);
 
                   if (doneIds_.find(mod.second) != doneIds_.end())
                   {
-                    if (shouldLog_)
-                      log_->info("Module producer: wants to enqueue module {} a second time. {}", mod.second, id_);
+                    //if (shouldLog_)
+                    //  log_->info("Module producer: wants to enqueue module {} a second time. {}", mod.second, id_);
                   }
                   else
                   {
@@ -93,8 +93,8 @@ namespace SCIRun {
                     doneIds_.insert(mod.second);
                     doneCount_.fetch_add(1);
 
-                    if (shouldLog_)
-                      log_->trace("Producer status: {} {} out of {}", id_, doneCount_, numModules_);
+                    //if (shouldLog_)
+                    //  log_->trace("Producer status: {} {} out of {}", id_, doneCount_, numModules_);
                   }
                 }
               }
@@ -105,7 +105,7 @@ namespace SCIRun {
           {
             id_ = boost::this_thread::get_id();
 
-            log_->trace_if(shouldLog_, "Producer started {}", id_);
+            //log_->trace_if(shouldLog_, "Producer started {}", id_);
 
             enqueueReadyModules();
 
@@ -118,7 +118,7 @@ namespace SCIRun {
             if (badGroup_)
               std::cerr << "producer is done with bad group, something went wrong. probably a race condition..." << std::endl;
 
-            log_->trace_if(shouldLog_, "Producer is done. {}", id_);
+            //log_->trace_if(shouldLog_, "Producer is done. {}", id_);
           }
 
           bool isDone() const
@@ -133,7 +133,7 @@ namespace SCIRun {
           mutable boost::atomic<int> doneCount_;
           mutable bool badGroup_;
           mutable std::set<Networks::ModuleId> doneIds_;
-          static Core::Logging::Logger2 log_;
+          //static Core::Logging::Logger2 log_;
           bool shouldLog_;
           size_t numModules_;
           mutable boost::thread::id id_;

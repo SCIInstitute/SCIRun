@@ -45,7 +45,7 @@ namespace Math {
     virtual void execute() override;
     virtual void setStateDefaults() override {}
 
-    INPUT_PORT(0, Input, Int32);
+    INPUT_PORT(0, Input, Scalar);
     OUTPUT_PORT(0, Output, Matrix);
 
     MODULE_TRAITS_AND_INFO(NoAlgoOrUI)

@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,8 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_MATH_GenerateStandardMatrixALGO_H
-#define CORE_ALGORITHMS_MATH_GenerateStandardMatrixALGO_H
+#ifndef CORE_ALGORITHMS_MATH_CreateStandardMatrixALGO_H
+#define CORE_ALGORITHMS_MATH_CreateStandardMatrixALGO_H
 
 #include<Core/Datatypes/Matrix.h>
 #include<Core/Datatypes/DenseMatrix.h>
@@ -51,16 +50,18 @@ namespace SCIRun{
                 ALGORITHM_PARAMETER_DECL(MatrixType);
                 ALGORITHM_PARAMETER_DECL(Rows);
                 ALGORITHM_PARAMETER_DECL(Columns);
+                ALGORITHM_PARAMETER_DECL(Size);
+                ALGORITHM_PARAMETER_DECL(StartPointer);
                 
                 
-                class SCISHARE GenerateStandardMatrixAlgo : public AlgorithmBase
+                class SCISHARE CreateStandardMatrixAlgo : public AlgorithmBase
                 {
                 public:
-                    GenerateStandardMatrixAlgo();
+                    CreateStandardMatrixAlgo();
                     
                     AlgorithmOutput run(const AlgorithmInput& input) const;
                     
-                    Datatypes::DenseMatrixHandle generateMatrix(std::string matrixType, int row, int col) const;
+                    Datatypes::DenseMatrixHandle generateMatrix(const std::string& matrixType, int row, int col) const;
                     
                 };
             }

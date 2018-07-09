@@ -1,22 +1,17 @@
 /*
  For more information, please see: http://software.sci.utah.edu
-
  The MIT License
-
  Copyright (c) 2015 Scientific Computing and Imaging Institute,
  University of Utah.
-
- License for the specific language governing rights and limitations under
+ 
  Permission is hereby granted, free of charge, to any person obtaining a
  copy of this software and associated documentation files (the "Software"),
  to deal in the Software without restriction, including without limitation
  the rights to use, copy, modify, merge, publish, distribute, sublicense,
  and/or sell copies of the Software, and to permit persons to whom the
  Software is furnished to do so, subject to the following conditions:
-
  The above copyright notice and this permission notice shall be included
  in all copies or substantial portions of the Software.
-
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -26,30 +21,27 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+#include <Modules/String/TestModuleSimple.h>
+#include <Core/Datatypes/String.h>
 
-#ifndef MODULES_STRING_TestModuleSimple_H
-#define MODULES_STRING_TestModuleSimple_H
+using namespace SCIRun;
+using namespace SCIRun::Modules::StringManip;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+const ModuleLookupInfo TestModuleSimple::staticInfo_("TestModuleSimple","String","SCIRun");
 
-namespace SCIRun {
-namespace Modules {
-namespace StringManip {
-
-class SCISHARE TestModuleSimple : public SCIRun::Dataflow::Networks::Module,
-public HasNoInputPorts,
-public Has1OutputPort<StringPortTag>
+TestModuleSimple::TestModuleSimple () : Module(staticInfo_,false)
 {
-public:
-  TestModuleSimple();
-  virtual void execute();
-  virtual void setStateDefaults() {}
+    INITIALIZE_PORT(OutputString);
+}
 
-  OUTPUT_PORT(0, OutputString, String);
-    MODULE_TRAITS_AND_INFO(NoAlgoOrUI);
-};
-}}}
+void TestModuleSimple::execute()
+{
+    std::string message_string;
+    message_string="Trying to develop a Module";
+    
+    StringHandle msH(new String(message_string));
+    sendOutput(OutputString,msH);
+}
 
-
-#endif

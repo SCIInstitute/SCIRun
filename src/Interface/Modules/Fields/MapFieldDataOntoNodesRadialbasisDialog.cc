@@ -26,50 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Math/GenerateStandardMatrixDialog.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-// #include <Core/Algorithms/Base/GenerateStandardMatrixAlgo.h> ----Make this algo file
-#include <Core/Algorithms/Math/GenerateStandardMatrixAlgo.h>
-#include <boost/shared_ptr.hpp>
-#include <QtGui>
+#include <Interface/Modules/Fields/MapFieldDataOntoNodesRadialbasisDialog.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
+#include <Core/Logging/Log.h>
+#include <Core/Math/MiscMath.h>
 
 using namespace SCIRun::Gui;
-using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-
-namespace SCIRun {
-    namespace Gui{
-        class GenerateStandardMatrixDialogImpl
-        {
-        public:
-            GenerateStandardMatrixDialogImpl()
-            {
-                value_.insert(StringPair("Matrix with Zeros","Zero"));
-                value_.insert(StringPair("Matrix with Ones","One"));
-                value_.insert(StringPair("Matrix with NaNs","NaN"));
-                value_.insert(StringPair("Identity Matrix","Identity"));
-                value_.insert(StringPair("Matrix with Series","Series"));
-    
-            }
-            
-            GuiStringTranslationMap value_;
-        };
-    }
-}
-
-GenerateStandardMatrixDialog::GenerateStandardMatrixDialog(const std::string& name, ModuleStateHandle state,
+MapFieldDataOntoNodesRadialbasisDialog::MapFieldDataOntoNodesRadialbasisDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent),
-   impl_(new GenerateStandardMatrixDialogImpl)
+  : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-
-    addComboBoxManager(matrixType_, Parameters::MatrixType,impl_->value_);
-    addSpinBoxManager(noOfRows_, Parameters::Rows);
-    addSpinBoxManager(noOfColumns_, Parameters::Columns);
-  }
-
+  addComboBoxManager(quantityComboBox_, Parameters::Quantity);
+  addComboBoxManager(interpolationComboBox_, Parameters::InterpolationModel);
+  addDoubleSpinBoxManager(outsideValueDoubleSpinBox_, Parameters::OutsideValue);
+  addDoubleLineEditManager(maximumDistanceLineEdit_, Parameters::MaxDistance);
+}

@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,7 +26,7 @@
 */
 
 
-#include <Core/Algorithms/Math/GenerateStandardMatrixAlgo.h>
+#include <Core/Algorithms/Math/CreateStandardMatrixAlgo.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Math/MiscMath.h>
@@ -43,8 +42,10 @@ using namespace SCIRun::Core::Algorithms::Math::Parameters;
 ALGORITHM_PARAMETER_DEF(Math, MatrixType);
 ALGORITHM_PARAMETER_DEF(Math, Rows);
 ALGORITHM_PARAMETER_DEF(Math, Columns);
+ALGORITHM_PARAMETER_DEF(Math, Size);
+ALGORITHM_PARAMETER_DEF(Math, StartPointer);
 
-GenerateStandardMatrixAlgo::GenerateStandardMatrixAlgo()
+CreateStandardMatrixAlgo::CreateStandardMatrixAlgo()
 {
     //set parameter defaults for UI
     addOption(Parameters::MatrixType,"One","Zero|One|NaN|Identity|Series");
@@ -52,29 +53,27 @@ GenerateStandardMatrixAlgo::GenerateStandardMatrixAlgo()
     //using namespace Parameters;
     addParameter(Parameters::Rows, 1);
     addParameter(Parameters::Columns, 1);
-
-
+    addParameter(Parameters::Size, 1.0);
+    addParameter(Parameters::StartPointer,0.0);
     
     }
 
-AlgorithmOutput GenerateStandardMatrixAlgo::run(const AlgorithmInput& input) const{
+AlgorithmOutput CreateStandardMatrixAlgo::run(const AlgorithmInput& input) const{
     
     //pull parameter from UI
     std::string matrixType=getOption(Parameters::MatrixType);
     
-    //int rows = state->getValue(Parameters::Rows).toInt();
-    //int columns = state->getValue(Parameters::Columns).toInt();
     
     int rows = get(Parameters::Rows).toInt();
     int columns = get(Parameters::Columns).toInt();
-    auto outputMatrix=generateMatrix(matrixType, rows, columns);
+    auto result=generateMatrix(matrixType, rows, columns);
      AlgorithmOutput output;
-    output[Variables::OutputMatrix]=outputMatrix;
+    output[Variables::OutputMatrix]=result;
     
     return output;
 }
 
-Datatypes::DenseMatrixHandle GenerateStandardMatrixAlgo::generateMatrix(std::string matrixType, int rows, int columns) const
+Datatypes::DenseMatrixHandle CreateStandardMatrixAlgo::generateMatrix(const std::string& matrixType, int rows, int columns) const
 {
     if(rows<=0 || columns<=0)
     {
@@ -83,38 +82,51 @@ Datatypes::DenseMatrixHandle GenerateStandardMatrixAlgo::generateMatrix(std::str
         return output;
     }
     
-    DenseMatrix outputArray;
-    
     if(matrixType=="Zero")
     {
+        DenseMatrix outputArray;
         outputArray=MatrixXd::Constant(rows, columns, 0);
+        DenseMatrixHandle output(new DenseMatrix(outputArray.matrix()));
+        return output;
     }
     
-    if(matrixType=="One")
+    else if(matrixType=="One")
     {
+        DenseMatrix outputArray;
         outputArray=MatrixXd::Constant(rows, columns, 1);
+        DenseMatrixHandle output(new DenseMatrix(outputArray.matrix()));
+        return output;
     }
     
-    if(matrixType=="NaN")
+    else if(matrixType=="NaN")
     {
-        error("Not yet developed");
+        DenseMatrixHandle output=boost::make_shared<DenseMatrix>(rows, columns, std::numeric_limits<double>::quiet_NaN());
+        return output;
     }
 
-    if(matrixType=="Identity")
+    else if(matrixType=="Identity")
     {
+        DenseMatrix outputArray;
         outputArray=MatrixXd::Identity(rows,columns);
+        DenseMatrixHandle output(new DenseMatrix(outputArray.matrix()));
+        return output;
     }
 
-    if(matrixType=="Series")
+    else if(matrixType=="Series")
     {
-        
-        error("Not yet developed");
+        double size = get(Parameters::Size).toDouble();
+        double startPtr = get(Parameters::StartPointer).toDouble();
+        auto outputArray=boost::make_shared<DenseMatrix>(rows,columns);
+        for(int i=0;i<rows;i++)
+        {
+            for(int j=0;j<columns;j++)
+            {
+                (*outputArray)(i,j)=startPtr;
+                startPtr+=size;
+            }
+        }
+        return outputArray;
     }
-    
-    
-    DenseMatrixHandle outputMatrix(new DenseMatrix(outputArray.matrix()));
-    return outputMatrix;
     
     
 }
-

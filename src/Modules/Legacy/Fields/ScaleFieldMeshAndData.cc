@@ -70,13 +70,13 @@ void ScaleFieldMeshAndData::execute()
   {
     if (dataScale && *dataScale)
     {
-      double scale = (*dataScale)->value();
+      double scale = (*dataScale)->toDouble();
       get_state()->setValue(Parameters::data_scale, scale);
     }
 
     if (geomScale && *geomScale)
     {
-      double scale = (*geomScale)->value();
+      double scale = (*geomScale)->toDouble();
       get_state()->setValue(Parameters::mesh_scale, scale);
     }
 

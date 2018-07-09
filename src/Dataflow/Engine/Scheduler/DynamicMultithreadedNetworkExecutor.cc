@@ -43,9 +43,9 @@ namespace SCIRun {
     namespace Engine {
       namespace DynamicExecutor
       {
-        Logger2 ModuleConsumer::log_ = spdlog::stdout_color_mt("consumer");
-        Logger2 ModuleProducer::log_ = spdlog::stdout_color_mt("producer");
-        Logger2 ModuleExecutor::log_ = spdlog::stdout_color_mt("executor");
+        //Logger2 ModuleConsumer::log_ = spdlog::stdout_color_mt("consumer");
+        //Logger2 ModuleProducer::log_ = spdlog::stdout_color_mt("producer");
+        //Logger2 ModuleExecutor::log_ = spdlog::stdout_color_mt("executor");
       }
 
       /// @todo: templatize along with producer/consumer

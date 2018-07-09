@@ -26,42 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_MATH_SortMatrixALGO_H
-#define CORE_ALGORITHMS_MATH_SortMatrixALGO_H
+#ifndef INTERFACE_MODULES_MapFieldDataOntoNodesRadialbasisDialog_H
+#define INTERFACE_MODULES_MapFieldDataOntoNodesRadialbasisDialog_H
 
-#include<Core/Datatypes/Matrix.h>
-#include<Core/Datatypes/DenseMatrix.h>
-#include<Core/Datatypes/DenseColumnMatrix.h>
+#include "Interface/Modules/Fields/ui_MapFieldDataOntoNodesRadialbasis.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
-#include<string>
-#include<sstream>
-#include<vector>
-#include<algorithm>
+namespace SCIRun {
+namespace Gui {
 
-#include<Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include<Core/Algorithms/Base/AlgorithmBase.h>
-#include<Core/Algorithms/Math/share.h>
+class SCISHARE MapFieldDataOntoNodesRadialbasisDialog : public ModuleDialogGeneric,
+  public Ui::MapFieldDataOntoNodesRadialbasis
+{
+  Q_OBJECT
 
-namespace SCIRun{
-    namespace Core{
-        namespace Algorithms{
-            namespace Math{
-                class SCISHARE SortMatrixAlgo : public AlgorithmBase
-                {
-                public:
-                    SortMatrixAlgo();
-                    
-                    AlgorithmOutput run(const AlgorithmInput& input) const;
-                    
-                    bool Sort(Datatypes::DenseMatrixHandle input, Datatypes::DenseMatrixHandle& output, int method) const;
-                    
-                    bool Quicksort(double* input, index_type lo, index_type hi) const;
-                    
-                    index_type Partition(double* input, index_type lo, index_type hi) const;
-                };
-            }
-        }
-    }
+public:
+  MapFieldDataOntoNodesRadialbasisDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+};
+
+}
 }
 
 #endif

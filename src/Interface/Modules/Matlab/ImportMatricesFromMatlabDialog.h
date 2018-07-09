@@ -24,36 +24,43 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
-#ifndef INTERFACE_MODULES_MATH_GenerateStandardMatrixDIALOG_H
-#define INTERFACE_MODULES_MATH_GenerateStandardMatrixDIALOG_H
+#ifndef INTERFACE_MODULES_MATLAB_ImportMatricesFromMatlabDialog_H
+#define INTERFACE_MODULES_MATLAB_ImportMatricesFromMatlabDialog_H
 
-#include <Interface/Modules/Math/ui_GenerateStandardMatrixDialog.h>
-//#include <boost/shared_ptr.hpp>
+#include "Interface/Modules/Matlab/ui_ImportMatricesFromMatlab.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/share.h>
+#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
+#include <Interface/Modules/Matlab/share.h>
 
 namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE GenerateStandardMatrixDialog : public ModuleDialogGeneric,
-    public Ui::GenerateStandardMatrixDialog
-{
-	Q_OBJECT
-	
-public:
-  GenerateStandardMatrixDialog(const std::string& name,
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  
-private:
-     
-     boost::shared_ptr<class GenerateStandardMatrixDialogImpl> impl_;
-    
-};
+  namespace Gui {
 
-}
+    class SCISHARE ImportMatricesFromMatlabDialog : public ModuleDialogGeneric,
+      public Ui::ImportMatricesFromMatlab, public RemembersFileDialogDirectory
+    {
+      Q_OBJECT
+
+    public:
+      ImportMatricesFromMatlabDialog(const std::string& name,
+        Dataflow::Networks::ModuleStateHandle state,
+        QWidget* parent = nullptr);
+    protected:
+      virtual void pullSpecial() override;
+    private Q_SLOTS:
+      void openFile();
+      void pushFileNameToState();
+      void pushPortChoices();
+      void portItemClicked(int index);
+      void matlabItemClicked(int row);
+    private:
+      enum { NONE_CHOICE = -1 };
+      std::vector<int> portChoices_;
+      std::vector<std::string> fieldNames_;
+    };
+
+  }
 }
 
 #endif

@@ -78,7 +78,8 @@ TEST(LogWrapperTests, SpdLogExample)
 
 	// Conditional logging example
         auto i = 2;
-        console->warn_if(i != 0, "an important message");
+        if (i != 0)
+          console->warn("an important message");
 
         // Formatting examples
         console->warn("Easy padding in numbers like {:08d}", 12);
