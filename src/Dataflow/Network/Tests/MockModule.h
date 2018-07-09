@@ -108,6 +108,7 @@ namespace SCIRun {
           void setReexecutionFactory(ReexecuteStrategyFactoryHandle reexFactory) override;
           const ModuleDescriptionMap& getAllAvailableModuleDescriptions() const override;
           const DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const override { throw "not implemented"; }
+          bool moduleImplementationExists(const std::string& name) const override { throw "not implemented"; }
         private:
           mutable size_t moduleCounter_;
           ModuleStateFactoryHandle stateFactory_;
