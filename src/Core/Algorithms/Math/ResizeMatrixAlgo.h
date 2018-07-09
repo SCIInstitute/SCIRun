@@ -55,11 +55,10 @@ namespace SCIRun{
                 
                 class SCISHARE ResizeMatrixAlgo : public AlgorithmBase
                 {
-                
                 public:
-                    ResizeMatrixAlgo();
+                  ResizeMatrixAlgo();
                     
-                    AlgorithmOutput run(const AlgorithmInput& input) const;
+                  AlgorithmOutput run(const AlgorithmInput& input) const;
                     
                     
                 };

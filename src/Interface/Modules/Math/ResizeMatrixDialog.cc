@@ -38,15 +38,15 @@ using namespace SCIRun::Core::Algorithms::Math;
 
 
 ResizeMatrixDialog::ResizeMatrixDialog(const std::string& name, ModuleStateHandle state,
-                                                       QWidget* parent /* = 0 */)
-: ModuleDialogGeneric(state, parent)
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-    setupUi(this);
-    setWindowTitle(QString::fromStdString(name));
-    fixSize();
-    
-    addComboBoxManager(major_, Parameters::Major);
-    addSpinBoxManager(noOfRows_,Parameters::NoOfRows);
-    addSpinBoxManager(noOfColumns_,Parameters::NoOfColumns);
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  
+  addComboBoxManager(major_, Parameters::Major);
+  addSpinBoxManager(noOfRows_,Parameters::NoOfRows);
+  addSpinBoxManager(noOfColumns_,Parameters::NoOfColumns);
     
 }

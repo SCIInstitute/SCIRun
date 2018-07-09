@@ -15,30 +15,29 @@ MODULE_INFO_DEF(ResizeMatrix,Math,SCIRun);
 
 ResizeMatrix::ResizeMatrix() : Module(staticInfo_)
 {
-    INITIALIZE_PORT(InputMatrix);
-    INITIALIZE_PORT(OutputMatrix);
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(OutputMatrix);
 }
 
 void ResizeMatrix::setStateDefaults()
 {
-    setStateIntFromAlgo(Parameters::NoOfRows);
-    setStateIntFromAlgo(Parameters::NoOfColumns);
-    setStateStringFromAlgoOption(Parameters::Major);
+  setStateIntFromAlgo(Parameters::NoOfRows);
+  setStateIntFromAlgo(Parameters::NoOfColumns);
+  setStateStringFromAlgoOption(Parameters::Major);
     
 }
 
 void ResizeMatrix::execute()
-
 {
-    auto input=getRequiredInput(InputMatrix);
-   
-    if(needToExecute())
-    {
-        setAlgoIntFromState(Parameters::NoOfRows);
-        setAlgoIntFromState(Parameters::NoOfColumns);
-        setAlgoOptionFromState(Parameters::Major);
-        
-        auto output=algo().run(withInputData((InputMatrix,input)));
-        sendOutputFromAlgorithm(OutputMatrix,output);
-    }
+  auto input=getRequiredInput(InputMatrix);
+ 
+  if(needToExecute())
+  {
+    setAlgoIntFromState(Parameters::NoOfRows);
+    setAlgoIntFromState(Parameters::NoOfColumns);
+    setAlgoOptionFromState(Parameters::Major);
+    
+    auto output=algo().run(withInputData((InputMatrix,input)));
+    sendOutputFromAlgorithm(OutputMatrix,output);
+  }
 }

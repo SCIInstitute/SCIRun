@@ -29,21 +29,19 @@
 #include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
-    namespace Gui {
-        
-        class SCISHARE ResizeMatrixDialog : public ModuleDialogGeneric,
-        public Ui::ResizeMatrixDialog
-        {
-            Q_OBJECT
-            
-        public:
-            ResizeMatrixDialog(const std::string& name,
-                                       SCIRun::Dataflow::Networks::ModuleStateHandle state,
-                                       QWidget* parent = 0);
-            
-        };
-        
-    }
+  namespace Gui {
+    class SCISHARE ResizeMatrixDialog : public ModuleDialogGeneric,
+    public Ui::ResizeMatrixDialog
+    {
+      Q_OBJECT
+      
+      public:
+        ResizeMatrixDialog(const std::string& name,
+           SCIRun::Dataflow::Networks::ModuleStateHandle state,
+           QWidget* parent = 0);
+      
+    };
+  }
 }
 
 #endif
