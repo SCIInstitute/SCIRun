@@ -21,8 +21,8 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef INTERFACE_MODULES_MATH_CreateStandardMatrixDIALOG_H
-#define INTERFACE_MODULES_MATH_CreateStandardMatrixDIALOG_H
+#ifndef INTERFACE_MODULES_MATH_ResizeMatrixDIALOG_H
+#define INTERFACE_MODULES_MATH_ResizeMatrixDIALOG_H
 
 #include <Interface/Modules/Math/ui_ResizeMatrixDialog.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
