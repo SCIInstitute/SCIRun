@@ -182,7 +182,7 @@ bool SCIRunMainWindow::importLegacyNetworkFile(const QString& filename)
 		auto log = QString::fromStdString(command.logContents());
     auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
     auto logFileName = QString::fromStdString(Core::Logging::LogSettings::Instance().logDirectory().string())
-      + "/" + ("importLog_" + strippedName(filename) + "_" + QString::fromStdString(isoString) + ".log");
+      + "/" + (strippedName(filename) + "_importLog_" + QString::fromStdString(isoString) + ".log");
 		QFile logFile(logFileName);
     if (logFile.open(QFile::WriteOnly | QFile::Text))
 		{
