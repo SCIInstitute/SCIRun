@@ -26,7 +26,7 @@
 */
 
 #include <Interface/Modules/Fields/CalculateMeshCenterDialog.h>
-#include <Core/Algorithms/Legacy/Fields/Mapping/CalculateMeshCenterAlgo.h>
+#include <Core/Algorithms/Field/CalculateMeshCenterAlgorithm.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
@@ -46,8 +46,8 @@ CalculateMeshCenterDialog::CalculateMeshCenterDialog(const std::string& name, Mo
   map_.insert(StringPair("Volumeteric Center", "weightedEleCenter"));
   map_.insert(StringPair("Bounding Box Center","boundingBoxCenter"));
   map_.insert(StringPair("Middle Index Node","midNodeIndex"));
-  map_insert(StringPair("Middle Index Element","midEleIndex"));
+  map_.insert(StringPair("Middle Index Element","midElemIndex"));
 
-  addComboBoxManager(methodComboBox_, Parameters::Method, map_);
+  addComboBoxManager(method_, Parameters::Method, map_);
 }
 

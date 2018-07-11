@@ -37,12 +37,12 @@ namespace SCIRun {
 namespace Gui {
 
 class SCISHARE CalculateMeshCenterDialog : public ModuleDialogGeneric,
-  public Ui::CalculateMeshCenter
+  public Ui::CalculateMeshCenterDialog
 {
 	Q_OBJECT
 
 public:
-  BuildMappingMatrixDialog(const std::string& name,
+  CalculateMeshCenterDialog(const std::string& name,
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
 

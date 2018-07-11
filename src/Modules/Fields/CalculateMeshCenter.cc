@@ -36,7 +36,7 @@
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 MODULE_INFO_DEF(CalculateMeshCenter, NewField, SCIRun)
 
@@ -48,25 +48,18 @@ CalculateMeshCenter::CalculateMeshCenter() : Module(staticInfo_)
 
 void CalculateMeshCenter::setStateDefaults()
 {
+  setStateStringFromAlgoOption(Parameters::Method);
 }
 
 void CalculateMeshCenter::execute()
 {
   auto field = getRequiredInput(InputField);
 
-  /*if (needToExecute())
+  if (needToExecute())
   {
-    setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::Verbose);
-    setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::Padding);
-    setAlgoOptionFromState(InterfaceWithCleaverAlgorithm::VolumeScalingOption);
-    setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingX);
-    setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingY);
-    setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingZ);
-
-    auto output = algo().run(withInputData((InputFields, fields)));
+    setAlgoOptionFromState(Parameters::Method);
+    auto output = algo().run(withInputData((InputField, field)));
 
     sendOutputFromAlgorithm(OutputField,output);
-  }*/
-  FieldHandle output;
-  sendOutput(OutputField,output);
+  }
 }

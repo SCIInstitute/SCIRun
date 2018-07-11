@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -35,69 +34,80 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 //#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 //#include <boost/unordered_map.hpp>
+#include <vector>
+#include <Core/GeometryPrimitives/Vector.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
-//using namespace SCIRun::Core::Geometry;
-using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+//using namespace SCIRun::Core::Geometry::Vector;
 
-ALGORITHM_PARAMETER_DEF(Math, Method);
+
+ALGORITHM_PARAMETER_DEF(Fields, Method);
 
 CalculateMeshCenterAlgorithm::CalculateMeshCenterAlgorithm()
 {
   // set parameters defaults UI
-  addOption(Paramters::Method,"weightedEleCenter","nodeCenter|eleCenter|weightedEleCenter|boundingBoxCenter|midNodeIndex|midEleIndex");
+  addOption(Parameters::Method,"weightedEleCenter","nodeCenter|eleCenter|weightedEleCenter|boundingBoxCenter|midNodeIndex|midElemIndex");
 }
 
 
 AlgorithmOutput CalculateMeshCenterAlgorithm::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
-  
   FieldHandle output;
   
   //pull parameter from UI
-  std::string method=getOption(Paramters::Method);
-  
-  //Safety Check
-  if(inputField.getRep()==0)
-  {
-    error("No input field");
-    return nullptr;
-  }
-  
-  FieldInformation fo(inputField);
-  fo.makePointCloudMesh();
-  fo.make_nodata();
-  
-  if(inputField->numNodes()==0)
-  {
-    warning("Input field does contain any nodes, output will be an empty field");
-    output=CreateField(fo);
-    return output;
-  }
+  std::string method=getOption(Parameters::Method);
   
   VMesh* imesh=inputField->vmesh();
   
-  MeshHandle mesh=CreateMesh(fo);
+  //Safety Check
+  /*if(imesh->get_rep()==0)
+  {
+    error("No input field");
+    AlgorithmOutput result;
+    result[Variables::OutputField] = output ;
+    return result;
+  }*/
   
-  if(imesh->numNodes()=0)
+  FieldInformation fo(inputField);
+  fo.make_pointcloudmesh();
+  fo.make_nodata();
+  
+  if(imesh->num_nodes()==0)
   {
     warning("Input field does contain any nodes, output will be an empty field");
     output=CreateField(fo);
-    return output;
+    AlgorithmOutput result;
+    result[Variables::OutputField] = output ;
+    return result;
+  }
+  
+  //VMesh* imesh=inputField->vmesh();
+  
+  MeshHandle mesh=CreateMesh(fo);
+  
+  if(imesh->num_nodes()==0)
+  {
+    warning("Input field does contain any nodes, output will be an empty field");
+    output=CreateField(fo);
+    AlgorithmOutput result;
+    result[Variables::OutputField] = output ;
+    return result;
   }
   
   Point center(0.0,0.0,0.0);
   
-  if(method_=="nodeCenter")
+  if(method=="nodeCenter")
   {
     Point c(0.0,0.0,0.0);
-    Vfield::sizeType numNodes=imesh->NumNodes();
-    for(Vfield::Node::indexType idx=0;idx<numNodes;idx++)
+    VField::size_type numNodes=imesh->num_nodes();
+    for(VMesh::Node::index_type idx=0;idx<numNodes;idx++)
     {
       Point p;
-      imesh->getCenter(p,idx);
+      imesh->get_center(p,idx);
       c=Point(c+p);
     }
     if(numNodes)
@@ -108,11 +118,11 @@ AlgorithmOutput CalculateMeshCenterAlgorithm::run(const AlgorithmInput& input) c
   else if(method=="eleCenter")
   {
     Point c(0.0,0.0,0.0);
-    VField::sizeType numElems=imesh->numElems();
-    for(VMesh::Elem::indexType idx=0;idx<numElems;idx++)
+    VField::size_type numElems=imesh->num_elems();
+    for(VMesh::Elem::index_type idx=0;idx<numElems;idx++)
     {
       Point p;
-      imesh->getCenter(p,idx);
+      imesh->get_center(p,idx);
       c=Point(c+p);
     }
     center=(c*(1.0/static_cast<double>(numElems)));
@@ -120,14 +130,14 @@ AlgorithmOutput CalculateMeshCenterAlgorithm::run(const AlgorithmInput& input) c
   else if(method=="weightedEleCenter")
   {
     Point c(0.0,0.0,0.0);
-    VField::sizeType numElems=imesh->numElems();
+    VField::size_type numElems=imesh->num_elems();
     double size=0.0;
     double weight;
-    for(VMesh::Elem::indexType idx=0;idx<numElems;idx++)
+    for(VMesh::Elem::index_type idx=0;idx<numElems;idx++)
     {
       Point p;
-      imesh->getCenter(p,idx);
-      weight=Abs(imesh->getSize(idx));
+      imesh->get_center(p,idx);
+      weight=abs(imesh->get_size(idx));
       size+=weight;
       c=Point(c+weight*p);
     }
@@ -135,23 +145,24 @@ AlgorithmOutput CalculateMeshCenterAlgorithm::run(const AlgorithmInput& input) c
   }
   else if(method=="boundingBoxCenter")
   {
-    BBox b=imesh->getBoundingBox();
-    center=(0.5*(b.max()+b.min())).point();
+    BBox b=imesh->get_bounding_box();
+    center=(0.5*(b.get_max()+b.get_min())).point();
   }
   else if(method=="midNodeIndex")
   {
-    VMesh::Node::indexType midIdx=(imesh->numNodes()>>1);
-    imesh->getCenter(center,midIdx);
+    VMesh::Node::index_type midIdx=(imesh->num_nodes()>>1);
+    imesh->get_center(center,midIdx);
   }
-  else if(method=="midELeIndex")
+  else if(method=="midElemIndex")
   {
-    VMesh::Ele::indexType midIdx=(imesh->numElems()>>1);
-    imesh->getCenter(center,midIdx);
+    warning("Not producing the right result :( ");
+    VMesh::Elem::index_type midIdx=(imesh->num_elems()>>1);
+    imesh->get_center(center,midIdx);
   }
   
   output=CreateField(fo);
-  output.vmesh.addPoint(center);
-  output.Vfield().resizeValues();
+  output->vmesh()->add_point(center);
+  output->vfield()->resize_values();
   
   AlgorithmOutput result;
   result[Variables::OutputField] = output ;
