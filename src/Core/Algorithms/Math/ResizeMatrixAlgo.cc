@@ -68,10 +68,7 @@ AlgorithmOutput ResizeMatrixAlgo::run(const AlgorithmInput& input) const
   if(major=="Column")
   {
     denseMat->transposeInPlace();
-    int temp;
-    temp=rows;
-    rows=columns;
-    columns=temp;
+    std::swap(rows,columns);
   }
 
   Map<MatrixXd> result(denseMat->data(),columns,rows);
