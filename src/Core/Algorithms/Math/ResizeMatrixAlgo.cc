@@ -64,20 +64,24 @@ AlgorithmOutput ResizeMatrixAlgo::run(const AlgorithmInput& input) const
   std::string major=getOption(Parameters::Major);
   DenseMatrixHandle dense=castMatrix::toDense(inputMatrix);
   DenseMatrixHandle denseMat(new DenseMatrix(*dense));
-
-
+  
   if(major=="Column")
   {
     denseMat->transposeInPlace();
+    int temp;
+    temp=rows;
+    rows=columns;
+    columns=temp;
   }
 
   Map<MatrixXd> result(denseMat->data(),columns,rows);
   DenseMatrixHandle outputArray(new DenseMatrix(result.matrix()));
+  
   outputArray->transposeInPlace();
-
+  
   if(denseMat->rows()*denseMat->cols() != rows*columns)
   {
-    warning("size you input and the size of you matrix dont match");
+    warning("Input size does not match the size of the Output Matrix, Matrix will be padded with zeros or cropped up.");
 
     double *resultMatrix=outputArray->data();
     for(int i=denseMat->rows()*denseMat->cols();i<rows*columns;i++)
@@ -85,6 +89,10 @@ AlgorithmOutput ResizeMatrixAlgo::run(const AlgorithmInput& input) const
       resultMatrix[i]=0;
     }
   }
+  
+  if(major=="Column")
+    outputArray->transposeInPlace();
+  
   AlgorithmOutput output;
   output[Variables::OutputMatrix]=outputArray;
   return output;
