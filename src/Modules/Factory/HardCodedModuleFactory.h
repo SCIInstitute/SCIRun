@@ -50,6 +50,7 @@ namespace SCIRun {
         virtual void setReexecutionFactory(Dataflow::Networks::ReexecuteStrategyFactoryHandle reexFactory) override;
         virtual const Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const override;
         virtual const Dataflow::Networks::DirectModuleDescriptionLookupMap& getDirectModuleDescriptionLookupMap() const override;
+        virtual bool moduleImplementationExists(const std::string& name) const override;
       private:
         Dataflow::Networks::ModuleStateFactoryHandle stateFactory_;
         boost::shared_ptr<class HardCodedModuleFactoryImpl> impl_;
