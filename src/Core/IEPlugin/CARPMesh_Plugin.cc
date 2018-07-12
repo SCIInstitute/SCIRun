@@ -52,7 +52,7 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
   std::string elems_fn(filename);
   std::string pts_fn(filename);
 
-  // Check whether the .elems or .tri file exists
+  // Check whether the .elem file exists
   std::string::size_type pos = elems_fn.find_last_of(".");
   if (pos == std::string::npos)
   {
@@ -233,7 +233,6 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
       for (int i = 0; i < num_elems && getline(inputfile,line,'\n'); ++i)
       {
 
-
         if (i == 0) {
             for (size_t k=0; k<line.size(); k++)
             {
@@ -244,8 +243,9 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
                    }
             }
 
+
             if (elem_type != "Tt") {
-              if (pr) pr->error("Mesh types other than Tet not supported");
+              if (pr) pr->error("Mesh types other than Tet and surface Tet (Tr) not supported");
               return (result);
 
             }
@@ -260,6 +260,7 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
 
         fvalues.push_back(ivalues[ivalues.size()-1]);
 
+        cout << vdata << endl;
         mesh->add_elem(vdata);
 
       }
