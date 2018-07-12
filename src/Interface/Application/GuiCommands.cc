@@ -240,7 +240,7 @@ bool NetworkFileProcessCommand::execute()
   catch (ExceptionBase& e)
   {
     std::string message(e.what());
-    GuiLogger::logErrorStd("File load failed (" + filename + "): exception in load_xml, " + message);
+    GuiLogger::logErrorStd("File load failed (" + filename + "): SCIRun exception in load_xml, " + message);
     if (message.find("InterfaceWithTetGen") != std::string::npos)
     {
       QMessageBox::warning(SCIRunMainWindow::Instance(), "TetGen module not found",
@@ -254,11 +254,11 @@ bool NetworkFileProcessCommand::execute()
   }
   catch (std::exception& ex)
   {
-    GuiLogger::logErrorStd("File load failed(" + filename + "): exception in load_xml, " + ex.what());
+    GuiLogger::logErrorStd("File load failed (" + filename + "): std::exception in load_xml, " + ex.what());
   }
   catch (...)
   {
-    GuiLogger::logErrorStd("File load failed(" + filename + "): Unknown exception in load_xml.");
+    GuiLogger::logErrorStd("File load failed (" + filename + "): Unknown exception in load_xml.");
   }
   return false;
 }

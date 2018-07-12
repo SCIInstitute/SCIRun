@@ -283,7 +283,8 @@ public:
     manhattanLabel_->setPixmap(QPixmap(":/general/Resources/manhattanPipe.png"));
     euclideanLabel_->setPixmap(QPixmap(":/general/Resources/euclideanPipe.png"));
     cubicLabel_->setPixmap(QPixmap(":/general/Resources/cubicPipe.png"));
-    registerField("connectionChoice*", connectionComboBox_);
+    registerField("connectionChoice", connectionComboBox_);
+    SCIRunMainWindow::Instance()->setConnectionPipelineType(0);
     connect(connectionComboBox_, SIGNAL(currentIndexChanged(int)), SCIRunMainWindow::Instance(), SLOT(setConnectionPipelineType(int)));
   }
 };
