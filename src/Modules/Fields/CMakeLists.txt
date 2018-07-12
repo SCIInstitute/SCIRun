@@ -33,6 +33,7 @@ SET(Modules_Fields_SRCS
   EditMeshBoundingBox.cc
   CalculateNodeLocationFrequency.cc
   RefineTetMeshLocally.cc
+  CalculateInsideWhichField.cc
 )
 
 SET(Modules_Fields_HEADERS
@@ -43,6 +44,7 @@ SET(Modules_Fields_HEADERS
   CalculateNodeLocationFrequency.h
   RefineTetMeshLocally.h
   share.h
+  CalculateInsideWhichField.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_Fields
