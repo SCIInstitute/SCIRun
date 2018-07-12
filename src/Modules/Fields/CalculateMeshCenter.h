@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -36,7 +35,6 @@ namespace Modules {
 namespace Fields {
 
   class SCISHARE CalculateMeshCenter : public SCIRun::Dataflow::Networks::Module,
-    //public Has1InputPort<DynamicPortTag<FieldPortTag>>,
     public Has1InputPort<FieldPortTag>,
     public Has1OutputPort<FieldPortTag>
   {
@@ -45,7 +43,6 @@ namespace Fields {
     void execute() override;
     void setStateDefaults() override;
 
-    //HAS_DYNAMIC_PORTS
     INPUT_PORT(0, InputField, Field);
     OUTPUT_PORT(0, OutputField, Field);
 

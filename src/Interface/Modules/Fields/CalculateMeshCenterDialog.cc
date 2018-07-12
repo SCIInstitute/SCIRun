@@ -42,8 +42,8 @@ CalculateMeshCenterDialog::CalculateMeshCenterDialog(const std::string& name, Mo
   fixSize();
 
   map_.insert(StringPair("Average of Node Locations", "nodeCenter"));
-  map_.insert(StringPair("Average of Element Centers", "eleCenter"));
-  map_.insert(StringPair("Volumeteric Center", "weightedEleCenter"));
+  map_.insert(StringPair("Average of Element Centers", "elemCenter"));
+  map_.insert(StringPair("Volumeteric Center", "weightedElemCenter"));
   map_.insert(StringPair("Bounding Box Center","boundingBoxCenter"));
   map_.insert(StringPair("Middle Index Node","midNodeIndex"));
   map_.insert(StringPair("Middle Index Element","midElemIndex"));

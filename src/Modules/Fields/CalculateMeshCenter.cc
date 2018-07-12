@@ -30,7 +30,6 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Scalar.h>
-//#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Algorithms/Field/CalculateMeshCenterAlgorithm.h>
 
 using namespace SCIRun::Modules::Fields;
@@ -58,6 +57,7 @@ void CalculateMeshCenter::execute()
   if (needToExecute())
   {
     setAlgoOptionFromState(Parameters::Method);
+    
     auto output = algo().run(withInputData((InputField, field)));
 
     sendOutputFromAlgorithm(OutputField,output);

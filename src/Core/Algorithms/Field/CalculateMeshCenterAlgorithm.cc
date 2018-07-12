@@ -32,24 +32,21 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-//#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
-//#include <boost/unordered_map.hpp>
-#include <vector>
+
+//#include <vector>
 #include <Core/GeometryPrimitives/Vector.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Geometry;
-//using namespace SCIRun::Core::Geometry::Vector;
-
 
 ALGORITHM_PARAMETER_DEF(Fields, Method);
 
 CalculateMeshCenterAlgorithm::CalculateMeshCenterAlgorithm()
 {
   // set parameters defaults UI
-  addOption(Parameters::Method,"weightedEleCenter","nodeCenter|eleCenter|weightedEleCenter|boundingBoxCenter|midNodeIndex|midElemIndex");
+  addOption(Parameters::Method,"weightedElemCenter","nodeCenter|elemCenter|weightedElemCenter|boundingBoxCenter|midNodeIndex|midElemIndex");
 }
 
 
@@ -61,33 +58,33 @@ AlgorithmOutput CalculateMeshCenterAlgorithm::run(const AlgorithmInput& input) c
   //pull parameter from UI
   std::string method=getOption(Parameters::Method);
   
-  VMesh* imesh=inputField->vmesh();
   
   //Safety Check
-  /*if(imesh->get_rep()==0)
+  if(!inputField)
   {
     error("No input field");
+    
+    output=nullptr;
     AlgorithmOutput result;
     result[Variables::OutputField] = output ;
     return result;
-  }*/
+  }
   
+  // Get the information of the input field
   FieldInformation fo(inputField);
   fo.make_pointcloudmesh();
   fo.make_nodata();
   
-  if(imesh->num_nodes()==0)
+  /*if(inputField->vmesh()->num_nodes()==0)
   {
     warning("Input field does contain any nodes, output will be an empty field");
     output=CreateField(fo);
     AlgorithmOutput result;
     result[Variables::OutputField] = output ;
     return result;
-  }
+  }*/
   
-  //VMesh* imesh=inputField->vmesh();
-  
-  MeshHandle mesh=CreateMesh(fo);
+  VMesh* imesh=inputField->vmesh();
   
   if(imesh->num_nodes()==0)
   {
@@ -115,7 +112,7 @@ AlgorithmOutput CalculateMeshCenterAlgorithm::run(const AlgorithmInput& input) c
       center=(c*(1.0/static_cast<double>(numNodes)));
     }
   }
-  else if(method=="eleCenter")
+  else if(method=="elemCenter")
   {
     Point c(0.0,0.0,0.0);
     VField::size_type numElems=imesh->num_elems();
@@ -127,7 +124,7 @@ AlgorithmOutput CalculateMeshCenterAlgorithm::run(const AlgorithmInput& input) c
     }
     center=(c*(1.0/static_cast<double>(numElems)));
   }
-  else if(method=="weightedEleCenter")
+  else if(method=="weightedElemCenter")
   {
     Point c(0.0,0.0,0.0);
     VField::size_type numElems=imesh->num_elems();
@@ -155,7 +152,6 @@ AlgorithmOutput CalculateMeshCenterAlgorithm::run(const AlgorithmInput& input) c
   }
   else if(method=="midElemIndex")
   {
-    warning("Not producing the right result :( ");
     VMesh::Elem::index_type midIdx=(imesh->num_elems()>>1);
     imesh->get_center(center,midIdx);
   }
