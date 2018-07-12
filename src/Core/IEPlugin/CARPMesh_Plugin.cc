@@ -245,7 +245,7 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
 
 
             if (elem_type != "Tt") {
-              if (pr) pr->error("Mesh types other than Tet and surface Tet (Tr) not supported");
+              if (pr) pr->error("Mesh types other than Tet (Tt) not supported");
               return (result);
 
             }
@@ -453,7 +453,7 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
      else
 		{
 
-      if (pr) pr->error("Please convert to either TriSurf or TetVol mesh ");
+      if (pr) pr->error("Please convert to TetVol mesh ");
       return false;
     	}
       
