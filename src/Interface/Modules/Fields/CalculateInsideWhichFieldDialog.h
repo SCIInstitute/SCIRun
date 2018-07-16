@@ -25,31 +25,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_FIELDS_CalculateInsideWhichField_H
-#define MODULES_FIELDS_CalculateInsideWhichField_H
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+#ifndef INTERFACE_MODULES_CalculateInsideWhichFieldDialog_H
+#define INTERFACE_MODULES_CalculateInsideWhichFieldDialog_H
+
+#include "Interface/Modules/Fields/ui_CalculateInsideWhichFieldDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Fields {
+namespace Gui {
 
-  class SCISHARE CalculateInsideWhichField : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPorts<FieldPortTag,DynamicPortTag<FieldPortTag>>,
-    public Has1OutputPort<FieldPortTag>
-  {
-  public:
-    CalculateInsideWhichField();
-    void execute() override;
-    void setStateDefaults() override;
+class SCISHARE CalculateInsideWhichFieldDialog : public ModuleDialogGeneric,
+  public Ui::CalculateInsideWhichFieldDialog
+{
+	Q_OBJECT
 
-    HAS_DYNAMIC_PORTS
-    INPUT_PORT_DYNAMIC(0, InputFields, Field);
-    INPUT_PORT(1, InputField, Field);
-    OUTPUT_PORT(0, OutputField, Field);
+public:
+  CalculateInsideWhichFieldDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+};
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm);
-  };
-}}}
+}
+}
 
 #endif

@@ -25,31 +25,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_FIELDS_CalculateInsideWhichField_H
-#define MODULES_FIELDS_CalculateInsideWhichField_H
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+#include <Interface/Modules/Fields/CalculateInsideWhichFieldDialog.h>
+#include <Core/Algorithms/Field/CalculateMeshCenterAlgorithm.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 
-namespace SCIRun {
-namespace Modules {
-namespace Fields {
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-  class SCISHARE CalculateInsideWhichField : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPorts<FieldPortTag,DynamicPortTag<FieldPortTag>>,
-    public Has1OutputPort<FieldPortTag>
-  {
-  public:
-    CalculateInsideWhichField();
-    void execute() override;
-    void setStateDefaults() override;
+CalculateInsideWhichFieldDialog::CalculateInsideWhichFieldDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-    HAS_DYNAMIC_PORTS
-    INPUT_PORT_DYNAMIC(0, InputFields, Field);
-    INPUT_PORT(1, InputField, Field);
-    OUTPUT_PORT(0, OutputField, Field);
+  addComboBoxManager(method_, Parameters::Method);
+  addComboBoxManager(samplingScheme_, Parameters::SamplingScheme);
+  addComboBoxManager(changeOutsideValues_, Paramters::ChangeOutsideValue);
+  addDoubleSpinBoxManager(outsideValue_, Parameters::OutsideValue);
+  addDoubleSpinBoxManager(startValue_, Parameters::StartValue);
+  addComboBoxManager(outputType_, Parameters::OutputType);
+  addComboBoxManager(dataLocation_, Parameters::DataLocation);
+}
 
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm);
-  };
-}}}
-
-#endif

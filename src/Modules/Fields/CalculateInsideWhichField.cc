@@ -41,28 +41,39 @@ MODULE_INFO_DEF(CalculateInsideWhichField, NewField, SCIRun)
 
 CalculateInsideWhichField::CalculateInsideWhichField() : Module(staticInfo_)
 {
-  INITIALIZE_PORT(InputField1);
-  INITIALIZE_PORT(InputField2);
+  INITIALIZE_PORT(InputFields);
+  INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);
 }
 
 void CalculateInsideWhichField::setStateDefaults()
 {
-  //setStateStringFromAlgoOption(Parameters::Method);
+  setStateStringFromAlgoOption(Parameters::Method);
+  setStateStringFromAlgoOption(Parameters::SamplingScheme);
+  setStateStringFromAlgoOption(Paramters::ChangeOutsideValue);
+  setStateDoubleFromAlgorithm(Parameters::OutsideValue);
+  setStateDoubleFromAlgorithm(Parameters::StartValue);
+  setStateStringFromAlgoOption(Parameters::OutputType);
+  setStateStringFromAlgoOption(Parameters::DataLocation);
 }
 
 void CalculateInsideWhichField::execute()
 {
-  auto field = getRequiredInput(InputField1);
-
-  /*if (needToExecute())
+  auto DynamicField = getRequiredDynamicInputs(InputFields);
+  auto field = getRequiredDynamicInputs(InputField);
+  
+  if (needToExecute())
   {
     setAlgoOptionFromState(Parameters::Method);
+    setAlgoOptionFromState(Parameters::SamplingScheme);
+    setAlgoOptionFromState(Parameters::ChangeOutsideValue);
+    setAlgoDoubleFromState(Parameters::OutsideValue);
+    setAlgpDoubleFromState(Parameters::StartValue);
+    setAlgoOptionFromState(Parameters::OutputType);
+    setAlgoOptionFromState(Parameters::DataLocation);
     
-    auto output = algo().run(withInputData((InputField, field)));
+    auto output = algo().run(withInputData((InputFields, DynamicField)(InputField, field)));
 
     sendOutputFromAlgorithm(OutputField,output);
-  }*/
-  FieldHandle output;
-  sendOutput(OutputField,output);
+  }
 }

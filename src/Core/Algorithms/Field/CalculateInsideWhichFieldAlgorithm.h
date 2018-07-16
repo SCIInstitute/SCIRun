@@ -25,31 +25,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_FIELDS_CalculateInsideWhichField_H
-#define MODULES_FIELDS_CalculateInsideWhichField_H
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+#ifndef ALGORITHMS_MATH_CalculateInsideWhichFieldAlgorithm_H
+#define ALGORITHMS_MATH_CalculateInsideWhichFieldAlgorithm_H
+
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Field/share.h>
 
 namespace SCIRun {
-namespace Modules {
+namespace Core {
+namespace Algorithms {
 namespace Fields {
-
-  class SCISHARE CalculateInsideWhichField : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPorts<FieldPortTag,DynamicPortTag<FieldPortTag>>,
-    public Has1OutputPort<FieldPortTag>
+  
+  ALGORITHM_PARAMETER_DECL(Method);
+  ALGORITHM_PARAMETER_DECL(SamplingScheme);
+  ALGORITHM_PARAMETER_DECL(ChangeOutsideValue);
+  ALGORITHM_PARAMETER_DECL(OutsideValue);
+  ALGORITHM_PARAMETER_DECL(StartValue);
+  ALGORITHM_PARAMETER_DECL(OutputType);
+  ALGORITHM_PARAMETER_DECL(DataLocation);
+  
+  class SCISHARE CalculateInsideWhichFieldAlgorithm : public AlgorithmBase
   {
+
   public:
-    CalculateInsideWhichField();
-    void execute() override;
-    void setStateDefaults() override;
-
-    HAS_DYNAMIC_PORTS
-    INPUT_PORT_DYNAMIC(0, InputFields, Field);
-    INPUT_PORT(1, InputField, Field);
-    OUTPUT_PORT(0, OutputField, Field);
-
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm);
+    CalculateInsideWhichFieldAlgorithm();
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
   };
-}}}
+
+}}}}
 
 #endif
