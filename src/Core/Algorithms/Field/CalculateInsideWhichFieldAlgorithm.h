@@ -29,6 +29,7 @@
 #define ALGORITHMS_MATH_CalculateInsideWhichFieldAlgorithm_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Field/share.h>
 
 namespace SCIRun {
@@ -49,7 +50,13 @@ namespace Fields {
 
   public:
     CalculateInsideWhichFieldAlgorithm();
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+    //static const AlgorithmInputName InputField;
+    
+    FieldHandle run(FieldHandle input,const FieldList& objField)const;
+    
+    virtual AlgorithmOutput run(const AlgorithmInput &) const override;
+    
+    
   };
 
 }}}}

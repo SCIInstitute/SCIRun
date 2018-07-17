@@ -26,7 +26,7 @@
 */
 
 #include <Interface/Modules/Fields/CalculateInsideWhichFieldDialog.h>
-#include <Core/Algorithms/Field/CalculateMeshCenterAlgorithm.h>
+#include <Core/Algorithms/Field/CalculateInsideWhichFieldAlgorithm.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
@@ -43,7 +43,7 @@ CalculateInsideWhichFieldDialog::CalculateInsideWhichFieldDialog(const std::stri
 
   addComboBoxManager(method_, Parameters::Method);
   addComboBoxManager(samplingScheme_, Parameters::SamplingScheme);
-  addComboBoxManager(changeOutsideValues_, Paramters::ChangeOutsideValue);
+  addComboBoxManager(changeOutsideValues_, Parameters::ChangeOutsideValue);
   addDoubleSpinBoxManager(outsideValue_, Parameters::OutsideValue);
   addDoubleSpinBoxManager(startValue_, Parameters::StartValue);
   addComboBoxManager(outputType_, Parameters::OutputType);

@@ -30,19 +30,21 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Scalar.h>
-//#include <Core/Algorithms/Field/CalculateMeshCenterAlgorithm.h>
+#include <Core/Algorithms/Field/CalculateInsideWhichFieldAlgorithm.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 MODULE_INFO_DEF(CalculateInsideWhichField, NewField, SCIRun)
 
 CalculateInsideWhichField::CalculateInsideWhichField() : Module(staticInfo_)
 {
-  INITIALIZE_PORT(InputFields);
   INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(InputFields);
+  
   INITIALIZE_PORT(OutputField);
 }
 
@@ -50,17 +52,17 @@ void CalculateInsideWhichField::setStateDefaults()
 {
   setStateStringFromAlgoOption(Parameters::Method);
   setStateStringFromAlgoOption(Parameters::SamplingScheme);
-  setStateStringFromAlgoOption(Paramters::ChangeOutsideValue);
-  setStateDoubleFromAlgorithm(Parameters::OutsideValue);
-  setStateDoubleFromAlgorithm(Parameters::StartValue);
+  setStateStringFromAlgoOption(Parameters::ChangeOutsideValue);
+  setStateDoubleFromAlgo(Parameters::OutsideValue);
+  setStateDoubleFromAlgo(Parameters::StartValue);
   setStateStringFromAlgoOption(Parameters::OutputType);
   setStateStringFromAlgoOption(Parameters::DataLocation);
 }
 
 void CalculateInsideWhichField::execute()
 {
-  auto DynamicField = getRequiredDynamicInputs(InputFields);
-  auto field = getRequiredDynamicInputs(InputField);
+  auto field=getRequiredInput(InputField);
+  auto fields = getRequiredDynamicInputs(InputFields);
   
   if (needToExecute())
   {
@@ -68,11 +70,11 @@ void CalculateInsideWhichField::execute()
     setAlgoOptionFromState(Parameters::SamplingScheme);
     setAlgoOptionFromState(Parameters::ChangeOutsideValue);
     setAlgoDoubleFromState(Parameters::OutsideValue);
-    setAlgpDoubleFromState(Parameters::StartValue);
+    setAlgoDoubleFromState(Parameters::StartValue);
     setAlgoOptionFromState(Parameters::OutputType);
     setAlgoOptionFromState(Parameters::DataLocation);
     
-    auto output = algo().run(withInputData((InputFields, DynamicField)(InputField, field)));
+    auto output = algo().run(withInputData((InputField, field)(InputFields, fields)));
 
     sendOutputFromAlgorithm(OutputField,output);
   }

@@ -35,7 +35,7 @@ namespace Modules {
 namespace Fields {
 
   class SCISHARE CalculateInsideWhichField : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPorts<FieldPortTag,DynamicPortTag<FieldPortTag>>,
+    public Has2InputPorts<FieldPortTag, DynamicPortTag <FieldPortTag>>,
     public Has1OutputPort<FieldPortTag>
   {
   public:
@@ -43,9 +43,10 @@ namespace Fields {
     void execute() override;
     void setStateDefaults() override;
 
+    
+    INPUT_PORT(0, InputField, Field);
     HAS_DYNAMIC_PORTS
-    INPUT_PORT_DYNAMIC(0, InputFields, Field);
-    INPUT_PORT(1, InputField, Field);
+    INPUT_PORT_DYNAMIC(1, InputFields, Field);
     OUTPUT_PORT(0, OutputField, Field);
 
     MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm);
