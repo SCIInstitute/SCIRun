@@ -51,6 +51,7 @@ SET(Modules_Math_SRCS
   DisplayHistogram.cc
   BasicPlotter.cc
   AdvancedPlotter.cc
+  ResizeMatrix.cc
   CreateStandardMatrix.cc
 )
 
@@ -80,6 +81,7 @@ SET(Modules_Math_HEADERS
   DisplayHistogram.h
   BasicPlotter.h
   AdvancedPlotter.h
+  ResizeMatrix.h
   CreateStandardMatrix.h
 )
 
