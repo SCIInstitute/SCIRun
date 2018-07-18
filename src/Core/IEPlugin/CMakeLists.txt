@@ -53,6 +53,7 @@ SET(Core_IEPlugin_SRCS
   TriSurfField_Plugin.cc
   TetVolField_Plugin.cc
   CARPMesh_Plugin.cc
+  CARPSurf_Plugin.cc
   CARPFiber_Plugin.cc
 )
 
@@ -84,6 +85,7 @@ SET(Core_IEPlugin_HEADERS
   TriSurfField_Plugin.h
   TetVolField_Plugin.h
   CARPMesh_Plugin.h
+  CARPSurf_Plugin.h
   CARPFiber_Plugin.h
 )
 
