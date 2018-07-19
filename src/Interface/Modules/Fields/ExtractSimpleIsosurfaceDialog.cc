@@ -45,6 +45,7 @@ ExtractSimpleIsosurfaceDialog::ExtractSimpleIsosurfaceDialog(const std::string& 
   addTextEditManager(listTextEdit_, Parameters::ListOfIsovalues);
   addSpinBoxManager(quantitySpinBox_, Parameters::QuantityOfIsovalues);
   addTextEditManager(isovalListFromQuantityTextEdit_, Parameters::IsovalueListString);
+  addRadioButtonGroupManager({inclusiveRadioButton_, exclusiveRadioButton_}, Parameters::IsovalueListInclusiveExclusive);
   WidgetStyleMixin::tabStyle(tabWidget);
   addTabManager(tabWidget, Parameters::IsovalueChoice);
 }

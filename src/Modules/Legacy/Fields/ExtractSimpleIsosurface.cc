@@ -58,6 +58,7 @@ void ExtractSimpleIsosurface::setStateDefaults()
   setStateDoubleFromAlgo(Parameters::SingleIsoValue);
   setStateStringFromAlgo(Parameters::ListOfIsovalues);
   setStateIntFromAlgo(Parameters::QuantityOfIsovalues);
+  setStateIntFromAlgo(Parameters::IsovalueListInclusiveExclusive);
   get_state()->setValue(Parameters::IsovalueListString, std::string());
   get_state()->setValue(Parameters::IsovalueChoice, std::string("Single"));
 }
@@ -121,25 +122,33 @@ void ExtractSimpleIsosurface::execute()
     }
     else if (state->getValue(Parameters::IsovalueChoice).toString() == "Quantity")
     {
-      //TODO: add exclusive/inclusive option; move to algo level
+      auto inclExcl = state->getValue(Parameters::IsovalueListInclusiveExclusive).toInt();
+      // incl = 0, excl = 1
+      bool inclusive = 0 == inclExcl;
       double qmin, qmax;
       field->vfield()->minmax(qmin, qmax);
       std::ostringstream ostr;
       int num = state->getValue(Parameters::QuantityOfIsovalues).toInt();
       if (num > 1)
       {
-        double di = (qmax - qmin) / (double)(num - 1.0);
-        for (int i = 0; i < num; i++)
+        int denom = inclusive ? num - 1 : num + 1;
+        int minIndex = inclusive ? 0 : 1;
+        int maxIndex = inclusive ? num : num + 1;
+        double di = (qmax - qmin) / denom;   
+          
+        for (int i = minIndex; i < maxIndex; i++)
         {
-          isoDoubles.push_back(qmin + ((double)i*di));
-          ostr << isoDoubles[i] << "\n";
+          isoDoubles.push_back(qmin + i * di);
         }
       }
       else if (num == 1)
       {
-        isoDoubles.push_back((qmin + qmax)/2);
-        ostr << isoDoubles[0] << "\n";
+        isoDoubles.push_back((qmin + qmax) / 2);
       }
+
+      for (const auto& isos : isoDoubles)
+        ostr << isos << "\n";
+      
       state->setValue(Parameters::IsovalueListString, ostr.str());
     }
 
