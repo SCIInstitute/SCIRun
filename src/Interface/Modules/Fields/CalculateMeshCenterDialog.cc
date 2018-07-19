@@ -26,7 +26,7 @@
 */
 
 #include <Interface/Modules/Fields/CalculateMeshCenterDialog.h>
-#include <Core/Algorithms/Field/CalculateMeshCenterAlgorithm.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/CalculateMeshCenterAlgo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 
 using namespace SCIRun::Gui;

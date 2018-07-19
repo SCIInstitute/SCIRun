@@ -32,7 +32,6 @@ SET(Algorithms_Field_SRCS
   InterfaceWithCleaver2Algorithm.cc
   CalculateNodeLocationFrequencyAlgorithm.cc
   RefineTetMeshLocallyAlgorithm.cc
-  CalculateMeshCenterAlgorithm.cc
 )
 
 SET(Algorithms_Field_HEADERS
@@ -42,7 +41,6 @@ SET(Algorithms_Field_HEADERS
   CalculateNodeLocationFrequencyAlgorithm.h
   RefineTetMeshLocallyAlgorithm.h
   share.h
-  CalculateMeshCenterAlgorithm.h
 )
 
 SCIRUN_ADD_LIBRARY(Algorithms_Field
