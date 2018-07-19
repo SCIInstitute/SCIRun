@@ -81,9 +81,13 @@ void ExtractSimpleIsosurface::execute()
       }
       else if (state->getValue(Parameters::IsovalueChoice).toString() == "List")
       {
-        if (!matrixIs::dense(*isovalueOption)) error("Isovalue input matrix should be dense type");
-        
-        auto mat_iso = castMatrix::toDense (*isovalueOption);
+        if (!matrixIs::dense(*isovalueOption))
+        {
+          error("Isovalue input matrix should be dense type");
+          return;
+        }
+
+        auto mat_iso = castMatrix::toDense(*isovalueOption);
         if (mat_iso->nrows()>1)
         {
           if (mat_iso->ncols()>1)
@@ -103,6 +107,9 @@ void ExtractSimpleIsosurface::execute()
     }
 
     std::vector<double> isoDoubles;
+    double qmin, qmax;
+    field->vfield()->minmax(qmin, qmax);
+    state->setTransientValue("fieldMinMax", std::make_pair(qmin, qmax));
 
     if (state->getValue(Parameters::IsovalueChoice).toString() == "Single")
     {
@@ -125,9 +132,6 @@ void ExtractSimpleIsosurface::execute()
       auto inclExcl = state->getValue(Parameters::IsovalueListInclusiveExclusive).toInt();
       // incl = 0, excl = 1
       bool inclusive = 0 == inclExcl;
-      double qmin, qmax;
-      field->vfield()->minmax(qmin, qmax);
-      std::ostringstream ostr;
       int num = state->getValue(Parameters::QuantityOfIsovalues).toInt();
       if (num > 1)
       {
@@ -146,6 +150,7 @@ void ExtractSimpleIsosurface::execute()
         isoDoubles.push_back((qmin + qmax) / 2);
       }
 
+      std::ostringstream ostr;
       for (const auto& isos : isoDoubles)
         ostr << isos << "\n";
       
