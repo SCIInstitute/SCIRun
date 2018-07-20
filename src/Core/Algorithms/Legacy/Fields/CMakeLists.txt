@@ -102,6 +102,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   MeshData/GetMeshQualityFieldAlgo.h
   Cleanup/RemoveUnusedNodes.h
   Cleanup/CleanupTetMesh.h
+  Cleanup/ReorderNormalCoherentlyAlgo.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -213,6 +214,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #TransformMesh/PolarProjectionTools.cc
   #TransformMesh/GeneratePolarProjectionImage.cc
   #TracePoints/TracePoints.cc
+  Cleanup/ReorderNormalCoherentlyAlgo.cc
 )
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Fields
