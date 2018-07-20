@@ -61,27 +61,13 @@ AlgorithmOutput CalculateMeshCenterAlgo::run(const AlgorithmInput& input) const
   //Safety Check
   if(!inputField)
   {
-    error("No input field");
-    
-    output=nullptr;
-    AlgorithmOutput result;
-    result[Variables::OutputField] = output ;
-    return result;
+    THROW_ALGORITHM_INPUT_ERROR("No input field");
   }
   
   // Get the information of the input field
   FieldInformation fo(inputField);
   fo.make_pointcloudmesh();
   fo.make_nodata();
-  
-  /*if(inputField->vmesh()->num_nodes()==0)
-  {
-    warning("Input field does contain any nodes, output will be an empty field");
-    output=CreateField(fo);
-    AlgorithmOutput result;
-    result[Variables::OutputField] = output ;
-    return result;
-  }*/
   
   VMesh* imesh=inputField->vmesh();
   
