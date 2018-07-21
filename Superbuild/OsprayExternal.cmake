@@ -26,18 +26,10 @@
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 SET(ospray_GIT_TAG "origin/scirun-build")
-SET(ospray_DEPENDENCIES "Tbb_external")
-SET(ospray_DEPENDENCIES "Embree_external")
-SET(ospray_DEPENDENCIES "Ispc_external")
-
-#MESSAGE("in ospray now")
-#MESSAGE(STATUS "TBB_BIN_DIR: ${TBB_BIN_DIR}")
-#MESSAGE(STATUS "TBB_SRC_DIR: ${TBB_SRC_DIR}")
-
-#SET(TBB_ROOT ${TBB_BIN_DIR}/tbb_cmake_build_subdir_release)
-#SET(TBB_DIR ${TBB_SRC_DIR}/cmake)
-#MESSAGE(STATUS "TBB_ROOT: ${TBB_ROOT}")
-#find_package(TBB)
+SET(ospray_DEPENDENCIES 
+  "Tbb_external" 
+  "Embree_external" 
+  "Ispc_external")
 
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
