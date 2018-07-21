@@ -61,6 +61,7 @@ InterfaceWithPythonDialog::InterfaceWithPythonDialog(const std::string& name, Mo
   setupOutputTableCells();
 
   connect(pythonDocPushButton_, SIGNAL(clicked()), this, SLOT(loadAPIDocumentation()));
+  connect(addMatlabCodeBlockToolButton_, SIGNAL(clicked()), pythonCodePlainTextEdit_, SLOT(insertSpecialCodeBlock()));
 }
 
 void InterfaceWithPythonDialog::resetObjects()
@@ -204,6 +205,11 @@ void CodeEditor::highlightCurrentLine()
   setExtraSelections(extras);
 }
 
+void CodeEditor::insertSpecialCodeBlock()
+{
+  insertPlainText("/*matlab\nmatlab*/");
+}
+
 void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
 {
   QPainter painter(lineNumberArea_);
@@ -317,10 +323,10 @@ Highlighter::Highlighter(QTextDocument *parent)
   rule.format = singleLineCommentFormat;
   highlightingRules.append(rule);
 
-  multiLineCommentFormat.setForeground(Qt::yellow);
+  multiLineCommentFormat.setForeground(QColor(255,105,180));
 
-  commentStartExpression = QRegExp("/\\*");
-  commentEndExpression = QRegExp("\\*/");
+  commentStartExpression = QRegExp("/\\*matlab");
+  commentEndExpression = QRegExp("matlab\\*/");
 }
 
 void Highlighter::highlightBlock(const QString &text)

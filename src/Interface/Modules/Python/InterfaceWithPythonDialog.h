@@ -63,6 +63,8 @@ public:
   void lineNumberAreaPaintEvent(QPaintEvent *event);
   int lineNumberAreaWidth();
 
+public Q_SLOTS:
+  void insertSpecialCodeBlock();
 protected:
   void resizeEvent(QResizeEvent *event) override;
 
