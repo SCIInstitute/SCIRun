@@ -89,6 +89,7 @@ SET(Modules_Legacy_Fields_HEADERS
   GetMeshQualityField.h
   RemoveUnusedNodes.h
   CleanupTetMesh.h
+  CalculateMeshCenter.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -98,7 +99,7 @@ SET(Modules_Legacy_Fields_SRCS
   #PadRegularMesh.cc
   ResampleRegularMesh.cc
   #CalculateMeshConnector.cc
-  #CalculateMeshCenter.cc
+  CalculateMeshCenter.cc
   #GetDomainStructure.cc
   RegisterWithCorrespondences.cc
   #SmoothVecFieldMedian.cc

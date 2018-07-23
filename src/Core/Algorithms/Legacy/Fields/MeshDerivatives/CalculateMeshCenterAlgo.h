@@ -25,41 +25,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef ALGORITHMS_MATH_CALCULATEMESHCENTERAlgo_H
+#define ALGORITHMS_MATH_CALCULATEMESHCENTERAlgo_H
 
-#include <Modules/Legacy/Fields/CalculateMeshCenter.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Scalar.h>
-#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/CalculateMeshCenterAlgo.h>
+#include <Core/Algorithms/Field/share.h>
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Fields;
-
-MODULE_INFO_DEF(CalculateMeshCenter, NewField, SCIRun)
-
-CalculateMeshCenter::CalculateMeshCenter() : Module(staticInfo_)
-{
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
-}
-
-void CalculateMeshCenter::setStateDefaults()
-{
-  setStateStringFromAlgoOption(Parameters::Method);
-}
-
-void CalculateMeshCenter::execute()
-{
-  auto field = getRequiredInput(InputField);
-
-  if (needToExecute())
+namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+namespace Fields {
+  
+  ALGORITHM_PARAMETER_DECL(Method);
+  
+  class SCISHARE CalculateMeshCenterAlgo : public AlgorithmBase
   {
-    setAlgoOptionFromState(Parameters::Method);
-    
-    auto output = algo().run(withInputData((InputField, field)));
 
-    sendOutputFromAlgorithm(OutputField,output);
-  }
-}
+  public:
+    CalculateMeshCenterAlgo();
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+  };
+
+}}}}
+
+#endif

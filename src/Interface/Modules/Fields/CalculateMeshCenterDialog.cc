@@ -25,41 +25,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-#include <Modules/Legacy/Fields/CalculateMeshCenter.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Scalar.h>
+#include <Interface/Modules/Fields/CalculateMeshCenterDialog.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/CalculateMeshCenterAlgo.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-MODULE_INFO_DEF(CalculateMeshCenter, NewField, SCIRun)
-
-CalculateMeshCenter::CalculateMeshCenter() : Module(staticInfo_)
+CalculateMeshCenterDialog::CalculateMeshCenterDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+
+  map_.insert(StringPair("Average of Node Locations", "nodeCenter"));
+  map_.insert(StringPair("Average of Element Centers", "elemCenter"));
+  map_.insert(StringPair("Volumeteric Center", "weightedElemCenter"));
+  map_.insert(StringPair("Bounding Box Center","boundingBoxCenter"));
+  map_.insert(StringPair("Middle Index Node","midNodeIndex"));
+  map_.insert(StringPair("Middle Index Element","midElemIndex"));
+
+  addComboBoxManager(method_, Parameters::Method, map_);
 }
 
-void CalculateMeshCenter::setStateDefaults()
-{
-  setStateStringFromAlgoOption(Parameters::Method);
-}
-
-void CalculateMeshCenter::execute()
-{
-  auto field = getRequiredInput(InputField);
-
-  if (needToExecute())
-  {
-    setAlgoOptionFromState(Parameters::Method);
-    
-    auto output = algo().run(withInputData((InputField, field)));
-
-    sendOutputFromAlgorithm(OutputField,output);
-  }
-}

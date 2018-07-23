@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,39 +25,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MODULES_FIELDS_CalculateMeshCenter_H
+#define MODULES_FIELDS_CalculateMeshCenter_H
+#include <Dataflow/Network/Module.h>
+#include <Modules/Fields/share.h>
 
-#ifndef CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_CalculateMESHCENTER_H
-#define CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_CalculateMESHCENTER_H 1
+namespace SCIRun {
+namespace Modules {
+namespace Fields {
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
-
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE CalculateMeshCenterAlgo : public AlgoBase
-{
+  class SCISHARE CalculateMeshCenter : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<FieldPortTag>,
+    public Has1OutputPort<FieldPortTag>
+  {
   public:
-    /// Set defaults
-    CalculateMeshCenterAlgo()
-    {
-      /// The output type
-      add_option("method","weighted-elem-center","node-center|elem-center|weighted-elem-center|bounding-box-center|mid-node-index|mid-elem-index");
-    }
-  
-    /// run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
-};
+    CalculateMeshCenter();
+    void execute() override;
+    void setStateDefaults() override;
 
-} // end namespace SCIRunAlgo
+    INPUT_PORT(0, InputField, Field);
+    OUTPUT_PORT(0, OutputField, Field);
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+  };
+}}}
 
 #endif
-

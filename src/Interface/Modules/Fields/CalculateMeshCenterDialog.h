@@ -25,41 +25,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_CalculateMeshCenterDialog_H
+#define INTERFACE_MODULES_CalculateMeshCenterDialog_H
 
-#include <Modules/Legacy/Fields/CalculateMeshCenter.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Scalar.h>
-#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/CalculateMeshCenterAlgo.h>
+#include "Interface/Modules/Fields/ui_CalculateMeshCenterDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Fields;
+namespace SCIRun {
+namespace Gui {
 
-MODULE_INFO_DEF(CalculateMeshCenter, NewField, SCIRun)
-
-CalculateMeshCenter::CalculateMeshCenter() : Module(staticInfo_)
+class SCISHARE CalculateMeshCenterDialog : public ModuleDialogGeneric,
+  public Ui::CalculateMeshCenterDialog
 {
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
+	Q_OBJECT
+
+public:
+  CalculateMeshCenterDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+
+private:
+  GuiStringTranslationMap map_;
+};
+
+}
 }
 
-void CalculateMeshCenter::setStateDefaults()
-{
-  setStateStringFromAlgoOption(Parameters::Method);
-}
-
-void CalculateMeshCenter::execute()
-{
-  auto field = getRequiredInput(InputField);
-
-  if (needToExecute())
-  {
-    setAlgoOptionFromState(Parameters::Method);
-    
-    auto output = algo().run(withInputData((InputField, field)));
-
-    sendOutputFromAlgorithm(OutputField,output);
-  }
-}
+#endif
