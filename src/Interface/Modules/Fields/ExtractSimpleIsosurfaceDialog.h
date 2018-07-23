@@ -45,6 +45,10 @@ public:
   ExtractSimpleIsosurfaceDialog(const std::string& name,
     Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = nullptr);
+protected:
+  virtual void pullSpecial() override;
+protected Q_SLOTS:
+  void sliderChanged();
 };
 
 }

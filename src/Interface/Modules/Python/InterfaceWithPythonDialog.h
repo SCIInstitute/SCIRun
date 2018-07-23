@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -36,13 +35,13 @@
 namespace SCIRun {
 namespace Gui {
 
-  class SCISHARE InterfaceWithPythonDialog : public ModuleDialogGeneric,
-    public Ui::InterfaceWithPython
+class SCISHARE InterfaceWithPythonDialog : public ModuleDialogGeneric,
+  public Ui::InterfaceWithPython
 {
 	Q_OBJECT
 
 public:
-    InterfaceWithPythonDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
+  InterfaceWithPythonDialog(const std::string& name, SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = nullptr);
 public Q_SLOTS:
   virtual void updateFromPortChange(int numPorts, const std::string& portName, DynamicPortChange type) override;
 private Q_SLOTS:
@@ -59,11 +58,13 @@ class CodeEditor : public QPlainTextEdit
   Q_OBJECT
 
 public:
-  CodeEditor(QWidget *parent = nullptr);
+  explicit CodeEditor(QWidget *parent = nullptr);
 
   void lineNumberAreaPaintEvent(QPaintEvent *event);
   int lineNumberAreaWidth();
 
+public Q_SLOTS:
+  void insertSpecialCodeBlock();
 protected:
   void resizeEvent(QResizeEvent *event) override;
 
@@ -84,59 +85,62 @@ private:
 class LineNumberArea : public QWidget
 {
 public:
-    LineNumberArea(CodeEditor *editor) : QWidget(editor) {
-        codeEditor = editor;
-    }
+  explicit LineNumberArea(CodeEditor *editor) : QWidget(editor) 
+  {
+    codeEditor = editor;
+  }
 
-    QSize sizeHint() const override {
-        return QSize(codeEditor->lineNumberAreaWidth(), 0);
-    }
+  QSize sizeHint() const override 
+  {
+    return QSize(codeEditor->lineNumberAreaWidth(), 0);
+  }
 
 protected:
-    void paintEvent(QPaintEvent *event) override {
-        codeEditor->lineNumberAreaPaintEvent(event);
-    }
+  void paintEvent(QPaintEvent *event) override 
+  {
+    codeEditor->lineNumberAreaPaintEvent(event);
+  }
 
 private:
-    CodeEditor *codeEditor;
+  CodeEditor *codeEditor;
 };
 
 class Highlighter : public QSyntaxHighlighter
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    Highlighter(QTextDocument* parent = nullptr);
+  Highlighter(QTextDocument* parent = nullptr);
 
 protected:
-    void highlightBlock(const QString &text) override;
+  void highlightBlock(const QString &text) override;
 
 private:
-    struct HighlightingRule
-    {
-        QRegExp pattern;
-        QTextCharFormat format;
-    };
-    QVector<HighlightingRule> highlightingRules;
+  struct HighlightingRule
+  {
+    QRegExp pattern;
+    QTextCharFormat format;
+  };
+  QVector<HighlightingRule> highlightingRules;
 
-    QRegExp commentStartExpression;
-    QRegExp commentEndExpression;
+  QRegExp commentStartExpression;
+  QRegExp commentEndExpression;
 
-    QTextCharFormat keywordFormat;
-    QTextCharFormat classFormat;
-    QTextCharFormat singleLineCommentFormat;
-    QTextCharFormat multiLineCommentFormat;
-    QTextCharFormat quotationFormat;
-    QTextCharFormat functionFormat;
+  QTextCharFormat keywordFormat;
+  QTextCharFormat classFormat;
+  QTextCharFormat singleLineCommentFormat;
+  QTextCharFormat multiLineCommentFormat;
+  QTextCharFormat quotationFormat;
+  QTextCharFormat functionFormat;
 
-    void highlightBlockParens(const QString& text);
+  void highlightBlockParens(const QString& text);
 };
 
 struct ParenthesisInfo
-  {
-      char character;
-      int position;
-  };
+{
+  char character;
+  int position;
+};
 
 class TextBlockData : public QTextBlockUserData
 {

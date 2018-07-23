@@ -45,6 +45,29 @@ ExtractSimpleIsosurfaceDialog::ExtractSimpleIsosurfaceDialog(const std::string& 
   addTextEditManager(listTextEdit_, Parameters::ListOfIsovalues);
   addSpinBoxManager(quantitySpinBox_, Parameters::QuantityOfIsovalues);
   addTextEditManager(isovalListFromQuantityTextEdit_, Parameters::IsovalueListString);
+  addRadioButtonGroupManager({inclusiveRadioButton_, exclusiveRadioButton_}, Parameters::IsovalueListInclusiveExclusive);
   WidgetStyleMixin::tabStyle(tabWidget);
   addTabManager(tabWidget, Parameters::IsovalueChoice);
+  connect(singleHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderChanged()));
+}
+
+void ExtractSimpleIsosurfaceDialog::pullSpecial()
+{
+  using namespace Parameters;
+  auto minmax = transient_value_cast<std::pair<double, double>>(state_->getTransientValue("fieldMinMax"));
+  //std::cout << __FILE__ << ":" << __LINE__ << " " << minmax.first << "," << minmax.second << std::endl;
+}
+
+void ExtractSimpleIsosurfaceDialog::sliderChanged()
+{
+  //qDebug() << __FUNCTION__ << value;
+  auto value = singleHorizontalSlider_->value();
+  auto percent = static_cast<double>(value) / (singleHorizontalSlider_->maximum() - singleHorizontalSlider_->minimum());
+  auto minmax = transient_value_cast<std::pair<double, double>>(state_->getTransientValue("fieldMinMax"));
+  auto newFieldValue = percent * (minmax.second - minmax.first) + minmax.first;
+  singleDoubleSpinBox_->setValue(newFieldValue);
+  singleDoubleSpinBox_->setToolTip(QString("Min: %1, Max: %2").arg(minmax.first).arg(minmax.second));
+
+  if (executeOnReleaseCheckBox_->isChecked())
+    Q_EMIT executeFromStateChangeTriggered();
 }
