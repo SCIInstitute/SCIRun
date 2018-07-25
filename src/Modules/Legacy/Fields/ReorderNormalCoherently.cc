@@ -41,7 +41,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-MODULE_INFO_DEF(ReorderNormalCoherently, NewField, SCIRun)
+MODULE_INFO_DEF(ReorderNormalCoherently, ChangeMesh, SCIRun)
 
 ReorderNormalCoherently::ReorderNormalCoherently() : Module(staticInfo_)
 {
@@ -58,7 +58,6 @@ void ReorderNormalCoherently::setStateDefaults()
 void ReorderNormalCoherently::execute()
 {
   auto input = getRequiredInput(InputField);
-  //FieldHandle output;
 
   if (needToExecute())
   {

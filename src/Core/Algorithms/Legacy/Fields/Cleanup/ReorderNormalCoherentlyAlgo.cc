@@ -240,18 +240,25 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
     
     if (get(Parameters::invertedElementsCheckBox).toBool())
     {
-      invertedElementsListMatrix = boost::make_shared<DenseColumnMatrix>(invertedElements.size());
+      remark("Sorry this part is causing error");
+      invertedElementsListMatrix = boost::make_shared<DenseColumnMatrix<size_type>>(invertedElements.size());
+      
       //invertedElementsListMatrix=new DenseColumnMatrix(invertedElements.size());
       if (!invertedElementsListMatrix)
       {
         error("Could not allocate inverted element matrix");
       }
       auto outputMatrix=castMatrix::toDense(invertedElementsListMatrix);
+      
+      auto invElems=invertedElements.begin();
       for(int i=0;i<invertedElements.size();i++)
       {
-        (*outputMatrix)(i)=invertedElements.at(i);
+        
+        (*outputMatrix)(i)=invElems;
+        inElems++;
       }
-      //std::copy(invertedElements.begin(), invertedElements.end(), invertedElementsListMatrix->begin());
+      //std::copy(invertedElements.begin(), invertedElements.end(), invertedElementsListMatrix->begin());*/
+      
     }
   }
   else

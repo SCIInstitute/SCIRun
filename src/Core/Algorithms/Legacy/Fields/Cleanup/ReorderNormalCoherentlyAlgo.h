@@ -27,8 +27,8 @@
    */
 
 
-#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_ReorderNormalCoherentlyALGO_H
-#define CORE_ALGORITHMS_FIELDS_FIELDDATA_ReorderNormalCoherentlyALGO_H
+#ifndef CORE_ALGORITHMS_FIELDS_CLEANUP_ReorderNormalCoherentlyALGO_H
+#define CORE_ALGORITHMS_FIELDS_CLEANUP_ReorderNormalCoherentlyALGO_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
