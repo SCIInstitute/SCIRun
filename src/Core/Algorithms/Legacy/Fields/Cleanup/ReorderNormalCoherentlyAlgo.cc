@@ -240,7 +240,6 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
     
     if (get(Parameters::invertedElementsCheckBox).toBool())
     {
-      remark("Sorry this part is causing error");
       invertedElementsListMatrix = boost::make_shared<DenseColumnMatrix<size_type>>(invertedElements.size());
       
       //invertedElementsListMatrix=new DenseColumnMatrix(invertedElements.size());
