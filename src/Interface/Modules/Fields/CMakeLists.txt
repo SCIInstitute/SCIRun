@@ -75,6 +75,7 @@ SET(Interface_Modules_Fields_FORMS
   RefineTetMeshLocally.ui
   GetMeshQualityField.ui
   CleanupTetMeshDialog.ui
+  ReorderNormalCoherentlyDialog.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -125,6 +126,7 @@ SET(Interface_Modules_Fields_HEADERS
   RefineTetMeshLocallyDialog.h
   GetMeshQualityFieldDialog.h
   CleanupTetMeshDialog.h
+  ReorderNormalCoherentlyDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -174,6 +176,7 @@ SET(Interface_Modules_Fields_SOURCES
   RefineTetMeshLocallyDialog.cc
   GetMeshQualityFieldDialog.cc
   CleanupTetMeshDialog.cc
+  ReorderNormalCoherentlyDialog.cc
 )
 
 IF(WITH_TETGEN)

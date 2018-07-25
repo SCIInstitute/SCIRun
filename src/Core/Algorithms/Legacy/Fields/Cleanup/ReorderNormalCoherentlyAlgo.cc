@@ -155,6 +155,7 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
         }
       }
     }
+  }
     
     //traverse graph
     std::vector<bool> elemTraversed;
@@ -228,9 +229,7 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
     outputVField->copy_values(inputVField);
   }
   
-    // ****DOUBT*** CONFIRM IT FROM DAN OR JESS
-  // copy properties of the property manager
-    CopyProperties(*inputField,*outputField);
+  CopyProperties(*inputField,*outputField);
 
   
   if (invertedElements.size() > 0)
@@ -242,27 +241,33 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
     if (get(Parameters::invertedElementsCheckBox).toBool())
     {
       invertedElementsListMatrix = boost::make_shared<DenseColumnMatrix>(invertedElements.size());
+      //invertedElementsListMatrix=new DenseColumnMatrix(invertedElements.size());
       if (!invertedElementsListMatrix)
       {
         error("Could not allocate inverted element matrix");
       }
-      std::copy(invertedElements.begin(), invertedElements.end(), invertedElementsListMatrix.begin());
+      auto outputMatrix=castMatrix::toDense(invertedElementsListMatrix);
+      for(int i=0;i<invertedElements.size();i++)
+      {
+        (*outputMatrix)(i)=invertedElements.at(i);
+      }
+      //std::copy(invertedElements.begin(), invertedElements.end(), invertedElementsListMatrix->begin());
     }
   }
   else
   {
     remark("Input TriSurf mesh is consistent.");
   }
-  }
 }
 
 AlgorithmOutput ReorderNormalCoherentlyAlgo::run(const AlgorithmInput& input) const
 {
-  auto field = input.get<Field>(Variables::InputField);
+  auto inputField = input.get<Field>(Variables::InputField);
   
   FieldHandle outputField;
   MatrixHandle outputMatrix;
   
+  runImpl(inputField, outputField, outputMatrix);
   
   AlgorithmOutput output;
   output[Variables::OutputField] = outputField;

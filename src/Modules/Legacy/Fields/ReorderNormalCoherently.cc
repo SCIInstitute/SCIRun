@@ -43,20 +43,26 @@ using namespace SCIRun::Core::Datatypes;
 
 MODULE_INFO_DEF(ReorderNormalCoherently, NewField, SCIRun)
 
-ReorderNormalCoherently::ReorderNormalCoherently() : Module(staticInfo_, false)
+ReorderNormalCoherently::ReorderNormalCoherently() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);
   INITIALIZE_PORT(Mapping);
 }
 
+void ReorderNormalCoherently::setStateDefaults()
+{
+  setStateBoolFromAlgo(Parameters::invertedElementsCheckBox);
+}
+
 void ReorderNormalCoherently::execute()
 {
   auto input = getRequiredInput(InputField);
-  FieldHandle output;
+  //FieldHandle output;
 
   if (needToExecute())
   {
+    setAlgoBoolFromState(Parameters::invertedElementsCheckBox);
     auto output=algo().run(withInputData((InputField, input)));
     
     sendOutputFromAlgorithm(OutputField,output);
