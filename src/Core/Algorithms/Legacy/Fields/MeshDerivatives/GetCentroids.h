@@ -31,34 +31,31 @@
 #define CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_GETCENTROIDS_H 1
 
 // Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 // Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 
 // for Windows support
-#include <Core/Algorithms/Fields/share.h>
+#include <Core/Algorithms/Field/share.h>
 
-namespace SCIRunAlgo {
+namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+namespace Fields {
 
-using namespace SCIRun;
-
-class SCISHARE GetCentroidsAlgo : public AlgoBase
-{
+  class SCISHARE GetCentroids : public AlgorithmBase
+  {
   public:
     /// Set defaults
-    GetCentroidsAlgo()
-    {
-      /// The output type
-      add_option("centroid","elem","node|edge|face|cell|elem|delem");
-    }
-  
+    GetCentroids();
+    
     /// run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
-};
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+  };
 
-} // end namespace SCIRunAlgo
+}}}}
 
 #endif
 

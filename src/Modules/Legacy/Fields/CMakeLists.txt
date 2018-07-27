@@ -90,6 +90,7 @@ SET(Modules_Legacy_Fields_HEADERS
   RemoveUnusedNodes.h
   CleanupTetMesh.h
   CalculateMeshCenter.h
+  GetCentroidsFromMesh.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -118,7 +119,7 @@ SET(Modules_Legacy_Fields_SRCS
   #CalculateNodeNormals.cc
   BuildMappingMatrix.cc
   BuildMatrixOfSurfaceNormals.cc
-  #GetCentroidsFromMesh.cc
+  GetCentroidsFromMesh.cc
   #ConvertMeshCoordinateSystem.cc
   ConvertFieldBasis.cc
   ConvertFieldDataType.cc
