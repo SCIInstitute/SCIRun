@@ -44,6 +44,8 @@ namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace Fields {
+  
+  ALGORITHM_PARAMETER_DECL(Centroids);
 
   class SCISHARE GetCentroids : public AlgorithmBase
   {

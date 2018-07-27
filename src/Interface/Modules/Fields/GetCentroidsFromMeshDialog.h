@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,42 +25,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/GetCentroidsFromMesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
+#ifndef INTERFACE_MODULES_GetCentroidsFromMeshDialog_H
+#define INTERFACE_MODULES_GetCentroidsFromMeshDialog_H
 
-#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetCentroids.h>
+#include "Interface/Modules/Fields/ui_GetCentroidsFromMeshDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
+namespace SCIRun {
+namespace Gui {
 
-MODULE_INFO_DEF(GetCentroidsFromMesh, NewField, SCIRun)
-
-GetCentroidsFromMesh::GetCentroidsFromMesh() : Module(staticInfo_)
+class SCISHARE GetCentroidsFromMeshDialog : public ModuleDialogGeneric,
+  public Ui::GetCentroidsFromMeshDialog
 {
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
+	Q_OBJECT
+
+public:
+  GetCentroidsFromMeshDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+};
+
+}
 }
 
-void GetCentroidsFromMesh::setStateDefaults()
-{
-  setStateStringFromAlgoOption(Parameters::Centroids);
-}
-
-void GetCentroidsFromMesh::execute()
-{
-  auto input = getRequiredInput(InputField);
-
-  if (needToExecute())
-  {
-    setAlgoOptionFromState(Parameters::Centroids);
-    
-    auto output=algo().run(withInputData((InputField, input)));
-    
-    sendOutputFromAlgorithm(OutputField, output);
-  }
-}
+#endif

@@ -12,7 +12,7 @@
     "header": "Core/Algorithms/Legacy/Fields/MeshDerivatives/GetCentroids.h"
   },
   "UI": {
-    "name": "N/A",
-    "header": "N/A"
+    "name": "GetCentroidsFromMeshDialog",
+    "header": "Interface/Modules/Fields/GetCentroidsFromMeshDialog.h"
   }
 }

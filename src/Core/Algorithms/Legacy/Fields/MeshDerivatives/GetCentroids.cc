@@ -41,9 +41,11 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
+ALGORITHM_PARAMETER_DEF(Fields, Centroids);
+
 GetCentroids::GetCentroids()
 {
-  addOption(AlgorithmParameterName("centroid"),"elem","node|edge|face|cell|elem|delem");
+  addOption(Parameters::Centroids,"Element","Node|Edge|Face|Cell|Element|DElement");
 }
 
 AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
@@ -62,13 +64,13 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
   fo.make_nodata();
   
   std::string centroids;
-  centroids=getOption(AlgorithmParameterName("centroid"));
+  centroids=getOption(Parameters::Centroids);
     
   VMesh* imesh = inputField->vmesh();
   MeshHandle mesh = CreateMesh(fo);
   VMesh* omesh = mesh->vmesh();
       
-  if (centroids=="elem")
+  if (centroids=="Element")
   {
     VField::size_type num_elems = imesh->num_elems();
     omesh->reserve_nodes(num_elems);
@@ -87,7 +89,7 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
     return outputField;
   }
 
-  if (centroids=="node")
+  if (centroids=="Node")
   {
     VMesh::size_type num_nodes = imesh->num_nodes();
     omesh->reserve_nodes(num_nodes);
@@ -106,7 +108,7 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
     return outputField;
   }
 
-  if (centroids=="edge")
+  if (centroids=="Edge")
   {
     VMesh::size_type num_edges = imesh->num_edges();
     omesh->reserve_nodes(num_edges);
@@ -125,7 +127,7 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
     return outputField;
   }
 
-  if (centroids=="face")
+  if (centroids=="Face")
   {
     VMesh::size_type num_faces = imesh->num_faces();
     omesh->reserve_nodes(num_faces);
@@ -144,7 +146,7 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
     return outputField;
   }
 
-  if (centroids=="cell")
+  if (centroids=="Cell")
   {
     VMesh::size_type num_cells = imesh->num_cells();
     omesh->reserve_nodes(num_cells);
@@ -164,7 +166,7 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
   }
 
 
-  if (centroids=="delem")
+  if (centroids=="DElement")
   {
     VMesh::size_type num_delems = imesh->num_delems();
     omesh->reserve_nodes(num_delems);
