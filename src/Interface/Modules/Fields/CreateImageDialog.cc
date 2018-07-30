@@ -45,5 +45,16 @@ CreateImageDialog::CreateImageDialog(const std::string& name, ModuleStateHandle 
   addDoubleSpinBoxManager(padPercentageSpinBox_, Parameters::PadPercent);
 
   addRadioButtonGroupManager({ axisX_, axisY_, axisZ_, axisCustom_}, Parameters::Axis);
-  addRadioButtonGroupManager({ elementSizeNormalizedButton_, elementSizeOneButton_ }, CreateLatVolModule::ElementSizeNormalized);
+  
+  addSpinBoxManager(centerX_, Parameters::CenterX);
+  addSpinBoxManager(centerY_, Parameters::CenterY);
+  addSpinBoxManager(centerZ_, Parameters::CenterZ);
+  
+  addSpinBoxManager(normalX_, Parameters::NormalX);
+  addSpinBoxManager(normalY_, Parameters::NormalY);
+  addSpinBoxManager(normalZ_, Parameters::NormalZ);
+  
+  addSpinBoxManager(position_, Parameters::Position);
+  
+  addRadioButtonGroupManager({ nodes_, faces_, none_ }, Parameters::DataAtLocation);
 }
