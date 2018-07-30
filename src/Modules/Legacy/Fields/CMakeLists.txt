@@ -90,6 +90,7 @@ SET(Modules_Legacy_Fields_HEADERS
   RemoveUnusedNodes.h
   CleanupTetMesh.h
   CalculateMeshCenter.h
+  CreateImage.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -162,7 +163,7 @@ SET(Modules_Legacy_Fields_SRCS
   GenerateSinglePointProbeFromField.cc
   GeneratePointSamplesFromFieldOrWidget.cc
   CreateLatVol.cc
-  #CreateImage.cc
+  CreateImage.cc
   #CreateStructHex.cc
   #ReportScalarFieldStats.cc
   GeneratePointSamplesFromField.cc
