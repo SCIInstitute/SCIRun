@@ -52,16 +52,19 @@ ReorderNormalCoherently::ReorderNormalCoherently() : Module(staticInfo_)
 
 void ReorderNormalCoherently::setStateDefaults()
 {
-  setStateBoolFromAlgo(Parameters::invertedElementsCheckBox);
+  //setStateBoolFromAlgo(Parameters::invertedElementsCheckBox);
 }
 
 void ReorderNormalCoherently::execute()
 {
   auto input = getRequiredInput(InputField);
-
+  
+  bool needMatrixData=oport_connected(Mapping);
+  
   if (needToExecute())
   {
-    setAlgoBoolFromState(Parameters::invertedElementsCheckBox);
+    algo().set(Parameters::invertedElementsCheckBox, needMatrixData);
+    
     auto output=algo().run(withInputData((InputField, input)));
     
     sendOutputFromAlgorithm(OutputField,output);

@@ -52,10 +52,10 @@ ALGORITHM_PARAMETER_DEF(Fields, invertedElementsCheckBox);
 
 ReorderNormalCoherentlyAlgo::ReorderNormalCoherentlyAlgo()
 {
-  addParameter(Parameters::invertedElementsCheckBox, false);
+  addParameter(Parameters::invertedElementsCheckBox, true);
 }
 
-void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& outputField, MatrixHandle& invertedElementsListMatrix) const
+void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& outputField, DenseColumnMatrixHandle& invertedElementsListMatrix) const
 {
   if(!inputField)
   {
@@ -240,21 +240,17 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
     
     if (get(Parameters::invertedElementsCheckBox).toBool())
     {
-      invertedElementsListMatrix = boost::make_shared<DenseColumnMatrix<size_type>>(invertedElements.size());
+      invertedElementsListMatrix = boost::make_shared<DenseColumnMatrix>(invertedElements.size());
       
       //invertedElementsListMatrix=new DenseColumnMatrix(invertedElements.size());
-      if (!invertedElementsListMatrix)
-      {
-        error("Could not allocate inverted element matrix");
-      }
-      auto outputMatrix=castMatrix::toDense(invertedElementsListMatrix);
+      
+      // auto outputMatrix=castMatrix::toDense(invertedElementsListMatrix);
       
       auto invElems=invertedElements.begin();
       for(int i=0;i<invertedElements.size();i++)
       {
         
-        (*outputMatrix)(i)=invElems;
-        inElems++;
+        (*invertedElementsListMatrix)(i)=invElems[i];
       }
       //std::copy(invertedElements.begin(), invertedElements.end(), invertedElementsListMatrix->begin());*/
       
@@ -262,7 +258,8 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
   }
   else
   {
-    remark("Input TriSurf mesh is consistent.");
+    invertedElementsListMatrix=nullptr;
+    //remark("Input TriSurf mesh is consistent.");
   }
 }
 
@@ -271,7 +268,7 @@ AlgorithmOutput ReorderNormalCoherentlyAlgo::run(const AlgorithmInput& input) co
   auto inputField = input.get<Field>(Variables::InputField);
   
   FieldHandle outputField;
-  MatrixHandle outputMatrix;
+  DenseColumnMatrixHandle outputMatrix;
   
   runImpl(inputField, outputField, outputMatrix);
   

@@ -47,7 +47,7 @@ namespace SCIRun {
 
           void runImpl(FieldHandle inputField,
             FieldHandle& outputField,
-            Datatypes::MatrixHandle& outputMatrix)const;
+            Datatypes::DenseColumnMatrixHandle& outputMatrix)const;
 
           virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
         };

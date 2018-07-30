@@ -12,7 +12,7 @@
     "header": "Core/Algorithms/Legacy/Fields/Cleanup/ReorderNormalCoherentlyAlgo.h"
   },
   "UI": {
-    "name": "ReorderNormalCoherentlyDialog",
-    "header": "Interface/Modules/Fields/ReorderNormalCoherentlyDialog.h"
+    "name": "N/A",
+    "header": "N/A"
   }
 }
