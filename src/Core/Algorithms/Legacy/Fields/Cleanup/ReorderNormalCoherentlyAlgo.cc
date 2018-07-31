@@ -52,7 +52,7 @@ ALGORITHM_PARAMETER_DEF(Fields, invertedElementsCheckBox);
 
 ReorderNormalCoherentlyAlgo::ReorderNormalCoherentlyAlgo()
 {
-  addParameter(Parameters::invertedElementsCheckBox, true);
+  addParameter(Parameters::invertedElementsCheckBox, false);
 }
 
 void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& outputField, DenseColumnMatrixHandle& invertedElementsListMatrix) const
@@ -235,31 +235,24 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
   if (invertedElements.size() > 0)
   {
     std::ostringstream oss;
-    oss << invertedElements.size() << " elements were found to be incorrectly oriented in input TriSurf mesh.";
+    oss << invertedElements.size() << "elements were found to be incorrectly oriented in input TriSurf mesh.";
     warning(oss.str());
     
     if (get(Parameters::invertedElementsCheckBox).toBool())
     {
       invertedElementsListMatrix = boost::make_shared<DenseColumnMatrix>(invertedElements.size());
       
-      //invertedElementsListMatrix=new DenseColumnMatrix(invertedElements.size());
-      
-      // auto outputMatrix=castMatrix::toDense(invertedElementsListMatrix);
-      
-      auto invElems=invertedElements.begin();
       for(int i=0;i<invertedElements.size();i++)
       {
         
-        (*invertedElementsListMatrix)(i)=invElems[i];
+        (*invertedElementsListMatrix)(i)=invertedElements[i];
       }
-      //std::copy(invertedElements.begin(), invertedElements.end(), invertedElementsListMatrix->begin());*/
       
     }
   }
   else
   {
     invertedElementsListMatrix=nullptr;
-    //remark("Input TriSurf mesh is consistent.");
   }
 }
 
@@ -275,5 +268,6 @@ AlgorithmOutput ReorderNormalCoherentlyAlgo::run(const AlgorithmInput& input) co
   AlgorithmOutput output;
   output[Variables::OutputField] = outputField;
   output[Variables::OutputMatrix] = outputMatrix;
+  
   return output;
 }

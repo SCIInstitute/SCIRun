@@ -43,23 +43,18 @@ using namespace SCIRun::Core::Datatypes;
 
 MODULE_INFO_DEF(ReorderNormalCoherently, ChangeMesh, SCIRun)
 
-ReorderNormalCoherently::ReorderNormalCoherently() : Module(staticInfo_)
+ReorderNormalCoherently::ReorderNormalCoherently() : Module(staticInfo_, false)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);
-  INITIALIZE_PORT(Mapping);
-}
-
-void ReorderNormalCoherently::setStateDefaults()
-{
-  //setStateBoolFromAlgo(Parameters::invertedElementsCheckBox);
+  INITIALIZE_PORT(OutputMatrix);
 }
 
 void ReorderNormalCoherently::execute()
 {
   auto input = getRequiredInput(InputField);
   
-  bool needMatrixData=oport_connected(Mapping);
+  bool needMatrixData=oport_connected(OutputMatrix);
   
   if (needToExecute())
   {
@@ -68,6 +63,6 @@ void ReorderNormalCoherently::execute()
     auto output=algo().run(withInputData((InputField, input)));
     
     sendOutputFromAlgorithm(OutputField,output);
-    sendOutputFromAlgorithm(Mapping, output);
+    sendOutputFromAlgorithm(OutputMatrix, output);
   }
 }

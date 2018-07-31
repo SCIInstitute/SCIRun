@@ -44,11 +44,11 @@ namespace SCIRun {
         ReorderNormalCoherently();
 
         virtual void execute() override;
-        virtual void setStateDefaults() override;
+        virtual void setStateDefaults() override{};
 
         INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, OutputField, Field);
-        OUTPUT_PORT(1, Mapping, Matrix);
+        OUTPUT_PORT(1, OutputMatrix, Matrix);
 
         MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
       };
