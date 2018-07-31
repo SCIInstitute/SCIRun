@@ -354,13 +354,15 @@ const std::string &val)
     simpleLog_ << "VAR TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
     return;
   }
+  else
+    simpleLog_ << "VAR IMPLEMENTED: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
   std::string stripBraces(val.begin() + 1, val.end() - 1);
   stateXML.setValue(varNameIter->second.first, varNameIter->second.second(stripBraces));
 }
 
 namespace
 {
-  ValueConverter toInt = [](const std::string& s) { return boost::lexical_cast<int>(s); };
+  ValueConverter toInt = [](const std::string& s) { return std::stoi(s); };
   ValueConverter toDouble = [](const std::string& s) { return boost::lexical_cast<double>(s); };
   ValueConverter toPercent = [](const std::string& s) { return boost::lexical_cast<double>(s) / 100.0; };
   ValueConverter toString = [](const std::string& s) { return s;};
@@ -392,6 +394,7 @@ LegacyNetworkIO::read_importer_map(const std::string& file)
   StringToFunctorMap functorLookup_ =
   {
     {"toInt", toInt},
+    {"toDouble", toDouble},
     {"toPercent", toPercent},
     {"data_at", data_at},
     {"element_size", element_size},
@@ -406,7 +409,7 @@ LegacyNetworkIO::read_importer_map(const std::string& file)
   NameAndValLookup temp;
   for(const ptree::value_type &module : tree.get_child("modules"))
   {
-    std::string moduleName = module.second.get<std::string>("<xmlattr>.name");
+    std::string moduleName = checkForModuleRename(module.second.get<std::string>("<xmlattr>.name"));
     for(const ptree::value_type& keys : module.second.get_child(""))
     {
       if(keys.first == "<xmlattr>")

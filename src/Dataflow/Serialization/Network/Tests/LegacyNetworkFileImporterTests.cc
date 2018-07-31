@@ -296,7 +296,37 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithDynamicPorts)
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithLotsOfState)
 {
-  FAIL() << "todo";
+  auto networkFile = load("lotsOfState.srn");
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(4, networkFile->network.modules.size());
+
+  auto mod = networkFile->network.modules.begin();
+  EXPECT_EQ("GetDomainBoundary:0", mod->first);
+  EXPECT_EQ(0, mod->second.state.getValue(Name("UseRange")).toInt());
+  EXPECT_EQ(0.0, mod->second.state.getValue(Name("MinRange")).toDouble());
+  EXPECT_EQ(255.0, mod->second.state.getValue(Name("MaxRange")).toDouble());
+  EXPECT_EQ(1, mod->second.state.getValue(Name("Domain")).toInt());
+  EXPECT_EQ(1, mod->second.state.getValue(Name("AddOuterBoundary")).toInt());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("InnerBoundaryOnly")).toInt());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("NoInnerBoundary")).toInt());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("DisconnectBoundaries")).toInt()); 
+  ++mod;
+  EXPECT_EQ("ReadField:0", mod->first);
+  EXPECT_EQ("SCIRunData_4/utahtorso/utahtorso-blood.ts.fld", mod->second.state.getValue(Name("filename")).toString());
+  EXPECT_EQ("", mod->second.state.getValue(Name("from-env")).toString());
+  EXPECT_EQ("SCIRun Field File (*.fld)", mod->second.state.getValue(Name("filetype")).toString());
+  EXPECT_EQ("utahtorso-blood.ts.fld", mod->second.state.getValue(Name("filename_base")).toString());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("number_in_series")).toInt());
+  EXPECT_EQ(2, mod->second.state.getValue(Name("delay")).toInt());
+  ++mod;
+  EXPECT_EQ("RescaleColorMap:0", mod->first);
+  EXPECT_EQ(0, mod->second.state.getValue(Name("AutoScale")).toInt());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("Symmetric")).toInt());
+  EXPECT_EQ(0.5, mod->second.state.getValue(Name("FixedMin")).toDouble());
+  EXPECT_EQ(1.0, mod->second.state.getValue(Name("FixedMax")).toDouble());
+  ++mod;
+  EXPECT_EQ("ShowField:0", mod->first);
 }
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotes)
