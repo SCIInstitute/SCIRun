@@ -58,6 +58,10 @@
 #include <iostream>
 #include <sstream>
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/foreach.hpp>
+
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
@@ -338,20 +342,20 @@ const std::string &val)
   std::string moduleName = xmlData_->network.modules[moduleIdMap_[mod_id]].module.module_name_;
   auto& stateXML = xmlData_->network.modules[moduleIdMap_[mod_id]].state;
 
-  auto moduleNameMapIter = nameLookup_.find(moduleName);
-  if (moduleNameMapIter == nameLookup_.end())
+  auto moduleNameMapIter = nameAndValLookup_.find(moduleName);
+  if (moduleNameMapIter == nameAndValLookup_.end())
   {
     simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
     return;
   }
-  auto valueConverterForModuleIter = valueConverter_.find(moduleName);
-  if (valueConverterForModuleIter == valueConverter_.end())
+  auto varNameIter = moduleNameMapIter->second.find(var);
+  if (varNameIter == moduleNameMapIter->second.end())
   {
-    simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
+    simpleLog_ << "VAR TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
     return;
   }
   std::string stripBraces(val.begin() + 1, val.end() - 1);
-  stateXML.setValue(moduleNameMapIter->second[var], valueConverterForModuleIter->second[var](stripBraces));
+  stateXML.setValue(varNameIter->second.first, varNameIter->second.second(stripBraces));
 }
 
 namespace
@@ -359,7 +363,7 @@ namespace
   ValueConverter toInt = [](const std::string& s) { return boost::lexical_cast<int>(s); };
   ValueConverter toDouble = [](const std::string& s) { return boost::lexical_cast<double>(s); };
   ValueConverter toPercent = [](const std::string& s) { return boost::lexical_cast<double>(s) / 100.0; };
-
+  ValueConverter toString = [](const std::string& s) { return s;};
   //TODO: mapping macro or find a boost lib to do pattern matching with funcs easily
   ValueConverter data_at = [](const std::string& s)
   {
@@ -375,38 +379,45 @@ namespace
   };
 
   ValueConverter throwAway = [](const std::string& s) { return 0; };
+  ValueConverter negateBool = [](const std::string&s)
+  {
+    if (s == "1") return 0;
+    return 1;
+  };
 }
 
-NameLookup LegacyNetworkIO::nameLookup_ =
+NameAndValLookup
+LegacyNetworkIO::read_importer_map(const std::string& file)
 {
+  StringToFunctorMap functorLookup_ =
   {
-    "CreateLatVol",
+    {"toInt", toInt},
+    {"toPercent", toPercent},
+    {"data_at", data_at},
+    {"element_size", element_size},
+    {"throwAway", throwAway},
+    {"toString", toString},
+    {"negateBool", negateBool}
+  };
+  using boost::property_tree::ptree;
+  using boost::property_tree::read_xml;
+  ptree tree;
+  read_xml(file, tree);
+  NameAndValLookup temp;
+  for(const ptree::value_type &module : tree.get_child("modules"))
+  {
+    std::string moduleName = module.second.get<std::string>("<xmlattr>.name");
+    for(const ptree::value_type& keys : module.second.get_child(""))
     {
-      { "sizex", Name("XSize") },
-      { "sizey", Name("YSize") },
-      { "sizez", Name("ZSize") },
-      { "padpercent", Name("PadPercent") },
-      { "data-at", Name("DataAtLocation") },
-      { "element-size", Name("ElementSizeNormalized") }
+      if(keys.first == "<xmlattr>")
+        continue;
+      temp[moduleName][keys.second.get<std::string>("from")] = std::make_pair(Name(keys.second.get<std::string>("to")),functorLookup_[keys.second.get<std::string>("type")]);
     }
   }
-};
+  return temp;
+}
 
-ValueConverterMap LegacyNetworkIO::valueConverter_ =
-{
-  {
-    "CreateLatVol",
-    {
-      { "sizex", toInt },
-      { "sizey", toInt },
-      { "sizez", toInt },
-      { "padpercent", toPercent },
-      { "data-at", data_at },
-      { "element-size", element_size },
-      { "ui_geometry", throwAway }
-    }
-  }
-};
+NameAndValLookup LegacyNetworkIO::nameAndValLookup_ = read_importer_map("./LegacyModuleImporter.xml");
 
 #if 0
 void
