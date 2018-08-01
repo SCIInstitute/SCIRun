@@ -103,6 +103,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   Cleanup/RemoveUnusedNodes.h
   Cleanup/CleanupTetMesh.h
   Cleanup/ReorderNormalCoherentlyAlgo.h
+  MeshDerivatives/CalculateMeshCenterAlgo.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -186,7 +187,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #MeshData/GetSurfaceElemNormals.cc
   MeshData/GetMeshQualityFieldAlgo.cc
   #MeshDerivatives/CalculateMeshConnector.cc
-  #MeshDerivatives/CalculateMeshCenter.cc
+  MeshDerivatives/CalculateMeshCenterAlgo.cc
   #MeshDerivatives/GetCentroids.cc
   MeshDerivatives/GetFieldBoundaryAlgo.cc
   #MeshDerivatives/GetBoundingBox.cc

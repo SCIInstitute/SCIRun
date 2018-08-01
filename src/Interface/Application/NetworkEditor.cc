@@ -795,6 +795,7 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
       }
     }
   }
+  //TODO from jess: check if module drag is creating space, then realign; if not creating space, don't move alignment
   alignViewport();
   QGraphicsView::mouseMoveEvent(event);
 }

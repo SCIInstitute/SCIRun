@@ -39,8 +39,6 @@ SET(Interface_Modules_Visualization_FORMS
   ShowString.ui
   ShowColorMap.ui
   RescaleColorMap.ui
-  InterfaceWithOspray.ui
-  ViewOsprayScene.ui
   ShowFieldWithOspray.ui
 )
 
@@ -56,8 +54,6 @@ SET(Interface_Modules_Visualization_HEADERS
   ShowStringDialog.h
   ShowColorMapDialog.h
   RescaleColorMapDialog.h
-  InterfaceWithOsprayDialog.h
-  ViewOspraySceneDialog.h
   ShowFieldWithOsprayDialog.h
 )
 
@@ -72,8 +68,6 @@ SET(Interface_Modules_Visualization_SOURCES
   ShowStringDialog.cc
   ShowColorMapDialog.cc
   RescaleColorMapDialog.cc
-  InterfaceWithOsprayDialog.cc
-  ViewOspraySceneDialog.cc
   ShowFieldWithOsprayDialog.cc
 )
 

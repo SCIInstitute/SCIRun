@@ -49,6 +49,7 @@ using namespace SCIRun::Core::Geometry;
 ALGORITHM_PARAMETER_DEF(Fields, Isovalues);
 ALGORITHM_PARAMETER_DEF(Fields, SingleIsoValue);
 ALGORITHM_PARAMETER_DEF(Fields, IsovalueChoice);
+ALGORITHM_PARAMETER_DEF(Fields, IsovalueListInclusiveExclusive);
 ALGORITHM_PARAMETER_DEF(Fields, ListOfIsovalues);
 ALGORITHM_PARAMETER_DEF(Fields, QuantityOfIsovalues);
 ALGORITHM_PARAMETER_DEF(Fields, IsovalueListString);
@@ -57,6 +58,7 @@ ExtractSimpleIsosurfaceAlgo::ExtractSimpleIsosurfaceAlgo()
 {
   addParameter(Parameters::SingleIsoValue, 0.0);
   addParameter(Parameters::Isovalues, VariableList());
+  addParameter(Parameters::IsovalueListInclusiveExclusive, 0);
   addParameter(Parameters::ListOfIsovalues, std::string());
   addParameter(Parameters::QuantityOfIsovalues, 1);
   addOption(Parameters::IsovalueChoice, "Single", "Single|List|Quantity");

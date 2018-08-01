@@ -41,16 +41,6 @@ GlyphGeom::GlyphGeom() : numVBOElements_(0), lineIndex_(0)
 
 }
 
-void GlyphGeom::getBufferInfo(int64_t& numVBOElements, std::vector<Vector>& points, std::vector<Vector>& normals,
-                              std::vector<ColorRGB>& colors, std::vector<uint32_t>& indices)
-{
-  numVBOElements = numVBOElements_;
-  points = points_;
-  normals = normals_;
-  colors = colors_;
-  indices = indices_;
-}
-
 void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& uniqueNodeID, const bool isTransparent, const double transparencyValue,
   const ColorScheme& colorScheme, RenderState state, const SpireIBO::PRIMITIVE& primIn, const BBox& bbox)
 {
@@ -160,14 +150,15 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
   for (auto a : indices_)
     iboBuffer->write(a);
 
+  const bool writeNormals = normals_.size() == points_.size();
   for (size_t i = 0; i < points_.size(); i++)
   {
     // Write first point on line
     vboBuffer->write(static_cast<float>(points_.at(i).x()));
     vboBuffer->write(static_cast<float>(points_.at(i).y()));
     vboBuffer->write(static_cast<float>(points_.at(i).z()));
-    // Write normal
-    if (normals_.size() == points_.size())
+
+    if (writeNormals)
     {
       vboBuffer->write(static_cast<float>(normals_.at(i).x()));
       vboBuffer->write(static_cast<float>(normals_.at(i).y()));
@@ -213,31 +204,30 @@ void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double
 
   Point mid(ratio * (p1.x() + p2.x()), ratio * (p1.y() + p2.y()), ratio * (p1.z() + p2.z()));
 
-  generateCylinder(p1, mid, radius / 6.0, radius / 6.0, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
-  generateCylinder(mid, p2, radius, 0.0, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
+  generateCylinder(p1, mid, radius / 6.0, radius / 6.0, resolution, color1, color2);
+  generateCylinder(mid, p2, radius, 0.0, resolution, color1, color2);
 }
 
 void GlyphGeom::addSphere(const Point& p, double radius, double resolution, const ColorRGB& color)
 {
-  generateSphere(p, radius, radius, resolution, color, numVBOElements_, points_, normals_, indices_, colors_);
+  generateSphere(p, radius, radius, resolution, color);
 }
 
 void GlyphGeom::addEllipsoid(const Point& p, double radius1, double radius2, double resolution, const ColorRGB& color)
 {
-  generateEllipsoid(p, radius1, radius2, resolution, color, numVBOElements_, points_, normals_, indices_, colors_);
+  generateEllipsoid(p, radius1, radius2, resolution, color);
 }
 
 void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, double resolution,
                             const ColorRGB& color1, const ColorRGB& color2)
 {
-  generateCylinder(p1, p2, radius, radius, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
+  generateCylinder(p1, p2, radius, radius, resolution, color1, color2);
 }
 
 void GlyphGeom::addCone(const Point& p1, const Point& p2, double radius, double resolution,
   const ColorRGB& color1, const ColorRGB& color2)
 {
-  //std::cout << "p1: " << p1 << " p2 " << p2 << " radius: " << radius << " resolution: " << resolution << " color1: " << color1 << " color2: " << color2 << std::endl;
-  generateCylinder(p1, p2, radius, 0.0, resolution, color1, color2, numVBOElements_, points_, normals_, indices_, colors_);
+  generateCylinder(p1, p2, radius, 0.0, resolution, color1, color2);
 }
 
 void GlyphGeom::addClippingPlane(const Point& p1, const Point& p2,
@@ -258,31 +248,29 @@ void GlyphGeom::addPlane(const Point& p1, const Point& p2,
   const Point& p3, const Point& p4,
   const ColorRGB& color1)
 {
-  generatePlane(p1, p2, p3, p4, color1, numVBOElements_, points_, normals_, indices_, colors_);
+  generatePlane(p1, p2, p3, p4, color1);
 }
 
 void GlyphGeom::addLine(const Point& p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
 {
-  generateLine(p1, p2, color1, color2, numVBOElements_, points_, indices_, colors_);
+  generateLine(p1, p2, color1, color2);
 }
 
 void GlyphGeom::addNeedle(const Point& p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
 {
   Point mid(0.5 * (p1.x() + p2.x()), 0.5 * (p1.y() + p2.y()), 0.5 * (p1.z() + p2.z()));
   ColorRGB endColor(color2.r(), color2.g(), color2.b(), 0.5);
-  generateLine(p1, mid, color1, endColor, numVBOElements_, points_, indices_, colors_);
-  generateLine(mid, p2, color1, endColor, numVBOElements_, points_, indices_, colors_);
+  generateLine(p1, mid, color1, endColor);
+  generateLine(mid, p2, color1, endColor);
 }
 
 void GlyphGeom::addPoint(const Point& p, const ColorRGB& color)
 {
-  generatePoint(p, color, numVBOElements_, points_, indices_, colors_);
+  generatePoint(p, color);
 }
 
 void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius1,
-  double radius2, double resolution, const ColorRGB& color1, const ColorRGB& color2,
-  int64_t& numVBOElements, std::vector<Vector>& points, std::vector<Vector>& normals,
-  std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
+  double radius2, double resolution, const ColorRGB& color1, const ColorRGB& color2)
 {
   double num_strips = resolution;
   if (num_strips < 0) num_strips = 20.0;
@@ -296,31 +284,30 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
   Vector p;
   for (double strips = 0.; strips <= num_strips; strips += 1.)
   {
-    uint32_t offset = static_cast<uint32_t>(numVBOElements);
+    uint32_t offset = static_cast<uint32_t>(numVBOElements_);
     p = std::cos(2. * M_PI * strips / num_strips) * u +
       std::sin(2. * M_PI * strips / num_strips) * crx;
     p.normalize();
-    points.push_back(r1 * p + Vector(p1));
-    colors.push_back(color1);
-    numVBOElements++;
-    points.push_back(r2 * p + Vector(p2));
-    colors.push_back(color2);
-    numVBOElements++;
-    normals.push_back(p);
-    normals.push_back(p);
-    indices.push_back(0 + offset);
-    indices.push_back(1 + offset);
-    indices.push_back(2 + offset);
-    indices.push_back(2 + offset);
-    indices.push_back(1 + offset);
-    indices.push_back(3 + offset);
+    points_.push_back(r1 * p + Vector(p1));
+    colors_.push_back(color1);
+    numVBOElements_++;
+    points_.push_back(r2 * p + Vector(p2));
+    colors_.push_back(color2);
+    numVBOElements_++;
+    normals_.push_back(p);
+    normals_.push_back(p);
+    indices_.push_back(0 + offset);
+    indices_.push_back(1 + offset);
+    indices_.push_back(2 + offset);
+    indices_.push_back(2 + offset);
+    indices_.push_back(1 + offset);
+    indices_.push_back(3 + offset);
   }
-  for (int jj = 0; jj < 6; jj++) indices.pop_back();
+  for (int jj = 0; jj < 6; jj++) indices_.pop_back();
 }
 
 void GlyphGeom::generateSphere(const Point& center, double radius1, double radius2,
-  double resolution, const ColorRGB& color, int64_t& numVBOElements, std::vector<Vector>& points,
-  std::vector<Vector>& normals, std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
+  double resolution, const ColorRGB& color)
 {
   double num_strips = resolution;
   if (num_strips < 0) num_strips = 20.0;
@@ -334,31 +321,30 @@ void GlyphGeom::generateSphere(const Point& center, double radius1, double radiu
   {
     for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc)
     {
-      uint32_t offset = static_cast<uint32_t>(numVBOElements);
+      uint32_t offset = static_cast<uint32_t>(numVBOElements_);
       pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
       pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
-      points.push_back(r1 * pp1 + Vector(center));
-      colors.push_back(color);
-      numVBOElements++;
-      points.push_back(r2 * pp2 + Vector(center));
-      colors.push_back(color);
-      numVBOElements++;
-      normals.push_back(pp1);
-      normals.push_back(pp2);
-      indices.push_back(0 + offset);
-      indices.push_back(1 + offset);
-      indices.push_back(2 + offset);
-      indices.push_back(2 + offset);
-      indices.push_back(1 + offset);
-      indices.push_back(3 + offset);
+      points_.push_back(r1 * pp1 + Vector(center));
+      colors_.push_back(color);
+      numVBOElements_++;
+      points_.push_back(r2 * pp2 + Vector(center));
+      colors_.push_back(color);
+      numVBOElements_++;
+      normals_.push_back(pp1);
+      normals_.push_back(pp2);
+      indices_.push_back(0 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(3 + offset);
     }
-    for (int jj = 0; jj < 6; jj++) indices.pop_back();
+    for (int jj = 0; jj < 6; jj++) indices_.pop_back();
   }
 }
 
 void GlyphGeom::generateEllipsoid(const Point& center, double radius1, double radius2,
-  double resolution, const ColorRGB& color, int64_t& numVBOElements, std::vector<Vector>& points,
-  std::vector<Vector>& normals, std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
+  double resolution, const ColorRGB& color)
 {
   double num_strips = resolution;
   if (num_strips < 0) num_strips = 20.0;
@@ -373,118 +359,78 @@ void GlyphGeom::generateEllipsoid(const Point& center, double radius1, double ra
   {
     for (double theta = 0.; theta <= /*2. */ M_PI; theta += theta_inc)
     {
-      uint32_t offset = static_cast<uint32_t>(numVBOElements);
+      uint32_t offset = static_cast<uint32_t>(numVBOElements_);
       pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
       pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
-      points.push_back(r1 * pp1 + Vector(center));
-      colors.push_back(color);
-      numVBOElements++;
-      points.push_back(r2 * pp2 + Vector(center + radius));
-      colors.push_back(color);
-      numVBOElements++;
-      normals.push_back(pp1);
-      normals.push_back(pp2);
+      points_.push_back(r1 * pp1 + Vector(center));
+      colors_.push_back(color);
+      numVBOElements_++;
+      points_.push_back(r2 * pp2 + Vector(center + radius));
+      colors_.push_back(color);
+      numVBOElements_++;
+      normals_.push_back(pp1);
+      normals_.push_back(pp2);
 
-      indices.push_back(0 + offset);
-      indices.push_back(1 + offset);
-      indices.push_back(2 + offset);
-      indices.push_back(2 + offset);
-      indices.push_back(1 + offset);
-      indices.push_back(3 + offset);
-      /*
-      indices.push_back(0 + offset);
-      indices.push_back(1 + offset);
-      indices.push_back(2 + offset);
-      indices.push_back(2 + offset);
-      indices.push_back(1 + offset);
-      indices.push_back(3 + offset);
-
-
-      //generate triangles for the cylinders.
-      Vector n((p1 - p2).normal()), u = (10 * n + Vector(10, 10, 10)).normal();
-      Vector crx = Cross(u, n).normal();
-      u = Cross(crx, n).normal();
-      Vector p;
-      for (double strips = 0.; strips <= num_strips; strips += 1.)
-      {
-      uint32_t offset = (uint32_t)numVBOElements;
-      p = std::cos(2. * M_PI * strips / num_strips) * u +
-      std::sin(2. * M_PI * strips / num_strips) * crx;
-      p.normalize();
-      points.push_back(r1 * p + Vector(p1));
-      colors.push_back(color1);
-      numVBOElements++;
-      points.push_back(r2 * p + Vector(p2));
-      colors.push_back(color2);
-      numVBOElements++;
-      normals.push_back(p);
-      normals.push_back(p);
-      indices.push_back(0 + offset);
-      indices.push_back(1 + offset);
-      indices.push_back(2 + offset);
-      indices.push_back(2 + offset);
-      indices.push_back(1 + offset);
-      indices.push_back(3 + offset);
-      }
-      */
+      indices_.push_back(0 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(3 + offset);
     }
-    for (int jj = 0; jj < 6; jj++) indices.pop_back();
+    for (int jj = 0; jj < 6; jj++) indices_.pop_back();
   }
 }
 
-void GlyphGeom::generateLine(const Point& p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2,
-  int64_t& numVBOElements, std::vector<Vector>& points, std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
+void GlyphGeom::generateLine(const Point& p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
 {
-  points.push_back(Vector(p1));
-  colors.push_back(color1);
-  indices.push_back(lineIndex_);
+  points_.push_back(Vector(p1));
+  colors_.push_back(color1);
+  indices_.push_back(lineIndex_);
   ++lineIndex_;
-  points.push_back(Vector(p2));
-  colors.push_back(color2);
-  indices.push_back(lineIndex_);
+  points_.push_back(Vector(p2));
+  colors_.push_back(color2);
+  indices_.push_back(lineIndex_);
   ++lineIndex_;
-  ++numVBOElements;
+  ++numVBOElements_;
 }
 
-void GlyphGeom::generatePoint(const Point& p, const ColorRGB& color,
-  int64_t& numVBOElements, std::vector<Vector>& points, std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
+void GlyphGeom::generatePoint(const Point& p, const ColorRGB& color)
 {
-  points.push_back(Vector(p));
-  colors.push_back(color);
-  indices.push_back(lineIndex_);
+  points_.push_back(Vector(p));
+  colors_.push_back(color);
+  indices_.push_back(lineIndex_);
   ++lineIndex_;
-  ++numVBOElements;
+  ++numVBOElements_;
 }
 
 void GlyphGeom::generatePlane(const Point& p1, const Point& p2,
-  const Point& p3, const Point& p4, const ColorRGB& color,
-  int64_t& numVBOElements, std::vector<Vector>& points, std::vector<Vector>& normals,
-  std::vector<uint32_t>& indices, std::vector<ColorRGB>& colors)
+  const Point& p3, const Point& p4, const ColorRGB& color)
 {
-  points.push_back(Vector(p1));
-  points.push_back(Vector(p2));
-  points.push_back(Vector(p3));
-  points.push_back(Vector(p4));
-  colors.push_back(color);
-  colors.push_back(color);
-  colors.push_back(color);
-  colors.push_back(color);
+  points_.push_back(Vector(p1));
+  points_.push_back(Vector(p2));
+  points_.push_back(Vector(p3));
+  points_.push_back(Vector(p4));
+  colors_.push_back(color);
+  colors_.push_back(color);
+  colors_.push_back(color);
+  colors_.push_back(color);
   Vector n;
   n = Cross(p2 - p1, p4 - p1).normal();
-  normals.push_back(n);
+  normals_.push_back(n);
   n = Cross(p3 - p2, p1 - p2).normal();
-  normals.push_back(n);
+  normals_.push_back(n);
   n = Cross(p4 - p3, p2 - p3).normal();
-  normals.push_back(n);
+  normals_.push_back(n);
   n = Cross(p1 - p4, p3 - p4).normal();
-  normals.push_back(n);
-  indices.push_back(0 + numVBOElements);
-  indices.push_back(1 + numVBOElements);
-  indices.push_back(2 + numVBOElements);
-  indices.push_back(2 + numVBOElements);
-  indices.push_back(3 + numVBOElements);
-  indices.push_back(0 + numVBOElements);
-  numVBOElements += 4;
+  normals_.push_back(n);
+  indices_.push_back(0 + numVBOElements_);
+  indices_.push_back(1 + numVBOElements_);
+  indices_.push_back(2 + numVBOElements_);
+  indices_.push_back(2 + numVBOElements_);
+  indices_.push_back(3 + numVBOElements_);
+  indices_.push_back(0 + numVBOElements_);
+  numVBOElements_ += 4;
 }
 
 // Addarrow from SCIRun 4

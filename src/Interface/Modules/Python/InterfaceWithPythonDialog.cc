@@ -61,6 +61,7 @@ InterfaceWithPythonDialog::InterfaceWithPythonDialog(const std::string& name, Mo
   setupOutputTableCells();
 
   connect(pythonDocPushButton_, SIGNAL(clicked()), this, SLOT(loadAPIDocumentation()));
+  connect(addMatlabCodeBlockToolButton_, SIGNAL(clicked()), pythonCodePlainTextEdit_, SLOT(insertSpecialCodeBlock()));
 }
 
 void InterfaceWithPythonDialog::resetObjects()
@@ -148,83 +149,88 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
 
 int CodeEditor::lineNumberAreaWidth()
 {
-    int digits = 1;
-    int max = qMax(1, blockCount());
-    while (max >= 10) {
-        max /= 10;
-        ++digits;
-    }
+  int digits = 1;
+  int max = qMax(1, blockCount());
+  while (max >= 10) {
+    max /= 10;
+    ++digits;
+  }
 
-    int space = 3 + fontMetrics().width(QLatin1Char('9')) * digits;
+  int space = 3 + fontMetrics().width(QLatin1Char('9')) * digits;
 
-    return space;
+  return space;
 }
 
 void CodeEditor::updateLineNumberAreaWidth(int /* newBlockCount */)
 {
-    setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
+  setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
 }
 
 void CodeEditor::updateLineNumberArea(const QRect &rect, int dy)
 {
-    if (dy)
-        lineNumberArea_->scroll(0, dy);
-    else
-        lineNumberArea_->update(0, rect.y(), lineNumberArea_->width(), rect.height());
+  if (dy)
+    lineNumberArea_->scroll(0, dy);
+  else
+    lineNumberArea_->update(0, rect.y(), lineNumberArea_->width(), rect.height());
 
-    if (rect.contains(viewport()->rect()))
-        updateLineNumberAreaWidth(0);
+  if (rect.contains(viewport()->rect()))
+    updateLineNumberAreaWidth(0);
 }
 
 void CodeEditor::resizeEvent(QResizeEvent *e)
 {
-    QPlainTextEdit::resizeEvent(e);
+  QPlainTextEdit::resizeEvent(e);
 
-    QRect cr = contentsRect();
-    lineNumberArea_->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
+  QRect cr = contentsRect();
+  lineNumberArea_->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
 }
 
 void CodeEditor::highlightCurrentLine()
 {
-    QList<QTextEdit::ExtraSelection> extras;// = extraSelections();
+  QList<QTextEdit::ExtraSelection> extras;// = extraSelections();
 
-    if (!isReadOnly())
-    {
-        QTextEdit::ExtraSelection selection;
+  if (!isReadOnly())
+  {
+    QTextEdit::ExtraSelection selection;
 
-        QColor lineColor = QColor(Qt::darkGray);
+    QColor lineColor = QColor(Qt::darkGray);
 
-        selection.format.setBackground(lineColor);
-        selection.format.setProperty(QTextFormat::FullWidthSelection, true);
-        selection.cursor = textCursor();
-        selection.cursor.clearSelection();
-        extras.append(selection);
-    }
+    selection.format.setBackground(lineColor);
+    selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+    selection.cursor = textCursor();
+    selection.cursor.clearSelection();
+    extras.append(selection);
+  }
 
-    setExtraSelections(extras);
+  setExtraSelections(extras);
+}
+
+void CodeEditor::insertSpecialCodeBlock()
+{
+  insertPlainText("/*matlab\nmatlab*/");
 }
 
 void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
 {
-    QPainter painter(lineNumberArea_);
-    painter.fillRect(event->rect(), Qt::lightGray);
-    QTextBlock block = firstVisibleBlock();
-   int blockNumber = block.blockNumber();
-   int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
-   int bottom = top + (int) blockBoundingRect(block).height();
-   while (block.isValid() && top <= event->rect().bottom())
-   {
-     if (block.isVisible() && bottom >= event->rect().top())
-     {
-        QString number = QString::number(blockNumber + 1);
-        painter.setPen(Qt::black);
-        painter.drawText(0, top, lineNumberArea_->width(), fontMetrics().height(),
-                         Qt::AlignRight, number);
+  QPainter painter(lineNumberArea_);
+  painter.fillRect(event->rect(), Qt::lightGray);
+  QTextBlock block = firstVisibleBlock();
+  int blockNumber = block.blockNumber();
+  int top = (int)blockBoundingGeometry(block).translated(contentOffset()).top();
+  int bottom = top + (int)blockBoundingRect(block).height();
+  while (block.isValid() && top <= event->rect().bottom())
+  {
+    if (block.isVisible() && bottom >= event->rect().top())
+    {
+      QString number = QString::number(blockNumber + 1);
+      painter.setPen(Qt::black);
+      painter.drawText(0, top, lineNumberArea_->width(), fontMetrics().height(),
+        Qt::AlignRight, number);
     }
 
     block = block.next();
     top = bottom;
-    bottom = top + (int) blockBoundingRect(block).height();
+    bottom = top + (int)blockBoundingRect(block).height();
     ++blockNumber;
   }
 }
@@ -233,15 +239,15 @@ void CodeEditor::matchParentheses()
 {
   QList<QTextEdit::ExtraSelection> selections;// = extraSelections();
   setExtraSelections(selections);
-  TextBlockData *data = static_cast<TextBlockData *>(textCursor().block().userData());
+  auto data = static_cast<TextBlockData *>(textCursor().block().userData());
 
   if (data)
   {
-    QVector<ParenthesisInfo *> infos = data->parentheses();
+    auto infos = data->parentheses();
     //int pos = textCursor().block().position();
     for (int i = 0; i < infos.size(); ++i)
     {
-      ParenthesisInfo *info = infos.at(i);
+      auto info = infos.at(i);
       int curPos = textCursor().position() - textCursor().block().position();
       if (info->position == curPos - 1 && info->character == '(')
       {
@@ -272,55 +278,55 @@ void CodeEditor::createParenthesisSelection(int pos)
 Highlighter::Highlighter(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
 {
-    HighlightingRule rule;
+  HighlightingRule rule;
 
-    keywordFormat.setForeground(Qt::green);
-    keywordFormat.setFontWeight(QFont::Bold);
-    QStringList keywordPatterns;
-    keywordPatterns << "\\band\\b" << "\\bclass\\b" << "\\bassert\\b"
-                    << "\\bbreak\\b" << "\\bas\\b" << "\\bcontinue\\b"
-                    << "\\bdef\\b" << "\\bdel\\b" << "\\belif\\b"
-                    << "\\blong\\b" << "\\bnamespace\\b" << "\\boperator\\b"
-                    << "\\belse\\b" << "\\bexcept\\b" << "\\bexec\\b"
-                    << "\\bfinally\\b" << "\\bfrom\\b" << "\\bimport\\b"
-                    << "\\bglobal\\b" << "\\bif\\b" << "\\bis\\b"
-                    << "\\blambda\\b" << "\\bnot\\b" << "\\bor\\b"
-                    << "\\bpass\\b" << "\\braise\\b" << "\\breturn\\b"
-                    << "\\btry\\b" << "\\bwhile\\b" << "\\bfor\\b" << "\\bin\\b"
-                    << "\\bwith\\b" << "\\byield\\b"
-                    << "\\bTrue\\b" << "\\bFalse\\b" << "\\bNone\\b";
-    for (const auto& pattern : keywordPatterns)
-    {
-        rule.pattern = QRegExp(pattern);
-        rule.format = keywordFormat;
-        highlightingRules.append(rule);
-    }
-    classFormat.setFontWeight(QFont::Bold);
-classFormat.setForeground(Qt::darkMagenta);
-rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
-rule.format = classFormat;
-highlightingRules.append(rule);
+  keywordFormat.setForeground(Qt::green);
+  keywordFormat.setFontWeight(QFont::Bold);
+  QStringList keywordPatterns;
+  keywordPatterns << "\\band\\b" << "\\bclass\\b" << "\\bassert\\b"
+    << "\\bbreak\\b" << "\\bas\\b" << "\\bcontinue\\b"
+    << "\\bdef\\b" << "\\bdel\\b" << "\\belif\\b"
+    << "\\blong\\b" << "\\bnamespace\\b" << "\\boperator\\b"
+    << "\\belse\\b" << "\\bexcept\\b" << "\\bexec\\b"
+    << "\\bfinally\\b" << "\\bfrom\\b" << "\\bimport\\b"
+    << "\\bglobal\\b" << "\\bif\\b" << "\\bis\\b"
+    << "\\blambda\\b" << "\\bnot\\b" << "\\bor\\b"
+    << "\\bpass\\b" << "\\braise\\b" << "\\breturn\\b"
+    << "\\btry\\b" << "\\bwhile\\b" << "\\bfor\\b" << "\\bin\\b"
+    << "\\bwith\\b" << "\\byield\\b"
+    << "\\bTrue\\b" << "\\bFalse\\b" << "\\bNone\\b";
+  for (const auto& pattern : keywordPatterns)
+  {
+    rule.pattern = QRegExp(pattern);
+    rule.format = keywordFormat;
+    highlightingRules.append(rule);
+  }
+  classFormat.setFontWeight(QFont::Bold);
+  classFormat.setForeground(Qt::darkMagenta);
+  rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
+  rule.format = classFormat;
+  highlightingRules.append(rule);
 
-quotationFormat.setForeground(Qt::darkGreen);
-rule.pattern = QRegExp("\".*\"");
-rule.format = quotationFormat;
-highlightingRules.append(rule);
+  quotationFormat.setForeground(Qt::darkGreen);
+  rule.pattern = QRegExp("\".*\"");
+  rule.format = quotationFormat;
+  highlightingRules.append(rule);
 
-functionFormat.setFontItalic(true);
-functionFormat.setForeground(Qt::cyan);
-rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
-rule.format = functionFormat;
-highlightingRules.append(rule);
+  functionFormat.setFontItalic(true);
+  functionFormat.setForeground(Qt::cyan);
+  rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
+  rule.format = functionFormat;
+  highlightingRules.append(rule);
 
-singleLineCommentFormat.setForeground(Qt::yellow);
-rule.pattern = QRegExp("#[^\n]*");
-rule.format = singleLineCommentFormat;
-highlightingRules.append(rule);
+  singleLineCommentFormat.setForeground(Qt::yellow);
+  rule.pattern = QRegExp("#[^\n]*");
+  rule.format = singleLineCommentFormat;
+  highlightingRules.append(rule);
 
-multiLineCommentFormat.setForeground(Qt::yellow);
+  multiLineCommentFormat.setForeground(QColor(255,105,180));
 
-commentStartExpression = QRegExp("/\\*");
-commentEndExpression = QRegExp("\\*/");
+  commentStartExpression = QRegExp("/\\*matlab");
+  commentEndExpression = QRegExp("matlab\\*/");
 }
 
 void Highlighter::highlightBlock(const QString &text)
@@ -368,7 +374,7 @@ void Highlighter::highlightBlockParens(const QString &text)
   int leftPos = text.indexOf('(');
   while (leftPos != -1)
   {
-    ParenthesisInfo *info = new ParenthesisInfo;
+    auto info = new ParenthesisInfo;
     info->character = '(';
     info->position = leftPos;
     data->insert(info);
@@ -379,56 +385,64 @@ void Highlighter::highlightBlockParens(const QString &text)
 
 bool CodeEditor::matchLeftParenthesis(QTextBlock currentBlock, int i, int numLeftParentheses)
 {
-    TextBlockData *data = static_cast<TextBlockData *>(currentBlock.userData());
-    QVector<ParenthesisInfo *> infos = data->parentheses();
+  auto data = static_cast<TextBlockData *>(currentBlock.userData());
+  auto infos = data->parentheses();
 
-    int docPos = currentBlock.position();
-    for (; i < infos.size(); ++i) {
-        ParenthesisInfo *info = infos.at(i);
+  int docPos = currentBlock.position();
+  for (; i < infos.size(); ++i) 
+  {
+    auto info = infos.at(i);
 
-        if (info->character == '(') {
-            ++numLeftParentheses;
-            continue;
-        }
-
-        if (info->character == ')' && numLeftParentheses == 0) {
-            createParenthesisSelection(docPos + info->position);
-            return true;
-        } else
-            --numLeftParentheses;
+    if (info->character == '(') 
+    {
+      ++numLeftParentheses;
+      continue;
     }
 
-    currentBlock = currentBlock.next();
-    if (currentBlock.isValid())
-        return matchLeftParenthesis(currentBlock, 0, numLeftParentheses);
+    if (info->character == ')' && numLeftParentheses == 0) 
+    {
+      createParenthesisSelection(docPos + info->position);
+      return true;
+    }
+    else
+      --numLeftParentheses;
+  }
 
-    return false;
+  currentBlock = currentBlock.next();
+  if (currentBlock.isValid())
+    return matchLeftParenthesis(currentBlock, 0, numLeftParentheses);
+
+  return false;
 }
 
 bool CodeEditor::matchRightParenthesis(QTextBlock currentBlock, int i, int numRightParentheses)
 {
-    TextBlockData *data = static_cast<TextBlockData *>(currentBlock.userData());
-    QVector<ParenthesisInfo *> parentheses = data->parentheses();
+  auto data = static_cast<TextBlockData *>(currentBlock.userData());
+  auto parentheses = data->parentheses();
 
-    int docPos = currentBlock.position();
-    for (; i > -1 && parentheses.size() > 0; --i) {
-        ParenthesisInfo *info = parentheses.at(i);
-        if (info->character == ')') {
-            ++numRightParentheses;
-            continue;
-        }
-        if (info->character == '(' && numRightParentheses == 0) {
-            createParenthesisSelection(docPos + info->position);
-            return true;
-        } else
-            --numRightParentheses;
+  int docPos = currentBlock.position();
+  for (; i > -1 && parentheses.size() > 0; --i) 
+  {
+    auto info = parentheses.at(i);
+    if (info->character == ')') 
+    {
+      ++numRightParentheses;
+      continue;
     }
+    if (info->character == '(' && numRightParentheses == 0) 
+    {
+      createParenthesisSelection(docPos + info->position);
+      return true;
+    }
+    else
+      --numRightParentheses;
+  }
 
-    currentBlock = currentBlock.previous();
-    if (currentBlock.isValid())
-        return matchRightParenthesis(currentBlock, 0, numRightParentheses);
+  currentBlock = currentBlock.previous();
+  if (currentBlock.isValid())
+    return matchRightParenthesis(currentBlock, 0, numRightParentheses);
 
-    return false;
+  return false;
 }
 
 TextBlockData::TextBlockData()
@@ -437,16 +451,15 @@ TextBlockData::TextBlockData()
 
 QVector<ParenthesisInfo *> TextBlockData::parentheses()
 {
-    return m_parentheses;
+  return m_parentheses;
 }
 
 
 void TextBlockData::insert(ParenthesisInfo *info)
 {
-    int i = 0;
-    while (i < m_parentheses.size() &&
-        info->position > m_parentheses.at(i)->position)
-        ++i;
+  int i = 0;
+  while (i < m_parentheses.size() && info->position > m_parentheses.at(i)->position)
+    ++i;
 
-    m_parentheses.insert(i, info);
+  m_parentheses.insert(i, info);
 }

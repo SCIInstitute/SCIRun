@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,32 +25,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_ExtractSimpleIsosurfaceDialog_H
-#define INTERFACE_MODULES_ExtractSimpleIsosurfaceDialog_H
+#include <Interface/Modules/Fields/CalculateMeshCenterDialog.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/CalculateMeshCenterAlgo.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 
-#include "Interface/Modules/Fields/ui_ExtractSimpleIsosurface.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun {
-namespace Gui {
-
-class SCISHARE ExtractSimpleIsosurfaceDialog : public ModuleDialogGeneric,
-  public Ui::ExtractSimpleIsosurface
+CalculateMeshCenterDialog::CalculateMeshCenterDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-	Q_OBJECT
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 
-public:
-  ExtractSimpleIsosurfaceDialog(const std::string& name,
-    Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = nullptr);
-protected:
-  virtual void pullSpecial() override;
-protected Q_SLOTS:
-  void sliderChanged();
-};
+  map_.insert(StringPair("Average of Node Locations", "nodeCenter"));
+  map_.insert(StringPair("Average of Element Centers", "elemCenter"));
+  map_.insert(StringPair("Volumeteric Center", "weightedElemCenter"));
+  map_.insert(StringPair("Bounding Box Center","boundingBoxCenter"));
+  map_.insert(StringPair("Middle Index Node","midNodeIndex"));
+  map_.insert(StringPair("Middle Index Element","midElemIndex"));
 
+  addComboBoxManager(method_, Parameters::Method, map_);
 }
-}
 
-#endif
