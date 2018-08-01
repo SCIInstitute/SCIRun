@@ -29,7 +29,7 @@
 #define ALGORITHMS_MATH_CALCULATEMESHCENTERAlgo_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Field/share.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
 namespace Core {
