@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>368</width>
-    <height>488</height>
+    <width>464</width>
+    <height>474</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -101,51 +101,6 @@
        </layout>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QGroupBox" name="groupBox_3">
-       <property name="minimumSize">
-        <size>
-         <width>319</width>
-         <height>100</height>
-        </size>
-       </property>
-       <property name="title">
-        <string>Data At Location</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
-        <item>
-         <widget class="QRadioButton" name="nodes_">
-          <property name="minimumSize">
-           <size>
-            <width>249</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Nodes (linear basis)</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="faces_">
-          <property name="text">
-           <string>Faces (constant basis)</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="none_">
-          <property name="text">
-           <string>None</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
      <item row="1" column="0">
       <widget class="QGroupBox" name="groupBox_2">
        <property name="minimumSize">
@@ -157,76 +112,12 @@
        <property name="title">
         <string>Axis</string>
        </property>
-       <widget class="QRadioButton" name="axisX_">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>30</y>
-          <width>34</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>X</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-       <widget class="QRadioButton" name="axisZ_">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>110</x>
-          <y>30</y>
-          <width>34</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Z</string>
-        </property>
-       </widget>
-       <widget class="QRadioButton" name="axisY_">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>60</x>
-          <y>30</y>
-          <width>34</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Y</string>
-        </property>
-       </widget>
-       <widget class="QRadioButton" name="axisCustom_">
-        <property name="geometry">
-         <rect>
-          <x>170</x>
-          <y>30</y>
-          <width>100</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Custom</string>
-        </property>
-       </widget>
        <widget class="QGroupBox" name="groupBox_4">
         <property name="geometry">
          <rect>
           <x>-1</x>
           <y>48</y>
-          <width>357</width>
+          <width>421</width>
           <height>111</height>
          </rect>
         </property>
@@ -235,15 +126,23 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
          <item row="0" column="3">
-          <widget class="QDoubleSpinBox" name="centerZ_"/>
+          <widget class="QDoubleSpinBox" name="centerZ_">
+           <property name="decimals">
+            <number>3</number>
+           </property>
+          </widget>
          </item>
          <item row="0" column="2">
-          <widget class="QDoubleSpinBox" name="centerY_"/>
+          <widget class="QDoubleSpinBox" name="centerY_">
+           <property name="decimals">
+            <number>3</number>
+           </property>
+          </widget>
          </item>
          <item row="0" column="1">
           <widget class="QDoubleSpinBox" name="centerX_">
            <property name="decimals">
-            <number>2</number>
+            <number>3</number>
            </property>
            <property name="minimum">
             <double>0.000000000000000</double>
@@ -254,7 +153,11 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QDoubleSpinBox" name="normalX_"/>
+          <widget class="QDoubleSpinBox" name="normalX_">
+           <property name="decimals">
+            <number>3</number>
+           </property>
+          </widget>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_6">
@@ -271,18 +174,29 @@
           </widget>
          </item>
          <item row="1" column="2">
-          <widget class="QDoubleSpinBox" name="normalY_"/>
+          <widget class="QDoubleSpinBox" name="normalY_">
+           <property name="decimals">
+            <number>3</number>
+           </property>
+          </widget>
          </item>
          <item row="1" column="3">
-          <widget class="QDoubleSpinBox" name="normalZ_"/>
+          <widget class="QDoubleSpinBox" name="normalZ_">
+           <property name="decimals">
+            <number>3</number>
+           </property>
+          </widget>
          </item>
          <item row="2" column="1">
           <widget class="QDoubleSpinBox" name="position_">
+           <property name="decimals">
+            <number>4</number>
+           </property>
            <property name="minimum">
-            <double>-1.000000000000000</double>
+            <double>-10000.000000000000000</double>
            </property>
            <property name="maximum">
-            <double>1.000000000000000</double>
+            <double>10000.000000000000000</double>
            </property>
            <property name="singleStep">
             <double>0.100000000000000</double>
@@ -298,6 +212,74 @@
          </item>
         </layout>
        </widget>
+       <widget class="QComboBox" name="axis_">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>104</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <item>
+         <property name="text">
+          <string>X</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Y</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Z</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Custom</string>
+         </property>
+        </item>
+       </widget>
+       <widget class="QComboBox" name="dataLocation_">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>180</y>
+          <width>161</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <item>
+         <property name="text">
+          <string>Nodes(linear basis)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Faces(constant basis)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>None</string>
+         </property>
+        </item>
+       </widget>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>160</y>
+          <width>141</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Data At Location</string>
+        </property>
+       </widget>
       </widget>
      </item>
     </layout>
@@ -308,10 +290,6 @@
   <tabstop>width_</tabstop>
   <tabstop>height_</tabstop>
   <tabstop>padPercentageSpinBox_</tabstop>
-  <tabstop>axisX_</tabstop>
-  <tabstop>axisZ_</tabstop>
-  <tabstop>nodes_</tabstop>
-  <tabstop>faces_</tabstop>
  </tabstops>
  <resources/>
  <connections/>
