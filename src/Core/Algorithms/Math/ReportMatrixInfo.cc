@@ -53,9 +53,9 @@ ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::runImpl(const Inpu
   MaximumCoefficient<double> max;
   input->accept(max);
 
-  return Outputs(type, 
-    input->nrows(), 
-    input->ncols(), 
+  return Outputs(type,
+    input->nrows(),
+    input->ncols(),
     num.value(),
     min.value(),
     max.value()
@@ -69,7 +69,7 @@ AlgorithmOutput ReportMatrixInfoAlgorithm::run(const AlgorithmInput& input) cons
   auto outputs = runImpl(matrix);
 
   AlgorithmOutput output;
-  output.setTransient(outputs); 
+  output.setTransient(outputs);
   return output;
 }
 
