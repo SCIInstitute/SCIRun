@@ -299,9 +299,15 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithLotsOfState)
   auto networkFile = load("lotsOfState.srn");
   ASSERT_TRUE(networkFile != nullptr);
 
-  EXPECT_EQ(4, networkFile->network.modules.size());
+  EXPECT_EQ(7, networkFile->network.modules.size());
 
   auto mod = networkFile->network.modules.begin();
+  EXPECT_EQ("CalculateFieldData:0", mod->first);
+  EXPECT_EQ("RESULT = abs(DATA);\n", mod->second.state.getValue(Name("FunctionString")).toString());
+  EXPECT_EQ("Scalar", mod->second.state.getValue(Name("FormatString")).toString());
+  ++mod;
+  EXPECT_EQ("CreateStandardColorMap:0", mod->first);
+  ++mod;
   EXPECT_EQ("GetDomainBoundary:0", mod->first);
   EXPECT_EQ(0, mod->second.state.getValue(Name("UseRange")).toInt());
   EXPECT_EQ(0.0, mod->second.state.getValue(Name("MinRange")).toDouble());
@@ -313,9 +319,9 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithLotsOfState)
   EXPECT_EQ(0, mod->second.state.getValue(Name("DisconnectBoundaries")).toInt()); 
   ++mod;
   EXPECT_EQ("ReadField:0", mod->first);
-  EXPECT_EQ("SCIRunData_4/utahtorso/utahtorso-blood.ts.fld", mod->second.state.getValue(Name("filename")).toString());
-  EXPECT_EQ("", mod->second.state.getValue(Name("from-env")).toString());
-  EXPECT_EQ("SCIRun Field File (*.fld)", mod->second.state.getValue(Name("filetype")).toString());
+  EXPECT_EQ("SCIRunData_4/utahtorso/utahtorso-blood.ts.fld", mod->second.state.getValue(Name("Filename")).toString());
+  EXPECT_EQ("", mod->second.state.getValue(Name("ScriptEnvironmentVariable")).toString());
+  EXPECT_EQ("SCIRun Field File (*.fld)", mod->second.state.getValue(Name("FileTypeName")).toString());
   EXPECT_EQ("utahtorso-blood.ts.fld", mod->second.state.getValue(Name("filename_base")).toString());
   EXPECT_EQ(0, mod->second.state.getValue(Name("number_in_series")).toInt());
   EXPECT_EQ(2, mod->second.state.getValue(Name("delay")).toInt());
@@ -327,6 +333,8 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithLotsOfState)
   EXPECT_EQ(1.0, mod->second.state.getValue(Name("FixedMax")).toDouble());
   ++mod;
   EXPECT_EQ("ShowField:0", mod->first);
+  ++mod;
+  EXPECT_EQ("ViewScene:0", mod->first);
 }
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotes)

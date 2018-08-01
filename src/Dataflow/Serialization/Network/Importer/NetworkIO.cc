@@ -345,7 +345,7 @@ const std::string &val)
   auto moduleNameMapIter = nameAndValLookup_.find(moduleName);
   if (moduleNameMapIter == nameAndValLookup_.end())
   {
-    simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
+    simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << std::endl;
     return;
   }
   auto varNameIter = moduleNameMapIter->second.find(var);
@@ -354,8 +354,7 @@ const std::string &val)
     simpleLog_ << "VAR TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
     return;
   }
-  else
-    simpleLog_ << "VAR IMPLEMENTED: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
+
   std::string stripBraces(val.begin() + 1, val.end() - 1);
   stateXML.setValue(varNameIter->second.first, varNameIter->second.second(stripBraces));
 }
@@ -420,7 +419,7 @@ LegacyNetworkIO::read_importer_map(const std::string& file)
   return temp;
 }
 
-NameAndValLookup LegacyNetworkIO::nameAndValLookup_ = read_importer_map("./LegacyModuleImporter.xml");
+NameAndValLookup LegacyNetworkIO::nameAndValLookup_ = read_importer_map("../../src/Resources/LegacyModuleImporter.xml");
 
 #if 0
 void
