@@ -92,21 +92,17 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
   
   std::vector<std::set<int>> elemsOfVert;
   std::vector<std::set<int>> elemNeighbors;
-  std::vector<std::vector<int>> elem;
   std::set<int> dummy;
-  std::vector<int> tempVec;
-  
-  for(i=0;i<3;i++)
-    tempVec.push_back(0);
-  
+  std::vector<int> tempVec={0,0,0};
+  std::vector<std::vector<int>> elem(m, tempVec);
+  const int d=3;
+
   //intialize vector of vectors
-  for(i=0;i<m;i++)
-    elem.push_back(tempVec);
   
   VMesh::Face::iterator meshFaceIter;
   VMesh::Face::iterator meshFaceEnd;
   
-  VMesh::Node::array_type nodesFromFace(3);
+  VMesh::Node::array_type nodesFromFace(iter);
   
   inputVMesh->synchronize(Mesh::ALL_ELEMENTS_E);
   
@@ -118,7 +114,7 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
     VMesh::Face::index_type elemID=*meshFaceIter;
     inputVMesh->get_nodes(nodesFromFace, elemID);
     
-    for(i=0;i<3;i++)
+    for(i=0;i<d;i++)
       elem[elemID][i]=nodesFromFace[i];
   }
   
@@ -131,7 +127,7 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
   //get elements
   for(i=0;i<m;i++)
   {
-    for(j=0;j<3;j++)
+    for(j=0;j<d;j++)
       elemsOfVert[elem[i][j]].insert(i);
   }
   
@@ -139,9 +135,9 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
   //create graph
   for(i=0;i<m;i++)
   {
-    for(j=0;j<3;j++)
+    for(j=0;j<d;j++)
     {
-      k = (j+1)%3;
+      k = (j+1)%d;
       std::set<int>::iterator it;
       for (it = elemsOfVert[elem[i][j]].begin(); it != elemsOfVert[elem[i][j]].end(); it++)
       {
@@ -158,10 +154,8 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
   }
     
     //traverse graph
-    std::vector<bool> elemTraversed;
-    for(i=0;i<m;i++)
-      elemTraversed.push_back(false);
-    
+    std::vector<bool> elemTraversed(m, false);
+  
     std::queue<int> bfs;
     bfs.push(0);
     elemTraversed[0]=true;
@@ -187,9 +181,9 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
     }
     //reordered elem i if desired
     bool flag=false;
-    for (j = 0; j < 3 && flag == false; j++)
+    for (j = 0; j < d && flag == false; j++)
     {
-      k = (j+1)%3;
+      k = (j+1)%d;
       if (edges.find(std::make_pair(elem[i][j], elem[i][k])) != edges.end())
       {
         invertedElements.push_back(i);
@@ -202,9 +196,9 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
         nodesFromFace[k] = elem[i][k];
       }
     }
-    for (j = 0; j < 3; j++)
+    for (j = 0; j < d; j++)
     {
-      k=(j+1)%3;
+      k=(j+1)%d;
       edges.insert(std::make_pair(elem[i][j], elem[i][k]));
     }
     outputVMesh->add_elem(nodesFromFace);
@@ -236,7 +230,7 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
   {
     std::ostringstream oss;
     oss << invertedElements.size() << "elements were found to be incorrectly oriented in input TriSurf mesh.";
-    warning(oss.str());
+    remark(oss.str());
     
     if (get(Parameters::invertedElementsCheckBox).toBool())
     {
