@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CreateImage",
+    "namespace": "Fields",
+    "status": "new module",
+    "description": "Makes an image field",
+    "header": "Modules/Legacy/Fields/CreateImage.h"
+  },
+  "algorithm": {
+    "name": "CreateImageAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/CreateMesh/CreateImageAlgo.h"
+  },
+  "UI": {
+    "name": "CreateImageDialog",
+    "header": "Interface/Modules/Fields/CreateImageDialog.h"
+  }
+}
