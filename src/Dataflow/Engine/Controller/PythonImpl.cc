@@ -127,7 +127,7 @@ namespace
 
   private:
     SparseRowMatrixHandle underlying_;
-    boost::python::list pyMat_;
+    boost::python::dict pyMat_;
   };
 
   class PyDatatypeField : public PyDatatype
