@@ -84,6 +84,11 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
     
+    if(omesh->num_nodes()==0)
+    {
+      warning("No. of nodes equal to zero! Empty matrix will get generated");
+    }
+    
     AlgorithmOutput outputField;
     outputField[Variables::OutputField] = output;
     return outputField;
@@ -102,6 +107,11 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
 
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
+    
+    if(omesh->num_nodes()==0)
+    {
+      warning("No. of nodes equal to zero! Empty matrix will get generated");
+    }
     
     AlgorithmOutput outputField;
     outputField[Variables::OutputField] = output;
@@ -122,6 +132,11 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
     
+    if(omesh->num_nodes()==0)
+    {
+      warning("No. of nodes equal to zero! Empty matrix will get generated");
+    }
+    
     AlgorithmOutput outputField;
     outputField[Variables::OutputField] = output;
     return outputField;
@@ -141,6 +156,11 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
     
+    if(omesh->num_nodes()==0)
+    {
+      warning("No. of nodes equal to zero! Empty matrix will get generated");
+    }
+    
     AlgorithmOutput outputField;
     outputField[Variables::OutputField] = output;
     return outputField;
@@ -156,9 +176,13 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
       imesh->get_center(p,idx);
       omesh->add_node(p);
     }
-
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
+    
+    if(omesh->num_nodes()==0)
+    {
+      warning("No. of nodes equal to zero! Empty matrix will get generated");
+    }
     
     AlgorithmOutput outputField;
     outputField[Variables::OutputField] = output;
@@ -175,6 +199,11 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
       Point p;
       imesh->get_center(p,idx);
       omesh->add_node(p);
+    }
+    
+    if(omesh->num_nodes()==0)
+    {
+      warning("No. of nodes equal to zero! Empty matrix will get generated");
     }
 
     output = CreateField(fo,mesh);
