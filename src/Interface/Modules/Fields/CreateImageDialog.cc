@@ -43,7 +43,9 @@ CreateImageDialog::CreateImageDialog(const std::string& name, ModuleStateHandle 
   addSpinBoxManager(width_, Parameters::Width);
   addSpinBoxManager(height_, Parameters::Height);
   addDoubleSpinBoxManager(padPercentageSpinBox_, Parameters::PadPercent);
-
+  
+  addCheckableButtonManager({mannual_,auto_}, Parameters::Mode);
+  
   addComboBoxManager(axis_, Parameters::Axis);
   
   addSpinBoxManager(centerX_, Parameters::CenterX);

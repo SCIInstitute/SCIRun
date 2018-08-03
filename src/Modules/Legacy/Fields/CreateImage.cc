@@ -52,6 +52,8 @@ void CreateLatVol::setStateDefaults()
   setStateIntFromAlgo(Parameters::Height);
   setStateDoubleFromAlgo(Parameters::PadPercent);
   
+  setStateIntFromAlgo(Parameters::Mode);
+  
   setStateStringFromAlgoOtpion(Parameters::Axis);
   
   setStateDoubleFromAlgo(Parameters::CenterX);
@@ -78,6 +80,8 @@ void CreateImage::execute()
     setAlgoIntFromState(Parameters::Width);
     setAlgoIntFromState(Parameters::Height);
     setAlgoDoubleFromState(Parameters::PadPercent);
+    
+    setAlgoIntFromState(Parameters::Mode);
     
     setAlgoOptionsFromState(Parameters::Axis);
     
