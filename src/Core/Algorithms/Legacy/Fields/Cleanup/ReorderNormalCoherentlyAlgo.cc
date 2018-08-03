@@ -102,7 +102,7 @@ void ReorderNormalCoherentlyAlgo::runImpl(FieldHandle inputField, FieldHandle& o
   VMesh::Face::iterator meshFaceIter;
   VMesh::Face::iterator meshFaceEnd;
   
-  VMesh::Node::array_type nodesFromFace(iter);
+  VMesh::Node::array_type nodesFromFace(noOfV);
   
   inputVMesh->synchronize(Mesh::ALL_ELEMENTS_E);
   
