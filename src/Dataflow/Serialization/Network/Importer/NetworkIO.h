@@ -178,6 +178,8 @@ namespace Networks {
     static NameAndValLookup read_importer_map(const std::string& file);
     static const std::map<std::string, std::string> moduleRenameMap_;
     static NameAndValLookup nameAndValLookup_;
+    static std::unique_ptr<std::string> v4MergeStateToV5_;
+    static ValueConverter addFirst, appendOthers;
   };
 
 }}} // end namespace SCIRun

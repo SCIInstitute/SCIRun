@@ -380,12 +380,26 @@ namespace
   };
 
   ValueConverter throwAway = [](const std::string& s) { return 0; };
-  ValueConverter negateBool = [](const std::string&s)
+  ValueConverter negateBool = [](const std::string& s)
   {
     if (s == "1") return 0;
     return 1;
   };
 }
+
+std::unique_ptr<std::string> LegacyNetworkIO::v4MergeStateToV5_ = std::unique_ptr<std::string>(new std::string(""));
+
+ValueConverter LegacyNetworkIO::addFirst = [](const std::string& s)
+{
+  v4MergeStateToV5_ = std::unique_ptr<std::string>(new std::string(s));
+  return s;
+};
+
+ValueConverter LegacyNetworkIO::appendOthers = [](const std::string& s)
+{
+  *v4MergeStateToV5_ += "," + s;
+  return *v4MergeStateToV5_;
+};
 
 NameAndValLookup
 LegacyNetworkIO::read_importer_map(const std::string& file)
@@ -399,7 +413,9 @@ LegacyNetworkIO::read_importer_map(const std::string& file)
     {"element_size", element_size},
     {"throwAway", throwAway},
     {"toString", toString},
-    {"negateBool", negateBool}
+    {"negateBool", negateBool},
+    {"addFirst", addFirst},
+    {"appendOthers", appendOthers}
   };
   using boost::property_tree::ptree;
   using boost::property_tree::read_xml;
