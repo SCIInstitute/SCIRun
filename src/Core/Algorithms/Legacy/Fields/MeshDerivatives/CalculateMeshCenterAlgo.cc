@@ -53,24 +53,24 @@ AlgorithmOutput CalculateMeshCenterAlgo::run(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(Variables::InputField);
   FieldHandle output;
-  
+
   //pull parameter from UI
   std::string method=getOption(Parameters::Method);
-  
-  
+
+
   //Safety Check
   if(!inputField)
   {
     THROW_ALGORITHM_INPUT_ERROR("No input field");
   }
-  
+
   // Get the information of the input field
   FieldInformation fo(inputField);
   fo.make_pointcloudmesh();
   fo.make_nodata();
-  
+
   VMesh* imesh=inputField->vmesh();
-  
+
   if(imesh->num_nodes()==0)
   {
     warning("Input field does contain any nodes, output will be an empty field");
@@ -79,9 +79,9 @@ AlgorithmOutput CalculateMeshCenterAlgo::run(const AlgorithmInput& input) const
     result[Variables::OutputField] = output ;
     return result;
   }
-  
+
   Point center(0.0,0.0,0.0);
-  
+
   if(method=="nodeCenter")
   {
     Point c(0.0,0.0,0.0);
@@ -119,7 +119,7 @@ AlgorithmOutput CalculateMeshCenterAlgo::run(const AlgorithmInput& input) const
     {
       Point p;
       imesh->get_center(p,idx);
-      weight=abs(imesh->get_size(idx));
+      weight=fabs(imesh->get_size(idx));
       size+=weight;
       c=Point(c+weight*p);
     }
@@ -140,11 +140,11 @@ AlgorithmOutput CalculateMeshCenterAlgo::run(const AlgorithmInput& input) const
     VMesh::Elem::index_type midIdx=(imesh->num_elems()>>1);
     imesh->get_center(center,midIdx);
   }
-  
+
   output=CreateField(fo);
   output->vmesh()->add_point(center);
   output->vfield()->resize_values();
-  
+
   AlgorithmOutput result;
   result[Variables::OutputField] = output ;
   return result;
