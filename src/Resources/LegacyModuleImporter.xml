@@ -343,32 +343,32 @@
       <to>CylinderResolution</to>
     </key>
     <key>
-      <type>addFirst</type>
+      <type>initState</type>
       <from>text_color-r</from>
       <to>DefaultTextColor</to>
     </key>
     <key>
-      <type>appendOthers</type>
+      <type>appendState</type>
       <from>text_color-g</from>
       <to>DefaultTextColor</to>
     </key>
     <key>
-      <type>appendOthers</type>
+      <type>appendState</type>
       <from>text_color-b</from>
       <to>DefaultTextColor</to>
     </key>
     <key>
-      <type>addFirst</type>
+      <type>initState</type>
       <from>def_color-r</from>
       <to>DefaultMeshColor</to>
     </key>
     <key>
-      <type>appendOthers</type>
+      <type>appendState</type>
       <from>def_color-g</from>
       <to>DefaultMeshColor</to>
     </key>
     <key>
-      <type>appendOthers</type>
+      <type>appendState</type>
       <from>def_color-b</from>
       <to>DefaultMeshColor</to>
     </key>
@@ -455,17 +455,17 @@
       <to>TensorsResolution</to>
     </key>
     <key>
-      <type>addFirst</type>
+      <type>initState</type>
       <from>def_color-r</from>
       <to>DefaultMeshColor</to>
     </key>
     <key>
-      <type>appendOthers</type>
+      <type>appendState</type>
       <from>def_color-g</from>
       <to>DefaultMeshColor</to>
     </key>
     <key>
-      <type>appendOthers</type>
+      <type>appendState</type>
       <from>def_color-b</from>
       <to>DefaultMeshColor</to>
     </key>
@@ -487,7 +487,7 @@
       <to>DefaultValue</to>
     </key>
     <key>
-      <type>addFirst</type>
+      <type>initState</type>
       <from>interpolation_basis</from>
       <to>MappingMethod</to>
     </key>
@@ -527,6 +527,36 @@
     </key>
   </module>
   <module name="EditMeshBoundingBox">
+    <key>
+      <type>toString</type>
+      <from>inputcenterx</from>
+      <to>InputCenterX</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>inputcentery</from>
+      <to>InputCenterY</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>inputcenterz</from>
+      <to>InputCenterZ</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>inputsizex</from>
+      <to>InputSizeX</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>inputsizey</from>
+      <to>InputSizeY</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>inputsizez</from>
+      <to>InputSizeZ</to>
+    </key>
     <key>
       <type>toDouble</type>
       <from>outputcenterx</from>
@@ -596,6 +626,99 @@
       <type>negateBool</type>
       <from>useoutputsize</from>
       <to>ResetSize</to>
+    </key>
+    <key>
+      <type>throwAway</type>
+      <from>ui_geometry</from>
+      <to>ui_geometry</to>
+    </key>
+  </module>
+  <module name="CreateFieldData">
+    <key>
+      <type>toString</type>
+      <from>function</from>
+      <to>FunctionString</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>format</from>
+      <to>FormatString</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>basis</from>
+      <to>BasisString</to>
+    </key>
+    <key>
+      <type>throwAway</type>
+      <from>ui_geometry</from>
+      <to>ui_geometry</to>
+    </key>
+  </module>
+  <module name="ConvertFieldBasis">
+    <key>
+      <type>toString</type>
+      <from>outputbasis</from>
+      <to>OutputType</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>inputbasis</from>
+      <to>InputType</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>fldname</from>
+      <to>InputFieldName</to>
+    </key>
+    <key>
+      <type>throwAway</type>
+      <from>ui_geometry</from>
+      <to>ui_geometry</to>
+    </key>
+  </module>
+  <module name="BuildMappingMatrix">
+    <key>
+      <type>toDouble</type>
+      <from>exhaustive_search_max_dist</from>
+      <to>MaxDistance</to>
+    </key>
+    <key>
+      <type>toDouble</type>
+      <from>default-value</from>
+      <to>DefaultValue</to>
+    </key>
+    <key>
+      <type>initState</type>
+      <from>interpolation_basis</from>
+      <to>MappingMethod</to>
+    </key>
+    <key>
+      <type>useState</type>
+      <from>map_source_to_single_dest</from>
+      <to>MappingMethod</to>
+    </key>
+    <key>
+      <type>throwAway</type>
+      <from>ui_geometry</from>
+      <to>ui_geometry</to>
+    </key>
+  </module>
+  <module name="RefineMesh">
+    <key>
+      <type>toString</type>
+      <from>select</from>
+      <to>AddConstraints</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>method</from>
+      <to>RefineMethod</to>
+    </key>
+    <key>
+      <type>toDouble</type>
+      <from>isoval</from>
+      <to>IsoValue</to>
     </key>
     <key>
       <type>throwAway</type>

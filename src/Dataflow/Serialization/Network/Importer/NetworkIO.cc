@@ -389,13 +389,13 @@ namespace
 
 std::unique_ptr<std::string> LegacyNetworkIO::v4MergeStateToV5_ = std::unique_ptr<std::string>(new std::string(""));
 
-ValueConverter LegacyNetworkIO::addFirst = [](const std::string& s)
+ValueConverter LegacyNetworkIO::initState = [](const std::string& s)
 {
   v4MergeStateToV5_ = std::unique_ptr<std::string>(new std::string(s));
   return s;
 };
 
-ValueConverter LegacyNetworkIO::appendOthers = [](const std::string& s)
+ValueConverter LegacyNetworkIO::appendState = [](const std::string& s)
 {
   *v4MergeStateToV5_ += "," + s;
   return *v4MergeStateToV5_;
@@ -423,8 +423,8 @@ LegacyNetworkIO::read_importer_map(const std::string& file)
     {"throwAway", throwAway},
     {"toString", toString},
     {"negateBool", negateBool},
-    {"addFirst", addFirst},
-    {"appendOthers", appendOthers},
+    {"initState", initState},
+    {"appendState", appendState},
     {"useState", useState}
   };
   using boost::property_tree::ptree;
