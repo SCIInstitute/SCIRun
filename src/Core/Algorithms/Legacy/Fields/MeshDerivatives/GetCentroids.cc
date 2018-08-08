@@ -59,6 +59,9 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
   }
   
   /// Get the information of the input field
+  
+  remark("Input taken correctly");
+  
   FieldInformation fo(inputField);
   fo.make_pointcloudmesh();
   fo.make_nodata();
@@ -68,8 +71,13 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
     
   VMesh* imesh = inputField->vmesh();
   MeshHandle mesh = CreateMesh(fo);
+  //MeshHandle mesh=&mesh1;
   VMesh* omesh = mesh->vmesh();
-      
+  
+  remark("Output fo set");
+  
+  AlgorithmOutput outputField;
+  
   if (centroids=="Element")
   {
     VField::size_type num_elems = imesh->num_elems();
@@ -88,13 +96,10 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
     {
       warning("No. of nodes equal to zero! Empty matrix will get generated");
     }
-    
-    AlgorithmOutput outputField;
-    outputField[Variables::OutputField] = output;
-    return outputField;
+    remark("Element done successfuly");
   }
-
-  if (centroids=="Node")
+  
+  else if (centroids=="Node")
   {
     VMesh::size_type num_nodes = imesh->num_nodes();
     omesh->reserve_nodes(num_nodes);
@@ -112,14 +117,13 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
     {
       warning("No. of nodes equal to zero! Empty matrix will get generated");
     }
-    
-    AlgorithmOutput outputField;
-    outputField[Variables::OutputField] = output;
-    return outputField;
+    remark("Node done successfuly");
   }
 
-  if (centroids=="Edge")
+  else if (centroids=="Edge")
   {
+    remark("Entered EDGe");
+
     VMesh::size_type num_edges = imesh->num_edges();
     omesh->reserve_nodes(num_edges);
     for (VMesh::Edge::index_type idx=0; idx < num_edges; idx++)
@@ -128,7 +132,9 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
       imesh->get_center(p,idx);
       omesh->add_node(p);
     }
-
+    
+    remark("Assigning to o/p");
+    
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
     
@@ -136,16 +142,17 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
     {
       warning("No. of nodes equal to zero! Empty matrix will get generated");
     }
-    
-    AlgorithmOutput outputField;
-    outputField[Variables::OutputField] = output;
-    return outputField;
+    remark("Edge done successfuly");
   }
 
-  if (centroids=="Face")
+  else if (centroids=="Face")
   {
+    remark("Entered Face");
+    remark("once more");
     VMesh::size_type num_faces = imesh->num_faces();
+    remark("in between");
     omesh->reserve_nodes(num_faces);
+    remark("Before for loop");
     for (VMesh::Face::index_type idx=0; idx < num_faces; idx++)
     {
       Point p;
@@ -156,17 +163,15 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
     
+    
     if(omesh->num_nodes()==0)
     {
       warning("No. of nodes equal to zero! Empty matrix will get generated");
     }
-    
-    AlgorithmOutput outputField;
-    outputField[Variables::OutputField] = output;
-    return outputField;
+    remark("Face done successfuly");
   }
 
-  if (centroids=="Cell")
+  else if (centroids=="Cell")
   {
     VMesh::size_type num_cells = imesh->num_cells();
     omesh->reserve_nodes(num_cells);
@@ -183,17 +188,18 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
     {
       warning("No. of nodes equal to zero! Empty matrix will get generated");
     }
-    
-    AlgorithmOutput outputField;
-    outputField[Variables::OutputField] = output;
-    return outputField;
+    remark("Cell done successfuly");
   }
 
 
-  if (centroids=="DElement")
+  else if (centroids=="DElement")
   {
+    remark("Entered DElem");
+    
     VMesh::size_type num_delems = imesh->num_delems();
+    remark("inbetween");
     omesh->reserve_nodes(num_delems);
+    
     for (VMesh::DElem::index_type idx=0; idx < num_delems; idx++)
     {
       Point p;
@@ -201,18 +207,19 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
       omesh->add_node(p);
     }
     
+    output = CreateField(fo,mesh);
+    output->vfield()->resize_values();
+    
+    
+    
     if(omesh->num_nodes()==0)
     {
       warning("No. of nodes equal to zero! Empty matrix will get generated");
     }
-
-    output = CreateField(fo,mesh);
-    output->vfield()->resize_values();
+    remark("DElem successfully");
     
-    AlgorithmOutput outputField;
-    outputField[Variables::OutputField] = output;
-    return outputField;
   }
-  AlgorithmOutput outputField;
-  return outputField; // nothing done
+  outputField[Variables::OutputField] = output;
+  return outputField;
+
 }
