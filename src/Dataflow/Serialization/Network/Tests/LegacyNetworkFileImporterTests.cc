@@ -339,6 +339,30 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithLotsOfState)
   EXPECT_EQ("ViewScene:0", mod->first);
 }
 
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithMapFieldDataFromSourceToDestinationState)
+{
+  auto networkFile = load("MapFieldDataFromSourceToDestination.srn");
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(3, networkFile->network.modules.size());
+
+  auto mod = networkFile->network.modules.begin();
+  EXPECT_EQ("MapFieldDataFromSourceToDestination:0", mod->first);
+  EXPECT_EQ(0.0, mod->second.state.getValue(Name("DefaultValue")).toDouble());
+  EXPECT_EQ(-1.0, mod->second.state.getValue(Name("MaxDistance")).toDouble());
+  EXPECT_EQ("interpolateddata", mod->second.state.getValue(Name("MappingMethod")).toString());
+  ++mod;
+  EXPECT_EQ("MapFieldDataFromSourceToDestination:1", mod->first);
+  EXPECT_EQ(0.0, mod->second.state.getValue(Name("DefaultValue")).toDouble());
+  EXPECT_EQ(-1.0, mod->second.state.getValue(Name("MaxDistance")).toDouble());
+  EXPECT_EQ("singledestination", mod->second.state.getValue(Name("MappingMethod")).toString());
+  ++mod;
+  EXPECT_EQ("MapFieldDataFromSourceToDestination:2", mod->first);
+  EXPECT_EQ(0.0, mod->second.state.getValue(Name("DefaultValue")).toDouble());
+  EXPECT_EQ(-1.0, mod->second.state.getValue(Name("MaxDistance")).toDouble());
+  EXPECT_EQ("closestdata", mod->second.state.getValue(Name("MappingMethod")).toString());
+}
+
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotes)
 {
   auto networkFile = load("notes.srn");

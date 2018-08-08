@@ -179,7 +179,7 @@ namespace Networks {
     static const std::map<std::string, std::string> moduleRenameMap_;
     static NameAndValLookup nameAndValLookup_;
     static std::unique_ptr<std::string> v4MergeStateToV5_;
-    static ValueConverter addFirst, appendOthers;
+    static ValueConverter addFirst, appendOthers, useState;
   };
 
 }}} // end namespace SCIRun

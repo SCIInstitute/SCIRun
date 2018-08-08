@@ -401,6 +401,15 @@ ValueConverter LegacyNetworkIO::appendOthers = [](const std::string& s)
   return *v4MergeStateToV5_;
 };
 
+ValueConverter LegacyNetworkIO::useState = [](const std::string& s)
+{
+  if(*v4MergeStateToV5_ == "linear")
+    return std::string("interpolateddata");
+  if(std::stoi(s) == 1)
+    return std::string("singledestination");
+  return std::string("closestdata");
+};
+
 NameAndValLookup
 LegacyNetworkIO::read_importer_map(const std::string& file)
 {
@@ -415,7 +424,8 @@ LegacyNetworkIO::read_importer_map(const std::string& file)
     {"toString", toString},
     {"negateBool", negateBool},
     {"addFirst", addFirst},
-    {"appendOthers", appendOthers}
+    {"appendOthers", appendOthers},
+    {"useState", useState}
   };
   using boost::property_tree::ptree;
   using boost::property_tree::read_xml;
