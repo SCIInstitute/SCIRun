@@ -28,111 +28,6 @@
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0">
-      <widget class="QGroupBox" name="groupBox">
-       <property name="minimumSize">
-        <size>
-         <width>319</width>
-         <height>159</height>
-        </size>
-       </property>
-       <property name="title">
-        <string>Mesh Size</string>
-       </property>
-       <widget class="QRadioButton" name="manual_">
-        <property name="geometry">
-         <rect>
-          <x>290</x>
-          <y>60</y>
-          <width>106</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Manual Size</string>
-        </property>
-       </widget>
-       <widget class="QRadioButton" name="auto_">
-        <property name="geometry">
-         <rect>
-          <x>290</x>
-          <y>100</y>
-          <width>83</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Auto Size</string>
-        </property>
-       </widget>
-       <widget class="QWidget" name="">
-        <property name="geometry">
-         <rect>
-          <x>15</x>
-          <y>52</y>
-          <width>261</width>
-          <height>141</height>
-         </rect>
-        </property>
-        <layout class="QGridLayout" name="gridLayout">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Width</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QSpinBox" name="width_">
-           <property name="minimum">
-            <number>2</number>
-           </property>
-           <property name="maximum">
-            <number>1000</number>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>Height</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QSpinBox" name="height_">
-           <property name="minimum">
-            <number>2</number>
-           </property>
-           <property name="maximum">
-            <number>1000</number>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_4">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="text">
-            <string>Pad Percentage</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QDoubleSpinBox" name="padPercentageSpinBox_">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="decimals">
-            <number>5</number>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </widget>
-     </item>
      <item row="1" column="0">
       <widget class="QGroupBox" name="groupBox_2">
        <property name="minimumSize">
@@ -157,7 +52,7 @@
          <string/>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
-         <item row="0" column="3">
+         <item row="0" column="4">
           <widget class="QDoubleSpinBox" name="centerZ_">
            <property name="decimals">
             <number>3</number>
@@ -212,7 +107,7 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="3">
+         <item row="1" column="4">
           <widget class="QDoubleSpinBox" name="normalZ_">
            <property name="decimals">
             <number>3</number>
@@ -239,6 +134,16 @@
           <widget class="QLabel" name="label_7">
            <property name="text">
             <string>Position</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="4">
+          <widget class="QSpinBox" name="index_"/>
+         </item>
+         <item row="2" column="2">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>           Index</string>
            </property>
           </widget>
          </item>
@@ -310,6 +215,118 @@
         </property>
         <property name="text">
          <string>Data At Location</string>
+        </property>
+       </widget>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QGroupBox" name="groupBox">
+       <property name="minimumSize">
+        <size>
+         <width>319</width>
+         <height>159</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>Mesh Size</string>
+       </property>
+       <widget class="QWidget" name="layoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>15</x>
+          <y>52</y>
+          <width>261</width>
+          <height>141</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Width</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QSpinBox" name="width_">
+           <property name="minimum">
+            <number>2</number>
+           </property>
+           <property name="maximum">
+            <number>1000</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Height</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QSpinBox" name="height_">
+           <property name="minimum">
+            <number>2</number>
+           </property>
+           <property name="maximum">
+            <number>1000</number>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>Pad Percentage</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QDoubleSpinBox" name="padPercentageSpinBox_">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="decimals">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QComboBox" name="mode_">
+        <property name="geometry">
+         <rect>
+          <x>290</x>
+          <y>100</y>
+          <width>104</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <item>
+         <property name="text">
+          <string>Manual</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Auto</string>
+         </property>
+        </item>
+       </widget>
+       <widget class="QLabel" name="modeLabel">
+        <property name="geometry">
+         <rect>
+          <x>310</x>
+          <y>80</y>
+          <width>60</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>   Mode</string>
         </property>
        </widget>
       </widget>

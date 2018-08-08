@@ -44,7 +44,7 @@ CreateImageDialog::CreateImageDialog(const std::string& name, ModuleStateHandle 
   addSpinBoxManager(height_, Parameters::Height);
   addDoubleSpinBoxManager(padPercentageSpinBox_, Parameters::PadPercent);
   
-  addCheckableButtonManager({mannual_,auto_}, Parameters::Mode);
+  addComboBoxManager(mode_, Parameters::Mode);
   
   addComboBoxManager(axis_, Parameters::Axis);
   
@@ -57,6 +57,17 @@ CreateImageDialog::CreateImageDialog(const std::string& name, ModuleStateHandle 
   addSpinBoxManager(normalZ_, Parameters::NormalZ);
   
   addSpinBoxManager(position_, Parameters::Position);
+  connect(mode_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
   
   addComboBoxManager(dataLocation_, Parameters::DataLocation);
+}
+
+void CreateImageDialog::enableWidgets(const QString& mode)
+{
+  index_->setReadOnly(mode!="Auto");
+}
+
+void CreateImageDialog::pullSpecial()
+{
+  enableWidgets(QString::fromStdString(state_->getValue(Parameters::Mode).toString()));
 }

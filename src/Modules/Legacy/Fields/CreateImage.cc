@@ -26,12 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/CreateImage.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/CreateMesh/CreateImageAlgo.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
@@ -41,13 +44,14 @@ MODULE_INFO_DEF(CreateImage, NewField, SCIRun)
 CreateImage::CreateImage() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(SizeMatrix)
+  INITIALIZE_PORT(SizeMatrix);
   INITIALIZE_PORT(OVMatrix);
   INITIALIZE_PORT(OutputField);
 }
 
 void CreateLatVol::setStateDefaults()
 {
+  auto state=get_state();
   setStateIntFromAlgo(Parameters::Width);
   setStateIntFromAlgo(Parameters::Height);
   setStateDoubleFromAlgo(Parameters::PadPercent);
@@ -97,7 +101,7 @@ void CreateImage::execute()
     
     setAlgoOptionsFromState(Parameters::DataLocation);
     
-    auto output=algo.run(withInputData((InputField, inputField)(SizeMatrix,sizeMatrix)(OVMatrix, oVMatrix)));
+    auto output=algo.run(withInputData((InputField, optionalAlgoInput(inputField))(SizeMatrix,optionalAlgoInput(sizeMatrix))(OVMatrix, optionalAlgoInput(oVMatrix))));
     
     sendOutputFromAlgorihtm(OutputField, output);
   }

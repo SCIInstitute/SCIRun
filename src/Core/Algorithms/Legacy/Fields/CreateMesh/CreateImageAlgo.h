@@ -38,7 +38,10 @@ namespace Fields {
   
   ALGORITHM_PARAMETER_DECL(Width);
   ALGORITHM_PARAMETER_DECL(Height);
+  ALGORITHM_PARAMETER_DECL(Depth);
   ALGORITHM_PARAMETER_DECL(PadPercent);
+  
+  ALGORITHM_PARAMETER_DECL(Mode);
   
   ALGORITHM_PARAMETER_DECL(Axis);
   
@@ -51,6 +54,7 @@ namespace Fields {
   ALGORITHM_PARAMETER_DECL(NormalZ);
   
   ALGORITHM_PARAMETER_DECL(Position);
+  ALGORITHM_PARAMETER_DECL(Index);
   
   ALGORITHM_PARAMETER_DECL(DataLocation);
   
@@ -59,7 +63,12 @@ namespace Fields {
 
   public:
     CreateImageAlgo();
+    static const AlgorithmInputName OVMatrix;
+    static const AlgorithmInputName SizeMatrix;
     virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+    
+  private:
+    enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
   };
 
 }}}}
