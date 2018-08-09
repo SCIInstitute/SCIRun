@@ -106,7 +106,8 @@ AlgorithmOutput CreateImageAlgo::run(const AlgorithmInput& input) const
   FieldHandle output;
   
   
-  Point customNormal, customCenter;
+  Point customCenter;
+  Vector customNormal;
   //pull parameter from UI
   std::string axisInput=getOption(Parameters::Axis);
   int axisTemp;
@@ -119,14 +120,14 @@ AlgorithmOutput CreateImageAlgo::run(const AlgorithmInput& input) const
   else if(axisInput=="Custom")
     axisTemp=3;
   
-  auto axis=std::min(2, std::max(0,0,axisTemp));
+  auto axis=std::min(2, std::max(0, axisTemp));
   
   Transform trans;
   trans.load_identity();
   
   // checking for input matrices
   
-  if(sizeMatrix)
+  /*if(sizeMatrix)
   {
     if(sizeMatrix->rows()==1 && sizeMatrix->cols()==1)
     {
@@ -163,7 +164,7 @@ AlgorithmOutput CreateImageAlgo::run(const AlgorithmInput& input) const
     customNormal=Point((*oVMatrix)(1,0),(*oVMatrix)(1,1),(*oVMatrix)(1,2));
     customNormal.safe_normalize();
     
-  }
+  }*/
   
   double angle=0;
   Vector axisVector(0.0,0.0,1.0);
@@ -192,7 +193,7 @@ AlgorithmOutput CreateImageAlgo::run(const AlgorithmInput& input) const
   
   if(axis==3)
   {
-    customNormal=Point(get(Parameters::NormalX).toDouble(),get(Parameters::NormalY).toDouble(),get(Parameters::NormalZ).toDouble());
+    customNormal=Vector(get(Parameters::NormalX).toDouble(),get(Parameters::NormalY).toDouble(),get(Parameters::NormalZ).toDouble());
     Vector tempNormal(-customNormal);
     Vector fakey(Cross(Vector(0.0,0.0,1.0),tempNormal));
     
@@ -217,7 +218,7 @@ AlgorithmOutput CreateImageAlgo::run(const AlgorithmInput& input) const
     trans2.invert();
     trans.change_basis(trans2);
     customCenter=Point(get(Parameters::CenterX).toDouble(),get(Parameters::CenterY).toDouble(),get(Parameters::CenterZ).toDouble());
-    trans.pre_translate(customCenter);
+    trans.pre_translate(Vector(customCenter));
   }
   
   DataTypeEnum datatype;
@@ -230,7 +231,7 @@ AlgorithmOutput CreateImageAlgo::run(const AlgorithmInput& input) const
     width=std::max(2,get(Parameters::Width).toInt());
     height=std::max(2,get(Parameters::Height).toInt());
   }
-  else
+  /*else
   {
     datatype = SCALAR;
     FieldInformation fi(inputField);
@@ -284,7 +285,7 @@ AlgorithmOutput CreateImageAlgo::run(const AlgorithmInput& input) const
             }
             else
             {
-              Depth.set( depth );
+              Depth.set( depth ););
             }
             //TCLInterface::execute(get_id()+" edit_scale");
             break;
@@ -310,16 +311,16 @@ AlgorithmOutput CreateImageAlgo::run(const AlgorithmInput& input) const
             sizey = std::max(2, get(Parameters::Height).toInt());
             break;
         }
+     }
+      else
+      {
+        warning("No autosize algorithm for this field type, resize manually.");
+        sizex = std::max(2, get(Parameters::Width).toInt());
+        sizey = std::max(2, get(Parameters::Height).toInt());
+        Mode.set("Manual");
+        //TCLInterface::execute(get_id()+" edit_scale");
+      }
     }
-    else
-    {
-      warning("No autosize algorithm for this field type, resize manually.");
-      sizex = std::max(2, get(Parameters::Width).toInt());
-      sizey = std::max(2, get(Parameters::Height).toInt());
-      Mode.set("Manual");
-      //TCLInterface::execute(get_id()+" edit_scale");
-    }
-  }
     else
     {
       // Create blank mesh.
@@ -372,11 +373,11 @@ AlgorithmOutput CreateImageAlgo::run(const AlgorithmInput& input) const
       }
         trans.pre_translate(Vector(loc));
     }
-  }
+  }*/
   
   Point minb(-0.5, -0.5, 0.0);
   Point maxb(0.5, 0.5, 0.0);
-  Vector diag((maxb.asVector() - minb.asVector()) * (get(Parameters::PadPercent).toDouble()/100.0));
+  Vector diag((Vector(maxb) - Vector(minb)) * (get(Parameters::PadPercent).toDouble()/100.0));
   minb -= diag;
   maxb += diag;
   
@@ -387,7 +388,8 @@ AlgorithmOutput CreateImageAlgo::run(const AlgorithmInput& input) const
   else
   {
     error("Unsupported data_at location " + getOption(Parameters::DataLocation) + ".");
-    return;
+    AlgorithmOutput result;
+    return result;
   }
   
   FieldInformation ifi("ImageMesh",basis_order,"double");
@@ -395,7 +397,7 @@ AlgorithmOutput CreateImageAlgo::run(const AlgorithmInput& input) const
   if (datatype == VECTOR) ifi.make_vector();
   else if (datatype == TENSOR) ifi.make_tensor();
   
-  MeshHandle imagemesh = CreateMesh(ifi,sizex, sizey, minb, maxb);
+  MeshHandle imagemesh = CreateMesh(ifi,width, height, minb, maxb);
   output = CreateField(ifi,imagemesh);
   
   // Transform field.

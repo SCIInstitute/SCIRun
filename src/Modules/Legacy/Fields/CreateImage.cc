@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Fields/CreateImage.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Fields/CreateMesh/CreateImageAlgo.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -34,7 +35,6 @@
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
@@ -49,16 +49,15 @@ CreateImage::CreateImage() : Module(staticInfo_)
   INITIALIZE_PORT(OutputField);
 }
 
-void CreateLatVol::setStateDefaults()
+void CreateImage::setStateDefaults()
 {
-  auto state=get_state();
   setStateIntFromAlgo(Parameters::Width);
   setStateIntFromAlgo(Parameters::Height);
   setStateDoubleFromAlgo(Parameters::PadPercent);
   
   setStateIntFromAlgo(Parameters::Mode);
   
-  setStateStringFromAlgoOtpion(Parameters::Axis);
+  setStateStringFromAlgoOption(Parameters::Axis);
   
   setStateDoubleFromAlgo(Parameters::CenterX);
   setStateDoubleFromAlgo(Parameters::CenterY);
@@ -87,7 +86,7 @@ void CreateImage::execute()
     
     setAlgoIntFromState(Parameters::Mode);
     
-    setAlgoOptionsFromState(Parameters::Axis);
+    setAlgoOptionFromState(Parameters::Axis);
     
     setAlgoDoubleFromState(Parameters::CenterX);
     setAlgoDoubleFromState(Parameters::CenterY);
@@ -99,10 +98,10 @@ void CreateImage::execute()
     
     setAlgoDoubleFromState(Parameters::Position);
     
-    setAlgoOptionsFromState(Parameters::DataLocation);
+    setAlgoOptionFromState(Parameters::DataLocation);
     
-    auto output=algo.run(withInputData((InputField, optionalAlgoInput(inputField))(SizeMatrix,optionalAlgoInput(sizeMatrix))(OVMatrix, optionalAlgoInput(oVMatrix))));
+    auto output=algo().run(withInputData((InputField, optionalAlgoInput(inputField))(SizeMatrix,optionalAlgoInput(sizeMatrix))(OVMatrix, optionalAlgoInput(oVMatrix))));
     
-    sendOutputFromAlgorihtm(OutputField, output);
+    sendOutputFromAlgorithm(OutputField, output);
   }
 }

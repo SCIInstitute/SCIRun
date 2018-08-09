@@ -47,7 +47,7 @@ namespace SCIRun {
 
         INPUT_PORT(0, InputField, Field);
         INPUT_PORT(1, SizeMatrix, Matrix);
-        INPUT_PORT(2, OVMartix, Matrix);
+        INPUT_PORT(2, OVMatrix, Matrix);
         OUTPUT_PORT(0, OutputField, Field);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
