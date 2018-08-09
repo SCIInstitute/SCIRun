@@ -34,6 +34,7 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <boost/unordered_map.hpp>
+#include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -101,7 +102,9 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
   
   else if (centroids=="Node")
   {
+    remark("Enter nodes");
     VMesh::size_type num_nodes = imesh->num_nodes();
+    remark("in between");
     omesh->reserve_nodes(num_nodes);
     for (VMesh::Node::index_type idx=0; idx < num_nodes; idx++)
     {
@@ -148,8 +151,9 @@ AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
   else if (centroids=="Face")
   {
     remark("Entered Face");
-    remark("once more");
-    VMesh::size_type num_faces = imesh->num_faces();
+    //omesh->reset();
+    VMesh::Face::size_type num_faces;
+    imesh->size(num_faces);
     remark("in between");
     omesh->reserve_nodes(num_faces);
     remark("Before for loop");
