@@ -109,8 +109,9 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
   
   fo.make_constantdata();
   
-  std::string dataLocation=getOption(Parameters::DataLocation);
-  if(dataLocation=="node") fo.make_lineardata();
+  //std::string dataLocation=getOption(Parameters::DataLocation);
+  if(checkOption(Parameters::DataLocation,"node"))
+    fo.make_lineardata();
   
   output=CreateField(fo,input->mesh());
   
@@ -189,11 +190,11 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
         }
         cnt++;
         //Progress Reporting
-        if(cnt==100)
+       /* if(cnt==100)
         {
           update_progress(idx/numElems);
           cnt=0;
-        }
+        }*/
       }
     }
     else if(method=="all")
@@ -206,7 +207,7 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
           bool is_inside=true;
           for(size_t r=0;r<points2.size();r++)
           {
-            if(objmesh[p]->locate(cidx,points2[r]))
+            if(!objmesh[p]->locate(cidx,points2[r]))
             {
               is_inside=false;
               break;
@@ -217,11 +218,11 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
         }
         cnt++;
         //Progress Reporting
-        if(cnt==100)
+        /*if(cnt==100)
         {
           update_progress(idx/numElems);
           cnt=0;
-        }
+        }*/
       }
     }
     else
@@ -245,11 +246,11 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
         }
         cnt++;
         //Progress Reporting
-        if(cnt==100)
+        /*if(cnt==100)
         {
           update_progress(idx/numElems);
           cnt=0;
-        }
+        }*/
       }
     }
   }
@@ -282,11 +283,11 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
       
       // Progress Reporting
       cnt++;
-      if (cnt == 100)
+     /* if (cnt == 100)
       {
         update_progress(idx/numNodes);
         cnt = 0;
-      }
+      }*/
     }
   }
     return output;
