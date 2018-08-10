@@ -83,9 +83,9 @@ CreateImageAlgo::CreateImageAlgo()
   addParameter(Parameters::CenterY,0);
   addParameter(Parameters::CenterZ,0);
   
-  addParameter(Parameters::NormalX,0);
-  addParameter(Parameters::NormalX,0);
-  addParameter(Parameters::NormalX,0);
+  addParameter(Parameters::NormalX,1);
+  addParameter(Parameters::NormalY,1);
+  addParameter(Parameters::NormalZ,1);
   
   addParameter(Parameters::Position,0);
   addParameter(Parameters::Index,0);
@@ -385,12 +385,12 @@ AlgorithmOutput CreateImageAlgo::run(const AlgorithmInput& input) const
   if (getOption(Parameters::DataLocation) == "Nodes") basis_order = 1;
   else if (getOption(Parameters::DataLocation) == "Faces") basis_order = 0;
   else if (getOption(Parameters::DataLocation) == "None") basis_order = -1;
-  else
+  /*else
   {
     error("Unsupported data_at location " + getOption(Parameters::DataLocation) + ".");
     AlgorithmOutput result;
     return result;
-  }
+  }*/
   
   FieldInformation ifi("ImageMesh",basis_order,"double");
   

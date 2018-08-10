@@ -26,11 +26,12 @@
 */
 
 #include <Interface/Modules/Fields/CreateImageDialog.h>
-#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/CreateImage.h>
+#include <Core/Algorithms/Legacy/Fields/CreateMesh/CreateImageAlgo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 CreateImageDialog::CreateImageDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -48,15 +49,15 @@ CreateImageDialog::CreateImageDialog(const std::string& name, ModuleStateHandle 
   
   addComboBoxManager(axis_, Parameters::Axis);
   
-  addSpinBoxManager(centerX_, Parameters::CenterX);
-  addSpinBoxManager(centerY_, Parameters::CenterY);
-  addSpinBoxManager(centerZ_, Parameters::CenterZ);
+  addDoubleSpinBoxManager(centerX_, Parameters::CenterX);
+  addDoubleSpinBoxManager(centerY_, Parameters::CenterY);
+  addDoubleSpinBoxManager(centerZ_, Parameters::CenterZ);
   
-  addSpinBoxManager(normalX_, Parameters::NormalX);
-  addSpinBoxManager(normalY_, Parameters::NormalY);
-  addSpinBoxManager(normalZ_, Parameters::NormalZ);
+  addDoubleSpinBoxManager(normalX_, Parameters::NormalX);
+  addDoubleSpinBoxManager(normalY_, Parameters::NormalY);
+  addDoubleSpinBoxManager(normalZ_, Parameters::NormalZ);
   
-  addSpinBoxManager(position_, Parameters::Position);
+  addDoubleSpinBoxManager(position_, Parameters::Position);
   connect(mode_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
   
   addComboBoxManager(dataLocation_, Parameters::DataLocation);

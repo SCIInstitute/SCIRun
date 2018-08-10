@@ -69,7 +69,7 @@ void CreateImage::setStateDefaults()
   
   setStateDoubleFromAlgo(Parameters::Position);
   
-  setStateStringFromAlgoOtpion(Parameters::DataLocation);
+  setStateStringFromAlgoOption(Parameters::DataLocation);
 }
 
 void CreateImage::execute()
