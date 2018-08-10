@@ -6,6 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -23,22 +24,37 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
+   */
 
-#include <Interface/Modules/Fields/SetFieldDataDialog.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Fields;
+#ifndef CORE_ALGORITHMS_FIELDS_CLEANUP_ReorderNormalCoherentlyALGO_H
+#define CORE_ALGORITHMS_FIELDS_CLEANUP_ReorderNormalCoherentlyALGO_H
 
-SetFieldDataDialog::SetFieldDataDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
-{
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
-  addCheckBoxManager(keepTypeCheckBox_, Parameters::keepTypeCheckBox);
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
+
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
+
+        ALGORITHM_PARAMETER_DECL(invertedElementsCheckBox);
+        
+        class SCISHARE ReorderNormalCoherentlyAlgo : public AlgorithmBase
+        {
+        public:
+          ReorderNormalCoherentlyAlgo();
+
+          void runImpl(FieldHandle inputField,
+            FieldHandle& outputField,
+            Datatypes::DenseColumnMatrixHandle& outputMatrix)const;
+
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+        };
+      }
+    }
+  }
 }
+
+#endif
+

@@ -6,6 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,20 +26,43 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Fields/SetFieldDataDialog.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
+#include <Modules/Legacy/Fields/ReorderNormalCoherently.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
+#include <Core/Algorithms/Legacy/Fields/Cleanup/ReorderNormalCoherentlyAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
-SetFieldDataDialog::SetFieldDataDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+MODULE_INFO_DEF(ReorderNormalCoherently, ChangeMesh, SCIRun)
+
+ReorderNormalCoherently::ReorderNormalCoherently() : Module(staticInfo_, false)
 {
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
-  addCheckBoxManager(keepTypeCheckBox_, Parameters::keepTypeCheckBox);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(OutputMatrix);
+}
+
+void ReorderNormalCoherently::execute()
+{
+  auto input = getRequiredInput(InputField);
+  
+  bool needMatrixData=oport_connected(OutputMatrix);
+  
+  if (needToExecute())
+  {
+    algo().set(Parameters::invertedElementsCheckBox, needMatrixData);
+    
+    auto output=algo().run(withInputData((InputField, input)));
+    
+    sendOutputFromAlgorithm(OutputField,output);
+    sendOutputFromAlgorithm(OutputMatrix, output);
+  }
 }
