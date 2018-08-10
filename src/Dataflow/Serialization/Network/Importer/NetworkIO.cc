@@ -385,6 +385,18 @@ namespace
     if (s == "1") return 0;
     return 1;
   };
+  ValueConverter dataOrNodes = [](const std::string& s)
+  {
+    if (std::stoi(s) == 1)
+      return std::string("data");
+    return std::string("node");
+  };
+  ValueConverter opStringToInt = [](const std::string& s)
+  {
+    if (s == "Add") return 0;
+    if (s == "Mult") return 2;
+    return 3;
+  }
 }
 
 std::unique_ptr<std::string> LegacyNetworkIO::v4MergeStateToV5_ = std::unique_ptr<std::string>(new std::string(""));
@@ -425,7 +437,9 @@ LegacyNetworkIO::read_importer_map(const std::string& file)
     {"negateBool", negateBool},
     {"initState", initState},
     {"appendState", appendState},
-    {"useState", useState}
+    {"useState", useState},
+    {"dataOrNodes", dataOrNodes},
+    {"opStringToInt", opStringToInt}
   };
   using boost::property_tree::ptree;
   using boost::property_tree::read_xml;
