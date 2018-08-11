@@ -362,7 +362,11 @@ const std::string &val)
 namespace
 {
   ValueConverter toInt = [](const std::string& s) { return std::stoi(s); };
-  ValueConverter toDouble = [](const std::string& s) { return boost::lexical_cast<double>(s); };
+  ValueConverter toDouble = [](const std::string& s)
+  {
+    if(s == "Inf") return DBL_MAX;
+    return boost::lexical_cast<double>(s);
+  };
   ValueConverter toPercent = [](const std::string& s) { return boost::lexical_cast<double>(s) / 100.0; };
   ValueConverter toString = [](const std::string& s) { return s;};
   //TODO: mapping macro or find a boost lib to do pattern matching with funcs easily
@@ -387,8 +391,7 @@ namespace
   };
   ValueConverter dataOrNodes = [](const std::string& s)
   {
-    if (std::stoi(s) == 1)
-      return std::string("data");
+    if (std::stoi(s) == 1) return std::string("data");
     return std::string("node");
   };
   ValueConverter opStringToInt = [](const std::string& s)
@@ -396,7 +399,64 @@ namespace
     if (s == "Add") return 0;
     if (s == "Mult") return 2;
     return 3;
-  }
+  };
+  ValueConverter capFirstLetter = [](const std::string& s)
+  {
+    std::string result = s;
+    result[0] = std::toupper(s[0]);
+    return result;
+  };
+  ValueConverter shortenMethodForLinearSystem = [](const std::string& s)
+  {
+    if (s[0] == 'C') return std::string("cg");
+    if (s[0] == 'B') return std::string("bicg");
+    if (s[0] == 'J') return std::string("jacobi");
+    return std::string("minres");
+  };
+  ValueConverter createMatrixFormat = [](const std::string& s)
+  {
+    std::string result;
+    bool newLineStart = false;
+    for (const auto &c : s)
+    {
+      if (c == '{') continue;
+      if (c == ' ' && newLineStart)
+      {
+        newLineStart = false;
+        continue;
+      }
+      if (c == '}')
+      {
+        result += '\n';
+        newLineStart = true;
+      }
+      else result += c;
+    }
+    return result;
+  };
+  ValueConverter directionForStreamLines = [](const std::string& s)
+  {
+    if (s == 0) return std::string("Negative");
+    if (s == 1) return std::string("Both");
+    return std::string("Positive");
+  };
+  ValueConverter valueForStreamLines = [](const std::string& s)
+  {
+    if (s == 0) return std::string("Seed value");
+    if (s == 1) return std::string("Seed index");
+    if (s == 2) return std::string("Integration index");
+    if (s == 3) return std::string("Intergration step");
+    if (s == 4) return std::string("Distance from seed");
+    return std::string("Streamline length");
+  };
+  ValueConverter methodForStreamLines = [](const std::string& s)
+  {
+    if (s == 0) return std::string("CellWalk");
+    if (s == 1) return std::string("AdamsBashforth");
+    if (s == 2) return std::string("Heun");
+    if (s == 3) return std::string("RungeKutta");
+    return std::string("RungeKuttaFehlberg");
+  };
 }
 
 std::unique_ptr<std::string> LegacyNetworkIO::v4MergeStateToV5_ = std::unique_ptr<std::string>(new std::string(""));
@@ -439,7 +499,13 @@ LegacyNetworkIO::read_importer_map(const std::string& file)
     {"appendState", appendState},
     {"useState", useState},
     {"dataOrNodes", dataOrNodes},
-    {"opStringToInt", opStringToInt}
+    {"opStringToInt", opStringToInt},
+    {"capFirstLetter", capFirstLetter},
+    {"shortenMethodForLinearSystem", shortenMethodForLinearSystem},
+    {"createMatrixFormat", createMatrixFormat},
+    {"directionForStreamLines", directionForStreamLines},
+    {"valueForStreamLines", valueForStreamLines},
+    {"methodForStreamLines", methodForStreamLines}
   };
   using boost::property_tree::ptree;
   using boost::property_tree::read_xml;
