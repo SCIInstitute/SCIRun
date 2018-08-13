@@ -26,8 +26,12 @@
 */
 
 #include <Interface/Modules/Fields/CalculateInsideWhichFieldDialog.h>
-#include <Core/Algorithms/Field/CalculateInsideWhichFieldAlgorithm.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateInsideWhichFieldAlgorithm.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
+
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateIsInsideField.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

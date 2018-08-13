@@ -102,6 +102,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   MeshData/GetMeshQualityFieldAlgo.h
   Cleanup/RemoveUnusedNodes.h
   Cleanup/CleanupTetMesh.h
+  DistanceField/CalculateInsideWhichFieldAlgorithm.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -126,7 +127,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
 
   DistanceField/CalculateDistanceField.cc
   DistanceField/CalculateIsInsideField.cc
-  #DistanceField/CalculateInsideWhichField.cc
+  DistanceField/CalculateInsideWhichFieldAlgorithm.cc
   DistanceField/CalculateSignedDistanceField.cc
   DomainFields/GetDomainBoundaryAlgo.cc
   #DomainFields/GetDomainStructure.cc

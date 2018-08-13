@@ -4,12 +4,12 @@
     "namespace": "Fields",
     "status": "New Module",
     "description": "CalculateInsideWhichField",
-    "header": "Modules/Fields/CalculateInsideWhichField.h"
+    "header": "Modules/Legacy/Fields/CalculateInsideWhichField.h"
   },
   "algorithm": {
     "name": "CalculateInsideWhichFieldAlgorithm",
     "namespace": "Fields",
-    "header": "Core/Algorithms/Field/CalculateInsideWhichFieldAlgorithm.h"
+    "header": "Core/Algorithms/Legacy/Fields/DistanceField/CalculateInsideWhichFieldAlgorithm.h"
   },
   "UI": {
     "name": "CalculateInsideWhichFieldDialog",

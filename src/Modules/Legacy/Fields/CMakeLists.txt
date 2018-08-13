@@ -89,6 +89,7 @@ SET(Modules_Legacy_Fields_HEADERS
   GetMeshQualityField.h
   RemoveUnusedNodes.h
   CleanupTetMesh.h
+  CalculateInsideWhichField.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -181,7 +182,7 @@ SET(Modules_Legacy_Fields_SRCS
   CalculateDistanceToFieldBoundary.cc
   CalculateSignedDistanceToField.cc
   #CalculateIsInsideField.cc
-  #CalculateInsideWhichField.cc
+  CalculateInsideWhichField.cc
   ConvertIndicesToFieldData.cc
   CreateFieldData.cc
   GetFieldData.cc
