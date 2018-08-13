@@ -436,25 +436,25 @@ namespace
   };
   ValueConverter directionForStreamLines = [](const std::string& s)
   {
-    if (s == 0) return std::string("Negative");
-    if (s == 1) return std::string("Both");
+    if (s == "0") return std::string("Negative");
+    if (s == "1") return std::string("Both");
     return std::string("Positive");
   };
   ValueConverter valueForStreamLines = [](const std::string& s)
   {
-    if (s == 0) return std::string("Seed value");
-    if (s == 1) return std::string("Seed index");
-    if (s == 2) return std::string("Integration index");
-    if (s == 3) return std::string("Intergration step");
-    if (s == 4) return std::string("Distance from seed");
+    if (s == "0") return std::string("Seed value");
+    if (s == "1") return std::string("Seed index");
+    if (s == "2") return std::string("Integration index");
+    if (s == "3") return std::string("Integration step");
+    if (s == "4") return std::string("Distance from seed");
     return std::string("Streamline length");
   };
   ValueConverter methodForStreamLines = [](const std::string& s)
   {
-    if (s == 0) return std::string("CellWalk");
-    if (s == 1) return std::string("AdamsBashforth");
-    if (s == 2) return std::string("Heun");
-    if (s == 3) return std::string("RungeKutta");
+    if (s == "0") return std::string("CellWalk");
+    if (s == "1") return std::string("AdamsBashforth");
+    if (s == "2") return std::string("Heun");
+    if (s == "3") return std::string("RungeKutta");
     return std::string("RungeKuttaFehlberg");
   };
 }

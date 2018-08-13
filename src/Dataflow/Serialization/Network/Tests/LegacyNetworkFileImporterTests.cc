@@ -363,6 +363,18 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithMapFieldDataFromSourc
   EXPECT_EQ("closestdata", mod->second.state.getValue(Name("MappingMethod")).toString());
 }
 
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithCreateMatrix)
+{
+  auto networkFile = load("CreateMatrix.srn");
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(1, networkFile->network.modules.size());
+
+  auto mod = networkFile->network.modules.begin();
+  EXPECT_EQ("CreateMatrix:0", mod->first);
+  EXPECT_EQ("0.1 0.2\n0.3 0.4\n0.5 0.6\n", mod->second.state.getValue(Name("TextEntry")).toString());
+}
+
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotes)
 {
   auto networkFile = load("notes.srn");
