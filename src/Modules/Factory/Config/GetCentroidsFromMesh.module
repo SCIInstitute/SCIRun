@@ -2,8 +2,8 @@
   "module": {
     "name": "GetCentroidsFromMesh",
     "namespace": "Fields",
-    "status": "new module",
-    "description": "Computes a PointCloudField containing all of the element centers for a field",
+    "status": "Converted, Updation Issue",
+    "description": "Computes centroids from the mesh",
     "header": "Modules/Legacy/Fields/GetCentroidsFromMesh.h"
   },
   "algorithm": {
