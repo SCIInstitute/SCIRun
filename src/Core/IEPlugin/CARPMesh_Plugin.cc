@@ -190,6 +190,44 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
   std::vector<double> fvalues;
   std::vector<VMesh::index_type> ivalues;
   std::string elem_type;
+    
+    
+// Check the element type
+    
+{
+        std::ifstream inputfile;
+        inputfile.exceptions( std::ifstream::badbit );
+        
+        try
+        {
+            inputfile.open(elems_fn.c_str());
+            
+            for (int lineno = 0; getline (inputfile,line) && lineno < 2; lineno++)
+            {
+                
+                if (lineno != 0){
+                    for (size_t k=0; k<line.size(); k++)
+                    {
+                            if (line[k]==' '){ break;}
+                            else {elem_type += line[k];}
+                    }
+                }
+        
+            }
+            
+            if ((elem_type != "Tt") && (elem_type != "Tr")) {
+                if (pr) pr->error("Mesh types other than Tet and Tri not supported");
+                return (result);
+            
+            }
+        }
+        catch(...)
+        {
+            if (pr) pr->error("Could not read element type");
+            return (result);
+        }
+}
+
 
 //  if (nrows != num_nodes)
 //  {
@@ -205,9 +243,28 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
 //  }
 
   // add data to elems (constant basis)
-  FieldInformation fi("TetVolMesh",-1,"double");
-  fi.make_constantdata();
-  result = CreateField(fi);
+    
+cout << "Loading element type: " << endl;
+cout << elem_type << endl;
+
+FieldInformation fi(nullptr);
+    
+    int elem_n = (elem_type == "Tt") ? 4: 3;
+    
+    
+    if (elem_type == "Tt")
+    {
+        fi= FieldInformation("TetVolMesh",-1,"double");
+        fi.make_constantdata();
+        
+    }
+    else if (elem_type == "Tr")
+    {
+        fi= FieldInformation("TriSurfMesh",-1,"double");
+        
+    }
+  
+result = CreateField(fi);
 
   VMesh *mesh = result->vmesh();
   VField *field = result->vfield();
@@ -223,7 +280,7 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
       inputfile.open(elems_fn.c_str());
 
       VMesh::Node::array_type vdata;
-      vdata.resize(4);
+      vdata.resize(elem_n);
 
       getline(inputfile,line,'\n');
       multiple_from_string(line,values);
@@ -233,27 +290,9 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
       for (int i = 0; i < num_elems && getline(inputfile,line,'\n'); ++i)
       {
 
-
-        if (i == 0) {
-            for (size_t k=0; k<line.size(); k++)
-            {
-
-               if (line[k]==' '){ break;}
-               else {
-                       elem_type += line[k];
-                   }
-            }
-
-            if (elem_type != "Tt") {
-              if (pr) pr->error("Mesh types other than Tet not supported");
-              return (result);
-
-            }
-          }
-
         multiple_from_string(line,ivalues);
 
-        for (size_t j=0; j<ivalues.size() && j<4; j++)
+        for (size_t j=0; j<ivalues.size() && j< elem_n; j++)
         {
           vdata[j] = ivalues[j];
         }
@@ -291,8 +330,9 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
       for (int i = 0; i < num_nodes && getline(inputfile,line,'\n'); ++i) {
 
           multiple_from_string(line, values);
+          int sf = 1000;
 
-          if (values.size() == 3) mesh->add_point(Point(values[0], values[1], values[2]));
+          if (values.size() == 3) mesh->add_point(Point(values[0]/sf, values[1]/sf, values[2]/sf));
 
       }
     }
