@@ -35,6 +35,7 @@
 #include <Core/IEPlugin/PointCloudField_Plugin.h>
 #include <Core/IEPlugin/IgbFileToMatrix_Plugin.h>
 #include <Core/IEPlugin/CurveField_Plugin.h>
+#include <Core/IEPlugin/CARPSurf_Plugin.h>
 #include <Core/IEPlugin/TriSurfField_Plugin.h>
 #include <Core/IEPlugin/TetVolField_Plugin.h>
 #include <Core/IEPlugin/CARPMesh_Plugin.h>
@@ -84,6 +85,7 @@ void IEPluginManager::Initialize()
 
   static FieldIEPluginLegacyAdapter TetVolField_plugin("TetVolField","*.elem *.tet *.pts *.pos", "", TextToTetVolField_reader, TetVolFieldToTextBaseIndexZero_writer);
   static FieldIEPluginLegacyAdapter CARPMesh_plugin("CARPMesh","*.elem *.pts *.lon", "", CARPMesh_reader, CARPMesh_writer);
+  static FieldIEPluginLegacyAdapter CARPSurf_plugin("CARPSurf","*.elem *.pts *.surf","", CARPSurf_reader, nullptr);
   static FieldIEPluginLegacyAdapter CARPFiber_plugin("CARPFiber","*.lon", "", nullptr, CARPFiber_writer);
   static FieldIEPluginLegacyAdapter TetVolFieldBaseIndexOne_plugin("TetVolField[BaseIndex 1]", "*.tet *.pts", "", nullptr, TetVolFieldToTextBaseIndexOne_writer);
   static FieldIEPluginLegacyAdapter JHU_elemsPtsFileToTetVol_plugin("JHUFileToTetVol","*.elem *.tet *.pts *.pos", "", TextToTetVolField_reader, nullptr);

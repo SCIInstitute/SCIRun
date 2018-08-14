@@ -52,7 +52,7 @@ FieldHandle SCIRun::CARPMesh_reader(LoggerHandle pr, const char *filename)
   std::string elems_fn(filename);
   std::string pts_fn(filename);
 
-  // Check whether the .elems or .tri file exists
+  // Check whether the .elem file exists
   std::string::size_type pos = elems_fn.find_last_of(".");
   if (pos == std::string::npos)
   {
@@ -299,6 +299,7 @@ result = CreateField(fi);
 
         fvalues.push_back(ivalues[ivalues.size()-1]);
 
+        cout << vdata << endl;
         mesh->add_elem(vdata);
 
       }
@@ -492,7 +493,7 @@ bool SCIRun::CARPMesh_writer(LoggerHandle pr, FieldHandle fh, const char *filena
      else
 		{
 
-      if (pr) pr->error("Please convert to either TriSurf or TetVol mesh ");
+      if (pr) pr->error("Please convert to TetVol mesh ");
       return false;
     	}
       
