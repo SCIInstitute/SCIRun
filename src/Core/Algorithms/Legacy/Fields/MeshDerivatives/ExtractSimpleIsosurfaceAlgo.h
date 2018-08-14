@@ -42,6 +42,7 @@ namespace Fields {
   ALGORITHM_PARAMETER_DECL(SingleIsoValue);
   ALGORITHM_PARAMETER_DECL(ListOfIsovalues);
   ALGORITHM_PARAMETER_DECL(QuantityOfIsovalues);
+  ALGORITHM_PARAMETER_DECL(IsovalueListInclusiveExclusive);
   ALGORITHM_PARAMETER_DECL(Isovalues);
   ALGORITHM_PARAMETER_DECL(IsovalueChoice);
   ALGORITHM_PARAMETER_DECL(IsovalueListString);

@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,32 +25,46 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_ExtractSimpleIsosurfaceDialog_H
-#define INTERFACE_MODULES_ExtractSimpleIsosurfaceDialog_H
+#ifndef CORE_ALGORITHMS_MATH_ResizeMatrixALGO_H
+#define CORE_ALGORITHMS_MATH_ResizeMatrixALGO_H
 
-#include "Interface/Modules/Fields/ui_ExtractSimpleIsosurface.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+#include<Core/Datatypes/Matrix.h>
+#include<Core/Datatypes/DenseMatrix.h>
+#include<Core/Datatypes/DenseColumnMatrix.h>
+#include <Dataflow/Network/Module.h>
+#include <Eigen/Dense>
 
-namespace SCIRun {
-namespace Gui {
+#include<string>
+#include<sstream>
+#include<vector>
+#include<algorithm>
 
-class SCISHARE ExtractSimpleIsosurfaceDialog : public ModuleDialogGeneric,
-  public Ui::ExtractSimpleIsosurface
-{
-	Q_OBJECT
+#include<Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include<Core/Algorithms/Base/AlgorithmBase.h>
+#include<Core/Algorithms/Math/share.h>
 
-public:
-  ExtractSimpleIsosurfaceDialog(const std::string& name,
-    Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = nullptr);
-protected:
-  virtual void pullSpecial() override;
-protected Q_SLOTS:
-  void sliderChanged();
-};
-
-}
+namespace SCIRun{
+    namespace Core{
+        namespace Algorithms{
+            namespace Math{
+                
+                ALGORITHM_PARAMETER_DECL(NoOfRows);
+                ALGORITHM_PARAMETER_DECL(NoOfColumns);
+                ALGORITHM_PARAMETER_DECL(Major);
+                
+                
+                class SCISHARE ResizeMatrixAlgo : public AlgorithmBase
+                {
+                public:
+                  ResizeMatrixAlgo();
+                    
+                  AlgorithmOutput run(const AlgorithmInput& input) const;
+                    
+                    
+                };
+            }
+        }
+    }
 }
 
 #endif

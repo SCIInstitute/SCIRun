@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,32 +25,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_ExtractSimpleIsosurfaceDialog_H
-#define INTERFACE_MODULES_ExtractSimpleIsosurfaceDialog_H
+#ifndef ALGORITHMS_MATH_CALCULATEMESHCENTERAlgo_H
+#define ALGORITHMS_MATH_CALCULATEMESHCENTERAlgo_H
 
-#include "Interface/Modules/Fields/ui_ExtractSimpleIsosurface.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Field/share.h>
 
 namespace SCIRun {
-namespace Gui {
+namespace Core {
+namespace Algorithms {
+namespace Fields {
+  
+  ALGORITHM_PARAMETER_DECL(Method);
+  
+  class SCISHARE CalculateMeshCenterAlgo : public AlgorithmBase
+  {
 
-class SCISHARE ExtractSimpleIsosurfaceDialog : public ModuleDialogGeneric,
-  public Ui::ExtractSimpleIsosurface
-{
-	Q_OBJECT
+  public:
+    CalculateMeshCenterAlgo();
+    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+  };
 
-public:
-  ExtractSimpleIsosurfaceDialog(const std::string& name,
-    Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = nullptr);
-protected:
-  virtual void pullSpecial() override;
-protected Q_SLOTS:
-  void sliderChanged();
-};
-
-}
-}
+}}}}
 
 #endif

@@ -1408,15 +1408,19 @@ void GeometryBuilder::renderEdges(
       }
     }
     //accumulate VBO or IBO data
-    if (state.get(RenderState::USE_CYLINDER) && p0 != p1)
+
+    if (p0 != p1)
     {
-      glyphs.addCylinder(p0, p1, radius, num_strips, edge_colors[0], edge_colors[1]);
-      glyphs.addSphere(p0, radius, num_strips, edge_colors[0]);
-      glyphs.addSphere(p1, radius, num_strips, edge_colors[1]);
-    }
-    else
-    {
-      glyphs.addLine(p0, p1, edge_colors[0], edge_colors[1]);
+      if (state.get(RenderState::USE_CYLINDER))
+      {
+        glyphs.addCylinder(p0, p1, radius, num_strips, edge_colors[0], edge_colors[1]);
+        glyphs.addSphere(p0, radius, num_strips, edge_colors[0]);
+        glyphs.addSphere(p1, radius, num_strips, edge_colors[1]);
+      }
+      else
+      {
+        glyphs.addLine(p0, p1, edge_colors[0], edge_colors[1]);
+      }
     }
 
     ++eiter;

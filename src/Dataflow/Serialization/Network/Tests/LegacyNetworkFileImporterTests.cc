@@ -71,6 +71,8 @@ namespace
   }
 }
 
+bool print = false;
+
 TEST(LegacyNetworkFileImporterTests, CanLoadEmptyNetworkFile)
 {
   auto networkFile = load("empty.srn");
@@ -204,7 +206,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithTwoModulesOneConnecti
 
   ASSERT_EQ(1, networkFile->network.connections.size());
   auto conn = networkFile->network.connections[0];
-  std::cout << "CONN LOOKS LIKE " << static_cast<std::string>(ConnectionId::create(conn)) << std::endl;
+  //std::cout << "CONN LOOKS LIKE " << static_cast<std::string>(ConnectionId::create(conn)) << std::endl;
 
   EXPECT_EQ(2, networkFile->modulePositions.modulePositions.size());
 
@@ -260,7 +262,8 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithMultipleConnections)
   std::string* expectedPtr = expected;
   for (const auto& c : networkFile->network.connections)
   {
-    std::cout << static_cast<std::string>(ConnectionId::create(c)) << std::endl;
+    if (print)
+      std::cout << static_cast<std::string>(ConnectionId::create(c)) << std::endl;
     EXPECT_EQ(static_cast<std::string>(ConnectionId::create(c)), *expectedPtr++);
   }
 }
@@ -291,7 +294,7 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithDynamicPorts)
   EXPECT_EQ(0, networkFile->moduleTags.tags.size());
 }
 
-TEST(LegacyNetworkFileImporterTests, DISABLED_CanLoadNetworkFileWithLotsOfState)
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithLotsOfState)
 {
   FAIL() << "todo";
 }
@@ -365,3 +368,4 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotesInFivePosi
   ++noteIter;
   EXPECT_TRUE(noteIter == moduleNotesMap.end());
 }
+

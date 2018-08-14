@@ -76,6 +76,7 @@ SET(Interface_Modules_Fields_FORMS
   GetMeshQualityField.ui
   CleanupTetMeshDialog.ui
   CalculateInsideWhichFieldDialog.ui
+  CalculateMeshCenterDialog.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -127,6 +128,7 @@ SET(Interface_Modules_Fields_HEADERS
   GetMeshQualityFieldDialog.h
   CleanupTetMeshDialog.h
   CalculateInsideWhichFieldDialog.h
+  CalculateMeshCenterDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -177,6 +179,7 @@ SET(Interface_Modules_Fields_SOURCES
   GetMeshQualityFieldDialog.cc
   CleanupTetMeshDialog.cc
   CalculateInsideWhichFieldDialog.cc
+  CalculateMeshCenterDialog.cc
 )
 
 IF(WITH_TETGEN)
