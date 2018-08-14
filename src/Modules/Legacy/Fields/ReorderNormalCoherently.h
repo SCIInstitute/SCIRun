@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,14 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#undef SCISHARE
+#ifndef MODULES_LEGACY_FIELDS_ReorderNormalCoherently_H__
+#define MODULES_LEGACY_FIELDS_ReorderNormalCoherently_H__
 
-#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
-#  ifdef BUILD_Dataflow_Modules_DataIO
-#    define SCISHARE __declspec(dllexport)
-#  else
-#    define SCISHARE __declspec(dllimport)
-#  endif
-#else
-#  define SCISHARE
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
+
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
+
+      class SCISHARE ReorderNormalCoherently : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has2OutputPorts<FieldPortTag, MatrixPortTag>
+      {
+      public:
+        ReorderNormalCoherently();
+
+        virtual void execute() override;
+        virtual void setStateDefaults() override{};
+
+        INPUT_PORT(0, InputField, Field);
+        OUTPUT_PORT(0, OutputField, Field);
+        OUTPUT_PORT(1, OutputMatrix, Matrix);
+
+        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+      };
+
+    }
+  }
+}
+
 #endif

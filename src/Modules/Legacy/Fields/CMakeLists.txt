@@ -90,6 +90,7 @@ SET(Modules_Legacy_Fields_HEADERS
   RemoveUnusedNodes.h
   CleanupTetMesh.h
   CalculateInsideWhichField.h
+  ReorderNormalCoherently.h
   CalculateMeshCenter.h
 )
 
@@ -202,6 +203,7 @@ SET(Modules_Legacy_Fields_SRCS
   MapFieldDataFromElemToNode.cc
   MapFieldDataFromNodeToElem.cc
   ExtractSimpleIsosurface.cc
+  ReorderNormalCoherently.cc
 )
 
 IF(WITH_TETGEN)
