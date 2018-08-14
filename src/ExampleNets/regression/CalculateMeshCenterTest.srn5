@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>24</count>
+			<count>13</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CalculateMeshCenter:0</first>
@@ -175,540 +175,12 @@
 				</second>
 			</item>
 			<item>
-				<first>GetFieldsFromBundle:0</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Bundle</category_name_>
-						<module_name_>GetFieldsFromBundle</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>6</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>field1-name</name>
-								</first>
-								<second>
-									<name>field1-name</name>
-									<value>
-										<which>2</which>
-										<value>field0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field2-name</name>
-								</first>
-								<second>
-									<name>field2-name</name>
-									<value>
-										<which>2</which>
-										<value>field1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field3-name</name>
-								</first>
-								<second>
-									<name>field3-name</name>
-									<value>
-										<which>2</which>
-										<value>RED_WIRE_ELECTRODE</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field4-name</name>
-								</first>
-								<second>
-									<name>field4-name</name>
-									<value>
-										<which>2</which>
-										<value>field3</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field5-name</name>
-								</first>
-								<second>
-									<name>field5-name</name>
-									<value>
-										<which>2</which>
-										<value>field4</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field6-name</name>
-								</first>
-								<second>
-									<name>field6-name</name>
-									<value>
-										<which>2</which>
-										<value>field5</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>GetFieldsFromBundle:1</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Bundle</category_name_>
-						<module_name_>GetFieldsFromBundle</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>6</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>field1-name</name>
-								</first>
-								<second>
-									<name>field1-name</name>
-									<value>
-										<which>2</which>
-										<value>CAN_ELECTRODE</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field2-name</name>
-								</first>
-								<second>
-									<name>field2-name</name>
-									<value>
-										<which>2</which>
-										<value>field1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field3-name</name>
-								</first>
-								<second>
-									<name>field3-name</name>
-									<value>
-										<which>2</which>
-										<value>RED_WIRE_ELECTRODE</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field4-name</name>
-								</first>
-								<second>
-									<name>field4-name</name>
-									<value>
-										<which>2</which>
-										<value>field3</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field5-name</name>
-								</first>
-								<second>
-									<name>field5-name</name>
-									<value>
-										<which>2</which>
-										<value>field4</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field6-name</name>
-								</first>
-								<second>
-									<name>field6-name</name>
-									<value>
-										<which>2</which>
-										<value>field5</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>GetFieldsFromBundle:2</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Bundle</category_name_>
-						<module_name_>GetFieldsFromBundle</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>6</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>field1-name</name>
-								</first>
-								<second>
-									<name>field1-name</name>
-									<value>
-										<which>2</which>
-										<value>CARDIAC_SURFACE</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field2-name</name>
-								</first>
-								<second>
-									<name>field2-name</name>
-									<value>
-										<which>2</which>
-										<value>field1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field3-name</name>
-								</first>
-								<second>
-									<name>field3-name</name>
-									<value>
-										<which>2</which>
-										<value>RED_WIRE_ELECTRODE</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field4-name</name>
-								</first>
-								<second>
-									<name>field4-name</name>
-									<value>
-										<which>2</which>
-										<value>field3</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field5-name</name>
-								</first>
-								<second>
-									<name>field5-name</name>
-									<value>
-										<which>2</which>
-										<value>field4</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field6-name</name>
-								</first>
-								<second>
-									<name>field6-name</name>
-									<value>
-										<which>2</which>
-										<value>field5</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>GetFieldsFromBundle:3</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Bundle</category_name_>
-						<module_name_>GetFieldsFromBundle</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>6</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>field1-name</name>
-								</first>
-								<second>
-									<name>field1-name</name>
-									<value>
-										<which>2</which>
-										<value>BLUE_WIRE_ELECTRODE</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field2-name</name>
-								</first>
-								<second>
-									<name>field2-name</name>
-									<value>
-										<which>2</which>
-										<value>field1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field3-name</name>
-								</first>
-								<second>
-									<name>field3-name</name>
-									<value>
-										<which>2</which>
-										<value>RED_WIRE_ELECTRODE</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field4-name</name>
-								</first>
-								<second>
-									<name>field4-name</name>
-									<value>
-										<which>2</which>
-										<value>field3</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field5-name</name>
-								</first>
-								<second>
-									<name>field5-name</name>
-									<value>
-										<which>2</which>
-										<value>field4</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field6-name</name>
-								</first>
-								<second>
-									<name>field6-name</name>
-									<value>
-										<which>2</which>
-										<value>field5</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>GetFieldsFromBundle:4</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Bundle</category_name_>
-						<module_name_>GetFieldsFromBundle</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>6</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>field1-name</name>
-								</first>
-								<second>
-									<name>field1-name</name>
-									<value>
-										<which>2</which>
-										<value>SEGMENTATION</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field2-name</name>
-								</first>
-								<second>
-									<name>field2-name</name>
-									<value>
-										<which>2</which>
-										<value>field1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field3-name</name>
-								</first>
-								<second>
-									<name>field3-name</name>
-									<value>
-										<which>2</which>
-										<value>RED_WIRE_ELECTRODE</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field4-name</name>
-								</first>
-								<second>
-									<name>field4-name</name>
-									<value>
-										<which>2</which>
-										<value>field3</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field5-name</name>
-								</first>
-								<second>
-									<name>field5-name</name>
-									<value>
-										<which>2</which>
-										<value>field4</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field6-name</name>
-								</first>
-								<second>
-									<name>field6-name</name>
-									<value>
-										<which>2</which>
-										<value>field5</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>GetFieldsFromBundle:5</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Bundle</category_name_>
-						<module_name_>GetFieldsFromBundle</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>6</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>field1-name</name>
-								</first>
-								<second>
-									<name>field1-name</name>
-									<value>
-										<which>2</which>
-										<value>POTENTIAL_FIELD</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field2-name</name>
-								</first>
-								<second>
-									<name>field2-name</name>
-									<value>
-										<which>2</which>
-										<value>field1</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field3-name</name>
-								</first>
-								<second>
-									<name>field3-name</name>
-									<value>
-										<which>2</which>
-										<value>RED_WIRE_ELECTRODE</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field4-name</name>
-								</first>
-								<second>
-									<name>field4-name</name>
-									<value>
-										<which>2</which>
-										<value>field3</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field5-name</name>
-								</first>
-								<second>
-									<name>field5-name</name>
-									<value>
-										<which>2</which>
-										<value>field4</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>field6-name</name>
-								</first>
-								<second>
-									<name>field6-name</name>
-									<value>
-										<which>2</which>
-										<value>field5</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReadBundle:0</first>
+				<first>ReadField:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>DataIO</category_name_>
-						<module_name_>ReadBundle</module_name_>
+						<module_name_>ReadField</module_name_>
 					</module>
 					<state>
 						<stateMap>
@@ -722,7 +194,7 @@
 									<name>FileTypeName</name>
 									<value>
 										<which>2</which>
-										<value>SCIRun Bundle File</value>
+										<value>SCIRun Field File</value>
 									</value>
 								</second>
 							</item>
@@ -734,267 +206,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/barad-dur/Downloads/SCIRunData_4/torso/Defib_simulation_results.bdl</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ScriptEnvironmentVariable</name>
-								</first>
-								<second>
-									<name>ScriptEnvironmentVariable</name>
-									<value>
-										<which>2</which>
-										<value></value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReadBundle:1</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>ReadBundle</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>3</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Bundle File</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Downloads/SCIRunData_4/torso/Defib_simulation_results.bdl</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ScriptEnvironmentVariable</name>
-								</first>
-								<second>
-									<name>ScriptEnvironmentVariable</name>
-									<value>
-										<which>2</which>
-										<value></value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReadBundle:2</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>ReadBundle</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>3</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Bundle File</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Downloads/SCIRunData_4/torso/Defib_simulation_results.bdl</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ScriptEnvironmentVariable</name>
-								</first>
-								<second>
-									<name>ScriptEnvironmentVariable</name>
-									<value>
-										<which>2</which>
-										<value></value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReadBundle:3</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>ReadBundle</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>3</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Bundle File</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Downloads/SCIRunData_4/torso/Defib_simulation_results.bdl</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ScriptEnvironmentVariable</name>
-								</first>
-								<second>
-									<name>ScriptEnvironmentVariable</name>
-									<value>
-										<which>2</which>
-										<value></value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReadBundle:4</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>ReadBundle</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>3</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Bundle File</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Downloads/SCIRunData_4/torso/Defib_simulation_results.bdl</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ScriptEnvironmentVariable</name>
-								</first>
-								<second>
-									<name>ScriptEnvironmentVariable</name>
-									<value>
-										<which>2</which>
-										<value></value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReadBundle:5</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>ReadBundle</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>3</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Bundle File</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Downloads/SCIRunData_4/torso/Defib_simulation_results.bdl</value>
+										<value>%SCIRUNDATADIR%/Fields/torso-defib/can_electrode.fld</value>
 									</value>
 								</second>
 							</item>
@@ -1112,7 +324,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>18</count>
+			<count>12</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CalculateMeshCenter:0</moduleId1_>
@@ -1187,9 +399,9 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>GetFieldsFromBundle:0</moduleId1_>
+				<moduleId1_>ReadField:0</moduleId1_>
 				<port1_>
-					<name>field3</name>
+					<name>Field</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>CalculateMeshCenter:0</moduleId2_>
@@ -1199,9 +411,9 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>GetFieldsFromBundle:1</moduleId1_>
+				<moduleId1_>ReadField:0</moduleId1_>
 				<port1_>
-					<name>field1</name>
+					<name>Field</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>CalculateMeshCenter:1</moduleId2_>
@@ -1211,9 +423,9 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>GetFieldsFromBundle:2</moduleId1_>
+				<moduleId1_>ReadField:0</moduleId1_>
 				<port1_>
-					<name>field1</name>
+					<name>Field</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>CalculateMeshCenter:2</moduleId2_>
@@ -1223,9 +435,9 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>GetFieldsFromBundle:3</moduleId1_>
+				<moduleId1_>ReadField:0</moduleId1_>
 				<port1_>
-					<name>field1</name>
+					<name>Field</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>CalculateMeshCenter:3</moduleId2_>
@@ -1235,9 +447,9 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>GetFieldsFromBundle:4</moduleId1_>
+				<moduleId1_>ReadField:0</moduleId1_>
 				<port1_>
-					<name>field1</name>
+					<name>Field</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>CalculateMeshCenter:4</moduleId2_>
@@ -1247,9 +459,9 @@
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>GetFieldsFromBundle:5</moduleId1_>
+				<moduleId1_>ReadField:0</moduleId1_>
 				<port1_>
-					<name>field1</name>
+					<name>Field</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>CalculateMeshCenter:5</moduleId2_>
@@ -1258,82 +470,10 @@
 					<id>0</id>
 				</port2_>
 			</item>
-			<item>
-				<moduleId1_>ReadBundle:0</moduleId1_>
-				<port1_>
-					<name>Bundle</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>GetFieldsFromBundle:0</moduleId2_>
-				<port2_>
-					<name>InputBundle</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadBundle:1</moduleId1_>
-				<port1_>
-					<name>Bundle</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>GetFieldsFromBundle:1</moduleId2_>
-				<port2_>
-					<name>InputBundle</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadBundle:2</moduleId1_>
-				<port1_>
-					<name>Bundle</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>GetFieldsFromBundle:2</moduleId2_>
-				<port2_>
-					<name>InputBundle</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadBundle:3</moduleId1_>
-				<port1_>
-					<name>Bundle</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>GetFieldsFromBundle:3</moduleId2_>
-				<port2_>
-					<name>InputBundle</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadBundle:4</moduleId1_>
-				<port1_>
-					<name>Bundle</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>GetFieldsFromBundle:4</moduleId2_>
-				<port2_>
-					<name>InputBundle</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadBundle:5</moduleId1_>
-				<port1_>
-					<name>Bundle</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>GetFieldsFromBundle:5</moduleId2_>
-				<port2_>
-					<name>InputBundle</name>
-					<id>0</id>
-				</port2_>
-			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>24</count>
+		<count>13</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CalculateMeshCenter:0</first>
@@ -1352,113 +492,36 @@
 		<item>
 			<first>CalculateMeshCenter:2</first>
 			<second>
-				<first>9.30000000000000000e+02</first>
-				<second>3.30000000000000000e+02</second>
+				<first>5.72000000000000000e+02</first>
+				<second>3.36000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CalculateMeshCenter:3</first>
 			<second>
-				<first>1.23000000000000000e+03</first>
-				<second>3.30000000000000000e+02</second>
+				<first>8.72000000000000000e+02</first>
+				<second>3.36000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CalculateMeshCenter:4</first>
 			<second>
-				<first>1.53000000000000000e+03</first>
-				<second>6.30000000000000000e+02</second>
+				<first>1.12000000000000000e+02</first>
+				<second>5.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>CalculateMeshCenter:5</first>
 			<second>
-				<first>2.13000000000000000e+03</first>
-				<second>9.30000000000000000e+02</second>
+				<first>4.56000000000000000e+02</first>
+				<second>5.32000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>GetFieldsFromBundle:0</first>
+			<first>ReadField:0</first>
 			<second>
-				<first>3.00000000000000000e+01</first>
-				<second>2.30000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>GetFieldsFromBundle:1</first>
-			<second>
-				<first>3.30000000000000000e+02</first>
-				<second>2.30000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>GetFieldsFromBundle:2</first>
-			<second>
-				<first>9.30000000000000000e+02</first>
-				<second>2.30000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>GetFieldsFromBundle:3</first>
-			<second>
-				<first>1.23000000000000000e+03</first>
-				<second>2.30000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>GetFieldsFromBundle:4</first>
-			<second>
-				<first>1.53000000000000000e+03</first>
-				<second>5.30000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>GetFieldsFromBundle:5</first>
-			<second>
-				<first>2.13000000000000000e+03</first>
-				<second>8.30000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ReadBundle:0</first>
-			<second>
-				<first>3.00000000000000000e+01</first>
-				<second>1.30000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ReadBundle:1</first>
-			<second>
-				<first>3.30000000000000000e+02</first>
-				<second>1.30000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ReadBundle:2</first>
-			<second>
-				<first>9.30000000000000000e+02</first>
-				<second>1.30000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ReadBundle:3</first>
-			<second>
-				<first>1.23000000000000000e+03</first>
-				<second>1.30000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ReadBundle:4</first>
-			<second>
-				<first>1.53000000000000000e+03</first>
-				<second>4.30000000000000000e+02</second>
-			</second>
-		</item>
-		<item>
-			<first>ReadBundle:5</first>
-			<second>
-				<first>2.12800000000000000e+03</first>
-				<second>6.84000000000000000e+02</second>
+				<first>2.00000000000000000e+02</first>
+				<second>1.47000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -1478,29 +541,29 @@
 		<item>
 			<first>ReportFieldInfo:2</first>
 			<second>
-				<first>9.30000000000000000e+02</first>
-				<second>4.30000000000000000e+02</second>
+				<first>5.72000000000000000e+02</first>
+				<second>4.36000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:3</first>
 			<second>
-				<first>1.23000000000000000e+03</first>
-				<second>4.30000000000000000e+02</second>
+				<first>8.72000000000000000e+02</first>
+				<second>4.36000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:4</first>
 			<second>
-				<first>1.53000000000000000e+03</first>
-				<second>7.30000000000000000e+02</second>
+				<first>1.12000000000000000e+02</first>
+				<second>6.28000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:5</first>
 			<second>
-				<first>2.13000000000000000e+03</first>
-				<second>1.03000000000000000e+03</second>
+				<first>4.56000000000000000e+02</first>
+				<second>6.08000000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -1513,7 +576,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>24</count>
+		<count>13</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>CalculateMeshCenter:0</first>
@@ -1540,51 +603,7 @@
 			<second>-1</second>
 		</item>
 		<item>
-			<first>GetFieldsFromBundle:0</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>GetFieldsFromBundle:1</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>GetFieldsFromBundle:2</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>GetFieldsFromBundle:3</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>GetFieldsFromBundle:4</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>GetFieldsFromBundle:5</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>ReadBundle:0</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>ReadBundle:1</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>ReadBundle:2</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>ReadBundle:3</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>ReadBundle:4</first>
-			<second>-1</second>
-		</item>
-		<item>
-			<first>ReadBundle:5</first>
+			<first>ReadField:0</first>
 			<second>-1</second>
 		</item>
 		<item>

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ReorderNormalCoherently",
+    "namespace": "Fields",
+    "status": "new module",
+    "description": "reorders the normals so they are all facing the same direction",
+    "header": "Modules/Legacy/Fields/ReorderNormalCoherently.h"
+  },
+  "algorithm": {
+    "name": "ReorderNormalCoherentlyAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/Cleanup/ReorderNormalCoherentlyAlgo.h"
+  },
+  "UI": {
+    "name": "N/A",
+    "header": "N/A"
+  }
+}

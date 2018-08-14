@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -24,59 +24,37 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
-*/
-
-#include <Core/Datatypes/Bundle.h>
-
-#include <Dataflow/Network/Ports/BundlePort.h>
-#include <Dataflow/Network/Module.h>
-
-#include <Dataflow/Modules/DataIO/GenericReader.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
-
-using namespace SCIRun;
-
-/// @class ReadBundle
-/// @brief This module reads a bundle from file (a SCIRun .bdl file).
-
-class ReadBundle : public GenericReader<BundleHandle> {
-  public:
-    ReadBundle(GuiContext*);
-    virtual ~ReadBundle() {}
-
-    virtual void execute();
-  protected:
-    GuiString guiTypes_;
-    GuiString guiFileType_;
-  
-};
+   */
 
 
-DECLARE_MAKER(ReadBundle)
-  ReadBundle::ReadBundle(GuiContext* ctx)
-    : GenericReader<BundleHandle>("ReadBundle", ctx, "DataIO", "SCIRun"),
-  guiTypes_(get_ctx()->subVar("types")),
-  guiFileType_(get_ctx()->subVar("filetype"))
-{
-  std::string importtypes = "{";
-  importtypes += "{{SCIRun Bundle File} {.bdl} } ";
-  importtypes += "}";
+#ifndef CORE_ALGORITHMS_FIELDS_CLEANUP_ReorderNormalCoherentlyALGO_H
+#define CORE_ALGORITHMS_FIELDS_CLEANUP_ReorderNormalCoherentlyALGO_H
 
-  guiTypes_.set(importtypes);
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
+
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
+
+        ALGORITHM_PARAMETER_DECL(invertedElementsCheckBox);
+        
+        class SCISHARE ReorderNormalCoherentlyAlgo : public AlgorithmBase
+        {
+        public:
+          ReorderNormalCoherentlyAlgo();
+
+          void runImpl(FieldHandle inputField,
+            FieldHandle& outputField,
+            Datatypes::DenseColumnMatrixHandle& outputMatrix)const;
+
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+        };
+      }
+    }
+  }
 }
 
-void
-ReadBundle::execute()
-{
-  const std::string ftpre = guiFileType_.get();
-  const std::string::size_type loc = ftpre.find(" (");
-  const std::string ft = ftpre.substr(0, loc);
-
-  importing_ = false;
-  GenericReader<BundleHandle>::execute();
-}
-
-
-
-
+#endif
 
