@@ -26,12 +26,12 @@
 */
 
 #include <Interface/Modules/Fields/CreateImageDialog.h>
-#include <Core/Algorithms/Legacy/Fields/CreateMesh/CreateImageAlgo.h>
+#include <Modules/Legacy/Fields/CreateImage.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Fields;
+typedef SCIRun::Modules::Fields::CreateImage CreateImageModule;
 
 CreateImageDialog::CreateImageDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -41,26 +41,26 @@ CreateImageDialog::CreateImageDialog(const std::string& name, ModuleStateHandle 
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addSpinBoxManager(width_, Parameters::Width);
-  addSpinBoxManager(height_, Parameters::Height);
-  addDoubleSpinBoxManager(padPercentageSpinBox_, Parameters::PadPercent);
+  addSpinBoxManager(width_, CreateImageModule::Width);
+  addSpinBoxManager(height_, CreateImageModule::Height);
+  addDoubleSpinBoxManager(padPercentageSpinBox_, CreateImageModule::PadPercent);
   
-  addComboBoxManager(mode_, Parameters::Mode);
+  addComboBoxManager(mode_, CreateImageModule::Mode);
   
-  addComboBoxManager(axis_, Parameters::Axis);
+  addComboBoxManager(axis_, CreateImageModule::Axis);
   
-  addDoubleSpinBoxManager(centerX_, Parameters::CenterX);
-  addDoubleSpinBoxManager(centerY_, Parameters::CenterY);
-  addDoubleSpinBoxManager(centerZ_, Parameters::CenterZ);
+  addDoubleSpinBoxManager(centerX_, CreateImageModule::CenterX);
+  addDoubleSpinBoxManager(centerY_, CreateImageModule::CenterY);
+  addDoubleSpinBoxManager(centerZ_, CreateImageModule::CenterZ);
   
-  addDoubleSpinBoxManager(normalX_, Parameters::NormalX);
-  addDoubleSpinBoxManager(normalY_, Parameters::NormalY);
-  addDoubleSpinBoxManager(normalZ_, Parameters::NormalZ);
+  addDoubleSpinBoxManager(normalX_, CreateImageModule::NormalX);
+  addDoubleSpinBoxManager(normalY_, CreateImageModule::NormalY);
+  addDoubleSpinBoxManager(normalZ_, CreateImageModule::NormalZ);
   
-  addDoubleSpinBoxManager(position_, Parameters::Position);
+  addDoubleSpinBoxManager(position_, CreateImageModule::Position);
   connect(mode_, SIGNAL(activated(const QString&)), this, SLOT(enableWidgets(const QString&)));
   
-  addComboBoxManager(dataLocation_, Parameters::DataLocation);
+  addComboBoxManager(dataLocation_, CreateImageModule::DataLocation);
 }
 
 void CreateImageDialog::enableWidgets(const QString& mode)
@@ -70,5 +70,5 @@ void CreateImageDialog::enableWidgets(const QString& mode)
 
 void CreateImageDialog::pullSpecial()
 {
-  enableWidgets(QString::fromStdString(state_->getValue(Parameters::Mode).toString()));
+  enableWidgets(QString::fromStdString(state_->getValue(CreateImageModule::Mode).toString()));
 }

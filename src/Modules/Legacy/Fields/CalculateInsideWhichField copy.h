@@ -25,52 +25,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_CreateImageAlgo_H
-#define ALGORITHMS_MATH_CreateImageAlgo_H
-
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Field/share.h>
+#ifndef MODULES_FIELDS_CalculateInsideWhichField_H
+#define MODULES_FIELDS_CalculateInsideWhichField_H
+#include <Dataflow/Network/Module.h>
+#include <Modules/Fields/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Algorithms {
+namespace Modules {
 namespace Fields {
-  
-  ALGORITHM_PARAMETER_DECL(Width);
-  ALGORITHM_PARAMETER_DECL(Height);
-  ALGORITHM_PARAMETER_DECL(Depth);
-  ALGORITHM_PARAMETER_DECL(PadPercent);
-  
-  ALGORITHM_PARAMETER_DECL(Mode);
-  
-  ALGORITHM_PARAMETER_DECL(Axis);
-  
-  ALGORITHM_PARAMETER_DECL(CenterX);
-  ALGORITHM_PARAMETER_DECL(CenterY);
-  ALGORITHM_PARAMETER_DECL(CenterZ);
-  
-  ALGORITHM_PARAMETER_DECL(NormalX);
-  ALGORITHM_PARAMETER_DECL(NormalY);
-  ALGORITHM_PARAMETER_DECL(NormalZ);
-  
-  ALGORITHM_PARAMETER_DECL(Position);
-  ALGORITHM_PARAMETER_DECL(Index);
-  
-  ALGORITHM_PARAMETER_DECL(DataLocation);
-  
-  class SCISHARE CreateImageAlgo : public AlgorithmBase
+
+  class SCISHARE CalculateInsideWhichField : public SCIRun::Dataflow::Networks::Module,
+    public Has2InputPorts<FieldPortTag, DynamicPortTag <FieldPortTag>>,
+    public Has1OutputPort<FieldPortTag>
   {
-
   public:
-    CreateImageAlgo();
-    static const AlgorithmInputName OVMatrix;
-    static const AlgorithmInputName SizeMatrix;
-    virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
-    
-  private:
-    enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
-  };
+    CalculateInsideWhichField();
+    void execute() override;
+    void setStateDefaults() override;
 
-}}}}
+    
+    INPUT_PORT(0, InputField, Field);
+    HAS_DYNAMIC_PORTS
+    INPUT_PORT_DYNAMIC(1, InputFields, Field);
+    OUTPUT_PORT(0, OutputField, Field);
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm);
+  };
+}}}
 
 #endif

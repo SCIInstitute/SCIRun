@@ -103,9 +103,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   Cleanup/RemoveUnusedNodes.h
   Cleanup/CleanupTetMesh.h
   MeshDerivatives/CalculateMeshCenterAlgo.h
-  CreateMesh/CreateImageAlgo.h
-
-)
+  )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
   RegisterWithCorrespondences.cc
@@ -126,8 +124,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #CompareFields/CompareFields.cc
   #CompareFields/SimilarMeshes.cc
   #CreateMesh/CreateMeshFromNrrd.cc
-  CreateMesh/CreateImageAlgo.cc
-
+  
   DistanceField/CalculateDistanceField.cc
   DistanceField/CalculateIsInsideField.cc
   #DistanceField/CalculateInsideWhichField.cc

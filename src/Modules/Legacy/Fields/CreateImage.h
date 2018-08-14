@@ -46,11 +46,34 @@ namespace SCIRun {
         virtual void setStateDefaults() override;
 
         INPUT_PORT(0, InputField, Field);
-        INPUT_PORT(1, SizeMatrix, Matrix);
-        INPUT_PORT(2, OVMatrix, Matrix);
+        INPUT_PORT(1, SizeMatrix, DenseMatrix);
+        INPUT_PORT(2, OVMatrix, DenseMatrix);
         OUTPUT_PORT(0, OutputField, Field);
-
-        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+        
+        static const SCIRun::Core::Algorithms::AlgorithmParameterName Width;
+        static const SCIRun::Core::Algorithms::AlgorithmParameterName Height;
+        static const SCIRun::Core::Algorithms::AlgorithmParameterName Depth;
+        static const SCIRun::Core::Algorithms::AlgorithmParameterName PadPercent;
+        
+        static const SCIRun::Core::Algorithms::AlgorithmParameterName Mode;
+        static const SCIRun::Core::Algorithms::AlgorithmParameterName Axis;
+        
+        static const SCIRun::Core::Algorithms::AlgorithmParameterName CenterX;
+        static const SCIRun::Core::Algorithms::AlgorithmParameterName CenterY;
+        static const SCIRun::Core::Algorithms::AlgorithmParameterName CenterZ;
+        
+        static const SCIRun::Core::Algorithms::AlgorithmParameterName NormalX;
+        static const SCIRun::Core::Algorithms::AlgorithmParameterName NormalY;
+        static const SCIRun::Core::Algorithms::AlgorithmParameterName NormalZ;
+        
+        static const SCIRun::Core::Algorithms::AlgorithmParameterName Position;
+        static const SCIRun::Core::Algorithms::AlgorithmParameterName Index;
+        static const SCIRun::Core::Algorithms::AlgorithmParameterName DataLocation;
+        
+        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        
+      private:
+        enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
 
       };
     }
