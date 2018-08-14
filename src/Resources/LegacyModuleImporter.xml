@@ -1,6 +1,6 @@
 <modules>
   <module name="CreateLatVol">
-    <key> 
+    <key>
       <type>toInt</type>
       <from>sizex</from>
       <to>XSize</to>
@@ -15,26 +15,21 @@
       <from>sizez</from>
       <to>ZSize</to>
    </key>
-    <key> 
+    <key>
       <type>toPercent</type>
       <from>padpercent</from>
       <to>PadPercent</to>
     </key>
-    <key> 
+    <key>
       <type>data_at</type>
       <from>data-at</from>
       <to>DataAtLocation</to>
     </key>
-    <key> 
+    <key>
       <type>element_size</type>
       <from>element-size</from>
       <to>ElementSizeNormalized</to>
     </key>
-    <key> 
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>UIGeometry</to>
-    </key>      
   </module>
   <module name="ReadField">
     <key> 
@@ -72,22 +67,12 @@
       <from>delay</from>
       <to>delay</to>
     </key>
-    <key> 
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>UIGeometry</to>
-    </key>   
   </module>
   <module name="RescaleColorMap">
     <key>
       <type>throwAway</type>
       <from>main_frame</from>
       <to>main_frame</to>
-    </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
     </key>
     <key>
       <type>negateBool</type>
@@ -156,11 +141,6 @@
       <from>disconnect</from>
       <to>DisconnectBoundaries</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>  
   <module name="CalculateFieldData">
     <key>
@@ -178,11 +158,6 @@
       <from>cache</from>
       <to>cache</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key> 
   </module>
   <module name="CreateStandardColorMaps">
     <key>
@@ -199,11 +174,6 @@
       <type>toDouble</type>
       <from>gamma</from>
       <to>ColorMapShift</to>
-    </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
     </key>
   </module>
   <module name="ShowField">
@@ -372,11 +342,6 @@
       <from>def_color-b</from>
       <to>DefaultMeshColor</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>
   <module name="ShowFieldGlyphs">
     <key>
@@ -469,11 +434,6 @@
       <from>def_color-b</from>
       <to>DefaultMeshColor</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>
   <module name="MapFieldDataFromSourceToDestination">
     <key>
@@ -496,11 +456,6 @@
       <from>map_source_to_single_dest</from>
       <to>MappingMethod</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>
   <module name="SwapFieldDataWithMatrixEntries">
     <key>
@@ -508,22 +463,12 @@
       <from>keepscalartype</from>
       <to>PreserveScalar</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>
   <module name="SetFieldData">
     <key>
       <type>toInt</type>
       <from>keepscalartype</from>
       <to>keepTypeCheckBox</to>
-    </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
     </key>
   </module>
   <module name="EditMeshBoundingBox">
@@ -627,11 +572,6 @@
       <from>useoutputsize</from>
       <to>ResetSize</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>
   <module name="CreateFieldData">
     <key>
@@ -649,11 +589,6 @@
       <from>basis</from>
       <to>BasisString</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>
   <module name="ConvertFieldBasis">
     <key>
@@ -670,11 +605,6 @@
       <type>toString</type>
       <from>fldname</from>
       <to>InputFieldName</to>
-    </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
     </key>
   </module>
   <module name="BuildMappingMatrix">
@@ -698,11 +628,6 @@
       <from>map_source_to_single_dest</from>
       <to>MappingMethod</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>
   <module name="RefineMesh">
     <key>
@@ -719,11 +644,6 @@
       <type>toDouble</type>
       <from>isoval</from>
       <to>IsoValue</to>
-    </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
     </key>
   </module>
   <module name="JoinFields">
@@ -757,22 +677,12 @@
       <from>meshonly</from>
       <to>MakeNoData</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>
   <module name="ConvertMeshToPointCloud">
     <key>
       <type>dataOrNodes</type>
       <from>datalocation</from>
       <to>Location</to>
-    </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
     </key>
   </module>
   <module name="MapFieldDataFromElemToNode">
@@ -781,22 +691,12 @@
       <from>method</from>
       <to>Method</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>
   <module name="MapFieldDataFromNodeToElem">
     <key>
       <type>toString</type>
       <from>method</from>
       <to>Method</to>
-    </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
     </key>
   </module>
   <module name="ConvertFieldDataType">
@@ -815,11 +715,6 @@
       <from>fldname</from>
       <to>InputFieldName</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>
   <module name="ScaleFieldMeshAndData">
     <key>
@@ -837,22 +732,12 @@
       <from>usegeomcenter</from>
       <to>scale_from_center</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>
   <module name="GetMeshQualityField">
     <key>
       <type>toString</type>
       <from>method</from>
       <to>Metric</to>
-    </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
     </key>
   </module>
   <module name="CalculateDistanceToFieldBoundary">
@@ -875,11 +760,6 @@
       <type>toString</type>
       <from>basistype</from>
       <to>BasisType</to>
-    </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
     </key>
   </module>
   <module name="GeneratePointSamplesFromFieldOrWidget">
@@ -908,11 +788,6 @@
       <from>clamp</from>
       <to>ClampToNodes</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>
   <module name="ReadMatrix">
     <key>
@@ -929,11 +804,6 @@
       <type>toString</type>
       <from>filetype</from>
       <to>FileTypeName</to>
-    </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>UIGeometry</to>
     </key>
   </module>
   <module name="CalculateDistanceToField">
@@ -957,11 +827,6 @@
       <from>basistype</from>
       <to>BasisType</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>
   <module name="EvaluateLinAlgBinary">
     <key>
@@ -974,11 +839,6 @@
       <from>function</from>
       <to>FunctionString</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>
   <module name="ClipFieldByFunction">
     <key>
@@ -990,11 +850,6 @@
       <type>toString</type>
       <from>function</from>
       <to>FunctionString</to>
-    </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
     </key>
   </module>
   <module name="ApplyFEMCurrentSource">
@@ -1012,11 +867,6 @@
       <type>toString</type>
       <from>modeTCL</from>
       <to>ModelType</to>
-    </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
     </key>
   </module>
   <module name="GetSliceFromStructuredFieldByIndices">
@@ -1055,11 +905,6 @@
       <from>index-k</from>
       <to>Index_k</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>
   <module name="SolveLinearSystem">
     <key>
@@ -1078,14 +923,9 @@
       <to>Preconditioner</to>
     </key>
     <key>
-      <type>toDouble</type>
+      <type>toInt</type>
       <from>maxiter</from>
       <to>MaxIterations</to>
-    </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
     </key>
   </module>
   <module name="CreateMatrix">
@@ -1114,11 +954,6 @@
       <from>rlabel</from>
       <to>rlabel</to>
     </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
-    </key>
   </module>
   <module name="CollectMatrices">
     <key>
@@ -1135,11 +970,6 @@
       <type>toInt</type>
       <from>front</from>
       <to>CollectPrependIndicator</to>
-    </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
     </key>
   </module>
   <module name="FairMesh">
@@ -1162,11 +992,6 @@
       <type>toDouble</type>
       <from>mu</from>
       <to>FilterCutoff</to>
-    </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
     </key>
   </module>
   <module name="MapFieldDataOntoElems">
@@ -1199,11 +1024,6 @@
       <type>toDouble</type>
       <from>max-distance</from>
       <to>MaxDistance</to>
-    </key>
-    <key>
-      <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
     </key>
   </module>
   <module name="GenerateStreamLines">
@@ -1247,10 +1067,241 @@
       <from>auto-parameterize</from>
       <to>AutoParameters</to>
     </key>
+  </module>
+  <module name="ShowColorMap">
+    <key>
+      <type>lengthForShowColorMap</type>
+      <from>length</from>
+      <to>DisplayLength</to>
+    </key>
+    <key>
+      <type>sideForShowColorMap</type>
+      <from>side</from>
+      <to>DisplaySide</to>
+    </key>
+    <key>
+      <type>toInt</type>
+      <from>numlabels</from>
+      <to>Labels</to>
+    </key>
+    <key>
+      <type>toDouble</type>
+      <from>scale</from>
+      <to>Scale</to>
+    </key>
+    <key>
+      <type>toInt</type>
+      <from>numsigdigits</from>
+      <to>SignificantDigits</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>units</from>
+      <to>Units</to>
+    </key>
+    <key>
+      <type>toDouble</type>
+      <from>color-r</from>
+      <to>TextRed</to>
+    </key>
+    <key>
+      <type>toDouble</type>
+      <from>color-g</from>
+      <to>TextGreen</to>
+    </key>
+    <key>
+      <type>toDouble</type>
+      <from>color-b</from>
+      <to>TextBlue</to>
+    </key>
     <key>
       <type>throwAway</type>
-      <from>ui_geometry</from>
-      <to>ui_geometry</to>
+      <from>extra-padding</from>
+      <to>extra-padding</to>
+    </key>
+  </module>
+  <module name="MapFieldDataOntoNodes">
+    <key>
+      <type>toDouble</type>
+      <from>outside-value</from>
+      <to>OutsideValue</to>
+    </key>
+    <key>
+      <type>toDouble</type>
+      <from>max-distance</from>
+      <to>MaxDistance</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>quantity</from>
+      <to>Quantity</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>value</from>
+      <to>InterpolationModel</to>
+    </key>
+  </module>
+  <module name="GetFieldsFromBundle">
+    <key>
+      <type>toString</type>
+      <from>field1-name</from>
+      <to>field1-name</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>field2-name</from>
+      <to>field2-name</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>field3-name</from>
+      <to>field3-name</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>field4-name</from>
+      <to>field4-name</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>field5-name</from>
+      <to>field5-name</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>field6-name</from>
+      <to>field6-name</to>
+    </key>
+  </module>
+  <module name="ClipVolumeByIsovalue">
+    <key>
+      <type>toDouble</type>
+      <from>isoval</from>
+      <to>ScalarIsoValue</to>
+    </key>
+    <key>
+      <type>toInt</type>
+      <from>lte</from>
+      <to>LessThanIsoValue</to>
+    </key>
+  </module>
+  <module name="ReportFieldGeometryMeasures">
+    <key>
+      <type>toString</type>
+      <from>simplexString</from>
+      <to>MeasureLocation</to>
+    </key>
+    <key>
+      <type>toInt</type>
+      <from>xFlag</from>
+      <to>XPositionFlag</to>
+    </key>
+    <key>
+      <type>toInt</type>
+      <from>yFlag</from>
+      <to>YPositionFlag</to>
+    </key>
+    <key>
+      <type>toInt</type>
+      <from>zFlag</from>
+      <to>ZPositionFlag</to>
+    </key>
+    <key>
+      <type>toInt</type>
+      <from>idxFlag</from>
+      <to>IndexFlag</to>
+    </key>
+    <key>
+      <type>toInt</type>
+      <from>sizeFlag</from>
+      <to>SizeFlag</to>
+    </key>
+    <key>
+      <type>toInt</type>
+      <from>normalsFlag</from>
+      <to>NormalsFlag</to>
+    </key>
+  </module>
+  <module name="ConvertIndicesToFieldData">
+    <key>
+      <type>toString</type>
+      <from>outputtype</from>
+      <to>OutputFieldDataType</to>
+    </key>
+  </module>
+  <module name="CreateString">
+    <key>
+      <type>toString</type>
+      <from>inputstring</from>
+      <to>InputString</to>
+    </key>
+  </module>
+  <module name="ProjectPointsOntoMesh">
+    <key>
+      <type>toString</type>
+      <from>method</from>
+      <to>ProjectMethod</to>
+    </key>
+  </module>
+  <module name="BuildNoiseColumnMatrix">
+    <key>
+      <type>toDouble</type>
+      <from>snr</from>
+      <to>SignalToNoiseRatio</to>
+    </key>
+  </module>
+  <module name="PrintMatrixIntoString">
+    <key>
+      <type>toString</type>
+      <from>formatstring</from>
+      <to>FormatString</to>
+    </key>
+  </module>
+  <module name="SplitFieldByConnectedRegion">
+    <key>
+      <type>toInt</type>
+      <from>sort-by-size</from>
+      <to>SortAscending</to>
+    </key>
+    <key>
+      <type>toInt</type>
+      <from>sort-ascending</from>
+      <to>SortDomainBySize</to>
+    </key>
+  </module>
+  <module name="ReadBundle">
+    <key>
+      <type>toString</type>
+      <from>filename</from>
+      <to>Filename</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>from-env</from>
+      <to>ScriptEnvironmentVariable</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>types</from>
+      <to>FileTypeName</to>
+    </key>
+  </module>
+  <module name="SetFieldDataToConstantValue">
+    <key>
+      <type>toString</type>
+      <from>data-type</from>
+      <to>DataType</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>basis-order</from>
+      <to>BasisOrder</to>
+    </key>
+    <key>
+      <type>toDouble</type>
+      <from>value</from>
+      <to>Value</to>
     </key>
   </module>
 </modules>

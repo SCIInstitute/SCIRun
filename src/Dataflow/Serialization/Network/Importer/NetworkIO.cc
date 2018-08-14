@@ -338,6 +338,8 @@ const std::string &val)
 
   if (!xmlData_)
     return;
+  if (var == "ui_geometry")
+    return;
 
   std::string moduleName = xmlData_->network.modules[moduleIdMap_[mod_id]].module.module_name_;
   auto& stateXML = xmlData_->network.modules[moduleIdMap_[mod_id]].state;
@@ -457,6 +459,17 @@ namespace
     if (s == "3") return std::string("RungeKutta");
     return std::string("RungeKuttaFehlberg");
   };
+  ValueConverter lengthForShowColorMap = [](const std::string& s)
+  {
+    if (s == "full") return 1;
+    if (s == "half1") return 0;
+    return 2;
+  };
+  ValueConverter sideForShowColorMap = [](const std::string& s)
+  {
+    if (s == "left") return 0;
+    return 1;
+  };
 }
 
 std::unique_ptr<std::string> LegacyNetworkIO::v4MergeStateToV5_ = std::unique_ptr<std::string>(new std::string(""));
@@ -505,7 +518,9 @@ LegacyNetworkIO::read_importer_map(const std::string& file)
     {"createMatrixFormat", createMatrixFormat},
     {"directionForStreamLines", directionForStreamLines},
     {"valueForStreamLines", valueForStreamLines},
-    {"methodForStreamLines", methodForStreamLines}
+    {"methodForStreamLines", methodForStreamLines},
+    {"lengthForShowColorMap", lengthForShowColorMap},
+    {"sideForShowColorMap", sideForShowColorMap}
   };
   using boost::property_tree::ptree;
   using boost::property_tree::read_xml;
