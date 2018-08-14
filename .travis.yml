@@ -27,10 +27,8 @@ before_install:
 
 script:
   - cd bin
-  - if [[ "${TRAVIS_OS_NAME}" = "linux" ]]; then cmake -GNinja -DTRAVIS_BUILD:BOOL=ON ../Superbuild; fi
-  - if [[ "${TRAVIS_OS_NAME}" = "osx" ]]; then cmake -DTRAVIS_BUILD:BOOL=ON ../Superbuild; fi
-  - if [[ "${TRAVIS_OS_NAME}" = "linux" ]]; then travis_wait 80 ninja; fi
-  - if [[ "${TRAVIS_OS_NAME}" = "osx" ]]; then travis_wait 80 ninja; fi
+  - cmake -GNinja -DTRAVIS_BUILD:BOOL=ON ../Superbuild
+  - travis_wait 80 ninja
   - cd SCIRun
   - ./Algorithm_Layer_Test
   - ./Modules_Factory_Tests --gtest_filter=*HardCodedModuleFactoryTests*
