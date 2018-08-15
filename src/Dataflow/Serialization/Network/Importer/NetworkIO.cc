@@ -470,6 +470,16 @@ namespace
     if (s == "left") return 0;
     return 1;
   };
+  ValueConverter conditionsForFEMVoltage = [](const std::string& s)
+  {
+    if (s == "DirSub") return 1;
+    return 0;
+  };
+  ValueConverter opStringToIntUnary = [](const std::string& s)
+  {
+    if (s == "Transpose") return 0;
+    return 3;
+  };
 }
 
 std::unique_ptr<std::string> LegacyNetworkIO::v4MergeStateToV5_ = std::unique_ptr<std::string>(new std::string(""));
@@ -520,7 +530,9 @@ LegacyNetworkIO::read_importer_map(const std::string& file)
     {"valueForStreamLines", valueForStreamLines},
     {"methodForStreamLines", methodForStreamLines},
     {"lengthForShowColorMap", lengthForShowColorMap},
-    {"sideForShowColorMap", sideForShowColorMap}
+    {"sideForShowColorMap", sideForShowColorMap},
+    {"conditionsForFEMVoltage", conditionsForFEMVoltage},
+    {"opStringToIntUnary", opStringToIntUnary}
   };
   using boost::property_tree::ptree;
   using boost::property_tree::read_xml;

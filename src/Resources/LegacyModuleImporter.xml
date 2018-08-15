@@ -832,7 +832,7 @@
     <key>
       <type>opStringToInt</type>
       <from>op</from>
-      <to>Truncate</to>
+      <to>Operator</to>
     </key>
     <key>
       <type>toString</type>
@@ -1302,6 +1302,103 @@
       <type>toDouble</type>
       <from>value</from>
       <to>Value</to>
+    </key>
+  </module>
+  <module name="WriteField">
+    <key>
+      <type>toString</type>
+      <from>filename</from>
+      <to>Filename</to>
+    </key>
+    <key>
+      <type>throwAway</type>
+      <from>filetype</from>
+      <to>filetype</to>
+    </key>
+  </module>
+  <module name="SolveInverseProblemWithTikhonov">
+    <key>
+      <type>toDouble</type>
+      <from>lambda_from_textentry</from>
+      <to>LambdaFromDirectEntry</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>reg_method</from>
+      <to>RegularizationMethod</to>
+    </key>
+    <key>
+      <type>toDouble</type>
+      <from>lambda_min</from>
+      <to>LambdaMin</to>
+    </key>
+    <key>
+      <type>toDouble</type>
+      <from>lambda_max</from>
+      <to>LambdaMax</to>
+    </key>
+    <key>
+      <type>toInt</type>
+      <from>lambda_num</from>
+      <to>LambdaNum</to>
+    </key>
+    <key>
+      <type>toDouble</type>
+      <from>lambda_resolution</from>
+      <to>LambdaResolution</to>
+    </key>
+    <key>
+      <type>toInt</type>
+      <from>tik_cases</from>
+      <to>regularizationChoice</to>
+    </key>
+    <key>
+      <type>toInt</type>
+      <from>tik_solution_subcases</from>
+      <to>regularizationSolutionSubcase</to>
+    </key>
+    <key>
+      <type>toInt</type>
+      <from>tik_residual_subcases</from>
+      <to>regularizationResidualSubcase</to>
+    </key>
+    <key>
+      <type>toDouble</type>
+      <from>log_val</from>
+      <to>LambdaSliderValue</to>
+    </key>
+  </module>
+  <module name="ApplyFEMVoltageSource">
+    <key>
+      <type>conditionsForFEMVoltage</type>
+      <from>bcFlag</from>
+      <to>ApplyDirichlet</to>
+    </key>
+  </module>
+  <module name="EvaluateLinAlgUnary">
+    <key>
+      <type>opStringToIntUnary</type>
+      <from>op</from>
+      <to>Operator</to>
+    </key>
+    <key>
+      <type>toString</type>
+      <from>function</from>
+      <to>FunctionString</to>
+    </key>
+  </module>
+  <module name="PrintStringIntoString">
+    <key>
+      <type>toString</type>
+      <from>formatstring</from>
+      <to>FormatString</to>
+    </key>
+  </module>
+  <module name="ReportStringInfo">
+    <key>
+      <type>throwAway</type>
+      <from>inputstring</from>
+      <to>inputstring</to>
     </key>
   </module>
 </modules>
