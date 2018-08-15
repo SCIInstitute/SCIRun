@@ -254,5 +254,10 @@ void ReportFieldGeometryMeasures::execute()
     }
   }
 
+  if (output && output->nrows() == 0)
+  {
+    warning("No measures added to matrix--output will be an empty matrix with zero rows.");
+  }
+
   sendOutput(Output_Measures, output);
 }

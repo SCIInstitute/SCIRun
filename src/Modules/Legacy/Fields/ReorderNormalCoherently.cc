@@ -6,6 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,30 +26,43 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_FIELDS_CalculateMeshCenter_H
-#define MODULES_FIELDS_CalculateMeshCenter_H
+#include <Modules/Legacy/Fields/ReorderNormalCoherently.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Fields/share.h>
+#include <Core/Algorithms/Legacy/Fields/Cleanup/ReorderNormalCoherentlyAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
-namespace SCIRun {
-namespace Modules {
-namespace Fields {
+using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
-  class SCISHARE CalculateMeshCenter : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<FieldPortTag>,
-    public Has1OutputPort<FieldPortTag>
+MODULE_INFO_DEF(ReorderNormalCoherently, ChangeMesh, SCIRun)
+
+ReorderNormalCoherently::ReorderNormalCoherently() : Module(staticInfo_, false)
+{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(OutputMatrix);
+}
+
+void ReorderNormalCoherently::execute()
+{
+  auto input = getRequiredInput(InputField);
+  
+  bool needMatrixData=oport_connected(OutputMatrix);
+  
+  if (needToExecute())
   {
-  public:
-    CalculateMeshCenter();
-    void execute() override;
-    void setStateDefaults() override;
-
-    INPUT_PORT(0, InputField, Field);
-    OUTPUT_PORT(0, OutputField, Field);
-
-    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
-  };
-}}}
-
-#endif
+    algo().set(Parameters::invertedElementsCheckBox, needMatrixData);
+    
+    auto output=algo().run(withInputData((InputField, input)));
+    
+    sendOutputFromAlgorithm(OutputField,output);
+    sendOutputFromAlgorithm(OutputMatrix, output);
+  }
+}

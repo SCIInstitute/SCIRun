@@ -111,7 +111,7 @@ namespace
     const auto& geom_type = obj->GeomType;
 
     SCIRun::LOG_DEBUG("geom_type");
-    
+
     // create and setup model and mesh
     if (boost::iequals(geom_type, "Surface"))
     {
@@ -166,6 +166,7 @@ namespace
     else
     {
       SCIRun::LOG_DEBUG("something went wrong.  File type not supported");
+      return {};
     }
   }
 
