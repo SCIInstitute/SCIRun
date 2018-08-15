@@ -31,13 +31,15 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Algorithms/Field/share.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/CalculateMeshCenterAlgo.h>
+
 
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace Fields {
   
-  ALGORITHM_PARAMETER_DECL(Method);
+  
   //ALGORITHM_PARAMETER_DECL(SamplingScheme);
   ALGORITHM_PARAMETER_DECL(ChangeOutsideValue);
 //ALGORITHM_PARAMETER_DECL(OutsideValue);

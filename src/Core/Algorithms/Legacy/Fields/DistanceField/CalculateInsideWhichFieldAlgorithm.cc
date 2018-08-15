@@ -33,6 +33,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/Vector.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/CalculateMeshCenterAlgo.h>
 
 #include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
@@ -44,7 +45,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Geometry;
 
-ALGORITHM_PARAMETER_DEF(Fields, Method);
+
 //ALGORITHM_PARAMETER_DEF(Fields, SamplingScheme);
 ALGORITHM_PARAMETER_DEF(Fields, ChangeOutsideValue);
 //ALGORITHM_PARAMETER_DEF(Fields, OutsideValue);
