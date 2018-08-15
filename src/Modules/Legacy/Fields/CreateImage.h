@@ -42,9 +42,9 @@ namespace SCIRun {
       public:
         CreateImage();
 
-        virtual void execute() override;
         virtual void setStateDefaults() override;
-
+        virtual void execute() override;
+        
         INPUT_PORT(0, InputField, Field);
         INPUT_PORT(1, SizeMatrix, DenseMatrix);
         INPUT_PORT(2, OVMatrix, DenseMatrix);
