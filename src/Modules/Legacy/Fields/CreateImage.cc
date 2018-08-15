@@ -82,7 +82,7 @@ void CreateImage::setStateDefaults()
   state->setValue(Depth, 2);
   state->setValue(PadPercent, 0.0);
   
-  state->setValue(Mode, std::string("Mannual"));
+  state->setValue(Mode, std::string("Manual"));
   state->setValue(Axis, std::string("X"));
   
   state->setValue(CenterX, 0);
@@ -101,7 +101,6 @@ void CreateImage::setStateDefaults()
 
 void CreateImage::execute()
 {
-  std::cout<<"EXECUTION METHOD";
   auto inputField = getOptionalInput(InputField);
   auto sizeOption = getOptionalInput(SizeMatrix);
   auto oVMatrixInput = getOptionalInput(OVMatrix);
@@ -110,7 +109,6 @@ void CreateImage::execute()
   
   if(needToExecute())
   {
-    std::cout<<"ENTERED";
     
     Point customCenter;
     Vector customNormal;

@@ -2,7 +2,7 @@
   "module": {
     "name": "CreateImage",
     "namespace": "Fields",
-    "status": "new module",
+    "status": "Converted, crashes when executed",
     "description": "Makes an image field",
     "header": "Modules/Legacy/Fields/CreateImage.h"
   },
