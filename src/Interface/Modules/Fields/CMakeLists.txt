@@ -77,6 +77,7 @@ SET(Interface_Modules_Fields_FORMS
   CleanupTetMeshDialog.ui
   CalculateInsideWhichFieldDialog.ui
   CalculateMeshCenterDialog.ui
+  GetCentroidsFromMeshDialog.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -129,6 +130,7 @@ SET(Interface_Modules_Fields_HEADERS
   CleanupTetMeshDialog.h
   CalculateInsideWhichFieldDialog.h
   CalculateMeshCenterDialog.h
+  GetCentroidsFromMeshDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -180,6 +182,7 @@ SET(Interface_Modules_Fields_SOURCES
   CleanupTetMeshDialog.cc
   CalculateInsideWhichFieldDialog.cc
   CalculateMeshCenterDialog.cc
+  GetCentroidsFromMeshDialog.cc
 )
 
 IF(WITH_TETGEN)

@@ -105,7 +105,8 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   DistanceField/CalculateInsideWhichFieldAlgorithm.h
   Cleanup/ReorderNormalCoherentlyAlgo.h
   MeshDerivatives/CalculateMeshCenterAlgo.h
-)
+  MeshDerivatives/GetCentroids.h
+  )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
   RegisterWithCorrespondences.cc
@@ -189,7 +190,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   MeshData/GetMeshQualityFieldAlgo.cc
   #MeshDerivatives/CalculateMeshConnector.cc
   MeshDerivatives/CalculateMeshCenterAlgo.cc
-  #MeshDerivatives/GetCentroids.cc
+  MeshDerivatives/GetCentroids.cc
   MeshDerivatives/GetFieldBoundaryAlgo.cc
   #MeshDerivatives/GetBoundingBox.cc
   MeshDerivatives/SplitByConnectedRegion.cc

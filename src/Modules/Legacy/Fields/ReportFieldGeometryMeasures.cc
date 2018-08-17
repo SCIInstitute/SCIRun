@@ -210,6 +210,7 @@ void ReportFieldGeometryMeasures::execute()
   {
     VMesh::Face::size_type nrows;
     mesh->size(nrows);
+    remark("Entered");
     output.reset(new DenseMatrix(nrows, ncols));
     double* dataptr = output->data();
 
