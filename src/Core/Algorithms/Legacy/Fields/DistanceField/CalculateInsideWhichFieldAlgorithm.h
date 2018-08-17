@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,26 +25,42 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
+#ifndef ALGORITHMS_MATH_CalculateInsideWhichFieldAlgorithm_H
+#define ALGORITHMS_MATH_CalculateInsideWhichFieldAlgorithm_H
 
-using namespace SCIRun;
-using namespace Core::Algorithms;
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Field/share.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/CalculateMeshCenterAlgo.h>
 
-const int NUM_ALGORITHMS = 85;
 
-const int EXPECTED_RANGE = 15;   // Require updating these numbers every few modules
-
-TEST(AlgorithmLayerTests, ListAllAlgorithms)
-{
-  HardCodedAlgorithmFactory factory;
-
-  std::cout << "algorithm factory size: " << factory.numAlgorithms() << std::endl;
-  EXPECT_GE(factory.numAlgorithms(), NUM_ALGORITHMS);
-  EXPECT_LE(factory.numAlgorithms(), NUM_ALGORITHMS + EXPECTED_RANGE);
-
-  for (const auto& a : factory)
+namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+namespace Fields {
+  
+  
+  //ALGORITHM_PARAMETER_DECL(SamplingScheme);
+  ALGORITHM_PARAMETER_DECL(ChangeOutsideValue);
+//ALGORITHM_PARAMETER_DECL(OutsideValue);
+  ALGORITHM_PARAMETER_DECL(StartValue);
+  //ALGORITHM_PARAMETER_DECL(OutputType);
+  ALGORITHM_PARAMETER_DECL(DataLocation);
+  
+  class SCISHARE CalculateInsideWhichFieldAlgorithm : public AlgorithmBase
   {
-    std::cout << a.first << " -> " << a.second.first << std::endl;
-  }
-}
+
+  public:
+    CalculateInsideWhichFieldAlgorithm();
+    //static const AlgorithmInputName InputField;
+    
+    FieldHandle run(FieldHandle input,const FieldList& objField)const;
+    
+    virtual AlgorithmOutput run(const AlgorithmInput &) const override;
+    
+    
+  };
+
+}}}}
+
+#endif

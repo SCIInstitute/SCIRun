@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,26 +25,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
+#ifndef MODULES_FIELDS_CalculateInsideWhichField_H
+#define MODULES_FIELDS_CalculateInsideWhichField_H
+#include <Dataflow/Network/Module.h>
+#include <Modules/Fields/share.h>
 
-using namespace SCIRun;
-using namespace Core::Algorithms;
+namespace SCIRun {
+namespace Modules {
+namespace Fields {
 
-const int NUM_ALGORITHMS = 85;
-
-const int EXPECTED_RANGE = 15;   // Require updating these numbers every few modules
-
-TEST(AlgorithmLayerTests, ListAllAlgorithms)
-{
-  HardCodedAlgorithmFactory factory;
-
-  std::cout << "algorithm factory size: " << factory.numAlgorithms() << std::endl;
-  EXPECT_GE(factory.numAlgorithms(), NUM_ALGORITHMS);
-  EXPECT_LE(factory.numAlgorithms(), NUM_ALGORITHMS + EXPECTED_RANGE);
-
-  for (const auto& a : factory)
+  class SCISHARE CalculateInsideWhichField : public SCIRun::Dataflow::Networks::Module,
+    public Has2InputPorts<FieldPortTag, DynamicPortTag <FieldPortTag>>,
+    public Has1OutputPort<FieldPortTag>
   {
-    std::cout << a.first << " -> " << a.second.first << std::endl;
-  }
-}
+  public:
+    CalculateInsideWhichField();
+    void execute() override;
+    void setStateDefaults() override;
+
+    
+    INPUT_PORT(0, InputField, Field);
+    HAS_DYNAMIC_PORTS
+    INPUT_PORT_DYNAMIC(1, InputFields, Field);
+    OUTPUT_PORT(0, OutputField, Field);
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm);
+  };
+}}}
+
+#endif
