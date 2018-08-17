@@ -299,7 +299,6 @@ result = CreateField(fi);
 
         fvalues.push_back(ivalues[ivalues.size()-1]);
 
-        cout << vdata << endl;
         mesh->add_elem(vdata);
 
       }
