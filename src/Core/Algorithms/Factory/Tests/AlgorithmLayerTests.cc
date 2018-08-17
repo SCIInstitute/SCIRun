@@ -32,7 +32,7 @@
 using namespace SCIRun;
 using namespace Core::Algorithms;
 
-const int NUM_ALGORITHMS = 76;
+const int NUM_ALGORITHMS = 85;
 
 const int EXPECTED_RANGE = 15;   // Require updating these numbers every few modules
 

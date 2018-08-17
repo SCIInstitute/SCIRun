@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,42 +25,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/GetCentroidsFromMesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
+#ifndef MODULES_FIELDS_CalculateInsideWhichField_H
+#define MODULES_FIELDS_CalculateInsideWhichField_H
+#include <Dataflow/Network/Module.h>
+#include <Modules/Fields/share.h>
 
-#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetCentroids.h>
+namespace SCIRun {
+namespace Modules {
+namespace Fields {
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-
-MODULE_INFO_DEF(GetCentroidsFromMesh, NewField, SCIRun)
-
-GetCentroidsFromMesh::GetCentroidsFromMesh() : Module(staticInfo_)
-{
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
-}
-
-void GetCentroidsFromMesh::setStateDefaults()
-{
-  setStateStringFromAlgoOption(Parameters::Centroids);
-}
-
-void GetCentroidsFromMesh::execute()
-{
-  auto input = getRequiredInput(InputField);
-  remark("Executing1");
-  if (needToExecute())
+  class SCISHARE CalculateInsideWhichField : public SCIRun::Dataflow::Networks::Module,
+    public Has2InputPorts<FieldPortTag, DynamicPortTag <FieldPortTag>>,
+    public Has1OutputPort<FieldPortTag>
   {
-    setAlgoOptionFromState(Parameters::Centroids);
-    remark("Executing2");
-    auto output=algo().run(withInputData((InputField, input)));
-    remark("Executing3");
-    sendOutputFromAlgorithm(OutputField, output);
-  }
-}
+  public:
+    CalculateInsideWhichField();
+    void execute() override;
+    void setStateDefaults() override;
+
+    
+    INPUT_PORT(0, InputField, Field);
+    HAS_DYNAMIC_PORTS
+    INPUT_PORT_DYNAMIC(1, InputFields, Field);
+    OUTPUT_PORT(0, OutputField, Field);
+
+    MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm);
+  };
+}}}
+
+#endif
