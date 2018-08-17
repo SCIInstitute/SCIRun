@@ -127,7 +127,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #CompareFields/CompareFields.cc
   #CompareFields/SimilarMeshes.cc
   #CreateMesh/CreateMeshFromNrrd.cc
-
+  
   DistanceField/CalculateDistanceField.cc
   DistanceField/CalculateIsInsideField.cc
   DistanceField/CalculateInsideWhichFieldAlgorithm.cc

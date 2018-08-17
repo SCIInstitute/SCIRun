@@ -92,6 +92,7 @@ SET(Modules_Legacy_Fields_HEADERS
   CalculateInsideWhichField.h
   ReorderNormalCoherently.h
   CalculateMeshCenter.h
+  CreateImage.h
   GetCentroidsFromMesh.h
 )
 
@@ -165,7 +166,7 @@ SET(Modules_Legacy_Fields_SRCS
   GenerateSinglePointProbeFromField.cc
   GeneratePointSamplesFromFieldOrWidget.cc
   CreateLatVol.cc
-  #CreateImage.cc
+  CreateImage.cc
   #CreateStructHex.cc
   #ReportScalarFieldStats.cc
   GeneratePointSamplesFromField.cc
