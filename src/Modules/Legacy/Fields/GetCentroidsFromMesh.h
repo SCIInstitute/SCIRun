@@ -26,42 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/GetCentroidsFromMesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
+#ifndef MODULES_LEGACY_FIELDS_GetCentroidsFromMesh_H__
+#define MODULES_LEGACY_FIELDS_GetCentroidsFromMesh_H__
 
-#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetCentroids.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-MODULE_INFO_DEF(GetCentroidsFromMesh, NewField, SCIRun)
+      class SCISHARE GetCentroidsFromMesh : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        GetCentroidsFromMesh();
 
-GetCentroidsFromMesh::GetCentroidsFromMesh() : Module(staticInfo_)
-{
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
-}
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
-void GetCentroidsFromMesh::setStateDefaults()
-{
-  setStateStringFromAlgoOption(Parameters::Centroids);
-}
+        INPUT_PORT(0, InputField, Field);
+        OUTPUT_PORT(0, OutputField, Field);
 
-void GetCentroidsFromMesh::execute()
-{
-  auto input = getRequiredInput(InputField);
-  remark("Executing1");
-  if (needToExecute())
-  {
-    setAlgoOptionFromState(Parameters::Centroids);
-    remark("Executing2");
-    auto output=algo().run(withInputData((InputField, input)));
-    remark("Executing3");
-    sendOutputFromAlgorithm(OutputField, output);
+        MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
+      };
+
+    }
   }
 }
+
+#endif

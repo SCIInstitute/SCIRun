@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CalculateInsideWhichField",
+    "namespace": "Fields",
+    "status": "New Module",
+    "description": "CalculateInsideWhichField",
+    "header": "Modules/Legacy/Fields/CalculateInsideWhichField.h"
+  },
+  "algorithm": {
+    "name": "CalculateInsideWhichFieldAlgorithm",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/DistanceField/CalculateInsideWhichFieldAlgorithm.h"
+  },
+  "UI": {
+    "name": "CalculateInsideWhichFieldDialog",
+    "header": "Interface/Modules/Fields/CalculateInsideWhichFieldDialog.h"
+  }
+}

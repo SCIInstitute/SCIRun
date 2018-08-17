@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,42 +25,42 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/GetCentroidsFromMesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
+#ifndef ALGORITHMS_MATH_CalculateInsideWhichFieldAlgorithm_H
+#define ALGORITHMS_MATH_CalculateInsideWhichFieldAlgorithm_H
 
-#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetCentroids.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Field/share.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/CalculateMeshCenterAlgo.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
 
-MODULE_INFO_DEF(GetCentroidsFromMesh, NewField, SCIRun)
-
-GetCentroidsFromMesh::GetCentroidsFromMesh() : Module(staticInfo_)
-{
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
-}
-
-void GetCentroidsFromMesh::setStateDefaults()
-{
-  setStateStringFromAlgoOption(Parameters::Centroids);
-}
-
-void GetCentroidsFromMesh::execute()
-{
-  auto input = getRequiredInput(InputField);
-  remark("Executing1");
-  if (needToExecute())
+namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+namespace Fields {
+  
+  
+  //ALGORITHM_PARAMETER_DECL(SamplingScheme);
+  ALGORITHM_PARAMETER_DECL(ChangeOutsideValue);
+//ALGORITHM_PARAMETER_DECL(OutsideValue);
+  ALGORITHM_PARAMETER_DECL(StartValue);
+  //ALGORITHM_PARAMETER_DECL(OutputType);
+  ALGORITHM_PARAMETER_DECL(DataLocation);
+  
+  class SCISHARE CalculateInsideWhichFieldAlgorithm : public AlgorithmBase
   {
-    setAlgoOptionFromState(Parameters::Centroids);
-    remark("Executing2");
-    auto output=algo().run(withInputData((InputField, input)));
-    remark("Executing3");
-    sendOutputFromAlgorithm(OutputField, output);
-  }
-}
+
+  public:
+    CalculateInsideWhichFieldAlgorithm();
+    //static const AlgorithmInputName InputField;
+    
+    FieldHandle run(FieldHandle input,const FieldList& objField)const;
+    
+    virtual AlgorithmOutput run(const AlgorithmInput &) const override;
+    
+    
+  };
+
+}}}}
+
+#endif

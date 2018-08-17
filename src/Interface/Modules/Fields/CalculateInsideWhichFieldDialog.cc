@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,42 +25,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/GetCentroidsFromMesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Interface/Modules/Fields/CalculateInsideWhichFieldDialog.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateInsideWhichFieldAlgorithm.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  ///TODO: extract into intermediate
 
-#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetCentroids.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/MapFieldDataOntoNodes.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/ConvertFieldBasisType.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateIsInsideField.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-MODULE_INFO_DEF(GetCentroidsFromMesh, NewField, SCIRun)
-
-GetCentroidsFromMesh::GetCentroidsFromMesh() : Module(staticInfo_)
+CalculateInsideWhichFieldDialog::CalculateInsideWhichFieldDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+
+  addComboBoxManager(method_, Parameters::Method);
+  addComboBoxManager(samplingScheme_, Parameters::SamplingScheme);
+  addComboBoxManager(changeOutsideValues_, Parameters::ChangeOutsideValue);
+  addDoubleSpinBoxManager(outsideValue_, Parameters::OutsideValue);
+  addDoubleSpinBoxManager(startValue_, Parameters::StartValue);
+  addComboBoxManager(outputType_, Parameters::OutputType);
+  addComboBoxManager(dataLocation_, Parameters::DataLocation);
 }
 
-void GetCentroidsFromMesh::setStateDefaults()
-{
-  setStateStringFromAlgoOption(Parameters::Centroids);
-}
-
-void GetCentroidsFromMesh::execute()
-{
-  auto input = getRequiredInput(InputField);
-  remark("Executing1");
-  if (needToExecute())
-  {
-    setAlgoOptionFromState(Parameters::Centroids);
-    remark("Executing2");
-    auto output=algo().run(withInputData((InputField, input)));
-    remark("Executing3");
-    sendOutputFromAlgorithm(OutputField, output);
-  }
-}
