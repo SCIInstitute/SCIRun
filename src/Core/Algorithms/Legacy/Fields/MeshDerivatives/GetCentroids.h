@@ -30,15 +30,8 @@
 #ifndef CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_GETCENTROIDS_H
 #define CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_GETCENTROIDS_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-
-// Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-
-// for Windows support
-#include <Core/Algorithms/Field/share.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
 namespace Core {
