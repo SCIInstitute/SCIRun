@@ -77,6 +77,7 @@ SET(Interface_Modules_Fields_FORMS
   CleanupTetMeshDialog.ui
   CalculateInsideWhichFieldDialog.ui
   CalculateMeshCenterDialog.ui
+  CreateImageDialog.ui
   GetCentroidsFromMeshDialog.ui
 )
 
@@ -130,6 +131,7 @@ SET(Interface_Modules_Fields_HEADERS
   CleanupTetMeshDialog.h
   CalculateInsideWhichFieldDialog.h
   CalculateMeshCenterDialog.h
+  CreateImageDialog.h
   GetCentroidsFromMeshDialog.h
 )
 
@@ -182,6 +184,7 @@ SET(Interface_Modules_Fields_SOURCES
   CleanupTetMeshDialog.cc
   CalculateInsideWhichFieldDialog.cc
   CalculateMeshCenterDialog.cc
+  CreateImageDialog.cc
   GetCentroidsFromMeshDialog.cc
 )
 
