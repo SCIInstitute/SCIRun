@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>790</width>
-    <height>600</height>
+    <width>457</width>
+    <height>214</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>600</width>
-    <height>600</height>
+    <width>457</width>
+    <height>214</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -30,8 +30,8 @@
     <widget class="QGroupBox" name="groupBox">
      <property name="minimumSize">
       <size>
-       <width>499</width>
-       <height>500</height>
+       <width>0</width>
+       <height>0</height>
       </size>
      </property>
      <property name="title">
@@ -208,12 +208,25 @@
        </widget>
       </item>
       <item row="3" column="2">
-       <widget class="QDoubleSpinBox" name="outsideValue_"/>
+       <widget class="QDoubleSpinBox" name="outsideValue_">
+        <property name="decimals">
+         <number>6</number>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item row="4" column="2">
        <widget class="QDoubleSpinBox" name="startValue_">
+        <property name="decimals">
+         <number>6</number>
+        </property>
         <property name="minimum">
          <double>1.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
         </property>
        </widget>
       </item>

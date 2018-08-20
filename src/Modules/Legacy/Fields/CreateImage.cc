@@ -96,7 +96,7 @@ void CreateImage::setStateDefaults()
   state->setValue(Position, 0);
   state->setValue(Index, 0);
   
-  state->setValue(DataLocation, std::string("Node(linear basis)"));
+  state->setValue(DataLocation, std::string("Nodes(linear basis)"));
 }
 
 void CreateImage::execute()
