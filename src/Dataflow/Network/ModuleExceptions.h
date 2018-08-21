@@ -44,7 +44,12 @@ namespace Networks {
   struct SCISHARE InvalidInputPortRequestException : virtual DataPortException {};
   struct SCISHARE GeneralModuleError : virtual Core::ExceptionBase {};
 
-  #define MODULE_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(type() << SCIRun::Core::ErrorMessage(message)); }
+  #define MODULE_ERROR_WITH_TYPE(type, message) \
+  { \
+    error(message); \
+    setErrorLoggedFromMacro(true); \
+    BOOST_THROW_EXCEPTION(type() << SCIRun::Core::ErrorMessage(message)); \
+  } \
 
 }}}
 

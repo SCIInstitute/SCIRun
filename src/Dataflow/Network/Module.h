@@ -178,6 +178,7 @@ namespace Networks {
     void sendFeedbackUpstreamAlongIncomingConnections(const Core::Datatypes::ModuleFeedback& feedback) const;
     std::string stateMetaInfo() const;
     void copyStateToMetadata();
+    void setErrorLoggedFromMacro(bool logged);
 
     friend class ModuleBuilder;
 
