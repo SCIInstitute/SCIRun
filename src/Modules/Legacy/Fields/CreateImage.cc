@@ -111,7 +111,6 @@ void CreateImage::execute()
   {
     Point customCenter;
     Vector customNormal;
-
     std::string axisInput = get_state()->getValue(Axis).toString();
 
     int axisTemp;
@@ -129,45 +128,48 @@ void CreateImage::execute()
     Transform trans;
     trans.load_identity();
 
-    auto sizeMatrix = *sizeOption;
-    // checking for input matrices
-    if (sizeMatrix)
+    if (sizeOption)
     {
-      if (sizeMatrix->nrows() == 1 && sizeMatrix->ncols() == 1)
+      auto sizeMatrix = *sizeOption;
+      // checking for input matrices
+      if (sizeMatrix)
       {
-        //double* data=sizeMatrix->getDatapointer();
-        const int size1 = static_cast<int>((*sizeMatrix)(0, 0));
-        const int size2 = static_cast<int>((*sizeMatrix)(0, 0));
-        get_state()->setValue(Width, size1);
-        get_state()->setValue(Height, size2);
-
-      }
-      else if (sizeMatrix->nrows() == 2 && sizeMatrix->ncols() == 1)
-      {
-        //double* data=sizeMatrix->get_data_pointer();
-        int size1 = static_cast<int>((*sizeMatrix)(0, 0));
-        int size2 = static_cast<int>((*sizeMatrix)(0, 1));
-        get_state()->setValue(Width, size1);
-        get_state()->setValue(Height, size2);
-
-      }
-      else
-      {
-        error("Image Size matrix must have only 1 or 2 elements");
+        if (sizeMatrix->nrows() == 1 && sizeMatrix->ncols() == 1)
+        {
+          //double* data=sizeMatrix->getDatapointer();
+          const int size1 = static_cast<int>((*sizeMatrix)(0, 0));
+          const int size2 = static_cast<int>((*sizeMatrix)(0, 0));
+          get_state()->setValue(Width, size1);
+          get_state()->setValue(Height, size2);
+        }
+        else if (sizeMatrix->nrows() == 2 && sizeMatrix->ncols() == 1)
+        {
+          //double* data=sizeMatrix->get_data_pointer();
+          int size1 = static_cast<int>((*sizeMatrix)(0, 0));
+          int size2 = static_cast<int>((*sizeMatrix)(0, 1));
+          get_state()->setValue(Width, size1);
+          get_state()->setValue(Height, size2);
+        }
+        else
+        {
+          error("Image Size matrix must have only 1 or 2 elements");
+        }
       }
     }
 
-    auto oVMatrix = *oVMatrixInput;
-    if (oVMatrix)
+    if (oVMatrixInput)
     {
-      if (oVMatrix->nrows() != 2 || oVMatrix->ncols() != 3)
+      auto oVMatrix = *oVMatrixInput;
+      if (oVMatrix)
       {
-        error("Custom Center and Nomal matrix must be of size 2x3. The Center is the first row and the normal is the second");
+        if (oVMatrix->nrows() != 2 || oVMatrix->ncols() != 3)
+        {
+          error("Custom Center and Nomal matrix must be of size 2x3. The Center is the first row and the normal is the second");
+        }
+        customCenter = Point((*oVMatrix)(0, 0), (*oVMatrix)(0, 1), (*oVMatrix)(0, 2));
+        customNormal = Vector((*oVMatrix)(1, 0), (*oVMatrix)(1, 1), (*oVMatrix)(1, 2));
+        customNormal.safe_normalize();
       }
-      customCenter = Point((*oVMatrix)(0, 0), (*oVMatrix)(0, 1), (*oVMatrix)(0, 2));
-      customNormal = Vector((*oVMatrix)(1, 0), (*oVMatrix)(1, 1), (*oVMatrix)(1, 2));
-      customNormal.safe_normalize();
-
     }
 
     double angle = 0;
@@ -247,7 +249,6 @@ void CreateImage::execute()
       {
         datatype = VECTOR;
       }
-
       int basis_order = 1;
       if (get_state()->getValue(Mode).toString() == "Auto")
       {
@@ -385,11 +386,11 @@ void CreateImage::execute()
     maxb += diag;
 
     int basis_order = 1;
-    if (get_state()->getValue(DataLocation).toString() == "Nodes(linear basis)") 
+    if (get_state()->getValue(DataLocation).toString() == "Nodes(linear basis)")
       basis_order = 1;
     else if (get_state()->getValue(DataLocation).toString() == "Faces(constant basis)")
       basis_order = 0;
-    else if (get_state()->getValue(DataLocation).toString() == "None") 
+    else if (get_state()->getValue(DataLocation).toString() == "None")
       basis_order = -1;
     /*else
      {
@@ -400,9 +401,9 @@ void CreateImage::execute()
 
     FieldInformation ifi("ImageMesh", basis_order, "double");
 
-    if (datatype == VECTOR) 
+    if (datatype == VECTOR)
       ifi.make_vector();
-    else if (datatype == TENSOR) 
+    else if (datatype == TENSOR)
       ifi.make_tensor();
 
     MeshHandle imagemesh = CreateMesh(ifi, width, height, minb, maxb);
