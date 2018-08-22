@@ -29,7 +29,7 @@
 #define INTERFACE_MODULES_CODEEDITORWIDGETS_H
 
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Python/share.h>
+#include <Interface/Modules/Base/share.h>
 
 namespace SCIRun {
 namespace Gui {

@@ -25,7 +25,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Python/CodeEditorWidgets.h>
+#include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
 
 using namespace SCIRun::Gui;
 

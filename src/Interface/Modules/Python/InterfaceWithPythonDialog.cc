@@ -29,7 +29,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Python/InterfaceWithPythonDialog.h>
 #include <Modules/Python/InterfaceWithPython.h>
 #include <Modules/Python/PythonObjectForwarder.h>
-#include <Interface/Modules/Python/CodeEditorWidgets.h>
+#include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
