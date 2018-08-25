@@ -147,6 +147,19 @@ namespace
       ospSet1f(mesh, "radius", radius);
       return mesh;
     }
+    else if (boost::iequals(geom_type, "Cylinder"))
+    {
+      SCIRun::LOG_DEBUG("adding Cylinders");
+      OSPGeometry mesh = ospNewGeometry("cylinders");
+      OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
+      ospCommit(data);
+      ospSetData(mesh, "cylinders", data);
+      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
+      ospCommit(data);
+      ospSetData(mesh, "color", data);
+      ospSet1f(mesh, "radius", radius);
+      return mesh;
+    }
     else if (boost::iequals(geom_type, "Streamlines"))
     {
       SCIRun::LOG_DEBUG("adding streamlines");

@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Modules/Visualization/ShowFieldWithOspray.h>
 #include <Core/Algorithms/Visualization/OsprayDataAlgorithm.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -82,11 +83,11 @@ void ShowFieldWithOspray::execute()
     FieldInformation info(field);
     if (info.is_curvemesh())
     {
-      state->setValue(Parameters::ShowEdges,true)
+      state->setValue(Parameters::ShowEdges,true);
     }
     else if (info.is_pointcloudmesh())
     {
-      state->setValue(Parameters::ShowEdges,false)
+      state->setValue(Parameters::ShowEdges,false);
     }
     
     
