@@ -63,6 +63,7 @@ ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorB);
 ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorA);
 ALGORITHM_PARAMETER_DEF(Visualization, Radius);
 ALGORITHM_PARAMETER_DEF(Visualization, UseNormals);
+ALGORITHM_PARAMETER_DEF(Visualization, ShowEdges);
 
 OsprayDataAlgorithm::OsprayDataAlgorithm()
 {
@@ -72,6 +73,7 @@ OsprayDataAlgorithm::OsprayDataAlgorithm()
   addParameter(Parameters::DefaultColorA, 1.0);
   addParameter(Parameters::Radius, 0.1);
   addParameter(Parameters::UseNormals, true);
+  addParameter(Parameters::ShowEdges, false);
 }
 
 struct detect_loops : public boost::dfs_visitor<>

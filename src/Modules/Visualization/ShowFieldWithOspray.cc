@@ -52,6 +52,7 @@ void ShowFieldWithOspray::setStateDefaults()
   setStateDoubleFromAlgo(Parameters::DefaultColorA);
   setStateDoubleFromAlgo(Parameters::Radius);
   setStateBoolFromAlgo(Parameters::UseNormals);
+  setStateBoolFromAlgo(Parameters::ShowEdges);
 }
 
 ShowFieldWithOspray::ShowFieldWithOspray() : Module(staticInfo_)
@@ -74,6 +75,21 @@ void ShowFieldWithOspray::execute()
     setAlgoDoubleFromState(Parameters::DefaultColorA);
     setAlgoDoubleFromState(Parameters::Radius);
     setAlgoBoolFromState(Parameters::UseNormals);
+    setAlgoBoolFromState(Parameters::ShowEdges);
+    
+    // this is mostly for user feedback for now.
+    auto state = get_state();
+    FieldInformation info(field);
+    if (info.is_curvemesh())
+    {
+      state->setValue(Parameters::ShowEdges,true)
+    }
+    else if (info.is_pointcloudmesh())
+    {
+      state->setValue(Parameters::ShowEdges,false)
+    }
+    
+    
 
     auto output = algo().run(withInputData((Field, field)(ColorMapObject, optionalAlgoInput(colorMap))));
     sendOutputFromAlgorithm(SceneGraph, output);

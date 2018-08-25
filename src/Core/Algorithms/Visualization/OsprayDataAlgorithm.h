@@ -48,6 +48,7 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(DefaultColorA);
         ALGORITHM_PARAMETER_DECL(Radius);
         ALGORITHM_PARAMETER_DECL(UseNormals);
+        ALGORITHM_PARAMETER_DECL(ShowEdges);
         
         typedef std::pair<int,int> Edge;
         typedef std::vector<Edge> EdgeVector;
