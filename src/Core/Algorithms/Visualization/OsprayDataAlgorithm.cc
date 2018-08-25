@@ -474,10 +474,14 @@ AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
 
   if (info.is_trisurfmesh())
   {
-    renderable = addSurface(field, colorMap);
+    // currently only supports one output, so no point in doing both
     if (get(Parameters::UseNormals).toBool())
     {
       renderable = addCylinder(field, colorMap);
+    }
+    else
+    {
+      renderable = addSurface(field, colorMap);
     }
   }
   else if (info.is_pointcloudmesh())
