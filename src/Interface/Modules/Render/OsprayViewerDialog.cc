@@ -70,7 +70,7 @@ namespace
   void setupViewer(VolumeViewer* viewer)
   {
     float ambientLightIntensity = 0.2f;
-    float directionalLightIntensity = 1.7f;
+    float directionalLightIntensity = 1.0f;
     float directionalLightAzimuth = 80;
     float directionalLightElevation = 65;
     float samplingRate = .125f;
@@ -370,6 +370,7 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 
       connect(viewer_->getWindow(), SIGNAL(cameraChanged()), this, SLOT(setCameraWidgets()));
     }
+    setBGColor();
     setLightColor();
     viewer_->show();
   }
@@ -752,6 +753,15 @@ void OsprayViewerDialog::setLightColor()
   }
   #endif
 }
+
+void OsprayViewerDialog::setBGColor()
+{
+  auto colorStr = state_->getValue(Parameters::BackgroundColor).toString();
+  
+  ColorRGB color(colorStr);
+  viewer_->setBackgroundColor(color.r(), color.g(), color.b());
+}
+
 
 void OsprayViewerDialog::pullSpecial()
 {
