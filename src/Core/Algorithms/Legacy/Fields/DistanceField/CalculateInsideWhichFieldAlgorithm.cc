@@ -45,11 +45,8 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Geometry;
 
 
-//ALGORITHM_PARAMETER_DEF(Fields, SamplingScheme);
 ALGORITHM_PARAMETER_DEF(Fields, ChangeOutsideValue);
-//ALGORITHM_PARAMETER_DEF(Fields, OutsideValue);
 ALGORITHM_PARAMETER_DEF(Fields, StartValue);
-//ALGORITHM_PARAMETER_DEF(Fields, OutputType);
 ALGORITHM_PARAMETER_DEF(Fields, DataLocation);
 
 CalculateInsideWhichFieldAlgorithm::CalculateInsideWhichFieldAlgorithm()
@@ -74,8 +71,6 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
   //pull parameter from UI
   std::string method=getOption(Parameters::Method);
   
-  
-  //Safety Check
   if(!input)
   {
     THROW_ALGORITHM_INPUT_ERROR("No input fields given");
@@ -123,7 +118,6 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
     error("Could not create output field");
     return FieldHandle();
   }
-  
   
   // For the moment we calculate everything in doubles
   
@@ -277,7 +271,6 @@ FieldHandle CalculateInsideWhichFieldAlgorithm::run(FieldHandle input,const std:
       
       for (size_t p=0; p<objmesh.size(); p++)
       {
-        bool is_inside = false;
         if (objmesh[p]->locate(cidx,point))
         {
           ofield->set_value(startValue+p,idx);
