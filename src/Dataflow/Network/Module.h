@@ -70,6 +70,8 @@ namespace Networks {
     const ModuleStateHandle cstate() const override final;
     void enqueueExecuteAgain(bool upstream) override final;
     void error(const std::string& msg) const override final;
+    bool errorReported() const override final { return getLogger()->errorReported(); }
+    void setErrorFlag(bool flag) override final { getLogger()->setErrorFlag(flag); }
     void warning(const std::string& msg) const override final { getLogger()->warning(msg); }
     void remark(const std::string& msg) const override final { getLogger()->remark(msg); }
     void status(const std::string& msg) const override final { getLogger()->status(msg); }

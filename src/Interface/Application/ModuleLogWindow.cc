@@ -109,6 +109,8 @@ void ModuleLogger::error(const std::string& msg) const
   auto log = ModuleLog::Instance().get();
   if (log)
     log->error("[{0}] {1}", moduleName_, msg);
+
+  errorReported_ = true;
 }
 
 void ModuleLogger::warning(const std::string& msg) const
