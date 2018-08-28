@@ -27,8 +27,9 @@
 
 #ifndef MODULES_FIELDS_CalculateInsideWhichField_H
 #define MODULES_FIELDS_CalculateInsideWhichField_H
+
 #include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
 namespace Modules {

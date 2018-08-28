@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>790</width>
-    <height>600</height>
+    <width>556</width>
+    <height>271</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>600</width>
-    <height>600</height>
+    <width>556</width>
+    <height>271</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -30,8 +30,8 @@
     <widget class="QGroupBox" name="groupBox">
      <property name="minimumSize">
       <size>
-       <width>499</width>
-       <height>500</height>
+       <width>0</width>
+       <height>0</height>
       </size>
      </property>
      <property name="title">
@@ -68,6 +68,12 @@
       </item>
       <item row="1" column="2">
        <widget class="QComboBox" name="samplingScheme_">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
         <item>
          <property name="text">
           <string>regular1</string>
@@ -104,6 +110,12 @@
       </item>
       <item row="0" column="2">
        <widget class="QComboBox" name="method_">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
         <item>
          <property name="text">
           <string>one</string>
@@ -123,6 +135,12 @@
       </item>
       <item row="6" column="2">
        <widget class="QComboBox" name="dataLocation_">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
         <item>
          <property name="text">
           <string>element</string>
@@ -137,6 +155,12 @@
       </item>
       <item row="5" column="2">
        <widget class="QComboBox" name="outputType_">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
         <item>
          <property name="text">
           <string>same as input</string>
@@ -195,6 +219,12 @@
       </item>
       <item row="2" column="2">
        <widget class="QComboBox" name="changeOutsideValues_">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
         <item>
          <property name="text">
           <string>true</string>
@@ -208,12 +238,37 @@
        </widget>
       </item>
       <item row="3" column="2">
-       <widget class="QDoubleSpinBox" name="outsideValue_"/>
+       <widget class="QDoubleSpinBox" name="outsideValue_">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="decimals">
+         <number>6</number>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item row="4" column="2">
        <widget class="QDoubleSpinBox" name="startValue_">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="decimals">
+         <number>6</number>
+        </property>
         <property name="minimum">
          <double>1.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>999999999.000000000000000</double>
         </property>
        </widget>
       </item>

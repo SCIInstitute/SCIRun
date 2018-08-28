@@ -178,7 +178,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -302,7 +302,7 @@
 									<name>StreamlineStepSize</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000002e-02</value>
+										<value>1.00000000000000000e-002</value>
 									</value>
 								</second>
 							</item>
@@ -314,7 +314,7 @@
 									<name>StreamlineTolerance</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000005e-04</value>
+										<value>1.00000000000000000e-004</value>
 									</value>
 								</second>
 							</item>
@@ -1475,937 +1475,289 @@
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:0</first>
+				<first>ReportMatrixInfo:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/GetCentroidsStreamlines</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:1</first>
+				<first>ReportMatrixInfo:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/NodesStreamlines</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:10</first>
+				<first>ReportMatrixInfo:10</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/NodeTet</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:11</first>
+				<first>ReportMatrixInfo:11</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/GeoMeasureTet</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:12</first>
+				<first>ReportMatrixInfo:12</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/GetCentroidsHex</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:13</first>
+				<first>ReportMatrixInfo:13</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/NodeHex</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:14</first>
+				<first>ReportMatrixInfo:14</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/GeoMeasureHex</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:15</first>
+				<first>ReportMatrixInfo:15</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/GetCentroidsCloud</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:16</first>
+				<first>ReportMatrixInfo:16</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/NodeCloud</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:17</first>
+				<first>ReportMatrixInfo:17</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/GeoMeasureCloud</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:2</first>
+				<first>ReportMatrixInfo:2</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/GetCentroidsTriSurf</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:3</first>
+				<first>ReportMatrixInfo:3</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/NodeTriSurf</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:4</first>
+				<first>ReportMatrixInfo:4</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/GeoMeasureStreamlines</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:5</first>
+				<first>ReportMatrixInfo:5</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/GeoMeasureTriSurf</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:6</first>
+				<first>ReportMatrixInfo:6</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/GetCentroidsQuad5</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:7</first>
+				<first>ReportMatrixInfo:7</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/NodeQuad</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:8</first>
+				<first>ReportMatrixInfo:8</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/GeoMeasureQuad</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>WriteMatrix:9</first>
+				<first>ReportMatrixInfo:9</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>ReportMatrixInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>3</count>
+							<count>0</count>
 							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>FileTypeList</name>
-								</first>
-								<second>
-									<name>FileTypeList</name>
-									<value>
-										<which>2</which>
-										<value>SCIRun Matrix Binary (*.mat);;SCIRun Matrix ASCII (*.mat);;ECGSimFile (*.*);;Matlab Matrix (*.mat);;SimpleTextFile (*.*)</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FileTypeName</name>
-								</first>
-								<second>
-									<name>FileTypeName</name>
-									<value>
-										<which>2</which>
-										<value>SimpleTextFile</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>/Users/barad-dur/Desktop/GetCentroidsTet</value>
-									</value>
-								</second>
-							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -2816,9 +2168,9 @@
 					<name>MatrixNodes</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:0</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:2</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2828,9 +2180,9 @@
 					<name>MatrixNodes</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:15</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:15</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2840,9 +2192,9 @@
 					<name>MatrixNodes</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:16</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:16</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2852,9 +2204,9 @@
 					<name>MatrixNodes</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:1</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:1</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2864,9 +2216,9 @@
 					<name>MatrixNodes</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:2</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:3</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2876,9 +2228,9 @@
 					<name>MatrixNodes</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:3</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:4</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2888,9 +2240,9 @@
 					<name>MatrixNodes</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:6</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:6</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2900,9 +2252,9 @@
 					<name>MatrixNodes</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:7</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:7</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2912,9 +2264,9 @@
 					<name>MatrixNodes</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:9</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:9</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2924,9 +2276,9 @@
 					<name>MatrixNodes</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:10</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:10</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2936,9 +2288,9 @@
 					<name>MatrixNodes</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:12</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:12</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2948,9 +2300,9 @@
 					<name>MatrixNodes</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:13</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:13</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2972,9 +2324,9 @@
 					<name>Output_Measures</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:4</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:0</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2984,9 +2336,9 @@
 					<name>Output_Measures</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:5</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:5</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -2996,9 +2348,9 @@
 					<name>Output_Measures</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:8</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:8</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -3008,9 +2360,9 @@
 					<name>Output_Measures</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:11</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:11</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -3020,9 +2372,9 @@
 					<name>Output_Measures</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:14</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:14</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -3032,9 +2384,9 @@
 					<name>Output_Measures</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>WriteMatrix:17</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:17</moduleId2_>
 				<port2_>
-					<name>MatrixToWrite</name>
+					<name>InputMatrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -3046,380 +2398,458 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ConvertHexVolToTetVol:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>1.29200000000000000e+03</first>
-				<second>-2.28000000000000000e+02</second>
+				<first>1.29200000000000000e+003</first>
+				<second>-2.28000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertMeshToPointCloud:0</first>
 			<second>
-				<first>2.28200000000000000e+03</first>
-				<second>-3.63000000000000000e+02</second>
+				<first>2.28200000000000000e+003</first>
+				<second>-3.63000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertMeshToUnstructuredMesh:0</first>
 			<second>
-				<first>1.74800000000000000e+03</first>
-				<second>-3.04000000000000000e+02</second>
+				<first>1.74800000000000000e+003</first>
+				<second>-3.04000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ConvertQuadSurfToTriSurf:0</first>
 			<second>
-				<first>2.28000000000000000e+02</first>
-				<second>-1.52000000000000000e+02</second>
+				<first>2.28000000000000000e+002</first>
+				<second>-1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateFieldData:1</first>
 			<second>
-				<first>-3.04000000000000000e+02</first>
-				<second>-3.04000000000000000e+02</second>
+				<first>-3.04000000000000000e+002</first>
+				<second>-3.04000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>CreateLatVol:0</first>
 			<second>
-				<first>9.12000000000000000e+02</first>
-				<second>-6.08000000000000000e+02</second>
+				<first>9.12000000000000000e+002</first>
+				<second>-6.08000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GenerateStreamLines:1</first>
 			<second>
-				<first>-2.06000000000000000e+02</first>
-				<second>-1.55000000000000000e+02</second>
+				<first>-1.52000000000000000e+002</first>
+				<second>-2.28000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetCentroidsFromMesh:1</first>
 			<second>
-				<first>-2.28000000000000000e+02</first>
-				<second>-7.60000000000000000e+01</second>
+				<first>-2.28000000000000000e+002</first>
+				<second>-7.60000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>GetCentroidsFromMesh:2</first>
 			<second>
-				<first>2.28000000000000000e+02</first>
-				<second>-7.60000000000000000e+01</second>
+				<first>2.28000000000000000e+002</first>
+				<second>-7.60000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>GetCentroidsFromMesh:3</first>
 			<second>
-				<first>8.36000000000000000e+02</first>
-				<second>-2.28000000000000000e+02</second>
+				<first>8.36000000000000000e+002</first>
+				<second>-2.28000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetCentroidsFromMesh:4</first>
 			<second>
-				<first>1.29200000000000000e+03</first>
-				<second>-1.52000000000000000e+02</second>
+				<first>1.29200000000000000e+003</first>
+				<second>-1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetCentroidsFromMesh:5</first>
 			<second>
-				<first>1.82400000000000000e+03</first>
-				<second>-1.52000000000000000e+02</second>
+				<first>1.82400000000000000e+003</first>
+				<second>-1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetCentroidsFromMesh:6</first>
 			<second>
-				<first>2.28200000000000000e+03</first>
-				<second>-2.87000000000000000e+02</second>
+				<first>2.28200000000000000e+003</first>
+				<second>-2.87000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldBoundary:0</first>
 			<second>
-				<first>3.04000000000000000e+02</first>
-				<second>-2.28000000000000000e+02</second>
+				<first>3.04000000000000000e+002</first>
+				<second>-2.28000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldBoundary:1</first>
 			<second>
-				<first>8.74000000000000000e+02</first>
-				<second>-2.93000000000000000e+02</second>
+				<first>8.74000000000000000e+002</first>
+				<second>-2.93000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldNodes:0</first>
 			<second>
-				<first>-2.28000000000000000e+02</first>
-				<second>0.00000000000000000e+00</second>
+				<first>-2.28000000000000000e+002</first>
+				<second>0.00000000000000000e+000</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldNodes:1</first>
 			<second>
-				<first>-5.40000000000000000e+01</first>
-				<second>-3.00000000000000000e+00</second>
+				<first>-5.40000000000000000e+001</first>
+				<second>-3.00000000000000000e+000</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldNodes:10</first>
 			<second>
-				<first>2.31900000000000000e+03</first>
-				<second>-1.30000000000000000e+02</second>
+				<first>2.31900000000000000e+003</first>
+				<second>-1.30000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldNodes:11</first>
 			<second>
-				<first>2.49300000000000000e+03</first>
-				<second>-1.33000000000000000e+02</second>
+				<first>2.49300000000000000e+003</first>
+				<second>-1.33000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldNodes:2</first>
 			<second>
-				<first>2.28000000000000000e+02</first>
-				<second>0.00000000000000000e+00</second>
+				<first>2.28000000000000000e+002</first>
+				<second>0.00000000000000000e+000</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldNodes:3</first>
 			<second>
-				<first>4.56000000000000000e+02</first>
-				<second>-7.60000000000000000e+01</second>
+				<first>4.56000000000000000e+002</first>
+				<second>-7.60000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldNodes:4</first>
 			<second>
-				<first>8.46000000000000000e+02</first>
-				<second>-4.00000000000000000e+01</second>
+				<first>8.46000000000000000e+002</first>
+				<second>-4.00000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldNodes:5</first>
 			<second>
-				<first>1.02000000000000000e+03</first>
-				<second>-4.30000000000000000e+01</second>
+				<first>1.02000000000000000e+003</first>
+				<second>-4.30000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldNodes:6</first>
 			<second>
-				<first>1.30900000000000000e+03</first>
-				<second>-5.40000000000000000e+01</second>
+				<first>1.30900000000000000e+003</first>
+				<second>-5.40000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldNodes:7</first>
 			<second>
-				<first>1.48300000000000000e+03</first>
-				<second>-5.70000000000000000e+01</second>
+				<first>1.48300000000000000e+003</first>
+				<second>-5.70000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldNodes:8</first>
 			<second>
-				<first>1.83100000000000000e+03</first>
-				<second>-3.30000000000000000e+01</second>
+				<first>1.83100000000000000e+003</first>
+				<second>-3.30000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>GetFieldNodes:9</first>
 			<second>
-				<first>2.00700000000000000e+03</first>
-				<second>-3.60000000000000000e+01</second>
+				<first>2.00700000000000000e+003</first>
+				<second>-3.60000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>GetSliceFromStructuredFieldByIndices:0</first>
 			<second>
-				<first>-1.52000000000000000e+02</first>
-				<second>-2.28000000000000000e+02</second>
+				<first>-1.52000000000000000e+002</first>
+				<second>-3.04000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldGeometryMeasures:0</first>
 			<second>
-				<first>0.00000000000000000e+00</first>
-				<second>-7.60000000000000000e+01</second>
+				<first>-7.60000000000000000e+001</first>
+				<second>-7.60000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldGeometryMeasures:1</first>
 			<second>
-				<first>6.07000000000000000e+02</first>
-				<second>-7.60000000000000000e+01</second>
+				<first>6.07000000000000000e+002</first>
+				<second>-7.60000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldGeometryMeasures:2</first>
 			<second>
-				<first>1.07400000000000000e+03</first>
-				<second>-1.16000000000000000e+02</second>
+				<first>1.07400000000000000e+003</first>
+				<second>-1.16000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldGeometryMeasures:3</first>
 			<second>
-				<first>1.53700000000000000e+03</first>
-				<second>-1.30000000000000000e+02</second>
+				<first>1.53700000000000000e+003</first>
+				<second>-1.30000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldGeometryMeasures:4</first>
 			<second>
-				<first>2.05200000000000000e+03</first>
-				<second>-7.60000000000000000e+01</second>
+				<first>2.05200000000000000e+003</first>
+				<second>-7.60000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldGeometryMeasures:5</first>
 			<second>
-				<first>2.54700000000000000e+03</first>
-				<second>-2.06000000000000000e+02</second>
+				<first>2.54700000000000000e+003</first>
+				<second>-2.06000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:0</first>
+			<first>ReportMatrixInfo:0</first>
 			<second>
-				<first>-2.28000000000000000e+02</first>
-				<second>7.60000000000000000e+01</second>
+				<first>7.60000000000000000e+001</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:1</first>
+			<first>ReportMatrixInfo:1</first>
 			<second>
-				<first>-7.60000000000000000e+01</first>
-				<second>7.60000000000000000e+01</second>
+				<first>-7.60000000000000000e+001</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:10</first>
+			<first>ReportMatrixInfo:10</first>
 			<second>
-				<first>1.46100000000000000e+03</first>
-				<second>2.20000000000000000e+01</second>
+				<first>1.44400000000000000e+003</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:11</first>
+			<first>ReportMatrixInfo:11</first>
 			<second>
-				<first>1.61300000000000000e+03</first>
-				<second>2.20000000000000000e+01</second>
+				<first>1.59600000000000000e+003</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:12</first>
+			<first>ReportMatrixInfo:12</first>
 			<second>
-				<first>1.83100000000000000e+03</first>
-				<second>4.30000000000000000e+01</second>
+				<first>1.82400000000000000e+003</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:13</first>
+			<first>ReportMatrixInfo:13</first>
 			<second>
-				<first>1.98500000000000000e+03</first>
-				<second>4.30000000000000000e+01</second>
+				<first>1.97600000000000000e+003</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:14</first>
+			<first>ReportMatrixInfo:14</first>
 			<second>
-				<first>2.13700000000000000e+03</first>
-				<second>4.30000000000000000e+01</second>
+				<first>2.12800000000000000e+003</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:15</first>
+			<first>ReportMatrixInfo:15</first>
 			<second>
-				<first>2.31900000000000000e+03</first>
-				<second>-5.40000000000000000e+01</second>
+				<first>2.28000000000000000e+003</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:16</first>
+			<first>ReportMatrixInfo:16</first>
 			<second>
-				<first>2.47100000000000000e+03</first>
-				<second>-5.40000000000000000e+01</second>
+				<first>2.49800000000000000e+003</first>
+				<second>1.50000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:17</first>
+			<first>ReportMatrixInfo:17</first>
 			<second>
-				<first>2.62300000000000000e+03</first>
-				<second>-5.40000000000000000e+01</second>
+				<first>2.64900000000000000e+003</first>
+				<second>1.45000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:2</first>
+			<first>ReportMatrixInfo:2</first>
 			<second>
-				<first>2.28000000000000000e+02</first>
-				<second>7.60000000000000000e+01</second>
+				<first>-2.28000000000000000e+002</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:3</first>
+			<first>ReportMatrixInfo:3</first>
 			<second>
-				<first>3.80000000000000000e+02</first>
-				<second>0.00000000000000000e+00</second>
+				<first>2.28000000000000000e+002</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:4</first>
+			<first>ReportMatrixInfo:4</first>
 			<second>
-				<first>7.60000000000000000e+01</first>
-				<second>7.60000000000000000e+01</second>
+				<first>3.80000000000000000e+002</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:5</first>
+			<first>ReportMatrixInfo:5</first>
 			<second>
-				<first>5.31000000000000000e+02</first>
-				<second>7.60000000000000000e+01</second>
+				<first>5.32000000000000000e+002</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:6</first>
+			<first>ReportMatrixInfo:6</first>
 			<second>
-				<first>8.46000000000000000e+02</first>
-				<second>3.60000000000000000e+01</second>
+				<first>8.36000000000000000e+002</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:7</first>
+			<first>ReportMatrixInfo:7</first>
 			<second>
-				<first>9.98000000000000000e+02</first>
-				<second>3.60000000000000000e+01</second>
+				<first>9.88000000000000000e+002</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:8</first>
+			<first>ReportMatrixInfo:8</first>
 			<second>
-				<first>1.15000000000000000e+03</first>
-				<second>3.60000000000000000e+01</second>
+				<first>1.14000000000000000e+003</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
-			<first>WriteMatrix:9</first>
+			<first>ReportMatrixInfo:9</first>
 			<second>
-				<first>1.30900000000000000e+03</first>
-				<second>2.20000000000000000e+01</second>
+				<first>1.29200000000000000e+003</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>
 	<moduleNotes class_id="18" tracking_level="0" version="0">
-		<count>0</count>
+		<count>6</count>
 		<item_version>0</item_version>
+		<item class_id="19" tracking_level="0" version="0">
+			<first>GetCentroidsFromMesh:1</first>
+			<second class_id="20" tracking_level="0" version="0">
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;DElement&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>DElement</noteText>
+				<position>0</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>GetCentroidsFromMesh:2</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Edge&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Edge</noteText>
+				<position>0</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>GetCentroidsFromMesh:3</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Edge&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Edge</noteText>
+				<position>0</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>GetCentroidsFromMesh:4</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Face&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Face</noteText>
+				<position>0</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>GetCentroidsFromMesh:5</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Face&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Face</noteText>
+				<position>0</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
+		<item>
+			<first>GetCentroidsFromMesh:6</first>
+			<second>
+				<noteHTML>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Delement&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</noteHTML>
+				<noteText>Delement</noteText>
+				<position>0</position>
+				<fontSize>8</fontSize>
+			</second>
+		</item>
 	</moduleNotes>
 	<connectionNotes>
 		<count>0</count>
 		<item_version>0</item_version>
 	</connectionNotes>
-	<moduleTags class_id="19" tracking_level="0" version="0">
+	<moduleTags class_id="21" tracking_level="0" version="0">
 		<count>52</count>
 		<item_version>0</item_version>
-		<item class_id="20" tracking_level="0" version="0">
+		<item class_id="22" tracking_level="0" version="0">
 			<first>ConvertHexVolToTetVol:0</first>
 			<second>-1</second>
 		</item>
@@ -3556,79 +2986,79 @@
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:0</first>
+			<first>ReportMatrixInfo:0</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:1</first>
+			<first>ReportMatrixInfo:1</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:10</first>
+			<first>ReportMatrixInfo:10</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:11</first>
+			<first>ReportMatrixInfo:11</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:12</first>
+			<first>ReportMatrixInfo:12</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:13</first>
+			<first>ReportMatrixInfo:13</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:14</first>
+			<first>ReportMatrixInfo:14</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:15</first>
+			<first>ReportMatrixInfo:15</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:16</first>
+			<first>ReportMatrixInfo:16</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:17</first>
+			<first>ReportMatrixInfo:17</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:2</first>
+			<first>ReportMatrixInfo:2</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:3</first>
+			<first>ReportMatrixInfo:3</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:4</first>
+			<first>ReportMatrixInfo:4</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:5</first>
+			<first>ReportMatrixInfo:5</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:6</first>
+			<first>ReportMatrixInfo:6</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:7</first>
+			<first>ReportMatrixInfo:7</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:8</first>
+			<first>ReportMatrixInfo:8</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>WriteMatrix:9</first>
+			<first>ReportMatrixInfo:9</first>
 			<second>-1</second>
 		</item>
 	</moduleTags>
-	<disabledModules class_id="21" tracking_level="0" version="0">
+	<disabledModules class_id="23" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledModules>
@@ -3636,12 +3066,12 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledConnections>
-	<moduleTagLabels class_id="22" tracking_level="0" version="0">
+	<moduleTagLabels class_id="24" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</moduleTagLabels>
 	<loadTagGroups>0</loadTagGroups>
-	<subnetworks class_id="23" tracking_level="0" version="0">
+	<subnetworks class_id="25" tracking_level="0" version="0">
 		<count>0</count>
 		<item_version>0</item_version>
 	</subnetworks>

@@ -55,13 +55,10 @@ void GetCentroidsFromMesh::setStateDefaults()
 void GetCentroidsFromMesh::execute()
 {
   auto input = getRequiredInput(InputField);
-  remark("Executing1");
   if (needToExecute())
   {
     setAlgoOptionFromState(Parameters::Centroids);
-    remark("Executing2");
-    auto output=algo().run(withInputData((InputField, input)));
-    remark("Executing3");
+    auto output = algo().run(withInputData((InputField, input)));
     sendOutputFromAlgorithm(OutputField, output);
   }
 }
