@@ -123,7 +123,7 @@ void CreateImage::execute()
     else if (axisInput == "Custom")
       axisTemp = 3;
 
-    auto axis = std::min(2, std::max(0, axisTemp));
+    auto axis = std::min(3, std::max(0, axisTemp));
 
     Transform trans;
     trans.load_identity();

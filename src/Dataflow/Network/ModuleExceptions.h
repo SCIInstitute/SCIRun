@@ -47,7 +47,6 @@ namespace Networks {
   #define MODULE_ERROR_WITH_TYPE(type, message) \
   { \
     error(message); \
-    setErrorLoggedFromMacro(true); \
     BOOST_THROW_EXCEPTION(type() << SCIRun::Core::ErrorMessage(message)); \
   } \
 
