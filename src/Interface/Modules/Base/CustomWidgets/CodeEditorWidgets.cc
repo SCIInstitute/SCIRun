@@ -42,7 +42,7 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
 
   highlighter_ = new Highlighter(document());
 
-  //connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(matchParentheses()));
+  connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(matchParentheses()));
 }
 
 int CodeEditor::lineNumberAreaWidth()
@@ -135,36 +135,40 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
 
 void CodeEditor::matchParentheses()
 {
-  QList<QTextEdit::ExtraSelection> selections;// = extraSelections();
+  QList<QTextEdit::ExtraSelection> selections;
   setExtraSelections(selections);
-  auto data = static_cast<TextBlockData *>(textCursor().block().userData());
+  auto data = static_cast<TextBlockData*>(textCursor().block().userData());
 
   if (data)
   {
     auto infos = data->parentheses();
-    //int pos = textCursor().block().position();
     for (int i = 0; i < infos.size(); ++i)
     {
-      auto info = infos.at(i);
+      auto info = infos[i];
       int curPos = textCursor().position() - textCursor().block().position();
-      if (info->position == curPos - 1 && info->character == '(')
+      if (info.position == curPos - 1 && info.character == '(')
       {
-        matchLeftParenthesis(textCursor().block(), i + 1, 0);
-        return;
+        if (!matchLeftParenthesis(textCursor().block(), i + 1, 0))
+        {
+          createParenthesisSelection(info.position, Qt::red);
+        }
       }
-      if (info->position == curPos - 1 && info->character == ')')
+      else if (info.position == curPos - 1 && info.character == ')')
       {
-        matchRightParenthesis(textCursor().block(), i - 1, 0);
+        if (!matchRightParenthesis(textCursor().block(), i - 1, 0))
+        {
+          createParenthesisSelection(info.position, Qt::red);
+        }
       }
     }
   }
 }
 
-void CodeEditor::createParenthesisSelection(int pos)
+void CodeEditor::createParenthesisSelection(int pos, const QColor& color)
 {
   auto selections = extraSelections();
   QTextEdit::ExtraSelection selection;
-  selection.format.setBackground(Qt::green);
+  selection.format.setBackground(color);
   QTextCursor cursor = textCursor();
   cursor.setPosition(pos);
   cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor);
@@ -229,8 +233,7 @@ Highlighter::Highlighter(QTextDocument *parent)
 
 void Highlighter::highlightBlock(const QString &text)
 {
-  //TODO: doesn't work yet
-  //highlightBlockParens(text);
+  highlightBlockParens(text);
   for (const auto& rule : highlightingRules)
   {
     QRegExp expression(rule.pattern);
@@ -272,11 +275,14 @@ void Highlighter::highlightBlockParens(const QString &text)
   int leftPos = text.indexOf('(');
   while (leftPos != -1)
   {
-    auto info = new ParenthesisInfo;
-    info->character = '(';
-    info->position = leftPos;
-    data->insert(info);
+    data->insert({'(', leftPos});
     leftPos = text.indexOf('(', leftPos + 1);
+  }
+  int rightPos = text.indexOf(')');
+  while (rightPos != -1)
+  {
+    data->insert({ ')', rightPos });
+    rightPos = text.indexOf(')', rightPos + 1);
   }
   setCurrentBlockUserData(data);
 }
@@ -289,17 +295,17 @@ bool CodeEditor::matchLeftParenthesis(QTextBlock currentBlock, int i, int numLef
   int docPos = currentBlock.position();
   for (; i < infos.size(); ++i)
   {
-    auto info = infos.at(i);
+    auto info = infos[i];
 
-    if (info->character == '(')
+    if (info.character == '(')
     {
       ++numLeftParentheses;
       continue;
     }
 
-    if (info->character == ')' && numLeftParentheses == 0)
+    if (info.character == ')' && numLeftParentheses == 0)
     {
-      createParenthesisSelection(docPos + info->position);
+      createParenthesisSelection(docPos + info.position, Qt::green);
       return true;
     }
     else
@@ -322,14 +328,14 @@ bool CodeEditor::matchRightParenthesis(QTextBlock currentBlock, int i, int numRi
   for (; i > -1 && parentheses.size() > 0; --i)
   {
     auto info = parentheses.at(i);
-    if (info->character == ')')
+    if (info.character == ')')
     {
       ++numRightParentheses;
       continue;
     }
-    if (info->character == '(' && numRightParentheses == 0)
+    if (info.character == '(' && numRightParentheses == 0)
     {
-      createParenthesisSelection(docPos + info->position);
+      createParenthesisSelection(docPos + info.position, Qt::green);
       return true;
     }
     else
@@ -347,17 +353,17 @@ TextBlockData::TextBlockData()
 {
 }
 
-QVector<ParenthesisInfo *> TextBlockData::parentheses()
+std::vector<ParenthesisInfo> TextBlockData::parentheses() const
 {
   return m_parentheses;
 }
 
 
-void TextBlockData::insert(ParenthesisInfo *info)
+void TextBlockData::insert(ParenthesisInfo&& info)
 {
   int i = 0;
-  while (i < m_parentheses.size() && info->position > m_parentheses.at(i)->position)
+  while (i < m_parentheses.size() && info.position > m_parentheses[i].position)
     ++i;
 
-  m_parentheses.insert(i, info);
+  m_parentheses.insert(m_parentheses.begin() + i, info);
 }

@@ -58,7 +58,7 @@ private Q_SLOTS:
 private:
   QWidget* lineNumberArea_;
   class Highlighter* highlighter_;
-  void createParenthesisSelection(int pos);
+  void createParenthesisSelection(int pos, const QColor& color);
   bool matchLeftParenthesis(QTextBlock currentBlock, int index, int numRightParentheses);
   bool matchRightParenthesis(QTextBlock currentBlock, int index, int numLeftParentheses);
 };
@@ -127,10 +127,10 @@ class TextBlockData : public QTextBlockUserData
 {
 public:
   TextBlockData();
-  QVector<ParenthesisInfo *> parentheses();
-  void insert(ParenthesisInfo *info);
+  std::vector<ParenthesisInfo> parentheses() const;
+  void insert(ParenthesisInfo&& info);
 private:
-  QVector<ParenthesisInfo *> m_parentheses;
+  std::vector<ParenthesisInfo> m_parentheses;
 };
 
 }
