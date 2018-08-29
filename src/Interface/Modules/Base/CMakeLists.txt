@@ -44,6 +44,7 @@ SET(Interface_Modules_Base_HEADERS
   ModuleButtonBar.h
   CustomWidgets/QtHistogramWidget.h
   CustomWidgets/QtHistogramGraph.h
+  CustomWidgets/CodeEditorWidgets.h
   share.h
 )
 
@@ -56,6 +57,7 @@ SET(Interface_Modules_Base_SOURCES
   ModuleButtonBar.cc
   CustomWidgets/QtHistogramWidget.cc
   CustomWidgets/QtHistogramGraph.cc
+  CustomWidgets/CodeEditorWidgets.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Base_FORMS_HEADERS "${Interface_Modules_Base_FORMS}")

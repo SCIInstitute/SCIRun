@@ -57,6 +57,7 @@ private Q_SLOTS:
   void remindAboutUnsavedMatrix();
 private:
   bool firstPull_;
+  class CodeEditor* matrixTextEdit_;
 };
 
 }
