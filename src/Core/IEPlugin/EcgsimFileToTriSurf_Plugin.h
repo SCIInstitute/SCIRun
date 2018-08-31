@@ -6,7 +6,7 @@
   Copyright (c) 2015 Scientific Computing and Imaging Institute,
   University of Utah.
 
-  
+
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
   to deal in the Software without restriction, including without limitation
@@ -26,19 +26,16 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_IEPLUGIN_ECGSIMFILETOMATRIX_PLUGIN_H__
-#define CORE_IEPLUGIN_ECGSIMFILETOMATRIX_PLUGIN_H__
+#ifndef CORE_IEPLUGIN_ECGSIMFILETOTRISURF_PLUGIN_H__
+#define CORE_IEPLUGIN_ECGSIMFILETOTRISURF_PLUGIN_H__
 
 #include <Core/Logging/LoggerFwd.h>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/IEPlugin/share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
-  SCISHARE Core::Datatypes::MatrixHandle EcgsimFileMatrix_reader(Core::Logging::LoggerHandle pr, const char *filename);
-  SCISHARE Core::Datatypes::MatrixHandle EcgsimBinaryFileMatrix_reader(Core::Logging::LoggerHandle pr, const char *filename);
-
-  SCISHARE bool EcgsimFileMatrix_writer(Core::Logging::LoggerHandle pr, Core::Datatypes::MatrixHandle fh, const char* filename);
+  SCISHARE FieldHandle EcgsimFileToTriSurf_reader(Core::Logging::LoggerHandle pr, const char *filename);
 }
 
 #endif
