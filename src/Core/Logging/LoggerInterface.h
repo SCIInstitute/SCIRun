@@ -46,6 +46,8 @@ namespace SCIRun
         virtual ~LegacyLoggerInterface();
 
         virtual void error(const std::string& msg) const = 0;
+        virtual bool errorReported() const = 0;
+        virtual void setErrorFlag(bool flag) = 0;
         virtual void warning(const std::string& msg) const = 0;
         virtual void remark(const std::string& msg) const = 0;
         virtual void status(const std::string& msg) const = 0;

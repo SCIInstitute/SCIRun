@@ -192,7 +192,6 @@ namespace SCIRun
         AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
         UiToggleFunc uiToggleFunc_;
 
-        bool moduleErrorLoggedFromMacro_{ false };
         bool returnCode_{ false };
       };
     }
@@ -386,7 +385,7 @@ bool Module::executeWithSignals() NOEXCEPT
   impl_->executionState_->transitionTo(ModuleExecutionState::Executing);
   impl_->returnCode_ = false;
   bool threadStopValue = false;
-  impl_->moduleErrorLoggedFromMacro_ = false;
+  getLogger()->setErrorFlag(false);
 
   try
   {
@@ -414,7 +413,7 @@ bool Module::executeWithSignals() NOEXCEPT
   {
     /// @todo: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
     //if (LogSettings::Instance().verbose())
-    if (!impl_->moduleErrorLoggedFromMacro_)
+    if (!getLogger()->errorReported())
     {
       std::ostringstream ostr;
       ostr << "Caught exception: " << e.typeName() << std::endl << "Message: " << e.what() << "\n" << boost::diagnostic_information(e) << std::endl;
@@ -469,11 +468,6 @@ bool Module::executeWithSignals() NOEXCEPT
 
   impl_->executeEnds_(executionTime, get_id());
   return impl_->returnCode_;
-}
-
-void Module::setErrorLoggedFromMacro(bool logged)
-{
-  impl_->moduleErrorLoggedFromMacro_ = logged;
 }
 
 ModuleStateHandle Module::get_state()

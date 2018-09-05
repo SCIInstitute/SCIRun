@@ -263,5 +263,36 @@ bool SCIRun::EcgsimFileMatrix_writer(LoggerHandle pr, MatrixHandle matrixInput, 
   return (true);
 }
 
+MatrixHandle SCIRun::EcgsimBinaryFileMatrix_reader(LoggerHandle pr, const char *filename)
+{
+  std::ifstream fp(filename, std::ifstream::binary);
+  if (!fp)
+  {
+    if (pr) pr->error("Could not load file: " + std::string(filename));
+    return nullptr;
+  }
+
+  const int sizeCount = 2;
+  unsigned int hdr[sizeCount];
+  fp.read(reinterpret_cast<char*>(hdr), sizeCount * sizeof(unsigned int));
+  if (!fp)
+  {
+    if (pr) pr->error("Header read failed (matrix size).");
+    return nullptr;
+  }
+  auto nrows = hdr[0];
+  auto ncols = hdr[1];
+  std::vector<float> values(nrows*ncols);
+  fp.read(reinterpret_cast<char*>(&values[0]), values.size() * sizeof(float));
+  if (!fp)
+  {
+    if (pr) pr->error("Values read failed (matrix contents).");
+    return nullptr;
+  }
+
+  auto result = boost::make_shared<DenseMatrix>(nrows, ncols);
+  std::copy(values.begin(), values.end(), result->data());
+  return result;
+}
 
 
