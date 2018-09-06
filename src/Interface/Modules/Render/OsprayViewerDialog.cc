@@ -69,7 +69,7 @@ namespace
 
   void setupViewer(VolumeViewer* viewer)
   {
-    float ambientLightIntensity = 0.2f;
+    float ambientLightIntensity = 0.1f;
     float directionalLightIntensity = 1.0f;
     float directionalLightAzimuth = 80;
     float directionalLightElevation = 65;

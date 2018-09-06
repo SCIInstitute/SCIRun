@@ -494,7 +494,15 @@ AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
   }
   else
   {
-    THROW_ALGORITHM_INPUT_ERROR("field type not supported.");
+    if (get(Parameters::ShowEdges).toBool())
+    {
+      renderable = addCylinder(field, colorMap);
+    }
+    else
+    {
+      THROW_ALGORITHM_INPUT_ERROR("field type not supported.");
+    }
+    
   }
 
   AlgorithmOutput output;
