@@ -756,10 +756,12 @@ void OsprayViewerDialog::setLightColor()
 
 void OsprayViewerDialog::setBGColor()
 {
+  #ifdef WITH_OSPRAY
   auto colorStr = state_->getValue(Parameters::BackgroundColor).toString();
   
   ColorRGB color(colorStr);
   viewer_->setBackgroundColor(color.r(), color.g(), color.b());
+  #endif
 }
 
 
