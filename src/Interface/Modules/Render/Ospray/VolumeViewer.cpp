@@ -1016,3 +1016,11 @@ void VolumeViewer::setDirectionalLightColor(float r, float g, float b)
   ospCommit(directionalLight);
   render();
 }
+
+void VolumeViewer::setBackgroundColor(float r, float g, float b)
+{
+  ospSet3f(renderer, "bgColor", r, g, b);
+  ospCommit(renderer);
+  
+}
+

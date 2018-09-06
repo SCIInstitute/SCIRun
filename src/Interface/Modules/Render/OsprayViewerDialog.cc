@@ -69,8 +69,8 @@ namespace
 
   void setupViewer(VolumeViewer* viewer)
   {
-    float ambientLightIntensity = 0.2f;
-    float directionalLightIntensity = 1.7f;
+    float ambientLightIntensity = 0.1f;
+    float directionalLightIntensity = 1.0f;
     float directionalLightAzimuth = 80;
     float directionalLightElevation = 65;
     float samplingRate = .125f;
@@ -141,6 +141,19 @@ namespace
       OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
       ospCommit(data);
       ospSetData(mesh, "spheres", data);
+      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
+      ospCommit(data);
+      ospSetData(mesh, "color", data);
+      ospSet1f(mesh, "radius", radius);
+      return mesh;
+    }
+    else if (boost::iequals(geom_type, "Cylinder"))
+    {
+      SCIRun::LOG_DEBUG("adding Cylinders");
+      OSPGeometry mesh = ospNewGeometry("cylinders");
+      OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
+      ospCommit(data);
+      ospSetData(mesh, "cylinders", data);
       data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
       ospCommit(data);
       ospSetData(mesh, "color", data);
@@ -357,6 +370,7 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 
       connect(viewer_->getWindow(), SIGNAL(cameraChanged()), this, SLOT(setCameraWidgets()));
     }
+    setBGColor();
     setLightColor();
     viewer_->show();
   }
@@ -739,6 +753,17 @@ void OsprayViewerDialog::setLightColor()
   }
   #endif
 }
+
+void OsprayViewerDialog::setBGColor()
+{
+  #ifdef WITH_OSPRAY
+  auto colorStr = state_->getValue(Parameters::BackgroundColor).toString();
+  
+  ColorRGB color(colorStr);
+  viewer_->setBackgroundColor(color.r(), color.g(), color.b());
+  #endif
+}
+
 
 void OsprayViewerDialog::pullSpecial()
 {

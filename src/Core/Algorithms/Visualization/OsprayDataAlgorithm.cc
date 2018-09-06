@@ -63,6 +63,7 @@ ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorB);
 ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorA);
 ALGORITHM_PARAMETER_DEF(Visualization, Radius);
 ALGORITHM_PARAMETER_DEF(Visualization, UseNormals);
+ALGORITHM_PARAMETER_DEF(Visualization, ShowEdges);
 
 OsprayDataAlgorithm::OsprayDataAlgorithm()
 {
@@ -72,6 +73,7 @@ OsprayDataAlgorithm::OsprayDataAlgorithm()
   addParameter(Parameters::DefaultColorA, 1.0);
   addParameter(Parameters::Radius, 0.1);
   addParameter(Parameters::UseNormals, true);
+  addParameter(Parameters::ShowEdges, false);
 }
 
 struct detect_loops : public boost::dfs_visitor<>
@@ -316,6 +318,60 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addSurface(FieldHandle field, Co
   return obj;
 }
 
+OsprayGeometryObjectHandle OsprayDataAlgorithm::addCylinder(FieldHandle field, ColorMapHandle colorMap) const
+{
+  auto obj = fillDataBuffers(field, colorMap);
+  obj->isCylinder = true;
+  obj->GeomType="Cylinder";
+  obj->radius = static_cast<float>(get(Parameters::Radius).toDouble());
+  
+  
+  auto& fieldData = obj->data;
+  
+  auto& vertex = fieldData.vertex;
+  auto& color = fieldData.color;
+  auto& index = fieldData.index;
+  
+  std::vector<float> vertex_new, color_new;
+  std::vector<int32_t> index_new;
+  
+  ColorRGB nodeColor(get(Parameters::DefaultColorR).toDouble(),
+                     get(Parameters::DefaultColorG).toDouble(),
+                     get(Parameters::DefaultColorB).toDouble());
+  auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
+  
+  std::vector<float> vertex_orig;
+  {
+    auto facade(field->mesh()->getFacade());
+    for (const auto& edge : facade->edges())
+    {
+      auto nodePoints = edge.nodePoints();
+//      std::cout<<"points ="<<nodePoints[0]<<", "<<nodePoints[1]<<std::endl;
+      
+      vertex_new.push_back(static_cast<float>(nodePoints[0].x()));
+      vertex_new.push_back(static_cast<float>(nodePoints[0].y()));
+      vertex_new.push_back(static_cast<float>(nodePoints[0].z()));
+      vertex.push_back(1);
+      vertex_new.push_back(static_cast<float>(nodePoints[1].x()));
+      vertex_new.push_back(static_cast<float>(nodePoints[1].y()));
+      vertex_new.push_back(static_cast<float>(nodePoints[1].z()));
+      vertex.push_back(1);
+      
+      // hard coded to default value for now
+      color_new.push_back(static_cast<float>(nodeColor.r()));
+      color_new.push_back(static_cast<float>(nodeColor.g()));
+      color_new.push_back(static_cast<float>(nodeColor.b()));
+      color_new.push_back(alpha);
+    }
+  }
+  
+  index = index_new;
+  vertex = vertex_new;
+  color = color_new;
+  
+  return obj;
+}
+
 OsprayGeometryObjectHandle OsprayDataAlgorithm::addSphere(FieldHandle field, ColorMapHandle colorMap) const
 {
   auto obj = fillDataBuffers(field, colorMap);
@@ -418,7 +474,15 @@ AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
 
   if (info.is_trisurfmesh())
   {
-    renderable = addSurface(field, colorMap);
+    // currently only supports one output, so no point in doing both
+    if (get(Parameters::ShowEdges).toBool())
+    {
+      renderable = addCylinder(field, colorMap);
+    }
+    else
+    {
+      renderable = addSurface(field, colorMap);
+    }
   }
   else if (info.is_pointcloudmesh())
   {
@@ -430,7 +494,15 @@ AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
   }
   else
   {
-    THROW_ALGORITHM_INPUT_ERROR("field type not supported.");
+    if (get(Parameters::ShowEdges).toBool())
+    {
+      renderable = addCylinder(field, colorMap);
+    }
+    else
+    {
+      THROW_ALGORITHM_INPUT_ERROR("field type not supported.");
+    }
+    
   }
 
   AlgorithmOutput output;

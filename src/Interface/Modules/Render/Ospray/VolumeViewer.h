@@ -240,6 +240,8 @@ public Q_SLOTS:
   void setDirectionalLightVisible(bool visible);
   void setAmbientLightColor(float r, float g, float b);
   void setDirectionalLightColor(float r, float g, float b);
+  void setBackgroundColor(float r, float g, float b);
+
 
 protected:
 
