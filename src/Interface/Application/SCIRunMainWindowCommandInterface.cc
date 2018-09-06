@@ -225,7 +225,7 @@ void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
   PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
   statusBar()->showMessage(tr("Script is running."), 2000);
 #else
-  GuiLogger::logInfo("Python not included in this build, cannot run " + scriptFileName);
+  GuiLogger::logInfoQ("Python not included in this build, cannot run " + scriptFileName);
 #endif
 }
 
