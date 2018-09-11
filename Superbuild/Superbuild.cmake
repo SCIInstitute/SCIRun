@@ -214,6 +214,7 @@ ADD_EXTERNAL( ${SUPERBUILD_DIR}/SpdLogExternal.cmake SpdLog_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/TnyExternal.cmake Tny_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/LodePngExternal.cmake LodePng_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/Cleaver2External.cmake Cleaver2_external )
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/GoogleTestExternal.cmake GoogleTest_external )
 
 IF(WIN32)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/GlewExternal.cmake Glew_external )
@@ -284,6 +285,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DSPDLOG_DIR:PATH=${SPDLOG_DIR}"
     "-DTNY_DIR:PATH=${TNY_DIR}"
 	  "-DGLEW_DIR:PATH=${Glew_DIR}"
+    "-DGTEST_DIR:PATH=${GTEST_DIR}"
     "-DLODEPNG_DIR:PATH=${LODEPNG_DIR}"
     "-DCLEAVER2_DIR:PATH=${CLEAVER2_DIR}"
     "-DSCI_DATA_DIR:PATH=${SCI_DATA_DIR}"
