@@ -13,6 +13,7 @@ fi
 VERSION="v5.0-$1"
 echo $VERSION
 
+cd ../src
 git checkout master
 rm LATEST_TAG.txt
 echo $VERSION >> LATEST_TAG.txt
