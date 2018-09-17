@@ -31,7 +31,7 @@ SET(GTEST_CACHE_ARGS
   "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
   "-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON"
   )
-SET(googletest_GIT_TAG "origin/master")
+SET(googletest_GIT_TAG "origin/cibc")
 
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
