@@ -36,11 +36,7 @@
 #include <boost/numeric/interval.hpp>
 #include <Core/Utils/share.h>
 
-#ifdef WIN32 
-#define NOEXCEPT _NOEXCEPT
-#else
 #define NOEXCEPT noexcept(true)
-#endif
 
 namespace SCIRun 
 {
