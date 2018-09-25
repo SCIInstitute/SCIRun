@@ -31,7 +31,7 @@ MESSAGE(STATUS "Configuring External Packages")
 # TODO: move to external repository
 
 MESSAGE(STATUS "Configuring google-mock")
-ADD_SUBDIRECTORY(gmock)
+ADD_SUBDIRECTORY(googletest)
 
 MESSAGE(STATUS "Configuring cleaver 1")
 ADD_SUBDIRECTORY(cleaver)

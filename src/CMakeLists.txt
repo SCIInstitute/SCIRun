@@ -563,10 +563,10 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_BINARY_DIR}
   ${SCIRun_SOURCE_DIR}/
   ${SCIRun_SOURCE_DIR}/include
-  ${SCIRun_SOURCE_DIR}/Externals/gmock/gtest/include
-  ${SCIRun_SOURCE_DIR}/Externals/gmock/include
   ${SCIRun_SOURCE_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/spire/
+  ${SCIRun_SOURCE_DIR}/Externals/googletest/googletest/include
+  ${SCIRun_SOURCE_DIR}/Externals/googletest/googlemock/include
   ${CMAKE_CURRENT_BINARY_DIR}/Externals/libxml2/include
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
