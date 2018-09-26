@@ -22,7 +22,6 @@
 
 /// @todo Documentation Core/Datatypes/Legacy/Bundle/Bundle.cc
 
-#include <boost/algorithm/string.hpp>
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -32,11 +31,6 @@
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-
-#include <boost/range/algorithm/count_if.hpp>
-#include <boost/range/adaptors.hpp>
-#include <boost/bind/bind.hpp>
-#include <boost/range/algorithm/copy.hpp>
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Datatypes/NrrdData.h>
@@ -180,7 +174,8 @@ Bundle::io(Piostream& stream)
     auto size = bundle_.size();
 
     std::vector<std::string> names;
-    boost::copy(bundle_ | boost::adaptors::map_keys, std::back_inserter(names));
+    std::transform(begin(), end(), std::back_inserter(names),
+      [](const UnderlyingMapType::value_type& p) { return p.first; });
 
     for (int p = 0; p < size; p ++)
     {
@@ -611,7 +606,7 @@ DatatypeHandle Bundle::get(const std::string& name) const
   return DatatypeHandle();
 }
 
-/// @todo: extract into teplate impl, but do it here to avoid including every type in Bundle.h
+/// @todo: extract into template impl, but do it here to avoid including every type in Bundle.h
 
 FieldHandle Bundle::getField(const std::string& name) const
 {
@@ -625,20 +620,17 @@ bool Bundle::isField(const std::string& name) const
 
 size_t Bundle::numFields() const
 {
-  return boost::count_if(bundle_ | boost::adaptors::map_keys, 
-	  [this](auto n) { return isField(n); });
+  return numObjs([this](const std::string& n) { return isField(n); });
 }
 
 std::vector<FieldHandle> Bundle::getFields() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed([this](auto n) { return getField(n); }) | boost::adaptors::filtered([] (FieldHandle f) { return f != nullptr; });
-  return std::vector<FieldHandle>(range.begin(), range.end());
+  return getObjs<FieldHandle>([this](const std::string& n) { return getField(n); });
 }
 
 std::vector<std::string> Bundle::getFieldNames() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered([this](auto n) { return isField(n); });
-  return std::vector<std::string>(range.begin(), range.end());
+  return getObjNames([this](const std::string& n) { return isField(n); });
 }
 
 MatrixHandle Bundle::getMatrix(const std::string& name) const
@@ -653,22 +645,17 @@ bool Bundle::isMatrix(const std::string& name) const
 
 size_t Bundle::numMatrices() const
 {
-  return boost::count_if(bundle_ | boost::adaptors::map_keys, [this](auto n) { return isMatrix(n); });
+  return numObjs([this](const std::string& n) { return isMatrix(n); });
 }
 
 std::vector<MatrixHandle> Bundle::getMatrices() const
 {
-  auto range = bundle_ | 
-	  boost::adaptors::map_keys | 
-	  boost::adaptors::transformed([this](auto n) { return getMatrix(n); }) |
-	  boost::adaptors::filtered([] (MatrixHandle m) { return m != nullptr; });
-  return std::vector<MatrixHandle>(range.begin(), range.end());
+  return getObjs<MatrixHandle>([this](const std::string& n) { return getMatrix(n); });
 }
 
 std::vector<std::string> Bundle::getMatrixNames() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered([this](auto n) { return isMatrix(n); });
-  return std::vector<std::string>(range.begin(), range.end());
+  return getObjNames([this](const std::string& n) { return isMatrix(n); });
 }
 
 StringHandle Bundle::getString(const std::string& name) const
@@ -683,19 +670,17 @@ bool Bundle::isString(const std::string& name) const
 
 size_t Bundle::numStrings() const
 {
-  return boost::count_if(bundle_ | boost::adaptors::map_keys, [this](auto n) { return isString(n); });
+  return numObjs([this](const std::string& n) { return isString(n); });
 }
 
 std::vector<StringHandle> Bundle::getStrings() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed([this](auto n) { return getString(n); }) | boost::adaptors::filtered([] (StringHandle s) { return s != nullptr; });
-  return std::vector<StringHandle>(range.begin(), range.end());
+  return getObjs<StringHandle>([this](const std::string& n) { return getString(n); });
 }
 
 std::vector<std::string> Bundle::getStringNames() const
 {
-  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered([this](auto n) { return isString(n); });
-  return std::vector<std::string>(range.begin(), range.end());
+  return getObjNames([this](const std::string& n) { return isString(n); });
 }
 
 bool Bundle::remove(const std::string& name)
