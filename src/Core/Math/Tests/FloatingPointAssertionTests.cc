@@ -34,8 +34,12 @@ using namespace SCIRun;
 
 TEST(FloatComparisonTest, BoostCheck)
 {
-  namespace btt = boost::test_tools;
-  //namespace btt = boost::math::fpc;
+#if BOOST_VERSION >= 106700
+	namespace btt = boost::math::fpc;
+#else
+	namespace btt = boost::test_tools;
+#endif
+  
   btt::close_at_tolerance<double> comp(btt::percent_tolerance(1e-5));
   EXPECT_TRUE(comp(1, 1));
   EXPECT_FALSE(comp(1.0/3, 0.33333));

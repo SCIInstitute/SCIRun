@@ -22,6 +22,9 @@ else()
   add_subdirectory( googletest )
 endif()
 
+set(gtest_SOURCE_DIR ${CMAKE_SOURCE_DIR}/googletest)
+set(INSTALL_GTEST OFF)
+
 #############
 # CIBC part #
 #############
