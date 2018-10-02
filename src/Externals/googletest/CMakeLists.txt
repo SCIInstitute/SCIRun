@@ -16,6 +16,8 @@ include(GNUInstallDirs)
 option(BUILD_GMOCK "Builds the googlemock subproject" ON)
 option(INSTALL_GTEST "Enable installation of googletest. (Projects embedding googletest may want to turn this OFF.)" ON)
 
+set(INSTALL_GTEST OFF)
+
 if(BUILD_GMOCK)
   add_subdirectory( googlemock )
 else()
@@ -23,7 +25,7 @@ else()
 endif()
 
 set(gtest_SOURCE_DIR ${CMAKE_SOURCE_DIR}/googletest)
-set(INSTALL_GTEST OFF)
+
 
 #############
 # CIBC part #
