@@ -222,6 +222,7 @@ ENDIF()
 
 IF(BUILD_WITH_PYTHON)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/PythonExternal.cmake Python_external )
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/PyBindExternal.cmake PyBind_external )
 ENDIF()
 
 FIND_PACKAGE(Subversion)
@@ -295,6 +296,7 @@ IF(BUILD_WITH_PYTHON)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DPython_DIR:PATH=${Python_DIR}"
     "-DPYTHON_EXECUTABLE:FILEPATH=${SCI_PYTHON_EXE}"
+	"-DPyBind_DIR:PATH=${PyBind_DIR}"
   )
 ENDIF()
 
