@@ -35,8 +35,6 @@ SCIRUN_ADD_UNIT_TEST(Core_Python_Tests
   ${Core_Python_Tests_SRCS}
 )
 
-find_package(pybind11 REQUIRED)
-
 pybind11_add_module(example PyBindTests.cc)
 
 TARGET_LINK_LIBRARIES(Core_Python_Tests
