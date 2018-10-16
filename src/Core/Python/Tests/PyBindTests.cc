@@ -47,13 +47,42 @@ namespace py = pybind11;
 // #endif
 // #endif
 
-// using namespace SCIRun;
-// using namespace SCIRun::Core;
-// using namespace Core::Python;
+#include <Core/Python/PythonInterpreter.h>
+#include <boost/filesystem.hpp>
+
+using namespace SCIRun;
+using namespace SCIRun::Core;
+//using namespace Core::Python;
 // using namespace Testing;
 // using namespace TestUtils;
 
-TEST(PyBindTests, Test1)
+class PyBindTests : public ::testing::Test
 {
+public:
+  PyBindTests()
+  {
+    PythonInterpreter::Instance().initialize(false, "Engine_Python_Tests", boost::filesystem::current_path().string());
+    //PythonInterpreter::Instance().importSCIRunLibrary();
+  }
+};
+
+int add(int i, int j)
+{
+    return i + j;
+}
+
+PYBIND11_MODULE(example, m)
+{
+  m.doc() = "pybind11 example plugin"; // optional module docstring
+  m.def("add", &add, "A function which adds two numbers");
+}
+
+TEST_F(PyBindTests, Test1)
+{
+  PythonInterpreter::Instance().run_string("import example");
+  PythonInterpreter::Instance().run_string("example.add(1, 2)");
+
+
+
   FAIL() << "todo";
 }

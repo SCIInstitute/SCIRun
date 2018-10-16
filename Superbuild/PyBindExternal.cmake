@@ -29,9 +29,9 @@ SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 # If CMake ever allows overriding the checkout command or adding flags,
 # git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(PyBind_external
-  GIT_REPOSITORY "https://github.com/pybind/pybind11"
-  GIT_TAG "v2.2.4"
-  CONFIGURE_COMMAND ""
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/pybind11"
+  GIT_TAG "origin/cibc"
+  #CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
   INSTALL_COMMAND ""
   CMAKE_CACHE_ARGS
@@ -42,3 +42,6 @@ ExternalProject_Get_Property(PyBind_external SOURCE_DIR)
 SET(PyBind_DIR ${SOURCE_DIR})
 
 MESSAGE(STATUS "PyBind_DIR: ${PyBind_DIR}")
+
+ExternalProject_Get_Property(PyBind_external BINARY_DIR)
+SET(PyBind_Build_DIR ${BINARY_DIR})
