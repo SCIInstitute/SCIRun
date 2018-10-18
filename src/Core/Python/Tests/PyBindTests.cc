@@ -27,7 +27,7 @@
    */
 
 //#include <Python.h>
-
+#if 0
 #include <pybind11/pybind11.h>
 
 namespace py = pybind11;
@@ -61,8 +61,8 @@ class PyBindTests : public ::testing::Test
 public:
   PyBindTests()
   {
-    PythonInterpreter::Instance().initialize(false, "Engine_Python_Tests", boost::filesystem::current_path().string());
-    //PythonInterpreter::Instance().importSCIRunLibrary();
+    PythonInterpreter::Instance().initialize(false, "Engine_Python_Tests", (boost::filesystem::current_path() / "lib").string());
+    PythonInterpreter::Instance().importSCIRunLibrary();
   }
 };
 
@@ -79,6 +79,8 @@ PYBIND11_MODULE(example, m)
 
 TEST_F(PyBindTests, Test1)
 {
+  std::cout << "libpath: " <<  boost::filesystem::current_path().string() << std::endl;
+
   PythonInterpreter::Instance().run_string("import example");
   PythonInterpreter::Instance().run_string("example.add(1, 2)");
 
@@ -86,3 +88,4 @@ TEST_F(PyBindTests, Test1)
 
   FAIL() << "todo";
 }
+#endif
