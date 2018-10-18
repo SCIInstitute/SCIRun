@@ -27,7 +27,7 @@
    */
 
 //#include <Python.h>
-#if 0
+
 #include <pybind11/pybind11.h>
 
 namespace py = pybind11;
@@ -61,8 +61,7 @@ class PyBindTests : public ::testing::Test
 public:
   PyBindTests()
   {
-    PythonInterpreter::Instance().initialize(false, "Engine_Python_Tests", (boost::filesystem::current_path() / "lib").string());
-    PythonInterpreter::Instance().importSCIRunLibrary();
+    PythonInterpreter::Instance().initialize(false, "Engine_Python_Tests", (boost::filesystem::current_path()).string());
   }
 };
 
@@ -77,15 +76,11 @@ PYBIND11_MODULE(example, m)
   m.def("add", &add, "A function which adds two numbers");
 }
 
-TEST_F(PyBindTests, Test1)
+TEST_F(PyBindTests, FirstExample)
 {
-  std::cout << "libpath: " <<  boost::filesystem::current_path().string() << std::endl;
-
+  PythonInterpreter::Instance().run_string("import sys");
+  // need to add lib path manually for now
+  PythonInterpreter::Instance().run_string("sys.path.append('" + (boost::filesystem::current_path() / "lib").string() + "')");
   PythonInterpreter::Instance().run_string("import example");
   PythonInterpreter::Instance().run_string("example.add(1, 2)");
-
-
-
-  FAIL() << "todo";
 }
-#endif
