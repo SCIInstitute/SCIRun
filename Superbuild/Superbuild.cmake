@@ -214,7 +214,6 @@ ADD_EXTERNAL( ${SUPERBUILD_DIR}/SpdLogExternal.cmake SpdLog_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/TnyExternal.cmake Tny_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/LodePngExternal.cmake LodePng_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/Cleaver2External.cmake Cleaver2_external )
-#ADD_EXTERNAL( ${SUPERBUILD_DIR}/GoogleTestExternal.cmake GoogleTest_external )
 
 IF(WIN32)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/GlewExternal.cmake Glew_external )
@@ -222,7 +221,6 @@ ENDIF()
 
 IF(BUILD_WITH_PYTHON)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/PythonExternal.cmake Python_external )
-  ADD_EXTERNAL( ${SUPERBUILD_DIR}/PyBindExternal.cmake PyBind_external )
 ENDIF()
 
 FIND_PACKAGE(Subversion)
@@ -286,9 +284,6 @@ SET(SCIRUN_CACHE_ARGS
     "-DSPDLOG_DIR:PATH=${SPDLOG_DIR}"
     "-DTNY_DIR:PATH=${TNY_DIR}"
 	  "-DGLEW_DIR:PATH=${Glew_DIR}"
-    "-DPyBind_DIR:PATH=${PyBind_DIR}"
-    "-DPyBind_Build_DIR:PATH=${PyBind_Build_DIR}"
-#    "-DGTEST_DIR:PATH=${GTEST_DIR}"
     "-DLODEPNG_DIR:PATH=${LODEPNG_DIR}"
     "-DCLEAVER2_DIR:PATH=${CLEAVER2_DIR}"
     "-DSCI_DATA_DIR:PATH=${SCI_DATA_DIR}"
@@ -298,7 +293,6 @@ IF(BUILD_WITH_PYTHON)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DPython_DIR:PATH=${Python_DIR}"
     "-DPYTHON_EXECUTABLE:FILEPATH=${SCI_PYTHON_EXE}"
-	"-DPyBind_DIR:PATH=${PyBind_DIR}"
   )
 ENDIF()
 

@@ -49,37 +49,12 @@ namespace py = pybind11;
 
 #include <Core/Python/PythonInterpreter.h>
 #include <boost/filesystem.hpp>
-#include <Core/Python/Tests/PyBindExampleModule.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Core;
-//using namespace Core::Python;
-// using namespace Testing;
-// using namespace TestUtils;
 
-class PyBindTests : public ::testing::Test
-{
-public:
-  PyBindTests()
-  {
-    PythonInterpreter::Instance().initialize(false, "Engine_Python_Tests", (boost::filesystem::current_path()).string());
-    PythonInterpreter::Instance().output_signal_.connect([](const std::string& msg) { std::cout << "FROM PYTHON: " << msg << std::endl; });
-  }
-};
-
-TEST_F(PyBindTests, FirstExample)
-{
-  //std::cout << __FILE__ << " " << __LINE__ << std::endl;
-  PythonInterpreter::Instance().run_string("import sys");
-  std::cout << __FILE__ << " " << __LINE__ << std::endl;
-  std::cout << "path " << boost::filesystem::current_path() << std::endl;
-  
-  // need to add lib path manually for now
-  PythonInterpreter::Instance().run_string("sys.path.append('" + (boost::filesystem::current_path() / "lib").string() + "')");
-  PythonInterpreter::Instance().run_string("sys.path.append('C:\\17p\\SCIRun\\lib\\Release\\')");
-  //std::cout << __FILE__ << " " << __LINE__ << std::endl;
-  PythonInterpreter::Instance().run_string("import example");
-  //std::cout << __FILE__ << " " << __LINE__ << std::endl;
-  PythonInterpreter::Instance().run_string("example.add(1, 2)");
-  //std::cout << __FILE__ << " " << __LINE__ << std::endl;
-}
+int add(int i, int j);
+//
+//PYBIND11_MODULE(example, m)
+//{
+//  m.doc() = "pybind11 example plugin"; // optional module docstring
+//  m.def("add", &add, "A function which adds two numbers");
+//}
