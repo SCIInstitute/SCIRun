@@ -26,20 +26,12 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-MESSAGE(STATUS "Configuring External Packages")
+MESSAGE(STATUS "Configuring Submodules")
 
-# TODO: move to external repository
-
-MESSAGE(STATUS "Configuring google-mock")
-ADD_SUBDIRECTORY(googletest)
-
-MESSAGE(STATUS "Configuring cleaver 1")
-ADD_SUBDIRECTORY(cleaver)
-
-MESSAGE(STATUS "Configuring libxml2")
-ADD_SUBDIRECTORY(libxml2)
-
-MESSAGE(STATUS "Configuring spire")
-ADD_SUBDIRECTORY(spire)
-
-ADD_SUBDIRECTORY(submodules)
+IF(BUILD_WITH_PYTHON)
+  SET(PYTHON_EXECUTABLE ${SCI_PYTHON_EXE})
+  message(${SCI_PYTHON_LIBRARY_RELEASE})
+  SET(PYTHON_LIBRARY ${SCI_PYTHON_LIBRARY_RELEASE})
+  SET(PYBIND11_PYTHON_VERSION 3.4.3)
+  ADD_SUBDIRECTORY(pybind11)
+ENDIF()
