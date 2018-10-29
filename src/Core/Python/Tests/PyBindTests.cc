@@ -71,12 +71,18 @@ TEST_F(PyBindTests, FirstExample)
 {
   //std::cout << __FILE__ << " " << __LINE__ << std::endl;
   PythonInterpreter::Instance().run_string("import sys");
+  PythonInterpreter::Instance().run_string("print(sys.path)");
   std::cout << __FILE__ << " " << __LINE__ << std::endl;
   std::cout << "path " << boost::filesystem::current_path() << std::endl;
-  
+
   // need to add lib path manually for now
+  #ifdef __APPLE__
   PythonInterpreter::Instance().run_string("sys.path.append('" + (boost::filesystem::current_path() / "lib").string() + "')");
+  #else
+  #ifdef WIN32
   PythonInterpreter::Instance().run_string("sys.path.append('C:\\17p\\SCIRun\\lib\\Release\\')");
+  #endif
+  #endif
   //std::cout << __FILE__ << " " << __LINE__ << std::endl;
   PythonInterpreter::Instance().run_string("import example");
   //std::cout << __FILE__ << " " << __LINE__ << std::endl;
