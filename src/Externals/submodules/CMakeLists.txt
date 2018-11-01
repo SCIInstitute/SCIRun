@@ -47,6 +47,10 @@ if(NOT EXISTS "${PROJECT_SOURCE_DIR}/Externals/submodules/pybind11/CMakeLists.tx
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
 
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/Externals/submodules/googletest/CMakeLists.txt")
+    message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
+endif()
+
 IF(BUILD_WITH_PYTHON)
   SET(PYTHON_EXECUTABLE ${SCI_PYTHON_EXE})
   IF(WIN32)
@@ -56,3 +60,5 @@ IF(BUILD_WITH_PYTHON)
   SET(PYBIND11_PYTHON_VERSION 3.4.3)
   ADD_SUBDIRECTORY(pybind11)
 ENDIF()
+
+ADD_SUBDIRECTORY(googletest)
