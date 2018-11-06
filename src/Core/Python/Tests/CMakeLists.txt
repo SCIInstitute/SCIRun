@@ -28,23 +28,23 @@
 
 SET(Core_Python_Tests_SRCS
   PythonInterpreterTests.cc
-  PyBindTests.cc
+  #PyBindTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_Python_Tests
   ${Core_Python_Tests_SRCS}
 )
 
-pybind11_add_module(example PyBindExampleModule.cc)
+#pybind11_add_module(example PyBindExampleModule.cc)
 
-TARGET_LINK_LIBRARIES(example 
-  Core_Python
-  ${SCI_PYTHON_LIBRARY}
-  ${SCI_BOOST_LIBRARY}
-  gtest_main
-  gtest
-  gmock
-  )
+#TARGET_LINK_LIBRARIES(example 
+#  Core_Python
+#  ${SCI_PYTHON_LIBRARY}
+#  ${SCI_BOOST_LIBRARY}
+#  gtest_main
+#  gtest
+#  gmock
+#   )
 
 TARGET_LINK_LIBRARIES(Core_Python_Tests
   Core_Python
