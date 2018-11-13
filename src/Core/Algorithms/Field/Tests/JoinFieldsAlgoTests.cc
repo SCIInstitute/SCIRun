@@ -133,7 +133,7 @@ using ::testing::Bool;
 using ::testing::Values;
 using ::testing::Combine;
 
-class JoinFieldsAlgoTestsParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, bool, bool, double> >
+class JoinFieldsAlgoTestsParameterized : public ::testing::TestWithParam < std::tuple<bool, bool, bool, bool, double> >
 {
 public:
   JoinFieldsAlgo algo_;
@@ -144,11 +144,11 @@ protected:
   {
     LogSettings::Instance().setVerbose(true);
     // How to set parameters on an algorithm (that come from the GUI)
-    algo_.set(JoinFieldsAlgo::MergeNodes,      ::std::tr1::get<0>(GetParam()));
-    algo_.set(JoinFieldsAlgo::MergeElems,      ::std::tr1::get<1>(GetParam()));
-    algo_.set(JoinFieldsAlgo::MatchNodeValues, ::std::tr1::get<2>(GetParam()));
-    algo_.set(JoinFieldsAlgo::MakeNoData,      ::std::tr1::get<3>(GetParam()));
-    algo_.set(JoinFieldsAlgo::Tolerance,       ::std::tr1::get<4>(GetParam()));
+    algo_.set(JoinFieldsAlgo::MergeNodes,      std::get<0>(GetParam()));
+    algo_.set(JoinFieldsAlgo::MergeElems,      std::get<1>(GetParam()));
+    algo_.set(JoinFieldsAlgo::MatchNodeValues, std::get<2>(GetParam()));
+    algo_.set(JoinFieldsAlgo::MakeNoData,      std::get<3>(GetParam()));
+    algo_.set(JoinFieldsAlgo::Tolerance,       std::get<4>(GetParam()));
   }
   virtual void TearDown(){ }
 };

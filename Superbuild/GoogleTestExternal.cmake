@@ -1,4 +1,3 @@
-#
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
@@ -24,19 +23,28 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-#
 
-MESSAGE(STATUS "Configuring External Packages")
+SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-# TODO: move to external repository
+SET(GTEST_CACHE_ARGS
+  "-DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}"
+  "-DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}"
+  "-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON"
+  )
+SET(googletest_GIT_TAG "origin/cibc")
 
-MESSAGE(STATUS "Configuring cleaver 1")
-ADD_SUBDIRECTORY(cleaver)
+# If CMake ever allows overriding the checkout command or adding flags,
+# git checkout -q will silence message about detached head (harmless).
+ExternalProject_Add(GoogleTest_external
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/googletest.git"
+  GIT_TAG ${googletest_GIT_TAG}
+  PATCH_COMMAND ""
+  INSTALL_DIR ""
+  INSTALL_COMMAND ""
+  CMAKE_CACHE_ARGS ${GTEST_CACHE_ARGS}
+)
 
-MESSAGE(STATUS "Configuring libxml2")
-ADD_SUBDIRECTORY(libxml2)
+ExternalProject_Get_Property(GoogleTest_external BINARY_DIR)
+SET(GTEST_DIR ${BINARY_DIR} CACHE PATH "")
 
-MESSAGE(STATUS "Configuring spire")
-ADD_SUBDIRECTORY(spire)
-
-ADD_SUBDIRECTORY(submodules)
+MESSAGE(STATUS "GTEST_DIR: ${GTEST_DIR}")

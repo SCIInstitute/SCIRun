@@ -1,0 +1,6 @@
+[submodule "src/Externals/submodules/pybind11"]
+	path = src/Externals/submodules/pybind11
+	url = https://github.com/CIBC-Internal/pybind11.git
+[submodule "src/Externals/submodules/googletest"]
+	path = src/Externals/submodules/googletest
+	url = https://github.com/CIBC-Internal/googletest.git

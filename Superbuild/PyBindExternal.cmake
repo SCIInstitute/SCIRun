@@ -1,4 +1,3 @@
-#
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
@@ -24,19 +23,25 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-#
 
-MESSAGE(STATUS "Configuring External Packages")
+SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-# TODO: move to external repository
+# If CMake ever allows overriding the checkout command or adding flags,
+# git checkout -q will silence message about detached head (harmless).
+ExternalProject_Add(PyBind_external
+  GIT_REPOSITORY "https://github.com/CIBC-Internal/pybind11"
+  GIT_TAG "origin/cibc"
+  #CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
+  CMAKE_CACHE_ARGS
+    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
+)
 
-MESSAGE(STATUS "Configuring cleaver 1")
-ADD_SUBDIRECTORY(cleaver)
+ExternalProject_Get_Property(PyBind_external SOURCE_DIR)
+SET(PyBind_DIR ${SOURCE_DIR})
 
-MESSAGE(STATUS "Configuring libxml2")
-ADD_SUBDIRECTORY(libxml2)
+MESSAGE(STATUS "PyBind_DIR: ${PyBind_DIR}")
 
-MESSAGE(STATUS "Configuring spire")
-ADD_SUBDIRECTORY(spire)
-
-ADD_SUBDIRECTORY(submodules)
+ExternalProject_Get_Property(PyBind_external BINARY_DIR)
+SET(PyBind_Build_DIR ${BINARY_DIR})
