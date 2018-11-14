@@ -43,11 +43,10 @@ CalculateMeshCenterDialog::CalculateMeshCenterDialog(const std::string& name, Mo
 
   map_.insert(StringPair("Average of Node Locations", "nodeCenter"));
   map_.insert(StringPair("Average of Element Centers", "elemCenter"));
-  map_.insert(StringPair("Volumeteric Center", "weightedElemCenter"));
+  map_.insert(StringPair("Volumetric Center", "weightedElemCenter"));
   map_.insert(StringPair("Bounding Box Center","boundingBoxCenter"));
   map_.insert(StringPair("Middle Index Node","midNodeIndex"));
   map_.insert(StringPair("Middle Index Element","midElemIndex"));
 
   addComboBoxManager(method_, Parameters::Method, map_);
 }
-

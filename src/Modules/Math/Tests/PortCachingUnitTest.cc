@@ -107,12 +107,12 @@ using ::testing::Bool;
 using ::testing::Values;
 using ::testing::Combine;
 
-class PortCachingUnitTest : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool> >
+class PortCachingUnitTest : public ::testing::TestWithParam < std::tuple<bool, bool> >
 {
 public:
   PortCachingUnitTest() :
-    portCaching_(::std::tr1::get<0>(GetParam())),
-    needToExecute_(::std::tr1::get<1>(GetParam()))
+    portCaching_(std::get<0>(GetParam())),
+    needToExecute_(std::get<1>(GetParam()))
   {
   }
 protected:
@@ -225,13 +225,13 @@ TEST_P(PortCachingUnitTest, DISABLED_TestWithMockReexecute)
   #endif
 }
 
-class ReexecuteStrategyUnitTest : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, bool> >
+class ReexecuteStrategyUnitTest : public ::testing::TestWithParam < std::tuple<bool, bool, bool> >
 {
 public:
   ReexecuteStrategyUnitTest() :
-    inputsChanged_(::std::tr1::get<0>(GetParam())),
-    stateChanged_(::std::tr1::get<1>(GetParam())),
-    oportsCached_(::std::tr1::get<2>(GetParam()))
+    inputsChanged_(std::get<0>(GetParam())),
+    stateChanged_(std::get<1>(GetParam())),
+    oportsCached_(std::get<2>(GetParam()))
   {
     LogSettings::Instance().setVerbose(true);
   }

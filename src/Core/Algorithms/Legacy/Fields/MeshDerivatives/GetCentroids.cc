@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,39 +25,55 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/MeshDerivatives/GetCentroids.h>
-
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetCentroids.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <boost/unordered_map.hpp>
+#include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
 
-namespace SCIRunAlgo {
+using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
-bool
-GetCentroidsAlgo::run(FieldHandle input, FieldHandle& output)
+ALGORITHM_PARAMETER_DEF(Fields, Centroids);
+
+GetCentroids::GetCentroids()
 {
-  algo_start("GetCentroids");
-  
-  /// Safety check
-  if (input.get_rep() == 0)
+  addOption(Parameters::Centroids,"Element","Node|Edge|Face|Cell|Element|DElement");
+}
+
+AlgorithmOutput GetCentroids::run(const AlgorithmInput& input) const
+{
+  auto inputField = input.get<Field>(Variables::InputField);
+  FieldHandle output;
+  if (!inputField)
   {
-    error("No input field");
-    algo_end(); return (false);
+    THROW_ALGORITHM_INPUT_ERROR("No input field");
   }
   
-  /// Get the information of the input field
-  FieldInformation fo(input);
+  FieldInformation fo(inputField);
   fo.make_pointcloudmesh();
   fo.make_nodata();
   
   std::string centroids;
-  get_option("centroid",centroids);
+  centroids=getOption(Parameters::Centroids);
     
-  VMesh* imesh = input->vmesh();  
+  VMesh* imesh = inputField->vmesh();
   MeshHandle mesh = CreateMesh(fo);
   VMesh* omesh = mesh->vmesh();
-      
-  if (centroids == "elem")
+  
+  AlgorithmOutput outputField;
+  
+  if (centroids=="Element")
   {
+    imesh->synchronize(Mesh::ELEMS_E);
     VField::size_type num_elems = imesh->num_elems();
     omesh->reserve_nodes(num_elems);
     for (VMesh::Elem::index_type idx=0; idx < num_elems; idx++)
@@ -71,11 +86,14 @@ GetCentroidsAlgo::run(FieldHandle input, FieldHandle& output)
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
     
-    algo_end(); return (true);
+    if(omesh->num_nodes()==0)
+    {
+      warning("No. of nodes equal to zero! Empty matrix will get generated");
+    }
   }
-
-  if (centroids == "node")
+  else if (centroids=="Node")
   {
+    imesh->synchronize(Mesh::NODES_E);
     VMesh::size_type num_nodes = imesh->num_nodes();
     omesh->reserve_nodes(num_nodes);
     for (VMesh::Node::index_type idx=0; idx < num_nodes; idx++)
@@ -88,11 +106,15 @@ GetCentroidsAlgo::run(FieldHandle input, FieldHandle& output)
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
     
-    algo_end(); return (true);
+    if(omesh->num_nodes()==0)
+    {
+      warning("No. of nodes equal to zero! Empty matrix will get generated");
+    }
   }
-
-  if (centroids == "edge")
+  else if (centroids=="Edge")
   {
+    imesh->synchronize(Mesh::EDGES_E);
+
     VMesh::size_type num_edges = imesh->num_edges();
     omesh->reserve_nodes(num_edges);
     for (VMesh::Edge::index_type idx=0; idx < num_edges; idx++)
@@ -101,16 +123,20 @@ GetCentroidsAlgo::run(FieldHandle input, FieldHandle& output)
       imesh->get_center(p,idx);
       omesh->add_node(p);
     }
-
+    
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
     
-    algo_end(); return (true);
+    if(omesh->num_nodes()==0)
+    {
+      warning("No. of nodes equal to zero! Empty matrix will get generated");
+    }
   }
-
-  if (centroids == "face")
+  else if (centroids=="Face")
   {
-    VMesh::size_type num_faces = imesh->num_faces();
+    imesh->synchronize(Mesh::FACES_E);
+    VMesh::Face::size_type num_faces;
+    imesh->size(num_faces);
     omesh->reserve_nodes(num_faces);
     for (VMesh::Face::index_type idx=0; idx < num_faces; idx++)
     {
@@ -122,11 +148,14 @@ GetCentroidsAlgo::run(FieldHandle input, FieldHandle& output)
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
     
-    algo_end(); return (true);
+    if(omesh->num_nodes()==0)
+    {
+      warning("No. of nodes equal to zero! Empty matrix will get generated");
+    }
   }
-
-  if (centroids == "cell")
+  else if (centroids=="Cell")
   {
+    imesh->synchronize(Mesh::CELLS_E);
     VMesh::size_type num_cells = imesh->num_cells();
     omesh->reserve_nodes(num_cells);
     for (VMesh::Cell::index_type idx=0; idx < num_cells; idx++)
@@ -135,32 +164,36 @@ GetCentroidsAlgo::run(FieldHandle input, FieldHandle& output)
       imesh->get_center(p,idx);
       omesh->add_node(p);
     }
-
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
     
-    algo_end(); return (true);
+    if(omesh->num_nodes()==0)
+    {
+      warning("No. of nodes equal to zero! Empty matrix will get generated");
+    }
   }
-
-
-  if (centroids == "delem")
+  else if (centroids=="DElement")
   {
+    imesh->synchronize(Mesh::DELEMS_E);
+    
     VMesh::size_type num_delems = imesh->num_delems();
     omesh->reserve_nodes(num_delems);
+    
     for (VMesh::DElem::index_type idx=0; idx < num_delems; idx++)
     {
       Point p;
       imesh->get_center(p,idx);
       omesh->add_node(p);
     }
-
+    
     output = CreateField(fo,mesh);
     output->vfield()->resize_values();
     
-    algo_end(); return (true);
+    if(omesh->num_nodes()==0)
+    {
+      warning("No. of nodes equal to zero! Empty matrix will get generated");
+    }
   }
-
-  return false; // nothing done
+  outputField[Variables::OutputField] = output;
+  return outputField;
 }
-
-} // end namespace SCIRunAlgo

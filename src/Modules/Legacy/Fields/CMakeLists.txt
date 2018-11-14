@@ -89,8 +89,11 @@ SET(Modules_Legacy_Fields_HEADERS
   GetMeshQualityField.h
   RemoveUnusedNodes.h
   CleanupTetMesh.h
+  CalculateInsideWhichField.h
   ReorderNormalCoherently.h
   CalculateMeshCenter.h
+  CreateImage.h
+  GetCentroidsFromMesh.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -119,7 +122,7 @@ SET(Modules_Legacy_Fields_SRCS
   #CalculateNodeNormals.cc
   BuildMappingMatrix.cc
   BuildMatrixOfSurfaceNormals.cc
-  #GetCentroidsFromMesh.cc
+  GetCentroidsFromMesh.cc
   #ConvertMeshCoordinateSystem.cc
   ConvertFieldBasis.cc
   ConvertFieldDataType.cc
@@ -163,7 +166,7 @@ SET(Modules_Legacy_Fields_SRCS
   GenerateSinglePointProbeFromField.cc
   GeneratePointSamplesFromFieldOrWidget.cc
   CreateLatVol.cc
-  #CreateImage.cc
+  CreateImage.cc
   #CreateStructHex.cc
   #ReportScalarFieldStats.cc
   GeneratePointSamplesFromField.cc
@@ -183,7 +186,7 @@ SET(Modules_Legacy_Fields_SRCS
   CalculateDistanceToFieldBoundary.cc
   CalculateSignedDistanceToField.cc
   #CalculateIsInsideField.cc
-  #CalculateInsideWhichField.cc
+  CalculateInsideWhichField.cc
   ConvertIndicesToFieldData.cc
   CreateFieldData.cc
   GetFieldData.cc

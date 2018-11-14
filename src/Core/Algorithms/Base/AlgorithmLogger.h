@@ -46,6 +46,8 @@ namespace Algorithms {
 
     /// functions for the algorithm, so it can forward errors if needed
     virtual void error(const std::string& error) const;
+    virtual bool errorReported() const;
+    virtual void setErrorFlag(bool flag);
     virtual void warning(const std::string& warning) const;
     virtual void remark(const std::string& remark) const;
     virtual void status(const std::string& status) const;

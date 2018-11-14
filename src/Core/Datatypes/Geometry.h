@@ -96,6 +96,7 @@ namespace Datatypes
     double radius;
 
     bool isStreamline{ false };
+    bool isCylinder{ false };
     bool isSurface{ false };
     bool isSphere{ false };
     bool isEdge{ false };

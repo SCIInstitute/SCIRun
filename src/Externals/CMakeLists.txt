@@ -30,9 +30,6 @@ MESSAGE(STATUS "Configuring External Packages")
 
 # TODO: move to external repository
 
-MESSAGE(STATUS "Configuring google-mock")
-ADD_SUBDIRECTORY(gmock)
-
 MESSAGE(STATUS "Configuring cleaver 1")
 ADD_SUBDIRECTORY(cleaver)
 
@@ -41,3 +38,5 @@ ADD_SUBDIRECTORY(libxml2)
 
 MESSAGE(STATUS "Configuring spire")
 ADD_SUBDIRECTORY(spire)
+
+ADD_SUBDIRECTORY(submodules)

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>610</width>
-    <height>200</height>
+    <width>600</width>
+    <height>80</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,8 +18,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>400</width>
-    <height>75</height>
+    <width>600</width>
+    <height>80</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -49,9 +49,12 @@
        <widget class="QComboBox" name="method_">
         <property name="minimumSize">
          <size>
-          <width>50</width>
-          <height>25</height>
+          <width>250</width>
+          <height>30</height>
          </size>
+        </property>
+        <property name="sizeAdjustPolicy">
+         <enum>QComboBox::AdjustToMinimumContentsLength</enum>
         </property>
        </widget>
       </item>

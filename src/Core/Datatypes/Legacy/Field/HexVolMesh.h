@@ -3045,7 +3045,7 @@ HexVolMesh<Basis>::type_name(int n)
 template <class Basis>
 void
 HexVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
-                                    typename Cell::index_type ei,
+                                    typename Elem::index_type ei,
                                     FieldRNG &rng) const
 {
   const Core::Geometry::Point &p0 = points_[cells_[ei*8+0]];

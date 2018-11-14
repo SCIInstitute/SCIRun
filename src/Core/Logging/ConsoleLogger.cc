@@ -36,6 +36,7 @@ using namespace SCIRun::Core::Logging;
 void ConsoleLogger::error(const std::string& msg) const
 {
   std::cout << "Error: " << msg << std::endl;
+  errorReported_ = true;
 }
 
 void ConsoleLogger::warning(const std::string& msg) const

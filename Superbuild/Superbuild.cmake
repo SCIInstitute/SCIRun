@@ -77,12 +77,6 @@ OPTION(WITH_TETGEN "Build Tetgen." OFF)
 ###########################################
 # Configure ospray
 OPTION(WITH_OSPRAY "Build Ospray." OFF)
-IF(APPLE) 
-  SET(WITH_OSPRAY ON)
-ENDIF()
-IF(WIN32) # needs VS2017--turn off for now
-  SET(WITH_OSPRAY OFF)
-ENDIF()
 
 ###########################################
 # Configure data

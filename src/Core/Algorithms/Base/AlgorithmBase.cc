@@ -269,6 +269,16 @@ void AlgorithmLogger::status(const std::string& status) const
   logger_->status(status);
 }
 
+bool AlgorithmLogger::errorReported() const
+{
+  return logger_->errorReported();
+}
+
+void AlgorithmLogger::setErrorFlag(bool flag)
+{
+  logger_->setErrorFlag(flag);
+}
+
 AlgorithmParameterList::AlgorithmParameterList() {}
 
 bool AlgorithmParameterList::set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value)
