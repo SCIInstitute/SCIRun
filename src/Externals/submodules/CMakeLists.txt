@@ -64,9 +64,10 @@ endif()
 ADD_SUBDIRECTORY(googletest)
 
 IF(WITH_OSPRAY)
-  set(embree_DIR ${Embree_DIR})
+
+  #set(embree_DIR ${Embree_DIR})
   set(OSPRAY_TASKING_SYSTEM "TBB")
-  set(TBB_ROOT ${Tbb_DIR})
+  #set(TBB_ROOT ${Tbb_DIR})
   set(OSPRAY_ENABLE_TESTING OFF)
   set(OSPRAY_SG_CHOMBO OFF)
   set(OSPRAY_SG_OPENIMAGEIO OFF)

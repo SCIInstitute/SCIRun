@@ -240,7 +240,7 @@ IF(WITH_OSPRAY)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TbbExternal.cmake Tbb_external )
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/EmbreeExternal.cmake Embree_external )
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/IspcExternal.cmake Ispc_external )
-  ADD_EXTERNAL( ${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external )
+  #ADD_EXTERNAL( ${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external )
 ENDIF()
 
 IF(NOT BUILD_HEADLESS)
@@ -304,8 +304,16 @@ ENDIF()
 
 IF(WITH_OSPRAY)
   LIST(APPEND SCIRUN_CACHE_ARGS
-    "-DOSPRAY_BUILD_DIR:PATH=${OSPRAY_BUILD_DIR}"
+    "-Dembree_DIR:PATH=${Embree_DIR}"
+    "-DTBB_ROOT:PATH=${Tbb_DIR}"
+    "-DIspc_DIR:PATH=${Ispc_DIR}"
   )
+
+  message("~~~~~~")
+  message("Embree: " ${Embree_DIR})
+  message("TBB_ROOT: " ${Tbb_DIR})
+  message("Ispc_DIR: " ${Ispc_DIR})
+  message("~~~~~~")
 ENDIF()
 
 IF(WIN32)
