@@ -1,5 +1,10 @@
 language: c++
 
+env:
+  - PYTHON_VERSION=3.4.3
+  - PYTHON_VERSION=3.6.3
+  - PYTHON_VERSION=3.7.1
+
 matrix:
   include:
     - os: linux
@@ -27,7 +32,7 @@ before_install:
 
 script:
   - cd bin
-  - cmake -GNinja -DTRAVIS_BUILD:BOOL=ON ../Superbuild
+  - cmake -GNinja -DTRAVIS_BUILD:BOOL=ON -DUSER_PYTHON_VERSION="${PYTHON_VERSION}" ../Superbuild
   - travis_wait 80 ninja
   - cd SCIRun
   - ./Algorithm_Layer_Test
