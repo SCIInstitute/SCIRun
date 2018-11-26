@@ -430,7 +430,7 @@ QString SCIRun::Gui::networkBackgroundImage()
   auto date = QDate::currentDate();
   if (12 == date.month() && 23 < date.day() && date.day() < 27)
     return ":/general/Resources/ski.png";
-  if (11 == date.month() && 21 < date.day() && date.day() < 27 && 4==data.dayOfWeek())
+  if (11 == date.month() && 21 < date.day() && date.day() < 29 && 4==date.dayOfWeek())
     return ":/general/Resources/turkey.png";
   if (10 == date.month() && 31 == date.day())
     return ":/general/Resources/pumpkin.png";
