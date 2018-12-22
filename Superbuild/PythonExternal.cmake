@@ -28,7 +28,12 @@
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-set(USER_PYTHON_VERSION "3.4.3" CACHE STRING "Branch name corresponding to Python version number")
+SET(DEFAULT_PYTHON_VERSION "3.5.6")
+IF(WIN32) # need to check windows
+  SET(DEFAULT_PYTHON_VERSION "3.4.3")
+ENDIF()
+
+set(USER_PYTHON_VERSION ${DEFAULT_PYTHON_VERSION} CACHE STRING "Branch name corresponding to Python version number")
 set_property(CACHE USER_PYTHON_VERSION PROPERTY STRINGS 3.4.3 3.5.6 3.6.3 3.6.7 3.7.1)
 
 string(REPLACE "." ";" USER_PYTHON_VERSION_LIST ${USER_PYTHON_VERSION})
