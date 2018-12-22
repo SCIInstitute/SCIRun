@@ -34,7 +34,7 @@ before_build:
     mkdir build
     cd build
     cmake --version
-    cmake ..\Superbuild -G %generator%
+    cmake ..\Superbuild -G %generator% -DQT5_BUILD:BOOL=ON
 
 build:
   project: c:\projects\cmake-init\build\Superbuild.sln
