@@ -31,7 +31,7 @@ before_build:
 - cmd: |-
     cd bin
     cmake --version
-    cmake ..\Superbuild -G %generator% -DQT5_BUILD:BOOL=ON -DQt5_PATH:PATH="C:\Qt\5.11.2\msvc2017_64" -DBUILD_WITH_PYTHON:BOOL=OFF
+    cmake ..\Superbuild -G %generator% -DQT5_BUILD:BOOL=ON -DQt5_PATH:PATH="C:\Qt\5.11.2\msvc2017_64" -DBUILD_WITH_PYTHON:BOOL=OFF -DTRAVIS_BUILD:BOOL=ON
 
 build:
   project: c:\scirun\bin\Superbuild.sln
