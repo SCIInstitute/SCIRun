@@ -5,7 +5,6 @@ branches:
   - python-choice
 clone_folder: c:\projects\cmake-init
 image:
-- Visual Studio 2015
 - Visual Studio 2017
 configuration:
 - Release
@@ -26,7 +25,6 @@ init:
 - echo %arch%
 - echo %APPVEYOR_BUILD_WORKER_IMAGE%
 - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set generator="Visual Studio 15 2017%arch%" )
-- if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" ( set generator="Visual Studio 14 2015%arch%" )
 - echo %generator%
 
 before_build:
@@ -34,7 +32,7 @@ before_build:
     mkdir build
     cd build
     cmake --version
-    cmake ..\Superbuild -G %generator% -DQT5_BUILD:BOOL=ON
+    cmake ..\Superbuild -G %generator% -DQT5_BUILD:BOOL=ON -DQT5_PATH:PATH="C:\Qt\5.11.2\msvc2017_64"
 
 build:
   project: c:\projects\cmake-init\build\Superbuild.sln
