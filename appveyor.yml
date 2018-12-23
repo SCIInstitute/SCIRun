@@ -3,7 +3,7 @@ branches:
   only:
   - master
   - python-choice
-clone_folder: c:\projects\cmake-init
+clone_folder: c:\scirun
 image:
 - Visual Studio 2017
 configuration:
@@ -29,13 +29,12 @@ init:
 
 before_build:
 - cmd: |-
-    mkdir build
-    cd build
+    cd bin
     cmake --version
     cmake ..\Superbuild -G %generator% -DQT5_BUILD:BOOL=ON -DQt5_PATH:PATH="C:\Qt\5.11.2\msvc2017_64" -DBUILD_WITH_PYTHON:BOOL=OFF
 
 build:
-  project: c:\projects\cmake-init\build\Superbuild.sln
+  project: c:\scirun\bin\Superbuild.sln
   verbosity: minimal
   parallel: true
 only_commits:
