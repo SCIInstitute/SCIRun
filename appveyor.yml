@@ -1,8 +1,7 @@
 version: '{build}'
 branches:
   only:
-  - master
-  - python-choice
+  - windows-build-experimental
 clone_folder: c:\scirun
 image:
 - Visual Studio 2017
