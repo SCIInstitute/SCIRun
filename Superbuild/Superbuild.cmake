@@ -114,7 +114,7 @@ IF(TRAVIS_BUILD)
 
     IF(CMAKE_C_COMPILER_ID MATCHES "GNU")
       SET(BUILD_HEADLESS ON)
-      SET(BUILD_WITH_PYTHON OFF)
+      SET(BUILD_WITH_PYTHON ON)
     ELSE()
       # try building everything with clang!
     ENDIF()
