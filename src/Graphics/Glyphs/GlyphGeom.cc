@@ -276,9 +276,12 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
   if (num_strips < 0) num_strips = 20.0;
   double r1 = radius1 < 0 ? 1.0 : radius1;
   double r2 = radius2 < 0 ? 1.0 : radius2;
-
+  
   //generate triangles for the cylinders.
-  Vector n((p1 - p2).normal()), u = (10 * n + Vector(10, 10, 10)).normal();
+  Vector n((p1 - p2).normal());
+  Vector u = (10 * n + Vector(10, 10, 10)).normal();
+  if(n.x() == n.y() && n.x() == n.z())u = (10 * n + Vector(10, 0, 0)).normal();
+  
   Vector crx = Cross(u, n).normal();
   u = Cross(crx, n).normal();
   Vector p;
@@ -489,7 +492,7 @@ void GlyphGeom::generateCylinder(const Point& center, const Vector& t, double ra
                                  double radius2, double length, int nu, int nv,
                                  std::vector<QuadStrip>& quadstrips)
 {
-  nu++; //Bring nu to expected value for shape.
+  nu++; //Bring nu to expected value for shape
 
   if (nu > 20) nu = 20;
   if (nv == 0) nv = 20;
