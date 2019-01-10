@@ -22,6 +22,7 @@ before_install:
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then uname -a; fi
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build libqt4-dev qt4-qmake libqt4-opengl-dev; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 30 brew tap cartr/qt4; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 30 brew tap cartr/qt4; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 30 brew tap-pin cartr/qt4; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 30 brew install cartr/qt4/qt ninja; fi
 
