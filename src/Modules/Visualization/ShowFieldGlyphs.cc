@@ -421,7 +421,7 @@ void GlyphBuilder::renderVectors(
     {
       colorScheme = ColorScheme::COLOR_UNIFORM;
     }
-
+    
     for (const auto& node : facade->nodes())
     {
       interruptible->checkForInterruption();

@@ -279,11 +279,9 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
   
   //generate triangles for the cylinders.
   Vector n((p1 - p2).normal());
-  Vector u = (10 * n + Vector(10, 10, 10)).normal();
-  if(n.x() == n.y() && n.x() == n.z())u = (10 * n + Vector(10, 0, 0)).normal();
-  
-  Vector crx = Cross(u, n).normal();
-  u = Cross(crx, n).normal();
+  Vector crx = n.getArbitraryTangent();
+  std::cout<<"n dot tangent"<<Dot(n,crx)<<std::endl;
+  Vector u = Cross(crx, n).normal();
   Vector p;
   for (double strips = 0.; strips <= num_strips; strips += 1.)
   {
@@ -297,8 +295,9 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
     points_.push_back(r2 * p + Vector(p2));
     colors_.push_back(color2);
     numVBOElements_++;
-    normals_.push_back(p);
-    normals_.push_back(p);
+    Vector normals(((p2-p1).length() * p + (r2-r1)*n).normal());
+    normals_.push_back(normals);
+    normals_.push_back(normals);
     indices_.push_back(0 + offset);
     indices_.push_back(1 + offset);
     indices_.push_back(2 + offset);
