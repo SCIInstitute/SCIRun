@@ -280,7 +280,6 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
   //generate triangles for the cylinders.
   Vector n((p1 - p2).normal());
   Vector crx = n.getArbitraryTangent();
-  std::cout<<"n dot tangent"<<Dot(n,crx)<<std::endl;
   Vector u = Cross(crx, n).normal();
   Vector p;
   for (double strips = 0.; strips <= num_strips; strips += 1.)
