@@ -54,6 +54,7 @@ Preferences::Preferences() :
   highlightPorts("highlightPorts", false),
   autoNotes("autoNotes", false),
   highDPIAdjustment("highDPIAdjustment", false),
+  forceGridBackground("forceGridBackground", false),
   modulesAreDockable("modulesAreDockable", true),
   networkBackgroundColor("backgroundColor", "#808080"),
   postModuleAdd("postModuleAdd"),

@@ -83,6 +83,8 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
 {
   setBackgroundBrush(QPixmap(networkBackgroundImage()));
 
+  Preferences::Instance().forceGridBackground.connectValueChanged([this](bool value) { updateBackground(value); });
+
   setHighResolutionExpandFactor(highResolutionExpandFactor_);
 
   setScene(scene_);
@@ -1787,6 +1789,11 @@ void NetworkEditor::moduleWindowAction()
       break;
     }
   }
+}
+
+void NetworkEditor::updateBackground(bool forceGrid)
+{
+  setBackgroundBrush(QPixmap(forceGrid ? standardNetworkBackgroundImage() : networkBackgroundImage()));
 }
 
 void NetworkEditor::adjustModuleWidth(int delta)
