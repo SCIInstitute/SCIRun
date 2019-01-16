@@ -6,6 +6,7 @@ matrix:
       dist: trusty
       sudo: required
       compiler: gcc
+      env: PYTHON_VERSION=3.4.3
     - os: linux
       dist: trusty
       sudo: required
