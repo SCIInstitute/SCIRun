@@ -785,7 +785,6 @@ void GlyphBuilder::renderTensors(
         BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Box Geom is not supported yet."));
         break;
       case RenderState::GlyphType::SPHERE_GLYPH:
-//              std::cout << "e1: " << eigen1 << " e2: " << eigen2 << " e3: " << eigen3 << std::endl;
         glyphs.addEllipsoid(p, t, scale, resolution, node_color);
         break;
       default:

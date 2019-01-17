@@ -361,17 +361,10 @@ void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale,
     // Get rotation matrix from eigenvectors
     Vector eig_vec1, eig_vec2, eig_vec3;
     t.get_eigenvectors(eig_vec1, eig_vec2, eig_vec3);
-//    std::cout << "eigvec1: " << eig_vec1 << std::endl;
-//    std::cout << "eigvec2: " << eig_vec2 << std::endl;
-//    std::cout << "eigvec3: " << eig_vec3 << std::endl;
     DenseMatrix rotation(3, 3);
     rotation << eig_vec1[0], eig_vec2[0], eig_vec3[0],
                 eig_vec1[1], eig_vec2[1], eig_vec3[1],
                 eig_vec1[2], eig_vec2[2], eig_vec3[2];
-//    rotation << eig_vec1[0], eig_vec1[1], eig_vec1[2],
-//                eig_vec2[0], eig_vec2[1], eig_vec2[2],
-//                eig_vec3[0], eig_vec3[1], eig_vec3[2];
-//    std::cout << "\nrot: " << rotation << std::endl;
 
     Eigen::Vector3d pp1, pp2;
 
@@ -387,8 +380,6 @@ void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale,
             pp2 = Eigen::Vector3d(sin(theta) * cos(phi + phi_inc) * r1, sin(theta) * sin(phi + phi_inc) * r2, cos(theta) * r3);
             pp1 *= scale;
             pp2 *= scale;
-//            std::cout << "pp1: " << rotation * pp1 << std::endl;
-//            std::cout << "pp2: " << rotation * pp2 << std::endl;
             pp1 = rotation * pp1;
             pp2 = rotation * pp2;
             Vector v_pp1 = Vector(pp1[0], pp1[1], pp1[2]);
