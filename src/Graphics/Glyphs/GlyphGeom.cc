@@ -27,6 +27,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Graphics/Glyphs/GlyphGeom.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Math/MiscMath.h>
 #include <Core/GeometryPrimitives/Transform.h>
 
@@ -210,12 +211,12 @@ void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double
 
 void GlyphGeom::addSphere(const Point& p, double radius, double resolution, const ColorRGB& color)
 {
-  generateSphere(p, radius, radius, resolution, color);
+  generateSphere(p, radius, resolution, color);
 }
 
-void GlyphGeom::addEllipsoid(const Point& p, double radius1, double radius2, double resolution, const ColorRGB& color)
+void GlyphGeom::addEllipsoid(const Point& p, Tensor& t, double scale, double resolution, const ColorRGB& color)
 {
-  generateEllipsoid(p, radius1, radius2, resolution, color);
+  generateEllipsoid(p, t, scale, resolution, color);
 }
 
 void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, double resolution,
@@ -306,28 +307,28 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
   for (int jj = 0; jj < 6; jj++) indices_.pop_back();
 }
 
-void GlyphGeom::generateSphere(const Point& center, double radius1, double radius2,
-  double resolution, const ColorRGB& color)
+void GlyphGeom::generateSphere(const Point& center, double radius, double resolution, const ColorRGB& color)
 {
   double num_strips = resolution;
   if (num_strips < 0) num_strips = 20.0;
-  double r1 = radius1 < 0 ? 1.0 : radius1;
-  double r2 = radius2 < 0 ? 1.0 : radius2;
+  double r = radius < 0 ? 1.0 : radius;
   Vector pp1, pp2;
-  double theta_inc = 2. * M_PI / num_strips, phi_inc = M_PI / num_strips;
+  double theta_inc = /*2. */ M_PI / num_strips, phi_inc = 0.5 * M_PI / num_strips;
 
   //generate triangles for the spheres
-  for (double phi = 0.; phi <= M_PI; phi += phi_inc)
+  for (double phi = 0.; phi <= M_PI - phi_inc; phi += phi_inc)
   {
     for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc)
     {
       uint32_t offset = static_cast<uint32_t>(numVBOElements_);
       pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
       pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
-      points_.push_back(r1 * pp1 + Vector(center));
+      pp1 *= r;
+      pp2 *= r;
+      points_.push_back(pp1 + Vector(center));
       colors_.push_back(color);
       numVBOElements_++;
-      points_.push_back(r2 * pp2 + Vector(center));
+      points_.push_back(pp2 + Vector(center));
       colors_.push_back(color);
       numVBOElements_++;
       normals_.push_back(pp1);
@@ -343,21 +344,92 @@ void GlyphGeom::generateSphere(const Point& center, double radius1, double radiu
   }
 }
 
+void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale,
+                                  double resolution, const ColorRGB& color)
+{
+    double num_strips = resolution;
+    if (num_strips < 0) num_strips = 20.0;
+    
+    // Get radii from eigen values
+    double eig_val1, eig_val2, eig_val3;
+    t.get_eigenvalues(eig_val1, eig_val2, eig_val3);
+    
+    double r1 = eig_val1 < 0 ? 1.0 : eig_val1;
+    double r2 = eig_val2 < 0 ? 1.0 : eig_val2;
+    double r3 = eig_val3 < 0 ? 1.0 : eig_val3;
+    
+    // Get rotation matrix from eigenvectors
+    Vector eig_vec1, eig_vec2, eig_vec3;
+    t.get_eigenvectors(eig_vec1, eig_vec2, eig_vec3);
+//    std::cout << "eigvec1: " << eig_vec1 << std::endl;
+//    std::cout << "eigvec2: " << eig_vec2 << std::endl;
+//    std::cout << "eigvec3: " << eig_vec3 << std::endl;
+    DenseMatrix rotation(3, 3);
+    rotation << eig_vec1[0], eig_vec2[0], eig_vec3[0],
+                eig_vec1[1], eig_vec2[1], eig_vec3[1],
+                eig_vec1[2], eig_vec2[2], eig_vec3[2];
+//    rotation << eig_vec1[0], eig_vec1[1], eig_vec1[2],
+//                eig_vec2[0], eig_vec2[1], eig_vec2[2],
+//                eig_vec3[0], eig_vec3[1], eig_vec3[2];
+//    std::cout << "\nrot: " << rotation << std::endl;
+
+    Eigen::Vector3d pp1, pp2;
+
+    double theta_inc = /*2. */ M_PI / num_strips, phi_inc = 0.5 * M_PI / num_strips;
+
+    //generate triangles for the spheres
+    for (double phi = 0.; phi <= M_PI - phi_inc; phi += phi_inc)
+    {
+        for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc)
+        {
+            uint32_t offset = static_cast<uint32_t>(numVBOElements_);
+            pp1 = Eigen::Vector3d(sin(theta) * cos(phi) * r1, sin(theta) * sin(phi) * r2, cos(theta) * r3);
+            pp2 = Eigen::Vector3d(sin(theta) * cos(phi + phi_inc) * r1, sin(theta) * sin(phi + phi_inc) * r2, cos(theta) * r3);
+            pp1 *= scale;
+            pp2 *= scale;
+//            std::cout << "pp1: " << rotation * pp1 << std::endl;
+//            std::cout << "pp2: " << rotation * pp2 << std::endl;
+            pp1 = rotation * pp1;
+            pp2 = rotation * pp2;
+            Vector v_pp1 = Vector(pp1[0], pp1[1], pp1[2]);
+            Vector v_pp2 = Vector(pp2[0], pp2[1], pp2[2]);
+            points_.push_back(v_pp1 + Vector(center));
+            colors_.push_back(color);
+            numVBOElements_++;
+            points_.push_back(v_pp2 + Vector(center));
+            colors_.push_back(color);
+            numVBOElements_++;
+            normals_.push_back(v_pp1);
+            normals_.push_back(v_pp2);
+            indices_.push_back(0 + offset);
+            indices_.push_back(1 + offset);
+            indices_.push_back(2 + offset);
+            indices_.push_back(2 + offset);
+            indices_.push_back(1 + offset);
+            indices_.push_back(3 + offset);
+        }
+        for (int jj = 0; jj < 6; jj++) indices_.pop_back();
+    }
+}
+
+/**
 void GlyphGeom::generateEllipsoid(const Point& center, double radius1, double radius2,
   double resolution, const ColorRGB& color)
 {
   double num_strips = resolution;
+    radius1 *= 5;
+    radius2 *= 5;
   if (num_strips < 0) num_strips = 20.0;
   double r1 = radius1 < 0 ? 1.0 : radius1;
   double r2 = radius2 < 0 ? 1.0 : radius2;
   Vector pp1, pp2;
-  double theta_inc = /*2. */ M_PI / num_strips, phi_inc = 0.5 * M_PI / num_strips;
+  double theta_inc = /*2. / M_PI / num_strips, phi_inc = 0.5 * M_PI / num_strips;
   Vector radius = Vector(radius1, 0, radius2);
 
   //generate triangles for the spheres
   for (double phi = 0.; phi <= M_PI; phi += phi_inc)
   {
-    for (double theta = 0.; theta <= /*2. */ M_PI; theta += theta_inc)
+    for (double theta = 0.; theta <= /*2. / M_PI; theta += theta_inc)
     {
       uint32_t offset = static_cast<uint32_t>(numVBOElements_);
       pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
@@ -381,6 +453,7 @@ void GlyphGeom::generateEllipsoid(const Point& center, double radius1, double ra
     for (int jj = 0; jj < 6; jj++) indices_.pop_back();
   }
 }
+**/
 
 void GlyphGeom::generateLine(const Point& p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
 {

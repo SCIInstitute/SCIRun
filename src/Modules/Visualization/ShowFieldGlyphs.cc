@@ -713,6 +713,7 @@ void GlyphBuilder::renderTensors(
   SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::TRIANGLES;;
 
   GlyphGeom glyphs;
+  double scale = state->getValue(ShowFieldGlyphs::TensorsScale).toDouble();
   auto facade(field->mesh()->getFacade());
   // Render linear data
   if (finfo.is_linear())
@@ -784,7 +785,8 @@ void GlyphBuilder::renderTensors(
         BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Box Geom is not supported yet."));
         break;
       case RenderState::GlyphType::SPHERE_GLYPH:
-        glyphs.addSphere(p, radius, resolution, node_color);
+//              std::cout << "e1: " << eigen1 << " e2: " << eigen2 << " e3: " << eigen3 << std::endl;
+        glyphs.addEllipsoid(p, t, scale, resolution, node_color);
         break;
       default:
 
