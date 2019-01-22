@@ -736,8 +736,20 @@ void GlyphBuilder::renderTensors(
         }
         if (colorScheme == ColorScheme::COLOR_IN_SITU)
         {
-          Vector colorVector = t.get_eigenvector1().normal();
-          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
+          Vector eigvec1, eigvec2, eigvec3;
+          t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
+
+          Vector colorVector;
+
+          // If eigen value 3 is larger than eigen value 1, all 3 eigen values are negative.
+          // If so, eigen vector 3 is the primary eigen vector when absolute.
+          if(std::abs(eigen1) >= std::abs(eigen3)){
+              colorVector = Abs(eigvec1).normal();
+          } else{
+              colorVector = Abs(eigvec3).normal();
+          }
+
+          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
         }
       }
       switch (renState.mGlyphType)
@@ -746,7 +758,7 @@ void GlyphBuilder::renderTensors(
         BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Box Geom is not supported yet."));
         break;
       case RenderState::GlyphType::SPHERE_GLYPH:
-        glyphs.addSphere(p, radius, resolution, node_color);
+          glyphs.addEllipsoid(p, t, scale, resolution, node_color);
         break;
       default:
 
@@ -931,6 +943,7 @@ RenderState GlyphBuilder::getTensorsRenderState(
   RenderState renState;
 
   bool useColorMap = state->getValue(ShowFieldGlyphs::TensorsColoring).toInt() == 1;
+  bool rgbConversion = state->getValue(ShowFieldGlyphs::TensorsColoring).toInt() == 2;
   renState.set(RenderState::USE_NORMALS, true);
 
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldGlyphs::ShowTensors).toBool());
@@ -968,6 +981,10 @@ RenderState GlyphBuilder::getTensorsRenderState(
   if (colorMap && useColorMap)
   {
     renState.set(RenderState::USE_COLORMAP, true);
+  }
+  else if (rgbConversion)
+  {
+      renState.set(RenderState::USE_COLOR_CONVERT, true);
   }
   else
   {

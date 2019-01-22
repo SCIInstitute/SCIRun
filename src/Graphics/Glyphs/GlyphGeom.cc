@@ -354,10 +354,10 @@ void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale,
     double eig_val1, eig_val2, eig_val3;
     t.get_eigenvalues(eig_val1, eig_val2, eig_val3);
     
-    double r1 = eig_val1 < 0 ? 1.0 : eig_val1;
-    double r2 = eig_val2 < 0 ? 1.0 : eig_val2;
-    double r3 = eig_val3 < 0 ? 1.0 : eig_val3;
-    
+    double r1 = abs(eig_val1);
+    double r2 = abs(eig_val2);
+    double r3 = abs(eig_val3);
+
     // Get rotation matrix from eigenvectors
     Vector eig_vec1, eig_vec2, eig_vec3;
     t.get_eigenvectors(eig_vec1, eig_vec2, eig_vec3);
