@@ -199,6 +199,7 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(VectorsColoring, 0);
   state->setValue(VectorsDisplayType, 0);
   state->setValue(ShowVectorTab, false);
+  state->setValue(NormalizeVectors, false);
 
   // Scalars
   state->setValue(ShowScalars, false);
@@ -400,6 +401,11 @@ void GlyphBuilder::renderVectors(
 
   GlyphGeom glyphs;
   auto facade(field->mesh()->getFacade());
+  
+  bool normalizeGlyphs = false;//state->getValue(ShowFieldGlyphs::NormalizeVectors).toBool();
+  bool renderBidirectionaly = true;
+  bool renderGlphysBellowThreashold = true;
+  float threashold = 0.01;
 
   //sets feild location for consant feild data 1: node centered 2: edge centered 3: face centered 4: cell centered
   int feildLocation = finfo.is_point()*1 + finfo.is_line()*2 + finfo.is_surface()*3 + finfo.is_volume()*4;
@@ -414,13 +420,24 @@ void GlyphBuilder::renderVectors(
       for (const auto& node : facade->nodes())
       {
         interruptible->checkForInterruption();
-        Vector v, inputVector; Point p1, p2; double radius;
+        Vector v, inputVector; Point p1, p2, p3; double radius;
+        
         fld->get_value(inputVector, node.index());
-        mesh->get_center(p1,node.index());
-        p1 = node.point();
-        v = inputVector * scale;
+        mesh->get_center(p1, node.index());
+        
+        if(normalizeGlyphs)
+          v = inputVector.normal() * scale;
+        else
+          v = inputVector * scale;
+        
         p2 = p1 + v;
+        p3 = p1 - v;
+        
         radius = v.length() * secondaryScalar;
+        
+        if(!renderGlphysBellowThreashold)
+          if(inputVector.length() < threashold)
+            break;
         
         if (colorScheme == ColorScheme::COLOR_UNIFORM)
         {
@@ -438,6 +455,8 @@ void GlyphBuilder::renderVectors(
         }
 
         addGlpyh(glyphs, renState.mGlyphType, p1, p2, radius, resolution, node_color, useLines);
+        if(renderBidirectionaly)
+          addGlpyh(glyphs, renState.mGlyphType, p1, p3, radius, resolution, node_color, useLines);
       }
       break;
       
@@ -445,13 +464,25 @@ void GlyphBuilder::renderVectors(
       for (const auto& edge : facade->edges())
       {
         interruptible->checkForInterruption();
-        Vector v, inputVector;Point p1, p2;double radius;
+        Vector v, inputVector; Point p1, p2, p3; double radius;
+        
         fld->get_value(inputVector, edge.index());
         mesh->get_center(p1,edge.index());
-        v = inputVector * scale;
+        
+        if(normalizeGlyphs)
+          v = inputVector.normal() * scale;
+        else
+          v = inputVector * scale;
+        
         p2 = p1 + v;
+        p3 = p1 - v;
+        
         radius = v.length() * secondaryScalar;
-
+        
+        if(!renderGlphysBellowThreashold)
+          if(inputVector.length() < threashold)
+            break;
+        
         if (colorScheme == ColorScheme::COLOR_UNIFORM)
         {
           node_color = renState.defaultColor;
@@ -468,6 +499,8 @@ void GlyphBuilder::renderVectors(
         }
         
         addGlpyh(glyphs, renState.mGlyphType, p1, p2, radius, resolution, node_color, useLines);
+        if(renderBidirectionaly)
+          addGlpyh(glyphs, renState.mGlyphType, p1, p3, radius, resolution, node_color, useLines);
       }
       break;
       
@@ -475,12 +508,24 @@ void GlyphBuilder::renderVectors(
       for (const auto& face : facade->faces())
       {
         interruptible->checkForInterruption();
-        Vector v, inputVector;Point p1, p2;double radius;
+        Vector v, inputVector; Point p1, p2, p3; double radius;
+        
         fld->get_value(inputVector, face.index());
         mesh->get_center(p1,face.index());
-        v = inputVector * scale;
+        
+        if(normalizeGlyphs)
+          v = inputVector.normal() * scale;
+        else
+          v = inputVector * scale;
+        
         p2 = p1 + v;
+        p3 = p1 - v;
+        
         radius = v.length() * secondaryScalar;
+        
+        if(!renderGlphysBellowThreashold)
+          if(inputVector.length() < threashold)
+            break;
         
         if (colorScheme == ColorScheme::COLOR_UNIFORM)
         {
@@ -498,6 +543,8 @@ void GlyphBuilder::renderVectors(
         }
         
         addGlpyh(glyphs, renState.mGlyphType, p1, p2, radius, resolution, node_color, useLines);
+        if(renderBidirectionaly)
+          addGlpyh(glyphs, renState.mGlyphType, p1, p3, radius, resolution, node_color, useLines);
       }
       break;
       
@@ -505,12 +552,24 @@ void GlyphBuilder::renderVectors(
       for (const auto& cell : facade->cells())
       {
         interruptible->checkForInterruption();
-        Vector v, inputVector; Point p1, p2; double radius;
+        Vector v, inputVector; Point p1, p2, p3; double radius;
+        
         fld->get_value(inputVector, cell.index());
         mesh->get_center(p1,cell.index());
-        v = inputVector * scale;
+        
+        if(normalizeGlyphs)
+          v = inputVector.normal() * scale;
+        else
+          v = inputVector * scale;
+        
         p2 = p1 + v;
+        p3 = p1 - v;
+        
         radius = v.length() * secondaryScalar;
+        
+        if(!renderGlphysBellowThreashold)
+          if(inputVector.length() < threashold)
+            break;
         
         if (colorScheme == ColorScheme::COLOR_UNIFORM)
         {
@@ -528,6 +587,8 @@ void GlyphBuilder::renderVectors(
         }
         
         addGlpyh(glyphs, renState.mGlyphType, p1, p2, radius, resolution, node_color, useLines);
+        if(renderBidirectionaly)
+          addGlpyh(glyphs, renState.mGlyphType, p1, p3, radius, resolution, node_color, useLines);
       }
       break;
   }

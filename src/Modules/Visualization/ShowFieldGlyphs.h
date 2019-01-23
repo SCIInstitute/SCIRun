@@ -56,6 +56,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName VectorsResolution;
         static const Core::Algorithms::AlgorithmParameterName VectorsColoring;
         static const Core::Algorithms::AlgorithmParameterName VectorsDisplayType;
+        static const Core::Algorithms::AlgorithmParameterName NormalizeVectors;
 
         // Scalar Tab
         static const Core::Algorithms::AlgorithmParameterName ShowScalars;
