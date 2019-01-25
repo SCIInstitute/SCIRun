@@ -434,6 +434,11 @@ QString SCIRun::Gui::networkBackgroundImage()
     return ":/general/Resources/turkey.png";
   if (10 == date.month() && 31 == date.day())
     return ":/general/Resources/pumpkin.png";
+  return standardNetworkBackgroundImage();
+}
+
+QString SCIRun::Gui::standardNetworkBackgroundImage()
+{
   return ":/general/Resources/SCIgrid-small.png";
 }
 
