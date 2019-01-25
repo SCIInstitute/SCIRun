@@ -56,8 +56,11 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName VectorsResolution;
         static const Core::Algorithms::AlgorithmParameterName VectorsColoring;
         static const Core::Algorithms::AlgorithmParameterName VectorsDisplayType;
-        static const Core::Algorithms::AlgorithmParameterName NormalizeVectors;
-
+        static const Core::Algorithms::AlgorithmParameterName NormalizeGlyphs;
+        static const Core::Algorithms::AlgorithmParameterName RenderBidirectionaly;
+        static const Core::Algorithms::AlgorithmParameterName RenderGlyphsBellowThreshold;
+        static const Core::Algorithms::AlgorithmParameterName Threshold;
+        
         // Scalar Tab
         static const Core::Algorithms::AlgorithmParameterName ShowScalars;
         static const Core::Algorithms::AlgorithmParameterName ScalarsTransparency;

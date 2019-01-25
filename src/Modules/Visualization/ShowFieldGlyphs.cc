@@ -199,7 +199,10 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(VectorsColoring, 0);
   state->setValue(VectorsDisplayType, 0);
   state->setValue(ShowVectorTab, false);
-  state->setValue(NormalizeVectors, false);
+  state->setValue(NormalizeGlyphs, false);
+  state->setValue(RenderBidirectionaly, false);
+  state->setValue(RenderGlyphsBellowThreshold,true);
+  state->setValue(Threshold,0.0);
 
   // Scalars
   state->setValue(ShowScalars, false);
@@ -402,10 +405,10 @@ void GlyphBuilder::renderVectors(
   GlyphGeom glyphs;
   auto facade(field->mesh()->getFacade());
   
-  bool normalizeGlyphs = false;//state->getValue(ShowFieldGlyphs::NormalizeVectors).toBool();
-  bool renderBidirectionaly = true;
-  bool renderGlphysBellowThreashold = true;
-  float threashold = 0.01;
+  bool normalizeGlyphs = state->getValue(ShowFieldGlyphs::NormalizeGlyphs).toBool();
+  bool renderBidirectionaly = state->getValue(ShowFieldGlyphs::RenderBidirectionaly).toBool();
+  bool renderGlphysBellowThreshold = state->getValue(ShowFieldGlyphs::RenderGlyphsBellowThreshold).toBool();
+  float threshold = state->getValue(ShowFieldGlyphs::Threshold).toDouble();
 
   //sets feild location for consant feild data 1: node centered 2: edge centered 3: face centered 4: cell centered
   int feildLocation = finfo.is_point()*1 + finfo.is_line()*2 + finfo.is_surface()*3 + finfo.is_volume()*4;
@@ -435,10 +438,6 @@ void GlyphBuilder::renderVectors(
         
         radius = v.length() * secondaryScalar;
         
-        if(!renderGlphysBellowThreashold)
-          if(inputVector.length() < threashold)
-            break;
-        
         if (colorScheme == ColorScheme::COLOR_UNIFORM)
         {
           node_color = renState.defaultColor;
@@ -453,10 +452,13 @@ void GlyphBuilder::renderVectors(
           Vector colorVector = inputVector.normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
         }
-
-        addGlpyh(glyphs, renState.mGlyphType, p1, p2, radius, resolution, node_color, useLines);
-        if(renderBidirectionaly)
-          addGlpyh(glyphs, renState.mGlyphType, p1, p3, radius, resolution, node_color, useLines);
+        
+        if(renderGlphysBellowThreshold || inputVector.length() >= threshold)
+        {
+          addGlpyh(glyphs, renState.mGlyphType, p1, p2, radius, resolution, node_color, useLines);
+          if(renderBidirectionaly)
+            addGlpyh(glyphs, renState.mGlyphType, p1, p3, radius, resolution, node_color, useLines);
+        }
       }
       break;
       
@@ -479,10 +481,6 @@ void GlyphBuilder::renderVectors(
         
         radius = v.length() * secondaryScalar;
         
-        if(!renderGlphysBellowThreashold)
-          if(inputVector.length() < threashold)
-            break;
-        
         if (colorScheme == ColorScheme::COLOR_UNIFORM)
         {
           node_color = renState.defaultColor;
@@ -498,9 +496,12 @@ void GlyphBuilder::renderVectors(
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
         }
         
-        addGlpyh(glyphs, renState.mGlyphType, p1, p2, radius, resolution, node_color, useLines);
-        if(renderBidirectionaly)
-          addGlpyh(glyphs, renState.mGlyphType, p1, p3, radius, resolution, node_color, useLines);
+        if(renderGlphysBellowThreshold || inputVector.length() >= threshold)
+        {
+          addGlpyh(glyphs, renState.mGlyphType, p1, p2, radius, resolution, node_color, useLines);
+          if(renderBidirectionaly)
+            addGlpyh(glyphs, renState.mGlyphType, p1, p3, radius, resolution, node_color, useLines);
+        }
       }
       break;
       
@@ -523,10 +524,6 @@ void GlyphBuilder::renderVectors(
         
         radius = v.length() * secondaryScalar;
         
-        if(!renderGlphysBellowThreashold)
-          if(inputVector.length() < threashold)
-            break;
-        
         if (colorScheme == ColorScheme::COLOR_UNIFORM)
         {
           node_color = renState.defaultColor;
@@ -542,9 +539,12 @@ void GlyphBuilder::renderVectors(
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
         }
         
-        addGlpyh(glyphs, renState.mGlyphType, p1, p2, radius, resolution, node_color, useLines);
-        if(renderBidirectionaly)
-          addGlpyh(glyphs, renState.mGlyphType, p1, p3, radius, resolution, node_color, useLines);
+        if(renderGlphysBellowThreshold || inputVector.length() >= threshold)
+        {
+          addGlpyh(glyphs, renState.mGlyphType, p1, p2, radius, resolution, node_color, useLines);
+          if(renderBidirectionaly)
+            addGlpyh(glyphs, renState.mGlyphType, p1, p3, radius, resolution, node_color, useLines);
+        }
       }
       break;
       
@@ -567,10 +567,6 @@ void GlyphBuilder::renderVectors(
         
         radius = v.length() * secondaryScalar;
         
-        if(!renderGlphysBellowThreashold)
-          if(inputVector.length() < threashold)
-            break;
-        
         if (colorScheme == ColorScheme::COLOR_UNIFORM)
         {
           node_color = renState.defaultColor;
@@ -586,9 +582,12 @@ void GlyphBuilder::renderVectors(
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
         }
         
-        addGlpyh(glyphs, renState.mGlyphType, p1, p2, radius, resolution, node_color, useLines);
-        if(renderBidirectionaly)
-          addGlpyh(glyphs, renState.mGlyphType, p1, p3, radius, resolution, node_color, useLines);
+        if(renderGlphysBellowThreshold || inputVector.length() >= threshold)
+        {
+          addGlpyh(glyphs, renState.mGlyphType, p1, p2, radius, resolution, node_color, useLines);
+          if(renderBidirectionaly)
+            addGlpyh(glyphs, renState.mGlyphType, p1, p3, radius, resolution, node_color, useLines);
+        }
       }
       break;
   }
@@ -1081,6 +1080,10 @@ const AlgorithmParameterName ShowFieldGlyphs::VectorsScale("VectorsScale");
 const AlgorithmParameterName ShowFieldGlyphs::VectorsResolution("VectorsResolution");
 const AlgorithmParameterName ShowFieldGlyphs::VectorsColoring("VectorsColoring");
 const AlgorithmParameterName ShowFieldGlyphs::VectorsDisplayType("VectorsDisplayType");
+const AlgorithmParameterName ShowFieldGlyphs::NormalizeGlyphs("NormalizeGlyphs");
+const AlgorithmParameterName ShowFieldGlyphs::RenderBidirectionaly("RenderBidirectionaly");
+const AlgorithmParameterName ShowFieldGlyphs::RenderGlyphsBellowThreshold("RenderGlyphsBellowThreshold");
+const AlgorithmParameterName ShowFieldGlyphs::Threshold("Threshold");
 // Scalar Controls
 const AlgorithmParameterName ShowFieldGlyphs::ShowScalars("ShowScalars");
 const AlgorithmParameterName ShowFieldGlyphs::ScalarsTransparency("ScalarsTransparency");
