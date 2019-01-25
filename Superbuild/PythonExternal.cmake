@@ -1,21 +1,21 @@
 #  For more information, please see: http://software.sci.utah.edu
-# 
+#
 #  The MIT License
-# 
+#
 #  Copyright (c) 2015 Scientific Computing and Imaging Institute,
 #  University of Utah.
-# 
-#  
+#
+#
 #  Permission is hereby granted, free of charge, to any person obtaining a
 #  copy of this software and associated documentation files (the "Software"),
 #  to deal in the Software without restriction, including without limitation
 #  the rights to use, copy, modify, merge, publish, distribute, sublicense,
 #  and/or sell copies of the Software, and to permit persons to whom the
 #  Software is furnished to do so, subject to the following conditions:
-# 
+#
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
-# 
+#  in all copies or substantial portions of the Software.
+#
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 #  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
@@ -28,10 +28,22 @@
 
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
-# TODO: update when upgrading
-SET(PY_MAJOR 3)
-SET(PY_MINOR 4)
-SET(PY_PATCH 3)
+SET(DEFAULT_PYTHON_VERSION "3.5.6")
+IF(WIN32) # need to check windows
+  SET(DEFAULT_PYTHON_VERSION "3.4.3")
+ENDIF()
+
+set(USER_PYTHON_VERSION ${DEFAULT_PYTHON_VERSION} CACHE STRING "Branch name corresponding to Python version number")
+set_property(CACHE USER_PYTHON_VERSION PROPERTY STRINGS 3.4.3 3.5.6 3.6.3 3.6.7 3.7.1)
+
+string(REPLACE "." ";" USER_PYTHON_VERSION_LIST ${USER_PYTHON_VERSION})
+list(GET USER_PYTHON_VERSION_LIST 0 USER_PYTHON_VERSION_MAJOR)
+list(GET USER_PYTHON_VERSION_LIST 1 USER_PYTHON_VERSION_MINOR)
+list(GET USER_PYTHON_VERSION_LIST 2 USER_PYTHON_VERSION_PATCH)
+
+SET(PY_MAJOR ${USER_PYTHON_VERSION_MAJOR})
+SET(PY_MINOR ${USER_PYTHON_VERSION_MINOR})
+SET(PY_PATCH ${USER_PYTHON_VERSION_PATCH})
 SET(SCI_PYTHON_VERSION "${PY_MAJOR}.${PY_MINOR}.${PY_PATCH}")
 SET(SCI_PYTHON_VERSION_SHORT "${PY_MAJOR}.${PY_MINOR}")
 SET(SCI_PYTHON_VERSION_SHORT_WIN32 "${PY_MAJOR}${PY_MINOR}")
@@ -46,7 +58,7 @@ SET(python_ABIFLAG_PYDEBUG)
 SET(python_ABIFLAG_PYMALLOC "m")
 SET(ABIFLAGS "${python_ABIFLAG_PYMALLOC}${python_ABIFLAG_PYDEBUG}")
 
-SET(python_GIT_TAG "origin/master")
+SET(python_GIT_TAG "origin/${USER_PYTHON_VERSION}")
 SET(python_GIT_URL "https://github.com/CIBC-Internal/python.git")
 
 SET(python_WIN32_ARCH)
