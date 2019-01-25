@@ -96,6 +96,15 @@ ENDIF()
 OPTION(BUILD_HEADLESS "Build SCIRun without GUI." OFF)
 
 ###########################################
+# Configure Qt version
+OPTION(QT5_BUILD "Qt 5 compatible build" ON)
+# Until ViewScene works...
+IF(APPLE)
+  SET(QT5_BUILD OFF)
+ENDIF()
+MARK_AS_ADVANCED(QT5_BUILD)
+
+###########################################
 # Travis CI build needs to be as slim as possible
 OPTION(TRAVIS_BUILD "Slim build for Travis CI" OFF)
 MARK_AS_ADVANCED(TRAVIS_BUILD)
@@ -108,6 +117,7 @@ IF(TRAVIS_BUILD)
     SET(BUILD_WITH_SCIRUN_DATA OFF)
   ELSE()
     SET(WITH_OSPRAY OFF)
+    SET(QT5_BUILD OFF) # need to check this one
 	  SET(BUILD_TESTING OFF)
 	  SET(DOWNLOAD_TOOLKITS OFF)
 	  SET(BUILD_WITH_SCIRUN_DATA OFF)
@@ -122,11 +132,6 @@ IF(TRAVIS_BUILD)
 
   ADD_DEFINITIONS(-DTRAVIS_BUILD)
 ENDIF()
-
-###########################################
-# Travis CI build needs to be as slim as possible
-OPTION(QT5_BUILD "Qt 5 compatible build" OFF)
-MARK_AS_ADVANCED(QT5_BUILD)
 
 ###########################################
 # Configure Qt
@@ -147,17 +152,17 @@ IF(NOT BUILD_HEADLESS)
       MESSAGE(FATAL_ERROR "QT ${QT_MIN_VERSION} or later is required for building the SCIRun GUI")
     ENDIF()
   ELSE()
-    SET(QT_MIN_VERSION "5.9")
+    SET(QT_MIN_VERSION "5.12")
 
     SET(Qt5_PATH "" CACHE PATH "Path to directory where Qt 5 is installed. Directory should contain lib and bin subdirectories.")
 
     IF(IS_DIRECTORY ${Qt5_PATH})
-      FIND_PACKAGE(Qt5Core REQUIRED HINTS ${Qt5_PATH})
-      FIND_PACKAGE(Qt5Gui REQUIRED HINTS ${Qt5_PATH})
-  	  FIND_PACKAGE(Qt5Widgets REQUIRED HINTS ${Qt5_PATH})
-  	  FIND_PACKAGE(Qt5Network REQUIRED HINTS ${Qt5_PATH})
-      FIND_PACKAGE(Qt5OpenGL REQUIRED HINTS ${Qt5_PATH})
-  	  FIND_PACKAGE(Qt5Concurrent REQUIRED HINTS ${Qt5_PATH})
+      FIND_PACKAGE(Qt5Core ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
+      FIND_PACKAGE(Qt5Gui ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
+  	  FIND_PACKAGE(Qt5Widgets ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
+  	  FIND_PACKAGE(Qt5Network ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
+      FIND_PACKAGE(Qt5OpenGL ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
+  	  FIND_PACKAGE(Qt5Concurrent ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
     ELSE()
       MESSAGE(SEND_ERROR "Set Qt5_PATH to directory where Qt 5 is installed (containing lib and bin subdirectories) or set BUILD_HEADLESS to ON.")
     ENDIF()
