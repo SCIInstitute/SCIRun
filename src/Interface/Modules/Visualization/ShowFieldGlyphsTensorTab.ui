@@ -70,7 +70,7 @@
    </property>
    <widget class="QRadioButton" name="tensorsAsBoxesRButton_">
     <property name="enabled">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -82,7 +82,7 @@
     </property>
     <property name="font">
      <font>
-      <strikeout>true</strikeout>
+      <strikeout>false</strikeout>
      </font>
     </property>
     <property name="text">
@@ -396,18 +396,6 @@
     <double>0.650000000000000</double>
    </property>
   </widget>
-  <zorder>showTensorsCheckBox_</zorder>
-  <zorder>tensorDisplayTypeGroupBox_</zorder>
-  <zorder>enableTransparencyTensorsCheckBox_</zorder>
-  <zorder>normalizeTensorsCheckBox_</zorder>
-  <zorder>tensorsResolutionSpinBox_</zorder>
-  <zorder>renderTensorsBelowThresholdCheckBox_</zorder>
-  <zorder>tensorColoringGroupBox_</zorder>
-  <zorder>scaleTensorsDoubleSpinBox_</zorder>
-  <zorder>label_10</zorder>
-  <zorder>label_11</zorder>
-  <zorder>tensorsTransparencyDoubleSpinBox_</zorder>
-  <zorder>conversionRGBTensorsColoringRButton_</zorder>
  </widget>
  <resources/>
  <connections/>

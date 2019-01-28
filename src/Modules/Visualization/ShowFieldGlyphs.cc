@@ -71,7 +71,8 @@ namespace SCIRun {
           boost::optional<ColorMapHandle> colorMap,
           Interruptible* interruptible,
           ModuleStateHandle state,
-          const GeometryIDGenerator& idgen);
+          const GeometryIDGenerator& idgen,
+          Module* module_);
 
         void renderVectors(
           FieldHandle field,
@@ -98,7 +99,8 @@ namespace SCIRun {
           Interruptible* interruptible,
           const RenderState& renState,
           GeometryHandle geom,
-          const std::string& id);
+          const std::string& id,
+          const Module* module_);
 
         RenderState getVectorsRenderState(
           ModuleStateHandle state,
@@ -184,7 +186,7 @@ void ShowFieldGlyphs::execute()
   if (needToExecute())
   {
     //configureInputs(pfield, sfield, tfield, pcolorMap, scolorMap, tcolorMap);
-    auto geom = builder_->buildGeometryObject(pfield, pcolorMap, this, get_state(), *this);
+    auto geom = builder_->buildGeometryObject(pfield, pcolorMap, this, get_state(), *this, this);
     sendOutput(SceneGraph, geom);
   }
 }
@@ -238,7 +240,8 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
   boost::optional<ColorMapHandle> colorMap,
   Interruptible* interruptible,
   ModuleStateHandle state,
-  const GeometryIDGenerator& idgen)
+  const GeometryIDGenerator& idgen,
+  Module* module)
 {
   // Function for reporting progress.
   //SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc progressFunc = getUpdaterFunc();
@@ -282,7 +285,7 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
     state->setValue(ShowFieldGlyphs::ShowTensorTab, true);
     if (showTensors)
     {
-      renderTensors(field, colorMap, state, interruptible, getTensorsRenderState(state, colorMap), geom, geom->uniqueID());
+      renderTensors(field, colorMap, state, interruptible, getTensorsRenderState(state, colorMap), geom, geom->uniqueID(), module);
     }
   }
   else
@@ -675,7 +678,8 @@ void GlyphBuilder::renderTensors(
   Interruptible* interruptible,
   const RenderState& renState,
   GeometryHandle geom,
-  const std::string& id)
+  const std::string& id,
+  const Module* module_)
 {
   FieldInformation finfo(field);
 
@@ -718,8 +722,11 @@ void GlyphBuilder::renderTensors(
   // Render linear data
   if (finfo.is_linear())
   {
+
+//      std::cout << "lin" << std::endl;
     for (const auto& node : facade->nodes())
     {
+//        std::cout << "node" << std::endl;
       interruptible->checkForInterruption();
       Tensor t;
       fld->get_value(t, node.index());
@@ -740,22 +747,19 @@ void GlyphBuilder::renderTensors(
           t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
 
           Vector colorVector;
-
-          // If eigen value 3 is larger than eigen value 1, all 3 eigen values are negative.
-          // If so, eigen vector 3 is the primary eigen vector when absolute.
-          if(std::abs(eigen1) >= std::abs(eigen3)){
-              colorVector = Abs(eigvec1).normal();
-          } else{
-              colorVector = Abs(eigvec3).normal();
+          if(eigen1 >= 0) {
+            colorVector = Abs(eigvec1).normal();
+            node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
           }
-
-          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
+          else{
+            module_->warning("Negative eigen values");
+          }
         }
       }
       switch (renState.mGlyphType)
       {
       case RenderState::GlyphType::BOX_GLYPH:
-        BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Box Geom is not supported yet."));
+          glyphs.addBox(p, t, scale);
         break;
       case RenderState::GlyphType::SPHERE_GLYPH:
           glyphs.addEllipsoid(p, t, scale, resolution, node_color);
@@ -769,8 +773,10 @@ void GlyphBuilder::renderTensors(
   // Render cell data
   else
   {
+//      std::cout << "not lin" << std::endl;
     for (const auto& cell : facade->cells())
     {
+//        std::cout << "cell" << std::endl;
       interruptible->checkForInterruption();
       Tensor t;
       fld->get_value(t, cell.index());
