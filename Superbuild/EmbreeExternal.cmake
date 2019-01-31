@@ -24,9 +24,19 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
+IF(APPLE)
+  SET(EMBREE_URL "https://github.com/embree/embree/releases/download/v3.4.0/embree-3.4.0.x86_64.macosx.tar.gz")
+ELSE()
+  IF(WIN32)
+    SET(EMBREE_URL "https://github.com/embree/embree/releases/download/v3.4.0/embree-3.4.0.x64.vc14.windows.zip")
+  ELSE() # Linux
+    SET(EMBREE_URL "https://github.com/embree/embree/releases/download/v3.4.0/embree-3.4.0.x86_64.linux.tar.gz")
+  ENDIF()
+ENDIF()
+
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 ExternalProject_Add(Embree_external
-  URL "https://github.com/embree/embree/releases/download/v3.2.0/embree-3.2.0.x86_64.macosx.tar.gz"
+  URL ${EMBREE_URL}
   PATCH_COMMAND ""
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
@@ -38,17 +48,6 @@ ExternalProject_Add(Embree_external
 )
 
 ExternalProject_Get_Property(Embree_external SOURCE_DIR)
-#ExternalProject_Get_Property(Tetgen_external BINARY_DIR)
-#ExternalProject_Get_Property(Embree_external INSTALL_DIR)
-#SET(TETGEN_INCLUDE ${SOURCE_DIR})
-#SET(TETGEN_LIBRARY_DIR ${BINARY_DIR})
-#SET(TETGEN_USE_FILE ${INSTALL_DIR}/UseTetgen.cmake)
-# see Tetgen CMakeLists.txt file
-#SET(TETGEN_LIBRARY "tet")
 SET(Embree_DIR ${SOURCE_DIR} CACHE PATH "")
-
-# Boost is special case - normally this should be handled in external library repo
-#CONFIGURE_FILE(${SUPERBUILD_DIR}/TetgenConfig.cmake.in ${INSTALL_DIR}/TetgenConfig.cmake @ONLY)
-#CONFIGURE_FILE(${SUPERBUILD_DIR}/UseTetgen.cmake ${TETGEN_USE_FILE} COPYONLY)
 
 MESSAGE(STATUS "Embree_DIR: ${Embree_DIR}")

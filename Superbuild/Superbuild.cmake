@@ -311,12 +311,6 @@ IF(WITH_OSPRAY)
     "-DTBB_ROOT:PATH=${Tbb_DIR}"
     "-DIspc_DIR:PATH=${Ispc_DIR}"
   )
-
-  message("~~~~~~")
-  message("Embree: " ${Embree_DIR})
-  message("TBB_ROOT: " ${Tbb_DIR})
-  message("Ispc_DIR: " ${Ispc_DIR})
-  message("~~~~~~")
 ENDIF()
 
 IF(WIN32)
