@@ -45,6 +45,7 @@ PreferencesWindow::PreferencesWindow(NetworkEditor* editor, std::function<void()
   connect(autoModuleNoteCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateAutoNotesState(int)));
   connect(errorGraphicItemsCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorInlineMessagesOption(int)));
   connect(highDPIAdjustCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateHighDPIAdjust(int)));
+  connect(forceGridBackgroundCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateForceGridBackground(int)));
 }
 
 void PreferencesWindow::updateModuleErrorDialogOption(int state)
@@ -65,6 +66,11 @@ void PreferencesWindow::updateAutoNotesState(int state)
 void PreferencesWindow::updateHighDPIAdjust(int state)
 {
   SCIRun::Core::Preferences::Instance().highDPIAdjustment.setValue(state != 0);
+}
+
+void PreferencesWindow::updateForceGridBackground(int state)
+{
+  SCIRun::Core::Preferences::Instance().forceGridBackground.setValueWithSignal(state != 0);
 }
 
 void PreferencesWindow::setSaveBeforeExecute(bool mode)

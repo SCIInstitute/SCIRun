@@ -68,7 +68,6 @@ SCISHARE void glPlatformInit();
   #define GL_GLEXT_PROTOTYPES
   #include <GL/gl.h>
   #include <GL/glext.h>
-  #include <GL/glx.h>
 #elif __unix // all unices not caught above
   #error General unix not supported - try defining GL_PLATFORM_USING_LINUX and disabling this error.
 #elif __posix
