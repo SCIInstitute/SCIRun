@@ -387,6 +387,11 @@ ENDIF()
 
 IF(WITH_OSPRAY)
   ADD_DEFINITIONS(-DWITH_OSPRAY)
+  SET(OSPRAY_INCLUDE_DIRS
+    "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray"
+    "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray/ospray/include")
+  message(${OSPRAY_INCLUDE_DIRS})
+  SET(OSPRAY_LIBRARIES ospray)
 ENDIF()
 
 ########################################################################
@@ -584,9 +589,9 @@ INCLUDE_DIRECTORIES(
   ${SCI_CLEAVER2_INCLUDE}
 )
 
-#IF(BUILD_WITH_PYTHON)
-#  INCLUDE_DIRECTORIES(${SCIRun_SOURCE_DIR}/Externals/submodules/pybind11/include)
-#ENDIF()
+IF(WITH_OSPRAY)
+  INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
+ENDIF()
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
 
