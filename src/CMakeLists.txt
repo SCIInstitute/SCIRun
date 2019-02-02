@@ -254,16 +254,6 @@ IF(WITH_TETGEN)
   INCLUDE(${TETGEN_USE_FILE})
 ENDIF()
 
-IF(WITH_OSPRAY)
-  #CONFIG_STANDARD_EXTERNAL( Ospray OsprayConfig.cmake ${OSPRAY_BUILD_DIR} )
-  #INCLUDE(${OSPRAY_USE_FILE})
-  #message("~~~~~~")
-  #message("Embree" ${embree_DIR})
-  #message("TBB_ROOT" ${TBB_ROOT})
-  #message("Ispc_DIR" ${Ispc_DIR})
-  #message("~~~~~~")
-ENDIF()
-
 IF(WIN32)
   CONFIG_STANDARD_EXTERNAL( Glew GlewConfig.cmake ${GLEW_DIR} )
   INCLUDE(${GLEW_USE_FILE})
@@ -389,7 +379,9 @@ IF(WITH_OSPRAY)
   ADD_DEFINITIONS(-DWITH_OSPRAY)
   SET(OSPRAY_INCLUDE_DIRS
     "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray"
-    "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray/ospray/include")
+    "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray/ospray/include"
+    "${SCIRun_BINARY_DIR}/Externals/submodules/ospray"
+    )
   message(${OSPRAY_INCLUDE_DIRS})
   SET(OSPRAY_LIBRARIES ospray)
 ENDIF()
