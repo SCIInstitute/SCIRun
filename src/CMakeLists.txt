@@ -379,6 +379,7 @@ IF(WITH_OSPRAY)
   ADD_DEFINITIONS(-DWITH_OSPRAY)
   SET(OSPRAY_INCLUDE_DIRS
     "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray"
+    "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray/components"
     "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray/ospray/include"
     "${SCIRun_BINARY_DIR}/Externals/submodules/ospray"
     )
