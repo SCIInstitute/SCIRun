@@ -386,7 +386,7 @@ inline Vector Cross(const Vector& v1, const Vector& v2)
 }
 
 //returns a unit vector
-inline Vector Vector::getArbitraryTangent()
+inline Vector Vector::getArbitraryTangent() const
 {
   Vector normalized = this->normal();
   
