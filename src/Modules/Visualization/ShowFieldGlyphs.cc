@@ -411,7 +411,7 @@ void GlyphBuilder::renderVectors(
   float threshold = state->getValue(ShowFieldGlyphs::Threshold).toDouble();
 
   //sets feild location for consant feild data 1: node centered 2: edge centered 3: face centered 4: cell centered
-  int feildLocation = finfo.is_point()*1 + finfo.is_line()*2 + finfo.is_surface()*3 + finfo.is_volume()*4;
+  int fieldLocation = finfo.is_point()*1 + finfo.is_line()*2 + finfo.is_surface()*3 + finfo.is_volume()*4;
   //sets feild location to 0 for linear data regardless of location
   feildLocation = feildLocation * !finfo.is_linear();
   
