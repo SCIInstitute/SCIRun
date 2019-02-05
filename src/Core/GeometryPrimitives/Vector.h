@@ -390,7 +390,7 @@ inline Vector Vector::getArbitraryTangent() const
 {
   Vector normalized = this->normal();
   
-  if(abs(normalized.x()) < 0.707)
+  if(abs(normalized.x()) < THRESHOLD)
      return (Vector(1,0,0) - normalized * normalized.x()).normal();
   
   return (Vector(0,1,0) - normalized * normalized.y()).normal();
