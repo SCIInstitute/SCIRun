@@ -412,8 +412,8 @@ void GlyphBuilder::renderVectors(
 
   //sets field location for constant field data 1: node centered 2: edge centered 3: face centered 4: cell centered
   int fieldLocation = finfo.is_point()*1 + finfo.is_line()*2 + finfo.is_surface()*3 + finfo.is_volume()*4;
-  //sets feild location to 0 for linear data regardless of location
-  feildLocation = feildLocation * !finfo.is_linear();
+  //sets field location to 0 for linear data regardless of location
+  fieldLocation = feildLocation * !finfo.is_linear();
   
   switch(fieldLocation)
   {
