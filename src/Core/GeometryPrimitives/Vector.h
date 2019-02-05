@@ -110,7 +110,7 @@ class Vector
     inline Vector& operator-=(const Vector&);
     inline double normalize();
     inline double safe_normalize();
-    inline Vector getArbitraryTangent();
+    inline Vector getArbitraryTangent() const;
     SCISHARE Vector normal() const;
     SCISHARE Vector safe_normal() const;
     friend inline Vector Cross(const Vector&, const Vector&);
