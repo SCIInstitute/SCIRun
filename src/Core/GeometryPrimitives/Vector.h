@@ -396,7 +396,7 @@ inline Vector Vector::getArbitraryTangent() const
   if(abs(normalized.x()) < THRESHOLD)
      return (i - normalized * normalized.x()).normal();
   
-  return (Vector(0,1,0) - normalized * normalized.y()).normal();
+  return (j - normalized * normalized.y()).normal();
 }
 
 inline Vector Interpolate(const Vector& v1, const Vector& v2,
