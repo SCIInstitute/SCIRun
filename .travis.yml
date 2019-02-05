@@ -61,7 +61,7 @@ before_install:
 
 script:
   - cd bin
-  - cmake -GNinja -DTRAVIS_BUILD:BOOL=ON -DUSER_PYTHON_VERSION="${PYTHON_VERSION}" -DWITH_OSPRAY="${OSPRAY_BUILD}" ../Superbuild
+  - cmake -GNinja -DTRAVIS_BUILD:BOOL=ON -DUSER_PYTHON_VERSION="${PYTHON_VERSION}" -DWITH_OSPRAY:BOOL=${OSPRAY_BUILD} ../Superbuild
   - travis_wait 80 ninja
   - cd SCIRun
   - ./Algorithm_Layer_Test
