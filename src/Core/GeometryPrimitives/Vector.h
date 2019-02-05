@@ -386,6 +386,7 @@ inline Vector Cross(const Vector& v1, const Vector& v2)
 }
 
 //returns a unit vector
+static const double THRESHOLD = std::sqrt(2.0)/2;
 inline Vector Vector::getArbitraryTangent() const
 {
   Vector normalized = this->normal();
