@@ -415,7 +415,7 @@ void GlyphBuilder::renderVectors(
   //sets feild location to 0 for linear data regardless of location
   feildLocation = feildLocation * !finfo.is_linear();
   
-  switch(feildLocation)
+  switch(fieldLocation)
   {
       
     case 0: //linear data falls through to node data handling routine
