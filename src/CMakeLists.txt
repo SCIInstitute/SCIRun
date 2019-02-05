@@ -383,7 +383,7 @@ IF(WITH_OSPRAY)
     "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray/ospray/include"
     "${SCIRun_BINARY_DIR}/Externals/submodules/ospray"
     )
-  message(${OSPRAY_INCLUDE_DIRS})
+  #message(${OSPRAY_INCLUDE_DIRS})
   SET(OSPRAY_LIBRARIES ospray)
 ENDIF()
 
