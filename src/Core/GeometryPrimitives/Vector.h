@@ -110,6 +110,7 @@ class Vector
     inline Vector& operator-=(const Vector&);
     inline double normalize();
     inline double safe_normalize();
+    inline Vector getArbitraryTangent() const;
     SCISHARE Vector normal() const;
     SCISHARE Vector safe_normal() const;
     friend inline Vector Cross(const Vector&, const Vector&);
@@ -382,6 +383,20 @@ inline Vector Cross(const Vector& v1, const Vector& v2)
   return Vector(v1.d_[1]*v2.d_[2]-v1.d_[2]*v2.d_[1],
 		v1.d_[2]*v2.d_[0]-v1.d_[0]*v2.d_[2],
 		v1.d_[0]*v2.d_[1]-v1.d_[1]*v2.d_[0]);
+}
+
+//returns a unit vector
+static const double THRESHOLD = std::sqrt(2.0)/2;
+static const Vector i(1,0,0);
+static const Vector j(0,1,0);
+inline Vector Vector::getArbitraryTangent() const
+{
+  Vector normalized = this->normal();
+  
+  if(abs(normalized.x()) < THRESHOLD)
+     return (i - normalized * normalized.x()).normal();
+  
+  return (j - normalized * normalized.y()).normal();
 }
 
 inline Vector Interpolate(const Vector& v1, const Vector& v2,
