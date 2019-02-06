@@ -223,7 +223,7 @@ void SCIRunMainWindow::readSettings()
   {
     bool mode = settings.value(newViewSceneMouseControls).toBool();
     guiLogDebug("Setting read: newViewSceneMouseControls = {}", mode);
-    Core::Preferences::Instance().useNewViewSceneMouseControls.setValue(mode);
+    prefs.useNewViewSceneMouseControls.setValue(mode);
   }
 
   const QString invertMouseZoom = "invertMouseZoom";
@@ -231,7 +231,16 @@ void SCIRunMainWindow::readSettings()
   {
     bool mode = settings.value(invertMouseZoom).toBool();
     guiLogDebug("Setting read: invertMouseZoom = {}", mode);
-    Core::Preferences::Instance().invertMouseZoom.setValue(mode);
+    prefs.invertMouseZoom.setValue(mode);
+  }
+
+  const QString forceGridBackground = "forceGridBackground";
+  if (settings.contains(forceGridBackground))
+  {
+    bool mode = settings.value(forceGridBackground).toBool();
+    guiLogDebug("Setting read: forceGridBackground = {}", mode);
+    prefs.forceGridBackground.setValueWithSignal(mode);
+    prefsWindow_->forceGridBackgroundCheckBox_->setChecked(mode);
   }
 
   const QString favoriteModules = "favoriteModules";
@@ -358,6 +367,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("disableModuleErrorDialogs", prefsWindow_->disableModuleErrorDialogs());
   settings.setValue("saveBeforeExecute", prefsWindow_->saveBeforeExecute());
   settings.setValue("newViewSceneMouseControls", prefs.useNewViewSceneMouseControls.val());
+  settings.setValue("forceGridBackground", prefs.forceGridBackground.val());
   settings.setValue("invertMouseZoom", prefs.invertMouseZoom.val());
   settings.setValue("favoriteModules", favoriteModuleNames_);
   settings.setValue("dataDirectory", QString::fromStdString(prefs.dataDirectory().string()));
