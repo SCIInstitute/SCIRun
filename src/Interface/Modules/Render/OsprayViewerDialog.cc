@@ -279,6 +279,7 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
 
   statusBar_ = new QStatusBar(this);
   statusBar_->setMaximumHeight(20);
+  #ifdef WITH_OSPRAY
   {
     std::ostringstream ostr;
     ostr << "Ospray version: " << OSPRAY_VERSION_MAJOR << "." <<  OSPRAY_VERSION_MINOR << "."
@@ -287,6 +288,7 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
     versionLabel->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
     statusBar_->addPermanentWidget(versionLabel);
   }
+  #endif
 }
 
 void OsprayViewerDialog::newGeometryValue()
