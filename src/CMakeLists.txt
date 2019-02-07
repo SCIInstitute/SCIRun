@@ -254,11 +254,6 @@ IF(WITH_TETGEN)
   INCLUDE(${TETGEN_USE_FILE})
 ENDIF()
 
-IF(WITH_OSPRAY)
-  CONFIG_STANDARD_EXTERNAL( Ospray OsprayConfig.cmake ${OSPRAY_BUILD_DIR} )
-  #INCLUDE(${OSPRAY_USE_FILE})
-ENDIF()
-
 IF(WIN32)
   CONFIG_STANDARD_EXTERNAL( Glew GlewConfig.cmake ${GLEW_DIR} )
   INCLUDE(${GLEW_USE_FILE})
@@ -382,6 +377,14 @@ ENDIF()
 
 IF(WITH_OSPRAY)
   ADD_DEFINITIONS(-DWITH_OSPRAY)
+  SET(OSPRAY_INCLUDE_DIRS
+    "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray"
+    "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray/components"
+    "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray/ospray/include"
+    "${SCIRun_BINARY_DIR}/Externals/submodules/ospray"
+    )
+  #message(${OSPRAY_INCLUDE_DIRS})
+  SET(OSPRAY_LIBRARIES ospray)
 ENDIF()
 
 ########################################################################
@@ -579,9 +582,9 @@ INCLUDE_DIRECTORIES(
   ${SCI_CLEAVER2_INCLUDE}
 )
 
-#IF(BUILD_WITH_PYTHON)
-#  INCLUDE_DIRECTORIES(${SCIRun_SOURCE_DIR}/Externals/submodules/pybind11/include)
-#ENDIF()
+IF(WITH_OSPRAY)
+  INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
+ENDIF()
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
 

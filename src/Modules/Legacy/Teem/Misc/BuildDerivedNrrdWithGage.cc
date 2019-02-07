@@ -169,14 +169,12 @@ BuildDerivedNrrdWithGage::execute()
   }
 
   what = airEnumVal(kind->enm, state->getValue(Parameters::Quantity).toString().c_str());
-  if (-1 == what) {
+  if (-1 == what)
+  {
     /* -1 indeed always means "unknown" for any gageKind */
-    std::string err = "couldn't parse " + state->getValue(Parameters::Quantity).toString() + " as measure of ";
-    char cerr[] = "";
-    strcat(cerr, err.c_str());
-    strcat(cerr, kind->name);
-    strcat(cerr, " volume.");
-    error(cerr);
+    std::string err = "couldn't parse " + state->getValue(Parameters::Quantity).toString() + " as measure of "
+     + kind->name + " volume.";
+    error(err);
     return;
   }
 

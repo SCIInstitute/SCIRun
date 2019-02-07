@@ -97,11 +97,12 @@ OPTION(BUILD_HEADLESS "Build SCIRun without GUI." OFF)
 
 ###########################################
 # Configure Qt version
-OPTION(QT5_BUILD "Qt 5 compatible build" ON)
-# Until ViewScene works...
-IF(APPLE)
-  SET(QT5_BUILD OFF)
+
+SET(QT5_BUILD_DEFAULT ON)
+IF(APPLE) # Until ViewScene works...
+  SET(QT5_BUILD_DEFAULT OFF)
 ENDIF()
+OPTION(QT5_BUILD "Qt 5 compatible build" ${QT5_BUILD_DEFAULT})
 MARK_AS_ADVANCED(QT5_BUILD)
 
 ###########################################
@@ -111,12 +112,10 @@ MARK_AS_ADVANCED(TRAVIS_BUILD)
 
 IF(TRAVIS_BUILD)
   IF(APPLE)
-    SET(WITH_OSPRAY OFF)
     SET(BUILD_TESTING OFF)
     SET(DOWNLOAD_TOOLKITS OFF)
     SET(BUILD_WITH_SCIRUN_DATA OFF)
   ELSE()
-    SET(WITH_OSPRAY OFF)
     SET(QT5_BUILD OFF) # need to check this one
 	  SET(BUILD_TESTING OFF)
 	  SET(DOWNLOAD_TOOLKITS OFF)
@@ -245,7 +244,7 @@ IF(WITH_OSPRAY)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TbbExternal.cmake Tbb_external )
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/EmbreeExternal.cmake Embree_external )
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/IspcExternal.cmake Ispc_external )
-  ADD_EXTERNAL( ${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external )
+  #ADD_EXTERNAL( ${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external )
 ENDIF()
 
 IF(NOT BUILD_HEADLESS)
@@ -312,7 +311,9 @@ ENDIF()
 
 IF(WITH_OSPRAY)
   LIST(APPEND SCIRUN_CACHE_ARGS
-    "-DOSPRAY_BUILD_DIR:PATH=${OSPRAY_BUILD_DIR}"
+    "-Dembree_DIR:PATH=${Embree_DIR}"
+    "-DTBB_ROOT:PATH=${Tbb_DIR}"
+    "-DIspc_DIR:PATH=${Ispc_DIR}"
   )
 ENDIF()
 
