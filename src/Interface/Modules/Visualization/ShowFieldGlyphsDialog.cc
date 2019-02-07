@@ -214,6 +214,10 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
     vectorTab_->vectorsAsCometsRButton_, vectorTab_->vectorsAsConesRButton_, vectorTab_->vectorsAsArrowsRButton_,
     vectorTab_->vectorsAsDisksRButton_, vectorTab_->vectorsAsRingsRButton_, vectorTab_->vectorsAsSpringsRButton_ },
     ShowFieldGlyphs::VectorsDisplayType);
+  addCheckableButtonManager(vectorTab_->normalizeVectorsCheckBox_, ShowFieldGlyphs::NormalizeGlyphs);
+  addCheckableButtonManager(vectorTab_->bidirectionalVectorsCheckBox_, ShowFieldGlyphs::RenderBidirectionaly);
+  addCheckableButtonManager(vectorTab_->renderVectorsBelowThresholdCheckBox_, ShowFieldGlyphs::RenderGlyphsBellowThreshold);
+  addDoubleSpinBoxManager(vectorTab_->thresholdDoubleSpinBox_, ShowFieldGlyphs::Threshold);
 
   connectButtonToExecuteSignal(vectorTab_->showVectorsCheckBox_);
   connectButtonToExecuteSignal(vectorTab_->enableTransparencyVectorsCheckBox_);
@@ -228,6 +232,9 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
   //connectButtonToExecuteSignal(vectorTab_->vectorsAsDisksRButton_);
   //connectButtonToExecuteSignal(vectorTab_->vectorsAsRingsRButton_);
   //connectButtonToExecuteSignal(vectorTab_->vectorsAsSpringsRButton_);
+  connectButtonToExecuteSignal(vectorTab_->normalizeVectorsCheckBox_);
+  connectButtonToExecuteSignal(vectorTab_->bidirectionalVectorsCheckBox_);
+  connectButtonToExecuteSignal(vectorTab_->renderVectorsBelowThresholdCheckBox_);
 }
 
 void ShowFieldGlyphsDialog::setupTensorsTab()

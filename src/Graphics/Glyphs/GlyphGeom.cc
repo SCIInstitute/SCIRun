@@ -282,11 +282,11 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
   if (num_strips < 0) num_strips = 20.0;
   double r1 = radius1 < 0 ? 1.0 : radius1;
   double r2 = radius2 < 0 ? 1.0 : radius2;
-
+  
   //generate triangles for the cylinders.
-  Vector n((p1 - p2).normal()), u = (10 * n + Vector(10, 10, 10)).normal();
-  Vector crx = Cross(u, n).normal();
-  u = Cross(crx, n).normal();
+  Vector n((p1 - p2).normal());
+  Vector crx = n.getArbitraryTangent();
+  Vector u = Cross(crx, n).normal();
   Vector p;
   for (double strips = 0.; strips <= num_strips; strips += 1.)
   {
@@ -300,8 +300,9 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
     points_.push_back(r2 * p + Vector(p2));
     colors_.push_back(color2);
     numVBOElements_++;
-    normals_.push_back(p);
-    normals_.push_back(p);
+    Vector normals(((p2-p1).length() * p + (r2-r1)*n).normal());
+    normals_.push_back(normals);
+    normals_.push_back(normals);
     indices_.push_back(0 + offset);
     indices_.push_back(1 + offset);
     indices_.push_back(2 + offset);
@@ -655,7 +656,7 @@ void GlyphGeom::generateCylinder(const Point& center, const Vector& t, double ra
                                  double radius2, double length, int nu, int nv,
                                  std::vector<QuadStrip>& quadstrips)
 {
-  nu++; //Bring nu to expected value for shape.
+  nu++; //Bring nu to expected value for shape
 
   if (nu > 20) nu = 20;
   if (nv == 0) nv = 20;
