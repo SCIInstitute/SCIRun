@@ -70,7 +70,7 @@
    </property>
    <widget class="QRadioButton" name="tensorsAsBoxesRButton_">
     <property name="enabled">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
     <property name="geometry">
      <rect>
@@ -293,6 +293,9 @@
     </item>
     <item>
      <widget class="QRadioButton" name="colormapLookupTensorsColoringRButton_">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="font">
        <font>
         <strikeout>false</strikeout>

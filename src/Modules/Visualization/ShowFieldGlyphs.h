@@ -48,6 +48,8 @@ namespace SCIRun {
         ShowFieldGlyphs();
         virtual void execute() override;
 
+        static const Core::Algorithms::AlgorithmParameterName FieldName;
+
         // Vector Tab
         static const Core::Algorithms::AlgorithmParameterName ShowVectors;
         static const Core::Algorithms::AlgorithmParameterName VectorsTransparency;
