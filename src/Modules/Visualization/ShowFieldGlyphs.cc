@@ -1001,18 +1001,42 @@ ColorRGB GlyphBuilder::set_color(Tensor& t, boost::optional<ColorMapHandle> colo
       }
       if (colorScheme == ColorScheme::COLOR_IN_SITU)
       {
-          Vector colorVector = Abs(t.get_eigenvector1());
+          Vector colorVector;
+          double eigval1, eigval2, eigval3;
+          t.get_eigenvalues(eigval1, eigval2, eigval3);
+
+          if(eigval1 == eigval2){
+            Vector eigvec3_norm = t.get_eigenvector3().normal();
+            Vector xCross = Cross(eigvec3_norm, Vector(1,0,0));
+            Vector yCross = Cross(eigvec3_norm, Vector(0,1,0));
+            Vector zCross = Cross(eigvec3_norm, Vector(0,0,1));
+            xCross.normalize();
+            yCross.normalize();
+            zCross.normalize();
+
+            if(std::abs(Dot(xCross, yCross)) > 0.99999){
+              colorVector = xCross;
+            }
+            else if(std::abs(Dot(yCross, zCross)) > 0.99999){
+              colorVector = yCross;
+            }
+            else if(std::abs(Dot(xCross, zCross)) > 0.99999){
+              colorVector = zCross;
+            }
+            else{
+              colorVector = t.get_eigenvector1();
+            }
+
+          } else{
+            colorVector = t.get_eigenvector1();
+          }
+          colorVector = Abs(colorVector);
           colorVector.normalize();
-          node_color = ColorRGB(colorVector.x(), colorVector.y(), colorVector.z());
+
+          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
       }
   }
   return node_color;
-}
-
-bool GlyphBuilder::vectorsEqual(Vector &a, Vector &b, double error_margin){
-  return (std::abs(a.x())-std::abs(b.x()) < error_margin &&
-      std::abs(a.y())-std::abs(b.y()) < error_margin &&
-      std::abs(a.z())-std::abs(b.z()) < error_margin);
 }
 
 RenderState GlyphBuilder::getVectorsRenderState(
