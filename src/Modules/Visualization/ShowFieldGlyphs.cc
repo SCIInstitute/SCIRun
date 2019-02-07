@@ -119,7 +119,6 @@ namespace SCIRun {
         ColorRGB set_color(Tensor& t, boost::optional<ColorMapHandle> colorMap, ColorScheme colorScheme);
       private:
         std::string moduleId_;
-        bool vectorsEqual(Vector &a, Vector &b, double error_margin);
       };
     }
   }
@@ -283,12 +282,9 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
 
   if (finfo.is_scalar())
   {
-    std::cout << "scalar" << std::endl;
     state->setValue(ShowFieldGlyphs::ShowScalarTab, true);
     if (showScalars)
     {
-
-        std::cout << "show scalar" << std::endl;
       renderScalars(field, colorMap, state, interruptible, getScalarsRenderState(state, colorMap), geom, geom->uniqueID());
     }
   }
@@ -299,7 +295,6 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
 
   if (finfo.is_tensor())
   {
-    std::cout << "tensor" << std::endl;
     state->setValue(ShowFieldGlyphs::ShowTensorTab, true);
     if (showTensors)
     {
@@ -750,7 +745,6 @@ void GlyphBuilder::renderTensors(
     switch(fieldLocation){
       case 0: //linear data falls through to node data handling routine
       case 1: //node centered constant data
-        // std::cout << "node" << std::endl;
         for (const auto& node : facade->nodes())
         {
             bool neg_eigval = false;
@@ -786,7 +780,6 @@ void GlyphBuilder::renderTensors(
         break;
 
       case 2: //edge centered constant data
-        // std::cout << "edge" << std::endl;
         for(const auto& edge : facade->edges()){
             bool neg_eigval = false;
             interruptible->checkForInterruption();
@@ -825,7 +818,6 @@ void GlyphBuilder::renderTensors(
         break;
 
       case 3: //face centered constant data
-        // std::cout << "face" << std::endl;
         for (const auto& face : facade->faces())
         {
             bool neg_eigval = false;
@@ -861,7 +853,6 @@ void GlyphBuilder::renderTensors(
         }
         break;
       case 4: //cell centerd constant data
-        // std::cout << "cell" << std::endl;
         for (const auto& cell : facade->cells())
         {
             bool neg_eigval = false;
@@ -871,7 +862,6 @@ void GlyphBuilder::renderTensors(
             Point p = cell.center();
             double eigen1, eigen2, eigen3;
             t.get_eigenvalues(eigen1, eigen2, eigen3);
-            // std::cout << eigen1 << "    " << eigen2 << "    " << eigen3 << std::endl;
 
             neg_eigval = (eigen1 < 0 || eigen2 < 0 || eigen3 < 0);
             if(neg_eigval)
@@ -899,16 +889,11 @@ void GlyphBuilder::renderTensors(
 
 
     if(neg_eigval_count > 0) {
-//        std::string warning_text = ;
-//        std::cout << "before warning" << std::endl;
         module_->warning(std::to_string(neg_eigval_count) + " negative eigen values in data.");
     }
 
-    // std::cout << "building..." << std::endl;
     glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY),
                        state->getValue(ShowFieldGlyphs::TensorsTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
-
-    // std::cout << "fin tensor count : " << tensorcount << std::endl;
 }
 
 ColorRGB GlyphBuilder::set_color(Tensor& t, boost::optional<ColorMapHandle> colorMap, ColorScheme colorScheme){
@@ -931,45 +916,24 @@ ColorRGB GlyphBuilder::set_color(Tensor& t, boost::optional<ColorMapHandle> colo
             Vector xCross = Cross(eigvec3_norm, Vector(1,0,0));
             Vector yCross = Cross(eigvec3_norm, Vector(0,1,0));
             Vector zCross = Cross(eigvec3_norm, Vector(0,0,1));
+            xCross.normalize();
+            yCross.normalize();
+            zCross.normalize();
 
-            double xDotY = std::abs(Dot(xCross, Vector(0,1,0)));
-            double xDotZ = std::abs(Dot(xCross, Vector(0,0,1)));
-            double yDotX = std::abs(Dot(yCross, Vector(1,0,0)));
-            double yDotZ = std::abs(Dot(yCross, Vector(0,0,1)));
-            double zDotX = std::abs(Dot(zCross, Vector(1,0,0)));
-            double zDotY = std::abs(Dot(zCross, Vector(0,1,0)));
-            double xDotLargest = (xDotY > xDotZ) ? xDotY : xDotZ;
-            double yDotLargest = (yDotX > yDotZ) ? yDotX : yDotZ;
-            double zDotLargest = (zDotX > zDotY) ? zDotX : zDotY;
-
-            // std::cout << "xdot: " << xDotLargest << " ydot: " << yDotLargest << " zdot: " << zDotLargest << std::endl;
-              // std::cout << "x-y " << std::abs(xDotLargest - yDotLargest)
-              // << "    y-z " << std::abs(yDotLargest - zDotLargest)
-              // << "    x-z " << std::abs(xDotLargest - zDotLargest) << std::endl;
-              if((xDotLargest > 0.9999 && yDotLargest > 0.9999) ||
-                (xDotLargest > 0.9999 && zDotLargest > 0.9999) ||
-                (yDotLargest > 0.9999 && zDotLargest > 0.9999)){
-                    colorVector = t.get_eigenvector1();
-                  } else{
-                Vector xCrossAbs = Abs(xCross);
-                Vector yCrossAbs = Abs(yCross);
-                Vector zCrossAbs = Abs(zCross);
-                if(vectorsEqual(xCrossAbs, yCrossAbs, 0.0001)){
-                  colorVector = xCross;
-                  // std::cout << "xcross" << std::endl;
-                }
-                else if(vectorsEqual(yCrossAbs, zCrossAbs, 0.0001)){
-                  colorVector = yCross;
-                  // std::cout << "ycross" << std::endl;
-                }
-                else {
-                  colorVector = zCross;
-                  // std::cout << "zcross" << std::endl;
-                }
+            if(std::abs(Dot(xCross, yCross)) > 0.99999){
+              colorVector = xCross;
+            }
+            else if(std::abs(Dot(yCross, zCross)) > 0.99999){
+              colorVector = yCross;
+            }
+            else if(std::abs(Dot(xCross, zCross)) > 0.99999){
+              colorVector = zCross;
+            }
+            else{
+              colorVector = t.get_eigenvector1();
             }
 
           } else{
-            // std::cout << "e1 col" << std::endl;
             colorVector = t.get_eigenvector1();
           }
           colorVector = Abs(colorVector);
@@ -979,12 +943,6 @@ ColorRGB GlyphBuilder::set_color(Tensor& t, boost::optional<ColorMapHandle> colo
       }
   }
   return node_color;
-}
-
-bool GlyphBuilder::vectorsEqual(Vector &a, Vector &b, double error_margin){
-  return (a.x()-b.x() < error_margin &&
-      a.y()-b.y() < error_margin &&
-      a.z()-b.z() < error_margin);
 }
 
 RenderState GlyphBuilder::getVectorsRenderState(
