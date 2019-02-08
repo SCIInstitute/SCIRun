@@ -1252,7 +1252,8 @@ void ModuleWidget::toggleOptionsDialog()
         {
           auto maxX = *std::max_element(positions_.begin(), positions_.end(), [](const QPoint& p1, const QPoint& p2) { return p1.x() < p2.x(); });
           auto maxY = *std::max_element(positions_.begin(), positions_.end(), [](const QPoint& p1, const QPoint& p2) { return p1.y() < p2.y(); });
-          dockable_->move(maxX.x() + 30, maxY.y() + 30);
+          static const QRect rec = QApplication::desktop()->screenGeometry();
+          dockable_->move((maxX.x() + 30) % rec.width(), (maxY.y() + 30) % rec.height());
         }
         positions_.append(dockable_->pos());
       }
@@ -1269,6 +1270,7 @@ void ModuleWidget::toggleOptionsDialog()
     else
     {
       hideUI();
+      positions_.removeAll(dockable_->pos());
       colorOptionsButton(false);
     }
   }
