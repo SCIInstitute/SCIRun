@@ -27,6 +27,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Graphics/Glyphs/GlyphGeom.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Math/MiscMath.h>
 #include <Core/GeometryPrimitives/Transform.h>
 
@@ -210,12 +211,17 @@ void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double
 
 void GlyphGeom::addSphere(const Point& p, double radius, double resolution, const ColorRGB& color)
 {
-  generateSphere(p, radius, radius, resolution, color);
+  generateSphere(p, radius, resolution, color);
 }
 
-void GlyphGeom::addEllipsoid(const Point& p, double radius1, double radius2, double resolution, const ColorRGB& color)
+void GlyphGeom::addBox(const Point& center, Tensor& t, double scale)
 {
-  generateEllipsoid(p, radius1, radius2, resolution, color);
+    generateBox(center, t, scale);
+}
+
+void GlyphGeom::addEllipsoid(const Point& p, Tensor& t, double scale, double resolution, const ColorRGB& color)
+{
+  generateEllipsoid(p, t, scale, resolution, color);
 }
 
 void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, double resolution,
@@ -307,32 +313,32 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
   for (int jj = 0; jj < 6; jj++) indices_.pop_back();
 }
 
-void GlyphGeom::generateSphere(const Point& center, double radius1, double radius2,
-  double resolution, const ColorRGB& color)
+void GlyphGeom::generateSphere(const Point& center, double radius, double resolution, const ColorRGB& color)
 {
   double num_strips = resolution;
   if (num_strips < 0) num_strips = 20.0;
-  double r1 = radius1 < 0 ? 1.0 : radius1;
-  double r2 = radius2 < 0 ? 1.0 : radius2;
+  double r = radius < 0 ? 1.0 : radius;
   Vector pp1, pp2;
-  double theta_inc = 2. * M_PI / num_strips, phi_inc = M_PI / num_strips;
+  double theta_inc = /*2. */ M_PI / num_strips, phi_inc = 0.5 * M_PI / num_strips;
 
   //generate triangles for the spheres
-  for (double phi = 0.; phi <= M_PI; phi += phi_inc)
+  for (double phi = 0.; phi <= M_PI - phi_inc; phi += phi_inc)
   {
     for (double theta = 0.; theta <= 2. * M_PI; theta += theta_inc)
     {
       uint32_t offset = static_cast<uint32_t>(numVBOElements_);
       pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
       pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
-      points_.push_back(r1 * pp1 + Vector(center));
-      colors_.push_back(color);
-      numVBOElements_++;
-      points_.push_back(r2 * pp2 + Vector(center));
-      colors_.push_back(color);
-      numVBOElements_++;
       normals_.push_back(pp1);
       normals_.push_back(pp2);
+      pp1 *= r;
+      pp2 *= r;
+      points_.push_back(pp1 + Vector(center));
+      colors_.push_back(color);
+      numVBOElements_++;
+      points_.push_back(pp2 + Vector(center));
+      colors_.push_back(color);
+      numVBOElements_++;
       indices_.push_back(0 + offset);
       indices_.push_back(1 + offset);
       indices_.push_back(2 + offset);
@@ -344,43 +350,203 @@ void GlyphGeom::generateSphere(const Point& center, double radius1, double radiu
   }
 }
 
-void GlyphGeom::generateEllipsoid(const Point& center, double radius1, double radius2,
-  double resolution, const ColorRGB& color)
+void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale)
 {
-  double num_strips = resolution;
-  if (num_strips < 0) num_strips = 20.0;
-  double r1 = radius1 < 0 ? 1.0 : radius1;
-  double r2 = radius2 < 0 ? 1.0 : radius2;
-  Vector pp1, pp2;
-  double theta_inc = /*2. */ M_PI / num_strips, phi_inc = 0.5 * M_PI / num_strips;
-  Vector radius = Vector(radius1, 0, radius2);
+    /**
+    std::vector<QuadStrip> quadstrips;
+    double eigval1, eigval2, eigval3;
+    t.get_eigenvalues(eigval1, eigval2, eigval3);
 
-  //generate triangles for the spheres
-  for (double phi = 0.; phi <= M_PI; phi += phi_inc)
-  {
-    for (double theta = 0.; theta <= /*2. */ M_PI; theta += theta_inc)
-    {
-      uint32_t offset = static_cast<uint32_t>(numVBOElements_);
-      pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
-      pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
-      points_.push_back(r1 * pp1 + Vector(center));
-      colors_.push_back(color);
-      numVBOElements_++;
-      points_.push_back(r2 * pp2 + Vector(center + radius));
-      colors_.push_back(color);
-      numVBOElements_++;
-      normals_.push_back(pp1);
-      normals_.push_back(pp2);
+    double half_x_side = eigval1 * 0.5 * scale;
+    double half_y_side = eigval2 * 0.5 * scale;
+    double half_z_side = eigval3 * 0.5 * scale;
 
-      indices_.push_back(0 + offset);
-      indices_.push_back(1 + offset);
-      indices_.push_back(2 + offset);
-      indices_.push_back(2 + offset);
-      indices_.push_back(1 + offset);
-      indices_.push_back(3 + offset);
+    std::cout << "box:\nx: " << half_x_side << "\ny: " << half_y_side << "\nz: " << half_z_side << "\n\n";
+
+    Transform trans;
+    Transform rotate;
+//    generateTransforms(center, t, trans, rotate);
+
+    uint32_t offset = static_cast<uint32_t>(numVBOElements_);
+    //Draw the Box
+//    Point p1 = trans * Point(-half_x_side, half_y_side, half_z_side);
+//    Point p2 = trans * Point(-half_x_side, half_y_side, -half_z_side);
+//    Point p3 = trans * Point(half_x_side, half_y_side, half_z_side);
+//    Point p4 = trans * Point(half_x_side, half_y_side, -half_z_side);
+//
+//    Point p5 = trans * Point(-half_x_side, -half_y_side, half_z_side);
+//    Point p6 = trans * Point(-half_x_side, -half_y_side, -half_z_side);
+//    Point p7 = trans * Point(half_x_side, -half_y_side, half_z_side);
+//    Point p8 = trans * Point(half_x_side, -half_y_side, -half_z_side);
+
+    // Make vectors
+    Vector v_corner1 = Point(-half_x_side, half_y_side, half_z_side);
+    Vector v_corner2 = Point(-half_x_side, half_y_side, -half_z_side);
+    Vector v_corner3 = Point(half_x_side, half_y_side, half_z_side);
+    Vector v_corner4 = Point(half_x_side, half_y_side, -half_z_side);
+
+    Vector v_corner5 = Point(-half_x_side, -half_y_side, half_z_side);
+    Vector v_corner6 = Point(-half_x_side, -half_y_side, -half_z_side);
+    Vector v_corner7 = Point(half_x_side, -half_y_side, half_z_side);
+    Vector v_corner8 = Point(half_x_side, -half_y_side, -half_z_side);
+
+    Vector v_plane1 = rotate * Vector(half_x_side, 0, 0);
+    Vector v_plane2 = rotate * Vector(0, half_y_side, 0);
+    Vector v_plane3 = rotate * Vector(0, 0, half_z_side);
+
+    Vector v_plane4 = rotate * Vector(-half_x_side, 0, 0);
+    Vector v_plane5 = rotate * Vector(0, -half_y_side, 0);
+    Vector v_plane6 = rotate * Vector(0, 0, -half_z_side);
+
+    // Add corner points to list
+    points_.push_back(v_plane1 + Vector(center));
+    points_.push_back(v_plane2 + Vector(center));
+    points_.push_back(v_plane3 + Vector(center));
+    points_.push_back(v_plane4 + Vector(center));
+    points_.push_back(v_plane5 + Vector(center));
+    points_.push_back(v_plane6 + Vector(center));
+    points_.push_back(v_pp1 + Vector(center));
+    points_.push_back(v_pp2 + Vector(center));
+    points_.push_back(v_pp3 + Vector(center));
+    points_.push_back(v_pp4 + Vector(center));
+    points_.push_back(v_pp5 + Vector(center));
+    points_.push_back(v_pp6 + Vector(center));
+    points_.push_back(v_pp7 + Vector(center));
+    points_.push_back(v_pp8 + Vector(center));
+
+    // Add indices
+    indices_.push_back(0 + offset);
+    indices_.push_back(1 + offset);
+    indices_.push_back(2 + offset);
+    quadstrip1.push_back((v_corner7, v_plane1));
+    quadstrip1.push_back((v_corner8, v_plane1));
+    quadstrip1.push_back((v_corner3, v_plane1));
+    quadstrip1.push_back((v_corner4, v_plane1));
+
+    Vector v1 = rotate * Vector(half_x_side, 0, 0);
+    Vector v2 = rotate * Vector(0, half_y_side, 0);
+    Vector v3 = rotate * Vector(0, 0, half_z_side);
+
+    Vector v4 = rotate * Vector(-half_x_side, 0, 0);
+    Vector v5 = rotate * Vector(0, -half_y_side, 0);
+    Vector v6 = rotate * Vector(0, 0, -half_z_side);
+
+    QuadStrip quadstrip1;
+    QuadStrip quadstrip2;
+    QuadStrip quadstrip3;
+    QuadStrip quadstrip4;
+    QuadStrip quadstrip5;
+    QuadStrip quadstrip6;
+
+    // +X
+    quadstrip1.push_back(std::make_pair(p7, v1));
+    quadstrip1.push_back(std::make_pair(p8, v1));
+    quadstrip1.push_back(std::make_pair(p3, v1));
+    quadstrip1.push_back(std::make_pair(p4, v1));
+
+    // +Y
+    quadstrip2.push_back(std::make_pair(p3, v2));
+    quadstrip2.push_back(std::make_pair(p4, v2));
+    quadstrip2.push_back(std::make_pair(p1, v2));
+    quadstrip2.push_back(std::make_pair(p2, v2));
+
+    // +Z
+    quadstrip3.push_back(std::make_pair(p5, v3));
+    quadstrip3.push_back(std::make_pair(p7, v3));
+    quadstrip3.push_back(std::make_pair(p1, v3));
+    quadstrip3.push_back(std::make_pair(p3, v3));
+
+    // -X
+    quadstrip4.push_back(std::make_pair(p1, v4));
+    quadstrip4.push_back(std::make_pair(p2, v4));
+    quadstrip4.push_back(std::make_pair(p5, v4));
+    quadstrip4.push_back(std::make_pair(p6, v4));
+
+    // -Y
+    quadstrip5.push_back(std::make_pair(p5, v5));
+    quadstrip5.push_back(std::make_pair(p6, v5));
+    quadstrip5.push_back(std::make_pair(p7, v5));
+    quadstrip5.push_back(std::make_pair(p8, v5));
+
+    // -Z
+    quadstrip6.push_back(std::make_pair(p2, v6));
+    quadstrip6.push_back(std::make_pair(p4, v6));
+    quadstrip6.push_back(std::make_pair(p6, v6));
+    quadstrip6.push_back(std::make_pair(p8, v6));
+
+    quadstrips.push_back(quadstrip1);
+    quadstrips.push_back(quadstrip2);
+    quadstrips.push_back(quadstrip3);
+    quadstrips.push_back(quadstrip4);
+    quadstrips.push_back(quadstrip5);
+    quadstrips.push_back(quadstrip6);
+     **/
+}
+
+void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale,
+                                  double resolution, const ColorRGB& color)
+{
+    double num_strips = resolution;
+    if (num_strips < 0) num_strips = 20.0;
+
+    // Get radii from eigen values
+    double eig_val1, eig_val2, eig_val3;
+    t.get_eigenvalues(eig_val1, eig_val2, eig_val3);
+
+    double r1, r2, r3;
+    if(eig_val1 < 0 || eig_val2 < 0 || eig_val3 < 0){
+      r1 = 1.0;
+      r2 = 1.0;
+      r3 = 1.0;
+    } else {
+      r1 = eig_val1;
+      r2 = eig_val2;
+      r3 = eig_val3;
     }
-    for (int jj = 0; jj < 6; jj++) indices_.pop_back();
-  }
+
+    // Get rotation matrix from eigenvectors
+    Vector eig_vec1, eig_vec2, eig_vec3;
+    t.get_eigenvectors(eig_vec1, eig_vec2, eig_vec3);
+    DenseMatrix rotation(3, 3);
+    rotation << eig_vec1[0], eig_vec2[0], eig_vec3[0],
+                eig_vec1[1], eig_vec2[1], eig_vec3[1],
+                eig_vec1[2], eig_vec2[2], eig_vec3[2];
+
+    Eigen::Vector3d pp1, pp2;
+
+    double theta_inc = /*2. */ M_PI / num_strips, phi_inc = 0.5 * M_PI / num_strips;
+
+    //generate triangles for the spheres
+    for (double phi = 0.; phi <= M_PI; phi += phi_inc)
+    {
+        for (double theta = 0.; theta <= 2. * M_PI + theta_inc; theta += theta_inc)
+        {
+            uint32_t offset = static_cast<uint32_t>(numVBOElements_);
+            pp1 = Eigen::Vector3d(sin(theta) * cos(phi) * r1, sin(theta) * sin(phi) * r2, cos(theta) * r3);
+            pp2 = Eigen::Vector3d(sin(theta) * cos(phi + phi_inc) * r1, sin(theta) * sin(phi + phi_inc) * r2, cos(theta) * r3);
+            pp1 *= scale;
+            pp2 *= scale;
+            pp1 = rotation * pp1;
+            pp2 = rotation * pp2;
+            Vector v_pp1 = Vector(pp1[0], pp1[1], pp1[2]);
+            Vector v_pp2 = Vector(pp2[0], pp2[1], pp2[2]);
+            points_.push_back(v_pp1 + Vector(center));
+            colors_.push_back(color);
+            numVBOElements_++;
+            points_.push_back(v_pp2 + Vector(center));
+            colors_.push_back(color);
+            numVBOElements_++;
+            normals_.push_back(v_pp1);
+            normals_.push_back(v_pp2);
+            indices_.push_back(0 + offset);
+            indices_.push_back(1 + offset);
+            indices_.push_back(2 + offset);
+            indices_.push_back(2 + offset);
+            indices_.push_back(1 + offset);
+            indices_.push_back(3 + offset);
+        }
+        for (int jj = 0; jj < 6; jj++) indices_.pop_back();
+    }
 }
 
 void GlyphGeom::generateLine(const Point& p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)

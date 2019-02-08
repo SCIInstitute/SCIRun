@@ -32,7 +32,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Mesh/MeshFacade.h>
-#include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Core/GeometryPrimitives/Vector.h>
@@ -40,6 +39,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/Color.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
 
 using namespace SCIRun;
 using namespace Modules::Visualization;
@@ -61,6 +62,7 @@ namespace SCIRun {
       class GlyphBuilder
       {
       public:
+        GlyphBuilder(const std::string& moduleId) : moduleId_(moduleId){}
         /// Constructs a geometry object (essentially a spire object) from the given
         /// field data.
         /// \param field    Field from which to construct geometry.
@@ -71,7 +73,8 @@ namespace SCIRun {
           boost::optional<ColorMapHandle> colorMap,
           Interruptible* interruptible,
           ModuleStateHandle state,
-          const GeometryIDGenerator& idgen);
+          const GeometryIDGenerator& idgen,
+          Module* module_);
 
         void renderVectors(
           FieldHandle field,
@@ -98,7 +101,8 @@ namespace SCIRun {
           Interruptible* interruptible,
           const RenderState& renState,
           GeometryHandle geom,
-          const std::string& id);
+          const std::string& id,
+          const Module* module_);
 
         RenderState getVectorsRenderState(
           ModuleStateHandle state,
@@ -111,8 +115,11 @@ namespace SCIRun {
         RenderState getTensorsRenderState(
           ModuleStateHandle state,
           boost::optional<ColorMapHandle> colorMap);
-        
+
+        ColorRGB set_color(Tensor& t, boost::optional<ColorMapHandle> colorMap, ColorScheme colorScheme);
       private:
+        std::string moduleId_;
+        bool vectorsEqual(Vector &a, Vector &b, double error_margin);
         void addGlpyh(
           GlyphGeom& glyphs,
           int glyph_type,
@@ -175,7 +182,7 @@ void GlyphBuilder::addGlpyh(
 }
 
 
-ShowFieldGlyphs::ShowFieldGlyphs() : GeometryGeneratingModule(staticInfo_), builder_(new GlyphBuilder)
+ShowFieldGlyphs::ShowFieldGlyphs() : GeometryGeneratingModule(staticInfo_), builder_(new GlyphBuilder(get_id().id_))
 {
   INITIALIZE_PORT(PrimaryData);
   INITIALIZE_PORT(PrimaryColorMap);
@@ -232,6 +239,8 @@ void ShowFieldGlyphs::setStateDefaults()
 
 
   state->setValue(DefaultMeshColor, ColorRGB(0.5, 0.5, 0.5).toString());
+
+  state->setValue(FieldName, std::string());
 }
 
 void ShowFieldGlyphs::execute()
@@ -246,7 +255,7 @@ void ShowFieldGlyphs::execute()
   if (needToExecute())
   {
     //configureInputs(pfield, sfield, tfield, pcolorMap, scolorMap, tcolorMap);
-    auto geom = builder_->buildGeometryObject(pfield, pcolorMap, this, get_state(), *this);
+    auto geom = builder_->buildGeometryObject(pfield, pcolorMap, this, get_state(), *this, this);
     sendOutput(SceneGraph, geom);
   }
 }
@@ -300,7 +309,8 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
   boost::optional<ColorMapHandle> colorMap,
   Interruptible* interruptible,
   ModuleStateHandle state,
-  const GeometryIDGenerator& idgen)
+  const GeometryIDGenerator& idgen,
+  Module* module)
 {
   // Function for reporting progress.
   //SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc progressFunc = getUpdaterFunc();
@@ -309,7 +319,12 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
   bool showScalars = state->getValue(ShowFieldGlyphs::ShowScalars).toBool();
   bool showTensors = state->getValue(ShowFieldGlyphs::ShowTensors).toBool();
 
-  auto geom(boost::make_shared<GeometryObjectSpire>(idgen, "EntireGlyphField", true));
+  std::string idname = "EntireGlyphField";
+  if(!state->getValue(ShowFieldGlyphs::FieldName).toString().empty()){
+    idname += GeometryObject::delimiter + state->getValue(ShowFieldGlyphs::FieldName).toString() + " (from " + moduleId_ +")";
+  }
+
+  auto geom(boost::make_shared<GeometryObjectSpire>(idgen, idname, true));
 
   FieldInformation finfo(field);
 
@@ -344,7 +359,7 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
     state->setValue(ShowFieldGlyphs::ShowTensorTab, true);
     if (showTensors)
     {
-      renderTensors(field, colorMap, state, interruptible, getTensorsRenderState(state, colorMap), geom, geom->uniqueID());
+      renderTensors(field, colorMap, state, interruptible, getTensorsRenderState(state, colorMap), geom, geom->uniqueID(), module);
     }
   }
   else
@@ -404,7 +419,7 @@ void GlyphBuilder::renderVectors(
 
   GlyphGeom glyphs;
   auto facade(field->mesh()->getFacade());
-  
+
   bool normalizeGlyphs = state->getValue(ShowFieldGlyphs::NormalizeGlyphs).toBool();
   bool renderBidirectionaly = state->getValue(ShowFieldGlyphs::RenderBidirectionaly).toBool();
   bool renderGlphysBellowThreshold = state->getValue(ShowFieldGlyphs::RenderGlyphsBellowThreshold).toBool();
@@ -414,30 +429,30 @@ void GlyphBuilder::renderVectors(
   int fieldLocation = finfo.is_point()*1 + finfo.is_line()*2 + finfo.is_surface()*3 + finfo.is_volume()*4;
   //sets field location to 0 for linear data regardless of location
   fieldLocation = fieldLocation * !finfo.is_linear();
-  
+
   switch(fieldLocation)
   {
-      
+
     case 0: //linear data falls through to node data handling routine
     case 1: //node centered constant data
       for (const auto& node : facade->nodes())
       {
         interruptible->checkForInterruption();
         Vector v, inputVector; Point p1, p2, p3; double radius;
-        
+
         fld->get_value(inputVector, node.index());
         mesh->get_center(p1, node.index());
-        
+
         if(normalizeGlyphs)
           v = inputVector.normal() * scale;
         else
           v = inputVector * scale;
-        
+
         p2 = p1 + v;
         p3 = p1 - v;
-        
+
         radius = v.length() * secondaryScalar;
-        
+
         if (colorScheme == ColorScheme::COLOR_UNIFORM)
         {
           node_color = renState.defaultColor;
@@ -452,7 +467,7 @@ void GlyphBuilder::renderVectors(
           Vector colorVector = inputVector.normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
         }
-        
+
         if(renderGlphysBellowThreshold || inputVector.length() >= threshold)
         {
           addGlpyh(glyphs, renState.mGlyphType, p1, p2, radius, resolution, node_color, useLines);
@@ -461,26 +476,26 @@ void GlyphBuilder::renderVectors(
         }
       }
       break;
-      
+
     case 2: //edge centered constant data
       for (const auto& edge : facade->edges())
       {
         interruptible->checkForInterruption();
         Vector v, inputVector; Point p1, p2, p3; double radius;
-        
+
         fld->get_value(inputVector, edge.index());
         mesh->get_center(p1,edge.index());
-        
+
         if(normalizeGlyphs)
           v = inputVector.normal() * scale;
         else
           v = inputVector * scale;
-        
+
         p2 = p1 + v;
         p3 = p1 - v;
-        
+
         radius = v.length() * secondaryScalar;
-        
+
         if (colorScheme == ColorScheme::COLOR_UNIFORM)
         {
           node_color = renState.defaultColor;
@@ -495,7 +510,7 @@ void GlyphBuilder::renderVectors(
           Vector colorVector = inputVector.normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
         }
-        
+
         if(renderGlphysBellowThreshold || inputVector.length() >= threshold)
         {
           addGlpyh(glyphs, renState.mGlyphType, p1, p2, radius, resolution, node_color, useLines);
@@ -504,26 +519,26 @@ void GlyphBuilder::renderVectors(
         }
       }
       break;
-      
+
     case 3: //face centered constant data
       for (const auto& face : facade->faces())
       {
         interruptible->checkForInterruption();
         Vector v, inputVector; Point p1, p2, p3; double radius;
-        
+
         fld->get_value(inputVector, face.index());
         mesh->get_center(p1,face.index());
-        
+
         if(normalizeGlyphs)
           v = inputVector.normal() * scale;
         else
           v = inputVector * scale;
-        
+
         p2 = p1 + v;
         p3 = p1 - v;
-        
+
         radius = v.length() * secondaryScalar;
-        
+
         if (colorScheme == ColorScheme::COLOR_UNIFORM)
         {
           node_color = renState.defaultColor;
@@ -538,7 +553,7 @@ void GlyphBuilder::renderVectors(
           Vector colorVector = inputVector.normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
         }
-        
+
         if(renderGlphysBellowThreshold || inputVector.length() >= threshold)
         {
           addGlpyh(glyphs, renState.mGlyphType, p1, p2, radius, resolution, node_color, useLines);
@@ -547,26 +562,26 @@ void GlyphBuilder::renderVectors(
         }
       }
       break;
-      
+
     case 4: //cell centered constant data
       for (const auto& cell : facade->cells())
       {
         interruptible->checkForInterruption();
         Vector v, inputVector; Point p1, p2, p3; double radius;
-        
+
         fld->get_value(inputVector, cell.index());
         mesh->get_center(p1,cell.index());
-        
+
         if(normalizeGlyphs)
           v = inputVector.normal() * scale;
         else
           v = inputVector * scale;
-        
+
         p2 = p1 + v;
         p3 = p1 - v;
-        
+
         radius = v.length() * secondaryScalar;
-        
+
         if (colorScheme == ColorScheme::COLOR_UNIFORM)
         {
           node_color = renState.defaultColor;
@@ -581,7 +596,7 @@ void GlyphBuilder::renderVectors(
           Vector colorVector = inputVector.normal();
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
         }
-        
+
         if(renderGlphysBellowThreshold || inputVector.length() >= threshold)
         {
           addGlpyh(glyphs, renState.mGlyphType, p1, p2, radius, resolution, node_color, useLines);
@@ -592,7 +607,7 @@ void GlyphBuilder::renderVectors(
       break;
   }
 
-  
+
   std::stringstream ss;
   ss << renState.mGlyphType << resolution << scale << static_cast<int>(colorScheme);
 
@@ -765,132 +780,263 @@ void GlyphBuilder::renderScalars(
 }
 
 void GlyphBuilder::renderTensors(
-  FieldHandle field,
-  boost::optional<ColorMapHandle> colorMap,
-  ModuleStateHandle state,
-  Interruptible* interruptible,
-  const RenderState& renState,
-  GeometryHandle geom,
-  const std::string& id)
+        FieldHandle field,
+        boost::optional<ColorMapHandle> colorMap,
+        ModuleStateHandle state,
+        Interruptible* interruptible,
+        const RenderState& renState,
+        GeometryHandle geom,
+        const std::string& id,
+        const Module* module_)
 {
-  FieldInformation finfo(field);
+    FieldInformation finfo(field);
 
-  VField* fld = field->vfield();
-  VMesh*  mesh = field->vmesh();
+    VField* fld = field->vfield();
+    VMesh*  mesh = field->vmesh();
 
-  ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
+    ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
+    ColorRGB node_color;
+    // std::cout << "basis order: " << fld->basis_order() << " dimensionality: " << mesh->dimensionality() << " def col: " << renState.get(RenderState::USE_DEFAULT_COLOR) << std::endl;;
+
+    if (fld->basis_order() < 0 || renState.get(RenderState::USE_DEFAULT_COLOR))
+    {
+        colorScheme = ColorScheme::COLOR_UNIFORM;
+    }
+    else if (renState.get(RenderState::USE_COLORMAP))
+    {
+        colorScheme = ColorScheme::COLOR_MAP;
+    }
+    else
+    {
+        colorScheme = ColorScheme::COLOR_IN_SITU;
+    }
+
+    mesh->synchronize(Mesh::NODES_E);
+
+    double scale = state->getValue(ShowFieldGlyphs::TensorsScale).toDouble();
+    double resolution = state->getValue(ShowFieldGlyphs::TensorsResolution).toInt();
+    if (resolution < 3) resolution = 5;
+
+    std::stringstream ss;
+    ss << renState.mGlyphType << resolution << scale << static_cast<int>(colorScheme);
+
+    std::string uniqueNodeID = id + "tensor_glyphs" + ss.str();
+
+    SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::TRIANGLES;;
+
+    GlyphGeom glyphs;
+    auto facade(field->mesh()->getFacade());
+
+    int neg_eigval_count = 0;
+
+    //sets feild location for consant feild data 1: node centered 2: edge centered 3: face centered 4: cell centered
+    int fieldLocation = finfo.is_point() * 1 + finfo.is_line() * 2 +
+      finfo.is_surface() * 3 + finfo.is_volume() * 4;
+
+    //sets feild location to 0 for linear data regardless of location
+    fieldLocation *= !finfo.is_linear();
+    int tensorcount = 0;
+
+    switch(fieldLocation){
+      case 0: //linear data falls through to node data handling routine
+      case 1: //node centered constant data
+        for (const auto& node : facade->nodes())
+        {
+            bool neg_eigval = false;
+            interruptible->checkForInterruption();
+            Tensor t;
+            fld->get_value(t, node.index());
+
+            Point p = node.point();
+            double eigen1, eigen2, eigen3;
+            t.get_eigenvalues(eigen1, eigen2, eigen3);
+
+            neg_eigval = (eigen1 < 0 || eigen2 < 0 || eigen3 < 0);
+            if(neg_eigval)
+                neg_eigval_count++;
+            if(!neg_eigval)
+              node_color = set_color(t, colorMap, colorScheme);
+
+            switch (renState.mGlyphType)
+            {
+                case RenderState::GlyphType::BOX_GLYPH:
+                    glyphs.addBox(p, t, scale);
+                    break;
+                case RenderState::GlyphType::ELLIPSOID_GLYPH:
+                    glyphs.addEllipsoid(p, t, scale, resolution, node_color);
+                    tensorcount++;
+                    break;
+                case RenderState::GlyphType::SPHERE_GLYPH:
+                    glyphs.addSphere(p, eigen1, resolution, node_color);
+                default:
+                    break;
+            }
+        }
+        break;
+
+      case 2: //edge centered constant data
+        for(const auto& edge : facade->edges()){
+            bool neg_eigval = false;
+            interruptible->checkForInterruption();
+            Tensor t;
+            // Point p1, p2;
+            fld->get_value(t, edge.index());
+
+            Point p;
+            mesh->get_center(p, edge.index());
+
+            double eigen1, eigen2, eigen3;
+            t.get_eigenvalues(eigen1, eigen2, eigen3);
+
+            neg_eigval = (eigen1 < 0 || eigen2 < 0 || eigen3 < 0);
+            if(neg_eigval)
+                neg_eigval_count++;
+            if(!neg_eigval)
+              node_color = set_color(t, colorMap, colorScheme);
+
+            switch (renState.mGlyphType)
+            {
+                case RenderState::GlyphType::BOX_GLYPH:
+                    glyphs.addBox(p, t, scale);
+                    break;
+                case RenderState::GlyphType::ELLIPSOID_GLYPH:
+                    glyphs.addEllipsoid(p, t, scale, resolution, node_color);
+                    tensorcount++;
+                    break;
+                case RenderState::GlyphType::SPHERE_GLYPH:
+                    glyphs.addSphere(p, eigen1, resolution, node_color);
+                default:
+                    break;
+            }
+        }
+        break;
+
+      case 3: //face centered constant data
+        for (const auto& face : facade->faces())
+        {
+            bool neg_eigval = false;
+            interruptible->checkForInterruption();
+            Tensor t;
+            fld->get_value(t, face.index());
+
+            Point p;
+            mesh->get_center(p,face.index());
+            double eigen1, eigen2, eigen3;
+            t.get_eigenvalues(eigen1, eigen2, eigen3);
+
+            neg_eigval = (eigen1 < 0 || eigen2 < 0 || eigen3 < 0);
+            if(neg_eigval)
+                neg_eigval_count++;
+            if(!neg_eigval)
+              node_color = set_color(t, colorMap, colorScheme);
+
+            switch (renState.mGlyphType)
+            {
+                case RenderState::GlyphType::BOX_GLYPH:
+                    glyphs.addBox(p, t, scale);
+                    break;
+                case RenderState::GlyphType::ELLIPSOID_GLYPH:
+                    glyphs.addEllipsoid(p, t, scale, resolution, node_color);
+                    tensorcount++;
+                    break;
+                case RenderState::GlyphType::SPHERE_GLYPH:
+                    glyphs.addSphere(p, eigen1, resolution, node_color);
+                default:
+                    break;
+            }
+        }
+        break;
+      case 4: //cell centerd constant data
+        for (const auto& cell : facade->cells())
+        {
+            bool neg_eigval = false;
+            interruptible->checkForInterruption();
+            Tensor t;
+            fld->get_value(t, cell.index());
+            Point p = cell.center();
+            double eigen1, eigen2, eigen3;
+            t.get_eigenvalues(eigen1, eigen2, eigen3);
+
+            neg_eigval = (eigen1 < 0 || eigen2 < 0 || eigen3 < 0);
+            if(neg_eigval)
+                neg_eigval_count++;
+            if(!neg_eigval)
+              node_color = set_color(t, colorMap, colorScheme);
+
+            switch (renState.mGlyphType)
+            {
+                case RenderState::GlyphType::BOX_GLYPH:
+                    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Box Geom is not supported yet."));
+                    break;
+                case RenderState::GlyphType::ELLIPSOID_GLYPH:
+                    glyphs.addEllipsoid(p, t, scale, resolution, node_color);
+                    tensorcount++;
+                    break;
+                case RenderState::GlyphType::SPHERE_GLYPH:
+                    glyphs.addSphere(p, eigen1, resolution, node_color);
+                default:
+                    break;
+            }
+        }
+        break;
+    }
+
+
+    if(neg_eigval_count > 0) {
+        module_->warning(std::to_string(neg_eigval_count) + " negative eigen values in data.");
+    }
+
+    glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY),
+                       state->getValue(ShowFieldGlyphs::TensorsTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
+}
+
+ColorRGB GlyphBuilder::set_color(Tensor& t, boost::optional<ColorMapHandle> colorMap, ColorScheme colorScheme){
   ColorRGB node_color;
-
-  if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || renState.get(RenderState::USE_DEFAULT_COLOR))
+  if (colorScheme != ColorScheme::COLOR_UNIFORM)
   {
-    colorScheme = ColorScheme::COLOR_UNIFORM;
-  }
-  else if (renState.get(RenderState::USE_COLORMAP))
-  {
-    colorScheme = ColorScheme::COLOR_MAP;
-  }
-  else
-  {
-    colorScheme = ColorScheme::COLOR_IN_SITU;
-  }
-
-  mesh->synchronize(Mesh::NODES_E);
-
-  double radius = state->getValue(ShowFieldGlyphs::TensorsScale).toDouble();
-  double resolution = state->getValue(ShowFieldGlyphs::TensorsResolution).toInt();
-  if (radius < 0) radius = 0.1;
-  if (resolution < 3) resolution = 5;
-
-  std::stringstream ss;
-  ss << renState.mGlyphType << resolution << radius << static_cast<int>(colorScheme);
-
-  std::string uniqueNodeID = id + "tensor_glyphs" + ss.str();
-
-  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::TRIANGLES;;
-
-  GlyphGeom glyphs;
-  auto facade(field->mesh()->getFacade());
-  // Render linear data
-  if (finfo.is_linear())
-  {
-    for (const auto& node : facade->nodes())
-    {
-      interruptible->checkForInterruption();
-      Tensor t;
-      fld->get_value(t, node.index());
-      Point p = node.point();
-      double eigen1, eigen2, eigen3;
-      t.get_eigenvalues(eigen1, eigen2, eigen3);
-
-      if (colorScheme != ColorScheme::COLOR_UNIFORM)
+      if (colorScheme == ColorScheme::COLOR_MAP)
       {
-        if (colorScheme == ColorScheme::COLOR_MAP)
-        {
           ColorMapHandle map = colorMap.get();
           node_color = map->valueToColor(t);
-        }
-        if (colorScheme == ColorScheme::COLOR_IN_SITU)
-        {
-          Vector colorVector = t.get_eigenvector1().normal();
+      }
+      if (colorScheme == ColorScheme::COLOR_IN_SITU)
+      {
+          Vector colorVector;
+          double eigval1, eigval2, eigval3;
+          t.get_eigenvalues(eigval1, eigval2, eigval3);
+
+          if(eigval1 == eigval2){
+            Vector eigvec3_norm = t.get_eigenvector3().normal();
+            Vector xCross = Cross(eigvec3_norm, Vector(1,0,0));
+            Vector yCross = Cross(eigvec3_norm, Vector(0,1,0));
+            Vector zCross = Cross(eigvec3_norm, Vector(0,0,1));
+            xCross.normalize();
+            yCross.normalize();
+            zCross.normalize();
+
+            if(std::abs(Dot(xCross, yCross)) > 0.99999){
+              colorVector = xCross;
+            }
+            else if(std::abs(Dot(yCross, zCross)) > 0.99999){
+              colorVector = yCross;
+            }
+            else if(std::abs(Dot(xCross, zCross)) > 0.99999){
+              colorVector = zCross;
+            }
+            else{
+              colorVector = t.get_eigenvector1();
+            }
+
+          } else{
+            colorVector = t.get_eigenvector1();
+          }
+          colorVector = Abs(colorVector);
+          colorVector.normalize();
+
           node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
-        }
       }
-      switch (renState.mGlyphType)
-      {
-      case RenderState::GlyphType::BOX_GLYPH:
-        BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Box Geom is not supported yet."));
-        break;
-      case RenderState::GlyphType::SPHERE_GLYPH:
-        glyphs.addSphere(p, radius, resolution, node_color);
-        break;
-      default:
-
-        break;
-      }
-    }
   }
-  // Render cell data
-  else
-  {
-    for (const auto& cell : facade->cells())
-    {
-      interruptible->checkForInterruption();
-      Tensor t;
-      fld->get_value(t, cell.index());
-      Point p = cell.center();
-      double eigen1, eigen2, eigen3;
-      t.get_eigenvalues(eigen1, eigen2, eigen3);
-
-      if (colorScheme != ColorScheme::COLOR_UNIFORM)
-      {
-        if (colorScheme == ColorScheme::COLOR_MAP)
-        {
-          ColorMapHandle map = colorMap.get();
-          node_color = map->valueToColor(t);
-        }
-        if (colorScheme == ColorScheme::COLOR_IN_SITU)
-        {
-          Vector colorVector = t.get_eigenvector1().normal();
-          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
-        }
-      }
-      switch (renState.mGlyphType)
-      {
-      case RenderState::GlyphType::BOX_GLYPH:
-        BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Box Geom is not supported yet."));
-        break;
-      case RenderState::GlyphType::SPHERE_GLYPH:
-        glyphs.addSphere(p, radius, resolution, node_color);
-        break;
-      default:
-
-        break;
-      }
-    }
-  }
-
-  glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY),
-    state->getValue(ShowFieldGlyphs::TensorsTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
+  return node_color;
 }
 
 RenderState GlyphBuilder::getVectorsRenderState(
@@ -1026,6 +1172,7 @@ RenderState GlyphBuilder::getTensorsRenderState(
   RenderState renState;
 
   bool useColorMap = state->getValue(ShowFieldGlyphs::TensorsColoring).toInt() == 1;
+  bool rgbConversion = state->getValue(ShowFieldGlyphs::TensorsColoring).toInt() == 2;
   renState.set(RenderState::USE_NORMALS, true);
 
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldGlyphs::ShowTensors).toBool());
@@ -1040,7 +1187,7 @@ RenderState GlyphBuilder::getTensorsRenderState(
     renState.mGlyphType = RenderState::GlyphType::BOX_GLYPH;
     break;
   case 2:
-    renState.mGlyphType = RenderState::GlyphType::SPHERE_GLYPH;
+    renState.mGlyphType = RenderState::GlyphType::ELLIPSOID_GLYPH;
     break;
   case 3:
     renState.mGlyphType = RenderState::GlyphType::SPHERE_GLYPH;
@@ -1064,6 +1211,10 @@ RenderState GlyphBuilder::getTensorsRenderState(
   {
     renState.set(RenderState::USE_COLORMAP, true);
   }
+  else if (rgbConversion)
+  {
+      renState.set(RenderState::USE_COLOR_CONVERT, true);
+  }
   else
   {
     renState.set(RenderState::USE_DEFAULT_COLOR, true);
@@ -1073,6 +1224,7 @@ RenderState GlyphBuilder::getTensorsRenderState(
 }
 
 // Vector Controls
+const AlgorithmParameterName ShowFieldGlyphs::FieldName("FieldName");
 const AlgorithmParameterName ShowFieldGlyphs::ShowVectors("ShowVectors");
 const AlgorithmParameterName ShowFieldGlyphs::VectorsTransparency("VectorsTransparency");
 const AlgorithmParameterName ShowFieldGlyphs::VectorsTransparencyValue("VectorsTransparencyValue");
