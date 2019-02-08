@@ -172,5 +172,9 @@ void NetworkEditorControllerGuiProxy::cleanUpNetwork()
 
 std::vector<ModuleExecutionState::Value> NetworkEditorControllerGuiProxy::moduleExecutionStates() const
 {
+  if (!controller_)
+  {
+    return {};
+  }
   return controller_->moduleExecutionStates();
 }

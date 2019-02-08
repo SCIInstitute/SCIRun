@@ -316,9 +316,17 @@ MARK_AS_ADVANCED(BUILD_BUNDLE)
 
 # should be installed by default, searching system paths only
 IF(APPLE)
-  FIND_PROGRAM(MACDEPLOYQT
-    NAMES macdeployqt
-  )
+  IF(QT5_BUILD)
+    FIND_PROGRAM(MACDEPLOYQT
+      HINTS ${Qt5_PATH} ${Qt5_PATH}/bin
+      NAMES macdeployqt
+      NO_DEFAULT_PATH
+    )
+  ELSE()
+    FIND_PROGRAM(MACDEPLOYQT
+      NAMES macdeployqt
+    )
+  ENDIF()
   MARK_AS_ADVANCED(MACDEPLOYQT)
 
   SET(MACDEPLOYQT_OUTPUT_LEVEL 0 CACHE STRING "Set macdeployqt output level (0-3)")

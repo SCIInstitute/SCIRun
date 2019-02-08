@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -33,7 +33,7 @@
 ///////////////////////////
 
 #ifndef CORE_GEOMETRY_VECTOR_H
-#define CORE_GEOMETRY_VECTOR_H 
+#define CORE_GEOMETRY_VECTOR_H
 
 #include <cmath>
 #include <algorithm>
@@ -62,7 +62,7 @@ namespace Geometry {
 
 class Point;
 
-class Vector 
+class Vector
 {
   private:
     double d_[3];
@@ -82,15 +82,15 @@ class Vector
     inline Vector& operator=(const Vector&);
     inline Vector& operator=(const double&);
     inline Vector& operator=(const int&);
-  
+
     //Note vector[0]=vector.x();vector[1]=vector.y();vector[2]=vector.z()
-    inline double& operator[](int idx) 
+    inline double& operator[](int idx)
     {
       return d_[idx];
     }
 
     //Note vector[0]=vector.x();vector[1]=vector.y();vector[2]=vector.z()
-    inline double operator[](int idx) const 
+    inline double operator[](int idx) const
     {
       return d_[idx];
     }
@@ -133,15 +133,15 @@ class Vector
     SCISHARE std::string get_string() const;
 
     friend class Point;
-      
+
     friend inline Vector Interpolate(const Vector&, const Vector&, double);
-      
+
     SCISHARE void find_orthogonal(Vector&, Vector&) const;
     SCISHARE bool check_find_orthogonal(Vector&, Vector&) const;
 
     inline const Point &point() const;
     inline Point &asPoint() const;
-    
+
     inline double minComponent() const;
     inline double maxComponent() const;
 
@@ -163,7 +163,7 @@ inline Vector::Vector()
 inline Vector::Vector(const Vector& p)
 {
   d_[0] = p.d_[0];
-  d_[1] = p.d_[1]; 
+  d_[1] = p.d_[1];
   d_[2] = p.d_[2];
 }
 
@@ -254,12 +254,12 @@ inline double Vector::length2() const
 }
 
 
-inline double Vector::minComponent() const 
+inline double Vector::minComponent() const
 {
   return Min(d_[0], d_[1], d_[2]);
 }
 
-inline double Vector::maxComponent() const 
+inline double Vector::maxComponent() const
 {
   return Max(d_[0], d_[1], d_[2]);
 }
@@ -392,10 +392,10 @@ static const Vector j(0,1,0);
 inline Vector Vector::getArbitraryTangent() const
 {
   Vector normalized = this->normal();
-  
-  if(abs(normalized.x()) < THRESHOLD)
+
+  if (fabs(normalized.x()) < THRESHOLD)
      return (i - normalized * normalized.x()).normal();
-  
+
   return (j - normalized * normalized.y()).normal();
 }
 
@@ -466,12 +466,12 @@ double Vector::normalize()
 
 
 
-inline const Point &Vector::point() const 
+inline const Point &Vector::point() const
 {
   return reinterpret_cast<const Point &>(*this);
 }
 
-inline Point &Vector::asPoint() const 
+inline Point &Vector::asPoint() const
 {
   return reinterpret_cast<Point &>(const_cast<Vector &>(*this));
 }
@@ -479,7 +479,7 @@ inline Point &Vector::asPoint() const
 
 
 inline void Vector::Set(double x, double y, double z)
-{ 
+{
   d_[0] = x;
   d_[1] = y;
   d_[2] = z;
