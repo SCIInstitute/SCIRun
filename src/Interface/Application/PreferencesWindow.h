@@ -62,6 +62,7 @@ public Q_SLOTS:
   void updateSaveBeforeExecuteOption(int state);
   void updateAutoNotesState(int state);
   void updateHighDPIAdjust(int state);
+  void updateForceGridBackground(int state);
 
 protected:
   void hideEvent(QHideEvent * event) override;
