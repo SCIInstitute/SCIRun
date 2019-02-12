@@ -508,14 +508,8 @@ void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale,
     eig_vec2 *= r2;
     eig_vec3 *= r3;
 
-    // Get rotation matrix from eigenvectors
-    DenseMatrix rot_and_scale(3, 3);
-    rot_and_scale << eig_vec1[0], eig_vec2[0], eig_vec3[0],
-                eig_vec1[1], eig_vec2[1], eig_vec3[1],
-                eig_vec1[2], eig_vec2[2], eig_vec3[2];
-
     int nu = resolution + 1;
-    int nv = resolution;
+    //    int nv = resolution;
 
     // Half ellipsoid criteria.
     //  if (half == -1) start = M_PI / 2.0;
@@ -525,12 +519,11 @@ void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale,
     // Should only happen when doing half ellipsoids.
     //  if (nv < 2) nv = 2;
 
-    double start = 0, stop =  M_PI;
     SinCosTable tab1(nu, 0, 2 * M_PI);
-    SinCosTable tab2(nv, start, stop);
+    SinCosTable tab2(resolution, 0, M_PI);
 
     // Draw the ellipsoid
-    for (int v = 0; v<nv - 1; v++)
+    for (int v = 0; v<resolution - 1; v++)
       {
         double nr1 = tab2.sin(v + 1);
         double nr2 = tab2.sin(v);
@@ -553,20 +546,21 @@ void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale,
             double z2 = nz2;
 
             // Rotate points
-            Eigen::Vector3d p1 = rot_and_scale * Eigen::Vector3d(x1, y1, z1);
-            Eigen::Vector3d p2 = rot_and_scale * Eigen::Vector3d(x2, y2, z2);
+            Vector v_p1 = Vector(eig_vec1[0] * x1 + eig_vec2[0] * y1 + eig_vec3[0] * z1,
+                                 eig_vec1[1] * x1 + eig_vec2[1] * y1 + eig_vec3[1] * z1,
+                                 eig_vec1[2] * x1 + eig_vec2[2] * y1 + eig_vec3[2] * z1);
 
-            Vector v_p1 = Vector(p1[0], p1[1], p1[2]);
-            Vector v_p2 = Vector(p2[0], p2[1], p2[2]);
-
+            Vector v_p2 = Vector(eig_vec1[0] * x2 + eig_vec2[0] * y2 + eig_vec3[0] * z2,
+                                 eig_vec1[1] * x2 + eig_vec2[1] * y2 + eig_vec3[1] * z2,
+                                 eig_vec1[2] * x2 + eig_vec2[2] * y2 + eig_vec3[2] * z2);
 
             // Transorm points and add to points list
             points_.push_back(v_p1 + Vector(center));
             points_.push_back(v_p2 + Vector(center));
 
             // Add normals
-            normals_.push_back(v_p1.normal());
-            normals_.push_back(v_p2.normal());
+            normals_.push_back(v_p1);
+            normals_.push_back(v_p2);
 
             // Add color vectors from parameters
             colors_.push_back(color);
