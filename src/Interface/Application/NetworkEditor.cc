@@ -89,6 +89,7 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
 
   setScene(scene_);
   setDragMode(RubberBandDrag);
+  setAcceptDrops(true);
   setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
   connect(scene_, SIGNAL(changed(const QList<QRectF>&)), this, SIGNAL(sceneChanged(const QList<QRectF>&)));
@@ -767,6 +768,7 @@ void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
 
 void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
+  event->acceptProposedAction();
 }
 
 void NetworkEditor::updateViewport()

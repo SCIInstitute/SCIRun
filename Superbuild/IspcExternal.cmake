@@ -24,9 +24,19 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
+IF(APPLE)
+  SET(ISPC_URL "https://svwh.dl.sourceforge.net/project/ispcmirror/v1.10.0/ispc-v1.10.0-osx.tar.gz")
+ELSE()
+  IF(WIN32)
+    SET(ISPC_URL "https://astuteinternet.dl.sourceforge.net/project/ispcmirror/v1.10.0/ispc-v1.10.0-windows.zip")
+  ELSE() # Linux
+    SET(ISPC_URL "https://astuteinternet.dl.sourceforge.net/project/ispcmirror/v1.10.0/ispc-v1.10.0-linux.tar.gz")
+  ENDIF()
+ENDIF()
+
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 ExternalProject_Add(Ispc_external
-  URL "https://downloads.sourceforge.net/project/ispcmirror/v1.9.2/ispc-v1.9.2-osx.tar.gz"
+  URL ${ISPC_URL}
   PATCH_COMMAND ""
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
@@ -40,15 +50,6 @@ ExternalProject_Add(Ispc_external
 ExternalProject_Get_Property(Ispc_external SOURCE_DIR)
 ExternalProject_Get_Property(Ispc_external BINARY_DIR)
 ExternalProject_Get_Property(Ispc_external INSTALL_DIR)
-#SET(TETGEN_INCLUDE ${SOURCE_DIR})
-#SET(TETGEN_LIBRARY_DIR ${BINARY_DIR})
-#SET(TETGEN_USE_FILE ${INSTALL_DIR}/UseTetgen.cmake)
-# see Tetgen CMakeLists.txt file
-#SET(TETGEN_LIBRARY "tet")
-SET(Ispc_DIR ${SOURCE_DIR} CACHE PATH "")
-
-# Boost is special case - normally this should be handled in external library repo
-#CONFIGURE_FILE(${SUPERBUILD_DIR}/TetgenConfig.cmake.in ${INSTALL_DIR}/TetgenConfig.cmake @ONLY)
-#CONFIGURE_FILE(${SUPERBUILD_DIR}/UseTetgen.cmake ${TETGEN_USE_FILE} COPYONLY)
+SET(Ispc_DIR "${SOURCE_DIR}/bin" CACHE PATH "")
 
 MESSAGE(STATUS "Ispc_DIR: ${Ispc_DIR}")

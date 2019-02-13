@@ -37,7 +37,6 @@ SET(Modules_Visualization_Tests_SRCS
 )
 
 IF(WITH_OSPRAY)
-  INCLUDE(${CMAKE_SOURCE_DIR}/CMake/Modules/FindOSPRay.cmake)
   INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
   SET(Modules_Visualization_Tests_SRCS ${Modules_Visualization_Tests_SRCS}
     OsprayFieldRenderTests.cc
