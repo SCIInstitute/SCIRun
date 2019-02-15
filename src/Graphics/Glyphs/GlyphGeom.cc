@@ -486,67 +486,97 @@ void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale)
 void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale,
                                   double resolution, const ColorRGB& color)
 {
-    double num_strips = resolution;
-    if (num_strips < 0) num_strips = 20.0;
-
     // Get radii from eigen values
     double eig_val1, eig_val2, eig_val3;
     t.get_eigenvalues(eig_val1, eig_val2, eig_val3);
 
     double r1, r2, r3;
-    if(eig_val1 < 0 || eig_val2 < 0 || eig_val3 < 0){
-      r1 = 1.0;
-      r2 = 1.0;
-      r3 = 1.0;
-    } else {
-      r1 = eig_val1;
-      r2 = eig_val2;
-      r3 = eig_val3;
+    r1 = scale;
+    r2 = scale;
+    r3 = scale;
+    if(eig_val1 >= 0 && eig_val2 >= 0 && eig_val3 >= 0) {
+      r1 *= eig_val1;
+      r2 *= eig_val2;
+      r3 *= eig_val3;
     }
 
-    // Get rotation matrix from eigenvectors
     Vector eig_vec1, eig_vec2, eig_vec3;
     t.get_eigenvectors(eig_vec1, eig_vec2, eig_vec3);
-    DenseMatrix rotation(3, 3);
-    rotation << eig_vec1[0], eig_vec2[0], eig_vec3[0],
-                eig_vec1[1], eig_vec2[1], eig_vec3[1],
-                eig_vec1[2], eig_vec2[2], eig_vec3[2];
 
-    Eigen::Vector3d pp1, pp2;
+    // Scale to eigen values
+    eig_vec1 *= r1;
+    eig_vec2 *= r2;
+    eig_vec3 *= r3;
 
-    double theta_inc = /*2. */ M_PI / num_strips, phi_inc = 0.5 * M_PI / num_strips;
+    int nu = resolution + 1;
+    //    int nv = resolution;
 
-    //generate triangles for the spheres
-    for (double phi = 0.; phi <= M_PI; phi += phi_inc)
-    {
-        for (double theta = 0.; theta <= 2. * M_PI + theta_inc; theta += theta_inc)
-        {
+    // Half ellipsoid criteria.
+    //  if (half == -1) start = M_PI / 2.0;
+    //  if (half == 1) stop = M_PI / 2.0;
+    //  if (half != 0) nv /= 2;
+
+    // Should only happen when doing half ellipsoids.
+    //  if (nv < 2) nv = 2;
+
+    SinCosTable tab1(nu, 0, 2 * M_PI);
+    SinCosTable tab2(resolution, 0, M_PI);
+
+    // Draw the ellipsoid
+    for (int v = 0; v<resolution - 1; v++)
+      {
+        double nr1 = tab2.sin(v + 1);
+        double nr2 = tab2.sin(v);
+
+        double nz1 = tab2.cos(v + 1);
+        double nz2 = tab2.cos(v);
+
+        for (int u = 0; u<nu; u++)
+          {
             uint32_t offset = static_cast<uint32_t>(numVBOElements_);
-            pp1 = Eigen::Vector3d(sin(theta) * cos(phi) * r1, sin(theta) * sin(phi) * r2, cos(theta) * r3);
-            pp2 = Eigen::Vector3d(sin(theta) * cos(phi + phi_inc) * r1, sin(theta) * sin(phi + phi_inc) * r2, cos(theta) * r3);
-            pp1 *= scale;
-            pp2 *= scale;
-            pp1 = rotation * pp1;
-            pp2 = rotation * pp2;
-            Vector v_pp1 = Vector(pp1[0], pp1[1], pp1[2]);
-            Vector v_pp2 = Vector(pp2[0], pp2[1], pp2[2]);
-            points_.push_back(v_pp1 + Vector(center));
+            double nx = tab1.sin(u);
+            double ny = tab1.cos(u);
+
+            double x1 = nr1 * nx;
+            double y1 = nr1 * ny;
+            double z1 = nz1;
+
+            double x2 = nr2 * nx;
+            double y2 = nr2 * ny;
+            double z2 = nz2;
+
+            // Rotate points
+            Vector v_p1 = Vector(eig_vec1[0] * x1 + eig_vec2[0] * y1 + eig_vec3[0] * z1,
+                                 eig_vec1[1] * x1 + eig_vec2[1] * y1 + eig_vec3[1] * z1,
+                                 eig_vec1[2] * x1 + eig_vec2[2] * y1 + eig_vec3[2] * z1);
+
+            Vector v_p2 = Vector(eig_vec1[0] * x2 + eig_vec2[0] * y2 + eig_vec3[0] * z2,
+                                 eig_vec1[1] * x2 + eig_vec2[1] * y2 + eig_vec3[1] * z2,
+                                 eig_vec1[2] * x2 + eig_vec2[2] * y2 + eig_vec3[2] * z2);
+
+            // Transorm points and add to points list
+            points_.push_back(v_p1 + Vector(center));
+            points_.push_back(v_p2 + Vector(center));
+
+            // Add normals
+            normals_.push_back(v_p1);
+            normals_.push_back(v_p2);
+
+            // Add color vectors from parameters
             colors_.push_back(color);
-            numVBOElements_++;
-            points_.push_back(v_pp2 + Vector(center));
             colors_.push_back(color);
-            numVBOElements_++;
-            normals_.push_back(v_pp1);
-            normals_.push_back(v_pp2);
+
+            numVBOElements_ += 2;
+
             indices_.push_back(0 + offset);
             indices_.push_back(1 + offset);
             indices_.push_back(2 + offset);
             indices_.push_back(2 + offset);
             indices_.push_back(1 + offset);
             indices_.push_back(3 + offset);
-        }
-        for (int jj = 0; jj < 6; jj++) indices_.pop_back();
-    }
+          }
+        for(int jj = 0; jj < 6; jj++) indices_.pop_back();
+      }
 }
 
 void GlyphGeom::generateLine(const Point& p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)

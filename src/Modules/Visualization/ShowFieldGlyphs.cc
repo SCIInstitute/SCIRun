@@ -1005,7 +1005,7 @@ ColorRGB GlyphBuilder::set_color(Tensor& t, boost::optional<ColorMapHandle> colo
           double eigval1, eigval2, eigval3;
           t.get_eigenvalues(eigval1, eigval2, eigval3);
 
-          if(eigval1 == eigval2){
+          if(eigval1 == eigval2 && eigval1 != eigval3){
             Vector eigvec3_norm = t.get_eigenvector3().normal();
             Vector xCross = Cross(eigvec3_norm, Vector(1,0,0));
             Vector yCross = Cross(eigvec3_norm, Vector(0,1,0));
