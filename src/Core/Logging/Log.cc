@@ -30,6 +30,9 @@
 #include <Core/Logging/ApplicationHelper.h>
 #include <boost/filesystem.hpp>
 #include <Core/Utils/Exception.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/sinks/base_sink.h>
 
 using namespace SCIRun::Core::Logging;
 
@@ -88,11 +91,13 @@ namespace
     {
     }
   protected:
-    void _sink_it(const spdlog::details::log_msg& msg) override
+    void sink_it_(const spdlog::details::log_msg& msg) override
     {
-      appender_->log4(msg.formatted.str());
+		  fmt::memory_buffer formatted;
+		  sink::formatter_->format(msg, formatted);
+      appender_->log4(fmt::to_string(formatted));
     }
-    void _flush() override
+    void flush_() override
     {
     }
   private:
@@ -110,11 +115,11 @@ Logger2 Log2::get()
       std::lock_guard<std::mutex> g(mutex);
       if (!logger_)
       {
-        spdlog::set_async_mode(1 << 10);
         std::transform(customSinks_.begin(), customSinks_.end(), std::back_inserter(sinks_),
           [](LogAppenderStrategyPtr app) { return std::make_shared<ThreadedSink>(app); });
         logger_ = std::make_shared<spdlog::logger>(name_, sinks_.begin(), sinks_.end());
         logger_->trace("{} log initialized.", name_);
+		    logger_->flush_on(spdlog::level::err);
         setVerbose(verbose());
       }
     }
