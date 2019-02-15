@@ -82,7 +82,7 @@
     </property>
     <property name="font">
      <font>
-      <strikeout>true</strikeout>
+      <strikeout>false</strikeout>
      </font>
     </property>
     <property name="text">
@@ -293,26 +293,40 @@
     </item>
     <item>
      <widget class="QRadioButton" name="colormapLookupTensorsColoringRButton_">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="font">
+       <font>
+        <strikeout>false</strikeout>
+       </font>
+      </property>
       <property name="text">
        <string>Colormap Lookup</string>
       </property>
       <property name="checked">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QRadioButton" name="conversionRGBTensorsColoringRButton_">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="font">
        <font>
-        <strikeout>true</strikeout>
+        <strikeout>false</strikeout>
        </font>
       </property>
       <property name="text">
        <string>Conversion to RGB</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
       </property>
      </widget>
     </item>

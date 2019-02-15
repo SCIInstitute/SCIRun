@@ -136,7 +136,7 @@ SCIRUN_ADD_TEST_DIR(Tests)
 
 IF(WITH_OSPRAY)
   ADD_SUBDIRECTORY(Ospray)
-  INCLUDE(${CMAKE_SOURCE_DIR}/CMake/Modules/FindOSPRay.cmake)
+  #INCLUDE(${CMAKE_SOURCE_DIR}/CMake/Modules/FindOSPRay.cmake)
   INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
   TARGET_LINK_LIBRARIES(Interface_Modules_Render
     Interface_Modules_Render_Ospray

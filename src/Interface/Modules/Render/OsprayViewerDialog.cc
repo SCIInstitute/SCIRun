@@ -38,6 +38,7 @@ DEALINGS IN THE SOFTWARE.
 
 #ifdef WITH_OSPRAY
 #include <Interface/Modules/Render/Ospray/VolumeViewer.h>
+#include <ospray/version.h>
 #endif
 
 using namespace SCIRun::Gui;
@@ -278,6 +279,16 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
 
   statusBar_ = new QStatusBar(this);
   statusBar_->setMaximumHeight(20);
+  #ifdef WITH_OSPRAY
+  {
+    std::ostringstream ostr;
+    ostr << "Ospray version: " << OSPRAY_VERSION_MAJOR << "." <<  OSPRAY_VERSION_MINOR << "."
+      << OSPRAY_VERSION_PATCH;
+    auto versionLabel = new QLabel(QString::fromStdString(ostr.str()));
+    versionLabel->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+    statusBar_->addPermanentWidget(versionLabel);
+  }
+  #endif
 }
 
 void OsprayViewerDialog::newGeometryValue()
@@ -758,7 +769,7 @@ void OsprayViewerDialog::setBGColor()
 {
   #ifdef WITH_OSPRAY
   auto colorStr = state_->getValue(Parameters::BackgroundColor).toString();
-  
+
   ColorRGB color(colorStr);
   viewer_->setBackgroundColor(color.r(), color.g(), color.b());
   #endif

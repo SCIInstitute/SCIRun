@@ -354,6 +354,14 @@ size_t NetworkStatusImpl::unexecuted() const
 
 size_t NetworkStatusImpl::countState(ModuleExecutionState::Value val) const
 {
+  if (!ned_)
+  {
+    return 0;
+  }
+  if (!ned_->getNetworkEditorController())
+  {
+    return 0;
+  }
   auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
   return std::count(allStates.begin(), allStates.end(), val);
 }
