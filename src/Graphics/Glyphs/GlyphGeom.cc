@@ -485,28 +485,6 @@ void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale)
 
 void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, Vector &scaled_eigenvals, double resolution, const ColorRGB& color)
 {
-    // Get radii from eigen values
-  //    double eig_val1, eig_val2, eig_val3;
-  //    t.get_eigenvalues(eig_val1, eig_val2, eig_val3);
-
-  /**    double r1, r2, r3;
-    r1 = scale;
-    r2 = scale;
-    r3 = scale;
-    if(eig_val1 >= 0 && eig_val2 >= 0 && eig_val3 >= 0) {
-      r1 *= scaled_eigenvals.x();
-      r2 *= eig_val2.y();
-      r3 *= eig_val3.z();
-      }**/
-
-    // If flag passed, normalize eigen values before continuing
-    /**    if(normalizeGlyphs){
-      double length = sqrt(r1*r1 + r2*r2 + r3*r3);
-      r1 /= length;
-      r2 /= length;
-      r3 /= length;
-      }**/
-
     Vector eig_vec1, eig_vec2, eig_vec3;
     t.get_eigenvectors(eig_vec1, eig_vec2, eig_vec3);
 
