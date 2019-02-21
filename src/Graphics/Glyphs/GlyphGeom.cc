@@ -219,9 +219,9 @@ void GlyphGeom::addBox(const Point& center, Tensor& t, double scale)
     generateBox(center, t, scale);
 }
 
-void GlyphGeom::addEllipsoid(const Point& p, Tensor& t, double scale, double resolution, const ColorRGB& color)
+void GlyphGeom::addEllipsoid(const Point& p, Tensor& t, Vector& scaled_eigenvals, double resolution, const ColorRGB& color)
 {
-  generateEllipsoid(p, t, scale, resolution, color);
+  generateEllipsoid(p, t, scaled_eigenvals, resolution, color);
 }
 
 void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, double resolution,
@@ -483,30 +483,37 @@ void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale)
      **/
 }
 
-void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale,
-                                  double resolution, const ColorRGB& color)
+void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, Vector &scaled_eigenvals, double resolution, const ColorRGB& color)
 {
     // Get radii from eigen values
-    double eig_val1, eig_val2, eig_val3;
-    t.get_eigenvalues(eig_val1, eig_val2, eig_val3);
+  //    double eig_val1, eig_val2, eig_val3;
+  //    t.get_eigenvalues(eig_val1, eig_val2, eig_val3);
 
-    double r1, r2, r3;
+  /**    double r1, r2, r3;
     r1 = scale;
     r2 = scale;
     r3 = scale;
     if(eig_val1 >= 0 && eig_val2 >= 0 && eig_val3 >= 0) {
-      r1 *= eig_val1;
-      r2 *= eig_val2;
-      r3 *= eig_val3;
-    }
+      r1 *= scaled_eigenvals.x();
+      r2 *= eig_val2.y();
+      r3 *= eig_val3.z();
+      }**/
+
+    // If flag passed, normalize eigen values before continuing
+    /**    if(normalizeGlyphs){
+      double length = sqrt(r1*r1 + r2*r2 + r3*r3);
+      r1 /= length;
+      r2 /= length;
+      r3 /= length;
+      }**/
 
     Vector eig_vec1, eig_vec2, eig_vec3;
     t.get_eigenvectors(eig_vec1, eig_vec2, eig_vec3);
 
     // Scale to eigen values
-    eig_vec1 *= r1;
-    eig_vec2 *= r2;
-    eig_vec3 *= r3;
+    eig_vec1 *= scaled_eigenvals.x();
+    eig_vec2 *= scaled_eigenvals.y();
+    eig_vec3 *= scaled_eigenvals.z();
 
     int nu = resolution + 1;
     //    int nv = resolution;
