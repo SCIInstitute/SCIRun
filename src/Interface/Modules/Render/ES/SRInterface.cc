@@ -1389,11 +1389,13 @@ namespace SCIRun {
       // Update the static camera with the appropriate world to view transform.
       mCamera->applyTransform();
       glm::mat4 viewToWorld = mCamera->getViewToWorld();
+      glm::mat4 projection = mCamera->getViewToProjection();
 
       gen::StaticCamera* camera = mCore.getStaticComponent<gen::StaticCamera>();
       if (camera)
       {
-        camera->data.setView(viewToWorld);
+        camera->data.setProjection(projection, mCamera->getFOVY(), mCamera->getAspect(), mCamera->getZNear(), mCamera->getZFar());
+        camera->data.setView(viewToWorld);//this takes the inverse of the world to view matrix for some reason
       }
     }
 

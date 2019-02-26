@@ -85,8 +85,13 @@ public:
   /// Default camera settings
   /// @{
   static float getDefaultFOVY()   {return 32.0f * (glm::pi<float>() / 180.0f);}
-  static float getDefaultZNear()  {return 0.001f;}
-  static float getDefaultZFar()   {return 100000.0f;}
+  static float getDefaultZNear()  {return 1.000f;}
+  static float getDefaultZFar()   {return 10000.0f;}
+  
+  float getZFar()   { return mZFar;}
+  float getZNear()  { return mZNear;}
+  float getFOVY()   { return mFOV;}
+  float getAspect() { return static_cast<float>(mInterface.getScreenWidthPixels()) /static_cast<float>(mInterface.getScreenHeightPixels());}
   /// @}
 
   void setLockZoom(bool lock) { lockZoom_ = lock; }

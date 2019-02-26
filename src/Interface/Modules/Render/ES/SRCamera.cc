@@ -93,6 +93,7 @@ void SRCamera::mouseDownEvent(const glm::ivec2& pos, SRInterface::MouseButton bt
 {
   glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
   mArcLookAt->doReferenceDown(screenSpace);
+  std::cout<<"zFar: " << mZFar << "\n";
 }
 
 //------------------------------------------------------------------------------
