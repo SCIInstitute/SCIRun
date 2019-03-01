@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#if 0 //TODO: move to algo layer later
-
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -41,6 +39,7 @@
 #include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 
 #include <ospray/ospray.h>
+#include <ospray/version.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
@@ -253,17 +252,18 @@ namespace osprayImpl
 
 TEST_P(OsprayFieldRenderTest, RenderLatVolWithOspray)
 {
-  //Log::get() << INFO << "Start ShowField::execute" << std::endl;
-
   for (int inc : {1, 2, 3, 4, 5, 6, 7, 8, 9, 10})
   {
     osprayImpl::renderLatVol(latVol, inc*0.2, GetParam());
   }
 
-  FAIL() << "todo";
+  //FAIL() << "todo";
+}
 
-
-  //Log::get() << INFO << "End ShowField::execute" << std::endl;
+TEST(OsprayVersionTest, CanPrintVersion)
+{
+  std::cout << "ospray version: " << OSPRAY_VERSION_MAJOR << "." <<  OSPRAY_VERSION_MINOR << "."
+    << OSPRAY_VERSION_PATCH << std::endl;
 }
 
 INSTANTIATE_TEST_CASE_P(
@@ -274,4 +274,3 @@ INSTANTIATE_TEST_CASE_P(
   //, 256 // probably runs out of memory
   )
   );
-#endif

@@ -24,9 +24,19 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
+IF(APPLE)
+  SET(TBB_URL "https://github.com/01org/tbb/releases/download/2019_U3/tbb2019_20181203oss_mac.tgz")
+ELSE()
+  IF(WIN32)
+    SET(TBB_URL "https://github.com/01org/tbb/releases/download/2019_U3/tbb2019_20181203oss_win.zip")
+  ELSE() # Linux
+    SET(TBB_URL "https://github.com/01org/tbb/releases/download/2019_U3/tbb2019_20181203oss_lin.tgz")
+  ENDIF()
+ENDIF()
+
 SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 ExternalProject_Add(Tbb_external
-  URL "https://github.com/01org/tbb/releases/download/2018_U4/tbb2018_20180411oss_mac.tgz"
+  URL ${TBB_URL}
   PATCH_COMMAND ""
   CONFIGURE_COMMAND ""
   INSTALL_COMMAND ""
@@ -38,17 +48,7 @@ ExternalProject_Add(Tbb_external
 )
 
 ExternalProject_Get_Property(Tbb_external SOURCE_DIR)
-#ExternalProject_Get_Property(Tetgen_external BINARY_DIR)
-#ExternalProject_Get_Property(Tbb_external INSTALL_DIR)
-#SET(TETGEN_INCLUDE ${SOURCE_DIR})
-#SET(TETGEN_LIBRARY_DIR ${BINARY_DIR})
-#SET(TETGEN_USE_FILE ${INSTALL_DIR}/UseTetgen.cmake)
-# see Tetgen CMakeLists.txt file
-#SET(TETGEN_LIBRARY "tet")
-SET(Tbb_DIR ${SOURCE_DIR} CACHE PATH "")
-
-# Boost is special case - normally this should be handled in external library repo
-#CONFIGURE_FILE(${SUPERBUILD_DIR}/TetgenConfig.cmake.in ${INSTALL_DIR}/TetgenConfig.cmake @ONLY)
-#CONFIGURE_FILE(${SUPERBUILD_DIR}/UseTetgen.cmake ${TETGEN_USE_FILE} COPYONLY)
+SET(Tbb_extra_dir_name "tbb2019_20181203oss")
+SET(Tbb_DIR "${SOURCE_DIR}/${Tbb_extra_dir_name}" CACHE PATH "")
 
 MESSAGE(STATUS "Tbb_DIR: ${Tbb_DIR}")

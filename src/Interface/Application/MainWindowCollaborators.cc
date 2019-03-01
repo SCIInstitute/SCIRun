@@ -354,6 +354,14 @@ size_t NetworkStatusImpl::unexecuted() const
 
 size_t NetworkStatusImpl::countState(ModuleExecutionState::Value val) const
 {
+  if (!ned_)
+  {
+    return 0;
+  }
+  if (!ned_->getNetworkEditorController())
+  {
+    return 0;
+  }
   auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
   return std::count(allStates.begin(), allStates.end(), val);
 }
@@ -434,6 +442,11 @@ QString SCIRun::Gui::networkBackgroundImage()
     return ":/general/Resources/turkey.png";
   if (10 == date.month() && 31 == date.day())
     return ":/general/Resources/pumpkin.png";
+  return standardNetworkBackgroundImage();
+}
+
+QString SCIRun::Gui::standardNetworkBackgroundImage()
+{
   return ":/general/Resources/SCIgrid-small.png";
 }
 

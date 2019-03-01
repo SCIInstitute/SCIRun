@@ -106,6 +106,7 @@ public:
   {
     POINT_GLYPH,
     SPHERE_GLYPH,
+    ELLIPSOID_GLYPH,
     BOX_GLYPH,
     AXIS_GLYPH,
     LINE_GLYPH,
@@ -142,4 +143,3 @@ public:
 } // namespace SCIRun
 
 #endif
-

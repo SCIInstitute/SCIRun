@@ -83,10 +83,13 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
 {
   setBackgroundBrush(QPixmap(networkBackgroundImage()));
 
+  Preferences::Instance().forceGridBackground.connectValueChanged([this](bool value) { updateBackground(value); });
+
   setHighResolutionExpandFactor(highResolutionExpandFactor_);
 
   setScene(scene_);
   setDragMode(RubberBandDrag);
+  setAcceptDrops(true);
   setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
   connect(scene_, SIGNAL(changed(const QList<QRectF>&)), this, SIGNAL(sceneChanged(const QList<QRectF>&)));
@@ -765,6 +768,7 @@ void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
 
 void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
+  event->acceptProposedAction();
 }
 
 void NetworkEditor::updateViewport()
@@ -1787,6 +1791,11 @@ void NetworkEditor::moduleWindowAction()
       break;
     }
   }
+}
+
+void NetworkEditor::updateBackground(bool forceGrid)
+{
+  setBackgroundBrush(QPixmap(forceGrid ? standardNetworkBackgroundImage() : networkBackgroundImage()));
 }
 
 void NetworkEditor::adjustModuleWidth(int delta)
