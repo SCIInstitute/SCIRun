@@ -555,6 +555,24 @@ void ViewSceneDialog::showOrientationChecked(bool value)
   spire->showOrientation(value);
 }
 
+void ViewSceneDialog::setOrientAxisSize(int value)
+{
+  auto spire = mSpire.lock();
+  spire->setOrientSize(value);
+}
+
+void ViewSceneDialog::setOrientAxisPosX(int pos)
+{
+  auto spire = mSpire.lock();
+  spire->setOrientPosX(pos);
+}
+
+void ViewSceneDialog::setOrientAxisPosY(int pos)
+{
+  auto spire = mSpire.lock();
+  spire->setOrientPosY(pos);
+}
+
 //------------------------------------------------------------------------------
 void ViewSceneDialog::showAxisChecked(bool value)
 {
