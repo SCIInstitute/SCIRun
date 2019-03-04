@@ -592,6 +592,20 @@ namespace SCIRun {
     }
 
     //------------------------------------------------------------------------------
+    void SRInterface::setDefaultOrientPos()
+    {
+      float y = 0.5f;
+      float x = 0.5f;
+    }
+
+    //------------------------------------------------------------------------------
+    void SRInterface::setCenterOrientPos()
+    {
+      float y = 0.0f;
+      float x = 0.0f;
+    }
+
+    //------------------------------------------------------------------------------
     void SRInterface::setBackgroundColor(QColor color)
     {
       mCore.setBackgroundColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());

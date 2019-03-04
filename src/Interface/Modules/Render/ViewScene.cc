@@ -573,6 +573,20 @@ void ViewSceneDialog::setOrientAxisPosY(int pos)
   spire->setOrientPosY(pos);
 }
 
+void ViewSceneDialog::setCenterOrientPos()
+{
+  setOrientAxisPosX(50);
+  setOrientAxisPosY(50);
+  //setSliderCenterPos();
+}
+
+void ViewSceneDialog::setDefaultOrientPos()
+{
+  setOrientAxisPosX(100);
+  setOrientAxisPosY(100);
+  //setSliderDefaultPos();
+}
+
 //------------------------------------------------------------------------------
 void ViewSceneDialog::showAxisChecked(bool value)
 {

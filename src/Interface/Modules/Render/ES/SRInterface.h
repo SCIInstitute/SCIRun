@@ -170,6 +170,12 @@ namespace SCIRun {
       /// Set Orientation Y Position
       void setOrientPosY(int pos);
 
+      /// Set Orientation Top Right Corner
+      void setDefaultOrientPos();
+
+      /// Set Orientation Center Corner
+      void setCenterOrientPos();
+
       /// Set the Background Color
       void setBackgroundColor(QColor color);
 
