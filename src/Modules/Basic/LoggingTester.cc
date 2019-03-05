@@ -27,12 +27,18 @@
 
 #include <iostream>
 #include <Modules/Basic/LoggingTester.h>
+#include <Core/Logging/Log.h>
+#include <Core/Logging/ScopedTimeRemarker.h>
+#include <Core/Logging/ScopedFunctionLogger.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <boost/thread.hpp>
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
 
 MODULE_INFO_DEF(LoggingTester, Testing, SCIRun)
 
@@ -43,10 +49,41 @@ LoggingTester::LoggingTester() : Module(staticInfo_, false)
 
 void LoggingTester::execute()
 {
+  // simplest method
   std::cout << "std::cout message" << std::endl;
+
+  // legacy logging methods
+  status("LoggingTester status message");
+  remark("LoggingTester remark message");
+  warning("LoggingTester warning message");
+  error("LoggingTester error message");
+
+  // logging macros
+  LOG_TRACE("LoggingTester LOG_TRACE call at line {}", __LINE__);
+  DEBUG_LOG_LINE_INFO
+  LOG_DEBUG("LoggingTester LOG_DEBUG call at line {}", __LINE__);
+  logInfo("LoggingTester logInfo call at line {}", __LINE__);
+  logWarning("LoggingTester logWarning call at line {}", __LINE__);
+  logError("LoggingTester logError call at line {}", __LINE__);
+  logCritical("LoggingTester logCritical call at line {}", __LINE__);
+
+  {
+    ScopedTimeLogger s("Example ScopedTimeLogger, sleeping for 0.1 seconds");
+    boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+  }
+
+  {
+    ScopedTimeRemarker s(this, "Example ScopedTimeRemarker, sleeping for 0.1 seconds");
+    boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+  }
+
+  LOG_FUNCTION_SCOPE;
+
+  // special macros for module/algo classes--should go last
+  THROW_ALGORITHM_INPUT_ERROR("Example algo input error log+throw.");
 }
 
 void LoggingTester::setStateDefaults()
 {
-  
+
 }
