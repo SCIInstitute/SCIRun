@@ -844,9 +844,6 @@ void GlyphBuilder::renderTensors(
     fieldLocation *= !finfo.is_linear();
     int tensorcount = 0;
     double epsilon = pow(2, -52);
-    std::cout << "eps: " << epsilon << std::endl;
-
-
 
     switch(fieldLocation){
       case 0: //linear data falls through to node data handling routine
@@ -931,7 +928,6 @@ void GlyphBuilder::renderTensors(
         for(const auto& edge : facade->edges()){
             interruptible->checkForInterruption();
             Tensor t;
-            // Point p1, p2;
             fld->get_value(t, edge.index());
 
             Point p;
@@ -1024,7 +1020,7 @@ void GlyphBuilder::renderTensors(
             bool eig_y_0 = eigvals.y() < epsilon && eigvals.y() > -epsilon;
             bool eig_z_0 = eigvals.z() < epsilon && eigvals.z() > -epsilon;
 
-            bool neg_eigval = (eigen1 < epsilon || eigen2 < epsilon || eigen3 < epsilon);
+            bool neg_eigval = (eigen1 < -epsilon || eigen2 < -epsilon || eigen3 < -epsilon);
             if(neg_eigval)
               neg_eigval_count++;
 
@@ -1100,7 +1096,7 @@ void GlyphBuilder::renderTensors(
             bool eig_y_0 = eigvals.y() < epsilon && eigvals.y() > -epsilon;
             bool eig_z_0 = eigvals.z() < epsilon && eigvals.z() > -epsilon;
 
-            bool neg_eigval = (eigen1 < epsilon || eigen2 < epsilon || eigen3 < epsilon);
+            bool neg_eigval = (eigen1 < -epsilon || eigen2 < -epsilon || eigen3 < -epsilon);
             if(neg_eigval)
               neg_eigval_count++;
 
@@ -1128,7 +1124,7 @@ void GlyphBuilder::renderTensors(
                 switch (renState.mGlyphType)
                   {
                   case RenderState::GlyphType::BOX_GLYPH:
-                    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Box Geom is not supported yet."));
+                    glyphs.addBox(p, t, scale);
                     break;
                   case RenderState::GlyphType::ELLIPSOID_GLYPH:
                     glyphs.addEllipsoid(p, t, eigvals, resolution, node_color);
@@ -1170,10 +1166,14 @@ void GlyphBuilder::renderTensors(
     glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY),
                        state->getValue(ShowFieldGlyphs::TensorsTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
 
-    tensor_line_glyphs.buildObject(*geom, uniqueLineID, renState.get(RenderState::USE_TRANSPARENT_EDGES),
-                       state->getValue(ShowFieldGlyphs::VectorsTransparencyValue).toDouble(), colorScheme, renState, SpireIBO::PRIMITIVE::LINES, mesh->get_bounding_box());
-    point_glyphs.buildObject(*geom, uniquePointID, renState.get(RenderState::USE_TRANSPARENT_NODES),
-                             state->getValue(ShowFieldGlyphs::ScalarsTransparencyValue).toDouble(), colorScheme, renState, SpireIBO::PRIMITIVE::POINTS, mesh->get_bounding_box());
+    // Render lines(2 eigenvalues equalling 0)
+    RenderState lineRenState = getVectorsRenderState(state, colorMap);
+    tensor_line_glyphs.buildObject(*geom, uniqueLineID, lineRenState.get(RenderState::USE_TRANSPARENT_EDGES),
+                       state->getValue(ShowFieldGlyphs::TensorsTransparencyValue).toDouble(), colorScheme, lineRenState, SpireIBO::PRIMITIVE::LINES, mesh->get_bounding_box());
+    // Render scalars(3 eigenvalues equalling 0)
+    RenderState pointRenState = getScalarsRenderState(state, colorMap);
+    point_glyphs.buildObject(*geom, uniquePointID, pointRenState.get(RenderState::USE_TRANSPARENT_NODES),
+                       state->getValue(ShowFieldGlyphs::TensorsTransparencyValue).toDouble(), colorScheme, pointRenState, SpireIBO::PRIMITIVE::POINTS, mesh->get_bounding_box());
 }
 
 ColorRGB GlyphBuilder::set_color(Tensor& t, boost::optional<ColorMapHandle> colorMap, ColorScheme colorScheme){
@@ -1201,13 +1201,14 @@ ColorRGB GlyphBuilder::set_color(Tensor& t, boost::optional<ColorMapHandle> colo
             zCross.normalize();
 
             // TODO change to epsilon
-            if(std::abs(Dot(xCross, yCross)) > 0.99999){
+            double epsilon = pow(2, -52);
+            if(std::abs(Dot(xCross, yCross)) > (1-epsilon)){
               colorVector = xCross;
             }
-            else if(std::abs(Dot(yCross, zCross)) > 0.99999){
+            else if(std::abs(Dot(yCross, zCross)) > (1-epsilon)){
               colorVector = yCross;
             }
-            else if(std::abs(Dot(xCross, zCross)) > 0.99999){
+            else if(std::abs(Dot(xCross, zCross)) > (1-epsilon)){
               colorVector = zCross;
             }
             else{
