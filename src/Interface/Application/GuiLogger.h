@@ -41,7 +41,7 @@ namespace Gui {
   {
     CORE_SINGLETON(GuiLog)
   public:
-    GuiLog() : Log2("ui", Core::Logging::useLogCheckForWindows7()) {}
+    GuiLog();
   };
 
   template <class... T>

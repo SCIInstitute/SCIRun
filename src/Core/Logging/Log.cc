@@ -33,6 +33,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 #include <spdlog/sinks/base_sink.h>
+#include <iostream>
 
 using namespace SCIRun::Core::Logging;
 
@@ -105,6 +106,13 @@ namespace
   };
 }
 
+template <class T>
+Logger2 makeLoggerLogged(const std::string& name, T&& sinkBegin, T&& sinkEnd)
+{
+  //printf("Parameters: %s %Ii\n", name.c_str(), std::distance(sinkBegin, sinkEnd));
+  return std::make_shared<spdlog::logger>(name, sinkBegin, sinkEnd);
+}
+
 Logger2 Log2::get()
 {
   if (useLog_)
@@ -117,25 +125,27 @@ Logger2 Log2::get()
       {
         std::transform(customSinks_.begin(), customSinks_.end(), std::back_inserter(sinks_),
           [](LogAppenderStrategyPtr app) { return std::make_shared<ThreadedSink>(app); });
-        logger_ = std::make_shared<spdlog::logger>(name_, sinks_.begin(), sinks_.end());
+        logger_ = makeLoggerLogged(name_, sinks_.begin(), sinks_.end());
         logger_->trace("{} log initialized.", name_);
 		    logger_->flush_on(spdlog::level::err);
         setVerbose(verbose());
       }
     }
   }
+
   return logger_;
 }
 
 Log2::Log2(const std::string& name, bool useLog) : useLog_(useLog), name_(name)
 {
+  //printf("Log2(): %s\n", name_.c_str());
 }
 
 void Log2::addColorConsoleSink()
 {
   if (useLog_)
   {
-    auto consoleSink = spdlog::stdout_color_mt("dummy" + name_)->sinks()[0];
+    auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
     addSink(consoleSink);
   }
 }
@@ -147,13 +157,16 @@ bool Log2::verbose() const
 
 void Log2::setVerbose(bool v)
 {
-  //std::cout << "@@@ local setVerbose " << v << " on " << name_ << std::endl;
   verbose_ = v;
   if (logger_)
   {
     logger_->set_level(v ? spdlog::level::debug : spdlog::level::warn);
-    //std::cout << "@@@ local setVerbose " << v << " on " << name_ << " logger object received" << std::endl;
   }
+}
+
+void Log2::addSink(spdlog::sink_ptr sink)
+{
+  sinks_.push_back(sink);
 }
 
 GeneralLog::GeneralLog() : Log2("root", useLogCheckForWindows7())
@@ -162,7 +175,7 @@ GeneralLog::GeneralLog() : Log2("root", useLogCheckForWindows7())
   {
     addColorConsoleSink();
     auto rotating = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
-      (LogSettings::Instance().logDirectory() / "scirun5_root_v2.log").string(), 1024 * 1024, 3);
+      (LogSettings::Instance().logDirectory() / "scirun5_root_v3.log").string(), 1024 * 1024, 3);
     addSink(rotating);
   }
 }
