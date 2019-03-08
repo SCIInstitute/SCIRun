@@ -44,7 +44,8 @@ public:
 
   void execute(double currentTime, double constantFrameTime);
   void setBackgroundColor(float r, float g, float b, float a);
-  
+  void runGCOnNextExecution(){runGC = true;}
+
 private:
 
   int64_t                   mCoreSequence;    ///< Sequence number (frame) since start.
@@ -54,10 +55,12 @@ private:
   float                     mFPS;             ///< Actual FPS of system.
   float                     mLastRealTime;    ///< Last realtime passed into the core.
 
+  bool runGC;
+
   float r_, g_, b_, a_;
 };
 
 } // namespace Render
 } // namespace SCIRun
 
-#endif 
+#endif
