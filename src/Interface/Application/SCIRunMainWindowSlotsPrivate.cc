@@ -289,6 +289,22 @@ void SCIRunMainWindow::runScript()
 void SCIRunMainWindow::runMacro1()
 {
   qDebug() << "macro 1";
+
+  NetworkEditor::InEditingContext iec(networkEditor_);
+  GuiLogger::logInfoQ("RUNNING MACRO");
+  PythonInterpreter::Instance().importSCIRunLibrary();
+  static const std::string jake =
+  "mods = scirun_module_ids()\n"
+  "view = scirun_add_module('ViewScene')\n"
+  "cnt=0\n"
+  "for mod in mods:\n"
+  "\tprint(mod)\n"
+  "\tif 'Show' in mod:\n"
+  "\t\tprint('connecting ',cnt)\n"
+  "\t\tscirun_connect_modules(mod,0,view,cnt)\n"
+  "\t\tcnt+=1\n"
+  ;
+  PythonInterpreter::Instance().run_script(jake);
 }
 
 void SCIRunMainWindow::showModuleSelectorContextMenu(const QPoint& pos)
