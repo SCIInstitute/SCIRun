@@ -216,18 +216,15 @@ ColorRGB ColorMap::valueToColor(double scalar) const {
 }
 /**
  * @name valueToColor
- * @brief Takes a tensor value and creates an RGB value.
+ * @brief Takes a tensor value and creates an RGB value based on the magnitude of the eigenvalues.
  * @param The raw data value as a tensor.
  * @return The RGB value mapped from the tensor.
  */
-ColorRGB ColorMap::valueToColor(const Tensor &tensor) const {
-    //TODO this is probably not implemented correctly.
-    //return ColorRGB(getTransformedColor(fabs(tensor.xx())), getTransformedColor(fabs(tensor.yy())), getTransformedColor(fabs(tensor.zz())));
+ColorRGB ColorMap::valueToColor(Tensor &tensor) const {
   double eigen1, eigen2, eigen3;
-  Tensor ten = tensor;
-  ten.get_eigenvalues(eigen1, eigen2, eigen3);
-  double primaryEigen = std::max(std::max(eigen1, eigen2), eigen3);
-  return getColorMapVal(primaryEigen);
+  tensor.get_eigenvalues(eigen1, eigen2, eigen3);
+  double magnitude = Vector(eigen1, eigen2, eigen3).length();
+  return getColorMapVal(magnitude);
 }
 /**
  * @name valueToColor

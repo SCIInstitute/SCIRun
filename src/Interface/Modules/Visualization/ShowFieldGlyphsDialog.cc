@@ -250,7 +250,10 @@ void ShowFieldGlyphsDialog::setupTensorsTab()
   addRadioButtonGroupManager({ tensorTab_->defaultTensorsColoringRButton_, tensorTab_->colormapLookupTensorsColoringRButton_,
     tensorTab_->conversionRGBTensorsColoringRButton_ }, ShowFieldGlyphs::TensorsColoring);
   addRadioButtonGroupManager({ tensorTab_->tensorsAsBoxesRButton_, tensorTab_->tensorsAsColoredBoxesRButton_,
-    tensorTab_->tensorsAsEllipsoidsRButton_, tensorTab_->tensorsAsSuperquadricsRButton_ }, ShowFieldGlyphs::TensorsDisplayType);
+                               tensorTab_->tensorsAsEllipsoidsRButton_, tensorTab_->tensorsAsSuperquadricsRButton_ }, ShowFieldGlyphs::TensorsDisplayType);
+  addCheckableButtonManager(tensorTab_->normalizeTensorsCheckBox_, ShowFieldGlyphs::NormalizeGlyphs);
+  addCheckableButtonManager(tensorTab_->renderTensorsBelowThresholdCheckBox_, ShowFieldGlyphs::RenderGlyphsBellowThreshold);
+  addDoubleSpinBoxManager(tensorTab_->thresholdDoubleSpinBox_, ShowFieldGlyphs::Threshold);
 
   connectButtonToExecuteSignal(tensorTab_->showTensorsCheckBox_);
   connectButtonToExecuteSignal(tensorTab_->enableTransparencyTensorsCheckBox_);
