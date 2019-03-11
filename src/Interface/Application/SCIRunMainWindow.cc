@@ -148,6 +148,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   createStandardToolbars();
   createExecuteToolbar();
   createAdvancedToolbar();
+  createMacroToolbar();
 
   #ifdef __APPLE__
   connect(actionLaunchNewInstance_, SIGNAL(triggered()), this, SLOT(launchNewInstance()));
@@ -180,6 +181,8 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionImportNetwork_, SIGNAL(triggered()), this, SLOT(importLegacyNetwork()));
   connect(actionQuit_, SIGNAL(triggered()), this, SLOT(close()));
   connect(actionRunScript_, SIGNAL(triggered()), this, SLOT(runScript()));
+
+  connect(actionRunMacro1_, SIGNAL(triggered()), this, SLOT(runMacro1()));
 
   actionQuit_->setShortcut(QKeySequence::Quit);
 

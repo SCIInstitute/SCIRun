@@ -143,6 +143,7 @@ private:
 
   void createStandardToolbars();
   void createExecuteToolbar();
+  void createMacroToolbar();
   void createAdvancedToolbar();
   void postConstructionSignalHookup();
   void executeCommandLineRequests();
@@ -262,6 +263,7 @@ private Q_SLOTS:
   void resetWindowLayout();
   void runNewModuleWizard();
   void runScript();
+  void runMacro1();
   void saveNetwork();
   void saveNetworkAs();
   void selectModuleKeyboardAction();

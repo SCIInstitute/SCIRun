@@ -141,6 +141,22 @@ void SCIRunMainWindow::createAdvancedToolbar()
   advancedBar->setVisible(false);
 }
 
+void SCIRunMainWindow::createMacroToolbar()
+{
+  auto macroBar = addToolBar("Macro");
+  WidgetStyleMixin::toolbarStyle(macroBar);
+  macroBar->setObjectName("MacroToolbar");
+
+  macroBar->addAction(actionRunMacro1_);
+  //advancedBar->addAction(actionToggleMetadataLayer_);
+  //advancedBar->addAction(actionToggleTagLayer_);
+
+  connect(actionMacroBar_, SIGNAL(toggled(bool)), macroBar, SLOT(setVisible(bool)));
+  connect(macroBar, SIGNAL(visibilityChanged(bool)), actionMacroBar_, SLOT(setChecked(bool)));
+
+  macroBar->setVisible(false);
+}
+
 void SCIRunMainWindow::createExecuteToolbar()
 {
   auto executeBar = addToolBar(tr("&Execute"));

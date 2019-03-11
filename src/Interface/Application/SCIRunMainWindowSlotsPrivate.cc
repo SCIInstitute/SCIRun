@@ -286,6 +286,11 @@ void SCIRunMainWindow::runScript()
   }
 }
 
+void SCIRunMainWindow::runMacro1()
+{
+  qDebug() << "macro 1";
+}
+
 void SCIRunMainWindow::showModuleSelectorContextMenu(const QPoint& pos)
 {
   auto globalPos = moduleSelectorTreeWidget_->mapToGlobal(pos);

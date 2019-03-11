@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1093</width>
-         <height>853</height>
+         <width>1098</width>
+         <height>839</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -216,6 +216,7 @@
      <addaction name="actionExecuteBar_"/>
      <addaction name="actionSearchBar_"/>
      <addaction name="actionAdvancedBar_"/>
+     <addaction name="actionMacroBar_"/>
     </widget>
     <addaction name="actionConfiguration_"/>
     <addaction name="actionModule_Selector"/>
@@ -269,6 +270,8 @@
     <addaction name="actionCleanUpNetwork_"/>
     <addaction name="separator"/>
     <addaction name="actionMakeSubnetwork_"/>
+    <addaction name="separator"/>
+    <addaction name="actionRunMacro1_"/>
    </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuEdit"/>
@@ -1268,6 +1271,19 @@
    </property>
    <property name="shortcut">
     <string/>
+   </property>
+  </action>
+  <action name="actionRunMacro1_">
+   <property name="text">
+    <string>Run Macro 1</string>
+   </property>
+  </action>
+  <action name="actionMacroBar_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Macro</string>
    </property>
   </action>
  </widget>
