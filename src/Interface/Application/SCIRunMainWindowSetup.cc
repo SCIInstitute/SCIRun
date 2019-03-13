@@ -147,9 +147,12 @@ void SCIRunMainWindow::createMacroToolbar()
   WidgetStyleMixin::toolbarStyle(macroBar);
   macroBar->setObjectName("MacroToolbar");
 
+  macroBar->addAction(actionMacroEditor_);
   macroBar->addAction(actionRunMacro1_);
-  //advancedBar->addAction(actionToggleMetadataLayer_);
-  //advancedBar->addAction(actionToggleTagLayer_);
+  macroBar->addAction(actionRunMacro2_);
+  macroBar->addAction(actionRunMacro3_);
+  macroBar->addAction(actionRunMacro4_);
+  macroBar->addAction(actionRunMacro5_);
 
   connect(actionMacroBar_, SIGNAL(toggled(bool)), macroBar, SLOT(setVisible(bool)));
   connect(macroBar, SIGNAL(visibilityChanged(bool)), actionMacroBar_, SLOT(setChecked(bool)));
@@ -297,6 +300,13 @@ void SCIRunMainWindow::setActionIcons()
   actionExecuteAll_->setIcon(QPixmap(":/general/Resources/new/general/run.png"));
   actionUndo_->setIcon(QPixmap(":/general/Resources/undo.png"));
   actionRedo_->setIcon(QPixmap(":/general/Resources/redo.png"));
+
+  actionMacroEditor_->setIcon(QPixmap(":/general/Resources/script_play-512lime.png"));
+  actionRunMacro1_->setIcon(QPixmap(":/general/Resources/flash1.png"));
+  actionRunMacro2_->setIcon(QPixmap(":/general/Resources/flash2.png"));
+  actionRunMacro3_->setIcon(QPixmap(":/general/Resources/flash3.png"));
+  actionRunMacro4_->setIcon(QPixmap(":/general/Resources/flash4.png"));
+  actionRunMacro5_->setIcon(QPixmap(":/general/Resources/flash5.png"));
 
   actionHideAllModuleUIs_->setIcon(QPixmap(":/general/Resources/new/general/hideAll.png"));
   actionPinAllModuleUIs_->setIcon(QPixmap(":/general/Resources/new/general/rightAll.png"));

@@ -226,6 +226,7 @@
     <addaction name="actionPythonConsole_"/>
     <addaction name="actionDevConsole_"/>
     <addaction name="actionTriggeredEvents_"/>
+    <addaction name="actionMacroEditor_"/>
     <addaction name="actionPreferences_"/>
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
@@ -249,6 +250,16 @@
     <property name="title">
      <string>Network</string>
     </property>
+    <widget class="QMenu" name="menuMacros">
+     <property name="title">
+      <string>Macros</string>
+     </property>
+     <addaction name="actionRunMacro1_"/>
+     <addaction name="actionRunMacro2_"/>
+     <addaction name="actionRunMacro3_"/>
+     <addaction name="actionRunMacro4_"/>
+     <addaction name="actionRunMacro5_"/>
+    </widget>
     <addaction name="actionExecuteAll_"/>
     <addaction name="separator"/>
     <addaction name="actionPinAllModuleUIs_"/>
@@ -271,7 +282,7 @@
     <addaction name="separator"/>
     <addaction name="actionMakeSubnetwork_"/>
     <addaction name="separator"/>
-    <addaction name="actionRunMacro1_"/>
+    <addaction name="menuMacros"/>
    </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuEdit"/>
@@ -1284,6 +1295,31 @@
    </property>
    <property name="text">
     <string>Macro</string>
+   </property>
+  </action>
+  <action name="actionRunMacro2_">
+   <property name="text">
+    <string>Run Macro 2</string>
+   </property>
+  </action>
+  <action name="actionRunMacro3_">
+   <property name="text">
+    <string>Run Macro 3</string>
+   </property>
+  </action>
+  <action name="actionRunMacro4_">
+   <property name="text">
+    <string>Run Macro 4</string>
+   </property>
+  </action>
+  <action name="actionRunMacro5_">
+   <property name="text">
+    <string>Run Macro 5</string>
+   </property>
+  </action>
+  <action name="actionMacroEditor_">
+   <property name="text">
+    <string>Macro Editor</string>
    </property>
   </action>
  </widget>
