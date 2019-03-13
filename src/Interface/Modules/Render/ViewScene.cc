@@ -98,16 +98,11 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   fmt.setRgba(true);
   fmt.setDepth(true);
   fmt.setDoubleBuffer(true);
-  fmt.setDepthBufferSize(32);
-  
-  QtGLContext* tempContext = new QtGLContext(fmt);
-  
-  mGLWidget = new GLWidget(tempContext, parentWidget());
+  fmt.setDepthBufferSize(24);
+
+  mGLWidget = new GLWidget(new QtGLContext(fmt), parentWidget());
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
   connect(this, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int, const std::string&)), this, SLOT(sendGeometryFeedbackToState(int, int, const std::string&)));
-  
-  std::cout<<"Actuall Depth Buffer Size: " << tempContext->format().depthBufferSize() << "\n";
-  std::cout<<"Opengl Version: " << tempContext->format().openGLVersionFlags() << "\n";
 
   if (mGLWidget->isValid())
   {

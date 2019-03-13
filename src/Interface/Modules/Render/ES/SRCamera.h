@@ -87,7 +87,7 @@ public:
   static float getDefaultFOVY()   {return 32.0f * (glm::pi<float>() / 180.0f);}
   static float getDefaultZNear()  {return 1.000f;}
   static float getDefaultZFar()   {return 10000.0f;}
-  
+
   float getZFar()   { return mZFar;}
   float getZNear()  { return mZNear;}
   float getFOVY()   { return mFOV;}
@@ -116,6 +116,8 @@ private:
   float                 mFOV;         ///< Field of view.
   float                 mZNear;       ///< Position of near plane along view vec.
   float                 mZFar;        ///< Position of far plane along view vec.
+
+  float                 mRadius;
 
   SRInterface&          mInterface;   ///< SRInterface.
 

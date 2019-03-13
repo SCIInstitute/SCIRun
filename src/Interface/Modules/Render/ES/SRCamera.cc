@@ -50,6 +50,7 @@ SRCamera::SRCamera(SRInterface& iface) :
 
   glm::mat4 cam;
   cam[3] = (glm::vec4(0.0f, 0.0f, 7.0f, 1.0f));
+  mRadius = -1.0;
 }
 
 //------------------------------------------------------------------------------
@@ -93,7 +94,6 @@ void SRCamera::mouseDownEvent(const glm::ivec2& pos, SRInterface::MouseButton bt
 {
   glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
   mArcLookAt->doReferenceDown(screenSpace);
-  std::cout<<"zFar: " << mZFar << "\n";
 }
 
 //------------------------------------------------------------------------------
@@ -123,6 +123,13 @@ void SRCamera::mouseWheelEvent(int32_t delta, int zoomSpeed)
     //mArcLookAt->doZoom(-static_cast<float>(delta) / 100.0f, zoomSpeed);
     mArcLookAt->doZoom(mInvertVal*static_cast<float>(delta) / 100.0f, zoomSpeed);
   }
+
+  if(mRadius > 0.0)
+  {
+    mZFar = mArcLookAt->getCamDistance() + mRadius;
+    mZNear = std::max(mZFar/1000.0f, mArcLookAt->getCamDistance() - mRadius);
+    setAsPerspective();
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -138,12 +145,20 @@ void SRCamera::doAutoView(const Core::Geometry::BBox& bbox)
 
   /// \todo Use real FOV-Y when we allow the user to change the FOV.
   mArcLookAt->autoview(aabb, getDefaultFOVY());
+
+  //we multiply by 1.5 to give us some breathing room for the glyphs which can poke out of
+  //the bounding box. This should be removed once bounding box generation is fixed for glyphs
+  mRadius = (glm::length(max - min) / 2.0f) * 1.5f;
+
+  mZFar = mArcLookAt->getCamDistance() + mRadius;
+  mZNear = std::max(mZFar/1000.0f, mArcLookAt->getCamDistance() - mRadius);
+  setAsPerspective();
 }
 
 //------------------------------------------------------------------------------
 void SRCamera::setView(const glm::vec3& view, const glm::vec3& up)
 {
-    mArcLookAt->setView(view, up);
+  mArcLookAt->setView(view, up);
 }
 
 //------------------------------------------------------------------------------
