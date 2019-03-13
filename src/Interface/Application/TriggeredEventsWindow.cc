@@ -30,14 +30,15 @@
 #include <Interface/Application/TriggeredEventsWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Core/Application/Preferences/Preferences.h>
+#include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
 
 using namespace SCIRun::Gui;
-//using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Dataflow::Engine;
 
-TriggeredEventsWindow::TriggeredEventsWindow(QWidget* parent /* = 0 */) : QDockWidget(parent)
+TriggeredEventsWindow::TriggeredEventsWindow(QWidget* parent /* = 0 */) : QDockWidget(parent),
+  scriptPlainTextEdit_(new CodeEditor(this))
 {
   setupUi(this);
+  gridLayout_2->addWidget(scriptPlainTextEdit_, 2, 0);
   connect(eventListWidget_, SIGNAL(itemSelectionChanged()), this, SLOT(updateScriptEditor()));
   connect(scriptPlainTextEdit_, SIGNAL(textChanged()), this, SLOT(updateScripts()));
   connect(enabledCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(enableStateChanged(int)));

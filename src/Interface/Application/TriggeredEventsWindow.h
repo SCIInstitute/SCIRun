@@ -40,6 +40,7 @@ namespace SCIRun {
 namespace Gui {
 
   class NetworkEditor;
+  class CodeEditor;
 
 class TriggeredEventsWindow : public QDockWidget, public Ui::TriggeredEvents
 {
@@ -59,6 +60,7 @@ private Q_SLOTS:
   void enableStateChanged(int state);
 private:
   void push();
+  CodeEditor* scriptPlainTextEdit_;
   QMap<QString, QString> scripts_;
   QMap<QString, bool> scriptEnabledFlags_;
 };
