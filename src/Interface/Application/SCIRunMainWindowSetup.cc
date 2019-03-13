@@ -6,7 +6,6 @@
   Copyright (c) 2015 Scientific Computing and Imaging Institute,
   University of Utah.
 
-  License for the specific language governing rights and limitations under
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
   to deal in the Software without restriction, including without limitation
@@ -51,6 +50,7 @@
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Interface/Application/DialogErrorControl.h>
 #include <Interface/Application/TriggeredEventsWindow.h>
+#include <Interface/Application/MacroEditor.h>
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Interface/Application/ModuleWizard/ModuleWizard.h>
@@ -351,6 +351,11 @@ void SCIRunMainWindow::setupScriptedEventsWindow()
   connect(actionTriggeredEvents_, SIGNAL(toggled(bool)), triggeredEventsWindow_, SLOT(setVisible(bool)));
   connect(triggeredEventsWindow_, SIGNAL(visibilityChanged(bool)), actionTriggeredEvents_, SLOT(setChecked(bool)));
   triggeredEventsWindow_->hide();
+
+  macroEditor_ = new MacroEditor(this);
+  connect(actionMacroEditor_, SIGNAL(toggled(bool)), macroEditor_, SLOT(setVisible(bool)));
+  connect(macroEditor_, SIGNAL(visibilityChanged(bool)), actionMacroEditor_, SLOT(setChecked(bool)));
+  macroEditor_->hide();
 }
 
 void SCIRunMainWindow::setupProvenanceWindow()

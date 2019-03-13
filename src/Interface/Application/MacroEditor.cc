@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -38,12 +37,40 @@ MacroEditor::MacroEditor(QWidget* parent /* = 0 */) : QDockWidget(parent),
   scriptPlainTextEdit_(new CodeEditor(this))
 {
   setupUi(this);
-  gridLayout_2->addWidget(scriptPlainTextEdit_, 2, 0);
-  connect(eventListWidget_, SIGNAL(itemSelectionChanged()), this, SLOT(updateScriptEditor()));
+  gridLayout_2->addWidget(scriptPlainTextEdit_, 1, 1);
+  connect(macroListWidget_, SIGNAL(itemSelectionChanged()), this, SLOT(updateScriptEditor()));
   connect(scriptPlainTextEdit_, SIGNAL(textChanged()), this, SLOT(updateScripts()));
+  connect(addPushButton_, SIGNAL(clicked()), this, SLOT(addMacro()));
+  connect(removePushButton_, SIGNAL(clicked()), this, SLOT(removeMacro()));
+
+  auto assignMenu = new QMenu(this);
+  for (int i = 1; i <= 5; ++i)
+  {
+    setupAssignToAction(assignMenu->addAction(QString::number(i)), i);
+  }
+
+  assignToButtonPushButton_->setMenu(assignMenu);
   //connect(enabledCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(enableStateChanged(int)));
 }
 
+static const char* macroIndex = "macroIndex";
+
+void MacroEditor::setupAssignToAction(QAction* action, int i)
+{
+  action->setProperty(macroIndex, i);
+  connect(action, SIGNAL(triggered()), this, SLOT(assignToButton()));
+}
+
+void MacroEditor::assignToButton()
+{
+  auto index = sender()->property(macroIndex).toInt();
+  qDebug() << "assigning to macro " << index;
+  auto selected = macroListWidget_->selectedItems();
+  if (!selected.isEmpty())
+  {
+    selected[0]->setText(tr("[%0] %1").arg(index).arg(selected[0]->text()));
+  }
+}
 // const QMap<QString, QString>& TriggeredEventsWindow::getScripts() const
 // {
 //   return scripts_;
@@ -70,6 +97,25 @@ MacroEditor::MacroEditor(QWidget* parent /* = 0 */) : QDockWidget(parent),
 //   updateScriptEditor();
 // }
 
+void MacroEditor::addMacro()
+{
+  bool ok;
+  QString text = QInputDialog::getText(this, "Add Macro", "Macro name:", QLineEdit::Normal, "", &ok);
+  if (ok && !text.isEmpty())
+  {
+    auto item = new QListWidgetItem(text, macroListWidget_);
+  }
+}
+
+void MacroEditor::removeMacro()
+{
+  for (auto& item : macroListWidget_->selectedItems())
+  {
+    qDebug() << "removing " << item->text();
+    delete item;
+  }
+}
+
 namespace
 {
   const QString defaultScript = "# Insert Python API calls here.\n"
@@ -87,7 +133,7 @@ namespace
     ;
 }
 
-void TriggeredEventsWindow::updateScriptEditor()
+void MacroEditor::updateScriptEditor()
 {
   // auto key = eventListWidget_->currentItem()->text();
   // auto scr = scripts_[key];
@@ -96,7 +142,7 @@ void TriggeredEventsWindow::updateScriptEditor()
   push();
 }
 
-void TriggeredEventsWindow::updateScripts()
+void MacroEditor::updateScripts()
 {
   // auto key = eventListWidget_->currentItem()->text();
   // auto script = scriptPlainTextEdit_->toPlainText();
@@ -116,7 +162,7 @@ void TriggeredEventsWindow::updateScripts()
 //   push();
 // }
 //
-void TriggeredEventsWindow::push()
+void MacroEditor::push()
 {
 //   auto& prefs = Core::Preferences::Instance();
 //   static std::map<QString, Core::TriggeredScriptInfo*> scriptInfos

@@ -1318,6 +1318,9 @@
    </property>
   </action>
   <action name="actionMacroEditor_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Macro Editor</string>
    </property>

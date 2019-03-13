@@ -56,9 +56,13 @@ public:
 private Q_SLOTS:
   void updateScriptEditor();
   void updateScripts();
+  void addMacro();
+  void removeMacro();
+  void assignToButton();
   //void enableStateChanged(int state);
 private:
   void push();
+  void setupAssignToAction(QAction* action, int i);
   CodeEditor* scriptPlainTextEdit_;
   //QMap<QString, QString> scripts_;
   //QMap<QString, bool> scriptEnabledFlags_;
