@@ -10,18 +10,27 @@ matrix:
       dist: trusty
       sudo: required
       compiler: clang
-#    - os: osx
-#      osx_image: xcode7.2
+    - os: osx
+      osx_image: xcode7.2
+    - os: osx
+      osx_image: xcode8.3
+    - os: osx
+      osx_image: xcode9.3
 
 before_install:
-- date -u
-- uname -a
-- sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build libqt4-dev qt4-qmake libqt4-opengl-dev
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then date -u; fi
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then uname -a; fi
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build libqt4-dev qt4-qmake libqt4-opengl-dev; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 30 brew tap cartr/qt4; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 30 brew tap-pin cartr/qt4; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 30 brew install cartr/qt4/qt; fi
 
 script:
   - cd bin
-  - cmake -GNinja -DTRAVIS_BUILD:BOOL=ON ../Superbuild
-  - travis_wait 80 ninja
+  - if [[ "${TRAVIS_OS_NAME}" = "linux" ]]; then cmake -GNinja -DTRAVIS_BUILD:BOOL=ON ../Superbuild; fi
+  - if [[ "${TRAVIS_OS_NAME}" = "osx" ]]; then cmake -DTRAVIS_BUILD:BOOL=ON ../Superbuild; fi
+  - if [[ "${TRAVIS_OS_NAME}" = "linux" ]]; then travis_wait 80 ninja; fi
+  - if [[ "${TRAVIS_OS_NAME}" = "osx" ]]; then make -j4; fi
   - cd SCIRun
   - ./Algorithm_Layer_Test
   - ./Modules_Factory_Tests --gtest_filter=*HardCodedModuleFactoryTests*
