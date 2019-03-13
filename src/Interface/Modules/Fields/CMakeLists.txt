@@ -55,6 +55,7 @@ SET(Interface_Modules_Fields_FORMS
   ConvertIndicesToFieldData.ui
   ConvertMeshToPointCloudDialog.ui
   MapFieldDataOntoNodes.ui
+  MapFieldDataOntoNodesRadialbasis.ui
   ClipFieldByFunction.ui
   GenerateSinglePointProbeFromField.ui
   GeneratePointSamplesFromFieldOrWidget.ui
@@ -74,6 +75,10 @@ SET(Interface_Modules_Fields_FORMS
   RefineTetMeshLocally.ui
   GetMeshQualityField.ui
   CleanupTetMeshDialog.ui
+  CalculateInsideWhichFieldDialog.ui
+  CalculateMeshCenterDialog.ui
+  CreateImageDialog.ui
+  GetCentroidsFromMeshDialog.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -101,6 +106,7 @@ SET(Interface_Modules_Fields_HEADERS
   GetSliceFromStructuredFieldByIndicesDialog.h
   MapFieldDataOntoElemsDialog.h
   MapFieldDataOntoNodesDialog.h
+  MapFieldDataOntoNodesRadialbasisDialog.h
   GenerateSinglePointProbeFromFieldDialog.h
   ClipFieldByFunctionDialog.h
   RefineMeshDialog.h
@@ -123,6 +129,10 @@ SET(Interface_Modules_Fields_HEADERS
   RefineTetMeshLocallyDialog.h
   GetMeshQualityFieldDialog.h
   CleanupTetMeshDialog.h
+  CalculateInsideWhichFieldDialog.h
+  CalculateMeshCenterDialog.h
+  CreateImageDialog.h
+  GetCentroidsFromMeshDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -152,6 +162,7 @@ SET(Interface_Modules_Fields_SOURCES
   CalculateDistanceToFieldBoundaryDialog.cc
   MapFieldDataOntoElemsDialog.cc
   MapFieldDataOntoNodesDialog.cc
+  MapFieldDataOntoNodesRadialbasisDialog.cc
   ClipFieldByFunctionDialog.cc
   SwapFieldDataWithMatrixEntriesDialog.cc
   RefineMeshDialog.cc
@@ -171,6 +182,10 @@ SET(Interface_Modules_Fields_SOURCES
   RefineTetMeshLocallyDialog.cc
   GetMeshQualityFieldDialog.cc
   CleanupTetMeshDialog.cc
+  CalculateInsideWhichFieldDialog.cc
+  CalculateMeshCenterDialog.cc
+  CreateImageDialog.cc
+  GetCentroidsFromMeshDialog.cc
 )
 
 IF(WITH_TETGEN)

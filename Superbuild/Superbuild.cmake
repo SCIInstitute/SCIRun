@@ -75,6 +75,10 @@ OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
 OPTION(WITH_TETGEN "Build Tetgen." OFF)
 
 ###########################################
+# Configure ospray
+OPTION(WITH_OSPRAY "Build Ospray." OFF)
+
+###########################################
 # Configure data
 OPTION(BUILD_WITH_SCIRUN_DATA "Svn checkout data" OFF)
 
@@ -92,6 +96,16 @@ ENDIF()
 OPTION(BUILD_HEADLESS "Build SCIRun without GUI." OFF)
 
 ###########################################
+# Configure Qt version
+
+SET(QT5_BUILD_DEFAULT ON)
+IF(APPLE) # Until ViewScene works...
+  SET(QT5_BUILD_DEFAULT OFF)
+ENDIF()
+OPTION(QT5_BUILD "Qt 5 compatible build" ${QT5_BUILD_DEFAULT})
+MARK_AS_ADVANCED(QT5_BUILD)
+
+###########################################
 # Travis CI build needs to be as slim as possible
 OPTION(TRAVIS_BUILD "Slim build for Travis CI" OFF)
 MARK_AS_ADVANCED(TRAVIS_BUILD)
@@ -102,27 +116,21 @@ IF(TRAVIS_BUILD)
     SET(DOWNLOAD_TOOLKITS OFF)
     SET(BUILD_WITH_SCIRUN_DATA OFF)
   ELSE()
+    SET(QT5_BUILD OFF) # need to check this one
+	  SET(BUILD_TESTING OFF)
+	  SET(DOWNLOAD_TOOLKITS OFF)
+	  SET(BUILD_WITH_SCIRUN_DATA OFF)
+
     IF(CMAKE_C_COMPILER_ID MATCHES "GNU")
-      SET(BUILD_TESTING OFF)
-      SET(DOWNLOAD_TOOLKITS OFF)
       SET(BUILD_HEADLESS ON)
       SET(BUILD_WITH_PYTHON OFF)
-      SET(BUILD_WITH_SCIRUN_DATA OFF)
     ELSE()
-      SET(BUILD_TESTING OFF)
-      SET(DOWNLOAD_TOOLKITS OFF)
-      SET(BUILD_WITH_SCIRUN_DATA OFF)
       # try building everything with clang!
     ENDIF()
   ENDIF()
 
   ADD_DEFINITIONS(-DTRAVIS_BUILD)
 ENDIF()
-
-###########################################
-# Travis CI build needs to be as slim as possible
-OPTION(QT5_BUILD "Qt 5 compatible build" OFF)
-MARK_AS_ADVANCED(QT5_BUILD)
 
 ###########################################
 # Configure Qt
@@ -143,17 +151,17 @@ IF(NOT BUILD_HEADLESS)
       MESSAGE(FATAL_ERROR "QT ${QT_MIN_VERSION} or later is required for building the SCIRun GUI")
     ENDIF()
   ELSE()
-    SET(QT_MIN_VERSION "5.9")
+    SET(QT_MIN_VERSION "5.12")
 
     SET(Qt5_PATH "" CACHE PATH "Path to directory where Qt 5 is installed. Directory should contain lib and bin subdirectories.")
 
     IF(IS_DIRECTORY ${Qt5_PATH})
-      FIND_PACKAGE(Qt5Core REQUIRED HINTS ${Qt5_PATH})
-      FIND_PACKAGE(Qt5Gui REQUIRED HINTS ${Qt5_PATH})
-  	  FIND_PACKAGE(Qt5Widgets REQUIRED HINTS ${Qt5_PATH})
-  	  FIND_PACKAGE(Qt5Network REQUIRED HINTS ${Qt5_PATH})
-      FIND_PACKAGE(Qt5OpenGL REQUIRED HINTS ${Qt5_PATH})
-  	  FIND_PACKAGE(Qt5Concurrent REQUIRED HINTS ${Qt5_PATH})
+      FIND_PACKAGE(Qt5Core ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
+      FIND_PACKAGE(Qt5Gui ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
+  	  FIND_PACKAGE(Qt5Widgets ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
+  	  FIND_PACKAGE(Qt5Network ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
+      FIND_PACKAGE(Qt5OpenGL ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
+  	  FIND_PACKAGE(Qt5Concurrent ${QT_MIN_VERSION} REQUIRED HINTS ${Qt5_PATH})
     ELSE()
       MESSAGE(SEND_ERROR "Set Qt5_PATH to directory where Qt 5 is installed (containing lib and bin subdirectories) or set BUILD_HEADLESS to ON.")
     ENDIF()
@@ -232,6 +240,13 @@ IF(WITH_TETGEN)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TetgenExternal.cmake Tetgen_external )
 ENDIF()
 
+IF(WITH_OSPRAY)
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/TbbExternal.cmake Tbb_external )
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/EmbreeExternal.cmake Embree_external )
+  ADD_EXTERNAL( ${SUPERBUILD_DIR}/IspcExternal.cmake Ispc_external )
+  #ADD_EXTERNAL( ${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external )
+ENDIF()
+
 IF(NOT BUILD_HEADLESS)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/QwtExternal.cmake Qwt_external )
 ENDIF()
@@ -258,7 +273,11 @@ SET(SCIRUN_CACHE_ARGS
     "-DBUILD_HEADLESS:BOOL=${BUILD_HEADLESS}"
     "-DSCIRUN_TEST_RESOURCE_DIR:PATH=${SCIRUN_TEST_RESOURCE_DIR}"
     "-DBUILD_WITH_PYTHON:BOOL=${BUILD_WITH_PYTHON}"
+    "-DUSER_PYTHON_VERSION:STRING=${USER_PYTHON_VERSION}"
+    "-DUSER_PYTHON_VERSION_MAJOR:STRING=${USER_PYTHON_VERSION_MAJOR}"
+    "-DUSER_PYTHON_VERSION_MINOR:STRING=${USER_PYTHON_VERSION_MINOR}"
     "-DWITH_TETGEN:BOOL=${WITH_TETGEN}"
+    "-DWITH_OSPRAY:BOOL=${WITH_OSPRAY}"
     "-DQT5_BUILD:BOOL=${QT5_BUILD}"
     "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=${REGENERATE_MODULE_FACTORY_CODE}"
     "-DGENERATE_MODULE_FACTORY_CODE:BOOL=${GENERATE_MODULE_FACTORY_CODE}"
@@ -267,7 +286,6 @@ SET(SCIRUN_CACHE_ARGS
     "-DSQLite_DIR:PATH=${SQLite_DIR}"
     "-DBoost_DIR:PATH=${Boost_DIR}"
     "-DTeem_DIR:PATH=${Teem_DIR}"
-    "-DTetgen_DIR:PATH=${Tetgen_DIR}"
     "-DFreetype_DIR:PATH=${Freetype_DIR}"
 	  "-DGLM_DIR:PATH=${GLM_DIR}"
     "-DSPDLOG_DIR:PATH=${SPDLOG_DIR}"
@@ -288,6 +306,14 @@ ENDIF()
 IF(WITH_TETGEN)
   LIST(APPEND SCIRUN_CACHE_ARGS
     "-DTetgen_DIR:PATH=${Tetgen_DIR}"
+  )
+ENDIF()
+
+IF(WITH_OSPRAY)
+  LIST(APPEND SCIRUN_CACHE_ARGS
+    "-Dembree_DIR:PATH=${Embree_DIR}"
+    "-DTBB_ROOT:PATH=${Tbb_DIR}"
+    "-DIspc_DIR:PATH=${Ispc_DIR}"
   )
 ENDIF()
 

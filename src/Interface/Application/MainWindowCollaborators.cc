@@ -283,7 +283,8 @@ public:
     manhattanLabel_->setPixmap(QPixmap(":/general/Resources/manhattanPipe.png"));
     euclideanLabel_->setPixmap(QPixmap(":/general/Resources/euclideanPipe.png"));
     cubicLabel_->setPixmap(QPixmap(":/general/Resources/cubicPipe.png"));
-    registerField("connectionChoice*", connectionComboBox_);
+    registerField("connectionChoice", connectionComboBox_);
+    SCIRunMainWindow::Instance()->setConnectionPipelineType(0);
     connect(connectionComboBox_, SIGNAL(currentIndexChanged(int)), SCIRunMainWindow::Instance(), SLOT(setConnectionPipelineType(int)));
   }
 };
@@ -353,6 +354,14 @@ size_t NetworkStatusImpl::unexecuted() const
 
 size_t NetworkStatusImpl::countState(ModuleExecutionState::Value val) const
 {
+  if (!ned_)
+  {
+    return 0;
+  }
+  if (!ned_->getNetworkEditorController())
+  {
+    return 0;
+  }
   auto allStates = ned_->getNetworkEditorController()->moduleExecutionStates();
   return std::count(allStates.begin(), allStates.end(), val);
 }
@@ -427,12 +436,17 @@ int DockManager::usedSpace() const
 QString SCIRun::Gui::networkBackgroundImage()
 {
   auto date = QDate::currentDate();
-  if (12 == date.month() && 20 < date.day() && date.day() < 28)
+  if (12 == date.month() && 23 < date.day() && date.day() < 27)
     return ":/general/Resources/ski.png";
-  if (11 == date.month() && 20 < date.day() && date.day() < 31)
+  if (11 == date.month() && 21 < date.day() && date.day() < 29 && 4==date.dayOfWeek())
     return ":/general/Resources/turkey.png";
   if (10 == date.month() && 31 == date.day())
     return ":/general/Resources/pumpkin.png";
+  return standardNetworkBackgroundImage();
+}
+
+QString SCIRun::Gui::standardNetworkBackgroundImage()
+{
   return ":/general/Resources/SCIgrid-small.png";
 }
 

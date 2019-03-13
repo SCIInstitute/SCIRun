@@ -99,7 +99,7 @@ void
 LegacyNetworkIO::gui_pop_subnet_ctx(const std::string& ctx)
 {
   std::string cmmd = "set Subnet(Loading) " + ctx;
-  simpleLog_ << "TCLInterface::eval " << cmmd << std::endl;
+  //simpleLog_ << "TCLInterface::eval " << cmmd << std::endl;
 #if 0
   --sn_ctx_;
   netid_to_modid_.pop();
@@ -163,6 +163,16 @@ const std::string &y)
     nextId = *std::max_element(existingIdsWithThisModuleName.begin(), existingIdsWithThisModuleName.end()) + 1;
   moduleIdMap_[mod_id] = ModuleId(cmodule, nextId);
 
+  if (!modFactory_.moduleImplementationExists(cmodule))
+  {
+    simpleLog_ << "ERROR: module not implemented: " << cmodule << std::endl;
+    simpleLog_ << "\t~~~ File an issue at github.com/SCIInstitute/SCIRun for conversion (if not already created, please search first). ~~~" << std::endl;
+
+    std::ostringstream ostr;
+    ostr << "Error: Undefined module \"" << cmodule << "\"";
+    THROW_INVALID_ARGUMENT(ostr.str());
+  }
+
   ModuleLookupInfoXML& mod = xmlData_->network.modules[moduleIdMap_[mod_id]].module;
   mod.package_name_ = cpackage;
   mod.category_name_ = ccategory;
@@ -179,7 +189,14 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
   {
     {"MapFieldDataOntoElems", "MapFieldDataOntoElements"},
     {"GetColumnOrRowFromMatrix", "GetMatrixSlice"},
-    {"CreateStandardColorMaps", "CreateStandardColorMap"}
+    {"CreateStandardColorMaps", "CreateStandardColorMap"},
+    { "EvaluateLinAlgBinary", "EvaluateLinearAlgebraBinary" },
+    { "EvaluateLinAlgUnary", "EvaluateLinearAlgebraUnary" },
+    { "ExtractIsosurface", "ExtractSimpleIsosurface" }, //TODO: needs rename after issue
+    { "CalculateFieldData2", "CalculateFieldData" },
+    { "CalculateFieldData3", "CalculateFieldData" },
+    { "CalculateFieldData4", "CalculateFieldData" },
+    { "CalculateFieldData5", "CalculateFieldData" }
   };
 
 std::string LegacyNetworkIO::checkForModuleRename(const std::string& originalName)
@@ -198,6 +215,11 @@ LegacyNetworkIO::createConnectionNew(const std::string& from, const std::string&
   auto toId = moduleIdMap_[to];
 
   if (!xmlData_)
+    return;
+
+  if (!modFactory_.moduleImplementationExists(fromId.name_))
+    return;
+  if (!modFactory_.moduleImplementationExists(toId.name_))
     return;
 
   try
@@ -459,7 +481,7 @@ void
 LegacyNetworkIO::gui_set_variable(const std::string &var, const std::string &val)
 {
   std::string cmd = "set " + var +  " " + val;
-  simpleLog_ << "TCLInterface::eval " << cmd << std::endl;
+  //simpleLog_ << "TCLInterface::eval " << cmd << std::endl;
 }
 
 void
@@ -467,7 +489,7 @@ LegacyNetworkIO::gui_open_module_gui(const std::string &mod_id)
 {
   std::string mod = get_mod_id(mod_id);
   std::string cmmd = mod + " initialize_ui";
-  simpleLog_ << "TCLInterface::eval " << cmmd << std::endl;
+  //simpleLog_ << "TCLInterface::eval " << cmmd << std::endl;
 }
 
 void
@@ -934,25 +956,24 @@ LegacyNetworkIO::process_network_node(xmlNode* network_node)
       }
 
       xmlNode* enode = node->children;
-      for (; enode != 0; enode = enode->next) {
-
-        if (enode->type == XML_ELEMENT_NODE &&
-          std::string(to_char_ptr(enode->name)) == std::string("environment"))
+      for (; enode != 0; enode = enode->next) 
+      {
+        auto name = std::string(to_char_ptr(enode->name));
+        if (enode->type == XML_ELEMENT_NODE && name == "environment")
         {
           process_environment(enode);
-        } else if (enode->type == XML_ELEMENT_NODE &&
-          std::string(to_char_ptr(enode->name)) == std::string("modules"))
+        } 
+        else if (enode->type == XML_ELEMENT_NODE && name == "modules")
         {
           process_modules_pass1(enode);
-        } else if (enode->type == XML_ELEMENT_NODE &&
-          std::string(to_char_ptr(enode->name)) == std::string("connections"))
+        } 
+        else if (enode->type == XML_ELEMENT_NODE && name == "connections")
         {
           process_connections(enode);
-        } else if (enode->type == XML_ELEMENT_NODE &&
-          std::string(to_char_ptr(enode->name)) == std::string("note"))
+        } 
+        else if (enode->type == XML_ELEMENT_NODE && name == "note")
         {
-          gui_set_variable(std::string("notes"),
-            std::string(to_char_ptr(enode->children->content)));
+          gui_set_variable(std::string("notes"), std::string(to_char_ptr(enode->children->content)));
         }
       }
     }

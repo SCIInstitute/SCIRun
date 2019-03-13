@@ -102,7 +102,11 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   MeshData/GetMeshQualityFieldAlgo.h
   Cleanup/RemoveUnusedNodes.h
   Cleanup/CleanupTetMesh.h
-)
+  DistanceField/CalculateInsideWhichFieldAlgorithm.h
+  Cleanup/ReorderNormalCoherentlyAlgo.h
+  MeshDerivatives/CalculateMeshCenterAlgo.h
+  MeshDerivatives/GetCentroids.h
+  )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
   RegisterWithCorrespondences.cc
@@ -123,10 +127,10 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #CompareFields/CompareFields.cc
   #CompareFields/SimilarMeshes.cc
   #CreateMesh/CreateMeshFromNrrd.cc
-
+  
   DistanceField/CalculateDistanceField.cc
   DistanceField/CalculateIsInsideField.cc
-  #DistanceField/CalculateInsideWhichField.cc
+  DistanceField/CalculateInsideWhichFieldAlgorithm.cc
   DistanceField/CalculateSignedDistanceField.cc
   DomainFields/GetDomainBoundaryAlgo.cc
   #DomainFields/GetDomainStructure.cc
@@ -185,8 +189,8 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #MeshData/GetSurfaceElemNormals.cc
   MeshData/GetMeshQualityFieldAlgo.cc
   #MeshDerivatives/CalculateMeshConnector.cc
-  #MeshDerivatives/CalculateMeshCenter.cc
-  #MeshDerivatives/GetCentroids.cc
+  MeshDerivatives/CalculateMeshCenterAlgo.cc
+  MeshDerivatives/GetCentroids.cc
   MeshDerivatives/GetFieldBoundaryAlgo.cc
   #MeshDerivatives/GetBoundingBox.cc
   MeshDerivatives/SplitByConnectedRegion.cc
@@ -213,6 +217,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #TransformMesh/PolarProjectionTools.cc
   #TransformMesh/GeneratePolarProjectionImage.cc
   #TracePoints/TracePoints.cc
+  Cleanup/ReorderNormalCoherentlyAlgo.cc
 )
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_Legacy_Fields

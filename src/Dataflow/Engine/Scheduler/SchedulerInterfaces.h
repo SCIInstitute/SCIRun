@@ -118,7 +118,7 @@ namespace Engine {
     catch (NetworkHasCyclesException&)
     {
       /// @todo: use real logger here--or just let this exception bubble up--needs testing.
-      SCIRun::Core::Logging::GeneralLog::Instance().get()->error("Cannot schedule execution: network has cycles. Please break all cycles and try again.");
+      logError("Cannot schedule execution: network has cycles. Please break all cycles and try again.");
       context.bounds().executeFinishes_(-1);
       return;
     }

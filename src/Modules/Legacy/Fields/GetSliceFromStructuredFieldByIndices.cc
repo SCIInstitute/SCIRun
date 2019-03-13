@@ -131,8 +131,8 @@ void GetSliceFromStructuredFieldByIndices::execute()
     if (state->getValue(Dim_i).toInt() != static_cast<int>(dims[0] - offset))
     {
       state->setValue(Dim_i, static_cast<int>(dims[0] - offset));
-      }
     }
+  }
 
   if (dims.size() >= 2)
   {
@@ -400,7 +400,7 @@ void GetSliceFromStructuredFieldByIndices::execute()
 
       /// Index based on the old mesh so that we are assured of getting the last
       /// node even if it forms a "partial" elem.
-      for (k = k_start; k<k_stop_stride; k += k_stride)
+      for (k = k_start; k < k_stop_stride; k += k_stride)
       {
 
         /// Check for going past the stop.
@@ -424,7 +424,7 @@ void GetSliceFromStructuredFieldByIndices::execute()
         knodeIdx = knode*jdim_in*idim_in;
         kelemIdx = knode*(jdim_in - 1)*(idim_in - 1);
 
-        for (j = j_start; j<j_stop_stride; j += j_stride)
+        for (j = j_start; j < j_stop_stride; j += j_stride)
         {
 
           /// Check for going past the stop.
@@ -473,23 +473,23 @@ void GetSliceFromStructuredFieldByIndices::execute()
 
             switch (ifield->basis_order())
             {
-            case 0:
+              case 0:
 
-              if (i + i_stride < i_stop_stride &&
-                j + j_stride < j_stop_stride &&
-                k + k_stride < k_stop_stride)
-              {
-                ofield->copy_value(ifield, ielemIdx, oelemIdx);
-                oelemIdx++;
-              }
-              break;
+                if (i + i_stride < i_stop_stride &&
+                  j + j_stride < j_stop_stride &&
+                  k + k_stride < k_stop_stride)
+                {
+                  ofield->copy_value(ifield, ielemIdx, oelemIdx);
+                  oelemIdx++;
+                }
+                break;
 
-            case 1:
-              ofield->copy_value(ifield, inodeIdx, onodeIdx);
-              break;
+              case 1:
+                ofield->copy_value(ifield, inodeIdx, onodeIdx);
+                break;
 
-            default:
-              break;
+              default:
+                break;
             }
 
             onodeIdx++;
@@ -788,4 +788,4 @@ void GetSliceFromStructuredFieldByIndices::execute()
       sendOutput(OutputMatrix, selected);
     }
   }
-  }
+}

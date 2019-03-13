@@ -37,6 +37,9 @@ void ModuleDialogWithParserHelp::popUpParserHelp()
     help_ = new ParserHelpDialog(this);
 
   help_->show();
+  help_->activateWindow();
+  help_->raise();
+  help_->move(10,10);
 }
 
 void ModuleDialogWithParserHelp::connectParserHelpButton(QPushButton* button)

@@ -68,10 +68,12 @@ class ModuleLogger : public QObject, public Core::Logging::LegacyLoggerInterface
 public:
   explicit ModuleLogger(ModuleLogWindow* window);
   ~ModuleLogger();
-  virtual void error(const std::string& msg) const;
-  virtual void warning(const std::string& msg) const;
-  virtual void remark(const std::string& msg) const;
-  virtual void status(const std::string& msg) const;
+  virtual void error(const std::string& msg) const override;
+  virtual void warning(const std::string& msg) const override;
+  virtual void remark(const std::string& msg) const override;
+  virtual void status(const std::string& msg) const override;
+  virtual bool errorReported() const override { return errorReported_; }
+  virtual void setErrorFlag(bool flag) override { errorReported_ = flag; }
 
 Q_SIGNALS:
   void logSignal(const QString& message, const QColor& color) const;
@@ -79,6 +81,7 @@ Q_SIGNALS:
   void popup(const QString& message) const;
 private:
   std::string moduleName_;
+  mutable bool errorReported_{ false };
 };
 
 }

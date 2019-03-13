@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -28,6 +27,7 @@
 
 #include <Interface/Modules/Fields/CalculateFieldDataDialog.h>
 #include <Modules/Legacy/Fields/CalculateFieldData5.h>
+#include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -42,7 +42,12 @@ CalculateFieldDataDialog::CalculateFieldDataDialog(const std::string& name, Modu
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addTextEditManager(expressionTextEdit_, CalculateFieldDataModule::FunctionString);
   addComboBoxManager(outputTypeComboBox_, CalculateFieldDataModule::FormatString);
   connectParserHelpButton(parserHelpButton_);
+
+  {
+    codeEdit_ = new CodeEditor(this);
+    qobject_cast<QVBoxLayout*>(expressionGroupBox_->layout())->insertWidget(0, codeEdit_);
+    addPlainTextEditManager(codeEdit_, CalculateFieldDataModule::FunctionString);
+  }
 }

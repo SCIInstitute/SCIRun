@@ -71,7 +71,7 @@ void NetworkEditorControllerGuiProxy::addModule(const std::string& moduleName)
   }
   catch (SCIRun::Core::InvalidArgumentException& e)
   {
-    GeneralLog::Instance().get()->error("CAUGHT EXCEPTION: {}", e.what());
+    logError("CAUGHT EXCEPTION: {}", e.what());
   }
 }
 
@@ -172,5 +172,9 @@ void NetworkEditorControllerGuiProxy::cleanUpNetwork()
 
 std::vector<ModuleExecutionState::Value> NetworkEditorControllerGuiProxy::moduleExecutionStates() const
 {
+  if (!controller_)
+  {
+    return {};
+  }
   return controller_->moduleExecutionStates();
 }

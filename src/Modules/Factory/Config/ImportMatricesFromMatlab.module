@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "ImportMatricesFromMatlab",
+    "namespace": "Matlab",
+    "status": "Ported module",
+    "description": "TODO",
+    "header": "Modules/Legacy/Matlab/DataIO/ImportMatricesFromMatlab.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+  },
+  "UI": {
+    "name": "ImportMatricesFromMatlabDialog",
+    "header": "Interface/Modules/Matlab/ImportMatricesFromMatlabDialog.h"
+  }
+}

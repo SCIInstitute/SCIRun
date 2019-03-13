@@ -36,6 +36,7 @@
 namespace SCIRun 
 {
   SCISHARE Core::Datatypes::MatrixHandle EcgsimFileMatrix_reader(Core::Logging::LoggerHandle pr, const char *filename);
+  SCISHARE Core::Datatypes::MatrixHandle EcgsimBinaryFileMatrix_reader(Core::Logging::LoggerHandle pr, const char *filename);
 
   SCISHARE bool EcgsimFileMatrix_writer(Core::Logging::LoggerHandle pr, Core::Datatypes::MatrixHandle fh, const char* filename);
 }

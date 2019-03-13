@@ -74,6 +74,7 @@ SET(Modules_Legacy_Fields_HEADERS
   MapFieldDataOntoElems.h
   MapFieldDataOntoNodes.h
   MapFieldDataFromSourceToDestination.h
+  MapFieldDataOntoNodesRadialbasis.h
   ReportFieldGeometryMeasures.h
   FlipSurfaceNormals.h
   SwapFieldDataWithMatrixEntries.h
@@ -88,6 +89,11 @@ SET(Modules_Legacy_Fields_HEADERS
   GetMeshQualityField.h
   RemoveUnusedNodes.h
   CleanupTetMesh.h
+  CalculateInsideWhichField.h
+  ReorderNormalCoherently.h
+  CalculateMeshCenter.h
+  CreateImage.h
+  GetCentroidsFromMesh.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -97,7 +103,7 @@ SET(Modules_Legacy_Fields_SRCS
   #PadRegularMesh.cc
   ResampleRegularMesh.cc
   #CalculateMeshConnector.cc
-  #CalculateMeshCenter.cc
+  CalculateMeshCenter.cc
   #GetDomainStructure.cc
   RegisterWithCorrespondences.cc
   #SmoothVecFieldMedian.cc
@@ -116,7 +122,7 @@ SET(Modules_Legacy_Fields_SRCS
   #CalculateNodeNormals.cc
   BuildMappingMatrix.cc
   BuildMatrixOfSurfaceNormals.cc
-  #GetCentroidsFromMesh.cc
+  GetCentroidsFromMesh.cc
   #ConvertMeshCoordinateSystem.cc
   ConvertFieldBasis.cc
   ConvertFieldDataType.cc
@@ -160,7 +166,7 @@ SET(Modules_Legacy_Fields_SRCS
   GenerateSinglePointProbeFromField.cc
   GeneratePointSamplesFromFieldOrWidget.cc
   CreateLatVol.cc
-  #CreateImage.cc
+  CreateImage.cc
   #CreateStructHex.cc
   #ReportScalarFieldStats.cc
   GeneratePointSamplesFromField.cc
@@ -180,14 +186,14 @@ SET(Modules_Legacy_Fields_SRCS
   CalculateDistanceToFieldBoundary.cc
   CalculateSignedDistanceToField.cc
   #CalculateIsInsideField.cc
-  #CalculateInsideWhichField.cc
+  CalculateInsideWhichField.cc
   ConvertIndicesToFieldData.cc
   CreateFieldData.cc
   GetFieldData.cc
   SetFieldData.cc
   GetFieldNodes.cc
   SetFieldNodes.cc
-  #MapFieldDataOntoNodesRadialbasis.cc
+  MapFieldDataOntoNodesRadialbasis.cc
   #SelectAndSetFieldData.cc
   #SelectAndSetFieldData3.cc
   #SplitNodesByDomain.cc
@@ -199,6 +205,7 @@ SET(Modules_Legacy_Fields_SRCS
   MapFieldDataFromElemToNode.cc
   MapFieldDataFromNodeToElem.cc
   ExtractSimpleIsosurface.cc
+  ReorderNormalCoherently.cc
 )
 
 IF(WITH_TETGEN)

@@ -211,7 +211,8 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
 
   std::ostringstream ostr;
   XMLSerializer::save_xml(*xml, ostr, "network");
-  std::cout << ostr.str() << std::endl;
+  if (false)
+    std::cout << ostr.str() << std::endl;
 
   NetworkEditorController controller2(mf, sf, exe, nullptr, nullptr, nullptr, nullptr);
   controller2.loadNetwork(xml);
@@ -324,14 +325,16 @@ TEST(SerializeNetworkTest, FullTestWithDynamicPorts)
   size_t port = 0;
   for (const auto& show : showFields)
   {
-    std::cout << "Attempting to connect to view scene on " << port << std::endl;
+    if (false)
+      std::cout << "Attempting to connect to view scene on " << port << std::endl;
     controller.requestConnection(show->outputPorts()[0].get(), view->inputPorts()[port++].get());
   }
   EXPECT_EQ(showFields.size(), net->nconnections());
 
   auto xml = controller.saveNetwork();
 
-  std::cout << "NOW TESTING SERIALIZED COPY" << std::endl;
+  if (false)
+    std::cout << "NOW TESTING SERIALIZED COPY" << std::endl;
 
   std::ostringstream ostr;
   XMLSerializer::save_xml(*xml, ostr, "network");
@@ -417,7 +420,8 @@ TEST(ToolkitSerializationTest, Experimenting)
   std::ostringstream ostr;
   XMLSerializer::save_xml(toolkit.networks, ostr, "toolkit");
 
-  std::cout << ostr.str() << std::endl;
+  if (false)
+    std::cout << ostr.str() << std::endl;
 }
 
 #ifdef WIN32
@@ -426,7 +430,8 @@ boost::filesystem::path toolkitPath("C:\\Users\\Dan\\Downloads\\FwdInvToolkit-1.
 boost::filesystem::path toolkitPath("/Users/dwhite/Desktop/Dev/FwdInvToolkit/Networks");
 #endif
 
-TEST(ToolkitSerializationTest, CanCreateFromFolders)
+//TODO: componentize
+TEST(ToolkitSerializationTest, DISABLED_CanCreateFromFolders)
 {
   auto toolkit = makeToolkitFromDirectory(toolkitPath);
 
@@ -442,7 +447,7 @@ TEST(ToolkitSerializationTest, DISABLED_ManuallyCreate)
   makeToolkitFromDirectory("C:\\_\\SCIRun\\FwdInvToolkit_v1.2\\FwdInvToolkit-1.2.1\\Networks").save(f);
 }
 
-TEST(ToolkitSerializationTest, RoundTripFromFolders)
+TEST(ToolkitSerializationTest, DISABLED_RoundTripFromFolders)
 {
   auto toolkit = makeToolkitFromDirectory(toolkitPath);
 

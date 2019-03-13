@@ -33,6 +33,7 @@
 #include <boost/assign.hpp>
 #include <boost/assign/std/vector.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <Core/Utils/Legacy/MemoryUtil.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Interface/Application/GuiLogger.h>
@@ -179,8 +180,10 @@ bool SCIRunMainWindow::importLegacyNetworkFile(const QString& filename)
       statusBar()->showMessage(tr("File import failed: ") + filename, 2000);
     }
 		auto log = QString::fromStdString(command.logContents());
-		auto logFileName = latestNetworkDirectory_.path() + "/" + ("importLog_" + strippedName(filename) + ".log");
-		QFile logFile(logFileName); //todo: add timestamp
+    auto isoString = boost::posix_time::to_iso_string(boost::posix_time::microsec_clock::universal_time());
+    auto logFileName = QString::fromStdString(Core::Logging::LogSettings::Instance().logDirectory().string())
+      + "/" + (strippedName(filename) + "_importLog_" + QString::fromStdString(isoString) + ".log");
+		QFile logFile(logFileName);
     if (logFile.open(QFile::WriteOnly | QFile::Text))
 		{
 			QTextStream stream(&logFile);
@@ -217,12 +220,12 @@ void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 {
 #ifdef BUILD_WITH_PYTHON
   NetworkEditor::InEditingContext iec(networkEditor_);
-  GuiLogger::logInfo("RUNNING PYTHON SCRIPT: " + scriptFileName);
+  GuiLogger::logInfoQ("RUNNING PYTHON SCRIPT: " + scriptFileName);
   PythonInterpreter::Instance().importSCIRunLibrary();
   PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
   statusBar()->showMessage(tr("Script is running."), 2000);
 #else
-  GuiLogger::logInfo("Python not included in this build, cannot run " + scriptFileName);
+  GuiLogger::logInfoQ("Python not included in this build, cannot run " + scriptFileName);
 #endif
 }
 

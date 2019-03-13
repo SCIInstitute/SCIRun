@@ -56,25 +56,27 @@ inline bool equal_size(const Core::Datatypes::Matrix& m1, const Core::Datatypes:
     && m1.ncols() == m2.ncols();
 }
 
+#if BOOST_VERSION >= 106700
+namespace btt = boost::math::fpc;
+#else
+namespace btt = boost::test_tools;
+#endif
+
 #define DEFAULT_MATRIX_PERCENT_TOLERANCE 1e-5
 
 //TODO improve error reporting
 inline bool compare_with_tolerance(const Core::Datatypes::DenseMatrix& m1, const Core::Datatypes::DenseMatrix& m2, double percentTolerance = DEFAULT_MATRIX_PERCENT_TOLERANCE)
 {
-  using namespace boost::test_tools;
-  //using namespace boost::math::fpc;
   return equal_size(m1, m2) &&
     std::equal(m1.data(), m1.data() + m1.size(), m2.data(),
-    close_at_tolerance<double>(percent_tolerance(percentTolerance)));
+		btt::close_at_tolerance<double>(btt::percent_tolerance(percentTolerance)));
 }
 
 inline bool compare_with_tolerance(const Core::Datatypes::SparseRowMatrix& m1, const Core::Datatypes::SparseRowMatrix& m2, double percentTolerance = DEFAULT_MATRIX_PERCENT_TOLERANCE)
 {
-  using namespace boost::test_tools;
-  //using namespace boost::math::fpc;
   return equal_size(m1, m2) &&
     std::equal(m1.valuePtr(), m1.valuePtr() + m1.nonZeros(), m2.valuePtr(),
-    close_at_tolerance<double>(percent_tolerance(percentTolerance)));
+		btt::close_at_tolerance<double>(btt::percent_tolerance(percentTolerance)));
 }
 
 inline ::testing::AssertionResult compare_with_tolerance_readable(const Core::Datatypes::DenseMatrix& m1, const Core::Datatypes::DenseMatrix& m2, double percentTolerance, int printSize = 50)

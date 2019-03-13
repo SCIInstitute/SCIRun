@@ -205,6 +205,40 @@ class SCISHARE Bundle : public Datatype
 
 private:
 
+  template <typename OfType>
+  size_t numObjs(OfType ofType) const
+  {
+    return std::count_if(begin(), end(),
+      [ofType](const UnderlyingMapType::value_type& p) { return ofType(p.first); }
+    );
+  }
+
+  template <typename T, typename OfType>
+  std::vector<T> getObjs(OfType typedGet) const
+  {
+    std::vector<T> objs;
+    std::transform(begin(), end(), std::back_inserter(objs),
+      [typedGet](const UnderlyingMapType::value_type& p)
+      {
+        return typedGet(p.first);
+      });
+
+    objs.erase(std::remove_if(objs.begin(), objs.end(), [](const T& t) { return t == nullptr; }), objs.end());
+    return objs;
+  }
+
+  template <typename OfType>
+  std::vector<std::string> getObjNames(OfType ofType) const
+  {
+    std::vector<std::string> names;
+    for (const auto& p : bundle_)
+    {
+      if (ofType(p.first))
+        names.push_back(p.first);
+    }
+    return names;
+  }
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 

@@ -98,29 +98,17 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
 
   /////Set unused widgets to be not visible
   //Nodes Tab
-  //label_4->setVisible(false); // Sphere scale lable
-  //scaleSphereDoubleSpinBox_->setVisible(false); // Sphere scale spin box
-  //resolutionSpinBox->setVisible(false); //resolution spin box
-  //label_5->setVisible(false); //resolution label
-  //groupBox_3->setVisible(false); //Node coloring
-  //groupBox_4->setVisible(false); //Node Display Type Group Box
+  conversionRGBNodeColoringButton_->setVisible(false);
 
   //Edges Tab
-  //groupBox_7->setVisible(false);//Edge Display Type Group Box
-  //label_9->setVisible(false); //resolution label
-  //cylinder_res_spin->setVisible(false); //resolution spinbox
-  //label_8->setVisible(false); //scale label
-  //cylinder_rad_spin->setVisible(false); //cylinder scale spinbox
-  //groupBox_6->setVisible(false); //edge coloring
+  conversionRGBEdgeColoringButton_->setVisible(false);
 
   //Faces Tab
-  //groupBox_5->setVisible(false); //face coloring
-  //checkBox->setVisible(false); //Use Face Normal box
-  //checkBox_2->setVisible(false); //Images as texture box
+  conversionRGBFaceColoringButton_->setVisible(false);
+  textureCheckBox_->setVisible(false);
 
   //Text Tab
-  textOptionsFrame_->setEnabled(false);
-  textColoringGroupBox_->setEnabled(false);
+  displayOptionsTabs_->removeTab(3);
 }
 
 void ShowFieldDialog::push()

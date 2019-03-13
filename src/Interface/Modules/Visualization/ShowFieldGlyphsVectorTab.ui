@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>251</width>
-    <height>395</height>
+    <height>421</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -60,7 +60,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>224</y>
+     <y>251</y>
      <width>231</width>
      <height>111</height>
     </rect>
@@ -229,7 +229,7 @@
   </widget>
   <widget class="QCheckBox" name="normalizeVectorsCheckBox_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="geometry">
     <rect>
@@ -247,7 +247,7 @@
    </property>
    <property name="font">
     <font>
-     <strikeout>true</strikeout>
+     <strikeout>false</strikeout>
     </font>
    </property>
    <property name="text">
@@ -256,7 +256,7 @@
   </widget>
   <widget class="QCheckBox" name="bidirectionalVectorsCheckBox_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="geometry">
     <rect>
@@ -274,7 +274,7 @@
    </property>
    <property name="font">
     <font>
-     <strikeout>true</strikeout>
+     <strikeout>false</strikeout>
     </font>
    </property>
    <property name="text">
@@ -285,7 +285,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>363</y>
+     <y>390</y>
      <width>111</width>
      <height>21</height>
     </rect>
@@ -302,7 +302,7 @@
   </widget>
   <widget class="QCheckBox" name="renderVectorsBelowThresholdCheckBox_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="geometry">
     <rect>
@@ -320,7 +320,7 @@
    </property>
    <property name="font">
     <font>
-     <strikeout>true</strikeout>
+     <strikeout>false</strikeout>
     </font>
    </property>
    <property name="text">
@@ -387,7 +387,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>340</y>
+     <y>367</y>
      <width>111</width>
      <height>20</height>
     </rect>
@@ -412,7 +412,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>340</y>
+     <y>367</y>
      <width>91</width>
      <height>20</height>
     </rect>
@@ -425,7 +425,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>363</y>
+     <y>390</y>
      <width>91</width>
      <height>20</height>
     </rect>
@@ -451,6 +451,38 @@
    </property>
    <property name="value">
     <double>0.650000000000000</double>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="thresholdDoubleSpinBox_">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>220</y>
+     <width>111</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="decimals">
+    <number>4</number>
+   </property>
+   <property name="maximum">
+    <double>100.000000000000000</double>
+   </property>
+   <property name="singleStep">
+    <double>0.100000000000000</double>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>220</y>
+     <width>60</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Threshold</string>
    </property>
   </widget>
  </widget>

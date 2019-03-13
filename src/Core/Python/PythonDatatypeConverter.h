@@ -89,7 +89,7 @@ namespace SCIRun
 
       SCISHARE boost::python::dict convertFieldToPython(FieldHandle field);
       SCISHARE boost::python::list convertMatrixToPython(Datatypes::DenseMatrixHandle matrix);
-      SCISHARE boost::python::object convertMatrixToPython(Datatypes::SparseRowMatrixHandle matrix);
+      SCISHARE boost::python::dict convertMatrixToPython(Datatypes::SparseRowMatrixHandle matrix);
       SCISHARE boost::python::object convertStringToPython(Datatypes::StringHandle str);
 
       SCISHARE Algorithms::Variable convertPythonObjectToVariable(const boost::python::object& object);
@@ -123,6 +123,8 @@ namespace SCIRun
         virtual bool check() const override;
         virtual Datatypes::DatatypeHandle operator()() const override;
         virtual std::string label() const override { return "sparse matrix"; }
+      private:
+        static std::set<std::string> validKeys_;
       };
 
       class SCISHARE FieldExtractor : public DatatypePythonExtractor

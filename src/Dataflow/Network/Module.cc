@@ -191,6 +191,8 @@ namespace SCIRun
         LoggerHandle log_;
         AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
         UiToggleFunc uiToggleFunc_;
+
+        bool returnCode_{ false };
       };
     }
   }
@@ -381,14 +383,15 @@ bool Module::executeWithSignals() NOEXCEPT
   /// @todo: need separate logger per module
   //LOG_DEBUG("STARTING MODULE: " << id_.id_);
   impl_->executionState_->transitionTo(ModuleExecutionState::Executing);
-  bool returnCode = false;
+  impl_->returnCode_ = false;
   bool threadStopValue = false;
+  getLogger()->setErrorFlag(false);
 
   try
   {
     if (!executionDisabled())
       execute();
-    returnCode = true;
+    impl_->returnCode_ = true;
   }
   catch (const std::bad_alloc&)
   {
@@ -409,7 +412,8 @@ bool Module::executeWithSignals() NOEXCEPT
   catch (Core::ExceptionBase& e)
   {
     /// @todo: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
-    if (LogSettings::Instance().verbose())
+    //if (LogSettings::Instance().verbose())
+    if (!getLogger()->errorReported())
     {
       std::ostringstream ostr;
       ostr << "Caught exception: " << e.typeName() << std::endl << "Message: " << e.what() << "\n" << boost::diagnostic_information(e) << std::endl;
@@ -440,7 +444,7 @@ bool Module::executeWithSignals() NOEXCEPT
 
   std::ostringstream finished;
   finished << "MODULE " << get_id().id_ << " FINISHED " <<
-    (returnCode ? "successfully " : "with errors ") << "in " << executionTime << " seconds.";
+    (impl_->returnCode_ ? "successfully " : "with errors ") << "in " << executionTime << " seconds.";
   status(finished.str());
 #ifdef BUILD_HEADLESS //TODO: better headless logging
   if (!LogSettings::Instance().verbose())
@@ -453,7 +457,7 @@ bool Module::executeWithSignals() NOEXCEPT
   //TODO: brittle dependency on Completed with executor
   impl_->executionState_->transitionTo(ModuleExecutionState::Completed);
 
-  auto expandedEndState = returnCode ? ModuleExecutionState::Completed : ModuleExecutionState::Errored;
+  auto expandedEndState = impl_->returnCode_ ? ModuleExecutionState::Completed : ModuleExecutionState::Errored;
   impl_->executionState_->setExpandedState(expandedEndState);
 
   if (!executionDisabled())
@@ -463,7 +467,7 @@ bool Module::executeWithSignals() NOEXCEPT
   }
 
   impl_->executeEnds_(executionTime, get_id());
-  return returnCode;
+  return impl_->returnCode_;
 }
 
 ModuleStateHandle Module::get_state()
@@ -842,6 +846,8 @@ bool Module::needToExecute() const
     //Test fix for reexecute problem. Seems like it could be a race condition, but not sure.
     Guard g(needToExecuteLock.get());
     if (impl_->threadStopped_)
+      return true;
+    if (!impl_->returnCode_)
       return true;
     auto val = impl_->reexecute_->needToExecute();
     LOG_DEBUG("Module reexecute of {} returns {}", get_id().id_, val);

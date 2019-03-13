@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
 <boost_serialization signature="serialization::archive" version="12">
-<networkFile class_id="0" tracking_level="0" version="5">
+<networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>13</count>
+			<count>14</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>ImportFieldsFromMatlab:0</first>
@@ -186,7 +186,7 @@
 									<name>tolerance</name>
 									<value>
 										<which>1</which>
-										<value>9.99999999999999955e-07</value>
+										<value>9.99999999999999950e-007</value>
 									</value>
 								</second>
 							</item>
@@ -339,6 +339,22 @@
 				</second>
 			</item>
 			<item>
+				<first>ReportStringInfo:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>String</category_name_>
+						<module_name_>ReportStringInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>ShowField:0</first>
 				<second>
 					<module>
@@ -348,7 +364,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>33</count>
+							<count>38</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -370,7 +386,7 @@
 									<name>CylinderRadius</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000006e-01</value>
+										<value>1.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -430,7 +446,7 @@
 									<name>EdgeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -455,6 +471,18 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>EdgesColoring</name>
+								</first>
+								<second>
+									<name>EdgesColoring</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -490,7 +518,7 @@
 									<name>FaceTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -503,6 +531,30 @@
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FacesColoring</name>
+								</first>
+								<second>
+									<name>FacesColoring</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FieldName</name>
+								</first>
+								<second>
+									<name>FieldName</name>
+									<value>
+										<which>2</which>
+										<value></value>
 									</value>
 								</second>
 							</item>
@@ -538,7 +590,7 @@
 									<name>NodeTransparencyValue</name>
 									<value>
 										<which>1</which>
-										<value>6.49999976158142090e-01</value>
+										<value>6.49999976158142090e-001</value>
 									</value>
 								</second>
 							</item>
@@ -550,6 +602,18 @@
 									<name>NodesAvailable</name>
 									<value>
 										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodesColoring</name>
+								</first>
+								<second>
+									<name>NodesColoring</name>
+									<value>
+										<which>0</which>
 										<value>1</value>
 									</value>
 								</second>
@@ -676,13 +740,25 @@
 							</item>
 							<item>
 								<first>
+									<name>SphereResolution</name>
+								</first>
+								<second>
+									<name>SphereResolution</name>
+									<value>
+										<which>0</which>
+										<value>5</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>SphereScaleValue</name>
 								</first>
 								<second>
 									<name>SphereScaleValue</name>
 									<value>
 										<which>1</which>
-										<value>2.99999999999999989e-02</value>
+										<value>2.99999999999999990e-002</value>
 									</value>
 								</second>
 							</item>
@@ -760,7 +836,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>30</count>
+							<count>39</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -770,7 +846,7 @@
 									<name>Ambient</name>
 									<value>
 										<which>1</which>
-										<value>2.00000000000000011e-01</value>
+										<value>2.00000000000000010e-001</value>
 									</value>
 								</second>
 							</item>
@@ -806,7 +882,7 @@
 									<name>Diffuse</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -830,7 +906,7 @@
 									<name>Emission</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -866,7 +942,7 @@
 									<name>FogEnd</name>
 									<value>
 										<which>1</which>
-										<value>7.09999999999999964e-01</value>
+										<value>7.09999999999999960e-001</value>
 									</value>
 								</second>
 							</item>
@@ -890,7 +966,103 @@
 									<name>FogStart</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>HeadLightColor</name>
+								</first>
+								<second>
+									<name>HeadLightColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(0,0,0)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>HeadLightOn</name>
+								</first>
+								<second>
+									<name>HeadLightOn</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Light1Color</name>
+								</first>
+								<second>
+									<name>Light1Color</name>
+									<value>
+										<which>2</which>
+										<value>Color(0,0,0)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Light1On</name>
+								</first>
+								<second>
+									<name>Light1On</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Light2Color</name>
+								</first>
+								<second>
+									<name>Light2Color</name>
+									<value>
+										<which>2</which>
+										<value>Color(0,0,0)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Light2On</name>
+								</first>
+								<second>
+									<name>Light2On</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Light3Color</name>
+								</first>
+								<second>
+									<name>Light3Color</name>
+									<value>
+										<which>2</which>
+										<value>Color(0,0,0)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Light3On</name>
+								</first>
+								<second>
+									<name>Light3On</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -926,7 +1098,7 @@
 									<name>PolygonOffset</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -938,7 +1110,7 @@
 									<name>ScaleBarFontSize</name>
 									<value>
 										<which>0</which>
-										<value>8</value>
+										<value>99</value>
 									</value>
 								</second>
 							</item>
@@ -950,7 +1122,7 @@
 									<name>ScaleBarHeight</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>9.99899999999999950e+001</value>
 									</value>
 								</second>
 							</item>
@@ -962,7 +1134,7 @@
 									<name>ScaleBarLength</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -974,7 +1146,7 @@
 									<name>ScaleBarLineWidth</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -986,7 +1158,7 @@
 									<name>ScaleBarMultiplier</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -998,7 +1170,7 @@
 									<name>ScaleBarNumTicks</name>
 									<value>
 										<which>0</which>
-										<value>11</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -1022,7 +1194,7 @@
 									<name>Shine</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1052,13 +1224,25 @@
 							</item>
 							<item>
 								<first>
+									<name>ShowViewer</name>
+								</first>
+								<second>
+									<name>ShowViewer</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>Specular</name>
 								</first>
 								<second>
 									<name>Specular</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000022e-01</value>
+										<value>4.00000000000000020e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1082,7 +1266,7 @@
 									<name>StereoFusion</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000022e-01</value>
+										<value>4.00000000000000020e-001</value>
 									</value>
 								</second>
 							</item>
@@ -1094,7 +1278,7 @@
 									<name>TextOffset</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>0.00000000000000000e+000</value>
 									</value>
 								</second>
 							</item>
@@ -1128,7 +1312,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>17</count>
+			<count>18</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>ImportFieldsFromMatlab:0</moduleId1_>
@@ -1275,6 +1459,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>ImportFieldsFromMatlab:0</moduleId1_>
+				<port1_>
+					<name>FilenameOut</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportStringInfo:0</moduleId2_>
+				<port2_>
+					<name>Input</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>JoinFields:0</moduleId1_>
 				<port1_>
 					<name>OutputField</name>
@@ -1337,97 +1533,104 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>13</count>
+		<count>14</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>ImportFieldsFromMatlab:0</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>4.90000000000000000e+01</first>
-				<second>1.40000000000000000e+01</second>
+				<first>4.90000000000000000e+001</first>
+				<second>1.40000000000000000e+001</second>
 			</second>
 		</item>
 		<item>
 			<first>JoinFields:0</first>
 			<second>
-				<first>1.52000000000000000e+02</first>
-				<second>5.32000000000000000e+02</second>
+				<first>1.52000000000000000e+002</first>
+				<second>5.32000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:0</first>
 			<second>
-				<first>-1.52000000000000000e+02</first>
-				<second>1.52000000000000000e+02</second>
+				<first>-1.52000000000000000e+002</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:1</first>
 			<second>
-				<first>-1.52000000000000000e+02</first>
-				<second>2.28000000000000000e+02</second>
+				<first>-1.52000000000000000e+002</first>
+				<second>2.28000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:2</first>
 			<second>
-				<first>-1.52000000000000000e+02</first>
-				<second>3.04000000000000000e+02</second>
+				<first>-1.52000000000000000e+002</first>
+				<second>3.04000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:3</first>
 			<second>
-				<first>2.28000000000000000e+02</first>
-				<second>1.52000000000000000e+02</second>
+				<first>2.28000000000000000e+002</first>
+				<second>1.52000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:4</first>
 			<second>
-				<first>2.28000000000000000e+02</first>
-				<second>2.28000000000000000e+02</second>
+				<first>2.28000000000000000e+002</first>
+				<second>2.28000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportFieldInfo:5</first>
 			<second>
-				<first>2.28000000000000000e+02</first>
-				<second>3.04000000000000000e+02</second>
+				<first>2.28000000000000000e+002</first>
+				<second>3.04000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:180</first>
 			<second>
-				<first>-5.00000000000000000e-01</first>
-				<second>9.47000000000000000e+02</second>
+				<first>-5.00000000000000000e-001</first>
+				<second>9.47000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:181</first>
 			<second>
-				<first>3.24500000000000000e+02</first>
-				<second>9.30000000000000000e+02</second>
+				<first>3.24500000000000000e+002</first>
+				<second>9.30000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:182</first>
 			<second>
-				<first>4.44500000000000000e+02</first>
-				<second>1.05000000000000000e+03</second>
+				<first>4.44500000000000000e+002</first>
+				<second>1.05000000000000000e+003</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportStringInfo:0</first>
+			<second>
+				<first>5.07000000000000000e+002</first>
+				<second>2.96000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowField:0</first>
 			<second>
-				<first>0.00000000000000000e+00</first>
-				<second>6.84000000000000000e+02</second>
+				<first>0.00000000000000000e+000</first>
+				<second>6.84000000000000000e+002</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:0</first>
 			<second>
-				<first>3.90000000000000000e+01</first>
-				<second>8.30000000000000000e+02</second>
+				<first>3.90000000000000000e+001</first>
+				<second>8.30000000000000000e+002</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -1440,7 +1643,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="20" tracking_level="0" version="0">
-		<count>13</count>
+		<count>14</count>
 		<item_version>0</item_version>
 		<item class_id="21" tracking_level="0" version="0">
 			<first>ImportFieldsFromMatlab:0</first>
@@ -1487,6 +1690,10 @@
 			<second>-1</second>
 		</item>
 		<item>
+			<first>ReportStringInfo:0</first>
+			<second>-1</second>
+		</item>
+		<item>
 			<first>ShowField:0</first>
 			<second>0</second>
 		</item>
@@ -1508,6 +1715,10 @@
 		<item_version>0</item_version>
 	</moduleTagLabels>
 	<loadTagGroups>0</loadTagGroups>
+	<subnetworks class_id="24" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</subnetworks>
 </networkFile>
 </boost_serialization>
 

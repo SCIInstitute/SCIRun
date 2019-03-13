@@ -46,6 +46,10 @@ namespace SCIRun
         virtual void warning(const std::string& msg) const override;
         virtual void remark(const std::string& msg) const override;
         virtual void status(const std::string& msg) const override;
+        virtual bool errorReported() const override { return errorReported_; }
+        virtual void setErrorFlag(bool flag) override { errorReported_ = flag; }
+      private:
+        mutable bool errorReported_{ false };
       };
 
       class SCISHARE NullLogger : public LegacyLoggerInterface
@@ -55,6 +59,8 @@ namespace SCIRun
         virtual void warning(const std::string& msg) const override {}
         virtual void remark(const std::string& msg) const override {}
         virtual void status(const std::string& msg) const override {}
+        virtual bool errorReported() const override { return false; }
+        virtual void setErrorFlag(bool flag) override {}
       };
     }
   }

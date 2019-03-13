@@ -54,6 +54,7 @@ Preferences::Preferences() :
   highlightPorts("highlightPorts", false),
   autoNotes("autoNotes", false),
   highDPIAdjustment("highDPIAdjustment", false),
+  forceGridBackground("forceGridBackground", false),
   modulesAreDockable("modulesAreDockable", true),
   networkBackgroundColor("backgroundColor", "#808080"),
   postModuleAdd("postModuleAdd"),
@@ -76,9 +77,9 @@ void Preferences::setDataDirectory(const boost::filesystem::path& path, bool run
   dataDir_ = path;
 
   if (!boost::filesystem::exists(path))
-    GeneralLog::Instance().get()->warn("Data directory {} does not exist.", path.string());
+    logWarning("Data directory {} does not exist.", path.string());
   if (!boost::filesystem::is_directory(path))
-    GeneralLog::Instance().get()->warn("Data directory {} is not a directory.", path.string());
+    logWarning("Data directory {} is not a directory.", path.string());
 
   if (dataDir_.string().back() == boost::filesystem::path::preferred_separator)
   {

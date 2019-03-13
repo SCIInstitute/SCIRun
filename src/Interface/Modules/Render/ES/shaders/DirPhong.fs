@@ -72,35 +72,32 @@ uniform vec4    uFogColor;          // fog color
 // are dealing with point lights. Since we are only dealing with directional
 // lights we light in world space.
 varying vec3    vNormal;
-varying vec4    vPos;//for clipping plane calc
-varying vec4    vFogCoord;// for fog calculation
+varying vec4    vPos;               //for clipping plane calc
+varying vec4    vFogCoord;          // for fog calculation
 
 vec4 calculate_lighting(vec3 lightDirWorld, vec3 lightColor)
 {
-  // Remember to always negate the light direction for these lighting
-  // calculations. The dot product takes on its greatest values when the angle
-  // between the two vectors diminishes.
+  // Remember to always negate the light direction for these lighting calculations.
   vec3  invLightDir = -lightDirWorld;
   vec3  normal      = normalize(vNormal);
-  float diffuse     = max(0.0, dot(normal, invLightDir));
-
+  
   // Note, the following is a hack due to legacy meshes still being supported.
   // We light the object as if it was double sided. We choose the normal based
   // on the normal that yields the largest diffuse component.
+  float diffuse     = max(0.0, dot(normal, invLightDir));
   float diffuseInv  = max(0.0, dot(-normal, invLightDir));
-
+  
   if (diffuse < diffuseInv)
   {
     diffuse = diffuseInv;
     normal = -normal;
   }
-
+  
   vec3  reflection  = reflect(invLightDir, normal);
-  float spec        = max(0.0, dot(reflection, uCamViewVec));
-
-  spec              = pow(spec, uSpecularPower);
-  return vec4(lightColor, 1.0) * vec4((diffuse * spec * uSpecularColor + 
-      diffuse * uDiffuseColor + uAmbientColor).rgb, uTransparency);
+  float specular    = max(0.0, dot(reflection, uCamViewVec));
+  specular          = pow(specular, uSpecularPower);
+  
+  return vec4(lightColor * (diffuse * uDiffuseColor.rgb + specular * uSpecularColor.rgb), 0.0);
 }
 
 void main()
@@ -149,7 +146,7 @@ void main()
       discard;
   }
 
-  gl_FragColor = vec4(0.0);
+  gl_FragColor = vec4(uAmbientColor.rgb * uDiffuseColor.rgb, uTransparency);
   if (length(uLightDirWorld0) > 0.0)
     gl_FragColor += calculate_lighting(uLightDirWorld0, uLightColor0);
   if (length(uLightDirWorld1) > 0.0)
@@ -158,8 +155,6 @@ void main()
     gl_FragColor += calculate_lighting(uLightDirWorld2, uLightColor2);
   if (length(uLightDirWorld3) > 0.0)
     gl_FragColor += calculate_lighting(uLightDirWorld3, uLightColor3);
-  if (gl_FragColor == vec4(0.0))
-    gl_FragColor = vec4(uAmbientColor.rgb, uTransparency);
 
   //calculate fog
   if (uFogSettings.x > 0.0)

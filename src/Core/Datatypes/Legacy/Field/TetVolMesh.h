@@ -3722,7 +3722,7 @@ TetVolMesh<Basis>::get_weights(const Core::Geometry::Point &p, typename Node::ar
 
 template <class Basis>
 void
-TetVolMesh<Basis>::insert_elem_into_grid(typename Cell::index_type ci)
+TetVolMesh<Basis>::insert_elem_into_grid(typename Elem::index_type ci)
 {
   /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
@@ -3740,7 +3740,7 @@ TetVolMesh<Basis>::insert_elem_into_grid(typename Cell::index_type ci)
 
 template <class Basis>
 void
-TetVolMesh<Basis>::remove_elem_from_grid(typename Cell::index_type ci)
+TetVolMesh<Basis>::remove_elem_from_grid(typename Elem::index_type ci)
 {
   const index_type idx = ci*4;
   Core::Geometry::BBox box;
