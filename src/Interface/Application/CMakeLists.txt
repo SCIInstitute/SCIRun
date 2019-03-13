@@ -64,6 +64,7 @@ SET(Interface_Application_SOURCES
   ModuleWizard/ModuleWizard.cc
   TriggeredEventsWindow.cc
   Subnetworks.cc
+  MacroEditor.cc
 )
 
 SET(Interface_Application_HEADERS
@@ -100,6 +101,7 @@ SET(Interface_Application_HEADERS
   Subnetworks.h
   ModuleWizard/ModuleWizard.h
   TriggeredEventsWindow.h
+  MacroEditor.h
 )
 
 SET(Interface_Application_FORMS
@@ -119,6 +121,7 @@ SET(Interface_Application_FORMS
   RenderWindow.ui
   TagManager.ui
   TriggeredEventsWindow.ui
+  MacroEditor.ui
 )
 
 SET(Interface_Application_RESOURCES
