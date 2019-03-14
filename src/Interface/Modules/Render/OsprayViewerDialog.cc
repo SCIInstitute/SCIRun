@@ -221,28 +221,26 @@ namespace
     const auto& vertex_normal = fieldData.vertex_normal;
     const auto& color = fieldData.color;
     const auto& index = fieldData.index;
+    const auto& radius = obj->radius;
+    const auto& geom_type = obj->GeomType;
     
     SCIRun::LOG_DEBUG("adding Volume");
     OSPVolume vol = ospNewVolume("shared_structured_volume");
     
-    //bounds = ospcommon::box3f(ospcommon::vec3f(0.f), 1);
+    bounds = ospcommon::box3f(ospcommon::vec3f(0.f), 1);
     
-    int numVoxels = obj->data.vertex.size();
-    OSPData voxelData = ospNewData(numVoxels, OSP_FLOAT, obj->data.vertex.data());
+    int numVoxels = obj->data.color.size();
+    OSPData voxelData = ospNewData(numVoxels, OSP_FLOAT, obj->data.color.data());
     ospSetObject(vol, "voxelData", voxelData);
     //ospRelease(voxelData);
     SCIRun::LOG_DEBUG(std::to_string(numVoxels));
     
     ospSetString(vol, "voxelType", "float");
-    ospSet3i(vol, "dimensions", 2, 2, 2);
+    ospSet3i(vol, "dimensions", 100, 100, 100);
     
-    //std::for_each(obj->data.vertex.begin(), obj->data.vertex.end(), [&](ospcommon::vec3f &v) {
-    //  bounds.extend(v);
-    //});
     std::for_each(obj->data.color.begin(), obj->data.color.end(), [&](float &v) {
       if (!std::isnan(v))
         voxelRange.extend(v);
-      
       //SCIRun::LOG_DEBUG(std::to_string(v));
     });
     return vol;
