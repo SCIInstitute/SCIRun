@@ -1,4 +1,3 @@
-#
 #  For more information, please see: http://software.sci.utah.edu
 #
 #  The MIT License
@@ -24,47 +23,20 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-#
 
-SET(Modules_Basic_SRCS
-  AsyncPortTestModule.cc
-  DynamicPortTester.cc
-  NeedToExecuteTester.cc
-  ReceiveComplexScalar.cc
-  PrintDatatype.cc
-  SendComplexScalar.cc
-  ChooseInput.cc
-  PortFeedbackTestModules.cc
-  LoggingTester.cc
+SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
+
+# TODO: test on Windows
+ExternalProject_Add(Eigen_external
+  URL "https://bitbucket.org/eigen/eigen/get/3.3.7.tar.gz"
+  PATCH_COMMAND ""
+  CONFIGURE_COMMAND ""
+  BUILD_IN_SOURCE ON
+  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
 )
 
-SET(Modules_Basic_HEADERS
-  AsyncPortTestModule.h
-  DynamicPortTester.h
-  NeedToExecuteTester.h
-  ReceiveComplexScalar.h
-  PrintDatatype.h
-  SendComplexScalar.h
-  ChooseInput.h
-  PortFeedbackTestModules.h
-  LoggingTester.h
-  share.h
-)
+ExternalProject_Get_Property(Eigen_external SOURCE_DIR)
+SET(Eigen_DIR ${SOURCE_DIR} CACHE PATH "")
 
-SCIRUN_ADD_LIBRARY(Modules_Basic
-  ${Modules_Basic_HEADERS}
-  ${Modules_Basic_SRCS}
-)
-
-TARGET_LINK_LIBRARIES(Modules_Basic
-  Core_Datatypes
-  Core_Datatypes_Legacy_Field
-  Algorithms_Field
-  Dataflow_Network
-)
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Modules_Basic)
-ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_TEST_DIR(Tests)
+MESSAGE(STATUS "Eigen_DIR: ${Eigen_DIR}")
