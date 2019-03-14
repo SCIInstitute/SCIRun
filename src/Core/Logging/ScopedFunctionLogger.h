@@ -29,7 +29,7 @@
 #ifndef CORE_LOGGING_SCOPEDFUNCTIONLOGGER_H
 #define CORE_LOGGING_SCOPEDFUNCTIONLOGGER_H
 
-#include <Core/Logging/LoggerFwd.h>
+#include <Core/Logging/Log.h>
 
 namespace SCIRun
 {
@@ -56,14 +56,34 @@ namespace SCIRun
         Logger2 logger_;
         const char* functionName_;
       };
+
+      struct ScopedFunctionLoggerGeneral
+      {
+        explicit ScopedFunctionLoggerGeneral(const char* functionName) :
+          logger_(SCIRun::Core::Logging::GeneralLog::Instance().get()),
+          functionName_(functionName)
+        {
+          if (logger_)
+            logger_->debug("Entering function: {}", functionName_);
+        }
+        ~ScopedFunctionLoggerGeneral()
+        {
+          if (logger_)
+            logger_->debug("Leaving function: {}", functionName_);
+        }
+      private:
+        Logger2 logger_;
+        const char* functionName_;
+      };
     }
   }
 }
 
 #ifndef WIN32
-#define LOG_FUNCTION_SCOPE(LogType) SCIRun::Core::Logging::ScopedFunctionLogger<LogType> sfl ## __LINE__ (LOG_FUNC);
+#define LOG_FUNCTION_SCOPE_OLD(LogType) SCIRun::Core::Logging::ScopedFunctionLogger<LogType> sfl ## __LINE__ (LOG_FUNC);
+#define LOG_FUNCTION_SCOPE SCIRun::Core::Logging::ScopedFunctionLoggerGeneral sfl ## __LINE__ (LOG_FUNC);
 #else
-#define LOG_FUNCTION_SCOPE(LogType)
+#define LOG_FUNCTION_SCOPE
 #endif
 
 #endif
