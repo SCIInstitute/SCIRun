@@ -30,6 +30,10 @@
 
 #include <Core/Logging/Log.h>
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/sinks/daily_file_sink.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
 #include <iostream>
 #include <memory>
@@ -152,8 +156,6 @@ TEST(LogWrapperTests, SpdLogExample)
 
 void async_example()
 {
-    size_t q_size = 4096; //queue size must be power of 2
-    spd::set_async_mode(q_size);
     auto async_file = spd::daily_logger_st("async_file_logger", "logs/async_log.txt");
     for (int i = 0; i < 100; ++i)
         async_file->info("Async message #{}", i);
