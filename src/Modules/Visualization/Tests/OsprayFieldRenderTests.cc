@@ -122,7 +122,7 @@ namespace osprayImpl
 
     auto facade(trisurf->mesh()->getFacade());
 
-    std::cout << "hello ospray" << std::endl;
+    std::cout << "hello ospray test" << std::endl;
     // image size
     osp::vec2i imgSize;
     imgSize.x = 1024; // width

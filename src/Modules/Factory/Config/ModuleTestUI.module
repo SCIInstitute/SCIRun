@@ -1,0 +1,17 @@
+{
+"module": {
+    "name": "ModuleTestUI",
+    "namespace": "StringManip",
+    "status": "new module",
+    "description": "This is a simple module to show how to make new modules.",
+    "header": "Modules/String/ModuleTestUI.h"
+  },
+  "algorithm": {
+    "name": "N/A",
+    "namespace": "N/A",
+    "header": "N/A"
+}, "UI": {
+    "name": "ModuleTestUIDialog",
+    "header": "Interface/Modules/String/ModuleTestUIDialog.h"
+  }
+}

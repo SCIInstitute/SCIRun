@@ -34,6 +34,7 @@ SET(Interface_Modules_String_FORMS
   PrintMatrixIntoStringDialog.ui
   PrintStringIntoStringDialog.ui
   ReportStringInfo.ui
+  ModuleTestUIDialog.ui
 )
 
 SET(Interface_Modules_String_HEADERS
@@ -44,6 +45,7 @@ SET(Interface_Modules_String_HEADERS
   PrintMatrixIntoStringDialog.h
   PrintStringIntoStringDialog.h
   ReportStringInfoDialog.h
+ModuleTestUIDialog.h
 )
 
 SET(Interface_Modules_String_SOURCES
@@ -53,6 +55,7 @@ SET(Interface_Modules_String_SOURCES
   PrintMatrixIntoStringDialog.cc
   PrintStringIntoStringDialog.cc
   ReportStringInfoDialog.cc
+ModuleTestUIDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_String_FORMS_HEADERS "${Interface_Modules_String_FORMS}")

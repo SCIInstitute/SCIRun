@@ -310,11 +310,47 @@ std::vector<int32_t> OsprayDataAlgorithm::sort_points(EdgeVector edges, std::vec
 
 }
 
-OsprayGeometryObjectHandle OsprayDataAlgorithm::addSurface(FieldHandle field, ColorMapHandle colorMap) const
+OsprayGeometryObjectHandle OsprayDataAlgorithm::addTriSurface(FieldHandle field, ColorMapHandle colorMap) const
 {
   auto obj = fillDataBuffers(field, colorMap);
   obj->isSurface = true;
-  obj->GeomType="Surface";
+  obj->GeomType="TriSurface";
+  return obj;
+}
+
+OsprayGeometryObjectHandle OsprayDataAlgorithm::addQuadSurface(FieldHandle field, ColorMapHandle colorMap) const
+{
+    auto obj = fillDataBuffers(field, colorMap);
+    obj->isSurface = true;
+    obj->GeomType="QuadSurface";
+    return obj;
+}
+
+OsprayGeometryObjectHandle OsprayDataAlgorithm::addVol(FieldHandle field, ColorMapHandle colorMap) const
+{
+  auto obj = makeObject(field);
+  obj->isVolume = true;
+  obj->GeomType="Volume";
+  
+  auto& fieldData = obj->data;
+  
+  auto facade(field->mesh()->getFacade());
+  std::vector<float> voxels;
+  auto vfield = field->vfield();
+  double value;
+  
+  for (const auto& node : facade->nodes())
+  {
+    auto point = node.point();
+    if (vfield->num_values() > 0)
+    {
+      vfield->get_value(value, node.index());
+      voxels.push_back(value);
+    }
+    
+  }
+  fieldData.color = voxels;
+  
   return obj;
 }
 
@@ -421,19 +457,28 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle fiel
     }
   }
 
+    FieldInformation info(field);
+    
+    
   auto& index = fieldData.index;
   {
     for (const auto& face : facade->faces())
     {
       auto nodes = face.nodeIndices();
-      index.push_back(static_cast<int32_t>(nodes[0]));
-      index.push_back(static_cast<int32_t>(nodes[1]));
-      index.push_back(static_cast<int32_t>(nodes[2]));
+      if(info.is_quadsurfmesh()){
+        index.push_back(static_cast<int32_t>(nodes[3]));
+        index.push_back(static_cast<int32_t>(nodes[2]));
+        index.push_back(static_cast<int32_t>(nodes[1]));
+        index.push_back(static_cast<int32_t>(nodes[0]));
+      }else{
+        index.push_back(static_cast<int32_t>(nodes[0]));
+        index.push_back(static_cast<int32_t>(nodes[1]));
+        index.push_back(static_cast<int32_t>(nodes[2]));
+      }
     }
   }
 
-  FieldInformation info(field);
-  if (get(Parameters::UseNormals).toBool() && info.is_trisurfmesh())
+  if (get(Parameters::UseNormals).toBool() && info.is_surface())
   {
     auto mesh = field->vmesh();
     mesh->synchronize(Mesh::NORMALS_E);
@@ -481,8 +526,18 @@ AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
     }
     else
     {
-      renderable = addSurface(field, colorMap);
+      renderable = addTriSurface(field, colorMap);
     }
+  }
+  else if (info.is_quadsurfmesh()){
+      renderable = addQuadSurface(field, colorMap);
+      //THROW_ALGORITHM_INPUT_ERROR("field type quad.");
+  }
+  else if (info.is_volume())
+  {
+    if(info.is_latvol())
+    renderable = addVol(field, colorMap);
+    //THROW_ALGORITHM_INPUT_ERROR("field type vol.");
   }
   else if (info.is_pointcloudmesh())
   {

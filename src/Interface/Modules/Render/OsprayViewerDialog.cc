@@ -36,6 +36,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Logging/Log.h>
 #include <boost/algorithm/string/predicate.hpp>
 
+
 #ifdef WITH_OSPRAY
 #include <Interface/Modules/Render/Ospray/VolumeViewer.h>
 #endif
@@ -113,9 +114,9 @@ namespace
     SCIRun::LOG_DEBUG("geom_type");
 
     // create and setup model and mesh
-    if (boost::iequals(geom_type, "Surface"))
+    if (boost::iequals(geom_type, "TriSurface"))
     {
-      SCIRun::LOG_DEBUG("adding surface");
+      SCIRun::LOG_DEBUG("adding TriSurface");
       OSPGeometry mesh = ospNewGeometry("triangles");
       OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
       ospCommit(data);
@@ -133,6 +134,37 @@ namespace
         ospSetData(mesh, "vertex.normal", data);
       }
       return mesh;
+    }
+    else if (boost::iequals(geom_type, "QuadSurface"))
+    {
+        SCIRun::LOG_DEBUG("adding QuadSurface");
+        OSPGeometry mesh = ospNewGeometry("quads");
+        OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
+        ospCommit(data);
+        ospSetData(mesh, "vertex", data);
+        data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
+        ospCommit(data);
+        ospSetData(mesh, "vertex.color", data);
+        data = ospNewData(index.size() / 4, OSP_INT4, &index[0]);
+        ospCommit(data);
+        
+        ospSetData(mesh, "index", data);
+        data = ospNewData(vertex_normal.size() / 4, OSP_FLOAT3A, &vertex_normal[0]);
+        ospCommit(data);
+        ospSetData(mesh, "vertex.normal", data);
+        SCIRun::LOG_DEBUG("finish adding QuadSurface");
+        return mesh;
+    }else if (boost::iequals(geom_type, "Volume"))
+    {
+      SCIRun::LOG_DEBUG("adding Volume wrong place");
+      //OSPVolume vol = ospNewVolume("shared_structured_volume");
+      
+      /*OSPTransferFunction tfn =
+      ospTestingNewTransferFunction(test_data.voxelRange, "jet");
+      ospSetObject(test_data.volume, "transferFunction", tfn);
+      ospCommit(test_data.volume);*/
+
+      //return mesh;
     }
     else if (boost::iequals(geom_type, "Spheres"))
     {
@@ -181,6 +213,40 @@ namespace
       SCIRun::LOG_DEBUG("something went wrong.  File type not supported");
       return {};
     }
+  }
+  
+  OSPVolume duplicatedCodeFromAlgorithm_vol(OsprayGeometryObjectHandle obj, ospcommon::range1f& voxelRange, ospcommon::box3f& bounds){
+    const auto& fieldData = obj->data;
+    const auto& vertex = fieldData.vertex;
+    const auto& vertex_normal = fieldData.vertex_normal;
+    const auto& color = fieldData.color;
+    const auto& index = fieldData.index;
+    
+    SCIRun::LOG_DEBUG("adding Volume");
+    OSPVolume vol = ospNewVolume("shared_structured_volume");
+    
+    //bounds = ospcommon::box3f(ospcommon::vec3f(0.f), 1);
+    
+    int numVoxels = obj->data.vertex.size();
+    OSPData voxelData = ospNewData(numVoxels, OSP_FLOAT, obj->data.vertex.data());
+    ospSetObject(vol, "voxelData", voxelData);
+    //ospRelease(voxelData);
+    SCIRun::LOG_DEBUG(std::to_string(numVoxels));
+    
+    ospSetString(vol, "voxelType", "float");
+    ospSet3i(vol, "dimensions", 2, 2, 2);
+    
+    //std::for_each(obj->data.vertex.begin(), obj->data.vertex.end(), [&](ospcommon::vec3f &v) {
+    //  bounds.extend(v);
+    //});
+    std::for_each(obj->data.color.begin(), obj->data.color.end(), [&](float &v) {
+      if (!std::isnan(v))
+        voxelRange.extend(v);
+      
+      //SCIRun::LOG_DEBUG(std::to_string(v));
+    });
+    return vol;
+    
   }
 
   ospcommon::box3f toOsprayBox(const BBox& box)
@@ -330,13 +396,31 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
     };
 
     impl_->geoms_.clear();
-
-    for (const auto& obj : geom.objects())
-      impl_->geoms_.push_back(duplicatedCodeFromAlgorithm(obj));
-
+    
+    
+    // volumes
+    std::vector<OSPVolume> vol_list;
+    std::vector<ospcommon::range1f> voxelRange_list;
+    std::vector<ospcommon::box3f> bounds_list;
+    
+    for (const auto& obj : geom.objects()){
+      if(boost::iequals(obj->GeomType, "Volume")){
+        ospcommon::range1f r;
+        ospcommon::box3f b;
+        vol_list.push_back(duplicatedCodeFromAlgorithm_vol(obj, r, b));
+        voxelRange_list.push_back(r);
+        bounds_list.push_back(b);
+      }else
+        impl_->geoms_.push_back(duplicatedCodeFromAlgorithm(obj));
+    }
     viewer_ = new VolumeViewer(params, guiParams, { impl_->geoms_, toOsprayBox(geom.box) }, this);
 
     setupViewer(viewer_);
+    // load volume here
+    for(int i=0;i<vol_list.size();i++){
+      viewer_->loadVolume(vol_list[i], voxelRange_list[i].toVec2f(), bounds_list[i]);
+    }
+    SCIRun::LOG_DEBUG("init viewer");
 
     osprayLayout->addWidget(viewer_);
     osprayLayout->addWidget(statusBar_);
