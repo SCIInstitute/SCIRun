@@ -38,6 +38,7 @@ DEALINGS IN THE SOFTWARE.
 
 #ifdef WITH_OSPRAY
 #include <Interface/Modules/Render/Ospray/VolumeViewer.h>
+#include <ospray/version.h>
 #endif
 
 using namespace SCIRun::Gui;
@@ -69,8 +70,8 @@ namespace
 
   void setupViewer(VolumeViewer* viewer)
   {
-    float ambientLightIntensity = 0.2f;
-    float directionalLightIntensity = 1.7f;
+    float ambientLightIntensity = 0.1f;
+    float directionalLightIntensity = 1.0f;
     float directionalLightAzimuth = 80;
     float directionalLightElevation = 65;
     float samplingRate = .125f;
@@ -111,7 +112,7 @@ namespace
     const auto& geom_type = obj->GeomType;
 
     SCIRun::LOG_DEBUG("geom_type");
-    
+
     // create and setup model and mesh
     if (boost::iequals(geom_type, "Surface"))
     {
@@ -147,6 +148,19 @@ namespace
       ospSet1f(mesh, "radius", radius);
       return mesh;
     }
+    else if (boost::iequals(geom_type, "Cylinder"))
+    {
+      SCIRun::LOG_DEBUG("adding Cylinders");
+      OSPGeometry mesh = ospNewGeometry("cylinders");
+      OSPData data = ospNewData(vertex.size() / 4, OSP_FLOAT3A, &vertex[0]); // OSP_FLOAT3 format is also supported for vertex positions
+      ospCommit(data);
+      ospSetData(mesh, "cylinders", data);
+      data = ospNewData(color.size() / 4, OSP_FLOAT4, &color[0]);
+      ospCommit(data);
+      ospSetData(mesh, "color", data);
+      ospSet1f(mesh, "radius", radius);
+      return mesh;
+    }
     else if (boost::iequals(geom_type, "Streamlines"))
     {
       SCIRun::LOG_DEBUG("adding streamlines");
@@ -166,6 +180,7 @@ namespace
     else
     {
       SCIRun::LOG_DEBUG("something went wrong.  File type not supported");
+      return {};
     }
   }
 
@@ -264,6 +279,16 @@ OsprayViewerDialog::OsprayViewerDialog(const std::string& name, ModuleStateHandl
 
   statusBar_ = new QStatusBar(this);
   statusBar_->setMaximumHeight(20);
+  #ifdef WITH_OSPRAY
+  {
+    std::ostringstream ostr;
+    ostr << "Ospray version: " << OSPRAY_VERSION_MAJOR << "." <<  OSPRAY_VERSION_MINOR << "."
+      << OSPRAY_VERSION_PATCH;
+    auto versionLabel = new QLabel(QString::fromStdString(ostr.str()));
+    versionLabel->setStyleSheet("QToolTip { color: #ffffff; background - color: #2a82da; border: 1px solid white; }");
+    statusBar_->addPermanentWidget(versionLabel);
+  }
+  #endif
 }
 
 void OsprayViewerDialog::newGeometryValue()
@@ -356,6 +381,7 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
 
       connect(viewer_->getWindow(), SIGNAL(cameraChanged()), this, SLOT(setCameraWidgets()));
     }
+    setBGColor();
     setLightColor();
     viewer_->show();
   }
@@ -738,6 +764,17 @@ void OsprayViewerDialog::setLightColor()
   }
   #endif
 }
+
+void OsprayViewerDialog::setBGColor()
+{
+  #ifdef WITH_OSPRAY
+  auto colorStr = state_->getValue(Parameters::BackgroundColor).toString();
+
+  ColorRGB color(colorStr);
+  viewer_->setBackgroundColor(color.r(), color.g(), color.b());
+  #endif
+}
+
 
 void OsprayViewerDialog::pullSpecial()
 {

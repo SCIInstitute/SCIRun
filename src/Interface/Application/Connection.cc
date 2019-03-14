@@ -648,14 +648,12 @@ ConnectionInProgress* ConnectionFactory::makeConnectionInProgress(PortWidget* po
       return c;
     }
     case ConnectionDrawType::MANHATTAN:
+    default:
     {
       auto c = new ConnectionInProgressManhattan(port, getCurrentDrawer());
       activate(c);
       return c;
     }
-    default:
-      std::cerr << "Unknown connection type." << std::endl;
-      return nullptr;
   }
 }
 

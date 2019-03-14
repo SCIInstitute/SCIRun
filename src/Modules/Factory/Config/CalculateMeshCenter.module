@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "CalculateMeshCenter",
+    "namespace": "Fields",
+    "status": "new module",
+    "description": "Calculates Mesh Center",
+    "header": "Modules/Legacy/Fields/CalculateMeshCenter.h"
+  },
+  "algorithm": {
+    "name": "CalculateMeshCenterAlgo",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/MeshDerivatives/CalculateMeshCenterAlgo.h"
+  },
+  "UI": {
+    "name": "CalculateMeshCenterDialog",
+    "header": "Interface/Modules/Fields/CalculateMeshCenterDialog.h"
+  }
+}

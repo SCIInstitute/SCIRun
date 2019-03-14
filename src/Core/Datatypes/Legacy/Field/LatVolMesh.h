@@ -920,12 +920,9 @@ public:
                  const typename Cell::index_type &) const;
 
   /// get the parent element(s) of the given index
-  void get_elems(typename Elem::array_type &result,
-                 const typename Node::index_type &idx) const;
-  void get_elems(typename Elem::array_type &result,
-                 const typename Edge::index_type &idx) const;
-  void get_elems(typename Elem::array_type &result,
-                 const typename Face::index_type &idx) const;
+  void get_elems(typename Elem::array_type &result, const typename Node::index_type &idx) const;
+  void get_elems(typename Elem::array_type &result, const typename Edge::index_type &idx) const;
+  void get_elems(typename Elem::array_type &result, const typename Face::index_type &idx) const;
 
 
   /// Wrapper to get the derivative elements from this element.
@@ -1626,7 +1623,7 @@ LatVolMesh<Basis>::get_edges(typename Edge::array_type &array,
 
 template <class Basis>
 void
-LatVolMesh<Basis>::get_elems(typename Cell::array_type &result,
+LatVolMesh<Basis>::get_elems(typename Elem::array_type &result,
                              const typename Edge::index_type &eidx) const
 {
   result.reserve(4);
@@ -1721,7 +1718,7 @@ LatVolMesh<Basis>::get_faces(typename Face::array_type &array,
 
 template <class Basis>
 void
-LatVolMesh<Basis>::get_elems(typename Cell::array_type &result,
+LatVolMesh<Basis>::get_elems(typename Elem::array_type &result,
                              const typename Face::index_type &fidx) const
 {
   result.reserve(2);
@@ -1763,7 +1760,7 @@ LatVolMesh<Basis>::get_elems(typename Cell::array_type &result,
 
 template <class Basis>
 void
-LatVolMesh<Basis>::get_elems(typename Cell::array_type &result,
+LatVolMesh<Basis>::get_elems(typename Elem::array_type &result,
                              const typename Node::index_type &idx) const
 {
   result.reserve(8);
@@ -2129,7 +2126,7 @@ LatVolMesh<Basis>::get_size(const typename Cell::index_type& /*idx*/) const
 
 template <class Basis>
 bool
-LatVolMesh<Basis>::locate(typename Cell::index_type &elem, const Core::Geometry::Point &p) const
+LatVolMesh<Basis>::locate(typename Elem::index_type &elem, const Core::Geometry::Point &p) const
 {
   const double epsilon = 1e-7;
 

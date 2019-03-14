@@ -6,31 +6,55 @@ matrix:
       dist: trusty
       sudo: required
       compiler: gcc
+      env: PYTHON_VERSION=3.4.3 OSPRAY_BUILD=OFF
     - os: linux
       dist: trusty
       sudo: required
       compiler: clang
+      env: PYTHON_VERSION=3.4.3 OSPRAY_BUILD=OFF
+    - os: linux
+      dist: xenial
+      sudo: required
+      compiler: clang
+      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
     - os: osx
       osx_image: xcode7.2
+      env: PYTHON_VERSION=3.4.3 OSPRAY_BUILD=OFF
     - os: osx
       osx_image: xcode8.3
+      env: PYTHON_VERSION=3.4.3 OSPRAY_BUILD=OFF
     - os: osx
       osx_image: xcode9.3
+      env: PYTHON_VERSION=3.4.3 OSPRAY_BUILD=OFF
+    - os: osx
+      osx_image: xcode7.2
+      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
+    - os: osx
+      osx_image: xcode8.3
+      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
+    - os: osx
+      osx_image: xcode9.3
+      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
+    - os: osx
+      osx_image: xcode7.2
+      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF
+    - os: osx
+      osx_image: xcode8.3
+      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF
+    - os: osx
+      osx_image: xcode9.3
+      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF
 
 before_install:
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then date -u; fi
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then uname -a; fi
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build libqt4-dev qt4-qmake libqt4-opengl-dev; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 30 brew tap cartr/qt4; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 30 brew tap-pin cartr/qt4; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 30 brew install cartr/qt4/qt; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 30 scripts/getQt4Mac.sh; fi
 
 script:
   - cd bin
-  - if [[ "${TRAVIS_OS_NAME}" = "linux" ]]; then cmake -GNinja -DTRAVIS_BUILD:BOOL=ON ../Superbuild; fi
-  - if [[ "${TRAVIS_OS_NAME}" = "osx" ]]; then cmake -DTRAVIS_BUILD:BOOL=ON ../Superbuild; fi
-  - if [[ "${TRAVIS_OS_NAME}" = "linux" ]]; then travis_wait 80 ninja; fi
-  - if [[ "${TRAVIS_OS_NAME}" = "osx" ]]; then make -j4; fi
+  - cmake -GNinja -DTRAVIS_BUILD:BOOL=ON -DUSER_PYTHON_VERSION="${PYTHON_VERSION}" -DWITH_OSPRAY:BOOL=${OSPRAY_BUILD} ../Superbuild
+  - travis_wait 80 ninja
   - cd SCIRun
   - ./Algorithm_Layer_Test
   - ./Modules_Factory_Tests --gtest_filter=*HardCodedModuleFactoryTests*

@@ -115,32 +115,18 @@ void OsprayViewer::setStateDefaults()
   state->setValue(Parameters::BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
   state->setValue(Parameters::ShowAmbientLight, true);
   state->setValue(Parameters::AmbientLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
-  state->setValue(Parameters::AmbientLightIntensity, 0.2);
+  state->setValue(Parameters::AmbientLightIntensity, 0.1);
   state->setValue(Parameters::ShowDirectionalLight, true);
   state->setValue(Parameters::DirectionalLightColor, ColorRGB(1.0, 1.0, 1.0).toString());
-  state->setValue(Parameters::DirectionalLightIntensity, 1.7);
-  state->setValue(Parameters::DirectionalLightAzimuth, 0);
-  state->setValue(Parameters::DirectionalLightElevation, 45);
+  state->setValue(Parameters::DirectionalLightIntensity, 1.0);
+  state->setValue(Parameters::DirectionalLightAzimuth, 80);
+  state->setValue(Parameters::DirectionalLightElevation, 65);
   state->setValue(Parameters::ShowProbe, false);
   state->setValue(Parameters::ProbeX, 0.0);
   state->setValue(Parameters::ProbeY, 0.0);
   state->setValue(Parameters::ProbeZ, 0.0);
   state->setValue(Parameters::InvertZoom, false);
   state->setValue(Parameters::ZoomSpeed, 1.0);
-}
-
-void addToList(std::vector<OsprayGeometryObjectHandle>& vec, OsprayGeometryObjectHandle geom)
-{
-  auto comp = boost::dynamic_pointer_cast<CompositeOsprayGeometryObject>(geom);
-  if (comp)
-  {
-    for (auto& sub : comp->objects())
-      addToList(vec, sub);
-  }
-  else
-  {
-    vec.push_back(geom);
-  }
 }
 
 void OsprayViewer::portRemovedSlotImpl(const PortId& pid)
@@ -162,7 +148,9 @@ void OsprayViewer::asyncExecute(const PortId& pid, DatatypeHandle data)
 
 void OsprayViewer::execute()
 {
-
+#ifndef WITH_OSPRAY
+  error("Must compile WITH_OSPRAY to enable this module.");
+#endif
 }
 
 void OsprayViewer::sendCompositeGeometry()
@@ -171,12 +159,8 @@ void OsprayViewer::sendCompositeGeometry()
   //logWarning("allGeom size {}", allGeom.size());
   if (!allGeom.empty())
   {
-    std::vector<OsprayGeometryObjectHandle> flattened;
-    for (auto& obj : allGeom)
-      addToList(flattened, obj);
-
     //logWarning("flattened size {}", flattened.size());
-    OsprayGeometryObjectHandle composite(new CompositeOsprayGeometryObject(flattened));
+    OsprayGeometryObjectHandle composite(new CompositeOsprayGeometryObject(allGeom));
     //logWarning("composite ptr {}", composite.get());
     get_state()->setTransientValue(Parameters::GeomData, composite, true);
   }

@@ -83,10 +83,13 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
 {
   setBackgroundBrush(QPixmap(networkBackgroundImage()));
 
+  Preferences::Instance().forceGridBackground.connectValueChanged([this](bool value) { updateBackground(value); });
+
   setHighResolutionExpandFactor(highResolutionExpandFactor_);
 
   setScene(scene_);
   setDragMode(RubberBandDrag);
+  setAcceptDrops(true);
   setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
   connect(scene_, SIGNAL(changed(const QList<QRectF>&)), this, SIGNAL(sceneChanged(const QList<QRectF>&)));
@@ -311,7 +314,7 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
           [&](const PortWidget* port) { return port->get_typename() == iport->get_typename() && port->getIndex() >= nextInputIndex; });
         if (toConnect == newInputs.end())
         {
-          guiLog->critical("Logical error: could not find input port to connect to {}, {}", iport->name().toStdString(), nextInputIndex);
+          guiLogCritical("Logical error: could not find input port to connect to {}, {}", iport->name().toStdString(), nextInputIndex);
           break;
         }
         nextInputIndex = (*toConnect)->getIndex() + 1;
@@ -331,7 +334,7 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
           [&](const PortWidget* port) { return port->get_typename() == oport->get_typename() && port->getIndex() >= nextOutputIndex; });
         if (toConnect == newOutputs.end())
         {
-          guiLog->critical("Logical error: could not find output port to connect to {}", oport->name().toStdString());
+          guiLogCritical("Logical error: could not find output port to connect to {}", oport->name().toStdString());
           break;
         }
         auto connectedPorts = oport->connectedPorts();
@@ -420,7 +423,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
 
   if (highResolutionExpandFactor_ > 1)
   {
-    auto multiplier = std::min(highResolutionExpandFactor_, 1.5);
+    auto multiplier = std::min(highResolutionExpandFactor_, 1.2);
     module->setFixedHeight(proxy->size().height() * multiplier);
     proxy->setMaximumHeight(proxy->size().height() * multiplier);
     module->setFixedWidth(proxy->size().width() * std::max(multiplier*0.9, 1.0));
@@ -765,6 +768,7 @@ void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
 
 void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
+  event->acceptProposedAction();
 }
 
 void NetworkEditor::updateViewport()
@@ -795,6 +799,7 @@ void NetworkEditor::mouseMoveEvent(QMouseEvent *event)
       }
     }
   }
+  //TODO from jess: check if module drag is creating space, then realign; if not creating space, don't move alignment
   alignViewport();
   QGraphicsView::mouseMoveEvent(event);
 }
@@ -1786,6 +1791,11 @@ void NetworkEditor::moduleWindowAction()
       break;
     }
   }
+}
+
+void NetworkEditor::updateBackground(bool forceGrid)
+{
+  setBackgroundBrush(QPixmap(forceGrid ? standardNetworkBackgroundImage() : networkBackgroundImage()));
 }
 
 void NetworkEditor::adjustModuleWidth(int delta)

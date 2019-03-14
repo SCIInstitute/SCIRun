@@ -29,6 +29,7 @@
 #include <Interface/Modules/Math/CreateMatrixDialog.h>
 #include <Modules/Math/CreateMatrix.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -36,14 +37,21 @@ using namespace SCIRun::Modules;
 
 CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent), firstPull_(true)
+  : ModuleDialogGeneric(state, parent), firstPull_(true), matrixTextEdit_(nullptr)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
+  {
+    matrixTextEdit_ = new CodeEditor(this);
+    layout()->addWidget(matrixTextEdit_);
+    matrixTextEdit_->setEnabled(false);
+  }
+
   connect(editCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(pushMatrixToState(int)));
   connect(matrixTextEdit_, SIGNAL(textChanged()), this, SLOT(editBoxUnsaved()));
+  connect(editCheckBox_, SIGNAL(toggled(bool)), matrixTextEdit_, SLOT(setEnabled(bool)));
 }
 
 void CreateMatrixDialog::hideEvent(QHideEvent* event)

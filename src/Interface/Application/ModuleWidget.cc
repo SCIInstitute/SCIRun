@@ -170,7 +170,10 @@ void ModuleWidgetDisplay::setupTitle(const QString& name)
   titleLabel_->setFont(titleFont);
   titleLabel_->setText(name);
   if (hiDpi)
+  {
     titleLabel_->setMinimumHeight(1.2 * titleLabel_->minimumHeight());
+    titleLabel_->setMinimumWidth(1.2 * titleLabel_->minimumWidth());
+  }
   QFont smallerTitleFont(scirunModuleFontName(), fontSize - buttonPageFontSizeDiff);
   buttonGroup_->setFont(smallerTitleFont);
   buttonGroup_->setTitle(name);

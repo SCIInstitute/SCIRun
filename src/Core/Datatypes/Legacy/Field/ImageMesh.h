@@ -737,12 +737,9 @@ public:
   { a.push_back(f); }
 
   /// get the parent element(s) of the given index
-  void get_elems(typename Elem::array_type &result,
-                 typename Node::index_type idx) const;
-  void get_elems(typename Elem::array_type &result,
-                 typename Edge::index_type idx) const;
-  void get_elems(typename Elem::array_type&,
-                 typename Face::index_type) const {}
+  void get_elems(typename Elem::array_type &result, typename Node::index_type idx) const;
+  void get_elems(typename Elem::array_type &result, typename Edge::index_type idx) const;
+  void get_elems(typename Elem::array_type&, typename Face::index_type) const {}
 
 
   /// Wrapper to get the derivative elements from this element.
@@ -1214,8 +1211,7 @@ ImageMesh<Basis>::get_edges(typename Edge::array_type &array,
 
 template<class Basis>
 void
-ImageMesh<Basis>::get_elems(typename Face::array_type &array,
-                                          typename Edge::index_type idx) const
+ImageMesh<Basis>::get_elems(typename Elem::array_type &array, typename Edge::index_type idx) const
 {
   array.reserve(2);
   array.clear();
@@ -1297,8 +1293,7 @@ ImageMesh<Basis>::get_neighbors(typename Face::array_type &array,
 
 template<class Basis>
 void
-ImageMesh<Basis>::get_elems(typename Elem::array_type &result,
-                            const typename Node::index_type idx) const
+ImageMesh<Basis>::get_elems(typename Elem::array_type &result, const typename Node::index_type idx) const
 {
   result.reserve(4);
   result.clear();

@@ -1,0 +1,18 @@
+{
+  "module": {
+    "name": "GetCentroidsFromMesh",
+    "namespace": "Fields",
+    "status": "Converted, Updation Issue",
+    "description": "Computes centroids from the mesh",
+    "header": "Modules/Legacy/Fields/GetCentroidsFromMesh.h"
+  },
+  "algorithm": {
+    "name": "GetCentroids",
+    "namespace": "Fields",
+    "header": "Core/Algorithms/Legacy/Fields/MeshDerivatives/GetCentroids.h"
+  },
+  "UI": {
+    "name": "GetCentroidsFromMeshDialog",
+    "header": "Interface/Modules/Fields/GetCentroidsFromMeshDialog.h"
+  }
+}

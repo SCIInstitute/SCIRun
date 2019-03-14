@@ -31,26 +31,43 @@
 #define CORE_DATATYPES_SCALAR_H
 
 #include <Core/Datatypes/Datatype.h>
+#include <boost/variant.hpp>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  template <typename T>
-  class Scalar : public Datatype
+  using ScalarValue = boost::variant<int, double>;
+
+  class SCISHARE Scalar : public Datatype
   {
   public:
-    explicit Scalar(const T& val) : val_(val) {}
-    T value() const { return val_; }
-    virtual Scalar* clone() const override { return new Scalar(*this); }
+    explicit Scalar(const ScalarValue& val) : value_(val) {}
+    ScalarValue value() const { return value_; }
+    virtual double doubleValue() const = 0;
     virtual std::string dynamic_type_name() const override { return "Scalar"; }
-  private:
-    T val_;
+  protected:
+    ScalarValue value_;
   };
 
-  typedef Scalar<int> Int32;
-  typedef Scalar<double> Double;
+  class SCISHARE Double : public Scalar
+  {
+  public:
+    explicit Double(double value) : Scalar(value) {}
+    virtual Scalar* clone() const override { return new Double(toDouble()); }
+    double toDouble() const;
+    double doubleValue() const override { return toDouble(); }
+  };
+
+  class SCISHARE Int32 : public Scalar
+  {
+  public:
+    explicit Int32(int value) : Scalar(value) {}
+    virtual Scalar* clone() const override { return new Int32(toInt()); }
+    int toInt() const;
+    double doubleValue() const override { return static_cast<double>(toInt()); }
+  };
 
 }}}
 

@@ -41,24 +41,32 @@ namespace Gui {
   {
     CORE_SINGLETON(GuiLog)
   public:
-    GuiLog() : Log2("ui") {}
+    GuiLog() : Log2("ui", Core::Logging::useLogCheckForWindows7()) {}
   };
-
-  #define guiLog GuiLog::Instance().get()
 
   template <class... T>
   void guiLogDebug(const char* fmt, T&&... args)
   {
-    guiLog->debug(fmt, args...);
+    auto log = GuiLog::Instance().get();
+    if (log)
+      log->debug(fmt, args...);
+  }
+
+  template <class... T>
+  void guiLogCritical(const char* fmt, T&&... args)
+  {
+    auto log = GuiLog::Instance().get();
+    if (log)
+      log->critical(fmt, args...);
   }
 
   class GuiLogger : boost::noncopyable
   {
   public:
-    static void logInfo(const QString& message);
-    static void logError(const QString& message);
-    static void logInfoStd(const std::string& message) { logInfo(QString::fromStdString(message)); }
-    static void logErrorStd(const std::string& message) { logError(QString::fromStdString(message)); }
+    static void logInfoQ(const QString& message);
+    static void logErrorQ(const QString& message);
+    static void logInfoStd(const std::string& message) { logInfoQ(QString::fromStdString(message)); }
+    static void logErrorStd(const std::string& message) { logErrorQ(QString::fromStdString(message)); }
   private:
     GuiLogger() = delete;
   };

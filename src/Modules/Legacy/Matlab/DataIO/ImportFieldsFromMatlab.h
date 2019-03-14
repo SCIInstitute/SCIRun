@@ -30,6 +30,7 @@
 #define MODULES_LEGACY_MATLAB_DATAIO_IMPORTFIELDSFROMMATLAB_H
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Matlab/matlabfwd.h>
 #include <Modules/Legacy/Matlab/DataIO/share.h>
 
 namespace SCIRun {
@@ -45,10 +46,24 @@ namespace SCIRun {
     }
   }
 
+  template <size_t N>
+  using StringPortName = Dataflow::Networks::StaticPortName<Core::Datatypes::String, N>;
+
 namespace Modules {
 namespace Matlab {
 
-  class SCISHARE ImportFieldsFromMatlab : public Dataflow::Networks::Module,
+  class SCISHARE MatlabFileIndexModule : public Dataflow::Networks::Module
+  {
+  public:
+    explicit MatlabFileIndexModule(const Dataflow::Networks::ModuleLookupInfo& info) : Dataflow::Networks::Module(info) {}
+  protected:
+    void indexmatlabfile();
+    void executeImpl(const StringPortName<0>& filenameIn, const StringPortName<6>& filenameOut);
+    virtual SCIRun::Core::Datatypes::DatatypeHandle processMatlabData(const MatlabIO::matlabarray&) const = 0;
+    virtual int indexMatlabFile(MatlabIO::matlabconverter& converter, const MatlabIO::matlabarray& mlarray, std::string& infostring) const = 0;
+  };
+
+  class SCISHARE ImportFieldsFromMatlab : public MatlabFileIndexModule,
     public Has1InputPort<StringPortTag>,
     public Has7OutputPorts<FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, StringPortTag>
   {
@@ -72,9 +87,10 @@ namespace Matlab {
 
   protected:
     virtual void postStateChangeInternalSignalHookup() override;
-  private:
-    void indexmatlabfile();
+    virtual SCIRun::Core::Datatypes::DatatypeHandle processMatlabData(const MatlabIO::matlabarray&) const override;
+    virtual int indexMatlabFile(MatlabIO::matlabconverter& converter, const MatlabIO::matlabarray& mlarray, std::string& infostring) const override;
   };
+
 }}}
 
 #endif

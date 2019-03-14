@@ -65,18 +65,22 @@ void GetSliceFromStructuredFieldByIndicesDialog::pullSpecial()
 {
   using namespace Parameters;
 
-  iAxisSpinBox_->setMaximum(state_->getValue(Dim_i).toInt());
+  auto iMax = state_->getValue(Dim_i).toInt() - 1;
+  auto jMax = state_->getValue(Dim_j).toInt() - 1;
+  auto kMax = state_->getValue(Dim_k).toInt() - 1;
+
+  iAxisSpinBox_->setMaximum(iMax);
   iAxisSpinBox_->setEnabled(iAxisRadioButton_->isChecked());
-  jAxisSpinBox_->setMaximum(state_->getValue(Dim_j).toInt());
+  jAxisSpinBox_->setMaximum(jMax);
   jAxisSpinBox_->setEnabled(jAxisRadioButton_->isChecked());
-  kAxisSpinBox_->setMaximum(state_->getValue(Dim_k).toInt());
+  kAxisSpinBox_->setMaximum(kMax);
   kAxisSpinBox_->setEnabled(kAxisRadioButton_->isChecked());
 
-  iAxisHorizontalSlider_->setMaximum(state_->getValue(Dim_i).toInt());
+  iAxisHorizontalSlider_->setMaximum(iMax);
   iAxisHorizontalSlider_->setEnabled(iAxisRadioButton_->isChecked());
-  jAxisHorizontalSlider_->setMaximum(state_->getValue(Dim_j).toInt());
+  jAxisHorizontalSlider_->setMaximum(jMax);
   jAxisHorizontalSlider_->setEnabled(jAxisRadioButton_->isChecked());
-  kAxisHorizontalSlider_->setMaximum(state_->getValue(Dim_k).toInt());
+  kAxisHorizontalSlider_->setMaximum(kMax);
   kAxisHorizontalSlider_->setEnabled(kAxisRadioButton_->isChecked());
 }
 

@@ -134,6 +134,21 @@ namespace MatlabIO
 
   };
 
+  struct SCISHARE ScopedMatlabFileReader
+  {
+    explicit ScopedMatlabFileReader(const std::string& filename)
+    {
+      mfile.open(filename, "r");
+    }
+    ~ScopedMatlabFileReader()
+    {
+      mfile.close();
+    }
+    matlabfile mfile;
+  };
+
+  SCISHARE matlabarray readmatlabarray(matlabfile& mfile, const std::string& matlabName);
+
 }}
 
 #endif

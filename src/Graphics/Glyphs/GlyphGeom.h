@@ -31,9 +31,11 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Math/TrigTable.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/Datatypes/Color.h>
+#include <Eigen/Dense>
 
 #include <Graphics/Glyphs/share.h>
 
@@ -47,9 +49,6 @@ namespace SCIRun {
 
       GlyphGeom();
 
-      void getBufferInfo(int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points,
-        std::vector<Core::Geometry::Vector>& normals, std::vector<Core::Datatypes::ColorRGB>& colors, std::vector<uint32_t>& indices);
-
       void buildObject(Datatypes::GeometryObjectSpire& geom, const std::string& uniqueNodeID, const bool isTransparent, const double transparencyValue,
         const Datatypes::ColorScheme& colorScheme, RenderState state,
         const Datatypes::SpireIBO::PRIMITIVE& primIn, const Core::Geometry::BBox& bbox);
@@ -57,7 +56,8 @@ namespace SCIRun {
       void addArrow(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double resolution,
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void addSphere(const Core::Geometry::Point& p, double radius, double resolution, const Core::Datatypes::ColorRGB& color);
-      void addEllipsoid(const Core::Geometry::Point& p, double radius1, double radius2, double resolution, const Core::Datatypes::ColorRGB& color);
+      void addBox(const Core::Geometry::Point& center, Core::Geometry::Tensor& t, double scale);
+      void addEllipsoid(const Core::Geometry::Point& p, Core::Geometry::Tensor& t, Core::Geometry::Vector& scaled_eigenvals, double resolution, const Core::Datatypes::ColorRGB& color);
       void addCylinder(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double resolution,
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void addCone(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double resolution,
@@ -90,19 +90,14 @@ namespace SCIRun {
       int64_t numVBOElements_;
       uint32_t lineIndex_;
 
-      void generateCylinder(const  Core::Geometry::Point& p1, const  Core::Geometry::Point& p2, double radius1, double radius2, double resolution, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2,
-        int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<Core::Geometry::Vector>& normals, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
-      void generateEllipsoid(const Core::Geometry::Point& center, double radius1, double radius2, double resolution, const Core::Datatypes::ColorRGB& color,
-        int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<Core::Geometry::Vector>& normals, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
-      void generateSphere(const Core::Geometry::Point& center, double radius1, double radius2, double resolution, const Core::Datatypes::ColorRGB& color,
-        int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<Core::Geometry::Vector>& normals, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
-      void generateLine(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2,
-        int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
-      void generatePoint(const Core::Geometry::Point& p, const Core::Datatypes::ColorRGB& color,
-        int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
+      void generateCylinder(const  Core::Geometry::Point& p1, const  Core::Geometry::Point& p2, double radius1, double radius2, double resolution, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
+      void generateSphere(const Core::Geometry::Point& center, double radius, double resolution, const Core::Datatypes::ColorRGB& color);
+      void generateBox(const Core::Geometry::Point& center, Core::Geometry::Tensor& t, double scale);
+    void generateEllipsoid(const Core::Geometry::Point& center, Core::Geometry::Tensor& t, Core::Geometry::Vector& scaled_eigenvals, double resolution, const Core::Datatypes::ColorRGB& color);
+      void generateLine(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
+      void generatePoint(const Core::Geometry::Point& p, const Core::Datatypes::ColorRGB& color);
       void generatePlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
-        const Core::Geometry::Point& p3, const Core::Geometry::Point& p4, const Core::Datatypes::ColorRGB& color,
-        int64_t& numVBOElements, std::vector<Core::Geometry::Vector>& points, std::vector<Core::Geometry::Vector>& normals, std::vector<uint32_t>& indices, std::vector<Core::Datatypes::ColorRGB>& colors);
+        const Core::Geometry::Point& p3, const Core::Geometry::Point& p4, const Core::Datatypes::ColorRGB& color);
 
       //From SCIRun4
       void generateBox(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double x_side, double y_side, double z_side, std::vector<QuadStrip>& quadstrips);

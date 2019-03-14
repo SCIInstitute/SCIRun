@@ -94,7 +94,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   // Setup Qt OpenGL widget.
   QGLFormat fmt;
-  fmt.setAlpha(true);
+  fmt.setAlpha(false);
   fmt.setRgba(true);
   fmt.setDepth(true);
   fmt.setDoubleBuffer(true);

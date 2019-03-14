@@ -466,7 +466,7 @@ void GeomMan::runGCAgainstVaidNames(const std::set<std::string>& validKeys)
 {
   if (mNewUnfulfilledAssets)
   {
-    RendererLog::get()->error("GeomMan: Terminating garbage collection. Orphan assets that have yet to be associated with entity ID's would be GC'd");
+    //RendererLog::get()->error("GeomMan: Terminating garbage collection. Orphan assets that have yet to be associated with entity ID's would be GC'd");
     return;
   }
 
@@ -488,7 +488,7 @@ void GeomMan::runGCAgainstVaidNames(const std::set<std::string>& validKeys)
 
     if (it == mNameMap.end())
     {
-      RendererLog::get()->error("runGCAgainstVaidNames: terminating early, validKeys contains elements not in Geom map.");
+      //RendererLog::get()->error("runGCAgainstVaidNames: terminating early, validKeys contains elements not in Geom map.");
       break;
     }
 
@@ -497,7 +497,7 @@ void GeomMan::runGCAgainstVaidNames(const std::set<std::string>& validKeys)
     // component, this is not an error.
     if (it->first > asset)
     {
-      RendererLog::get()->error("runGCAgainstVaidNames: validKeys contains elements not in the Geom map.");
+      //RendererLog::get()->error("runGCAgainstVaidNames: validKeys contains elements not in the Geom map.");
     }
 
     ++it;
@@ -505,7 +505,7 @@ void GeomMan::runGCAgainstVaidNames(const std::set<std::string>& validKeys)
 
   while (it != mNameMap.end())
   {
-    RendererLog::get()->info("Geom GC: {}", it->first);
+    //RendererLog::get()->info("Geom GC: {}", it->first);
     mNameMap.erase(it++);
   }
 }
@@ -531,7 +531,7 @@ public:
     }
     else
     {
-        RendererLog::get()->error("Unable to complete geom garbage collection. There is no StaticGeomMan.");
+        //RendererLog::get()->error("Unable to complete geom garbage collection. There is no StaticGeomMan.");
     }
   }
 

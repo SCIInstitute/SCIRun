@@ -55,7 +55,6 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Interface/Application/ModuleWizard/ModuleWizard.h>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
 #include <Dataflow/Network/SimpleSourceSink.h>  //TODO: encapsulate!!!
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
@@ -271,11 +270,11 @@ SCIRunMainWindow::SCIRunMainWindow()
   //TODO: store in xml file, add to app resources
   {
     ToolkitInfo fwdInv{ "http://www.sci.utah.edu/images/software/forward-inverse/forward-inverse-mod.png",
-    #ifdef __APPLE__
-      "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/v1.4.1",
-    #else
-      "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.4.1.zip",
-    #endif
+#ifdef __APPLE__
+      "https://codeload.github.com/SCIInstitute/FwdInvToolkit/zip/v1.4.3",
+#else
+      "http://sci.utah.edu/devbuilds/scirun5/toolkits/FwdInvToolkit_v1.4.3.zip",
+#endif
       "FwdInvToolkit_stable.zip" };
     fwdInv.setupAction(actionForwardInverseStable_, this);
   }

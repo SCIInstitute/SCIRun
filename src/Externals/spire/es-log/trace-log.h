@@ -34,19 +34,19 @@
 
 namespace spire
 {
-  class SCISHARE RendererLog
-  {
-  public:
-    static SCIRun::Core::Logging::Logger2 get();
-    static const char* name();
-  private:
-    static SCIRun::Core::Logging::Logger2 logger_;
-  };
+  //class SCISHARE RendererLog
+  //{
+  //public:
+  //  static SCIRun::Core::Logging::Logger2 get();
+  //  static const char* name();
+  //private:
+  //  static SCIRun::Core::Logging::Logger2 logger_;
+  //};
 }
 
-#define logRendererError(...) spire::RendererLog::get()->error(__VA_ARGS__)
-#define logRendererWarning(...) spire::RendererLog::get()->warn(__VA_ARGS__)
-#define logRendererInfo(...) spire::RendererLog::get()->info(__VA_ARGS__)
+#define logRendererError(...) //spire::RendererLog::get()->error(__VA_ARGS__)
+#define logRendererWarning(...)// spire::RendererLog::get()->warn(__VA_ARGS__)
+#define logRendererInfo(...) //spire::RendererLog::get()->info(__VA_ARGS__)
 
 #ifdef RENDERER_TRACE_ON
   #define SPDLOG_TRACE_ON

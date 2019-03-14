@@ -55,7 +55,6 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Interface/Application/ModuleWizard/ModuleWizard.h>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
 #include <Dataflow/Network/SimpleSourceSink.h>  //TODO: encapsulate!!!
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
@@ -84,7 +83,7 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
-namespace 
+namespace
 {
   QColor favesColor()
   {
@@ -155,13 +154,13 @@ void SCIRunMainWindow::readCustomSnippets(QTreeWidgetItem* snips)
   QFile inputFile("patterns.txt");
   if (inputFile.open(QIODevice::ReadOnly))
   {
-    GuiLogger::logInfo("Pattern file opened: " + inputFile.fileName());
+    GuiLogger::logInfoQ("Pattern file opened: " + inputFile.fileName());
     QTextStream in(&inputFile);
     while (!in.atEnd())
     {
       QString line = in.readLine();
       addSnippet(line, snips);
-      GuiLogger::logInfo("Pattern read: " + line);
+      GuiLogger::logInfoQ("Pattern read: " + line);
     }
     inputFile.close();
   }

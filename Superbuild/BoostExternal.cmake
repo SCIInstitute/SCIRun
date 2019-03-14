@@ -71,9 +71,20 @@ ENDIF()
 # Boost Jam needs to have 64-bit build explicitly configured
 IF(WIN32)
   SET(FORCE_64BIT_BUILD ON)
+  SET(boost_GIT_TAG "origin/v1.67.0")
+ELSE()
+
+  if (${USER_PYTHON_VERSION} VERSION_GREATER "3.7")
+    #message(${USER_PYTHON_VERSION} " needs a later boost")
+    SET(boost_GIT_TAG "origin/v1.67.0")
+  else()
+    #message(${USER_PYTHON_VERSION} " ok with old boost")
+    SET(boost_GIT_TAG "origin/v1.58.0")
+  endif()
+
 ENDIF()
 
-SET(boost_GIT_TAG "origin/v1.58.0")
+
 SET(boost_GIT_URL "https://github.com/CIBC-Internal/boost.git")
 
 # TODO: fix install step

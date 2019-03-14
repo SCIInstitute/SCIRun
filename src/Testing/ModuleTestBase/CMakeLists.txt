@@ -41,6 +41,8 @@ SCIRUN_ADD_LIBRARY(Testing_ModuleTestBase
   ${Testing_ModuleTestBase_SRCS}
 )
 
+TARGET_COMPILE_DEFINITIONS(Testing_ModuleTestBase PRIVATE -DGTEST_LINKED_AS_SHARED_LIBRARY)
+
 TARGET_LINK_LIBRARIES(Testing_ModuleTestBase
   Core_Datatypes
   Modules_Factory

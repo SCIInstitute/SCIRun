@@ -56,7 +56,7 @@ using ::testing::Values;
 using ::testing::Combine;
 using ::testing::Range;
 
-class SolveLinearSystemTestsAlgoParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<const char*, const char*, int> >
+class SolveLinearSystemTestsAlgoParameterized : public ::testing::TestWithParam < std::tuple<const char*, const char*, int> >
 {
 public:
 	ReadMatrixAlgorithm reader;
@@ -89,14 +89,14 @@ protected:
 		}
 		 // algo object will initialize x0 to the zero vector
 
-		algo.set(Variables::Preconditioner, std::string(::std::tr1::get<1>(GetParam())));
+		algo.set(Variables::Preconditioner, std::string(std::get<1>(GetParam())));
 		algo.set(Variables::MaxIterations, 670);
-		algo.set(Variables::TargetError, ::std::tr1::get<2>(GetParam()));
+		algo.set(Variables::TargetError, std::get<2>(GetParam()));
 
 		algo.set(Variables::MaxIterations, 667);
 		algo.set(Variables::TargetError, 1e-4);
 
-		algo.setOption(Variables::Method, std::string(::std::tr1::get<0>(GetParam())));
+		algo.setOption(Variables::Method, std::string(std::get<0>(GetParam())));
 		algo.setUpdaterFunc([](double x) {});
 
 		/*

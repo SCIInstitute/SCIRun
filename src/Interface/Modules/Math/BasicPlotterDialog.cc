@@ -185,6 +185,8 @@ void BasicPlotterDialog::updateFromPortChange(int, const std::string&, DynamicPo
 	{
 		state_->setTransientValue(Variables::InputMatrix, nullptr);
 		plotDialog_->plot()->clearCurves();
-		ModuleLog::Instance().get()->warn("[{}] Curves and plot data cleared. Re-execute to replot connected data.", windowTitle().toStdString());
+    auto log = ModuleLog::Instance().get();
+    if (log)
+      log->warn("[{}] Curves and plot data cleared. Re-execute to replot connected data.", windowTitle().toStdString());
 	}
 }

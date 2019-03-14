@@ -210,6 +210,7 @@ void ReportFieldGeometryMeasures::execute()
   {
     VMesh::Face::size_type nrows;
     mesh->size(nrows);
+    remark("Entered");
     output.reset(new DenseMatrix(nrows, ncols));
     double* dataptr = output->data();
 
@@ -252,6 +253,11 @@ void ReportFieldGeometryMeasures::execute()
       if (eidx) { *dataptr = static_cast<double>(idx); dataptr++; }
       if (size) { *dataptr = vol; dataptr++; }
     }
+  }
+
+  if (output && output->nrows() == 0)
+  {
+    warning("No measures added to matrix--output will be an empty matrix with zero rows.");
   }
 
   sendOutput(Output_Measures, output);

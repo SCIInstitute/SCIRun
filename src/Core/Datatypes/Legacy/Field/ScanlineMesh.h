@@ -960,7 +960,7 @@ ScanlineMesh<Basis>::get_nodes(typename Node::array_type &array,
 
 template <class Basis>
 void
-ScanlineMesh<Basis>::get_elems(typename Edge::array_type &result,
+ScanlineMesh<Basis>::get_elems(typename Elem::array_type &result,
                                typename Node::index_type index) const
 {
   result.reserve(2);
@@ -1403,7 +1403,7 @@ ScanlineMesh<Basis>::locate(typename Edge::index_type &elem, const Core::Geometr
 
 template <class Basis>
 bool
-ScanlineMesh<Basis>::locate(typename Edge::index_type &elem, 
+ScanlineMesh<Basis>::locate(typename Elem::index_type &elem, 
                             std::vector<double>& coords,
                             const Core::Geometry::Point &p) const
 {
