@@ -227,7 +227,7 @@ namespace
     SCIRun::LOG_DEBUG("adding Volume");
     OSPVolume vol = ospNewVolume("shared_structured_volume");
     
-    bounds = ospcommon::box3f(ospcommon::vec3f(0.f), 1);
+    //bounds = ospcommon::box3f(ospcommon::vec3f(0.f), 1);
     
     int numVoxels = obj->data.color.size();
     OSPData voxelData = ospNewData(numVoxels, OSP_FLOAT, obj->data.color.data());
@@ -243,6 +243,24 @@ namespace
         voxelRange.extend(v);
       //SCIRun::LOG_DEBUG(std::to_string(v));
     });
+    for(int i=0;i<vertex.size();i+=3){
+      ospcommon::vec3f v = ospcommon::vec3f(vertex[i], vertex[i+1], vertex[i+2]);
+      bounds.extend(v);
+    }
+    
+    const auto& func = obj->tfn;
+    OSPTransferFunction transferFunction = ospNewTransferFunction("piecewise_linear");
+    OSPData cData = ospNewData(func.colors.size(), OSP_FLOAT3, func.colors.data());
+    OSPData oData = ospNewData(func.opacities.size(), OSP_FLOAT, func.opacities.data());
+    
+    ospSetData(transferFunction, "colors", cData);
+    ospSetData(transferFunction, "opacities", oData);
+    // the transfer function will apply over this volume value range
+    ospSet2f(transferFunction, "valueRange", 0, 1);
+    ospCommit(transferFunction);
+    // For now we set the same transfer function on all volumes.
+    ospSetObject(vol, "transferFunction", transferFunction);
+    //bounds = ospcommon::box3f(ospcommon::vec3f(0.f), 1);
     return vol;
     
   }

@@ -92,6 +92,12 @@ namespace Datatypes
     };
 
     FieldData data;
+    struct transferFunc
+    {
+      std::vector<float> colors;
+      std::vector<float> opacities;
+    };
+    transferFunc tfn;
     
     double radius;
 

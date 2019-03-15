@@ -766,7 +766,7 @@ void VolumeViewer::loadVolume(OSPVolume vol, const vec2f& voxelRange, const box3
   //  modelStates_.push_back(ModelState(ospNewModel()));
 
   assert(vol);
-  std::vector<float> colors;
+  /*std::vector<float> colors;
   std::vector<float> opacities;
   colors.push_back(1);
   colors.push_back(0);
@@ -786,7 +786,7 @@ void VolumeViewer::loadVolume(OSPVolume vol, const vec2f& voxelRange, const box3
   ospSet2f(transferFunction, "valueRange", 0, 1);
   ospCommit(transferFunction);
   // For now we set the same transfer function on all volumes.
-  ospSetObject(vol, "transferFunction", transferFunction);
+  ospSetObject(vol, "transferFunction", transferFunction);*/
   ospCommit(vol);
 
   // Add the loaded volume(s) to the model.
@@ -857,7 +857,7 @@ void VolumeViewer::globalInit(const std::string &renderer_type)
   // Create an OSPRay transfer function.
   transferFunction = ospNewTransferFunction("piecewise_linear");
   exitOnCondition(transferFunction == NULL, "could not create OSPRay transfer function object");
-  ospCommit(transferFunction);
+  //ospCommit(transferFunction);
 }
 
 const float b = -3;
