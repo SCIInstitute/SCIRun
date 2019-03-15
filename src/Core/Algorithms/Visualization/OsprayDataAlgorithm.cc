@@ -347,17 +347,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addVol(FieldHandle field, ColorM
     if (vfield->num_values() > 0)
     {
       vfield->get_value(value, node.index());
-      //if (colorMap)
-      {
-        obj->tfn.colors.push_back(0);
-        obj->tfn.colors.push_back(0);
-        obj->tfn.colors.push_back(1);
-        obj->tfn.colors.push_back(1);
-        obj->tfn.colors.push_back(0);
-        obj->tfn.colors.push_back(0);
-        obj->tfn.opacities.push_back(0.5);
-        obj->tfn.opacities.push_back(0.5);
-      }
+      
       
       voxels.push_back(value);
     }
@@ -365,6 +355,30 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addVol(FieldHandle field, ColorM
     vertex_new.push_back(static_cast<float>(point.y()));
     vertex_new.push_back(static_cast<float>(point.z()));
     
+  }
+  
+  //if (colorMap)
+  {
+    obj->tfn.colors.push_back(0);
+    obj->tfn.colors.push_back(0);
+    obj->tfn.colors.push_back(1);
+    //obj->tfn.colors.push_back(0);
+    //obj->tfn.colors.push_back(.75);
+    //obj->tfn.colors.push_back(.75);
+    
+    obj->tfn.colors.push_back(0);
+    obj->tfn.colors.push_back(1);
+    obj->tfn.colors.push_back(0);
+    
+    //obj->tfn.colors.push_back(1);
+    //obj->tfn.colors.push_back(.5);
+    //obj->tfn.colors.push_back(0);
+    obj->tfn.colors.push_back(1);
+    obj->tfn.colors.push_back(0);
+    obj->tfn.colors.push_back(0);
+    
+    obj->tfn.opacities.push_back(0.5);
+    obj->tfn.opacities.push_back(0.5);
   }
   fieldData.color = voxels;
   fieldData.vertex = vertex_new;

@@ -250,7 +250,9 @@ namespace
     
     const auto& func = obj->tfn;
     OSPTransferFunction transferFunction = ospNewTransferFunction("piecewise_linear");
-    OSPData cData = ospNewData(func.colors.size(), OSP_FLOAT3, func.colors.data());
+    
+    
+    OSPData cData = ospNewData(func.colors.size()/3, OSP_FLOAT3, func.colors.data());
     OSPData oData = ospNewData(func.opacities.size(), OSP_FLOAT, func.opacities.data());
     
     ospSetData(transferFunction, "colors", cData);
