@@ -50,7 +50,6 @@ MacroEditor::MacroEditor(QWidget* parent /* = 0 */) : QDockWidget(parent),
   }
 
   assignToButtonPushButton_->setMenu(assignMenu);
-  //connect(enabledCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(enableStateChanged(int)));
 }
 
 static const char* macroIndex = "macroIndex";
@@ -71,31 +70,41 @@ void MacroEditor::assignToButton()
     selected[0]->setText(tr("[%0] %1").arg(index).arg(selected[0]->text()));
   }
 }
-// const QMap<QString, QString>& TriggeredEventsWindow::getScripts() const
-// {
-//   return scripts_;
-// }
 
-// void TriggeredEventsWindow::setScripts(const QMap<QString, QString>& scripts)
-// {
-//   scripts_ = scripts;
-//
-//   eventListWidget_->setCurrentItem(eventListWidget_->item(1));
-//   updateScriptEditor();
-// }
-//
-// const QMap<QString, bool>& TriggeredEventsWindow::getScriptEnabledFlags() const
-// {
-//   return scriptEnabledFlags_;
-// }
+const QMap<QString, QString>& MacroEditor::scripts() const
+{
+  return macros_;
+}
 
-// void TriggeredEventsWindow::setScriptEnabledFlags(const QMap<QString, bool>& scriptsEnabled)
-// {
-//   scriptEnabledFlags_ = scriptsEnabled;
-//
-//   eventListWidget_->setCurrentItem(eventListWidget_->item(1));
-//   updateScriptEditor();
-// }
+void MacroEditor::setScripts(const QMap<QString, QString>& macros)
+{
+  macros_ = macros;
+
+  for (const auto& macroPair : macros_.toStdMap())
+  {
+    auto item = new QListWidgetItem(macroPair.first, macroListWidget_);
+  }
+  if (!macros_.isEmpty())
+  {
+    macroListWidget_->setCurrentItem(macroListWidget_->item(0));
+    updateScriptEditor();
+  }
+}
+
+namespace
+{
+  const QString defaultScript = "# Insert Python API calls here.\n"
+    "mods = scirun_module_ids()\n"
+    "view = scirun_add_module('ViewScene')\n"
+    "cnt=0\n"
+    "for mod in mods:\n"
+    "\tprint(mod)\n"
+    "\tif 'Show' in mod:\n"
+    "\t\tprint('connecting ',cnt)\n"
+    "\t\tscirun_connect_modules(mod,0,view,cnt)\n"
+    "\t\tcnt+=1\n"
+    ;
+}
 
 void MacroEditor::addMacro()
 {
@@ -104,6 +113,7 @@ void MacroEditor::addMacro()
   if (ok && !text.isEmpty())
   {
     auto item = new QListWidgetItem(text, macroListWidget_);
+    macros_[text] = defaultScript;
   }
 }
 
@@ -112,74 +122,35 @@ void MacroEditor::removeMacro()
   for (auto& item : macroListWidget_->selectedItems())
   {
     qDebug() << "removing " << item->text();
+    macros_.remove(item->text());
+    macroListWidget_->blockSignals(true);
     delete item;
+    macroListWidget_->blockSignals(false);
+    updateScriptEditor();
   }
-}
-
-namespace
-{
-  const QString defaultScript = "# Insert Python API calls here.\n"
-    "\n"
-    "# Examples:\n"
-    "\n"
-    "# With the \"Post module add\" event, this snippet will change the initial filetype for a specific type of input module :\n"
-    "# scirun_set_module_state(scirun_module_ids()[-1], 'FileTypeName', 'Matlab Matrix (*.mat)') if scirun_module_ids()[-1].startswith('ReadMatrix') else None\n"
-    "\n"
-    "# With the \"On network load\" event, this snippet will open the UIs for all the ViewScenes in the network :\n"
-    "# [scirun_set_module_state(id, '__UI__', True) for id in scirun_module_ids() if id.startswith('ViewScene')]\n"
-    "\n"
-    "# With the \"Application start\" event, this snippet will print SCIRun's python library path, which one could then edit:\n"
-    "import sys\n\nprint(sys.path)"
-    ;
 }
 
 void MacroEditor::updateScriptEditor()
 {
-  // auto key = eventListWidget_->currentItem()->text();
-  // auto scr = scripts_[key];
-  // scriptPlainTextEdit_->setPlainText(!scr.isEmpty() ? scr : defaultScript);
-  // enabledCheckBox_->setChecked(scriptEnabledFlags_[key]);
-  push();
+  auto item = macroListWidget_->currentItem();
+  if (item)
+  {
+    auto key = item->text();
+    auto scr = macros_[key];
+    scriptPlainTextEdit_->setPlainText(!scr.isEmpty() ? scr : defaultScript);
+  }
+  else
+  {
+    scriptPlainTextEdit_->setPlainText("");
+  }
 }
 
 void MacroEditor::updateScripts()
 {
-  // auto key = eventListWidget_->currentItem()->text();
-  // auto script = scriptPlainTextEdit_->toPlainText();
-  // scripts_[key] = script;
-
-  //TODO: waiting on implementation of #41, see ModuleDialogGeneric.h comment
-  push();
-}
-//
-// void TriggeredEventsWindow::enableStateChanged(int state)
-// {
-//   auto key = eventListWidget_->currentItem()->text();
-//   auto enabled = state == Qt::Checked;
-//   scriptEnabledFlags_[key] = enabled;
-//
-//   //TODO: waiting on implementation of #41, see ModuleDialogGeneric.h comment
-//   push();
-// }
-//
-void MacroEditor::push()
-{
-//   auto& prefs = Core::Preferences::Instance();
-//   static std::map<QString, Core::TriggeredScriptInfo*> scriptInfos
-//   {
-//     { "Post module add", &prefs.postModuleAdd },
-//     { "On network load", &prefs.onNetworkLoad },
-//     { "Application start", &prefs.applicationStart }
-//   };
-//
-//   for (int i = 0; i < eventListWidget_->count(); ++i)
-//   {
-//     auto key = eventListWidget_->item(i)->text();
-//     auto trig = scriptInfos.find(key);
-//     if (trig != scriptInfos.end())
-//     {
-//       trig->second->script.setValue(scripts_[key].toStdString());
-//       trig->second->enabled.setValue(scriptEnabledFlags_[key]);
-//     }
-//   }
+  if (macroListWidget_->count() > 0)
+  {
+    auto key = macroListWidget_->currentItem()->text();
+    auto script = scriptPlainTextEdit_->toPlainText();
+    macros_[key] = script;
+  }
 }

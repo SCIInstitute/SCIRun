@@ -47,10 +47,10 @@ class TriggeredEventsWindow : public QDockWidget, public Ui::TriggeredEvents
 
 public:
   explicit TriggeredEventsWindow(QWidget* parent = nullptr);
-  const QMap<QString, QString>& getScripts() const;
-  const QMap<QString, bool>& getScriptEnabledFlags() const;
 
+  const QMap<QString, QString>& scripts() const;
   void setScripts(const QMap<QString, QString>& scripts);
+  const QMap<QString, bool>& scriptEnabledFlags() const;
   void setScriptEnabledFlags(const QMap<QString, bool>& scriptsEnabled);
 
 private Q_SLOTS:

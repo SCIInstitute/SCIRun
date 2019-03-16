@@ -43,7 +43,7 @@ TriggeredEventsWindow::TriggeredEventsWindow(QWidget* parent /* = 0 */) : QDockW
   connect(enabledCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(enableStateChanged(int)));
 }
 
-const QMap<QString, QString>& TriggeredEventsWindow::getScripts() const
+const QMap<QString, QString>& TriggeredEventsWindow::scripts() const
 {
   return scripts_;
 }
@@ -56,7 +56,7 @@ void TriggeredEventsWindow::setScripts(const QMap<QString, QString>& scripts)
   updateScriptEditor();
 }
 
-const QMap<QString, bool>& TriggeredEventsWindow::getScriptEnabledFlags() const
+const QMap<QString, bool>& TriggeredEventsWindow::scriptEnabledFlags() const
 {
   return scriptEnabledFlags_;
 }

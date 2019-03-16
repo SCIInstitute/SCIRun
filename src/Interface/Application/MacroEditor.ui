@@ -23,7 +23,7 @@
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="3">
+      <item row="0" column="4">
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -35,6 +35,19 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="assignToButtonPushButton_">
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Assign to button</string>
+        </property>
+       </widget>
       </item>
       <item row="0" column="0">
        <widget class="QPushButton" name="addPushButton_">
@@ -50,16 +63,10 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QPushButton" name="assignToButtonPushButton_">
-        <property name="maximumSize">
-         <size>
-          <width>200</width>
-          <height>16777215</height>
-         </size>
-        </property>
+      <item row="0" column="3">
+       <widget class="QPushButton" name="runNowPushButton_">
         <property name="text">
-         <string>Assign to button</string>
+         <string>Run Now</string>
         </property>
        </widget>
       </item>

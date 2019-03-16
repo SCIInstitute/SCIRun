@@ -35,6 +35,7 @@
 #include <Interface/Application/TagManagerWindow.h>
 #include <Interface/Application/ProvenanceWindow.h>
 #include <Interface/Application/TriggeredEventsWindow.h>
+#include <Interface/Application/MacroEditor.h>
 #include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
@@ -302,6 +303,13 @@ void SCIRunMainWindow::readSettings()
     triggeredEventsWindow_->setScriptEnabledFlags(toBoolMap(scriptsMap));
   }
 
+  const QString macros = "macros";
+  if (settings.contains(macros))
+  {
+    auto macrosMap = settings.value(macros).toMap();
+    macroEditor_->setScripts(toStrMap(macrosMap));
+  }
+
   const QString savedSubnetworksNames = "savedSubnetworksNames";
   if (settings.contains(savedSubnetworksNames))
   {
@@ -374,8 +382,9 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("dataPath", convertPathList(prefs.dataPath()));
   settings.setValue("tagNames", tagManagerWindow_->getTagNames());
   settings.setValue("tagColors", tagManagerWindow_->getTagColors());
-  settings.setValue("triggeredScripts", fromStrMap(triggeredEventsWindow_->getScripts()));
-  settings.setValue("triggeredScriptEnableFlags", fromBoolMap(triggeredEventsWindow_->getScriptEnabledFlags()));
+  settings.setValue("triggeredScripts", fromStrMap(triggeredEventsWindow_->scripts()));
+  settings.setValue("triggeredScriptEnableFlags", fromBoolMap(triggeredEventsWindow_->scriptEnabledFlags()));
+  settings.setValue("macros", fromStrMap(macroEditor_->scripts()));
   settings.setValue("savedSubnetworksNames", savedSubnetworksNames_);
   settings.setValue("savedSubnetworksXml", savedSubnetworksXml_);
   settings.setValue("toolkitFiles", toolkitFiles_);

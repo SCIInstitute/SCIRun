@@ -47,11 +47,8 @@ class MacroEditor : public QDockWidget, public Ui::MacroEditor
 
 public:
   explicit MacroEditor(QWidget* parent = nullptr);
-  //const QMap<QString, QString>& getScripts() const;
-  //const QMap<QString, bool>& getScriptEnabledFlags() const;
-
-  //void setScripts(const QMap<QString, QString>& scripts);
-  //void setScriptEnabledFlags(const QMap<QString, bool>& scriptsEnabled);
+  const QMap<QString, QString>& scripts() const;
+  void setScripts(const QMap<QString, QString>& scripts);
 
 private Q_SLOTS:
   void updateScriptEditor();
@@ -59,13 +56,12 @@ private Q_SLOTS:
   void addMacro();
   void removeMacro();
   void assignToButton();
-  //void enableStateChanged(int state);
+
 private:
   void push();
   void setupAssignToAction(QAction* action, int i);
   CodeEditor* scriptPlainTextEdit_;
-  //QMap<QString, QString> scripts_;
-  //QMap<QString, bool> scriptEnabledFlags_;
+  QMap<QString, QString> macros_;
 };
 
 }
