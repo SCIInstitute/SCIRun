@@ -71,18 +71,18 @@ void MacroEditor::assignToButton()
   }
 }
 
-const QMap<QString, QString>& MacroEditor::scripts() const
+const MacroNameValueList& MacroEditor::scripts() const
 {
   return macros_;
 }
 
-void MacroEditor::setScripts(const QMap<QString, QString>& macros)
+void MacroEditor::setScripts(const MacroNameValueList& macros)
 {
   macros_ = macros;
 
-  for (const auto& macroPair : macros_.toStdMap())
+  for (const auto& macroPair : macros_)
   {
-    auto item = new QListWidgetItem(macroPair.first, macroListWidget_);
+    auto item = new QListWidgetItem(macroPair[0], macroListWidget_);
   }
   if (!macros_.isEmpty())
   {
@@ -109,20 +109,23 @@ namespace
 void MacroEditor::addMacro()
 {
   bool ok;
-  QString text = QInputDialog::getText(this, "Add Macro", "Macro name:", QLineEdit::Normal, "", &ok);
-  if (ok && !text.isEmpty())
+  auto name = QInputDialog::getText(this, "Add Macro", "Macro name:", QLineEdit::Normal, "", &ok);
+  if (ok && !name.isEmpty())
   {
-    auto item = new QListWidgetItem(text, macroListWidget_);
-    macros_[text] = defaultScript;
+    auto item = new QListWidgetItem(name, macroListWidget_);
+    macros_.push_back(QStringList() << name << defaultScript);
   }
 }
 
 void MacroEditor::removeMacro()
 {
+  auto row = macroListWidget_->currentRow();
   for (auto& item : macroListWidget_->selectedItems())
   {
-    qDebug() << "removing " << item->text();
-    macros_.remove(item->text());
+    auto name = item->text();
+    qDebug() << "removing " << name;
+    macros_.removeAt(row);
+
     macroListWidget_->blockSignals(true);
     delete item;
     macroListWidget_->blockSignals(false);
@@ -133,10 +136,11 @@ void MacroEditor::removeMacro()
 void MacroEditor::updateScriptEditor()
 {
   auto item = macroListWidget_->currentItem();
+  auto row = macroListWidget_->currentRow();
   if (item)
   {
     auto key = item->text();
-    auto scr = macros_[key];
+    auto scr = macros_[row][1];
     scriptPlainTextEdit_->setPlainText(!scr.isEmpty() ? scr : defaultScript);
   }
   else
@@ -149,8 +153,9 @@ void MacroEditor::updateScripts()
 {
   if (macroListWidget_->count() > 0)
   {
+    auto row = macroListWidget_->currentRow();
     auto key = macroListWidget_->currentItem()->text();
     auto script = scriptPlainTextEdit_->toPlainText();
-    macros_[key] = script;
+    macros_[row][1] = script;
   }
 }

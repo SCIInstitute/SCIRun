@@ -67,6 +67,16 @@ namespace
     return ss;
   }
 
+  QList<QStringList> toStrList(const QList<QVariant>& lv)
+  {
+    QList<QStringList> ls;
+    for (const auto& v : lv)
+    {
+      ls.push_back(v.toStringList());
+    }
+    return ls;
+  }
+
   template <typename T>
   QMap<QString, QVariant> fromTypedMap(const QMap<QString, T>& m)
   {
@@ -76,6 +86,17 @@ namespace
       sv[ss.first] = ss.second;
     }
     return sv;
+  }
+
+  template <typename T>
+  QList<QVariant> fromTypedList(const QList<T>& list)
+  {
+    QList<QVariant> lv;
+    for (const auto& t : list)
+    {
+      lv.push_back(t);
+    }
+    return lv;
   }
 
   QMap<QString, QVariant> fromStrMap(const QMap<QString, QString>& m)
@@ -306,8 +327,8 @@ void SCIRunMainWindow::readSettings()
   const QString macros = "macros";
   if (settings.contains(macros))
   {
-    auto macrosMap = settings.value(macros).toMap();
-    macroEditor_->setScripts(toStrMap(macrosMap));
+    auto macrosList = settings.value(macros).toList();
+    macroEditor_->setScripts(toStrList(macrosList));
   }
 
   const QString savedSubnetworksNames = "savedSubnetworksNames";
@@ -384,7 +405,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("tagColors", tagManagerWindow_->getTagColors());
   settings.setValue("triggeredScripts", fromStrMap(triggeredEventsWindow_->scripts()));
   settings.setValue("triggeredScriptEnableFlags", fromBoolMap(triggeredEventsWindow_->scriptEnabledFlags()));
-  settings.setValue("macros", fromStrMap(macroEditor_->scripts()));
+  settings.setValue("macros", fromTypedList<QStringList>(macroEditor_->scripts()));
   settings.setValue("savedSubnetworksNames", savedSubnetworksNames_);
   settings.setValue("savedSubnetworksXml", savedSubnetworksXml_);
   settings.setValue("toolkitFiles", toolkitFiles_);

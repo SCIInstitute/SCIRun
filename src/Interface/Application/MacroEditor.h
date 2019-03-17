@@ -41,14 +41,16 @@ namespace Gui {
   class NetworkEditor;
   class CodeEditor;
 
+  using MacroNameValueList = QList<QStringList>;
+
 class MacroEditor : public QDockWidget, public Ui::MacroEditor
 {
 	Q_OBJECT
 
 public:
   explicit MacroEditor(QWidget* parent = nullptr);
-  const QMap<QString, QString>& scripts() const;
-  void setScripts(const QMap<QString, QString>& scripts);
+  const MacroNameValueList& scripts() const;
+  void setScripts(const MacroNameValueList& scripts);
 
 private Q_SLOTS:
   void updateScriptEditor();
@@ -58,10 +60,9 @@ private Q_SLOTS:
   void assignToButton();
 
 private:
-  void push();
   void setupAssignToAction(QAction* action, int i);
   CodeEditor* scriptPlainTextEdit_;
-  QMap<QString, QString> macros_;
+  MacroNameValueList macros_;
 };
 
 }
