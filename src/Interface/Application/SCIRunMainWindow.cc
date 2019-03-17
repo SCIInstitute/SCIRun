@@ -182,7 +182,11 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionQuit_, SIGNAL(triggered()), this, SLOT(close()));
   connect(actionRunScript_, SIGNAL(triggered()), this, SLOT(runScript()));
 
-  connect(actionRunMacro1_, SIGNAL(triggered()), this, SLOT(runMacro1()));
+  connect(actionRunMacro1_, SIGNAL(triggered()), this, SLOT(runMacro()));
+  connect(actionRunMacro2_, SIGNAL(triggered()), this, SLOT(runMacro()));
+  connect(actionRunMacro3_, SIGNAL(triggered()), this, SLOT(runMacro()));
+  connect(actionRunMacro4_, SIGNAL(triggered()), this, SLOT(runMacro()));
+  connect(actionRunMacro5_, SIGNAL(triggered()), this, SLOT(runMacro()));
 
   actionQuit_->setShortcut(QKeySequence::Quit);
 

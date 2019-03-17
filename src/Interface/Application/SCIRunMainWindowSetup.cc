@@ -153,6 +153,11 @@ void SCIRunMainWindow::createMacroToolbar()
   macroBar->addAction(actionRunMacro3_);
   macroBar->addAction(actionRunMacro4_);
   macroBar->addAction(actionRunMacro5_);
+  actionRunMacro1_->setProperty(MacroEditor::Index, 1);
+  actionRunMacro2_->setProperty(MacroEditor::Index, 2);
+  actionRunMacro3_->setProperty(MacroEditor::Index, 3);
+  actionRunMacro4_->setProperty(MacroEditor::Index, 4);
+  actionRunMacro5_->setProperty(MacroEditor::Index, 5);
 
   connect(actionMacroBar_, SIGNAL(toggled(bool)), macroBar, SLOT(setVisible(bool)));
   connect(macroBar, SIGNAL(visibilityChanged(bool)), actionMacroBar_, SLOT(setChecked(bool)));

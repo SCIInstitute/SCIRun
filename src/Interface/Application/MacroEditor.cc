@@ -30,8 +30,14 @@
 #include <Interface/Application/NetworkEditor.h>
 #include <Core/Application/Preferences/Preferences.h>
 #include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
+#include <Interface/Application/SCIRunMainWindow.h>
+
+#ifdef BUILD_WITH_PYTHON
+#include <Core/Python/PythonInterpreter.h>
+#endif
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Core;
 
 MacroEditor::MacroEditor(QWidget* parent /* = 0 */) : QDockWidget(parent),
   scriptPlainTextEdit_(new CodeEditor(this))
@@ -42,6 +48,7 @@ MacroEditor::MacroEditor(QWidget* parent /* = 0 */) : QDockWidget(parent),
   connect(scriptPlainTextEdit_, SIGNAL(textChanged()), this, SLOT(updateScripts()));
   connect(addPushButton_, SIGNAL(clicked()), this, SLOT(addMacro()));
   connect(removePushButton_, SIGNAL(clicked()), this, SLOT(removeMacro()));
+  connect(runNowPushButton_, SIGNAL(clicked()), this, SLOT(runSelectedMacro()));
 
   auto assignMenu = new QMenu(this);
   for (int i = 1; i <= 5; ++i)
@@ -52,22 +59,37 @@ MacroEditor::MacroEditor(QWidget* parent /* = 0 */) : QDockWidget(parent),
   assignToButtonPushButton_->setMenu(assignMenu);
 }
 
-static const char* macroIndex = "macroIndex";
+const char* MacroEditor::Index = "macroIndex";
+static int macroIndexInt = Qt::UserRole;
 
 void MacroEditor::setupAssignToAction(QAction* action, int i)
 {
-  action->setProperty(macroIndex, i);
+  action->setProperty(Index, i);
   connect(action, SIGNAL(triggered()), this, SLOT(assignToButton()));
 }
 
 void MacroEditor::assignToButton()
 {
-  auto index = sender()->property(macroIndex).toInt();
-  qDebug() << "assigning to macro " << index;
+  auto index = sender()->property(Index).toInt();
   auto selected = macroListWidget_->selectedItems();
+  auto row = macroListWidget_->currentRow();
   if (!selected.isEmpty())
   {
-    selected[0]->setText(tr("[%0] %1").arg(index).arg(selected[0]->text()));
+    for (int i = 0; i < macroListWidget_->count(); ++i)
+    {
+      auto other = macroListWidget_->item(i);
+      if (other->data(macroIndexInt).toInt() == index)
+      {
+        other->setToolTip("");
+        other->setData(macroIndexInt, 0);
+        macros_[i][MacroListItem::ButtonNumber] = "";
+      }
+    }
+
+    auto item = selected[0];
+    item->setToolTip(tr("Assigned to macro button %0").arg(index));
+    item->setData(macroIndexInt, index);
+    macros_[row][MacroListItem::ButtonNumber] = QString::number(index);
   }
 }
 
@@ -80,9 +102,19 @@ void MacroEditor::setScripts(const MacroNameValueList& macros)
 {
   macros_ = macros;
 
-  for (const auto& macroPair : macros_)
+  for (const auto& macroList : macros_)
   {
-    auto item = new QListWidgetItem(macroPair[0], macroListWidget_);
+    auto item = new QListWidgetItem(macroList[MacroListItem::Name], macroListWidget_);
+    if (macroList.size() > MacroListItem::ButtonNumber)
+    {
+      auto button = macroList[MacroListItem::ButtonNumber];
+      if (!button.isEmpty())
+      {
+        auto index = button.toInt();
+        item->setToolTip(tr("Assigned to macro button %0").arg(index));
+        item->setData(macroIndexInt, index);
+      }
+    }
   }
   if (!macros_.isEmpty())
   {
@@ -94,6 +126,7 @@ void MacroEditor::setScripts(const MacroNameValueList& macros)
 namespace
 {
   const QString defaultScript = "# Insert Python API calls here.\n"
+    "# This useful example will connect all available ShowField modules to a new ViewScene.\n"
     "mods = scirun_module_ids()\n"
     "view = scirun_add_module('ViewScene')\n"
     "cnt=0\n"
@@ -112,8 +145,8 @@ void MacroEditor::addMacro()
   auto name = QInputDialog::getText(this, "Add Macro", "Macro name:", QLineEdit::Normal, "", &ok);
   if (ok && !name.isEmpty())
   {
-    auto item = new QListWidgetItem(name, macroListWidget_);
-    macros_.push_back(QStringList() << name << defaultScript);
+    new QListWidgetItem(name, macroListWidget_);
+    macros_.push_back(QStringList() << name << defaultScript << "");
   }
 }
 
@@ -123,7 +156,6 @@ void MacroEditor::removeMacro()
   for (auto& item : macroListWidget_->selectedItems())
   {
     auto name = item->text();
-    qDebug() << "removing " << name;
     macros_.removeAt(row);
 
     macroListWidget_->blockSignals(true);
@@ -140,7 +172,7 @@ void MacroEditor::updateScriptEditor()
   if (item)
   {
     auto key = item->text();
-    auto scr = macros_[row][1];
+    auto scr = macros_[row][MacroListItem::Script];
     scriptPlainTextEdit_->setPlainText(!scr.isEmpty() ? scr : defaultScript);
   }
   else
@@ -156,6 +188,25 @@ void MacroEditor::updateScripts()
     auto row = macroListWidget_->currentRow();
     auto key = macroListWidget_->currentItem()->text();
     auto script = scriptPlainTextEdit_->toPlainText();
-    macros_[row][1] = script;
+    macros_[row][MacroListItem::Script] = script;
   }
+}
+
+void MacroEditor::runSelectedMacro()
+{
+#ifdef BUILD_WITH_PYTHON
+  auto row = macroListWidget_->currentRow();
+  if (row >= 0 && row < macros_.size())
+  {
+    auto scr = macros_[row][MacroListItem::Script];
+
+    NetworkEditor::InEditingContext iec(SCIRunMainWindow::Instance()->networkEditor());
+    PythonInterpreter::Instance().run_script(scr.toStdString());
+  }
+#endif
+}
+
+QString MacroEditor::macroForButton(int i) const
+{
+  return "";
 }

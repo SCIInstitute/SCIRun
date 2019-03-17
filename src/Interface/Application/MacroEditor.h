@@ -43,6 +43,13 @@ namespace Gui {
 
   using MacroNameValueList = QList<QStringList>;
 
+  enum MacroListItem
+  {
+    Name,
+    Script,
+    ButtonNumber
+  };
+
 class MacroEditor : public QDockWidget, public Ui::MacroEditor
 {
 	Q_OBJECT
@@ -52,12 +59,17 @@ public:
   const MacroNameValueList& scripts() const;
   void setScripts(const MacroNameValueList& scripts);
 
+  QString macroForButton(int i) const;
+
+  static const char* Index;
+
 private Q_SLOTS:
   void updateScriptEditor();
   void updateScripts();
   void addMacro();
   void removeMacro();
   void assignToButton();
+  void runSelectedMacro();
 
 private:
   void setupAssignToAction(QAction* action, int i);

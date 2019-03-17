@@ -264,7 +264,7 @@ private Q_SLOTS:
   void resetWindowLayout();
   void runNewModuleWizard();
   void runScript();
-  void runMacro1();
+  void runMacro();
   void saveNetwork();
   void saveNetworkAs();
   void selectModuleKeyboardAction();

@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>725</width>
+    <width>871</width>
     <height>422</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>725</width>
+    <width>800</width>
     <height>422</height>
    </size>
   </property>
@@ -23,18 +23,12 @@
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="4">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+      <item row="0" column="3">
+       <widget class="QPushButton" name="runNowPushButton_">
+        <property name="text">
+         <string>Run Now</string>
         </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
+       </widget>
       </item>
       <item row="0" column="2">
        <widget class="QPushButton" name="assignToButtonPushButton_">
@@ -63,13 +57,6 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="3">
-       <widget class="QPushButton" name="runNowPushButton_">
-        <property name="text">
-         <string>Run Now</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
     <item row="0" column="1">
@@ -81,14 +68,26 @@
     </item>
     <item row="1" column="0">
      <widget class="QListWidget" name="macroListWidget_">
+      <property name="maximumSize">
+       <size>
+        <width>400</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="showDropIndicator" stdset="0">
+       <bool>false</bool>
+      </property>
       <property name="dragEnabled">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="dragDropMode">
-       <enum>QAbstractItemView::InternalMove</enum>
+       <enum>QAbstractItemView::NoDragDrop</enum>
       </property>
       <property name="defaultDropAction">
-       <enum>Qt::MoveAction</enum>
+       <enum>Qt::IgnoreAction</enum>
+      </property>
+      <property name="alternatingRowColors">
+       <bool>false</bool>
       </property>
      </widget>
     </item>
