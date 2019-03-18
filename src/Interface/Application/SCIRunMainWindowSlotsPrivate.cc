@@ -288,11 +288,21 @@ void SCIRunMainWindow::runScript()
 void SCIRunMainWindow::runMacro()
 {
   auto index = sender()->property(MacroEditor::Index).toInt();
-  qDebug() << "macro" << index;
-
   auto script = macroEditor_->macroForButton(index);
   NetworkEditor::InEditingContext iec(networkEditor_);
   PythonInterpreter::Instance().run_script(script.toStdString());
+}
+
+void SCIRunMainWindow::updateMacroButton(int index, const QString& name)
+{
+  static std::vector<QAction*> buttons { actionRunMacro1_, actionRunMacro2_, actionRunMacro3_, actionRunMacro4_, actionRunMacro5_ };
+  if (index >= MacroEditor::MIN_MACRO_INDEX && index <= MacroEditor::MAX_MACRO_INDEX)
+  {
+    auto str = tr("Run Macro %0").arg(index);
+    if (!name.isEmpty())
+      str += ": " + name;
+    buttons[index - 1]->setToolTip(str);
+  }
 }
 
 void SCIRunMainWindow::showModuleSelectorContextMenu(const QPoint& pos)

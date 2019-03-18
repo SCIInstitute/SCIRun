@@ -360,6 +360,7 @@ void SCIRunMainWindow::setupScriptedEventsWindow()
   macroEditor_ = new MacroEditor(this);
   connect(actionMacroEditor_, SIGNAL(toggled(bool)), macroEditor_, SLOT(setVisible(bool)));
   connect(macroEditor_, SIGNAL(visibilityChanged(bool)), actionMacroEditor_, SLOT(setChecked(bool)));
+  connect(macroEditor_, SIGNAL(macroButtonChanged(int, const QString&)), this, SLOT(updateMacroButton(int, const QString&)));
   macroEditor_->hide();
 }
 

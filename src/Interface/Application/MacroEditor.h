@@ -62,6 +62,14 @@ public:
   QString macroForButton(int i) const;
 
   static const char* Index;
+  enum
+  {
+    MIN_MACRO_INDEX = 1,
+    MAX_MACRO_INDEX = 5
+  };
+
+Q_SIGNALS:
+  void macroButtonChanged(int index, const QString& name);
 
 private Q_SLOTS:
   void updateScriptEditor();

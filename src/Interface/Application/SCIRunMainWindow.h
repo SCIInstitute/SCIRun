@@ -265,6 +265,7 @@ private Q_SLOTS:
   void runNewModuleWizard();
   void runScript();
   void runMacro();
+  void updateMacroButton(int index, const QString& name);
   void saveNetwork();
   void saveNetworkAs();
   void selectModuleKeyboardAction();

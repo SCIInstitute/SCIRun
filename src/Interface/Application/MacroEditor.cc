@@ -86,10 +86,15 @@ void MacroEditor::assignToButton()
       }
     }
 
+    auto previous = macros_[row][MacroListItem::ButtonNumber].toInt();
+    if (previous >= MIN_MACRO_INDEX && previous <= MAX_MACRO_INDEX)
+      Q_EMIT macroButtonChanged(previous, "");
+
     auto item = selected[0];
     item->setToolTip(tr("Assigned to macro button %0").arg(index));
     item->setData(macroIndexInt, index);
     macros_[row][MacroListItem::ButtonNumber] = QString::number(index);
+    Q_EMIT macroButtonChanged(index, macros_[row][MacroListItem::Name]);
   }
 }
 
@@ -113,6 +118,7 @@ void MacroEditor::setScripts(const MacroNameValueList& macros)
         auto index = button.toInt();
         item->setToolTip(tr("Assigned to macro button %0").arg(index));
         item->setData(macroIndexInt, index);
+        Q_EMIT macroButtonChanged(index, macroList[MacroListItem::Name]);
       }
     }
   }
@@ -145,8 +151,9 @@ void MacroEditor::addMacro()
   auto name = QInputDialog::getText(this, "Add Macro", "Macro name:", QLineEdit::Normal, "", &ok);
   if (ok && !name.isEmpty())
   {
-    new QListWidgetItem(name, macroListWidget_);
+    auto item = new QListWidgetItem(name, macroListWidget_);
     macros_.push_back(QStringList() << name << defaultScript << "");
+    macroListWidget_->setCurrentItem(item);
   }
 }
 
@@ -156,6 +163,8 @@ void MacroEditor::removeMacro()
   for (auto& item : macroListWidget_->selectedItems())
   {
     auto name = item->text();
+    auto index = macros_[row][MacroListItem::ButtonNumber].toInt();
+    Q_EMIT macroButtonChanged(index, "");
     macros_.removeAt(row);
 
     macroListWidget_->blockSignals(true);
@@ -205,12 +214,6 @@ void MacroEditor::runSelectedMacro()
   }
 #endif
 }
-
-enum
-{
-  MIN_MACRO_INDEX = 1,
-  MAX_MACRO_INDEX = 5
-};
 
 QString MacroEditor::macroForButton(int index) const
 {
