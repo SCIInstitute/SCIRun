@@ -116,6 +116,27 @@ namespace SCIRun {
       glDeleteTextures(1, &mFontTexture);
     }
 
+    std::string SRInterface::toString(std::string prefix) const
+    {
+      std::string output = prefix + "SR_INTERFACE:\n";
+      prefix += "  ";
+
+      output += prefix + "SRObjects: " + std::to_string(mSRObjects.size()) + "\n";
+      for(auto& srobj : mSRObjects)
+      {
+        output += prefix + "  Name: \"" + srobj.mName + "\"  Port: " + std::to_string(srobj.mPort)
+          + "  Passes: " + std::to_string(srobj.mPasses.size()) + "\n";
+        for(auto& srpass: srobj.mPasses)
+          output += prefix + "    PassName: \"" + srpass.passName + "\"  RenderType: " + "\n";
+      }
+      output+="\n";
+
+      output += mCore.toString(prefix);
+      //output+="\n";
+
+      return output;
+    }
+
     //------------------------------------------------------------------------------
     void SRInterface::setupCore()
     {
@@ -898,6 +919,7 @@ namespace SCIRun {
 
             if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
             {
+              std::cout << "mRenderSortType == LIST_SORT\n";
               RENDERER_LOG("Create sorted lists of Buffers for transparency in each direction of the axis.");
               uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(ibo.data->getBuffer());
               size_t num_triangles = ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
@@ -1149,7 +1171,7 @@ namespace SCIRun {
             }
           }
         }
-
+        std::cout << "handleGeomObject\n";
         mCore.runGCOnNextExecution();
       }
       DEBUG_LOG_LINE_INFO

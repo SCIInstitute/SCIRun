@@ -84,6 +84,14 @@ const IBOMan::IBOData& IBOMan::getIBOData(const std::string& assetName) const
 
 void IBOMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
 {
+  for(auto& key: validKeys)
+    std::cout << "  Valid Keys: " << key << "\n";
+  std::cout << "\n";
+
+  for(auto& key: mIBOData)
+    std::cout<< "  Current Keys Pre-GC : " << key.first << "\n";
+  std::cout << "\n";
+
   // Every GLuint in validKeys should be in our map. If there is not, then
   // there is an error in the system, and it should be reported.
   // The reverse is not expected to be true, and is what we are attempting to
@@ -129,6 +137,10 @@ void IBOMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
     mIBOData.erase(it++);
     GL(glDeleteBuffers(1, &idToErase));
   }
+
+  for(auto& key: mIBOData)
+    std::cout<< "  Current Keys Post-GC : " << key.first << "\n";
+  std::cout << "\n";
 }
 
 class IBOGarbageCollector :
@@ -141,9 +153,14 @@ public:
   std::set<GLuint> mValidKeys;
 
   void preWalkComponents(spire::ESCoreBase&) override {mValidKeys.clear();}
-  void postWalkComponents(spire::ESCoreBase& core) override 
+  void postWalkComponents(spire::ESCoreBase& core) override
   {
     std::weak_ptr<IBOMan> im = core.getStaticComponent<StaticIBOMan>()->instance_;
+
+
+
+
+
     if (std::shared_ptr<IBOMan> man = im.lock()) {
       man->runGCAgainstVaidIDs(mValidKeys);
       mValidKeys.clear();

@@ -42,6 +42,8 @@ public:
   ESCore();
   virtual ~ESCore();
 
+  std::string toString(std::string prefix) const;
+
   void execute(double currentTime, double constantFrameTime);
   void setBackgroundColor(float r, float g, float b, float a);
   void runGCOnNextExecution(){runGC = true;}

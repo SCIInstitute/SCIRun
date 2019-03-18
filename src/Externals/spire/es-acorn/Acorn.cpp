@@ -147,7 +147,7 @@ void Acorn::addUserSystem(const std::string& name, uint64_t ms,
                          uint64_t referenceTime, uint64_t stagger)
 {
   if (warnIfSystemPresent(name)) return;
-  
+
   mUserSystems.insert(name);
   mSystems->addActiveSystem(name, ms, referenceTime, stagger);
 }
@@ -246,10 +246,13 @@ void Acorn::runCompleteGC()
 {
   for (const std::string& str : mGarbageCollectorSystems)
   {
-    std::shared_ptr<spire::BaseSystem> sys = mSystems->createNewSystem(str);
-    sys->walkComponents(*this);
+    if(true || str == "ren:IBOGarbageCollector")
+    {
+      std::cout << "Running: " << str << "\n";
+      std::shared_ptr<spire::BaseSystem> sys = mSystems->createNewSystem(str);
+      sys->walkComponents(*this);
+    }
   }
 }
 
 } // namespace spire
-

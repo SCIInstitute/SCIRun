@@ -173,6 +173,26 @@ void ViewSceneDialog::adjustToolbar()
   adjustToolbarForHighResolution(mToolBar);
 }
 
+std::string ViewSceneDialog::toString(std::string prefix) const
+{
+  auto spire = mSpire.lock();
+
+  std::string output = "VIEW_SCENE:\n";
+  prefix += "  ";
+
+  //auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
+  //auto portGeometries = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
+
+  output += prefix + "State:\n";
+  output += "\n";
+
+  output += spire->toString(prefix);
+  output += "\n";
+
+  return output;
+}
+
+
 void ViewSceneDialog::setInitialLightValues()
 {
   auto light0str = state_->getValue(Modules::Render::ViewScene::HeadLightColor).toString();
@@ -495,8 +515,11 @@ void ViewSceneDialog::newGeometryValue()
       }
     }
   }
+
   if (!validObjects.empty())
     spire->gcInvalidObjects(validObjects);
+
+  std::cout << toString("");
 
   sendScreenshotDownstreamForTesting();
 
@@ -1660,14 +1683,17 @@ void ViewSceneDialog::setupRenderTabValues()
 
 void ViewSceneDialog::showEvent(QShowEvent* evt)
 {
+  std::cout<<"showEvent\n";
   if (!shown_)
   {
+    std::cout<<"shown_ == false \n";
     autoViewClicked();
     shown_ = true;
   }
 
   if (pulledSavedVisibility_)
   {
+    std::cout<<"pulledSavedVisibility_ == true\n";
     ScopedWidgetSignalBlocker ssb(this);
     state_->setValue(Modules::Render::ViewScene::ShowViewer, true);
   }
