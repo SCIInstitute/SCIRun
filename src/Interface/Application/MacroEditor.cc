@@ -206,7 +206,21 @@ void MacroEditor::runSelectedMacro()
 #endif
 }
 
-QString MacroEditor::macroForButton(int i) const
+enum
 {
+  MIN_MACRO_INDEX = 1,
+  MAX_MACRO_INDEX = 5
+};
+
+QString MacroEditor::macroForButton(int index) const
+{
+  if (index >= MIN_MACRO_INDEX && index <= MAX_MACRO_INDEX)
+  {
+    for (const auto& macro : macros_)
+    {
+      if (macro[MacroListItem::ButtonNumber].toInt() == index)
+        return macro[MacroListItem::Script];
+    }
+  }
   return "";
 }

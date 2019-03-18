@@ -290,9 +290,9 @@ void SCIRunMainWindow::runMacro()
   auto index = sender()->property(MacroEditor::Index).toInt();
   qDebug() << "macro" << index;
 
+  auto script = macroEditor_->macroForButton(index);
   NetworkEditor::InEditingContext iec(networkEditor_);
-
-  //PythonInterpreter::Instance().run_script(jake);
+  PythonInterpreter::Instance().run_script(script.toStdString());
 }
 
 void SCIRunMainWindow::showModuleSelectorContextMenu(const QPoint& pos)
