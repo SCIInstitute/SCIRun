@@ -102,6 +102,11 @@ void ESCore::execute(double currentTime, double constantFrameTime)
   mSystems->renormalize();
 
   // Perform garbage collection if requested.
+  if(doGC)
+    {
+      runCompleteGC();
+      doGC = false;
+    }
 
   // Perform debug serialization here. You can save the frame here as well.
   // Might be useful for debugging.

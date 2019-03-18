@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>251</width>
-    <height>421</height>
+    <width>303</width>
+    <height>416</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -61,7 +61,7 @@
     <rect>
      <x>10</x>
      <y>251</y>
-     <width>231</width>
+     <width>281</width>
      <height>111</height>
     </rect>
    </property>
@@ -284,9 +284,9 @@
   <widget class="QSpinBox" name="vectorsResolutionSpinBox_">
    <property name="geometry">
     <rect>
-     <x>120</x>
+     <x>200</x>
      <y>390</y>
-     <width>111</width>
+     <width>91</width>
      <height>21</height>
     </rect>
    </property>
@@ -335,7 +335,7 @@
     <rect>
      <x>10</x>
      <y>56</y>
-     <width>231</width>
+     <width>281</width>
      <height>96</height>
     </rect>
    </property>
@@ -386,9 +386,9 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>120</x>
+     <x>200</x>
      <y>367</y>
-     <width>111</width>
+     <width>91</width>
      <height>20</height>
     </rect>
    </property>
@@ -437,9 +437,9 @@
   <widget class="QDoubleSpinBox" name="vectorsTransparencyDoubleSpinBox_">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>33</y>
-     <width>53</width>
+     <x>200</x>
+     <y>30</y>
+     <width>91</width>
      <height>20</height>
     </rect>
    </property>
@@ -456,9 +456,9 @@
   <widget class="QDoubleSpinBox" name="thresholdDoubleSpinBox_">
    <property name="geometry">
     <rect>
-     <x>110</x>
+     <x>200</x>
      <y>220</y>
-     <width>111</width>
+     <width>91</width>
      <height>24</height>
     </rect>
    </property>

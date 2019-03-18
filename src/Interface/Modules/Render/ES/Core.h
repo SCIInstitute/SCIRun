@@ -44,6 +44,7 @@ public:
 
   void execute(double currentTime, double constantFrameTime);
   void setBackgroundColor(float r, float g, float b, float a);
+  void runGCOnNextFrame(){doGC = true;}
   
 private:
 
@@ -55,6 +56,7 @@ private:
   float                     mLastRealTime;    ///< Last realtime passed into the core.
 
   float r_, g_, b_, a_;
+  bool doGC;
 };
 
 } // namespace Render

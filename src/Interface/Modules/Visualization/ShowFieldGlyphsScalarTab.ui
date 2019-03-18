@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>251</width>
+    <width>303</width>
     <height>395</height>
    </rect>
   </property>
@@ -61,7 +61,7 @@
     <rect>
      <x>10</x>
      <y>201</y>
-     <width>231</width>
+     <width>281</width>
      <height>81</height>
     </rect>
    </property>
@@ -87,9 +87,9 @@
    <widget class="QRadioButton" name="scalarsAsSpheresRButton_">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>140</x>
       <y>25</y>
-      <width>101</width>
+      <width>131</width>
       <height>21</height>
      </rect>
     </property>
@@ -124,9 +124,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>140</x>
       <y>45</y>
-      <width>101</width>
+      <width>131</width>
       <height>21</height>
      </rect>
     </property>
@@ -189,9 +189,9 @@
   <widget class="QSpinBox" name="scalarsResolutionSpinBox_">
    <property name="geometry">
     <rect>
-     <x>120</x>
+     <x>200</x>
      <y>363</y>
-     <width>111</width>
+     <width>91</width>
      <height>21</height>
     </rect>
    </property>
@@ -240,7 +240,7 @@
     <rect>
      <x>10</x>
      <y>56</y>
-     <width>231</width>
+     <width>281</width>
      <height>96</height>
     </rect>
    </property>
@@ -288,9 +288,9 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>120</x>
+     <x>200</x>
      <y>340</y>
-     <width>111</width>
+     <width>91</width>
      <height>20</height>
     </rect>
    </property>
@@ -339,10 +339,10 @@
   <widget class="QDoubleSpinBox" name="scalarsTransparencyDoubleSpinBox_">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>33</y>
-     <width>53</width>
-     <height>20</height>
+     <x>200</x>
+     <y>30</y>
+     <width>91</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="maximum">

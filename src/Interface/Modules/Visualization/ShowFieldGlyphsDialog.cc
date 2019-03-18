@@ -44,12 +44,13 @@ ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStat
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  fixSize();
 
-  addLineEditManager(lineEdit, ShowFieldGlyphs::FieldName);
   setupVectorsTab();
   setupScalarsTab();
   setupTensorsTab();
+  setupSecondaryTab();
+  setupTertiaryTab();
+  addLineEditManager(lineEdit, ShowFieldGlyphs::FieldName);
   WidgetStyleMixin::tabStyle(this->displayOptionsTabs_);
 
 
@@ -111,7 +112,7 @@ void ShowFieldGlyphsDialog::checkTabs()
     if (vectorTabIndex_ < 0)
     {
       displayOptionsTabs_->addTab(vectorTab_, tr("Vectors"));
-      vectorTabIndex_ = displayOptionsTabs_->count() - 1;
+      vectorTabIndex_ = displayOptionsTabs_->count() - 3;
     }
   }
   else
@@ -132,7 +133,7 @@ void ShowFieldGlyphsDialog::checkTabs()
     if (scalarTabIndex_ < 0)
     {
       displayOptionsTabs_->addTab(scalarTab_, tr("Scalars"));
-      scalarTabIndex_ = displayOptionsTabs_->count() - 1;
+      scalarTabIndex_ = displayOptionsTabs_->count() - 3;
     }
   }
   else
@@ -153,7 +154,7 @@ void ShowFieldGlyphsDialog::checkTabs()
     if (tensorTabIndex_ < 0)
     {
       displayOptionsTabs_->addTab(tensorTab_, tr("Tensors"));
-      tensorTabIndex_ = displayOptionsTabs_->count() - 1;
+      tensorTabIndex_ = displayOptionsTabs_->count() - 3;
     }
   }
   else
@@ -168,13 +169,17 @@ void ShowFieldGlyphsDialog::checkTabs()
       tensorTabIndex_ = -1;
     }
   }
+  // Show secondary and tertiary tabs
+  displayOptionsTabs_->addTab(secondaryTab_, tr("Secondary"));
+  displayOptionsTabs_->addTab(tertiaryTab_, tr("Tertiary"));
 
-  displayOptionsTabs_->setCurrentIndex(displayOptionsTabs_->count() - 1);
+  displayOptionsTabs_->setCurrentIndex(displayOptionsTabs_->count() - 3);
 }
 
 void ShowFieldGlyphsDialog::setupScalarsTab()
 {
   scalarTab_ = new ShowFieldGlyphsScalarTabDialog(this);
+  displayOptionsTabs_->removeTab(-1);
   displayOptionsTabs_->addTab(scalarTab_, tr("Scalars"));
   displayOptionsTabs_->removeTab(1);
   addCheckableButtonManager(scalarTab_->showScalarsCheckBox_, ShowFieldGlyphs::ShowScalars);
@@ -198,9 +203,36 @@ void ShowFieldGlyphsDialog::setupScalarsTab()
   //connectButtonToExecuteSignal(scalarTab_->scalarsAsAxisRButton_);
 }
 
+void ShowFieldGlyphsDialog::setupSecondaryTab(){
+  secondaryTab_ = new ShowFieldGlyphsSecondaryTabDialog(this);
+  displayOptionsTabs_->addTab(secondaryTab_, tr("Secondary"));
+  addCheckableButtonManager(secondaryTab_->showSecondaryCheckBox_, ShowFieldGlyphs::ShowSecondary);
+  addRadioButtonGroupManager({ secondaryTab_->defaultSecondaryColoringRButton_, secondaryTab_->colormapLookupSecondaryColoringRButton_,
+                               secondaryTab_->conversionRGBSecondaryColoringRButton_ }, ShowFieldGlyphs::SecondaryColoring);
+  addCheckableButtonManager(secondaryTab_->secondaryAlphaMappingCheckBox_, ShowFieldGlyphs::SecondaryAlphaMapping);
+  addCheckableButtonManager(secondaryTab_->secondaryGlyphValueCheckBox_, ShowFieldGlyphs::SecondaryGlyphValue);
+  addRadioButtonGroupManager({ secondaryTab_->majorRadiusRButton_, secondaryTab_->minorRadiusRButton_,
+                               secondaryTab_->pitchRButton_ }, ShowFieldGlyphs::SecondarySpringType);
+  addDoubleSpinBoxManager(secondaryTab_->secondaryScaleSpinBox_, ShowFieldGlyphs::SecondaryScale);
+}
+
+void ShowFieldGlyphsDialog::setupTertiaryTab(){
+  tertiaryTab_ = new ShowFieldGlyphsTertiaryTabDialog(this);
+  displayOptionsTabs_->addTab(tertiaryTab_, tr("Tertiary"));
+  addCheckableButtonManager(tertiaryTab_->showTertiaryCheckBox_, ShowFieldGlyphs::ShowTertiary);
+  addRadioButtonGroupManager({ tertiaryTab_->defaultTertiaryColoringRButton_, tertiaryTab_->colormapLookupTertiaryColoringRButton_,
+                               tertiaryTab_->conversionRGBTertiaryColoringRButton_ }, ShowFieldGlyphs::TertiaryColoring);
+  addCheckableButtonManager(tertiaryTab_->tertiaryAlphaMappingCheckBox_, ShowFieldGlyphs::TertiaryAlphaMapping);
+  addCheckableButtonManager(tertiaryTab_->tertiaryGlyphValueCheckBox_, ShowFieldGlyphs::TertiaryGlyphValue);
+  addRadioButtonGroupManager({ tertiaryTab_->majorRadiusRButton_, tertiaryTab_->minorRadiusRButton_,
+                               tertiaryTab_->pitchRButton_ }, ShowFieldGlyphs::TertiarySpringType);
+  addDoubleSpinBoxManager(tertiaryTab_->tertiaryScaleSpinBox_, ShowFieldGlyphs::TertiaryScale);
+}
+
 void ShowFieldGlyphsDialog::setupVectorsTab()
 {
   vectorTab_ = new ShowFieldGlyphsVectorTabDialog(this);
+  displayOptionsTabs_->removeTab(-1);
   displayOptionsTabs_->addTab(vectorTab_, tr("Vectors"));
   displayOptionsTabs_->removeTab(1);
   addCheckableButtonManager(vectorTab_->showVectorsCheckBox_, ShowFieldGlyphs::ShowVectors);
@@ -240,6 +272,7 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
 void ShowFieldGlyphsDialog::setupTensorsTab()
 {
   tensorTab_ = new ShowFieldGlyphsTensorTabDialog(this);
+  displayOptionsTabs_->removeTab(-1);
   displayOptionsTabs_->addTab(tensorTab_, tr("Tensors"));
   displayOptionsTabs_->removeTab(1);
   addCheckableButtonManager(tensorTab_->showTensorsCheckBox_, ShowFieldGlyphs::ShowTensors);

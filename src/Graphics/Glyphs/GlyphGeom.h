@@ -53,7 +53,7 @@ namespace SCIRun {
         const Datatypes::ColorScheme& colorScheme, RenderState state,
         const Datatypes::SpireIBO::PRIMITIVE& primIn, const Core::Geometry::BBox& bbox);
 
-      void addArrow(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double resolution,
+      void addArrow(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double height, double resolution,
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void addSphere(const Core::Geometry::Point& p, double radius, double resolution, const Core::Datatypes::ColorRGB& color);
       void addBox(const Core::Geometry::Point& center, Core::Geometry::Tensor& t, double scale);

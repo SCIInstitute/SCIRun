@@ -36,6 +36,7 @@ SET(Interface_Modules_Visualization_FORMS
   ShowFieldGlyphsVectorTab.ui
   ShowFieldGlyphsTensorTab.ui
   ShowFieldGlyphsSecondaryTab.ui
+  ShowFieldGlyphsTertiaryTab.ui
   ShowString.ui
   ShowColorMap.ui
   RescaleColorMap.ui
@@ -51,6 +52,8 @@ SET(Interface_Modules_Visualization_HEADERS
   ShowFieldGlyphsScalarTabDialog.h
   ShowFieldGlyphsVectorTabDialog.h
   ShowFieldGlyphsTensorTabDialog.h
+  ShowFieldGlyphsSecondaryTabDialog.h
+  ShowFieldGlyphsTertiaryTabDialog.h
   ShowStringDialog.h
   ShowColorMapDialog.h
   RescaleColorMapDialog.h
@@ -65,6 +68,8 @@ SET(Interface_Modules_Visualization_SOURCES
   ShowFieldGlyphsScalarTabDialog.cc
   ShowFieldGlyphsVectorTabDialog.cc
   ShowFieldGlyphsTensorTabDialog.cc
+  ShowFieldGlyphsSecondaryTabDialog.cc
+  ShowFieldGlyphsTertiaryTabDialog.cc
   ShowStringDialog.cc
   ShowColorMapDialog.cc
   RescaleColorMapDialog.cc

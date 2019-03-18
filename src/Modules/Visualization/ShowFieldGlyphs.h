@@ -39,8 +39,7 @@ namespace SCIRun {
     namespace Visualization {
 
       class SCISHARE ShowFieldGlyphs : public Dataflow::Networks::GeometryGeneratingModule,
-        //public Has6InputPorts<FieldPortTag, ColorMapPortTag, FieldPortTag, ColorMapPortTag, FieldPortTag, ColorMapPortTag>,
-        public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
+        public Has6InputPorts<FieldPortTag, ColorMapPortTag, FieldPortTag, ColorMapPortTag, FieldPortTag, ColorMapPortTag>,
         public Has1OutputPort < GeometryPortTag >,
         public Core::Thread::Interruptible
       {
@@ -49,6 +48,16 @@ namespace SCIRun {
         virtual void execute() override;
 
         static const Core::Algorithms::AlgorithmParameterName FieldName;
+
+        // Tab Control
+        static const Core::Algorithms::AlgorithmParameterName ShowVectorTab;
+        static const Core::Algorithms::AlgorithmParameterName ShowScalarTab;
+        static const Core::Algorithms::AlgorithmParameterName ShowTensorTab;
+        static const Core::Algorithms::AlgorithmParameterName ShowSecondaryTab;
+        static const Core::Algorithms::AlgorithmParameterName ShowTertiaryTab;
+
+        // Mesh Color
+        static const Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
 
         // Vector Tab
         static const Core::Algorithms::AlgorithmParameterName ShowVectors;
@@ -62,7 +71,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName RenderBidirectionaly;
         static const Core::Algorithms::AlgorithmParameterName RenderGlyphsBellowThreshold;
         static const Core::Algorithms::AlgorithmParameterName Threshold;
-        
+
         // Scalar Tab
         static const Core::Algorithms::AlgorithmParameterName ShowScalars;
         static const Core::Algorithms::AlgorithmParameterName ScalarsTransparency;
@@ -81,22 +90,28 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName TensorsColoring;
         static const Core::Algorithms::AlgorithmParameterName TensorsDisplayType;
 
-        // Mesh Color
-        static const Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
+        //Secondary Controls
+        static const Core::Algorithms::AlgorithmParameterName ShowSecondary;
+        static const Core::Algorithms::AlgorithmParameterName SecondaryColoring;
+        static const Core::Algorithms::AlgorithmParameterName SecondaryAlphaMapping;
+        static const Core::Algorithms::AlgorithmParameterName SecondaryGlyphValue;
+        static const Core::Algorithms::AlgorithmParameterName SecondarySpringType;
+        static const Core::Algorithms::AlgorithmParameterName SecondaryScale;
 
-        // Tab Control
-        static const Core::Algorithms::AlgorithmParameterName ShowVectorTab;
-        static const Core::Algorithms::AlgorithmParameterName ShowScalarTab;
-        static const Core::Algorithms::AlgorithmParameterName ShowTensorTab;
-        static const Core::Algorithms::AlgorithmParameterName ShowSecondaryTab;
-        static const Core::Algorithms::AlgorithmParameterName ShowTertiaryTab;
+        //Tertiary Controls
+        static const Core::Algorithms::AlgorithmParameterName ShowTertiary;
+        static const Core::Algorithms::AlgorithmParameterName TertiaryColoring;
+        static const Core::Algorithms::AlgorithmParameterName TertiaryAlphaMapping;
+        static const Core::Algorithms::AlgorithmParameterName TertiaryGlyphValue;
+        static const Core::Algorithms::AlgorithmParameterName TertiarySpringType;
+        static const Core::Algorithms::AlgorithmParameterName TertiaryScale;
 
         INPUT_PORT(0, PrimaryData, Field);
         INPUT_PORT(1, PrimaryColorMap, ColorMap);
-        //INPUT_PORT(2, SecondaryData, Field);
-        //INPUT_PORT(3, SecondaryColorMap, ColorMap);
-        //INPUT_PORT(4, TertiaryData, Field);
-        //INPUT_PORT(5, TertiaryColorMap, ColorMap);
+        INPUT_PORT(2, SecondaryData, Field);
+        INPUT_PORT(3, SecondaryColorMap, ColorMap);
+        INPUT_PORT(4, TertiaryData, Field);
+        INPUT_PORT(5, TertiaryColorMap, ColorMap);
         OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
         virtual void setStateDefaults() override;
