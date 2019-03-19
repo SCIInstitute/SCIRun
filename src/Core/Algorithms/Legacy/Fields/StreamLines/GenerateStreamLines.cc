@@ -137,7 +137,7 @@ IntegrationMethod convertMethod(const std::string& option)
   else if (option == "RungeKuttaFehlberg") method = 4;
   else if (option == "CellWalk") method = 5;
   else
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Unknown streamline method selected"));
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Unknown streamline method selected: " + option));
   return IntegrationMethod(method);
 }
 
