@@ -79,6 +79,9 @@ namespace SCIRun {
     //------------------------------------------------------------------------------
     SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context,
       int frameInitLimit) :
+      orientSize(1.0),
+      orientPosX(0.5),
+      orientPosY(0.5),
       mSelectedID(0),
       mZoomSpeed(65),
       mMouseMode(MOUSE_OLDSCIRUN),
@@ -563,6 +566,43 @@ namespace SCIRun {
     void SRInterface::showOrientation(bool value)
     {
       showOrientation_ = value;
+    }
+
+    //------------------------------------------------------------------------------
+    void SRInterface::setOrientSize(int size)
+    {
+      // Remap from 1:100 to 0.1:10
+      orientSize = ((float)size)/10.0f;
+    }
+
+    //------------------------------------------------------------------------------
+    void SRInterface::setOrientPosX(int pos)
+    {
+      // Remap 0:100 to -0.5:0.5
+      float x = ((float)pos-50)/100;
+      orientPosX = x;
+    }
+
+    //------------------------------------------------------------------------------
+    void SRInterface::setOrientPosY(int pos)
+    {
+      // Remap 0:100 to -0.5:0.5
+      float y = ((float)pos-50)/100;
+      orientPosY = y;
+    }
+
+    //------------------------------------------------------------------------------
+    void SRInterface::setDefaultOrientPos()
+    {
+      float y = 0.5f;
+      float x = 0.5f;
+    }
+
+    //------------------------------------------------------------------------------
+    void SRInterface::setCenterOrientPos()
+    {
+      float y = 0.0f;
+      float x = 0.0f;
     }
 
     //------------------------------------------------------------------------------
@@ -1626,16 +1666,37 @@ namespace SCIRun {
             // variable.
             gen::StaticScreenDims* dims = mCore.getStaticComponent<gen::StaticScreenDims>();
             float aspect = static_cast<float>(dims->width) / static_cast<float>(dims->height);
-            glm::mat4 projection = glm::perspective(0.59f, aspect, 1.0f, 2000.0f);
-
+            // Project onto a orthographic plane with respect to aspect ratio
+            glm::mat4 projection = glm::ortho(-aspect/2, aspect/2, -0.5f, 0.5f, 0.0f, 2.0f);
+            
             // Build world transform for all axes. Rotates about uninverted camera's
             // view, then translates to a specified corner on the screen.
             glm::mat4 axesRot = mCamera->getWorldToView();
             axesRot[3][0] = 0.0f;
             axesRot[3][1] = 0.0f;
             axesRot[3][2] = 0.0f;
-            glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(0.375f * aspect, 0.37f, -1.5f));
-            glm::mat4 axesScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.8f));
+
+            // Remap x and y position(-0.5 to 0.5) so the edge doesn't pass the margin, regardless of size
+            float margin = orientSize / 10.0f;
+            float xLow2 = -aspect/2 + margin;
+            float xHigh2 = aspect/2 - margin;
+            float yLow2 = -0.5 + margin;
+            float yHigh2 = 0.5 - margin;
+            float xPos, yPos;
+
+            // If the scale is larger than the width, the scale centers at 0
+            if(xLow2 > 0 && xHigh2 < 0)
+              {
+                xPos = 0;
+              }
+            else
+              {
+                xPos = xLow2 + (orientPosX + 0.5f) * (xHigh2 - xLow2);
+              }
+            yPos = yLow2 + (orientPosY + 0.5f) * (yHigh2 - yLow2);
+
+            glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(xPos, yPos, -1.5f));
+            glm::mat4 axesScale = glm::scale(glm::mat4(1.0f), glm::vec3(orientSize));
             glm::mat4 axesTransform = axesScale * axesRot;
 
             GLint locCamViewVec = glGetUniformLocation(shader, "uCamViewVec");

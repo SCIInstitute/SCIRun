@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>488</width>
-    <height>497</height>
+    <width>496</width>
+    <height>662</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>488</width>
-    <height>497</height>
+    <width>496</width>
+    <height>662</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
     </size>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
+    <item row="1" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="enabled">
        <bool>true</bool>
@@ -39,7 +39,7 @@
        </font>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>5</number>
       </property>
       <widget class="QWidget" name="ObjectTab">
        <attribute name="title">
@@ -66,6 +66,11 @@
              <attribute name="headerVisible">
               <bool>false</bool>
              </attribute>
+             <column>
+              <property name="text">
+               <string notr="true">1</string>
+              </property>
+             </column>
             </widget>
            </item>
            <item>
@@ -1317,52 +1322,205 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="viewOptionsGroupBox_">
+         <widget class="QGroupBox" name="groupBox">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="font">
            <font>
-            <weight>50</weight>
-            <bold>false</bold>
+            <pointsize>13</pointsize>
            </font>
           </property>
           <property name="title">
-           <string>View Options</string>
+           <string>Orientation Axes</string>
           </property>
-          <layout class="QGridLayout" name="gridLayout_8">
-           <item row="0" column="0">
-            <widget class="QCheckBox" name="autoViewOnLoadCheckBox_">
-             <property name="text">
-              <string>Autoview on Load</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QCheckBox" name="orientationCheckBox_">
-             <property name="toolTip">
-              <string>Toggle Orientation Axis</string>
-             </property>
-             <property name="text">
-              <string>Orientation</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QCheckBox" name="orthoViewCheckBox_">
-             <property name="text">
-              <string>Ortho View</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QCheckBox" name="showAxisCheckBox_">
-             <property name="text">
-              <string>Show Axis</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+          <widget class="QLabel" name="label_26">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>50</y>
+             <width>31</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Size:</string>
+           </property>
+          </widget>
+          <widget class="QSlider" name="orientAxisSize_">
+           <property name="geometry">
+            <rect>
+             <x>70</x>
+             <y>60</y>
+             <width>341</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>50</number>
+           </property>
+           <property name="pageStep">
+            <number>10</number>
+           </property>
+           <property name="value">
+            <number>5</number>
+           </property>
+           <property name="sliderPosition">
+            <number>5</number>
+           </property>
+           <property name="tracking">
+            <bool>true</bool>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_27">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>120</y>
+             <width>41</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>X Axis:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_28">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>150</y>
+             <width>41</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Y Axis:</string>
+           </property>
+          </widget>
+          <widget class="QSlider" name="orientAxisXPos_">
+           <property name="geometry">
+            <rect>
+             <x>70</x>
+             <y>130</y>
+             <width>341</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="value">
+            <number>100</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+          <widget class="QSlider" name="orientAxisYPos_">
+           <property name="geometry">
+            <rect>
+             <x>70</x>
+             <y>160</y>
+             <width>341</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>100</number>
+           </property>
+           <property name="value">
+            <number>100</number>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+          <widget class="QCheckBox" name="orientationCheckBox_">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>30</y>
+             <width>203</width>
+             <height>18</height>
+            </rect>
+           </property>
+           <property name="toolTip">
+            <string>Toggle Orientation Axis</string>
+           </property>
+           <property name="text">
+            <string>Show Orientation Axes</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="orientDefaultPositionButton">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="geometry">
+            <rect>
+             <x>110</x>
+             <y>90</y>
+             <width>110</width>
+             <height>31</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Default</string>
+           </property>
+           <property name="default">
+            <bool>true</bool>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_29">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>90</y>
+             <width>56</width>
+             <height>31</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Position:</string>
+           </property>
+          </widget>
+          <widget class="QPushButton" name="orientCenterPositionButton">
+           <property name="geometry">
+            <rect>
+             <x>250</x>
+             <y>90</y>
+             <width>110</width>
+             <height>31</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Center</string>
+           </property>
+          </widget>
          </widget>
         </item>
         <item>
@@ -1383,95 +1541,6 @@
            <bool>false</bool>
           </property>
           <layout class="QGridLayout" name="gridLayout_4">
-           <item row="1" column="5">
-            <widget class="QLabel" name="label_12">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Multiplier:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="8">
-            <spacer name="horizontalSpacer_13">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>69</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="4" column="0">
-            <widget class="QLabel" name="label_10">
-             <property name="text">
-              <string>Height:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <spacer name="horizontalSpacer_9">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_7">
-             <property name="text">
-              <string>Font Size: </string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_9">
-             <property name="text">
-              <string>Length:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QSpinBox" name="fontSizeSpinBox_">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimum">
-              <number>1</number>
-             </property>
-             <property name="value">
-              <number>8</number>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="2">
-            <spacer name="horizontalSpacer_11">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>56</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
            <item row="1" column="2">
             <spacer name="horizontalSpacer_10">
              <property name="orientation">
@@ -1484,32 +1553,6 @@
               </size>
              </property>
             </spacer>
-           </item>
-           <item row="1" column="8">
-            <spacer name="horizontalSpacer_14">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>200</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="4" column="1">
-            <widget class="QDoubleSpinBox" name="scaleBarHeightDoubleSpinBox_">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="value">
-              <double>1.000000000000000</double>
-             </property>
-            </widget>
            </item>
            <item row="0" column="8">
             <spacer name="horizontalSpacer_15">
@@ -1537,12 +1580,65 @@
              </property>
             </widget>
            </item>
+           <item row="1" column="8">
+            <spacer name="horizontalSpacer_14">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>200</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_10">
+             <property name="text">
+              <string>Height:</string>
+             </property>
+            </widget>
+           </item>
            <item row="0" column="5">
             <widget class="QLabel" name="label_8">
              <property name="text">
               <string>Unit:</string>
              </property>
             </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QDoubleSpinBox" name="scaleBarHeightDoubleSpinBox_">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="value">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_9">
+             <property name="text">
+              <string>Length:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="2">
+            <spacer name="horizontalSpacer_11">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>56</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
            <item row="0" column="6">
             <widget class="QLineEdit" name="scaleBarUnitLineEdit_">
@@ -1579,6 +1675,19 @@
              </property>
             </widget>
            </item>
+           <item row="1" column="5">
+            <widget class="QLabel" name="label_12">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Multiplier:</string>
+             </property>
+            </widget>
+           </item>
            <item row="4" column="6">
             <widget class="QSpinBox" name="numTicksSpinBox_">
              <property name="sizePolicy">
@@ -1591,6 +1700,26 @@
               <number>11</number>
              </property>
             </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_7">
+             <property name="text">
+              <string>Font Size: </string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="8">
+            <spacer name="horizontalSpacer_13">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>69</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
            <item row="4" column="5">
             <widget class="QLabel" name="label_13">
@@ -1605,21 +1734,76 @@
              </property>
             </widget>
            </item>
+           <item row="0" column="1">
+            <widget class="QSpinBox" name="fontSizeSpinBox_">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="value">
+              <number>8</number>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <spacer name="horizontalSpacer_9">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
          </widget>
         </item>
         <item>
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
+         <widget class="QGroupBox" name="viewOptionsGroupBox_">
+          <property name="enabled">
+           <bool>true</bool>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>37</height>
-           </size>
+          <property name="font">
+           <font>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
           </property>
-         </spacer>
+          <property name="title">
+           <string>View Options</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_8">
+           <item row="1" column="0">
+            <widget class="QCheckBox" name="orthoViewCheckBox_">
+             <property name="text">
+              <string>Ortho View</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QCheckBox" name="autoViewOnLoadCheckBox_">
+             <property name="text">
+              <string>Autoview on Load</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QCheckBox" name="showAxisCheckBox_">
+             <property name="text">
+              <string>Show Axis</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -1810,7 +1994,24 @@
   </widget>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>orientCenterPositionButton</sender>
+   <signal>clicked()</signal>
+   <receiver>orientAxisXPos_</receiver>
+   <slot>update()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>339</x>
+     <y>355</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>275</x>
+     <y>390</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <buttongroups>
   <buttongroup name="shadingButtonGroup_"/>
   <buttongroup name="planeButtonGroup_"/>

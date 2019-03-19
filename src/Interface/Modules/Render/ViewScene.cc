@@ -555,6 +555,38 @@ void ViewSceneDialog::showOrientationChecked(bool value)
   spire->showOrientation(value);
 }
 
+void ViewSceneDialog::setOrientAxisSize(int value)
+{
+  auto spire = mSpire.lock();
+  spire->setOrientSize(value);
+}
+
+void ViewSceneDialog::setOrientAxisPosX(int pos)
+{
+  auto spire = mSpire.lock();
+  spire->setOrientPosX(pos);
+}
+
+void ViewSceneDialog::setOrientAxisPosY(int pos)
+{
+  auto spire = mSpire.lock();
+  spire->setOrientPosY(pos);
+}
+
+void ViewSceneDialog::setCenterOrientPos()
+{
+  setOrientAxisPosX(50);
+  setOrientAxisPosY(50);
+  //setSliderCenterPos();
+}
+
+void ViewSceneDialog::setDefaultOrientPos()
+{
+  setOrientAxisPosX(100);
+  setOrientAxisPosY(100);
+  //setSliderDefaultPos();
+}
+
 //------------------------------------------------------------------------------
 void ViewSceneDialog::showAxisChecked(bool value)
 {
