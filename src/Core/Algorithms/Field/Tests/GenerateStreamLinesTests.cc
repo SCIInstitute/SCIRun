@@ -53,6 +53,16 @@ FieldHandle LoadSingleSeed()
    return loadFieldFromFile(TestResources::rootDir() / "Fields/streamlines/singleSeed.fld");
 }
 
+FieldHandle LoadTorsoSeeds()
+{
+   return loadFieldFromFile(TestResources::rootDir() / "Fields/seedPointsFromTorso.fld");
+}
+
+FieldHandle LoadTorso()
+{
+   return loadFieldFromFile(TestResources::rootDir() / "Fields/utahtorso-lowres/gradient.fld");
+}
+
 FieldHandle LoadVectorField()
 {
    return loadFieldFromFile(TestResources::rootDir() / "Fields/streamlines/vectorField.fld");
@@ -177,5 +187,31 @@ TEST(GenerateStreamLinesTests, MultipleSeedsProducesMultipleStreamlinesMultiThre
     // EXPECT_EQ(output->vmesh()->num_nodes(), 8568);
     // EXPECT_EQ(output->vmesh()->num_elems(), 8565);
     // EXPECT_EQ(output->vfield()->num_values(), 8568);
+  }
+}
+
+
+TEST(GenerateStreamLinesTests, ManySeedsMultithreaded)
+{
+  auto torsoSeeds = LoadTorsoSeeds();
+  auto torso = LoadTorso();
+
+  for (const auto& method : methods)
+  {
+    GenerateStreamLinesAlgo algo;
+    FieldHandle output;
+
+    algo.set(Parameters::UseMultithreading, true);
+    algo.setOption(Parameters::StreamlineMethod, method);
+
+    algo.runImpl(torso, torsoSeeds, output);
+
+    EXPECT_GT(output->vmesh()->num_nodes(), 0);
+    EXPECT_GT(output->vmesh()->num_elems(), 0);
+    EXPECT_GT(output->vfield()->num_values(), 0);
+
+    // EXPECT_EQ(output->vmesh()->num_nodes(), 65);
+    // EXPECT_EQ(output->vmesh()->num_elems(), 116);
+    // EXPECT_EQ(output->vfield()->num_values(), 65);
   }
 }

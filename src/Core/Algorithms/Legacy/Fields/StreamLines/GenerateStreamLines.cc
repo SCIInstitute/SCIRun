@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -41,6 +40,7 @@
 #include <Core/Thread/Interruptible.h>
 #include <Core/Thread/Barrier.h>
 #include <Core/Thread/Parallel.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -80,7 +80,6 @@ GenerateStreamLinesAlgo::GenerateStreamLinesAlgo()
 
 namespace detail
 {
-
   void CleanupStreamLinePoints(const std::vector<Point> &input, std::vector<Point> &output, double e2)
   {
     // Removes colinear points from the list of points.
@@ -130,36 +129,43 @@ namespace detail
 
   IntegrationMethod convertMethod(const std::string& option)
   {
-    int method = 0;
-    if (option == "AdamsBashforth") method = 0;
-    else if (option == "Heun") method = 2;
-    else if (option == "RungeKutta") method = 3;
-    else if (option == "RungeKuttaFehlberg") method = 4;
-    else if (option == "CellWalk") method = 5;
-    else
-      BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Unknown streamline method selected: " + option));
-    return IntegrationMethod(method);
+    if (option == "AdamsBashforth")
+      return IntegrationMethod::AdamsBashforth;
+    if (option == "Heun")
+      return IntegrationMethod::Heun;
+    if (option == "RungeKutta")
+      return IntegrationMethod::RungeKutta;
+    if (option == "RungeKuttaFehlberg")
+      return IntegrationMethod::RungeKuttaFehlberg;
+    if (option == "CellWalk")
+      return IntegrationMethod::CellWalk;
+
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Unknown streamline method selected: " + option));
   }
 
   StreamlineValue convertValue(const std::string& option)
   {
     //"Seed value|Seed index|Integration index|Integration step|Distance from seed|Streamline length"
     if (option == "Seed value")
-      return SeedValue;
+      return StreamlineValue::SeedValue;
     if (option == "Seed index")
-      return SeedIndex;
+      return StreamlineValue::SeedIndex;
     if (option == "Integration index")
-      return IntegrationIndex;
+      return StreamlineValue::IntegrationIndex;
     if (option == "Integration step")
-      return IntegrationStep;
+      return StreamlineValue::IntegrationStep;
     if (option == "Distance from seed")
-      return DistanceFromSeed;
+      return StreamlineValue::DistanceFromSeed;
     if (option == "Streamline length")
-      return StreamlineLength;
+      return StreamlineValue::StreamlineLength;
 
     BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Unknown streamline value selected"));
   }
 
+  class GenerateStreamLinesAlgoImplBase : public Core::Thread::Interruptible
+  {
+
+  };
 
   class GenerateStreamLinesAlgoP : public Core::Thread::Interruptible
   {
@@ -167,8 +173,8 @@ namespace detail
   public:
     GenerateStreamLinesAlgoP(const AlgorithmBase* algo) :
       algo_(algo), numprocessors_(Parallel::NumCores()), barrier_("FEMVolRHSBuilder Barrier", numprocessors_),
-      tolerance_(0), step_size_(0), max_steps_(0), direction_(0), value_(SeedIndex), remove_colinear_pts_(false),
-      method_(AdamsBashforth), seed_field_(0), seed_mesh_(0), field_(0), mesh_(0), ofield_(0), omesh_(0)
+      tolerance_(0), step_size_(0), max_steps_(0), direction_(0), value_(StreamlineValue::SeedIndex), remove_colinear_pts_(false),
+      method_(IntegrationMethod::AdamsBashforth), seed_field_(0), seed_mesh_(0), field_(0), mesh_(0), ofield_(0), omesh_(0)
     {}
 
     bool run(FieldHandle input,
@@ -272,7 +278,7 @@ namespace detail
         double length = 0;
         Point p1;
 
-        if (value_ == StreamlineLength)
+        if (value_ == StreamlineValue::StreamlineLength)
         {
           node_iter = BI.nodes_.begin();
           if (node_iter != BI.nodes_.end())
@@ -303,12 +309,12 @@ namespace detail
 
           ofield->resize_values();
 
-          if (value_ == SeedValue) ofield->copy_value(seed_field_, idx, n1);
-          else if (value_ == SeedIndex) ofield->set_value(index_type(idx), n1);
-          else if (value_ == IntegrationIndex) ofield->set_value(abs(cc), n1);
-          else if (value_ == IntegrationStep) ofield->set_value(0, n1);
-          else if (value_ == DistanceFromSeed) ofield->set_value(0, n1);
-          else if (value_ == StreamlineLength) ofield->set_value(length, n1);
+          if (value_ == StreamlineValue::SeedValue) ofield->copy_value(seed_field_, idx, n1);
+          else if (value_ == StreamlineValue::SeedIndex) ofield->set_value(index_type(idx), n1);
+          else if (value_ == StreamlineValue::IntegrationIndex) ofield->set_value(abs(cc), n1);
+          else if (value_ == StreamlineValue::IntegrationStep) ofield->set_value(0, n1);
+          else if (value_ == StreamlineValue::DistanceFromSeed) ofield->set_value(0, n1);
+          else if (value_ == StreamlineValue::StreamlineLength) ofield->set_value(length, n1);
 
           ++node_iter;
           cc++;
@@ -318,20 +324,20 @@ namespace detail
             n2 = omesh->add_point(*node_iter);
             ofield->resize_fdata();
 
-            if (value_ == SeedValue) ofield->copy_value(seed_field_, idx, n2);
-            else if (value_ == SeedIndex) ofield->set_value(index_type(idx), n2);
-            else if (value_ == IntegrationIndex) ofield->set_value(abs(cc), n2);
-            else if (value_ == IntegrationStep)
+            if (value_ == StreamlineValue::SeedValue) ofield->copy_value(seed_field_, idx, n2);
+            else if (value_ == StreamlineValue::SeedIndex) ofield->set_value(index_type(idx), n2);
+            else if (value_ == StreamlineValue::IntegrationIndex) ofield->set_value(abs(cc), n2);
+            else if (value_ == StreamlineValue::IntegrationStep)
             {
               length = Vector(*node_iter - p1).length();
               ofield->set_value(length, n2);
             }
-            else if (value_ == DistanceFromSeed)
+            else if (value_ == StreamlineValue::DistanceFromSeed)
             {
               length += Vector(*node_iter - p1).length();
               ofield->set_value(length, n2);
             }
-            else if (value_ == StreamlineLength)
+            else if (value_ == StreamlineValue::StreamlineLength)
             {
               ofield->set_value(length, n2);
             }
@@ -383,11 +389,12 @@ namespace detail
     success_[proc_num] = true;
 
     for (int q = 0; q < numprocessors_; q++)
-      if (!success_[q])
-        return;
+      if (success_[q] == false) return;
 
     const index_type start_gd = (global_dimension_ * proc_num) / numprocessors_ + 1;
     const index_type end_gd = (global_dimension_ * (proc_num + 1)) / numprocessors_;
+
+    LOG_DEBUG("GenerateStreamLinesAlgoP proc {}, start {}, end {}", proc_num, start_gd, end_gd);
 
     outputs_[proc_num] = StreamLinesForCertainSeeds(start_gd, end_gd, proc_num);
   }
@@ -442,7 +449,7 @@ namespace detail
   public:
     GenerateStreamLinesAccAlgo() :
       numprocessors_(Parallel::NumCores()), barrier_("FEMVolRHSBuilder Barrier", numprocessors_),
-      max_steps_(0), direction_(0), value_(SeedIndex), remove_colinear_pts_(false),
+      max_steps_(0), direction_(0), value_(StreamlineValue::SeedIndex), remove_colinear_pts_(false),
       seed_field_(0), seed_mesh_(0)
     {}
 
@@ -539,7 +546,7 @@ namespace detail
         double length = 0;
         Point p1;
 
-        if (value_ == StreamlineLength)
+        if (value_ == StreamlineValue::StreamlineLength)
         {
           node_iter = nodes.begin();
           if (node_iter != nodes.end())
@@ -570,12 +577,12 @@ namespace detail
 
           ofield->resize_values();
 
-          if (value_ == SeedValue) ofield->copy_value(field_, idx, n1);
-          else if (value_ == SeedIndex) ofield->set_value(static_cast<int>(idx), n1);
-          else if (value_ == IntegrationIndex) ofield->set_value(abs(cc), n1);
-          else if (value_ == IntegrationStep) ofield->set_value(0, n1);
-          else if (value_ == DistanceFromSeed) ofield->set_value(0, n1);
-          else if (value_ == StreamlineLength) ofield->set_value(length, n1);
+          if (value_ == StreamlineValue::SeedValue) ofield->copy_value(field_, idx, n1);
+          else if (value_ == StreamlineValue::SeedIndex) ofield->set_value(static_cast<int>(idx), n1);
+          else if (value_ == StreamlineValue::IntegrationIndex) ofield->set_value(abs(cc), n1);
+          else if (value_ == StreamlineValue::IntegrationStep) ofield->set_value(0, n1);
+          else if (value_ == StreamlineValue::DistanceFromSeed) ofield->set_value(0, n1);
+          else if (value_ == StreamlineValue::StreamlineLength) ofield->set_value(length, n1);
           ++node_iter;
 
           cc++;
@@ -585,20 +592,20 @@ namespace detail
             n2 = omesh->add_point(*node_iter);
             ofield->resize_values();
 
-            if (value_ == SeedValue) ofield->copy_value(field_, idx, n2);
-            else if (value_ == SeedIndex) ofield->set_value(static_cast<int>(idx), n2);
-            else if (value_ == IntegrationIndex) ofield->set_value(abs(cc), n2);
-            else if (value_ == IntegrationStep)
+            if (value_ == StreamlineValue::SeedValue) ofield->copy_value(field_, idx, n2);
+            else if (value_ == StreamlineValue::SeedIndex) ofield->set_value(static_cast<int>(idx), n2);
+            else if (value_ == StreamlineValue::IntegrationIndex) ofield->set_value(abs(cc), n2);
+            else if (value_ == StreamlineValue::IntegrationStep)
             {
               length = Vector(*node_iter - p1).length();
               ofield->set_value(length, n2);
             }
-            else if (value_ == DistanceFromSeed)
+            else if (value_ == StreamlineValue::DistanceFromSeed)
             {
               length += Vector(*node_iter - p1).length();
               ofield->set_value(length, n2);
             }
-            else if (value_ == StreamlineLength)
+            else if (value_ == StreamlineValue::StreamlineLength)
             {
               ofield->set_value(length, n2);
             }
@@ -808,7 +815,7 @@ bool GenerateStreamLinesAlgo::runImpl(FieldHandle input, FieldHandle seeds, Fiel
 
   auto method = detail::convertMethod(getOption(Parameters::StreamlineMethod));
 
-  if (method == CellWalk && ifield->basis_order() != 0)
+  if (method == IntegrationMethod::CellWalk && ifield->basis_order() != 0)
   {
     error("The Cell Walk method only works for cell centered Vector Fields.");
     return (false);
@@ -840,7 +847,7 @@ bool GenerateStreamLinesAlgo::runImpl(FieldHandle input, FieldHandle seeds, Fiel
 
   bool success = false;
 
-  if (method == 5)
+  if (method == IntegrationMethod::CellWalk)
   {
     detail::GenerateStreamLinesAccAlgo algo;
     success = algo.run(this, input, seeds, output);
