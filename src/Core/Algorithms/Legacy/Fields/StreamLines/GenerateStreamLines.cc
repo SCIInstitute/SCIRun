@@ -167,11 +167,11 @@ namespace detail
   public:
     GenerateStreamLinesAlgoImplBase(const AlgorithmBase* algo, IntegrationMethod method) : algo_(algo),
       numprocessors_(Parallel::NumCores()),
-      barrier_("FEMVolRHSBuilder Barrier", numprocessors_), method_(method)
+      barrier_("GenerateStreamLinesAlgoImplBase Barrier", numprocessors_), method_(method)
     {}
 
 
-    bool run(FieldHandle input, FieldHandle seeds, FieldHandle& output);
+    //bool run(FieldHandle input, FieldHandle seeds, FieldHandle& output);
 
   protected:
     void parallel(int proc);
@@ -203,48 +203,17 @@ namespace detail
     VMesh::Node::index_type global_dimension_ {0};
   };
 
-  class GenerateStreamLinesAlgoP : public Core::Thread::Interruptible
+  class GenerateStreamLinesAlgoP : public GenerateStreamLinesAlgoImplBase
   {
 
   public:
-    GenerateStreamLinesAlgoP(const AlgorithmBase* algo) :
-      algo_(algo), numprocessors_(Parallel::NumCores()), barrier_("FEMVolRHSBuilder Barrier", numprocessors_),
-      tolerance_(0), step_size_(0), max_steps_(0), direction_(0), value_(StreamlineValue::SeedIndex), remove_colinear_pts_(false),
-      method_(IntegrationMethod::AdamsBashforth), seed_field_(0), seed_mesh_(0), field_(0), mesh_(0), ofield_(0), omesh_(0)
+    GenerateStreamLinesAlgoP(const AlgorithmBase* algo, IntegrationMethod method) : GenerateStreamLinesAlgoImplBase(algo, method)
     {}
 
-    bool run(FieldHandle input,
-          FieldHandle seeds, FieldHandle& output,
-          IntegrationMethod method);
+    bool run(FieldHandle input, FieldHandle seeds, FieldHandle& output);
 
-  private:
-    void runImpl();
-    const AlgorithmBase* algo_;
-    int numprocessors_;
-    Barrier barrier_;
-    double tolerance_;
-    double step_size_;
-    int    max_steps_;
-    int    direction_;
-    StreamlineValue    value_;
-    bool   remove_colinear_pts_;
-    IntegrationMethod method_;
-
-    VField* seed_field_;
-    VMesh*  seed_mesh_;
-
-    VField* field_;
-    VMesh*  mesh_;
-
-    VField* ofield_;
-    VMesh*  omesh_;
-
-    FieldHandle input_;
-    std::vector<bool> success_;
-    FieldList outputs_;
-    VMesh::Node::index_type global_dimension_;
-    void parallel(int proc);
-    FieldHandle StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num);
+  protected:
+    FieldHandle StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num) override;
   };
 
   FieldHandle GenerateStreamLinesAlgoP::StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num)
@@ -420,7 +389,7 @@ namespace detail
     return out;
   }
 
-  void GenerateStreamLinesAlgoP::parallel(int proc_num)
+  void GenerateStreamLinesAlgoImplBase::parallel(int proc_num)
   {
     success_[proc_num] = true;
 
@@ -437,8 +406,7 @@ namespace detail
 
   bool GenerateStreamLinesAlgoP::run(FieldHandle input,
     FieldHandle seeds,
-    FieldHandle& output,
-    IntegrationMethod method)
+    FieldHandle& output)
   {
     seed_field_ = seeds->vfield();
     seed_mesh_ = seeds->vmesh();
@@ -452,7 +420,6 @@ namespace detail
     direction_ = convertDirectionOption(algo_->getOption(Parameters::StreamlineDirection));
     value_ = convertValue(algo_->getOption(Parameters::StreamlineValue));
     remove_colinear_pts_ = algo_->get(Parameters::RemoveColinearPoints).toBool();
-    method_ = method;
     input_ = input;
     global_dimension_ = seed_mesh_->num_nodes();
     if (global_dimension_ < numprocessors_ || numprocessors_ < 1) numprocessors_ = 1;
@@ -465,8 +432,8 @@ namespace detail
     Parallel::RunTasks([this](int i) { parallel(i); }, numprocessors_);
     for (size_t j = 0; j < success_.size(); j++)
     {
-      if (success_[j] == false) return false;
-      if (outputs_[j] == nullptr) return false;
+      if (!success_[j]) return false;
+      if (!outputs_[j]) return false;
     }
     JoinFieldsAlgo algo;
     algo.set(JoinFieldsAlgo::MergeNodes, false);
@@ -907,8 +874,8 @@ bool GenerateStreamLinesAlgo::runImpl(FieldHandle input, FieldHandle seeds, Fiel
 #endif
     }
 
-    detail::GenerateStreamLinesAlgoP algo(this);
-    success = algo.run(input, seeds, output, method);
+    detail::GenerateStreamLinesAlgoP algo(this, method);
+    success = algo.run(input, seeds, output);
   }
 
   return (success);
