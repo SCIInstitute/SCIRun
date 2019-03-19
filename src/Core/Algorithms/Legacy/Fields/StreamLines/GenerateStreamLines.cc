@@ -170,8 +170,7 @@ namespace detail
       barrier_("GenerateStreamLinesAlgoImplBase Barrier", numprocessors_), method_(method)
     {}
 
-
-    //bool run(FieldHandle input, FieldHandle seeds, FieldHandle& output);
+    bool run(FieldHandle input, FieldHandle seeds, FieldHandle& output);
 
   protected:
     void parallel(int proc);
@@ -194,9 +193,6 @@ namespace detail
     VField* field_ {nullptr};
     VMesh*  mesh_ {nullptr};
 
-    VField* ofield_ {nullptr};
-    VMesh*  omesh_ {nullptr};
-
     FieldHandle input_;
     std::vector<bool> success_;
     FieldList outputs_;
@@ -209,9 +205,6 @@ namespace detail
   public:
     GenerateStreamLinesAlgoP(const AlgorithmBase* algo, IntegrationMethod method) : GenerateStreamLinesAlgoImplBase(algo, method)
     {}
-
-    bool run(FieldHandle input, FieldHandle seeds, FieldHandle& output);
-
   protected:
     FieldHandle StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num) override;
   };
@@ -240,7 +233,6 @@ namespace detail
       std::vector<Point>::iterator node_iter;
 
       // Try to find the streamline for each seed point.
-      //VMesh::size_type num_seeds = seed_mesh_->num_nodes();
       VMesh::Node::array_type newnodes(2);
 
       for (VMesh::Node::index_type idx = from; idx < to; ++idx)
@@ -307,11 +299,6 @@ namespace detail
           p1 = *node_iter;
           n1 = omesh->add_point(p1);
 
-          // Record the streamline point indexes. Used downstream.
-          //std::ostringstream str;
-          //str << "Streamline " << (unsigned int) idx << " Node Index";
-          //ofield->set_property( str.str(), (unsigned int) n1, false );
-
           ofield->resize_values();
 
           if (value_ == StreamlineValue::SeedValue) ofield->copy_value(seed_field_, idx, n1);
@@ -365,9 +352,6 @@ namespace detail
 #ifdef NEEDS_ADDITIONAL_ALGO_OUTPUT
       algo_->set_int("num_streamlines", num_seeds);
 #endif
-
-      // Record the number of streamline. Used downstream.
-      //ofield->set_property( "Streamline Count", (unsigned int) num_seeds, false );
     }
 
     catch (const Exception &e)
@@ -404,26 +388,25 @@ namespace detail
     outputs_[proc_num] = StreamLinesForCertainSeeds(start_gd, end_gd, proc_num);
   }
 
-  bool GenerateStreamLinesAlgoP::run(FieldHandle input,
+  bool GenerateStreamLinesAlgoImplBase::run(FieldHandle input,
     FieldHandle seeds,
     FieldHandle& output)
   {
+    input_ = input;
     seed_field_ = seeds->vfield();
     seed_mesh_ = seeds->vmesh();
     field_ = input->vfield();
     mesh_ = input->vmesh();
-    ofield_ = output->vfield();
-    omesh_ = output->vmesh();
     tolerance_ = algo_->get(Parameters::StreamlineTolerance).toDouble();
     step_size_ = algo_->get(Parameters::StreamlineStepSize).toDouble();
     max_steps_ = algo_->get(Parameters::StreamlineMaxSteps).toInt();
     direction_ = convertDirectionOption(algo_->getOption(Parameters::StreamlineDirection));
     value_ = convertValue(algo_->getOption(Parameters::StreamlineValue));
     remove_colinear_pts_ = algo_->get(Parameters::RemoveColinearPoints).toBool();
-    input_ = input;
     global_dimension_ = seed_mesh_->num_nodes();
     if (global_dimension_ < numprocessors_ || numprocessors_ < 1) numprocessors_ = 1;
-    if (numprocessors_ > 16) numprocessors_ = 16;  // request from Dan White to limit the number of threads
+    if (numprocessors_ > 16)
+      numprocessors_ = 16;  // limit the number of threads
     if (!algo_->get(Parameters::UseMultithreading).toBool())
       numprocessors_ = 1;
     success_.resize(numprocessors_, true);
@@ -435,9 +418,11 @@ namespace detail
       if (!success_[j]) return false;
       if (!outputs_[j]) return false;
     }
-    JoinFieldsAlgo algo;
-    algo.set(JoinFieldsAlgo::MergeNodes, false);
-    algo.runImpl(outputs_, output);
+    JoinFieldsAlgo join;
+    join.set(JoinFieldsAlgo::MergeNodes, false);
+    if (IntegrationMethod::CellWalk == method_)
+      join.set(JoinFieldsAlgo::Tolerance, 1e-8);
+    join.runImpl(outputs_, output);
 
     return true;
   }
@@ -449,12 +434,10 @@ namespace detail
   public:
     GenerateStreamLinesAccAlgo(const AlgorithmBase* algo, IntegrationMethod method) : GenerateStreamLinesAlgoImplBase(algo, method)
     {}
-
-    bool run(FieldHandle input, FieldHandle seeds, FieldHandle& output);
-
-    void find_nodes(std::vector<Point>& v, Point seed, bool back);
   protected:
     FieldHandle StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num) override;
+  private:
+    void find_nodes(std::vector<Point>& v, Point seed, bool back);
   };
 
   FieldHandle GenerateStreamLinesAccAlgo::StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num)
@@ -464,7 +447,7 @@ namespace detail
     fi.make_lineardata();
     fi.make_linearmesh();
     fi.make_double();
-    FieldHandle out;// = CreateField(fi);
+    FieldHandle out;
     try
     {
       out = CreateField(fi);
@@ -537,11 +520,6 @@ namespace detail
           p1 = *node_iter;
           n1 = omesh->add_point(*node_iter);
 
-          // Record the streamline point indexes. Used downstream.
-          //std::ostringstream str;
-          //str << "Streamline " << (unsigned int) idx << " Node Index";
-          //ofield_->set_property( str.str(), (unsigned int) n1, false );
-
           ofield->resize_values();
 
           if (value_ == StreamlineValue::SeedValue) ofield->copy_value(field_, idx, n1);
@@ -596,9 +574,6 @@ namespace detail
 #ifdef NEED_ADDITIONAL_ALGO_OUTPUT
       algo->set_int("num_streamlines", num_seeds);
 #endif
-
-      // Record the number of streamline. Used downstream.
-      //ofield_->set_property( "Streamline Count", (unsigned int) num_seeds, false );
       }
 
     catch (const Exception &e)
@@ -618,45 +593,7 @@ namespace detail
     }
 
     return out;
-    }
-
-
-  bool GenerateStreamLinesAccAlgo::run(FieldHandle input,
-    FieldHandle seeds,
-    FieldHandle& output)
-  {
-    seed_field_ = seeds->vfield();
-    seed_mesh_ = seeds->vmesh();
-    input_ = input;
-    field_ = input->vfield();
-    mesh_ = input->vmesh();
-    max_steps_ = algo_->get(Parameters::StreamlineMaxSteps).toInt();
-    direction_ = convertDirectionOption(algo_->getOption(Parameters::StreamlineDirection));
-    value_ = convertValue(algo_->getOption(Parameters::StreamlineValue));
-    remove_colinear_pts_ = algo_->get(Parameters::RemoveColinearPoints).toBool();
-    global_dimension_ = seed_mesh_->num_nodes();
-    if (global_dimension_ < numprocessors_)
-      numprocessors_ = 1;
-    if (!algo_->get(Parameters::UseMultithreading).toBool())
-      numprocessors_ = 1;
-    if (numprocessors_ > 16)
-      numprocessors_ = 16;
-    success_.resize(numprocessors_, true);
-    outputs_.resize(numprocessors_, nullptr);
-    Parallel::RunTasks([this](int i) { parallel(i); }, numprocessors_);
-    for (size_t j = 0; j < success_.size(); j++)
-    {
-      if (success_[j] == false) return false;
-      if (outputs_[j] == nullptr) return false;
-    }
-    JoinFieldsAlgo JFalgo;
-    JFalgo.set(JoinFieldsAlgo::Tolerance, 1e-8);
-    JFalgo.set(JoinFieldsAlgo::MergeNodes, false);
-    JFalgo.runImpl(outputs_, output);
-
-    return true;
   }
-
 
   void GenerateStreamLinesAccAlgo::find_nodes(std::vector<Point> &v, Point seed, bool back)
   {
