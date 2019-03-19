@@ -172,6 +172,15 @@ namespace detail
 
     bool run(FieldHandle input, FieldHandle seeds, FieldHandle& output);
 
+    std::pair<index_type, index_type> partitionNodes(int proc_num) const
+    {
+      const index_type start_gd = (global_dimension_ * proc_num) / numprocessors_;
+      const index_type end_gd = (global_dimension_ * (proc_num + 1)) / numprocessors_;
+
+      LOG_DEBUG("GenerateStreamLinesAlgoP proc {}, start {}, end {}", proc_num, start_gd, end_gd);
+      return {start_gd, end_gd};
+    }
+
   protected:
     void parallel(int proc);
     virtual FieldHandle StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num) = 0;
@@ -378,14 +387,13 @@ namespace detail
     success_[proc_num] = true;
 
     for (int q = 0; q < numprocessors_; q++)
-      if (success_[q] == false) return;
+    {
+      if (!success_[q])
+        return;
+    }
 
-    const index_type start_gd = (global_dimension_ * proc_num) / numprocessors_ + 1;
-    const index_type end_gd = (global_dimension_ * (proc_num + 1)) / numprocessors_;
-
-    LOG_DEBUG("GenerateStreamLinesAlgoP proc {}, start {}, end {}", proc_num, start_gd, end_gd);
-
-    outputs_[proc_num] = StreamLinesForCertainSeeds(start_gd, end_gd, proc_num);
+    auto range = partitionNodes(proc_num);
+    outputs_[proc_num] = StreamLinesForCertainSeeds(range.first, range.second, proc_num);
   }
 
   bool GenerateStreamLinesAlgoImplBase::run(FieldHandle input,
