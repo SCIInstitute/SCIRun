@@ -442,56 +442,20 @@ namespace detail
     return true;
   }
 
-
   // Cell walk streamline code
-
-
-
-  class GenerateStreamLinesAccAlgo {
+  class GenerateStreamLinesAccAlgo : public GenerateStreamLinesAlgoImplBase
+  {
 
   public:
-    GenerateStreamLinesAccAlgo() :
-      numprocessors_(Parallel::NumCores()), barrier_("FEMVolRHSBuilder Barrier", numprocessors_),
-      max_steps_(0), direction_(0), value_(StreamlineValue::SeedIndex), remove_colinear_pts_(false),
-      seed_field_(0), seed_mesh_(0)
+    GenerateStreamLinesAccAlgo(const AlgorithmBase* algo, IntegrationMethod method) : GenerateStreamLinesAlgoImplBase(algo, method)
     {}
 
-    bool run(const AlgorithmBase* algo, FieldHandle input, FieldHandle seeds, FieldHandle& output);
+    bool run(FieldHandle input, FieldHandle seeds, FieldHandle& output);
 
     void find_nodes(std::vector<Point>& v, Point seed, bool back);
-  private:
-    int numprocessors_;
-    Barrier barrier_;
-    int    max_steps_;
-    int    direction_;
-    StreamlineValue    value_;
-    bool   remove_colinear_pts_;
-
-    VField* seed_field_;
-    VMesh*  seed_mesh_;
-
-    VField* field_;
-    VMesh*  mesh_;
-
-    void parallel(int proc_num);
-    FieldHandle StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num);
-    std::vector<bool> success_;
-    FieldList outputs_;
-    FieldHandle input_;
-    VMesh::Node::index_type global_dimension_;
-    const AlgorithmBase* algo_;
+  protected:
+    FieldHandle StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num) override;
   };
-
-  void GenerateStreamLinesAccAlgo::parallel(int proc_num)
-  {
-    success_[proc_num] = true;
-    for (int q = 0; q < numprocessors_; q++)
-      if (success_[q] == false) return;
-    const index_type start_gd = (global_dimension_ * proc_num) / numprocessors_;
-    const index_type end_gd = (global_dimension_ * (proc_num + 1)) / numprocessors_;
-    outputs_[proc_num] = StreamLinesForCertainSeeds(start_gd, end_gd, proc_num);
-  }
-
 
   FieldHandle GenerateStreamLinesAccAlgo::StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num)
   {
@@ -657,7 +621,7 @@ namespace detail
     }
 
 
-  bool GenerateStreamLinesAccAlgo::run(const AlgorithmBase* algo, FieldHandle input,
+  bool GenerateStreamLinesAccAlgo::run(FieldHandle input,
     FieldHandle seeds,
     FieldHandle& output)
   {
@@ -666,7 +630,6 @@ namespace detail
     input_ = input;
     field_ = input->vfield();
     mesh_ = input->vmesh();
-    algo_ = algo;
     max_steps_ = algo_->get(Parameters::StreamlineMaxSteps).toInt();
     direction_ = convertDirectionOption(algo_->getOption(Parameters::StreamlineDirection));
     value_ = convertValue(algo_->getOption(Parameters::StreamlineValue));
@@ -782,8 +745,7 @@ namespace detail
       CleanupStreamLinePoints(tv, v, mesh_->get_epsilon()*mesh_->get_epsilon());
     }
   }
-
-  } // end namespace detail
+} // end namespace detail
 
 bool GenerateStreamLinesAlgo::runImpl(FieldHandle input, FieldHandle seeds, FieldHandle& output) const
 {
@@ -852,8 +814,8 @@ bool GenerateStreamLinesAlgo::runImpl(FieldHandle input, FieldHandle seeds, Fiel
 
   if (method == IntegrationMethod::CellWalk)
   {
-    detail::GenerateStreamLinesAccAlgo algo;
-    success = algo.run(this, input, seeds, output);
+    detail::GenerateStreamLinesAccAlgo algo(this, IntegrationMethod::CellWalk);
+    success = algo.run(input, seeds, output);
   }
   else
   {
