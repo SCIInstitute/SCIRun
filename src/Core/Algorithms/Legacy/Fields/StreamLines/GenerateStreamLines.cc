@@ -164,7 +164,43 @@ namespace detail
 
   class GenerateStreamLinesAlgoImplBase : public Core::Thread::Interruptible
   {
+  public:
+    GenerateStreamLinesAlgoImplBase(const AlgorithmBase* algo, IntegrationMethod method) : algo_(algo),
+      numprocessors_(Parallel::NumCores()),
+      barrier_("FEMVolRHSBuilder Barrier", numprocessors_), method_(method)
+    {}
 
+
+    bool run(FieldHandle input, FieldHandle seeds, FieldHandle& output);
+
+  protected:
+    void parallel(int proc);
+    virtual FieldHandle StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num) = 0;
+
+    const AlgorithmBase* algo_;
+    int numprocessors_;
+    Barrier barrier_;
+    double tolerance_ {0};
+    double step_size_ {0};
+    int    max_steps_ {0};
+    int    direction_ {0};
+    StreamlineValue    value_ {StreamlineValue::SeedIndex};
+    bool   remove_colinear_pts_ {false};
+    IntegrationMethod method_;
+
+    VField* seed_field_ {nullptr};
+    VMesh*  seed_mesh_ {nullptr};
+
+    VField* field_ {nullptr};
+    VMesh*  mesh_ {nullptr};
+
+    VField* ofield_ {nullptr};
+    VMesh*  omesh_ {nullptr};
+
+    FieldHandle input_;
+    std::vector<bool> success_;
+    FieldList outputs_;
+    VMesh::Node::index_type global_dimension_ {0};
   };
 
   class GenerateStreamLinesAlgoP : public Core::Thread::Interruptible
@@ -178,8 +214,8 @@ namespace detail
     {}
 
     bool run(FieldHandle input,
-      FieldHandle seeds, FieldHandle& output,
-      IntegrationMethod method);
+          FieldHandle seeds, FieldHandle& output,
+          IntegrationMethod method);
 
   private:
     void runImpl();
