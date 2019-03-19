@@ -146,10 +146,8 @@ void SRCamera::doAutoView(const Core::Geometry::BBox& bbox)
   /// \todo Use real FOV-Y when we allow the user to change the FOV.
   mArcLookAt->autoview(aabb, getDefaultFOVY());
 
-  //we multiply by 1.5 to give us some breathing room for the glyphs which can poke out of
-  //the bounding box. This should be removed once bounding box generation is fixed for glyphs
-  mRadius = (glm::length(max - min) / 2.0f) * 1.5f;
-
+  mRadius = (glm::length(max - min) / 2.0f);
+  
   mZFar = mArcLookAt->getCamDistance() + mRadius;
   mZNear = std::max(mZFar/1000.0f, mArcLookAt->getCamDistance() - mRadius);
   setAsPerspective();
