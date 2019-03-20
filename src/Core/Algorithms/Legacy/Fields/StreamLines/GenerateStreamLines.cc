@@ -184,6 +184,7 @@ namespace detail
   protected:
     void parallel(int proc);
     virtual FieldHandle StreamLinesForCertainSeeds(VMesh::Node::index_type from, VMesh::Node::index_type to, int proc_num) = 0;
+    double calcTotalStreamlineLength(const std::vector<Point>& nodes) const;
 
     const AlgorithmBase* algo_;
     int numprocessors_;
@@ -207,6 +208,30 @@ namespace detail
     FieldList outputs_;
     VMesh::Node::index_type global_dimension_ {0};
   };
+
+  double GenerateStreamLinesAlgoImplBase::calcTotalStreamlineLength(const std::vector<Point>& nodes) const
+  {
+    double length = 0;
+    Point p1;
+
+    if (value_ == StreamlineValue::StreamlineLength)
+    {
+      auto node_iter = nodes.begin();
+      if (node_iter != nodes.end())
+      {
+        p1 = *node_iter;
+        ++node_iter;
+
+        while (node_iter != nodes.end())
+        {
+          length += Vector(*node_iter - p1).length();
+          p1 = *node_iter;
+          ++node_iter;
+        }
+      }
+    }
+    return length;
+  }
 
   class GenerateStreamLinesAlgoP : public GenerateStreamLinesAlgoImplBase
   {
@@ -281,44 +306,29 @@ namespace detail
           BI.integrate(method_);
         }
 
-        double length = 0;
-        Point p1;
+        const auto totalLength = calcTotalStreamlineLength(BI.nodes_);
 
-        if (value_ == StreamlineValue::StreamlineLength)
-        {
-          node_iter = BI.nodes_.begin();
-          if (node_iter != BI.nodes_.end())
-          {
-            p1 = *node_iter;
-            ++node_iter;
-
-            while (node_iter != BI.nodes_.end())
-            {
-              length += Vector(*node_iter - p1).length();
-              p1 = *node_iter;
-              ++node_iter;
-            }
-          }
-        }
-
-        node_iter = BI.nodes_.begin();
+        auto node_iter = BI.nodes_.begin();
 
         if (node_iter != BI.nodes_.end())
         {
-          p1 = *node_iter;
+          auto p1 = *node_iter;
           n1 = omesh->add_point(p1);
 
           ofield->resize_values();
+
+          double distanceFromSeedLength = 0;
 
           if (value_ == StreamlineValue::SeedValue) ofield->copy_value(seed_field_, idx, n1);
           else if (value_ == StreamlineValue::SeedIndex) ofield->set_value(index_type(idx), n1);
           else if (value_ == StreamlineValue::IntegrationIndex) ofield->set_value(abs(cc), n1);
           else if (value_ == StreamlineValue::IntegrationStep) ofield->set_value(0, n1);
-          else if (value_ == StreamlineValue::DistanceFromSeed) ofield->set_value(0, n1);
-          else if (value_ == StreamlineValue::StreamlineLength) ofield->set_value(length, n1);
+          else if (value_ == StreamlineValue::DistanceFromSeed) ofield->set_value(distanceFromSeedLength, n1);
+          else if (value_ == StreamlineValue::StreamlineLength) ofield->set_value(totalLength, n1);
 
           ++node_iter;
           cc++;
+
 
           while (node_iter != BI.nodes_.end())
           {
@@ -330,17 +340,17 @@ namespace detail
             else if (value_ == StreamlineValue::IntegrationIndex) ofield->set_value(abs(cc), n2);
             else if (value_ == StreamlineValue::IntegrationStep)
             {
-              length = Vector(*node_iter - p1).length();
+              auto length = Vector(*node_iter - p1).length();
               ofield->set_value(length, n2);
             }
             else if (value_ == StreamlineValue::DistanceFromSeed)
             {
-              length += Vector(*node_iter - p1).length();
-              ofield->set_value(length, n2);
+              distanceFromSeedLength += Vector(*node_iter - p1).length();
+              ofield->set_value(distanceFromSeedLength, n2);
             }
             else if (value_ == StreamlineValue::StreamlineLength)
             {
-              ofield->set_value(length, n2);
+              ofield->set_value(totalLength, n2);
             }
 
             newnodes[0] = n1;
@@ -501,41 +511,25 @@ namespace detail
           find_nodes(nodes, seed, false);
         }
 
-        double length = 0;
-        Point p1;
+        const auto totalLength = calcTotalStreamlineLength(nodes);
 
-        if (value_ == StreamlineValue::StreamlineLength)
-        {
-          node_iter = nodes.begin();
-          if (node_iter != nodes.end())
-          {
-            p1 = *node_iter;
-            ++node_iter;
-
-            while (node_iter != nodes.end())
-            {
-              length += Vector(*node_iter - p1).length();
-              p1 = *node_iter;
-              ++node_iter;
-            }
-          }
-        }
-
-        node_iter = nodes.begin();
+        auto node_iter = nodes.begin();
 
         if (node_iter != nodes.end())
         {
-          p1 = *node_iter;
-          n1 = omesh->add_point(*node_iter);
+          auto p1 = *node_iter;
+          n1 = omesh->add_point(p1);
 
           ofield->resize_values();
+
+          double distanceFromSeedLength = 0;
 
           if (value_ == StreamlineValue::SeedValue) ofield->copy_value(field_, idx, n1);
           else if (value_ == StreamlineValue::SeedIndex) ofield->set_value(static_cast<int>(idx), n1);
           else if (value_ == StreamlineValue::IntegrationIndex) ofield->set_value(abs(cc), n1);
           else if (value_ == StreamlineValue::IntegrationStep) ofield->set_value(0, n1);
-          else if (value_ == StreamlineValue::DistanceFromSeed) ofield->set_value(0, n1);
-          else if (value_ == StreamlineValue::StreamlineLength) ofield->set_value(length, n1);
+          else if (value_ == StreamlineValue::DistanceFromSeed) ofield->set_value(distanceFromSeedLength, n1);
+          else if (value_ == StreamlineValue::StreamlineLength) ofield->set_value(totalLength, n1);
           ++node_iter;
 
           cc++;
@@ -550,17 +544,17 @@ namespace detail
             else if (value_ == StreamlineValue::IntegrationIndex) ofield->set_value(abs(cc), n2);
             else if (value_ == StreamlineValue::IntegrationStep)
             {
-              length = Vector(*node_iter - p1).length();
+              auto length = Vector(*node_iter - p1).length();
               ofield->set_value(length, n2);
             }
             else if (value_ == StreamlineValue::DistanceFromSeed)
             {
-              length += Vector(*node_iter - p1).length();
-              ofield->set_value(length, n2);
+              distanceFromSeedLength += Vector(*node_iter - p1).length();
+              ofield->set_value(distanceFromSeedLength, n2);
             }
             else if (value_ == StreamlineValue::StreamlineLength)
             {
-              ofield->set_value(length, n2);
+              ofield->set_value(totalLength, n2);
             }
 
             newnodes[0] = n1;
