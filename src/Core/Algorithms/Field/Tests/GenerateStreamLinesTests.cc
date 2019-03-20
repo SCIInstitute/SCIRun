@@ -68,11 +68,6 @@ FieldHandle LoadVectorField()
    return loadFieldFromFile(TestResources::rootDir() / "Fields/streamlines/vectorField.fld");
 }
 
-FieldHandle LoadExpected()
-{
-   return loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_latvol.fld");
-}
-
 static std::vector<std::string> methods { "AdamsBashforth", "Heun", "RungeKutta",
   "RungeKuttaFehlberg", "CellWalk" };
 
@@ -86,7 +81,9 @@ TEST(GenerateStreamLinesTests, SingleSeedProducesSinglePositiveStreamlineSingleT
     GenerateStreamLinesAlgo algo;
     FieldHandle output;
 
+    std::cout << "method: " << method << std::endl;
     algo.set(Parameters::UseMultithreading, false);
+    algo.setOption(Parameters::StreamlineValue, "Distance from seed");
     algo.setOption(Parameters::StreamlineMethod, method);
 
     algo.runImpl(vectorField, singleSeed, output);
@@ -95,9 +92,13 @@ TEST(GenerateStreamLinesTests, SingleSeedProducesSinglePositiveStreamlineSingleT
     EXPECT_GT(output->vmesh()->num_elems(), 0);
     EXPECT_GT(output->vfield()->num_values(), 0);
 
-    // EXPECT_EQ(output->vmesh()->num_nodes(), 65);
-    // EXPECT_EQ(output->vmesh()->num_elems(), 116);
-    // EXPECT_EQ(output->vfield()->num_values(), 65);
+    double min,max;
+    output->vfield()->minmax(min, max);
+    std::cout << min << " " << max << std::endl;
+
+    // streamlines contained within 8x8x8 latvol
+    EXPECT_GT(min, 0.0);
+    EXPECT_LT(max, 8.0);
   }
 }
 
@@ -112,6 +113,7 @@ TEST(GenerateStreamLinesTests, SingleSeedProducesSinglePositiveStreamlineMultiTh
     FieldHandle output;
 
     algo.set(Parameters::UseMultithreading, true);
+    algo.setOption(Parameters::StreamlineValue, "Distance from seed");
     algo.setOption(Parameters::StreamlineMethod, method);
 
     algo.runImpl(vectorField, singleSeed, output);
@@ -120,9 +122,13 @@ TEST(GenerateStreamLinesTests, SingleSeedProducesSinglePositiveStreamlineMultiTh
     EXPECT_GT(output->vmesh()->num_elems(), 0);
     EXPECT_GT(output->vfield()->num_values(), 0);
 
-    // EXPECT_EQ(output->vmesh()->num_nodes(), 65);
-    // EXPECT_EQ(output->vmesh()->num_elems(), 116);
-    // EXPECT_EQ(output->vfield()->num_values(), 65);
+    double min,max;
+    output->vfield()->minmax(min, max);
+    std::cout << min << " " << max << std::endl;
+
+    // streamlines contained within 8x8x8 latvol
+    EXPECT_GT(min, 0.0);
+    EXPECT_LT(max, 8.0);
   }
 }
 
@@ -137,6 +143,7 @@ TEST(GenerateStreamLinesTests, MultipleSeedsProducesMultipleStreamlinesSingleThr
     FieldHandle output;
 
     algo.set(Parameters::UseMultithreading, false);
+    algo.setOption(Parameters::StreamlineValue, "Distance from seed");
     algo.setOption(Parameters::StreamlineMethod, method);
 
     algo.runImpl(vectorField, multiSeeds, output);
@@ -145,9 +152,13 @@ TEST(GenerateStreamLinesTests, MultipleSeedsProducesMultipleStreamlinesSingleThr
     EXPECT_GT(output->vmesh()->num_elems(), 0);
     EXPECT_GT(output->vfield()->num_values(), 0);
 
-    // EXPECT_EQ(output->vmesh()->num_nodes(), 8568);
-    // EXPECT_EQ(output->vmesh()->num_elems(), 8565);
-    // EXPECT_EQ(output->vfield()->num_values(), 8568);
+    double min,max;
+    output->vfield()->minmax(min, max);
+    std::cout << min << " " << max << std::endl;
+
+    // streamlines contained within 8x8x8 latvol
+    EXPECT_GT(min, 0.0);
+    EXPECT_LT(max, 8.0);
   }
 }
 
@@ -162,6 +173,7 @@ TEST(GenerateStreamLinesTests, MultipleSeedsProducesMultipleStreamlinesMultiThre
     FieldHandle output;
 
     algo.set(Parameters::UseMultithreading, true);
+    algo.setOption(Parameters::StreamlineValue, "Distance from seed");
     algo.setOption(Parameters::StreamlineMethod, method);
 
     algo.runImpl(vectorField, multiSeeds, output);
@@ -170,9 +182,13 @@ TEST(GenerateStreamLinesTests, MultipleSeedsProducesMultipleStreamlinesMultiThre
     EXPECT_GT(output->vmesh()->num_elems(), 0);
     EXPECT_GT(output->vfield()->num_values(), 0);
 
-    // EXPECT_EQ(output->vmesh()->num_nodes(), 8568);
-    // EXPECT_EQ(output->vmesh()->num_elems(), 8565);
-    // EXPECT_EQ(output->vfield()->num_values(), 8568);
+    double min,max;
+    output->vfield()->minmax(min, max);
+    std::cout << min << " " << max << std::endl;
+
+    // streamlines contained within 8x8x8 latvol
+    EXPECT_GT(min, 0.0);
+    EXPECT_LT(max, 8.0);
   }
 }
 
@@ -195,6 +211,7 @@ TEST(GenerateStreamLinesTests, ManySeedsMultithreaded)
     FieldHandle output;
 
     algo.set(Parameters::UseMultithreading, true);
+    algo.setOption(Parameters::StreamlineValue, "Distance from seed");
     algo.setOption(Parameters::StreamlineMethod, method);
 
     std::cout << "processing real streamlines using " << method << " method." << std::endl;
@@ -207,5 +224,13 @@ TEST(GenerateStreamLinesTests, ManySeedsMultithreaded)
     EXPECT_EQ(output->vmesh()->num_nodes(), meshOutputByMethod[method][0]);
     EXPECT_EQ(output->vmesh()->num_elems(), meshOutputByMethod[method][1]);
     EXPECT_EQ(output->vfield()->num_values(), meshOutputByMethod[method][2]);
+
+    double min,max;
+    output->vfield()->minmax(min, max);
+    std::cout << min << " " << max << std::endl;
+
+    // streamlines contained within mesh with greatest dimension <= 600
+    EXPECT_GT(min, 0.0);
+    EXPECT_LT(max, 600.0);
   }
 }
