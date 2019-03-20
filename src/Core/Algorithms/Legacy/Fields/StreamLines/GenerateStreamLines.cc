@@ -211,26 +211,18 @@ namespace detail
 
   double GenerateStreamLinesAlgoImplBase::calcTotalStreamlineLength(const std::vector<Point>& nodes) const
   {
-    double length = 0;
-    Point p1;
-
+    double totalStreamlineLength = 0;
     if (value_ == StreamlineValue::StreamlineLength)
     {
-      auto node_iter = nodes.begin();
-      if (node_iter != nodes.end())
+      if (nodes.size() > 1)
       {
-        p1 = *node_iter;
-        ++node_iter;
-
-        while (node_iter != nodes.end())
+        for (size_t i = 1; i < nodes.size(); ++i)
         {
-          length += Vector(*node_iter - p1).length();
-          p1 = *node_iter;
-          ++node_iter;
+          totalStreamlineLength += Vector(nodes[i - 1] - nodes[i]).length();
         }
       }
     }
-    return length;
+    return totalStreamlineLength;
   }
 
   class GenerateStreamLinesAlgoP : public GenerateStreamLinesAlgoImplBase
