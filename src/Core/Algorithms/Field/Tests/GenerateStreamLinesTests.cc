@@ -50,22 +50,22 @@ FieldHandle LoadMultiSeeds()
 
 FieldHandle LoadSingleSeed()
 {
-   return loadFieldFromFile(TestResources::rootDir() / "Fields/streamlines/singleSeed.fld");
+  return loadFieldFromFile(TestResources::rootDir() / "Fields/streamlines/singleSeed.fld");
 }
 
 FieldHandle LoadTorsoSeeds()
 {
-   return loadFieldFromFile(TestResources::rootDir() / "Fields/seedPointsFromTorso.fld");
+  return loadFieldFromFile(TestResources::rootDir() / "Fields/seedPointsFromTorso.fld");
 }
 
 FieldHandle LoadTorso()
 {
-   return loadFieldFromFile(TestResources::rootDir() / "Fields/utahtorso-lowres/gradient.fld");
+  return loadFieldFromFile(TestResources::rootDir() / "Fields/utahtorso-lowres/gradient.fld");
 }
 
 FieldHandle LoadVectorField()
 {
-   return loadFieldFromFile(TestResources::rootDir() / "Fields/streamlines/vectorField.fld");
+  return loadFieldFromFile(TestResources::rootDir() / "Fields/streamlines/vectorField.fld");
 }
 
 static std::vector<std::string> methods { "AdamsBashforth", "Heun", "RungeKutta",
@@ -81,7 +81,7 @@ TEST(GenerateStreamLinesTests, SingleSeedProducesSinglePositiveStreamlineSingleT
     GenerateStreamLinesAlgo algo;
     FieldHandle output;
 
-    std::cout << "method: " << method << std::endl;
+    //std::cout << "method: " << method << std::endl;
     algo.set(Parameters::UseMultithreading, false);
     algo.setOption(Parameters::StreamlineValue, "Distance from seed");
     algo.setOption(Parameters::StreamlineMethod, method);
@@ -94,11 +94,14 @@ TEST(GenerateStreamLinesTests, SingleSeedProducesSinglePositiveStreamlineSingleT
 
     double min,max;
     output->vfield()->minmax(min, max);
-    std::cout << min << " " << max << std::endl;
+    //std::cout << min << " " << max << std::endl;
 
     // streamlines contained within 8x8x8 latvol
-    EXPECT_GT(min, 0.0);
-    EXPECT_LT(max, 8.0);
+    EXPECT_EQ(min, 0.0);
+    if (method == "AdamsBashforth")
+      EXPECT_LT(max, 65.0); // corkscrew streamlines
+    else
+      EXPECT_LT(max, 12.0);
   }
 }
 
@@ -124,14 +127,18 @@ TEST(GenerateStreamLinesTests, SingleSeedProducesSinglePositiveStreamlineMultiTh
 
     double min,max;
     output->vfield()->minmax(min, max);
-    std::cout << min << " " << max << std::endl;
+    //std::cout << min << " " << max << std::endl;
 
     // streamlines contained within 8x8x8 latvol
-    EXPECT_GT(min, 0.0);
-    EXPECT_LT(max, 8.0);
+    EXPECT_EQ(min, 0.0);
+    if (method == "AdamsBashforth")
+      EXPECT_LT(max, 65.0); // corkscrew streamlines
+    else
+      EXPECT_LT(max, 12.0);
   }
 }
 
+//TODO: use > 16 seeds to force multithreading
 TEST(GenerateStreamLinesTests, MultipleSeedsProducesMultipleStreamlinesSingleThreaded)
 {
   auto multiSeeds = LoadMultiSeeds();
@@ -154,11 +161,14 @@ TEST(GenerateStreamLinesTests, MultipleSeedsProducesMultipleStreamlinesSingleThr
 
     double min,max;
     output->vfield()->minmax(min, max);
-    std::cout << min << " " << max << std::endl;
+    //std::cout << min << " " << max << std::endl;
 
     // streamlines contained within 8x8x8 latvol
-    EXPECT_GT(min, 0.0);
-    EXPECT_LT(max, 8.0);
+    EXPECT_EQ(min, 0.0);
+    if (method == "AdamsBashforth")
+      EXPECT_LT(max, 93.0); // corkscrew streamlines
+    else
+      EXPECT_LT(max, 17.0);
   }
 }
 
@@ -184,11 +194,14 @@ TEST(GenerateStreamLinesTests, MultipleSeedsProducesMultipleStreamlinesMultiThre
 
     double min,max;
     output->vfield()->minmax(min, max);
-    std::cout << min << " " << max << std::endl;
+    //std::cout << min << " " << max << std::endl;
 
     // streamlines contained within 8x8x8 latvol
-    EXPECT_GT(min, 0.0);
-    EXPECT_LT(max, 8.0);
+    EXPECT_EQ(min, 0.0);
+    if (method == "AdamsBashforth")
+      EXPECT_LT(max, 93.0); // corkscrew streamlines
+    else
+      EXPECT_LT(max, 17.0);
   }
 }
 
@@ -215,7 +228,7 @@ TEST(GenerateStreamLinesTests, ManySeedsMultithreaded)
     algo.setOption(Parameters::StreamlineValue, "Distance from seed");
     algo.setOption(Parameters::StreamlineMethod, method);
 
-    std::cout << "processing real streamlines using " << method << " method." << std::endl;
+    //std::cout << "processing real streamlines using " << method << " method." << std::endl;
     algo.runImpl(torso, torsoSeeds, output);
 
     EXPECT_GT(output->vmesh()->num_nodes(), 0);
@@ -228,11 +241,16 @@ TEST(GenerateStreamLinesTests, ManySeedsMultithreaded)
 
     double min,max;
     output->vfield()->minmax(min, max);
-    std::cout << min << " " << max << std::endl;
+    //std::cout << min << " " << max << std::endl;
 
     // streamlines contained within mesh with greatest dimension <= 600
-    EXPECT_GT(min, 0.0);
-    EXPECT_LT(max, 600.0);
+    EXPECT_EQ(min, 0.0);
+    if (method == "AdamsBashforth")
+      EXPECT_LT(max, 6300.0); // corkscrew streamlines
+    else if (method == "CellWalk")
+      EXPECT_LT(max, 2900.0);
+    else
+      EXPECT_LT(max, 600.0);
   }
 }
 
@@ -259,12 +277,12 @@ TEST(GenerateStreamLinesTests, ManySeedsMultithreadedStreamlineLength)
     algo.setOption(Parameters::StreamlineValue, "Streamline length");
     algo.setOption(Parameters::StreamlineMethod, method);
 
-    std::cout << "processing real streamlines using " << method << " method." << std::endl;
+    //std::cout << "processing real streamlines using " << method << " method." << std::endl;
     algo.runImpl(torso, torsoSeeds, output);
 
     double min,max;
     output->vfield()->minmax(min, max);
-    std::cout << min << " " << max << std::endl;
+    //std::cout << min << " " << max << std::endl;
     EXPECT_NEAR(min, meshOutputByMethodTotalLength[method].first, 1e-2);
     EXPECT_NEAR(max, meshOutputByMethodTotalLength[method].second, 1e-1);
   }
