@@ -193,11 +193,11 @@ TEST(GenerateStreamLinesTests, MultipleSeedsProducesMultipleStreamlinesMultiThre
 }
 
 static std::map<std::string, std::vector<int>> meshOutputByMethod
-  { { "AdamsBashforth", {3983502, 3982502, 3983502} },
-    { "Heun", {3983502, 3982502, 3983502} },
-    { "RungeKutta", {3983502, 3982502, 3983502} },
-    { "RungeKuttaFehlberg", {2438234, 2437234, 2438234} },
-    { "CellWalk", {98155, 97155, 98155} }
+  { { "AdamsBashforth", {400617, 399617, 400617} },
+    { "Heun", {400617, 399617, 400617} },
+    { "RungeKutta", {400617, 399617, 400617} },
+    { "RungeKuttaFehlberg", {214100, 213100, 214100} },
+    { "CellWalk", {98120, 97120, 98120} }
   };
 
 TEST(GenerateStreamLinesTests, ManySeedsMultithreaded)
@@ -211,6 +211,7 @@ TEST(GenerateStreamLinesTests, ManySeedsMultithreaded)
     FieldHandle output;
 
     algo.set(Parameters::UseMultithreading, true);
+    algo.set(Parameters::StreamlineMaxSteps, 200);
     algo.setOption(Parameters::StreamlineValue, "Distance from seed");
     algo.setOption(Parameters::StreamlineMethod, method);
 
@@ -236,10 +237,10 @@ TEST(GenerateStreamLinesTests, ManySeedsMultithreaded)
 }
 
 static std::map<std::string, std::pair<double,double>> meshOutputByMethodTotalLength
-  { { "AdamsBashforth", {0.269025, 63397.6} },
-    { "Heun", {0.269025, 5253.55} },
-    { "RungeKutta", {0.269025, 4666.72} },
-    { "RungeKuttaFehlberg", {6.07487, 539.166} },
+  { { "AdamsBashforth", {0.0269025, 6260.01} },
+    { "Heun", {0.0269025, 517.404} },
+    { "RungeKutta", {0.0269025, 476.269} },
+    { "RungeKuttaFehlberg", {0.767026, 127.16} },
     { "CellWalk", {0.0, 2861.98} }
   };
 
@@ -254,6 +255,7 @@ TEST(GenerateStreamLinesTests, ManySeedsMultithreadedStreamlineLength)
     FieldHandle output;
 
     algo.set(Parameters::UseMultithreading, true);
+    algo.set(Parameters::StreamlineMaxSteps, 200);
     algo.setOption(Parameters::StreamlineValue, "Streamline length");
     algo.setOption(Parameters::StreamlineMethod, method);
 
