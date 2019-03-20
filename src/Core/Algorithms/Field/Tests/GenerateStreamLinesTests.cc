@@ -73,20 +73,6 @@ FieldHandle LoadExpected()
    return loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_latvol.fld");
 }
 
-/*
-ALGORITHM_PARAMETER_DECL(StreamlineStepSize);
-ALGORITHM_PARAMETER_DECL(StreamlineTolerance);
-ALGORITHM_PARAMETER_DECL(StreamlineMaxSteps);
-ALGORITHM_PARAMETER_DECL(StreamlineDirection);
-ALGORITHM_PARAMETER_DECL(StreamlineValue);
-ALGORITHM_PARAMETER_DECL(RemoveColinearPoints);
-ALGORITHM_PARAMETER_DECL(StreamlineMethod);
-//
-ALGORITHM_PARAMETER_DECL(AutoParameters);
-ALGORITHM_PARAMETER_DECL(NumStreamlines);
-ALGORITHM_PARAMETER_DECL(UseMultithreading);
-*/
-
 static std::vector<std::string> methods { "AdamsBashforth", "Heun", "RungeKutta",
   "RungeKuttaFehlberg", "CellWalk" };
 
@@ -190,6 +176,13 @@ TEST(GenerateStreamLinesTests, MultipleSeedsProducesMultipleStreamlinesMultiThre
   }
 }
 
+static std::map<std::string, std::vector<int>> meshOutputByMethod
+  { { "AdamsBashforth", {3983502, 3982502, 3983502} },
+    { "Heun", {3983502, 3982502, 3983502} },
+    { "RungeKutta", {3983502, 3982502, 3983502} },
+    { "RungeKuttaFehlberg", {2438234, 2437234, 2438234} },
+    { "CellWalk", {98155, 97155, 98155} }
+  };
 
 TEST(GenerateStreamLinesTests, ManySeedsMultithreaded)
 {
@@ -204,14 +197,15 @@ TEST(GenerateStreamLinesTests, ManySeedsMultithreaded)
     algo.set(Parameters::UseMultithreading, true);
     algo.setOption(Parameters::StreamlineMethod, method);
 
+    std::cout << "processing real streamlines using " << method << " method." << std::endl;
     algo.runImpl(torso, torsoSeeds, output);
 
     EXPECT_GT(output->vmesh()->num_nodes(), 0);
     EXPECT_GT(output->vmesh()->num_elems(), 0);
     EXPECT_GT(output->vfield()->num_values(), 0);
 
-    // EXPECT_EQ(output->vmesh()->num_nodes(), 65);
-    // EXPECT_EQ(output->vmesh()->num_elems(), 116);
-    // EXPECT_EQ(output->vfield()->num_values(), 65);
+    EXPECT_EQ(output->vmesh()->num_nodes(), meshOutputByMethod[method][0]);
+    EXPECT_EQ(output->vmesh()->num_elems(), meshOutputByMethod[method][1]);
+    EXPECT_EQ(output->vfield()->num_values(), meshOutputByMethod[method][2]);
   }
 }
