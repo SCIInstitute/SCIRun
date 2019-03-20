@@ -74,7 +74,7 @@ public:
     core.addKernelSystem(ren::TextureMan::getGCName(), 1000 * 60 * 5);
 
     // -- Promise Fulfillment --
-    // Run shader promise fulfillment 5 times a second. 
+    // Run shader promise fulfillment 5 times a second.
     core.addKernelSystem(ren::ShaderMan::getPromiseVFFulfillmentName(), 200);
     core.addKernelSystem(ren::TextureMan::getPromiseSystemName(), 200, 0, 50);
     core.addKernelSystem(ren::GeomMan::getPromiseSystemName(), 200, 0, 100);
@@ -196,5 +196,3 @@ const char* getSystemName_CoreBootstrap() {return CoreBootstrap::getName();}
 
 } // namespace Render
 } // namespace SCIRun
-
-
