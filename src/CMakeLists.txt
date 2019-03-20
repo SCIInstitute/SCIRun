@@ -579,11 +579,11 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
   ${SCIRun_BINARY_DIR}/include
-  ${SCIRun_SOURCE_DIR}/Externals/eigen
   ${SCI_TEEM_INCLUDE}
   ${SCI_ZLIB_INCLUDE}
   ${GLM_DIR}
   ${SPDLOG_DIR}/include
+  ${Eigen_DIR}
   ${SCI_TNY_INCLUDE}
   ${SCI_LODEPNG_INCLUDE}
   ${SCI_QWT_INCLUDE}

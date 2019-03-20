@@ -97,7 +97,7 @@ vec4 calculate_lighting(vec3 lightDirWorld, vec3 lightColor)
   float specular    = max(0.0, dot(reflection, uCamViewVec));
   specular          = pow(specular, uSpecularPower);
   
-  return vec4(lightColor * (diffuse * uDiffuseColor.rgb + specular * uSpecularColor.rgb), uTransparency);
+  return vec4(lightColor * (diffuse * uDiffuseColor.rgb + specular * uSpecularColor.rgb), 0.0);
 }
 
 void main()

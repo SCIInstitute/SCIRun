@@ -163,6 +163,21 @@ namespace SCIRun {
       /// Toggle Orientation Axes
       void showOrientation(bool value);
 
+      /// Set Orientation size
+      void setOrientSize(int size);
+
+      /// Set Orientation X Position
+      void setOrientPosX(int pos);
+
+      /// Set Orientation Y Position
+      void setOrientPosY(int pos);
+
+      /// Set Orientation Top Right Corner
+      void setDefaultOrientPos();
+
+      /// Set Orientation Center Corner
+      void setCenterOrientPos();
+
       /// Set the Background Color
       void setBackgroundColor(QColor color);
 
@@ -348,6 +363,10 @@ namespace SCIRun {
       bool                              selectWidget_;    ///< Whether mouse click will select a widget.
       bool                              widgetSelected_;  ///< Whether or not a widget is currently selected.
       bool                              widgetExists_;    ///< Geometry contains a widget to find.
+
+      float                             orientSize;       ///  Size of coordinate axes
+      float                             orientPosX;       ///  X Position of coordinate axes
+      float                             orientPosY;       ///  Y Position of coordinate axes
 
       uint64_t                          mSelectedID;
       int                               mZoomSpeed;
