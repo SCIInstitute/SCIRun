@@ -234,3 +234,36 @@ TEST(GenerateStreamLinesTests, ManySeedsMultithreaded)
     EXPECT_LT(max, 600.0);
   }
 }
+
+static std::map<std::string, std::pair<double,double>> meshOutputByMethodTotalLength
+  { { "AdamsBashforth", {0.269025, 63397.6} },
+    { "Heun", {0.269025, 5253.55} },
+    { "RungeKutta", {0.269025, 4666.72} },
+    { "RungeKuttaFehlberg", {6.07487, 539.166} },
+    { "CellWalk", {0.0, 2861.98} }
+  };
+
+TEST(GenerateStreamLinesTests, ManySeedsMultithreadedStreamlineLength)
+{
+  auto torsoSeeds = LoadTorsoSeeds();
+  auto torso = LoadTorso();
+
+  for (const auto& method : methods)
+  {
+    GenerateStreamLinesAlgo algo;
+    FieldHandle output;
+
+    algo.set(Parameters::UseMultithreading, true);
+    algo.setOption(Parameters::StreamlineValue, "Streamline length");
+    algo.setOption(Parameters::StreamlineMethod, method);
+
+    std::cout << "processing real streamlines using " << method << " method." << std::endl;
+    algo.runImpl(torso, torsoSeeds, output);
+
+    double min,max;
+    output->vfield()->minmax(min, max);
+    std::cout << min << " " << max << std::endl;
+    EXPECT_NEAR(min, meshOutputByMethodTotalLength[method].first, 1e-2);
+    EXPECT_NEAR(max, meshOutputByMethodTotalLength[method].second, 1e-1);
+  }
+}
