@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>310</width>
-    <height>716</height>
+    <width>313</width>
+    <height>679</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -76,7 +76,7 @@
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>2</number>
+           <number>1</number>
           </property>
           <property name="documentMode">
            <bool>false</bool>
@@ -95,7 +95,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>260</y>
+              <y>220</y>
               <width>231</width>
               <height>31</height>
              </rect>
@@ -119,7 +119,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>360</y>
+              <y>320</y>
               <width>91</width>
               <height>20</height>
              </rect>
@@ -132,7 +132,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>290</y>
+              <y>250</y>
               <width>91</width>
               <height>20</height>
              </rect>
@@ -148,7 +148,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>310</y>
+              <y>270</y>
               <width>231</width>
               <height>20</height>
              </rect>
@@ -175,7 +175,7 @@
             <property name="geometry">
              <rect>
               <x>140</x>
-              <y>290</y>
+              <y>250</y>
               <width>101</width>
               <height>20</height>
              </rect>
@@ -200,7 +200,7 @@
             <property name="geometry">
              <rect>
               <x>140</x>
-              <y>360</y>
+              <y>320</y>
               <width>101</width>
               <height>21</height>
              </rect>
@@ -244,7 +244,7 @@
             <property name="geometry">
              <rect>
               <x>140</x>
-              <y>330</y>
+              <y>290</y>
               <width>101</width>
               <height>21</height>
              </rect>
@@ -263,7 +263,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>330</y>
+              <y>290</y>
               <width>60</width>
               <height>31</height>
              </rect>
@@ -281,79 +281,12 @@
               <x>10</x>
               <y>130</y>
               <width>231</width>
-              <height>131</height>
+              <height>91</height>
              </rect>
             </property>
             <property name="title">
              <string>Transparency</string>
             </property>
-            <widget class="QGroupBox" name="scalarsTransparencyDataInputGroupBox_2">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>60</y>
-               <width>211</width>
-               <height>61</height>
-              </rect>
-             </property>
-             <property name="title">
-              <string>Data Input</string>
-             </property>
-             <widget class="QRadioButton" name="scalarsDataPortTransparencyRButton_">
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>20</y>
-                <width>201</width>
-                <height>18</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Use Input:</string>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-             </widget>
-             <widget class="QLabel" name="label_13">
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>40</y>
-                <width>88</width>
-                <height>20</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Port:</string>
-              </property>
-             </widget>
-             <widget class="QComboBox" name="scalarsTransparencyInputComboBox">
-              <property name="geometry">
-               <rect>
-                <x>80</x>
-                <y>35</y>
-                <width>131</width>
-                <height>31</height>
-               </rect>
-              </property>
-              <item>
-               <property name="text">
-                <string>Primary</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Secondary</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Tertiary</string>
-               </property>
-              </item>
-             </widget>
-            </widget>
             <widget class="QRadioButton" name="scalarsTransparencyOffRButton_">
              <property name="geometry">
               <rect>
@@ -377,9 +310,9 @@
              <property name="geometry">
               <rect>
                <x>10</x>
-               <y>40</y>
+               <y>41</y>
                <width>100</width>
-               <height>21</height>
+               <height>20</height>
               </rect>
              </property>
              <property name="font">
@@ -394,7 +327,7 @@
             <widget class="QDoubleSpinBox" name="scalarsTransparencyDoubleSpinBox_">
              <property name="geometry">
               <rect>
-               <x>120</x>
+               <x>130</x>
                <y>40</y>
                <width>101</width>
                <height>21</height>
@@ -415,6 +348,47 @@
              <property name="value">
               <double>0.650000000000000</double>
              </property>
+            </widget>
+            <widget class="QRadioButton" name="scalarsDataPortTransparencyRButton_">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>60</y>
+               <width>81</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Use Input:</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+            <widget class="QComboBox" name="scalarsTransparencyInputComboBox">
+             <property name="geometry">
+              <rect>
+               <x>100</x>
+               <y>60</y>
+               <width>131</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <item>
+              <property name="text">
+               <string>Primary</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Secondary</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tertiary</string>
+              </property>
+             </item>
             </widget>
            </widget>
            <widget class="QGroupBox" name="vectorColoringGroupBox_6">
@@ -448,7 +422,7 @@
             <widget class="QComboBox" name="vectorsColoringInputComboBox_7">
              <property name="geometry">
               <rect>
-               <x>90</x>
+               <x>100</x>
                <y>20</y>
                <width>131</width>
                <height>26</height>
@@ -476,7 +450,7 @@
                <x>10</x>
                <y>50</y>
                <width>88</width>
-               <height>20</height>
+               <height>21</height>
               </rect>
              </property>
              <property name="text">
@@ -486,7 +460,7 @@
             <widget class="QComboBox" name="vectorsColoringInputComboBox_6">
              <property name="geometry">
               <rect>
-               <x>90</x>
+               <x>100</x>
                <y>50</y>
                <width>131</width>
                <height>26</height>
@@ -525,7 +499,7 @@
            <widget class="QComboBox" name="vectorsColoringInputComboBox_5">
             <property name="geometry">
              <rect>
-              <x>100</x>
+              <x>110</x>
               <y>30</y>
               <width>131</width>
               <height>26</height>
@@ -564,7 +538,7 @@
             <property name="geometry">
              <rect>
               <x>140</x>
-              <y>370</y>
+              <y>330</y>
               <width>101</width>
               <height>21</height>
              </rect>
@@ -592,7 +566,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>340</y>
+              <y>300</y>
               <width>221</width>
               <height>31</height>
              </rect>
@@ -616,7 +590,7 @@
             <property name="geometry">
              <rect>
               <x>140</x>
-              <y>420</y>
+              <y>380</y>
               <width>101</width>
               <height>21</height>
              </rect>
@@ -635,7 +609,7 @@
             <property name="geometry">
              <rect>
               <x>140</x>
-              <y>490</y>
+              <y>450</y>
               <width>101</width>
               <height>21</height>
              </rect>
@@ -654,7 +628,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>360</y>
+              <y>320</y>
               <width>91</width>
               <height>41</height>
              </rect>
@@ -670,7 +644,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>390</y>
+              <y>350</y>
               <width>221</width>
               <height>20</height>
              </rect>
@@ -694,7 +668,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>410</y>
+              <y>370</y>
               <width>60</width>
               <height>31</height>
              </rect>
@@ -707,7 +681,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>480</y>
+              <y>440</y>
               <width>91</width>
               <height>31</height>
              </rect>
@@ -748,7 +722,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>440</y>
+              <y>400</y>
               <width>221</width>
               <height>20</height>
              </rect>
@@ -775,7 +749,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>260</y>
+              <y>220</y>
               <width>231</width>
               <height>81</height>
              </rect>
@@ -799,7 +773,7 @@
             <widget class="QDoubleSpinBox" name="vectorsRadiusWidthDoubleSpinBox">
              <property name="geometry">
               <rect>
-               <x>120</x>
+               <x>130</x>
                <y>50</y>
                <width>101</width>
                <height>21</height>
@@ -834,7 +808,7 @@
             <widget class="QComboBox" name="vectorsRadiusWidthPortComboBox">
              <property name="geometry">
               <rect>
-               <x>90</x>
+               <x>100</x>
                <y>20</y>
                <width>131</width>
                <height>26</height>
@@ -861,7 +835,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>460</y>
+              <y>420</y>
               <width>121</width>
               <height>21</height>
              </rect>
@@ -874,7 +848,7 @@
             <property name="geometry">
              <rect>
               <x>140</x>
-              <y>460</y>
+              <y>420</y>
               <width>101</width>
               <height>21</height>
              </rect>
@@ -923,7 +897,7 @@
             <widget class="QComboBox" name="vectorsColoringInputComboBox_11">
              <property name="geometry">
               <rect>
-               <x>90</x>
+               <x>100</x>
                <y>20</y>
                <width>131</width>
                <height>26</height>
@@ -951,7 +925,7 @@
                <x>10</x>
                <y>50</y>
                <width>88</width>
-               <height>20</height>
+               <height>21</height>
               </rect>
              </property>
              <property name="text">
@@ -961,7 +935,7 @@
             <widget class="QComboBox" name="vectorsColoringInputComboBox_12">
              <property name="geometry">
               <rect>
-               <x>90</x>
+               <x>100</x>
                <y>50</y>
                <width>131</width>
                <height>26</height>
@@ -984,151 +958,6 @@
              </item>
             </widget>
            </widget>
-           <widget class="QGroupBox" name="scalarColoringGroupBox_3">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>130</y>
-              <width>231</width>
-              <height>131</height>
-             </rect>
-            </property>
-            <property name="title">
-             <string>Transparency</string>
-            </property>
-            <widget class="QGroupBox" name="scalarsTransparencyDataInputGroupBox_3">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>60</y>
-               <width>211</width>
-               <height>61</height>
-              </rect>
-             </property>
-             <property name="title">
-              <string>Data Input</string>
-             </property>
-             <widget class="QRadioButton" name="scalarsDataPortTransparencyRButton_1">
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>20</y>
-                <width>201</width>
-                <height>18</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Use Input:</string>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-             </widget>
-             <widget class="QLabel" name="label_14">
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>40</y>
-                <width>88</width>
-                <height>20</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Port:</string>
-              </property>
-             </widget>
-             <widget class="QComboBox" name="scalarsTransparencyInputComboBox_2">
-              <property name="geometry">
-               <rect>
-                <x>80</x>
-                <y>35</y>
-                <width>131</width>
-                <height>31</height>
-               </rect>
-              </property>
-              <item>
-               <property name="text">
-                <string>Primary</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Secondary</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Tertiary</string>
-               </property>
-              </item>
-             </widget>
-            </widget>
-            <widget class="QRadioButton" name="scalarsTransparencyOffRButton_1">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>20</y>
-               <width>210</width>
-               <height>18</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Off</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-            <widget class="QRadioButton" name="scalarsCustomTransparencyRButton_1">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>40</y>
-               <width>100</width>
-               <height>21</height>
-              </rect>
-             </property>
-             <property name="font">
-              <font>
-               <strikeout>false</strikeout>
-              </font>
-             </property>
-             <property name="text">
-              <string>Custom:</string>
-             </property>
-            </widget>
-            <widget class="QDoubleSpinBox" name="scalarsTransparencyDoubleSpinBox_1">
-             <property name="geometry">
-              <rect>
-               <x>120</x>
-               <y>40</y>
-               <width>101</width>
-               <height>21</height>
-              </rect>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>80</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximum">
-              <double>1.000000000000000</double>
-             </property>
-             <property name="singleStep">
-              <double>0.010000000000000</double>
-             </property>
-             <property name="value">
-              <double>0.650000000000000</double>
-             </property>
-            </widget>
-           </widget>
            <widget class="QLabel" name="label_38">
             <property name="geometry">
              <rect>
@@ -1145,7 +974,7 @@
            <widget class="QComboBox" name="vectorsColoringInputComboBox_2">
             <property name="geometry">
              <rect>
-              <x>100</x>
+              <x>110</x>
               <y>30</y>
               <width>131</width>
               <height>26</height>
@@ -1177,6 +1006,125 @@
              </property>
             </item>
            </widget>
+           <widget class="QGroupBox" name="scalarColoringGroupBox_8">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>130</y>
+              <width>231</width>
+              <height>91</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>Transparency</string>
+            </property>
+            <widget class="QRadioButton" name="scalarsTransparencyOffRButton_6">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>20</y>
+               <width>210</width>
+               <height>18</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Off</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+            <widget class="QRadioButton" name="scalarsCustomTransparencyRButton_6">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>41</y>
+               <width>100</width>
+               <height>20</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <strikeout>false</strikeout>
+              </font>
+             </property>
+             <property name="text">
+              <string>Custom:</string>
+             </property>
+            </widget>
+            <widget class="QDoubleSpinBox" name="scalarsTransparencyDoubleSpinBox_6">
+             <property name="geometry">
+              <rect>
+               <x>130</x>
+               <y>40</y>
+               <width>101</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>80</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.650000000000000</double>
+             </property>
+            </widget>
+            <widget class="QRadioButton" name="scalarsDataPortTransparencyRButton_6">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>60</y>
+               <width>81</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Use Input:</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+            <widget class="QComboBox" name="scalarsTransparencyInputComboBox_7">
+             <property name="geometry">
+              <rect>
+               <x>100</x>
+               <y>60</y>
+               <width>131</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <item>
+              <property name="text">
+               <string>Primary</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Secondary</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tertiary</string>
+              </property>
+             </item>
+            </widget>
+           </widget>
            <zorder>scaleVectorsDoubleSpinBox_</zorder>
            <zorder>normalizeVectorsCheckBox_</zorder>
            <zorder>vectorsThresholdDoubleSpinBox_</zorder>
@@ -1193,9 +1141,10 @@
            <zorder></zorder>
            <zorder>horizontalLayoutWidget_6</zorder>
            <zorder>vectorColoringGroupBox_9</zorder>
-           <zorder>scalarColoringGroupBox_3</zorder>
            <zorder>label_38</zorder>
            <zorder>vectorsColoringInputComboBox_2</zorder>
+           <zorder>scalarsTransparencyDataInputGroupBox_3</zorder>
+           <zorder>scalarColoringGroupBox_8</zorder>
           </widget>
           <widget class="QWidget" name="tensorTab_">
            <attribute name="title">
@@ -1205,7 +1154,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>419</y>
+              <y>379</y>
               <width>91</width>
               <height>21</height>
              </rect>
@@ -1218,7 +1167,7 @@
             <property name="geometry">
              <rect>
               <x>140</x>
-              <y>390</y>
+              <y>350</y>
               <width>101</width>
               <height>24</height>
              </rect>
@@ -1240,7 +1189,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>370</y>
+              <y>330</y>
               <width>221</width>
               <height>20</height>
              </rect>
@@ -1267,7 +1216,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>320</y>
+              <y>280</y>
               <width>221</width>
               <height>31</height>
              </rect>
@@ -1291,7 +1240,7 @@
             <property name="geometry">
              <rect>
               <x>140</x>
-              <y>420</y>
+              <y>380</y>
               <width>101</width>
               <height>21</height>
              </rect>
@@ -1310,7 +1259,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>390</y>
+              <y>350</y>
               <width>60</width>
               <height>21</height>
              </rect>
@@ -1351,7 +1300,7 @@
             <property name="geometry">
              <rect>
               <x>140</x>
-              <y>350</y>
+              <y>310</y>
               <width>101</width>
               <height>20</height>
              </rect>
@@ -1376,7 +1325,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>350</y>
+              <y>310</y>
               <width>91</width>
               <height>21</height>
              </rect>
@@ -1438,9 +1387,9 @@
              <property name="geometry">
               <rect>
                <x>10</x>
-               <y>20</y>
+               <y>21</y>
                <width>67</width>
-               <height>21</height>
+               <height>20</height>
               </rect>
              </property>
              <property name="text">
@@ -1450,7 +1399,7 @@
             <widget class="QComboBox" name="vectorsColoringInputComboBox_13">
              <property name="geometry">
               <rect>
-               <x>90</x>
+               <x>100</x>
                <y>20</y>
                <width>131</width>
                <height>26</height>
@@ -1478,7 +1427,7 @@
                <x>10</x>
                <y>50</y>
                <width>88</width>
-               <height>20</height>
+               <height>21</height>
               </rect>
              </property>
              <property name="text">
@@ -1488,7 +1437,7 @@
             <widget class="QComboBox" name="vectorsColoringInputComboBox_14">
              <property name="geometry">
               <rect>
-               <x>90</x>
+               <x>100</x>
                <y>50</y>
                <width>131</width>
                <height>26</height>
@@ -1514,7 +1463,7 @@
            <widget class="QComboBox" name="vectorsColoringInputComboBox_15">
             <property name="geometry">
              <rect>
-              <x>100</x>
+              <x>110</x>
               <y>30</y>
               <width>131</width>
               <height>26</height>
@@ -1526,7 +1475,20 @@
              </property>
             </item>
            </widget>
-           <widget class="QGroupBox" name="scalarColoringGroupBox_4">
+           <widget class="QLabel" name="label_41">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>30</y>
+              <width>100</width>
+              <height>20</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Display Type:</string>
+            </property>
+           </widget>
+           <widget class="QGroupBox" name="scalarColoringGroupBox_9">
             <property name="enabled">
              <bool>true</bool>
             </property>
@@ -1535,80 +1497,13 @@
               <x>10</x>
               <y>190</y>
               <width>231</width>
-              <height>131</height>
+              <height>91</height>
              </rect>
             </property>
             <property name="title">
              <string>Transparency</string>
             </property>
-            <widget class="QGroupBox" name="scalarsTransparencyDataInputGroupBox_4">
-             <property name="geometry">
-              <rect>
-               <x>10</x>
-               <y>60</y>
-               <width>211</width>
-               <height>61</height>
-              </rect>
-             </property>
-             <property name="title">
-              <string>Data Input</string>
-             </property>
-             <widget class="QRadioButton" name="scalarsDataPortTransparencyRButton_2">
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>20</y>
-                <width>201</width>
-                <height>18</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Use Input:</string>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-             </widget>
-             <widget class="QLabel" name="label_15">
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>40</y>
-                <width>88</width>
-                <height>20</height>
-               </rect>
-              </property>
-              <property name="text">
-               <string>Port:</string>
-              </property>
-             </widget>
-             <widget class="QComboBox" name="scalarsTransparencyInputComboBox_3">
-              <property name="geometry">
-               <rect>
-                <x>80</x>
-                <y>35</y>
-                <width>131</width>
-                <height>31</height>
-               </rect>
-              </property>
-              <item>
-               <property name="text">
-                <string>Primary</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Secondary</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Tertiary</string>
-               </property>
-              </item>
-             </widget>
-            </widget>
-            <widget class="QRadioButton" name="scalarsTransparencyOffRButton_2">
+            <widget class="QRadioButton" name="scalarsTransparencyOffRButton_7">
              <property name="geometry">
               <rect>
                <x>10</x>
@@ -1624,16 +1519,16 @@
               <bool>true</bool>
              </property>
             </widget>
-            <widget class="QRadioButton" name="scalarsCustomTransparencyRButton_2">
+            <widget class="QRadioButton" name="scalarsCustomTransparencyRButton_7">
              <property name="enabled">
               <bool>true</bool>
              </property>
              <property name="geometry">
               <rect>
                <x>10</x>
-               <y>40</y>
+               <y>41</y>
                <width>100</width>
-               <height>21</height>
+               <height>20</height>
               </rect>
              </property>
              <property name="font">
@@ -1645,10 +1540,10 @@
               <string>Custom:</string>
              </property>
             </widget>
-            <widget class="QDoubleSpinBox" name="scalarsTransparencyDoubleSpinBox_2">
+            <widget class="QDoubleSpinBox" name="scalarsTransparencyDoubleSpinBox_7">
              <property name="geometry">
               <rect>
-               <x>120</x>
+               <x>130</x>
                <y>40</y>
                <width>101</width>
                <height>21</height>
@@ -1670,19 +1565,47 @@
               <double>0.650000000000000</double>
              </property>
             </widget>
-           </widget>
-           <widget class="QLabel" name="label_41">
-            <property name="geometry">
-             <rect>
-              <x>10</x>
-              <y>30</y>
-              <width>100</width>
-              <height>20</height>
-             </rect>
-            </property>
-            <property name="text">
-             <string>Display Type:</string>
-            </property>
+            <widget class="QRadioButton" name="scalarsDataPortTransparencyRButton_7">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>60</y>
+               <width>81</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Use Input:</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+            <widget class="QComboBox" name="scalarsTransparencyInputComboBox_8">
+             <property name="geometry">
+              <rect>
+               <x>100</x>
+               <y>60</y>
+               <width>131</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <item>
+              <property name="text">
+               <string>Primary</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Secondary</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tertiary</string>
+              </property>
+             </item>
+            </widget>
            </widget>
           </widget>
           <widget class="QWidget" name="textTab_">
