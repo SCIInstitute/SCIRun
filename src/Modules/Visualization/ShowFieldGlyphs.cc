@@ -223,7 +223,7 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(ShowVectorTab, false);
   state->setValue(ShowVectors, false);
   state->setValue(VectorsTransparency, false);
-  state->setValue(VectorsTransparencyValue, 0.65);
+  state->setValue(VectorsCustomTransparencyValue, 0.65);
   state->setValue(VectorsScale, 1.0);
   state->setValue(VectorsResolution, 5);
   state->setValue(VectorsColoring, 0);
@@ -429,8 +429,8 @@ void GlyphBuilder::renderVectors(
   const std::string& id)
 {
   std::cout << "get sec and tert states\n";
-  bool showSecondary = state->getValue(ShowFieldGlyphs::ShowSecondary).toBool();
-  bool showTertiary = state->getValue(ShowFieldGlyphs::ShowTertiary).toBool();
+  //  bool showSecondary = state->getValue(ShowFieldGlyphs::ShowSecondary).toBool();
+  //  bool showTertiary = state->getValue(ShowFieldGlyphs::ShowTertiary).toBool();
   std::cout << "get field info\n";
   FieldInformation pfinfo(pfield);
 
@@ -745,7 +745,7 @@ void GlyphBuilder::renderVectors(
   std::string uniqueNodeID = id + "vector_glyphs" + ss.str();
 
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENT_EDGES),
-                     state->getValue(ShowFieldGlyphs::VectorsTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
+                     state->getValue(ShowFieldGlyphs::VectorsCustomTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
 }
 
 void GlyphBuilder::renderScalars(
@@ -1369,13 +1369,13 @@ RenderState GlyphBuilder::getVectorsRenderState(
   boost::optional<ColorMapHandle> tcolorMap)
 {
   RenderState renState;
-  bool showSecondary = state->getValue(ShowFieldGlyphs::ShowSecondary).toBool();
-  bool showTertiary = state->getValue(ShowFieldGlyphs::ShowTertiary).toBool();
+  //  bool showSecondary = state->getValue(ShowFieldGlyphs::ShowSecondary).toBool();
+  //  bool showTertiary = state->getValue(ShowFieldGlyphs::ShowTertiary).toBool();
 
   bool useColorMap = state->getValue(ShowFieldGlyphs::VectorsColoring).toInt() == 1;
   bool rgbConversion = state->getValue(ShowFieldGlyphs::VectorsColoring).toInt() == 2;
 
-  if(showSecondary || showTertiary)
+  /**  if(showSecondary || showTertiary)
     {
       // If secondary or tertiary has color map, override primary
       if((showSecondary && state->getValue(ShowFieldGlyphs::SecondaryColoring).toInt() == 1 && scolorMap)
@@ -1391,7 +1391,7 @@ RenderState GlyphBuilder::getVectorsRenderState(
           useColorMap = false;
           rgbConversion = true;
         }
-    }
+        }**/
 
   renState.set(RenderState::USE_NORMALS, true);
 
@@ -1458,13 +1458,13 @@ RenderState GlyphBuilder::getScalarsRenderState(
   boost::optional<ColorMapHandle> colorMap)
 {
   RenderState renState;
-  bool showSecondary = state->getValue(ShowFieldGlyphs::ShowSecondary).toBool();
-  bool showTertiary = state->getValue(ShowFieldGlyphs::ShowTertiary).toBool();
+  //  bool showSecondary = state->getValue(ShowFieldGlyphs::ShowSecondary).toBool();
+  //  bool showTertiary = state->getValue(ShowFieldGlyphs::ShowTertiary).toBool();
 
   bool useColorMap = state->getValue(ShowFieldGlyphs::ScalarsColoring).toInt() == 1;
   bool rgbConversion = state->getValue(ShowFieldGlyphs::ScalarsColoring).toInt() == 2;
 
-  if(showSecondary || showTertiary)
+  /**  if(showSecondary || showTertiary)
     {
       // If secondary or tertiary has color map, override primary
       if(state->getValue(ShowFieldGlyphs::SecondaryColoring).toInt() == 1 || state->getValue(ShowFieldGlyphs::TertiaryColoring).toInt() == 1)
@@ -1478,7 +1478,7 @@ RenderState GlyphBuilder::getScalarsRenderState(
           useColorMap = false;
           rgbConversion = true;
         }
-    }
+        }**/
 
   renState.set(RenderState::USE_NORMALS, true);
 
@@ -1535,13 +1535,13 @@ RenderState GlyphBuilder::getTensorsRenderState(
   boost::optional<ColorMapHandle> colorMap)
 {
   RenderState renState;
-  bool showSecondary = state->getValue(ShowFieldGlyphs::ShowSecondary).toBool();
-  bool showTertiary = state->getValue(ShowFieldGlyphs::ShowTertiary).toBool();
+  //  bool showSecondary = state->getValue(ShowFieldGlyphs::ShowSecondary).toBool();
+  //  bool showTertiary = state->getValue(ShowFieldGlyphs::ShowTertiary).toBool();
 
   bool useColorMap = state->getValue(ShowFieldGlyphs::TensorsColoring).toInt() == 1;
   bool rgbConversion = state->getValue(ShowFieldGlyphs::TensorsColoring).toInt() == 2;
 
-  if(showSecondary || showTertiary)
+  /**  if(showSecondary || showTertiary)
     {
       // If secondary or tertiary has color map, override primary
       if(state->getValue(ShowFieldGlyphs::SecondaryColoring).toInt() == 1 || state->getValue(ShowFieldGlyphs::TertiaryColoring).toInt() == 1)
@@ -1556,6 +1556,7 @@ RenderState GlyphBuilder::getTensorsRenderState(
           rgbConversion = true;
         }
     }
+  **/
 
   renState.set(RenderState::USE_NORMALS, true);
 
@@ -1607,54 +1608,48 @@ RenderState GlyphBuilder::getTensorsRenderState(
   return renState;
 }
 
-// Tab Controls
-const AlgorithmParameterName ShowFieldGlyphs::ShowVectorTab("ShowVectorTab");
-const AlgorithmParameterName ShowFieldGlyphs::ShowScalarTab("ShowScalarTab");
-const AlgorithmParameterName ShowFieldGlyphs::ShowTensorTab("ShowTensorTab");
-const AlgorithmParameterName ShowFieldGlyphs::ShowSecondaryTab("ShowSecondaryTab");
-const AlgorithmParameterName ShowFieldGlyphs::ShowTertiaryTab("ShowTertiaryTab");
+const AlgorithmParameterName ShowFieldGlyphs::FieldName("FieldName");
 // Mesh Color
 const AlgorithmParameterName ShowFieldGlyphs::DefaultMeshColor("DefaultMeshColor");
 // Vector Controls
-const AlgorithmParameterName ShowFieldGlyphs::FieldName("FieldName");
 const AlgorithmParameterName ShowFieldGlyphs::ShowVectors("ShowVectors");
-const AlgorithmParameterName ShowFieldGlyphs::VectorsTransparency("VectorsTransparency");
-const AlgorithmParameterName ShowFieldGlyphs::VectorsTransparencyValue("VectorsTransparencyValue");
-const AlgorithmParameterName ShowFieldGlyphs::VectorsScale("VectorsScale");
-const AlgorithmParameterName ShowFieldGlyphs::VectorsResolution("VectorsResolution");
-const AlgorithmParameterName ShowFieldGlyphs::VectorsColoring("VectorsColoring");
 const AlgorithmParameterName ShowFieldGlyphs::VectorsDisplayType("VectorsDisplayType");
-const AlgorithmParameterName ShowFieldGlyphs::NormalizeGlyphs("NormalizeGlyphs");
+const AlgorithmParameterName ShowFieldGlyphs::VectorsColoring("VectorsColoring");
+const AlgorithmParameterName ShowFieldGlyphs::VectorsColoringDataInput("VectorsColoringDataInput");
+const AlgorithmParameterName ShowFieldGlyphs::VectorsTransparency("VectorsTransparency");
+const AlgorithmParameterName ShowFieldGlyphs::VectorsCustomTransparencyValue("VectorsCustomTransparencyValue");
+const AlgorithmParameterName ShowFieldGlyphs::VectorsTransparencyDataInput("VectorsTransparencyDataInput");
+const AlgorithmParameterName ShowFieldGlyphs::VectorsRadiusWidthDataInput("VectorsRadiusWidthDataInput");
+const AlgorithmParameterName ShowFieldGlyphs::VectorsRadiusWidthScale("VectorsRadiusWidthScale");
+const AlgorithmParameterName ShowFieldGlyphs::NormalizeVectors("NormalizeVectors");
+const AlgorithmParameterName ShowFieldGlyphs::VectorsScale("VectorsScale");
+const AlgorithmParameterName ShowFieldGlyphs::RenderVectorsBelowThreshold("RenderVectorsBelowThreshold");
+const AlgorithmParameterName ShowFieldGlyphs::VectorsThreshold("VectorsThreshold");
 const AlgorithmParameterName ShowFieldGlyphs::RenderBidirectionaly("RenderBidirectionaly");
-const AlgorithmParameterName ShowFieldGlyphs::RenderGlyphsBellowThreshold("RenderGlyphsBellowThreshold");
-const AlgorithmParameterName ShowFieldGlyphs::Threshold("Threshold");
+const AlgorithmParameterName ShowFieldGlyphs::ArrowHeadRatio("ArrowHeadRatio");
+const AlgorithmParameterName ShowFieldGlyphs::VectorsResolution("VectorsResolution");
 // Scalar Controls
 const AlgorithmParameterName ShowFieldGlyphs::ShowScalars("ShowScalars");
-const AlgorithmParameterName ShowFieldGlyphs::ScalarsTransparency("ScalarsTransparency");
-const AlgorithmParameterName ShowFieldGlyphs::ScalarsTransparencyValue("ScalarsTransparencyValue");
-const AlgorithmParameterName ShowFieldGlyphs::ScalarsScale("ScalarsScale");
-const AlgorithmParameterName ShowFieldGlyphs::ScalarsResolution("ScalarsResolution");
-const AlgorithmParameterName ShowFieldGlyphs::ScalarsColoring("ScalarsColoring");
 const AlgorithmParameterName ShowFieldGlyphs::ScalarsDisplayType("ScalarsDisplayType");
+const AlgorithmParameterName ShowFieldGlyphs::ScalarsColoring("ScalarsColoring");
+const AlgorithmParameterName ShowFieldGlyphs::ScalarsColoringDataInput("ScalarsColoringDataInput");
+const AlgorithmParameterName ShowFieldGlyphs::ScalarsTransparency("ScalarsTransparency");
+const AlgorithmParameterName ShowFieldGlyphs::ScalarsCustomTransparencyValue("ScalarsCustomTransparencyValue");
+const AlgorithmParameterName ShowFieldGlyphs::ScalarsTransparencyDataInput("ScalarsTransparencyDataInput");
+const AlgorithmParameterName ShowFieldGlyphs::ScalarsScale("ScalarsScale");
+const AlgorithmParameterName ShowFieldGlyphs::RenderScalarsBelowThreshold("RenderScalarsBelowThreshold");
+const AlgorithmParameterName ShowFieldGlyphs::ScalarsThreshold("ScalarsThreshold");
+const AlgorithmParameterName ShowFieldGlyphs::ScalarsResolution("ScalarsResolution");
 // Tensor Controls
 const AlgorithmParameterName ShowFieldGlyphs::ShowTensors("ShowTensors");
-const AlgorithmParameterName ShowFieldGlyphs::TensorsTransparency("TensorsTransparency");
-const AlgorithmParameterName ShowFieldGlyphs::TensorsTransparencyValue("TensorsTransparencyValue");
-const AlgorithmParameterName ShowFieldGlyphs::TensorsScale("TensorsScale");
-const AlgorithmParameterName ShowFieldGlyphs::TensorsResolution("TensorsResolution");
-const AlgorithmParameterName ShowFieldGlyphs::TensorsColoring("TensorsColoring");
 const AlgorithmParameterName ShowFieldGlyphs::TensorsDisplayType("TensorsDisplayType");
-//Secondary Controls
-const AlgorithmParameterName ShowFieldGlyphs::ShowSecondary("ShowSecondary");
-const AlgorithmParameterName ShowFieldGlyphs::SecondaryColoring("SecondaryColoring");
-const AlgorithmParameterName ShowFieldGlyphs::SecondaryAlphaMapping("SecondaryAlphaMapping");
-const AlgorithmParameterName ShowFieldGlyphs::SecondaryGlyphValue("SecondaryGlyphValue");
-const AlgorithmParameterName ShowFieldGlyphs::SecondarySpringType("SecondarySpringType");
-const AlgorithmParameterName ShowFieldGlyphs::SecondaryScale("SecondaryScale");
-//Tertiary Controls
-const AlgorithmParameterName ShowFieldGlyphs::ShowTertiary("ShowTertiary");
-const AlgorithmParameterName ShowFieldGlyphs::TertiaryColoring("TertiaryColoring");
-const AlgorithmParameterName ShowFieldGlyphs::TertiaryAlphaMapping("TertiaryAlphaMapping");
-const AlgorithmParameterName ShowFieldGlyphs::TertiaryGlyphValue("TertiaryGlyphValue");
-const AlgorithmParameterName ShowFieldGlyphs::TertiarySpringType("TertiarySpringType");
-const AlgorithmParameterName ShowFieldGlyphs::TertiaryScale("TertiaryScale");
+const AlgorithmParameterName ShowFieldGlyphs::TensorsColoring("TensorsColoring");
+const AlgorithmParameterName ShowFieldGlyphs::TensorsColoringDataInput("TensorsColoringDataInput");
+const AlgorithmParameterName ShowFieldGlyphs::TensorsTransparency("TensorsTransparency");
+const AlgorithmParameterName ShowFieldGlyphs::TensorsCustomTransparencyValue("TensorsCustomTransparencyValue");
+const AlgorithmParameterName ShowFieldGlyphs::TensorsTransparencyDataInput("TensorsTransparencyDataInput");
+const AlgorithmParameterName ShowFieldGlyphs::NormalizeTensors("NormalizeTensors");
+const AlgorithmParameterName ShowFieldGlyphs::TensorsScale("TensorsScale");
+const AlgorithmParameterName ShowFieldGlyphs::RenderTensorsBelowThreshold("RenderTensorsBelowThreshold");
+const AlgorithmParameterName ShowFieldGlyphs::TensorsThreshold("TensorsThreshold");
+const AlgorithmParameterName ShowFieldGlyphs::TensorsResolution("TensorsResolution");
