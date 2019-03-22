@@ -56,7 +56,8 @@ Name::Name(const std::string& name) : name_(name)
 {
   if (!std::all_of(name.begin(), name.end(), [](char c) { return isalnum(c) || c == '_'; }))
   {
-    LOG_DEBUG("AlgorithmParameterName not accessible from Python: {}", name);
+    //Disabling this message since it messes up log creation order.
+    //LOG_DEBUG("AlgorithmParameterName not accessible from Python: {}", name);
   }
 }
 

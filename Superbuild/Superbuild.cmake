@@ -208,6 +208,7 @@ IF(BUILD_TESTING)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TestDataConfig.cmake SCIRunTestData_external )
 ENDIF()
 
+ADD_EXTERNAL( ${SUPERBUILD_DIR}/EigenExternal.cmake Eigen_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/ZlibExternal.cmake Zlib_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/SQLiteExternal.cmake SQLite_external )
 ADD_EXTERNAL( ${SUPERBUILD_DIR}/LibPNGExternal.cmake LibPNG_external )
@@ -244,7 +245,6 @@ IF(WITH_OSPRAY)
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/TbbExternal.cmake Tbb_external )
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/EmbreeExternal.cmake Embree_external )
   ADD_EXTERNAL( ${SUPERBUILD_DIR}/IspcExternal.cmake Ispc_external )
-  #ADD_EXTERNAL( ${SUPERBUILD_DIR}/OsprayExternal.cmake Ospray_external )
 ENDIF()
 
 IF(NOT BUILD_HEADLESS)
@@ -281,6 +281,7 @@ SET(SCIRUN_CACHE_ARGS
     "-DQT5_BUILD:BOOL=${QT5_BUILD}"
     "-DREGENERATE_MODULE_FACTORY_CODE:BOOL=${REGENERATE_MODULE_FACTORY_CODE}"
     "-DGENERATE_MODULE_FACTORY_CODE:BOOL=${GENERATE_MODULE_FACTORY_CODE}"
+    "-DEigen_DIR:PATH=${Eigen_DIR}"
     "-DZlib_DIR:PATH=${Zlib_DIR}"
     "-DLibPNG_DIR:PATH=${LibPNG_DIR}"
     "-DSQLite_DIR:PATH=${SQLite_DIR}"

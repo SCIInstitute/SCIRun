@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,39 +25,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ES_TRACE_LOG_H
-#define ES_TRACE_LOG_H
+#ifndef MODULES_BASIC_LOGGING_TESTER_H
+#define MODULES_BASIC_LOGGING_TESTER_H
 
-#include <Core/Logging/LoggerFwd.h>
-#include <spire/scishare.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Basic/share.h>
 
-namespace spire
-{
-  //class SCISHARE RendererLog
-  //{
-  //public:
-  //  static SCIRun::Core::Logging::Logger2 get();
-  //  static const char* name();
-  //private:
-  //  static SCIRun::Core::Logging::Logger2 logger_;
-  //};
-}
+namespace SCIRun {
+  namespace Modules {
+    namespace Basic {
 
-#define logRendererError(...) //spire::RendererLog::get()->error(__VA_ARGS__)
-#define logRendererWarning(...)// spire::RendererLog::get()->warn(__VA_ARGS__)
-#define logRendererInfo(...) //spire::RendererLog::get()->info(__VA_ARGS__)
+      class SCISHARE LoggingTester : public SCIRun::Dataflow::Networks::Module,
+        public Has1InputPort<MatrixPortTag>,
+        public HasNoOutputPorts
+      {
+      public:
+        LoggingTester();
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
 
-#ifdef RENDERER_TRACE_ON
-  #define SPDLOG_TRACE_ON
-  #include <spdlog/spdlog.h>
-  #define RENDERER_LOG(...) SPDLOG_TRACE(spire::RendererLog::get(), __VA_ARGS__)
-  #define RENDERER_LOG_FUNCTION_SCOPE LOG_FUNCTION_SCOPE(spire::RendererLog);
-#else
-  #include <spdlog/spdlog.h>
-  #define RENDERER_LOG(...)
-  #define RENDERER_LOG_FUNCTION_SCOPE
-#endif
+        INPUT_PORT(0, Input, Matrix);
 
-//#include <Core/Logging/ScopedFunctionLogger.h>
+        MODULE_TRAITS_AND_INFO(NoAlgoOrUI)
+      };
+ }}}
 
 #endif
