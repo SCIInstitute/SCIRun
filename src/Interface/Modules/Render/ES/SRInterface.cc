@@ -1630,8 +1630,8 @@ namespace SCIRun {
             if (arrowVBO == 0 || arrowIBO == 0 || shader == 0)
             {
               axesFailCount_++;
-              if (axesFailCount_ > frameInitLimit_)
-                throw SRInterfaceFailure("Failed to initialize axes after many attempts. ViewScene is unusable. Halting renderer loop.");
+              //if (axesFailCount_ > frameInitLimit_)
+                //throw SRInterfaceFailure("Failed to initialize axes after many attempts. ViewScene is unusable. Halting renderer loop.");
               return;
             }
 
@@ -1668,7 +1668,7 @@ namespace SCIRun {
             float aspect = static_cast<float>(dims->width) / static_cast<float>(dims->height);
             // Project onto a orthographic plane with respect to aspect ratio
             glm::mat4 projection = glm::ortho(-aspect/2, aspect/2, -0.5f, 0.5f, 0.0f, 2.0f);
-            
+
             // Build world transform for all axes. Rotates about uninverted camera's
             // view, then translates to a specified corner on the screen.
             glm::mat4 axesRot = mCamera->getWorldToView();

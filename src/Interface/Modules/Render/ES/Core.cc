@@ -47,6 +47,8 @@ namespace Render {
   ren::registerAll(*this);
   rendererRegisterAll(*this);
 
+  mCurrentTime = 0.0;
+
   // You should set your default OpenGL state here before we create the
   // default static component GLState.
   mDefaultGLState.setFrontFace(GL_CW);
@@ -135,4 +137,3 @@ void ESCore::setBackgroundColor(float r, float g, float b, float a)
 
 } // namespace Render
 } // namespace SCIRun
-
