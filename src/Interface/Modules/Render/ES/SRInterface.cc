@@ -207,30 +207,9 @@ namespace SCIRun {
         dims->width = static_cast<uint32_t>(width);
         dims->height = static_cast<uint32_t>(height);
       }
-
-      // Setup default camera projection.
-      gen::StaticCamera* cam = mCore.getStaticComponent<gen::StaticCamera>();
-      gen::StaticOrthoCamera* orthoCam = mCore.getStaticComponent<gen::StaticOrthoCamera>();
-
-      if (cam == nullptr || orthoCam == nullptr) return;
-
-      float aspect = static_cast<float>(width) / static_cast<float>(height);
-
-      float perspFOVY = 0.59f;
-      float perspZNear = 0.01f;
-      float perspZFar = 20000.0f;
-      glm::mat4 proj = glm::perspective(perspFOVY, aspect, perspZNear, perspZFar);
-      cam->data.setProjection(proj, perspFOVY, aspect, perspZNear, perspZFar);
-      cam->data.winWidth = static_cast<float>(width);
-
-      // Setup default ortho camera projection
-      float orthoZNear = -1000.0f;
-      float orthoZFar = 1000.0f;
-      glm::mat4 orthoProj = glm::ortho(/*left*/   -1.0f,      /*right*/ 1.0f,
-        /*bottom*/ -1.0f,      /*top*/   1.0f,
-        /*znear*/  orthoZNear, /*zfar*/  orthoZFar);
-      orthoCam->data.setOrthoProjection(orthoProj, aspect, 2.0f, 2.0f, orthoZNear, orthoZFar);
-      orthoCam->data.winWidth = static_cast<float>(width);
+      
+      mCamera->setAsPerspective();
+      updateCamera();
     }
 
     //------------------------------------------------------------------------------
@@ -1434,8 +1413,8 @@ namespace SCIRun {
       gen::StaticCamera* camera = mCore.getStaticComponent<gen::StaticCamera>();
       if (camera)
       {
+        camera->data.setView(viewToWorld);
         camera->data.setProjection(projection, mCamera->getFOVY(), mCamera->getAspect(), mCamera->getZNear(), mCamera->getZFar());
-        camera->data.setView(viewToWorld);//this takes the inverse of the world to view matrix for some reason
       }
     }
 
@@ -1663,6 +1642,7 @@ namespace SCIRun {
             GL(glDepthMask(GL_TRUE));
             GL(glDisable(GL_CULL_FACE));
             GL(glDisable(GL_BLEND));
+            glClear(GL_DEPTH_BUFFER_BIT);
 
             // Note that we can pull aspect ratio from the screen dimensions static
             // variable.
@@ -1670,7 +1650,7 @@ namespace SCIRun {
             float aspect = static_cast<float>(dims->width) / static_cast<float>(dims->height);
             // Project onto a orthographic plane with respect to aspect ratio
             glm::mat4 projection = glm::ortho(-aspect/2, aspect/2, -0.5f, 0.5f, 0.0f, 2.0f);
-            
+
             // Build world transform for all axes. Rotates about uninverted camera's
             // view, then translates to a specified corner on the screen.
             glm::mat4 axesRot = mCamera->getWorldToView();

@@ -147,7 +147,7 @@ void SRCamera::doAutoView(const Core::Geometry::BBox& bbox)
   mArcLookAt->autoview(aabb, getDefaultFOVY());
 
   mRadius = (glm::length(max - min) / 2.0f);
-  
+
   mZFar = mArcLookAt->getCamDistance() + mRadius;
   mZNear = std::max(mZFar/1000.0f, mArcLookAt->getCamDistance() - mRadius);
   setAsPerspective();
