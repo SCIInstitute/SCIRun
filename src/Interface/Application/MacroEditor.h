@@ -25,10 +25,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_TRIGGEREDEVENTSWINDOW_H
-#define INTERFACE_APPLICATION_TRIGGEREDEVENTSWINDOW_H
+#ifndef INTERFACE_APPLICATION_MACROEDITOR_H
+#define INTERFACE_APPLICATION_MACROEDITOR_H
 
-#include "ui_TriggeredEventsWindow.h"
+#include "ui_MacroEditor.h"
 #include <QMap>
 
 #ifndef Q_MOC_RUN
@@ -41,27 +41,48 @@ namespace Gui {
   class NetworkEditor;
   class CodeEditor;
 
-class TriggeredEventsWindow : public QDockWidget, public Ui::TriggeredEvents
+  using MacroNameValueList = QList<QStringList>;
+
+  enum MacroListItem
+  {
+    Name,
+    Script,
+    ButtonNumber
+  };
+
+class MacroEditor : public QDockWidget, public Ui::MacroEditor
 {
 	Q_OBJECT
 
 public:
-  explicit TriggeredEventsWindow(QWidget* parent = nullptr);
+  explicit MacroEditor(QWidget* parent = nullptr);
+  const MacroNameValueList& scripts() const;
+  void setScripts(const MacroNameValueList& scripts);
 
-  const QMap<QString, QString>& scripts() const;
-  void setScripts(const QMap<QString, QString>& scripts);
-  const QMap<QString, bool>& scriptEnabledFlags() const;
-  void setScriptEnabledFlags(const QMap<QString, bool>& scriptsEnabled);
+  QString macroForButton(int i) const;
+
+  static const char* Index;
+  enum
+  {
+    MIN_MACRO_INDEX = 1,
+    MAX_MACRO_INDEX = 5
+  };
+
+Q_SIGNALS:
+  void macroButtonChanged(int index, const QString& name);
 
 private Q_SLOTS:
   void updateScriptEditor();
   void updateScripts();
-  void enableStateChanged(int state);
+  void addMacro();
+  void removeMacro();
+  void assignToButton();
+  void runSelectedMacro();
+
 private:
-  void push();
+  void setupAssignToAction(QAction* action, int i);
   CodeEditor* scriptPlainTextEdit_;
-  QMap<QString, QString> scripts_;
-  QMap<QString, bool> scriptEnabledFlags_;
+  MacroNameValueList macros_;
 };
 
 }

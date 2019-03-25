@@ -46,7 +46,7 @@ namespace SCIRun {
     namespace Algorithms {
       namespace Fields {
 
-        enum IntegrationMethod
+        enum class IntegrationMethod
         {
           AdamsBashforth = 0,
           Heun = 2,
@@ -55,7 +55,7 @@ namespace SCIRun {
           CellWalk = 5
         };
 
-        enum StreamlineValue
+        enum class StreamlineValue
         {
           SeedValue,
           SeedIndex,

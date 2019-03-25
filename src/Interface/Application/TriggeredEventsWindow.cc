@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -30,20 +29,21 @@
 #include <Interface/Application/TriggeredEventsWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Core/Application/Preferences/Preferences.h>
+#include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
 
 using namespace SCIRun::Gui;
-//using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Dataflow::Engine;
 
-TriggeredEventsWindow::TriggeredEventsWindow(QWidget* parent /* = 0 */) : QDockWidget(parent)
+TriggeredEventsWindow::TriggeredEventsWindow(QWidget* parent /* = 0 */) : QDockWidget(parent),
+  scriptPlainTextEdit_(new CodeEditor(this))
 {
   setupUi(this);
+  gridLayout_2->addWidget(scriptPlainTextEdit_, 2, 0);
   connect(eventListWidget_, SIGNAL(itemSelectionChanged()), this, SLOT(updateScriptEditor()));
   connect(scriptPlainTextEdit_, SIGNAL(textChanged()), this, SLOT(updateScripts()));
   connect(enabledCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(enableStateChanged(int)));
 }
 
-const QMap<QString, QString>& TriggeredEventsWindow::getScripts() const
+const QMap<QString, QString>& TriggeredEventsWindow::scripts() const
 {
   return scripts_;
 }
@@ -56,7 +56,7 @@ void TriggeredEventsWindow::setScripts(const QMap<QString, QString>& scripts)
   updateScriptEditor();
 }
 
-const QMap<QString, bool>& TriggeredEventsWindow::getScriptEnabledFlags() const
+const QMap<QString, bool>& TriggeredEventsWindow::scriptEnabledFlags() const
 {
   return scriptEnabledFlags_;
 }

@@ -264,19 +264,19 @@ StreamLineIntegrators::integrate(IntegrationMethod method)
 {
   switch ( method ) 
   {
-  case AdamsBashforth:
+  case IntegrationMethod::AdamsBashforth:
     FindAdamsBashforth();
     break;
 
-  case Heun:
+  case IntegrationMethod::Heun:
     FindHeun();
     break;
 
-  case RungeKutta:
+  case IntegrationMethod::RungeKutta:
     FindRK4();
     break;
 
-  case RungeKuttaFehlberg:
+  case IntegrationMethod::RungeKuttaFehlberg:
     FindRKF();
     break;
   default:

@@ -35,6 +35,7 @@
 #include <Interface/Application/TagManagerWindow.h>
 #include <Interface/Application/ProvenanceWindow.h>
 #include <Interface/Application/TriggeredEventsWindow.h>
+#include <Interface/Application/MacroEditor.h>
 #include <Core/Application/Preferences/Preferences.h>
 
 using namespace SCIRun::Gui;
@@ -66,6 +67,16 @@ namespace
     return ss;
   }
 
+  QList<QStringList> toStrList(const QList<QVariant>& lv)
+  {
+    QList<QStringList> ls;
+    for (const auto& v : lv)
+    {
+      ls.push_back(v.toStringList());
+    }
+    return ls;
+  }
+
   template <typename T>
   QMap<QString, QVariant> fromTypedMap(const QMap<QString, T>& m)
   {
@@ -75,6 +86,17 @@ namespace
       sv[ss.first] = ss.second;
     }
     return sv;
+  }
+
+  template <typename T>
+  QList<QVariant> fromTypedList(const QList<T>& list)
+  {
+    QList<QVariant> lv;
+    for (const auto& t : list)
+    {
+      lv.push_back(t);
+    }
+    return lv;
   }
 
   QMap<QString, QVariant> fromStrMap(const QMap<QString, QString>& m)
@@ -302,6 +324,13 @@ void SCIRunMainWindow::readSettings()
     triggeredEventsWindow_->setScriptEnabledFlags(toBoolMap(scriptsMap));
   }
 
+  const QString macros = "macros";
+  if (settings.contains(macros))
+  {
+    auto macrosList = settings.value(macros).toList();
+    macroEditor_->setScripts(toStrList(macrosList));
+  }
+
   const QString savedSubnetworksNames = "savedSubnetworksNames";
   if (settings.contains(savedSubnetworksNames))
   {
@@ -374,8 +403,9 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("dataPath", convertPathList(prefs.dataPath()));
   settings.setValue("tagNames", tagManagerWindow_->getTagNames());
   settings.setValue("tagColors", tagManagerWindow_->getTagColors());
-  settings.setValue("triggeredScripts", fromStrMap(triggeredEventsWindow_->getScripts()));
-  settings.setValue("triggeredScriptEnableFlags", fromBoolMap(triggeredEventsWindow_->getScriptEnabledFlags()));
+  settings.setValue("triggeredScripts", fromStrMap(triggeredEventsWindow_->scripts()));
+  settings.setValue("triggeredScriptEnableFlags", fromBoolMap(triggeredEventsWindow_->scriptEnabledFlags()));
+  settings.setValue("macros", fromTypedList<QStringList>(macroEditor_->scripts()));
   settings.setValue("savedSubnetworksNames", savedSubnetworksNames_);
   settings.setValue("savedSubnetworksXml", savedSubnetworksXml_);
   settings.setValue("toolkitFiles", toolkitFiles_);
