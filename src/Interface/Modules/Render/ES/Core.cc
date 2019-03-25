@@ -72,8 +72,9 @@ std::string ESCore::toString(std::string prefix) const
   for(auto& comp : mComponents)
     if(comp.second->getNumComponents() > 0)
     {
-      output += prefix + "  ID: " + std::to_string(comp.first)
-        + "  Components: " + std::to_string(comp.second->getNumComponents()) + "\n";
+      output += prefix + std::to_string(comp.first)
+        + "  Components: " + std::to_string(comp.second->getNumComponents())
+        + "  Name: \"" +  mComponentIDNameMap.at(comp.first);
       output += comp.second->toString(prefix + "  ");
     }
   output += "\n";
@@ -101,11 +102,12 @@ std::string ESCore::toString(std::string prefix) const
 
   auto systems = mSystems.get();
   //output += prefix + "systems: " + std::to_string(mKernelSystems.size()) + "\n";
-  output += systems->toString(prefix);
+  output += systems->toString(prefix) + "\n";
+
+  output += prefix + "Current Time: " + std::to_string(static_cast<uint64_t>(mCurrentTime * 1000.0)) + "\n";
 
   return output;
 }
-
 
 void ESCore::execute(double currentTime, double constantFrameTime)
 {

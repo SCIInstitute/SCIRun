@@ -12,7 +12,8 @@ std::string SystemCore::toString(std::string prefix) const
 
   for(auto& sysItm: mSystems)
   {
-    output += prefix + "Name: " + sysItm.systemName + "\n";
+    output += prefix + "Name: " + sysItm.systemName
+      + "  NextExecutionTime: " + std::to_string(sysItm.nextExecutionTime) + "\n";
   }
 
   return output;
