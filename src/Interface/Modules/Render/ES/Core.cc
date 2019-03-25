@@ -39,15 +39,14 @@
 namespace SCIRun {
 namespace Render {
 
-  ESCore::ESCore() : r_(0.0f), g_(0.0f), b_(0.0f), a_(0.0f)
+  ESCore::ESCore() : mCoreSequence(0), mCurrentTime(0.0f), mFPS(0.0f), mLastRealTime(0.0f),
+    r_(0.0f), g_(0.0f), b_(0.0f), a_(0.0f)
 {
   // Register common systems.
   gen::registerAll(*this);
   spire::registerAll(*this);
   ren::registerAll(*this);
   rendererRegisterAll(*this);
-
-  mCurrentTime = 0.0;
 
   // You should set your default OpenGL state here before we create the
   // default static component GLState.

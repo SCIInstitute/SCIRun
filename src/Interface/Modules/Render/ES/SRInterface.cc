@@ -1630,8 +1630,8 @@ namespace SCIRun {
             if (arrowVBO == 0 || arrowIBO == 0 || shader == 0)
             {
               axesFailCount_++;
-              //if (axesFailCount_ > frameInitLimit_)
-                //throw SRInterfaceFailure("Failed to initialize axes after many attempts. ViewScene is unusable. Halting renderer loop.");
+              if (axesFailCount_ > frameInitLimit_)
+                throw SRInterfaceFailure("Failed to initialize axes after many attempts. ViewScene is unusable. Halting renderer loop.");
               return;
             }
 
