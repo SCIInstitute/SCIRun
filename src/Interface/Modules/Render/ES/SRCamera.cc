@@ -60,6 +60,7 @@ void SRCamera::setAsPerspective()
 
   float aspect = static_cast<float>(mInterface.getScreenWidthPixels()) /
                  static_cast<float>(mInterface.getScreenHeightPixels());
+
   mP = glm::perspective(mFOV, aspect, mZNear, mZFar);
 }
 
@@ -146,10 +147,24 @@ void SRCamera::doAutoView(const Core::Geometry::BBox& bbox)
   /// \todo Use real FOV-Y when we allow the user to change the FOV.
   mArcLookAt->autoview(aabb, getDefaultFOVY());
 
-  mRadius = (glm::length(max - min) / 2.0f);
+  setClippingPlanes(bbox);
+}
 
-  mZFar = mArcLookAt->getCamDistance() + mRadius;
-  mZNear = std::max(mZFar/1000.0f, mArcLookAt->getCamDistance() - mRadius);
+void SRCamera::setClippingPlanes(const Core::Geometry::BBox& bbox)
+{
+  mRadius = (bbox.get_max() - bbox.get_min()).length() / 2.0f;
+
+  if(mRadius > 0.0)
+  {
+    mZFar = mArcLookAt->getCamDistance() + mRadius;
+    mZNear = std::max(mZFar/1000.0f, mArcLookAt->getCamDistance() - mRadius);
+  }
+  else
+  {
+    mZFar = getDefaultZFar();
+    mZNear = getDefaultZNear();
+  }
+  
   setAsPerspective();
 }
 

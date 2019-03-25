@@ -207,7 +207,7 @@ namespace SCIRun {
         dims->width = static_cast<uint32_t>(width);
         dims->height = static_cast<uint32_t>(height);
       }
-      
+
       mCamera->setAsPerspective();
       updateCamera();
     }
@@ -258,6 +258,7 @@ namespace SCIRun {
     void SRInterface::inputMouseWheel(int32_t delta)
     {
       mCamera->mouseWheelEvent(delta, mZoomSpeed);
+      updateCamera();
     }
 
     //------------------------------------------------------------------------------
@@ -528,11 +529,8 @@ namespace SCIRun {
     void SRInterface::doAutoView()
     {
       if (mSceneBBox.valid())
-      {
         mCamera->doAutoView(mSceneBBox);
-
-        //std::cout << mSceneBBox.get_min() << "\t" << mSceneBBox.get_max() << "\n";
-      }
+      updateCamera();
     }
 
     //------------------------------------------------------------------------------
@@ -1169,7 +1167,13 @@ namespace SCIRun {
           }
         }
       }
+
+      if (mSceneBBox.valid())
+        mCamera->setClippingPlanes(mSceneBBox);
+
       DEBUG_LOG_LINE_INFO
+
+
     }
 
     //------------------------------------------------------------------------------

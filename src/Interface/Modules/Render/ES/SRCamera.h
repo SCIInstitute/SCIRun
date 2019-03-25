@@ -76,6 +76,8 @@ public:
   /// Perform autoview.
   void doAutoView(const Core::Geometry::BBox& bbox);
 
+  void setClippingPlanes(const Core::Geometry::BBox& bbox);
+
   /// Sets the selected View of the window to given up axis and view axis
   void setView(const glm::vec3& view, const glm::vec3& up);
 
