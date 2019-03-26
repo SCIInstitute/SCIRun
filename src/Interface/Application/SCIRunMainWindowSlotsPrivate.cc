@@ -6,7 +6,6 @@
   Copyright (c) 2015 Scientific Computing and Imaging Institute,
   University of Utah.
 
-  License for the specific language governing rights and limitations under
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
   to deal in the Software without restriction, including without limitation
@@ -47,6 +46,7 @@
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/GuiCommands.h>
+#include <Interface/Application/MacroEditor.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Interface/Application/DialogErrorControl.h>
@@ -70,7 +70,6 @@
 #include <Interface/Application/PythonConsoleWidget.h>
 #include <Core/Python/PythonInterpreter.h>
 #endif
-#include "TriggeredEventsWindow.h"
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 
 using namespace SCIRun;
@@ -283,6 +282,26 @@ void SCIRunMainWindow::runScript()
   {
     QString filename = QFileDialog::getOpenFileName(this, "Load Script...", latestNetworkDirectory_.path(), "*.py");
     runPythonScript(filename);
+  }
+}
+
+void SCIRunMainWindow::runMacro()
+{
+  auto index = sender()->property(MacroEditor::Index).toInt();
+  auto script = macroEditor_->macroForButton(index);
+  NetworkEditor::InEditingContext iec(networkEditor_);
+  PythonInterpreter::Instance().run_script(script.toStdString());
+}
+
+void SCIRunMainWindow::updateMacroButton(int index, const QString& name)
+{
+  static std::vector<QAction*> buttons { actionRunMacro1_, actionRunMacro2_, actionRunMacro3_, actionRunMacro4_, actionRunMacro5_ };
+  if (index >= MacroEditor::MIN_MACRO_INDEX && index <= MacroEditor::MAX_MACRO_INDEX)
+  {
+    auto str = tr("Run Macro %0").arg(index);
+    if (!name.isEmpty())
+      str += ": " + name;
+    buttons[index - 1]->setToolTip(str);
   }
 }
 

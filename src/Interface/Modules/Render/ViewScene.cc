@@ -608,7 +608,6 @@ void ViewSceneDialog::viewBarButtonClicked()
 void ViewSceneDialog::viewAxisSelected(const QString& name)
 {
   mUpVectorBox->clear();
-  mUpVectorBox->addItem("------");
 
   if (!name.contains("X"))
   {
@@ -1545,7 +1544,6 @@ void ViewSceneDialog::addViewOptions()
   mDownViewBox = new QComboBox();
   mDownViewBox->setMinimumHeight(25);
   mDownViewBox->setToolTip("Vector pointing out of the screen");
-  mDownViewBox->addItem("------");
   mDownViewBox->addItem("+X");
   mDownViewBox->addItem("+Y");
   mDownViewBox->addItem("+Z");
@@ -1564,7 +1562,6 @@ void ViewSceneDialog::addViewOptions()
   mUpVectorBox = new QComboBox();
   mUpVectorBox->setMinimumHeight(25);
   mUpVectorBox->setToolTip("Vector pointing up");
-  mUpVectorBox->addItem("------");
   connect(mUpVectorBox, SIGNAL(activated(const QString&)), this, SLOT(viewVectorSelected(const QString&)));
   mViewBar->addWidget(mUpVectorBox);
   mViewBar->setMinimumHeight(35);

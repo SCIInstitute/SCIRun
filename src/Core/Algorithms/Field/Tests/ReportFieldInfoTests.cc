@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
- 
+
 #include <gtest/gtest.h>
 
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -70,4 +70,37 @@ TEST(ReportFieldInfoTest, CanDescribeLatVol)
   runTest(-1, "NoDataBasis", "None (nodata basis)", 0);
   runTest(0, "ConstantBasis", "Cells (constant basis)", 24);
   runTest(1, "HexTrilinearLgn", "Nodes (linear basis)", 60);
+}
+
+TEST(TensorDoubleCastTest, MinMaxQuestion)
+{
+  Tensor t1(1,1,1,2,2,3);
+  std::cout << "t1 " << t1 << std::endl;
+
+  auto norm = t1.norm();
+  std::cout << "norm: " << norm << std::endl;
+
+  auto d1 = CastFData<double>(t1);
+  std::cout << "casted: " << d1 << std::endl;
+
+
+  FieldInformation lfi("LatVolMesh", 1, "Tensor");
+
+  size_type sizex = 3, sizey = 4, sizez = 5;
+  Point minb(-1.0, -1.0, -1.0);
+  Point maxb(1.0, 1.0, 1.0);
+  MeshHandle mesh = CreateMesh(lfi,sizex, sizey, sizez, minb, maxb);
+  FieldHandle ofh = CreateField(lfi,mesh);
+  double min,max;
+  auto res = ofh->vfield()->minmax(min,max);
+  ASSERT_TRUE(res);
+  EXPECT_EQ(min, 0.0);
+  EXPECT_EQ(max, 0.0);
+  ofh->vfield()->set_all_values(t1);
+
+  res = ofh->vfield()->minmax(min,max);
+  ASSERT_TRUE(res);
+  std::cout << "minmax: " << min << " " << max << std::endl;
+  EXPECT_EQ(min, norm);
+  EXPECT_EQ(max, norm);
 }
