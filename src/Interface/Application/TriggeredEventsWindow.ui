@@ -109,21 +109,6 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QPlainTextEdit" name="scriptPlainTextEdit_">
-          <property name="plainText">
-           <string># Insert Python API calls here.
-
-# Examples:
-
-# With the &quot;Post module add&quot; event, this snippet will change the initial filetype for a specific type of input module:
-# scirun_set_module_state(scirun_module_ids()[-1], 'FileTypeName', 'Matlab Matrix (*.mat)') if scirun_module_ids()[-1].startswith('ReadMatrix') else None
-
-# With the &quot;On network load&quot; event, this snippet will open the UIs for all the ViewScenes in the network:
-# TODO</string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="0">
          <widget class="QCheckBox" name="enabledCheckBox_">
           <property name="text">

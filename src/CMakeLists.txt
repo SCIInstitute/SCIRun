@@ -254,11 +254,6 @@ IF(WITH_TETGEN)
   INCLUDE(${TETGEN_USE_FILE})
 ENDIF()
 
-IF(WITH_OSPRAY)
-  CONFIG_STANDARD_EXTERNAL( Ospray OsprayConfig.cmake ${OSPRAY_BUILD_DIR} )
-  #INCLUDE(${OSPRAY_USE_FILE})
-ENDIF()
-
 IF(WIN32)
   CONFIG_STANDARD_EXTERNAL( Glew GlewConfig.cmake ${GLEW_DIR} )
   INCLUDE(${GLEW_USE_FILE})
@@ -321,9 +316,17 @@ MARK_AS_ADVANCED(BUILD_BUNDLE)
 
 # should be installed by default, searching system paths only
 IF(APPLE)
-  FIND_PROGRAM(MACDEPLOYQT
-    NAMES macdeployqt
-  )
+  IF(QT5_BUILD)
+    FIND_PROGRAM(MACDEPLOYQT
+      HINTS ${Qt5_PATH} ${Qt5_PATH}/bin
+      NAMES macdeployqt
+      NO_DEFAULT_PATH
+    )
+  ELSE()
+    FIND_PROGRAM(MACDEPLOYQT
+      NAMES macdeployqt
+    )
+  ENDIF()
   MARK_AS_ADVANCED(MACDEPLOYQT)
 
   SET(MACDEPLOYQT_OUTPUT_LEVEL 0 CACHE STRING "Set macdeployqt output level (0-3)")
@@ -382,6 +385,14 @@ ENDIF()
 
 IF(WITH_OSPRAY)
   ADD_DEFINITIONS(-DWITH_OSPRAY)
+  SET(OSPRAY_INCLUDE_DIRS
+    "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray"
+    "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray/components"
+    "${SCIRun_SOURCE_DIR}/Externals/submodules/ospray/ospray/include"
+    "${SCIRun_BINARY_DIR}/Externals/submodules/ospray"
+    )
+  #message(${OSPRAY_INCLUDE_DIRS})
+  SET(OSPRAY_LIBRARIES ospray)
 ENDIF()
 
 ########################################################################
@@ -568,20 +579,20 @@ INCLUDE_DIRECTORIES(
   ${SCIRun_SOURCE_DIR}/Externals/
   ${SCIRun_BINARY_DIR}/
   ${SCIRun_BINARY_DIR}/include
-  ${SCIRun_SOURCE_DIR}/Externals/eigen
   ${SCI_TEEM_INCLUDE}
   ${SCI_ZLIB_INCLUDE}
   ${GLM_DIR}
   ${SPDLOG_DIR}/include
+  ${Eigen_DIR}
   ${SCI_TNY_INCLUDE}
   ${SCI_LODEPNG_INCLUDE}
   ${SCI_QWT_INCLUDE}
   ${SCI_CLEAVER2_INCLUDE}
 )
 
-#IF(BUILD_WITH_PYTHON)
-#  INCLUDE_DIRECTORIES(${SCIRun_SOURCE_DIR}/Externals/submodules/pybind11/include)
-#ENDIF()
+IF(WITH_OSPRAY)
+  INCLUDE_DIRECTORIES(${OSPRAY_INCLUDE_DIRS})
+ENDIF()
 
 INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
 

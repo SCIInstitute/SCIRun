@@ -69,5 +69,11 @@
     <file>Resources/rename.ico</file>
     <file>Resources/delete_black.png</file>
     <file>Resources/delete_red.png</file>
+    <file>Resources/script_play-512lime.png</file>
+    <file>Resources/flash1.png</file>
+    <file>Resources/flash2.png</file>
+    <file>Resources/flash3.png</file>
+    <file>Resources/flash4.png</file>
+    <file>Resources/flash5.png</file>
   </qresource>
 </RCC>

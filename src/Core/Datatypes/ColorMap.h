@@ -64,7 +64,7 @@ namespace Datatypes {
     double getColorMapRescaleShift() const;
 
     ColorRGB valueToColor(double scalar) const;
-    ColorRGB valueToColor(const Core::Geometry::Tensor &tensor) const;
+    ColorRGB valueToColor(Core::Geometry::Tensor &tensor) const;
     ColorRGB valueToColor(const Core::Geometry::Vector &vector) const;
 
     virtual std::string dynamic_type_name() const override { return "ColorMap"; }

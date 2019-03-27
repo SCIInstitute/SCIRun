@@ -6,7 +6,6 @@
   Copyright (c) 2015 Scientific Computing and Imaging Institute,
   University of Utah.
 
-  License for the specific language governing rights and limitations under
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
   to deal in the Software without restriction, including without limitation
@@ -50,12 +49,10 @@
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Interface/Application/DialogErrorControl.h>
-#include <Interface/Application/TriggeredEventsWindow.h>
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Interface/Application/ModuleWizard/ModuleWizard.h>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
 #include <Dataflow/Network/SimpleSourceSink.h>  //TODO: encapsulate!!!
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
@@ -84,7 +81,7 @@ using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
-namespace 
+namespace
 {
   QColor favesColor()
   {

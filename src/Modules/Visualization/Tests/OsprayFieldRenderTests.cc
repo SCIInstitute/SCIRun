@@ -39,6 +39,7 @@
 #include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 
 #include <ospray/ospray.h>
+#include <ospray/version.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
@@ -257,6 +258,12 @@ TEST_P(OsprayFieldRenderTest, RenderLatVolWithOspray)
   }
 
   //FAIL() << "todo";
+}
+
+TEST(OsprayVersionTest, CanPrintVersion)
+{
+  std::cout << "ospray version: " << OSPRAY_VERSION_MAJOR << "." <<  OSPRAY_VERSION_MINOR << "."
+    << OSPRAY_VERSION_PATCH << std::endl;
 }
 
 INSTANTIATE_TEST_CASE_P(
