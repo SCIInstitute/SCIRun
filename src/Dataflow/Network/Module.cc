@@ -958,9 +958,9 @@ OutputPortsCachedCheckerImpl::OutputPortsCachedCheckerImpl(const Module& module)
 
 bool OutputPortsCachedCheckerImpl::outputPortsCached() const
 {
-  return true;
+  //return true;
 
-  /* this way doesn't make sense either, since ports can't be cleared manually. Will need to discuss. 
+  /* this way doesn't make sense either, since ports can't be cleared manually. Will need to discuss. */
   auto value = true;
   for (const auto& output : module_.outputPorts())
   {
@@ -969,7 +969,7 @@ bool OutputPortsCachedCheckerImpl::outputPortsCached() const
   }
   LOG_DEBUG("reexecute {}?--output ports cached: {}", module_.get_id().id_, value);
   return value;
-  */
+  
 
   //TODO: need a way to filter optional input ports
   /*

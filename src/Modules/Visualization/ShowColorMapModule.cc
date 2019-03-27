@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -40,7 +39,9 @@ using namespace Core::Algorithms;
 using namespace Core::Geometry;
 using namespace Graphics::Datatypes;
 
-ShowColorMap::ShowColorMap() : GeometryGeneratingModule(ModuleLookupInfo("ShowColorMap", "Visualization", "SCIRun"))
+MODULE_INFO_DEF(ShowColorMap, Visualization, SCIRun)
+
+ShowColorMap::ShowColorMap() : GeometryGeneratingModule(staticInfo_)
 {
   INITIALIZE_PORT(ColorMapObject);
   INITIALIZE_PORT(GeometryOutput);
@@ -62,6 +63,7 @@ void ShowColorMap::setStateDefaults()
   state->setValue(AddExtraSpace, false);
   state->setValue(XTranslation, 0);
   state->setValue(YTranslation, 0);
+  state->setValue(ColorMapName, std::string(""));
 }
 
 void ShowColorMap::execute()
@@ -135,19 +137,18 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
 
   //add the actual points and colors
 
-  auto st = get_state();
-  int sigdig = st->getValue(SignificantDigits).toInt();
-  int numlabel = st->getValue(Labels).toInt();
-  int txtsize = st->getValue(TextSize).toInt();
-  double scale = st->getValue(Scale).toDouble();
+  int sigdig = state->getValue(SignificantDigits).toInt();
+  int numlabel = state->getValue(Labels).toInt();
+  int txtsize = state->getValue(TextSize).toInt();
+  double scale = state->getValue(Scale).toDouble();
   int displaySide = state->getValue(DisplaySide).toInt();
-  float red = static_cast<float>(st->getValue(TextRed).toDouble());
-  float green = static_cast<float>(st->getValue(TextGreen).toDouble());
-  float blue = static_cast<float>(st->getValue(TextBlue).toDouble());
-  float xTrans = static_cast<float>(st->getValue(XTranslation).toInt());
-  float yTrans = static_cast<float>(st->getValue(YTranslation).toInt());
+  float red = static_cast<float>(state->getValue(TextRed).toDouble());
+  float green = static_cast<float>(state->getValue(TextGreen).toDouble());
+  float blue = static_cast<float>(state->getValue(TextBlue).toDouble());
+  float xTrans = static_cast<float>(state->getValue(XTranslation).toInt());
+  float yTrans = static_cast<float>(state->getValue(YTranslation).toInt());
   std::stringstream ss;
-  ss << resolution << sigdig << txtsize << numlabel << st->getValue(Units).toString() <<
+  ss << resolution << sigdig << txtsize << numlabel << state->getValue(Units).toString() <<
     scale << displaySide << red << green << blue << xTrans << yTrans;
 
   auto uniqueNodeID = id + "colorMapLegend" + ss.str();
@@ -188,7 +189,13 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
-  auto geom(boost::make_shared<GeometryObjectSpire>(*this, "ShowColorMap", false));
+  std::string idname = "ShowColorMap";
+  if (!state->getValue(ColorMapName).toString().empty())
+  {
+    idname += GeometryObject::delimiter + state->getValue(ColorMapName).toString() + " (from " + get_id().id_ + ")";
+  }
+
+  auto geom(boost::make_shared<GeometryObjectSpire>(*this, idname, false));
 
   geom->setColorMap(cm->getColorMapName());
   geom->ibos().push_back(geomIBO);
@@ -217,7 +224,7 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   {
     std::stringstream line;
     sprintf(str2, sd.str().c_str(), (i / cm->getColorMapRescaleScale() - cm->getColorMapRescaleShift()) * scale);
-    line << str2 << " " << st->getValue(Units).toString();
+    line << str2 << " " << state->getValue(Units).toString();
     Vector shift((displaySide == 0) ?
       (xTrans > 50 ? -(textSize*strlen(line.str().c_str())) : dash_size) : 0.,
       (displaySide == 0) ?
@@ -253,3 +260,4 @@ const AlgorithmParameterName ShowColorMap::TextGreen("TextGreen");
 const AlgorithmParameterName ShowColorMap::TextBlue("TextBlue");
 const AlgorithmParameterName ShowColorMap::XTranslation("XTranslation");
 const AlgorithmParameterName ShowColorMap::YTranslation("YTranslation");
+const AlgorithmParameterName ShowColorMap::ColorMapName("ColorMapName");
