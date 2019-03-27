@@ -236,7 +236,9 @@ namespace
     SCIRun::LOG_DEBUG(std::to_string(numVoxels));
     
     ospSetString(vol, "voxelType", "float");
-    ospSet3i(vol, "dimensions", 100, 100, 100);
+    ospSet3i(vol, "dimensions", obj->data.dim_x, obj->data.dim_y, obj->data.dim_z);
+    ospSet3f(vol, "gridSpacing", fieldData.spacing_x, fieldData.spacing_y, fieldData.spacing_z);
+    ospSet3f(vol, "gridOrigin", fieldData.origin_x, fieldData.origin_y, fieldData.origin_z);
     
     std::for_each(obj->data.color.begin(), obj->data.color.end(), [&](float &v) {
       if (!std::isnan(v))
@@ -247,7 +249,6 @@ namespace
       ospcommon::vec3f v = ospcommon::vec3f(vertex[i], vertex[i+1], vertex[i+2]);
       bounds.extend(v);
     }
-    
     const auto& func = obj->tfn;
     OSPTransferFunction transferFunction = ospNewTransferFunction("piecewise_linear");
     
@@ -257,12 +258,9 @@ namespace
     
     ospSetData(transferFunction, "colors", cData);
     ospSetData(transferFunction, "opacities", oData);
-    // the transfer function will apply over this volume value range
-    ospSet2f(transferFunction, "valueRange", 0, 1);
+    ospSet2f(transferFunction, "valueRange", voxelRange.lower, voxelRange.upper);
     ospCommit(transferFunction);
-    // For now we set the same transfer function on all volumes.
     ospSetObject(vol, "transferFunction", transferFunction);
-    //bounds = ospcommon::box3f(ospcommon::vec3f(0.f), 1);
     return vol;
     
   }

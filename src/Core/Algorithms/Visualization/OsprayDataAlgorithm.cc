@@ -34,6 +34,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/LatVolMesh.h>
 #include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -339,7 +340,24 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addVol(FieldHandle field, ColorM
   
   auto facade(field->mesh()->getFacade());
   auto vfield = field->vfield();
+  
+  // //cast mesh to latvol and fill dim, space, origin
+  //auto latVolM = (boost::shared_ptr<LatVolMesh<Core::Basis::HexTrilinearLgn<Core::Geometry::Point> > >) field->mesh();
+  //std::vector<int> dim; latVolM->get_dim(dim);
+  // std::vector<float> min; latVolM.get_min(min);
+  /*fieldData.origin_x = latVolM->get_min_i();
+  fieldData.origin_y = latVolM->get_min_j();
+  fieldData.origin_z = latVolM->get_min_k();
+  fieldData.dim_x = latVolM->get_ni();
+  fieldData.dim_y = latVolM->get_nj();
+  fieldData.dim_z = latVolM->get_nk();*/
+  //get_ni
+  fieldData.dim_x = 100; fieldData.dim_y = 100; fieldData.dim_z = 100;
+  fieldData.origin_x = -1; fieldData.origin_y = -1; fieldData.origin_z = -1;
+  fieldData.spacing_x = 0.02; fieldData.spacing_y = 0.02; fieldData.spacing_z = 0.02;
+  
   double value;
+  //std::cout << "mname:" << field->mesh()->type_name << std::endl;
   
   for (const auto& node : facade->nodes())
   {
@@ -347,8 +365,6 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addVol(FieldHandle field, ColorM
     if (vfield->num_values() > 0)
     {
       vfield->get_value(value, node.index());
-      
-      
       voxels.push_back(value);
     }
     vertex_new.push_back(static_cast<float>(point.x()));
@@ -357,32 +373,14 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addVol(FieldHandle field, ColorM
     
   }
   
-  //if (colorMap)
+  if (colorMap)
   {
-    obj->tfn.colors.push_back(0);
-    obj->tfn.colors.push_back(0);
-    obj->tfn.colors.push_back(1);
-    //obj->tfn.colors.push_back(0);
-    //obj->tfn.colors.push_back(.75);
-    //obj->tfn.colors.push_back(.75);
-    
-    obj->tfn.colors.push_back(0);
-    obj->tfn.colors.push_back(1);
-    obj->tfn.colors.push_back(0);
-    
-    //obj->tfn.colors.push_back(1);
-    //obj->tfn.colors.push_back(.5);
-    //obj->tfn.colors.push_back(0);
-    obj->tfn.colors.push_back(1);
-    obj->tfn.colors.push_back(0);
-    obj->tfn.colors.push_back(0);
-    
-    obj->tfn.opacities.push_back(0.5);
-    obj->tfn.opacities.push_back(0.5);
+    ColorMap_OSP_helper cmp(colorMap->getColorMapName());
+    obj->tfn.colors = cmp.colorList;
+    obj->tfn.opacities = cmp.opacityList;
   }
   fieldData.color = voxels;
   fieldData.vertex = vertex_new;
-  
   return obj;
 }
 
@@ -567,9 +565,15 @@ AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
   }
   else if (info.is_volume())
   {
-    if(info.is_latvol())
-    renderable = addVol(field, colorMap);
-    //THROW_ALGORITHM_INPUT_ERROR("field type vol.");
+    if(info.is_latvol()){
+      renderable = addVol(field, colorMap);
+    }else if(info.is_tetvol()){
+      THROW_ALGORITHM_INPUT_ERROR("Tet vol not supported. LatVol only at this point");
+    }else if(info.is_hexvol()){
+      THROW_ALGORITHM_INPUT_ERROR("Hex vol not supported. LatVol only at this point");
+    }else{
+      THROW_ALGORITHM_INPUT_ERROR("Unknown vol type. LatVol only at this point");
+    }
   }
   else if (info.is_pointcloudmesh())
   {

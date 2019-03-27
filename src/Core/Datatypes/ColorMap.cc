@@ -54,8 +54,11 @@ ColorMap* ColorMap::clone() const
   return new ColorMap(*this);
 }
 
+
+
 namespace detail
 {
+  
   class Rainbow : public ColorMapStrategy
   {
   public:
