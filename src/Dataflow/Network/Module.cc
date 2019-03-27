@@ -1115,5 +1115,5 @@ std::string Module::helpPageUrl() const
 
 std::string Module::newHelpPageUrl() const
 {
-  return "https://cibctest.github.io/scirun-pages/modules.html#" + legacyModuleName();
+  return "https://sciinstitute.github.io/scirun.pages/modules.html#" + get_module_name();
 }
