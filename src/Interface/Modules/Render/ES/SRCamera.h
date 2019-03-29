@@ -120,7 +120,6 @@ private:
   float                 mZFar;        ///< Position of far plane along view vec.
 
   float                 mRadius;
-  glm::vec3 mTarget;
 
   SRInterface&          mInterface;   ///< SRInterface.
 

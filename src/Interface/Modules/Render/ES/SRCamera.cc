@@ -44,7 +44,6 @@ SRCamera::SRCamera(SRInterface& iface) :
     mZNear(getDefaultZNear()),
     mZFar(getDefaultZFar()),
     mRadius(-1.0),
-    mTarget(0.0,0.0,0.0),
     mInterface(iface),
     mArcLookAt(new spire::ArcLookAt())
 {
