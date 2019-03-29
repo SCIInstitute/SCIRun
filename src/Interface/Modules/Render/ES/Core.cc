@@ -39,7 +39,8 @@
 namespace SCIRun {
 namespace Render {
 
-  ESCore::ESCore() : r_(0.0f), g_(0.0f), b_(0.0f), a_(0.0f)
+  ESCore::ESCore() : mCoreSequence(0), mCurrentTime(0.0f), mFPS(0.0f), mLastRealTime(0.0f),
+    r_(0.0f), g_(0.0f), b_(0.0f), a_(0.0f)
 {
   // Register common systems.
   gen::registerAll(*this);
@@ -135,4 +136,3 @@ void ESCore::setBackgroundColor(float r, float g, float b, float a)
 
 } // namespace Render
 } // namespace SCIRun
-
