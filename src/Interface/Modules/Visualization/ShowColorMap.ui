@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>297</width>
-    <height>431</height>
+    <height>508</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,17 +19,36 @@
   <property name="minimumSize">
    <size>
     <width>297</width>
-    <height>431</height>
+    <height>508</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_7">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="groupBox_6">
+     <property name="title">
+      <string>General</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_9">
+      <item>
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>ColorMap Name:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="colorMapNameLineEdit_"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Display Side:</string>
+      <string>Display Side</string>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>

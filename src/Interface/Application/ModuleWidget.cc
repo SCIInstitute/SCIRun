@@ -1299,7 +1299,7 @@ void ModuleWidget::updateModuleTime()
 
 void ModuleWidget::launchDocumentation()
 {
-  openUrl(QString::fromStdString(theModule_->helpPageUrl()), "module help page");
+  openUrl(QString::fromStdString(theModule_->newHelpPageUrl()), "module help page");
 }
 
 void ModuleWidget::setStartupNote(const QString& text)

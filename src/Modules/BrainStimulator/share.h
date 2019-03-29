@@ -38,4 +38,4 @@
 #define SCISHARE
 #endif
 
-#define NEW_BRAIN_STIMULATOR_MODULE public: virtual std::string helpPageUrl() const override { return "https://github.com/SCIInstitute/BrainStimulator"; }
+#define NEW_BRAIN_STIMULATOR_MODULE public: virtual std::string newHelpPageUrl() const override { return "https://github.com/SCIInstitute/BrainStimulator"; }
