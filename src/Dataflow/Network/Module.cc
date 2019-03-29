@@ -385,13 +385,14 @@ bool Module::executeWithSignals() NOEXCEPT
   impl_->executionState_->transitionTo(ModuleExecutionState::Executing);
   impl_->returnCode_ = false;
   bool threadStopValue = false;
-  getLogger()->setErrorFlag(false);
 
   try
   {
     if (!executionDisabled())
       execute();
+
     impl_->returnCode_ = true;
+    getLogger()->setErrorFlag(false);
   }
   catch (const std::bad_alloc&)
   {
@@ -846,14 +847,18 @@ bool Module::needToExecute() const
     //Test fix for reexecute problem. Seems like it could be a race condition, but not sure.
     Guard g(needToExecuteLock.get());
     if (impl_->threadStopped_)
+    {
       return true;
-    if (!impl_->returnCode_)
+    }
+    if (getLogger()->errorReported())
+    {
+      getLogger()->setErrorFlag(false);
       return true;
+    }
     auto val = impl_->reexecute_->needToExecute();
     LOG_DEBUG("Module reexecute of {} returns {}", get_id().id_, val);
     return val;
   }
-
   return true;
 }
 
@@ -953,6 +958,9 @@ OutputPortsCachedCheckerImpl::OutputPortsCachedCheckerImpl(const Module& module)
 
 bool OutputPortsCachedCheckerImpl::outputPortsCached() const
 {
+  //return true;
+
+  /* this way doesn't make sense either, since ports can't be cleared manually. Will need to discuss. */
   auto value = true;
   for (const auto& output : module_.outputPorts())
   {
@@ -961,7 +969,7 @@ bool OutputPortsCachedCheckerImpl::outputPortsCached() const
   }
   LOG_DEBUG("reexecute {}?--output ports cached: {}", module_.get_id().id_, value);
   return value;
-
+  
 
   //TODO: need a way to filter optional input ports
   /*
@@ -1107,5 +1115,5 @@ std::string Module::helpPageUrl() const
 
 std::string Module::newHelpPageUrl() const
 {
-  return "https://cibctest.github.io/scirun-pages/modules.html#" + legacyModuleName();
+  return "https://sciinstitute.github.io/scirun.pages/modules.html#" + get_module_name();
 }
