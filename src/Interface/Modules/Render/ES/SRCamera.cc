@@ -43,6 +43,8 @@ SRCamera::SRCamera(SRInterface& iface) :
     mFOV(getDefaultFOVY()),
     mZNear(getDefaultZNear()),
     mZFar(getDefaultZFar()),
+    mRadius(-1.0),
+    mTarget(0.0,0.0,0.0),
     mInterface(iface),
     mArcLookAt(new spire::ArcLookAt())
 {
@@ -152,7 +154,16 @@ void SRCamera::doAutoView(const Core::Geometry::BBox& bbox)
 
 void SRCamera::setClippingPlanes(const Core::Geometry::BBox& bbox)
 {
+
+  buildTransform();  //make sure matricies are up to date
   mRadius = (bbox.get_max() - bbox.get_min()).length() / 2.0f;
+
+  Core::Geometry::Point c =  Core::Geometry::Point(bbox.get_max() - bbox.get_min());
+  glm::vec4 center(c.x(),c.y(),c.z(), 1.0);
+  center = mIV * center;
+  glm::vec3 temp = center.xyz();
+
+  mRadius += glm::length(temp);
 
   if(mRadius > 0.0)
   {
@@ -164,7 +175,7 @@ void SRCamera::setClippingPlanes(const Core::Geometry::BBox& bbox)
     mZFar = getDefaultZFar();
     mZNear = getDefaultZNear();
   }
-  
+
   setAsPerspective();
 }
 
