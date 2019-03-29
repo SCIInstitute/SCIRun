@@ -251,6 +251,8 @@ namespace SCIRun {
       else
       {
         mCamera->mouseMoveEvent(pos, btn);
+        if (mSceneBBox.valid())
+          mCamera->setClippingPlanes(mSceneBBox);
       }
     }
 
