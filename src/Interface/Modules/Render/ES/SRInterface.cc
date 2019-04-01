@@ -119,6 +119,27 @@ namespace SCIRun {
       glDeleteTextures(1, &mFontTexture);
     }
 
+    std::string SRInterface::toString(std::string prefix) const
+    {
+      std::string output = prefix + "SR_INTERFACE:\n";
+      prefix += "  ";
+
+      output += prefix + "SRObjects: " + std::to_string(mSRObjects.size()) + "\n";
+      for(auto& srobj : mSRObjects)
+      {
+        output += prefix + "  Name: \"" + srobj.mName + "\"  Port: " + std::to_string(srobj.mPort)
+          + "  Passes: " + std::to_string(srobj.mPasses.size()) + "\n";
+        for(auto& srpass: srobj.mPasses)
+          output += prefix + "    PassName: \"" + srpass.passName + "\"  RenderType: " + "\n";
+      }
+      output+="\n";
+
+      output += mCore.toString(prefix);
+      //output+="\n";
+
+      return output;
+    }
+
     //------------------------------------------------------------------------------
     void SRInterface::setupCore()
     {
@@ -1168,6 +1189,7 @@ namespace SCIRun {
             }
           }
         }
+        mCore.runGCOnNextExecution();
       }
 
       if (mSceneBBox.valid())

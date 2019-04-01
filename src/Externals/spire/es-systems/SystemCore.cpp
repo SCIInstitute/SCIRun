@@ -5,6 +5,21 @@
 
 namespace spire {
 
+std::string SystemCore::toString(std::string prefix) const
+{
+  std::string output = prefix + "Systems: " + std::to_string(mSystems.size()) + "\n";
+  prefix += "  ";
+
+  for(auto& sysItm: mSystems)
+  {
+    output += prefix + "Name: " + sysItm.systemName
+      + "  NextExecutionTime: " + std::to_string(sysItm.nextExecutionTime) + "\n";
+  }
+
+  return output;
+}
+
+
 void SystemCore::runSystems(spire::ESCoreBase& core, uint64_t referenceTime)
 {
   for (SystemItem& sys : mSystems)
