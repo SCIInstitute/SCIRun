@@ -147,19 +147,12 @@ void ESCore::execute(double currentTime, double constantFrameTime)
   renormalize(true);
   mSystems->renormalize();
 
-
-  #if 1
   // Perform garbage collection if requested.
   if(runGC)
   {
-    //std::cout << toString("b ");
     runCompleteGC();
     runGC = false;
-    std::cout << "ranGC\n";
-    //std::cout << toString("");
   }
-  #endif
-
 
   // Perform debug serialization here. You can save the frame here as well.
   // Might be useful for debugging.

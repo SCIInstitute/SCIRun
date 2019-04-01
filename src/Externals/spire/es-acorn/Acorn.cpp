@@ -246,12 +246,8 @@ void Acorn::runCompleteGC()
 {
   for (const std::string& str : mGarbageCollectorSystems)
   {
-    if(true || str == "ren:IBOGarbageCollector")
-    {
-      std::cout << "Running: " << str << "\n";
-      std::shared_ptr<spire::BaseSystem> sys = mSystems->createNewSystem(str);
-      sys->walkComponents(*this);
-    }
+    std::shared_ptr<spire::BaseSystem> sys = mSystems->createNewSystem(str);
+    sys->walkComponents(*this);
   }
 }
 

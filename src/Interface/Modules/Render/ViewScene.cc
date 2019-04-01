@@ -519,8 +519,6 @@ void ViewSceneDialog::newGeometryValue()
   if (!validObjects.empty())
     spire->gcInvalidObjects(validObjects);
 
-  std::cout << toString("");
-
   sendScreenshotDownstreamForTesting();
 
   if (saveScreenshotOnNewGeometry_)
@@ -1715,17 +1713,14 @@ void ViewSceneDialog::setupRenderTabValues()
 
 void ViewSceneDialog::showEvent(QShowEvent* evt)
 {
-  std::cout<<"showEvent\n";
   if (!shown_)
   {
-    std::cout<<"shown_ == false \n";
     autoViewClicked();
     shown_ = true;
   }
 
   if (pulledSavedVisibility_)
   {
-    std::cout<<"pulledSavedVisibility_ == true\n";
     ScopedWidgetSignalBlocker ssb(this);
     state_->setValue(Modules::Render::ViewScene::ShowViewer, true);
   }

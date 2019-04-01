@@ -959,7 +959,6 @@ namespace SCIRun {
 
             if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
             {
-              std::cout << "mRenderSortType == LIST_SORT\n";
               RENDERER_LOG("Create sorted lists of Buffers for transparency in each direction of the axis.");
               uint32_t* ibo_buffer = reinterpret_cast<uint32_t*>(ibo.data->getBuffer());
               size_t num_triangles = ibo.data->getBufferSize() / (sizeof(uint32_t) * 3);
@@ -1211,7 +1210,6 @@ namespace SCIRun {
             }
           }
         }
-        std::cout << "handleGeomObject\n";
         mCore.runGCOnNextExecution();
       }
       DEBUG_LOG_LINE_INFO
@@ -1692,7 +1690,7 @@ namespace SCIRun {
             float aspect = static_cast<float>(dims->width) / static_cast<float>(dims->height);
             // Project onto a orthographic plane with respect to aspect ratio
             glm::mat4 projection = glm::ortho(-aspect/2, aspect/2, -0.5f, 0.5f, 0.0f, 2.0f);
-            
+
             // Build world transform for all axes. Rotates about uninverted camera's
             // view, then translates to a specified corner on the screen.
             glm::mat4 axesRot = mCamera->getWorldToView();
