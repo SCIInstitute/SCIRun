@@ -45,6 +45,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Python;
 
 ALGORITHM_PARAMETER_DEF(Python, PythonCode);
+ALGORITHM_PARAMETER_DEF(Python, PythonTopLevelCode);
 ALGORITHM_PARAMETER_DEF(Python, PythonInputStringNames);
 ALGORITHM_PARAMETER_DEF(Python, PythonInputMatrixNames);
 ALGORITHM_PARAMETER_DEF(Python, PythonInputFieldNames);
@@ -83,6 +84,9 @@ void InterfaceWithPython::setStateDefaults()
   auto state = get_state();
 
   state->setValue(Parameters::PythonCode, std::string("# Insert your Python code here. The SCIRun API package is automatically imported."));
+  state->setValue(Parameters::PythonTopLevelCode,
+    std::string("# Main namespace/top level context code goes here; for example, import statements and global variables.\n"
+    "# This code will be executed before the 'Code' tab, and no input/output variables are available."));
   state->setValue(Parameters::PollingIntervalMilliseconds, 200);
   state->setValue(Parameters::NumberOfRetries, 50);
 
@@ -163,6 +167,16 @@ void InterfaceWithPython::execute()
     auto state = get_state();
     {
       Guard g(lock_.get());
+
+      {
+        auto topLevelCode = state->getValue(Parameters::PythonTopLevelCode).toString();
+        std::vector<std::string> lines;
+        boost::split(lines, topLevelCode, boost::is_any_of("\n"));
+        for (const auto& line : lines)
+        {
+          PythonInterpreter::Instance().run_string(line);
+        }
+      }
 
       auto code = state->getValue(Parameters::PythonCode).toString();
 

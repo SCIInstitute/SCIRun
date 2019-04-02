@@ -42,6 +42,7 @@ namespace SCIRun
       namespace Python
       {
         ALGORITHM_PARAMETER_DECL(PythonCode);
+        ALGORITHM_PARAMETER_DECL(PythonTopLevelCode);
         ALGORITHM_PARAMETER_DECL(PythonInputStringNames);
         ALGORITHM_PARAMETER_DECL(PythonInputMatrixNames);
         ALGORITHM_PARAMETER_DECL(PythonInputFieldNames);
