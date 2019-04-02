@@ -274,6 +274,7 @@ namespace SCIRun {
         mCamera->mouseMoveEvent(pos, btn);
         if (mSceneBBox.valid())
           mCamera->setClippingPlanes(mSceneBBox);
+        updateCamera();
       }
     }
 
@@ -281,6 +282,8 @@ namespace SCIRun {
     void SRInterface::inputMouseWheel(int32_t delta)
     {
       mCamera->mouseWheelEvent(delta, mZoomSpeed);
+      if (mSceneBBox.valid())
+        mCamera->setClippingPlanes(mSceneBBox);
       updateCamera();
     }
 

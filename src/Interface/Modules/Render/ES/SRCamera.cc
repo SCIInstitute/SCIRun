@@ -125,13 +125,6 @@ void SRCamera::mouseWheelEvent(int32_t delta, int zoomSpeed)
     //mArcLookAt->doZoom(-static_cast<float>(delta) / 100.0f, zoomSpeed);
     mArcLookAt->doZoom(mInvertVal*static_cast<float>(delta) / 100.0f, zoomSpeed);
   }
-
-  if(mRadius > 0.0)
-  {
-    mZFar = mArcLookAt->getCamDistance() + mRadius;
-    mZNear = std::max(mZFar/1000.0f, mArcLookAt->getCamDistance() - mRadius);
-    setAsPerspective();
-  }
 }
 
 //------------------------------------------------------------------------------
@@ -153,21 +146,17 @@ void SRCamera::doAutoView(const Core::Geometry::BBox& bbox)
 
 void SRCamera::setClippingPlanes(const Core::Geometry::BBox& bbox)
 {
-
   buildTransform();  //make sure matricies are up to date
   mRadius = (bbox.get_max() - bbox.get_min()).length() / 2.0f;
 
-  Core::Geometry::Point c =  Core::Geometry::Point(bbox.get_max() - bbox.get_min());
-  glm::vec4 center(c.x(),c.y(),c.z(), 1.0);
+  Core::Geometry::Point c =  Core::Geometry::Point(bbox.get_max() + bbox.get_min());
+  glm::vec4 center(c.x()/2.0,c.y()/2.0,c.z()/2.0, 1.0);
   center = mIV * center;
-  glm::vec3 temp = center.xyz();
-
-  mRadius += glm::length(temp);
 
   if(mRadius > 0.0)
   {
-    mZFar = mArcLookAt->getCamDistance() + mRadius;
-    mZNear = std::max(mZFar/1000.0f, mArcLookAt->getCamDistance() - mRadius);
+    mZFar = -center.z + mRadius;
+    mZNear = std::max(mZFar/1000.0f, -center.z - mRadius);
   }
   else
   {
