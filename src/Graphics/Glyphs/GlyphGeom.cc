@@ -151,7 +151,7 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
   for (auto a : indices_)
     iboBuffer->write(a);
 
-    BBox newBBox = bbox;
+    BBox newBBox;
 
   const bool writeNormals = normals_.size() == points_.size();
   for (size_t i = 0; i < points_.size(); i++)
