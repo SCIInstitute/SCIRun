@@ -327,11 +327,11 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addQuadSurface(FieldHandle field
     return obj;
 }
 
-OsprayGeometryObjectHandle OsprayDataAlgorithm::addVol(FieldHandle field, ColorMapHandle colorMap) const
+OsprayGeometryObjectHandle OsprayDataAlgorithm::addStructVol(FieldHandle field, ColorMapHandle colorMap) const
 {
   auto obj = makeObject(field);
   obj->isVolume = true;
-  obj->GeomType="Volume";
+  obj->GeomType="structVol";
   
   auto& fieldData = obj->data;
   
@@ -340,21 +340,25 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addVol(FieldHandle field, ColorM
   
   auto facade(field->mesh()->getFacade());
   auto vfield = field->vfield();
+  auto vmesh = field->vmesh();
   
-  // //cast mesh to latvol and fill dim, space, origin
-  //auto latVolM = (boost::shared_ptr<LatVolMesh<Core::Basis::HexTrilinearLgn<Core::Geometry::Point> > >) field->mesh();
-  //std::vector<int> dim; latVolM->get_dim(dim);
-  // std::vector<float> min; latVolM.get_min(min);
-  /*fieldData.origin_x = latVolM->get_min_i();
-  fieldData.origin_y = latVolM->get_min_j();
-  fieldData.origin_z = latVolM->get_min_k();
-  fieldData.dim_x = latVolM->get_ni();
-  fieldData.dim_y = latVolM->get_nj();
-  fieldData.dim_z = latVolM->get_nk();*/
-  //get_ni
-  fieldData.dim_x = 100; fieldData.dim_y = 100; fieldData.dim_z = 100;
-  fieldData.origin_x = -1; fieldData.origin_y = -1; fieldData.origin_z = -1;
-  fieldData.spacing_x = 0.02; fieldData.spacing_y = 0.02; fieldData.spacing_z = 0.02;
+  const BBox bbox = vmesh->get_bounding_box();
+  Vector size = bbox.diagonal();
+  Point center = bbox.center();
+  VMesh::dimension_type dim;
+  vmesh->get_dimensions(dim);
+  Vector dimensions_ = Vector(1.0,1.0,1.0);
+  for (size_t p=0;p<dim.size();p++) dimensions_[p] = static_cast<double>(dim[p]);
+  
+  fieldData.dim_x = dimensions_[0];
+  fieldData.dim_y = dimensions_[1];
+  fieldData.dim_z = dimensions_[2];
+  fieldData.origin_x = center.x() - size.x()/2.0;
+  fieldData.origin_y = center.y() - size.y()/2.0;
+  fieldData.origin_z = center.z() - size.z()/2.0;
+  fieldData.spacing_x = size.x()/dimensions_[0];
+  fieldData.spacing_y = size.y()/dimensions_[1];
+  fieldData.spacing_z = size.z()/dimensions_[2];
   
   double value;
   //std::cout << "mname:" << field->mesh()->type_name << std::endl;
@@ -372,15 +376,91 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addVol(FieldHandle field, ColorM
     vertex_new.push_back(static_cast<float>(point.z()));
     
   }
-  
+  //auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
   if (colorMap)
   {
     ColorMap_OSP_helper cmp(colorMap->getColorMapName());
     obj->tfn.colors = cmp.colorList;
-    obj->tfn.opacities = cmp.opacityList;
+    
+    // set default opacity for now
+    // obj->tfn.opacities = cmp.opacityList;
+    auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
+    obj->tfn.opacities.push_back(alpha);
+    obj->tfn.opacities.push_back(alpha);
   }
   fieldData.color = voxels;
   fieldData.vertex = vertex_new;
+  return obj;
+}
+
+OsprayGeometryObjectHandle OsprayDataAlgorithm::addUnstructVol(FieldHandle field, ColorMapHandle colorMap) const
+{
+  auto obj = makeObject(field);
+  obj->isVolume = true;
+  obj->GeomType="unstructVol";
+  
+  auto& fieldData = obj->data;
+  
+  std::vector<float> voxels;
+  std::vector<float> vertex_new;
+  std::vector<int32_t> index_new;
+  
+  auto facade(field->mesh()->getFacade());
+  auto vfield = field->vfield();
+  auto vmesh = field->vmesh();
+  
+  
+  double value;
+  //std::cout << "mname:" << field->mesh()->type_name << std::endl;
+  for (const auto& node : facade->nodes())
+  {
+    auto point = node.point();
+    if (vfield->num_values() > 0)
+    {
+      vfield->get_value(value, node.index());
+      voxels.push_back(value);
+    }
+    vertex_new.push_back(static_cast<float>(point.x()));
+    vertex_new.push_back(static_cast<float>(point.y()));
+    vertex_new.push_back(static_cast<float>(point.z()));
+  }
+  
+  VMesh::Cell::iterator meshCellIter;
+  VMesh::Cell::iterator meshCellEnd;
+  vmesh->end(meshCellEnd);
+  
+  int numVPerCell = -1;
+  FieldInformation info(field);
+  
+  if(info.is_tetvol()) numVPerCell =4;
+  else numVPerCell =8;
+  //else THROW_ALGORITHM_INPUT_ERROR("hex or tet only for unstructured volume!");
+  
+  for (vmesh->begin(meshCellIter); meshCellIter != meshCellEnd; ++meshCellIter)
+  {
+    VMesh::Cell::index_type elemID = *meshCellIter;
+    VMesh::Node::array_type nodesFromCell(8);
+    vmesh->get_nodes(nodesFromCell, elemID);
+    for(int i=numVPerCell;i<8;i++)
+      nodesFromCell[i] = -4/(8-numVPerCell);
+    for(int i=numVPerCell;i<16-numVPerCell;i++){
+      index_new.push_back(nodesFromCell[i%8]);
+    }
+  }
+  if (colorMap)
+  {
+    ColorMap_OSP_helper cmp(colorMap->getColorMapName());
+    obj->tfn.colors = cmp.colorList;
+    
+    // set default opacity for now
+    // obj->tfn.opacities = cmp.opacityList;
+    auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
+    obj->tfn.opacities.push_back(alpha);
+    obj->tfn.opacities.push_back(alpha);
+  }
+  fieldData.color = voxels;
+  fieldData.vertex = vertex_new;
+  fieldData.index = index_new;
   return obj;
 }
 
@@ -546,7 +626,6 @@ AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
   OsprayGeometryObjectHandle renderable;
 
   FieldInformation info(field);
-
   if (info.is_trisurfmesh())
   {
     // currently only supports one output, so no point in doing both
@@ -565,13 +644,16 @@ AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
   }
   else if (info.is_volume())
   {
-    if(info.is_latvol()){
-      renderable = addVol(field, colorMap);
-    }else if(info.is_tetvol()){
-      THROW_ALGORITHM_INPUT_ERROR("Tet vol not supported. LatVol only at this point");
-    }else if(info.is_hexvol()){
+    if(info.is_hexvol()){
+      //renderable = addUnstructVol(field, colorMap);
       THROW_ALGORITHM_INPUT_ERROR("Hex vol not supported. LatVol only at this point");
-    }else{
+    }else if(info.is_latvol()){
+      renderable = addStructVol(field, colorMap);
+      //renderable = addStructVol(field, colorMap);
+    }else if(info.is_tetvol()){
+      renderable = addUnstructVol(field, colorMap);
+      //THROW_ALGORITHM_INPUT_ERROR("Tet vol not supported. LatVol only at this point");
+    }else {
       THROW_ALGORITHM_INPUT_ERROR("Unknown vol type. LatVol only at this point");
     }
   }

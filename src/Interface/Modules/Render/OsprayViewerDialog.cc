@@ -225,47 +225,84 @@ namespace
     const auto& radius = obj->radius;
     const auto& geom_type = obj->GeomType;
     
-    SCIRun::LOG_DEBUG("adding Volume");
-    OSPVolume vol = ospNewVolume("shared_structured_volume");
-    
-    //bounds = ospcommon::box3f(ospcommon::vec3f(0.f), 1);
-    
-    int numVoxels = obj->data.color.size();
-    OSPData voxelData = ospNewData(numVoxels, OSP_FLOAT, obj->data.color.data());
-    ospSetObject(vol, "voxelData", voxelData);
-    //ospRelease(voxelData);
-    SCIRun::LOG_DEBUG(std::to_string(numVoxels));
-    
-    ospSetString(vol, "voxelType", "float");
-    ospSet3i(vol, "dimensions", obj->data.dim_x, obj->data.dim_y, obj->data.dim_z);
-    ospSet3f(vol, "gridSpacing", fieldData.spacing_x, fieldData.spacing_y, fieldData.spacing_z);
-    ospSet3f(vol, "gridOrigin", fieldData.origin_x, fieldData.origin_y, fieldData.origin_z);
-    
-    std::for_each(obj->data.color.begin(), obj->data.color.end(), [&](float &v) {
-      if (!std::isnan(v))
-        voxelRange.extend(v);
-      //SCIRun::LOG_DEBUG(std::to_string(v));
-    });
-    for(int i=0;i<vertex.size();i+=3){
-      ospcommon::vec3f v = ospcommon::vec3f(vertex[i], vertex[i+1], vertex[i+2]);
-      bounds.extend(v);
-    }
     const auto& func = obj->tfn;
     OSPTransferFunction transferFunction = ospNewTransferFunction("piecewise_linear");
-    
-    
     OSPData cData = ospNewData(func.colors.size()/3, OSP_FLOAT3, func.colors.data());
     OSPData oData = ospNewData(func.opacities.size(), OSP_FLOAT, func.opacities.data());
     
     ospSetData(transferFunction, "colors", cData);
     ospSetData(transferFunction, "opacities", oData);
-    ospSet2f(transferFunction, "valueRange", voxelRange.lower, voxelRange.upper);
-    ospCommit(transferFunction);
-    ospSetObject(vol, "transferFunction", transferFunction);
-    return vol;
+    
+    if (boost::iequals(geom_type, "structVol"))
+    {
+      
+      SCIRun::LOG_DEBUG("adding Volume");
+      OSPVolume vol = ospNewVolume("shared_structured_volume");
+      
+      int numVoxels = obj->data.color.size();
+      OSPData voxelData = ospNewData(numVoxels, OSP_FLOAT, obj->data.color.data());
+      ospSetObject(vol, "voxelData", voxelData);
+      ospRelease(voxelData);
+      SCIRun::LOG_DEBUG(std::to_string(numVoxels));
+      
+      ospSetString(vol, "voxelType", "float");
+      ospSet3i(vol, "dimensions", obj->data.dim_x, obj->data.dim_y, obj->data.dim_z);
+      ospSet3f(vol, "gridSpacing", fieldData.spacing_x, fieldData.spacing_y, fieldData.spacing_z);
+      ospSet3f(vol, "gridOrigin", fieldData.origin_x, fieldData.origin_y, fieldData.origin_z);
+      
+      std::for_each(obj->data.color.begin(), obj->data.color.end(), [&](float &v) {
+        if (!std::isnan(v))
+          voxelRange.extend(v);
+        //SCIRun::LOG_DEBUG(std::to_string(v));
+      });
+      for(int i=0;i<vertex.size();i+=3){
+        ospcommon::vec3f v = ospcommon::vec3f(vertex[i], vertex[i+1], vertex[i+2]);
+        bounds.extend(v);
+      }
+      
+      ospSet2f(transferFunction, "valueRange", voxelRange.lower, voxelRange.upper);
+      ospCommit(transferFunction);
+      ospSetObject(vol, "transferFunction", transferFunction);
+      ospRelease(transferFunction);
+      return vol;
+    }else if (boost::iequals(geom_type, "unstructVol")){
+      SCIRun::LOG_DEBUG("adding unstructured Volume");
+      OSPVolume vol = ospNewVolume("unstructured_volume");
+      
+      //int numVoxels = obj->data.color.size();
+      OSPData vertexData = ospNewData(vertex.size()/3, OSP_FLOAT3, vertex.data());
+      OSPData fieldsData = ospNewData(color.size(), OSP_FLOAT, color.data());
+      OSPData indicesData = ospNewData(index.size()/4, OSP_INT4, index.data());
+      
+      
+      ospSetObject(vol, "vertices", vertexData);
+      ospSetData(vol, "field", fieldsData);
+      ospSetData(vol, "indices", indicesData);
+      
+      
+      ospRelease(vertexData);
+      ospRelease(fieldsData);
+      ospRelease(indicesData);
+      
+      std::for_each(obj->data.color.begin(), obj->data.color.end(), [&](float &v) {
+        if (!std::isnan(v))
+          voxelRange.extend(v);
+      });
+      for(int i=0;i<vertex.size();i+=3){
+        ospcommon::vec3f v = ospcommon::vec3f(vertex[i], vertex[i+1], vertex[i+2]);
+        bounds.extend(v);
+      }
+      
+      ospSet2f(transferFunction, "valueRange", voxelRange.lower, voxelRange.upper);
+      ospCommit(transferFunction);
+      ospSetObject(vol, "transferFunction", transferFunction);
+      ospRelease(transferFunction);
+      return vol;
+      
+    }
     
   }
-
+  
   ospcommon::box3f toOsprayBox(const BBox& box)
   {
     auto min = box.get_min();
@@ -431,7 +468,7 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
     std::vector<ospcommon::box3f> bounds_list;
     
     for (const auto& obj : geom.objects()){
-      if(boost::iequals(obj->GeomType, "Volume")){
+      if((boost::iequals(obj->GeomType, "structVol"))||(boost::iequals(obj->GeomType, "unstructVol")) )   {
         ospcommon::range1f r;
         ospcommon::box3f b;
         vol_list.push_back(duplicatedCodeFromAlgorithm_vol(obj, r, b));
@@ -441,8 +478,11 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
         impl_->geoms_.push_back(duplicatedCodeFromAlgorithm(obj));
     }
     viewer_ = new VolumeViewer(params, guiParams, { impl_->geoms_, toOsprayBox(geom.box) }, this);
-
+    
+    
     setupViewer(viewer_);
+    
+    SCIRun::LOG_DEBUG("num of vol: "+std::to_string(vol_list.size()));
     // load volume here
     for(int i=0;i<vol_list.size();i++){
       viewer_->loadVolume(vol_list[i], voxelRange_list[i].toVec2f(), bounds_list[i]);

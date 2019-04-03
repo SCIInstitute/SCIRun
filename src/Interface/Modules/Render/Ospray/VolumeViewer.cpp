@@ -766,32 +766,10 @@ void VolumeViewer::loadVolume(OSPVolume vol, const vec2f& voxelRange, const box3
   //  modelStates_.push_back(ModelState(ospNewModel()));
 
   assert(vol);
-  /*std::vector<float> colors;
-  std::vector<float> opacities;
-  colors.push_back(1);
-  colors.push_back(0);
-  colors.push_back(0);
-  colors.push_back(0);
-  colors.push_back(0);
-  colors.push_back(1);
-  opacities.push_back(0.5);
-  opacities.push_back(0.5);
-  OSPData cData = ospNewData(colors.size(), OSP_FLOAT3, colors.data());
-  OSPData oData = ospNewData(opacities.size(), OSP_FLOAT, opacities.data());
   
-  ospSetData(transferFunction, "colors", cData);
-  ospSetData(transferFunction, "opacities", oData);
-  
-  // the transfer function will apply over this volume value range
-  ospSet2f(transferFunction, "valueRange", 0, 1);
-  ospCommit(transferFunction);
-  // For now we set the same transfer function on all volumes.
-  ospSetObject(vol, "transferFunction", transferFunction);*/
   ospCommit(vol);
-
   // Add the loaded volume(s) to the model.
   ospAddVolume(modelStates_.back().model, vol);
-  //std::cout<<"load volume "<<(int)vol<<std::endl;
   assert(!bounds.empty());
   // Add to volumes vector for the current model.
   modelStates_.back().volumes.push_back(std::make_shared<ModelState::Volume>(vol, bounds, voxelRange));
