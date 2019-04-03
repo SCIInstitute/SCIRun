@@ -1189,6 +1189,7 @@ namespace SCIRun {
             }
           }
         }
+        mCore.runGCOnNextExecution();
       }
       DEBUG_LOG_LINE_INFO
     }
