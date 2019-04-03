@@ -198,13 +198,10 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
   geom.passes().push_back(pass);
 }
 
-void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double height, double resolution,
+void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double ratio, double resolution,
   const ColorRGB& color1, const ColorRGB& color2)
 {
-  double ratio1 = 0.5 * height;
-  double ratio2 = 1 - ratio1;
-
-  Point mid((p1.x() * ratio1 + p2.x() * ratio2), (p1.y() * ratio1 + p2.y() * ratio2), (p1.z() * ratio1 + p2.z() * ratio2));
+  Point mid((p1.x() * ratio + p2.x() * (1 - ratio)), (p1.y() * ratio + p2.y() * (1 - ratio)), (p1.z() * ratio + p2.z() * (1 - ratio)));
 
   generateCylinder(p1, mid, radius / 6.0, radius / 6.0, resolution, color1, color2);
   generateCylinder(mid, p2, radius, 0.0, resolution, color1, color2);

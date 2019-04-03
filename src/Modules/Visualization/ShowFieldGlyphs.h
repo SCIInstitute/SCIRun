@@ -33,6 +33,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/Thread/Interruptible.h>
 #include <Modules/Visualization/share.h>
+#include <Core/Algorithms/Visualization/RenderFieldState.h>
 
 namespace SCIRun {
   namespace Modules {
@@ -51,42 +52,44 @@ namespace SCIRun {
         // Mesh Color
         static const Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
         // Vector Controls
+        static const Core::Algorithms::AlgorithmParameterName ShowVectorTab;
         static const Core::Algorithms::AlgorithmParameterName ShowVectors;
         static const Core::Algorithms::AlgorithmParameterName VectorsDisplayType;
         static const Core::Algorithms::AlgorithmParameterName VectorsColoring;
         static const Core::Algorithms::AlgorithmParameterName VectorsColoringDataInput;
         static const Core::Algorithms::AlgorithmParameterName VectorsTransparency;
-        static const Core::Algorithms::AlgorithmParameterName VectorsCustomTransparencyValue;
-        static const Core::Algorithms::AlgorithmParameterName VectorsTransparencyDataInput;
-        static const Core::Algorithms::AlgorithmParameterName VectorsRadiusWidthDataInput;
-        static const Core::Algorithms::AlgorithmParameterName VectorsRadiusWidthScale;
+        static const Core::Algorithms::AlgorithmParameterName VectorsUniformTransparencyValue;
+        //        static const Core::Algorithms::AlgorithmParameterName VectorsTransparencyDataInput;
         static const Core::Algorithms::AlgorithmParameterName NormalizeVectors;
         static const Core::Algorithms::AlgorithmParameterName VectorsScale;
         static const Core::Algorithms::AlgorithmParameterName RenderVectorsBelowThreshold;
         static const Core::Algorithms::AlgorithmParameterName VectorsThreshold;
-        static const Core::Algorithms::AlgorithmParameterName RenderBidirectionaly;
+        static const Core::Algorithms::AlgorithmParameterName VectorsRadiusWidthDataInput;
+        static const Core::Algorithms::AlgorithmParameterName VectorsRadiusWidthScale;
         static const Core::Algorithms::AlgorithmParameterName ArrowHeadRatio;
+        static const Core::Algorithms::AlgorithmParameterName RenderBidirectionaly;
         static const Core::Algorithms::AlgorithmParameterName VectorsResolution;
         // Scalar Controls
+        static const Core::Algorithms::AlgorithmParameterName ShowScalarTab;
         static const Core::Algorithms::AlgorithmParameterName ShowScalars;
         static const Core::Algorithms::AlgorithmParameterName ScalarsDisplayType;
         static const Core::Algorithms::AlgorithmParameterName ScalarsColoring;
         static const Core::Algorithms::AlgorithmParameterName ScalarsColoringDataInput;
         static const Core::Algorithms::AlgorithmParameterName ScalarsTransparency;
-        static const Core::Algorithms::AlgorithmParameterName ScalarsCustomTransparencyValue;
-        static const Core::Algorithms::AlgorithmParameterName ScalarsTransparencyDataInput;
+        static const Core::Algorithms::AlgorithmParameterName ScalarsUniformTransparencyValue;
+        //        static const Core::Algorithms::AlgorithmParameterName ScalarsTransparencyDataInput;
         static const Core::Algorithms::AlgorithmParameterName ScalarsScale;
-        static const Core::Algorithms::AlgorithmParameterName RenderScalarsBelowThreshold;
         static const Core::Algorithms::AlgorithmParameterName ScalarsThreshold;
         static const Core::Algorithms::AlgorithmParameterName ScalarsResolution;
         // Tensor Controls
+        static const Core::Algorithms::AlgorithmParameterName ShowTensorTab;
         static const Core::Algorithms::AlgorithmParameterName ShowTensors;
         static const Core::Algorithms::AlgorithmParameterName TensorsDisplayType;
         static const Core::Algorithms::AlgorithmParameterName TensorsColoring;
         static const Core::Algorithms::AlgorithmParameterName TensorsColoringDataInput;
         static const Core::Algorithms::AlgorithmParameterName TensorsTransparency;
-        static const Core::Algorithms::AlgorithmParameterName TensorsCustomTransparencyValue;
-        static const Core::Algorithms::AlgorithmParameterName TensorsTransparencyDataInput;
+        static const Core::Algorithms::AlgorithmParameterName TensorsUniformTransparencyValue;
+        //        static const Core::Algorithms::AlgorithmParameterName TensorsTransparencyDataInput;
         static const Core::Algorithms::AlgorithmParameterName NormalizeTensors;
         static const Core::Algorithms::AlgorithmParameterName TensorsScale;
         static const Core::Algorithms::AlgorithmParameterName RenderTensorsBelowThreshold;
@@ -113,6 +116,7 @@ namespace SCIRun {
           boost::optional<Core::Datatypes::ColorMapHandle> pcolormap,
           boost::optional<Core::Datatypes::ColorMapHandle> scolormap,
           boost::optional<Core::Datatypes::ColorMapHandle> tcolormap);
+        RenderState::InputPort getInput(std::string &port_name);
 
         boost::shared_ptr<class GlyphBuilder> builder_;
 

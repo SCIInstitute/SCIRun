@@ -81,8 +81,8 @@ namespace SCIRun {
       void setupScalarsTab();
       void setupVectorsTab();
       void setupTensorsTab();
-      void setupSecondaryTab();
-      void setupTertiaryTab();
+      //void setupSecondaryTab();
+      //void setupTertiaryTab();
     };
 
   }
