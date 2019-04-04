@@ -6,7 +6,6 @@
    Copyright (c) 2016 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -64,7 +63,7 @@ MODULE_INFO_DEF(InterfaceWithPython, Python, SCIRun)
 
 Mutex InterfaceWithPython::lock_("InterfaceWithPython");
 
-InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_)
+InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_), parser_(*this)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(InputField);
@@ -111,52 +110,6 @@ std::vector<AlgorithmParameterName> InterfaceWithPython::outputNameParameters()
     Parameters::PythonOutputString1Name, Parameters::PythonOutputString2Name, Parameters::PythonOutputString3Name };
 }
 
-std::string InterfaceWithPython::convertOutputSyntax(const std::string& code) const
-{
-  auto outputVarsToCheck = outputNameParameters();
-
-  for (const auto& var : outputVarsToCheck)
-  {
-    auto varName = cstate()->getValue(var).toString();
-
-    auto regexString = "(\\h*)" + varName + " = (.+)";
-    //std::cout << "REGEX STRING " << regexString << std::endl;
-    boost::regex outputRegex(regexString);
-    boost::smatch what;
-    if (regex_match(code, what, outputRegex))
-    {
-      int rhsIndex = what.size() > 2 ? 2 : 1;
-      auto whitespace = what.size() > 2 ? boost::lexical_cast<std::string>(what[1]) : "";
-      auto rhs = boost::lexical_cast<std::string>(what[rhsIndex]);
-      auto converted = whitespace + "scirun_set_module_transient_state(\"" + get_id().id_ + "\",\"" + varName + "\"," + rhs + ")";
-      //std::cout << "CONVERTED TO " << converted << std::endl;
-      return converted;
-    }
-  }
-
-  return code;
-}
-
-std::string InterfaceWithPython::convertInputSyntax(const std::string& code) const
-{
-  for (const auto& port : inputPorts())
-  {
-    if (port->nconnections() > 0)
-    {
-      auto inputName = cstate()->getValue(Name(port->id().toString())).toString();
-      //std::cout << "FOUND INPUT VARIABLE NAME: " << inputName << " for port " << port->id().toString() << std::endl;
-      //std::cout << "NEED TO REPLACE " << inputName << " with\n\t" << "scirun_get_module_input_value(\"" << get_id() << "\", \"" << port->id().toString() << "\")" << std::endl;
-      auto index = code.find(inputName);
-      if (index != std::string::npos)
-      {
-        auto codeCopy = code;
-        return codeCopy.replace(index, inputName.length(), "scirun_get_module_input_value(\"" + get_id().id_ + "\", \"" + port->id().toString() + "\")");
-      }
-    }
-  }
-  return code;
-}
-
 void InterfaceWithPython::execute()
 {
 #ifdef BUILD_WITH_PYTHON
@@ -172,14 +125,14 @@ void InterfaceWithPython::execute()
       runTopLevelCode();
 
       auto code = state->getValue(Parameters::PythonCode).toString();
-      extractSpecialBlocks(code);
+      parser_.extractSpecialBlocks(code);
 
       std::ostringstream convertedCode;
       std::vector<std::string> lines;
       boost::split(lines, code, boost::is_any_of("\n"));
       for (const auto& line : lines)
       {
-        convertedCode << convertInputSyntax(convertOutputSyntax(line)) << "\n";
+        convertedCode << parser_.convertInputSyntax(parser_.convertOutputSyntax(line)) << "\n";
       }
 
       NetworkEditorPythonAPI::PythonModuleContextApiDisabler disabler;
@@ -223,43 +176,4 @@ void InterfaceWithPython::runTopLevelCode() const
     PythonInterpreter::Instance().run_string(line);
   }
 #endif
-}
-
-void InterfaceWithPython::extractSpecialBlocks(const std::string& code) const
-{
-  logCritical("Code: {}", code);
-  static boost::regex matlabBlock("(.*)\\/\\*matlab(.*)matlab\\*\\/(.*)");
-
-  std::string::const_iterator start, end;
-  start = code.begin();
-  end = code.end();
-  boost::match_results<std::string::const_iterator> what;
-  boost::match_flag_type flags = boost::match_default;
-  while (regex_search(start, end, what, matlabBlock, flags))
-  {
-    // what[0] contains the whole string
-    // what[5] contains the class name.
-    // what[6] contains the template specialisation if any.
-    // add class name and position to map:
-    // m[std::string(what[5].first, what[5].second)
-    //       + std::string(what[6].first, what[6].second)]
-    //    = what[5].first - file.begin();
-    auto firstPart = std::string(what[1]);
-    auto matlabPart = std::string(what[2]);
-    auto secondPart = std::string(what[3]);
-    // update search position:
-    start = what[2].second;
-
-    // update flags:
-    flags |= boost::match_prev_avail;
-    flags |= boost::match_not_bob;
-
-    logCritical("First: {}", firstPart);
-    logCritical("Matlab: {}", matlabPart);
-    logCritical("Second: {}", secondPart);
-
-    logCritical("Next search string: {}", std::string(start, end));
-
-  }
-
 }
