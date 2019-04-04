@@ -287,6 +287,7 @@ namespace
       std::for_each(obj->data.color.begin(), obj->data.color.end(), [&](float &v) {
         if (!std::isnan(v))
           voxelRange.extend(v);
+        //SCIRun::LOG_DEBUG(std::to_string(v));
       });
       for(int i=0;i<vertex.size();i+=3){
         ospcommon::vec3f v = ospcommon::vec3f(vertex[i], vertex[i+1], vertex[i+2]);

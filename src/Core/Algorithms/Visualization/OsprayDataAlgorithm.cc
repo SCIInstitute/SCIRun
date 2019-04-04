@@ -433,8 +433,8 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addUnstructVol(FieldHandle field
   FieldInformation info(field);
   
   if(info.is_tetvol()) numVPerCell =4;
-  else numVPerCell =8;
-  //else THROW_ALGORITHM_INPUT_ERROR("hex or tet only for unstructured volume!");
+  else if(info.is_hexvol()) numVPerCell =8;
+  else THROW_ALGORITHM_INPUT_ERROR("hex or tet only for unstructured volume!");
   
   for (vmesh->begin(meshCellIter); meshCellIter != meshCellEnd; ++meshCellIter)
   {
@@ -443,7 +443,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addUnstructVol(FieldHandle field
     vmesh->get_nodes(nodesFromCell, elemID);
     for(int i=numVPerCell;i<8;i++)
       nodesFromCell[i] = -4/(8-numVPerCell);
-    for(int i=numVPerCell;i<16-numVPerCell;i++){
+    for(int i=numVPerCell;i<8+numVPerCell;i++){
       index_new.push_back(nodesFromCell[i%8]);
     }
   }
@@ -645,8 +645,8 @@ AlgorithmOutput OsprayDataAlgorithm::run(const AlgorithmInput& input) const
   else if (info.is_volume())
   {
     if(info.is_hexvol()){
-      //renderable = addUnstructVol(field, colorMap);
-      THROW_ALGORITHM_INPUT_ERROR("Hex vol not supported. LatVol only at this point");
+      renderable = addUnstructVol(field, colorMap);
+      //THROW_ALGORITHM_INPUT_ERROR("Hex vol not supported. LatVol only at this point");
     }else if(info.is_latvol()){
       renderable = addStructVol(field, colorMap);
       //renderable = addStructVol(field, colorMap);
