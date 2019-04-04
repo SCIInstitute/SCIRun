@@ -30,6 +30,7 @@
 #include <Modules/Python/PythonObjectForwarder.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Core/Python/PythonInterpreter.h>
+#include <Core/Logging/Log.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <boost/algorithm/string.hpp>
@@ -168,17 +169,10 @@ void InterfaceWithPython::execute()
     {
       Guard g(lock_.get());
 
-      {
-        auto topLevelCode = state->getValue(Parameters::PythonTopLevelCode).toString();
-        std::vector<std::string> lines;
-        boost::split(lines, topLevelCode, boost::is_any_of("\n"));
-        for (const auto& line : lines)
-        {
-          PythonInterpreter::Instance().run_string(line);
-        }
-      }
+      runTopLevelCode();
 
       auto code = state->getValue(Parameters::PythonCode).toString();
+      extractSpecialBlocks(code);
 
       std::ostringstream convertedCode;
       std::vector<std::string> lines;
@@ -216,4 +210,56 @@ void InterfaceWithPython::execute()
 #else
   error("This module does nothing, turn on BUILD_WITH_PYTHON to enable.");
 #endif
+}
+
+void InterfaceWithPython::runTopLevelCode() const
+{
+#ifdef BUILD_WITH_PYTHON
+  auto topLevelCode = cstate()->getValue(Parameters::PythonTopLevelCode).toString();
+  std::vector<std::string> lines;
+  boost::split(lines, topLevelCode, boost::is_any_of("\n"));
+  for (const auto& line : lines)
+  {
+    PythonInterpreter::Instance().run_string(line);
+  }
+#endif
+}
+
+void InterfaceWithPython::extractSpecialBlocks(const std::string& code) const
+{
+  logCritical("Code: {}", code);
+  static boost::regex matlabBlock("(.*)\\/\\*matlab(.*)matlab\\*\\/(.*)");
+
+  std::string::const_iterator start, end;
+  start = code.begin();
+  end = code.end();
+  boost::match_results<std::string::const_iterator> what;
+  boost::match_flag_type flags = boost::match_default;
+  while (regex_search(start, end, what, matlabBlock, flags))
+  {
+    // what[0] contains the whole string
+    // what[5] contains the class name.
+    // what[6] contains the template specialisation if any.
+    // add class name and position to map:
+    // m[std::string(what[5].first, what[5].second)
+    //       + std::string(what[6].first, what[6].second)]
+    //    = what[5].first - file.begin();
+    auto firstPart = std::string(what[1]);
+    auto matlabPart = std::string(what[2]);
+    auto secondPart = std::string(what[3]);
+    // update search position:
+    start = what[2].second;
+
+    // update flags:
+    flags |= boost::match_prev_avail;
+    flags |= boost::match_not_bob;
+
+    logCritical("First: {}", firstPart);
+    logCritical("Matlab: {}", matlabPart);
+    logCritical("Second: {}", secondPart);
+
+    logCritical("Next search string: {}", std::string(start, end));
+
+  }
+
 }

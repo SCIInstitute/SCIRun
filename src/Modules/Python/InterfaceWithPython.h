@@ -94,6 +94,8 @@ namespace SCIRun
         static Core::Thread::Mutex lock_;
         std::string convertInputSyntax(const std::string& code) const;
         std::string convertOutputSyntax(const std::string& code) const;
+        void runTopLevelCode() const;
+        void extractSpecialBlocks(const std::string& code) const;
       };
 
     }
