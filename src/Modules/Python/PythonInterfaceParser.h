@@ -28,7 +28,7 @@
 #ifndef MODULES_PYTHON_PYTHONINTERFACEPARSER_H
 #define MODULES_PYTHON_PYTHONINTERFACEPARSER_H
 
-#include <string>
+#include <Dataflow/Network/ModuleStateInterface.h>
 #include <Modules/Python/share.h>
 
 namespace SCIRun
@@ -49,11 +49,15 @@ namespace SCIRun
         class SCISHARE PythonInterfaceParser
         {
         public:
-          explicit PythonInterfaceParser(Modules::Python::InterfaceWithPython& module);
+          PythonInterfaceParser(const std::string& moduleId,
+            const Dataflow::Networks::ModuleStateInterface& state,
+            Modules::Python::InterfaceWithPython& module);
           std::string convertInputSyntax(const std::string& code) const;
           std::string convertOutputSyntax(const std::string& code) const;
           void extractSpecialBlocks(const std::string& code) const;
         private:
+          const std::string moduleId_;
+          const Dataflow::Networks::ModuleStateInterface& state_;
           Modules::Python::InterfaceWithPython& module_;
         };
       }

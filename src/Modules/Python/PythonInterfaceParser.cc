@@ -36,9 +36,13 @@
 #endif
 
 using namespace SCIRun::Modules::Python;
+using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Python;
 
-PythonInterfaceParser::PythonInterfaceParser(InterfaceWithPython& module) : module_(module)
+PythonInterfaceParser::PythonInterfaceParser(const std::string& moduleId,
+  const ModuleStateInterface& state,
+  InterfaceWithPython& module)
+  : moduleId_(moduleId), state_(state), module_(module)
 {
 }
 
@@ -48,7 +52,7 @@ std::string PythonInterfaceParser::convertOutputSyntax(const std::string& code) 
 
   for (const auto& var : outputVarsToCheck)
   {
-    auto varName = module_.cstate()->getValue(var).toString();
+    auto varName = state_.getValue(var).toString();
 
     auto regexString = "(\\h*)" + varName + " = (.+)";
     //std::cout << "REGEX STRING " << regexString << std::endl;
@@ -60,7 +64,7 @@ std::string PythonInterfaceParser::convertOutputSyntax(const std::string& code) 
       auto whitespace = what.size() > 2 ? boost::lexical_cast<std::string>(what[1]) : "";
       auto rhs = boost::lexical_cast<std::string>(what[rhsIndex]);
       auto converted = whitespace + "scirun_set_module_transient_state(\"" +
-        module_.get_id().id_ + "\",\"" + varName + "\"," + rhs + ")";
+        moduleId_ + "\",\"" + varName + "\"," + rhs + ")";
       //std::cout << "CONVERTED TO " << converted << std::endl;
       return converted;
     }
@@ -75,7 +79,7 @@ std::string PythonInterfaceParser::convertInputSyntax(const std::string& code) c
   {
     if (port->nconnections() > 0)
     {
-      auto inputName = module_.cstate()->getValue(Name(port->id().toString())).toString();
+      auto inputName = state_.getValue(Name(port->id().toString())).toString();
       //std::cout << "FOUND INPUT VARIABLE NAME: " << inputName << " for port " << port->id().toString() << std::endl;
       //std::cout << "NEED TO REPLACE " << inputName << " with\n\t" << "scirun_get_module_input_value(\"" << get_id() << "\", \"" << port->id().toString() << "\")" << std::endl;
       auto index = code.find(inputName);
@@ -83,7 +87,7 @@ std::string PythonInterfaceParser::convertInputSyntax(const std::string& code) c
       {
         auto codeCopy = code;
         return codeCopy.replace(index, inputName.length(),
-          "scirun_get_module_input_value(\"" + module_.get_id().id_ + "\", \"" + port->id().toString() + "\")");
+          "scirun_get_module_input_value(\"" + moduleId_ + "\", \"" + port->id().toString() + "\")");
       }
     }
   }
@@ -93,7 +97,7 @@ std::string PythonInterfaceParser::convertInputSyntax(const std::string& code) c
 
 void PythonInterfaceParser::extractSpecialBlocks(const std::string& code) const
 {
-  logCritical("Code: {}", code);
+  //logCritical("Code: {}", code);
   static boost::regex matlabBlock("(.*)\\/\\*matlab(.*)matlab\\*\\/(.*)");
 
   std::string::const_iterator start, end;
@@ -120,11 +124,11 @@ void PythonInterfaceParser::extractSpecialBlocks(const std::string& code) const
     flags |= boost::match_prev_avail;
     flags |= boost::match_not_bob;
 
-    logCritical("First: {}", firstPart);
-    logCritical("Matlab: {}", matlabPart);
-    logCritical("Second: {}", secondPart);
+    //logCritical("First: {}", firstPart);
+    //logCritical("Matlab: {}", matlabPart);
+    //logCritical("Second: {}", secondPart);
 
-    logCritical("Next search string: {}", std::string(start, end));
+    //logCritical("Next search string: {}", std::string(start, end));
 
   }
 

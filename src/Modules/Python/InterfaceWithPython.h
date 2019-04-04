@@ -30,7 +30,6 @@
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Thread/Mutex.h>
-#include <Modules/Python/PythonInterfaceParser.h>
 #include <Modules/Python/share.h>
 
 namespace SCIRun
@@ -92,7 +91,6 @@ namespace SCIRun
         NEW_HELP_WEBPAGE_ONLY
       private:
         static Core::Thread::Mutex lock_;
-        Core::Algorithms::Python::PythonInterfaceParser parser_;
         void runTopLevelCode() const;
       };
 

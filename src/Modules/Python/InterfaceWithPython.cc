@@ -28,6 +28,7 @@
 #include <Modules/Python/InterfaceWithPython.h>
 #include <Modules/Python/PythonObjectForwarder.h>
 #ifdef BUILD_WITH_PYTHON
+#include <Modules/Python/PythonInterfaceParser.h>
 #include <Core/Python/PythonInterpreter.h>
 #include <Core/Logging/Log.h>
 // ReSharper disable once CppUnusedIncludeDirective
@@ -63,7 +64,7 @@ MODULE_INFO_DEF(InterfaceWithPython, Python, SCIRun)
 
 Mutex InterfaceWithPython::lock_("InterfaceWithPython");
 
-InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_), parser_(*this)
+InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputMatrix);
   INITIALIZE_PORT(InputField);
@@ -124,15 +125,16 @@ void InterfaceWithPython::execute()
 
       runTopLevelCode();
 
+      PythonInterfaceParser parser(get_id().id_, *cstate(), *this);
       auto code = state->getValue(Parameters::PythonCode).toString();
-      parser_.extractSpecialBlocks(code);
+      parser.extractSpecialBlocks(code);
 
       std::ostringstream convertedCode;
       std::vector<std::string> lines;
       boost::split(lines, code, boost::is_any_of("\n"));
       for (const auto& line : lines)
       {
-        convertedCode << parser_.convertInputSyntax(parser_.convertOutputSyntax(line)) << "\n";
+        convertedCode << parser.convertInputSyntax(parser.convertOutputSyntax(line)) << "\n";
       }
 
       NetworkEditorPythonAPI::PythonModuleContextApiDisabler disabler;
