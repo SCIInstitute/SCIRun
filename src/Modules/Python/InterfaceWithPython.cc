@@ -111,6 +111,19 @@ std::vector<AlgorithmParameterName> InterfaceWithPython::outputNameParameters()
     Parameters::PythonOutputString1Name, Parameters::PythonOutputString2Name, Parameters::PythonOutputString3Name };
 }
 
+std::vector<std::string> InterfaceWithPython::connectedPortIds() const
+{
+  std::vector<std::string> ids;
+  for (const auto& port : inputPorts())
+  {
+    if (port->nconnections() > 0)
+    {
+      ids.push_back(port->id().toString());
+    }
+  }
+  return ids;
+}
+
 void InterfaceWithPython::execute()
 {
 #ifdef BUILD_WITH_PYTHON
@@ -125,7 +138,7 @@ void InterfaceWithPython::execute()
 
       runTopLevelCode();
 
-      PythonInterfaceParser parser(get_id().id_, *cstate(), *this);
+      PythonInterfaceParser parser(get_id().id_, state, connectedPortIds());
       auto code = state->getValue(Parameters::PythonCode).toString();
       parser.extractSpecialBlocks(code);
 

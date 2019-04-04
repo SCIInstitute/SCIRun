@@ -33,13 +33,6 @@
 
 namespace SCIRun
 {
-  namespace Modules
-  {
-    namespace Python
-    {
-      class InterfaceWithPython;
-    }
-  }
   namespace Core
   {
     namespace Algorithms
@@ -50,15 +43,15 @@ namespace SCIRun
         {
         public:
           PythonInterfaceParser(const std::string& moduleId,
-            const Dataflow::Networks::ModuleStateInterface& state,
-            Modules::Python::InterfaceWithPython& module);
+            const Dataflow::Networks::ModuleStateHandle& state,
+            const std::vector<std::string>& portIds);
           std::string convertInputSyntax(const std::string& code) const;
           std::string convertOutputSyntax(const std::string& code) const;
           void extractSpecialBlocks(const std::string& code) const;
         private:
           const std::string moduleId_;
-          const Dataflow::Networks::ModuleStateInterface& state_;
-          Modules::Python::InterfaceWithPython& module_;
+          const Dataflow::Networks::ModuleStateHandle state_;
+          std::vector<std::string> portIds_;
         };
       }
     }

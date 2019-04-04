@@ -92,6 +92,7 @@ namespace SCIRun
       private:
         static Core::Thread::Mutex lock_;
         void runTopLevelCode() const;
+        std::vector<std::string> connectedPortIds() const;
       };
 
     }

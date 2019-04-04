@@ -26,13 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Python/InterfaceWithPython.h>
 #include <Modules/Python/PythonInterfaceParser.h>
+#include <Modules/Python/InterfaceWithPython.h>
 #ifdef BUILD_WITH_PYTHON
 #include <Core/Logging/Log.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 #endif
 
 using namespace SCIRun::Modules::Python;
@@ -40,9 +41,9 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Python;
 
 PythonInterfaceParser::PythonInterfaceParser(const std::string& moduleId,
-  const ModuleStateInterface& state,
-  InterfaceWithPython& module)
-  : moduleId_(moduleId), state_(state), module_(module)
+  const ModuleStateHandle& state,
+  const std::vector<std::string>& portIds)
+  : moduleId_(moduleId), state_(state), portIds_(portIds)
 {
 }
 
@@ -52,7 +53,7 @@ std::string PythonInterfaceParser::convertOutputSyntax(const std::string& code) 
 
   for (const auto& var : outputVarsToCheck)
   {
-    auto varName = state_.getValue(var).toString();
+    auto varName = state_->getValue(var).toString();
 
     auto regexString = "(\\h*)" + varName + " = (.+)";
     //std::cout << "REGEX STRING " << regexString << std::endl;
@@ -75,20 +76,17 @@ std::string PythonInterfaceParser::convertOutputSyntax(const std::string& code) 
 
 std::string PythonInterfaceParser::convertInputSyntax(const std::string& code) const
 {
-  for (const auto& port : module_.inputPorts())
+  for (const auto& portId : portIds_)
   {
-    if (port->nconnections() > 0)
+    auto inputName = state_->getValue(Name(portId)).toString();
+    //std::cout << "FOUND INPUT VARIABLE NAME: " << inputName << " for port " << portId << std::endl;
+    //std::cout << "NEED TO REPLACE " << inputName << " with\n\t" << "scirun_get_module_input_value(\"" << moduleId_ << "\", \"" << portId << "\")" << std::endl;
+    auto index = code.find(inputName);
+    if (index != std::string::npos)
     {
-      auto inputName = state_.getValue(Name(port->id().toString())).toString();
-      //std::cout << "FOUND INPUT VARIABLE NAME: " << inputName << " for port " << port->id().toString() << std::endl;
-      //std::cout << "NEED TO REPLACE " << inputName << " with\n\t" << "scirun_get_module_input_value(\"" << get_id() << "\", \"" << port->id().toString() << "\")" << std::endl;
-      auto index = code.find(inputName);
-      if (index != std::string::npos)
-      {
-        auto codeCopy = code;
-        return codeCopy.replace(index, inputName.length(),
-          "scirun_get_module_input_value(\"" + moduleId_ + "\", \"" + port->id().toString() + "\")");
-      }
+      auto codeCopy = code;
+      return codeCopy.replace(index, inputName.length(),
+        "scirun_get_module_input_value(\"" + moduleId_ + "\", \"" + portId + "\")");
     }
   }
   return code;
