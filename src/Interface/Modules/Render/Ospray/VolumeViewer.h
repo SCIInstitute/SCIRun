@@ -243,10 +243,6 @@ public Q_SLOTS:
   void setBackgroundColor(float r, float g, float b);
 
   
-  //******************* tmp post init for vol ****************//
-  void postInitObjectConstruction_again(const OsprayViewerParameters& params, const OsprayGUIParameters& guiParams){
-    postInitObjectConstruction(params, guiParams);
-  }
 
 protected:
 
