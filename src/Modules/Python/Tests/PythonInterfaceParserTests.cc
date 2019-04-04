@@ -27,5 +27,17 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-//
-/// @todo
+#include <Modules/Python/PythonInterfaceParser.h>
+
+using namespace SCIRun::Core::Algorithms::Python;
+using namespace SCIRun::Dataflow::Networks;
+
+TEST(PythonInterfaceParserTests, Basic)
+{
+  std::string moduleId = "InterfaceWithPython:0";
+  ModuleStateHandle state;
+  std::vector<std::string> portIds = {"InputString:0"};
+  PythonInterfaceParser parser(moduleId, state, portIds);
+
+  FAIL() << "todo";
+}
