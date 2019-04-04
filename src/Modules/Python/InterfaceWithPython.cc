@@ -140,18 +140,11 @@ void InterfaceWithPython::execute()
 
       PythonInterfaceParser parser(get_id().id_, state, connectedPortIds());
       auto code = state->getValue(Parameters::PythonCode).toString();
-      parser.extractSpecialBlocks(code);
+      //parser.extractSpecialBlocks(code);
 
-      std::ostringstream convertedCode;
-      std::vector<std::string> lines;
-      boost::split(lines, code, boost::is_any_of("\n"));
-      for (const auto& line : lines)
-      {
-        convertedCode << parser.convertInputSyntax(parser.convertOutputSyntax(line)) << "\n";
-      }
-
+      auto convertedCode = parser.convertStandardCodeBlock(code);
       NetworkEditorPythonAPI::PythonModuleContextApiDisabler disabler;
-      PythonInterpreter::Instance().run_script(convertedCode.str());
+      PythonInterpreter::Instance().run_script(convertedCode);
     }
 
     PythonObjectForwarderImpl<InterfaceWithPython> impl(*this);

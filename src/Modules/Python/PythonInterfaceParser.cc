@@ -47,7 +47,7 @@ PythonInterfaceParser::PythonInterfaceParser(const std::string& moduleId,
 {
 }
 
-std::string PythonInterfaceParser::convertOutputSyntax(const std::string& code) const
+std::string PythonInterfaceParser::convertOutputSyntax(const std::string& line) const
 {
   auto outputVarsToCheck = InterfaceWithPython::outputNameParameters();
 
@@ -59,7 +59,7 @@ std::string PythonInterfaceParser::convertOutputSyntax(const std::string& code) 
     //std::cout << "REGEX STRING " << regexString << std::endl;
     boost::regex outputRegex(regexString);
     boost::smatch what;
-    if (regex_match(code, what, outputRegex))
+    if (regex_match(line, what, outputRegex))
     {
       int rhsIndex = what.size() > 2 ? 2 : 1;
       auto whitespace = what.size() > 2 ? boost::lexical_cast<std::string>(what[1]) : "";
@@ -71,25 +71,37 @@ std::string PythonInterfaceParser::convertOutputSyntax(const std::string& code) 
     }
   }
 
-  return code;
+  return line;
 }
 
-std::string PythonInterfaceParser::convertInputSyntax(const std::string& code) const
+std::string PythonInterfaceParser::convertInputSyntax(const std::string& line) const
 {
   for (const auto& portId : portIds_)
   {
     auto inputName = state_->getValue(Name(portId)).toString();
     //std::cout << "FOUND INPUT VARIABLE NAME: " << inputName << " for port " << portId << std::endl;
     //std::cout << "NEED TO REPLACE " << inputName << " with\n\t" << "scirun_get_module_input_value(\"" << moduleId_ << "\", \"" << portId << "\")" << std::endl;
-    auto index = code.find(inputName);
+    auto index = line.find(inputName);
     if (index != std::string::npos)
     {
-      auto codeCopy = code;
+      auto codeCopy = line;
       return codeCopy.replace(index, inputName.length(),
         "scirun_get_module_input_value(\"" + moduleId_ + "\", \"" + portId + "\")");
     }
   }
-  return code;
+  return line;
+}
+
+std::string PythonInterfaceParser::convertStandardCodeBlock(const std::string& code) const
+{
+  std::ostringstream convertedCode;
+  std::vector<std::string> lines;
+  boost::split(lines, code, boost::is_any_of("\n"));
+  for (const auto& line : lines)
+  {
+    convertedCode << convertInputSyntax(convertOutputSyntax(line)) << "\n";
+  }
+  return convertedCode.str();
 }
 
 

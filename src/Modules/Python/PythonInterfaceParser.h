@@ -45,8 +45,9 @@ namespace SCIRun
           PythonInterfaceParser(const std::string& moduleId,
             const Dataflow::Networks::ModuleStateHandle& state,
             const std::vector<std::string>& portIds);
-          std::string convertInputSyntax(const std::string& code) const;
-          std::string convertOutputSyntax(const std::string& code) const;
+          std::string convertStandardCodeBlock(const std::string& code) const;
+          std::string convertInputSyntax(const std::string& line) const;
+          std::string convertOutputSyntax(const std::string& line) const;
           void extractSpecialBlocks(const std::string& code) const;
         private:
           const std::string moduleId_;

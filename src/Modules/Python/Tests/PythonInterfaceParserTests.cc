@@ -28,16 +28,41 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <Modules/Python/PythonInterfaceParser.h>
+#include <Modules/Python/InterfaceWithPython.h>
+#include <Dataflow/State/SimpleMapModuleState.h>
 
 using namespace SCIRun::Core::Algorithms::Python;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::State;
+using namespace SCIRun::Modules::Python;
+using namespace SCIRun::Core;
+using namespace SCIRun::Core::Algorithms;
 
 TEST(PythonInterfaceParserTests, Basic)
 {
   std::string moduleId = "InterfaceWithPython:0";
-  ModuleStateHandle state;
   std::vector<std::string> portIds = {"InputString:0"};
+  auto state = boost::make_shared<SimpleMapModuleState>();
+  for (const auto& outputVarToCheck : InterfaceWithPython::outputNameParameters())
+  {
+    state->setValue(Name(outputVarToCheck), std::string(""));
+  }
+  state->setValue(Name(portIds[0]), std::string("str1"));
+  state->setValue(Name("PythonOutputString1Name"), std::string("out1"));
+
   PythonInterfaceParser parser(moduleId, state, portIds);
 
-  FAIL() << "todo";
+  std::string code =
+    "s = str1\n"
+    "out1 = s + \"!12!\"\n";
+
+  auto convertedCode = parser.convertStandardCodeBlock(code);
+
+  std::cout << convertedCode << std::endl;
+
+ std::string expectedCode =
+  "s = scirun_get_module_input_value(\"InterfaceWithPython:0\", \"InputString:0\")\n"
+  "scirun_set_module_transient_state(\"InterfaceWithPython:0\",\"out1\",s + \"!12!\")\n\n";
+
+  ASSERT_EQ(convertedCode, expectedCode);
 }
