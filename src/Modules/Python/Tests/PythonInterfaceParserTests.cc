@@ -154,3 +154,36 @@ TEST(PythonInterfaceParserTests, CanExtractMultipleMatlabBlocksBetweenNormalBloc
   EXPECT_EQ("print(b)", blockIterator->code);
   EXPECT_FALSE(blockIterator->isMatlab);
 }
+
+TEST(PythonInterfaceParserTests, CanConcatenateNormalBlocksUntilMatlabConversionWorks)
+{
+  auto parser = makeParser();
+
+  std::string code =
+    "s = str1\n"
+    "print(s)\n"
+    "/*matlab\n"
+    "a = 1\n"
+    "matlab*/\n"
+    "s = s + '.'\n"
+    "/*matlab\n"
+    "b = 2\n"
+    "matlab*/\n"
+    "print(b)\n";
+
+  auto blocks = parser->extractSpecialBlocks(code);
+
+  auto regularPython = parser->concatenateNormalBlocks(blocks);
+  EXPECT_FALSE(regularPython.isMatlab);
+  std::cout << regularPython.code << std::endl;
+
+  std::string expectedRegularPython =
+    "s = str1\n"
+    "print(s)\n"
+    "s = s + '.'\n"
+    "print(b)\n";
+
+  EXPECT_EQ(expectedRegularPython, regularPython.code);
+
+  //FAIL() << "todo";
+}

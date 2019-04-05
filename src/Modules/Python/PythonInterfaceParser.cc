@@ -156,7 +156,7 @@ PythonCodeBlock PythonInterfaceParser::concatenateNormalBlocks(const PythonCode&
   {
     if (!block.isMatlab)
     {
-      ostr << block.code;
+      ostr << block.code << '\n';
     }
   }
   return {ostr.str(), false };
