@@ -38,7 +38,7 @@ using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
-TEST(PythonInterfaceParserTests, Basic)
+std::unique_ptr<PythonInterfaceParser> makeParser()
 {
   std::string moduleId = "InterfaceWithPython:0";
   std::vector<std::string> portIds = {"InputString:0"};
@@ -50,13 +50,19 @@ TEST(PythonInterfaceParserTests, Basic)
   state->setValue(Name(portIds[0]), std::string("str1"));
   state->setValue(Name("PythonOutputString1Name"), std::string("out1"));
 
-  PythonInterfaceParser parser(moduleId, state, portIds);
+  std::unique_ptr<PythonInterfaceParser> parser(new PythonInterfaceParser(moduleId, state, portIds));
+  return parser;
+}
+
+TEST(PythonInterfaceParserTests, Basic)
+{
+  auto parser = makeParser();
 
   std::string code =
     "s = str1\n"
     "out1 = s + \"!12!\"\n";
 
-  auto convertedCode = parser.convertStandardCodeBlock(code);
+  auto convertedCode = parser->convertStandardCodeBlock({code, false});
 
   std::cout << convertedCode << std::endl;
 
@@ -65,4 +71,18 @@ TEST(PythonInterfaceParserTests, Basic)
   "scirun_set_module_transient_state(\"InterfaceWithPython:0\",\"out1\",s + \"!12!\")\n\n";
 
   ASSERT_EQ(convertedCode, expectedCode);
+}
+
+TEST(PythonInterfaceParserTests, CanExtractSingleMatlabBlock)
+{
+  auto parser = makeParser();
+
+  std::string code = "/*matlab\na = 1\nmatlab*/";
+  auto blocks = parser->extractSpecialBlocks(code);
+
+  ASSERT_EQ(1, blocks.size());
+  EXPECT_EQ("a = 1", blocks.begin()->code);
+  EXPECT_TRUE(blocks.begin()->isMatlab);
+
+  FAIL() << "todo";
 }

@@ -39,16 +39,25 @@ namespace SCIRun
     {
       namespace Python
       {
+        struct SCISHARE PythonCodeBlock
+        {
+          std::string code;
+          bool isMatlab;
+        };
+
+        using PythonCode = std::list<PythonCodeBlock>;
+
         class SCISHARE PythonInterfaceParser
         {
         public:
           PythonInterfaceParser(const std::string& moduleId,
             const Dataflow::Networks::ModuleStateHandle& state,
             const std::vector<std::string>& portIds);
-          std::string convertStandardCodeBlock(const std::string& code) const;
+          std::string convertStandardCodeBlock(const PythonCodeBlock& code) const;
           std::string convertInputSyntax(const std::string& line) const;
           std::string convertOutputSyntax(const std::string& line) const;
-          void extractSpecialBlocks(const std::string& code) const;
+          PythonCode extractSpecialBlocks(const std::string& code) const;
+          PythonCodeBlock concatenateNormalBlocks(const PythonCode& code) const;
         private:
           const std::string moduleId_;
           const Dataflow::Networks::ModuleStateHandle state_;

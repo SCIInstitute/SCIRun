@@ -140,9 +140,10 @@ void InterfaceWithPython::execute()
 
       PythonInterfaceParser parser(get_id().id_, state, connectedPortIds());
       auto code = state->getValue(Parameters::PythonCode).toString();
-      //parser.extractSpecialBlocks(code);
 
-      auto convertedCode = parser.convertStandardCodeBlock(code);
+      auto intermediate = parser.extractSpecialBlocks(code);
+      auto readyToConvert = parser.concatenateNormalBlocks(intermediate);
+      auto convertedCode = parser.convertStandardCodeBlock(readyToConvert);
       NetworkEditorPythonAPI::PythonModuleContextApiDisabler disabler;
       PythonInterpreter::Instance().run_script(convertedCode);
     }

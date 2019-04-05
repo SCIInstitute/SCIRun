@@ -92,11 +92,14 @@ std::string PythonInterfaceParser::convertInputSyntax(const std::string& line) c
   return line;
 }
 
-std::string PythonInterfaceParser::convertStandardCodeBlock(const std::string& code) const
+std::string PythonInterfaceParser::convertStandardCodeBlock(const PythonCodeBlock& block) const
 {
+  if (block.isMatlab)
+    throw std::invalid_argument("Cannot process matlab block");
+
   std::ostringstream convertedCode;
   std::vector<std::string> lines;
-  boost::split(lines, code, boost::is_any_of("\n"));
+  boost::split(lines, block.code, boost::is_any_of("\n"));
   for (const auto& line : lines)
   {
     convertedCode << convertInputSyntax(convertOutputSyntax(line)) << "\n";
@@ -105,7 +108,7 @@ std::string PythonInterfaceParser::convertStandardCodeBlock(const std::string& c
 }
 
 
-void PythonInterfaceParser::extractSpecialBlocks(const std::string& code) const
+PythonCode PythonInterfaceParser::extractSpecialBlocks(const std::string& code) const
 {
   //logCritical("Code: {}", code);
   static boost::regex matlabBlock("(.*)\\/\\*matlab(.*)matlab\\*\\/(.*)");
@@ -141,5 +144,18 @@ void PythonInterfaceParser::extractSpecialBlocks(const std::string& code) const
     //logCritical("Next search string: {}", std::string(start, end));
 
   }
+  return {};
+}
 
+PythonCodeBlock PythonInterfaceParser::concatenateNormalBlocks(const PythonCode& codeList) const
+{
+  std::ostringstream ostr;
+  for (const auto& block : codeList)
+  {
+    if (!block.isMatlab)
+    {
+      ostr << block.code;
+    }
+  }
+  return {ostr.str(), false };
 }
