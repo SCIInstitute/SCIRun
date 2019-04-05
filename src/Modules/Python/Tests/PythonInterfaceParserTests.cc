@@ -83,6 +83,74 @@ TEST(PythonInterfaceParserTests, CanExtractSingleMatlabBlock)
   ASSERT_EQ(1, blocks.size());
   EXPECT_EQ("a = 1", blocks.begin()->code);
   EXPECT_TRUE(blocks.begin()->isMatlab);
+}
 
-  FAIL() << "todo";
+TEST(PythonInterfaceParserTests, CanExtractMultipleMatlabBlocks)
+{
+  auto parser = makeParser();
+
+  std::string code =
+    "/*matlab\n"
+    "a = 1\n"
+    "matlab*/\n"
+    "/*matlab\n"
+    "b = 2\n"
+    "matlab*/\n";
+  auto blocks = parser->extractSpecialBlocks(code);
+
+  std::cout << "printing out" << std::endl;
+  for (const auto& block : blocks)
+  {
+    std::cout << block.isMatlab << " : " << block.code << std::endl;
+  }
+
+  ASSERT_EQ(2, blocks.size());
+  auto blockIterator = blocks.begin();
+  EXPECT_EQ("a = 1", blockIterator->code);
+  EXPECT_TRUE(blockIterator->isMatlab);
+  blockIterator++;
+  EXPECT_EQ("b = 2", blockIterator->code);
+  EXPECT_TRUE(blockIterator->isMatlab);
+}
+
+TEST(PythonInterfaceParserTests, CanExtractMultipleMatlabBlocksBetweenNormalBlocks)
+{
+  auto parser = makeParser();
+
+  std::string code =
+    "s = str1\n"
+    "print(s)\n"
+    "/*matlab\n"
+    "a = 1\n"
+    "matlab*/\n"
+    "s = s + '.'\n"
+    "/*matlab\n"
+    "b = 2\n"
+    "matlab*/\n"
+    "print(b)\n";
+
+  auto blocks = parser->extractSpecialBlocks(code);
+
+  std::cout << "printing out" << std::endl;
+  for (const auto& block : blocks)
+  {
+    std::cout << block.isMatlab << " : " << block.code << std::endl;
+  }
+
+  ASSERT_EQ(5, blocks.size());
+  auto blockIterator = blocks.begin();
+  EXPECT_EQ("s = str1\nprint(s)", blockIterator->code);
+  EXPECT_FALSE(blockIterator->isMatlab);
+  blockIterator++;
+  EXPECT_EQ("a = 1", blockIterator->code);
+  EXPECT_TRUE(blockIterator->isMatlab);
+  blockIterator++;
+  EXPECT_EQ("s = s + '.'", blockIterator->code);
+  EXPECT_FALSE(blockIterator->isMatlab);
+  blockIterator++;
+  EXPECT_EQ("b = 2", blockIterator->code);
+  EXPECT_TRUE(blockIterator->isMatlab);
+  blockIterator++;
+  EXPECT_EQ("print(b)", blockIterator->code);
+  EXPECT_FALSE(blockIterator->isMatlab);
 }

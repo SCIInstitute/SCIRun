@@ -107,44 +107,46 @@ std::string PythonInterfaceParser::convertStandardCodeBlock(const PythonCodeBloc
   return convertedCode.str();
 }
 
-
 PythonCode PythonInterfaceParser::extractSpecialBlocks(const std::string& code) const
 {
-  //logCritical("Code: {}", code);
-  static boost::regex matlabBlock("(.*)\\/\\*matlab(.*)matlab\\*\\/(.*)");
+  PythonCode blocks;
+  static boost::regex matlabBlock("(.*)\\/\\*matlab\\n(.*)\\nmatlab\\*\\/(.*)");
 
-  std::string::const_iterator start, end;
-  start = code.begin();
-  end = code.end();
-  boost::match_results<std::string::const_iterator> what;
-  boost::match_flag_type flags = boost::match_default;
-  while (regex_search(start, end, what, matlabBlock, flags))
+  boost::smatch what;
+  if (regex_match(code, what, matlabBlock))
   {
-    // what[0] contains the whole string
-    // what[5] contains the class name.
-    // what[6] contains the template specialisation if any.
-    // add class name and position to map:
-    // m[std::string(what[5].first, what[5].second)
-    //       + std::string(what[6].first, what[6].second)]
-    //    = what[5].first - file.begin();
     auto firstPart = std::string(what[1]);
+    boost::trim(firstPart);
     auto matlabPart = std::string(what[2]);
+    boost::trim(matlabPart);
     auto secondPart = std::string(what[3]);
-    // update search position:
-    start = what[2].second;
-
-    // update flags:
-    flags |= boost::match_prev_avail;
-    flags |= boost::match_not_bob;
+    boost::trim(secondPart);
 
     //logCritical("First: {}", firstPart);
+    parsePart(blocks, firstPart);
+
     //logCritical("Matlab: {}", matlabPart);
+    if (!matlabPart.empty())
+      blocks.push_back({matlabPart, true});
+
     //logCritical("Second: {}", secondPart);
-
-    //logCritical("Next search string: {}", std::string(start, end));
-
+    parsePart(blocks, secondPart);
   }
-  return {};
+  return blocks;
+}
+
+void PythonInterfaceParser::parsePart(PythonCode& blocks, const std::string& part) const
+{
+  if (!part.empty())
+  {
+    if (part.find("/*matlab") != std::string::npos)
+    {
+      auto rec = extractSpecialBlocks(part);
+      blocks.insert(blocks.begin(), rec.begin(), rec.end());
+    }
+    else
+      blocks.push_back({part, false});
+  }
 }
 
 PythonCodeBlock PythonInterfaceParser::concatenateNormalBlocks(const PythonCode& codeList) const

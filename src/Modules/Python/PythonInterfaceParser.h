@@ -62,6 +62,7 @@ namespace SCIRun
           const std::string moduleId_;
           const Dataflow::Networks::ModuleStateHandle state_;
           std::vector<std::string> portIds_;
+          void parsePart(PythonCode& blocks, const std::string& part) const;
         };
       }
     }
