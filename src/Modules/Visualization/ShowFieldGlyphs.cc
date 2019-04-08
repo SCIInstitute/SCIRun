@@ -26,6 +26,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Visualization/ShowFieldGlyphsPortHandler.h>
 #include <Modules/Visualization/ShowFieldGlyphs.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -77,7 +78,7 @@ namespace SCIRun {
           Interruptible* interruptible,
           ModuleStateHandle state,
           const GeometryIDGenerator& idgen,
-          Module* module);
+          const Module* module);
         GeometryHandle buildGeometryObject(
           FieldHandle field,
           boost::optional<ColorMapHandle> colorMap,
@@ -87,12 +88,13 @@ namespace SCIRun {
           Module* module_);
 
         void renderVectors(
-          FieldHandle pfield,
-          boost::optional<FieldHandle> sfield,
-          boost::optional<FieldHandle> tfield,
-          boost::optional<ColorMapHandle> pcolorMap,
-          boost::optional<ColorMapHandle> scolorMap,
-          boost::optional<ColorMapHandle> tcolorMap,
+          ShowFieldGlyphsPortHandler& portHandler,
+                           //FieldHandle pfield,
+                           //boost::optional<FieldHandle> sfield,
+                           //boost::optional<FieldHandle> tfield,
+                           //boost::optional<ColorMapHandle> pcolorMap,
+                           //boost::optional<ColorMapHandle> scolorMap,
+                           //boost::optional<ColorMapHandle> tcolorMap,
           ModuleStateHandle state,
           Interruptible* interruptible,
           const RenderState& renState,
@@ -295,26 +297,18 @@ void ShowFieldGlyphs::setStateDefaults()
 
 void ShowFieldGlyphs::execute()
 {
-  std::cout << "getting primary input\n";
   auto pfield = getRequiredInput(PrimaryData);
   auto pcolorMap = getOptionalInput(PrimaryColorMap);
-  std::cout << "getting secondary input\n";
   boost::optional<boost::shared_ptr<SCIRun::Field>> sfield = getOptionalInput(SecondaryData);
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> scolorMap = getOptionalInput(SecondaryColorMap);
-  std::cout << "getting tertiary input\n";
   boost::optional<boost::shared_ptr<SCIRun::Field>> tfield = getOptionalInput(TertiaryData);
   boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> tcolorMap = getOptionalInput(TertiaryColorMap);
-  std::cout << "got tertiary input\n";
 
   if (needToExecute())
   {
-    std::cout << "configuring inputs\n";
     configureInputs(pfield, sfield, tfield, pcolorMap, scolorMap, tcolorMap);
-    std::cout << "building geom\n";
     auto geom = builder_->buildGeometryObject(pfield, sfield, tfield, pcolorMap, scolorMap, tcolorMap, this, get_state(), *this, this);
-    std::cout << "sending output\n";
     sendOutput(SceneGraph, geom);
-    std::cout << "output sent\n";
   }
 }
 
@@ -326,9 +320,7 @@ void ShowFieldGlyphs::configureInputs(
   boost::optional<ColorMapHandle> scolormap,
   boost::optional<ColorMapHandle> tcolormap)
 {
-  std::cout << "getting pinfo\n";
   FieldInformation pfinfo(pfield);
-  std::cout << "got pinfo\n";
 
   if (!pfinfo.is_svt())
   {
@@ -337,24 +329,20 @@ void ShowFieldGlyphs::configureInputs(
 
   if (sfield)
   {
-    std::cout << "sfield\n";
     FieldInformation sfinfo(*sfield);
     if (!sfinfo.is_svt())
       {
         THROW_ALGORITHM_INPUT_ERROR("No Scalar, Vector, or Tensor data found in the secondary data field.");
       }
-    //    *sfield = pfield;
   }
 
   if (tfield)
   {
-    std::cout << "no tfield\n";
     FieldInformation tfinfo(*tfield);
     if (!tfinfo.is_svt())
       {
         THROW_ALGORITHM_INPUT_ERROR("No Scalar, Vector, or Tensor data found in the tertiary data field.");
       }
-    //    *tfield = pfield;
   }
 }
 
@@ -362,17 +350,14 @@ RenderState::InputPort GlyphBuilder::getInput(std::string&& port_name)
 {
   if(port_name == "Primary")
     {
-      std::cout << "pri\n";
       return RenderState::PRIMARY_PORT;
     }
   else if(port_name == "Secondary")
     {
-      std::cout << "sec\n";
       return RenderState::SECONDARY_PORT;
     }
-  else if(port_name == "Tertiary")
+  else
     {
-      std::cout << "ter\n";
       return RenderState::TERTIARY_PORT;
     }
 }
@@ -387,16 +372,14 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
   Interruptible* interruptible,
   ModuleStateHandle state,
   const GeometryIDGenerator& idgen,
-  Module* module)
+  const Module* module)
 {
   // Function for reporting progress.
   //SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc progressFunc = getUpdaterFunc();
 
-  std::cout << "in build geom obj\n";
   bool showVectors = state->getValue(ShowFieldGlyphs::ShowVectors).toBool();
   bool showScalars = state->getValue(ShowFieldGlyphs::ShowScalars).toBool();
   bool showTensors = state->getValue(ShowFieldGlyphs::ShowTensors).toBool();
-  std::cout << "got tab bools\n";
 
   std::string idname = "EntireGlyphField";
   if(!state->getValue(ShowFieldGlyphs::FieldName).toString().empty()){
@@ -406,14 +389,18 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
   auto geom(boost::make_shared<GeometryObjectSpire>(idgen, idname, true));
 
   FieldInformation finfo(pfield);
+  boost::optional<FieldInformation> sfinfo(sfield.get());
+  boost::optional<FieldInformation> tfinfo(tfield.get());
 
   if (finfo.is_vector())
   {
     state->setValue(ShowFieldGlyphs::ShowVectorTab, true);
     if (showVectors)
     {
-      std::cout << "render vec\n";
-      renderVectors(pfield, sfield, tfield, pcolorMap, scolorMap, tcolorMap, state, interruptible, getVectorsRenderState(state, sfield, tfield, pcolorMap, scolorMap, tcolorMap), geom, geom->uniqueID(), module);
+      RenderState renState = getVectorsRenderState(state, sfield, tfield, pcolorMap, scolorMap, tcolorMap);
+      ShowFieldGlyphsPortHandler portHandler(module, state, renState, pfield, sfield, tfield, finfo, sfinfo,
+                                             tfinfo, pcolorMap, scolorMap, tcolorMap);
+      renderVectors(portHandler, state, interruptible, renState, geom, geom->uniqueID(), module);
     }
   }
   else
@@ -451,12 +438,7 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
 }
 
 void GlyphBuilder::renderVectors(
-  FieldHandle pfield,
-  boost::optional<FieldHandle> sfield,
-  boost::optional<FieldHandle> tfield,
-  boost::optional<ColorMapHandle> pcolorMap,
-  boost::optional<ColorMapHandle> scolorMap,
-  boost::optional<ColorMapHandle> tcolorMap,
+  ShowFieldGlyphsPortHandler& portHandler,
   ModuleStateHandle state,
   Interruptible* interruptible,
   const RenderState& renState,
@@ -464,65 +446,9 @@ void GlyphBuilder::renderVectors(
   const std::string& id,
   const Module* module_)
 {
-  FieldInformation pfinfo(pfield);
-
-  VField* fld = pfield->vfield();
-  VMesh*  mesh = pfield->vmesh();
-  VField *sfld, *tfld;
-  boost::optional<FieldInformation> sf_ptr, tf_ptr;
-  std::cout << "before field get/n";
-  if(sfield)
-    {
-      sfld = sfield.get()->vfield();
-      sf_ptr = FieldInformation(sfield.get());
-    }
-  else if(tfield)
-    {
-      tfld = tfield.get()->vfield();
-      tf_ptr = FieldInformation(tfield.get());
-    }
-  std::cout << "after field get/n";
-
-  boost::optional<ColorMapHandle> colorMap;
-  ColorScheme colorScheme;
-  colorScheme= getColoringType(renState, fld);
-  if(colorScheme == ColorScheme::COLOR_MAP)
-    {
-      switch(renState.mColorInput)
-        {
-        case RenderState::InputPort::PRIMARY_PORT:
-          if(pfield && pcolorMap)
-            colorMap = pcolorMap;
-          else
-            {
-              module_->error("Primary Color Map input is reqired.");
-              return;
-            }
-          break;
-        case RenderState::InputPort::SECONDARY_PORT:
-          if(sfield && scolorMap)
-            colorMap = scolorMap;
-          else
-            {
-              module_->error("Secondary Field and Color Map input is reqired.");
-              return;
-            }
-          break;
-        case RenderState::InputPort::TERTIARY_PORT:
-          if(tfield && tcolorMap)
-            colorMap = tcolorMap;
-          else
-            {
-              module_->error("Tertiary Field and Color Map input is reqired.");
-              return;
-            }
-          break;
-        }
-    }
-
-  ColorRGB node_color;
-
+  VMesh* mesh = portHandler.getMesh();
   mesh->synchronize(Mesh::EDGES_E);
+  FieldInformation pfinfo = portHandler.getPrimaryFieldInfo();
 
   bool useLines = renState.mGlyphType == RenderState::GlyphType::LINE_GLYPH || renState.mGlyphType == RenderState::GlyphType::NEEDLE_GLYPH;
 
@@ -538,50 +464,122 @@ void GlyphBuilder::renderVectors(
   double resolution = state->getValue(ShowFieldGlyphs::VectorsResolution).toInt();
   double arrowHeadRatio = state->getValue(ShowFieldGlyphs::ArrowHeadRatio).toDouble();
 
-  //bool useSecondaryGlyphValue = state->getValue(ShowFieldGlyphs::SecondaryGlyphValue).toBool();
-  //bool useTertiaryGlyphValue = state->getValue(ShowFieldGlyphs::TertiaryGlyphValue).toBool();
-
-  /**double secondaryScalar = 0.25, tertiaryScalar = 1.0;
-  if(useSecondaryGlyphValue)
-    secondaryScalar = state->getValue(ShowFieldGlyphs::SecondaryScale).toDouble();
-  if(useTertiaryGlyphValue)
-    tertiaryScalar = state->getValue(ShowFieldGlyphs::TertiaryScale).toDouble();
-  **/
-  if (scale < 0) scale = 1.0;
-  if (resolution < 3) resolution = 5;
-
-
-  GlyphGeom glyphs;
-  MeshTraits<VMesh>::MeshFacadeHandle pfacade(pfield->mesh()->getFacade());
-  boost::optional<MeshTraits<VMesh>::MeshFacadeHandle> sfacade, tfacade;
-  if(sfield)
-    sfacade = MeshTraits<VMesh>::MeshFacadeHandle(sfield.get()->mesh()->getFacade());
-  if(tfield)
-    tfacade = MeshTraits<VMesh>::MeshFacadeHandle(tfield.get()->mesh()->getFacade());
-
   bool normalizeGlyphs = state->getValue(ShowFieldGlyphs::NormalizeVectors).toBool();
   bool renderBidirectionaly = state->getValue(ShowFieldGlyphs::RenderBidirectionaly).toBool();
   bool renderGlphysBelowThreshold = state->getValue(ShowFieldGlyphs::RenderVectorsBelowThreshold).toBool();
   float threshold = state->getValue(ShowFieldGlyphs::VectorsThreshold).toDouble();
 
-  //sets field location for constant field data 1: node centered 2: edge centered 3: face centered 4: cell centered
+  // Make sure scale and resolution are not below minimum values
+  if (scale < 0) scale = 1.0;
+  if (resolution < 3) resolution = 5;
+  if(arrowHeadRatio < 0) arrowHeadRatio = 0;
+  if(arrowHeadRatio > 1) arrowHeadRatio = 1;
+
+ //sets field location for constant field data 1: node centered 2: edge centered 3: face centered 4: cell centered
   int fieldLocation = pfinfo.is_point()*1 + pfinfo.is_line()*2 + pfinfo.is_surface()*3 + pfinfo.is_volume()*4;
   //sets field location to 0 for linear data regardless of location
   fieldLocation = fieldLocation * !pfinfo.is_linear();
 
-  std::cout << "before switch\n";
+  std::vector<int> indices;
+  std::vector<Point> points;
+  GlyphGeom glyphs;
   switch(fieldLocation)
   {
+  case 0: //linear data falls through to node data handling routine
+  case 1: //node centered constant data
+    for (const auto& node : portHandler.getPrimaryFacade()->nodes())
+      {
+        indices.push_back(node.index());
+        Point p;
+        mesh->get_center(p, node.index());
+        points.push_back(p);
+      }
+    break;
+  case 2: //edge centered constant data
+    for (const auto& edge : portHandler.getPrimaryFacade()->edges())
+      {
+        indices.push_back(edge.index());
+        Point p;
+        mesh->get_center(p, edge.index());
+        points.push_back(p);
+      }
+    break;
+  case 3: //face centered constant data
+    for (const auto& face : portHandler.getPrimaryFacade()->faces())
+      {
+        indices.push_back(face.index());
+        Point p;
+        mesh->get_center(p, face.index());
+        points.push_back(p);
+      }
+    break;
+  case 4: //cell centered constant data
+    for (const auto& cell : portHandler.getPrimaryFacade()->cells())
+      {
+        indices.push_back(cell.index());
+        Point p;
+        mesh->get_center(p, cell.index());
+        points.push_back(p);
+      }
+    break;
+  }
+  for(int i = 0; i < indices.size(); i++)
+    {
+      interruptible->checkForInterruption();
+      Vector v, pinputVector; Point p2, p3; double radius, height;
 
-    case 0: //linear data falls through to node data handling routine
-    case 1: //node centered constant data
-      for (const auto& node : pfacade->nodes())
+      //fld->get_value(pinputVector, node.index());
+      pinputVector = portHandler.getPrimaryVector(indices[i]);
+      //mesh->get_center(p1, indices[i]);
+
+      // Normalize/Scale
+      if(normalizeGlyphs)
+        v = pinputVector.normal() * scale;
+      else
+        v = pinputVector * scale;
+
+      // Calculate points
+      p2 = points[i] + v;
+      p3 = points[i] - v;
+
+      // Get radius
+      try
+        {
+          radius = portHandler.getSecondaryVectorParameter(indices[i]);
+        } catch(const std::invalid_argument& e)
+        {
+          module_->error(e.what());
+          return;
+        }
+      radius *= radiusWidthScale;
+
+      ColorRGB node_color;
+      try
+        {
+          node_color = portHandler.getNodeColor(indices[i]);
+        } catch(const std::invalid_argument& e)
+        {
+          module_->error(e.what());
+          return;
+        }
+
+      if(renderGlphysBelowThreshold || pinputVector.length() >= threshold)
+        {
+          addGlyph(glyphs, renState.mGlyphType, points[i], p2, radius, arrowHeadRatio, resolution, node_color, useLines);
+          if(renderBidirectionaly)
+            addGlyph(glyphs, renState.mGlyphType, points[i], p3, radius, arrowHeadRatio, resolution, node_color, useLines);
+        }
+    }
+
+  // Old loop for reference. TODO delete
+      /**  case 2: //edge centered constant data
+       for (const auto& edge : pfacade->edges())
       {
         interruptible->checkForInterruption();
         Vector v, pinputVector; Point p1, p2, p3; double radius, height;
 
-        fld->get_value(pinputVector, node.index());
-        mesh->get_center(p1, node.index());
+        fld->get_value(pinputVector, edge.index());
+        mesh->get_center(p1, edge.index());
 
         if(normalizeGlyphs)
           v = pinputVector.normal() * scale;
@@ -594,20 +592,20 @@ void GlyphBuilder::renderVectors(
         if(sfield)
           {
             if (sf_ptr->is_scalar())
-              sfld->get_value(sinputScalar, node.index());
+              sfld->get_value(sinputScalar, edge.index());
             else if (sf_ptr->is_vector())
-              sfld->get_value(sinputVector, node.index());
+              sfld->get_value(sinputVector, edge.index());
             else
-              sfld->get_value(sinputTensor, node.index());
+              sfld->get_value(sinputTensor, edge.index());
           }
         if(tfield)
           {
             if (tf_ptr->is_scalar())
-              tfld->get_value(tinputScalar, node.index());
+              tfld->get_value(tinputScalar, edge.index());
             else if (tf_ptr->is_vector())
-              tfld->get_value(tinputVector, node.index());
+              tfld->get_value(tinputVector, edge.index());
             else
-              tfld->get_value(tinputTensor, node.index());
+              tfld->get_value(tinputTensor, edge.index());
           }
 
         p2 = p1 + v;
@@ -751,7 +749,6 @@ void GlyphBuilder::renderVectors(
          }
         radius *= radiusWidthScale;
 
-        //std::cout << "before color map\n";
         if (colorScheme == ColorScheme::COLOR_UNIFORM)
         {
           node_color = renState.defaultColor;
@@ -775,157 +772,22 @@ void GlyphBuilder::renderVectors(
         }
       }
       break;
-
-    case 2: //edge centered constant data
-      if(sfacade)
-        const auto& sedge = sfacade.get()->edges();
-      if(tfacade)
-        const auto& tedge = tfacade.get()->edges();
-      for (const auto& pedge : pfacade->edges())
-      {
-        interruptible->checkForInterruption();
-        Vector v, inputVector; Point p1, p2, p3; double radius, height;
-
-        fld->get_value(inputVector, pedge.index());
-        mesh->get_center(p1,pedge.index());
-
-        if(normalizeGlyphs)
-          v = inputVector.normal() * scale;
-        else
-          v = inputVector * scale;
-
-        p2 = p1 + v;
-        p3 = p1 - v;
-
-        radius = v.length() * radiusWidthScale;// * secondaryScalar;
-
-        if (colorScheme == ColorScheme::COLOR_UNIFORM)
-        {
-          node_color = renState.defaultColor;
-        }
-        else if (colorScheme == ColorScheme::COLOR_MAP)
-        {
-          ColorMapHandle map = colorMap.get();
-          node_color = map->valueToColor(inputVector);
-        }
-        else if (colorScheme == ColorScheme::COLOR_IN_SITU)
-        {
-          Vector colorVector = inputVector.normal();
-          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
-        }
-
-        if(renderGlphysBelowThreshold || inputVector.length() >= threshold)
-        {
-          addGlyph(glyphs, renState.mGlyphType, p1, p2, radius, arrowHeadRatio, resolution, node_color, useLines);
-          if(renderBidirectionaly)
-            addGlyph(glyphs, renState.mGlyphType, p1, p3, radius, arrowHeadRatio, resolution, node_color, useLines);
-        }
-      }
-      break;
-
-    case 3: //face centered constant data
-      if(sfacade)
-        const auto& sface = sfacade.get()->faces();
-      if(tfacade)
-        const auto& tface = tfacade.get()->faces();
-      for (const auto& pface : pfacade->faces())
-      {
-        interruptible->checkForInterruption();
-        Vector v, inputVector; Point p1, p2, p3; double radius, height;
-
-        fld->get_value(inputVector, pface.index());
-        mesh->get_center(p1, pface.index());
-
-        if(normalizeGlyphs)
-          v = inputVector.normal() * scale;
-        else
-          v = inputVector * scale;
-
-        p2 = p1 + v;
-        p3 = p1 - v;
-
-        radius = v.length() * radiusWidthScale;// * secondaryScalar;
-
-        if (colorScheme == ColorScheme::COLOR_UNIFORM)
-        {
-          node_color = renState.defaultColor;
-        }
-        else if (colorScheme == ColorScheme::COLOR_MAP)
-        {
-          ColorMapHandle map = colorMap.get();
-          node_color = map->valueToColor(inputVector);
-        }
-        else if (colorScheme == ColorScheme::COLOR_IN_SITU)
-        {
-          Vector colorVector = inputVector.normal();
-          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
-        }
-
-        if(renderGlphysBelowThreshold || inputVector.length() >= threshold)
-        {
-          addGlyph(glyphs, renState.mGlyphType, p1, p2, radius, arrowHeadRatio, resolution, node_color, useLines);
-          if(renderBidirectionaly)
-            addGlyph(glyphs, renState.mGlyphType, p1, p3, radius, arrowHeadRatio, resolution, node_color, useLines);
-        }
-      }
-      break;
-
-    case 4: //cell centered constant data
-      if(sfacade)
-        const auto& scell = sfacade.get()->cells();
-      if(tfacade)
-        const auto& tcell = tfacade.get()->cells();
-      for (const auto& pcell : pfacade->cells())
-      {
-        interruptible->checkForInterruption();
-        Vector v, inputVector; Point p1, p2, p3; double radius, height;
-
-        fld->get_value(inputVector, pcell.index());
-        mesh->get_center(p1,pcell.index());
-
-        if(normalizeGlyphs)
-          v = inputVector.normal() * scale;
-        else
-          v = inputVector * scale;
-
-        p2 = p1 + v;
-        p3 = p1 - v;
-
-        radius = v.length() * radiusWidthScale;// * secondaryScalar;
-
-        if (colorScheme == ColorScheme::COLOR_UNIFORM)
-        {
-          node_color = renState.defaultColor;
-        }
-        else if (colorScheme == ColorScheme::COLOR_MAP)
-        {
-          ColorMapHandle map = colorMap.get();
-          node_color = map->valueToColor(inputVector);
-        }
-        else if (colorScheme == ColorScheme::COLOR_IN_SITU)
-        {
-          Vector colorVector = inputVector.normal();
-          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
-        }
-
-        if(renderGlphysBelowThreshold || inputVector.length() >= threshold)
-        {
-          addGlyph(glyphs, renState.mGlyphType, p1, p2, radius, arrowHeadRatio, resolution, node_color, useLines);
-          if(renderBidirectionaly)
-            addGlyph(glyphs, renState.mGlyphType, p1, p3, radius, arrowHeadRatio, resolution, node_color, useLines);
-        }
-      }
-      break;
-  }
-
+**/
 
   std::stringstream ss;
-  ss << renState.mGlyphType << resolution << scale << static_cast<int>(colorScheme);
+  try
+    {
+      ss << renState.mGlyphType << resolution << scale << static_cast<int>(portHandler.getColorScheme());
+    } catch(const std::invalid_argument& e)
+    {
+      module_->error(e.what());
+      return;
+    }
 
   std::string uniqueNodeID = id + "vector_glyphs" + ss.str();
 
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENT_EDGES),
-                     state->getValue(ShowFieldGlyphs::VectorsUniformTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
+                     state->getValue(ShowFieldGlyphs::VectorsUniformTransparencyValue).toDouble(), portHandler.getColorScheme(), renState, primIn, mesh->get_bounding_box());
 }
 
 void GlyphBuilder::renderScalars(
@@ -1580,7 +1442,6 @@ RenderState GlyphBuilder::getVectorsRenderState(
   renState.set(RenderState::IS_ON, state->getValue(ShowFieldGlyphs::ShowVectors).toBool());
 
   // Transparency
-  std::cout << "vec_trans " << state->getValue(ShowFieldGlyphs::VectorsTransparency).toInt() << std::endl;
   renState.set(RenderState::USE_TRANSPARENT_EDGES, state->getValue(ShowFieldGlyphs::VectorsTransparency).toInt() == 1);
 
   std::string g_type = state->getValue(ShowFieldGlyphs::VectorsDisplayType).toString();
