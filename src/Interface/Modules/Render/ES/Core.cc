@@ -64,6 +64,52 @@ ESCore::~ESCore()
 {
 }
 
+std::string ESCore::toString(std::string prefix) const
+{
+  std::string output = prefix + "ES_CORE:\n";
+  prefix += "  ";
+
+  output += prefix + "ComponentContainers: " + std::to_string(mComponents.size()) + "\n";
+  for(auto& comp : mComponents)
+    if(comp.second->getNumComponents() > 0)
+    {
+      output += prefix + std::to_string(comp.first)
+        + "  Components: " + std::to_string(comp.second->getNumComponents())
+        + "  Name: \"" +  mComponentIDNameMap.at(comp.first);
+      output += comp.second->toString(prefix + "  ");
+    }
+  output += "\n";
+
+  output += prefix + "KernelSystems: " + std::to_string(mKernelSystems.size()) + "\n";
+  for(auto& name: mKernelSystems)
+  {
+    output += prefix + "  Name: " + name + "\n";
+  }
+  output+= "\n";
+
+  output += prefix + "UserSystems: " + std::to_string(mUserSystems.size()) + "\n";
+  for(auto& name: mUserSystems)
+  {
+    output += prefix + "  Name: " + name + "\n";
+  }
+  output += "\n";
+
+  output += prefix + "GarbageCollectorSystems: " + std::to_string(mGarbageCollectorSystems.size()) + "\n";
+  for(auto& name: mGarbageCollectorSystems)
+  {
+    output+= prefix + "  Name: " + name + "\n";
+  }
+  output += "\n";
+
+  auto systems = mSystems.get();
+  //output += prefix + "systems: " + std::to_string(mKernelSystems.size()) + "\n";
+  output += systems->toString(prefix) + "\n";
+
+  output += prefix + "Current Time: " + std::to_string(static_cast<uint64_t>(mCurrentTime * 1000.0)) + "\n";
+
+  return output;
+}
+
 void ESCore::execute(double currentTime, double constantFrameTime)
 {
   ++mCoreSequence;
