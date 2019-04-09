@@ -43,7 +43,7 @@ MacroEditor::MacroEditor(QWidget* parent /* = 0 */) : QDockWidget(parent),
   scriptPlainTextEdit_(new CodeEditor(this))
 {
   setupUi(this);
-  gridLayout_2->addWidget(scriptPlainTextEdit_, 1, 1);
+  gridLayout_4->addWidget(scriptPlainTextEdit_, 0, 1);
   connect(macroListWidget_, SIGNAL(itemSelectionChanged()), this, SLOT(updateScriptEditor()));
   connect(scriptPlainTextEdit_, SIGNAL(textChanged()), this, SLOT(updateScripts()));
   connect(addPushButton_, SIGNAL(clicked()), this, SLOT(addMacro()));
