@@ -76,6 +76,7 @@ private Q_SLOTS:
   void updateScripts();
   void addMacro();
   void removeMacro();
+  void renameMacro();
   void assignToButton();
   void runSelectedMacro();
 

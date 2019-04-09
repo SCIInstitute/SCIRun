@@ -48,6 +48,7 @@ MacroEditor::MacroEditor(QWidget* parent /* = 0 */) : QDockWidget(parent),
   connect(scriptPlainTextEdit_, SIGNAL(textChanged()), this, SLOT(updateScripts()));
   connect(addPushButton_, SIGNAL(clicked()), this, SLOT(addMacro()));
   connect(removePushButton_, SIGNAL(clicked()), this, SLOT(removeMacro()));
+  connect(renamePushButton_, SIGNAL(clicked()), this, SLOT(renameMacro()));
   connect(runNowPushButton_, SIGNAL(clicked()), this, SLOT(runSelectedMacro()));
 
   auto assignMenu = new QMenu(this);
@@ -171,6 +172,23 @@ void MacroEditor::removeMacro()
     delete item;
     macroListWidget_->blockSignals(false);
     updateScriptEditor();
+  }
+}
+
+void MacroEditor::renameMacro()
+{
+  bool ok;
+  auto name = QInputDialog::getText(this, "Rename Macro", "New macro name:", QLineEdit::Normal, "", &ok);
+  if (ok && !name.isEmpty())
+  {
+    auto row = macroListWidget_->currentRow();
+    for (auto& item : macroListWidget_->selectedItems())
+    {
+      item->setText(name);
+      macros_[row][MacroListItem::Name] = name;
+      auto index = macros_[row][MacroListItem::ButtonNumber].toInt();
+      Q_EMIT macroButtonChanged(index, name);
+    }
   }
 }
 
