@@ -81,9 +81,9 @@ private Q_SLOTS:
   void runSelectedMacro();
 
 private:
-  void setupAssignToAction(QAction* action, int i);
   CodeEditor* scriptPlainTextEdit_;
   MacroNameValueList macros_;
+  std::vector<QPushButton*> buttons_;
 };
 
 }

@@ -51,27 +51,24 @@ MacroEditor::MacroEditor(QWidget* parent /* = 0 */) : QDockWidget(parent),
   connect(renamePushButton_, SIGNAL(clicked()), this, SLOT(renameMacro()));
   connect(runNowPushButton_, SIGNAL(clicked()), this, SLOT(runSelectedMacro()));
 
-  auto assignMenu = new QMenu(this);
+  buttons_ = {pushButton1_, pushButton2_, pushButton3_, pushButton4_, pushButton5_ };
   for (int i = 1; i <= 5; ++i)
   {
-    setupAssignToAction(assignMenu->addAction(QString::number(i)), i);
-  }
+    auto button = buttons_[i-1];
+    button->setProperty(Index, i);
+    button->setStyleSheet("QPushButton { background-color: darkGray }");
 
-  assignToButtonPushButton_->setMenu(assignMenu);
+    connect(button, SIGNAL(clicked()), this, SLOT(assignToButton()));
+  }
 }
 
 const char* MacroEditor::Index = "macroIndex";
 static int macroIndexInt = Qt::UserRole;
 
-void MacroEditor::setupAssignToAction(QAction* action, int i)
-{
-  action->setProperty(Index, i);
-  connect(action, SIGNAL(triggered()), this, SLOT(assignToButton()));
-}
-
 void MacroEditor::assignToButton()
 {
-  auto index = sender()->property(Index).toInt();
+  auto button = qobject_cast<QPushButton*>(sender());
+  auto index = button->property(Index).toInt();
   auto selected = macroListWidget_->selectedItems();
   auto row = macroListWidget_->currentRow();
   if (!selected.isEmpty())
@@ -96,6 +93,11 @@ void MacroEditor::assignToButton()
     item->setData(macroIndexInt, index);
     macros_[row][MacroListItem::ButtonNumber] = QString::number(index);
     Q_EMIT macroButtonChanged(index, macros_[row][MacroListItem::Name]);
+    for (auto& b : buttons_)
+    {
+      b->setStyleSheet("QPushButton { background-color: darkGray }");
+    }
+    button->setStyleSheet("QPushButton { background-color: red }");
   }
 }
 
@@ -201,6 +203,16 @@ void MacroEditor::updateScriptEditor()
     auto key = item->text();
     auto scr = macros_[row][MacroListItem::Script];
     scriptPlainTextEdit_->setPlainText(!scr.isEmpty() ? scr : defaultScript);
+
+    auto buttonAssigned = macros_[row][MacroListItem::ButtonNumber].toInt();
+    for (auto& button : buttons_)
+    {
+      button->setStyleSheet("QPushButton { background-color: darkGray }");
+    }
+    if (buttonAssigned >= MIN_MACRO_INDEX && buttonAssigned <= MAX_MACRO_INDEX)
+    {
+      buttons_[buttonAssigned - 1]->setStyleSheet("QPushButton { background-color: red }");
+    }
   }
   else
   {
