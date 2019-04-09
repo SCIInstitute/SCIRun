@@ -71,19 +71,10 @@ namespace
 }
 
 //------------------------------------------------------------------------------
-ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent),
-  mConfigurationDock(nullptr),
-  shown_(false),
-  shiftdown_(false),
-  selected_(false),
-  clippingPlaneIndex_(0),
-  screenshotTaker_(nullptr),
-  saveScreenshotOnNewGeometry_(false),
+ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state, QWidget* parent) :
+  ModuleDialogGeneric(state, parent),
   gid_(new DialogIdGenerator(name))
 {
-  counter_ = 1;
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   setFocusPolicy(Qt::StrongFocus);

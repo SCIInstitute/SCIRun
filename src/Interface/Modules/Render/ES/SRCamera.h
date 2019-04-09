@@ -105,29 +105,28 @@ private:
   void buildTransform();
   glm::vec2 calculateScreenSpaceCoords(const glm::ivec2& mousePos);
 
-  glm::mat4             mPIV;         ///< Projection * Inverse View transformation.
-  glm::mat4             mIV;          ///< Inverse view transformation.
-  glm::mat4             mV;           ///< View matrix.
-  glm::mat4             mP;           ///< Projection transformation.
-  size_t                mTrafoSeq;    ///< Current sequence of the view transform.
-                                      ///< Helps us determine when a camera is 'dirty'.
+  glm::mat4             mPIV          {};                   ///< Projection * Inverse View transformation.
+  glm::mat4             mIV           {};                   ///< Inverse view transformation.
+  glm::mat4             mV            {};                   ///< View matrix.
+  glm::mat4             mP            {};                   ///< Projection transformation.
+  size_t                mTrafoSeq     {0};                  ///< Current sequence of the view transform.
+                                                            ///< Helps us determine when a camera is 'dirty'.
 
-  bool                  mPerspective; ///< True if we are using a perspective
-                                      ///< transformation.
-  int                   mInvertVal;   ///< Invert multiplier
-  float                 mFOV;         ///< Field of view.
-  float                 mZNear;       ///< Position of near plane along view vec.
-  float                 mZFar;        ///< Position of far plane along view vec.
+  bool                  mPerspective  {true};               ///< True if we are using a perspective
+  bool                  lockRotation_ {false};
+  bool                  lockZoom_     {false};
+  bool                  lockPanning_  {false};
 
-  float                 mRadius;
+  int                   mInvertVal    {-1};                 ///< Invert multiplier
+  float                 mFOV          {getDefaultFOVY()};   ///< Field of view.
+  float                 mZNear        {getDefaultZNear()};  ///< Position of near plane along view vec.
+  float                 mZFar         {getDefaultZFar()};   ///< Position of far plane along view vec.
+  float                 mRadius       {-1.0};
 
-  SRInterface&          mInterface;   ///< SRInterface.
+  SRInterface&          mInterface;                         ///< SRInterface.
 
-  std::shared_ptr<spire::ArcLookAt>  mArcLookAt;
+  std::shared_ptr<spire::ArcLookAt>   mArcLookAt {};
 
-  bool lockRotation_{false};
-  bool lockZoom_{false};
-  bool lockPanning_{false};
 };
 
 } // namespace Render

@@ -225,40 +225,39 @@ namespace SCIRun {
       void setFog(int factor, double value);
       void setFogColor(const glm::vec4 &color);
 
-      GLWidget*                             mGLWidget;            ///< GL widget containing context.
-      std::weak_ptr<Render::SRInterface>    mSpire;               ///< Instance of Spire.
-      QToolBar*                             mToolBar;             ///< Tool bar.
-      QToolBar*                             mViewBar;             ///< Tool bar for view options.
-      QComboBox*                            mDownViewBox;         ///< Combo box for Down axis options.
-      QComboBox*                            mUpVectorBox;         ///< Combo box for Up Vector options.
-      ViewSceneControlsDock*                mConfigurationDock;   ///< Dock holding configuration functions
+      GLWidget*                             mGLWidget                     {};         ///< GL widget containing context.
+      std::weak_ptr<Render::SRInterface>    mSpire                        {};         ///< Instance of Spire.
+      QToolBar*                             mToolBar                      {};         ///< Tool bar.
+      QToolBar*                             mViewBar                      {};         ///< Tool bar for view options.
+      QComboBox*                            mDownViewBox                  {};         ///< Combo box for Down axis options.
+      QComboBox*                            mUpVectorBox                  {};         ///< Combo box for Up Vector options.
+      ViewSceneControlsDock*                mConfigurationDock            {nullptr};  ///< Dock holding configuration functions
 
-      int counter_;
-      bool shown_;
-      bool hideViewBar_;
-      bool invertZoom_;
-      bool shiftdown_;
-      bool selected_;
-      int clippingPlaneIndex_;
-      QColor bgColor_;
-      QColor fogColor_;
-      ScaleBar scaleBar_;
-      std::vector<ClippingPlane> clippingPlanes_;
-      class Screenshot* screenshotTaker_;
-      bool saveScreenshotOnNewGeometry_;
-      bool pulledSavedVisibility_ {false};
-      QTimer resizeTimer_;
+      bool                                  shown_                        {false};
+      bool                                  hideViewBar_                  {};
+      bool                                  invertZoom_                   {};
+      bool                                  shiftdown_                    {false};
+      bool                                  selected_                     {false};
+      int                                   clippingPlaneIndex_           {0};
+      QColor                                bgColor_                      {};
+      QColor                                fogColor_                     {};
+      ScaleBar                              scaleBar_                     {};
+      std::vector<ClippingPlane>            clippingPlanes_               {};
+      class Screenshot*                     screenshotTaker_              {nullptr};
+      bool                                  saveScreenshotOnNewGeometry_  {false};
+      bool                                  pulledSavedVisibility_        {false};
+      QTimer                                resizeTimer_                  {};
 
       //geometries
-      Modules::Visualization::TextBuilder textBuilder_;
-      Graphics::Datatypes::GeometryHandle scaleBarGeom_;
-      std::vector<Graphics::Datatypes::GeometryHandle> clippingPlaneGeoms_;
-      QAction* lockRotation_;
-      QAction* lockPan_;
-      QAction* lockZoom_;
-      QPushButton* controlLock_;
-      QPushButton* autoViewButton_;
-      QPushButton* viewBarBtn_;
+      Modules::Visualization::TextBuilder               textBuilder_        {};
+      Graphics::Datatypes::GeometryHandle               scaleBarGeom_       {};
+      std::vector<Graphics::Datatypes::GeometryHandle>  clippingPlaneGeoms_ {};
+      QAction*                                          lockRotation_       {};
+      QAction*                                          lockPan_            {};
+      QAction*                                          lockZoom_           {};
+      QPushButton*                                      controlLock_        {};
+      QPushButton*                                      autoViewButton_     {};
+      QPushButton*                                      viewBarBtn_         {};
 
       friend class ViewSceneControlsDock;
 

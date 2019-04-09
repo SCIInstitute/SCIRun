@@ -37,21 +37,10 @@ namespace Render {
 
 //------------------------------------------------------------------------------
 SRCamera::SRCamera(SRInterface& iface) :
-    mTrafoSeq(0),
-    mPerspective(true),
-    mInvertVal(-1),
-    mFOV(getDefaultFOVY()),
-    mZNear(getDefaultZNear()),
-    mZFar(getDefaultZFar()),
-    mRadius(-1.0),
     mInterface(iface),
     mArcLookAt(new spire::ArcLookAt())
 {
   setAsPerspective();
-
-  glm::mat4 cam;
-  cam[3] = (glm::vec4(0.0f, 0.0f, 7.0f, 1.0f));
-  mRadius = -1.0;
 }
 
 //------------------------------------------------------------------------------

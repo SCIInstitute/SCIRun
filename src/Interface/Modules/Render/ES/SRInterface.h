@@ -282,19 +282,19 @@ namespace SCIRun {
             renderType(renType)
           {}
 
-          std::string                 passName;
-          std::list<ObjectTransforms> transforms;
+          std::string                     passName;
+          std::list<ObjectTransforms>     transforms;
           Graphics::Datatypes::RenderType renderType;
         };
 
-        std::string                     mName;
-        glm::mat4                       mObjectToWorld;
-        std::list<SRPass>               mPasses;
-        Core::Geometry::BBox            mBBox;          ///< Objects bounding box (calculated from VBO).
+        std::string                   mName;
+        glm::mat4                     mObjectToWorld;
+        std::list<SRPass>             mPasses;
+        Core::Geometry::BBox          mBBox;          ///< Objects bounding box (calculated from VBO).
 
-        boost::optional<std::string>    mColorMap;
+        boost::optional<std::string>  mColorMap;
 
-        int										          mPort;
+        int										        mPort;
       };
 
       // Sets up ESCore.
@@ -358,67 +358,62 @@ namespace SCIRun {
       // make sure clipping plane number matches
       void checkClippingPlanes(int n);
 
-      bool                              showOrientation_; ///< Whether the coordinate axes will render or not.
-      bool                              autoRotate_;      ///< Whether the scene will continue to rotate.
-      bool                              selectWidget_;    ///< Whether mouse click will select a widget.
-      bool                              widgetSelected_;  ///< Whether or not a widget is currently selected.
-      bool                              widgetExists_;    ///< Geometry contains a widget to find.
+      bool                              showOrientation_    {true};   ///< Whether the coordinate axes will render or not.
+      bool                              autoRotate_         {false};  ///< Whether the scene will continue to rotate.
+      bool                              selectWidget_       {false};  ///< Whether mouse click will select a widget.
+      bool                              widgetSelected_     {false};  ///< Whether or not a widget is currently selected.
+      bool                              widgetExists_       {false};  ///< Geometry contains a widget to find.
 
-      float                             orientSize;       ///  Size of coordinate axes
-      float                             orientPosX;       ///  X Position of coordinate axes
-      float                             orientPosY;       ///  Y Position of coordinate axes
+      float                             orientSize          {1.0};    ///  Size of coordinate axes
+      float                             orientPosX          {0.5};    ///  X Position of coordinate axes
+      float                             orientPosY          {0.5};    ///  Y Position of coordinate axes
 
-      uint64_t                          mSelectedID;
-      int                               mZoomSpeed;
-      MouseMode                         mMouseMode;       ///< Current mouse mode.
+      uint64_t                          mSelectedID         {0};
+      int                               mZoomSpeed          {65};
+      MouseMode                         mMouseMode          {MOUSE_OLDSCIRUN};  ///< Current mouse mode.
 
-      std::string                       mSelected;        ///< Current selection
-      glm::vec4                         mSelectedPos;     ///
-      gen::Transform                    mWidgetTransform;
+      std::string                       mSelected           {};       ///< Current selection
+      glm::vec4                         mSelectedPos        {};
+      gen::Transform                    mWidgetTransform    {};
 
-      size_t                            mScreenWidth;     ///< Screen width in pixels.
-      size_t                            mScreenHeight;    ///< Screen height in pixels.
+      size_t                            mScreenWidth        {640};    ///< Screen width in pixels.
+      size_t                            mScreenHeight       {480};    ///< Screen height in pixels.
 
-      GLuint                            mFontTexture;     /// 2D texture for fonts
+      GLuint                            mFontTexture        {};       /// 2D texture for fonts
 
-      int axesFailCount_;
-      std::shared_ptr<Gui::GLContext>   mContext;         ///< Context to use for rendering.
-      std::vector<SRObject>             mSRObjects;       ///< All SCIRun objects.
-      Core::Geometry::BBox              mSceneBBox;       ///< Scene's AABB. Recomputed per-frame.
+      int                               axesFailCount_      {0};
+      std::shared_ptr<Gui::GLContext>   mContext            {};       ///< Context to use for rendering.
+      std::vector<SRObject>             mSRObjects          {};       ///< All SCIRun objects.
+      Core::Geometry::BBox              mSceneBBox          {};       ///< Scene's AABB. Recomputed per-frame.
 
 
-      ESCore                            mCore;            ///< Entity system core.
+      ESCore                            mCore               {};       ///< Entity system core.
 
-      //Modules::Visualization::TextBuilder mTextBuilder;   /// text builder
-      std::string                       mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
-      std::string                       mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
-      std::string                       mArrowObjectName; ///< Object name for profile arrow.
+      std::vector<ClippingPlane>        clippingPlanes_     {};
+      int                               clippingPlaneIndex_ {0};
 
-      std::vector<ClippingPlane>        clippingPlanes_;
-      int                               clippingPlaneIndex_;
-
-      ren::ShaderVBOAttribs<5>          mArrowAttribs;    ///< Pre-applied shader / VBO attributes.
-      ren::CommonUniforms               mArrowUniforms;   ///< Common uniforms used in the arrow shader.
-      RenderState::TransparencySortType mRenderSortType;  ///< Which strategy will be used to render transparency
+      ren::ShaderVBOAttribs<5>          mArrowAttribs       {};       ///< Pre-applied shader / VBO attributes.
+      ren::CommonUniforms               mArrowUniforms      {};       ///< Common uniforms used in the arrow shader.
+      RenderState::TransparencySortType mRenderSortType     {};       ///< Which strategy will be used to render transparency
 
       //material settings
-      double                            mMatAmbient;
-      double                            mMatDiffuse;
-      double                            mMatSpecular;
-      double                            mMatShine;
+      double                            mMatAmbient         {0.2};
+      double                            mMatDiffuse         {1.0};
+      double                            mMatSpecular        {0.0};
+      double                            mMatShine           {2.0};
 
       //fog settings
-      double                            mFogIntensity;
-      double                            mFogStart;
-      double                            mFogEnd;
-      glm::vec4                         mFogColor;
+      double                            mFogIntensity       {0.0};
+      double                            mFogStart           {0.0};
+      double                            mFogEnd             {1.0};
+      glm::vec4                         mFogColor           {0.0, 0.0, 0.0, 0.0};
 
       //light settings
-      std::vector<glm::vec3>            mLightPosition;
-      std::vector<bool>                 mLightsOn;
+      std::vector<glm::vec3>            mLightPosition      {};
+      std::vector<bool>                 mLightsOn           {};
 
-      const int frameInitLimit_;
-      std::unique_ptr<SRCamera>         mCamera;          ///< Primary camera.
+      const int                         frameInitLimit_     {};
+      std::unique_ptr<SRCamera>         mCamera             {};       ///< Primary camera.
     };
 
   } // namespace Render

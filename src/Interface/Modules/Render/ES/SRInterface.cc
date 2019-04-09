@@ -73,40 +73,16 @@ using namespace std::placeholders;
 
 namespace fs = spire;
 
-namespace SCIRun {
-  namespace Render {
-
+namespace SCIRun
+{
+  namespace Render
+  {
     //------------------------------------------------------------------------------
-    SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context,
-      int frameInitLimit) :
-      orientSize(1.0),
-      orientPosX(0.5),
-      orientPosY(0.5),
-      mSelectedID(0),
-      mZoomSpeed(65),
-      mMouseMode(MOUSE_OLDSCIRUN),
-      mScreenWidth(640),
-      mScreenHeight(480),
-      axesFailCount_(0),
+    SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context, int frameInitLimit) :
       mContext(context),
-      clippingPlaneIndex_(0),
-      mMatAmbient(0.2),
-      mMatDiffuse(1.0),
-      mMatSpecular(0.0),
-      mMatShine(2.0),
-      mFogIntensity(0.0),
-      mFogStart(0.0),
-      mFogEnd(1.0),
-      mFogColor(glm::vec4(0.0)),
       frameInitLimit_(frameInitLimit),
       mCamera(new SRCamera(*this))  // Should come after all vars have been initialized.
     {
-      showOrientation_ = true;
-      autoRotate_ = false;
-      selectWidget_ = false;
-      widgetSelected_ = false;
-      widgetExists_ = false;
-      mRenderSortType = RenderState::TransparencySortType::UPDATE_SORT;
       // Construct ESCore. We will need to bootstrap the core. We should also
       // probably add utility static classes.
       setupCore();
@@ -119,6 +95,7 @@ namespace SCIRun {
       glDeleteTextures(1, &mFontTexture);
     }
 
+    //------------------------------------------------------------------------------
     std::string SRInterface::toString(std::string prefix) const
     {
       std::string output = prefix + "SR_INTERFACE:\n";
@@ -127,15 +104,16 @@ namespace SCIRun {
       output += prefix + "SRObjects: " + std::to_string(mSRObjects.size()) + "\n";
       for(auto& srobj : mSRObjects)
       {
-        output += prefix + "  Name: \"" + srobj.mName + "\"  Port: " + std::to_string(srobj.mPort)
+        output += prefix + "  Name: \"" + srobj.mName
+          + "\"  Port: " + std::to_string(srobj.mPort)
           + "  Passes: " + std::to_string(srobj.mPasses.size()) + "\n";
+
         for(auto& srpass: srobj.mPasses)
           output += prefix + "    PassName: \"" + srpass.passName + "\"  RenderType: " + "\n";
       }
-      output+="\n";
+      output += "\n";
 
       output += mCore.toString(prefix);
-      //output+="\n";
 
       return output;
     }
