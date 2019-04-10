@@ -56,7 +56,7 @@ MacroEditor::MacroEditor(QWidget* parent /* = 0 */) : QDockWidget(parent),
   {
     auto button = buttons_[i-1];
     button->setProperty(Index, i);
-    button->setStyleSheet("QPushButton { background-color: darkGray }");
+    dehighlightButton(button);
 
     connect(button, SIGNAL(clicked()), this, SLOT(assignToButton()));
   }
@@ -95,9 +95,9 @@ void MacroEditor::assignToButton()
     Q_EMIT macroButtonChanged(index, macros_[row][MacroListItem::Name]);
     for (auto& b : buttons_)
     {
-      b->setStyleSheet("QPushButton { background-color: darkGray }");
+      dehighlightButton(b);
     }
-    button->setStyleSheet("QPushButton { background-color: red }");
+    highlightButton(button);
   }
 }
 
@@ -207,17 +207,27 @@ void MacroEditor::updateScriptEditor()
     auto buttonAssigned = macros_[row][MacroListItem::ButtonNumber].toInt();
     for (auto& button : buttons_)
     {
-      button->setStyleSheet("QPushButton { background-color: darkGray }");
+      dehighlightButton(button);
     }
     if (buttonAssigned >= MIN_MACRO_INDEX && buttonAssigned <= MAX_MACRO_INDEX)
     {
-      buttons_[buttonAssigned - 1]->setStyleSheet("QPushButton { background-color: red }");
+      highlightButton(buttons_[buttonAssigned - 1]);
     }
   }
   else
   {
     scriptPlainTextEdit_->setPlainText("");
   }
+}
+
+void MacroEditor::highlightButton(QPushButton* button) const
+{
+  button->setStyleSheet("QPushButton { background-color: green }");
+}
+
+void MacroEditor::dehighlightButton(QPushButton* button) const
+{
+  button->setStyleSheet("QPushButton { background-color: darkGray }");
 }
 
 void MacroEditor::updateScripts()

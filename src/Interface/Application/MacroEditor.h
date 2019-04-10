@@ -81,6 +81,8 @@ private Q_SLOTS:
   void runSelectedMacro();
 
 private:
+  void highlightButton(QPushButton* button) const;
+  void dehighlightButton(QPushButton* button) const;
   CodeEditor* scriptPlainTextEdit_;
   MacroNameValueList macros_;
   std::vector<QPushButton*> buttons_;
