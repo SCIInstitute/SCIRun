@@ -282,19 +282,19 @@ namespace SCIRun {
             renderType(renType)
           {}
 
-          std::string                     passName;
-          std::list<ObjectTransforms>     transforms;
+          std::string passName;
+          std::list<ObjectTransforms> transforms;
           Graphics::Datatypes::RenderType renderType;
         };
 
-        std::string                   mName;
-        glm::mat4                     mObjectToWorld;
-        std::list<SRPass>             mPasses;
-        Core::Geometry::BBox          mBBox;          ///< Objects bounding box (calculated from VBO).
+        std::string mName;
+        glm::mat4 mObjectToWorld;
+        std::list<SRPass> mPasses;
+        Core::Geometry::BBox mBBox;          ///< Objects bounding box (calculated from VBO).
 
-        boost::optional<std::string>  mColorMap;
+        boost::optional<std::string> mColorMap;
 
-        int										        mPort;
+        int	mPort;
       };
 
       // Sets up ESCore.

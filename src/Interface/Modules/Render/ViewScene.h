@@ -47,9 +47,7 @@ class QStandardItem;
 class QGLWidget;
 
 namespace SCIRun {
-
   namespace Render { class SRInterface; }
-
   namespace Gui {
 
     class GLWidget;
@@ -263,7 +261,8 @@ namespace SCIRun {
 
       std::unique_ptr<Core::GeometryIDGenerator> gid_;
     };
-  }
-}
+
+  } // namespace Gui
+} // namespace SCIRun
 
 #endif

@@ -1787,7 +1787,7 @@ void ViewSceneDialog::screenshotClicked()
 void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 {
   //wait for a couple frames to go by.
-//  boost::this_thread::sleep(boost::posix_time::milliseconds(150));
+  //boost::this_thread::sleep(boost::posix_time::milliseconds(150));
   takeScreenshot();
   state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
 }

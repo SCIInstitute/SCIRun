@@ -73,10 +73,9 @@ using namespace std::placeholders;
 
 namespace fs = spire;
 
-namespace SCIRun
-{
-  namespace Render
-  {
+namespace SCIRun {
+  namespace Render {
+
     //------------------------------------------------------------------------------
     SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context, int frameInitLimit) :
       mContext(context),
@@ -151,7 +150,6 @@ namespace SCIRun
         StaticSRInterface iface(this);
         mCore.addStaticComponent(iface);
       }
-
     }
 
     void SRInterface::setupLights()
@@ -250,8 +248,6 @@ namespace SCIRun
       else
       {
         mCamera->mouseMoveEvent(pos, btn);
-        if (mSceneBBox.valid())
-          mCamera->setClippingPlanes(mSceneBBox);
         updateCamera();
       }
     }
@@ -260,8 +256,6 @@ namespace SCIRun
     void SRInterface::inputMouseWheel(int32_t delta)
     {
       mCamera->mouseWheelEvent(delta, mZoomSpeed);
-      if (mSceneBBox.valid())
-        mCamera->setClippingPlanes(mSceneBBox);
       updateCamera();
     }
 
@@ -532,8 +526,7 @@ namespace SCIRun
     //------------------------------------------------------------------------------
     void SRInterface::doAutoView()
     {
-      if (mSceneBBox.valid())
-        mCamera->doAutoView(mSceneBBox);
+      mCamera->doAutoView();
       updateCamera();
     }
 
@@ -541,6 +534,7 @@ namespace SCIRun
     void SRInterface::setView(const glm::vec3& view, const glm::vec3& up)
     {
       mCamera->setView(view, up);
+      updateCamera();
     }
 
     //------------------------------------------------------------------------------
@@ -1173,8 +1167,9 @@ namespace SCIRun
         mCore.runGCOnNextExecution();
       }
 
-      if (mSceneBBox.valid())
-        mCamera->setClippingPlanes(mSceneBBox);
+      mCamera->setSceneBoundingBox(mSceneBBox);
+      //if (mSceneBBox.valid())
+      //  mCamera->setClippingPlanes(mSceneBBox);
 
       DEBUG_LOG_LINE_INFO
 
@@ -1415,7 +1410,7 @@ namespace SCIRun
     void SRInterface::updateCamera()
     {
       // Update the static camera with the appropriate world to view transform.
-      mCamera->applyTransform();
+      //mCamera->applyTransform();
       glm::mat4 viewToWorld = mCamera->getViewToWorld();
       glm::mat4 projection = mCamera->getViewToProjection();
 
@@ -1889,7 +1884,7 @@ namespace SCIRun
         for (size_t i = 0; i < w*h; i++)
         {
           uint16_t pixel = font_data[i];
-/*          font.push_back(static_cast<uint8_t>(pixel >> 8));
+          /*font.push_back(static_cast<uint8_t>(pixel >> 8));
           font.push_back(static_cast<uint8_t>(pixel >> 8));
           font.push_back(static_cast<uint8_t>(pixel >> 8));
           font.push_back(static_cast<uint8_t>(pixel & 0x00ff));*/
@@ -1919,5 +1914,6 @@ namespace SCIRun
         delete [] font;
       }
     }
+
   } // namespace Render
 } // namespace SCIRun
