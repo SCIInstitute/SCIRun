@@ -69,6 +69,8 @@ namespace SCIRun {
       explicit SRInterface(std::shared_ptr<Gui::GLContext> context, int frameInitLimit = 100);
       ~SRInterface();
 
+      std::string toString(std::string prefix) const;
+
       /// Call this whenever the window is resized. This will modify the viewport
       /// appropriately.
       void eventResize(size_t width, size_t height);

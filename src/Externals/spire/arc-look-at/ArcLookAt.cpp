@@ -185,4 +185,3 @@ void ArcLookAt::setView(const glm::vec3& view, const glm::vec3& up)
 }
 
 } // namespace spire
-
