@@ -41,7 +41,7 @@ MODULE_INFO_DEF(SmoothVecFieldMedian, ChangeFieldData, SCIRun)
 /// using a median filter. 
 
 SmoothVecFieldMedian::SmoothVecFieldMedian() :
-  Module(staticInfo_)
+  Module(staticInfo_, HasUI<SmoothVecFieldMedian>::value)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputField);
