@@ -120,15 +120,16 @@ PythonCode PythonInterfaceParser::extractSpecialBlocks(const std::string& code) 
     auto secondPart = std::string(what[3]);
     boost::trim(secondPart);
 
-    //logCritical("First: {}", firstPart);
     parsePart(blocks, firstPart);
 
-    //logCritical("Matlab: {}", matlabPart);
     if (!matlabPart.empty())
       blocks.push_back({matlabPart, true});
 
-    //logCritical("Second: {}", secondPart);
     parsePart(blocks, secondPart);
+  }
+  else
+  {
+    return {{code, false}};
   }
   return blocks;
 }

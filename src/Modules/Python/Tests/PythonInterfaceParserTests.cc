@@ -73,6 +73,35 @@ TEST(PythonInterfaceParserTests, Basic)
   ASSERT_EQ(convertedCode, expectedCode);
 }
 
+TEST(PythonInterfaceParserTests, BasicActual)
+{
+  auto parser = makeParser();
+
+  std::string code =
+    "s = str1\n"
+    "out1 = s + \"!12!\"\n";
+
+  auto convertedCode = parser->convertStandardCodeBlock({code, false});
+
+  std::cout << convertedCode << std::endl;
+
+ std::string expectedCode =
+  "s = scirun_get_module_input_value(\"InterfaceWithPython:0\", \"InputString:0\")\n"
+  "scirun_set_module_transient_state(\"InterfaceWithPython:0\",\"out1\",s + \"!12!\")\n\n";
+
+  ASSERT_EQ(convertedCode, expectedCode);
+
+  auto intermediate = parser->extractSpecialBlocks(code);
+
+  std::cout << intermediate.begin()->code << std::endl;
+  auto readyToConvert = parser->concatenateNormalBlocks(intermediate);
+  std::cout << readyToConvert.code << std::endl;
+  auto convertedCode2 = parser->convertStandardCodeBlock(readyToConvert);
+  std::cout << convertedCode2 << std::endl;
+
+  ASSERT_EQ(convertedCode2, expectedCode + "\n");
+}
+
 TEST(PythonInterfaceParserTests, CanExtractSingleMatlabBlock)
 {
   auto parser = makeParser();
@@ -83,6 +112,20 @@ TEST(PythonInterfaceParserTests, CanExtractSingleMatlabBlock)
   ASSERT_EQ(1, blocks.size());
   EXPECT_EQ("a = 1", blocks.begin()->code);
   EXPECT_TRUE(blocks.begin()->isMatlab);
+}
+
+TEST(PythonInterfaceParserTests, CanPreserveNormalPython)
+{
+  auto parser = makeParser();
+
+  std::string code =
+    "s = str1\n"
+    "out1 = s + \"!12!\"\n";
+  auto blocks = parser->extractSpecialBlocks(code);
+
+  ASSERT_EQ(1, blocks.size());
+  EXPECT_EQ(code, blocks.begin()->code);
+  EXPECT_FALSE(blocks.begin()->isMatlab);
 }
 
 TEST(PythonInterfaceParserTests, CanExtractMultipleMatlabBlocks)
