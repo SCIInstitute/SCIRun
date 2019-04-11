@@ -28,13 +28,11 @@
 
 #include <Modules/Python/PythonInterfaceParser.h>
 #include <Modules/Python/InterfaceWithPython.h>
-#ifdef BUILD_WITH_PYTHON
 #include <Core/Logging/Log.h>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
-#endif
 
 using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Dataflow::Networks;
