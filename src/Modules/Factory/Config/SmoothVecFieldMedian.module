@@ -9,7 +9,7 @@
   "algorithm": {
     "name": "SmoothVecFieldMedianAlgo",
     "namespace": "Fields",
-    "header": "Core/Algorithms/Legacy/Fields/FieldData/SmoothVecFieldMedian.h"
+    "header": "Core/Algorithms/Legacy/Fields/FieldData/SmoothVecFieldMedianAlgo.h"
   },
   "UI": {
     "name": "N/A",
