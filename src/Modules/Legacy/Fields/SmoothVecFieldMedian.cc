@@ -26,71 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/FieldData/SmoothVecFieldMedian.h>
+#include <Modules/Legacy/Fields/SmoothVecFieldMedian.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Core/Datatypes/Field.h>
-#include <Dataflow/Network/Module.h>
-//#include <Core/Malloc/Allocator.h>
+using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
-namespace SCIRun {
-
-//using namespace SCIRun;
+MODULE_INFO_DEF(SmoothVecFieldMedian, ChangeFieldData, SCIRun)
 
 /// @class SmoothVecFieldMedian
 /// @brief This function smoothes vectors assigned to the elements of a mesh
 /// using a median filter. 
 
-class SmoothVecFieldMedian : public Module 
+SmoothVecFieldMedian::SmoothVecFieldMedian() :
+  Module(staticInfo_)
 {
-  public:
-
-    SmoothVecFieldMedian(GuiContext* ctx);
-    virtual ~SmoothVecFieldMedian();
-    virtual void execute();
-    virtual void tcl_command(GuiArgs&, void*);
-  
-  private:
-    SCIRunAlgo::SmoothVecFieldMedianAlgo algo_;
-
-};
-
-
-DECLARE_MAKER(SmoothVecFieldMedian)
-
-SmoothVecFieldMedian::SmoothVecFieldMedian(GuiContext* ctx) :
-  Module("SmoothVecFieldMedian", ctx, Filter, "ChangeFieldData", "SCIRun")
-{
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
 }
 
-SmoothVecFieldMedian::~SmoothVecFieldMedian(){
-}
-
-void
-SmoothVecFieldMedian::execute()
+void SmoothVecFieldMedian::execute()
 {
-  FieldHandle input, output;
+  auto input = getRequiredInput(InputField);
 
-  get_input_handle( "vector_median_filt", input, true );
-
-  // If no data or a changed recalcute.
-  if( inputs_changed_ || !oport_cached("Output_vector_field") )
+  if (needToExecute())
   {
-    update_state(Executing);
-
-    if (!(algo_.run(input,output))) return;
-    send_output_handle( "Output_vector_field", output );
+    auto output = algo().run(withInputData((InputField, input)));
+    sendOutputFromAlgorithm(OutputField, output);
   }
-
 }
-
-void
-SmoothVecFieldMedian::tcl_command(GuiArgs& args, void* userdata)
-{
-  Module::tcl_command(args, userdata);
-}
-
-} // End namespace SCIRun
-
-
