@@ -119,6 +119,27 @@ namespace SCIRun {
       glDeleteTextures(1, &mFontTexture);
     }
 
+    std::string SRInterface::toString(std::string prefix) const
+    {
+      std::string output = prefix + "SR_INTERFACE:\n";
+      prefix += "  ";
+
+      output += prefix + "SRObjects: " + std::to_string(mSRObjects.size()) + "\n";
+      for(auto& srobj : mSRObjects)
+      {
+        output += prefix + "  Name: \"" + srobj.mName + "\"  Port: " + std::to_string(srobj.mPort)
+          + "  Passes: " + std::to_string(srobj.mPasses.size()) + "\n";
+        for(auto& srpass: srobj.mPasses)
+          output += prefix + "    PassName: \"" + srpass.passName + "\"  RenderType: " + "\n";
+      }
+      output+="\n";
+
+      output += mCore.toString(prefix);
+      //output+="\n";
+
+      return output;
+    }
+
     //------------------------------------------------------------------------------
     void SRInterface::setupCore()
     {
@@ -208,29 +229,8 @@ namespace SCIRun {
         dims->height = static_cast<uint32_t>(height);
       }
 
-      // Setup default camera projection.
-      gen::StaticCamera* cam = mCore.getStaticComponent<gen::StaticCamera>();
-      gen::StaticOrthoCamera* orthoCam = mCore.getStaticComponent<gen::StaticOrthoCamera>();
-
-      if (cam == nullptr || orthoCam == nullptr) return;
-
-      float aspect = static_cast<float>(width) / static_cast<float>(height);
-
-      float perspFOVY = 0.59f;
-      float perspZNear = 0.01f;
-      float perspZFar = 20000.0f;
-      glm::mat4 proj = glm::perspective(perspFOVY, aspect, perspZNear, perspZFar);
-      cam->data.setProjection(proj, perspFOVY, aspect, perspZNear, perspZFar);
-      cam->data.winWidth = static_cast<float>(width);
-
-      // Setup default ortho camera projection
-      float orthoZNear = -1000.0f;
-      float orthoZFar = 1000.0f;
-      glm::mat4 orthoProj = glm::ortho(/*left*/   -1.0f,      /*right*/ 1.0f,
-        /*bottom*/ -1.0f,      /*top*/   1.0f,
-        /*znear*/  orthoZNear, /*zfar*/  orthoZFar);
-      orthoCam->data.setOrthoProjection(orthoProj, aspect, 2.0f, 2.0f, orthoZNear, orthoZFar);
-      orthoCam->data.winWidth = static_cast<float>(width);
+      mCamera->setAsPerspective();
+      updateCamera();
     }
 
     //------------------------------------------------------------------------------
@@ -272,6 +272,9 @@ namespace SCIRun {
       else
       {
         mCamera->mouseMoveEvent(pos, btn);
+        if (mSceneBBox.valid())
+          mCamera->setClippingPlanes(mSceneBBox);
+        updateCamera();
       }
     }
 
@@ -279,6 +282,9 @@ namespace SCIRun {
     void SRInterface::inputMouseWheel(int32_t delta)
     {
       mCamera->mouseWheelEvent(delta, mZoomSpeed);
+      if (mSceneBBox.valid())
+        mCamera->setClippingPlanes(mSceneBBox);
+      updateCamera();
     }
 
     //------------------------------------------------------------------------------
@@ -549,11 +555,8 @@ namespace SCIRun {
     void SRInterface::doAutoView()
     {
       if (mSceneBBox.valid())
-      {
         mCamera->doAutoView(mSceneBBox);
-
-        //std::cout << mSceneBBox.get_min() << "\t" << mSceneBBox.get_max() << "\n";
-      }
+      updateCamera();
     }
 
     //------------------------------------------------------------------------------
@@ -1189,8 +1192,15 @@ namespace SCIRun {
             }
           }
         }
+        mCore.runGCOnNextExecution();
       }
+
+      if (mSceneBBox.valid())
+        mCamera->setClippingPlanes(mSceneBBox);
+
       DEBUG_LOG_LINE_INFO
+
+
     }
 
     //------------------------------------------------------------------------------
@@ -1429,11 +1439,13 @@ namespace SCIRun {
       // Update the static camera with the appropriate world to view transform.
       mCamera->applyTransform();
       glm::mat4 viewToWorld = mCamera->getViewToWorld();
+      glm::mat4 projection = mCamera->getViewToProjection();
 
       gen::StaticCamera* camera = mCore.getStaticComponent<gen::StaticCamera>();
       if (camera)
       {
         camera->data.setView(viewToWorld);
+        camera->data.setProjection(projection, mCamera->getFOVY(), mCamera->getAspect(), mCamera->getZNear(), mCamera->getZFar());
       }
     }
 
@@ -1661,6 +1673,7 @@ namespace SCIRun {
             GL(glDepthMask(GL_TRUE));
             GL(glDisable(GL_CULL_FACE));
             GL(glDisable(GL_BLEND));
+            glClear(GL_DEPTH_BUFFER_BIT);
 
             // Note that we can pull aspect ratio from the screen dimensions static
             // variable.
