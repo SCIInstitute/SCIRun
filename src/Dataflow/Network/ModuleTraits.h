@@ -46,22 +46,15 @@ namespace Modules
   template <class ModuleType>
   struct ModuleTraits
   {
-    static const int Flags;
+    static const int Flags = ModuleType::TraitFlags;
   };
 
-  template <class ModuleType>
-  const int ModuleTraits<ModuleType>::Flags = ModuleType::TraitFlags;
-
-#ifndef WIN32 // not working in VS2013
   DEFINE_MEMBER_CHECKER(Flags)
-#endif
 
   template <class ModuleType>
   struct HasUI
   {
-#ifndef WIN32  // not working in VS2013
     static const int ensureModuleDefinesFlags[ModuleTraits<ModuleType>::Flags];
-#endif
     static const bool value;
   };
 
@@ -71,9 +64,7 @@ namespace Modules
   template <class ModuleType>
   struct HasAlgorithm
   {
-#ifndef WIN32
     static const int ensureModuleDefinesFlags[ModuleTraits<ModuleType>::Flags];
-#endif
     static const bool value;
   };
 
