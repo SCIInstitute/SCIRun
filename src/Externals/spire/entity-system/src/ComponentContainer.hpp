@@ -60,6 +60,19 @@ public:
     removeAllImmediately();
   }
 
+  std::string toString(std::string prefix) const override
+  {
+    std::string output = "";
+    prefix += "  ";
+
+    for(auto& comp : mComponents)
+    {
+      output += prefix + "Sequence: " + std::to_string(comp.sequence) + "\n";
+    }
+
+    return output;
+  }
+
   /// Item that represents one component paired with a sequence.
   struct ComponentItem
   {

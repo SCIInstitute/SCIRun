@@ -39,7 +39,8 @@
 namespace SCIRun {
 namespace Render {
 
-  ESCore::ESCore() : r_(0.0f), g_(0.0f), b_(0.0f), a_(0.0f)
+  ESCore::ESCore() : mCoreSequence(0), mCurrentTime(0.0f), mFPS(0.0f), mLastRealTime(0.0f),
+    r_(0.0f), g_(0.0f), b_(0.0f), a_(0.0f)
 {
   // Register common systems.
   gen::registerAll(*this);
@@ -61,6 +62,52 @@ namespace Render {
 
 ESCore::~ESCore()
 {
+}
+
+std::string ESCore::toString(std::string prefix) const
+{
+  std::string output = prefix + "ES_CORE:\n";
+  prefix += "  ";
+
+  output += prefix + "ComponentContainers: " + std::to_string(mComponents.size()) + "\n";
+  for(auto& comp : mComponents)
+    if(comp.second->getNumComponents() > 0)
+    {
+      output += prefix + std::to_string(comp.first)
+        + "  Components: " + std::to_string(comp.second->getNumComponents())
+        + "  Name: \"" +  mComponentIDNameMap.at(comp.first);
+      output += comp.second->toString(prefix + "  ");
+    }
+  output += "\n";
+
+  output += prefix + "KernelSystems: " + std::to_string(mKernelSystems.size()) + "\n";
+  for(auto& name: mKernelSystems)
+  {
+    output += prefix + "  Name: " + name + "\n";
+  }
+  output+= "\n";
+
+  output += prefix + "UserSystems: " + std::to_string(mUserSystems.size()) + "\n";
+  for(auto& name: mUserSystems)
+  {
+    output += prefix + "  Name: " + name + "\n";
+  }
+  output += "\n";
+
+  output += prefix + "GarbageCollectorSystems: " + std::to_string(mGarbageCollectorSystems.size()) + "\n";
+  for(auto& name: mGarbageCollectorSystems)
+  {
+    output+= prefix + "  Name: " + name + "\n";
+  }
+  output += "\n";
+
+  auto systems = mSystems.get();
+  //output += prefix + "systems: " + std::to_string(mKernelSystems.size()) + "\n";
+  output += systems->toString(prefix) + "\n";
+
+  output += prefix + "Current Time: " + std::to_string(static_cast<uint64_t>(mCurrentTime * 1000.0)) + "\n";
+
+  return output;
 }
 
 void ESCore::execute(double currentTime, double constantFrameTime)
@@ -102,11 +149,11 @@ void ESCore::execute(double currentTime, double constantFrameTime)
   mSystems->renormalize();
 
   // Perform garbage collection if requested.
-  if(doGC)
-    {
-      runCompleteGC();
-      doGC = false;
-    }
+  if(runGC)
+  {
+    runCompleteGC();
+    runGC = false;
+  }
 
   // Perform debug serialization here. You can save the frame here as well.
   // Might be useful for debugging.
@@ -140,4 +187,3 @@ void ESCore::setBackgroundColor(float r, float g, float b, float a)
 
 } // namespace Render
 } // namespace SCIRun
-

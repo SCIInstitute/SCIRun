@@ -151,6 +151,8 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
   for (auto a : indices_)
     iboBuffer->write(a);
 
+    BBox newBBox;
+
   const bool writeNormals = normals_.size() == points_.size();
   for (size_t i = 0; i < points_.size(); i++)
   {
@@ -158,6 +160,8 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
     vboBuffer->write(static_cast<float>(points_.at(i).x()));
     vboBuffer->write(static_cast<float>(points_.at(i).y()));
     vboBuffer->write(static_cast<float>(points_.at(i).z()));
+
+    newBBox.extend(Point(points_.at(i).x(), points_.at(i).y(), points_.at(i).z()));
 
     if (writeNormals)
     {
@@ -177,7 +181,7 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
 
   // If true, then the VBO will be placed on the GPU. We don't want to place
   // VBOs on the GPU when we are generating rendering lists.
-  SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements_, bbox, true);
+  SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements_, newBBox, true);
 
   // Construct IBO.
   SpireIBO geomIBO(iboName, primIn, sizeof(uint32_t), iboBufferSPtr);
@@ -280,7 +284,7 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
   if (num_strips < 0) num_strips = 20.0;
   double r1 = radius1 < 0 ? 1.0 : radius1;
   double r2 = radius2 < 0 ? 1.0 : radius2;
-  
+
   //generate triangles for the cylinders.
   Vector n((p1 - p2).normal());
   Vector crx = n.getArbitraryTangent();

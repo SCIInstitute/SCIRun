@@ -84,7 +84,7 @@ namespace Networks {
     ModuleExecutionState& executionState() override final;
 
     std::string helpPageUrl() const override;
-    std::string newHelpPageUrl() const; // location in flux, but new v5 modules only have one of these
+    std::string newHelpPageUrl() const override; // location in flux, but new v5 modules only have one of these
     //for serialization
     const ModuleLookupInfo& get_info() const override final;
     void set_id(const std::string& id) override final;
@@ -180,7 +180,6 @@ namespace Networks {
     void sendFeedbackUpstreamAlongIncomingConnections(const Core::Datatypes::ModuleFeedback& feedback) const;
     std::string stateMetaInfo() const;
     void copyStateToMetadata();
-    void setErrorLoggedFromMacro(bool logged);
 
     friend class ModuleBuilder;
 

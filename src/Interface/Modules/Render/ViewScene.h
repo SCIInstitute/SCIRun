@@ -66,7 +66,9 @@ namespace SCIRun {
         Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
 
+      std::string toString(std::string prefix) const;
       void adjustToolbar() override;
+
     Q_SIGNALS:
       void newGeometryValueForwarder();
       void mousePressSignalForTestingGeometryObjectFeedback(int x, int y, const std::string& selName);
@@ -78,6 +80,11 @@ namespace SCIRun {
       void autoViewOnLoadChecked(bool value);
       void useOrthoViewChecked(bool value);
       void showOrientationChecked(bool value);
+      void setOrientAxisSize(int value);
+      void setOrientAxisPosX(int pos);
+      void setOrientAxisPosY(int pos);
+      void setCenterOrientPos();
+      void setDefaultOrientPos();
       void showAxisChecked(bool value);
       void viewBarButtonClicked();
       void viewAxisSelected(const QString& name);

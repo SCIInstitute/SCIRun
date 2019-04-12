@@ -76,6 +76,8 @@ public:
   /// Perform autoview.
   void doAutoView(const Core::Geometry::BBox& bbox);
 
+  void setClippingPlanes(const Core::Geometry::BBox& bbox);
+
   /// Sets the selected View of the window to given up axis and view axis
   void setView(const glm::vec3& view, const glm::vec3& up);
 
@@ -85,8 +87,13 @@ public:
   /// Default camera settings
   /// @{
   static float getDefaultFOVY()   {return 32.0f * (glm::pi<float>() / 180.0f);}
-  static float getDefaultZNear()  {return 0.001f;}
-  static float getDefaultZFar()   {return 100000.0f;}
+  static float getDefaultZNear()  {return 1.00f;}
+  static float getDefaultZFar()   {return 10000.0f;}
+
+  float getZFar()   { return mZFar;}
+  float getZNear()  { return mZNear;}
+  float getFOVY()   { return mFOV;}
+  float getAspect() { return static_cast<float>(mInterface.getScreenWidthPixels()) /static_cast<float>(mInterface.getScreenHeightPixels());}
   /// @}
 
   void setLockZoom(bool lock) { lockZoom_ = lock; }
@@ -111,6 +118,8 @@ private:
   float                 mFOV;         ///< Field of view.
   float                 mZNear;       ///< Position of near plane along view vec.
   float                 mZFar;        ///< Position of far plane along view vec.
+
+  float                 mRadius;
 
   SRInterface&          mInterface;   ///< SRInterface.
 

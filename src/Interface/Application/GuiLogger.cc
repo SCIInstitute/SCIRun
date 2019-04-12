@@ -32,6 +32,10 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
 
+GuiLog::GuiLog() : Log2("ui", Core::Logging::useLogCheckForWindows7()) 
+{
+}
+
 void GuiLogger::logInfoQ(const QString& message)
 {
   auto log = GuiLog::Instance().get();

@@ -59,6 +59,6 @@ namespace spire
   #define RENDERER_LOG_FUNCTION_SCOPE
 #endif
 
-#include <Core/Logging/ScopedFunctionLogger.h>
+//#include <Core/Logging/ScopedFunctionLogger.h>
 
 #endif

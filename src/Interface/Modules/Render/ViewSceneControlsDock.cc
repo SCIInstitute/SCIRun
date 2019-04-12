@@ -127,6 +127,13 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(autoViewOnLoadCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(autoViewOnLoadChecked(bool)));
   connect(orthoViewCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(useOrthoViewChecked(bool)));
   connect(orientationCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showOrientationChecked(bool)));
+  connect(orientAxisSize_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisSize(int)));
+  connect(orientAxisXPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosX(int)));
+  connect(orientAxisYPos_, SIGNAL(valueChanged(int)), parent, SLOT(setOrientAxisPosY(int)));
+  connect(orientDefaultPositionButton, SIGNAL(clicked()), parent, SLOT(setDefaultOrientPos()));
+  connect(orientCenterPositionButton, SIGNAL(clicked()), parent, SLOT(setCenterOrientPos()));
+  connect(orientDefaultPositionButton, SIGNAL(clicked()), this, SLOT(setSliderDefaultPos()));
+  connect(orientCenterPositionButton, SIGNAL(clicked()), this, SLOT(setSliderCenterPos()));
   connect(showAxisCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showAxisChecked(bool)));
   connect(showScaleBarTextGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setScaleBarVisible(bool)));
   connect(fontSizeSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarFontSize(int)));
@@ -190,7 +197,8 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   ////View Tab
   autoRotateGroupBox_->setEnabled(false);
   autoRotateGroupBox_->setVisible(false);
-  //viewOptionsGroupBox_->setEnabled(false);
+  viewOptionsGroupBox_->setEnabled(false);
+  viewOptionsGroupBox_->setVisible(false);
   autoViewOnLoadCheckBox_->setVisible(false);
   orthoViewCheckBox_->setVisible(false);
   showAxisCheckBox_->setVisible(false);
@@ -331,6 +339,20 @@ void ViewSceneControlsDock::updatePlaneControlDisplay(double x, double y, double
 QPointF ViewSceneControlsDock::getLightPosition(int index) const
 {
   return lightControls_[index]->getLightPosition();
+}
+
+// Set x and y sliders all the way right(100)
+void ViewSceneControlsDock::setSliderDefaultPos()
+{
+  orientAxisXPos_->setValue(100);
+  orientAxisYPos_->setValue(100);
+}
+
+// Set x and y sliders to half way(50)
+void ViewSceneControlsDock::setSliderCenterPos()
+{
+  orientAxisXPos_->setValue(50);
+  orientAxisYPos_->setValue(50);
 }
 
 QColor ViewSceneControlsDock::getLightColor(int index) const

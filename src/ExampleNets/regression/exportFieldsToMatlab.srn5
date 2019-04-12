@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
 <boost_serialization signature="serialization::archive" version="12">
-<networkFile class_id="0" tracking_level="0" version="4">
+<networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
 			<count>2</count>
@@ -50,7 +50,7 @@
 									<name>PadPercent</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+000</value>
+										<value>0.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -104,7 +104,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>4</count>
+							<count>6</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -131,6 +131,21 @@
 													<value>numeric array</value>
 												</value>
 											</item>
+										</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FieldNames</name>
+								</first>
+								<second>
+									<name>FieldNames</name>
+									<value>
+										<which>5</which>
+										<value>
+											<count>0</count>
+											<item_version>0</item_version>
 										</value>
 									</value>
 								</second>
@@ -168,6 +183,18 @@
 									<value>
 										<which>2</which>
 										<value>f2</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputField:2</name>
+								</first>
+								<second>
+									<name>InputField:2</name>
+									<value>
+										<which>2</which>
+										<value>fieldInput3</value>
 									</value>
 								</second>
 							</item>
@@ -211,15 +238,15 @@
 		<item class_id="17" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
 			<second class_id="18" tracking_level="0" version="0">
-				<first>7.60000000000000000e+001</first>
-				<second>-1.52000000000000000e+002</second>
+				<first>7.60000000000000000e+01</first>
+				<second>-1.52000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
 			<first>ExportFieldsToMatlab:0</first>
 			<second>
-				<first>1.49500000000000000e+002</first>
-				<second>1.14500000000000000e+002</second>
+				<first>1.49500000000000000e+02</first>
+				<second>1.14500000000000000e+02</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -251,6 +278,15 @@
 		<count>0</count>
 		<item_version>0</item_version>
 	</disabledConnections>
+	<moduleTagLabels class_id="23" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</moduleTagLabels>
+	<loadTagGroups>0</loadTagGroups>
+	<subnetworks class_id="24" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</subnetworks>
 </networkFile>
 </boost_serialization>
 

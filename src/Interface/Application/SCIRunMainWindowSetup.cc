@@ -6,7 +6,6 @@
   Copyright (c) 2015 Scientific Computing and Imaging Institute,
   University of Utah.
 
-  License for the specific language governing rights and limitations under
   Permission is hereby granted, free of charge, to any person obtaining a
   copy of this software and associated documentation files (the "Software"),
   to deal in the Software without restriction, including without limitation
@@ -51,6 +50,7 @@
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Interface/Application/DialogErrorControl.h>
 #include <Interface/Application/TriggeredEventsWindow.h>
+#include <Interface/Application/MacroEditor.h>
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Interface/Application/ModuleWizard/ModuleWizard.h>
@@ -139,6 +139,30 @@ void SCIRunMainWindow::createAdvancedToolbar()
   connect(advancedBar, SIGNAL(visibilityChanged(bool)), actionAdvancedBar_, SLOT(setChecked(bool)));
 
   advancedBar->setVisible(false);
+}
+
+void SCIRunMainWindow::createMacroToolbar()
+{
+  auto macroBar = addToolBar("Macro");
+  WidgetStyleMixin::toolbarStyle(macroBar);
+  macroBar->setObjectName("MacroToolbar");
+
+  macroBar->addAction(actionMacroEditor_);
+  macroBar->addAction(actionRunMacro1_);
+  macroBar->addAction(actionRunMacro2_);
+  macroBar->addAction(actionRunMacro3_);
+  macroBar->addAction(actionRunMacro4_);
+  macroBar->addAction(actionRunMacro5_);
+  actionRunMacro1_->setProperty(MacroEditor::Index, 1);
+  actionRunMacro2_->setProperty(MacroEditor::Index, 2);
+  actionRunMacro3_->setProperty(MacroEditor::Index, 3);
+  actionRunMacro4_->setProperty(MacroEditor::Index, 4);
+  actionRunMacro5_->setProperty(MacroEditor::Index, 5);
+
+  connect(actionMacroBar_, SIGNAL(toggled(bool)), macroBar, SLOT(setVisible(bool)));
+  connect(macroBar, SIGNAL(visibilityChanged(bool)), actionMacroBar_, SLOT(setChecked(bool)));
+
+  macroBar->setVisible(false);
 }
 
 void SCIRunMainWindow::createExecuteToolbar()
@@ -282,6 +306,13 @@ void SCIRunMainWindow::setActionIcons()
   actionUndo_->setIcon(QPixmap(":/general/Resources/undo.png"));
   actionRedo_->setIcon(QPixmap(":/general/Resources/redo.png"));
 
+  actionMacroEditor_->setIcon(QPixmap(":/general/Resources/script_play-512lime.png"));
+  actionRunMacro1_->setIcon(QPixmap(":/general/Resources/flash1.png"));
+  actionRunMacro2_->setIcon(QPixmap(":/general/Resources/flash2.png"));
+  actionRunMacro3_->setIcon(QPixmap(":/general/Resources/flash3.png"));
+  actionRunMacro4_->setIcon(QPixmap(":/general/Resources/flash4.png"));
+  actionRunMacro5_->setIcon(QPixmap(":/general/Resources/flash5.png"));
+
   actionHideAllModuleUIs_->setIcon(QPixmap(":/general/Resources/new/general/hideAll.png"));
   actionPinAllModuleUIs_->setIcon(QPixmap(":/general/Resources/new/general/rightAll.png"));
   actionRestoreAllModuleUIs_->setIcon(QPixmap(":/general/Resources/new/general/showAll.png"));
@@ -325,6 +356,12 @@ void SCIRunMainWindow::setupScriptedEventsWindow()
   connect(actionTriggeredEvents_, SIGNAL(toggled(bool)), triggeredEventsWindow_, SLOT(setVisible(bool)));
   connect(triggeredEventsWindow_, SIGNAL(visibilityChanged(bool)), actionTriggeredEvents_, SLOT(setChecked(bool)));
   triggeredEventsWindow_->hide();
+
+  macroEditor_ = new MacroEditor(this);
+  connect(actionMacroEditor_, SIGNAL(toggled(bool)), macroEditor_, SLOT(setVisible(bool)));
+  connect(macroEditor_, SIGNAL(visibilityChanged(bool)), actionMacroEditor_, SLOT(setChecked(bool)));
+  connect(macroEditor_, SIGNAL(macroButtonChanged(int, const QString&)), this, SLOT(updateMacroButton(int, const QString&)));
+  macroEditor_->hide();
 }
 
 void SCIRunMainWindow::setupProvenanceWindow()

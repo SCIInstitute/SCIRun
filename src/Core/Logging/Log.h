@@ -75,10 +75,7 @@ namespace SCIRun
       public:
         Log2(const std::string& name, bool useLog);
         Logger2 get();
-        void addSink(spdlog::sink_ptr sink)
-        {
-          sinks_.push_back(sink);
-        }
+        void addSink(spdlog::sink_ptr sink);
         void addCustomSink(LogAppenderStrategyPtr appender)
         {
           customSinks_.push_back(appender);
