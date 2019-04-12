@@ -50,29 +50,40 @@ namespace SCIRun{
       class ShowFieldGlyphsPortHandler
       {
       private:
+        enum FieldDataType
+          {
+           Scalar,
+           Vector,
+           Tensor
+          };
+
         const Dataflow::Networks::Module* module_;
         const RenderState* renderState;
-        RenderState::InputPort secondaryVecVal;
+        RenderState::InputPort secondaryVecInput;
         VField* p_vfld;
         VField *s_vfld, *t_vfld;
+        Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle* facade_ptr;
         FieldHandle pf_handle;
-        boost::optional<FieldHandle> sf_handle;
-        boost::optional<FieldHandle> tf_handle;
         FieldInformation pf_info;
-        boost::optional<FieldInformation> sf_info, tf_info;
-        //std::unique_ptr<FieldInformation> sfinfo, tfinfo;
         Graphics::Datatypes::ColorScheme colorScheme;
-        Core::Datatypes::ColorMapHandle colorMap;
+        RenderState::InputPort colorInput;
+        Core::Datatypes::ColorRGB defaultColor;
+        boost::optional<Core::Datatypes::ColorMapHandle> colorMap;
         boost::optional<Core::Geometry::Tensor> pinputTensor, sinputTensor, tinputTensor;
         boost::optional<Core::Geometry::Vector> pinputVector, sinputVector, tinputVector;
         boost::optional<double> pinputScalar, sinputScalar, tinputScalar;
-        //bool sfieldGiven, tfieldGiven;
         double current_index;
+        bool colorMapGiven;
+        bool secondaryFieldGiven, tertiaryFieldGiven;
+        FieldDataType pf_data_type, sf_data_type, tf_data_type;
 
         void getFieldData(int index);
 
         // Returns a color value to use for color maps
         Core::Datatypes::ColorRGB getColorMapVal(int index);
+
+        Core::Geometry::Vector getTensorColorVector(Core::Geometry::Tensor& t);
+
 
      public:
         ShowFieldGlyphsPortHandler(
@@ -82,12 +93,11 @@ namespace SCIRun{
                     FieldHandle pf,
                     boost::optional<FieldHandle> sf,
                     boost::optional<FieldHandle> tf,
-                    FieldInformation pfieldinfo,
-                    boost::optional<FieldInformation> sfieldinfo,
-                    boost::optional<FieldInformation> tfieldinfo,
                     boost::optional<Core::Datatypes::ColorMapHandle> pcolorMap,
                     boost::optional<Core::Datatypes::ColorMapHandle> scolorMap,
                     boost::optional<Core::Datatypes::ColorMapHandle> tcolorMap);
+
+        void checkForErrors();
 
         // Returns color scheme that was set in render state
         Graphics::Datatypes::ColorScheme getColorScheme();
@@ -104,8 +114,14 @@ namespace SCIRun{
         // Vector only. Returns a decimal number to use for the secondary vector parameter
         double getSecondaryVectorParameter(int index);
 
+        // Return primary scalar
+        double getPrimaryScalar(int index);
+
         // Return primary vector
         Core::Geometry::Vector getPrimaryVector(int index);
+
+        // Return primary vector
+        Core::Geometry::Tensor getPrimaryTensor(int index);
 
         // Get primary field information
         const FieldInformation getPrimaryFieldInfo();

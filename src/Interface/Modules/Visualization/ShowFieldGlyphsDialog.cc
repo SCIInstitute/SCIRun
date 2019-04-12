@@ -36,7 +36,6 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
-//using namespace SCIRun::Core::Algorithms::Visualization;
 
 ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -51,7 +50,6 @@ ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStat
 
   addLineEditManager(lineEdit, ShowFieldGlyphs::FieldName);
   WidgetStyleMixin::tabStyle(this->displayOptionsTabs_);
-
 
   createExecuteInteractivelyToggleAction();
 
@@ -83,9 +81,14 @@ void ShowFieldGlyphsDialog::pullSpecial()
     static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
     static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
 
-  //  checkTabs();
+  // Switch tabs
+  if(state_->getValue(ShowFieldGlyphs::ShowScalarTab).toBool())
+    displayOptionsTabs_->setCurrentIndex(0);
+  else if(state_->getValue(ShowFieldGlyphs::ShowVectorTab).toBool())
+    displayOptionsTabs_->setCurrentIndex(1);
+  if(state_->getValue(ShowFieldGlyphs::ShowTensorTab).toBool())
+    displayOptionsTabs_->setCurrentIndex(2);
 }
-
 
 void ShowFieldGlyphsDialog::assignDefaultMeshColor()
 {
@@ -126,16 +129,13 @@ void ShowFieldGlyphsDialog::setupScalarsTab()
   // Threshold
   addDoubleSpinBoxManager(this->scalarsThresholdDoubleSpinBox_, ShowFieldGlyphs::ScalarsThreshold);
 
+  // Execute if any changed
   connectButtonToExecuteSignal(this->showScalarsCheckBox_);
+  connectComboToExecuteSignal(this->scalarsDisplayTypeComboBox_);
+  connectComboToExecuteSignal(this->scalarsColorTypeComboBox_);
+  connectComboToExecuteSignal(this->scalarsColoringInputComboBox_);
   connectButtonToExecuteSignal(this->scalarsTransparencyOffRButton_);
   connectButtonToExecuteSignal(this->scalarsUniformTransparencyRButton_);
-  //connectButtonToExecuteSignal(this->defaultScalarsColoringRButton_);
-  //connectButtonToExecuteSignal(this->colormapLookupScalarsColoringRButton_);
-  //connectButtonToExecuteSignal(this->conversionRGBScalarsColoringRButton_);
-  //connectButtonToExecuteSignal(this->scalarsAsPointsRButton_);
-  //connectButtonToExecuteSignal(this->scalarsAsSpheresRButton_);
-  //connectButtonToExecuteSignal(this->scalarsAsBoxesRButton_);
-  //connectButtonToExecuteSignal(this->scalarsAsAxisRButton_);
 
   // Text Labels
   this->scalarColorTypeLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
@@ -176,23 +176,17 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
   // Bidirectional
   addCheckableButtonManager(this->bidirectionalVectorsCheckBox_, ShowFieldGlyphs::RenderBidirectionaly);
 
+  // Execute if any changed
   connectButtonToExecuteSignal(this->showVectorsCheckBox_);
+  connectComboToExecuteSignal(this->vectorsDisplayTypeComboBox_);
+  connectComboToExecuteSignal(this->vectorsColorTypeComboBox_);
+  connectComboToExecuteSignal(this->vectorsColoringInputComboBox_);
   connectButtonToExecuteSignal(this->vectorsTransparencyOffRButton_);
   connectButtonToExecuteSignal(this->vectorsUniformTransparencyRButton_);
-  //connectButtonToExecuteSignal(this->defaultVectorsColoringRButton_);
-  //connectButtonToExecuteSignal(this->colormapLookupVectorsColoringRButton_);
-  //connectButtonToExecuteSignal(this->conversionRGBVectorsColoringRButton_);
-  //connectButtonToExecuteSignal(this->vectorsAsLinesRButton_);
-  //connectButtonToExecuteSignal(this->vectorsAsNeedlesRButton_);
-  //connectButtonToExecuteSignal(this->vectorsAsCometsRButton_);
-  //connectButtonToExecuteSignal(this->vectorsAsConesRButton_);
-  //connectButtonToExecuteSignal(this->vectorsAsArrowsRButton_);
-  //connectButtonToExecuteSignal(this->vectorsAsDisksRButton_);
-  //connectButtonToExecuteSignal(this->vectorsAsRingsRButton_);
-  //connectButtonToExecuteSignal(this->vectorsAsSpringsRButton_);
   connectButtonToExecuteSignal(this->normalizeVectorsCheckBox_);
-  connectButtonToExecuteSignal(this->bidirectionalVectorsCheckBox_);
   connectButtonToExecuteSignal(this->renderVectorsBelowThresholdCheckBox_);
+  connectComboToExecuteSignal(this->vectorsRadiusWidthPortComboBox_);
+  connectButtonToExecuteSignal(this->bidirectionalVectorsCheckBox_);
 
   // Text Labels
   this->vectorColorTypeLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
@@ -236,15 +230,13 @@ void ShowFieldGlyphsDialog::setupTensorsTab()
   addDoubleSpinBoxManager(this->tensorsThresholdDoubleSpinBox_, ShowFieldGlyphs::TensorsThreshold);
 
   connectButtonToExecuteSignal(this->showTensorsCheckBox_);
+  connectComboToExecuteSignal(this->tensorsDisplayTypeComboBox_);
+  connectComboToExecuteSignal(this->tensorsColorTypeComboBox_);
+  connectComboToExecuteSignal(this->tensorsColoringInputComboBox_);
   connectButtonToExecuteSignal(this->tensorsTransparencyOffRButton_);
   connectButtonToExecuteSignal(this->tensorsUniformTransparencyRButton_);
-  //connectButtonToExecuteSignal(this->defaultTensorsColoringRButton_);
-  //connectButtonToExecuteSignal(this->colormapLookupTensorsColoringRButton_);
-  //connectButtonToExecuteSignal(this->conversionRGBTensorsColoringRButton_);
-  //connectButtonToExecuteSignal(this->tensorsAsEllipsoidsRButton_);
-  //connectButtonToExecuteSignal(this->tensorsAsBoxesRButton_);
-  //connectButtonToExecuteSignal(this->tensorsAsColoredBoxesRButton_);
-  //connectButtonToExecuteSignal(this->tensorsAsSuperquadricsRButton_);
+  connectButtonToExecuteSignal(this->normalizeTensorsCheckBox_);
+  connectButtonToExecuteSignal(this->renderTensorsBelowThresholdCheckBox_);
 
   // Text Labels
   this->tensorSuperquadricsEmphasisSlider_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");

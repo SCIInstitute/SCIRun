@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>371</width>
-    <height>692</height>
+    <width>375</width>
+    <height>713</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>250</width>
-    <height>610</height>
+    <height>710</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -67,7 +67,7 @@
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>2</number>
+           <number>1</number>
           </property>
           <property name="documentMode">
            <bool>false</bool>
@@ -82,7 +82,7 @@
            <widget class="QCheckBox" name="showScalarsCheckBox_">
             <property name="geometry">
              <rect>
-              <x>100</x>
+              <x>10</x>
               <y>0</y>
               <width>101</width>
               <height>21</height>
@@ -195,7 +195,7 @@
             </widget>
             <widget class="QCheckBox" name="normalizeScalarsCheckBox_">
              <property name="enabled">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
              <property name="geometry">
               <rect>
@@ -515,6 +515,9 @@
               <string>Threshold</string>
              </attribute>
              <widget class="QLabel" name="scalarThresholdLabel">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="geometry">
                <rect>
                 <x>10</x>
@@ -522,6 +525,11 @@
                 <width>161</width>
                 <height>21</height>
                </rect>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>true</strikeout>
+               </font>
               </property>
               <property name="text">
                <string>Threshold:</string>
@@ -618,7 +626,7 @@
            <widget class="QCheckBox" name="showVectorsCheckBox_">
             <property name="geometry">
              <rect>
-              <x>100</x>
+              <x>10</x>
               <y>0</y>
               <width>101</width>
               <height>21</height>
@@ -885,8 +893,13 @@
               <height>321</height>
              </rect>
             </property>
+            <property name="font">
+             <font>
+              <strikeout>false</strikeout>
+             </font>
+            </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="page">
              <property name="geometry">
@@ -1023,8 +1036,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>291</width>
-               <height>197</height>
+               <width>100</width>
+               <height>30</height>
               </rect>
              </property>
              <attribute name="label">
@@ -1095,8 +1108,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>291</width>
-               <height>197</height>
+               <width>100</width>
+               <height>30</height>
               </rect>
              </property>
              <attribute name="label">
@@ -1278,8 +1291,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>98</width>
-               <height>28</height>
+               <width>291</width>
+               <height>197</height>
               </rect>
              </property>
              <property name="font">
@@ -1313,6 +1326,11 @@
                  <width>161</width>
                  <height>21</height>
                 </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <strikeout>true</strikeout>
+                </font>
                </property>
                <property name="text">
                 <string>Scale:</string>
@@ -1348,6 +1366,11 @@
                  <width>131</width>
                  <height>21</height>
                 </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <strikeout>true</strikeout>
+                </font>
                </property>
                <property name="text">
                 <string>Input:</string>
@@ -1403,6 +1426,11 @@
                  <height>21</height>
                 </rect>
                </property>
+               <property name="font">
+                <font>
+                 <strikeout>true</strikeout>
+                </font>
+               </property>
                <property name="text">
                 <string>Scale:</string>
                </property>
@@ -1437,6 +1465,11 @@
                  <width>131</width>
                  <height>21</height>
                 </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <strikeout>true</strikeout>
+                </font>
                </property>
                <property name="text">
                 <string>Input:</string>
@@ -1492,6 +1525,11 @@
                  <height>21</height>
                 </rect>
                </property>
+               <property name="font">
+                <font>
+                 <strikeout>true</strikeout>
+                </font>
+               </property>
                <property name="text">
                 <string>Scale:</string>
                </property>
@@ -1526,6 +1564,11 @@
                  <width>131</width>
                  <height>21</height>
                 </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <strikeout>true</strikeout>
+                </font>
                </property>
                <property name="text">
                 <string>Input:</string>
@@ -1575,9 +1618,9 @@
            <widget class="QCheckBox" name="showTensorsCheckBox_">
             <property name="geometry">
              <rect>
-              <x>100</x>
+              <x>10</x>
               <y>0</y>
-              <width>101</width>
+              <width>111</width>
               <height>21</height>
              </rect>
             </property>
@@ -2025,8 +2068,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>98</width>
-               <height>28</height>
+               <width>100</width>
+               <height>30</height>
               </rect>
              </property>
              <attribute name="label">
@@ -2119,7 +2162,7 @@
         </item>
        </layout>
       </item>
-      <item row="1" column="0">
+      <item row="0" column="0" rowspan="3">
        <widget class="QGroupBox" name="generalOptionsBox_">
         <property name="enabled">
          <bool>true</bool>
@@ -2127,7 +2170,7 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>69</height>
+          <height>70</height>
          </size>
         </property>
         <property name="title">

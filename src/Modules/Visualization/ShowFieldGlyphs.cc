@@ -72,43 +72,24 @@ namespace SCIRun {
           FieldHandle pfield,
           boost::optional<FieldHandle> sfield,
           boost::optional<FieldHandle> tfield,
-          boost::optional<ColorMapHandle> colorMap,
-          boost::optional<ColorMapHandle> scolorMap,
-          boost::optional<ColorMapHandle> tcolorMap,
+          boost::optional<ColorMapHandle> pcolormap,
+          boost::optional<ColorMapHandle> scolormap,
+          boost::optional<ColorMapHandle> tcolormap,
           Interruptible* interruptible,
           ModuleStateHandle state,
           const GeometryIDGenerator& idgen,
           const Module* module);
-        GeometryHandle buildGeometryObject(
-          FieldHandle field,
-          boost::optional<ColorMapHandle> colorMap,
-          Interruptible* interruptible,
-          ModuleStateHandle state,
-          const GeometryIDGenerator& idgen,
-          Module* module_);
 
         void renderVectors(
           ShowFieldGlyphsPortHandler& portHandler,
-                           //FieldHandle pfield,
-                           //boost::optional<FieldHandle> sfield,
-                           //boost::optional<FieldHandle> tfield,
-                           //boost::optional<ColorMapHandle> pcolorMap,
-                           //boost::optional<ColorMapHandle> scolorMap,
-                           //boost::optional<ColorMapHandle> tcolorMap,
           ModuleStateHandle state,
           Interruptible* interruptible,
           const RenderState& renState,
           GeometryHandle geom,
-          const std::string& id,
-          const Module* module_);
+          const std::string& id);
 
         void renderScalars(
-          FieldHandle pfield,
-          boost::optional<FieldHandle> sfield,
-          boost::optional<FieldHandle> tfield,
-          boost::optional<ColorMapHandle> pcolorMap,
-          boost::optional<ColorMapHandle> scolorMap,
-          boost::optional<ColorMapHandle> tcolorMap,
+          ShowFieldGlyphsPortHandler& portHandler,
           ModuleStateHandle state,
           Interruptible* interruptible,
           const RenderState& renState,
@@ -116,10 +97,7 @@ namespace SCIRun {
           const std::string& id);
 
         void renderTensors(
-          FieldHandle field,
-          boost::optional<FieldHandle> sfield,
-          boost::optional<FieldHandle> tfield,
-          boost::optional<ColorMapHandle> colorMap,
+          ShowFieldGlyphsPortHandler& portHandler,
           ModuleStateHandle state,
           Interruptible* interruptible,
           const RenderState& renState,
@@ -127,21 +105,11 @@ namespace SCIRun {
           const std::string& id,
           const Module* module_);
 
-        RenderState getVectorsRenderState(
-          ModuleStateHandle state,
-          boost::optional<FieldHandle> sfield,
-          boost::optional<FieldHandle> tfield,
-          boost::optional<ColorMapHandle> colorMap,
-          boost::optional<ColorMapHandle> scolorMap,
-          boost::optional<ColorMapHandle> tcolorMap);
+      RenderState getVectorsRenderState(ModuleStateHandle state);
 
-        RenderState getScalarsRenderState(
-          ModuleStateHandle state,
-          boost::optional<ColorMapHandle> colorMap);
+      RenderState getScalarsRenderState(ModuleStateHandle state);
 
-        RenderState getTensorsRenderState(
-          ModuleStateHandle state,
-          boost::optional<ColorMapHandle> colorMap);
+      RenderState getTensorsRenderState(ModuleStateHandle state);
 
       private:
         std::string moduleId_;
@@ -158,8 +126,6 @@ namespace SCIRun {
           bool use_lines);
 
         ColorScheme getColoringType(const RenderState& renState, VField* fld);
-
-        ColorRGB set_tensor_color(Tensor& t, boost::optional<ColorMapHandle> colorMap, ColorScheme colorScheme);
       };
     }
   }
@@ -291,8 +257,6 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(RenderTensorsBelowThreshold, true);
   state->setValue(TensorsThreshold, 0.0);
   state->setValue(TensorsResolution, 10);
-
-  //state->setValue(TensorsScale, 0.1);
 }
 
 void ShowFieldGlyphs::execute()
@@ -307,7 +271,9 @@ void ShowFieldGlyphs::execute()
   if (needToExecute())
   {
     configureInputs(pfield, sfield, tfield, pcolorMap, scolorMap, tcolorMap);
-    auto geom = builder_->buildGeometryObject(pfield, sfield, tfield, pcolorMap, scolorMap, tcolorMap, this, get_state(), *this, this);
+
+    auto geom = builder_->buildGeometryObject(pfield, sfield, tfield, pcolorMap, scolorMap, tcolorMap,
+                                              this, get_state(), *this, this);
     sendOutput(SceneGraph, geom);
   }
 }
@@ -366,9 +332,9 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
   FieldHandle pfield,
   boost::optional<FieldHandle> sfield,
   boost::optional<FieldHandle> tfield,
-  boost::optional<ColorMapHandle> pcolorMap,
-  boost::optional<ColorMapHandle> scolorMap,
-  boost::optional<ColorMapHandle> tcolorMap,
+  boost::optional<ColorMapHandle> pcolormap,
+  boost::optional<ColorMapHandle> scolormap,
+  boost::optional<ColorMapHandle> tcolormap,
   Interruptible* interruptible,
   ModuleStateHandle state,
   const GeometryIDGenerator& idgen,
@@ -377,9 +343,16 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
   // Function for reporting progress.
   //SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc progressFunc = getUpdaterFunc();
 
-  bool showVectors = state->getValue(ShowFieldGlyphs::ShowVectors).toBool();
-  bool showScalars = state->getValue(ShowFieldGlyphs::ShowScalars).toBool();
-  bool showTensors = state->getValue(ShowFieldGlyphs::ShowTensors).toBool();
+  FieldInformation finfo(pfield);
+
+  // Show or hide tabs
+  state->setValue(ShowFieldGlyphs::ShowScalarTab, finfo.is_scalar());
+  state->setValue(ShowFieldGlyphs::ShowVectorTab, finfo.is_vector());
+  state->setValue(ShowFieldGlyphs::ShowTensorTab, finfo.is_tensor());
+
+  bool showScalars = state->getValue(ShowFieldGlyphs::ShowScalars).toBool() && finfo.is_scalar();
+  bool showVectors = state->getValue(ShowFieldGlyphs::ShowVectors).toBool() && finfo.is_vector();
+  bool showTensors = state->getValue(ShowFieldGlyphs::ShowTensors).toBool() && finfo.is_tensor();
 
   std::string idname = "EntireGlyphField";
   if(!state->getValue(ShowFieldGlyphs::FieldName).toString().empty()){
@@ -388,51 +361,60 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
 
   auto geom(boost::make_shared<GeometryObjectSpire>(idgen, idname, true));
 
-  FieldInformation finfo(pfield);
-  boost::optional<FieldInformation> sfinfo(sfield.get());
-  boost::optional<FieldInformation> tfinfo(tfield.get());
+  if(!showScalars)
+    state->setValue(ShowFieldGlyphs::ShowScalars, showScalars);
+  if(!showVectors)
+    state->setValue(ShowFieldGlyphs::ShowVectors, showVectors);
+  if(!showTensors)
+    state->setValue(ShowFieldGlyphs::ShowTensors, showTensors);
 
-  if (finfo.is_vector())
-  {
-    state->setValue(ShowFieldGlyphs::ShowVectorTab, true);
-    if (showVectors)
+  // Don't render if no data given
+  if(!(showScalars || showVectors || showTensors))
     {
-      RenderState renState = getVectorsRenderState(state, sfield, tfield, pcolorMap, scolorMap, tcolorMap);
-      ShowFieldGlyphsPortHandler portHandler(module, state, renState, pfield, sfield, tfield, finfo, sfinfo,
-                                             tfinfo, pcolorMap, scolorMap, tcolorMap);
-      renderVectors(portHandler, state, interruptible, renState, geom, geom->uniqueID(), module);
+      return geom;
     }
-  }
-  else
-  {
-    state->setValue(ShowFieldGlyphs::ShowVectorTab, false);
-  }
 
-  if (finfo.is_scalar())
-  {
-    state->setValue(ShowFieldGlyphs::ShowScalarTab, true);
-    if (showScalars)
+  // Get render state
+  RenderState renState;
+  if(showScalars)
     {
-      renderScalars(pfield, sfield, tfield, pcolorMap, scolorMap, tcolorMap, state, interruptible, getScalarsRenderState(state, pcolorMap), geom, geom->uniqueID());
+      renState = getScalarsRenderState(state);
     }
-  }
-  else
-  {
-    state->setValue(ShowFieldGlyphs::ShowScalarTab, false);
-  }
+  else if(showVectors)
+    {
+      renState = getVectorsRenderState(state);
+    }
+  else if(showTensors)
+    {
+      renState = getTensorsRenderState(state);
+    }
 
-  if (finfo.is_tensor())
-  {
-    state->setValue(ShowFieldGlyphs::ShowTensorTab, true);
-    if (showTensors)
+  // Create port handler and check for errors
+  ShowFieldGlyphsPortHandler portHandler(module, state, renState, pfield, sfield, tfield,
+                                         pcolormap, scolormap, tcolormap);
+  try
     {
-      renderTensors(pfield, sfield, tfield, pcolorMap, state, interruptible, getTensorsRenderState(state, pcolorMap), geom, geom->uniqueID(), module);
+      portHandler.checkForErrors();
+    } catch(const std::invalid_argument& e)
+    {
+      // If error is given, post it and return empty geom object
+      module->error(e.what());
+      return geom;
     }
-  }
-  else
-  {
-    state->setValue(ShowFieldGlyphs::ShowTensorTab, false);
-  }
+
+  // Render glyphs
+  if (finfo.is_scalar() && showScalars)
+    {
+      renderScalars(portHandler, state, interruptible, renState, geom, geom->uniqueID());
+    }
+  else if (finfo.is_vector() && showVectors)
+    {
+      renderVectors(portHandler, state, interruptible, renState, geom, geom->uniqueID());
+    }
+  else if (finfo.is_tensor() && showTensors)
+    {
+      renderTensors(portHandler, state, interruptible, renState, geom, geom->uniqueID(), module);
+    }
 
   return geom;
 }
@@ -443,12 +425,12 @@ void GlyphBuilder::renderVectors(
   Interruptible* interruptible,
   const RenderState& renState,
   GeometryHandle geom,
-  const std::string& id,
-  const Module* module_)
+  const std::string& id)
 {
   VMesh* mesh = portHandler.getMesh();
   mesh->synchronize(Mesh::EDGES_E);
   FieldInformation pfinfo = portHandler.getPrimaryFieldInfo();
+  ColorScheme colorScheme = portHandler.getColorScheme();
 
   bool useLines = renState.mGlyphType == RenderState::GlyphType::LINE_GLYPH || renState.mGlyphType == RenderState::GlyphType::NEEDLE_GLYPH;
 
@@ -528,9 +510,7 @@ void GlyphBuilder::renderVectors(
       interruptible->checkForInterruption();
       Vector v, pinputVector; Point p2, p3; double radius, height;
 
-      //fld->get_value(pinputVector, node.index());
       pinputVector = portHandler.getPrimaryVector(indices[i]);
-      //mesh->get_center(p1, indices[i]);
 
       // Normalize/Scale
       if(normalizeGlyphs)
@@ -543,25 +523,11 @@ void GlyphBuilder::renderVectors(
       p3 = points[i] - v;
 
       // Get radius
-      try
-        {
-          radius = portHandler.getSecondaryVectorParameter(indices[i]);
-        } catch(const std::invalid_argument& e)
-        {
-          module_->error(e.what());
-          return;
-        }
+      radius = portHandler.getSecondaryVectorParameter(indices[i]);
       radius *= radiusWidthScale;
 
       ColorRGB node_color;
-      try
-        {
-          node_color = portHandler.getNodeColor(indices[i]);
-        } catch(const std::invalid_argument& e)
-        {
-          module_->error(e.what());
-          return;
-        }
+      node_color = portHandler.getNodeColor(indices[i]);
 
       if(renderGlphysBelowThreshold || pinputVector.length() >= threshold)
         {
@@ -571,278 +537,26 @@ void GlyphBuilder::renderVectors(
         }
     }
 
-  // Old loop for reference. TODO delete
-      /**  case 2: //edge centered constant data
-       for (const auto& edge : pfacade->edges())
-      {
-        interruptible->checkForInterruption();
-        Vector v, pinputVector; Point p1, p2, p3; double radius, height;
-
-        fld->get_value(pinputVector, edge.index());
-        mesh->get_center(p1, edge.index());
-
-        if(normalizeGlyphs)
-          v = pinputVector.normal() * scale;
-        else
-          v = pinputVector * scale;
-
-        Tensor sinputTensor, tinputTensor;
-        Vector sinputVector, tinputVector;
-        double sinputScalar, tinputScalar;
-        if(sfield)
-          {
-            if (sf_ptr->is_scalar())
-              sfld->get_value(sinputScalar, edge.index());
-            else if (sf_ptr->is_vector())
-              sfld->get_value(sinputVector, edge.index());
-            else
-              sfld->get_value(sinputTensor, edge.index());
-          }
-        if(tfield)
-          {
-            if (tf_ptr->is_scalar())
-              tfld->get_value(tinputScalar, edge.index());
-            else if (tf_ptr->is_vector())
-              tfld->get_value(tinputVector, edge.index());
-            else
-              tfld->get_value(tinputTensor, edge.index());
-          }
-
-        p2 = p1 + v;
-        p3 = p1 - v;
-
-        Vector colorVector;
-        float colorMapVal;
-        switch(renState.mColorInput)
-          {
-          case RenderState::InputPort::PRIMARY_PORT:
-            if(colorScheme == ColorScheme::COLOR_IN_SITU)
-              {
-                colorVector = pinputVector;
-              }
-            else if(colorScheme == ColorScheme::COLOR_MAP)
-              {
-                colorMapVal = pinputVector.length();
-              }
-            break;
-          case RenderState::InputPort::SECONDARY_PORT:
-            if(colorScheme == ColorScheme::COLOR_IN_SITU)
-              {
-                if(sf_ptr->is_scalar())
-                  {
-                    module_->error("Secondary Field input cannot be a scalar for RGB Conversion.");
-                    return;
-                  }
-                else if(sf_ptr->is_vector())
-                  {
-                    colorVector = sinputVector;
-                  }
-                else
-                  {
-                    Vector eigvec1, eigvec2, eigvec3;
-                    sinputTensor.get_eigenvectors(eigvec1, eigvec2, eigvec3);
-                    colorVector = eigvec1;
-                  }
-              }
-            else if(colorScheme == ColorScheme::COLOR_MAP)
-              {
-                if(sf_ptr->is_scalar())
-                  {
-                    colorMapVal = sinputScalar;
-                  }
-                else if(sf_ptr->is_vector())
-                  {
-                    colorMapVal = sinputVector.length();
-                  }
-                else
-                  {
-                    colorMapVal = sinputTensor.magnitude();
-                  }
-              }
-            break;
-          case RenderState::InputPort::TERTIARY_PORT:
-            if(colorScheme == ColorScheme::COLOR_IN_SITU)
-              {
-                if(tf_ptr->is_scalar())
-                  {
-                    module_->error("Tertiary Field input cannot be a scalar for RGB Conversion.");
-                    return;
-                  }
-                else if(tf_ptr->is_vector())
-                  {
-                    colorVector = tinputVector;
-                  }
-                else
-                  {
-                    Vector eigvec1, eigvec2, eigvec3;
-                    sinputTensor.get_eigenvectors(eigvec1, eigvec2, eigvec3);
-                    colorVector = eigvec1;
-                  }
-              }
-            else if(colorScheme == ColorScheme::COLOR_MAP)
-              {
-                if(tf_ptr->is_scalar())
-                  {
-                    colorMapVal = tinputScalar;
-                  }
-                else if(tf_ptr->is_vector())
-                  {
-                    colorMapVal = tinputVector.length();
-                  }
-                else
-                  {
-                    colorMapVal = tinputTensor.magnitude();
-                  }
-              }
-            break;
-        }
-
-        switch(renState.mVectorRadiusWidthInput)
-          {
-          case RenderState::InputPort::PRIMARY_PORT:
-            radius = pinputVector.length();
-            break;
-          case RenderState::InputPort::SECONDARY_PORT:
-            if(sfield)
-              {
-                if(sf_ptr->is_scalar())
-                  {
-                    radius = sinputScalar;
-                  }
-                else if(sf_ptr->is_vector())
-                  {
-                    radius = sinputVector.length();
-                  }
-                else
-                  {
-                    radius = sinputTensor.magnitude();
-                  }
-              }
-            else
-              {
-                module_->error("Secondary Field input is required for Secondary Vector Parameter.");
-                return;
-              }
-            break;
-          case RenderState::InputPort::TERTIARY_PORT:
-            if(tfield)
-              {
-                if(tf_ptr->is_scalar())
-                  {
-                    radius = tinputScalar;
-                  }
-                else if(tf_ptr->is_vector())
-                  {
-                    radius = tinputVector.length();
-                  }
-                else
-                  {
-                    radius = tinputTensor.magnitude();
-                  }
-              }
-            else
-              {
-                module_->error("Tertiary Field input is required for Secondary Vector Parameter.");
-                return;
-              }
-            break;
-         }
-        radius *= radiusWidthScale;
-
-        if (colorScheme == ColorScheme::COLOR_UNIFORM)
-        {
-          node_color = renState.defaultColor;
-        }
-        else if (colorScheme == ColorScheme::COLOR_MAP)
-        {
-          ColorMapHandle map = colorMap.get();
-          node_color = map->valueToColor(colorMapVal);
-        }
-        else if (colorScheme == ColorScheme::COLOR_IN_SITU)
-        {
-          colorVector = colorVector.normal();
-          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
-        }
-
-        if(renderGlphysBelowThreshold || pinputVector.length() >= threshold)
-        {
-          addGlyph(glyphs, renState.mGlyphType, p1, p2, radius, arrowHeadRatio, resolution, node_color, useLines);
-          if(renderBidirectionaly)
-            addGlyph(glyphs, renState.mGlyphType, p1, p3, radius, arrowHeadRatio, resolution, node_color, useLines);
-        }
-      }
-      break;
-**/
-
   std::stringstream ss;
-  try
-    {
-      ss << renState.mGlyphType << resolution << scale << static_cast<int>(portHandler.getColorScheme());
-    } catch(const std::invalid_argument& e)
-    {
-      module_->error(e.what());
-      return;
-    }
+  ss << renState.mGlyphType << resolution << scale << static_cast<int>(colorScheme);
 
   std::string uniqueNodeID = id + "vector_glyphs" + ss.str();
 
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENT_EDGES),
-                     state->getValue(ShowFieldGlyphs::VectorsUniformTransparencyValue).toDouble(), portHandler.getColorScheme(), renState, primIn, mesh->get_bounding_box());
+                     state->getValue(ShowFieldGlyphs::VectorsUniformTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
 }
 
 void GlyphBuilder::renderScalars(
-  FieldHandle pfield,
-  boost::optional<FieldHandle> sfield,
-  boost::optional<FieldHandle> tfield,
-  boost::optional<ColorMapHandle> pcolorMap,
-  boost::optional<ColorMapHandle> scolorMap,
-  boost::optional<ColorMapHandle> tcolorMap,
+  ShowFieldGlyphsPortHandler& portHandler,
   ModuleStateHandle state,
   Interruptible* interruptible,
   const RenderState& renState,
   GeometryHandle geom,
   const std::string& id)
 {
-  FieldInformation finfo(pfield);
-
-  VField* fld = pfield->vfield();
-  VMesh*  mesh = pfield->vmesh();
-
-  boost::optional<ColorMapHandle> colorMap;
-  ColorScheme colorScheme;
-  colorScheme= getColoringType(renState, fld);
-  if(colorScheme == ColorScheme::COLOR_MAP)
-    {
-      switch(renState.mColorInput)
-        {
-        case RenderState::InputPort::PRIMARY_PORT:
-          if(pfield && pcolorMap)
-            colorMap = pcolorMap;
-          else
-            {
-              // TODO throw error
-            }
-          break;
-        case RenderState::InputPort::SECONDARY_PORT:
-          if(sfield && scolorMap)
-            colorMap = scolorMap;
-          else
-            {
-              // TODO throw error
-            }
-          break;
-        case RenderState::InputPort::TERTIARY_PORT:
-          if(tfield && tcolorMap)
-            colorMap = tcolorMap;
-          else
-            {
-              // TODO throw error
-            }
-          break;
-        }
-    }
-
+  VMesh* mesh = portHandler.getMesh();
   mesh->synchronize(Mesh::NODES_E);
+  ColorScheme colorScheme = portHandler.getColorScheme();
 
   double scale = state->getValue(ShowFieldGlyphs::ScalarsScale).toDouble();
   double resolution = state->getValue(ShowFieldGlyphs::ScalarsResolution).toInt();
@@ -858,114 +572,62 @@ void GlyphBuilder::renderScalars(
     primIn = SpireIBO::PRIMITIVE::POINTS;
   }
 
-  GlyphGeom glyphs;
-  auto facade(pfield->mesh()->getFacade());
-
   bool done = false;
-  // Render cell data
-  if (!finfo.is_linear())
-  {
-    for (const auto& cell : facade->cells())
+  std::vector<int> indices;
+  std::vector<Point> points;
+  GlyphGeom glyphs;
+  if (!portHandler.getPrimaryFieldInfo().is_linear())
     {
-      interruptible->checkForInterruption();
-      double v;
-      fld->get_value(v, cell.index());
-      Point p = cell.center();
-      double radius = std::abs(v) * scale;
-
-      ColorRGB node_color;
-      if (colorScheme != ColorScheme::COLOR_UNIFORM)
-      {
-        if (colorScheme == ColorScheme::COLOR_MAP)
+      for (const auto& node : portHandler.getPrimaryFacade()->nodes())
         {
-          ColorMapHandle map = colorMap.get();
-          node_color = map->valueToColor(v);
+          indices.push_back(node.index());
+          Point p;
+          mesh->get_center(p, node.index());
+          points.push_back(p);
         }
-        if (colorScheme == ColorScheme::COLOR_IN_SITU)
-        {
-          Vector colorVector = Vector(p.x(), p.y(), p.z()).normal();
-          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
-        }
-      }
-      switch (renState.mGlyphType)
-      {
-      case RenderState::GlyphType::POINT_GLYPH:
-        glyphs.addPoint(p, node_color);
-        break;
-      case RenderState::GlyphType::SPHERE_GLYPH:
-        glyphs.addSphere(p, radius, resolution, node_color);
-        break;
-      case RenderState::GlyphType::BOX_GLYPH:
-        BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Box Geom is not supported yet."));
-        break;
-      case RenderState::GlyphType::AXIS_GLYPH:
-        BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Axis Geom is not supported yet."));
-        break;
-      default:
-        if (usePoints)
-          glyphs.addPoint(p, node_color);
-        else
-          glyphs.addSphere(p, radius, resolution, node_color);
-        break;
-      }
-      done = true;
     }
-  }
-
-  // Render linear data
   if (!done)
-  {
-    if ((fld->basis_order() == 0 && mesh->dimensionality() != 0))
     {
-      colorScheme = ColorScheme::COLOR_UNIFORM;
+      for (const auto& cell : portHandler.getPrimaryFacade()->cells())
+        {
+          indices.push_back(cell.index());
+          Point p;
+          mesh->get_center(p, cell.index());
+          points.push_back(p);
+        }
     }
 
-    for (const auto& node : facade->nodes())
+  for(int i = 0; i < indices.size(); i++)
     {
       interruptible->checkForInterruption();
-      double v;
-      fld->get_value(v, node.index());
-      Point p = node.point();
+
+      double v = portHandler.getPrimaryScalar(indices[i]);
+      ColorRGB node_color = portHandler.getNodeColor(indices[i]);
       double radius = std::abs(v) * scale;
 
-      ColorRGB node_color;
-      if (colorScheme != ColorScheme::COLOR_UNIFORM)
-      {
-        if (colorScheme == ColorScheme::COLOR_MAP)
-        {
-          ColorMapHandle map = colorMap.get();
-          node_color = map->valueToColor(v);
-        }
-        if (colorScheme == ColorScheme::COLOR_IN_SITU)
-        {
-          Vector colorVector = Vector(p.x(), p.y(), p.z()).normal();
-          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
-        }
-      }
       switch (renState.mGlyphType)
-      {
-      case RenderState::GlyphType::POINT_GLYPH:
-        glyphs.addPoint(p, node_color);
-        break;
-      case RenderState::GlyphType::SPHERE_GLYPH:
-        glyphs.addSphere(p, radius, resolution, node_color);
-        break;
-      case RenderState::GlyphType::BOX_GLYPH:
-        //glyphs.addEllipsoid(p, radius, 2*radius, resolution, node_color);
-        BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Box Geom is not supported yet."));
-        break;
-      case RenderState::GlyphType::AXIS_GLYPH:
-        BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Axis Geom is not supported yet."));
-        break;
-      default:
-        if (usePoints)
-          glyphs.addPoint(p, node_color);
-        else
-          glyphs.addSphere(p, radius, resolution, node_color);
-        break;
-      }
-    }
-  }
+        {
+        case RenderState::GlyphType::POINT_GLYPH:
+          glyphs.addPoint(points[i], node_color);
+          break;
+        case RenderState::GlyphType::SPHERE_GLYPH:
+          glyphs.addSphere(points[i], radius, resolution, node_color);
+          break;
+        case RenderState::GlyphType::BOX_GLYPH:
+          BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Box Geom is not supported yet."));
+          break;
+        case RenderState::GlyphType::AXIS_GLYPH:
+          BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Axis Geom is not supported yet."));
+          break;
+        default:
+          if (usePoints)
+            glyphs.addPoint(points[i], node_color);
+          else
+            glyphs.addSphere(points[i], radius, resolution, node_color);
+          break;
+        }
+      done = true;
+   }
 
   std::stringstream ss;
   ss << renState.mGlyphType << resolution << scale << static_cast<int>(colorScheme);
@@ -977,40 +639,22 @@ void GlyphBuilder::renderScalars(
 }
 
 void GlyphBuilder::renderTensors(
-        FieldHandle field,
-        boost::optional<FieldHandle> sfield,
-        boost::optional<FieldHandle> tfield,
-        boost::optional<ColorMapHandle> colorMap,
-        ModuleStateHandle state,
-        Interruptible* interruptible,
-        const RenderState& renState,
-        GeometryHandle geom,
-        const std::string& id,
-        const Module* module_)
+  ShowFieldGlyphsPortHandler& portHandler,
+  ModuleStateHandle state,
+  Interruptible* interruptible,
+  const RenderState& renState,
+  GeometryHandle geom,
+  const std::string& id,
+  const Module* module_)
 {
-    FieldInformation finfo(field);
+  FieldInformation pfinfo = portHandler.getPrimaryFieldInfo();
 
-    VField* fld = field->vfield();
-    VMesh*  mesh = field->vmesh();
+    VMesh* mesh = portHandler.getMesh();
+    mesh->synchronize(Mesh::NODES_E);
+    ColorScheme colorScheme = portHandler.getColorScheme();
 
-    ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
-    ColorRGB node_color;
     // std::cout << "basis order: " << fld->basis_order() << " dimensionality: " << mesh->dimensionality() << " def col: " << renState.get(RenderState::USE_DEFAULT_COLOR) << std::endl;;
 
-    if (fld->basis_order() < 0 || renState.get(RenderState::USE_DEFAULT_COLOR))
-    {
-        colorScheme = ColorScheme::COLOR_UNIFORM;
-    }
-    else if (renState.get(RenderState::USE_COLORMAP))
-    {
-        colorScheme = ColorScheme::COLOR_MAP;
-    }
-    else
-    {
-        colorScheme = ColorScheme::COLOR_IN_SITU;
-    }
-
-    mesh->synchronize(Mesh::NODES_E);
 
     double scale = state->getValue(ShowFieldGlyphs::TensorsScale).toDouble();
     double resolution = state->getValue(ShowFieldGlyphs::TensorsResolution).toInt();
@@ -1028,334 +672,136 @@ void GlyphBuilder::renderTensors(
 
     SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::TRIANGLES;
 
-    GlyphGeom glyphs;
     GlyphGeom tensor_line_glyphs;
     GlyphGeom point_glyphs;
-    auto facade(field->mesh()->getFacade());
+
+    //sets feild location for consant feild data 1: node centered 2: edge centered 3: face centered 4: cell centered
+    int fieldLocation = pfinfo.is_point() * 1 + pfinfo.is_line() * 2 +
+      pfinfo.is_surface() * 3 + pfinfo.is_volume() * 4;
+    //sets feild location to 0 for linear data regardless of location
+    fieldLocation *= !pfinfo.is_linear();
+
+    std::vector<int> indices;
+    std::vector<Point> points;
+    GlyphGeom glyphs;
+    switch(fieldLocation)
+      {
+      case 0: //linear data falls through to node data handling routine
+      case 1: //node centered constant data
+        for (const auto& node : portHandler.getPrimaryFacade()->nodes())
+          {
+            indices.push_back(node.index());
+            Point p;
+            mesh->get_center(p, node.index());
+            points.push_back(p);
+          }
+        break;
+      case 2: //edge centered constant data
+        for (const auto& edge : portHandler.getPrimaryFacade()->edges())
+          {
+            indices.push_back(edge.index());
+            Point p;
+            mesh->get_center(p, edge.index());
+            points.push_back(p);
+          }
+        break;
+      case 3: //face centered constant data
+        for (const auto& face : portHandler.getPrimaryFacade()->faces())
+          {
+            indices.push_back(face.index());
+            Point p;
+            mesh->get_center(p, face.index());
+            points.push_back(p);
+          }
+        break;
+      case 4: //cell centered constant data
+        for (const auto& cell : portHandler.getPrimaryFacade()->cells())
+          {
+            indices.push_back(cell.index());
+            Point p;
+            mesh->get_center(p, cell.index());
+            points.push_back(p);
+          }
+        break;
+      }
 
     int neg_eigval_count = 0;
 
-    //sets feild location for consant feild data 1: node centered 2: edge centered 3: face centered 4: cell centered
-    int fieldLocation = finfo.is_point() * 1 + finfo.is_line() * 2 +
-      finfo.is_surface() * 3 + finfo.is_volume() * 4;
-
-    //sets feild location to 0 for linear data regardless of location
-    fieldLocation *= !finfo.is_linear();
     int tensorcount = 0;
     double epsilon = pow(2, -52);
 
-    switch(fieldLocation){
-      case 0: //linear data falls through to node data handling routine
-      case 1: //node centered constant data
-        for (const auto& node : facade->nodes())
-        {
-            interruptible->checkForInterruption();
-            Tensor t;
-            fld->get_value(t, node.index());
 
-            Point p = node.point();
-            double eigen1, eigen2, eigen3;
-            t.get_eigenvalues(eigen1, eigen2, eigen3);
+    for(int i = 0; i < indices.size(); i++)
+      {
+        interruptible->checkForInterruption();
 
-            Vector eigvals(fabs(eigen1), fabs(eigen2), fabs(eigen3));
+        Tensor t = portHandler.getPrimaryTensor(indices[i]);
+        double eigen1, eigen2, eigen3;
+        t.get_eigenvalues(eigen1, eigen2, eigen3);
 
-            bool eig_x_0 = eigvals.x() < epsilon && eigvals.x() > -epsilon;
-            bool eig_y_0 = eigvals.y() < epsilon && eigvals.y() > -epsilon;
-            bool eig_z_0 = eigvals.z() < epsilon && eigvals.z() > -epsilon;
+        Vector eigvals(fabs(eigen1), fabs(eigen2), fabs(eigen3));
 
-            bool neg_eigval = (eigen1 < -epsilon || eigen2 < -epsilon || eigen3 < -epsilon);
-            if(neg_eigval)
-                neg_eigval_count++;
+        bool eig_x_0 = eigvals.x() < epsilon && eigvals.x() > -epsilon;
+        bool eig_y_0 = eigvals.y() < epsilon && eigvals.y() > -epsilon;
+        bool eig_z_0 = eigvals.z() < epsilon && eigvals.z() > -epsilon;
 
-            node_color = set_tensor_color(t, colorMap, colorScheme);
+        bool neg_eigval = (eigen1 < -epsilon || eigen2 < -epsilon || eigen3 < -epsilon);
+        if(neg_eigval)
+          neg_eigval_count++;
 
-            double magnitude = t.magnitude();
-            // If normalize checkbox selected
-            if(normalizeGlyphs){
-              eigvals.x(eigen1 / magnitude);
-              eigvals.y(eigen2 / magnitude);
-              eigvals.z(eigen3 / magnitude);
-            }
-
-            // Do not render tensors that are too small - because surfaces
-            // are not renderd at least two of the scales must be non zero.
-            if(!renderGlyphsBelowThreshold){
-              if(t.magnitude() < threshold)
-                continue;
-            }
-
-            if((eig_x_0 + eig_y_0 + eig_z_0) <= 1)
-              {
-                eigvals *= scale;
-
-                switch (renState.mGlyphType)
-                  {
-                  case RenderState::GlyphType::BOX_GLYPH:
-                    glyphs.addBox(p, t, scale);
-                    break;
-                  case RenderState::GlyphType::ELLIPSOID_GLYPH:
-                    glyphs.addEllipsoid(p, t, eigvals, resolution, node_color);
-                    tensorcount++;
-                    break;
-                  case RenderState::GlyphType::SPHERE_GLYPH:
-                    glyphs.addSphere(p, eigvals.x(), resolution, node_color);
-                  default:
-                    break;
-                  }
-              }
-            // Tensor as line
-            else if((eig_x_0 + eig_y_0 + eig_z_0) == 2)
-              {
-                eigvals *= scale;
-
-                Vector eigvec1, eigvec2, eigvec3;
-                t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
-                Transform trans(p, eigvec1, eigvec2, eigvec3);
-                Point p1 = p + trans *  eigvals/2;
-                Point p2 = p + trans * -eigvals/2;
-                addGlyph(tensor_line_glyphs, RenderState::GlyphType::LINE_GLYPH, p1, p2, scale, scale, resolution, node_color, true);
-              }
-            // Too small: render as point
-            else
-              {
-                point_glyphs.addPoint(p, node_color);
-              }
+        ColorRGB node_color = portHandler.getNodeColor(indices[i]);
+        double magnitude = t.magnitude();
+        // If normalize checkbox selected
+        if(normalizeGlyphs){
+          eigvals.x(eigen1 / magnitude);
+          eigvals.y(eigen2 / magnitude);
+          eigvals.z(eigen3 / magnitude);
         }
-        break;
 
-      case 2: //edge centered constant data
-        for(const auto& edge : facade->edges()){
-            interruptible->checkForInterruption();
-            Tensor t;
-            fld->get_value(t, edge.index());
-
-            Point p;
-            mesh->get_center(p, edge.index());
-
-            double eigen1, eigen2, eigen3;
-            t.get_eigenvalues(eigen1, eigen2, eigen3);
-
-            Vector eigvals(fabs(eigen1), fabs(eigen2), fabs(eigen3));
-
-            bool eig_x_0 = eigvals.x() < epsilon && eigvals.x() > -epsilon;
-            bool eig_y_0 = eigvals.y() < epsilon && eigvals.y() > -epsilon;
-            bool eig_z_0 = eigvals.z() < epsilon && eigvals.z() > -epsilon;
-
-            bool neg_eigval = (eigen1 < -epsilon || eigen2 < -epsilon || eigen3 < -epsilon);
-            if(neg_eigval)
-                neg_eigval_count++;
-
-            node_color = set_tensor_color(t, colorMap, colorScheme);
-
-            double magnitude = t.magnitude();
-            // If normalize checkbox selected
-            if(normalizeGlyphs){
-              eigvals.x(eigen1 / magnitude);
-              eigvals.y(eigen2 / magnitude);
-              eigvals.z(eigen3 / magnitude);
-            }
-
-            // Do not render tensors that are too small - because surfaces
-            // are not renderd at least two of the scales must be non zero.
-            if(!renderGlyphsBelowThreshold){
-              if(t.magnitude() < threshold)
-                continue;
-            }
-
-            if((eig_x_0 + eig_y_0 + eig_z_0) <= 1)
-              {
-                eigvals *= scale;
-
-                switch (renState.mGlyphType)
-                  {
-                  case RenderState::GlyphType::BOX_GLYPH:
-                    glyphs.addBox(p, t, scale);
-                    break;
-                  case RenderState::GlyphType::ELLIPSOID_GLYPH:
-                    glyphs.addEllipsoid(p, t, eigvals, resolution, node_color);
-                    tensorcount++;
-                    break;
-                  case RenderState::GlyphType::SPHERE_GLYPH:
-                    glyphs.addSphere(p, eigvals.x(), resolution, node_color);
-                  default:
-                    break;
-                  }
-              }
-            // Tensor as line
-            else if((eig_x_0 + eig_y_0 + eig_z_0) == 2)
-              {
-                eigvals *= scale;
-
-                Vector eigvec1, eigvec2, eigvec3;
-                t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
-                Transform trans(p, eigvec1, eigvec2, eigvec3);
-                Point p1 = p + trans *  eigvals/2;
-                Point p2 = p + trans * -eigvals/2;
-                addGlyph(tensor_line_glyphs, RenderState::GlyphType::LINE_GLYPH, p1, p2, scale, scale, resolution, node_color, true);
-              }
-            // Too small: render as point
-            else
-              {
-                point_glyphs.addPoint(p, node_color);
-              }
+        // Do not render tensors that are too small - because surfaces
+        // are not renderd at least two of the scales must be non zero.
+        if(!renderGlyphsBelowThreshold){
+          if(t.magnitude() < threshold)
+            continue;
         }
-        break;
 
-      case 3: //face centered constant data
-        for (const auto& face : facade->faces())
-        {
-            interruptible->checkForInterruption();
-            Tensor t;
-            fld->get_value(t, face.index());
+        if((eig_x_0 + eig_y_0 + eig_z_0) <= 1)
+          {
+            eigvals *= scale;
 
-            Point p;
-            mesh->get_center(p,face.index());
-            double eigen1, eigen2, eigen3;
-            t.get_eigenvalues(eigen1, eigen2, eigen3);
-
-            Vector eigvals(fabs(eigen1), fabs(eigen2), fabs(eigen3));
-
-            bool eig_x_0 = eigvals.x() < epsilon && eigvals.x() > -epsilon;
-            bool eig_y_0 = eigvals.y() < epsilon && eigvals.y() > -epsilon;
-            bool eig_z_0 = eigvals.z() < epsilon && eigvals.z() > -epsilon;
-
-            bool neg_eigval = (eigen1 < -epsilon || eigen2 < -epsilon || eigen3 < -epsilon);
-            if(neg_eigval)
-              neg_eigval_count++;
-
-            node_color = set_tensor_color(t, colorMap, colorScheme);
-
-            double magnitude = t.magnitude();
-            // If normalize checkbox selected
-            if(normalizeGlyphs){
-              eigvals.x(eigen1 / magnitude);
-              eigvals.y(eigen2 / magnitude);
-              eigvals.z(eigen3 / magnitude);
-            }
-
-            // Do not render tensors that are too small - because surfaces
-            // are not renderd at least two of the scales must be non zero.
-            if(!renderGlyphsBelowThreshold){
-              if(t.magnitude() < threshold)
-                continue;
-            }
-
-            if((eig_x_0 + eig_y_0 + eig_z_0) <= 1)
+            switch (renState.mGlyphType)
               {
-                eigvals *= scale;
-
-                switch (renState.mGlyphType)
-                  {
-                  case RenderState::GlyphType::BOX_GLYPH:
-                    glyphs.addBox(p, t, scale);
-                    break;
-                  case RenderState::GlyphType::ELLIPSOID_GLYPH:
-                    glyphs.addEllipsoid(p, t, eigvals, resolution, node_color);
-                    tensorcount++;
-                    break;
-                  case RenderState::GlyphType::SPHERE_GLYPH:
-                    glyphs.addSphere(p, eigvals.x(), resolution, node_color);
-                  default:
-                    break;
-                  }
+              case RenderState::GlyphType::BOX_GLYPH:
+                glyphs.addBox(points[i], t, scale);
+                break;
+              case RenderState::GlyphType::ELLIPSOID_GLYPH:
+                glyphs.addEllipsoid(points[i], t, eigvals, resolution, node_color);
+                tensorcount++;
+                break;
+              case RenderState::GlyphType::SPHERE_GLYPH:
+                glyphs.addSphere(points[i], eigvals.x(), resolution, node_color);
+              default:
+                break;
               }
-               
-            // Tensor as line
-            else if((eig_x_0 + eig_y_0 + eig_z_0) == 2)
-              {
-                eigvals *= scale;
+          }
+        // Tensor as line
+        else if((eig_x_0 + eig_y_0 + eig_z_0) == 2)
+          {
+            eigvals *= scale;
 
-                Vector eigvec1, eigvec2, eigvec3;
-                t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
-                Transform trans(p, eigvec1, eigvec2, eigvec3);
-                Point p1 = p + trans *  eigvals/2;
-                Point p2 = p + trans * -eigvals/2;
-                addGlyph(tensor_line_glyphs, RenderState::GlyphType::LINE_GLYPH, p1, p2, scale, scale, resolution, node_color, true);
-              }
-            // Too small: render as point
-            else
-              {
-                point_glyphs.addPoint(p, node_color);
-              }
-        }
-        break;
-      case 4: //cell centerd constant data
-        for (const auto& cell : facade->cells())
-        {
-            interruptible->checkForInterruption();
-            Tensor t;
-            fld->get_value(t, cell.index());
-            Point p = cell.center();
-            double eigen1, eigen2, eigen3;
-            t.get_eigenvalues(eigen1, eigen2, eigen3);
-
-            Vector eigvals(fabs(eigen1), fabs(eigen2), fabs(eigen3));
-
-            bool eig_x_0 = eigvals.x() < epsilon && eigvals.x() > -epsilon;
-            bool eig_y_0 = eigvals.y() < epsilon && eigvals.y() > -epsilon;
-            bool eig_z_0 = eigvals.z() < epsilon && eigvals.z() > -epsilon;
-
-            bool neg_eigval = (eigen1 < -epsilon || eigen2 < -epsilon || eigen3 < -epsilon);
-            if(neg_eigval)
-              neg_eigval_count++;
-
-            node_color = set_tensor_color(t, colorMap, colorScheme);
-
-            double magnitude = t.magnitude();
-            // If normalize checkbox selected
-            if(normalizeGlyphs){
-              eigvals.x(eigen1 / magnitude);
-              eigvals.y(eigen2 / magnitude);
-              eigvals.z(eigen3 / magnitude);
-            }
-
-            // Do not render tensors that are too small - because surfaces
-            // are not renderd at least two of the scales must be non zero.
-            if(!renderGlyphsBelowThreshold){
-              if(t.magnitude() < threshold)
-                continue;
-            }
-
-            if((eig_x_0 + eig_y_0 + eig_z_0) <= 1)
-              {
-                eigvals *= scale;
-
-                switch (renState.mGlyphType)
-                  {
-                  case RenderState::GlyphType::BOX_GLYPH:
-                    glyphs.addBox(p, t, scale);
-                    break;
-                  case RenderState::GlyphType::ELLIPSOID_GLYPH:
-                    glyphs.addEllipsoid(p, t, eigvals, resolution, node_color);
-                    tensorcount++;
-                    break;
-                  case RenderState::GlyphType::SPHERE_GLYPH:
-                    glyphs.addSphere(p, eigvals.x(), resolution, node_color);
-                  default:
-                    break;
-                  }
-              }
-            // Tensor as line
-            else if((eig_x_0 + eig_y_0 + eig_z_0) == 2)
-              {
-                eigvals *= scale;
-
-                Vector eigvec1, eigvec2, eigvec3;
-                t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
-                Transform trans(p, eigvec1, eigvec2, eigvec3);
-                Point p1 = p + trans *  eigvals/2;
-                Point p2 = p + trans * -eigvals/2;
-                addGlyph(tensor_line_glyphs, RenderState::GlyphType::LINE_GLYPH, p1, p2, scale, scale, resolution, node_color, true);
-              }
-            // Too small: render as point
-            else
-              {
-                point_glyphs.addPoint(p, node_color);
-              }
-        }
-        break;
-    }
-
+            Vector eigvec1, eigvec2, eigvec3;
+            t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
+            Transform trans(points[i], eigvec1, eigvec2, eigvec3);
+            Point p1 = points[i] + trans *  eigvals/2;
+            Point p2 = points[i] + trans * -eigvals/2;
+            addGlyph(tensor_line_glyphs, RenderState::GlyphType::LINE_GLYPH, p1, p2, scale, scale, resolution, node_color, true);
+          }
+        // Too small: render as point
+        else
+          {
+            point_glyphs.addPoint(points[i], node_color);
+          }
+     }
 
     if(neg_eigval_count > 0) {
         module_->warning(std::to_string(neg_eigval_count) + " negative eigen values in data.");
@@ -1365,72 +811,16 @@ void GlyphBuilder::renderTensors(
                        state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
 
     // Render lines(2 eigenvalues equalling 0)
-    RenderState lineRenState = getVectorsRenderState(state, sfield, tfield, colorMap, colorMap, colorMap);
+    RenderState lineRenState = getVectorsRenderState(state);
     tensor_line_glyphs.buildObject(*geom, uniqueLineID, lineRenState.get(RenderState::USE_TRANSPARENT_EDGES),
-                       state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(), colorScheme, lineRenState, SpireIBO::PRIMITIVE::LINES, mesh->get_bounding_box());
+                                   state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(), colorScheme, lineRenState, SpireIBO::PRIMITIVE::LINES, mesh->get_bounding_box());
     // Render scalars(3 eigenvalues equalling 0)
-    RenderState pointRenState = getScalarsRenderState(state, colorMap);
+    RenderState pointRenState = getScalarsRenderState(state);
     point_glyphs.buildObject(*geom, uniquePointID, pointRenState.get(RenderState::USE_TRANSPARENT_NODES),
-                       state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(), colorScheme, pointRenState, SpireIBO::PRIMITIVE::POINTS, mesh->get_bounding_box());
+                             state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(), colorScheme, pointRenState, SpireIBO::PRIMITIVE::POINTS, mesh->get_bounding_box());
 }
 
-ColorRGB GlyphBuilder::set_tensor_color(Tensor& t, boost::optional<ColorMapHandle> colorMap, ColorScheme colorScheme){
-  ColorRGB node_color;
-  if (colorScheme != ColorScheme::COLOR_UNIFORM)
-  {
-      if (colorScheme == ColorScheme::COLOR_MAP)
-      {
-          ColorMapHandle map = colorMap.get();
-          node_color = map->valueToColor(t);
-      }
-      if (colorScheme == ColorScheme::COLOR_IN_SITU)
-      {
-          Vector colorVector;
-          double eigval1, eigval2, eigval3;
-          t.get_eigenvalues(eigval1, eigval2, eigval3);
-
-          if(eigval1 == eigval2 && eigval1 != eigval3){
-            Vector eigvec3_norm = t.get_eigenvector3().normal();
-            Vector xCross = Cross(eigvec3_norm, Vector(1,0,0));
-            Vector yCross = Cross(eigvec3_norm, Vector(0,1,0));
-            Vector zCross = Cross(eigvec3_norm, Vector(0,0,1));
-            xCross.normalize();
-            yCross.normalize();
-            zCross.normalize();
-
-            double epsilon = pow(2, -52);
-            if(std::abs(Dot(xCross, yCross)) > (1-epsilon)){
-              colorVector = xCross;
-            }
-            else if(std::abs(Dot(yCross, zCross)) > (1-epsilon)){
-              colorVector = yCross;
-            }
-            else if(std::abs(Dot(xCross, zCross)) > (1-epsilon)){
-              colorVector = zCross;
-            }
-            else{
-              colorVector = t.get_eigenvector1();
-            }
-
-          } else{
-            colorVector = t.get_eigenvector1();
-          }
-          colorVector = Abs(colorVector);
-          colorVector.normalize();
-
-          node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
-      }
-  }
-  return node_color;
-}
-
-RenderState GlyphBuilder::getVectorsRenderState(
-  ModuleStateHandle state,
-  boost::optional<FieldHandle> sfield,
-  boost::optional<FieldHandle> tfield,
-  boost::optional<ColorMapHandle> colorMap,
-  boost::optional<ColorMapHandle> scolorMap,
-  boost::optional<ColorMapHandle> tcolorMap)
+RenderState GlyphBuilder::getVectorsRenderState(ModuleStateHandle state)
 {
   RenderState renState;
 
@@ -1473,7 +863,7 @@ RenderState GlyphBuilder::getVectorsRenderState(
                            renState.defaultColor.b() / 255.) : renState.defaultColor;
 
   std::string c_type = state->getValue(ShowFieldGlyphs::VectorsColoring).toString();
-  if(c_type == "Colormap Lookup" && colorMap)
+  if(c_type == "Colormap Lookup")
   {
     renState.set(RenderState::USE_COLORMAP, true);
   }
@@ -1491,9 +881,7 @@ RenderState GlyphBuilder::getVectorsRenderState(
   return renState;
 }
 
-RenderState GlyphBuilder::getScalarsRenderState(
-  ModuleStateHandle state,
-  boost::optional<ColorMapHandle> colorMap)
+RenderState GlyphBuilder::getScalarsRenderState(ModuleStateHandle state)
 {
   RenderState renState;
 
@@ -1542,7 +930,7 @@ RenderState GlyphBuilder::getScalarsRenderState(
     : renState.defaultColor;
 
   std::string c_type = state->getValue(ShowFieldGlyphs::ScalarsColoring).toString();
-  if(c_type == "Colormap Lookup" && colorMap)
+  if(c_type == "Colormap Lookup")
   {
     renState.set(RenderState::USE_COLORMAP, true);
   }
@@ -1560,9 +948,7 @@ RenderState GlyphBuilder::getScalarsRenderState(
   return renState;
 }
 
-RenderState GlyphBuilder::getTensorsRenderState(
-  ModuleStateHandle state,
-  boost::optional<ColorMapHandle> colorMap)
+RenderState GlyphBuilder::getTensorsRenderState(ModuleStateHandle state)
 {
   RenderState renState;
 
@@ -1587,21 +973,6 @@ RenderState GlyphBuilder::getTensorsRenderState(
       renState.set(RenderState::USE_TRANSPARENCY, true);
     }
 
-  //renState.mTransparencyInput = getInput(state->getValue(ShowFieldGlyphs::TensorsTransparencyDataInput).toString());
-  /**  std::string trans_input = state->getValue(ShowFieldGlyphs::TensorsTransparenycDataInput).toString();
-  if(trans_input == "Primary")
-    {
-      renState.mTransparencyInput = PRIMARY_PORT;
-    }
-  else if(trans_input == "Secondary")
-    {
-      renState.mTransparencyInput = SECONDARY_PORT;
-    }
-  else if(trans_input == "Tertiary")
-    {
-      renState.mTransparencyInput = TERTIARY_PORT;
-      }**/
-
   // Glpyh Type
   std::string glyph = state->getValue(ShowFieldGlyphs::TensorsDisplayType).toString();
   if(glyph == "Boxes")
@@ -1625,7 +996,7 @@ RenderState GlyphBuilder::getTensorsRenderState(
 
   // Coloring
   std::string color = state->getValue(ShowFieldGlyphs::TensorsColoring).toString();
-  if(color == "Colormap Lookup" && colorMap)
+  if(color == "Colormap Lookup")
   {
     renState.set(RenderState::USE_COLORMAP, true);
   }
