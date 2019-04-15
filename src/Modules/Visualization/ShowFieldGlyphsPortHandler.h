@@ -82,7 +82,10 @@ namespace SCIRun{
         // Returns a color value to use for color maps
         Core::Datatypes::ColorRGB getColorMapVal(int index);
 
+        // Returns color vector to be used for rgb conversion of tensors
         Core::Geometry::Vector getTensorColorVector(Core::Geometry::Tensor& t);
+
+        void checkForErrors();
 
 
      public:
@@ -96,8 +99,6 @@ namespace SCIRun{
                     boost::optional<Core::Datatypes::ColorMapHandle> pcolorMap,
                     boost::optional<Core::Datatypes::ColorMapHandle> scolorMap,
                     boost::optional<Core::Datatypes::ColorMapHandle> tcolorMap);
-
-        void checkForErrors();
 
         // Returns color scheme that was set in render state
         Graphics::Datatypes::ColorScheme getColorScheme();

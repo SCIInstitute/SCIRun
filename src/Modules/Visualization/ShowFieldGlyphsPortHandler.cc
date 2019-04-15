@@ -378,6 +378,7 @@ namespace SCIRun{
           }
       }
 
+      // Returns color scheme that was set in render state
       ColorScheme ShowFieldGlyphsPortHandler::getColorScheme()
       {
         return colorScheme;
@@ -462,6 +463,7 @@ namespace SCIRun{
         return colorVector;
       }
 
+      // Returns color of node
       ColorRGB ShowFieldGlyphsPortHandler::getNodeColor(int index)
       {
         getFieldData(index);
@@ -487,6 +489,7 @@ namespace SCIRun{
         return node_color;
       }
 
+      // Vector only. Returns a decimal number to use for the secondary vector parameter
       double ShowFieldGlyphsPortHandler::getSecondaryVectorParameter(int index)
       {
         getFieldData(index);
@@ -533,6 +536,7 @@ namespace SCIRun{
         return abs(val);
       }
 
+      // Return primary scalar
       double ShowFieldGlyphsPortHandler::getPrimaryScalar(int index)
       {
         getFieldData(index);
@@ -540,6 +544,7 @@ namespace SCIRun{
         return pinputScalar.get();
       }
 
+      // Return primary vector
       Geometry::Vector ShowFieldGlyphsPortHandler::getPrimaryVector(int index)
       {
         getFieldData(index);
@@ -547,6 +552,7 @@ namespace SCIRun{
         return pinputVector.get();
       }
 
+      // Return primary vector
       Geometry::Tensor ShowFieldGlyphsPortHandler::getPrimaryTensor(int index)
       {
         getFieldData(index);
@@ -554,11 +560,13 @@ namespace SCIRun{
         return pinputTensor.get();
       }
 
+      // Get primary field information
       const FieldInformation ShowFieldGlyphsPortHandler::getPrimaryFieldInfo()
       {
         return (pf_info);
       }
 
+      // Returns color map
       ColorMapHandle ShowFieldGlyphsPortHandler::getColorMap()
       {
         return colorMap.get();
