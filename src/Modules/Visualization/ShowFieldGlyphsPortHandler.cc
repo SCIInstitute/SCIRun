@@ -117,7 +117,7 @@ namespace SCIRun{
 
         // Get Field and mesh from primary port
         p_vfld = pf->vfield();
-        secondaryVecInput = renState.mVectorRadiusWidthInput;
+        secondaryVecInput = renState.mSecondaryVectorParameterInput;
 
         // Get info on coloring
         if((p_vfld->basis_order() < 0 && pf->vmesh()->dimensionality() != 0)
@@ -307,6 +307,7 @@ namespace SCIRun{
         return colorMapVal;
       }
 
+      // Verifies that data is valid. Run this after initialization
       void ShowFieldGlyphsPortHandler::checkForErrors()
       {
         // Make sure color map port and correpsonding field data is given for chosen color map

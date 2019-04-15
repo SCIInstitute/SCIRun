@@ -350,10 +350,12 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
   state->setValue(ShowFieldGlyphs::ShowVectorTab, finfo.is_vector());
   state->setValue(ShowFieldGlyphs::ShowTensorTab, finfo.is_tensor());
 
+  // Shows glyphs if data is present and user has selected
   bool showScalars = state->getValue(ShowFieldGlyphs::ShowScalars).toBool() && finfo.is_scalar();
   bool showVectors = state->getValue(ShowFieldGlyphs::ShowVectors).toBool() && finfo.is_vector();
   bool showTensors = state->getValue(ShowFieldGlyphs::ShowTensors).toBool() && finfo.is_tensor();
 
+  // Creates id
   std::string idname = "EntireGlyphField";
   if(!state->getValue(ShowFieldGlyphs::FieldName).toString().empty()){
     idname += GeometryObject::delimiter + state->getValue(ShowFieldGlyphs::FieldName).toString() + " (from " + moduleId_ +")";
@@ -430,7 +432,6 @@ void GlyphBuilder::renderVectors(
   VMesh* mesh = portHandler.getMesh();
   mesh->synchronize(Mesh::EDGES_E);
   FieldInformation pfinfo = portHandler.getPrimaryFieldInfo();
-  ColorScheme colorScheme = portHandler.getColorScheme();
 
   bool useLines = renState.mGlyphType == RenderState::GlyphType::LINE_GLYPH || renState.mGlyphType == RenderState::GlyphType::NEEDLE_GLYPH;
 
@@ -441,6 +442,8 @@ void GlyphBuilder::renderVectors(
     primIn = SpireIBO::PRIMITIVE::LINES;
   }
 
+  // Gets user set data
+  ColorScheme colorScheme = portHandler.getColorScheme();
   double scale = state->getValue(ShowFieldGlyphs::VectorsScale).toDouble();
   double radiusWidthScale = state->getValue(ShowFieldGlyphs::SecondaryVectorParameterScale).toDouble();
   double resolution = state->getValue(ShowFieldGlyphs::VectorsResolution).toInt();
@@ -462,6 +465,7 @@ void GlyphBuilder::renderVectors(
   //sets field location to 0 for linear data regardless of location
   fieldLocation = fieldLocation * !pfinfo.is_linear();
 
+  // Collect indices and points from facades
   std::vector<int> indices;
   std::vector<Point> points;
   GlyphGeom glyphs;
@@ -505,10 +509,12 @@ void GlyphBuilder::renderVectors(
       }
     break;
   }
+
+  // Render every item from facade
   for(int i = 0; i < indices.size(); i++)
     {
       interruptible->checkForInterruption();
-      Vector v, pinputVector; Point p2, p3; double radius, height;
+      Vector v, pinputVector; Point p2, p3; double radius;
 
       pinputVector = portHandler.getPrimaryVector(indices[i]);
 
@@ -526,8 +532,7 @@ void GlyphBuilder::renderVectors(
       radius = portHandler.getSecondaryVectorParameter(indices[i]);
       radius *= radiusWidthScale;
 
-      ColorRGB node_color;
-      node_color = portHandler.getNodeColor(indices[i]);
+      ColorRGB node_color = portHandler.getNodeColor(indices[i]);
 
       if(renderGlphysBelowThreshold || pinputVector.length() >= threshold)
         {
@@ -556,8 +561,9 @@ void GlyphBuilder::renderScalars(
 {
   VMesh* mesh = portHandler.getMesh();
   mesh->synchronize(Mesh::NODES_E);
-  ColorScheme colorScheme = portHandler.getColorScheme();
 
+  // Gets user set data
+  ColorScheme colorScheme = portHandler.getColorScheme();
   double scale = state->getValue(ShowFieldGlyphs::ScalarsScale).toDouble();
   double resolution = state->getValue(ShowFieldGlyphs::ScalarsResolution).toInt();
   if (scale < 0) scale = 1.0;
@@ -572,6 +578,7 @@ void GlyphBuilder::renderScalars(
     primIn = SpireIBO::PRIMITIVE::POINTS;
   }
 
+  // Collect indices and points from facades
   bool done = false;
   std::vector<int> indices;
   std::vector<Point> points;
@@ -597,6 +604,7 @@ void GlyphBuilder::renderScalars(
         }
     }
 
+  // Render every item from facade
   for(int i = 0; i < indices.size(); i++)
     {
       interruptible->checkForInterruption();
@@ -651,11 +659,9 @@ void GlyphBuilder::renderTensors(
 
     VMesh* mesh = portHandler.getMesh();
     mesh->synchronize(Mesh::NODES_E);
+
+    // Gets user set data
     ColorScheme colorScheme = portHandler.getColorScheme();
-
-    // std::cout << "basis order: " << fld->basis_order() << " dimensionality: " << mesh->dimensionality() << " def col: " << renState.get(RenderState::USE_DEFAULT_COLOR) << std::endl;;
-
-
     double scale = state->getValue(ShowFieldGlyphs::TensorsScale).toDouble();
     double resolution = state->getValue(ShowFieldGlyphs::TensorsResolution).toInt();
     bool normalizeGlyphs = state->getValue(ShowFieldGlyphs::NormalizeTensors).toBool();
@@ -666,6 +672,7 @@ void GlyphBuilder::renderTensors(
     std::stringstream ss;
     ss << renState.mGlyphType << resolution << scale << static_cast<int>(colorScheme);
 
+    // Separate id's are needed for lines and points if rendered
     std::string uniqueNodeID = id + "tensor_glyphs" + ss.str();
     std::string uniqueLineID = id + "tensor_line_glyphs" + ss.str();
     std::string uniquePointID = id + "tensor_point_glyphs" + ss.str();
@@ -681,6 +688,7 @@ void GlyphBuilder::renderTensors(
     //sets feild location to 0 for linear data regardless of location
     fieldLocation *= !pfinfo.is_linear();
 
+    // Collect indices and points from facades
     std::vector<int> indices;
     std::vector<Point> points;
     GlyphGeom glyphs;
@@ -730,7 +738,7 @@ void GlyphBuilder::renderTensors(
     int tensorcount = 0;
     double epsilon = pow(2, -52);
 
-
+    // Render every item from facade
     for(int i = 0; i < indices.size(); i++)
       {
         interruptible->checkForInterruption();
@@ -739,12 +747,13 @@ void GlyphBuilder::renderTensors(
         double eigen1, eigen2, eigen3;
         t.get_eigenvalues(eigen1, eigen2, eigen3);
 
+        // Checks to see if eigenvalues are machine zero
         Vector eigvals(fabs(eigen1), fabs(eigen2), fabs(eigen3));
-
         bool eig_x_0 = eigvals.x() < epsilon && eigvals.x() > -epsilon;
         bool eig_y_0 = eigvals.y() < epsilon && eigvals.y() > -epsilon;
         bool eig_z_0 = eigvals.z() < epsilon && eigvals.z() > -epsilon;
 
+        // Counter for negative eigen values
         bool neg_eigval = (eigen1 < -epsilon || eigen2 < -epsilon || eigen3 < -epsilon);
         if(neg_eigval)
           neg_eigval_count++;
@@ -765,6 +774,7 @@ void GlyphBuilder::renderTensors(
             continue;
         }
 
+        // Render as order 2 or 3 tensor
         if((eig_x_0 + eig_y_0 + eig_z_0) <= 1)
           {
             eigvals *= scale;
@@ -784,7 +794,7 @@ void GlyphBuilder::renderTensors(
                 break;
               }
           }
-        // Tensor as line
+        // Render as order 1 tensor(vector)
         else if((eig_x_0 + eig_y_0 + eig_z_0) == 2)
           {
             eigvals *= scale;
@@ -796,13 +806,14 @@ void GlyphBuilder::renderTensors(
             Point p2 = points[i] + trans * -eigvals/2;
             addGlyph(tensor_line_glyphs, RenderState::GlyphType::LINE_GLYPH, p1, p2, scale, scale, resolution, node_color, true);
           }
-        // Too small: render as point
+        // Render as order 0 tensor(point)
         else
           {
             point_glyphs.addPoint(points[i], node_color);
           }
      }
 
+    // Prints warning if there are negative eigen values
     if(neg_eigval_count > 0) {
         module_->warning(std::to_string(neg_eigval_count) + " negative eigen values in data.");
     }
@@ -823,9 +834,6 @@ void GlyphBuilder::renderTensors(
 RenderState GlyphBuilder::getVectorsRenderState(ModuleStateHandle state)
 {
   RenderState renState;
-
-  bool useColorMap = state->getValue(ShowFieldGlyphs::VectorsColoring).toInt() == 1;
-  bool rgbConversion = state->getValue(ShowFieldGlyphs::VectorsColoring).toInt() == 2;
 
   renState.set(RenderState::USE_NORMALS, true);
 
@@ -876,7 +884,7 @@ RenderState GlyphBuilder::getVectorsRenderState(ModuleStateHandle state)
     renState.set(RenderState::USE_DEFAULT_COLOR, true);
   }
   renState.mColorInput = getInput(state->getValue(ShowFieldGlyphs::VectorsColoringDataInput).toString());
-  renState.mVectorRadiusWidthInput = getInput(state->getValue(ShowFieldGlyphs::SecondaryVectorParameterDataInput).toString());
+  renState.mSecondaryVectorParameterInput = getInput(state->getValue(ShowFieldGlyphs::SecondaryVectorParameterDataInput).toString());
 
   return renState;
 }

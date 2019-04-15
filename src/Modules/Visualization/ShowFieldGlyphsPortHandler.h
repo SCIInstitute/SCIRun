@@ -85,9 +85,6 @@ namespace SCIRun{
         // Returns color vector to be used for rgb conversion of tensors
         Core::Geometry::Vector getTensorColorVector(Core::Geometry::Tensor& t);
 
-        void checkForErrors();
-
-
      public:
         ShowFieldGlyphsPortHandler(
                     const Dataflow::Networks::Module* mod_,
@@ -99,6 +96,9 @@ namespace SCIRun{
                     boost::optional<Core::Datatypes::ColorMapHandle> pcolorMap,
                     boost::optional<Core::Datatypes::ColorMapHandle> scolorMap,
                     boost::optional<Core::Datatypes::ColorMapHandle> tcolorMap);
+
+        // Verifies that data is valid. Run this after initialization
+        void checkForErrors();
 
         // Returns color scheme that was set in render state
         Graphics::Datatypes::ColorScheme getColorScheme();

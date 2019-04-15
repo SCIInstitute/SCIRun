@@ -144,7 +144,7 @@ public:
   GlyphType mGlyphType = POINT_GLYPH;
 //InputPort mTransparencyInput = PRIMARY_PORT;
   InputPort mColorInput = PRIMARY_PORT;
-  InputPort mVectorRadiusWidthInput = PRIMARY_PORT;
+  InputPort mSecondaryVectorParameterInput = PRIMARY_PORT;
   InputPort mSpringsMajorRadiusInput = PRIMARY_PORT;
   InputPort mSpringsMinorRadiusInput = PRIMARY_PORT;
   InputPort mSpringsPitchInput = PRIMARY_PORT;
