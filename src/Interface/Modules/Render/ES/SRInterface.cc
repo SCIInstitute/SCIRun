@@ -810,7 +810,6 @@ namespace SCIRun {
     //------------------------------------------------------------------------------
     void SRInterface::handleGeomObject(GeometryHandle obj, int port)
     {
-      mCore.runGCOnNextFrame();
       //logRendererInfo("Handling geom object on port {}", port);
       RENDERER_LOG_FUNCTION_SCOPE;
       RENDERER_LOG("Ensure our rendering context is current on our thread.");

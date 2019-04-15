@@ -131,9 +131,6 @@ void ShowFieldGlyphsDialog::setupScalarsTab()
 
   // Execute if any changed
   connectButtonToExecuteSignal(this->showScalarsCheckBox_);
-  connectComboToExecuteSignal(this->scalarsDisplayTypeComboBox_);
-  connectComboToExecuteSignal(this->scalarsColorTypeComboBox_);
-  connectComboToExecuteSignal(this->scalarsColoringInputComboBox_);
   connectButtonToExecuteSignal(this->scalarsTransparencyOffRButton_);
   connectButtonToExecuteSignal(this->scalarsUniformTransparencyRButton_);
 
@@ -178,14 +175,10 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
 
   // Execute if any changed
   connectButtonToExecuteSignal(this->showVectorsCheckBox_);
-  connectComboToExecuteSignal(this->vectorsDisplayTypeComboBox_);
-  connectComboToExecuteSignal(this->vectorsColorTypeComboBox_);
-  connectComboToExecuteSignal(this->vectorsColoringInputComboBox_);
   connectButtonToExecuteSignal(this->vectorsTransparencyOffRButton_);
   connectButtonToExecuteSignal(this->vectorsUniformTransparencyRButton_);
   connectButtonToExecuteSignal(this->normalizeVectorsCheckBox_);
   connectButtonToExecuteSignal(this->renderVectorsBelowThresholdCheckBox_);
-  connectComboToExecuteSignal(this->vectorsRadiusWidthPortComboBox_);
   connectButtonToExecuteSignal(this->bidirectionalVectorsCheckBox_);
 
   // Text Labels
@@ -230,9 +223,6 @@ void ShowFieldGlyphsDialog::setupTensorsTab()
   addDoubleSpinBoxManager(this->tensorsThresholdDoubleSpinBox_, ShowFieldGlyphs::TensorsThreshold);
 
   connectButtonToExecuteSignal(this->showTensorsCheckBox_);
-  connectComboToExecuteSignal(this->tensorsDisplayTypeComboBox_);
-  connectComboToExecuteSignal(this->tensorsColorTypeComboBox_);
-  connectComboToExecuteSignal(this->tensorsColoringInputComboBox_);
   connectButtonToExecuteSignal(this->tensorsTransparencyOffRButton_);
   connectButtonToExecuteSignal(this->tensorsUniformTransparencyRButton_);
   connectButtonToExecuteSignal(this->normalizeTensorsCheckBox_);
