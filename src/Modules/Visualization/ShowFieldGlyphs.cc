@@ -222,8 +222,8 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(VectorsTransparency, 0);
   state->setValue(VectorsUniformTransparencyValue, 0.65);
   //  state->setValue(VectorsTransparencyDataInput, std::string("Primary"));
-  state->setValue(VectorsRadiusWidthDataInput, std::string("Primary"));
-  state->setValue(VectorsRadiusWidthScale, 0.25);
+  state->setValue(SecondaryVectorParameterDataInput, std::string("Primary"));
+  state->setValue(SecondaryVectorParameterScale, 0.25);
   state->setValue(NormalizeVectors, false);
   state->setValue(VectorsScale, 1.0);
   state->setValue(RenderVectorsBelowThreshold, true);
@@ -442,7 +442,7 @@ void GlyphBuilder::renderVectors(
   }
 
   double scale = state->getValue(ShowFieldGlyphs::VectorsScale).toDouble();
-  double radiusWidthScale = state->getValue(ShowFieldGlyphs::VectorsRadiusWidthScale).toDouble();
+  double radiusWidthScale = state->getValue(ShowFieldGlyphs::SecondaryVectorParameterScale).toDouble();
   double resolution = state->getValue(ShowFieldGlyphs::VectorsResolution).toInt();
   double arrowHeadRatio = state->getValue(ShowFieldGlyphs::ArrowHeadRatio).toDouble();
 
@@ -876,7 +876,7 @@ RenderState GlyphBuilder::getVectorsRenderState(ModuleStateHandle state)
     renState.set(RenderState::USE_DEFAULT_COLOR, true);
   }
   renState.mColorInput = getInput(state->getValue(ShowFieldGlyphs::VectorsColoringDataInput).toString());
-  renState.mVectorRadiusWidthInput = getInput(state->getValue(ShowFieldGlyphs::VectorsRadiusWidthDataInput).toString());
+  renState.mVectorRadiusWidthInput = getInput(state->getValue(ShowFieldGlyphs::SecondaryVectorParameterDataInput).toString());
 
   return renState;
 }
@@ -1030,8 +1030,8 @@ const AlgorithmParameterName ShowFieldGlyphs::NormalizeVectors("NormalizeVectors
 const AlgorithmParameterName ShowFieldGlyphs::VectorsScale("VectorsScale");
 const AlgorithmParameterName ShowFieldGlyphs::RenderVectorsBelowThreshold("RenderVectorsBelowThreshold");
 const AlgorithmParameterName ShowFieldGlyphs::VectorsThreshold("VectorsThreshold");
-const AlgorithmParameterName ShowFieldGlyphs::VectorsRadiusWidthDataInput("VectorsRadiusWidthDataInput");
-const AlgorithmParameterName ShowFieldGlyphs::VectorsRadiusWidthScale("VectorsRadiusWidthScale");
+const AlgorithmParameterName ShowFieldGlyphs::SecondaryVectorParameterDataInput("SecondaryVectorParameterDataInput");
+const AlgorithmParameterName ShowFieldGlyphs::SecondaryVectorParameterScale("SecondaryVectorParameterScale");
 const AlgorithmParameterName ShowFieldGlyphs::ArrowHeadRatio("ArrowHeadRatio");
 const AlgorithmParameterName ShowFieldGlyphs::RenderBidirectionaly("RenderBidirectionaly");
 const AlgorithmParameterName ShowFieldGlyphs::VectorsResolution("VectorsResolution");

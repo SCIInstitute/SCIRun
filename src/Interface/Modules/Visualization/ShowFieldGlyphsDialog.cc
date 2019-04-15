@@ -166,8 +166,8 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
   addCheckableButtonManager(this->renderVectorsBelowThresholdCheckBox_, ShowFieldGlyphs::RenderVectorsBelowThreshold);
   addDoubleSpinBoxManager(this->vectorsThresholdDoubleSpinBox_, ShowFieldGlyphs::VectorsThreshold);
   // Radius/Width
-  addComboBoxManager(this->vectorsRadiusWidthPortComboBox_, ShowFieldGlyphs::VectorsRadiusWidthDataInput);
-  addDoubleSpinBoxManager(this->vectorsRadiusWidthDoubleSpinBox_, ShowFieldGlyphs::VectorsRadiusWidthScale);
+  addComboBoxManager(this->secondaryVectorParameterPortComboBox_, ShowFieldGlyphs::SecondaryVectorParameterDataInput);
+  addDoubleSpinBoxManager(this->secondaryVectorParameterDoubleSpinBox_, ShowFieldGlyphs::SecondaryVectorParameterScale);
   // Arrow Head Ratio
   addDoubleSpinBoxManager(this->arrowHeadRatioDoubleSpinBox_, ShowFieldGlyphs::ArrowHeadRatio);
   // Bidirectional
@@ -186,8 +186,8 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
   this->vectorColorInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->normalizeVectorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->vectorScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->vectorRadiusWidthInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->vectorRadiusWidthScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->secondaryVectorParameterInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->secondaryVectorParameterScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->bidirectionalVectorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->springsMajorRadiusInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->springsMajorRadiusScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");

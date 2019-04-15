@@ -370,7 +370,7 @@
              </rect>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="page_7">
              <property name="geometry">
@@ -899,7 +899,7 @@
              </font>
             </property>
             <property name="currentIndex">
-             <number>3</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="page">
              <property name="geometry">
@@ -1036,8 +1036,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>100</width>
-               <height>30</height>
+               <width>291</width>
+               <height>197</height>
               </rect>
              </property>
              <attribute name="label">
@@ -1108,14 +1108,14 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>100</width>
-               <height>30</height>
+               <width>291</width>
+               <height>197</height>
               </rect>
              </property>
              <attribute name="label">
-              <string>Radius/Width and Arrow Settings</string>
+              <string>Secondary Parameter and Arrows</string>
              </attribute>
-             <widget class="QGroupBox" name="radiusWidthGroupBox_">
+             <widget class="QGroupBox" name="secondaryVectorParameterGroupBox_">
               <property name="enabled">
                <bool>true</bool>
               </property>
@@ -1128,9 +1128,9 @@
                </rect>
               </property>
               <property name="title">
-               <string>Radius/Width</string>
+               <string>Secondary Parameter</string>
               </property>
-              <widget class="QLabel" name="vectorRadiusWidthScaleLabel">
+              <widget class="QLabel" name="secondaryVectorParameterScaleLabel">
                <property name="geometry">
                 <rect>
                  <x>10</x>
@@ -1143,7 +1143,7 @@
                 <string>Scale:</string>
                </property>
               </widget>
-              <widget class="QDoubleSpinBox" name="vectorsRadiusWidthDoubleSpinBox_">
+              <widget class="QDoubleSpinBox" name="secondaryVectorParameterDoubleSpinBox_">
                <property name="geometry">
                 <rect>
                  <x>170</x>
@@ -1165,7 +1165,7 @@
                 <double>0.250000000000000</double>
                </property>
               </widget>
-              <widget class="QLabel" name="vectorRadiusWidthInputLabel">
+              <widget class="QLabel" name="secondaryVectorParameterInputLabel">
                <property name="geometry">
                 <rect>
                  <x>10</x>
@@ -1178,7 +1178,7 @@
                 <string>Input:</string>
                </property>
               </widget>
-              <widget class="QComboBox" name="vectorsRadiusWidthPortComboBox_">
+              <widget class="QComboBox" name="secondaryVectorParameterPortComboBox_">
                <property name="geometry">
                 <rect>
                  <x>150</x>
@@ -2068,8 +2068,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>100</width>
-               <height>30</height>
+               <width>98</width>
+               <height>28</height>
               </rect>
              </property>
              <attribute name="label">
