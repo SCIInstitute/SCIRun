@@ -55,7 +55,7 @@ namespace DynamicExecutor {
     {
       auto thread = executeThreads_->create_thread(boost::bind(&ModuleExecutor::run, executor));
       Core::Thread::Guard g(mapLock_->get());
-      threadsByModuleId_[executor.module_->get_id().id_] = thread;
+      threadsByModuleId_[executor.module_->id().id_] = thread;
     }
     void joinAll()
     {

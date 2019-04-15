@@ -68,7 +68,7 @@ void ChooseInput::execute()
 void ChooseInput::portAddedSlot(const ModuleId& mid, const PortId&)
 {
   //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
-  if (mid == get_id())
+  if (mid == id())
   {
     portChangeImpl();
   }
@@ -77,7 +77,7 @@ void ChooseInput::portAddedSlot(const ModuleId& mid, const PortId&)
 void ChooseInput::portRemovedSlot(const ModuleId& mid, const PortId&)
 {
   //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
-  if (mid == get_id())
+  if (mid == id())
   {
     portChangeImpl();
   }
@@ -85,6 +85,6 @@ void ChooseInput::portRemovedSlot(const ModuleId& mid, const PortId&)
 
 void ChooseInput::portChangeImpl()
 {
-  int inputs = num_input_ports() - 1; // -1 for empty end
+  int inputs = numInputPorts() - 1; // -1 for empty end
   get_state()->setTransientValue(Parameters::PortMax, inputs);
 }

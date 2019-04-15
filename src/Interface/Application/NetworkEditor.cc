@@ -166,7 +166,7 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
     return;
   }
 
-  latestModuleId_ = module->get_id().id_;
+  latestModuleId_ = module->id().id_;
   auto moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
   moduleEventProxy_->trackModule(module);
 
@@ -177,7 +177,7 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
   }
   count.increment();
   Q_EMIT modified();
-  Q_EMIT newModule(QString::fromStdString(module->get_id()), module->has_ui());
+  Q_EMIT newModule(QString::fromStdString(module->id()), module->hasUI());
   alignViewport();
 }
 
@@ -233,7 +233,7 @@ void NetworkEditor::duplicateModule(const ModuleHandle& module)
 {
   InEditingContext iec(this);
 
-  auto widget = findById(scene_->items(), module->get_id());
+  auto widget = findById(scene_->items(), module->id());
   lastModulePosition_ = widget->scenePos() + QPointF(100, 0);
   //TODO: need better duplicate placement. hard code it for now.
   controller_->duplicateModule(module);
@@ -251,7 +251,7 @@ void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, cons
 
 void NetworkEditor::connectNewModuleImpl(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName, QObject* sender)
 {
-  auto widget = findById(scene_->items(), moduleToConnectTo->get_id());
+  auto widget = findById(scene_->items(), moduleToConnectTo->id());
 
   if (widget)
   {
@@ -293,7 +293,7 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
 {
   InEditingContext iec(this);
 
-  auto oldModule = findById(scene_->items(), moduleToReplace->get_id());
+  auto oldModule = findById(scene_->items(), moduleToReplace->id());
   lastModulePosition_ = oldModule->scenePos() - QPointF(15, 15);
   controller_->addModule(newModuleName);
 
@@ -636,7 +636,7 @@ void NetworkEditor::copy()
     {
       if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
       {
-        if (w->getModuleWidget()->getModuleId() == mod->get_id().id_)
+        if (w->getModuleWidget()->getModuleId() == mod->id().id_)
           return true;
       }
     }
@@ -1146,7 +1146,7 @@ void NetworkEditor::copyNote(ModuleHandle from, ModuleHandle to) const
   {
     if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      if (w->getModuleWidget()->getModule()->get_id() == from->get_id())
+      if (w->getModuleWidget()->getModule()->id() == from->id())
       {
         note = w->currentNote();
         break;
@@ -1158,7 +1158,7 @@ void NetworkEditor::copyNote(ModuleHandle from, ModuleHandle to) const
   {
     if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      if (w->getModuleWidget()->getModule()->get_id() == to->get_id())
+      if (w->getModuleWidget()->getModule()->id() == to->id())
       {
         w->updateNote(note);
         w->getModuleWidget()->setCurrentNote(note, true);

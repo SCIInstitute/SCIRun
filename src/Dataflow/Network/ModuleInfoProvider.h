@@ -45,19 +45,19 @@ namespace Networks {
     virtual bool hasOutputPort(const PortId& id) const = 0;
     virtual OutputPortHandle getOutputPort(const PortId& id) const = 0;
     virtual std::vector<OutputPortHandle> findOutputPortsWithName(const std::string& name) const = 0;
-    virtual size_t num_output_ports() const = 0;
+    virtual size_t numOutputPorts() const = 0;
     virtual std::vector<OutputPortHandle> outputPorts() const = 0;
 
     virtual bool hasInputPort(const PortId& id) const = 0;
     virtual InputPortHandle getInputPort(const PortId& id) = 0;
     virtual std::vector<InputPortHandle> findInputPortsWithName(const std::string& name) const = 0;
-    virtual size_t num_input_ports() const = 0;
+    virtual size_t numInputPorts() const = 0;
     virtual std::vector<InputPortHandle> inputPorts() const = 0;
 
-    virtual std::string get_module_name() const = 0;
-    virtual ModuleId get_id() const = 0;
-    virtual bool has_ui() const = 0;
-    virtual const ModuleLookupInfo& get_info() const = 0;
+    virtual std::string name() const = 0;
+    virtual ModuleId id() const = 0;
+    virtual bool hasUI() const = 0;
+    virtual const ModuleLookupInfo& info() const = 0;
     virtual bool hasDynamicPorts() const = 0;
 
     virtual std::string helpPageUrl() const = 0;

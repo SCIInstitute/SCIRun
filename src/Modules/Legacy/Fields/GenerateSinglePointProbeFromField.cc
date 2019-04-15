@@ -100,7 +100,7 @@ void GenerateSinglePointProbeFromField::processWidgetFeedback(const ModuleFeedba
   try
   {
     auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
-    if (vsf.selectionName.find(get_id()) != std::string::npos &&
+    if (vsf.selectionName.find(id()) != std::string::npos &&
       impl_->previousTransform_ != vsf.transform)
     {
       adjustPositionFromTransform(vsf.transform);

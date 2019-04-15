@@ -166,11 +166,11 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     return;
   //lock for state modification
   {
-    LOG_DEBUG("ViewScene::asyncExecute {} before locking", get_id().id_);
+    LOG_DEBUG("ViewScene::asyncExecute {} before locking", id().id_);
     Guard lock(mutex_.get());
     get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
 
-    LOG_DEBUG("ViewScene::asyncExecute {} after locking", get_id().id_);
+    LOG_DEBUG("ViewScene::asyncExecute {} after locking", id().id_);
 
     auto geom = boost::dynamic_pointer_cast<GeometryObject>(data);
     if (!geom)

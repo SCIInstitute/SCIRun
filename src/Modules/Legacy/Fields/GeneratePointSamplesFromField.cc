@@ -135,7 +135,7 @@ void GeneratePointSamplesFromField::processWidgetFeedback(const ModuleFeedback& 
   try
   {
     auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
-    if (vsf.selectionName.find(get_id()) != std::string::npos)
+    if (vsf.selectionName.find(id()) != std::string::npos)
     {
       int widgetIndex = -1;
       try

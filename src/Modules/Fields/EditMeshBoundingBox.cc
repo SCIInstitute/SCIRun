@@ -80,7 +80,7 @@ void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
   try
   {
     auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
-    if (vsf.selectionName.find(get_id()) != std::string::npos && impl_->userWidgetTransform_ != vsf.transform)
+    if (vsf.selectionName.find(id()) != std::string::npos && impl_->userWidgetTransform_ != vsf.transform)
     {
       widgetMoved_ = true;
       adjustGeometryFromTransform(vsf.transform);
