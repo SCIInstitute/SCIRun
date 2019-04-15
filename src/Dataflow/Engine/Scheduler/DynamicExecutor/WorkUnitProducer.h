@@ -134,7 +134,7 @@ namespace SCIRun {
           mutable bool badGroup_;
           mutable std::set<Networks::ModuleId> doneIds_;
           //static Core::Logging::Logger2 log_;
-          bool shouldLog_;
+          //bool shouldLog_;
           size_t numModules_;
           mutable boost::thread::id id_;
         };

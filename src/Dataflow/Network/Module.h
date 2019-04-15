@@ -112,6 +112,8 @@ namespace Networks {
     std::string get_categoryname() const;
     std::string get_packagename() const;
     ModuleId get_id() const override;
+    bool isDeprecated() const override { return false; }
+    std::string replacementModuleName() const override { return ""; }
     ModuleReexecutionStrategyHandle getReexecutionStrategy() const override final;
     void setReexecutionStrategy(ModuleReexecutionStrategyHandle caching) override final;
     Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const override final;

@@ -65,10 +65,12 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(num_output_ports, size_t());
           MOCK_CONST_METHOD0(get_id, ModuleId());
           MOCK_CONST_METHOD0(has_ui, bool());
+          MOCK_CONST_METHOD0(isDeprecated, bool());
           MOCK_CONST_METHOD0(hasDynamicPorts, bool());
           MOCK_CONST_METHOD0(metadata, const MetadataMap&());
           MOCK_CONST_METHOD0(helpPageUrl, std::string());
           MOCK_CONST_METHOD0(newHelpPageUrl, std::string());
+          MOCK_CONST_METHOD0(replacementModuleName, std::string());
           MOCK_METHOD1(setUiVisible, void(bool));
           MOCK_METHOD1(set_id, void(const std::string&));
           MOCK_CONST_METHOD0(get_info, const ModuleLookupInfo&());

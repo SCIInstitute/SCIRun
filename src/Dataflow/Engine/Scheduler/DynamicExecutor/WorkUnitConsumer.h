@@ -98,8 +98,8 @@ namespace DynamicExecutor {
     explicit ModuleConsumer(ModuleWorkQueuePtr workQueue, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer,
       ExecutionThreadGroupPtr executeThreadGroup) :
     work_(workQueue), producer_(producer), lookup_(lookup),
-    executeThreadGroup_(executeThreadGroup),
-    shouldLog_(false)//SCIRun::Core::Logging::Log::get().verbose())
+    executeThreadGroup_(executeThreadGroup)
+    //,shouldLog_(false)//SCIRun::Core::Logging::Log::get().verbose())
     {
       //log_.setVerbose(shouldLog_);
       //log_->trace_if(shouldLog_, "Consumer created.");
@@ -154,7 +154,7 @@ namespace DynamicExecutor {
     ExecutionThreadGroupPtr executeThreadGroup_;
 
     //static Core::Logging::Logger2 log_;
-    bool shouldLog_;
+    //bool shouldLog_;
   };
 
   typedef boost::shared_ptr<ModuleConsumer> ModuleConsumerPtr;

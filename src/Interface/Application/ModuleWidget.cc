@@ -383,6 +383,15 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   auto oldName = theModule->legacyModuleName();
   if (theModule->get_module_name() != oldName)
     setToolTip("Converted version of module " + QString::fromStdString(oldName));
+
+  if (theModule->isDeprecated())
+  {
+    QMessageBox::warning(nullptr,
+      "Module deprecation alert",
+      tr("Module %1 is deprecated, please use this replacement instead: %2")
+        .arg(QString::fromStdString(theModule->get_module_name()))
+        .arg(QString::fromStdString(theModule->replacementModuleName())));
+  }
 }
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)

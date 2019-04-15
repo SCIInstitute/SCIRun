@@ -43,6 +43,8 @@ namespace Fields {
     InterfaceWithCleaver();
     void execute() override;
     void setStateDefaults() override;
+    
+    DEPRECATED_MODULE_REPLACE_WITH("InterfaceWithCleaver2")
 
     HAS_DYNAMIC_PORTS
     INPUT_PORT_DYNAMIC(0, InputFields, Field);
