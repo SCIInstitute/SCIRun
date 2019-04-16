@@ -135,7 +135,7 @@ void GeneratePointSamplesFromField::processWidgetFeedback(const ModuleFeedback& 
   try
   {
     auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
-    if (vsf.selectionName.find(id()) != std::string::npos)
+    if (vsf.matchesWithModuleId(id()))
     {
       int widgetIndex = -1;
       try
@@ -148,6 +148,7 @@ void GeneratePointSamplesFromField::processWidgetFeedback(const ModuleFeedback& 
       catch (...)
       {
         logWarning("Failure parsing widget id");
+        return;
       }
       if (impl_->previousTransforms_[widgetIndex] != vsf.transform)
       {
