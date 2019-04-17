@@ -90,7 +90,7 @@ namespace SCIRun{
       float getZNear()  {return mZNear;}
       float getFOVY()   {return mFOVY;}
       float getAspect() {return static_cast<float>(mInterface.getScreenWidthPixels()) /
-                                static_cast<float>(mInterface.getScreenHeightPixels());}
+                         static_cast<float>(mInterface.getScreenHeightPixels());}
 
       void setLockZoom(bool lock)     {lockZoom_ = lock;}
       void setLockPanning(bool lock)  {lockPanning_ = lock;}
