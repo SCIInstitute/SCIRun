@@ -94,13 +94,13 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   for (double i = 0.; std::abs(i - 1.) > 0.000001; i += resolution) {
     ColorRGB col = new_map.valueToColor(i);
     uint32_t offset = static_cast<uint32_t>(points.size());
-    points.push_back(Vector(0., i, +0.001));
+    points.push_back(Vector(0., i, 0.001));
     colors.push_back(col);
-    points.push_back(Vector(1., i, +0.001));
+    points.push_back(Vector(1., i, 0.001));
     colors.push_back(col);
-    points.push_back(Vector(0., i + resolution, +0.001));
+    points.push_back(Vector(0., i + resolution, 0.001));
     colors.push_back(col);
-    points.push_back(Vector(1., i + resolution, +0.001));
+    points.push_back(Vector(1., i + resolution, 0.001));
     colors.push_back(col);
     numVBOElements += 2;
     indices.push_back(offset + 0);
