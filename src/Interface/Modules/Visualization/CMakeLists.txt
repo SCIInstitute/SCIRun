@@ -40,6 +40,7 @@ SET(Interface_Modules_Visualization_FORMS
   ShowColorMap.ui
   RescaleColorMap.ui
   ShowFieldWithOspray.ui
+  ShowAndEditDipoles.ui
 )
 
 SET(Interface_Modules_Visualization_HEADERS
@@ -55,6 +56,7 @@ SET(Interface_Modules_Visualization_HEADERS
   ShowColorMapDialog.h
   RescaleColorMapDialog.h
   ShowFieldWithOsprayDialog.h
+  ShowAndEditDipolesDialog.h
 )
 
 SET(Interface_Modules_Visualization_SOURCES
@@ -69,6 +71,7 @@ SET(Interface_Modules_Visualization_SOURCES
   ShowColorMapDialog.cc
   RescaleColorMapDialog.cc
   ShowFieldWithOsprayDialog.cc
+  ShowAndEditDipolesDialog.cc
 )
 
 QT_WRAP_UI(Interface_Modules_Visualization_FORMS_HEADERS "${Interface_Modules_Visualization_FORMS}")
