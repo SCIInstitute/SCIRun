@@ -98,6 +98,7 @@ namespace SCIRun {
       void saveNewGeometryChanged(int state);
       void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
       void updateMeshComponentSelection(const QString& moduleId, const QString& component, bool selected);
+
       //Clipping Plane
       void setClippingPlaneIndex(int index);
       void setClippingPlaneVisible(bool value);
@@ -107,6 +108,7 @@ namespace SCIRun {
       void setClippingPlaneY(int index);
       void setClippingPlaneZ(int index);
       void setClippingPlaneD(int index);
+
       //Materials Controls
       void setAmbientValue(double value);
       void setDiffuseValue(double value);
@@ -119,6 +121,7 @@ namespace SCIRun {
       void setFogStartValue(double value);
       void setFogEndValue(double value);
       void assignFogColor();
+
       //Scale Bar
       void setScaleBarVisible(bool value);
       void setScaleBarFontSize(int value);
@@ -129,6 +132,7 @@ namespace SCIRun {
       void setScaleBarNumTicks(int value);
       void setScaleBarLineWidth(double value);
       void setScaleBar();
+
       //Render Settings
       void lightingChecked(bool value);
       void showBBoxChecked(bool value);

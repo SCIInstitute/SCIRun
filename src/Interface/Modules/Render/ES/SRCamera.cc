@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// \author James Hughes
-/// \date   March 2013
+// author James Hughes
+// date   March 2013
 
 #include <gl-platform/GLPlatform.hpp>
 #include <Interface/Modules/Render/ES/SRCamera.h>
@@ -35,7 +35,7 @@
 namespace SCIRun {
   namespace Render {
 
-    //------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
     SRCamera::SRCamera(SRInterface& iface) :
         mInterface(iface),
         mArcLookAt(new spire::ArcLookAt())
@@ -43,15 +43,16 @@ namespace SCIRun {
       setAsPerspective();
     }
 
-    //------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
     void SRCamera::buildTransform()
     {
+      // todo fix this method to return mV instead of mIV
       mIV  = mArcLookAt->getWorldViewTransform();
       mV   = glm::affineInverse(mIV);
       mVP  = mP * mV;
     }
 
-    //------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
     void SRCamera::setAsPerspective()
     {
       mPerspective = true;
@@ -59,7 +60,7 @@ namespace SCIRun {
       buildTransform();
     }
 
-    //------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
     void SRCamera::setAsOrthographic(float halfWidth, float halfHeight)
     {
       mPerspective = false;
@@ -67,21 +68,21 @@ namespace SCIRun {
       buildTransform();
     }
 
-    //------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
     void SRCamera::setView(const glm::vec3& view, const glm::vec3& up)
     {
       mArcLookAt->setView(view, up);
       setClippingPlanes();
     }
 
-    //------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
     void SRCamera::mouseDownEvent(const glm::ivec2& pos, SRInterface::MouseButton btn)
     {
       glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
       mArcLookAt->doReferenceDown(screenSpace);
     }
 
-    //------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
     void SRCamera::mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton btn)
     {
       glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
@@ -101,7 +102,7 @@ namespace SCIRun {
       setClippingPlanes();
     }
 
-    //------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
     void SRCamera::mouseWheelEvent(int32_t delta, int zoomSpeed)
     {
       if (mInterface.getMouseMode() != SRInterface::MOUSE_OLDSCIRUN && !lockZoom_)
@@ -111,14 +112,14 @@ namespace SCIRun {
       }
     }
 
-    //------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
     void SRCamera::setSceneBoundingBox(const Core::Geometry::BBox& bbox)
     {
       mSceneBBox = bbox;
       setClippingPlanes();
     }
 
-    //------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
     void SRCamera::doAutoView()
     {
       if(mSceneBBox.valid())
@@ -131,20 +132,20 @@ namespace SCIRun {
 
         spire::AABB aabb(min, max);
 
-        /// \todo Use real FOV-Y when we allow the user to change the FOV.
+        // todo Use real FOV-Y when we allow the user to change the FOV.
         mArcLookAt->autoview(aabb, mFOVY);
         setClippingPlanes();
       }
     }
 
-    //------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
     void SRCamera::setClippingPlanes()
     {
       mRadius = (mSceneBBox.get_max() - mSceneBBox.get_min()).length() / 2.0f;
 
       if(mRadius > 0.0)
       {
-        buildTransform();  //make sure matricies are up to date
+        buildTransform();  // make sure matricies are up to date
         Core::Geometry::Point c =  Core::Geometry::Point(mSceneBBox.get_max() + mSceneBBox.get_min());
         glm::vec4 center(c.x()/2.0,c.y()/2.0,c.z()/2.0, 1.0);
         center = mV * center;
@@ -161,7 +162,7 @@ namespace SCIRun {
       setAsPerspective();
     }
 
-    //------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
     void SRCamera::setZoomInverted(bool value)
     {
       if (value)
@@ -170,7 +171,7 @@ namespace SCIRun {
         mInvertVal = -1;
     }
 
-    //------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
     glm::vec2 SRCamera::calculateScreenSpaceCoords(const glm::ivec2& mousePos)
     {
       float windowOriginX = 0.0f;
@@ -184,7 +185,7 @@ namespace SCIRun {
         / static_cast<float>(mInterface.getScreenHeightPixels()) - 1.0f;
 
       // Rotation with flipped axes feels much more natural. It places it inside the
-      //correct OpenGL coordinate system (with origin in the center of the screen).
+      // correct OpenGL coordinate system (with origin in the center of the screen).
       mouseScreenSpace.y = -mouseScreenSpace.y;
 
       return mouseScreenSpace;

@@ -544,6 +544,32 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
+    uint32_t SRInterface::getSelectIDForName(const std::string& name)
+    {
+      return static_cast<uint32_t>(std::hash<std::string>()(name));
+    }
+
+    //----------------------------------------------------------------------------------------------
+    glm::vec4 SRInterface::getVectorForID(const uint32_t id)
+    {
+      float a = ((id >> 24) & 0xff) / 255.0f;
+      float b = ((id >> 16) & 0xff) / 255.0f;
+      float g = ((id >> 8)  & 0xff) / 255.0f;
+      float r = ((id)       & 0xff) / 255.0f;
+      return glm::vec4(r, g, b, a);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    uint32_t SRInterface::getIDForVector(const glm::vec4& vec)
+    {
+      uint32_t r = (uint32_t)(vec.r*255.0) & 0xff;
+      uint32_t g = (uint32_t)(vec.g*255.0) & 0xff;
+      uint32_t b = (uint32_t)(vec.b*255.0) & 0xff;
+      uint32_t a = (uint32_t)(vec.a*255.0) & 0xff;
+      return (a << 24) | (b << 16) | (g << 8) | (r);
+    }
+
+    //----------------------------------------------------------------------------------------------
     void SRInterface::updateWidget(const glm::ivec2& pos)
     {
       gen::StaticCamera* cam = mCore.getStaticComponent<gen::StaticCamera>();
@@ -699,7 +725,7 @@ namespace SCIRun {
       std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
       if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock())
       {
-        DEBUG_LOG_LINE_INFO
+        DEBUG_LOG_LINE_INFO;
         if (std::shared_ptr<ren::IBOMan> iboMan = im.lock())
         {
           DEBUG_LOG_LINE_INFO
@@ -1065,8 +1091,6 @@ namespace SCIRun {
       DEBUG_LOG_LINE_INFO
     }
 
-
-
     //----------------------------------------------------------------------------------------------
     void SRInterface::removeAllGeomObjects()
     {
@@ -1238,6 +1262,11 @@ namespace SCIRun {
       }
     }
 
+    //----------------------------------------------------------------------------------------------
+    uint64_t SRInterface::getEntityIDForName(const std::string& name, int port)
+    {
+      return (static_cast<uint64_t>(std::hash<std::string>()(name)) >> 8) + (static_cast<uint64_t>(port) << 56);
+    }
 
 
 
@@ -1721,46 +1750,6 @@ namespace SCIRun {
         break;
       }
     }
-
-
-
-    //----------------------------------------------------------------------------------------------
-    //---------------- Complex Getters/Setters -----------------------------------------------------
-    //----------------------------------------------------------------------------------------------
-
-    //----------------------------------------------------------------------------------------------
-    uint64_t SRInterface::getEntityIDForName(const std::string& name, int port)
-    {
-      return (static_cast<uint64_t>(std::hash<std::string>()(name)) >> 8) + (static_cast<uint64_t>(port) << 56);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    uint32_t SRInterface::getSelectIDForName(const std::string& name)
-    {
-      return static_cast<uint32_t>(std::hash<std::string>()(name));
-    }
-
-    //----------------------------------------------------------------------------------------------
-    glm::vec4 SRInterface::getVectorForID(const uint32_t id)
-    {
-      float a = ((id >> 24) & 0xff) / 255.0f;
-      float b = ((id >> 16) & 0xff) / 255.0f;
-      float g = ((id >> 8)  & 0xff) / 255.0f;
-      float r = ((id)       & 0xff) / 255.0f;
-      return glm::vec4(r, g, b, a);
-    }
-
-    //----------------------------------------------------------------------------------------------
-    uint32_t SRInterface::getIDForVector(const glm::vec4& vec)
-    {
-      uint32_t r = (uint32_t)(vec.r*255.0) & 0xff;
-      uint32_t g = (uint32_t)(vec.g*255.0) & 0xff;
-      uint32_t b = (uint32_t)(vec.b*255.0) & 0xff;
-      uint32_t a = (uint32_t)(vec.a*255.0) & 0xff;
-      return (a << 24) | (b << 16) | (g << 8) | (r);
-    }
-
-
 
   } // namespace Render
 } // namespace SCIRun

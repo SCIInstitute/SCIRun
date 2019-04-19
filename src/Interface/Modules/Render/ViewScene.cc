@@ -171,9 +171,6 @@ std::string ViewSceneDialog::toString(std::string prefix) const
   std::string output = "VIEW_SCENE:\n";
   prefix += "  ";
 
-  //auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
-  //auto portGeometries = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
-
   output += prefix + "State:\n";
   output += "\n";
 
@@ -182,7 +179,6 @@ std::string ViewSceneDialog::toString(std::string prefix) const
 
   return output;
 }
-
 
 void ViewSceneDialog::setInitialLightValues()
 {

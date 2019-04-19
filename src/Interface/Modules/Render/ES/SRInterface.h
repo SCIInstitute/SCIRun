@@ -117,12 +117,16 @@ namespace SCIRun {
       void inputMouseWheel(int32_t delta);
       void inputShiftKeyDown(bool shiftDown);
 
+      void setMouseMode(MouseMode mode) {mMouseMode = mode;}
+      MouseMode getMouseMode() const    {return mMouseMode;}
+
       //---------------- Camera --------------------------------------------------------------------
       // Call this whenever the window is resized. This will modify the viewport appropriately.
       void eventResize(size_t width, size_t height);
       void doAutoView();
       // Sets the selected View of the window
       void setView(const glm::vec3& view, const glm::vec3& up);
+      void setZoomSpeed(int zoomSpeed) {mZoomSpeed = zoomSpeed;}
       void setZoomInverted(bool value);
       void setLockZoom(bool lock);
       void setLockPanning(bool lock);
@@ -136,6 +140,8 @@ namespace SCIRun {
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...
       void select(const glm::ivec2& pos, std::list<Graphics::Datatypes::GeometryHandle> &objList, int port);
+      std::string &getSelection()          {return mSelected;}
+      gen::Transform &getWidgetTransform() {return mWidgetTransform;}
 
       //---------------- Clipping Planes -----------------------------------------------------------
       StaticClippingPlanes* getClippingPlanes();
@@ -146,6 +152,7 @@ namespace SCIRun {
       void setClippingPlaneY(double value);
       void setClippingPlaneZ(double value);
       void setClippingPlaneD(double value);
+      void setClippingPlaneIndex(int index) {clippingPlaneIndex_ = index;}
 
       //---------------- Data Handeling ------------------------------------------------------------
       // Handles a new geometry object.
@@ -154,6 +161,11 @@ namespace SCIRun {
       void removeAllGeomObjects();
       // Garbage collect all invalid objects not given in the valid objects vector.
       void gcInvalidObjects(const std::vector<std::string>& validObjects);
+      // Simple hash function. Modify if hash collisions occur due to string
+      // hashing. The simplest approach would be to have all names placed in a
+      // hash multimap with a list which assigns ids to names.
+      uint64_t getEntityIDForName(const std::string& name, int port);
+      Core::Geometry::BBox getSceneBox() {return mSceneBBox;}
 
       //---------------- Rendering -----------------------------------------------------------------
       void doFrame(double currentTime, double constantDeltaTime); // Performs a frame.
@@ -162,34 +174,18 @@ namespace SCIRun {
       void setLightOn(int index, bool value);
       void setMaterialFactor(MatFactor factor, double value);
       void setFog(FogFactor factor, double value);
-
-
-
-      // Screen width retrieval. Dimensions are pixels.
-      size_t getScreenWidthPixels() const  { return mScreenWidth; }
-      size_t getScreenHeightPixels() const { return mScreenHeight; }
-
-      void setZoomSpeed(int zoomSpeed) {mZoomSpeed = zoomSpeed;}
-
       void setOrientSize(int size) {orientSize = size/10.0f;}      //Remap 1:100 to 0.1:10
       void setOrientPosX(int pos)  {orientPosX = (pos-50)/100.0f;} //Remap 0:100 to -0.5:0.5
       void setOrientPosY(int pos)  {orientPosY = (pos-50)/100.0f;} //Remap 0:100 to -0.5:0.5
       void showOrientation(bool value) {showOrientation_ = value;}
-
-      void setMouseMode(MouseMode mode) {mMouseMode = mode;}
-      MouseMode getMouseMode() const    {return mMouseMode;}
-
-      std::string &getSelection()          {return mSelected;}
-      gen::Transform &getWidgetTransform() {return mWidgetTransform;}
-
-      void setClippingPlaneIndex(int index) {clippingPlaneIndex_ = index;}
-      Core::Geometry::BBox getSceneBox()    {return mSceneBBox;}
-
       void setBackgroundColor(QColor color)
         {mCore.setBackgroundColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());}
       void setFogColor(const glm::vec4 &color) {mFogColor = color;}
       void setTransparencyRendertype(RenderState::TransparencySortType rType) {mRenderSortType = rType;}
 
+      // Screen width retrieval. Dimensions are pixels.
+      size_t getScreenWidthPixels() const  {return mScreenWidth;}
+      size_t getScreenHeightPixels() const {return mScreenHeight;}
 
     private:
       void setupCore();
@@ -198,10 +194,13 @@ namespace SCIRun {
       //---------------- Widgets -------------------------------------------------------------------
       bool foundWidget(const glm::ivec2& pos); // search for a widget at mouse position
       void updateWidget(const glm::ivec2& pos); // update selected widget
+      uint32_t getSelectIDForName(const std::string& name);
+      glm::vec4 getVectorForID(const uint32_t id);
+      uint32_t getIDForVector(const glm::vec4& vec);
 
       //---------------- Clipping Planes -----------------------------------------------------------
       void checkClippingPlanes(int n);// make sure clipping plane number matches
-      double getMaxProjLength(const glm::vec3 &n);
+            double getMaxProjLength(const glm::vec3 &n);
 
       //---------------- Data Handeling ------------------------------------------------------------
       // Adds a VBO to the given entityID.
@@ -224,16 +223,6 @@ namespace SCIRun {
       void applyUniform(uint64_t entityID, const Graphics::Datatypes::SpireSubPass::Uniform& uniform);
       void applyMatFactors(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
       void applyFog(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
-
-      //---------------- Getters/Setters -----------------------------------------------------------
-      // Simple hash function. Modify if hash collisions occur due to string
-      // hashing. The simplest approach would be to have all names placed in a
-      // hash multimap with a list which assigns ids to names.
-      uint64_t getEntityIDForName(const std::string& name, int port);
-      uint32_t getSelectIDForName(const std::string& name);
-      glm::vec4 getVectorForID(const uint32_t id);
-      uint32_t getIDForVector(const glm::vec4& vec);
-
 
 
       class DepthIndex
@@ -345,7 +334,7 @@ namespace SCIRun {
       double                            mMatAmbient         {0.2};
       double                            mMatDiffuse         {1.0};
       double                            mMatSpecular        {0.0};
-      double                            mMatShine           {2.0};
+      double                            mMatShine           {1.0};
 
       //fog settings
       double                            mFogIntensity       {0.0};
