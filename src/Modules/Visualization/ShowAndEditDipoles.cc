@@ -48,21 +48,26 @@ ShowAndEditDipoles::ShowAndEditDipoles() : GeometryGeneratingModule(staticInfo_)
 void ShowAndEditDipoles::execute()
 {
   auto field = getRequiredInput(InputField);
-  if(needToExecute())
+  //  if(needToExecute())
+  //    {
+  std::cout << "executing\n";
+  FieldInformation finfo(field);
+  if(!finfo.is_pointcloudmesh())
     {
-      std::cout << "executing\n";
-      FieldInformation finfo(field);
-      if(!finfo.is_pointcloudmesh())
-        {
-          error("Input field was not a valid point cloud.");
-        }
+      error("Input field was not a valid point cloud.");
     }
+  else
+    {
+      std::cout << "point cloud found\n";
+    }
+      //    }
 }
 
 void ShowAndEditDipoles::setStateDefaults()
 {
   auto state = get_state();
 
+  std::cout << "state setting\n";
   state->setValue(Sizing, 0);
   state->setValue(ShowLastAsVector, false);
   state->setValue(ShowLines, false);
@@ -71,3 +76,4 @@ void ShowAndEditDipoles::setStateDefaults()
 const AlgorithmParameterName ShowAndEditDipoles::Sizing("Sizing");
 const AlgorithmParameterName ShowAndEditDipoles::ShowLastAsVector("ShowLastAsVector");
 const AlgorithmParameterName ShowAndEditDipoles::ShowLines("ShowLines");
+

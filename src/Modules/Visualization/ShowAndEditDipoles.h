@@ -33,6 +33,16 @@ DEALINGS IN THE SOFTWARE.
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
+  //  namespace Core{
+  // namespace Algorithms{
+  //   namespace Visualization{
+  //     ALGORITHM_PARAMETER_DECL(Sizing);
+  //     ALGORITHM_PARAMETER_DECL(ShowLastAsVector);
+  //     ALGORITHM_PARAMETER_DECL(ShowLines);
+  //   }
+  // }
+  //}
+
   namespace Modules {
     namespace Visualization {
 
@@ -43,7 +53,10 @@ namespace SCIRun {
       public:
         ShowAndEditDipoles();
         virtual void execute() override;
-        virtual void setStateDefaults();
+
+        static const Core::Algorithms::AlgorithmParameterName Sizing;
+        static const Core::Algorithms::AlgorithmParameterName ShowLastAsVector;
+        static const Core::Algorithms::AlgorithmParameterName ShowLines;
 
         INPUT_PORT(0, InputField, Field);
         OUTPUT_PORT(0, OutputField, Field);
@@ -51,9 +64,7 @@ namespace SCIRun {
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI);
 
-        static const Core::Algorithms::AlgorithmParameterName Sizing;
-        static const Core::Algorithms::AlgorithmParameterName ShowLastAsVector;
-        static const Core::Algorithms::AlgorithmParameterName ShowLines;
+        virtual void setStateDefaults();
       };
     }
   }

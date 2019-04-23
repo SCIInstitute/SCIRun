@@ -28,9 +28,14 @@
 
 #include <Interface/Modules/Visualization/ShowAndEditDipolesDialog.h>
 #include <Modules/Visualization/ShowAndEditDipoles.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Visualization;
+using namespace SCIRun::Core::Datatypes;
+
+using SAED = SCIRun::Modules::Visualization::ShowAndEditDipoles;
 
 ShowAndEditDipolesDialog::ShowAndEditDipolesDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -39,4 +44,9 @@ ShowAndEditDipolesDialog::ShowAndEditDipolesDialog(const std::string& name, Modu
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+
+  std::cout << "dialog managers\n";
+  addCheckBoxManager(showLastAsVectorCheckBox, SAED::ShowLastAsVector);
+  addRadioButtonGroupManager({fixedSizeRButton, normalizeLargestRButton, scaleSizeRButton}, SAED::Sizing);
+  addCheckBoxManager(showLinesCheckBox, SAED::ShowLines);
 }

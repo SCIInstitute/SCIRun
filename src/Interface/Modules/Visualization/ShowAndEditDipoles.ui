@@ -72,7 +72,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QRadioButton" name="fixedSizeRadioButton">
+       <widget class="QRadioButton" name="fixedSizeRButton">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -85,7 +85,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="normalizeLargestRadioButton">
+       <widget class="QRadioButton" name="normalizeLargestRButton">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -98,7 +98,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="scaleSizeRadioButton">
+       <widget class="QRadioButton" name="scaleSizeRButton">
         <property name="minimumSize">
          <size>
           <width>0</width>
