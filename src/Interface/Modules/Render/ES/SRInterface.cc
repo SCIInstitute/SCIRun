@@ -229,6 +229,19 @@ namespace SCIRun {
         dims->height = static_cast<uint32_t>(height);
       }
 
+      gen::StaticCamera* cam = mCore.getStaticComponent<gen::StaticCamera>();
+      gen::StaticOrthoCamera* orthoCam = mCore.getStaticComponent<gen::StaticOrthoCamera>();
+      if (cam == nullptr || orthoCam == nullptr) return;
+
+      //Setup default orthognal camera projection.
+      float aspect = static_cast<float>(width) / static_cast<float>(height);
+      float orthoZNear = -1000.0f;
+      float orthoZFar = 1000.0f;
+      glm::mat4 orthoProj = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, orthoZNear, orthoZFar);
+      orthoCam->data.setOrthoProjection(orthoProj, aspect, 2.0f, 2.0f, orthoZNear, orthoZFar);
+      orthoCam->data.winWidth = static_cast<float>(width);
+
+      cam->data.winWidth = static_cast<float>(width);
       mCamera->setAsPerspective();
       updateCamera();
     }
