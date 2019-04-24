@@ -6,7 +6,6 @@
    Copyright (c) 2016 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -42,6 +41,7 @@ namespace SCIRun
       namespace Python
       {
         ALGORITHM_PARAMETER_DECL(PythonCode);
+        ALGORITHM_PARAMETER_DECL(PythonTopLevelCode);
         ALGORITHM_PARAMETER_DECL(PythonInputStringNames);
         ALGORITHM_PARAMETER_DECL(PythonInputMatrixNames);
         ALGORITHM_PARAMETER_DECL(PythonInputFieldNames);
@@ -91,8 +91,8 @@ namespace SCIRun
         NEW_HELP_WEBPAGE_ONLY
       private:
         static Core::Thread::Mutex lock_;
-        std::string convertInputSyntax(const std::string& code) const;
-        std::string convertOutputSyntax(const std::string& code) const;
+        void runTopLevelCode() const;
+        std::vector<std::string> connectedPortIds() const;
       };
 
     }

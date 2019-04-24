@@ -1324,6 +1324,9 @@
    <property name="text">
     <string>Macro Editor</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+X</string>
+   </property>
   </action>
  </widget>
  <resources/>
