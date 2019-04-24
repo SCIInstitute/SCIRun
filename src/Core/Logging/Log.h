@@ -35,7 +35,13 @@
 #ifndef Q_MOC_RUN
 #include <Core/Utils/Singleton.h>
 #include <boost/filesystem/path.hpp>
+
+// older Mac compiler does not support thread-local storage
+#if defined(__APPLE__) && defined(DISABLE_SPDLOG_TLS)
+#define SPDLOG_NO_TLS
+#endif
 #include <spdlog/spdlog.h>
+
 #endif
 #include <Core/Logging/share.h>
 
