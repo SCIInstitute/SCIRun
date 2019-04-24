@@ -76,13 +76,16 @@ private Q_SLOTS:
   void updateScripts();
   void addMacro();
   void removeMacro();
+  void renameMacro();
   void assignToButton();
   void runSelectedMacro();
 
 private:
-  void setupAssignToAction(QAction* action, int i);
+  void highlightButton(QPushButton* button) const;
+  void dehighlightButton(QPushButton* button) const;
   CodeEditor* scriptPlainTextEdit_;
   MacroNameValueList macros_;
+  std::vector<QPushButton*> buttons_;
 };
 
 }
