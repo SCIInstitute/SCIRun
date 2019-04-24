@@ -138,7 +138,7 @@ public:
     {
       return;
     }
-    
+
     if (!srstate.front().state.get(RenderState::IS_TEXT))
     {
       return;
@@ -242,7 +242,7 @@ public:
     }
 
     geom.front().attribs.bind();
-    
+
     // Disable zwrite if we are rendering a transparent object.
     bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
     bool cullFace = glIsEnabled(GL_CULL_FACE);
@@ -276,7 +276,7 @@ public:
           rlist.front().data->getBuffer(), rlist.front().data->getBufferSize());
 
       spire::BSerialize colorDeserialize(
-          rlist.front().data->getBuffer(), rlist.front().data->getBufferSize()); 
+          rlist.front().data->getBuffer(), rlist.front().data->getBufferSize());
 
       int64_t posSize     = 0;
       int64_t colorSize   = 0;
@@ -366,7 +366,7 @@ public:
                           ibo.front().primType, 0));
       }
     }
-		
+
     if (depthMask)
     {
       GL(glDepthMask(GL_TRUE));
@@ -410,4 +410,3 @@ const char* getSystemName_RenderTransTextGeom()
 
 } // namespace Render
 } // namespace SCIRun
-

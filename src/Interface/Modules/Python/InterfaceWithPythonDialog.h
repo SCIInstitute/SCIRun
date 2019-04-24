@@ -35,6 +35,8 @@
 namespace SCIRun {
 namespace Gui {
 
+  class CodeEditor;
+
 class SCISHARE InterfaceWithPythonDialog : public ModuleDialogGeneric,
   public Ui::InterfaceWithPython
 {
@@ -50,7 +52,8 @@ private Q_SLOTS:
 private:
   void handleInputTableWidgetRowChange(const std::string& portId, const std::string& type, DynamicPortChange portChangeType);
   void setupOutputTableCells();
-  class CodeEditor* pythonCodePlainTextEdit_;
+  CodeEditor* pythonCodePlainTextEdit_ {nullptr};
+  CodeEditor* pythonTopLevelCodePlainTextEdit_ {nullptr};
 };
 
 }
