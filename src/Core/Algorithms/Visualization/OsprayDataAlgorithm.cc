@@ -383,7 +383,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addStructVol(FieldHandle field, 
     obj->tfn.colors = cmp.colorList;
     
     // set default opacity for now
-    // obj->tfn.opacities = cmp.opacityList;
+    // alpha pushed twice for both upper and lower values
     auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
     obj->tfn.opacities.push_back(alpha);
     obj->tfn.opacities.push_back(alpha);
@@ -438,6 +438,10 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addUnstructVol(FieldHandle field
   
   for (vmesh->begin(meshCellIter); meshCellIter != meshCellEnd; ++meshCellIter)
   {
+    // OSPRay require an index array of size 8
+    // for each unstructured mesh cell
+    // a tetrahedral cell's first 4 vertices are set to -1
+    // a wedge cell's first 2 vertices are set to -2
     VMesh::Cell::index_type elemID = *meshCellIter;
     VMesh::Node::array_type nodesFromCell(8);
     vmesh->get_nodes(nodesFromCell, elemID);
@@ -453,7 +457,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::addUnstructVol(FieldHandle field
     obj->tfn.colors = cmp.colorList;
     
     // set default opacity for now
-    // obj->tfn.opacities = cmp.opacityList;
+    // alpha pushed twice for both upper and lower values
     auto alpha = static_cast<float>(get(Parameters::DefaultColorA).toDouble());
     obj->tfn.opacities.push_back(alpha);
     obj->tfn.opacities.push_back(alpha);
@@ -576,6 +580,7 @@ OsprayGeometryObjectHandle OsprayDataAlgorithm::fillDataBuffers(FieldHandle fiel
     {
       auto nodes = face.nodeIndices();
       if(info.is_quadsurfmesh()){
+        // quad face added in reverse order for correct normal in OSPRay viewer
         index.push_back(static_cast<int32_t>(nodes[3]));
         index.push_back(static_cast<int32_t>(nodes[2]));
         index.push_back(static_cast<int32_t>(nodes[1]));

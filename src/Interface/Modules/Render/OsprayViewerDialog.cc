@@ -483,7 +483,7 @@ void OsprayViewerDialog::createViewer(const CompositeOsprayGeometryObject& geom)
     
     setupViewer(viewer_);
     
-    SCIRun::LOG_DEBUG("num of vol: "+std::to_string(vol_list.size()));
+    SCIRun::LOG_DEBUG("num of vol: {}", vol_list.size());
     // load volume here
     for(int i=0;i<vol_list.size();i++){
       viewer_->loadVolume(vol_list[i], voxelRange_list[i].toVec2f(), bounds_list[i]);

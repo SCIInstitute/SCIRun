@@ -29,16 +29,12 @@
 SET(Modules_String_SRCS
   CreateString.cc
   NetworkNotes.cc
-  ModuleTest.cc
-ModuleTestUI.cc
 )
 
 SET(Modules_String_HEADERS
   CreateString.h
   NetworkNotes.h
-  ModuleTest.h
   share.h
-ModuleTestUI.h
 )
 
 SCIRUN_ADD_LIBRARY(Modules_String 
