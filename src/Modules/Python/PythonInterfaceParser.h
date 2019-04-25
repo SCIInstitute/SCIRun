@@ -43,6 +43,7 @@ namespace SCIRun
         {
           std::string code;
           bool isMatlab;
+          static constexpr const char* delimiter {"%%"};
         };
 
         using PythonCode = std::list<PythonCodeBlock>;

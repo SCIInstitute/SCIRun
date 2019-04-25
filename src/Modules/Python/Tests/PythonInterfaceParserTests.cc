@@ -106,7 +106,7 @@ TEST(PythonInterfaceParserTests, CanExtractSingleMatlabBlock)
 {
   auto parser = makeParser();
 
-  std::string code = "/*matlab\na = 1\nmatlab*/";
+  std::string code = "%%\na = 1\n%%";
   auto blocks = parser->extractSpecialBlocks(code);
 
   ASSERT_EQ(1, blocks.size());
@@ -133,12 +133,12 @@ TEST(PythonInterfaceParserTests, CanExtractMultipleMatlabBlocks)
   auto parser = makeParser();
 
   std::string code =
-    "/*matlab\n"
+    "%%\n"
     "a = 1\n"
-    "matlab*/\n"
-    "/*matlab\n"
+    "%%\n"
+    "%%\n"
     "b = 2\n"
-    "matlab*/\n";
+    "%%\n";
   auto blocks = parser->extractSpecialBlocks(code);
 
   std::cout << "printing out" << std::endl;
@@ -163,13 +163,13 @@ TEST(PythonInterfaceParserTests, CanExtractMultipleMatlabBlocksBetweenNormalBloc
   std::string code =
     "s = str1\n"
     "print(s)\n"
-    "/*matlab\n"
+    "%%\n"
     "a = 1\n"
-    "matlab*/\n"
+    "%%\n"
     "s = s + '.'\n"
-    "/*matlab\n"
+    "%%\n"
     "b = 2\n"
-    "matlab*/\n"
+    "%%\n"
     "print(b)\n";
 
   auto blocks = parser->extractSpecialBlocks(code);
@@ -205,13 +205,13 @@ TEST(PythonInterfaceParserTests, CanConcatenateNormalBlocksUntilMatlabConversion
   std::string code =
     "s = str1\n"
     "print(s)\n"
-    "/*matlab\n"
+    "%%\n"
     "a = 1\n"
-    "matlab*/\n"
+    "%%\n"
     "s = s + '.'\n"
-    "/*matlab\n"
+    "%%\n"
     "b = 2\n"
-    "matlab*/\n"
+    "%%\n"
     "print(b)\n";
 
   auto blocks = parser->extractSpecialBlocks(code);

@@ -108,7 +108,7 @@ std::string PythonInterfaceParser::convertStandardCodeBlock(const PythonCodeBloc
 PythonCode PythonInterfaceParser::extractSpecialBlocks(const std::string& code) const
 {
   PythonCode blocks;
-  static boost::regex matlabBlock("(.*)\\/\\*matlab\\n(.*)\\nmatlab\\*\\/(.*)");
+  static boost::regex matlabBlock("(.*)%%\\n(.*)\\n%%(.*)");
 
   boost::smatch what;
   if (regex_match(code, what, matlabBlock))
@@ -138,7 +138,7 @@ void PythonInterfaceParser::parsePart(PythonCode& blocks, const std::string& par
 {
   if (!part.empty())
   {
-    if (part.find("/*matlab") != std::string::npos)
+    if (part.find("%%") != std::string::npos)
     {
       auto rec = extractSpecialBlocks(part);
       blocks.insert(blocks.begin(), rec.begin(), rec.end());
