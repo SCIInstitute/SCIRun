@@ -93,7 +93,9 @@ std::string PythonInterfaceParser::convertInputSyntax(const std::string& line) c
 std::string PythonInterfaceParser::convertStandardCodeBlock(const PythonCodeBlock& block) const
 {
   if (block.isMatlab)
+  {
     throw std::invalid_argument("Cannot process matlab block");
+  }
 
   std::ostringstream convertedCode;
   std::vector<std::string> lines;
@@ -150,6 +152,25 @@ void PythonInterfaceParser::parsePart(PythonCode& blocks, const std::string& par
   }
 }
 
+/*
+TEST CASE: first case. Need to convert parsing code from python to C++
+
+input:
+*/
+
+static std::string input1 = "ofield = scirun_test_field(field1)";
+
+//output:
+static std::string output1 =
+"import matlab.engine\n"
+"eng = matlab.engine.start_matlab()\n"
+"field1=convertfieldtomatlab(field1)\n"
+"ofield = eng. scirun_test_field(field1, nargout=1)\n"
+"ofield =convertfieldtopython(ofield )\n"
+"fieldOutput1 = ofield\n";
+
+
+
 PythonCodeBlock PythonInterfaceParser::concatenateNormalBlocks(const PythonCode& codeList) const
 {
   std::ostringstream ostr;
@@ -158,6 +179,24 @@ PythonCodeBlock PythonInterfaceParser::concatenateNormalBlocks(const PythonCode&
     if (!block.isMatlab)
     {
       ostr << block.code << '\n';
+    }
+  }
+  return {ostr.str(), false };
+}
+
+PythonCodeBlock PythonInterfaceParser::concatenateAndConvertBlocks(const PythonCode& codeList) const
+{
+  std::ostringstream ostr;
+  for (const auto& block : codeList)
+  {
+    if (!block.isMatlab)
+    {
+      ostr << block.code << '\n';
+    }
+    else
+    {
+      if (block.code == input1)
+        ostr << output1;
     }
   }
   return {ostr.str(), false };

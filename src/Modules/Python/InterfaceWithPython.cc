@@ -142,7 +142,7 @@ void InterfaceWithPython::execute()
       auto code = state->getValue(Parameters::PythonCode).toString();
 
       auto intermediate = parser.extractSpecialBlocks(code);
-      auto readyToConvert = parser.concatenateNormalBlocks(intermediate);
+      auto readyToConvert = parser.concatenateAndConvertBlocks(intermediate);
       auto convertedCode = parser.convertStandardCodeBlock(readyToConvert);
       NetworkEditorPythonAPI::PythonModuleContextApiDisabler disabler;
       PythonInterpreter::Instance().run_script(convertedCode);

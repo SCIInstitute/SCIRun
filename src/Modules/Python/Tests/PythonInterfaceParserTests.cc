@@ -227,6 +227,31 @@ TEST(PythonInterfaceParserTests, CanConcatenateNormalBlocksUntilMatlabConversion
     "print(b)\n";
 
   EXPECT_EQ(expectedRegularPython, regularPython.code);
+}
 
-  //FAIL() << "todo";
+TEST(PythonInterfaceParserTests, CanTranslateFirstSpecificMatlabBlock)
+{
+  auto parser = makeParser();
+
+  std::string code =
+    "%%\n"
+    "ofield = scirun_test_field(field1)\n"
+    "%%\n";
+
+  auto intermediate = parser->extractSpecialBlocks(code);
+  std::cout << intermediate.begin()->code << std::endl;
+  auto readyToConvert = parser->concatenateAndConvertBlocks(intermediate);
+  std::cout << readyToConvert.code << std::endl;
+  auto convertedCode2 = parser->convertStandardCodeBlock(readyToConvert);
+  std::cout << convertedCode2 << std::endl;
+
+  static std::string expectedCode =
+  "import matlab.engine\n"
+  "eng = matlab.engine.start_matlab()\n"
+  "field1=convertfieldtomatlab(field1)\n"
+  "ofield = eng. scirun_test_field(field1, nargout=1)\n"
+  "ofield =convertfieldtopython(ofield )\n"
+  "fieldOutput1 = ofield\n";
+
+  ASSERT_EQ(convertedCode2, expectedCode + "\n");
 }

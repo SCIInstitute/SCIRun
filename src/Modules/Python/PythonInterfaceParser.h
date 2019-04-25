@@ -59,6 +59,7 @@ namespace SCIRun
           std::string convertOutputSyntax(const std::string& line) const;
           PythonCode extractSpecialBlocks(const std::string& code) const;
           PythonCodeBlock concatenateNormalBlocks(const PythonCode& code) const;
+          PythonCodeBlock concatenateAndConvertBlocks(const PythonCode& code) const;
         private:
           const std::string moduleId_;
           const Dataflow::Networks::ModuleStateHandle state_;
