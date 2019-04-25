@@ -126,7 +126,7 @@ ModuleHandle ModuleTestBase::makeModule(const std::string& name)
 
 void ModuleTestBase::stubPortNWithThisData(ModuleHandle module, size_t portNum, DatatypeHandle data)
 {
-  if (portNum < module->num_input_ports())
+  if (portNum < module->numInputPorts())
   {
     auto iport = module->inputPorts()[portNum];
     if (iport->nconnections() > 0)
@@ -144,7 +144,7 @@ void ModuleTestBase::stubPortNWithThisData(ModuleHandle module, size_t portNum, 
 
 DatatypeHandle ModuleTestBase::getDataOnThisOutputPort(ModuleHandle module, size_t portNum)
 {
-  if (portNum < module->num_output_ports())
+  if (portNum < module->numOutputPorts())
   {
     auto oport = module->outputPorts()[portNum];
     return boost::dynamic_pointer_cast<TestSimpleSource>(oport->source())->getDataForTesting();
@@ -154,7 +154,7 @@ DatatypeHandle ModuleTestBase::getDataOnThisOutputPort(ModuleHandle module, size
 
 void ModuleTestBase::connectDummyOutputConnection(Dataflow::Networks::ModuleHandle module, size_t portNum)
 {
-  if (portNum < module->num_output_ports())
+  if (portNum < module->numOutputPorts())
   {
     auto oport = module->outputPorts()[portNum];
     oport->attach(nullptr);

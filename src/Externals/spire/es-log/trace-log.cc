@@ -29,13 +29,13 @@
 #include <es-log/trace-log.h>
 
 using namespace spire;
-using namespace SCIRun::Core::Logging;
+//using namespace SCIRun::Core::Logging;
 
 //SCIRun::Core::Logging::Logger2 RendererLog::logger_;
 //
-//const char* RendererLog::name() 
-//{ 
-//  return "renderer"; 
+//const char* RendererLog::name()
+//{
+//  return "renderer";
 //}
 //
 //Logger2 RendererLog::get()

@@ -182,7 +182,7 @@ void GlyphBuilder::addGlyph(
 }
 
 
-ShowFieldGlyphs::ShowFieldGlyphs() : GeometryGeneratingModule(staticInfo_), builder_(new GlyphBuilder(get_id().id_))
+ShowFieldGlyphs::ShowFieldGlyphs() : GeometryGeneratingModule(staticInfo_), builder_(new GlyphBuilder(id().id_))
 {
   INITIALIZE_PORT(PrimaryData);
   INITIALIZE_PORT(PrimaryColorMap);
@@ -1060,7 +1060,7 @@ void GlyphBuilder::renderTensors(
                     break;
                   }
               }
-               
+
             // Tensor as line
             else if((eig_x_0 + eig_y_0 + eig_z_0) == 2)
               {
@@ -1136,7 +1136,7 @@ void GlyphBuilder::renderTensors(
                     break;
                   }
               }
-            
+
             // Tensor as line
             else if((eig_x_0 + eig_y_0 + eig_z_0) == 2)
               {
