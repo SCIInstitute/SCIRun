@@ -72,7 +72,7 @@ void ShowColorMap::execute()
   if (needToExecute())
   {
     std::ostringstream ostr;
-    ostr << get_id() << "$" <<
+    ostr << id() << "$" <<
       colorMap->getColorMapInvert() << colorMap->getColorMapName() << colorMap->getColorMapRescaleScale() <<
       colorMap->getColorMapRescaleShift() << colorMap->getColorMapResolution() << colorMap.get() <<
       colorMap->getColorMapShift();
@@ -81,7 +81,7 @@ void ShowColorMap::execute()
   }
 }
 
-GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle state, const std::string& id)
+GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleStateHandle state, const std::string& geomId)
 {
   std::vector<Vector> points;
   std::vector<ColorRGB> colors;
@@ -94,13 +94,13 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   for (double i = 0.; std::abs(i - 1.) > 0.000001; i += resolution) {
     ColorRGB col = new_map.valueToColor(i);
     uint32_t offset = static_cast<uint32_t>(points.size());
-    points.push_back(Vector(0., i, +0.001));
+    points.push_back(Vector(0., i, 0.001));
     colors.push_back(col);
-    points.push_back(Vector(1., i, +0.001));
+    points.push_back(Vector(1., i, 0.001));
     colors.push_back(col);
-    points.push_back(Vector(0., i + resolution, +0.001));
+    points.push_back(Vector(0., i + resolution, 0.001));
     colors.push_back(col);
-    points.push_back(Vector(1., i + resolution, +0.001));
+    points.push_back(Vector(1., i + resolution, 0.001));
     colors.push_back(col);
     numVBOElements += 2;
     indices.push_back(offset + 0);
@@ -151,7 +151,7 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   ss << resolution << sigdig << txtsize << numlabel << state->getValue(Units).toString() <<
     scale << displaySide << red << green << blue << xTrans << yTrans;
 
-  auto uniqueNodeID = id + "colorMapLegend" + ss.str();
+  auto uniqueNodeID = geomId + "colorMapLegend" + ss.str();
   auto vboName = uniqueNodeID + "VBO";
   auto iboName = uniqueNodeID + "IBO";
   auto passName = uniqueNodeID + "Pass";
@@ -192,7 +192,7 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
   std::string idname = "ShowColorMap";
   if (!state->getValue(ColorMapName).toString().empty())
   {
-    idname += GeometryObject::delimiter + state->getValue(ColorMapName).toString() + " (from " + get_id().id_ + ")";
+    idname += GeometryObject::delimiter + state->getValue(ColorMapName).toString() + " (from " + id().id_ + ")";
   }
 
   auto geom(boost::make_shared<GeometryObjectSpire>(*this, idname, false));
@@ -240,7 +240,7 @@ GeometryBaseHandle ShowColorMap::buildGeometryObject(ColorMapHandle cm, ModuleSt
       + yTrans / 50.;
     Vector trans(x_trans, y_trans, 0.0);
 
-    textBuilder_.printString(line.str(), trans, shift, id, *geom);
+    textBuilder_.printString(line.str(), trans, shift, geomId, *geom);
   }
 
   return geom;

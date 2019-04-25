@@ -43,6 +43,7 @@ SRCamera::SRCamera(SRInterface& iface) :
     mFOV(getDefaultFOVY()),
     mZNear(getDefaultZNear()),
     mZFar(getDefaultZFar()),
+    mRadius(-1.0),
     mInterface(iface),
     mArcLookAt(new spire::ArcLookAt())
 {
@@ -50,6 +51,7 @@ SRCamera::SRCamera(SRInterface& iface) :
 
   glm::mat4 cam;
   cam[3] = (glm::vec4(0.0f, 0.0f, 7.0f, 1.0f));
+  mRadius = -1.0;
 }
 
 //------------------------------------------------------------------------------
@@ -59,6 +61,7 @@ void SRCamera::setAsPerspective()
 
   float aspect = static_cast<float>(mInterface.getScreenWidthPixels()) /
                  static_cast<float>(mInterface.getScreenHeightPixels());
+
   mP = glm::perspective(mFOV, aspect, mZNear, mZFar);
 }
 
@@ -137,12 +140,37 @@ void SRCamera::doAutoView(const Core::Geometry::BBox& bbox)
 
   /// \todo Use real FOV-Y when we allow the user to change the FOV.
   mArcLookAt->autoview(aabb, getDefaultFOVY());
+
+  setClippingPlanes(bbox);
+}
+
+void SRCamera::setClippingPlanes(const Core::Geometry::BBox& bbox)
+{
+  buildTransform();  //make sure matricies are up to date
+  mRadius = (bbox.get_max() - bbox.get_min()).length() / 2.0f;
+
+  Core::Geometry::Point c =  Core::Geometry::Point(bbox.get_max() + bbox.get_min());
+  glm::vec4 center(c.x()/2.0,c.y()/2.0,c.z()/2.0, 1.0);
+  center = mIV * center;
+
+  if(mRadius > 0.0)
+  {
+    mZFar = -center.z + mRadius;
+    mZNear = std::max(mZFar/1000.0f, -center.z - mRadius);
+  }
+  else
+  {
+    mZFar = getDefaultZFar();
+    mZNear = getDefaultZNear();
+  }
+
+  setAsPerspective();
 }
 
 //------------------------------------------------------------------------------
 void SRCamera::setView(const glm::vec3& view, const glm::vec3& up)
 {
-    mArcLookAt->setView(view, up);
+  mArcLookAt->setView(view, up);
 }
 
 //------------------------------------------------------------------------------

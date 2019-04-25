@@ -15,6 +15,8 @@ public:
   BaseComponentContainer()           {}
   virtual ~BaseComponentContainer()  {}
 
+  virtual std::string toString(std::string prefix) const = 0;
+
   virtual void renormalize(bool stableSort) = 0;
 
   /// Get the least sequence held by the component.

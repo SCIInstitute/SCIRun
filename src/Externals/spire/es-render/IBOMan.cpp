@@ -141,9 +141,14 @@ public:
   std::set<GLuint> mValidKeys;
 
   void preWalkComponents(spire::ESCoreBase&) override {mValidKeys.clear();}
-  void postWalkComponents(spire::ESCoreBase& core) override 
+  void postWalkComponents(spire::ESCoreBase& core) override
   {
     std::weak_ptr<IBOMan> im = core.getStaticComponent<StaticIBOMan>()->instance_;
+
+
+
+
+
     if (std::shared_ptr<IBOMan> man = im.lock()) {
       man->runGCAgainstVaidIDs(mValidKeys);
       mValidKeys.clear();

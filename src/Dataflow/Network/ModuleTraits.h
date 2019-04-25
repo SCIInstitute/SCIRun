@@ -82,6 +82,7 @@ namespace Modules
   #define LEGACY_MATLAB_MODULE public: virtual std::string legacyPackageName() const override { return "MatlabInterface"; }
   #define CONVERTED_VERSION_OF_MODULE(modName) public: virtual std::string legacyModuleName() const override { return #modName; }
   #define NEW_HELP_WEBPAGE_ONLY public: virtual std::string helpPageUrl() const override { return newHelpPageUrl(); }
+  #define DEPRECATED_MODULE_REPLACE_WITH(modName) public: bool isDeprecated() const override { return true; } std::string replacementModuleName() const override { return #modName; }
 }
 }
 
