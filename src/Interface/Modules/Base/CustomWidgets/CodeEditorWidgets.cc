@@ -108,8 +108,9 @@ void CodeEditor::highlightCurrentLine()
 void CodeEditor::insertSpecialCodeBlock()
 {
   static auto delim = PythonCodeBlock::delimiter;
-  static QString special(tr("%1\n%1").arg(delim));
+  static QString special(tr("%1\n\n%1").arg(delim));
   insertPlainText(special);
+  moveCursor(QTextCursor::Up, QTextCursor::MoveAnchor);
 }
 
 void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
@@ -231,8 +232,8 @@ Highlighter::Highlighter(QTextDocument *parent)
 
   multiLineCommentFormat.setForeground(QColor(255,105,180));
 
-  commentStartExpression = QRegExp("/\\*matlab");
-  commentEndExpression = QRegExp("matlab\\*/");
+  commentStartExpression = QRegExp(PythonCodeBlock::delimiter);
+  commentEndExpression = QRegExp(PythonCodeBlock::delimiter);
 }
 
 void Highlighter::highlightBlock(const QString &text)
