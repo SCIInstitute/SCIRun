@@ -155,6 +155,22 @@ private:
     }
   };
 
+  GLuint addIBO(void* iboData, size_t iboDataSize)
+  {
+    GLuint glid;
+
+    GL(glGenBuffers(1, &glid));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glid));
+    GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(iboDataSize), iboData, GL_STATIC_DRAW));
+
+    return glid;
+  }
+
+  void removeIBO(GLuint glid)
+  {
+    GL(glDeleteBuffers(1, &glid));
+  }
+
   GLuint sortObjects(const Core::Geometry::Vector& dir,
     const spire::ComponentGroup<ren::IBO>& ibo,
     const spire::ComponentGroup<SpireSubPass>& pass,
@@ -205,8 +221,7 @@ private:
       }
 
       std::string transIBOName = pass.front().ibo.name + "trans";
-      result = iboMan.front().instance_->addInMemoryIBO(sbuffer, pass.front().ibo.data->getBufferSize(), ibo.front().primMode, ibo.front().primType,
-        numPrimitives, transIBOName);
+      result = addIBO(sbuffer, pass.front().ibo.data->getBufferSize());
     }
 
     return result;
@@ -298,7 +313,7 @@ private:
           {
             if (sortedObjects[index].mSortedID != 0)
             {
-              iboMan.front().instance_->removeInMemoryIBO(sortedObjects[index].mSortedID);
+              removeIBO(sortedObjects[index].mSortedID);
             }
             sortedObjects[index].prevDir = dir;
             sortedObjects[index].mSortedID = sortObjects(dir, ibo, pass, iboMan);
@@ -583,7 +598,7 @@ private:
     {
       if (pass.front().renderState.mSortType == RenderState::TransparencySortType::CONTINUOUS_SORT)
       {
-        iboMan.front().instance_->removeInMemoryIBO(iboID);
+        removeIBO(iboID);
       }
     }
 
