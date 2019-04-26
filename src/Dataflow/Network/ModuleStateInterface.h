@@ -81,6 +81,9 @@ namespace Networks {
     virtual boost::signals2::connection connectSpecificStateChanged(const Name& stateKeyToObserve, state_changed_sig_t::slot_function_type subscriber) = 0;
   };
 
+  SCISHARE void setModuleAlwaysExecute(ModuleStateHandle state, bool toggle);
+  SCISHARE bool getModuleAlwaysExecute(ModuleStateHandle state);
+
   class SCISHARE ModuleStateInterfaceFactory
   {
   public:

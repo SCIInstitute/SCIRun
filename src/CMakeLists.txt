@@ -213,7 +213,7 @@ set (cxxfeaturelist ${CMAKE_CXX_COMPILE_FEATURES})
 
 list (FIND cxxfeaturelist "cxx_thread_local" _index)
 if (${_index} GREATER -1)
-  message("Found cxx_thread_local")
+  #message("Found cxx_thread_local")
 else()
   message(WARNING "Did NOT find cxx_thread_local--turning off feature of spdlog")
   add_definitions(-DDISABLE_SPDLOG_TLS=1)

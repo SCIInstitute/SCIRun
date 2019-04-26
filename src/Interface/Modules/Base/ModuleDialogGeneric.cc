@@ -234,15 +234,8 @@ void ModuleDialogGeneric::executeInteractivelyToggled(bool toggle)
 
 void ModuleDialogGeneric::forceAlwaysExecuteToggled(bool toggle)
 {
-  qDebug() << __FUNCTION__ << toggle;
-  //if (qobject_cast<QCheckBox*>(sender()))
-  //  executeInteractivelyToggleAction_->setChecked(toggle);
-  //else
-  //  buttonBox_->executeInteractivelyCheckBox_->setChecked(toggle);
-  //if (toggle)
-  //  connectStateChangeToExecute();
-  //else
-  //  disconnectStateChangeToExecute();
+  logWarning("Module always execute set to {}", toggle);
+  setModuleAlwaysExecute(state_, toggle);
 }
 
 void ModuleDialogGeneric::connectStateChangeToExecute()

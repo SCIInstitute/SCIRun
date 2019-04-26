@@ -130,7 +130,7 @@ void InterfaceWithPython::execute()
   auto matrices = getOptionalDynamicInputs(InputMatrix);
   auto fields = getOptionalDynamicInputs(InputField);
   auto strings = getOptionalDynamicInputs(InputString);
-  if (needToExecute())
+  if (needToExecute() || alwaysExecuteEnabled())
   {
     auto state = get_state();
     {
