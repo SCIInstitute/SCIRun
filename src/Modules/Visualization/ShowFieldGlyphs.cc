@@ -194,7 +194,7 @@ void GlyphBuilder::addGlyph(
 }
 
 
-ShowFieldGlyphs::ShowFieldGlyphs() : GeometryGeneratingModule(staticInfo_), builder_(new GlyphBuilder(get_id().id_))
+ShowFieldGlyphs::ShowFieldGlyphs() : GeometryGeneratingModule(staticInfo_), builder_(new GlyphBuilder(id().id_))
 {
   INITIALIZE_PORT(PrimaryData);
   INITIALIZE_PORT(PrimaryColorMap);

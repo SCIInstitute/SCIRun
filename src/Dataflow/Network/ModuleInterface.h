@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -71,8 +70,8 @@ namespace Networks {
     virtual boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) = 0;
     virtual ModuleExecutionState& executionState() = 0;
     /// @todo for deserialization
-    virtual void set_id(const std::string& id) = 0;
-    virtual void set_state(ModuleStateHandle state) = 0;
+    virtual void setId(const std::string& id) = 0;
+    virtual void setState(ModuleStateHandle state) = 0;
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) = 0;
     virtual std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) = 0;
     virtual void send_output_handle(const PortId& id, SCIRun::Core::Datatypes::DatatypeHandle data) = 0;

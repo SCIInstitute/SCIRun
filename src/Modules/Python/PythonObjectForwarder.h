@@ -72,7 +72,7 @@ namespace SCIRun
             while (tries < maxTries_ && !valueOption)
             {
               std::ostringstream ostr;
-              ostr << module_.get_id() << " looking up value for " << transientKey << "; attempt #" << (tries + 1) << "/" << maxTries_;
+              ostr << module_.id() << " looking up value for " << transientKey << "; attempt #" << (tries + 1) << "/" << maxTries_;
               module_.remark(ostr.str());
 
               valueOption = state->getTransientValue(transientKey);

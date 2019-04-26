@@ -281,7 +281,8 @@ void SCIRunMainWindow::runScript()
   if (okToContinue())
   {
     QString filename = QFileDialog::getOpenFileName(this, "Load Script...", latestNetworkDirectory_.path(), "*.py");
-    runPythonScript(filename);
+    if (!filename.isEmpty())
+      runPythonScript(filename);
   }
 }
 

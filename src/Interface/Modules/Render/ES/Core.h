@@ -50,16 +50,16 @@ public:
 
 private:
 
-  int64_t                   mCoreSequence;    ///< Sequence number (frame) since start.
+  int64_t         mCoreSequence;    ///< Sequence number (frame) since start.
   spire::GLState  mDefaultGLState;  ///< Default OpenGL state.
-  double                    mCurrentTime;     ///< Current system time calculated from constant frame time.
+  double          mCurrentTime;     ///< Current system time calculated from constant frame time.
 
-  float                     mFPS;             ///< Actual FPS of system.
-  float                     mLastRealTime;    ///< Last realtime passed into the core.
+  float           mFPS;             ///< Actual FPS of system.
+  float           mLastRealTime;    ///< Last realtime passed into the core.
 
-  bool runGC;
+  bool            runGC;
 
-  float r_, g_, b_, a_;
+  float           r_, g_, b_, a_;
 };
 
 } // namespace Render

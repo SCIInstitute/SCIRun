@@ -260,7 +260,7 @@ namespace
   class PyPortsImpl : public PyPorts
   {
   public:
-    PyPortsImpl(ModuleHandle mod, bool input, NetworkEditorController& nec) : mod_(mod), nec_(nec), modId_(mod->get_id())
+    PyPortsImpl(ModuleHandle mod, bool input, NetworkEditorController& nec) : mod_(mod), nec_(nec), modId_(mod->id())
     {
       //wish:
       //boost::push_back(ports_,
@@ -368,7 +368,7 @@ namespace
     virtual std::string id() const override
     {
       if (module_)
-        return module_->get_id();
+        return module_->id();
       return "<Null module>";
     }
 
@@ -565,11 +565,11 @@ boost::shared_ptr<PyModule> PythonImpl::addModule(const std::string& name)
 {
   auto m = nec_.addModule(name);
   if (m)
-    std::cout << "Module added: " + m->get_id().id_ << std::endl;
+    std::cout << "Module added: " + m->id().id_ << std::endl;
   else
     std::cout << "Module add failed, no such module type" << std::endl;
 
-  return modules_[m->get_id().id_];
+  return modules_[m->id().id_];
 }
 
 void PythonImpl::pythonModuleAddedSlot(const std::string& modId, ModuleHandle m, ModuleCounter)

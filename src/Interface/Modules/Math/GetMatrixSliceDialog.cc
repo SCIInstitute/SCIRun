@@ -80,6 +80,12 @@ void GetMatrixSliceDialog::pullSpecial()
   auto max = state_->getValue(Parameters::MaxIndex).toInt();
   indexSlider_->setMaximum(max);
   indexSpinBox_->setMaximum(max);
+
+  // set value again in case it was greater than the hard-coded widget max.
+  auto value = state_->getValue(Parameters::SliceIndex).toInt();
+  indexSlider_->setValue(value);
+  indexSpinBox_->setValue(value);
+
   indexSlider_->setMinimum(0);
 }
 
