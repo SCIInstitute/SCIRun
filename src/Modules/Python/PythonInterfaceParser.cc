@@ -110,8 +110,8 @@ std::string PythonInterfaceParser::convertStandardCodeBlock(const PythonCodeBloc
 PythonCode PythonInterfaceParser::extractSpecialBlocks(const std::string& code) const
 {
   PythonCode blocks;
-  static std::string matlabBlockRegex = std::string("(.*)") + PythonCodeBlock::delimiter
-    + "\\n(.*)\\n" + PythonCodeBlock::delimiter + "(.*)";
+  static std::string matlabBlockRegex = std::string("(.*)") + matlabDelimiter
+    + "\\n(.*)\\n" + matlabDelimiter + "(.*)";
   static boost::regex matlabBlock(matlabBlockRegex);
 
   boost::smatch what;
@@ -142,7 +142,7 @@ void PythonInterfaceParser::parsePart(PythonCode& blocks, const std::string& par
 {
   if (!part.empty())
   {
-    if (part.find(PythonCodeBlock::delimiter) != std::string::npos)
+    if (part.find(matlabDelimiter) != std::string::npos)
     {
       auto rec = extractSpecialBlocks(part);
       blocks.insert(blocks.begin(), rec.begin(), rec.end());
