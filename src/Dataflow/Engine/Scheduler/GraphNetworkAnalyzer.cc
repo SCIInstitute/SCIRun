@@ -86,7 +86,7 @@ EdgeVector NetworkGraphAnalyzer::constructEdgeListFromNetwork()
     auto module = network_.module(i);
     if (moduleFilter_(module))
     {
-      moduleIdLookup_.left.insert(std::make_pair(module->get_id(), moduleCount_));
+      moduleIdLookup_.left.insert(std::make_pair(module->id(), moduleCount_));
       moduleCount_++;
     }
   }
@@ -175,12 +175,12 @@ ExecuteSingleModule::ExecuteSingleModule(SCIRun::Dataflow::Networks::ModuleHandl
 
 bool ExecuteSingleModule::operator()(SCIRun::Dataflow::Networks::ModuleHandle mod) const
 {
-  auto toCheckId = mod->get_id();
+  auto toCheckId = mod->id();
   auto modIdIter = components_.find(toCheckId);
   if (modIdIter == components_.end())
     THROW_INVALID_ARGUMENT("Module not found in component map");
 
-  auto rootId = module_->get_id();
+  auto rootId = module_->id();
   if (rootId.name_ == "Subnet")
     return false;
   auto rootIdIter = components_.find(rootId);

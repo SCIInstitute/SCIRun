@@ -84,9 +84,9 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
       try
       {
         auto module = controller_->addModule(modPair.second.module);
-        module->set_id(modPair.first);
+        module->setId(modPair.first);
         ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
-        module->set_state(state);
+        module->setState(state);
       }
       catch (Core::InvalidArgumentException& e)
       {
@@ -139,9 +139,9 @@ NetworkXMLConverter::NetworkAppendInfo NetworkXMLConverter::appendXmlData(const 
 
       //std::cout << "setting module id to " << newId << std::endl;
       info.moduleIdMapping[modPair.first] = newId;
-      module->set_id(newId);
+      module->setId(newId);
       ModuleStateHandle state(new SimpleMapModuleState(std::move(modPair.second.state)));
-      module->set_state(state);
+      module->setState(state);
     }
   }
 
@@ -193,7 +193,7 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network, Module
     {
       auto state = module->get_state();
       auto stateXML = make_state_xml(state);
-      networkXML.modules[module->get_id()] = ModuleWithState(module->get_info(), stateXML ? *stateXML : SimpleMapModuleStateXML());
+      networkXML.modules[module->id()] = ModuleWithState(module->info(), stateXML ? *stateXML : SimpleMapModuleStateXML());
     }
   }
 

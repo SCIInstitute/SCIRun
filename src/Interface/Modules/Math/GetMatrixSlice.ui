@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>339</width>
-    <height>353</height>
+    <width>344</width>
+    <height>364</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -22,6 +22,12 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="3" column="1">
     <widget class="QComboBox" name="rowColumnComboBox_">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>30</height>
+      </size>
+     </property>
      <property name="currentIndex">
       <number>1</number>
      </property>
@@ -127,6 +133,12 @@
       </item>
       <item row="1" column="1">
        <widget class="QComboBox" name="playModeComboBox_">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>30</height>
+         </size>
+        </property>
         <item>
          <property name="text">
           <string>Loop once</string>
