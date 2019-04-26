@@ -200,7 +200,7 @@ namespace SCIRun {
 
       //---------------- Clipping Planes -----------------------------------------------------------
       void checkClippingPlanes(int n);// make sure clipping plane number matches
-            double getMaxProjLength(const glm::vec3 &n);
+      double getMaxProjLength(const glm::vec3 &n);
 
       //---------------- Data Handeling ------------------------------------------------------------
       // Adds a VBO to the given entityID.

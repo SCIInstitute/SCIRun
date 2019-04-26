@@ -57,7 +57,7 @@ namespace SCIRun {
     class SCISHARE ViewSceneDialog : public ModuleDialogGeneric,
       public Ui::ViewScene
     {
-      Q_OBJECT
+    Q_OBJECT
 
     public:
       ViewSceneDialog(const std::string& name,
@@ -188,12 +188,13 @@ namespace SCIRun {
         double projLength;
       };
 
-      void setInitialLightValues();
-      QColor checkColorSetting(std::string& rgb, QColor defaultColor);
-      void selectObject(const int x, const int y);
-      std::string restoreObjColor();
-      void updatClippingPlaneDisplay();
       void addToolBar();
+      void setupClippingPlanes();
+      void setupScaleBar();
+      void setInitialLightValues();
+      void setupMaterials();
+      void setupRenderTabValues();//?why isnt this called?
+
       void addAutoViewButton();
       void addScreenshotButton();
       void addViewBarButton();
@@ -203,10 +204,12 @@ namespace SCIRun {
       void addViewOptions();
       void addConfigurationButton();
       void addConfigurationDock();
-      void setupClippingPlanes();
-      void setupMaterials();
-      void setupScaleBar();
-      void setupRenderTabValues();
+
+      QColor checkColorSetting(std::string& rgb, QColor defaultColor);
+      void selectObject(const int x, const int y);
+      std::string restoreObjColor();
+      void updatClippingPlaneDisplay();
+
       void takeScreenshot();
       void sendScreenshotDownstreamForTesting();
 
