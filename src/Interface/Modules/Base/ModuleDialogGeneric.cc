@@ -49,12 +49,7 @@ std::set<ModuleDialogGeneric*> ModuleDialogGeneric::instances_;
 ModuleDialogGeneric::ModuleDialogGeneric(ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state),
   pulling_(false),
-  executeAction_(nullptr),
-  shrinkAction_(nullptr),
-  executeInteractivelyToggleAction_(nullptr),
-  collapsed_(false),
-  dock_(nullptr),
-  buttonBox_(nullptr)
+  collapsed_(false)
 {
   setModal(false);
   setAttribute(Qt::WA_MacAlwaysShowToolWindow, true);
@@ -98,6 +93,16 @@ void ModuleDialogGeneric::setupButtonBar()
   else
   {
     buttonBox_->executeInteractivelyCheckBox_->setVisible(false);
+  }
+
+  if (forceAlwaysExecuteToggleAction_)
+  {
+    connect(buttonBox_->forceAlwaysExecuteCheckBox_, SIGNAL(toggled(bool)), this, SLOT(forceAlwaysExecuteToggled(bool)));
+    buttonBox_->forceAlwaysExecuteCheckBox_->setChecked(forceAlwaysExecuteToggleAction_->isChecked());
+  }
+  else
+  {
+    buttonBox_->forceAlwaysExecuteCheckBox_->setVisible(false);
   }
 }
 
@@ -206,6 +211,15 @@ void ModuleDialogGeneric::createExecuteInteractivelyToggleAction()
   connect(executeInteractivelyToggleAction_, SIGNAL(toggled(bool)), this, SLOT(executeInteractivelyToggled(bool)));
 }
 
+void ModuleDialogGeneric::createForceAlwaysExecuteToggleAction()
+{
+  forceAlwaysExecuteToggleAction_ = new QAction(this);
+  forceAlwaysExecuteToggleAction_->setText("Execute Always");
+  forceAlwaysExecuteToggleAction_->setCheckable(true);
+  forceAlwaysExecuteToggleAction_->setChecked(false);
+  connect(forceAlwaysExecuteToggleAction_, SIGNAL(toggled(bool)), this, SLOT(forceAlwaysExecuteToggled(bool)));
+}
+
 void ModuleDialogGeneric::executeInteractivelyToggled(bool toggle)
 {
   if (qobject_cast<QCheckBox*>(sender()))
@@ -216,6 +230,19 @@ void ModuleDialogGeneric::executeInteractivelyToggled(bool toggle)
     connectStateChangeToExecute();
   else
     disconnectStateChangeToExecute();
+}
+
+void ModuleDialogGeneric::forceAlwaysExecuteToggled(bool toggle)
+{
+  qDebug() << __FUNCTION__ << toggle;
+  //if (qobject_cast<QCheckBox*>(sender()))
+  //  executeInteractivelyToggleAction_->setChecked(toggle);
+  //else
+  //  buttonBox_->executeInteractivelyCheckBox_->setChecked(toggle);
+  //if (toggle)
+  //  connectStateChangeToExecute();
+  //else
+  //  disconnectStateChangeToExecute();
 }
 
 void ModuleDialogGeneric::connectStateChangeToExecute()
