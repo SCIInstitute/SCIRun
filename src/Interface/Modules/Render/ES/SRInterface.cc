@@ -1370,6 +1370,7 @@ namespace SCIRun {
             // variable.
             gen::StaticScreenDims* dims = mCore.getStaticComponent<gen::StaticScreenDims>();
             float aspect = static_cast<float>(dims->width) / static_cast<float>(dims->height);
+            
             // Project onto a orthographic plane with respect to aspect ratio
             glm::mat4 projection = glm::ortho(-aspect/2, aspect/2, -0.5f, 0.5f, 0.0f, 2.0f);
 
@@ -1390,13 +1391,13 @@ namespace SCIRun {
 
             // If the scale is larger than the width, the scale centers at 0
             if(xLow2 > 0 && xHigh2 < 0)
-              {
+            {
                 xPos = 0;
-              }
+            }
             else
-              {
+            {
                 xPos = xLow2 + (orientPosX + 0.5f) * (xHigh2 - xLow2);
-              }
+            }
             yPos = yLow2 + (orientPosY + 0.5f) * (yHigh2 - yLow2);
 
             glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(xPos, yPos, -1.5f));
@@ -1578,6 +1579,7 @@ namespace SCIRun {
       gen::StaticCamera* camera = mCore.getStaticComponent<gen::StaticCamera>();
       if (camera)
       {
+        camera->data.winWidth = static_cast<float>(mScreenWidth);
         camera->data.setView(viewToWorld);
         camera->data.setProjection(projection, mCamera->getFOVY(), mCamera->getAspect(), mCamera->getZNear(), mCamera->getZFar());
       }

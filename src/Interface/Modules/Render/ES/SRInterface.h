@@ -116,7 +116,6 @@ namespace SCIRun {
       void inputMouseUp(const glm::ivec2& pos, MouseButton btn);
       void inputMouseWheel(int32_t delta);
       void inputShiftKeyDown(bool shiftDown);
-
       void setMouseMode(MouseMode mode) {mMouseMode = mode;}
       MouseMode getMouseMode() const    {return mMouseMode;}
 
@@ -135,7 +134,6 @@ namespace SCIRun {
       const glm::mat4& getWorldToView() const;
       const glm::mat4& getViewToWorld() const;
       const glm::mat4& getViewToProjection() const;
-
 
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...

@@ -54,52 +54,59 @@ namespace SCIRun {
     class ViewSceneControlsDock;
 
 
-    class SCISHARE ViewSceneDialog : public ModuleDialogGeneric,
-      public Ui::ViewScene
+    class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, public Ui::ViewScene
     {
-    Q_OBJECT
+    Q_OBJECT;
+
 
     public:
-      ViewSceneDialog(const std::string& name,
-        Dataflow::Networks::ModuleStateHandle state,
+      ViewSceneDialog(const std::string& name, Dataflow::Networks::ModuleStateHandle state,
         QWidget* parent = nullptr);
 
       std::string toString(std::string prefix) const;
       void adjustToolbar() override;
 
+
     Q_SIGNALS:
       void newGeometryValueForwarder();
       void mousePressSignalForTestingGeometryObjectFeedback(int x, int y, const std::string& selName);
 
+
     protected Q_SLOTS:
-      void menuMouseControlChanged(int index);
-      void autoViewClicked();
+      //---------------- New Geometry --------------------------------------------------------------
       void newGeometryValue();
-      void autoViewOnLoadChecked(bool value);
-      void useOrthoViewChecked(bool value);
-      void showOrientationChecked(bool value);
-      void setOrientAxisSize(int value);
-      void setOrientAxisPosX(int pos);
-      void setOrientAxisPosY(int pos);
-      void setCenterOrientPos();
-      void setDefaultOrientPos();
-      void showAxisChecked(bool value);
+      void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
+
+      //---------------- Input ---------------------------------------------------------------------
       void viewBarButtonClicked();
+      void configurationButtonClicked();
+      void resizingDone();
+
+      //---------------- Camera --------------------------------------------------------------------
+      void autoViewClicked();
+      void autoViewOnLoadChecked(bool value);
       void viewAxisSelected(const QString& name);
       void viewVectorSelected(const QString& name);
-      void configurationButtonClicked();
-      void assignBackgroundColor();
-      void setTransparencySortTypeContinuous(bool index);
-      void setTransparencySortTypeUpdate(bool index);
-      void setTransparencySortTypeLists(bool index);
-      void adjustZoomSpeed(int value);
+      void setFieldOfView(int value);
+      void useOrthoViewChecked(bool value);
+      void menuMouseControlChanged(int index);
       void invertZoomClicked(bool value);
-      void screenshotClicked();
-      void saveNewGeometryChanged(int state);
-      void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
+      void adjustZoomSpeed(int value);
+      void lockRotationToggled();
+      void lockPanningToggled();
+      void lockZoomToggled();
+      void lockAllTriggered();
+      void unlockAllTriggered();
+      void toggleLockColor(bool locked);
+      void stereoChecked(bool value);
+      void setStereoFusion(int value);
+      void setPolygonOffset(int value);
+      void setTextOffset(int value);
+
+      //---------------- Widgets -------------------------------------------------------------------
       void updateMeshComponentSelection(const QString& moduleId, const QString& component, bool selected);
 
-      //Clipping Plane
+      //---------------- Clipping Planes -----------------------------------------------------------
       void setClippingPlaneIndex(int index);
       void setClippingPlaneVisible(bool value);
       void setClippingPlaneFrameOn(bool value);
@@ -108,21 +115,17 @@ namespace SCIRun {
       void setClippingPlaneY(int index);
       void setClippingPlaneZ(int index);
       void setClippingPlaneD(int index);
+      void useClipChecked(bool value);
 
-      //Materials Controls
-      void setAmbientValue(double value);
-      void setDiffuseValue(double value);
-      void setSpecularValue(double value);
-      void setShininessValue(double value);
-      void setEmissionValue(double value);
-      void setFogOn(bool value);
-      void setFogOnVisibleObjects(bool value);
-      void setFogUseBGColor(bool value);
-      void setFogStartValue(double value);
-      void setFogEndValue(double value);
-      void assignFogColor();
+      //---------------- Orietation Glyph ----------------------------------------------------------
+      void showOrientationChecked(bool value);
+      void setOrientAxisSize(int value);
+      void setOrientAxisPosX(int pos);
+      void setOrientAxisPosY(int pos);
+      void setCenterOrientPos();
+      void setDefaultOrientPos();
 
-      //Scale Bar
+      //---------------- Scale Bar -----------------------------------------------------------------
       void setScaleBarVisible(bool value);
       void setScaleBarFontSize(int value);
       void setScaleBarUnitValue(const QString& text);
@@ -133,33 +136,50 @@ namespace SCIRun {
       void setScaleBarLineWidth(double value);
       void setScaleBar();
 
-      //Render Settings
-      void lightingChecked(bool value);
-      void showBBoxChecked(bool value);
-      void useClipChecked(bool value);
-      void stereoChecked(bool value);
-      void useBackCullChecked(bool value);
-      void displayListChecked(bool value);
-      void setStereoFusion(int value);
-      void setPolygonOffset(int value);
-      void setTextOffset(int value);
-      void setFieldOfView(int value);
+      //---------------- Lights --------------------------------------------------------------------
       void setLightPosition(int index);
       void setLightColor(int index);
       void toggleHeadLight(bool value);
       void toggleLight1(bool value);
       void toggleLight2(bool value);
       void toggleLight3(bool value);
-      void resizingDone();
+      void lightingChecked(bool value);
 
-      void lockRotationToggled();
-      void lockPanningToggled();
-      void lockZoomToggled();
-      void lockAllTriggered();
-      void unlockAllTriggered();
-      void toggleLockColor(bool locked);
+      //---------------- Material Settings ---------------------------------------------------------
+      void setAmbientValue(double value);
+      void setDiffuseValue(double value);
+      void setSpecularValue(double value);
+      void setShininessValue(double value);
+      void setEmissionValue(double value);
+
+      //---------------- Fog Tools -----------------------------------------------------------------
+      void setFogOn(bool value);
+      void setFogOnVisibleObjects(bool value);
+      void setFogUseBGColor(bool value);
+      void assignFogColor();
+      void setFogStartValue(double value);
+      void setFogEndValue(double value);
+
+      //---------------- Misc. ---------------------------------------------------------------------
+      void assignBackgroundColor();
+      void setTransparencySortTypeContinuous(bool index);
+      void setTransparencySortTypeUpdate(bool index);
+      void setTransparencySortTypeLists(bool index);
+      void screenshotClicked();
+      void saveNewGeometryChanged(int state);
+      void showBBoxChecked(bool value);
+      void useBackCullChecked(bool value);
+      void displayListChecked(bool value);
+
 
     protected:
+      //---------------- Intitilization ------------------------------------------------------------
+      void pullSpecial() override;
+
+      //---------------- Input ---------------------------------------------------------------------
+      void showEvent(QShowEvent* evt) override;
+      void hideEvent(QHideEvent* evt) override;
+      void resizeEvent(QResizeEvent *event) override;
       void mousePressEvent(QMouseEvent* event) override;
       void mouseReleaseEvent(QMouseEvent* event) override;
       void mouseMoveEvent(QMouseEvent* event) override;
@@ -167,34 +187,17 @@ namespace SCIRun {
       void keyPressEvent(QKeyEvent* event) override;
       void keyReleaseEvent(QKeyEvent*event) override;
       void closeEvent(QCloseEvent* evt) override;
-      void showEvent(QShowEvent* evt) override;
-      void hideEvent(QHideEvent* evt) override;
       void contextMenuEvent(QContextMenuEvent* evt) override {}
-      void resizeEvent(QResizeEvent *event) override;
 
-      void pullSpecial() override;
 
     private:
-      struct ClippingPlane {
-        bool visible, showFrame, reverseNormal;
-        double x, y, z, d;
-      };
-
-      struct ScaleBar {
-        bool visible;
-        int fontSize;
-        double length, height, multiplier, numTicks, lineWidth;
-        std::string unit;
-        double projLength;
-      };
-
+      //---------------- Intitilization ------------------------------------------------------------
       void addToolBar();
       void setupClippingPlanes();
       void setupScaleBar();
       void setInitialLightValues();
       void setupMaterials();
-      void setupRenderTabValues();//?why isnt this called?
-
+      void setupRenderTabValues();
       void addAutoViewButton();
       void addScreenshotButton();
       void addViewBarButton();
@@ -204,38 +207,58 @@ namespace SCIRun {
       void addViewOptions();
       void addConfigurationButton();
       void addConfigurationDock();
-
       QColor checkColorSetting(std::string& rgb, QColor defaultColor);
+
+      //---------------- Widgets -------------------------------------------------------------------
       void selectObject(const int x, const int y);
       std::string restoreObjColor();
+
+      //---------------- Clipping Planes -----------------------------------------------------------
       void updatClippingPlaneDisplay();
-
-      void takeScreenshot();
-      void sendScreenshotDownstreamForTesting();
-
-      void toggleLightOnOff(int index, bool value);
-
-      // update scale bar geometries
-      Graphics::Datatypes::GeometryHandle buildGeometryScaleBar();
-      void updateScaleBarLength();
-
-      // update clipping plane geometries
       void buildGeomClippingPlanes();
       void buildGeometryClippingPlane(int index, glm::vec4 plane, const Core::Geometry::BBox& bbox);
 
-      //set material
+      //---------------- Scale Bar -----------------------------------------------------------------
+      void updateScaleBarLength();
+      Graphics::Datatypes::GeometryHandle buildGeometryScaleBar();
+
+      //---------------- Lights --------------------------------------------------------------------
+      void toggleLightOnOff(int index, bool value);
+
+      //---------------- Materials -----------------------------------------------------------------
       void setMaterialFactor(int factor, double value);
 
-      //set fog
+      //---------------- Fog -----------------------------------------------------------------------
       void setFog(int factor, double value);
       void setFogColor(const glm::vec4 &color);
 
-      GLWidget*                             mGLWidget                     {};         ///< GL widget containing context.
+      //---------------- Misc. ---------------------------------------------------------------------
+      void takeScreenshot();
+      void sendScreenshotDownstreamForTesting();
+
+
+      struct ClippingPlane
+      {
+        bool visible, showFrame, reverseNormal;
+        double x, y, z, d;
+      };
+
+      struct ScaleBar
+      {
+        bool visible;
+        int fontSize;
+        double length, height, multiplier, numTicks, lineWidth;
+        std::string unit;
+        double projLength;
+      };
+
+
+      GLWidget*                             mGLWidget                     {nullptr};  ///< GL widget containing context.
       std::weak_ptr<Render::SRInterface>    mSpire                        {};         ///< Instance of Spire.
-      QToolBar*                             mToolBar                      {};         ///< Tool bar.
-      QToolBar*                             mViewBar                      {};         ///< Tool bar for view options.
-      QComboBox*                            mDownViewBox                  {};         ///< Combo box for Down axis options.
-      QComboBox*                            mUpVectorBox                  {};         ///< Combo box for Up Vector options.
+      QToolBar*                             mToolBar                      {nullptr};  ///< Tool bar.
+      QToolBar*                             mViewBar                      {nullptr};  ///< Tool bar for view options.
+      QComboBox*                            mDownViewBox                  {nullptr};  ///< Combo box for Down axis options.
+      QComboBox*                            mUpVectorBox                  {nullptr};  ///< Combo box for Up Vector options.
       ViewSceneControlsDock*                mConfigurationDock            {nullptr};  ///< Dock holding configuration functions
 
       bool                                  shown_                        {false};
@@ -257,12 +280,12 @@ namespace SCIRun {
       Modules::Visualization::TextBuilder               textBuilder_        {};
       Graphics::Datatypes::GeometryHandle               scaleBarGeom_       {};
       std::vector<Graphics::Datatypes::GeometryHandle>  clippingPlaneGeoms_ {};
-      QAction*                                          lockRotation_       {};
-      QAction*                                          lockPan_            {};
-      QAction*                                          lockZoom_           {};
-      QPushButton*                                      controlLock_        {};
-      QPushButton*                                      autoViewButton_     {};
-      QPushButton*                                      viewBarBtn_         {};
+      QAction*                                          lockRotation_       {nullptr};
+      QAction*                                          lockPan_            {nullptr};
+      QAction*                                          lockZoom_           {nullptr};
+      QPushButton*                                      controlLock_        {nullptr};
+      QPushButton*                                      autoViewButton_     {nullptr};
+      QPushButton*                                      viewBarBtn_         {nullptr};
 
       friend class ViewSceneControlsDock;
 
