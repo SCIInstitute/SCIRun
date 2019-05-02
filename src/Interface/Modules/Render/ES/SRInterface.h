@@ -189,6 +189,9 @@ namespace SCIRun {
       void setupCore();
       void setupLights();
 
+      //---------------- Camera ----------------------------------------------------------------------
+      void updateCamera(); // Places mCamera's transform into our static camera component.
+
       //---------------- Widgets -------------------------------------------------------------------
       bool foundWidget(const glm::ivec2& pos); // search for a widget at mouse position
       void updateWidget(const glm::ivec2& pos); // update selected widget
@@ -199,6 +202,7 @@ namespace SCIRun {
       //---------------- Clipping Planes -----------------------------------------------------------
       void checkClippingPlanes(int n);// make sure clipping plane number matches
       double getMaxProjLength(const glm::vec3 &n);
+      void updateClippingPlanes();
 
       //---------------- Data Handeling ------------------------------------------------------------
       // Adds a VBO to the given entityID.
@@ -215,9 +219,7 @@ namespace SCIRun {
 
       //---------------- Rendering -----------------------------------------------------------------
       void renderCoordinateAxes();
-      void updateCamera(); // Places mCamera's transform into our static camera component.
       void updateWorldLight();
-      void updateClippingPlanes();
       void applyUniform(uint64_t entityID, const Graphics::Datatypes::SpireSubPass::Uniform& uniform);
       void applyMatFactors(Graphics::Datatypes::SpireSubPass::Uniform& uniform);
       void applyFog(Graphics::Datatypes::SpireSubPass::Uniform& uniform);

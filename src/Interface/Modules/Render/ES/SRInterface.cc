@@ -271,6 +271,22 @@ namespace SCIRun {
       updateCamera();
     }
 
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::updateCamera()
+    {
+      // Update the static camera with the appropriate world to view transform.
+      glm::mat4 viewToWorld = mCamera->getViewToWorld();
+      glm::mat4 projection = mCamera->getViewToProjection();
+
+      gen::StaticCamera* camera = mCore.getStaticComponent<gen::StaticCamera>();
+      if (camera)
+      {
+        camera->data.winWidth = static_cast<float>(mScreenWidth);
+        camera->data.setView(viewToWorld);
+        camera->data.setProjection(projection, mCamera->getFOVY(), mCamera->getAspect(), mCamera->getZNear(), mCamera->getZFar());
+      }
+    }
+
     //Getters/Setters-------------------------------------------------------------------------------
     void SRInterface::setZoomInverted(bool value) {mCamera->setZoomInverted(value);}
     void SRInterface::setLockZoom(bool lock)      {mCamera->setLockZoom(lock);}
@@ -703,6 +719,52 @@ namespace SCIRun {
         std::max(
         std::abs(glm::dot(n, a3)),
         std::abs(glm::dot(n, a4))));
+    }
+
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::updateClippingPlanes()
+    {
+      StaticClippingPlanes* clippingPlanes = mCore.getStaticComponent<StaticClippingPlanes>();
+      if (clippingPlanes)
+      {
+        clippingPlanes->clippingPlanes.clear();
+        clippingPlanes->clippingPlaneCtrls.clear();
+        //boundbox transformation
+        glm::mat4 trans_bb = glm::mat4();
+        glm::vec3 scale_bb(mSceneBBox.x_length() / 2.0, mSceneBBox.y_length() / 2.0, mSceneBBox.z_length() / 2.0);
+        glm::vec3 center_bb(mSceneBBox.center().x(), mSceneBBox.center().y(), mSceneBBox.center().z());
+        glm::mat4 temp = glm::scale(glm::mat4(), scale_bb);
+        trans_bb = temp * trans_bb;
+        temp = glm::translate(glm::mat4(), center_bb);
+        trans_bb = temp * trans_bb;
+        int index = 0;
+        for (auto i : clippingPlanes_)
+        {
+          glm::vec3 n3(i.x, i.y, i.z);
+          double d = i.d;
+          glm::vec4 n(0.0);
+          if (glm::length(n3) > 0.0)
+          {
+            n3 = glm::normalize(n3);
+            n = glm::vec4(n3, 0.0);
+            d *= getMaxProjLength(n3);
+          }
+          glm::vec4 o = glm::vec4(n.x, n.y, n.z, 1.0) * d;
+          o.w = 1;
+          o = trans_bb * o;
+          n = glm::inverseTranspose(trans_bb) * n;
+          o.w = 0;
+          n.w = 0;
+          n = glm::normalize(n);
+          n.w = -glm::dot(o, n);
+          clippingPlanes->clippingPlanes.push_back(n);
+          glm::vec4 control(i.visible ? 1.0 : 0.0,
+            i.showFrame ? 1.0 : 0.0,
+            i.reverseNormal ? 1.0 : 0.0, 0.0);
+          clippingPlanes->clippingPlaneCtrls.push_back(control);
+          index++;
+        }
+      }
     }
 
 
@@ -1570,22 +1632,6 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::updateCamera()
-    {
-      // Update the static camera with the appropriate world to view transform.
-      glm::mat4 viewToWorld = mCamera->getViewToWorld();
-      glm::mat4 projection = mCamera->getViewToProjection();
-
-      gen::StaticCamera* camera = mCore.getStaticComponent<gen::StaticCamera>();
-      if (camera)
-      {
-        camera->data.winWidth = static_cast<float>(mScreenWidth);
-        camera->data.setView(viewToWorld);
-        camera->data.setProjection(projection, mCamera->getFOVY(), mCamera->getAspect(), mCamera->getZNear(), mCamera->getZFar());
-      }
-    }
-
-    //----------------------------------------------------------------------------------------------
     void SRInterface::updateWorldLight()
     {
       glm::mat4 viewToWorld = mCamera->getViewToWorld();
@@ -1599,52 +1645,6 @@ namespace SCIRun {
           glm::vec3 viewDir = viewToWorld[2].xyz();
           viewDir = -viewDir; // Cameras look down -Z.
           light->lightDir[i] = mLightsOn[i] ? viewDir : glm::vec3(0.0, 0.0, 0.0);
-        }
-      }
-    }
-
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::updateClippingPlanes()
-    {
-      StaticClippingPlanes* clippingPlanes = mCore.getStaticComponent<StaticClippingPlanes>();
-      if (clippingPlanes)
-      {
-        clippingPlanes->clippingPlanes.clear();
-        clippingPlanes->clippingPlaneCtrls.clear();
-        //boundbox transformation
-        glm::mat4 trans_bb = glm::mat4();
-        glm::vec3 scale_bb(mSceneBBox.x_length() / 2.0, mSceneBBox.y_length() / 2.0, mSceneBBox.z_length() / 2.0);
-        glm::vec3 center_bb(mSceneBBox.center().x(), mSceneBBox.center().y(), mSceneBBox.center().z());
-        glm::mat4 temp = glm::scale(glm::mat4(), scale_bb);
-        trans_bb = temp * trans_bb;
-        temp = glm::translate(glm::mat4(), center_bb);
-        trans_bb = temp * trans_bb;
-        int index = 0;
-        for (auto i : clippingPlanes_)
-        {
-          glm::vec3 n3(i.x, i.y, i.z);
-          double d = i.d;
-          glm::vec4 n(0.0);
-          if (glm::length(n3) > 0.0)
-          {
-            n3 = glm::normalize(n3);
-            n = glm::vec4(n3, 0.0);
-            d *= getMaxProjLength(n3);
-          }
-          glm::vec4 o = glm::vec4(n.x, n.y, n.z, 1.0) * d;
-          o.w = 1;
-          o = trans_bb * o;
-          n = glm::inverseTranspose(trans_bb) * n;
-          o.w = 0;
-          n.w = 0;
-          n = glm::normalize(n);
-          n.w = -glm::dot(o, n);
-          clippingPlanes->clippingPlanes.push_back(n);
-          glm::vec4 control(i.visible ? 1.0 : 0.0,
-            i.showFrame ? 1.0 : 0.0,
-            i.reverseNormal ? 1.0 : 0.0, 0.0);
-          clippingPlanes->clippingPlaneCtrls.push_back(control);
-          index++;
         }
       }
     }
