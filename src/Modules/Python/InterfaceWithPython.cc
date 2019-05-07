@@ -78,6 +78,8 @@ InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_)
   INITIALIZE_PORT(PythonMatrix3);
   INITIALIZE_PORT(PythonField3);
   INITIALIZE_PORT(PythonString3);
+
+  translator_.reset(new InterfaceWithPythonCodeTranslatorImpl(id().id_, get_state()));
 }
 
 void InterfaceWithPython::setStateDefaults()
@@ -138,14 +140,15 @@ void InterfaceWithPython::execute()
 
       runTopLevelCode();
 
-      PythonInterfaceParser parser(id().id_, state, connectedPortIds());
+      translator_->updatePorts(connectedPortIds());
       auto code = state->getValue(Parameters::PythonCode).toString();
-
-      auto intermediate = parser.extractSpecialBlocks(code);
-      auto readyToConvert = parser.concatenateAndConvertBlocks(intermediate);
-      auto convertedCode = parser.convertStandardCodeBlock(readyToConvert);
+      auto convertedCode = translator_->translate(code);
       NetworkEditorPythonAPI::PythonModuleContextApiDisabler disabler;
-      PythonInterpreter::Instance().run_script(convertedCode);
+      if (convertedCode.isMatlab)
+      {
+        //TODO: insert top level call to start matlab engine
+      }
+      PythonInterpreter::Instance().run_script(convertedCode.code);
     }
 
     PythonObjectForwarderImpl<InterfaceWithPython> impl(*this);

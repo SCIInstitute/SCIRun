@@ -49,17 +49,29 @@ namespace SCIRun
 
         using PythonCode = std::list<PythonCodeBlock>;
 
-        class SCISHARE PythonInterfaceParser
+        class SCISHARE InterfaceWithPythonCodeTranslator
         {
         public:
-          PythonInterfaceParser(const std::string& moduleId,
-            const Dataflow::Networks::ModuleStateHandle& state,
-            const std::vector<std::string>& portIds);
-          std::string convertStandardCodeBlock(const PythonCodeBlock& code) const;
+          virtual ~InterfaceWithPythonCodeTranslator() {}
+          virtual PythonCodeBlock translate(const std::string& code) const = 0;
+          virtual void updatePorts(const std::vector<std::string>& portIds) = 0;
+        };
+
+        class SCISHARE InterfaceWithPythonCodeTranslatorImpl : public InterfaceWithPythonCodeTranslator
+        {
+        public:
+          InterfaceWithPythonCodeTranslatorImpl(const std::string& moduleId,
+            const Dataflow::Networks::ModuleStateHandle& state);
+
+          void updatePorts(const std::vector<std::string>& portIds) override { portIds_ = portIds; }
+          PythonCodeBlock translate(const std::string& code) const override;
+
+          PythonCodeBlock convertIOSyntax(const PythonCodeBlock& code) const;
+
           std::string convertInputSyntax(const std::string& line) const;
           std::string convertOutputSyntax(const std::string& line) const;
           PythonCode extractSpecialBlocks(const std::string& code) const;
-          PythonCodeBlock concatenateNormalBlocks(const PythonCode& code) const;
+          //PythonCodeBlock concatenateNormalBlocks(const PythonCode& code) const;
           PythonCodeBlock concatenateAndConvertBlocks(const PythonCode& code) const;
         private:
           const std::string moduleId_;

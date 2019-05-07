@@ -54,6 +54,8 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(PythonOutputField1Name);
         ALGORITHM_PARAMETER_DECL(PythonOutputField2Name);
         ALGORITHM_PARAMETER_DECL(PythonOutputField3Name);
+
+        class InterfaceWithPythonCodeTranslator;
       }
     }
   }
@@ -93,6 +95,7 @@ namespace SCIRun
         static Core::Thread::Mutex lock_;
         void runTopLevelCode() const;
         std::vector<std::string> connectedPortIds() const;
+        SharedPointer<Core::Algorithms::Python::InterfaceWithPythonCodeTranslator> translator_;
       };
 
     }

@@ -38,14 +38,18 @@ using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Python;
 
-PythonInterfaceParser::PythonInterfaceParser(const std::string& moduleId,
-  const ModuleStateHandle& state,
-  const std::vector<std::string>& portIds)
-  : moduleId_(moduleId), state_(state), portIds_(portIds)
+InterfaceWithPythonCodeTranslatorImpl::InterfaceWithPythonCodeTranslatorImpl(const std::string& moduleId,
+  const ModuleStateHandle& state)
+  : moduleId_(moduleId), state_(state)
 {
 }
 
-std::string PythonInterfaceParser::convertOutputSyntax(const std::string& line) const
+PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::translate(const std::string& code) const
+{
+  return convertIOSyntax(concatenateAndConvertBlocks(extractSpecialBlocks(code)));
+}
+
+std::string InterfaceWithPythonCodeTranslatorImpl::convertOutputSyntax(const std::string& line) const
 {
   auto outputVarsToCheck = InterfaceWithPython::outputNameParameters();
 
@@ -72,7 +76,7 @@ std::string PythonInterfaceParser::convertOutputSyntax(const std::string& line) 
   return line;
 }
 
-std::string PythonInterfaceParser::convertInputSyntax(const std::string& line) const
+std::string InterfaceWithPythonCodeTranslatorImpl::convertInputSyntax(const std::string& line) const
 {
   for (const auto& portId : portIds_)
   {
@@ -90,13 +94,8 @@ std::string PythonInterfaceParser::convertInputSyntax(const std::string& line) c
   return line;
 }
 
-std::string PythonInterfaceParser::convertStandardCodeBlock(const PythonCodeBlock& block) const
+PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::convertIOSyntax(const PythonCodeBlock& block) const
 {
-  if (block.isMatlab)
-  {
-    throw std::invalid_argument("Cannot process matlab block");
-  }
-
   std::ostringstream convertedCode;
   std::vector<std::string> lines;
   boost::split(lines, block.code, boost::is_any_of("\n"));
@@ -104,10 +103,10 @@ std::string PythonInterfaceParser::convertStandardCodeBlock(const PythonCodeBloc
   {
     convertedCode << convertInputSyntax(convertOutputSyntax(line)) << "\n";
   }
-  return convertedCode.str();
+  return {convertedCode.str(), block.isMatlab};
 }
 
-PythonCode PythonInterfaceParser::extractSpecialBlocks(const std::string& code) const
+PythonCode InterfaceWithPythonCodeTranslatorImpl::extractSpecialBlocks(const std::string& code) const
 {
   PythonCode blocks;
   static std::string matlabBlockRegex = std::string("(.*)") + matlabDelimiter
@@ -138,7 +137,7 @@ PythonCode PythonInterfaceParser::extractSpecialBlocks(const std::string& code) 
   return blocks;
 }
 
-void PythonInterfaceParser::parsePart(PythonCode& blocks, const std::string& part) const
+void InterfaceWithPythonCodeTranslatorImpl::parsePart(PythonCode& blocks, const std::string& part) const
 {
   if (!part.empty())
   {
@@ -157,34 +156,34 @@ TEST CASE: first case. Need to convert parsing code from python to C++
 
 input:
 */
+//
+// static std::string input1 = "ofield = scirun_test_field(field1)";
+//
+// //output:
+// static std::string output1 =
+// "import matlab.engine\n"
+// "eng = matlab.engine.start_matlab()\n"
+// "field1=convertfieldtomatlab(field1)\n"
+// "ofield = eng. scirun_test_field(field1, nargout=1)\n"
+// "ofield =convertfieldtopython(ofield )\n"
+// "fieldOutput1 = ofield\n";
+//
 
-static std::string input1 = "ofield = scirun_test_field(field1)";
 
-//output:
-static std::string output1 =
-"import matlab.engine\n"
-"eng = matlab.engine.start_matlab()\n"
-"field1=convertfieldtomatlab(field1)\n"
-"ofield = eng. scirun_test_field(field1, nargout=1)\n"
-"ofield =convertfieldtopython(ofield )\n"
-"fieldOutput1 = ofield\n";
+// PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::concatenateNormalBlocks(const PythonCode& codeList) const
+// {
+//   std::ostringstream ostr;
+//   for (const auto& block : codeList)
+//   {
+//     if (!block.isMatlab)
+//     {
+//       ostr << block.code << '\n';
+//     }
+//   }
+//   return {ostr.str(), false };
+// }
 
-
-
-PythonCodeBlock PythonInterfaceParser::concatenateNormalBlocks(const PythonCode& codeList) const
-{
-  std::ostringstream ostr;
-  for (const auto& block : codeList)
-  {
-    if (!block.isMatlab)
-    {
-      ostr << block.code << '\n';
-    }
-  }
-  return {ostr.str(), false };
-}
-
-PythonCodeBlock PythonInterfaceParser::concatenateAndConvertBlocks(const PythonCode& codeList) const
+PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::concatenateAndConvertBlocks(const PythonCode& codeList) const
 {
   std::ostringstream ostr;
   for (const auto& block : codeList)
@@ -195,8 +194,8 @@ PythonCodeBlock PythonInterfaceParser::concatenateAndConvertBlocks(const PythonC
     }
     else
     {
-      if (block.code == input1)
-        ostr << output1;
+      //if (block.code == input1)
+        //ostr << block.code;
     }
   }
   return {ostr.str(), false };
