@@ -6,7 +6,6 @@
    Copyright (c) 2016 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -46,10 +45,10 @@ InterfaceWithPythonCodeTranslatorImpl::InterfaceWithPythonCodeTranslatorImpl(con
 
 PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::translate(const std::string& code) const
 {
-  return convertIOSyntax(concatenateAndConvertBlocks(extractSpecialBlocks(code)));
+  return translateIOSyntax(concatenateAndTranslateMatlabBlocks(extractSpecialBlocks(code)));
 }
 
-std::string InterfaceWithPythonCodeTranslatorImpl::convertOutputSyntax(const std::string& line) const
+std::string InterfaceWithPythonCodeTranslatorImpl::translateOutputSyntax(const std::string& line) const
 {
   auto outputVarsToCheck = InterfaceWithPython::outputNameParameters();
 
@@ -76,7 +75,7 @@ std::string InterfaceWithPythonCodeTranslatorImpl::convertOutputSyntax(const std
   return line;
 }
 
-std::string InterfaceWithPythonCodeTranslatorImpl::convertInputSyntax(const std::string& line) const
+std::string InterfaceWithPythonCodeTranslatorImpl::translateInputSyntax(const std::string& line) const
 {
   for (const auto& portId : portIds_)
   {
@@ -94,14 +93,14 @@ std::string InterfaceWithPythonCodeTranslatorImpl::convertInputSyntax(const std:
   return line;
 }
 
-PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::convertIOSyntax(const PythonCodeBlock& block) const
+PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::translateIOSyntax(const PythonCodeBlock& block) const
 {
   std::ostringstream convertedCode;
   std::vector<std::string> lines;
   boost::split(lines, block.code, boost::is_any_of("\n"));
   for (const auto& line : lines)
   {
-    convertedCode << convertInputSyntax(convertOutputSyntax(line)) << "\n";
+    convertedCode << translateInputSyntax(translateOutputSyntax(line)) << "\n";
   }
   return {convertedCode.str(), block.isMatlab};
 }
@@ -183,9 +182,10 @@ input:
 //   return {ostr.str(), false };
 // }
 
-PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::concatenateAndConvertBlocks(const PythonCode& codeList) const
+PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::concatenateAndTranslateMatlabBlocks(const PythonCode& codeList) const
 {
   std::ostringstream ostr;
+  bool isMatlab = false;
   for (const auto& block : codeList)
   {
     if (!block.isMatlab)
@@ -194,9 +194,14 @@ PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::concatenateAndConvertBloc
     }
     else
     {
-      //if (block.code == input1)
-        //ostr << block.code;
+      ostr << translateMatlabBlock(block);
+      isMatlab = true;
     }
   }
-  return {ostr.str(), false };
+  return {ostr.str(), isMatlab};
+}
+
+std::string InterfaceWithPythonCodeTranslatorImpl::translateMatlabBlock(const PythonCodeBlock& block) const
+{
+  return block.code;
 }

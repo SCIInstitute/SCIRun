@@ -66,13 +66,14 @@ namespace SCIRun
           void updatePorts(const std::vector<std::string>& portIds) override { portIds_ = portIds; }
           PythonCodeBlock translate(const std::string& code) const override;
 
-          PythonCodeBlock convertIOSyntax(const PythonCodeBlock& code) const;
+          PythonCodeBlock translateIOSyntax(const PythonCodeBlock& code) const;
 
-          std::string convertInputSyntax(const std::string& line) const;
-          std::string convertOutputSyntax(const std::string& line) const;
+          std::string translateInputSyntax(const std::string& line) const;
+          std::string translateOutputSyntax(const std::string& line) const;
           PythonCode extractSpecialBlocks(const std::string& code) const;
           //PythonCodeBlock concatenateNormalBlocks(const PythonCode& code) const;
-          PythonCodeBlock concatenateAndConvertBlocks(const PythonCode& code) const;
+          PythonCodeBlock concatenateAndTranslateMatlabBlocks(const PythonCode& code) const;
+          std::string translateMatlabBlock(const PythonCodeBlock& code) const;
         private:
           const std::string moduleId_;
           const Dataflow::Networks::ModuleStateHandle state_;

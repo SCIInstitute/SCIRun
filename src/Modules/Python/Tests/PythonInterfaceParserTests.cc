@@ -64,7 +64,7 @@ TEST(PythonInterfaceParserTests, Basic)
     "s = str1\n"
     "out1 = s + \"!12!\"\n";
 
-  auto convertedCode = parser->convertIOSyntax({code, false});
+  auto convertedCode = parser->translateIOSyntax({code, false});
 
   std::cout << convertedCode.code << std::endl;
   EXPECT_FALSE(convertedCode.isMatlab);
@@ -84,7 +84,7 @@ TEST(PythonInterfaceParserTests, BasicActual)
     "s = str1\n"
     "out1 = s + \"!12!\"\n";
 
-  auto convertedCode = parser->convertIOSyntax({code, false});
+  auto convertedCode = parser->translateIOSyntax({code, false});
 
   std::cout << convertedCode.code << std::endl;
   EXPECT_FALSE(convertedCode.isMatlab);
@@ -98,9 +98,9 @@ TEST(PythonInterfaceParserTests, BasicActual)
   auto intermediate = parser->extractSpecialBlocks(code);
 
   std::cout << intermediate.begin()->code << std::endl;
-  auto readyToConvert = parser->concatenateAndConvertBlocks(intermediate);
+  auto readyToConvert = parser->concatenateAndTranslateMatlabBlocks(intermediate);
   std::cout << readyToConvert.code << std::endl;
-  auto convertedCode2 = parser->convertIOSyntax(readyToConvert);
+  auto convertedCode2 = parser->translateIOSyntax(readyToConvert);
   std::cout << convertedCode2.code << std::endl;
 
   ASSERT_EQ(convertedCode2.code, expectedCode + "\n");
@@ -246,9 +246,9 @@ TEST(PythonInterfaceParserTests, CanTranslateFirstSpecificMatlabBlock)
 
   auto intermediate = parser->extractSpecialBlocks(code);
   std::cout << intermediate.begin()->code << std::endl;
-  auto readyToConvert = parser->concatenateAndConvertBlocks(intermediate);
+  auto readyToConvert = parser->concatenateAndTranslateMatlabBlocks(intermediate);
   std::cout << readyToConvert.code << std::endl;
-  auto convertedCode2 = parser->convertIOSyntax(readyToConvert);
+  auto convertedCode2 = parser->translateIOSyntax(readyToConvert);
   std::cout << convertedCode2.code << std::endl;
 
   EXPECT_TRUE(convertedCode2.isMatlab);
