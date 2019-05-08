@@ -44,8 +44,8 @@ InterfaceWithCleaver2Dialog::InterfaceWithCleaver2Dialog(const std::string& name
 
   addDoubleSpinBoxManager(alphaLongDoubleSpinBox_, Parameters::AlphaLong);
   addDoubleSpinBoxManager(alphaShortDoubleSpinBox_, Parameters::AlphaShort);
-  addDoubleSpinBoxManager(multiplierDoubleSpinBox_, Parameters::VolumeMultiplier);
-  addDoubleSpinBoxManager(scalingDoubleSpinBox_, Parameters::VolumeScaling);
+  addDoubleSpinBoxManager(featureScalingDoubleSpinBox_, Parameters::VolumeFeatureScaling);
+  addDoubleSpinBoxManager(samplingRateDoubleSpinBox_, Parameters::VolumeSamplingRate);
   addDoubleSpinBoxManager(lipschitzDoubleSpinBox_, Parameters::Lipschitz);
   addCheckBoxManager(verboseCheckBox_, Parameters::Verbose);
   addCheckBoxManager(simpleModeCheckBox_, Parameters::SimpleMode);

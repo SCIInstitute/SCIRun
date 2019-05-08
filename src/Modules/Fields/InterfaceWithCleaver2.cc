@@ -59,8 +59,8 @@ void InterfaceWithCleaver2::setStateDefaults()
   setStateDoubleFromAlgo(Parameters::Lipschitz);
   setStateDoubleFromAlgo(Parameters::AlphaLong);
   setStateDoubleFromAlgo(Parameters::AlphaShort);
-  setStateDoubleFromAlgo(Parameters::VolumeScaling);
-  setStateDoubleFromAlgo(Parameters::VolumeMultiplier);
+  setStateDoubleFromAlgo(Parameters::VolumeSamplingRate);
+  setStateDoubleFromAlgo(Parameters::VolumeFeatureScaling);
   setStateIntFromAlgo(Parameters::MeshMode);
 }
 
@@ -78,8 +78,8 @@ void InterfaceWithCleaver2::execute()
     setAlgoDoubleFromState(Parameters::Lipschitz);
     setAlgoDoubleFromState(Parameters::AlphaLong);
     setAlgoDoubleFromState(Parameters::AlphaShort);
-    setAlgoDoubleFromState(Parameters::VolumeScaling);
-    setAlgoDoubleFromState(Parameters::VolumeMultiplier);
+    setAlgoDoubleFromState(Parameters::VolumeSamplingRate);
+    setAlgoDoubleFromState(Parameters::VolumeFeatureScaling);
     setAlgoIntFromState(Parameters::MeshMode);
 
     auto output = algo().run(withInputData((InputFields, fields)
