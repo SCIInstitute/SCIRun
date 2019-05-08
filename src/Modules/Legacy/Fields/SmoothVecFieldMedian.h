@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/SmoothVecFieldMedian.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
+#ifndef MODULES_LEGACY_FIELDS_SMOOTHVECFIELDMEDIAN_H__
+#define MODULES_LEGACY_FIELDS_SMOOTHVECFIELDMEDIAN_H__
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-MODULE_INFO_DEF(SmoothVecFieldMedian, ChangeFieldData, SCIRun)
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-/// @class SmoothVecFieldMedian
-/// @brief This function smoothes vectors assigned to the elements of a mesh
-/// using a median filter. 
+      class SCISHARE SmoothVecFieldMedian : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        SmoothVecFieldMedian();
 
-SmoothVecFieldMedian::SmoothVecFieldMedian() :
-  Module(staticInfo_, HasUI<SmoothVecFieldMedian>::value)
-{
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
-}
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
 
-void SmoothVecFieldMedian::execute()
-{
-  auto input = getRequiredInput(InputField);
+        INPUT_PORT(0, InputField, Field);
+        OUTPUT_PORT(0, OutputField, Field);
 
-  if (needToExecute())
-  {
-    auto output = algo().run(withInputData((InputField, input)));
-    sendOutputFromAlgorithm(OutputField, output);
+        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+      };
+
+    }
   }
 }
+
+#endif
