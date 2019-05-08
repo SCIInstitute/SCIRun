@@ -83,10 +83,10 @@ TEST_F(NetworkTests, CanAddAndRemoveModules)
   ModuleLookupInfo mli;
   mli.module_name_ = "Module1";
   ModuleHandle m = network.add_module(mli);
-  EXPECT_EQ(mli.module_name_, m->get_module_name());
+  EXPECT_EQ(mli.module_name_, m->name());
   EXPECT_EQ(1, network.nmodules());
   EXPECT_EQ(m, network.module(0));
-  EXPECT_TRUE(network.remove_module(ModuleId(m->get_id())));
+  EXPECT_TRUE(network.remove_module(ModuleId(m->id())));
   EXPECT_EQ(0, network.nmodules());
   EXPECT_FALSE(network.remove_module(ModuleId("not in the network4")));
 }

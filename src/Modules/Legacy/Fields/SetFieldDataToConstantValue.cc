@@ -42,21 +42,6 @@ MODULE_INFO_DEF(SetFieldDataToConstantValue, ChangeFieldData, SCIRun)
 /// @class SetFieldDataToConstantValue
 /// @brief Sets field data to a given scalar value on a new output field based
 /// on the input field geometry.
-//
-//class SetFieldDataToConstantValue : public Module {
-//  public:
-//    SetFieldDataToConstantValue(GuiContext*);
-//    virtual ~SetFieldDataToConstantValue() {}
-//
-//    virtual void execute();
-//
-//  private:
-//    GuiString gui_data_type_;
-//    GuiString gui_basis_order_;
-//    GuiDouble gui_value_;
-//
-//    SCIRunAlgo::SetFieldDataToConstantValueAlgo algo_;
-//};
 
 SetFieldDataToConstantValue::SetFieldDataToConstantValue() :
   Module(staticInfo_)

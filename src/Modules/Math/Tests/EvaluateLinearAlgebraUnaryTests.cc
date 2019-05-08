@@ -62,7 +62,7 @@ TEST_F(EvaluateLinearAlgebraUnaryModuleTests, CanCreateWithMockAlgorithm)
   const std::string name = "EvaluateLinearAlgebraUnary";
   auto module = makeModule(name);
 
-  EXPECT_EQ(name, module->get_module_name());
+  EXPECT_EQ(name, module->name());
 
   DenseMatrixHandle m(new DenseMatrix(2,2,2));
 

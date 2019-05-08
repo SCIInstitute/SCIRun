@@ -26,50 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_SMOOTHVECFIELDMEDIAN_H
+#define CORE_ALGORITHMS_FIELDS_FIELDDATA_SMOOTHVECFIELDMEDIAN_H 1
 
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 
-///
-///@file  Color.cc
-///@brief Simple RGB color model
-///
-///@author
-///       Steven G. Parker
-///       Department of Computer Science
-///       University of Utah
-///@date  June 1994
-///
-
-#include <Core/Datatypes/Color.h>
-#include <Core/Persistent/Persistent.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-void Pio(Piostream& stream, SLIVR::Color& p)
-{
-  double r = p.r();
-  double g = p.g();
-  double b = p.b();
-  stream.begin_cheap_delim();
-  Pio(stream, r);
-  Pio(stream, g);
-  Pio(stream, b);
-  p.r(r);
-  p.g(g);
-  p.b(b);
-  stream.end_cheap_delim();
+        class SCISHARE SmoothVecFieldMedianAlgo : public AlgorithmBase
+        {
+        public:
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
+
+          bool runImpl(FieldHandle input, FieldHandle& output) const;
+        };
+
+      }
+    }
+  }
 }
 
-void Pio(Piostream& stream, SLIVR::CharColor& p)
-{
-  stream.begin_cheap_delim();
-  Pio(stream, p.red);
-  Pio(stream, p.green);
-  Pio(stream, p.blue);
-  stream.end_cheap_delim();
-}
-
-} // End namespace SCIRun
-
-
-
-
+#endif

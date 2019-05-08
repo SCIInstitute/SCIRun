@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_SMOOTHVECFIELDMEDIAN_H
-#define CORE_ALGORITHMS_FIELDS_FIELDDATA_SMOOTHVECFIELDMEDIAN_H 1
+#ifndef MODULES_LEGACY_FIELDS_SMOOTHVECFIELDMEDIAN_H__
+#define MODULES_LEGACY_FIELDS_SMOOTHVECFIELDMEDIAN_H__
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+      class SCISHARE SmoothVecFieldMedian : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        SmoothVecFieldMedian();
 
-namespace SCIRunAlgo {
+        virtual void execute() override;
+        virtual void setStateDefaults() override {}
 
-using namespace SCIRun;
+        INPUT_PORT(0, InputField, Field);
+        OUTPUT_PORT(0, OutputField, Field);
 
-class SCISHARE SmoothVecFieldMedianAlgo : public AlgoBase
-{
-  public:
-    /// Set defaults
-    SmoothVecFieldMedianAlgo()
-    {
+        MODULE_TRAITS_AND_INFO(ModuleHasAlgorithm)
+      };
+
     }
-  
-    /// run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
-};
-
-} // end namespace SCIRun
+  }
+}
 
 #endif

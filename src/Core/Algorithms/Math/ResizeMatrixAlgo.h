@@ -28,40 +28,27 @@
 #ifndef CORE_ALGORITHMS_MATH_ResizeMatrixALGO_H
 #define CORE_ALGORITHMS_MATH_ResizeMatrixALGO_H
 
-#include<Core/Datatypes/Matrix.h>
-#include<Core/Datatypes/DenseMatrix.h>
-#include<Core/Datatypes/DenseColumnMatrix.h>
-#include <Dataflow/Network/Module.h>
-#include <Eigen/Dense>
-
-#include<string>
-#include<sstream>
-#include<vector>
-#include<algorithm>
-
-#include<Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include<Core/Algorithms/Base/AlgorithmBase.h>
 #include<Core/Algorithms/Math/share.h>
 
-namespace SCIRun{
-    namespace Core{
-        namespace Algorithms{
-            namespace Math{
-                
-                ALGORITHM_PARAMETER_DECL(NoOfRows);
-                ALGORITHM_PARAMETER_DECL(NoOfColumns);
-                ALGORITHM_PARAMETER_DECL(Major);
-                
-                
-                class SCISHARE ResizeMatrixAlgo : public AlgorithmBase
-                {
-                public:
-                  ResizeMatrixAlgo();
-                    
-                  AlgorithmOutput run(const AlgorithmInput& input) const;
-                    
-                    
-                };
+namespace SCIRun
+{
+    namespace Core
+    {
+        namespace Algorithms
+        {
+            namespace Math
+            {
+              ALGORITHM_PARAMETER_DECL(NoOfRows);
+              ALGORITHM_PARAMETER_DECL(NoOfColumns);
+              ALGORITHM_PARAMETER_DECL(Major);
+
+              class SCISHARE ResizeMatrixAlgo : public AlgorithmBase
+              {
+              public:
+                ResizeMatrixAlgo();
+                AlgorithmOutput run(const AlgorithmInput& input) const;
+              };
             }
         }
     }

@@ -345,7 +345,7 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderWithSomeModulesDone)
 {
   setupBasicNetwork();
 
-  ModuleFilter filter = [](ModuleHandle mh) { return mh->get_module_name().find("Unary") == std::string::npos; };
+  ModuleFilter filter = [](ModuleHandle mh) { return mh->name().find("Unary") == std::string::npos; };
   BoostGraphParallelScheduler scheduler(filter);
   auto order = scheduler.schedule(matrixMathNetwork);
   std::ostringstream ostr;

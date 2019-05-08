@@ -138,7 +138,7 @@ void InterfaceWithPython::execute()
 
       runTopLevelCode();
 
-      PythonInterfaceParser parser(get_id().id_, state, connectedPortIds());
+      PythonInterfaceParser parser(id().id_, state, connectedPortIds());
       auto code = state->getValue(Parameters::PythonCode).toString();
 
       auto intermediate = parser.extractSpecialBlocks(code);
