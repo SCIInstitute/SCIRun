@@ -173,6 +173,26 @@ void ViewSceneDialog::adjustToolbar()
   adjustToolbarForHighResolution(mToolBar);
 }
 
+std::string ViewSceneDialog::toString(std::string prefix) const
+{
+  auto spire = mSpire.lock();
+
+  std::string output = "VIEW_SCENE:\n";
+  prefix += "  ";
+
+  //auto geomDataTransient = state_->getTransientValue(Parameters::GeomData);
+  //auto portGeometries = transient_value_cast<Modules::Render::ViewScene::GeomListPtr>(geomDataTransient);
+
+  output += prefix + "State:\n";
+  output += "\n";
+
+  output += spire->toString(prefix);
+  output += "\n";
+
+  return output;
+}
+
+
 void ViewSceneDialog::setInitialLightValues()
 {
   auto light0str = state_->getValue(Modules::Render::ViewScene::HeadLightColor).toString();
@@ -495,6 +515,7 @@ void ViewSceneDialog::newGeometryValue()
       }
     }
   }
+
   if (!validObjects.empty())
     spire->gcInvalidObjects(validObjects);
 
@@ -608,7 +629,6 @@ void ViewSceneDialog::viewBarButtonClicked()
 void ViewSceneDialog::viewAxisSelected(const QString& name)
 {
   mUpVectorBox->clear();
-  mUpVectorBox->addItem("------");
 
   if (!name.contains("X"))
   {
@@ -1545,7 +1565,6 @@ void ViewSceneDialog::addViewOptions()
   mDownViewBox = new QComboBox();
   mDownViewBox->setMinimumHeight(25);
   mDownViewBox->setToolTip("Vector pointing out of the screen");
-  mDownViewBox->addItem("------");
   mDownViewBox->addItem("+X");
   mDownViewBox->addItem("+Y");
   mDownViewBox->addItem("+Z");
@@ -1564,7 +1583,6 @@ void ViewSceneDialog::addViewOptions()
   mUpVectorBox = new QComboBox();
   mUpVectorBox->setMinimumHeight(25);
   mUpVectorBox->setToolTip("Vector pointing up");
-  mUpVectorBox->addItem("------");
   connect(mUpVectorBox, SIGNAL(activated(const QString&)), this, SLOT(viewVectorSelected(const QString&)));
   mViewBar->addWidget(mUpVectorBox);
   mViewBar->setMinimumHeight(35);

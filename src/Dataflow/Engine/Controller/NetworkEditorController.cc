@@ -141,10 +141,10 @@ namespace
           uiVisible = true;
         }
         auto mod = nec_.addModule(m);
-        if (mod->has_ui())
+        if (mod->hasUI())
           mod->setUiVisible(uiVisible);
         mods_.push_back(mod);
-        positions.modulePositions[mod->get_id().id_] =
+        positions.modulePositions[mod->id().id_] =
           { snippetSpacer + numSnips * MODULE_HORIZONTAL_SPACING,
             snippetSpacer + MODULE_VERTICAL_SPACING * i++ };
       }
@@ -280,9 +280,9 @@ void NetworkEditorController::interruptModule(const ModuleId& id)
 ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module)
 {
   ENSURE_NOT_NULL(module, "Cannot duplicate null module");
-  auto id(module->get_id());
-  auto newModule = addModuleImpl(module->get_info());
-  newModule->set_state(module->get_state()->clone());
+  auto id(module->id());
+  auto newModule = addModuleImpl(module->info());
+  newModule->setState(module->get_state()->clone());
   static ModuleCounter dummy;
   moduleAdded_(id.name_, newModule, dummy);
 
@@ -485,7 +485,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
       {
         auto module = theNetwork_->module(i);
-        moduleAdded_(module->get_module_name(), module, modulesDone);
+        moduleAdded_(module->name(), module, modulesDone);
         networkDoneLoading_(static_cast<int>(i));
       }
 
@@ -562,7 +562,7 @@ void NetworkEditorController::appendToNetwork(const NetworkFileHandle& xml)
       for (size_t i = startIndex; i < theNetwork_->nmodules(); ++i)
       {
         auto module = theNetwork_->module(i);
-        moduleAdded_(module->get_module_name(), module, modulesDone);
+        moduleAdded_(module->name(), module, modulesDone);
       }
 
       {

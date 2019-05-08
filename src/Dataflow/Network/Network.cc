@@ -69,7 +69,7 @@ ModuleHandle Network::add_module(const ModuleLookupInfo& info)
 
 bool Network::remove_module(const ModuleId& id)
 {
-  Modules::iterator loc = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *boost::lambda::_1) == id);
+  Modules::iterator loc = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::id, *boost::lambda::_1) == id);
   if (loc != modules_.end())
   {
     // Inform the module that it is about to be erased from the network...
@@ -107,8 +107,8 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
   }
 
   ConnectionId id = ConnectionId::create(ConnectionDescription(
-    OutgoingConnectionDescription(outputModule->get_id(), outputPortId),
-    IncomingConnectionDescription(inputModule->get_id(), inputPortId)));
+    OutgoingConnectionDescription(outputModule->id(), outputPortId),
+    IncomingConnectionDescription(inputModule->id(), inputPortId)));
   if (connections_.find(id) == connections_.end())
   {
     try
@@ -160,7 +160,7 @@ ModuleHandle Network::module(size_t i) const
 
 ModuleHandle Network::lookupModule(const ModuleId& id) const
 {
-  Modules::const_iterator i = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *boost::lambda::_1) == id);
+  Modules::const_iterator i = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::id, *boost::lambda::_1) == id);
   return i == modules_.end() ? nullptr : *i;
 }
 
@@ -256,7 +256,7 @@ void Network::clear()
 
 bool Network::containsViewScene() const
 {
-  return std::find_if(modules_.begin(), modules_.end(), [](ModuleHandle m) { return m->get_module_name() == "ViewScene"; }) != modules_.end();
+  return std::find_if(modules_.begin(), modules_.end(), [](ModuleHandle m) { return m->name() == "ViewScene"; }) != modules_.end();
 }
 
 boost::signals2::connection Network::connectModuleInterrupted(ModuleInterruptedSignal::slot_function_type subscriber) const

@@ -27,7 +27,7 @@
 */
 
 // Uniforms
-uniform float    uAspectRatio  ;      
+uniform float    uAspectRatio  ;
 uniform float    uWindowWidth  ;
 uniform float    uXTranslate;
 uniform float    uYTranslate;
@@ -56,9 +56,9 @@ void main( void )
   float y_scale = 2. / (uWindowWidth / uAspectRatio);
   float x_trans = -1. + (  ds ?0.:(tick_separation+(full?bar_buffer:(half1?0.:(bar_buffer+1.)))))
                         + uXTranslate / 50.;
-  float y_trans = -1. + ((!ds)?0.:(tick_separation+(full?bar_buffer:(half1?0.:(bar_buffer+1.)))))   
+  float y_trans = -1. + ((!ds)?0.:(tick_separation+(full?bar_buffer:(half1?0.:(bar_buffer+1.)))))
                         + uYTranslate / 50.;
-  gl_Position = vec4(newPos.x * x_scale + x_trans, 
-                     newPos.y * y_scale + y_trans, 0., 1.0);
+  gl_Position = vec4(newPos.x * x_scale + x_trans,
+                     newPos.y * y_scale + y_trans, -1.0, 1.0);
   fTexCoord = aTexCoord;
 }

@@ -19,30 +19,21 @@ matrix:
       env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
     - os: osx
       osx_image: xcode7.2
-      env: PYTHON_VERSION=3.4.3 OSPRAY_BUILD=OFF
-    - os: osx
-      osx_image: xcode8.3
-      env: PYTHON_VERSION=3.4.3 OSPRAY_BUILD=OFF
-    - os: osx
-      osx_image: xcode9.3
-      env: PYTHON_VERSION=3.4.3 OSPRAY_BUILD=OFF
-    - os: osx
-      osx_image: xcode7.2
       env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
     - os: osx
       osx_image: xcode8.3
       env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
     - os: osx
       osx_image: xcode9.3
+      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
+    - os: osx
+      osx_image: xcode10.1
       env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF
     - os: osx
       osx_image: xcode7.2
       env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF
     - os: osx
-      osx_image: xcode8.3
-      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF
-    - os: osx
-      osx_image: xcode9.3
+      osx_image: xcode10.1
       env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF
 
 before_install:

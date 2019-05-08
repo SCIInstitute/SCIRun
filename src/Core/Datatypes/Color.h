@@ -84,6 +84,8 @@ namespace Datatypes {
     Geometry::Transform transform;
     std::string selectionName;
     std::tuple<int,int> windowSize;
+
+    bool matchesWithModuleId(const std::string& modId) const;
   };
 
   struct SCISHARE MeshComponentSelectionFeedback : ModuleFeedback

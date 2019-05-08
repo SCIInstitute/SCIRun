@@ -54,11 +54,8 @@ namespace spire
   #define RENDERER_LOG(...) SPDLOG_TRACE(spire::RendererLog::get(), __VA_ARGS__)
   #define RENDERER_LOG_FUNCTION_SCOPE LOG_FUNCTION_SCOPE(spire::RendererLog);
 #else
-  #include <spdlog/spdlog.h>
   #define RENDERER_LOG(...)
   #define RENDERER_LOG_FUNCTION_SCOPE
 #endif
-
-//#include <Core/Logging/ScopedFunctionLogger.h>
 
 #endif

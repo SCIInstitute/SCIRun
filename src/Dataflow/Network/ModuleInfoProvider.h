@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -46,24 +45,27 @@ namespace Networks {
     virtual bool hasOutputPort(const PortId& id) const = 0;
     virtual OutputPortHandle getOutputPort(const PortId& id) const = 0;
     virtual std::vector<OutputPortHandle> findOutputPortsWithName(const std::string& name) const = 0;
-    virtual size_t num_output_ports() const = 0;
+    virtual size_t numOutputPorts() const = 0;
     virtual std::vector<OutputPortHandle> outputPorts() const = 0;
 
     virtual bool hasInputPort(const PortId& id) const = 0;
     virtual InputPortHandle getInputPort(const PortId& id) = 0;
     virtual std::vector<InputPortHandle> findInputPortsWithName(const std::string& name) const = 0;
-    virtual size_t num_input_ports() const = 0;
+    virtual size_t numInputPorts() const = 0;
     virtual std::vector<InputPortHandle> inputPorts() const = 0;
 
-    virtual std::string get_module_name() const = 0;
-    virtual ModuleId get_id() const = 0;
-    virtual bool has_ui() const = 0;
-    virtual const ModuleLookupInfo& get_info() const = 0;
+    virtual std::string name() const = 0;
+    virtual ModuleId id() const = 0;
+    virtual bool hasUI() const = 0;
+    virtual const ModuleLookupInfo& info() const = 0;
     virtual bool hasDynamicPorts() const = 0;
 
     virtual std::string helpPageUrl() const = 0;
+    virtual std::string newHelpPageUrl() const = 0;
     virtual std::string legacyPackageName() const = 0;
     virtual std::string legacyModuleName() const = 0;
+    virtual bool isDeprecated() const = 0;
+    virtual std::string replacementModuleName() const = 0;
   };
 
   SCISHARE std::string to_string(const ModuleInfoProvider&);

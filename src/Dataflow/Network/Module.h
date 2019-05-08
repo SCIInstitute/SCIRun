@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -80,23 +79,23 @@ namespace Networks {
 
     /*** public Dev-interface ****/
     boost::signals2::connection connectExecuteSelfRequest(const ExecutionSelfRequestSignalType::slot_type& subscriber) override final;
-    void set_state(ModuleStateHandle state) override final;
+    void setState(ModuleStateHandle state) override final;
     ModuleExecutionState& executionState() override final;
 
     std::string helpPageUrl() const override;
-    std::string newHelpPageUrl() const; // location in flux, but new v5 modules only have one of these
+    std::string newHelpPageUrl() const override; // location in flux, but new v5 modules only have one of these
     //for serialization
-    const ModuleLookupInfo& get_info() const override final;
-    void set_id(const std::string& id) override final;
+    const ModuleLookupInfo& info() const override final;
+    void setId(const std::string& id) override final;
     bool executeWithSignals() NOEXCEPT override final;
-    bool has_ui() const override;
+    bool hasUI() const override;
     void setUiVisible(bool visible) override;
-    size_t num_input_ports() const override final;
-    size_t num_output_ports() const override final;
+    size_t numInputPorts() const override final;
+    size_t numOutputPorts() const override final;
     // override this for modules that changed packages, to point to correct wiki page
     std::string legacyPackageName() const override { return get_packagename(); }
     // override this for modules that changed names, to point to correct wiki page
-    std::string legacyModuleName() const override { return get_module_name(); }
+    std::string legacyModuleName() const override { return name(); }
     bool hasInputPort(const PortId& id) const override final;
     bool hasOutputPort(const PortId& id) const override final;
     InputPortHandle getInputPort(const PortId& id) override final;
@@ -108,10 +107,12 @@ namespace Networks {
     bool isStoppable() const override final;
     bool oport_connected(const PortId& id) const;
     bool inputsChanged() const;
-    std::string get_module_name() const override final;
+    std::string name() const override final;
     std::string get_categoryname() const;
     std::string get_packagename() const;
-    ModuleId get_id() const override;
+    ModuleId id() const override;
+    bool isDeprecated() const override { return false; }
+    std::string replacementModuleName() const override { return ""; }
     ModuleReexecutionStrategyHandle getReexecutionStrategy() const override final;
     void setReexecutionStrategy(ModuleReexecutionStrategyHandle caching) override final;
     Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const override final;
@@ -180,7 +181,6 @@ namespace Networks {
     void sendFeedbackUpstreamAlongIncomingConnections(const Core::Datatypes::ModuleFeedback& feedback) const;
     std::string stateMetaInfo() const;
     void copyStateToMetadata();
-    void setErrorLoggedFromMacro(bool logged);
 
     friend class ModuleBuilder;
 

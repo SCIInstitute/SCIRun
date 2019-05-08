@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -376,7 +375,7 @@ void NetworkEditor::initializeSubnet(const QString& name, ModuleHandle mod, Netw
   //TODO: later
   //auto mdi = new SubnetworkWindow;
 
-  auto dock = new SubnetworkEditor(subnet, mod->get_id(), name, nullptr);
+  auto dock = new SubnetworkEditor(subnet, mod->id(), name, nullptr);
   dock->setStyleSheet(SCIRunMainWindow::Instance()->styleSheet());
   //dock->setWindowFlags(Qt::WindowStaysOnTopHint);
   //mdi->addSubWindow(dock, Qt::WindowStaysOnTopHint);
@@ -390,7 +389,7 @@ SubnetModule::SubnetModule(const std::vector<ModuleHandle>& underlyingModules, c
   NetworkEditor* parent) : Module(ModuleLookupInfo()),
   underlyingModules_(underlyingModules), items_(items), connector_(parent)
 {
-  set_id("Subnet:" + boost::lexical_cast<std::string>(subnetCount_));
+  setId("Subnet:" + boost::lexical_cast<std::string>(subnetCount_));
   subnetCount_++;
   connector_.setModule(this);
 }
@@ -406,10 +405,10 @@ void SubnetModule::setStateDefaults()
   auto table = makeHomogeneousVariableList(
     [this](size_t i)
     {
-      return makeAnonymousVariableList(underlyingModules_[i]->get_id().id_,
+      return makeAnonymousVariableList(underlyingModules_[i]->id().id_,
         std::string("Push me"),
-        boost::lexical_cast<std::string>(underlyingModules_[i]->num_input_ports()),
-        boost::lexical_cast<std::string>(underlyingModules_[i]->num_output_ports()));
+        boost::lexical_cast<std::string>(underlyingModules_[i]->numInputPorts()),
+        boost::lexical_cast<std::string>(underlyingModules_[i]->numOutputPorts()));
     },
     underlyingModules_.size());
 
@@ -421,7 +420,7 @@ std::string SubnetModule::listComponentIds() const
   std::ostringstream ostr;
   std::transform(underlyingModules_.begin(), underlyingModules_.end(),
     std::ostream_iterator<std::string>(ostr, ", "),
-    [](const ModuleHandle& mod) { return mod->get_id(); });
+    [](const ModuleHandle& mod) { return mod->id(); });
   return ostr.str();
 }
 
@@ -481,7 +480,7 @@ void NetworkEditor::makeSubnetwork()
     {
       items.append(item);
       auto mod = module->getModule();
-      if (mod->get_id().id_.find("Subnet") != std::string::npos)
+      if (mod->id().id_.find("Subnet") != std::string::npos)
       {
         QMessageBox::information(this, "Make subnetwork", noRecursiveSubnetsWarning);
         return;
@@ -537,9 +536,9 @@ public:
       {
         auto mods = conn->getConnectedToModuleIds();
         auto foundFirst = std::find_if(modules.cbegin(), modules.cend(),
-          [&mods](const ModuleHandle& mod) { return mod->get_id().id_ == mods.first.id_; });
+          [&mods](const ModuleHandle& mod) { return mod->id().id_ == mods.first.id_; });
         auto foundSecond = std::find_if(modules.cbegin(), modules.cend(),
-          [&mods](const ModuleHandle& mod) { return mod->get_id().id_ == mods.second.id_; });
+          [&mods](const ModuleHandle& mod) { return mod->id().id_ == mods.second.id_; });
         auto isInternalConnection = foundFirst != modules.cend() && foundSecond != modules.cend();
         conn->setData(SUBNET_KEY, isInternalConnection ? INTERNAL_SUBNET_CONNECTION : EXTERNAL_SUBNET_CONNECTION);
 
@@ -672,10 +671,10 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   childrenNetworkItems_[name] = items;
 
   addSubnetChild(name, subnetModule);
-  subnetNameMap_[subnetModule->get_id()] = name;
+  subnetNameMap_[subnetModule->id()] = name;
 
   Q_EMIT modified();
-  Q_EMIT newModule(QString::fromStdString(subnetModule->get_id()), subnetModule->has_ui());
+  Q_EMIT newModule(QString::fromStdString(subnetModule->id()), subnetModule->hasUI());
 }
 
 QPixmap NetworkEditor::grabSubnetPic(const QRectF& rect, const QList<QGraphicsItem*>& items)
@@ -832,7 +831,7 @@ bool SubnetModuleConnector::signalFromSubnet(QObject* sender) const
 
 void SubnetModuleConnector::moduleAddedToSubnet(const std::string& s, ModuleHandle module)
 {
-  if (signalFromSubnet(sender()) && subnet_->containsModule(module->get_id().id_))
+  if (signalFromSubnet(sender()) && subnet_->containsModule(module->id().id_))
   {
     //qDebug() << "was:" << module_->underlyingModules_.size();
     module_->underlyingModules_.push_back(module);

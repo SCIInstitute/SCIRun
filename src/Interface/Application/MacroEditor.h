@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,38 +25,70 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_APPLICATION_MACROEDITOR_H
+#define INTERFACE_APPLICATION_MACROEDITOR_H
 
+#include "ui_MacroEditor.h"
+#include <QMap>
 
-///
-///@file  Color.h
-///@brief Simple RGB color model
-///
-///@author
-///       Steven G. Parker
-///       Department of Computer Science
-///       University of Utah
-///@date  June 1994
-///
-
-#ifndef SCI_project_Color_h
-#define SCI_project_Color_h
-
-#include <slivr/Color.h>
-#include <Core/Datatypes/share.h>
-
+#ifndef Q_MOC_RUN
+#include <Dataflow/Network/NetworkFwd.h>
+#endif
 
 namespace SCIRun {
-using SLIVR::Color;
-using SLIVR::Colorub;
-using SLIVR::HSVColor;
-using SLIVR::CharColor;
+namespace Gui {
 
-class Piostream;
+  class NetworkEditor;
+  class CodeEditor;
 
-SCISHARE void Pio( Piostream&, SLIVR::Color& );
-SCISHARE void Pio( Piostream&, SLIVR::CharColor& );
+  using MacroNameValueList = QList<QStringList>;
 
-} // End namespace SCIRun
+  enum MacroListItem
+  {
+    Name,
+    Script,
+    ButtonNumber
+  };
 
+class MacroEditor : public QDockWidget, public Ui::MacroEditor
+{
+	Q_OBJECT
+
+public:
+  explicit MacroEditor(QWidget* parent = nullptr);
+  const MacroNameValueList& scripts() const;
+  void setScripts(const MacroNameValueList& scripts);
+
+  QString macroForButton(int i) const;
+
+  static const char* Index;
+  enum
+  {
+    MIN_MACRO_INDEX = 1,
+    MAX_MACRO_INDEX = 5
+  };
+
+Q_SIGNALS:
+  void macroButtonChanged(int index, const QString& name);
+
+private Q_SLOTS:
+  void updateScriptEditor();
+  void updateScripts();
+  void addMacro();
+  void removeMacro();
+  void renameMacro();
+  void assignToButton();
+  void runSelectedMacro();
+
+private:
+  void highlightButton(QPushButton* button) const;
+  void dehighlightButton(QPushButton* button) const;
+  CodeEditor* scriptPlainTextEdit_;
+  MacroNameValueList macros_;
+  std::vector<QPushButton*> buttons_;
+};
+
+}
+}
 
 #endif
