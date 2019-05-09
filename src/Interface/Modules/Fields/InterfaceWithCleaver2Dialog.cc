@@ -42,10 +42,11 @@ InterfaceWithCleaver2Dialog::InterfaceWithCleaver2Dialog(const std::string& name
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
+  //Cleaver parameters: Scaling = Sampling Rate, Multiplier = Feature Scaling
   addDoubleSpinBoxManager(alphaLongDoubleSpinBox_, Parameters::AlphaLong);
   addDoubleSpinBoxManager(alphaShortDoubleSpinBox_, Parameters::AlphaShort);
-  addDoubleSpinBoxManager(featureScalingDoubleSpinBox_, Parameters::VolumeFeatureScaling);
-  addDoubleSpinBoxManager(samplingRateDoubleSpinBox_, Parameters::VolumeSamplingRate);
+  addDoubleSpinBoxManager(featureScalingDoubleSpinBox_, Parameters::VolumeMultiplier);
+  addDoubleSpinBoxManager(samplingRateDoubleSpinBox_, Parameters::VolumeScaling);
   addDoubleSpinBoxManager(lipschitzDoubleSpinBox_, Parameters::Lipschitz);
   addCheckBoxManager(verboseCheckBox_, Parameters::Verbose);
   addCheckBoxManager(simpleModeCheckBox_, Parameters::SimpleMode);
