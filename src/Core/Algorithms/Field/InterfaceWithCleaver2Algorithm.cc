@@ -60,8 +60,8 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Geometry;
 
 ALGORITHM_PARAMETER_DEF(Fields, Verbose);
-ALGORITHM_PARAMETER_DEF(Fields, VolumeSamplingRate);
-ALGORITHM_PARAMETER_DEF(Fields, VolumeFeatureScaling);
+ALGORITHM_PARAMETER_DEF(Fields, VolumeScaling);
+ALGORITHM_PARAMETER_DEF(Fields, VolumeMultiplier);
 ALGORITHM_PARAMETER_DEF(Fields, Lipschitz);
 ALGORITHM_PARAMETER_DEF(Fields, Padding);
 ALGORITHM_PARAMETER_DEF(Fields, AlphaShort);
@@ -505,11 +505,12 @@ namespace detail
 
 InterfaceWithCleaver2Algorithm::InterfaceWithCleaver2Algorithm()
 {
+  //Cleaver parameters: Scaling = Sampling Rate, Multiplier = Feature Scaling
   addParameter(Parameters::Verbose, true);
   addParameter(Parameters::SimpleMode, false);
   addParameter(Parameters::ReverseJacobians, true);
-  addParameter(Parameters::VolumeSamplingRate, detail::kDefaultSamplingRate);
-  addParameter(Parameters::VolumeFeatureScaling, detail::kDefaultFeatureScaling);
+  addParameter(Parameters::VolumeScaling, detail::kDefaultSamplingRate);
+  addParameter(Parameters::VolumeMultiplier, detail::kDefaultFeatureScaling);
   addParameter(Parameters::Lipschitz, detail::kDefaultLipschitz);
   //addParameter(Parameters::Padding, detail::kDefaultPadding);
   addParameter(Parameters::AlphaLong, detail::kDefaultAlphaLong);
