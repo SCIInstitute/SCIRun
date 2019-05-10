@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -40,6 +39,7 @@ namespace SCIRun {
 namespace Gui {
 
   class NetworkEditor;
+  class CodeEditor;
 
 class TriggeredEventsWindow : public QDockWidget, public Ui::TriggeredEvents
 {
@@ -47,10 +47,10 @@ class TriggeredEventsWindow : public QDockWidget, public Ui::TriggeredEvents
 
 public:
   explicit TriggeredEventsWindow(QWidget* parent = nullptr);
-  const QMap<QString, QString>& getScripts() const;
-  const QMap<QString, bool>& getScriptEnabledFlags() const;
 
+  const QMap<QString, QString>& scripts() const;
   void setScripts(const QMap<QString, QString>& scripts);
+  const QMap<QString, bool>& scriptEnabledFlags() const;
   void setScriptEnabledFlags(const QMap<QString, bool>& scriptsEnabled);
 
 private Q_SLOTS:
@@ -59,6 +59,7 @@ private Q_SLOTS:
   void enableStateChanged(int state);
 private:
   void push();
+  CodeEditor* scriptPlainTextEdit_;
   QMap<QString, QString> scripts_;
   QMap<QString, bool> scriptEnabledFlags_;
 };

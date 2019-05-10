@@ -53,7 +53,7 @@ void DynamicPortManager::connectionAddedNeedToCloneAPort(const SCIRun::Dataflow:
     {
       ModuleBuilder builder;
       auto newPortId = builder.cloneInputPort(moduleIn, cd.in_.portId_);
-      portAdded_(moduleIn->get_id(), newPortId);
+      portAdded_(moduleIn->id(), newPortId);
     }
   }
 }
@@ -70,7 +70,7 @@ void DynamicPortManager::connectionRemovedNeedToRemoveAPort(const SCIRun::Datafl
       {
         ModuleBuilder builder;
         builder.removeInputPort(moduleIn, desc.in_.portId_);
-        portRemoved_(moduleIn->get_id(), desc.in_.portId_);
+        portRemoved_(moduleIn->id(), desc.in_.portId_);
       }
     }
   }

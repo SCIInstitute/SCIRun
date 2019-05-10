@@ -13,6 +13,8 @@ public:
   EmptyComponentContainer()           {}
   virtual ~EmptyComponentContainer()  {}
 
+  std::string toString(std::string prefix) const override {return prefix + "  EMPTY\n";}
+
   void renormalize(bool stableSort) override {}
   uint64_t getLowerSequence() const override {return 0;}
   uint64_t getUpperSequence() const override {return 0;}

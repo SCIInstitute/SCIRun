@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1093</width>
-         <height>853</height>
+         <width>1098</width>
+         <height>839</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -216,6 +216,7 @@
      <addaction name="actionExecuteBar_"/>
      <addaction name="actionSearchBar_"/>
      <addaction name="actionAdvancedBar_"/>
+     <addaction name="actionMacroBar_"/>
     </widget>
     <addaction name="actionConfiguration_"/>
     <addaction name="actionModule_Selector"/>
@@ -225,6 +226,7 @@
     <addaction name="actionPythonConsole_"/>
     <addaction name="actionDevConsole_"/>
     <addaction name="actionTriggeredEvents_"/>
+    <addaction name="actionMacroEditor_"/>
     <addaction name="actionPreferences_"/>
     <addaction name="menuToolbars"/>
     <addaction name="separator"/>
@@ -248,6 +250,16 @@
     <property name="title">
      <string>Network</string>
     </property>
+    <widget class="QMenu" name="menuMacros">
+     <property name="title">
+      <string>Macros</string>
+     </property>
+     <addaction name="actionRunMacro1_"/>
+     <addaction name="actionRunMacro2_"/>
+     <addaction name="actionRunMacro3_"/>
+     <addaction name="actionRunMacro4_"/>
+     <addaction name="actionRunMacro5_"/>
+    </widget>
     <addaction name="actionExecuteAll_"/>
     <addaction name="separator"/>
     <addaction name="actionPinAllModuleUIs_"/>
@@ -269,6 +281,8 @@
     <addaction name="actionCleanUpNetwork_"/>
     <addaction name="separator"/>
     <addaction name="actionMakeSubnetwork_"/>
+    <addaction name="separator"/>
+    <addaction name="menuMacros"/>
    </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuEdit"/>
@@ -1268,6 +1282,50 @@
    </property>
    <property name="shortcut">
     <string/>
+   </property>
+  </action>
+  <action name="actionRunMacro1_">
+   <property name="text">
+    <string>Run Macro 1</string>
+   </property>
+  </action>
+  <action name="actionMacroBar_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Macro</string>
+   </property>
+  </action>
+  <action name="actionRunMacro2_">
+   <property name="text">
+    <string>Run Macro 2</string>
+   </property>
+  </action>
+  <action name="actionRunMacro3_">
+   <property name="text">
+    <string>Run Macro 3</string>
+   </property>
+  </action>
+  <action name="actionRunMacro4_">
+   <property name="text">
+    <string>Run Macro 4</string>
+   </property>
+  </action>
+  <action name="actionRunMacro5_">
+   <property name="text">
+    <string>Run Macro 5</string>
+   </property>
+  </action>
+  <action name="actionMacroEditor_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Macro Editor</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+X</string>
    </property>
   </action>
  </widget>

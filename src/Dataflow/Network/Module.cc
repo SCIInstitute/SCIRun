@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -62,7 +61,7 @@ using namespace SCIRun::Core::Thread;
 
 std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 {
-  return m.get_module_name() + " [" + m.get_id().id_ + "]";
+  return m.name() + " [" + m.id().id_ + "]";
 }
 
 namespace detail
@@ -220,7 +219,7 @@ Module::Module(const ModuleLookupInfo& info,
 
   if (algoFactory)
   {
-    impl_->algo_ = algoFactory->create(get_module_name(), this);
+    impl_->algo_ = algoFactory->create(name(), this);
     if (impl_->algo_)
       LOG_TRACE("Module algorithm initialized: {}", info.module_name_);
   }
@@ -233,7 +232,7 @@ Module::Module(const ModuleLookupInfo& info,
   impl_->executionState_->transitionTo(ModuleExecutionState::NotExecuted);
 }
 
-void Module::set_id(const std::string& id)
+void Module::setId(const std::string& id)
 {
   ModuleId newId(id);
   if (!DefaultModuleFactories::idGenerator_->takeId(newId.name_, newId.idNumber_))
@@ -249,32 +248,32 @@ ModuleStateFactoryHandle DefaultModuleFactories::defaultStateFactory_;
 AlgorithmFactoryHandle DefaultModuleFactories::defaultAlgoFactory_;
 ReexecuteStrategyFactoryHandle DefaultModuleFactories::defaultReexFactory_;
 
-bool Module::has_ui() const
+bool Module::hasUI() const
 {
   return impl_->has_ui_;
 }
 
-const ModuleLookupInfo& Module::get_info() const
+const ModuleLookupInfo& Module::info() const
 {
   return impl_->info_;
 }
 
-std::string Module::get_module_name() const
+std::string Module::name() const
 {
-  return get_info().module_name_;
+  return info().module_name_;
 }
 
 std::string Module::get_categoryname() const
 {
-  return get_info().category_name_;
+  return info().category_name_;
 }
 
 std::string Module::get_packagename() const
 {
-  return get_info().package_name_;
+  return info().package_name_;
 }
 
-ModuleId Module::get_id() const
+ModuleId Module::id() const
 {
   return impl_->id_;
 }
@@ -291,7 +290,7 @@ void Module::setExecutionDisabled(bool disable)
 
 void Module::error(const std::string& msg) const
 {
-  impl_->errorSignal_(get_id());
+  impl_->errorSignal_(id());
   getLogger()->error(msg);
 }
 
@@ -325,12 +324,12 @@ InputPortHandle Module::getInputPort(const PortId& id)
   return impl_->iports_[id];
 }
 
-size_t Module::num_input_ports() const
+size_t Module::numInputPorts() const
 {
   return impl_->iports_.size();
 }
 
-size_t Module::num_output_ports() const
+size_t Module::numOutputPorts() const
 {
   return impl_->oports_.size();
 }
@@ -362,7 +361,7 @@ void Module::copyStateToMetadata()
 
 bool Module::executeWithSignals() NOEXCEPT
 {
-  auto starting = "STARTING MODULE: " + get_id().id_;
+  auto starting = "STARTING MODULE: " + id().id_;
 #ifdef BUILD_HEADLESS //TODO: better headless logging
   static Mutex executeLogLock("headlessExecution");
   if (!LogSettings::Instance().verbose())
@@ -371,7 +370,7 @@ bool Module::executeWithSignals() NOEXCEPT
     std::cout << starting << std::endl;
   }
 #endif
-  impl_->executeBegins_(get_id());
+  impl_->executeBegins_(id());
   boost::timer executionTimer;
   {
     auto isoString = boost::posix_time::to_simple_string(boost::posix_time::microsec_clock::universal_time());
@@ -385,13 +384,14 @@ bool Module::executeWithSignals() NOEXCEPT
   impl_->executionState_->transitionTo(ModuleExecutionState::Executing);
   impl_->returnCode_ = false;
   bool threadStopValue = false;
-  getLogger()->setErrorFlag(false);
 
   try
   {
     if (!executionDisabled())
       execute();
+
     impl_->returnCode_ = true;
+    getLogger()->setErrorFlag(false);
   }
   catch (const std::bad_alloc&)
   {
@@ -443,7 +443,7 @@ bool Module::executeWithSignals() NOEXCEPT
   }
 
   std::ostringstream finished;
-  finished << "MODULE " << get_id().id_ << " FINISHED " <<
+  finished << "MODULE " << id().id_ << " FINISHED " <<
     (impl_->returnCode_ ? "successfully " : "with errors ") << "in " << executionTime << " seconds.";
   status(finished.str());
 #ifdef BUILD_HEADLESS //TODO: better headless logging
@@ -466,7 +466,7 @@ bool Module::executeWithSignals() NOEXCEPT
     impl_->inputsChanged_ = false;
   }
 
-  impl_->executeEnds_(executionTime, get_id());
+  impl_->executeEnds_(executionTime, id());
   return impl_->returnCode_;
 }
 
@@ -480,7 +480,7 @@ const ModuleStateHandle Module::cstate() const
   return impl_->state_;
 }
 
-void Module::set_state(ModuleStateHandle state)
+void Module::setState(ModuleStateHandle state)
 {
   if (!get_state())
     impl_->state_ = state;
@@ -560,28 +560,28 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
   return data;
 }
 
-std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId& id)
+std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId& pid)
 {
   /// @todo test...
-  auto portsWithName = impl_->iports_[id.name];  //will throw if empty
+  auto portsWithName = impl_->iports_[pid.name];  //will throw if empty
   if (!portsWithName[0]->isDynamic())
   {
-    BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + id.toString() + " is static, get_input_handle must be called."));
+    BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + pid.toString() + " is static, get_input_handle must be called."));
   }
 
   {
-    LOG_TRACE("{} :: inputsChanged is {}, querying port for value.", get_id().id_, impl_->inputsChanged_);
+    LOG_TRACE("{} :: inputsChanged is {}, querying port for value.", id().id_, impl_->inputsChanged_);
     // NOTE: don't use short-circuited boolean OR here, we need to call hasChanged each time since it updates the port's cache flag.
     bool startingVal = impl_->inputsChanged_;
     impl_->inputsChanged_ = std::accumulate(portsWithName.begin(), portsWithName.end(), startingVal, [](bool acc, InputPortHandle input) { return input->hasChanged() || acc; });
-    LOG_TRACE("{} :: inputsChanged is now {}.", get_id().id_, impl_->inputsChanged_);
+    LOG_TRACE("{} :: inputsChanged is now {}.", id().id_, impl_->inputsChanged_);
   }
 
   std::vector<DatatypeHandleOption> options;
   auto getData = [](InputPortHandle input) { return input->getData(); };
   std::transform(portsWithName.begin(), portsWithName.end(), std::back_inserter(options), getData);
 
-  impl_->metadata_.setMetadata("Input " + id.toString(), metaInfo(options.empty() ? boost::none : options[0]));
+  impl_->metadata_.setMetadata("Input " + pid.toString(), metaInfo(options.empty() ? boost::none : options[0]));
 
   return options;
 }
@@ -634,7 +634,7 @@ public:
   virtual void execute() override
   {
     std::ostringstream ostr;
-    ostr << "Module " << get_module_name() << " executing for " << 3.14 << " seconds." << std::endl;
+    ostr << "Module " << name() << " executing for " << 3.14 << " seconds." << std::endl;
     status(ostr.str());
   }
   virtual void setStateDefaults() override
@@ -846,14 +846,18 @@ bool Module::needToExecute() const
     //Test fix for reexecute problem. Seems like it could be a race condition, but not sure.
     Guard g(needToExecuteLock.get());
     if (impl_->threadStopped_)
+    {
       return true;
-    if (!impl_->returnCode_)
+    }
+    if (getLogger()->errorReported())
+    {
+      getLogger()->setErrorFlag(false);
       return true;
+    }
     auto val = impl_->reexecute_->needToExecute();
-    LOG_DEBUG("Module reexecute of {} returns {}", get_id().id_, val);
+    LOG_DEBUG("Module reexecute of {} returns {}", id().id_, val);
     return val;
   }
-
   return true;
 }
 
@@ -904,7 +908,7 @@ size_t ModuleWithAsyncDynamicPorts::add_input_port(InputPortHandle h)
 void ModuleWithAsyncDynamicPorts::portRemovedSlot(const ModuleId& mid, const PortId& pid)
 {
   //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
-  if (mid == get_id())
+  if (mid == id())
   {
     portRemovedSlotImpl(pid);
   }
@@ -932,7 +936,7 @@ InputsChangedCheckerImpl::InputsChangedCheckerImpl(const Module& module) : modul
 bool InputsChangedCheckerImpl::inputsChanged() const
 {
   auto ret = module_.inputsChanged();
-  LOG_DEBUG("reexecute {}?--inputs changed: {}", module_.get_id().id_, ret);
+  LOG_DEBUG("reexecute {}?--inputs changed: {}", module_.id().id_, ret);
   return ret;
 }
 
@@ -943,7 +947,7 @@ StateChangedCheckerImpl::StateChangedCheckerImpl(const Module& module) : module_
 bool StateChangedCheckerImpl::newStatePresent() const
 {
   auto ret = module_.newStatePresent();
-  LOG_DEBUG("reexecute {}?--state changed: {}", module_.get_id().id_, ret);
+  LOG_DEBUG("reexecute {}?--state changed: {}", module_.id().id_, ret);
   return ret;
 }
 
@@ -953,13 +957,16 @@ OutputPortsCachedCheckerImpl::OutputPortsCachedCheckerImpl(const Module& module)
 
 bool OutputPortsCachedCheckerImpl::outputPortsCached() const
 {
+  //return true;
+
+  /* this way doesn't make sense either, since ports can't be cleared manually. Will need to discuss. */
   auto value = true;
   for (const auto& output : module_.outputPorts())
   {
     if (output->hasConnectionCountIncreased())
       value = false;
   }
-  LOG_DEBUG("reexecute {}?--output ports cached: {}", module_.get_id().id_, value);
+  LOG_DEBUG("reexecute {}?--output ports cached: {}", module_.id().id_, value);
   return value;
 
 
@@ -967,7 +974,7 @@ bool OutputPortsCachedCheckerImpl::outputPortsCached() const
   /*
   auto outputs = module_.outputPorts();
   auto ret = std::all_of(outputs.begin(), outputs.end(), [](OutputPortHandle out) { return out-> out->hasData(); });
-  Log::get() << DEBUG_LOG << module_.get_id() << " OutputPortsCachedCheckerImpl, returns " << ret << std::endl;
+  Log::get() << DEBUG_LOG << module_.id() << " OutputPortsCachedCheckerImpl, returns " << ret << std::endl;
   return ret;
   */
 }
@@ -993,7 +1000,7 @@ ModuleReexecutionStrategyHandle DynamicReexecutionStrategyFactory::create(const 
 
 bool SCIRun::Dataflow::Networks::canReplaceWith(ModuleHandle module, const ModuleDescription& potentialReplacement)
 {
-  if (module->get_module_name() == potentialReplacement.lookupInfo_.module_name_)
+  if (module->name() == potentialReplacement.lookupInfo_.module_name_)
     return false;
 
   {
@@ -1047,7 +1054,7 @@ std::hash<std::string> ModuleLevelUniqueIDGenerator::hash_;
 std::string ModuleLevelUniqueIDGenerator::generateModuleLevelUniqueID(const ModuleInterface& module, const std::string& name) const
 {
   std::ostringstream ostr;
-  ostr << name << GeometryObject::delimiter << module.get_id() << GeometryObject::delimiter << "_";
+  ostr << name << GeometryObject::delimiter << module.id() << GeometryObject::delimiter << "_";
 
   std::ostringstream toHash;
   toHash << "Data{";
@@ -1107,5 +1114,5 @@ std::string Module::helpPageUrl() const
 
 std::string Module::newHelpPageUrl() const
 {
-  return "https://cibctest.github.io/scirun-pages/modules.html#" + legacyModuleName();
+  return "https://sciinstitute.github.io/scirun.pages/modules.html#" + name();
 }

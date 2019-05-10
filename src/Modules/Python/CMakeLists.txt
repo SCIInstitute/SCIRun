@@ -29,11 +29,13 @@
 SET(Modules_Python_SRCS
   PythonObjectForwarder.cc
   InterfaceWithPython.cc
+  PythonInterfaceParser.cc
 )
 
 SET(Modules_Python_HEADERS
   PythonObjectForwarder.h
   InterfaceWithPython.h
+  PythonInterfaceParser.h
   share.h
 )
 

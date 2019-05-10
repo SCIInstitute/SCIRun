@@ -63,6 +63,8 @@ ExportFieldsToMatlab::ExportFieldsToMatlab() : Module(staticInfo_)
 void ExportFieldsToMatlab::setStateDefaults()
 {
   get_state()->setValue(Variables::Filename, std::string());
+  get_state()->setValue(Parameters::FieldNames, Variable::List());
+  get_state()->setValue(Parameters::FieldFormats, Variable::List());
 }
 
 void ExportFieldsToMatlab::execute()

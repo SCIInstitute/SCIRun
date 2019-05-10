@@ -127,6 +127,10 @@ namespace SCIRun {
 
       std::vector<LightControlCircle*> lightControls_;
       std::unique_ptr<VisibleItemManager> visibleItems_;
+    private Q_SLOTS:
+      void setSliderDefaultPos();
+      void setSliderCenterPos();
+
     };
   }
 }

@@ -53,13 +53,7 @@
 #include <Core/Python/PythonInterpreter.h>
 
 #include <Dataflow/Engine/Python/SCIRunPythonModule.h>
-
-
-//#ifdef _MSC_VER
-//#pragma warning( pop )
-//#endif
-
-//#include <Interface/PythonTestGui/Python/ToPythonConverters.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Core;
 
@@ -506,6 +500,7 @@ void PythonInterpreter::print_banner()
 
 bool PythonInterpreter::run_string( const std::string& command )
 {
+  LOG_DEBUG("Python::run_string( {} )", command);
 	{
 		PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 		if ( !this->private_->initialized_ )
@@ -582,6 +577,7 @@ bool PythonInterpreter::run_string( const std::string& command )
 
 void PythonInterpreter::run_script( const std::string& script )
 {
+  LOG_DEBUG("Python::run_script( {} )", script);
 	{
 		PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 		if ( !this->private_->initialized_ )
@@ -627,6 +623,7 @@ void PythonInterpreter::run_script( const std::string& script )
 
 bool PythonInterpreter::run_file( const std::string& file_name )
 {
+  LOG_DEBUG("Python::run_file( {} )", file_name);
 	{
 		PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 		if ( !this->private_->initialized_ )

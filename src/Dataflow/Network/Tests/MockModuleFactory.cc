@@ -53,9 +53,9 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info) const
 {
   MockModulePtr module(new NiceMock<MockModule>);
 
-  ON_CALL(*module, get_module_name()).WillByDefault(Return(info.lookupInfo_.module_name_));
+  ON_CALL(*module, name()).WillByDefault(Return(info.lookupInfo_.module_name_));
 
-  ON_CALL(*module, num_input_ports()).WillByDefault(Return(info.input_ports_.size()));
+  ON_CALL(*module, numInputPorts()).WillByDefault(Return(info.input_ports_.size()));
   size_t portIndex = 0;
   std::vector<InputPortHandle> inputs;
   for (const InputPortDescription& d : info.input_ports_)
@@ -71,7 +71,7 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info) const
   }
   ON_CALL(*module, inputPorts()).WillByDefault(Return(inputs));
 
-  ON_CALL(*module, num_output_ports()).WillByDefault(Return(info.output_ports_.size()));
+  ON_CALL(*module, numOutputPorts()).WillByDefault(Return(info.output_ports_.size()));
   portIndex = 0;
   std::vector<OutputPortHandle> outputs;
   for (const OutputPortDescription& d : info.output_ports_)
@@ -88,7 +88,7 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info) const
   ON_CALL(*module, outputPorts()).WillByDefault(Return(outputs));
 
   ModuleId id("module", ++moduleCounter_);
-  ON_CALL(*module, get_id()).WillByDefault(Return(id));
+  ON_CALL(*module, id()).WillByDefault(Return(id));
 
   //not used now, commenting out.
   //if (stateFactory_)
