@@ -4,41 +4,29 @@
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>7</count>
+			<count>8</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>CreateFieldData:9</first>
+				<first>CalculateFieldData:5</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
 						<category_name_>ChangeFieldData</category_name_>
-						<module_name_>CreateFieldData</module_name_>
+						<module_name_>CalculateFieldData</module_name_>
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>3</count>
+							<count>2</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
-									<name>BasisString</name>
+									<name>FormatString</name>
 								</first>
 								<second class_id="10" tracking_level="0" version="0">
-									<name>BasisString</name>
+									<name>FormatString</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>Linear</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>FormatString</name>
-								</first>
-								<second>
-									<name>FormatString</name>
-									<value>
-										<which>2</which>
-										<value>Tensor</value>
+										<value>Vector</value>
 									</value>
 								</second>
 							</item>
@@ -50,11 +38,7 @@
 									<name>FunctionString</name>
 									<value>
 										<which>2</which>
-										<value>eigvect1 = normalize(vector(1,0,0));
-eigvect2 = normalize(cross(eigvect1,vector(0,1,0)));
-ten = tensor(eigvect1, eigvect2, (X/(Z+0.5)+Y/4),Y*0.4+X+Z,sqrt(Y));
-//RESULT = eigvec1(ten);
-RESULT = ten;</value>
+										<value>RESULT = vector(X,Y,Z);</value>
 									</value>
 								</second>
 							</item>
@@ -63,7 +47,87 @@ RESULT = ten;</value>
 				</second>
 			</item>
 			<item>
-				<first>CreateLatVol:3</first>
+				<first>CalculateFieldData:6</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>CalculateFieldData</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FormatString</name>
+								</first>
+								<second>
+									<name>FormatString</name>
+									<value>
+										<which>2</which>
+										<value>Scalar</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>RESULT = (X*Y*Z*Y+.05);</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CalculateFieldData:7</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>ChangeFieldData</category_name_>
+						<module_name_>CalculateFieldData</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>2</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>FormatString</name>
+								</first>
+								<second>
+									<name>FormatString</name>
+									<value>
+										<which>2</which>
+										<value>Vector</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FunctionString</name>
+								</first>
+								<second>
+									<name>FunctionString</name>
+									<value>
+										<which>2</which>
+										<value>RESULT = vector(X^2*Y+Z,Y,Z*1.3+2*Y);</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateLatVol:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -94,7 +158,7 @@ RESULT = ten;</value>
 									<name>ElementSizeNormalized</name>
 									<value>
 										<which>0</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -118,7 +182,7 @@ RESULT = ten;</value>
 									<name>XSize</name>
 									<value>
 										<which>0</which>
-										<value>2</value>
+										<value>16</value>
 									</value>
 								</second>
 							</item>
@@ -130,7 +194,7 @@ RESULT = ten;</value>
 									<name>YSize</name>
 									<value>
 										<which>0</which>
-										<value>5</value>
+										<value>16</value>
 									</value>
 								</second>
 							</item>
@@ -142,7 +206,7 @@ RESULT = ten;</value>
 									<name>ZSize</name>
 									<value>
 										<which>0</which>
-										<value>2</value>
+										<value>16</value>
 									</value>
 								</second>
 							</item>
@@ -151,7 +215,7 @@ RESULT = ten;</value>
 				</second>
 			</item>
 			<item>
-				<first>CreateStandardColorMap:1</first>
+				<first>CreateStandardColorMap:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -209,7 +273,7 @@ RESULT = ten;</value>
 									<name>ColorMapResolution</name>
 									<value>
 										<which>0</which>
-										<value>8</value>
+										<value>256</value>
 									</value>
 								</second>
 							</item>
@@ -230,23 +294,7 @@ RESULT = ten;</value>
 				</second>
 			</item>
 			<item>
-				<first>GetFieldBoundary:8</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>NewField</category_name_>
-						<module_name_>GetFieldBoundary</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>RescaleColorMap:1</first>
+				<first>RescaleColorMap:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -277,7 +325,7 @@ RESULT = ten;</value>
 									<name>FixedMax</name>
 									<value>
 										<which>1</which>
-										<value>3.60000000000000009e+00</value>
+										<value>3.98622628559894965e+00</value>
 									</value>
 								</second>
 							</item>
@@ -289,7 +337,7 @@ RESULT = ten;</value>
 									<name>FixedMin</name>
 									<value>
 										<which>1</which>
-										<value>0.00000000000000000e+00</value>
+										<value>8.13770374382246642e-02</value>
 									</value>
 								</second>
 							</item>
@@ -310,7 +358,7 @@ RESULT = ten;</value>
 				</second>
 			</item>
 			<item>
-				<first>ShowFieldGlyphs:8</first>
+				<first>ShowFieldGlyphs:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -319,7 +367,7 @@ RESULT = ten;</value>
 					</module>
 					<state>
 						<stateMap>
-							<count>48</count>
+							<count>47</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -329,7 +377,7 @@ RESULT = ten;</value>
 									<name>ArrowHeadRatio</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e-01</value>
+										<value>8.00000000000000017e-02</value>
 									</value>
 								</second>
 							</item>
@@ -359,18 +407,6 @@ RESULT = ten;</value>
 							</item>
 							<item>
 								<first>
-									<name>NormalizeGlyphs</name>
-								</first>
-								<second>
-									<name>NormalizeGlyphs</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
 									<name>NormalizeTensors</name>
 								</first>
 								<second>
@@ -402,18 +438,6 @@ RESULT = ten;</value>
 									<value>
 										<which>3</which>
 										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>RenderGlyphsBellowThreshold</name>
-								</first>
-								<second>
-									<name>RenderGlyphsBellowThreshold</name>
-									<value>
-										<which>3</which>
-										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -557,7 +581,7 @@ RESULT = ten;</value>
 									<name>SecondaryVectorParameterDataInput</name>
 									<value>
 										<which>2</which>
-										<value>Primary</value>
+										<value>Tertiary</value>
 									</value>
 								</second>
 							</item>
@@ -569,7 +593,7 @@ RESULT = ten;</value>
 									<name>SecondaryVectorParameterScale</name>
 									<value>
 										<which>1</which>
-										<value>2.50000000000000000e-01</value>
+										<value>5.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -617,7 +641,7 @@ RESULT = ten;</value>
 									<name>ShowTensorTab</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -629,7 +653,7 @@ RESULT = ten;</value>
 									<name>ShowTensors</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -653,7 +677,7 @@ RESULT = ten;</value>
 									<name>ShowVectorTab</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -665,7 +689,7 @@ RESULT = ten;</value>
 									<name>ShowVectors</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -676,10 +700,8 @@ RESULT = ten;</value>
 								<second>
 									<name>TensorsColoring</name>
 									<value>
-										<which>2</which>
-
-										<value>Colormap Lookup</value>
-
+										<which>0</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -702,8 +724,8 @@ RESULT = ten;</value>
 								<second>
 									<name>TensorsDisplayType</name>
 									<value>
-										<which>2</which>
-										<value>Ellipsoids</value>
+										<which>0</which>
+										<value>2</value>
 									</value>
 								</second>
 							</item>
@@ -715,7 +737,7 @@ RESULT = ten;</value>
 									<name>TensorsResolution</name>
 									<value>
 										<which>0</which>
-										<value>20</value>
+										<value>3</value>
 									</value>
 								</second>
 							</item>
@@ -727,7 +749,7 @@ RESULT = ten;</value>
 									<name>TensorsScale</name>
 									<value>
 										<which>1</which>
-										<value>1.30000000000000004e-01</value>
+										<value>1.00000000000000006e-01</value>
 									</value>
 								</second>
 							</item>
@@ -781,25 +803,13 @@ RESULT = ten;</value>
 							</item>
 							<item>
 								<first>
-									<name>Threshold</name>
-								</first>
-								<second>
-									<name>Threshold</name>
-									<value>
-										<which>1</which>
-										<value>1.50000000000000000e+00</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
 									<name>VectorsColoring</name>
 								</first>
 								<second>
 									<name>VectorsColoring</name>
 									<value>
-										<which>0</which>
-										<value>2</value>
+										<which>2</which>
+										<value>Conversion to RGB</value>
 									</value>
 								</second>
 							</item>
@@ -811,7 +821,7 @@ RESULT = ten;</value>
 									<name>VectorsColoringDataInput</name>
 									<value>
 										<which>2</which>
-										<value>Primary</value>
+										<value>Secondary</value>
 									</value>
 								</second>
 							</item>
@@ -822,8 +832,32 @@ RESULT = ten;</value>
 								<second>
 									<name>VectorsDisplayType</name>
 									<value>
-										<which>0</which>
-										<value>0</value>
+										<which>2</which>
+										<value>Arrows</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>VectorsRadiusWidthDataInput</name>
+								</first>
+								<second>
+									<name>VectorsRadiusWidthDataInput</name>
+									<value>
+										<which>2</which>
+										<value>Tertiary</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>VectorsRadiusWidthScale</name>
+								</first>
+								<second>
+									<name>VectorsRadiusWidthScale</name>
+									<value>
+										<which>1</which>
+										<value>7.00000000000000000e+00</value>
 									</value>
 								</second>
 							</item>
@@ -835,7 +869,7 @@ RESULT = ten;</value>
 									<name>VectorsResolution</name>
 									<value>
 										<which>0</which>
-										<value>5</value>
+										<value>10</value>
 									</value>
 								</second>
 							</item>
@@ -847,7 +881,7 @@ RESULT = ten;</value>
 									<name>VectorsScale</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>1.00000000000000000e+01</value>
 									</value>
 								</second>
 							</item>
@@ -904,7 +938,7 @@ RESULT = ten;</value>
 				</second>
 			</item>
 			<item>
-				<first>ViewScene:9</first>
+				<first>ViewScene:0</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -1389,93 +1423,135 @@ RESULT = ten;</value>
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>7</count>
+			<count>11</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
-				<moduleId1_>CreateFieldData:9</moduleId1_>
+				<moduleId1_>CalculateFieldData:5</moduleId1_>
 				<port1_ class_id="15" tracking_level="0" version="0">
 					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>GetFieldBoundary:8</moduleId2_>
-				<port2_>
-					<name>InputField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>CreateLatVol:3</moduleId1_>
-				<port1_>
-					<name>OutputField</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>CreateFieldData:9</moduleId2_>
-				<port2_>
-					<name>InputField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>CreateStandardColorMap:1</moduleId1_>
-				<port1_>
-					<name>ColorMapObject</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>RescaleColorMap:1</moduleId2_>
-				<port2_>
-					<name>ColorMapObject</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-
-				<moduleId1_>GetFieldBoundary:8</moduleId1_>
-				<port1_>
-					<name>BoundaryField</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>RescaleColorMap:1</moduleId2_>
-				<port2_>
-					<name>Field</name>
-					<id>1</id>
-
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>GetFieldBoundary:8</moduleId1_>
-				<port1_>
-					<name>BoundaryField</name>
-					<id>0</id>
-				</port1_>
-
-				<moduleId2_>ShowFieldGlyphs:8</moduleId2_>
+				<moduleId2_>ShowFieldGlyphs:1</moduleId2_>
 				<port2_>
 					<name>PrimaryData</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>RescaleColorMap:1</moduleId1_>
+				<moduleId1_>CalculateFieldData:6</moduleId1_>
 				<port1_>
-					<name>ColorMapOutput</name>
-
+					<name>OutputField</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ShowFieldGlyphs:8</moduleId2_>
+				<moduleId2_>ShowFieldGlyphs:1</moduleId2_>
 				<port2_>
-
-					<name>PrimaryColorMap</name>
-
+					<name>TertiaryData</name>
 					<id>0</id>
 				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ShowFieldGlyphs:8</moduleId1_>
+				<moduleId1_>CalculateFieldData:7</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>RescaleColorMap:0</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CalculateFieldData:7</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowFieldGlyphs:1</moduleId2_>
+				<port2_>
+					<name>SecondaryData</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CalculateFieldData:5</moduleId2_>
+				<port2_>
+					<name>InputFields</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CalculateFieldData:6</moduleId2_>
+				<port2_>
+					<name>InputFields</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateLatVol:0</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>CalculateFieldData:7</moduleId2_>
+				<port2_>
+					<name>InputFields</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateStandardColorMap:0</moduleId1_>
+				<port1_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>RescaleColorMap:0</moduleId2_>
+				<port2_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateStandardColorMap:0</moduleId1_>
+				<port1_>
+					<name>ColorMapObject</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowFieldGlyphs:1</moduleId2_>
+				<port2_>
+					<name>PrimaryColorMap</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>RescaleColorMap:0</moduleId1_>
+				<port1_>
+					<name>ColorMapOutput</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowFieldGlyphs:1</moduleId2_>
+				<port2_>
+					<name>SecondaryColorMap</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowFieldGlyphs:1</moduleId1_>
 				<port1_>
 					<name>SceneGraph</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>ViewScene:9</moduleId2_>
+				<moduleId2_>ViewScene:0</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>0</id>
@@ -1484,55 +1560,62 @@ RESULT = ten;</value>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>7</count>
+		<count>8</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
-			<first>CreateFieldData:9</first>
+			<first>CalculateFieldData:5</first>
 			<second class_id="18" tracking_level="0" version="0">
+				<first>-1.01000000000000000e+02</first>
+				<second>-2.88000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CalculateFieldData:6</first>
+			<second>
 				<first>-4.56000000000000000e+02</first>
 				<second>-3.04000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>CreateLatVol:3</first>
+			<first>CalculateFieldData:7</first>
 			<second>
-				<first>-4.56000000000000000e+02</first>
+				<first>-1.52000000000000000e+02</first>
 				<second>-3.80000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>CreateStandardColorMap:1</first>
+			<first>CreateLatVol:0</first>
 			<second>
-				<first>-6.84000000000000000e+02</first>
+				<first>-3.04000000000000000e+02</first>
 				<second>-3.80000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>GetFieldBoundary:8</first>
+			<first>CreateStandardColorMap:0</first>
 			<second>
-				<first>-6.08000000000000000e+02</first>
-				<second>-1.52000000000000000e+02</second>
+				<first>-3.54000000000000000e+02</first>
+				<second>-6.15000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>RescaleColorMap:1</first>
+			<first>RescaleColorMap:0</first>
 			<second>
-				<first>-6.93000000000000000e+02</first>
-				<second>-2.79000000000000000e+02</second>
+				<first>-8.90000000000000000e+01</first>
+				<second>-5.39000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
-			<first>ShowFieldGlyphs:8</first>
+			<first>ShowFieldGlyphs:1</first>
 			<second>
-				<first>-5.32000000000000000e+02</first>
+				<first>-3.04000000000000000e+02</first>
+				<second>-2.28000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>ViewScene:0</first>
+			<second>
+				<first>-3.04000000000000000e+02</first>
 				<second>-7.60000000000000000e+01</second>
-			</second>
-		</item>
-		<item>
-			<first>ViewScene:9</first>
-			<second>
-				<first>-5.45000000000000000e+02</first>
-				<second>2.90000000000000000e+01</second>
 			</second>
 		</item>
 	</modulePositions>
@@ -1545,34 +1628,38 @@ RESULT = ten;</value>
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="20" tracking_level="0" version="0">
-		<count>7</count>
+		<count>8</count>
 		<item_version>0</item_version>
 		<item class_id="21" tracking_level="0" version="0">
-			<first>CreateFieldData:9</first>
+			<first>CalculateFieldData:5</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>CreateLatVol:3</first>
+			<first>CalculateFieldData:6</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>CreateStandardColorMap:1</first>
+			<first>CalculateFieldData:7</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>GetFieldBoundary:8</first>
+			<first>CreateLatVol:0</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>RescaleColorMap:1</first>
+			<first>CreateStandardColorMap:0</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>ShowFieldGlyphs:8</first>
+			<first>RescaleColorMap:0</first>
 			<second>-1</second>
 		</item>
 		<item>
-			<first>ViewScene:9</first>
+			<first>ShowFieldGlyphs:1</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>ViewScene:0</first>
 			<second>-1</second>
 		</item>
 	</moduleTags>
