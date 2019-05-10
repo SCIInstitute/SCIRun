@@ -29,32 +29,27 @@
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_SMOOTHVECFIELDMEDIAN_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_SMOOTHVECFIELDMEDIAN_H 1
 
-// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 
-// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-namespace SCIRunAlgo {
+        class SCISHARE SmoothVecFieldMedianAlgo : public AlgorithmBase
+        {
+        public:
+          virtual AlgorithmOutput run(const AlgorithmInput& input) const override;
 
-using namespace SCIRun;
+          bool runImpl(FieldHandle input, FieldHandle& output) const;
+        };
 
-class SCISHARE SmoothVecFieldMedianAlgo : public AlgoBase
-{
-  public:
-    /// Set defaults
-    SmoothVecFieldMedianAlgo()
-    {
+      }
     }
-  
-    /// run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
-};
-
-} // end namespace SCIRun
+  }
+}
 
 #endif

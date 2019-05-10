@@ -47,7 +47,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/SetFieldData.h
   FieldData/SetFieldDataToConstantValue.h
   FieldData/SwapFieldDataWithMatrixEntriesAlgo.h
-  #FieldData/SmoothVecFieldMedian.h
+  FieldData/SmoothVecFieldMedianAlgo.h
   Mapping/BuildMappingMatrixAlgo.h
   DomainFields/GetDomainBoundaryAlgo.h
   MeshDerivatives/GetFieldBoundaryAlgo.h
@@ -149,7 +149,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FieldData/ConvertMappingMatrixToFieldData.cc
   FieldData/SetFieldData.cc
   FieldData/SetFieldDataToConstantValue.cc
-  #FieldData/SmoothVecFieldMedian.cc
+  FieldData/SmoothVecFieldMedianAlgo.cc
   #FilterFieldData/DilateFieldData.cc
   #FilterFieldData/ErodeFieldData.cc
   #FilterFieldData/TriSurfPhaseFilter.cc
