@@ -6,128 +6,2221 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>308</width>
-    <height>610</height>
+    <width>375</width>
+    <height>713</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>308</width>
-    <height>610</height>
+    <width>250</width>
+    <height>710</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>375</width>
+    <height>16777215</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>Field Name:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLineEdit" name="lineEdit">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="1" column="0">
+   <item row="0" column="0" alignment="Qt::AlignLeft">
     <widget class="QGroupBox" name="groupBox">
      <property name="minimumSize">
       <size>
-       <width>228</width>
+       <width>350</width>
        <height>359</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>400</width>
+       <height>16777215</height>
       </size>
      </property>
      <property name="title">
       <string>Display Options</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="0">
-       <layout class="QVBoxLayout" name="verticalLayout"/>
+      <item row="3" column="0">
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QTabWidget" name="displayOptionsTabs_">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>245</width>
+            <height>560</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="tabPosition">
+           <enum>QTabWidget::North</enum>
+          </property>
+          <property name="tabShape">
+           <enum>QTabWidget::Rounded</enum>
+          </property>
+          <property name="currentIndex">
+           <number>1</number>
+          </property>
+          <property name="documentMode">
+           <bool>false</bool>
+          </property>
+          <property name="tabsClosable">
+           <bool>false</bool>
+          </property>
+          <widget class="QWidget" name="scalarTab_">
+           <attribute name="title">
+            <string>Scalar</string>
+           </attribute>
+           <widget class="QCheckBox" name="showScalarsCheckBox_">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>0</y>
+              <width>101</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Show Scalars</string>
+            </property>
+           </widget>
+           <widget class="QComboBox" name="scalarsDisplayTypeComboBox_">
+            <property name="geometry">
+             <rect>
+              <x>155</x>
+              <y>20</y>
+              <width>151</width>
+              <height>26</height>
+             </rect>
+            </property>
+            <item>
+             <property name="text">
+              <string>Points</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Spheres</string>
+             </property>
+            </item>
+           </widget>
+           <widget class="QLabel" name="scalarResolutionLabel">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>180</y>
+              <width>171</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Resolution:</string>
+            </property>
+           </widget>
+           <widget class="QGroupBox" name="scalarScalingGroupBox_">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>5</x>
+              <y>110</y>
+              <width>301</width>
+              <height>63</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>Scaling</string>
+            </property>
+            <widget class="QLabel" name="scalarScaleLabel">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>38</y>
+               <width>171</width>
+               <height>20</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Scale:</string>
+             </property>
+            </widget>
+            <widget class="QDoubleSpinBox" name="scaleScalarsDoubleSpinBox_">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>180</x>
+               <y>40</y>
+               <width>121</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="decimals">
+              <number>4</number>
+             </property>
+             <property name="minimum">
+              <double>0.000100000000000</double>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+             <property name="value">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+            <widget class="QCheckBox" name="normalizeScalarsCheckBox_">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>18</y>
+               <width>281</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <strikeout>true</strikeout>
+              </font>
+             </property>
+             <property name="text">
+              <string>Normalize before scaling</string>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QLabel" name="scalarDisplayTypeLabel">
+            <property name="geometry">
+             <rect>
+              <x>5</x>
+              <y>20</y>
+              <width>151</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Display Type:</string>
+            </property>
+           </widget>
+           <widget class="QSpinBox" name="scalarsResolutionSpinBox_">
+            <property name="geometry">
+             <rect>
+              <x>185</x>
+              <y>180</y>
+              <width>121</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="minimum">
+             <number>3</number>
+            </property>
+            <property name="maximum">
+             <number>20</number>
+            </property>
+            <property name="value">
+             <number>5</number>
+            </property>
+           </widget>
+           <widget class="QGroupBox" name="scalarColoringGroupBox_">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>5</x>
+              <y>37</y>
+              <width>301</width>
+              <height>71</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>Coloring</string>
+            </property>
+            <widget class="QLabel" name="scalarColorTypeLabel">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>22</y>
+               <width>141</width>
+               <height>20</height>
+              </rect>
+             </property>
+             <property name="autoFillBackground">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Color Type:</string>
+             </property>
+             <property name="textFormat">
+              <enum>Qt::AutoText</enum>
+             </property>
+             <property name="scaledContents">
+              <bool>false</bool>
+             </property>
+            </widget>
+            <widget class="QComboBox" name="scalarsColorTypeComboBox_">
+             <property name="geometry">
+              <rect>
+               <x>150</x>
+               <y>17</y>
+               <width>151</width>
+               <height>26</height>
+              </rect>
+             </property>
+             <item>
+              <property name="text">
+               <string>Default</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Colormap Lookup</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Conversion to RGB</string>
+              </property>
+             </item>
+            </widget>
+            <widget class="QLabel" name="scalarColorInputLabel">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>45</y>
+               <width>141</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="autoFillBackground">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Input:</string>
+             </property>
+            </widget>
+            <widget class="QComboBox" name="scalarsColoringInputComboBox_">
+             <property name="geometry">
+              <rect>
+               <x>150</x>
+               <y>43</y>
+               <width>151</width>
+               <height>26</height>
+              </rect>
+             </property>
+             <item>
+              <property name="text">
+               <string>Primary</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Secondary</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tertiary</string>
+              </property>
+             </item>
+            </widget>
+           </widget>
+           <widget class="QToolBox" name="toolBox_2">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>210</y>
+              <width>291</width>
+              <height>171</height>
+             </rect>
+            </property>
+            <property name="currentIndex">
+             <number>1</number>
+            </property>
+            <widget class="QWidget" name="page_7">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>291</width>
+               <height>109</height>
+              </rect>
+             </property>
+             <attribute name="label">
+              <string>Transparency</string>
+             </attribute>
+             <widget class="QRadioButton" name="scalarsUniformTransparencyRButton_">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>50</y>
+                <width>161</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>false</strikeout>
+               </font>
+              </property>
+              <property name="text">
+               <string>Uniform:</string>
+              </property>
+             </widget>
+             <widget class="QRadioButton" name="scalarsTransparencyOffRButton_">
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>20</y>
+                <width>271</width>
+                <height>18</height>
+               </rect>
+              </property>
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Off</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="scalarsTransparencyDoubleSpinBox_">
+              <property name="geometry">
+               <rect>
+                <x>170</x>
+                <y>50</y>
+                <width>121</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximum">
+               <double>1.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.010000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.650000000000000</double>
+              </property>
+             </widget>
+             <widget class="QComboBox" name="scalarsTransparencyInputComboBox_">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>150</x>
+                <y>80</y>
+                <width>141</width>
+                <height>26</height>
+               </rect>
+              </property>
+              <item>
+               <property name="text">
+                <string>Primary</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Secondary</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Tertiary</string>
+               </property>
+              </item>
+             </widget>
+             <widget class="QRadioButton" name="scalarsDataPortTransparencyRButton_">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>80</y>
+                <width>141</width>
+                <height>31</height>
+               </rect>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>true</strikeout>
+               </font>
+              </property>
+              <property name="text">
+               <string>Use Input:</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </widget>
+            <widget class="QWidget" name="page_8">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>291</width>
+               <height>109</height>
+              </rect>
+             </property>
+             <attribute name="label">
+              <string>Threshold</string>
+             </attribute>
+             <widget class="QLabel" name="scalarThresholdLabel">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>40</y>
+                <width>161</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>true</strikeout>
+               </font>
+              </property>
+              <property name="text">
+               <string>Threshold:</string>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="renderScalarsBelowThresholdCheckBox_">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>281</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>true</strikeout>
+               </font>
+              </property>
+              <property name="text">
+               <string>Render glyphs below threshold</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="scalarsThresholdDoubleSpinBox_">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>170</x>
+                <y>40</y>
+                <width>121</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="decimals">
+               <number>4</number>
+              </property>
+              <property name="maximum">
+               <double>100.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+             </widget>
+            </widget>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="vectorTab_">
+           <attribute name="title">
+            <string>Vector</string>
+           </attribute>
+           <widget class="QSpinBox" name="vectorsResolutionSpinBox_">
+            <property name="geometry">
+             <rect>
+              <x>185</x>
+              <y>180</y>
+              <width>121</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="minimum">
+             <number>3</number>
+            </property>
+            <property name="maximum">
+             <number>20</number>
+            </property>
+            <property name="value">
+             <number>5</number>
+            </property>
+           </widget>
+           <widget class="QLabel" name="vectorResolutionLabel">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>180</y>
+              <width>171</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Resolution:</string>
+            </property>
+           </widget>
+           <widget class="QCheckBox" name="showVectorsCheckBox_">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>0</y>
+              <width>101</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Show Vectors</string>
+            </property>
+           </widget>
+           <widget class="QGroupBox" name="vectorColoringGroupBox_">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>5</x>
+              <y>37</y>
+              <width>301</width>
+              <height>71</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>Coloring</string>
+            </property>
+            <widget class="QLabel" name="vectorColorTypeLabel">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>22</y>
+               <width>141</width>
+               <height>20</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Color Type:</string>
+             </property>
+            </widget>
+            <widget class="QComboBox" name="vectorsColorTypeComboBox_">
+             <property name="geometry">
+              <rect>
+               <x>150</x>
+               <y>17</y>
+               <width>151</width>
+               <height>26</height>
+              </rect>
+             </property>
+             <item>
+              <property name="text">
+               <string>Default</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Colormap Lookup</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Conversion to RGB</string>
+              </property>
+             </item>
+            </widget>
+            <widget class="QLabel" name="vectorColorInputLabel">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>45</y>
+               <width>141</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="autoFillBackground">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Input:</string>
+             </property>
+            </widget>
+            <widget class="QComboBox" name="vectorsColoringInputComboBox_">
+             <property name="geometry">
+              <rect>
+               <x>150</x>
+               <y>43</y>
+               <width>151</width>
+               <height>26</height>
+              </rect>
+             </property>
+             <item>
+              <property name="text">
+               <string>Primary</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Secondary</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tertiary</string>
+              </property>
+             </item>
+            </widget>
+           </widget>
+           <widget class="QLabel" name="vectorDisplayTypeLabel">
+            <property name="geometry">
+             <rect>
+              <x>5</x>
+              <y>20</y>
+              <width>151</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Display Type:</string>
+            </property>
+           </widget>
+           <widget class="QComboBox" name="vectorsDisplayTypeComboBox_">
+            <property name="geometry">
+             <rect>
+              <x>155</x>
+              <y>20</y>
+              <width>151</width>
+              <height>26</height>
+             </rect>
+            </property>
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <property name="frame">
+             <bool>true</bool>
+            </property>
+            <item>
+             <property name="text">
+              <string>Lines</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Arrows</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Cones</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Comets</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Needles</string>
+             </property>
+            </item>
+           </widget>
+           <widget class="QGroupBox" name="vectorScalingGroupBox_">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>5</x>
+              <y>110</y>
+              <width>301</width>
+              <height>63</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>Scaling</string>
+            </property>
+            <widget class="QLabel" name="vectorScaleLabel">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>38</y>
+               <width>171</width>
+               <height>20</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Scale:</string>
+             </property>
+            </widget>
+            <widget class="QDoubleSpinBox" name="scaleVectorsDoubleSpinBox_">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>180</x>
+               <y>40</y>
+               <width>121</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="decimals">
+              <number>4</number>
+             </property>
+             <property name="minimum">
+              <double>0.000100000000000</double>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+             <property name="value">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+            <widget class="QCheckBox" name="normalizeVectorsCheckBox_">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>18</y>
+               <width>281</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <strikeout>false</strikeout>
+              </font>
+             </property>
+             <property name="text">
+              <string>Normalize before scaling</string>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QToolBox" name="toolBox">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>210</y>
+              <width>291</width>
+              <height>321</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <strikeout>false</strikeout>
+             </font>
+            </property>
+            <property name="currentIndex">
+             <number>2</number>
+            </property>
+            <widget class="QWidget" name="page">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>291</width>
+               <height>197</height>
+              </rect>
+             </property>
+             <attribute name="label">
+              <string>Transparency</string>
+             </attribute>
+             <widget class="QComboBox" name="vectorsTransparencyInputComboBox_">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>150</x>
+                <y>80</y>
+                <width>141</width>
+                <height>26</height>
+               </rect>
+              </property>
+              <item>
+               <property name="text">
+                <string>Primary</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Secondary</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Tertiary</string>
+               </property>
+              </item>
+             </widget>
+             <widget class="QDoubleSpinBox" name="vectorsTransparencyDoubleSpinBox_">
+              <property name="geometry">
+               <rect>
+                <x>170</x>
+                <y>50</y>
+                <width>121</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximum">
+               <double>1.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.010000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.650000000000000</double>
+              </property>
+             </widget>
+             <widget class="QRadioButton" name="vectorsTransparencyOffRButton_">
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>20</y>
+                <width>271</width>
+                <height>18</height>
+               </rect>
+              </property>
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Off</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QRadioButton" name="vectorsDataPortTransparencyRButton_">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>80</y>
+                <width>141</width>
+                <height>31</height>
+               </rect>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>true</strikeout>
+               </font>
+              </property>
+              <property name="text">
+               <string>Use Input:</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+             </widget>
+             <widget class="QRadioButton" name="vectorsUniformTransparencyRButton_">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>50</y>
+                <width>161</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>false</strikeout>
+               </font>
+              </property>
+              <property name="text">
+               <string>Uniform:</string>
+              </property>
+             </widget>
+            </widget>
+            <widget class="QWidget" name="page_2">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>291</width>
+               <height>197</height>
+              </rect>
+             </property>
+             <attribute name="label">
+              <string>Threshold</string>
+             </attribute>
+             <widget class="QDoubleSpinBox" name="vectorsThresholdDoubleSpinBox_">
+              <property name="geometry">
+               <rect>
+                <x>170</x>
+                <y>40</y>
+                <width>121</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="decimals">
+               <number>4</number>
+              </property>
+              <property name="maximum">
+               <double>100.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="renderVectorsBelowThresholdCheckBox_">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>281</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>false</strikeout>
+               </font>
+              </property>
+              <property name="text">
+               <string>Render glyphs below threshold</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="vectorThresholdLabel">
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>40</y>
+                <width>161</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Threshold:</string>
+              </property>
+             </widget>
+            </widget>
+            <widget class="QWidget" name="generalPage">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>291</width>
+               <height>197</height>
+              </rect>
+             </property>
+             <attribute name="label">
+              <string>Secondary Parameter and Arrows</string>
+             </attribute>
+             <widget class="QGroupBox" name="secondaryVectorParameterGroupBox_">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>291</width>
+                <height>77</height>
+               </rect>
+              </property>
+              <property name="title">
+               <string>Secondary Parameter</string>
+              </property>
+              <widget class="QLabel" name="secondaryVectorParameterScaleLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>46</y>
+                 <width>161</width>
+                 <height>21</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Scale:</string>
+               </property>
+              </widget>
+              <widget class="QDoubleSpinBox" name="secondaryVectorParameterDoubleSpinBox_">
+               <property name="geometry">
+                <rect>
+                 <x>170</x>
+                 <y>50</y>
+                 <width>121</width>
+                 <height>21</height>
+                </rect>
+               </property>
+               <property name="decimals">
+                <number>4</number>
+               </property>
+               <property name="maximum">
+                <double>100.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.100000000000000</double>
+               </property>
+               <property name="value">
+                <double>0.250000000000000</double>
+               </property>
+              </widget>
+              <widget class="QLabel" name="secondaryVectorParameterInputLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>20</y>
+                 <width>141</width>
+                 <height>20</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Input:</string>
+               </property>
+              </widget>
+              <widget class="QComboBox" name="secondaryVectorParameterPortComboBox_">
+               <property name="geometry">
+                <rect>
+                 <x>150</x>
+                 <y>20</y>
+                 <width>141</width>
+                 <height>26</height>
+                </rect>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Primary</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Secondary</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Tertiary</string>
+                </property>
+               </item>
+              </widget>
+             </widget>
+             <widget class="QGroupBox" name="arrowsGroupBox_">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>75</y>
+                <width>291</width>
+                <height>71</height>
+               </rect>
+              </property>
+              <property name="title">
+               <string>Arrows</string>
+              </property>
+              <widget class="QDoubleSpinBox" name="arrowHeadRatioDoubleSpinBox_">
+               <property name="geometry">
+                <rect>
+                 <x>170</x>
+                 <y>20</y>
+                 <width>121</width>
+                 <height>21</height>
+                </rect>
+               </property>
+               <property name="decimals">
+                <number>4</number>
+               </property>
+               <property name="maximum">
+                <double>1.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.100000000000000</double>
+               </property>
+               <property name="value">
+                <double>0.500000000000000</double>
+               </property>
+              </widget>
+              <widget class="QLabel" name="vectorArrowHeadRatioLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>20</y>
+                 <width>161</width>
+                 <height>21</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Arrow Head Ratio:</string>
+               </property>
+              </widget>
+              <widget class="QCheckBox" name="bidirectionalVectorsCheckBox_">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>45</y>
+                 <width>271</width>
+                 <height>20</height>
+                </rect>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>20</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <strikeout>false</strikeout>
+                </font>
+               </property>
+               <property name="text">
+                <string>Render bidirectionally</string>
+               </property>
+              </widget>
+             </widget>
+            </widget>
+            <widget class="QWidget" name="springsPage">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>291</width>
+               <height>197</height>
+              </rect>
+             </property>
+             <property name="font">
+              <font>
+               <strikeout>true</strikeout>
+              </font>
+             </property>
+             <attribute name="label">
+              <string>Springs Settings</string>
+             </attribute>
+             <widget class="QGroupBox" name="majorRadiusGroupBox_">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>3</y>
+                <width>291</width>
+                <height>66</height>
+               </rect>
+              </property>
+              <property name="title">
+               <string>Major Radius</string>
+              </property>
+              <widget class="QLabel" name="springsMajorRadiusScaleLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>40</y>
+                 <width>161</width>
+                 <height>21</height>
+                </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <strikeout>true</strikeout>
+                </font>
+               </property>
+               <property name="text">
+                <string>Scale:</string>
+               </property>
+              </widget>
+              <widget class="QDoubleSpinBox" name="springsMajorRadiusScaleSpinBox_">
+               <property name="geometry">
+                <rect>
+                 <x>170</x>
+                 <y>42</y>
+                 <width>121</width>
+                 <height>21</height>
+                </rect>
+               </property>
+               <property name="decimals">
+                <number>4</number>
+               </property>
+               <property name="maximum">
+                <double>100.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.100000000000000</double>
+               </property>
+               <property name="value">
+                <double>1.000000000000000</double>
+               </property>
+              </widget>
+              <widget class="QLabel" name="springsMajorRadiusInputLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>20</y>
+                 <width>131</width>
+                 <height>21</height>
+                </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <strikeout>true</strikeout>
+                </font>
+               </property>
+               <property name="text">
+                <string>Input:</string>
+               </property>
+              </widget>
+              <widget class="QComboBox" name="springsMajorRadiusComboBox_">
+               <property name="geometry">
+                <rect>
+                 <x>140</x>
+                 <y>17</y>
+                 <width>151</width>
+                 <height>26</height>
+                </rect>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Primary</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Secondary</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Tertiary</string>
+                </property>
+               </item>
+              </widget>
+             </widget>
+             <widget class="QGroupBox" name="minorRadiusGroupBox_">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>65</y>
+                <width>291</width>
+                <height>66</height>
+               </rect>
+              </property>
+              <property name="title">
+               <string>Minor Radius</string>
+              </property>
+              <widget class="QLabel" name="springsMinorRadiusScaleLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>44</y>
+                 <width>161</width>
+                 <height>21</height>
+                </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <strikeout>true</strikeout>
+                </font>
+               </property>
+               <property name="text">
+                <string>Scale:</string>
+               </property>
+              </widget>
+              <widget class="QDoubleSpinBox" name="springsMinorRadiusDoubleScaleSpinBox_">
+               <property name="geometry">
+                <rect>
+                 <x>170</x>
+                 <y>42</y>
+                 <width>121</width>
+                 <height>21</height>
+                </rect>
+               </property>
+               <property name="decimals">
+                <number>4</number>
+               </property>
+               <property name="maximum">
+                <double>100.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.100000000000000</double>
+               </property>
+               <property name="value">
+                <double>1.000000000000000</double>
+               </property>
+              </widget>
+              <widget class="QLabel" name="springsMinorRadiusInputLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>20</y>
+                 <width>131</width>
+                 <height>21</height>
+                </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <strikeout>true</strikeout>
+                </font>
+               </property>
+               <property name="text">
+                <string>Input:</string>
+               </property>
+              </widget>
+              <widget class="QComboBox" name="springsMinorRadiusPortComboBox_">
+               <property name="geometry">
+                <rect>
+                 <x>140</x>
+                 <y>17</y>
+                 <width>151</width>
+                 <height>26</height>
+                </rect>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Primary</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Secondary</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Tertiary</string>
+                </property>
+               </item>
+              </widget>
+             </widget>
+             <widget class="QGroupBox" name="pitchGroupBox_">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>128</y>
+                <width>291</width>
+                <height>66</height>
+               </rect>
+              </property>
+              <property name="title">
+               <string>Pitch</string>
+              </property>
+              <widget class="QLabel" name="springsPitchScaleLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>44</y>
+                 <width>161</width>
+                 <height>21</height>
+                </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <strikeout>true</strikeout>
+                </font>
+               </property>
+               <property name="text">
+                <string>Scale:</string>
+               </property>
+              </widget>
+              <widget class="QDoubleSpinBox" name="springsPitchScaleDoubleSpinBox_">
+               <property name="geometry">
+                <rect>
+                 <x>170</x>
+                 <y>42</y>
+                 <width>121</width>
+                 <height>21</height>
+                </rect>
+               </property>
+               <property name="decimals">
+                <number>4</number>
+               </property>
+               <property name="maximum">
+                <double>100.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.100000000000000</double>
+               </property>
+               <property name="value">
+                <double>1.000000000000000</double>
+               </property>
+              </widget>
+              <widget class="QLabel" name="springsPitchInputLabel">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>20</y>
+                 <width>131</width>
+                 <height>21</height>
+                </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <strikeout>true</strikeout>
+                </font>
+               </property>
+               <property name="text">
+                <string>Input:</string>
+               </property>
+              </widget>
+              <widget class="QComboBox" name="springsPitchPortComboBox_">
+               <property name="geometry">
+                <rect>
+                 <x>140</x>
+                 <y>17</y>
+                 <width>151</width>
+                 <height>26</height>
+                </rect>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Primary</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Secondary</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Tertiary</string>
+                </property>
+               </item>
+              </widget>
+             </widget>
+            </widget>
+           </widget>
+           <zorder>vectorsDisplayTypeComboBox_</zorder>
+           <zorder>vectorsResolutionSpinBox_</zorder>
+           <zorder>vectorResolutionLabel</zorder>
+           <zorder>showVectorsCheckBox_</zorder>
+           <zorder>vectorColoringGroupBox_</zorder>
+           <zorder>vectorDisplayTypeLabel</zorder>
+           <zorder>vectorScalingGroupBox_</zorder>
+           <zorder>toolBox</zorder>
+          </widget>
+          <widget class="QWidget" name="tensorTab_">
+           <attribute name="title">
+            <string>Tensor</string>
+           </attribute>
+           <widget class="QCheckBox" name="showTensorsCheckBox_">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>0</y>
+              <width>111</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Show Tensors</string>
+            </property>
+           </widget>
+           <widget class="QGroupBox" name="tensorSuperquadricEmphasisGroupBox_">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>5</x>
+              <y>40</y>
+              <width>301</width>
+              <height>51</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <strikeout>true</strikeout>
+             </font>
+            </property>
+            <property name="title">
+             <string>Superquadric Emphasis</string>
+            </property>
+            <widget class="QSlider" name="tensorSuperquadricsEmphasisSlider_">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>26</y>
+               <width>281</width>
+               <height>19</height>
+              </rect>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QComboBox" name="tensorsDisplayTypeComboBox_">
+            <property name="geometry">
+             <rect>
+              <x>155</x>
+              <y>20</y>
+              <width>151</width>
+              <height>26</height>
+             </rect>
+            </property>
+            <item>
+             <property name="text">
+              <string>Ellipsoids</string>
+             </property>
+            </item>
+           </widget>
+           <widget class="QLabel" name="tensorDisplayTypeLabel">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>22</y>
+              <width>151</width>
+              <height>20</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Display Type:</string>
+            </property>
+           </widget>
+           <widget class="QSpinBox" name="tensorsResolutionSpinBox_">
+            <property name="geometry">
+             <rect>
+              <x>185</x>
+              <y>230</y>
+              <width>121</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="minimum">
+             <number>3</number>
+            </property>
+            <property name="maximum">
+             <number>20</number>
+            </property>
+            <property name="value">
+             <number>5</number>
+            </property>
+           </widget>
+           <widget class="QLabel" name="tensorResolutionLabel">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>230</y>
+              <width>171</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Resolution:</string>
+            </property>
+           </widget>
+           <widget class="QGroupBox" name="tensorColoringGroupBox_">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>5</x>
+              <y>87</y>
+              <width>301</width>
+              <height>71</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>Coloring</string>
+            </property>
+            <widget class="QLabel" name="tensorColorTypeLabel">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>22</y>
+               <width>141</width>
+               <height>20</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Color Type:</string>
+             </property>
+            </widget>
+            <widget class="QComboBox" name="tensorsColorTypeComboBox_">
+             <property name="geometry">
+              <rect>
+               <x>150</x>
+               <y>17</y>
+               <width>151</width>
+               <height>26</height>
+              </rect>
+             </property>
+             <item>
+              <property name="text">
+               <string>Default</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Colormap Lookup</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Conversion to RGB</string>
+              </property>
+             </item>
+            </widget>
+            <widget class="QLabel" name="tensorColorInputLabel">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>45</y>
+               <width>141</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="autoFillBackground">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Input:</string>
+             </property>
+            </widget>
+            <widget class="QComboBox" name="tensorsColoringInputComboBox_">
+             <property name="geometry">
+              <rect>
+               <x>150</x>
+               <y>43</y>
+               <width>151</width>
+               <height>26</height>
+              </rect>
+             </property>
+             <item>
+              <property name="text">
+               <string>Primary</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Secondary</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tertiary</string>
+              </property>
+             </item>
+            </widget>
+           </widget>
+           <widget class="QGroupBox" name="tensorScalingGroupBox_">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>5</x>
+              <y>160</y>
+              <width>301</width>
+              <height>63</height>
+             </rect>
+            </property>
+            <property name="title">
+             <string>Scaling</string>
+            </property>
+            <widget class="QLabel" name="tensorScaleLabel">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>38</y>
+               <width>171</width>
+               <height>20</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Scale:</string>
+             </property>
+            </widget>
+            <widget class="QDoubleSpinBox" name="scaleTensorsDoubleSpinBox_">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>180</x>
+               <y>40</y>
+               <width>121</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="decimals">
+              <number>4</number>
+             </property>
+             <property name="minimum">
+              <double>0.000100000000000</double>
+             </property>
+             <property name="maximum">
+              <double>100.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+             <property name="value">
+              <double>1.000000000000000</double>
+             </property>
+            </widget>
+            <widget class="QCheckBox" name="normalizeTensorsCheckBox_">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>18</y>
+               <width>281</width>
+               <height>21</height>
+              </rect>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <strikeout>false</strikeout>
+              </font>
+             </property>
+             <property name="text">
+              <string>Normalize before scaling</string>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QToolBox" name="toolBox_3">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>260</y>
+              <width>291</width>
+              <height>171</height>
+             </rect>
+            </property>
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <widget class="QWidget" name="page_9">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>291</width>
+               <height>109</height>
+              </rect>
+             </property>
+             <attribute name="label">
+              <string>Transparency</string>
+             </attribute>
+             <widget class="QRadioButton" name="tensorsUniformTransparencyRButton_">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>50</y>
+                <width>161</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>false</strikeout>
+               </font>
+              </property>
+              <property name="text">
+               <string>Uniform:</string>
+              </property>
+             </widget>
+             <widget class="QRadioButton" name="tensorsTransparencyOffRButton_">
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>20</y>
+                <width>271</width>
+                <height>18</height>
+               </rect>
+              </property>
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Off</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="tensorsTransparencyDoubleSpinBox_">
+              <property name="geometry">
+               <rect>
+                <x>170</x>
+                <y>50</y>
+                <width>121</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximum">
+               <double>1.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.010000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.650000000000000</double>
+              </property>
+             </widget>
+             <widget class="QComboBox" name="tensorsTransparencyInputComboBox_">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>150</x>
+                <y>80</y>
+                <width>141</width>
+                <height>26</height>
+               </rect>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>false</strikeout>
+               </font>
+              </property>
+              <item>
+               <property name="text">
+                <string>Primary</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Secondary</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Tertiary</string>
+               </property>
+              </item>
+             </widget>
+             <widget class="QRadioButton" name="tensorsDataPortTransparencyRButton_">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>80</y>
+                <width>141</width>
+                <height>31</height>
+               </rect>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>true</strikeout>
+               </font>
+              </property>
+              <property name="text">
+               <string>Use Input:</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </widget>
+            <widget class="QWidget" name="page_10">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>98</width>
+               <height>28</height>
+              </rect>
+             </property>
+             <attribute name="label">
+              <string>Threshold</string>
+             </attribute>
+             <widget class="QLabel" name="tensorThresholdLabel">
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>40</y>
+                <width>161</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Threshold:</string>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="renderTensorsBelowThresholdCheckBox_">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>281</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <strikeout>false</strikeout>
+               </font>
+              </property>
+              <property name="text">
+               <string>Render glyphs below threshold</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="tensorsThresholdDoubleSpinBox_">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>170</x>
+                <y>40</y>
+                <width>121</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="decimals">
+               <number>4</number>
+              </property>
+              <property name="maximum">
+               <double>100.000000000000000</double>
+              </property>
+              <property name="singleStep">
+               <double>0.100000000000000</double>
+              </property>
+             </widget>
+            </widget>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="textTab_">
+           <attribute name="title">
+            <string>Text</string>
+           </attribute>
+           <widget class="QLabel" name="label_2">
+            <property name="geometry">
+             <rect>
+              <x>20</x>
+              <y>20</y>
+              <width>181</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>(Nothing here yet)</string>
+            </property>
+           </widget>
+          </widget>
+         </widget>
+        </item>
+       </layout>
       </item>
-      <item row="0" column="0">
-       <widget class="QTabWidget" name="displayOptionsTabs_">
+      <item row="0" column="0" rowspan="3">
+       <widget class="QGroupBox" name="generalOptionsBox_">
         <property name="enabled">
          <bool>true</bool>
         </property>
         <property name="minimumSize">
          <size>
-          <width>206</width>
-          <height>395</height>
+          <width>0</width>
+          <height>70</height>
          </size>
         </property>
-        <property name="styleSheet">
-         <string notr="true"/>
+        <property name="title">
+         <string>General Options</string>
         </property>
-        <property name="tabPosition">
-         <enum>QTabWidget::North</enum>
-        </property>
-        <property name="tabShape">
-         <enum>QTabWidget::Rounded</enum>
-        </property>
-        <property name="currentIndex">
-         <number>0</number>
-        </property>
-        <property name="documentMode">
-         <bool>false</bool>
-        </property>
-        <property name="tabsClosable">
-         <bool>false</bool>
-        </property>
-        <widget class="QWidget" name="textTab_">
-         <attribute name="title">
-          <string>Text</string>
-         </attribute>
-         <widget class="QLabel" name="label_2">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>20</y>
-            <width>181</width>
-            <height>31</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>(Nothing here yet)</string>
-          </property>
-         </widget>
+        <widget class="QLabel" name="label">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>24</y>
+           <width>70</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Field Name:</string>
+         </property>
         </widget>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QGroupBox" name="groupBox_2">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>80</height>
-      </size>
-     </property>
-     <property name="title">
-      <string>General Options</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
-       <widget class="QPushButton" name="defaultMeshColorButton_">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="text">
-         <string>Default Color</string>
-        </property>
+        <widget class="QLineEdit" name="lineEdit">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>86</x>
+           <y>20</y>
+           <width>231</width>
+           <height>21</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="defaultMeshColorButton_">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>40</y>
+           <width>321</width>
+           <height>32</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Default Color</string>
+         </property>
+        </widget>
        </widget>
       </item>
      </layout>
