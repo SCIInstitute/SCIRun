@@ -677,7 +677,9 @@ RESULT = ten;</value>
 									<name>TensorsColoring</name>
 									<value>
 										<which>2</which>
+
 										<value>Colormap Lookup</value>
+
 									</value>
 								</second>
 							</item>
@@ -1426,6 +1428,7 @@ RESULT = ten;</value>
 				</port2_>
 			</item>
 			<item>
+
 				<moduleId1_>GetFieldBoundary:8</moduleId1_>
 				<port1_>
 					<name>BoundaryField</name>
@@ -1435,6 +1438,7 @@ RESULT = ten;</value>
 				<port2_>
 					<name>Field</name>
 					<id>1</id>
+
 				</port2_>
 			</item>
 			<item>
@@ -1443,6 +1447,7 @@ RESULT = ten;</value>
 					<name>BoundaryField</name>
 					<id>0</id>
 				</port1_>
+
 				<moduleId2_>ShowFieldGlyphs:8</moduleId2_>
 				<port2_>
 					<name>PrimaryData</name>
@@ -1453,11 +1458,14 @@ RESULT = ten;</value>
 				<moduleId1_>RescaleColorMap:1</moduleId1_>
 				<port1_>
 					<name>ColorMapOutput</name>
+
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ShowFieldGlyphs:8</moduleId2_>
 				<port2_>
+
 					<name>PrimaryColorMap</name>
+
 					<id>0</id>
 				</port2_>
 			</item>
