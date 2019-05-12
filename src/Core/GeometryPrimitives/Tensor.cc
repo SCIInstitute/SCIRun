@@ -254,6 +254,17 @@ double Tensor::norm() const
   return (a);
 }
 
+double Tensor::magnitude()
+{
+  double eigenval1, eigenval2, eigenval3;
+  get_eigenvalues(eigenval1, eigenval2, eigenval3);
+
+  double magnitude = sqrt(eigenval1 * eigenval1 +
+                          eigenval2 * eigenval2 +
+                          eigenval3 * eigenval3);
+  return magnitude;
+}
+
 std::string Tensor::type_name(int) {
   static const std::string str("Tensor");
   return str;
