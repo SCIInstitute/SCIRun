@@ -206,8 +206,11 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::inputMouseWheel(int32_t delta)
     {
-      mCamera->mouseWheelEvent(delta, mZoomSpeed);
-      updateCamera();
+      if(!widgetSelected_)
+      {
+        mCamera->mouseWheelEvent(delta, mZoomSpeed);
+        updateCamera();
+      }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -603,18 +606,20 @@ namespace SCIRun {
     {
       gen::StaticCamera* cam = mCore.getStaticComponent<gen::StaticCamera>();
       glm::vec4 spos((float(2 * pos.x) - float(mScreenWidth)) / float(mScreenWidth),
-        (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
-        mSelectedPos.z, 1.0f);
+                     (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
+                     mSelectedPos.z, 1.0f);
 
+      float ssDepth = mSelectedPos.z * 0.5 + 0.5;
+      float zFar = mCamera->getZFar();
+      float zNear = mCamera->getZNear();
+      float vDepth = 1.0/(ssDepth * (1.0/zFar - 1.0/zNear) + 1.0/zNear);
+
+      glm::vec4 transVec = glm::vec4(glm::vec3(spos - mSelectedPos) * glm::vec3(vDepth , vDepth, 1.0), 0.0f);
       mWidgetTransform = gen::Transform();
-      mWidgetTransform.setPosition((spos - mSelectedPos).xyz());
-      mWidgetTransform.transform = glm::inverse(cam->data.projIV) *
-        mWidgetTransform.transform * cam->data.projIV;
+      mWidgetTransform.setPosition((glm::inverse(cam->data.projIV) * transVec).xyz());
 
-      spire::CerealHeap<gen::Transform>* contTrans =
-        mCore.getOrCreateComponentContainer<gen::Transform>();
-      std::pair<const gen::Transform*, size_t> component =
-        contTrans->getComponent(mSelectedID);
+      spire::CerealHeap<gen::Transform>* contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
+      std::pair<const gen::Transform*, size_t> component = contTrans->getComponent(mSelectedID);
 
       if (component.first != nullptr)
         contTrans->modifyIndex(mWidgetTransform, component.second, 0);
