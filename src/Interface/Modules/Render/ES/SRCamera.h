@@ -36,101 +36,93 @@
 
 #include <arc-look-at/ArcLookAt.hpp>
 
-namespace SCIRun {
-namespace Render {
+namespace SCIRun{
+  namespace Render{
 
-/// Basic camera class for spire, mimicking SCIRun v4.
-class SRCamera
-{
-public:
-  explicit SRCamera(SRInterface& iface);
+    /// Basic camera class for spire, mimicking SCIRun v4.
+    class SRCamera
+    {
+    public:
+      explicit SRCamera(SRInterface& iface);
 
-  // V  = View matrix
-  // IV = Inverse view matrix
-  // P  = Projection matrix
-  // m  = multiplication
-  const glm::mat4& getWorldToProjection() const  {return mPIV;}
-  const glm::mat4& getWorldToView() const        {return mIV;}
-  const glm::mat4& getViewToWorld() const        {return mV;}
-  const glm::mat4& getViewToProjection() const   {return mP;}
+      /// Sets this camera to use a perspective projection transformation.
+      void setAsPerspective();
 
-  /// Sets this camera to use a perspective projection transformation.
-  void setAsPerspective();
+      /// Sets this camera to use an orthographic projection transformation.
+      void setAsOrthographic(float halfWidth, float halfHeight);
 
-  /// Sets this camera to use an orthographic projection transformation.
-  void setAsOrthographic(float halfWidth, float halfHeight);
+      /// Handle mouse down.
+      void mouseDownEvent(const glm::ivec2& pos, SRInterface::MouseButton btn);
 
-  /// Sets the current view transform (view to world space).
-  /// \xxx This should be removed.
-  void applyTransform();
+      /// Handle mouse movement.
+      void mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton btn);
 
-  /// Handle mouse down.
-  void mouseDownEvent(const glm::ivec2& pos, SRInterface::MouseButton btn);
+      /// Handle mouse wheel event.
+      void mouseWheelEvent(int32_t delta, int zoomSpeed);
 
-  /// Handle mouse movement.
-  void mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton btn);
+      //set zNear and zFar using scene bounding box
+      void setSceneBoundingBox(const Core::Geometry::BBox& bbox);
 
-  /// Handle mouse wheel event.
-  void mouseWheelEvent(int32_t delta, int zoomSpeed);
+      /// Perform autoview.
+      void doAutoView();
 
-  /// Perform autoview.
-  void doAutoView(const Core::Geometry::BBox& bbox);
+      //set zNear and zFar using scene bounding box
+      void setClippingPlanes();
 
-  void setClippingPlanes(const Core::Geometry::BBox& bbox);
+      /// Sets the selected View of the window to given up axis and view axis
+      void setView(const glm::vec3& view, const glm::vec3& up);
 
-  /// Sets the selected View of the window to given up axis and view axis
-  void setView(const glm::vec3& view, const glm::vec3& up);
+      /// Toggles the zoom controls on New Mouse Controls Inverted/Not Inverted
+      void setZoomInverted(bool value);
 
-  /// Toggles the zoom controls on New Mouse Controls Inverted/Not Inverted
-  void setZoomInverted(bool value);
+      // P  = Projection matrix | IV = Inverse view matrix |  V  = View matrix
+      const glm::mat4& getWorldToProjection() const  {return mVP;}
+      const glm::mat4& getWorldToView() const        {return mV;}
+      const glm::mat4& getViewToWorld() const        {return mIV;}
+      const glm::mat4& getViewToProjection() const   {return mP;}
 
-  /// Default camera settings
-  /// @{
-  static float getDefaultFOVY()   {return 32.0f * (glm::pi<float>() / 180.0f);}
-  static float getDefaultZNear()  {return 1.00f;}
-  static float getDefaultZFar()   {return 10000.0f;}
+      /// Default camera settings
+      static float getDefaultFOVY()   {return 32.0f * (glm::pi<float>() / 180.0f);}
+      static float getDefaultZNear()  {return 1.00f;}
+      static float getDefaultZFar()   {return 10000.0f;}
 
-  float getZFar()   { return mZFar;}
-  float getZNear()  { return mZNear;}
-  float getFOVY()   { return mFOV;}
-  float getAspect() { return static_cast<float>(mInterface.getScreenWidthPixels()) /static_cast<float>(mInterface.getScreenHeightPixels());}
-  /// @}
+      float getZFar()   {return mZFar;}
+      float getZNear()  {return mZNear;}
+      float getFOVY()   {return mFOVY;}
+      float getAspect() {return static_cast<float>(mInterface.getScreenWidthPixels()) /
+                         static_cast<float>(mInterface.getScreenHeightPixels());}
 
-  void setLockZoom(bool lock) { lockZoom_ = lock; }
-  void setLockPanning(bool lock) { lockPanning_ = lock; }
-  void setLockRotation(bool lock) { lockRotation_ = lock; }
+      void setLockZoom(bool lock)     {lockZoom_ = lock;}
+      void setLockPanning(bool lock)  {lockPanning_ = lock;}
+      void setLockRotation(bool lock) {lockRotation_ = lock;}
 
-private:
+    private:
+      void buildTransform();
+      glm::vec2 calculateScreenSpaceCoords(const glm::ivec2& mousePos);
 
-  void buildTransform();
-  glm::vec2 calculateScreenSpaceCoords(const glm::ivec2& mousePos);
+      bool                  mPerspective  {true};               ///< True if we are using a perspective
+      bool                  lockRotation_ {false};
+      bool                  lockZoom_     {false};
+      bool                  lockPanning_  {false};
 
-  glm::mat4             mPIV;         ///< Projection * Inverse View transformation.
-  glm::mat4             mIV;          ///< Inverse view transformation.
-  glm::mat4             mV;           ///< View matrix.
-  glm::mat4             mP;           ///< Projection transformation.
-  size_t                mTrafoSeq;    ///< Current sequence of the view transform.
-                                      ///< Helps us determine when a camera is 'dirty'.
+      int                   mInvertVal    {-1};                 ///< Invert multiplier
+      float                 mFOVY         {getDefaultFOVY()};   ///< Field of view.
+      float                 mZNear        {getDefaultZNear()};  ///< Position of near plane along view vec.
+      float                 mZFar         {getDefaultZFar()};   ///< Position of far plane along view vec.
+      float                 mRadius       {-1.0};
 
-  bool                  mPerspective; ///< True if we are using a perspective
-                                      ///< transformation.
-  int                   mInvertVal;   ///< Invert multiplier
-  float                 mFOV;         ///< Field of view.
-  float                 mZNear;       ///< Position of near plane along view vec.
-  float                 mZFar;        ///< Position of far plane along view vec.
+      glm::mat4             mVP           {};   ///< Projection * View transformation.
+      glm::mat4             mV            {};   ///< View transformation.
+      glm::mat4             mIV           {};   ///< Inverse View transformation.
+      glm::mat4             mP            {};   ///< Projection transformation.
 
-  float                 mRadius;
+      SRInterface&                        mInterface;           ///< SRInterface.
+      std::shared_ptr<spire::ArcLookAt>   mArcLookAt{};
+      Core::Geometry::BBox                mSceneBBox{};
 
-  SRInterface&          mInterface;   ///< SRInterface.
+    };
 
-  std::shared_ptr<spire::ArcLookAt>  mArcLookAt;
-
-  bool lockRotation_{false};
-  bool lockZoom_{false};
-  bool lockPanning_{false};
-};
-
-} // namespace Render
+  } // namespace Render
 } // namespace SCIRun
 
 #endif

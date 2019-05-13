@@ -67,12 +67,17 @@ public:
   /// contexts running on the same thread.
   void makeCurrent();
 
-  void setLockZoom(bool lock) { mGraphics->setLockZoom(lock); }
-  void setLockPanning(bool lock) { mGraphics->setLockPanning(lock); }
+  void setLockZoom(bool lock)     { mGraphics->setLockZoom(lock); }
+  void setLockPanning(bool lock)  { mGraphics->setLockPanning(lock); }
   void setLockRotation(bool lock) { mGraphics->setLockRotation(lock); }
 
 Q_SIGNALS:
   void fatalError(const QString& message);
+
+public Q_SLOTS:
+  // Only use when not using threading.
+  void updateRenderer();
+
 protected:
   virtual void mousePressEvent(QMouseEvent* event);
   virtual void mouseMoveEvent(QMouseEvent* event);
@@ -84,20 +89,15 @@ protected:
   virtual void resizeGL(int width, int height);
   void closeEvent(QCloseEvent *evt);
 
-public Q_SLOTS:
-  // Only use when not using threading.
-  void updateRenderer();
-
 private:
-
   /// Retrieve SRInterface mouse button from mouse event.
   Render::SRInterface::MouseButton getSpireButton(QMouseEvent* event);
 
-  std::shared_ptr<GLContext>            mContext;   ///< Graphics context.
-  std::shared_ptr<Render::SRInterface>  mGraphics;  ///< Interface to spire.
-  QTimer*                               mTimer;
+  std::shared_ptr<GLContext>            mContext      {};  ///< Graphics context.
+  std::shared_ptr<Render::SRInterface>  mGraphics     {};  ///< Interface to spire.
+  QTimer*                               mTimer        {};
 
-  double                                mCurrentTime;
+  double                                mCurrentTime  {0.0};
 };
 
 } // end of namespace Gui
