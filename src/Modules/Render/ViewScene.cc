@@ -73,9 +73,9 @@ void ViewScene::setStateDefaults()
   state->setValue(BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
   state->setValue(Ambient, 0.2);
   state->setValue(Diffuse, 1.0);
-  state->setValue(Specular, 0.4);
+  state->setValue(Specular, 0.0);
   state->setValue(Shine, 1.0);
-  state->setValue(Emission, 1.0);
+  state->setValue(Emission, 0.0);
   state->setValue(FogOn, false);
   state->setValue(ObjectsOnly, true);
   state->setValue(UseBGColor, true);

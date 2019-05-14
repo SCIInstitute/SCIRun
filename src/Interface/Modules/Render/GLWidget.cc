@@ -48,8 +48,7 @@ const double updateTime = RendererUpdateInMS / 1000.0;
 //------------------------------------------------------------------------------
 GLWidget::GLWidget(QtGLContext* context, QWidget* parent) :
     QGLWidget(context, parent),
-    mContext(new GLContext(this)),
-    mCurrentTime(0.0)
+    mContext(new GLContext(this))
 {
   /// \todo Implement this intelligently. This function is called everytime
   ///       there is a new graphics context.

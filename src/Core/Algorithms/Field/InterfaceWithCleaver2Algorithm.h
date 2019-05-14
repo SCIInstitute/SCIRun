@@ -38,6 +38,7 @@ namespace Core {
 namespace Algorithms {
 namespace Fields {
 
+  //Cleaver parameters: Scaling = Sampling Rate, Multiplier = Feature Scaling
   ALGORITHM_PARAMETER_DECL(Verbose);
   ALGORITHM_PARAMETER_DECL(VolumeScaling);
   ALGORITHM_PARAMETER_DECL(VolumeMultiplier);

@@ -68,6 +68,11 @@ bool SmoothVecFieldMedianAlgo::runImpl(FieldHandle input, FieldHandle& output) c
     return false;
   }
 
+  if (!fi.is_constantdata())
+  {
+    THROW_ALGORITHM_PROCESSING_ERROR("The data needs to be on the cells of the mesh");
+  }
+
   output = CreateField(fi, input->mesh());
 
   if (!output)
@@ -79,21 +84,19 @@ bool SmoothVecFieldMedianAlgo::runImpl(FieldHandle input, FieldHandle& output) c
   VField* ifield = input->vfield();
   VField* ofield = output->vfield();
   VMesh* imesh = input->vmesh();
-  VMesh::Elem::index_type a, b;
-  Vector v0, v1, v2, v3;
-  std::vector<double> angles, original;
-  int middle = 0, myloc = 0;
-  bool not_on_list = false;
-  double gdot = 0, m1 = 0, m2 = 0, angle = 0;
 
   if (ifield->is_vector())
   {
-    VField::size_type num_values = ifield->num_values();
+    Vector v0, v1, v2, v3;
+
+    int myloc = 0;
+    bool not_on_list = false;
+    auto num_values = ifield->num_values();
 
     imesh->synchronize(Mesh::ELEM_NEIGHBORS_E);
 
     int cnt = 0;
-    
+
     for (VMesh::Elem::index_type idx = 0; idx < num_values; idx++)
     {
       //calculate neighborhoods
@@ -143,12 +146,11 @@ bool SmoothVecFieldMedianAlgo::runImpl(FieldHandle input, FieldHandle& output) c
         }
       }
 
-      angles.clear();
-      original.clear();
+      std::vector<double> angles, original;
       ifield->get_value(v0, idx);
       for (size_t q = 0; q < Nlist.size(); q++)
       {
-        a = Nlist[q];
+        auto a = Nlist[q];
         ifield->get_value(v1, a);
         if (v0.length()*v1.length() == 0)
         {
@@ -157,17 +159,17 @@ bool SmoothVecFieldMedianAlgo::runImpl(FieldHandle input, FieldHandle& output) c
         }
         else
         {
-          gdot = Dot(v0, v1);
-          m1 = v0.length();
-          m2 = v1.length();
-          angle = (gdot / (m1*m2));
+          auto gdot = Dot(v0, v1);
+          auto m1 = v0.length();
+          auto m2 = v1.length();
+          auto angle = (gdot / (m1*m2));
           angles.push_back(angle);
           original.push_back(angle);
         }
       }
 
       sort(angles.begin(), angles.end());
-      middle = (int)((angles.size() + 1) / 2);
+      auto middle = (int)((angles.size() + 1) / 2);
       for (size_t k = 0; k < original.size(); k++)
       {
         if (original[k] == angles[middle])
@@ -177,16 +179,16 @@ bool SmoothVecFieldMedianAlgo::runImpl(FieldHandle input, FieldHandle& output) c
         }
       }
 
-      b = Nlist[myloc];
+      auto b = Nlist[myloc];
       ifield->get_value(v2, b);
 
       ofield->set_value(v2, idx);
 
-      cnt++; 
-      if (cnt == 200) 
-      { 
-        cnt = 0; 
-        update_progress_max(idx, num_values); 
+      cnt++;
+      if (cnt == 200)
+      {
+        cnt = 0;
+        update_progress_max(idx, num_values);
       }
     }
   }

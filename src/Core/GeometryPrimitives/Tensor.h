@@ -97,6 +97,7 @@ public:
   void get_eigenvalues(double &l1, double &l2, double &l3);
 
   double norm() const;
+  double magnitude();
 
   void set_eigens(const Vector &e1, const Vector &e2, const Vector &e3);
 
