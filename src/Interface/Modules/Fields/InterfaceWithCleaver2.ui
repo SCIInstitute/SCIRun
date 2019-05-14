@@ -59,12 +59,12 @@
    <item row="2" column="0">
     <widget class="QLabel" name="label_4">
      <property name="text">
-      <string>Scaling</string>
+      <string>Sampling Rate</string>
      </property>
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QDoubleSpinBox" name="scalingDoubleSpinBox_">
+    <widget class="QDoubleSpinBox" name="samplingRateDoubleSpinBox_">
      <property name="minimumSize">
       <size>
        <width>125</width>
@@ -82,12 +82,12 @@
    <item row="3" column="0">
     <widget class="QLabel" name="label_5">
      <property name="text">
-      <string>Multiplier</string>
+      <string>Feature Scaling</string>
      </property>
     </widget>
    </item>
    <item row="3" column="1">
-    <widget class="QDoubleSpinBox" name="multiplierDoubleSpinBox_">
+    <widget class="QDoubleSpinBox" name="featureScalingDoubleSpinBox_">
      <property name="minimumSize">
       <size>
        <width>125</width>
