@@ -26,6 +26,14 @@
    DEALINGS IN THE SOFTWARE.
  */
 
+ #ifdef OPENGL_ES
+   #ifdef GL_FRAGMENT_PRECISION_HIGH
+     precision highp float;
+   #else
+     precision mediump float;
+   #endif
+ #endif
+
 uniform vec3    uCamViewVec;        // Camera 'at' vector in world space
 uniform vec4    uAmbientColor;      // Ambient color
 uniform vec4    uDiffuseColor;      // Diffuse color
@@ -70,27 +78,19 @@ varying vec4    vFogCoord;// for fog calculation
 
 vec4 calculate_lighting(vec3 lightDirWorld, vec3 lightColor)
 {
-  // Remember to always negate the light direction for these lighting calculations.
-  vec4  diffuseColor = vColor;
   vec3  invLightDir = -lightDirWorld;
   vec3  normal      = normalize(vNormal);
-  
-  // Note, the following is a hack due to legacy meshes still being supported.
-  // We light the object as if it was double sided. We choose the normal based
-  // on the normal that yields the largest diffuse component.
-  float diffuse     = max(0.0, dot(normal, invLightDir));
-  float diffuseInv  = max(0.0, dot(-normal, invLightDir));
-  
-  if (diffuse < diffuseInv)
-  {
-    diffuse = diffuseInv;
+
+  if (gl_FrontFacing)
     normal = -normal;
-  }
-  
+
+  float diffuse     = max(0.0, dot(normal, invLightDir));
   vec3  reflection  = reflect(invLightDir, normal);
   float specular    = max(0.0, dot(reflection, uCamViewVec));
   specular          = pow(specular, uSpecularPower);
-  
+
+  vec4  diffuseColor = vColor;
+
   return vec4(lightColor * (diffuse * diffuseColor.rgb + specular * uSpecularColor.rgb), 0.0);
 }
 
@@ -149,7 +149,7 @@ void main()
     gl_FragColor += calculate_lighting(uLightDirWorld2, uLightColor2);
   if (length(uLightDirWorld3) > 0.0)
     gl_FragColor += calculate_lighting(uLightDirWorld3, uLightColor3);
-  
+
   //calculate fog
   if (uFogSettings.x > 0.0)
   {
@@ -158,7 +158,7 @@ void main()
     fp.y = uFogSettings.y;
     fp.z = uFogSettings.z;
     fp.w = abs(vFogCoord.z/vFogCoord.w);
-    
+
     float fog_factor;
     fog_factor = (fp.z-fp.w)/(fp.z-fp.y);
     fog_factor = 1.0 - clamp(fog_factor, 0.0, 1.0);
@@ -167,4 +167,3 @@ void main()
       clamp(uFogColor.xyz, 0.0, 1.0), fog_factor);
   }
 }
-

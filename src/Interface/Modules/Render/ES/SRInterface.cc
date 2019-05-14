@@ -1388,7 +1388,8 @@ namespace SCIRun {
           {
             GLuint arrowVBO = vboMan->hasVBO("Assets/arrow.geom");
             GLuint arrowIBO = iboMan->hasIBO("Assets/arrow.geom");
-            GLuint shader = shaderMan->getIDForAsset("Shaders/DirPhongNoClipping");
+            //GLuint shader = shaderMan->getIDForAsset("Shaders/DirPhongNoClipping");
+            GLuint shader = shaderMan->getIDForAsset("Shaders/UniformColor");
 
             // Bail if assets have not been loaded yet (asynchronous loading may take a
             // few frames).
@@ -1470,7 +1471,8 @@ namespace SCIRun {
             GLint locLightDirWorld = glGetUniformLocation(shader, "uLightDirWorld");
 
             GLint locAmbientColor = glGetUniformLocation(shader, "uAmbientColor");
-            GLint locDiffuseColor = glGetUniformLocation(shader, "uDiffuseColor");
+            //GLint locDiffuseColor = glGetUniformLocation(shader, "uDiffuseColor");
+            GLint locDiffuseColor = glGetUniformLocation(shader, "uColor");
             GLint locSpecularColor = glGetUniformLocation(shader, "uSpecularColor");
             GLint locSpecularPower = glGetUniformLocation(shader, "uSpecularPower");
 
@@ -1485,15 +1487,16 @@ namespace SCIRun {
 
             mArrowAttribs.bind();
 
+            //GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
+            //GL(glUniform4f(locAmbientColor, 0.2f, 0.2f, 0.2f, 1.0f));
+            //GL(glUniform1f(locSpecularPower, 16.0f));
+
             // X Axis (dark)
             {
               glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
               glm::mat4 finalTrafo = axesTransform * xform;
 
-              GL(glUniform4f(locAmbientColor, 0.1f, 0.01f, 0.01f, 1.0f));
               GL(glUniform4f(locDiffuseColor, 0.25f, 0.0f, 0.0f, 1.0f));
-              GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
-              GL(glUniform1f(locSpecularPower, 16.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
               const GLfloat* ptr = glm::value_ptr(worldToProj);
@@ -1511,10 +1514,7 @@ namespace SCIRun {
               glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
               glm::mat4 finalTrafo = axesTransform * xform;
 
-              GL(glUniform4f(locAmbientColor, 0.5f, 0.01f, 0.01f, 1.0f));
               GL(glUniform4f(locDiffuseColor, 1.0f, 0.0f, 0.0f, 1.0f));
-              GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
-              GL(glUniform1f(locSpecularPower, 16.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
               const GLfloat* ptr = glm::value_ptr(worldToProj);
@@ -1532,10 +1532,7 @@ namespace SCIRun {
               glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
               glm::mat4 finalTrafo = axesTransform * xform;
 
-              GL(glUniform4f(locAmbientColor, 0.01f, 0.1f, 0.01f, 1.0f));
               GL(glUniform4f(locDiffuseColor, 0.0f, 0.25f, 0.0f, 1.0f));
-              GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
-              GL(glUniform1f(locSpecularPower, 16.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
               const GLfloat* ptr = glm::value_ptr(worldToProj);
@@ -1553,10 +1550,7 @@ namespace SCIRun {
               glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
               glm::mat4 finalTrafo = axesTransform * xform;
 
-              GL(glUniform4f(locAmbientColor, 0.01f, 0.5f, 0.01f, 1.0f));
               GL(glUniform4f(locDiffuseColor, 0.0f, 1.0f, 0.0f, 1.0f));
-              GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
-              GL(glUniform1f(locSpecularPower, 16.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
               const GLfloat* ptr = glm::value_ptr(worldToProj);
@@ -1574,10 +1568,7 @@ namespace SCIRun {
               // No rotation at all
               glm::mat4 finalTrafo = axesTransform;
 
-              GL(glUniform4f(locAmbientColor, 0.01f, 0.01f, 0.1f, 1.0f));
               GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 0.25f, 1.0f));
-              GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
-              GL(glUniform1f(locSpecularPower, 16.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
               const GLfloat* ptr = glm::value_ptr(worldToProj);
@@ -1596,10 +1587,7 @@ namespace SCIRun {
               glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>(), glm::vec3(1.0, 0.0, 0.0));
               glm::mat4 finalTrafo = axesTransform * xform;
 
-              GL(glUniform4f(locAmbientColor, 0.01f, 0.01f, 0.5f, 1.0f));
               GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 1.0f, 1.0f));
-              GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
-              GL(glUniform1f(locSpecularPower, 16.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
               const GLfloat* ptr = glm::value_ptr(worldToProj);
