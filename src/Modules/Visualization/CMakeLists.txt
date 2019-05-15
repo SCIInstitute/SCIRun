@@ -35,7 +35,6 @@ SET(Modules_Visualization_SRCS
   RescaleColorMap.cc
   TextBuilder.cc
   ShowFieldWithOspray.cc
-  ShowAndEditDipoles.cc
 )
 
 SET(Modules_Visualization_HEADERS
@@ -47,7 +46,6 @@ SET(Modules_Visualization_HEADERS
   RescaleColorMap.h
   TextBuilder.h
   ShowFieldWithOspray.h
-  ShowAndEditDipoles.h
   share.h
 )
 

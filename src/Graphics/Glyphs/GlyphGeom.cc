@@ -280,7 +280,8 @@ void GlyphGeom::addPoint(const Point& p, const ColorRGB& color)
 }
 
 void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius1,
-  double radius2, double resolution, const ColorRGB& color1, const ColorRGB& color2)
+                                 double radius2, double resolution, const ColorRGB& color1,
+                                 const ColorRGB& color2)
 {
   double num_strips = resolution;
   if (num_strips < 0) num_strips = 20.0;
@@ -292,6 +293,16 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
   Vector crx = n.getArbitraryTangent();
   Vector u = Cross(crx, n).normal();
   Vector p;
+  // points_.push_back(Vector(p1.x(), p1.y(), p1.z()));
+  // points_.push_back(Vector(p2.x(), p2.y(), p2.z()));
+  // int p1_index = numVBOElements_;
+  // colors_.push_back(color1);
+  // normals_.push_back(n);
+  // numVBOElements_++;
+  // int p2_index = numVBOElements_;
+  // colors_.push_back(color2);
+  // normals_.push_back(n);
+  // numVBOElements_++;
   for (double strips = 0.; strips <= num_strips; strips += 1.)
   {
     uint32_t offset = static_cast<uint32_t>(numVBOElements_);
@@ -313,6 +324,22 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
     indices_.push_back(2 + offset);
     indices_.push_back(1 + offset);
     indices_.push_back(3 + offset);
+
+    // Sides
+    // points_.push_back(r1 * p + Vector(p1));
+    // colors_.push_back(color1);
+    // normals_.push_back(n);
+    // numVBOElements_++;
+    // points_.push_back(r2 * p + Vector(p2));
+    // colors_.push_back(color2);
+    // normals_.push_back(n);
+    // numVBOElements_++;
+    // indices_.push_back(p1_index);
+    // indices_.push_back(0 + offset);
+    // indices_.push_back(2 + offset);
+    // indices_.push_back(p2_index);
+    // indices_.push_back(1 + offset);
+    // indices_.push_back(3 + offset);
   }
   for (int jj = 0; jj < 6; jj++) indices_.pop_back();
 }

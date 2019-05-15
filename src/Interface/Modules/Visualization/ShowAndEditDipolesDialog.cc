@@ -27,7 +27,7 @@
 */
 
 #include <Interface/Modules/Visualization/ShowAndEditDipolesDialog.h>
-#include <Modules/Visualization/ShowAndEditDipoles.h>
+#include <Modules/Legacy/Visualization/ShowAndEditDipoles.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;

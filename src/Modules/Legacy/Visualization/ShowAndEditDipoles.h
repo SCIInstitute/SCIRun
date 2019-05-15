@@ -26,30 +26,61 @@
    DEALINGS IN THE SOFTWARE.
    */
 
-#ifndef MODULES_LEGACY_VISUALIZATION_ShowAndEditDipoles_H_
-#define MODULES_LEGACY_VISUALIZATION_ShowAndEditDipoles_H_
+#ifndef MODULES_LEGACY_VISUALIZATION_SHOWANDEDITDIPOLES_H
+#define MODULES_LEGACY_VISUALIZATION_SHOWANDEDITDIPOLES_H
 
-#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
+#include <Core/Datatypes/Geometry.h>
+#include <Graphics/Widgets/Widget.h>
 #include <Modules/Legacy/Visualization/share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Visualization {
 
-      class SCISHARE ShowAndEditDipoles : public Dataflow::Networks::Module,
+      class SCISHARE ShowAndEditDipoles : public SCIRun::Dataflow::Networks::GeometryGeneratingModule,
         public Has1InputPort<FieldPortTag>,
         public Has2OutputPorts<FieldPortTag, GeometryPortTag>
       {
       public:
         ShowAndEditDipoles();
-        virtual void setStateDefaults() override;
         virtual void execute() override;
+        virtual void setStateDefaults() override;
+
+        static const Core::Algorithms::AlgorithmParameterName Sizing;
+        static const Core::Algorithms::AlgorithmParameterName ShowLastAsVector;
+        static const Core::Algorithms::AlgorithmParameterName ShowLines;
+        // static const Core::Algorithms::AlgorithmParameterName XLocation;
+        // static const Core::Algorithms::AlgorithmParameterName YLocation;
+        // static const Core::Algorithms::AlgorithmParameterName ZLocation;
+        // static const Core::Algorithms::AlgorithmParameterName FieldValue;
+        // static const Core::Algorithms::AlgorithmParameterName MoveMethod;
+        // static const Core::Algorithms::AlgorithmParameterName SnapToElement;
+        // static const Core::Algorithms::AlgorithmParameterName SnapToNode;
+        // static const Core::Algorithms::AlgorithmParameterName FieldNode;
+        // static const Core::Algorithms::AlgorithmParameterName FieldElem;
+        // static const Core::Algorithms::AlgorithmParameterName ProbeColor;
+        static const Core::Algorithms::AlgorithmParameterName NumSeeds;
+        static const Core::Algorithms::AlgorithmParameterName ProbeScale;
+        static const Core::Algorithms::AlgorithmParameterName PointPositions;
 
         INPUT_PORT(0, DipoleInputField, Field);
         OUTPUT_PORT(0, DipoleOutputField, Field);
         OUTPUT_PORT(1, DipoleWidget, GeometryObject);
 
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
+        MODULE_TRAITS_AND_INFO(ModuleHasUI);
+
+      private:
+        boost::shared_ptr<class ShowAndEditDipolesImpl> impl_;
+        // Core::Geometry::Point currentLocation() const;
+        // Graphics::Datatypes::GeometryHandle buildGeometryObject(FieldHandle field, const GeometryIDGenerator& idGenerator);
+        FieldHandle GenerateOutputField();
+        void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
+        void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, int index);
+        int moveCount_ {0};
+        // void setNearestNode(const Core::Geometry::Point& location);
+        // void setNearestElement(const Core::Geometry::Point& location);
+        // FieldHandle GenerateOutputField(boost::optional<FieldHandle> ifieldOption);
       };
     }
   }

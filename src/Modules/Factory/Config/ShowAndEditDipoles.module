@@ -4,7 +4,7 @@
     "namespace": "Visualization",
     "status": "...",
     "description": "...",
-    "header": "Modules/Visualization/ShowAndEditDipoles.h"
+    "header": "Modules/Legacy/Visualization/ShowAndEditDipoles.h"
   },
    "algorithm": {
     "name": "N/A",

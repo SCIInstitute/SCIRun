@@ -71,20 +71,53 @@ namespace SCIRun
         std::vector<WidgetHandle> widgets_;
       };
 
+      class SCISHARE LinkedCompositeWidget : public WidgetBase
+      {
+      public:
+        template <typename WidgetIter>
+          LinkedCompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
+          : WidgetBase(idGenerator, tag, true), widgets_(begin, end)
+          {}
+        ~LinkedCompositeWidget();
+        void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
+      private:
+        std::vector<WidgetHandle> widgets_;
+      };
+
       class SCISHARE WidgetFactory
       {
       public:
-        static WidgetHandle createBox(const Core::GeometryIDGenerator& idGenerator, double scale,
-          const BoxPosition& pos, const Core::Geometry::BBox& bbox);
-        static WidgetHandle createSphere(const Core::GeometryIDGenerator& idGenerator,
-          const std::string& name,
-          double radius, const std::string& defaultColor,
-          const Core::Geometry::Point& point, const Core::Geometry::BBox& bbox);
-        template <typename WidgetIter>
+      static WidgetHandle createBox(const Core::GeometryIDGenerator& idGenerator, double scale,
+                                    const BoxPosition& pos, const Core::Geometry::BBox& bbox);
+      static WidgetHandle createSphere(const Core::GeometryIDGenerator& idGenerator,
+                                       const std::string& name,
+                                       double radius, const std::string& defaultColor,
+                                       const Core::Geometry::Point& point, const Core::Geometry::BBox& bbox);
+      static WidgetHandle createCylinder(const Core::GeometryIDGenerator& idGenerator,
+                                         const std::string& name,
+                                         double scale,
+                                         const std::string& defaultColor,
+                                         const Core::Geometry::Point& p1,
+                                         const Core::Geometry::Point& p2,
+                                         const Core::Geometry::BBox& bbox);
+      static WidgetHandle createCone(const Core::GeometryIDGenerator& idGenerator,
+                                     const std::string& name,
+                                     double scale,
+                                     const std::string& defaultColor,
+                                     const Core::Geometry::Point& p1,
+                                     const Core::Geometry::Point& p2,
+                                     const Core::Geometry::BBox& bbox);
+       template <typename WidgetIter>
         static WidgetHandle createComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
         {
           return boost::make_shared<CompositeWidget>(idGenerator, tag, begin, end);
         }
+
+       template <typename WidgetIter>
+       static WidgetHandle createLinkedComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
+       {
+         return boost::make_shared<LinkedCompositeWidget>(idGenerator, tag, begin, end);
+       }
       };
     }
   }

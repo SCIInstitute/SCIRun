@@ -29,6 +29,8 @@ DEALINGS IN THE SOFTWARE.
 #include <Graphics/Widgets/Widget.h>
 #include <Graphics/Widgets/BoundingBoxWidget.h>
 #include <Graphics/Widgets/SphereWidget.h>
+#include <Graphics/Widgets/CylinderWidget.h>
+#include <Graphics/Widgets/ConeWidget.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
@@ -54,6 +56,28 @@ WidgetHandle WidgetFactory::createSphere(const Core::GeometryIDGenerator& idGene
   return boost::make_shared<SphereWidget>(idGenerator, name, scale, defaultColor, point, bbox);
 }
 
+WidgetHandle WidgetFactory::createCylinder(const Core::GeometryIDGenerator& idGenerator,
+                                           const std::string& name,
+                                           double scale,
+                                           const std::string& defaultColor,
+                                           const Point& p1,
+                                           const Point& p2,
+                                           const BBox& bbox)
+{
+  return boost::make_shared<CylinderWidget>(idGenerator, name, scale, defaultColor, p1, p2, bbox);
+}
+
+WidgetHandle WidgetFactory::createCone(const Core::GeometryIDGenerator& idGenerator,
+                                       const std::string& name,
+                                       double scale,
+                                       const std::string& defaultColor,
+                                       const Point& p1,
+                                       const Point& p2,
+                                       const BBox& bbox)
+{
+  return boost::make_shared<ConeWidget>(idGenerator, name, scale, defaultColor, p1, p2, bbox);
+}
+
 CompositeWidget::~CompositeWidget()
 {
 }
@@ -64,4 +88,16 @@ void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
   {
     list.insert(widgets_.begin(), widgets_.end());
   }
+}
+
+LinkedCompositeWidget::~LinkedCompositeWidget()
+{
+}
+
+void LinkedCompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
+{
+  if (handle.get() == this)
+    {
+      list.insert(widgets_.begin(), widgets_.end());
+    }
 }
