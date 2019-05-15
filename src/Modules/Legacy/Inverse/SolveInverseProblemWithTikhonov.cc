@@ -125,7 +125,7 @@ void SolveInverseProblemWithTikhonov::execute()
     if (regularization_method== "lcurve")
     {
 			LCurvePlot helper;
-      auto str = helper.update_lcurve_gui(get_id(),lambda,lambda_array,lambda_index);
+      auto str = helper.update_lcurve_gui(id(),lambda,lambda_array,lambda_index);
       state->setTransientValue("LambdaCorner", lambda->get(0,0));
       state->setTransientValue("LambdaCurveInfo", str);
       state->setTransientValue("LambdaCurve", lambda_array);

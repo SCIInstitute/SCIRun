@@ -31,18 +31,10 @@ DEALINGS IN THE SOFTWARE.
 
 #include "Interface/Modules/Visualization/ui_ShowFieldGlyphs.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Visualization/ShowFieldGlyphsVectorTabDialog.h>
-#include <Interface/Modules/Visualization/ShowFieldGlyphsScalarTabDialog.h>
-#include <Interface/Modules/Visualization/ShowFieldGlyphsTensorTabDialog.h>
 #include <Interface/Modules/Visualization/share.h>
 
 namespace SCIRun {
   namespace Gui {
-
-    class ShowFieldGlyphsScalarTabDialog;
-    class ShowFieldGlyphsVectorTabDialog;
-    class ShowFieldGlyphsTensorTabDialog;
-
     class SCISHARE ShowFieldGlyphsDialog : public ModuleDialogGeneric,
       public Ui::ShowFieldGlyphsDialog
     {
@@ -64,16 +56,8 @@ namespace SCIRun {
 
     private:
       QColor defaultMeshColor_;
-      ShowFieldGlyphsScalarTabDialog* scalarTab_;
-      ShowFieldGlyphsVectorTabDialog* vectorTab_;
-      ShowFieldGlyphsTensorTabDialog* tensorTab_;
+      bool interactiveUpdate;
 
-
-      int vectorTabIndex_;
-      int scalarTabIndex_;
-      int tensorTabIndex_;
-
-      void checkTabs();
       void setupScalarsTab();
       void setupVectorsTab();
       void setupTensorsTab();

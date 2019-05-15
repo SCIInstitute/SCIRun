@@ -130,7 +130,7 @@ private:
 using namespace detail;
 
 ShowField::ShowField() : GeometryGeneratingModule(staticInfo_),
-  builder_(new GeometryBuilder(get_id().id_, get_state()))
+  builder_(new GeometryBuilder(id().id_, get_state()))
 {
   INITIALIZE_PORT(Field);
   INITIALIZE_PORT(ColorMapObject);
@@ -199,7 +199,7 @@ void ShowField::processMeshComponentSelection(const ModuleFeedback& var)
   try
   {
     auto sel = dynamic_cast<const MeshComponentSelectionFeedback&>(var);
-    if (sel.moduleId == get_id().id_)
+    if (sel.moduleId == id().id_)
     {
     get_state()->setValue(Name("Show" + sel.component), sel.selected);
     enqueueExecuteAgain(false);

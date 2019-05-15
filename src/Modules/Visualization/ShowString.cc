@@ -158,7 +158,7 @@ GeometryBaseHandle ShowString::buildGeometryObject(const std::string& text)
   std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(0));
   std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(0));
 
-  auto uniqueNodeID = get_id().id_ + "_showString_" + text;
+  auto uniqueNodeID = id().id_ + "_showString_" + text;
   auto vboName = uniqueNodeID + "VBO";
   auto iboName = uniqueNodeID + "IBO";
   auto passName = uniqueNodeID + "Pass";

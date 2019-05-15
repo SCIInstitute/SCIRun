@@ -43,34 +43,32 @@ MacroEditor::MacroEditor(QWidget* parent /* = 0 */) : QDockWidget(parent),
   scriptPlainTextEdit_(new CodeEditor(this))
 {
   setupUi(this);
-  gridLayout_2->addWidget(scriptPlainTextEdit_, 1, 1);
+  gridLayout_4->addWidget(scriptPlainTextEdit_, 0, 1);
   connect(macroListWidget_, SIGNAL(itemSelectionChanged()), this, SLOT(updateScriptEditor()));
   connect(scriptPlainTextEdit_, SIGNAL(textChanged()), this, SLOT(updateScripts()));
   connect(addPushButton_, SIGNAL(clicked()), this, SLOT(addMacro()));
   connect(removePushButton_, SIGNAL(clicked()), this, SLOT(removeMacro()));
+  connect(renamePushButton_, SIGNAL(clicked()), this, SLOT(renameMacro()));
   connect(runNowPushButton_, SIGNAL(clicked()), this, SLOT(runSelectedMacro()));
 
-  auto assignMenu = new QMenu(this);
+  buttons_ = {pushButton1_, pushButton2_, pushButton3_, pushButton4_, pushButton5_ };
   for (int i = 1; i <= 5; ++i)
   {
-    setupAssignToAction(assignMenu->addAction(QString::number(i)), i);
-  }
+    auto button = buttons_[i-1];
+    button->setProperty(Index, i);
+    dehighlightButton(button);
 
-  assignToButtonPushButton_->setMenu(assignMenu);
+    connect(button, SIGNAL(clicked()), this, SLOT(assignToButton()));
+  }
 }
 
 const char* MacroEditor::Index = "macroIndex";
 static int macroIndexInt = Qt::UserRole;
 
-void MacroEditor::setupAssignToAction(QAction* action, int i)
-{
-  action->setProperty(Index, i);
-  connect(action, SIGNAL(triggered()), this, SLOT(assignToButton()));
-}
-
 void MacroEditor::assignToButton()
 {
-  auto index = sender()->property(Index).toInt();
+  auto button = qobject_cast<QPushButton*>(sender());
+  auto index = button->property(Index).toInt();
   auto selected = macroListWidget_->selectedItems();
   auto row = macroListWidget_->currentRow();
   if (!selected.isEmpty())
@@ -95,6 +93,11 @@ void MacroEditor::assignToButton()
     item->setData(macroIndexInt, index);
     macros_[row][MacroListItem::ButtonNumber] = QString::number(index);
     Q_EMIT macroButtonChanged(index, macros_[row][MacroListItem::Name]);
+    for (auto& b : buttons_)
+    {
+      dehighlightButton(b);
+    }
+    highlightButton(button);
   }
 }
 
@@ -174,6 +177,23 @@ void MacroEditor::removeMacro()
   }
 }
 
+void MacroEditor::renameMacro()
+{
+  bool ok;
+  auto name = QInputDialog::getText(this, "Rename Macro", "New macro name:", QLineEdit::Normal, "", &ok);
+  if (ok && !name.isEmpty())
+  {
+    auto row = macroListWidget_->currentRow();
+    for (auto& item : macroListWidget_->selectedItems())
+    {
+      item->setText(name);
+      macros_[row][MacroListItem::Name] = name;
+      auto index = macros_[row][MacroListItem::ButtonNumber].toInt();
+      Q_EMIT macroButtonChanged(index, name);
+    }
+  }
+}
+
 void MacroEditor::updateScriptEditor()
 {
   auto item = macroListWidget_->currentItem();
@@ -183,11 +203,31 @@ void MacroEditor::updateScriptEditor()
     auto key = item->text();
     auto scr = macros_[row][MacroListItem::Script];
     scriptPlainTextEdit_->setPlainText(!scr.isEmpty() ? scr : defaultScript);
+
+    auto buttonAssigned = macros_[row][MacroListItem::ButtonNumber].toInt();
+    for (auto& button : buttons_)
+    {
+      dehighlightButton(button);
+    }
+    if (buttonAssigned >= MIN_MACRO_INDEX && buttonAssigned <= MAX_MACRO_INDEX)
+    {
+      highlightButton(buttons_[buttonAssigned - 1]);
+    }
   }
   else
   {
     scriptPlainTextEdit_->setPlainText("");
   }
+}
+
+void MacroEditor::highlightButton(QPushButton* button) const
+{
+  button->setStyleSheet("QPushButton { background-color: green }");
+}
+
+void MacroEditor::dehighlightButton(QPushButton* button) const
+{
+  button->setStyleSheet("QPushButton { background-color: darkGray }");
 }
 
 void MacroEditor::updateScripts()

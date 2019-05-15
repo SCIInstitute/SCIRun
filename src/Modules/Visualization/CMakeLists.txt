@@ -30,6 +30,7 @@ SET(Modules_Visualization_SRCS
   CreateStandardColorMap.cc
   ShowField.cc
   ShowFieldGlyphs.cc
+  ShowFieldGlyphsPortHandler.cc
   ShowString.cc
   ShowColorMapModule.cc
   RescaleColorMap.cc
@@ -41,6 +42,7 @@ SET(Modules_Visualization_HEADERS
   CreateStandardColorMap.h
   ShowField.h
   ShowFieldGlyphs.h
+  ShowFieldGlyphsPortHandler.h
   ShowString.h
   ShowColorMapModule.h
   RescaleColorMap.h

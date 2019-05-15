@@ -46,9 +46,12 @@ InterfaceWithPythonDialog::InterfaceWithPythonDialog(const std::string& name, Mo
   {
     pythonCodePlainTextEdit_ = new CodeEditor(this);
     tabWidget->widget(0)->layout()->addWidget(pythonCodePlainTextEdit_);
+    pythonTopLevelCodePlainTextEdit_ = new CodeEditor(this);
+    tabWidget->widget(3)->layout()->addWidget(pythonTopLevelCodePlainTextEdit_);
   }
 
   addPlainTextEditManager(pythonCodePlainTextEdit_, Parameters::PythonCode);
+  addPlainTextEditManager(pythonTopLevelCodePlainTextEdit_, Parameters::PythonTopLevelCode);
 
   addSpinBoxManager(retryAttemptsSpinBox_, Parameters::NumberOfRetries);
   addSpinBoxManager(pollingIntervalSpinBox_, Parameters::PollingIntervalMilliseconds);

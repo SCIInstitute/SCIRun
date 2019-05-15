@@ -32,10 +32,6 @@ SET(Interface_Modules_Visualization_FORMS
   GenerateStreamLines.ui
   ShowField.ui
   ShowFieldGlyphs.ui
-  ShowFieldGlyphsScalarTab.ui
-  ShowFieldGlyphsVectorTab.ui
-  ShowFieldGlyphsTensorTab.ui
-  ShowFieldGlyphsSecondaryTab.ui
   ShowString.ui
   ShowColorMap.ui
   RescaleColorMap.ui
@@ -49,9 +45,6 @@ SET(Interface_Modules_Visualization_HEADERS
   share.h
   ShowFieldDialog.h
   ShowFieldGlyphsDialog.h
-  ShowFieldGlyphsScalarTabDialog.h
-  ShowFieldGlyphsVectorTabDialog.h
-  ShowFieldGlyphsTensorTabDialog.h
   ShowStringDialog.h
   ShowColorMapDialog.h
   RescaleColorMapDialog.h
@@ -64,9 +57,6 @@ SET(Interface_Modules_Visualization_SOURCES
   GenerateStreamLinesDialog.cc
   ShowFieldDialog.cc
   ShowFieldGlyphsDialog.cc
-  ShowFieldGlyphsScalarTabDialog.cc
-  ShowFieldGlyphsVectorTabDialog.cc
-  ShowFieldGlyphsTensorTabDialog.cc
   ShowStringDialog.cc
   ShowColorMapDialog.cc
   RescaleColorMapDialog.cc
