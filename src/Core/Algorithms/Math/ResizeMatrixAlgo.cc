@@ -27,7 +27,6 @@ DEALINGS IN THE SOFTWARE.
 
 
 #include <Core/Algorithms/Math/ResizeMatrixAlgo.h>
-#include<Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -51,7 +50,6 @@ ResizeMatrixAlgo::ResizeMatrixAlgo()
   addParameter(Parameters::NoOfRows, 1);
   addParameter(Parameters::NoOfColumns, 1);
   addOption(Parameters::Major,"Row","Row|Column");
-
 }
 
 AlgorithmOutput ResizeMatrixAlgo::run(const AlgorithmInput& input) const
@@ -64,7 +62,7 @@ AlgorithmOutput ResizeMatrixAlgo::run(const AlgorithmInput& input) const
   std::string major=getOption(Parameters::Major);
   DenseMatrixHandle dense=castMatrix::toDense(inputMatrix);
   DenseMatrixHandle denseMat(new DenseMatrix(*dense));
-  
+
   if(major=="Column")
   {
     denseMat->transposeInPlace();
@@ -73,9 +71,9 @@ AlgorithmOutput ResizeMatrixAlgo::run(const AlgorithmInput& input) const
 
   Map<MatrixXd> result(denseMat->data(),columns,rows);
   DenseMatrixHandle outputArray(new DenseMatrix(result.matrix()));
-  
+
   outputArray->transposeInPlace();
-  
+
   if(denseMat->rows()*denseMat->cols() != rows*columns)
   {
     warning("Input size does not match the size of the Output Matrix, Matrix will be padded with zeros or cropped up.");
@@ -86,10 +84,10 @@ AlgorithmOutput ResizeMatrixAlgo::run(const AlgorithmInput& input) const
       resultMatrix[i]=0;
     }
   }
-  
+
   if(major=="Column")
     outputArray->transposeInPlace();
-  
+
   AlgorithmOutput output;
   output[Variables::OutputMatrix]=outputArray;
   return output;

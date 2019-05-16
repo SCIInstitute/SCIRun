@@ -94,6 +94,7 @@ SET(Modules_Legacy_Fields_HEADERS
   CalculateMeshCenter.h
   CreateImage.h
   GetCentroidsFromMesh.h
+  SmoothVecFieldMedian.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -106,7 +107,7 @@ SET(Modules_Legacy_Fields_SRCS
   CalculateMeshCenter.cc
   #GetDomainStructure.cc
   RegisterWithCorrespondences.cc
-  #SmoothVecFieldMedian.cc
+  SmoothVecFieldMedian.cc
   SetFieldDataToConstantValue.cc
   RemoveUnusedNodes.cc
   MapFieldDataOntoNodes.cc

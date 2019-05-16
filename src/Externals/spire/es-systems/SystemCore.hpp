@@ -30,6 +30,7 @@ public:
 class SCISHARE SystemCore
 {
 public:
+  std::string toString(std::string prefix) const;
 
   /// Perform requested additions and removals of systems that occured
   /// during the frame.

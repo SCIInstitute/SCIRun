@@ -123,7 +123,7 @@ void MatlabFileIndexModule::executeImpl(const StringPortName<0>& filenameIn, con
   try
   {
     ScopedMatlabFileReader smfr(filename);
-    for (int p=0; p < num_output_ports() - 1; ++p)
+    for (int p = 0; p < numOutputPorts() - 1; ++p)
     {
       // Now read the matrix from file
       // The next function will open, read, and close the file

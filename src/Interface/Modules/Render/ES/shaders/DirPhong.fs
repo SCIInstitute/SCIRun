@@ -37,7 +37,7 @@
 uniform vec3    uCamViewVec;        // Camera 'at' vector in world space
 uniform vec4    uAmbientColor;      // Ambient color
 uniform vec4    uDiffuseColor;      // Diffuse color
-uniform vec4    uSpecularColor;     // Specular color     
+uniform vec4    uSpecularColor;     // Specular color
 uniform float   uSpecularPower;     // Specular power
 uniform vec3    uLightDirWorld0;     // Directional light (world space).
 uniform vec3    uLightDirWorld1;     // Directional light (world space).
@@ -80,23 +80,23 @@ vec4 calculate_lighting(vec3 lightDirWorld, vec3 lightColor)
   // Remember to always negate the light direction for these lighting calculations.
   vec3  invLightDir = -lightDirWorld;
   vec3  normal      = normalize(vNormal);
-  
+
   // Note, the following is a hack due to legacy meshes still being supported.
   // We light the object as if it was double sided. We choose the normal based
   // on the normal that yields the largest diffuse component.
   float diffuse     = max(0.0, dot(normal, invLightDir));
   float diffuseInv  = max(0.0, dot(-normal, invLightDir));
-  
+
   if (diffuse < diffuseInv)
   {
     diffuse = diffuseInv;
     normal = -normal;
   }
-  
+
   vec3  reflection  = reflect(invLightDir, normal);
   float specular    = max(0.0, dot(reflection, uCamViewVec));
   specular          = pow(specular, uSpecularPower);
-  
+
   return vec4(lightColor * (diffuse * uDiffuseColor.rgb + specular * uSpecularColor.rgb), 0.0);
 }
 
@@ -164,7 +164,7 @@ void main()
     fp.y = uFogSettings.y;
     fp.z = uFogSettings.z;
     fp.w = abs(vFogCoord.z/vFogCoord.w);
-    
+
     float fog_factor;
     fog_factor = (fp.z-fp.w)/(fp.z-fp.y);
     fog_factor = 1.0 - clamp(fog_factor, 0.0, 1.0);
@@ -173,4 +173,3 @@ void main()
       clamp(uFogColor.xyz, 0.0, 1.0), fog_factor);
   }
 }
-

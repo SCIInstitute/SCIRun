@@ -327,7 +327,7 @@ namespace
 {
   ModuleId id(ModuleHandle mod)
   {
-    return mod ? mod->get_id() : ModuleId();
+    return mod ? mod->id() : ModuleId();
   }
 }
 
@@ -381,8 +381,17 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   connect(this, SIGNAL(signalExecuteButtonIconChangeToStop()), this, SLOT(changeExecuteButtonToStop()));
 
   auto oldName = theModule->legacyModuleName();
-  if (theModule->get_module_name() != oldName)
+  if (theModule->name() != oldName)
     setToolTip("Converted version of module " + QString::fromStdString(oldName));
+
+  if (theModule->isDeprecated())
+  {
+    QMessageBox::warning(nullptr,
+      "Module deprecation alert",
+      tr("Module %1 is deprecated, please use this replacement instead: %2")
+        .arg(QString::fromStdString(theModule->name()))
+        .arg(QString::fromStdString(theModule->replacementModuleName())));
+  }
 }
 
 int ModuleWidget::buildDisplay(ModuleWidgetDisplayBase* display, const QString& name)
@@ -411,7 +420,7 @@ void ModuleWidget::setupLogging(ModuleErrorDisplayer* displayer)
   LoggerHandle logger(boost::make_shared<ModuleLogger>(logWindow_));
   theModule_->setLogger(logger);
   theModule_->setUpdaterFunc(boost::bind(&ModuleWidget::updateProgressBarSignal, this, _1));
-  if (theModule_->has_ui())
+  if (theModule_->hasUI())
     theModule_->setUiToggleFunc([this](bool b){ dockable_->setVisible(b); });
 }
 
@@ -427,7 +436,7 @@ void ModuleWidget::setupDisplayWidgets(ModuleWidgetDisplayBase* display, const Q
     display->setupSpecial();
   }
   display->setupProgressBar();
-  display->setupButtons(theModule_->has_ui(), this);
+  display->setupButtons(theModule_->hasUI(), this);
 }
 
 #if defined (WIN32)
@@ -535,9 +544,9 @@ void ModuleWidget::setupModuleActions()
   connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
   if (isViewScene_
     || theModule_->hasDynamicPorts()  //TODO: buggy combination, will disable for now. Fix is #1035
-    || theModule_->get_id().name_ == "Subnet")
+    || theModule_->id().name_ == "Subnet")
     actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Duplicate"));
-  if (theModule_->get_id().name_ == "Subnet")
+  if (theModule_->id().name_ == "Subnet")
     actionsMenu_->getMenu()->removeAction(actionsMenu_->getAction("Replace With..."));
 
   connectNoteEditorToAction(actionsMenu_->getAction("Notes"));
@@ -586,7 +595,7 @@ void ModuleWidget::fillReplaceWithMenu(QMenu* menu)
     return;
 
   menu->clear();
-  LOG_DEBUG("Filling menu for {}", theModule_->get_module_name());
+  LOG_DEBUG("Filling menu for {}", theModule_->name());
   auto replacements = Application::Instance().controller()->possibleReplacements(this->theModule_);
   auto isReplacement = [&](const ModuleDescription& md) { return replacements.find(md.lookupInfo_) != replacements.end(); };
   fillMenuWithFilteredModuleActions(menu, Application::Instance().controller()->getAllAvailableModuleDescriptions(),
@@ -607,7 +616,7 @@ void ModuleWidget::replaceModuleWith()
 void ModuleWidget::replaceMe()
 {
   if (!executedOnce_)
-    Q_EMIT replaceModuleWith(theModule_, theModule_->get_module_name());
+    Q_EMIT replaceModuleWith(theModule_, theModule_->name());
   else
   {
     setStartupNote("MODULE FATAL ERROR, DO NOT USE THIS INSTANCE. \nPlease manually replace module for proper execution.");
@@ -636,7 +645,7 @@ class PortBuilder
 public:
   void buildInputs(ModuleWidget* widget, const ModuleInfoProvider& moduleInfoProvider)
   {
-    const auto moduleId = moduleInfoProvider.get_id();
+    const auto moduleId = moduleInfoProvider.id();
     size_t i = 0;
     const auto& inputs = moduleInfoProvider.inputPorts();
     for (const auto& port : inputs)
@@ -673,7 +682,7 @@ public:
   }
   void buildOutputs(ModuleWidget* widget, const ModuleInfoProvider& moduleInfoProvider)
   {
-    const ModuleId moduleId = moduleInfoProvider.get_id();
+    const ModuleId moduleId = moduleInfoProvider.id();
     size_t i = 0;
     for (const auto& port : moduleInfoProvider.outputPorts())
     {
@@ -703,7 +712,7 @@ void ModuleWidget::createInputPorts(const ModuleInfoProvider& moduleInfoProvider
 
 void ModuleWidget::printInputPorts(const ModuleInfoProvider& moduleInfoProvider) const
 {
-  const auto moduleId = moduleInfoProvider.get_id();
+  const auto moduleId = moduleInfoProvider.id();
   std::cout << "Module input ports: " << moduleId << std::endl;
   size_t i = 0;
   for (const auto& port : moduleInfoProvider.inputPorts())
@@ -1137,7 +1146,7 @@ double ModuleWidget::highResolutionExpandFactor_ = 1;
 
 void ModuleWidget::makeOptionsDialog()
 {
-  if (theModule_->has_ui())
+  if (theModule_->hasUI())
   {
     if (!dialog_)
     {
@@ -1299,7 +1308,7 @@ void ModuleWidget::updateModuleTime()
 
 void ModuleWidget::launchDocumentation()
 {
-  openUrl(QString::fromStdString(theModule_->helpPageUrl()), "module help page");
+  openUrl(QString::fromStdString(theModule_->newHelpPageUrl()), "module help page");
 }
 
 void ModuleWidget::setStartupNote(const QString& text)
@@ -1423,7 +1432,7 @@ void ModuleWidget::changeExecuteButtonToPlay()
 
 void ModuleWidget::stopButtonPushed()
 {
-  Q_EMIT interrupt(theModule_->get_id());
+  Q_EMIT interrupt(theModule_->id());
 }
 
 void ModuleWidget::movePortWidgets(int oldIndex, int newIndex)
@@ -1532,7 +1541,7 @@ void ModuleWidget::setExecutionDisabled(bool disabled)
 
 void ModuleWidget::incomingConnectionStateChanged(bool disabled, int index)
 {
-  if (index < theModule_->num_input_ports())
+  if (index < theModule_->numInputPorts())
   {
     theModule_->inputPorts()[index]->connection(0)->setDisable(disabled);
   }

@@ -73,9 +73,9 @@ void ViewScene::setStateDefaults()
   state->setValue(BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
   state->setValue(Ambient, 0.2);
   state->setValue(Diffuse, 1.0);
-  state->setValue(Specular, 0.4);
+  state->setValue(Specular, 0.0);
   state->setValue(Shine, 1.0);
-  state->setValue(Emission, 1.0);
+  state->setValue(Emission, 0.0);
   state->setValue(FogOn, false);
   state->setValue(ObjectsOnly, true);
   state->setValue(UseBGColor, true);
@@ -166,11 +166,11 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     return;
   //lock for state modification
   {
-    LOG_DEBUG("ViewScene::asyncExecute {} before locking", get_id().id_);
+    LOG_DEBUG("ViewScene::asyncExecute {} before locking", id().id_);
     Guard lock(mutex_.get());
     get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
 
-    LOG_DEBUG("ViewScene::asyncExecute {} after locking", get_id().id_);
+    LOG_DEBUG("ViewScene::asyncExecute {} after locking", id().id_);
 
     auto geom = boost::dynamic_pointer_cast<GeometryObject>(data);
     if (!geom)
