@@ -36,22 +36,20 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
-//using namespace SCIRun::Core::Algorithms::Visualization;
 
 ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent), vectorTabIndex_(-1), scalarTabIndex_(-1), tensorTabIndex_(-1)
+  : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  fixSize();
 
-  addLineEditManager(lineEdit, ShowFieldGlyphs::FieldName);
   setupVectorsTab();
   setupScalarsTab();
   setupTensorsTab();
-  WidgetStyleMixin::tabStyle(this->displayOptionsTabs_);
 
+  addLineEditManager(lineEdit, ShowFieldGlyphs::FieldName);
+  WidgetStyleMixin::tabStyle(this->displayOptionsTabs_);
 
   createExecuteInteractivelyToggleAction();
 
@@ -83,9 +81,14 @@ void ShowFieldGlyphsDialog::pullSpecial()
     static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
     static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
 
-  checkTabs();
+  // Switch tabs
+  if(state_->getValue(ShowFieldGlyphs::ShowScalarTab).toBool())
+    displayOptionsTabs_->setCurrentIndex(0);
+  else if(state_->getValue(ShowFieldGlyphs::ShowVectorTab).toBool())
+    displayOptionsTabs_->setCurrentIndex(1);
+  if(state_->getValue(ShowFieldGlyphs::ShowTensorTab).toBool())
+    displayOptionsTabs_->setCurrentIndex(2);
 }
-
 
 void ShowFieldGlyphsDialog::assignDefaultMeshColor()
 {
@@ -103,162 +106,132 @@ void ShowFieldGlyphsDialog::pushColor()
   state_->setValue(ShowFieldGlyphs::DefaultMeshColor, ColorRGB(defaultMeshColor_.redF(), defaultMeshColor_.greenF(), defaultMeshColor_.blueF()).toString());
 }
 
-void ShowFieldGlyphsDialog::checkTabs()
-{
-  // Show the vector tab
-  if (state_->getValue(ShowFieldGlyphs::ShowVectorTab).toBool())
-  {
-    if (vectorTabIndex_ < 0)
-    {
-      displayOptionsTabs_->addTab(vectorTab_, tr("Vectors"));
-      vectorTabIndex_ = displayOptionsTabs_->count() - 1;
-    }
-  }
-  else
-  {
-    if (vectorTabIndex_ > 0)
-    {
-      displayOptionsTabs_->removeTab(vectorTabIndex_);
-      if (scalarTabIndex_ > vectorTabIndex_)
-        --scalarTabIndex_;
-      if (tensorTabIndex_ > vectorTabIndex_)
-        --tensorTabIndex_;
-      vectorTabIndex_ = -1;
-    }
-  }
-  // Show the scalar tab
-  if (state_->getValue(ShowFieldGlyphs::ShowScalarTab).toBool())
-  {
-    if (scalarTabIndex_ < 0)
-    {
-      displayOptionsTabs_->addTab(scalarTab_, tr("Scalars"));
-      scalarTabIndex_ = displayOptionsTabs_->count() - 1;
-    }
-  }
-  else
-  {
-    if (scalarTabIndex_ > 0)
-    {
-      displayOptionsTabs_->removeTab(scalarTabIndex_);
-      if (vectorTabIndex_ > scalarTabIndex_)
-        --vectorTabIndex_;
-      if (tensorTabIndex_ > scalarTabIndex_)
-        --tensorTabIndex_;
-      scalarTabIndex_ = -1;
-    }
-  }
-  // Show the tensor tab
-  if (state_->getValue(ShowFieldGlyphs::ShowTensorTab).toBool())
-  {
-    if (tensorTabIndex_ < 0)
-    {
-      displayOptionsTabs_->addTab(tensorTab_, tr("Tensors"));
-      tensorTabIndex_ = displayOptionsTabs_->count() - 1;
-    }
-  }
-  else
-  {
-    if (tensorTabIndex_ > 0)
-    {
-      displayOptionsTabs_->removeTab(tensorTabIndex_);
-      if (vectorTabIndex_ > tensorTabIndex_)
-        --vectorTabIndex_;
-      if (scalarTabIndex_ > tensorTabIndex_)
-        --scalarTabIndex_;
-      tensorTabIndex_ = -1;
-    }
-  }
-
-  displayOptionsTabs_->setCurrentIndex(displayOptionsTabs_->count() - 1);
-}
-
 void ShowFieldGlyphsDialog::setupScalarsTab()
 {
-  scalarTab_ = new ShowFieldGlyphsScalarTabDialog(this);
-  displayOptionsTabs_->addTab(scalarTab_, tr("Scalars"));
-  displayOptionsTabs_->removeTab(1);
-  addCheckableButtonManager(scalarTab_->showScalarsCheckBox_, ShowFieldGlyphs::ShowScalars);
-  addCheckableButtonManager(scalarTab_->enableTransparencyScalarsCheckBox_, ShowFieldGlyphs::ScalarsTransparency);
-  addDoubleSpinBoxManager(scalarTab_->scalarsTransparencyDoubleSpinBox_, ShowFieldGlyphs::ScalarsTransparencyValue);
-  addDoubleSpinBoxManager(scalarTab_->scaleScalarsDoubleSpinBox_, ShowFieldGlyphs::ScalarsScale);
-  addSpinBoxManager(scalarTab_->scalarsResolutionSpinBox_, ShowFieldGlyphs::ScalarsResolution);
-  addRadioButtonGroupManager({ scalarTab_->defaultScalarsColoringRButton_, scalarTab_->colormapLookupScalarsColoringRButton_,
-    scalarTab_->conversionRGBScalarsColoringRButton_ }, ShowFieldGlyphs::ScalarsColoring);
-  addRadioButtonGroupManager({ scalarTab_->scalarsAsPointsRButton_, scalarTab_->scalarsAsSpheresRButton_,
-    scalarTab_->scalarsAsBoxesRButton_, scalarTab_->scalarsAsAxisRButton_ }, ShowFieldGlyphs::ScalarsDisplayType);
+  // Show Scalars
+  addCheckableButtonManager(this->showScalarsCheckBox_, ShowFieldGlyphs::ShowScalars);
+  // Display Type
+  addComboBoxManager(this->scalarsDisplayTypeComboBox_, ShowFieldGlyphs::ScalarsDisplayType);
+  this->scalarsDisplayTypeComboBox_->setCurrentIndex(0);
+  // Coloring
+  addComboBoxManager(scalarsColorTypeComboBox_, ShowFieldGlyphs::ScalarsColoring);
+  // Coloring Data Input
+  addComboBoxManager(this->scalarsColoringInputComboBox_, ShowFieldGlyphs::ScalarsColoringDataInput);
+  // Transparency
+  addRadioButtonGroupManager({ this->scalarsTransparencyOffRButton_, this->scalarsUniformTransparencyRButton_}, ShowFieldGlyphs::ScalarsTransparency);
+  addDoubleSpinBoxManager(this->scalarsTransparencyDoubleSpinBox_, ShowFieldGlyphs::ScalarsUniformTransparencyValue);
+  // Transparency Data Input
+  //  addComboBoxManager(this->scalarsTransparencyInputComboBox_, ShowFieldGlyphs::ScalarsTransparencyDataInput);
+  // Scale
+  addDoubleSpinBoxManager(this->scaleScalarsDoubleSpinBox_, ShowFieldGlyphs::ScalarsScale);
+  // Resolution
+  addSpinBoxManager(this->scalarsResolutionSpinBox_, ShowFieldGlyphs::ScalarsResolution);
+  // Threshold
+  addDoubleSpinBoxManager(this->scalarsThresholdDoubleSpinBox_, ShowFieldGlyphs::ScalarsThreshold);
 
-  connectButtonToExecuteSignal(scalarTab_->showScalarsCheckBox_);
-  connectButtonToExecuteSignal(scalarTab_->enableTransparencyScalarsCheckBox_);
-  connectButtonToExecuteSignal(scalarTab_->defaultScalarsColoringRButton_);
-  connectButtonToExecuteSignal(scalarTab_->colormapLookupScalarsColoringRButton_);
-  connectButtonToExecuteSignal(scalarTab_->conversionRGBScalarsColoringRButton_);
-  connectButtonToExecuteSignal(scalarTab_->scalarsAsPointsRButton_);
-  connectButtonToExecuteSignal(scalarTab_->scalarsAsSpheresRButton_);
-  //connectButtonToExecuteSignal(scalarTab_->scalarsAsBoxesRButton_);
-  //connectButtonToExecuteSignal(scalarTab_->scalarsAsAxisRButton_);
+  // Execute if any changed
+  connectButtonToExecuteSignal(this->showScalarsCheckBox_);
+  connectButtonToExecuteSignal(this->scalarsTransparencyOffRButton_);
+  connectButtonToExecuteSignal(this->scalarsUniformTransparencyRButton_);
+
+  // Text Labels
+  this->scalarColorTypeLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->scalarColorInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->normalizeScalarsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->scalarScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
 }
 
 void ShowFieldGlyphsDialog::setupVectorsTab()
 {
-  vectorTab_ = new ShowFieldGlyphsVectorTabDialog(this);
-  displayOptionsTabs_->addTab(vectorTab_, tr("Vectors"));
-  displayOptionsTabs_->removeTab(1);
-  addCheckableButtonManager(vectorTab_->showVectorsCheckBox_, ShowFieldGlyphs::ShowVectors);
-  addCheckableButtonManager(vectorTab_->enableTransparencyVectorsCheckBox_, ShowFieldGlyphs::VectorsTransparency);
-  addDoubleSpinBoxManager(vectorTab_->vectorsTransparencyDoubleSpinBox_, ShowFieldGlyphs::VectorsTransparencyValue);
-  addDoubleSpinBoxManager(vectorTab_->scaleVectorsDoubleSpinBox_, ShowFieldGlyphs::VectorsScale);
-  addSpinBoxManager(vectorTab_->vectorsResolutionSpinBox_, ShowFieldGlyphs::VectorsResolution);
-  addRadioButtonGroupManager({ vectorTab_->defaultVectorsColoringRButton_, vectorTab_->colormapLookupVectorsColoringRButton_,
-    vectorTab_->conversionRGBVectorsColoringRButton_ }, ShowFieldGlyphs::VectorsColoring);
-  addRadioButtonGroupManager({ vectorTab_->vectorsAsLinesRButton_, vectorTab_->vectorsAsNeedlesRButton_,
-    vectorTab_->vectorsAsCometsRButton_, vectorTab_->vectorsAsConesRButton_, vectorTab_->vectorsAsArrowsRButton_,
-    vectorTab_->vectorsAsDisksRButton_, vectorTab_->vectorsAsRingsRButton_, vectorTab_->vectorsAsSpringsRButton_ },
-    ShowFieldGlyphs::VectorsDisplayType);
-  addCheckableButtonManager(vectorTab_->normalizeVectorsCheckBox_, ShowFieldGlyphs::NormalizeGlyphs);
-  addCheckableButtonManager(vectorTab_->bidirectionalVectorsCheckBox_, ShowFieldGlyphs::RenderBidirectionaly);
-  addCheckableButtonManager(vectorTab_->renderVectorsBelowThresholdCheckBox_, ShowFieldGlyphs::RenderGlyphsBellowThreshold);
-  addDoubleSpinBoxManager(vectorTab_->thresholdDoubleSpinBox_, ShowFieldGlyphs::Threshold);
+  // Show Vectors
+  addCheckableButtonManager(this->showVectorsCheckBox_, ShowFieldGlyphs::ShowVectors);
+  // Display Type
+  addComboBoxManager(this->vectorsDisplayTypeComboBox_, ShowFieldGlyphs::VectorsDisplayType);
+  // Coloring
+  addComboBoxManager(this->vectorsColorTypeComboBox_, ShowFieldGlyphs::VectorsColoring);
+  // Coloring Data Input
+  addComboBoxManager(this->vectorsColoringInputComboBox_, ShowFieldGlyphs::VectorsColoringDataInput);
+  // Transparency
+  addRadioButtonGroupManager({ this->vectorsTransparencyOffRButton_, this->vectorsUniformTransparencyRButton_}, ShowFieldGlyphs::VectorsTransparency);
+  addDoubleSpinBoxManager(this->vectorsTransparencyDoubleSpinBox_, ShowFieldGlyphs::VectorsUniformTransparencyValue);
+  // Transparency Data Input
+  //  addComboBoxManager(this->vectorsTransparencyInputComboBox_, ShowFieldGlyphs::VectorsTransparencyDataInput);
+  // Normalize
+  addCheckableButtonManager(this->normalizeVectorsCheckBox_, ShowFieldGlyphs::NormalizeVectors);
+  // Scale
+  addDoubleSpinBoxManager(this->scaleVectorsDoubleSpinBox_, ShowFieldGlyphs::VectorsScale);
+  // Resolution
+  addSpinBoxManager(this->vectorsResolutionSpinBox_, ShowFieldGlyphs::VectorsResolution);
+  // Threshold
+  addCheckableButtonManager(this->renderVectorsBelowThresholdCheckBox_, ShowFieldGlyphs::RenderVectorsBelowThreshold);
+  addDoubleSpinBoxManager(this->vectorsThresholdDoubleSpinBox_, ShowFieldGlyphs::VectorsThreshold);
+  // Radius/Width
+  addComboBoxManager(this->secondaryVectorParameterPortComboBox_, ShowFieldGlyphs::SecondaryVectorParameterDataInput);
+  addDoubleSpinBoxManager(this->secondaryVectorParameterDoubleSpinBox_, ShowFieldGlyphs::SecondaryVectorParameterScale);
+  // Arrow Head Ratio
+  addDoubleSpinBoxManager(this->arrowHeadRatioDoubleSpinBox_, ShowFieldGlyphs::ArrowHeadRatio);
+  // Bidirectional
+  addCheckableButtonManager(this->bidirectionalVectorsCheckBox_, ShowFieldGlyphs::RenderBidirectionaly);
 
-  connectButtonToExecuteSignal(vectorTab_->showVectorsCheckBox_);
-  connectButtonToExecuteSignal(vectorTab_->enableTransparencyVectorsCheckBox_);
-  connectButtonToExecuteSignal(vectorTab_->defaultVectorsColoringRButton_);
-  connectButtonToExecuteSignal(vectorTab_->colormapLookupVectorsColoringRButton_);
-  connectButtonToExecuteSignal(vectorTab_->conversionRGBVectorsColoringRButton_);
-  connectButtonToExecuteSignal(vectorTab_->vectorsAsLinesRButton_);
-  connectButtonToExecuteSignal(vectorTab_->vectorsAsNeedlesRButton_);
-  connectButtonToExecuteSignal(vectorTab_->vectorsAsCometsRButton_);
-  connectButtonToExecuteSignal(vectorTab_->vectorsAsConesRButton_);
-  connectButtonToExecuteSignal(vectorTab_->vectorsAsArrowsRButton_);
-  //connectButtonToExecuteSignal(vectorTab_->vectorsAsDisksRButton_);
-  //connectButtonToExecuteSignal(vectorTab_->vectorsAsRingsRButton_);
-  //connectButtonToExecuteSignal(vectorTab_->vectorsAsSpringsRButton_);
-  connectButtonToExecuteSignal(vectorTab_->normalizeVectorsCheckBox_);
-  connectButtonToExecuteSignal(vectorTab_->bidirectionalVectorsCheckBox_);
-  connectButtonToExecuteSignal(vectorTab_->renderVectorsBelowThresholdCheckBox_);
+  // Execute if any changed
+  connectButtonToExecuteSignal(this->showVectorsCheckBox_);
+  connectButtonToExecuteSignal(this->vectorsTransparencyOffRButton_);
+  connectButtonToExecuteSignal(this->vectorsUniformTransparencyRButton_);
+  connectButtonToExecuteSignal(this->normalizeVectorsCheckBox_);
+  connectButtonToExecuteSignal(this->renderVectorsBelowThresholdCheckBox_);
+  connectButtonToExecuteSignal(this->bidirectionalVectorsCheckBox_);
+
+  // Text Labels
+  this->vectorColorTypeLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->vectorColorInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->normalizeVectorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->vectorScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->secondaryVectorParameterInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->secondaryVectorParameterScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->bidirectionalVectorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->springsMajorRadiusInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->springsMajorRadiusScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->springsMinorRadiusInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->springsMinorRadiusScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->springsPitchInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->springsPitchScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
 }
 
 void ShowFieldGlyphsDialog::setupTensorsTab()
 {
-  tensorTab_ = new ShowFieldGlyphsTensorTabDialog(this);
-  displayOptionsTabs_->addTab(tensorTab_, tr("Tensors"));
-  displayOptionsTabs_->removeTab(1);
-  addCheckableButtonManager(tensorTab_->showTensorsCheckBox_, ShowFieldGlyphs::ShowTensors);
-  addCheckableButtonManager(tensorTab_->enableTransparencyTensorsCheckBox_, ShowFieldGlyphs::TensorsTransparency);
-  addDoubleSpinBoxManager(tensorTab_->tensorsTransparencyDoubleSpinBox_, ShowFieldGlyphs::TensorsTransparencyValue);
-  addDoubleSpinBoxManager(tensorTab_->scaleTensorsDoubleSpinBox_, ShowFieldGlyphs::TensorsScale);
-  addSpinBoxManager(tensorTab_->tensorsResolutionSpinBox_, ShowFieldGlyphs::TensorsResolution);
-  addRadioButtonGroupManager({ tensorTab_->defaultTensorsColoringRButton_, tensorTab_->colormapLookupTensorsColoringRButton_,
-    tensorTab_->conversionRGBTensorsColoringRButton_ }, ShowFieldGlyphs::TensorsColoring);
-  addRadioButtonGroupManager({ tensorTab_->tensorsAsBoxesRButton_, tensorTab_->tensorsAsColoredBoxesRButton_,
-                               tensorTab_->tensorsAsEllipsoidsRButton_, tensorTab_->tensorsAsSuperquadricsRButton_ }, ShowFieldGlyphs::TensorsDisplayType);
-  addCheckableButtonManager(tensorTab_->normalizeTensorsCheckBox_, ShowFieldGlyphs::NormalizeGlyphs);
-  addCheckableButtonManager(tensorTab_->renderTensorsBelowThresholdCheckBox_, ShowFieldGlyphs::RenderGlyphsBellowThreshold);
-  addDoubleSpinBoxManager(tensorTab_->thresholdDoubleSpinBox_, ShowFieldGlyphs::Threshold);
+  // Show Tensors
+  addCheckableButtonManager(this->showTensorsCheckBox_, ShowFieldGlyphs::ShowTensors);
+  // Display Type
+  addComboBoxManager(this->tensorsDisplayTypeComboBox_, ShowFieldGlyphs::TensorsDisplayType);
+  // Coloring
+  addComboBoxManager(this->tensorsColorTypeComboBox_, ShowFieldGlyphs::TensorsColoring);
+  // Coloring Data Input
+  addComboBoxManager(this->tensorsColoringInputComboBox_, ShowFieldGlyphs::TensorsColoringDataInput);
+  // Transparency
+  addRadioButtonGroupManager({ this->tensorsTransparencyOffRButton_, this->tensorsUniformTransparencyRButton_}, ShowFieldGlyphs::TensorsTransparency);
+  addDoubleSpinBoxManager(this->tensorsTransparencyDoubleSpinBox_, ShowFieldGlyphs::TensorsUniformTransparencyValue);
+  // Transparency Data Input
+  //  addComboBoxManager(this->tensorsTransparencyInputComboBox_, ShowFieldGlyphs::TensorsTransparencyDataInput);
+  // Normalize
+  addCheckableButtonManager(this->normalizeTensorsCheckBox_, ShowFieldGlyphs::NormalizeTensors);
+  // Scale
+  addDoubleSpinBoxManager(this->scaleTensorsDoubleSpinBox_, ShowFieldGlyphs::TensorsScale);
+  // Resolution
+  addSpinBoxManager(this->tensorsResolutionSpinBox_, ShowFieldGlyphs::TensorsResolution);
+  // Threshold
+  addCheckableButtonManager(this->renderVectorsBelowThresholdCheckBox_, ShowFieldGlyphs::RenderTensorsBelowThreshold);
+  addDoubleSpinBoxManager(this->tensorsThresholdDoubleSpinBox_, ShowFieldGlyphs::TensorsThreshold);
 
-  connectButtonToExecuteSignal(tensorTab_->showTensorsCheckBox_);
-  connectButtonToExecuteSignal(tensorTab_->enableTransparencyTensorsCheckBox_);
-  //connectButtonToExecuteSignal(tensorTab_->tensorsAsBoxesRButton_);
-  //connectButtonToExecuteSignal(tensorTab_->tensorsAsColoredBoxesRButton_);
-  connectButtonToExecuteSignal(tensorTab_->tensorsAsEllipsoidsRButton_);
-  //connectButtonToExecuteSignal(tensorTab_->tensorsAsSuperquadricsRButton_);
+  connectButtonToExecuteSignal(this->showTensorsCheckBox_);
+  connectButtonToExecuteSignal(this->tensorsTransparencyOffRButton_);
+  connectButtonToExecuteSignal(this->tensorsUniformTransparencyRButton_);
+  connectButtonToExecuteSignal(this->normalizeTensorsCheckBox_);
+  connectButtonToExecuteSignal(this->renderTensorsBelowThresholdCheckBox_);
+
+  // Text Labels
+  this->tensorSuperquadricsEmphasisSlider_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->tensorColorTypeLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->tensorColorInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->normalizeTensorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->tensorScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
 }
