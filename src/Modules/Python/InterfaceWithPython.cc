@@ -79,7 +79,9 @@ InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_)
   INITIALIZE_PORT(PythonField3);
   INITIALIZE_PORT(PythonString3);
 
+#ifdef BUILD_WITH_PYTHON
   translator_.reset(new InterfaceWithPythonCodeTranslatorImpl(id().id_, get_state()));
+#endif
 }
 
 void InterfaceWithPython::setStateDefaults()
