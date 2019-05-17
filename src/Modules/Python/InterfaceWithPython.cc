@@ -63,6 +63,7 @@ ALGORITHM_PARAMETER_DEF(Python, PythonOutputField3Name);
 MODULE_INFO_DEF(InterfaceWithPython, Python, SCIRun)
 
 Mutex InterfaceWithPython::lock_("InterfaceWithPython");
+bool InterfaceWithPython::matlabInitialized_{ false };
 
 InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_)
 {
@@ -146,9 +147,11 @@ void InterfaceWithPython::execute()
       auto code = state->getValue(Parameters::PythonCode).toString();
       auto convertedCode = translator_->translate(code);
       NetworkEditorPythonAPI::PythonModuleContextApiDisabler disabler;
-      if (convertedCode.isMatlab)
+      if (convertedCode.isMatlab && !matlabInitialized_)
       {
-        //TODO: insert top level call to start matlab engine
+        PythonInterpreter::Instance().run_string("import matlab.engine");
+        PythonInterpreter::Instance().run_string("__eng = matlab.engine.start_matlab()");
+        matlabInitialized_ = true;
       }
       PythonInterpreter::Instance().run_script(convertedCode.code);
     }

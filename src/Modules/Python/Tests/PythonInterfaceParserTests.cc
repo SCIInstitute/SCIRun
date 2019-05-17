@@ -254,14 +254,26 @@ TEST(PythonInterfaceParserTests, CanTranslateFirstSpecificMatlabBlock)
   EXPECT_TRUE(convertedCode2.isMatlab);
 
   static std::string expectedCode =
-  "import matlab.engine\n"
-  "eng = matlab.engine.start_matlab()\n"
-  "field1=convertfieldtomatlab(field1)\n"
-  "ofield = eng. scirun_test_field(field1, nargout=1)\n"
-  "ofield =convertfieldtopython(ofield )\n";
+  "__field1 = convertfieldtomatlab(field1)\n"
+  "__ofield = __eng.scirun_test_field(__field1, nargout=1)\n"
+  "ofield = convertfieldtopython(__ofield)\n";
 
   ASSERT_EQ(convertedCode2.code, expectedCode + "\n");
 }
+
+/*
+
+[PYTHON] x, y = f(a, b, c)
+[PYTHON]
+__field1=convertfieldtomatlab(a)
+__field2=convertfieldtomatlab( b)
+__field3=convertfieldtomatlab( c)
+__x, __y = eng.f(__field1, __field2, __field3, nargout=2)
+x = convertfieldtopython(__x)
+y = convertfieldtopython(__y)
+
+*/
+
 
 TEST(PythonInterfaceParserTests, CanTranslateBasicMatlabBlock)
 {
@@ -276,8 +288,6 @@ TEST(PythonInterfaceParserTests, CanTranslateBasicMatlabBlock)
   EXPECT_TRUE(convertedCode.isMatlab);
 
   static std::string expectedCode =
-  "import matlab.engine\n"
-  "__eng = matlab.engine.start_matlab()\n"
   "__i1 = convertfieldtomatlab(i1)\n"
   "__o1 = __eng.scirun_test_field_1(__i1, nargout=1)\n"
   "o1 = convertfieldtopython(__o1)\n";

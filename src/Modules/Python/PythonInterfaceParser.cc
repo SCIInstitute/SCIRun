@@ -150,38 +150,6 @@ void InterfaceWithPythonCodeTranslatorImpl::parsePart(PythonCode& blocks, const 
   }
 }
 
-/*
-TEST CASE: first case. Need to convert parsing code from python to C++
-
-input:
-*/
-//
-// static std::string input1 = "ofield = scirun_test_field(field1)";
-//
-// //output:
-// static std::string output1 =
-// "import matlab.engine\n"
-// "eng = matlab.engine.start_matlab()\n"
-// "field1=convertfieldtomatlab(field1)\n"
-// "ofield = eng. scirun_test_field(field1, nargout=1)\n"
-// "ofield =convertfieldtopython(ofield )\n"
-// "fieldOutput1 = ofield\n";
-//
-
-
-// PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::concatenateNormalBlocks(const PythonCode& codeList) const
-// {
-//   std::ostringstream ostr;
-//   for (const auto& block : codeList)
-//   {
-//     if (!block.isMatlab)
-//     {
-//       ostr << block.code << '\n';
-//     }
-//   }
-//   return {ostr.str(), false };
-// }
-
 PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::concatenateAndTranslateMatlabBlocks(const PythonCode& codeList) const
 {
   std::ostringstream ostr;
@@ -203,5 +171,28 @@ PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::concatenateAndTranslateMa
 
 std::string InterfaceWithPythonCodeTranslatorImpl::translateMatlabBlock(const PythonCodeBlock& block) const
 {
+  auto code = block.code;
+
+  static std::string matlabLineRegex = "(.*)=(.*)\\((.*)\\)";
+  static boost::regex matlabLine(matlabLineRegex);
+
+  boost::smatch what;
+  if (regex_match(code, what, matlabLine))
+  {
+    auto LHS = std::string(what[1]);
+    boost::trim(LHS);
+    auto func = std::string(what[2]);
+    boost::trim(func);
+    auto args = std::string(what[3]);
+    boost::trim(args);
+    
+    std::ostringstream o;
+    o << "__" << args << " = convertfieldtomatlab(" << args << ")\n" <<
+      "__" << LHS << " = __eng." << func << "(__" << args << ", nargout=1)\n" <<
+      LHS << " = convertfieldtopython(__" << LHS << ")\n";
+    return o.str();
+  }
+
+  logCritical("Error processing matlab block: {}", code);
   return block.code;
 }
