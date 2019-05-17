@@ -176,8 +176,7 @@ namespace SCIRun {
       void setOrientPosX(int pos)  {orientPosX = (pos-50)/100.0f;} //Remap 0:100 to -0.5:0.5
       void setOrientPosY(int pos)  {orientPosY = (pos-50)/100.0f;} //Remap 0:100 to -0.5:0.5
       void showOrientation(bool value) {showOrientation_ = value;}
-      void setBackgroundColor(QColor color)
-        {mCore.setBackgroundColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());}
+      void setBackgroundColor(const QColor& color);
       void setFogColor(const glm::vec4 &color) {mFogColor = color;}
       void setTransparencyRendertype(RenderState::TransparencySortType rType) {mRenderSortType = rType;}
 

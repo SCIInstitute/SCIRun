@@ -257,6 +257,11 @@ namespace SCIRun {
       updateCamera();
     }
 
+    void SRInterface::setBackgroundColor(const QColor& color)
+    {
+      mCore.setBackgroundColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+    }
+
     //----------------------------------------------------------------------------------------------
     void SRInterface::doAutoView()
     {
