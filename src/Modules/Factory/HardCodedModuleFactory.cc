@@ -69,8 +69,8 @@ ModuleDescriptionLookup::ModuleDescriptionLookup() : includeTestingModules_(fals
 
 ModuleDescription ModuleDescriptionLookup::lookupDescription(const ModuleLookupInfo& info) const
 {
-  auto iter = lookup_.find(info);
-  if (iter == lookup_.end())
+  auto iter = moduleLookup_.find(info);
+  if (iter == moduleLookup_.end())
   {
     /// @todo: log
     std::ostringstream ostr;
@@ -146,7 +146,7 @@ const ModuleDescriptionMap& HardCodedModuleFactory::getAllAvailableModuleDescrip
 
 const DirectModuleDescriptionLookupMap& HardCodedModuleFactory::getDirectModuleDescriptionLookupMap() const
 {
-  return impl_->lookup.lookup_;
+  return impl_->lookup.moduleLookup_;
 }
 
 bool HardCodedModuleFactory::moduleImplementationExists(const std::string& name) const

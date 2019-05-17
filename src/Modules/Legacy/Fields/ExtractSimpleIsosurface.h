@@ -36,13 +36,13 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-      class SCISHARE ExtractSimpleIsosurface : public Dataflow::Networks::Module,
+      class SCISHARE ExtractIsosurface : public Dataflow::Networks::Module,
         public Has2InputPorts<FieldPortTag, MatrixPortTag>,
         public Has2OutputPorts<FieldPortTag, MatrixPortTag>
       {
         CONVERTED_VERSION_OF_MODULE(ExtractIsosurface)
       public:
-        ExtractSimpleIsosurface();
+        ExtractIsosurface();
 
         virtual void execute() override;
         virtual void setStateDefaults() override;
