@@ -61,6 +61,7 @@ void ExtractIsosurface::setStateDefaults()
   setStateStringFromAlgo(Parameters::ListOfIsovalues);
   setStateIntFromAlgo(Parameters::QuantityOfIsovalues);
   setStateIntFromAlgo(Parameters::IsovalueListInclusiveExclusive);
+  setStateIntFromAlgo(Parameters::IsovalueQuantityFromField);
   get_state()->setValue(Parameters::IsovalueListString, std::string());
   get_state()->setValue(Parameters::IsovalueChoice, std::string("Single"));
 }
@@ -101,7 +102,7 @@ void ExtractIsosurface::execute()
             mat_iso->transposeInPlace();
           }
         }
-        
+
         std::ostringstream ostr;
         ostr << *mat_iso;
         state->setValue(Parameters::ListOfIsovalues, ostr.str());
@@ -140,8 +141,8 @@ void ExtractIsosurface::execute()
         int denom = inclusive ? num - 1 : num + 1;
         int minIndex = inclusive ? 0 : 1;
         int maxIndex = inclusive ? num : num + 1;
-        double di = (qmax - qmin) / denom;   
-          
+        double di = (qmax - qmin) / denom;
+
         for (int i = minIndex; i < maxIndex; i++)
         {
           isoDoubles.push_back(qmin + i * di);
@@ -155,14 +156,14 @@ void ExtractIsosurface::execute()
       std::ostringstream ostr;
       for (const auto& isos : isoDoubles)
         ostr << isos << "\n";
-      
+
       state->setValue(Parameters::IsovalueListString, ostr.str());
     }
 
     VariableList isos;
     std::transform(isoDoubles.begin(), isoDoubles.end(), std::back_inserter(isos), [](double x) { return makeVariable("iso", x); });
     algo().set(Parameters::Isovalues, isos);
-    
+
     auto output = algo().run(withInputData((InputField, field)));
     sendOutputFromAlgorithm(OutputField, output);
     sendOutputFromAlgorithm(OutputMatrix, output);

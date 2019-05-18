@@ -50,6 +50,7 @@ ALGORITHM_PARAMETER_DEF(Fields, Isovalues);
 ALGORITHM_PARAMETER_DEF(Fields, SingleIsoValue);
 ALGORITHM_PARAMETER_DEF(Fields, IsovalueChoice);
 ALGORITHM_PARAMETER_DEF(Fields, IsovalueListInclusiveExclusive);
+ALGORITHM_PARAMETER_DEF(Fields, IsovalueQuantityFromField);
 ALGORITHM_PARAMETER_DEF(Fields, ListOfIsovalues);
 ALGORITHM_PARAMETER_DEF(Fields, QuantityOfIsovalues);
 ALGORITHM_PARAMETER_DEF(Fields, IsovalueListString);
@@ -61,6 +62,7 @@ ExtractSimpleIsosurfaceAlgo::ExtractSimpleIsosurfaceAlgo()
   addParameter(Parameters::IsovalueListInclusiveExclusive, 0);
   addParameter(Parameters::ListOfIsovalues, std::string());
   addParameter(Parameters::QuantityOfIsovalues, 1);
+  addParameter(Parameters::IsovalueQuantityFromField, 1);
   addOption(Parameters::IsovalueChoice, "Single", "Single|List|Quantity");
 }
 
@@ -89,7 +91,7 @@ AlgorithmOutput ExtractSimpleIsosurfaceAlgo::run(const AlgorithmInput& input) co
 
   if (!run(field, iso_value_vector, output_field))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
-  
+
   DenseMatrixHandle output_matrix( new DenseMatrix(iso_value_vector.size(),1,0.0));
   for (size_t k=0;k<iso_value_vector.size();k++) {(*output_matrix)(k,0) = iso_value_vector[k];}
 
