@@ -44,6 +44,8 @@ namespace Fields {
   ALGORITHM_PARAMETER_DECL(QuantityOfIsovalues);
   ALGORITHM_PARAMETER_DECL(IsovalueListInclusiveExclusive);
   ALGORITHM_PARAMETER_DECL(IsovalueQuantityFromField);
+  ALGORITHM_PARAMETER_DECL(ManualMinimumIsovalue);
+  ALGORITHM_PARAMETER_DECL(ManualMaximumIsovalue);
   ALGORITHM_PARAMETER_DECL(Isovalues);
   ALGORITHM_PARAMETER_DECL(IsovalueChoice);
   ALGORITHM_PARAMETER_DECL(IsovalueListString);

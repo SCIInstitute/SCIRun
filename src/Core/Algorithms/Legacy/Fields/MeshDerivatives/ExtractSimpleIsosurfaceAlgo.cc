@@ -51,6 +51,8 @@ ALGORITHM_PARAMETER_DEF(Fields, SingleIsoValue);
 ALGORITHM_PARAMETER_DEF(Fields, IsovalueChoice);
 ALGORITHM_PARAMETER_DEF(Fields, IsovalueListInclusiveExclusive);
 ALGORITHM_PARAMETER_DEF(Fields, IsovalueQuantityFromField);
+ALGORITHM_PARAMETER_DEF(Fields, ManualMinimumIsovalue);
+ALGORITHM_PARAMETER_DEF(Fields, ManualMaximumIsovalue);
 ALGORITHM_PARAMETER_DEF(Fields, ListOfIsovalues);
 ALGORITHM_PARAMETER_DEF(Fields, QuantityOfIsovalues);
 ALGORITHM_PARAMETER_DEF(Fields, IsovalueListString);
@@ -63,6 +65,8 @@ ExtractSimpleIsosurfaceAlgo::ExtractSimpleIsosurfaceAlgo()
   addParameter(Parameters::ListOfIsovalues, std::string());
   addParameter(Parameters::QuantityOfIsovalues, 1);
   addParameter(Parameters::IsovalueQuantityFromField, 1);
+  addParameter(Parameters::ManualMaximumIsovalue, 0.0);
+  addParameter(Parameters::ManualMinimumIsovalue, 0.0);
   addOption(Parameters::IsovalueChoice, "Single", "Single|List|Quantity");
 }
 

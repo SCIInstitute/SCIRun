@@ -62,6 +62,8 @@ void ExtractIsosurface::setStateDefaults()
   setStateIntFromAlgo(Parameters::QuantityOfIsovalues);
   setStateIntFromAlgo(Parameters::IsovalueListInclusiveExclusive);
   setStateIntFromAlgo(Parameters::IsovalueQuantityFromField);
+  setStateDoubleFromAlgo(Parameters::ManualMaximumIsovalue);
+  setStateDoubleFromAlgo(Parameters::ManualMinimumIsovalue);
   get_state()->setValue(Parameters::IsovalueListString, std::string());
   get_state()->setValue(Parameters::IsovalueChoice, std::string("Single"));
 }
@@ -110,9 +112,9 @@ void ExtractIsosurface::execute()
     }
 
     std::vector<double> isoDoubles;
-    double qmin, qmax;
-    field->vfield()->minmax(qmin, qmax);
-    state->setTransientValue("fieldMinMax", std::make_pair(qmin, qmax));
+    double fieldMin, fieldMax;
+    field->vfield()->minmax(fieldMin, fieldMax);
+    state->setTransientValue("fieldMinMax", std::make_pair(fieldMin, fieldMax));
 
     if (state->getValue(Parameters::IsovalueChoice).toString() == "Single")
     {
@@ -136,6 +138,9 @@ void ExtractIsosurface::execute()
       // incl = 0, excl = 1
       bool inclusive = 0 == inclExcl;
       int num = state->getValue(Parameters::QuantityOfIsovalues).toInt();
+      bool useFieldMinMax = state->getValue(Parameters::IsovalueQuantityFromField).toInt() == 1;
+      double qmax = useFieldMinMax ? fieldMax : state->getValue(Parameters::ManualMaximumIsovalue).toDouble();
+      double qmin = useFieldMinMax ? fieldMin : state->getValue(Parameters::ManualMinimumIsovalue).toDouble();
       if (num > 1)
       {
         int denom = inclusive ? num - 1 : num + 1;

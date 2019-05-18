@@ -47,16 +47,11 @@ ExtractSimpleIsosurfaceDialog::ExtractSimpleIsosurfaceDialog(const std::string& 
   addTextEditManager(isovalListFromQuantityTextEdit_, Parameters::IsovalueListString);
   addRadioButtonGroupManager({inclusiveRadioButton_, exclusiveRadioButton_}, Parameters::IsovalueListInclusiveExclusive);
   addRadioButtonGroupManager({manualMinMaxRadioButton_, fieldMinMaxRadioButton_}, Parameters::IsovalueQuantityFromField);
+  addDoubleSpinBoxManager(manualMinDoubleSpinBox_, Parameters::ManualMinimumIsovalue);
+  addDoubleSpinBoxManager(manualMaxDoubleSpinBox_, Parameters::ManualMaximumIsovalue);
   WidgetStyleMixin::tabStyle(tabWidget);
   addTabManager(tabWidget, Parameters::IsovalueChoice);
   connect(singleHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderChanged()));
-}
-
-void ExtractSimpleIsosurfaceDialog::pullSpecial()
-{
-  //using namespace Parameters;
-  //auto minmax = transient_value_cast<std::pair<double, double>>(state_->getTransientValue("fieldMinMax"));
-  //std::cout << __FILE__ << ":" << __LINE__ << " " << minmax.first << "," << minmax.second << std::endl;
 }
 
 void ExtractSimpleIsosurfaceDialog::sliderChanged()
