@@ -132,12 +132,14 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::setupLights()
     {
+      mLightDirectionPolar.push_back(glm::vec2(0.0, 0.0));
+      mLightDirectionView.push_back(glm::vec3(0.0, 0.0, -1.0));
       mLightsOn.push_back(true);
-      mLightPosition.push_back(glm::vec3(0, 0, 1));
       for (int i = 1; i < LIGHT_NUM; ++i)
       {
+        mLightDirectionPolar.push_back(glm::vec2(0.0, 0.0));
+        mLightDirectionView.push_back(glm::vec3(0.0, 0.0, -1.0));
         mLightsOn.push_back(false);
-        mLightPosition.push_back(glm::vec3(0, 0, 1));
       }
     }
 
@@ -1470,11 +1472,11 @@ namespace SCIRun {
             GLint locCamViewVec = glGetUniformLocation(shader, "uCamViewVec");
             GLint locLightDirWorld = glGetUniformLocation(shader, "uLightDirWorld");
 
-            GLint locAmbientColor = glGetUniformLocation(shader, "uAmbientColor");
+            //GLint locAmbientColor = glGetUniformLocation(shader, "uAmbientColor");
             //GLint locDiffuseColor = glGetUniformLocation(shader, "uDiffuseColor");
             GLint locDiffuseColor = glGetUniformLocation(shader, "uColor");
-            GLint locSpecularColor = glGetUniformLocation(shader, "uSpecularColor");
-            GLint locSpecularPower = glGetUniformLocation(shader, "uSpecularPower");
+            //GLint locSpecularColor = glGetUniformLocation(shader, "uSpecularColor");
+            //GLint locSpecularPower = glGetUniformLocation(shader, "uSpecularPower");
 
             GLint locProjIVObject = glGetUniformLocation(shader, "uProjIVObject");
             GLint locObject = glGetUniformLocation(shader, "uObject");
@@ -1623,16 +1625,13 @@ namespace SCIRun {
     void SRInterface::updateWorldLight()
     {
       glm::mat4 viewToWorld = mCamera->getViewToWorld();
-
-      // Set directional light source (in world space).
       StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
       if (light)
       {
         for (int i = 0; i < LIGHT_NUM; ++i)
         {
-          glm::vec3 viewDir = viewToWorld[2].xyz();
-          viewDir = -viewDir; // Cameras look down -Z.
-          light->lightDir[i] = mLightsOn[i] ? viewDir : glm::vec3(0.0, 0.0, 0.0);
+          glm::vec3 lightDirectionWorld = (viewToWorld * glm::vec4(mLightDirectionView[i], 0.0)).xyz();
+          light->lightDir[i] = mLightsOn[i] ? lightDirectionWorld : glm::vec3(0.0, 0.0, 0.0);
         }
       }
     }
@@ -1697,17 +1696,27 @@ namespace SCIRun {
       }
     }
 
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::setLightPosition(int index, float x, float y)
+    void SRInterface::setLightAzimuth(int index, float azimuth)
     {
-      if (index >= LIGHT_NUM)
-        return;
+      mLightDirectionPolar[index].x = azimuth;
+      updateLightDirection(index);
+    }
 
-      glm::mat4 viewToWorld = mCamera->getViewToWorld();
-      if (mLightPosition.size() > 0)
-      {
-        mLightPosition[index] = glm::vec3(x, y, 0.0);
-      }
+    void SRInterface::setLightInclination(int index, float inclination)
+    {
+      mLightDirectionPolar[index].y = inclination;
+      updateLightDirection(index);
+    }
+
+    void SRInterface::updateLightDirection(int index)
+    {
+      float azimuth = mLightDirectionPolar[index].x;
+      float inclination = mLightDirectionPolar[index].y;
+      glm::vec3 viewVector;
+      viewVector.z = cos(inclination) * cos(azimuth);
+      viewVector.x = cos(inclination) * sin(azimuth);
+      viewVector.y = sin(inclination);
+      mLightDirectionView[index] = -viewVector;
     }
 
     //----------------------------------------------------------------------------------------------

@@ -108,6 +108,14 @@ void ViewScene::setStateDefaults()
   state->setValue(Light1Color, ColorRGB(0.0, 0.0, 0.0).toString());
   state->setValue(Light2Color, ColorRGB(0.0, 0.0, 0.0).toString());
   state->setValue(Light3Color, ColorRGB(0.0, 0.0, 0.0).toString());
+  state->setValue(HeadLightAzimuth, 180);
+  state->setValue(Light1Azimuth, 180);
+  state->setValue(Light2Azimuth, 180);
+  state->setValue(Light3Azimuth, 180);
+  state->setValue(HeadLightInclination, 90);
+  state->setValue(Light1Inclination, 90);
+  state->setValue(Light2Inclination, 90);
+  state->setValue(Light3Inclination, 90);
   state->setValue(ShowViewer, false);
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
@@ -321,4 +329,12 @@ const AlgorithmParameterName ViewScene::HeadLightColor("HeadLightColor");
 const AlgorithmParameterName ViewScene::Light1Color("Light1Color");
 const AlgorithmParameterName ViewScene::Light2Color("Light2Color");
 const AlgorithmParameterName ViewScene::Light3Color("Light3Color");
+const AlgorithmParameterName ViewScene::HeadLightAzimuth("HeadLightAzimuth");
+const AlgorithmParameterName ViewScene::Light1Azimuth("Light1Azimuth");
+const AlgorithmParameterName ViewScene::Light2Azimuth("Light2Azimuth");
+const AlgorithmParameterName ViewScene::Light3Azimuth("Light3Azimuth");
+const AlgorithmParameterName ViewScene::HeadLightInclination("HeadLightInclination");
+const AlgorithmParameterName ViewScene::Light1Inclination("Light1Inclination");
+const AlgorithmParameterName ViewScene::Light2Inclination("Light2Inclination");
+const AlgorithmParameterName ViewScene::Light3Inclination("Light3Inclination");
 const AlgorithmParameterName ViewScene::ShowViewer("ShowViewer");
