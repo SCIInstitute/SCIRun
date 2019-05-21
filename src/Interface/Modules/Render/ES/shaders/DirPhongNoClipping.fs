@@ -25,9 +25,9 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 #ifdef OPENGL_ES
   #ifdef GL_FRAGMENT_PRECISION_HIGH
-    // Default precision
     precision highp float;
   #else
     precision mediump float;
@@ -37,7 +37,7 @@
 uniform vec3    uCamViewVec;        // Camera 'at' vector in world space
 uniform vec4    uAmbientColor;      // Ambient color
 uniform vec4    uDiffuseColor;      // Diffuse color
-uniform vec4    uSpecularColor;     // Specular color     
+uniform vec4    uSpecularColor;     // Specular color
 uniform float   uSpecularPower;     // Specular power
 uniform vec3    uLightDirWorld;     // Directional light (world space).
 uniform float   uTransparency;
@@ -49,29 +49,16 @@ varying vec3  vNormal;
 
 void main()
 {
-  // Remember to always negate the light direction for these lighting
-  // calculations. The dot product takes on its greatest values when the angle
-  // between the two vectors diminishes.
   vec3  invLightDir = -uLightDirWorld;
-  vec3  normal      = normalize(vNormal);
-  float diffuse     = max(0.0, dot(normal, invLightDir));
+  vec3  normal      = -normalize(vNormal);
 
-  // Note, the following is a hack due to legacy meshes still being supported.
-  // We light the object as if it was double sided. We choose the normal based
-  // on the normal that yields the largest diffuse component.
-  float diffuseInv  = max(0.0, dot(-normal, invLightDir));
-
-  if (diffuse < diffuseInv)
-  {
-    diffuse = diffuseInv;
+  if (gl_FrontFacing)
     normal = -normal;
-  }
 
+  float diffuse     = max(0.0, dot(normal, invLightDir));
   vec3  reflection  = reflect(invLightDir, normal);
-  float spec        = max(0.0, dot(reflection, uCamViewVec));
+  float specular    = max(0.0, dot(reflection, uCamViewVec));
+  specular          = pow(specular, uSpecularPower);
 
-  spec              = pow(spec, uSpecularPower);
-  gl_FragColor      = vec4((diffuse * spec * uSpecularColor + 
-                       diffuse * uDiffuseColor + uAmbientColor).rgb, uTransparency);
+  gl_FragColor      = vec4((specular * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor * uDiffuseColor).rgb, uTransparency);
 }
-
