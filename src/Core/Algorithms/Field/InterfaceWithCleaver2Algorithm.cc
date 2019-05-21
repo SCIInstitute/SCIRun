@@ -84,9 +84,9 @@ namespace detail
   static const double kDefaultAlpha = 0.4;
   static const double kDefaultAlphaLong = 0.357;
   static const double kDefaultAlphaShort = 0.203;
-  static const double kDefaultScale = 1.0;
+  static const double kDefaultSamplingRate = 1.0;
   static const double kDefaultLipschitz = 0.2;
-  static const double kDefaultMultiplier = 1.0;
+  static const double kDefaultFeatureScaling = 1.0;
   //static const int    kDefaultPadding = 0;
   //static const int    kDefaultMaxIterations = 1000;
   //static const double kDefaultSigma = 1.;
@@ -96,9 +96,9 @@ namespace detail
     cleaver2::MeshType mesh_mode;
     double alphaLong;
     double alphaShort;
-    double scaling;
+    double samplingRate;
     double lipschitz;
-    double multiplier;
+    double featureScaling;
     bool verbose;
     bool simpleMode;
     bool reverseJacobians;
@@ -119,9 +119,9 @@ namespace detail
     Cleaver2Impl(const AlgorithmBase* algo, const Cleaver2Parameters& params, FieldHandle sizingField, FieldHandle backgroundMesh) :
       algo_(algo), params_(params), inputSizingField_(sizingField), inputBackgroundMesh_(backgroundMesh)
     {
-      LOG_DEBUG("Cleaver 2 parameters: \n\tmesh_mode: {}\n\talphaLong: {}\n\talphaShort: {}\n\tscaling: {}\n\tlipschitz: {}\n\tmultiplier: {}\n\tverbose: {}\n\tsimpleMode: {}",
+      LOG_DEBUG("Cleaver 2 parameters: \n\tmesh_mode: {}\n\talphaLong: {}\n\talphaShort: {}\n\tsampling_rate: {}\n\tlipschitz: {}\n\tfeature_scaling: {}\n\tverbose: {}\n\tsimpleMode: {}",
         params_.mesh_mode, params_.alphaLong, params_.alphaShort,
-        params_.scaling, params_.lipschitz, params_.multiplier,
+        params_.samplingRate, params_.lipschitz, params_.featureScaling,
         params_.verbose, params_.simpleMode);
     }
 
@@ -429,8 +429,8 @@ namespace detail
         sizingField_.reset(cleaver2::SizingFieldCreator::createSizingFieldFromVolume(
           volume_.get(),
           (float)(1.0 / params_.lipschitz),
-          (float)params_.scaling,
-          (float)params_.multiplier,
+          (float)params_.samplingRate,
+          (float)params_.featureScaling,
           0, // padding--off
           (params_.mesh_mode != cleaver2::Regular),
           params_.verbose));
@@ -505,11 +505,12 @@ namespace detail
 
 InterfaceWithCleaver2Algorithm::InterfaceWithCleaver2Algorithm()
 {
+  //Cleaver parameters: Scaling = Sampling Rate, Multiplier = Feature Scaling
   addParameter(Parameters::Verbose, true);
   addParameter(Parameters::SimpleMode, false);
   addParameter(Parameters::ReverseJacobians, true);
-  addParameter(Parameters::VolumeScaling, detail::kDefaultScale);
-  addParameter(Parameters::VolumeMultiplier, detail::kDefaultMultiplier);
+  addParameter(Parameters::VolumeScaling, detail::kDefaultSamplingRate);
+  addParameter(Parameters::VolumeMultiplier, detail::kDefaultFeatureScaling);
   addParameter(Parameters::Lipschitz, detail::kDefaultLipschitz);
   //addParameter(Parameters::Padding, detail::kDefaultPadding);
   addParameter(Parameters::AlphaLong, detail::kDefaultAlphaLong);
