@@ -349,7 +349,7 @@ namespace SCIRun {
       std::vector<bool>                 mLightsOn           {};
 
       const int                         frameInitLimit_     {};
-      std::unique_ptr<SRCamera>         mCamera             {};       // Primary camera.
+      std::unique_ptr<SRCamera>         mCamera;       // Primary camera.
     };
 
   } // namespace Render
