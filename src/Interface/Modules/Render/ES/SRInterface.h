@@ -168,8 +168,10 @@ namespace SCIRun {
       //---------------- Rendering -----------------------------------------------------------------
       void doFrame(double currentTime, double constantDeltaTime); // Performs a frame.
       void setLightColor(int index, float r, float g, float b);
-      void setLightPosition(int index, float x, float y);
       void setLightOn(int index, bool value);
+      void setLightAzimuth(int index, float azimuth);
+      void setLightInclination(int index, float inclination);
+      void updateLightDirection(int index);
       void setMaterialFactor(MatFactor factor, double value);
       void setFog(FogFactor factor, double value);
       void setOrientSize(int size) {orientSize = size/10.0f;}      //Remap 1:100 to 0.1:10
@@ -343,7 +345,8 @@ namespace SCIRun {
       glm::vec4                         mFogColor           {0.0, 0.0, 0.0, 0.0};
 
       //light settings
-      std::vector<glm::vec3>            mLightPosition      {};
+      std::vector<glm::vec2>            mLightDirectionPolar{};
+      std::vector<glm::vec3>            mLightDirectionView{};
       std::vector<bool>                 mLightsOn           {};
 
       const int                         frameInitLimit_     {};

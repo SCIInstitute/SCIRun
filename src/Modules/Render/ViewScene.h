@@ -118,6 +118,14 @@ namespace Render {
     static const Core::Algorithms::AlgorithmParameterName Light1Color;
     static const Core::Algorithms::AlgorithmParameterName Light2Color;
     static const Core::Algorithms::AlgorithmParameterName Light3Color;
+    static const Core::Algorithms::AlgorithmParameterName HeadLightAzimuth;
+    static const Core::Algorithms::AlgorithmParameterName Light1Azimuth;
+    static const Core::Algorithms::AlgorithmParameterName Light2Azimuth;
+    static const Core::Algorithms::AlgorithmParameterName Light3Azimuth;
+    static const Core::Algorithms::AlgorithmParameterName HeadLightInclination;
+    static const Core::Algorithms::AlgorithmParameterName Light1Inclination;
+    static const Core::Algorithms::AlgorithmParameterName Light2Inclination;
+    static const Core::Algorithms::AlgorithmParameterName Light3Inclination;
     static const Core::Algorithms::AlgorithmParameterName ShowViewer;
 
 
