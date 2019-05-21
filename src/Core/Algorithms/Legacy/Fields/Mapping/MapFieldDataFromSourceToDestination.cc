@@ -72,6 +72,7 @@ namespace detail
       sfield_(0), dfield_(0), smesh_(0), dmesh_(0), maxdist_(0), algo_(0),
       barrier_(name, nproc), nproc_(nproc) {}
 
+    virtual ~MapFieldDataFromSourceToDestinationPAlgoBase() {}
     virtual void parallel(int proc) = 0;
 
     VField* sfield_;

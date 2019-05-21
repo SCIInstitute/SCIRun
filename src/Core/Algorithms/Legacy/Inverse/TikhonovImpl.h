@@ -48,7 +48,8 @@ namespace Inverse {
 	public:
 
 		// constructor
-		TikhonovImpl() {};
+		TikhonovImpl() {}
+		virtual ~TikhonovImpl() {}
 
 		virtual SCIRun::Core::Datatypes::DenseMatrix computeInverseSolution( double lambda_sq, bool inverseCalculation) const = 0;
 
