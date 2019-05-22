@@ -175,11 +175,15 @@ namespace Networks {
     std::map<std::string, std::string> connectionIdMap_;
 
     //Legacy importer maps
-    static NameAndValLookup read_importer_map(const std::string& file);
-    static const std::map<std::string, std::string> moduleRenameMap_;
-    static NameAndValLookup nameAndValLookup_;
-    static std::unique_ptr<std::string> v4MergeStateToV5_;
-    static ValueConverter initState, appendState, useState;
+    struct LegacyImporterMap
+    {
+      NameAndValLookup read_importer_map(const std::string& file);
+      const std::map<std::string, std::string> moduleRenameMap_;
+      NameAndValLookup nameAndValLookup_;
+      std::unique_ptr<std::string> v4MergeStateToV5_;  //??
+      ValueConverter initState, appendState, useState;
+    };
+    static LegacyImporterMap lim_;
   };
 
 }}} // end namespace SCIRun
