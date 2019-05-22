@@ -37,6 +37,7 @@
 #include <libxml/xmlreader.h>
 #include <map>
 #include <stack>
+#include <utility>
 
 #include <Dataflow/Serialization/Network/Importer/share.h>
 
@@ -44,9 +45,9 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
-  typedef std::map<std::string, std::map<std::string, Core::Algorithms::Name>> NameLookup;
   typedef boost::function<Core::Algorithms::AlgorithmParameter::Value(std::string)> ValueConverter;
-  typedef std::map<std::string, std::map<std::string, ValueConverter>> ValueConverterMap;
+  typedef std::map<std::string, std::map<std::string, std::pair<Core::Algorithms::Name, ValueConverter>>> NameAndValLookup;
+  typedef std::map<std::string, ValueConverter> StringToFunctorMap;
 
   class SCISHARE LegacyNetworkIO
   {
@@ -172,9 +173,13 @@ namespace Networks {
     const Networks::ModuleFactory& modFactory_;
     std::map<std::string, ModuleId> moduleIdMap_;
     std::map<std::string, std::string> connectionIdMap_;
+
+    //Legacy importer maps
+    static NameAndValLookup read_importer_map(const std::string& file);
     static const std::map<std::string, std::string> moduleRenameMap_;
-    static NameLookup nameLookup_;
-    static ValueConverterMap valueConverter_;
+    static NameAndValLookup nameAndValLookup_;
+    static std::unique_ptr<std::string> v4MergeStateToV5_;
+    static ValueConverter initState, appendState, useState;
   };
 
 }}} // end namespace SCIRun
