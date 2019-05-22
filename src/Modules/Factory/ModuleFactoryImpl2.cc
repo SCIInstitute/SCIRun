@@ -92,7 +92,8 @@ void ModuleDescriptionLookup::addMoreModules()
   addModuleDesc<GenerateStreamLines>("in progress--needs testing", "...");
   addModuleDesc<ConvertHexVolToTetVol>("ConvertHexVolToTetVol", "ChangeMesh", "SCIRun", "Real ported module", "...");
   addModuleDesc<BuildSurfaceLaplacianMatrix>("BuildSurfaceLaplacianMatrix","Inverse","SCIRun","...","...");
-  addModuleDesc<ExtractSimpleIsosurface>("ExtractSimpleIsosurface","NewField","SCIRun","...","...");
+  addModuleDesc<ExtractIsosurface>("...","...");
+  addModuleDesc<ExtractIsosurface>("ExtractSimpleIsosurface", "NewField", "SCIRun", "...", "...");
   addModuleDesc<ComputePCA>("ComputePCA","Math","SCIRun","...","...");
   addModuleDesc<ClipVolumeByIsovalue>("ClipVolumeByIsovalue","NewField","SCIRun","...","...");
   addModuleDesc<RefineTetMeshLocally>("RefineTetMeshLocally","ChangeMesh","SCIRun","...","...");

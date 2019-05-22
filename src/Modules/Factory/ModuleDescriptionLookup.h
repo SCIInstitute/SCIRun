@@ -44,7 +44,7 @@ namespace SCIRun {
         ModuleDescriptionLookup();
         Dataflow::Networks::ModuleDescription lookupDescription(const Dataflow::Networks::ModuleLookupInfo& info) const;
         Dataflow::Networks::ModuleDescriptionMap descMap_;
-        Dataflow::Networks::DirectModuleDescriptionLookupMap lookup_;
+        Dataflow::Networks::DirectModuleDescriptionLookupMap moduleLookup_;
       private:
         bool includeTestingModules_;
 
@@ -70,7 +70,7 @@ namespace SCIRun {
           description.hasUI_ = HasUI<ModuleType>::value;
           description.hasAlgo_ = HasAlgorithm<ModuleType>::value;
 
-          lookup_[info] = description;
+          moduleLookup_[info] = description;
 
           descMap_[info.package_name_][info.category_name_][info.module_name_] = description;
         }
