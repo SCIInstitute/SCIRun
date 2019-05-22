@@ -24,7 +24,7 @@ namespace Render {
 class AssetBootstrap : public spire::EmptySystem
 {
 public:
-  
+
   static const char* getName() {return "scirun:AssetBootstrap";}
 
   void execute(spire::ESCoreBase& baseCore)
@@ -59,6 +59,7 @@ public:
         // Load shader we will use with the coordinate axes.
       shaderMan->loadVertexAndFragmentShader(core, cachedEntity, "Shaders/DirPhong");
       shaderMan->loadVertexAndFragmentShader(core, cachedEntity, "Shaders/DirPhongNoClipping");
+      shaderMan->loadVertexAndFragmentShader(core, cachedEntity, "Shaders/UniformColor");
     }
 
     // Note: We don't need to strictly store the coordinate axes entity.
@@ -78,5 +79,3 @@ const char* getSystemName_AssetBootstrap() {return AssetBootstrap::getName();}
 
 } // namespace Render
 } // namespace SCIRun
-
-

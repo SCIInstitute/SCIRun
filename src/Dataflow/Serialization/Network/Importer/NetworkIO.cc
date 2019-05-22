@@ -58,6 +58,10 @@
 #include <iostream>
 #include <sstream>
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/foreach.hpp>
+
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
@@ -334,32 +338,39 @@ const std::string &val)
 
   if (!xmlData_)
     return;
+  if (var == "ui_geometry")
+    return;
 
   std::string moduleName = xmlData_->network.modules[moduleIdMap_[mod_id]].module.module_name_;
   auto& stateXML = xmlData_->network.modules[moduleIdMap_[mod_id]].state;
 
-  auto moduleNameMapIter = nameLookup_.find(moduleName);
-  if (moduleNameMapIter == nameLookup_.end())
+  auto moduleNameMapIter = nameAndValLookup_.find(moduleName);
+  if (moduleNameMapIter == nameAndValLookup_.end())
   {
-    simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
+    simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << std::endl;
     return;
   }
-  auto valueConverterForModuleIter = valueConverter_.find(moduleName);
-  if (valueConverterForModuleIter == valueConverter_.end())
+  auto varNameIter = moduleNameMapIter->second.find(var);
+  if (varNameIter == moduleNameMapIter->second.end())
   {
-    simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
+    simpleLog_ << "VAR TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
     return;
   }
+
   std::string stripBraces(val.begin() + 1, val.end() - 1);
-  stateXML.setValue(moduleNameMapIter->second[var], valueConverterForModuleIter->second[var](stripBraces));
+  stateXML.setValue(varNameIter->second.first, varNameIter->second.second(stripBraces));
 }
 
 namespace
 {
-  ValueConverter toInt = [](const std::string& s) { return boost::lexical_cast<int>(s); };
-  ValueConverter toDouble = [](const std::string& s) { return boost::lexical_cast<double>(s); };
+  ValueConverter toInt = [](const std::string& s) { return std::stoi(s); };
+  ValueConverter toDouble = [](const std::string& s)
+  {
+    if(s == "Inf") return DBL_MAX;
+    return boost::lexical_cast<double>(s);
+  };
   ValueConverter toPercent = [](const std::string& s) { return boost::lexical_cast<double>(s) / 100.0; };
-
+  ValueConverter toString = [](const std::string& s) { return s;};
   //TODO: mapping macro or find a boost lib to do pattern matching with funcs easily
   ValueConverter data_at = [](const std::string& s)
   {
@@ -375,38 +386,173 @@ namespace
   };
 
   ValueConverter throwAway = [](const std::string& s) { return 0; };
+  ValueConverter negateBool = [](const std::string& s)
+  {
+    if (s == "1") return 0;
+    return 1;
+  };
+  ValueConverter dataOrNodes = [](const std::string& s)
+  {
+    if (std::stoi(s) == 1) return std::string("data");
+    return std::string("node");
+  };
+  ValueConverter opStringToInt = [](const std::string& s)
+  {
+    if (s == "Add") return 0;
+    if (s == "Mult") return 2;
+    return 3;
+  };
+  ValueConverter capFirstLetter = [](const std::string& s)
+  {
+    std::string result = s;
+    result[0] = std::toupper(s[0]);
+    return result;
+  };
+  ValueConverter shortenMethodForLinearSystem = [](const std::string& s)
+  {
+    if (s[0] == 'C') return std::string("cg");
+    if (s[0] == 'B') return std::string("bicg");
+    if (s[0] == 'J') return std::string("jacobi");
+    return std::string("minres");
+  };
+  ValueConverter createMatrixFormat = [](const std::string& s)
+  {
+    std::string result;
+    bool newLineStart = false;
+    for (const auto &c : s)
+    {
+      if (c == '{') continue;
+      if (c == ' ' && newLineStart)
+      {
+        newLineStart = false;
+        continue;
+      }
+      if (c == '}')
+      {
+        result += '\n';
+        newLineStart = true;
+      }
+      else result += c;
+    }
+    return result;
+  };
+  ValueConverter directionForStreamLines = [](const std::string& s)
+  {
+    if (s == "0") return std::string("Negative");
+    if (s == "1") return std::string("Both");
+    return std::string("Positive");
+  };
+  ValueConverter valueForStreamLines = [](const std::string& s)
+  {
+    if (s == "0") return std::string("Seed value");
+    if (s == "1") return std::string("Seed index");
+    if (s == "2") return std::string("Integration index");
+    if (s == "3") return std::string("Integration step");
+    if (s == "4") return std::string("Distance from seed");
+    return std::string("Streamline length");
+  };
+  ValueConverter methodForStreamLines = [](const std::string& s)
+  {
+    if (s == "0") return std::string("CellWalk");
+    if (s == "1") return std::string("AdamsBashforth");
+    if (s == "2") return std::string("Heun");
+    if (s == "3") return std::string("RungeKutta");
+    return std::string("RungeKuttaFehlberg");
+  };
+  ValueConverter lengthForShowColorMap = [](const std::string& s)
+  {
+    if (s == "full") return 1;
+    if (s == "half1") return 0;
+    return 2;
+  };
+  ValueConverter sideForShowColorMap = [](const std::string& s)
+  {
+    if (s == "left") return 0;
+    return 1;
+  };
+  ValueConverter conditionsForFEMVoltage = [](const std::string& s)
+  {
+    if (s == "DirSub") return 1;
+    return 0;
+  };
+  ValueConverter opStringToIntUnary = [](const std::string& s)
+  {
+    if (s == "Transpose") return 0;
+    return 3;
+  };
 }
 
-NameLookup LegacyNetworkIO::nameLookup_ =
+std::unique_ptr<std::string> LegacyNetworkIO::v4MergeStateToV5_ = std::unique_ptr<std::string>(new std::string(""));
+
+ValueConverter LegacyNetworkIO::initState = [](const std::string& s)
 {
-  {
-    "CreateLatVol",
-    {
-      { "sizex", Name("XSize") },
-      { "sizey", Name("YSize") },
-      { "sizez", Name("ZSize") },
-      { "padpercent", Name("PadPercent") },
-      { "data-at", Name("DataAtLocation") },
-      { "element-size", Name("ElementSizeNormalized") }
-    }
-  }
+  v4MergeStateToV5_ = std::unique_ptr<std::string>(new std::string(s));
+  return s;
 };
 
-ValueConverterMap LegacyNetworkIO::valueConverter_ =
+ValueConverter LegacyNetworkIO::appendState = [](const std::string& s)
 {
+  *v4MergeStateToV5_ += "," + s;
+  return *v4MergeStateToV5_;
+};
+
+ValueConverter LegacyNetworkIO::useState = [](const std::string& s)
+{
+  if(*v4MergeStateToV5_ == "linear")
+    return std::string("interpolateddata");
+  if(std::stoi(s) == 1)
+    return std::string("singledestination");
+  return std::string("closestdata");
+};
+
+NameAndValLookup
+LegacyNetworkIO::read_importer_map(const std::string& file)
+{
+  StringToFunctorMap functorLookup_ =
   {
-    "CreateLatVol",
+    {"toInt", toInt},
+    {"toDouble", toDouble},
+    {"toPercent", toPercent},
+    {"data_at", data_at},
+    {"element_size", element_size},
+    {"throwAway", throwAway},
+    {"toString", toString},
+    {"negateBool", negateBool},
+    {"initState", initState},
+    {"appendState", appendState},
+    {"useState", useState},
+    {"dataOrNodes", dataOrNodes},
+    {"opStringToInt", opStringToInt},
+    {"capFirstLetter", capFirstLetter},
+    {"shortenMethodForLinearSystem", shortenMethodForLinearSystem},
+    {"createMatrixFormat", createMatrixFormat},
+    {"directionForStreamLines", directionForStreamLines},
+    {"valueForStreamLines", valueForStreamLines},
+    {"methodForStreamLines", methodForStreamLines},
+    {"lengthForShowColorMap", lengthForShowColorMap},
+    {"sideForShowColorMap", sideForShowColorMap},
+    {"conditionsForFEMVoltage", conditionsForFEMVoltage},
+    {"opStringToIntUnary", opStringToIntUnary}
+  };
+  using boost::property_tree::ptree;
+  using boost::property_tree::read_xml;
+  ptree tree;
+  read_xml(file, tree);
+  NameAndValLookup temp;
+  for(const ptree::value_type &module : tree.get_child("modules"))
+  {
+    std::string moduleName = checkForModuleRename(module.second.get<std::string>("<xmlattr>.name"));
+    for(const ptree::value_type& keys : module.second.get_child(""))
     {
-      { "sizex", toInt },
-      { "sizey", toInt },
-      { "sizez", toInt },
-      { "padpercent", toPercent },
-      { "data-at", data_at },
-      { "element-size", element_size },
-      { "ui_geometry", throwAway }
+      if(keys.first == "<xmlattr>")
+        continue;
+      temp[moduleName][keys.second.get<std::string>("from")] = std::make_pair(Name(keys.second.get<std::string>("to")),functorLookup_[keys.second.get<std::string>("type")]);
     }
   }
-};
+  return temp;
+}
+
+NameAndValLookup LegacyNetworkIO::nameAndValLookup_ = read_importer_map("../../src/Resources/LegacyModuleImporter.xml");
 
 #if 0
 void

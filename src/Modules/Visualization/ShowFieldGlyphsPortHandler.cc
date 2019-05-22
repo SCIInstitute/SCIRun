@@ -325,11 +325,19 @@ namespace SCIRun{
                   {
                     throw std::invalid_argument("Secondary Field and Color Map input is required.");
                   }
+                if(s_vfld->num_values() < p_vfld->num_values())
+                  {
+                    throw std::invalid_argument("Secondary Field input cannot have a smaller size than the Primary Field input.");
+                  }
                 break;
               case RenderState::InputPort::TERTIARY_PORT:
                 if(!(tertiaryFieldGiven && colorMap))
                   {
                     throw std::invalid_argument("Tertiary Field and Color Map input is required.");
+                  }
+                if(t_vfld->num_values() < p_vfld->num_values())
+                  {
+                    throw std::invalid_argument("Tertiary Field input cannot have a smaller size than the Primary Field input.");
                   }
                 break;
               }
@@ -350,11 +358,19 @@ namespace SCIRun{
                   {
                     throw std::invalid_argument("Secondary Field input cannot be a scalar for RGB Conversion.");
                   }
+                if(s_vfld->num_values() < p_vfld->num_values())
+                  {
+                    throw std::invalid_argument("Secondary Field input cannot have a smaller size than the Primary Field input.");
+                  }
                 break;
               case RenderState::InputPort::TERTIARY_PORT:
                 if(tf_data_type == FieldDataType::Scalar)
                   {
                     throw std::invalid_argument("Tertiary Field input cannot be a scalar for RGB Conversion.");
+                  }
+                if(t_vfld->num_values() < p_vfld->num_values())
+                  {
+                    throw std::invalid_argument("Tertiary Field input cannot have a smaller size than the Primary Field input.");
                   }
                 break;
               }
@@ -368,11 +384,19 @@ namespace SCIRun{
               {
                 throw std::invalid_argument("Secondary Field input is required for Secondary Vector Parameter.");
               }
+            if(s_vfld->num_values() < p_vfld->num_values())
+              {
+                throw std::invalid_argument("Secondary Field input cannot have a smaller size than the Primary Field input.");
+              }
             break;
           case RenderState::InputPort::TERTIARY_PORT:
             if(!tertiaryFieldGiven)
               {
                 throw std::invalid_argument("Tertiary Field input is required for Secondary Vector Parameter.");
+              }
+            if(t_vfld->num_values() < p_vfld->num_values())
+              {
+                throw std::invalid_argument("Tertiary Field input cannot have a smaller size than the Primary Field input.");
               }
             break;
           }

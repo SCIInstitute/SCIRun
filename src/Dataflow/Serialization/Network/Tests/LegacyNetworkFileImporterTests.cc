@@ -296,7 +296,83 @@ TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithDynamicPorts)
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithLotsOfState)
 {
-  FAIL() << "todo";
+  auto networkFile = load("lotsOfState.srn");
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(7, networkFile->network.modules.size());
+
+  auto mod = networkFile->network.modules.begin();
+  EXPECT_EQ("CalculateFieldData:0", mod->first);
+  EXPECT_EQ("RESULT = abs(DATA);\n", mod->second.state.getValue(Name("FunctionString")).toString());
+  EXPECT_EQ("Scalar", mod->second.state.getValue(Name("FormatString")).toString());
+  ++mod;
+  EXPECT_EQ("CreateStandardColorMap:0", mod->first);
+  ++mod;
+  EXPECT_EQ("GetDomainBoundary:0", mod->first);
+  EXPECT_EQ(0, mod->second.state.getValue(Name("UseRange")).toInt());
+  EXPECT_EQ(0.0, mod->second.state.getValue(Name("MinRange")).toDouble());
+  EXPECT_EQ(255.0, mod->second.state.getValue(Name("MaxRange")).toDouble());
+  EXPECT_EQ(1, mod->second.state.getValue(Name("Domain")).toInt());
+  EXPECT_EQ(1, mod->second.state.getValue(Name("AddOuterBoundary")).toInt());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("InnerBoundaryOnly")).toInt());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("NoInnerBoundary")).toInt());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("DisconnectBoundaries")).toInt()); 
+  ++mod;
+  EXPECT_EQ("ReadField:0", mod->first);
+  EXPECT_EQ("SCIRunData_4/utahtorso/utahtorso-blood.ts.fld", mod->second.state.getValue(Name("Filename")).toString());
+  EXPECT_EQ("", mod->second.state.getValue(Name("ScriptEnvironmentVariable")).toString());
+  EXPECT_EQ("SCIRun Field File (*.fld)", mod->second.state.getValue(Name("FileTypeName")).toString());
+  EXPECT_EQ("utahtorso-blood.ts.fld", mod->second.state.getValue(Name("filename_base")).toString());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("number_in_series")).toInt());
+  EXPECT_EQ(2, mod->second.state.getValue(Name("delay")).toInt());
+  ++mod;
+  EXPECT_EQ("RescaleColorMap:0", mod->first);
+  EXPECT_EQ(0, mod->second.state.getValue(Name("AutoScale")).toInt());
+  EXPECT_EQ(0, mod->second.state.getValue(Name("Symmetric")).toInt());
+  EXPECT_EQ(0.5, mod->second.state.getValue(Name("FixedMin")).toDouble());
+  EXPECT_EQ(1.0, mod->second.state.getValue(Name("FixedMax")).toDouble());
+  ++mod;
+  EXPECT_EQ("ShowField:0", mod->first);
+  EXPECT_EQ("0.5,0.25,0.35",mod->second.state.getValue(Name("DefaultMeshColor")).toString());
+  EXPECT_EQ("1.0,0.5,1.0",mod->second.state.getValue(Name("DefaultTextColor")).toString());
+  ++mod;
+  EXPECT_EQ("ViewScene:0", mod->first);
+}
+
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithMapFieldDataFromSourceToDestinationState)
+{
+  auto networkFile = load("MapFieldDataFromSourceToDestination.srn");
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(3, networkFile->network.modules.size());
+
+  auto mod = networkFile->network.modules.begin();
+  EXPECT_EQ("MapFieldDataFromSourceToDestination:0", mod->first);
+  EXPECT_EQ(0.0, mod->second.state.getValue(Name("DefaultValue")).toDouble());
+  EXPECT_EQ(-1.0, mod->second.state.getValue(Name("MaxDistance")).toDouble());
+  EXPECT_EQ("interpolateddata", mod->second.state.getValue(Name("MappingMethod")).toString());
+  ++mod;
+  EXPECT_EQ("MapFieldDataFromSourceToDestination:1", mod->first);
+  EXPECT_EQ(0.0, mod->second.state.getValue(Name("DefaultValue")).toDouble());
+  EXPECT_EQ(-1.0, mod->second.state.getValue(Name("MaxDistance")).toDouble());
+  EXPECT_EQ("singledestination", mod->second.state.getValue(Name("MappingMethod")).toString());
+  ++mod;
+  EXPECT_EQ("MapFieldDataFromSourceToDestination:2", mod->first);
+  EXPECT_EQ(0.0, mod->second.state.getValue(Name("DefaultValue")).toDouble());
+  EXPECT_EQ(-1.0, mod->second.state.getValue(Name("MaxDistance")).toDouble());
+  EXPECT_EQ("closestdata", mod->second.state.getValue(Name("MappingMethod")).toString());
+}
+
+TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithCreateMatrix)
+{
+  auto networkFile = load("CreateMatrix.srn");
+  ASSERT_TRUE(networkFile != nullptr);
+
+  EXPECT_EQ(1, networkFile->network.modules.size());
+
+  auto mod = networkFile->network.modules.begin();
+  EXPECT_EQ("CreateMatrix:0", mod->first);
+  EXPECT_EQ("0.1 0.2\n0.3 0.4\n0.5 0.6\n", mod->second.state.getValue(Name("TextEntry")).toString());
 }
 
 TEST(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithModuleNotes)

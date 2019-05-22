@@ -151,6 +151,7 @@ void InterfaceWithPython::execute()
       {
         PythonInterpreter::Instance().run_string("import matlab.engine");
         PythonInterpreter::Instance().run_string("__eng = matlab.engine.start_matlab()");
+        PythonInterpreter::Instance().run_string("from MatlabConversion import *");
         matlabInitialized_ = true;
       }
       PythonInterpreter::Instance().run_script(convertedCode.code);
