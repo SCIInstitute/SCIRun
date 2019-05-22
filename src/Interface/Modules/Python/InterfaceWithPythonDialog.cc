@@ -66,6 +66,8 @@ InterfaceWithPythonDialog::InterfaceWithPythonDialog(const std::string& name, Mo
 
   connect(pythonDocPushButton_, SIGNAL(clicked()), this, SLOT(loadAPIDocumentation()));
   connect(addMatlabCodeBlockToolButton_, SIGNAL(clicked()), pythonCodePlainTextEdit_, SLOT(insertSpecialCodeBlock()));
+
+  createForceAlwaysExecuteToggleAction();
 }
 
 void InterfaceWithPythonDialog::resetObjects()

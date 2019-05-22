@@ -6,7 +6,6 @@
    Copyright (c) 2016 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -38,14 +37,18 @@ using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Python;
 
-PythonInterfaceParser::PythonInterfaceParser(const std::string& moduleId,
-  const ModuleStateHandle& state,
-  const std::vector<std::string>& portIds)
-  : moduleId_(moduleId), state_(state), portIds_(portIds)
+InterfaceWithPythonCodeTranslatorImpl::InterfaceWithPythonCodeTranslatorImpl(const std::string& moduleId,
+  const ModuleStateHandle& state)
+  : moduleId_(moduleId), state_(state)
 {
 }
 
-std::string PythonInterfaceParser::convertOutputSyntax(const std::string& line) const
+PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::translate(const std::string& code) const
+{
+  return translateIOSyntax(concatenateAndTranslateMatlabBlocks(extractSpecialBlocks(code)));
+}
+
+std::string InterfaceWithPythonCodeTranslatorImpl::translateOutputSyntax(const std::string& line) const
 {
   auto outputVarsToCheck = InterfaceWithPython::outputNameParameters();
 
@@ -72,7 +75,7 @@ std::string PythonInterfaceParser::convertOutputSyntax(const std::string& line) 
   return line;
 }
 
-std::string PythonInterfaceParser::convertInputSyntax(const std::string& line) const
+std::string InterfaceWithPythonCodeTranslatorImpl::translateInputSyntax(const std::string& line) const
 {
   for (const auto& portId : portIds_)
   {
@@ -90,25 +93,24 @@ std::string PythonInterfaceParser::convertInputSyntax(const std::string& line) c
   return line;
 }
 
-std::string PythonInterfaceParser::convertStandardCodeBlock(const PythonCodeBlock& block) const
+PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::translateIOSyntax(const PythonCodeBlock& block) const
 {
-  if (block.isMatlab)
-    throw std::invalid_argument("Cannot process matlab block");
-
   std::ostringstream convertedCode;
   std::vector<std::string> lines;
   boost::split(lines, block.code, boost::is_any_of("\n"));
   for (const auto& line : lines)
   {
-    convertedCode << convertInputSyntax(convertOutputSyntax(line)) << "\n";
+    convertedCode << translateInputSyntax(translateOutputSyntax(line)) << "\n";
   }
-  return convertedCode.str();
+  return {convertedCode.str(), block.isMatlab};
 }
 
-PythonCode PythonInterfaceParser::extractSpecialBlocks(const std::string& code) const
+PythonCode InterfaceWithPythonCodeTranslatorImpl::extractSpecialBlocks(const std::string& code) const
 {
   PythonCode blocks;
-  static boost::regex matlabBlock("(.*)\\/\\*matlab\\n(.*)\\nmatlab\\*\\/(.*)");
+  static std::string matlabBlockRegex = std::string("(.*)") + matlabDelimiter
+    + "\\n(.*)\\n" + matlabDelimiter + "(.*)";
+  static boost::regex matlabBlock(matlabBlockRegex);
 
   boost::smatch what;
   if (regex_match(code, what, matlabBlock))
@@ -134,11 +136,11 @@ PythonCode PythonInterfaceParser::extractSpecialBlocks(const std::string& code) 
   return blocks;
 }
 
-void PythonInterfaceParser::parsePart(PythonCode& blocks, const std::string& part) const
+void InterfaceWithPythonCodeTranslatorImpl::parsePart(PythonCode& blocks, const std::string& part) const
 {
   if (!part.empty())
   {
-    if (part.find("/*matlab") != std::string::npos)
+    if (part.find(matlabDelimiter) != std::string::npos)
     {
       auto rec = extractSpecialBlocks(part);
       blocks.insert(blocks.begin(), rec.begin(), rec.end());
@@ -148,15 +150,49 @@ void PythonInterfaceParser::parsePart(PythonCode& blocks, const std::string& par
   }
 }
 
-PythonCodeBlock PythonInterfaceParser::concatenateNormalBlocks(const PythonCode& codeList) const
+PythonCodeBlock InterfaceWithPythonCodeTranslatorImpl::concatenateAndTranslateMatlabBlocks(const PythonCode& codeList) const
 {
   std::ostringstream ostr;
+  bool isMatlab = false;
   for (const auto& block : codeList)
   {
     if (!block.isMatlab)
     {
       ostr << block.code << '\n';
     }
+    else
+    {
+      ostr << translateMatlabBlock(block);
+      isMatlab = true;
+    }
   }
-  return {ostr.str(), false };
+  return {ostr.str(), isMatlab};
+}
+
+std::string InterfaceWithPythonCodeTranslatorImpl::translateMatlabBlock(const PythonCodeBlock& block) const
+{
+  auto code = block.code;
+
+  static std::string matlabLineRegex = "(.*)=(.*)\\((.*)\\)";
+  static boost::regex matlabLine(matlabLineRegex);
+
+  boost::smatch what;
+  if (regex_match(code, what, matlabLine))
+  {
+    auto LHS = std::string(what[1]);
+    boost::trim(LHS);
+    auto func = std::string(what[2]);
+    boost::trim(func);
+    auto args = std::string(what[3]);
+    boost::trim(args);
+    
+    std::ostringstream o;
+    o << "__" << args << " = convertfieldtomatlab(" << args << ")\n" <<
+      "__" << LHS << " = __eng." << func << "(__" << args << ", nargout=1)\n" <<
+      LHS << " = convertfieldtopython(__" << LHS << ")\n";
+    return o.str();
+  }
+
+  logCritical("Error processing matlab block: {}", code);
+  return block.code;
 }

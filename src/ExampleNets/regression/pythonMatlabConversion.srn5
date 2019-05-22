@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>5</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CreateString:0</first>
@@ -91,6 +91,34 @@
 				</second>
 			</item>
 			<item>
+				<first>CreateString:3</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>String</category_name_>
+						<module_name_>CreateString</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>InputString</name>
+								</first>
+								<second>
+									<name>InputString</name>
+									<value>
+										<which>2</which>
+										<value>ofield = scirun_test_field(field1)</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
 				<first>InterfaceWithPython:0</first>
 				<second>
 					<module>
@@ -100,7 +128,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>16</count>
+							<count>17</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -135,6 +163,18 @@
 									<value>
 										<which>2</which>
 										<value>stringInput3</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>InputString:3</name>
+								</first>
+								<second>
+									<name>InputString:3</name>
+									<value>
+										<which>2</which>
+										<value>stringInput4</value>
 									</value>
 								</second>
 							</item>
@@ -300,7 +340,10 @@ print(stringInput2)
 print(stringtotext(stringInput2))
 
 print(stringInput3)
-print(stringtotext(stringInput3))</value>
+print(stringtotext(stringInput3))
+
+print(stringInput4)
+print(stringtotext(stringInput4))</value>
 									</value>
 								</second>
 							</item>
@@ -612,7 +655,7 @@ matlab*/</value>
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>3</count>
+			<count>4</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateString:0</moduleId1_>
@@ -650,10 +693,22 @@ matlab*/</value>
 					<id>2</id>
 				</port2_>
 			</item>
+			<item>
+				<moduleId1_>CreateString:3</moduleId1_>
+				<port1_>
+					<name>NewString</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>InterfaceWithPython:0</moduleId2_>
+				<port2_>
+					<name>InputString</name>
+					<id>3</id>
+				</port2_>
+			</item>
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>5</count>
+		<count>6</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateString:0</first>
@@ -674,6 +729,13 @@ matlab*/</value>
 			<second>
 				<first>1.75000000000000000e+02</first>
 				<second>-2.74000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateString:3</first>
+			<second>
+				<first>2.99000000000000000e+02</first>
+				<second>-1.32000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -700,7 +762,7 @@ matlab*/</value>
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="19" tracking_level="0" version="0">
-		<count>5</count>
+		<count>6</count>
 		<item_version>0</item_version>
 		<item class_id="20" tracking_level="0" version="0">
 			<first>CreateString:0</first>
@@ -712,6 +774,10 @@ matlab*/</value>
 		</item>
 		<item>
 			<first>CreateString:2</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>CreateString:3</first>
 			<second>-1</second>
 		</item>
 		<item>

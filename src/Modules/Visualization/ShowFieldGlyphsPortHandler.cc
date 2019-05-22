@@ -50,8 +50,7 @@ namespace SCIRun{
           boost::optional<ColorMapHandle> pcolorMap,
           boost::optional<ColorMapHandle> scolorMap,
           boost::optional<ColorMapHandle> tcolorMap)
-        : pf_info(pf),
-          pf_handle(pf)
+        : pf_handle(pf), pf_info(pf)
       {
         // Save field info
         p_vfld = (pf)->vfield();
