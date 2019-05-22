@@ -177,13 +177,14 @@ namespace Networks {
     //Legacy importer maps
     struct LegacyImporterMap
     {
+      LegacyImporterMap();
       NameAndValLookup read_importer_map(const std::string& file);
-      const std::map<std::string, std::string> moduleRenameMap_;
       NameAndValLookup nameAndValLookup_;
       std::unique_ptr<std::string> v4MergeStateToV5_;  //??
       ValueConverter initState, appendState, useState;
     };
-    static LegacyImporterMap lim_;
+    static LegacyImporterMap legacyNetworks_;
+    static const std::map<std::string, std::string> moduleRenameMap_;
   };
 
 }}} // end namespace SCIRun

@@ -203,6 +203,8 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     { "CalculateFieldData5", "CalculateFieldData" }
   };
 
+LegacyNetworkIO::LegacyImporterMap LegacyNetworkIO::legacyNetworks_;
+
 std::string LegacyNetworkIO::checkForModuleRename(const std::string& originalName)
 {
   auto rename = moduleRenameMap_.find(originalName);
@@ -344,8 +346,8 @@ const std::string &val)
   std::string moduleName = xmlData_->network.modules[moduleIdMap_[mod_id]].module.module_name_;
   auto& stateXML = xmlData_->network.modules[moduleIdMap_[mod_id]].state;
 
-  auto moduleNameMapIter = nameAndValLookup_.find(moduleName);
-  if (moduleNameMapIter == nameAndValLookup_.end())
+  auto moduleNameMapIter = legacyNetworks_.nameAndValLookup_.find(moduleName);
+  if (moduleNameMapIter == legacyNetworks_.nameAndValLookup_.end())
   {
     simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << std::endl;
     return;
@@ -482,33 +484,35 @@ namespace
   };
 }
 
-std::unique_ptr<std::string> LegacyNetworkIO::v4MergeStateToV5_ = std::unique_ptr<std::string>(new std::string(""));
-
-ValueConverter LegacyNetworkIO::initState = [](const std::string& s)
+LegacyNetworkIO::LegacyImporterMap::LegacyImporterMap() : v4MergeStateToV5_(new std::string)
 {
-  v4MergeStateToV5_ = std::unique_ptr<std::string>(new std::string(s));
-  return s;
-};
+  initState = [this](const std::string& s)
+  {
+    v4MergeStateToV5_ = std::unique_ptr<std::string>(new std::string(s));
+    return s;
+  };
+  appendState = [this](const std::string& s)
+  {
+    *v4MergeStateToV5_ += "," + s;
+    return *v4MergeStateToV5_;
+  };
+  useState = [this](const std::string& s)
+  {
+    if(*v4MergeStateToV5_ == "linear")
+      return std::string("interpolateddata");
+    if(std::stoi(s) == 1)
+      return std::string("singledestination");
+    return std::string("closestdata");
+  };
 
-ValueConverter LegacyNetworkIO::appendState = [](const std::string& s)
-{
-  *v4MergeStateToV5_ += "," + s;
-  return *v4MergeStateToV5_;
-};
-
-ValueConverter LegacyNetworkIO::useState = [](const std::string& s)
-{
-  if(*v4MergeStateToV5_ == "linear")
-    return std::string("interpolateddata");
-  if(std::stoi(s) == 1)
-    return std::string("singledestination");
-  return std::string("closestdata");
-};
+  //TODO: move to app resources
+  nameAndValLookup_ = read_importer_map("../../src/Resources/LegacyModuleImporter.xml");
+}
 
 NameAndValLookup
-LegacyNetworkIO::read_importer_map(const std::string& file)
+LegacyNetworkIO::LegacyImporterMap::read_importer_map(const std::string& file)
 {
-  StringToFunctorMap functorLookup_ =
+  static StringToFunctorMap functorLookup_ =
   {
     {"toInt", toInt},
     {"toDouble", toDouble},
@@ -552,7 +556,7 @@ LegacyNetworkIO::read_importer_map(const std::string& file)
   return temp;
 }
 
-NameAndValLookup LegacyNetworkIO::nameAndValLookup_ = read_importer_map("../../src/Resources/LegacyModuleImporter.xml");
+
 
 #if 0
 void
@@ -1102,21 +1106,21 @@ LegacyNetworkIO::process_network_node(xmlNode* network_node)
       }
 
       xmlNode* enode = node->children;
-      for (; enode != 0; enode = enode->next) 
+      for (; enode != 0; enode = enode->next)
       {
         auto name = std::string(to_char_ptr(enode->name));
         if (enode->type == XML_ELEMENT_NODE && name == "environment")
         {
           process_environment(enode);
-        } 
+        }
         else if (enode->type == XML_ELEMENT_NODE && name == "modules")
         {
           process_modules_pass1(enode);
-        } 
+        }
         else if (enode->type == XML_ELEMENT_NODE && name == "connections")
         {
           process_connections(enode);
-        } 
+        }
         else if (enode->type == XML_ELEMENT_NODE && name == "note")
         {
           gui_set_variable(std::string("notes"), std::string(to_char_ptr(enode->children->content)));
