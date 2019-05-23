@@ -1054,7 +1054,7 @@ bool RegisterWithCorrespondencesAlgo::make_new_pointsA(VMesh* points, VMesh* Cor
     P.x(sumx + (Pp.x()) * (coefs[0]) + (Pp.y()) * (coefs[1]) + (Pp.z()) * (coefs[2]) + coefs[3]);
     P.y(sumy + (Pp.x()) * coefs[4] + (Pp.y())*coefs[5] + (Pp.z())*coefs[6] + coefs[7]);
     P.z(sumz + (Pp.x()) * coefs[8] + (Pp.y())*coefs[9] + (Pp.z())*coefs[10] + coefs[11]);
-
+    std::cout<<"point["<<i<<"] = "<<P<<std:endl;
     omesh.set_point(P, *(itp));
   }
   return true;
