@@ -174,6 +174,7 @@ namespace Networks {
     std::map<std::string, ModuleId> moduleIdMap_;
     std::map<std::string, std::string> connectionIdMap_;
 
+#if 0 // breaks installer
     //Legacy importer maps
     struct LegacyImporterMap
     {
@@ -184,6 +185,7 @@ namespace Networks {
       ValueConverter initState, appendState, useState;
     };
     static LegacyImporterMap legacyNetworks_;
+#endif
     static const std::map<std::string, std::string> moduleRenameMap_;
   };
 

@@ -203,7 +203,9 @@ const std::map<std::string, std::string> LegacyNetworkIO::moduleRenameMap_ =
     { "CalculateFieldData5", "CalculateFieldData" }
   };
 
+#if 0
 LegacyNetworkIO::LegacyImporterMap LegacyNetworkIO::legacyNetworks_;
+#endif
 
 std::string LegacyNetworkIO::checkForModuleRename(const std::string& originalName)
 {
@@ -346,6 +348,7 @@ const std::string &val)
   std::string moduleName = xmlData_->network.modules[moduleIdMap_[mod_id]].module.module_name_;
   auto& stateXML = xmlData_->network.modules[moduleIdMap_[mod_id]].state;
 
+#if 0
   auto moduleNameMapIter = legacyNetworks_.nameAndValLookup_.find(moduleName);
   if (moduleNameMapIter == legacyNetworks_.nameAndValLookup_.end())
   {
@@ -358,9 +361,9 @@ const std::string &val)
     simpleLog_ << "VAR TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
     return;
   }
-
   std::string stripBraces(val.begin() + 1, val.end() - 1);
   stateXML.setValue(varNameIter->second.first, varNameIter->second.second(stripBraces));
+#endif
 }
 
 namespace
@@ -484,6 +487,7 @@ namespace
   };
 }
 
+#if 0
 LegacyNetworkIO::LegacyImporterMap::LegacyImporterMap() : v4MergeStateToV5_(new std::string)
 {
   initState = [this](const std::string& s)
@@ -555,7 +559,7 @@ LegacyNetworkIO::LegacyImporterMap::read_importer_map(const std::string& file)
   }
   return temp;
 }
-
+#endif
 
 
 #if 0
