@@ -52,6 +52,7 @@ RegisterWithCorrespondences::RegisterWithCorrespondences() : Module(staticInfo_)
 	INITIALIZE_PORT(Correspondences1);
 	INITIALIZE_PORT(Correspondences2);
 	INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(Transform_Matrix);
 }
 
 void RegisterWithCorrespondences::setStateDefaults()
