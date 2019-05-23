@@ -386,7 +386,12 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
 {
   std::vector<QString> displayNames;
   std::transform(geomList.begin(), geomList.end(), std::back_inserter(displayNames),
-    [](const GeometryBaseHandle& geom) { return QString::fromStdString(geom->uniqueID()).split(GeometryObject::delimiter).at(1); });
+    [](const GeometryBaseHandle& geom)
+    {
+      auto parts = QString::fromStdString(geom->uniqueID()).split(GeometryObject::delimiter);
+      return (parts.size() > 1) ? parts.at(1) : QString("scale bar");
+    }
+  );
   for (int i = 0; i < itemList_->topLevelItemCount(); ++i)
   {
     if (std::find(displayNames.begin(), displayNames.end(), itemList_->topLevelItem(i)->text(0)) == displayNames.end())
