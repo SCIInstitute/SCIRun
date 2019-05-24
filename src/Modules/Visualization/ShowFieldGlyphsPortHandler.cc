@@ -41,7 +41,7 @@ namespace SCIRun{
   namespace Modules{
     namespace Visualization{
       ShowFieldGlyphsPortHandler::ShowFieldGlyphsPortHandler(
-          const Dataflow::Networks::Module* mod_,
+          const Dataflow::Networks::Module* mod,
           ModuleStateHandle state,
           const RenderState renState,
           FieldHandle pf,
@@ -50,7 +50,8 @@ namespace SCIRun{
           boost::optional<ColorMapHandle> pcolorMap,
           boost::optional<ColorMapHandle> scolorMap,
           boost::optional<ColorMapHandle> tcolorMap)
-        : pf_handle(pf), pf_info(pf)
+        : module_(mod),
+        pf_handle(pf), pf_info(pf)
       {
         // Save field info
         p_vfld = (pf)->vfield();
@@ -110,9 +111,6 @@ namespace SCIRun{
           {
             tertiaryFieldGiven = false;
           }
-
-        // Set module for error throwing
-        module_ = mod_;
 
         // Get Field and mesh from primary port
         p_vfld = pf->vfield();
@@ -190,64 +188,70 @@ namespace SCIRun{
         if(current_index == index)
           return;
 
-        // Get input data from ports
-        if(pf_data_type == FieldDataType::Scalar)
+        if (p_vfld)
+        {
+          // Get input data from ports
+          if (pf_data_type == FieldDataType::Scalar)
           {
             double s;
             p_vfld->get_value(s, index);
             pinputScalar = s;
           }
-        else if(pf_data_type == FieldDataType::Vector)
+          else if (pf_data_type == FieldDataType::Vector)
           {
             Geometry::Vector v;
             p_vfld->get_value(v, index);
             pinputVector = v;
           }
-        else if(pf_data_type == FieldDataType::Tensor)
+          else if (pf_data_type == FieldDataType::Tensor)
           {
             Geometry::Tensor t;
             p_vfld->get_value(t, index);
             pinputTensor = t;
           }
-
-        if(sf_data_type == FieldDataType::Scalar)
+        }
+        if (s_vfld)
+        {
+          if (sf_data_type == FieldDataType::Scalar)
           {
             double s;
             s_vfld->get_value(s, index);
             sinputScalar = s;
           }
-        else if(sf_data_type == FieldDataType::Vector)
+          else if (sf_data_type == FieldDataType::Vector)
           {
             Geometry::Vector v;
             s_vfld->get_value(v, index);
             sinputVector = v;
           }
-        else if(sf_data_type == FieldDataType::Tensor)
+          else if (sf_data_type == FieldDataType::Tensor)
           {
             Geometry::Tensor t;
             s_vfld->get_value(t, index);
             sinputTensor = t;
           }
-
-        if(tf_data_type == FieldDataType::Scalar)
+        }
+        if (t_vfld)
+        {
+          if (tf_data_type == FieldDataType::Scalar)
           {
             double s;
             t_vfld->get_value(s, index);
             tinputScalar = s;
           }
-        else if(tf_data_type == FieldDataType::Vector)
+          else if (tf_data_type == FieldDataType::Vector)
           {
             Geometry::Vector v;
             t_vfld->get_value(v, index);
             tinputVector = v;
           }
-        else if(tf_data_type == FieldDataType::Tensor)
+          else if (tf_data_type == FieldDataType::Tensor)
           {
             Geometry::Tensor t;
             t_vfld->get_value(t, index);
             tinputTensor = t;
           }
-
+        }
         // Set current index so it doesn't rerun for the same index
         current_index = index;
       }

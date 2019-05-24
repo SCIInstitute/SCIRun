@@ -54,15 +54,15 @@ namespace SCIRun{
           {
            Scalar,
            Vector,
-           Tensor
+           Tensor,
+           UNKNOWN = -1
           };
 
         const Dataflow::Networks::Module* module_;
-        const RenderState* renderState;
         RenderState::InputPort secondaryVecInput;
-        VField* p_vfld;
-        VField *s_vfld, *t_vfld;
-        Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle* facade_ptr;
+        VField* p_vfld{ nullptr };
+        VField* s_vfld{ nullptr };
+        VField* t_vfld{ nullptr };
         FieldHandle pf_handle;
         FieldInformation pf_info;
         Graphics::Datatypes::ColorScheme colorScheme;
@@ -75,7 +75,7 @@ namespace SCIRun{
         double current_index;
         bool colorMapGiven;
         bool secondaryFieldGiven, tertiaryFieldGiven;
-        FieldDataType pf_data_type, sf_data_type, tf_data_type;
+        FieldDataType pf_data_type{ UNKNOWN }, sf_data_type{ UNKNOWN }, tf_data_type{ UNKNOWN };
 
         void getFieldData(int index);
 
