@@ -47,11 +47,10 @@ using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Geometry;
 
-AlgorithmOutputName RegisterWithCorrespondencesAlgo::Transform_Matrix("Tranform_Mapping");
 
 static void printMatrix(const DenseMatrix& m, const std::string& tag = "tag")
 {
-#if 0
+#if 1
   std::cout << tag << std::endl;
   std::cout << "Size: " << m.nrows() << " x " << m.ncols() << std::endl;
   std::cout << "Min/Max: " << std::setprecision(15) << m.minCoeff() << " , " << m.maxCoeff() << std::endl;
@@ -88,10 +87,12 @@ AlgorithmOutput RegisterWithCorrespondencesAlgo::run(const AlgorithmInput& input
     transform=runN(input_field, corres1, corres2, return_field);
     break;
   }
+  
+  printMatrix(*transform,"Transform");
 
   AlgorithmOutput output;
   output[Variables::OutputField] = return_field;
-  output[Transform_Matrix] = transform;
+  output[TransformMatrix] = transform;
   return output;
 }
 
@@ -744,8 +745,6 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
         mypoint.x(mp.x() - sumx);
         mypoint.y(mp.y() - sumy);
         mypoint.z(mp.z() - sumz);
-      
-        std::cout<<"corr1_point["<<i<<"] = "<<mypoint.x()<<","<<mypoint.y()<<","<<mypoint.z()<<std::endl;
         icors1->set_point(mypoint, idx);
     }
     
@@ -895,6 +894,10 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
       //done with solve, make the new field
     std::cout<<"coefs computed"<<std::endl;
     std::cout<<coefs<<std::endl;
+  
+    printMatrix(*transform,"transform");
+  
+  
     make_new_pointsA(imesh, icors2, coefs, *omesh, sumx, sumy, sumz);
     
 #if 0
@@ -910,7 +913,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
         }
     }
 #endif
-    
+    std::cout<<"transformed points"<<std::endl;
     return transform;
 }
 
@@ -1062,7 +1065,6 @@ bool RegisterWithCorrespondencesAlgo::make_new_pointsA(VMesh* points, VMesh* Cor
     P.x(sumx + (Pp.x()) * (coefs[0]) + (Pp.y()) * (coefs[1]) + (Pp.z()) * (coefs[2]) + coefs[3]);
     P.y(sumy + (Pp.x()) * coefs[4] + (Pp.y())*coefs[5] + (Pp.z())*coefs[6] + coefs[7]);
     P.z(sumz + (Pp.x()) * coefs[8] + (Pp.y())*coefs[9] + (Pp.z())*coefs[10] + coefs[11]);
-    std::cout<<"point["<<i<<"] = "<<P.x()<<","<<P.y()<<","<<P.z()<<std::endl;
     omesh.set_point(P, *(itp));
   }
   return true;
@@ -1071,3 +1073,4 @@ bool RegisterWithCorrespondencesAlgo::make_new_pointsA(VMesh* points, VMesh* Cor
 
 AlgorithmInputName RegisterWithCorrespondencesAlgo::Correspondences1("Correspondences1");
 AlgorithmInputName RegisterWithCorrespondencesAlgo::Correspondences2("Correspondences2");
+AlgorithmOutputName RegisterWithCorrespondencesAlgo::TransformMatrix("TranformMatrix");

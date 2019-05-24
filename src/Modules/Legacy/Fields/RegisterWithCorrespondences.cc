@@ -52,7 +52,7 @@ RegisterWithCorrespondences::RegisterWithCorrespondences() : Module(staticInfo_)
 	INITIALIZE_PORT(Correspondences1);
 	INITIALIZE_PORT(Correspondences2);
 	INITIALIZE_PORT(OutputField);
-  INITIALIZE_PORT(Transform_Matrix);
+  INITIALIZE_PORT(TransformMatrix);
 }
 
 void RegisterWithCorrespondences::setStateDefaults()
@@ -70,5 +70,6 @@ void RegisterWithCorrespondences::execute()
     setAlgoIntFromState(Variables::Operator);
     auto output = algo().run(withInputData((InputField, input1)(Correspondences1, input2)(Correspondences2, input3)));
     sendOutputFromAlgorithm(OutputField, output);
+    sendOutputFromAlgorithm(TransformMatrix, output);
   }
 }

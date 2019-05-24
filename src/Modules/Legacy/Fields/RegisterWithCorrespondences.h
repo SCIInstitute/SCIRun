@@ -50,7 +50,7 @@ namespace SCIRun {
         INPUT_PORT(1, Correspondences1, Field);
         INPUT_PORT(2, Correspondences2, Field);
         OUTPUT_PORT(0, OutputField, Field);
-        OUTPUT_PORT(1, Transform_Matrix, Matrix);
+        OUTPUT_PORT(1, TransformMatrix, Matrix);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       };

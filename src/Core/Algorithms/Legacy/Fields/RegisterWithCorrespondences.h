@@ -51,7 +51,7 @@ class SCISHARE RegisterWithCorrespondencesAlgo : public AlgorithmBase
     RegisterWithCorrespondencesAlgo();
 	static AlgorithmInputName Correspondences1;
 	static AlgorithmInputName Correspondences2;
-  static AlgorithmOutputName Transform_Matrix;
+  static AlgorithmOutputName TransformMatrix;
   
 	AlgorithmOutput run(const AlgorithmInput& input) const;
   
