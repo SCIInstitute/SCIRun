@@ -50,7 +50,7 @@ using namespace SCIRun::Core::Geometry;
 
 static void printMatrix(const DenseMatrix& m, const std::string& tag = "tag")
 {
-#if 1
+#if 0
   std::cout << tag << std::endl;
   std::cout << "Size: " << m.nrows() << " x " << m.ncols() << std::endl;
   std::cout << "Min/Max: " << std::setprecision(15) << m.minCoeff() << " , " << m.maxCoeff() << std::endl;
@@ -597,17 +597,31 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runA(FieldHandle input, Field
     }
   }
   
-  DenseMatrixHandle transform(new DenseMatrix(4,4));
-  double *t_data = transform->data();
+  DenseMatrix rotation(Eigen::MatrixXd::Identity(4,4));
+  DenseMatrix trans1(Eigen::MatrixXd::Identity(4,4));
+  DenseMatrix trans2(Eigen::MatrixXd::Identity(4,4));
+  double *r_data = rotation.data();
   
   for (int p = 0; p < coefs.size(); p++)
   {
-    t_data[p] = coefs[p];
+    r_data[p] = coefs[p];
   }
-  t_data[12]=0;
-  t_data[13]=0;
-  t_data[14]=0;
-  t_data[15]=1;
+  
+  // recreate previous translation
+  trans1(0,3) = -sumx2;
+  trans1(1,3) = -sumy2;
+  trans1(2,3) = -sumz2;
+  
+  trans2(0,3) = sumx;
+  trans2(1,3) = sumy;
+  trans2(2,3) = sumz;
+  
+
+  
+  DenseMatrix transform;
+  transform = trans2*rotation*trans1;
+  DenseMatrixHandle trans_out(new DenseMatrix(transform.matrix()));
+  
   
   //done with solve, make the new field
   
@@ -633,7 +647,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runA(FieldHandle input, Field
   }
 #endif
 
-  return transform;
+  return trans_out;
 }
 
 
@@ -877,25 +891,44 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
       Tmat(2, 2)*traceA*norm1,
       0.0 };
   
-    DenseMatrixHandle transform(new DenseMatrix(4,4));
-    double *t_data = transform->data();
+  DenseMatrix rotation(Eigen::MatrixXd::Identity(4,4));
+  DenseMatrix trans1(Eigen::MatrixXd::Identity(4,4));
+  DenseMatrix trans2(Eigen::MatrixXd::Identity(4,4));
+  DenseMatrix scale1(Eigen::MatrixXd::Identity(4,4));
+  DenseMatrix scale2(Eigen::MatrixXd::Identity(4,4));
+  double *r_data = rotation.data();
   
-    std::cout<<"coefs ="<<coefs<<std::endl;
+  for (int p = 0; p < coefs.size(); p++)
+  {
+    r_data[p] = coefs[p];
+  }
+  // recreate previous moves
+  trans1(0,3) = -sumx2;
+  trans1(1,3) = -sumy2;
+  trans1(2,3) = -sumz2;
   
-    for (int p = 0; p < coefs.size(); p++)
-    {
-      t_data[p] = coefs[p];
-    }
-    t_data[12]=0;
-    t_data[13]=0;
-    t_data[14]=0;
-    t_data[15]=1;
-    
+  trans2(0,3) = sumx;
+  trans2(1,3) = sumy;
+  trans2(2,3) = sumz;
+  
+  scale1(1,1) = 1/norm2;
+  scale1(2,2) = 1/norm2;
+  scale1(3,3) = 1/norm2;
+  
+  scale2(1,1) = norm1;
+  scale2(2,2) = norm1;
+  scale2(3,3) = norm1;
+  
+  
+  DenseMatrix transform;
+  transform = trans2*scale2*rotation*scale1*trans1;
+  DenseMatrixHandle trans_out(new DenseMatrix(transform.matrix()));
+  
       //done with solve, make the new field
     std::cout<<"coefs computed"<<std::endl;
     std::cout<<coefs<<std::endl;
   
-    printMatrix(*transform,"transform");
+    printMatrix(*trans_out,"transform");
   
   
     make_new_pointsA(imesh, icors2, coefs, *omesh, sumx, sumy, sumz);
@@ -914,7 +947,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
     }
 #endif
     std::cout<<"transformed points"<<std::endl;
-    return transform;
+    return trans_out;
 }
 
 
@@ -1073,4 +1106,4 @@ bool RegisterWithCorrespondencesAlgo::make_new_pointsA(VMesh* points, VMesh* Cor
 
 AlgorithmInputName RegisterWithCorrespondencesAlgo::Correspondences1("Correspondences1");
 AlgorithmInputName RegisterWithCorrespondencesAlgo::Correspondences2("Correspondences2");
-AlgorithmOutputName RegisterWithCorrespondencesAlgo::TransformMatrix("TranformMatrix");
+AlgorithmOutputName RegisterWithCorrespondencesAlgo::TransformMatrix("TransformMatrix");
