@@ -31,6 +31,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Algorithms/Legacy/Fields/RegisterWithCorrespondences.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 
 using namespace SCIRun;
@@ -67,6 +68,16 @@ void RegisterWithCorrespondences::execute()
 	auto input3 = getRequiredInput(Correspondences2);
   if (needToExecute())
   {
+    FieldInformation fi1(input1);
+    FieldInformation fi2(input2);
+    FieldInformation fi3(input3);
+    
+    if (fi1.is_structuredmesh() || fi2.is_structuredmesh() || fi3.is_structuredmesh())
+    {
+      error("input fields cannot be a structured mesh.");
+      return;
+    }
+    
     setAlgoIntFromState(Variables::Operator);
     auto output = algo().run(withInputData((InputField, input1)(Correspondences1, input2)(Correspondences2, input3)));
     sendOutputFromAlgorithm(OutputField, output);

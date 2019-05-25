@@ -50,7 +50,7 @@ using namespace SCIRun::Core::Geometry;
 
 static void printMatrix(const DenseMatrix& m, const std::string& tag = "tag")
 {
-#if 1
+#if 0
   std::cout << tag << std::endl;
   std::cout << "Size: " << m.nrows() << " x " << m.ncols() << std::endl;
   std::cout << "Min/Max: " << std::setprecision(15) << m.minCoeff() << " , " << m.maxCoeff() << std::endl;
@@ -624,9 +624,6 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runA(FieldHandle input, Field
   
   
   //done with solve, make the new field
-  
-  std::cout<<"coefs computed"<<std::endl;
-  std::cout<<coefs<<std::endl;
   make_new_pointsA(imesh, icors2, coefs, *omesh, sumx, sumy, sumz);
   
   
@@ -925,22 +922,12 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
   printMatrix(scale1,"scale1");
   printMatrix(scale2,"scale2");
   
-  std::cout<<"translation 1: "<<-sumx2<<", "<<-sumy2<<", "<<-sumz2<<std::endl;
-  std::cout<<"translation 2: "<<sumx<<", "<<sumy<<", "<<sumz<<std::endl;
-  
-  std::cout<<"scale 1: "<<1/norm2<<std::endl;
-  std::cout<<"scale 2: "<<norm1<<std::endl;
-  
   
   DenseMatrix transform;
   transform = trans2*rotation*scale1*trans1;
-//  transform = scale1;
   DenseMatrixHandle trans_out(new DenseMatrix(transform.matrix()));
   
       //done with solve, make the new field
-    std::cout<<"coefs computed"<<std::endl;
-    std::cout<<coefs<<std::endl;
-  
     printMatrix(*trans_out,"transform");
   
   
