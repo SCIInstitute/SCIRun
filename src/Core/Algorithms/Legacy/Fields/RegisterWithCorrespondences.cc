@@ -935,7 +935,6 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
         }
     }
 #endif
-    std::cout<<"transformed points"<<std::endl;
     return trans_out;
 }
 
