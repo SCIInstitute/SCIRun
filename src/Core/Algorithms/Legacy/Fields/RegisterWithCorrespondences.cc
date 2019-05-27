@@ -602,10 +602,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runA(FieldHandle input, Field
   DenseMatrix trans2(Eigen::MatrixXd::Identity(4,4));
   double *r_data = rotation.data();
   
-  for (int p = 0; p < coefs.size(); p++)
-  {
-    r_data[p] = coefs[p];
-  }
+  std::copy(coefs.begin(), coefs.end(), r_data);
   
   // recreate previous translation
   trans1(0,3) = -sumx2;
@@ -616,11 +613,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runA(FieldHandle input, Field
   trans2(1,3) = sumy;
   trans2(2,3) = sumz;
   
-
-  
-  DenseMatrix transform;
-  transform = trans2*rotation*trans1;
-  DenseMatrixHandle trans_out(new DenseMatrix(transform.matrix()));
+  auto trans_out = boost::make_shared<DenseMatrix>(trans2*rotation*trans1);
   
   
   //done with solve, make the new field
@@ -895,10 +888,8 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
   DenseMatrix scale2(Eigen::MatrixXd::Identity(4,4));
   double *r_data = rotation.data();
   
-  for (int p = 0; p < coefs.size(); p++)
-  {
-    r_data[p] = coefs[p];
-  }
+  std::copy(coefs.begin(), coefs.end(), r_data);
+  
   // recreate previous moves
   trans1(0,3) = -sumx2;
   trans1(1,3) = -sumy2;
@@ -923,9 +914,7 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runP(FieldHandle input, Field
   printMatrix(scale2,"scale2");
   
   
-  DenseMatrix transform;
-  transform = trans2*rotation*scale1*trans1;
-  DenseMatrixHandle trans_out(new DenseMatrix(transform.matrix()));
+  auto trans_out = boost::make_shared<DenseMatrix>(trans2*rotation*scale1*trans1);
   
       //done with solve, make the new field
     printMatrix(*trans_out,"transform");
@@ -984,10 +973,8 @@ DenseMatrixHandle RegisterWithCorrespondencesAlgo::runN(FieldHandle input, Field
 
   omesh = imesh;
   
-  DenseMatrix transArray(Eigen::MatrixXd::Identity(4,4));
-  DenseMatrixHandle transform(new DenseMatrix(transArray.matrix()));
+  return boost::make_shared<DenseMatrix>(Eigen::MatrixXd::Identity(4,4));
 
-  return transform;
 }
 
 bool RegisterWithCorrespondencesAlgo::radial_basis_func(VMesh* Cors, VMesh* points, DenseMatrixHandle& Sigma) const
