@@ -89,9 +89,9 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setWindowTitle(QString::fromStdString(name));
   setFocusPolicy(Qt::StrongFocus);
 
+  setupScaleBar();
   addToolBar();
   setupClippingPlanes();
-  setupScaleBar();
 
   // Setup Qt OpenGL widget.
   QGLFormat fmt;
