@@ -50,16 +50,6 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName Sizing;
         static const Core::Algorithms::AlgorithmParameterName ShowLastAsVector;
         static const Core::Algorithms::AlgorithmParameterName ShowLines;
-        // static const Core::Algorithms::AlgorithmParameterName XLocation;
-        // static const Core::Algorithms::AlgorithmParameterName YLocation;
-        // static const Core::Algorithms::AlgorithmParameterName ZLocation;
-        // static const Core::Algorithms::AlgorithmParameterName FieldValue;
-        // static const Core::Algorithms::AlgorithmParameterName MoveMethod;
-        // static const Core::Algorithms::AlgorithmParameterName SnapToElement;
-        // static const Core::Algorithms::AlgorithmParameterName SnapToNode;
-        // static const Core::Algorithms::AlgorithmParameterName FieldNode;
-        // static const Core::Algorithms::AlgorithmParameterName FieldElem;
-        // static const Core::Algorithms::AlgorithmParameterName ProbeColor;
         static const Core::Algorithms::AlgorithmParameterName NumSeeds;
         static const Core::Algorithms::AlgorithmParameterName ProbeScale;
         static const Core::Algorithms::AlgorithmParameterName PointPositions;
@@ -72,6 +62,19 @@ namespace SCIRun {
 
       private:
         boost::shared_ptr<class ShowAndEditDipolesImpl> impl_;
+        Core::Geometry::Point pos_;
+        Core::Geometry::Vector direction_;
+        double sphereRadius_;
+        double cylinderRadius_;
+        double coneRadius_;
+        double diskRadius_;
+        double diskDistFromCenter_;
+        double diskWidth_;
+
+        Core::Datatypes::ColorRGB deflPointCol_;
+        Core::Datatypes::ColorRGB deflCol_;
+        Core::Datatypes::ColorRGB greenCol_;
+        Core::Datatypes::ColorRGB resizeCol_;
         // Core::Geometry::Point currentLocation() const;
         // Graphics::Datatypes::GeometryHandle buildGeometryObject(FieldHandle field, const GeometryIDGenerator& idGenerator);
         FieldHandle GenerateOutputField();
@@ -80,7 +83,6 @@ namespace SCIRun {
         int moveCount_ {0};
         // void setNearestNode(const Core::Geometry::Point& location);
         // void setNearestElement(const Core::Geometry::Point& location);
-        // FieldHandle GenerateOutputField(boost::optional<FieldHandle> ifieldOption);
       };
     }
   }

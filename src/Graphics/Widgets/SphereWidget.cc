@@ -41,37 +41,27 @@ SphereWidget::SphereWidget(const Core::GeometryIDGenerator& idGenerator,
   const std::string& name,
   double radius, const std::string& defaultColor,
   const Point& point, const BBox& bbox)
-  : WidgetBase(idGenerator, "SphereWidget::" + name, true), position_(point)
+  : WidgetBase(idGenerator, "SphereWidget::" + name, true, point)
 {
   //std::cout << "SphereWidget() point: " << point.get_string() << std::endl;
-  double num_strips = 10;
+  int resolution = 10;
   if (radius < 0) radius = 1.;
-  if (num_strips < 0) num_strips = 10.;
+  if (resolution < 0) resolution = 10.;
 
   auto colorScheme = ColorScheme::COLOR_UNIFORM;
   std::stringstream ss;
-  ss << radius << num_strips << static_cast<int>(colorScheme);
+  ss << radius << resolution << static_cast<int>(colorScheme);
 
   auto uniqueNodeID = uniqueID() + "widget" + ss.str();
 
   Graphics::GlyphGeom glyphs;
   ColorRGB node_color;
-  glyphs.addSphere(point, radius, num_strips, node_color);
+  glyphs.addSphere(point, radius, resolution, node_color);
 
   auto renState = getWidgetRenderState(defaultColor);
 
   glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
-}
-
-Point SphereWidget::position() const
-{
-  return position_;
-}
-
-void SphereWidget::setPosition(const Point& p)
-{
-  position_ = p;
 }
 
 RenderState SphereWidget::getWidgetRenderState(const std::string& defaultColor)

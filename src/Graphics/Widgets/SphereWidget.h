@@ -43,11 +43,8 @@ namespace SCIRun {
       public:
         SphereWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& name, double radius, const std::string& defaultColor,
           const Core::Geometry::Point& point, const Core::Geometry::BBox& bbox);
-        Core::Geometry::Point position() const;
-        void setPosition(const Core::Geometry::Point& p);
       private:
         RenderState getWidgetRenderState(const std::string& defaultColor);
-        Core::Geometry::Point position_;
       };
 
       using SphereWidgetHandle = SharedPointer<SphereWidget>;

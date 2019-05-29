@@ -32,6 +32,7 @@ SET(Graphics_Widgets_SRCS
   SphereWidget.cc
   CylinderWidget.cc
   ConeWidget.cc
+  DiskWidget.cc
 )
 
 SET(Graphics_Widgets_HEADERS

@@ -44,6 +44,13 @@ namespace SCIRun
       {
       public:
         WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable);
+        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& pos);
+        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Vector& pos);
+        Core::Geometry::Point position() const;
+        void setPosition(const Core::Geometry::Point& p);
+
+      protected:
+        Core::Geometry::Point position_;
       };
 
       using WidgetHandle = SharedPointer<WidgetBase>;
@@ -53,16 +60,16 @@ namespace SCIRun
         Core::Geometry::Point center_, right_, down_, in_;
 
         void setPosition(const Core::Geometry::Point& center, const Core::Geometry::Point& right,
-          const Core::Geometry::Point& down, const Core::Geometry::Point& in);
+                         const Core::Geometry::Point& down, const Core::Geometry::Point& in);
         void getPosition(Core::Geometry::Point& center, Core::Geometry::Point& right,
-          Core::Geometry::Point& down, Core::Geometry::Point& in) const;
+                         Core::Geometry::Point& down, Core::Geometry::Point& in) const;
       };
 
       class SCISHARE CompositeWidget : public WidgetBase
       {
       public:
         template <typename WidgetIter>
-        CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
+          CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
           : WidgetBase(idGenerator, tag, true), widgets_(begin, end)
         {}
         ~CompositeWidget();
@@ -77,7 +84,7 @@ namespace SCIRun
         template <typename WidgetIter>
           LinkedCompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
           : WidgetBase(idGenerator, tag, true), widgets_(begin, end)
-          {}
+        {}
         ~LinkedCompositeWidget();
         void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
       private:
@@ -87,20 +94,28 @@ namespace SCIRun
       class SCISHARE WidgetFactory
       {
       public:
-      static WidgetHandle createBox(const Core::GeometryIDGenerator& idGenerator, double scale,
-                                    const BoxPosition& pos, const Core::Geometry::BBox& bbox);
-      static WidgetHandle createSphere(const Core::GeometryIDGenerator& idGenerator,
-                                       const std::string& name,
-                                       double radius, const std::string& defaultColor,
-                                       const Core::Geometry::Point& point, const Core::Geometry::BBox& bbox);
-      static WidgetHandle createCylinder(const Core::GeometryIDGenerator& idGenerator,
+        static WidgetHandle createBox(const Core::GeometryIDGenerator& idGenerator, double scale,
+                                      const BoxPosition& pos, const Core::Geometry::BBox& bbox);
+        static WidgetHandle createSphere(const Core::GeometryIDGenerator& idGenerator,
                                          const std::string& name,
-                                         double scale,
-                                         const std::string& defaultColor,
-                                         const Core::Geometry::Point& p1,
-                                         const Core::Geometry::Point& p2,
-                                         const Core::Geometry::BBox& bbox);
-      static WidgetHandle createCone(const Core::GeometryIDGenerator& idGenerator,
+                                         double radius, const std::string& defaultColor,
+                                         const Core::Geometry::Point& point, const Core::Geometry::BBox& bbox);
+        static WidgetHandle createCylinder(const Core::GeometryIDGenerator& idGenerator,
+                                           const std::string& name,
+                                           double scale,
+                                           const std::string& defaultColor,
+                                           const Core::Geometry::Point& p1,
+                                           const Core::Geometry::Point& p2,
+                                           const Core::Geometry::BBox& bbox);
+        static WidgetHandle createCone(const Core::GeometryIDGenerator& idGenerator,
+                                       const std::string& name,
+                                       double scale,
+                                       const std::string& defaultColor,
+                                       const Core::Geometry::Point& p1,
+                                       const Core::Geometry::Point& p2,
+                                       const Core::Geometry::BBox& bbox,
+                                     bool renderBase);
+      static WidgetHandle createDisk(const Core::GeometryIDGenerator& idGenerator,
                                      const std::string& name,
                                      double scale,
                                      const std::string& defaultColor,

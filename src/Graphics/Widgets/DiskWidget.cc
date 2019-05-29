@@ -45,10 +45,10 @@ DiskWidget::DiskWidget(const Core::GeometryIDGenerator& idGenerator,
                                const Point& p1,
                                const Point& p2,
                                const BBox& bbox)
-  : WidgetBase(idGenerator, "DiskWidget::" + name, true), position_((p1 + p2)/2)
+  : WidgetBase(idGenerator, "DiskWidget::" + name, true, (p1 + p2)/2)
 {
   //std::cout << "DiskWidget() point: " << point.get_string() << std::endl;
-  double resolution = 10;
+  int resolution = 10;
   if (radius < 0) radius = 1.;
   if (resolution < 0) resolution = 10.;
 
@@ -66,16 +66,6 @@ DiskWidget::DiskWidget(const Core::GeometryIDGenerator& idGenerator,
 
   glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
-}
-
-Point DiskWidget::position() const
-{
-  return position_;
-}
-
-void DiskWidget::setPosition(const Point& p)
-{
-  position_ = p;
 }
 
 RenderState DiskWidget::getWidgetRenderState(const std::string& defaultColor)

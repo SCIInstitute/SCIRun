@@ -39,16 +39,17 @@ using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
 ConeWidget::ConeWidget(const Core::GeometryIDGenerator& idGenerator,
-                               const std::string& name,
-                               double radius,
-                               const std::string& defaultColor,
-                               const Point& p1,
-                               const Point& p2,
-                               const BBox& bbox)
-  : WidgetBase(idGenerator, "ConeWidget::" + name, true), position_((p1 + p2)/2)
+                       const std::string& name,
+                       double radius,
+                       const std::string& defaultColor,
+                       const Point& p1,
+                       const Point& p2,
+                       const BBox& bbox,
+                       bool renderBase)
+  : WidgetBase(idGenerator, "ConeWidget::" + name, true, (p1 + p2)/2)
 {
   //std::cout << "ConeWidget() point: " << point.get_string() << std::endl;
-  double resolution = 10;
+  int resolution = 10;
   if (radius < 0) radius = 1.;
   if (resolution < 0) resolution = 10.;
 
@@ -60,22 +61,12 @@ ConeWidget::ConeWidget(const Core::GeometryIDGenerator& idGenerator,
 
   Graphics::GlyphGeom glyphs;
   ColorRGB node_color;
-  glyphs.addCone(p1, p2, radius, resolution, node_color, node_color);
+  glyphs.addCone(p1, p2, radius, resolution, renderBase, node_color, node_color);
 
   auto renState = getWidgetRenderState(defaultColor);
 
   glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
-}
-
-Point ConeWidget::position() const
-{
-  return position_;
-}
-
-void ConeWidget::setPosition(const Point& p)
-{
-  position_ = p;
 }
 
 RenderState ConeWidget::getWidgetRenderState(const std::string& defaultColor)
