@@ -1,1 +1,1 @@
-v5.0-beta.W.RC1
+v5.0-beta.W
