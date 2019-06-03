@@ -588,6 +588,7 @@ QColor ViewSceneDialog::checkColorSetting(std::string& rgb, QColor defaultColor)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::newGeometryValue()
 {
+  std::cout << "New Geometry Value\n";
   DEBUG_LOG_LINE_INFO
   LOG_DEBUG("ViewSceneDialog::newGeometryValue {} before locking", windowTitle().toStdString());
   RENDERER_LOG_FUNCTION_SCOPE;
