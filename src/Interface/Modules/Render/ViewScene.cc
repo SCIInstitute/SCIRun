@@ -588,7 +588,7 @@ QColor ViewSceneDialog::checkColorSetting(std::string& rgb, QColor defaultColor)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::newGeometryValue()
 {
-  std::cout << "New Geometry Value\n";
+  //std::cout << "New Geometry Value\n";
   DEBUG_LOG_LINE_INFO
   LOG_DEBUG("ViewSceneDialog::newGeometryValue {} before locking", windowTitle().toStdString());
   RENDERER_LOG_FUNCTION_SCOPE;
@@ -597,8 +597,6 @@ void ViewSceneDialog::newGeometryValue()
   auto spire = mSpire.lock();
   if (!spire)
     return;
-
-  spire->removeAllGeomObjects();
 
   std::vector<QString> displayNames;
   std::vector<std::string> validObjects;
@@ -634,17 +632,40 @@ void ViewSceneDialog::newGeometryValue()
     if (mConfigurationDock->visibleItems().isVisible(name))
     {
       auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
-      if (realObj)
+      if (realObj && spire->hasObject(obj->uniqueID()))
       {
-        DEBUG_LOG_LINE_INFO
-        spire->handleGeomObject(realObj, port);
         validObjects.push_back(obj->uniqueID());
+        //std::cout << obj->uniqueID() << " : " << "already exists\n";
       }
     }
   }
 
   if (!validObjects.empty())
     spire->gcInvalidObjects(validObjects);
+  else
+    spire->removeAllGeomObjects();
+
+  validObjects.clear();
+
+  port = 0;
+  for (auto it = allGeoms.begin(); it != allGeoms.end(); ++it, ++port)
+  {
+    auto obj = *it;
+    auto name = displayNames[port];
+    if (mConfigurationDock->visibleItems().isVisible(name))
+    {
+      auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
+      if (realObj && !spire->hasObject(obj->uniqueID()))
+      {
+        DEBUG_LOG_LINE_INFO
+        spire->handleGeomObject(realObj, port);
+        validObjects.push_back(obj->uniqueID());
+        //  std::cout << "added: " << obj->uniqueID() << "\n";
+      }
+    }
+  }
+
+  //std::cout << toString("");
 
   sendScreenshotDownstreamForTesting();
 
@@ -1277,6 +1298,8 @@ void ViewSceneDialog::buildGeomClippingPlanes()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, const BBox& bbox)
 {
+  BBox mBBox;
+  mBBox.reset();
   Vector diag(bbox.diagonal());
   Point c(bbox.center());
   Vector n(plane.x, plane.y, plane.z);
@@ -1319,7 +1342,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
   renState.set(RenderState::IS_WIDGET, true);
   auto geom(boost::make_shared<GeometryObjectSpire>(*gid_, uniqueNodeID, false));
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox());
 
   Graphics::GlyphGeom glyphs2;
   glyphs2.addPlane(p1, p2, p3, p4, ColorRGB());
@@ -1334,7 +1357,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
   renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
   auto geom2(boost::make_shared<GeometryObjectSpire>(*gid_, ss.str(), false));
   glyphs2.buildObject(*geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox());
 
   clippingPlaneGeoms_.push_back(geom);
   clippingPlaneGeoms_.push_back(geom2);

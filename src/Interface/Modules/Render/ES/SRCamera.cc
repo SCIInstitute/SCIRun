@@ -141,7 +141,7 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRCamera::setClippingPlanes()
     {
-      mRadius = (mSceneBBox.get_max() - mSceneBBox.get_min()).length() / 2.0f;
+      mRadius = (mSceneBBox.get_max() - mSceneBBox.get_min()).length() / 1.9f;
 
       if(mRadius > 0.0)
       {
