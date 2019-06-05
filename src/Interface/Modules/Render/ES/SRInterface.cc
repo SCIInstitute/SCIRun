@@ -788,7 +788,6 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::handleGeomObject(GeometryHandle obj, int port)
     {
-      //std::cout << "Handel Geom Object\n";
       //logRendererInfo("Handling geom object on port {}", port);
       RENDERER_LOG_FUNCTION_SCOPE;
       RENDERER_LOG("Ensure our rendering context is current on our thread.");
@@ -1164,7 +1163,6 @@ namespace SCIRun {
             mSceneBBox.reset();
             for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
             {
-              //std::cout << "BBox Valid: " << it->mBBox.valid() << "\n";
               if (it->mBBox.valid())
               {
                 mSceneBBox.extend(it->mBBox);
@@ -1191,7 +1189,6 @@ namespace SCIRun {
         for (const auto& pass : it->mPasses)
         {
           uint64_t entityID = getEntityIDForName(pass.passName, it->mPort);
-          //  std::cout << "entityID: " << entityID << "\n";
           mCore.removeEntity(entityID);
         }
       }
@@ -1230,7 +1227,7 @@ namespace SCIRun {
       for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
         if (it->mName == object)
           return true;
-              
+
       return false;
     }
 
