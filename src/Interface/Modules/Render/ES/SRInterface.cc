@@ -1228,12 +1228,9 @@ namespace SCIRun {
     bool SRInterface::hasObject(std::string object)
     {
       for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
-      {
         if (it->mName == object)
-        {
           return true;
-        }
-      }
+              
       return false;
     }
 

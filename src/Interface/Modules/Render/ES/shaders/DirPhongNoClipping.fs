@@ -50,7 +50,7 @@ varying vec3  vNormal;
 void main()
 {
   vec3  invLightDir = -uLightDirWorld;
-  vec3  normal      = -normalize(vNormal);
+  vec3  normal      = normalize(vNormal);
 
   if (gl_FrontFacing)
     normal = -normal;

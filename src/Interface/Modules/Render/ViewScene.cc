@@ -640,12 +640,10 @@ void ViewSceneDialog::newGeometryValue()
     }
   }
 
-  if (!validObjects.empty())
-    spire->gcInvalidObjects(validObjects);
-  else
-    spire->removeAllGeomObjects();
-
-  validObjects.clear();
+  //if (!validObjects.empty())
+  spire->gcInvalidObjects(validObjects);
+  //else
+  //  spire->removeAllGeomObjects();
 
   port = 0;
   for (auto it = allGeoms.begin(); it != allGeoms.end(); ++it, ++port)
@@ -659,8 +657,7 @@ void ViewSceneDialog::newGeometryValue()
       {
         DEBUG_LOG_LINE_INFO
         spire->handleGeomObject(realObj, port);
-        validObjects.push_back(obj->uniqueID());
-        //  std::cout << "added: " << obj->uniqueID() << "\n";
+        //std::cout << "added: " << obj->uniqueID() << "\n";
       }
     }
   }
@@ -1325,7 +1322,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
 
   Graphics::GlyphGeom glyphs;
   glyphs.addClippingPlane(p1, p2, p3, p4, 0.01 * std::min(w, h),
-    50, ColorRGB(), ColorRGB());
+    10, ColorRGB(), ColorRGB());
   ss << "clipping_plane" << index <<
     p1.x() << p1.y() << p1.z() <<
     p2.x() << p2.y() << p2.z() <<

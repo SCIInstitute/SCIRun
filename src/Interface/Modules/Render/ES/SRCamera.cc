@@ -141,7 +141,9 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRCamera::setClippingPlanes()
     {
-      mRadius = (mSceneBBox.get_max() - mSceneBBox.get_min()).length() / 1.9f;
+      //we could divide by 2.0 for tightest bound but here we divide by 1.0 to accomidate
+      //for the clipping plane visualization
+      mRadius = (mSceneBBox.get_max() - mSceneBBox.get_min()).length() / 1.0f;
 
       if(mRadius > 0.0)
       {
