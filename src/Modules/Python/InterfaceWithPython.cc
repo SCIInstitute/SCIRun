@@ -63,6 +63,7 @@ ALGORITHM_PARAMETER_DEF(Python, PythonOutputField3Name);
 MODULE_INFO_DEF(InterfaceWithPython, Python, SCIRun)
 
 Mutex InterfaceWithPython::lock_("InterfaceWithPython");
+bool InterfaceWithPython::matlabInitialized_{ false };
 
 InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_)
 {
@@ -78,6 +79,10 @@ InterfaceWithPython::InterfaceWithPython() : Module(staticInfo_)
   INITIALIZE_PORT(PythonMatrix3);
   INITIALIZE_PORT(PythonField3);
   INITIALIZE_PORT(PythonString3);
+
+#ifdef BUILD_WITH_PYTHON
+  translator_.reset(new InterfaceWithPythonCodeTranslatorImpl(id().id_, get_state()));
+#endif
 }
 
 void InterfaceWithPython::setStateDefaults()
@@ -130,7 +135,7 @@ void InterfaceWithPython::execute()
   auto matrices = getOptionalDynamicInputs(InputMatrix);
   auto fields = getOptionalDynamicInputs(InputField);
   auto strings = getOptionalDynamicInputs(InputString);
-  if (needToExecute())
+  if (needToExecute() || alwaysExecuteEnabled())
   {
     auto state = get_state();
     {
@@ -138,14 +143,18 @@ void InterfaceWithPython::execute()
 
       runTopLevelCode();
 
-      PythonInterfaceParser parser(id().id_, state, connectedPortIds());
+      translator_->updatePorts(connectedPortIds());
       auto code = state->getValue(Parameters::PythonCode).toString();
-
-      auto intermediate = parser.extractSpecialBlocks(code);
-      auto readyToConvert = parser.concatenateNormalBlocks(intermediate);
-      auto convertedCode = parser.convertStandardCodeBlock(readyToConvert);
+      auto convertedCode = translator_->translate(code);
       NetworkEditorPythonAPI::PythonModuleContextApiDisabler disabler;
-      PythonInterpreter::Instance().run_script(convertedCode);
+      if (convertedCode.isMatlab && !matlabInitialized_)
+      {
+        PythonInterpreter::Instance().run_string("import matlab.engine");
+        PythonInterpreter::Instance().run_string("__eng = matlab.engine.start_matlab()");
+        PythonInterpreter::Instance().run_string("from MatlabConversion import *");
+        matlabInitialized_ = true;
+      }
+      PythonInterpreter::Instance().run_script(convertedCode.code);
     }
 
     PythonObjectForwarderImpl<InterfaceWithPython> impl(*this);

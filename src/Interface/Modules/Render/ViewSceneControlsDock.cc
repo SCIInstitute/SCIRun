@@ -108,9 +108,21 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(dValueHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setClippingPlaneD(int)));
   //-----------Lights Tab-----------------//
   connect(headlightCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleHeadLight(bool)));
+  connect(headlightAzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setHeadLightAzimuth(int)));
+  connect(headlightInclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setHeadLightInclination(int)));
+
   connect(light1CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight1(bool)));
+  connect(light1AzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight1Azimuth(int)));
+  connect(light1InclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight1Inclination(int)));
+
   connect(light2CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight2(bool)));
+  connect(light2AzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight2Azimuth(int)));
+  connect(light2InclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight2Inclination(int)));
+
   connect(light3CheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleLight3(bool)));
+  connect(light3AzimuthSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight3Azimuth(int)));
+  connect(light3InclinationSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setLight3Inclination(int)));
+
   //-----------Materials Tab-----------------//
   connect(ambientDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAmbientValue(double)));
   connect(diffuseDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setDiffuseValue(double)));
@@ -134,7 +146,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(orientCenterPositionButton, SIGNAL(clicked()), parent, SLOT(setCenterOrientPos()));
   connect(orientDefaultPositionButton, SIGNAL(clicked()), this, SLOT(setSliderDefaultPos()));
   connect(orientCenterPositionButton, SIGNAL(clicked()), this, SLOT(setSliderCenterPos()));
-  connect(showAxisCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(showAxisChecked(bool)));
   connect(showScaleBarTextGroupBox_, SIGNAL(clicked(bool)), parent, SLOT(setScaleBarVisible(bool)));
   connect(fontSizeSpinBox_, SIGNAL(valueChanged(int)), parent, SLOT(setScaleBarFontSize(int)));
   connect(scaleBarLengthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLength(double)));
@@ -168,7 +179,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   for (auto &light : lightControls_)
   {
-    connect(light, SIGNAL(lightMoved(int)), parent, SLOT(setLightPosition(int)));
+    //connect(light, SIGNAL(lightMoved(int)), parent, SLOT(setLightPosition(int)));
     connect(light, SIGNAL(colorChanged(int)), parent, SLOT(setLightColor(int)));
   }
 
@@ -201,11 +212,9 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   viewOptionsGroupBox_->setVisible(false);
   autoViewOnLoadCheckBox_->setVisible(false);
   orthoViewCheckBox_->setVisible(false);
-  showAxisCheckBox_->setVisible(false);
 
   ////Controls Tab
   transparencyGroupBox_->setVisible(false);
-
 }
 
 void ViewSceneControlsDock::setSampleColor(const QColor& color)
@@ -377,7 +386,12 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
 {
   std::vector<QString> displayNames;
   std::transform(geomList.begin(), geomList.end(), std::back_inserter(displayNames),
-    [](const GeometryBaseHandle& geom) { return QString::fromStdString(geom->uniqueID()).split(GeometryObject::delimiter).at(1); });
+    [](const GeometryBaseHandle& geom)
+    {
+      auto parts = QString::fromStdString(geom->uniqueID()).split(GeometryObject::delimiter);
+      return (parts.size() > 1) ? parts.at(1) : QString("scale bar");
+    }
+  );
   for (int i = 0; i < itemList_->topLevelItemCount(); ++i)
   {
     if (std::find(displayNames.begin(), displayNames.end(), itemList_->topLevelItem(i)->text(0)) == displayNames.end())

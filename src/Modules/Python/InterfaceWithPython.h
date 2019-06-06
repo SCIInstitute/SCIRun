@@ -54,6 +54,8 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(PythonOutputField1Name);
         ALGORITHM_PARAMETER_DECL(PythonOutputField2Name);
         ALGORITHM_PARAMETER_DECL(PythonOutputField3Name);
+
+        class InterfaceWithPythonCodeTranslator;
       }
     }
   }
@@ -84,7 +86,6 @@ namespace SCIRun
         OUTPUT_PORT(7, PythonString2, String);
         OUTPUT_PORT(8, PythonString3, String);
 
-        static std::vector<Core::Algorithms::AlgorithmParameterName> inputNameParameters();
         static std::vector<Core::Algorithms::AlgorithmParameterName> outputNameParameters();
 
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
@@ -93,6 +94,8 @@ namespace SCIRun
         static Core::Thread::Mutex lock_;
         void runTopLevelCode() const;
         std::vector<std::string> connectedPortIds() const;
+        SharedPointer<Core::Algorithms::Python::InterfaceWithPythonCodeTranslator> translator_;
+        static bool matlabInitialized_;
       };
 
     }

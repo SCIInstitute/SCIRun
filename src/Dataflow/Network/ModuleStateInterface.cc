@@ -107,3 +107,24 @@ StringMap MetadataMap::getFullMap() const
 {
   return transient_value_cast<StringMap>(state_->getTransientValue(metadataKey));
 }
+
+namespace
+{
+  const char* alwaysExecuteKey = "__INTERNAL__forceAlwaysExecute";
+}
+
+void SCIRun::Dataflow::Networks::setModuleAlwaysExecute(ModuleStateHandle state, bool toggle)
+{
+  if (!state)
+    return;
+
+  state->setTransientValue(alwaysExecuteKey, toggle);
+}
+
+bool SCIRun::Dataflow::Networks::getModuleAlwaysExecute(ModuleStateHandle state)
+{
+  if (!state)
+    return false;
+
+  return transient_value_cast<bool>(state->getTransientValue(alwaysExecuteKey));
+}

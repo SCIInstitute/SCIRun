@@ -70,7 +70,7 @@ FieldHandle LoadInLatVol()
 
 TEST_F(ExtractSimpleIsosurfaceModuleTests, ExtractSimpleIsosurfaceTriangleNoThrow_Example1)
 {
-  auto test = makeModule("ExtractSimpleIsosurface");
+  auto test = makeModule("ExtractIsosurface");
   FieldHandle f=LoadInTriangles();
   stubPortNWithThisData(test, 0, f);
   EXPECT_NO_THROW(test->execute());
@@ -78,7 +78,7 @@ TEST_F(ExtractSimpleIsosurfaceModuleTests, ExtractSimpleIsosurfaceTriangleNoThro
 
 TEST_F(ExtractSimpleIsosurfaceModuleTests, ExtractSimpleIsosurfaceTriangleNoThrow_Example2)
 {
-  auto test = makeModule("ExtractSimpleIsosurface");
+  auto test = makeModule("ExtractIsosurface");
   FieldHandle f=LoadInTetrahedrals();
   stubPortNWithThisData(test, 0, f);
   EXPECT_NO_THROW(test->execute());
@@ -86,7 +86,7 @@ TEST_F(ExtractSimpleIsosurfaceModuleTests, ExtractSimpleIsosurfaceTriangleNoThro
 
 TEST_F(ExtractSimpleIsosurfaceModuleTests, ExtractSimpleIsosurfaceTriangleNoThrow_Example3)
 {
-  auto test = makeModule("ExtractSimpleIsosurface");
+  auto test = makeModule("ExtractIsosurface");
   FieldHandle f=LoadInLatVol();
   stubPortNWithThisData(test, 0, f);
   EXPECT_NO_THROW(test->execute());
@@ -94,7 +94,7 @@ TEST_F(ExtractSimpleIsosurfaceModuleTests, ExtractSimpleIsosurfaceTriangleNoThro
 
 TEST_F(ExtractSimpleIsosurfaceModuleTests, ThrowForDenseMatrixInPort)
 {
-  auto test = makeModule("ExtractSimpleIsosurface");
+  auto test = makeModule("ExtractIsosurface");
 	DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
 	for (int i=0; i<3; i++)
 		(*m)(i, 0) = 1;
@@ -104,7 +104,7 @@ TEST_F(ExtractSimpleIsosurfaceModuleTests, ThrowForDenseMatrixInPort)
 
 TEST_F(ExtractSimpleIsosurfaceModuleTests, ThrowForNullPointerExeption)
 {
-  auto test = makeModule("ExtractSimpleIsosurface");
+  auto test = makeModule("ExtractIsosurface");
   FieldHandle nullfield;
   stubPortNWithThisData(test, 0, nullfield);
   EXPECT_THROW(test->execute(), NullHandleOnPortException);

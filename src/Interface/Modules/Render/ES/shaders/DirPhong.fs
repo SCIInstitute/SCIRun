@@ -25,9 +25,9 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
 #ifdef OPENGL_ES
   #ifdef GL_FRAGMENT_PRECISION_HIGH
-    // Default precision
     precision highp float;
   #else
     precision mediump float;
@@ -77,22 +77,13 @@ varying vec4    vFogCoord;          // for fog calculation
 
 vec4 calculate_lighting(vec3 lightDirWorld, vec3 lightColor)
 {
-  // Remember to always negate the light direction for these lighting calculations.
   vec3  invLightDir = -lightDirWorld;
   vec3  normal      = normalize(vNormal);
 
-  // Note, the following is a hack due to legacy meshes still being supported.
-  // We light the object as if it was double sided. We choose the normal based
-  // on the normal that yields the largest diffuse component.
-  float diffuse     = max(0.0, dot(normal, invLightDir));
-  float diffuseInv  = max(0.0, dot(-normal, invLightDir));
-
-  if (diffuse < diffuseInv)
-  {
-    diffuse = diffuseInv;
+  if (gl_FrontFacing)
     normal = -normal;
-  }
 
+  float diffuse     = max(0.0, dot(normal, invLightDir));
   vec3  reflection  = reflect(invLightDir, normal);
   float specular    = max(0.0, dot(reflection, uCamViewVec));
   specular          = pow(specular, uSpecularPower);

@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -46,16 +46,12 @@ ExtractSimpleIsosurfaceDialog::ExtractSimpleIsosurfaceDialog(const std::string& 
   addSpinBoxManager(quantitySpinBox_, Parameters::QuantityOfIsovalues);
   addTextEditManager(isovalListFromQuantityTextEdit_, Parameters::IsovalueListString);
   addRadioButtonGroupManager({inclusiveRadioButton_, exclusiveRadioButton_}, Parameters::IsovalueListInclusiveExclusive);
+  addRadioButtonGroupManager({manualMinMaxRadioButton_, fieldMinMaxRadioButton_}, Parameters::IsovalueQuantityFromField);
+  addDoubleSpinBoxManager(manualMinDoubleSpinBox_, Parameters::ManualMinimumIsovalue);
+  addDoubleSpinBoxManager(manualMaxDoubleSpinBox_, Parameters::ManualMaximumIsovalue);
   WidgetStyleMixin::tabStyle(tabWidget);
   addTabManager(tabWidget, Parameters::IsovalueChoice);
   connect(singleHorizontalSlider_, SIGNAL(sliderReleased()), this, SLOT(sliderChanged()));
-}
-
-void ExtractSimpleIsosurfaceDialog::pullSpecial()
-{
-  using namespace Parameters;
-  auto minmax = transient_value_cast<std::pair<double, double>>(state_->getTransientValue("fieldMinMax"));
-  //std::cout << __FILE__ << ":" << __LINE__ << " " << minmax.first << "," << minmax.second << std::endl;
 }
 
 void ExtractSimpleIsosurfaceDialog::sliderChanged()

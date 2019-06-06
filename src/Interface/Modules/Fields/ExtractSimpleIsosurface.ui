@@ -192,7 +192,7 @@
          <item>
           <widget class="QRadioButton" name="manualMinMaxRadioButton_">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="text">
             <string>Manual: Min</string>
@@ -205,14 +205,23 @@
          <item>
           <widget class="QDoubleSpinBox" name="manualMinDoubleSpinBox_">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
+           </property>
+           <property name="decimals">
+            <number>5</number>
+           </property>
+           <property name="minimum">
+            <double>-999999999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>999999999999.000000000000000</double>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_5">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="text">
             <string>Max</string>
@@ -222,7 +231,16 @@
          <item>
           <widget class="QDoubleSpinBox" name="manualMaxDoubleSpinBox_">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
+           </property>
+           <property name="decimals">
+            <number>5</number>
+           </property>
+           <property name="minimum">
+            <double>-99999999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>99999999999.000000000000000</double>
            </property>
           </widget>
          </item>
@@ -235,7 +253,40 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>fieldMinMaxRadioButton_</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>manualMaxDoubleSpinBox_</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>216</x>
+     <y>84</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>359</x>
+     <y>113</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fieldMinMaxRadioButton_</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>manualMinDoubleSpinBox_</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>216</x>
+     <y>84</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>182</x>
+     <y>113</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <buttongroups>
   <buttongroup name="buttonGroup"/>
  </buttongroups>

@@ -38,7 +38,8 @@ using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Algorithms;
 
-std::unique_ptr<PythonInterfaceParser> makeParser()
+
+std::unique_ptr<InterfaceWithPythonCodeTranslatorImpl> makeParser()
 {
   std::string moduleId = "InterfaceWithPython:0";
   std::vector<std::string> portIds = {"InputString:0"};
@@ -50,7 +51,8 @@ std::unique_ptr<PythonInterfaceParser> makeParser()
   state->setValue(Name(portIds[0]), std::string("str1"));
   state->setValue(Name("PythonOutputString1Name"), std::string("out1"));
 
-  std::unique_ptr<PythonInterfaceParser> parser(new PythonInterfaceParser(moduleId, state, portIds));
+  std::unique_ptr<InterfaceWithPythonCodeTranslatorImpl> parser(new InterfaceWithPythonCodeTranslatorImpl(moduleId, state));
+  parser->updatePorts(portIds);
   return parser;
 }
 
@@ -62,15 +64,16 @@ TEST(PythonInterfaceParserTests, Basic)
     "s = str1\n"
     "out1 = s + \"!12!\"\n";
 
-  auto convertedCode = parser->convertStandardCodeBlock({code, false});
+  auto convertedCode = parser->translateIOSyntax({code, false});
 
-  std::cout << convertedCode << std::endl;
+  std::cout << convertedCode.code << std::endl;
+  EXPECT_FALSE(convertedCode.isMatlab);
 
  std::string expectedCode =
   "s = scirun_get_module_input_value(\"InterfaceWithPython:0\", \"InputString:0\")\n"
   "scirun_set_module_transient_state(\"InterfaceWithPython:0\",\"out1\",s + \"!12!\")\n\n";
 
-  ASSERT_EQ(convertedCode, expectedCode);
+  ASSERT_EQ(convertedCode.code, expectedCode);
 }
 
 TEST(PythonInterfaceParserTests, BasicActual)
@@ -81,32 +84,33 @@ TEST(PythonInterfaceParserTests, BasicActual)
     "s = str1\n"
     "out1 = s + \"!12!\"\n";
 
-  auto convertedCode = parser->convertStandardCodeBlock({code, false});
+  auto convertedCode = parser->translateIOSyntax({code, false});
 
-  std::cout << convertedCode << std::endl;
+  std::cout << convertedCode.code << std::endl;
+  EXPECT_FALSE(convertedCode.isMatlab);
 
  std::string expectedCode =
   "s = scirun_get_module_input_value(\"InterfaceWithPython:0\", \"InputString:0\")\n"
   "scirun_set_module_transient_state(\"InterfaceWithPython:0\",\"out1\",s + \"!12!\")\n\n";
 
-  ASSERT_EQ(convertedCode, expectedCode);
+  ASSERT_EQ(convertedCode.code, expectedCode);
 
   auto intermediate = parser->extractSpecialBlocks(code);
 
   std::cout << intermediate.begin()->code << std::endl;
-  auto readyToConvert = parser->concatenateNormalBlocks(intermediate);
+  auto readyToConvert = parser->concatenateAndTranslateMatlabBlocks(intermediate);
   std::cout << readyToConvert.code << std::endl;
-  auto convertedCode2 = parser->convertStandardCodeBlock(readyToConvert);
-  std::cout << convertedCode2 << std::endl;
+  auto convertedCode2 = parser->translateIOSyntax(readyToConvert);
+  std::cout << convertedCode2.code << std::endl;
 
-  ASSERT_EQ(convertedCode2, expectedCode + "\n");
+  ASSERT_EQ(convertedCode2.code, expectedCode + "\n");
 }
 
 TEST(PythonInterfaceParserTests, CanExtractSingleMatlabBlock)
 {
   auto parser = makeParser();
 
-  std::string code = "/*matlab\na = 1\nmatlab*/";
+  std::string code = "%%\na = 1\n%%";
   auto blocks = parser->extractSpecialBlocks(code);
 
   ASSERT_EQ(1, blocks.size());
@@ -133,12 +137,12 @@ TEST(PythonInterfaceParserTests, CanExtractMultipleMatlabBlocks)
   auto parser = makeParser();
 
   std::string code =
-    "/*matlab\n"
+    "%%\n"
     "a = 1\n"
-    "matlab*/\n"
-    "/*matlab\n"
+    "%%\n"
+    "%%\n"
     "b = 2\n"
-    "matlab*/\n";
+    "%%\n";
   auto blocks = parser->extractSpecialBlocks(code);
 
   std::cout << "printing out" << std::endl;
@@ -163,13 +167,13 @@ TEST(PythonInterfaceParserTests, CanExtractMultipleMatlabBlocksBetweenNormalBloc
   std::string code =
     "s = str1\n"
     "print(s)\n"
-    "/*matlab\n"
+    "%%\n"
     "a = 1\n"
-    "matlab*/\n"
+    "%%\n"
     "s = s + '.'\n"
-    "/*matlab\n"
+    "%%\n"
     "b = 2\n"
-    "matlab*/\n"
+    "%%\n"
     "print(b)\n";
 
   auto blocks = parser->extractSpecialBlocks(code);
@@ -198,6 +202,7 @@ TEST(PythonInterfaceParserTests, CanExtractMultipleMatlabBlocksBetweenNormalBloc
   EXPECT_FALSE(blockIterator->isMatlab);
 }
 
+#if 0
 TEST(PythonInterfaceParserTests, CanConcatenateNormalBlocksUntilMatlabConversionWorks)
 {
   auto parser = makeParser();
@@ -205,13 +210,13 @@ TEST(PythonInterfaceParserTests, CanConcatenateNormalBlocksUntilMatlabConversion
   std::string code =
     "s = str1\n"
     "print(s)\n"
-    "/*matlab\n"
+    "%%\n"
     "a = 1\n"
-    "matlab*/\n"
+    "%%\n"
     "s = s + '.'\n"
-    "/*matlab\n"
+    "%%\n"
     "b = 2\n"
-    "matlab*/\n"
+    "%%\n"
     "print(b)\n";
 
   auto blocks = parser->extractSpecialBlocks(code);
@@ -227,6 +232,65 @@ TEST(PythonInterfaceParserTests, CanConcatenateNormalBlocksUntilMatlabConversion
     "print(b)\n";
 
   EXPECT_EQ(expectedRegularPython, regularPython.code);
+}
+#endif
 
-  //FAIL() << "todo";
+TEST(PythonInterfaceParserTests, CanTranslateFirstSpecificMatlabBlock)
+{
+  auto parser = makeParser();
+
+  std::string code =
+    "%%\n"
+    "ofield = scirun_test_field(field1)\n"
+    "%%\n";
+
+  auto intermediate = parser->extractSpecialBlocks(code);
+  std::cout << intermediate.begin()->code << std::endl;
+  auto readyToConvert = parser->concatenateAndTranslateMatlabBlocks(intermediate);
+  std::cout << readyToConvert.code << std::endl;
+  auto convertedCode2 = parser->translateIOSyntax(readyToConvert);
+  std::cout << convertedCode2.code << std::endl;
+
+  EXPECT_TRUE(convertedCode2.isMatlab);
+
+  static std::string expectedCode =
+  "__field1 = convertfieldtomatlab(field1)\n"
+  "__ofield = __eng.scirun_test_field(__field1, nargout=1)\n"
+  "ofield = convertfieldtopython(__ofield)\n";
+
+  ASSERT_EQ(convertedCode2.code, expectedCode + "\n");
+}
+
+/*
+
+[PYTHON] x, y = f(a, b, c)
+[PYTHON]
+__field1=convertfieldtomatlab(a)
+__field2=convertfieldtomatlab( b)
+__field3=convertfieldtomatlab( c)
+__x, __y = eng.f(__field1, __field2, __field3, nargout=2)
+x = convertfieldtopython(__x)
+y = convertfieldtopython(__y)
+
+*/
+
+
+TEST(PythonInterfaceParserTests, CanTranslateBasicMatlabBlock)
+{
+  auto parser = makeParser();
+
+  std::string code =
+    "%%\n"
+    "o1 = scirun_test_field_1(i1)\n"
+    "%%\n";
+
+  auto convertedCode = parser->translate(code);
+  EXPECT_TRUE(convertedCode.isMatlab);
+
+  static std::string expectedCode =
+  "__i1 = convertfieldtomatlab(i1)\n"
+  "__o1 = __eng.scirun_test_field_1(__i1, nargout=1)\n"
+  "o1 = convertfieldtopython(__o1)\n";
+
+  ASSERT_EQ(convertedCode.code, expectedCode + "\n");
 }

@@ -164,12 +164,14 @@ namespace Gui {
     static std::tuple<std::string, int> getConnectedDynamicPortId(const std::string& portId, const std::string& type, bool isLoadingFile);
 
     void createExecuteInteractivelyToggleAction();
+    void createForceAlwaysExecuteToggleAction();
     QColor colorFromState(const Core::Algorithms::AlgorithmParameterName& stateKey) const;
     void colorToState(const Core::Algorithms::AlgorithmParameterName& stateKey, const QColor& color);
     std::vector<QColor> colorsFromState(const Core::Algorithms::AlgorithmParameterName& stateKey) const;
     void colorsToState(const Core::Algorithms::AlgorithmParameterName& stateKey, const std::vector<QColor>& colors);
   private Q_SLOTS:
     void executeInteractivelyToggled(bool toggle);
+    void forceAlwaysExecuteToggled(bool toggle);
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     void createExecuteAction();
@@ -180,14 +182,15 @@ namespace Gui {
     void disconnectStateChangeToExecute();
     std::vector<WidgetSlotManagerPtr> slotManagers_;
     boost::signals2::connection stateConnection_;
-    QAction* executeAction_;
-    QAction* executeDownstreamAction_;
-    QAction* shrinkAction_;
-    QAction* executeInteractivelyToggleAction_;
+    QAction* executeAction_{ nullptr };
+    QAction* executeDownstreamAction_{ nullptr };
+    QAction* shrinkAction_{ nullptr };
+    QAction* executeInteractivelyToggleAction_{ nullptr };
+    QAction* forceAlwaysExecuteToggleAction_{ nullptr };
     bool collapsed_;
     QString windowTitle_;
-    QDockWidget* dock_;
-    class ModuleButtonBar* buttonBox_;
+    QDockWidget* dock_{ nullptr };
+    class ModuleButtonBar* buttonBox_{ nullptr };
     QSize oldSize_;
     std::vector<QWidget*> needToRemoveFromDisabler_;
     static ExecutionDisablingServiceFunction disablerAdd_;

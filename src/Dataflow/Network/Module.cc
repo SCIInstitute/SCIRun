@@ -861,6 +861,11 @@ bool Module::needToExecute() const
   return true;
 }
 
+bool Module::alwaysExecuteEnabled() const
+{
+  return getModuleAlwaysExecute(cstate());
+}
+
 bool Module::hasDynamicPorts() const
 {
   return false; /// @todo: need to examine HasPorts base classes

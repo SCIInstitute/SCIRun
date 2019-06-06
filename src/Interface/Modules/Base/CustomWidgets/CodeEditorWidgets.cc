@@ -26,8 +26,10 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
+#include <Modules/Python/PythonInterfaceParser.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Core::Algorithms::Python;
 
 CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
 {
@@ -85,7 +87,7 @@ void CodeEditor::resizeEvent(QResizeEvent *e)
 
 void CodeEditor::highlightCurrentLine()
 {
-  QList<QTextEdit::ExtraSelection> extras;// = extraSelections();
+  QList<QTextEdit::ExtraSelection> extras;
 
   if (!isReadOnly())
   {
@@ -105,7 +107,9 @@ void CodeEditor::highlightCurrentLine()
 
 void CodeEditor::insertSpecialCodeBlock()
 {
-  insertPlainText("/*matlab\nmatlab*/");
+  static QString special(tr("%1\n\n%1").arg(matlabDelimiter));
+  insertPlainText(special);
+  moveCursor(QTextCursor::Up, QTextCursor::MoveAnchor);
 }
 
 void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
@@ -227,8 +231,8 @@ Highlighter::Highlighter(QTextDocument *parent)
 
   multiLineCommentFormat.setForeground(QColor(255,105,180));
 
-  commentStartExpression = QRegExp("/\\*matlab");
-  commentEndExpression = QRegExp("matlab\\*/");
+  commentStartExpression = QRegExp(matlabDelimiter);
+  commentEndExpression = QRegExp(matlabDelimiter);
 }
 
 void Highlighter::highlightBlock(const QString &text)
