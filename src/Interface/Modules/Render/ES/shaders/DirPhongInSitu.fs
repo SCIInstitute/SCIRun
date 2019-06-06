@@ -39,8 +39,16 @@ uniform vec4    uAmbientColor;      // Ambient color
 uniform vec4    uDiffuseColor;      // Diffuse color
 uniform vec4    uSpecularColor;     // Specular color
 uniform float   uSpecularPower;     // Specular power
-uniform vec3    uLightDirWorld;     // Directional light (world space).
+uniform vec3    uLightDirWorld0;     // Directional light (world space).
+uniform vec3    uLightDirWorld1;     // Directional light (world space).
+uniform vec3    uLightDirWorld2;     // Directional light (world space).
+uniform vec3    uLightDirWorld3;     // Directional light (world space).
+uniform vec3    uLightColor0;        // color of light 0
+uniform vec3    uLightColor1;        // color of light 1
+uniform vec3    uLightColor2;        // color of light 2
+uniform vec3    uLightColor3;        // color of light 3
 uniform float   uTransparency;
+
 
 //clipping planes
 uniform vec4    uClippingPlane0;    // clipping plane 0
@@ -66,8 +74,24 @@ uniform vec4    uFogColor;          // fog color
 // lights we light in world space.
 varying vec3  vNormal;
 varying vec4  vColor;
-varying vec4    vPos;//for clipping plane calc
-varying vec4    vFogCoord;// for fog calculation
+varying vec4  vPos;//for clipping plane calc
+varying vec4  vFogCoord;// for fog calculation
+
+vec4 calculate_lighting(vec3 lightDirWorld, vec3 lightColor)
+{
+  vec3  invLightDir = -normalize(lightDirWorld);
+  vec3  normal      = normalize(vNormal);
+
+  if (gl_FrontFacing)
+    normal = -normal;
+
+  float diffuse     = max(0.0, dot(normal, invLightDir));
+  vec3  reflection  = reflect(invLightDir, normal);
+  float specular    = max(0.0, dot(reflection, uCamViewVec));
+  specular          = pow(specular, uSpecularPower);
+
+  return vec4(lightColor * (diffuse * vColor.rgb + specular * uSpecularColor.rgb), 0.0);
+}
 
 void main()
 {
@@ -115,20 +139,15 @@ void main()
       discard;
   }
 
-  vec3  invLightDir = -uLightDirWorld;
-  vec3  normal      = normalize(vNormal);
-
-  if (gl_FrontFacing)
-    normal = -normal;
-
-  float diffuse     = max(0.0, dot(normal, invLightDir));
-  vec3  reflection  = reflect(invLightDir, normal);
-  float specular    = max(0.0, dot(reflection, uCamViewVec));
-  specular          = pow(specular, uSpecularPower);
-
-  vec4 diffuseColor = vColor;
-
-  gl_FragColor      = vec4((specular * uSpecularColor + diffuse * diffuseColor + uAmbientColor *  diffuseColor).rgb, uTransparency);
+  gl_FragColor = vec4(uAmbientColor.rgb * vColor.rgb, uTransparency);
+  if (length(uLightDirWorld0) > 0.0)
+    gl_FragColor += calculate_lighting(uLightDirWorld0, uLightColor0);
+  if (length(uLightDirWorld1) > 0.0)
+    gl_FragColor += calculate_lighting(uLightDirWorld1, uLightColor1);
+  if (length(uLightDirWorld2) > 0.0)
+    gl_FragColor += calculate_lighting(uLightDirWorld2, uLightColor2);
+  if (length(uLightDirWorld3) > 0.0)
+    gl_FragColor += calculate_lighting(uLightDirWorld3, uLightColor3);
 
   //calculate fog
   if (uFogSettings.x > 0.0)
