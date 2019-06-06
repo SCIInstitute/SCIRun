@@ -587,7 +587,7 @@ QColor ViewSceneDialog::checkColorSetting(std::string& rgb, QColor defaultColor)
 
 void ViewSceneDialog::updateAllGeometries()
 {
-  //if a render parameter changes we must update all of the geometrys by removing and radding them.
+  //If a render parameter changes we must update all of the geometries by removing and readding them.
   //This must be foreced because the IDs will not have changed
   newGeometryValue(true);
 }
@@ -595,7 +595,7 @@ void ViewSceneDialog::updateAllGeometries()
 void ViewSceneDialog::updateModifiedGeometries()
 {
   //if we are looking for a new geoetry the ID will have changed therefore we can find the
-  //geometrys that have changed and only remove those
+  //geometries that have changed and only remove those
   newGeometryValue(false);
 }
 
