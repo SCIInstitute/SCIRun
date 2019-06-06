@@ -74,7 +74,9 @@ namespace SCIRun {
 
     protected Q_SLOTS:
       //---------------- New Geometry --------------------------------------------------------------
-      void newGeometryValue(bool force = false);
+      void updateModifiedGeometries();
+      void updateAllGeometries();
+      void newGeometryValue(bool forceAllObjectsToUpdate);
       void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
 
       //---------------- Input ---------------------------------------------------------------------

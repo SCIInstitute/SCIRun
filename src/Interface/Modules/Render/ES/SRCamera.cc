@@ -143,7 +143,7 @@ namespace SCIRun {
     {
       //we could divide by 2.0 for tightest bound but here we divide by 1.0 to accomidate
       //for the clipping plane visualization
-      mRadius = (mSceneBBox.get_max() - mSceneBBox.get_min()).length() / 1.0f;
+      mRadius = (mSceneBBox.get_max() - mSceneBBox.get_min()).length();
 
       if(mRadius > 0.0)
       {
