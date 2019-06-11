@@ -277,6 +277,10 @@ namespace SCIRun {
       bool                                  shiftdown_                    {false};
       bool                                  selected_                     {false};
       int                                   clippingPlaneIndex_           {0};
+      float                                 clippingPlaneColors_[6][3]    {{0.7f, 0.2f, 0.1f}, {0.8f, 0.5f, 0.3f},
+                                                                           {0.8f, 0.8f, 0.5f}, {0.4f, 0.7f, 0.3f},
+                                                                           {0.2f, 0.4f, 0.5f}, {0.5f, 0.3f, 0.5f}};
+
       QColor                                bgColor_                      {};
       QColor                                fogColor_                     {};
       ScaleBar                              scaleBar_                     {};
