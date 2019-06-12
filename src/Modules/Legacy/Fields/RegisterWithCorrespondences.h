@@ -38,7 +38,7 @@ namespace SCIRun {
 
       class SCISHARE RegisterWithCorrespondences : public Dataflow::Networks::Module,
         public Has3InputPorts<FieldPortTag, FieldPortTag, FieldPortTag>,
-        public Has1OutputPort<FieldPortTag>
+        public Has2OutputPorts<FieldPortTag,MatrixPortTag>
       {
       public:
         RegisterWithCorrespondences();
@@ -50,6 +50,7 @@ namespace SCIRun {
         INPUT_PORT(1, Correspondences1, Field);
         INPUT_PORT(2, Correspondences2, Field);
         OUTPUT_PORT(0, OutputField, Field);
+        OUTPUT_PORT(1, TransformMatrix, Matrix);
 
         MODULE_TRAITS_AND_INFO(ModuleHasUIAndAlgorithm)
       };

@@ -137,12 +137,20 @@ namespace SCIRun {
       void setScaleBar();
 
       //---------------- Lights --------------------------------------------------------------------
-      void setLightPosition(int index);
       void setLightColor(int index);
       void toggleHeadLight(bool value);
+      void setHeadLightAzimuth(int value);
+      void setHeadLightInclination(int value);
       void toggleLight1(bool value);
+      void setLight1Azimuth(int value);
+      void setLight1Inclination(int value);
       void toggleLight2(bool value);
+      void setLight2Azimuth(int value);
+      void setLight2Inclination(int value);
       void toggleLight3(bool value);
+      void setLight3Azimuth(int value);
+      void setLight3Inclination(int value);
+      void updateLightDirection(int light);
       void lightingChecked(bool value);
 
       //---------------- Material Settings ---------------------------------------------------------

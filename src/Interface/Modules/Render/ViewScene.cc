@@ -89,9 +89,9 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setWindowTitle(QString::fromStdString(name));
   setFocusPolicy(Qt::StrongFocus);
 
+  setupScaleBar();
   addToolBar();
   setupClippingPlanes();
-  setupScaleBar();
 
   // Setup Qt OpenGL widget.
   QGLFormat fmt;
@@ -475,19 +475,39 @@ void ViewSceneDialog::setInitialLightValues()
 {
   auto light0str = state_->getValue(Modules::Render::ViewScene::HeadLightColor).toString();
   QColor light0 = checkColorSetting(light0str, Qt::white);
+  int headlightAzimuth = state_->getValue(Modules::Render::ViewScene::HeadLightAzimuth).toInt();
+  int headlightInclination = state_->getValue(Modules::Render::ViewScene::HeadLightInclination).toInt();
 
   auto light1str = state_->getValue(Modules::Render::ViewScene::Light1Color).toString();
   QColor light1 = checkColorSetting(light1str, Qt::white);
+  int light1Azimuth = state_->getValue(Modules::Render::ViewScene::Light1Azimuth).toInt();
+  int light1Inclination = state_->getValue(Modules::Render::ViewScene::Light1Inclination).toInt();
 
   auto light2str = state_->getValue(Modules::Render::ViewScene::Light2Color).toString();
   QColor light2 = checkColorSetting(light2str, Qt::white);
+  int light2Azimuth = state_->getValue(Modules::Render::ViewScene::Light2Azimuth).toInt();
+  int light2Inclination = state_->getValue(Modules::Render::ViewScene::Light2Inclination).toInt();
 
   auto light3str = state_->getValue(Modules::Render::ViewScene::Light3Color).toString();
   QColor light3 = checkColorSetting(light3str, Qt::white);
+  int light3Azimuth = state_->getValue(Modules::Render::ViewScene::Light2Azimuth).toInt();
+  int light3Inclination = state_->getValue(Modules::Render::ViewScene::Light2Inclination).toInt();
 
   auto spire = mSpire.lock();
   if (spire)
   {
+    setHeadLightAzimuth(headlightAzimuth);
+    setHeadLightInclination(headlightInclination);
+
+    setLight1Azimuth(light1Azimuth);
+    setLight1Inclination(light1Inclination);
+
+    setLight2Azimuth(light2Azimuth);
+    setLight2Inclination(light2Inclination);
+
+    setLight3Azimuth(light3Azimuth);
+    setLight3Inclination(light3Inclination);
+
     spire->setLightColor(0, light0.redF(), light0.greenF(), light0.blueF());
     spire->setLightColor(1, light1.redF(), light1.greenF(), light1.blueF());
     spire->setLightColor(2, light2.redF(), light2.greenF(), light2.blueF());
@@ -1604,14 +1624,6 @@ GeometryHandle ViewSceneDialog::buildGeometryScaleBar()
 //--------------------------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::setLightPosition(int index)
-{
-  auto spire = mSpire.lock();
-  if (spire)
-    spire->setLightPosition(index, mConfigurationDock->getLightPosition(index).x(), mConfigurationDock->getLightPosition(index).y());
-}
-
-//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setLightColor(int index)
 {
   QColor lightColor(mConfigurationDock->getLightColor(index));
@@ -1644,10 +1656,44 @@ void ViewSceneDialog::toggleHeadLight(bool value)
   toggleLightOnOff(0, value);
 }
 
+const static float PI = 3.1415926f;
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::setHeadLightAzimuth(int value)
+{
+  state_->setValue(Modules::Render::ViewScene::HeadLightAzimuth, value);
+  auto spire = mSpire.lock();
+  spire->setLightAzimuth(0, value / 180.0f * PI - PI);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::setHeadLightInclination(int value)
+{
+  state_->setValue(Modules::Render::ViewScene::HeadLightInclination, value);
+  auto spire = mSpire.lock();
+  spire->setLightInclination(0, value / 180.0f * PI - PI / 2.0f);
+}
+
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::toggleLight1(bool value)
 {
   toggleLightOnOff(1, value);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::setLight1Azimuth(int value)
+{
+  state_->setValue(Modules::Render::ViewScene::Light1Azimuth, value);
+  auto spire = mSpire.lock();
+  spire->setLightAzimuth(1, value / 180.0f * PI - PI);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::setLight1Inclination(int value)
+{
+  state_->setValue(Modules::Render::ViewScene::Light1Inclination, value);
+  auto spire = mSpire.lock();
+  spire->setLightInclination(1, value / 180.0f * PI - PI / 2.0f);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1657,9 +1703,41 @@ void ViewSceneDialog::toggleLight2(bool value)
 }
 
 //--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::setLight2Azimuth(int value)
+{
+  state_->setValue(Modules::Render::ViewScene::Light2Azimuth, value);
+  auto spire = mSpire.lock();
+  spire->setLightAzimuth(2, value / 180.0f * PI - PI);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::setLight2Inclination(int value)
+{
+  state_->setValue(Modules::Render::ViewScene::Light2Inclination, value);
+  auto spire = mSpire.lock();
+  spire->setLightInclination(2, value / 180.0f * PI - PI / 2.0f);
+}
+
+//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::toggleLight3(bool value)
 {
   toggleLightOnOff(3, value);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::setLight3Azimuth(int value)
+{
+  state_->setValue(Modules::Render::ViewScene::Light3Azimuth, value);
+  auto spire = mSpire.lock();
+  spire->setLightAzimuth(3, value / 180.0f * PI - PI);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::setLight3Inclination(int value)
+{
+  state_->setValue(Modules::Render::ViewScene::Light3Inclination, value);
+  auto spire = mSpire.lock();
+  spire->setLightInclination(3, value / 180.0f * PI - PI / 2.0f);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1695,6 +1773,11 @@ void ViewSceneDialog::toggleLightOnOff(int index, bool value)
 }
 
 
+
+void ViewSceneDialog::updateLightDirection(int light)
+{
+
+}
 
 //--------------------------------------------------------------------------------------------------
 //---------------- Materials -----------------------------------------------------------------------

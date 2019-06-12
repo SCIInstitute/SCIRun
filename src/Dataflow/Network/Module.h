@@ -75,6 +75,7 @@ namespace Networks {
     void remark(const std::string& msg) const override final { getLogger()->remark(msg); }
     void status(const std::string& msg) const override final { getLogger()->status(msg); }
     bool needToExecute() const override final;
+    bool alwaysExecuteEnabled() const;
     bool hasDynamicPorts() const override;
 
     /*** public Dev-interface ****/

@@ -44,8 +44,10 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-ExtractSimpleIsosurface::ExtractSimpleIsosurface()
-  : Module(ModuleLookupInfo("ExtractSimpleIsosurface", "NewField", "SCIRun"))
+MODULE_INFO_DEF(ExtractIsosurface, NewField, SCIRun)
+
+ExtractIsosurface::ExtractIsosurface()
+  : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(Isovalue);
@@ -53,17 +55,20 @@ ExtractSimpleIsosurface::ExtractSimpleIsosurface()
   INITIALIZE_PORT(OutputMatrix);
 }
 
-void ExtractSimpleIsosurface::setStateDefaults()
+void ExtractIsosurface::setStateDefaults()
 {
   setStateDoubleFromAlgo(Parameters::SingleIsoValue);
   setStateStringFromAlgo(Parameters::ListOfIsovalues);
   setStateIntFromAlgo(Parameters::QuantityOfIsovalues);
   setStateIntFromAlgo(Parameters::IsovalueListInclusiveExclusive);
+  setStateIntFromAlgo(Parameters::IsovalueQuantityFromField);
+  setStateDoubleFromAlgo(Parameters::ManualMaximumIsovalue);
+  setStateDoubleFromAlgo(Parameters::ManualMinimumIsovalue);
   get_state()->setValue(Parameters::IsovalueListString, std::string());
   get_state()->setValue(Parameters::IsovalueChoice, std::string("Single"));
 }
 
-void ExtractSimpleIsosurface::execute()
+void ExtractIsosurface::execute()
 {
   auto field = getRequiredInput(InputField);
   auto isovalueOption = getOptionalInput(Isovalue);
@@ -99,7 +104,7 @@ void ExtractSimpleIsosurface::execute()
             mat_iso->transposeInPlace();
           }
         }
-        
+
         std::ostringstream ostr;
         ostr << *mat_iso;
         state->setValue(Parameters::ListOfIsovalues, ostr.str());
@@ -107,9 +112,9 @@ void ExtractSimpleIsosurface::execute()
     }
 
     std::vector<double> isoDoubles;
-    double qmin, qmax;
-    field->vfield()->minmax(qmin, qmax);
-    state->setTransientValue("fieldMinMax", std::make_pair(qmin, qmax));
+    double fieldMin, fieldMax;
+    field->vfield()->minmax(fieldMin, fieldMax);
+    state->setTransientValue("fieldMinMax", std::make_pair(fieldMin, fieldMax));
 
     if (state->getValue(Parameters::IsovalueChoice).toString() == "Single")
     {
@@ -133,13 +138,16 @@ void ExtractSimpleIsosurface::execute()
       // incl = 0, excl = 1
       bool inclusive = 0 == inclExcl;
       int num = state->getValue(Parameters::QuantityOfIsovalues).toInt();
+      bool useFieldMinMax = state->getValue(Parameters::IsovalueQuantityFromField).toInt() == 1;
+      double qmax = useFieldMinMax ? fieldMax : state->getValue(Parameters::ManualMaximumIsovalue).toDouble();
+      double qmin = useFieldMinMax ? fieldMin : state->getValue(Parameters::ManualMinimumIsovalue).toDouble();
       if (num > 1)
       {
         int denom = inclusive ? num - 1 : num + 1;
         int minIndex = inclusive ? 0 : 1;
         int maxIndex = inclusive ? num : num + 1;
-        double di = (qmax - qmin) / denom;   
-          
+        double di = (qmax - qmin) / denom;
+
         for (int i = minIndex; i < maxIndex; i++)
         {
           isoDoubles.push_back(qmin + i * di);
@@ -153,14 +161,14 @@ void ExtractSimpleIsosurface::execute()
       std::ostringstream ostr;
       for (const auto& isos : isoDoubles)
         ostr << isos << "\n";
-      
+
       state->setValue(Parameters::IsovalueListString, ostr.str());
     }
 
     VariableList isos;
     std::transform(isoDoubles.begin(), isoDoubles.end(), std::back_inserter(isos), [](double x) { return makeVariable("iso", x); });
     algo().set(Parameters::Isovalues, isos);
-    
+
     auto output = algo().run(withInputData((InputField, field)));
     sendOutputFromAlgorithm(OutputField, output);
     sendOutputFromAlgorithm(OutputMatrix, output);

@@ -488,6 +488,7 @@ void GlyphGeom::generateSphere(const Point& center, double radius, int resolutio
       uint32_t offset = static_cast<uint32_t>(numVBOElements_);
       pp1 = Vector(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));
       pp2 = Vector(sin(theta) * cos(phi + phi_inc), sin(theta) * sin(phi + phi_inc), cos(theta));
+
       normals_.push_back(pp1);
       normals_.push_back(pp2);
       pp1 *= r;
@@ -498,11 +499,20 @@ void GlyphGeom::generateSphere(const Point& center, double radius, int resolutio
       points_.push_back(pp2 + Vector(center));
       colors_.push_back(color);
       numVBOElements_++;
+
+      //preserve vertex ordering for double sided rendering
+      int v1 = 1, v2 = 2;
+      if(theta < M_PI)
+      {
+        v1 = 2;
+        v2 = 1;
+      }
+
       indices_.push_back(0 + offset);
-      indices_.push_back(1 + offset);
-      indices_.push_back(2 + offset);
-      indices_.push_back(2 + offset);
-      indices_.push_back(1 + offset);
+      indices_.push_back(v1 + offset);
+      indices_.push_back(v2 + offset);
+      indices_.push_back(v2 + offset);
+      indices_.push_back(v1 + offset);
       indices_.push_back(3 + offset);
     }
     for (int jj = 0; jj < 6; jj++) indices_.pop_back();

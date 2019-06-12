@@ -132,12 +132,14 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::setupLights()
     {
+      mLightDirectionPolar.push_back(glm::vec2(0.0, 0.0));
+      mLightDirectionView.push_back(glm::vec3(0.0, 0.0, -1.0));
       mLightsOn.push_back(true);
-      mLightPosition.push_back(glm::vec3(0, 0, 1));
       for (int i = 1; i < LIGHT_NUM; ++i)
       {
+        mLightDirectionPolar.push_back(glm::vec2(0.0, 0.0));
+        mLightDirectionView.push_back(glm::vec3(0.0, 0.0, -1.0));
         mLightsOn.push_back(false);
-        mLightPosition.push_back(glm::vec3(0, 0, 1));
       }
     }
 
@@ -258,6 +260,11 @@ namespace SCIRun {
       cam->data.winWidth = static_cast<float>(width);
       mCamera->setAsPerspective();
       updateCamera();
+    }
+
+    void SRInterface::setBackgroundColor(const QColor& color)
+    {
+      mCore.setBackgroundColor(color.redF(), color.greenF(), color.blueF(), color.alphaF());
     }
 
     //----------------------------------------------------------------------------------------------
@@ -1393,7 +1400,8 @@ namespace SCIRun {
           {
             GLuint arrowVBO = vboMan->hasVBO("Assets/arrow.geom");
             GLuint arrowIBO = iboMan->hasIBO("Assets/arrow.geom");
-            GLuint shader = shaderMan->getIDForAsset("Shaders/DirPhongNoClipping");
+            //GLuint shader = shaderMan->getIDForAsset("Shaders/DirPhongNoClipping");
+            GLuint shader = shaderMan->getIDForAsset("Shaders/UniformColor");
 
             // Bail if assets have not been loaded yet (asynchronous loading may take a
             // few frames).
@@ -1474,10 +1482,11 @@ namespace SCIRun {
             GLint locCamViewVec = glGetUniformLocation(shader, "uCamViewVec");
             GLint locLightDirWorld = glGetUniformLocation(shader, "uLightDirWorld");
 
-            GLint locAmbientColor = glGetUniformLocation(shader, "uAmbientColor");
-            GLint locDiffuseColor = glGetUniformLocation(shader, "uDiffuseColor");
-            GLint locSpecularColor = glGetUniformLocation(shader, "uSpecularColor");
-            GLint locSpecularPower = glGetUniformLocation(shader, "uSpecularPower");
+            //GLint locAmbientColor = glGetUniformLocation(shader, "uAmbientColor");
+            //GLint locDiffuseColor = glGetUniformLocation(shader, "uDiffuseColor");
+            GLint locDiffuseColor = glGetUniformLocation(shader, "uColor");
+            //GLint locSpecularColor = glGetUniformLocation(shader, "uSpecularColor");
+            //GLint locSpecularPower = glGetUniformLocation(shader, "uSpecularPower");
 
             GLint locProjIVObject = glGetUniformLocation(shader, "uProjIVObject");
             GLint locObject = glGetUniformLocation(shader, "uObject");
@@ -1490,15 +1499,16 @@ namespace SCIRun {
 
             mArrowAttribs.bind();
 
+            //GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
+            //GL(glUniform4f(locAmbientColor, 0.2f, 0.2f, 0.2f, 1.0f));
+            //GL(glUniform1f(locSpecularPower, 16.0f));
+
             // X Axis (dark)
             {
               glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
               glm::mat4 finalTrafo = axesTransform * xform;
 
-              GL(glUniform4f(locAmbientColor, 0.1f, 0.01f, 0.01f, 1.0f));
               GL(glUniform4f(locDiffuseColor, 0.25f, 0.0f, 0.0f, 1.0f));
-              GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
-              GL(glUniform1f(locSpecularPower, 16.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
               const GLfloat* ptr = glm::value_ptr(worldToProj);
@@ -1516,10 +1526,7 @@ namespace SCIRun {
               glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(0.0, 1.0, 0.0));
               glm::mat4 finalTrafo = axesTransform * xform;
 
-              GL(glUniform4f(locAmbientColor, 0.5f, 0.01f, 0.01f, 1.0f));
               GL(glUniform4f(locDiffuseColor, 1.0f, 0.0f, 0.0f, 1.0f));
-              GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
-              GL(glUniform1f(locSpecularPower, 16.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
               const GLfloat* ptr = glm::value_ptr(worldToProj);
@@ -1537,10 +1544,7 @@ namespace SCIRun {
               glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
               glm::mat4 finalTrafo = axesTransform * xform;
 
-              GL(glUniform4f(locAmbientColor, 0.01f, 0.1f, 0.01f, 1.0f));
               GL(glUniform4f(locDiffuseColor, 0.0f, 0.25f, 0.0f, 1.0f));
-              GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
-              GL(glUniform1f(locSpecularPower, 16.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
               const GLfloat* ptr = glm::value_ptr(worldToProj);
@@ -1558,10 +1562,7 @@ namespace SCIRun {
               glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>() / 2.0f, glm::vec3(1.0, 0.0, 0.0));
               glm::mat4 finalTrafo = axesTransform * xform;
 
-              GL(glUniform4f(locAmbientColor, 0.01f, 0.5f, 0.01f, 1.0f));
               GL(glUniform4f(locDiffuseColor, 0.0f, 1.0f, 0.0f, 1.0f));
-              GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
-              GL(glUniform1f(locSpecularPower, 16.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
               const GLfloat* ptr = glm::value_ptr(worldToProj);
@@ -1579,10 +1580,7 @@ namespace SCIRun {
               // No rotation at all
               glm::mat4 finalTrafo = axesTransform;
 
-              GL(glUniform4f(locAmbientColor, 0.01f, 0.01f, 0.1f, 1.0f));
               GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 0.25f, 1.0f));
-              GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
-              GL(glUniform1f(locSpecularPower, 16.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
               const GLfloat* ptr = glm::value_ptr(worldToProj);
@@ -1601,10 +1599,7 @@ namespace SCIRun {
               glm::mat4 xform = glm::rotate(glm::mat4(1.0f), glm::pi<float>(), glm::vec3(1.0, 0.0, 0.0));
               glm::mat4 finalTrafo = axesTransform * xform;
 
-              GL(glUniform4f(locAmbientColor, 0.01f, 0.01f, 0.5f, 1.0f));
               GL(glUniform4f(locDiffuseColor, 0.0f, 0.0f, 1.0f, 1.0f));
-              GL(glUniform4f(locSpecularColor, 0.5f, 0.5f, 0.5f, 1.0f));
-              GL(glUniform1f(locSpecularPower, 16.0f));
 
               glm::mat4 worldToProj = projection * invCamTrans * finalTrafo;
               const GLfloat* ptr = glm::value_ptr(worldToProj);
@@ -1640,16 +1635,13 @@ namespace SCIRun {
     void SRInterface::updateWorldLight()
     {
       glm::mat4 viewToWorld = mCamera->getViewToWorld();
-
-      // Set directional light source (in world space).
       StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
       if (light)
       {
         for (int i = 0; i < LIGHT_NUM; ++i)
         {
-          glm::vec3 viewDir = viewToWorld[2].xyz();
-          viewDir = -viewDir; // Cameras look down -Z.
-          light->lightDir[i] = mLightsOn[i] ? viewDir : glm::vec3(0.0, 0.0, 0.0);
+          glm::vec3 lightDirectionWorld = (viewToWorld * glm::vec4(mLightDirectionView[i], 0.0)).xyz();
+          light->lightDir[i] = mLightsOn[i] ? lightDirectionWorld : glm::vec3(0.0, 0.0, 0.0);
         }
       }
     }
@@ -1714,17 +1706,27 @@ namespace SCIRun {
       }
     }
 
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::setLightPosition(int index, float x, float y)
+    void SRInterface::setLightAzimuth(int index, float azimuth)
     {
-      if (index >= LIGHT_NUM)
-        return;
+      mLightDirectionPolar[index].x = azimuth;
+      updateLightDirection(index);
+    }
 
-      glm::mat4 viewToWorld = mCamera->getViewToWorld();
-      if (mLightPosition.size() > 0)
-      {
-        mLightPosition[index] = glm::vec3(x, y, 0.0);
-      }
+    void SRInterface::setLightInclination(int index, float inclination)
+    {
+      mLightDirectionPolar[index].y = inclination;
+      updateLightDirection(index);
+    }
+
+    void SRInterface::updateLightDirection(int index)
+    {
+      float azimuth = mLightDirectionPolar[index].x;
+      float inclination = mLightDirectionPolar[index].y;
+      glm::vec3 viewVector;
+      viewVector.z = cos(inclination) * cos(azimuth);
+      viewVector.x = cos(inclination) * sin(azimuth);
+      viewVector.y = sin(inclination);
+      mLightDirectionView[index] = -viewVector;
     }
 
     //----------------------------------------------------------------------------------------------
