@@ -102,6 +102,13 @@ namespace SCIRun {
       void setStereoFusion(int value);
       void setPolygonOffset(int value);
       void setTextOffset(int value);
+      void setAutoRotateSpeed(double speed);
+      void setAutoRotateOnDrag(bool value);
+      void autoRotateRight();
+      void autoRotateLeft();
+      void autoRotateUp();
+      void autoRotateDown();
+
 
       //---------------- Widgets -------------------------------------------------------------------
       void updateMeshComponentSelection(const QString& moduleId, const QString& component, bool selected);

@@ -80,6 +80,9 @@ namespace SCIRun {
     {
       glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
       mArcLookAt->doReferenceDown(screenSpace);
+      lastPos = screenSpace;
+      startPos = screenSpace;
+      movementVec = glm::vec2(0.0, 0.0);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -95,7 +98,13 @@ namespace SCIRun {
           break;
 
         case SRInterface::MOUSE_NEWSCIRUN:
-          if (btn == SRInterface::MOUSE_LEFT && !lockRotation_)   mArcLookAt->doRotation(screenSpace);
+          if (btn == SRInterface::MOUSE_LEFT && !lockRotation_)
+          {
+            mArcLookAt->doRotation(screenSpace);
+            movementVec = screenSpace - lastPos;
+            if(glm::length(movementVec) < 0.01f) movementVec = glm::vec2(0.0, 0.0);
+            lastPos = screenSpace;
+          }
           if (btn == SRInterface::MOUSE_RIGHT && !lockPanning_)   mArcLookAt->doPan(screenSpace);
           break;
       }
@@ -169,6 +178,20 @@ namespace SCIRun {
         mInvertVal = 1;
       else
         mInvertVal = -1;
+    }
+
+    void SRCamera::tryAutoRotate()
+    {
+      mArcLookAt->doReferenceDown((startPos + lastPos)/2.0f);
+      mArcLookAt->doRotation((startPos + lastPos)/2.0f + movementVec);
+      setClippingPlanes();
+    }
+
+    void SRCamera::rotate(glm::vec2 vector)
+    {
+      mArcLookAt->doReferenceDown(glm::vec2(0.0, 0.0));
+      mArcLookAt->doRotation(vector);
+      setClippingPlanes();
     }
 
     //----------------------------------------------------------------------------------------------

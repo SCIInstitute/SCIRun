@@ -182,6 +182,8 @@ namespace SCIRun {
           //todo make this select widget
         }
       }
+      autoRotateVector = glm::vec2(0.0, 0.0);
+      tryAutoRotate = false;
       mCamera->mouseDownEvent(pos, btn);
     }
 
@@ -189,6 +191,7 @@ namespace SCIRun {
     void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
     {
       widgetSelected_ = false;
+      tryAutoRotate = doAutoRotateOnDrag;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -295,6 +298,33 @@ namespace SCIRun {
         camera->data.setView(viewToWorld);
         camera->data.setProjection(projection, mCamera->getFOVY(), mCamera->getAspect(), mCamera->getZNear(), mCamera->getZFar());
       }
+    }
+
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::setAutoRotateSpeed(double speed)
+    {
+      autoRotateSpeed = speed;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::setAutoRotateOnDrag(bool value)
+    {
+       doAutoRotateOnDrag = value;
+    }
+
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::setAutoRotateVector(glm::vec2 axis)
+    {
+      tryAutoRotate = false;
+      if(autoRotateVector.x == axis.x && autoRotateVector.y == axis.y)
+      {
+        autoRotateVector = glm::vec2(0.0, 0.0);
+      }
+      else
+      {
+        autoRotateVector = axis;
+      }
+      std::cout << autoRotateVector.x << ", " << autoRotateVector.y << "\n";
     }
 
     //Getters/Setters-------------------------------------------------------------------------------
@@ -1367,6 +1397,9 @@ namespace SCIRun {
       /// \todo Only render a frame if something has changed (new or deleted
       /// objects, or the view point has changed).
       mContext->makeCurrent();
+
+      if(glm::length(autoRotateVector) > 0.1) mCamera->rotate(autoRotateVector * autoRotateSpeed);
+      if(tryAutoRotate) mCamera->tryAutoRotate();
 
       updateCamera();
       updateWorldLight();

@@ -988,6 +988,48 @@ void ViewSceneDialog::setTextOffset(int value)
   state_->setValue(Modules::Render::ViewScene::TextOffset, offset);
 }
 
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::setAutoRotateSpeed(double speed)
+{
+  auto spire = mSpire.lock();
+  spire->setAutoRotateSpeed(speed);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::setAutoRotateOnDrag(bool value)
+{
+  auto spire = mSpire.lock();
+  spire->setAutoRotateOnDrag(value);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::autoRotateRight()
+{
+  auto spire = mSpire.lock();
+  spire->setAutoRotateVector(glm::vec2(1.0, 0.0));
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::autoRotateLeft()
+{
+  auto spire = mSpire.lock();
+  spire->setAutoRotateVector(glm::vec2(-1.0, 0.0));
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::autoRotateUp()
+{
+  auto spire = mSpire.lock();
+  spire->setAutoRotateVector(glm::vec2(0.0, 1.0));
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::autoRotateDown()
+{
+  auto spire = mSpire.lock();
+  spire->setAutoRotateVector(glm::vec2(0.0, -1.0));
+}
+
 
 
 //--------------------------------------------------------------------------------------------------

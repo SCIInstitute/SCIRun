@@ -75,6 +75,10 @@ namespace SCIRun{
       /// Toggles the zoom controls on New Mouse Controls Inverted/Not Inverted
       void setZoomInverted(bool value);
 
+      void tryAutoRotate();
+
+      void rotate(glm::vec2);
+
       // P  = Projection matrix | IV = Inverse view matrix |  V  = View matrix
       const glm::mat4& getWorldToProjection() const  {return mVP;}
       const glm::mat4& getWorldToView() const        {return mV;}
@@ -110,6 +114,10 @@ namespace SCIRun{
       float                 mZNear        {getDefaultZNear()};  ///< Position of near plane along view vec.
       float                 mZFar         {getDefaultZFar()};   ///< Position of far plane along view vec.
       float                 mRadius       {-1.0};
+
+      glm::vec2             startPos      {0.0, 0.0};
+      glm::vec2             lastPos       {0.0, 0.0};
+      glm::vec2             movementVec   {0.0, 0.0};
 
       glm::mat4             mVP           {};   ///< Projection * View transformation.
       glm::mat4             mV            {};   ///< View transformation.
