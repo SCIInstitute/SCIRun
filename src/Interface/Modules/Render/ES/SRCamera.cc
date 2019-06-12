@@ -182,8 +182,8 @@ namespace SCIRun {
 
     void SRCamera::tryAutoRotate()
     {
-      mArcLookAt->doReferenceDown((startPos + lastPos)/2.0f);
-      mArcLookAt->doRotation((startPos + lastPos)/2.0f + movementVec);
+      mArcLookAt->doReferenceDown(lastPos);
+      mArcLookAt->doRotation(lastPos + movementVec);
       setClippingPlanes();
     }
 
