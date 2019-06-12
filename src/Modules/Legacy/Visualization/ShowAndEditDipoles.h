@@ -70,6 +70,7 @@ namespace SCIRun {
         double diskRadius_;
         double diskDistFromCenter_;
         double diskWidth_;
+        int widgetID_;
 
         Core::Datatypes::ColorRGB deflPointCol_;
         Core::Datatypes::ColorRGB deflCol_;

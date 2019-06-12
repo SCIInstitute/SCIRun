@@ -128,6 +128,7 @@ ShowAndEditDipoles::ShowAndEditDipoles()
   diskRadius_ = 1.0;
   diskDistFromCenter_ = 0.85;
   diskWidth_ = 0.05;
+  widgetID_ = 0;
 }
 
 void ShowAndEditDipoles::setStateDefaults()
@@ -183,7 +184,8 @@ void ShowAndEditDipoles::processWidgetFeedback(const ModuleFeedback& var)
       if (impl_->previousTransforms_[widgetIndex] != vsf.transform)
       {
         adjustPositionFromTransform(vsf.transform, widgetIndex);
-        enqueueExecuteAgain(true);
+        // execute();
+        enqueueExecuteAgain(false);
       }
     }
   }
@@ -220,7 +222,7 @@ void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformM
   case WidgetSection::DISK:
   {
     Vector newVec(newPoint-pos_);
-    newVec /= 0.75;
+    newVec /= diskDistFromCenter_;
     direction_ = Dot(newVec, direction_.normal()) * direction_.normal();
     break;
   }
@@ -261,14 +263,14 @@ FieldHandle ShowAndEditDipoles::GenerateOutputField()
 
   auto state = get_state();
   auto scale = state->getValue(ProbeScale).toDouble();
-  auto widgetName = [](int i) { return "SAED(" + std::to_string(i) + ")"; };
+  auto widgetName = [](int i, int id) { return "SAED(" + std::to_string(i) + ")" + std::to_string(id); };
   impl_->pointWidgets_.resize(0);
 
   // Create glyphs
   impl_->pointWidgets_.push_back(boost::dynamic_pointer_cast<WidgetBase>
                                  (WidgetFactory::createSphere(
                                    *this,
-                                   widgetName(WidgetSection::SPHERE),
+                                   widgetName(WidgetSection::SPHERE, widgetID_),
                                    sphereRadius_ * direction_.length() * scale,
                                    deflPointCol_.toString(),
                                    pos_,
@@ -279,7 +281,7 @@ FieldHandle ShowAndEditDipoles::GenerateOutputField()
     impl_->pointWidgets_.push_back(boost::dynamic_pointer_cast<WidgetBase>
                                    (WidgetFactory::createCylinder(
                                      *this,
-                                     widgetName(WidgetSection::CYLINDER),
+                                     widgetName(WidgetSection::CYLINDER, widgetID_),
                                      cylinderRadius_ * direction_.length() * scale,
                                      deflCol_.toString(),
                                      pos_,
@@ -288,7 +290,7 @@ FieldHandle ShowAndEditDipoles::GenerateOutputField()
     impl_->pointWidgets_.push_back(boost::dynamic_pointer_cast<WidgetBase>
                                    (WidgetFactory::createCone(
                                      *this,
-                                     widgetName(WidgetSection::CONE),
+                                     widgetName(WidgetSection::CONE, widgetID_),
                                      coneRadius_ * direction_.length() * scale,
                                      deflCol_.toString(),
                                      center,
@@ -303,7 +305,7 @@ FieldHandle ShowAndEditDipoles::GenerateOutputField()
     impl_->pointWidgets_.push_back(boost::dynamic_pointer_cast<WidgetBase>
                                    (WidgetFactory::createDisk(
                                      *this,
-                                     widgetName(WidgetSection::DISK),
+                                     widgetName(WidgetSection::DISK, widgetID_),
                                      diskRadius_ * direction_.length() * scale,
                                      resizeCol_.toString(),
                                      dp1,
@@ -312,6 +314,7 @@ FieldHandle ShowAndEditDipoles::GenerateOutputField()
   }
 
   impl_->previousTransforms_.resize(impl_->pointWidgets_.size());
+  widgetID_++;
 
   VariableList positions;
   for (const auto& widget : impl_->pointWidgets_)
@@ -328,6 +331,9 @@ FieldHandle ShowAndEditDipoles::GenerateOutputField()
 const AlgorithmParameterName ShowAndEditDipoles::Sizing("Sizing");
 const AlgorithmParameterName ShowAndEditDipoles::ShowLastAsVector("ShowLastAsVector");
 const AlgorithmParameterName ShowAndEditDipoles::ShowLines("ShowLines");
+const AlgorithmParameterName ShowAndEditDipoles::ProbeScale("ProbeScale");
+const AlgorithmParameterName ShowAndEditDipoles::PointPositions("PointPositions");
+const AlgorithmParameterName ShowAndEditDipoles::NumSeeds("NumSeeds");
 
 
 
