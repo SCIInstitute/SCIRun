@@ -89,9 +89,18 @@ namespace Datatypes
     {
       std::vector<float> vertex, color, vertex_normal;
       std::vector<int32_t> index;
+      int dim_x, dim_y,dim_z;
+      float origin_x,origin_y,origin_z;
+      float spacing_x, spacing_y, spacing_z;
     };
 
     FieldData data;
+    struct transferFunc
+    {
+      std::vector<float> colors;
+      std::vector<float> opacities;
+    };
+    transferFunc tfn;
     
     double radius;
 

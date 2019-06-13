@@ -242,6 +242,7 @@ public Q_SLOTS:
   void setDirectionalLightColor(float r, float g, float b);
   void setBackgroundColor(float r, float g, float b);
 
+  
 
 protected:
 
