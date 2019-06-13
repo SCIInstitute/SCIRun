@@ -45,7 +45,7 @@ ShowAndEditDipolesDialog::ShowAndEditDipolesDialog(const std::string& name, Modu
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  std::cout << "dialog managers\n";
+  addDoubleSpinBoxManager(widgetSizeSpinBox, SAED::WidgetSize);
   addCheckBoxManager(showLastAsVectorCheckBox, SAED::ShowLastAsVector);
   addRadioButtonGroupManager({fixedSizeRButton, normalizeLargestRButton, scaleSizeRButton}, SAED::Sizing);
   addCheckBoxManager(showLinesCheckBox, SAED::ShowLines);

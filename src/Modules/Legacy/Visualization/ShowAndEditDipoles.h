@@ -47,11 +47,10 @@ namespace SCIRun {
         virtual void execute() override;
         virtual void setStateDefaults() override;
 
+        static const Core::Algorithms::AlgorithmParameterName WidgetSize;
         static const Core::Algorithms::AlgorithmParameterName Sizing;
         static const Core::Algorithms::AlgorithmParameterName ShowLastAsVector;
         static const Core::Algorithms::AlgorithmParameterName ShowLines;
-        static const Core::Algorithms::AlgorithmParameterName NumSeeds;
-        static const Core::Algorithms::AlgorithmParameterName ProbeScale;
         static const Core::Algorithms::AlgorithmParameterName PointPositions;
 
         INPUT_PORT(0, DipoleInputField, Field);

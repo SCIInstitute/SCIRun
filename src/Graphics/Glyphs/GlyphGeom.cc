@@ -418,7 +418,7 @@ void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
   numVBOElements_++;
   int p2_index = numVBOElements_;
   colors_.push_back(color2);
-  normals_.push_back(n);
+  normals_.push_back(-n);
   numVBOElements_++;
 
   // Precalculate
@@ -446,7 +446,7 @@ void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
     normals_.push_back(n);
     points_.push_back(radius2 * p + Vector(p2));
     colors_.push_back(color2);
-    normals_.push_back(n);
+    normals_.push_back(-n);
   }
 
   uint32_t offset = static_cast<uint32_t>(numVBOElements_);
@@ -458,16 +458,16 @@ void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
     indices_.push_back(strips);
     indices_.push_back(strips + 1);
     indices_.push_back(strips + points_per_loop);
-    indices_.push_back(strips + 1);
     indices_.push_back(strips + points_per_loop);
+    indices_.push_back(strips + 1);
     indices_.push_back(strips + points_per_loop + 1);
 
     // Render base
     indices_.push_back(p1_index);
     indices_.push_back(strips + 2);
     indices_.push_back(strips + points_per_loop + 2);
-    indices_.push_back(p2_index);
     indices_.push_back(strips + 3);
+    indices_.push_back(p2_index);
     indices_.push_back(strips + points_per_loop + 3);
   }
 }

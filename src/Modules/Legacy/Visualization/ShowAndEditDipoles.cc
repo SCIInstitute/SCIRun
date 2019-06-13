@@ -122,10 +122,10 @@ ShowAndEditDipoles::ShowAndEditDipoles()
   greenCol_ = ColorRGB(0.2, 0.8, 0.2);
   resizeCol_ = ColorRGB(0.54, 1.0, 0.60);
 
-  sphereRadius_ = 1.0;
-  cylinderRadius_ = 0.5;
-  coneRadius_ = 1.0;
-  diskRadius_ = 1.0;
+  sphereRadius_ = 0.25;
+  cylinderRadius_ = 0.12;
+  coneRadius_ = 0.25;
+  diskRadius_ = 0.25;
   diskDistFromCenter_ = 0.85;
   diskWidth_ = 0.05;
   widgetID_ = 0;
@@ -134,9 +134,10 @@ ShowAndEditDipoles::ShowAndEditDipoles()
 void ShowAndEditDipoles::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(NumSeeds, 1);
+  state->setValue(WidgetSize, 0.23);
+  state->setValue(Sizing, 0);
   state->setValue(ShowLastAsVector, false);
-  state->setValue(ProbeScale, 0.23);
+  state->setValue(ShowLines, false);
   state->setValue(PointPositions, VariableList());
 
   getOutputPort(DipoleWidget)->connectConnectionFeedbackListener([this](const ModuleFeedback& var) { processWidgetFeedback(var); });
@@ -211,9 +212,15 @@ void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformM
   {
   // Sphere and Cylinder reposition dipole
   case WidgetSection::SPHERE:
-  case WidgetSection::CYLINDER:
     pos_ = newPoint;
     break;
+  case WidgetSection::CYLINDER:
+    {
+      double scale = get_state()->getValue(WidgetSize).toDouble();
+      // Shift direction back because newPos is the center of the cylinder
+      pos_ = newPoint - 1.375 * direction_ * scale * sphereRadius_;
+      break;
+    }
   // Cone rotates dipole
   case WidgetSection::CONE:
     direction_ = (newPoint - pos_).normal() * direction_.length();
@@ -224,6 +231,9 @@ void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformM
     Vector newVec(newPoint-pos_);
     newVec /= diskDistFromCenter_;
     direction_ = Dot(newVec, direction_.normal()) * direction_.normal();
+
+    double scale = get_state()->getValue(WidgetSize).toDouble();
+    direction_ /= scale;
     break;
   }
   }
@@ -234,9 +244,12 @@ FieldHandle ShowAndEditDipoles::GenerateOutputField()
   auto ifieldhandle = getRequiredInput(DipoleInputField);
   auto bbox = ifieldhandle->vmesh()->get_bounding_box();
 
+  auto state = get_state();
+  double scale = state->getValue(WidgetSize).toDouble();
+  Vector scaled_dir = direction_ * scale;
   Point center;
   Point bmin = pos_;
-  Point bmax = pos_ + direction_;
+  Point bmax = pos_ + scaled_dir;
 
   // Fix degenerate boxes.
   const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
@@ -256,13 +269,11 @@ FieldHandle ShowAndEditDipoles::GenerateOutputField()
     bmax.z(bmax.z() + size_estimate);
   }
 
-  center = pos_ + direction_/2.0;
+  center = pos_ + scaled_dir/2.0;
 
   impl_->l2norm_ = (bmax - bmin).length();
   impl_->last_bounds_ = bbox;
 
-  auto state = get_state();
-  auto scale = state->getValue(ProbeScale).toDouble();
   auto widgetName = [](int i, int id) { return "SAED(" + std::to_string(i) + ")" + std::to_string(id); };
   impl_->pointWidgets_.resize(0);
 
@@ -271,42 +282,45 @@ FieldHandle ShowAndEditDipoles::GenerateOutputField()
                                  (WidgetFactory::createSphere(
                                    *this,
                                    widgetName(WidgetSection::SPHERE, widgetID_),
-                                   sphereRadius_ * direction_.length() * scale,
+                                   sphereRadius_ * scaled_dir.length(),
                                    deflPointCol_.toString(),
                                    pos_,
                                    bbox)));
 
   if(state->getValue(ShowLastAsVector).toBool())
   {
+    // Starts the cylinder position closer to the surface of the sphere
+    Point cylinderStart = pos_ + 0.75 * (scaled_dir * sphereRadius_);
+
     impl_->pointWidgets_.push_back(boost::dynamic_pointer_cast<WidgetBase>
                                    (WidgetFactory::createCylinder(
                                      *this,
                                      widgetName(WidgetSection::CYLINDER, widgetID_),
-                                     cylinderRadius_ * direction_.length() * scale,
+                                     cylinderRadius_ * scaled_dir.length(),
                                      deflCol_.toString(),
-                                     pos_,
+                                     cylinderStart,
                                      center,
                                      bbox)));
     impl_->pointWidgets_.push_back(boost::dynamic_pointer_cast<WidgetBase>
                                    (WidgetFactory::createCone(
                                      *this,
                                      widgetName(WidgetSection::CONE, widgetID_),
-                                     coneRadius_ * direction_.length() * scale,
+                                     coneRadius_ * scaled_dir.length(),
                                      deflCol_.toString(),
                                      center,
                                      bmax,
                                      bbox,
                                      true)));
 
-    Point diskPos = pos_ + direction_ * diskDistFromCenter_;
-    Point dp1 = diskPos - diskWidth_ * direction_;
-    Point dp2 = diskPos + diskWidth_ * direction_;
+    Point diskPos = pos_ + scaled_dir * diskDistFromCenter_;
+    Point dp1 = diskPos - diskWidth_ * scaled_dir;
+    Point dp2 = diskPos + diskWidth_ * scaled_dir;
 
     impl_->pointWidgets_.push_back(boost::dynamic_pointer_cast<WidgetBase>
                                    (WidgetFactory::createDisk(
                                      *this,
                                      widgetName(WidgetSection::DISK, widgetID_),
-                                     diskRadius_ * direction_.length() * scale,
+                                     diskRadius_ * scaled_dir.length(),
                                      resizeCol_.toString(),
                                      dp1,
                                      dp2,
@@ -328,12 +342,11 @@ FieldHandle ShowAndEditDipoles::GenerateOutputField()
 }
 
 
+const AlgorithmParameterName ShowAndEditDipoles::WidgetSize("WidgetSize");
 const AlgorithmParameterName ShowAndEditDipoles::Sizing("Sizing");
 const AlgorithmParameterName ShowAndEditDipoles::ShowLastAsVector("ShowLastAsVector");
 const AlgorithmParameterName ShowAndEditDipoles::ShowLines("ShowLines");
-const AlgorithmParameterName ShowAndEditDipoles::ProbeScale("ProbeScale");
 const AlgorithmParameterName ShowAndEditDipoles::PointPositions("PointPositions");
-const AlgorithmParameterName ShowAndEditDipoles::NumSeeds("NumSeeds");
 
 
 
