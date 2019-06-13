@@ -301,15 +301,10 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::setAutoRotateSpeed(double speed)
+    void SRInterface::applyAutoRotation()
     {
-      autoRotateSpeed = speed;
-    }
-
-    //----------------------------------------------------------------------------------------------
-    void SRInterface::setAutoRotateOnDrag(bool value)
-    {
-       doAutoRotateOnDrag = value;
+      if(glm::length(autoRotateVector) > 0.1) mCamera->rotate(autoRotateVector * autoRotateSpeed);
+      if(tryAutoRotate) mCamera->tryAutoRotate();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -324,10 +319,11 @@ namespace SCIRun {
       {
         autoRotateVector = axis;
       }
-      std::cout << autoRotateVector.x << ", " << autoRotateVector.y << "\n";
     }
 
     //Getters/Setters-------------------------------------------------------------------------------
+    void SRInterface::setAutoRotateSpeed(double speed) { autoRotateSpeed = speed; }
+    void SRInterface::setAutoRotateOnDrag(bool value) { doAutoRotateOnDrag = value; }
     void SRInterface::setZoomInverted(bool value) {mCamera->setZoomInverted(value);}
     void SRInterface::setLockZoom(bool lock)      {mCamera->setLockZoom(lock);}
     void SRInterface::setLockPanning(bool lock)   {mCamera->setLockPanning(lock);}
@@ -1398,9 +1394,7 @@ namespace SCIRun {
       /// objects, or the view point has changed).
       mContext->makeCurrent();
 
-      if(glm::length(autoRotateVector) > 0.1) mCamera->rotate(autoRotateVector * autoRotateSpeed);
-      if(tryAutoRotate) mCamera->tryAutoRotate();
-
+      applyAutoRotation();
       updateCamera();
       updateWorldLight();
 

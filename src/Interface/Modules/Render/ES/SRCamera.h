@@ -115,7 +115,6 @@ namespace SCIRun{
       float                 mZFar         {getDefaultZFar()};   ///< Position of far plane along view vec.
       float                 mRadius       {-1.0};
 
-      glm::vec2             startPos      {0.0, 0.0};
       glm::vec2             lastPos       {0.0, 0.0};
       glm::vec2             movementVec   {0.0, 0.0};
 

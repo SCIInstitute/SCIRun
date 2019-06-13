@@ -81,20 +81,26 @@ namespace SCIRun {
       glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
       mArcLookAt->doReferenceDown(screenSpace);
       lastPos = screenSpace;
-      startPos = screenSpace;
       movementVec = glm::vec2(0.0, 0.0);
     }
 
     //----------------------------------------------------------------------------------------------
     void SRCamera::mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton btn)
     {
+      static const float spinThreashold = 0.01f;
       glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
       switch (mInterface.getMouseMode())
       {
         case SRInterface::MOUSE_OLDSCIRUN:
           if (btn == SRInterface::MOUSE_LEFT && !lockPanning_)    mArcLookAt->doPan(screenSpace);
           if (btn == SRInterface::MOUSE_RIGHT && !lockZoom_)      mArcLookAt->doZoom(screenSpace);
-          if (btn == SRInterface::MOUSE_MIDDLE && !lockRotation_) mArcLookAt->doRotation(screenSpace);
+          if (btn == SRInterface::MOUSE_MIDDLE && !lockRotation_)
+          {
+              mArcLookAt->doRotation(screenSpace);
+              movementVec = screenSpace - lastPos;
+              if(glm::length(movementVec) < spinThreashold) movementVec = glm::vec2(0.0, 0.0);
+              lastPos = screenSpace;
+          }
           break;
 
         case SRInterface::MOUSE_NEWSCIRUN:
@@ -102,7 +108,7 @@ namespace SCIRun {
           {
             mArcLookAt->doRotation(screenSpace);
             movementVec = screenSpace - lastPos;
-            if(glm::length(movementVec) < 0.01f) movementVec = glm::vec2(0.0, 0.0);
+            if(glm::length(movementVec) < spinThreashold) movementVec = glm::vec2(0.0, 0.0);
             lastPos = screenSpace;
           }
           if (btn == SRInterface::MOUSE_RIGHT && !lockPanning_)   mArcLookAt->doPan(screenSpace);
@@ -180,6 +186,7 @@ namespace SCIRun {
         mInvertVal = -1;
     }
 
+    //----------------------------------------------------------------------------------------------
     void SRCamera::tryAutoRotate()
     {
       mArcLookAt->doReferenceDown(lastPos);
@@ -187,6 +194,7 @@ namespace SCIRun {
       setClippingPlanes();
     }
 
+    //----------------------------------------------------------------------------------------------
     void SRCamera::rotate(glm::vec2 vector)
     {
       mArcLookAt->doReferenceDown(glm::vec2(0.0, 0.0));
