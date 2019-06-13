@@ -195,6 +195,7 @@ namespace SCIRun {
 
       //---------------- Camera ----------------------------------------------------------------------
       void updateCamera(); // Places mCamera's transform into our static camera component.
+      void applyAutoRotation();
 
       //---------------- Widgets -------------------------------------------------------------------
       bool foundWidget(const glm::ivec2& pos); // search for a widget at mouse position
