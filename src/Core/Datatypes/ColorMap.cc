@@ -54,8 +54,11 @@ ColorMap* ColorMap::clone() const
   return new ColorMap(*this);
 }
 
+
+
 namespace detail
 {
+  
   class Rainbow : public ColorMapStrategy
   {
   public:
@@ -340,3 +343,45 @@ double ColorMap::getColorMapShift() const { return shift_; }
 bool ColorMap::getColorMapInvert() const { return invert_; }
 double ColorMap::getColorMapRescaleScale() const { return rescale_scale_; }
 double ColorMap::getColorMapRescaleShift() const { return rescale_shift_; }
+
+
+
+ColorMap_OSP_helper::ColorMap_OSP_helper(const std::string name){
+  opacityList.push_back(0.5);
+  opacityList.push_back(0.5);
+  if(name.compare("Rainbow") == 0){
+    colorList.push_back(0); colorList.push_back(0);     colorList.push_back(1);
+    colorList.push_back(0); colorList.push_back(0.75);  colorList.push_back(0.75);
+    colorList.push_back(0); colorList.push_back(1);     colorList.push_back(0);
+    colorList.push_back(1); colorList.push_back(0.5);   colorList.push_back(0);
+    colorList.push_back(1); colorList.push_back(0);     colorList.push_back(0);
+  }else if(name.compare("Old Rainbow") == 0){
+    colorList.push_back(0); colorList.push_back(0);  colorList.push_back(1);
+    colorList.push_back(0); colorList.push_back(1);  colorList.push_back(1);
+    colorList.push_back(0); colorList.push_back(1);  colorList.push_back(0);
+    colorList.push_back(1); colorList.push_back(1);  colorList.push_back(0);
+    colorList.push_back(1); colorList.push_back(0);  colorList.push_back(0);
+  }else if(name.compare("Blackbody") == 0){
+    colorList.push_back(0); colorList.push_back(0);  colorList.push_back(0);
+    colorList.push_back(1); colorList.push_back(0);  colorList.push_back(0);
+    colorList.push_back(1); colorList.push_back(1);  colorList.push_back(0);
+    colorList.push_back(1); colorList.push_back(1);  colorList.push_back(1);
+  }else if(name.compare("Grayscale") == 0){
+    colorList.push_back(0); colorList.push_back(0);     colorList.push_back(0);
+    colorList.push_back(1); colorList.push_back(1);     colorList.push_back(1);
+  }else if(name.compare("Orange,Black,Lime") == 0){
+    colorList.push_back(1); colorList.push_back(0.5); colorList.push_back(0);
+    colorList.push_back(0); colorList.push_back(0);   colorList.push_back(0);
+    colorList.push_back(0); colorList.push_back(1);   colorList.push_back(0);
+  }else if(name.compare("Darkhue") == 0){
+    colorList.push_back(0); colorList.push_back(0);   colorList.push_back(0);
+    colorList.push_back(0); colorList.push_back(0);   colorList.push_back(0.333333);
+    colorList.push_back(0.5); colorList.push_back(0); colorList.push_back(0.5);
+    colorList.push_back(1); colorList.push_back(0);   colorList.push_back(0);
+    colorList.push_back(1); colorList.push_back(0);     colorList.push_back(0.25*2.6666666);
+  }else if(name.compare("BP Seismic") == 0){
+    colorList.push_back(0); colorList.push_back(0);  colorList.push_back(1);
+    colorList.push_back(1); colorList.push_back(1);  colorList.push_back(1);
+    colorList.push_back(1); colorList.push_back(0);  colorList.push_back(0);
+  }
+}
