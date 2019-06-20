@@ -147,7 +147,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setInitialLightValues();
 
   state->connectStateChanged([this]() { Q_EMIT newGeometryValueForwarder(); });
-  connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(newGeometryValue()));
+  connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(updateModifiedGeometries()));
 
   std::string filesystemRoot = Application::Instance().executablePath().string();
   std::string sep;
@@ -585,8 +585,22 @@ QColor ViewSceneDialog::checkColorSetting(std::string& rgb, QColor defaultColor)
 //---------------- New Geometry --------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
+void ViewSceneDialog::updateAllGeometries()
+{
+  //If a render parameter changes we must update all of the geometries by removing and readding them.
+  //This must be foreced because the IDs will not have changed
+  newGeometryValue(true);
+}
+
+void ViewSceneDialog::updateModifiedGeometries()
+{
+  //if we are looking for a new geoetry the ID will have changed therefore we can find the
+  //geometries that have changed and only remove those
+  newGeometryValue(false);
+}
+
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::newGeometryValue()
+void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
 {
   DEBUG_LOG_LINE_INFO
   LOG_DEBUG("ViewSceneDialog::newGeometryValue {} before locking", windowTitle().toStdString());
@@ -597,7 +611,8 @@ void ViewSceneDialog::newGeometryValue()
   if (!spire)
     return;
 
-  spire->removeAllGeomObjects();
+  if(forceAllObjectsToUpdate)
+    spire->removeAllGeomObjects();
 
   std::vector<QString> displayNames;
   std::vector<std::string> validObjects;
@@ -633,17 +648,28 @@ void ViewSceneDialog::newGeometryValue()
     if (mConfigurationDock->visibleItems().isVisible(name))
     {
       auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
-      if (realObj)
-      {
-        DEBUG_LOG_LINE_INFO
-        spire->handleGeomObject(realObj, port);
+      if (realObj && spire->hasObject(obj->uniqueID()))
         validObjects.push_back(obj->uniqueID());
-      }
     }
   }
 
-  if (!validObjects.empty())
-    spire->gcInvalidObjects(validObjects);
+  spire->gcInvalidObjects(validObjects);
+
+  port = 0;
+  for (auto it = allGeoms.begin(); it != allGeoms.end(); ++it, ++port)
+  {
+    auto obj = *it;
+    auto name = displayNames[port];
+    if (mConfigurationDock->visibleItems().isVisible(name))
+    {
+      auto realObj = boost::dynamic_pointer_cast<GeometryObjectSpire>(obj);
+      if (realObj && !spire->hasObject(obj->uniqueID()))
+      {
+        DEBUG_LOG_LINE_INFO
+        spire->handleGeomObject(realObj, port);
+      }
+    }
+  }
 
   sendScreenshotDownstreamForTesting();
 
@@ -755,7 +781,7 @@ void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
   if (shiftdown_)
   {
     selectObject(event->x(), event->y());
-    newGeometryValue();
+    updateModifiedGeometries();
   }
 }
 
@@ -766,7 +792,7 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
   {
     selected_ = false;
     auto selName = restoreObjColor();
-    newGeometryValue();
+    updateModifiedGeometries();
     Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y(), selName);
   }
 }
@@ -783,7 +809,7 @@ void ViewSceneDialog::wheelEvent(QWheelEvent* event)
   {
     updateScaleBarLength();
     scaleBarGeom_ = buildGeometryScaleBar();
-    newGeometryValue();
+    updateModifiedGeometries();
   }
 }
 
@@ -1177,7 +1203,7 @@ void ViewSceneDialog::setClippingPlaneVisible(bool value)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setClippingPlaneFrameOn(bool value)
 {
-  newGeometryValue();
+  updateModifiedGeometries();
   clippingPlanes_[clippingPlaneIndex_].showFrame = value;
   auto spire = mSpire.lock();
   if (spire)
@@ -1252,7 +1278,7 @@ void ViewSceneDialog::updatClippingPlaneDisplay()
 
   //geometry
   buildGeomClippingPlanes();
-  newGeometryValue();
+  updateModifiedGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1276,6 +1302,8 @@ void ViewSceneDialog::buildGeomClippingPlanes()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, const BBox& bbox)
 {
+  BBox mBBox;
+  mBBox.reset();
   Vector diag(bbox.diagonal());
   Point c(bbox.center());
   Vector n(plane.x, plane.y, plane.z);
@@ -1301,7 +1329,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
 
   Graphics::GlyphGeom glyphs;
   glyphs.addClippingPlane(p1, p2, p3, p4, 0.01 * std::min(w, h),
-    50, ColorRGB(), ColorRGB());
+    10, ColorRGB(), ColorRGB());
   ss << "clipping_plane" << index <<
     p1.x() << p1.y() << p1.z() <<
     p2.x() << p2.y() << p2.z() <<
@@ -1312,13 +1340,13 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
   RenderState renState;
   renState.set(RenderState::IS_ON, true);
   renState.set(RenderState::USE_TRANSPARENCY, false);
-  renState.defaultColor = ColorRGB(0.4, 0.4, 1);
+  renState.defaultColor = ColorRGB(clippingPlaneColors_[index][0], clippingPlaneColors_[index][1], clippingPlaneColors_[index][2]);
   renState.set(RenderState::USE_DEFAULT_COLOR, true);
   renState.set(RenderState::USE_NORMALS, true);
   renState.set(RenderState::IS_WIDGET, true);
   auto geom(boost::make_shared<GeometryObjectSpire>(*gid_, uniqueNodeID, false));
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox());
 
   Graphics::GlyphGeom glyphs2;
   glyphs2.addPlane(p1, p2, p3, p4, ColorRGB());
@@ -1333,7 +1361,7 @@ void ViewSceneDialog::buildGeometryClippingPlane(int index, glm::vec4 plane, con
   renState.defaultColor = ColorRGB(1, 1, 1, 0.2);
   auto geom2(boost::make_shared<GeometryObjectSpire>(*gid_, ss.str(), false));
   glyphs2.buildObject(*geom2, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 0.2,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
+    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, BBox());
 
   clippingPlaneGeoms_.push_back(geom);
   clippingPlaneGeoms_.push_back(geom2);
@@ -1464,7 +1492,7 @@ void ViewSceneDialog::setScaleBar()
   {
     updateScaleBarLength();
     scaleBarGeom_ = buildGeometryScaleBar();
-    newGeometryValue();
+    updateModifiedGeometries();
   }
 }
 
@@ -1772,12 +1800,12 @@ void ViewSceneDialog::toggleLightOnOff(int index, bool value)
     spire->setLightOn(index, value);
 }
 
-
-
 void ViewSceneDialog::updateLightDirection(int light)
 {
 
 }
+
+
 
 //--------------------------------------------------------------------------------------------------
 //---------------- Materials -----------------------------------------------------------------------
@@ -1788,7 +1816,7 @@ void ViewSceneDialog::setAmbientValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::Ambient, value);
   setMaterialFactor(SRInterface::MAT_AMBIENT, value);
-  newGeometryValue();
+  updateAllGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1796,7 +1824,7 @@ void ViewSceneDialog::setDiffuseValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::Diffuse, value);
   setMaterialFactor(SRInterface::MAT_DIFFUSE, value);
-  newGeometryValue();
+  updateAllGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1804,7 +1832,7 @@ void ViewSceneDialog::setSpecularValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::Specular, value);
   setMaterialFactor(SRInterface::MAT_SPECULAR, value);
-  newGeometryValue();
+  updateAllGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1812,7 +1840,7 @@ void ViewSceneDialog::setShininessValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::Shine, value);
   setMaterialFactor(SRInterface::MAT_SHINE, value);
-  newGeometryValue();
+  updateAllGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1835,7 +1863,7 @@ void ViewSceneDialog::setFogOn(bool value)
     setFog(SRInterface::FOG_INTENSITY, 1.0);
   else
     setFog(SRInterface::FOG_INTENSITY, 0.0);
-  newGeometryValue();
+  updateAllGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1852,7 +1880,7 @@ void ViewSceneDialog::setFogUseBGColor(bool value)
     setFogColor(glm::vec4(bgColor_.red(), bgColor_.green(), bgColor_.blue(), 1.0));
   else
     setFogColor(glm::vec4(fogColor_.red(), fogColor_.green(), fogColor_.blue(), 1.0));
-  newGeometryValue();
+  updateAllGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1870,7 +1898,7 @@ void ViewSceneDialog::assignFogColor()
   if (!useBg)
   {
     setFogColor(glm::vec4(fogColor_.red(), fogColor_.green(), fogColor_.blue(), 1.0));
-    newGeometryValue();
+    updateAllGeometries();
   }
 }
 
@@ -1879,7 +1907,7 @@ void ViewSceneDialog::setFogStartValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::FogStart, value);
   setFog(SRInterface::FOG_START, value);
-  newGeometryValue();
+  updateAllGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1887,7 +1915,7 @@ void ViewSceneDialog::setFogEndValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::FogEnd, value);
   setFog(SRInterface::FOG_END, value);
-  newGeometryValue();
+  updateAllGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1937,7 +1965,7 @@ void ViewSceneDialog::assignBackgroundColor()
       setFogColor(glm::vec4(bgColor_.red(), bgColor_.green(), bgColor_.blue(), 1.0));
     else
       setFogColor(glm::vec4(fogColor_.red(), fogColor_.green(), fogColor_.blue(), 1.0));
-    newGeometryValue();
+    updateAllGeometries();
   }
 }
 
@@ -1946,7 +1974,7 @@ void ViewSceneDialog::setTransparencySortTypeContinuous(bool index)
 {
   std::shared_ptr<SRInterface> spire = mSpire.lock();
   spire->setTransparencyRendertype(RenderState::TransparencySortType::CONTINUOUS_SORT);
-  newGeometryValue();
+  updateAllGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1954,7 +1982,7 @@ void ViewSceneDialog::setTransparencySortTypeUpdate(bool index)
 {
   std::shared_ptr<SRInterface> spire = mSpire.lock();
   spire->setTransparencyRendertype(RenderState::TransparencySortType::UPDATE_SORT);
-  newGeometryValue();
+  updateAllGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1962,7 +1990,7 @@ void ViewSceneDialog::setTransparencySortTypeLists(bool index)
 {
   std::shared_ptr<SRInterface> spire = mSpire.lock();
   spire->setTransparencyRendertype(RenderState::TransparencySortType::LISTS_SORT);
-  newGeometryValue();
+  updateAllGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------

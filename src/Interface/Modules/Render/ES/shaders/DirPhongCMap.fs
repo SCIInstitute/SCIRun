@@ -36,7 +36,6 @@
 
 uniform vec3    uCamViewVec;        // Camera 'at' vector in world space
 uniform vec4    uAmbientColor;      // Ambient color
-uniform vec4    uDiffuseColor;      // Diffuse color
 uniform vec4    uSpecularColor;     // Specular color
 uniform float   uSpecularPower;     // Specular power
 uniform vec3    uLightDirWorld0;     // Directional light (world space).
@@ -89,9 +88,7 @@ vec4 calculate_lighting(vec3 lightDirWorld, vec3 lightColor)
   float specular    = max(0.0, dot(reflection, uCamViewVec));
   specular          = pow(specular, uSpecularPower);
 
-  vec4  diffuseColor = vColor;
-
-  return vec4(lightColor * (diffuse * diffuseColor.rgb + specular * uSpecularColor.rgb), 0.0);
+  return vec4(lightColor * (diffuse * vColor.rgb + specular * uSpecularColor.rgb), 0.0);
 }
 
 void main()
@@ -140,7 +137,7 @@ void main()
       discard;
   }
 
-  gl_FragColor = vec4(uAmbientColor.rgb * uDiffuseColor.rgb, uTransparency);
+  gl_FragColor = vec4(uAmbientColor.rgb * vColor.rgb, uTransparency);
   if (length(uLightDirWorld0) > 0.0)
     gl_FragColor += calculate_lighting(uLightDirWorld0, uLightColor0);
   if (length(uLightDirWorld1) > 0.0)
