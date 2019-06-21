@@ -25,27 +25,43 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+#ifdef OPENGL_ES
+  #ifdef GL_FRAGMENT_PRECISION_HIGH
+    // Default precision
+    precision highp float;
+  #else
+    precision mediump float;
+  #endif
+#endif
 
-// Uniforms
-uniform mat4    uProjIVObject;      // Projection transform * Inverse View
-uniform mat4    uObject;            // Object -> World
-uniform mat4    uInverseView;       // world -> view
+uniform float uTransparency;
 
-// Attributes
-attribute vec3  aPos;
-attribute vec3  aNormal;
+//fog
+uniform vec4    uFogSettings;       // fog settings (intensity, start, end, 0.0)
+uniform vec4    uFogColor;          // fog color
 
-// Outputs to the fragment shader.
-varying vec3    vNormal;
+varying vec4	fColor;
 varying vec4    vPos;//for clipping plane calc
 varying vec4    vFogCoord;// for fog calculation
 
-void main( void )
+void main()
 {
-  // Todo: Add gamma correction factor of 2.2. For textures, we assume that it
-  // was generated in gamma space, and we need to convert it to linear space.
-  vNormal  = normalize(vec3(uObject * vec4(aNormal, 0.0)));
-  vPos = vec4(aPos, 1.0);
-  vFogCoord = uInverseView * vPos;
-  gl_Position = uProjIVObject * vec4(aPos, 1.0);
+	gl_FragColor 		= vec4(fColor.xyz,uTransparency);
+
+  //calculate fog
+  if (uFogSettings.x > 0.0)
+  {
+    vec4 fp;
+    fp.x = uFogSettings.x;
+    fp.y = uFogSettings.y;
+    fp.z = uFogSettings.z;
+    fp.w = abs(vFogCoord.z/vFogCoord.w);
+
+    float fog_factor;
+    fog_factor = (fp.z-fp.w)/(fp.z-fp.y);
+    fog_factor = 1.0 - clamp(fog_factor, 0.0, 1.0);
+    fog_factor = 1.0 - exp(-pow(fog_factor*2.5, 2.0));
+    gl_FragColor.xyz = mix(clamp(gl_FragColor.xyz, 0.0, 1.0),
+      clamp(uFogColor.xyz, 0.0, 1.0), fog_factor);
+  }
 }

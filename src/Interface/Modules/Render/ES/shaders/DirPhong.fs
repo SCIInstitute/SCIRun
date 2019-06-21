@@ -44,9 +44,9 @@ uniform vec3    uLightDirWorld1;     // Directional light (world space).
 uniform vec3    uLightDirWorld2;     // Directional light (world space).
 uniform vec3    uLightDirWorld3;     // Directional light (world space).
 uniform vec3    uLightColor0;        // color of light 0
-uniform vec3    uLightColor1;        // color of light 0
-uniform vec3    uLightColor2;        // color of light 0
-uniform vec3    uLightColor3;        // color of light 0
+uniform vec3    uLightColor1;        // color of light 1
+uniform vec3    uLightColor2;        // color of light 2
+uniform vec3    uLightColor3;        // color of light 3
 uniform float   uTransparency;
 
 //clipping planes
@@ -77,7 +77,7 @@ varying vec4    vFogCoord;          // for fog calculation
 
 vec4 calculate_lighting(vec3 lightDirWorld, vec3 lightColor)
 {
-  vec3  invLightDir = -lightDirWorld;
+  vec3  invLightDir = -normalize(lightDirWorld);
   vec3  normal      = normalize(vNormal);
 
   if (gl_FrontFacing)

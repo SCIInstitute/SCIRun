@@ -880,7 +880,7 @@ namespace SCIRun {
             if (vbo.onGPU)
             {
               RENDERER_LOG("Generate vector of attributes to pass into the entity system: {}, {}", nameIndex, vbo.name);
-              std::vector<std::tuple<std::string, size_t, bool>> attributeData;
+              std::vector<std::tuple<std::string, size_t, bool >> attributeData;
               for (const auto& attribData : vbo.attributes)
               {
                 attributeData.push_back(std::make_tuple(attribData.name, attribData.sizeInBytes, attribData.normalize));
@@ -1248,6 +1248,16 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
+    bool SRInterface::hasObject(const std::string& object)
+    {
+      for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
+        if (it->mName == object)
+          return true;
+
+      return false;
+    }
+
+    //----------------------------------------------------------------------------------------------
     void SRInterface::addVBOToEntity(uint64_t entityID, const std::string& vboName)
     {
       std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
@@ -1427,8 +1437,7 @@ namespace SCIRun {
           {
             GLuint arrowVBO = vboMan->hasVBO("Assets/arrow.geom");
             GLuint arrowIBO = iboMan->hasIBO("Assets/arrow.geom");
-            //GLuint shader = shaderMan->getIDForAsset("Shaders/DirPhongNoClipping");
-            GLuint shader = shaderMan->getIDForAsset("Shaders/UniformColor");
+            GLuint shader = shaderMan->getIDForAsset("Shaders/OrientationGlyph");
 
             // Bail if assets have not been loaded yet (asynchronous loading may take a
             // few frames).
@@ -1508,13 +1517,7 @@ namespace SCIRun {
 
             GLint locCamViewVec = glGetUniformLocation(shader, "uCamViewVec");
             GLint locLightDirWorld = glGetUniformLocation(shader, "uLightDirWorld");
-
-            //GLint locAmbientColor = glGetUniformLocation(shader, "uAmbientColor");
-            //GLint locDiffuseColor = glGetUniformLocation(shader, "uDiffuseColor");
             GLint locDiffuseColor = glGetUniformLocation(shader, "uColor");
-            //GLint locSpecularColor = glGetUniformLocation(shader, "uSpecularColor");
-            //GLint locSpecularPower = glGetUniformLocation(shader, "uSpecularPower");
-
             GLint locProjIVObject = glGetUniformLocation(shader, "uProjIVObject");
             GLint locObject = glGetUniformLocation(shader, "uObject");
 
@@ -1525,10 +1528,6 @@ namespace SCIRun {
             // use the camera, but will use the camera's transformation matrix.
 
             mArrowAttribs.bind();
-
-            //GL(glUniform4f(locSpecularColor, 0.0f, 0.0f, 0.0f, 1.0f));
-            //GL(glUniform4f(locAmbientColor, 0.2f, 0.2f, 0.2f, 1.0f));
-            //GL(glUniform1f(locSpecularPower, 16.0f));
 
             // X Axis (dark)
             {
