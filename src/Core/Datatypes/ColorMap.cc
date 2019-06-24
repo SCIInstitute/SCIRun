@@ -58,7 +58,7 @@ ColorMap* ColorMap::clone() const
 
 namespace detail
 {
-  
+
   class Rainbow : public ColorMapStrategy
   {
   public:
@@ -345,8 +345,9 @@ double ColorMap::getColorMapRescaleScale() const { return rescale_scale_; }
 double ColorMap::getColorMapRescaleShift() const { return rescale_shift_; }
 
 
-
-ColorMap_OSP_helper::ColorMap_OSP_helper(const std::string name){
+//TODO: heavily refactor
+ColorMap_OSP_helper::ColorMap_OSP_helper(const std::string& name)
+{
   opacityList.push_back(0.5);
   opacityList.push_back(0.5);
   if(name.compare("Rainbow") == 0){

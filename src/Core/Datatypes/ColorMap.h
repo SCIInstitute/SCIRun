@@ -118,14 +118,14 @@ namespace Datatypes {
   private:
     StandardColorMapFactory() = delete;
   };
-  
+
   // colormap helper for ospray transfer function
-  class ColorMap_OSP_helper
+  class SCISHARE ColorMap_OSP_helper
   {
   public:
     std::vector<float> colorList;
     std::vector<float> opacityList;
-    ColorMap_OSP_helper(const std::string name);
+    explicit ColorMap_OSP_helper(const std::string& name);
   };
 
 }}}
