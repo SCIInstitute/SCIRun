@@ -28,7 +28,8 @@
 
 #include <Modules/Legacy/Fields/CalculateMeshNodes.h>
 //#include <Core/Algorithms/Base/AlgorithmBase.h>
-//#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Scalar.h>
 //#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/CalculateMeshCenterAlgo.h>
 
@@ -38,11 +39,15 @@
 //#include <Core/Datatypes/FieldInformation.h>
 #include <Core/Parser/ArrayMathEngine.h>
 
-namespace SCIRun {
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+//using namespace SCIRun::Core::Algorithms::Fields;
 
 /// @class CalculateMeshNodes
 /// @brief Calculate new positions for the node locations of the mesh.
 
+/*
 class CalculateMeshNodes : public Module
 {
   public:
@@ -60,15 +65,32 @@ class CalculateMeshNodes : public Module
 
     bool old_version_;
 };
+*/
 
 
-DECLARE_MAKER(CalculateMeshNodes)
+MODULE_INFO_DEF(CalculateMeshNodes, ChangeMesh, SCIRun)
+
+CalculateMeshNodes::CalculateMeshNodes() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(OutputField);
+}
+
+void CalculateMeshNodes::setStateDefaults()
+{
+  //TODO
+  //setStateStringFromAlgoOption(Parameters::Method);
+}
+
+
+/*
 CalculateMeshNodes::CalculateMeshNodes(GuiContext* ctx)
   : Module("CalculateMeshNodes", ctx, Source, "ChangeMesh", "SCIRun"),
   guifunction_(get_ctx()->subVar("function")),
   old_version_(false)
 {
 }
+*/
 
 void CalculateMeshNodes::execute()
 {
@@ -89,9 +111,7 @@ void CalculateMeshNodes::execute()
   }
   get_dynamic_input_handles("Array",matrices,false);
 
-  TCLInterface::eval(get_id()+" update_text");
-
-  if (inputs_changed_ || guifunction_.changed() || !oport_cached("Field"))
+  if (needToExecute())
   {
     update_state(Executing);
     // Get number of matrix ports with data (the last one is always empty)
@@ -161,7 +181,8 @@ void CalculateMeshNodes::execute()
     bool has_NEWPOS = true;
     if (function.find("NEWPOS") != std::string::npos)
     {
-      if(!(engine.add_output_fieldnodes("NEWPOS",field))) return;
+      if(!(engine.add_output_fieldnodes("NEWPOS",field)))
+      return;
     }
     else
     {
@@ -184,19 +205,9 @@ void CalculateMeshNodes::execute()
     // code for all the objects, as well as inserting the function and looping
     // over every data point
 
-    if (!(engine.run()))
+    if (!engine.run())
     {
-      ///-----------------------
-      // Backwards compatibility with version 3.0.2
-      if (old_version_)
-      {
-        error("This module does not fully support backwards compatibility:");
-        error("C++/C functions are not supported in by this module anymore.");
-        error("Please review documentation to explore available functionality and grammar of this module.");
-        error("We are sorry for this inconvenience, but we do not longer support dynamically compiling code in SCIRun.");
-      }
-      ///-----------------------
-
+      error("Engine/parser failure");
       return;
     }
 
@@ -216,7 +227,7 @@ void CalculateMeshNodes::execute()
   }
 }
 
-
+#if 0
 void
 CalculateMeshNodes::tcl_command(GuiArgs& args, void* userdata)
 {
@@ -293,8 +304,5 @@ CalculateMeshNodes::post_read()
       if (coord == "3") TCLInterface::set(modName+"function", "NEWPOS = POS + DATA*normal(ELEMENT);", get_ctx());
     }
   }
-
 }
-
-
-} // End namespace SCIRun
+#endif
