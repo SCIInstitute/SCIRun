@@ -98,6 +98,14 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   planeButtonGroup_->setId(plane4RadioButton_, 3);
   planeButtonGroup_->setId(plane5RadioButton_, 4);
   planeButtonGroup_->setId(plane6RadioButton_, 5);
+
+  plane1RadioButton_->setStyleSheet("QRadioButton { color: rgb(179, 51, 25) }");
+  plane2RadioButton_->setStyleSheet("QRadioButton { color: rgb(191, 108, 59) }");
+  plane3RadioButton_->setStyleSheet("QRadioButton { color: rgb(193, 197, 109) }");
+  plane4RadioButton_->setStyleSheet("QRadioButton { color: rgb(86, 167, 58) }");
+  plane5RadioButton_->setStyleSheet("QRadioButton { color: rgb(40, 83, 109) }");
+  plane6RadioButton_->setStyleSheet("QRadioButton { color: rgb(108, 55, 109) }");
+
   connect(planeButtonGroup_, SIGNAL(buttonPressed(int)), parent, SLOT(setClippingPlaneIndex(int)));
   connect(planeVisibleCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneVisible(bool)));
   connect(showPlaneFrameCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setClippingPlaneFrameOn(bool)));

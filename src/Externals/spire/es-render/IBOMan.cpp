@@ -82,8 +82,19 @@ const IBOMan::IBOData& IBOMan::getIBOData(const std::string& assetName) const
 // GARBAGE COLLECTION
 //------------------------------------------------------------------------------
 
+#define PRINT_IBO_GC 0
 void IBOMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
 {
+#if PRINT_IBO_GC
+  for(auto& key: validKeys)
+    std::cout << "  \e[33mValid Keys\e[00m: " << key << "\n";
+  std::cout << "\n";
+
+  for(auto& key: mIBOData)
+    std::cout<< "  \e[31mCurrent Keys Pre-GC\e[00m: " << key.first << "\n";
+  std::cout << "\n";
+#endif
+
   // Every GLuint in validKeys should be in our map. If there is not, then
   // there is an error in the system, and it should be reported.
   // The reverse is not expected to be true, and is what we are attempting to
@@ -129,6 +140,12 @@ void IBOMan::runGCAgainstVaidIDs(const std::set<GLuint>& validKeys)
     mIBOData.erase(it++);
     GL(glDeleteBuffers(1, &idToErase));
   }
+
+#if PRINT_IBO_GC
+  for(auto& key: mIBOData)
+    std::cout<< "  \e[34mCurrent Keys Post-GC\e[00m: " << key.first << "\n";
+  std::cout << "\n";
+#endif
 }
 
 class IBOGarbageCollector :
