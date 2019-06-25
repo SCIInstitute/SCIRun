@@ -157,6 +157,7 @@ namespace SCIRun {
       void handleGeomObject(Graphics::Datatypes::GeometryHandle object, int port);
       // Remove all SCIRun 5 objects.
       void removeAllGeomObjects();
+      bool hasObject(const std::string& object);
       // Garbage collect all invalid objects not given in the valid objects vector.
       void gcInvalidObjects(const std::vector<std::string>& validObjects);
       // Simple hash function. Modify if hash collisions occur due to string

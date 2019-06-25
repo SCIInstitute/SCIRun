@@ -151,7 +151,7 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
   for (auto a : indices_)
     iboBuffer->write(a);
 
-    BBox newBBox;
+  BBox newBBox;
 
   const bool writeNormals = normals_.size() == points_.size();
   for (size_t i = 0; i < points_.size(); i++)
@@ -178,6 +178,9 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
       //vboBuffer->write(static_cast<float>(1.f));
     } // no color writing otherwise
   }
+
+  if(!bbox.valid())
+    newBBox.reset();
 
   // If true, then the VBO will be placed on the GPU. We don't want to place
   // VBOs on the GPU when we are generating rendering lists.

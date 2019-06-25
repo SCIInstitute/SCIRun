@@ -649,7 +649,7 @@ namespace ren {
         // Find the asset name in mNameToGL and erase.
         mNameToGL.erase(mNameToGL.find(it->second));
 
-        std::cout << "Texture GC: " << it->second << std::endl;
+        //std::cout << "Texture GC: " << it->second << std::endl;
 
         // Erase our iterator and move on. Ensure we delete the program.
         GLuint idToErase = it->first;
@@ -681,7 +681,7 @@ namespace ren {
       // Find the asset name in mNameToGL and erase.
       mNameToGL.erase(mNameToGL.find(it->second));
 
-      std::cout << "Texture GC: " << it->second << std::endl;
+      //std::cout << "Texture GC: " << it->second << std::endl;
 
       // Erase our iterator and move on. Ensure we delete the program.
       GLuint idToErase = it->first;

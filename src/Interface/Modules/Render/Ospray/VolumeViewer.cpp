@@ -762,22 +762,19 @@ void VolumeViewer::loadGeometry(OSPGeometry geom)
 
 void VolumeViewer::loadVolume(OSPVolume vol, const vec2f& voxelRange, const box3f& bounds)
 {
-  if (ownModelPerObject_)
-    modelStates_.push_back(ModelState(ospNewModel()));
+  //if (ownModelPerObject_)
+  //  modelStates_.push_back(ModelState(ospNewModel()));
 
   assert(vol);
-  // For now we set the same transfer function on all volumes.
-  ospSetObject(vol, "transferFunction", transferFunction);
+  
   ospCommit(vol);
-
   // Add the loaded volume(s) to the model.
   ospAddVolume(modelStates_.back().model, vol);
-
   assert(!bounds.empty());
   // Add to volumes vector for the current model.
   modelStates_.back().volumes.push_back(std::make_shared<ModelState::Volume>(vol, bounds, voxelRange));
 
-  if (ownModelPerObject_)
+  //if (ownModelPerObject_)
     ospCommit(modelStates_.back().model);
 }
 
@@ -838,7 +835,7 @@ void VolumeViewer::globalInit(const std::string &renderer_type)
   // Create an OSPRay transfer function.
   transferFunction = ospNewTransferFunction("piecewise_linear");
   exitOnCondition(transferFunction == NULL, "could not create OSPRay transfer function object");
-  ospCommit(transferFunction);
+  //ospCommit(transferFunction);
 }
 
 const float b = -3;
