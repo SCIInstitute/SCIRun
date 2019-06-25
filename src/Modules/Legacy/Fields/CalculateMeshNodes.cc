@@ -27,22 +27,20 @@
 */
 
 #include <Modules/Legacy/Fields/CalculateMeshNodes.h>
-//#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Scalar.h>
-//#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/CalculateMeshCenterAlgo.h>
 
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
-//#include <Core/Datatypes/Field.h>
-//#include <Core/Datatypes/FieldInformation.h>
 #include <Core/Parser/ArrayMathEngine.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms;
 
 /// @class CalculateMeshNodes
 /// @brief Calculate new positions for the node locations of the mesh.
@@ -73,13 +71,15 @@ MODULE_INFO_DEF(CalculateMeshNodes, ChangeMesh, SCIRun)
 CalculateMeshNodes::CalculateMeshNodes() : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(Function);
   INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(InputArrays);
 }
 
 void CalculateMeshNodes::setStateDefaults()
 {
-  //TODO
-  //setStateStringFromAlgoOption(Parameters::Method);
+  auto state = get_state();
+  state->setValue(Variables::FunctionString, std::string("NEWPOS = 3*POS;"));
 }
 
 
@@ -94,26 +94,17 @@ CalculateMeshNodes::CalculateMeshNodes(GuiContext* ctx)
 
 void CalculateMeshNodes::execute()
 {
-  // Define local handles of data objects:
-  FieldHandle field;
-  StringHandle func;
-  std::vector<MatrixHandle> matrices;
+  auto field = getRequiredInput(InputField);
+  auto func = getOptionalInput(Function);
+  auto matrices = getOptionalDynamicInputs(InputArrays);
 
-  // Get the new input data:
-  get_input_handle("Field",field,true);
-  if (get_input_handle("Function",func,false))
+  if (func && *func)
   {
-    if (func.get_rep())
-    {
-      guifunction_.set(func->get());
-      get_ctx()->reset();
-    }
+    get_state()->setValue(Variables::FunctionString, (*func)->value());
   }
-  get_dynamic_input_handles("Array",matrices,false);
 
   if (needToExecute())
   {
-    update_state(Executing);
     // Get number of matrix ports with data (the last one is always empty)
     size_t numinputs = matrices.size();
     if (numinputs > 23)
@@ -123,7 +114,7 @@ void CalculateMeshNodes::execute()
     }
 
     NewArrayMathEngine engine;
-    engine.set_progress_reporter(this);
+    engine.setLogger(this);
 
     FieldInformation fi(field);
     if (field->vfield()->basis_order() == 1 || fi.is_pointcloudmesh())
@@ -167,7 +158,7 @@ void CalculateMeshNodes::execute()
 
     for (size_t p = 0; p < numinputs; p++)
     {
-      if (matrices[p].get_rep() == 0)
+      if (!matrices[p])
       {
         error("No matrix was found on input port.");
         return;
@@ -177,7 +168,7 @@ void CalculateMeshNodes::execute()
       if (!(engine.add_input_matrix(matrixname,matrices[p]))) return;
     }
 
-    std::string function = guifunction_.get();
+    std::string function = get_state()->getValue(Variables::FunctionString).toString();
     bool has_NEWPOS = true;
     if (function.find("NEWPOS") != std::string::npos)
     {
@@ -223,7 +214,7 @@ void CalculateMeshNodes::execute()
     }
 
     // send new output if there is any:
-    send_output_handle("Field", ofield);
+    sendOutput(OutputField, ofield);
   }
 }
 

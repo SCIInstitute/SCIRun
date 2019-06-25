@@ -36,15 +36,18 @@ namespace Modules {
 namespace Fields {
 
   class SCISHARE CalculateMeshNodes : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<FieldPortTag>,
+    public Has3InputPorts<FieldPortTag, StringPortTag, DynamicPortTag<MatrixPortTag>>,
     public Has1OutputPort<FieldPortTag>
   {
   public:
     CalculateMeshNodes();
     void execute() override;
     void setStateDefaults() override;
+    HAS_DYNAMIC_PORTS
 
     INPUT_PORT(0, InputField, Field);
+    INPUT_PORT(1, Function, String);
+    INPUT_PORT_DYNAMIC(2, InputArrays, Matrix);
     OUTPUT_PORT(0, OutputField, Field);
 
     MODULE_TRAITS_AND_INFO(ModuleHasUI)
