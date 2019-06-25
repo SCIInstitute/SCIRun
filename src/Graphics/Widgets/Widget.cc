@@ -112,10 +112,6 @@ WidgetHandle WidgetFactory::createDisk(const Core::GeometryIDGenerator& idGenera
   return boost::make_shared<DiskWidget>(idGenerator, name, scale, defaultColor, p1, p2, bbox);
 }
 
-CompositeWidget::~CompositeWidget()
-{
-}
-
 void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
 {
   if (handle.get() == this)
@@ -124,15 +120,6 @@ void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
   }
 }
 
-
-LinkedCompositeWidget::~LinkedCompositeWidget()
+CompositeWidget::~CompositeWidget()
 {
-}
-
-void LinkedCompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
-{
-  if (handle.get() == this)
-  {
-    list.insert(widgets_.begin(), widgets_.end());
-  }
 }

@@ -43,7 +43,6 @@ SphereWidget::SphereWidget(const Core::GeometryIDGenerator& idGenerator,
   const Point& point, const BBox& bbox)
   : WidgetBase(idGenerator, "SphereWidget::" + name, true, point)
 {
-  //std::cout << "SphereWidget() point: " << point.get_string() << std::endl;
   int resolution = 10;
   if (radius < 0) radius = 1.;
   if (resolution < 0) resolution = 10.;

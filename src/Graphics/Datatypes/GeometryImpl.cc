@@ -29,6 +29,7 @@
 #include <Graphics/Datatypes/GeometryImpl.h>
 
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 
 GeometryObjectSpire::GeometryObjectSpire(const GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable) :
@@ -36,4 +37,16 @@ GeometryObject(idGenerator, tag),
 isClippable_(isClippable)
 {
 
+}
+
+Composite::~Composite()
+{
+}
+
+void Composite::addToList(GeometryBaseHandle handle, GeomList& list)
+{
+  if (handle.get() == this)
+  {
+    list.insert(geoms_.begin(), geoms_.end());
+  }
 }

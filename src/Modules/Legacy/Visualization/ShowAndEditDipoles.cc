@@ -36,19 +36,24 @@
  *
  */
 
-#include <Modules/Legacy/Visualization/ShowAndEditDipoles.h>
+#include <Core/Algorithms/Visualization/RenderFieldState.h>
+#include <Core/Datatypes/Color.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/Mesh/MeshFacade.h>
+#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Logging/Log.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
+#include <Graphics/Glyphs/GlyphGeom.h>
 #include <Graphics/Widgets/SphereWidget.h>
 #include <Graphics/Widgets/ConeWidget.h>
 #include <Graphics/Widgets/CylinderWidget.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/BBox.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Color.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Logging/Log.h>
+#include <Modules/Legacy/Visualization/ShowAndEditDipoles.h>
 #include <math.h>
 
 using namespace SCIRun;
@@ -57,6 +62,7 @@ using namespace Logging;
 using namespace Datatypes;
 using namespace Algorithms;
 using namespace Geometry;
+using namespace Graphics;
 using namespace Modules::Visualization;
 using namespace Dataflow::Networks;
 using namespace Graphics::Datatypes;
@@ -74,7 +80,8 @@ namespace SCIRun
       {
       public:
         BBox last_bounds_;
-        std::vector<WidgetHandle> pointWidgets_;
+        std::vector<std::vector<WidgetHandle>* > pointWidgets_;
+        std::vector<GeometryHandle> geoms_;
         std::vector<Transform> previousTransforms_;
         double l2norm_;
 
@@ -87,7 +94,7 @@ namespace SCIRun
 
           for (int i = 0; i < pointWidgets_.size(); i++)
           {
-            const Point location = pointWidgets_[i]->position();
+            const Point location = (*pointWidgets_[i])[0]->position();
 
             VMesh::Node::index_type pcindex = mesh->add_point(location);
             field->resize_fdata();
@@ -104,18 +111,20 @@ enum WidgetSection {
   SPHERE,
   CYLINDER,
   CONE,
-  DISK
+  DISK,
+  LINE
 };
 
 ShowAndEditDipoles::ShowAndEditDipoles()
   : GeometryGeneratingModule(staticInfo_),
-    impl_(new ShowAndEditDipolesImpl),
-    pos_(0,0,0),
-    direction_(1,1,1)
+    impl_(new ShowAndEditDipolesImpl)
 {
   INITIALIZE_PORT(DipoleInputField);
   INITIALIZE_PORT(DipoleOutputField);
   INITIALIZE_PORT(DipoleWidget);
+
+  reset_ = true;
+  lastVectorShown_ = false;
 
   deflPointCol_ = ColorRGB(0.54, 0.6, 1.0);
   deflCol_ = ColorRGB(0.5, 0.5, 0.5);
@@ -128,12 +137,13 @@ ShowAndEditDipoles::ShowAndEditDipoles()
   diskRadius_ = 0.25;
   diskDistFromCenter_ = 0.85;
   diskWidth_ = 0.05;
-  widgetID_ = 0;
+  widgetIter_ = 0;
 }
 
 void ShowAndEditDipoles::setStateDefaults()
 {
   auto state = get_state();
+  state->setValue(FieldName, std::string());
   state->setValue(WidgetSize, 0.23);
   state->setValue(Sizing, 0);
   state->setValue(ShowLastAsVector, false);
@@ -145,10 +155,64 @@ void ShowAndEditDipoles::setStateDefaults()
 
 void ShowAndEditDipoles::execute()
 {
-  sendOutput(DipoleOutputField, GenerateOutputField());
+  FieldHandle fh = getRequiredInput(DipoleInputField);
+  FieldInformation fi(fh);
+  auto state = get_state();
 
-  auto geom = WidgetFactory::createLinkedComposite(*this, "dipoles", impl_->pointWidgets_.begin(), impl_->pointWidgets_.end());
-  sendOutput(DipoleWidget, geom);
+  if (!(fi.is_pointcloudmesh()))
+  {
+    error("Input field was not a valid point cloud.");
+    return;
+  }
+
+  // Get new data upstream
+  if(inputsChanged())
+  {
+    // Garbage collect
+    for(auto dip : impl_->pointWidgets_)
+    {
+      dip->erase(dip->begin(), dip->end());
+    }
+    impl_->pointWidgets_.erase(impl_->pointWidgets_.begin(), impl_->pointWidgets_.end());
+
+    ReceiveInputField();
+    GenerateOutputGeom();
+  }
+
+  // Only run if Show Last as Vector is toggled
+  if(lastVectorShown_ != state->getValue(ShowLastAsVector).toBool())
+  {
+    auto bbox = fh->vmesh()->get_bounding_box();
+    int last_id = pos_.size() - 1;
+    // Destroy last dipole
+    impl_->pointWidgets_[last_id]->erase(impl_->pointWidgets_[last_id]->begin(), impl_->pointWidgets_[last_id]->end());
+    createDipoleWidget(bbox, pos_[last_id], direction_[last_id] * state->getValue(WidgetSize).toDouble(), last_id, state->getValue(ShowLastAsVector).toBool());
+    lastVectorShown_ = state->getValue(ShowLastAsVector).toBool();
+  }
+
+  // Recreate geom list
+  impl_->geoms_.resize(0);
+
+  // Rewrite all existing geom
+  for(int d = 0; d < impl_->pointWidgets_.size(); d++)
+  {
+    for(int w = 0; w < impl_->pointWidgets_[d]->size(); w++)
+      impl_->geoms_.push_back((*impl_->pointWidgets_[d])[w]);
+  }
+  if(state->getValue(ShowLines).toBool())
+    impl_->geoms_.push_back(addLines());
+
+  sendOutput(DipoleOutputField, impl_->makePointCloud());
+
+  std::string idName = "SAEDField";
+  idName += GeometryObject::delimiter +
+    state->getValue(ShowAndEditDipoles::FieldName).toString() +
+    " (from " + id().id_ +")" +
+    "(" + std::to_string(widgetIter_) + ")";
+
+  auto comp_geo = createGeomComposite(*this, "dipoles", impl_->geoms_.begin(), impl_->geoms_.end());
+  sendOutput(DipoleWidget, comp_geo);
+  widgetIter_++;
 }
 
 void ShowAndEditDipoles::processWidgetFeedback(const ModuleFeedback& var)
@@ -158,7 +222,8 @@ void ShowAndEditDipoles::processWidgetFeedback(const ModuleFeedback& var)
     auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
     if (vsf.matchesWithModuleId(id()))
     {
-      int widgetIndex = -1;
+      int widgetType = -1;
+      int widgetID = -1;
       try
       {
       // Check if correct module
@@ -166,28 +231,34 @@ void ShowAndEditDipoles::processWidgetFeedback(const ModuleFeedback& var)
         boost::smatch what;
         regex_match(vsf.selectionName, what, r);
 
-        // Get widget id
+        // Get widget index and id
         static boost::regex ind_r("\\([0-9]*\\)");
         boost::smatch match;
-        regex_search(vsf.selectionName, match, ind_r);
+        std::string::const_iterator searchStart(vsf.selectionName.cbegin());
+        std::vector<std::string> matches;
 
-        std::string ind_str = match[0];
+        // Find all matches
+        while(regex_search(searchStart, vsf.selectionName.cend(), match, ind_r))
+        {
+          matches.push_back(match[0]);
+          searchStart = match.suffix().first;
+        }
 
         // Remove parantheses
-        ind_str = ind_str.substr(1, ind_str.length()-2);
+        for(int i = 0; i < matches.size(); i++)
+        {
+          matches[i] = matches[i].substr(1, matches[i].length()-2);
+        }
         // Cast to int
-        widgetIndex = boost::lexical_cast<int>(ind_str);
+        widgetType = boost::lexical_cast<int>(matches[0]);
+        widgetID = boost::lexical_cast<int>(matches[1]);
       }
       catch (...)
       {
         logWarning("Failure parsing widget id");
       }
-      if (impl_->previousTransforms_[widgetIndex] != vsf.transform)
-      {
-        adjustPositionFromTransform(vsf.transform, widgetIndex);
-        // execute();
+        adjustPositionFromTransform(vsf.transform, widgetType, widgetID);
         enqueueExecuteAgain(false);
-      }
     }
   }
   catch (std::bad_cast&)
@@ -196,11 +267,11 @@ void ShowAndEditDipoles::processWidgetFeedback(const ModuleFeedback& var)
   }
 }
 
-void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformMatrix, int index)
+void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformMatrix, int type, int id)
 {
   DenseMatrix center(4, 1);
 
-  auto currLoc = impl_->pointWidgets_[index]->position();
+  auto currLoc = (*impl_->pointWidgets_[id])[type]->position();
   center << currLoc.x(), currLoc.y(), currLoc.z(), 1.0;
   DenseMatrix newTransform(DenseMatrix(transformMatrix) * center);
 
@@ -208,48 +279,91 @@ void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformM
                  newTransform(1, 0) / newTransform(3, 0),
                  newTransform(2, 0) / newTransform(3, 0));
 
-  switch (index)
+  switch (type)
   {
   // Sphere and Cylinder reposition dipole
   case WidgetSection::SPHERE:
-    pos_ = newPoint;
+    pos_[id] = newPoint;
     break;
   case WidgetSection::CYLINDER:
-    {
-      double scale = get_state()->getValue(WidgetSize).toDouble();
-      // Shift direction back because newPos is the center of the cylinder
-      pos_ = newPoint - 1.375 * direction_ * scale * sphereRadius_;
-      break;
-    }
+  {
+    double scale = get_state()->getValue(WidgetSize).toDouble();
+    // Shift direction back because newPos is the center of the cylinder
+    pos_[id] = newPoint - 1.375 * direction_[id] * scale * sphereRadius_;
+    break;
+  }
   // Cone rotates dipole
   case WidgetSection::CONE:
-    direction_ = (newPoint - pos_).normal() * direction_.length();
+    direction_[id] = (newPoint - pos_[id]).normal() * direction_[id].length();
     break;
   // Disk resizes dipole
   case WidgetSection::DISK:
   {
-    Vector newVec(newPoint-pos_);
+    Vector newVec(newPoint-pos_[id]);
     newVec /= diskDistFromCenter_;
-    direction_ = Dot(newVec, direction_.normal()) * direction_.normal();
+    direction_[id] = Dot(newVec, direction_[id].normal()) * direction_[id].normal();
 
     double scale = get_state()->getValue(WidgetSize).toDouble();
-    direction_ /= scale;
+    direction_[id] /= scale;
     break;
   }
   }
+  FieldHandle fh = getRequiredInput(DipoleInputField);
+  auto state = get_state();
+  auto bbox = fh->vmesh()->get_bounding_box();
+  bool is_vector = (impl_->pointWidgets_[id]->size() == 4);
+  createDipoleWidget(bbox, pos_[id], direction_[id] * state->getValue(WidgetSize).toDouble(), id, is_vector);
 }
 
-FieldHandle ShowAndEditDipoles::GenerateOutputField()
+void ShowAndEditDipoles::ReceiveInputField()
 {
-  auto ifieldhandle = getRequiredInput(DipoleInputField);
-  auto bbox = ifieldhandle->vmesh()->get_bounding_box();
+  FieldHandle fh = getRequiredInput(DipoleInputField);
+  VField* vf = fh->vfield();
+  Point p;
+  Vector v;
+  direction_.clear();
+  pos_.clear();
+  for(const auto& node : fh->mesh()->getFacade()->nodes())
+  {
+    int index = node.index();
+    vf->get_center(p, index);
+    vf->get_value(v, index);
+    pos_.push_back(p);
+    direction_.push_back(v);
+  }
+  reset_ = false;
+}
 
+void ShowAndEditDipoles::GenerateOutputGeom()
+{
+  FieldHandle fh = getRequiredInput(DipoleInputField);
   auto state = get_state();
-  double scale = state->getValue(WidgetSize).toDouble();
-  Vector scaled_dir = direction_ * scale;
-  Point center;
-  Point bmin = pos_;
-  Point bmax = pos_ + scaled_dir;
+  auto bbox = fh->vmesh()->get_bounding_box();
+
+  impl_->last_bounds_ = bbox;
+  impl_->pointWidgets_.resize(pos_.size());
+
+  // Create all but last dipole as vector
+  for(int i = 0; i < pos_.size() - 1; i++)
+  {
+    createDipoleWidget(bbox, pos_[i], direction_[i] * state->getValue(WidgetSize).toDouble(), i, true);
+  }
+
+  // Create last dipoles separately to check if shown as vector
+  int last_id = pos_.size() - 1;
+  createDipoleWidget(bbox, pos_[last_id], direction_[last_id] * state->getValue(WidgetSize).toDouble(), last_id, state->getValue(ShowLastAsVector).toBool());
+  lastVectorShown_ = state->getValue(ShowLastAsVector).toBool();
+}
+
+void ShowAndEditDipoles::createDipoleWidget(BBox& bbox, Point& pos, Vector scaled_dir, int widget_num, bool show_as_vector)
+{
+  auto widgetName = [](int i, int id, int iter) {
+                      return "SAED(" + std::to_string(i) + ")" +
+                        "(" + std::to_string(id) + ")" +
+                        "(" + std::to_string(iter) + ")"; };
+
+  Point bmin = pos;
+  Point bmax = pos + scaled_dir;
 
   // Fix degenerate boxes.
   const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
@@ -269,79 +383,99 @@ FieldHandle ShowAndEditDipoles::GenerateOutputField()
     bmax.z(bmax.z() + size_estimate);
   }
 
-  center = pos_ + scaled_dir/2.0;
+  Point center = bmin + scaled_dir/2.0;
 
-  impl_->l2norm_ = (bmax - bmin).length();
-  impl_->last_bounds_ = bbox;
-
-  auto widgetName = [](int i, int id) { return "SAED(" + std::to_string(i) + ")" + std::to_string(id); };
-  impl_->pointWidgets_.resize(0);
+  impl_->pointWidgets_[widget_num] = new std::vector<WidgetHandle>(1 + show_as_vector * 3);
 
   // Create glyphs
-  impl_->pointWidgets_.push_back(boost::dynamic_pointer_cast<WidgetBase>
-                                 (WidgetFactory::createSphere(
-                                   *this,
-                                   widgetName(WidgetSection::SPHERE, widgetID_),
-                                   sphereRadius_ * scaled_dir.length(),
-                                   deflPointCol_.toString(),
-                                   pos_,
-                                   bbox)));
+  (*impl_->pointWidgets_[widget_num])[0] = (boost::dynamic_pointer_cast<WidgetBase>
+                                      (WidgetFactory::createSphere(
+                                        *this,
+                                        widgetName(WidgetSection::SPHERE, widget_num, widgetIter_),
+                                        sphereRadius_ * scaled_dir.length(),
+                                        deflPointCol_.toString(),
+                                        bmin,
+                                        bbox)));
 
-  if(state->getValue(ShowLastAsVector).toBool())
+  if(show_as_vector)
   {
     // Starts the cylinder position closer to the surface of the sphere
-    Point cylinderStart = pos_ + 0.75 * (scaled_dir * sphereRadius_);
+    Point cylinderStart = bmin + 0.75 * (scaled_dir * sphereRadius_);
 
-    impl_->pointWidgets_.push_back(boost::dynamic_pointer_cast<WidgetBase>
-                                   (WidgetFactory::createCylinder(
-                                     *this,
-                                     widgetName(WidgetSection::CYLINDER, widgetID_),
-                                     cylinderRadius_ * scaled_dir.length(),
-                                     deflCol_.toString(),
-                                     cylinderStart,
-                                     center,
-                                     bbox)));
-    impl_->pointWidgets_.push_back(boost::dynamic_pointer_cast<WidgetBase>
-                                   (WidgetFactory::createCone(
-                                     *this,
-                                     widgetName(WidgetSection::CONE, widgetID_),
-                                     coneRadius_ * scaled_dir.length(),
-                                     deflCol_.toString(),
-                                     center,
-                                     bmax,
-                                     bbox,
-                                     true)));
+    (*impl_->pointWidgets_[widget_num])[1] = (boost::dynamic_pointer_cast<WidgetBase>
+                                                (WidgetFactory::createCylinder(
+                                                  *this,
+                                                  widgetName(WidgetSection::CYLINDER, widget_num, widgetIter_),
+                                                  cylinderRadius_ * scaled_dir.length(),
+                                                  deflCol_.toString(),
+                                                  cylinderStart,
+                                                  center,
+                                                  bbox)));
+    (*impl_->pointWidgets_[widget_num])[2] = (boost::dynamic_pointer_cast<WidgetBase>
+                                                (WidgetFactory::createCone(
+                                                  *this,
+                                                  widgetName(WidgetSection::CONE, widget_num, widgetIter_),
+                                                  coneRadius_ * scaled_dir.length(),
+                                                  deflCol_.toString(),
+                                                  center,
+                                                  bmax,
+                                                  bbox,
+                                                  true)));
 
-    Point diskPos = pos_ + scaled_dir * diskDistFromCenter_;
+    Point diskPos = bmin + scaled_dir * diskDistFromCenter_;
     Point dp1 = diskPos - diskWidth_ * scaled_dir;
     Point dp2 = diskPos + diskWidth_ * scaled_dir;
 
-    impl_->pointWidgets_.push_back(boost::dynamic_pointer_cast<WidgetBase>
-                                   (WidgetFactory::createDisk(
-                                     *this,
-                                     widgetName(WidgetSection::DISK, widgetID_),
-                                     diskRadius_ * scaled_dir.length(),
-                                     resizeCol_.toString(),
-                                     dp1,
-                                     dp2,
-                                     bbox)));
+    (*impl_->pointWidgets_[widget_num])[3] = (boost::dynamic_pointer_cast<WidgetBase>
+                                                (WidgetFactory::createDisk(
+                                                  *this,
+                                                  widgetName(WidgetSection::DISK, widget_num, widgetIter_),
+                                                  diskRadius_ * scaled_dir.length(),
+                                                  resizeCol_.toString(),
+                                                  dp1,
+                                                  dp2,
+                                                  bbox)));
   }
-
-  impl_->previousTransforms_.resize(impl_->pointWidgets_.size());
-  widgetID_++;
-
-  VariableList positions;
-  for (const auto& widget : impl_->pointWidgets_)
-  {
-    std::string temp = widget->position().get_string();
-    positions.push_back(makeVariable("widget_i", temp));
-  }
-  state->setValue(PointPositions, positions);
-
-  return impl_->makePointCloud();
 }
 
+GeometryHandle ShowAndEditDipoles::addLines()
+{
+  FieldHandle fh = getRequiredInput(DipoleInputField);
+  auto state = get_state();
+  auto bbox = fh->vmesh()->get_bounding_box();
 
+  SpireIBO::PRIMITIVE primIn = SpireIBO::PRIMITIVE::LINES;
+  std::string idName = "SAEDField" +
+    GeometryObject::delimiter +
+    state->getValue(ShowAndEditDipoles::FieldName).toString()
+    + " (from " + id().id_ +")" +
+    "(" + std::to_string(widgetIter_) + ")";
+
+  auto geom(boost::make_shared<GeometryObjectSpire>(*this, idName, true));
+  GlyphGeom glyphs;
+
+  RenderState renState;
+  renState.set(RenderState::USE_NORMALS, true);
+  renState.set(RenderState::IS_ON, true);
+  renState.set(RenderState::USE_TRANSPARENT_EDGES, false);
+  renState.mGlyphType = RenderState::GlyphType::LINE_GLYPH;
+  renState.defaultColor = resizeCol_;
+  renState.set(RenderState::USE_DEFAULT_COLOR, true);
+
+  // Create lines between every point
+  for(int a = 0; a < pos_.size(); a++)
+  {
+    for(int b = 0; b < pos_.size(); b++)
+    {
+      glyphs.addLine(pos_[a], pos_[b], resizeCol_, resizeCol_);
+    }
+  }
+
+  glyphs.buildObject(*geom, idName, false, 0.5, ColorScheme::COLOR_UNIFORM, renState, primIn, bbox);
+  return geom;
+}
+
+const AlgorithmParameterName ShowAndEditDipoles::FieldName("FieldName");
 const AlgorithmParameterName ShowAndEditDipoles::WidgetSize("WidgetSize");
 const AlgorithmParameterName ShowAndEditDipoles::Sizing("Sizing");
 const AlgorithmParameterName ShowAndEditDipoles::ShowLastAsVector("ShowLastAsVector");
@@ -414,7 +548,7 @@ class ShowAndEditDipoles : public Module {
     int                      lastGen_;
 
     std::string                   execMsg_;
-    std::vector<GeomHandle>       widget_switch_;
+    std::vector<GeometryHandle>       widget_switch_;
     std::vector<GuiPoint*>        new_positions_;
     std::vector<GuiVector*>       new_directions_;
     std::vector<GuiDouble*>       new_magnitudes_;
@@ -528,10 +662,10 @@ ShowAndEditDipoles::execute()
   int gen = fieldH->generation;
 
   reset_vars();
-  if (reset_ || (gen != lastGen_))
+  if (needToExecute() || (gen != lastGen_))
   {
     lastGen_ = gen;
-    if (reset_ || (field->num_values() != static_cast<VMesh::size_type>(num_dipoles_.get())))
+    if (needToExecute() || (field->num_values() != static_cast<VMesh::size_type>(num_dipoles_.get())))
     {
       new_input_data(field);
     }

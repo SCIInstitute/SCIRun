@@ -47,6 +47,7 @@ namespace SCIRun {
         virtual void execute() override;
         virtual void setStateDefaults() override;
 
+        static const Core::Algorithms::AlgorithmParameterName FieldName;
         static const Core::Algorithms::AlgorithmParameterName WidgetSize;
         static const Core::Algorithms::AlgorithmParameterName Sizing;
         static const Core::Algorithms::AlgorithmParameterName ShowLastAsVector;
@@ -61,15 +62,17 @@ namespace SCIRun {
 
       private:
         boost::shared_ptr<class ShowAndEditDipolesImpl> impl_;
-        Core::Geometry::Point pos_;
-        Core::Geometry::Vector direction_;
+        std::vector<Core::Geometry::Point> pos_;
+        std::vector<Core::Geometry::Vector> direction_;
+        bool reset_;
+        bool lastVectorShown_;
         double sphereRadius_;
         double cylinderRadius_;
         double coneRadius_;
         double diskRadius_;
         double diskDistFromCenter_;
         double diskWidth_;
-        int widgetID_;
+        int widgetIter_;
 
         Core::Datatypes::ColorRGB deflPointCol_;
         Core::Datatypes::ColorRGB deflCol_;
@@ -77,10 +80,12 @@ namespace SCIRun {
         Core::Datatypes::ColorRGB resizeCol_;
         // Core::Geometry::Point currentLocation() const;
         // Graphics::Datatypes::GeometryHandle buildGeometryObject(FieldHandle field, const GeometryIDGenerator& idGenerator);
-        FieldHandle GenerateOutputField();
+        void ReceiveInputField();
+        void GenerateOutputGeom();
+        void createDipoleWidget(Core::Geometry::BBox& bbox, Core::Geometry::Point& pos, Core::Geometry::Vector scaled_dir, int widget_num, bool show_as_vector);
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
-        void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, int index);
-        int moveCount_ {0};
+        void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, int index, int id);
+        Graphics::Datatypes::GeometryHandle addLines();
         // void setNearestNode(const Core::Geometry::Point& location);
         // void setNearestElement(const Core::Geometry::Point& location);
       };
