@@ -32,6 +32,8 @@
 #include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Graphics/Widgets/Widget.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
+#include <Core/GeometryPrimitives/BBox.h>
 #include <Modules/Legacy/Visualization/share.h>
 
 namespace SCIRun {
@@ -61,9 +63,13 @@ namespace SCIRun {
         MODULE_TRAITS_AND_INFO(ModuleHasUI);
 
       private:
-        boost::shared_ptr<class ShowAndEditDipolesImpl> impl_;
         std::vector<Core::Geometry::Point> pos_;
         std::vector<Core::Geometry::Vector> direction_;
+        Core::Geometry::BBox last_bounds_;
+        std::vector<std::vector<Graphics::Datatypes::WidgetHandle>* > pointWidgets_;
+        std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
+        std::vector<Core::Geometry::Transform> previousTransforms_;
+
         bool reset_;
         bool lastVectorShown_;
         double sphereRadius_;
@@ -78,6 +84,7 @@ namespace SCIRun {
         Core::Datatypes::ColorRGB deflCol_;
         Core::Datatypes::ColorRGB greenCol_;
         Core::Datatypes::ColorRGB resizeCol_;
+        Core::Datatypes::ColorRGB lineCol_;
         // Core::Geometry::Point currentLocation() const;
         // Graphics::Datatypes::GeometryHandle buildGeometryObject(FieldHandle field, const GeometryIDGenerator& idGenerator);
         void ReceiveInputField();
@@ -88,6 +95,7 @@ namespace SCIRun {
         Graphics::Datatypes::GeometryHandle addLines();
         // void setNearestNode(const Core::Geometry::Point& location);
         // void setNearestElement(const Core::Geometry::Point& location);
+        FieldHandle makePointCloud();
       };
     }
   }

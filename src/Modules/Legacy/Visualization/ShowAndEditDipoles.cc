@@ -45,10 +45,8 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Mesh/MeshFacade.h>
-#include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
-#include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Graphics/Widgets/SphereWidget.h>
 #include <Graphics/Widgets/ConeWidget.h>
@@ -69,44 +67,6 @@ using namespace Graphics::Datatypes;
 
 MODULE_INFO_DEF(ShowAndEditDipoles, Visualization, SCIRun)
 
-
-namespace SCIRun
-{
-  namespace Modules
-  {
-    namespace Visualization
-    {
-      class ShowAndEditDipolesImpl
-      {
-      public:
-        BBox last_bounds_;
-        std::vector<std::vector<WidgetHandle>* > pointWidgets_;
-        std::vector<GeometryHandle> geoms_;
-        std::vector<Transform> previousTransforms_;
-        double l2norm_;
-
-        FieldHandle makePointCloud()
-        {
-          FieldInformation fi("PointCloudMesh", 1, "double");
-          auto ofield = CreateField(fi);
-          auto mesh = ofield->vmesh();
-          auto field = ofield->vfield();
-
-          for (int i = 0; i < pointWidgets_.size(); i++)
-          {
-            const Point location = (*pointWidgets_[i])[0]->position();
-
-            VMesh::Node::index_type pcindex = mesh->add_point(location);
-            field->resize_fdata();
-            field->set_value(static_cast<double>(i), pcindex);
-          }
-          return ofield;
-        }
-      };
-    }
-  }
-}
-
 enum WidgetSection {
   SPHERE,
   CYLINDER,
@@ -116,8 +76,7 @@ enum WidgetSection {
 };
 
 ShowAndEditDipoles::ShowAndEditDipoles()
-  : GeometryGeneratingModule(staticInfo_),
-    impl_(new ShowAndEditDipolesImpl)
+  : GeometryGeneratingModule(staticInfo_)
 {
   INITIALIZE_PORT(DipoleInputField);
   INITIALIZE_PORT(DipoleOutputField);
@@ -130,6 +89,7 @@ ShowAndEditDipoles::ShowAndEditDipoles()
   deflCol_ = ColorRGB(0.5, 0.5, 0.5);
   greenCol_ = ColorRGB(0.2, 0.8, 0.2);
   resizeCol_ = ColorRGB(0.54, 1.0, 0.60);
+  lineCol_ = ColorRGB(0.8, 0.8, 0.2);
 
   sphereRadius_ = 0.25;
   cylinderRadius_ = 0.12;
@@ -169,11 +129,11 @@ void ShowAndEditDipoles::execute()
   if(inputsChanged())
   {
     // Garbage collect
-    for(auto dip : impl_->pointWidgets_)
+    for(auto dip : pointWidgets_)
     {
       dip->erase(dip->begin(), dip->end());
     }
-    impl_->pointWidgets_.erase(impl_->pointWidgets_.begin(), impl_->pointWidgets_.end());
+    pointWidgets_.erase(pointWidgets_.begin(), pointWidgets_.end());
 
     ReceiveInputField();
     GenerateOutputGeom();
@@ -185,24 +145,24 @@ void ShowAndEditDipoles::execute()
     auto bbox = fh->vmesh()->get_bounding_box();
     int last_id = pos_.size() - 1;
     // Destroy last dipole
-    impl_->pointWidgets_[last_id]->erase(impl_->pointWidgets_[last_id]->begin(), impl_->pointWidgets_[last_id]->end());
+    pointWidgets_[last_id]->erase(pointWidgets_[last_id]->begin(), pointWidgets_[last_id]->end());
     createDipoleWidget(bbox, pos_[last_id], direction_[last_id] * state->getValue(WidgetSize).toDouble(), last_id, state->getValue(ShowLastAsVector).toBool());
     lastVectorShown_ = state->getValue(ShowLastAsVector).toBool();
   }
 
   // Recreate geom list
-  impl_->geoms_.resize(0);
+  geoms_.resize(0);
 
   // Rewrite all existing geom
-  for(int d = 0; d < impl_->pointWidgets_.size(); d++)
+  for(int d = 0; d < pointWidgets_.size(); d++)
   {
-    for(int w = 0; w < impl_->pointWidgets_[d]->size(); w++)
-      impl_->geoms_.push_back((*impl_->pointWidgets_[d])[w]);
+    for(int w = 0; w < pointWidgets_[d]->size(); w++)
+      geoms_.push_back((*pointWidgets_[d])[w]);
   }
   if(state->getValue(ShowLines).toBool())
-    impl_->geoms_.push_back(addLines());
+    geoms_.push_back(addLines());
 
-  sendOutput(DipoleOutputField, impl_->makePointCloud());
+  sendOutput(DipoleOutputField, makePointCloud());
 
   std::string idName = "SAEDField";
   idName += GeometryObject::delimiter +
@@ -210,7 +170,7 @@ void ShowAndEditDipoles::execute()
     " (from " + id().id_ +")" +
     "(" + std::to_string(widgetIter_) + ")";
 
-  auto comp_geo = createGeomComposite(*this, "dipoles", impl_->geoms_.begin(), impl_->geoms_.end());
+  auto comp_geo = createGeomComposite(*this, "dipoles", geoms_.begin(), geoms_.end());
   sendOutput(DipoleWidget, comp_geo);
   widgetIter_++;
 }
@@ -271,7 +231,7 @@ void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformM
 {
   DenseMatrix center(4, 1);
 
-  auto currLoc = (*impl_->pointWidgets_[id])[type]->position();
+  auto currLoc = (*pointWidgets_[id])[type]->position();
   center << currLoc.x(), currLoc.y(), currLoc.z(), 1.0;
   DenseMatrix newTransform(DenseMatrix(transformMatrix) * center);
 
@@ -311,7 +271,7 @@ void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformM
   FieldHandle fh = getRequiredInput(DipoleInputField);
   auto state = get_state();
   auto bbox = fh->vmesh()->get_bounding_box();
-  bool is_vector = (impl_->pointWidgets_[id]->size() == 4);
+  bool is_vector = (pointWidgets_[id]->size() == 4);
   createDipoleWidget(bbox, pos_[id], direction_[id] * state->getValue(WidgetSize).toDouble(), id, is_vector);
 }
 
@@ -340,8 +300,8 @@ void ShowAndEditDipoles::GenerateOutputGeom()
   auto state = get_state();
   auto bbox = fh->vmesh()->get_bounding_box();
 
-  impl_->last_bounds_ = bbox;
-  impl_->pointWidgets_.resize(pos_.size());
+  last_bounds_ = bbox;
+  pointWidgets_.resize(pos_.size());
 
   // Create all but last dipole as vector
   for(int i = 0; i < pos_.size() - 1; i++)
@@ -385,15 +345,17 @@ void ShowAndEditDipoles::createDipoleWidget(BBox& bbox, Point& pos, Vector scale
 
   Point center = bmin + scaled_dir/2.0;
 
-  impl_->pointWidgets_[widget_num] = new std::vector<WidgetHandle>(1 + show_as_vector * 3);
+  pointWidgets_[widget_num] = new std::vector<WidgetHandle>(1 + show_as_vector * 3);
+
+  ColorRGB sphereCol = (show_as_vector) ? deflPointCol_ : resizeCol_;
 
   // Create glyphs
-  (*impl_->pointWidgets_[widget_num])[0] = (boost::dynamic_pointer_cast<WidgetBase>
+  (*pointWidgets_[widget_num])[0] = (boost::dynamic_pointer_cast<WidgetBase>
                                       (WidgetFactory::createSphere(
                                         *this,
                                         widgetName(WidgetSection::SPHERE, widget_num, widgetIter_),
                                         sphereRadius_ * scaled_dir.length(),
-                                        deflPointCol_.toString(),
+                                        sphereCol.toString(),
                                         bmin,
                                         bbox)));
 
@@ -402,7 +364,7 @@ void ShowAndEditDipoles::createDipoleWidget(BBox& bbox, Point& pos, Vector scale
     // Starts the cylinder position closer to the surface of the sphere
     Point cylinderStart = bmin + 0.75 * (scaled_dir * sphereRadius_);
 
-    (*impl_->pointWidgets_[widget_num])[1] = (boost::dynamic_pointer_cast<WidgetBase>
+    (*pointWidgets_[widget_num])[1] = (boost::dynamic_pointer_cast<WidgetBase>
                                                 (WidgetFactory::createCylinder(
                                                   *this,
                                                   widgetName(WidgetSection::CYLINDER, widget_num, widgetIter_),
@@ -411,7 +373,7 @@ void ShowAndEditDipoles::createDipoleWidget(BBox& bbox, Point& pos, Vector scale
                                                   cylinderStart,
                                                   center,
                                                   bbox)));
-    (*impl_->pointWidgets_[widget_num])[2] = (boost::dynamic_pointer_cast<WidgetBase>
+    (*pointWidgets_[widget_num])[2] = (boost::dynamic_pointer_cast<WidgetBase>
                                                 (WidgetFactory::createCone(
                                                   *this,
                                                   widgetName(WidgetSection::CONE, widget_num, widgetIter_),
@@ -426,7 +388,7 @@ void ShowAndEditDipoles::createDipoleWidget(BBox& bbox, Point& pos, Vector scale
     Point dp1 = diskPos - diskWidth_ * scaled_dir;
     Point dp2 = diskPos + diskWidth_ * scaled_dir;
 
-    (*impl_->pointWidgets_[widget_num])[3] = (boost::dynamic_pointer_cast<WidgetBase>
+    (*pointWidgets_[widget_num])[3] = (boost::dynamic_pointer_cast<WidgetBase>
                                                 (WidgetFactory::createDisk(
                                                   *this,
                                                   widgetName(WidgetSection::DISK, widget_num, widgetIter_),
@@ -459,7 +421,7 @@ GeometryHandle ShowAndEditDipoles::addLines()
   renState.set(RenderState::IS_ON, true);
   renState.set(RenderState::USE_TRANSPARENT_EDGES, false);
   renState.mGlyphType = RenderState::GlyphType::LINE_GLYPH;
-  renState.defaultColor = resizeCol_;
+  renState.defaultColor = lineCol_;
   renState.set(RenderState::USE_DEFAULT_COLOR, true);
 
   // Create lines between every point
@@ -467,12 +429,28 @@ GeometryHandle ShowAndEditDipoles::addLines()
   {
     for(int b = 0; b < pos_.size(); b++)
     {
-      glyphs.addLine(pos_[a], pos_[b], resizeCol_, resizeCol_);
+      glyphs.addLine(pos_[a], pos_[b], lineCol_, lineCol_);
     }
   }
 
   glyphs.buildObject(*geom, idName, false, 0.5, ColorScheme::COLOR_UNIFORM, renState, primIn, bbox);
   return geom;
+}
+
+FieldHandle ShowAndEditDipoles::makePointCloud()
+{
+  FieldInformation fi("PointCloudMesh", 0, "Vector");
+  auto ofield = CreateField(fi);
+  auto mesh = ofield->vmesh();
+  auto field = ofield->vfield();
+
+  for (int i = 0; i < pointWidgets_.size(); i++)
+  {
+    VMesh::Node::index_type pcindex = mesh->add_point(pos_[i]);
+    field->resize_fdata();
+    field->set_value(static_cast<Vector>(direction_[i]), pcindex);
+  }
+  return ofield;
 }
 
 const AlgorithmParameterName ShowAndEditDipoles::FieldName("FieldName");
@@ -1097,7 +1075,6 @@ ShowAndEditDipoles::tcl_command(GuiArgs& args, void* userdata)
     Module::tcl_command(args, userdata);
   }
 }
-
 
 
 } // End namespace BioPSE
