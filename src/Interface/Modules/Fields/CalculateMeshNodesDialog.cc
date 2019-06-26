@@ -25,8 +25,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Fields/CalculateFieldDataDialog.h>
-#include <Modules/Legacy/Fields/CalculateFieldData5.h>
+#include <Interface/Modules/Fields/CalculateMeshNodesDialog.h>
+#include <Modules/Legacy/Fields/CalculateMeshNodes.h>
 #include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
@@ -34,7 +34,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-CalculateFieldDataDialog::CalculateFieldDataDialog(const std::string& name, ModuleStateHandle state,
+CalculateMeshNodesDialog::CalculateMeshNodesDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogWithParserHelp(state, parent)
 {
@@ -42,7 +42,6 @@ CalculateFieldDataDialog::CalculateFieldDataDialog(const std::string& name, Modu
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addComboBoxManager(outputTypeComboBox_, Variables::FormatString);
   connectParserHelpButton(parserHelpButton_);
 
   {

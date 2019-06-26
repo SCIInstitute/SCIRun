@@ -25,29 +25,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Fields/CalculateFieldDataDialog.h>
-#include <Modules/Legacy/Fields/CalculateFieldData5.h>
-#include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#ifndef INTERFACE_MODULES_CALCULATEMESHNODES_H
+#define INTERFACE_MODULES_CALCULATEMESHNODES_H
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms;
+#include "Interface/Modules/Fields/ui_CalculateMeshNodes.h"
+#include <Interface/Modules/Base/HasParserHelpDialog.h>
+#include <Interface/Modules/Fields/share.h>
 
-CalculateFieldDataDialog::CalculateFieldDataDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogWithParserHelp(state, parent)
+namespace SCIRun {
+namespace Gui {
+
+class SCISHARE CalculateMeshNodesDialog : public ModuleDialogWithParserHelp,
+  public Ui::CalculateMeshNodes
 {
-  setupUi(this);
-  setWindowTitle(QString::fromStdString(name));
-  fixSize();
+	Q_OBJECT
 
-  addComboBoxManager(outputTypeComboBox_, Variables::FormatString);
-  connectParserHelpButton(parserHelpButton_);
+public:
+  CalculateMeshNodesDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+  private:
+    class CodeEditor* codeEdit_;
+};
 
-  {
-    codeEdit_ = new CodeEditor(this);
-    qobject_cast<QVBoxLayout*>(expressionGroupBox_->layout())->insertWidget(0, codeEdit_);
-    addPlainTextEditManager(codeEdit_, Variables::FunctionString);
-  }
 }
+}
+
+#endif
