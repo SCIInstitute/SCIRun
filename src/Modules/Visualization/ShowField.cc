@@ -431,10 +431,6 @@ void GeometryBuilder::renderFaces(
 
 
 
-static size_t vboInsertionSize = 0;
-static size_t iboInsertionSize = 0;
-static size_t vboLastPrintSize = 0;
-static size_t iboLastPrintSize = 0;
 void GeometryBuilder::renderFacesLinear(
   FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
@@ -444,11 +440,6 @@ void GeometryBuilder::renderFacesLinear(
   unsigned int approxDiv,
   const std::string& id)
 {
-  vboInsertionSize = 0;
-  iboInsertionSize = 0;
-  vboLastPrintSize = 0;
-  iboLastPrintSize = 0;
-
   VField* fld = field->vfield();
   VMesh*  mesh = field->vmesh();
 
@@ -498,17 +489,9 @@ void GeometryBuilder::renderFacesLinear(
   mesh->get_nodes(nodes, *fiter);
   mesh->get_point(idpt, nodes[0]);
 
-  std::cout << "Number of Attributes: " << numAttributes << "\n";
   // Three 32 bit ints for each triangle to index into the VBO (triangles = verticies - 2)
   size_t iboSize = static_cast<size_t>(mesh->num_faces() * sizeof(uint32_t) * (nodes.size() - 2) * 3);
   size_t vboSize = static_cast<size_t>(mesh->num_faces() * sizeof(float) * nodes.size() * numAttributes);
-
-  //size_t vboSize = static_cast<size_t>(mesh->num_faces() * sizeof(uint32_t) * 3);
-  //size_t iboSize = static_cast<size_t>(mesh->num_faces() * sizeof(float) * 7);
-
-  std::cout << "Faces: " << mesh->num_faces() << "\n";
-  std::cout << "IBO buffer size: " << iboSize/1024/1024 << "MiB\n";
-  std::cout << "VBO buffer size: " << vboSize/1024/1024 << "MiB\n";
 
   // Construct VBO and IBO that will be used to render the faces. Once again, IBOs are not strictly
   // needed. But, we may be able to optimize this code somewhat.
@@ -878,11 +861,6 @@ void GeometryBuilder::renderFacesLinear(
   SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
   geom->ibos().push_back(geomIBO);
 
-  std::cout << "Actual IBO size: " << iboBufferSPtr->getBufferSize()/1024/1024 << "MiB\n";
-  std::cout << "Allocated IBO size: " << iboBufferSPtr->getAllocatedSize()/1024/1024 << "MiB\n";
-  std::cout << "Actual VBO size: " << vboBufferSPtr->getBufferSize()/1024/1024 << "MiB\n";
-  std::cout << "Allocated VBO size: " << vboBufferSPtr->getAllocatedSize()/1024/1024 << "MiB\n";
-
   SpireText text;
   SpireSubPass pass(passName, vboName, iboName, shader,
     colorScheme, state, RenderType::RENDER_VBO_IBO, geomVBO, geomIBO, text);
@@ -917,7 +895,6 @@ void GeometryBuilder::addFaceGeom(
 
   auto writeVBOPoint = [&vboBuffer](const Point& point)
   {
-    vboInsertionSize += 3*sizeof(float);
     vboBuffer->write(static_cast<float>(point.x()));
     vboBuffer->write(static_cast<float>(point.y()));
     vboBuffer->write(static_cast<float>(point.z()));
@@ -925,7 +902,6 @@ void GeometryBuilder::addFaceGeom(
 
   auto writeVBONormal = [&vboBuffer](const Vector& normal)
   {
-    vboInsertionSize += 3*sizeof(float);
     vboBuffer->write(static_cast<float>(normal.x()));
     vboBuffer->write(static_cast<float>(normal.y()));
     vboBuffer->write(static_cast<float>(normal.z()));
@@ -933,7 +909,6 @@ void GeometryBuilder::addFaceGeom(
 
   auto writeVBOColorValue = [&vboBuffer](ColorRGB value)
   {
-    vboInsertionSize += 4*sizeof(float);
     vboBuffer->write(static_cast<float>(value.r()));
     vboBuffer->write(static_cast<float>(value.g()));
     vboBuffer->write(static_cast<float>(value.b()));
@@ -942,13 +917,11 @@ void GeometryBuilder::addFaceGeom(
 
   auto writeIBOIndex = [&iboBuffer](uint32_t index)
   {
-    iboInsertionSize += sizeof(uint32_t);
     iboBuffer->write(index);
   };
 
 
   bool doubleSided = state.get(RenderState::IS_DOUBLE_SIDED);
-
 
   if (colorScheme == ColorScheme::COLOR_UNIFORM)
   {
@@ -1225,11 +1198,6 @@ void GeometryBuilder::addFaceGeom(
       iboIndex += points.size();
     }
   }
-
-  if((vboInsertionSize - vboLastPrintSize) > (1024 * 1024 * 16))
-    std::cout << "VBO size: " << (vboLastPrintSize = vboInsertionSize)/1024/1024 << "MiB\n";
-  if((iboInsertionSize - iboLastPrintSize) > (1024 * 1024 * 16))
-    std::cout << "IBO size: " << (iboLastPrintSize = iboInsertionSize)/1024/1024 << "MiB\n";
 }
 
 
