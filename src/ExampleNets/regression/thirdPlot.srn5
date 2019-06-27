@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="12">
+<boost_serialization signature="serialization::archive" version="16">
 <networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>13</count>
+			<count>14</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>BasicPlotter:0</first>
@@ -346,6 +346,34 @@
 0.4 0.8
 0.5 1.6
 0.6 3.2</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateString:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>String</category_name_>
+						<module_name_>CreateString</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>InputString</name>
+								</first>
+								<second>
+									<name>InputString</name>
+									<value>
+										<which>2</which>
+										<value>/Users/dan/Downloads/capped_sock_pots.mat</value>
 									</value>
 								</second>
 							</item>
@@ -1639,7 +1667,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>10</count>
+			<count>11</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CreateMatrix:0</moduleId1_>
@@ -1674,6 +1702,18 @@
 				<moduleId2_>LinePlotter:1</moduleId2_>
 				<port2_>
 					<name>DependentVariables</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateString:0</moduleId1_>
+				<port1_>
+					<name>NewString</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReadMatrix:0</moduleId2_>
+				<port2_>
+					<name>Filename</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -1764,7 +1804,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>13</count>
+		<count>14</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>BasicPlotter:0</first>
@@ -1792,6 +1832,13 @@
 			<second>
 				<first>-8.70000000000000000e+01</first>
 				<second>-2.49000000000000000e+02</second>
+			</second>
+		</item>
+		<item>
+			<first>CreateString:0</first>
+			<second>
+				<first>1.03000000000000000e+02</first>
+				<second>-3.34000000000000000e+02</second>
 			</second>
 		</item>
 		<item>
@@ -1867,7 +1914,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="20" tracking_level="0" version="0">
-		<count>13</count>
+		<count>14</count>
 		<item_version>0</item_version>
 		<item class_id="21" tracking_level="0" version="0">
 			<first>BasicPlotter:0</first>
@@ -1883,6 +1930,10 @@
 		</item>
 		<item>
 			<first>CreateMatrix:2</first>
+			<second>-1</second>
+		</item>
+		<item>
+			<first>CreateString:0</first>
 			<second>-1</second>
 		</item>
 		<item>
@@ -1923,12 +1974,28 @@
 		</item>
 	</moduleTags>
 	<disabledModules class_id="22" tracking_level="0" version="0">
-		<count>0</count>
+		<count>8</count>
 		<item_version>0</item_version>
+		<item>ReadMatrix:0</item>
+		<item>SelectSubMatrix:2</item>
+		<item>SelectSubMatrix:1</item>
+		<item>SelectSubMatrix:0</item>
+		<item>LinePlotter:4</item>
+		<item>LinePlotter:3</item>
+		<item>LinePlotter:2</item>
+		<item>EvaluateLinearAlgebraUnary:0</item>
 	</disabledModules>
 	<disabledConnections>
-		<count>0</count>
+		<count>8</count>
 		<item_version>0</item_version>
+		<item>ReadMatrix:0--CreateString:0</item>
+		<item>SelectSubMatrix:1--EvaluateLinearAlgebraUnary:0</item>
+		<item>LinePlotter:4--SelectSubMatrix:2</item>
+		<item>LinePlotter:3--SelectSubMatrix:1</item>
+		<item>LinePlotter:2--SelectSubMatrix:0</item>
+		<item>EvaluateLinearAlgebraUnary:0--ReadMatrix:0</item>
+		<item>SelectSubMatrix:0--EvaluateLinearAlgebraUnary:0</item>
+		<item>SelectSubMatrix:2--EvaluateLinearAlgebraUnary:0</item>
 	</disabledConnections>
 	<moduleTagLabels class_id="23" tracking_level="0" version="0">
 		<count>0</count>
