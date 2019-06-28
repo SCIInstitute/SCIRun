@@ -39,11 +39,11 @@ isClippable_(isClippable)
 
 }
 
-Composite::~Composite()
+CompositeGeometryObject::~CompositeGeometryObject()
 {
 }
 
-void Composite::addToList(GeometryBaseHandle handle, GeomList& list)
+void CompositeGeometryObject::addToList(GeometryBaseHandle handle, GeomList& list)
 {
   if (handle.get() == this)
   {

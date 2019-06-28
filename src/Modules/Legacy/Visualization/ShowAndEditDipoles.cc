@@ -102,6 +102,7 @@ ShowAndEditDipoles::ShowAndEditDipoles()
   widgetIter_ = 0;
   resolution_ = 20;
   previousScaleFactor_ = 0.0;
+  zeroVectorRescale_ = 1.0e-3;
 }
 
 void ShowAndEditDipoles::setStateDefaults()
@@ -133,6 +134,11 @@ void ShowAndEditDipoles::execute()
   if (!(fi.is_pointcloudmesh()))
   {
     error("Input field was not a valid point cloud.");
+    return;
+  }
+  else if(!fi.is_vector())
+  {
+    error("Input field does not contain vectors.");
     return;
   }
 
@@ -205,7 +211,26 @@ void ShowAndEditDipoles::loadData()
     }
   }
 
-  if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_VECTOR_DATA)
+  bool zeroVector = false;
+  for(int i = 0; i < scale_.size(); i++)
+  {
+    if(scale_[i] == 0.0)
+    {
+      scale_[i] = zeroVectorRescale_;
+      direction_[i] = Vector(1, 1, 1).normal();
+      zeroVector = true;
+      std::cout << "zero vec resc " << zeroVectorRescale_ << std::endl;
+    }
+  }
+
+  if(zeroVector)
+  {
+    warning("Input data contains zero vectors.");
+      return;
+  }
+
+  if((previousSizing_ != state->getValue(Sizing).toInt() || state->getValue(Reset).toBool())
+     && state->getValue(Sizing).toInt() == SizingType::NORMALIZE_VECTOR_DATA)
   {
     scale_.clear();
     for(int i = 0; i < pos_.size(); i++)
@@ -214,6 +239,8 @@ void ShowAndEditDipoles::loadData()
     }
   }
 }
+
+
 
 void ShowAndEditDipoles::loadFromParameters()
 {
@@ -660,7 +687,7 @@ GeometryHandle ShowAndEditDipoles::addLines()
   // Create lines between every point
   for(int a = 0; a < pos_.size(); a++)
   {
-    for(int b = 0; b < pos_.size(); b++)
+    for(int b = a + 1; b < pos_.size(); b++)
     {
       glyphs.addLine(pos_[a], pos_[b], lineCol_, lineCol_);
     }

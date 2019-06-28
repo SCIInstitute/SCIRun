@@ -96,6 +96,7 @@ namespace SCIRun {
         int widgetIter_;
         double resolution_;
         double previousScaleFactor_;
+        double zeroVectorRescale_;
 
         Core::Datatypes::ColorRGB deflPointCol_;
         Core::Datatypes::ColorRGB deflCol_;

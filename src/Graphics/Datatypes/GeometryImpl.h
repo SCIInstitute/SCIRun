@@ -287,14 +287,14 @@ namespace SCIRun {
 
       typedef boost::shared_ptr<GeometryObjectSpire> GeometryHandle;
 
-      class SCISHARE Composite : public GeometryObjectSpire
+      class SCISHARE CompositeGeometryObject : public GeometryObjectSpire
       {
       public:
         template <typename GeomIter>
-          Composite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, GeomIter begin, GeomIter end)
+          CompositeGeometryObject(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, GeomIter begin, GeomIter end)
           : GeometryObjectSpire(idGenerator, tag, true), geoms_(begin, end)
         {}
-        ~Composite();
+        ~CompositeGeometryObject();
         void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
       private:
         std::vector<GeometryHandle> geoms_;
@@ -303,7 +303,7 @@ namespace SCIRun {
       template <typename GeomIter>
         static GeometryHandle createGeomComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, GeomIter begin, GeomIter end)
       {
-        return boost::make_shared<Composite>(idGenerator, tag, begin, end);
+        return boost::make_shared<CompositeGeometryObject>(idGenerator, tag, begin, end);
       }
     }
   }
