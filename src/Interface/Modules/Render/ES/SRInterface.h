@@ -130,6 +130,9 @@ namespace SCIRun {
       void setLockZoom(bool lock);
       void setLockPanning(bool lock);
       void setLockRotation(bool lock);
+      void setAutoRotateVector(glm::vec2 axis);
+      void setAutoRotateSpeed(double speed);
+      void setAutoRotateOnDrag(bool value);
       const glm::mat4& getWorldToProjection() const;
       const glm::mat4& getWorldToView() const;
       const glm::mat4& getViewToWorld() const;
@@ -193,6 +196,7 @@ namespace SCIRun {
 
       //---------------- Camera ----------------------------------------------------------------------
       void updateCamera(); // Places mCamera's transform into our static camera component.
+      void applyAutoRotation();
 
       //---------------- Widgets -------------------------------------------------------------------
       bool foundWidget(const glm::ivec2& pos); // search for a widget at mouse position
@@ -299,6 +303,8 @@ namespace SCIRun {
       bool                              selectWidget_       {false};  // Whether mouse click will select a widget.
       bool                              widgetSelected_     {false};  // Whether or not a widget is currently selected.
       bool                              widgetExists_       {false};  // Geometry contains a widget to find.
+      bool                              tryAutoRotate       {false};
+      bool                              doAutoRotateOnDrag  {false};
 
       float                             orientSize          {1.0};    //  Size of coordinate axes
       float                             orientPosX          {0.5};    //  X Position of coordinate axes
@@ -346,8 +352,11 @@ namespace SCIRun {
 
       //light settings
       std::vector<glm::vec2>            mLightDirectionPolar{};
-      std::vector<glm::vec3>            mLightDirectionView{};
+      std::vector<glm::vec3>            mLightDirectionView {};
       std::vector<bool>                 mLightsOn           {};
+
+      glm::vec2                         autoRotateVector    {0.0, 0.0};
+      float                             autoRotateSpeed     {0.01};
 
       const int                         frameInitLimit_     {};
       std::unique_ptr<SRCamera>         mCamera;       // Primary camera.
