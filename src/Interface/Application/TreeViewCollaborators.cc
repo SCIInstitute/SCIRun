@@ -27,6 +27,7 @@
 */
 
 #include <Interface/Application/TreeViewCollaborators.h>
+#include <iostream>
 
 using namespace SCIRun::Gui;
 
@@ -37,7 +38,7 @@ void GrabNameAndSetFlags::operator()(QTreeWidgetItem* item)
     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 }
 
-HideItemsNotMatchingString::HideItemsNotMatchingString(bool useRegex, const QString& pattern) : match_("*" + pattern + "*", Qt::CaseInsensitive, QRegExp::Wildcard), start_(pattern), useRegex_(useRegex) {}
+HideItemsNotMatchingString::HideItemsNotMatchingString(SearchType searchType, const QString& pattern) : match_("*" + pattern + "*", Qt::CaseInsensitive, QRegExp::Wildcard), start_(pattern), searchType_(searchType) {}
 
 void HideItemsNotMatchingString::operator()(QTreeWidgetItem* item)
 {
@@ -78,9 +79,38 @@ void HideItemsNotMatchingString::operator()(QTreeWidgetItem* item)
 bool HideItemsNotMatchingString::shouldHide(QTreeWidgetItem* item)
 {
   auto text = item->text(0);
-  if (useRegex_)
+  if (searchType_ == SearchType::STARTS_WITH)
+    return !text.startsWith(start_, Qt::CaseInsensitive);
+  else if(searchType_ == SearchType::WILDCARDS)
     return !match_.exactMatch(text);
-  return !text.startsWith(start_, Qt::CaseInsensitive);
+  else
+    return !fuzzySearch(text, start_);
+}
+
+bool HideItemsNotMatchingString::fuzzySearch(QString text, QString pattern)
+{
+  int patternIndex = 0;
+
+  for(int t = 0; t < text.length(); t++)
+  {
+    //Ignore spaces
+    while(pattern[patternIndex] == QChar(' '))
+      ++patternIndex;
+
+    // Counts as a match if letter found
+    if(text[t].toLower() == pattern[patternIndex].toLower())
+      ++patternIndex;
+
+    // Will return from here if there if pattern matched and no spaces at end of string
+    if(patternIndex >= pattern.length())
+      return true;
+  }
+
+  //Ignore spaces at end of string
+  while(pattern[patternIndex] == QChar(' '))
+    ++patternIndex;
+
+  return (patternIndex >= pattern.length());
 }
 
 void ShowAll::operator()(QTreeWidgetItem* item)

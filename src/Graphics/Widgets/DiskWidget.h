@@ -42,12 +42,13 @@ namespace SCIRun {
       {
       public:
         DiskWidget(const Core::GeometryIDGenerator& idGenerator,
-                       const std::string& name,
-                       double radius,
-                       const std::string& defaultColor,
-                       const Core::Geometry::Point& p1,
-                       const Core::Geometry::Point& p2,
-                       const Core::Geometry::BBox& bbox);
+                   const std::string& name,
+                   double radius,
+                   const std::string& defaultColor,
+                   const Core::Geometry::Point& p1,
+                   const Core::Geometry::Point& p2,
+                   const Core::Geometry::BBox& bbox,
+                   int resolution);
       private:
         RenderState getWidgetRenderState(const std::string& defaultColor);
       };

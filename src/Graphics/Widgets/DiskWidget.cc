@@ -39,18 +39,18 @@ using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
 DiskWidget::DiskWidget(const Core::GeometryIDGenerator& idGenerator,
-                               const std::string& name,
-                               double radius,
-                               const std::string& defaultColor,
-                               const Point& p1,
-                               const Point& p2,
-                               const BBox& bbox)
+                       const std::string& name,
+                       double radius,
+                       const std::string& defaultColor,
+                       const Point& p1,
+                       const Point& p2,
+                       const BBox& bbox,
+                       int resolution)
   : WidgetBase(idGenerator, "DiskWidget::" + name, true, (p1 + p2)/2)
 {
   //std::cout << "DiskWidget() point: " << point.get_string() << std::endl;
-  int resolution = 10;
   if (radius < 0) radius = 1.;
-  if (resolution < 0) resolution = 10.;
+  if (resolution < 0) resolution = 10;
 
   auto colorScheme = ColorScheme::COLOR_UNIFORM;
   std::stringstream ss;

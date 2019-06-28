@@ -85,15 +85,19 @@ namespace SCIRun
                                       const BoxPosition& pos, const Core::Geometry::BBox& bbox);
         static WidgetHandle createSphere(const Core::GeometryIDGenerator& idGenerator,
                                          const std::string& name,
-                                         double radius, const std::string& defaultColor,
-                                         const Core::Geometry::Point& point, const Core::Geometry::BBox& bbox);
+                                         double radius,
+                                         const std::string& defaultColor,
+                                         const Core::Geometry::Point& point,
+                                         const Core::Geometry::BBox& bbox,
+                                         int resolution);
         static WidgetHandle createCylinder(const Core::GeometryIDGenerator& idGenerator,
                                            const std::string& name,
                                            double scale,
                                            const std::string& defaultColor,
                                            const Core::Geometry::Point& p1,
                                            const Core::Geometry::Point& p2,
-                                           const Core::Geometry::BBox& bbox);
+                                           const Core::Geometry::BBox& bbox,
+                                           int resolution);
         static WidgetHandle createCone(const Core::GeometryIDGenerator& idGenerator,
                                        const std::string& name,
                                        double scale,
@@ -101,14 +105,16 @@ namespace SCIRun
                                        const Core::Geometry::Point& p1,
                                        const Core::Geometry::Point& p2,
                                        const Core::Geometry::BBox& bbox,
-                                     bool renderBase);
+                                       bool renderBase,
+                                       int resolution);
       static WidgetHandle createDisk(const Core::GeometryIDGenerator& idGenerator,
                                      const std::string& name,
                                      double scale,
                                      const std::string& defaultColor,
                                      const Core::Geometry::Point& p1,
                                      const Core::Geometry::Point& p2,
-                                     const Core::Geometry::BBox& bbox);
+                                     const Core::Geometry::BBox& bbox,
+                                     int resolution);
 
       template <typename WidgetIter>
         static WidgetHandle createComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)

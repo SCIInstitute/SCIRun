@@ -347,7 +347,13 @@ void SCIRunMainWindow::makeFilterButtonMenu()
   wildcardAction->setChecked(true);
   filterMenu->addAction(wildcardAction);
 
-  filterButton_->setMenu(filterMenu);
+  auto fuzzySearchAction = new QAction("Use fuzzy search", filterButton_);
+  fuzzySearchAction->setCheckable(true);
+  filterActionGroup_->addAction(fuzzySearchAction);
+  fuzzySearchAction->setChecked(true);
+  filterMenu->addAction(fuzzySearchAction);
+
+ filterButton_->setMenu(filterMenu);
 }
 
 void SCIRunMainWindow::setupScriptedEventsWindow()

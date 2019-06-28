@@ -41,12 +41,26 @@ ShowAndEditDipolesDialog::ShowAndEditDipolesDialog(const std::string& name, Modu
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
+  state_ = state;
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addDoubleSpinBoxManager(widgetSizeSpinBox, SAED::WidgetSize);
+  addDoubleSpinBoxManager(visualizationScalingFactorSpinBox, SAED::WidgetScaleFactor);
+  addRadioButtonGroupManager({originalSizeRButton, normalizeVectorDataRButton, normalizeByLargestVectorRButton}, SAED::Sizing);
+  connectButtonToExecuteSignal(originalSizeRButton);
+  connectButtonToExecuteSignal(normalizeVectorDataRButton);
+  connectButtonToExecuteSignal(normalizeByLargestVectorRButton);
   addCheckBoxManager(showLastAsVectorCheckBox, SAED::ShowLastAsVector);
-  addRadioButtonGroupManager({fixedSizeRButton, normalizeLargestRButton, scaleSizeRButton}, SAED::Sizing);
+  connectButtonToExecuteSignal(showLastAsVectorCheckBox);
   addCheckBoxManager(showLinesCheckBox, SAED::ShowLines);
+  connectButtonToExecuteSignal(showLinesCheckBox);
+  addCheckBoxManager(moveDipolesTogetherCheckBox, SAED::MoveDipolesTogether);
+  connect(resetButton, SIGNAL(clicked()), this, SLOT(clickResetButton()));
+  connectButtonToExecuteSignal(resetButton);
+}
+
+void ShowAndEditDipolesDialog::clickResetButton()
+{
+  state_->setValue(SAED::Reset, true);
 }

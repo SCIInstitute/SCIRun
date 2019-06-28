@@ -45,13 +45,13 @@ ConeWidget::ConeWidget(const Core::GeometryIDGenerator& idGenerator,
                        const Point& p1,
                        const Point& p2,
                        const BBox& bbox,
-                       bool renderBase)
+                       bool renderBase,
+                       int resolution)
   : WidgetBase(idGenerator, "ConeWidget::" + name, true, (p1 + p2)/2)
 {
   //std::cout << "ConeWidget() point: " << point.get_string() << std::endl;
-  int resolution = 10;
   if (radius < 0) radius = 1.;
-  if (resolution < 0) resolution = 10.;
+  if (resolution < 0) resolution = 10;
 
   auto colorScheme = ColorScheme::COLOR_UNIFORM;
   std::stringstream ss;

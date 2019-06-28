@@ -71,45 +71,51 @@ WidgetHandle WidgetFactory::createBox(const Core::GeometryIDGenerator& idGenerat
 }
 
 WidgetHandle WidgetFactory::createSphere(const Core::GeometryIDGenerator& idGenerator,
-  const std::string& name,
-  double scale,
-  const std::string& defaultColor, const Point& point, const BBox& bbox)
+                                         const std::string& name,
+                                         double radius,
+                                         const std::string& defaultColor,
+                                         const Point& point,
+                                         const BBox& bbox,
+                                         int resolution)
 {
-  return boost::make_shared<SphereWidget>(idGenerator, name, scale, defaultColor, point, bbox);
+  return boost::make_shared<SphereWidget>(idGenerator, name, radius, defaultColor, point, bbox, resolution);
 }
 
 WidgetHandle WidgetFactory::createCylinder(const Core::GeometryIDGenerator& idGenerator,
                                            const std::string& name,
-                                           double scale,
+                                           double radius,
                                            const std::string& defaultColor,
                                            const Point& p1,
                                            const Point& p2,
-                                           const BBox& bbox)
+                                           const BBox& bbox,
+                                           int resolution)
 {
-  return boost::make_shared<CylinderWidget>(idGenerator, name, scale, defaultColor, p1, p2, bbox);
+  return boost::make_shared<CylinderWidget>(idGenerator, name, radius, defaultColor, p1, p2, bbox, resolution);
 }
 
 WidgetHandle WidgetFactory::createCone(const Core::GeometryIDGenerator& idGenerator,
                                        const std::string& name,
-                                       double scale,
+                                       double radius,
                                        const std::string& defaultColor,
                                        const Point& p1,
                                        const Point& p2,
                                        const BBox& bbox,
-                                       bool renderBase)
+                                       bool renderBase,
+                                       int resolution)
 {
-  return boost::make_shared<ConeWidget>(idGenerator, name, scale, defaultColor, p1, p2, bbox, renderBase);
+  return boost::make_shared<ConeWidget>(idGenerator, name, radius, defaultColor, p1, p2, bbox, renderBase, resolution);
 }
 
 WidgetHandle WidgetFactory::createDisk(const Core::GeometryIDGenerator& idGenerator,
                                        const std::string& name,
-                                       double scale,
+                                       double radius,
                                        const std::string& defaultColor,
                                        const Point& p1,
                                        const Point& p2,
-                                       const BBox& bbox)
+                                       const BBox& bbox,
+                                       int resolution)
 {
-  return boost::make_shared<DiskWidget>(idGenerator, name, scale, defaultColor, p1, p2, bbox);
+  return boost::make_shared<DiskWidget>(idGenerator, name, radius, defaultColor, p1, p2, bbox, resolution);
 }
 
 void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)

@@ -160,9 +160,15 @@ void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
   ShowAll show;
   visitTree(moduleSelectorTreeWidget_, show);
 
-  bool regexSelected = filterActionGroup_->checkedAction()->text().contains("wildcards");
+  HideItemsNotMatchingString::SearchType searchType;
+  if(filterActionGroup_->checkedAction()->text().contains("Starts with"))
+    searchType = HideItemsNotMatchingString::SearchType::STARTS_WITH;
+  if(filterActionGroup_->checkedAction()->text().contains("wildcards"))
+    searchType = HideItemsNotMatchingString::SearchType::WILDCARDS;
+  else if(filterActionGroup_->checkedAction()->text().contains("fuzzy search"))
+    searchType = HideItemsNotMatchingString::SearchType::FUZZY_SEARCH;
 
-  HideItemsNotMatchingString func(regexSelected, start);
+  HideItemsNotMatchingString func(searchType, start);
 
   //note: goofy double call, first to hide the leaves, then hide the categories.
   visitTree(moduleSelectorTreeWidget_, func);

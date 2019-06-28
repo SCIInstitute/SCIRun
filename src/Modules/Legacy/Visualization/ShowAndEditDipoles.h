@@ -36,6 +36,12 @@
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Modules/Legacy/Visualization/share.h>
 
+enum SizingType {
+        ORIGINAL,
+        NORMALIZE_VECTOR_DATA,
+        NORMALIZE_BY_LARGEST_VECTOR
+};
+
 namespace SCIRun {
   namespace Modules {
     namespace Visualization {
@@ -50,11 +56,17 @@ namespace SCIRun {
         virtual void setStateDefaults() override;
 
         static const Core::Algorithms::AlgorithmParameterName FieldName;
-        static const Core::Algorithms::AlgorithmParameterName WidgetSize;
+        static const Core::Algorithms::AlgorithmParameterName WidgetScaleFactor;
         static const Core::Algorithms::AlgorithmParameterName Sizing;
         static const Core::Algorithms::AlgorithmParameterName ShowLastAsVector;
         static const Core::Algorithms::AlgorithmParameterName ShowLines;
-        static const Core::Algorithms::AlgorithmParameterName PointPositions;
+        static const Core::Algorithms::AlgorithmParameterName Reset;
+        static const Core::Algorithms::AlgorithmParameterName MoveDipolesTogether;
+        static const Core::Algorithms::AlgorithmParameterName DipolePositions;
+        static const Core::Algorithms::AlgorithmParameterName DipoleDirections;
+        static const Core::Algorithms::AlgorithmParameterName DipoleScales;
+        static const Core::Algorithms::AlgorithmParameterName DataSaved;
+        static const Core::Algorithms::AlgorithmParameterName LargestSize;
 
         INPUT_PORT(0, DipoleInputField, Field);
         OUTPUT_PORT(0, DipoleOutputField, Field);
@@ -65,13 +77,16 @@ namespace SCIRun {
       private:
         std::vector<Core::Geometry::Point> pos_;
         std::vector<Core::Geometry::Vector> direction_;
+        std::vector<double> scale_;
         Core::Geometry::BBox last_bounds_;
         std::vector<std::vector<Graphics::Datatypes::WidgetHandle>* > pointWidgets_;
         std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
         std::vector<Core::Geometry::Transform> previousTransforms_;
 
-        bool reset_;
+        bool firstRun_;
+        bool getFromFile_;
         bool lastVectorShown_;
+        SizingType previousSizing_;
         double sphereRadius_;
         double cylinderRadius_;
         double coneRadius_;
@@ -79,23 +94,35 @@ namespace SCIRun {
         double diskDistFromCenter_;
         double diskWidth_;
         int widgetIter_;
+        double resolution_;
+        double previousScaleFactor_;
 
         Core::Datatypes::ColorRGB deflPointCol_;
         Core::Datatypes::ColorRGB deflCol_;
         Core::Datatypes::ColorRGB greenCol_;
         Core::Datatypes::ColorRGB resizeCol_;
         Core::Datatypes::ColorRGB lineCol_;
-        // Core::Geometry::Point currentLocation() const;
-        // Graphics::Datatypes::GeometryHandle buildGeometryObject(FieldHandle field, const GeometryIDGenerator& idGenerator);
+
+        void loadData();
+        void refreshGeometry();
+        void toggleLastVectorShown();
+        void generateGeomsList();
+        void ReceiveInputPoints();
+        void ReceiveInputDirections();
+        void ReceiveInputScales();
         void ReceiveInputField();
         void GenerateOutputGeom();
-        void createDipoleWidget(Core::Geometry::BBox& bbox, Core::Geometry::Point& pos, Core::Geometry::Vector scaled_dir, int widget_num, bool show_as_vector);
+        void makeScalesPositive();
+        void resetData();
+        std::string widgetName(int i, int id, int iter);
+        void createDipoleWidget(Core::Geometry::BBox& bbox, Core::Geometry::Point& pos, Core::Geometry::Vector dir, double scale, int widget_num, bool show_as_vector);
+        void calculatePointMove(Core::Geometry::Point& oldPos, Core::Geometry::Point& newPos);
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
         void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, int index, int id);
         Graphics::Datatypes::GeometryHandle addLines();
-        // void setNearestNode(const Core::Geometry::Point& location);
-        // void setNearestElement(const Core::Geometry::Point& location);
         FieldHandle makePointCloud();
+        void loadFromParameters();
+        void saveToParameters();
       };
     }
   }
