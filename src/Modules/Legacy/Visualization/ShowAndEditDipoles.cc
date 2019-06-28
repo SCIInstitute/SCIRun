@@ -219,7 +219,6 @@ void ShowAndEditDipoles::loadData()
       scale_[i] = zeroVectorRescale_;
       direction_[i] = Vector(1, 1, 1).normal();
       zeroVector = true;
-      std::cout << "zero vec resc " << zeroVectorRescale_ << std::endl;
     }
   }
 
