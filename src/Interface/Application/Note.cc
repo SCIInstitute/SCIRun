@@ -122,6 +122,7 @@ void NoteDisplayHelper::updateNoteImpl(const Note& note)
 
     #ifdef QT5_BUILD
     note_ = new QGraphicsTextItem("");
+    scene_->addItem(note_);
     #else
     note_ = new QGraphicsTextItem("", nullptr, scene_);
     #endif
