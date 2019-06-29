@@ -27,6 +27,7 @@
 */
 
 #include <Interface/Application/TreeViewCollaborators.h>
+#include <boost/algorithm/string.hpp>
 #include <iostream>
 
 using namespace SCIRun::Gui;
@@ -81,7 +82,8 @@ bool HideItemsNotMatchingString::shouldHide(QTreeWidgetItem* item)
   auto text = item->text(0);
   if (searchType_ == SearchType::STARTS_WITH)
     return !text.startsWith(start_, Qt::CaseInsensitive);
-  else if(searchType_ == SearchType::WILDCARDS)
+  else if(searchType_ == SearchType::WILDCARDS
+          || boost::contains(start_, "*"))
     return !match_.exactMatch(text);
   else
     return !fuzzySearch(text, start_);
@@ -89,28 +91,99 @@ bool HideItemsNotMatchingString::shouldHide(QTreeWidgetItem* item)
 
 bool HideItemsNotMatchingString::fuzzySearch(QString text, QString pattern)
 {
-  int patternIndex = 0;
+  std::string pattern_str = removeAllSpecialCharacters(pattern.toStdString());
+  std::vector<std::string> pattern_split;
+  boost::split(pattern_split,
+               pattern_str,
+               [](char c){return c == ' ';});
 
-  for(int t = 0; t < text.length(); t++)
+  // Remove empty vectors
+  for(int i = pattern_split.size()-1; i >= 0; i--)
   {
-    //Ignore spaces
-    while(pattern[patternIndex] == QChar(' '))
-      ++patternIndex;
+    if(pattern_split[i].empty())
+      pattern_split.erase(pattern_split.begin() + i);
+  }
+  // Checks permutations of the first 8 words given
+  if(pattern_split.size() > 8)
+    pattern_split.resize(8);
 
-    // Counts as a match if letter found
-    if(text[t].toLower() == pattern[patternIndex].toLower())
-      ++patternIndex;
+  std::vector<bool> visited(pattern_split.size(), false);
 
-    // Will return from here if there if pattern matched and no spaces at end of string
-    if(patternIndex >= pattern.length())
-      return true;
+  return fuzzySearchRemainingPatterns(visited, pattern_split, text, 0);
+}
+
+std::string HideItemsNotMatchingString::removeAllSpecialCharacters(const std::string& str)
+{
+  std::string newStr;
+  for(char qc : str)
+  {
+    if(qc == ' ' // Check if space
+       || (qc >= 65 && qc <= 90) // Check if upper case char
+       || (qc >= 97 && qc <= 122)) // Check if lower case char
+    {
+      newStr.push_back(qc);
+    }
+  }
+  return newStr;
+}
+
+bool HideItemsNotMatchingString::fuzzySearchRemainingPatterns(std::vector<bool>& visited,
+                                                              std::vector<std::string>& patternSplit,
+                                                              QString& text,
+                                                              int textIndex)
+{
+  // Find current pattern
+  std::string currentPattern;
+  for(int i = 0; i < visited.size(); i++)
+  {
+    if(!visited[i])
+    {
+      visited[i] = true;
+      currentPattern = patternSplit[i];
+
+      // Do search
+      int patternIndex = 0;
+      int currentTextIndex = textIndex;
+      bool matched = false;
+
+      for(int t = currentTextIndex; t < text.length(); t++)
+      {
+        bool isUpperChar = currentPattern[patternIndex] < 97;
+
+        // Counts as a match if letter found
+        if((isUpperChar && (text[t] == currentPattern[patternIndex]))
+           || (!isUpperChar && (text[t].toLower() == std::tolower(currentPattern[patternIndex]))))
+        {
+          ++patternIndex;
+          currentTextIndex = t;
+        }
+
+        if(patternIndex >= currentPattern.length())
+        {
+          matched = true;
+          break;
+        }
+      }
+
+      // If current matched, check the rest of remaining permutations
+      bool remainingMatched = false;
+      if(matched)
+      {
+        remainingMatched = fuzzySearchRemainingPatterns(visited, patternSplit, text, currentTextIndex);
+        if(remainingMatched)
+          return true;
+      }
+      visited[i] = false;
+    }
   }
 
-  //Ignore spaces at end of string
-  while(pattern[patternIndex] == QChar(' '))
-    ++patternIndex;
+  for(int i = 0; i < visited.size(); i++)
+  {
+    if(!visited[i])
+      return false;
+  }
 
-  return (patternIndex >= pattern.length());
+  return true;
 }
 
 void ShowAll::operator()(QTreeWidgetItem* item)

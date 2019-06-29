@@ -344,7 +344,6 @@ void SCIRunMainWindow::makeFilterButtonMenu()
   auto wildcardAction = new QAction("Use wildcards", filterButton_);
   wildcardAction->setCheckable(true);
   filterActionGroup_->addAction(wildcardAction);
-  wildcardAction->setChecked(true);
   filterMenu->addAction(wildcardAction);
 
   auto fuzzySearchAction = new QAction("Use fuzzy search", filterButton_);
