@@ -86,10 +86,10 @@ bool HideItemsNotMatchingString::shouldHide(QTreeWidgetItem* item)
           || boost::contains(start_, "*"))
     return !match_.exactMatch(text);
   else
-    return !fuzzySearch(text, start_);
+    return !fuzzySearchAllPatterns(text, start_);
 }
 
-bool HideItemsNotMatchingString::fuzzySearch(QString text, QString pattern)
+bool HideItemsNotMatchingString::fuzzySearchAllPatterns(const QString& text, const QString& pattern)
 {
   std::string pattern_str = removeAllSpecialCharacters(pattern.toStdString());
   std::vector<std::string> pattern_split;
@@ -103,13 +103,43 @@ bool HideItemsNotMatchingString::fuzzySearch(QString text, QString pattern)
     if(pattern_split[i].empty())
       pattern_split.erase(pattern_split.begin() + i);
   }
-  // Checks permutations of the first 8 words given
-  if(pattern_split.size() > 8)
-    pattern_split.resize(8);
 
-  std::vector<bool> visited(pattern_split.size(), false);
+  // Every word in the pattern must match
+  for(std::string str : pattern_split)
+  {
+    if(!fuzzySearch(text.toStdString(), str))
+    {
+      return false;
+    }
+  }
 
-  return fuzzySearchRemainingPatterns(visited, pattern_split, text, 0);
+  return true;
+}
+
+bool HideItemsNotMatchingString::fuzzySearch(const std::string& text, const std::string& pattern)
+{
+  int patternIndex = 0;
+
+  for(int t = 0; t < text.length(); t++)
+  {
+    bool isUpperChar = pattern[patternIndex] < 97;
+
+    // Counts as a match if letter found. Only case sensitive if search char is upper case
+    if((isUpperChar && (text[t] == pattern[patternIndex]))
+       || (!isUpperChar && (std::tolower(text[t]) == std::tolower(pattern[patternIndex]))))
+    {
+      ++patternIndex;
+    }
+
+    // Matched if pattern reaches end of string
+    if(patternIndex >= pattern.length())
+    {
+      return true;
+    }
+  }
+
+  // Return false if all the letters did not match
+  return false;
 }
 
 std::string HideItemsNotMatchingString::removeAllSpecialCharacters(const std::string& str)
@@ -125,65 +155,6 @@ std::string HideItemsNotMatchingString::removeAllSpecialCharacters(const std::st
     }
   }
   return newStr;
-}
-
-bool HideItemsNotMatchingString::fuzzySearchRemainingPatterns(std::vector<bool>& visited,
-                                                              std::vector<std::string>& patternSplit,
-                                                              QString& text,
-                                                              int textIndex)
-{
-  // Find current pattern
-  std::string currentPattern;
-  for(int i = 0; i < visited.size(); i++)
-  {
-    if(!visited[i])
-    {
-      visited[i] = true;
-      currentPattern = patternSplit[i];
-
-      // Do search
-      int patternIndex = 0;
-      int currentTextIndex = textIndex;
-      bool matched = false;
-
-      for(int t = currentTextIndex; t < text.length(); t++)
-      {
-        bool isUpperChar = currentPattern[patternIndex] < 97;
-
-        // Counts as a match if letter found
-        if((isUpperChar && (text[t] == currentPattern[patternIndex]))
-           || (!isUpperChar && (text[t].toLower() == std::tolower(currentPattern[patternIndex]))))
-        {
-          ++patternIndex;
-          currentTextIndex = t;
-        }
-
-        if(patternIndex >= currentPattern.length())
-        {
-          matched = true;
-          break;
-        }
-      }
-
-      // If current matched, check the rest of remaining permutations
-      bool remainingMatched = false;
-      if(matched)
-      {
-        remainingMatched = fuzzySearchRemainingPatterns(visited, patternSplit, text, currentTextIndex);
-        if(remainingMatched)
-          return true;
-      }
-      visited[i] = false;
-    }
-  }
-
-  for(int i = 0; i < visited.size(); i++)
-  {
-    if(!visited[i])
-      return false;
-  }
-
-  return true;
 }
 
 void ShowAll::operator()(QTreeWidgetItem* item)

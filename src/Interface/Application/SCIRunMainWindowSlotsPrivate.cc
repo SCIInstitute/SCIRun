@@ -773,6 +773,20 @@ void SCIRunMainWindow::showTriggerHelp()
      );
 }
 
+void SCIRunMainWindow::showModuleFuzzySearchHelp()
+{
+  QMessageBox::information(this, "Module Selector Fuzzy Search",
+                           "\nFuzzy search lets you skip characters as long as the are in order."
+                           "\nExample: Searching 'rdfl' will find the module 'ReadField'."
+                           "\n\nSearches are case insensitive except when you type an upper case character."
+                           "\nExample: Searching 'RdFl' or 'Rdfl' will reduce total matches while still finding 'ReadField'."
+                           "\nTip: Type the first letters of words in capitals, such as 'SFG' to find 'ShowFieldGlyphs'."
+                           "\n\nSpaces between words will do multiple searches to further reduce matched modules."
+                           "\nExample: Search 'mesh get' to search both 'mesh' and 'get' in the same module name."
+                           "\n\nAll symbols are igonred except *'s which will make the search switch to the wildcards option instead of fuzzy search."
+    );
+}
+
 void SCIRunMainWindow::toolkitDownload()
 {
   auto action = qobject_cast<QAction*>(sender());

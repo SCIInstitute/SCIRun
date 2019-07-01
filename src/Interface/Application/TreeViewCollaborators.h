@@ -71,12 +71,9 @@ namespace Gui {
 
     void operator()(QTreeWidgetItem* item);
     bool shouldHide(QTreeWidgetItem* item);
-    bool fuzzySearch(QString text, QString pattern);
+    bool fuzzySearchAllPatterns(const QString& text, const QString& pattern);
+    bool fuzzySearch(const std::string& text, const std::string& pattern);
     std::string removeAllSpecialCharacters(const std::string& str);
-    bool fuzzySearchRemainingPatterns(std::vector<bool>& visited,
-                                      std::vector<std::string>& patternSplit,
-                                      QString& text,
-                                      int textIndex);
   };
 
   struct ShowAll
