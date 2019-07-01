@@ -31,6 +31,7 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Parser/ArrayMathEngine.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -40,8 +41,6 @@ using namespace SCIRun::Modules::Fields;
 
 MODULE_INFO_DEF(CreateFieldData, ChangeFieldData, SCIRun)
 
-const AlgorithmParameterName CreateFieldData::FunctionString("FunctionString");
-const AlgorithmParameterName CreateFieldData::FormatString("FormatString");
 const AlgorithmParameterName CreateFieldData::BasisString("BasisString");
 
 CreateFieldData::CreateFieldData() : Module(staticInfo_)
@@ -55,8 +54,8 @@ CreateFieldData::CreateFieldData() : Module(staticInfo_)
 void CreateFieldData::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(FunctionString, std::string("RESULT = 1;"));
-  state->setValue(FormatString, std::string("Scalar"));
+  state->setValue(Variables::FunctionString, std::string("RESULT = 1;"));
+  state->setValue(Variables::FormatString, std::string("Scalar"));
   state->setValue(BasisString, std::string("Linear"));
 }
 
@@ -81,7 +80,7 @@ CreateFieldData::execute()
 
   if (func && *func)
   {
-    get_state()->setValue(FunctionString, (*func)->value());
+    get_state()->setValue(Variables::FunctionString, (*func)->value());
   }
   auto matrices = getOptionalDynamicInputs(DataArray);
 
@@ -103,7 +102,7 @@ CreateFieldData::execute()
     NewArrayMathEngine engine;
     engine.setLogger(this);
 
-    std::string format = state->getValue(FormatString).toString();
+    std::string format = state->getValue(Variables::FormatString).toString();
     if (format.empty()) format = "double";
     std::string basis = state->getValue(BasisString).toString();
     if (basis.empty()) basis = "Linear";
@@ -141,7 +140,7 @@ CreateFieldData::execute()
     if(!(engine.add_index("INDEX"))) return;
     if(!(engine.add_size("SIZE"))) return;
 
-    std::string function = state->getValue(FunctionString).toString();
+    std::string function = state->getValue(Variables::FunctionString).toString();
     if(!(engine.add_expressions(function))) return;
 
     // Actual engine call, which does the dynamic compilation, the creation of the

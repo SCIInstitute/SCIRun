@@ -32,6 +32,7 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Parser/ArrayMathEngine.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -57,9 +58,6 @@ using namespace SCIRun::Modules::Fields;
 
 MODULE_INFO_DEF(CalculateFieldData, ChangeFieldData, SCIRun)
 
-const AlgorithmParameterName CalculateFieldData::FunctionString("FunctionString");
-const AlgorithmParameterName CalculateFieldData::FormatString("FormatString");
-
 CalculateFieldData::CalculateFieldData()
   : Module(staticInfo_)
 {
@@ -72,8 +70,8 @@ CalculateFieldData::CalculateFieldData()
 void CalculateFieldData::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(FunctionString, std::string("RESULT = abs(DATA1);"));
-  state->setValue(FormatString, std::string("Scalar"));
+  state->setValue(Variables::FunctionString, std::string("RESULT = abs(DATA1);"));
+  state->setValue(Variables::FormatString, std::string("Scalar"));
 /*
 gui_cache_(get_ctx()->subVar("cache"), 0),
 gui_count_(get_ctx()->subVar("count", 0), 0),
@@ -89,7 +87,7 @@ void CalculateFieldData::execute()
   {
     if (*func)
     {
-      get_state()->setValue(FunctionString, (*func)->value());
+      get_state()->setValue(Variables::FunctionString, (*func)->value());
     }
   }
 
@@ -201,10 +199,10 @@ void CalculateFieldData::execute()
 
     int basis_order = field->vfield()->basis_order();
 
-    std::string format = state->getValue(FormatString).toString();
+    std::string format = state->getValue(Variables::FormatString).toString();
     if (format.empty()) format = "double";
 
-    std::string function = state->getValue(FunctionString).toString();
+    std::string function = state->getValue(Variables::FunctionString).toString();
     bool has_RESULT = true;
     if (function.find("RESULT") != std::string::npos)
     {

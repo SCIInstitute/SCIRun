@@ -3,9 +3,8 @@
 
    The MIT License
 
-   Copyright (c) 2015 Scientific Computing and Imaging Institute,
+   Copyright (c) 2019 Scientific Computing and Imaging Institute,
    University of Utah.
-
 
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
@@ -26,44 +25,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FIELDS_CREATEFIELDDATA_H__
-#define MODULES_LEGACY_FIELDS_CREATEFIELDDATA_H__
+#ifndef MODULES_FIELDS_CalculateMeshNodes_H
+#define MODULES_FIELDS_CalculateMeshNodes_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
+namespace Modules {
+namespace Fields {
 
-      /// @class CreateFieldData
-      /// @brief This module assigns a value to each element or node of the mesh
-      /// based on a given function, that is based on the location of nodes and
-      /// elements and properties of the elements.
+  class SCISHARE CalculateMeshNodes : public SCIRun::Dataflow::Networks::Module,
+    public Has3InputPorts<FieldPortTag, StringPortTag, DynamicPortTag<MatrixPortTag>>,
+    public Has1OutputPort<FieldPortTag>
+  {
+  public:
+    CalculateMeshNodes();
+    void execute() override;
+    void setStateDefaults() override;
+    HAS_DYNAMIC_PORTS
 
-      class SCISHARE CreateFieldData : public Dataflow::Networks::Module,
-        public Has3InputPorts<FieldPortTag, StringPortTag, DynamicPortTag<MatrixPortTag>>,
-        public Has1OutputPort<FieldPortTag>
-      {
-      public:
-        CreateFieldData();
+    INPUT_PORT(0, InputField, Field);
+    INPUT_PORT(1, Function, String);
+    INPUT_PORT_DYNAMIC(2, InputArrays, Matrix);
+    OUTPUT_PORT(0, OutputField, Field);
 
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
-        HAS_DYNAMIC_PORTS
-
-        INPUT_PORT(0, InputField, Field);
-        INPUT_PORT(1, Function, String);
-        INPUT_PORT_DYNAMIC(2, DataArray, Matrix);
-        OUTPUT_PORT(0, OutputField, Field);
-
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
-
-        static const Core::Algorithms::AlgorithmParameterName BasisString;
-      };
-
-    }
-  }
-}
+    MODULE_TRAITS_AND_INFO(ModuleHasUI)
+  };
+}}}
 
 #endif
