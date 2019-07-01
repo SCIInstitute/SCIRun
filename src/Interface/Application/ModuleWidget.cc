@@ -384,7 +384,7 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, ModuleHandle 
   if (theModule->name() != oldName)
     setToolTip("Converted version of module " + QString::fromStdString(oldName));
 
-  if (theModule->isDeprecated())
+  if (theModule->isDeprecated() && !Core::Application::Instance().parameters()->isRegressionMode())
   {
     QMessageBox::warning(nullptr,
       "Module deprecation alert",

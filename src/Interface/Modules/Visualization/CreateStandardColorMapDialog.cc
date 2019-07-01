@@ -45,7 +45,7 @@ CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& na
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  
+
   addSpinBoxManager(resolutionSpin_, Parameters::ColorMapResolution);
   addDoubleSpinBoxManager(shiftSpin_, Parameters::ColorMapShift);
   addCheckBoxManager(invertCheck_, Parameters::ColorMapInvert);
@@ -167,7 +167,7 @@ namespace
   const QRectF colorMapPreviewRect(0, 0, colormapPreviewWidth, colormapPreviewHeight);
 }
 
-ColormapPreview::ColormapPreview(QGraphicsScene* scene, ModuleStateHandle state, 
+ColormapPreview::ColormapPreview(QGraphicsScene* scene, ModuleStateHandle state,
   const boost::atomic<bool>& pulling,
   QWidget* parent)
   : QGraphicsView(scene, parent), alphaPath_(nullptr),
@@ -259,14 +259,20 @@ void AlphaFunctionManager::pushToState()
 {
   if (!dialogPulling_)
   {
-    Variable::List alphaPointsVec;
-
-    //strip endpoints before saving user-added points
-    auto begin = alphaPoints_.begin(), end = alphaPoints_.end();
-    std::advance(begin, 1);
-    std::advance(end, -1);
-    std::for_each(begin, end, [&](const QPointF& p) { alphaPointsVec.emplace_back(Name("alphaPoint"), makeAnonymousVariableList(p.x(), p.y())); });
-    state_->setValue(Parameters::AlphaUserPointsVector, alphaPointsVec);
+    if (!alphaPoints_.empty())
+    {
+      Variable::List alphaPointsVec;
+      //strip endpoints before saving user-added points
+      auto begin = alphaPoints_.begin(), end = alphaPoints_.end();
+      std::advance(begin, 1);
+      std::advance(end, -1);
+      std::for_each(begin, end, [&](const QPointF& p) { alphaPointsVec.emplace_back(Name("alphaPoint"), makeAnonymousVariableList(p.x(), p.y())); });
+      state_->setValue(Parameters::AlphaUserPointsVector, alphaPointsVec);
+    }
+    else
+    {
+      state_->setValue(Parameters::AlphaUserPointsVector, Variable::List());
+    }
 
     state_->setTransientValue(Parameters::AlphaFunctionVector, alphaFunction_);
   }
