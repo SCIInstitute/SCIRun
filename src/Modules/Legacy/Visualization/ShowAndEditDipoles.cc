@@ -222,12 +222,6 @@ void ShowAndEditDipoles::loadData()
     }
   }
 
-  if(zeroVector)
-  {
-    warning("Input data contains zero vectors.");
-      return;
-  }
-
   if((previousSizing_ != state->getValue(Sizing).toInt() || state->getValue(Reset).toBool())
      && state->getValue(Sizing).toInt() == SizingType::NORMALIZE_VECTOR_DATA)
   {
@@ -236,6 +230,11 @@ void ShowAndEditDipoles::loadData()
     {
       scale_[i] = 1.0;
     }
+  }
+
+  if(zeroVector)
+  {
+    warning("Input data contains zero vectors.");
   }
 }
 
