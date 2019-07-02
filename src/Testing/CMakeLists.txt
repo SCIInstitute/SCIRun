@@ -79,7 +79,26 @@ IF(RUN_BASIC_REGRESSION_TESTS)
   MESSAGE(STATUS "Using executable: ${EXE_LOC} to test networks")
 
   # Run all the possible .srn5 files in src/ExampleNets
-  FILE(GLOB_RECURSE scirun_srns "${SCIRun_SOURCE_DIR}/ExampleNets/regression/*.srn5")
+  FILE(GLOB_RECURSE scirun_srns_modules "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Modules/*.srn5")
+  FILE(GLOB_RECURSE scirun_srns_network "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Network/*.srn5")
+  FILE(GLOB_RECURSE scirun_srns_io "${SCIRun_SOURCE_DIR}/ExampleNets/regression/ImportExport/*.srn5")
+  set(scirun_srns ${scirun_srns_modules} ${scirun_srns_network} ${scirun_srns_io})
+  
+  IF(NOT BUILD_HEADLESS)
+    FILE(GLOB_RECURSE scirun_srns_renderer "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Renderer/*.srn5")
+    set(scirun_srns ${scirun_srns} ${scirun_srns_renderer})
+  ENDIF()
+
+  IF(BUILD_WITH_PYTHON)
+    FILE(GLOB_RECURSE scirun_srns_python "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Python/*.srn5")
+    set(scirun_srns ${scirun_srns} ${scirun_srns_python})
+  ENDIF()
+  
+  IF(WITH_OSPRAY)
+    FILE(GLOB_RECURSE scirun_srns_ospray "${SCIRun_SOURCE_DIR}/ExampleNets/regression/Ospray/*.srn5")
+    set(scirun_srns ${scirun_srns} ${scirun_srns_ospray})
+  ENDIF()
+  
   FOREACH(srn ${scirun_srns})
     GET_FILENAME_COMPONENT(srn_name ${srn} NAME_WE)
     ADD_TEST(".Test.Samples.${srn_name}_srn" ${EXE_LOC} -E ${srn} --no_splash --regression 30 -d ${SCIRUN_TEST_RESOURCE_DIR})

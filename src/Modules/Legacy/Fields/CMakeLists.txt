@@ -95,6 +95,7 @@ SET(Modules_Legacy_Fields_HEADERS
   CreateImage.h
   GetCentroidsFromMesh.h
   SmoothVecFieldMedian.h
+  CalculateMeshNodes.h
 )
 
 SET(Modules_Legacy_Fields_SRCS
@@ -178,7 +179,7 @@ SET(Modules_Legacy_Fields_SRCS
   ConvertMeshToUnstructuredMesh.cc
   CalculateFieldData5.cc
   #CalculateFieldDataMetric.cc
-  #CalculateMeshNodes.cc
+  CalculateMeshNodes.cc
   #QueryFieldData.cc
   TransformMeshWithTransform.cc
   CalculateVectorMagnitudes.cc

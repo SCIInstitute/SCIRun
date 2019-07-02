@@ -162,6 +162,13 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(scaleBarMultiplierDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarMultiplier(double)));
   //connect(scaleBarLineWidthDoubleSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setScaleBarLineWidth(double)));
   connect(scaleBarUnitLineEdit_, SIGNAL(textEdited(const QString&)), parent, SLOT(setScaleBarUnitValue(const QString&)));
+  connect(rotateRightButton_, SIGNAL(clicked()), parent, SLOT(autoRotateRight()));
+  connect(rotateLeftButton_, SIGNAL(clicked()), parent, SLOT(autoRotateLeft()));
+  connect(rotateUpButton_, SIGNAL(clicked()), parent, SLOT(autoRotateUp()));
+  connect(rotateDownButton_, SIGNAL(clicked()), parent, SLOT(autoRotateDown()));
+  connect(autoRotateSpeedSpinBox_, SIGNAL(valueChanged(double)), parent, SLOT(setAutoRotateSpeed(double)));
+  connect(autoRotateCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(setAutoRotateOnDrag(bool)));
+
   //-----------Controls Tab-------------------//
   connect(saveScreenShotOnUpdateCheckBox_, SIGNAL(stateChanged(int)), parent, SLOT(saveNewGeometryChanged(int)));
   connect(mouseControlComboBox_, SIGNAL(currentIndexChanged(int)), parent, SLOT(menuMouseControlChanged(int)));
@@ -214,8 +221,8 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   //fogGroupBox_->setEnabled(false);
 
   ////View Tab
-  autoRotateGroupBox_->setEnabled(false);
-  autoRotateGroupBox_->setVisible(false);
+  //autoRotateGroupBox_->setEnabled(false);
+  //autoRotateGroupBox_->setVisible(false);
   viewOptionsGroupBox_->setEnabled(false);
   viewOptionsGroupBox_->setVisible(false);
   autoViewOnLoadCheckBox_->setVisible(false);

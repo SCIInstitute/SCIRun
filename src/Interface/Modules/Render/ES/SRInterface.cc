@@ -182,6 +182,8 @@ namespace SCIRun {
           //todo make this select widget
         }
       }
+      autoRotateVector = glm::vec2(0.0, 0.0);
+      tryAutoRotate = false;
       mCamera->mouseDownEvent(pos, btn);
     }
 
@@ -189,6 +191,7 @@ namespace SCIRun {
     void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
     {
       widgetSelected_ = false;
+      tryAutoRotate = doAutoRotateOnDrag;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -297,7 +300,30 @@ namespace SCIRun {
       }
     }
 
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::applyAutoRotation()
+    {
+      if(glm::length(autoRotateVector) > 0.1) mCamera->rotate(autoRotateVector * autoRotateSpeed);
+      if(tryAutoRotate) mCamera->tryAutoRotate();
+    }
+
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::setAutoRotateVector(glm::vec2 axis)
+    {
+      tryAutoRotate = false;
+      if(autoRotateVector.x == axis.x && autoRotateVector.y == axis.y)
+      {
+        autoRotateVector = glm::vec2(0.0, 0.0);
+      }
+      else
+      {
+        autoRotateVector = axis;
+      }
+    }
+
     //Getters/Setters-------------------------------------------------------------------------------
+    void SRInterface::setAutoRotateSpeed(double speed) { autoRotateSpeed = speed; }
+    void SRInterface::setAutoRotateOnDrag(bool value) { doAutoRotateOnDrag = value; }
     void SRInterface::setZoomInverted(bool value) {mCamera->setZoomInverted(value);}
     void SRInterface::setLockZoom(bool lock)      {mCamera->setLockZoom(lock);}
     void SRInterface::setLockPanning(bool lock)   {mCamera->setLockPanning(lock);}
@@ -1378,6 +1404,7 @@ namespace SCIRun {
       /// objects, or the view point has changed).
       mContext->makeCurrent();
 
+      applyAutoRotation();
       updateCamera();
       updateWorldLight();
 

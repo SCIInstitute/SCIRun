@@ -28,6 +28,7 @@
 #include <Interface/Modules/Fields/CreateFieldDataDialog.h>
 #include <Modules/Legacy/Fields/CreateFieldData.h>
 #include <Interface/Modules/Base/CustomWidgets/CodeEditorWidgets.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -42,13 +43,13 @@ CreateFieldDataDialog::CreateFieldDataDialog(const std::string& name, ModuleStat
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
-  addComboBoxManager(fieldOutputDataComboBox_, CreateFieldDataModule::FormatString);
+  addComboBoxManager(fieldOutputDataComboBox_, Variables::FormatString);
   addComboBoxManager(fieldOutputBasisComboBox_, CreateFieldDataModule::BasisString);
   connectParserHelpButton(parserHelpButton_);
 
   {
     codeEdit_ = new CodeEditor(this);
     qobject_cast<QVBoxLayout*>(expressionGroupBox_->layout())->insertWidget(0, codeEdit_);
-    addPlainTextEditManager(codeEdit_, CreateFieldDataModule::FunctionString);
+    addPlainTextEditManager(codeEdit_, Variables::FunctionString);
   }
 }
