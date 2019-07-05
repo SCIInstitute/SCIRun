@@ -679,6 +679,13 @@ void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, Vector &scaled
     SinCosTable tab1(nu, 0, 2 * M_PI);
     SinCosTable tab2(resolution, 0, M_PI);
 
+    Eigen::Matrix3f m;
+    m << eig_vec1[0], eig_vec2[0], eig_vec3[0],
+         eig_vec1[1], eig_vec2[1], eig_vec3[1],
+         eig_vec1[2], eig_vec2[2], eig_vec3[2];
+    Eigen::Matrix3f mInverse = m.inverse();
+    Eigen::Matrix3f mInverseTranspose = mInverse.transpose();
+
     // Draw the ellipsoid
     for (int v = 0; v<resolution - 1; v++)
       {
@@ -694,30 +701,33 @@ void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, Vector &scaled
             double nx = tab1.sin(u);
             double ny = tab1.cos(u);
 
-            double x1 = nr1 * nx;
-            double y1 = nr1 * ny;
-            double z1 = nz1;
+            Eigen::Vector3f p1(nr1 * nx,
+                               nr1 * ny,
+                               nz1);
 
-            double x2 = nr2 * nx;
-            double y2 = nr2 * ny;
-            double z2 = nz2;
+            Eigen::Vector3f p2(nr2 * nx,
+                               nr2 * ny,
+                               nz2);
 
-            // Rotate points
-            Vector v_p1 = Vector(eig_vec1[0] * x1 + eig_vec2[0] * y1 + eig_vec3[0] * z1,
-                                 eig_vec1[1] * x1 + eig_vec2[1] * y1 + eig_vec3[1] * z1,
-                                 eig_vec1[2] * x1 + eig_vec2[2] * y1 + eig_vec3[2] * z1);
-
-            Vector v_p2 = Vector(eig_vec1[0] * x2 + eig_vec2[0] * y2 + eig_vec3[0] * z2,
-                                 eig_vec1[1] * x2 + eig_vec2[1] * y2 + eig_vec3[1] * z2,
-                                 eig_vec1[2] * x2 + eig_vec2[2] * y2 + eig_vec3[2] * z2);
+            // Calculate points
+            Eigen::Vector3f v_p1 = m * p1;
+            Vector v_p1Vec = Vector(v_p1[0], v_p1[1], v_p1[2]);
+            Eigen::Vector3f v_p2 = m * p2;
+            Vector v_p2Vec = Vector(v_p2[0], v_p2[1], v_p2[2]);
 
             // Transorm points and add to points list
-            points_.push_back(v_p1 + Vector(center));
-            points_.push_back(v_p2 + Vector(center));
+            points_.push_back(v_p1Vec + Vector(center));
+            points_.push_back(v_p2Vec + Vector(center));
+
+            // Calculate normals
+            Eigen::Vector3f n1 = mInverseTranspose * p1;
+            Vector n1Vec = Vector(n1[0], n1[1], n1[2]);
+            Eigen::Vector3f n2 = mInverseTranspose * p2;
+            Vector n2Vec = Vector(n2[0], n2[1], n2[2]);
 
             // Add normals
-            normals_.push_back(v_p1);
-            normals_.push_back(v_p2);
+            normals_.push_back(n1Vec);
+            normals_.push_back(n2Vec);
 
             // Add color vectors from parameters
             colors_.push_back(color);

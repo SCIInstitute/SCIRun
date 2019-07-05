@@ -42,7 +42,7 @@
 namespace SCIRun {
 namespace Gui {
 
-const int RendererUpdateInMS = 35;
+const int RendererUpdateInMS = 1000 / 60;
 const double updateTime = RendererUpdateInMS / 1000.0;
 
 //------------------------------------------------------------------------------
@@ -156,6 +156,7 @@ void GLWidget::resizeGL(int width, int height)
 {
   mGraphics->eventResize(static_cast<size_t>(width),
                          static_cast<size_t>(height));
+  updateRenderer();
 }
 
 //------------------------------------------------------------------------------

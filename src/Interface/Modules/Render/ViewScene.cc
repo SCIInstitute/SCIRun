@@ -1881,7 +1881,7 @@ void ViewSceneDialog::setSpecularValue(double value)
 void ViewSceneDialog::setShininessValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::Shine, value);
-  setMaterialFactor(SRInterface::MAT_SHINE, value);
+  setMaterialFactor(SRInterface::MAT_SHINE, value * 19 + 1);
   updateAllGeometries();
 }
 

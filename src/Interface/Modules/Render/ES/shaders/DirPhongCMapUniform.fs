@@ -62,6 +62,5 @@ void main()
 
   vec4 diffuseColor = vColor;
 
-
   gl_FragColor      = vec4((specular * uSpecularColor + diffuse * diffuseColor + uAmbientColor * diffuseColor).rgb, uTransparency);
 }

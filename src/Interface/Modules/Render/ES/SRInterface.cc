@@ -566,6 +566,7 @@ namespace SCIRun {
       updateWorldLight();
 
       mCore.execute(0, 50);
+      std::cout << toString("");
 
       GLuint value;
       GLfloat depth;
@@ -1662,14 +1663,10 @@ namespace SCIRun {
     {
       glm::mat4 viewToWorld = mCamera->getViewToWorld();
       StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
+
       if (light)
-      {
         for (int i = 0; i < LIGHT_NUM; ++i)
-        {
-          glm::vec3 lightDirectionWorld = (viewToWorld * glm::vec4(mLightDirectionView[i], 0.0)).xyz();
-          light->lightDir[i] = mLightsOn[i] ? lightDirectionWorld : glm::vec3(0.0, 0.0, 0.0);
-        }
-      }
+          light->lightDir[i] = mLightsOn[i] ? mLightDirectionView[i] : glm::vec3(0.0, 0.0, 0.0);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -1752,7 +1749,7 @@ namespace SCIRun {
       viewVector.z = cos(inclination) * cos(azimuth);
       viewVector.x = cos(inclination) * sin(azimuth);
       viewVector.y = sin(inclination);
-      mLightDirectionView[index] = -viewVector;
+      mLightDirectionView[index] = glm::normalize(viewVector);
     }
 
     //----------------------------------------------------------------------------------------------

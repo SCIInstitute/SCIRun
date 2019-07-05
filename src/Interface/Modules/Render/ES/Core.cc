@@ -39,8 +39,8 @@
 namespace SCIRun {
 namespace Render {
 
-  ESCore::ESCore() : mCoreSequence(0), mCurrentTime(0.0f), mFPS(0.0f), mLastRealTime(0.0f),
-    r_(0.0f), g_(0.0f), b_(0.0f), a_(0.0f)
+ESCore::ESCore() : mCoreSequence(0), mCurrentTime(0.0f), mFPS(0.0f), mLastRealTime(0.0f),
+  r_(0.0f), g_(0.0f), b_(0.0f), a_(0.0f)
 {
   // Register common systems.
   gen::registerAll(*this);
@@ -71,38 +71,34 @@ std::string ESCore::toString(std::string prefix) const
 
   output += prefix + "ComponentContainers: " + std::to_string(mComponents.size()) + "\n";
   for(auto& comp : mComponents)
-    if(comp.second->getNumComponents() > 0)
+    if(comp.second->getNumComponents() >= 0)
     {
-      output += prefix + std::to_string(comp.first)
-        + "  Components: " + std::to_string(comp.second->getNumComponents())
-        + "  Name: \"" +  mComponentIDNameMap.at(comp.first);
-      output += comp.second->toString(prefix + "  ");
+      output += prefix + "Container: " + std::to_string(comp.first)
+        + "  Components: " + std::to_string(comp.second->getNumComponents());
+      if(mComponentIDNameMap.find(comp.first) != mComponentIDNameMap.end())
+        output += "  Name: \"" + mComponentIDNameMap.at(comp.first) + "\"";
+      else
+        output += "  Name: not found ";
+      output += "\n" + comp.second->toString(prefix);
     }
   output += "\n";
 
   output += prefix + "KernelSystems: " + std::to_string(mKernelSystems.size()) + "\n";
   for(auto& name: mKernelSystems)
-  {
     output += prefix + "  Name: " + name + "\n";
-  }
   output+= "\n";
 
   output += prefix + "UserSystems: " + std::to_string(mUserSystems.size()) + "\n";
   for(auto& name: mUserSystems)
-  {
     output += prefix + "  Name: " + name + "\n";
-  }
   output += "\n";
 
   output += prefix + "GarbageCollectorSystems: " + std::to_string(mGarbageCollectorSystems.size()) + "\n";
   for(auto& name: mGarbageCollectorSystems)
-  {
     output+= prefix + "  Name: " + name + "\n";
-  }
   output += "\n";
 
   auto systems = mSystems.get();
-  //output += prefix + "systems: " + std::to_string(mKernelSystems.size()) + "\n";
   output += systems->toString(prefix) + "\n";
 
   output += prefix + "Current Time: " + std::to_string(static_cast<uint64_t>(mCurrentTime * 1000.0)) + "\n";
@@ -114,10 +110,12 @@ void ESCore::execute(double currentTime, double constantFrameTime)
 {
   ++mCoreSequence;
 
-  const int fpsAvgLength = 180;
+  const int fpsAvgLength = 60;
   if (mCoreSequence % fpsAvgLength == 0)
   {
     mFPS /= fpsAvgLength;
+    //std::cout << toString("");
+    //std::cout << "FPS: " << mFPS << "\n";
     mFPS = 0.0f;
   }
 
@@ -164,8 +162,6 @@ void ESCore::execute(double currentTime, double constantFrameTime)
   {
     // Reset the GL state (we shouldn't really need to do this, but we will anyways).
     mDefaultGLState.apply();
-
-    //lClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClearColor(r_, g_, b_, a_);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   }
