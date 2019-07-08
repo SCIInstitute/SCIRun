@@ -503,13 +503,13 @@ namespace SCIRun {
             if (shaderID == 0)
             {
               const char* vs =
-                "uniform mat4 uProjIVObject;\n"
+                "uniform mat4 uModelViewProjection;\n"
                 "uniform vec4 uColor;\n"
                 "attribute vec3 aPos;\n"
                 "varying vec4 fColor;\n"
                 "void main()\n"
                 "{\n"
-                "  gl_Position = uProjIVObject * vec4(aPos, 1.0);\n"
+                "  gl_Position = uModelViewProjection * vec4(aPos, 1.0);\n"
                 "  fColor = uColor;\n"
                 "}\n";
               const char* fs =
@@ -1044,6 +1044,16 @@ namespace SCIRun {
           std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
           if (auto shaderMan = sm.lock())
           {
+            RENDERER_LOG("Recalculate scene bounding box. Should only be done when an object is added.");
+            mSceneBBox.reset();
+            for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
+            {
+              if (it->mBBox.valid())
+              {
+                mSceneBBox.extend(it->mBBox);
+              }
+            }
+
             RENDERER_LOG("Add passes");
             for (auto& pass : obj->passes())
             {
@@ -1185,18 +1195,9 @@ namespace SCIRun {
               pass.renderState.mSortType = mRenderSortType;
               mCore.addComponent(entityID, pass);
             }
-
-            RENDERER_LOG("Recalculate scene bounding box. Should only be done when an object is added.");
-            mSceneBBox.reset();
-            for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
-            {
-              if (it->mBBox.valid())
-              {
-                mSceneBBox.extend(it->mBBox);
-              }
-            }
           }
         }
+
         mCore.runGCOnNextExecution();
       }
 
@@ -1517,13 +1518,13 @@ namespace SCIRun {
             glm::mat4 axesTransform = axesScale * axesRot;
 
             GLint locCamViewVec = glGetUniformLocation(shader, "uCamViewVec");
-            GLint locLightDirWorld = glGetUniformLocation(shader, "uLightDirWorld");
+            GLint locLightDirecionView = glGetUniformLocation(shader, "uLightDirectionView");
             GLint locDiffuseColor = glGetUniformLocation(shader, "uColor");
-            GLint locProjIVObject = glGetUniformLocation(shader, "uProjIVObject");
-            GLint locObject = glGetUniformLocation(shader, "uObject");
+            GLint locProjIVObject = glGetUniformLocation(shader, "uModelViewProjection");
+            GLint locObject = glGetUniformLocation(shader, "uModel");
 
             GL(glUniform3f(locCamViewVec, 0.0f, 0.0f, -1.0f));
-            GL(glUniform3f(locLightDirWorld, 0.0f, 0.0f, -1.0f));
+            GL(glUniform3f(locLightDirecionView, 0.0f, 0.0f, -1.0f));
 
             // Build projection for the axes to use on the screen. The arrors will not
             // use the camera, but will use the camera's transformation matrix.
@@ -1700,20 +1701,16 @@ namespace SCIRun {
     {
       if (uniform.name == "uFogSettings")
       {
-        double start, end, zdist, ddist;
-        glm::vec4 center(mSceneBBox.center().x(), mSceneBBox.center().y(), mSceneBBox.center().z(), 1.0);
-        glm::mat4 worldToView = mCamera->getWorldToView();
-        center = worldToView * center;
-        center /= center.w;
-        glm::vec3 c3(center.x, center.y, center.z);
-        zdist = glm::length(c3);
-        ddist = 1.1 * mSceneBBox.diagonal().length();
-        start = zdist + (mFogStart - 0.5) * ddist;
-        end = zdist + (mFogEnd - 0.5) * ddist;
+        float radius = mSceneBBox.diagonal().length() * 2.0;
+        float start = radius * mFogStart;
+        float end = radius * mFogEnd;
         uniform.data = glm::vec4(mFogIntensity, start, end, 0.0);
       }
       else if (uniform.name == "uFogColor")
+      {
         uniform.data = mFogColor;
+      }
+
       uniform.type = Graphics::Datatypes::SpireSubPass::Uniform::UniformType::UNIFORM_VEC4;
     }
 

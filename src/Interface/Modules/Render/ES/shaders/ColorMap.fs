@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
  */
 varying vec4   fColor;
-varying vec4    vPos;//for clipping plane calc
-varying vec4    vFogCoord;// for fog calculation
+varying vec4    vPosWorld;//for clipping plane calc
+varying vec4    vPosView;// for fog calculation
 
 // Transparency to use along side the color map.
 uniform float uTransparency;
@@ -56,42 +56,42 @@ void main()
   float fPlaneValue;
   if (uClippingPlaneCtrl0.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane0);
+    fPlaneValue = dot(vPosWorld, uClippingPlane0);
     fPlaneValue = uClippingPlaneCtrl0.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
   }
   if (uClippingPlaneCtrl1.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane1);
+    fPlaneValue = dot(vPosWorld, uClippingPlane1);
     fPlaneValue = uClippingPlaneCtrl1.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
   }
   if (uClippingPlaneCtrl2.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane2);
+    fPlaneValue = dot(vPosWorld, uClippingPlane2);
     fPlaneValue = uClippingPlaneCtrl2.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
   }
   if (uClippingPlaneCtrl3.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane3);
+    fPlaneValue = dot(vPosWorld, uClippingPlane3);
     fPlaneValue = uClippingPlaneCtrl3.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
   }
   if (uClippingPlaneCtrl4.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane4);
+    fPlaneValue = dot(vPosWorld, uClippingPlane4);
     fPlaneValue = uClippingPlaneCtrl4.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
   }
   if (uClippingPlaneCtrl5.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane5);
+    fPlaneValue = dot(vPosWorld, uClippingPlane5);
     fPlaneValue = uClippingPlaneCtrl5.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
@@ -106,7 +106,7 @@ void main()
     fp.x = uFogSettings.x;
     fp.y = uFogSettings.y;
     fp.z = uFogSettings.z;
-    fp.w = abs(vFogCoord.z/vFogCoord.w);
+    fp.w = abs(vPosView.z/vPosView.w);
     
     float fog_factor;
     fog_factor = (fp.z-fp.w)/(fp.z-fp.y);

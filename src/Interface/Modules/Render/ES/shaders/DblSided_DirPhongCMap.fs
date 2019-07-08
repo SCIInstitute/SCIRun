@@ -31,7 +31,7 @@ uniform vec4    uAmbientColor;      // Ambient color
 uniform vec4    uSpecularColor;     // Specular color     
 uniform vec4    uDiffuseColor;      // Diffuse color
 uniform float   uSpecularPower;     // Specular power
-uniform vec3    uLightDirWorld;     // Directional light (world space).
+uniform vec3    uLightDirectionView;     // Directional light (view space).
 
 //clipping planes
 uniform vec4    uClippingPlane0;    // clipping plane 0
@@ -57,50 +57,50 @@ uniform vec4    uFogColor;          // fog color
 // lights we light in world space.
 varying vec3  vNormal;
 varying vec4  vColor;
-varying vec4    vPos;//for clipping plane calc
-varying vec4    vFogCoord;// for fog calculation
+varying vec4    vPosWorld;//for clipping plane calc
+varying vec4    vPosView;// for fog calculation
 
 void main()
 {
   float fPlaneValue;
   if (uClippingPlaneCtrl0.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane0);
+    fPlaneValue = dot(vPosWorld, uClippingPlane0);
     fPlaneValue = uClippingPlaneCtrl0.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
   }
   if (uClippingPlaneCtrl1.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane1);
+    fPlaneValue = dot(vPosWorld, uClippingPlane1);
     fPlaneValue = uClippingPlaneCtrl1.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
   }
   if (uClippingPlaneCtrl2.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane2);
+    fPlaneValue = dot(vPosWorld, uClippingPlane2);
     fPlaneValue = uClippingPlaneCtrl2.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
   }
   if (uClippingPlaneCtrl3.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane3);
+    fPlaneValue = dot(vPosWorld, uClippingPlane3);
     fPlaneValue = uClippingPlaneCtrl3.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
   }
   if (uClippingPlaneCtrl4.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane4);
+    fPlaneValue = dot(vPosWorld, uClippingPlane4);
     fPlaneValue = uClippingPlaneCtrl4.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
   }
   if (uClippingPlaneCtrl5.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane5);
+    fPlaneValue = dot(vPosWorld, uClippingPlane5);
     fPlaneValue = uClippingPlaneCtrl5.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
@@ -109,7 +109,7 @@ void main()
   // Remember to always negate the light direction for these lighting
   // calculations. The dot product takes on its greatest values when the angle
   // between the two vectors diminishes.
-  vec3  invLightDir = -uLightDirWorld;
+  vec3  invLightDir = -uLightDirectionView;
   vec3  normal      = normalize(vNormal);
   float diffuse     = max(0.0, dot(normal, invLightDir));
 
@@ -140,7 +140,7 @@ void main()
     fp.x = uFogSettings.x;
     fp.y = uFogSettings.y;
     fp.z = uFogSettings.z;
-    fp.w = abs(vFogCoord.z/vFogCoord.w);
+    fp.w = abs(vPosView.z/vPosView.w);
     
     float fog_factor;
     fog_factor = (fp.z-fp.w)/(fp.z-fp.y);

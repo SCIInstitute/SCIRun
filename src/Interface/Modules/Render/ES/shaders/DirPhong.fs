@@ -34,44 +34,42 @@
   #endif
 #endif
 
-uniform vec3    uCamViewVec;        // Camera 'at' vector in world space
-uniform vec4    uAmbientColor;      // Ambient color
-uniform vec4    uDiffuseColor;      // Diffuse color
-uniform vec4    uSpecularColor;     // Specular color
-uniform float   uSpecularPower;     // Specular power
-uniform vec3    uLightDirWorld0;     // Directional light (world space).
-uniform vec3    uLightDirWorld1;     // Directional light (world space).
-uniform vec3    uLightDirWorld2;     // Directional light (world space).
-uniform vec3    uLightDirWorld3;     // Directional light (world space).
-uniform vec3    uLightColor0;        // color of light 0
-uniform vec3    uLightColor1;        // color of light 1
-uniform vec3    uLightColor2;        // color of light 2
-uniform vec3    uLightColor3;        // color of light 3
+uniform vec4    uAmbientColor;
+uniform vec4    uDiffuseColor;
+uniform vec4    uSpecularColor;
+uniform float   uSpecularPower;
+uniform vec3    uLightDirectionView0;
+uniform vec3    uLightDirectionView1;
+uniform vec3    uLightDirectionView2;
+uniform vec3    uLightDirectionView3;
+uniform vec3    uLightColor0;
+uniform vec3    uLightColor1;
+uniform vec3    uLightColor2;
+uniform vec3    uLightColor3;
 uniform float   uTransparency;
 
-//clipping planes
-uniform vec4    uClippingPlane0;    // clipping plane 0
-uniform vec4    uClippingPlane1;    // clipping plane 1
-uniform vec4    uClippingPlane2;    // clipping plane 2
-uniform vec4    uClippingPlane3;    // clipping plane 3
-uniform vec4    uClippingPlane4;    // clipping plane 4
-uniform vec4    uClippingPlane5;    // clipping plane 5
+uniform vec4    uClippingPlane0;
+uniform vec4    uClippingPlane1;
+uniform vec4    uClippingPlane2;
+uniform vec4    uClippingPlane3;
+uniform vec4    uClippingPlane4;
+uniform vec4    uClippingPlane5;
 
-//clipping plane controls
-uniform vec4    uClippingPlaneCtrl0;// clipping plane 0 control (visible, showFrame, reverseNormal, 0)
-uniform vec4    uClippingPlaneCtrl1;// clipping plane 1 control (visible, showFrame, reverseNormal, 0)
-uniform vec4    uClippingPlaneCtrl2;// clipping plane 2 control (visible, showFrame, reverseNormal, 0)
-uniform vec4    uClippingPlaneCtrl3;// clipping plane 3 control (visible, showFrame, reverseNormal, 0)
-uniform vec4    uClippingPlaneCtrl4;// clipping plane 4 control (visible, showFrame, reverseNormal, 0)
-uniform vec4    uClippingPlaneCtrl5;// clipping plane 5 control (visible, showFrame, reverseNormal, 0)
+// clipping plane controls (visible, showFrame, reverseNormal, 0)
+uniform vec4    uClippingPlaneCtrl0;
+uniform vec4    uClippingPlaneCtrl1;
+uniform vec4    uClippingPlaneCtrl2;
+uniform vec4    uClippingPlaneCtrl3;
+uniform vec4    uClippingPlaneCtrl4;
+uniform vec4    uClippingPlaneCtrl5;
 
-//fog
-uniform vec4    uFogSettings;       // fog settings (intensity, start, end, 0.0)
-uniform vec4    uFogColor;          // fog color
+// fog settings (intensity, start, end, 0.0)
+uniform vec4    uFogSettings;
+uniform vec4    uFogColor;
 
 varying vec3    vNormal;
-varying vec4    vPos;
-varying vec4    vFogCoord;
+varying vec4    vPosWorld;
+varying vec4    vPosView;
 
 vec4 calculate_lighting(vec3 N, vec3 L, vec3 V, vec3 diffuseColor, vec3 specularColor, vec3 lightColor)
 {
@@ -88,42 +86,42 @@ void main()
   float fPlaneValue;
   if (uClippingPlaneCtrl0.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane0);
+    fPlaneValue = dot(vPosWorld, uClippingPlane0);
     fPlaneValue = uClippingPlaneCtrl0.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
   }
   if (uClippingPlaneCtrl1.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane1);
+    fPlaneValue = dot(vPosWorld, uClippingPlane1);
     fPlaneValue = uClippingPlaneCtrl1.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
   }
   if (uClippingPlaneCtrl2.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane2);
+    fPlaneValue = dot(vPosWorld, uClippingPlane2);
     fPlaneValue = uClippingPlaneCtrl2.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
   }
   if (uClippingPlaneCtrl3.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane3);
+    fPlaneValue = dot(vPosWorld, uClippingPlane3);
     fPlaneValue = uClippingPlaneCtrl3.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
   }
   if (uClippingPlaneCtrl4.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane4);
+    fPlaneValue = dot(vPosWorld, uClippingPlane4);
     fPlaneValue = uClippingPlaneCtrl4.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
   }
   if (uClippingPlaneCtrl5.x > 0.5)
   {
-    fPlaneValue = dot(vPos, uClippingPlane5);
+    fPlaneValue = dot(vPosWorld, uClippingPlane5);
     fPlaneValue = uClippingPlaneCtrl5.z > 0.5 ? -fPlaneValue : fPlaneValue;
     if (fPlaneValue < 0.0)
       discard;
@@ -136,17 +134,17 @@ void main()
 
   vec3 normal = normalize(vNormal);
   if (gl_FrontFacing) normal = -normal;
-  vec3 cameraVector = -normalize(vFogCoord.xyz);
+  vec3 cameraVector = -normalize(vPosView.xyz);
 
   gl_FragColor = vec4(ambientColor * diffuseColor, transparency);
-  if (length(uLightDirWorld0) > 0.0)
-    gl_FragColor += calculate_lighting(normal, uLightDirWorld0, cameraVector, diffuseColor, specularColor, uLightColor0);
-  if (length(uLightDirWorld1) > 0.0)
-    gl_FragColor += calculate_lighting(normal, uLightDirWorld1, cameraVector, diffuseColor, specularColor, uLightColor1);
-  if (length(uLightDirWorld2) > 0.0)
-    gl_FragColor += calculate_lighting(normal, uLightDirWorld2, cameraVector, diffuseColor, specularColor, uLightColor2);
-  if (length(uLightDirWorld3) > 0.0)
-    gl_FragColor += calculate_lighting(normal, uLightDirWorld3, cameraVector, diffuseColor, specularColor, uLightColor3);
+  if (length(uLightDirectionView0) > 0.0)
+    gl_FragColor += calculate_lighting(normal, uLightDirectionView0, cameraVector, diffuseColor, specularColor, uLightColor0);
+  if (length(uLightDirectionView1) > 0.0)
+    gl_FragColor += calculate_lighting(normal, uLightDirectionView1, cameraVector, diffuseColor, specularColor, uLightColor1);
+  if (length(uLightDirectionView2) > 0.0)
+    gl_FragColor += calculate_lighting(normal, uLightDirectionView2, cameraVector, diffuseColor, specularColor, uLightColor2);
+  if (length(uLightDirectionView3) > 0.0)
+    gl_FragColor += calculate_lighting(normal, uLightDirectionView3, cameraVector, diffuseColor, specularColor, uLightColor3);
 
   //calculate fog
   if (uFogSettings.x > 0.0)
@@ -155,7 +153,7 @@ void main()
     fp.x = uFogSettings.x;
     fp.y = uFogSettings.y;
     fp.z = uFogSettings.z;
-    fp.w = abs(vFogCoord.z/vFogCoord.w);
+    fp.w = abs(vPosView.z/vPosView.w);
 
     float fog_factor;
     fog_factor = (fp.z-fp.w)/(fp.z-fp.y);

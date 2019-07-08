@@ -339,16 +339,16 @@ namespace SCIRun {
       RenderState::TransparencySortType mRenderSortType     {};       // Which strategy will be used to render transparency
 
       //material settings
-      double                            mMatAmbient         {0.2};
-      double                            mMatDiffuse         {1.0};
-      double                            mMatSpecular        {0.0};
-      double                            mMatShine           {1.0};
+      double                            mMatAmbient         {};
+      double                            mMatDiffuse         {};
+      double                            mMatSpecular        {};
+      double                            mMatShine           {};
 
       //fog settings
-      double                            mFogIntensity       {0.0};
-      double                            mFogStart           {0.0};
-      double                            mFogEnd             {1.0};
-      glm::vec4                         mFogColor           {0.0, 0.0, 0.0, 0.0};
+      double                            mFogIntensity       {};
+      double                            mFogStart           {};
+      double                            mFogEnd             {};
+      glm::vec4                         mFogColor           {};
 
       //light settings
       std::vector<glm::vec2>            mLightDirectionPolar{};

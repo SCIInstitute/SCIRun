@@ -34,31 +34,28 @@
   #endif
 #endif
 
-uniform vec3    uCamViewVec;        // Camera 'at' vector in world space
-uniform vec4    uAmbientColor;      // Ambient color
-uniform vec4    uDiffuseColor;      // Diffuse color
-uniform vec4    uSpecularColor;     // Specular color
-uniform float   uSpecularPower;     // Specular power
-uniform vec3    uLightDirWorld0;     // Directional light (world space).
-uniform vec3    uLightDirWorld1;     // Directional light (world space).
-uniform vec3    uLightDirWorld2;     // Directional light (world space).
-uniform vec3    uLightDirWorld3;     // Directional light (world space).
-uniform vec3    uLightColor0;        // color of light 0
-uniform vec3    uLightColor1;        // color of light 0
-uniform vec3    uLightColor2;        // color of light 0
-uniform vec3    uLightColor3;        // color of light 0
+uniform vec3    uCamViewVec;
+uniform vec4    uAmbientColor;
+uniform vec4    uDiffuseColor;
+uniform vec4    uSpecularColor;
+uniform float   uSpecularPower;
+uniform vec3    uLightDirectionView0;
+uniform vec3    uLightDirectionView1;
+uniform vec3    uLightDirectionView2;
+uniform vec3    uLightDirectionView3;
+uniform vec3    uLightColor0;
+uniform vec3    uLightColor1;
+uniform vec3    uLightColor2;
+uniform vec3    uLightColor3;
 uniform float   uTransparency;
 
-//fog
-uniform vec4    uFogSettings;       // fog settings (intensity, start, end, 0.0)
-uniform vec4    uFogColor;          // fog color
+// fog settings (intensity, start, end, 0.0)
+uniform vec4    uFogSettings;
+uniform vec4    uFogColor;
 
-// Lighting in world space. Generally, it's better to light in eye space if you
-// are dealing with point lights. Since we are only dealing with directional
-// lights we light in world space.
 varying vec3    vNormal;
-varying vec4    vPos;               //for clipping plane calc
-varying vec4    vFogCoord;          // for fog calculation
+varying vec4    vPosWorld;
+varying vec4    vPosView;
 
 vec4 calculate_lighting(vec3 N, vec3 L, vec3 V, vec3 diffuseColor, vec3 specularColor, vec3 lightColor)
 {
@@ -79,17 +76,17 @@ void main()
 
   vec3 normal = normalize(vNormal);
   if (gl_FrontFacing) normal = -normal;
-  vec3 cameraVector = -normalize(vFogCoord.xyz);
+  vec3 cameraVector = -normalize(vPosView.xyz);
 
   gl_FragColor = vec4(ambientColor * diffuseColor, transparency);
-  if (length(uLightDirWorld0) > 0.0)
-    gl_FragColor += calculate_lighting(normal, uLightDirWorld0, cameraVector, diffuseColor, specularColor, uLightColor0);
-  if (length(uLightDirWorld1) > 0.0)
-    gl_FragColor += calculate_lighting(normal, uLightDirWorld1, cameraVector, diffuseColor, specularColor, uLightColor1);
-  if (length(uLightDirWorld2) > 0.0)
-    gl_FragColor += calculate_lighting(normal, uLightDirWorld2, cameraVector, diffuseColor, specularColor, uLightColor2);
-  if (length(uLightDirWorld3) > 0.0)
-    gl_FragColor += calculate_lighting(normal, uLightDirWorld3, cameraVector, diffuseColor, specularColor, uLightColor3);
+  if (length(uLightDirectionView0) > 0.0)
+    gl_FragColor += calculate_lighting(normal, uLightDirectionView0, cameraVector, diffuseColor, specularColor, uLightColor0);
+  if (length(uLightDirectionView1) > 0.0)
+    gl_FragColor += calculate_lighting(normal, uLightDirectionView1, cameraVector, diffuseColor, specularColor, uLightColor1);
+  if (length(uLightDirectionView2) > 0.0)
+    gl_FragColor += calculate_lighting(normal, uLightDirectionView2, cameraVector, diffuseColor, specularColor, uLightColor2);
+  if (length(uLightDirectionView3) > 0.0)
+    gl_FragColor += calculate_lighting(normal, uLightDirectionView3, cameraVector, diffuseColor, specularColor, uLightColor3);
 
   //calculate fog
   if (uFogSettings.x > 0.0)
@@ -98,7 +95,7 @@ void main()
     fp.x = uFogSettings.x;
     fp.y = uFogSettings.y;
     fp.z = uFogSettings.z;
-    fp.w = abs(vFogCoord.z/vFogCoord.w);
+    fp.w = abs(vPosView.z/vPosView.w);
 
     float fog_factor;
     fog_factor = (fp.z-fp.w)/(fp.z-fp.y);

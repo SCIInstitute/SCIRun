@@ -90,7 +90,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setFocusPolicy(Qt::StrongFocus);
 
   setupScaleBar();
-  addToolBar();
   setupClippingPlanes();
 
   // Setup Qt OpenGL widget.
@@ -105,25 +104,23 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
   connect(this, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int, const std::string&)), this, SLOT(sendGeometryFeedbackToState(int, int, const std::string&)));
 
-  if (mGLWidget->isValid())
+  if (!mGLWidget->isValid())
   {
-    // Hook up the GLWidget
-    glLayout->addWidget(mGLWidget);
-    glLayout->update();
-
-    // Set spire transient value (should no longer be used).
-    mSpire = std::weak_ptr<SRInterface>(mGLWidget->getSpire());
-  }
-  else
-  {
-    /// \todo Display dialog.
     delete mGLWidget;
+    return;
   }
+
+  mSpire = std::weak_ptr<SRInterface>(mGLWidget->getSpire());
+
+  //Set background Color
+  auto colorStr = state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString();
+  bgColor_ = checkColorSetting(colorStr, Qt::black);
 
   {
     auto spire = mSpire.lock();
-    if (!spire)
+    if(!spire)
       return;
+
     if (Preferences::Instance().useNewViewSceneMouseControls)
     {
       spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
@@ -133,21 +130,14 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     {
       spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
     }
-  }
 
-  {
-    //Set background Color
-    auto colorStr = state_->getValue(Modules::Render::ViewScene::BackgroundColor).toString();
-    bgColor_ = checkColorSetting(colorStr, Qt::black);
-
-    auto spire = mSpire.lock();
     spire->setBackgroundColor(bgColor_);
   }
 
   setInitialLightValues();
 
   state->connectStateChanged([this]() { Q_EMIT newGeometryValueForwarder(); });
-  connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(updateModifiedGeometries()));
+  connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(updateAllGeometries()));
 
   std::string filesystemRoot = Application::Instance().executablePath().string();
   std::string sep;
@@ -157,6 +147,14 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   resizeTimer_.setSingleShot(true);
   connect(&resizeTimer_, SIGNAL(timeout()), this, SLOT(resizingDone()));
   resize(1000, 1000);
+
+  QSize qs = QSize(300, 100);
+  resize(qs);
+
+  addToolBar();
+  glLayout->addWidget(mGLWidget);
+  glLayout->update();
+  resize(qs);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -234,32 +232,39 @@ void ViewSceneDialog::addConfigurationDock()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setupMaterials()
 {
+  double ambient = state_->getValue(Modules::Render::ViewScene::Ambient).toDouble();
+  double diffuse = state_->getValue(Modules::Render::ViewScene::Diffuse).toDouble();
+  double specular = state_->getValue(Modules::Render::ViewScene::Specular).toDouble();
+  double shine = state_->getValue(Modules::Render::ViewScene::Shine).toDouble();
+  double emission = state_->getValue(Modules::Render::ViewScene::Emission).toDouble();
+  bool fogOn = state_->getValue(Modules::Render::ViewScene::FogOn).toBool();
+  bool objectsOnly = state_->getValue(Modules::Render::ViewScene::ObjectsOnly).toBool();
+  bool useBGColor = state_->getValue(Modules::Render::ViewScene::UseBGColor).toBool();
+  double fogStart = state_->getValue(Modules::Render::ViewScene::FogStart).toDouble();
+  double fogEnd = state_->getValue(Modules::Render::ViewScene::FogEnd).toDouble();
   auto colorStr = state_->getValue(Modules::Render::ViewScene::FogColor).toString();
-  if (!colorStr.empty())
-  {
-    ColorRGB color(colorStr);
-    fogColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
-      static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
-      static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
 
-    mConfigurationDock->setMaterialTabValues(
-      state_->getValue(Modules::Render::ViewScene::Ambient).toDouble(),
-      state_->getValue(Modules::Render::ViewScene::Diffuse).toDouble(),
-      state_->getValue(Modules::Render::ViewScene::Specular).toDouble(),
-      state_->getValue(Modules::Render::ViewScene::Shine).toDouble(),
-      state_->getValue(Modules::Render::ViewScene::Emission).toDouble(),
-      state_->getValue(Modules::Render::ViewScene::FogOn).toBool(),
-      state_->getValue(Modules::Render::ViewScene::ObjectsOnly).toBool(),
-      state_->getValue(Modules::Render::ViewScene::UseBGColor).toBool(),
-      state_->getValue(Modules::Render::ViewScene::FogStart).toDouble(),
-      state_->getValue(Modules::Render::ViewScene::FogEnd).toDouble());
-  }
-  else
-  {
-    fogColor_ = Qt::blue;
-    mConfigurationDock->setMaterialTabValues(0.2, 1.0, 0.0, 1.0, 0.0, false, true, true, 0.0, 0.71);
-  }
+  ColorRGB color(colorStr);
+  fogColor_ = QColor(static_cast<int>(color.r() > 1 ? color.r() : color.r() * 255.0),
+                     static_cast<int>(color.g() > 1 ? color.g() : color.g() * 255.0),
+                     static_cast<int>(color.b() > 1 ? color.b() : color.b() * 255.0));
+
   mConfigurationDock->setFogColorLabel(fogColor_);
+
+  mConfigurationDock->setMaterialTabValues(ambient, diffuse, specular, shine,
+                                           emission, fogOn, objectsOnly,
+                                           useBGColor, fogStart, fogEnd);
+
+  setAmbientValue(ambient);
+  setDiffuseValue(diffuse);
+  setSpecularValue(specular);
+  setShininessValue(shine);
+  setEmissionValue(emission);
+  setFogOnVisibleObjects(objectsOnly);
+  setFogUseBGColor(useBGColor);
+  setFogStartValue(fogStart);
+  setFogEndValue(fogEnd);
+  setFogOn(fogOn);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -879,6 +884,7 @@ void ViewSceneDialog::autoViewClicked()
 {
   auto spireLock = mSpire.lock();
   spireLock->doAutoView();
+  updateAllGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1881,7 +1887,7 @@ void ViewSceneDialog::setSpecularValue(double value)
 void ViewSceneDialog::setShininessValue(double value)
 {
   state_->setValue(Modules::Render::ViewScene::Shine, value);
-  setMaterialFactor(SRInterface::MAT_SHINE, value * 19 + 1);
+  setMaterialFactor(SRInterface::MAT_SHINE, value * value * 39 + 1);
   updateAllGeometries();
 }
 
