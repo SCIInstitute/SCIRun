@@ -834,6 +834,9 @@ namespace SCIRun {
 
       DEBUG_LOG_LINE_INFO
 
+      if(!mCore.getStaticComponent<ren::StaticVBOMan>() ||
+         !mCore.getStaticComponent<ren::StaticIBOMan>()) return;
+
       std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
       std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
       if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock())

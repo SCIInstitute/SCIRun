@@ -151,7 +151,19 @@ void ESCore::execute(double currentTime, double constantFrameTime)
   // Perform garbage collection if requested.
   if(runGC)
   {
-    runCompleteGC();
+    bool run = true;
+    for(auto& comp : mComponents)
+      if(comp.second->getNumComponents() > 0)
+      {
+        if(mComponentIDNameMap.find(comp.first) != mComponentIDNameMap.end() &&
+           mComponentIDNameMap.at(comp.first) == "ren:GeomPromise")
+        {
+          run = false;
+          break;
+        }
+      }
+    if(run) runCompleteGC();
+    else std::cout << "abourted GC\n";
     runGC = false;
   }
 
