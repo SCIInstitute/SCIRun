@@ -95,7 +95,7 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRCamera::mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton btn)
     {
-      static const float spinThreashold = 0.001f;
+      static const float avFac = 0.3f; //should be less than 0.5 low values = less likely to spin
       glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
       switch (mInterface.getMouseMode())
       {
@@ -104,10 +104,14 @@ namespace SCIRun {
           if (btn == SRInterface::MOUSE_RIGHT && !lockZoom_)      mArcLookAt->doZoom(screenSpace);
           if (btn == SRInterface::MOUSE_MIDDLE && !lockRotation_)
           {
-              mArcLookAt->doRotation(screenSpace);
-              mouseMoveVec = 0.5f * (screenSpace - lastMousePos) + 0.5f * mouseMoveVec;
-              if(glm::length(mouseMoveVec) < spinThreashold) mouseMoveVec = glm::vec2(0.0, 0.0);
-              lastMousePos = screenSpace;
+            mArcLookAt->doRotation(screenSpace);
+            mouseMoveVec = avFac * (screenSpace - lastMousePos) + (1.0f - avFac) * mouseMoveVec;
+            mouseMoveVecR = (1.0f - avFac) * (screenSpace - lastMousePos) + avFac * mouseMoveVec;
+            if(glm::length(mouseMoveVecR) < glm::length(mouseMoveVec)*0.7f)
+              autoRotateVec = glm::vec2(0.0, 0.0);
+            else
+              autoRotateVec = mouseMoveVec;
+            lastMousePos = screenSpace;
           }
           break;
 
@@ -115,9 +119,9 @@ namespace SCIRun {
           if (btn == SRInterface::MOUSE_LEFT && !lockRotation_)
           {
             mArcLookAt->doRotation(screenSpace);
-            mouseMoveVec = 0.2f * (screenSpace - lastMousePos) + 0.8f * mouseMoveVec;
-            mouseMoveVecR = 0.8f * (screenSpace - lastMousePos) + 0.2f * mouseMoveVec;
-            if(glm::length(mouseMoveVecR) < glm::length(mouseMoveVec)/2.0f)
+            mouseMoveVec = avFac * (screenSpace - lastMousePos) + (1.0f - avFac) * mouseMoveVec;
+            mouseMoveVecR = (1.0f - avFac) * (screenSpace - lastMousePos) + avFac * mouseMoveVec;
+            if(glm::length(mouseMoveVecR) < glm::length(mouseMoveVec)*0.7f)
               autoRotateVec = glm::vec2(0.0, 0.0);
             else
               autoRotateVec = mouseMoveVec;
