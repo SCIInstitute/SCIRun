@@ -18,14 +18,14 @@ struct SCISHARE CommonUniforms
 
   enum COMMON_UNIFORMS
   {
-    U_MODEL_VIEW_PROJECTION,   // uModelViewProjection  - Object -> World -> View -> Projection
-    U_MODEL_VIEW,                      // uModelView    - Object -> World -> View
-    U_MODEL,                           // uModel        - Object -> World transform
-    U_VIEW_PROJECTION,          // uViewProjection        - Inverse view projection matrix
-    U_PROJECTION,                       // uProj          - Projection matrix
-    U_INVERSE_VIEW,                             // uInverseView          - View to World
+    U_MODEL_VIEW_PROJECTION,                // uModelViewProjection  - Object -> World -> View -> Projection
+    U_MODEL_VIEW,                           // uModelView    - Object -> World -> View
+    U_MODEL,                                // uModel        - Object -> World transform
+    U_VIEW_PROJECTION,                      // uViewProjection        - Inverse view projection matrix
+    U_PROJECTION,                           // uProj          - Projection matrix
+    U_INVERSE_VIEW,                         // uInverseView          - View to World
     U_CAM_VIEW_VEC,                         // uCamViewVec    - Viewing vector for the camera. Depends on projection matrix
-    U_VIEW,                     // uView   - Inverse view
+    U_VIEW,                                 // uView   - Inverse view
     U_CAM_UP,                               // uCamUp         - 'Up' vector for the camera in world space
     U_CAM_POS,                              // uCamPos        - Camera position in world space.
     U_GLOBAL_TIME,                          // uGlobalTime    - Global time of the game. Used for animation.

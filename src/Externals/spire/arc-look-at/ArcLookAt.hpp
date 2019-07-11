@@ -76,12 +76,8 @@ public:
   void doRotation(const glm::vec2& ssPos);
 
   /// Dollys the camera towards(negative) / away(positive) from the look at
-  /// point.
-  void doZoom(glm::float_t camZoom);
-
-  /// Dollys the camera towards(negative) / away(positive) from the look at
   /// point. With vairiable zoomspeed.
-  void doZoom(glm::float_t camZoom, int zoomSpeed);
+  void doZoom(glm::float_t camZoom, int zoomSpeed = 65);
 
   /// Uses a custom function to determine camera zoom. Downwards and to the
   /// right increases size, upwards or to the left decreases size
@@ -110,14 +106,12 @@ public:
 private:
   std::unique_ptr<spire::ArcBall>  mArcBall;
 
-  glm::vec3                 mCamLookAt;     ///< Current lookat position.
-  glm::float_t              mCamDistance;   ///< Distance from look-at.
+  glm::vec3                 mCamLookAt   {0.0f};     ///< Current lookat position.
+  glm::float_t              mCamDistance {3.0f};   ///< Distance from look-at.
 
   // The following are reference variables set when doReferenceDown is called.
   glm::vec2                 mReferenceScreenPos;
   glm::vec3                 mReferenceLookAt;
-  glm::mat4                 mReferenceTransform;
-  glm::float_t              mReferenceCamDistance;
 };
 
 } // namespace spire

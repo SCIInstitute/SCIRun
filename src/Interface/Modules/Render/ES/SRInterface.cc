@@ -288,14 +288,14 @@ namespace SCIRun {
     void SRInterface::updateCamera()
     {
       // Update the static camera with the appropriate world to view transform.
-      glm::mat4 viewToWorld = mCamera->getViewToWorld();
+      glm::mat4 view = mCamera->getWorldToView();
       glm::mat4 projection = mCamera->getViewToProjection();
 
       gen::StaticCamera* camera = mCore.getStaticComponent<gen::StaticCamera>();
       if (camera)
       {
         camera->data.winWidth = static_cast<float>(mScreenWidth);
-        camera->data.setView(viewToWorld);
+        camera->data.setView(view);
         camera->data.setProjection(projection, mCamera->getFOVY(), mCamera->getAspect(), mCamera->getZNear(), mCamera->getZFar());
       }
     }
@@ -330,7 +330,6 @@ namespace SCIRun {
     void SRInterface::setLockRotation(bool lock)  {mCamera->setLockRotation(lock);}
     const glm::mat4& SRInterface::getWorldToProjection() const {return mCamera->getWorldToProjection();}
     const glm::mat4& SRInterface::getWorldToView() const       {return mCamera->getWorldToView();}
-    const glm::mat4& SRInterface::getViewToWorld() const       {return mCamera->getViewToWorld();}
     const glm::mat4& SRInterface::getViewToProjection() const  {return mCamera->getViewToProjection();}
 
 
@@ -650,7 +649,7 @@ namespace SCIRun {
 
       glm::vec4 transVec = glm::vec4(glm::vec3(spos - mSelectedPos) * glm::vec3(vDepth , vDepth, 1.0), 0.0f);
       mWidgetTransform = gen::Transform();
-      mWidgetTransform.setPosition((glm::inverse(cam->data.projIV) * transVec).xyz());
+      mWidgetTransform.setPosition((glm::inverse(cam->data.viewProjection) * transVec).xyz());
 
       spire::CerealHeap<gen::Transform>* contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
       std::pair<const gen::Transform*, size_t> component = contTrans->getComponent(mSelectedID);
@@ -1662,7 +1661,6 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::updateWorldLight()
     {
-      glm::mat4 viewToWorld = mCamera->getViewToWorld();
       StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
 
       if (light)

@@ -61,13 +61,13 @@ void CommonUniforms::applyCommonUniforms(const glm::mat4& objectToWorld,
     switch (uniformType[i])
     {
       case U_MODEL_VIEW_PROJECTION:
-        mat = cam.projIV * objectToWorld;
+        mat = cam.viewProjection * objectToWorld;
         ptr = glm::value_ptr(mat);
         GL(glUniformMatrix4fv(uniformLocation[i], 1, false, ptr));
         break;
 
       case U_MODEL_VIEW:
-        mat = cam.worldToView * objectToWorld;
+        mat = cam.view * objectToWorld;
         ptr = glm::value_ptr(mat);
         GL(glUniformMatrix4fv(uniformLocation[i], 1, false, ptr));
         break;
@@ -78,7 +78,7 @@ void CommonUniforms::applyCommonUniforms(const glm::mat4& objectToWorld,
         break;
 
       case U_VIEW_PROJECTION:
-        ptr = glm::value_ptr(cam.projIV);
+        ptr = glm::value_ptr(cam.viewProjection);
         GL(glUniformMatrix4fv(uniformLocation[i], 1, false, ptr));
         break;
 
@@ -89,15 +89,15 @@ void CommonUniforms::applyCommonUniforms(const glm::mat4& objectToWorld,
 
       case U_INVERSE_VIEW:
         {
-          glm::mat4 view = cam.getView();
+          glm::mat4 view = cam.getInverseView();
           ptr = glm::value_ptr(view);
           GL(glUniformMatrix4fv(uniformLocation[i], 1, false, ptr));
           break;
         }
-        
+
       case U_CAM_VIEW_VEC:
         {
-          glm::mat4 view = cam.getView();
+          glm::mat4 view = cam.getInverseView();
           glm::vec3 viewVec = view[2].xyz();
           vec = -viewVec; // Our projection matrix looks down negative Z.
           GL(glUniform3f(uniformLocation[i], vec.x, vec.y, vec.z));
@@ -106,13 +106,13 @@ void CommonUniforms::applyCommonUniforms(const glm::mat4& objectToWorld,
 
       case U_VIEW:
         {
-          ptr = glm::value_ptr(cam.worldToView);
+          ptr = glm::value_ptr(cam.view);
           GL(glUniformMatrix4fv(uniformLocation[i], 1, false, ptr));
         }
 
       case U_CAM_UP:
         {
-          glm::mat4 view = cam.getView();
+          glm::mat4 view = cam.getInverseView();
           vec = view[1].xyz();
           GL(glUniform3f(uniformLocation[i], vec.x, vec.y, vec.z));
           break;
@@ -126,7 +126,7 @@ void CommonUniforms::applyCommonUniforms(const glm::mat4& objectToWorld,
 
       case U_CAM_POS:
         {
-          glm::mat4 view = cam.getView();
+          glm::mat4 view = cam.getInverseView();
           glm::vec3 pos(view[3].x, view[3].y, view[3].z);
           GL(glUniform3f(uniformLocation[i], pos.x, pos.y, pos.z));
         }
@@ -138,7 +138,7 @@ void CommonUniforms::applyCommonUniforms(const glm::mat4& objectToWorld,
           GL(glUniform1f(uniformLocation[i], aspect));
         }
         break;
-        
+
       case U_WINDOW_WIDTH:
         {
           float width = cam.winWidth;
@@ -154,5 +154,3 @@ void CommonUniforms::applyCommonUniforms(const glm::mat4& objectToWorld,
 }
 
 } // namespace ren
-
-

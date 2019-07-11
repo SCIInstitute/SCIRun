@@ -273,9 +273,9 @@ private:
     bool drawLines = (ibo.front().primMode == static_cast<int>(SpireIBO::PRIMITIVE::LINES));
     GLuint iboID = ibo.front().glid;
 
-    Core::Geometry::Vector dir(camera.front().data.worldToView[0][2],
-                               camera.front().data.worldToView[1][2],
-                               camera.front().data.worldToView[2][2]);
+    Core::Geometry::Vector dir(camera.front().data.view[0][2],
+                               camera.front().data.view[1][2],
+                               camera.front().data.view[2][2]);
 
     if (!drawLines)
     {
@@ -344,9 +344,9 @@ private:
               iboNegZID = it->glid;
           }
 
-          Core::Geometry::Vector absDir(fabs(camera.front().data.worldToView[0][2]),
-                                        fabs(camera.front().data.worldToView[1][2]),
-                                        fabs(camera.front().data.worldToView[2][2]));
+          Core::Geometry::Vector absDir(fabs(camera.front().data.view[0][2]),
+                                        fabs(camera.front().data.view[1][2]),
+                                        fabs(camera.front().data.view[2][2]));
 
           double xORy = absDir.x() > absDir.y() ? absDir.x() : absDir.y();
           double orZ = absDir.z() > xORy ? absDir.z() : xORy;

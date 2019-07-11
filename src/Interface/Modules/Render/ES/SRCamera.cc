@@ -47,9 +47,8 @@ namespace SCIRun {
     void SRCamera::buildTransform()
     {
       // todo fix this method to return mV instead of mIV
-      mIV  = mArcLookAt->getWorldViewTransform();
-      mV   = glm::affineInverse(mIV);
-      mVP  = mP * mV;
+      mV  = mArcLookAt->getWorldViewTransform();
+      mVP = mP * mV;
     }
 
     //----------------------------------------------------------------------------------------------
@@ -76,18 +75,27 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
+    void SRCamera::setViewMat(glm::mat4 view)
+    {
+      //mArcLookAt->setView(view[2].xyz(), up);
+      setClippingPlanes();
+    }
+
+    //----------------------------------------------------------------------------------------------
     void SRCamera::mouseDownEvent(const glm::ivec2& pos, SRInterface::MouseButton btn)
     {
       glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
       mArcLookAt->doReferenceDown(screenSpace);
-      lastPos = screenSpace;
-      movementVec = glm::vec2(0.0, 0.0);
+      lastMousePos  = screenSpace;
+      mouseMoveVec  = glm::vec2(0.0, 0.0);
+      mouseMoveVecR = glm::vec2(0.0, 0.0);
+      autoRotateVec = glm::vec2(0.0, 0.0);
     }
 
     //----------------------------------------------------------------------------------------------
     void SRCamera::mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton btn)
     {
-      static const float spinThreashold = 0.01f;
+      static const float spinThreashold = 0.001f;
       glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
       switch (mInterface.getMouseMode())
       {
@@ -97,9 +105,9 @@ namespace SCIRun {
           if (btn == SRInterface::MOUSE_MIDDLE && !lockRotation_)
           {
               mArcLookAt->doRotation(screenSpace);
-              movementVec = screenSpace - lastPos;
-              if(glm::length(movementVec) < spinThreashold) movementVec = glm::vec2(0.0, 0.0);
-              lastPos = screenSpace;
+              mouseMoveVec = 0.5f * (screenSpace - lastMousePos) + 0.5f * mouseMoveVec;
+              if(glm::length(mouseMoveVec) < spinThreashold) mouseMoveVec = glm::vec2(0.0, 0.0);
+              lastMousePos = screenSpace;
           }
           break;
 
@@ -107,9 +115,13 @@ namespace SCIRun {
           if (btn == SRInterface::MOUSE_LEFT && !lockRotation_)
           {
             mArcLookAt->doRotation(screenSpace);
-            movementVec = screenSpace - lastPos;
-            if(glm::length(movementVec) < spinThreashold) movementVec = glm::vec2(0.0, 0.0);
-            lastPos = screenSpace;
+            mouseMoveVec = 0.2f * (screenSpace - lastMousePos) + 0.8f * mouseMoveVec;
+            mouseMoveVecR = 0.8f * (screenSpace - lastMousePos) + 0.2f * mouseMoveVec;
+            if(glm::length(mouseMoveVecR) < glm::length(mouseMoveVec)/2.0f)
+              autoRotateVec = glm::vec2(0.0, 0.0);
+            else
+              autoRotateVec = mouseMoveVec;
+            lastMousePos = screenSpace;
           }
           if (btn == SRInterface::MOUSE_RIGHT && !lockPanning_)   mArcLookAt->doPan(screenSpace);
           break;
@@ -158,7 +170,7 @@ namespace SCIRun {
     {
       //we could divide by 2.0 for tightest bound but here we divide by 1.0 to accomidate
       //for the clipping plane visualization
-      mRadius = mSceneBBox.diagonal().length();;
+      mRadius = mSceneBBox.diagonal().length();
 
       if(mRadius > 0.0)
       {
@@ -176,7 +188,10 @@ namespace SCIRun {
         mZNear = getDefaultZNear();
       }
 
-      setAsPerspective();
+      if(mPerspective)
+        setAsPerspective();
+      else
+        setAsOrthographic(mRadius*0.5, mRadius*0.5*getAspect());
     }
 
     //----------------------------------------------------------------------------------------------
@@ -191,8 +206,8 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRCamera::tryAutoRotate()
     {
-      mArcLookAt->doReferenceDown(lastPos);
-      mArcLookAt->doRotation(lastPos + movementVec);
+      mArcLookAt->doReferenceDown(lastMousePos);
+      mArcLookAt->doRotation(lastMousePos + autoRotateVec);
       setClippingPlanes();
     }
 
