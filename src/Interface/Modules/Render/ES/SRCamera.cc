@@ -95,7 +95,7 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRCamera::mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton btn)
     {
-      static const float avFac = 0.3f; //should be less than 0.5 low values = less likely to spin
+      static const float avFac = 0.2f;
       glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
       switch (mInterface.getMouseMode())
       {

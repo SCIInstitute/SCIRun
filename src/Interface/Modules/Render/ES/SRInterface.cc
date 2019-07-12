@@ -565,7 +565,6 @@ namespace SCIRun {
       updateWorldLight();
 
       mCore.execute(0, 50);
-      std::cout << toString("");
 
       GLuint value;
       GLfloat depth;
