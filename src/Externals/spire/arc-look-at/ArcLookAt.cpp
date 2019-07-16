@@ -142,4 +142,7 @@ void ArcLookAt::setView(const glm::vec3& view, const glm::vec3& up)
   mCamLookAt = mReferenceLookAt;
 }
 
+glm::quat ArcLookAt::getRotation() const {return mArcBall->getQuat();}
+void ArcLookAt::setRotation(const glm::quat q) {mArcBall->setQuat(q);}
+
 } // namespace spire

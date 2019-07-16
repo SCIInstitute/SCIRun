@@ -83,5 +83,4 @@ glm::mat4 ArcBall::getTransformation() const
   return glm::mat4_cast(mQNow);
 }
 
-
 } // namespace spire

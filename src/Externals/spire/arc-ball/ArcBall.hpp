@@ -57,6 +57,9 @@ public:
   /// from mQNow.
   glm::mat4 getTransformation() const;
 
+  glm::quat getQuat() const {return mQNow;}
+  void setQuat(const glm::quat q) {mQNow = q;}
+
 private:
 
   /// Calculates our position on the ArcBall from 2D mouse position.
@@ -76,7 +79,7 @@ private:
   glm::quat     mQNow;          ///< Current state of the rotation taking into account mouse.
                                 ///< Essentially QDrag * QDown (QDown is a applied first, just
                                 ///< as in matrix multiplication).
-                                
+
 };
 
 } // namespace spire

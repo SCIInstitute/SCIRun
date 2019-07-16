@@ -322,6 +322,12 @@ namespace SCIRun {
     }
 
     //Getters/Setters-------------------------------------------------------------------------------
+    void SRInterface::setCameraDistance(float distance) {mCamera->setDistance(distance);}
+    float SRInterface::getCameraDistance() {return mCamera->getDistance();}
+    void SRInterface::setCameraLookAt(glm::vec3 lookAt) {mCamera->setLookAt(lookAt);}
+    glm::vec3 SRInterface::getCameraLookAt() {return mCamera->getLookAt();}
+    void SRInterface::setCameraRotation(glm::quat roation) {mCamera->setRotation(roation);}
+    glm::quat SRInterface::getCameraRotation() {return mCamera->getRotation();}
     void SRInterface::setAutoRotateSpeed(double speed) { autoRotateSpeed = speed; }
     void SRInterface::setAutoRotateOnDrag(bool value) { doAutoRotateOnDrag = value; }
     void SRInterface::setZoomInverted(bool value) {mCamera->setZoomInverted(value);}

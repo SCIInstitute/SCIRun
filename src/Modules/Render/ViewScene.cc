@@ -117,6 +117,19 @@ void ViewScene::setStateDefaults()
   state->setValue(Light2Inclination, 90);
   state->setValue(Light3Inclination, 90);
   state->setValue(ShowViewer, false);
+  state->setValue(CameraDistance, 3.0);
+  {
+    float lookAt[] = {0.0f, 0.0f, 0.0f};
+    std::string s;
+    for(int i = 0; i < sizeof(lookAt); ++i) s += ((char*)lookAt)[i];
+    state->setValue(CameraLookAt, s);
+  }
+  {
+    float rotation[] = {1.0f, 0.0f, 0.0f, 0.0f};
+    std::string s;
+    for(int i = 0; i < sizeof(rotation); ++i) s += ((char*)rotation)[i];
+    state->setValue(CameraRotation, s);
+  }
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
@@ -338,3 +351,6 @@ const AlgorithmParameterName ViewScene::Light1Inclination("Light1Inclination");
 const AlgorithmParameterName ViewScene::Light2Inclination("Light2Inclination");
 const AlgorithmParameterName ViewScene::Light3Inclination("Light3Inclination");
 const AlgorithmParameterName ViewScene::ShowViewer("ShowViewer");
+const AlgorithmParameterName ViewScene::CameraDistance("CameraDistance");
+const AlgorithmParameterName ViewScene::CameraLookAt("CameraLookAt");
+const AlgorithmParameterName ViewScene::CameraRotation("CameraRotation");

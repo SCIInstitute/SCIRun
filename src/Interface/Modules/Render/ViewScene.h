@@ -39,6 +39,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Interface/Modules/Render/share.h>
+#include <glm/gtc/quaternion.hpp>
 
 //TODO: needs to inherit from ModuleWidget somehow
 class QToolBar;
@@ -225,6 +226,7 @@ namespace SCIRun {
       void addConfigurationButton();
       void addConfigurationDock();
       QColor checkColorSetting(std::string& rgb, QColor defaultColor);
+      void setupCamera();
 
       //---------------- Widgets -------------------------------------------------------------------
       void selectObject(const int x, const int y);

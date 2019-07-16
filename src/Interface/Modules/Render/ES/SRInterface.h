@@ -44,6 +44,7 @@
 #include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Interface/Modules/Render/share.h>
+#include <glm/gtc/quaternion.hpp>
 
 namespace SCIRun {
   namespace Render {
@@ -124,6 +125,12 @@ namespace SCIRun {
       void eventResize(size_t width, size_t height);
       void doAutoView();
       // Sets the selected View of the window
+      void setCameraDistance(float distance);
+      float getCameraDistance();
+      void setCameraLookAt(glm::vec3 lookAt);
+      glm::vec3 getCameraLookAt();
+      void setCameraRotation(glm::quat rotation);
+      glm::quat getCameraRotation();
       void setView(const glm::vec3& view, const glm::vec3& up);
       void setZoomSpeed(int zoomSpeed) {mZoomSpeed = zoomSpeed;}
       void setZoomInverted(bool value);

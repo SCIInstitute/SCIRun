@@ -94,10 +94,15 @@ public:
   void setView(const glm::vec3& view, const glm::vec3& up);
 
   /// Retrieves the camera's distance away from the look at point.
-  glm::float_t getCamDistance() const   {return mCamDistance;}
+  glm::float_t getDistance() const {return mCamDistance;}
+  void setDistance(const glm::float_t f) {mCamDistance = f;}
 
   /// Retrieves the current lookat point.
-  glm::vec3 getLookAt() const   {return mCamLookAt;}
+  glm::vec3 getLookAt() const {return mCamLookAt;}
+  void setLookAt(const glm::vec3 v) {mCamLookAt = v;}
+
+  glm::quat getRotation() const;
+  void setRotation(const glm::quat q);
 
   /// Retrieves the world transformation for the camera (looking down
   /// negative z).

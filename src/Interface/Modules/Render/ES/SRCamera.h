@@ -97,6 +97,15 @@ namespace SCIRun{
       float getAspect() {return static_cast<float>(mInterface.getScreenWidthPixels()) /
                                 static_cast<float>(mInterface.getScreenHeightPixels());}
 
+      float getDistance() {return mArcLookAt->getDistance();}
+      void setDistance(float f) {mArcLookAt->setDistance(f);}
+
+      glm::vec3 getLookAt() {return mArcLookAt->getLookAt();}
+      void setLookAt(glm::vec3 v) {mArcLookAt->setLookAt(v);}
+
+      glm::quat getRotation() {return mArcLookAt->getRotation();}
+      void setRotation(glm::quat q) {mArcLookAt->setRotation(q);}
+
       void setLockZoom(bool lock)     {lockZoom_ = lock;}
       void setLockPanning(bool lock)  {lockPanning_ = lock;}
       void setLockRotation(bool lock) {lockRotation_ = lock;}
