@@ -479,8 +479,8 @@ void ViewSceneDialog::setupScaleBar()
 void ViewSceneDialog::setupCamera()
 {
     auto spire = mSpire.lock();
-    if(!spire)
-      return;
+    if(!spire) return;
+
     float distance = state_->getValue(Modules::Render::ViewScene::CameraDistance).toDouble();
     spire->setCameraDistance(distance);
 
@@ -829,17 +829,13 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
   {
     glm::vec3 v = spire->getCameraLookAt();
     float f[3] = {v.x, v.y, v.z};
-    std::string s;
-    for(int i = 0; i < sizeof(f); ++i) s += ((char*)f)[i];
-    state_->setValue(Modules::Render::ViewScene::CameraLookAt, s);
+    state_->setValue(Modules::Render::ViewScene::CameraLookAt, std::string((char*)f, sizeof(f)));
   }
 
   {
     glm::quat q = spire->getCameraRotation();
     float f[4] = {q.w, q.x, q.y, q.z};
-    std::string s;
-    for(int i = 0; i < sizeof(f); ++i) s += ((char*)f)[i];
-    state_->setValue(Modules::Render::ViewScene::CameraRotation, s);
+    state_->setValue(Modules::Render::ViewScene::CameraRotation, std::string((char*)f, sizeof(f)));
   }
 }
 
@@ -859,8 +855,8 @@ void ViewSceneDialog::wheelEvent(QWheelEvent* event)
   }
 
   auto spire = mSpire.lock();
-  if(!spire)
-    return;
+  if(!spire) return;
+
   state_->setValue(Modules::Render::ViewScene::CameraDistance, (double)spire->getCameraDistance());
 }
 
@@ -920,17 +916,26 @@ void ViewSceneDialog::viewVectorSelected(const QString& name)
   glm::vec3 up, view;
   std::tie(view, up) = axisViewParams[mDownViewBox->currentText()][name];
 
-  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  auto spire = mSpire.lock();
+  if(!spire) return;
 
   spire->setView(view, up);
+  {
+    glm::quat q = spire->getCameraRotation();
+    float f[4] = {q.w, q.x, q.y, q.z};
+    state_->setValue(Modules::Render::ViewScene::CameraRotation, std::string((char*)f, sizeof(f)));
+  }
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::autoViewClicked()
 {
-  auto spireLock = mSpire.lock();
-  spireLock->doAutoView();
+  auto spire = mSpire.lock();
+  if(!spire) return;
+
+  spire->doAutoView();
   updateAllGeometries();
+  state_->setValue(Modules::Render::ViewScene::CameraDistance, (double)spire->getCameraDistance());
 }
 
 //--------------------------------------------------------------------------------------------------
