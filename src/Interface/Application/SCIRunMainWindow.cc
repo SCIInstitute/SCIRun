@@ -90,7 +90,6 @@ SCIRunMainWindow::SCIRunMainWindow()
   dockManager_ = new DockManager(dockSpace_, this);
 
   {
-    //const bool regression = Application::Instance().parameters()->isRegressionMode();
     boost::shared_ptr<TextEditAppender> logger(new TextEditAppender(logTextBrowser_));
     GuiLog::Instance().addCustomSink(logger);
   }
@@ -187,6 +186,20 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionRunMacro3_, SIGNAL(triggered()), this, SLOT(runMacro()));
   connect(actionRunMacro4_, SIGNAL(triggered()), this, SLOT(runMacro()));
   connect(actionRunMacro5_, SIGNAL(triggered()), this, SLOT(runMacro()));
+
+  {
+    QFile importerXML(":/general/Resources/LegacyModuleImporter.xml");
+
+    if (importerXML.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+      QTextStream in(&importerXML);
+      while (!in.atEnd())
+      {
+        QString line = in.readLine();
+        qDebug() << line;
+      }
+    }
+  }
 
   actionQuit_->setShortcut(QKeySequence::Quit);
 
@@ -350,8 +363,6 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupVersionButton();
 
   WidgetStyleMixin::tabStyle(optionsTabWidget_);
-
-  //devConsole_->updateNetworkViewLog("hello");
 }
 
 const QString SCIRunMainWindow::saveFragmentData_("fragmentTree");

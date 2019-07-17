@@ -345,10 +345,11 @@ const std::string &val)
   if (var == "ui_geometry")
     return;
 
+
+#if 0
   std::string moduleName = xmlData_->network.modules[moduleIdMap_[mod_id]].module.module_name_;
   auto& stateXML = xmlData_->network.modules[moduleIdMap_[mod_id]].state;
 
-#if 0
   auto moduleNameMapIter = legacyNetworks_.nameAndValLookup_.find(moduleName);
   if (moduleNameMapIter == legacyNetworks_.nameAndValLookup_.end())
   {

@@ -6,7 +6,7 @@ The MIT License
 Copyright (c) 2015 Scientific Computing and Imaging Institute,
 University of Utah.
 
-License for the specific language governing rights and limitations under
+
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),
 to deal in the Software without restriction, including without limitation
@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 /// @todo Documentation Modules/Visualization/ShowFieldGlyphs.h
 
 #include <Modules/Visualization/ShowFieldGlyphsPortHandler.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun;
 using namespace Modules::Visualization;
@@ -276,6 +277,9 @@ namespace SCIRun{
               case FieldDataType::Tensor:
                 colorMapVal = colorMap.get()->valueToColor(pinputTensor.get());
                 break;
+              default:
+                logCritical("Unknown field data type on primary port.");
+                break;
               }
             break;
           case RenderState::InputPort::SECONDARY_PORT:
@@ -290,6 +294,9 @@ namespace SCIRun{
               case FieldDataType::Tensor:
                 colorMapVal = colorMap.get()->valueToColor(sinputTensor.get());
                 break;
+              default:
+                logCritical("Unknown field data type on secondary port.");
+                break;
               }
             break;
           case RenderState::InputPort::TERTIARY_PORT:
@@ -303,6 +310,9 @@ namespace SCIRun{
                 break;
               case FieldDataType::Tensor:
                 colorMapVal = colorMap.get()->valueToColor(tinputTensor.get());
+                break;
+              default:
+                logCritical("Unknown field data type on tertiary port.");
                 break;
               }
             break;
@@ -383,6 +393,9 @@ namespace SCIRun{
         // Make sure port is given for chosen secondary Vector input
          switch(secondaryVecInput)
           {
+          case RenderState::InputPort::PRIMARY_PORT:
+            logCritical("Invalid port/input combination.");
+            break;
           case RenderState::InputPort::SECONDARY_PORT:
             if(!secondaryFieldGiven)
               {

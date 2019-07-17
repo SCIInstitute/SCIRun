@@ -205,7 +205,6 @@ private:
     std::sort(rel_depth.begin(), rel_depth.end());
 
     // setup index buffers
-    int numPrimitives = pass.front().ibo.data->getBufferSize() / pass.front().ibo.indexSize;
 
     std::vector<char> sorted_buffer(pass.front().ibo.data->getBufferSize());
     char* ibuffer = reinterpret_cast<char*>(pass.front().ibo.data->getBuffer());
