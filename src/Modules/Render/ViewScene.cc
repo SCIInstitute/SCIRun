@@ -127,6 +127,14 @@ void ViewScene::setStateDefaults()
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
 }
 
+void ViewScene::fireTransientStateChangeSignalForGeomData()
+{
+  //this is gross but I dont see any other way to fire the signal associated with geom data
+  auto transient = get_state()->getTransientValue(Parameters::GeomData);
+  auto geoms = transient_value_cast<GeomListPtr>(transient);
+  get_state()->setTransientValue(Parameters::GeomData, geoms, true);
+}
+
 void ViewScene::portRemovedSlotImpl(const PortId& pid)
 {
   //lock for state modification
@@ -137,7 +145,8 @@ void ViewScene::portRemovedSlotImpl(const PortId& pid)
       activeGeoms_.erase(loc);
     updateTransientList();
   }
-  get_state()->fireTransientStateChangeSignal();
+
+  fireTransientStateChangeSignalForGeomData();
 }
 
 void ViewScene::updateTransientList()
@@ -166,7 +175,7 @@ void ViewScene::updateTransientList()
   // about the lifetimes of the buffers we have in GeometryObject. Need to
   // switch to std::shared_ptr on an std::array when in production.
 
-  /// \todo Need to make this data transfer mechanism thread safe!
+  // todo Need to make this data transfer mechanism thread safe!
   // I thought about dynamic casting geometry object to a weak_ptr, but I don't
   // know where it will be destroyed. For now, it will have have stale pointer
   // data lying around in it... yuck.
@@ -206,7 +215,7 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     updateTransientList();
   }
 
-  get_state()->fireTransientStateChangeSignal();
+  fireTransientStateChangeSignalForGeomData();
   asyncUpdates_.fetch_add(1);
 }
 

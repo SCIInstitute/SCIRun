@@ -137,7 +137,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setupCamera();
   setInitialLightValues();
 
-  state->connectStateChanged([this]() { Q_EMIT newGeometryValueForwarder(); });
+  state->connectSpecificStateChanged(Parameters::GeomData,[this](){Q_EMIT newGeometryValueForwarder();});
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(updateAllGeometries()));
 
   std::string filesystemRoot = Application::Instance().executablePath().string();
@@ -934,7 +934,6 @@ void ViewSceneDialog::autoViewClicked()
   if(!spire) return;
 
   spire->doAutoView();
-  updateAllGeometries();
   state_->setValue(Modules::Render::ViewScene::CameraDistance, (double)spire->getCameraDistance());
 }
 

@@ -184,7 +184,7 @@ namespace SCIRun {
         center = mV * center;
 
         mZFar = -center.z + mRadius;
-        mZNear = std::max(mZFar/1000.0f, -center.z - mRadius);
+        mZNear = std::max(mZFar/100.0f, -center.z - mRadius);
       }
       else
       {
