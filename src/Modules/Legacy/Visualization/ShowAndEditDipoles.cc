@@ -212,7 +212,7 @@ void ShowAndEditDipoles::loadData()
   }
 
   bool zeroVector = false;
-  for(int i = 0; i < scale_.size(); i++)
+  for(uint i = 0; i < scale_.size(); i++)
   {
     if(scale_[i] == 0.0)
     {
@@ -226,7 +226,7 @@ void ShowAndEditDipoles::loadData()
      && state->getValue(Sizing).toInt() == SizingType::NORMALIZE_VECTOR_DATA)
   {
     scale_.clear();
-    for(int i = 0; i < pos_.size(); i++)
+    for(uint i = 0; i < pos_.size(); i++)
     {
       scale_[i] = 1.0;
     }
@@ -250,7 +250,7 @@ void ShowAndEditDipoles::loadFromParameters()
   pos_.resize(positions.size());
   direction_.resize(positions.size());
   scale_.resize(positions.size());
-  for(int i = 0; i < positions.size(); i++)
+  for(uint i = 0; i < positions.size(); i++)
   {
     pos_[i] = pointFromString(positions[i].toString());
     direction_[i] = vectorFromString(directions[i].toString());
@@ -265,7 +265,7 @@ void ShowAndEditDipoles::saveToParameters()
   VariableList positions;
   VariableList directions;
   VariableList scales;
-  for(int i = 0; i < pos_.size(); i++)
+  for(uint i = 0; i < pos_.size(); i++)
   {
     positions.push_back(makeVariable("dip_pos", pos_[i].get_string()));
     directions.push_back(makeVariable("dip_dir", direction_[i].get_string()));
@@ -318,9 +318,9 @@ void ShowAndEditDipoles::generateGeomsList()
   geoms_.resize(0);
 
   // Rewrite all existing geom
-  for(int d = 0; d < pointWidgets_.size(); d++)
+  for(uint d = 0; d < pointWidgets_.size(); d++)
   {
-    for(int w = 0; w < pointWidgets_[d]->size(); w++)
+    for(uint w = 0; w < pointWidgets_[d]->size(); w++)
       geoms_.push_back((*pointWidgets_[d])[w]);
   }
   if(state->getValue(ShowLines).toBool())
@@ -357,7 +357,7 @@ void ShowAndEditDipoles::processWidgetFeedback(const ModuleFeedback& var)
         }
 
         // Remove parantheses
-        for(int i = 0; i < matches.size(); i++)
+        for(uint i = 0; i < matches.size(); i++)
         {
           matches[i] = matches[i].substr(1, matches[i].length()-2);
         }
@@ -386,7 +386,7 @@ void ShowAndEditDipoles::calculatePointMove(Point& oldPos, Point& newPos)
   if(state->getValue(MoveDipolesTogether).toBool())
   {
     Vector dist = newPos - oldPos;
-    for(int i = 0; i < pos_.size(); i++)
+    for(uint i = 0; i < pos_.size(); i++)
     {
       pos_[i] += dist;
     }
@@ -494,7 +494,7 @@ void ShowAndEditDipoles::ReceiveInputScales()
     int index = node.index();
     vf->get_value(v, index);
     scale_.push_back(v.length());
-    newLargest = std::max(newLargest, abs(v.length()));
+    newLargest = std::max(newLargest, std::abs(v.length()));
   }
   state->setValue(LargestSize, newLargest);
 }
@@ -502,11 +502,11 @@ void ShowAndEditDipoles::ReceiveInputScales()
 void ShowAndEditDipoles::makeScalesPositive()
 {
   // If dipole is scaled below 0, make the scale positive and flip the direction
-  for(int i = 0; i < scale_.size(); i++)
+  for(uint i = 0; i < scale_.size(); i++)
   {
     if(scale_[i] < 0.0)
     {
-      scale_[i] = abs(scale_[i]);
+      scale_[i] = std::abs(scale_[i]);
       direction_[i] = -direction_[i];
     }
   }
@@ -531,7 +531,7 @@ void ShowAndEditDipoles::ReceiveInputField()
     pos_.push_back(p);
     direction_.push_back(v.normal());
     scale_.push_back(v.length());
-    newLargest = std::max(newLargest, abs(v.length()));
+    newLargest = std::max(newLargest, std::abs(v.length()));
   }
   state->setValue(LargestSize, newLargest);
 }
@@ -546,7 +546,7 @@ void ShowAndEditDipoles::GenerateOutputGeom()
   pointWidgets_.resize(pos_.size());
 
   // Create all but last dipole as vector
-  for(int i = 0; i < pos_.size() - 1; i++)
+  for(uint i = 0; i < pos_.size() - 1; i++)
   {
     double scale = scale_[i];
     if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
@@ -581,17 +581,17 @@ void ShowAndEditDipoles::createDipoleWidget(BBox& bbox, Point& pos, Vector dir, 
 
   // Fix degenerate boxes.
   const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
-  if (fabs(bmax.x() - bmin.x()) < 1.0e-6)
+  if (std::abs(bmax.x() - bmin.x()) < 1.0e-6)
   {
     bmin.x(bmin.x() - size_estimate);
     bmax.x(bmax.x() + size_estimate);
   }
-  if (fabs(bmax.y() - bmin.y()) < 1.0e-6)
+  if (std::abs(bmax.y() - bmin.y()) < 1.0e-6)
   {
     bmin.y(bmin.y() - size_estimate);
     bmax.y(bmax.y() + size_estimate);
   }
-  if (fabs(bmax.z() - bmin.z()) < 1.0e-6)
+  if (std::abs(bmax.z() - bmin.z()) < 1.0e-6)
   {
     bmin.z(bmin.z() - size_estimate);
     bmax.z(bmax.z() + size_estimate);
@@ -683,9 +683,9 @@ GeometryHandle ShowAndEditDipoles::addLines()
   renState.set(RenderState::USE_DEFAULT_COLOR, true);
 
   // Create lines between every point
-  for(int a = 0; a < pos_.size(); a++)
+  for(uint a = 0; a < pos_.size(); a++)
   {
-    for(int b = a + 1; b < pos_.size(); b++)
+    for(uint b = a + 1; b < pos_.size(); b++)
     {
       glyphs.addLine(pos_[a], pos_[b], lineCol_, lineCol_);
     }
