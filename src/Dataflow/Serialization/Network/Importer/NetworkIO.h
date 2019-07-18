@@ -45,9 +45,26 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
-  typedef boost::function<Core::Algorithms::AlgorithmParameter::Value(std::string)> ValueConverter;
-  typedef std::map<std::string, std::map<std::string, std::pair<Core::Algorithms::Name, ValueConverter>>> NameAndValLookup;
-  typedef std::map<std::string, ValueConverter> StringToFunctorMap;
+  typedef boost::function<Core::Algorithms::AlgorithmParameter::Value(const std::string&)> ValueConverter;
+  struct NewNameAndValueConverter
+  {
+    Core::Algorithms::Name name;
+    ValueConverter valueConverter;
+  };
+  typedef std::map<std::string, NewNameAndValueConverter> OldStateNameConverterLookup;
+  typedef std::map<std::string, OldStateNameConverterLookup> StateConverterLookupByModule;
+
+  class LegacyNetworkStateConversion
+  {
+  public:
+    LegacyNetworkStateConversion();
+    void readImporterMap(std::istream& file);
+    boost::optional<NewNameAndValueConverter> getStateConverter(const std::string& moduleName, const std::string& oldStateName) const;
+  private:
+    StateConverterLookupByModule nameAndValLookup_;
+    //std::unique_ptr<std::string> v4MergeStateToV5_;  //??
+    //ValueConverter initState, appendState, useState;
+  };
 
   class SCISHARE LegacyNetworkIO
   {
@@ -55,6 +72,8 @@ namespace Networks {
     LegacyNetworkIO(const std::string& dtdPath, const Networks::ModuleFactory& modFactory,
       std::ostringstream& simpleLog);
     NetworkFileHandle load_net(const std::string& legacyNetworkFilename);
+
+    static std::string checkForModuleRename(const std::string& originalName);
   private:
     bool done_writing() const { return done_writing_; }
 
@@ -146,7 +165,6 @@ namespace Networks {
     void gui_pop_subnet_ctx(const std::string& ctx);
 
     void listModuleIdMapping();
-    static std::string checkForModuleRename(const std::string& originalName);
 
     xmlNode* get_module_node(const std::string &id);
     xmlNode* get_connection_node(const std::string &id);
@@ -174,18 +192,8 @@ namespace Networks {
     std::map<std::string, ModuleId> moduleIdMap_;
     std::map<std::string, std::string> connectionIdMap_;
 
-#if 0 // breaks installer
-    //Legacy importer maps
-    struct LegacyImporterMap
-    {
-      LegacyImporterMap();
-      NameAndValLookup read_importer_map(const std::string& file);
-      NameAndValLookup nameAndValLookup_;
-      std::unique_ptr<std::string> v4MergeStateToV5_;  //??
-      ValueConverter initState, appendState, useState;
-    };
-    static LegacyImporterMap legacyNetworks_;
-#endif
+    static LegacyNetworkStateConversion legacyState_;
+
     static const std::map<std::string, std::string> moduleRenameMap_;
   };
 

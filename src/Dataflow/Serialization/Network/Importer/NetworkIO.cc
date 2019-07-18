@@ -29,18 +29,18 @@
 //    Author : Martin Cole
 //    Date   : Mon Feb  6 14:32:15 2006
 
-
-// TODO: change string concatenation to string streams
-
-// Disable concepts compliance detection for problem compiler.
-// See boost/range/concepts.hpp for other problem compilers.
-#if defined __clang__
-#if __clang_major__ == 4 && __clang_minor__ == 2
-
-#define BOOST_RANGE_ENABLE_CONCEPT_ASSERT 0
-
-#endif
-#endif
+//
+// // TODO: change string concatenation to string streams
+//
+// // Disable concepts compliance detection for problem compiler.
+// // See boost/range/concepts.hpp for other problem compilers.
+// #if defined __clang__
+// #if __clang_major__ == 4 && __clang_minor__ == 2
+//
+// #define BOOST_RANGE_ENABLE_CONCEPT_ASSERT 0
+//
+// #endif
+// #endif
 
 #include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
 #include <Dataflow/Network/Network.h>
@@ -81,6 +81,8 @@ modFactory_(modFactory)
   netid_to_modid_.push(id_map_t());
   netid_to_conid_.push(id_map_t());
 }
+
+LegacyNetworkStateConversion LegacyNetworkIO::legacyState_;
 
 std::string
 LegacyNetworkIO::get_mod_id(const std::string& id)
@@ -320,8 +322,7 @@ NetworkIO::gui_call_module_callback(const std::string &id, const std::string &ca
 #endif
 
 void
-LegacyNetworkIO::gui_set_modgui_variable(const std::string &mod_id, const std::string &var,
-const std::string &val)
+LegacyNetworkIO::gui_set_modgui_variable(const std::string &mod_id, const std::string &var, const std::string &val)
 {
   std::string cmmd;
   std::string mod = get_mod_id(mod_id);
@@ -345,26 +346,33 @@ const std::string &val)
   if (var == "ui_geometry")
     return;
 
-
-#if 0
   std::string moduleName = xmlData_->network.modules[moduleIdMap_[mod_id]].module.module_name_;
   auto& stateXML = xmlData_->network.modules[moduleIdMap_[mod_id]].state;
 
-  auto moduleNameMapIter = legacyNetworks_.nameAndValLookup_.find(moduleName);
-  if (moduleNameMapIter == legacyNetworks_.nameAndValLookup_.end())
+  auto converterObj = legacyState_.getStateConverter(moduleName, var);
+  if (converterObj)
+  {
+    std::string stripBraces(val.begin() + 1, val.end() - 1);
+    stateXML.setValue(converterObj->name, converterObj->valueConverter(stripBraces));
+  }
+  else
   {
     simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << std::endl;
-    return;
-  }
-  auto varNameIter = moduleNameMapIter->second.find(var);
-  if (varNameIter == moduleNameMapIter->second.end())
-  {
     simpleLog_ << "VAR TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
-    return;
   }
-  std::string stripBraces(val.begin() + 1, val.end() - 1);
-  stateXML.setValue(varNameIter->second.first, varNameIter->second.second(stripBraces));
-#endif
+  // auto moduleNameMapIter = legacyNetworks_.nameAndValLookup_.find(moduleName);
+  // if (moduleNameMapIter == legacyNetworks_.nameAndValLookup_.end())
+  // {
+  //   simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << std::endl;
+  //   return;
+  // }
+  // auto varNameIter = moduleNameMapIter->second.find(var);
+  // if (varNameIter == moduleNameMapIter->second.end())
+  // {
+  //   simpleLog_ << "VAR TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
+  //   return;
+  // }
+
 }
 
 namespace
@@ -486,11 +494,41 @@ namespace
     if (s == "Transpose") return 0;
     return 3;
   };
+
+  typedef std::map<std::string, ValueConverter> StringToFunctorMap;
+
+  static StringToFunctorMap functorLookup_ =
+  {
+    {"toInt", toInt},
+    {"toDouble", toDouble},
+    {"toPercent", toPercent},
+    {"data_at", data_at},
+    {"element_size", element_size},
+    {"throwAway", throwAway},
+    {"toString", toString},
+    {"negateBool", negateBool},
+    //{"initState", initState},
+    //{"appendState", appendState},
+    //{"useState", useState},
+    {"dataOrNodes", dataOrNodes},
+    {"opStringToInt", opStringToInt},
+    {"capFirstLetter", capFirstLetter},
+    {"shortenMethodForLinearSystem", shortenMethodForLinearSystem},
+    {"createMatrixFormat", createMatrixFormat},
+    {"directionForStreamLines", directionForStreamLines},
+    {"valueForStreamLines", valueForStreamLines},
+    {"methodForStreamLines", methodForStreamLines},
+    {"lengthForShowColorMap", lengthForShowColorMap},
+    {"sideForShowColorMap", sideForShowColorMap},
+    {"conditionsForFEMVoltage", conditionsForFEMVoltage},
+    {"opStringToIntUnary", opStringToIntUnary}
+  };
 }
 
-#if 0
-LegacyNetworkIO::LegacyImporterMap::LegacyImporterMap() : v4MergeStateToV5_(new std::string)
+LegacyNetworkStateConversion::LegacyNetworkStateConversion()
+  //: v4MergeStateToV5_(new std::string)
 {
+#if 0
   initState = [this](const std::string& s)
   {
     v4MergeStateToV5_ = std::unique_ptr<std::string>(new std::string(s));
@@ -509,59 +547,45 @@ LegacyNetworkIO::LegacyImporterMap::LegacyImporterMap() : v4MergeStateToV5_(new 
       return std::string("singledestination");
     return std::string("closestdata");
   };
-
+#endif
   //TODO: move to app resources
-  nameAndValLookup_ = read_importer_map("../../src/Resources/LegacyModuleImporter.xml");
+  //nameAndValLookup_ = read_importer_map("../../src/Resources/LegacyModuleImporter.xml");
 }
 
-NameAndValLookup
-LegacyNetworkIO::LegacyImporterMap::read_importer_map(const std::string& file)
+void LegacyNetworkStateConversion::readImporterMap(std::istream& file)
 {
-  static StringToFunctorMap functorLookup_ =
-  {
-    {"toInt", toInt},
-    {"toDouble", toDouble},
-    {"toPercent", toPercent},
-    {"data_at", data_at},
-    {"element_size", element_size},
-    {"throwAway", throwAway},
-    {"toString", toString},
-    {"negateBool", negateBool},
-    {"initState", initState},
-    {"appendState", appendState},
-    {"useState", useState},
-    {"dataOrNodes", dataOrNodes},
-    {"opStringToInt", opStringToInt},
-    {"capFirstLetter", capFirstLetter},
-    {"shortenMethodForLinearSystem", shortenMethodForLinearSystem},
-    {"createMatrixFormat", createMatrixFormat},
-    {"directionForStreamLines", directionForStreamLines},
-    {"valueForStreamLines", valueForStreamLines},
-    {"methodForStreamLines", methodForStreamLines},
-    {"lengthForShowColorMap", lengthForShowColorMap},
-    {"sideForShowColorMap", sideForShowColorMap},
-    {"conditionsForFEMVoltage", conditionsForFEMVoltage},
-    {"opStringToIntUnary", opStringToIntUnary}
-  };
   using boost::property_tree::ptree;
   using boost::property_tree::read_xml;
   ptree tree;
   read_xml(file, tree);
-  NameAndValLookup temp;
-  for(const ptree::value_type &module : tree.get_child("modules"))
+  for (const auto& module : tree.get_child("modules"))
   {
-    std::string moduleName = checkForModuleRename(module.second.get<std::string>("<xmlattr>.name"));
-    for(const ptree::value_type& keys : module.second.get_child(""))
+    auto moduleName = LegacyNetworkIO::checkForModuleRename(module.second.get<std::string>("<xmlattr>.name"));
+    for (const auto& keys : module.second.get_child(""))
     {
-      if(keys.first == "<xmlattr>")
+      if (keys.first == "<xmlattr>")
         continue;
-      temp[moduleName][keys.second.get<std::string>("from")] = std::make_pair(Name(keys.second.get<std::string>("to")),functorLookup_[keys.second.get<std::string>("type")]);
+      nameAndValLookup_[moduleName][keys.second.get<std::string>("from")] =
+        { Name(keys.second.get<std::string>("to")),
+          functorLookup_[keys.second.get<std::string>("type")]};
     }
   }
-  return temp;
 }
-#endif
 
+boost::optional<NewNameAndValueConverter> LegacyNetworkStateConversion::getStateConverter(const std::string& moduleName, const std::string& oldStateName) const
+{
+  auto moduleNameMapIter = nameAndValLookup_.find(moduleName);
+  if (moduleNameMapIter == nameAndValLookup_.end())
+  {
+    return {};
+  }
+  auto varNameIter = moduleNameMapIter->second.find(oldStateName);
+  if (varNameIter == moduleNameMapIter->second.end())
+  {
+    return {};
+  }
+  return varNameIter->second;
+}
 
 #if 0
 void
