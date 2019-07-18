@@ -489,6 +489,23 @@ namespace
     return 3;
   };
 
+  static std::string colorState;
+  ValueConverter startColorR = [](const std::string& s)
+  {
+    colorState = "Color(" + s;
+    return colorState;
+  };
+  ValueConverter appendColorG = [](const std::string& s)
+  {
+    colorState += "," + s;
+    return colorState;
+  };
+  ValueConverter appendColorB = [](const std::string& s)
+  {
+    colorState += "," + s + ")";
+    return colorState;
+  };
+
   typedef std::map<std::string, ValueConverter> StringToFunctorMap;
 
   static StringToFunctorMap functorLookup_ =
@@ -501,9 +518,10 @@ namespace
     {"throwAway", throwAway},
     {"toString", toString},
     {"negateBool", negateBool},
-    //{"initState", initState},
-    //{"appendState", appendState},
-    //{"useState", useState},
+    {"colorR", startColorR}, //TODO: initState},
+    {"colorG", appendColorG}, //TODO: appendState},
+    {"colorB", appendColorB}, //TODO: appendState},
+    {"useState", throwAway}, //TODO: useState},
     {"dataOrNodes", dataOrNodes},
     {"opStringToInt", opStringToInt},
     {"capFirstLetter", capFirstLetter},
@@ -520,7 +538,6 @@ namespace
 }
 
 LegacyNetworkStateConversion::LegacyNetworkStateConversion()
-  //: v4MergeStateToV5_(new std::string)
 {
 #if 0
   initState = [this](const std::string& s)
@@ -558,9 +575,9 @@ void LegacyNetworkStateConversion::readImporterMap(std::istream& file)
       if (keys.first == "<xmlattr>")
         continue;
 
-      std::cout << moduleName << "," << keys.second.get<std::string>("from")
-        << ": " << keys.second.get<std::string>("to") << " -- " <<
-        keys.second.get<std::string>("type") << std::endl;
+      // std::cout << moduleName << "," << keys.second.get<std::string>("from")
+      //   << ": " << keys.second.get<std::string>("to") << " -- " <<
+      //   keys.second.get<std::string>("type") << std::endl;
 
       nameAndValLookup_[moduleName][keys.second.get<std::string>("from")] =
         { Name(keys.second.get<std::string>("to")),

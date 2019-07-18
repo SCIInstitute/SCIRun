@@ -64,6 +64,7 @@
 #include <Core/Thread/Parallel.h>
 #include <Core/Application/Version.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/Importer/NetworkIO.h>
 #include <Core/Utils/CurrentFileName.h>
 
 #ifdef BUILD_WITH_PYTHON
@@ -192,12 +193,15 @@ SCIRunMainWindow::SCIRunMainWindow()
 
     if (importerXML.open(QIODevice::ReadOnly | QIODevice::Text))
     {
+      std::ostringstream ostr;
       QTextStream in(&importerXML);
       while (!in.atEnd())
       {
         QString line = in.readLine();
-        qDebug() << line;
+        ostr << line.toStdString();
       }
+      std::istringstream file(ostr.str());
+      LegacyNetworkIO::initializeStateConverter(file);
     }
   }
 

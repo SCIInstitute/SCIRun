@@ -334,8 +334,8 @@ TEST_F(LegacyNetworkFileImporterTests, CanLoadNetworkFileWithLotsOfState)
   EXPECT_EQ(1.0, mod->second.state.getValue(Name("FixedMax")).toDouble());
   ++mod;
   EXPECT_EQ("ShowField:0", mod->first);
-  EXPECT_EQ("0.5,0.25,0.35",mod->second.state.getValue(Name("DefaultMeshColor")).toString());
-  EXPECT_EQ("1.0,0.5,1.0",mod->second.state.getValue(Name("DefaultTextColor")).toString());
+  EXPECT_EQ("Color(0.5,0.5,0.5)",mod->second.state.getValue(Name("DefaultMeshColor")).toString());
+  EXPECT_EQ("Color(1.0,1.0,1.0)",mod->second.state.getValue(Name("DefaultTextColor")).toString());
   ++mod;
   EXPECT_EQ("ViewScene:0", mod->first);
 }

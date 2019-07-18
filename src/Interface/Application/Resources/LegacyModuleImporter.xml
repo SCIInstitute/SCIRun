@@ -32,37 +32,37 @@
     </key>
   </module>
   <module name="ReadField">
-    <key> 
+    <key>
       <type>toString</type>
       <from>filename</from>
       <to>Filename</to>
     </key>
-    <key> 
+    <key>
       <type>toString</type>
       <from>from-env</from>
       <to>ScriptEnvironmentVariable</to>
     </key>
-    <key> 
+    <key>
       <type>toString</type>
       <from>types</from>
       <to>types</to>
     </key>
-    <key> 
+    <key>
       <type>toString</type>
       <from>filetype</from>
       <to>FileTypeName</to>
     </key>
-    <key> 
+    <key>
       <type>toString</type>
       <from>filename_base</from>
       <to>filename_base</to>
     </key>
-    <key> 
+    <key>
       <type>toInt</type>
       <from>number_in_series</from>
       <to>number_in_series</to>
     </key>
-    <key> 
+    <key>
       <type>toInt</type>
       <from>delay</from>
       <to>delay</to>
@@ -94,7 +94,7 @@
       <from>max</from>
       <to>FixedMax</to>
     </key>
-  </module>  
+  </module>
   <module name="GetDomainBoundary">
     <key>
       <type>toInt</type>
@@ -141,7 +141,7 @@
       <from>disconnect</from>
       <to>DisconnectBoundaries</to>
     </key>
-  </module>  
+  </module>
   <module name="CalculateFieldData">
     <key>
       <type>toString</type>
@@ -313,32 +313,32 @@
       <to>CylinderResolution</to>
     </key>
     <key>
-      <type>initState</type>
+      <type>colorR</type>
       <from>text_color-r</from>
       <to>DefaultTextColor</to>
     </key>
     <key>
-      <type>appendState</type>
+      <type>colorG</type>
       <from>text_color-g</from>
       <to>DefaultTextColor</to>
     </key>
     <key>
-      <type>appendState</type>
+      <type>colorB</type>
       <from>text_color-b</from>
       <to>DefaultTextColor</to>
     </key>
     <key>
-      <type>initState</type>
+      <type>colorR</type>
       <from>def_color-r</from>
       <to>DefaultMeshColor</to>
     </key>
     <key>
-      <type>appendState</type>
+      <type>colorG</type>
       <from>def_color-g</from>
       <to>DefaultMeshColor</to>
     </key>
     <key>
-      <type>appendState</type>
+      <type>colorB</type>
       <from>def_color-b</from>
       <to>DefaultMeshColor</to>
     </key>
@@ -420,17 +420,17 @@
       <to>TensorsResolution</to>
     </key>
     <key>
-      <type>initState</type>
+      <type>colorR</type>
       <from>def_color-r</from>
       <to>DefaultMeshColor</to>
     </key>
     <key>
-      <type>appendState</type>
+      <type>colorG</type>
       <from>def_color-g</from>
       <to>DefaultMeshColor</to>
     </key>
     <key>
-      <type>appendState</type>
+      <type>colorB</type>
       <from>def_color-b</from>
       <to>DefaultMeshColor</to>
     </key>
