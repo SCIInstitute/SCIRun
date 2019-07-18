@@ -84,6 +84,11 @@ modFactory_(modFactory)
 
 LegacyNetworkStateConversion LegacyNetworkIO::legacyState_;
 
+void LegacyNetworkIO::initializeStateConverter(std::istream& file)
+{
+  legacyState_.readImporterMap(file);
+}
+
 std::string
 LegacyNetworkIO::get_mod_id(const std::string& id)
 {
@@ -353,6 +358,8 @@ LegacyNetworkIO::gui_set_modgui_variable(const std::string &mod_id, const std::s
   if (converterObj)
   {
     std::string stripBraces(val.begin() + 1, val.end() - 1);
+    std::cout << "!!! Attempting state conversion function: name{" << converterObj->name << "} "
+      << (converterObj->valueConverter ? "<func>" : "null func") << std::endl;
     stateXML.setValue(converterObj->name, converterObj->valueConverter(stripBraces));
   }
   else
@@ -360,19 +367,6 @@ LegacyNetworkIO::gui_set_modgui_variable(const std::string &mod_id, const std::s
     simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << std::endl;
     simpleLog_ << "VAR TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
   }
-  // auto moduleNameMapIter = legacyNetworks_.nameAndValLookup_.find(moduleName);
-  // if (moduleNameMapIter == legacyNetworks_.nameAndValLookup_.end())
-  // {
-  //   simpleLog_ << "STATE CONVERSION TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << std::endl;
-  //   return;
-  // }
-  // auto varNameIter = moduleNameMapIter->second.find(var);
-  // if (varNameIter == moduleNameMapIter->second.end())
-  // {
-  //   simpleLog_ << "VAR TO IMPLEMENT: module " << moduleName << ", mod_id: " << moduleIdMap_[mod_id] << " var: " << var << " val: " << val << std::endl;
-  //   return;
-  // }
-
 }
 
 namespace
@@ -548,8 +542,6 @@ LegacyNetworkStateConversion::LegacyNetworkStateConversion()
     return std::string("closestdata");
   };
 #endif
-  //TODO: move to app resources
-  //nameAndValLookup_ = read_importer_map("../../src/Resources/LegacyModuleImporter.xml");
 }
 
 void LegacyNetworkStateConversion::readImporterMap(std::istream& file)
@@ -565,6 +557,11 @@ void LegacyNetworkStateConversion::readImporterMap(std::istream& file)
     {
       if (keys.first == "<xmlattr>")
         continue;
+
+      std::cout << moduleName << "," << keys.second.get<std::string>("from")
+        << ": " << keys.second.get<std::string>("to") << " -- " <<
+        keys.second.get<std::string>("type") << std::endl;
+
       nameAndValLookup_[moduleName][keys.second.get<std::string>("from")] =
         { Name(keys.second.get<std::string>("to")),
           functorLookup_[keys.second.get<std::string>("type")]};

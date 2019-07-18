@@ -74,6 +74,7 @@ namespace Networks {
     NetworkFileHandle load_net(const std::string& legacyNetworkFilename);
 
     static std::string checkForModuleRename(const std::string& originalName);
+    static void initializeStateConverter(std::istream& file);
   private:
     bool done_writing() const { return done_writing_; }
 
