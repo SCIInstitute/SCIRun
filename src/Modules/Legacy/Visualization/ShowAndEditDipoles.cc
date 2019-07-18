@@ -212,7 +212,7 @@ void ShowAndEditDipoles::loadData()
   }
 
   bool zeroVector = false;
-  for(uint i = 0; i < scale_.size(); i++)
+  for(size_t i = 0; i < scale_.size(); i++)
   {
     if(scale_[i] == 0.0)
     {
@@ -226,7 +226,7 @@ void ShowAndEditDipoles::loadData()
      && state->getValue(Sizing).toInt() == SizingType::NORMALIZE_VECTOR_DATA)
   {
     scale_.clear();
-    for(uint i = 0; i < pos_.size(); i++)
+    for(size_t i = 0; i < pos_.size(); i++)
     {
       scale_[i] = 1.0;
     }
@@ -250,7 +250,7 @@ void ShowAndEditDipoles::loadFromParameters()
   pos_.resize(positions.size());
   direction_.resize(positions.size());
   scale_.resize(positions.size());
-  for(uint i = 0; i < positions.size(); i++)
+  for(size_t i = 0; i < positions.size(); i++)
   {
     pos_[i] = pointFromString(positions[i].toString());
     direction_[i] = vectorFromString(directions[i].toString());
@@ -265,7 +265,7 @@ void ShowAndEditDipoles::saveToParameters()
   VariableList positions;
   VariableList directions;
   VariableList scales;
-  for(uint i = 0; i < pos_.size(); i++)
+  for(size_t i = 0; i < pos_.size(); i++)
   {
     positions.push_back(makeVariable("dip_pos", pos_[i].get_string()));
     directions.push_back(makeVariable("dip_dir", direction_[i].get_string()));
@@ -299,7 +299,7 @@ void ShowAndEditDipoles::toggleLastVectorShown()
   auto bbox = fh->vmesh()->get_bounding_box();
   auto state = get_state();
 
-  int last_id = pos_.size() - 1;
+  size_t last_id = pos_.size() - 1;
   // Destroy last dipole
   pointWidgets_[last_id]->erase(pointWidgets_[last_id]->begin(), pointWidgets_[last_id]->end());
 
@@ -318,9 +318,9 @@ void ShowAndEditDipoles::generateGeomsList()
   geoms_.resize(0);
 
   // Rewrite all existing geom
-  for(uint d = 0; d < pointWidgets_.size(); d++)
+  for(size_t d = 0; d < pointWidgets_.size(); d++)
   {
-    for(uint w = 0; w < pointWidgets_[d]->size(); w++)
+    for(size_t w = 0; w < pointWidgets_[d]->size(); w++)
       geoms_.push_back((*pointWidgets_[d])[w]);
   }
   if(state->getValue(ShowLines).toBool())
@@ -334,8 +334,8 @@ void ShowAndEditDipoles::processWidgetFeedback(const ModuleFeedback& var)
     auto vsf = dynamic_cast<const ViewSceneFeedback&>(var);
     if (vsf.matchesWithModuleId(id()))
     {
-      int widgetType = -1;
-      int widgetID = -1;
+      size_t widgetType;
+      size_t widgetID;
       try
       {
       // Check if correct module
@@ -357,20 +357,20 @@ void ShowAndEditDipoles::processWidgetFeedback(const ModuleFeedback& var)
         }
 
         // Remove parantheses
-        for(uint i = 0; i < matches.size(); i++)
+        for(size_t i = 0; i < matches.size(); i++)
         {
           matches[i] = matches[i].substr(1, matches[i].length()-2);
         }
-        // Cast to int
-        widgetType = boost::lexical_cast<int>(matches[0]);
-        widgetID = boost::lexical_cast<int>(matches[1]);
+        // Cast to size_t
+        widgetType = boost::lexical_cast<size_t>(matches[0]);
+        widgetID = boost::lexical_cast<size_t>(matches[1]);
+        adjustPositionFromTransform(vsf.transform, widgetType, widgetID);
       }
       catch (...)
       {
         logWarning("Failure parsing widget id");
       }
-        adjustPositionFromTransform(vsf.transform, widgetType, widgetID);
-        enqueueExecuteAgain(false);
+      enqueueExecuteAgain(false);
     }
   }
   catch (std::bad_cast&)
@@ -386,7 +386,7 @@ void ShowAndEditDipoles::calculatePointMove(Point& oldPos, Point& newPos)
   if(state->getValue(MoveDipolesTogether).toBool())
   {
     Vector dist = newPos - oldPos;
-    for(uint i = 0; i < pos_.size(); i++)
+    for(size_t i = 0; i < pos_.size(); i++)
     {
       pos_[i] += dist;
     }
@@ -395,7 +395,7 @@ void ShowAndEditDipoles::calculatePointMove(Point& oldPos, Point& newPos)
     oldPos = newPos;
 }
 
-void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformMatrix, int type, int id)
+void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformMatrix, size_t type, size_t id)
 {
   auto state = get_state();
   DenseMatrix center(4, 1);
@@ -461,7 +461,7 @@ void ShowAndEditDipoles::ReceiveInputPoints()
   pos_.clear();
   for(const auto& node : fh->mesh()->getFacade()->nodes())
   {
-    int index = node.index();
+    size_t index = node.index();
     vf->get_center(p, index);
     pos_.push_back(p);
   }
@@ -475,7 +475,7 @@ void ShowAndEditDipoles::ReceiveInputDirections()
   direction_.clear();
   for(const auto& node : fh->mesh()->getFacade()->nodes())
   {
-    int index = node.index();
+    size_t index = node.index();
     vf->get_value(v, index);
     direction_.push_back(v.normal());
   }
@@ -491,7 +491,7 @@ void ShowAndEditDipoles::ReceiveInputScales()
   double newLargest = 0.0;
   for(const auto& node : fh->mesh()->getFacade()->nodes())
   {
-    int index = node.index();
+    size_t index = node.index();
     vf->get_value(v, index);
     scale_.push_back(v.length());
     newLargest = std::max(newLargest, std::abs(v.length()));
@@ -502,7 +502,7 @@ void ShowAndEditDipoles::ReceiveInputScales()
 void ShowAndEditDipoles::makeScalesPositive()
 {
   // If dipole is scaled below 0, make the scale positive and flip the direction
-  for(uint i = 0; i < scale_.size(); i++)
+  for(size_t i = 0; i < scale_.size(); i++)
   {
     if(scale_[i] < 0.0)
     {
@@ -525,7 +525,7 @@ void ShowAndEditDipoles::ReceiveInputField()
   double newLargest = 0.0;
   for(const auto& node : fh->mesh()->getFacade()->nodes())
   {
-    int index = node.index();
+    size_t index = node.index();
     vf->get_center(p, index);
     vf->get_value(v, index);
     pos_.push_back(p);
@@ -546,7 +546,7 @@ void ShowAndEditDipoles::GenerateOutputGeom()
   pointWidgets_.resize(pos_.size());
 
   // Create all but last dipole as vector
-  for(uint i = 0; i < pos_.size() - 1; i++)
+  for(size_t i = 0; i < pos_.size() - 1; i++)
   {
     double scale = scale_[i];
     if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
@@ -556,7 +556,7 @@ void ShowAndEditDipoles::GenerateOutputGeom()
   }
 
   // Create last dipoles separately to check if shown as vector
-  int last_id = pos_.size() - 1;
+  size_t last_id = pos_.size() - 1;
 
   double scale = scale_[last_id];
   if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
@@ -567,14 +567,14 @@ void ShowAndEditDipoles::GenerateOutputGeom()
   lastVectorShown_ = state->getValue(ShowLastAsVector).toBool();
 }
 
-std::string ShowAndEditDipoles::widgetName(int i, int id, int iter)
+std::string ShowAndEditDipoles::widgetName(size_t i, size_t id, size_t iter)
 {
   return "SAED(" + std::to_string(i) + ")" +
     "(" + std::to_string(id) + ")" +
     "(" + std::to_string(iter) + ")";
 }
 
-void ShowAndEditDipoles::createDipoleWidget(BBox& bbox, Point& pos, Vector dir, double scale, int widget_num, bool show_as_vector)
+void ShowAndEditDipoles::createDipoleWidget(BBox& bbox, Point& pos, Vector dir, double scale, size_t widget_num, bool show_as_vector)
 {
   Point bmin = pos;
   Point bmax = pos + dir * scale;
@@ -683,9 +683,9 @@ GeometryHandle ShowAndEditDipoles::addLines()
   renState.set(RenderState::USE_DEFAULT_COLOR, true);
 
   // Create lines between every point
-  for(uint a = 0; a < pos_.size(); a++)
+  for(size_t a = 0; a < pos_.size(); a++)
   {
-    for(uint b = a + 1; b < pos_.size(); b++)
+    for(size_t b = a + 1; b < pos_.size(); b++)
     {
       glyphs.addLine(pos_[a], pos_[b], lineCol_, lineCol_);
     }
@@ -703,7 +703,7 @@ FieldHandle ShowAndEditDipoles::makePointCloud()
   auto field = ofield->vfield();
   auto state = get_state();
 
-  for (int i = 0; i < pointWidgets_.size(); i++)
+  for (size_t i = 0; i < pointWidgets_.size(); i++)
   {
     VMesh::Node::index_type pcindex = mesh->add_point(pos_[i]);
     field->resize_fdata();
