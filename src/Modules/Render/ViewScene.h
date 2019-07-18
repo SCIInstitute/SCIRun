@@ -150,6 +150,7 @@ namespace Render {
   private:
     void processViewSceneObjectFeedback();
     void processMeshComponentSelection();
+    void fireTransientStateChangeSignalForGeomData();
     void updateTransientList();
     void syncMeshComponentFlags(const std::string& connectedModuleId, Dataflow::Networks::ModuleStateHandle state);
     ActiveGeometryMap activeGeoms_;

@@ -81,7 +81,6 @@ GLWidget::~GLWidget()
   // Need to inform module that the context is being destroyed.
   if (mGraphics != nullptr)
   {
-    //std::cout << "Terminating spire." << std::endl;
     mGraphics.reset();
   }
 }
@@ -182,7 +181,7 @@ void GLWidget::updateRenderer()
 
 #if 0
 #ifdef QT5_BUILD
-//idea--needs QWindow wrapper
+  //idea--needs QWindow wrapper
   if (!isExposed())
     return;
 #endif
