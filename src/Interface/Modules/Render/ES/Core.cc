@@ -113,12 +113,14 @@ std::string ESCore::toString(std::string prefix) const
 bool ESCore::hasGeomPromise() const
 {
   for(auto& comp : mComponents)
+  {
     if(comp.second->getNumComponents() > 0)
     {
       if(mComponentIDNameMap.find(comp.first) != mComponentIDNameMap.end() &&
          mComponentIDNameMap.at(comp.first) == "ren:GeomPromise")
         return true;
     }
+  }
   return false;
 }
 
