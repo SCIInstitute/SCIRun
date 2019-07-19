@@ -110,7 +110,7 @@ std::string ESCore::toString(std::string prefix) const
   return output;
 }
 
-bool ESCore::hasGeomPromise()
+bool ESCore::hasGeomPromise() const
 {
   for(auto& comp : mComponents)
     if(comp.second->getNumComponents() > 0)
