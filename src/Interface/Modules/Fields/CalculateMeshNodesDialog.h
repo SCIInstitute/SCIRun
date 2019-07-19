@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,44 +25,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FIELDS_CREATEFIELDDATA_H__
-#define MODULES_LEGACY_FIELDS_CREATEFIELDDATA_H__
+#ifndef INTERFACE_MODULES_CALCULATEMESHNODES_H
+#define INTERFACE_MODULES_CALCULATEMESHNODES_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Fields/share.h>
+#include "Interface/Modules/Fields/ui_CalculateMeshNodes.h"
+#include <Interface/Modules/Base/HasParserHelpDialog.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
+namespace Gui {
 
-      /// @class CreateFieldData
-      /// @brief This module assigns a value to each element or node of the mesh
-      /// based on a given function, that is based on the location of nodes and
-      /// elements and properties of the elements.
+class SCISHARE CalculateMeshNodesDialog : public ModuleDialogWithParserHelp,
+  public Ui::CalculateMeshNodes
+{
+	Q_OBJECT
 
-      class SCISHARE CreateFieldData : public Dataflow::Networks::Module,
-        public Has3InputPorts<FieldPortTag, StringPortTag, DynamicPortTag<MatrixPortTag>>,
-        public Has1OutputPort<FieldPortTag>
-      {
-      public:
-        CreateFieldData();
+public:
+  CalculateMeshNodesDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = nullptr);
+  private:
+    class CodeEditor* codeEdit_;
+};
 
-        virtual void execute() override;
-        virtual void setStateDefaults() override;
-        HAS_DYNAMIC_PORTS
-
-        INPUT_PORT(0, InputField, Field);
-        INPUT_PORT(1, Function, String);
-        INPUT_PORT_DYNAMIC(2, DataArray, Matrix);
-        OUTPUT_PORT(0, OutputField, Field);
-
-        MODULE_TRAITS_AND_INFO(ModuleHasUI)
-
-        static const Core::Algorithms::AlgorithmParameterName BasisString;
-      };
-
-    }
-  }
+}
 }
 
 #endif

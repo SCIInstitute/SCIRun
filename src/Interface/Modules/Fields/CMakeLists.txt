@@ -79,6 +79,7 @@ SET(Interface_Modules_Fields_FORMS
   CalculateMeshCenterDialog.ui
   CreateImageDialog.ui
   GetCentroidsFromMeshDialog.ui
+  CalculateMeshNodes.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -133,6 +134,7 @@ SET(Interface_Modules_Fields_HEADERS
   CalculateMeshCenterDialog.h
   CreateImageDialog.h
   GetCentroidsFromMeshDialog.h
+  CalculateMeshNodesDialog.h
 )
 
 SET(Interface_Modules_Fields_SOURCES
@@ -186,6 +188,7 @@ SET(Interface_Modules_Fields_SOURCES
   CalculateMeshCenterDialog.cc
   CreateImageDialog.cc
   GetCentroidsFromMeshDialog.cc
+  CalculateMeshNodesDialog.cc
 )
 
 IF(WITH_TETGEN)
