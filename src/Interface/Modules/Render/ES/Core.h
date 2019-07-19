@@ -49,7 +49,7 @@ public:
   void runGCOnNextExecution(){runGC = true;}
 
 private:
-  bool hasGeomPromise();
+  bool hasGeomPromise() const;
 
   int64_t         mCoreSequence;    ///< Sequence number (frame) since start.
   spire::GLState  mDefaultGLState;  ///< Default OpenGL state.
