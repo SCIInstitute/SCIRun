@@ -522,7 +522,7 @@ void GeometryBuilder::renderFacesLinear(
 
     //TODO fix so the withNormals tp be woth lighting is called correctly, and the meshes are fixed.
     if (withNormals)
-    {
+   {
       bool useFaceNormals = state.get(RenderState::USE_FACE_NORMALS) && mesh->has_normals();
       if (useFaceNormals)
       {

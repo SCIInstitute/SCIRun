@@ -152,6 +152,7 @@ SCISHARE bool operator==(const Vector& v1, const Vector& v2);
 SCISHARE bool operator!=(const Vector& v1, const Vector& v2);
 SCISHARE std::ostream& operator<<(std::ostream& os, const Vector& p);
 SCISHARE std::istream& operator>>(std::istream& os, Vector& p);
+SCISHARE Vector vectorFromString(const std::string& str);
 
 inline Vector::Vector()
 {

@@ -183,6 +183,7 @@
       <string>Learn About New Features</string>
      </property>
      <addaction name="helpActionSnippets_"/>
+     <addaction name="helpActionModuleFuzzySearch_"/>
      <addaction name="helpActionMetadataLayer_"/>
      <addaction name="helpActionTagLayer_"/>
      <addaction name="helpActionPythonInterpreter_"/>
@@ -1052,6 +1053,11 @@
    </property>
    <property name="text">
     <string>*Import 4.x network file...</string>
+   </property>
+  </action>
+  <action name="helpActionModuleFuzzySearch_">
+   <property name="text">
+    <string>Module Fuzzy Search</string>
    </property>
   </action>
   <action name="helpActionSnippets_">
