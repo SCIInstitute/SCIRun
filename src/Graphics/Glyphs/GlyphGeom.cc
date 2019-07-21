@@ -357,8 +357,6 @@ void GlyphGeom::generateCone(const Point& p1, const Point& p2, double radius,
   double strip_angle = 2. * M_PI / resolution;
   size_t offset = static_cast<size_t>(numVBOElements_);
 
-  uint32_t offset = static_cast<uint32_t>(numVBOElements_);
-
   Vector p;
 
   // Add points, normals, and colors
@@ -433,8 +431,6 @@ void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
   double length = (p2-p1).length();
   double strip_angle = 2. * M_PI / resolution;
   size_t offset = static_cast<size_t>(numVBOElements_);
-
-  uint32_t offset = static_cast<uint32_t>(numVBOElements_);
 
   Vector p;
   // Add points, normals, and colors
