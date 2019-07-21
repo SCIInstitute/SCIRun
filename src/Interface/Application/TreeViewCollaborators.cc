@@ -29,6 +29,7 @@
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <boost/algorithm/string.hpp>
 #include <iostream>
+#include <cctype>
 
 using namespace SCIRun::Gui;
 

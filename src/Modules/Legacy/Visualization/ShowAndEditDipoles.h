@@ -93,7 +93,7 @@ namespace SCIRun {
         double diskRadius_;
         double diskDistFromCenter_;
         double diskWidth_;
-        int widgetIter_;
+        size_t widgetIter_;
         double resolution_;
         double previousScaleFactor_;
         double zeroVectorRescale_;
@@ -115,11 +115,11 @@ namespace SCIRun {
         void GenerateOutputGeom();
         void makeScalesPositive();
         void resetData();
-        std::string widgetName(int i, int id, int iter);
-        void createDipoleWidget(Core::Geometry::BBox& bbox, Core::Geometry::Point& pos, Core::Geometry::Vector dir, double scale, int widget_num, bool show_as_vector);
+        std::string widgetName(size_t i, size_t id, size_t iter);
+        void createDipoleWidget(Core::Geometry::BBox& bbox, Core::Geometry::Point& pos, Core::Geometry::Vector dir, double scale, size_t widget_num, bool show_as_vector);
         void calculatePointMove(Core::Geometry::Point& oldPos, Core::Geometry::Point& newPos);
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
-        void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, int index, int id);
+        void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, size_t index, size_t id);
         Graphics::Datatypes::GeometryHandle addLines();
         FieldHandle makePointCloud();
         void loadFromParameters();

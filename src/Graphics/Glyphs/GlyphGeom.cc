@@ -212,6 +212,7 @@ void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double
 
   generateCylinder(p1, mid, radius / 6.0, radius / 6.0, resolution, color1, color2);
   generateCone(mid, p2, radius, resolution, false, color1, color2);
+  //generateCylinder(mid, p2, radius, 0.0, resolution, color1, color2);
 }
 
 void GlyphGeom::addSphere(const Point& p, double radius, int resolution, const ColorRGB& color)
@@ -302,7 +303,7 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
   Vector p;
   for (int strips = 0; strips <= num_strips; strips++)
   {
-    uint32_t offset = static_cast<uint32_t>(numVBOElements_);
+    size_t offset = static_cast<size_t>(numVBOElements_);
     p = std::cos(2. * M_PI * strips / num_strips) * u +
       std::sin(2. * M_PI * strips / num_strips) * crx;
     p.normalize();
@@ -340,7 +341,7 @@ void GlyphGeom::generateCone(const Point& p1, const Point& p2, double radius,
   Vector u = Cross(crx, n).normal();
 
   // Center of base
-  uint32_t base_index = numVBOElements_;
+  size_t base_index = numVBOElements_;
   int points_per_loop = 2;
   if(renderBase)
   {
@@ -354,10 +355,12 @@ void GlyphGeom::generateCone(const Point& p1, const Point& p2, double radius,
   // Precalculate
   double length = (p2-p1).length();
   double strip_angle = 2. * M_PI / resolution;
+  size_t offset = static_cast<size_t>(numVBOElements_);
 
   uint32_t offset = static_cast<uint32_t>(numVBOElements_);
 
   Vector p;
+
   // Add points, normals, and colors
   for (int strips = 0; strips <= resolution; strips++)
   {
@@ -382,8 +385,6 @@ void GlyphGeom::generateCone(const Point& p1, const Point& p2, double radius,
       numVBOElements_++;
     }
   }
-
-  // numVBOElements_ += resolution * points_per_loop;
 
   // Add indices
   for (int strips = offset; strips < resolution * points_per_loop + offset; strips += points_per_loop)
@@ -431,6 +432,7 @@ void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
   // Precalculate
   double length = (p2-p1).length();
   double strip_angle = 2. * M_PI / resolution;
+  size_t offset = static_cast<size_t>(numVBOElements_);
 
   uint32_t offset = static_cast<uint32_t>(numVBOElements_);
 
@@ -456,12 +458,18 @@ void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
     points_.push_back(radius2 * p + Vector(p2));
     colors_.push_back(color2);
     normals_.push_back(-n);
+<<<<<<< HEAD
 
     numVBOElements_ += 4;
   }
 
   // numVBOElements_ += resolution * points_per_loop;
 
+=======
+    numVBOElements_ += 4;
+  }
+
+>>>>>>> upstream/master
   // Add indices
   for (int strips = offset; strips < resolution * points_per_loop + offset; strips += points_per_loop)
   {
