@@ -458,18 +458,10 @@ void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
     points_.push_back(radius2 * p + Vector(p2));
     colors_.push_back(color2);
     normals_.push_back(-n);
-<<<<<<< HEAD
 
     numVBOElements_ += 4;
   }
 
-  // numVBOElements_ += resolution * points_per_loop;
-
-=======
-    numVBOElements_ += 4;
-  }
-
->>>>>>> upstream/master
   // Add indices
   for (int strips = offset; strips < resolution * points_per_loop + offset; strips += points_per_loop)
   {
