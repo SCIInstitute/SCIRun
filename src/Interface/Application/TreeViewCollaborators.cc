@@ -27,6 +27,9 @@
 */
 
 #include <Interface/Application/TreeViewCollaborators.h>
+#include <boost/algorithm/string.hpp>
+#include <iostream>
+#include <cctype>
 
 using namespace SCIRun::Gui;
 
@@ -37,7 +40,7 @@ void GrabNameAndSetFlags::operator()(QTreeWidgetItem* item)
     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 }
 
-HideItemsNotMatchingString::HideItemsNotMatchingString(bool useRegex, const QString& pattern) : match_("*" + pattern + "*", Qt::CaseInsensitive, QRegExp::Wildcard), start_(pattern), useRegex_(useRegex) {}
+HideItemsNotMatchingString::HideItemsNotMatchingString(SearchType searchType, const QString& pattern) : match_("*" + pattern + "*", Qt::CaseInsensitive, QRegExp::Wildcard), start_(pattern), searchType_(searchType) {}
 
 void HideItemsNotMatchingString::operator()(QTreeWidgetItem* item)
 {
@@ -78,9 +81,81 @@ void HideItemsNotMatchingString::operator()(QTreeWidgetItem* item)
 bool HideItemsNotMatchingString::shouldHide(QTreeWidgetItem* item)
 {
   auto text = item->text(0);
-  if (useRegex_)
+  if (searchType_ == SearchType::STARTS_WITH)
+    return !text.startsWith(start_, Qt::CaseInsensitive);
+  else if(searchType_ == SearchType::WILDCARDS
+          || boost::contains(start_, "*"))
     return !match_.exactMatch(text);
-  return !text.startsWith(start_, Qt::CaseInsensitive);
+  else
+    return !fuzzySearchAllPatterns(text, start_);
+}
+
+bool HideItemsNotMatchingString::fuzzySearchAllPatterns(const QString& text, const QString& pattern)
+{
+  std::string pattern_str = removeAllSpecialCharacters(pattern.toStdString());
+  std::vector<std::string> pattern_split;
+  boost::split(pattern_split,
+               pattern_str,
+               [](char c){return c == ' ';});
+
+  // Remove empty vectors
+  for(int i = pattern_split.size()-1; i >= 0; i--)
+  {
+    if(pattern_split[i].empty())
+      pattern_split.erase(pattern_split.begin() + i);
+  }
+
+  // Every word in the pattern must match
+  for(std::string str : pattern_split)
+  {
+    if(!fuzzySearch(text.toStdString(), str))
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool HideItemsNotMatchingString::fuzzySearch(const std::string& text, const std::string& pattern)
+{
+  int patternIndex = 0;
+
+  for(int t = 0; t < text.length(); t++)
+  {
+    bool isUpperChar = pattern[patternIndex] < 97;
+
+    // Counts as a match if letter found. Only case sensitive if search char is upper case
+    if((isUpperChar && (text[t] == pattern[patternIndex]))
+       || (!isUpperChar && (std::tolower(text[t]) == std::tolower(pattern[patternIndex]))))
+    {
+      ++patternIndex;
+    }
+
+    // Matched if pattern reaches end of string
+    if(patternIndex >= pattern.length())
+    {
+      return true;
+    }
+  }
+
+  // Return false if all the letters did not match
+  return false;
+}
+
+std::string HideItemsNotMatchingString::removeAllSpecialCharacters(const std::string& str)
+{
+  std::string newStr;
+  for(char qc : str)
+  {
+    if(qc == ' ' // Check if space
+       || (qc >= 65 && qc <= 90) // Check if upper case char
+       || (qc >= 97 && qc <= 122)) // Check if lower case char
+    {
+      newStr.push_back(qc);
+    }
+  }
+  return newStr;
 }
 
 void ShowAll::operator()(QTreeWidgetItem* item)

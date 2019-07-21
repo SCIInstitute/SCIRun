@@ -89,6 +89,8 @@ TARGET_LINK_LIBRARIES(Modules_Legacy_Visualization
   #Core_Persistent
   #Core_Thread
   Core_Util_Legacy
+  Graphics_Widgets
+  Graphics_Datatypes
   #${SCI_TEEM_LIBRARY}
 )
 

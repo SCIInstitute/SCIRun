@@ -121,7 +121,7 @@ namespace SCIRun {
           Point& p2,
           double radius,
           double ratio,
-          double resolution,
+          int resolution,
           ColorRGB& node_color,
           bool use_lines);
 
@@ -154,7 +154,7 @@ void GlyphBuilder::addGlyph(
   Point& p2,
   double radius,
   double ratio,
-  double resolution,
+  int resolution,
   ColorRGB& node_color,
   bool use_lines)
 {
@@ -168,10 +168,10 @@ void GlyphBuilder::addGlyph(
       break;
     case RenderState::GlyphType::COMET_GLYPH:
       glyphs.addSphere(p2, radius, resolution, node_color);
-      glyphs.addCone(p2, p1, radius, resolution, node_color, node_color);
+      glyphs.addCone(p2, p1, radius, resolution, false, node_color, node_color);
       break;
     case RenderState::GlyphType::CONE_GLYPH:
-      glyphs.addCone(p1, p2, radius, resolution, node_color, node_color);
+      glyphs.addCone(p1, p2, radius, resolution, false, node_color, node_color);
       break;
     case RenderState::GlyphType::ARROW_GLYPH:
       glyphs.addArrow(p1, p2, radius, ratio, resolution, node_color, node_color);
@@ -446,7 +446,7 @@ void GlyphBuilder::renderVectors(
   ColorScheme colorScheme = portHandler.getColorScheme();
   double scale = state->getValue(ShowFieldGlyphs::VectorsScale).toDouble();
   double radiusWidthScale = state->getValue(ShowFieldGlyphs::SecondaryVectorParameterScale).toDouble();
-  double resolution = state->getValue(ShowFieldGlyphs::VectorsResolution).toInt();
+  int resolution = state->getValue(ShowFieldGlyphs::VectorsResolution).toInt();
   double arrowHeadRatio = state->getValue(ShowFieldGlyphs::ArrowHeadRatio).toDouble();
 
   bool normalizeGlyphs = state->getValue(ShowFieldGlyphs::NormalizeVectors).toBool();
@@ -565,7 +565,7 @@ void GlyphBuilder::renderScalars(
   // Gets user set data
   ColorScheme colorScheme = portHandler.getColorScheme();
   double scale = state->getValue(ShowFieldGlyphs::ScalarsScale).toDouble();
-  double resolution = state->getValue(ShowFieldGlyphs::ScalarsResolution).toInt();
+  int resolution = state->getValue(ShowFieldGlyphs::ScalarsResolution).toInt();
   if (scale < 0) scale = 1.0;
   if (resolution < 3) resolution = 5;
 
@@ -663,7 +663,7 @@ void GlyphBuilder::renderTensors(
     // Gets user set data
     ColorScheme colorScheme = portHandler.getColorScheme();
     double scale = state->getValue(ShowFieldGlyphs::TensorsScale).toDouble();
-    double resolution = state->getValue(ShowFieldGlyphs::TensorsResolution).toInt();
+    int resolution = state->getValue(ShowFieldGlyphs::TensorsResolution).toInt();
     bool normalizeGlyphs = state->getValue(ShowFieldGlyphs::NormalizeTensors).toBool();
     bool renderGlyphsBelowThreshold = state->getValue(ShowFieldGlyphs::RenderTensorsBelowThreshold).toBool();
     float threshold = state->getValue(ShowFieldGlyphs::TensorsThreshold).toDouble();
