@@ -235,7 +235,11 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
 
         auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this,
           widgetName(i),
-          scale, "Color(0.5,0.5,0.5)", location, bbox));
+          scale,
+          "Color(0.5,0.5,0.5)",
+          location,
+          bbox,
+          10));
         impl_->pointWidgets_.push_back(seed);
       }
     }
@@ -250,7 +254,11 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
     {
       auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this,
         widgetName(counter++) + std::string(moveCount_, ' '),
-        scale, "Color(0.5,0.5,0.5)", oldWidget->position(), bbox));
+        scale,
+        "Color(0.5,0.5,0.5)",
+        oldWidget->position(),
+        bbox,
+        10));
       newWidgets.push_back(seed);
     }
     impl_->pointWidgets_ = newWidgets;

@@ -205,16 +205,17 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
   geom.passes().push_back(pass);
 }
 
-void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double ratio, double resolution,
+void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double ratio, int resolution,
   const ColorRGB& color1, const ColorRGB& color2)
 {
   Point mid((p1.x() * ratio + p2.x() * (1 - ratio)), (p1.y() * ratio + p2.y() * (1 - ratio)), (p1.z() * ratio + p2.z() * (1 - ratio)));
 
   generateCylinder(p1, mid, radius / 6.0, radius / 6.0, resolution, color1, color2);
-  generateCylinder(mid, p2, radius, 0.0, resolution, color1, color2);
+  generateCone(mid, p2, radius, resolution, false, color1, color2);
+// generateCylinder(mid, p2, radius, 0.0, resolution, color1, color2);
 }
 
-void GlyphGeom::addSphere(const Point& p, double radius, double resolution, const ColorRGB& color)
+void GlyphGeom::addSphere(const Point& p, double radius, int resolution, const ColorRGB& color)
 {
   generateSphere(p, radius, resolution, color);
 }
@@ -224,25 +225,31 @@ void GlyphGeom::addBox(const Point& center, Tensor& t, double scale)
     generateBox(center, t, scale);
 }
 
-void GlyphGeom::addEllipsoid(const Point& p, Tensor& t, Vector& scaled_eigenvals, double resolution, const ColorRGB& color)
+void GlyphGeom::addEllipsoid(const Point& p, Tensor& t, Vector& scaled_eigenvals, int resolution, const ColorRGB& color)
 {
   generateEllipsoid(p, t, scaled_eigenvals, resolution, color);
 }
 
-void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, double resolution,
+void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, int resolution,
                             const ColorRGB& color1, const ColorRGB& color2)
 {
   generateCylinder(p1, p2, radius, radius, resolution, color1, color2);
 }
 
-void GlyphGeom::addCone(const Point& p1, const Point& p2, double radius, double resolution,
-  const ColorRGB& color1, const ColorRGB& color2)
+void GlyphGeom::addDisk(const Point& p1, const Point& p2, double radius, int resolution,
+                            const ColorRGB& color1, const ColorRGB& color2)
 {
-  generateCylinder(p1, p2, radius, 0.0, resolution, color1, color2);
+  generateDisk(p1, p2, radius, radius, resolution, color1, color2);
+}
+
+void GlyphGeom::addCone(const Point& p1, const Point& p2, double radius, int resolution,
+                        bool renderBase, const ColorRGB& color1, const ColorRGB& color2)
+{
+  generateCone(p1, p2, radius, resolution, renderBase, color1, color2);
 }
 
 void GlyphGeom::addClippingPlane(const Point& p1, const Point& p2,
-  const Point& p3, const Point& p4, double radius, double resolution,
+  const Point& p3, const Point& p4, double radius, int resolution,
   const ColorRGB& color1, const ColorRGB& color2)
 {
   addSphere(p1, radius, resolution, color1);
@@ -281,7 +288,8 @@ void GlyphGeom::addPoint(const Point& p, const ColorRGB& color)
 }
 
 void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius1,
-  double radius2, double resolution, const ColorRGB& color1, const ColorRGB& color2)
+                                 double radius2, int resolution, const ColorRGB& color1,
+                                 const ColorRGB& color2)
 {
   double num_strips = resolution;
   if (num_strips < 0) num_strips = 20.0;
@@ -293,21 +301,23 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
   Vector crx = n.getArbitraryTangent();
   Vector u = Cross(crx, n).normal();
   Vector p;
-  for (double strips = 0.; strips <= num_strips; strips += 1.)
+  for (int strips = 0; strips <= num_strips; strips++)
   {
-    uint32_t offset = static_cast<uint32_t>(numVBOElements_);
+    size_t offset = static_cast<size_t>(numVBOElements_);
     p = std::cos(2. * M_PI * strips / num_strips) * u +
       std::sin(2. * M_PI * strips / num_strips) * crx;
     p.normalize();
+    Vector normals(((p2-p1).length() * p + (r2-r1)*n).normal());
+
     points_.push_back(r1 * p + Vector(p1));
     colors_.push_back(color1);
+    normals_.push_back(normals);
     numVBOElements_++;
     points_.push_back(r2 * p + Vector(p2));
     colors_.push_back(color2);
+    normals_.push_back(normals);
     numVBOElements_++;
-    Vector normals(((p2-p1).length() * p + (r2-r1)*n).normal());
-    normals_.push_back(normals);
-    normals_.push_back(normals);
+
     indices_.push_back(0 + offset);
     indices_.push_back(1 + offset);
     indices_.push_back(2 + offset);
@@ -318,7 +328,155 @@ void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius
   for (int jj = 0; jj < 6; jj++) indices_.pop_back();
 }
 
-void GlyphGeom::generateSphere(const Point& center, double radius, double resolution, const ColorRGB& color)
+void GlyphGeom::generateCone(const Point& p1, const Point& p2, double radius,
+                             int resolution, bool renderBase,
+                             const ColorRGB& color1, const ColorRGB& color2)
+{
+  resolution = resolution < 0 ? 20 : resolution;
+  radius = radius < 0 ? 1 : radius;
+
+  //generate triangles for the cylinders.
+  Vector n((p1 - p2).normal());
+  Vector crx = n.getArbitraryTangent();
+  Vector u = Cross(crx, n).normal();
+
+  // Center of base
+  size_t base_index = numVBOElements_;
+  int points_per_loop = 2;
+  if(renderBase)
+  {
+    points_.push_back(Vector(p1));
+    colors_.push_back(color1);
+    normals_.push_back(n);
+    numVBOElements_++;
+    points_per_loop = 3;
+  }
+
+  // Precalculate
+  double length = (p2-p1).length();
+  double strip_angle = 2. * M_PI / resolution;
+  size_t offset = static_cast<size_t>(numVBOElements_);
+
+  Vector p;
+
+  // Add points, normals, and colors
+  for (int strips = 0; strips <= resolution; strips++)
+  {
+    p = std::cos(strip_angle * strips) * u +
+      std::sin(strip_angle * strips) * crx;
+    p.normalize();
+    Vector normals((length * p - radius * n).normal());
+
+    points_.push_back(radius * p + Vector(p1));
+    colors_.push_back(color1);
+    normals_.push_back(normals);
+    points_.push_back(Vector(p2));
+    colors_.push_back(color2);
+    normals_.push_back(normals);
+    numVBOElements_ += 2;
+
+    if(renderBase)
+    {
+      points_.push_back(radius * p + Vector(p1));
+      colors_.push_back(color1);
+      normals_.push_back(n);
+      numVBOElements_++;
+    }
+  }
+
+  // Add indices
+  for (int strips = offset; strips < resolution * points_per_loop + offset; strips += points_per_loop)
+  {
+    indices_.push_back(strips);
+    indices_.push_back(strips + 1);
+    indices_.push_back(strips + points_per_loop);
+    if(renderBase)
+    {
+      indices_.push_back(base_index);
+      indices_.push_back(strips + 2);
+      indices_.push_back(strips + points_per_loop + 2);
+    }
+  }
+}
+
+void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
+                             double radius2, int resolution, const ColorRGB& color1,
+                             const ColorRGB& color2)
+{
+  resolution = resolution < 0 ? 20 : resolution;
+  radius1 = radius1 < 0 ? 1.0 : radius1;
+  radius2 = radius2 < 0 ? 1.0 : radius2;
+
+  //generate triangles for the cylinders.
+  Vector n((p1 - p2).normal());
+  Vector crx = n.getArbitraryTangent();
+  Vector u = Cross(crx, n).normal();
+
+  int points_per_loop = 4;
+
+  // Add center points so flat sides can be drawn
+  points_.push_back(Vector(p1));
+  points_.push_back(Vector(p2));
+  int p1_index = numVBOElements_;
+  colors_.push_back(color1);
+  normals_.push_back(n);
+  numVBOElements_++;
+  int p2_index = numVBOElements_;
+  colors_.push_back(color2);
+  normals_.push_back(-n);
+  numVBOElements_++;
+
+  // Precalculate
+  double length = (p2-p1).length();
+  double strip_angle = 2. * M_PI / resolution;
+  size_t offset = static_cast<size_t>(numVBOElements_);
+
+  Vector p;
+  // Add points, normals, and colors
+  for (int strips = 0; strips <= resolution; strips++)
+  {
+    p = std::cos(strip_angle * strips) * u +
+      std::sin(strip_angle * strips) * crx;
+    p.normalize();
+    Vector normals((length * p + (radius2-radius1)*n).normal());
+    points_.push_back(radius1 * p + Vector(p1));
+    colors_.push_back(color1);
+    normals_.push_back(normals);
+    points_.push_back(radius2 * p + Vector(p2));
+    colors_.push_back(color2);
+    normals_.push_back(normals);
+
+    // Points for base
+    points_.push_back(radius1 * p + Vector(p1));
+    colors_.push_back(color1);
+    normals_.push_back(n);
+    points_.push_back(radius2 * p + Vector(p2));
+    colors_.push_back(color2);
+    normals_.push_back(-n);
+    numVBOElements_ += 4;
+  }
+
+  // Add indices
+  for (int strips = offset; strips < resolution * points_per_loop + offset; strips += points_per_loop)
+  {
+    indices_.push_back(strips);
+    indices_.push_back(strips + 1);
+    indices_.push_back(strips + points_per_loop);
+    indices_.push_back(strips + points_per_loop);
+    indices_.push_back(strips + 1);
+    indices_.push_back(strips + points_per_loop + 1);
+
+    // Render base
+    indices_.push_back(p1_index);
+    indices_.push_back(strips + 2);
+    indices_.push_back(strips + points_per_loop + 2);
+    indices_.push_back(strips + 3);
+    indices_.push_back(p2_index);
+    indices_.push_back(strips + points_per_loop + 3);
+  }
+}
+
+void GlyphGeom::generateSphere(const Point& center, double radius, int resolution, const ColorRGB& color)
 {
   double num_strips = resolution;
   if (num_strips < 0) num_strips = 20.0;
@@ -498,7 +656,7 @@ void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale)
      **/
 }
 
-void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, Vector &scaled_eigenvals, double resolution, const ColorRGB& color)
+void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, Vector &scaled_eigenvals, int resolution, const ColorRGB& color)
 {
     Vector eig_vec1, eig_vec2, eig_vec3;
     t.get_eigenvectors(eig_vec1, eig_vec2, eig_vec3);

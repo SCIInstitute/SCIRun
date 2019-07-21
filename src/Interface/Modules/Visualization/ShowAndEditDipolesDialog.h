@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,27 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Graphics/Datatypes/GeometryImpl.h>
+#ifndef INTERFACE_MODULES_SHOW_AND_EDIT_DIPOLES_H
+#define INTERFACE_MODULES_SHOW_AND_EDIT_DIPOLES_H
 
-using namespace SCIRun::Core;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Graphics::Datatypes;
+#include "Interface/Modules/Visualization/ui_ShowAndEditDipoles.h"
+#include <boost/shared_ptr.hpp>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Visualization/share.h>
 
-GeometryObjectSpire::GeometryObjectSpire(const GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable) :
-GeometryObject(idGenerator, tag),
-isClippable_(isClippable)
+namespace SCIRun {
+namespace Gui {
+
+class SCISHARE ShowAndEditDipolesDialog : public ModuleDialogGeneric,
+  public Ui::ShowAndEditDipoles
 {
+	Q_OBJECT
+
+public:
+  ShowAndEditDipolesDialog(const std::string& name,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+private:
+  Dataflow::Networks::ModuleStateHandle state_;
+  private Q_SLOTS:
+    void clickResetButton();
+};
 
 }
-
-CompositeGeometryObject::~CompositeGeometryObject()
-{
 }
 
-void CompositeGeometryObject::addToList(GeometryBaseHandle handle, GeomList& list)
-{
-  if (handle.get() == this)
-  {
-    list.insert(geoms_.begin(), geoms_.end());
-  }
-}
+#endif // INTERFACE_MODULES_SHOW_AND_EDIT_DIPOLES_H
+
