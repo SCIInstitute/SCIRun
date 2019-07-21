@@ -118,10 +118,8 @@ void ViewScene::setStateDefaults()
   state->setValue(Light3Inclination, 90);
   state->setValue(ShowViewer, false);
   state->setValue(CameraDistance, 3.0);
-  float lookAt[] = {0.0f, 0.0f, 0.0f};
-  state->setValue(CameraLookAt, std::string((char*)lookAt, sizeof(lookAt)));
-  float rotation[] = {1.0f, 0.0f, 0.0f, 0.0f};
-  state->setValue(CameraRotation, std::string((char*)rotation, sizeof(rotation)));
+  state->setValue(CameraLookAt, makeAnonymousVariableList(0.0, 0.0, 0.0));
+  state->setValue(CameraRotation, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });

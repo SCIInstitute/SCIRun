@@ -38,6 +38,7 @@
 #include <QTimer>
 #include <QtDebug>
 #include <Core/Application/Application.h>
+#include <ctime>
 
 namespace SCIRun {
 namespace Gui {
