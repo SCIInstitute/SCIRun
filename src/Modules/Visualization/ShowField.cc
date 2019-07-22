@@ -347,9 +347,9 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
   const GeometryIDGenerator& gid, Interruptible* interruptible)
 {
   // Function for reporting progress. TODO: use this variable somewhere!
-  //auto progressFunc = getUpdaterFunc();
+  // auto progressFunc = getUpdaterFunc();
 
-  /// \todo Determine a better way of handling all of the various object state_.
+  // todo Determine a better way of handling all of the various object state_.
   bool showNodes = state_->getValue(ShowField::ShowNodes).toBool();
   bool showEdges = state_->getValue(ShowField::ShowEdges).toBool();
   bool showFaces = state_->getValue(ShowField::ShowFaces).toBool();
@@ -363,16 +363,16 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
 
   auto geom(boost::make_shared<GeometryObjectSpire>(gid, idname, true));
 
-  /// \todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
+  // todo Implement inputs_changes_ ? See old scirun ShowField.cc:293.
 
-  /// \todo Mind material properties (simple since we already have implemented
-  ///       most of this).
+  // todo Mind material properties (simple since we already have implemented
+  //      most of this).
 
-  /// \todo Handle assignment of color map. The color map will need to be
-  ///       available to us as we are building the meshes. Due to the way
-  ///       SCIRun expects meshes to be built.
+  // todo Handle assignment of color map. The color map will need to be
+  //      available to us as we are building the meshes. Due to the way
+  //      SCIRun expects meshes to be built.
 
-  /// \todo render_state_ DIRTY flag? See old scirun ShowField.cc:446.
+  // todo render_state_ DIRTY flag? See old scirun ShowField.cc:446.
 
   const int dim = field->vmesh()->dimensionality();
   if (showEdges && dim < 1) { showEdges = false; }
@@ -380,7 +380,6 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
 
   if (showNodes)
   {
-    // Construct node geometry.
     renderNodes(field, colorMap, interruptible, getNodeRenderState(colorMap), geom, geom->uniqueID());
   }
 
@@ -482,7 +481,7 @@ void GeometryBuilder::renderFacesLinear(
   // Construct VBO and IBO that will be used to render the faces. Once again,
   // IBOs are not strictly needed. But, we may be able to optimize this code
   // somewhat.
-  /// \todo Switch to unique_ptrs and move semantics.
+  // todo Switch to unique_ptrs and move semantics.
   std::shared_ptr<spire::VarBuffer> iboBufferSPtr(
     new spire::VarBuffer(vboSize));
   std::shared_ptr<spire::VarBuffer> vboBufferSPtr(
