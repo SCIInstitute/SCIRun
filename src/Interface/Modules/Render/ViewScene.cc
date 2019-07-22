@@ -1087,6 +1087,7 @@ void ViewSceneDialog::autoRotateRight()
 {
   auto spire = mSpire.lock();
   spire->setAutoRotateVector(glm::vec2(1.0, 0.0));
+  pushCameraState();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1094,6 +1095,7 @@ void ViewSceneDialog::autoRotateLeft()
 {
   auto spire = mSpire.lock();
   spire->setAutoRotateVector(glm::vec2(-1.0, 0.0));
+  pushCameraState();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1101,6 +1103,7 @@ void ViewSceneDialog::autoRotateUp()
 {
   auto spire = mSpire.lock();
   spire->setAutoRotateVector(glm::vec2(0.0, 1.0));
+  pushCameraState();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1108,6 +1111,7 @@ void ViewSceneDialog::autoRotateDown()
 {
   auto spire = mSpire.lock();
   spire->setAutoRotateVector(glm::vec2(0.0, -1.0));
+  pushCameraState();
 }
 
 
