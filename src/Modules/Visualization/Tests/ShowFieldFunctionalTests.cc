@@ -51,30 +51,37 @@ using ::testing::NotNull;
 using ::testing::TestWithParam;
 using ::testing::Bool;
 
-//Parameters:
-// <0> bool : ShowNodes
-// <1> bool : ShowEdges
-enum ShowFieldParams
-{
-  SHOW_NODES,
-  SHOW_EDGES,
-  SHOW_FACES,
-  NODE_TRANSPARENCY,
-  EDGE_TRANSPARENCY,
-  FACE_TRANSPARENCY,
-  TRANSPARENCY_VALUE,
-  NODES_AS_SPHERES,
-  EDGES_AS_CYLINDERS
-};
+
+
+
+
+
+//--------------------------------------------------------------------------------------------------
+//---------------- Brute Force ---------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
 
 class ShowFieldBruteForceTest : public ParameterizedModuleTest<std::tuple<bool, bool, bool, bool, bool, bool,
   double, int, int>>
 {
 protected:
+  enum ShowFieldParams
+  {
+    SHOW_NODES,
+    SHOW_EDGES,
+    SHOW_FACES,
+    NODE_TRANSPARENCY,
+    EDGE_TRANSPARENCY,
+    FACE_TRANSPARENCY,
+    TRANSPARENCY_VALUE,
+    NODES_AS_SPHERES,
+    EDGES_AS_CYLINDERS
+  };
+
   static void TestFixtureSetUp()
   {
     LogSettings::Instance().setVerbose(false);
   }
+
   virtual void SetUp()
   {
     LogSettings::Instance().setVerbose(false);
@@ -151,4 +158,283 @@ INSTANTIATE_TEST_CASE_P(
 
 
 
+
+
+
 //--------------------------------------------------------------------------------------------------
+//---------------- Faces ---------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
+
+class ShowFieldFaceTest : public ParameterizedModuleTest<std::tuple<bool, double, int, bool, bool>>
+{
+protected:
+  enum ShowFieldParams
+  {
+    TRANSPARENCY,
+    TRANSPARENCY_VALUE,
+    COLORING,
+    INVERT_NORMALS,
+    USE_FACE_NORMALS
+  };
+
+  static void TestFixtureSetUp()
+  {
+    LogSettings::Instance().setVerbose(false);
+  }
+
+  virtual void SetUp()
+  {
+    LogSettings::Instance().setVerbose(false);
+
+    if (!showField)
+    {
+      showField = makeModule("ShowField");
+      showField->setStateDefaults();
+
+      auto state = showField->get_state();
+      state->setValue(ShowField::ShowFaces, true);
+      state->setValue(ShowField::ShowEdges, false);
+      state->setValue(ShowField::ShowNodes, false);
+    }
+
+    //data--to loop over
+    if (vectorOfInputData.empty())
+    {
+      vectorOfInputData =
+      {
+        CreateEmptyLatVol(2, 2, 2),
+        CreateEmptyLatVol(3, 4, 5),
+        // trisurf
+        // quadsurf
+        // hexvol
+        // curvemesh
+        // imagemesh
+      };
+    }
+
+    auto params = GetParam();
+    auto state = showField->get_state();
+
+    state->setValue(ShowField::FaceTransparency, std::get<TRANSPARENCY>(params));
+    state->setValue(ShowField::FaceTransparencyValue, std::get<TRANSPARENCY_VALUE>(params));
+    state->setValue(ShowField::FacesColoring, std::get<COLORING>(params));
+    state->setValue(ShowField::FaceInvertNormals, std::get<INVERT_NORMALS>(params));
+    state->setValue(ShowField::UseFaceNormals, std::get<USE_FACE_NORMALS>(params));
+  }
+
+  UseRealModuleStateFactory f;
+  static ModuleHandle showField;
+  static std::vector<FieldHandle> vectorOfInputData;
+};
+
+ModuleHandle ShowFieldFaceTest::showField;
+std::vector<FieldHandle> ShowFieldFaceTest::vectorOfInputData;
+
+TEST_P(ShowFieldFaceTest, FaceGenerationTest)
+{
+  LogSettings::Instance().setVerbose(false);
+
+  for (auto& field : vectorOfInputData)
+  {
+    stubPortNWithThisData(showField, 0, field);
+    showField->execute();
+    auto geom = getDataOnThisOutputPort(showField, 0);
+    ASSERT_TRUE(geom != nullptr);
+  }
+}
+
+INSTANTIATE_TEST_CASE_P(
+  ConstructLatVolGeometry,
+  ShowFieldFaceTest,
+  Combine(Bool(), Values(0.0, 0.25, 0.5, 1.0), Values(0, 1), Bool(), Bool())
+);
+
+
+
+
+
+
+//--------------------------------------------------------------------------------------------------
+//---------------- Edges ---------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
+
+class ShowFieldEdgeTest : public ParameterizedModuleTest<std::tuple<bool, double, int, int, double, int>>
+{
+protected:
+  enum ShowFieldParams
+  {
+    TRANSPARENCY,
+    TRANSPARENCY_VALUE,
+    COLORING,
+    USE_CYLINDERS,
+    CYLINDER_RADIUS,
+    CYLYNDER_RESOLUTION
+  };
+
+  static void TestFixtureSetUp()
+  {
+    LogSettings::Instance().setVerbose(false);
+  }
+
+  virtual void SetUp()
+  {
+    LogSettings::Instance().setVerbose(false);
+
+    if (!showField)
+    {
+      showField = makeModule("ShowField");
+      showField->setStateDefaults();
+
+      auto state = showField->get_state();
+      state->setValue(ShowField::ShowFaces, false);
+      state->setValue(ShowField::ShowEdges, true);
+      state->setValue(ShowField::ShowNodes, false);
+    }
+
+    //data--to loop over
+    if (vectorOfInputData.empty())
+    {
+      vectorOfInputData =
+      {
+        CreateEmptyLatVol(2, 2, 2),
+        CreateEmptyLatVol(3, 4, 5),
+        // trisurf
+        // quadsurf
+        // hexvol
+        // curvemesh
+        // imagemesh
+      };
+    }
+
+    auto params = GetParam();
+    auto state = showField->get_state();
+
+    state->setValue(ShowField::EdgeTransparency, std::get<TRANSPARENCY>(params));
+    state->setValue(ShowField::EdgeTransparencyValue, std::get<TRANSPARENCY_VALUE>(params));
+    state->setValue(ShowField::EdgesColoring, std::get<COLORING>(params));
+    state->setValue(ShowField::EdgesAsCylinders, std::get<USE_CYLINDERS>(params));
+    state->setValue(ShowField::CylinderRadius, std::get<CYLINDER_RADIUS>(params));
+    state->setValue(ShowField::CylinderResolution, std::get<CYLYNDER_RESOLUTION>(params));
+  }
+
+  UseRealModuleStateFactory f;
+  static ModuleHandle showField;
+  static std::vector<FieldHandle> vectorOfInputData;
+};
+
+ModuleHandle ShowFieldEdgeTest::showField;
+std::vector<FieldHandle> ShowFieldEdgeTest::vectorOfInputData;
+
+TEST_P(ShowFieldEdgeTest, EdgeGenerationTest)
+{
+  LogSettings::Instance().setVerbose(false);
+
+  for (auto& field : vectorOfInputData)
+  {
+    stubPortNWithThisData(showField, 0, field);
+    showField->execute();
+    auto geom = getDataOnThisOutputPort(showField, 0);
+    ASSERT_TRUE(geom != nullptr);
+  }
+}
+
+INSTANTIATE_TEST_CASE_P(
+  ConstructLatVolGeometry,
+  ShowFieldEdgeTest,
+  Combine(Bool(), Values(0.0, 0.25, 0.5, 1.0), Values(0, 1), Values(0, 1), Values(0.05, 0.01), Values(5, 10))
+);
+
+
+
+
+
+
+//--------------------------------------------------------------------------------------------------
+//---------------- Nodes ---------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------
+
+class ShowFieldNodeTest : public ParameterizedModuleTest<std::tuple<bool, double, int, int, double, int>>
+{
+protected:
+  enum ShowFieldParams
+  {
+    TRANSPARENCY,
+    TRANSPARENCY_VALUE,
+    COLORING,
+    USE_SPHERES,
+    SPHERE_SCALE,
+    SPHERE_RESOLUTION
+  };
+
+  static void TestFixtureSetUp()
+  {
+    LogSettings::Instance().setVerbose(false);
+  }
+
+  virtual void SetUp()
+  {
+    LogSettings::Instance().setVerbose(false);
+
+    if (!showField)
+    {
+      showField = makeModule("ShowField");
+      showField->setStateDefaults();
+
+      auto state = showField->get_state();
+      state->setValue(ShowField::ShowFaces, false);
+      state->setValue(ShowField::ShowEdges, false);
+      state->setValue(ShowField::ShowNodes, true);
+    }
+
+    //data--to loop over
+    if (vectorOfInputData.empty())
+    {
+      vectorOfInputData =
+      {
+        CreateEmptyLatVol(2, 2, 2),
+        CreateEmptyLatVol(3, 4, 5),
+        // trisurf
+        // quadsurf
+        // hexvol
+        // curvemesh
+        // imagemesh
+      };
+    }
+
+    auto params = GetParam();
+    auto state = showField->get_state();
+
+    state->setValue(ShowField::NodeTransparency, std::get<TRANSPARENCY>(params));
+    state->setValue(ShowField::NodeTransparencyValue, std::get<TRANSPARENCY_VALUE>(params));
+    state->setValue(ShowField::NodesColoring, std::get<COLORING>(params));
+    state->setValue(ShowField::NodeAsSpheres, std::get<USE_SPHERES>(params));
+    state->setValue(ShowField::SphereScaleValue, std::get<SPHERE_SCALE>(params));
+    state->setValue(ShowField::SphereResolution, std::get<SPHERE_RESOLUTION>(params));
+  }
+
+  UseRealModuleStateFactory f;
+  static ModuleHandle showField;
+  static std::vector<FieldHandle> vectorOfInputData;
+};
+
+ModuleHandle ShowFieldNodeTest::showField;
+std::vector<FieldHandle> ShowFieldNodeTest::vectorOfInputData;
+
+TEST_P(ShowFieldNodeTest, NodeGenerationTest)
+{
+  LogSettings::Instance().setVerbose(false);
+
+  for (auto& field : vectorOfInputData)
+  {
+    stubPortNWithThisData(showField, 0, field);
+    showField->execute();
+    auto geom = getDataOnThisOutputPort(showField, 0);
+    ASSERT_TRUE(geom != nullptr);
+  }
+}
+
+INSTANTIATE_TEST_CASE_P(
+  ConstructLatVolGeometry,
+  ShowFieldNodeTest,
+  Combine(Bool(), Values(0.0, 0.25, 0.5, 1.0), Values(0, 1), Values(0, 1), Values(0.5, 1.0), Values(5, 10))
+);
