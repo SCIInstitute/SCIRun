@@ -179,7 +179,7 @@ void GlyphBuilder::addGlyph(
       break;
     }
     case RenderState::GlyphType::CONE_GLYPH:
-      glyphs.addCone(p1, p2, radius, resolution, node_color, node_color);
+      glyphs.addCone(p1, p2, radius, resolution, false, node_color, node_color);
       break;
     case RenderState::GlyphType::ARROW_GLYPH:
       glyphs.addArrow(p1, p2, radius, ratio, resolution, node_color, node_color);

@@ -430,6 +430,7 @@ void GeometryBuilder::renderFaces(
 }
 
 
+
 void GeometryBuilder::renderFacesLinear(
   FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
@@ -445,14 +446,18 @@ void GeometryBuilder::renderFacesLinear(
   mesh->synchronize(Mesh::FACES_E);
 
   VMesh::Face::size_type numFaces;
+  int numAttributes = 3; //intially 3 because we will atleast be rendering verticies (vec3's)
 
   mesh->size(numFaces);
-
   if (numFaces == 0)
     return;
 
-  bool withNormals = (state.get(RenderState::USE_NORMALS));
-  if (withNormals) { mesh->synchronize(Mesh::NORMALS_E); }
+  bool withNormals = state.get(RenderState::USE_NORMALS);
+  if (withNormals)
+  {
+    numAttributes += 3;
+    mesh->synchronize(Mesh::NORMALS_E);
+  }
 
   bool invertNormals = state_->getValue(ShowField::FaceInvertNormals).toBool();
   ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
@@ -467,62 +472,54 @@ void GeometryBuilder::renderFacesLinear(
   }
   else if (state.get(RenderState::USE_COLORMAP))
   {
+    numAttributes += 4;
     colorScheme = ColorScheme::COLOR_MAP;
   }
   else // if (fld->basis_order() >= 0)
   {
+    numAttributes += 4;
     colorScheme = ColorScheme::COLOR_IN_SITU;
   }
 
-  // Three 32 bit ints to index into the VBO
-  uint32_t iboSize = static_cast<uint32_t>(mesh->num_faces() * sizeof(uint32_t) * 3);
-  //Seven floats per VBO: Pos (3) XYZ, and Color (4) RGBA
-  uint32_t vboSize = static_cast<uint32_t>(mesh->num_faces() * sizeof(float) * 7);
+  Point idpt;
+  VMesh::Face::iterator fiter, fiterEnd;
+  VMesh::Node::array_type nodes;
+  mesh->begin(fiter);
+  mesh->end(fiterEnd);
+  mesh->get_nodes(nodes, *fiter);
+  mesh->get_point(idpt, nodes[0]);
 
-  // Construct VBO and IBO that will be used to render the faces. Once again,
-  // IBOs are not strictly needed. But, we may be able to optimize this code
-  // somewhat.
-  /// \todo Switch to unique_ptrs and move semantics.
-  std::shared_ptr<spire::VarBuffer> iboBufferSPtr(
-    new spire::VarBuffer(vboSize));
-  std::shared_ptr<spire::VarBuffer> vboBufferSPtr(
-    new spire::VarBuffer(iboSize));
+  // Three 32 bit ints for each triangle to index into the VBO (triangles = verticies - 2)
+  size_t iboSize = static_cast<size_t>(mesh->num_faces() * sizeof(uint32_t) * (nodes.size() - 2) * 3);
+  size_t vboSize = static_cast<size_t>(mesh->num_faces() * sizeof(float) * nodes.size() * numAttributes);
 
-  // Accessing the pointers like this is contrived. We only do this for
-  // speed since we will be using the pointers in a tight inner loop.
+  // Construct VBO and IBO that will be used to render the faces. Once again, IBOs are not strictly
+  // needed. But, we may be able to optimize this code somewhat.
+  // todo Switch to unique_ptrs and move semantics.
+  std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(iboSize));
+  std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(vboSize));
+
+  // Accessing the pointers like this is contrived. We only do this for speed since we will be
+  // using the pointers in a tight inner loop.
   auto iboBuffer = iboBufferSPtr.get();
   auto vboBuffer = vboBufferSPtr.get();
 
   uint32_t iboIndex = 0;
-  int64_t numVBOElements = 0;
-
-  VMesh::Face::iterator fiter, fiterEnd;
-  VMesh::Node::array_type nodes;
-
-  mesh->begin(fiter);
-  mesh->end(fiterEnd);
-
-  Point idpt;
-  mesh->get_nodes(nodes, *fiter);
-  mesh->get_point(idpt, nodes[0]);
+  size_t numVBOElements = 0;
 
   while (fiter != fiterEnd)
   {
     interruptible->checkForInterruption();
 
     mesh->get_nodes(nodes, *fiter);
-
     std::vector<Point> points(nodes.size());
     std::vector<Vector> normals(nodes.size());
-
     for (size_t i = 0; i < nodes.size(); i++)
-    {
       mesh->get_point(points[i], nodes[i]);
-    }
 
     //TODO fix so the withNormals tp be woth lighting is called correctly, and the meshes are fixed.
     if (withNormals)
-    {
+   {
       bool useFaceNormals = state.get(RenderState::USE_FACE_NORMALS) && mesh->has_normals();
       if (useFaceNormals)
       {
@@ -575,12 +572,14 @@ void GeometryBuilder::renderFacesLinear(
         }
       }
     }
+
     // Default color single face no matter the element data.
     if (colorScheme == ColorScheme::COLOR_UNIFORM)
     {
       addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
         colorScheme, face_colors, state);
     }
+
     // Element data (Cells) so two sided faces.
     else if (fld->basis_order() == 0 && mesh->dimensionality() == 3)
     {
@@ -647,6 +646,7 @@ void GeometryBuilder::renderFacesLinear(
       addFaceGeom(points, normals, withNormals, iboIndex, iboBuffer, vboBuffer,
         colorScheme, face_colors, state);
     }
+
     // Element data (faces)
     else if (fld->basis_order() == 0 && mesh->dimensionality() == 2)
     {
@@ -855,19 +855,13 @@ void GeometryBuilder::renderFacesLinear(
     }
   }
 
-  SpireVBO geomVBO(vboName, attribs, vboBufferSPtr,
-    numVBOElements, mesh->get_bounding_box(), true);
-
+  SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements, mesh->get_bounding_box(), true);
   geom->vbos().push_back(geomVBO);
 
-  // Construct IBO.
-
   SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
-
   geom->ibos().push_back(geomIBO);
 
   SpireText text;
-
   SpireSubPass pass(passName, vboName, iboName, shader,
     colorScheme, state, RenderType::RENDER_VBO_IBO, geomVBO, geomIBO, text);
 
@@ -879,6 +873,8 @@ void GeometryBuilder::renderFacesLinear(
   /// \todo Add spheres and other glyphs as display lists. Will want to
   ///       build up to geometry / tessellation shaders if support is present.
 }
+
+
 
 // This function needs to be reorganized.
 // The fact that we are only rendering triangles helps us dramatically and
@@ -896,6 +892,7 @@ void GeometryBuilder::addFaceGeom(
   const std::vector<ColorRGB> &face_colors,
   const RenderState& state)
 {
+
   auto writeVBOPoint = [&vboBuffer](const Point& point)
   {
     vboBuffer->write(static_cast<float>(point.x()));
@@ -922,6 +919,7 @@ void GeometryBuilder::addFaceGeom(
   {
     iboBuffer->write(index);
   };
+
 
   bool doubleSided = state.get(RenderState::IS_DOUBLE_SIDED);
 
@@ -1201,6 +1199,8 @@ void GeometryBuilder::addFaceGeom(
     }
   }
 }
+
+
 
 void GeometryBuilder::renderNodes(
   FieldHandle field,

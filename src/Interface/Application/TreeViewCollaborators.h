@@ -57,13 +57,23 @@ namespace Gui {
 
   struct HideItemsNotMatchingString
   {
-    explicit HideItemsNotMatchingString(bool useRegex, const QString& pattern);
+    enum SearchType
+    {
+      STARTS_WITH,
+      WILDCARDS,
+      FUZZY_SEARCH
+    };
+
+    explicit HideItemsNotMatchingString(SearchType searchType, const QString& pattern);
     QRegExp match_;
     QString start_;
-    bool useRegex_;
+    SearchType searchType_;
 
     void operator()(QTreeWidgetItem* item);
     bool shouldHide(QTreeWidgetItem* item);
+    bool fuzzySearchAllPatterns(const QString& text, const QString& pattern);
+    bool fuzzySearch(const std::string& text, const std::string& pattern);
+    std::string removeAllSpecialCharacters(const std::string& str);
   };
 
   struct ShowAll

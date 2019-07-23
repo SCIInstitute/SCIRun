@@ -85,7 +85,7 @@ namespace SCIRun {
         SpireVBO() : numElements(0), onGPU(false) {}
         SpireVBO(const std::string& vboName, const std::vector<AttributeData> attribs,
           std::shared_ptr<spire::VarBuffer> vboData,
-          int64_t numVBOElements, const Core::Geometry::BBox& bbox, bool placeOnGPU) :
+          size_t numVBOElements, const Core::Geometry::BBox& bbox, bool placeOnGPU) :
           name(vboName),
           attributes(attribs),
           data(vboData),
@@ -96,8 +96,8 @@ namespace SCIRun {
 
         std::string                           name;
         std::vector<AttributeData>            attributes;
-        std::shared_ptr<spire::VarBuffer> data; // Change to unique_ptr w/ move semantics (possibly).
-        int64_t                               numElements;
+        std::shared_ptr<spire::VarBuffer>     data; // Change to unique_ptr w/ move semantics (possibly).
+        size_t                                numElements;
         Core::Geometry::BBox                  boundingBox;
         bool                                  onGPU;
       };
@@ -123,7 +123,7 @@ namespace SCIRun {
         std::string                           name;
         size_t                                indexSize;
         PRIMITIVE                             prim;
-        std::shared_ptr<spire::VarBuffer> data; // Change to unique_ptr w/ move semantics (possibly).
+        std::shared_ptr<spire::VarBuffer>     data; // Change to unique_ptr w/ move semantics (possibly).
       };
 
       struct SpireText
@@ -287,7 +287,24 @@ namespace SCIRun {
 
       typedef boost::shared_ptr<GeometryObjectSpire> GeometryHandle;
 
+      class SCISHARE CompositeGeometryObject : public GeometryObjectSpire
+      {
+      public:
+        template <typename GeomIter>
+          CompositeGeometryObject(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, GeomIter begin, GeomIter end)
+          : GeometryObjectSpire(idGenerator, tag, true), geoms_(begin, end)
+        {}
+        ~CompositeGeometryObject();
+        void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
+      private:
+        std::vector<GeometryHandle> geoms_;
+      };
 
+      template <typename GeomIter>
+        static GeometryHandle createGeomComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, GeomIter begin, GeomIter end)
+      {
+        return boost::make_shared<CompositeGeometryObject>(idGenerator, tag, begin, end);
+      }
     }
   }
 }
