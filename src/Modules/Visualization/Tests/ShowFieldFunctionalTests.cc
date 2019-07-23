@@ -212,12 +212,12 @@ protected:
           CreateEmptyLatVol(2, 2, 2),
           CreateEmptyLatVol(3, 4, 5),
           loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
-          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld") // tetvol
+          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld"), // tetvol
+          //loadFieldFromFile(TestResources::rootDir() / "Fields/curveMesh.fld"),                                  // curvemesh
+          //loadFieldFromFile(TestResources::rootDir() / "Fields/points.fld"),                                     // point cloud
           // quadsurf
-          //hexvol
-          // curvemesh
+          // hexvol
           // imagemesh
-          // point cloud
       };
     }
 
@@ -338,12 +338,12 @@ protected:
           CreateEmptyLatVol(2, 2, 2),
           CreateEmptyLatVol(3, 4, 5),
           loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
-          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld") // tetvol
+          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld"), // tetvol
+          loadFieldFromFile(TestResources::rootDir() / "Fields/curveMesh.fld"),                                  // curvemesh
+          //loadFieldFromFile(TestResources::rootDir() / "Fields/points.fld"),                                     // point cloud
           // quadsurf
-          //hexvol
-          // curvemesh
+          // hexvol
           // imagemesh
-          // point cloud
       };
     }
 
@@ -466,12 +466,12 @@ protected:
           CreateEmptyLatVol(2, 2, 2),
           CreateEmptyLatVol(3, 4, 5),
           loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
-          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld") // tetvol
+          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld"), // tetvol
+          loadFieldFromFile(TestResources::rootDir() / "Fields/curveMesh.fld"),                                  // curvemesh
+          //loadFieldFromFile(TestResources::rootDir() / "Fields/points.fld"),                                     // point cloud
           // quadsurf
-          //hexvol
-          // curvemesh
+          // hexvol
           // imagemesh
-          // point cloud
       };
     }
 
