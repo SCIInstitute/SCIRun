@@ -4,9 +4,9 @@ namespace spire {
 
 //------------------------------------------------------------------------------
 ArcBall::ArcBall(const glm::vec3& center, glm::float_t radius, const glm::mat4& screenToTCS) :
+    mScreenToTCS(screenToTCS),
     mCenter(center),
-    mRadius(radius),
-    mScreenToTCS(screenToTCS)
+    mRadius(radius)
 {
   // glm uses the following format for quaternions: w,x,y,z.
   //        w,    x,    y,    z

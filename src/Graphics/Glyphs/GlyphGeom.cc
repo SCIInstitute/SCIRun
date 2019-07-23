@@ -212,7 +212,6 @@ void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double
 
   generateCylinder(p1, mid, radius / 6.0, radius / 6.0, resolution, color1, color2);
   generateCone(mid, p2, radius, resolution, false, color1, color2);
-  //generateCylinder(mid, p2, radius, 0.0, resolution, color1, color2);
 }
 
 void GlyphGeom::addSphere(const Point& p, double radius, int resolution, const ColorRGB& color)
@@ -397,7 +396,6 @@ void GlyphGeom::generateCone(const Point& p1, const Point& p2, double radius,
       indices_.push_back(strips + points_per_loop + 2);
     }
   }
-  // for (int jj = 0; jj < 6; jj++) indices_.pop_back();
 }
 
 void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
