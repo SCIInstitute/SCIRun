@@ -8,13 +8,13 @@ namespace spire {
 
 VarBuffer::VarBuffer() :
 mBuffer(1024),
-    mBufferSize(1024)
+mBufferSize(1024)
 {
   RENDERER_LOG("VarBuffer ctor (mBufferSize {})", mBufferSize);
   mSerializer.reset(new spire::BSerialize(getBuffer(), mBufferSize));
 }
 
-VarBuffer::VarBuffer(uint32_t size) :
+VarBuffer::VarBuffer(size_t size) :
 mBuffer(size),
 mBufferSize(size)
 {
