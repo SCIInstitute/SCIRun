@@ -161,7 +161,7 @@ void ViewScene::updateTransientList()
   // about the lifetimes of the buffers we have in GeometryObject. Need to
   // switch to std::shared_ptr on an std::array when in production.
 
-  /// \todo Need to make this data transfer mechanism thread safe!
+  // todo Need to make this data transfer mechanism thread safe!
   // I thought about dynamic casting geometry object to a weak_ptr, but I don't
   // know where it will be destroyed. For now, it will have have stale pointer
   // data lying around in it... yuck.

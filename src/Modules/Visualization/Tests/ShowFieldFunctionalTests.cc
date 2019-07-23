@@ -137,7 +137,7 @@ std::vector<FieldHandle> ShowFieldBruteForceTest::vectorOfInputData;
 
 // 768 cases in 1 second/field
 // 768 tests from ConstructLatVolGeometry/ShowFieldBruteForceTest (2746 ms total)
-TEST_P(ShowFieldBruteForceTest, BruteForceExecuteTest)
+TEST_P(ShowFieldBruteForceTest, DISABLED_BruteForceExecuteTest)
 {
   LogSettings::Instance().setVerbose(false);
 
@@ -167,8 +167,8 @@ INSTANTIATE_TEST_CASE_P(
 //--------------------------------------------------------------------------------------------------
 //---------------- Faces ---------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
-//57ms
-class ShowFieldFaceTest : public ParameterizedModuleTest<std::tuple<FieldHandle, bool, double, int, bool, bool>>
+//87ms
+class ShowFieldFaceTest : public ParameterizedModuleTest<std::tuple<int, bool, double, int, bool, bool>>
 {
 protected:
   enum ShowFieldParams
@@ -199,22 +199,27 @@ protected:
       state->setValue(ShowField::ShowFaces, true);
       state->setValue(ShowField::ShowEdges, false);
       state->setValue(ShowField::ShowNodes, false);
+
+      colorMap = StandardColorMapFactory::create();
+      stubPortNWithThisData(showField, 1, colorMap);
     }
 
     //data--to loop over
-    //if (vectorOfInputData.empty())
-    //{
-    //  vectorOfInputData =
-    //  {
-    //    CreateEmptyLatVol(2, 2, 2),
-    //    CreateEmptyLatVol(3, 4, 5),
-    //    // trisurf
-    //    // quadsurf
-    //    // hexvol
-    //    // curvemesh
-    //    // imagemesh
-    //  };
-    //}
+    if (vectorOfInputData.empty())
+    {
+      vectorOfInputData =
+      {
+          CreateEmptyLatVol(2, 2, 2),
+          CreateEmptyLatVol(3, 4, 5),
+          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
+          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld") // tetvol
+          // quadsurf
+          //hexvol
+          // curvemesh
+          // imagemesh
+          // point cloud
+      };
+    }
 
     auto params = GetParam();
     auto state = showField->get_state();
@@ -228,55 +233,56 @@ protected:
 
   UseRealModuleStateFactory f;
   static ModuleHandle showField;
-  //static std::vector<FieldHandle> vectorOfInputData;
+  static ColorMapHandle colorMap;
+  static std::vector<FieldHandle> vectorOfInputData;
 };
 
 ModuleHandle ShowFieldFaceTest::showField;
-//std::vector<FieldHandle> ShowFieldFaceTest::vectorOfInputData;
+ColorMapHandle ShowFieldFaceTest::colorMap;
+std::vector<FieldHandle> ShowFieldFaceTest::vectorOfInputData;
 
 TEST_P(ShowFieldFaceTest, FaceGenerationTest)
 {
   LogSettings::Instance().setVerbose(false);
 
   auto params = GetParam();
-  auto field = std::get<FIELD>(params);
-  auto colorMap = StandardColorMapFactory::create();
-
-  stubPortNWithThisData(showField, 0, field);
-  stubPortNWithThisData(showField, 1, colorMap);
-  showField->execute();
-
-  auto state = showField->get_state();
-  auto geom = getDataOnThisOutputPort(showField, 0);
-
-  ASSERT_TRUE(geom != nullptr);
-
-  auto spireGeom = boost::dynamic_pointer_cast<SCIRun::Graphics::Datatypes::GeometryObjectSpire>(geom);
-
-  if(std::get<COLORING>(params) == 0)
+  for (auto& field : vectorOfInputData)
   {
-    ASSERT_TRUE(spireGeom->vbos().front().attributes.size() == 2);
-  }
-  else if(std::get<COLORING>(params) == 1)
-  {
-    ASSERT_TRUE(spireGeom->vbos().front().attributes.size() == 3);
+    stubPortNWithThisData(showField, 0, field);
+    showField->execute();
+
+    auto state = showField->get_state();
+    auto geom = getDataOnThisOutputPort(showField, 0);
+
+    ASSERT_TRUE(geom != nullptr);
+
+    auto spireGeom = boost::dynamic_pointer_cast<SCIRun::Graphics::Datatypes::GeometryObjectSpire>(geom);
+
+    int numAttributes = 2;
+    if(std::get<COLORING>(params) == 1) ++numAttributes;
+    ASSERT_TRUE(spireGeom->vbos().front().attributes.size() == numAttributes);
+
+    if(std::get<TRANSPARENCY>(params))
+    {
+      bool transparencyFound = false;
+      for(auto uniform: spireGeom->passes().front().mUniforms)
+      {
+        if(uniform.name == "uTransparency")
+        {
+          transparencyFound = true;
+          ASSERT_TRUE(std::abs(uniform.data.x - std::get<TRANSPARENCY_VALUE>(params)) < 0.001);
+          break;
+        }
+      }
+      ASSERT_TRUE(transparencyFound);
+    }
   }
 }
 
 INSTANTIATE_TEST_CASE_P(
   ConstructLatVolGeometry,
   ShowFieldFaceTest,
-  Combine(Values(
-    CreateEmptyLatVol(2, 2, 2),
-    CreateEmptyLatVol(3, 4, 5),
-    loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
-    loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld") // tetvol
-    //loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld")// quadsurf
-    // hexvol
-    // curvemesh
-    // imagemesh
-    // point cloud
-  ), Bool(), Values(0.0, 0.25, 0.5, 1.0), Values(0, 1), Bool(), Bool())
+  Combine(Values(0), Bool(), Values(0.0, 0.25, 0.5, 1.0), Values(0, 1), Bool(), Bool())
 );
 
 
@@ -319,6 +325,9 @@ protected:
       state->setValue(ShowField::ShowFaces, false);
       state->setValue(ShowField::ShowEdges, true);
       state->setValue(ShowField::ShowNodes, false);
+
+      colorMap = StandardColorMapFactory::create();
+      stubPortNWithThisData(showField, 1, colorMap);
     }
 
     //data--to loop over
@@ -326,13 +335,15 @@ protected:
     {
       vectorOfInputData =
       {
-        CreateEmptyLatVol(2, 2, 2),
-        CreateEmptyLatVol(3, 4, 5),
-        // trisurf
-        // quadsurf
-        // hexvol
-        // curvemesh
-        // imagemesh
+          CreateEmptyLatVol(2, 2, 2),
+          CreateEmptyLatVol(3, 4, 5),
+          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
+          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld") // tetvol
+          // quadsurf
+          //hexvol
+          // curvemesh
+          // imagemesh
+          // point cloud
       };
     }
 
@@ -349,29 +360,57 @@ protected:
 
   UseRealModuleStateFactory f;
   static ModuleHandle showField;
+  static ColorMapHandle colorMap;
   static std::vector<FieldHandle> vectorOfInputData;
 };
 
 ModuleHandle ShowFieldEdgeTest::showField;
+ColorMapHandle ShowFieldEdgeTest::colorMap;
 std::vector<FieldHandle> ShowFieldEdgeTest::vectorOfInputData;
 
 TEST_P(ShowFieldEdgeTest, EdgeGenerationTest)
 {
   LogSettings::Instance().setVerbose(false);
 
+  auto params = GetParam();
   for (auto& field : vectorOfInputData)
   {
     stubPortNWithThisData(showField, 0, field);
     showField->execute();
+
+    auto state = showField->get_state();
     auto geom = getDataOnThisOutputPort(showField, 0);
+
     ASSERT_TRUE(geom != nullptr);
+
+    auto spireGeom = boost::dynamic_pointer_cast<SCIRun::Graphics::Datatypes::GeometryObjectSpire>(geom);
+
+    int numAttributes = 1;
+    if(std::get<COLORING>(params) == 1) ++numAttributes;
+    if(std::get<USE_CYLINDERS>(params) == 1) ++numAttributes;
+    ASSERT_TRUE(spireGeom->vbos().front().attributes.size() == numAttributes);
+
+    if(std::get<TRANSPARENCY>(params))
+    {
+      bool transparencyFound = false;
+      for(auto uniform: spireGeom->passes().front().mUniforms)
+      {
+        if(uniform.name == "uTransparency")
+        {
+          transparencyFound = true;
+          ASSERT_TRUE(std::abs(uniform.data.x - std::get<TRANSPARENCY_VALUE>(params)) < 0.001);
+          break;
+        }
+      }
+      ASSERT_TRUE(transparencyFound);
+    }
   }
 }
 
 INSTANTIATE_TEST_CASE_P(
   ConstructLatVolGeometry,
   ShowFieldEdgeTest,
-  Combine(Bool(), Values(0.0, 0.25, 0.5, 1.0), Values(0, 1), Values(0, 1), Values(0.05, 0.01), Values(5, 10))
+  Combine(Bool(), Values(0.0, 0.25, 0.5, 1.0), Values(0, 1), Values(0, 1), Values(0.05), Values(5))
 );
 
 
@@ -414,6 +453,9 @@ protected:
       state->setValue(ShowField::ShowFaces, false);
       state->setValue(ShowField::ShowEdges, false);
       state->setValue(ShowField::ShowNodes, true);
+
+      colorMap = StandardColorMapFactory::create();
+      stubPortNWithThisData(showField, 1, colorMap);
     }
 
     //data--to loop over
@@ -421,13 +463,15 @@ protected:
     {
       vectorOfInputData =
       {
-        CreateEmptyLatVol(2, 2, 2),
-        CreateEmptyLatVol(3, 4, 5),
-        // trisurf
-        // quadsurf
-        // hexvol
-        // curvemesh
-        // imagemesh
+          CreateEmptyLatVol(2, 2, 2),
+          CreateEmptyLatVol(3, 4, 5),
+          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
+          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld") // tetvol
+          // quadsurf
+          //hexvol
+          // curvemesh
+          // imagemesh
+          // point cloud
       };
     }
 
@@ -444,27 +488,55 @@ protected:
 
   UseRealModuleStateFactory f;
   static ModuleHandle showField;
+  static ColorMapHandle colorMap;
   static std::vector<FieldHandle> vectorOfInputData;
 };
 
 ModuleHandle ShowFieldNodeTest::showField;
+ColorMapHandle ShowFieldNodeTest::colorMap;
 std::vector<FieldHandle> ShowFieldNodeTest::vectorOfInputData;
 
 TEST_P(ShowFieldNodeTest, NodeGenerationTest)
 {
   LogSettings::Instance().setVerbose(false);
 
+  auto params = GetParam();
   for (auto& field : vectorOfInputData)
   {
     stubPortNWithThisData(showField, 0, field);
     showField->execute();
+
+    auto state = showField->get_state();
     auto geom = getDataOnThisOutputPort(showField, 0);
+
     ASSERT_TRUE(geom != nullptr);
+
+    auto spireGeom = boost::dynamic_pointer_cast<SCIRun::Graphics::Datatypes::GeometryObjectSpire>(geom);
+
+    int numAttributes = 1;
+    if(std::get<COLORING>(params) == 1) ++numAttributes;
+    if(std::get<USE_SPHERES>(params) == 1) ++numAttributes;
+    ASSERT_TRUE(spireGeom->vbos().front().attributes.size() == numAttributes);
+
+    if(std::get<TRANSPARENCY>(params))
+    {
+      bool transparencyFound = false;
+      for(auto uniform: spireGeom->passes().front().mUniforms)
+      {
+        if(uniform.name == "uTransparency")
+        {
+          transparencyFound = true;
+          ASSERT_TRUE(std::abs(uniform.data.x - std::get<TRANSPARENCY_VALUE>(params)) < 0.001);
+          break;
+        }
+      }
+      ASSERT_TRUE(transparencyFound);
+    }
   }
 }
 
 INSTANTIATE_TEST_CASE_P(
   ConstructLatVolGeometry,
   ShowFieldNodeTest,
-  Combine(Bool(), Values(0.0, 0.25, 0.5, 1.0), Values(0, 1), Values(0, 1), Values(0.05, 0.01), Values(5, 10))
+  Combine(Bool(), Values(0.0, 0.25, 0.5, 1.0), Values(0, 1), Values(0, 1), Values(0.05), Values(5))
 );
