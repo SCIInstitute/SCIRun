@@ -33,6 +33,9 @@
 #include <Core/Utils/Exception.h>
 #include <Core/Logging/Log.h>
 #include <Core/Datatypes/ColorMap.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun::Testing;
 using namespace SCIRun::TestUtils;
@@ -164,12 +167,13 @@ INSTANTIATE_TEST_CASE_P(
 //--------------------------------------------------------------------------------------------------
 //---------------- Faces ---------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
-
-class ShowFieldFaceTest : public ParameterizedModuleTest<std::tuple<bool, double, int, bool, bool>>
+//57ms
+class ShowFieldFaceTest : public ParameterizedModuleTest<std::tuple<FieldHandle, bool, double, int, bool, bool>>
 {
 protected:
   enum ShowFieldParams
   {
+    FIELD,
     TRANSPARENCY,
     TRANSPARENCY_VALUE,
     COLORING,
@@ -198,19 +202,19 @@ protected:
     }
 
     //data--to loop over
-    if (vectorOfInputData.empty())
-    {
-      vectorOfInputData =
-      {
-        CreateEmptyLatVol(2, 2, 2),
-        CreateEmptyLatVol(3, 4, 5),
-        // trisurf
-        // quadsurf
-        // hexvol
-        // curvemesh
-        // imagemesh
-      };
-    }
+    //if (vectorOfInputData.empty())
+    //{
+    //  vectorOfInputData =
+    //  {
+    //    CreateEmptyLatVol(2, 2, 2),
+    //    CreateEmptyLatVol(3, 4, 5),
+    //    // trisurf
+    //    // quadsurf
+    //    // hexvol
+    //    // curvemesh
+    //    // imagemesh
+    //  };
+    //}
 
     auto params = GetParam();
     auto state = showField->get_state();
@@ -224,29 +228,55 @@ protected:
 
   UseRealModuleStateFactory f;
   static ModuleHandle showField;
-  static std::vector<FieldHandle> vectorOfInputData;
+  //static std::vector<FieldHandle> vectorOfInputData;
 };
 
 ModuleHandle ShowFieldFaceTest::showField;
-std::vector<FieldHandle> ShowFieldFaceTest::vectorOfInputData;
+//std::vector<FieldHandle> ShowFieldFaceTest::vectorOfInputData;
 
 TEST_P(ShowFieldFaceTest, FaceGenerationTest)
 {
   LogSettings::Instance().setVerbose(false);
 
-  for (auto& field : vectorOfInputData)
+  auto params = GetParam();
+  auto field = std::get<FIELD>(params);
+  auto colorMap = StandardColorMapFactory::create();
+
+  stubPortNWithThisData(showField, 0, field);
+  stubPortNWithThisData(showField, 1, colorMap);
+  showField->execute();
+
+  auto state = showField->get_state();
+  auto geom = getDataOnThisOutputPort(showField, 0);
+
+  ASSERT_TRUE(geom != nullptr);
+
+  auto spireGeom = boost::dynamic_pointer_cast<SCIRun::Graphics::Datatypes::GeometryObjectSpire>(geom);
+
+  if(std::get<COLORING>(params) == 0)
   {
-    stubPortNWithThisData(showField, 0, field);
-    showField->execute();
-    auto geom = getDataOnThisOutputPort(showField, 0);
-    ASSERT_TRUE(geom != nullptr);
+    ASSERT_TRUE(spireGeom->vbos().front().attributes.size() == 2);
+  }
+  else if(std::get<COLORING>(params) == 1)
+  {
+    ASSERT_TRUE(spireGeom->vbos().front().attributes.size() == 3);
   }
 }
 
 INSTANTIATE_TEST_CASE_P(
   ConstructLatVolGeometry,
   ShowFieldFaceTest,
-  Combine(Bool(), Values(0.0, 0.25, 0.5, 1.0), Values(0, 1), Bool(), Bool())
+  Combine(Values(
+    CreateEmptyLatVol(2, 2, 2),
+    CreateEmptyLatVol(3, 4, 5),
+    loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
+    loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld") // tetvol
+    //loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld")// quadsurf
+    // hexvol
+    // curvemesh
+    // imagemesh
+    // point cloud
+  ), Bool(), Values(0.0, 0.25, 0.5, 1.0), Values(0, 1), Bool(), Bool())
 );
 
 
@@ -436,5 +466,5 @@ TEST_P(ShowFieldNodeTest, NodeGenerationTest)
 INSTANTIATE_TEST_CASE_P(
   ConstructLatVolGeometry,
   ShowFieldNodeTest,
-  Combine(Bool(), Values(0.0, 0.25, 0.5, 1.0), Values(0, 1), Values(0, 1), Values(0.5, 1.0), Values(5, 10))
+  Combine(Bool(), Values(0.0, 0.25, 0.5, 1.0), Values(0, 1), Values(0, 1), Values(0.05, 0.01), Values(5, 10))
 );

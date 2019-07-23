@@ -120,9 +120,7 @@ namespace SCIRun {
 
         boost::shared_ptr<detail::GeometryBuilder> builder_;
       };
-
-
-
+      
     } // Visualization
   } // Modules
 } // SCIRun

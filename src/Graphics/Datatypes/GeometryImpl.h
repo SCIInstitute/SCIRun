@@ -96,7 +96,7 @@ namespace SCIRun {
 
         std::string                           name;
         std::vector<AttributeData>            attributes;
-        std::shared_ptr<spire::VarBuffer> data; // Change to unique_ptr w/ move semantics (possibly).
+        std::shared_ptr<spire::VarBuffer>     data; // Change to unique_ptr w/ move semantics (possibly).
         int64_t                               numElements;
         Core::Geometry::BBox                  boundingBox;
         bool                                  onGPU;
