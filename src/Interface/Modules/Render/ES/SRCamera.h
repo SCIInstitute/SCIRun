@@ -72,8 +72,6 @@ namespace SCIRun{
       /// Sets the selected View of the window to given up axis and view axis
       void setView(const glm::vec3& view, const glm::vec3& up);
 
-      void setViewMat(glm::mat4 view);
-
       /// Toggles the zoom controls on New Mouse Controls Inverted/Not Inverted
       void setZoomInverted(bool value);
 
@@ -97,14 +95,14 @@ namespace SCIRun{
       float getAspect() {return static_cast<float>(mInterface.getScreenWidthPixels()) /
                                 static_cast<float>(mInterface.getScreenHeightPixels());}
 
-      float getDistance() {return mArcLookAt->getDistance();}
-      void setDistance(float f) {mArcLookAt->setDistance(f);}
+      float getDistance() const {return mArcLookAt->getDistance();}
+      void setDistance(const float f) {mArcLookAt->setDistance(f);}
 
-      glm::vec3 getLookAt() {return mArcLookAt->getLookAt();}
-      void setLookAt(glm::vec3 v) {mArcLookAt->setLookAt(v);}
+      glm::vec3 getLookAt() const {return mArcLookAt->getLookAt();}
+      void setLookAt(const glm::vec3 v) {mArcLookAt->setLookAt(v);}
 
-      glm::quat getRotation() {return mArcLookAt->getRotation();}
-      void setRotation(glm::quat q) {mArcLookAt->setRotation(q);}
+      glm::quat getRotation() const {return mArcLookAt->getRotation();}
+      void setRotation(const glm::quat q) {mArcLookAt->setRotation(q);}
 
       void setLockZoom(bool lock)     {lockZoom_ = lock;}
       void setLockPanning(bool lock)  {lockPanning_ = lock;}

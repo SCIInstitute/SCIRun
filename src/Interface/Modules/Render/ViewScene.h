@@ -39,7 +39,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Interface/Modules/Render/share.h>
-#include <glm/gtc/quaternion.hpp>
 
 //TODO: needs to inherit from ModuleWidget somehow
 class QToolBar;

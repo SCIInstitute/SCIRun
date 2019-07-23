@@ -75,13 +75,6 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRCamera::setViewMat(glm::mat4 view)
-    {
-      //mArcLookAt->setView(view[2].xyz(), up);
-      setClippingPlanes();
-    }
-
-    //----------------------------------------------------------------------------------------------
     void SRCamera::mouseDownEvent(const glm::ivec2& pos, SRInterface::MouseButton btn)
     {
       glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);

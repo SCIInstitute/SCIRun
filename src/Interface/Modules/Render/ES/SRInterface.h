@@ -125,12 +125,12 @@ namespace SCIRun {
       void eventResize(size_t width, size_t height);
       void doAutoView();
       // Sets the selected View of the window
-      void setCameraDistance(float distance);
-      float getCameraDistance();
-      void setCameraLookAt(glm::vec3 lookAt);
-      glm::vec3 getCameraLookAt();
-      void setCameraRotation(glm::quat rotation);
-      glm::quat getCameraRotation();
+      void setCameraDistance(const float distance);
+      float getCameraDistance() const;
+      void setCameraLookAt(const glm::vec3 lookAt);
+      glm::vec3 getCameraLookAt() const;
+      void setCameraRotation(const glm::quat rotation);
+      glm::quat getCameraRotation() const;
       void setView(const glm::vec3& view, const glm::vec3& up);
       void setZoomSpeed(int zoomSpeed) {mZoomSpeed = zoomSpeed;}
       void setZoomInverted(bool value);

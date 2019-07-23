@@ -854,7 +854,6 @@ void ViewSceneDialog::wheelEvent(QWheelEvent* event)
     updateModifiedGeometries();
   }
 
-  //pushCameraState();
   auto spire = mSpire.lock();
   if(!spire) return;
   state_->setValue(Modules::Render::ViewScene::CameraDistance, (double)spire->getCameraDistance());
@@ -1938,8 +1937,11 @@ void ViewSceneDialog::setSpecularValue(double value)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::setShininessValue(double value)
 {
+  const static int maxSpecExp = 40;
+  const static int minSpecExp = 1;
   state_->setValue(Modules::Render::ViewScene::Shine, value);
-  setMaterialFactor(SRInterface::MAT_SHINE, value * value * 39 + 1);
+  //taking square of value makes the ui a little more intuitive in my opinion
+  setMaterialFactor(SRInterface::MAT_SHINE, value * value * (maxSpecExp - minSpecExp) + minSpecExp);
   updateAllGeometries();
 }
 
