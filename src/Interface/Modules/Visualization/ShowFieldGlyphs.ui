@@ -377,8 +377,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>291</width>
-               <height>109</height>
+               <width>100</width>
+               <height>30</height>
               </rect>
              </property>
              <attribute name="label">
@@ -1124,7 +1124,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>291</width>
-                <height>77</height>
+                <height>101</height>
                </rect>
               </property>
               <property name="title">
@@ -1134,7 +1134,7 @@
                <property name="geometry">
                 <rect>
                  <x>10</x>
-                 <y>46</y>
+                 <y>75</y>
                  <width>161</width>
                  <height>21</height>
                 </rect>
@@ -1147,7 +1147,7 @@
                <property name="geometry">
                 <rect>
                  <x>170</x>
-                 <y>50</y>
+                 <y>75</y>
                  <width>121</width>
                  <height>21</height>
                 </rect>
@@ -1159,30 +1159,65 @@
                 <double>100.000000000000000</double>
                </property>
                <property name="singleStep">
-                <double>0.100000000000000</double>
+                <double>0.010000000000000</double>
                </property>
                <property name="value">
                 <double>0.250000000000000</double>
                </property>
               </widget>
-              <widget class="QLabel" name="secondaryVectorParameterInputLabel">
+              <widget class="QRadioButton" name="secondaryVectorParameterUniformRButton_">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
                <property name="geometry">
                 <rect>
                  <x>10</x>
-                 <y>20</y>
-                 <width>141</width>
-                 <height>20</height>
+                 <y>25</y>
+                 <width>161</width>
+                 <height>21</height>
                 </rect>
                </property>
+               <property name="font">
+                <font>
+                 <strikeout>false</strikeout>
+                </font>
+               </property>
                <property name="text">
-                <string>Input:</string>
+                <string>Uniform:</string>
+               </property>
+              </widget>
+              <widget class="QRadioButton" name="secondaryVectorParameterPortRButton_">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>45</y>
+                 <width>141</width>
+                 <height>31</height>
+                </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <strikeout>false</strikeout>
+                </font>
+               </property>
+               <property name="text">
+                <string>Use Input:</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
                </property>
               </widget>
               <widget class="QComboBox" name="secondaryVectorParameterPortComboBox_">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
                <property name="geometry">
                 <rect>
                  <x>150</x>
-                 <y>20</y>
+                 <y>45</y>
                  <width>141</width>
                  <height>26</height>
                 </rect>
@@ -1203,6 +1238,12 @@
                 </property>
                </item>
               </widget>
+              <zorder>secondaryVectorParameterScaleLabel</zorder>
+              <zorder>secondaryVectorParameterDoubleSpinBox_</zorder>
+              <zorder>secondaryVectorParameterUniformRButton_</zorder>
+              <zorder>secondaryVectorParameterPortRButton_</zorder>
+              <zorder>secondaryVectorParameterPortComboBox_</zorder>
+              <zorder>arrowsGroupBox_</zorder>
              </widget>
              <widget class="QGroupBox" name="arrowsGroupBox_">
               <property name="enabled">
@@ -1211,7 +1252,7 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>75</y>
+                <y>110</y>
                 <width>291</width>
                 <height>71</height>
                </rect>
@@ -1235,7 +1276,7 @@
                 <double>1.000000000000000</double>
                </property>
                <property name="singleStep">
-                <double>0.100000000000000</double>
+                <double>0.010000000000000</double>
                </property>
                <property name="value">
                 <double>0.500000000000000</double>
@@ -1685,6 +1726,11 @@
             </property>
             <item>
              <property name="text">
+              <string>Boxes</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
               <string>Ellipsoids</string>
              </property>
             </item>
@@ -2068,8 +2114,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>98</width>
-               <height>28</height>
+               <width>100</width>
+               <height>30</height>
               </rect>
              </property>
              <attribute name="label">

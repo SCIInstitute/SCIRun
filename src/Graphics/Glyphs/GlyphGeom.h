@@ -56,12 +56,16 @@ namespace SCIRun {
       void addArrow(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double ratio, double resolution,
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void addSphere(const Core::Geometry::Point& p, double radius, double resolution, const Core::Datatypes::ColorRGB& color);
-      void addBox(const Core::Geometry::Point& center, Core::Geometry::Tensor& t, double scale);
+      void addBox(const Core::Geometry::Point& center, Core::Geometry::Tensor& t, double scale, Core::Datatypes::ColorRGB& node_color);
       void addEllipsoid(const Core::Geometry::Point& p, Core::Geometry::Tensor& t, Core::Geometry::Vector& scaled_eigenvals, double resolution, const Core::Datatypes::ColorRGB& color);
-      void addCylinder(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double resolution,
+      void addCylinder(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, int resolution,
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
+      void addCylinder(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius1, double radius2,
+        int resolution, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void addCone(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double resolution,
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
+      void addComet(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double resolution,
+                    const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2, double sphere_extrusion);
       void addClippingPlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
         const Core::Geometry::Point& p3, const Core::Geometry::Point& p4, double radius, double resolution,
         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
@@ -79,6 +83,8 @@ namespace SCIRun {
       void addArrow(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double radius, double length, int nu = 20, int nv = 0);
       void addBox(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double x_side, double y_side, double z_side);
       void addCylinder(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double radius1, double length, int nu = 20, int nv = 2);
+      void generateComet(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, int resolution,
+                         const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2, double sphere_extrusion);
       void addSphere(const Core::Geometry::Point& center, double radius, int nu=20, int nv=20, int half=0);
 
     private:
@@ -92,8 +98,11 @@ namespace SCIRun {
 
       void generateCylinder(const  Core::Geometry::Point& p1, const  Core::Geometry::Point& p2, double radius1, double radius2, double resolution, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void generateSphere(const Core::Geometry::Point& center, double radius, double resolution, const Core::Datatypes::ColorRGB& color);
-      void generateBox(const Core::Geometry::Point& center, Core::Geometry::Tensor& t, double scale);
-    void generateEllipsoid(const Core::Geometry::Point& center, Core::Geometry::Tensor& t, Core::Geometry::Vector& scaled_eigenvals, double resolution, const Core::Datatypes::ColorRGB& color);
+      void generateBox(const Core::Geometry::Point& center, Core::Geometry::Tensor& t, double scale, Core::Datatypes::ColorRGB& node_color);
+      void generateBoxSide(const Core::Geometry::Vector& p1, const Core::Geometry::Vector& p2,
+                           const Core::Geometry::Vector& p3, const Core::Geometry::Vector& p4,
+                           const Core::Geometry::Vector& normal, const Core::Datatypes::ColorRGB& node_color);
+      void generateEllipsoid(const Core::Geometry::Point& center, Core::Geometry::Tensor& t, Core::Geometry::Vector& scaled_eigenvals, double resolution, const Core::Datatypes::ColorRGB& color, bool half);
       void generateLine(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void generatePoint(const Core::Geometry::Point& p, const Core::Datatypes::ColorRGB& color);
       void generatePlane(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2,
@@ -104,6 +113,7 @@ namespace SCIRun {
       void generateCylinder(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double radius1, double radius2, double length, int nu, int nv, std::vector<QuadStrip>& quadstrips);
       void generateEllipsoid(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double scales, int nu, int nv, int half, std::vector<QuadStrip>& quadstrips);
       void generateTransforms(const Core::Geometry::Point& center, const Core::Geometry::Vector& normal, Core::Geometry::Transform& trans, Core::Geometry::Transform& rotate);
+      void generateTransforms(const Core::Geometry::Point& center, const Core::Geometry::Transform& transform, Core::Geometry::Transform& trans, Core::Geometry::Transform& rotate);
 
 
     };

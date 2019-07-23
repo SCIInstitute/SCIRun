@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Math/MiscMath.h>
 #include <Core/GeometryPrimitives/Transform.h>
+#include "glm/gtc/matrix_transform.hpp"
 
 using namespace SCIRun;
 using namespace Graphics;
@@ -219,20 +220,32 @@ void GlyphGeom::addSphere(const Point& p, double radius, double resolution, cons
   generateSphere(p, radius, resolution, color);
 }
 
-void GlyphGeom::addBox(const Point& center, Tensor& t, double scale)
+void GlyphGeom::addComet(const Point& p1, const Point& p2, double radius, double resolution,
+                         const ColorRGB& color1, const ColorRGB& color2, double sphere_extrusion)
 {
-    generateBox(center, t, scale);
+  generateComet(p1, p2, radius, resolution, color1, color2, sphere_extrusion);
+}
+
+void GlyphGeom::addBox(const Point& center, Tensor& t, double scale, ColorRGB& node_color)
+{
+  generateBox(center, t, scale, node_color);
 }
 
 void GlyphGeom::addEllipsoid(const Point& p, Tensor& t, Vector& scaled_eigenvals, double resolution, const ColorRGB& color)
 {
-  generateEllipsoid(p, t, scaled_eigenvals, resolution, color);
+  generateEllipsoid(p, t, scaled_eigenvals, resolution, color, false);
 }
 
-void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, double resolution,
+void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, int resolution,
                             const ColorRGB& color1, const ColorRGB& color2)
 {
   generateCylinder(p1, p2, radius, radius, resolution, color1, color2);
+}
+
+void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius1, double radius2,
+                            int resolution, const ColorRGB& color1, const ColorRGB& color2)
+{
+  generateCylinder(p1, p2, radius1, radius2, resolution, color1, color2);
 }
 
 void GlyphGeom::addCone(const Point& p1, const Point& p2, double radius, double resolution,
@@ -365,165 +378,267 @@ void GlyphGeom::generateSphere(const Point& center, double radius, double resolu
   }
 }
 
-void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale)
+void GlyphGeom::generateComet(const Point& p1, const Point& p2,
+                              double radius, int resolution,
+                              const ColorRGB& color1, const ColorRGB& color2,
+                              double sphere_extrusion)
 {
-    /**
-    std::vector<QuadStrip> quadstrips;
-    double eigval1, eigval2, eigval3;
-    t.get_eigenvalues(eigval1, eigval2, eigval3);
+  Vector dir = (p2-p1).normal();
 
-    double half_x_side = eigval1 * 0.5 * scale;
-    double half_y_side = eigval2 * 0.5 * scale;
-    double half_z_side = eigval3 * 0.5 * scale;
+  // First, generate cone
+  resolution = resolution < 0 ? 20 : resolution;
+  radius = radius < 0 ? 1 : radius;
 
-    std::cout << "box:\nx: " << half_x_side << "\ny: " << half_y_side << "\nz: " << half_z_side << "\n\n";
+  //generate triangles for the cylinders.
+  Vector n((p1 - p2).normal());
+  Vector crx = n.getArbitraryTangent();
+  Vector u = Cross(crx, n).normal();
+  Point cone_p2 = p2 - dir * radius * sphere_extrusion * M_PI;
+  double cone_radius = radius * cos(sphere_extrusion * M_PI);
 
-    Transform trans;
-    Transform rotate;
-//    generateTransforms(center, t, trans, rotate);
+  // Center of base
+  int points_per_loop = 2;
 
-    uint32_t offset = static_cast<uint32_t>(numVBOElements_);
-    //Draw the Box
-//    Point p1 = trans * Point(-half_x_side, half_y_side, half_z_side);
-//    Point p2 = trans * Point(-half_x_side, half_y_side, -half_z_side);
-//    Point p3 = trans * Point(half_x_side, half_y_side, half_z_side);
-//    Point p4 = trans * Point(half_x_side, half_y_side, -half_z_side);
-//
-//    Point p5 = trans * Point(-half_x_side, -half_y_side, half_z_side);
-//    Point p6 = trans * Point(-half_x_side, -half_y_side, -half_z_side);
-//    Point p7 = trans * Point(half_x_side, -half_y_side, half_z_side);
-//    Point p8 = trans * Point(half_x_side, -half_y_side, -half_z_side);
+  // Precalculate
+  double length = (p2-p1).length();
+  double strip_angle = 2. * M_PI / resolution;
 
-    // Make vectors
-    Vector v_corner1 = Point(-half_x_side, half_y_side, half_z_side);
-    Vector v_corner2 = Point(-half_x_side, half_y_side, -half_z_side);
-    Vector v_corner3 = Point(half_x_side, half_y_side, half_z_side);
-    Vector v_corner4 = Point(half_x_side, half_y_side, -half_z_side);
+  uint32_t offset = static_cast<uint32_t>(numVBOElements_);
 
-    Vector v_corner5 = Point(-half_x_side, -half_y_side, half_z_side);
-    Vector v_corner6 = Point(-half_x_side, -half_y_side, -half_z_side);
-    Vector v_corner7 = Point(half_x_side, -half_y_side, half_z_side);
-    Vector v_corner8 = Point(half_x_side, -half_y_side, -half_z_side);
+  std::vector<Vector> cone_rim_points;
 
-    Vector v_plane1 = rotate * Vector(half_x_side, 0, 0);
-    Vector v_plane2 = rotate * Vector(0, half_y_side, 0);
-    Vector v_plane3 = rotate * Vector(0, 0, half_z_side);
+  Vector p;
+  // Add points, normals, and colors
+  for (int strips = 0; strips <= resolution; strips++)
+  {
+    p = std::cos(strip_angle * strips) * u +
+      std::sin(strip_angle * strips) * crx;
+    p.normalize();
+    Vector normals((length * p + radius * n).normal());
 
-    Vector v_plane4 = rotate * Vector(-half_x_side, 0, 0);
-    Vector v_plane5 = rotate * Vector(0, -half_y_side, 0);
-    Vector v_plane6 = rotate * Vector(0, 0, -half_z_side);
+    Vector new_point = cone_radius * p + Vector(cone_p2);
+    points_.push_back(new_point);
+    colors_.push_back(color1);
+    normals_.push_back(normals);
+    points_.push_back(Vector(p1));
+    colors_.push_back(color2);
+    normals_.push_back(normals);
+    numVBOElements_ += 2;
 
-    // Add corner points to list
-    points_.push_back(v_plane1 + Vector(center));
-    points_.push_back(v_plane2 + Vector(center));
-    points_.push_back(v_plane3 + Vector(center));
-    points_.push_back(v_plane4 + Vector(center));
-    points_.push_back(v_plane5 + Vector(center));
-    points_.push_back(v_plane6 + Vector(center));
-    points_.push_back(v_pp1 + Vector(center));
-    points_.push_back(v_pp2 + Vector(center));
-    points_.push_back(v_pp3 + Vector(center));
-    points_.push_back(v_pp4 + Vector(center));
-    points_.push_back(v_pp5 + Vector(center));
-    points_.push_back(v_pp6 + Vector(center));
-    points_.push_back(v_pp7 + Vector(center));
-    points_.push_back(v_pp8 + Vector(center));
+    cone_rim_points.push_back(new_point);
+  }
 
-    // Add indices
-    indices_.push_back(0 + offset);
-    indices_.push_back(1 + offset);
-    indices_.push_back(2 + offset);
-    quadstrip1.push_back((v_corner7, v_plane1));
-    quadstrip1.push_back((v_corner8, v_plane1));
-    quadstrip1.push_back((v_corner3, v_plane1));
-    quadstrip1.push_back((v_corner4, v_plane1));
+  // Add indices
+  for (int strips = offset; strips < resolution * points_per_loop + offset; strips += points_per_loop)
+  {
+    indices_.push_back(strips);
+    indices_.push_back(strips + points_per_loop);
+    indices_.push_back(strips + 1);
+  }
 
-    Vector v1 = rotate * Vector(half_x_side, 0, 0);
-    Vector v2 = rotate * Vector(0, half_y_side, 0);
-    Vector v3 = rotate * Vector(0, 0, half_z_side);
 
-    Vector v4 = rotate * Vector(-half_x_side, 0, 0);
-    Vector v5 = rotate * Vector(0, -half_y_side, 0);
-    Vector v6 = rotate * Vector(0, 0, -half_z_side);
+  // Generate ellipsoid
+  Vector tangent = dir.getArbitraryTangent();
+  Vector bitangent = Cross(dir, tangent);
 
-    QuadStrip quadstrip1;
-    QuadStrip quadstrip2;
-    QuadStrip quadstrip3;
-    QuadStrip quadstrip4;
-    QuadStrip quadstrip5;
-    QuadStrip quadstrip6;
+  Transform rotate(Point(0.0, 0.0, 0.0), tangent, bitangent, dir);
+  Transform trans = rotate;
+  trans.pre_translate((Vector) p2);
 
-    // +X
-    quadstrip1.push_back(std::make_pair(p7, v1));
-    quadstrip1.push_back(std::make_pair(p8, v1));
-    quadstrip1.push_back(std::make_pair(p3, v1));
-    quadstrip1.push_back(std::make_pair(p4, v1));
+  trans.post_scale ( Vector(1.0,1.0,1.0) * radius );
+  rotate.post_scale( Vector(1.0,1.0,1.0) / radius );
 
-    // +Y
-    quadstrip2.push_back(std::make_pair(p3, v2));
-    quadstrip2.push_back(std::make_pair(p4, v2));
-    quadstrip2.push_back(std::make_pair(p1, v2));
-    quadstrip2.push_back(std::make_pair(p2, v2));
+  int nu = resolution + 1;
 
-    // +Z
-    quadstrip3.push_back(std::make_pair(p5, v3));
-    quadstrip3.push_back(std::make_pair(p7, v3));
-    quadstrip3.push_back(std::make_pair(p1, v3));
-    quadstrip3.push_back(std::make_pair(p3, v3));
+  // Half ellipsoid criteria.
+  int nv = resolution * (0.5 + sphere_extrusion);
 
-    // -X
-    quadstrip4.push_back(std::make_pair(p1, v4));
-    quadstrip4.push_back(std::make_pair(p2, v4));
-    quadstrip4.push_back(std::make_pair(p5, v4));
-    quadstrip4.push_back(std::make_pair(p6, v4));
+  // Should only happen when doing half ellipsoids.
+  if (nv < 2) nv = 2;
 
-    // -Y
-    quadstrip5.push_back(std::make_pair(p5, v5));
-    quadstrip5.push_back(std::make_pair(p6, v5));
-    quadstrip5.push_back(std::make_pair(p7, v5));
-    quadstrip5.push_back(std::make_pair(p8, v5));
+  double end = M_PI * (0.5 + sphere_extrusion);
 
-    // -Z
-    quadstrip6.push_back(std::make_pair(p2, v6));
-    quadstrip6.push_back(std::make_pair(p4, v6));
-    quadstrip6.push_back(std::make_pair(p6, v6));
-    quadstrip6.push_back(std::make_pair(p8, v6));
+  SinCosTable tab1(nu, 0, 2 * M_PI);
+  SinCosTable tab2(nv, 0, end);
 
-    quadstrips.push_back(quadstrip1);
-    quadstrips.push_back(quadstrip2);
-    quadstrips.push_back(quadstrip3);
-    quadstrips.push_back(quadstrip4);
-    quadstrips.push_back(quadstrip5);
-    quadstrips.push_back(quadstrip6);
-     **/
+  int cone_rim_index = 0;
+
+  // Draw the ellipsoid
+  for (int v = 0; v<nv - 1; v++)
+  {
+    double nr1 = tab2.sin(v + 1);
+    double nr2 = tab2.sin(v);
+
+    double nz1 = tab2.cos(v + 1);
+    double nz2 = tab2.cos(v);
+
+    for (int u = 0; u<nu; u++)
+    {
+      uint32_t offset = static_cast<uint32_t>(numVBOElements_);
+      double nx = tab1.sin(u);
+      double ny = tab1.cos(u);
+
+      double x1 = nr1 * nx;
+      double y1 = nr1 * ny;
+      double z1 = nz1;
+
+      double x2 = nr2 * nx;
+      double y2 = nr2 * ny;
+      double z2 = nz2;
+
+      // Rotate and translate points
+      Vector p1 = Vector(trans * Point(x1, y1, z1));
+      Vector p2 = Vector(trans * Point(x2, y2, z2));
+
+      // Rotate norms
+      Vector v1 = rotate * Vector(x1, y1, z1);
+      Vector v2 = rotate * Vector(x2, y2, z2);
+
+      v1.safe_normalize();
+      v2.safe_normalize();
+
+      // Use cone points around rim of ellipsoid
+      if(v == nv - 2)
+      {
+        points_.push_back(cone_rim_points[cone_rim_index]);
+        cone_rim_index++;
+      }
+      else
+      {
+        points_.push_back(p1);
+      }
+      points_.push_back(p2);
+
+      // Add normals
+      normals_.push_back(v1);
+      normals_.push_back(v2);
+
+      // Add color vectors from parameters
+      colors_.push_back(color1);
+      colors_.push_back(color1);
+
+      numVBOElements_ += 2;
+
+      indices_.push_back(0 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(3 + offset);
+    }
+    for(int jj = 0; jj < 6; jj++) indices_.pop_back();
+  }
 }
 
-void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, Vector &scaled_eigenvals, double resolution, const ColorRGB& color)
+void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale, ColorRGB& node_color)
 {
-    Vector eig_vec1, eig_vec2, eig_vec3;
-    t.get_eigenvectors(eig_vec1, eig_vec2, eig_vec3);
+  double eigval1, eigval2, eigval3;
+  t.get_eigenvalues(eigval1, eigval2, eigval3);
 
-    // Scale to eigen values
-    eig_vec1 *= scaled_eigenvals.x();
-    eig_vec2 *= scaled_eigenvals.y();
-    eig_vec3 *= scaled_eigenvals.z();
+  Vector scaled_eigenvals(abs(eigval1), abs(eigval2), abs(eigval3));
+  scaled_eigenvals *= scale;
+
+  Vector eigvec1, eigvec2, eigvec3;
+  t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
+
+  Transform rotate(Point(0.0, 0.0, 0.0), eigvec1, eigvec2, eigvec3);
+  Transform trans = rotate;
+  trans.pre_translate((Vector) center);
+
+  // Rotate and translate points
+  Vector p1 = Vector(trans * Point(scaled_eigenvals * Vector(-1.0, 1.0, 1.0)));
+  Vector p2 = Vector(trans * Point(scaled_eigenvals * Vector(-1.0, 1.0, -1.0)));
+  Vector p3 = Vector(trans * Point(scaled_eigenvals * Vector(1.0, 1.0, 1.0)));
+  Vector p4 = Vector(trans * Point(scaled_eigenvals * Vector(1.0, 1.0, -1.0)));
+  Vector p5 = Vector(trans * Point(scaled_eigenvals * Vector(-1.0, -1.0, 1.0)));
+  Vector p6 = Vector(trans * Point(scaled_eigenvals * Vector(-1.0, -1.0, -1.0)));
+  Vector p7 = Vector(trans * Point(scaled_eigenvals * Vector(1.0, -1.0, 1.0)));
+  Vector p8 = Vector(trans * Point(scaled_eigenvals * Vector(1.0, -1.0, -1.0)));
+
+  // Rotate norms
+  Vector x_vec = rotate * Vector(1, 0, 0);
+  Vector y_vec = rotate * Vector(0, 1, 0);
+  Vector z_vec = rotate * Vector(0, 0, 1);
+
+  generateBoxSide(p7, p8, p3, p4, x_vec, node_color);
+  generateBoxSide(p3, p4, p1, p2, y_vec, node_color);
+  generateBoxSide(p5, p7, p1, p3, z_vec, node_color);
+  generateBoxSide(p1, p2, p5, p6, -x_vec, node_color);
+  generateBoxSide(p5, p6, p7, p8, -y_vec, node_color);
+  generateBoxSide(p2, p4, p6, p8, -z_vec, node_color);
+}
+
+void GlyphGeom::generateBoxSide(const Vector& p1, const Vector& p2, const Vector& p3, const Vector& p4,
+                                const Vector& normal, const ColorRGB& node_color)
+{
+  size_t offset = static_cast<size_t>(numVBOElements_);
+  points_.push_back(p1);
+  points_.push_back(p2);
+  points_.push_back(p3);
+  points_.push_back(p4);
+
+  for(int i = 0; i < 4; i++)
+  {
+    normals_.push_back(normal);
+    colors_.push_back(node_color);
+  }
+  numVBOElements_ += 4;
+
+  indices_.push_back(offset + 2);
+  indices_.push_back(offset);
+  indices_.push_back(offset + 3);
+  indices_.push_back(offset + 1);
+  indices_.push_back(offset + 3);
+  indices_.push_back(offset);
+}
+
+void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, Vector &scaled_eigenvals, double resolution, const ColorRGB& color, bool half)
+{
+    Vector eigvec1, eigvec2, eigvec3;
+    t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
+
+    Transform rotate(Point(0.0, 0.0, 0.0), eigvec1, eigvec2, eigvec3);
+    Transform trans = rotate;
+    trans.pre_translate((Vector) center);
+
+    trans.post_scale ( Vector(1.0,1.0,1.0) * scaled_eigenvals );
+    rotate.post_scale( Vector(1.0,1.0,1.0) / scaled_eigenvals );
 
     int nu = resolution + 1;
-    //    int nv = resolution;
 
     // Half ellipsoid criteria.
-    //  if (half == -1) start = M_PI / 2.0;
-    //  if (half == 1) stop = M_PI / 2.0;
-    //  if (half != 0) nv /= 2;
+    int nv = resolution;
+    if (half) nv /= 2;
 
     // Should only happen when doing half ellipsoids.
-    //  if (nv < 2) nv = 2;
+    if (nv < 2) nv = 2;
+
+    double end = half ? M_PI / 2 : M_PI;
 
     SinCosTable tab1(nu, 0, 2 * M_PI);
-    SinCosTable tab2(resolution, 0, M_PI);
+    SinCosTable tab2(nv, 0, end);
+
+    // Check for zero eigenvectors
+    bool zero_norm_used = false;
+    Vector zero_norm;
+    if(scaled_eigenvals[0] == 0.0)
+    {
+      zero_norm_used = true;
+      zero_norm = eigvec1;
+    }
+    else if(scaled_eigenvals[1] == 0.0)
+    {
+      zero_norm_used = true;
+      zero_norm = eigvec2;
+    }
+    else if(scaled_eigenvals[2] == 0.0)
+    {
+      zero_norm_used = true;
+      zero_norm = eigvec3;
+    }
 
     // Draw the ellipsoid
-    for (int v = 0; v<resolution - 1; v++)
+    for (int v = 0; v<nv - 1; v++)
       {
         double nr1 = tab2.sin(v + 1);
         double nr2 = tab2.sin(v);
@@ -545,22 +660,36 @@ void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, Vector &scaled
             double y2 = nr2 * ny;
             double z2 = nz2;
 
-            // Rotate points
-            Vector v_p1 = Vector(eig_vec1[0] * x1 + eig_vec2[0] * y1 + eig_vec3[0] * z1,
-                                 eig_vec1[1] * x1 + eig_vec2[1] * y1 + eig_vec3[1] * z1,
-                                 eig_vec1[2] * x1 + eig_vec2[2] * y1 + eig_vec3[2] * z1);
+            // Rotate and translate points
+            Vector p1 = Vector(trans * Point(x1, y1, z1));
+            Vector p2 = Vector(trans * Point(x2, y2, z2));
 
-            Vector v_p2 = Vector(eig_vec1[0] * x2 + eig_vec2[0] * y2 + eig_vec3[0] * z2,
-                                 eig_vec1[1] * x2 + eig_vec2[1] * y2 + eig_vec3[1] * z2,
-                                 eig_vec1[2] * x2 + eig_vec2[2] * y2 + eig_vec3[2] * z2);
+            Vector v1, v2;
+
+            if(zero_norm_used)
+            {
+              // Avoids recalculating norm vector and prevents vectors with infinite length
+              bool first_half = v < nv/2;
+              v1 = first_half ? zero_norm : -zero_norm;
+              v2 = first_half ? zero_norm : -zero_norm;
+            }
+            else
+            {
+              // Rotate norms
+              v1 = rotate * Vector(x1, y1, z1);
+              v2 = rotate * Vector(x2, y2, z2);
+            }
+
+            v1.safe_normalize();
+            v2.safe_normalize();
 
             // Transorm points and add to points list
-            points_.push_back(v_p1 + Vector(center));
-            points_.push_back(v_p2 + Vector(center));
+            points_.push_back(p1);
+            points_.push_back(p2);
 
             // Add normals
-            normals_.push_back(v_p1);
-            normals_.push_back(v_p2);
+            normals_.push_back(v1);
+            normals_.push_back(v2);
 
             // Add color vectors from parameters
             colors_.push_back(color);
@@ -911,6 +1040,9 @@ void GlyphGeom::generateTransforms(const Point& center, const Vector& normal,
 
   double cangle = Dot(z, axis);
   double zrotangle = -acos(cangle);
+
+  trans.pre_translate((Vector) center);
+  trans.post_rotate(zrotangle, zrotaxis);
 
   rotate.post_rotate(zrotangle, zrotaxis);
 }

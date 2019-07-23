@@ -121,7 +121,7 @@ namespace SCIRun {
           Point& p2,
           double radius,
           double ratio,
-          double resolution,
+          int resolution,
           ColorRGB& node_color,
           bool use_lines);
 
@@ -130,6 +130,12 @@ namespace SCIRun {
     }
   }
 }
+
+enum SecondaryVecParamScalingTypeEnum
+{
+  UNIFORM,
+  USE_INPUT
+};
 
 ColorScheme GlyphBuilder::getColoringType(const RenderState& renState, VField* fld)
 {
@@ -154,7 +160,7 @@ void GlyphBuilder::addGlyph(
   Point& p2,
   double radius,
   double ratio,
-  double resolution,
+  int resolution,
   ColorRGB& node_color,
   bool use_lines)
 {
@@ -167,9 +173,11 @@ void GlyphBuilder::addGlyph(
       glyphs.addNeedle(p1, p2, node_color, node_color);
       break;
     case RenderState::GlyphType::COMET_GLYPH:
-      glyphs.addSphere(p2, radius, resolution, node_color);
-      glyphs.addCone(p2, p1, radius, resolution, node_color, node_color);
+    {
+      double sphere_extrusion = 0.0625f;
+      glyphs.addComet(p1, p2, radius, resolution, node_color, node_color, sphere_extrusion);
       break;
+    }
     case RenderState::GlyphType::CONE_GLYPH:
       glyphs.addCone(p1, p2, radius, resolution, node_color, node_color);
       break;
@@ -222,8 +230,9 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(VectorsTransparency, 0);
   state->setValue(VectorsUniformTransparencyValue, 0.65);
   //  state->setValue(VectorsTransparencyDataInput, std::string("Primary"));
-  state->setValue(SecondaryVectorParameterDataInput, std::string("Primary"));
-  state->setValue(SecondaryVectorParameterScale, 0.25);
+  state->setValue(SecondaryVecParamScalingType, SecondaryVecParamScalingTypeEnum::USE_INPUT);
+  state->setValue(SecondaryVecParamDataInput, std::string("Primary"));
+  state->setValue(SecondaryVecParamScale, 0.5);
   state->setValue(NormalizeVectors, false);
   state->setValue(VectorsScale, 1.0);
   state->setValue(RenderVectorsBelowThreshold, true);
@@ -445,8 +454,8 @@ void GlyphBuilder::renderVectors(
   // Gets user set data
   ColorScheme colorScheme = portHandler.getColorScheme();
   double scale = state->getValue(ShowFieldGlyphs::VectorsScale).toDouble();
-  double radiusWidthScale = state->getValue(ShowFieldGlyphs::SecondaryVectorParameterScale).toDouble();
-  double resolution = state->getValue(ShowFieldGlyphs::VectorsResolution).toInt();
+  double radiusWidthScale = state->getValue(ShowFieldGlyphs::SecondaryVecParamScale).toDouble();
+  int resolution = state->getValue(ShowFieldGlyphs::VectorsResolution).toInt();
   double arrowHeadRatio = state->getValue(ShowFieldGlyphs::ArrowHeadRatio).toDouble();
 
   bool normalizeGlyphs = state->getValue(ShowFieldGlyphs::NormalizeVectors).toBool();
@@ -529,8 +538,9 @@ void GlyphBuilder::renderVectors(
       p3 = points[i] - v;
 
       // Get radius
-      radius = portHandler.getSecondaryVectorParameter(indices[i]);
-      radius *= radiusWidthScale;
+      radius = scale * radiusWidthScale / 2.0;
+      if(state->getValue(ShowFieldGlyphs::SecondaryVecParamScalingType).toInt() == SecondaryVecParamScalingTypeEnum::USE_INPUT)
+        radius *= portHandler.getSecondaryVectorParameter(indices[i]);
 
       ColorRGB node_color = portHandler.getNodeColor(indices[i]);
 
@@ -565,7 +575,7 @@ void GlyphBuilder::renderScalars(
   // Gets user set data
   ColorScheme colorScheme = portHandler.getColorScheme();
   double scale = state->getValue(ShowFieldGlyphs::ScalarsScale).toDouble();
-  double resolution = state->getValue(ShowFieldGlyphs::ScalarsResolution).toInt();
+  int resolution = state->getValue(ShowFieldGlyphs::ScalarsResolution).toInt();
   if (scale < 0) scale = 1.0;
   if (resolution < 3) resolution = 5;
 
@@ -663,7 +673,7 @@ void GlyphBuilder::renderTensors(
     // Gets user set data
     ColorScheme colorScheme = portHandler.getColorScheme();
     double scale = state->getValue(ShowFieldGlyphs::TensorsScale).toDouble();
-    double resolution = state->getValue(ShowFieldGlyphs::TensorsResolution).toInt();
+    int resolution = state->getValue(ShowFieldGlyphs::TensorsResolution).toInt();
     bool normalizeGlyphs = state->getValue(ShowFieldGlyphs::NormalizeTensors).toBool();
     bool renderGlyphsBelowThreshold = state->getValue(ShowFieldGlyphs::RenderTensorsBelowThreshold).toBool();
     float threshold = state->getValue(ShowFieldGlyphs::TensorsThreshold).toDouble();
@@ -782,7 +792,7 @@ void GlyphBuilder::renderTensors(
             switch (renState.mGlyphType)
               {
               case RenderState::GlyphType::BOX_GLYPH:
-                glyphs.addBox(points[i], t, scale);
+                glyphs.addBox(points[i], t, scale, node_color);
                 break;
               case RenderState::GlyphType::ELLIPSOID_GLYPH:
                 glyphs.addEllipsoid(points[i], t, eigvals, resolution, node_color);
@@ -884,7 +894,7 @@ RenderState GlyphBuilder::getVectorsRenderState(ModuleStateHandle state)
     renState.set(RenderState::USE_DEFAULT_COLOR, true);
   }
   renState.mColorInput = getInput(state->getValue(ShowFieldGlyphs::VectorsColoringDataInput).toString());
-  renState.mSecondaryVectorParameterInput = getInput(state->getValue(ShowFieldGlyphs::SecondaryVectorParameterDataInput).toString());
+  renState.mSecondaryVectorParameterInput = getInput(state->getValue(ShowFieldGlyphs::SecondaryVecParamDataInput).toString());
 
   return renState;
 }
@@ -1038,8 +1048,9 @@ const AlgorithmParameterName ShowFieldGlyphs::NormalizeVectors("NormalizeVectors
 const AlgorithmParameterName ShowFieldGlyphs::VectorsScale("VectorsScale");
 const AlgorithmParameterName ShowFieldGlyphs::RenderVectorsBelowThreshold("RenderVectorsBelowThreshold");
 const AlgorithmParameterName ShowFieldGlyphs::VectorsThreshold("VectorsThreshold");
-const AlgorithmParameterName ShowFieldGlyphs::SecondaryVectorParameterDataInput("SecondaryVectorParameterDataInput");
-const AlgorithmParameterName ShowFieldGlyphs::SecondaryVectorParameterScale("SecondaryVectorParameterScale");
+const AlgorithmParameterName ShowFieldGlyphs::SecondaryVecParamScalingType("SecondaryVecParamScalingType");
+const AlgorithmParameterName ShowFieldGlyphs::SecondaryVecParamDataInput("SecondaryVecParamDataInput");
+const AlgorithmParameterName ShowFieldGlyphs::SecondaryVecParamScale("SecondaryVecParamScale");
 const AlgorithmParameterName ShowFieldGlyphs::ArrowHeadRatio("ArrowHeadRatio");
 const AlgorithmParameterName ShowFieldGlyphs::RenderBidirectionaly("RenderBidirectionaly");
 const AlgorithmParameterName ShowFieldGlyphs::VectorsResolution("VectorsResolution");
