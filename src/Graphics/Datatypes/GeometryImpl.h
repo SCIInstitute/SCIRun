@@ -85,7 +85,7 @@ namespace SCIRun {
         SpireVBO() : numElements(0), onGPU(false) {}
         SpireVBO(const std::string& vboName, const std::vector<AttributeData> attribs,
           std::shared_ptr<spire::VarBuffer> vboData,
-          int64_t numVBOElements, const Core::Geometry::BBox& bbox, bool placeOnGPU) :
+          size_t numVBOElements, const Core::Geometry::BBox& bbox, bool placeOnGPU) :
           name(vboName),
           attributes(attribs),
           data(vboData),
@@ -97,7 +97,11 @@ namespace SCIRun {
         std::string                           name;
         std::vector<AttributeData>            attributes;
         std::shared_ptr<spire::VarBuffer>     data; // Change to unique_ptr w/ move semantics (possibly).
+<<<<<<< showFieldTests
         int64_t                               numElements;
+=======
+        size_t                                numElements;
+>>>>>>> master
         Core::Geometry::BBox                  boundingBox;
         bool                                  onGPU;
       };
@@ -123,7 +127,7 @@ namespace SCIRun {
         std::string                           name;
         size_t                                indexSize;
         PRIMITIVE                             prim;
-        std::shared_ptr<spire::VarBuffer> data; // Change to unique_ptr w/ move semantics (possibly).
+        std::shared_ptr<spire::VarBuffer>     data; // Change to unique_ptr w/ move semantics (possibly).
       };
 
       struct SpireText
