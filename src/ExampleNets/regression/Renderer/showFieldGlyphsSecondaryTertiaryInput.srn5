@@ -367,7 +367,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>47</count>
+							<count>49</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -423,6 +423,18 @@
 								</first>
 								<second>
 									<name>NormalizeVectors</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>RenderBases</name>
+								</first>
+								<second>
+									<name>RenderBases</name>
 									<value>
 										<which>3</which>
 										<value>0</value>
@@ -593,7 +605,19 @@
 									<name>SecondaryVectorParameterScale</name>
 									<value>
 										<which>1</which>
-										<value>5.00000000000000000e+00</value>
+										<value>2.50000000000005329e+00</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>SecondaryVectorParameterScalingType</name>
+								</first>
+								<second>
+									<name>SecondaryVectorParameterScalingType</name>
+									<value>
+										<which>0</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -947,7 +971,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>39</count>
+							<count>47</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1083,6 +1107,18 @@
 							</item>
 							<item>
 								<first>
+									<name>HeadLightAzimuth</name>
+								</first>
+								<second>
+									<name>HeadLightAzimuth</name>
+									<value>
+										<which>0</which>
+										<value>180</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>HeadLightColor</name>
 								</first>
 								<second>
@@ -1090,6 +1126,18 @@
 									<value>
 										<which>2</which>
 										<value>Color(0,0,0)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>HeadLightInclination</name>
+								</first>
+								<second>
+									<name>HeadLightInclination</name>
+									<value>
+										<which>0</which>
+										<value>90</value>
 									</value>
 								</second>
 							</item>
@@ -1107,6 +1155,18 @@
 							</item>
 							<item>
 								<first>
+									<name>Light1Azimuth</name>
+								</first>
+								<second>
+									<name>Light1Azimuth</name>
+									<value>
+										<which>0</which>
+										<value>180</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>Light1Color</name>
 								</first>
 								<second>
@@ -1114,6 +1174,18 @@
 									<value>
 										<which>2</which>
 										<value>Color(0,0,0)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Light1Inclination</name>
+								</first>
+								<second>
+									<name>Light1Inclination</name>
+									<value>
+										<which>0</which>
+										<value>90</value>
 									</value>
 								</second>
 							</item>
@@ -1131,6 +1203,18 @@
 							</item>
 							<item>
 								<first>
+									<name>Light2Azimuth</name>
+								</first>
+								<second>
+									<name>Light2Azimuth</name>
+									<value>
+										<which>0</which>
+										<value>180</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>Light2Color</name>
 								</first>
 								<second>
@@ -1138,6 +1222,18 @@
 									<value>
 										<which>2</which>
 										<value>Color(0,0,0)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Light2Inclination</name>
+								</first>
+								<second>
+									<name>Light2Inclination</name>
+									<value>
+										<which>0</which>
+										<value>90</value>
 									</value>
 								</second>
 							</item>
@@ -1155,6 +1251,18 @@
 							</item>
 							<item>
 								<first>
+									<name>Light3Azimuth</name>
+								</first>
+								<second>
+									<name>Light3Azimuth</name>
+									<value>
+										<which>0</which>
+										<value>180</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>Light3Color</name>
 								</first>
 								<second>
@@ -1162,6 +1270,18 @@
 									<value>
 										<which>2</which>
 										<value>Color(0,0,0)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Light3Inclination</name>
+								</first>
+								<second>
+									<name>Light3Inclination</name>
+									<value>
+										<which>0</which>
+										<value>90</value>
 									</value>
 								</second>
 							</item>

@@ -133,7 +133,7 @@ namespace SCIRun {
   }
 }
 
-enum SecondaryVecParamScalingTypeEnum
+enum SecondaryVectorParameterScalingTypeEnum
 {
   UNIFORM,
   USE_INPUT
@@ -234,9 +234,9 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(VectorsTransparency, 0);
   state->setValue(VectorsUniformTransparencyValue, 0.65);
   //  state->setValue(VectorsTransparencyDataInput, std::string("Primary"));
-  state->setValue(SecondaryVecParamScalingType, SecondaryVecParamScalingTypeEnum::USE_INPUT);
-  state->setValue(SecondaryVecParamDataInput, std::string("Primary"));
-  state->setValue(SecondaryVecParamScale, 0.5);
+  state->setValue(SecondaryVectorParameterScalingType, SecondaryVectorParameterScalingTypeEnum::USE_INPUT);
+  state->setValue(SecondaryVectorParameterDataInput, std::string("Primary"));
+  state->setValue(SecondaryVectorParameterScale, 0.5);
   state->setValue(NormalizeVectors, false);
   state->setValue(VectorsScale, 1.0);
   state->setValue(RenderVectorsBelowThreshold, true);
@@ -459,7 +459,7 @@ void GlyphBuilder::renderVectors(
   // Gets user set data
   ColorScheme colorScheme = portHandler.getColorScheme();
   double scale = state->getValue(ShowFieldGlyphs::VectorsScale).toDouble();
-  double radiusWidthScale = state->getValue(ShowFieldGlyphs::SecondaryVecParamScale).toDouble();
+  double radiusWidthScale = state->getValue(ShowFieldGlyphs::SecondaryVectorParameterScale).toDouble();
   int resolution = state->getValue(ShowFieldGlyphs::VectorsResolution).toInt();
   double arrowHeadRatio = state->getValue(ShowFieldGlyphs::ArrowHeadRatio).toDouble();
 
@@ -545,7 +545,7 @@ void GlyphBuilder::renderVectors(
 
       // Get radius
       radius = scale * radiusWidthScale / 2.0;
-      if(state->getValue(ShowFieldGlyphs::SecondaryVecParamScalingType).toInt() == SecondaryVecParamScalingTypeEnum::USE_INPUT)
+      if(state->getValue(ShowFieldGlyphs::SecondaryVectorParameterScalingType).toInt() == SecondaryVectorParameterScalingTypeEnum::USE_INPUT)
         radius *= portHandler.getSecondaryVectorParameter(indices[i]);
 
       ColorRGB node_color = portHandler.getNodeColor(indices[i]);
@@ -907,7 +907,7 @@ RenderState GlyphBuilder::getVectorsRenderState(ModuleStateHandle state)
     renState.set(RenderState::USE_DEFAULT_COLOR, true);
   }
   renState.mColorInput = getInput(state->getValue(ShowFieldGlyphs::VectorsColoringDataInput).toString());
-  renState.mSecondaryVectorParameterInput = getInput(state->getValue(ShowFieldGlyphs::SecondaryVecParamDataInput).toString());
+  renState.mSecondaryVectorParameterInput = getInput(state->getValue(ShowFieldGlyphs::SecondaryVectorParameterDataInput).toString());
 
   return renState;
 }
@@ -1061,9 +1061,9 @@ const AlgorithmParameterName ShowFieldGlyphs::NormalizeVectors("NormalizeVectors
 const AlgorithmParameterName ShowFieldGlyphs::VectorsScale("VectorsScale");
 const AlgorithmParameterName ShowFieldGlyphs::RenderVectorsBelowThreshold("RenderVectorsBelowThreshold");
 const AlgorithmParameterName ShowFieldGlyphs::VectorsThreshold("VectorsThreshold");
-const AlgorithmParameterName ShowFieldGlyphs::SecondaryVecParamScalingType("SecondaryVecParamScalingType");
-const AlgorithmParameterName ShowFieldGlyphs::SecondaryVecParamDataInput("SecondaryVecParamDataInput");
-const AlgorithmParameterName ShowFieldGlyphs::SecondaryVecParamScale("SecondaryVecParamScale");
+const AlgorithmParameterName ShowFieldGlyphs::SecondaryVectorParameterScalingType("SecondaryVectorParameterScalingType");
+const AlgorithmParameterName ShowFieldGlyphs::SecondaryVectorParameterDataInput("SecondaryVectorParameterDataInput");
+const AlgorithmParameterName ShowFieldGlyphs::SecondaryVectorParameterScale("SecondaryVectorParameterScale");
 const AlgorithmParameterName ShowFieldGlyphs::ArrowHeadRatio("ArrowHeadRatio");
 const AlgorithmParameterName ShowFieldGlyphs::RenderBidirectionaly("RenderBidirectionaly");
 const AlgorithmParameterName ShowFieldGlyphs::RenderBases("RenderBases");

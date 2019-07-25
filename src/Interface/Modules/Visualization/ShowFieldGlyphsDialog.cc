@@ -166,9 +166,9 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
   addCheckableButtonManager(this->renderVectorsBelowThresholdCheckBox_, ShowFieldGlyphs::RenderVectorsBelowThreshold);
   addDoubleSpinBoxManager(this->vectorsThresholdDoubleSpinBox_, ShowFieldGlyphs::VectorsThreshold);
   // Radius/Width
-  addRadioButtonGroupManager({ this->secondaryVectorParameterUniformRButton_, this->secondaryVectorParameterPortRButton_}, ShowFieldGlyphs::SecondaryVecParamScalingType);
-  addComboBoxManager(this->secondaryVectorParameterPortComboBox_, ShowFieldGlyphs::SecondaryVecParamDataInput);
-  addDoubleSpinBoxManager(this->secondaryVectorParameterDoubleSpinBox_, ShowFieldGlyphs::SecondaryVecParamScale);
+  addRadioButtonGroupManager({ this->secondaryVectorParameterUniformRButton_, this->secondaryVectorParameterPortRButton_}, ShowFieldGlyphs::SecondaryVectorParameterScalingType);
+  addComboBoxManager(this->secondaryVectorParameterPortComboBox_, ShowFieldGlyphs::SecondaryVectorParameterDataInput);
+  addDoubleSpinBoxManager(this->secondaryVectorParameterDoubleSpinBox_, ShowFieldGlyphs::SecondaryVectorParameterScale);
   // Arrow Settings
   addDoubleSpinBoxManager(this->arrowHeadRatioDoubleSpinBox_, ShowFieldGlyphs::ArrowHeadRatio);
   addCheckableButtonManager(this->bidirectionalVectorsCheckBox_, ShowFieldGlyphs::RenderBidirectionaly);

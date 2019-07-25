@@ -64,9 +64,9 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName VectorsScale;
         static const Core::Algorithms::AlgorithmParameterName RenderVectorsBelowThreshold;
         static const Core::Algorithms::AlgorithmParameterName VectorsThreshold;
-        static const Core::Algorithms::AlgorithmParameterName SecondaryVecParamScalingType;
-        static const Core::Algorithms::AlgorithmParameterName SecondaryVecParamDataInput;
-        static const Core::Algorithms::AlgorithmParameterName SecondaryVecParamScale;
+        static const Core::Algorithms::AlgorithmParameterName SecondaryVectorParameterScalingType;
+        static const Core::Algorithms::AlgorithmParameterName SecondaryVectorParameterDataInput;
+        static const Core::Algorithms::AlgorithmParameterName SecondaryVectorParameterScale;
         static const Core::Algorithms::AlgorithmParameterName ArrowHeadRatio;
         static const Core::Algorithms::AlgorithmParameterName RenderBidirectionaly;
         static const Core::Algorithms::AlgorithmParameterName RenderBases;
