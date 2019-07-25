@@ -123,7 +123,9 @@ namespace SCIRun {
           double ratio,
           int resolution,
           ColorRGB& node_color,
-          bool use_lines);
+          bool use_lines,
+          bool render_base1,
+          bool render_base2);
 
         ColorScheme getColoringType(const RenderState& renState, VField* fld);
       };
@@ -162,7 +164,9 @@ void GlyphBuilder::addGlyph(
   double ratio,
   int resolution,
   ColorRGB& node_color,
-  bool use_lines)
+  bool use_lines,
+  bool render_base1 = false,
+  bool render_base2 = false)
 {
   switch (glyph_type)
   {
@@ -179,13 +183,13 @@ void GlyphBuilder::addGlyph(
       break;
     }
     case RenderState::GlyphType::CONE_GLYPH:
-      glyphs.addCone(p1, p2, radius, resolution, false, node_color, node_color);
+      glyphs.addCone(p1, p2, radius, resolution, render_base1, node_color, node_color);
       break;
     case RenderState::GlyphType::ARROW_GLYPH:
-      glyphs.addArrow(p1, p2, radius, ratio, resolution, node_color, node_color);
+      glyphs.addArrow(p1, p2, radius, ratio, resolution, node_color, node_color, render_base1, render_base2);
       break;
     case RenderState::GlyphType::DISK_GLYPH:
-      glyphs.addCylinder(p1, p2, radius, resolution, node_color, node_color);
+      glyphs.addDisk(p1, p2, radius, resolution, node_color, node_color);
       break;
     case RenderState::GlyphType::RING_GLYPH:
       BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Ring Geom is not supported yet."));
@@ -197,7 +201,7 @@ void GlyphBuilder::addGlyph(
       if (use_lines)
         glyphs.addLine(p1, p2, node_color, node_color);
       else
-        glyphs.addArrow(p1, p2, radius, ratio, resolution, node_color, node_color);
+        glyphs.addArrow(p1, p2, radius, ratio, resolution, node_color, node_color, render_base1, render_base2);
   }
 }
 
@@ -237,6 +241,7 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(VectorsScale, 1.0);
   state->setValue(RenderVectorsBelowThreshold, true);
   state->setValue(VectorsThreshold, 0.0);
+  state->setValue(RenderBases, false);
   state->setValue(RenderBidirectionaly, false);
   state->setValue(ArrowHeadRatio, 0.5);
   state->setValue(VectorsResolution, 5);
@@ -460,6 +465,7 @@ void GlyphBuilder::renderVectors(
 
   bool normalizeGlyphs = state->getValue(ShowFieldGlyphs::NormalizeVectors).toBool();
   bool renderBidirectionaly = state->getValue(ShowFieldGlyphs::RenderBidirectionaly).toBool();
+  bool renderBases = state->getValue(ShowFieldGlyphs::RenderBases).toBool();
   bool renderGlphysBelowThreshold = state->getValue(ShowFieldGlyphs::RenderVectorsBelowThreshold).toBool();
   float threshold = state->getValue(ShowFieldGlyphs::VectorsThreshold).toDouble();
 
@@ -546,9 +552,15 @@ void GlyphBuilder::renderVectors(
 
       if(renderGlphysBelowThreshold || pinputVector.length() >= threshold)
         {
-          addGlyph(glyphs, renState.mGlyphType, points[i], p2, radius, arrowHeadRatio, resolution, node_color, useLines);
+          // No need to render cylinder base if arrow is bidirectional
+          bool render_cylinder_base = renderBases && !renderBidirectionaly;
+
+          addGlyph(glyphs, renState.mGlyphType, points[i], p2, radius, arrowHeadRatio,
+                   resolution, node_color, useLines, render_cylinder_base, renderBases);
+
           if(renderBidirectionaly)
-            addGlyph(glyphs, renState.mGlyphType, points[i], p3, radius, arrowHeadRatio, resolution, node_color, useLines);
+            addGlyph(glyphs, renState.mGlyphType, points[i], p3, radius, arrowHeadRatio,
+                     resolution, node_color, useLines, render_cylinder_base, renderBases);
         }
     }
 
@@ -558,7 +570,8 @@ void GlyphBuilder::renderVectors(
   std::string uniqueNodeID = id + "vector_glyphs" + ss.str();
 
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENT_EDGES),
-                     state->getValue(ShowFieldGlyphs::VectorsUniformTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
+                     state->getValue(ShowFieldGlyphs::VectorsUniformTransparencyValue).toDouble(),
+                     colorScheme, renState, primIn, mesh->get_bounding_box());
 }
 
 void GlyphBuilder::renderScalars(
@@ -1053,6 +1066,7 @@ const AlgorithmParameterName ShowFieldGlyphs::SecondaryVecParamDataInput("Second
 const AlgorithmParameterName ShowFieldGlyphs::SecondaryVecParamScale("SecondaryVecParamScale");
 const AlgorithmParameterName ShowFieldGlyphs::ArrowHeadRatio("ArrowHeadRatio");
 const AlgorithmParameterName ShowFieldGlyphs::RenderBidirectionaly("RenderBidirectionaly");
+const AlgorithmParameterName ShowFieldGlyphs::RenderBases("RenderBases");
 const AlgorithmParameterName ShowFieldGlyphs::VectorsResolution("VectorsResolution");
 // Scalar Controls
 const AlgorithmParameterName ShowFieldGlyphs::ShowScalarTab("ShowScalarTab");

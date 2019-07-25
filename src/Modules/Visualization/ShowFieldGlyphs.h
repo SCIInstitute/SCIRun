@@ -69,6 +69,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName SecondaryVecParamScale;
         static const Core::Algorithms::AlgorithmParameterName ArrowHeadRatio;
         static const Core::Algorithms::AlgorithmParameterName RenderBidirectionaly;
+        static const Core::Algorithms::AlgorithmParameterName RenderBases;
         static const Core::Algorithms::AlgorithmParameterName VectorsResolution;
         // Scalar Controls
         static const Core::Algorithms::AlgorithmParameterName ShowScalarTab;

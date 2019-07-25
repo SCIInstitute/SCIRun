@@ -26,7 +26,7 @@
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0" alignment="Qt::AlignLeft">
+   <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="minimumSize">
       <size>
@@ -888,7 +888,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>210</y>
+              <y>230</y>
               <width>291</width>
               <height>321</height>
              </rect>
@@ -1238,12 +1238,6 @@
                 </property>
                </item>
               </widget>
-              <zorder>secondaryVectorParameterScaleLabel</zorder>
-              <zorder>secondaryVectorParameterDoubleSpinBox_</zorder>
-              <zorder>secondaryVectorParameterUniformRButton_</zorder>
-              <zorder>secondaryVectorParameterPortRButton_</zorder>
-              <zorder>secondaryVectorParameterPortComboBox_</zorder>
-              <zorder>arrowsGroupBox_</zorder>
              </widget>
              <widget class="QGroupBox" name="arrowsGroupBox_">
               <property name="enabled">
@@ -1643,6 +1637,33 @@
              </widget>
             </widget>
            </widget>
+           <widget class="QCheckBox" name="renderWithBasesCheckBox_">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>205</y>
+              <width>271</width>
+              <height>20</height>
+             </rect>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <strikeout>false</strikeout>
+             </font>
+            </property>
+            <property name="text">
+             <string>Render With Bases</string>
+            </property>
+           </widget>
            <zorder>vectorsDisplayTypeComboBox_</zorder>
            <zorder>vectorsResolutionSpinBox_</zorder>
            <zorder>vectorResolutionLabel</zorder>
@@ -1651,6 +1672,7 @@
            <zorder>vectorDisplayTypeLabel</zorder>
            <zorder>vectorScalingGroupBox_</zorder>
            <zorder>toolBox</zorder>
+           <zorder>renderWithBasesCheckBox_</zorder>
           </widget>
           <widget class="QWidget" name="tensorTab_">
            <attribute name="title">

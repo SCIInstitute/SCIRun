@@ -207,13 +207,12 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
 }
 
 void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double ratio, int resolution,
-  const ColorRGB& color1, const ColorRGB& color2)
+                         const ColorRGB& color1, const ColorRGB& color2, bool render_cylinder_base, bool render_cone_base)
 {
   Point mid((p1.x() * ratio + p2.x() * (1 - ratio)), (p1.y() * ratio + p2.y() * (1 - ratio)), (p1.z() * ratio + p2.z() * (1 - ratio)));
 
-  generateCylinder(p1, mid, radius / 6.0, radius / 6.0, resolution, color1, color2);
-  generateCone(mid, p2, radius, resolution, false, color1, color2);
-// generateCylinder(mid, p2, radius, 0.0, resolution, color1, color2);
+  generateCylinder(p1, mid, radius / 6.0, radius / 6.0, resolution, color1, color2, render_cylinder_base, false);
+  generateCone(mid, p2, radius, resolution, render_cone_base, color1, color2);
 }
 
 void GlyphGeom::addSphere(const Point& p, double radius, int resolution, const ColorRGB& color)
@@ -238,27 +237,29 @@ void GlyphGeom::addEllipsoid(const Point& p, Tensor& t, Vector& scaled_eigenvals
 }
 
 void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, int resolution,
-                            const ColorRGB& color1, const ColorRGB& color2)
+                            const ColorRGB& color1, const ColorRGB& color2,
+                            bool renderBase1, bool renderBase2)
 {
-  generateCylinder(p1, p2, radius, radius, resolution, color1, color2);
+  generateCylinder(p1, p2, radius, radius, resolution, color1, color2, renderBase1, renderBase2);
 }
 
 void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius1, double radius2,
-                            int resolution, const ColorRGB& color1, const ColorRGB& color2)
+                            int resolution, const ColorRGB& color1, const ColorRGB& color2,
+                            bool renderBase1, bool renderBase2)
 {
-  generateCylinder(p1, p2, radius1, radius2, resolution, color1, color2);
+  generateCylinder(p1, p2, radius1, radius2, resolution, color1, color2, renderBase1, renderBase2);
 }
 
 void GlyphGeom::addDisk(const Point& p1, const Point& p2, double radius, int resolution,
                             const ColorRGB& color1, const ColorRGB& color2)
 {
-  generateDisk(p1, p2, radius, radius, resolution, color1, color2);
+  generateCylinder(p1, p2, radius, radius, resolution, color1, color2, true, true);
 }
 
 void GlyphGeom::addCone(const Point& p1, const Point& p2, double radius, int resolution,
-                        bool renderBase, const ColorRGB& color1, const ColorRGB& color2)
+                        bool render_base, const ColorRGB& color1, const ColorRGB& color2)
 {
-  generateCone(p1, p2, radius, resolution, renderBase, color1, color2);
+  generateCone(p1, p2, radius, resolution, render_base, color1, color2);
 }
 
 void GlyphGeom::addClippingPlane(const Point& p1, const Point& p2,
@@ -412,9 +413,9 @@ void GlyphGeom::generateCone(const Point& p1, const Point& p2, double radius,
   }
 }
 
-void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
-                             double radius2, int resolution, const ColorRGB& color1,
-                             const ColorRGB& color2)
+void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius1,
+                                 double radius2, int resolution, const ColorRGB& color1,
+                                 const ColorRGB& color2, bool renderBase1, bool renderBase2)
 {
   resolution = resolution < 0 ? 20 : resolution;
   radius1 = radius1 < 0 ? 1.0 : radius1;
@@ -425,19 +426,26 @@ void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
   Vector crx = n.getArbitraryTangent();
   Vector u = Cross(crx, n).normal();
 
-  int points_per_loop = 4;
+  int points_per_loop = 2 + renderBase1 + renderBase2;
 
   // Add center points so flat sides can be drawn
-  points_.push_back(Vector(p1));
-  points_.push_back(Vector(p2));
-  int p1_index = numVBOElements_;
-  colors_.push_back(color1);
-  normals_.push_back(n);
-  numVBOElements_++;
-  int p2_index = numVBOElements_;
-  colors_.push_back(color2);
-  normals_.push_back(-n);
-  numVBOElements_++;
+  int p1_index, p2_index;
+  if(renderBase1)
+  {
+    points_.push_back(Vector(p1));
+    p1_index = numVBOElements_;
+    colors_.push_back(color1);
+    normals_.push_back(n);
+    numVBOElements_++;
+  }
+  if(renderBase2)
+  {
+    points_.push_back(Vector(p2));
+    p2_index = numVBOElements_;
+    colors_.push_back(color2);
+    normals_.push_back(-n);
+    numVBOElements_++;
+  }
 
   // Precalculate
   double length = (p2-p1).length();
@@ -460,13 +468,19 @@ void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
     normals_.push_back(normals);
 
     // Points for base
-    points_.push_back(radius1 * p + Vector(p1));
-    colors_.push_back(color1);
-    normals_.push_back(n);
-    points_.push_back(radius2 * p + Vector(p2));
-    colors_.push_back(color2);
-    normals_.push_back(-n);
-    numVBOElements_ += 4;
+    if(renderBase1)
+    {
+      points_.push_back(radius1 * p + Vector(p1));
+      colors_.push_back(color1);
+      normals_.push_back(n);
+    }
+    if(renderBase2)
+    {
+      points_.push_back(radius2 * p + Vector(p2));
+      colors_.push_back(color2);
+      normals_.push_back(-n);
+    }
+    numVBOElements_ += points_per_loop;
   }
 
   // Add indices
@@ -480,12 +494,19 @@ void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
     indices_.push_back(strips + points_per_loop + 1);
 
     // Render base
-    indices_.push_back(p1_index);
-    indices_.push_back(strips + 2);
-    indices_.push_back(strips + points_per_loop + 2);
-    indices_.push_back(strips + 3);
-    indices_.push_back(p2_index);
-    indices_.push_back(strips + points_per_loop + 3);
+    if(renderBase1)
+    {
+      indices_.push_back(p1_index);
+      indices_.push_back(strips + 2);
+      indices_.push_back(strips + points_per_loop + 2);
+    }
+    if(renderBase2)
+    {
+      // Increment 1 if base 1 is present
+      indices_.push_back(strips + 2 + renderBase1);
+      indices_.push_back(p2_index);
+      indices_.push_back(strips + points_per_loop + 2 + renderBase1);
+    }
   }
 }
 

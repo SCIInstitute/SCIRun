@@ -169,18 +169,21 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
   addRadioButtonGroupManager({ this->secondaryVectorParameterUniformRButton_, this->secondaryVectorParameterPortRButton_}, ShowFieldGlyphs::SecondaryVecParamScalingType);
   addComboBoxManager(this->secondaryVectorParameterPortComboBox_, ShowFieldGlyphs::SecondaryVecParamDataInput);
   addDoubleSpinBoxManager(this->secondaryVectorParameterDoubleSpinBox_, ShowFieldGlyphs::SecondaryVecParamScale);
-  // Arrow Head Ratio
+  // Arrow Settings
   addDoubleSpinBoxManager(this->arrowHeadRatioDoubleSpinBox_, ShowFieldGlyphs::ArrowHeadRatio);
-  // Bidirectional
   addCheckableButtonManager(this->bidirectionalVectorsCheckBox_, ShowFieldGlyphs::RenderBidirectionaly);
-
+  addCheckableButtonManager(this->renderWithBasesCheckBox_, ShowFieldGlyphs::RenderBases);
+  
   // Execute if any changed
   connectButtonToExecuteSignal(this->showVectorsCheckBox_);
   connectButtonToExecuteSignal(this->vectorsTransparencyOffRButton_);
   connectButtonToExecuteSignal(this->vectorsUniformTransparencyRButton_);
+  connectButtonToExecuteSignal(this->secondaryVectorParameterUniformRButton_);
+  connectButtonToExecuteSignal(this->secondaryVectorParameterPortRButton_);
   connectButtonToExecuteSignal(this->normalizeVectorsCheckBox_);
   connectButtonToExecuteSignal(this->renderVectorsBelowThresholdCheckBox_);
   connectButtonToExecuteSignal(this->bidirectionalVectorsCheckBox_);
+  connectButtonToExecuteSignal(this->renderWithBasesCheckBox_);
 
   // Text Labels
   this->vectorColorTypeLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
