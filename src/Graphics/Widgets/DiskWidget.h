@@ -26,8 +26,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef Graphics_Widgets_SphereWidget_H
-#define Graphics_Widgets_SphereWidget_H
+#ifndef Graphics_Widgets_DiskWidget_H
+#define Graphics_Widgets_DiskWidget_H
 
 #include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Core/Datatypes/Legacy/Field/FieldFwd.h>
@@ -38,21 +38,22 @@ namespace SCIRun {
   namespace Graphics {
     namespace Datatypes {
 
-      class SCISHARE SphereWidget : public WidgetBase
+      class SCISHARE DiskWidget : public WidgetBase
       {
       public:
-        SphereWidget(const Core::GeometryIDGenerator& idGenerator,
-                     const std::string& name,
-                     double radius,
-                     const std::string& defaultColor,
-                     const Core::Geometry::Point& point,
-                     const Core::Geometry::BBox& bbox,
-                     int resolution);
+        DiskWidget(const Core::GeometryIDGenerator& idGenerator,
+                   const std::string& name,
+                   double radius,
+                   const std::string& defaultColor,
+                   const Core::Geometry::Point& p1,
+                   const Core::Geometry::Point& p2,
+                   const Core::Geometry::BBox& bbox,
+                   int resolution);
       private:
         RenderState getWidgetRenderState(const std::string& defaultColor);
       };
 
-      using SphereWidgetHandle = SharedPointer<SphereWidget>;
+      using DiskWidgetHandle = SharedPointer<DiskWidget>;
     }
   }
 }

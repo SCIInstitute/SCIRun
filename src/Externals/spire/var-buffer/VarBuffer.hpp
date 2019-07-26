@@ -21,11 +21,11 @@ public:
   VarBuffer();
 
   // Preallocate the variable buffer to the preset size.
-  explicit VarBuffer(uint32_t size);
+  explicit VarBuffer(size_t size);
 
-  /// \todo Add flag which will swap bytes when reading out of or into buffer.
+  // todo Add flag which will swap bytes when reading out of or into buffer.
 
-  /// Writes \p numBytes of \p bytes.
+  // Writes numBytes of bytes.
   void writeBytes(const char* bytes, size_t numBytes);
 
   /// Writes a null terminated string.
@@ -53,7 +53,7 @@ public:
   size_t getBufferSize() const {return mSerializer->getOffset();}
 
   /// Retrieves currently allocated size of the buffer.
-  int getAllocatedSize() const {return mBufferSize;}
+  size_t getAllocatedSize() const {return mBufferSize;}
 
 private:
 
@@ -65,7 +65,7 @@ private:
   static uint16_t deserializeUInt16(const char* msg, int msgLen, int* offset_out);
 
   std::vector<char> mBuffer;      ///< buffer
-  int     mBufferSize;  ///< Absolute size of mBuffer in bytes.
+  size_t            mBufferSize;  ///< Absolute size of mBuffer in bytes.
 
   std::unique_ptr<spire::BSerialize> mSerializer;
 };

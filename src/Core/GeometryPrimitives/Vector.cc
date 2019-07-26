@@ -112,7 +112,7 @@ Vector::safe_normal() const
    return v;
 }
 
-std::istream& operator>>( std::istream& is, Vector& v)
+std::istream& SCIRun::Core::Geometry::operator>>( std::istream& is, Vector& v)
 {
   double x, y, z;
   char st;
@@ -193,4 +193,12 @@ const TypeDescription* SCIRun::Core::Geometry::get_type_description(Vector*)
 				"SCIRun", TypeDescription::DATA_E);
   }
   return td;
+}
+
+Vector SCIRun::Core::Geometry::vectorFromString(const std::string& str)
+{
+  std::istringstream istr(str);
+  Vector v;
+  istr >> v;
+  return v;
 }

@@ -30,12 +30,17 @@ SET(Graphics_Widgets_SRCS
   Widget.cc
   BoundingBoxWidget.cc
   SphereWidget.cc
+  CylinderWidget.cc
+  ConeWidget.cc
+  DiskWidget.cc
 )
 
 SET(Graphics_Widgets_HEADERS
   Widget.h
   BoundingBoxWidget.h
   SphereWidget.h
+  CylinderWidget.h
+  ConeWidget.h
   share.h
 )
 

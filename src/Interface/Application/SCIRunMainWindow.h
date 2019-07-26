@@ -280,6 +280,7 @@ private Q_SLOTS:
   void showSnippetHelp();
   void showTagHelp();
   void showTriggerHelp();
+  void showModuleFuzzySearchHelp();
   void switchMouseMode();
   void toggleFullScreen();
   void toggleMetadataLayer(bool toggle);

@@ -160,9 +160,15 @@ void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
   ShowAll show;
   visitTree(moduleSelectorTreeWidget_, show);
 
-  bool regexSelected = filterActionGroup_->checkedAction()->text().contains("wildcards");
+  HideItemsNotMatchingString::SearchType searchType;
+  if(filterActionGroup_->checkedAction()->text().contains("Starts with"))
+    searchType = HideItemsNotMatchingString::SearchType::STARTS_WITH;
+  if(filterActionGroup_->checkedAction()->text().contains("wildcards"))
+    searchType = HideItemsNotMatchingString::SearchType::WILDCARDS;
+  else if(filterActionGroup_->checkedAction()->text().contains("fuzzy search"))
+    searchType = HideItemsNotMatchingString::SearchType::FUZZY_SEARCH;
 
-  HideItemsNotMatchingString func(regexSelected, start);
+  HideItemsNotMatchingString func(searchType, start);
 
   //note: goofy double call, first to hide the leaves, then hide the categories.
   visitTree(moduleSelectorTreeWidget_, func);
@@ -765,6 +771,20 @@ void SCIRunMainWindow::showTriggerHelp()
     "via network loading), and post-network-load (after user loads a file)."
     "\n\nExamples can be found in the GUI when you first load the dialog. The scripts are saved at the application level and can be enabled/disabled."
      );
+}
+
+void SCIRunMainWindow::showModuleFuzzySearchHelp()
+{
+  QMessageBox::information(this, "Module Selector Fuzzy Search",
+                           "\nFuzzy search lets you skip characters as long as the are in order."
+                           "\nExample: Searching 'rdfl' will find the module 'ReadField'."
+                           "\n\nSearches are case insensitive except when you type an upper case character."
+                           "\nExample: Searching 'RdFl' or 'Rdfl' will reduce total matches while still finding 'ReadField'."
+                           "\nTip: Type the first letters of words in capitals, such as 'SFG' to find 'ShowFieldGlyphs'."
+                           "\n\nSpaces between words will do multiple searches to further reduce matched modules."
+                           "\nExample: Search 'mesh get' to search both 'mesh' and 'get' in the same module name."
+                           "\n\nAll symbols are igonred except *'s which will make the search switch to the wildcards option instead of fuzzy search."
+    );
 }
 
 void SCIRunMainWindow::toolkitDownload()
