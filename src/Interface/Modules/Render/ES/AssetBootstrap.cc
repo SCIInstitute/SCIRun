@@ -54,12 +54,10 @@ public:
     {
       // Load geometry and associated vertex and fragment shaders.
       geomMan->loadGeometry(core, cachedEntity, "Assets/arrow.geom");
-      geomMan->loadGeometry(core, cachedEntity, "Assets/sphere.geom");
     }
     if (std::shared_ptr<ren::ShaderMan> shaderMan = sm.lock())
     {
         // Load shader we will use with the coordinate axes.
-      shaderMan->loadVertexAndFragmentShader(core, cachedEntity, "Shaders/DirPhong");
       shaderMan->loadVertexAndFragmentShader(core, cachedEntity, "Shaders/OrientationGlyph");
     }
 

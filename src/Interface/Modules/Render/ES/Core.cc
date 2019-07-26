@@ -106,6 +106,20 @@ std::string ESCore::toString(std::string prefix) const
   return output;
 }
 
+bool ESCore::hasGeomPromise() const
+{
+  for(auto& comp : mComponents)
+  {
+    if(comp.second->getNumComponents() > 0)
+    {
+      if(mComponentIDNameMap.find(comp.first) != mComponentIDNameMap.end() &&
+         mComponentIDNameMap.at(comp.first) == "ren:GeomPromise")
+        return true;
+    }
+  }
+  return false;
+}
+
 void ESCore::execute(double currentTime, double constantFrameTime)
 {
   ++mCoreSequence;
@@ -146,10 +160,11 @@ void ESCore::execute(double currentTime, double constantFrameTime)
   renormalize(true);
   mSystems->renormalize();
 
-  // Perform garbage collection if requested.
+  // Perform garbage collection if requested and safe
   if(runGC)
   {
-    runCompleteGC();
+    if(!hasGeomPromise())
+      runCompleteGC();
     runGC = false;
   }
 

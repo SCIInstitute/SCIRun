@@ -839,12 +839,14 @@ namespace SCIRun {
 
       DEBUG_LOG_LINE_INFO
 
-      std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
-      std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
-      if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock())
+      auto vmc = mCore.getStaticComponent<ren::StaticVBOMan>();
+      auto imc = mCore.getStaticComponent<ren::StaticIBOMan>();
+      if(!vmc || !imc) return;
+
+      if (std::shared_ptr<ren::VBOMan> vboMan = vmc->instance_)
       {
         DEBUG_LOG_LINE_INFO;
-        if (std::shared_ptr<ren::IBOMan> iboMan = im.lock())
+        if (std::shared_ptr<ren::IBOMan> iboMan = imc->instance_)
         {
           DEBUG_LOG_LINE_INFO
           if (foundObject != mSRObjects.end())
