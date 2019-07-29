@@ -356,7 +356,7 @@ namespace SCIRun {
       std::vector<bool>                 mLightsOn           {};
 
       glm::vec2                         autoRotateVector    {0.0, 0.0};
-      float                             autoRotateSpeed     {0.01};
+      float                             autoRotateSpeed     {0.01f};
 
       const int                         frameInitLimit_     {};
       std::unique_ptr<SRCamera>         mCamera;       // Primary camera.
