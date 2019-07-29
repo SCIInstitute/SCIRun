@@ -294,10 +294,12 @@ void SCIRunMainWindow::runScript()
 
 void SCIRunMainWindow::runMacro()
 {
+#ifdef BUILD_WITH_PYTHON
   auto index = sender()->property(MacroEditor::Index).toInt();
   auto script = macroEditor_->macroForButton(index);
   NetworkEditor::InEditingContext iec(networkEditor_);
   PythonInterpreter::Instance().run_script(script.toStdString());
+#endif
 }
 
 void SCIRunMainWindow::updateMacroButton(int index, const QString& name)
