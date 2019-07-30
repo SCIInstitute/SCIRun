@@ -767,28 +767,63 @@ void GlyphBuilder::renderTensors(
         interruptible->checkForInterruption();
 
         Tensor t = portHandler.getPrimaryTensor(indices[i]);
+
         double eigen1, eigen2, eigen3;
         t.get_eigenvalues(eigen1, eigen2, eigen3);
-
-        // Checks to see if eigenvalues are machine zero
         Vector eigvals(fabs(eigen1), fabs(eigen2), fabs(eigen3));
-        bool eig_x_0 = eigvals.x() < epsilon && eigvals.x() > -epsilon;
-        bool eig_y_0 = eigvals.y() < epsilon && eigvals.y() > -epsilon;
-        bool eig_z_0 = eigvals.z() < epsilon && eigvals.z() > -epsilon;
 
         // Counter for negative eigen values
-        bool neg_eigval = (eigen1 < -epsilon || eigen2 < -epsilon || eigen3 < -epsilon);
-        if(neg_eigval)
+        if(eigen1 < -epsilon || eigen2 < -epsilon || eigen3 < -epsilon)
           neg_eigval_count++;
 
-        ColorRGB node_color = portHandler.getNodeColor(indices[i]);
-        double magnitude = t.magnitude();
+        Vector eigvec1, eigvec2, eigvec3;
+        t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
+
+        std::vector<Vector> eigvectors;
+        eigvectors.push_back(eigvec1);
+        eigvectors.push_back(eigvec2);
+        eigvectors.push_back(eigvec3);
+
         // If normalize checkbox selected
-        if(normalizeGlyphs){
-          eigvals.x(eigen1 / magnitude);
-          eigvals.y(eigen2 / magnitude);
-          eigvals.z(eigen3 / magnitude);
+        if(normalizeGlyphs)
+          eigvals.safe_normalize();
+
+        eigvals *= scale;
+
+        // Checks to see if eigenvalues are machine zero
+        bool eig_x_0 = eigvals.x() <= epsilon;
+        bool eig_y_0 = eigvals.y() <= epsilon;
+        bool eig_z_0 = eigvals.z() <= epsilon;
+
+        // For order 2 tensor(flat), we reorder values by size after getting absolute values to prevent normals
+        // from being generating incorrectly
+        int first = 0, second = 1, third = 2;
+        if((eig_x_0 + eig_y_0 + eig_z_0) == 1)
+        {
+          if(eigvals[first] < eigvals[second])
+          {
+            int temp = first;
+            first = second;
+            second = temp;
+          }
+          if(eigvals[second] < eigvals[third])
+          {
+            int temp = second;
+            second = third;
+            third = temp;
+          }
+          if(eigvals[first] < eigvals[second])
+          {
+            int temp = first;
+            first = second;
+            second = temp;
+          }
         }
+
+        t.set_outside_eigens(eigvectors[first], eigvectors[second], eigvectors[third],
+                             eigvals[first], eigvals[second], eigvals[third]);
+
+        ColorRGB node_color = portHandler.getNodeColor(indices[i]);
 
         // Do not render tensors that are too small - because surfaces
         // are not renderd at least two of the scales must be non zero.
@@ -800,15 +835,13 @@ void GlyphBuilder::renderTensors(
         // Render as order 2 or 3 tensor
         if((eig_x_0 + eig_y_0 + eig_z_0) <= 1)
           {
-            eigvals *= scale;
-
             switch (renState.mGlyphType)
               {
               case RenderState::GlyphType::BOX_GLYPH:
                 glyphs.addBox(points[i], t, scale, node_color);
                 break;
               case RenderState::GlyphType::ELLIPSOID_GLYPH:
-                glyphs.addEllipsoid(points[i], t, eigvals, resolution, node_color);
+                glyphs.addEllipsoid(points[i], t, resolution, node_color);
                 tensorcount++;
                 break;
               case RenderState::GlyphType::SPHERE_GLYPH:
@@ -820,13 +853,15 @@ void GlyphBuilder::renderTensors(
         // Render as order 1 tensor(vector)
         else if((eig_x_0 + eig_y_0 + eig_z_0) == 2)
           {
-            eigvals *= scale;
-
-            Vector eigvec1, eigvec2, eigvec3;
-            t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
-            Transform trans(points[i], eigvec1, eigvec2, eigvec3);
-            Point p1 = points[i] + trans *  eigvals/2;
-            Point p2 = points[i] + trans * -eigvals/2;
+            Vector dir;
+            if(eig_x_0 && eig_y_0)
+              dir = eigvec3;
+            else if(eig_y_0 && eig_z_0)
+              dir = eigvec1;
+            else if(eig_x_0 && eig_z_0)
+              dir = eigvec2;
+            Point p1 = points[i] - dir*scale;
+            Point p2 = points[i] + dir*scale;
             addGlyph(tensor_line_glyphs, RenderState::GlyphType::LINE_GLYPH, p1, p2, scale, scale, resolution, node_color, true);
           }
         // Render as order 0 tensor(point)

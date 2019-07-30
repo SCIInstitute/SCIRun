@@ -30,7 +30,6 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Math/MiscMath.h>
 #include <Core/GeometryPrimitives/Transform.h>
-#include "glm/gtc/matrix_transform.hpp"
 
 using namespace SCIRun;
 using namespace Graphics;
@@ -231,9 +230,9 @@ void GlyphGeom::addBox(const Point& center, Tensor& t, double scale, ColorRGB& n
   generateBox(center, t, scale, node_color);
 }
 
-void GlyphGeom::addEllipsoid(const Point& p, Tensor& t, Vector& scaled_eigenvals, int resolution, const ColorRGB& color)
+void GlyphGeom::addEllipsoid(const Point& p, Tensor& t, int resolution, const ColorRGB& color)
 {
-  generateEllipsoid(p, t, scaled_eigenvals, resolution, color, false);
+  generateEllipsoid(p, t, resolution, color, false);
 }
 
 void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, int resolution,
@@ -771,18 +770,44 @@ void GlyphGeom::generateBoxSide(const Vector& p1, const Vector& p2, const Vector
   indices_.push_back(offset);
 }
 
-void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, Vector &scaled_eigenvals,
-                                  int resolution, const ColorRGB& color, bool half)
+void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, int resolution, const ColorRGB& color, bool half)
 {
     Vector eigvec1, eigvec2, eigvec3;
     t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
+
+    double eigval1, eigval2, eigval3;
+    t.get_eigenvalues(eigval1, eigval2, eigval3);
+    Vector scaled_eigenvals = Vector(eigval1, eigval2, eigval3);
+
+    // Check for zero eigenvectors
+    bool zero_norm_used = false;
+    Vector zero_norm;
+    double epsilon = pow(2, -52);
+    if(scaled_eigenvals[0] <= epsilon)
+    {
+      zero_norm_used = true;
+      zero_norm = Cross(eigvec2, eigvec3);
+      eigvec1 = Cross(eigvec2, eigvec3);
+    }
+    else if(scaled_eigenvals[1] <= epsilon)
+    {
+      zero_norm_used = true;
+      zero_norm = Cross(eigvec1, eigvec3);
+      eigvec2 = Cross(eigvec1, eigvec3);
+    }
+    else if(scaled_eigenvals[2] <= epsilon)
+    {
+      zero_norm_used = true;
+      zero_norm = Cross(eigvec1, eigvec2);
+      eigvec3 = Cross(eigvec1, eigvec2);
+    }
 
     Transform rotate(Point(0.0, 0.0, 0.0), eigvec1, eigvec2, eigvec3);
     Transform trans = rotate;
     trans.pre_translate((Vector) center);
 
-    trans.post_scale ( Vector(1.0,1.0,1.0) * scaled_eigenvals );
-    rotate.post_scale( Vector(1.0,1.0,1.0) / scaled_eigenvals );
+    trans.post_scale (Vector(1.0,1.0,1.0) * scaled_eigenvals);
+    rotate.post_scale(Vector(1.0,1.0,1.0) / scaled_eigenvals);
 
     int nu = resolution + 1;
 
@@ -797,25 +822,6 @@ void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, Vector &scaled
 
     SinCosTable tab1(nu, 0, 2 * M_PI);
     SinCosTable tab2(nv, 0, end);
-
-    // Check for zero eigenvectors
-    bool zero_norm_used = false;
-    Vector zero_norm;
-    if(scaled_eigenvals[0] == 0.0)
-    {
-      zero_norm_used = true;
-      zero_norm = eigvec1;
-    }
-    else if(scaled_eigenvals[1] == 0.0)
-    {
-      zero_norm_used = true;
-      zero_norm = eigvec2;
-    }
-    else if(scaled_eigenvals[2] == 0.0)
-    {
-      zero_norm_used = true;
-      zero_norm = eigvec3;
-    }
 
     // Draw the ellipsoid
     for (int v = 0; v<nv - 1; v++)

@@ -57,7 +57,7 @@ namespace SCIRun {
                     const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2, bool render_cylinder_base, bool render_cone_base);
       void addSphere(const Core::Geometry::Point& p, double radius, int resolution, const Core::Datatypes::ColorRGB& color);
       void addBox(const Core::Geometry::Point& center, Core::Geometry::Tensor& t, double scale, Core::Datatypes::ColorRGB& node_color);
-      void addEllipsoid(const Core::Geometry::Point& p, Core::Geometry::Tensor& t, Core::Geometry::Vector& scaled_eigenvals, int resolution, const Core::Datatypes::ColorRGB& color);
+      void addEllipsoid(const Core::Geometry::Point& p, Core::Geometry::Tensor& t, int resolution, const Core::Datatypes::ColorRGB& color);
       void addCylinder(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, int resolution,
                        const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2,
                        bool renderBase1 = false, bool renderBase2 = false);
@@ -109,7 +109,7 @@ namespace SCIRun {
       void generateBoxSide(const Core::Geometry::Vector& p1, const Core::Geometry::Vector& p2,
                            const Core::Geometry::Vector& p3, const Core::Geometry::Vector& p4,
                            const Core::Geometry::Vector& normal, const Core::Datatypes::ColorRGB& node_color);
-      void generateEllipsoid(const Core::Geometry::Point& center, Core::Geometry::Tensor& t, Core::Geometry::Vector& scaled_eigenvals, int resolution, const Core::Datatypes::ColorRGB& color, bool half);
+      void generateEllipsoid(const Core::Geometry::Point& center, Core::Geometry::Tensor& t, int resolution, const Core::Datatypes::ColorRGB& color, bool half);
       void generateCone(const  Core::Geometry::Point& p1, const  Core::Geometry::Point& p2, double radius, int resolution, bool renderBase, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       /* void generateDisk(const  Core::Geometry::Point& p1, const  Core::Geometry::Point& p2, double radius1, double radius2, int resolution, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2); */
       void generateLine(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
