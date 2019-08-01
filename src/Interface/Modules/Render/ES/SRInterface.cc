@@ -665,7 +665,7 @@ namespace SCIRun {
       mWidgetTransform.setPosition(newPos);
 
       // Rotate
-      glm::vec3 viewVec = (cam->data.projIV * glm::vec4(0.0, 0.0, 1.0, 0.0)).xyz();
+      glm::vec3 viewVec = (cam->data.projIV * glm::vec4(0.0, 0.0, -1.0, 0.0)).xyz();
       glm::vec3 rotAxis = glm::cross(glm::normalize(viewVec), transVec);
       glm::mat4 rot = glm::rotate(glm::length(transVec), rotAxis);
       mWidgetTransform.transform = rot * mWidgetTransform.transform;
