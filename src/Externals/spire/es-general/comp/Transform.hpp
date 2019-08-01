@@ -21,7 +21,7 @@ struct Transform
     transform[3].z = pos.z;
   }
 
-  glm::vec3 getPosition()
+  glm::vec3 getPosition() const
   {
     return glm::vec3(transform[3].x, transform[3].y, transform[3].z);
   }

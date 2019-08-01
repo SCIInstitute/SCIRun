@@ -31,6 +31,7 @@
 #include <gl-platform/GLPlatform.hpp>
 #include <Interface/Modules/Render/UndefiningX11Cruft.h>
 #include <QtOpenGL/QGLWidget>
+#include <glm/gtx/transform.hpp>
 
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
@@ -370,6 +371,7 @@ namespace SCIRun {
 
       //a map from selection id to name
       std::map<uint32_t, std::string> selMap;
+      std::map<uint32_t, glm::vec3> originMap;
       std::vector<uint64_t> entityList;
 
       //modify and add each object to draw
@@ -378,6 +380,7 @@ namespace SCIRun {
         std::string objectName = obj->uniqueID();
         uint32_t selid = getSelectIDForName(objectName);
         selMap.insert(std::make_pair(selid, objectName));
+        originMap.insert(std::make_pair(selid, obj->origin));
         glm::vec4 selCol = getVectorForID(selid);
 
         // Add vertex buffer objects.
@@ -574,7 +577,10 @@ namespace SCIRun {
       {
         auto it = selMap.find(value);
         if (it != selMap.end())
+        {
           mSelected = it->second;
+          mSelectedOrigin = originMap.find(value)->second;
+        }
       }
       //release and restore fbo
       fboMan->unbindFBO();
@@ -647,12 +653,27 @@ namespace SCIRun {
       float zNear = mCamera->getZNear();
       float vDepth = 1.0/(ssDepth * (1.0/zFar - 1.0/zNear) + 1.0/zNear);
 
-      glm::vec4 transVec = glm::vec4(glm::vec3(spos - mSelectedPos) * glm::vec3(vDepth , vDepth, 1.0), 0.0f);
+      glm::vec3 transVec = glm::vec3(spos - mSelectedPos) * glm::vec3(vDepth , vDepth, 1.0);
       mWidgetTransform = gen::Transform();
-      mWidgetTransform.setPosition((glm::inverse(cam->data.projIV) * transVec).xyz());
+      glm::vec3 transProjVec = glm::vec3(glm::inverse(cam->data.projIV) * glm::vec4(transVec, 0.0f)).xyz();
 
       spire::CerealHeap<gen::Transform>* contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
       std::pair<const gen::Transform*, size_t> component = contTrans->getComponent(mSelectedID);
+
+      // Translate origin to center
+      glm::vec3 newPos = -mSelectedOrigin;
+      mWidgetTransform.setPosition(newPos);
+
+      // Rotate
+      glm::vec3 viewVec = (cam->data.projIV * glm::vec4(0.0, 0.0, 1.0, 0.0)).xyz();
+      glm::vec3 rotAxis = glm::cross(glm::normalize(viewVec), transVec);
+      glm::mat4 rot = glm::rotate(glm::length(transVec), rotAxis);
+      mWidgetTransform.transform = rot * mWidgetTransform.transform;
+
+      // Translate back to world space
+      mWidgetTransform.transform[3][0] += mSelectedOrigin[0];
+      mWidgetTransform.transform[3][1] += mSelectedOrigin[1];
+      mWidgetTransform.transform[3][2] += mSelectedOrigin[2];
 
       if (component.first != nullptr)
         contTrans->modifyIndex(mWidgetTransform, component.second, 0);

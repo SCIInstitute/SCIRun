@@ -656,6 +656,9 @@ void ShowAndEditDipoles::createDipoleWidget(BBox& bbox, Point& pos, Vector dir, 
                                                   bbox,
                                                   resolution_)));
   }
+  glm::vec3 origin = glm::vec3(bmin.x(), bmin.y(), bmin.z());
+  for(int i = 0; i < 1 + 3*show_as_vector; i++)
+    (*pointWidgets_[widget_num])[i]->origin = origin;
 }
 
 GeometryHandle ShowAndEditDipoles::addLines()

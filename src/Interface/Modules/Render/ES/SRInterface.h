@@ -316,6 +316,7 @@ namespace SCIRun {
 
       std::string                       mSelected           {};       // Current selection
       glm::vec4                         mSelectedPos        {};
+      glm::vec3                         mSelectedOrigin     {};
       gen::Transform                    mWidgetTransform    {};
 
       size_t                            mScreenWidth        {640};    // Screen width in pixels.
