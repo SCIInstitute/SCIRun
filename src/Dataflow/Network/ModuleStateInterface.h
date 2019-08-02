@@ -46,11 +46,17 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
+/*
+  Big change coming: separate into three different "Solid/Liquid/Gas" states. All with same interface, with
+  more fine-grained signal control.
+  Or, have each state key/value be setup with a save/load spec object, that could provide the signaling behavior
+*/
+
   class SCISHARE ModuleStateInterface
   {
   public:
     virtual ~ModuleStateInterface();
-    
+
     typedef SCIRun::Core::Algorithms::AlgorithmParameterName Name;
     typedef SCIRun::Core::Algorithms::AlgorithmParameter Value;
     typedef std::vector<Name> Keys;
@@ -61,7 +67,7 @@ namespace Networks {
     virtual bool containsKey(const Name& name) const = 0;
     virtual Keys getKeys() const = 0;
     virtual ModuleStateHandle clone() const = 0;
-    
+
     // this function preserves key/value pairs not in other
     void overwriteWith(const ModuleStateInterface& other);
 
@@ -146,7 +152,7 @@ namespace Networks {
   T transient_value_cast_with_variable_check(const ModuleStateInterface::TransientValueOption& x)
   {
     if (!x)
-      return{};
+      return {};
 
     if (transient_value_check<T>(x))
       return any_cast_or_default_<T>(*x);
