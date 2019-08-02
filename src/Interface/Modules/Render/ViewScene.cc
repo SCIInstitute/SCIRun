@@ -562,7 +562,6 @@ void ViewSceneDialog::setInitialLightValues()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::pullSpecial()
 {
-  pullCameraState();
   auto show = state_->getValue(Modules::Render::ViewScene::ShowViewer).toBool();
 
   if (show && parentWidget())
