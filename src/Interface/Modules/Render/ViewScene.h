@@ -69,6 +69,9 @@ namespace SCIRun {
 
     Q_SIGNALS:
       void newGeometryValueForwarder();
+      void cameraRotationChangeForwarder();
+      void cameraLookAtChangeForwarder();
+      void cameraDistnaceChangeForwarder();
       void mousePressSignalForTestingGeometryObjectFeedback(int x, int y, const std::string& selName);
 
 
@@ -110,6 +113,9 @@ namespace SCIRun {
       void autoRotateLeft();
       void autoRotateUp();
       void autoRotateDown();
+      void pullCameraRotation();
+      void pullCameraLookAt();
+      void pullCameraDistance();
 
 
       //---------------- Widgets -------------------------------------------------------------------
@@ -298,6 +304,7 @@ namespace SCIRun {
       bool                                  saveScreenshotOnNewGeometry_  {false};
       bool                                  pulledSavedVisibility_        {false};
       QTimer                                resizeTimer_                  {};
+      std::atomic<bool>                     pushingCameraState_           {false};
 
       //geometries
       Modules::Visualization::TextBuilder               textBuilder_        {};

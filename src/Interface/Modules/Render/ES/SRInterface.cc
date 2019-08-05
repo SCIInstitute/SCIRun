@@ -1408,8 +1408,8 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::doFrame(double currentTime, double constantDeltaTime)
     {
-      /// \todo Only render a frame if something has changed (new or deleted
-      /// objects, or the view point has changed).
+      // todo Only render a frame if something has changed (new or deleted
+      // objects, or the view point has changed).
       mContext->makeCurrent();
 
       applyAutoRotation();

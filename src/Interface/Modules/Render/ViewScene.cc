@@ -140,6 +140,15 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   state->connectSpecificStateChanged(Parameters::GeomData,[this](){Q_EMIT newGeometryValueForwarder();});
   connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(updateAllGeometries()));
 
+  state->connectSpecificStateChanged(Modules::Render::ViewScene::CameraRotation,[this](){Q_EMIT cameraRotationChangeForwarder();});
+  connect(this, SIGNAL(cameraRotationChangeForwarder()), this, SLOT(pullCameraRotation()));
+
+  state->connectSpecificStateChanged(Modules::Render::ViewScene::CameraLookAt,[this](){Q_EMIT cameraLookAtChangeForwarder();});
+  connect(this, SIGNAL(cameraLookAtChangeForwarder()), this, SLOT(pullCameraLookAt()));
+
+  state->connectSpecificStateChanged(Modules::Render::ViewScene::CameraDistance,[this](){Q_EMIT cameraDistnaceChangeForwarder();});
+  connect(this, SIGNAL(cameraDistnaceChangeForwarder()), this, SLOT(pullCameraDistance()));
+
   std::string filesystemRoot = Application::Instance().executablePath().string();
   std::string sep;
   sep += boost::filesystem::path::preferred_separator;
@@ -493,8 +502,42 @@ void ViewSceneDialog::pullCameraState()
 }
 
 //--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::pullCameraRotation()
+{
+  if(pushingCameraState_) return;
+  auto spire = mSpire.lock();
+  if(!spire) return;
+
+  auto rotation = toDoubleVector(state_->getValue(Modules::Render::ViewScene::CameraRotation).toVector());
+  spire->setCameraRotation(glm::quat(rotation[0], rotation[1], rotation[2], rotation[3]));
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::pullCameraLookAt()
+{
+  if(pushingCameraState_) return;
+  auto spire = mSpire.lock();
+  if(!spire) return;
+
+  auto lookAt = toDoubleVector(state_->getValue(Modules::Render::ViewScene::CameraLookAt).toVector());
+  spire->setCameraLookAt(glm::vec3(lookAt[0], lookAt[1], lookAt[2]));
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::pullCameraDistance()
+{
+  if(pushingCameraState_) return;
+  auto spire = mSpire.lock();
+  if(!spire) return;
+
+  float distance = state_->getValue(Modules::Render::ViewScene::CameraDistance).toDouble();
+  spire->setCameraDistance(distance);
+}
+
+//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::pushCameraState()
 {
+  pushingCameraState_ = true;
   auto spire = mSpire.lock();
   if(!spire) return;
 
@@ -507,6 +550,7 @@ void ViewSceneDialog::pushCameraState()
   glm::quat q = spire->getCameraRotation();
   auto rotation = makeAnonymousVariableList((double)q.w, (double)q.x, (double)q.y, (double)q.z);
   state_->setValue(Modules::Render::ViewScene::CameraRotation, rotation);
+  pushingCameraState_ = false;
 }
 
 //--------------------------------------------------------------------------------------------------

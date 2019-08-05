@@ -96,13 +96,13 @@ namespace SCIRun{
                                 static_cast<float>(mInterface.getScreenHeightPixels());}
 
       float getDistance() const {return mArcLookAt->getDistance();}
-      void setDistance(const float f) {mArcLookAt->setDistance(f);}
+      void setDistance(const float f) {mArcLookAt->setDistance(f); setClippingPlanes();}
 
       glm::vec3 getLookAt() const {return mArcLookAt->getLookAt();}
-      void setLookAt(const glm::vec3 v) {mArcLookAt->setLookAt(v);}
+      void setLookAt(const glm::vec3 v) {mArcLookAt->setLookAt(v); setClippingPlanes();}
 
       glm::quat getRotation() const {return mArcLookAt->getRotation();}
-      void setRotation(const glm::quat q) {mArcLookAt->setRotation(q);}
+      void setRotation(const glm::quat q) {mArcLookAt->setRotation(q); setClippingPlanes();}
 
       void setLockZoom(bool lock)     {lockZoom_ = lock;}
       void setLockPanning(bool lock)  {lockPanning_ = lock;}
