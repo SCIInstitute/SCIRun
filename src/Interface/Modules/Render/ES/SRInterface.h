@@ -343,7 +343,7 @@ namespace SCIRun {
 
       ren::ShaderVBOAttribs<5>          mArrowAttribs       {};       // Pre-applied shader / VBO attributes.
       ren::CommonUniforms               mArrowUniforms      {};       // Common uniforms used in the arrow shader.
-      RenderState::TransparencySortType mRenderSortType     {};       // Which strategy will be used to render transparency
+      RenderState::TransparencySortType mRenderSortType     {RenderState::TransparencySortType::UPDATE_SORT};       // Which strategy will be used to render transparency
 
       //material settings
       double                            mMatAmbient         {};
