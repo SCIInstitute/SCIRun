@@ -116,13 +116,14 @@ protected:
     {
       vectorOfInputData =
       {
-        CreateEmptyLatVol(2, 2, 2),
-        CreateEmptyLatVol(3, 4, 5),
-        // trisurf
+        CreateEmptyLatVol(2, 3, 4),
+        CreateEmptyLatVol(2, 3, 4),
+        loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
+        loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld"), // tetvol
+        loadFieldFromFile(TestResources::rootDir() / "Fields/test_image_node.fld"),                            // imagemesh
         // quadsurf
         // hexvol
         // curvemesh
-        // imagemesh
       };
     }
   }
@@ -137,7 +138,7 @@ std::vector<FieldHandle> ShowFieldBruteForceTest::vectorOfInputData;
 
 // 768 cases in 1 second/field
 // 768 tests from ConstructLatVolGeometry/ShowFieldBruteForceTest (2746 ms total)
-TEST_P(ShowFieldBruteForceTest, DISABLED_BruteForceExecuteTest)
+TEST_P(ShowFieldBruteForceTest, BruteForceExecuteTest)
 {
   LogSettings::Instance().setVerbose(false);
 
@@ -209,15 +210,14 @@ protected:
     {
       vectorOfInputData =
       {
-          CreateEmptyLatVol(2, 2, 2),
-          CreateEmptyLatVol(3, 4, 5),
-          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
-          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld"), // tetvol
-          //loadFieldFromFile(TestResources::rootDir() / "Fields/curveMesh.fld"),                                  // curvemesh
-          //loadFieldFromFile(TestResources::rootDir() / "Fields/points.fld"),                                     // point cloud
-          // quadsurf
-          // hexvol
-          // imagemesh
+        CreateEmptyLatVol(2, 3, 4),
+        loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
+        loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld"), // tetvol
+        loadFieldFromFile(TestResources::rootDir() / "Fields/test_image_node.fld"),                            // imagemesh
+        //loadFieldFromFile(TestResources::rootDir() / "Fields/curveMesh.fld"),                                  // curvemesh
+        //loadFieldFromFile(TestResources::rootDir() / "Fields/points.fld"),                                     // point cloud
+        // quadsurf
+        // hexvol
       };
     }
 
@@ -335,15 +335,14 @@ protected:
     {
       vectorOfInputData =
       {
-          CreateEmptyLatVol(2, 2, 2),
-          CreateEmptyLatVol(3, 4, 5),
-          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
-          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld"), // tetvol
-          loadFieldFromFile(TestResources::rootDir() / "Fields/curveMesh.fld"),                                  // curvemesh
-          //loadFieldFromFile(TestResources::rootDir() / "Fields/points.fld"),                                     // point cloud
-          // quadsurf
-          // hexvol
-          // imagemesh
+        CreateEmptyLatVol(2, 3, 4),
+        loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
+        loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld"), // tetvol
+        loadFieldFromFile(TestResources::rootDir() / "Fields/curveMesh.fld"),                                  // curvemesh
+        loadFieldFromFile(TestResources::rootDir() / "Fields/test_image_node.fld"),                            // imagemesh
+        //loadFieldFromFile(TestResources::rootDir() / "Fields/points.fld"),                                     // point cloud
+        // quadsurf
+        // hexvolf
       };
     }
 
@@ -463,15 +462,14 @@ protected:
     {
       vectorOfInputData =
       {
-          CreateEmptyLatVol(2, 2, 2),
-          CreateEmptyLatVol(3, 4, 5),
-          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
-          loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld"), // tetvol
-          loadFieldFromFile(TestResources::rootDir() / "Fields/curveMesh.fld"),                                  // curvemesh
-          //loadFieldFromFile(TestResources::rootDir() / "Fields/points.fld"),                                     // point cloud
-          // quadsurf
-          // hexvol
-          // imagemesh
+        CreateEmptyLatVol(2, 3, 4),
+        loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
+        loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld"), // tetvol
+        loadFieldFromFile(TestResources::rootDir() / "Fields/curveMesh.fld"),                                  // curvemesh
+        loadFieldFromFile(TestResources::rootDir() / "Fields/test_image_node.fld"),                            // imagemesh
+        //loadFieldFromFile(TestResources::rootDir() / "Fields/points.fld"),                                     // point cloud
+        // quadsurf
+        // hexvol
       };
     }
 
