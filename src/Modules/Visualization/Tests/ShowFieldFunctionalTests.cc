@@ -62,7 +62,8 @@ using ::testing::Bool;
 //--------------------------------------------------------------------------------------------------
 //---------------- Brute Force ---------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
-
+//27527 ms
+//115 ms
 class ShowFieldBruteForceTest : public ParameterizedModuleTest<std::tuple<bool, bool, bool, bool, bool, bool,
   double, int, int>>
 {
@@ -117,13 +118,13 @@ protected:
       vectorOfInputData =
       {
         CreateEmptyLatVol(2, 3, 4),
-        CreateEmptyLatVol(2, 3, 4),
         loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
         loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld"), // tetvol
         loadFieldFromFile(TestResources::rootDir() / "Fields/test_image_node.fld"),                            // imagemesh
-        // quadsurf
-        // hexvol
-        // curvemesh
+        loadFieldFromFile(TestResources::rootDir() / "Fields/hexvol.fld"),                                     // hexvol
+        loadFieldFromFile(TestResources::rootDir() / "Fields/quadsurf.fld"),                                   // quadsurf
+        //loadFieldFromFile(TestResources::rootDir() / "Fields/curveMesh.fld"),                                  // curvemesh
+        //loadFieldFromFile(TestResources::rootDir() / "Fields/points.fld"),                                     // point cloud
       };
     }
   }
@@ -214,10 +215,10 @@ protected:
         loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
         loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld"), // tetvol
         loadFieldFromFile(TestResources::rootDir() / "Fields/test_image_node.fld"),                            // imagemesh
+        loadFieldFromFile(TestResources::rootDir() / "Fields/hexvol.fld"),                                     // hexvol
+        loadFieldFromFile(TestResources::rootDir() / "Fields/quadsurf.fld"),                                   // quadsurf
         //loadFieldFromFile(TestResources::rootDir() / "Fields/curveMesh.fld"),                                  // curvemesh
         //loadFieldFromFile(TestResources::rootDir() / "Fields/points.fld"),                                     // point cloud
-        // quadsurf
-        // hexvol
       };
     }
 
@@ -293,7 +294,7 @@ INSTANTIATE_TEST_CASE_P(
 //--------------------------------------------------------------------------------------------------
 //---------------- Edges ---------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
-
+//2799 ms
 class ShowFieldEdgeTest : public ParameterizedModuleTest<std::tuple<bool, double, int, int, double, int>>
 {
 protected:
@@ -338,11 +339,11 @@ protected:
         CreateEmptyLatVol(2, 3, 4),
         loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
         loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld"), // tetvol
-        loadFieldFromFile(TestResources::rootDir() / "Fields/curveMesh.fld"),                                  // curvemesh
         loadFieldFromFile(TestResources::rootDir() / "Fields/test_image_node.fld"),                            // imagemesh
+        loadFieldFromFile(TestResources::rootDir() / "Fields/hexvol.fld"),                                     // hexvol
+        loadFieldFromFile(TestResources::rootDir() / "Fields/quadsurf.fld"),                                   // quadsurf
+        loadFieldFromFile(TestResources::rootDir() / "Fields/curveMesh.fld"),                                  // curvemesh
         //loadFieldFromFile(TestResources::rootDir() / "Fields/points.fld"),                                     // point cloud
-        // quadsurf
-        // hexvolf
       };
     }
 
@@ -420,7 +421,7 @@ INSTANTIATE_TEST_CASE_P(
 //--------------------------------------------------------------------------------------------------
 //---------------- Nodes ---------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
-
+//717 ms
 class ShowFieldNodeTest : public ParameterizedModuleTest<std::tuple<bool, double, int, int, double, int>>
 {
 protected:
@@ -465,11 +466,11 @@ protected:
         CreateEmptyLatVol(2, 3, 4),
         loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tri.fld"), // trisurf
         loadFieldFromFile(TestResources::rootDir() / "Fields/extractsimpleisosurface/test_isosimsuf_tet.fld"), // tetvol
-        loadFieldFromFile(TestResources::rootDir() / "Fields/curveMesh.fld"),                                  // curvemesh
         loadFieldFromFile(TestResources::rootDir() / "Fields/test_image_node.fld"),                            // imagemesh
+        loadFieldFromFile(TestResources::rootDir() / "Fields/hexvol.fld"),                                     // hexvol
+        loadFieldFromFile(TestResources::rootDir() / "Fields/quadsurf.fld"),                                   // quadsurf
+        loadFieldFromFile(TestResources::rootDir() / "Fields/curveMesh.fld"),                                  // curvemesh
         //loadFieldFromFile(TestResources::rootDir() / "Fields/points.fld"),                                     // point cloud
-        // quadsurf
-        // hexvol
       };
     }
 
