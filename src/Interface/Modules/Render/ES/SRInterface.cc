@@ -32,6 +32,7 @@
 #include <Interface/Modules/Render/UndefiningX11Cruft.h>
 #include <QtOpenGL/QGLWidget>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
@@ -64,7 +65,6 @@
 #include "comp/StaticWorldLight.h"
 #include "comp/LightingUniforms.h"
 #include "comp/ClippingPlaneUniforms.h"
-
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
@@ -579,7 +579,7 @@ namespace SCIRun {
         if (it != selMap.end())
         {
           mSelected = it->second;
-          mSelectedOrigin = originMap.find(value)->second;
+          mOriginWorld = originMap.find(value)->second;
         }
       }
       //release and restore fbo
@@ -589,10 +589,30 @@ namespace SCIRun {
       if (mSelected != "")
       {
         widgetSelected_ = true;
-        glm::vec4 spos((float(2 * pos.x) - float(mScreenWidth)) / float(mScreenWidth),
-          (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
-          depth * 2 - 1, 1.0f);
-        mSelectedPos = spos;
+        float zFar = mCamera->getZFar();
+        float zNear = mCamera->getZNear();
+        float z = -1.0/(depth * (1.0/zFar - 1.0/zNear) + 1.0/zNear);
+        mSelectedW = -z;
+
+        glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
+                     -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
+
+        glm::vec3 sposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * mSelectedW, 0.0, 1.0));
+        sposView.z = z;
+        glm::vec3 originView = glm::vec3(mCamera->getWorldToView() * glm::vec4(mOriginWorld, 1.0));
+        float radius = glm::length(sposView - originView);
+
+        //glm::vec4 originClip = mCamera->getWorldToProjection() * glm::vec4(mOriginWorld, 1.0);
+        //glm::vec2 projectedSposView =  glm::vec2(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * originClip.w, 0.0, 1.0));
+
+        std::cout << "spos: " << spos[0] << " " << spos[1] << "\n";
+        //std::cout << "mOriginWorld: " << mOriginWorld[0] << " " << mOriginWorld[1] << " " << mOriginWorld[2] << "\n";
+        std::cout << "sposView: " << sposView[0] << " " << sposView[1] << " " << sposView[2] << "\n";
+        std::cout << "originView: " << originView[0] << " " << originView[1] << " " << originView[2] << "\n";
+        std::cout << "radius: " << radius << "\n\n";
+
+        widgetBall.reset(new spire::ArcBall(originView, radius));
+        widgetBall->beginDrag(glm::vec2(sposView));
       }
 
       for (auto& it : entityList)
@@ -644,36 +664,42 @@ namespace SCIRun {
     void SRInterface::updateWidget(const glm::ivec2& pos)
     {
       gen::StaticCamera* cam = mCore.getStaticComponent<gen::StaticCamera>();
-      glm::vec4 spos((float(2 * pos.x) - float(mScreenWidth)) / float(mScreenWidth),
-                     (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
-                     mSelectedPos.z, 1.0f);
+      glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
+                   -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
 
-      float ssDepth = mSelectedPos.z * 0.5 + 0.5;
-      float zFar = mCamera->getZFar();
-      float zNear = mCamera->getZNear();
-      float vDepth = 1.0/(ssDepth * (1.0/zFar - 1.0/zNear) + 1.0/zNear);
+      glm::vec2 sposView = glm::vec2(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * mSelectedW, 0.0, 1.0));
+      widgetBall->drag(sposView);
 
-      glm::vec3 transVec = glm::vec3(spos - mSelectedPos) * glm::vec3(vDepth , vDepth, 1.0);
       mWidgetTransform = gen::Transform();
-      glm::vec3 transProjVec = glm::vec3(glm::inverse(cam->data.projIV) * glm::vec4(transVec, 0.0f)).xyz();
 
       spire::CerealHeap<gen::Transform>* contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
       std::pair<const gen::Transform*, size_t> component = contTrans->getComponent(mSelectedID);
 
       // Translate origin to center
-      glm::vec3 newPos = -mSelectedOrigin;
+      glm::vec3 newPos = -mOriginWorld;
       mWidgetTransform.setPosition(newPos);
 
       // Rotate
-      glm::vec3 viewVec = (cam->data.getView() * glm::vec4(0.0, 0.0, 1.0, 0.0)).xyz();
-      glm::vec3 rotAxis = glm::cross(glm::normalize(viewVec), glm::normalize(transProjVec));
-      glm::mat4 rot = glm::rotate(glm::length(transProjVec), rotAxis);
-      mWidgetTransform.transform = rot * mWidgetTransform.transform;
+      // glm::vec3 viewVec = (cam->data.getView() * glm::vec4(0.0, 0.0, 1.0, 0.0)).xyz();
+
+      // glm::vec3 dirFromOrigin = glm::normalize(glm::vec3(mSelectedPos.xyz()) - mSelectedOrigin);
+      // std::cout << "old dir: " << oldDir[0] << ", " << oldDir[1] << ", " << oldDir[2] << std::endl;
+      // std::cout << "new dir: " << newDir[0] << ", " << newDir[1] << ", " << newDir[2] << std::endl;
+      // std::cout << "angle: " << glm::angle(oldDir, newDir) << std::endl << std::endl;
+
+      // glm::vec3 rotAxis = glm::normalize(glm::cross(oldDir, newDir));
+      // float ang = glm::angle(oldDir, newDir);
+      // float rad = ang/180.0f * 3.14f;
+
+      // glm::mat4 rot = glm::rotate(rad, rotAxis);
+
+
+      mWidgetTransform.transform =   widgetBall->getTransformation() * mWidgetTransform.transform;
 
       // Translate back to world space
-      mWidgetTransform.transform[3][0] += mSelectedOrigin[0];
-      mWidgetTransform.transform[3][1] += mSelectedOrigin[1];
-      mWidgetTransform.transform[3][2] += mSelectedOrigin[2];
+      mWidgetTransform.transform[3][0] += mOriginWorld[0];
+      mWidgetTransform.transform[3][1] += mOriginWorld[1];
+      mWidgetTransform.transform[3][2] += mOriginWorld[2];
 
       if (component.first != nullptr)
         contTrans->modifyIndex(mWidgetTransform, component.second, 0);

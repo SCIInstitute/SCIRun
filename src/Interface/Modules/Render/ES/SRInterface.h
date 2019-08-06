@@ -33,6 +33,7 @@
 #include <memory>
 #include <Interface/Modules/Render/GLContext.h>
 #include <Interface/Modules/Render/ES/Core.h>
+#include <Externals/spire/arc-ball/ArcBall.hpp>
 #include <es-general/comp/Transform.hpp>
 
 //freetype
@@ -315,9 +316,10 @@ namespace SCIRun {
       MouseMode                         mMouseMode          {MOUSE_OLDSCIRUN};  // Current mouse mode.
 
       std::string                       mSelected           {};       // Current selection
-      glm::vec4                         mSelectedPos        {};
-      glm::vec3                         mSelectedOrigin     {};
+      glm::vec3                         mOriginWorld        {};
+      float                             mSelectedW          {};
       gen::Transform                    mWidgetTransform    {};
+      bool                              firstMovement       {true};
 
       size_t                            mScreenWidth        {640};    // Screen width in pixels.
       size_t                            mScreenHeight       {480};    // Screen height in pixels.
@@ -361,6 +363,8 @@ namespace SCIRun {
 
       const int                         frameInitLimit_     {};
       std::unique_ptr<SRCamera>         mCamera;       // Primary camera.
+
+      std::shared_ptr<spire::ArcBall>          widgetBall          {};
     };
 
   } // namespace Render
