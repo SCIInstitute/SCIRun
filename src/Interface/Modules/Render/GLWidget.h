@@ -96,6 +96,7 @@ private:
   std::shared_ptr<GLContext>            mContext      {};  ///< Graphics context.
   std::shared_ptr<Render::SRInterface>  mGraphics     {};  ///< Interface to spire.
   QTimer*                               mTimer        {};
+  double                                mFrameTime    {0.0};
 
   double                                mCurrentTime  {0.0};
 };

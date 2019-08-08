@@ -27,14 +27,14 @@
 */
 
 // Uniforms
-uniform mat4    uProjIVObject;      // Projection transform * Inverse View
-uniform mat4    uObject;            // Object -> World
+uniform mat4    uModelViewProjection;
+uniform mat4    uModel;
 uniform vec3    uCamViewVec;        // Camera 'at' vector in world space
 uniform vec4    uAmbientColor;      // Ambient color
 uniform vec4    uDiffuseColor;      // Diffuse color
 uniform vec4    uSpecularColor;     // Specular color     
 uniform float   uSpecularPower;     // Specular power
-uniform vec3    uLightDirWorld;     // Directional light (world space).
+uniform vec3    uLightDirectionView;     // Directional light (view space).
 
 // Attributes
 attribute vec3  aPos;
@@ -45,9 +45,9 @@ varying vec4    fColor;
 
 void main( void )
 {
-  vec3  invLightDir     = -uLightDirWorld;
+  vec3  invLightDir     = -uLightDirectionView;
   vec3  normal          = normalize(aNormal);
-  vec3  worldSpaceNorm  = vec3(uObject * vec4(normal, 0.0));
+  vec3  worldSpaceNorm  = vec3(uModel * vec4(normal, 0.0));
   float diffuse         = max(0.0, dot(worldSpaceNorm, invLightDir));
 
   // Note, the following is a hack due to legacy meshes still being supported.
@@ -68,5 +68,5 @@ void main( void )
   spec        = pow(spec, uSpecularPower);
   fColor      = diffuse * spec * uSpecularColor + diffuse * uDiffuseColor + uAmbientColor;
 
-  gl_Position = uProjIVObject * vec4(aPos, 1.0);
+  gl_Position = uModelViewProjection * vec4(aPos, 1.0);
 }
