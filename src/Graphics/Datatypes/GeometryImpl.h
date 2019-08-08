@@ -272,7 +272,6 @@ namespace SCIRun {
 
         void setColorMap(const std::string& name) { mColorMap = name; }
         boost::optional<std::string> colorMap() const { return mColorMap; }
-        glm::vec3 origin;
       private:
         VBOList mVBOs;  ///< Array of vertex buffer objects.
         IBOList mIBOs;  ///< Array of index buffer objects.

@@ -82,7 +82,6 @@ namespace SCIRun{
       // P  = Projection matrix | IV = Inverse view matrix |  V  = View matrix
       const glm::mat4& getWorldToProjection() const  {return mVP;}
       const glm::mat4& getWorldToView() const        {return mV;}
-      const glm::mat4& getViewToWorld() const        {return mIV;}
       const glm::mat4& getViewToProjection() const   {return mP;}
 
       /// Default camera settings
@@ -94,7 +93,16 @@ namespace SCIRun{
       float getZNear()  {return mZNear;}
       float getFOVY()   {return mFOVY;}
       float getAspect() {return static_cast<float>(mInterface.getScreenWidthPixels()) /
-                         static_cast<float>(mInterface.getScreenHeightPixels());}
+                                static_cast<float>(mInterface.getScreenHeightPixels());}
+
+      float getDistance() const {return mArcLookAt->getDistance();}
+      void setDistance(const float f) {mArcLookAt->setDistance(f); setClippingPlanes();}
+
+      glm::vec3 getLookAt() const {return mArcLookAt->getLookAt();}
+      void setLookAt(const glm::vec3 v) {mArcLookAt->setLookAt(v); setClippingPlanes();}
+
+      glm::quat getRotation() const {return mArcLookAt->getRotation();}
+      void setRotation(const glm::quat q) {mArcLookAt->setRotation(q); setClippingPlanes();}
 
       void setLockZoom(bool lock)     {lockZoom_ = lock;}
       void setLockPanning(bool lock)  {lockPanning_ = lock;}
@@ -115,12 +123,13 @@ namespace SCIRun{
       float                 mZFar         {getDefaultZFar()};   ///< Position of far plane along view vec.
       float                 mRadius       {-1.0};
 
-      glm::vec2             lastPos       {0.0, 0.0};
-      glm::vec2             movementVec   {0.0, 0.0};
+      glm::vec2             lastMousePos  {0.0, 0.0};
+      glm::vec2             mouseMoveVec  {0.0, 0.0};
+      glm::vec2             mouseMoveVecR {0.0, 0.0};
+      glm::vec2             autoRotateVec {0.0, 0.0};
 
       glm::mat4             mVP           {};   ///< Projection * View transformation.
       glm::mat4             mV            {};   ///< View transformation.
-      glm::mat4             mIV           {};   ///< Inverse View transformation.
       glm::mat4             mP            {};   ///< Projection transformation.
 
       SRInterface&                        mInterface;           ///< SRInterface.

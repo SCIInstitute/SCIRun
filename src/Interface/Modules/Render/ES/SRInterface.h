@@ -29,6 +29,7 @@
 #ifndef INTERFACE_MODULES_RENDER_SPIRESCIRUN_SRINTERFACE_H
 #define INTERFACE_MODULES_RENDER_SPIRESCIRUN_SRINTERFACE_H
 
+#include <unordered_map>
 #include <cstdint>
 #include <memory>
 #include <Interface/Modules/Render/GLContext.h>
@@ -44,7 +45,9 @@
 #include <es-render/comp/CommonUniforms.hpp>
 #include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
+#include <Graphics/Widgets/Widget.h>
 #include <Interface/Modules/Render/share.h>
+#include <glm/gtc/quaternion.hpp>
 
 namespace SCIRun {
   namespace Render {
@@ -125,6 +128,12 @@ namespace SCIRun {
       void eventResize(size_t width, size_t height);
       void doAutoView();
       // Sets the selected View of the window
+      void setCameraDistance(const float distance);
+      float getCameraDistance() const;
+      void setCameraLookAt(const glm::vec3 lookAt);
+      glm::vec3 getCameraLookAt() const;
+      void setCameraRotation(const glm::quat rotation);
+      glm::quat getCameraRotation() const;
       void setView(const glm::vec3& view, const glm::vec3& up);
       void setZoomSpeed(int zoomSpeed) {mZoomSpeed = zoomSpeed;}
       void setZoomInverted(bool value);
@@ -141,7 +150,7 @@ namespace SCIRun {
 
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...
-      void select(const glm::ivec2& pos, std::list<Graphics::Datatypes::GeometryHandle> &objList, int port);
+      void select(const glm::ivec2& pos, std::vector<Graphics::Datatypes::WidgetHandle> &objList, int port);
       std::string &getSelection()          {return mSelected;}
       gen::Transform &getWidgetTransform() {return mWidgetTransform;}
 
@@ -196,12 +205,15 @@ namespace SCIRun {
       void setupLights();
 
       //---------------- Camera ----------------------------------------------------------------------
-      void updateCamera(); // Places mCamera's transform into our static camera component.
       void applyAutoRotation();
+      void updateCamera(); // Places mCamera's transform into our static camera component.
 
       //---------------- Widgets -------------------------------------------------------------------
       bool foundWidget(const glm::ivec2& pos); // search for a widget at mouse position
-      void updateWidget(const glm::ivec2& pos); // update selected widget
+      void updateWidget(const glm::ivec2& pos);
+      void rotateWidget(const glm::ivec2& pos);
+      void translateWidget(const glm::ivec2& pos);
+      void scaleWidget(const glm::ivec2& pos);
       uint32_t getSelectIDForName(const std::string& name);
       glm::vec4 getVectorForID(const uint32_t id);
       uint32_t getIDForVector(const glm::vec4& vec);
@@ -299,72 +311,80 @@ namespace SCIRun {
       };
 
 
-      bool                              showOrientation_    {true};   // Whether the coordinate axes will render or not.
-      bool                              autoRotate_         {false};  // Whether the scene will continue to rotate.
-      bool                              selectWidget_       {false};  // Whether mouse click will select a widget.
-      bool                              widgetSelected_     {false};  // Whether or not a widget is currently selected.
-      bool                              widgetExists_       {false};  // Geometry contains a widget to find.
-      bool                              tryAutoRotate       {false};
-      bool                              doAutoRotateOnDrag  {false};
+      bool                                showOrientation_    {true};   // Whether the coordinate axes will render or not.
+      bool                                autoRotate_         {false};  // Whether the scene will continue to rotate.
+      bool                                selectWidget_       {false};  // Whether mouse click will select a widget.
+      bool                                widgetSelected_     {false};  // Whether or not a widget is currently selected.
+      bool                                widgetExists_       {false};  // Geometry contains a widget to find.
+      bool                                tryAutoRotate       {false};
+      bool                                doAutoRotateOnDrag  {false};
 
-      float                             orientSize          {1.0};    //  Size of coordinate axes
-      float                             orientPosX          {0.5};    //  X Position of coordinate axes
-      float                             orientPosY          {0.5};    //  Y Position of coordinate axes
+      float                               orientSize          {1.0};    //  Size of coordinate axes
+      float                               orientPosX          {0.5};    //  X Position of coordinate axes
+      float                               orientPosY          {0.5};    //  Y Position of coordinate axes
 
-      uint64_t                          mSelectedID         {0};
-      int                               mZoomSpeed          {65};
-      MouseMode                         mMouseMode          {MOUSE_OLDSCIRUN};  // Current mouse mode.
+      uint64_t                            mSelectedID         {0};
+      int                                 mZoomSpeed          {65};
+      MouseMode                           mMouseMode          {MOUSE_OLDSCIRUN};  // Current mouse mode.
 
-      std::string                       mSelected           {};       // Current selection
-      glm::vec3                         mOriginWorld        {};
-      float                             mSelectedW          {};
-      gen::Transform                    mWidgetTransform    {};
-      bool                              firstMovement       {true};
+      std::string                         mSelected           {};       // Current selection
+      glm::vec3                           mOriginWorld        {};
+      glm::vec3                           mFlipAxisWorld      {};
+      glm::vec3                           mOriginToSpos       {};
+      glm::vec3                           mOriginView         {};
+      glm::vec2                           mSelectedPos        {};
+      float                               mSelectedW          {};
+      float                               mSelectedDepth      {};
+      float                               mSelectedRadius     {};
+      gen::Transform                      mWidgetTransform    {};
+      Graphics::Datatypes::WidgetMovement mWidgetMovement     {};
+      std::vector<std::string>            mConnectedWidgets   {};
 
-      size_t                            mScreenWidth        {640};    // Screen width in pixels.
-      size_t                            mScreenHeight       {480};    // Screen height in pixels.
+      size_t                              mScreenWidth        {640};    // Screen width in pixels.
+      size_t                              mScreenHeight       {480};    // Screen height in pixels.
 
-      GLuint                            mFontTexture        {};       // 2D texture for fonts
+      GLuint                              mFontTexture        {};       // 2D texture for fonts
 
-      int                               axesFailCount_      {0};
-      std::shared_ptr<Gui::GLContext>   mContext            {};       // Context to use for rendering.
-      std::vector<SRObject>             mSRObjects          {};       // All SCIRun objects.
-      Core::Geometry::BBox              mSceneBBox          {};       // Scene's AABB. Recomputed per-frame.
+      int                                 axesFailCount_      {0};
+      std::shared_ptr<Gui::GLContext>     mContext            {};       // Context to use for rendering.
+      std::vector<SRObject>               mSRObjects          {};       // All SCIRun objects.
+      std::unordered_map<std::string, uint64_t> mEntityIdMap  {};
+      Core::Geometry::BBox                mSceneBBox          {};       // Scene's AABB. Recomputed per-frame.
 
 
-      ESCore                            mCore               {};       // Entity system core.
+      ESCore                              mCore               {};       // Entity system core.
 
-      std::vector<ClippingPlane>        clippingPlanes_     {};
-      int                               clippingPlaneIndex_ {0};
+      std::vector<ClippingPlane>          clippingPlanes_     {};
+      int                                 clippingPlaneIndex_ {0};
 
-      ren::ShaderVBOAttribs<5>          mArrowAttribs       {};       // Pre-applied shader / VBO attributes.
-      ren::CommonUniforms               mArrowUniforms      {};       // Common uniforms used in the arrow shader.
-      RenderState::TransparencySortType mRenderSortType     {};       // Which strategy will be used to render transparency
+      ren::ShaderVBOAttribs<5>            mArrowAttribs       {};       // Pre-applied shader / VBO attributes.
+      ren::CommonUniforms                 mArrowUniforms      {};       // Common uniforms used in the arrow shader.
+      RenderState::TransparencySortType   mRenderSortType     {RenderState::TransparencySortType::UPDATE_SORT};       // Which strategy will be used to render transparency
 
       //material settings
-      double                            mMatAmbient         {0.2};
-      double                            mMatDiffuse         {1.0};
-      double                            mMatSpecular        {0.0};
-      double                            mMatShine           {1.0};
+      double                              mMatAmbient         {};
+      double                              mMatDiffuse         {};
+      double                              mMatSpecular        {};
+      double                              mMatShine           {};
 
       //fog settings
-      double                            mFogIntensity       {0.0};
-      double                            mFogStart           {0.0};
-      double                            mFogEnd             {1.0};
-      glm::vec4                         mFogColor           {0.0, 0.0, 0.0, 0.0};
+      double                              mFogIntensity       {};
+      double                              mFogStart           {};
+      double                              mFogEnd             {};
+      glm::vec4                           mFogColor           {};
 
       //light settings
-      std::vector<glm::vec2>            mLightDirectionPolar{};
-      std::vector<glm::vec3>            mLightDirectionView {};
-      std::vector<bool>                 mLightsOn           {};
+      std::vector<glm::vec2>              mLightDirectionPolar{};
+      std::vector<glm::vec3>              mLightDirectionView {};
+      std::vector<bool>                   mLightsOn           {};
 
-      glm::vec2                         autoRotateVector    {0.0, 0.0};
-      float                             autoRotateSpeed     {0.01};
+      glm::vec2                           autoRotateVector    {0.0, 0.0};
+      float                               autoRotateSpeed     {0.01};
 
-      const int                         frameInitLimit_     {};
-      std::unique_ptr<SRCamera>         mCamera;       // Primary camera.
+      const int                           frameInitLimit_     {};
+      std::unique_ptr<SRCamera>           mCamera;       // Primary camera.
 
-      std::shared_ptr<spire::ArcBall>          widgetBall          {};
+      std::shared_ptr<spire::ArcBall>     widgetBall_         {};
     };
 
   } // namespace Render

@@ -39,7 +39,14 @@ namespace SCIRun
   {
     namespace Datatypes
     {
-
+      // These will give different types of widget movement through ViewScene.
+      // To use rotation and scaling, an origin point must be given.
+      enum class WidgetMovement
+      {
+        TRANSLATE,
+        ROTATE,
+        SCALE
+      };
       class SCISHARE WidgetBase : public GeometryObjectSpire
       {
       public:
@@ -48,6 +55,10 @@ namespace SCIRun
         WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Vector& pos);
         Core::Geometry::Point position() const;
         void setPosition(const Core::Geometry::Point& p);
+        glm::vec3 origin;
+        glm::vec3 flipAxis;
+        WidgetMovement movementType;
+        std::vector<std::string> connectedIds;
 
       protected:
         Core::Geometry::Point position_;

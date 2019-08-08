@@ -418,7 +418,7 @@ void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformM
   {
     double widgetScale = get_state()->getValue(WidgetScaleFactor).toDouble();
     // Shift direction back because newPos is the center of the cylinder
-    Point newPos = transformPoint - 1.375 * direction_[id] * widgetScale * sphereRadius_;
+    Point newPos = transformPoint - 1.375 * direction_[id] * scale_[id] * widgetScale * sphereRadius_;
     calculatePointMove(pos_[id], newPos);
     break;
   }
@@ -656,9 +656,31 @@ void ShowAndEditDipoles::createDipoleWidget(BBox& bbox, Point& pos, Vector dir, 
                                                   bbox,
                                                   resolution_)));
   }
+  // Give origin and flip vector
   glm::vec3 origin = glm::vec3(bmin.x(), bmin.y(), bmin.z());
+  Vector flipVec = dir.getArbitraryTangent().normal();
+  glm::vec3 gFlipVec = glm::vec3(flipVec[0], flipVec[1], flipVec[2]);
   for(int i = 0; i < 1 + 3*show_as_vector; i++)
+  {
     (*pointWidgets_[widget_num])[i]->origin = origin;
+    (*pointWidgets_[widget_num])[i]->flipAxis = gFlipVec;
+  }
+
+  // Specify movement type
+  (*pointWidgets_[widget_num])[0]->movementType = WidgetMovement::TRANSLATE;
+  if(show_as_vector)
+  {
+    (*pointWidgets_[widget_num])[1]->movementType = WidgetMovement::TRANSLATE;
+    (*pointWidgets_[widget_num])[2]->movementType = WidgetMovement::ROTATE;
+    (*pointWidgets_[widget_num])[3]->movementType = WidgetMovement::SCALE;
+  }
+
+  std::vector<std::string> geom_ids;
+  for(int i = 0; i < 1 + 3*show_as_vector; i++)
+    geom_ids.push_back((*pointWidgets_[widget_num])[i]->uniqueID());
+
+  for(int i = 0; i < 1 + 3*show_as_vector; i++)
+    (*pointWidgets_[widget_num])[i]->connectedIds = geom_ids;
 }
 
 GeometryHandle ShowAndEditDipoles::addLines()
