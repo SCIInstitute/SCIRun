@@ -60,11 +60,11 @@ public:
     glm::mat4 view;
     if (perspCam)
     {
-      view = cam.front().data.getView();
+      view = cam.front().data.getInverseView();
     }
     else
     {
-      view = orthoCam.front().data.getView();
+      view = orthoCam.front().data.getInverseView();
     }
 
     camLoc.x = view[3][0];
@@ -130,4 +130,3 @@ const char* getSystemName_ClickBox2D()
 }
 
 } // namespace gen
-

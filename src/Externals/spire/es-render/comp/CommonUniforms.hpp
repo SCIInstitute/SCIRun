@@ -18,19 +18,19 @@ struct SCISHARE CommonUniforms
 
   enum COMMON_UNIFORMS
   {
-    OBJ_PROJECTION_INVERSE_VIEW_OBJECT,   // uProjIVObject  - Object -> World -> View -> Projection
-    OBJ_VIEW_OBJECT,                      // uViewObject    - Object -> World -> View
-    OBJ_OBJECT,                           // uObject        - Object -> World transform
-    CAM_PROJECTION_INVERSE_VIEW,          // uProjIV        - Inverse view projection matrix
-    CAM_PROJECTION,                       // uProj          - Projection matrix
-    CAM_VIEW,                             // uView          - View to World
-    CAM_VIEW_VEC,                         // uCamViewVec    - Viewing vector for the camera. Depends on projection matrix
-    CAM_INVERSE_VIEW,                     // uInverseView   - Inverse view
-    CAM_UP,                               // uCamUp         - 'Up' vector for the camera in world space
-    CAM_POS,                              // uCamPos        - Camera position in world space.
-    GLOBAL_TIME,                          // uGlobalTime    - Global time of the game. Used for animation.
-    ASPECT_RATIO,                         // uAspectRatio   - The window aspect ratio
-    WINDOW_WIDTH,                         // uWindowWidth   - The window's width
+    U_MODEL_VIEW_PROJECTION,                // uModelViewProjection  - Object -> World -> View -> Projection
+    U_MODEL_VIEW,                           // uModelView    - Object -> World -> View
+    U_MODEL,                                // uModel        - Object -> World transform
+    U_VIEW_PROJECTION,                      // uViewProjection        - Inverse view projection matrix
+    U_PROJECTION,                           // uProj          - Projection matrix
+    U_INVERSE_VIEW,                         // uInverseView          - View to World
+    U_CAM_VIEW_VEC,                         // uCamViewVec    - Viewing vector for the camera. Depends on projection matrix
+    U_VIEW,                                 // uView   - Inverse view
+    U_CAM_UP,                               // uCamUp         - 'Up' vector for the camera in world space
+    U_CAM_POS,                              // uCamPos        - Camera position in world space.
+    U_GLOBAL_TIME,                          // uGlobalTime    - Global time of the game. Used for animation.
+    U_ASPECT_RATIO,                         // uAspectRatio   - The window aspect ratio
+    U_WINDOW_WIDTH,                         // uWindowWidth   - The window's width
     UNIFORM_NONE,
   };
 

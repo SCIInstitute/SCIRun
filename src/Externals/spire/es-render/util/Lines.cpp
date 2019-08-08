@@ -83,13 +83,13 @@ GLuint getColorLineShader(spire::CerealCore& core)
       if (shaderID == 0)
       {
         const char* vs =
-            "uniform mat4 uProjIVObject;\n"
+            "uniform mat4 uModelViewProjection;\n"
             "uniform vec4 uColor;\n"
             "attribute vec3 aPos;\n"
             "varying vec4 fColor;\n"
             "void main()\n"
             "{\n"
-            "  gl_Position = uProjIVObject * vec4(aPos, 1.0);\n"
+            "  gl_Position = uModelViewProjection * vec4(aPos, 1.0);\n"
             "  fColor = uColor;\n"
             "}\n";
         const char* fs =

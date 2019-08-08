@@ -15,9 +15,9 @@ namespace gen {
 // care anything about the camera itself.
 struct StaticCameraData
 {
-  glm::mat4 projIV;           // projection * iv
-  glm::mat4 worldToView;      // Inverse view (iv)
-  glm::mat4 projection;       // Projection matrix.
+  glm::mat4 view;
+  glm::mat4 projection;
+  glm::mat4 viewProjection;
 
   // Misc variables. fovy only applies to perspective matrices.
   float fovy;
@@ -51,24 +51,23 @@ struct StaticCameraData
     winWidth   = 0.0f;
   }
 
-  void setView(const glm::mat4& view)
+  void setView(const glm::mat4& view_in)
   {
-    worldToView = glm::affineInverse(view);
-    projIV = projection * worldToView;
+    view = view_in;
+    viewProjection = projection * view;
   }
 
-  void setProjection(const glm::mat4& projectionIn, float fovy_in, float aspect_in,
+  void setProjection(const glm::mat4& projection_in, float fovy_in, float aspect_in,
                      float znear_in, float zfar_in)
   {
-    fovy   = fovy_in;
-    aspect = aspect_in;
-    znear  = znear_in;
-    zfar   = zfar_in;
-
-    projection = projectionIn;
+    projection = projection_in;
+    fovy       = fovy_in;
+    aspect     = aspect_in;
+    znear      = znear_in;
+    zfar       = zfar_in;
 
     // Setup frustum details.
-		float zDist = fabs(zfar - znear);
+		float zDist  = fabs(zfar - znear);
 		float tanVal = tanf(0.5f * (fovy));
 		//for (int i = 0; i < mNumFrustumSections + 1; i++)
 
@@ -214,9 +213,9 @@ struct StaticCameraData
     zppHHeight = std::get<1>(halfWH);
   }
 
-  glm::mat4 getView() const
+  glm::mat4 getInverseView() const
   {
-    return glm::affineInverse(worldToView);
+    return glm::affineInverse(view);
   }
 };
 
