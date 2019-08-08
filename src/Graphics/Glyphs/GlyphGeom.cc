@@ -225,14 +225,14 @@ void GlyphGeom::addComet(const Point& p1, const Point& p2, double radius, int re
   generateComet(p1, p2, radius, resolution, color1, color2, sphere_extrusion);
 }
 
-void GlyphGeom::addBox(const Point& center, Tensor& t, double scale, ColorRGB& node_color)
+void GlyphGeom::addBox(const Point& center, Tensor& t, double scale, ColorRGB& node_color, bool normalize)
 {
-  generateBox(center, t, scale, node_color);
+  generateBox(center, t, scale, node_color, normalize);
 }
 
-void GlyphGeom::addEllipsoid(const Point& p, Tensor& t, int resolution, const ColorRGB& color)
+void GlyphGeom::addEllipsoid(const Point& p, Tensor& t, double scale, int resolution, const ColorRGB& color, bool normalize)
 {
-  generateEllipsoid(p, t, resolution, color, false);
+  generateEllipsoid(p, t, scale, resolution, color, false, normalize);
 }
 
 void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, int resolution,
@@ -708,30 +708,97 @@ void GlyphGeom::generateComet(const Point& p1, const Point& p2,
   }
 }
 
-void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale, ColorRGB& node_color)
+void reorderTensor(std::vector<Vector>& eigvectors, Vector& eigvals)
 {
+  if(eigvals[0] < eigvals[1])
+  {
+    double temp = eigvals[0];
+    eigvals[0] = eigvals[1];
+    eigvals[1] = temp;
+    Vector tempVec = eigvectors[0];
+    eigvectors[0] = eigvectors[1];
+    eigvectors[1] = tempVec;
+  }
+  if(eigvals[1] < eigvals[2])
+  {
+    double temp = eigvals[1];
+    eigvals[1] = eigvals[2];
+    eigvals[2] = temp;
+    Vector tempVec = eigvectors[1];
+    eigvectors[1] = eigvectors[2];
+    eigvectors[2] = tempVec;
+  }
+  if(eigvals[0] < eigvals[1])
+  {
+    double temp = eigvals[0];
+    eigvals[0] = eigvals[1];
+    eigvals[1] = temp;
+    Vector tempVec = eigvectors[0];
+    eigvectors[0] = eigvectors[1];
+    eigvectors[1] = tempVec;
+  }
+}
+
+void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale, ColorRGB& node_color, bool normalize)
+{
+  double zeroThreshold = 0.000001;
   double eigval1, eigval2, eigval3;
   t.get_eigenvalues(eigval1, eigval2, eigval3);
 
-  Vector scaled_eigenvals(abs(eigval1), abs(eigval2), abs(eigval3));
-  scaled_eigenvals *= scale;
+  Vector eigvals(abs(eigval1), abs(eigval2), abs(eigval3));
+  if(normalize)
+    eigvals.normalize();
+  eigvals *= scale;
 
-  Vector eigvec1, eigvec2, eigvec3;
-  t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
+  std::vector<Vector> eigvectors(3);
+  t.get_eigenvectors(eigvectors[0], eigvectors[1], eigvectors[2]);
 
-  Transform rotate(Point(0.0, 0.0, 0.0), eigvec1, eigvec2, eigvec3);
+  // Checks to see if eigenvalues are close to 0
+  bool eig_x_0 = eigvals.x() <= zeroThreshold;
+  bool eig_y_0 = eigvals.y() <= zeroThreshold;
+  bool eig_z_0 = eigvals.z() <= zeroThreshold;
+
+  // Set to 0 if below threshold
+  eigvals[0] = (!eig_x_0) * eigvals[0];
+  eigvals[1] = (!eig_y_0) * eigvals[1];
+  eigvals[2] = (!eig_z_0) * eigvals[2];
+
+  bool flatTensor = (eig_x_0 + eig_y_0 + eig_z_0) >= 1;
+  if(flatTensor)
+  {
+    reorderTensor(eigvectors, eigvals);
+
+    eig_x_0 = eigvals.x() <= zeroThreshold;
+    eig_y_0 = eigvals.y() <= zeroThreshold;
+    eig_z_0 = eigvals.z() <= zeroThreshold;
+    // Check for zero eigenvectors
+    if(eig_x_0)
+    {
+      eigvectors[0] = Cross(eigvectors[1], eigvectors[2]);
+    }
+    else if(eig_y_0)
+    {
+      eigvectors[1] = Cross(eigvectors[0], eigvectors[2]);
+    }
+    else if(eig_z_0)
+    {
+      eigvectors[2] = Cross(eigvectors[0], eigvectors[1]);
+    }
+  }
+
+  Transform rotate(Point(0.0, 0.0, 0.0), eigvectors[0], eigvectors[1], eigvectors[2]);
   Transform trans = rotate;
   trans.pre_translate((Vector) center);
 
   // Rotate and translate points
-  Vector p1 = Vector(trans * Point(scaled_eigenvals * Vector(-1.0, 1.0, 1.0)));
-  Vector p2 = Vector(trans * Point(scaled_eigenvals * Vector(-1.0, 1.0, -1.0)));
-  Vector p3 = Vector(trans * Point(scaled_eigenvals * Vector(1.0, 1.0, 1.0)));
-  Vector p4 = Vector(trans * Point(scaled_eigenvals * Vector(1.0, 1.0, -1.0)));
-  Vector p5 = Vector(trans * Point(scaled_eigenvals * Vector(-1.0, -1.0, 1.0)));
-  Vector p6 = Vector(trans * Point(scaled_eigenvals * Vector(-1.0, -1.0, -1.0)));
-  Vector p7 = Vector(trans * Point(scaled_eigenvals * Vector(1.0, -1.0, 1.0)));
-  Vector p8 = Vector(trans * Point(scaled_eigenvals * Vector(1.0, -1.0, -1.0)));
+  Vector p1 = Vector(trans * Point(eigvals * Vector(-1.0, 1.0, 1.0)));
+  Vector p2 = Vector(trans * Point(eigvals * Vector(-1.0, 1.0, -1.0)));
+  Vector p3 = Vector(trans * Point(eigvals * Vector(1.0, 1.0, 1.0)));
+  Vector p4 = Vector(trans * Point(eigvals * Vector(1.0, 1.0, -1.0)));
+  Vector p5 = Vector(trans * Point(eigvals * Vector(-1.0, -1.0, 1.0)));
+  Vector p6 = Vector(trans * Point(eigvals * Vector(-1.0, -1.0, -1.0)));
+  Vector p7 = Vector(trans * Point(eigvals * Vector(1.0, -1.0, 1.0)));
+  Vector p8 = Vector(trans * Point(eigvals * Vector(1.0, -1.0, -1.0)));
 
   // Rotate norms
   Vector x_vec = rotate * Vector(1, 0, 0);
@@ -770,128 +837,147 @@ void GlyphGeom::generateBoxSide(const Vector& p1, const Vector& p2, const Vector
   indices_.push_back(offset);
 }
 
-void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, int resolution, const ColorRGB& color, bool half)
+void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale, int resolution, const ColorRGB& color, bool half, bool normalize)
 {
-    Vector eigvec1, eigvec2, eigvec3;
-    t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
+  double zeroThreshold = 0.000001;
+  std::vector<Vector> eigvectors(3);
+  t.get_eigenvectors(eigvectors[0], eigvectors[1], eigvectors[2]);
 
-    double eigval1, eigval2, eigval3;
-    t.get_eigenvalues(eigval1, eigval2, eigval3);
-    Vector scaled_eigenvals = Vector(eigval1, eigval2, eigval3);
+  double eigval1, eigval2, eigval3;
+  t.get_eigenvalues(eigval1, eigval2, eigval3);
+  Vector eigvals = Vector(fabs(eigval1), fabs(eigval2), fabs(eigval3));
+  if(normalize)
+    eigvals.normalize();
+  eigvals *= scale;
 
+  // Checks to see if eigenvalues are close to 0
+  bool eig_x_0 = eigvals.x() <= zeroThreshold;
+  bool eig_y_0 = eigvals.y() <= zeroThreshold;
+  bool eig_z_0 = eigvals.z() <= zeroThreshold;
+
+  // Set to 0 if below threshold
+  eigvals[0] = (!eig_x_0) * eigvals[0];
+  eigvals[1] = (!eig_y_0) * eigvals[1];
+  eigvals[2] = (!eig_z_0) * eigvals[2];
+
+  bool flatTensor = (eig_x_0 + eig_y_0 + eig_z_0) >= 1;
+  Vector zero_norm;
+
+  if(flatTensor)
+  {
+    reorderTensor(eigvectors, eigvals);
+
+    eig_x_0 = eigvals.x() <= zeroThreshold;
+    eig_y_0 = eigvals.y() <= zeroThreshold;
+    eig_z_0 = eigvals.z() <= zeroThreshold;
     // Check for zero eigenvectors
-    bool zero_norm_used = false;
-    Vector zero_norm;
-    double epsilon = pow(2, -52);
-    if(scaled_eigenvals[0] <= epsilon)
+    if(eig_x_0)
     {
-      zero_norm_used = true;
-      zero_norm = Cross(eigvec2, eigvec3);
-      eigvec1 = Cross(eigvec2, eigvec3);
+      zero_norm = Cross(eigvectors[1], eigvectors[2]);
+      eigvectors[0] = zero_norm;
     }
-    else if(scaled_eigenvals[1] <= epsilon)
+    else if(eig_y_0)
     {
-      zero_norm_used = true;
-      zero_norm = Cross(eigvec1, eigvec3);
-      eigvec2 = Cross(eigvec1, eigvec3);
+      zero_norm = Cross(eigvectors[0], eigvectors[2]);
+      eigvectors[1] = zero_norm;
     }
-    else if(scaled_eigenvals[2] <= epsilon)
+    else if(eig_z_0)
     {
-      zero_norm_used = true;
-      zero_norm = Cross(eigvec1, eigvec2);
-      eigvec3 = Cross(eigvec1, eigvec2);
+      zero_norm = Cross(eigvectors[0], eigvectors[1]);
+      eigvectors[2] = zero_norm;
     }
+  }
 
-    Transform rotate(Point(0.0, 0.0, 0.0), eigvec1, eigvec2, eigvec3);
-    Transform trans = rotate;
-    trans.pre_translate((Vector) center);
+  Transform rotate(Point(0.0, 0.0, 0.0), eigvectors[0], eigvectors[1], eigvectors[2]);
+  Transform trans = rotate;
+  trans.pre_translate((Vector) center);
 
-    trans.post_scale (Vector(1.0,1.0,1.0) * scaled_eigenvals);
-    rotate.post_scale(Vector(1.0,1.0,1.0) / scaled_eigenvals);
+  trans.post_scale (Vector(1.0,1.0,1.0) * eigvals);
+  rotate.post_scale(Vector(1.0,1.0,1.0) / eigvals);
 
-    int nu = resolution + 1;
+  int nu = resolution + 1;
 
-    // Half ellipsoid criteria.
-    int nv = resolution;
-    if (half) nv /= 2;
+  // Half ellipsoid criteria.
+  int nv = resolution;
+  if (half) nv /= 2;
 
-    // Should only happen when doing half ellipsoids.
-    if (nv < 2) nv = 2;
+  // Should only happen when doing half ellipsoids.
+  if (nv < 2) nv = 2;
 
-    double end = half ? M_PI / 2 : M_PI;
+  double end = half ? M_PI / 2 : M_PI;
 
-    SinCosTable tab1(nu, 0, 2 * M_PI);
-    SinCosTable tab2(nv, 0, end);
+  SinCosTable tab1(nu, 0, 2 * M_PI);
+  SinCosTable tab2(nv, 0, end);
 
-    // Draw the ellipsoid
-    for (int v = 0; v<nv - 1; v++)
+  // Draw the ellipsoid
+  for (int v = 0; v<nv - 1; v++)
+  {
+    double nr1 = tab2.sin(v + 1);
+    double nr2 = tab2.sin(v);
+
+    double nz1 = tab2.cos(v + 1);
+    double nz2 = tab2.cos(v);
+
+    for (int u = 0; u<nu; u++)
+    {
+      uint32_t offset = static_cast<uint32_t>(numVBOElements_);
+      double nx = tab1.sin(u);
+      double ny = tab1.cos(u);
+
+      double x1 = nr1 * nx;
+      double y1 = nr1 * ny;
+      double z1 = nz1;
+
+      double x2 = nr2 * nx;
+      double y2 = nr2 * ny;
+      double z2 = nz2;
+
+      // Rotate and translate points
+      Vector p1 = Vector(trans * Point(x1, y1, z1));
+      Vector p2 = Vector(trans * Point(x2, y2, z2));
+
+      Vector v1, v2;
+
+      if(flatTensor)
       {
-        double nr1 = tab2.sin(v + 1);
-        double nr2 = tab2.sin(v);
-
-        double nz1 = tab2.cos(v + 1);
-        double nz2 = tab2.cos(v);
-
-        for (int u = 0; u<nu; u++)
-          {
-            uint32_t offset = static_cast<uint32_t>(numVBOElements_);
-            double nx = tab1.sin(u);
-            double ny = tab1.cos(u);
-
-            double x1 = nr1 * nx;
-            double y1 = nr1 * ny;
-            double z1 = nz1;
-
-            double x2 = nr2 * nx;
-            double y2 = nr2 * ny;
-            double z2 = nz2;
-
-            // Rotate and translate points
-            Vector p1 = Vector(trans * Point(x1, y1, z1));
-            Vector p2 = Vector(trans * Point(x2, y2, z2));
-
-            Vector v1, v2;
-
-            if(zero_norm_used)
-            {
-              // Avoids recalculating norm vector and prevents vectors with infinite length
-              bool first_half = v < nv/2;
-              v1 = first_half ? zero_norm : -zero_norm;
-              v2 = first_half ? zero_norm : -zero_norm;
-            }
-            else
-            {
-              // Rotate norms
-              v1 = rotate * Vector(x1, y1, z1);
-              v2 = rotate * Vector(x2, y2, z2);
-            }
-
-            v1.safe_normalize();
-            v2.safe_normalize();
-
-            // Transorm points and add to points list
-            points_.push_back(p1);
-            points_.push_back(p2);
-
-            // Add normals
-            normals_.push_back(v1);
-            normals_.push_back(v2);
-
-            // Add color vectors from parameters
-            colors_.push_back(color);
-            colors_.push_back(color);
-
-            numVBOElements_ += 2;
-
-            indices_.push_back(0 + offset);
-            indices_.push_back(1 + offset);
-            indices_.push_back(2 + offset);
-            indices_.push_back(2 + offset);
-            indices_.push_back(1 + offset);
-            indices_.push_back(3 + offset);
-          }
-        for(int jj = 0; jj < 6; jj++) indices_.pop_back();
+        // Avoids recalculating norm vector and prevents vectors with infinite length
+        bool first_half = v < nv/2;
+        v1 = first_half ? zero_norm : -zero_norm;
+        v2 = first_half ? zero_norm : -zero_norm;
       }
+      else
+      {
+        // Rotate norms
+        v1 = rotate * Vector(x1, y1, z1);
+        v2 = rotate * Vector(x2, y2, z2);
+      }
+
+      v1.safe_normalize();
+      v2.safe_normalize();
+
+      // Transorm points and add to points list
+      points_.push_back(p1);
+      points_.push_back(p2);
+
+      // Add normals
+      normals_.push_back(v1);
+      normals_.push_back(v2);
+
+      // Add color vectors from parameters
+      colors_.push_back(color);
+      colors_.push_back(color);
+
+      numVBOElements_ += 2;
+
+      indices_.push_back(0 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(3 + offset);
+    }
+    for(int jj = 0; jj < 6; jj++) indices_.pop_back();
+  }
 }
 
 void GlyphGeom::generateLine(const Point& p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
