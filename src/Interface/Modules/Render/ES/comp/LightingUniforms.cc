@@ -27,27 +27,27 @@ void LightingUniforms::checkUniformArray(GLuint shaderID)
   std::vector<shaders::ShaderUniform> shaderUniforms = shaders::getProgramUniforms(shaderID);
   for (const shaders::ShaderUniform& uniform : shaderUniforms)
   {
-    if (uniform.nameInCode == "uLightDirWorld")
+    if (uniform.nameInCode == "uLightDirectionView")
     {
       hasLightUniform[0] = true;
       uniformLocation[0] = uniform.uniformLoc;
     }
-    else if (uniform.nameInCode == "uLightDirWorld0")
+    else if (uniform.nameInCode == "uLightDirectionView0")
     {
       hasLightUniform[0] = true;
       uniformLocation[0] = uniform.uniformLoc;
     }
-    else if (uniform.nameInCode == "uLightDirWorld1")
+    else if (uniform.nameInCode == "uLightDirectionView1")
     {
       hasLightUniform[1] = true;
       uniformLocation[1] = uniform.uniformLoc;
     }
-    else if (uniform.nameInCode == "uLightDirWorld2")
+    else if (uniform.nameInCode == "uLightDirectionView2")
     {
       hasLightUniform[2] = true;
       uniformLocation[2] = uniform.uniformLoc;
     }
-    else if (uniform.nameInCode == "uLightDirWorld3")
+    else if (uniform.nameInCode == "uLightDirectionView3")
     {
       hasLightUniform[3] = true;
       uniformLocation[3] = uniform.uniformLoc;

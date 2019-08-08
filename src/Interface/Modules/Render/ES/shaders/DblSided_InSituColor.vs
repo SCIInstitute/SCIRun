@@ -27,7 +27,7 @@
 */
 
 // Uniforms
-uniform mat4    uProjIVObject;    // Projection * Inverse View * World XForm
+uniform mat4    uModelViewProjection;
 uniform float   uFDToggle;        // Field data toggle
 
 // Attributes
@@ -40,6 +40,6 @@ varying vec4    fColor;
 
 void main( void )
 {
-  gl_Position = uProjIVObject * vec4(aPos, 1.0);
+  gl_Position = uModelViewProjection * vec4(aPos, 1.0);
   fColor = uFDToggle * aColor + (1.0 - uFDToggle) * aColorSecondary;
 }

@@ -73,8 +73,8 @@ void ViewScene::setStateDefaults()
   state->setValue(BackgroundColor, ColorRGB(0.0, 0.0, 0.0).toString());
   state->setValue(Ambient, 0.2);
   state->setValue(Diffuse, 1.0);
-  state->setValue(Specular, 0.0);
-  state->setValue(Shine, 1.0);
+  state->setValue(Specular, 0.3);
+  state->setValue(Shine, 0.5);
   state->setValue(Emission, 0.0);
   state->setValue(FogOn, false);
   state->setValue(ObjectsOnly, true);
@@ -117,9 +117,20 @@ void ViewScene::setStateDefaults()
   state->setValue(Light2Inclination, 90);
   state->setValue(Light3Inclination, 90);
   state->setValue(ShowViewer, false);
+  state->setValue(CameraDistance, 3.0);
+  state->setValue(CameraLookAt, makeAnonymousVariableList(0.0, 0.0, 0.0));
+  state->setValue(CameraRotation, makeAnonymousVariableList(1.0, 0.0, 0.0, 0.0));
 
   get_state()->connectSpecificStateChanged(Parameters::GeometryFeedbackInfo, [this]() { processViewSceneObjectFeedback(); });
   get_state()->connectSpecificStateChanged(Parameters::MeshComponentSelection, [this]() { processMeshComponentSelection(); });
+}
+
+void ViewScene::fireTransientStateChangeSignalForGeomData()
+{
+  //this is gross but I dont see any other way to fire the signal associated with geom data
+  auto transient = get_state()->getTransientValue(Parameters::GeomData);
+  auto geoms = transient_value_cast<GeomListPtr>(transient);
+  get_state()->setTransientValue(Parameters::GeomData, geoms, true);
 }
 
 void ViewScene::portRemovedSlotImpl(const PortId& pid)
@@ -132,7 +143,8 @@ void ViewScene::portRemovedSlotImpl(const PortId& pid)
       activeGeoms_.erase(loc);
     updateTransientList();
   }
-  get_state()->fireTransientStateChangeSignal();
+
+  fireTransientStateChangeSignalForGeomData();
 }
 
 void ViewScene::updateTransientList()
@@ -201,7 +213,7 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
     updateTransientList();
   }
 
-  get_state()->fireTransientStateChangeSignal();
+  fireTransientStateChangeSignalForGeomData();
   asyncUpdates_.fetch_add(1);
 }
 
@@ -338,3 +350,6 @@ const AlgorithmParameterName ViewScene::Light1Inclination("Light1Inclination");
 const AlgorithmParameterName ViewScene::Light2Inclination("Light2Inclination");
 const AlgorithmParameterName ViewScene::Light3Inclination("Light3Inclination");
 const AlgorithmParameterName ViewScene::ShowViewer("ShowViewer");
+const AlgorithmParameterName ViewScene::CameraDistance("CameraDistance");
+const AlgorithmParameterName ViewScene::CameraLookAt("CameraLookAt");
+const AlgorithmParameterName ViewScene::CameraRotation("CameraRotation");
