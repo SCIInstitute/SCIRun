@@ -17,19 +17,19 @@ void CommonUniforms::checkUniformArray(GLuint shaderID)
   for (const shaders::ShaderUniform& uniform : shaderUniforms)
   {
     COMMON_UNIFORMS foundUniform = UNIFORM_NONE;
-    if (uniform.nameInCode == "uProjIVObject")      foundUniform = OBJ_PROJECTION_INVERSE_VIEW_OBJECT;
-    else if (uniform.nameInCode == "uViewObject")   foundUniform = OBJ_VIEW_OBJECT;
-    else if (uniform.nameInCode == "uObject")       foundUniform = OBJ_OBJECT;
-    else if (uniform.nameInCode == "uProjIV")       foundUniform = CAM_PROJECTION_INVERSE_VIEW;
-    else if (uniform.nameInCode == "uView")         foundUniform = CAM_VIEW;
-    else if (uniform.nameInCode == "uInverseView")  foundUniform = CAM_INVERSE_VIEW;
-    else if (uniform.nameInCode == "uProjection")   foundUniform = CAM_PROJECTION;
-    else if (uniform.nameInCode == "uCamViewVec")   foundUniform = CAM_VIEW_VEC;
-    else if (uniform.nameInCode == "uCamUp")        foundUniform = CAM_UP;
-    else if (uniform.nameInCode == "uCamPos")       foundUniform = CAM_POS;
-    else if (uniform.nameInCode == "uGlobalTime")   foundUniform = GLOBAL_TIME;
-    else if (uniform.nameInCode == "uAspectRatio")   foundUniform = ASPECT_RATIO;
-    else if (uniform.nameInCode == "uWindowWidth")   foundUniform = WINDOW_WIDTH;
+         if (uniform.nameInCode == "uModel")                foundUniform = U_MODEL;
+    else if (uniform.nameInCode == "uView")                 foundUniform = U_VIEW;
+    else if (uniform.nameInCode == "uProjection")           foundUniform = U_PROJECTION;
+    else if (uniform.nameInCode == "uModelView")            foundUniform = U_MODEL_VIEW;
+    else if (uniform.nameInCode == "uViewProjection")       foundUniform = U_VIEW_PROJECTION;
+    else if (uniform.nameInCode == "uModelViewProjection")  foundUniform = U_MODEL_VIEW_PROJECTION;
+    else if (uniform.nameInCode == "uInverseView")          foundUniform = U_INVERSE_VIEW;
+    else if (uniform.nameInCode == "uCamViewVec")           foundUniform = U_CAM_VIEW_VEC;
+    else if (uniform.nameInCode == "uCamUp")                foundUniform = U_CAM_UP;
+    else if (uniform.nameInCode == "uCamPos")               foundUniform = U_CAM_POS;
+    else if (uniform.nameInCode == "uGlobalTime")           foundUniform = U_GLOBAL_TIME;
+    else if (uniform.nameInCode == "uAspectRatio")          foundUniform = U_ASPECT_RATIO;
+    else if (uniform.nameInCode == "uWindowWidth")          foundUniform = U_WINDOW_WIDTH;
 
     if (foundUniform != UNIFORM_NONE)
     {
@@ -60,86 +60,86 @@ void CommonUniforms::applyCommonUniforms(const glm::mat4& objectToWorld,
   {
     switch (uniformType[i])
     {
-      case OBJ_PROJECTION_INVERSE_VIEW_OBJECT:
-        mat = cam.projIV * objectToWorld;
+      case U_MODEL_VIEW_PROJECTION:
+        mat = cam.viewProjection * objectToWorld;
         ptr = glm::value_ptr(mat);
         GL(glUniformMatrix4fv(uniformLocation[i], 1, false, ptr));
         break;
 
-      case OBJ_VIEW_OBJECT:
-        mat = cam.worldToView * objectToWorld;
+      case U_MODEL_VIEW:
+        mat = cam.view * objectToWorld;
         ptr = glm::value_ptr(mat);
         GL(glUniformMatrix4fv(uniformLocation[i], 1, false, ptr));
         break;
 
-      case OBJ_OBJECT:
+      case U_MODEL:
         ptr = glm::value_ptr(objectToWorld);
         GL(glUniformMatrix4fv(uniformLocation[i], 1, false, ptr));
         break;
 
-      case CAM_PROJECTION_INVERSE_VIEW:
-        ptr = glm::value_ptr(cam.projIV);
+      case U_VIEW_PROJECTION:
+        ptr = glm::value_ptr(cam.viewProjection);
         GL(glUniformMatrix4fv(uniformLocation[i], 1, false, ptr));
         break;
 
-      case CAM_PROJECTION:
+      case U_PROJECTION:
         ptr = glm::value_ptr(cam.projection);
         GL(glUniformMatrix4fv(uniformLocation[i], 1, false, ptr));
         break;
 
-      case CAM_VIEW:
+      case U_INVERSE_VIEW:
         {
-          glm::mat4 view = cam.getView();
+          glm::mat4 view = cam.getInverseView();
           ptr = glm::value_ptr(view);
           GL(glUniformMatrix4fv(uniformLocation[i], 1, false, ptr));
           break;
         }
-        
-      case CAM_VIEW_VEC:
+
+      case U_CAM_VIEW_VEC:
         {
-          glm::mat4 view = cam.getView();
+          glm::mat4 view = cam.getInverseView();
           glm::vec3 viewVec = view[2].xyz();
           vec = -viewVec; // Our projection matrix looks down negative Z.
           GL(glUniform3f(uniformLocation[i], vec.x, vec.y, vec.z));
           break;
         }
 
-      case CAM_INVERSE_VIEW:
+      case U_VIEW:
         {
-          ptr = glm::value_ptr(cam.worldToView);
+          ptr = glm::value_ptr(cam.view);
           GL(glUniformMatrix4fv(uniformLocation[i], 1, false, ptr));
         }
 
-      case CAM_UP:
+      case U_CAM_UP:
         {
-          glm::mat4 view = cam.getView();
+          glm::mat4 view = cam.getInverseView();
           vec = view[1].xyz();
           GL(glUniform3f(uniformLocation[i], vec.x, vec.y, vec.z));
           break;
         }
 
-      case GLOBAL_TIME:
+      case U_GLOBAL_TIME:
         {
           GL(glUniform1f(uniformLocation[i], static_cast<float>(globalTime)));
           break;
         }
 
-      case CAM_POS:
+      case U_CAM_POS:
         {
-          glm::mat4 view = cam.getView();
+          glm::mat4 view = cam.getInverseView();
           glm::vec3 pos(view[3].x, view[3].y, view[3].z);
           GL(glUniform3f(uniformLocation[i], pos.x, pos.y, pos.z));
         }
         break;
 
-      case ASPECT_RATIO:
+      case U_ASPECT_RATIO:
         {
           float aspect = cam.aspect;
           GL(glUniform1f(uniformLocation[i], aspect));
         }
         break;
-        
-      case WINDOW_WIDTH:
+
+      case U_WINDOW_WIDTH:
         {
           float width = cam.winWidth;
           GL(glUniform1f(uniformLocation[i], width));
@@ -154,5 +154,3 @@ void CommonUniforms::applyCommonUniforms(const glm::mat4& objectToWorld,
 }
 
 } // namespace ren
-
-

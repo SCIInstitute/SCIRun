@@ -823,6 +823,13 @@ void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, int resolution
     SinCosTable tab1(nu, 0, 2 * M_PI);
     SinCosTable tab2(nv, 0, end);
 
+    Eigen::Matrix3f m;
+    m << eig_vec1[0], eig_vec2[0], eig_vec3[0],
+         eig_vec1[1], eig_vec2[1], eig_vec3[1],
+         eig_vec1[2], eig_vec2[2], eig_vec3[2];
+    Eigen::Matrix3f mInverse = m.inverse();
+    Eigen::Matrix3f mInverseTranspose = mInverse.transpose();
+
     // Draw the ellipsoid
     for (int v = 0; v<nv - 1; v++)
       {
@@ -838,13 +845,13 @@ void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, int resolution
             double nx = tab1.sin(u);
             double ny = tab1.cos(u);
 
-            double x1 = nr1 * nx;
-            double y1 = nr1 * ny;
-            double z1 = nz1;
+            Eigen::Vector3f p1(nr1 * nx,
+                               nr1 * ny,
+                               nz1);
 
-            double x2 = nr2 * nx;
-            double y2 = nr2 * ny;
-            double z2 = nz2;
+            Eigen::Vector3f p2(nr2 * nx,
+                               nr2 * ny,
+                               nz2);
 
             // Rotate and translate points
             Vector p1 = Vector(trans * Point(x1, y1, z1));
