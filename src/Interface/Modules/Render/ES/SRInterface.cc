@@ -473,31 +473,6 @@ namespace SCIRun {
               addVBOToEntity(entityID, pass.vboName);
               addIBOToEntity(entityID, pass.iboName);
             }
-            else
-            {
-              // We will be constructing a render list from the VBO and IBO.
-              RenderList list;
-
-              for (const auto& vbo : obj->vbos())
-              {
-                if (vbo.name == pass.vboName)
-                {
-                  list.data = vbo.data;
-                  list.attributes = vbo.attributes;
-                  list.renderType = pass.renderType;
-                  list.numElements = vbo.numElements;
-                  mCore.addComponent(entityID, list);
-                  break;
-                }
-              }
-
-              // Lookup the VBOs and IBOs associated with this particular draw list
-              // and add them to our entity in question.
-              std::string assetName = "Assets/sphere.geom";
-
-              addVBOToEntity(entityID, assetName);
-              addIBOToEntity(entityID, assetName);
-            }
 
             // Load vertex and fragment shader will use an already loaded program.
             //shaderMan->loadVertexAndFragmentShader(mCore, entityID, "Shaders/Selection");
@@ -1096,41 +1071,6 @@ namespace SCIRun {
                 RENDERER_LOG("add texture");
                 addTextToEntity(entityID, pass.text);
               }
-              else
-              {
-                RENDERER_LOG("We will be constructing a render list from the VBO and IBO.");
-                RenderList list;
-
-                for (const auto& vbo : obj->vbos())
-                {
-                  if (vbo.name == pass.vboName)
-                  {
-                    list.data = vbo.data;
-                    list.attributes = vbo.attributes;
-                    list.renderType = pass.renderType;
-                    list.numElements = vbo.numElements;
-                    mCore.addComponent(entityID, list);
-                    break;
-                  }
-                }
-
-                RENDERER_LOG("Lookup the VBOs and IBOs associated with this particular draw list "
-                  "and add them to our entity in question.");
-                std::string assetName = "Assets/sphere.geom";
-
-                if (pass.renderType == RenderType::RENDER_RLIST_SPHERE)
-                {
-                  assetName = "Assets/sphere.geom";
-                }
-
-                if (pass.renderType == RenderType::RENDER_RLIST_CYLINDER)
-                {
-                  assetName = "Assests/arrow.geom";
-                }
-
-                addVBOToEntity(entityID, assetName);
-                addIBOToEntity(entityID, assetName);
-              }
 
               RENDERER_LOG("Load vertex and fragment shader will use an already loaded program.");
               shaderMan->loadVertexAndFragmentShader(mCore, entityID, pass.programName);
@@ -1143,13 +1083,6 @@ namespace SCIRun {
                 widgetExists_ = true;
               }
 
-              if (pass.renderType == RenderType::RENDER_RLIST_SPHERE)
-              {
-                double scale = pass.scalar;
-                trafo.transform[0].x = scale;
-                trafo.transform[1].y = scale;
-                trafo.transform[2].z = scale;
-              }
               if (widgetSelected_ && objectName == mSelected)
               {
                 mSelectedID = entityID;
@@ -1202,13 +1135,10 @@ namespace SCIRun {
               mCore.addComponent(entityID, pass);
             }
           }
+          mCamera->setSceneBoundingBox(mSceneBBox);
+          mCore.runGCOnNextExecution();
         }
-
-        mCore.runGCOnNextExecution();
       }
-
-      mCamera->setSceneBoundingBox(mSceneBBox);
-
       DEBUG_LOG_LINE_INFO
     }
 

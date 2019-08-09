@@ -185,6 +185,7 @@ namespace SCIRun {
         SpireIBO			ibo;
         SpireText     text;//draw a string (usually single character) on geometry
         double        scalar;
+        std::string   preproc {""};
 
         struct Uniform
         {
@@ -195,16 +196,17 @@ namespace SCIRun {
           };
 
           Uniform() : type(UniformType::UNIFORM_SCALAR) {}
-          Uniform(const std::string& nameIn, float d) :
+
+          Uniform(const std::string& nameIn, float scalar) :
             name(nameIn),
             type(UniformType::UNIFORM_SCALAR),
-            data(d, 0.0f, 0.0f, 0.0f)
+            data(scalar, 0.0f, 0.0f, 0.0f)
           {}
 
-          Uniform(const std::string& nameIn, const glm::vec4& vec) :
+          Uniform(const std::string& nameIn, const glm::vec4& vector) :
             name(nameIn),
             type(UniformType::UNIFORM_VEC4),
-            data(vec)
+            data(vector)
           {}
 
           std::string   name;
@@ -215,34 +217,30 @@ namespace SCIRun {
         std::vector<Uniform>  mUniforms;
         ColorScheme           mColorScheme;
 
-        void addUniform(const std::string& name, float scalar)
-        {
-          bool existed = false;
-          for (auto& i : mUniforms)
-          {
-            if (i.name == name && i.type == Uniform::UniformType::UNIFORM_SCALAR)
-            {
-              i.data.x = scalar;
-              existed = true;
-            }
-          }
-          if (!existed)
-            mUniforms.push_back(Uniform(name, scalar));
-        }
-
         void addUniform(const std::string& name, const glm::vec4& vector)
         {
-          bool existed = false;
           for (auto& i : mUniforms)
           {
             if (i.name == name && i.type == Uniform::UniformType::UNIFORM_VEC4)
             {
               i.data = vector;
-              existed = true;
+              return;
             }
           }
-          if (!existed)
-            mUniforms.push_back(Uniform(name, vector));
+          mUniforms.push_back(Uniform(name, vector));
+        }
+
+        void addOrModifyUniform(const Uniform& uniform)
+        {
+          for (auto& i : mUniforms)
+          {
+            if (i.name == uniform.name && i.type == uniform.type)
+            {
+              i.data = uniform.data;
+              return;
+            }
+          }
+          mUniforms.push_back(uniform);
         }
 
         void addUniform(const Uniform& uniform)
