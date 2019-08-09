@@ -48,6 +48,7 @@
 class QDockWidget;
 class QProgressBar;
 class QTimeLine;
+class QGroupBox;
 class PortBuilder;
 
 namespace SCIRun {
@@ -85,6 +86,8 @@ public:
 
   virtual int getTitleWidth() const = 0;
   virtual QLabel* getTitle() const = 0;
+
+  virtual QGroupBox* getButtonGroup() const = 0;
 
   virtual void startExecuteMovie() = 0;
   virtual void stopExecuteMovie() = 0;
