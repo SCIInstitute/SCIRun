@@ -171,13 +171,13 @@ void GlyphBuilder::addGlyph(
       glyphs.addCone(p2, p1, radius, resolution, false, node_color, node_color);
       break;
     case RenderState::GlyphType::CONE_GLYPH:
-      glyphs.addCone(p1, p2, radius, resolution, false, node_color, node_color);
+      glyphs.addCone(p1, p2, radius, resolution, true, node_color, node_color);
       break;
     case RenderState::GlyphType::ARROW_GLYPH:
       glyphs.addArrow(p1, p2, radius, ratio, resolution, node_color, node_color);
       break;
     case RenderState::GlyphType::DISK_GLYPH:
-      glyphs.addCylinder(p1, p2, radius, resolution, node_color, node_color);
+      glyphs.addDisk(p1, p2, radius, resolution, node_color, node_color);
       break;
     case RenderState::GlyphType::RING_GLYPH:
       BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Ring Geom is not supported yet."));

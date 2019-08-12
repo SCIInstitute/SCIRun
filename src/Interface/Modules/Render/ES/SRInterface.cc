@@ -288,14 +288,14 @@ namespace SCIRun {
     void SRInterface::updateCamera()
     {
       // Update the static camera with the appropriate world to view transform.
-      glm::mat4 viewToWorld = mCamera->getViewToWorld();
+      glm::mat4 view = mCamera->getWorldToView();
       glm::mat4 projection = mCamera->getViewToProjection();
 
       gen::StaticCamera* camera = mCore.getStaticComponent<gen::StaticCamera>();
       if (camera)
       {
         camera->data.winWidth = static_cast<float>(mScreenWidth);
-        camera->data.setView(viewToWorld);
+        camera->data.setView(view);
         camera->data.setProjection(projection, mCamera->getFOVY(), mCamera->getAspect(), mCamera->getZNear(), mCamera->getZFar());
       }
     }
@@ -322,6 +322,12 @@ namespace SCIRun {
     }
 
     //Getters/Setters-------------------------------------------------------------------------------
+    void SRInterface::setCameraDistance(const float distance) {mCamera->setDistance(distance);}
+    float SRInterface::getCameraDistance() const {return mCamera->getDistance();}
+    void SRInterface::setCameraLookAt(const glm::vec3 lookAt) {mCamera->setLookAt(lookAt);}
+    glm::vec3 SRInterface::getCameraLookAt() const {return mCamera->getLookAt();}
+    void SRInterface::setCameraRotation(const glm::quat roation) {mCamera->setRotation(roation);}
+    glm::quat SRInterface::getCameraRotation() const {return mCamera->getRotation();}
     void SRInterface::setAutoRotateSpeed(double speed) { autoRotateSpeed = speed; }
     void SRInterface::setAutoRotateOnDrag(bool value) { doAutoRotateOnDrag = value; }
     void SRInterface::setZoomInverted(bool value) {mCamera->setZoomInverted(value);}
@@ -330,7 +336,6 @@ namespace SCIRun {
     void SRInterface::setLockRotation(bool lock)  {mCamera->setLockRotation(lock);}
     const glm::mat4& SRInterface::getWorldToProjection() const {return mCamera->getWorldToProjection();}
     const glm::mat4& SRInterface::getWorldToView() const       {return mCamera->getWorldToView();}
-    const glm::mat4& SRInterface::getViewToWorld() const       {return mCamera->getViewToWorld();}
     const glm::mat4& SRInterface::getViewToProjection() const  {return mCamera->getViewToProjection();}
 
 
@@ -503,13 +508,13 @@ namespace SCIRun {
             if (shaderID == 0)
             {
               const char* vs =
-                "uniform mat4 uProjIVObject;\n"
+                "uniform mat4 uModelViewProjection;\n"
                 "uniform vec4 uColor;\n"
                 "attribute vec3 aPos;\n"
                 "varying vec4 fColor;\n"
                 "void main()\n"
                 "{\n"
-                "  gl_Position = uProjIVObject * vec4(aPos, 1.0);\n"
+                "  gl_Position = uModelViewProjection * vec4(aPos, 1.0);\n"
                 "  fColor = uColor;\n"
                 "}\n";
               const char* fs =
@@ -649,7 +654,7 @@ namespace SCIRun {
 
       glm::vec4 transVec = glm::vec4(glm::vec3(spos - mSelectedPos) * glm::vec3(vDepth , vDepth, 1.0), 0.0f);
       mWidgetTransform = gen::Transform();
-      mWidgetTransform.setPosition((glm::inverse(cam->data.projIV) * transVec).xyz());
+      mWidgetTransform.setPosition((glm::inverse(cam->data.viewProjection) * transVec).xyz());
 
       spire::CerealHeap<gen::Transform>* contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
       std::pair<const gen::Transform*, size_t> component = contTrans->getComponent(mSelectedID);
@@ -1045,6 +1050,16 @@ namespace SCIRun {
           std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
           if (auto shaderMan = sm.lock())
           {
+            RENDERER_LOG("Recalculate scene bounding box. Should only be done when an object is added.");
+            mSceneBBox.reset();
+            for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
+            {
+              if (it->mBBox.valid())
+              {
+                mSceneBBox.extend(it->mBBox);
+              }
+            }
+
             RENDERER_LOG("Add passes");
             for (auto& pass : obj->passes())
             {
@@ -1186,18 +1201,9 @@ namespace SCIRun {
               pass.renderState.mSortType = mRenderSortType;
               mCore.addComponent(entityID, pass);
             }
-
-            RENDERER_LOG("Recalculate scene bounding box. Should only be done when an object is added.");
-            mSceneBBox.reset();
-            for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
-            {
-              if (it->mBBox.valid())
-              {
-                mSceneBBox.extend(it->mBBox);
-              }
-            }
           }
         }
+
         mCore.runGCOnNextExecution();
       }
 
@@ -1402,8 +1408,8 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::doFrame(double currentTime, double constantDeltaTime)
     {
-      /// \todo Only render a frame if something has changed (new or deleted
-      /// objects, or the view point has changed).
+      // todo Only render a frame if something has changed (new or deleted
+      // objects, or the view point has changed).
       mContext->makeCurrent();
 
       applyAutoRotation();
@@ -1518,13 +1524,13 @@ namespace SCIRun {
             glm::mat4 axesTransform = axesScale * axesRot;
 
             GLint locCamViewVec = glGetUniformLocation(shader, "uCamViewVec");
-            GLint locLightDirWorld = glGetUniformLocation(shader, "uLightDirWorld");
+            GLint locLightDirecionView = glGetUniformLocation(shader, "uLightDirectionView");
             GLint locDiffuseColor = glGetUniformLocation(shader, "uColor");
-            GLint locProjIVObject = glGetUniformLocation(shader, "uProjIVObject");
-            GLint locObject = glGetUniformLocation(shader, "uObject");
+            GLint locProjIVObject = glGetUniformLocation(shader, "uModelViewProjection");
+            GLint locObject = glGetUniformLocation(shader, "uModel");
 
             GL(glUniform3f(locCamViewVec, 0.0f, 0.0f, -1.0f));
-            GL(glUniform3f(locLightDirWorld, 0.0f, 0.0f, -1.0f));
+            GL(glUniform3f(locLightDirecionView, 0.0f, 0.0f, -1.0f));
 
             // Build projection for the axes to use on the screen. The arrors will not
             // use the camera, but will use the camera's transformation matrix.
@@ -1662,16 +1668,11 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::updateWorldLight()
     {
-      glm::mat4 viewToWorld = mCamera->getViewToWorld();
       StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
+
       if (light)
-      {
         for (int i = 0; i < LIGHT_NUM; ++i)
-        {
-          glm::vec3 lightDirectionWorld = (viewToWorld * glm::vec4(mLightDirectionView[i], 0.0)).xyz();
-          light->lightDir[i] = mLightsOn[i] ? lightDirectionWorld : glm::vec3(0.0, 0.0, 0.0);
-        }
-      }
+          light->lightDir[i] = mLightsOn[i] ? mLightDirectionView[i] : glm::vec3(0.0, 0.0, 0.0);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -1705,20 +1706,16 @@ namespace SCIRun {
     {
       if (uniform.name == "uFogSettings")
       {
-        double start, end, zdist, ddist;
-        glm::vec4 center(mSceneBBox.center().x(), mSceneBBox.center().y(), mSceneBBox.center().z(), 1.0);
-        glm::mat4 worldToView = mCamera->getWorldToView();
-        center = worldToView * center;
-        center /= center.w;
-        glm::vec3 c3(center.x, center.y, center.z);
-        zdist = glm::length(c3);
-        ddist = 1.1 * mSceneBBox.diagonal().length();
-        start = zdist + (mFogStart - 0.5) * ddist;
-        end = zdist + (mFogEnd - 0.5) * ddist;
+        float radius = mSceneBBox.diagonal().length() * 2.0;
+        float start = radius * mFogStart;
+        float end = radius * mFogEnd;
         uniform.data = glm::vec4(mFogIntensity, start, end, 0.0);
       }
       else if (uniform.name == "uFogColor")
+      {
         uniform.data = mFogColor;
+      }
+
       uniform.type = Graphics::Datatypes::SpireSubPass::Uniform::UniformType::UNIFORM_VEC4;
     }
 
@@ -1754,7 +1751,7 @@ namespace SCIRun {
       viewVector.z = cos(inclination) * cos(azimuth);
       viewVector.x = cos(inclination) * sin(azimuth);
       viewVector.y = sin(inclination);
-      mLightDirectionView[index] = -viewVector;
+      mLightDirectionView[index] = glm::normalize(viewVector);
     }
 
     //----------------------------------------------------------------------------------------------

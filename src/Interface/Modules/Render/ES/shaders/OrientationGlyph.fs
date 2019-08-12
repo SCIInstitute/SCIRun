@@ -41,8 +41,8 @@ uniform vec4    uFogSettings;       // fog settings (intensity, start, end, 0.0)
 uniform vec4    uFogColor;          // fog color
 
 varying vec4	fColor;
-varying vec4    vPos;//for clipping plane calc
-varying vec4    vFogCoord;// for fog calculation
+varying vec4    vPosWorld;//for clipping plane calc
+varying vec4    vPosView;// for fog calculation
 
 void main()
 {
@@ -55,7 +55,7 @@ void main()
     fp.x = uFogSettings.x;
     fp.y = uFogSettings.y;
     fp.z = uFogSettings.z;
-    fp.w = abs(vFogCoord.z/vFogCoord.w);
+    fp.w = abs(vPosView.z/vPosView.w);
 
     float fog_factor;
     fog_factor = (fp.z-fp.w)/(fp.z-fp.y);

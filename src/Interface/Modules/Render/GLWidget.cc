@@ -38,11 +38,12 @@
 #include <QTimer>
 #include <QtDebug>
 #include <Core/Application/Application.h>
+#include <ctime>
 
 namespace SCIRun {
 namespace Gui {
 
-const int RendererUpdateInMS = 35;
+const int RendererUpdateInMS = 1000 / 60;
 const double updateTime = RendererUpdateInMS / 1000.0;
 
 //------------------------------------------------------------------------------
@@ -81,7 +82,6 @@ GLWidget::~GLWidget()
   // Need to inform module that the context is being destroyed.
   if (mGraphics != nullptr)
   {
-    //std::cout << "Terminating spire." << std::endl;
     mGraphics.reset();
   }
 }
@@ -156,6 +156,7 @@ void GLWidget::resizeGL(int width, int height)
 {
   mGraphics->eventResize(static_cast<size_t>(width),
                          static_cast<size_t>(height));
+  updateRenderer();
 }
 
 //------------------------------------------------------------------------------
@@ -181,7 +182,7 @@ void GLWidget::updateRenderer()
 
 #if 0
 #ifdef QT5_BUILD
-//idea--needs QWindow wrapper
+  //idea--needs QWindow wrapper
   if (!isExposed())
     return;
 #endif

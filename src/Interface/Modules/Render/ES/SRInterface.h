@@ -44,6 +44,7 @@
 #include <Interface/Modules/Render/ES/comp/StaticClippingPlanes.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Interface/Modules/Render/share.h>
+#include <glm/gtc/quaternion.hpp>
 
 namespace SCIRun {
   namespace Render {
@@ -124,6 +125,12 @@ namespace SCIRun {
       void eventResize(size_t width, size_t height);
       void doAutoView();
       // Sets the selected View of the window
+      void setCameraDistance(const float distance);
+      float getCameraDistance() const;
+      void setCameraLookAt(const glm::vec3 lookAt);
+      glm::vec3 getCameraLookAt() const;
+      void setCameraRotation(const glm::quat rotation);
+      glm::quat getCameraRotation() const;
       void setView(const glm::vec3& view, const glm::vec3& up);
       void setZoomSpeed(int zoomSpeed) {mZoomSpeed = zoomSpeed;}
       void setZoomInverted(bool value);
@@ -195,8 +202,8 @@ namespace SCIRun {
       void setupLights();
 
       //---------------- Camera ----------------------------------------------------------------------
-      void updateCamera(); // Places mCamera's transform into our static camera component.
       void applyAutoRotation();
+      void updateCamera(); // Places mCamera's transform into our static camera component.
 
       //---------------- Widgets -------------------------------------------------------------------
       bool foundWidget(const glm::ivec2& pos); // search for a widget at mouse position
@@ -336,19 +343,19 @@ namespace SCIRun {
 
       ren::ShaderVBOAttribs<5>          mArrowAttribs       {};       // Pre-applied shader / VBO attributes.
       ren::CommonUniforms               mArrowUniforms      {};       // Common uniforms used in the arrow shader.
-      RenderState::TransparencySortType mRenderSortType     {};       // Which strategy will be used to render transparency
+      RenderState::TransparencySortType mRenderSortType     {RenderState::TransparencySortType::UPDATE_SORT};       // Which strategy will be used to render transparency
 
       //material settings
-      double                            mMatAmbient         {0.2};
-      double                            mMatDiffuse         {1.0};
-      double                            mMatSpecular        {0.0};
-      double                            mMatShine           {1.0};
+      double                            mMatAmbient         {};
+      double                            mMatDiffuse         {};
+      double                            mMatSpecular        {};
+      double                            mMatShine           {};
 
       //fog settings
-      double                            mFogIntensity       {0.0};
-      double                            mFogStart           {0.0};
-      double                            mFogEnd             {1.0};
-      glm::vec4                         mFogColor           {0.0, 0.0, 0.0, 0.0};
+      double                            mFogIntensity       {};
+      double                            mFogStart           {};
+      double                            mFogEnd             {};
+      glm::vec4                         mFogColor           {};
 
       //light settings
       std::vector<glm::vec2>            mLightDirectionPolar{};

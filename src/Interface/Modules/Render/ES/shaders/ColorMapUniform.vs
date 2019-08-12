@@ -27,7 +27,7 @@
 */
 
 // Uniforms
-uniform mat4  uProjIVObject;      // Projection * Inverse View * World XForm
+uniform mat4  uModelViewProjection;
 
 // The following values are used to rescale the data between 0 .. 1.
 uniform float uFieldData;
@@ -42,6 +42,6 @@ varying float    fFieldData;
 
 void main( void )
 {
-  gl_Position = uProjIVObject * vec4(aPos, 1.0);
+  gl_Position = uModelViewProjection * vec4(aPos, 1.0);
   fFieldData  = uFieldData;
 }
