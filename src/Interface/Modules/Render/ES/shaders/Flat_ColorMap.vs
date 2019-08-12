@@ -34,12 +34,12 @@ uniform mat4    uView;
 
 // Attributes
 attribute vec3  aPos;
-attribute vec4  aColor;
+attribute vec2  aTexCoords;
 
 // Outputs to the fragment shader.
 varying vec4    vPosWorld;
 varying vec4    vPosView;
-varying vec4    vColor;
+varying vec2    vTexCoords;
 
 void main( void )
 {
@@ -47,7 +47,7 @@ void main( void )
   // was generated in gamma space, and we need to convert it to linear space.
   vPosWorld = uModel * vec4(aPos, 1.0);
   vPosView = uView * uModel * vPosWorld;
-  vColor = aColor;
+  vTexCoords = aTexCoords;
 
   gl_Position = uModelViewProjection * vec4(aPos, 1.0);
 }

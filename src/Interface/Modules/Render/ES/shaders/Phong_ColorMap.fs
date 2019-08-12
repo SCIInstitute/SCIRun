@@ -136,7 +136,9 @@ void main()
     }
   }
 
-  vec3 diffuseColor = texture2D(uTX0, vec2(vTexCoords.x, 0.0)).rgb;
+  vec3 diffuseColor;
+  if(gl_FrontFacing) diffuseColor = texture2D(uTX0, vec2(vTexCoords.y, 0.0)).rgb;
+  else               diffuseColor = texture2D(uTX0, vec2(vTexCoords.x, 0.0)).rgb;
   vec3 specularColor = uSpecularColor.rgb;
   vec3 ambientColor = uAmbientColor.rgb;
   float transparency = uTransparency;

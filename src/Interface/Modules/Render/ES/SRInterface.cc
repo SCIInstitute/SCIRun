@@ -1070,7 +1070,6 @@ namespace SCIRun {
                 }
                 RENDERER_LOG("add texture");
                 addTextToEntity(entityID, pass.text);
-                std::cout << "Adding: " << pass.texture.name << " " << pass.texture.width << "x" << pass.texture.height << "\n";
                 addTextureToEntity(entityID, pass.texture);
               }
 
@@ -1137,7 +1136,6 @@ namespace SCIRun {
               mCore.addComponent(entityID, pass);
             }
           }
-          std::cout << toString("");
           mCamera->setSceneBoundingBox(mSceneBBox);
           mCore.runGCOnNextExecution();
         }

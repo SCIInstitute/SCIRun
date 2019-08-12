@@ -55,13 +55,15 @@ uniform vec4    uClippingPlaneCtrl3;
 uniform vec4    uClippingPlaneCtrl4;
 uniform vec4    uClippingPlaneCtrl5;
 
+uniform sampler2D uTX0;
+
 // fog settings (intensity, start, end, 0.0)
 uniform vec4    uFogSettings;
 uniform vec4    uFogColor;
 
 varying vec4    vPosWorld;
 varying vec4    vPosView;
-varying vec4    vColor;
+varying vec2    vTexCoords;
 
 void main()
 {
@@ -112,7 +114,9 @@ void main()
     }
   }
 
-  vec3 diffuseColor = aColor.rgb;
+  vec3 diffuseColor;
+  if(gl_FrontFacing) diffuseColor = texture2D(uTX0, vec2(vTexCoords.y, 0.0)).rgb;
+  else               diffuseColor = texture2D(uTX0, vec2(vTexCoords.x, 0.0)).rgb;
   float transparency = uTransparency;
 
   gl_FragColor = vec4(diffuseColor, transparency);

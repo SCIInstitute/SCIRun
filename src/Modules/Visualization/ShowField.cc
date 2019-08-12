@@ -519,6 +519,7 @@ static float valueToFloat(Vector &vector)
 }
 
 
+
 void GeometryBuilder::renderFacesLinear(
   FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
@@ -550,7 +551,17 @@ void GeometryBuilder::renderFacesLinear(
 
   bool useColorMap = (fld->basis_order() >= 0 && state.get(RenderState::USE_COLORMAP));
   ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
-  auto map = colorMap.get();
+
+  auto realColorMap = colorMap.get();
+  if(!realColorMap) realColorMap = StandardColorMapFactory::create();
+
+  auto map = StandardColorMapFactory::create(realColorMap->getColorMapName(),
+    realColorMap->getColorMapResolution(), realColorMap->getColorMapShift(),
+    realColorMap->getColorMapInvert());
+
+  auto coordinateMap = StandardColorMapFactory::create("Grayscale", 256, 0, false,
+    realColorMap->getColorMapRescaleScale(), realColorMap->getColorMapRescaleShift());
+
   if (useColorMap)
   {
     numAttributes += 2;
@@ -593,29 +604,20 @@ void GeometryBuilder::renderFacesLinear(
     auto iboBuffer = iboBufferSPtr.get();
     auto vboBuffer = vboBufferSPtr.get();
 
-    /*
-    std::cout << "writeCase: " << writeCase << "\n";
-    std::cout << "useQuads: " << useQuads << "\n";
-    std::cout << "useNormals: " << useNormals << "\n";
-    std::cout << "useColorMap: " << useColorMap << "\n";
-    if(useFaceNormals) std::cout << "using face normals\n";
-    if(invertNormals)  std::cout << "inverting normals\n";
-    */
-
     uint32_t iboIndex = 0;
     while (facesLeftInThisPass > 0)
     {
       interruptible->checkForInterruption();
       mesh->get_nodes(nodes, *fiter);
 
-      for(size_t i = 0; i < numNodes; i++)
+      for(size_t i = 0; i < numNodes; ++i)
         mesh->get_point(points[i], nodes[i]);
 
       if (useNormals)
       {
         if (useFaceNormals)
         {
-          for(size_t i = 0; i < numNodes; i++)
+          for(size_t i = 0; i < numNodes; ++i)
             mesh->get_normal(normals[i], nodes[i]);
         }
         else
@@ -638,12 +640,12 @@ void GeometryBuilder::renderFacesLinear(
             norm.normalize();
           }
 
-          for(size_t i = 0; i < numNodes; i++)
+          for(size_t i = 0; i < numNodes; ++i)
             normals[i] = norm;
         }
 
         if(invertNormals)
-          for(size_t i = 0; i < numNodes; i++)
+          for(size_t i = 0; i < numNodes; ++i)
             normals[i] = -normals[i];
       }
 
@@ -661,8 +663,11 @@ void GeometryBuilder::renderFacesLinear(
             if (cells.size() > 1) fld->get_value(svals[1], cells[1]);
             else svals[1] = svals[0];
 
-            textureCoords[0].x = valueToFloat(svals[0]);
-            textureCoords[1].x = valueToFloat(svals[1]);
+            for (size_t i = 0; i < numNodes; ++i)
+            {
+              textureCoords[i].x = coordinateMap->valueToColor(svals[0]).r();
+              textureCoords[i].y = coordinateMap->valueToColor(svals[1]).r();
+            }
           }
           else if (fld->is_vector())
           {
@@ -670,8 +675,11 @@ void GeometryBuilder::renderFacesLinear(
             if (cells.size() > 1) fld->get_value(vvals[1], cells[1]);
             else svals[1] = svals[0];
 
-            textureCoords[0].x = valueToFloat(vvals[0]);
-            textureCoords[1].x = valueToFloat(vvals[1]);
+            for (size_t i = 0; i < numNodes; ++i)
+            {
+              textureCoords[i].x = coordinateMap->valueToColor(vvals[0]).r();
+              textureCoords[i].y = coordinateMap->valueToColor(vvals[1]).r();
+            }
           }
           else if (fld->is_tensor())
           {
@@ -679,8 +687,11 @@ void GeometryBuilder::renderFacesLinear(
             if (cells.size() > 1) fld->get_value(tvals[1], cells[1]);
             else svals[1] = svals[0];
 
-            textureCoords[0].x = valueToFloat(tvals[0]);
-            textureCoords[1].x = valueToFloat(tvals[1]);
+            for (size_t i = 0; i < numNodes; ++i)
+            {
+              textureCoords[i].x = coordinateMap->valueToColor(tvals[0]).r();
+              textureCoords[i].y = coordinateMap->valueToColor(tvals[1]).r();
+            }
           }
         }
         // Element data (faces)
@@ -689,47 +700,47 @@ void GeometryBuilder::renderFacesLinear(
           if (fld->is_scalar())
           {
             fld->get_value(svals[0], *fiter);
-            textureCoords[0].x = valueToFloat(svals[0]);
+            textureCoords[0].x = coordinateMap->valueToColor(svals[0]).r();
           }
           else if (fld->is_vector())
           {
             fld->get_value(vvals[0], *fiter);
-            textureCoords[0].x = valueToFloat(vvals[0]);
+            textureCoords[0].x = coordinateMap->valueToColor(vvals[0]).r();
           }
           else if (fld->is_tensor())
           {
             fld->get_value(tvals[0], *fiter);
-            textureCoords[0].x = valueToFloat(tvals[0]);
+            textureCoords[0].x = coordinateMap->valueToColor(tvals[0]).r();
           }
 
           for (size_t i = 0; i < numNodes; ++i)
-            textureCoords[i].x = textureCoords[0].x;
+            textureCoords[i].y = textureCoords[i].x = textureCoords[0].x;
         }
         // Data at nodes
         else if (fld->basis_order() == 1)
         {
           if (fld->is_scalar())
           {
-            for (size_t i = 0; i<numNodes; i++)
+            for (size_t i = 0; i<numNodes; ++i)
             {
               fld->get_value(svals[i], nodes[i]);
-              textureCoords[i].x = valueToFloat(svals[i]);
+              textureCoords[i].x = textureCoords[i].y = coordinateMap->valueToColor(svals[i]).r();
             }
           }
           else if (fld->is_vector())
           {
-            for (size_t i = 0; i<numNodes; i++)
+            for (size_t i = 0; i<numNodes; ++i)
             {
               fld->get_value(vvals[i], nodes[i]);
-              textureCoords[i].x = valueToFloat(vvals[i]);
+              textureCoords[i].x = textureCoords[i].y = coordinateMap->valueToColor(vvals[i]).r();
             }
           }
           else if (fld->is_tensor())
           {
-            for (size_t i = 0; i<numNodes; i++)
+            for (size_t i = 0; i<numNodes; ++i)
             {
               fld->get_value(tvals[i], nodes[i]);
-              textureCoords[i].x = valueToFloat(tvals[i]);
+              textureCoords[i].x = textureCoords[i].y = coordinateMap->valueToColor(tvals[i]).r();
             }
           }
         }
@@ -781,7 +792,6 @@ void GeometryBuilder::renderFacesLinear(
     {
       shader += "_ColorMap";
       attribs.push_back(SpireVBO::AttributeData("aTexCoords", 2 * sizeof(float)));
-      uniforms.push_back(SpireSubPass::Uniform("uTX0", 0));
       for(int i = 0; i < 256; ++i)
       {
         ColorRGB color = map->valueToColor(i/256.0f * 2.0 - 1.0);
@@ -789,10 +799,7 @@ void GeometryBuilder::renderFacesLinear(
         texture.bitmap.push_back(color.g()*255);
         texture.bitmap.push_back(color.b()*255);
         texture.bitmap.push_back(255);
-      //  std::cout << (int)texture.bitmap[i*4] << " " << (int)texture.bitmap[i*4+1] << " "
-      //  << (int)texture.bitmap[i*4+2] << " " << (int)texture.bitmap[i*4+3] << "\n";
       }
-
       texture.name = "ColorMap";
       texture.height = 1;
       texture.width = 256;
