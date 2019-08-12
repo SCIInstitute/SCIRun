@@ -104,7 +104,7 @@ public:
     spire::VarBuffer* iboBuffer,
     spire::VarBuffer* vboBuffer,
     ColorScheme colorScheme,
-    const std::vector<ColorRGB> &face_colors,
+    const std::vector<ColorRGB> &textureCoords,
     const RenderState& state);
 
   void renderEdges(
@@ -452,6 +452,12 @@ inline static void writeAtributeToVBO(const ColorRGB& color, spire::VarBuffer* v
   vboBuffer->write(static_cast<float>(1.0f));
 }
 
+inline static void writeAtributeToVBO(const glm::vec2& coords, spire::VarBuffer* vboBuffer)
+{
+  vboBuffer->write(static_cast<float>(coords.x));
+  vboBuffer->write(static_cast<float>(coords.y));
+}
+
 inline static void writeIndexToIBO(const uint32_t index, spire::VarBuffer* iboBuffer)
 {
   iboBuffer->write(index);
@@ -494,6 +500,25 @@ static void writeQuad(
 
 
 
+static float valueToFloat(double scalar)
+{
+    return scalar * 0.5 + 0.5;
+}
+
+static float valueToFloat(Tensor &tensor)
+{
+  double eigen1, eigen2, eigen3;
+  tensor.get_eigenvalues(eigen1, eigen2, eigen3);
+  float magnitude = Vector(eigen1, eigen2, eigen3).length();
+  return magnitude * 0.5 + 0.5;
+}
+
+static float valueToFloat(Vector &vector)
+{
+  return vector.length()*0.5+0.5;
+}
+
+
 void GeometryBuilder::renderFacesLinear(
   FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
@@ -528,7 +553,7 @@ void GeometryBuilder::renderFacesLinear(
   auto map = colorMap.get();
   if (useColorMap)
   {
-    numAttributes += 4;
+    numAttributes += 2;
     colorScheme = ColorScheme::COLOR_MAP;
   }
 
@@ -546,7 +571,7 @@ void GeometryBuilder::renderFacesLinear(
 
   std::vector<Point> points(numNodes);
   std::vector<Vector> normals(numNodes);
-  std::vector<ColorRGB> face_colors(numNodes);
+  std::vector<glm::vec2> textureCoords(numNodes);
   std::vector<double> svals(numNodes);
   std::vector<Vector> vvals(numNodes);
   std::vector<Tensor> tvals(numNodes);
@@ -636,8 +661,8 @@ void GeometryBuilder::renderFacesLinear(
             if (cells.size() > 1) fld->get_value(svals[1], cells[1]);
             else svals[1] = svals[0];
 
-            face_colors[0] = map->valueToColor(svals[0]);
-            face_colors[1] = map->valueToColor(svals[1]);
+            textureCoords[0].x = valueToFloat(svals[0]);
+            textureCoords[1].x = valueToFloat(svals[1]);
           }
           else if (fld->is_vector())
           {
@@ -645,8 +670,8 @@ void GeometryBuilder::renderFacesLinear(
             if (cells.size() > 1) fld->get_value(vvals[1], cells[1]);
             else svals[1] = svals[0];
 
-            face_colors[0] = map->valueToColor(vvals[0]);
-            face_colors[1] = map->valueToColor(vvals[1]);
+            textureCoords[0].x = valueToFloat(vvals[0]);
+            textureCoords[1].x = valueToFloat(vvals[1]);
           }
           else if (fld->is_tensor())
           {
@@ -654,8 +679,8 @@ void GeometryBuilder::renderFacesLinear(
             if (cells.size() > 1) fld->get_value(tvals[1], cells[1]);
             else svals[1] = svals[0];
 
-            face_colors[0] = map->valueToColor(tvals[0]);
-            face_colors[1] = map->valueToColor(tvals[1]);
+            textureCoords[0].x = valueToFloat(tvals[0]);
+            textureCoords[1].x = valueToFloat(tvals[1]);
           }
         }
         // Element data (faces)
@@ -664,21 +689,21 @@ void GeometryBuilder::renderFacesLinear(
           if (fld->is_scalar())
           {
             fld->get_value(svals[0], *fiter);
-            face_colors[0] = map->valueToColor(svals[0]);
+            textureCoords[0].x = valueToFloat(svals[0]);
           }
           else if (fld->is_vector())
           {
             fld->get_value(vvals[0], *fiter);
-            face_colors[0] = map->valueToColor(vvals[0]);
+            textureCoords[0].x = valueToFloat(vvals[0]);
           }
           else if (fld->is_tensor())
           {
             fld->get_value(tvals[0], *fiter);
-            face_colors[0] = map->valueToColor(tvals[0]);
+            textureCoords[0].x = valueToFloat(tvals[0]);
           }
 
           for (size_t i = 0; i < numNodes; ++i)
-            face_colors[i] = face_colors[0];
+            textureCoords[i].x = textureCoords[0].x;
         }
         // Data at nodes
         else if (fld->basis_order() == 1)
@@ -688,7 +713,7 @@ void GeometryBuilder::renderFacesLinear(
             for (size_t i = 0; i<numNodes; i++)
             {
               fld->get_value(svals[i], nodes[i]);
-              face_colors[i] = map->valueToColor(svals[i]);
+              textureCoords[i].x = valueToFloat(svals[i]);
             }
           }
           else if (fld->is_vector())
@@ -696,7 +721,7 @@ void GeometryBuilder::renderFacesLinear(
             for (size_t i = 0; i<numNodes; i++)
             {
               fld->get_value(vvals[i], nodes[i]);
-              face_colors[i] = map->valueToColor(vvals[i]);
+              textureCoords[i].x = valueToFloat(vvals[i]);
             }
           }
           else if (fld->is_tensor())
@@ -704,7 +729,7 @@ void GeometryBuilder::renderFacesLinear(
             for (size_t i = 0; i<numNodes; i++)
             {
               fld->get_value(tvals[i], nodes[i]);
-              face_colors[i] = map->valueToColor(tvals[i]);
+              textureCoords[i].x = valueToFloat(tvals[i]);
             }
           }
         }
@@ -713,13 +738,13 @@ void GeometryBuilder::renderFacesLinear(
       switch(writeCase)
       {
         case 0b000: writeTri(vboBuffer, iboBuffer, iboIndex, points); break;
-        case 0b001: writeTri(vboBuffer, iboBuffer, iboIndex, points, face_colors); break;
+        case 0b001: writeTri(vboBuffer, iboBuffer, iboIndex, points, textureCoords); break;
         case 0b010: writeTri(vboBuffer, iboBuffer, iboIndex, points, normals); break;
-        case 0b011: writeTri(vboBuffer, iboBuffer, iboIndex, points, normals, face_colors); break;
+        case 0b011: writeTri(vboBuffer, iboBuffer, iboIndex, points, normals, textureCoords); break;
         case 0b100: writeQuad(vboBuffer, iboBuffer, iboIndex, points); break;
-        case 0b101: writeQuad(vboBuffer, iboBuffer, iboIndex, points, face_colors); break;
+        case 0b101: writeQuad(vboBuffer, iboBuffer, iboIndex, points, textureCoords); break;
         case 0b110: writeQuad(vboBuffer, iboBuffer, iboIndex, points, normals); break;
-        case 0b111: writeQuad(vboBuffer, iboBuffer, iboIndex, points, normals, face_colors); break;
+        case 0b111: writeQuad(vboBuffer, iboBuffer, iboIndex, points, normals, textureCoords); break;
       }
 
       ++fiter;
@@ -742,8 +767,6 @@ void GeometryBuilder::renderFacesLinear(
     uniforms.push_back(SpireSubPass::Uniform("uUseClippingPlanes", true));
     uniforms.push_back(SpireSubPass::Uniform("uUseFog", true));
     uniforms.push_back(SpireSubPass::Uniform("uTransparency", faceTransparencyValue_));
-    uniforms.push_back(SpireSubPass::Uniform("uDiffuseColor",
-      glm::vec4(state.defaultColor.r(), state.defaultColor.g(), state.defaultColor.b(), 1.0f)));
 
     if (useNormals)
     {
@@ -753,10 +776,31 @@ void GeometryBuilder::renderFacesLinear(
       uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
     }
 
+    SpireTexture2D texture;
     if (useColorMap)
     {
       shader += "_ColorMap";
-      attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
+      attribs.push_back(SpireVBO::AttributeData("aTexCoords", 2 * sizeof(float)));
+      uniforms.push_back(SpireSubPass::Uniform("uTX0", 0));
+      for(int i = 0; i < 256; ++i)
+      {
+        ColorRGB color = map->valueToColor(i/256.0f * 2.0 - 1.0);
+        texture.bitmap.push_back(color.r()*255);
+        texture.bitmap.push_back(color.g()*255);
+        texture.bitmap.push_back(color.b()*255);
+        texture.bitmap.push_back(255);
+      //  std::cout << (int)texture.bitmap[i*4] << " " << (int)texture.bitmap[i*4+1] << " "
+      //  << (int)texture.bitmap[i*4+2] << " " << (int)texture.bitmap[i*4+3] << "\n";
+      }
+
+      texture.name = "ColorMap";
+      texture.height = 1;
+      texture.width = 256;
+    }
+    else
+    {
+      uniforms.push_back(SpireSubPass::Uniform("uDiffuseColor",
+        glm::vec4(state.defaultColor.r(), state.defaultColor.g(), state.defaultColor.b(), 1.0f)));
     }
 
     //numVBOElements is only used in dead code and should be removed which is why its hard coded to 0
@@ -768,7 +812,7 @@ void GeometryBuilder::renderFacesLinear(
 
     SpireText text;
     SpireSubPass pass(passName, vboName, iboName, shader,
-      colorScheme, state, RenderType::RENDER_VBO_IBO, geomVBO, geomIBO, text);
+      colorScheme, state, RenderType::RENDER_VBO_IBO, geomVBO, geomIBO, text, texture);
 
     for (const auto& uniform : uniforms) pass.addUniform(uniform);
 

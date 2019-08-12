@@ -145,6 +145,25 @@ namespace SCIRun {
         std::vector<uint8_t>                  bitmap;
       };
 
+      struct SpireTexture2D
+      {
+        SpireTexture2D() : name(""), width(0), height(0) {}
+        SpireTexture2D(std::string name , size_t width, size_t height, const char* data) :
+          name(name),
+          width(width),
+          height(height)
+        {
+            size_t size = width*height*4;
+            bitmap.resize(size);
+            std::copy(data, data + size, bitmap.begin());
+        }
+        std::string                           name;
+        size_t                                width;
+        size_t                                height;
+        std::vector<uint8_t>                  bitmap;
+      };
+
+
       /// Defines a Spire object 'pass'.
       struct SpireSubPass
       {
@@ -153,7 +172,7 @@ namespace SCIRun {
           const std::string& iboName, const std::string& program,
           ColorScheme scheme, const RenderState& state,
           RenderType renType, const SpireVBO& vbo, const SpireIBO& ibo,
-          const SpireText& text) :
+          const SpireText& text, const SpireTexture2D& texture = SpireTexture2D()) :
           passName(name),
           vboName(vboName),
           iboName(iboName),
@@ -163,6 +182,7 @@ namespace SCIRun {
           vbo(vbo),
           ibo(ibo),
           text(text),
+          texture(texture),
           scalar(1.0),
           mColorScheme(scheme)
         {}
@@ -184,8 +204,9 @@ namespace SCIRun {
         SpireVBO			vbo;
         SpireIBO			ibo;
         SpireText     text;//draw a string (usually single character) on geometry
+        SpireTexture2D texture;
         double        scalar;
-        std::string   preproc {""};
+
 
         struct Uniform
         {
@@ -266,21 +287,18 @@ namespace SCIRun {
         const PassList& passes() const { return mPasses; }
         PassList& passes() { return mPasses; }
 
-        bool isClippable() const { return isClippable_; }
+        bool isClippable() const {return isClippable_;}
 
-        void setColorMap(const std::string& name) { mColorMap = name; }
+        void setColorMap(const std::string& name) { }
         boost::optional<std::string> colorMap() const { return mColorMap; }
+
       private:
         VBOList mVBOs;  ///< Array of vertex buffer objects.
         IBOList mIBOs;  ///< Array of index buffer objects.
-
-        /// List of passes to setup.
-        PassList  mPasses;
-
-        /// Optional colormap name.
+        PassList  mPasses; /// List of passes to setup.
+        bool isClippable_;
         boost::optional<std::string> mColorMap;
 
-        bool isClippable_;
       };
 
       typedef boost::shared_ptr<GeometryObjectSpire> GeometryHandle;

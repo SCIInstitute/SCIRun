@@ -66,6 +66,8 @@ uniform vec4    uClippingPlaneCtrl3;
 uniform vec4    uClippingPlaneCtrl4;
 uniform vec4    uClippingPlaneCtrl5;
 
+uniform sampler2D uTX0;
+
 // fog settings (intensity, start, end, 0.0)
 uniform vec4    uFogSettings;
 uniform vec4    uFogColor;
@@ -73,7 +75,7 @@ uniform vec4    uFogColor;
 varying vec3    vNormal;
 varying vec4    vPosWorld;
 varying vec4    vPosView;
-varying vec4    vColor;
+varying vec2    vTexCoords;
 
 vec4 calculate_lighting(vec3 N, vec3 L, vec3 V, vec3 diffuseColor, vec3 specularColor, vec3 lightColor)
 {
@@ -134,7 +136,7 @@ void main()
     }
   }
 
-  vec3 diffuseColor = vColor.rgb;
+  vec3 diffuseColor = texture2D(uTX0, vec2(vTexCoords.x, 0.0)).rgb;
   vec3 specularColor = uSpecularColor.rgb;
   vec3 ambientColor = uAmbientColor.rgb;
   float transparency = uTransparency;

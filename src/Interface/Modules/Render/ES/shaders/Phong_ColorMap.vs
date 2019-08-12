@@ -25,7 +25,6 @@
   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
   DEALINGS IN THE SOFTWARE.
 */
-#define COLOR_MAP
 
 // Uniforms
 uniform mat4    uModelViewProjection;
@@ -35,13 +34,13 @@ uniform mat4    uView;
 // Attributes
 attribute vec3  aPos;
 attribute vec3  aNormal;
-attribute vec4  aColor;
+attribute vec2  aTexCoords;
 
 // Outputs to the fragment shader.
 varying vec3    vNormal;
 varying vec4    vPosWorld;
 varying vec4    vPosView;
-varying vec4    vColor;
+varying vec2    vTexCoords;
 
 void main( void )
 {
@@ -49,8 +48,8 @@ void main( void )
   // was generated in gamma space, and we need to convert it to linear space.
   vPosWorld = uModel * vec4(aPos, 1.0);
   vPosView = uView * vPosWorld;
-  vNormal = normalize((uView * vec4(aNormal, 0.0)).xyz);
-  vColor = aColor;
+  vNormal = normalize((uView * vec4(aNormal, 0.5)).xyz);
+  vTexCoords = aTexCoords;
 
   gl_Position = uModelViewProjection * vec4(aPos, 1.0);
 }
