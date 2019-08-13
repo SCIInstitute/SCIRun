@@ -265,6 +265,7 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(TensorsColoringDataInput, std::string("Primary"));
   state->setValue(TensorsTransparency, 0);
   state->setValue(TensorsUniformTransparencyValue, 0.65);
+  state->setValue(SuperquadricEmphasis, 0.85);
   //  state->setValue(TensorsTransparencyDataInput, std::string("Primary"));
   state->setValue(NormalizeTensors, false);
   state->setValue(TensorsScale, 1.0);
@@ -669,6 +670,15 @@ void GlyphBuilder::renderScalars(
                      state->getValue(ShowFieldGlyphs::ScalarsUniformTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
 }
 
+double map_emphasis(double old)
+{
+  if (old < 0.0) old = 0.0;
+  else if (old > 1.0) old = 1.0;
+  return tan(old * (M_PI / 2.0 * 0.999));
+  // Map old 3.5 value onto new 0.825 value.
+  //return tan(old * (atan(3.5) / (0.825 * 4.0)));
+}
+
 void GlyphBuilder::renderTensors(
   ShowFieldGlyphsPortHandler& portHandler,
   ModuleStateHandle state,
@@ -827,13 +837,19 @@ void GlyphBuilder::renderTensors(
             break;
           case RenderState::GlyphType::ELLIPSOID_GLYPH:
             glyphs.addEllipsoid(points[i], t, scale, resolution, node_color, normalizeGlyphs);
-            tensorcount++;
             break;
-          case RenderState::GlyphType::SPHERE_GLYPH:
-            glyphs.addSphere(points[i], eigvals.x(), resolution, node_color);
+          case RenderState::GlyphType::SUPERELLIPSOID_GLYPH:
+          {
+            double emphasis = state->getValue(ShowFieldGlyphs::SuperquadricEmphasis).toDouble();
+            if(emphasis > 0.0)
+              glyphs.addSuperEllipsoid(points[i], t, scale, resolution, node_color, normalizeGlyphs, emphasis);
+            else
+              glyphs.addEllipsoid(points[i], t, scale, resolution, node_color, normalizeGlyphs);
+          }
           default:
             break;
           }
+          tensorcount++;
         }
      }
 
@@ -853,6 +869,12 @@ void GlyphBuilder::renderTensors(
     RenderState pointRenState = getScalarsRenderState(state);
     point_glyphs.buildObject(*geom, uniquePointID, pointRenState.get(RenderState::USE_TRANSPARENT_NODES),
                              state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(), colorScheme, pointRenState, SpireIBO::PRIMITIVE::POINTS, mesh->get_bounding_box());
+}
+
+void ShowFieldGlyphs::setSuperquadricEmphasis(int emphasis)
+{
+  double mapped_emphasis = map_emphasis((double) emphasis * 0.01);
+  get_state()->setValue(ShowFieldGlyphs::SuperquadricEmphasis, mapped_emphasis);
 }
 
 RenderState GlyphBuilder::getVectorsRenderState(ModuleStateHandle state)
@@ -1013,6 +1035,8 @@ RenderState GlyphBuilder::getTensorsRenderState(ModuleStateHandle state)
     renState.mGlyphType = RenderState::GlyphType::ELLIPSOID_GLYPH;
   else if(glyph == "Spheres")
     renState.mGlyphType = RenderState::GlyphType::SPHERE_GLYPH;
+  else if(glyph == "Superellipsoids")
+    renState.mGlyphType = RenderState::GlyphType::SUPERELLIPSOID_GLYPH;
   else
     renState.mGlyphType = RenderState::GlyphType::BOX_GLYPH;
 
@@ -1089,6 +1113,7 @@ const AlgorithmParameterName ShowFieldGlyphs::TensorsColoring("TensorsColoring")
 const AlgorithmParameterName ShowFieldGlyphs::TensorsColoringDataInput("TensorsColoringDataInput");
 const AlgorithmParameterName ShowFieldGlyphs::TensorsTransparency("TensorsTransparency");
 const AlgorithmParameterName ShowFieldGlyphs::TensorsUniformTransparencyValue("TensorsUniformTransparencyValue");
+const AlgorithmParameterName ShowFieldGlyphs::SuperquadricEmphasis("SuperquadricEmphasis");
 //const AlgorithmParameterName ShowFieldGlyphs::TensorsTransparencyDataInput("TensorsTransparencyDataInput");
 const AlgorithmParameterName ShowFieldGlyphs::NormalizeTensors("NormalizeTensors");
 const AlgorithmParameterName ShowFieldGlyphs::TensorsScale("TensorsScale");

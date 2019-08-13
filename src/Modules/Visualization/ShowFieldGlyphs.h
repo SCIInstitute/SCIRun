@@ -91,6 +91,7 @@ namespace SCIRun {
         static const Core::Algorithms::AlgorithmParameterName TensorsColoringDataInput;
         static const Core::Algorithms::AlgorithmParameterName TensorsTransparency;
         static const Core::Algorithms::AlgorithmParameterName TensorsUniformTransparencyValue;
+        static const Core::Algorithms::AlgorithmParameterName SuperquadricEmphasis;
         //        static const Core::Algorithms::AlgorithmParameterName TensorsTransparencyDataInput;
         static const Core::Algorithms::AlgorithmParameterName NormalizeTensors;
         static const Core::Algorithms::AlgorithmParameterName TensorsScale;
@@ -119,6 +120,7 @@ namespace SCIRun {
           boost::optional<Core::Datatypes::ColorMapHandle> scolormap,
           boost::optional<Core::Datatypes::ColorMapHandle> tcolormap);
         RenderState::InputPort getInput(std::string &port_name);
+        void setSuperquadricEmphasis(int emphasis);
 
         boost::shared_ptr<class GlyphBuilder> builder_;
 

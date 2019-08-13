@@ -54,6 +54,7 @@ ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStat
   createExecuteInteractivelyToggleAction();
 
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
+  // connect(tensorSuperquadricsEmphasisSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setSuperquadricEmphasis(int)));
   connectButtonToExecuteSignal(defaultMeshColorButton_);
 }
 
@@ -200,6 +201,16 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
   this->springsPitchScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
 }
 
+void ShowFieldGlyphsDialog::emphasisSliderChanged(int val)
+{
+  superquadricEmphasisDoubleSpinBox_->setValue(val * 0.01);
+}
+
+void ShowFieldGlyphsDialog::emphasisSpinBoxChanged(double val)
+{
+  superquadricEmphasisSlider_->setValue(int(val * 100));
+}
+
 void ShowFieldGlyphsDialog::setupTensorsTab()
 {
   // Show Tensors
@@ -224,6 +235,9 @@ void ShowFieldGlyphsDialog::setupTensorsTab()
   // Threshold
   addCheckableButtonManager(this->renderVectorsBelowThresholdCheckBox_, ShowFieldGlyphs::RenderTensorsBelowThreshold);
   addDoubleSpinBoxManager(this->tensorsThresholdDoubleSpinBox_, ShowFieldGlyphs::TensorsThreshold);
+  addDoubleSpinBoxManager(this->superquadricEmphasisDoubleSpinBox_, ShowFieldGlyphs::SuperquadricEmphasis);
+  connect(this->superquadricEmphasisSlider_, SIGNAL(valueChanged(int)), this, SLOT(emphasisSliderChanged(int)));
+  connect(this->superquadricEmphasisDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(emphasisSpinBoxChanged(double)));
 
   connectButtonToExecuteSignal(this->showTensorsCheckBox_);
   connectButtonToExecuteSignal(this->tensorsTransparencyOffRButton_);
@@ -232,9 +246,10 @@ void ShowFieldGlyphsDialog::setupTensorsTab()
   connectButtonToExecuteSignal(this->renderTensorsBelowThresholdCheckBox_);
 
   // Text Labels
-  this->tensorSuperquadricsEmphasisSlider_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->superquadricEmphasisSlider_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->tensorColorTypeLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->tensorColorInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->normalizeTensorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->tensorScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
 }
+

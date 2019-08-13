@@ -235,6 +235,11 @@ void GlyphGeom::addEllipsoid(const Point& p, Tensor& t, double scale, int resolu
   generateEllipsoid(p, t, scale, resolution, color, false, normalize);
 }
 
+void GlyphGeom::addSuperEllipsoid(const Point& p, Tensor& t, double scale, int resolution, const ColorRGB& color, bool normalize, double emphasis)
+{
+  generateSuperEllipsoid(p, t, scale, resolution, color, normalize, emphasis);
+}
+
 void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, int resolution,
                             const ColorRGB& color1, const ColorRGB& color2,
                             bool renderBase1, bool renderBase2)
@@ -979,6 +984,199 @@ void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale, 
     for(int jj = 0; jj < 6; jj++) indices_.pop_back();
   }
 }
+
+inline double spow(double e, double x)
+{
+  // This for round off of very small numbers.
+  if( abs( e ) < 1.0e-6)
+    e = 0.0;
+
+  if (e < 0.0)
+  {
+    return (double)(pow(abs(e), x) * -1.0);
+  }
+  else
+  {
+    return (double)(pow(e, x));
+  }
+}
+
+void GlyphGeom::generateSuperEllipsoid(const Point& center, Tensor& t, double scale, int resolution, const ColorRGB& color, bool normalize, double emphasis)
+{
+  double zeroThreshold = 0.000001;
+  std::vector<Vector> eigvectors(3);
+  t.get_eigenvectors(eigvectors[0], eigvectors[1], eigvectors[2]);
+
+  double eigval1, eigval2, eigval3;
+  t.get_eigenvalues(eigval1, eigval2, eigval3);
+  Vector eigvals = Vector(fabs(eigval1), fabs(eigval2), fabs(eigval3));
+  if(normalize)
+    eigvals.normalize();
+  eigvals *= scale;
+
+  // Checks to see if eigenvalues are close to 0
+  bool eig_x_0 = eigvals.x() <= zeroThreshold;
+  bool eig_y_0 = eigvals.y() <= zeroThreshold;
+  bool eig_z_0 = eigvals.z() <= zeroThreshold;
+
+  // Set to 0 if below threshold
+  eigvals[0] = (!eig_x_0) * eigvals[0];
+  eigvals[1] = (!eig_y_0) * eigvals[1];
+  eigvals[2] = (!eig_z_0) * eigvals[2];
+
+  bool flatTensor = (eig_x_0 + eig_y_0 + eig_z_0) >= 1;
+  Vector zero_norm;
+
+  if(flatTensor)
+  {
+    reorderTensor(eigvectors, eigvals);
+
+    eig_x_0 = eigvals.x() <= zeroThreshold;
+    eig_y_0 = eigvals.y() <= zeroThreshold;
+    eig_z_0 = eigvals.z() <= zeroThreshold;
+    // Check for zero eigenvectors
+    if(eig_x_0)
+    {
+      zero_norm = Cross(eigvectors[1], eigvectors[2]);
+      eigvectors[0] = zero_norm;
+    }
+    else if(eig_y_0)
+    {
+      zero_norm = Cross(eigvectors[0], eigvectors[2]);
+      eigvectors[1] = zero_norm;
+    }
+    else if(eig_z_0)
+    {
+      zero_norm = Cross(eigvectors[0], eigvectors[1]);
+      eigvectors[2] = zero_norm;
+    }
+  }
+
+  Transform rotate(Point(0.0, 0.0, 0.0), eigvectors[0], eigvectors[1], eigvectors[2]);
+  Transform trans = rotate;
+  trans.pre_translate((Vector) center);
+
+  trans.post_scale (Vector(1.0,1.0,1.0) * eigvals);
+  rotate.post_scale(Vector(1.0,1.0,1.0) / eigvals);
+
+  int nu = resolution + 1;
+  int nv = resolution;
+
+  SinCosTable tab1(nu, 0, 2 * M_PI);
+  SinCosTable tab2(nv, 0, M_PI);
+
+  double cl = (eigvals[0] - eigvals[1]) / (eigvals[0] + eigvals[1] + eigvals[2]);
+  double cp = 2.0 * (eigvals[1] - eigvals[2]) / (eigvals[0] + eigvals[1] + eigvals[2]);
+  double A = spow((1.0 - cl), emphasis);
+  double B = spow((1.0 - cp), emphasis);
+
+  double nr[2];
+  double nz[2];
+
+  for (int v=0; v < nv-1; v++)
+  {
+    nr[0] = tab2.sin(v+1);
+    nr[1] = tab2.sin(v);
+
+    nz[0] = tab2.cos(v+1);
+    nz[1] = tab2.cos(v);
+
+    for (int u=0; u<nu; u++)
+    {
+      double nx = tab1.sin(u);
+      double ny = tab1.cos(u);
+
+      uint32_t offset = static_cast<uint32_t>(numVBOElements_);
+      for( unsigned int i=0; i<2; i++ )
+      {
+        // Transorm points and add to points list
+        const double x = spow(nr[i], B) * spow(nx, A);
+        const double y = spow(nr[i], B) * spow(ny, A);
+        const double z = spow(nz[i], B);
+        Vector  point  = Vector(trans  * Point( x, y, z ));
+        points_.push_back(point);
+
+        // Add normals
+        const float nnx = spow(nr[i], 2.0-B) * spow(nx, 2.0-A);
+        const float nny = spow(nr[i], 2.0-B) * spow(ny, 2.0-A);
+        const float nnz = spow(nz[i], 2.0-B);
+        Vector normal = rotate * Vector( nnx, nny, nnz );
+        normal.safe_normalize();
+        normals_.push_back(normal);
+
+        // Add color vectors from parameters
+        colors_.push_back(color);
+
+        numVBOElements_ ++;
+      }
+
+      indices_.push_back(0 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(3 + offset);
+    }
+  }
+  for(int jj = 0; jj < 6; jj++) indices_.pop_back();
+}
+
+// template <class T>
+// void GeomGlyph::gen_torus(const Point& center, const T& t,
+			      // double major_radius, double minor_radius,
+			      // int nu, int nv,
+			      // std::vector< QuadStrip >& quadstrips )
+// {
+  // nu++; //Bring nu to expected value for shape.
+
+  // SinCosTable tab1(nu, 0, 2*M_PI);
+  // SinCosTable tab2(nv, 0, 2*M_PI, minor_radius);
+
+  // Transform trans;
+  // Transform rotate;
+  // gen_transforms( center, t, trans, rotate );
+
+  // Draw the torus
+  // for (int v=0; v<nv-1; v++)
+  // {
+    // double z1 = tab2.cos(v+1);
+    // double z2 = tab2.cos(v);
+
+    // double nr1 = tab2.sin(v+1);
+    // double nr2 = tab2.sin(v);
+
+    // double r1 = major_radius + nr1;
+    // double r2 = major_radius + nr2;
+
+    // QuadStrip quadstrip;
+
+    // for (int u=0; u<nu; u++)
+    // {
+      // double nx = tab1.sin(u);
+      // double ny = tab1.cos(u);
+
+      // double x1 = r1 * nx;
+      // double y1 = r1 * ny;
+
+      // double x2 = r2 * nx;
+      // double y2 = r2 * ny;
+
+      // Point p1 = trans * Point(x1, y1, z1);
+      // Point p2 = trans * Point(x2, y2, z2);
+
+      // Vector v1 = rotate * Vector(nr1*nx, nr1*ny, z1);
+      // Vector v2 = rotate * Vector(nr2*nx, nr2*ny, z2);
+
+      // v1.safe_normalize();
+      // v2.safe_normalize();
+
+      // quadstrip.push_back( std::make_pair(p1, v1) );
+      // quadstrip.push_back( std::make_pair(p2, v2) );
+    // }
+
+    // quadstrips.push_back( quadstrip );
+  // }
+// }
 
 void GlyphGeom::generateLine(const Point& p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
 {
