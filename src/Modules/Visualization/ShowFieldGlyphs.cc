@@ -179,7 +179,8 @@ void GlyphBuilder::addGlyph(
     case RenderState::GlyphType::COMET_GLYPH:
     {
       double sphere_extrusion = 0.0625f;
-      glyphs.addComet(p1, p2, radius, resolution, node_color, node_color, sphere_extrusion);
+      Vector dir = (p2 - p1);
+      glyphs.addComet(p1-dir, p1, radius, resolution, node_color, node_color, sphere_extrusion);
       break;
     }
     case RenderState::GlyphType::CONE_GLYPH:
