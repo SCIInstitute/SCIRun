@@ -56,6 +56,7 @@ protected:
     LogSettings::Instance().setVerbose(false);
     showField = makeModule("ShowField");
     showField->setStateDefaults();
+    showField->get_state()->setValue(ShowField::ShowEdges, false);
     auto size = GetParam();
     latVol = CreateEmptyLatVol(size, size, size);
     stubPortNWithThisData(showField, 0, latVol);
@@ -77,9 +78,7 @@ TEST_P(ShowFieldScalingTest, ConstructLatVolGeometry)
 INSTANTIATE_TEST_CASE_P(
   ConstructLatVolGeometry,
   ShowFieldScalingTest,
-  Values(20, 40, 60, 80
-  //, 100, 120, 150//, //200 //to speed up make test
-  //, 256 // probably runs out of memory
+  Values(20, 40, 60, 80, 100, 120 //,150 //,200 //,256
   )
   );
 

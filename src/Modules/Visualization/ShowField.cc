@@ -426,7 +426,7 @@ namespace
   inline void writeFloats(spire::VarBuffer* vboBuffer, std::initializer_list<T> ts)
   {
     for (const T& t : ts)
-      vboBuffer->write(static_cast<float>(t));
+      vboBuffer->writeUnsafe(static_cast<float>(t));
   }
 
   inline void writeAtributeToVBO(const Point& point, spire::VarBuffer* vboBuffer)
@@ -446,15 +446,12 @@ namespace
 
   inline void writeIndexToIBO(const uint32_t index, spire::VarBuffer* iboBuffer)
   {
-    iboBuffer->write(index);
+    iboBuffer->writeUnsafe(index);
   }
 
   template<typename ... Params>
-  void writeTri(
-    spire::VarBuffer* vboBuffer,
-    spire::VarBuffer* iboBuffer,
-    uint32_t& iboIndex,
-    const Params& ... params)
+  void writeTri(spire::VarBuffer* vboBuffer, spire::VarBuffer* iboBuffer,
+                uint32_t& iboIndex, const Params& ... params)
   {
     for(int i = 0; i < 3; ++i)
       (void)std::initializer_list<int>{(writeAtributeToVBO(params[i], vboBuffer), 0)...};
@@ -466,11 +463,8 @@ namespace
   }
 
   template<typename ...Params>
-  void writeQuad(
-    spire::VarBuffer* vboBuffer,
-    spire::VarBuffer* iboBuffer,
-    uint32_t& iboIndex,
-    const Params& ... params)
+  void writeQuad(spire::VarBuffer* vboBuffer, spire::VarBuffer* iboBuffer,
+                 uint32_t& iboIndex, const Params& ... params)
   {
     for(int i = 0; i < 4; ++i)
       (void)std::initializer_list<int>{(writeAtributeToVBO(params[i], vboBuffer), 0)...};
@@ -489,6 +483,11 @@ namespace
     TRI, TRI_TEXCOORDS, TRI_NORMALS, TRI_NORMALS_TEXCOORDS,
     QUAD, QUAD_TEXCOORDS, QUAD_NORMALS, QUAD_NORMALS_TEXCOORDS
   };
+
+  inline int getWriteCase(bool writeQuads, bool writeNormals, bool writeTexCoords)
+  {
+    return ((int)writeQuads << 2) | ((int)writeNormals << 1) | ((int)writeTexCoords);
+  }
 }
 
 
@@ -522,6 +521,15 @@ void GeometryBuilder::renderFacesLinear(
   }
 
   bool useColorMap = (fld->basis_order() >= 0 && state.get(RenderState::USE_COLORMAP));
+  bool isCellData = (fld->basis_order() == 0 && mesh->dimensionality() == 3);
+  bool isFaceData = (fld->basis_order() == 0 && mesh->dimensionality() == 2);
+  bool isNodeData = (fld->basis_order() == 1);
+  bool isScalar = fld->is_scalar();
+  bool isVector = fld->is_vector();
+  bool isTensor = fld->is_tensor();
+  int colorMapCase = (isCellData * 0 + isFaceData * 1 + isNodeData * 2) * 3;
+  colorMapCase += isScalar * 0 + isVector * 1 + isTensor * 2;
+
   ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
 
   auto realColorMap = colorMap.get();
@@ -548,16 +556,16 @@ void GeometryBuilder::renderFacesLinear(
   mesh->begin(fiter);
   mesh->end(fiterEnd);
 
-  int numNodes = nodes.size();
-  bool useQuads = (numNodes == 4);
-  int writeCase = ((int)useQuads << 2) | ((int)useNormals << 1) | ((int)useColorMap);
+  int numNodesPerFace = nodes.size();
+  bool useQuads = (numNodesPerFace == 4);
+  int writeCase = getWriteCase(useQuads, useNormals, useColorMap);
 
-  std::vector<Point> points(numNodes);
-  std::vector<Vector> normals(numNodes);
-  std::vector<glm::vec2> textureCoords(numNodes);
-  std::vector<double> svals(numNodes);
-  std::vector<Vector> vvals(numNodes);
-  std::vector<Tensor> tvals(numNodes);
+  std::vector<Point> points(numNodesPerFace);
+  std::vector<Vector> normals(numNodesPerFace);
+  std::vector<glm::vec2> textureCoords(numNodesPerFace);
+  std::vector<double> svals(numNodesPerFace);
+  std::vector<Vector> vvals(numNodesPerFace);
+  std::vector<Tensor> tvals(numNodesPerFace);
 
   size_t passNumber = 0;
   size_t facesLeft = mesh->num_faces();
@@ -569,8 +577,8 @@ void GeometryBuilder::renderFacesLinear(
     facesLeft -= facesLeftInThisPass;
 
     // Three 32 bit ints for each triangle to index into the VBO (triangles = verticies - 2)
-    size_t iboSize = static_cast<size_t>(facesLeftInThisPass * sizeof(uint32_t) * (numNodes - 2) * 3);
-    size_t vboSize = static_cast<size_t>(facesLeftInThisPass * sizeof(float) * numNodes * numAttributes);
+    size_t iboSize = static_cast<size_t>(facesLeftInThisPass * sizeof(uint32_t) * (numNodesPerFace - 2) * 3);
+    size_t vboSize = static_cast<size_t>(facesLeftInThisPass * sizeof(float) * numNodesPerFace * numAttributes);
     std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(iboSize));
     std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(vboSize));
     auto iboBuffer = iboBufferSPtr.get();
@@ -582,14 +590,14 @@ void GeometryBuilder::renderFacesLinear(
       interruptible->checkForInterruption();
       mesh->get_nodes(nodes, *fiter);
 
-      for(size_t i = 0; i < numNodes; ++i)
+      for(size_t i = 0; i < numNodesPerFace; ++i)
         mesh->get_point(points[i], nodes[i]);
 
       if (useNormals)
       {
         if (useFaceNormals)
         {
-          for(size_t i = 0; i < numNodes; ++i)
+          for(size_t i = 0; i < numNodesPerFace; ++i)
             mesh->get_normal(normals[i], nodes[i]);
         }
         else
@@ -612,54 +620,54 @@ void GeometryBuilder::renderFacesLinear(
             norm.normalize();
           }
 
-          for(size_t i = 0; i < numNodes; ++i)
+          for(size_t i = 0; i < numNodesPerFace; ++i)
             normals[i] = norm;
         }
 
         if(invertNormals)
-          for(size_t i = 0; i < numNodes; ++i)
+          for(size_t i = 0; i < numNodesPerFace; ++i)
             normals[i] = -normals[i];
       }
 
       if(useColorMap)
       {
         // Element data (Cells) so two sided faces.
-        if (fld->basis_order() == 0 && mesh->dimensionality() == 3)
+        if (isCellData)
         {
           VMesh::Elem::array_type cells;
           mesh->get_elems(cells, *fiter);
 
-          if (fld->is_scalar())
+          if (isScalar)
           {
             fld->get_value(svals[0], cells[0]);
             if (cells.size() > 1) fld->get_value(svals[1], cells[1]);
             else svals[1] = svals[0];
 
-            for (size_t i = 0; i < numNodes; ++i)
+            for (size_t i = 0; i < numNodesPerFace; ++i)
             {
               textureCoords[i].x = coordinateMap->valueToColor(svals[0]).r();
               textureCoords[i].y = coordinateMap->valueToColor(svals[1]).r();
             }
           }
-          else if (fld->is_vector())
+          else if (isVector)
           {
             fld->get_value(vvals[0], cells[0]);
             if (cells.size() > 1) fld->get_value(vvals[1], cells[1]);
             else svals[1] = svals[0];
 
-            for (size_t i = 0; i < numNodes; ++i)
+            for (size_t i = 0; i < numNodesPerFace; ++i)
             {
               textureCoords[i].x = coordinateMap->valueToColor(vvals[0]).r();
               textureCoords[i].y = coordinateMap->valueToColor(vvals[1]).r();
             }
           }
-          else if (fld->is_tensor())
+          else if (isTensor)
           {
             fld->get_value(tvals[0], cells[0]);
             if (cells.size() > 1) fld->get_value(tvals[1], cells[1]);
             else svals[1] = svals[0];
 
-            for (size_t i = 0; i < numNodes; ++i)
+            for (size_t i = 0; i < numNodesPerFace; ++i)
             {
               textureCoords[i].x = coordinateMap->valueToColor(tvals[0]).r();
               textureCoords[i].y = coordinateMap->valueToColor(tvals[1]).r();
@@ -667,49 +675,49 @@ void GeometryBuilder::renderFacesLinear(
           }
         }
         // Element data (faces)
-        else if (fld->basis_order() == 0 && mesh->dimensionality() == 2)
+        else if (isFaceData)
         {
-          if (fld->is_scalar())
+          if (isScalar)
           {
             fld->get_value(svals[0], *fiter);
             textureCoords[0].x = coordinateMap->valueToColor(svals[0]).r();
           }
-          else if (fld->is_vector())
+          else if (isVector)
           {
             fld->get_value(vvals[0], *fiter);
             textureCoords[0].x = coordinateMap->valueToColor(vvals[0]).r();
           }
-          else if (fld->is_tensor())
+          else if (isTensor)
           {
             fld->get_value(tvals[0], *fiter);
             textureCoords[0].x = coordinateMap->valueToColor(tvals[0]).r();
           }
 
-          for (size_t i = 0; i < numNodes; ++i)
+          for (size_t i = 0; i < numNodesPerFace; ++i)
             textureCoords[i].y = textureCoords[i].x = textureCoords[0].x;
         }
         // Data at nodes
-        else if (fld->basis_order() == 1)
+        else if (isNodeData)
         {
-          if (fld->is_scalar())
+          if (isScalar)
           {
-            for (size_t i = 0; i<numNodes; ++i)
+            for (size_t i = 0; i < numNodesPerFace; ++i)
             {
               fld->get_value(svals[i], nodes[i]);
               textureCoords[i].x = textureCoords[i].y = coordinateMap->valueToColor(svals[i]).r();
             }
           }
-          else if (fld->is_vector())
+          else if (isVector)
           {
-            for (size_t i = 0; i<numNodes; ++i)
+            for (size_t i = 0; i < numNodesPerFace; ++i)
             {
               fld->get_value(vvals[i], nodes[i]);
               textureCoords[i].x = textureCoords[i].y = coordinateMap->valueToColor(vvals[i]).r();
             }
           }
-          else if (fld->is_tensor())
+          else if (isTensor)
           {
-            for (size_t i = 0; i<numNodes; ++i)
+            for (size_t i = 0; i < numNodesPerFace; ++i)
             {
               fld->get_value(tvals[i], nodes[i]);
               textureCoords[i].x = textureCoords[i].y = coordinateMap->valueToColor(tvals[i]).r();
