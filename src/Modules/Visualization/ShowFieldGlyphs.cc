@@ -178,7 +178,7 @@ void GlyphBuilder::addGlyph(
       break;
     case RenderState::GlyphType::COMET_GLYPH:
     {
-      double sphere_extrusion = 0.0625f;
+      static const double sphere_extrusion = 0.0625f;
       Vector dir = (p2 - p1);
       glyphs.addComet(p1-dir, p1, radius, resolution, node_color, node_color, sphere_extrusion);
       break;
@@ -198,7 +198,6 @@ void GlyphBuilder::addGlyph(
     }
     case RenderState::GlyphType::RING_GLYPH:
     {
-      // double torusRatio = 6.0;
       double length = (p2 - p1).length();
       double major_radius = length * 0.5;
       double minor_radius = length * radius * 2.0;
@@ -779,9 +778,9 @@ void GlyphBuilder::renderTensors(
 
     int neg_eigval_count = 0;
     int tensorcount = 0;
-    double vectorThreshold = 0.001;
-    double pointThreshold = 0.01;
-    double epsilon = pow(2, -52);
+    static const double vectorThreshold = 0.001;
+    static const double pointThreshold = 0.01;
+    static const double epsilon = pow(2, -52);
 
     // Render every item from facade
     for(int i = 0; i < indices.size(); i++)

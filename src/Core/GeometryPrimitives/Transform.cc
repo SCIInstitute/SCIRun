@@ -839,6 +839,16 @@ Transform::operator=(const Transform& copy)
   return *this;
 }
 
+std::vector<Vector> Transform::get_column_vectors()
+{
+  std::vector<Vector> column_vectors(3);
+  for(int i = 0; i < 3; i++)
+  {
+    column_vectors[i] = Vector(mat[0][i], mat[1][i], mat[2][i]);
+  }
+  return column_vectors;
+}
+
 Point
 SCIRun::Core::Geometry::operator*(Transform &t, const Point &d)
 {

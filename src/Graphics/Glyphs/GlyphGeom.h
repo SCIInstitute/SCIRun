@@ -128,6 +128,8 @@ namespace SCIRun {
       void generateEllipsoid(const Core::Geometry::Point& center, const Core::Geometry::Vector& t, double scales, int nu, int nv, int half, std::vector<QuadStrip>& quadstrips);
       void generateTransforms(const Core::Geometry::Point& center, const Core::Geometry::Vector& normal, Core::Geometry::Transform& trans, Core::Geometry::Transform& rotate);
       void generateTransforms(const Core::Geometry::Point& center, const Core::Geometry::Transform& transform, Core::Geometry::Transform& trans, Core::Geometry::Transform& rotate);
+      void generateTransforms(const Core::Geometry::Point& center, const Core::Geometry::Vector& eigvec1, const Core::Geometry::Vector& eigvec2,
+                              const Core::Geometry::Vector& eigvec3, Core::Geometry::Transform& translate, Core::Geometry::Transform& rotate);
 
 
     };

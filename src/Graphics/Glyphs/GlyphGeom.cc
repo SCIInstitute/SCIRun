@@ -630,9 +630,8 @@ void GlyphGeom::generateComet(const Point& p1, const Point& p2,
   Vector tangent = dir.getArbitraryTangent();
   Vector bitangent = Cross(dir, tangent);
 
-  Transform rotate(Point(0.0, 0.0, 0.0), tangent, bitangent, dir);
-  Transform trans = rotate;
-  trans.pre_translate((Vector) p2);
+  Transform trans, rotate;
+  generateTransforms(p2, tangent, bitangent, dir, trans, rotate);
 
   trans.post_scale ( Vector(1.0,1.0,1.0) * radius );
   rotate.post_scale( Vector(1.0,1.0,1.0) / radius );
@@ -752,7 +751,7 @@ void reorderTensor(std::vector<Vector>& eigvectors, Vector& eigvals)
 
 void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale, ColorRGB& node_color, bool normalize)
 {
-  double zeroThreshold = 0.000001;
+  static const double zeroThreshold = 0.000001;
   double eigval1, eigval2, eigval3;
   t.get_eigenvalues(eigval1, eigval2, eigval3);
 
@@ -797,31 +796,30 @@ void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale, ColorR
     }
   }
 
-  Transform rotate(Point(0.0, 0.0, 0.0), eigvectors[0], eigvectors[1], eigvectors[2]);
-  Transform trans = rotate;
-  trans.pre_translate((Vector) center);
+  Transform trans, rotate;
+  generateTransforms(center, eigvectors[0], eigvectors[1], eigvectors[2], trans, rotate);
 
   // Rotate and translate points
-  Vector p1 = Vector(trans * Point(eigvals * Vector(-1.0, 1.0, 1.0)));
-  Vector p2 = Vector(trans * Point(eigvals * Vector(-1.0, 1.0, -1.0)));
-  Vector p3 = Vector(trans * Point(eigvals * Vector(1.0, 1.0, 1.0)));
-  Vector p4 = Vector(trans * Point(eigvals * Vector(1.0, 1.0, -1.0)));
-  Vector p5 = Vector(trans * Point(eigvals * Vector(-1.0, -1.0, 1.0)));
-  Vector p6 = Vector(trans * Point(eigvals * Vector(-1.0, -1.0, -1.0)));
-  Vector p7 = Vector(trans * Point(eigvals * Vector(1.0, -1.0, 1.0)));
-  Vector p8 = Vector(trans * Point(eigvals * Vector(1.0, -1.0, -1.0)));
+  std::vector<Vector> points;
+  for(int x = -1; x < 2; x+=2)
+  {
+    for(int y = -1; y < 2; y+=2)
+    {
+      for(int z = -1; z < 2; z+=2)
+      {
+        points.push_back(Vector(trans * Point(x * eigvals.x(), y * eigvals.y(), z * eigvals.z())));
+      }
+    }
+  }
 
-  // Rotate norms
-  Vector x_vec = rotate * Vector(1, 0, 0);
-  Vector y_vec = rotate * Vector(0, 1, 0);
-  Vector z_vec = rotate * Vector(0, 0, 1);
+  std::vector<Vector> column_vectors = rotate.get_column_vectors();
 
-  generateBoxSide(p7, p8, p3, p4, x_vec, node_color);
-  generateBoxSide(p3, p4, p1, p2, y_vec, node_color);
-  generateBoxSide(p5, p7, p1, p3, z_vec, node_color);
-  generateBoxSide(p1, p2, p5, p6, -x_vec, node_color);
-  generateBoxSide(p5, p6, p7, p8, -y_vec, node_color);
-  generateBoxSide(p2, p4, p6, p8, -z_vec, node_color);
+  generateBoxSide(points[5], points[4], points[7], points[6], column_vectors[0], node_color);
+  generateBoxSide(points[7], points[6], points[3], points[2], column_vectors[1], node_color);
+  generateBoxSide(points[1], points[5], points[3], points[7], column_vectors[2], node_color);
+  generateBoxSide(points[3], points[2], points[1], points[0], -column_vectors[0], node_color);
+  generateBoxSide(points[1], points[0], points[5], points[4], -column_vectors[1], node_color);
+  generateBoxSide(points[2], points[6], points[0], points[4], -column_vectors[2], node_color);
 }
 
 void GlyphGeom::generateBoxSide(const Vector& p1, const Vector& p2, const Vector& p3, const Vector& p4,
@@ -850,7 +848,7 @@ void GlyphGeom::generateBoxSide(const Vector& p1, const Vector& p2, const Vector
 
 void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale, int resolution, const ColorRGB& color, bool half, bool normalize)
 {
-  double zeroThreshold = 0.000001;
+  static const double zeroThreshold = 0.000001;
   std::vector<Vector> eigvectors(3);
   t.get_eigenvectors(eigvectors[0], eigvectors[1], eigvectors[2]);
 
@@ -899,9 +897,8 @@ void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale, 
     }
   }
 
-  Transform rotate(Point(0.0, 0.0, 0.0), eigvectors[0], eigvectors[1], eigvectors[2]);
-  Transform trans = rotate;
-  trans.pre_translate((Vector) center);
+  Transform trans, rotate;
+  generateTransforms(center, eigvectors[0], eigvectors[1], eigvectors[2], trans, rotate);
 
   trans.post_scale (Vector(1.0,1.0,1.0) * eigvals);
   rotate.post_scale(Vector(1.0,1.0,1.0) / eigvals);
@@ -1009,7 +1006,7 @@ inline double spow(double e, double x)
 
 void GlyphGeom::generateSuperEllipsoid(const Point& center, Tensor& t, double scale, int resolution, const ColorRGB& color, bool normalize, double emphasis)
 {
-  double zeroThreshold = 0.000001;
+  static const double zeroThreshold = 0.000001;
   std::vector<Vector> eigvectors(3);
   t.get_eigenvectors(eigvectors[0], eigvectors[1], eigvectors[2]);
 
@@ -1058,9 +1055,8 @@ void GlyphGeom::generateSuperEllipsoid(const Point& center, Tensor& t, double sc
     }
   }
 
-  Transform rotate(Point(0.0, 0.0, 0.0), eigvectors[0], eigvectors[1], eigvectors[2]);
-  Transform trans = rotate;
-  trans.pre_translate((Vector) center);
+  Transform trans, rotate;
+  generateTransforms(center, eigvectors[0], eigvectors[1], eigvectors[2], trans, rotate);
 
   trans.post_scale (Vector(1.0,1.0,1.0) * eigvals);
   rotate.post_scale(Vector(1.0,1.0,1.0) / eigvals);
@@ -1130,7 +1126,6 @@ void GlyphGeom::generateSuperEllipsoid(const Point& center, Tensor& t, double sc
 void GlyphGeom::generateTorus(const Point& p1, const Point& p2, double major_radius, double minor_radius,
                               int resolution, const ColorRGB& color)
 {
-  std::cout << "minor, major rad: " << minor_radius << ", " << major_radius << std::endl;
   int nv = resolution;
   int nu = nv + 1;
 
@@ -1532,4 +1527,13 @@ void GlyphGeom::generateTransforms(const Point& center, const Vector& normal,
   trans.post_rotate(zrotangle, zrotaxis);
 
   rotate.post_rotate(zrotangle, zrotaxis);
+}
+
+void GlyphGeom::generateTransforms(const Point& center, const Vector& eigvec1, const Vector& eigvec2,
+                                   const Vector& eigvec3, Transform& translate, Transform& rotate)
+{
+  static const Point origin(0.0, 0.0, 0.0);
+  rotate = Transform(origin, eigvec1, eigvec2, eigvec3);
+  translate = rotate;
+  translate.pre_translate((Vector) center);
 }

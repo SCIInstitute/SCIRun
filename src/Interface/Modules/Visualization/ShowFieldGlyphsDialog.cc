@@ -54,7 +54,6 @@ ShowFieldGlyphsDialog::ShowFieldGlyphsDialog(const std::string& name, ModuleStat
   createExecuteInteractivelyToggleAction();
 
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
-  // connect(tensorSuperquadricsEmphasisSlider_, SIGNAL(valueChanged(int)), parent, SLOT(setSuperquadricEmphasis(int)));
   connectButtonToExecuteSignal(defaultMeshColorButton_);
 }
 
