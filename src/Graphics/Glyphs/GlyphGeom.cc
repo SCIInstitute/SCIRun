@@ -260,6 +260,12 @@ void GlyphGeom::addDisk(const Point& p1, const Point& p2, double radius, int res
   generateCylinder(p1, p2, radius, radius, resolution, color1, color2, true, true);
 }
 
+void GlyphGeom::addTorus(const Point& p1, const Point& p2, double major_radius, double minor_radius, int resolution,
+                        const ColorRGB& color1, const ColorRGB& color2)
+{
+  generateTorus(p1, p2, major_radius, minor_radius, resolution, color1);
+}
+
 void GlyphGeom::addCone(const Point& p1, const Point& p2, double radius, int resolution,
                         bool render_base, const ColorRGB& color1, const ColorRGB& color2)
 {
@@ -1121,62 +1127,73 @@ void GlyphGeom::generateSuperEllipsoid(const Point& center, Tensor& t, double sc
   for(int jj = 0; jj < 6; jj++) indices_.pop_back();
 }
 
-// template <class T>
-// void GeomGlyph::gen_torus(const Point& center, const T& t,
-			      // double major_radius, double minor_radius,
-			      // int nu, int nv,
-			      // std::vector< QuadStrip >& quadstrips )
-// {
-  // nu++; //Bring nu to expected value for shape.
+void GlyphGeom::generateTorus(const Point& p1, const Point& p2, double major_radius, double minor_radius,
+                              int resolution, const ColorRGB& color)
+{
+  std::cout << "minor, major rad: " << minor_radius << ", " << major_radius << std::endl;
+  int nv = resolution;
+  int nu = nv + 1;
 
-  // SinCosTable tab1(nu, 0, 2*M_PI);
-  // SinCosTable tab2(nv, 0, 2*M_PI, minor_radius);
+  SinCosTable tab1(nu, 0, 2*M_PI);
+  SinCosTable tab2(nv, 0, 2*M_PI, minor_radius);
 
-  // Transform trans;
-  // Transform rotate;
-  // gen_transforms( center, t, trans, rotate );
+  Transform trans;
+  Transform rotate;
+  /* Point center = p1 + (p2-p1) * 0.5; */
+  generateTransforms( p1, (p2-p1), trans, rotate );
 
   // Draw the torus
-  // for (int v=0; v<nv-1; v++)
-  // {
-    // double z1 = tab2.cos(v+1);
-    // double z2 = tab2.cos(v);
+  for (int v=0; v<nv-1; v++)
+  {
+    double z1 = tab2.cos(v+1);
+    double z2 = tab2.cos(v);
 
-    // double nr1 = tab2.sin(v+1);
-    // double nr2 = tab2.sin(v);
+    double nr1 = tab2.sin(v+1);
+    double nr2 = tab2.sin(v);
 
-    // double r1 = major_radius + nr1;
-    // double r2 = major_radius + nr2;
+    double r1 = major_radius + nr1;
+    double r2 = major_radius + nr2;
 
-    // QuadStrip quadstrip;
+    for (int u=0; u<nu; u++)
+    {
+      uint32_t offset = static_cast<uint32_t>(numVBOElements_);
 
-    // for (int u=0; u<nu; u++)
-    // {
-      // double nx = tab1.sin(u);
-      // double ny = tab1.cos(u);
+      double nx = tab1.sin(u);
+      double ny = tab1.cos(u);
 
-      // double x1 = r1 * nx;
-      // double y1 = r1 * ny;
+      double x1 = r1 * nx;
+      double y1 = r1 * ny;
 
-      // double x2 = r2 * nx;
-      // double y2 = r2 * ny;
+      double x2 = r2 * nx;
+      double y2 = r2 * ny;
 
-      // Point p1 = trans * Point(x1, y1, z1);
-      // Point p2 = trans * Point(x2, y2, z2);
+      Vector p1 = Vector(trans * Point(x1, y1, z1));
+      Vector p2 = Vector(trans * Point(x2, y2, z2));
+      points_.push_back(p1);
+      points_.push_back(p2);
 
-      // Vector v1 = rotate * Vector(nr1*nx, nr1*ny, z1);
-      // Vector v2 = rotate * Vector(nr2*nx, nr2*ny, z2);
+      Vector v1 = rotate * Vector(nr1*nx, nr1*ny, z1);
+      Vector v2 = rotate * Vector(nr2*nx, nr2*ny, z2);
+      v1.safe_normalize();
+      v2.safe_normalize();
+      normals_.push_back(v1);
+      normals_.push_back(v2);
 
-      // v1.safe_normalize();
-      // v2.safe_normalize();
+      colors_.push_back(color);
+      colors_.push_back(color);
 
-      // quadstrip.push_back( std::make_pair(p1, v1) );
-      // quadstrip.push_back( std::make_pair(p2, v2) );
-    // }
+      numVBOElements_ += 2;
 
-    // quadstrips.push_back( quadstrip );
-  // }
-// }
+      indices_.push_back(0 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(3 + offset);
+    }
+  }
+  for(int jj = 0; jj < 6; jj++) indices_.pop_back();
+}
 
 void GlyphGeom::generateLine(const Point& p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
 {

@@ -190,11 +190,21 @@ void GlyphBuilder::addGlyph(
       glyphs.addArrow(p1, p2, radius, ratio, resolution, node_color, node_color, render_base1, render_base2);
       break;
     case RenderState::GlyphType::DISK_GLYPH:
-      glyphs.addDisk(p1, p2, radius, resolution, node_color, node_color);
+    {
+      Vector dir = (p2 - p1);
+      Point new_p2 = p1 + dir * radius * 2.0;
+      glyphs.addDisk(p1, new_p2, dir.length()*0.5, resolution, node_color, node_color);
       break;
+    }
     case RenderState::GlyphType::RING_GLYPH:
-      BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Ring Geom is not supported yet."));
+    {
+      // double torusRatio = 6.0;
+      double length = (p2 - p1).length();
+      double major_radius = length * 0.5;
+      double minor_radius = length * radius * 2.0;
+      glyphs.addTorus(p1, p2, major_radius, minor_radius, resolution, node_color, node_color);
       break;
+    }
     case RenderState::GlyphType::SPRING_GLYPH:
       BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Spring Geom is not supported yet."));
       break;
@@ -237,7 +247,7 @@ void ShowFieldGlyphs::setStateDefaults()
   //  state->setValue(VectorsTransparencyDataInput, std::string("Primary"));
   state->setValue(SecondaryVectorParameterScalingType, SecondaryVectorParameterScalingTypeEnum::USE_INPUT);
   state->setValue(SecondaryVectorParameterDataInput, std::string("Primary"));
-  state->setValue(SecondaryVectorParameterScale, 0.5);
+  state->setValue(SecondaryVectorParameterScale, 0.25);
   state->setValue(NormalizeVectors, false);
   state->setValue(VectorsScale, 1.0);
   state->setValue(RenderVectorsBelowThreshold, true);
