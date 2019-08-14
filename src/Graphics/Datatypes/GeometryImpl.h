@@ -238,36 +238,9 @@ namespace SCIRun {
         std::vector<Uniform>  mUniforms;
         ColorScheme           mColorScheme;
 
-        void addUniform(const std::string& name, const glm::vec4& vector)
-        {
-          for (auto& i : mUniforms)
-          {
-            if (i.name == name && i.type == Uniform::UniformType::UNIFORM_VEC4)
-            {
-              i.data = vector;
-              return;
-            }
-          }
-          mUniforms.push_back(Uniform(name, vector));
-        }
-
-        void addOrModifyUniform(const Uniform& uniform)
-        {
-          for (auto& i : mUniforms)
-          {
-            if (i.name == uniform.name && i.type == uniform.type)
-            {
-              i.data = uniform.data;
-              return;
-            }
-          }
-          mUniforms.push_back(uniform);
-        }
-
-        void addUniform(const Uniform& uniform)
-        {
-          mUniforms.push_back(uniform);
-        }
+        void addUniform(const std::string& name, const glm::vec4& vector);
+        void addOrModifyUniform(const Uniform& uniform);
+        void addUniform(const Uniform& uniform);
       };
 
       using VBOList = std::list<SpireVBO>;

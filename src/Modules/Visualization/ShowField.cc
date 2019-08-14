@@ -85,7 +85,6 @@ public:
     boost::optional<ColorMapHandle> colorMap,
     Interruptible* interruptible,
     RenderState state, GeometryHandle geom,
-    unsigned int approx_div,
     const std::string& id);
 
   void renderFacesLinear(
@@ -93,7 +92,6 @@ public:
     boost::optional<ColorMapHandle> colorMap,
     Interruptible* interruptible,
     RenderState state, GeometryHandle geom,
-    unsigned int approxDiv,
     const std::string& id);
 
   void addFaceGeom(
@@ -378,21 +376,14 @@ GeometryHandle GeometryBuilder::buildGeometryObject(
   if (showEdges && dim < 1) { showEdges = false; }
   if (showFaces && dim < 2) { showFaces = false; }
 
-  if (showNodes)
-  {
-    renderNodes(field, colorMap, interruptible, getNodeRenderState(colorMap), geom, geom->uniqueID());
-  }
-
   if (showFaces)
-  {
-    int approxDiv = 1;
-    renderFaces(field, colorMap, interruptible, getFaceRenderState(colorMap), geom, approxDiv, geom->uniqueID());
-  }
+    renderFaces(field, colorMap, interruptible, getFaceRenderState(colorMap), geom, geom->uniqueID());
 
   if (showEdges)
-  {
     renderEdges(field, colorMap, interruptible, getEdgeRenderState(colorMap), geom, geom->uniqueID());
-  }
+
+  if (showNodes)
+    renderNodes(field, colorMap, interruptible, getNodeRenderState(colorMap), geom, geom->uniqueID());
 
   return geom;
 }
@@ -403,7 +394,6 @@ void GeometryBuilder::renderFaces(
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
   Interruptible* interruptible,
   RenderState state, GeometryHandle geom,
-  unsigned int approxDiv,
   const std::string& id)
 {
   VField* fld = field->vfield();
@@ -412,7 +402,7 @@ void GeometryBuilder::renderFaces(
   // Directly ported from SCIRUN 4. Unsure what 'linear' is.
   // I'm assuming it means linear interpolation as opposed to nearest neighbor
   // interpolation along the basis. But I could be wrong.
-  bool doLinear = (fld->basis_order() < 2 && mesh->basis_order() < 2 && approxDiv == 1);
+  bool doLinear = (fld->basis_order() < 2 && mesh->basis_order() < 2);
 
   // Todo: Check for texture -- this is indicative of volume rendering.
   // if(mesh->is_regularmesh() && mesh->is_surface() &&
@@ -420,7 +410,7 @@ void GeometryBuilder::renderFaces(
 
   if (doLinear)
   {
-    return renderFacesLinear(field, colorMap, interruptible, state, geom, approxDiv, id);
+    return renderFacesLinear(field, colorMap, interruptible, state, geom, id);
   }
   else
   {
@@ -430,92 +420,75 @@ void GeometryBuilder::renderFaces(
 
 
 
-inline static void writeAtributeToVBO(const Point& point, spire::VarBuffer* vboBuffer)
+namespace
 {
-  vboBuffer->write(static_cast<float>(point.x()));
-  vboBuffer->write(static_cast<float>(point.y()));
-  vboBuffer->write(static_cast<float>(point.z()));
-}
+  template <typename T>
+  inline void writeFloats(spire::VarBuffer* vboBuffer, std::initializer_list<T> ts)
+  {
+    for (const T& t : ts)
+      vboBuffer->write(static_cast<float>(t));
+  }
 
-inline static void writeAtributeToVBO(const Vector& vector, spire::VarBuffer* vboBuffer)
-{
-  vboBuffer->write(static_cast<float>(vector.x()));
-  vboBuffer->write(static_cast<float>(vector.y()));
-  vboBuffer->write(static_cast<float>(vector.z()));
-}
+  inline void writeAtributeToVBO(const Point& point, spire::VarBuffer* vboBuffer)
+  {
+    writeFloats(vboBuffer, {point.x(), point.y(), point.z()});
+  }
 
-inline static void writeAtributeToVBO(const ColorRGB& color, spire::VarBuffer* vboBuffer)
-{
-  vboBuffer->write(static_cast<float>(color.r()));
-  vboBuffer->write(static_cast<float>(color.g()));
-  vboBuffer->write(static_cast<float>(color.b()));
-  vboBuffer->write(static_cast<float>(1.0f));
-}
+  inline void writeAtributeToVBO(const Vector& vector, spire::VarBuffer* vboBuffer)
+  {
+    writeFloats(vboBuffer, {vector.x(), vector.y(), vector.z()});
+  }
 
-inline static void writeAtributeToVBO(const glm::vec2& coords, spire::VarBuffer* vboBuffer)
-{
-  vboBuffer->write(static_cast<float>(coords.x));
-  vboBuffer->write(static_cast<float>(coords.y));
-}
+  inline void writeAtributeToVBO(const glm::vec2& coords, spire::VarBuffer* vboBuffer)
+  {
+    writeFloats(vboBuffer, {coords.x, coords.y});
+  }
 
-inline static void writeIndexToIBO(const uint32_t index, spire::VarBuffer* iboBuffer)
-{
-  iboBuffer->write(index);
-}
+  inline void writeIndexToIBO(const uint32_t index, spire::VarBuffer* iboBuffer)
+  {
+    iboBuffer->write(index);
+  }
 
-template<typename ... Params>
-static void writeTri(
-  spire::VarBuffer* vboBuffer,
-  spire::VarBuffer* iboBuffer,
-  uint32_t& iboIndex,
-  const Params& ... params)
-{
-  for(int i = 0; i < 3; ++i)
-    (void)std::initializer_list<int>{(writeAtributeToVBO(params[i], vboBuffer), 0)...};
+  template<typename ... Params>
+  void writeTri(
+    spire::VarBuffer* vboBuffer,
+    spire::VarBuffer* iboBuffer,
+    uint32_t& iboIndex,
+    const Params& ... params)
+  {
+    for(int i = 0; i < 3; ++i)
+      (void)std::initializer_list<int>{(writeAtributeToVBO(params[i], vboBuffer), 0)...};
 
-  writeIndexToIBO(iboIndex + 0, iboBuffer);
-  writeIndexToIBO(iboIndex + 1, iboBuffer);
-  writeIndexToIBO(iboIndex + 2, iboBuffer);
-  iboIndex += 3;
-}
+    writeIndexToIBO(iboIndex + 0, iboBuffer);
+    writeIndexToIBO(iboIndex + 1, iboBuffer);
+    writeIndexToIBO(iboIndex + 2, iboBuffer);
+    iboIndex += 3;
+  }
 
-template<typename ...Params>
-static void writeQuad(
-  spire::VarBuffer* vboBuffer,
-  spire::VarBuffer* iboBuffer,
-  uint32_t& iboIndex,
-  const Params& ... params)
-{
-  for(int i = 0; i < 4; ++i)
-    (void)std::initializer_list<int>{(writeAtributeToVBO(params[i], vboBuffer), 0)...};
+  template<typename ...Params>
+  void writeQuad(
+    spire::VarBuffer* vboBuffer,
+    spire::VarBuffer* iboBuffer,
+    uint32_t& iboIndex,
+    const Params& ... params)
+  {
+    for(int i = 0; i < 4; ++i)
+      (void)std::initializer_list<int>{(writeAtributeToVBO(params[i], vboBuffer), 0)...};
 
-  writeIndexToIBO(iboIndex + 0, iboBuffer);
-  writeIndexToIBO(iboIndex + 1, iboBuffer);
-  writeIndexToIBO(iboIndex + 2, iboBuffer);
-  writeIndexToIBO(iboIndex + 2, iboBuffer);
-  writeIndexToIBO(iboIndex + 3, iboBuffer);
-  writeIndexToIBO(iboIndex + 0, iboBuffer);
-  iboIndex += 4;
-}
+    writeIndexToIBO(iboIndex + 0, iboBuffer);
+    writeIndexToIBO(iboIndex + 1, iboBuffer);
+    writeIndexToIBO(iboIndex + 2, iboBuffer);
+    writeIndexToIBO(iboIndex + 2, iboBuffer);
+    writeIndexToIBO(iboIndex + 3, iboBuffer);
+    writeIndexToIBO(iboIndex + 0, iboBuffer);
+    iboIndex += 4;
+  }
 
-
-
-static float valueToFloat(double scalar)
-{
-    return scalar * 0.5 + 0.5;
-}
-
-static float valueToFloat(Tensor &tensor)
-{
-  double eigen1, eigen2, eigen3;
-  tensor.get_eigenvalues(eigen1, eigen2, eigen3);
-  float magnitude = Vector(eigen1, eigen2, eigen3).length();
-  return magnitude * 0.5 + 0.5;
-}
-
-static float valueToFloat(Vector &vector)
-{
-  return vector.length()*0.5+0.5;
+  enum : int
+  {
+    TRI, TRI_TEXCOORDS, TRI_NORMALS, TRI_NORMALS_TEXCOORDS,
+    QUAD, QUAD_TEXCOORDS, QUAD_NORMALS, QUAD_NORMALS_TEXCOORDS
+  };
 }
 
 
@@ -526,7 +499,6 @@ void GeometryBuilder::renderFacesLinear(
   Interruptible* interruptible,
   RenderState state,
   GeometryHandle geom,
-  unsigned int approxDiv,
   const std::string& id)
 {
   VField* fld = field->vfield();
@@ -593,7 +565,7 @@ void GeometryBuilder::renderFacesLinear(
   while(facesLeft > 0)
   {
     const static size_t maxFacesPerPass = 1 << 24;
-    int facesLeftInThisPass = std::min(facesLeft,maxFacesPerPass);
+    int facesLeftInThisPass = std::min(facesLeft, maxFacesPerPass);
     facesLeft -= facesLeftInThisPass;
 
     // Three 32 bit ints for each triangle to index into the VBO (triangles = verticies - 2)
@@ -748,14 +720,14 @@ void GeometryBuilder::renderFacesLinear(
 
       switch(writeCase)
       {
-        case 0b000: writeTri(vboBuffer, iboBuffer, iboIndex, points); break;
-        case 0b001: writeTri(vboBuffer, iboBuffer, iboIndex, points, textureCoords); break;
-        case 0b010: writeTri(vboBuffer, iboBuffer, iboIndex, points, normals); break;
-        case 0b011: writeTri(vboBuffer, iboBuffer, iboIndex, points, normals, textureCoords); break;
-        case 0b100: writeQuad(vboBuffer, iboBuffer, iboIndex, points); break;
-        case 0b101: writeQuad(vboBuffer, iboBuffer, iboIndex, points, textureCoords); break;
-        case 0b110: writeQuad(vboBuffer, iboBuffer, iboIndex, points, normals); break;
-        case 0b111: writeQuad(vboBuffer, iboBuffer, iboIndex, points, normals, textureCoords); break;
+        case TRI: writeTri(vboBuffer, iboBuffer, iboIndex, points); break;
+        case TRI_TEXCOORDS: writeTri(vboBuffer, iboBuffer, iboIndex, points, textureCoords); break;
+        case TRI_NORMALS: writeTri(vboBuffer, iboBuffer, iboIndex, points, normals); break;
+        case TRI_NORMALS_TEXCOORDS: writeTri(vboBuffer, iboBuffer, iboIndex, points, normals, textureCoords); break;
+        case QUAD: writeQuad(vboBuffer, iboBuffer, iboIndex, points); break;
+        case QUAD_TEXCOORDS: writeQuad(vboBuffer, iboBuffer, iboIndex, points, textureCoords); break;
+        case QUAD_NORMALS: writeQuad(vboBuffer, iboBuffer, iboIndex, points, normals); break;
+        case QUAD_NORMALS_TEXCOORDS: writeQuad(vboBuffer, iboBuffer, iboIndex, points, normals, textureCoords); break;
       }
 
       ++fiter;

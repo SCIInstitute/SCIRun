@@ -1226,7 +1226,7 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::addTextToEntity(uint64_t entityID, const SpireText& text)
     {
-      if (text.name == "") return;
+      if (text.name.empty()) return;
       std::weak_ptr<ren::TextureMan> tm = mCore.getStaticComponent<ren::StaticTextureMan>()->instance_;
       std::shared_ptr<ren::TextureMan> textureMan = tm.lock();
       if (!textureMan) return;
@@ -1240,7 +1240,7 @@ namespace SCIRun {
       spire::CerealHeap<ren::Texture>* contTex = mCore.getOrCreateComponentContainer<ren::Texture>();
       std::pair<const ren::Texture*, size_t> component = contTex->getComponent(entityID);
 
-      if (component.first == nullptr)
+      if (!component.first)
         texture = textureMan->createTexture(assetName, text.width, text.height, text.bitmap);
       else
         texture = *component.first;
@@ -1253,7 +1253,7 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::addTextureToEntity(uint64_t entityID, const SpireTexture2D& texture)
     {
-      if (texture.name == "") return;
+      if (texture.name.empty()) return;
       std::weak_ptr<ren::TextureMan> tm = mCore.getStaticComponent<ren::StaticTextureMan>()->instance_;
       std::shared_ptr<ren::TextureMan> textureMan = tm.lock();
       if (!textureMan) return;
@@ -1266,7 +1266,7 @@ namespace SCIRun {
       spire::CerealHeap<ren::Texture>* contTex = mCore.getOrCreateComponentContainer<ren::Texture>();
       std::pair<const ren::Texture*, size_t> component = contTex->getComponent(entityID);
 
-      if (component.first == nullptr)
+      if (!component.first)
         renTexture = textureMan->createTexture(assetName, GL_RGBA, texture.width, texture.height,
           GL_RGBA,  GL_UNSIGNED_BYTE, texture.bitmap);
       else
