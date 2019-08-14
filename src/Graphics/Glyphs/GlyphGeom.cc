@@ -807,7 +807,8 @@ void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale, ColorR
     {
       for(int z = -1; z < 2; z+=2)
       {
-        points.push_back(Vector(trans * Point(x * eigvals.x(), y * eigvals.y(), z * eigvals.z())));
+        Point translated_point = trans * Point(x * eigvals.x(), y * eigvals.y(), z * eigvals.z());
+        points.push_back(Vector(translated_point));
       }
     }
   }
