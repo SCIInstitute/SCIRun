@@ -800,27 +800,26 @@ void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale, ColorR
   generateTransforms(center, eigvectors[0], eigvectors[1], eigvectors[2], trans, rotate);
 
   // Rotate and translate points
-  std::vector<Vector> points;
-  for(int x = -1; x < 2; x+=2)
+  std::vector<Vector> box_points;
+  for(int x : {-1, 1})
   {
-    for(int y = -1; y < 2; y+=2)
+    for(int y : {-1, 1})
     {
-      for(int z = -1; z < 2; z+=2)
+      for(int z : {-1, 1})
       {
-        Point translated_point = trans * Point(x * eigvals.x(), y * eigvals.y(), z * eigvals.z());
-        points.push_back(Vector(translated_point));
+        box_points.emplace_back(trans * Point(x * eigvals.x(), y * eigvals.y(), z * eigvals.z()));
       }
     }
   }
 
   std::vector<Vector> column_vectors = rotate.get_column_vectors();
 
-  generateBoxSide(points[5], points[4], points[7], points[6], column_vectors[0], node_color);
-  generateBoxSide(points[7], points[6], points[3], points[2], column_vectors[1], node_color);
-  generateBoxSide(points[1], points[5], points[3], points[7], column_vectors[2], node_color);
-  generateBoxSide(points[3], points[2], points[1], points[0], -column_vectors[0], node_color);
-  generateBoxSide(points[1], points[0], points[5], points[4], -column_vectors[1], node_color);
-  generateBoxSide(points[2], points[6], points[0], points[4], -column_vectors[2], node_color);
+  generateBoxSide(box_points[5], box_points[4], box_points[7], box_points[6], column_vectors[0], node_color);
+  generateBoxSide(box_points[7], box_points[6], box_points[3], box_points[2], column_vectors[1], node_color);
+  generateBoxSide(box_points[1], box_points[5], box_points[3], box_points[7], column_vectors[2], node_color);
+  generateBoxSide(box_points[3], box_points[2], box_points[1], box_points[0], -column_vectors[0], node_color);
+  generateBoxSide(box_points[1], box_points[0], box_points[5], box_points[4], -column_vectors[1], node_color);
+  generateBoxSide(box_points[2], box_points[6], box_points[0], box_points[4], -column_vectors[2], node_color);
 }
 
 void GlyphGeom::generateBoxSide(const Vector& p1, const Vector& p2, const Vector& p3, const Vector& p4,
