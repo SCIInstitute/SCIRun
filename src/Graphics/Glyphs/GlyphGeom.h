@@ -108,6 +108,7 @@ namespace SCIRun {
 
       void generateCylinder(const  Core::Geometry::Point& p1, const  Core::Geometry::Point& p2, double radius1, double radius2, int resolution, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void generateSphere(const Core::Geometry::Point& center, double radius, int resolution, const Core::Datatypes::ColorRGB& color);
+      std::vector<Core::Geometry::Vector> generateBoxPoints(Core::Geometry::Transform& trans, Core::Geometry::Vector& eigvals);
       void generateBox(const Core::Geometry::Point& center, Core::Geometry::Tensor& t, double scale, Core::Datatypes::ColorRGB& node_color, bool normalize);
       void generateBoxSide(const Core::Geometry::Vector& p1, const Core::Geometry::Vector& p2,
                            const Core::Geometry::Vector& p3, const Core::Geometry::Vector& p4,

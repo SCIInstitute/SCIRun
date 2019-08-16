@@ -749,6 +749,22 @@ void reorderTensor(std::vector<Vector>& eigvectors, Vector& eigvals)
   }
 }
 
+std::vector<Vector> GlyphGeom::generateBoxPoints(Transform& trans, Vector& eigvals)
+{
+  std::vector<Vector> box_points;
+  for(int x : {-1, 1})
+    {
+      for(int y : {-1, 1})
+        {
+          for(int z : {-1, 1})
+            {
+              box_points.emplace_back(trans * Point(x * eigvals.x(), y * eigvals.y(), z * eigvals.z()));
+            }
+        }
+    }
+  return box_points;
+}
+
 void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale, ColorRGB& node_color, bool normalize)
 {
   static const double zeroThreshold = 0.000001;
@@ -799,19 +815,7 @@ void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale, ColorR
   Transform trans, rotate;
   generateTransforms(center, eigvectors[0], eigvectors[1], eigvectors[2], trans, rotate);
 
-  // Rotate and translate points
-  std::vector<Vector> box_points;
-  for(int x : {-1, 1})
-  {
-    for(int y : {-1, 1})
-    {
-      for(int z : {-1, 1})
-      {
-        box_points.emplace_back(trans * Point(x * eigvals.x(), y * eigvals.y(), z * eigvals.z()));
-      }
-    }
-  }
-
+  std::vector<Vector> box_points = generateBoxPoints(trans, eigvals);
   std::vector<Vector> column_vectors = rotate.get_column_vectors();
 
   generateBoxSide(box_points[5], box_points[4], box_points[7], box_points[6], column_vectors[0], node_color);
