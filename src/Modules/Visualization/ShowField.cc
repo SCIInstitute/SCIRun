@@ -444,38 +444,18 @@ namespace
     writeFloats(vboBuffer, {coords.x, coords.y});
   }
 
-  inline void writeIndexToIBO(const uint32_t index, spire::VarBuffer* iboBuffer)
-  {
-    iboBuffer->writeUnsafe(index);
-  }
-
   template<typename ... Params>
-  void writeTri(spire::VarBuffer* vboBuffer, spire::VarBuffer* iboBuffer,
-                uint32_t& iboIndex, const Params& ... params)
+  void writeTri(spire::VarBuffer* vboBuffer, const Params& ... params)
   {
     for(int i = 0; i < 3; ++i)
       (void)std::initializer_list<int>{(writeAtributeToVBO(params[i], vboBuffer), 0)...};
-
-    writeIndexToIBO(iboIndex + 0, iboBuffer);
-    writeIndexToIBO(iboIndex + 1, iboBuffer);
-    writeIndexToIBO(iboIndex + 2, iboBuffer);
-    iboIndex += 3;
   }
 
   template<typename ...Params>
-  void writeQuad(spire::VarBuffer* vboBuffer, spire::VarBuffer* iboBuffer,
-                 uint32_t& iboIndex, const Params& ... params)
+  void writeQuad(spire::VarBuffer* vboBuffer, const Params& ... params)
   {
     for(int i = 0; i < 4; ++i)
       (void)std::initializer_list<int>{(writeAtributeToVBO(params[i], vboBuffer), 0)...};
-
-    writeIndexToIBO(iboIndex + 0, iboBuffer);
-    writeIndexToIBO(iboIndex + 1, iboBuffer);
-    writeIndexToIBO(iboIndex + 2, iboBuffer);
-    writeIndexToIBO(iboIndex + 2, iboBuffer);
-    writeIndexToIBO(iboIndex + 3, iboBuffer);
-    writeIndexToIBO(iboIndex + 0, iboBuffer);
-    iboIndex += 4;
   }
 
   enum : int
@@ -583,7 +563,30 @@ void GeometryBuilder::renderFacesLinear(
     auto iboBuffer = iboBufferSPtr.get();
     auto vboBuffer = vboBufferSPtr.get();
 
-    uint32_t iboIndex = 0;
+    if(useQuads)
+    {
+      uint32_t nodesInThisPass = facesLeftInThisPass * 4;
+      for(uint32_t i = 0; i < nodesInThisPass; i += 4)
+      {
+        iboBuffer->writeUnsafe(i+0);
+        iboBuffer->writeUnsafe(i+1);
+        iboBuffer->writeUnsafe(i+2);
+        iboBuffer->writeUnsafe(i+2);
+        iboBuffer->writeUnsafe(i+3);
+        iboBuffer->writeUnsafe(i+0);
+      }
+    }
+    else
+    {
+      uint32_t nodesInThisPass = facesLeftInThisPass * 3;
+      for(uint32_t i = 0; i <  nodesInThisPass; i += 3)
+      {
+        iboBuffer->writeUnsafe(i+0);
+        iboBuffer->writeUnsafe(i+1);
+        iboBuffer->writeUnsafe(i+2);
+      }
+    }
+
     while (facesLeftInThisPass > 0)
     {
       interruptible->checkForInterruption();
@@ -727,14 +730,14 @@ void GeometryBuilder::renderFacesLinear(
 
       switch(writeCase)
       {
-        case TRI: writeTri(vboBuffer, iboBuffer, iboIndex, points); break;
-        case TRI_TEXCOORDS: writeTri(vboBuffer, iboBuffer, iboIndex, points, textureCoords); break;
-        case TRI_NORMALS: writeTri(vboBuffer, iboBuffer, iboIndex, points, normals); break;
-        case TRI_NORMALS_TEXCOORDS: writeTri(vboBuffer, iboBuffer, iboIndex, points, normals, textureCoords); break;
-        case QUAD: writeQuad(vboBuffer, iboBuffer, iboIndex, points); break;
-        case QUAD_TEXCOORDS: writeQuad(vboBuffer, iboBuffer, iboIndex, points, textureCoords); break;
-        case QUAD_NORMALS: writeQuad(vboBuffer, iboBuffer, iboIndex, points, normals); break;
-        case QUAD_NORMALS_TEXCOORDS: writeQuad(vboBuffer, iboBuffer, iboIndex, points, normals, textureCoords); break;
+        case TRI: writeTri(vboBuffer, points); break;
+        case TRI_TEXCOORDS: writeTri(vboBuffer, points, textureCoords); break;
+        case TRI_NORMALS: writeTri(vboBuffer, points, normals); break;
+        case TRI_NORMALS_TEXCOORDS: writeTri(vboBuffer, points, normals, textureCoords); break;
+        case QUAD: writeQuad(vboBuffer, points); break;
+        case QUAD_TEXCOORDS: writeQuad(vboBuffer, points, textureCoords); break;
+        case QUAD_NORMALS: writeQuad(vboBuffer, points, normals); break;
+        case QUAD_NORMALS_TEXCOORDS: writeQuad(vboBuffer, points, normals, textureCoords); break;
       }
 
       ++fiter;
