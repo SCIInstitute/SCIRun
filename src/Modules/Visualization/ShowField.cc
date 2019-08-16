@@ -506,10 +506,19 @@ void GeometryBuilder::renderFacesLinear(
   mesh->synchronize(Mesh::FACES_E);
 
   VMesh::Face::size_type numFaces;
-  int numAttributes = 3; //intially 3 because we will atleast be rendering verticies (vec3's)
-
   mesh->size(numFaces);
   if (numFaces == 0) return;
+
+  Point idpt;
+  VMesh::Face::iterator fiter, fiterEnd;
+  VMesh::Node::array_type nodes;
+  mesh->get_nodes(nodes, *fiter);
+  mesh->get_point(idpt, nodes[0]);
+  mesh->begin(fiter);
+  mesh->end(fiterEnd);
+  int numNodesPerFace = nodes.size();
+  bool useQuads = (numNodesPerFace == 4);
+  int numAttributes = 3; //intially 3 because we will atleast be rendering verticies (vec3's)
 
   bool useNormals = state.get(RenderState::USE_NORMALS);
   bool useFaceNormals = state.get(RenderState::USE_FACE_NORMALS) && mesh->has_normals();
@@ -548,16 +557,6 @@ void GeometryBuilder::renderFacesLinear(
     colorScheme = ColorScheme::COLOR_MAP;
   }
 
-  Point idpt;
-  VMesh::Face::iterator fiter, fiterEnd;
-  VMesh::Node::array_type nodes;
-  mesh->get_nodes(nodes, *fiter);
-  mesh->get_point(idpt, nodes[0]);
-  mesh->begin(fiter);
-  mesh->end(fiterEnd);
-
-  int numNodesPerFace = nodes.size();
-  bool useQuads = (numNodesPerFace == 4);
   int writeCase = getWriteCase(useQuads, useNormals, useColorMap);
 
   std::vector<Point> points(numNodesPerFace);

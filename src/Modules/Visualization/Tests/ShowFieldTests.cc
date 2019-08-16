@@ -127,3 +127,47 @@ TEST_F(ShowFieldStateGeometryNameSynchronizationTest, GeometryNameSynchronizesWi
   EXPECT_NE(hash1, addInputShouldBeDifferent);
   EXPECT_NE(inputChangeShouldBeDifferent, hash1);
 }
+
+class ShowFieldPreformaceTest : public ModuleTest {};
+TEST_F(ShowFieldPreformaceTest, TestFacePreformace)
+{
+  LogSettings::Instance().setVerbose(false);
+  UseRealModuleStateFactory f;
+  ModuleHandle showField = makeModule("ShowField");
+  showField->setStateDefaults();
+  auto state = showField->get_state();
+  state->setValue(ShowField::ShowFaces, true);
+  state->setValue(ShowField::ShowEdges, false);
+  state->setValue(ShowField::ShowNodes, false);
+  state->setValue(ShowField::FacesColoring, 1);
+
+  ColorMapHandle colorMap = StandardColorMapFactory::create();
+  stubPortNWithThisData(showField, 1, colorMap);
+
+  std::vector<FieldHandle> vectorOfInputData =
+  {
+    CreateEmptyLatVol(64, 64, 64)
+  };
+
+  std::vector<std::string> vectorOfInputDataNames =
+  {
+    "64x64x64 LatVol"
+  };
+
+  const static int NUM_RUNS = 16;
+
+  for(int i = 0; i < vectorOfInputData.size(); ++i)
+  {
+
+    auto start = std::chrono::steady_clock::now();
+    stubPortNWithThisData(showField, 0, vectorOfInputData[i]);
+    for(int i = 0; i < NUM_RUNS; ++i)
+    {
+      showField->execute();
+    }
+    auto end = std::chrono::steady_clock::now();
+    auto diff = end - start;
+    std::cout << vectorOfInputDataNames[i] << " : " << std::chrono::duration<double, std::milli>(diff).count()/NUM_RUNS << " ms\n";
+  }
+  std::cout << "\n";
+}
