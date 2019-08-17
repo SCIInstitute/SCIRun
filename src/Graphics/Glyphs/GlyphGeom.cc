@@ -749,7 +749,7 @@ void reorderTensor(std::vector<Vector>& eigvectors, Vector& eigvals)
   }
 }
 
-std::vector<Vector> GlyphGeom::generateBoxPoints(Transform& trans, Vector& eigvals)
+std::vector<Vector> GlyphGeom::generateBoxPoints(const Transform& trans, const Vector& eigvals)
 {
   std::vector<Vector> box_points;
   for(int x : {-1, 1})

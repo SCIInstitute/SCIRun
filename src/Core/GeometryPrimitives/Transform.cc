@@ -850,7 +850,7 @@ std::vector<Vector> Transform::get_column_vectors()
 }
 
 Point
-SCIRun::Core::Geometry::operator*(Transform &t, const Point &d)
+SCIRun::Core::Geometry::operator*(const Transform &t, const Point &d)
 {
   double result[4], tmp[4];
   result[0] = result[1] = result[2] = result[3] = 0;
@@ -874,7 +874,7 @@ SCIRun::Core::Geometry::operator*(Transform &t, const Point &d)
 }
 
 Vector
-SCIRun::Core::Geometry::operator*(Transform &t, const Vector &d)
+SCIRun::Core::Geometry::operator*(const Transform &t, const Vector &d)
 {
   double result[4], tmp[4];
   result[0] = result[1] = result[2] = result[3] = 0;
