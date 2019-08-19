@@ -118,8 +118,9 @@ namespace SCIRun {
           GlyphGeom& glyphs,
           int glyph_type,
           Point& p1,
-          Point& p2,
+          Vector& dir,
           double radius,
+          double scale,
           double ratio,
           int resolution,
           ColorRGB& node_color,
@@ -159,8 +160,9 @@ void GlyphBuilder::addGlyph(
   GlyphGeom& glyphs,
   int glyph_type,
   Point& p1,
-  Point& p2,
+  Vector& dir,
   double radius,
+  double scale,
   double ratio,
   int resolution,
   ColorRGB& node_color,
@@ -168,6 +170,8 @@ void GlyphBuilder::addGlyph(
   bool render_base1 = false,
   bool render_base2 = false)
 {
+  Point p2 = p1 + dir * scale;
+  double scaled_radius = scale * radius;
   switch (glyph_type)
   {
     case RenderState::GlyphType::LINE_GLYPH:
@@ -179,29 +183,26 @@ void GlyphBuilder::addGlyph(
     case RenderState::GlyphType::COMET_GLYPH:
     {
       static const double sphere_extrusion = 0.0625f;
-      Vector dir = (p2 - p1);
-      glyphs.addComet(p1-dir, p1, radius, resolution, node_color, node_color, sphere_extrusion);
+      glyphs.addComet(p1-(dir*scale), p1, scaled_radius, resolution, node_color, node_color, sphere_extrusion);
       break;
     }
     case RenderState::GlyphType::CONE_GLYPH:
-      glyphs.addCone(p1, p2, radius, resolution, render_base1, node_color, node_color);
+      glyphs.addCone(p1, p2, scaled_radius, resolution, render_base1, node_color, node_color);
       break;
     case RenderState::GlyphType::ARROW_GLYPH:
-      glyphs.addArrow(p1, p2, radius, ratio, resolution, node_color, node_color, render_base1, render_base2);
+      glyphs.addArrow(p1, p2, scaled_radius, ratio, resolution, node_color, node_color, render_base1, render_base2);
       break;
     case RenderState::GlyphType::DISK_GLYPH:
     {
-      Vector dir = (p2 - p1);
-      Point new_p2 = p1 + dir * radius * 2.0;
-      glyphs.addDisk(p1, new_p2, dir.length()*0.5, resolution, node_color, node_color);
+      Point new_p2 = p1 + dir.normal() * scaled_radius * 2.0;
+      double new_radius = dir.length() * scale * 0.5;
+      glyphs.addDisk(p1, new_p2, new_radius, resolution, node_color, node_color);
       break;
     }
     case RenderState::GlyphType::RING_GLYPH:
     {
-      double length = (p2 - p1).length();
-      double major_radius = length * 0.5;
-      double minor_radius = length * radius * 2.0;
-      glyphs.addTorus(p1, p2, major_radius, minor_radius, resolution, node_color, node_color);
+      double major_radius = dir.length() * scale * 0.5;
+      glyphs.addTorus(p1, p2, major_radius, scaled_radius, resolution, node_color, node_color);
       break;
     }
     case RenderState::GlyphType::SPRING_GLYPH:
@@ -211,7 +212,7 @@ void GlyphBuilder::addGlyph(
       if (use_lines)
         glyphs.addLine(p1, p2, node_color, node_color);
       else
-        glyphs.addArrow(p1, p2, radius, ratio, resolution, node_color, node_color, render_base1, render_base2);
+        glyphs.addArrow(p1, p2, scaled_radius, ratio, resolution, node_color, node_color, render_base1, render_base2);
   }
 }
 
@@ -545,17 +546,20 @@ void GlyphBuilder::renderVectors(
       pinputVector = portHandler.getPrimaryVector(indices[i]);
 
       // Normalize/Scale
+      Vector dir = pinputVector;
       if(normalizeGlyphs)
-        v = pinputVector.normal() * scale;
-      else
-        v = pinputVector * scale;
+        dir.normalize();
+      // v = pinputVector.normal() * scale;
+      // else
+      // v = pinputVector * scale;
 
       // Calculate points
-      p2 = points[i] + v;
-      p3 = points[i] - v;
+      // p2 = points[i] + v;
+      // p3 = points[i] - v;
 
       // Get radius
-      radius = scale * radiusWidthScale / 2.0;
+      // radius = scale * radiusWidthScale / 2.0;
+      radius = radiusWidthScale / 2.0;
       if(state->getValue(ShowFieldGlyphs::SecondaryVectorParameterScalingType).toInt() == SecondaryVectorParameterScalingTypeEnum::USE_INPUT)
         radius *= portHandler.getSecondaryVectorParameter(indices[i]);
 
@@ -566,12 +570,15 @@ void GlyphBuilder::renderVectors(
           // No need to render cylinder base if arrow is bidirectional
           bool render_cylinder_base = renderBases && !renderBidirectionaly;
 
-          addGlyph(glyphs, renState.mGlyphType, points[i], p2, radius, arrowHeadRatio,
+          addGlyph(glyphs, renState.mGlyphType, points[i], dir, radius, scale, arrowHeadRatio,
                    resolution, node_color, useLines, render_cylinder_base, renderBases);
 
           if(renderBidirectionaly)
-            addGlyph(glyphs, renState.mGlyphType, points[i], p3, radius, arrowHeadRatio,
+          {
+            Vector neg_dir = -dir;
+            addGlyph(glyphs, renState.mGlyphType, points[i], neg_dir, radius, scale, arrowHeadRatio,
                      resolution, node_color, useLines, render_cylinder_base, renderBases);
+          }
         }
     }
 
@@ -833,9 +840,9 @@ void GlyphBuilder::renderTensors(
             dir = eigvec1 * eigvals[0];
           else if(vector_eig_x_0 && vector_eig_z_0)
             dir = eigvec2 * eigvals[1];
-          Point p1 = points[i] - dir*scale;
-          Point p2 = points[i] + dir*scale;
-          addGlyph(tensor_line_glyphs, RenderState::GlyphType::LINE_GLYPH, p1, p2, scale, scale, resolution, node_color, true);
+          // Point p1 = points[i];
+          // Point p2 = points[i] + dir;
+          addGlyph(tensor_line_glyphs, RenderState::GlyphType::LINE_GLYPH, points[i], dir, scale, scale, scale, resolution, node_color, true);
         }
         // Render as order 2 or 3 tensor
         else
