@@ -30,6 +30,7 @@ DEALINGS IN THE SOFTWARE.
 #define Graphics_Widgets_BoundingBoxWidget_H
 
 #include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/GeometryPrimitives/Point.h>
 #include <Graphics/Widgets/Widget.h>
 #include <Graphics/Widgets/share.h>
 
@@ -41,7 +42,7 @@ namespace SCIRun {
       {
       public:
         BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator, double scale,
-          const BoxPosition& pos, const Core::Geometry::BBox& bbox);
+          const BoxPosition& pos, const Core::Geometry::Point& origin, const Core::Geometry::BBox& bbox);
       };
     }
   }

@@ -238,6 +238,7 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
           scale,
           "Color(0.5,0.5,0.5)",
           location,
+          location,
           bbox,
           10));
         impl_->pointWidgets_.push_back(seed);
@@ -256,6 +257,7 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
         widgetName(counter++) + std::string(moveCount_, ' '),
         scale,
         "Color(0.5,0.5,0.5)",
+        oldWidget->position(),
         oldWidget->position(),
         bbox,
         10));

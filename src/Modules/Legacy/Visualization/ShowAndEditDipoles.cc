@@ -39,18 +39,16 @@
 #include <Core/Algorithms/Visualization/RenderFieldState.h>
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
-#include <Graphics/Widgets/SphereWidget.h>
-#include <Graphics/Widgets/ConeWidget.h>
-#include <Graphics/Widgets/CylinderWidget.h>
+#include <Graphics/Widgets/ArrowWidget.h>
 #include <Modules/Legacy/Visualization/ShowAndEditDipoles.h>
 #include <math.h>
 
@@ -66,14 +64,6 @@ using namespace Dataflow::Networks;
 using namespace Graphics::Datatypes;
 
 MODULE_INFO_DEF(ShowAndEditDipoles, Visualization, SCIRun)
-
-enum WidgetSection {
-  SPHERE,
-  CYLINDER,
-  CONE,
-  DISK,
-  LINE
-};
 
 ShowAndEditDipoles::ShowAndEditDipoles()
   : GeometryGeneratingModule(staticInfo_)
@@ -93,12 +83,6 @@ ShowAndEditDipoles::ShowAndEditDipoles()
   resizeCol_ = ColorRGB(0.54, 1.0, 0.60);
   lineCol_ = ColorRGB(0.8, 0.8, 0.2);
 
-  sphereRadius_ = 0.25;
-  cylinderRadius_ = 0.12;
-  coneRadius_ = 0.25;
-  diskRadius_ = 0.25;
-  diskDistFromCenter_ = 0.85;
-  diskWidth_ = 0.05;
   widgetIter_ = 0;
   resolution_ = 20;
   previousScaleFactor_ = 0.0;
@@ -307,7 +291,10 @@ void ShowAndEditDipoles::toggleLastVectorShown()
   if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
     scale /= state->getValue(LargestSize).toDouble();
 
-  createDipoleWidget(bbox, pos_[last_id], direction_[last_id], scale * state->getValue(WidgetScaleFactor).toDouble(), last_id, state->getValue(ShowLastAsVector).toBool());
+  // createDipoleWidget(bbox, pos_[last_id], direction_[last_id], scale * state->getValue(WidgetScaleFactor).toDouble(), last_id, state->getValue(ShowLastAsVector).toBool());
+  ArrowWidget arrow(*this, "SAED", scale * state->getValue(WidgetScaleFactor).toDouble(),
+                    pos_[last_id], direction_[last_id], resolution_,
+                    lastVectorShown_, last_id, ++widgetIter_, bbox);
   lastVectorShown_ = state->getValue(ShowLastAsVector).toBool();
 }
 
@@ -338,8 +325,8 @@ void ShowAndEditDipoles::processWidgetFeedback(const ModuleFeedback& var)
       size_t widgetID;
       try
       {
-      // Check if correct module
-        static boost::regex r(".*Widget::SAED((.+)).+");
+      // Check if correct widget type
+        static boost::regex r("ArrowWidget((.+)).+");
         boost::smatch what;
         regex_match(vsf.selectionName, what, r);
 
@@ -411,10 +398,10 @@ void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformM
   switch (type)
   {
   // Sphere and Cylinder reposition dipole
-  case WidgetSection::SPHERE:
+  case ArrowWidgetSection::SPHERE:
     calculatePointMove(pos_[id], transformPoint);
     break;
-  case WidgetSection::CYLINDER:
+  case ArrowWidgetSection::CYLINDER:
   {
     double widgetScale = get_state()->getValue(WidgetScaleFactor).toDouble();
     // Shift direction back because newPos is the center of the cylinder
@@ -423,11 +410,11 @@ void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformM
     break;
   }
   // Cone rotates dipole
-  case WidgetSection::CONE:
+  case ArrowWidgetSection::CONE:
     direction_[id] = (transformPoint - pos_[id]).normal();
     break;
   // Disk resizes dipole
-  case WidgetSection::DISK:
+  case ArrowWidgetSection::DISK:
   {
     Vector newVec(transformPoint - pos_[id]);
     newVec /= diskDistFromCenter_;
@@ -450,7 +437,11 @@ void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformM
   if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
     scale /= state->getValue(LargestSize).toDouble();
 
-  createDipoleWidget(bbox, pos_[id], direction_[id], scale * state->getValue(WidgetScaleFactor).toDouble(), id, is_vector);
+  // createDipoleWidget(bbox, pos_[id], direction_[id], scale * state->getValue(WidgetScaleFactor).toDouble(), id, is_vector);
+  ArrowWidget arrow(
+      *this, "SAED", scale * state->getValue(WidgetScaleFactor).toDouble(),
+      pos_[id], direction_[id], resolution_, is_vector,
+      id, ++widgetIter_, bbox);
 }
 
 void ShowAndEditDipoles::ReceiveInputPoints()
@@ -552,7 +543,11 @@ void ShowAndEditDipoles::GenerateOutputGeom()
     if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
       scale /= state->getValue(LargestSize).toDouble();
 
-    createDipoleWidget(bbox, pos_[i], direction_[i], scale * state->getValue(WidgetScaleFactor).toDouble(), i, true);
+    // createDipoleWidget(bbox, pos_[i], direction_[i], scale * state->getValue(WidgetScaleFactor).toDouble(), i, true);
+    ArrowWidget arrow(
+        *this, "SAED", scale * state->getValue(WidgetScaleFactor).toDouble(),
+        pos_[i], direction_[i], resolution_, true, i, ++widgetIter_,
+        bbox);
   }
 
   // Create last dipoles separately to check if shown as vector
@@ -562,126 +557,15 @@ void ShowAndEditDipoles::GenerateOutputGeom()
   if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
     scale /= state->getValue(LargestSize).toDouble();
 
-  createDipoleWidget(bbox, pos_[last_id], direction_[last_id], scale * state->getValue(WidgetScaleFactor).toDouble(), last_id, state->getValue(ShowLastAsVector).toBool());
+  // createDipoleWidget(bbox, pos_[last_id], direction_[last_id], scale * state->getValue(WidgetScaleFactor).toDouble(), last_id, state->getValue(ShowLastAsVector).toBool());
+  ArrowWidget(
+      *this, "SAED", scale * state->getValue(WidgetScaleFactor).toDouble(),
+      pos_[last_id], direction_[last_id], resolution_,
+      state->getValue(ShowLastAsVector).toBool(), last_id, ++widgetIter_, bbox);
 
   lastVectorShown_ = state->getValue(ShowLastAsVector).toBool();
 }
 
-std::string ShowAndEditDipoles::widgetName(size_t i, size_t id, size_t iter)
-{
-  return "SAED(" + std::to_string(i) + ")" +
-    "(" + std::to_string(id) + ")" +
-    "(" + std::to_string(iter) + ")";
-}
-
-void ShowAndEditDipoles::createDipoleWidget(BBox& bbox, Point& pos, Vector dir, double scale, size_t widget_num, bool show_as_vector)
-{
-  Point bmin = pos;
-  Point bmax = pos + dir * scale;
-
-  // Fix degenerate boxes.
-  const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
-  if (std::abs(bmax.x() - bmin.x()) < 1.0e-6)
-  {
-    bmin.x(bmin.x() - size_estimate);
-    bmax.x(bmax.x() + size_estimate);
-  }
-  if (std::abs(bmax.y() - bmin.y()) < 1.0e-6)
-  {
-    bmin.y(bmin.y() - size_estimate);
-    bmax.y(bmax.y() + size_estimate);
-  }
-  if (std::abs(bmax.z() - bmin.z()) < 1.0e-6)
-  {
-    bmin.z(bmin.z() - size_estimate);
-    bmax.z(bmax.z() + size_estimate);
-  }
-
-  Point center = bmin + dir/2.0 * scale;
-
-  pointWidgets_[widget_num] = new std::vector<WidgetHandle>(1 + show_as_vector * 3);
-
-  ColorRGB sphereCol = (show_as_vector) ? deflPointCol_ : resizeCol_;
-
-  // Create glyphs
-  (*pointWidgets_[widget_num])[0] = (boost::dynamic_pointer_cast<WidgetBase>
-                                      (WidgetFactory::createSphere(
-                                        *this,
-                                        widgetName(WidgetSection::SPHERE, widget_num, widgetIter_),
-                                        sphereRadius_ * scale,
-                                        sphereCol.toString(),
-                                        bmin,
-                                        bbox,
-                                        resolution_)));
-
-  if(show_as_vector)
-  {
-    // Starts the cylinder position closer to the surface of the sphere
-    Point cylinderStart = bmin + 0.75 * (dir * scale * sphereRadius_);
-
-    (*pointWidgets_[widget_num])[1] = (boost::dynamic_pointer_cast<WidgetBase>
-                                                (WidgetFactory::createCylinder(
-                                                  *this,
-                                                  widgetName(WidgetSection::CYLINDER, widget_num, widgetIter_),
-                                                  cylinderRadius_ * scale,
-                                                  deflCol_.toString(),
-                                                  cylinderStart,
-                                                  center,
-                                                  bbox,
-                                                  resolution_)));
-    (*pointWidgets_[widget_num])[2] = (boost::dynamic_pointer_cast<WidgetBase>
-                                                (WidgetFactory::createCone(
-                                                  *this,
-                                                  widgetName(WidgetSection::CONE, widget_num, widgetIter_),
-                                                  coneRadius_ * scale,
-                                                  deflCol_.toString(),
-                                                  center,
-                                                  bmax,
-                                                  bbox,
-                                                  true,
-                                                  resolution_)));
-
-    Point diskPos = bmin + dir * scale * diskDistFromCenter_;
-    Point dp1 = diskPos - diskWidth_ * dir * scale;
-    Point dp2 = diskPos + diskWidth_ * dir * scale;
-
-    (*pointWidgets_[widget_num])[3] = (boost::dynamic_pointer_cast<WidgetBase>
-                                                (WidgetFactory::createDisk(
-                                                  *this,
-                                                  widgetName(WidgetSection::DISK, widget_num, widgetIter_),
-                                                  diskRadius_ * scale,
-                                                  resizeCol_.toString(),
-                                                  dp1,
-                                                  dp2,
-                                                  bbox,
-                                                  resolution_)));
-  }
-  // Give origin and flip vector
-  glm::vec3 origin = glm::vec3(bmin.x(), bmin.y(), bmin.z());
-  Vector flipVec = dir.getArbitraryTangent().normal();
-  glm::vec3 gFlipVec = glm::vec3(flipVec[0], flipVec[1], flipVec[2]);
-  for(int i = 0; i < 1 + 3*show_as_vector; i++)
-  {
-    (*pointWidgets_[widget_num])[i]->origin = origin;
-    (*pointWidgets_[widget_num])[i]->flipAxis = gFlipVec;
-  }
-
-  // Specify movement type
-  (*pointWidgets_[widget_num])[0]->movementType = WidgetMovement::TRANSLATE;
-  if(show_as_vector)
-  {
-    (*pointWidgets_[widget_num])[1]->movementType = WidgetMovement::TRANSLATE;
-    (*pointWidgets_[widget_num])[2]->movementType = WidgetMovement::ROTATE;
-    (*pointWidgets_[widget_num])[3]->movementType = WidgetMovement::SCALE;
-  }
-
-  std::vector<std::string> geom_ids;
-  for(int i = 0; i < 1 + 3*show_as_vector; i++)
-    geom_ids.push_back((*pointWidgets_[widget_num])[i]->uniqueID());
-
-  for(int i = 0; i < 1 + 3*show_as_vector; i++)
-    (*pointWidgets_[widget_num])[i]->connectedIds = geom_ids;
-}
 
 GeometryHandle ShowAndEditDipoles::addLines()
 {

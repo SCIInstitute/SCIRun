@@ -194,10 +194,14 @@ void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
   state->setValue(InputSizeZ, convertForLabel(size.z()));
 }
 
-GeometryBaseHandle EditMeshBoundingBox::buildGeometryObject()
+GeometryHandle EditMeshBoundingBox::buildGeometryObject()
 {
-  return WidgetFactory::createBox(*this, get_state()->getValue(Scale).toDouble(),
-    impl_->position_, impl_->bbox_);
+  WidgetHandle bbox_geom = WidgetFactory::createBox(*this, get_state()->getValue(Scale).toDouble(),
+                                                    impl_->position_, impl_->position_.center_, impl_->bbox_);
+
+  // std::cout << "bbox wid size: " << bbox_geom->widgets_.size() << std::endl;
+  return bbox_geom;
+  // return createGeomComposite(*this, "bbox", bbox_geom->widgets_.begin(), bbox_geom->widgets_.end());
 }
 
 void EditMeshBoundingBox::computeWidgetBox(const BBox& box) const

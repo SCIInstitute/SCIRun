@@ -94,7 +94,7 @@ namespace SCIRun {
         double diskDistFromCenter_;
         double diskWidth_;
         size_t widgetIter_;
-        double resolution_;
+        int resolution_;
         double previousScaleFactor_;
         double zeroVectorRescale_;
 

@@ -25,12 +25,13 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <Graphics/Widgets/Widget.h>
+#include <Graphics/Widgets/ArrowWidget.h>
 #include <Graphics/Widgets/BoundingBoxWidget.h>
-#include <Graphics/Widgets/SphereWidget.h>
+#include <Graphics/Widgets/ConeWidget.h>
 #include <Graphics/Widgets/CylinderWidget.h>
 #include <Graphics/Widgets/DiskWidget.h>
-#include <Graphics/Widgets/ConeWidget.h>
+#include <Graphics/Widgets/SphereWidget.h>
+#include <Graphics/Widgets/Widget.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
@@ -42,14 +43,15 @@ WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::
 {
 }
 
-WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Point& pos)
+WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Point& origin)
   : GeometryObjectSpire(idGenerator, tag, isClippable),
-    position_(pos)
+    origin_(glm::vec3(origin.x(), origin.y(), origin.z()))
 {
 }
 
-WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Vector& pos)
+WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Point& pos, const Point& origin)
   : GeometryObjectSpire(idGenerator, tag, isClippable),
+    origin_(glm::vec3(origin.x(), origin.y(), origin.z())),
     position_(pos)
 {
 }
@@ -64,10 +66,62 @@ void WidgetBase::setPosition(const Point& p)
   position_ = p;
 }
 
-WidgetHandle WidgetFactory::createBox(const Core::GeometryIDGenerator& idGenerator, double scale,
-  const BoxPosition& pos, const BBox& bbox)
+void WidgetBase::setToScale(const Vector& flipAxis)
 {
-  return boost::make_shared<BoundingBoxWidget>(idGenerator, scale, pos, bbox);
+  movementType_ = WidgetMovement::SCALE;
+  flipAxis_ = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
+}
+
+void WidgetBase::setToRotate()
+{
+  movementType_ = WidgetMovement::ROTATE;
+}
+
+void WidgetBase::setToTranslate()
+{
+  movementType_ = WidgetMovement::TRANSLATE;
+}
+
+glm::vec3 WidgetBase::getFlipVector()
+{
+  return flipAxis_;
+}
+
+WidgetMovement WidgetBase::getMovementType()
+{
+  return movementType_;
+}
+
+CompositeWidgetHandle WidgetFactory::createArrowWidget(const Core::GeometryIDGenerator &idGenerator,
+                                                       const std::string& name,
+                                                       double scale,
+                                                       const Point &pos,
+                                                       const Vector &dir,
+                                                       int resolution,
+                                                       bool show_as_vector,
+                                                       int widget_num,
+                                                       int widget_iter,
+                                                       const BBox &bbox)
+{
+  // ArrowWidget wid();
+  // ArrowWidgetHandle widget = boost::make_shared);
+  // return boost::make_shared<ArrowWidget>(idGenerator, name, scale, pos, dir,
+                                         // resolution, show_as_vector,
+                                         // widget_num, widget_iter, bbox);
+}
+
+WidgetHandle WidgetFactory::createBox(const Core::GeometryIDGenerator& idGenerator,
+                                               double scale,
+                                               const BoxPosition& pos,
+                                               const Point& origin,
+                                               const BBox& bbox)
+{
+  WidgetHandle widget = boost::make_shared<BoundingBoxWidget>(idGenerator, scale, pos, origin, bbox);
+  std::vector<std::string> ids = std::vector<std::string>(1);
+  ids.push_back(widget->uniqueID());
+  widget->connectedIds_ = ids;
+  widget->setToTranslate();
+  return widget;
 }
 
 WidgetHandle WidgetFactory::createSphere(const Core::GeometryIDGenerator& idGenerator,
@@ -75,10 +129,16 @@ WidgetHandle WidgetFactory::createSphere(const Core::GeometryIDGenerator& idGene
                                          double radius,
                                          const std::string& defaultColor,
                                          const Point& point,
+                                         const Core::Geometry::Point& origin,
                                          const BBox& bbox,
                                          int resolution)
 {
-  return boost::make_shared<SphereWidget>(idGenerator, name, radius, defaultColor, point, bbox, resolution);
+  WidgetHandle widget = boost::make_shared<SphereWidget>(idGenerator, name, radius, defaultColor, point, origin, bbox, resolution);
+  std::vector<std::string> ids = std::vector<std::string>(1);
+  ids.push_back(widget->uniqueID());
+  widget->connectedIds_ = ids;
+  widget->setToTranslate();
+  return widget;
 }
 
 WidgetHandle WidgetFactory::createCylinder(const Core::GeometryIDGenerator& idGenerator,
@@ -87,10 +147,16 @@ WidgetHandle WidgetFactory::createCylinder(const Core::GeometryIDGenerator& idGe
                                            const std::string& defaultColor,
                                            const Point& p1,
                                            const Point& p2,
+                                           const Core::Geometry::Point& origin,
                                            const BBox& bbox,
                                            int resolution)
 {
-  return boost::make_shared<CylinderWidget>(idGenerator, name, radius, defaultColor, p1, p2, bbox, resolution);
+  WidgetHandle widget = boost::make_shared<CylinderWidget>(idGenerator, name, radius, defaultColor, p1, p2, origin, bbox, resolution);
+  std::vector<std::string> ids = std::vector<std::string>(1);
+  ids.push_back(widget->uniqueID());
+  widget->connectedIds_ = ids;
+  widget->setToTranslate();
+  return widget;
 }
 
 WidgetHandle WidgetFactory::createCone(const Core::GeometryIDGenerator& idGenerator,
@@ -99,11 +165,17 @@ WidgetHandle WidgetFactory::createCone(const Core::GeometryIDGenerator& idGenera
                                        const std::string& defaultColor,
                                        const Point& p1,
                                        const Point& p2,
+                                       const Core::Geometry::Point& origin,
                                        const BBox& bbox,
                                        bool renderBase,
                                        int resolution)
 {
-  return boost::make_shared<ConeWidget>(idGenerator, name, radius, defaultColor, p1, p2, bbox, renderBase, resolution);
+  WidgetHandle widget = boost::make_shared<ConeWidget>(idGenerator, name, radius, defaultColor, p1, p2, origin, bbox, renderBase, resolution);
+  std::vector<std::string> ids = std::vector<std::string>(1);
+  ids.push_back(widget->uniqueID());
+  widget->connectedIds_ = ids;
+  widget->setToTranslate();
+  return widget;
 }
 
 WidgetHandle WidgetFactory::createDisk(const Core::GeometryIDGenerator& idGenerator,
@@ -112,10 +184,16 @@ WidgetHandle WidgetFactory::createDisk(const Core::GeometryIDGenerator& idGenera
                                        const std::string& defaultColor,
                                        const Point& p1,
                                        const Point& p2,
+                                       const Core::Geometry::Point& origin,
                                        const BBox& bbox,
                                        int resolution)
 {
-  return boost::make_shared<DiskWidget>(idGenerator, name, radius, defaultColor, p1, p2, bbox, resolution);
+  WidgetHandle widget = boost::make_shared<DiskWidget>(idGenerator, name, radius, defaultColor, p1, p2, origin, bbox, resolution);
+  std::vector<std::string> ids = std::vector<std::string>(1);
+  ids.push_back(widget->uniqueID());
+  widget->connectedIds_ = ids;
+  widget->setToTranslate();
+  return widget;
 }
 
 void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
@@ -124,6 +202,21 @@ void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
   {
     list.insert(widgets_.begin(), widgets_.end());
   }
+}
+
+void CompositeWidget::addToList(WidgetHandle widget)
+{
+  widgets_.push_back(widget);
+}
+
+std::vector<std::string> CompositeWidget::getListOfConnectedIds()
+{
+  std::vector<std::string> ids(widgets_.size());
+  for(int i = 0; i < ids.size(); i++)
+  {
+    ids[i] = widgets_[i]->uniqueID();
+  }
+  return ids;
 }
 
 CompositeWidget::~CompositeWidget()

@@ -51,17 +51,28 @@ namespace SCIRun
       {
       public:
         WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable);
-        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& pos);
-        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Vector& pos);
+        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& origin);
+        WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& pos, const Core::Geometry::Point& origin);
+        /* WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Vector& pos); */
         Core::Geometry::Point position() const;
         void setPosition(const Core::Geometry::Point& p);
-        glm::vec3 origin;
-        glm::vec3 flipAxis;
-        WidgetMovement movementType;
-        std::vector<std::string> connectedIds;
+        void setToScale(const Core::Geometry::Vector& flipAxis);
+        void setToRotate();
+        void setToTranslate();
+        glm::vec3 getFlipVector();
+        WidgetMovement getMovementType();
+
+        /* glm::vec3 getOrigin(); */
+        /* void setOrigin(glm::vec3& origin); */
+
+        glm::vec3 origin_;
+        std::vector<std::string> connectedIds_;
 
       protected:
         Core::Geometry::Point position_;
+      private:
+        WidgetMovement movementType_;
+        glm::vec3 flipAxis_;
       };
 
       using WidgetHandle = SharedPointer<WidgetBase>;
@@ -80,25 +91,59 @@ namespace SCIRun
       {
       public:
         template <typename WidgetIter>
-          CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
-          : WidgetBase(idGenerator, tag, true), widgets_(begin, end)
+                CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag,
+                                WidgetIter begin, WidgetIter end)
+                : WidgetBase(idGenerator, tag, true)
+        {}
+      CompositeWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& tag)
+                  : WidgetBase(idGenerator, tag, true)
         {}
         ~CompositeWidget();
         void addToList(Core::Datatypes::GeometryBaseHandle handle, Core::Datatypes::GeomList& list) override;
-      private:
+        void addToList(WidgetHandle handle);
+        std::vector<std::string> getListOfConnectedIds();
+
         std::vector<WidgetHandle> widgets_;
+      private:
       };
+
+      using CompositeWidgetHandle = SharedPointer<CompositeWidget>;
+
+      template <typename WidgetIter>
+        static WidgetHandle createWidgetComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
+      {
+        return boost::make_shared<CompositeWidget>(idGenerator, tag, begin, end);
+      }
+      /* template <typename WidgetIter> */
+        /* static WidgetHandle createWidgetComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag) */
+      /* { */
+        /* return boost::make_shared<CompositeWidget>(idGenerator, tag, widgets_.begin(), widgets_.end()); */
+      /* } */
 
       class SCISHARE WidgetFactory
       {
       public:
-        static WidgetHandle createBox(const Core::GeometryIDGenerator& idGenerator, double scale,
-                                      const BoxPosition& pos, const Core::Geometry::BBox& bbox);
+        static CompositeWidgetHandle createArrowWidget(const Core::GeometryIDGenerator &idGenerator,
+                                                       const std::string& name,
+                                                       double scale,
+                                                       const Core::Geometry::Point &pos,
+                                                       const Core::Geometry::Vector &dir,
+                                                       int resolution,
+                                                       bool show_as_vector,
+                                                       int widget_num,
+                                                       int widget_iter,
+                                                       const Core::Geometry::BBox &bbox);
+        static WidgetHandle createBox(const Core::GeometryIDGenerator& idGenerator,
+                                      double scale,
+                                      const BoxPosition& pos,
+                                      const Core::Geometry::Point& origin,
+                                      const Core::Geometry::BBox& bbox);
         static WidgetHandle createSphere(const Core::GeometryIDGenerator& idGenerator,
                                          const std::string& name,
                                          double radius,
                                          const std::string& defaultColor,
                                          const Core::Geometry::Point& point,
+                                         const Core::Geometry::Point& origin,
                                          const Core::Geometry::BBox& bbox,
                                          int resolution);
         static WidgetHandle createCylinder(const Core::GeometryIDGenerator& idGenerator,
@@ -107,6 +152,7 @@ namespace SCIRun
                                            const std::string& defaultColor,
                                            const Core::Geometry::Point& p1,
                                            const Core::Geometry::Point& p2,
+                                           const Core::Geometry::Point& origin,
                                            const Core::Geometry::BBox& bbox,
                                            int resolution);
         static WidgetHandle createCone(const Core::GeometryIDGenerator& idGenerator,
@@ -115,6 +161,7 @@ namespace SCIRun
                                        const std::string& defaultColor,
                                        const Core::Geometry::Point& p1,
                                        const Core::Geometry::Point& p2,
+                                       const Core::Geometry::Point& origin,
                                        const Core::Geometry::BBox& bbox,
                                        bool renderBase,
                                        int resolution);
@@ -124,11 +171,12 @@ namespace SCIRun
                                      const std::string& defaultColor,
                                      const Core::Geometry::Point& p1,
                                      const Core::Geometry::Point& p2,
+                                     const Core::Geometry::Point& origin,
                                      const Core::Geometry::BBox& bbox,
                                      int resolution);
 
       template <typename WidgetIter>
-        static WidgetHandle createComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
+        static CompositeWidgetHandle createComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
         {
           return boost::make_shared<CompositeWidget>(idGenerator, tag, begin, end);
         }

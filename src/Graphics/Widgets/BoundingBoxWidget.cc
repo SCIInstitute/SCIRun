@@ -28,7 +28,6 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Graphics/Widgets/BoundingBoxWidget.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
-#include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Color.h>
 
 using namespace SCIRun;
@@ -52,8 +51,8 @@ void BoxPosition::getPosition(Point& center, Point& right, Point& down, Point& i
 }
 
 BoundingBoxWidget::BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator,
-  double scale, const BoxPosition& pos, const BBox& bbox)
-  : WidgetBase(idGenerator, "BoundingBox", true)
+  double scale, const BoxPosition& pos, const Point& origin, const BBox& bbox)
+  : WidgetBase(idGenerator, "BoundingBox", true, origin)
 {
   auto colorScheme(ColorScheme::COLOR_UNIFORM);
   //get all the bbox edges

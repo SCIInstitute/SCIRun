@@ -589,10 +589,10 @@ namespace SCIRun {
           {
             if(objList[i]->uniqueID() == it->second)
             {
-              mOriginWorld = objList[i]->origin;
-              mFlipAxisWorld = objList[i]->flipAxis;
-              mWidgetMovement = objList[i]->movementType;
-              mConnectedWidgets = objList[i]->connectedIds;
+              mOriginWorld = objList[i]->origin_;
+              mFlipAxisWorld = objList[i]->getFlipVector();
+              mWidgetMovement = objList[i]->getMovementType();
+              mConnectedWidgets = objList[i]->connectedIds_;
             }
           }
           // mOriginWorld = originMap.find(value)->second;
@@ -605,14 +605,21 @@ namespace SCIRun {
       if (mSelected != "")
       {
         widgetSelected_ = true;
+
+        //Calculate w value
         float zFar = mCamera->getZFar();
         float zNear = mCamera->getZNear();
         float z = -1.0/(depth * (1.0/zFar - 1.0/zNear) + 1.0/zNear);
         mSelectedW = -z;
 
-        glm::vec4 projectedOrigin = mCamera->getViewToProjection() * glm::vec4(mOriginView, 1.0);
+        mOriginView = glm::vec3(mCamera->getWorldToView() * glm::vec4(mOriginWorld, 1.0));
+
+        // Get w value in of origin if scaling
         if(mWidgetMovement == WidgetMovement::SCALE)
+        {
+          glm::vec4 projectedOrigin = mCamera->getViewToProjection() * glm::vec4(mOriginView, 1.0);
           mSelectedW = projectedOrigin.w;
+        }
 
         glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
                        -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
@@ -621,12 +628,15 @@ namespace SCIRun {
 
         glm::vec3 sposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * mSelectedW, 0.0, 1.0));
         sposView.z = -mSelectedW;
-        mOriginView = glm::vec3(mCamera->getWorldToView() * glm::vec4(mOriginWorld, 1.0));
         mOriginToSpos = sposView - mOriginView;
         mSelectedRadius = glm::length(mOriginToSpos);
 
-        widgetBall_.reset(new spire::ArcBall(mOriginView, mSelectedRadius, (mOriginToSpos.z < 0.0)));
-        widgetBall_->beginDrag(glm::vec2(sposView));
+        if(mWidgetMovement == WidgetMovement::ROTATE)
+        {
+          widgetBall_.reset(new spire::ArcBall(mOriginView, mSelectedRadius, (mOriginToSpos.z < 0.0)));
+          widgetBall_->beginDrag(glm::vec2(sposView));
+        }
+
         updateWidget(pos);
       }
 
