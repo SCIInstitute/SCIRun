@@ -51,28 +51,14 @@ GLWidget::GLWidget(QtGLContext* context, QWidget* parent) :
     QGLWidget(context, parent),
     mContext(new GLContext(this))
 {
-  /// \todo Implement this intelligently. This function is called everytime
-  ///       there is a new graphics context.
-  std::vector<std::string> shaderSearchDirs;
-
-  mContext->makeCurrent();
-
+  makeCurrent();
   spire::glPlatformInit();
-
-  auto frameInitLimitFromCommandLine = Core::Application::Instance().parameters()->developerParameters()->frameInitLimit();
-  if (frameInitLimitFromCommandLine)
-  {
-    std::cout << "Renderer frame init limit changed to " << *frameInitLimitFromCommandLine << std::endl;
-  }
-  const int frameInitLimit = frameInitLimitFromCommandLine.get_value_or(100);
-
-  mGraphics.reset(new Render::SRInterface(mContext, frameInitLimit));
+  mGraphics.reset(new Render::SRInterface());
 
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
   mTimer->start(RendererUpdateInMS);
 
-  // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
 }
 
@@ -117,6 +103,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
+  makeCurrent();
   auto btn = getSpireButton(event);
   mGraphics->inputMouseDown(glm::ivec2(event->x(), event->y()), btn);
   event->ignore();
@@ -154,6 +141,7 @@ void GLWidget::keyReleaseEvent(QKeyEvent* event)
 //------------------------------------------------------------------------------
 void GLWidget::resizeGL(int width, int height)
 {
+  makeCurrent();
   mGraphics->eventResize(static_cast<size_t>(width),
                          static_cast<size_t>(height));
   updateRenderer();
@@ -190,6 +178,7 @@ void GLWidget::updateRenderer()
 
   try
   {
+    makeCurrent();
     mGraphics->doFrame(mCurrentTime, updateTime);
     mContext->swapBuffers();
   }

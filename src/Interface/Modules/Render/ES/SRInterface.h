@@ -68,7 +68,7 @@ namespace SCIRun {
       friend class AssetBootstrap;
 
     public:
-      explicit SRInterface(std::shared_ptr<Gui::GLContext> context, int frameInitLimit = 100);
+      explicit SRInterface(int frameInitLimit = 100);
       ~SRInterface();
       std::string toString(std::string prefix) const;
 
@@ -331,7 +331,6 @@ namespace SCIRun {
       GLuint                            mFontTexture        {};       // 2D texture for fonts
 
       int                               axesFailCount_      {0};
-      std::shared_ptr<Gui::GLContext>   mContext            {};       // Context to use for rendering.
       std::vector<SRObject>             mSRObjects          {};       // All SCIRun objects.
       Core::Geometry::BBox              mSceneBBox          {};       // Scene's AABB. Recomputed per-frame.
 
