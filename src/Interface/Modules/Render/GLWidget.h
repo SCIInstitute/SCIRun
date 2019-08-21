@@ -46,26 +46,26 @@
 
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #endif
-#include <QtOpenGL/QGLWidget>
+//#include <QtOpenGL/QGLWidget>
+#include <QOpenGLWidget>
 
 namespace SCIRun {
 namespace Gui {
 
 class QtGLContext;
 
-class GLWidget : public QGLWidget
+class GLWidget : public QOpenGLWidget
 {
   Q_OBJECT
 
 public:
-  GLWidget(QtGLContext* context, QWidget* parent);
+  GLWidget(QWidget* parent);
   ~GLWidget();
 
   std::shared_ptr<Render::SRInterface> getSpire() const {return mGraphics;}
 
   /// Required function for single threaded interfaces that have multiple
   /// contexts running on the same thread.
-  void makeCurrent();
 
   void setLockZoom(bool lock)     { mGraphics->setLockZoom(lock); }
   void setLockPanning(bool lock)  { mGraphics->setLockPanning(lock); }
@@ -86,6 +86,7 @@ protected:
   virtual void keyPressEvent(QKeyEvent* event);
   virtual void keyReleaseEvent(QKeyEvent* event);
   virtual void initializeGL();
+  virtual void paintGL();
   virtual void resizeGL(int width, int height);
   void closeEvent(QCloseEvent *evt);
 
@@ -93,7 +94,6 @@ private:
   /// Retrieve SRInterface mouse button from mouse event.
   Render::SRInterface::MouseButton getSpireButton(QMouseEvent* event);
 
-  std::shared_ptr<GLContext>            mContext      {};  ///< Graphics context.
   std::shared_ptr<Render::SRInterface>  mGraphics     {};  ///< Interface to spire.
   QTimer*                               mTimer        {};
   double                                mFrameTime    {0.0};

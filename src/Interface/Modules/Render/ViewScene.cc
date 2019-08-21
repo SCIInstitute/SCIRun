@@ -93,22 +93,23 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setupClippingPlanes();
 
   // Setup Qt OpenGL widget.
-  QGLFormat fmt;
-  fmt.setAlpha(false);
-  fmt.setRgba(true);
-  fmt.setDepth(true);
-  fmt.setDoubleBuffer(true);
-  fmt.setDepthBufferSize(24);
+  //QGLFormat fmt;
+  //fmt.setAlpha(false);
+  //fmt.setRgba(true);
+  //fmt.setDepth(true);
+  //fmt.setDoubleBuffer(true);
+  //fmt.setDepthBufferSize(24);
 
-  mGLWidget = new GLWidget(new QtGLContext(fmt), parentWidget());
+  mGLWidget = new GLWidget(parentWidget());
+  QSurfaceFormat format;
+  format.setDepthBufferSize(24);
+  //format.setVersion(3, 3);
+  format.setProfile(QSurfaceFormat::CoreProfile);
+  mGLWidget->setFormat(format);
+  //mGLWidget->show();
+
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
   connect(this, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int, const std::string&)), this, SLOT(sendGeometryFeedbackToState(int, int, const std::string&)));
-
-  if (!mGLWidget->isValid())
-  {
-    delete mGLWidget;
-    return;
-  }
 
   mSpire = std::weak_ptr<SRInterface>(mGLWidget->getSpire());
 
@@ -2141,17 +2142,17 @@ void ViewSceneDialog::setTransparencySortTypeLists(bool index)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::screenshotClicked()
 {
-  takeScreenshot();
-  screenshotTaker_->saveScreenshot();
+  //takeScreenshot();
+  //screenshotTaker_->saveScreenshot();
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::takeScreenshot()
 {
-  if (!screenshotTaker_)
-    screenshotTaker_ = new Screenshot(mGLWidget, this);
+//  if (!screenshotTaker_)
+//    screenshotTaker_ = new Screenshot(mGLWidget, this);
 
-  screenshotTaker_->takeScreenshot();
+//  screenshotTaker_->takeScreenshot();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2163,8 +2164,8 @@ void ViewSceneDialog::saveNewGeometryChanged(int state)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 {
-  takeScreenshot();
-  state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
+  //takeScreenshot();
+  //state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
 }
 
 //--------------------------------------------------------------------------------------------------
