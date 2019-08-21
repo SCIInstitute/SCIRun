@@ -36,20 +36,21 @@
 ///@date  November 2004
 ///
 
-#include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
-#include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/BBox.h>
-#include <Graphics/Widgets/SphereWidget.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
-#include <boost/regex.hpp>
+#include <Graphics/Widgets/SphereWidget.h>
+#include <Graphics/Widgets/WidgetFactory.h>
+#include <Modules/Legacy/Fields/GeneratePointSamplesFromField.h>
+#include <Modules/Legacy/Fields/GenerateSinglePointProbeFromField.h>
 #include <boost/lexical_cast.hpp>
+#include <boost/regex.hpp>
 
 using namespace SCIRun;
 using namespace Core;

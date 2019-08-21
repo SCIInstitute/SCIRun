@@ -29,8 +29,8 @@ DEALINGS IN THE SOFTWARE.
 #ifndef Graphics_Graphics_Widgets_Widget_H
 #define Graphics_Graphics_Widgets_Widget_H
 
-#include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/GeometryPrimitives/Point.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Widgets/share.h>
 
 namespace SCIRun
@@ -120,67 +120,6 @@ namespace SCIRun
         /* return boost::make_shared<CompositeWidget>(idGenerator, tag, widgets_.begin(), widgets_.end()); */
       /* } */
 
-      class SCISHARE WidgetFactory
-      {
-      public:
-        static CompositeWidgetHandle createArrowWidget(const Core::GeometryIDGenerator &idGenerator,
-                                                       const std::string& name,
-                                                       double scale,
-                                                       const Core::Geometry::Point &pos,
-                                                       const Core::Geometry::Vector &dir,
-                                                       int resolution,
-                                                       bool show_as_vector,
-                                                       int widget_num,
-                                                       int widget_iter,
-                                                       const Core::Geometry::BBox &bbox);
-        static WidgetHandle createBox(const Core::GeometryIDGenerator& idGenerator,
-                                      double scale,
-                                      const BoxPosition& pos,
-                                      const Core::Geometry::Point& origin,
-                                      const Core::Geometry::BBox& bbox);
-        static WidgetHandle createSphere(const Core::GeometryIDGenerator& idGenerator,
-                                         const std::string& name,
-                                         double radius,
-                                         const std::string& defaultColor,
-                                         const Core::Geometry::Point& point,
-                                         const Core::Geometry::Point& origin,
-                                         const Core::Geometry::BBox& bbox,
-                                         int resolution);
-        static WidgetHandle createCylinder(const Core::GeometryIDGenerator& idGenerator,
-                                           const std::string& name,
-                                           double scale,
-                                           const std::string& defaultColor,
-                                           const Core::Geometry::Point& p1,
-                                           const Core::Geometry::Point& p2,
-                                           const Core::Geometry::Point& origin,
-                                           const Core::Geometry::BBox& bbox,
-                                           int resolution);
-        static WidgetHandle createCone(const Core::GeometryIDGenerator& idGenerator,
-                                       const std::string& name,
-                                       double scale,
-                                       const std::string& defaultColor,
-                                       const Core::Geometry::Point& p1,
-                                       const Core::Geometry::Point& p2,
-                                       const Core::Geometry::Point& origin,
-                                       const Core::Geometry::BBox& bbox,
-                                       bool renderBase,
-                                       int resolution);
-      static WidgetHandle createDisk(const Core::GeometryIDGenerator& idGenerator,
-                                     const std::string& name,
-                                     double scale,
-                                     const std::string& defaultColor,
-                                     const Core::Geometry::Point& p1,
-                                     const Core::Geometry::Point& p2,
-                                     const Core::Geometry::Point& origin,
-                                     const Core::Geometry::BBox& bbox,
-                                     int resolution);
-
-      template <typename WidgetIter>
-        static CompositeWidgetHandle createComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, WidgetIter begin, WidgetIter end)
-        {
-          return boost::make_shared<CompositeWidget>(idGenerator, tag, begin, end);
-        }
-      };
     }
   }
 }

@@ -26,9 +26,10 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <Graphics/Widgets/ArrowWidget.h>
-#include <Graphics/Glyphs/GlyphGeom.h>
 #include <Core/Datatypes/Color.h>
+#include <Graphics/Glyphs/GlyphGeom.h>
+#include <Graphics/Widgets/ArrowWidget.h>
+#include <Graphics/Widgets/WidgetFactory.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core;
@@ -41,14 +42,11 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                          const Point &pos, const Vector &dir, int resolution,
                          bool show_as_vector, size_t widget_num, size_t widget_iter,
                          const BBox &bbox)
-    : WidgetBase(idGenerator, "SphereWidget::" + name, true, pos, pos)
-    // : CompositeWidget(idGenerator, name) {
-  /**
+    : CompositeWidget(idGenerator, name) {
   static const ColorRGB deflPointCol_ = ColorRGB(0.54, 0.6, 1.0);
   static const ColorRGB deflCol_ = ColorRGB(0.5, 0.5, 0.5);
-  static const ColorRGB greenCol_ = ColorRGB(0.2, 0.8, 0.2);
   static const ColorRGB resizeCol_ = ColorRGB(0.54, 1.0, 0.60);
-  static const ColorRGB lineCol_ = ColorRGB(0.8, 0.8, 0.2);
+  ColorRGB sphereCol = (show_as_vector) ? deflPointCol_ : resizeCol_;
 
   static const double sphereRadius_ = 0.25;
   static const double cylinderRadius_ = 0.12;
@@ -59,6 +57,7 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
 
   if (resolution < 3) resolution = 10;
 
+  isVector_ = show_as_vector;
   auto colorScheme = ColorScheme::COLOR_UNIFORM;
   std::stringstream ss;
   ss << pos << dir << static_cast<int>(colorScheme);
@@ -93,11 +92,8 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
 
   Point center = bmin + dir/2.0 * scale;
 
-  ColorRGB sphereCol = (show_as_vector) ? deflPointCol_ : resizeCol_;
-  std::vector<WidgetHandle> widget_handles;
-
   // Create glyphs
-  widget_handles.emplace_back(WidgetFactory::createSphere(
+  widgets_.push_back(WidgetFactory::createSphere(
                                 idGenerator,
                                 widgetName(ArrowWidgetSection::SPHERE, widget_num, widget_iter),
                                 sphereRadius_ * scale,
@@ -106,14 +102,14 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                                 bmin,
                                 bbox,
                                 resolution));
-  widget_handles[0]->setToTranslate();
+  widgets_[0]->setToTranslate();
 
   if(show_as_vector)
   {
     // Starts the cylinder position closer to the surface of the sphere
     Point cylinderStart = bmin + 0.75 * (dir * scale * sphereRadius_);
 
-    widget_handles.emplace_back(WidgetFactory::createCylinder(
+    widgets_.push_back(WidgetFactory::createCylinder(
                                   idGenerator,
                                   widgetName(ArrowWidgetSection::CYLINDER, widget_num, widget_iter),
                                   cylinderRadius_ * scale,
@@ -123,9 +119,9 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                                   bmin,
                                   bbox,
                                   resolution));
-    widget_handles[1]->setToTranslate();
+    widgets_[1]->setToTranslate();
 
-    widget_handles.emplace_back(WidgetFactory::createCone(
+    widgets_.push_back(WidgetFactory::createCone(
                                   idGenerator,
                                   widgetName(ArrowWidgetSection::CONE, widget_num, widget_iter),
                                   coneRadius_ * scale,
@@ -136,12 +132,12 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                                   bbox,
                                   true,
                                   resolution));
-    widget_handles[2]->setToRotate();
+    widgets_[2]->setToRotate();
 
     Point diskPos = bmin + dir * scale * diskDistFromCenter_;
     Point dp1 = diskPos - diskWidth_ * dir * scale;
     Point dp2 = diskPos + diskWidth_ * dir * scale;
-    widget_handles.emplace_back(WidgetFactory::createDisk(
+    widgets_.push_back(WidgetFactory::createDisk(
                                   idGenerator,
                                   widgetName(ArrowWidgetSection::DISK, widget_num, widget_iter),
                                   diskRadius_ * scale,
@@ -152,19 +148,23 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                                   bbox,
                                   resolution));
     Vector flipVec = dir.getArbitraryTangent().normal();
-    widget_handles[3]->setToScale(flipVec);
+    widgets_[3]->setToScale(flipVec);
   }
 
   std::vector<std::string> geom_ids;
   for(int i = 0; i < 1 + 3*show_as_vector; i++)
-    geom_ids.push_back(widget_handles[i]->uniqueID());
+    geom_ids.push_back(widgets_[i]->uniqueID());
 
   for(int i = 0; i < 1 + 3*show_as_vector; i++)
   {
-    widget_handles[i]->connectedIds_ = geom_ids;
-    addToList(widget_handles[i]);
+    widgets_[i]->connectedIds_ = geom_ids;
+    addToList(widgets_[i]);
   }
-  **/
+}
+
+bool ArrowWidget::isVector()
+{
+  return isVector_;
 }
 
 std::string ArrowWidget::widgetName(size_t i, size_t id, size_t iter)

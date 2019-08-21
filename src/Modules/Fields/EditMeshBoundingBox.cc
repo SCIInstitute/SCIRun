@@ -26,13 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Fields/EditMeshBoundingBox.h>
-#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/Datatypes/Color.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/GeometryPrimitives/BBox.h>
 #include <Graphics/Widgets/Widget.h>
-#include <Core/Datatypes/Color.h>
+#include <Graphics/Widgets/WidgetFactory.h>
+#include <Modules/Fields/EditMeshBoundingBox.h>
 #include <boost/format.hpp>
 
 using namespace SCIRun;

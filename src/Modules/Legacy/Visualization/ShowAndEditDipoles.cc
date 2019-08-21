@@ -48,7 +48,7 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Logging/Log.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
-#include <Graphics/Widgets/ArrowWidget.h>
+#include <Graphics/Widgets/WidgetFactory.h>
 #include <Modules/Legacy/Visualization/ShowAndEditDipoles.h>
 #include <math.h>
 
@@ -77,10 +77,6 @@ ShowAndEditDipoles::ShowAndEditDipoles()
   lastVectorShown_ = false;
   previousSizing_ = SizingType::ORIGINAL;
 
-  deflPointCol_ = ColorRGB(0.54, 0.6, 1.0);
-  deflCol_ = ColorRGB(0.5, 0.5, 0.5);
-  greenCol_ = ColorRGB(0.2, 0.8, 0.2);
-  resizeCol_ = ColorRGB(0.54, 1.0, 0.60);
   lineCol_ = ColorRGB(0.8, 0.8, 0.2);
 
   widgetIter_ = 0;
@@ -264,12 +260,7 @@ void ShowAndEditDipoles::saveToParameters()
 void ShowAndEditDipoles::refreshGeometry()
 {
   auto state = get_state();
-  // Garbage collect
-  for(auto dip : pointWidgets_)
-  {
-    dip->erase(dip->begin(), dip->end());
-  }
-  pointWidgets_.erase(pointWidgets_.begin(), pointWidgets_.end());
+  arrows_.clear();
 
   GenerateOutputGeom();
   state->setValue(Reset, false);
@@ -284,17 +275,17 @@ void ShowAndEditDipoles::toggleLastVectorShown()
   auto state = get_state();
 
   size_t last_id = pos_.size() - 1;
-  // Destroy last dipole
-  pointWidgets_[last_id]->erase(pointWidgets_[last_id]->begin(), pointWidgets_[last_id]->end());
 
   double scale = scale_[last_id];
   if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
     scale /= state->getValue(LargestSize).toDouble();
 
-  // createDipoleWidget(bbox, pos_[last_id], direction_[last_id], scale * state->getValue(WidgetScaleFactor).toDouble(), last_id, state->getValue(ShowLastAsVector).toBool());
-  ArrowWidget arrow(*this, "SAED", scale * state->getValue(WidgetScaleFactor).toDouble(),
-                    pos_[last_id], direction_[last_id], resolution_,
-                    lastVectorShown_, last_id, ++widgetIter_, bbox);
+  // Overwrite point
+  arrows_[last_id] = WidgetFactory::createArrowWidget(
+    *this, "SAED", scale * state->getValue(WidgetScaleFactor).toDouble(),
+    pos_[last_id], direction_[last_id], resolution_,
+    lastVectorShown_, last_id, ++widgetIter_, bbox);
+
   lastVectorShown_ = state->getValue(ShowLastAsVector).toBool();
 }
 
@@ -305,10 +296,10 @@ void ShowAndEditDipoles::generateGeomsList()
   geoms_.resize(0);
 
   // Rewrite all existing geom
-  for(size_t d = 0; d < pointWidgets_.size(); d++)
+  for(auto arrow : arrows_)
   {
-    for(size_t w = 0; w < pointWidgets_[d]->size(); w++)
-      geoms_.push_back((*pointWidgets_[d])[w]);
+    for(auto widget : arrow->widgets_)
+      geoms_.push_back(widget);
   }
   if(state->getValue(ShowLines).toBool())
     geoms_.push_back(addLines());
@@ -366,20 +357,12 @@ void ShowAndEditDipoles::processWidgetFeedback(const ModuleFeedback& var)
   }
 }
 
-void ShowAndEditDipoles::calculatePointMove(Point& oldPos, Point& newPos)
+void ShowAndEditDipoles::moveDipolesTogether(const Transform& transform)
 {
-  auto state = get_state();
-
-  if(state->getValue(MoveDipolesTogether).toBool())
+  for(size_t i = 0; i < pos_.size(); i++)
   {
-    Vector dist = newPos - oldPos;
-    for(size_t i = 0; i < pos_.size(); i++)
-    {
-      pos_[i] += dist;
-    }
+    pos_[i] = transform * pos_[i];
   }
-  else
-    oldPos = newPos;
 }
 
 void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformMatrix, size_t type, size_t id)
@@ -387,61 +370,29 @@ void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformM
   auto state = get_state();
   DenseMatrix center(4, 1);
 
-  auto currLoc = (*pointWidgets_[id])[type]->position();
-  center << currLoc.x(), currLoc.y(), currLoc.z(), 1.0;
-  DenseMatrix newTransform(DenseMatrix(transformMatrix) * center);
-
-  Point transformPoint(newTransform(0, 0) / newTransform(3, 0),
-                       newTransform(1, 0) / newTransform(3, 0),
-                       newTransform(2, 0) / newTransform(3, 0));
-
-  switch (type)
-  {
-  // Sphere and Cylinder reposition dipole
-  case ArrowWidgetSection::SPHERE:
-    calculatePointMove(pos_[id], transformPoint);
-    break;
-  case ArrowWidgetSection::CYLINDER:
-  {
-    double widgetScale = get_state()->getValue(WidgetScaleFactor).toDouble();
-    // Shift direction back because newPos is the center of the cylinder
-    Point newPos = transformPoint - 1.375 * direction_[id] * scale_[id] * widgetScale * sphereRadius_;
-    calculatePointMove(pos_[id], newPos);
-    break;
-  }
-  // Cone rotates dipole
-  case ArrowWidgetSection::CONE:
-    direction_[id] = (transformPoint - pos_[id]).normal();
-    break;
-  // Disk resizes dipole
-  case ArrowWidgetSection::DISK:
-  {
-    Vector newVec(transformPoint - pos_[id]);
-    newVec /= diskDistFromCenter_;
-
-    double widgetScale = get_state()->getValue(WidgetScaleFactor).toDouble();
-    scale_[id] = Dot(newVec, direction_[id]) / widgetScale;
-
-    if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
-      scale_[id] *= state->getValue(LargestSize).toDouble();
-
-    makeScalesPositive();
-    break;
-  }
-  }
   FieldHandle fh = getRequiredInput(DipoleInputField);
   auto bbox = fh->vmesh()->get_bounding_box();
-  bool is_vector = (pointWidgets_[id]->size() == 4);
+  bool is_vector = (arrows_[id]->isVector());
 
-  double scale = scale_[id];
-  if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
-    scale /= state->getValue(LargestSize).toDouble();
 
-  // createDipoleWidget(bbox, pos_[id], direction_[id], scale * state->getValue(WidgetScaleFactor).toDouble(), id, is_vector);
-  ArrowWidget arrow(
-      *this, "SAED", scale * state->getValue(WidgetScaleFactor).toDouble(),
-      pos_[id], direction_[id], resolution_, is_vector,
-      id, ++widgetIter_, bbox);
+  if (state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
+    scale_[id] /= state->getValue(LargestSize).toDouble();
+
+  if(state->getValue(MoveDipolesTogether).toBool() && (type == ArrowWidgetSection::CYLINDER || type == ArrowWidgetSection::SPHERE))
+    moveDipolesTogether(transformMatrix);
+  else
+  {
+    pos_[id] = transformMatrix * pos_[id];
+    direction_[id] = transformMatrix * direction_[id];
+    scale_[id] = direction_[id].length() * scale_[id];
+    direction_[id].normalize();
+  }
+    makeScalesPositive();
+
+    arrows_[id] = WidgetFactory::createArrowWidget(
+        *this, "SAED",
+        scale_[id] * state->getValue(WidgetScaleFactor).toDouble(), pos_[id],
+        direction_[id], resolution_, is_vector, id, ++widgetIter_, bbox);
 }
 
 void ShowAndEditDipoles::ReceiveInputPoints()
@@ -534,8 +485,9 @@ void ShowAndEditDipoles::GenerateOutputGeom()
   auto bbox = fh->vmesh()->get_bounding_box();
 
   last_bounds_ = bbox;
-  pointWidgets_.resize(pos_.size());
+  arrows_.resize(0);
 
+  std::string name = "SAED";
   // Create all but last dipole as vector
   for(size_t i = 0; i < pos_.size() - 1; i++)
   {
@@ -543,11 +495,10 @@ void ShowAndEditDipoles::GenerateOutputGeom()
     if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
       scale /= state->getValue(LargestSize).toDouble();
 
-    // createDipoleWidget(bbox, pos_[i], direction_[i], scale * state->getValue(WidgetScaleFactor).toDouble(), i, true);
-    ArrowWidget arrow(
-        *this, "SAED", scale * state->getValue(WidgetScaleFactor).toDouble(),
+    arrows_.push_back(WidgetFactory::createArrowWidget(
+        *this, name, scale * state->getValue(WidgetScaleFactor).toDouble(),
         pos_[i], direction_[i], resolution_, true, i, ++widgetIter_,
-        bbox);
+        bbox));
   }
 
   // Create last dipoles separately to check if shown as vector
@@ -557,11 +508,10 @@ void ShowAndEditDipoles::GenerateOutputGeom()
   if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
     scale /= state->getValue(LargestSize).toDouble();
 
-  // createDipoleWidget(bbox, pos_[last_id], direction_[last_id], scale * state->getValue(WidgetScaleFactor).toDouble(), last_id, state->getValue(ShowLastAsVector).toBool());
-  ArrowWidget(
-      *this, "SAED", scale * state->getValue(WidgetScaleFactor).toDouble(),
+    arrows_.push_back(WidgetFactory::createArrowWidget(
+      *this, name, scale * state->getValue(WidgetScaleFactor).toDouble(),
       pos_[last_id], direction_[last_id], resolution_,
-      state->getValue(ShowLastAsVector).toBool(), last_id, ++widgetIter_, bbox);
+      state->getValue(ShowLastAsVector).toBool(), last_id, ++widgetIter_, bbox));
 
   lastVectorShown_ = state->getValue(ShowLastAsVector).toBool();
 }
@@ -612,7 +562,7 @@ FieldHandle ShowAndEditDipoles::makePointCloud()
   auto field = ofield->vfield();
   auto state = get_state();
 
-  for (size_t i = 0; i < pointWidgets_.size(); i++)
+  for (size_t i = 0; i < arrows_.size(); i++)
   {
     VMesh::Node::index_type pcindex = mesh->add_point(pos_[i]);
     field->resize_fdata();

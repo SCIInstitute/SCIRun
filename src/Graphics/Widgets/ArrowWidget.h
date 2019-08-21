@@ -39,7 +39,7 @@ namespace SCIRun {
     namespace Datatypes {
       enum ArrowWidgetSection { SPHERE, CYLINDER, CONE, DISK };
 
-      class SCISHARE ArrowWidget : public WidgetBase
+      class SCISHARE ArrowWidget : public CompositeWidget
       {
       public:
         ArrowWidget(const Core::GeometryIDGenerator &idGenerator,
@@ -49,11 +49,14 @@ namespace SCIRun {
                     bool show_as_vector, size_t widget_num, size_t widget_iter,
                     const Core::Geometry::BBox &bbox);
 
+        bool isVector();
+
       private:
+        bool isVector_;
         std::string widgetName(size_t i, size_t id, size_t iter);
       };
 
-      /* using ArrowWidgetHandle = SharedPointer<ArrowWidget>; */
+      using ArrowWidgetHandle = SharedPointer<ArrowWidget>;
     }
   }
 }
