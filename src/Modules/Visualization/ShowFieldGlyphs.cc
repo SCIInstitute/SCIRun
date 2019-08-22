@@ -118,18 +118,27 @@ namespace SCIRun {
           GlyphGeom& glyphs,
           int glyph_type,
           Point& p1,
-          Point& p2,
+          Vector& dir,
           double radius,
+          double scale,
           double ratio,
           int resolution,
           ColorRGB& node_color,
-          bool use_lines);
+          bool use_lines,
+          bool render_base1,
+          bool render_base2);
 
         ColorScheme getColoringType(const RenderState& renState, VField* fld);
       };
     }
   }
 }
+
+enum SecondaryVectorParameterScalingTypeEnum
+{
+  UNIFORM,
+  USE_INPUT
+};
 
 ColorScheme GlyphBuilder::getColoringType(const RenderState& renState, VField* fld)
 {
@@ -151,13 +160,18 @@ void GlyphBuilder::addGlyph(
   GlyphGeom& glyphs,
   int glyph_type,
   Point& p1,
-  Point& p2,
+  Vector& dir,
   double radius,
+  double scale,
   double ratio,
   int resolution,
   ColorRGB& node_color,
-  bool use_lines)
+  bool use_lines,
+  bool render_base1 = false,
+  bool render_base2 = false)
 {
+  Point p2 = p1 + dir * scale;
+  double scaled_radius = scale * radius;
   switch (glyph_type)
   {
     case RenderState::GlyphType::LINE_GLYPH:
@@ -167,21 +181,30 @@ void GlyphBuilder::addGlyph(
       glyphs.addNeedle(p1, p2, node_color, node_color);
       break;
     case RenderState::GlyphType::COMET_GLYPH:
-      glyphs.addSphere(p2, radius, resolution, node_color);
-      glyphs.addCone(p2, p1, radius, resolution, false, node_color, node_color);
+    {
+      static const double sphere_extrusion = 0.0625f;
+      glyphs.addComet(p1-(dir*scale), p1, scaled_radius, resolution, node_color, node_color, sphere_extrusion);
       break;
+    }
     case RenderState::GlyphType::CONE_GLYPH:
-      glyphs.addCone(p1, p2, radius, resolution, true, node_color, node_color);
+      glyphs.addCone(p1, p2, scaled_radius, resolution, render_base1, node_color, node_color);
       break;
     case RenderState::GlyphType::ARROW_GLYPH:
-      glyphs.addArrow(p1, p2, radius, ratio, resolution, node_color, node_color);
+      glyphs.addArrow(p1, p2, scaled_radius, ratio, resolution, node_color, node_color, render_base1, render_base2);
       break;
     case RenderState::GlyphType::DISK_GLYPH:
-      glyphs.addDisk(p1, p2, radius, resolution, node_color, node_color);
+    {
+      Point new_p2 = p1 + dir.normal() * scaled_radius * 2.0;
+      double new_radius = dir.length() * scale * 0.5;
+      glyphs.addDisk(p1, new_p2, new_radius, resolution, node_color, node_color);
       break;
+    }
     case RenderState::GlyphType::RING_GLYPH:
-      BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Ring Geom is not supported yet."));
+    {
+      double major_radius = dir.length() * scale * 0.5;
+      glyphs.addTorus(p1, p2, major_radius, scaled_radius, resolution, node_color, node_color);
       break;
+    }
     case RenderState::GlyphType::SPRING_GLYPH:
       BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Spring Geom is not supported yet."));
       break;
@@ -189,7 +212,7 @@ void GlyphBuilder::addGlyph(
       if (use_lines)
         glyphs.addLine(p1, p2, node_color, node_color);
       else
-        glyphs.addArrow(p1, p2, radius, ratio, resolution, node_color, node_color);
+        glyphs.addArrow(p1, p2, scaled_radius, ratio, resolution, node_color, node_color, render_base1, render_base2);
   }
 }
 
@@ -222,12 +245,14 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(VectorsTransparency, 0);
   state->setValue(VectorsUniformTransparencyValue, 0.65);
   //  state->setValue(VectorsTransparencyDataInput, std::string("Primary"));
+  state->setValue(SecondaryVectorParameterScalingType, SecondaryVectorParameterScalingTypeEnum::USE_INPUT);
   state->setValue(SecondaryVectorParameterDataInput, std::string("Primary"));
   state->setValue(SecondaryVectorParameterScale, 0.25);
   state->setValue(NormalizeVectors, false);
   state->setValue(VectorsScale, 1.0);
   state->setValue(RenderVectorsBelowThreshold, true);
   state->setValue(VectorsThreshold, 0.0);
+  state->setValue(RenderBases, false);
   state->setValue(RenderBidirectionaly, false);
   state->setValue(ArrowHeadRatio, 0.5);
   state->setValue(VectorsResolution, 5);
@@ -251,6 +276,7 @@ void ShowFieldGlyphs::setStateDefaults()
   state->setValue(TensorsColoringDataInput, std::string("Primary"));
   state->setValue(TensorsTransparency, 0);
   state->setValue(TensorsUniformTransparencyValue, 0.65);
+  state->setValue(SuperquadricEmphasis, 0.85);
   //  state->setValue(TensorsTransparencyDataInput, std::string("Primary"));
   state->setValue(NormalizeTensors, false);
   state->setValue(TensorsScale, 1.0);
@@ -451,6 +477,7 @@ void GlyphBuilder::renderVectors(
 
   bool normalizeGlyphs = state->getValue(ShowFieldGlyphs::NormalizeVectors).toBool();
   bool renderBidirectionaly = state->getValue(ShowFieldGlyphs::RenderBidirectionaly).toBool();
+  bool renderBases = state->getValue(ShowFieldGlyphs::RenderBases).toBool();
   bool renderGlphysBelowThreshold = state->getValue(ShowFieldGlyphs::RenderVectorsBelowThreshold).toBool();
   float threshold = state->getValue(ShowFieldGlyphs::VectorsThreshold).toDouble();
 
@@ -519,26 +546,39 @@ void GlyphBuilder::renderVectors(
       pinputVector = portHandler.getPrimaryVector(indices[i]);
 
       // Normalize/Scale
+      Vector dir = pinputVector;
       if(normalizeGlyphs)
-        v = pinputVector.normal() * scale;
-      else
-        v = pinputVector * scale;
+        dir.normalize();
+      // v = pinputVector.normal() * scale;
+      // else
+      // v = pinputVector * scale;
 
       // Calculate points
-      p2 = points[i] + v;
-      p3 = points[i] - v;
+      // p2 = points[i] + v;
+      // p3 = points[i] - v;
 
       // Get radius
-      radius = portHandler.getSecondaryVectorParameter(indices[i]);
-      radius *= radiusWidthScale;
+      // radius = scale * radiusWidthScale / 2.0;
+      radius = radiusWidthScale / 2.0;
+      if(state->getValue(ShowFieldGlyphs::SecondaryVectorParameterScalingType).toInt() == SecondaryVectorParameterScalingTypeEnum::USE_INPUT)
+        radius *= portHandler.getSecondaryVectorParameter(indices[i]);
 
       ColorRGB node_color = portHandler.getNodeColor(indices[i]);
 
       if(renderGlphysBelowThreshold || pinputVector.length() >= threshold)
         {
-          addGlyph(glyphs, renState.mGlyphType, points[i], p2, radius, arrowHeadRatio, resolution, node_color, useLines);
+          // No need to render cylinder base if arrow is bidirectional
+          bool render_cylinder_base = renderBases && !renderBidirectionaly;
+
+          addGlyph(glyphs, renState.mGlyphType, points[i], dir, radius, scale, arrowHeadRatio,
+                   resolution, node_color, useLines, render_cylinder_base, renderBases);
+
           if(renderBidirectionaly)
-            addGlyph(glyphs, renState.mGlyphType, points[i], p3, radius, arrowHeadRatio, resolution, node_color, useLines);
+          {
+            Vector neg_dir = -dir;
+            addGlyph(glyphs, renState.mGlyphType, points[i], neg_dir, radius, scale, arrowHeadRatio,
+                     resolution, node_color, useLines, render_cylinder_base, renderBases);
+          }
         }
     }
 
@@ -548,7 +588,8 @@ void GlyphBuilder::renderVectors(
   std::string uniqueNodeID = id + "vector_glyphs" + ss.str();
 
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENT_EDGES),
-                     state->getValue(ShowFieldGlyphs::VectorsUniformTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
+                     state->getValue(ShowFieldGlyphs::VectorsUniformTransparencyValue).toDouble(),
+                     colorScheme, renState, primIn, mesh->get_bounding_box());
 }
 
 void GlyphBuilder::renderScalars(
@@ -646,6 +687,15 @@ void GlyphBuilder::renderScalars(
                      state->getValue(ShowFieldGlyphs::ScalarsUniformTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
 }
 
+double map_emphasis(double old)
+{
+  if (old < 0.0) old = 0.0;
+  else if (old > 1.0) old = 1.0;
+  return tan(old * (M_PI / 2.0 * 0.999));
+  // Map old 3.5 value onto new 0.825 value.
+  //return tan(old * (atan(3.5) / (0.825 * 4.0)));
+}
+
 void GlyphBuilder::renderTensors(
   ShowFieldGlyphsPortHandler& portHandler,
   ModuleStateHandle state,
@@ -734,9 +784,10 @@ void GlyphBuilder::renderTensors(
       }
 
     int neg_eigval_count = 0;
-
     int tensorcount = 0;
-    double epsilon = pow(2, -52);
+    static const double vectorThreshold = 0.001;
+    static const double pointThreshold = 0.01;
+    static const double epsilon = pow(2, -52);
 
     // Render every item from facade
     for(int i = 0; i < indices.size(); i++)
@@ -744,28 +795,30 @@ void GlyphBuilder::renderTensors(
         interruptible->checkForInterruption();
 
         Tensor t = portHandler.getPrimaryTensor(indices[i]);
+
         double eigen1, eigen2, eigen3;
         t.get_eigenvalues(eigen1, eigen2, eigen3);
-
-        // Checks to see if eigenvalues are machine zero
         Vector eigvals(fabs(eigen1), fabs(eigen2), fabs(eigen3));
-        bool eig_x_0 = eigvals.x() < epsilon && eigvals.x() > -epsilon;
-        bool eig_y_0 = eigvals.y() < epsilon && eigvals.y() > -epsilon;
-        bool eig_z_0 = eigvals.z() < epsilon && eigvals.z() > -epsilon;
 
         // Counter for negative eigen values
-        bool neg_eigval = (eigen1 < -epsilon || eigen2 < -epsilon || eigen3 < -epsilon);
-        if(neg_eigval)
+        if(eigen1 < -epsilon || eigen2 < -epsilon || eigen3 < -epsilon)
           neg_eigval_count++;
 
+        Vector eigvec1, eigvec2, eigvec3;
+        t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
+
+        // Checks to see if eigenvalues are below defined threshold
+        bool vector_eig_x_0 = eigvals.x() <= vectorThreshold;
+        bool vector_eig_y_0 = eigvals.y() <= vectorThreshold;
+        bool vector_eig_z_0 = eigvals.z() <= vectorThreshold;
+        bool point_eig_x_0 = eigvals.x() <= pointThreshold;
+        bool point_eig_y_0 = eigvals.y() <= pointThreshold;
+        bool point_eig_z_0 = eigvals.z() <= pointThreshold;
+
+        bool order0Tensor = (point_eig_x_0 && point_eig_y_0 && point_eig_z_0);
+        bool order1Tensor = (vector_eig_x_0 + vector_eig_y_0 + vector_eig_z_0) >= 2;
+
         ColorRGB node_color = portHandler.getNodeColor(indices[i]);
-        double magnitude = t.magnitude();
-        // If normalize checkbox selected
-        if(normalizeGlyphs){
-          eigvals.x(eigen1 / magnitude);
-          eigvals.y(eigen2 / magnitude);
-          eigvals.z(eigen3 / magnitude);
-        }
 
         // Do not render tensors that are too small - because surfaces
         // are not renderd at least two of the scales must be non zero.
@@ -774,43 +827,47 @@ void GlyphBuilder::renderTensors(
             continue;
         }
 
+        if(order0Tensor)
+        {
+          point_glyphs.addPoint(points[i], node_color);
+        }
+        else if(order1Tensor)
+        {
+          Vector dir;
+          if(vector_eig_x_0 && vector_eig_y_0)
+            dir = eigvec3 * eigvals[2];
+          else if(vector_eig_y_0 && vector_eig_z_0)
+            dir = eigvec1 * eigvals[0];
+          else if(vector_eig_x_0 && vector_eig_z_0)
+            dir = eigvec2 * eigvals[1];
+          // Point p1 = points[i];
+          // Point p2 = points[i] + dir;
+          addGlyph(tensor_line_glyphs, RenderState::GlyphType::LINE_GLYPH, points[i], dir, scale, scale, scale, resolution, node_color, true);
+        }
         // Render as order 2 or 3 tensor
-        if((eig_x_0 + eig_y_0 + eig_z_0) <= 1)
-          {
-            eigvals *= scale;
-
-            switch (renState.mGlyphType)
-              {
-              case RenderState::GlyphType::BOX_GLYPH:
-                glyphs.addBox(points[i], t, scale);
-                break;
-              case RenderState::GlyphType::ELLIPSOID_GLYPH:
-                glyphs.addEllipsoid(points[i], t, eigvals, resolution, node_color);
-                tensorcount++;
-                break;
-              case RenderState::GlyphType::SPHERE_GLYPH:
-                glyphs.addSphere(points[i], eigvals.x(), resolution, node_color);
-              default:
-                break;
-              }
-          }
-        // Render as order 1 tensor(vector)
-        else if((eig_x_0 + eig_y_0 + eig_z_0) == 2)
-          {
-            eigvals *= scale;
-
-            Vector eigvec1, eigvec2, eigvec3;
-            t.get_eigenvectors(eigvec1, eigvec2, eigvec3);
-            Transform trans(points[i], eigvec1, eigvec2, eigvec3);
-            Point p1 = points[i] + trans *  eigvals/2;
-            Point p2 = points[i] + trans * -eigvals/2;
-            addGlyph(tensor_line_glyphs, RenderState::GlyphType::LINE_GLYPH, p1, p2, scale, scale, resolution, node_color, true);
-          }
-        // Render as order 0 tensor(point)
         else
+        {
+          switch (renState.mGlyphType)
           {
-            point_glyphs.addPoint(points[i], node_color);
+          case RenderState::GlyphType::BOX_GLYPH:
+            glyphs.addBox(points[i], t, scale, node_color, normalizeGlyphs);
+            break;
+          case RenderState::GlyphType::ELLIPSOID_GLYPH:
+            glyphs.addEllipsoid(points[i], t, scale, resolution, node_color, normalizeGlyphs);
+            break;
+          case RenderState::GlyphType::SUPERELLIPSOID_GLYPH:
+          {
+            double emphasis = state->getValue(ShowFieldGlyphs::SuperquadricEmphasis).toDouble();
+            if(emphasis > 0.0)
+              glyphs.addSuperEllipsoid(points[i], t, scale, resolution, node_color, normalizeGlyphs, emphasis);
+            else
+              glyphs.addEllipsoid(points[i], t, scale, resolution, node_color, normalizeGlyphs);
           }
+          default:
+            break;
+          }
+          tensorcount++;
+        }
      }
 
     // Prints warning if there are negative eigen values
@@ -829,6 +886,12 @@ void GlyphBuilder::renderTensors(
     RenderState pointRenState = getScalarsRenderState(state);
     point_glyphs.buildObject(*geom, uniquePointID, pointRenState.get(RenderState::USE_TRANSPARENT_NODES),
                              state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(), colorScheme, pointRenState, SpireIBO::PRIMITIVE::POINTS, mesh->get_bounding_box());
+}
+
+void ShowFieldGlyphs::setSuperquadricEmphasis(int emphasis)
+{
+  double mapped_emphasis = map_emphasis((double) emphasis * 0.01);
+  get_state()->setValue(ShowFieldGlyphs::SuperquadricEmphasis, mapped_emphasis);
 }
 
 RenderState GlyphBuilder::getVectorsRenderState(ModuleStateHandle state)
@@ -989,6 +1052,8 @@ RenderState GlyphBuilder::getTensorsRenderState(ModuleStateHandle state)
     renState.mGlyphType = RenderState::GlyphType::ELLIPSOID_GLYPH;
   else if(glyph == "Spheres")
     renState.mGlyphType = RenderState::GlyphType::SPHERE_GLYPH;
+  else if(glyph == "Superellipsoids")
+    renState.mGlyphType = RenderState::GlyphType::SUPERELLIPSOID_GLYPH;
   else
     renState.mGlyphType = RenderState::GlyphType::BOX_GLYPH;
 
@@ -1038,10 +1103,12 @@ const AlgorithmParameterName ShowFieldGlyphs::NormalizeVectors("NormalizeVectors
 const AlgorithmParameterName ShowFieldGlyphs::VectorsScale("VectorsScale");
 const AlgorithmParameterName ShowFieldGlyphs::RenderVectorsBelowThreshold("RenderVectorsBelowThreshold");
 const AlgorithmParameterName ShowFieldGlyphs::VectorsThreshold("VectorsThreshold");
+const AlgorithmParameterName ShowFieldGlyphs::SecondaryVectorParameterScalingType("SecondaryVectorParameterScalingType");
 const AlgorithmParameterName ShowFieldGlyphs::SecondaryVectorParameterDataInput("SecondaryVectorParameterDataInput");
 const AlgorithmParameterName ShowFieldGlyphs::SecondaryVectorParameterScale("SecondaryVectorParameterScale");
 const AlgorithmParameterName ShowFieldGlyphs::ArrowHeadRatio("ArrowHeadRatio");
 const AlgorithmParameterName ShowFieldGlyphs::RenderBidirectionaly("RenderBidirectionaly");
+const AlgorithmParameterName ShowFieldGlyphs::RenderBases("RenderBases");
 const AlgorithmParameterName ShowFieldGlyphs::VectorsResolution("VectorsResolution");
 // Scalar Controls
 const AlgorithmParameterName ShowFieldGlyphs::ShowScalarTab("ShowScalarTab");
@@ -1063,6 +1130,7 @@ const AlgorithmParameterName ShowFieldGlyphs::TensorsColoring("TensorsColoring")
 const AlgorithmParameterName ShowFieldGlyphs::TensorsColoringDataInput("TensorsColoringDataInput");
 const AlgorithmParameterName ShowFieldGlyphs::TensorsTransparency("TensorsTransparency");
 const AlgorithmParameterName ShowFieldGlyphs::TensorsUniformTransparencyValue("TensorsUniformTransparencyValue");
+const AlgorithmParameterName ShowFieldGlyphs::SuperquadricEmphasis("SuperquadricEmphasis");
 //const AlgorithmParameterName ShowFieldGlyphs::TensorsTransparencyDataInput("TensorsTransparencyDataInput");
 const AlgorithmParameterName ShowFieldGlyphs::NormalizeTensors("NormalizeTensors");
 const AlgorithmParameterName ShowFieldGlyphs::TensorsScale("TensorsScale");

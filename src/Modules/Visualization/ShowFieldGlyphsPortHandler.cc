@@ -169,6 +169,9 @@ namespace SCIRun{
                     colorMapGiven = false;
                   }
                 break;
+              default:
+                throw std::invalid_argument("Selected port was not primary, secondary, or tertiary.");
+                break;
               }
           }
 
@@ -276,6 +279,9 @@ namespace SCIRun{
               case FieldDataType::Tensor:
                 colorMapVal = colorMap.get()->valueToColor(pinputTensor.get());
                 break;
+              default:
+                throw std::invalid_argument("Primary color map did not find scalar, vector, or tensor data.");
+                break;
               }
             break;
           case RenderState::InputPort::SECONDARY_PORT:
@@ -289,6 +295,9 @@ namespace SCIRun{
                 break;
               case FieldDataType::Tensor:
                 colorMapVal = colorMap.get()->valueToColor(sinputTensor.get());
+                break;
+              default:
+                throw std::invalid_argument("Secondary color map did not find scalar, vector, or tensor data.");
                 break;
               }
             break;
@@ -304,7 +313,13 @@ namespace SCIRun{
               case FieldDataType::Tensor:
                 colorMapVal = colorMap.get()->valueToColor(tinputTensor.get());
                 break;
+              default:
+                throw std::invalid_argument("Tertiary color map did not find scalar, vector, or tensor data.");
+                break;
               }
+            break;
+          default:
+            throw std::invalid_argument("Color map selection was not given a primary, secondary, or tertiary port.");
             break;
           }
         return colorMapVal;
@@ -344,6 +359,9 @@ namespace SCIRun{
                     throw std::invalid_argument("Tertiary Field input cannot have a smaller size than the Primary Field input.");
                   }
                 break;
+              default:
+                throw std::invalid_argument("Must select a primary, secondary, or tertiary port for color map input.");
+                break;
               }
           }
         // Make sure scalar is not given for rgb conversion
@@ -377,12 +395,18 @@ namespace SCIRun{
                     throw std::invalid_argument("Tertiary Field input cannot have a smaller size than the Primary Field input.");
                   }
                 break;
+              default:
+                throw std::invalid_argument("Must select a primary, secondary, or tertiary port for rgb conversion input.");
+                break;
               }
           }
 
         // Make sure port is given for chosen secondary Vector input
          switch(secondaryVecInput)
           {
+          case RenderState::InputPort::PRIMARY_PORT:
+            // Primary already present so no possible errors
+            break;
           case RenderState::InputPort::SECONDARY_PORT:
             if(!secondaryFieldGiven)
               {
@@ -402,6 +426,9 @@ namespace SCIRun{
               {
                 throw std::invalid_argument("Tertiary Field input cannot have a smaller size than the Primary Field input.");
               }
+            break;
+          default:
+            throw std::invalid_argument("Must select a primary, secondary, or tertiary port for secondary vector input.");
             break;
           }
       }
@@ -449,6 +476,9 @@ namespace SCIRun{
               {
                 colorVector = getTensorColorVector(tinputTensor.get());
               }
+            break;
+          default:
+            throw std::invalid_argument("Must select a primary, secondary, or tertiary port for selecting color vector.");
             break;
           }
         return colorVector;
@@ -509,9 +539,14 @@ namespace SCIRun{
               }
             break;
           case ColorScheme::COLOR_IN_SITU:
+          {
             Geometry::Vector colorVector;
             colorVector = getColorVector(index).normal();
             node_color = ColorRGB(std::abs(colorVector.x()), std::abs(colorVector.y()), std::abs(colorVector.z()));
+            break;
+          }
+          default:
+            throw std::invalid_argument("Must select a primary, secondary, or tertiary port for selecting color of node.");
             break;
           }
         return node_color;

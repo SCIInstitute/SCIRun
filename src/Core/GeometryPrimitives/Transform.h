@@ -147,12 +147,13 @@ namespace SCIRun {
         /// Persistent I/O.
         static PersistentTypeID type_id;
         virtual void io(Piostream &stream);
+        std::vector<Vector> get_column_vectors();
       };
 
-      SCISHARE Point operator*(Transform &t, const Point &d);
-      SCISHARE Vector operator*(Transform &t, const Vector &d);
+      SCISHARE Point operator*(const Transform &t, const Point &d);
+      SCISHARE Vector operator*(const Transform &t, const Vector &d);
 
-      SCISHARE Tensor operator*(const Transform &t, const Tensor &d);
+     SCISHARE Tensor operator*(const Transform &t, const Tensor &d);
       SCISHARE Tensor operator*(const Tensor &d, const Transform &t);
 
       SCISHARE bool operator==(const Transform& lhs, const Transform& rhs);
