@@ -166,27 +166,30 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
   addCheckableButtonManager(this->renderVectorsBelowThresholdCheckBox_, ShowFieldGlyphs::RenderVectorsBelowThreshold);
   addDoubleSpinBoxManager(this->vectorsThresholdDoubleSpinBox_, ShowFieldGlyphs::VectorsThreshold);
   // Radius/Width
+  addRadioButtonGroupManager({ this->secondaryVectorParameterUniformRButton_, this->secondaryVectorParameterPortRButton_}, ShowFieldGlyphs::SecondaryVectorParameterScalingType);
   addComboBoxManager(this->secondaryVectorParameterPortComboBox_, ShowFieldGlyphs::SecondaryVectorParameterDataInput);
   addDoubleSpinBoxManager(this->secondaryVectorParameterDoubleSpinBox_, ShowFieldGlyphs::SecondaryVectorParameterScale);
-  // Arrow Head Ratio
+  // Arrow Settings
   addDoubleSpinBoxManager(this->arrowHeadRatioDoubleSpinBox_, ShowFieldGlyphs::ArrowHeadRatio);
-  // Bidirectional
   addCheckableButtonManager(this->bidirectionalVectorsCheckBox_, ShowFieldGlyphs::RenderBidirectionaly);
-
+  addCheckableButtonManager(this->renderWithBasesCheckBox_, ShowFieldGlyphs::RenderBases);
+  
   // Execute if any changed
   connectButtonToExecuteSignal(this->showVectorsCheckBox_);
   connectButtonToExecuteSignal(this->vectorsTransparencyOffRButton_);
   connectButtonToExecuteSignal(this->vectorsUniformTransparencyRButton_);
+  connectButtonToExecuteSignal(this->secondaryVectorParameterUniformRButton_);
+  connectButtonToExecuteSignal(this->secondaryVectorParameterPortRButton_);
   connectButtonToExecuteSignal(this->normalizeVectorsCheckBox_);
   connectButtonToExecuteSignal(this->renderVectorsBelowThresholdCheckBox_);
   connectButtonToExecuteSignal(this->bidirectionalVectorsCheckBox_);
+  connectButtonToExecuteSignal(this->renderWithBasesCheckBox_);
 
   // Text Labels
   this->vectorColorTypeLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->vectorColorInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->normalizeVectorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->vectorScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->secondaryVectorParameterInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->secondaryVectorParameterScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->bidirectionalVectorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->springsMajorRadiusInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
@@ -195,6 +198,16 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
   this->springsMinorRadiusScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->springsPitchInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->springsPitchScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+}
+
+void ShowFieldGlyphsDialog::emphasisSliderChanged(int val)
+{
+  superquadricEmphasisDoubleSpinBox_->setValue(val * 0.01);
+}
+
+void ShowFieldGlyphsDialog::emphasisSpinBoxChanged(double val)
+{
+  superquadricEmphasisSlider_->setValue(int(val * 100));
 }
 
 void ShowFieldGlyphsDialog::setupTensorsTab()
@@ -221,6 +234,9 @@ void ShowFieldGlyphsDialog::setupTensorsTab()
   // Threshold
   addCheckableButtonManager(this->renderVectorsBelowThresholdCheckBox_, ShowFieldGlyphs::RenderTensorsBelowThreshold);
   addDoubleSpinBoxManager(this->tensorsThresholdDoubleSpinBox_, ShowFieldGlyphs::TensorsThreshold);
+  addDoubleSpinBoxManager(this->superquadricEmphasisDoubleSpinBox_, ShowFieldGlyphs::SuperquadricEmphasis);
+  connect(this->superquadricEmphasisSlider_, SIGNAL(valueChanged(int)), this, SLOT(emphasisSliderChanged(int)));
+  connect(this->superquadricEmphasisDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(emphasisSpinBoxChanged(double)));
 
   connectButtonToExecuteSignal(this->showTensorsCheckBox_);
   connectButtonToExecuteSignal(this->tensorsTransparencyOffRButton_);
@@ -229,9 +245,10 @@ void ShowFieldGlyphsDialog::setupTensorsTab()
   connectButtonToExecuteSignal(this->renderTensorsBelowThresholdCheckBox_);
 
   // Text Labels
-  this->tensorSuperquadricsEmphasisSlider_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->superquadricEmphasisSlider_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->tensorColorTypeLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->tensorColorInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->normalizeTensorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->tensorScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
 }
+
