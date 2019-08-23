@@ -1243,7 +1243,7 @@ void ViewSceneDialog::selectObject(const int x, const int y)
     std::string selName = spire->getSelection();
     if (selName != "")
     {
-      for (auto &obj : objList)
+      for (const auto &obj : objList)
       {
         if (obj->uniqueID() == selName)
         {

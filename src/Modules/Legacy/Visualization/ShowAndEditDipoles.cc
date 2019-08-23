@@ -292,15 +292,15 @@ void ShowAndEditDipoles::toggleLastVectorShown()
 void ShowAndEditDipoles::generateGeomsList()
 {
   auto state = get_state();
-  // Recreate geom list
-  geoms_.resize(0);
 
   // Rewrite all existing geom
-  for(auto arrow : arrows_)
+  geoms_.clear();
+  for(const auto& arrow : arrows_)
   {
-    for(auto widget : arrow->widgets_)
+    for(const auto& widget : arrow->widgets_)
       geoms_.push_back(widget);
   }
+
   if(state->getValue(ShowLines).toBool())
     geoms_.push_back(addLines());
 }
@@ -335,10 +335,11 @@ void ShowAndEditDipoles::processWidgetFeedback(const ModuleFeedback& var)
         }
 
         // Remove parantheses
-        for(size_t i = 0; i < matches.size(); i++)
+        for(auto& match : matches)
         {
-          matches[i] = matches[i].substr(1, matches[i].length()-2);
+          match = match.substr(1, match.length()-2);
         }
+
         // Cast to size_t
         widgetType = boost::lexical_cast<size_t>(matches[0]);
         widgetID = boost::lexical_cast<size_t>(matches[1]);
@@ -359,9 +360,9 @@ void ShowAndEditDipoles::processWidgetFeedback(const ModuleFeedback& var)
 
 void ShowAndEditDipoles::moveDipolesTogether(const Transform& transform)
 {
-  for(size_t i = 0; i < pos_.size(); i++)
+  for(auto& pos : pos_)
   {
-    pos_[i] = transform * pos_[i];
+    pos = transform * pos;
   }
 }
 

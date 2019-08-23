@@ -347,9 +347,7 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::select(const glm::ivec2& pos,
-      std::vector<Graphics::Datatypes::WidgetHandle> &objList,
-      int port)
+    void SRInterface::select(const glm::ivec2& pos, WidgetList& objList, int port)
     {
       mSelected = "";
       widgetSelected_ = false;
@@ -381,10 +379,10 @@ namespace SCIRun {
 
       int nameIndex = 0;
       //modify and add each object to draw
-      // for (auto& obj : objList)
-      for (int i = 0; i < objList.size(); i++)
+      for (auto& obj : objList)
       {
-        std::string objectName = objList[i]->uniqueID();
+        // auto& obj = objList[i];
+        std::string objectName = obj->uniqueID();
         uint32_t selid = getSelectIDForName(objectName);
         selMap.insert(std::make_pair(selid, objectName));
         glm::vec4 selCol = getVectorForID(selid);
@@ -392,7 +390,7 @@ namespace SCIRun {
         // Add vertex buffer objects.
         std::vector<char*> vbo_buffer;
         std::vector<size_t> stride_vbo;
-        for (auto it = objList[i]->vbos().cbegin(); it != objList[i]->vbos().cend(); ++it, ++nameIndex)
+        for (auto it = obj->vbos().cbegin(); it != obj->vbos().cend(); ++it, ++nameIndex)
         {
           const auto& vbo = *it;
 
@@ -417,7 +415,7 @@ namespace SCIRun {
 
         // Add index buffer objects.
         nameIndex = 0;
-        for (auto it = objList[i]->ibos().cbegin(); it != objList[i]->ibos().cend(); ++it, ++nameIndex)
+        for (auto it = obj->ibos().cbegin(); it != obj->ibos().cend(); ++it, ++nameIndex)
         {
           const auto& ibo = *it;
           GLenum primType = GL_UNSIGNED_SHORT;
@@ -466,7 +464,7 @@ namespace SCIRun {
         if (auto shaderMan = sm.lock())
         {
           // Add passes
-          for (auto& pass : objList[i]->passes())
+          for (auto& pass : obj->passes())
           {
             uint64_t entityID = getEntityIDForName(pass.passName, port);
 
@@ -480,7 +478,7 @@ namespace SCIRun {
               // We will be constructing a render list from the VBO and IBO.
               RenderList list;
 
-              for (const auto& vbo : objList[i]->vbos())
+              for (const auto& vbo : obj->vbos())
               {
                 if (vbo.name == pass.vboName)
                 {
@@ -584,14 +582,14 @@ namespace SCIRun {
         {
           mSelected = it->second;
 
-          for(int i = 0; i < objList.size(); i++)
+          for (auto &obj : objList)
           {
-            if(objList[i]->uniqueID() == it->second)
+            if (obj->uniqueID() == it->second)
             {
-              mOriginWorld = objList[i]->origin_;
-              mFlipAxisWorld = objList[i]->getFlipVector();
-              mWidgetMovement = objList[i]->getMovementType();
-              mConnectedWidgets = objList[i]->connectedIds_;
+              mOriginWorld = obj->origin_;
+              mFlipAxisWorld = obj->getFlipVector();
+              mWidgetMovement = obj->getMovementType();
+              mConnectedWidgets = obj->connectedIds_;
             }
           }
         }

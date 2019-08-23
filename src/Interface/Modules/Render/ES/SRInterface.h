@@ -150,7 +150,8 @@ namespace SCIRun {
 
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...
-      void select(const glm::ivec2& pos, std::vector<Graphics::Datatypes::WidgetHandle> &objList, int port);
+      typedef std::vector<Graphics::Datatypes::WidgetHandle> WidgetList;
+      void select(const glm::ivec2& pos, WidgetList& objList, int port);
       std::string &getSelection()          {return mSelected;}
       gen::Transform &getWidgetTransform() {return mWidgetTransform;}
 
