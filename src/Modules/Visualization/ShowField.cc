@@ -521,12 +521,9 @@ void GeometryBuilder::renderFacesLinear(
 
   ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
 
-  auto realColorMap = colorMap.get();
+  ColorMapHandle realColorMap;
+  if(colorMap) realColorMap = colorMap.get();
   if(!realColorMap) realColorMap = StandardColorMapFactory::create();
-
-  auto map = StandardColorMapFactory::create(realColorMap->getColorMapName(),
-    realColorMap->getColorMapResolution(), realColorMap->getColorMapShift(),
-    realColorMap->getColorMapInvert());
 
   auto coordinateMap = StandardColorMapFactory::create("Grayscale", 256, 0, false,
     realColorMap->getColorMapRescaleScale(), realColorMap->getColorMapRescaleShift());
@@ -774,9 +771,15 @@ void GeometryBuilder::renderFacesLinear(
     {
       shader += "_ColorMap";
       attribs.push_back(SpireVBO::AttributeData("aTexCoords", 2 * sizeof(float)));
-      for(int i = 0; i < 256; ++i)
+
+      auto map = StandardColorMapFactory::create(realColorMap->getColorMapName(),
+        realColorMap->getColorMapResolution(), realColorMap->getColorMapShift(),
+        realColorMap->getColorMapInvert());
+
+      const static int colorMapResolution = 256;
+      for(int i = 0; i < colorMapResolution; ++i)
       {
-        ColorRGB color = map->valueToColor(i/256.0f * 2.0 - 1.0);
+        ColorRGB color = map->valueToColor(static_cast<float>(i)/colorMapResolution * 2.0 - 1.0);
         texture.bitmap.push_back(color.r()*255);
         texture.bitmap.push_back(color.g()*255);
         texture.bitmap.push_back(color.b()*255);
@@ -784,7 +787,7 @@ void GeometryBuilder::renderFacesLinear(
       }
       texture.name = "ColorMap";
       texture.height = 1;
-      texture.width = 256;
+      texture.width = colorMapResolution;
     }
     else
     {
