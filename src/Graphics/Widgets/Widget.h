@@ -53,7 +53,6 @@ namespace SCIRun
         WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable);
         WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& origin);
         WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& pos, const Core::Geometry::Point& origin);
-        /* WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Vector& pos); */
         Core::Geometry::Point position() const;
         void setPosition(const Core::Geometry::Point& p);
         void setToScale(const Core::Geometry::Vector& flipAxis);
@@ -62,11 +61,9 @@ namespace SCIRun
         glm::vec3 getFlipVector();
         WidgetMovement getMovementType();
 
-        /* glm::vec3 getOrigin(); */
-        /* void setOrigin(glm::vec3& origin); */
-
         glm::vec3 origin_;
         std::vector<std::string> connectedIds_;
+        void addInitialId();
 
       protected:
         Core::Geometry::Point position_;
@@ -75,16 +72,19 @@ namespace SCIRun
         glm::vec3 flipAxis_;
       };
 
-      using WidgetHandle = SharedPointer<WidgetBase>;
+        using WidgetHandle = SharedPointer<WidgetBase>;
 
-      struct SCISHARE BoxPosition
-      {
-        Core::Geometry::Point center_, right_, down_, in_;
+        struct SCISHARE BoxPosition {
+          Core::Geometry::Point center_, right_, down_, in_;
 
-        void setPosition(const Core::Geometry::Point& center, const Core::Geometry::Point& right,
-                         const Core::Geometry::Point& down, const Core::Geometry::Point& in);
-        void getPosition(Core::Geometry::Point& center, Core::Geometry::Point& right,
-                         Core::Geometry::Point& down, Core::Geometry::Point& in) const;
+          void setPosition(const Core::Geometry::Point &center,
+                           const Core::Geometry::Point &right,
+                           const Core::Geometry::Point &down,
+                           const Core::Geometry::Point &in);
+          void getPosition(Core::Geometry::Point &center,
+                           Core::Geometry::Point &right,
+                           Core::Geometry::Point &down,
+                           Core::Geometry::Point &in) const;
       };
 
       class SCISHARE CompositeWidget : public WidgetBase
@@ -114,12 +114,6 @@ namespace SCIRun
       {
         return boost::make_shared<CompositeWidget>(idGenerator, tag, begin, end);
       }
-      /* template <typename WidgetIter> */
-        /* static WidgetHandle createWidgetComposite(const Core::GeometryIDGenerator& idGenerator, const std::string& tag) */
-      /* { */
-        /* return boost::make_shared<CompositeWidget>(idGenerator, tag, widgets_.begin(), widgets_.end()); */
-      /* } */
-
     }
   }
 }

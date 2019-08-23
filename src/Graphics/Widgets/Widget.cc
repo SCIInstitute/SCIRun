@@ -87,6 +87,12 @@ WidgetMovement WidgetBase::getMovementType()
   return movementType_;
 }
 
+void WidgetBase::addInitialId() {
+  auto ids = std::vector<std::string>(1);
+  ids.push_back(uniqueID());
+  connectedIds_ = ids;
+}
+
 void CompositeWidget::addToList(GeometryBaseHandle handle, GeomList& list)
 {
   if (handle.get() == this)

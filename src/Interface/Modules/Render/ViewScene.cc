@@ -1235,7 +1235,7 @@ void ViewSceneDialog::selectObject(const int x, const int y)
     }
 
     //get widgets
-    std::vector<WidgetHandle> objList = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
+    auto objList = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
 
     //select widget
     spire->select(glm::ivec2(x - mGLWidget->pos().x(), y - mGLWidget->pos().y()), objList, 0);

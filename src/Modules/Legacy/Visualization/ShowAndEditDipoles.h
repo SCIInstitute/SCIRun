@@ -80,7 +80,6 @@ namespace SCIRun {
         std::vector<Core::Geometry::Vector> direction_;
         std::vector<double> scale_;
         Core::Geometry::BBox last_bounds_;
-        /* std::vector<std::vector<Graphics::Datatypes::WidgetHandle>* > pointWidgets_; */
         std::vector<Graphics::Datatypes::ArrowWidgetHandle> arrows_;
         std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
         std::vector<Core::Geometry::Transform> previousTransforms_;

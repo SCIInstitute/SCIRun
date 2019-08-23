@@ -106,7 +106,7 @@ void ShowAndEditDipoles::setStateDefaults()
 
 void ShowAndEditDipoles::execute()
 {
-  FieldHandle fh = getRequiredInput(DipoleInputField);
+  auto fh = getRequiredInput(DipoleInputField);
   FieldInformation fi(fh);
   auto state = get_state();
 
@@ -270,7 +270,7 @@ void ShowAndEditDipoles::refreshGeometry()
 
 void ShowAndEditDipoles::toggleLastVectorShown()
 {
-  FieldHandle fh = getRequiredInput(DipoleInputField);
+  auto fh = getRequiredInput(DipoleInputField);
   auto bbox = fh->vmesh()->get_bounding_box();
   auto state = get_state();
 
@@ -370,7 +370,7 @@ void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformM
   auto state = get_state();
   DenseMatrix center(4, 1);
 
-  FieldHandle fh = getRequiredInput(DipoleInputField);
+  auto fh = getRequiredInput(DipoleInputField);
   auto bbox = fh->vmesh()->get_bounding_box();
   bool is_vector = (arrows_[id]->isVector());
 
@@ -397,8 +397,8 @@ void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformM
 
 void ShowAndEditDipoles::ReceiveInputPoints()
 {
-  FieldHandle fh = getRequiredInput(DipoleInputField);
-  VField* vf = fh->vfield();
+  auto fh = getRequiredInput(DipoleInputField);
+  auto vf = fh->vfield();
   Point p;
   pos_.clear();
   for(const auto& node : fh->mesh()->getFacade()->nodes())
@@ -411,8 +411,8 @@ void ShowAndEditDipoles::ReceiveInputPoints()
 
 void ShowAndEditDipoles::ReceiveInputDirections()
 {
-  FieldHandle fh = getRequiredInput(DipoleInputField);
-  VField* vf = fh->vfield();
+  auto fh = getRequiredInput(DipoleInputField);
+  auto vf = fh->vfield();
   Vector v;
   direction_.clear();
   for(const auto& node : fh->mesh()->getFacade()->nodes())
@@ -425,8 +425,8 @@ void ShowAndEditDipoles::ReceiveInputDirections()
 
 void ShowAndEditDipoles::ReceiveInputScales()
 {
-  FieldHandle fh = getRequiredInput(DipoleInputField);
-  VField* vf = fh->vfield();
+  auto fh = getRequiredInput(DipoleInputField);
+  auto vf = fh->vfield();
   auto state = get_state();
   Vector v;
   scale_.clear();
@@ -456,8 +456,8 @@ void ShowAndEditDipoles::makeScalesPositive()
 
 void ShowAndEditDipoles::ReceiveInputField()
 {
-  FieldHandle fh = getRequiredInput(DipoleInputField);
-  VField* vf = fh->vfield();
+  auto fh = getRequiredInput(DipoleInputField);
+  auto vf = fh->vfield();
   auto state = get_state();
   Point p;
   Vector v;
@@ -480,7 +480,7 @@ void ShowAndEditDipoles::ReceiveInputField()
 
 void ShowAndEditDipoles::GenerateOutputGeom()
 {
-  FieldHandle fh = getRequiredInput(DipoleInputField);
+  auto fh = getRequiredInput(DipoleInputField);
   auto state = get_state();
   auto bbox = fh->vmesh()->get_bounding_box();
 
@@ -519,7 +519,7 @@ void ShowAndEditDipoles::GenerateOutputGeom()
 
 GeometryHandle ShowAndEditDipoles::addLines()
 {
-  FieldHandle fh = getRequiredInput(DipoleInputField);
+  auto fh = getRequiredInput(DipoleInputField);
   auto state = get_state();
   auto bbox = fh->vmesh()->get_bounding_box();
 
@@ -564,7 +564,7 @@ FieldHandle ShowAndEditDipoles::makePointCloud()
 
   for (size_t i = 0; i < arrows_.size(); i++)
   {
-    VMesh::Node::index_type pcindex = mesh->add_point(pos_[i]);
+    auto pcindex = mesh->add_point(pos_[i]);
     field->resize_fdata();
 
     double scale = scale_[i];

@@ -377,7 +377,6 @@ namespace SCIRun {
 
       //a map from selection id to name
       std::map<uint32_t, std::string> selMap;
-      std::map<uint32_t, glm::vec3> originMap;
       std::vector<uint64_t> entityList;
 
       int nameIndex = 0;
@@ -595,7 +594,6 @@ namespace SCIRun {
               mConnectedWidgets = objList[i]->connectedIds_;
             }
           }
-          // mOriginWorld = originMap.find(value)->second;
         }
       }
       //release and restore fbo
@@ -703,9 +701,21 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
+    void SRInterface::modifyWidgets()
+    {
+      auto contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
+      for (auto &widgetId : mConnectedWidgets)
+      {
+        auto component = contTrans->getComponent(mEntityIdMap[widgetId]);
+        if (component.first != nullptr)
+          contTrans->modifyIndex(mWidgetTransform, component.second, 0);
+      }
+    }
+
+    //----------------------------------------------------------------------------------------------
     void SRInterface::translateWidget(const glm::ivec2& pos)
     {
-      gen::StaticCamera* cam = mCore.getStaticComponent<gen::StaticCamera>();
+      auto cam = mCore.getStaticComponent<gen::StaticCamera>();
       glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
                      -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
 
@@ -713,13 +723,7 @@ namespace SCIRun {
       mWidgetTransform = gen::Transform();
       mWidgetTransform.setPosition((glm::inverse(cam->data.viewProjection) * glm::vec4(transVec, 0.0, 0.0)).xyz());
 
-      spire::CerealHeap<gen::Transform>* contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
-      for(auto& widgetId : mConnectedWidgets)
-      {
-        std::pair<const gen::Transform*, size_t> component = contTrans->getComponent(mEntityIdMap[widgetId]);
-        if (component.first != nullptr)
-          contTrans->modifyIndex(mWidgetTransform, component.second, 0);
-      }
+      modifyWidgets();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -735,6 +739,7 @@ namespace SCIRun {
       float scaling_factor = glm::dot(glm::normalize(originToCurrentSpos), glm::normalize(mOriginToSpos))
         * (glm::length(originToCurrentSpos) / glm::length(mOriginToSpos));
 
+      // Flip if negative to avoid inverted normals
       glm::mat4 flip;
       bool negativeScale = scaling_factor < 0.0;
       if(negativeScale)
@@ -742,8 +747,6 @@ namespace SCIRun {
         flip = glm::rotate(glm::mat4(1.0f), 3.1415926f, mFlipAxisWorld);
         scaling_factor = -scaling_factor;
       }
-
-      // std::cout << "scaling factor: " << scaling_factor << std::endl;
 
       mWidgetTransform = gen::Transform();
       glm::mat4 translation = glm::translate(-mOriginWorld);
@@ -757,13 +760,7 @@ namespace SCIRun {
 
       mWidgetTransform.transform = reverse_translation * mWidgetTransform.transform;
 
-      spire::CerealHeap<gen::Transform>* contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
-      for(auto& widgetId : mConnectedWidgets)
-      {
-        std::pair<const gen::Transform*, size_t> component = contTrans->getComponent(mEntityIdMap[widgetId]);
-        if (component.first != nullptr)
-          contTrans->modifyIndex(mWidgetTransform, component.second, 0);
-      }
+      modifyWidgets();
     }
 
     //----------------------------------------------------------------------------------------------
@@ -790,13 +787,7 @@ namespace SCIRun {
       mWidgetTransform = gen::Transform();
       mWidgetTransform.transform = reverse_translation * rotation * translation;
 
-      spire::CerealHeap<gen::Transform>* contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
-      for(auto& widgetId : mConnectedWidgets)
-      {
-        std::pair<const gen::Transform*, size_t> component = contTrans->getComponent(mEntityIdMap[widgetId]);
-        if (component.first != nullptr)
-          contTrans->modifyIndex(mWidgetTransform, component.second, 0);
-      }
+      modifyWidgets();
     }
 
 
