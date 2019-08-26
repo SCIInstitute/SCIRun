@@ -232,6 +232,7 @@ namespace SCIRun {
       void addIBOToEntity(uint64_t entityID, const std::string& iboName);
       //add a texture to the given entityID.
       void addTextToEntity(uint64_t entityID, const Graphics::Datatypes::SpireText& text);
+      void addTextureToEntity(uint64_t entityID, const Graphics::Datatypes::SpireTexture2D& texture);
       // Adds a shader to the given entityID. Represents different materials
       // associated with different passes.
       void addShaderToEntity(uint64_t entityID, const std::string& shaderName);

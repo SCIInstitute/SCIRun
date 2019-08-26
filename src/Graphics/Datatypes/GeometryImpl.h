@@ -145,6 +145,25 @@ namespace SCIRun {
         std::vector<uint8_t>                  bitmap;
       };
 
+      struct SpireTexture2D
+      {
+        SpireTexture2D() : name(""), width(0), height(0) {}
+        SpireTexture2D(std::string name , size_t width, size_t height, const char* data) :
+          name(name),
+          width(width),
+          height(height)
+        {
+            size_t size = width*height*4;
+            bitmap.resize(size);
+            std::copy(data, data + size, bitmap.begin());
+        }
+        std::string                           name;
+        size_t                                width;
+        size_t                                height;
+        std::vector<uint8_t>                  bitmap;
+      };
+
+
       /// Defines a Spire object 'pass'.
       struct SpireSubPass
       {
@@ -153,7 +172,7 @@ namespace SCIRun {
           const std::string& iboName, const std::string& program,
           ColorScheme scheme, const RenderState& state,
           RenderType renType, const SpireVBO& vbo, const SpireIBO& ibo,
-          const SpireText& text) :
+          const SpireText& text, const SpireTexture2D& texture = SpireTexture2D()) :
           passName(name),
           vboName(vboName),
           iboName(iboName),
@@ -163,6 +182,7 @@ namespace SCIRun {
           vbo(vbo),
           ibo(ibo),
           text(text),
+          texture(texture),
           scalar(1.0),
           mColorScheme(scheme)
         {}
@@ -184,7 +204,9 @@ namespace SCIRun {
         SpireVBO			vbo;
         SpireIBO			ibo;
         SpireText     text;//draw a string (usually single character) on geometry
+        SpireTexture2D texture;
         double        scalar;
+
 
         struct Uniform
         {
@@ -195,16 +217,17 @@ namespace SCIRun {
           };
 
           Uniform() : type(UniformType::UNIFORM_SCALAR) {}
-          Uniform(const std::string& nameIn, float d) :
+
+          Uniform(const std::string& nameIn, float scalar) :
             name(nameIn),
             type(UniformType::UNIFORM_SCALAR),
-            data(d, 0.0f, 0.0f, 0.0f)
+            data(scalar, 0.0f, 0.0f, 0.0f)
           {}
 
-          Uniform(const std::string& nameIn, const glm::vec4& vec) :
+          Uniform(const std::string& nameIn, const glm::vec4& vector) :
             name(nameIn),
             type(UniformType::UNIFORM_VEC4),
-            data(vec)
+            data(vector)
           {}
 
           std::string   name;
@@ -215,40 +238,9 @@ namespace SCIRun {
         std::vector<Uniform>  mUniforms;
         ColorScheme           mColorScheme;
 
-        void addUniform(const std::string& name, float scalar)
-        {
-          bool existed = false;
-          for (auto& i : mUniforms)
-          {
-            if (i.name == name && i.type == Uniform::UniformType::UNIFORM_SCALAR)
-            {
-              i.data.x = scalar;
-              existed = true;
-            }
-          }
-          if (!existed)
-            mUniforms.push_back(Uniform(name, scalar));
-        }
-
-        void addUniform(const std::string& name, const glm::vec4& vector)
-        {
-          bool existed = false;
-          for (auto& i : mUniforms)
-          {
-            if (i.name == name && i.type == Uniform::UniformType::UNIFORM_VEC4)
-            {
-              i.data = vector;
-              existed = true;
-            }
-          }
-          if (!existed)
-            mUniforms.push_back(Uniform(name, vector));
-        }
-
-        void addUniform(const Uniform& uniform)
-        {
-          mUniforms.push_back(uniform);
-        }
+        void addUniform(const std::string& name, const glm::vec4& vector);
+        void addOrModifyUniform(const Uniform& uniform);
+        void addUniform(const Uniform& uniform);
       };
 
       using VBOList = std::list<SpireVBO>;
@@ -268,21 +260,18 @@ namespace SCIRun {
         const PassList& passes() const { return mPasses; }
         PassList& passes() { return mPasses; }
 
-        bool isClippable() const { return isClippable_; }
+        bool isClippable() const {return isClippable_;}
 
-        void setColorMap(const std::string& name) { mColorMap = name; }
+        void setColorMap(const std::string& name) { }
         boost::optional<std::string> colorMap() const { return mColorMap; }
+
       private:
         VBOList mVBOs;  ///< Array of vertex buffer objects.
         IBOList mIBOs;  ///< Array of index buffer objects.
-
-        /// List of passes to setup.
-        PassList  mPasses;
-
-        /// Optional colormap name.
+        PassList  mPasses; /// List of passes to setup.
+        bool isClippable_;
         boost::optional<std::string> mColorMap;
 
-        bool isClippable_;
       };
 
       typedef boost::shared_ptr<GeometryObjectSpire> GeometryHandle;
