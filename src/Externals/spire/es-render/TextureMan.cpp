@@ -159,6 +159,51 @@ namespace ren {
     return tex;
   }
 
+  ren::Texture TextureMan::createTexture(
+    const std::string& assetName,
+    GLint internalformat,
+    GLsizei width,
+    GLsizei height,
+    GLenum format,
+    GLenum type,
+    const std::vector<uint8_t>& data)
+  {
+    GLuint texID;
+    auto it = mNameToGL.find(assetName);
+    if (it != mNameToGL.end())
+    {
+      texID = it->second;
+    }
+    else
+    {
+      GL(glGenTextures(1, &texID));
+      GL(glBindTexture(GL_TEXTURE_2D, texID));
+      GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+      GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+      GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
+      GL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
+      GL(glTexImage2D(GL_TEXTURE_2D, 0, internalformat, width, height, 0, format, type,
+        (const GLvoid*)(&data[0])));
+
+      mGLToName.insert(std::make_pair(texID, assetName));
+      mNameToGL.insert(std::make_pair(assetName, texID));
+
+      GL(glBindTexture(GL_TEXTURE_2D, 0));
+    }
+
+    ren::Texture tex;
+    tex.glid = texID;
+    tex.textureType = GL_TEXTURE_2D;
+    tex.textureWidth = width;
+    tex.textureHeight = height;
+    tex.textureDepth = 1;
+    tex.internalFormat = internalformat;
+    tex.format = format;
+    tex.type = type;
+    tex.filter = GL_LINEAR;
+    return tex;
+  }
+
   bool TextureMan::resizeTexture(
     ren::Texture &tex, GLsizei textureWidth,
     GLsizei textureHeight)
