@@ -40,6 +40,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Visualization;
+using namespace SCIRun::Core::Algorithms::Visualization::Parameters;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core;
 using namespace SCIRun;
@@ -56,7 +57,7 @@ protected:
     LogSettings::Instance().setVerbose(false);
     showField = makeModule("ShowField");
     showField->setStateDefaults();
-    showField->get_state()->setValue(ShowField::ShowEdges, false);
+    showField->get_state()->setValue(ShowEdges, false);
     auto size = GetParam();
     latVol = CreateEmptyLatVol(size, size, size);
     stubPortNWithThisData(showField, 0, latVol);
@@ -136,10 +137,10 @@ TEST_F(ShowFieldPreformaceTest, TestFacePreformace)
   ModuleHandle showField = makeModule("ShowField");
   showField->setStateDefaults();
   auto state = showField->get_state();
-  state->setValue(ShowField::ShowFaces, true);
-  state->setValue(ShowField::ShowEdges, false);
-  state->setValue(ShowField::ShowNodes, false);
-  state->setValue(ShowField::FacesColoring, 1);
+  state->setValue(ShowFaces, true);
+  state->setValue(ShowEdges, false);
+  state->setValue(ShowNodes, false);
+  state->setValue(FacesColoring, 1);
 
   ColorMapHandle colorMap = StandardColorMapFactory::create();
   stubPortNWithThisData(showField, 1, colorMap);

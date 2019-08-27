@@ -56,15 +56,16 @@ using namespace SCIRun;
 using namespace Core::Algorithms;
 using namespace Core::Geometry;
 using namespace Visualization;
+using namespace OsprayVisualization;
 using namespace Core::Datatypes;
 
-ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorR);
-ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorG);
-ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorB);
-ALGORITHM_PARAMETER_DEF(Visualization, DefaultColorA);
-ALGORITHM_PARAMETER_DEF(Visualization, Radius);
-ALGORITHM_PARAMETER_DEF(Visualization, UseNormals);
-ALGORITHM_PARAMETER_DEF(Visualization, ShowEdges);
+ALGORITHM_PARAMETER_DEF(OsprayVisualization, DefaultColorR);
+ALGORITHM_PARAMETER_DEF(OsprayVisualization, DefaultColorG);
+ALGORITHM_PARAMETER_DEF(OsprayVisualization, DefaultColorB);
+ALGORITHM_PARAMETER_DEF(OsprayVisualization, DefaultColorA);
+ALGORITHM_PARAMETER_DEF(OsprayVisualization, Radius);
+ALGORITHM_PARAMETER_DEF(OsprayVisualization, UseNormals);
+ALGORITHM_PARAMETER_DEF(OsprayVisualization, ShowEdges);
 
 OsprayDataAlgorithm::OsprayDataAlgorithm()
 {

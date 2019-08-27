@@ -40,7 +40,7 @@ using namespace Modules::Visualization;
 using namespace Core;
 using namespace Core::Algorithms;
 using namespace Core::Geometry;
-using namespace Visualization;
+using namespace OsprayVisualization;
 using namespace Datatypes;
 
 MODULE_INFO_DEF(ShowFieldWithOspray, Visualization, SCIRun)
