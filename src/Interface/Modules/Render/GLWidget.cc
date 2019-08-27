@@ -77,6 +77,11 @@ void GLWidget::initializeGL()
 
 void GLWidget::paintGL()
 {
+  if(isValid())
+  {
+    mCurrentTime += updateTime;
+    mGraphics->doFrame(mCurrentTime, updateTime);
+  }
 
 }
 
@@ -165,16 +170,7 @@ void GLWidget::updateRenderer()
 {
   if(isValid())
   {
-    //QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
-  //  f->glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
-    //f->glClear(GL_COLOR_BUFFER_BIT);
-    std::cout << "frame\n";
-    mCurrentTime += updateTime;
-    makeCurrent();
-    mGraphics->doFrame(mCurrentTime, updateTime);
-    std::cout << "surface  width: " << context()->surface()->size().width() << "\n";
-    std::cout << "surface  height: " << context()->surface()->size().height() << "\n";
-    context()->swapBuffers(context()->surface());//mContext->swapBuffers();
+    update();
   }
 }
 

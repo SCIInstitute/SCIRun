@@ -45,6 +45,8 @@
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Interface/Modules/Render/share.h>
 #include <glm/gtc/quaternion.hpp>
+#include <QOpenGLContext>
+
 
 namespace SCIRun {
   namespace Render {
@@ -71,6 +73,8 @@ namespace SCIRun {
       explicit SRInterface(int frameInitLimit = 100);
       ~SRInterface();
       std::string toString(std::string prefix) const;
+
+      void setContext(QOpenGLContext* context) {mContext = context;}
 
       /// todo Specify what buttons are pressed.
       enum MouseButton
@@ -366,6 +370,7 @@ namespace SCIRun {
 
       const int                         frameInitLimit_     {};
       std::unique_ptr<SRCamera>         mCamera;       // Primary camera.
+      QOpenGLContext*                   mContext            {};
     };
 
   } // namespace Render

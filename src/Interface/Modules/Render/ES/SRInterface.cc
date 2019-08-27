@@ -30,7 +30,7 @@
 // Needed for OpenGL include files on Travis:
 #include <gl-platform/GLPlatform.hpp>
 #include <Interface/Modules/Render/UndefiningX11Cruft.h>
-#include <QtOpenGL/QGLWidget>
+#include <QOpenGLWidget>
 
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
@@ -822,6 +822,9 @@ namespace SCIRun {
 
       std::string objectName = obj->uniqueID();
       BBox bbox; // Bounding box containing all vertex buffer objects.
+
+      if(!mContext || !mContext->isValid()) return;
+      mContext->makeCurrent(mContext->surface());
 
       RENDERER_LOG("Check to see if the object already exists in our list. "
         "If so, then remove the object. We will re-add it.");

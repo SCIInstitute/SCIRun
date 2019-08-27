@@ -106,7 +106,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   //format.setVersion(3, 3);
   format.setProfile(QSurfaceFormat::CoreProfile);
   mGLWidget->setFormat(format);
-  //mGLWidget->show();
+  mGLWidget->show();
 
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
   connect(this, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int, const std::string&)), this, SLOT(sendGeometryFeedbackToState(int, int, const std::string&)));
@@ -121,6 +121,8 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     auto spire = mSpire.lock();
     if(!spire)
       return;
+
+    spire->setContext(mGLWidget->context());
 
     if (Preferences::Instance().useNewViewSceneMouseControls)
     {
@@ -694,6 +696,8 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
   auto spire = mSpire.lock();
   if (!spire)
     return;
+
+  spire->setContext(mGLWidget->context());
 
   if(forceAllObjectsToUpdate)
     spire->removeAllGeomObjects();
