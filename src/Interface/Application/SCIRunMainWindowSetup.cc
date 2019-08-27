@@ -515,7 +515,7 @@ void SCIRunMainWindow::setupTagManagerWindow()
 #ifdef QT5_BUILD
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
-#define QT5_VERSION_STRING "Qt" TOSTRING(QT5_VERSION)
+#define QT5_VERSION_STRING "+Qt" TOSTRING(QT5_VERSION)
 #endif
 
 void SCIRunMainWindow::setupVersionButton()
