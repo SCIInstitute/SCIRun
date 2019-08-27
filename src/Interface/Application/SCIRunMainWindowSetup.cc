@@ -512,11 +512,17 @@ void SCIRunMainWindow::setupTagManagerWindow()
   tagManagerWindow_->hide();
 }
 
+#ifdef QT5_BUILD
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+#define QT5_VERSION_STRING "Qt" TOSTRING(QT5_VERSION)
+#endif
+
 void SCIRunMainWindow::setupVersionButton()
 {
   auto qVersion = QString::fromStdString(VersionInfo::GIT_VERSION_TAG);
   #ifdef QT5_BUILD
-  qVersion += "+Qt5";
+  qVersion += QT5_VERSION_STRING;
   #else
   qVersion += "+Qt4";
   #endif
