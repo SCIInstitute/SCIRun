@@ -375,12 +375,10 @@ void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformM
   auto bbox = fh->vmesh()->get_bounding_box();
   bool is_vector = (arrows_[id]->isVector());
 
-
-  if (state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
-    scale_[id] /= state->getValue(LargestSize).toDouble();
-
   if(state->getValue(MoveDipolesTogether).toBool() && (type == ArrowWidgetSection::CYLINDER || type == ArrowWidgetSection::SPHERE))
+  {
     moveDipolesTogether(transformMatrix);
+  }
   else
   {
     pos_[id] = transformMatrix * pos_[id];
@@ -388,12 +386,14 @@ void ShowAndEditDipoles::adjustPositionFromTransform(const Transform& transformM
     scale_[id] = direction_[id].length() * scale_[id];
     direction_[id].normalize();
   }
-    makeScalesPositive();
+  makeScalesPositive();
 
-    arrows_[id] = WidgetFactory::createArrowWidget(
-        *this, "SAED",
-        scale_[id] * state->getValue(WidgetScaleFactor).toDouble(), pos_[id],
-        direction_[id], resolution_, is_vector, id, ++widgetIter_, bbox);
+  double currentScale = scale_[id] * state->getValue(WidgetScaleFactor).toDouble();
+  if (state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
+    currentScale /= state->getValue(LargestSize).toDouble();
+
+  arrows_[id] = WidgetFactory::createArrowWidget(*this, "SAED", currentScale, pos_[id], direction_[id],
+                                                 resolution_, is_vector, id, ++widgetIter_, bbox);
 }
 
 void ShowAndEditDipoles::ReceiveInputPoints()
