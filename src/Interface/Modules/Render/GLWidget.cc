@@ -55,9 +55,7 @@ GLWidget::GLWidget(QWidget* parent) :
 
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
-  mTimer->start(RendererUpdateInMS);
-  //setAutoBufferSwap(false);
-}
+  mTimer->start(RendererUpdateInMS);}
 
 //------------------------------------------------------------------------------
 GLWidget::~GLWidget()
@@ -77,12 +75,8 @@ void GLWidget::initializeGL()
 
 void GLWidget::paintGL()
 {
-  if(isValid())
-  {
-    mCurrentTime += updateTime;
-    mGraphics->doFrame(mCurrentTime, updateTime);
-  }
-
+  mCurrentTime += updateTime;
+  mGraphics->doFrame(mCurrentTime, updateTime);
 }
 
 //------------------------------------------------------------------------------
