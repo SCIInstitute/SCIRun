@@ -139,7 +139,7 @@ std::vector<FieldHandle> ShowFieldBruteForceTest::vectorOfInputData;
 
 // 768 cases in 1 second/field
 // 768 tests from ConstructLatVolGeometry/ShowFieldBruteForceTest (2746 ms total)
-TEST_P(ShowFieldBruteForceTest, BruteForceExecuteTest)
+TEST_P(ShowFieldBruteForceTest, DISABLED_BruteForceExecuteTest)
 {
   LogSettings::Instance().setVerbose(false);
 

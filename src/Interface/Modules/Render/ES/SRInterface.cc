@@ -473,31 +473,6 @@ namespace SCIRun {
               addVBOToEntity(entityID, pass.vboName);
               addIBOToEntity(entityID, pass.iboName);
             }
-            else
-            {
-              // We will be constructing a render list from the VBO and IBO.
-              RenderList list;
-
-              for (const auto& vbo : obj->vbos())
-              {
-                if (vbo.name == pass.vboName)
-                {
-                  list.data = vbo.data;
-                  list.attributes = vbo.attributes;
-                  list.renderType = pass.renderType;
-                  list.numElements = vbo.numElements;
-                  mCore.addComponent(entityID, list);
-                  break;
-                }
-              }
-
-              // Lookup the VBOs and IBOs associated with this particular draw list
-              // and add them to our entity in question.
-              std::string assetName = "Assets/sphere.geom";
-
-              addVBOToEntity(entityID, assetName);
-              addIBOToEntity(entityID, assetName);
-            }
 
             // Load vertex and fragment shader will use an already loaded program.
             //shaderMan->loadVertexAndFragmentShader(mCore, entityID, "Shaders/Selection");
@@ -1220,41 +1195,7 @@ namespace SCIRun {
                 }
                 RENDERER_LOG("add texture");
                 addTextToEntity(entityID, pass.text);
-              }
-              else
-              {
-                RENDERER_LOG("We will be constructing a render list from the VBO and IBO.");
-                RenderList list;
-
-                for (const auto& vbo : obj->vbos())
-                {
-                  if (vbo.name == pass.vboName)
-                  {
-                    list.data = vbo.data;
-                    list.attributes = vbo.attributes;
-                    list.renderType = pass.renderType;
-                    list.numElements = vbo.numElements;
-                    mCore.addComponent(entityID, list);
-                    break;
-                  }
-                }
-
-                RENDERER_LOG("Lookup the VBOs and IBOs associated with this particular draw list "
-                  "and add them to our entity in question.");
-                std::string assetName = "Assets/sphere.geom";
-
-                if (pass.renderType == RenderType::RENDER_RLIST_SPHERE)
-                {
-                  assetName = "Assets/sphere.geom";
-                }
-
-                if (pass.renderType == RenderType::RENDER_RLIST_CYLINDER)
-                {
-                  assetName = "Assests/arrow.geom";
-                }
-
-                addVBOToEntity(entityID, assetName);
-                addIBOToEntity(entityID, assetName);
+                addTextureToEntity(entityID, pass.texture);
               }
 
               RENDERER_LOG("Load vertex and fragment shader will use an already loaded program.");
@@ -1268,13 +1209,6 @@ namespace SCIRun {
                 widgetExists_ = true;
               }
 
-              if (pass.renderType == RenderType::RENDER_RLIST_SPHERE)
-              {
-                double scale = pass.scalar;
-                trafo.transform[0].x = scale;
-                trafo.transform[1].y = scale;
-                trafo.transform[2].z = scale;
-              }
               if (widgetSelected_ && objectName == mSelected)
               {
                 mSelectedID = entityID;
@@ -1329,13 +1263,10 @@ namespace SCIRun {
               mCore.addComponent(entityID, pass);
             }
           }
+          mCamera->setSceneBoundingBox(mSceneBBox);
+          mCore.runGCOnNextExecution();
         }
-
-        mCore.runGCOnNextExecution();
       }
-
-      mCamera->setSceneBoundingBox(mSceneBBox);
-
       DEBUG_LOG_LINE_INFO
     }
 
@@ -1429,14 +1360,10 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::addTextToEntity(uint64_t entityID, const SpireText& text)
     {
-      if (text.name == "")
-        return;
-
-       //texture man
+      if (text.name.empty()) return;
       std::weak_ptr<ren::TextureMan> tm = mCore.getStaticComponent<ren::StaticTextureMan>()->instance_;
       std::shared_ptr<ren::TextureMan> textureMan = tm.lock();
-      if (!textureMan)
-        return;
+      if (!textureMan) return;
 
       std::stringstream ss;
       ss << "FontTexture:" << entityID << text.name << text.width << text.height;
@@ -1444,11 +1371,10 @@ namespace SCIRun {
 
       ren::Texture texture;
 
-      spire::CerealHeap<ren::Texture>* contTex =
-        mCore.getOrCreateComponentContainer<ren::Texture>();
-      std::pair<const ren::Texture*, size_t> component =
-        contTex->getComponent(entityID);
-      if (component.first == nullptr)
+      spire::CerealHeap<ren::Texture>* contTex = mCore.getOrCreateComponentContainer<ren::Texture>();
+      std::pair<const ren::Texture*, size_t> component = contTex->getComponent(entityID);
+
+      if (!component.first)
         texture = textureMan->createTexture(assetName, text.width, text.height, text.bitmap);
       else
         texture = *component.first;
@@ -1456,6 +1382,33 @@ namespace SCIRun {
       texture.textureUnit = 0;
       texture.setUniformName("uTX0");
       mCore.addComponent(entityID, texture);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::addTextureToEntity(uint64_t entityID, const SpireTexture2D& texture)
+    {
+      if (texture.name.empty()) return;
+      std::weak_ptr<ren::TextureMan> tm = mCore.getStaticComponent<ren::StaticTextureMan>()->instance_;
+      std::shared_ptr<ren::TextureMan> textureMan = tm.lock();
+      if (!textureMan) return;
+
+      std::stringstream ss;
+      ss << "Texture:" << entityID << texture.name << texture.width << texture.height;
+      std::string assetName = ss.str();
+
+      ren::Texture renTexture;
+      spire::CerealHeap<ren::Texture>* contTex = mCore.getOrCreateComponentContainer<ren::Texture>();
+      std::pair<const ren::Texture*, size_t> component = contTex->getComponent(entityID);
+
+      if (!component.first)
+        renTexture = textureMan->createTexture(assetName, GL_RGBA, texture.width, texture.height,
+          GL_RGBA,  GL_UNSIGNED_BYTE, texture.bitmap);
+      else
+        renTexture = *component.first;
+
+      renTexture.textureUnit = 0;
+      renTexture.setUniformName("uTX0");
+      mCore.addComponent(entityID, renTexture);
     }
 
     //----------------------------------------------------------------------------------------------

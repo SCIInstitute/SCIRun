@@ -135,9 +135,9 @@ public:
     {
       return;
     }
-    
-    if (srstate.front().state.get(RenderState::USE_TRANSPARENCY) || 
-        srstate.front().state.get(RenderState::USE_TRANSPARENT_EDGES) || 
+
+    if (srstate.front().state.get(RenderState::USE_TRANSPARENCY) ||
+        srstate.front().state.get(RenderState::USE_TRANSPARENT_EDGES) ||
         srstate.front().state.get(RenderState::USE_TRANSPARENT_NODES) ||
         srstate.front().state.get(RenderState::IS_TEXT))
     {
@@ -206,15 +206,15 @@ public:
     // Bind VBO and IBO
     GL(glBindBuffer(GL_ARRAY_BUFFER, vbo.front().glid));
     GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID));
-    
+
     bool depthMask = glIsEnabled(GL_DEPTH_WRITEMASK);
     bool cullFace = glIsEnabled(GL_CULL_FACE);
     bool blend = glIsEnabled(GL_BLEND);
-    
+
     GL(glDepthMask(GL_TRUE));
     GL(glDisable(GL_CULL_FACE));
     GL(glDisable(GL_BLEND));
-		
+
     // Bind any common uniforms.
     if (commonUniforms.size() > 0)
     {
@@ -273,7 +273,7 @@ public:
           rlist.front().data->getBuffer(), rlist.front().data->getBufferSize());
 
       spire::BSerialize colorDeserialize(
-          rlist.front().data->getBuffer(), rlist.front().data->getBufferSize()); 
+          rlist.front().data->getBuffer(), rlist.front().data->getBufferSize());
 
       int64_t posSize     = 0;
       int64_t colorSize   = 0;
@@ -363,7 +363,7 @@ public:
                           ibo.front().primType, 0));
       }
     }
-		
+
     if (!depthMask)
     {
       GL(glDepthMask(GL_FALSE));
@@ -407,4 +407,3 @@ const char* getSystemName_RenderBasicGeom()
 
 } // namespace Render
 } // namespace SCIRun
-
