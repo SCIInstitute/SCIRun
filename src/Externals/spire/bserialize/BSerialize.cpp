@@ -43,7 +43,7 @@ const char* BSerialize::readNullTermString()
 {
   int nullIndex = -1;
   size_t size = 0;
-  for (int i = mOffset; i < mMsgSize; ++i)
+  for (size_t i = mOffset; i < mMsgSize; ++i)
   {
     ++size;
     if (mMsg[i] == '\0')
