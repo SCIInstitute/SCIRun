@@ -46,6 +46,7 @@ namespace SCIRun {
                      double radius,
                      const std::string& defaultColor,
                      const Core::Geometry::Point& point,
+                     const Core::Geometry::Point& origin,
                      const Core::Geometry::BBox& bbox,
                      int resolution);
       private:

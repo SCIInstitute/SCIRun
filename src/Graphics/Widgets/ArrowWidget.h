@@ -26,35 +26,37 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef Graphics_Widgets_DiskWidget_H
-#define Graphics_Widgets_DiskWidget_H
+#ifndef Graphics_Widgets_ArrowWidget_H
+#define Graphics_Widgets_ArrowWidget_H
 
-#include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Core/Datatypes/Legacy/Field/FieldFwd.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Graphics/Widgets/Widget.h>
 #include <Graphics/Widgets/share.h>
 
 namespace SCIRun {
   namespace Graphics {
     namespace Datatypes {
+      enum ArrowWidgetSection { SPHERE, CYLINDER, CONE, DISK };
 
-      class SCISHARE DiskWidget : public WidgetBase
+      class SCISHARE ArrowWidget : public CompositeWidget
       {
       public:
-        DiskWidget(const Core::GeometryIDGenerator& idGenerator,
-                   const std::string& name,
-                   double radius,
-                   const std::string& defaultColor,
-                   const Core::Geometry::Point& p1,
-                   const Core::Geometry::Point& p2,
-                   const Core::Geometry::Point& origin,
-                   const Core::Geometry::BBox& bbox,
-                   int resolution);
+        ArrowWidget(const Core::GeometryIDGenerator &idGenerator,
+                    const std::string &name, double scale,
+                    const Core::Geometry::Point &pos,
+                    const Core::Geometry::Vector &dir, int resolution,
+                    bool show_as_vector, size_t widget_num, size_t widget_iter,
+                    const Core::Geometry::BBox &bbox);
+
+        bool isVector();
+
       private:
-        RenderState getWidgetRenderState(const std::string& defaultColor);
+        bool isVector_;
+        std::string widgetName(size_t i, size_t id, size_t iter);
       };
 
-      using DiskWidgetHandle = SharedPointer<DiskWidget>;
+      using ArrowWidgetHandle = SharedPointer<ArrowWidget>;
     }
   }
 }

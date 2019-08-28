@@ -147,7 +147,7 @@ namespace SCIRun {
         /// Persistent I/O.
         static PersistentTypeID type_id;
         virtual void io(Piostream &stream);
-        std::vector<Vector> get_column_vectors();
+        std::vector<Vector> get_column_vectors() const;
       };
 
       SCISHARE Point operator*(const Transform &t, const Point &d);

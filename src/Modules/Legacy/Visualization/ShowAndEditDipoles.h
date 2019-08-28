@@ -29,11 +29,12 @@
 #ifndef MODULES_LEGACY_VISUALIZATION_SHOWANDEDITDIPOLES_H
 #define MODULES_LEGACY_VISUALIZATION_SHOWANDEDITDIPOLES_H
 
-#include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Core/Datatypes/Geometry.h>
-#include <Graphics/Widgets/Widget.h>
-#include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/GeometryPrimitives/BBox.h>
+#include <Dataflow/Network/GeometryGeneratingModule.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
+#include <Graphics/Widgets/Widget.h>
+#include <Graphics/Widgets/WidgetFactory.h>
 #include <Modules/Legacy/Visualization/share.h>
 
 enum SizingType {
@@ -79,7 +80,7 @@ namespace SCIRun {
         std::vector<Core::Geometry::Vector> direction_;
         std::vector<double> scale_;
         Core::Geometry::BBox last_bounds_;
-        std::vector<std::vector<Graphics::Datatypes::WidgetHandle>* > pointWidgets_;
+        std::vector<Graphics::Datatypes::ArrowWidgetHandle> arrows_;
         std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
         std::vector<Core::Geometry::Transform> previousTransforms_;
 
@@ -94,14 +95,10 @@ namespace SCIRun {
         double diskDistFromCenter_;
         double diskWidth_;
         size_t widgetIter_;
-        double resolution_;
+        int resolution_;
         double previousScaleFactor_;
         double zeroVectorRescale_;
 
-        Core::Datatypes::ColorRGB deflPointCol_;
-        Core::Datatypes::ColorRGB deflCol_;
-        Core::Datatypes::ColorRGB greenCol_;
-        Core::Datatypes::ColorRGB resizeCol_;
         Core::Datatypes::ColorRGB lineCol_;
 
         void loadData();
@@ -117,8 +114,8 @@ namespace SCIRun {
         void resetData();
         std::string widgetName(size_t i, size_t id, size_t iter);
         void createDipoleWidget(Core::Geometry::BBox& bbox, Core::Geometry::Point& pos, Core::Geometry::Vector dir, double scale, size_t widget_num, bool show_as_vector);
-        void calculatePointMove(Core::Geometry::Point& oldPos, Core::Geometry::Point& newPos);
-        void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
+        void moveDipolesTogether(const Core::Geometry::Transform &transform);
+        void processWidgetFeedback(const Core::Datatypes::ModuleFeedback &var);
         void adjustPositionFromTransform(const Core::Geometry::Transform& transformMatrix, size_t index, size_t id);
         Graphics::Datatypes::GeometryHandle addLines();
         FieldHandle makePointCloud();
