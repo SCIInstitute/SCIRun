@@ -839,7 +839,7 @@ Transform::operator=(const Transform& copy)
   return *this;
 }
 
-std::vector<Vector> Transform::get_column_vectors()
+std::vector<Vector> Transform::get_column_vectors() const
 {
   std::vector<Vector> column_vectors(3);
   for(int i = 0; i < 3; i++)
