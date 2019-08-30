@@ -50,7 +50,6 @@ const double updateTime = RendererUpdateInMS / 1000.0;
 GLWidget::GLWidget(QWidget* parent) :
     QOpenGLWidget(parent)
 {
-  spire::glPlatformInit();
   mGraphics.reset(new Render::SRInterface());
 
   mTimer = new QTimer(this);
@@ -70,8 +69,8 @@ GLWidget::~GLWidget()
 //------------------------------------------------------------------------------
 void GLWidget::initializeGL()
 {
-
-}
+	spire::glPlatformInit();
+}	
 
 void GLWidget::paintGL()
 {

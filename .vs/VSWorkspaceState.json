@@ -1,7 +1,12 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\src",
+    "\\src\\Interface",
+    "\\src\\Interface\\Modules",
+    "\\src\\Interface\\Modules\\Render",
+    "\\src\\Interface\\Modules\\Render\\ES"
   ],
-  "SelectedNode": "\\bin",
+  "SelectedNode": "\\src\\Interface\\Modules\\Render\\ES\\SRInterface.h",
   "PreviewInSolutionExplorer": false
 }
