@@ -356,7 +356,6 @@ namespace SCIRun {
       std::vector<SRObject>               mSRObjects          {};       // All SCIRun objects.
       Core::Geometry::BBox				  mSceneBBox          {};       // Scene's AABB. Recomputed per-frame.
       std::unordered_map<std::string, uint64_t> mEntityIdMap  {};
-      Core::Geometry::BBox                mSceneBBox          {};       // Scene's AABB. Recomputed per-frame.
 
       ESCore                              mCore               {};       // Entity system core.
 
