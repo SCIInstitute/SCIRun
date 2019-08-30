@@ -99,17 +99,17 @@ protected:
 
     showField->setStateDefaults();
     auto state = showField->get_state();
-    state->setValue(ShowField::ShowNodes, std::get<SHOW_NODES>(params));
-    state->setValue(ShowField::ShowEdges, std::get<SHOW_EDGES>(params));
-    state->setValue(ShowField::ShowFaces, std::get<SHOW_FACES>(params));
-    state->setValue(ShowField::NodeTransparency, std::get<NODE_TRANSPARENCY>(params));
-    state->setValue(ShowField::EdgeTransparency, std::get<EDGE_TRANSPARENCY>(params));
-    state->setValue(ShowField::FaceTransparency, std::get<FACE_TRANSPARENCY>(params));
-    state->setValue(ShowField::NodeTransparencyValue, std::get<TRANSPARENCY_VALUE>(params));
-    state->setValue(ShowField::EdgeTransparencyValue, std::get<TRANSPARENCY_VALUE>(params));
-    state->setValue(ShowField::FaceTransparencyValue, std::get<TRANSPARENCY_VALUE>(params));
-    state->setValue(ShowField::NodeAsSpheres, std::get<NODES_AS_SPHERES>(params));
-    state->setValue(ShowField::EdgesAsCylinders, std::get<EDGES_AS_CYLINDERS>(params));
+    state->setValue(Parameters::ShowNodes, std::get<SHOW_NODES>(params));
+    state->setValue(Parameters::ShowEdges, std::get<SHOW_EDGES>(params));
+    state->setValue(Parameters::ShowFaces, std::get<SHOW_FACES>(params));
+    state->setValue(Parameters::NodeTransparency, std::get<NODE_TRANSPARENCY>(params));
+    state->setValue(Parameters::EdgeTransparency, std::get<EDGE_TRANSPARENCY>(params));
+    state->setValue(Parameters::FaceTransparency, std::get<FACE_TRANSPARENCY>(params));
+    state->setValue(Parameters::NodeTransparencyValue, std::get<TRANSPARENCY_VALUE>(params));
+    state->setValue(Parameters::EdgeTransparencyValue, std::get<TRANSPARENCY_VALUE>(params));
+    state->setValue(Parameters::FaceTransparencyValue, std::get<TRANSPARENCY_VALUE>(params));
+    state->setValue(Parameters::NodeAsSpheres, std::get<NODES_AS_SPHERES>(params));
+    state->setValue(Parameters::EdgesAsCylinders, std::get<EDGES_AS_CYLINDERS>(params));
     //...ran out of gtest options at 10 due to tuple.
 
     //data--to loop over
@@ -139,7 +139,7 @@ std::vector<FieldHandle> ShowFieldBruteForceTest::vectorOfInputData;
 
 // 768 cases in 1 second/field
 // 768 tests from ConstructLatVolGeometry/ShowFieldBruteForceTest (2746 ms total)
-TEST_P(ShowFieldBruteForceTest, BruteForceExecuteTest)
+TEST_P(ShowFieldBruteForceTest, DISABLED_BruteForceExecuteTest)
 {
   LogSettings::Instance().setVerbose(false);
 
@@ -198,9 +198,9 @@ protected:
       showField->setStateDefaults();
 
       auto state = showField->get_state();
-      state->setValue(ShowField::ShowFaces, true);
-      state->setValue(ShowField::ShowEdges, false);
-      state->setValue(ShowField::ShowNodes, false);
+      state->setValue(Parameters::ShowFaces, true);
+      state->setValue(Parameters::ShowEdges, false);
+      state->setValue(Parameters::ShowNodes, false);
 
       colorMap = StandardColorMapFactory::create();
       stubPortNWithThisData(showField, 1, colorMap);
@@ -225,11 +225,11 @@ protected:
     auto params = GetParam();
     auto state = showField->get_state();
 
-    state->setValue(ShowField::FaceTransparency, std::get<TRANSPARENCY>(params));
-    state->setValue(ShowField::FaceTransparencyValue, std::get<TRANSPARENCY_VALUE>(params));
-    state->setValue(ShowField::FacesColoring, std::get<COLORING>(params));
-    state->setValue(ShowField::FaceInvertNormals, std::get<INVERT_NORMALS>(params));
-    state->setValue(ShowField::UseFaceNormals, std::get<USE_FACE_NORMALS>(params));
+    state->setValue(Parameters::FaceTransparency, std::get<TRANSPARENCY>(params));
+    state->setValue(Parameters::FaceTransparencyValue, std::get<TRANSPARENCY_VALUE>(params));
+    state->setValue(Parameters::FacesColoring, std::get<COLORING>(params));
+    state->setValue(Parameters::FaceInvertNormals, std::get<INVERT_NORMALS>(params));
+    state->setValue(Parameters::UseFaceNormals, std::get<USE_FACE_NORMALS>(params));
   }
 
   UseRealModuleStateFactory f;
@@ -323,9 +323,9 @@ protected:
       showField->setStateDefaults();
 
       auto state = showField->get_state();
-      state->setValue(ShowField::ShowFaces, false);
-      state->setValue(ShowField::ShowEdges, true);
-      state->setValue(ShowField::ShowNodes, false);
+      state->setValue(Parameters::ShowFaces, false);
+      state->setValue(Parameters::ShowEdges, true);
+      state->setValue(Parameters::ShowNodes, false);
 
       colorMap = StandardColorMapFactory::create();
       stubPortNWithThisData(showField, 1, colorMap);
@@ -350,12 +350,12 @@ protected:
     auto params = GetParam();
     auto state = showField->get_state();
 
-    state->setValue(ShowField::EdgeTransparency, std::get<TRANSPARENCY>(params));
-    state->setValue(ShowField::EdgeTransparencyValue, std::get<TRANSPARENCY_VALUE>(params));
-    state->setValue(ShowField::EdgesColoring, std::get<COLORING>(params));
-    state->setValue(ShowField::EdgesAsCylinders, std::get<USE_CYLINDERS>(params));
-    state->setValue(ShowField::CylinderRadius, std::get<CYLINDER_RADIUS>(params));
-    state->setValue(ShowField::CylinderResolution, std::get<CYLYNDER_RESOLUTION>(params));
+    state->setValue(Parameters::EdgeTransparency, std::get<TRANSPARENCY>(params));
+    state->setValue(Parameters::EdgeTransparencyValue, std::get<TRANSPARENCY_VALUE>(params));
+    state->setValue(Parameters::EdgesColoring, std::get<COLORING>(params));
+    state->setValue(Parameters::EdgesAsCylinders, std::get<USE_CYLINDERS>(params));
+    state->setValue(Parameters::CylinderRadius, std::get<CYLINDER_RADIUS>(params));
+    state->setValue(Parameters::CylinderResolution, std::get<CYLYNDER_RESOLUTION>(params));
   }
 
   UseRealModuleStateFactory f;
@@ -450,9 +450,9 @@ protected:
       showField->setStateDefaults();
 
       auto state = showField->get_state();
-      state->setValue(ShowField::ShowFaces, false);
-      state->setValue(ShowField::ShowEdges, false);
-      state->setValue(ShowField::ShowNodes, true);
+      state->setValue(Parameters::ShowFaces, false);
+      state->setValue(Parameters::ShowEdges, false);
+      state->setValue(Parameters::ShowNodes, true);
 
       colorMap = StandardColorMapFactory::create();
       stubPortNWithThisData(showField, 1, colorMap);
@@ -477,12 +477,12 @@ protected:
     auto params = GetParam();
     auto state = showField->get_state();
 
-    state->setValue(ShowField::NodeTransparency, std::get<TRANSPARENCY>(params));
-    state->setValue(ShowField::NodeTransparencyValue, std::get<TRANSPARENCY_VALUE>(params));
-    state->setValue(ShowField::NodesColoring, std::get<COLORING>(params));
-    state->setValue(ShowField::NodeAsSpheres, std::get<USE_SPHERES>(params));
-    state->setValue(ShowField::SphereScaleValue, std::get<SPHERE_SCALE>(params));
-    state->setValue(ShowField::SphereResolution, std::get<SPHERE_RESOLUTION>(params));
+    state->setValue(Parameters::NodeTransparency, std::get<TRANSPARENCY>(params));
+    state->setValue(Parameters::NodeTransparencyValue, std::get<TRANSPARENCY_VALUE>(params));
+    state->setValue(Parameters::NodesColoring, std::get<COLORING>(params));
+    state->setValue(Parameters::NodeAsSpheres, std::get<USE_SPHERES>(params));
+    state->setValue(Parameters::SphereScaleValue, std::get<SPHERE_SCALE>(params));
+    state->setValue(Parameters::SphereResolution, std::get<SPHERE_RESOLUTION>(params));
   }
 
   UseRealModuleStateFactory f;

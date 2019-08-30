@@ -26,7 +26,7 @@
    <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0" alignment="Qt::AlignLeft">
+   <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="minimumSize">
       <size>
@@ -67,7 +67,7 @@
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>2</number>
           </property>
           <property name="documentMode">
            <bool>false</bool>
@@ -115,12 +115,12 @@
             </property>
             <item>
              <property name="text">
-              <string>Points</string>
+              <string>Spheres</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>Spheres</string>
+              <string>Points</string>
              </property>
             </item>
            </widget>
@@ -377,8 +377,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>98</width>
-               <height>28</height>
+               <width>100</width>
+               <height>30</height>
               </rect>
              </property>
              <attribute name="label">
@@ -507,8 +507,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>98</width>
-               <height>28</height>
+               <width>291</width>
+               <height>109</height>
               </rect>
              </property>
              <attribute name="label">
@@ -776,22 +776,7 @@
             </property>
             <item>
              <property name="text">
-              <string>Lines</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Disks</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
               <string>Arrows</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Cones</string>
              </property>
             </item>
             <item>
@@ -801,7 +786,27 @@
             </item>
             <item>
              <property name="text">
+              <string>Cones</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Disks</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Lines</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
               <string>Needles</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Rings</string>
              </property>
             </item>
            </widget>
@@ -893,7 +898,7 @@
             <property name="geometry">
              <rect>
               <x>10</x>
-              <y>210</y>
+              <y>230</y>
               <width>291</width>
               <height>321</height>
              </rect>
@@ -911,8 +916,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>98</width>
-               <height>28</height>
+               <width>100</width>
+               <height>30</height>
               </rect>
              </property>
              <attribute name="label">
@@ -1041,8 +1046,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>98</width>
-               <height>28</height>
+               <width>100</width>
+               <height>30</height>
               </rect>
              </property>
              <attribute name="label">
@@ -1129,7 +1134,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>291</width>
-                <height>77</height>
+                <height>101</height>
                </rect>
               </property>
               <property name="title">
@@ -1139,7 +1144,7 @@
                <property name="geometry">
                 <rect>
                  <x>10</x>
-                 <y>46</y>
+                 <y>75</y>
                  <width>161</width>
                  <height>21</height>
                 </rect>
@@ -1152,7 +1157,7 @@
                <property name="geometry">
                 <rect>
                  <x>170</x>
-                 <y>50</y>
+                 <y>75</y>
                  <width>121</width>
                  <height>21</height>
                 </rect>
@@ -1164,30 +1169,65 @@
                 <double>100.000000000000000</double>
                </property>
                <property name="singleStep">
-                <double>0.100000000000000</double>
+                <double>0.010000000000000</double>
                </property>
                <property name="value">
                 <double>0.250000000000000</double>
                </property>
               </widget>
-              <widget class="QLabel" name="secondaryVectorParameterInputLabel">
+              <widget class="QRadioButton" name="secondaryVectorParameterUniformRButton_">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
                <property name="geometry">
                 <rect>
                  <x>10</x>
-                 <y>20</y>
-                 <width>141</width>
-                 <height>20</height>
+                 <y>25</y>
+                 <width>161</width>
+                 <height>21</height>
                 </rect>
                </property>
+               <property name="font">
+                <font>
+                 <strikeout>false</strikeout>
+                </font>
+               </property>
                <property name="text">
-                <string>Input:</string>
+                <string>Uniform:</string>
+               </property>
+              </widget>
+              <widget class="QRadioButton" name="secondaryVectorParameterPortRButton_">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>45</y>
+                 <width>141</width>
+                 <height>31</height>
+                </rect>
+               </property>
+               <property name="font">
+                <font>
+                 <strikeout>false</strikeout>
+                </font>
+               </property>
+               <property name="text">
+                <string>Use Input:</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
                </property>
               </widget>
               <widget class="QComboBox" name="secondaryVectorParameterPortComboBox_">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
                <property name="geometry">
                 <rect>
                  <x>150</x>
-                 <y>20</y>
+                 <y>45</y>
                  <width>141</width>
                  <height>26</height>
                 </rect>
@@ -1216,7 +1256,7 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>75</y>
+                <y>110</y>
                 <width>291</width>
                 <height>71</height>
                </rect>
@@ -1240,7 +1280,7 @@
                 <double>1.000000000000000</double>
                </property>
                <property name="singleStep">
-                <double>0.100000000000000</double>
+                <double>0.010000000000000</double>
                </property>
                <property name="value">
                 <double>0.500000000000000</double>
@@ -1296,8 +1336,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>98</width>
-               <height>28</height>
+               <width>100</width>
+               <height>30</height>
               </rect>
              </property>
              <property name="font">
@@ -1607,6 +1647,33 @@
              </widget>
             </widget>
            </widget>
+           <widget class="QCheckBox" name="renderWithBasesCheckBox_">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>205</y>
+              <width>271</width>
+              <height>20</height>
+             </rect>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <strikeout>false</strikeout>
+             </font>
+            </property>
+            <property name="text">
+             <string>Render With Bases</string>
+            </property>
+           </widget>
            <zorder>vectorsDisplayTypeComboBox_</zorder>
            <zorder>vectorsResolutionSpinBox_</zorder>
            <zorder>vectorResolutionLabel</zorder>
@@ -1615,6 +1682,7 @@
            <zorder>vectorDisplayTypeLabel</zorder>
            <zorder>vectorScalingGroupBox_</zorder>
            <zorder>toolBox</zorder>
+           <zorder>renderWithBasesCheckBox_</zorder>
           </widget>
           <widget class="QWidget" name="tensorTab_">
            <attribute name="title">
@@ -1645,9 +1713,9 @@
              <string>Show Tensors</string>
             </property>
            </widget>
-           <widget class="QGroupBox" name="tensorSuperquadricEmphasisGroupBox_">
+           <widget class="QGroupBox" name="superquadricEmphasisGroupBox_">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="geometry">
              <rect>
@@ -1659,20 +1727,48 @@
             </property>
             <property name="font">
              <font>
-              <strikeout>true</strikeout>
+              <strikeout>false</strikeout>
              </font>
             </property>
             <property name="title">
              <string>Superquadric Emphasis</string>
             </property>
-            <widget class="QSlider" name="tensorSuperquadricsEmphasisSlider_">
+            <widget class="QDoubleSpinBox" name="superquadricEmphasisDoubleSpinBox_">
+             <property name="geometry">
+              <rect>
+               <x>181</x>
+               <y>20</y>
+               <width>121</width>
+               <height>24</height>
+              </rect>
+             </property>
+             <property name="decimals">
+              <number>4</number>
+             </property>
+             <property name="maximum">
+              <double>1.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.010000000000000</double>
+             </property>
+             <property name="value">
+              <double>0.850000000000000</double>
+             </property>
+            </widget>
+            <widget class="QSlider" name="superquadricEmphasisSlider_">
              <property name="geometry">
               <rect>
                <x>10</x>
-               <y>26</y>
-               <width>281</width>
-               <height>19</height>
+               <y>20</y>
+               <width>160</width>
+               <height>22</height>
               </rect>
+             </property>
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="value">
+              <number>85</number>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -1690,7 +1786,17 @@
             </property>
             <item>
              <property name="text">
+              <string>Boxes</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
               <string>Ellipsoids</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Superellipsoids</string>
              </property>
             </item>
            </widget>
@@ -1938,8 +2044,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>98</width>
-               <height>28</height>
+               <width>291</width>
+               <height>109</height>
               </rect>
              </property>
              <attribute name="label">
@@ -2073,8 +2179,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>98</width>
-               <height>28</height>
+               <width>100</width>
+               <height>30</height>
               </rect>
              </property>
              <attribute name="label">

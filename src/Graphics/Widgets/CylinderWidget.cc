@@ -44,9 +44,10 @@ CylinderWidget::CylinderWidget(const Core::GeometryIDGenerator& idGenerator,
                                const std::string& defaultColor,
                                const Point& p1,
                                const Point& p2,
+                               const Point& origin,
                                const BBox& bbox,
                                int resolution)
-  : WidgetBase(idGenerator, "CylinderWidget::" + name, true, (p1 + p2)/2)
+  : WidgetBase(idGenerator, "CylinderWidget::" + name, true, Point(p1 + p2)/2, origin)
 {
   if (radius < 0) radius = 1.;
   if (resolution < 0) resolution = 10;

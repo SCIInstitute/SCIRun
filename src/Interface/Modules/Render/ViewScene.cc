@@ -1180,10 +1180,10 @@ void ViewSceneDialog::updateMeshComponentSelection(const QString& showFieldName,
 }
 
 //--------------------------------------------------------------------------------------------------
-static std::list<GeometryHandle> filterGeomObjecsForWidgets(SCIRun::Modules::Render::ViewScene::GeomListPtr geomData, ViewSceneControlsDock* mConfigurationDock)
+static std::vector<WidgetHandle> filterGeomObjectsForWidgets(SCIRun::Modules::Render::ViewScene::GeomListPtr geomData, ViewSceneControlsDock* mConfigurationDock)
 {
   //getting geom list
-  std::list<GeometryHandle> objList;
+  std::vector<WidgetHandle> objList;
 
   int port = 0;
   for (auto it = geomData->begin(); it != geomData->end(); ++it, ++port)
@@ -1207,7 +1207,7 @@ static std::list<GeometryHandle> filterGeomObjecsForWidgets(SCIRun::Modules::Ren
           }
         }
         if (isWidget)
-          objList.push_back(realObj);
+          objList.push_back(boost::dynamic_pointer_cast<WidgetBase>(realObj));
       }
     }
   }
@@ -1240,7 +1240,7 @@ void ViewSceneDialog::selectObject(const int x, const int y)
     }
 
     //get widgets
-    std::list<GeometryHandle> objList = filterGeomObjecsForWidgets(geomData, mConfigurationDock);
+    auto objList = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
 
     //select widget
     spire->select(glm::ivec2(x - mGLWidget->pos().x(), y - mGLWidget->pos().y()), objList, 0);
@@ -1248,7 +1248,7 @@ void ViewSceneDialog::selectObject(const int x, const int y)
     std::string selName = spire->getSelection();
     if (selName != "")
     {
-      for (auto &obj : objList)
+      for (const auto &obj : objList)
       {
         if (obj->uniqueID() == selName)
         {

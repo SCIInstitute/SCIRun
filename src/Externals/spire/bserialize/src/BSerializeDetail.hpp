@@ -53,6 +53,13 @@ bool writeTypeToMemory(char* msg, size_t msgSize, size_t* offset_out, const T& v
 }
 
 template <typename T>
+inline void writeTypeToMemoryUnsafe(char* msg, size_t& offset_out, const T& v)
+{
+  std::memcpy(msg + offset_out, &v, sizeof(T));
+  offset_out += sizeof(T);
+}
+
+template <typename T>
 class SerializeType
 {
 public:
@@ -195,6 +202,9 @@ public:
 
   static bool write(char* msg, size_t msgSize, size_t* offset_out, const Type& in)
   { return writeTypeToMemory<Type>(msg, msgSize, offset_out, in); }
+
+//  static bool writeUnsafe(char* msg, size_t* offset_out, const Type& in)
+//  { return writeTypeToMemoryUnsafe<Type>(msg, offset_out, in); }
 };
 
 //------------------------------------------------------------------------------

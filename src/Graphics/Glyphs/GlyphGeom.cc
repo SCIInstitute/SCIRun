@@ -206,12 +206,12 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
 }
 
 void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double ratio, int resolution,
-  const ColorRGB& color1, const ColorRGB& color2)
+                         const ColorRGB& color1, const ColorRGB& color2, bool render_cylinder_base, bool render_cone_base)
 {
   Point mid((p1.x() * ratio + p2.x() * (1 - ratio)), (p1.y() * ratio + p2.y() * (1 - ratio)), (p1.z() * ratio + p2.z() * (1 - ratio)));
 
-  generateCylinder(p1, mid, radius / 6.0, radius / 6.0, resolution, color1, color2);
-  generateCone(mid, p2, radius, resolution, false, color1, color2);
+  generateCylinder(p1, mid, radius / 6.0, radius / 6.0, resolution, color1, color2, render_cylinder_base, false);
+  generateCone(mid, p2, radius, resolution, render_cone_base, color1, color2);
 }
 
 void GlyphGeom::addSphere(const Point& p, double radius, int resolution, const ColorRGB& color)
@@ -219,32 +219,57 @@ void GlyphGeom::addSphere(const Point& p, double radius, int resolution, const C
   generateSphere(p, radius, resolution, color);
 }
 
-void GlyphGeom::addBox(const Point& center, Tensor& t, double scale)
+void GlyphGeom::addComet(const Point& p1, const Point& p2, double radius, int resolution,
+                         const ColorRGB& color1, const ColorRGB& color2, double sphere_extrusion)
 {
-    generateBox(center, t, scale);
+  generateComet(p1, p2, radius, resolution, color1, color2, sphere_extrusion);
 }
 
-void GlyphGeom::addEllipsoid(const Point& p, Tensor& t, Vector& scaled_eigenvals, int resolution, const ColorRGB& color)
+void GlyphGeom::addBox(const Point& center, Tensor& t, double scale, ColorRGB& node_color, bool normalize)
 {
-  generateEllipsoid(p, t, scaled_eigenvals, resolution, color);
+  generateBox(center, t, scale, node_color, normalize);
+}
+
+void GlyphGeom::addEllipsoid(const Point& p, Tensor& t, double scale, int resolution, const ColorRGB& color, bool normalize)
+{
+  generateEllipsoid(p, t, scale, resolution, color, false, normalize);
+}
+
+void GlyphGeom::addSuperEllipsoid(const Point& p, Tensor& t, double scale, int resolution, const ColorRGB& color, bool normalize, double emphasis)
+{
+  generateSuperEllipsoid(p, t, scale, resolution, color, normalize, emphasis);
 }
 
 void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius, int resolution,
-                            const ColorRGB& color1, const ColorRGB& color2)
+                            const ColorRGB& color1, const ColorRGB& color2,
+                            bool renderBase1, bool renderBase2)
 {
-  generateCylinder(p1, p2, radius, radius, resolution, color1, color2);
+  generateCylinder(p1, p2, radius, radius, resolution, color1, color2, renderBase1, renderBase2);
+}
+
+void GlyphGeom::addCylinder(const Point& p1, const Point& p2, double radius1, double radius2,
+                            int resolution, const ColorRGB& color1, const ColorRGB& color2,
+                            bool renderBase1, bool renderBase2)
+{
+  generateCylinder(p1, p2, radius1, radius2, resolution, color1, color2, renderBase1, renderBase2);
 }
 
 void GlyphGeom::addDisk(const Point& p1, const Point& p2, double radius, int resolution,
                             const ColorRGB& color1, const ColorRGB& color2)
 {
-  generateDisk(p1, p2, radius, radius, resolution, color1, color2);
+  generateCylinder(p1, p2, radius, radius, resolution, color1, color2, true, true);
+}
+
+void GlyphGeom::addTorus(const Point& p1, const Point& p2, double major_radius, double minor_radius, int resolution,
+                        const ColorRGB& color1, const ColorRGB& color2)
+{
+  generateTorus(p1, p2, major_radius, minor_radius, resolution, color1);
 }
 
 void GlyphGeom::addCone(const Point& p1, const Point& p2, double radius, int resolution,
-                        bool renderBase, const ColorRGB& color1, const ColorRGB& color2)
+                        bool render_base, const ColorRGB& color1, const ColorRGB& color2)
 {
-  generateCone(p1, p2, radius, resolution, renderBase, color1, color2);
+  generateCone(p1, p2, radius, resolution, render_base, color1, color2);
 }
 
 void GlyphGeom::addClippingPlane(const Point& p1, const Point& p2,
@@ -398,9 +423,9 @@ void GlyphGeom::generateCone(const Point& p1, const Point& p2, double radius,
   }
 }
 
-void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
-                             double radius2, int resolution, const ColorRGB& color1,
-                             const ColorRGB& color2)
+void GlyphGeom::generateCylinder(const Point& p1, const Point& p2, double radius1,
+                                 double radius2, int resolution, const ColorRGB& color1,
+                                 const ColorRGB& color2, bool renderBase1, bool renderBase2)
 {
   resolution = resolution < 0 ? 20 : resolution;
   radius1 = radius1 < 0 ? 1.0 : radius1;
@@ -411,19 +436,26 @@ void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
   Vector crx = n.getArbitraryTangent();
   Vector u = Cross(crx, n).normal();
 
-  int points_per_loop = 4;
+  int points_per_loop = 2 + renderBase1 + renderBase2;
 
   // Add center points so flat sides can be drawn
-  points_.push_back(Vector(p1));
-  points_.push_back(Vector(p2));
-  int p1_index = numVBOElements_;
-  colors_.push_back(color1);
-  normals_.push_back(n);
-  numVBOElements_++;
-  int p2_index = numVBOElements_;
-  colors_.push_back(color2);
-  normals_.push_back(-n);
-  numVBOElements_++;
+  int p1_index, p2_index;
+  if(renderBase1)
+  {
+    points_.push_back(Vector(p1));
+    p1_index = numVBOElements_;
+    colors_.push_back(color1);
+    normals_.push_back(n);
+    numVBOElements_++;
+  }
+  if(renderBase2)
+  {
+    points_.push_back(Vector(p2));
+    p2_index = numVBOElements_;
+    colors_.push_back(color2);
+    normals_.push_back(-n);
+    numVBOElements_++;
+  }
 
   // Precalculate
   double length = (p2-p1).length();
@@ -446,14 +478,19 @@ void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
     normals_.push_back(normals);
 
     // Points for base
-    points_.push_back(radius1 * p + Vector(p1));
-    colors_.push_back(color1);
-    normals_.push_back(n);
-    points_.push_back(radius2 * p + Vector(p2));
-    colors_.push_back(color2);
-    normals_.push_back(-n);
-
-    numVBOElements_ += 4;
+    if(renderBase1)
+    {
+      points_.push_back(radius1 * p + Vector(p1));
+      colors_.push_back(color1);
+      normals_.push_back(n);
+    }
+    if(renderBase2)
+    {
+      points_.push_back(radius2 * p + Vector(p2));
+      colors_.push_back(color2);
+      normals_.push_back(-n);
+    }
+    numVBOElements_ += points_per_loop;
   }
 
   // Add indices
@@ -467,12 +504,19 @@ void GlyphGeom::generateDisk(const Point& p1, const Point& p2, double radius1,
     indices_.push_back(strips + points_per_loop + 1);
 
     // Render base
-    indices_.push_back(p1_index);
-    indices_.push_back(strips + 2);
-    indices_.push_back(strips + points_per_loop + 2);
-    indices_.push_back(strips + 3);
-    indices_.push_back(p2_index);
-    indices_.push_back(strips + points_per_loop + 3);
+    if(renderBase1)
+    {
+      indices_.push_back(p1_index);
+      indices_.push_back(strips + 2);
+      indices_.push_back(strips + points_per_loop + 2);
+    }
+    if(renderBase2)
+    {
+      // Increment 1 if base 1 is present
+      indices_.push_back(strips + 2 + renderBase1);
+      indices_.push_back(p2_index);
+      indices_.push_back(strips + points_per_loop + 2 + renderBase1);
+    }
   }
 }
 
@@ -523,228 +567,631 @@ void GlyphGeom::generateSphere(const Point& center, double radius, int resolutio
   }
 }
 
-void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale)
+void GlyphGeom::generateComet(const Point& p1, const Point& p2,
+                              double radius, int resolution,
+                              const ColorRGB& color1, const ColorRGB& color2,
+                              double sphere_extrusion)
 {
-    /**
-    std::vector<QuadStrip> quadstrips;
-    double eigval1, eigval2, eigval3;
-    t.get_eigenvalues(eigval1, eigval2, eigval3);
+  Vector dir = (p2-p1).normal();
 
-    double half_x_side = eigval1 * 0.5 * scale;
-    double half_y_side = eigval2 * 0.5 * scale;
-    double half_z_side = eigval3 * 0.5 * scale;
+  // First, generate cone
+  resolution = resolution < 0 ? 20 : resolution;
+  radius = radius < 0 ? 1 : radius;
 
-    std::cout << "box:\nx: " << half_x_side << "\ny: " << half_y_side << "\nz: " << half_z_side << "\n\n";
+  //generate triangles for the cylinders.
+  Vector n((p1 - p2).normal());
+  Vector crx = n.getArbitraryTangent();
+  Vector u = Cross(crx, n).normal();
+  Point cone_p2 = p2 - dir * radius * sphere_extrusion * M_PI;
+  double cone_radius = radius * cos(sphere_extrusion * M_PI);
 
-    Transform trans;
-    Transform rotate;
-//    generateTransforms(center, t, trans, rotate);
+  // Center of base
+  int points_per_loop = 2;
 
-    uint32_t offset = static_cast<uint32_t>(numVBOElements_);
-    //Draw the Box
-//    Point p1 = trans * Point(-half_x_side, half_y_side, half_z_side);
-//    Point p2 = trans * Point(-half_x_side, half_y_side, -half_z_side);
-//    Point p3 = trans * Point(half_x_side, half_y_side, half_z_side);
-//    Point p4 = trans * Point(half_x_side, half_y_side, -half_z_side);
-//
-//    Point p5 = trans * Point(-half_x_side, -half_y_side, half_z_side);
-//    Point p6 = trans * Point(-half_x_side, -half_y_side, -half_z_side);
-//    Point p7 = trans * Point(half_x_side, -half_y_side, half_z_side);
-//    Point p8 = trans * Point(half_x_side, -half_y_side, -half_z_side);
+  // Precalculate
+  double length = (p2-p1).length();
+  double strip_angle = 2. * M_PI / resolution;
 
-    // Make vectors
-    Vector v_corner1 = Point(-half_x_side, half_y_side, half_z_side);
-    Vector v_corner2 = Point(-half_x_side, half_y_side, -half_z_side);
-    Vector v_corner3 = Point(half_x_side, half_y_side, half_z_side);
-    Vector v_corner4 = Point(half_x_side, half_y_side, -half_z_side);
+  uint32_t offset = static_cast<uint32_t>(numVBOElements_);
 
-    Vector v_corner5 = Point(-half_x_side, -half_y_side, half_z_side);
-    Vector v_corner6 = Point(-half_x_side, -half_y_side, -half_z_side);
-    Vector v_corner7 = Point(half_x_side, -half_y_side, half_z_side);
-    Vector v_corner8 = Point(half_x_side, -half_y_side, -half_z_side);
+  std::vector<Vector> cone_rim_points;
 
-    Vector v_plane1 = rotate * Vector(half_x_side, 0, 0);
-    Vector v_plane2 = rotate * Vector(0, half_y_side, 0);
-    Vector v_plane3 = rotate * Vector(0, 0, half_z_side);
+  Vector p;
+  // Add points, normals, and colors
+  for (int strips = 0; strips <= resolution; strips++)
+  {
+    p = std::cos(strip_angle * strips) * u +
+      std::sin(strip_angle * strips) * crx;
+    p.normalize();
+    Vector normals((length * p + radius * n).normal());
 
-    Vector v_plane4 = rotate * Vector(-half_x_side, 0, 0);
-    Vector v_plane5 = rotate * Vector(0, -half_y_side, 0);
-    Vector v_plane6 = rotate * Vector(0, 0, -half_z_side);
+    Vector new_point = cone_radius * p + Vector(cone_p2);
+    points_.push_back(new_point);
+    colors_.push_back(color1);
+    normals_.push_back(normals);
+    points_.push_back(Vector(p1));
+    colors_.push_back(color2);
+    normals_.push_back(normals);
+    numVBOElements_ += 2;
 
-    // Add corner points to list
-    points_.push_back(v_plane1 + Vector(center));
-    points_.push_back(v_plane2 + Vector(center));
-    points_.push_back(v_plane3 + Vector(center));
-    points_.push_back(v_plane4 + Vector(center));
-    points_.push_back(v_plane5 + Vector(center));
-    points_.push_back(v_plane6 + Vector(center));
-    points_.push_back(v_pp1 + Vector(center));
-    points_.push_back(v_pp2 + Vector(center));
-    points_.push_back(v_pp3 + Vector(center));
-    points_.push_back(v_pp4 + Vector(center));
-    points_.push_back(v_pp5 + Vector(center));
-    points_.push_back(v_pp6 + Vector(center));
-    points_.push_back(v_pp7 + Vector(center));
-    points_.push_back(v_pp8 + Vector(center));
+    cone_rim_points.push_back(new_point);
+  }
 
-    // Add indices
-    indices_.push_back(0 + offset);
-    indices_.push_back(1 + offset);
-    indices_.push_back(2 + offset);
-    quadstrip1.push_back((v_corner7, v_plane1));
-    quadstrip1.push_back((v_corner8, v_plane1));
-    quadstrip1.push_back((v_corner3, v_plane1));
-    quadstrip1.push_back((v_corner4, v_plane1));
+  // Add indices
+  for (int strips = offset; strips < resolution * points_per_loop + offset; strips += points_per_loop)
+  {
+    indices_.push_back(strips);
+    indices_.push_back(strips + points_per_loop);
+    indices_.push_back(strips + 1);
+  }
 
-    Vector v1 = rotate * Vector(half_x_side, 0, 0);
-    Vector v2 = rotate * Vector(0, half_y_side, 0);
-    Vector v3 = rotate * Vector(0, 0, half_z_side);
 
-    Vector v4 = rotate * Vector(-half_x_side, 0, 0);
-    Vector v5 = rotate * Vector(0, -half_y_side, 0);
-    Vector v6 = rotate * Vector(0, 0, -half_z_side);
+  // Generate ellipsoid
+  Vector tangent = dir.getArbitraryTangent();
+  Vector bitangent = Cross(dir, tangent);
 
-    QuadStrip quadstrip1;
-    QuadStrip quadstrip2;
-    QuadStrip quadstrip3;
-    QuadStrip quadstrip4;
-    QuadStrip quadstrip5;
-    QuadStrip quadstrip6;
+  Transform trans, rotate;
+  generateTransforms(p2, tangent, bitangent, dir, trans, rotate);
 
-    // +X
-    quadstrip1.push_back(std::make_pair(p7, v1));
-    quadstrip1.push_back(std::make_pair(p8, v1));
-    quadstrip1.push_back(std::make_pair(p3, v1));
-    quadstrip1.push_back(std::make_pair(p4, v1));
+  trans.post_scale ( Vector(1.0,1.0,1.0) * radius );
+  rotate.post_scale( Vector(1.0,1.0,1.0) / radius );
 
-    // +Y
-    quadstrip2.push_back(std::make_pair(p3, v2));
-    quadstrip2.push_back(std::make_pair(p4, v2));
-    quadstrip2.push_back(std::make_pair(p1, v2));
-    quadstrip2.push_back(std::make_pair(p2, v2));
+  int nu = resolution + 1;
 
-    // +Z
-    quadstrip3.push_back(std::make_pair(p5, v3));
-    quadstrip3.push_back(std::make_pair(p7, v3));
-    quadstrip3.push_back(std::make_pair(p1, v3));
-    quadstrip3.push_back(std::make_pair(p3, v3));
+  // Half ellipsoid criteria.
+  int nv = resolution * (0.5 + sphere_extrusion);
 
-    // -X
-    quadstrip4.push_back(std::make_pair(p1, v4));
-    quadstrip4.push_back(std::make_pair(p2, v4));
-    quadstrip4.push_back(std::make_pair(p5, v4));
-    quadstrip4.push_back(std::make_pair(p6, v4));
+  // Should only happen when doing half ellipsoids.
+  if (nv < 2) nv = 2;
 
-    // -Y
-    quadstrip5.push_back(std::make_pair(p5, v5));
-    quadstrip5.push_back(std::make_pair(p6, v5));
-    quadstrip5.push_back(std::make_pair(p7, v5));
-    quadstrip5.push_back(std::make_pair(p8, v5));
+  double end = M_PI * (0.5 + sphere_extrusion);
 
-    // -Z
-    quadstrip6.push_back(std::make_pair(p2, v6));
-    quadstrip6.push_back(std::make_pair(p4, v6));
-    quadstrip6.push_back(std::make_pair(p6, v6));
-    quadstrip6.push_back(std::make_pair(p8, v6));
+  SinCosTable tab1(nu, 0, 2 * M_PI);
+  SinCosTable tab2(nv, 0, end);
 
-    quadstrips.push_back(quadstrip1);
-    quadstrips.push_back(quadstrip2);
-    quadstrips.push_back(quadstrip3);
-    quadstrips.push_back(quadstrip4);
-    quadstrips.push_back(quadstrip5);
-    quadstrips.push_back(quadstrip6);
-     **/
+  int cone_rim_index = 0;
+
+  // Draw the ellipsoid
+  for (int v = 0; v<nv - 1; v++)
+  {
+    double nr1 = tab2.sin(v + 1);
+    double nr2 = tab2.sin(v);
+
+    double nz1 = tab2.cos(v + 1);
+    double nz2 = tab2.cos(v);
+
+    for (int u = 0; u<nu; u++)
+    {
+      uint32_t offset = static_cast<uint32_t>(numVBOElements_);
+      double nx = tab1.sin(u);
+      double ny = tab1.cos(u);
+
+      double x1 = nr1 * nx;
+      double y1 = nr1 * ny;
+      double z1 = nz1;
+
+      double x2 = nr2 * nx;
+      double y2 = nr2 * ny;
+      double z2 = nz2;
+
+      // Rotate and translate points
+      Vector p1 = Vector(trans * Point(x1, y1, z1));
+      Vector p2 = Vector(trans * Point(x2, y2, z2));
+
+      // Rotate norms
+      Vector v1 = rotate * Vector(x1, y1, z1);
+      Vector v2 = rotate * Vector(x2, y2, z2);
+
+      v1.safe_normalize();
+      v2.safe_normalize();
+
+      // Use cone points around rim of ellipsoid
+      if(v == nv - 2)
+      {
+        points_.push_back(cone_rim_points[cone_rim_index]);
+        cone_rim_index++;
+      }
+      else
+      {
+        points_.push_back(p1);
+      }
+      points_.push_back(p2);
+
+      // Add normals
+      normals_.push_back(v1);
+      normals_.push_back(v2);
+
+      // Add color vectors from parameters
+      colors_.push_back(color1);
+      colors_.push_back(color1);
+
+      numVBOElements_ += 2;
+
+      indices_.push_back(0 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(3 + offset);
+    }
+    for(int jj = 0; jj < 6; jj++) indices_.pop_back();
+  }
 }
 
-void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, Vector &scaled_eigenvals, int resolution, const ColorRGB& color)
+void reorderTensor(std::vector<Vector>& eigvectors, Vector& eigvals)
 {
-    Vector eig_vec1, eig_vec2, eig_vec3;
-    t.get_eigenvectors(eig_vec1, eig_vec2, eig_vec3);
+  if(eigvals[0] < eigvals[1])
+  {
+    double temp = eigvals[0];
+    eigvals[0] = eigvals[1];
+    eigvals[1] = temp;
+    Vector tempVec = eigvectors[0];
+    eigvectors[0] = eigvectors[1];
+    eigvectors[1] = tempVec;
+  }
+  if(eigvals[1] < eigvals[2])
+  {
+    double temp = eigvals[1];
+    eigvals[1] = eigvals[2];
+    eigvals[2] = temp;
+    Vector tempVec = eigvectors[1];
+    eigvectors[1] = eigvectors[2];
+    eigvectors[2] = tempVec;
+  }
+  if(eigvals[0] < eigvals[1])
+  {
+    double temp = eigvals[0];
+    eigvals[0] = eigvals[1];
+    eigvals[1] = temp;
+    Vector tempVec = eigvectors[0];
+    eigvectors[0] = eigvectors[1];
+    eigvectors[1] = tempVec;
+  }
+}
 
-    // Scale to eigen values
-    eig_vec1 *= scaled_eigenvals.x();
-    eig_vec2 *= scaled_eigenvals.y();
-    eig_vec3 *= scaled_eigenvals.z();
+std::vector<Vector> GlyphGeom::generateBoxPoints(const Transform& trans, const Vector& eigvals)
+{
+  std::vector<Vector> box_points;
+  for(int x : {-1, 1})
+    {
+      for(int y : {-1, 1})
+        {
+          for(int z : {-1, 1})
+            {
+              box_points.emplace_back(trans * Point(x * eigvals.x(), y * eigvals.y(), z * eigvals.z()));
+            }
+        }
+    }
+  return box_points;
+}
 
-    int nu = resolution + 1;
-    //    int nv = resolution;
+void GlyphGeom::generateBox(const Point& center, Tensor& t, double scale, ColorRGB& node_color, bool normalize)
+{
+  static const double zeroThreshold = 0.000001;
+  double eigval1, eigval2, eigval3;
+  t.get_eigenvalues(eigval1, eigval2, eigval3);
 
-    // Half ellipsoid criteria.
-    //  if (half == -1) start = M_PI / 2.0;
-    //  if (half == 1) stop = M_PI / 2.0;
-    //  if (half != 0) nv /= 2;
+  Vector eigvals(abs(eigval1), abs(eigval2), abs(eigval3));
+  if(normalize)
+    eigvals.normalize();
+  eigvals *= scale;
 
-    // Should only happen when doing half ellipsoids.
-    //  if (nv < 2) nv = 2;
+  std::vector<Vector> eigvectors(3);
+  t.get_eigenvectors(eigvectors[0], eigvectors[1], eigvectors[2]);
 
-    SinCosTable tab1(nu, 0, 2 * M_PI);
-    SinCosTable tab2(resolution, 0, M_PI);
+  // Checks to see if eigenvalues are close to 0
+  bool eig_x_0 = eigvals.x() <= zeroThreshold;
+  bool eig_y_0 = eigvals.y() <= zeroThreshold;
+  bool eig_z_0 = eigvals.z() <= zeroThreshold;
 
-    Eigen::Matrix3f m;
-    m << eig_vec1[0], eig_vec2[0], eig_vec3[0],
-         eig_vec1[1], eig_vec2[1], eig_vec3[1],
-         eig_vec1[2], eig_vec2[2], eig_vec3[2];
-    Eigen::Matrix3f mInverse = m.inverse();
-    Eigen::Matrix3f mInverseTranspose = mInverse.transpose();
+  // Set to 0 if below threshold
+  eigvals[0] = (!eig_x_0) * eigvals[0];
+  eigvals[1] = (!eig_y_0) * eigvals[1];
+  eigvals[2] = (!eig_z_0) * eigvals[2];
 
-    // Draw the ellipsoid
-    for (int v = 0; v<resolution - 1; v++)
+  bool flatTensor = (eig_x_0 + eig_y_0 + eig_z_0) >= 1;
+  if(flatTensor)
+  {
+    reorderTensor(eigvectors, eigvals);
+
+    eig_x_0 = eigvals.x() <= zeroThreshold;
+    eig_y_0 = eigvals.y() <= zeroThreshold;
+    eig_z_0 = eigvals.z() <= zeroThreshold;
+    // Check for zero eigenvectors
+    if(eig_x_0)
+    {
+      eigvectors[0] = Cross(eigvectors[1], eigvectors[2]);
+    }
+    else if(eig_y_0)
+    {
+      eigvectors[1] = Cross(eigvectors[0], eigvectors[2]);
+    }
+    else if(eig_z_0)
+    {
+      eigvectors[2] = Cross(eigvectors[0], eigvectors[1]);
+    }
+  }
+
+  Transform trans, rotate;
+  generateTransforms(center, eigvectors[0], eigvectors[1], eigvectors[2], trans, rotate);
+
+  std::vector<Vector> box_points = generateBoxPoints(trans, eigvals);
+  std::vector<Vector> column_vectors = rotate.get_column_vectors();
+
+  generateBoxSide(box_points[5], box_points[4], box_points[7], box_points[6], column_vectors[0], node_color);
+  generateBoxSide(box_points[7], box_points[6], box_points[3], box_points[2], column_vectors[1], node_color);
+  generateBoxSide(box_points[1], box_points[5], box_points[3], box_points[7], column_vectors[2], node_color);
+  generateBoxSide(box_points[3], box_points[2], box_points[1], box_points[0], -column_vectors[0], node_color);
+  generateBoxSide(box_points[1], box_points[0], box_points[5], box_points[4], -column_vectors[1], node_color);
+  generateBoxSide(box_points[2], box_points[6], box_points[0], box_points[4], -column_vectors[2], node_color);
+}
+
+void GlyphGeom::generateBoxSide(const Vector& p1, const Vector& p2, const Vector& p3, const Vector& p4,
+                                const Vector& normal, const ColorRGB& node_color)
+{
+  size_t offset = static_cast<size_t>(numVBOElements_);
+  points_.push_back(p1);
+  points_.push_back(p2);
+  points_.push_back(p3);
+  points_.push_back(p4);
+
+  for(int i = 0; i < 4; i++)
+  {
+    normals_.push_back(normal);
+    colors_.push_back(node_color);
+  }
+  numVBOElements_ += 4;
+
+  indices_.push_back(offset + 2);
+  indices_.push_back(offset);
+  indices_.push_back(offset + 3);
+  indices_.push_back(offset + 1);
+  indices_.push_back(offset + 3);
+  indices_.push_back(offset);
+}
+
+void GlyphGeom::generateEllipsoid(const Point& center, Tensor& t, double scale, int resolution, const ColorRGB& color, bool half, bool normalize)
+{
+  static const double zeroThreshold = 0.000001;
+  std::vector<Vector> eigvectors(3);
+  t.get_eigenvectors(eigvectors[0], eigvectors[1], eigvectors[2]);
+
+  double eigval1, eigval2, eigval3;
+  t.get_eigenvalues(eigval1, eigval2, eigval3);
+  Vector eigvals = Vector(fabs(eigval1), fabs(eigval2), fabs(eigval3));
+  if(normalize)
+    eigvals.normalize();
+  eigvals *= scale;
+
+  // Checks to see if eigenvalues are close to 0
+  bool eig_x_0 = eigvals.x() <= zeroThreshold;
+  bool eig_y_0 = eigvals.y() <= zeroThreshold;
+  bool eig_z_0 = eigvals.z() <= zeroThreshold;
+
+  // Set to 0 if below threshold
+  eigvals[0] = (!eig_x_0) * eigvals[0];
+  eigvals[1] = (!eig_y_0) * eigvals[1];
+  eigvals[2] = (!eig_z_0) * eigvals[2];
+
+  bool flatTensor = (eig_x_0 + eig_y_0 + eig_z_0) >= 1;
+  Vector zero_norm;
+
+  if(flatTensor)
+  {
+    reorderTensor(eigvectors, eigvals);
+
+    eig_x_0 = eigvals.x() <= zeroThreshold;
+    eig_y_0 = eigvals.y() <= zeroThreshold;
+    eig_z_0 = eigvals.z() <= zeroThreshold;
+    // Check for zero eigenvectors
+    if(eig_x_0)
+    {
+      zero_norm = Cross(eigvectors[1], eigvectors[2]);
+      eigvectors[0] = zero_norm;
+    }
+    else if(eig_y_0)
+    {
+      zero_norm = Cross(eigvectors[0], eigvectors[2]);
+      eigvectors[1] = zero_norm;
+    }
+    else if(eig_z_0)
+    {
+      zero_norm = Cross(eigvectors[0], eigvectors[1]);
+      eigvectors[2] = zero_norm;
+    }
+  }
+
+  Transform trans, rotate;
+  generateTransforms(center, eigvectors[0], eigvectors[1], eigvectors[2], trans, rotate);
+
+  trans.post_scale (Vector(1.0,1.0,1.0) * eigvals);
+  rotate.post_scale(Vector(1.0,1.0,1.0) / eigvals);
+
+  int nu = resolution + 1;
+
+  // Half ellipsoid criteria.
+  int nv = resolution;
+  if (half) nv /= 2;
+
+  // Should only happen when doing half ellipsoids.
+  if (nv < 2) nv = 2;
+
+  double end = half ? M_PI / 2 : M_PI;
+
+  SinCosTable tab1(nu, 0, 2 * M_PI);
+  SinCosTable tab2(nv, 0, end);
+
+  // Draw the ellipsoid
+  for (int v = 0; v<nv - 1; v++)
+  {
+    double nr1 = tab2.sin(v + 1);
+    double nr2 = tab2.sin(v);
+
+    double nz1 = tab2.cos(v + 1);
+    double nz2 = tab2.cos(v);
+
+    for (int u = 0; u<nu; u++)
+    {
+      uint32_t offset = static_cast<uint32_t>(numVBOElements_);
+      double nx = tab1.sin(u);
+      double ny = tab1.cos(u);
+
+      double x1 = nr1 * nx;
+      double y1 = nr1 * ny;
+      double z1 = nz1;
+
+      double x2 = nr2 * nx;
+      double y2 = nr2 * ny;
+      double z2 = nz2;
+
+      // Rotate and translate points
+      Vector p1 = Vector(trans * Point(x1, y1, z1));
+      Vector p2 = Vector(trans * Point(x2, y2, z2));
+
+      Vector v1, v2;
+
+      if(flatTensor)
       {
-        double nr1 = tab2.sin(v + 1);
-        double nr2 = tab2.sin(v);
-
-        double nz1 = tab2.cos(v + 1);
-        double nz2 = tab2.cos(v);
-
-        for (int u = 0; u<nu; u++)
-          {
-            uint32_t offset = static_cast<uint32_t>(numVBOElements_);
-            double nx = tab1.sin(u);
-            double ny = tab1.cos(u);
-
-            Eigen::Vector3f p1(nr1 * nx,
-                               nr1 * ny,
-                               nz1);
-
-            Eigen::Vector3f p2(nr2 * nx,
-                               nr2 * ny,
-                               nz2);
-
-            // Calculate points
-            Eigen::Vector3f v_p1 = m * p1;
-            Vector v_p1Vec = Vector(v_p1[0], v_p1[1], v_p1[2]);
-            Eigen::Vector3f v_p2 = m * p2;
-            Vector v_p2Vec = Vector(v_p2[0], v_p2[1], v_p2[2]);
-
-            // Transorm points and add to points list
-            points_.push_back(v_p1Vec + Vector(center));
-            points_.push_back(v_p2Vec + Vector(center));
-
-            // Calculate normals
-            Eigen::Vector3f n1 = mInverseTranspose * p1;
-            Vector n1Vec = Vector(n1[0], n1[1], n1[2]);
-            Eigen::Vector3f n2 = mInverseTranspose * p2;
-            Vector n2Vec = Vector(n2[0], n2[1], n2[2]);
-
-            // Add normals
-            normals_.push_back(n1Vec);
-            normals_.push_back(n2Vec);
-
-            // Add color vectors from parameters
-            colors_.push_back(color);
-            colors_.push_back(color);
-
-            numVBOElements_ += 2;
-
-            indices_.push_back(0 + offset);
-            indices_.push_back(1 + offset);
-            indices_.push_back(2 + offset);
-            indices_.push_back(2 + offset);
-            indices_.push_back(1 + offset);
-            indices_.push_back(3 + offset);
-          }
-        for(int jj = 0; jj < 6; jj++) indices_.pop_back();
+        // Avoids recalculating norm vector and prevents vectors with infinite length
+        bool first_half = v < nv/2;
+        v1 = first_half ? zero_norm : -zero_norm;
+        v2 = first_half ? zero_norm : -zero_norm;
       }
+      else
+      {
+        // Rotate norms
+        v1 = rotate * Vector(x1, y1, z1);
+        v2 = rotate * Vector(x2, y2, z2);
+      }
+
+      v1.safe_normalize();
+      v2.safe_normalize();
+
+      // Transorm points and add to points list
+      points_.push_back(p1);
+      points_.push_back(p2);
+
+      // Add normals
+      normals_.push_back(v1);
+      normals_.push_back(v2);
+
+      // Add color vectors from parameters
+      colors_.push_back(color);
+      colors_.push_back(color);
+
+      numVBOElements_ += 2;
+
+      indices_.push_back(0 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(3 + offset);
+    }
+    for(int jj = 0; jj < 6; jj++) indices_.pop_back();
+  }
+}
+
+inline double spow(double e, double x)
+{
+  // This for round off of very small numbers.
+  if( abs( e ) < 1.0e-6)
+    e = 0.0;
+
+  if (e < 0.0)
+  {
+    return (double)(pow(abs(e), x) * -1.0);
+  }
+  else
+  {
+    return (double)(pow(e, x));
+  }
+}
+
+void GlyphGeom::generateSuperEllipsoid(const Point& center, Tensor& t, double scale, int resolution, const ColorRGB& color, bool normalize, double emphasis)
+{
+  static const double zeroThreshold = 0.000001;
+  std::vector<Vector> eigvectors(3);
+  t.get_eigenvectors(eigvectors[0], eigvectors[1], eigvectors[2]);
+
+  double eigval1, eigval2, eigval3;
+  t.get_eigenvalues(eigval1, eigval2, eigval3);
+  Vector eigvals = Vector(fabs(eigval1), fabs(eigval2), fabs(eigval3));
+  if(normalize)
+    eigvals.normalize();
+  eigvals *= scale;
+
+  // Checks to see if eigenvalues are close to 0
+  bool eig_x_0 = eigvals.x() <= zeroThreshold;
+  bool eig_y_0 = eigvals.y() <= zeroThreshold;
+  bool eig_z_0 = eigvals.z() <= zeroThreshold;
+
+  // Set to 0 if below threshold
+  eigvals[0] = (!eig_x_0) * eigvals[0];
+  eigvals[1] = (!eig_y_0) * eigvals[1];
+  eigvals[2] = (!eig_z_0) * eigvals[2];
+
+  bool flatTensor = (eig_x_0 + eig_y_0 + eig_z_0) >= 1;
+  Vector zero_norm;
+
+  if(flatTensor)
+  {
+    reorderTensor(eigvectors, eigvals);
+
+    eig_x_0 = eigvals.x() <= zeroThreshold;
+    eig_y_0 = eigvals.y() <= zeroThreshold;
+    eig_z_0 = eigvals.z() <= zeroThreshold;
+    // Check for zero eigenvectors
+    if(eig_x_0)
+    {
+      zero_norm = Cross(eigvectors[1], eigvectors[2]);
+      eigvectors[0] = zero_norm;
+    }
+    else if(eig_y_0)
+    {
+      zero_norm = Cross(eigvectors[0], eigvectors[2]);
+      eigvectors[1] = zero_norm;
+    }
+    else if(eig_z_0)
+    {
+      zero_norm = Cross(eigvectors[0], eigvectors[1]);
+      eigvectors[2] = zero_norm;
+    }
+  }
+
+  Transform trans, rotate;
+  generateTransforms(center, eigvectors[0], eigvectors[1], eigvectors[2], trans, rotate);
+
+  trans.post_scale (Vector(1.0,1.0,1.0) * eigvals);
+  rotate.post_scale(Vector(1.0,1.0,1.0) / eigvals);
+
+  int nu = resolution + 1;
+  int nv = resolution;
+
+  SinCosTable tab1(nu, 0, 2 * M_PI);
+  SinCosTable tab2(nv, 0, M_PI);
+
+  double cl = (eigvals[0] - eigvals[1]) / (eigvals[0] + eigvals[1] + eigvals[2]);
+  double cp = 2.0 * (eigvals[1] - eigvals[2]) / (eigvals[0] + eigvals[1] + eigvals[2]);
+  double A = spow((1.0 - cl), emphasis);
+  double B = spow((1.0 - cp), emphasis);
+
+  double nr[2];
+  double nz[2];
+
+  for (int v=0; v < nv-1; v++)
+  {
+    nr[0] = tab2.sin(v+1);
+    nr[1] = tab2.sin(v);
+
+    nz[0] = tab2.cos(v+1);
+    nz[1] = tab2.cos(v);
+
+    for (int u=0; u<nu; u++)
+    {
+      double nx = tab1.sin(u);
+      double ny = tab1.cos(u);
+
+      uint32_t offset = static_cast<uint32_t>(numVBOElements_);
+      for( unsigned int i=0; i<2; i++ )
+      {
+        // Transorm points and add to points list
+        const double x = spow(nr[i], B) * spow(nx, A);
+        const double y = spow(nr[i], B) * spow(ny, A);
+        const double z = spow(nz[i], B);
+        Vector  point  = Vector(trans  * Point( x, y, z ));
+        points_.push_back(point);
+
+        // Add normals
+        const float nnx = spow(nr[i], 2.0-B) * spow(nx, 2.0-A);
+        const float nny = spow(nr[i], 2.0-B) * spow(ny, 2.0-A);
+        const float nnz = spow(nz[i], 2.0-B);
+        Vector normal = rotate * Vector( nnx, nny, nnz );
+        normal.safe_normalize();
+        normals_.push_back(normal);
+
+        // Add color vectors from parameters
+        colors_.push_back(color);
+
+        numVBOElements_ ++;
+      }
+
+      indices_.push_back(0 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(3 + offset);
+    }
+  }
+  for(int jj = 0; jj < 6; jj++) indices_.pop_back();
+}
+
+void GlyphGeom::generateTorus(const Point& p1, const Point& p2, double major_radius, double minor_radius,
+                              int resolution, const ColorRGB& color)
+{
+  int nv = resolution;
+  int nu = nv + 1;
+
+  SinCosTable tab1(nu, 0, 2*M_PI);
+  SinCosTable tab2(nv, 0, 2*M_PI, minor_radius);
+
+  Transform trans;
+  Transform rotate;
+  /* Point center = p1 + (p2-p1) * 0.5; */
+  generateTransforms( p1, (p2-p1), trans, rotate );
+
+  // Draw the torus
+  for (int v=0; v<nv-1; v++)
+  {
+    double z1 = tab2.cos(v+1);
+    double z2 = tab2.cos(v);
+
+    double nr1 = tab2.sin(v+1);
+    double nr2 = tab2.sin(v);
+
+    double r1 = major_radius + nr1;
+    double r2 = major_radius + nr2;
+
+    for (int u=0; u<nu; u++)
+    {
+      uint32_t offset = static_cast<uint32_t>(numVBOElements_);
+
+      double nx = tab1.sin(u);
+      double ny = tab1.cos(u);
+
+      double x1 = r1 * nx;
+      double y1 = r1 * ny;
+
+      double x2 = r2 * nx;
+      double y2 = r2 * ny;
+
+      Vector p1 = Vector(trans * Point(x1, y1, z1));
+      Vector p2 = Vector(trans * Point(x2, y2, z2));
+      points_.push_back(p1);
+      points_.push_back(p2);
+
+      Vector v1 = rotate * Vector(nr1*nx, nr1*ny, z1);
+      Vector v2 = rotate * Vector(nr2*nx, nr2*ny, z2);
+      v1.safe_normalize();
+      v2.safe_normalize();
+      normals_.push_back(v1);
+      normals_.push_back(v2);
+
+      colors_.push_back(color);
+      colors_.push_back(color);
+
+      numVBOElements_ += 2;
+
+      indices_.push_back(0 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(2 + offset);
+      indices_.push_back(1 + offset);
+      indices_.push_back(3 + offset);
+    }
+  }
+  for(int jj = 0; jj < 6; jj++) indices_.pop_back();
 }
 
 void GlyphGeom::generateLine(const Point& p1, const Point& p2, const ColorRGB& color1, const ColorRGB& color2)
@@ -1080,5 +1527,17 @@ void GlyphGeom::generateTransforms(const Point& center, const Vector& normal,
   double cangle = Dot(z, axis);
   double zrotangle = -acos(cangle);
 
+  trans.pre_translate((Vector) center);
+  trans.post_rotate(zrotangle, zrotaxis);
+
   rotate.post_rotate(zrotangle, zrotaxis);
+}
+
+void GlyphGeom::generateTransforms(const Point& center, const Vector& eigvec1, const Vector& eigvec2,
+                                   const Vector& eigvec3, Transform& translate, Transform& rotate)
+{
+  static const Point origin(0.0, 0.0, 0.0);
+  rotate = Transform(origin, eigvec1, eigvec2, eigvec3);
+  translate = rotate;
+  translate.pre_translate((Vector) center);
 }

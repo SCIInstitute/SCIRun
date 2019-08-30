@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
 <boost_serialization signature="serialization::archive" version="12">
-<networkFile class_id="0" tracking_level="0" version="5">
+<networkFile class_id="0" tracking_level="0" version="6">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>14</count>
+			<count>15</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CalculateFieldData:1</first>
@@ -557,6 +557,103 @@
 									<value>
 										<which>1</which>
 										<value>0.00000000000000000e+00</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>GeneratePointSamplesFromField:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>NewField</category_name_>
+						<module_name_>GeneratePointSamplesFromField</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>3</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>NumSeeds</name>
+								</first>
+								<second>
+									<name>NumSeeds</name>
+									<value>
+										<which>0</which>
+										<value>6</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>PointPositions</name>
+								</first>
+								<second>
+									<name>PointPositions</name>
+									<value>
+										<which>5</which>
+										<value>
+											<count>6</count>
+											<item_version>0</item_version>
+											<item>
+												<name>widget_i</name>
+												<value>
+													<which>2</which>
+													<value>[-2.15382, 1.63913, 0.331682]</value>
+												</value>
+											</item>
+											<item>
+												<name>widget_i</name>
+												<value>
+													<which>2</which>
+													<value>[-1.10363, 0.65162, 0.819813]</value>
+												</value>
+											</item>
+											<item>
+												<name>widget_i</name>
+												<value>
+													<which>2</which>
+													<value>[0.648736, -0.277567, 0.906761]</value>
+												</value>
+											</item>
+											<item>
+												<name>widget_i</name>
+												<value>
+													<which>2</which>
+													<value>[-1.12409, 0.595196, -0.755906]</value>
+												</value>
+											</item>
+											<item>
+												<name>widget_i</name>
+												<value>
+													<which>2</which>
+													<value>[1.65623, -1.07809, 0.487088]</value>
+												</value>
+											</item>
+											<item>
+												<name>widget_i</name>
+												<value>
+													<which>2</which>
+													<value>[-1.12409, 0.595196, -0.755906]</value>
+												</value>
+											</item>
+										</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ProbeScale</name>
+								</first>
+								<second>
+									<name>ProbeScale</name>
+									<value>
+										<which>1</which>
+										<value>2.30000000000000177e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1646,7 +1743,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>39</count>
+							<count>47</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -1716,7 +1813,7 @@
 									<name>Emission</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>8.49999999999999867e-01</value>
 									</value>
 								</second>
 							</item>
@@ -1782,6 +1879,18 @@
 							</item>
 							<item>
 								<first>
+									<name>HeadLightAzimuth</name>
+								</first>
+								<second>
+									<name>HeadLightAzimuth</name>
+									<value>
+										<which>0</which>
+										<value>180</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>HeadLightColor</name>
 								</first>
 								<second>
@@ -1789,6 +1898,18 @@
 									<value>
 										<which>2</which>
 										<value>Color(0,0,0)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>HeadLightInclination</name>
+								</first>
+								<second>
+									<name>HeadLightInclination</name>
+									<value>
+										<which>0</which>
+										<value>90</value>
 									</value>
 								</second>
 							</item>
@@ -1806,6 +1927,18 @@
 							</item>
 							<item>
 								<first>
+									<name>Light1Azimuth</name>
+								</first>
+								<second>
+									<name>Light1Azimuth</name>
+									<value>
+										<which>0</which>
+										<value>180</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>Light1Color</name>
 								</first>
 								<second>
@@ -1813,6 +1946,18 @@
 									<value>
 										<which>2</which>
 										<value>Color(0,0,0)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Light1Inclination</name>
+								</first>
+								<second>
+									<name>Light1Inclination</name>
+									<value>
+										<which>0</which>
+										<value>90</value>
 									</value>
 								</second>
 							</item>
@@ -1830,6 +1975,18 @@
 							</item>
 							<item>
 								<first>
+									<name>Light2Azimuth</name>
+								</first>
+								<second>
+									<name>Light2Azimuth</name>
+									<value>
+										<which>0</which>
+										<value>180</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>Light2Color</name>
 								</first>
 								<second>
@@ -1837,6 +1994,18 @@
 									<value>
 										<which>2</which>
 										<value>Color(0,0,0)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Light2Inclination</name>
+								</first>
+								<second>
+									<name>Light2Inclination</name>
+									<value>
+										<which>0</which>
+										<value>90</value>
 									</value>
 								</second>
 							</item>
@@ -1854,6 +2023,18 @@
 							</item>
 							<item>
 								<first>
+									<name>Light3Azimuth</name>
+								</first>
+								<second>
+									<name>Light3Azimuth</name>
+									<value>
+										<which>0</which>
+										<value>180</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>Light3Color</name>
 								</first>
 								<second>
@@ -1861,6 +2042,18 @@
 									<value>
 										<which>2</which>
 										<value>Color(0,0,0)</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Light3Inclination</name>
+								</first>
+								<second>
+									<name>Light3Inclination</name>
+									<value>
+										<which>0</which>
+										<value>90</value>
 									</value>
 								</second>
 							</item>
@@ -2004,7 +2197,7 @@
 									<name>Shine</name>
 									<value>
 										<which>1</which>
-										<value>1.00000000000000000e+00</value>
+										<value>8.49999999999999867e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2052,7 +2245,7 @@
 									<name>Specular</name>
 									<value>
 										<which>1</which>
-										<value>4.00000000000000022e-01</value>
+										<value>5.50000000000000044e-01</value>
 									</value>
 								</second>
 							</item>
@@ -2122,7 +2315,7 @@
 			</item>
 		</modules>
 		<connections class_id="13" tracking_level="0" version="0">
-			<count>15</count>
+			<count>17</count>
 			<item_version>0</item_version>
 			<item class_id="14" tracking_level="0" version="0">
 				<moduleId1_>CalculateFieldData:1</moduleId1_>
@@ -2233,6 +2426,18 @@
 				</port2_>
 			</item>
 			<item>
+				<moduleId1_>CreateLatVol:7</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>GeneratePointSamplesFromField:0</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
 				<moduleId1_>CreateStandardColorMap:4</moduleId1_>
 				<port1_>
 					<name>ColorMapObject</name>
@@ -2254,6 +2459,18 @@
 				<port2_>
 					<name>ColorMapObject</name>
 					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>GeneratePointSamplesFromField:0</moduleId1_>
+				<port1_>
+					<name>GeneratedWidget</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:9</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>2</id>
 				</port2_>
 			</item>
 			<item>
@@ -2307,7 +2524,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="16" tracking_level="0" version="0">
-		<count>14</count>
+		<count>15</count>
 		<item_version>0</item_version>
 		<item class_id="17" tracking_level="0" version="0">
 			<first>CalculateFieldData:1</first>
@@ -2373,6 +2590,13 @@
 			</second>
 		</item>
 		<item>
+			<first>GeneratePointSamplesFromField:0</first>
+			<second>
+				<first>1.81000000000000000e+02</first>
+				<second>-9.10000000000000000e+01</second>
+			</second>
+		</item>
+		<item>
 			<first>RescaleColorMap:2</first>
 			<second>
 				<first>2.74000000000000000e+02</first>
@@ -2417,7 +2641,7 @@
 		<item_version>0</item_version>
 	</connectionNotes>
 	<moduleTags class_id="20" tracking_level="0" version="0">
-		<count>14</count>
+		<count>15</count>
 		<item_version>0</item_version>
 		<item class_id="21" tracking_level="0" version="0">
 			<first>CalculateFieldData:1</first>
@@ -2456,6 +2680,10 @@
 			<second>-1</second>
 		</item>
 		<item>
+			<first>GeneratePointSamplesFromField:0</first>
+			<second>-1</second>
+		</item>
+		<item>
 			<first>RescaleColorMap:2</first>
 			<second>-1</second>
 		</item>
@@ -2489,6 +2717,10 @@
 		<item_version>0</item_version>
 	</moduleTagLabels>
 	<loadTagGroups>0</loadTagGroups>
+	<subnetworks class_id="24" tracking_level="0" version="0">
+		<count>0</count>
+		<item_version>0</item_version>
+	</subnetworks>
 </networkFile>
 </boost_serialization>
 

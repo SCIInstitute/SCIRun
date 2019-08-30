@@ -50,3 +50,34 @@ void CompositeGeometryObject::addToList(GeometryBaseHandle handle, GeomList& lis
     list.insert(geoms_.begin(), geoms_.end());
   }
 }
+
+void SpireSubPass::addUniform(const std::string& name, const glm::vec4& vector)
+{
+  for (auto& i : mUniforms)
+  {
+    if (i.name == name && i.type == Uniform::UniformType::UNIFORM_VEC4)
+    {
+      i.data = vector;
+      return;
+    }
+  }
+  mUniforms.push_back(Uniform(name, vector));
+}
+
+void SpireSubPass::addOrModifyUniform(const Uniform& uniform)
+{
+  for (auto& i : mUniforms)
+  {
+    if (i.name == uniform.name && i.type == uniform.type)
+    {
+      i.data = uniform.data;
+      return;
+    }
+  }
+  mUniforms.push_back(uniform);
+}
+
+void SpireSubPass::addUniform(const Uniform& uniform)
+{
+  mUniforms.push_back(uniform);
+}
