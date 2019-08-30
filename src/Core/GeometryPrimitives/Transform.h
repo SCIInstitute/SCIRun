@@ -35,6 +35,7 @@
 #ifndef CORE_GEOMETRY_TRANSFORM_H
 #define CORE_GEOMETRY_TRANSFORM_H 1
 
+#include <vector>
 #include <Core/Persistent/Persistent.h>
 
 #include <Core/GeometryPrimitives/share.h>

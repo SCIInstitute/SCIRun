@@ -42,6 +42,9 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Color.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 using namespace SCIRun;
 using namespace Modules::Visualization;
 using namespace Core;

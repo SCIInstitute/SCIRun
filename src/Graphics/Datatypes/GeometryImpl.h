@@ -165,7 +165,7 @@ namespace SCIRun {
 
 
       /// Defines a Spire object 'pass'.
-      struct SpireSubPass
+      struct SCISHARE SpireSubPass
       {
         SpireSubPass() : renderType(RenderType::RENDER_VBO_IBO), scalar(0), mColorScheme(ColorScheme::COLOR_UNIFORM) {}
         SpireSubPass(const std::string& name, const std::string& vboName,

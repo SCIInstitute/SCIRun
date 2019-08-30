@@ -38,6 +38,7 @@ using namespace SCIRun;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Visualization;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Render;
 using namespace SCIRun::Dataflow::Networks;
@@ -424,9 +425,9 @@ std::vector<QString> VisibleItemManager::synchronize(const std::vector<GeometryB
       auto state = stateIter->second;
 
       updateCheckStates(name, {
-        state->getValue(ShowField::ShowNodes).toBool(),
-        state->getValue(ShowField::ShowEdges).toBool(),
-        state->getValue(ShowField::ShowFaces).toBool() });
+        state->getValue(Parameters::ShowNodes).toBool(),
+        state->getValue(Parameters::ShowEdges).toBool(),
+        state->getValue(Parameters::ShowFaces).toBool() });
     }
   }
   itemList_->sortItems(0, Qt::AscendingOrder);
