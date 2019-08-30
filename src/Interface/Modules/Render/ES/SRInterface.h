@@ -352,18 +352,11 @@ namespace SCIRun {
 
       GLuint                              mFontTexture        {};       // 2D texture for fonts
 
-<<<<<<< HEAD
-      int                               axesFailCount_      {0};
-      std::vector<SRObject>             mSRObjects          {};       // All SCIRun objects.
-      Core::Geometry::BBox              mSceneBBox          {};       // Scene's AABB. Recomputed per-frame.
-=======
       int                                 axesFailCount_      {0};
-      std::shared_ptr<Gui::GLContext>     mContext            {};       // Context to use for rendering.
       std::vector<SRObject>               mSRObjects          {};       // All SCIRun objects.
+      Core::Geometry::BBox				  mSceneBBox          {};       // Scene's AABB. Recomputed per-frame.
       std::unordered_map<std::string, uint64_t> mEntityIdMap  {};
       Core::Geometry::BBox                mSceneBBox          {};       // Scene's AABB. Recomputed per-frame.
->>>>>>> upstream/master
-
 
       ESCore                              mCore               {};       // Entity system core.
 
