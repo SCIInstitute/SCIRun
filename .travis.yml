@@ -48,9 +48,11 @@ matrix:
 before_install:
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then date -u; fi
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then uname -a; fi
+
+install:
 - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build libqt4-dev qt4-qmake libqt4-opengl-dev; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 30 scripts/getQt4Mac.sh; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt@5.13; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt; fi
 
 script:
   - cd bin
