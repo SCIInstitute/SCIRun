@@ -27,9 +27,9 @@
  */
 
 // Uniforms
-uniform mat4    uProjIVObject;      // Projection transform * Inverse View
-uniform mat4    uObject;            // Object -> World
-uniform mat4    uInverseView;       // world -> view
+uniform mat4    uModelViewProjection;
+uniform mat4    uModel;
+uniform mat4    uView;
 
 // Attributes
 attribute vec3  aPos;
@@ -39,16 +39,17 @@ attribute vec4  aColor;
 // Outputs to the fragment shader.
 varying vec3    vNormal;
 varying vec4    vColor;
-varying vec4    vPos;//for clipping plane calc
-varying vec4    vFogCoord;// for fog calculation
+varying vec4    vPosWorld;
+varying vec4    vPosView;
 
 void main( void )
 {
    // Todo: Add gamma correction factor of 2.2. For textures, we assume that it
    // was generated in gamma space, and we need to convert it to linear space.
-   vNormal  = vec3(uObject * vec4(aNormal, 0.0));
+   vPosWorld = uModel * vec4(aPos, 1.0);
+   vPosView = uView * vPosWorld;
+   vNormal = normalize((uView * uModel * vec4(aNormal, 0.0)).xyz);
    vColor = aColor;
-   vPos = vec4(aPos, 1.0);
-  vFogCoord = uInverseView * vPos;
-   gl_Position = uProjIVObject * vec4(aPos, 1.0);
+
+   gl_Position = uModelViewProjection * vec4(aPos, 1.0);
 }

@@ -20,7 +20,7 @@ TEST(VarBufferTest, BasicSerialization)
   // After this write, we are at 1024.
   uint32_t v1 = 3;
   double v2 = 5.483;
-  float v3 = 8293.09;
+  float v3 = 8293.09f;
   int32_t v4 = -323;
   uint16_t v5 = 8924;
   std::string v6 = "This is a test string.";
@@ -66,7 +66,7 @@ TEST(VarBufferTest, TestPreallocatedSize)
   // After this write, we are at 1024.
   uint32_t v1 = 3;
   double v2 = 5.483;
-  float v3 = 8293.09;
+  float v3 = 8293.09f;
   int32_t v4 = -323;
   uint16_t v5 = 8924;
   std::string v6 = "This is a test string.";

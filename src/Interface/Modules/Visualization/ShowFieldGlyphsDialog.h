@@ -49,10 +49,12 @@ namespace SCIRun {
     protected:
       virtual void pullSpecial() override;
 
-      private Q_SLOTS:
+    private Q_SLOTS:
       void push();
       void pushColor();
       void assignDefaultMeshColor();
+      void emphasisSpinBoxChanged(double val);
+      void emphasisSliderChanged(int val);
 
     private:
       QColor defaultMeshColor_;

@@ -37,7 +37,7 @@ using namespace SCIRun::Modules::Python;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Python;
 
-InterfaceWithPythonCodeTranslatorImpl::InterfaceWithPythonCodeTranslatorImpl(const std::string& moduleId,
+InterfaceWithPythonCodeTranslatorImpl::InterfaceWithPythonCodeTranslatorImpl(ModuleIdGetter moduleId,
   const ModuleStateHandle& state)
   : moduleId_(moduleId), state_(state)
 {
@@ -66,7 +66,7 @@ std::string InterfaceWithPythonCodeTranslatorImpl::translateOutputSyntax(const s
       auto whitespace = what.size() > 2 ? boost::lexical_cast<std::string>(what[1]) : "";
       auto rhs = boost::lexical_cast<std::string>(what[rhsIndex]);
       auto converted = whitespace + "scirun_set_module_transient_state(\"" +
-        moduleId_ + "\",\"" + varName + "\"," + rhs + ")";
+        moduleId_() + "\",\"" + varName + "\"," + rhs + ")";
       //std::cout << "CONVERTED TO " << converted << std::endl;
       return converted;
     }
@@ -81,13 +81,13 @@ std::string InterfaceWithPythonCodeTranslatorImpl::translateInputSyntax(const st
   {
     auto inputName = state_->getValue(Name(portId)).toString();
     //std::cout << "FOUND INPUT VARIABLE NAME: " << inputName << " for port " << portId << std::endl;
-    //std::cout << "NEED TO REPLACE " << inputName << " with\n\t" << "scirun_get_module_input_value(\"" << moduleId_ << "\", \"" << portId << "\")" << std::endl;
+    //std::cout << "NEED TO REPLACE " << inputName << " with\n\t" << "scirun_get_module_input_value(\"" << moduleId_() << "\", \"" << portId << "\")" << std::endl;
     auto index = line.find(inputName);
     if (index != std::string::npos)
     {
       auto codeCopy = line;
       return codeCopy.replace(index, inputName.length(),
-        "scirun_get_module_input_value(\"" + moduleId_ + "\", \"" + portId + "\")");
+        "scirun_get_module_input_value(\"" + moduleId_() + "\", \"" + portId + "\")");
     }
   }
   return line;
@@ -185,7 +185,7 @@ std::string InterfaceWithPythonCodeTranslatorImpl::translateMatlabBlock(const Py
     boost::trim(func);
     auto args = std::string(what[3]);
     boost::trim(args);
-    
+
     std::ostringstream o;
     o << "__" << args << " = convertfieldtomatlab(" << args << ")\n" <<
       "__" << LHS << " = __eng." << func << "(__" << args << ", nargout=1)\n" <<

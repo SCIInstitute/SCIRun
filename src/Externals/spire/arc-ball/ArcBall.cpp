@@ -1,22 +1,23 @@
 #include "ArcBall.hpp"
+#include <iostream>
 
 namespace spire {
 
 //------------------------------------------------------------------------------
-ArcBall::ArcBall(const glm::vec3& center, glm::float_t radius, const glm::mat4& screenToTCS) :
+  ArcBall::ArcBall(const glm::vec3& center, glm::float_t radius, bool inverted, const glm::mat4& screenToTCS) :
+    mScreenToTCS(screenToTCS),
+    invertHemisphere(inverted),
     mCenter(center),
-    mRadius(radius),
-    mScreenToTCS(screenToTCS)
+    mRadius(radius)
 {
   // glm uses the following format for quaternions: w,x,y,z.
   //        w,    x,    y,    z
   glm::quat qOne(1.0, 0.0, 0.0, 0.0);
   glm::vec3 vZero(0.0, 0.0, 0.0);
 
-  mVDown    = vZero;
-  mVNow     = vZero;
-  mQDown    = qOne;
-  mQNow     = qOne;
+  mQDown       = qOne;
+  mQNow        = qOne;
+  mVSphereDown = mouseOnSphere(vZero);
 }
 
 //------------------------------------------------------------------------------
@@ -28,21 +29,20 @@ glm::vec3 ArcBall::mouseOnSphere(const glm::vec3& tscMouse)
   ballMouse.x = (tscMouse.x - mCenter.x) / mRadius;
   ballMouse.y = (tscMouse.y - mCenter.y) / mRadius;
 
-  glm::float_t mag = glm::dot(ballMouse, ballMouse);
-  if (mag > 1.0)
+  glm::float_t mag_sq = glm::dot(ballMouse, ballMouse);
+  if (mag_sq > 1.0)
   {
-    // Since we are outside of the sphere, map to the visible boundary of
-    // the sphere.
-    ballMouse *= 1.0 / sqrtf(mag);
-    ballMouse.z = 0.0;
+    // Since we are outside of the sphere, map to the visible boundary of the sphere.
+    ballMouse *= 1.0 / sqrtf(mag_sq);
   }
   else
   {
-    // We are not at the edge of the sphere, we are inside of it.
-    // Essentially, we are normalizing the vector by adding the missing z
-    // component.
-    ballMouse.z = sqrtf(1.0 - mag);
+    // Essentially, we are normalizing the vector by adding the missing z component.
+    ballMouse.z = sqrtf(1.0 - mag_sq);
   }
+
+  if(invertHemisphere)
+    ballMouse.z = -ballMouse.z;
 
   return ballMouse;
 }
@@ -50,64 +50,45 @@ glm::vec3 ArcBall::mouseOnSphere(const glm::vec3& tscMouse)
 //------------------------------------------------------------------------------
 void ArcBall::beginDrag(const glm::vec2& msc)
 {
-  // The next two lines are usually a part of end drag. But end drag introduces
-  // too much statefullness, so we are shortcircuiting it.
-  mQDown      = mQNow;
-
-  // Normal 'begin' code.
-  mVDown      = (mScreenToTCS * glm::vec4(msc.x, msc.y, 0.0f, 1.0)).xyz();
+  mQDown       = mQNow;
+  mVSphereDown = mouseOnSphere((mScreenToTCS * glm::vec4(msc, 0.0f, 1.0)).xyz());
 }
 
 //------------------------------------------------------------------------------
 void ArcBall::drag(const glm::vec2& msc)
 {
-  // Regular drag code to follow...
-  mVNow       = (mScreenToTCS * glm::vec4(msc.x, msc.y, 0.0, 1.0)).xyz();
-  mVSphereFrom= mouseOnSphere(mVDown);
-  mVSphereTo  = mouseOnSphere(mVNow);
+  glm::vec3 mVSphereNow = mouseOnSphere((mScreenToTCS * glm::vec4(msc, 0.0, 1.0)).xyz());
 
   // Construct a quaternion from two points on the unit sphere.
-  mQDrag = quatFromUnitSphere(mVSphereFrom, mVSphereTo);
+  glm:: quat mQDrag = quatFromUnitSphere(mVSphereDown, mVSphereNow);
   mQNow = mQDrag * mQDown;
-
-  // Perform complex conjugate
-  glm::quat q = mQNow;
-  q.x = -q.x;
-  q.y = -q.y;
-  q.z = -q.z;
-  q.w =  q.w;
-  mMatNow = glm::mat4_cast(q);
+  if(glm::dot(mVSphereDown, mVSphereNow) < 0.0)
+    beginDrag(msc);
 }
 
 //------------------------------------------------------------------------------
 void ArcBall::setLocationOnSphere(glm::vec3 location, glm::vec3 up)
 {
-  mMatNow = glm::lookAt(location, glm::vec3(0.0f), up);
-  glm::quat q = glm::quat_cast(mMatNow);
-  q.x = -q.x;
-  q.y = -q.y;
-  q.z = -q.z;
-  q.w = q.w;
-  mQNow = q;
-
+  glm::mat4 mMatNow = glm::lookAt(location, glm::vec3(0.0f), up);
+  mQNow   = glm::quat_cast(mMatNow);
 }
 
 //------------------------------------------------------------------------------
 glm::quat ArcBall::quatFromUnitSphere(const glm::vec3& from, const glm::vec3& to)
 {
-  glm::quat q;
-  q.x = from.y*to.z - from.z*to.y;
-  q.y = from.z*to.x - from.x*to.z;
-  q.z = from.x*to.y - from.y*to.x;
-  q.w = from.x*to.x + from.y*to.y + from.z*to.z;
-  return q;
+  glm::vec3 axis = glm::normalize(glm::cross(from, to));
+  float angle = std::acos(glm::dot(from, to));
+
+  if(angle <= 0.00001)
+    return glm::quat(1.0, 0.0, 0.0, 0.0);
+
+  return glm::angleAxis(angle, axis);
 }
 
 //------------------------------------------------------------------------------
 glm::mat4 ArcBall::getTransformation() const
 {
-  return mMatNow;
+  return glm::mat4_cast(mQNow);
 }
-
 
 } // namespace spire

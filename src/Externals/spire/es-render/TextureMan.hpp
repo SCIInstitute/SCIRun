@@ -46,6 +46,15 @@ namespace ren {
       GLsizei textureWidth, GLsizei textureHeight,
       const std::vector<uint8_t>& bitmap);
 
+    ren::Texture createTexture(
+      const std::string& assetName,
+      GLint internalformat,
+      GLsizei width,
+      GLsizei height,
+      GLenum format,
+      GLenum type,
+      const std::vector<uint8_t>& data);
+
     //resize texture
     bool resizeTexture(
       ren::Texture &tex, GLsizei textureWidth,

@@ -40,7 +40,7 @@ namespace SCIRun
   {
     namespace Algorithms
     {
-      namespace Visualization
+      namespace OsprayVisualization
       {
         ALGORITHM_PARAMETER_DECL(DefaultColorR);
         ALGORITHM_PARAMETER_DECL(DefaultColorG);
@@ -49,7 +49,10 @@ namespace SCIRun
         ALGORITHM_PARAMETER_DECL(Radius);
         ALGORITHM_PARAMETER_DECL(UseNormals);
         ALGORITHM_PARAMETER_DECL(ShowEdges);
-        
+      }
+
+      namespace Visualization
+      {  
         typedef std::pair<int,int> Edge;
         typedef std::vector<Edge> EdgeVector;
         typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS> DirectedGraph;

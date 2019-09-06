@@ -376,10 +376,10 @@ ColorMap_OSP_helper::ColorMap_OSP_helper(const std::string& name)
     colorList.push_back(0); colorList.push_back(1);   colorList.push_back(0);
   }else if(name.compare("Darkhue") == 0){
     colorList.push_back(0); colorList.push_back(0);   colorList.push_back(0);
-    colorList.push_back(0); colorList.push_back(0);   colorList.push_back(0.333333);
+    colorList.push_back(0); colorList.push_back(0);   colorList.push_back(0.333333f);
     colorList.push_back(0.5); colorList.push_back(0); colorList.push_back(0.5);
     colorList.push_back(1); colorList.push_back(0);   colorList.push_back(0);
-    colorList.push_back(1); colorList.push_back(0);     colorList.push_back(0.25*2.6666666);
+    colorList.push_back(1); colorList.push_back(0);     colorList.push_back(0.25f*2.6666666f);
   }else if(name.compare("BP Seismic") == 0){
     colorList.push_back(0); colorList.push_back(0);  colorList.push_back(1);
     colorList.push_back(1); colorList.push_back(1);  colorList.push_back(1);

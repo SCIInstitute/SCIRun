@@ -43,6 +43,7 @@ SCIRUN_ADD_LIBRARY(Graphics_Datatypes
 TARGET_LINK_LIBRARIES(Graphics_Datatypes
   Core_Datatypes
   Core_Geometry_Primitives
+  Core_Algorithms_Visualization
 )
 
 IF(BUILD_SHARED_LIBS)
