@@ -39,7 +39,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Algorithms::Visualization::Parameters;
+using namespace SCIRun::Core::Algorithms::OsprayVisualization::Parameters;
 
 ShowFieldWithOsprayDialog::ShowFieldWithOsprayDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)

@@ -42,6 +42,13 @@ public:
     }
   }
 
+  template <typename T>
+  inline void writeUnsafe(const T& val)
+  {
+    mSerializer->writeUnsafe(val);
+  }
+
+
   /// Clears all data currently written to the var buffer.
   void clear();
 

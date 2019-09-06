@@ -75,5 +75,6 @@
     <file>Resources/flash3.png</file>
     <file>Resources/flash4.png</file>
     <file>Resources/flash5.png</file>
+    <file>Resources/LegacyModuleImporter.xml</file>
   </qresource>
 </RCC>

@@ -34,7 +34,7 @@ public:
       const spire::ComponentGroup<gen::StaticCamera>& cam,
       const spire::ComponentGroup<UtilViewPosAlign>& /* posAlign */) override
   {
-    glm::mat4 viewMat = cam.front().data.getView();
+    glm::mat4 viewMat = cam.front().data.getInverseView();
     glm::mat4 newTrafo = trafo.front().transform;
     newTrafo[3].x = viewMat[3].x;
     newTrafo[3].y = viewMat[3].y;
@@ -61,4 +61,3 @@ const char* getSystemName_UtilViewPosAlign()
 }
 
 } // namespace ren
-

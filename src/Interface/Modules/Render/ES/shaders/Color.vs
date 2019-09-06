@@ -27,7 +27,7 @@
 */
 
 // Uniforms
-uniform mat4    uProjIVObject;      // Projection * Inverse View * World XForm
+uniform mat4    uModelViewProjection;
 
 // Attributes
 attribute vec3  aPos;
@@ -38,6 +38,6 @@ varying vec4    fColor;
 
 void main( void )
 {
-  gl_Position = uProjIVObject * vec4(aPos, 1.0);
+  gl_Position = uModelViewProjection * vec4(aPos, 1.0);
   fColor      = aColorFloat;
 }

@@ -45,7 +45,12 @@ public:
   {
     return detail::SerializeType<T>::write(mMsg, mMsgSize, &mOffset, val);
   }
-  /// @}
+
+  template <typename T>
+  inline void writeUnsafe(const T& val)
+  {
+    detail::writeTypeToMemoryUnsafe(mMsg, mOffset, val);
+  }
 
   /// Retrieves the current buffer offset. If we are writing to the buffer,
   /// then this is the size of the data currently written. If we are reading,

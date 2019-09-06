@@ -47,39 +47,39 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   WidgetStyleMixin::tabStyle(this->displayOptionsTabs_);
-  addLineEditManager(fieldNameLineEdit_, ShowField::FieldName);
-  addCheckBoxManager(showNodesCheckBox_, ShowField::ShowNodes);
-  addCheckBoxManager(showEdgesCheckBox_, ShowField::ShowEdges);
-  addCheckBoxManager(showFacesCheckBox_, ShowField::ShowFaces);
-  addCheckBoxManager(enableTransparencyNodesCheckBox_, ShowField::NodeTransparency);
-  addCheckBoxManager(enableTransparencyEdgesCheckBox_, ShowField::EdgeTransparency);
-  addCheckBoxManager(enableTransparencyFacesCheckBox_, ShowField::FaceTransparency);
-  addCheckBoxManager(invertNormalsCheckBox, ShowField::FaceInvertNormals);
-  addCheckBoxManager(showTextCheckBox_, ShowField::ShowText);
-  addCheckBoxManager(showDataValuesCheckBox_, ShowField::ShowDataValues);
-  addCheckBoxManager(showNodeIndicesCheckBox_, ShowField::ShowNodeIndices);
-  addCheckBoxManager(showEdgeIndicesCheckBox_, ShowField::ShowEdgeIndices);
-  addCheckBoxManager(showFaceIndicesCheckBox_, ShowField::ShowFaceIndices);
-  addCheckBoxManager(showCellIndicesCheckBox_, ShowField::ShowCellIndices);
-  addCheckBoxManager(cullTextCheckBox_, ShowField::CullBackfacingText);
-  addCheckBoxManager(textAlwaysVisibleCheckBox_, ShowField::TextAlwaysVisible);
-  addCheckBoxManager(renderIndicesLocationsCheckBox_, ShowField::RenderAsLocation);
-  addCheckBoxManager(useFaceNormalsCheckBox_, ShowField::UseFaceNormals);
-  addDoubleSpinBoxManager(transparencyDoubleSpinBox_, ShowField::FaceTransparencyValue);
-  addDoubleSpinBoxManager(nodeTransparencyDoubleSpinBox_, ShowField::NodeTransparencyValue);
-  addDoubleSpinBoxManager(edgeTransparencyDoubleSpinBox_, ShowField::EdgeTransparencyValue);
-  addDoubleSpinBoxManager(scaleSphereDoubleSpinBox_, ShowField::SphereScaleValue);
+  addLineEditManager(fieldNameLineEdit_, Parameters::FieldName);
+  addCheckBoxManager(showNodesCheckBox_, Parameters::ShowNodes);
+  addCheckBoxManager(showEdgesCheckBox_, Parameters::ShowEdges);
+  addCheckBoxManager(showFacesCheckBox_, Parameters::ShowFaces);
+  addCheckBoxManager(enableTransparencyNodesCheckBox_, Parameters::NodeTransparency);
+  addCheckBoxManager(enableTransparencyEdgesCheckBox_, Parameters::EdgeTransparency);
+  addCheckBoxManager(enableTransparencyFacesCheckBox_, Parameters::FaceTransparency);
+  addCheckBoxManager(invertNormalsCheckBox, Parameters::FaceInvertNormals);
+  addCheckBoxManager(showTextCheckBox_, Parameters::ShowText);
+  addCheckBoxManager(showDataValuesCheckBox_, Parameters::ShowDataValues);
+  addCheckBoxManager(showNodeIndicesCheckBox_, Parameters::ShowNodeIndices);
+  addCheckBoxManager(showEdgeIndicesCheckBox_, Parameters::ShowEdgeIndices);
+  addCheckBoxManager(showFaceIndicesCheckBox_, Parameters::ShowFaceIndices);
+  addCheckBoxManager(showCellIndicesCheckBox_, Parameters::ShowCellIndices);
+  addCheckBoxManager(cullTextCheckBox_, Parameters::CullBackfacingText);
+  addCheckBoxManager(textAlwaysVisibleCheckBox_, Parameters::TextAlwaysVisible);
+  addCheckBoxManager(renderIndicesLocationsCheckBox_, Parameters::RenderAsLocation);
+  addCheckBoxManager(useFaceNormalsCheckBox_, Parameters::UseFaceNormals);
+  addDoubleSpinBoxManager(transparencyDoubleSpinBox_, Parameters::FaceTransparencyValue);
+  addDoubleSpinBoxManager(nodeTransparencyDoubleSpinBox_, Parameters::NodeTransparencyValue);
+  addDoubleSpinBoxManager(edgeTransparencyDoubleSpinBox_, Parameters::EdgeTransparencyValue);
+  addDoubleSpinBoxManager(scaleSphereDoubleSpinBox_, Parameters::SphereScaleValue);
   addDoubleSpinBoxManager(cylinder_rad_spin, Parameters::CylinderRadius);
-  addSpinBoxManager(cylinder_res_spin, ShowField::CylinderResolution);
-  addSpinBoxManager(sphereResolutionSpinBox, ShowField::SphereResolution);
-  addSpinBoxManager(textSizeSpinBox_, ShowField::TextSize);
-  addSpinBoxManager(textPrecisionSpinBox_, ShowField::TextPrecision);
-  addRadioButtonGroupManager({ edgesAsLinesButton_, edgesAsCylindersButton_ }, ShowField::EdgesAsCylinders);
-  addRadioButtonGroupManager({ nodesAsPointsButton_, nodesAsSpheresButton_ }, ShowField::NodeAsSpheres);
-  addRadioButtonGroupManager({ defaultNodeColoringButton_, colormapLookupNodeColoringButton_/*, conversionRGBNodeColoringButton_*/ }, ShowField::NodesColoring);
-  addRadioButtonGroupManager({ defaultEdgeColoringButton_, colormapLookupEdgeColoringButton_/*, conversionRGBEdgeColoringButton_*/ }, ShowField::EdgesColoring);
-  addRadioButtonGroupManager({ defaultFaceColoringButton_, colormapLookupFaceColoringButton_/*, conversionRGBFaceColoringButton_*/ }, ShowField::FacesColoring);
-  addRadioButtonGroupManager({ textColoringRadioButton_, colormapLookupTextRadioButton_, conversionRGBTextRadioButton_ }, ShowField::TextColoring);
+  addSpinBoxManager(cylinder_res_spin, Parameters::CylinderResolution);
+  addSpinBoxManager(sphereResolutionSpinBox, Parameters::SphereResolution);
+  addSpinBoxManager(textSizeSpinBox_, Parameters::TextSize);
+  addSpinBoxManager(textPrecisionSpinBox_, Parameters::TextPrecision);
+  addRadioButtonGroupManager({ edgesAsLinesButton_, edgesAsCylindersButton_ }, Parameters::EdgesAsCylinders);
+  addRadioButtonGroupManager({ nodesAsPointsButton_, nodesAsSpheresButton_ }, Parameters::NodeAsSpheres);
+  addRadioButtonGroupManager({ defaultNodeColoringButton_, colormapLookupNodeColoringButton_/*, conversionRGBNodeColoringButton_*/ }, Parameters::NodesColoring);
+  addRadioButtonGroupManager({ defaultEdgeColoringButton_, colormapLookupEdgeColoringButton_/*, conversionRGBEdgeColoringButton_*/ }, Parameters::EdgesColoring);
+  addRadioButtonGroupManager({ defaultFaceColoringButton_, colormapLookupFaceColoringButton_/*, conversionRGBFaceColoringButton_*/ }, Parameters::FacesColoring);
+  addRadioButtonGroupManager({ textColoringRadioButton_, colormapLookupTextRadioButton_, conversionRGBTextRadioButton_ }, Parameters::TextColoring);
 
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
   connect(textColorPushButton_, SIGNAL(clicked()), this, SLOT(assignDefaultTextColor()));
@@ -127,18 +127,18 @@ void ShowFieldDialog::createStartupNote()
 
 void ShowFieldDialog::pullSpecial()
 {
-  defaultMeshColor_ = colorFromState(ShowField::DefaultMeshColor);
-  defaultTextColor_ = colorFromState(ShowField::DefaultTextColor);
+  defaultMeshColor_ = colorFromState(Parameters::DefaultMeshColor);
+  defaultTextColor_ = colorFromState(Parameters::DefaultTextColor);
 
   QString styleSheet = "QLabel{ background: rgb(" + QString::number(defaultTextColor_.red()) + "," +
     QString::number(defaultTextColor_.green()) + "," + QString::number(defaultTextColor_.blue()) + "); }";
   textColorLabel_->setStyleSheet(styleSheet);
 
-  nodesTab_->setEnabled(state_->getValue(ShowField::NodesAvailable).toBool());
+  nodesTab_->setEnabled(state_->getValue(Parameters::NodesAvailable).toBool());
   displayOptionsTabs_->setTabText(0, nodesTab_->isEnabled() ? "Nodes" : "NO NODES");
-  edgesTab_->setEnabled(state_->getValue(ShowField::EdgesAvailable).toBool());
+  edgesTab_->setEnabled(state_->getValue(Parameters::EdgesAvailable).toBool());
   displayOptionsTabs_->setTabText(1, edgesTab_->isEnabled() ? "Edges" : "NO EDGES");
-  facesTab_->setEnabled(state_->getValue(ShowField::FacesAvailable).toBool());
+  facesTab_->setEnabled(state_->getValue(Parameters::FacesAvailable).toBool());
   displayOptionsTabs_->setTabText(2, facesTab_->isEnabled() ? "Faces" : "NO FACES");
 }
 
@@ -168,8 +168,8 @@ void ShowFieldDialog::assignDefaultTextColor()
 
 void ShowFieldDialog::pushColor()
 {
-  colorToState(ShowField::DefaultTextColor, defaultTextColor_);
-  colorToState(ShowField::DefaultMeshColor, defaultMeshColor_);
+  colorToState(Parameters::DefaultTextColor, defaultTextColor_);
+  colorToState(Parameters::DefaultMeshColor, defaultMeshColor_);
 
   QString styleSheet = "QLabel{ background: rgb(" + QString::number(defaultTextColor_.red()) + "," +
     QString::number(defaultTextColor_.green()) + "," + QString::number(defaultTextColor_.blue()) + "); }";

@@ -6,7 +6,6 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -145,6 +144,7 @@ public:
 
   virtual int getTitleWidth() const override;
   virtual QLabel* getTitle() const override;
+  QGroupBox* getButtonGroup() const override;
 
   virtual void startExecuteMovie() override;
   virtual void stopExecuteMovie() override;
@@ -313,6 +313,11 @@ int ModuleWidgetDisplay::getTitleWidth() const
 QLabel* ModuleWidgetDisplay::getTitle() const
 {
   return titleLabel_;
+}
+
+QGroupBox* ModuleWidgetDisplay::getButtonGroup() const
+{
+  return buttonGroup_;
 }
 
 static const int UNSET = -1;
@@ -1122,8 +1127,12 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
       colorToUse = colorStateLookup.right.at(static_cast<int>(ModuleExecutionState::Errored));
     }
 
-    QString rounded("color: white; border-radius: 7px;");
-    setStyleSheet(rounded + " background-color: " + colorToUse);
+    static const QString rounded("color: white; border-radius: 7px;");
+    auto style = rounded + " background-color: " + colorToUse;
+    setStyleSheet(style);
+    fullWidgetDisplay_->getTitle()->setStyleSheet(style);
+    fullWidgetDisplay_->getButtonGroup()->setStyleSheet(style);
+
     previousModuleState_ = colorStateLookup.left.at(colorToUse);
   }
 }

@@ -41,9 +41,11 @@ SphereWidget::SphereWidget(const Core::GeometryIDGenerator& idGenerator,
                            const std::string& name,
                            double radius,
                            const std::string& defaultColor,
-                           const Point& point, const BBox& bbox,
+                           const Point& point,
+                           const Point& origin,
+                           const BBox& bbox,
                            int resolution)
-  : WidgetBase(idGenerator, "SphereWidget::" + name, true, point)
+  : WidgetBase(idGenerator, "SphereWidget::" + name, true, point, origin)
 {
   if (radius < 0) radius = 1.;
   if (resolution < 0) resolution = 10;

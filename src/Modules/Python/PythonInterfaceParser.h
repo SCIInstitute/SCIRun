@@ -57,10 +57,12 @@ namespace SCIRun
           virtual void updatePorts(const std::vector<std::string>& portIds) = 0;
         };
 
+        using ModuleIdGetter = std::function<std::string()>;
+
         class SCISHARE InterfaceWithPythonCodeTranslatorImpl : public InterfaceWithPythonCodeTranslator
         {
         public:
-          InterfaceWithPythonCodeTranslatorImpl(const std::string& moduleId,
+          InterfaceWithPythonCodeTranslatorImpl(ModuleIdGetter moduleId,
             const Dataflow::Networks::ModuleStateHandle& state);
 
           void updatePorts(const std::vector<std::string>& portIds) override { portIds_ = portIds; }
@@ -75,7 +77,7 @@ namespace SCIRun
           PythonCodeBlock concatenateAndTranslateMatlabBlocks(const PythonCode& code) const;
           std::string translateMatlabBlock(const PythonCodeBlock& code) const;
         private:
-          const std::string moduleId_;
+          ModuleIdGetter moduleId_;
           const Dataflow::Networks::ModuleStateHandle state_;
           std::vector<std::string> portIds_;
           void parsePart(PythonCode& blocks, const std::string& part) const;

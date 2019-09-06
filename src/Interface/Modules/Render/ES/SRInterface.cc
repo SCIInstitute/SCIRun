@@ -31,6 +31,8 @@
 #include <gl-platform/GLPlatform.hpp>
 #include <Interface/Modules/Render/UndefiningX11Cruft.h>
 #include <QtOpenGL/QGLWidget>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtx/vector_angle.hpp>
 
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
@@ -63,7 +65,6 @@
 #include "comp/StaticWorldLight.h"
 #include "comp/LightingUniforms.h"
 #include "comp/ClippingPlaneUniforms.h"
-
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
@@ -191,6 +192,7 @@ namespace SCIRun {
     void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
     {
       widgetSelected_ = false;
+      widgetBall_.reset();
       tryAutoRotate = doAutoRotateOnDrag;
     }
 
@@ -288,14 +290,14 @@ namespace SCIRun {
     void SRInterface::updateCamera()
     {
       // Update the static camera with the appropriate world to view transform.
-      glm::mat4 viewToWorld = mCamera->getViewToWorld();
+      glm::mat4 view = mCamera->getWorldToView();
       glm::mat4 projection = mCamera->getViewToProjection();
 
       gen::StaticCamera* camera = mCore.getStaticComponent<gen::StaticCamera>();
       if (camera)
       {
         camera->data.winWidth = static_cast<float>(mScreenWidth);
-        camera->data.setView(viewToWorld);
+        camera->data.setView(view);
         camera->data.setProjection(projection, mCamera->getFOVY(), mCamera->getAspect(), mCamera->getZNear(), mCamera->getZFar());
       }
     }
@@ -322,6 +324,12 @@ namespace SCIRun {
     }
 
     //Getters/Setters-------------------------------------------------------------------------------
+    void SRInterface::setCameraDistance(const float distance) {mCamera->setDistance(distance);}
+    float SRInterface::getCameraDistance() const {return mCamera->getDistance();}
+    void SRInterface::setCameraLookAt(const glm::vec3 lookAt) {mCamera->setLookAt(lookAt);}
+    glm::vec3 SRInterface::getCameraLookAt() const {return mCamera->getLookAt();}
+    void SRInterface::setCameraRotation(const glm::quat roation) {mCamera->setRotation(roation);}
+    glm::quat SRInterface::getCameraRotation() const {return mCamera->getRotation();}
     void SRInterface::setAutoRotateSpeed(double speed) { autoRotateSpeed = speed; }
     void SRInterface::setAutoRotateOnDrag(bool value) { doAutoRotateOnDrag = value; }
     void SRInterface::setZoomInverted(bool value) {mCamera->setZoomInverted(value);}
@@ -330,7 +338,6 @@ namespace SCIRun {
     void SRInterface::setLockRotation(bool lock)  {mCamera->setLockRotation(lock);}
     const glm::mat4& SRInterface::getWorldToProjection() const {return mCamera->getWorldToProjection();}
     const glm::mat4& SRInterface::getWorldToView() const       {return mCamera->getWorldToView();}
-    const glm::mat4& SRInterface::getViewToWorld() const       {return mCamera->getViewToWorld();}
     const glm::mat4& SRInterface::getViewToProjection() const  {return mCamera->getViewToProjection();}
 
 
@@ -340,9 +347,7 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::select(const glm::ivec2& pos,
-      std::list<Graphics::Datatypes::GeometryHandle> &objList,
-      int port)
+    void SRInterface::select(const glm::ivec2& pos, WidgetList& objList, int port)
     {
       mSelected = "";
       widgetSelected_ = false;
@@ -372,9 +377,11 @@ namespace SCIRun {
       std::map<uint32_t, std::string> selMap;
       std::vector<uint64_t> entityList;
 
+      int nameIndex = 0;
       //modify and add each object to draw
       for (auto& obj : objList)
       {
+        // auto& obj = objList[i];
         std::string objectName = obj->uniqueID();
         uint32_t selid = getSelectIDForName(objectName);
         selMap.insert(std::make_pair(selid, objectName));
@@ -383,8 +390,6 @@ namespace SCIRun {
         // Add vertex buffer objects.
         std::vector<char*> vbo_buffer;
         std::vector<size_t> stride_vbo;
-
-        int nameIndex = 0;
         for (auto it = obj->vbos().cbegin(); it != obj->vbos().cend(); ++it, ++nameIndex)
         {
           const auto& vbo = *it;
@@ -468,31 +473,6 @@ namespace SCIRun {
               addVBOToEntity(entityID, pass.vboName);
               addIBOToEntity(entityID, pass.iboName);
             }
-            else
-            {
-              // We will be constructing a render list from the VBO and IBO.
-              RenderList list;
-
-              for (const auto& vbo : obj->vbos())
-              {
-                if (vbo.name == pass.vboName)
-                {
-                  list.data = vbo.data;
-                  list.attributes = vbo.attributes;
-                  list.renderType = pass.renderType;
-                  list.numElements = vbo.numElements;
-                  mCore.addComponent(entityID, list);
-                  break;
-                }
-              }
-
-              // Lookup the VBOs and IBOs associated with this particular draw list
-              // and add them to our entity in question.
-              std::string assetName = "Assets/sphere.geom";
-
-              addVBOToEntity(entityID, assetName);
-              addIBOToEntity(entityID, assetName);
-            }
 
             // Load vertex and fragment shader will use an already loaded program.
             //shaderMan->loadVertexAndFragmentShader(mCore, entityID, "Shaders/Selection");
@@ -503,13 +483,13 @@ namespace SCIRun {
             if (shaderID == 0)
             {
               const char* vs =
-                "uniform mat4 uProjIVObject;\n"
+                "uniform mat4 uModelViewProjection;\n"
                 "uniform vec4 uColor;\n"
                 "attribute vec3 aPos;\n"
                 "varying vec4 fColor;\n"
                 "void main()\n"
                 "{\n"
-                "  gl_Position = uProjIVObject * vec4(aPos, 1.0);\n"
+                "  gl_Position = uModelViewProjection * vec4(aPos, 1.0);\n"
                 "  fColor = uColor;\n"
                 "}\n";
               const char* fs =
@@ -570,11 +550,24 @@ namespace SCIRun {
       GLuint value;
       GLfloat depth;
       if (fboMan->readFBO(mCore, fboName, pos.x, pos.y, 1, 1,
-        (GLvoid*)&value, (GLvoid*)&depth))
+                          (GLvoid*)&value, (GLvoid*)&depth))
       {
         auto it = selMap.find(value);
         if (it != selMap.end())
+        {
           mSelected = it->second;
+
+          for (auto &obj : objList)
+          {
+            if (obj->uniqueID() == it->second)
+            {
+              mOriginWorld = obj->origin_;
+              mFlipAxisWorld = obj->getFlipVector();
+              mWidgetMovement = obj->getMovementType();
+              mConnectedWidgets = obj->connectedIds_;
+            }
+          }
+        }
       }
       //release and restore fbo
       fboMan->unbindFBO();
@@ -583,10 +576,39 @@ namespace SCIRun {
       if (mSelected != "")
       {
         widgetSelected_ = true;
-        glm::vec4 spos((float(2 * pos.x) - float(mScreenWidth)) / float(mScreenWidth),
-          (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
-          depth * 2 - 1, 1.0f);
+
+        //Calculate w value
+        float zFar = mCamera->getZFar();
+        float zNear = mCamera->getZNear();
+        float z = -1.0/(depth * (1.0/zFar - 1.0/zNear) + 1.0/zNear);
+        mSelectedW = -z;
+
+        mOriginView = glm::vec3(mCamera->getWorldToView() * glm::vec4(mOriginWorld, 1.0));
+
+        // Get w value in of origin if scaling
+        if(mWidgetMovement == WidgetMovement::SCALE)
+        {
+          glm::vec4 projectedOrigin = mCamera->getViewToProjection() * glm::vec4(mOriginView, 1.0);
+          mSelectedW = projectedOrigin.w;
+        }
+
+        glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
+                       -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
         mSelectedPos = spos;
+        mSelectedDepth = depth * 2.0 - 1.0;
+
+        glm::vec3 sposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * mSelectedW, 0.0, 1.0));
+        sposView.z = -mSelectedW;
+        mOriginToSpos = sposView - mOriginView;
+        mSelectedRadius = glm::length(mOriginToSpos);
+
+        if(mWidgetMovement == WidgetMovement::ROTATE)
+        {
+          widgetBall_.reset(new spire::ArcBall(mOriginView, mSelectedRadius, (mOriginToSpos.z < 0.0)));
+          widgetBall_->beginDrag(glm::vec2(sposView));
+        }
+
+        updateWidget(pos);
       }
 
       for (auto& it : entityList)
@@ -637,31 +659,113 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::updateWidget(const glm::ivec2& pos)
     {
-      gen::StaticCamera* cam = mCore.getStaticComponent<gen::StaticCamera>();
-      glm::vec4 spos((float(2 * pos.x) - float(mScreenWidth)) / float(mScreenWidth),
-                     (float(mScreenHeight) - float(2 * pos.y)) / float(mScreenHeight),
-                     mSelectedPos.z, 1.0f);
+      switch(mWidgetMovement)
+      {
+      case WidgetMovement::TRANSLATE:
+        translateWidget(pos);
+        break;
+      case WidgetMovement::ROTATE:
+        rotateWidget(pos);
+        break;
+      case WidgetMovement::SCALE:
+        scaleWidget(pos);
+        break;
+      }
+    }
 
-      float ssDepth = mSelectedPos.z * 0.5 + 0.5;
-      float zFar = mCamera->getZFar();
-      float zNear = mCamera->getZNear();
-      float vDepth = 1.0/(ssDepth * (1.0/zFar - 1.0/zNear) + 1.0/zNear);
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::modifyWidgets()
+    {
+      auto contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
+      for (auto &widgetId : mConnectedWidgets)
+      {
+        auto component = contTrans->getComponent(mEntityIdMap[widgetId]);
+        if (component.first != nullptr)
+          contTrans->modifyIndex(mWidgetTransform, component.second, 0);
+      }
+    }
 
-      glm::vec4 transVec = glm::vec4(glm::vec3(spos - mSelectedPos) * glm::vec3(vDepth , vDepth, 1.0), 0.0f);
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::translateWidget(const glm::ivec2& pos)
+    {
+      auto cam = mCore.getStaticComponent<gen::StaticCamera>();
+      glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
+                     -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
+
+      glm::vec2 transVec = (spos - mSelectedPos) * glm::vec2(mSelectedW, mSelectedW);
       mWidgetTransform = gen::Transform();
-      mWidgetTransform.setPosition((glm::inverse(cam->data.projIV) * transVec).xyz());
+      mWidgetTransform.setPosition((glm::inverse(cam->data.viewProjection) * glm::vec4(transVec, 0.0, 0.0)).xyz());
 
-      spire::CerealHeap<gen::Transform>* contTrans = mCore.getOrCreateComponentContainer<gen::Transform>();
-      std::pair<const gen::Transform*, size_t> component = contTrans->getComponent(mSelectedID);
+      modifyWidgets();
+    }
 
-      if (component.first != nullptr)
-        contTrans->modifyIndex(mWidgetTransform, component.second, 0);
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::scaleWidget(const glm::ivec2& pos)
+    {
+      glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
+                    -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
+
+      glm::vec3 currentSposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * mSelectedW, 0.0, 1.0));
+      currentSposView.z = -mSelectedW;
+      glm::vec3 originToCurrentSpos = currentSposView - glm::vec3(mOriginView.xy(), mOriginView.z);
+
+      float scaling_factor = glm::dot(glm::normalize(originToCurrentSpos), glm::normalize(mOriginToSpos))
+        * (glm::length(originToCurrentSpos) / glm::length(mOriginToSpos));
+
+      // Flip if negative to avoid inverted normals
+      glm::mat4 flip;
+      bool negativeScale = scaling_factor < 0.0;
+      if(negativeScale)
+      {
+        flip = glm::rotate(glm::mat4(1.0f), 3.1415926f, mFlipAxisWorld);
+        scaling_factor = -scaling_factor;
+      }
+
+      mWidgetTransform = gen::Transform();
+      glm::mat4 translation = glm::translate(-mOriginWorld);
+      glm::mat4 scale = glm::scale(mWidgetTransform.transform, glm::vec3(scaling_factor));
+      glm::mat4 reverse_translation = glm::translate(mOriginWorld);
+
+      mWidgetTransform.transform = scale * translation;
+
+      if(negativeScale)
+        mWidgetTransform.transform = flip * mWidgetTransform.transform;
+
+      mWidgetTransform.transform = reverse_translation * mWidgetTransform.transform;
+
+      modifyWidgets();
+    }
+
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::rotateWidget(const glm::ivec2& pos)
+    {
+      if(!widgetBall_) return;
+
+      glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
+                   -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
+
+      glm::vec2 sposView = glm::vec2(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * mSelectedW, 0.0, 1.0));
+      widgetBall_->drag(sposView);
+
+
+      glm::quat rotationView = widgetBall_->getQuat();
+      glm::vec3 axis = glm::vec3(rotationView.x, rotationView.y, rotationView.z);
+      axis = glm::vec3(glm::inverse(mCamera->getWorldToView()) * glm::vec4(axis, 0.0));
+      glm::quat rotationWorld = glm::quat(rotationView.w, axis);
+
+      glm::mat4 translation = glm::translate(-mOriginWorld);
+      glm::mat4 reverse_translation = glm::translate(mOriginWorld);
+      glm::mat4 rotation = glm::mat4_cast(rotationWorld);
+
+      mWidgetTransform = gen::Transform();
+      mWidgetTransform.transform = reverse_translation * rotation * translation;
+
+      modifyWidgets();
     }
 
 
-
     //----------------------------------------------------------------------------------------------
-    //---------------- Clipping Planes -------------------------------------------------------------
+    //---------------- Clipping Planes -------------------------------------------------------------N
     //----------------------------------------------------------------------------------------------
 
     //----------------------------------------------------------------------------------------------
@@ -834,12 +938,14 @@ namespace SCIRun {
 
       DEBUG_LOG_LINE_INFO
 
-      std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
-      std::weak_ptr<ren::IBOMan> im = mCore.getStaticComponent<ren::StaticIBOMan>()->instance_;
-      if (std::shared_ptr<ren::VBOMan> vboMan = vm.lock())
+      auto vmc = mCore.getStaticComponent<ren::StaticVBOMan>();
+      auto imc = mCore.getStaticComponent<ren::StaticIBOMan>();
+      if(!vmc || !imc) return;
+
+      if (std::shared_ptr<ren::VBOMan> vboMan = vmc->instance_)
       {
         DEBUG_LOG_LINE_INFO;
-        if (std::shared_ptr<ren::IBOMan> iboMan = im.lock())
+        if (std::shared_ptr<ren::IBOMan> iboMan = imc->instance_)
         {
           DEBUG_LOG_LINE_INFO
           if (foundObject != mSRObjects.end())
@@ -850,6 +956,7 @@ namespace SCIRun {
             for (const auto& pass : foundObject->mPasses)
             {
               uint64_t entityID = getEntityIDForName(pass.passName, port);
+              mEntityIdMap.erase(objectName);
               mCore.removeEntity(entityID);
             }
 
@@ -1043,6 +1150,16 @@ namespace SCIRun {
           std::weak_ptr<ren::ShaderMan> sm = mCore.getStaticComponent<ren::StaticShaderMan>()->instance_;
           if (auto shaderMan = sm.lock())
           {
+            RENDERER_LOG("Recalculate scene bounding box. Should only be done when an object is added.");
+            mSceneBBox.reset();
+            for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
+            {
+              if (it->mBBox.valid())
+              {
+                mSceneBBox.extend(it->mBBox);
+              }
+            }
+
             RENDERER_LOG("Add passes");
             for (auto& pass : obj->passes())
             {
@@ -1078,41 +1195,7 @@ namespace SCIRun {
                 }
                 RENDERER_LOG("add texture");
                 addTextToEntity(entityID, pass.text);
-              }
-              else
-              {
-                RENDERER_LOG("We will be constructing a render list from the VBO and IBO.");
-                RenderList list;
-
-                for (const auto& vbo : obj->vbos())
-                {
-                  if (vbo.name == pass.vboName)
-                  {
-                    list.data = vbo.data;
-                    list.attributes = vbo.attributes;
-                    list.renderType = pass.renderType;
-                    list.numElements = vbo.numElements;
-                    mCore.addComponent(entityID, list);
-                    break;
-                  }
-                }
-
-                RENDERER_LOG("Lookup the VBOs and IBOs associated with this particular draw list "
-                  "and add them to our entity in question.");
-                std::string assetName = "Assets/sphere.geom";
-
-                if (pass.renderType == RenderType::RENDER_RLIST_SPHERE)
-                {
-                  assetName = "Assets/sphere.geom";
-                }
-
-                if (pass.renderType == RenderType::RENDER_RLIST_CYLINDER)
-                {
-                  assetName = "Assests/arrow.geom";
-                }
-
-                addVBOToEntity(entityID, assetName);
-                addIBOToEntity(entityID, assetName);
+                addTextureToEntity(entityID, pass.texture);
               }
 
               RENDERER_LOG("Load vertex and fragment shader will use an already loaded program.");
@@ -1126,17 +1209,12 @@ namespace SCIRun {
                 widgetExists_ = true;
               }
 
-              if (pass.renderType == RenderType::RENDER_RLIST_SPHERE)
-              {
-                double scale = pass.scalar;
-                trafo.transform[0].x = scale;
-                trafo.transform[1].y = scale;
-                trafo.transform[2].z = scale;
-              }
               if (widgetSelected_ && objectName == mSelected)
               {
                 mSelectedID = entityID;
               }
+              mEntityIdMap.insert(std::make_pair(objectName, entityID));
+
               mCore.addComponent(entityID, trafo);
 
               RENDERER_LOG("Add lighting uniform checks");
@@ -1184,23 +1262,11 @@ namespace SCIRun {
               pass.renderState.mSortType = mRenderSortType;
               mCore.addComponent(entityID, pass);
             }
-
-            RENDERER_LOG("Recalculate scene bounding box. Should only be done when an object is added.");
-            mSceneBBox.reset();
-            for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
-            {
-              if (it->mBBox.valid())
-              {
-                mSceneBBox.extend(it->mBBox);
-              }
-            }
           }
+          mCamera->setSceneBoundingBox(mSceneBBox);
+          mCore.runGCOnNextExecution();
         }
-        mCore.runGCOnNextExecution();
       }
-
-      mCamera->setSceneBoundingBox(mSceneBBox);
-
       DEBUG_LOG_LINE_INFO
     }
 
@@ -1218,6 +1284,7 @@ namespace SCIRun {
           mCore.removeEntity(entityID);
         }
       }
+      mEntityIdMap.clear();
 
       mCore.renormalize(true);
       widgetExists_ = false;
@@ -1227,6 +1294,7 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::gcInvalidObjects(const std::vector<std::string>& validObjects)
     {
+      mEntityIdMap.clear();
       for (auto it = mSRObjects.begin(); it != mSRObjects.end();)
       {
         if (std::find(validObjects.begin(), validObjects.end(), it->mName) == validObjects.end())
@@ -1240,6 +1308,11 @@ namespace SCIRun {
         }
         else
         {
+          for (const auto& pass : it->mPasses)
+          {
+            uint64_t entityID = getEntityIDForName(pass.passName, it->mPort);
+            mEntityIdMap.insert(std::make_pair(it->mName, entityID));
+          }
           ++it;
         }
       }
@@ -1287,14 +1360,10 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::addTextToEntity(uint64_t entityID, const SpireText& text)
     {
-      if (text.name == "")
-        return;
-
-       //texture man
+      if (text.name.empty()) return;
       std::weak_ptr<ren::TextureMan> tm = mCore.getStaticComponent<ren::StaticTextureMan>()->instance_;
       std::shared_ptr<ren::TextureMan> textureMan = tm.lock();
-      if (!textureMan)
-        return;
+      if (!textureMan) return;
 
       std::stringstream ss;
       ss << "FontTexture:" << entityID << text.name << text.width << text.height;
@@ -1302,11 +1371,10 @@ namespace SCIRun {
 
       ren::Texture texture;
 
-      spire::CerealHeap<ren::Texture>* contTex =
-        mCore.getOrCreateComponentContainer<ren::Texture>();
-      std::pair<const ren::Texture*, size_t> component =
-        contTex->getComponent(entityID);
-      if (component.first == nullptr)
+      spire::CerealHeap<ren::Texture>* contTex = mCore.getOrCreateComponentContainer<ren::Texture>();
+      std::pair<const ren::Texture*, size_t> component = contTex->getComponent(entityID);
+
+      if (!component.first)
         texture = textureMan->createTexture(assetName, text.width, text.height, text.bitmap);
       else
         texture = *component.first;
@@ -1314,6 +1382,33 @@ namespace SCIRun {
       texture.textureUnit = 0;
       texture.setUniformName("uTX0");
       mCore.addComponent(entityID, texture);
+    }
+
+    //----------------------------------------------------------------------------------------------
+    void SRInterface::addTextureToEntity(uint64_t entityID, const SpireTexture2D& texture)
+    {
+      if (texture.name.empty()) return;
+      std::weak_ptr<ren::TextureMan> tm = mCore.getStaticComponent<ren::StaticTextureMan>()->instance_;
+      std::shared_ptr<ren::TextureMan> textureMan = tm.lock();
+      if (!textureMan) return;
+
+      std::stringstream ss;
+      ss << "Texture:" << entityID << texture.name << texture.width << texture.height;
+      std::string assetName = ss.str();
+
+      ren::Texture renTexture;
+      spire::CerealHeap<ren::Texture>* contTex = mCore.getOrCreateComponentContainer<ren::Texture>();
+      std::pair<const ren::Texture*, size_t> component = contTex->getComponent(entityID);
+
+      if (!component.first)
+        renTexture = textureMan->createTexture(assetName, GL_RGBA, texture.width, texture.height,
+          GL_RGBA,  GL_UNSIGNED_BYTE, texture.bitmap);
+      else
+        renTexture = *component.first;
+
+      renTexture.textureUnit = 0;
+      renTexture.setUniformName("uTX0");
+      mCore.addComponent(entityID, renTexture);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -1400,8 +1495,8 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::doFrame(double currentTime, double constantDeltaTime)
     {
-      /// \todo Only render a frame if something has changed (new or deleted
-      /// objects, or the view point has changed).
+      // todo Only render a frame if something has changed (new or deleted
+      // objects, or the view point has changed).
       mContext->makeCurrent();
 
       applyAutoRotation();
@@ -1516,13 +1611,13 @@ namespace SCIRun {
             glm::mat4 axesTransform = axesScale * axesRot;
 
             GLint locCamViewVec = glGetUniformLocation(shader, "uCamViewVec");
-            GLint locLightDirWorld = glGetUniformLocation(shader, "uLightDirWorld");
+            GLint locLightDirecionView = glGetUniformLocation(shader, "uLightDirectionView");
             GLint locDiffuseColor = glGetUniformLocation(shader, "uColor");
-            GLint locProjIVObject = glGetUniformLocation(shader, "uProjIVObject");
-            GLint locObject = glGetUniformLocation(shader, "uObject");
+            GLint locProjIVObject = glGetUniformLocation(shader, "uModelViewProjection");
+            GLint locObject = glGetUniformLocation(shader, "uModel");
 
             GL(glUniform3f(locCamViewVec, 0.0f, 0.0f, -1.0f));
-            GL(glUniform3f(locLightDirWorld, 0.0f, 0.0f, -1.0f));
+            GL(glUniform3f(locLightDirecionView, 0.0f, 0.0f, -1.0f));
 
             // Build projection for the axes to use on the screen. The arrors will not
             // use the camera, but will use the camera's transformation matrix.
@@ -1660,16 +1755,11 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::updateWorldLight()
     {
-      glm::mat4 viewToWorld = mCamera->getViewToWorld();
       StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
+
       if (light)
-      {
         for (int i = 0; i < LIGHT_NUM; ++i)
-        {
-          glm::vec3 lightDirectionWorld = (viewToWorld * glm::vec4(mLightDirectionView[i], 0.0)).xyz();
-          light->lightDir[i] = mLightsOn[i] ? lightDirectionWorld : glm::vec3(0.0, 0.0, 0.0);
-        }
-      }
+          light->lightDir[i] = mLightsOn[i] ? mLightDirectionView[i] : glm::vec3(0.0, 0.0, 0.0);
     }
 
     //----------------------------------------------------------------------------------------------
@@ -1703,20 +1793,16 @@ namespace SCIRun {
     {
       if (uniform.name == "uFogSettings")
       {
-        double start, end, zdist, ddist;
-        glm::vec4 center(mSceneBBox.center().x(), mSceneBBox.center().y(), mSceneBBox.center().z(), 1.0);
-        glm::mat4 worldToView = mCamera->getWorldToView();
-        center = worldToView * center;
-        center /= center.w;
-        glm::vec3 c3(center.x, center.y, center.z);
-        zdist = glm::length(c3);
-        ddist = 1.1 * mSceneBBox.diagonal().length();
-        start = zdist + (mFogStart - 0.5) * ddist;
-        end = zdist + (mFogEnd - 0.5) * ddist;
+        float radius = mSceneBBox.diagonal().length() * 2.0;
+        float start = radius * mFogStart;
+        float end = radius * mFogEnd;
         uniform.data = glm::vec4(mFogIntensity, start, end, 0.0);
       }
       else if (uniform.name == "uFogColor")
+      {
         uniform.data = mFogColor;
+      }
+
       uniform.type = Graphics::Datatypes::SpireSubPass::Uniform::UniformType::UNIFORM_VEC4;
     }
 
@@ -1752,7 +1838,7 @@ namespace SCIRun {
       viewVector.z = cos(inclination) * cos(azimuth);
       viewVector.x = cos(inclination) * sin(azimuth);
       viewVector.y = sin(inclination);
-      mLightDirectionView[index] = -viewVector;
+      mLightDirectionView[index] = glm::normalize(viewVector);
     }
 
     //----------------------------------------------------------------------------------------------

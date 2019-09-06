@@ -30,6 +30,8 @@
 #define MODULES_FIELDS_EDITMESHBOUNDINGBOX_H
 
 #include <Dataflow/Network/GeometryGeneratingModule.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
+#include <Graphics/Widgets/Widget.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Modules/Fields/share.h>
 
@@ -94,7 +96,7 @@ namespace SCIRun {
         void clear_vals();
         void update_input_attributes(FieldHandle);
         void computeWidgetBox(const Core::Geometry::BBox& box) const;
-        Core::Datatypes::GeometryBaseHandle buildGeometryObject();
+        Graphics::Datatypes::GeometryHandle buildGeometryObject();
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
         void adjustGeometryFromTransform(const Core::Geometry::Transform& transformMatrix);
 
