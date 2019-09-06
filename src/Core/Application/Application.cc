@@ -64,9 +64,8 @@ namespace SCIRun
 {
   namespace Core
   {
-    class ApplicationPrivate
+    struct ApplicationPrivate
     {
-    public:
       CommandLineParser parser;
       boost::filesystem::path app_filepath_;
       boost::filesystem::path app_filename_;
