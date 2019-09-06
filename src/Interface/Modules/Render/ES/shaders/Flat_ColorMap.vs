@@ -25,7 +25,6 @@
   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
   DEALINGS IN THE SOFTWARE.
 */
-#define COLOR_MAP
 
 // Uniforms
 uniform mat4    uModelViewProjection;

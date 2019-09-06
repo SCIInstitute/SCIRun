@@ -50,154 +50,86 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
   std::string passName = uniqueNodeID + "Pass";
 
   bool useTriangles = primIn == SpireIBO::PRIMITIVE::TRIANGLES;
+  bool useColor = colorScheme == ColorScheme::COLOR_IN_SITU || colorScheme == ColorScheme::COLOR_MAP;
+  bool useNormals = normals_.size() == points_.size();
 
-  // Construct VBO.
-  std::string shader = "Shaders/UniformColor";
-  std::vector<SpireVBO::AttributeData> attribs;
-  attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-  if (useTriangles)
-    attribs.push_back(SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
   RenderType renderType = RenderType::RENDER_VBO_IBO;
+  ColorRGB dft = state.defaultColor;
 
-  //ColorScheme colorScheme = COLOR_UNIFORM;
-
+  std::string shader = (useNormals ? "Shaders/Phong" : "Shaders/Flat");
+  std::vector<SpireVBO::AttributeData> attribs;
   std::vector<SpireSubPass::Uniform> uniforms;
-  if (isTransparent)
-    uniforms.push_back(SpireSubPass::Uniform("uTransparency", static_cast<float>(transparencyValue)));
-  // TODO: add colormapping options
-  if (colorScheme == ColorScheme::COLOR_MAP)
+
+  attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+
+  if (useNormals)
   {
+    attribs.push_back(SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
+    uniforms.push_back(SpireSubPass::Uniform("uAmbientColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
+    uniforms.push_back(SpireSubPass::Uniform("uSpecularColor", glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
+    uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
+  }
+
+  if (useColor)
+  {
+    shader += "_Color";
     attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
-    if (useTriangles)
-    {
-      shader = "Shaders/DirPhongCMap";
-      uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
-        glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-      uniforms.push_back(SpireSubPass::Uniform("uSpecularColor",
-        glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-      uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    }
-    else
-    {
-      shader = "Shaders/ColorMap";
-    }
   }
-  else if (colorScheme == ColorScheme::COLOR_IN_SITU)
+  else
   {
-    attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
-    if (useTriangles)
-    {
-      shader = "Shaders/DirPhongInSitu";
-      uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
-        glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-      uniforms.push_back(SpireSubPass::Uniform("uSpecularColor",
-        glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-      uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    }
-    else
-    {
-      shader = "Shaders/InSituColor";
-    }
-  }
-  else if (colorScheme == ColorScheme::COLOR_UNIFORM)
-  {
-    ColorRGB dft = state.defaultColor;
-    if (useTriangles)
-    {
-      if (geom.isClippable())
-        shader = "Shaders/DirPhong";
-      else
-        shader = "Shaders/DirPhongNoClipping";
-      uniforms.push_back(SpireSubPass::Uniform("uAmbientColor",
-        glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
-      uniforms.push_back(SpireSubPass::Uniform("uDiffuseColor",
-        glm::vec4(dft.r(), dft.g(), dft.b(), static_cast<float>(transparencyValue))));
-      uniforms.push_back(SpireSubPass::Uniform("uSpecularColor",
-        glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
-      uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
-    }
-    else
-    {
-      uniforms.emplace_back("uColor", glm::vec4(dft.r(), dft.g(), dft.b(), static_cast<float>(transparencyValue)));
-    }
+    uniforms.push_back(SpireSubPass::Uniform("uDiffuseColor",
+      glm::vec4(dft.r(), dft.g(), dft.b(), static_cast<float>(transparencyValue))));
   }
 
-  uint32_t iboSize = 0;
-  uint32_t vboSize = 0;
+  if (isTransparent) uniforms.push_back(SpireSubPass::Uniform("uTransparency", static_cast<float>(transparencyValue)));
 
-  vboSize = static_cast<uint32_t>(points_.size()) * 3 * sizeof(float);
-  vboSize += static_cast<uint32_t>(normals_.size()) * 3 * sizeof(float);
-  if (colorScheme == ColorScheme::COLOR_IN_SITU || colorScheme == ColorScheme::COLOR_MAP)
-    vboSize += static_cast<uint32_t>(colors_.size()) * 4 * sizeof(float); //RGBA
-  iboSize = static_cast<uint32_t>(indices_.size()) * sizeof(uint32_t);
-  /// \todo To reduce memory requirements, we can use a 16bit index buffer.
-
-  /// \todo To further reduce a large amount of memory, get rid of the index
-  ///       buffer and use glDrawArrays to render without an IBO. An IBO is
-  ///       a waste of space.
-  ///       http://www.opengl.org/sdk/docs/man3/xhtml/glDrawArrays.xml
-
-  /// \todo Switch to unique_ptrs and move semantics.
+  size_t vboSize = static_cast<size_t>(points_.size()) * 3 * sizeof(float);
+  if (useNormals) vboSize += static_cast<size_t>(normals_.size()) * 3 * sizeof(float);
+  if (useColor) vboSize += static_cast<size_t>(colors_.size()) * 4 * sizeof(float); //RGBA
+  size_t iboSize = static_cast<size_t>(indices_.size()) * sizeof(uint32_t);
   std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(iboSize));
   std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(vboSize));
-
-  // Accessing the pointers like this is contrived. We only do this for
-  // speed since we will be using the pointers in a tight inner loop.
   auto iboBuffer = iboBufferSPtr.get();
   auto vboBuffer = vboBufferSPtr.get();
 
   //write to the IBO/VBOs
-
   for (auto a : indices_)
     iboBuffer->write(a);
 
   BBox newBBox;
-
-  const bool writeNormals = normals_.size() == points_.size();
   for (size_t i = 0; i < points_.size(); i++)
   {
-    // Write first point on line
+    newBBox.extend(Point(points_.at(i).x(), points_.at(i).y(), points_.at(i).z()));
     vboBuffer->write(static_cast<float>(points_.at(i).x()));
     vboBuffer->write(static_cast<float>(points_.at(i).y()));
     vboBuffer->write(static_cast<float>(points_.at(i).z()));
 
-    newBBox.extend(Point(points_.at(i).x(), points_.at(i).y(), points_.at(i).z()));
-
-    if (writeNormals)
+    if (useNormals)
     {
       vboBuffer->write(static_cast<float>(normals_.at(i).x()));
       vboBuffer->write(static_cast<float>(normals_.at(i).y()));
       vboBuffer->write(static_cast<float>(normals_.at(i).z()));
     }
-    if (colorScheme == ColorScheme::COLOR_MAP || colorScheme == ColorScheme::COLOR_IN_SITU)
+
+    if (useColor)
     {
       vboBuffer->write(static_cast<float>(colors_.at(i).r()));
       vboBuffer->write(static_cast<float>(colors_.at(i).g()));
       vboBuffer->write(static_cast<float>(colors_.at(i).b()));
       vboBuffer->write(static_cast<float>(colors_.at(i).a()));
-      //vboBuffer->write(static_cast<float>(1.f));
-    } // no color writing otherwise
+    }
   }
+  if(!bbox.valid()) newBBox.reset();
 
-  if(!bbox.valid())
-    newBBox.reset();
-
-  // If true, then the VBO will be placed on the GPU. We don't want to place
-  // VBOs on the GPU when we are generating rendering lists.
   SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements_, newBBox, true);
-
-  // Construct IBO.
   SpireIBO geomIBO(iboName, primIn, sizeof(uint32_t), iboBufferSPtr);
 
   state.set(RenderState::IS_ON, true);
   state.set(RenderState::HAS_DATA, true);
 
   SpireText text;
-
-  // Construct Pass.
   SpireSubPass pass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO, text);
 
-  // Add all uniforms generated above to the pass.
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 
   geom.vbos().push_back(geomVBO);
