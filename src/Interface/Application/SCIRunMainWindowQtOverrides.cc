@@ -108,7 +108,6 @@ void SCIRunMainWindow::closeEvent(QCloseEvent* event)
   {
     writeSettings();
     event->accept();
-    quit();
   }
   else
     event->ignore();
