@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/ColorMap.h>
 #include <Core/Math/MiscMath.h>
 #include <Core/GeometryPrimitives/Transform.h>
 
@@ -43,7 +44,7 @@ GlyphGeom::GlyphGeom() : numVBOElements_(0), lineIndex_(0)
 }
 
 void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& uniqueNodeID, const bool isTransparent, const double transparencyValue,
-  const ColorScheme& colorScheme, RenderState state, const SpireIBO::PRIMITIVE& primIn, const BBox& bbox)
+  const ColorScheme& colorScheme, RenderState state, const SpireIBO::PRIMITIVE& primIn, const BBox& bbox, const Core::Datatypes::ColorMapHandle colorMap)
 {
   std::string vboName = uniqueNodeID + "VBO";
   std::string iboName = uniqueNodeID + "IBO";
@@ -52,6 +53,7 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
   bool useTriangles = primIn == SpireIBO::PRIMITIVE::TRIANGLES;
   bool useColor = colorScheme == ColorScheme::COLOR_IN_SITU || colorScheme == ColorScheme::COLOR_MAP;
   bool useNormals = normals_.size() == points_.size();
+  int numAttributes = 3;
 
   RenderType renderType = RenderType::RENDER_VBO_IBO;
   ColorRGB dft = state.defaultColor;
@@ -61,9 +63,12 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
   std::vector<SpireSubPass::Uniform> uniforms;
 
   attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
+  uniforms.push_back(SpireSubPass::Uniform("uUseClippingPlanes", true));
+  uniforms.push_back(SpireSubPass::Uniform("uUseFog", true));
 
   if (useNormals)
   {
+    numAttributes += 3;
     attribs.push_back(SpireVBO::AttributeData("aNormal", 3 * sizeof(float)));
     uniforms.push_back(SpireSubPass::Uniform("uAmbientColor", glm::vec4(0.1f, 0.1f, 0.1f, 1.0f)));
     uniforms.push_back(SpireSubPass::Uniform("uSpecularColor", glm::vec4(0.1f, 0.1f, 0.1f, 0.1f)));
@@ -72,8 +77,18 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
 
   if (useColor)
   {
-    shader += "_Color";
-    attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
+    if(colorMap)
+    {
+      numAttributes += 2;
+      shader += "_ColorMap";
+      attribs.push_back(SpireVBO::AttributeData("aTexCoords", 2 * sizeof(float)));
+    }
+    else
+    {
+      numAttributes += 4;
+      shader += "_Color";
+      attribs.push_back(SpireVBO::AttributeData("aColor", 4 * sizeof(float)));
+    }
   }
   else
   {
@@ -83,9 +98,7 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
 
   if (isTransparent) uniforms.push_back(SpireSubPass::Uniform("uTransparency", static_cast<float>(transparencyValue)));
 
-  size_t vboSize = static_cast<size_t>(points_.size()) * 3 * sizeof(float);
-  if (useNormals) vboSize += static_cast<size_t>(normals_.size()) * 3 * sizeof(float);
-  if (useColor) vboSize += static_cast<size_t>(colors_.size()) * 4 * sizeof(float); //RGBA
+  size_t vboSize = static_cast<size_t>(points_.size()) * numAttributes * sizeof(float);
   size_t iboSize = static_cast<size_t>(indices_.size()) * sizeof(uint32_t);
   std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(iboSize));
   std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(vboSize));
@@ -113,10 +126,18 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
 
     if (useColor)
     {
-      vboBuffer->write(static_cast<float>(colors_.at(i).r()));
-      vboBuffer->write(static_cast<float>(colors_.at(i).g()));
-      vboBuffer->write(static_cast<float>(colors_.at(i).b()));
-      vboBuffer->write(static_cast<float>(colors_.at(i).a()));
+      if(!colorMap)
+      {
+        vboBuffer->write(static_cast<float>(colors_.at(i).r()));
+        vboBuffer->write(static_cast<float>(colors_.at(i).g()));
+        vboBuffer->write(static_cast<float>(colors_.at(i).b()));
+        vboBuffer->write(static_cast<float>(colors_.at(i).a()));
+      }
+      else
+      {
+        vboBuffer->write(static_cast<float>(colors_.at(i).r()));
+        vboBuffer->write(static_cast<float>(colors_.at(i).r()));
+      }
     }
   }
   if(!bbox.valid()) newBBox.reset();
@@ -127,8 +148,25 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
   state.set(RenderState::IS_ON, true);
   state.set(RenderState::HAS_DATA, true);
 
+  SpireTexture2D texture;
+  if (colorMap)
+  {
+    const static int colorMapResolution = 256;
+    for(int i = 0; i < colorMapResolution; ++i)
+    {
+      ColorRGB color = colorMap->valueToColor(static_cast<float>(i)/colorMapResolution * 2.0 - 1.0);
+      texture.bitmap.push_back(color.r()*255);
+      texture.bitmap.push_back(color.g()*255);
+      texture.bitmap.push_back(color.b()*255);
+      texture.bitmap.push_back(255);
+    }
+    texture.name = "ColorMap";
+    texture.height = 1;
+    texture.width = colorMapResolution;
+  }
+
   SpireText text;
-  SpireSubPass pass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO, text);
+  SpireSubPass pass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO, text, texture);
 
   for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
 

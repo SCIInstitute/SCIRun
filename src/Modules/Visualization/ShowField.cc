@@ -926,6 +926,13 @@ void GeometryBuilder::renderEdges(
   ColorScheme colorScheme;
   ColorRGB edge_colors[2];
 
+  ColorMapHandle realColorMap = nullptr;
+  if(colorMap) realColorMap = colorMap.get();
+  if(!realColorMap) realColorMap = StandardColorMapFactory::create();
+
+  auto coordinateMap = StandardColorMapFactory::create("Grayscale", 256, 0, false,
+    realColorMap->getColorMapRescaleScale(), realColorMap->getColorMapRescaleShift());
+
   if (fld->basis_order() < 0 ||
     (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
     state.get(RenderState::USE_DEFAULT_COLOR_EDGES))
@@ -984,8 +991,8 @@ void GeometryBuilder::renderEdges(
 
           sval1 = sval0;
         }
-        edge_colors[0] = map->valueToColor(sval0);
-        edge_colors[1] = map->valueToColor(sval1);
+        edge_colors[0] = coordinateMap->valueToColor(sval0);
+        edge_colors[1] = coordinateMap->valueToColor(sval1);
       }
       else if (fld->is_vector())
       {
@@ -1000,8 +1007,8 @@ void GeometryBuilder::renderEdges(
           vval1 = vval0;
         }
 
-        edge_colors[0] = map->valueToColor(vval0);
-        edge_colors[1] = map->valueToColor(vval1);
+        edge_colors[0] = coordinateMap->valueToColor(vval0);
+        edge_colors[1] = coordinateMap->valueToColor(vval1);
       }
       else if (fld->is_tensor())
       {
@@ -1016,8 +1023,8 @@ void GeometryBuilder::renderEdges(
           tval1 = tval0;
         }
 
-        edge_colors[0] = map->valueToColor(tval0);
-        edge_colors[1] = map->valueToColor(tval1);
+        edge_colors[0] = coordinateMap->valueToColor(tval0);
+        edge_colors[1] = coordinateMap->valueToColor(tval1);
       }
     }
     //accumulate VBO or IBO data
@@ -1039,8 +1046,16 @@ void GeometryBuilder::renderEdges(
     ++eiter;
   }
 
+  ColorMapHandle map = nullptr;
+  if(realColorMap)
+  {
+    map = StandardColorMapFactory::create(realColorMap->getColorMapName(),
+      realColorMap->getColorMapResolution(), realColorMap->getColorMapShift(),
+      realColorMap->getColorMapInvert());
+  }
+
   glyphs.buildObject(*geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_EDGES), edgeTransparencyValue_,
-    colorScheme, state, primIn, mesh->get_bounding_box());
+    colorScheme, state, primIn, mesh->get_bounding_box(), map);
 }
 
 void ShowField::updateAvailableRenderOptions(FieldHandle field)
