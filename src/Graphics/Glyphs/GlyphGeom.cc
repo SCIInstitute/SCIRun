@@ -46,11 +46,6 @@ GlyphGeom::GlyphGeom() : numVBOElements_(0), lineIndex_(0)
 void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& uniqueNodeID, const bool isTransparent, const double transparencyValue,
   const ColorScheme& colorScheme, RenderState state, const SpireIBO::PRIMITIVE& primIn, const BBox& bbox, const Core::Datatypes::ColorMapHandle colorMap)
 {
-  std::string vboName = uniqueNodeID + "VBO";
-  std::string iboName = uniqueNodeID + "IBO";
-  std::string passName = uniqueNodeID + "Pass";
-
-  bool useTriangles = primIn == SpireIBO::PRIMITIVE::TRIANGLES;
   bool useColor = colorScheme == ColorScheme::COLOR_IN_SITU || colorScheme == ColorScheme::COLOR_MAP;
   bool useNormals = normals_.size() == points_.size();
   int numAttributes = 3;
@@ -98,81 +93,98 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
 
   if (isTransparent) uniforms.push_back(SpireSubPass::Uniform("uTransparency", static_cast<float>(transparencyValue)));
 
-  size_t vboSize = static_cast<size_t>(points_.size()) * numAttributes * sizeof(float);
-  size_t iboSize = static_cast<size_t>(indices_.size()) * sizeof(uint32_t);
-  std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(iboSize));
-  std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(vboSize));
-  auto iboBuffer = iboBufferSPtr.get();
-  auto vboBuffer = vboBufferSPtr.get();
-
-  //write to the IBO/VBOs
-  for (auto a : indices_)
-    iboBuffer->write(a);
-
-  BBox newBBox;
-  for (size_t i = 0; i < points_.size(); i++)
+  size_t pointsLeft = points_.size();
+  size_t startOfPass = 0;
+  int passNumber = 0;
+  while(pointsLeft > 0)
   {
-    newBBox.extend(Point(points_.at(i).x(), points_.at(i).y(), points_.at(i).z()));
-    vboBuffer->write(static_cast<float>(points_.at(i).x()));
-    vboBuffer->write(static_cast<float>(points_.at(i).y()));
-    vboBuffer->write(static_cast<float>(points_.at(i).z()));
+    std::string passID = uniqueNodeID + "_" + std::to_string(passNumber++);
+    std::string vboName = passID + "VBO";
+    std::string iboName = passID + "IBO";
+    std::string passName = passID + "Pass";
 
-    if (useNormals)
-    {
-      vboBuffer->write(static_cast<float>(normals_.at(i).x()));
-      vboBuffer->write(static_cast<float>(normals_.at(i).y()));
-      vboBuffer->write(static_cast<float>(normals_.at(i).z()));
-    }
+    const static size_t maxPointsPerPass = 3 << 24;
+    uint32_t pointsInThisPass = std::min(pointsLeft, maxPointsPerPass);
+    size_t endOfPass = startOfPass + pointsInThisPass;
+    pointsLeft -= pointsInThisPass;
 
-    if (useColor)
+    size_t vboSize = static_cast<size_t>(pointsInThisPass) * numAttributes * sizeof(float);
+    size_t iboSize = static_cast<size_t>(pointsInThisPass) * sizeof(uint32_t);
+    std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(iboSize));
+    std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(vboSize));
+    auto iboBuffer = iboBufferSPtr.get();
+    auto vboBuffer = vboBufferSPtr.get();
+
+    for (auto a : indices_) if(a >= startOfPass && a < endOfPass)
+      iboBuffer->write(static_cast<uint32_t>(a - startOfPass));
+
+    BBox newBBox;
+    for (size_t i = startOfPass; i < endOfPass; ++i)
     {
-      if(!colorMap)
+      newBBox.extend(Point(points_.at(i).x(), points_.at(i).y(), points_.at(i).z()));
+      vboBuffer->write(static_cast<float>(points_.at(i).x()));
+      vboBuffer->write(static_cast<float>(points_.at(i).y()));
+      vboBuffer->write(static_cast<float>(points_.at(i).z()));
+
+      if (useNormals)
       {
-        vboBuffer->write(static_cast<float>(colors_.at(i).r()));
-        vboBuffer->write(static_cast<float>(colors_.at(i).g()));
-        vboBuffer->write(static_cast<float>(colors_.at(i).b()));
-        vboBuffer->write(static_cast<float>(colors_.at(i).a()));
+        vboBuffer->write(static_cast<float>(normals_.at(i).x()));
+        vboBuffer->write(static_cast<float>(normals_.at(i).y()));
+        vboBuffer->write(static_cast<float>(normals_.at(i).z()));
       }
-      else
+
+      if (useColor)
       {
-        vboBuffer->write(static_cast<float>(colors_.at(i).r()));
-        vboBuffer->write(static_cast<float>(colors_.at(i).r()));
+        if(!colorMap)
+        {
+          vboBuffer->write(static_cast<float>(colors_.at(i).r()));
+          vboBuffer->write(static_cast<float>(colors_.at(i).g()));
+          vboBuffer->write(static_cast<float>(colors_.at(i).b()));
+          vboBuffer->write(static_cast<float>(colors_.at(i).a()));
+        }
+        else
+        {
+          vboBuffer->write(static_cast<float>(colors_.at(i).r()));
+          vboBuffer->write(static_cast<float>(colors_.at(i).r()));
+        }
       }
     }
-  }
-  if(!bbox.valid()) newBBox.reset();
+    if(!bbox.valid()) newBBox.reset();
 
-  SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements_, newBBox, true);
-  SpireIBO geomIBO(iboName, primIn, sizeof(uint32_t), iboBufferSPtr);
+    startOfPass = endOfPass;
 
-  state.set(RenderState::IS_ON, true);
-  state.set(RenderState::HAS_DATA, true);
+    SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, numVBOElements_, newBBox, true);
+    SpireIBO geomIBO(iboName, primIn, sizeof(uint32_t), iboBufferSPtr);
 
-  SpireTexture2D texture;
-  if (colorMap)
-  {
-    const static int colorMapResolution = 256;
-    for(int i = 0; i < colorMapResolution; ++i)
+    state.set(RenderState::IS_ON, true);
+    state.set(RenderState::HAS_DATA, true);
+
+    SpireTexture2D texture;
+    if (colorMap)
     {
-      ColorRGB color = colorMap->valueToColor(static_cast<float>(i)/colorMapResolution * 2.0 - 1.0);
-      texture.bitmap.push_back(color.r()*255);
-      texture.bitmap.push_back(color.g()*255);
-      texture.bitmap.push_back(color.b()*255);
-      texture.bitmap.push_back(255);
+      const static int colorMapResolution = 256;
+      for(int i = 0; i < colorMapResolution; ++i)
+      {
+        ColorRGB color = colorMap->valueToColor(static_cast<float>(i)/colorMapResolution * 2.0 - 1.0);
+        texture.bitmap.push_back(color.r()*255);
+        texture.bitmap.push_back(color.g()*255);
+        texture.bitmap.push_back(color.b()*255);
+        texture.bitmap.push_back(255);
+      }
+      texture.name = "ColorMap";
+      texture.height = 1;
+      texture.width = colorMapResolution;
     }
-    texture.name = "ColorMap";
-    texture.height = 1;
-    texture.width = colorMapResolution;
+
+    SpireText text;
+    SpireSubPass pass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO, text, texture);
+
+    for (const auto& uniform : uniforms) pass.addUniform(uniform);
+
+    geom.vbos().push_back(geomVBO);
+    geom.ibos().push_back(geomIBO);
+    geom.passes().push_back(pass);
   }
-
-  SpireText text;
-  SpireSubPass pass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO, text, texture);
-
-  for (const auto& uniform : uniforms) { pass.addUniform(uniform); }
-
-  geom.vbos().push_back(geomVBO);
-  geom.ibos().push_back(geomIBO);
-  geom.passes().push_back(pass);
 }
 
 void GlyphGeom::addArrow(const Point& p1, const Point& p2, double radius, double ratio, int resolution,

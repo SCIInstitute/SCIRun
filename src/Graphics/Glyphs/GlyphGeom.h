@@ -102,9 +102,9 @@ namespace SCIRun {
       std::vector<Core::Geometry::Vector> points_;
       std::vector<Core::Geometry::Vector> normals_;
       std::vector<Core::Datatypes::ColorRGB> colors_;
-      std::vector<uint32_t> indices_;
-      int64_t numVBOElements_;
-      uint32_t lineIndex_;
+      std::vector<size_t> indices_;
+      size_t numVBOElements_;
+      size_t lineIndex_;
 
       void generateCylinder(const  Core::Geometry::Point& p1, const  Core::Geometry::Point& p2, double radius1, double radius2, int resolution, const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2);
       void generateSphere(const Core::Geometry::Point& center, double radius, int resolution, const Core::Datatypes::ColorRGB& color);
