@@ -685,6 +685,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
   if (!spire)
     return;
 
+  if(!mGLWidget->isValid()) return;
   spire->setContext(mGLWidget->context());
 
   if(forceAllObjectsToUpdate)
@@ -749,11 +750,10 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
 
   sendScreenshotDownstreamForTesting();
 
+  std::cout << toString("");
+
   if (saveScreenshotOnNewGeometry_)
     screenshotClicked();
-
-  //TODO IMPORTANT: we need some call somewhere to clear the transient geometry list once spire/ES has received the list of objects. They take up lots of memory...
-  //state_->setTransientValue(Parameters::GeomData, boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2136,17 +2136,17 @@ void ViewSceneDialog::setTransparencySortTypeLists(bool index)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::screenshotClicked()
 {
-  //takeScreenshot();
-  //screenshotTaker_->saveScreenshot();
+  takeScreenshot();
+  screenshotTaker_->saveScreenshot();
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::takeScreenshot()
 {
-//  if (!screenshotTaker_)
-//    screenshotTaker_ = new Screenshot(mGLWidget, this);
+  if (!screenshotTaker_)
+    screenshotTaker_ = new Screenshot(mGLWidget, this);
 
-//  screenshotTaker_->takeScreenshot();
+  screenshotTaker_->takeScreenshot();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2158,8 +2158,8 @@ void ViewSceneDialog::saveNewGeometryChanged(int state)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::sendScreenshotDownstreamForTesting()
 {
-  //takeScreenshot();
-  //state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
+  takeScreenshot();
+  state_->setTransientValue(Parameters::ScreenshotData, screenshotTaker_->toMatrix(), false);
 }
 
 //--------------------------------------------------------------------------------------------------
