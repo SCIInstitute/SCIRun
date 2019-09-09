@@ -1055,7 +1055,7 @@ void GeometryBuilder::renderEdges(
   }
 
   glyphs.buildObject(*geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_EDGES), edgeTransparencyValue_,
-    colorScheme, state, primIn, mesh->get_bounding_box(), map);
+    colorScheme, state, primIn, mesh->get_bounding_box(), true, map);
 }
 
 void ShowField::updateAvailableRenderOptions(FieldHandle field)

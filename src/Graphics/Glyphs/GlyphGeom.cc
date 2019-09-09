@@ -43,8 +43,10 @@ GlyphGeom::GlyphGeom() : numVBOElements_(0), lineIndex_(0)
 
 }
 
-void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& uniqueNodeID, const bool isTransparent, const double transparencyValue,
-  const ColorScheme& colorScheme, RenderState state, const SpireIBO::PRIMITIVE& primIn, const BBox& bbox, const Core::Datatypes::ColorMapHandle colorMap)
+void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& uniqueNodeID,
+  const bool isTransparent, const double transparencyValue, const ColorScheme& colorScheme,
+  RenderState state, const SpireIBO::PRIMITIVE& primIn, const BBox& bbox, const bool isClippable,
+  const Core::Datatypes::ColorMapHandle colorMap)
 {
   bool useColor = colorScheme == ColorScheme::COLOR_IN_SITU || colorScheme == ColorScheme::COLOR_MAP;
   bool useNormals = normals_.size() == points_.size();
@@ -58,7 +60,7 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
   std::vector<SpireSubPass::Uniform> uniforms;
 
   attribs.push_back(SpireVBO::AttributeData("aPos", 3 * sizeof(float)));
-  uniforms.push_back(SpireSubPass::Uniform("uUseClippingPlanes", true));
+  uniforms.push_back(SpireSubPass::Uniform("uUseClippingPlanes", isClippable));
   uniforms.push_back(SpireSubPass::Uniform("uUseFog", true));
 
   if (useNormals)
@@ -103,7 +105,7 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
     std::string iboName = passID + "IBO";
     std::string passName = passID + "Pass";
 
-    const static size_t maxPointsPerPass = 3 << 24;
+    const static size_t maxPointsPerPass = 3 << 24; //must be a numebr divisible by 2, 3 and, 4
     uint32_t pointsInThisPass = std::min(pointsLeft, maxPointsPerPass);
     size_t endOfPass = startOfPass + pointsInThisPass;
     pointsLeft -= pointsInThisPass;

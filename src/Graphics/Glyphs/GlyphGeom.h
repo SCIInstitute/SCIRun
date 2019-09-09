@@ -51,7 +51,7 @@ namespace SCIRun {
 
       void buildObject(Datatypes::GeometryObjectSpire& geom, const std::string& uniqueNodeID, const bool isTransparent, const double transparencyValue,
         const Datatypes::ColorScheme& colorScheme, RenderState state,
-        const Datatypes::SpireIBO::PRIMITIVE& primIn, const Core::Geometry::BBox& bbox, const Core::Datatypes::ColorMapHandle colorMap = nullptr);
+        const Datatypes::SpireIBO::PRIMITIVE& primIn, const Core::Geometry::BBox& bbox, const bool isClippable = true, const Core::Datatypes::ColorMapHandle colorMap = nullptr);
 
       void addArrow(const Core::Geometry::Point& p1, const Core::Geometry::Point& p2, double radius, double ratio, int resolution,
                     const Core::Datatypes::ColorRGB& color1, const Core::Datatypes::ColorRGB& color2, bool render_cylinder_base, bool render_cone_base);
