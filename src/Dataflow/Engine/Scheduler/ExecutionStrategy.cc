@@ -123,6 +123,9 @@ void ExecutionQueueManager::executeImpl(ExecutionContextHandle ctx)
 
 void ExecutionQueueManager::stop()
 {
-  executionLaunchThread_->interrupt();
-  executionLaunchThread_.reset();
+  if (executionLaunchThread_)
+  {
+    executionLaunchThread_->interrupt();
+    executionLaunchThread_.reset();
+  }
 }
