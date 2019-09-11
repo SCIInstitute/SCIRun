@@ -54,7 +54,8 @@ install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 30 scripts/getQt4Mac.sh; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt || true; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then echo $(brew --prefix qt); fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd $(brew --prefix qt)/5.13.0/clang_64; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd $(brew --prefix qt)/5.13.0/clang_64 || true; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cd $(brew --prefix qt)/5.13.1/clang_64 || true; fi
 
 script:
   - cd bin
