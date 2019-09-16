@@ -215,7 +215,10 @@ double alpha(double transformedValue)
  * @return The RGB value mapped from the scalar.
  */
 ColorRGB ColorMap::valueToColor(double scalar) const {
-    return getColorMapVal(scalar);
+  ColorRGB color = getColorMapVal(scalar);
+  return color;
+  //float alpha = 0.5;
+  //return ColorRGB(color.r(), color.g(), color.b(), alpha);
 }
 /**
  * @name valueToColor
@@ -227,7 +230,10 @@ ColorRGB ColorMap::valueToColor(Tensor &tensor) const {
   double eigen1, eigen2, eigen3;
   tensor.get_eigenvalues(eigen1, eigen2, eigen3);
   double magnitude = Vector(eigen1, eigen2, eigen3).length();
-  return getColorMapVal(magnitude);
+  ColorRGB color = getColorMapVal(magnitude);
+  return color;
+  //float alpha = 0.5;
+  //return ColorRGB(color.r(), color.g(), color.b(), alpha);
 }
 /**
  * @name valueToColor
@@ -238,7 +244,10 @@ ColorRGB ColorMap::valueToColor(Tensor &tensor) const {
 ColorRGB ColorMap::valueToColor(const Vector &vector) const {
     //TODO this is probably not implemented correctly.
    // return ColorRGB(getTransformedColor(fabs(vector.x())),getTransformedColor(fabs(vector.y())), getTransformedColor(fabs(vector.z())));
-  return getColorMapVal(vector.length());
+  ColorRGB color = getColorMapVal(vector.length());
+  return color;
+  //float alpha = 0.5;
+  //return ColorRGB(color.r(), color.g(), color.b(), alpha);
 }
 
 // This Rainbow takes into account scientific visualization recommendations.

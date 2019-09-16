@@ -72,6 +72,8 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
     uniforms.push_back(SpireSubPass::Uniform("uSpecularPower", 32.0f));
   }
 
+  SpireText text;
+  SpireTexture2D texture;
   if (useColor)
   {
     if(colorMap)
@@ -79,6 +81,20 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
       numAttributes += 2;
       shader += "_ColorMap";
       attribs.push_back(SpireVBO::AttributeData("aTexCoords", 2 * sizeof(float)));
+
+      const static int colorMapResolution = 256;
+      for(int i = 0; i < colorMapResolution; ++i)
+      {
+        ColorRGB color = colorMap->valueToColor(static_cast<float>(i)/colorMapResolution * 2.0f - 1.0f);
+        texture.bitmap.push_back(color.r()*255.99f);
+        texture.bitmap.push_back(color.g()*255.99f);
+        texture.bitmap.push_back(color.b()*255.99f);
+        texture.bitmap.push_back(color.a()*255.99f);
+      }
+
+      texture.name = "ColorMap";
+      texture.height = 1;
+      texture.width = colorMapResolution;
     }
     else
     {
@@ -105,7 +121,7 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
     std::string iboName = passID + "IBO";
     std::string passName = passID + "Pass";
 
-    const static size_t maxPointsPerPass = 3 << 24; //must be a numebr divisible by 2, 3 and, 4
+    const static size_t maxPointsPerPass = 3 << 24; //must be a number divisible by 2, 3 and, 4
     uint32_t pointsInThisPass = std::min(pointsLeft, maxPointsPerPass);
     size_t endOfPass = startOfPass + pointsInThisPass;
     pointsLeft -= pointsInThisPass;
@@ -123,31 +139,34 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
     BBox newBBox;
     for (size_t i = startOfPass; i < endOfPass; ++i)
     {
-      newBBox.extend(Point(points_.at(i).x(), points_.at(i).y(), points_.at(i).z()));
-      vboBuffer->write(static_cast<float>(points_.at(i).x()));
-      vboBuffer->write(static_cast<float>(points_.at(i).y()));
-      vboBuffer->write(static_cast<float>(points_.at(i).z()));
+      Vector point = points_.at(i);
+      newBBox.extend(Point(point.x(), point.y(), point.z()));
+      vboBuffer->write(static_cast<float>(point.x()));
+      vboBuffer->write(static_cast<float>(point.y()));
+      vboBuffer->write(static_cast<float>(point.z()));
 
       if (useNormals)
       {
-        vboBuffer->write(static_cast<float>(normals_.at(i).x()));
-        vboBuffer->write(static_cast<float>(normals_.at(i).y()));
-        vboBuffer->write(static_cast<float>(normals_.at(i).z()));
+        Vector normal = normals_.at(i);
+        vboBuffer->write(static_cast<float>(normal.x()));
+        vboBuffer->write(static_cast<float>(normal.y()));
+        vboBuffer->write(static_cast<float>(normal.z()));
       }
 
       if (useColor)
       {
+        ColorRGB color = colors_.at(i);
         if(!colorMap)
         {
-          vboBuffer->write(static_cast<float>(colors_.at(i).r()));
-          vboBuffer->write(static_cast<float>(colors_.at(i).g()));
-          vboBuffer->write(static_cast<float>(colors_.at(i).b()));
-          vboBuffer->write(static_cast<float>(colors_.at(i).a()));
+          vboBuffer->write(static_cast<float>(color.r()));
+          vboBuffer->write(static_cast<float>(color.g()));
+          vboBuffer->write(static_cast<float>(color.b()));
+          vboBuffer->write(static_cast<float>(color.a()));
         }
         else
         {
-          vboBuffer->write(static_cast<float>(colors_.at(i).r()));
-          vboBuffer->write(static_cast<float>(colors_.at(i).r()));
+          vboBuffer->write(static_cast<float>(color.r()));
+          vboBuffer->write(static_cast<float>(color.r()));
         }
       }
     }
@@ -160,25 +179,6 @@ void GlyphGeom::buildObject(GeometryObjectSpire& geom, const std::string& unique
 
     state.set(RenderState::IS_ON, true);
     state.set(RenderState::HAS_DATA, true);
-
-    SpireTexture2D texture;
-    if (colorMap)
-    {
-      const static int colorMapResolution = 256;
-      for(int i = 0; i < colorMapResolution; ++i)
-      {
-        ColorRGB color = colorMap->valueToColor(static_cast<float>(i)/colorMapResolution * 2.0 - 1.0);
-        texture.bitmap.push_back(color.r()*255);
-        texture.bitmap.push_back(color.g()*255);
-        texture.bitmap.push_back(color.b()*255);
-        texture.bitmap.push_back(255);
-      }
-      texture.name = "ColorMap";
-      texture.height = 1;
-      texture.width = colorMapResolution;
-    }
-
-    SpireText text;
     SpireSubPass pass(passName, vboName, iboName, shader, colorScheme, state, renderType, geomVBO, geomIBO, text, texture);
 
     for (const auto& uniform : uniforms) pass.addUniform(uniform);
