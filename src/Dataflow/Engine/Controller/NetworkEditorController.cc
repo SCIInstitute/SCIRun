@@ -102,6 +102,7 @@ NetworkEditorController::~NetworkEditorController()
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::clearImpl();
 #endif
+  executionManager_.stop();
 }
 
 namespace
