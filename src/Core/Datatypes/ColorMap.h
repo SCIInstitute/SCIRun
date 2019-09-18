@@ -51,7 +51,8 @@ namespace Datatypes {
     explicit ColorMap(ColorMapStrategyHandle color,
       const std::string& name = "Rainbow", const size_t resolution = 256,
                         const double shift = 0.0, const bool invert = false,
-                        const double rescale_scale = .5, const double rescale_shift = 1.);
+                        const double rescale_scale = .5, const double rescale_shift = 1.0,
+                        const std::vector<double>& alphaPoints = std::vector<double>());
                         //TODO cbright: pass in alpha vector
     virtual ColorMap* clone() const override;
 
@@ -73,6 +74,8 @@ namespace Datatypes {
     ///<< Internal functions.
     Core::Datatypes::ColorRGB getColorMapVal(double v) const;
     double getTransformedValue(double v) const;
+    ColorRGB applyAlpha(double transformed, ColorRGB colorWithoutAlpha);
+    double alpha(double transformedValue);
 
     ColorMapStrategyHandle color_;
     ///<< The colormap's name.
@@ -112,7 +115,8 @@ namespace Datatypes {
    // See explanation for defaults above in ColorMap Constructor
     static ColorMapHandle create(const std::string& name = "Rainbow", const size_t &resolution = 256,
                                     const double &shift = 0.0, const bool &invert = false,
-                                    const double &rescale_scale = .5, const double &rescale_shift = 1.);
+                                    const double &rescale_scale = .5, const double &rescale_shift = 1.0,
+                                    const std::vector<double>& alphaPoints = std::vector<double>());
     typedef std::vector<std::string> NameList;
     static NameList getList();
   private:
