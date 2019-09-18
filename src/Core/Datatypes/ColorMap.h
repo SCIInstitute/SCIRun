@@ -63,6 +63,7 @@ namespace Datatypes {
     bool getColorMapInvert() const;
     double getColorMapRescaleScale() const;
     double getColorMapRescaleShift() const;
+    std::vector<double> getAlphaLookup() const {return alphaLookup_;}
 
     ColorRGB valueToColor(double scalar) const;
     ColorRGB valueToColor(Core::Geometry::Tensor &tensor) const;
@@ -74,8 +75,8 @@ namespace Datatypes {
     ///<< Internal functions.
     Core::Datatypes::ColorRGB getColorMapVal(double v) const;
     double getTransformedValue(double v) const;
-    ColorRGB applyAlpha(double transformed, ColorRGB colorWithoutAlpha);
-    double alpha(double transformedValue);
+    ColorRGB applyAlpha(double transformed, ColorRGB colorWithoutAlpha) const;
+    double alpha(double transformedValue) const;
 
     ColorMapStrategyHandle color_;
     ///<< The colormap's name.

@@ -199,21 +199,23 @@ ColorRGB ColorMap::getColorMapVal(double v) const
   //return colorWithoutAlpha;
 }
 
-ColorRGB ColorMap::applyAlpha(double transformed, ColorRGB colorWithoutAlpha)
+ColorRGB ColorMap::applyAlpha(double transformed, ColorRGB colorWithoutAlpha) const
 {
   double a = alpha(transformed);
   return ColorRGB(colorWithoutAlpha.r(), colorWithoutAlpha.g(), colorWithoutAlpha.b(), a);
 }
 
-double ColorMap::alpha(double transformedValue)
+double ColorMap::alpha(double transformedValue) const
 {
+  transformedValue *= 364.0;
   std::cout << transformedValue << "\n";
+  if(alphaLookup_.size() == 0) return 0.5;
   int i;
-  for(i = 0; (i < alphaLookup_.size()) && (transformedValue < alphaLookup_[i]); i += 2);
+  for(i = 0; (i < alphaLookup_.size()) && (alphaLookup_[i] < transformedValue); i += 2);
 
   double startx = 0.0;
   double starty = 40.0;
-  double endx = 360.0;
+  double endx = 364.0;
   double endy = 40.0;
 
   if(i == 0)
@@ -223,16 +225,22 @@ double ColorMap::alpha(double transformedValue)
   }
   else if(i == alphaLookup_.size())
   {
-    startx = alphaLookup_[i];
+    startx = alphaLookup_[i - 2];
     starty = alphaLookup_[i - 1];
   }
   else
   {
+    std::cout << "normal\n";
     startx = alphaLookup_[i - 2];
     starty = alphaLookup_[i - 1];
     endx = alphaLookup_[i + 0];
     endy = alphaLookup_[i + 1];
   }
+
+  double interp = (transformedValue - startx) / (endx - startx);
+  double value = ((1.0f - interp) * starty + (interp) * endy) / 80.0;
+  std::cout << startx << " : " << endx << " : " << interp << "\n";
+  return value;
 }
 
 

@@ -481,7 +481,7 @@ namespace
 
     textureMap = StandardColorMapFactory::create(realColorMap->getColorMapName(),
       realColorMap->getColorMapResolution(), realColorMap->getColorMapShift(),
-      realColorMap->getColorMapInvert());
+      realColorMap->getColorMapInvert(), 0.5, 1.0, realColorMap->getAlphaLookup());
 
     coordinateMap = StandardColorMapFactory::create("Grayscale", 256, 0, false,
       realColorMap->getColorMapRescaleScale(), realColorMap->getColorMapRescaleShift());
