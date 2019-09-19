@@ -844,6 +844,9 @@ void GeometryBuilder::renderNodes(
   ColorScheme colorScheme;
   ColorRGB node_color;
 
+  ColorMapHandle textureMap, coordinateMap;
+  spiltColorMapToTextureAndCoordinates(colorMap, textureMap, coordinateMap);
+
   if (fld->basis_order() < 0 || (fld->basis_order() == 0 && mesh->dimensionality() != 0) || state.get(RenderState::USE_DEFAULT_COLOR_NODES))
     colorScheme = ColorScheme::COLOR_UNIFORM;
   else if (state.get(RenderState::USE_COLORMAP_ON_NODES))
@@ -887,17 +890,17 @@ void GeometryBuilder::renderNodes(
       if (fld->is_scalar())
       {
         fld->get_value(sval, *eiter);
-        node_color = map->valueToColor(sval);
+        node_color = coordinateMap->valueToColor(sval);
       }
       else if (fld->is_vector())
       {
         fld->get_value(vval, *eiter);
-        node_color = map->valueToColor(vval);
+        node_color = coordinateMap->valueToColor(vval);
       }
       else if (fld->is_tensor())
       {
         fld->get_value(tval, *eiter);
-        node_color = map->valueToColor(tval);
+        node_color = coordinateMap->valueToColor(tval);
       }
     }
     //accumulate VBO or IBO data
@@ -914,7 +917,7 @@ void GeometryBuilder::renderNodes(
   }
 
   glyphs.buildObject(*geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_NODES), nodeTransparencyValue_,
-    colorScheme, state, primIn, mesh->get_bounding_box());
+    colorScheme, state, primIn, mesh->get_bounding_box(), true, textureMap);
 }
 
 
