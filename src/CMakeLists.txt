@@ -119,8 +119,8 @@ string(REGEX REPLACE "^v[0-9]+\\.[0-9]+\\-(beta.[A-Za-z0-9_]+)\\-?.*" "\\1" VERS
 #MESSAGE(STATUS "Git version patch name: " "${VERSION_PATCH}")
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules/Version.cc.in
- ${CMAKE_CURRENT_SOURCE_DIR}/Core/Application/Version.cc)
-set(version_file "${CMAKE_CURRENT_SOURCE_DIR}/Core/Application/Version.cc")
+ ${CMAKE_CURRENT_BINARY_DIR}/Core/Application/Version.cc)
+set(version_file "${CMAKE_CURRENT_BINARY_DIR}/Core/Application/Version.cc")
 
 
 ########################################################################
