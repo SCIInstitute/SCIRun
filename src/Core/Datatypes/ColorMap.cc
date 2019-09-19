@@ -154,7 +154,7 @@ double ColorMap::getTransformedValue(double f) const
   static bool x = true;
   if (x)
   {
-    std::cout << "";// this;// << " " << name_ << " " << resolution_ << " " << shift_ << " " << invert_ << std::endl;
+    std::cout << "";
     x = false;
   }
   /////////////////////////////////////////////////
@@ -208,7 +208,6 @@ ColorRGB ColorMap::applyAlpha(double transformed, ColorRGB colorWithoutAlpha) co
 double ColorMap::alpha(double transformedValue) const
 {
   transformedValue *= 364.0;
-  std::cout << transformedValue << "\n";
   if(alphaLookup_.size() == 0) return 0.5;
   int i;
   for(i = 0; (i < alphaLookup_.size()) && (alphaLookup_[i] < transformedValue); i += 2);
@@ -230,7 +229,6 @@ double ColorMap::alpha(double transformedValue) const
   }
   else
   {
-    std::cout << "normal\n";
     startx = alphaLookup_[i - 2];
     starty = alphaLookup_[i - 1];
     endx = alphaLookup_[i + 0];
@@ -239,7 +237,6 @@ double ColorMap::alpha(double transformedValue) const
 
   double interp = (transformedValue - startx) / (endx - startx);
   double value = ((1.0f - interp) * starty + (interp) * endy) / 80.0;
-  std::cout << startx << " : " << endx << " : " << interp << "\n";
   return value;
 }
 
