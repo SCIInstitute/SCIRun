@@ -587,7 +587,7 @@ void GlyphBuilder::renderVectors(
 
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENT_EDGES),
                      state->getValue(ShowFieldGlyphs::VectorsUniformTransparencyValue).toDouble(),
-                     colorScheme, renState, primIn, mesh->get_bounding_box());
+                     colorScheme, renState, primIn, mesh->get_bounding_box(), true, portHandler.getTextureMap());
 }
 
 void GlyphBuilder::renderScalars(
@@ -682,7 +682,9 @@ void GlyphBuilder::renderScalars(
   std::string uniqueNodeID = id + "scalar_glyphs" + ss.str();
 
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENT_NODES),
-                     state->getValue(ShowFieldGlyphs::ScalarsUniformTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
+                     state->getValue(ShowFieldGlyphs::ScalarsUniformTransparencyValue).toDouble(),
+                     colorScheme, renState, primIn, mesh->get_bounding_box(), true,
+                     portHandler.getTextureMap());
 }
 
 double map_emphasis(double old)
@@ -870,16 +872,23 @@ void GlyphBuilder::renderTensors(
   }
 
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY),
-                     state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(), colorScheme, renState, primIn, mesh->get_bounding_box());
+                     state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(),
+                     colorScheme, renState, primIn, mesh->get_bounding_box(), true,
+                     portHandler.getTextureMap());
 
   // Render lines(2 eigenvalues equalling 0)
   RenderState lineRenState = getVectorsRenderState(state);
   tensor_line_glyphs.buildObject(*geom, uniqueLineID, lineRenState.get(RenderState::USE_TRANSPARENT_EDGES),
-                                 state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(), colorScheme, lineRenState, SpireIBO::PRIMITIVE::LINES, mesh->get_bounding_box());
+                                 state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(),
+                                 colorScheme, lineRenState, SpireIBO::PRIMITIVE::LINES, mesh->get_bounding_box(),
+                                 true, portHandler.getTextureMap());
+
   // Render scalars(3 eigenvalues equalling 0)
   RenderState pointRenState = getScalarsRenderState(state);
   point_glyphs.buildObject(*geom, uniquePointID, pointRenState.get(RenderState::USE_TRANSPARENT_NODES),
-                           state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(), colorScheme, pointRenState, SpireIBO::PRIMITIVE::POINTS, mesh->get_bounding_box());
+                           state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(),
+                           colorScheme, pointRenState, SpireIBO::PRIMITIVE::POINTS, mesh->get_bounding_box(),
+                           true, portHandler.getTextureMap());
 }
 
 void ShowFieldGlyphs::setSuperquadricEmphasis(int emphasis)

@@ -213,19 +213,19 @@ double ColorMap::alpha(double transformedValue) const
   for(i = 0; (i < alphaLookup_.size()) && (alphaLookup_[i] < transformedValue); i += 2);
 
   double startx = 0.0;
-  double starty = 40.0;
+  double starty = 41.0;
   double endx = 364.0;
-  double endy = 40.0;
+  double endy = starty;
 
   if(i == 0)
   {
     endx = alphaLookup_[0];
-    endy = alphaLookup_[1];
+    starty = endy = alphaLookup_[1];
   }
   else if(i == alphaLookup_.size())
   {
     startx = alphaLookup_[i - 2];
-    starty = alphaLookup_[i - 1];
+    endy = starty = alphaLookup_[i - 1];
   }
   else
   {
@@ -236,7 +236,7 @@ double ColorMap::alpha(double transformedValue) const
   }
 
   double interp = (transformedValue - startx) / (endx - startx);
-  double value = ((1.0f - interp) * starty + (interp) * endy) / 80.0;
+  double value = 1.0f - ((1.0f - interp) * starty + (interp) * endy) / 82.0f;
   return value;
 }
 
