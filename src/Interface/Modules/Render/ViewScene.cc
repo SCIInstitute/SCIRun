@@ -750,8 +750,6 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
 
   sendScreenshotDownstreamForTesting();
 
-  std::cout << toString("");
-
   if (saveScreenshotOnNewGeometry_)
     screenshotClicked();
 }
