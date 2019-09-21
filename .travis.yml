@@ -2,16 +2,11 @@ language: c++
 
 matrix:
   include:
-    # - os: linux
-    #   dist: trusty
-    #   sudo: required
-    #   compiler: gcc
-    #   env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
     - os: linux
       dist: trusty
       sudo: required
       compiler: gcc
-      env: PYTHON_VERSION=3.4.3 OSPRAY_BUILD=OFF QT5=ON
+      env: PYTHON_VERSION=3.4.3 OSPRAY_BUILD=OFF QT5=OFF
     - os: linux
       dist: trusty
       sudo: required
@@ -75,12 +70,11 @@ install:
 
 script:
   - cd bin
- - cmake -GNinja -DTRAVIS_BUILD:BOOL=ON -DUSER_PYTHON_VERSION="${PYTHON_VERSION}" -DWITH_OSPRAY:BOOL=${OSPRAY_BUILD} -DQT5_BUILD:BOOL=${QT5} -DQt5_PATH=$(brew --prefix qt) ../Superbuild
- # - if [[ "$QT5" = "ON" && "$TRAVIS_OS_NAME" == "linux" ]]; then cmake -GNinja -DTRAVIS_BUILD:BOOL=ON -DUSER_PYTHON_VERSION="${PYTHON_VERSION}" -DWITH_OSPRAY:BOOL=${OSPRAY_BUILD} -DQT5_BUILD:BOOL=${QT5} -DQt5_PATH=$(dpkg -L qtbase5-dev) ../Superbuild; fi
+  - cmake -GNinja -DTRAVIS_BUILD:BOOL=ON -DUSER_PYTHON_VERSION="${PYTHON_VERSION}" -DWITH_OSPRAY:BOOL=${OSPRAY_BUILD} -DQT5_BUILD:BOOL=${QT5} -DQt5_PATH=$(brew --prefix qt) ../Superbuild
   - travis_wait 80 ninja
-  # - cd SCIRun
-  # - ./Algorithm_Layer_Test
-  # - ./Modules_Factory_Tests --gtest_filter=*HardCodedModuleFactoryTests*
+  - cd SCIRun
+  - ./Algorithm_Layer_Test
+  - ./Modules_Factory_Tests --gtest_filter=*HardCodedModuleFactoryTests*
 
 notifications:
   slack: sciinstitute:lZnpQQXNd4Io5iGDPQDpJmI1
