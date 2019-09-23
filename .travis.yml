@@ -3,11 +3,11 @@ cache: ccache
 
 matrix:
   include:
-    - os: linux
-      dist: trusty
-      sudo: required
-      compiler: gcc
-      env: PYTHON_VERSION=3.4.3 OSPRAY_BUILD=OFF QT5=ON
+    # - os: linux
+      # dist: trusty
+      # sudo: required
+      # compiler: gcc
+      # env: PYTHON_VERSION=3.4.3 OSPRAY_BUILD=OFF QT5=ON
     # - os: linux
       # dist: trusty
       # sudo: required
@@ -18,10 +18,10 @@ matrix:
       # sudo: required
       # compiler: gcc
       # env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
-    # - os: linux
-      # dist: xenial
-      # compiler: gcc
-      # env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF QT5=ON
+    - os: linux
+      dist: xenial
+      compiler: clang
+      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
     # - os: linux
       # dist: bionic
       # compiler: gcc
@@ -38,9 +38,9 @@ matrix:
     # - os: osx
       # osx_image: xcode10.1
       # env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=OFF
-    - os: osx
-      osx_image: xcode10.3
-      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
+    # - os: osx
+      # osx_image: xcode10.3
+      # env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
     # - os: osx
       # osx_image: xcode11
       # env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
@@ -72,7 +72,7 @@ install:
 script:
   - cd bin
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake -GNinja -DTRAVIS_BUILD:BOOL=ON -DUSER_PYTHON_VERSION="${PYTHON_VERSION}" -DWITH_OSPRAY:BOOL=${OSPRAY_BUILD} -DQT5_BUILD:BOOL=${QT5} -DQt5_PATH=$(brew --prefix qt) ../Superbuild; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cmake -GNinja -DTRAVIS_BUILD:BOOL=ON -DUSER_PYTHON_VERSION="${PYTHON_VERSION}" -DWITH_OSPRAY:BOOL=${OSPRAY_BUILD} -DQT5_BUILD:BOOL=${QT5} -DQt5_PATH=$(dpkg -L qtbase5-dev | grep 5.13) ../Superbuild; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cmake -GNinja -DTRAVIS_BUILD:BOOL=ON -DUSER_PYTHON_VERSION="${PYTHON_VERSION}" -DWITH_OSPRAY:BOOL=${OSPRAY_BUILD} -DQT5_BUILD:BOOL=${QT5} -DQt5_PATH=$(dpkg -L qtbase5-dev) ../Superbuild; fi
   - travis_wait 80 ninja # max is 50 minutes on public repository
   - cd SCIRun
   - ./Algorithm_Layer_Test
