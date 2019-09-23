@@ -19,7 +19,7 @@ matrix:
       # compiler: gcc
       # env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
     - os: linux
-      dist: xenial
+      dist: bionic
       compiler: clang
       env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
     # - os: linux
