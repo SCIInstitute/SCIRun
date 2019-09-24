@@ -60,7 +60,7 @@ before_install:
 
 install:
 - if [[ "$QT5" = "OFF" && "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build libqt4-dev qt4-qmake libqt4-opengl-dev; fi
-- if [[ "$QT5" = "ON"  && "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev; fi
+- if [[ "$QT5" = "ON"  && "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg-dev; fi
 - if [[ "$QT5" = "OFF" && "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 30 scripts/getQt4Mac.sh; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ninja; fi
 # TODO: figure out/test ccache
