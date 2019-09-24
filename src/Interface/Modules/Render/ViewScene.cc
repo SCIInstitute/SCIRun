@@ -204,6 +204,8 @@ void ViewSceneDialog::addToolBar()
   glLayout->addWidget(mToolBar);
 
   addViewBar();
+
+  addBugReportButton();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -297,6 +299,15 @@ void ViewSceneDialog::addScreenshotButton()
   screenshotButton->setShortcut(Qt::Key_F12);
   connect(screenshotButton, SIGNAL(clicked(bool)), this, SLOT(screenshotClicked()));
   addToolbarButton(screenshotButton);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::addBugReportButton() {
+  QPushButton *bugReportButton = new QPushButton(this);
+  bugReportButton->setToolTip("Report a bug");
+  bugReportButton->setIcon(QPixmap(":/general/Resources/ViewScene/bugReport.png"));
+  connect(bugReportButton, SIGNAL(clicked(bool)), this, SLOT(reportBugClicked()));
+  addToolbarButton(bugReportButton);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2141,6 +2152,12 @@ void ViewSceneDialog::setTransparencySortTypeLists(bool index)
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::screenshotClicked()
 {
+  takeScreenshot();
+  screenshotTaker_->saveScreenshot();
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::reportBugClicked() {
   takeScreenshot();
   screenshotTaker_->saveScreenshot();
 }
