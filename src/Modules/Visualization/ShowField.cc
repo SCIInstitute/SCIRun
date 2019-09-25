@@ -583,9 +583,7 @@ void GeometryBuilder::renderFacesLinear(
         iboBuffer->writeUnsafe(i+0);
         iboBuffer->writeUnsafe(i+1);
         iboBuffer->writeUnsafe(i+2);
-        //iboBuffer->writeUnsafe(i+2);
         iboBuffer->writeUnsafe(i+3);
-        //iboBuffer->writeUnsafe(i+0);
       }
     }
     else
