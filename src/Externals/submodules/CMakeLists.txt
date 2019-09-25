@@ -47,9 +47,11 @@ endif()
     #message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 #endif()
 
+IF(BUILD_TESTING)
 if(NOT EXISTS "${PROJECT_SOURCE_DIR}/Externals/submodules/googletest/CMakeLists.txt")
     message(FATAL_ERROR "The submodules were not downloaded! GIT_SUBMODULE was turned off or failed. Please update submodules and try again.")
 endif()
+ENDIF()
 
 #IF(BUILD_WITH_PYTHON)
 #  SET(PYTHON_EXECUTABLE ${SCI_PYTHON_EXE})
@@ -61,7 +63,9 @@ endif()
 #  ADD_SUBDIRECTORY(pybind11)
 #ENDIF()
 
+IF(BUILD_TESTING)
 ADD_SUBDIRECTORY(googletest)
+ENDIF()
 
 IF(WITH_OSPRAY)
   set(OSPRAY_TASKING_SYSTEM "TBB")

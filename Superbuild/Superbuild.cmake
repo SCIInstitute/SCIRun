@@ -64,7 +64,7 @@ ENDIF()
 
 ###########################################
 # Configure test support
-OPTION(BUILD_TESTING "Build with tests." ON)
+OPTION(BUILD_TESTING "Build with tests." OFF)
 
 ###########################################
 # Configure python
