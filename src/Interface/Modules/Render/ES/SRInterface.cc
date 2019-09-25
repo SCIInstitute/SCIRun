@@ -453,18 +453,21 @@ namespace SCIRun {
           GLenum primitive = GL_TRIANGLES;
           switch (ibo.prim)
           {
-          case SpireIBO::PRIMITIVE::POINTS:
-            primitive = GL_POINTS;
-            break;
+            case SpireIBO::PRIMITIVE::POINTS:
+              primitive = GL_POINTS;
+              break;
 
-          case SpireIBO::PRIMITIVE::LINES:
-            primitive = GL_LINES;
-            break;
+            case SpireIBO::PRIMITIVE::LINES:
+              primitive = GL_LINES;
+              break;
 
-          case SpireIBO::PRIMITIVE::TRIANGLES:
-          default:
-            primitive = GL_TRIANGLES;
-            break;
+            case SpireIBO::PRIMITIVE::TRIANGLES:
+              primitive = GL_TRIANGLES;
+              break;
+
+            case SpireIBO::PRIMITIVE::QUADS:
+              primitive = GL_QUADS;
+              break;
           }
 
           int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
@@ -1047,18 +1050,21 @@ namespace SCIRun {
             GLenum primitive = GL_TRIANGLES;
             switch (ibo.prim)
             {
-            case SpireIBO::PRIMITIVE::POINTS:
-              primitive = GL_POINTS;
-              break;
+              case SpireIBO::PRIMITIVE::POINTS:
+                primitive = GL_POINTS;
+                break;
 
-            case SpireIBO::PRIMITIVE::LINES:
-              primitive = GL_LINES;
-              break;
+              case SpireIBO::PRIMITIVE::LINES:
+                primitive = GL_LINES;
+                break;
 
-            case SpireIBO::PRIMITIVE::TRIANGLES:
-            default:
-              primitive = GL_TRIANGLES;
-              break;
+              case SpireIBO::PRIMITIVE::TRIANGLES:
+                primitive = GL_TRIANGLES;
+                break;
+
+              case SpireIBO::PRIMITIVE::QUADS:
+                primitive = GL_QUADS;
+                break;
             }
 
             if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)

@@ -568,7 +568,7 @@ void GeometryBuilder::renderFacesLinear(
     facesLeft -= facesLeftInThisPass;
 
     // Three 32 bit ints for each triangle to index into the VBO (triangles = verticies - 2)
-    size_t iboSize = static_cast<size_t>(facesLeftInThisPass * sizeof(uint32_t) * (numNodesPerFace - 2) * 3);
+    size_t iboSize = static_cast<size_t>(facesLeftInThisPass * sizeof(uint32_t) * numNodesPerFace);
     size_t vboSize = static_cast<size_t>(facesLeftInThisPass * sizeof(float) * numNodesPerFace * numAttributes);
     std::shared_ptr<spire::VarBuffer> iboBufferSPtr(new spire::VarBuffer(iboSize));
     std::shared_ptr<spire::VarBuffer> vboBufferSPtr(new spire::VarBuffer(vboSize));
@@ -583,9 +583,9 @@ void GeometryBuilder::renderFacesLinear(
         iboBuffer->writeUnsafe(i+0);
         iboBuffer->writeUnsafe(i+1);
         iboBuffer->writeUnsafe(i+2);
-        iboBuffer->writeUnsafe(i+2);
+        //iboBuffer->writeUnsafe(i+2);
         iboBuffer->writeUnsafe(i+3);
-        iboBuffer->writeUnsafe(i+0);
+        //iboBuffer->writeUnsafe(i+0);
       }
     }
     else
@@ -810,7 +810,8 @@ void GeometryBuilder::renderFacesLinear(
     SpireVBO geomVBO(vboName, attribs, vboBufferSPtr, 0, mesh->get_bounding_box(), true);
     geom->vbos().push_back(geomVBO);
 
-    SpireIBO geomIBO(iboName, SpireIBO::PRIMITIVE::TRIANGLES, sizeof(uint32_t), iboBufferSPtr);
+    SpireIBO geomIBO(iboName, useQuads ? SpireIBO::PRIMITIVE::QUADS : SpireIBO::PRIMITIVE::TRIANGLES,
+      sizeof(uint32_t), iboBufferSPtr);
     geom->ibos().push_back(geomIBO);
 
     SpireText text;
