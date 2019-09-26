@@ -46,13 +46,13 @@ namespace SCIRun
     public:
       explicit Screenshot(QGLWidget *glwidget, QObject *parent = nullptr);
       void takeScreenshot();
+      QImage getScreenshot();
       void saveScreenshot();
       QString screenshotFile() const;
-
-
       Modules::Render::RGBMatrices toMatrix() const;
+
     private:
-      QGLWidget* viewport_;
+      QGLWidget *viewport_;
       QImage screenshot_;
       uint index_;
     };

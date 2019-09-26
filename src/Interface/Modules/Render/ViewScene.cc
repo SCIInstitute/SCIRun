@@ -29,17 +29,18 @@ DEALINGS IN THE SOFTWARE.
 #include <es-log/trace-log.h>
 #include <gl-platform/GLPlatform.hpp>
 
-#include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
-#include <Interface/Modules/Render/ES/SRInterface.h>
-#include <Interface/Modules/Render/GLWidget.h>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
-#include <Core/Logging/Log.h>
-#include <Modules/Render/ViewScene.h>
-#include <Interface/Modules/Render/Screenshot.h>
-#include <Graphics/Glyphs/GlyphGeom.h>
-#include <Graphics/Datatypes/GeometryImpl.h>
+#include <Core/Application/Version.h>
 #include <Core/GeometryPrimitives/Transform.h>
+#include <Core/Logging/Log.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
+#include <Graphics/Glyphs/GlyphGeom.h>
+#include <Interface/Modules/Render/ES/SRInterface.h>
+#include <Interface/Modules/Render/GLWidget.h>
+#include <Interface/Modules/Render/Screenshot.h>
+#include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
+#include <Modules/Render/ViewScene.h>
 #include <boost/timer.hpp>
 
 using namespace SCIRun::Gui;
@@ -2158,8 +2159,49 @@ void ViewSceneDialog::screenshotClicked()
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::reportBugClicked() {
+  std::cout << "machine host name: " << QSysInfo::machineHostName().toStdString() << "\n";
+  std::cout << "os version: " << QOperatingSystemVersion::current().name().toStdString() << "\n";
+  std::string glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+  std::string gpuVersion = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+
+  // Temporarily save screenshot so that it can be sent over email
   takeScreenshot();
-  screenshotTaker_->saveScreenshot();
+  QImage image = screenshotTaker_->getScreenshot();
+  QString location = QDir::tempPath() + "/scirun_bug.png";
+  image.save(location);
+
+  // Generate email template
+  static std::string askForScreenshot = "\nIMPORTANT: Make sure to attach the screenshot of the ViewScene located at "
+    + location.toStdString() + "\n\n\n";
+  static std::string instructions = "## For bugs, follow the template below: fill out all pertinent sections,"
+    "then delete the rest of the template to reduce clutter."
+    "\n### If the prerequisite is met, just delete that text as well. "
+    "If they're not all met, the issue will be closed or assigned back to you.\n\n";
+  static std::string prereqs = "**Prerequisite**\n* [ ] Did you [perform a cursory search](https://github.com/SCIInstitute/SCIRun/issues)"
+    "to see if your bug or enhancement is already reported?\n\n";
+  static std::string reportGuide = "For more information on how to write a good "
+    "[bug report](https://github.com/atom/atom/blob/master/CONTRIBUTING.md#how-do-i-submit-a-good-bug-report) or"
+    "[enhancement request](https://github.com/atom/atom/blob/master/CONTRIBUTING.md#how-do-i-submit-a-good-enhancement-suggestion),"
+    "see the `CONTRIBUTING` guide. These links point to another project, but most of the advice holds in general.\n\n";
+  static std::string describe = "**Describe the bug**\nA clear and concise description of what the bug is.\n\n";
+  static std::string askForData = "**Providing sample network(s) along with input data is useful to solving your issue.**\n\n";
+  static std::string reproduction = "**To Reproduce**\nSteps to reproduce the behavior:"
+    "\n1. Go to '...'\n2. Click on '....'\n3. Scroll down to '....'\n4. See error\n\n";
+  static std::string expectedBehavior = "**Expected behavior**\nA clear and concise description of what you expected to happen.\n\n";
+  static std::string additional = "**Additional context**\nAdd any other context about the problem here.\n\n";
+  static std::string desktopInfo = "Desktop: " + QSysInfo::prettyProductName().toStdString() + "\n";
+  static std::string osVersionInfo = "Version: " + QSysInfo::productVersion().toStdString() + "\n";
+  static std::string machineIdInfo = "Machine ID: " + QSysInfo::machineUniqueId().toStdString() + "\n";
+  static std::string kernelInfo = "Kernel: " + QSysInfo::kernelVersion().toStdString() + "\n";
+  static std::string glInfo = "GL Version: " + glVersion + "\n";
+  static std::string gpuInfo = "GPU Info: " + gpuVersion + "\n";
+  static std::string scirunVersionInfo = "SCIRun Version: " + VersionInfo::GIT_VERSION_TAG;
+
+  static std::string recipient = "dwhite@sci.utah.edu";
+  static std::string subject = "View%20Scene%20Bug%20Report";
+  std::string body = askForScreenshot + instructions + prereqs + reportGuide + describe + askForData + reproduction
+    + expectedBehavior + additional + desktopInfo + osVersionInfo + machineIdInfo + kernelInfo + gpuInfo + glInfo + scirunVersionInfo;
+  QDesktopServices::openUrl(QUrl(QString::fromStdString("mailto:" + recipient + "?subject=" + subject + "&body=" + body)));
 }
 
 //--------------------------------------------------------------------------------------------------
