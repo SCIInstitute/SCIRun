@@ -2159,19 +2159,13 @@ void ViewSceneDialog::screenshotClicked()
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::reportBugClicked() {
-  std::cout << "machine host name: " << QSysInfo::machineHostName().toStdString() << "\n";
-  std::cout << "os version: " << QOperatingSystemVersion::current().name().toStdString() << "\n";
   std::string glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
   std::string gpuVersion = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
-  std::string glVendor = reinterpret_cast<const char *>(glGetString(GL_VENDOR));
-  std::cout << "glVersion: " << glVersion << "\n";
-  std::cout << "glRenderer: " << gpuVersion << "\n";
-  std::cout << "glVendor: " << glVendor << "\n";
 
   // Temporarily save screenshot so that it can be sent over email
   takeScreenshot();
   QImage image = screenshotTaker_->getScreenshot();
-  QString location = QDir::tempPath() + "/scirun_bug.png";
+  QString location = QDir::homePath() + QLatin1String("/scirun5screenshots/scirun_bug.png");
   image.save(location);
 
   // Generate email template
@@ -2194,18 +2188,17 @@ void ViewSceneDialog::reportBugClicked() {
   static std::string expectedBehavior = "**Expected behavior**\nA clear and concise description of what you expected to happen.\n\n";
   static std::string additional = "**Additional context**\nAdd any other context about the problem here.\n\n";
   static std::string desktopInfo = "Desktop: " + QSysInfo::prettyProductName().toStdString() + "\n";
-  static std::string gpuInfo = "GPU: " + gpuVersion + "\n";
-  static std::string osVersionInfo = "Version: " + QSysInfo::productVersion().toStdString() + "\n";
-  static std::string machineIdInfo = "Machine ID: " + QSysInfo::machineUniqueId().toStdString() + "\n";
   static std::string kernelInfo = "Kernel: " + QSysInfo::kernelVersion().toStdString() + "\n";
-  static std::string glInfo = "GL Version: " + glVersion + "\n";
+  static std::string gpuInfo = "GPU: " + gpuVersion + "\n";
   static std::string qtInfo = "QT Version: " + QLibraryInfo::version().toString().toStdString() + "\n";
-  static std::string scirunVersionInfo = "SCIRun Version: " + VersionInfo::GIT_VERSION_TAG;
+  static std::string glInfo = "GL Version: " + glVersion + "\n";
+  static std::string scirunVersionInfo = "SCIRun Version: " + VersionInfo::GIT_VERSION_TAG+"\n";
+  static std::string machineIdInfo = "Machine ID: " + QSysInfo::machineUniqueId().toStdString() + "\n";
 
   static std::string recipient = "dwhite@sci.utah.edu";
   static std::string subject = "View%20Scene%20Bug%20Report";
   std::string body = askForScreenshot + instructions + prereqs + reportGuide + describe + askForData + reproduction + expectedBehavior + additional
-    + desktopInfo + osVersionInfo + machineIdInfo + kernelInfo + gpuInfo + glInfo + qtInfo + scirunVersionInfo;
+    + desktopInfo + kernelInfo + gpuInfo + qtInfo + glInfo + scirunVersionInfo + machineIdInfo;
   QDesktopServices::openUrl(QUrl(QString::fromStdString("mailto:" + recipient + "?subject=" + subject + "&body=" + body)));
 }
 
