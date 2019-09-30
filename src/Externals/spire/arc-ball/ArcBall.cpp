@@ -60,7 +60,7 @@ void ArcBall::drag(const glm::vec2& msc)
   glm::vec3 mVSphereNow = mouseOnSphere((mScreenToTCS * glm::vec4(msc, 0.0, 1.0)).xyz());
 
   // Construct a quaternion from two points on the unit sphere.
-  glm:: quat mQDrag = quatFromUnitSphere(mVSphereDown, mVSphereNow);
+  glm::quat mQDrag = quatFromUnitSphere(mVSphereDown, mVSphereNow);
   mQNow = mQDrag * mQDown;
   if(glm::dot(mVSphereDown, mVSphereNow) < 0.0)
     beginDrag(msc);
@@ -76,7 +76,13 @@ void ArcBall::setLocationOnSphere(glm::vec3 location, glm::vec3 up)
 //------------------------------------------------------------------------------
 glm::quat ArcBall::quatFromUnitSphere(const glm::vec3& from, const glm::vec3& to)
 {
-  glm::vec3 axis = glm::normalize(glm::cross(from, to));
+  glm::vec3 cross = glm::cross(from, to);
+  glm::vec3 axis = glm::normalize(cross);
+
+  // Give arbitrary non-zero vector because no rotation
+  if (glm::length(cross) == 0.0)
+    axis = from;
+
   float angle = std::acos(glm::dot(from, to));
 
   if(angle <= 0.00001)
