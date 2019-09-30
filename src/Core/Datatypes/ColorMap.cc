@@ -207,12 +207,12 @@ ColorRGB ColorMap::applyAlpha(double transformed, ColorRGB colorWithoutAlpha) co
 
 double ColorMap::alpha(double transformedValue) const
 {
-  transformedValue *= 365.0f;
+  //transformedValue *= 365.0f;
   if(alphaLookup_.size() == 0) return 0.5;
   int i;
   for(i = 0; (i < alphaLookup_.size()) && (alphaLookup_[i] < transformedValue); i += 2);
 
-  double startx = 0.0f, starty, endx = 365.0f, endy;
+  double startx = 0.0f, starty, endx = 1.0f, endy;
   if(i == 0)
   {
     endx = alphaLookup_[0];
@@ -232,7 +232,7 @@ double ColorMap::alpha(double transformedValue) const
   }
 
   double interp = (transformedValue - startx) / (endx - startx);
-  double value = 1.0f - ((1.0f - interp) * starty + (interp) * endy) * (1.0f / 83.0f);
+  double value = ((1.0f - interp) * starty + (interp) * endy);
   return value;
 }
 

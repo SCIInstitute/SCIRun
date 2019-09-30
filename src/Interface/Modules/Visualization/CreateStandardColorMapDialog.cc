@@ -38,6 +38,12 @@ using namespace SCIRun::Core::Datatypes;
 
 typedef SCIRun::Modules::Visualization::CreateStandardColorMap CreateStandardColorMapModule;
 
+namespace
+{
+  const double colormapPreviewHeight = 83;
+  const double colormapPreviewWidth = 365;
+  const QRectF colorMapPreviewRect(0, 0, colormapPreviewWidth, colormapPreviewHeight);
+}
 
 CreateStandardColorMapDialog::CreateStandardColorMapDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -97,7 +103,7 @@ void CreateStandardColorMapDialog::pullSpecial()
     for (const auto& p : pointsVec)
     {
       auto pVec = p.toVector();
-      previewColorMap_->addPoint(QPointF(pVec[0].toDouble(), pVec[1].toDouble()));
+      previewColorMap_->addPoint(QPointF(pVec[0].toDouble() * colormapPreviewWidth, (1.0f - pVec[1].toDouble()) * colormapPreviewHeight));
     }
   }
 }
@@ -157,13 +163,6 @@ AlphaFunctionManager::AlphaFunctionManager(const QPointF& start, const QPointF& 
   alphaFunction_(ALPHA_VECTOR_LENGTH, DEFAULT_ALPHA),
   dialogPulling_(pulling)
 {
-}
-
-namespace
-{
-  const double colormapPreviewHeight = 83;
-  const double colormapPreviewWidth = 365;
-  const QRectF colorMapPreviewRect(0, 0, colormapPreviewWidth, colormapPreviewHeight);
 }
 
 ColormapPreview::ColormapPreview(QGraphicsScene* scene, ModuleStateHandle state,
@@ -250,7 +249,8 @@ void AlphaFunctionManager::pushToState()
       Variable::List alphaPointsVec;
       //strip endpoints before saving user-added points
       auto begin = alphaPoints_.begin(), end = alphaPoints_.end();
-      std::for_each(begin, end, [&](const QPointF& p) { alphaPointsVec.emplace_back(Name("alphaPoint"), makeAnonymousVariableList(p.x(), p.y())); });
+      std::for_each(begin, end, [&](const QPointF& p) { alphaPointsVec.emplace_back(Name("alphaPoint"),
+        makeAnonymousVariableList(p.x()/colormapPreviewWidth, 1.0f - p.y()/colormapPreviewHeight)); });
       state_->setValue(Parameters::AlphaUserPointsVector, alphaPointsVec);
     }
     else
