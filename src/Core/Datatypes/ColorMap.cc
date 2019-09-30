@@ -192,11 +192,8 @@ double ColorMap::getTransformedValue(double f) const
 ColorRGB ColorMap::getColorMapVal(double v) const
 {
   double f = getTransformedValue(v);
-  //now grab the RGB
   auto colorWithoutAlpha = color_->getColorMapVal(f);
-  //TODO:
   return applyAlpha(f, colorWithoutAlpha);
-  //return colorWithoutAlpha;
 }
 
 ColorRGB ColorMap::applyAlpha(double transformed, ColorRGB colorWithoutAlpha) const
@@ -207,7 +204,6 @@ ColorRGB ColorMap::applyAlpha(double transformed, ColorRGB colorWithoutAlpha) co
 
 double ColorMap::alpha(double transformedValue) const
 {
-  //transformedValue *= 365.0f;
   if(alphaLookup_.size() == 0) return 0.5;
   int i;
   for(i = 0; (i < alphaLookup_.size()) && (alphaLookup_[i] < transformedValue); i += 2);

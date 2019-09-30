@@ -160,7 +160,6 @@ void CreateStandardColorMapDialog::onInvertCheck(bool b)
 AlphaFunctionManager::AlphaFunctionManager(const QPointF& start, const QPointF& end, ModuleStateHandle state, const boost::atomic<bool>& pulling) :
   state_(state),
   defaultStart_(start), defaultEnd_(end),
-  alphaFunction_(ALPHA_VECTOR_LENGTH, DEFAULT_ALPHA),
   dialogPulling_(pulling)
 {
 }
@@ -229,14 +228,12 @@ bool AlphaFunctionManager::alreadyExists(const QPointF& point) const
 void AlphaFunctionManager::insert(const QPointF& p)
 {
   alphaPoints_.insert(p);
-  updateAlphaFunction();
   pushToState();
 }
 
 void AlphaFunctionManager::clear()
 {
   alphaPoints_.clear();
-  alphaFunction_.assign(ALPHA_VECTOR_LENGTH, DEFAULT_ALPHA);
   pushToState();
 }
 
@@ -247,7 +244,6 @@ void AlphaFunctionManager::pushToState()
     if (!alphaPoints_.empty())
     {
       Variable::List alphaPointsVec;
-      //strip endpoints before saving user-added points
       auto begin = alphaPoints_.begin(), end = alphaPoints_.end();
       std::for_each(begin, end, [&](const QPointF& p) { alphaPointsVec.emplace_back(Name("alphaPoint"),
         makeAnonymousVariableList(p.x()/colormapPreviewWidth, 1.0f - p.y()/colormapPreviewHeight)); });
@@ -257,8 +253,6 @@ void AlphaFunctionManager::pushToState()
     {
       state_->setValue(Parameters::AlphaUserPointsVector, Variable::List());
     }
-
-    state_->setTransientValue(Parameters::AlphaFunctionVector, alphaFunction_);
   }
 }
 
@@ -293,26 +287,6 @@ void ColormapPreview::clearAlphaPointGraphics()
   }
   alphaManager_.clear();
   addDefaultLine();
-}
-
-void AlphaFunctionManager::updateAlphaFunction()
-{
-  //from v4, color endpoints (0 and 1) are fixed at alpha = 0.5.
-  // alphaFunction_ will sample from in between these endpoints, evenly spaced throughout open interval (0,1)
-
-  for (int i = 0; i < static_cast<int>(alphaFunction_.size()); ++i)
-  {
-    if (false && i > 0 && i < alphaFunction_.size() - 1)
-    {
-      double color = i / static_cast<double>(ALPHA_SAMPLES + 1);
-      auto between = alphaLineEndpointsAtColor(color);
-      alphaFunction_[i] = interpolateAlphaLineValue(between.first, between.second, color);
-    }
-    else
-    {
-      alphaFunction_[i] = DEFAULT_ALPHA;
-    }
-  }
 }
 
 std::pair<QPointF,QPointF> AlphaFunctionManager::alphaLineEndpointsAtColor(double color) const

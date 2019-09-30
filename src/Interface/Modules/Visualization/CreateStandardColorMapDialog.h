@@ -67,7 +67,6 @@ namespace SCIRun {
       const double DEFAULT_ALPHA = 0.5;
       const QPointF defaultStart_;
       const QPointF defaultEnd_;
-      std::vector<double> alphaFunction_;
       const boost::atomic<bool>& dialogPulling_;
     public:
       auto begin() const -> decltype(alphaPoints_.begin()) { return alphaPoints_.begin(); }
