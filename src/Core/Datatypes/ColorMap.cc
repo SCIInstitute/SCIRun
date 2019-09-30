@@ -149,16 +149,6 @@ StandardColorMapFactory::NameList StandardColorMapFactory::getList()
  */
 double ColorMap::getTransformedValue(double f) const
 {
-  /////////////////////////////////////////////////
-  //TODO: this seemingly useless code fixes a nasty crash bug on Windows. Don't delete it until a proper fix is implemented!
-  static bool x = true;
-  if (x)
-  {
-    std::cout << "";
-    x = false;
-  }
-  /////////////////////////////////////////////////
-
   const double rescaled01 = static_cast<double>((f + rescale_shift_) * rescale_scale_);
 
   double v = std::min(std::max(0., rescaled01), 1.);
