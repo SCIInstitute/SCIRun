@@ -66,7 +66,6 @@ void CreateStandardColorMap::execute()
 
     //TODO cbright: pass computed alpha function from transient state to factory
     auto alphaPoints = state->getValue(Parameters::AlphaUserPointsVector).toVector();
-    std::cout << alphaPoints << "\n";
     std::vector<double> points;
     for(auto point : alphaPoints)
     {
