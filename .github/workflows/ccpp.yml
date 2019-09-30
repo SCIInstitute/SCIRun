@@ -13,4 +13,4 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: make
-      run: ./build.sh
+      run: ./build.sh -DTRAVIS_BUILD:BOOL=ON -DBUILD_HEADLESS:BOOL=ON
