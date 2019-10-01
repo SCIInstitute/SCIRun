@@ -43,11 +43,9 @@ varying vec4    vPosView;
 
 void main( void )
 {
-  // Todo: Add gamma correction factor of 2.2. For textures, we assume that it
-  // was generated in gamma space, and we need to convert it to linear space.
   vPosWorld = uModel * vec4(aPos, 1.0);
-  vPosView = uView * vPosWorld;
-  vNormal = normalize((uView * vec4(aNormal, 0.0)).xyz);
-
+  vPosView = uView * uModel * vPosWorld;
+  vNormal = normalize((uView * uModel * vec4(aNormal, 0.0)).xyz);
+  
   gl_Position = uModelViewProjection * vec4(aPos, 1.0);
 }
