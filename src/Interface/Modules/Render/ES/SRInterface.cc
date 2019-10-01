@@ -77,6 +77,17 @@ namespace fs = spire;
 namespace SCIRun {
   namespace Render {
 
+
+    static glm::vec4 inverseGammaCorrect(glm::vec4 in)
+    {
+      return glm::vec4(glm::pow(glm::vec3(in), glm::vec3(2.2)), in.a);
+    }
+
+    static glm::vec3 inverseGammaCorrect(glm::vec3 in)
+    {
+      return glm::pow(in, glm::vec3(2.2));
+    }
+
     //----------------------------------------------------------------------------------------------
     SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context, int frameInitLimit) :
       mContext(context),
@@ -442,18 +453,21 @@ namespace SCIRun {
           GLenum primitive = GL_TRIANGLES;
           switch (ibo.prim)
           {
-          case SpireIBO::PRIMITIVE::POINTS:
-            primitive = GL_POINTS;
-            break;
+            case SpireIBO::PRIMITIVE::POINTS:
+              primitive = GL_POINTS;
+              break;
 
-          case SpireIBO::PRIMITIVE::LINES:
-            primitive = GL_LINES;
-            break;
+            case SpireIBO::PRIMITIVE::LINES:
+              primitive = GL_LINES;
+              break;
 
-          case SpireIBO::PRIMITIVE::TRIANGLES:
-          default:
-            primitive = GL_TRIANGLES;
-            break;
+            case SpireIBO::PRIMITIVE::TRIANGLES:
+              primitive = GL_TRIANGLES;
+              break;
+
+            case SpireIBO::PRIMITIVE::QUADS:
+              primitive = GL_QUADS;
+              break;
           }
 
           int numPrimitives = ibo.data->getBufferSize() / ibo.indexSize;
@@ -1036,18 +1050,21 @@ namespace SCIRun {
             GLenum primitive = GL_TRIANGLES;
             switch (ibo.prim)
             {
-            case SpireIBO::PRIMITIVE::POINTS:
-              primitive = GL_POINTS;
-              break;
+              case SpireIBO::PRIMITIVE::POINTS:
+                primitive = GL_POINTS;
+                break;
 
-            case SpireIBO::PRIMITIVE::LINES:
-              primitive = GL_LINES;
-              break;
+              case SpireIBO::PRIMITIVE::LINES:
+                primitive = GL_LINES;
+                break;
 
-            case SpireIBO::PRIMITIVE::TRIANGLES:
-            default:
-              primitive = GL_TRIANGLES;
-              break;
+              case SpireIBO::PRIMITIVE::TRIANGLES:
+                primitive = GL_TRIANGLES;
+                break;
+
+              case SpireIBO::PRIMITIVE::QUADS:
+                primitive = GL_QUADS;
+                break;
             }
 
             if (mRenderSortType == RenderState::TransparencySortType::LISTS_SORT)
@@ -1781,9 +1798,9 @@ namespace SCIRun {
     void SRInterface::applyMatFactors(Graphics::Datatypes::SpireSubPass::Uniform& uniform)
     {
       if (uniform.name == "uAmbientColor")
-        uniform.data = glm::vec4(mMatAmbient);
+        uniform.data = inverseGammaCorrect(glm::vec4(mMatAmbient));
       else if (uniform.name == "uSpecularColor")
-        uniform.data = glm::vec4(mMatSpecular);
+        uniform.data = inverseGammaCorrect(glm::vec4(mMatSpecular));
       else if (uniform.name == "uSpecularPower")
         uniform.data = glm::vec4(mMatShine);
     }
@@ -1800,7 +1817,7 @@ namespace SCIRun {
       }
       else if (uniform.name == "uFogColor")
       {
-        uniform.data = mFogColor;
+        uniform.data = inverseGammaCorrect(mFogColor);
       }
 
       uniform.type = Graphics::Datatypes::SpireSubPass::Uniform::UniformType::UNIFORM_VEC4;
@@ -1814,7 +1831,7 @@ namespace SCIRun {
       StaticWorldLight* light = mCore.getStaticComponent<StaticWorldLight>();
       if (light)
       {
-        light->lightColor[index] = glm::vec3(r, g, b);
+        light->lightColor[index] = inverseGammaCorrect(glm::vec3(r, g, b));
       }
     }
 
