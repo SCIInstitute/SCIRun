@@ -469,6 +469,23 @@ namespace
   {
     return ((int)writeQuads << 2) | ((int)writeNormals << 1) | ((int)writeTexCoords);
   }
+
+  void spiltColorMapToTextureAndCoordinates(
+    const boost::optional<boost::shared_ptr<ColorMap>>& colorMap,
+    ColorMapHandle& textureMap, ColorMapHandle& coordinateMap)
+  {
+    ColorMapHandle realColorMap = nullptr;
+
+    if(colorMap) realColorMap = colorMap.get();
+    else realColorMap = StandardColorMapFactory::create();
+
+    textureMap = StandardColorMapFactory::create(realColorMap->getColorMapName(),
+      realColorMap->getColorMapResolution(), realColorMap->getColorMapShift(),
+      realColorMap->getColorMapInvert());
+
+    coordinateMap = StandardColorMapFactory::create("Grayscale", 256, 0, false,
+      realColorMap->getColorMapRescaleScale(), realColorMap->getColorMapRescaleShift());
+  }
 }
 
 
@@ -522,12 +539,9 @@ void GeometryBuilder::renderFacesLinear(
 
   ColorScheme colorScheme = ColorScheme::COLOR_UNIFORM;
 
-  ColorMapHandle realColorMap;
-  if(colorMap) realColorMap = colorMap.get();
-  if(!realColorMap) realColorMap = StandardColorMapFactory::create();
 
-  auto coordinateMap = StandardColorMapFactory::create("Grayscale", 256, 0, false,
-    realColorMap->getColorMapRescaleScale(), realColorMap->getColorMapRescaleShift());
+  ColorMapHandle textureMap, coordinateMap;
+  spiltColorMapToTextureAndCoordinates(colorMap, textureMap, coordinateMap);
 
   if (useColorMap)
   {
@@ -773,18 +787,14 @@ void GeometryBuilder::renderFacesLinear(
       shader += "_ColorMap";
       attribs.push_back(SpireVBO::AttributeData("aTexCoords", 2 * sizeof(float)));
 
-      auto map = StandardColorMapFactory::create(realColorMap->getColorMapName(),
-        realColorMap->getColorMapResolution(), realColorMap->getColorMapShift(),
-        realColorMap->getColorMapInvert());
-
       const static int colorMapResolution = 256;
       for(int i = 0; i < colorMapResolution; ++i)
       {
-        ColorRGB color = map->valueToColor(static_cast<float>(i)/colorMapResolution * 2.0 - 1.0);
-        texture.bitmap.push_back(color.r()*255);
-        texture.bitmap.push_back(color.g()*255);
-        texture.bitmap.push_back(color.b()*255);
-        texture.bitmap.push_back(255);
+        ColorRGB color = textureMap->valueToColor(static_cast<float>(i)/colorMapResolution * 2.0 - 1.0);
+        texture.bitmap.push_back(color.r()*255.99f);
+        texture.bitmap.push_back(color.g()*255.99f);
+        texture.bitmap.push_back(color.b()*255.99f);
+        texture.bitmap.push_back(color.a()*255.99f);
       }
       texture.name = "ColorMap";
       texture.height = 1;
@@ -908,6 +918,7 @@ void GeometryBuilder::renderNodes(
 }
 
 
+
 void GeometryBuilder::renderEdges(
   FieldHandle field,
   boost::optional<boost::shared_ptr<ColorMap>> colorMap,
@@ -925,6 +936,9 @@ void GeometryBuilder::renderEdges(
 
   ColorScheme colorScheme;
   ColorRGB edge_colors[2];
+
+  ColorMapHandle textureMap, coordinateMap;
+  spiltColorMapToTextureAndCoordinates(colorMap, textureMap, coordinateMap);
 
   if (fld->basis_order() < 0 ||
     (fld->basis_order() == 0 && mesh->dimensionality() != 0) ||
@@ -984,8 +998,8 @@ void GeometryBuilder::renderEdges(
 
           sval1 = sval0;
         }
-        edge_colors[0] = map->valueToColor(sval0);
-        edge_colors[1] = map->valueToColor(sval1);
+        edge_colors[0] = coordinateMap->valueToColor(sval0);
+        edge_colors[1] = coordinateMap->valueToColor(sval1);
       }
       else if (fld->is_vector())
       {
@@ -1000,8 +1014,8 @@ void GeometryBuilder::renderEdges(
           vval1 = vval0;
         }
 
-        edge_colors[0] = map->valueToColor(vval0);
-        edge_colors[1] = map->valueToColor(vval1);
+        edge_colors[0] = coordinateMap->valueToColor(vval0);
+        edge_colors[1] = coordinateMap->valueToColor(vval1);
       }
       else if (fld->is_tensor())
       {
@@ -1016,8 +1030,8 @@ void GeometryBuilder::renderEdges(
           tval1 = tval0;
         }
 
-        edge_colors[0] = map->valueToColor(tval0);
-        edge_colors[1] = map->valueToColor(tval1);
+        edge_colors[0] = coordinateMap->valueToColor(tval0);
+        edge_colors[1] = coordinateMap->valueToColor(tval1);
       }
     }
     //accumulate VBO or IBO data
@@ -1040,7 +1054,7 @@ void GeometryBuilder::renderEdges(
   }
 
   glyphs.buildObject(*geom, uniqueNodeID, state.get(RenderState::USE_TRANSPARENT_EDGES), edgeTransparencyValue_,
-    colorScheme, state, primIn, mesh->get_bounding_box());
+    colorScheme, state, primIn, mesh->get_bounding_box(), true, textureMap);
 }
 
 void ShowField::updateAvailableRenderOptions(FieldHandle field)
