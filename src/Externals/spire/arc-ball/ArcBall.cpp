@@ -76,11 +76,10 @@ void ArcBall::setLocationOnSphere(glm::vec3 location, glm::vec3 up)
 //------------------------------------------------------------------------------
 glm::quat ArcBall::quatFromUnitSphere(const glm::vec3& from, const glm::vec3& to)
 {
-  glm::vec3 cross = glm::cross(from, to);
-  glm::vec3 axis = glm::normalize(cross);
+  glm::vec3 axis = glm::normalize(glm::cross(from, to));
 
   // Give arbitrary non-zero vector because no rotation
-  if (glm::length(cross) == 0.0)
+  if (std::isnan(axis[0]))
     axis = from;
 
   float angle = std::acos(glm::dot(from, to));
