@@ -44,13 +44,6 @@ ENDIF()
 
 INCLUDE( ExternalProject )
 
-# Compute -G arg for configuring external projects with the same CMake generator:
-#if(CMAKE_EXTRA_GENERATOR)
-#  set(gen "${CMAKE_EXTRA_GENERATOR} - ${CMAKE_GENERATOR}")
-#else()
-#  set(gen "${CMAKE_GENERATOR}" )
-#endif()
-
 ###########################################
 # DETERMINE ARCHITECTURE
 # In order for the code to depend on the architecture settings
@@ -99,9 +92,6 @@ OPTION(BUILD_HEADLESS "Build SCIRun without GUI." OFF)
 # Configure Qt version
 
 SET(QT5_BUILD_DEFAULT ON)
-IF(APPLE) # Until ViewScene works...
-  SET(QT5_BUILD_DEFAULT OFF)
-ENDIF()
 OPTION(QT5_BUILD "Qt 5 compatible build" ${QT5_BUILD_DEFAULT})
 MARK_AS_ADVANCED(QT5_BUILD)
 
@@ -132,7 +122,7 @@ ENDIF()
 # Configure Qt
 IF(NOT BUILD_HEADLESS)
   IF (NOT QT5_BUILD)
-    SET(QT_MIN_VERSION "4.8.1")
+    SET(QT_MIN_VERSION "4.8.6")
     INCLUDE(FindQt4)
     FIND_PACKAGE(Qt4 COMPONENTS QtMain QtCore QtGui QtNetwork REQUIRED)
     SET(QT_USE_QTOPENGL TRUE)

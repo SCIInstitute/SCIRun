@@ -69,13 +69,6 @@ OPTION(BUILD_SHARED_LIBS "Build shared libraries" ON)
 MARK_AS_ADVANCED(BUILD_SHARED_LIBS)
 
 ########################################################################
-# Headless build
-#
-#OPTION(BUILD_HEADLESS "Build headless version, without Qt" OFF)
-#MARK_AS_ADVANCED(BUILD_HEADLESS)
-
-
-########################################################################
 # Set default CMAKE_BUILD_TYPE
 # if empty for Unix Makefile builds
 
@@ -483,7 +476,6 @@ IF(QT5_BUILD)
   ADD_DEFINITIONS(-DQT5_BUILD)
 ENDIF()
 
-# TODO: exclude for headless
 IF(NOT BUILD_HEADLESS)
   IF(NOT QT5_BUILD)
     FIND_PACKAGE(Qt4 COMPONENTS QtMain QtCore QtGui QtNetwork QtOpenGL QtSvg REQUIRED)
@@ -532,10 +524,9 @@ IF(NOT BUILD_HEADLESS)
 
     IF(Qt5Core_FOUND)
       INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
-      #INCLUDE(${QT_USE_FILE})
       ADD_DEFINITIONS(${QT_DEFINITIONS})
     ELSE()
-      MESSAGE(FATAL_ERROR "QT 5.8 or greater is required to build SCIRun")
+      MESSAGE(FATAL_ERROR "QT 5.13 or greater is required to build SCIRun")
     ENDIF()
   ENDIF()
 
