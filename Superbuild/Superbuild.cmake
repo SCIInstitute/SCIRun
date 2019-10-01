@@ -111,16 +111,12 @@ OPTION(TRAVIS_BUILD "Slim build for Travis CI" OFF)
 MARK_AS_ADVANCED(TRAVIS_BUILD)
 
 IF(TRAVIS_BUILD)
+  SET(BUILD_TESTING OFF)
+  SET(DOWNLOAD_TOOLKITS OFF)
+  SET(BUILD_WITH_SCIRUN_DATA OFF)
   IF(APPLE)
-    SET(BUILD_TESTING OFF)
-    SET(DOWNLOAD_TOOLKITS OFF)
-    SET(BUILD_WITH_SCIRUN_DATA OFF)
+    # build everything; qt flag is in travis.yml
   ELSE()
-    SET(QT5_BUILD OFF) # need to check this one
-	  SET(BUILD_TESTING OFF)
-	  SET(DOWNLOAD_TOOLKITS OFF)
-	  SET(BUILD_WITH_SCIRUN_DATA OFF)
-
     IF(CMAKE_C_COMPILER_ID MATCHES "GNU")
       SET(BUILD_HEADLESS ON)
       SET(BUILD_WITH_PYTHON OFF)
@@ -151,7 +147,11 @@ IF(NOT BUILD_HEADLESS)
       MESSAGE(FATAL_ERROR "QT ${QT_MIN_VERSION} or later is required for building the SCIRun GUI")
     ENDIF()
   ELSE()
-    SET(QT_MIN_VERSION "5.12")
+    IF(TRAVIS_BUILD)
+      SET(QT_MIN_VERSION "5.4")
+    ELSE()
+      SET(QT_MIN_VERSION "5.13")
+    ENDIF()
 
     SET(Qt5_PATH "" CACHE PATH "Path to directory where Qt 5 is installed. Directory should contain lib and bin subdirectories.")
 
