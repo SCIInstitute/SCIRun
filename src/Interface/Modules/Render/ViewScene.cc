@@ -303,7 +303,8 @@ void ViewSceneDialog::addScreenshotButton()
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::addBugReportButton() {
+void ViewSceneDialog::addBugReportButton()
+{
   QPushButton *bugReportButton = new QPushButton(this);
   bugReportButton->setToolTip("Report a bug");
   bugReportButton->setIcon(QPixmap(":/general/Resources/ViewScene/bugReport.png"));
@@ -2158,55 +2159,51 @@ void ViewSceneDialog::screenshotClicked()
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::reportBugClicked() {
-  std::cout << "machine host name: " << QSysInfo::machineHostName().toStdString() << "\n";
-  std::cout << "os version: " << QOperatingSystemVersion::current().name().toStdString() << "\n";
-  std::string glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
-  std::string gpuVersion = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
-  std::string glVendor = reinterpret_cast<const char *>(glGetString(GL_VENDOR));
-  std::cout << "glVersion: " << glVersion << "\n";
-  std::cout << "glRenderer: " << gpuVersion << "\n";
-  std::cout << "glVendor: " << glVendor << "\n";
+void ViewSceneDialog::reportBugClicked()
+{
+  QString glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+  QString gpuVersion = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
 
   // Temporarily save screenshot so that it can be sent over email
   takeScreenshot();
   QImage image = screenshotTaker_->getScreenshot();
-  QString location = QDir::tempPath() + "/scirun_bug.png";
+  QString location = QDir::homePath() % QLatin1String("/scirun5screenshots/scirun_bug.png");
   image.save(location);
 
   // Generate email template
-  static std::string askForScreenshot = "\nIMPORTANT: Make sure to attach the screenshot of the ViewScene located at "
-    + location.toStdString() + "\n\n\n";
-  static std::string instructions = "## For bugs, follow the template below: fill out all pertinent sections,"
+  QString askForScreenshot = "\nIMPORTANT: Make sure to attach the screenshot of the ViewScene located at "
+    % location % "\n\n\n";
+  static QString instructions = "## For bugs, follow the template below: fill out all pertinent sections,"
     "then delete the rest of the template to reduce clutter."
     "\n### If the prerequisite is met, just delete that text as well. "
     "If they're not all met, the issue will be closed or assigned back to you.\n\n";
-  static std::string prereqs = "**Prerequisite**\n* [ ] Did you [perform a cursory search](https://github.com/SCIInstitute/SCIRun/issues)"
+  static QString prereqs = "**Prerequisite**\n* [ ] Did you [perform a cursory search](https://github.com/SCIInstitute/SCIRun/issues)"
     "to see if your bug or enhancement is already reported?\n\n";
-  static std::string reportGuide = "For more information on how to write a good "
+  static QString reportGuide = "For more information on how to write a good "
     "[bug report](https://github.com/atom/atom/blob/master/CONTRIBUTING.md#how-do-i-submit-a-good-bug-report) or"
     "[enhancement request](https://github.com/atom/atom/blob/master/CONTRIBUTING.md#how-do-i-submit-a-good-enhancement-suggestion),"
     "see the `CONTRIBUTING` guide. These links point to another project, but most of the advice holds in general.\n\n";
-  static std::string describe = "**Describe the bug**\nA clear and concise description of what the bug is.\n\n";
-  static std::string askForData = "**Providing sample network(s) along with input data is useful to solving your issue.**\n\n";
-  static std::string reproduction = "**To Reproduce**\nSteps to reproduce the behavior:"
+  static QString describe = "**Describe the bug**\nA clear and concise description of what the bug is.\n\n";
+  static QString askForData = "**Providing sample network(s) along with input data is useful to solving your issue.**\n\n";
+  static QString reproduction = "**To Reproduce**\nSteps to reproduce the behavior:"
     "\n1. Go to '...'\n2. Click on '....'\n3. Scroll down to '....'\n4. See error\n\n";
-  static std::string expectedBehavior = "**Expected behavior**\nA clear and concise description of what you expected to happen.\n\n";
-  static std::string additional = "**Additional context**\nAdd any other context about the problem here.\n\n";
-  static std::string desktopInfo = "Desktop: " + QSysInfo::prettyProductName().toStdString() + "\n";
-  static std::string gpuInfo = "GPU: " + gpuVersion + "\n";
-  static std::string osVersionInfo = "Version: " + QSysInfo::productVersion().toStdString() + "\n";
-  static std::string machineIdInfo = "Machine ID: " + QSysInfo::machineUniqueId().toStdString() + "\n";
-  static std::string kernelInfo = "Kernel: " + QSysInfo::kernelVersion().toStdString() + "\n";
-  static std::string glInfo = "GL Version: " + glVersion + "\n";
-  static std::string qtInfo = "QT Version: " + QLibraryInfo::version().toString().toStdString() + "\n";
-  static std::string scirunVersionInfo = "SCIRun Version: " + VersionInfo::GIT_VERSION_TAG;
+  static QString expectedBehavior = "**Expected behavior**\nA clear and concise description of what you expected to happen.\n\n";
+  static QString additional = "**Additional context**\nAdd any other context about the problem here.\n\n";
+  QString desktopInfo = "Desktop: " % QSysInfo::prettyProductName() % "\n";
+  QString kernelInfo = "Kernel: " % QSysInfo::kernelVersion() % "\n";
+  QString gpuInfo = "GPU: " % gpuVersion % "\n";
+  QString qtInfo = "QT Version: " % QLibraryInfo::version().toString() % "\n";
+  QString glInfo = "GL Version: " % glVersion % "\n";
+  QString scirunVersionInfo = "SCIRun Version: " % QString::fromStdString(VersionInfo::GIT_VERSION_TAG) % "\n";
+  QString machineIdInfo = "Machine ID: " % QString(QSysInfo::machineUniqueId()) % "\n";
 
-  static std::string recipient = "dwhite@sci.utah.edu";
-  static std::string subject = "View%20Scene%20Bug%20Report";
-  std::string body = askForScreenshot + instructions + prereqs + reportGuide + describe + askForData + reproduction + expectedBehavior + additional
-    + desktopInfo + osVersionInfo + machineIdInfo + kernelInfo + gpuInfo + glInfo + qtInfo + scirunVersionInfo;
-  QDesktopServices::openUrl(QUrl(QString::fromStdString("mailto:" + recipient + "?subject=" + subject + "&body=" + body)));
+  static QString recipient = "dwhite@sci.utah.edu";
+  static QString subject = "View%20Scene%20Bug%20Report";
+  QDesktopServices::openUrl(QUrl(QString("mailto:" % recipient % "?subject=" % subject % "&body=" %
+                                         askForScreenshot % instructions % prereqs % reportGuide %
+                                         describe % askForData % reproduction % expectedBehavior %
+                                         additional % desktopInfo % kernelInfo % gpuInfo %
+                                         qtInfo % glInfo % scirunVersionInfo % machineIdInfo)));
 }
 
 //--------------------------------------------------------------------------------------------------
