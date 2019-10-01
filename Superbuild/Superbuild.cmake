@@ -147,7 +147,11 @@ IF(NOT BUILD_HEADLESS)
       MESSAGE(FATAL_ERROR "QT ${QT_MIN_VERSION} or later is required for building the SCIRun GUI")
     ENDIF()
   ELSE()
-    SET(QT_MIN_VERSION "5.12")
+    IF(TRAVIS_BUILD)
+      SET(QT_MIN_VERSION "5.4")
+    ELSE()
+      SET(QT_MIN_VERSION "5.13")
+    ENDIF()
 
     SET(Qt5_PATH "" CACHE PATH "Path to directory where Qt 5 is installed. Directory should contain lib and bin subdirectories.")
 

@@ -1,30 +1,28 @@
 language: c++
+# cache: ccache
 
 matrix:
   include:
     - os: linux
       dist: trusty
-      sudo: required
       compiler: gcc
-      env: PYTHON_VERSION=3.4.3 OSPRAY_BUILD=OFF QT5=OFF
-    - os: linux
-      dist: trusty
-      sudo: required
-      compiler: clang
-      env: PYTHON_VERSION=3.4.3 OSPRAY_BUILD=OFF QT5=OFF
+      env: PYTHON_VERSION=3.4.3 OSPRAY_BUILD=OFF QT5=ON
     - os: linux
       dist: xenial
-      sudo: required
+      compiler: gcc
+      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
+    - os: linux
+      dist: xenial
       compiler: clang
-      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=OFF
-#    - os: linux
-#      dist: xenial
-#      compiler: clang
-#      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF QT5=OFF
-#    - os: linux
-#      dist: bionic
-#      compiler: clang
-#      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=OFF
+      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
+    - os: linux
+      dist: xenial
+      compiler: gcc
+      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF QT5=ON
+    - os: linux
+      dist: bionic
+      compiler: gcc
+      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
     - os: osx
       osx_image: xcode7.3
       env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=OFF
@@ -59,19 +57,20 @@ before_install:
 
 install:
 - if [[ "$QT5" = "OFF" && "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build libqt4-dev qt4-qmake libqt4-opengl-dev; fi
-- if [[ "$QT5" = "ON"  && "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev; fi
+- if [[ "$QT5" = "ON"  && "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev; fi
 - if [[ "$QT5" = "OFF" && "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 30 scripts/getQt4Mac.sh; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ninja; fi
 # TODO: figure out/test ccache
-#- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache; export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
+# - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache; export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
 # Verify qt 5.13, maybe not upgrade
 - if [[ "$QT5" = "ON"  && "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt || true; fi
 - if [[ "$QT5" = "ON"  && "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade qt || true; fi
 
 script:
   - cd bin
-  - cmake -GNinja -DTRAVIS_BUILD:BOOL=ON -DUSER_PYTHON_VERSION="${PYTHON_VERSION}" -DWITH_OSPRAY:BOOL=${OSPRAY_BUILD} -DQT5_BUILD:BOOL=${QT5} -DQt5_PATH=$(brew --prefix qt) ../Superbuild
-  - travis_wait 80 ninja
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then cmake -GNinja -DTRAVIS_BUILD:BOOL=ON -DUSER_PYTHON_VERSION="${PYTHON_VERSION}" -DWITH_OSPRAY:BOOL=${OSPRAY_BUILD} -DQT5_BUILD:BOOL=${QT5} -DQt5_PATH=$(brew --prefix qt) ../Superbuild; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then cmake -GNinja -DTRAVIS_BUILD:BOOL=ON -DUSER_PYTHON_VERSION="${PYTHON_VERSION}" -DWITH_OSPRAY:BOOL=${OSPRAY_BUILD} -DQT5_BUILD:BOOL=${QT5} -DQt5_PATH=$(dpkg -L qtbase5-dev) ../Superbuild; fi
+  - travis_wait 80 ninja # max is 50 minutes on public repository
   - cd SCIRun
   - ./Algorithm_Layer_Test
   - ./Modules_Factory_Tests --gtest_filter=*HardCodedModuleFactoryTests*
