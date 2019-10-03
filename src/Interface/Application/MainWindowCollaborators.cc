@@ -468,6 +468,37 @@ SCIRunGuiRunner::SCIRunGuiRunner(QApplication& app)
   mainWin->setController(Core::Application::Instance().controller());
   mainWin->initialize();
 
+  app.setStyleSheet(
+      "*{"
+      "color:white;"
+      "selection-background-color: blue;" // 336699 lighter blue
+      "background-color: rgb(66,66,69);"
+      "selection-color: yellow;"
+      "}"
+      "QPushButton {"
+      "  border: 2px solid #8f8f91;"
+      "  border - radius: 6px;"
+      "  background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
+      "  stop : 0 #f6f7fa, stop: 1 #dadbde);"
+      "  min - width: 80px;"
+      "}"
+      "QToolBar {        background-color: rgb(66,66,69); border: 1px solid "
+      "black; color: black;     }"
+      "QProgressBar {        background-color: rgb(66,66,69); border: 0px "
+      "solid black; color: black  ;   }"
+      "QDockWidget {background: rgb(66,66,69); background-color: "
+      "rgb(66,66,69); }"
+      "QPushButton:pressed{"
+      "background - color: qlineargradient(x1 : 0, y1 : 0, x2 : 0, y2 : 1,"
+      "stop : 0 #dadbde, stop: 1 #f6f7fa);"
+      "}"
+      "QPushButton:flat{"
+      "          border: none; /* no border for a flat push button */"
+      "}"
+      "QPushButton:default {"
+      "border - color: navy; /* make the default button prominent */"
+      "}");
+
   app.exec();
 }
 
