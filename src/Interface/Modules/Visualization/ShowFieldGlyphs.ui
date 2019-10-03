@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>375</width>
-    <height>713</height>
+    <width>372</width>
+    <height>730</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>250</width>
-    <height>710</height>
+    <height>730</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -67,7 +67,7 @@
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>2</number>
+           <number>1</number>
           </property>
           <property name="documentMode">
            <bool>false</bool>
@@ -909,7 +909,7 @@
              </font>
             </property>
             <property name="currentIndex">
-             <number>2</number>
+             <number>3</number>
             </property>
             <widget class="QWidget" name="page">
              <property name="geometry">
@@ -1336,8 +1336,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>100</width>
-               <height>30</height>
+               <width>291</width>
+               <height>197</height>
               </rect>
              </property>
              <property name="font">
@@ -1355,7 +1355,7 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>3</y>
+                <y>-5</y>
                 <width>291</width>
                 <height>66</height>
                </rect>
@@ -1454,7 +1454,7 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>65</y>
+                <y>57</y>
                 <width>291</width>
                 <height>66</height>
                </rect>
@@ -1553,7 +1553,7 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>128</y>
+                <y>120</y>
                 <width>291</width>
                 <height>66</height>
                </rect>
@@ -2325,7 +2325,7 @@
            <x>0</x>
            <y>40</y>
            <width>321</width>
-           <height>32</height>
+           <height>31</height>
           </rect>
          </property>
          <property name="text">
