@@ -371,7 +371,6 @@ void ViewSceneDialog::addViewOptions()
   mDownViewBox = new QComboBox();
   mDownViewBox->setMinimumHeight(25);
   mDownViewBox->setMinimumWidth(60);
-  mDownViewBox->setMaximumWidth(60);
   mDownViewBox->setToolTip("Vector pointing out of the screen");
   mDownViewBox->addItem("+X");
   mDownViewBox->addItem("+Y");
@@ -391,7 +390,6 @@ void ViewSceneDialog::addViewOptions()
   mUpVectorBox = new QComboBox();
   mUpVectorBox->setMinimumHeight(25);
   mUpVectorBox->setMinimumWidth(60);
-  mUpVectorBox->setMaximumWidth(60);
   mUpVectorBox->setToolTip("Vector pointing up");
   connect(mUpVectorBox, SIGNAL(activated(const QString&)), this, SLOT(viewVectorSelected(const QString&)));
   mViewBar->addWidget(mUpVectorBox);
