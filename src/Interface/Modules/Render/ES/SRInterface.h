@@ -383,8 +383,8 @@ namespace SCIRun {
       std::vector<glm::vec3>              mLightDirectionView {};
       std::vector<bool>                   mLightsOn           {};
 
-      glm::vec2                         autoRotateVector    {0.0, 0.0};
-      float                             autoRotateSpeed     {0.01f};
+      glm::vec2                         autoRotateVector      {0.0, 0.0};
+      float                             autoRotateSpeed       {0.01f};
 
       const int                         frameInitLimit_     {};
       QOpenGLContext*                   mContext            {};

@@ -50,18 +50,17 @@ namespace Core
 /// @class Application
 /// @brief Application is the thread that processes all the actions in the program.
 
-class Application;
-class ApplicationPrivate;
+struct ApplicationPrivate;
 typedef boost::shared_ptr<ApplicationPrivate> ApplicationPrivateHandle;
 
 
-class SCISHARE Application : boost::noncopyable //: public EventHandler, public RecursiveLockable
+class SCISHARE Application : boost::noncopyable
 {
 	CORE_SINGLETON( Application );
 
 private:
 	Application();
-	virtual ~Application();
+	~Application();
 
 public:
   void readCommandLine(int argc, const char* argv[]);
@@ -113,8 +112,6 @@ private:
 //	static int GetMajorVersion();
 //	static int GetMinorVersion();
 //	static int GetPatchVersion();
-//	static bool Is64Bit();
-//	static bool Is32Bit();
 //	static std::string GetApplicationName();
 //	static std::string GetReleaseName();
 //	static std::string GetApplicationNameAndVersion();

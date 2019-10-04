@@ -34,6 +34,9 @@
   #endif
 #endif
 
+uniform bool    uUseFog;
+uniform bool    uUseClippingPlanes;
+
 uniform vec4    uAmbientColor;
 uniform vec4    uDiffuseColor;
 uniform vec4    uSpecularColor;
@@ -70,84 +73,82 @@ uniform vec4    uFogColor;
 varying vec3    vNormal;
 varying vec4    vPosWorld;
 varying vec4    vPosView;
+varying vec4    vColor;
 
-vec4 calculate_lighting(vec3 N, vec3 L, vec3 V, vec3 diffuseColor, vec3 specularColor, vec3 lightColor)
+vec3 calculate_lighting(vec3 N, vec3 L, vec3 V, vec3 diffuseColor, vec3 specularColor, vec3 lightColor)
 {
   vec3 H = normalize(V + L);
   float diffuse = max(0.0, dot(N, L));
   float specular = max(0.0, dot(N, H));
   specular = pow(specular, uSpecularPower);
 
-  return vec4(lightColor * (diffuse * diffuseColor + specular * specularColor), 0.0);
+  return lightColor * (diffuse * diffuseColor + specular * specularColor);
 }
 
 void main()
 {
-  float fPlaneValue;
-  if (uClippingPlaneCtrl0.x > 0.5)
+  if(uUseClippingPlanes)
   {
-    fPlaneValue = dot(vPosWorld, uClippingPlane0);
-    fPlaneValue = uClippingPlaneCtrl0.z > 0.5 ? -fPlaneValue : fPlaneValue;
-    if (fPlaneValue < 0.0)
-      discard;
-  }
-  if (uClippingPlaneCtrl1.x > 0.5)
-  {
-    fPlaneValue = dot(vPosWorld, uClippingPlane1);
-    fPlaneValue = uClippingPlaneCtrl1.z > 0.5 ? -fPlaneValue : fPlaneValue;
-    if (fPlaneValue < 0.0)
-      discard;
-  }
-  if (uClippingPlaneCtrl2.x > 0.5)
-  {
-    fPlaneValue = dot(vPosWorld, uClippingPlane2);
-    fPlaneValue = uClippingPlaneCtrl2.z > 0.5 ? -fPlaneValue : fPlaneValue;
-    if (fPlaneValue < 0.0)
-      discard;
-  }
-  if (uClippingPlaneCtrl3.x > 0.5)
-  {
-    fPlaneValue = dot(vPosWorld, uClippingPlane3);
-    fPlaneValue = uClippingPlaneCtrl3.z > 0.5 ? -fPlaneValue : fPlaneValue;
-    if (fPlaneValue < 0.0)
-      discard;
-  }
-  if (uClippingPlaneCtrl4.x > 0.5)
-  {
-    fPlaneValue = dot(vPosWorld, uClippingPlane4);
-    fPlaneValue = uClippingPlaneCtrl4.z > 0.5 ? -fPlaneValue : fPlaneValue;
-    if (fPlaneValue < 0.0)
-      discard;
-  }
-  if (uClippingPlaneCtrl5.x > 0.5)
-  {
-    fPlaneValue = dot(vPosWorld, uClippingPlane5);
-    fPlaneValue = uClippingPlaneCtrl5.z > 0.5 ? -fPlaneValue : fPlaneValue;
-    if (fPlaneValue < 0.0)
-      discard;
+    float fPlaneValue;
+    if(uClippingPlaneCtrl0.x > 0.5)
+    {
+      fPlaneValue = dot(vPosWorld, uClippingPlane0);
+      fPlaneValue = uClippingPlaneCtrl0.z > 0.5 ? -fPlaneValue : fPlaneValue;
+      if(fPlaneValue < 0.0) discard;
+    }
+    if(uClippingPlaneCtrl1.x > 0.5)
+    {
+      fPlaneValue = dot(vPosWorld, uClippingPlane1);
+      fPlaneValue = uClippingPlaneCtrl1.z > 0.5 ? -fPlaneValue : fPlaneValue;
+      if(fPlaneValue < 0.0) discard;
+    }
+    if(uClippingPlaneCtrl2.x > 0.5)
+    {
+      fPlaneValue = dot(vPosWorld, uClippingPlane2);
+      fPlaneValue = uClippingPlaneCtrl2.z > 0.5 ? -fPlaneValue : fPlaneValue;
+      if(fPlaneValue < 0.0) discard;
+    }
+    if(uClippingPlaneCtrl3.x > 0.5)
+    {
+      fPlaneValue = dot(vPosWorld, uClippingPlane3);
+      fPlaneValue = uClippingPlaneCtrl3.z > 0.5 ? -fPlaneValue : fPlaneValue;
+      if(fPlaneValue < 0.0) discard;
+    }
+    if(uClippingPlaneCtrl4.x > 0.5)
+    {
+      fPlaneValue = dot(vPosWorld, uClippingPlane4);
+      fPlaneValue = uClippingPlaneCtrl4.z > 0.5 ? -fPlaneValue : fPlaneValue;
+      if(fPlaneValue < 0.0) discard;
+    }
+    if(uClippingPlaneCtrl5.x > 0.5)
+    {
+      fPlaneValue = dot(vPosWorld, uClippingPlane5);
+      fPlaneValue = uClippingPlaneCtrl5.z > 0.5 ? -fPlaneValue : fPlaneValue;
+      if(fPlaneValue < 0.0) discard;
+    }
   }
 
-  vec3 diffuseColor = uDiffuseColor.rgb;
+  vec3 diffuseColor = pow(vColor.rgb, vec3(2.2));
   vec3 specularColor = uSpecularColor.rgb;
   vec3 ambientColor = uAmbientColor.rgb;
   float transparency = uTransparency;
 
   vec3 normal = normalize(vNormal);
-  if (gl_FrontFacing) normal = -normal;
+  if(gl_FrontFacing) normal = -normal;
   vec3 cameraVector = -normalize(vPosView.xyz);
 
   gl_FragColor = vec4(ambientColor * diffuseColor, transparency);
-  if (length(uLightDirectionView0) > 0.0)
-    gl_FragColor += calculate_lighting(normal, uLightDirectionView0, cameraVector, diffuseColor, specularColor, uLightColor0);
-  if (length(uLightDirectionView1) > 0.0)
-    gl_FragColor += calculate_lighting(normal, uLightDirectionView1, cameraVector, diffuseColor, specularColor, uLightColor1);
-  if (length(uLightDirectionView2) > 0.0)
-    gl_FragColor += calculate_lighting(normal, uLightDirectionView2, cameraVector, diffuseColor, specularColor, uLightColor2);
-  if (length(uLightDirectionView3) > 0.0)
-    gl_FragColor += calculate_lighting(normal, uLightDirectionView3, cameraVector, diffuseColor, specularColor, uLightColor3);
+  if(length(uLightDirectionView0) > 0.0) gl_FragColor.rgb += calculate_lighting(normal,
+    uLightDirectionView0, cameraVector, diffuseColor, specularColor, uLightColor0);
+  if(length(uLightDirectionView1) > 0.0) gl_FragColor.rgb += calculate_lighting(normal,
+    uLightDirectionView1, cameraVector, diffuseColor, specularColor, uLightColor1);
+  if(length(uLightDirectionView2) > 0.0) gl_FragColor.rgb += calculate_lighting(normal,
+    uLightDirectionView2, cameraVector, diffuseColor, specularColor, uLightColor2);
+  if(length(uLightDirectionView3) > 0.0) gl_FragColor.rgb += calculate_lighting(normal,
+    uLightDirectionView3, cameraVector, diffuseColor, specularColor, uLightColor3);
 
   //calculate fog
-  if (uFogSettings.x > 0.0)
+  if(uUseFog && uFogSettings.x > 0.0)
   {
     vec4 fp;
     fp.x = uFogSettings.x;
@@ -159,7 +160,9 @@ void main()
     fog_factor = (fp.z-fp.w)/(fp.z-fp.y);
     fog_factor = 1.0 - clamp(fog_factor, 0.0, 1.0);
     fog_factor = 1.0 - exp(-pow(fog_factor*2.5, 2.0));
-    gl_FragColor.xyz = mix(clamp(gl_FragColor.xyz, 0.0, 1.0),
-      clamp(uFogColor.xyz, 0.0, 1.0), fog_factor);
+    gl_FragColor.rgb = mix(clamp(gl_FragColor.rgb, 0.0, 1.0),
+      clamp(uFogColor.rgb, 0.0, 1.0), fog_factor);
   }
+
+  gl_FragColor.rgb = pow(gl_FragColor.rgb, vec3(1.0/2.2));
 }
