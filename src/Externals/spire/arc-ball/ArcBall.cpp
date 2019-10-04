@@ -84,7 +84,7 @@ glm::quat ArcBall::quatFromUnitSphere(const glm::vec3& from, const glm::vec3& to
 
   float angle = std::acos(glm::dot(from, to));
 
-  if(angle <= 0.00001)
+  if(angle <= 0.00001 || std::isnan(angle))
     return glm::quat(1.0, 0.0, 0.0, 0.0);
 
   return glm::angleAxis(angle, axis);
