@@ -135,10 +135,10 @@ void ShowFieldGlyphsDialog::setupScalarsTab()
   connectButtonToExecuteSignal(this->scalarsUniformTransparencyRButton_);
 
   // Text Labels
-  this->scalarColorTypeLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->scalarColorInputLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->normalizeScalarsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->scalarScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->scalarColorTypeLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->scalarColorInputLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->normalizeScalarsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->scalarScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
 }
 
 void ShowFieldGlyphsDialog::setupVectorsTab()
@@ -186,18 +186,18 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
   connectButtonToExecuteSignal(this->renderWithBasesCheckBox_);
 
   // Text Labels
-  this->vectorColorTypeLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->vectorColorInputLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->normalizeVectorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->vectorScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->secondaryVectorParameterScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->bidirectionalVectorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->springsMajorRadiusInputLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->springsMajorRadiusScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->springsMinorRadiusInputLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->springsMinorRadiusScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->springsPitchInputLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->springsPitchScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->vectorColorTypeLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->vectorColorInputLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->normalizeVectorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->vectorScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->secondaryVectorParameterScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->bidirectionalVectorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->springsMajorRadiusInputLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->springsMajorRadiusScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->springsMinorRadiusInputLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->springsMinorRadiusScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->springsPitchInputLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->springsPitchScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
 }
 
 void ShowFieldGlyphsDialog::emphasisSliderChanged(int val)

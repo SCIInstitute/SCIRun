@@ -491,7 +491,13 @@ SCIRunGuiRunner::SCIRunGuiRunner(QApplication& app)
       "QPushButton:flat{"
       "border: none; /* no border for a flat push button}"
       "QPushButton:default {"
-      "border - color: navy; /* make the default button prominent */}");
+      "border - color: navy; /* make the default button prominent */}"
+      "QCheckBox{background:transparent}"
+      "QSpinBox{background:transparent}"
+      "QLabel{background-color:transparent}"
+      "QDoubleSpinBox{background-color:transparent}"
+      "QGroupBox::title{background-color:transparent}"
+      "QGroupBox{background-color:rgb(62,62,65)}");
 
   app.exec();
 }
