@@ -50,7 +50,6 @@ namespace SCIRun {
     public:
       AlphaFunctionManager(const QPointF& start, const QPointF& end, SCIRun::Dataflow::Networks::ModuleStateHandle state, const boost::atomic<bool>& pulling);
       void clear();
-      void insertEndpoints();
       void insert(const QPointF& p);
       bool alreadyExists(const QPointF& p) const;
     private:
@@ -68,7 +67,6 @@ namespace SCIRun {
       const double DEFAULT_ALPHA = 0.5;
       const QPointF defaultStart_;
       const QPointF defaultEnd_;
-      std::vector<double> alphaFunction_;
       const boost::atomic<bool>& dialogPulling_;
     public:
       auto begin() const -> decltype(alphaPoints_.begin()) { return alphaPoints_.begin(); }
@@ -85,7 +83,6 @@ namespace SCIRun {
         QWidget* parent = nullptr);
     void addDefaultLine();
     void addPoint(const QPointF& point);
-    void addEndpoints() { alphaManager_.insertEndpoints(); }
     public Q_SLOTS:
       void clearAlphaPointGraphics();
     Q_SIGNALS:
