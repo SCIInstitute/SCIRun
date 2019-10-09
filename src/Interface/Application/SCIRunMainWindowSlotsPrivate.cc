@@ -892,18 +892,17 @@ void SCIRunMainWindow::openToolkitNetwork()
 
 void SCIRunMainWindow::launchNewInstance()
 {
-  #ifdef __APPLE__
-  //TODO: test with bundle/installer
+#ifdef __APPLE__
   auto appFilepath = Core::Application::Instance().executablePath();
-  qDebug() << Core::Application::Instance().applicationName().c_str();
-  qDebug() << appFilepath.string().c_str();
-  qDebug() << appFilepath.parent_path().parent_path().string().c_str();
-  auto command = "open -n " +
-    (appFilepath.parent_path().parent_path() / "SCIRun/SCIRun_test").string() + " &";
-  qDebug() << command.c_str();
-  system( command.c_str() );
 
-  #endif
+#ifdef BUILD_BUNDLE
+  auto command = "open -n " + (appFilepath / "SCIRun").string() + " &";
+#else
+  auto command = "open -n " + (appFilepath.parent_path().parent_path() / "SCIRun/SCIRun_test").string() + " &";
+#endif
+
+  system( command.c_str() );
+#endif
 }
 
 void SCIRunMainWindow::maxCoreValueChanged(int value)
