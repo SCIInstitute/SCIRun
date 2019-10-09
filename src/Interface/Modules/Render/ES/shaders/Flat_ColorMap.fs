@@ -119,7 +119,7 @@ void main()
   else               colorMapValue = texture2D(uTX0, vec2(vTexCoords.x, 0.0));
 
   vec3 diffuseColor = colorMapValue.rgb;
-  float transparency = uTransparency;
+  float transparency = colorMapValue.a;
 
   gl_FragColor = vec4(diffuseColor, transparency);
 

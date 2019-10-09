@@ -119,7 +119,7 @@ void RescaleColorMap::execute()
       colorMap->getColorMapResolution(),
       colorMap->getColorMapShift(),
       colorMap->getColorMapInvert(),
-      cm_scale, cm_shift));
+      cm_scale, cm_shift, colorMap->getAlphaLookup()));
   }
 }
 
