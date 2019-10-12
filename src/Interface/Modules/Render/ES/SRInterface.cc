@@ -358,6 +358,11 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::select(const glm::ivec2& pos, WidgetList& objList, int port)
     {
+      if(!mContext || !mContext->isValid()) return;
+      mContext->makeCurrent(mContext->surface());
+
+      std::cout << pos.x << ", " <<  pos.y << "\n";
+      std::cout << mScreenWidth << ", " << mScreenHeight << "\n";
       mSelected = "";
       widgetSelected_ = false;
       // Ensure our rendering context is current on our thread.
@@ -558,6 +563,7 @@ namespace SCIRun {
 
       mCore.execute(0, 50);
 
+
       GLuint value;
       GLfloat depth;
       if (fboMan->readFBO(mCore, fboName, pos.x, pos.y, 1, 1,
@@ -580,6 +586,27 @@ namespace SCIRun {
           }
         }
       }
+      
+      std::cout << "P3\n";
+      std::cout << mScreenWidth  << " " << mScreenHeight << "\n";
+      std::cout << "255\n";
+      for(int j = 0; j < mScreenHeight; ++j)
+      {
+        for(int i = 0; i < mScreenWidth; ++i)
+        {
+          if (fboMan->readFBO(mCore, fboName, i, j, 1, 1, (GLvoid*)&value, (GLvoid*)&depth))
+          {
+            std::cout << ((value >> 16) & 0xff) << " ";
+            std::cout << ((value >> 8) & 0xff) << " ";
+            std::cout << ((value >> 0) & 0xff) << "\n";
+          }
+          else
+          {
+            std::cout << "0 0 0\n";
+          }
+        }
+      }
+
       //release and restore fbo
       fboMan->unbindFBO();
 
@@ -621,6 +648,7 @@ namespace SCIRun {
 
         updateWidget(pos);
       }
+
 
       for (auto& it : entityList)
         mCore.removeEntity(it);
