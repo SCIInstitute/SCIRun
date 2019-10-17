@@ -69,13 +69,6 @@ OPTION(BUILD_SHARED_LIBS "Build shared libraries" ON)
 MARK_AS_ADVANCED(BUILD_SHARED_LIBS)
 
 ########################################################################
-# Headless build
-#
-#OPTION(BUILD_HEADLESS "Build headless version, without Qt" OFF)
-#MARK_AS_ADVANCED(BUILD_HEADLESS)
-
-
-########################################################################
 # Set default CMAKE_BUILD_TYPE
 # if empty for Unix Makefile builds
 
@@ -483,7 +476,6 @@ IF(QT5_BUILD)
   ADD_DEFINITIONS(-DQT5_BUILD)
 ENDIF()
 
-# TODO: exclude for headless
 IF(NOT BUILD_HEADLESS)
   IF(NOT QT5_BUILD)
     FIND_PACKAGE(Qt4 COMPONENTS QtMain QtCore QtGui QtNetwork QtOpenGL QtSvg REQUIRED)
@@ -508,14 +500,14 @@ IF(NOT BUILD_HEADLESS)
 
     IF(Qt5Core_FOUND)
       MESSAGE(STATUS "Found Qt version: ${Qt5Core_VERSION_STRING}")
-	  ADD_DEFINITIONS(-DQT5_VERSION=${Qt5Core_VERSION_STRING})
-	  INCLUDE_DIRECTORIES(${Qt5Core_INCLUDE_DIRS})
+	    ADD_DEFINITIONS(-DQT5_VERSION=${Qt5Core_VERSION_STRING})
+	    INCLUDE_DIRECTORIES(${Qt5Core_INCLUDE_DIRS})
   	  INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDE_DIRS})
       INCLUDE_DIRECTORIES(${Qt5Gui_INCLUDE_DIRS})
       INCLUDE_DIRECTORIES(${Qt5Network_INCLUDE_DIRS})
       INCLUDE_DIRECTORIES(${Qt5OpenGL_INCLUDE_DIRS})
       INCLUDE_DIRECTORIES(${Qt5Concurrent_INCLUDE_DIRS})
-	  INCLUDE_DIRECTORIES(${Qt5PrintSupport_INCLUDE_DIRS})
+	    INCLUDE_DIRECTORIES(${Qt5PrintSupport_INCLUDE_DIRS})
       INCLUDE_DIRECTORIES(${Qt5Svg_INCLUDE_DIRS})
       ADD_DEFINITIONS(${Qt5Core_DEFINITIONS})
       ADD_DEFINITIONS(${Qt5Widgets_DEFINITIONS})
@@ -523,8 +515,8 @@ IF(NOT BUILD_HEADLESS)
       ADD_DEFINITIONS(${Qt5Network_DEFINITIONS})
       ADD_DEFINITIONS(${Qt5OpenGL_DEFINITIONS})
       ADD_DEFINITIONS(${Qt5Concurrent_DEFINITIONS})
-	  ADD_DEFINITIONS(${Qt5PrintSupport_DEFINITIONS})
-	  ADD_DEFINITIONS(${Qt5Svg_DEFINITIONS})
+	    ADD_DEFINITIONS(${Qt5PrintSupport_DEFINITIONS})
+	    ADD_DEFINITIONS(${Qt5Svg_DEFINITIONS})
       SET(QT_LIBRARIES Qt5::Widgets)
     ELSE()
       MESSAGE(FATAL_ERROR "Qt5 is required for building the SCIRun GUI")
@@ -532,10 +524,9 @@ IF(NOT BUILD_HEADLESS)
 
     IF(Qt5Core_FOUND)
       INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
-      #INCLUDE(${QT_USE_FILE})
       ADD_DEFINITIONS(${QT_DEFINITIONS})
     ELSE()
-      MESSAGE(FATAL_ERROR "QT 5.8 or greater is required to build SCIRun")
+      MESSAGE(FATAL_ERROR "QT 5.13 or greater is required to build SCIRun")
     ENDIF()
   ENDIF()
 
