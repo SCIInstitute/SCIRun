@@ -143,6 +143,14 @@ enum SecondaryVectorParameterScalingTypeEnum
   USE_INPUT
 };
 
+enum FieldDataType
+{
+  node,
+  edge,
+  face,
+  cell
+};
+
 ColorScheme GlyphBuilder::getColoringType(const RenderState& renState, VField* fld)
 {
   if(fld->basis_order() < 0 || renState.get(RenderState::USE_DEFAULT_COLOR))
@@ -486,10 +494,15 @@ void GlyphBuilder::renderVectors(
   if(arrowHeadRatio < 0) arrowHeadRatio = 0;
   if(arrowHeadRatio > 1) arrowHeadRatio = 1;
 
- //sets field location for constant field data 1: node centered 2: edge centered 3: face centered 4: cell centered
-  int fieldLocation = pfinfo.is_point()*1 + pfinfo.is_line()*2 + pfinfo.is_surface()*3 + pfinfo.is_volume()*4;
-  //sets field location to 0 for linear data regardless of location
-  fieldLocation = fieldLocation * !pfinfo.is_linear();
+  FieldDataType fieldLocation;
+  if(pfinfo.is_point() || pfinfo.is_linear())
+    fieldLocation = FieldDataType::node;
+  else if(pfinfo.is_line())
+    fieldLocation = FieldDataType::edge;
+  else if(pfinfo.is_surface())
+    fieldLocation = FieldDataType::face;
+  else
+    fieldLocation = FieldDataType::cell;
 
   // Collect indices and points from facades
   std::vector<int> indices;
@@ -497,8 +510,7 @@ void GlyphBuilder::renderVectors(
   GlyphGeom glyphs;
   switch(fieldLocation)
   {
-    case 0: //linear data falls through to node data handling routine
-    case 1: //node centered constant data
+    case FieldDataType::node:
       for (const auto& node : portHandler.getPrimaryFacade()->nodes())
       {
         indices.push_back(node.index());
@@ -507,7 +519,7 @@ void GlyphBuilder::renderVectors(
         points.push_back(p);
       }
       break;
-    case 2: //edge centered constant data
+    case FieldDataType::edge:
       for (const auto& edge : portHandler.getPrimaryFacade()->edges())
       {
         indices.push_back(edge.index());
@@ -516,7 +528,7 @@ void GlyphBuilder::renderVectors(
         points.push_back(p);
       }
       break;
-    case 3: //face centered constant data
+    case FieldDataType::face:
       for (const auto& face : portHandler.getPrimaryFacade()->faces())
       {
         indices.push_back(face.index());
@@ -525,7 +537,7 @@ void GlyphBuilder::renderVectors(
         points.push_back(p);
       }
       break;
-    case 4: //cell centered constant data
+    case FieldDataType::cell:
       for (const auto& cell : portHandler.getPrimaryFacade()->cells())
       {
         indices.push_back(cell.index());
@@ -618,11 +630,10 @@ void GlyphBuilder::renderScalars(
   }
 
   // Collect indices and points from facades
-  bool done = false;
   std::vector<int> indices;
   std::vector<Point> points;
   GlyphGeom glyphs;
-  if (!portHandler.getPrimaryFieldInfo().is_linear())
+  if (portHandler.getPrimaryFieldInfo().is_linear())
   {
     for (const auto& node : portHandler.getPrimaryFacade()->nodes())
     {
@@ -632,10 +643,9 @@ void GlyphBuilder::renderScalars(
       points.push_back(p);
     }
   }
-  if (!done)
-  {
+  else {
     for (const auto& cell : portHandler.getPrimaryFacade()->cells())
-    {
+      {
       indices.push_back(cell.index());
       Point p;
       mesh->get_center(p, cell.index());
@@ -673,7 +683,6 @@ void GlyphBuilder::renderScalars(
           glyphs.addSphere(points[i], radius, resolution, node_color);
         break;
     }
-    done = true;
   }
 
   std::stringstream ss;
@@ -732,11 +741,15 @@ void GlyphBuilder::renderTensors(
   GlyphGeom tensor_line_glyphs;
   GlyphGeom point_glyphs;
 
-  //sets feild location for consant feild data 1: node centered 2: edge centered 3: face centered 4: cell centered
-  int fieldLocation = pfinfo.is_point() * 1 + pfinfo.is_line() * 2 +
-    pfinfo.is_surface() * 3 + pfinfo.is_volume() * 4;
-  //sets feild location to 0 for linear data regardless of location
-  fieldLocation *= !pfinfo.is_linear();
+  FieldDataType fieldLocation;
+  if(pfinfo.is_point() || pfinfo.is_linear())
+    fieldLocation = FieldDataType::node;
+  else if(pfinfo.is_line())
+    fieldLocation = FieldDataType::edge;
+  else if(pfinfo.is_surface())
+    fieldLocation = FieldDataType::face;
+  else
+    fieldLocation = FieldDataType::cell;
 
   // Collect indices and points from facades
   std::vector<int> indices;
@@ -744,8 +757,7 @@ void GlyphBuilder::renderTensors(
   GlyphGeom glyphs;
   switch(fieldLocation)
   {
-    case 0: //linear data falls through to node data handling routine
-    case 1: //node centered constant data
+    case FieldDataType::node:
       for (const auto& node : portHandler.getPrimaryFacade()->nodes())
       {
         indices.push_back(node.index());
@@ -754,7 +766,7 @@ void GlyphBuilder::renderTensors(
         points.push_back(p);
       }
       break;
-    case 2: //edge centered constant data
+    case FieldDataType::edge:
       for (const auto& edge : portHandler.getPrimaryFacade()->edges())
       {
         indices.push_back(edge.index());
@@ -763,7 +775,7 @@ void GlyphBuilder::renderTensors(
         points.push_back(p);
       }
       break;
-    case 3: //face centered constant data
+    case FieldDataType::face:
       for (const auto& face : portHandler.getPrimaryFacade()->faces())
       {
         indices.push_back(face.index());
@@ -772,7 +784,7 @@ void GlyphBuilder::renderTensors(
         points.push_back(p);
       }
       break;
-    case 4: //cell centered constant data
+    case FieldDataType::cell:
       for (const auto& cell : portHandler.getPrimaryFacade()->cells())
       {
         indices.push_back(cell.index());
