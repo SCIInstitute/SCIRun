@@ -57,8 +57,8 @@ install:
 # TODO: figure out/test ccache
 # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache; export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
 # Verify qt 5.13, maybe not upgrade
-- if [[ "$QT5" = "ON"  && "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt || true; fi
-- if [[ "$QT5" = "ON"  && "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade qt || true; fi
+- if [[ "$QT5" = "ON"  && "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install qt || true; fi
+- if [[ "$QT5" = "ON"  && "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade qt || true; fi
 
 script:
   - cd bin
