@@ -34,7 +34,7 @@
 #include <Modules/Render/ViewScene.h>
 #endif
 
-class QGLWidget;
+class QOpenGLWidget;
 
 namespace SCIRun
 {
@@ -44,7 +44,7 @@ namespace SCIRun
     {
       Q_OBJECT
     public:
-      explicit Screenshot(QGLWidget *glwidget, QObject *parent = nullptr);
+      explicit Screenshot(QOpenGLWidget *glwidget, QObject *parent = nullptr);
       void takeScreenshot();
       void saveScreenshot();
       QString screenshotFile() const;
@@ -52,7 +52,7 @@ namespace SCIRun
 
       Modules::Render::RGBMatrices toMatrix() const;
     private:
-      QGLWidget* viewport_;
+      QOpenGLWidget* viewport_;
       QImage screenshot_;
       uint index_;
     };
