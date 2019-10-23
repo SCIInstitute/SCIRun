@@ -30,7 +30,7 @@
 // Needed for OpenGL include files on Travis:
 #include <gl-platform/GLPlatform.hpp>
 #include <Interface/Modules/Render/UndefiningX11Cruft.h>
-#include <QtOpenGL/QGLWidget>
+#include <QOpenGLWidget>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
@@ -89,8 +89,7 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
-    SRInterface::SRInterface(std::shared_ptr<Gui::GLContext> context, int frameInitLimit) :
-      mContext(context),
+    SRInterface::SRInterface(int frameInitLimit) :
       frameInitLimit_(frameInitLimit),
       mCamera(new SRCamera(*this))  // Should come after all vars have been initialized.
     {
@@ -250,7 +249,6 @@ namespace SCIRun {
       mScreenWidth = width;
       mScreenHeight = height;
 
-      mContext->makeCurrent();
       GL(glViewport(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height)));
 
       // Obtain StaticScreenDims component and populate.
@@ -363,7 +361,6 @@ namespace SCIRun {
       mSelected = "";
       widgetSelected_ = false;
       // Ensure our rendering context is current on our thread.
-      mContext->makeCurrent();
 
       //get vbo ibo man
       std::weak_ptr<ren::VBOMan> vm = mCore.getStaticComponent<ren::StaticVBOMan>()->instance_;
@@ -632,7 +629,6 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     bool SRInterface::foundWidget(const glm::ivec2& pos)
     {
-      mContext->makeCurrent();
       for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
       {
         for (const auto& pass : it->mPasses)
@@ -936,10 +932,12 @@ namespace SCIRun {
       RENDERER_LOG_FUNCTION_SCOPE;
       RENDERER_LOG("Ensure our rendering context is current on our thread.");
       DEBUG_LOG_LINE_INFO
-      mContext->makeCurrent();
 
       std::string objectName = obj->uniqueID();
       BBox bbox; // Bounding box containing all vertex buffer objects.
+
+      if(!mContext || !mContext->isValid()) return;
+      mContext->makeCurrent(mContext->surface());
 
       RENDERER_LOG("Check to see if the object already exists in our list. "
         "If so, then remove the object. We will re-add it.");
@@ -1290,7 +1288,6 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
     void SRInterface::removeAllGeomObjects()
     {
-      mContext->makeCurrent();
       for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
       {
         // Iterate through each of the passes and remove their associated
@@ -1514,8 +1511,6 @@ namespace SCIRun {
     {
       // todo Only render a frame if something has changed (new or deleted
       // objects, or the view point has changed).
-      mContext->makeCurrent();
-
       applyAutoRotation();
       updateCamera();
       updateWorldLight();
