@@ -229,6 +229,7 @@ void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, Mod
 
 void ViewScene::execute()
 {
+  /*
   // hack for headless viewscene. Right now, it hangs/crashes/who knows.
 #ifdef BUILD_HEADLESS
   sendOutput(ScreenshotDataRed, boost::make_shared<DenseMatrix>(0, 0));
@@ -277,6 +278,7 @@ void ViewScene::execute()
     get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
   }
 #endif
+*/
 }
 
 void ViewScene::processViewSceneObjectFeedback()
