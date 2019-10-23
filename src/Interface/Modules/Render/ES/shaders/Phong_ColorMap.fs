@@ -137,7 +137,7 @@ void main()
   vec3 diffuseColor = pow(colorMapValue.rgb, vec3(2.2));
   vec3 specularColor = uSpecularColor.rgb;
   vec3 ambientColor = uAmbientColor.rgb;
-  float transparency = uTransparency;
+  float transparency = colorMapValue.a;
 
   vec3 normal = normalize(vNormal);
   if(gl_FrontFacing) normal = -normal;
