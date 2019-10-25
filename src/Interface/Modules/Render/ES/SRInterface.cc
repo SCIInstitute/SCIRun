@@ -361,8 +361,6 @@ namespace SCIRun {
       if(!mContext || !mContext->isValid()) return;
       mContext->makeCurrent(mContext->surface());
 
-      std::cout << pos.x << ", " <<  pos.y << "\n";
-      std::cout << mScreenWidth << ", " << mScreenHeight << "\n";
       mSelected = "";
       widgetSelected_ = false;
       // Ensure our rendering context is current on our thread.
@@ -494,6 +492,7 @@ namespace SCIRun {
             //shaderMan->loadVertexAndFragmentShader(mCore, entityID, "Shaders/Selection");
             //					addShaderToEntity(entityID, "Shaders/Selection");
             //					shaderMan->loadVertexAndFragmentShader(mCore, entityID, pass.programName);
+
             const char* selectionShaderName = "Shaders/Selection";
             GLuint shaderID = shaderMan->getIDForAsset(selectionShaderName);
             if (shaderID == 0)
@@ -501,11 +500,13 @@ namespace SCIRun {
               const char* vs =
                 "uniform mat4 uModelViewProjection;\n"
                 "uniform vec4 uColor;\n"
+                "uniform bool hack;\n"
                 "attribute vec3 aPos;\n"
                 "varying vec4 fColor;\n"
                 "void main()\n"
                 "{\n"
                 "  gl_Position = uModelViewProjection * vec4(aPos, 1.0);\n"
+                "  if(hack) gl_Position.xy = ((gl_Position.xy/gl_Position.w) * vec2(0.5) - vec2(0.5)) * gl_Position.w;\n"
                 "  fColor = uColor;\n"
                 "}\n";
               const char* fs =
@@ -539,9 +540,8 @@ namespace SCIRun {
             ren::CommonUniforms commonUniforms;
             mCore.addComponent(entityID, commonUniforms);
 
-            SpireSubPass::Uniform uniform(
-              "uColor", selCol);
-            applyUniform(entityID, uniform);
+            applyUniform(entityID, SpireSubPass::Uniform("uColor", selCol));
+            applyUniform(entityID, SpireSubPass::Uniform("hack", mSelectionHack));
 
             // Add components associated with entity. We just need a base class which
             // we can pass in an entity ID, then a derived class which bundles
@@ -562,7 +562,6 @@ namespace SCIRun {
       updateWorldLight();
 
       mCore.execute(0, 50);
-
 
       GLuint value;
       GLfloat depth;
@@ -586,7 +585,8 @@ namespace SCIRun {
           }
         }
       }
-      
+
+      /*
       std::cout << "P3\n";
       std::cout << mScreenWidth  << " " << mScreenHeight << "\n";
       std::cout << "255\n";
@@ -606,6 +606,7 @@ namespace SCIRun {
           }
         }
       }
+      */
 
       //release and restore fbo
       fboMan->unbindFBO();
