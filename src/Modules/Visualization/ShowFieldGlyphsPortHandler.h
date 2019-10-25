@@ -69,6 +69,7 @@ namespace SCIRun{
         RenderState::InputPort colorInput;
         Core::Datatypes::ColorRGB defaultColor;
         boost::optional<Core::Datatypes::ColorMapHandle> colorMap;
+        Core::Datatypes::ColorMapHandle coordinateMap {nullptr}, textureMap {nullptr};
         boost::optional<Core::Geometry::Tensor> pinputTensor, sinputTensor, tinputTensor;
         boost::optional<Core::Geometry::Vector> pinputVector, sinputVector, tinputVector;
         boost::optional<double> pinputScalar, sinputScalar, tinputScalar;
@@ -99,6 +100,10 @@ namespace SCIRun{
 
         // Verifies that data is valid. Run this after initialization
         void checkForErrors();
+
+        void spiltColorMapToTextureAndCoordinates();
+
+        Core::Datatypes::ColorMapHandle getTextureMap() {return textureMap;}
 
         // Returns color scheme that was set in render state
         Graphics::Datatypes::ColorScheme getColorScheme();
