@@ -72,7 +72,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   updateZoomOptionVisibility();
 
   //----------- Developer Tab--------------//
-  connect(toStringButton_, SIGNAL(clicked()), parent, SLOT(toString()));
+  connect(toStringButton_, SIGNAL(clicked()), parent, SLOT(printToString()));
 
   //-----------Objects Tab-----------------//
   visibleItems_.reset(new VisibleItemManager(objectListWidget_));

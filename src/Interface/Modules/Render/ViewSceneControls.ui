@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>567</width>
-    <height>1101</height>
+    <height>662</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>496</width>
-    <height>1101</height>
+    <width>567</width>
+    <height>662</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -2356,7 +2356,7 @@
            </size>
           </property>
           <property name="styleSheet">
-           <string notr="true">QPushButton{color:red}QPushButton::pressed{background:red}</string>
+           <string notr="true"/>
           </property>
           <property name="text">
            <string>Dump Core</string>
