@@ -748,7 +748,9 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
     }
   }
 
+  if(mGLWidget) mGLWidget->updateRenderer(), std::cout << "render frame\n";
   sendScreenshotDownstreamForTesting();
+  std::cout << "send screenshot\n";
 
   if (saveScreenshotOnNewGeometry_)
     screenshotClicked();

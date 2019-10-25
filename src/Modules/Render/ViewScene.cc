@@ -229,56 +229,30 @@ void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, Mod
 
 void ViewScene::execute()
 {
-  /*
+  std::cout << "in execute\n";
   // hack for headless viewscene. Right now, it hangs/crashes/who knows.
 #ifdef BUILD_HEADLESS
   sendOutput(ScreenshotDataRed, boost::make_shared<DenseMatrix>(0, 0));
   sendOutput(ScreenshotDataGreen, boost::make_shared<DenseMatrix>(0, 0));
   sendOutput(ScreenshotDataBlue, boost::make_shared<DenseMatrix>(0, 0));
 #else
-  if (needToExecute())
+  if (needToExecute() && inputPorts().size() >= 1) // only send screenshot if input is present
   {
-    const int maxAsyncWaitTries = 100; //TODO: make configurable for longer-running networks
-    auto asyncWaitTries = 0;
-    if (inputPorts().size() > 1) // only send screenshot if input is present
+    std::cout << "executing\n";
+    ModuleStateInterface::TransientValueOption screenshotDataOption;
+    auto state = get_state();
+    screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
+    //if (screenshotDataOption)
     {
-      while (asyncUpdates_ < inputPorts().size() - 1)
-      {
-        asyncWaitTries++;
-        if (asyncWaitTries == maxAsyncWaitTries)
-          return; // nothing coming down the ports
-        //wait until all asyncExecutes are done.
-      }
-
-      ModuleStateInterface::TransientValueOption screenshotDataOption;
-      auto state = get_state();
-      do
-      {
-        screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
-        if (screenshotDataOption)
-        {
-          auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
-          if (screenshotData.red)
-          {
-            sendOutput(ScreenshotDataRed, screenshotData.red);
-          }
-          if (screenshotData.green)
-          {
-            sendOutput(ScreenshotDataGreen, screenshotData.green);
-          }
-          if (screenshotData.blue)
-          {
-            sendOutput(ScreenshotDataBlue, screenshotData.blue);
-          }
-        }
-      } while (!screenshotDataOption);
+      std::cout << "sending screenshot\n";
+      auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
+      if (screenshotData.red) sendOutput(ScreenshotDataRed, screenshotData.red);
+      if (screenshotData.green) sendOutput(ScreenshotDataGreen, screenshotData.green);
+      if (screenshotData.blue) sendOutput(ScreenshotDataBlue, screenshotData.blue);
+      //get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
     }
-    asyncUpdates_ = 0;
-
-    get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
   }
 #endif
-*/
 }
 
 void ViewScene::processViewSceneObjectFeedback()
