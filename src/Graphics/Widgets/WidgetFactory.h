@@ -32,6 +32,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Widgets/ArrowWidget.h>
 #include <Graphics/Widgets/BoundingBoxWidget.h>
+#include <Graphics/Widgets/BoxWidget.h>
 #include <Graphics/Widgets/ConeWidget.h>
 #include <Graphics/Widgets/CylinderWidget.h>
 #include <Graphics/Widgets/DiskWidget.h>

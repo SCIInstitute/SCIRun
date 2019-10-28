@@ -55,7 +55,7 @@ WidgetHandle WidgetFactory::createBox(const Core::GeometryIDGenerator& idGenerat
                                                const Point& origin,
                                                const BBox& bbox)
 {
-  auto widget = boost::make_shared<BoundingBoxWidget>(idGenerator, scale, pos, origin, bbox);
+  auto widget = boost::make_shared<BoxWidget>(idGenerator, scale, pos, origin, bbox);
   widget->addInitialId();
   widget->setToTranslate();
   return widget;

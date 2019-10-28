@@ -26,87 +26,90 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <Graphics/Widgets/BoundingBoxWidget.h>
-#include <Graphics/Glyphs/GlyphGeom.h>
 #include <Core/Datatypes/Color.h>
+#include <Graphics/Glyphs/GlyphGeom.h>
+#include <Graphics/Widgets/BoundingBoxWidget.h>
+#include <Graphics/Widgets/WidgetFactory.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-void BoxPosition::setPosition(const Point& center, const Point& right, const Point& down, const Point& in)
-{
-  center_ = center;
-  right_ = right;
-  down_ = down;
-  in_ = in;
-}
-void BoxPosition::getPosition(Point& center, Point& right, Point& down, Point& in) const
-{
-  center = center_;
-  right = right_;
-  down = down_;
-  in = in_;
-}
+BoxWidget::BoxWidget(const Core::GeometryIDGenerator& idGenerator, std::string& name, double scale,
+                     pconst BoxPosition& pos, const Point& origin, const BBox& bbox)
+    : CompositeWidget(idGenerator, name) {
+  static const ColorRGB deflPointCol_ = ColorRGB(0.54, 0.6, 1.0);
+  static const ColorRGB deflCol_ = ColorRGB(0.5, 0.5, 0.5);
+  static const ColorRGB resizeCol_ = ColorRGB(0.54, 1.0, 0.60);
+  ColorRGB diskCol = (show_as_vector) ? deflPointCol_ : resizeCol_;
 
-BoundingBoxWidget::BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator,
-  double scale, const BoxPosition& pos, const Point& origin, const BBox& bbox)
-  : WidgetBase(idGenerator, "BoundingBox", true, origin)
-{
-  auto colorScheme(ColorScheme::COLOR_UNIFORM);
-  //get all the bbox edges
-  Point c,r,d,b;
-  pos.getPosition(c,r,d,b);
-  auto x = r - c, y = d - c, z = b - c;
-  std::vector<Point> points = {
-    c + x + y + z,
-    c + x + y - z,
-    c + x - y + z,
-    c + x - y - z,
-    c - x + y + z,
-    c - x + y - z,
-    c - x - y + z,
-    c - x - y - z };
-  const uint32_t point_indicies[] = {
-    0, 1, 0, 2, 0, 4,
-    7, 6, 7, 5, 3, 7,
-    4, 5, 4, 6, 1, 5,
-    3, 2, 3, 1, 2, 6
-  };
-  const auto num_strips = 50;
-  std::vector<Vector> tri_points;
-  std::vector<Vector> tri_normals;
-  std::vector<uint32_t> tri_indices;
-  std::vector<ColorRGB> colors;
-  GlyphGeom glyphs;
-  //generate triangles for the cylinders.
-  for (auto edge = 0; edge < 24; edge += 2)
-  {
-    glyphs.addCylinder(points[point_indicies[edge]], points[point_indicies[edge + 1]], scale, num_strips, ColorRGB(), ColorRGB());
-  }
-  //generate triangles for the spheres
-  for (const auto& a : points)
-  {
-    glyphs.addSphere(a, scale, num_strips, ColorRGB(1, 0, 0));
-  }
 
+  if (resolution < 3) resolution = 10;
+
+  isVector_ = show_as_vector;
+  auto colorScheme = ColorScheme::COLOR_UNIFORM;
   std::stringstream ss;
-  ss << scale;
-  for (const auto& a : points) ss << a.x() << a.y() << a.z();
+  ss << pos << dir << static_cast<int>(colorScheme);
 
-  auto uniqueNodeID = "bounding_box_cylinders" + ss.str();
+  auto uniqueNodeID = uniqueID() + "widget" + ss.str();
 
-  RenderState renState;
+  // Graphics::GlyphGeom glyphs;
+  ColorRGB node_color;
 
-  renState.set(RenderState::IS_ON, true);
-  renState.set(RenderState::USE_TRANSPARENCY, false);
+  // auto renState = getWidgetRenderState(defaultColor);
 
-  renState.defaultColor = ColorRGB(1, 1, 1);
-  renState.set(RenderState::USE_DEFAULT_COLOR, true);
-  renState.set(RenderState::USE_NORMALS, true);
-  renState.set(RenderState::IS_WIDGET, true);
+  Point bmin = pos;
+  Point bmax = pos + dir * scale;
 
-  glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
-    colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
+  // Fix degenerate boxes.
+  const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
+  if (std::abs(bmax.x() - bmin.x()) < 1.0e-6)
+  {
+    bmin.x(bmin.x() - size_estimate);
+    bmax.x(bmax.x() + size_estimate);
+  }
+  if (std::abs(bmax.y() - bmin.y()) < 1.0e-6)
+  {
+    bmin.y(bmin.y() - size_estimate);
+    bmax.y(bmax.y() + size_estimate);
+  }
+  if (std::abs(bmax.z() - bmin.z()) < 1.0e-6)
+  {
+    bmin.z(bmin.z() - size_estimate);
+    bmax.z(bmax.z() + size_estimate);
+  }
+
+  Point center = bmin + dir/2.0 * scale;
+
+  // Create glyphs
+  std::string box_name = widgetName(BoundingBoxWidgetSection::BOX, widget_num, widget_iter);
+  widgets_.push_back(WidgetFactory::createBox(idGenerator, box_name, sphereRadius_ * scale,
+                                              diskCol.toString(), bmin, bmin, bbox, resolution));
+  widgets_[0]->setToTranslate();
+
+  std::string x_plus_name = widgetName(BoundingBoxWidgetSection::X_PLUS, widget_num, widget_iter);
+  widgets_.push_back(WidgetFactory::createDisk(idGenerator, x_plus_name, diskRadius_ * scale,
+                                  resizeCol_.toString(), dp1, dp2, bmin, bbox, resolution));
+
+    Vector flipVec = dir.getArbitraryTangent().normal();
+    widgets_[1]->setToScale(Vector(0,1,0));
+  }
+
+  std::vector<std::string> geom_ids;
+  for(int i = 0; i < 2; i++)
+    geom_ids.push_back(widgets_[i]->uniqueID());
+
+  for(int i = 0; i < 2; i++)
+  {
+    widgets_[i]->connectedIds_ = geom_ids;
+    addToList(widgets_[i]);
+  }
+}
+
+std::string BoundingBoxWidget::widgetName(size_t i, size_t id, size_t iter)
+{
+  return "BoundingBoxWidget(" + std::to_string(i) + ")" + "(" + std::to_string(id) + ")" +
+         "(" + std::to_string(iter) + ")";
 }
