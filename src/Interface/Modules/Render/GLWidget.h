@@ -70,9 +70,11 @@ public:
   void setLockZoom(bool lock)     { mGraphics->setLockZoom(lock); }
   void setLockPanning(bool lock)  { mGraphics->setLockPanning(lock); }
   void setLockRotation(bool lock) { mGraphics->setLockRotation(lock); }
+  void requestFrame() {mFramesTillRequest = 5;}
 
 Q_SIGNALS:
   void fatalError(const QString& message);
+  void finishedFrame();
 
 public Q_SLOTS:
   // Only use when not using threading.
@@ -97,6 +99,7 @@ private:
   std::shared_ptr<Render::SRInterface>  mGraphics     {};  ///< Interface to spire.
   QTimer*                               mTimer        {};
   double                                mFrameTime    {0.0};
+  int                                   mFramesTillRequest {0};
 
   double                                mCurrentTime  {0.0};
 };

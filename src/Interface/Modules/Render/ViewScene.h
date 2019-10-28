@@ -72,15 +72,19 @@ namespace SCIRun {
       void cameraRotationChangeForwarder();
       void cameraLookAtChangeForwarder();
       void cameraDistnaceChangeForwarder();
+      void lockMutexForwarder();
       void mousePressSignalForTestingGeometryObjectFeedback(int x, int y, const std::string& selName);
 
 
     protected Q_SLOTS:
       //---------------- New Geometry --------------------------------------------------------------
       void updateModifiedGeometries();
+      void updateModifiedGeometriesAndSendScreenShot();
       void updateAllGeometries();
-      void newGeometryValue(bool forceAllObjectsToUpdate);
+      void newGeometryValue(bool forceAllObjectsToUpdate, bool pushScreenShotToState);
       void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
+      void frameFinished();
+      void lockMutex();
 
       //---------------- Input ---------------------------------------------------------------------
       void viewBarButtonClicked();

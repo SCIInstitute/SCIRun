@@ -70,12 +70,17 @@ GLWidget::~GLWidget()
 void GLWidget::initializeGL()
 {
 	spire::glPlatformInit();
-}	
+}
 
 void GLWidget::paintGL()
 {
   mCurrentTime += updateTime;
   mGraphics->doFrame(mCurrentTime, updateTime);
+  if(mFramesTillRequest > 0)
+  {
+    std::cout << mGraphics->toString("");
+    if(--mFramesTillRequest == 0) finishedFrame();
+  }
 }
 
 //------------------------------------------------------------------------------

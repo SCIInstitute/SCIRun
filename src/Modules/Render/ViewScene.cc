@@ -51,20 +51,31 @@ using namespace SCIRun::Core::Logging;
 MODULE_INFO_DEF(ViewScene, Render, SCIRun)
 
 Mutex ViewScene::mutex_("ViewScene");
+//Mutex ViewScene::asyncExecuteMutex_("ViewSceneAsyncExecuteMutex");
 
 ALGORITHM_PARAMETER_DEF(Render, GeomData);
+ALGORITHM_PARAMETER_DEF(Render, VSMutex);
 ALGORITHM_PARAMETER_DEF(Render, GeometryFeedbackInfo);
 ALGORITHM_PARAMETER_DEF(Render, ScreenshotData);
 ALGORITHM_PARAMETER_DEF(Render, MeshComponentSelection);
 ALGORITHM_PARAMETER_DEF(Render, ShowFieldStates);
 
-ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true), asyncUpdates_(0)
+ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
 {
   RENDERER_LOG_FUNCTION_SCOPE;
   INITIALIZE_PORT(GeneralGeom);
   INITIALIZE_PORT(ScreenshotDataRed);
   INITIALIZE_PORT(ScreenshotDataGreen);
   INITIALIZE_PORT(ScreenshotDataBlue);
+
+  get_state()->setTransientValue(Parameters::VSMutex, new Mutex("ViewSceneScreenShotMutex"), true);
+}
+
+ViewScene::~ViewScene()
+{
+  auto screenShotMutex = get_state()->getTransientValue(Parameters::VSMutex);
+  auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
+  delete mutex;
 }
 
 void ViewScene::setStateDefaults()
@@ -188,6 +199,9 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
   {
     LOG_DEBUG("ViewScene::asyncExecute {} before locking", id().id_);
     Guard lock(mutex_.get());
+
+    //if(asyncExecutes == 0) asyncExecuteMutex_.lock();
+
     get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
 
     LOG_DEBUG("ViewScene::asyncExecute {} after locking", id().id_);
@@ -211,10 +225,14 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 
     activeGeoms_[pid] = geom;
     updateTransientList();
-  }
 
-  fireTransientStateChangeSignalForGeomData();
-  asyncUpdates_.fetch_add(1);
+    std::cout << pid << "\n";
+    //if(++asyncExecutes >= activeGeoms_.size())
+    //{
+    //  asyncExecuteMutex_.unlock();
+    //  asyncExecutes = 0;
+    //}
+  }
 }
 
 void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, ModuleStateHandle state)
@@ -229,8 +247,14 @@ void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, Mod
 
 void ViewScene::execute()
 {
-  std::cout << "in execute\n";
-  // hack for headless viewscene. Right now, it hangs/crashes/who knows.
+  std::cout << "entered execute\n";
+  //asyncExecuteMutex_.lock();
+  fireTransientStateChangeSignalForGeomData();
+  auto state = get_state();
+  auto screenShotMutex = state->getTransientValue(Parameters::VSMutex);
+  auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
+  mutex->lock();
+
 #ifdef BUILD_HEADLESS
   sendOutput(ScreenshotDataRed, boost::make_shared<DenseMatrix>(0, 0));
   sendOutput(ScreenshotDataGreen, boost::make_shared<DenseMatrix>(0, 0));
@@ -238,21 +262,19 @@ void ViewScene::execute()
 #else
   if (needToExecute() && inputPorts().size() >= 1) // only send screenshot if input is present
   {
-    std::cout << "executing\n";
     ModuleStateInterface::TransientValueOption screenshotDataOption;
-    auto state = get_state();
+    std::cout << "sending screenshot\n";
     screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
-    //if (screenshotDataOption)
     {
-      std::cout << "sending screenshot\n";
       auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
       if (screenshotData.red) sendOutput(ScreenshotDataRed, screenshotData.red);
       if (screenshotData.green) sendOutput(ScreenshotDataGreen, screenshotData.green);
       if (screenshotData.blue) sendOutput(ScreenshotDataBlue, screenshotData.blue);
-      //get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
     }
   }
 #endif
+  mutex->unlock();
+//  asyncExecuteMutex_.unlock();
 }
 
 void ViewScene::processViewSceneObjectFeedback()

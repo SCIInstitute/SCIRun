@@ -386,10 +386,10 @@ namespace SCIRun {
       glm::vec2                         autoRotateVector      {0.0, 0.0};
       float                             autoRotateSpeed       {0.01f};
 
-      const int                         frameInitLimit_     {};
-      QOpenGLContext*                   mContext            {};
-      std::shared_ptr<spire::ArcBall>	widgetBall_			{};
-	  std::unique_ptr<SRCamera>         mCamera;			// Primary camera.
+      const int                         frameInitLimit_ {};
+      QOpenGLContext*                   mContext        {};
+      std::shared_ptr<spire::ArcBall>	  widgetBall_			{};
+	    std::unique_ptr<SRCamera>         mCamera;			// Primary camera.
 
     };
 

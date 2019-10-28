@@ -40,6 +40,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Graphics/Glyphs/GlyphGeom.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Core/GeometryPrimitives/Transform.h>
+#include <Core/Thread/Mutex.h>
 #include <boost/timer.hpp>
 
 using namespace SCIRun::Gui;
@@ -85,6 +86,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   ModuleDialogGeneric(state, parent),
   gid_(new DialogIdGenerator(name))
 {
+  //lock
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   setFocusPolicy(Qt::StrongFocus);
@@ -99,6 +101,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   mGLWidget->setFormat(format);
 
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
+  connect(mGLWidget, SIGNAL(finishedFrame()), this, SLOT(frameFinished()));
   connect(this, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int, const std::string&)), this, SLOT(sendGeometryFeedbackToState(int, int, const std::string&)));
 
   mSpire = std::weak_ptr<SRInterface>(mGLWidget->getSpire());
@@ -129,7 +132,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setInitialLightValues();
 
   state->connectSpecificStateChanged(Parameters::GeomData,[this](){Q_EMIT newGeometryValueForwarder();});
-  connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(updateAllGeometries()));
+  connect(this, SIGNAL(newGeometryValueForwarder()), this, SLOT(updateModifiedGeometriesAndSendScreenShot()));
 
   state->connectSpecificStateChanged(Modules::Render::ViewScene::CameraRotation,[this](){Q_EMIT cameraRotationChangeForwarder();});
   connect(this, SIGNAL(cameraRotationChangeForwarder()), this, SLOT(pullCameraRotation()));
@@ -139,6 +142,11 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   state->connectSpecificStateChanged(Modules::Render::ViewScene::CameraDistance,[this](){Q_EMIT cameraDistnaceChangeForwarder();});
   connect(this, SIGNAL(cameraDistnaceChangeForwarder()), this, SLOT(pullCameraDistance()));
+
+  state->connectSpecificStateChanged(Parameters::VSMutex, [this](){Q_EMIT lockMutexForwarder();});
+  connect(this, SIGNAL(lockMutexForwarder()), this, SLOT(lockMutex()));
+
+  lockMutex();
 
   std::string filesystemRoot = Application::Instance().executablePath().string();
   std::string sep;
@@ -659,22 +667,30 @@ QColor ViewSceneDialog::checkColorSetting(std::string& rgb, QColor defaultColor)
 //---------------- New Geometry --------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------
 
+//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateAllGeometries()
 {
   //If a render parameter changes we must update all of the geometries by removing and readding them.
   //This must be foreced because the IDs will not have changed
-  newGeometryValue(true);
+  newGeometryValue(true, false);
 }
 
+//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateModifiedGeometries()
 {
   //if we are looking for a new geoetry the ID will have changed therefore we can find the
   //geometries that have changed and only remove those
-  newGeometryValue(false);
+  newGeometryValue(false, false);
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
+void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
+{
+  newGeometryValue(false, true);
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool pushScreenShotToState)
 {
   DEBUG_LOG_LINE_INFO
   LOG_DEBUG("ViewSceneDialog::newGeometryValue {} before locking", windowTitle().toStdString());
@@ -748,12 +764,30 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
     }
   }
 
-  if(mGLWidget) mGLWidget->updateRenderer(), std::cout << "render frame\n";
-  sendScreenshotDownstreamForTesting();
-  std::cout << "send screenshot\n";
+  if(pushScreenShotToState && mGLWidget) mGLWidget->requestFrame();
 
   if (saveScreenshotOnNewGeometry_)
     screenshotClicked();
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::lockMutex()
+{
+  auto screenShotMutex = state_->getTransientValue(Parameters::VSMutex);
+  auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
+  if(mutex) mutex->lock(), std::cout << "mutex locked\n";
+}
+
+void ViewSceneDialog::frameFinished()
+{
+  sendScreenshotDownstreamForTesting();  std::cout << "push frame to state\n";
+  auto screenShotMutex = state_->getTransientValue(Parameters::VSMutex);
+  auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
+  if(mutex)
+  {
+    mutex->unlock();
+    mutex->lock();
+  }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -792,7 +826,7 @@ void ViewSceneDialog::showEvent(QShowEvent* evt)
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
   ModuleDialogGeneric::showEvent(evt);
 
-  updateModifiedGeometries();
+  updateModifiedGeometriesAndSendScreenShot();
 }
 
 //--------------------------------------------------------------------------------------------------
