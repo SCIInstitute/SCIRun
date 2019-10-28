@@ -74,12 +74,15 @@ void GLWidget::initializeGL()
 
 void GLWidget::paintGL()
 {
-  mCurrentTime += updateTime;
-  mGraphics->doFrame(mCurrentTime, updateTime);
-  if(mFramesTillRequest > 0)
+  //set to 200ms to force promise fullfilment every frame if a good frame as been requested
+  double lUpdateTime = mFrameRequested ? 0.2 : updateTime;
+  mCurrentTime += lUpdateTime;
+  mGraphics->doFrame(mCurrentTime, lUpdateTime);
+
+  if(mFrameRequested && !mGraphics->hasShaderPromise())
   {
-    std::cout << mGraphics->toString("");
-    if(--mFramesTillRequest == 0) finishedFrame();
+    mFrameRequested = false;
+    finishedFrame();
   }
 }
 

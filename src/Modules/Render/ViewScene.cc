@@ -193,14 +193,11 @@ void ViewScene::updateTransientList()
 
 void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 {
-  if (!data)
-    return;
+  if (!data) return;
   //lock for state modification
   {
     LOG_DEBUG("ViewScene::asyncExecute {} before locking", id().id_);
     Guard lock(mutex_.get());
-
-    //if(asyncExecutes == 0) asyncExecuteMutex_.lock();
 
     get_state()->setTransientValue(Parameters::ScreenshotData, boost::any(), false);
 
@@ -225,13 +222,6 @@ void ViewScene::asyncExecute(const PortId& pid, DatatypeHandle data)
 
     activeGeoms_[pid] = geom;
     updateTransientList();
-
-    std::cout << pid << "\n";
-    //if(++asyncExecutes >= activeGeoms_.size())
-    //{
-    //  asyncExecuteMutex_.unlock();
-    //  asyncExecutes = 0;
-    //}
   }
 }
 
@@ -247,8 +237,6 @@ void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, Mod
 
 void ViewScene::execute()
 {
-  std::cout << "entered execute\n";
-  //asyncExecuteMutex_.lock();
   fireTransientStateChangeSignalForGeomData();
   auto state = get_state();
   auto screenShotMutex = state->getTransientValue(Parameters::VSMutex);
@@ -263,7 +251,6 @@ void ViewScene::execute()
   if (needToExecute() && inputPorts().size() >= 1) // only send screenshot if input is present
   {
     ModuleStateInterface::TransientValueOption screenshotDataOption;
-    std::cout << "sending screenshot\n";
     screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
     {
       auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
@@ -274,7 +261,6 @@ void ViewScene::execute()
   }
 #endif
   mutex->unlock();
-//  asyncExecuteMutex_.unlock();
 }
 
 void ViewScene::processViewSceneObjectFeedback()

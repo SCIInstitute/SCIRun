@@ -70,7 +70,7 @@ public:
   void setLockZoom(bool lock)     { mGraphics->setLockZoom(lock); }
   void setLockPanning(bool lock)  { mGraphics->setLockPanning(lock); }
   void setLockRotation(bool lock) { mGraphics->setLockRotation(lock); }
-  void requestFrame() {mFramesTillRequest = 5;}
+  void requestFrame() {mFrameRequested = true;}
 
 Q_SIGNALS:
   void fatalError(const QString& message);
@@ -96,12 +96,12 @@ private:
   /// Retrieve SRInterface mouse button from mouse event.
   Render::SRInterface::MouseButton getSpireButton(QMouseEvent* event);
 
-  std::shared_ptr<Render::SRInterface>  mGraphics     {};  ///< Interface to spire.
-  QTimer*                               mTimer        {};
-  double                                mFrameTime    {0.0};
-  int                                   mFramesTillRequest {0};
+  std::shared_ptr<Render::SRInterface>  mGraphics          {};  ///< Interface to spire.
+  QTimer*                               mTimer             {};
+  double                                mFrameTime         {0.0};
+  bool                                  mFrameRequested    {false};
 
-  double                                mCurrentTime  {0.0};
+  double                                mCurrentTime       {0.0};
 };
 
 } // end of namespace Gui

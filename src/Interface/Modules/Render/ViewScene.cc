@@ -145,7 +145,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
   state->connectSpecificStateChanged(Parameters::VSMutex, [this](){Q_EMIT lockMutexForwarder();});
   connect(this, SIGNAL(lockMutexForwarder()), this, SLOT(lockMutex()));
-
   lockMutex();
 
   std::string filesystemRoot = Application::Instance().executablePath().string();
@@ -698,8 +697,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool pushSc
   Guard lock(Modules::Render::ViewScene::mutex_.get());
 
   auto spire = mSpire.lock();
-  if (!spire)
-    return;
+  if (!spire) return;
 
   if(!mGLWidget->isValid()) return;
   spire->setContext(mGLWidget->context());
@@ -766,8 +764,7 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool pushSc
 
   if(pushScreenShotToState && mGLWidget) mGLWidget->requestFrame();
 
-  if (saveScreenshotOnNewGeometry_)
-    screenshotClicked();
+  if (saveScreenshotOnNewGeometry_) screenshotClicked();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -775,12 +772,12 @@ void ViewSceneDialog::lockMutex()
 {
   auto screenShotMutex = state_->getTransientValue(Parameters::VSMutex);
   auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
-  if(mutex) mutex->lock(), std::cout << "mutex locked\n";
+  if(mutex) mutex->lock();
 }
 
 void ViewSceneDialog::frameFinished()
 {
-  sendScreenshotDownstreamForTesting();  std::cout << "push frame to state\n";
+  sendScreenshotDownstreamForTesting();
   auto screenShotMutex = state_->getTransientValue(Parameters::VSMutex);
   auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
   if(mutex)
