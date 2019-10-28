@@ -68,7 +68,7 @@ BoundingBoxWidget::BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerato
     c - x + y - z,
     c - x - y + z,
     c - x - y - z };
-  uint32_t point_indicies[] = {
+  const uint32_t point_indicies[] = {
     0, 1, 0, 2, 0, 4,
     7, 6, 7, 5, 3, 7,
     4, 5, 4, 6, 1, 5,
