@@ -51,7 +51,6 @@ using namespace SCIRun::Core::Logging;
 MODULE_INFO_DEF(ViewScene, Render, SCIRun)
 
 Mutex ViewScene::mutex_("ViewScene");
-//Mutex ViewScene::asyncExecuteMutex_("ViewSceneAsyncExecuteMutex");
 
 ALGORITHM_PARAMETER_DEF(Render, GeomData);
 ALGORITHM_PARAMETER_DEF(Render, VSMutex);
@@ -68,14 +67,11 @@ ViewScene::ViewScene() : ModuleWithAsyncDynamicPorts(staticInfo_, true)
   INITIALIZE_PORT(ScreenshotDataGreen);
   INITIALIZE_PORT(ScreenshotDataBlue);
 
-  get_state()->setTransientValue(Parameters::VSMutex, new Mutex("ViewSceneScreenShotMutex"), true);
+  get_state()->setTransientValue(Parameters::VSMutex, &screenShotMutex_, true);
 }
 
 ViewScene::~ViewScene()
 {
-  auto screenShotMutex = get_state()->getTransientValue(Parameters::VSMutex);
-  auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
-  delete mutex;
 }
 
 void ViewScene::setStateDefaults()
@@ -241,8 +237,8 @@ void ViewScene::execute()
   auto state = get_state();
   auto screenShotMutex = state->getTransientValue(Parameters::VSMutex);
   auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
-  mutex->lock();
 
+  mutex->lock();
 #ifdef BUILD_HEADLESS
   sendOutput(ScreenshotDataRed, boost::make_shared<DenseMatrix>(0, 0));
   sendOutput(ScreenshotDataGreen, boost::make_shared<DenseMatrix>(0, 0));

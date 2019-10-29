@@ -686,7 +686,7 @@ void ViewSceneDialog::updateModifiedGeometries()
 void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
 {
   newGeometryValue(false);
-  if(mGLWidget) mGLWidget->requestFrame();
+  if(mGLWidget->isValid()) mGLWidget->requestFrame();
 }
 
 //--------------------------------------------------------------------------------------------------

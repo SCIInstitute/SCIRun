@@ -144,6 +144,7 @@ namespace Render {
     MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
     static Core::Thread::Mutex mutex_;
+    Core::Thread::Mutex screenShotMutex_ {"ViewSceneScreenShotMutex"};
 
     typedef SharedPointer<Core::Datatypes::GeomList> GeomListPtr;
     typedef std::map<Dataflow::Networks::PortId, Core::Datatypes::GeometryBaseHandle> ActiveGeometryMap;
@@ -155,7 +156,7 @@ namespace Render {
     void fireTransientStateChangeSignalForGeomData();
     void updateTransientList();
     void syncMeshComponentFlags(const std::string& connectedModuleId, Dataflow::Networks::ModuleStateHandle state);
-    
+
     ActiveGeometryMap activeGeoms_;
   };
 }}}
