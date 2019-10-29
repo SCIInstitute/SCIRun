@@ -234,20 +234,16 @@ void ViewScene::syncMeshComponentFlags(const std::string& connectedModuleId, Mod
 void ViewScene::execute()
 {
   fireTransientStateChangeSignalForGeomData();
-  auto state = get_state();
-  auto screenShotMutex = state->getTransientValue(Parameters::VSMutex);
-  auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
-
-  mutex->lock();
 #ifdef BUILD_HEADLESS
   sendOutput(ScreenshotDataRed, boost::make_shared<DenseMatrix>(0, 0));
   sendOutput(ScreenshotDataGreen, boost::make_shared<DenseMatrix>(0, 0));
   sendOutput(ScreenshotDataBlue, boost::make_shared<DenseMatrix>(0, 0));
 #else
+  Guard lock(screenShotMutex_.get());
   if (needToExecute() && inputPorts().size() >= 1) // only send screenshot if input is present
   {
     ModuleStateInterface::TransientValueOption screenshotDataOption;
-    screenshotDataOption = state->getTransientValue(Parameters::ScreenshotData);
+    screenshotDataOption = get_state()->getTransientValue(Parameters::ScreenshotData);
     {
       auto screenshotData = transient_value_cast<RGBMatrices>(screenshotDataOption);
       if (screenshotData.red) sendOutput(ScreenshotDataRed, screenshotData.red);
@@ -256,7 +252,6 @@ void ViewScene::execute()
     }
   }
 #endif
-  mutex->unlock();
 }
 
 void ViewScene::processViewSceneObjectFeedback()

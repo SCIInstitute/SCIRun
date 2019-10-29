@@ -901,6 +901,13 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
     selected_ = false;
     auto selName = restoreObjColor();
     updateModifiedGeometries();
+    auto screenShotMutex = state_->getTransientValue(Parameters::VSMutex);
+    auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
+    if(mutex)
+    {
+      mutex->unlock();
+      mutex->lock();
+    }
     Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y(), selName);
   }
 
