@@ -671,7 +671,7 @@ void ViewSceneDialog::updateAllGeometries()
 {
   //If a render parameter changes we must update all of the geometries by removing and readding them.
   //This must be foreced because the IDs will not have changed
-  newGeometryValue(true, false);
+  newGeometryValue(true);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -679,17 +679,18 @@ void ViewSceneDialog::updateModifiedGeometries()
 {
   //if we are looking for a new geoetry the ID will have changed therefore we can find the
   //geometries that have changed and only remove those
-  newGeometryValue(false, false);
+  newGeometryValue(false);
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
 {
-  newGeometryValue(false, true);
+  newGeometryValue(false);
+  if(mGLWidget) mGLWidget->requestFrame();
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool pushScreenShotToState)
+void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
 {
   DEBUG_LOG_LINE_INFO
   LOG_DEBUG("ViewSceneDialog::newGeometryValue {} before locking", windowTitle().toStdString());
@@ -761,8 +762,6 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate, bool pushSc
       }
     }
   }
-
-  if(pushScreenShotToState && mGLWidget) mGLWidget->requestFrame();
 
   if (saveScreenshotOnNewGeometry_) screenshotClicked();
 }

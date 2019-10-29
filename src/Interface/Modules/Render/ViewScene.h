@@ -81,7 +81,7 @@ namespace SCIRun {
       void updateModifiedGeometries();
       void updateModifiedGeometriesAndSendScreenShot();
       void updateAllGeometries();
-      void newGeometryValue(bool forceAllObjectsToUpdate, bool pushScreenShotToState);
+      void newGeometryValue(bool forceAllObjectsToUpdate);
       void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
       void frameFinished();
       void lockMutex();
