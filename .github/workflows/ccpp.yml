@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: linux-build
 
 on:
   pull_request:
