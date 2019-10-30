@@ -20,4 +20,4 @@ jobs:
         ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
 
     - name: make
-      run: ./build.sh -DUSER_PYTHON_VERSION="3.5.6" -DQT5_BUILD:BOOL="ON" -DQt5_PATH=$(brew --prefix qt) -j3
+      run: ./build.sh -DUSER_PYTHON_VERSION="3.5.6" -DQT5_BUILD:BOOL="ON" -DQt5_PATH=$(brew --prefix qt)
