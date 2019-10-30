@@ -1,0 +1,21 @@
+name: C/C++ CI
+
+on:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  build:
+
+    runs-on: mac-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Prepare
+      run: brew install qt
+
+    - name: make
+      run: ./build.sh -DTRAVIS_BUILD:BOOL=ON -DBUILD_HEADLESS:BOOL=ON -DUSER_PYTHON_VERSION="3.5.6" -DQt5_PATH=$(brew --prefix qt)
