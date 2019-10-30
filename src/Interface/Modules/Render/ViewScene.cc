@@ -92,23 +92,14 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setupScaleBar();
   setupClippingPlanes();
 
-  // Setup Qt OpenGL widget.
-  QGLFormat fmt;
-  fmt.setAlpha(false);
-  fmt.setRgba(true);
-  fmt.setDepth(true);
-  fmt.setDoubleBuffer(true);
-  fmt.setDepthBufferSize(24);
+  mGLWidget = new GLWidget(parentWidget());
+  QSurfaceFormat format;
+  format.setDepthBufferSize(24);
+  format.setProfile(QSurfaceFormat::CoreProfile);
+  mGLWidget->setFormat(format);
 
-  mGLWidget = new GLWidget(new QtGLContext(fmt), parentWidget());
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
   connect(this, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int, const std::string&)), this, SLOT(sendGeometryFeedbackToState(int, int, const std::string&)));
-
-  if (!mGLWidget->isValid())
-  {
-    delete mGLWidget;
-    return;
-  }
 
   mSpire = std::weak_ptr<SRInterface>(mGLWidget->getSpire());
 
@@ -324,34 +315,34 @@ static std::map<QString, InnerMap> axisViewParams;
 static void initAxisViewParams()
 {
   axisViewParams["+X"] = InnerMap {
-    { "+Y", P(V(-1, 0, 0), V( 0, 1, 0)) },
+    { "+Y", P(V( 1, 0, 0), V( 0, 1, 0)) },
     { "-Y", P(V( 1, 0, 0), V( 0,-1, 0)) },
-    { "+Z", P(V( 0, 1, 0), V( 1, 0, 0)) },
-    { "-Z", P(V( 0,-1, 0), V(-1, 0, 0)) }
+    { "+Z", P(V( 1, 0, 0), V( 0, 0, 1)) },
+    { "-Z", P(V( 1, 0, 0), V( 0, 0,-1)) }
   };
   axisViewParams["-X"] = InnerMap {
-    { "+Y", P(V( 1, 0, 0), V( 0, 1, 0)) },
+    { "+Y", P(V(-1, 0, 0), V( 0, 1, 0)) },
     { "-Y", P(V(-1, 0, 0), V( 0,-1, 0)) },
-    { "+Z", P(V( 0, 1, 0), V(-1, 0, 0)) },
-    { "-Z", P(V( 0,-1, 0), V( 1, 0, 0)) }
+    { "+Z", P(V(-1, 0, 0), V( 0, 0, 1)) },
+    { "-Z", P(V(-1, 0, 0), V( 0, 0,-1)) }
   };
   axisViewParams["+Y"] = InnerMap {
-    { "+X", P(V( 1, 0, 0), V(0, 0, 1)) },
-    { "-X", P(V(-1, 0, 0), V(0, 0, 1)) },
-    { "+Z", P(V( 0, 1, 0), V(0, 0, 1)) },
-    { "-Z", P(V( 0,-1, 0), V(0, 0, 1)) }
+    { "+X", P(V( 0, 1, 0), V( 1, 0, 0)) },
+    { "-X", P(V( 0, 1, 0), V(-1, 0, 0)) },
+    { "+Z", P(V( 0, 1, 0), V( 0, 0, 1)) },
+    { "-Z", P(V( 0, 1, 0), V( 0, 0,-1)) }
   };
   axisViewParams["-Y"] = InnerMap {
-    { "+X", P(V(-1, 0, 0), V(0, 0,-1)) },
-    { "-X", P(V( 1, 0, 0), V(0, 0,-1)) },
-    { "+Z", P(V( 0, 1, 0), V(0, 0,-1)) },
-    { "-Z", P(V( 0,-1, 0), V(0, 0,-1)) }
+    { "+X", P(V( 0,-1, 0), V( 1, 0, 0)) },
+    { "-X", P(V( 0,-1, 0), V(-1, 0, 0)) },
+    { "+Z", P(V( 0,-1, 0), V( 0, 0, 1)) },
+    { "-Z", P(V( 0,-1, 0), V( 0, 0,-1)) }
   };
   axisViewParams["+Z"] = InnerMap {
     { "+Y", P(V(0, 0, 1), V( 0, 1, 0)) },
     { "-Y", P(V(0, 0, 1), V( 0,-1, 0)) },
-    { "+X", P(V(0, 0, 1), V(-1, 0, 0)) },
-    { "-X", P(V(0, 0, 1), V( 1, 0, 0)) }
+    { "+X", P(V(0, 0, 1), V( 1, 0, 0)) },
+    { "-X", P(V(0, 0, 1), V(-1, 0, 0)) }
   };
   axisViewParams["-Z"] = InnerMap {
     { "+Y", P(V(0, 0,-1), V( 0, 1, 0)) },
@@ -694,6 +685,9 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
   if (!spire)
     return;
 
+  if(!mGLWidget->isValid()) return;
+  spire->setContext(mGLWidget->context());
+
   if(forceAllObjectsToUpdate)
     spire->removeAllGeomObjects();
 
@@ -758,9 +752,6 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
 
   if (saveScreenshotOnNewGeometry_)
     screenshotClicked();
-
-  //TODO IMPORTANT: we need some call somewhere to clear the transient geometry list once spire/ES has received the list of objects. They take up lots of memory...
-  //state_->setTransientValue(Parameters::GeomData, boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -798,6 +789,8 @@ void ViewSceneDialog::showEvent(QShowEvent* evt)
 
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
   ModuleDialogGeneric::showEvent(evt);
+
+  updateModifiedGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------

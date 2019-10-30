@@ -23,30 +23,24 @@ matrix:
       dist: bionic
       compiler: gcc
       env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
-    - os: osx
-      osx_image: xcode7.3
-      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=OFF
-    - os: osx
-      osx_image: xcode8.3
-      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=OFF
+#    - os: osx
+#      osx_image: xcode8.3
+#      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
     - os: osx
       osx_image: xcode9.4
-      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=OFF
-    - os: osx
-      osx_image: xcode10.1
-      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=OFF
+      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
+#    - os: osx
+#      osx_image: xcode10.1
+#      env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
     - os: osx
       osx_image: xcode10.3
       env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
     - os: osx
       osx_image: xcode11
       env: PYTHON_VERSION=3.5.6 OSPRAY_BUILD=OFF QT5=ON
-    - os: osx
-      osx_image: xcode7.2
-      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF QT5=OFF
-    - os: osx
-      osx_image: xcode10.1
-      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF QT5=ON
+#    - os: osx
+#      osx_image: xcode10.1
+#      env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF QT5=ON
     - os: osx
       osx_image: xcode11
       env: PYTHON_VERSION=3.6.7 OSPRAY_BUILD=OFF QT5=ON
@@ -59,12 +53,12 @@ install:
 - if [[ "$QT5" = "OFF" && "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build libqt4-dev qt4-qmake libqt4-opengl-dev; fi
 - if [[ "$QT5" = "ON"  && "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev; fi
 - if [[ "$QT5" = "OFF" && "$TRAVIS_OS_NAME" == "osx" ]]; then travis_wait 30 scripts/getQt4Mac.sh; fi
-- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ninja; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install ninja; fi
 # TODO: figure out/test ccache
 # - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache; export PATH="/usr/local/opt/ccache/libexec:$PATH"; fi
 # Verify qt 5.13, maybe not upgrade
-- if [[ "$QT5" = "ON"  && "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt || true; fi
-- if [[ "$QT5" = "ON"  && "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade qt || true; fi
+- if [[ "$QT5" = "ON"  && "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install qt || true; fi
+- if [[ "$QT5" = "ON"  && "$TRAVIS_OS_NAME" == "osx" ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade qt || true; fi
 
 script:
   - cd bin
