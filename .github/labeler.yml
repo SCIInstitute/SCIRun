@@ -1,6 +1,9 @@
 Graphics:
-  - **/Renderer/**/*
-  - **/Visualization/**/*
+  - src/**/Renderer/**/*
+  - src/**/Visualization/**/*
 
 Modules: 
-  - **/Modules/**/*
+  - src/Modules/**/*
+
+Build:
+  - .github/**/*
