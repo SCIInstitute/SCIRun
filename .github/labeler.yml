@@ -1,0 +1,6 @@
+Graphics:
+  - **/Renderer/**/*
+  - **/Visualization/**/*
+
+Modules: 
+  - **/Modules/**/*
