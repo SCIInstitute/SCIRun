@@ -17,7 +17,6 @@ jobs:
     - name: Prepare
       run: |
         brew install qt
-        sudo xcode-select --install
         ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
 
     - name: make
