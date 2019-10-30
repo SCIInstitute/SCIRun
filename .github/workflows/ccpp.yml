@@ -15,7 +15,7 @@ jobs:
       uses: actions/checkout@v1
 
     - name: Prepare
-      run: apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev
+      run: sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev
 
     - name: make
       run: ./build.sh -DTRAVIS_BUILD:BOOL=ON -DBUILD_HEADLESS:BOOL=ON -DUSER_PYTHON_VERSION="3.5.6"
