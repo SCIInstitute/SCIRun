@@ -26,7 +26,9 @@ jobs:
       run: |
         curl -vLo qt-unified-windows-x86-online.exe http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
         qt-unified-windows-x86-online.exe --verbose --script ..\scripts\qt.qs
+        echo $QTDIR
         dir $QTDIR
+        echo ${QTDIR}
         dir ${QTDIR}
 
     - name: Configure
@@ -37,7 +39,7 @@ jobs:
     - name: Compile
       working-directory: bin
       shell: cmd
-      run: cmake --build . --config Release -j 4
+      run: cmake --build . --config Release -j 3
 
     - name: Package
       working-directory: bin/SCIRun
