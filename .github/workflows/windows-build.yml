@@ -31,7 +31,7 @@ jobs:
       working-directory: bin
       shell: cmd
       run: |
-        set CMAKE_PREFIX_PATH=Qt\5.13.1\msvc2017_64
+        set CMAKE_PREFIX_PATH=%cd%\Qt\5.13.1\msvc2017_64
         cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 15 2017" -Ax64 -DQt5_PATH:PATH="Qt\5.13.1\msvc2017_64" -DBUILD_WITH_PYTHON:BOOL=OFF
 
     - name: Compile
