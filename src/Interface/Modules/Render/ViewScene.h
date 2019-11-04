@@ -77,6 +77,7 @@ namespace SCIRun {
 
     protected Q_SLOTS:
       void printToString() const {std::cout << toString("");}
+      void sendBugReport();
 
       //---------------- New Geometry --------------------------------------------------------------
       void updateModifiedGeometries();
@@ -191,7 +192,6 @@ namespace SCIRun {
       void setTransparencySortTypeUpdate(bool index);
       void setTransparencySortTypeLists(bool index);
       void screenshotClicked();
-      void reportBugClicked();
       void saveNewGeometryChanged(int state);
       void showBBoxChecked(bool value);
       void useBackCullChecked(bool value);
@@ -226,7 +226,6 @@ namespace SCIRun {
       void setupRenderTabValues();
       void addAutoViewButton();
       void addScreenshotButton();
-      void addBugReportButton();
       void addViewBarButton();
       void addControlLockButton();
       void addToolbarButton(QPushButton* button);

@@ -197,8 +197,6 @@ void ViewSceneDialog::addToolBar()
   glLayout->addWidget(mToolBar);
 
   addViewBar();
-
-  addBugReportButton();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -292,16 +290,6 @@ void ViewSceneDialog::addScreenshotButton()
   screenshotButton->setShortcut(Qt::Key_F12);
   connect(screenshotButton, SIGNAL(clicked(bool)), this, SLOT(screenshotClicked()));
   addToolbarButton(screenshotButton);
-}
-
-//--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::addBugReportButton()
-{
-  QPushButton *bugReportButton = new QPushButton(this);
-  bugReportButton->setToolTip("Report a bug");
-  bugReportButton->setIcon(QPixmap(":/general/Resources/ViewScene/bugReport.png"));
-  connect(bugReportButton, SIGNAL(clicked(bool)), this, SLOT(reportBugClicked()));
-  addToolbarButton(bugReportButton);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2153,7 +2141,7 @@ void ViewSceneDialog::screenshotClicked()
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::reportBugClicked()
+void ViewSceneDialog::sendBugReport()
 {
   QString glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
   QString gpuVersion = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
