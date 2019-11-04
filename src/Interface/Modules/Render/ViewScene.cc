@@ -96,6 +96,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   QSurfaceFormat format;
   format.setDepthBufferSize(24);
   format.setProfile(QSurfaceFormat::CoreProfile);
+  format.setVersion(2, 1);
   mGLWidget->setFormat(format);
 
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
