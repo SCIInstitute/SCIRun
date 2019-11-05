@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  linux-build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-16.04, ubuntu-18.04]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Prepare
+      run: sudo apt-get install mesa-common-dev libgl1-mesa-dev mesa-utils-extra libglapi-mesa ninja-build qt5-qmake qtbase5-dev libqt5opengl5-dev libqt5svg5-dev
+
+    - name: make
+      run: ./build.sh -DTRAVIS_BUILD:BOOL=ON -DQT5_BUILD:BOOL=ON -DQt5_PATH=$(dpkg -L qtbase5-dev) -DUSER_PYTHON_VERSION="3.5.6" -j3
+
+  mac-build:
+
+    runs-on: macOS-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Prepare
+      run: |
+        brew install qt
+        ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/Tk.framework/Versions/8.5/Headers/X11/ /usr/local/include/X11
+
+    - name: make
+      run: ./build.sh -DUSER_PYTHON_VERSION="3.5.6" -DQT5_BUILD:BOOL="ON" -DQt5_PATH=$(brew --prefix qt)
+
+  windows-build:
+    timeout-minutes: 15
+    runs-on: windows-2016
+
+#env:
+#  VCINSTALLDIR: ${{ 'C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/' }}
+#  Qt5_DIR: ${{ 'Qt\5.13.1\msvc2017_64\lib\cmake\Qt5\' }}
+#  QTDIR: ${{ 'Qt\5.13.1\msvc2017_64\' }}
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Prepare
+      working-directory: bin
+      shell: cmd
+      run: |
+        curl -vLo qt-unified-windows-x86-online.exe http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+        qt-unified-windows-x86-online.exe --verbose --script ..\scripts\qt.qs
+
+    # - name: Configure
+    #   working-directory: bin
+    #   shell: cmd
+    #   run: |
+    #     set CMAKE_PREFIX_PATH=Qt\5.13.1\msvc2017_64
+    #     set QT5DIR=%cd%\Qt\5.13.1\msvc2017_64
+    #     cmake ..\Superbuild -DCMAKE_BUILD_TYPE=Release -G"Visual Studio 15 2017" -Ax64 -DQt5_PATH:PATH="$QT5DIR" -DBUILD_WITH_PYTHON:BOOL=OFF
+    #
+    # - name: Compile
+    #   working-directory: bin
+    #   shell: cmd
+    #   run: cmake --build . --config Release -j 3
+
+    # - name: Package
+    #   working-directory: bin/SCIRun
+    #   shell: cmd
+    #   run: cmake --build . --config Release --target package
+
+#    - name: Release
+#      uses: softprops/action-gh-release@v1
+#      if: startsWith(github.ref, 'refs/tags/')
+#      with:
+#        files: build/gh-greets-qt_installer.exe
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
