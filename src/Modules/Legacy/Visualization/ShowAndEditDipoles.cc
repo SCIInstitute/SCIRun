@@ -509,10 +509,10 @@ void ShowAndEditDipoles::GenerateOutputGeom()
   if(state->getValue(Sizing).toInt() == SizingType::NORMALIZE_BY_LARGEST_VECTOR)
     scale /= state->getValue(LargestSize).toDouble();
 
-    arrows_.push_back(WidgetFactory::createArrowWidget(
-      *this, name, scale * state->getValue(WidgetScaleFactor).toDouble(),
-      pos_[last_id], direction_[last_id], resolution_,
-      state->getValue(ShowLastAsVector).toBool(), last_id, ++widgetIter_, bbox));
+  arrows_.push_back(WidgetFactory::createArrowWidget(
+    *this, name, scale * state->getValue(WidgetScaleFactor).toDouble(),
+    pos_[last_id], direction_[last_id], resolution_,
+    state->getValue(ShowLastAsVector).toBool(), last_id, ++widgetIter_, bbox));
 
   lastVectorShown_ = state->getValue(ShowLastAsVector).toBool();
 }

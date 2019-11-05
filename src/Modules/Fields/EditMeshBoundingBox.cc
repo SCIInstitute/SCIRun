@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include "Graphics/Widgets/BoundingBoxWidget.h"
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -147,6 +148,7 @@ void EditMeshBoundingBox::execute()
 
   if (needToExecute())
   {
+    std::cout << "need to exec\n";
     clear_vals();
     update_input_attributes(field);
     executeImpl(field);
@@ -195,10 +197,10 @@ void EditMeshBoundingBox::update_input_attributes(FieldHandle f)
   state->setValue(InputSizeZ, convertForLabel(size.z()));
 }
 
-GeometryHandle EditMeshBoundingBox::buildGeometryObject()
+void EditMeshBoundingBox::buildGeometryObject()
 {
-  return WidgetFactory::createBox(*this, get_state()->getValue(Scale).toDouble(),
-                                  impl_->position_, impl_->position_.center_, impl_->bbox_);
+  // return WidgetFactory::createBoundingBox(*this, "EMBB", get_state()->getValue(Scale).toDouble(),
+                                          // impl_->position_, impl_->position_.center_, 0, 0, impl_->bbox_);
 }
 
 void EditMeshBoundingBox::computeWidgetBox(const BBox& box) const
@@ -363,7 +365,26 @@ void EditMeshBoundingBox::executeImpl(FieldHandle inputField)
   state->setTransientValue(SetOutputSize, false);
   state->setTransientValue(ResetSize, false);
 
-  sendOutput(Transformation_Widget, buildGeometryObject());
+  std::cout << "generating geom list...\n";
+  generateGeomsList();
+  std::cout << "generating gom comp...\n";
+  auto comp_geo = createGeomComposite(*this, "bbox", geoms_.begin(), geoms_.end());
+  std::cout << "sending geom out...\n";
+  sendOutput(Transformation_Widget, comp_geo);
+  std::cout << "sent geom\n";
+}
+
+void EditMeshBoundingBox::generateGeomsList()
+{
+  // const auto bboxWidget = buildGeometryObject();
+  const auto bboxWidget = WidgetFactory::createBoundingBox(
+    *this, "EMBB", get_state()->getValue(Scale).toDouble(), impl_->position_,
+    impl_->position_.center_, 0, 0, impl_->bbox_);
+
+  // Rewrite all existing geom
+  geoms_.clear();
+  for (const auto& widget : bboxWidget->widgets_)
+    geoms_.push_back(widget);
 }
 
 const AlgorithmParameterName EditMeshBoundingBox::ResetCenter("ResetCenter");

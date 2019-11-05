@@ -29,6 +29,7 @@
 #ifndef MODULES_FIELDS_EDITMESHBOUNDINGBOX_H
 #define MODULES_FIELDS_EDITMESHBOUNDINGBOX_H
 
+#include "Graphics/Widgets/BoundingBoxWidget.h"
 #include <Dataflow/Network/GeometryGeneratingModule.h>
 #include <Graphics/Datatypes/GeometryImpl.h>
 #include <Graphics/Widgets/Widget.h>
@@ -96,11 +97,13 @@ namespace SCIRun {
         void clear_vals();
         void update_input_attributes(FieldHandle);
         void computeWidgetBox(const Core::Geometry::BBox& box) const;
-        Graphics::Datatypes::GeometryHandle buildGeometryObject();
+        void buildGeometryObject();
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
         void adjustGeometryFromTransform(const Core::Geometry::Transform& transformMatrix);
+        void generateGeomsList();
 
         boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;
+        std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
         bool widgetMoved_;
       };
     }

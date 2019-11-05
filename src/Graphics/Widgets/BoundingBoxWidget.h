@@ -37,28 +37,20 @@ DEALINGS IN THE SOFTWARE.
 namespace SCIRun {
   namespace Graphics {
     namespace Datatypes {
-      enum BoundingBoxWidgetSection { BOX, X_PLUS, Y_PLUS, Z_PLUS, X_MINUS, Y_MINUS, Z_MINUS };
+      enum BoundingBoxWidgetSection { BOX, CORNER_SCALE, FACE_ROTATE, FACE_SCALE, X_PLUS, Y_PLUS, Z_PLUS, X_MINUS, Y_MINUS, Z_MINUS };
 
       class SCISHARE BoundingBoxWidget : public CompositeWidget
       {
       public:
-        BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator, double scale,
-                          std::string& name,, const BoxPosition& pos,
-                          const Core::Geometry::Point& origin, const Core::Geometry::BBox& bbox);
-        // BoundingBoxWidget(const Core::GeometryIDGenerator &idGenerator,
-                    // const std::string &name, double scale,
-                    // const Core::Geometry::Point &pos,
-                    // const Core::Geometry::Vector &dir, int resolution,
-                    // bool show_as_vector, size_t widget_num, size_t widget_iter,
-                    // const Core::Geometry::BBox &bbox);
-
-        bool isVector();
+        BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& name,
+                          double scale, const BoxPosition& pos, const Core::Geometry::Point& origin,
+                          int widget_num, int widget_iter, const Core::Geometry::BBox& bbox);
 
       private:
         std::string widgetName(size_t i, size_t id, size_t iter);
       };
 
-      // using BoundingBoxWidgetHandle = SharedPointer<BoundingBoxWidget>;
+      using BoundingBoxWidgetHandle = SharedPointer<BoundingBoxWidget>;
     }
   }
 }

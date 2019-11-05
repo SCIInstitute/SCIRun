@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <Core/Datatypes/Color.h>
 #include <Graphics/Glyphs/GlyphGeom.h>
+#include <Graphics/Widgets/BoxWidget.h>
 #include <Graphics/Widgets/BoundingBoxWidget.h>
 #include <Graphics/Widgets/WidgetFactory.h>
 
@@ -37,21 +38,25 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-BoxWidget::BoxWidget(const Core::GeometryIDGenerator& idGenerator, std::string& name, double scale,
-                     pconst BoxPosition& pos, const Point& origin, const BBox& bbox)
+BoundingBoxWidget::BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& name,
+                                     double scale, const BoxPosition& pos, const Point& origin,
+                                     int widget_num, int widget_iter, const BBox& bbox)
     : CompositeWidget(idGenerator, name) {
-  static const ColorRGB deflPointCol_ = ColorRGB(0.54, 0.6, 1.0);
-  static const ColorRGB deflCol_ = ColorRGB(0.5, 0.5, 0.5);
-  static const ColorRGB resizeCol_ = ColorRGB(0.54, 1.0, 0.60);
-  ColorRGB diskCol = (show_as_vector) ? deflPointCol_ : resizeCol_;
+  static const std::string deflPointCol_ = ColorRGB(0.54, 0.6, 1.0).toString();
+  static const std::string deflCol_ = ColorRGB(0.5, 0.5, 0.5).toString();
+  static const std::string resizeCol_ = ColorRGB(0.54, 1.0, 0.60).toString();
+  std::string diskCol = resizeCol_;
 
+  int resolution = 10;
+  widgets_.clear();
+  int widgetsIndex = -1;
+  static const float sphereScale = 1.5;
+  static const float faceScale = 1.5;
+  static const float diskWidth = 1.5;
+  static const float diskRadius = 0.75;
 
-  if (resolution < 3) resolution = 10;
-
-  isVector_ = show_as_vector;
   auto colorScheme = ColorScheme::COLOR_UNIFORM;
   std::stringstream ss;
-  ss << pos << dir << static_cast<int>(colorScheme);
 
   auto uniqueNodeID = uniqueID() + "widget" + ss.str();
 
@@ -60,52 +65,69 @@ BoxWidget::BoxWidget(const Core::GeometryIDGenerator& idGenerator, std::string& 
 
   // auto renState = getWidgetRenderState(defaultColor);
 
-  Point bmin = pos;
-  Point bmax = pos + dir * scale;
-
-  // Fix degenerate boxes.
-  const double size_estimate = std::max((bmax - bmin).length() * 0.01, 1.0e-5);
-  if (std::abs(bmax.x() - bmin.x()) < 1.0e-6)
-  {
-    bmin.x(bmin.x() - size_estimate);
-    bmax.x(bmax.x() + size_estimate);
-  }
-  if (std::abs(bmax.y() - bmin.y()) < 1.0e-6)
-  {
-    bmin.y(bmin.y() - size_estimate);
-    bmax.y(bmax.y() + size_estimate);
-  }
-  if (std::abs(bmax.z() - bmin.z()) < 1.0e-6)
-  {
-    bmin.z(bmin.z() - size_estimate);
-    bmax.z(bmax.z() + size_estimate);
-  }
-
-  Point center = bmin + dir/2.0 * scale;
+  Point c,r,d,b;
+  pos.getPosition(c,r,d,b);
+  auto x = r - c, y = d - c, z = b - c;
+  std::vector<Point> corners = {
+    c + x + y + z,
+    c + x + y - z,
+    c + x - y + z,
+    c + x - y - z,
+    c - x + y + z,
+    c - x + y - z,
+    c - x - y + z,
+    c - x - y - z };
+  std::vector<Point> facesStart = {
+    c + x,
+    c - x,
+    c + y,
+    c - y,
+    c + z,
+    c - z};
+  std::vector<Point> facesEnd = {
+    c + x*diskWidth,
+    c - x*diskWidth,
+    c + y*diskWidth,
+    c - y*diskWidth,
+    c + z*diskWidth,
+    c - z*diskWidth};
 
   // Create glyphs
-  std::string box_name = widgetName(BoundingBoxWidgetSection::BOX, widget_num, widget_iter);
-  widgets_.push_back(WidgetFactory::createBox(idGenerator, box_name, sphereRadius_ * scale,
-                                              diskCol.toString(), bmin, bmin, bbox, resolution));
-  widgets_[0]->setToTranslate();
+  std::string boxName = widgetName(BoundingBoxWidgetSection::BOX, widget_num, widget_iter);
+  widgets_.push_back(WidgetFactory::createBox(idGenerator, scale, pos, origin, bbox));
+  widgets_[++widgetsIndex]->setToTranslate();
 
-  std::string x_plus_name = widgetName(BoundingBoxWidgetSection::X_PLUS, widget_num, widget_iter);
-  widgets_.push_back(WidgetFactory::createDisk(idGenerator, x_plus_name, diskRadius_ * scale,
-                                  resizeCol_.toString(), dp1, dp2, bmin, bbox, resolution));
-
-    Vector flipVec = dir.getArbitraryTangent().normal();
-    widgets_[1]->setToScale(Vector(0,1,0));
-  }
-
-  std::vector<std::string> geom_ids;
-  for(int i = 0; i < 2; i++)
-    geom_ids.push_back(widgets_[i]->uniqueID());
-
-  for(int i = 0; i < 2; i++)
+  for (const auto& corner : corners)
   {
-    widgets_[i]->connectedIds_ = geom_ids;
-    addToList(widgets_[i]);
+    std::string cornerName = widgetName(BoundingBoxWidgetSection::CORNER_SCALE, widget_num, widgetsIndex);
+    widgets_.push_back(WidgetFactory::createSphere(idGenerator, cornerName, scale*sphereScale, resizeCol_,
+                                                   corner, c, bbox, resolution));
+    widgets_[++widgetsIndex]->setToScale(x);
   }
+
+  for (const auto& face : facesStart)
+  for (int i = 0; i < 6; i++)
+    {
+      std::string faceName = widgetName(BoundingBoxWidgetSection::FACE_ROTATE, widget_num, widgetsIndex);
+      widgets_.push_back(WidgetFactory::createSphere(idGenerator, faceName, scale*sphereScale, deflCol_,
+                                                     face, c, bbox, resolution));
+      widgets_[++widgetsIndex]->setToRotate();
+    }
+
+  for (int i = 0; i < 6; i++)
+  {
+    std::string faceName = widgetName(BoundingBoxWidgetSection::FACE_SCALE, widget_num, widgetsIndex);
+    widgets_.push_back(WidgetFactory::createDisk(idGenerator, faceName, scale*diskRadius, resizeCol_,
+                                                 facesStart[i], facesEnd[i], c, bbox, resolution));
+    widgets_[++widgetsIndex]->setToScale(x);
+  }
+
+  std::vector<std::string> geom_ids(widgets_.size());
+  for (int i = 0; i < widgets_.size(); i++)
+    geom_ids[i] = (widgets_[i]->uniqueID());
+
+  for (int i = 0; i < widgets_.size(); i++)
+    widgets_[i]->connectedIds_ = geom_ids;
 }
 
 std::string BoundingBoxWidget::widgetName(size_t i, size_t id, size_t iter)

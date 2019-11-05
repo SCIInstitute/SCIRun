@@ -54,6 +54,14 @@ namespace SCIRun {
                                     double scale, const BoxPosition &pos,
                                     const Core::Geometry::Point &origin,
                                     const Core::Geometry::BBox &bbox);
+      static BoundingBoxWidgetHandle createBoundingBox(const Core::GeometryIDGenerator &idGenerator,
+                                                       const std::string& name,
+                                                       double scale,
+                                                       const BoxPosition &pos,
+                                                       const Core::Geometry::Point &origin,
+                                                       int widget_num,
+                                                       int widget_iter,
+                                                       const Core::Geometry::BBox &bbox);
       static WidgetHandle createSphere(const Core::GeometryIDGenerator &idGenerator,
                                        const std::string &name, double radius,
                                        const std::string &defaultColor,
