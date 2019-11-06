@@ -1156,10 +1156,10 @@ void ViewSceneDialog::autoRotateDown()
 //--------------------------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::toggleSelectionHack()
+void ViewSceneDialog::toggleSelectionHack(bool b)
 {
   auto spire = mSpire.lock();
-  if (spire) spire->toggleSelectionHack();
+  if (spire) spire->toggleSelectionHack(b);
 }
 
 //--------------------------------------------------------------------------------------------------

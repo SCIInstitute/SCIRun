@@ -154,7 +154,7 @@ namespace SCIRun {
 
       //---------------- Widgets -------------------------------------------------------------------
       // todo Selecting objects...
-      void toggleSelectionHack() {mSelectionHack = !mSelectionHack;}
+      void toggleSelectionHack(bool b) {mSelectionHack = b;}
       typedef std::vector<Graphics::Datatypes::WidgetHandle> WidgetList;
       void select(const glm::ivec2& pos, WidgetList& objList, int port);
       std::string &getSelection()          {return mSelected;}
