@@ -188,7 +188,16 @@ Transform::build_scale(double m[4][4], const Vector& v)
   m[2][2]=v.z();
   inverse_valid = false;
 }
-    
+
+void
+Transform::build_scale(double m[4][4], double d)
+{
+  load_identity(m);
+  for(int i = 0; i < 3; i++)
+    m[0][i]=d;
+  inverse_valid = false;
+}
+
 void
 Transform::pre_scale(const Vector& v)
 {
@@ -203,6 +212,24 @@ Transform::post_scale(const Vector& v)
 {
   double m[4][4];
   build_scale(m,v);
+  post_mulmat(m);
+  inverse_valid = false;
+}
+
+void
+Transform::pre_scale(double d)
+{
+  double m[4][4];
+  build_scale(m,d);
+  pre_mulmat(m);
+  inverse_valid = false;
+}
+
+void
+Transform::post_scale(double d)
+{
+  double m[4][4];
+  build_scale(m,d);
   post_mulmat(m);
   inverse_valid = false;
 }
@@ -839,7 +866,7 @@ Transform::operator=(const Transform& copy)
   return *this;
 }
 
-std::vector<Vector> Transform::get_column_vectors() const
+std::vector<Vector> Transform::get_rotation_vectors() const
 {
   std::vector<Vector> column_vectors(3);
   for(int i = 0; i < 3; i++)
@@ -847,6 +874,11 @@ std::vector<Vector> Transform::get_column_vectors() const
     column_vectors[i] = Vector(mat[0][i], mat[1][i], mat[2][i]);
   }
   return column_vectors;
+}
+
+Point Transform::get_translation_point() const
+{
+  return Point(mat[0][3], mat[1][3], mat[2][3]);
 }
 
 Point

@@ -42,19 +42,8 @@ BoundingBoxWidget::BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerato
                                      double scale, const BoxPosition& pos, const Point& origin,
                                      int widget_num, int widget_iter, const BBox& bbox)
     : CompositeWidget(idGenerator, name) {
-  static const std::string deflPointCol_ = ColorRGB(0.54, 0.6, 1.0).toString();
-  static const std::string deflCol_ = ColorRGB(0.5, 0.5, 0.5).toString();
-  static const std::string resizeCol_ = ColorRGB(0.54, 1.0, 0.60).toString();
-  std::string diskCol = resizeCol_;
-
-  int resolution = 10;
   widgets_.clear();
   int widgetsIndex = -1;
-  static const float sphereScale = 1.5;
-  static const float faceScale = 1.5;
-  static const float diskWidth = 1.5;
-  static const float diskRadius = 0.75;
-
   auto colorScheme = ColorScheme::COLOR_UNIFORM;
   std::stringstream ss;
 
@@ -85,12 +74,12 @@ BoundingBoxWidget::BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerato
     c + z,
     c - z};
   std::vector<Point> facesEnd = {
-    c + x*diskWidth,
-    c - x*diskWidth,
-    c + y*diskWidth,
-    c - y*diskWidth,
-    c + z*diskWidth,
-    c - z*diskWidth};
+    c + x*diskWidth_,
+    c - x*diskWidth_,
+    c + y*diskWidth_,
+    c - y*diskWidth_,
+    c + z*diskWidth_,
+    c - z*diskWidth_};
 
   // Create glyphs
   std::string boxName = widgetName(BoundingBoxWidgetSection::BOX, widget_num, widget_iter);
@@ -100,8 +89,8 @@ BoundingBoxWidget::BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerato
   for (const auto& corner : corners)
   {
     std::string cornerName = widgetName(BoundingBoxWidgetSection::CORNER_SCALE, widget_num, widgetsIndex);
-    widgets_.push_back(WidgetFactory::createSphere(idGenerator, cornerName, scale*sphereScale, resizeCol_,
-                                                   corner, c, bbox, resolution));
+    widgets_.push_back(WidgetFactory::createSphere(idGenerator, cornerName, scale*sphereScale_, resizeCol_,
+                                                   corner, c, bbox, resolution_));
     widgets_[++widgetsIndex]->setToScale(x);
   }
 
@@ -109,16 +98,16 @@ BoundingBoxWidget::BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerato
   for (int i = 0; i < 6; i++)
     {
       std::string faceName = widgetName(BoundingBoxWidgetSection::FACE_ROTATE, widget_num, widgetsIndex);
-      widgets_.push_back(WidgetFactory::createSphere(idGenerator, faceName, scale*sphereScale, deflCol_,
-                                                     face, c, bbox, resolution));
+      widgets_.push_back(WidgetFactory::createSphere(idGenerator, faceName, scale*sphereScale_, deflCol_,
+                                                     face, c, bbox, resolution_));
       widgets_[++widgetsIndex]->setToRotate();
     }
 
   for (int i = 0; i < 6; i++)
   {
     std::string faceName = widgetName(BoundingBoxWidgetSection::FACE_SCALE, widget_num, widgetsIndex);
-    widgets_.push_back(WidgetFactory::createDisk(idGenerator, faceName, scale*diskRadius, resizeCol_,
-                                                 facesStart[i], facesEnd[i], c, bbox, resolution));
+    widgets_.push_back(WidgetFactory::createDisk(idGenerator, faceName, scale*diskRadius_, resizeCol_,
+                                                 facesStart[i], facesEnd[i], c, bbox, resolution_));
     widgets_[++widgetsIndex]->setToScale(x);
   }
 
@@ -128,6 +117,13 @@ BoundingBoxWidget::BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerato
 
   for (int i = 0; i < widgets_.size(); i++)
     widgets_[i]->connectedIds_ = geom_ids;
+}
+
+BoundingBoxWidget::BoundingBoxWidget(const Core::GeometryIDGenerator& idGenerator, const std::string& name,
+                                     double scale, const Point& pos, const Point& origin,
+                                     const std::vector<Vector>& eigvecs_, const std::vector<double>& eigvals_,
+                                     int widget_num, int widget_iter)
+  : CompositeWidget(idGenerator, name) {
 }
 
 std::string BoundingBoxWidget::widgetName(size_t i, size_t id, size_t iter)

@@ -61,6 +61,7 @@ namespace SCIRun {
         void build_permute(double m[4][4], int, int, int, int pre);
         void build_rotate(double m[4][4], double, const Vector&);
         void build_shear(double mat[4][4], const Vector&, const Plane&);
+        void build_scale(double m[4][4], double);
         void build_scale(double m[4][4], const Vector&);
         void build_translate(double m[4][4], const Vector&);
         void pre_mulmat(const double[4][4]);
@@ -95,7 +96,9 @@ namespace SCIRun {
 
         void pre_permute(int xmap, int ymap, int zmap);
         void post_permute(int xmap, int ymap, int zmap);
+        void pre_scale(double d);
         void pre_scale(const Vector&);
+        void post_scale(double d);
         void post_scale(const Vector&);
 
         void load_identity();
@@ -148,7 +151,8 @@ namespace SCIRun {
         /// Persistent I/O.
         static PersistentTypeID type_id;
         virtual void io(Piostream &stream);
-        std::vector<Vector> get_column_vectors() const;
+        std::vector<Vector> get_rotation_vectors() const;
+        Point get_translation_point() const;
       };
 
       SCISHARE Point operator*(const Transform &t, const Point &d);
