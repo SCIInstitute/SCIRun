@@ -96,6 +96,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   QSurfaceFormat format;
   format.setDepthBufferSize(24);
   format.setProfile(QSurfaceFormat::CoreProfile);
+  format.setVersion(2, 1);
   mGLWidget->setFormat(format);
 
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
@@ -315,34 +316,34 @@ static std::map<QString, InnerMap> axisViewParams;
 static void initAxisViewParams()
 {
   axisViewParams["+X"] = InnerMap {
-    { "+Y", P(V(-1, 0, 0), V( 0, 1, 0)) },
+    { "+Y", P(V( 1, 0, 0), V( 0, 1, 0)) },
     { "-Y", P(V( 1, 0, 0), V( 0,-1, 0)) },
-    { "+Z", P(V( 0, 1, 0), V( 1, 0, 0)) },
-    { "-Z", P(V( 0,-1, 0), V(-1, 0, 0)) }
+    { "+Z", P(V( 1, 0, 0), V( 0, 0, 1)) },
+    { "-Z", P(V( 1, 0, 0), V( 0, 0,-1)) }
   };
   axisViewParams["-X"] = InnerMap {
-    { "+Y", P(V( 1, 0, 0), V( 0, 1, 0)) },
+    { "+Y", P(V(-1, 0, 0), V( 0, 1, 0)) },
     { "-Y", P(V(-1, 0, 0), V( 0,-1, 0)) },
-    { "+Z", P(V( 0, 1, 0), V(-1, 0, 0)) },
-    { "-Z", P(V( 0,-1, 0), V( 1, 0, 0)) }
+    { "+Z", P(V(-1, 0, 0), V( 0, 0, 1)) },
+    { "-Z", P(V(-1, 0, 0), V( 0, 0,-1)) }
   };
   axisViewParams["+Y"] = InnerMap {
-    { "+X", P(V( 1, 0, 0), V(0, 0, 1)) },
-    { "-X", P(V(-1, 0, 0), V(0, 0, 1)) },
-    { "+Z", P(V( 0, 1, 0), V(0, 0, 1)) },
-    { "-Z", P(V( 0,-1, 0), V(0, 0, 1)) }
+    { "+X", P(V( 0, 1, 0), V( 1, 0, 0)) },
+    { "-X", P(V( 0, 1, 0), V(-1, 0, 0)) },
+    { "+Z", P(V( 0, 1, 0), V( 0, 0, 1)) },
+    { "-Z", P(V( 0, 1, 0), V( 0, 0,-1)) }
   };
   axisViewParams["-Y"] = InnerMap {
-    { "+X", P(V(-1, 0, 0), V(0, 0,-1)) },
-    { "-X", P(V( 1, 0, 0), V(0, 0,-1)) },
-    { "+Z", P(V( 0, 1, 0), V(0, 0,-1)) },
-    { "-Z", P(V( 0,-1, 0), V(0, 0,-1)) }
+    { "+X", P(V( 0,-1, 0), V( 1, 0, 0)) },
+    { "-X", P(V( 0,-1, 0), V(-1, 0, 0)) },
+    { "+Z", P(V( 0,-1, 0), V( 0, 0, 1)) },
+    { "-Z", P(V( 0,-1, 0), V( 0, 0,-1)) }
   };
   axisViewParams["+Z"] = InnerMap {
     { "+Y", P(V(0, 0, 1), V( 0, 1, 0)) },
     { "-Y", P(V(0, 0, 1), V( 0,-1, 0)) },
-    { "+X", P(V(0, 0, 1), V(-1, 0, 0)) },
-    { "-X", P(V(0, 0, 1), V( 1, 0, 0)) }
+    { "+X", P(V(0, 0, 1), V( 1, 0, 0)) },
+    { "-X", P(V(0, 0, 1), V(-1, 0, 0)) }
   };
   axisViewParams["-Z"] = InnerMap {
     { "+Y", P(V(0, 0,-1), V( 0, 1, 0)) },
