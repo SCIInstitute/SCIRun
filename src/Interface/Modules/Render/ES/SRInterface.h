@@ -48,6 +48,8 @@
 #include <Graphics/Widgets/Widget.h>
 #include <Interface/Modules/Render/share.h>
 #include <glm/gtc/quaternion.hpp>
+#include <QOpenGLContext>
+
 
 namespace SCIRun {
   namespace Render {
@@ -71,9 +73,11 @@ namespace SCIRun {
       friend class AssetBootstrap;
 
     public:
-      explicit SRInterface(std::shared_ptr<Gui::GLContext> context, int frameInitLimit = 100);
+      explicit SRInterface(int frameInitLimit = 100);
       ~SRInterface();
       std::string toString(std::string prefix) const;
+
+      void setContext(QOpenGLContext* context) {mContext = context;}
 
       /// todo Specify what buttons are pressed.
       enum MouseButton
@@ -349,11 +353,9 @@ namespace SCIRun {
       GLuint                              mFontTexture        {};       // 2D texture for fonts
 
       int                                 axesFailCount_      {0};
-      std::shared_ptr<Gui::GLContext>     mContext            {};       // Context to use for rendering.
       std::vector<SRObject>               mSRObjects          {};       // All SCIRun objects.
+      Core::Geometry::BBox				  mSceneBBox          {};       // Scene's AABB. Recomputed per-frame.
       std::unordered_map<std::string, uint64_t> mEntityIdMap  {};
-      Core::Geometry::BBox                mSceneBBox          {};       // Scene's AABB. Recomputed per-frame.
-
 
       ESCore                              mCore               {};       // Entity system core.
 
@@ -384,10 +386,11 @@ namespace SCIRun {
       glm::vec2                         autoRotateVector      {0.0, 0.0};
       float                             autoRotateSpeed       {0.01f};
 
-      const int                           frameInitLimit_     {};
-      std::unique_ptr<SRCamera>           mCamera;       // Primary camera.
+      const int                         frameInitLimit_     {};
+      QOpenGLContext*                   mContext            {};
+      std::shared_ptr<spire::ArcBall>	widgetBall_			{};
+	  std::unique_ptr<SRCamera>         mCamera;			// Primary camera.
 
-      std::shared_ptr<spire::ArcBall>     widgetBall_         {};
     };
 
   } // namespace Render

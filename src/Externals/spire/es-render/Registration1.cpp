@@ -4,6 +4,7 @@
 #include "comp/CommonUniforms.hpp"
 #include "comp/GLState.hpp"
 #include "comp/IBO.hpp"
+#include "comp/FBO.hpp"
 #include "comp/MatUniform.hpp"
 #include "comp/RenderSequence.hpp"
 #include "comp/Shader.hpp"
@@ -38,6 +39,7 @@ namespace ren {
     core.registerComponent<CommonUniforms>();
     core.registerComponent<GLState>();
     core.registerComponent<IBO>();
+    core.registerComponent<FBO>();
     core.registerComponent<MatUniform>();
     core.registerComponent<RenderSequence>();
     core.registerComponent<Shader>();
@@ -47,4 +49,3 @@ namespace ren {
   }
 
 } // namespace ren
-
