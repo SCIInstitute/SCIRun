@@ -1,11 +1,6 @@
 name: CI
 
-on:
-  pull_request:
-    branches:
-    - master
-
-on: push
+on: [push, pull_request]
 
 jobs:
   linux-build:
