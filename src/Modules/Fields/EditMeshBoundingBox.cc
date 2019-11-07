@@ -112,6 +112,9 @@ void EditMeshBoundingBox::setStateDefaults()
 {
   // clear_vals();
   auto state = get_state();
+  state->setValue(Scale, 1.0);
+  state->setValue(OldScale, 1.0);
+  state->setValue(ScaleChanged, false);
   state->setValue(RefreshGeom, true);
   state->setValue(RestrictX, false);
   state->setValue(RestrictY, false);
