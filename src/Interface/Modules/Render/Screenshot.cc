@@ -28,14 +28,14 @@
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Interface/Modules/Render/Screenshot.h>
-#include <QGLWidget>
+#include <QOpenGLWidget>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Datatypes;
 
 const QString filePath = QDir::homePath() + QLatin1String("/scirun5screenshots");
 
-Screenshot::Screenshot(QGLWidget *glwidget, QObject *parent)
+Screenshot::Screenshot(QOpenGLWidget *glwidget, QObject *parent)
   : QObject(parent),
   viewport_(glwidget),
   index_(0)
@@ -49,7 +49,11 @@ Screenshot::Screenshot(QGLWidget *glwidget, QObject *parent)
 
 void Screenshot::takeScreenshot()
 {
-  screenshot_ = viewport_->grabFrameBuffer();
+  screenshot_ = viewport_->grabFramebuffer();
+}
+
+QImage Screenshot::getScreenshot() {
+  return viewport_->grabFramebuffer();
 }
 
 void Screenshot::saveScreenshot()

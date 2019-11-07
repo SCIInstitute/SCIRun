@@ -51,8 +51,7 @@ namespace SCIRun{
           boost::optional<ColorMapHandle> pcolorMap,
           boost::optional<ColorMapHandle> scolorMap,
           boost::optional<ColorMapHandle> tcolorMap)
-        : module_(mod),
-        pf_handle(pf), pf_info(pf)
+        : module_(mod), pf_handle(pf), pf_info(pf)
       {
         // Save field info
         p_vfld = (pf)->vfield();
@@ -134,47 +133,49 @@ namespace SCIRun{
 
         // If color map was picked, set the chosen color map
         if(colorScheme == ColorScheme::COLOR_MAP)
+        {
+          switch(renState.mColorInput)
           {
-            switch(renState.mColorInput)
+            case RenderState::InputPort::PRIMARY_PORT:
+              if(pcolorMap)
               {
-              case RenderState::InputPort::PRIMARY_PORT:
-                if(pcolorMap)
-                  {
-                    colorMap = pcolorMap;
-                    colorMapGiven = true;
-                  }
-                else
-                  {
-                    colorMapGiven = false;
-                  }
-                break;
-              case RenderState::InputPort::SECONDARY_PORT:
-                if(scolorMap)
-                  {
-                    colorMap = scolorMap;
-                    colorMapGiven = true;
-                  }
-                else
-                  {
-                    colorMapGiven = false;
-                  }
-                break;
-              case RenderState::InputPort::TERTIARY_PORT:
-                if(tcolorMap)
-                  {
-                    colorMap = tcolorMap;
-                    colorMapGiven = true;
-                  }
-                else
-                  {
-                    colorMapGiven = false;
-                  }
-                break;
-              default:
-                throw std::invalid_argument("Selected port was not primary, secondary, or tertiary.");
-                break;
+                colorMap = pcolorMap;
+                colorMapGiven = true;
               }
+              else
+              {
+                colorMapGiven = false;
+              }
+              break;
+            case RenderState::InputPort::SECONDARY_PORT:
+              if(scolorMap)
+              {
+                colorMap = scolorMap;
+                colorMapGiven = true;
+              }
+              else
+              {
+                colorMapGiven = false;
+              }
+              break;
+            case RenderState::InputPort::TERTIARY_PORT:
+              if(tcolorMap)
+              {
+                colorMap = tcolorMap;
+                colorMapGiven = true;
+              }
+              else
+              {
+                colorMapGiven = false;
+              }
+              break;
+            default:
+              throw std::invalid_argument("Selected port was not primary, secondary, or tertiary.");
+              break;
           }
+
+          spiltColorMapToTextureAndCoordinates();
+        }
 
         // Get color input type from render state
         colorInput = renState.mColorInput;
@@ -267,10 +268,10 @@ namespace SCIRun{
 
         ColorRGB colorMapVal;
         switch(colorInput)
-          {
+        {
           case RenderState::InputPort::PRIMARY_PORT:
             switch(pf_data_type)
-              {
+            {
               case FieldDataType::Scalar:
                 colorMapVal = colorMap.get()->valueToColor(pinputScalar.get());
                 break;
@@ -283,11 +284,11 @@ namespace SCIRun{
               default:
                 throw std::invalid_argument("Primary color map did not find scalar, vector, or tensor data.");
                 break;
-              }
+            }
             break;
           case RenderState::InputPort::SECONDARY_PORT:
             switch(sf_data_type)
-              {
+            {
               case FieldDataType::Scalar:
                 colorMapVal = colorMap.get()->valueToColor(sinputScalar.get());
                 break;
@@ -300,11 +301,11 @@ namespace SCIRun{
               default:
                 throw std::invalid_argument("Secondary color map did not find scalar, vector, or tensor data.");
                 break;
-              }
+            }
             break;
           case RenderState::InputPort::TERTIARY_PORT:
             switch(tf_data_type)
-              {
+            {
               case FieldDataType::Scalar:
                 colorMapVal = colorMap.get()->valueToColor(tinputScalar.get());
                 break;
@@ -317,12 +318,12 @@ namespace SCIRun{
               default:
                 throw std::invalid_argument("Tertiary color map did not find scalar, vector, or tensor data.");
                 break;
-              }
+            }
             break;
           default:
             throw std::invalid_argument("Color map selection was not given a primary, secondary, or tertiary port.");
             break;
-          }
+        }
         return colorMapVal;
       }
 
@@ -331,40 +332,40 @@ namespace SCIRun{
       {
         // Make sure color map port and correpsonding field data is given for chosen color map
         if(colorScheme == ColorScheme::COLOR_MAP)
+        {
+          switch(colorInput)
           {
-            switch(colorInput)
+            case RenderState::InputPort::PRIMARY_PORT:
+              if(!colorMap)
               {
-              case RenderState::InputPort::PRIMARY_PORT:
-                if(!colorMap)
-                  {
-                    throw std::invalid_argument("Primary Color Map input is required.");
-                  }
-                break;
-              case RenderState::InputPort::SECONDARY_PORT:
-                if(!(secondaryFieldGiven && colorMap))
-                  {
-                    throw std::invalid_argument("Secondary Field and Color Map input is required.");
-                  }
-                if(s_vfld->num_values() < p_vfld->num_values())
-                  {
-                    throw std::invalid_argument("Secondary Field input cannot have a smaller size than the Primary Field input.");
-                  }
-                break;
-              case RenderState::InputPort::TERTIARY_PORT:
-                if(!(tertiaryFieldGiven && colorMap))
-                  {
-                    throw std::invalid_argument("Tertiary Field and Color Map input is required.");
-                  }
-                if(t_vfld->num_values() < p_vfld->num_values())
-                  {
-                    throw std::invalid_argument("Tertiary Field input cannot have a smaller size than the Primary Field input.");
-                  }
-                break;
-              default:
-                throw std::invalid_argument("Must select a primary, secondary, or tertiary port for color map input.");
-                break;
+                throw std::invalid_argument("Primary Color Map input is required.");
               }
+              break;
+            case RenderState::InputPort::SECONDARY_PORT:
+              if(!(secondaryFieldGiven && colorMap))
+              {
+                throw std::invalid_argument("Secondary Field and Color Map input is required.");
+              }
+              if(s_vfld->num_values() < p_vfld->num_values())
+              {
+                throw std::invalid_argument("Secondary Field input cannot have a smaller size than the Primary Field input.");
+              }
+              break;
+            case RenderState::InputPort::TERTIARY_PORT:
+              if(!(tertiaryFieldGiven && colorMap))
+              {
+                throw std::invalid_argument("Tertiary Field and Color Map input is required.");
+              }
+              if(t_vfld->num_values() < p_vfld->num_values())
+              {
+                throw std::invalid_argument("Tertiary Field input cannot have a smaller size than the Primary Field input.");
+              }
+              break;
+            default:
+              throw std::invalid_argument("Must select a primary, secondary, or tertiary port for color map input.");
+              break;
           }
+        }
         // Make sure scalar is not given for rgb conversion
         else if(colorScheme == ColorScheme::COLOR_IN_SITU)
           {
@@ -647,6 +648,24 @@ namespace SCIRun{
       {
        return pf_handle->mesh()->getFacade();
       }
+
+      void ShowFieldGlyphsPortHandler::spiltColorMapToTextureAndCoordinates()
+      {
+        ColorMapHandle realColorMap = nullptr;
+
+        if(colorMap) realColorMap = colorMap.get();
+        else realColorMap = StandardColorMapFactory::create();
+
+        textureMap = StandardColorMapFactory::create(realColorMap->getColorMapName(),
+          realColorMap->getColorMapResolution(), realColorMap->getColorMapShift(),
+          realColorMap->getColorMapInvert(), 0.5, 1.0, realColorMap->getAlphaLookup());
+
+        coordinateMap = StandardColorMapFactory::create("Grayscale", 256, 0, false,
+          realColorMap->getColorMapRescaleScale(), realColorMap->getColorMapRescaleShift());
+
+        colorMap = coordinateMap;
+      }
+
     }
   }
 }

@@ -47,34 +47,14 @@ const int RendererUpdateInMS = 1000 / 60;
 const double updateTime = RendererUpdateInMS / 1000.0;
 
 //------------------------------------------------------------------------------
-GLWidget::GLWidget(QtGLContext* context, QWidget* parent) :
-    QGLWidget(context, parent),
-    mContext(new GLContext(this))
+GLWidget::GLWidget(QWidget* parent) :
+    QOpenGLWidget(parent)
 {
-  /// \todo Implement this intelligently. This function is called everytime
-  ///       there is a new graphics context.
-  std::vector<std::string> shaderSearchDirs;
-
-  mContext->makeCurrent();
-
-  spire::glPlatformInit();
-
-  auto frameInitLimitFromCommandLine = Core::Application::Instance().parameters()->developerParameters()->frameInitLimit();
-  if (frameInitLimitFromCommandLine)
-  {
-    std::cout << "Renderer frame init limit changed to " << *frameInitLimitFromCommandLine << std::endl;
-  }
-  const int frameInitLimit = frameInitLimitFromCommandLine.get_value_or(100);
-
-  mGraphics.reset(new Render::SRInterface(mContext, frameInitLimit));
+  mGraphics.reset(new Render::SRInterface());
 
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
-  mTimer->start(RendererUpdateInMS);
-
-  // We must disable auto buffer swap on the 'paintEvent'.
-  setAutoBufferSwap(false);
-}
+  mTimer->start(RendererUpdateInMS);}
 
 //------------------------------------------------------------------------------
 GLWidget::~GLWidget()
@@ -89,6 +69,13 @@ GLWidget::~GLWidget()
 //------------------------------------------------------------------------------
 void GLWidget::initializeGL()
 {
+	spire::glPlatformInit();
+}	
+
+void GLWidget::paintGL()
+{
+  mCurrentTime += updateTime;
+  mGraphics->doFrame(mCurrentTime, updateTime);
 }
 
 //------------------------------------------------------------------------------
@@ -117,6 +104,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
+  makeCurrent();
   auto btn = getSpireButton(event);
   mGraphics->inputMouseDown(glm::ivec2(event->x(), event->y()), btn);
   event->ignore();
@@ -154,9 +142,10 @@ void GLWidget::keyReleaseEvent(QKeyEvent* event)
 //------------------------------------------------------------------------------
 void GLWidget::resizeGL(int width, int height)
 {
+  makeCurrent();
   mGraphics->eventResize(static_cast<size_t>(width),
                          static_cast<size_t>(height));
-  updateRenderer();
+  //updateRenderer();
 }
 
 //------------------------------------------------------------------------------
@@ -166,37 +155,15 @@ void GLWidget::closeEvent(QCloseEvent *evt)
   {
     mGraphics.reset();
   }
-  QGLWidget::closeEvent(evt);
-}
-
-//------------------------------------------------------------------------------
-void GLWidget::makeCurrent()
-{
-  mContext->makeCurrent();
+  QOpenGLWidget::closeEvent(evt);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::updateRenderer()
 {
-  mCurrentTime += updateTime;
-
-#if 0
-#ifdef QT5_BUILD
-  //idea--needs QWindow wrapper
-  if (!isExposed())
-    return;
-#endif
-#endif
-
-  try
+  if(isValid())
   {
-    mGraphics->doFrame(mCurrentTime, updateTime);
-    mContext->swapBuffers();
-  }
-  catch (const SCIRun::Render::SRInterfaceFailure& e)
-  {
-    Q_EMIT fatalError(e.what());
-    mTimer->stop();
+    update();
   }
 }
 

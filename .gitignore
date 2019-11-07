@@ -6,6 +6,7 @@
 *.swp
 *.vcxproj*
 *DS_Store
+src/.ccls-cache
 src/Documentation/*/*/*.aux
 src/Documentation/*/*/*.blg
 src/Documentation/*/*/*.bbl

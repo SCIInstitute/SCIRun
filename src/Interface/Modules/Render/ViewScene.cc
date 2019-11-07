@@ -29,17 +29,18 @@ DEALINGS IN THE SOFTWARE.
 #include <es-log/trace-log.h>
 #include <gl-platform/GLPlatform.hpp>
 
-#include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
-#include <Interface/Modules/Render/ES/SRInterface.h>
-#include <Interface/Modules/Render/GLWidget.h>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
-#include <Core/Logging/Log.h>
-#include <Modules/Render/ViewScene.h>
-#include <Interface/Modules/Render/Screenshot.h>
-#include <Graphics/Glyphs/GlyphGeom.h>
-#include <Graphics/Datatypes/GeometryImpl.h>
+#include <Core/Application/Version.h>
 #include <Core/GeometryPrimitives/Transform.h>
+#include <Core/Logging/Log.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
+#include <Graphics/Glyphs/GlyphGeom.h>
+#include <Interface/Modules/Render/ES/SRInterface.h>
+#include <Interface/Modules/Render/GLWidget.h>
+#include <Interface/Modules/Render/Screenshot.h>
+#include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
+#include <Modules/Render/ViewScene.h>
 #include <boost/timer.hpp>
 
 using namespace SCIRun::Gui;
@@ -92,23 +93,15 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setupScaleBar();
   setupClippingPlanes();
 
-  // Setup Qt OpenGL widget.
-  QGLFormat fmt;
-  fmt.setAlpha(false);
-  fmt.setRgba(true);
-  fmt.setDepth(true);
-  fmt.setDoubleBuffer(true);
-  fmt.setDepthBufferSize(24);
+  mGLWidget = new GLWidget(parentWidget());
+  QSurfaceFormat format;
+  format.setDepthBufferSize(24);
+  format.setProfile(QSurfaceFormat::CoreProfile);
+  format.setVersion(2, 1);
+  mGLWidget->setFormat(format);
 
-  mGLWidget = new GLWidget(new QtGLContext(fmt), parentWidget());
   connect(mGLWidget, SIGNAL(fatalError(const QString&)), this, SIGNAL(fatalError(const QString&)));
   connect(this, SIGNAL(mousePressSignalForTestingGeometryObjectFeedback(int, int, const std::string&)), this, SLOT(sendGeometryFeedbackToState(int, int, const std::string&)));
-
-  if (!mGLWidget->isValid())
-  {
-    delete mGLWidget;
-    return;
-  }
 
   mSpire = std::weak_ptr<SRInterface>(mGLWidget->getSpire());
 
@@ -324,34 +317,34 @@ static std::map<QString, InnerMap> axisViewParams;
 static void initAxisViewParams()
 {
   axisViewParams["+X"] = InnerMap {
-    { "+Y", P(V(-1, 0, 0), V( 0, 1, 0)) },
+    { "+Y", P(V( 1, 0, 0), V( 0, 1, 0)) },
     { "-Y", P(V( 1, 0, 0), V( 0,-1, 0)) },
-    { "+Z", P(V( 0, 1, 0), V( 1, 0, 0)) },
-    { "-Z", P(V( 0,-1, 0), V(-1, 0, 0)) }
+    { "+Z", P(V( 1, 0, 0), V( 0, 0, 1)) },
+    { "-Z", P(V( 1, 0, 0), V( 0, 0,-1)) }
   };
   axisViewParams["-X"] = InnerMap {
-    { "+Y", P(V( 1, 0, 0), V( 0, 1, 0)) },
+    { "+Y", P(V(-1, 0, 0), V( 0, 1, 0)) },
     { "-Y", P(V(-1, 0, 0), V( 0,-1, 0)) },
-    { "+Z", P(V( 0, 1, 0), V(-1, 0, 0)) },
-    { "-Z", P(V( 0,-1, 0), V( 1, 0, 0)) }
+    { "+Z", P(V(-1, 0, 0), V( 0, 0, 1)) },
+    { "-Z", P(V(-1, 0, 0), V( 0, 0,-1)) }
   };
   axisViewParams["+Y"] = InnerMap {
-    { "+X", P(V( 1, 0, 0), V(0, 0, 1)) },
-    { "-X", P(V(-1, 0, 0), V(0, 0, 1)) },
-    { "+Z", P(V( 0, 1, 0), V(0, 0, 1)) },
-    { "-Z", P(V( 0,-1, 0), V(0, 0, 1)) }
+    { "+X", P(V( 0, 1, 0), V( 1, 0, 0)) },
+    { "-X", P(V( 0, 1, 0), V(-1, 0, 0)) },
+    { "+Z", P(V( 0, 1, 0), V( 0, 0, 1)) },
+    { "-Z", P(V( 0, 1, 0), V( 0, 0,-1)) }
   };
   axisViewParams["-Y"] = InnerMap {
-    { "+X", P(V(-1, 0, 0), V(0, 0,-1)) },
-    { "-X", P(V( 1, 0, 0), V(0, 0,-1)) },
-    { "+Z", P(V( 0, 1, 0), V(0, 0,-1)) },
-    { "-Z", P(V( 0,-1, 0), V(0, 0,-1)) }
+    { "+X", P(V( 0,-1, 0), V( 1, 0, 0)) },
+    { "-X", P(V( 0,-1, 0), V(-1, 0, 0)) },
+    { "+Z", P(V( 0,-1, 0), V( 0, 0, 1)) },
+    { "-Z", P(V( 0,-1, 0), V( 0, 0,-1)) }
   };
   axisViewParams["+Z"] = InnerMap {
     { "+Y", P(V(0, 0, 1), V( 0, 1, 0)) },
     { "-Y", P(V(0, 0, 1), V( 0,-1, 0)) },
-    { "+X", P(V(0, 0, 1), V(-1, 0, 0)) },
-    { "-X", P(V(0, 0, 1), V( 1, 0, 0)) }
+    { "+X", P(V(0, 0, 1), V( 1, 0, 0)) },
+    { "-X", P(V(0, 0, 1), V(-1, 0, 0)) }
   };
   axisViewParams["-Z"] = InnerMap {
     { "+Y", P(V(0, 0,-1), V( 0, 1, 0)) },
@@ -694,6 +687,9 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
   if (!spire)
     return;
 
+  if(!mGLWidget->isValid()) return;
+  spire->setContext(mGLWidget->context());
+
   if(forceAllObjectsToUpdate)
     spire->removeAllGeomObjects();
 
@@ -758,9 +754,6 @@ void ViewSceneDialog::newGeometryValue(bool forceAllObjectsToUpdate)
 
   if (saveScreenshotOnNewGeometry_)
     screenshotClicked();
-
-  //TODO IMPORTANT: we need some call somewhere to clear the transient geometry list once spire/ES has received the list of objects. They take up lots of memory...
-  //state_->setTransientValue(Parameters::GeomData, boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>(), false);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -798,6 +791,8 @@ void ViewSceneDialog::showEvent(QShowEvent* evt)
 
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
   ModuleDialogGeneric::showEvent(evt);
+
+  updateModifiedGeometries();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2143,6 +2138,55 @@ void ViewSceneDialog::screenshotClicked()
 {
   takeScreenshot();
   screenshotTaker_->saveScreenshot();
+}
+
+//--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::sendBugReport()
+{
+  QString glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+  QString gpuVersion = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+
+  // Temporarily save screenshot so that it can be sent over email
+  takeScreenshot();
+  QImage image = screenshotTaker_->getScreenshot();
+  QString location = QDir::homePath() % QLatin1String("/scirun5screenshots/scirun_bug.png");
+  image.save(location);
+
+  // Generate email template
+  QString askForScreenshot = "\nIMPORTANT: Make sure to attach the screenshot of the ViewScene located at "
+    % location % "\n\n\n";
+  static QString instructions = "## For bugs, follow the template below: fill out all pertinent sections,"
+    "then delete the rest of the template to reduce clutter."
+    "\n### If the prerequisite is met, just delete that text as well. "
+    "If they're not all met, the issue will be closed or assigned back to you.\n\n";
+  static QString prereqs = "**Prerequisite**\n* [ ] Did you [perform a cursory search](https://github.com/SCIInstitute/SCIRun/issues)"
+    "to see if your bug or enhancement is already reported?\n\n";
+  static QString reportGuide = "For more information on how to write a good "
+    "[bug report](https://github.com/atom/atom/blob/master/CONTRIBUTING.md#how-do-i-submit-a-good-bug-report) or"
+    "[enhancement request](https://github.com/atom/atom/blob/master/CONTRIBUTING.md#how-do-i-submit-a-good-enhancement-suggestion),"
+    "see the `CONTRIBUTING` guide. These links point to another project, but most of the advice holds in general.\n\n";
+  static QString describe = "**Describe the bug**\nA clear and concise description of what the bug is.\n\n";
+  static QString askForData = "**Providing sample network(s) along with input data is useful to solving your issue.**\n\n";
+  static QString reproduction = "**To Reproduce**\nSteps to reproduce the behavior:"
+    "\n1. Go to '...'\n2. Click on '....'\n3. Scroll down to '....'\n4. See error\n\n";
+
+  static QString expectedBehavior = "**Expected behavior**\nA clear and concise description of what you expected to happen.\n\n";
+  static QString additional = "**Additional context**\nAdd any other context about the problem here.\n\n";
+  QString desktopInfo = "Desktop: " % QSysInfo::prettyProductName() % "\n";
+  QString kernelInfo = "Kernel: " % QSysInfo::kernelVersion() % "\n";
+  QString gpuInfo = "GPU: " % gpuVersion % "\n";
+  QString qtInfo = "QT Version: " % QLibraryInfo::version().toString() % "\n";
+  QString glInfo = "GL Version: " % glVersion % "\n";
+  QString scirunVersionInfo = "SCIRun Version: " % QString::fromStdString(VersionInfo::GIT_VERSION_TAG) % "\n";
+  QString machineIdInfo = "Machine ID: " % QString(QSysInfo::machineUniqueId()) % "\n";
+
+  static QString recipient = "dwhite@sci.utah.edu";
+  static QString subject = "View%20Scene%20Bug%20Report";
+  QDesktopServices::openUrl(QUrl(QString("mailto:" % recipient % "?subject=" % subject % "&body=" %
+                                         askForScreenshot % instructions % prereqs % reportGuide %
+                                         describe % askForData % reproduction % expectedBehavior %
+                                         additional % desktopInfo % kernelInfo % gpuInfo %
+                                         qtInfo % glInfo % scirunVersionInfo % machineIdInfo)));
 }
 
 //--------------------------------------------------------------------------------------------------

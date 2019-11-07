@@ -42,9 +42,10 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Logging;
 
 ColorMap::ColorMap(ColorMapStrategyHandle color, const std::string& name, const size_t resolution, const double shift,
-  const bool invert, const double rescale_scale, const double rescale_shift)
+  const bool invert, const double rescale_scale, const double rescale_shift, const std::vector<double>& alphaPoints)
   : color_(color), nameInfo_(name), resolution_(resolution), shift_(shift),
-  invert_(invert), rescale_scale_(rescale_scale), rescale_shift_(rescale_shift)
+  invert_(invert), rescale_scale_(rescale_scale), rescale_shift_(rescale_shift),
+  alphaLookup_(alphaPoints)
 {
 
 }
@@ -116,7 +117,7 @@ namespace detail
 
 ColorMapHandle StandardColorMapFactory::create(const std::string& name, const size_t &res,
   const double &shift, const bool &invert,
-  const double &rescale_scale, const double &rescale_shift)
+  const double &rescale_scale, const double &rescale_shift, const std::vector<double>& alphaPoints)
 {
   using namespace detail;
   ColorMapStrategyHandle color;
@@ -129,7 +130,7 @@ ColorMapHandle StandardColorMapFactory::create(const std::string& name, const si
     color.reset(new Rainbow);
   }
 
-  return boost::make_shared<ColorMap>(color, name, res, shift, invert, rescale_scale, rescale_shift);
+  return boost::make_shared<ColorMap>(color, name, res, shift, invert, rescale_scale, rescale_shift, alphaPoints);
 }
 
 StandardColorMapFactory::NameList StandardColorMapFactory::getList()
@@ -148,16 +149,6 @@ StandardColorMapFactory::NameList StandardColorMapFactory::getList()
  */
 double ColorMap::getTransformedValue(double f) const
 {
-  /////////////////////////////////////////////////
-  //TODO: this seemingly useless code fixes a nasty crash bug on Windows. Don't delete it until a proper fix is implemented!
-  static bool x = true;
-  if (x)
-  {
-    std::cout << "";// this;// << " " << name_ << " " << resolution_ << " " << shift_ << " " << invert_ << std::endl;
-    x = false;
-  }
-  /////////////////////////////////////////////////
-
   const double rescaled01 = static_cast<double>((f + rescale_shift_) * rescale_scale_);
 
   double v = std::min(std::max(0., rescaled01), 1.);
@@ -191,22 +182,46 @@ double ColorMap::getTransformedValue(double f) const
 ColorRGB ColorMap::getColorMapVal(double v) const
 {
   double f = getTransformedValue(v);
-  //now grab the RGB
   auto colorWithoutAlpha = color_->getColorMapVal(f);
-  //TODO:
-  //return applyAlpha(f, colorWithoutAlpha);
-  return colorWithoutAlpha;
+  return applyAlpha(f, colorWithoutAlpha);
 }
-/*
-ColorRGB applyAlpha(double transformed, colorWithoutAlpha)
-...easy
 
-
-double alpha(double transformedValue)
+ColorRGB ColorMap::applyAlpha(double transformed, ColorRGB colorWithoutAlpha) const
 {
-  // interpolate in alphaLookup_
+  double a = alpha(transformed);
+  return ColorRGB(colorWithoutAlpha.r(), colorWithoutAlpha.g(), colorWithoutAlpha.b(), a);
 }
-*/
+
+double ColorMap::alpha(double transformedValue) const
+{
+  if(alphaLookup_.size() == 0) return 0.5;
+  int i;
+  for(i = 0; (i < alphaLookup_.size()) && (alphaLookup_[i] < transformedValue); i += 2);
+
+  double startx = 0.0f, starty, endx = 1.0f, endy;
+  if(i == 0)
+  {
+    endx = alphaLookup_[0];
+    starty = endy = alphaLookup_[1];
+  }
+  else if(i == alphaLookup_.size())
+  {
+    startx = alphaLookup_[i - 2];
+    endy = starty = alphaLookup_[i - 1];
+  }
+  else
+  {
+    startx = alphaLookup_[i - 2];
+    starty = alphaLookup_[i - 1];
+    endx = alphaLookup_[i + 0];
+    endy = alphaLookup_[i + 1];
+  }
+
+  double interp = (transformedValue - startx) / (endx - startx);
+  double value = ((1.0f - interp) * starty + (interp) * endy);
+  return value;
+}
+
 
 /**
  * @name valueToColor
@@ -214,34 +229,36 @@ double alpha(double transformedValue)
  * @param The raw data value as a scalar double.
  * @return The RGB value mapped from the scalar.
  */
-ColorRGB ColorMap::valueToColor(double scalar) const {
-  ColorRGB color = getColorMapVal(scalar);
-  return color;
+ColorRGB ColorMap::valueToColor(double scalar) const
+{
+  return getColorMapVal(scalar);
 }
+
 /**
  * @name valueToColor
  * @brief Takes a tensor value and creates an RGB value based on the magnitude of the eigenvalues.
  * @param The raw data value as a tensor.
  * @return The RGB value mapped from the tensor.
  */
-ColorRGB ColorMap::valueToColor(Tensor &tensor) const {
+ColorRGB ColorMap::valueToColor(Tensor &tensor) const
+{
   double eigen1, eigen2, eigen3;
   tensor.get_eigenvalues(eigen1, eigen2, eigen3);
   double magnitude = Vector(eigen1, eigen2, eigen3).length();
-  ColorRGB color = getColorMapVal(magnitude);
-  return color;
+  return getColorMapVal(magnitude);
 }
+
 /**
  * @name valueToColor
  * @brief Takes a vector value and creates an RGB value.
  * @param The raw data value as a vector.
  * @return The RGB value mapped from the vector.
  */
-ColorRGB ColorMap::valueToColor(const Vector &vector) const {
+ColorRGB ColorMap::valueToColor(const Vector &vector) const
+{
     //TODO this is probably not implemented correctly.
    // return ColorRGB(getTransformedColor(fabs(vector.x())),getTransformedColor(fabs(vector.y())), getTransformedColor(fabs(vector.z())));
-  ColorRGB color = getColorMapVal(vector.length());
-  return color;
+  return getColorMapVal(vector.length());
 }
 
 // This Rainbow takes into account scientific visualization recommendations.

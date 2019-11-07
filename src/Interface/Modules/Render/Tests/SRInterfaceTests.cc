@@ -45,8 +45,7 @@ using namespace Gui;
 //TODO: crashes on Mac, works on Windows
 TEST(SRInterfaceTest, TEST_NAME(CanInstantiateSRInterface))
 {
-  std::shared_ptr<GLContext> context;
-  SRInterface srinterface(context);
+  SRInterface srinterface;
 }
 
 class DummyGLContext : public GLContext
@@ -64,12 +63,11 @@ public:
 };
 
 //TODO: this one crashes on windows now too.
-TEST(SRInterfaceTest, 
+TEST(SRInterfaceTest,
   //TEST_NAME(CanRenderEmptyFrame))
   DISABLED_CanRenderEmptyFrame)
 {
-  std::shared_ptr<GLContext> context(new DummyGLContext);
-  SRInterface srinterface(context);
+  SRInterface srinterface;
 
   srinterface.doFrame(0, 50);
 }

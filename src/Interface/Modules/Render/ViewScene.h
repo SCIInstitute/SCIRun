@@ -76,6 +76,9 @@ namespace SCIRun {
 
 
     protected Q_SLOTS:
+      void printToString() const {std::cout << toString("");}
+      void sendBugReport();
+
       //---------------- New Geometry --------------------------------------------------------------
       void updateModifiedGeometries();
       void updateAllGeometries();
