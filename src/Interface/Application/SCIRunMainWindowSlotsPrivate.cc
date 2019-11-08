@@ -167,6 +167,8 @@ void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
     searchType = HideItemsNotMatchingString::SearchType::WILDCARDS;
   else if(filterActionGroup_->checkedAction()->text().contains("fuzzy search"))
     searchType = HideItemsNotMatchingString::SearchType::FUZZY_SEARCH;
+  else if(filterActionGroup_->checkedAction()->text().contains("Filter UI only"))
+    searchType = HideItemsNotMatchingString::SearchType::HIDE_NON_UI;
 
   HideItemsNotMatchingString func(searchType, start);
 
