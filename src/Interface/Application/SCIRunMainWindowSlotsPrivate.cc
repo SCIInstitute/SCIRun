@@ -896,10 +896,12 @@ void SCIRunMainWindow::launchNewInstance()
   auto appFilepath = Core::Application::Instance().executablePath();
 
 #ifdef BUILD_BUNDLE
-  auto command = "open -n " + (appFilepath / "SCIRun").string() + " &";
+  auto execName = appFilepath / "SCIRun";
 #else
-  auto command = "open -n " + (appFilepath.parent_path().parent_path() / "SCIRun/SCIRun_test").string() + " &";
+  auto execName = appFilepath.parent_path().parent_path() / "SCIRun/SCIRun_test";
 #endif
+
+  auto command = "open -n " + execName.string() + " &";
 
   system( command.c_str() );
 #endif
