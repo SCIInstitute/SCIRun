@@ -2177,11 +2177,13 @@ void ViewSceneDialog::sendBugReport()
   QString desktopInfo = "Desktop: " % QSysInfo::prettyProductName() % "\n";
   QString kernelInfo = "Kernel: " % QSysInfo::kernelVersion() % "\n";
   QString gpuInfo = "GPU: " % gpuVersion % "\n";
+#ifndef TRAVIS_BUILD
   QString qtInfo = "QT Version: " % QLibraryInfo::version().toString() % "\n";
   QString glInfo = "GL Version: " % glVersion % "\n";
   QString scirunVersionInfo = "SCIRun Version: " % QString::fromStdString(VersionInfo::GIT_VERSION_TAG) % "\n";
   QString machineIdInfo = "Machine ID: " % QString(QSysInfo::machineUniqueId()) % "\n";
 
+  //TODO: need generic email
   static QString recipient = "dwhite@sci.utah.edu";
   static QString subject = "View%20Scene%20Bug%20Report";
   QDesktopServices::openUrl(QUrl(QString("mailto:" % recipient % "?subject=" % subject % "&body=" %
@@ -2189,6 +2191,7 @@ void ViewSceneDialog::sendBugReport()
                                          describe % askForData % reproduction % expectedBehavior %
                                          additional % desktopInfo % kernelInfo % gpuInfo %
                                          qtInfo % glInfo % scirunVersionInfo % machineIdInfo)));
+#endif
 }
 
 //--------------------------------------------------------------------------------------------------
