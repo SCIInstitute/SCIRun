@@ -558,6 +558,10 @@ IF(NOT BUILD_HEADLESS)
 
 ENDIF()
 
+IF(TRAVIS_BUILD)
+  ADD_DEFINITIONS(-DTRAVIS_BUILD)
+ENDIF()
+
 ########################################################################
 # Find and configure dl library
 
