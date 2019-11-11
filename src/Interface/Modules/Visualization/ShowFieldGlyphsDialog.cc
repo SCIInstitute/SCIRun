@@ -135,10 +135,10 @@ void ShowFieldGlyphsDialog::setupScalarsTab()
   connectButtonToExecuteSignal(this->scalarsUniformTransparencyRButton_);
 
   // Text Labels
-  this->scalarColorTypeLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->scalarColorInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->normalizeScalarsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->scalarScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->scalarColorTypeLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->scalarColorInputLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->normalizeScalarsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->scalarScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
 }
 
 void ShowFieldGlyphsDialog::setupVectorsTab()
@@ -186,18 +186,18 @@ void ShowFieldGlyphsDialog::setupVectorsTab()
   connectButtonToExecuteSignal(this->renderWithBasesCheckBox_);
 
   // Text Labels
-  this->vectorColorTypeLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->vectorColorInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->normalizeVectorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->vectorScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->secondaryVectorParameterScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->bidirectionalVectorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->springsMajorRadiusInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->springsMajorRadiusScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->springsMinorRadiusInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->springsMinorRadiusScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->springsPitchInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->springsPitchScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->vectorColorTypeLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->vectorColorInputLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->normalizeVectorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->vectorScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->secondaryVectorParameterScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->bidirectionalVectorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->springsMajorRadiusInputLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->springsMajorRadiusScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->springsMinorRadiusInputLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->springsMinorRadiusScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->springsPitchInputLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  // this->springsPitchScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
 }
 
 void ShowFieldGlyphsDialog::emphasisSliderChanged(int val)
@@ -246,9 +246,9 @@ void ShowFieldGlyphsDialog::setupTensorsTab()
 
   // Text Labels
   this->superquadricEmphasisSlider_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->tensorColorTypeLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->tensorColorInputLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->tensorColorTypeLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->tensorColorInputLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
   this->normalizeTensorsCheckBox_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
-  this->tensorScaleLabel->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
+  this->tensorScaleLabel_->setStyleSheet("background-color: rgba(255, 255, 255, 0);");
 }
 

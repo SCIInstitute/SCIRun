@@ -52,6 +52,10 @@ void Screenshot::takeScreenshot()
   screenshot_ = viewport_->grabFramebuffer();
 }
 
+QImage Screenshot::getScreenshot() {
+  return viewport_->grabFramebuffer();
+}
+
 void Screenshot::saveScreenshot()
 {
   index_++;
