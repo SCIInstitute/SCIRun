@@ -211,9 +211,6 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   renderSliderFrame_->setEnabled(false);
   renderSliderFrame_->setVisible(false);
 
-  ///Lights Tab
-  label_11->setVisible(false);
-
   ///Materials Tab
   //materialsFrame_->setEnabled(false);
   //fogGroupBox_->setEnabled(false);
