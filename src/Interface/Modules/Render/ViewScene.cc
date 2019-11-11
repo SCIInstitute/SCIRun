@@ -1160,6 +1160,13 @@ void ViewSceneDialog::autoRotateDown()
 //--------------------------------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------------------------------
+void ViewSceneDialog::toggleSelectionHack(bool b)
+{
+  auto spire = mSpire.lock();
+  if (spire) spire->toggleSelectionHack(b);
+}
+
+//--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::updateMeshComponentSelection(const QString& showFieldName, const QString& component, bool selected)
 {
   auto name = showFieldName.toStdString();
