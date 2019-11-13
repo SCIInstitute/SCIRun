@@ -194,6 +194,29 @@ namespace Gui {
     bool showPrefs_{ false };
   };
 
+  class PythonWizard : public QWizard
+  {
+    Q_OBJECT
+  public:
+    explicit PythonWizard(QWidget* parent);
+    ~PythonWizard();
+  public Q_SLOTS:
+    void setShowPrefs(int state);
+  private Q_SLOTS:
+    void updatePathLabel(const QString& dir);
+    void showPrefs();
+  private:
+    QWizardPage* createIntroPage();
+    QWizardPage* createNetworkEditingPage();
+    QWizardPage* createModuleStateEditingPage();
+    QWizardPage* createModuleInputPage();
+    QWizardPage* createSpecialSyntaxPage();
+    QWizardPage* createTopLevelScriptPage();
+    QWizardPage* createRunningPythonScriptsPage();
+    QLineEdit* pathWidget_;
+    bool showPrefs_{ false };
+  };
+
   struct ToolkitInfo
   {
     static const char* ToolkitIconURL;

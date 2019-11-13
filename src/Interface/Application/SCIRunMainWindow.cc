@@ -201,6 +201,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 	connect(helpActionTagLayer_, SIGNAL(triggered()), this, SLOT(showTagHelp()));
 	connect(helpActionTriggeredScripts_, SIGNAL(triggered()), this, SLOT(showTriggerHelp()));
   connect(helpActionNewUserWizard_, SIGNAL(triggered()), this, SLOT(launchNewUserWizard()));
+  connect(helpActionPythonWizard_, SIGNAL(triggered()), this, SLOT(launchPythonWizard()));
 
   connect(actionReset_Window_Layout, SIGNAL(triggered()), this, SLOT(resetWindowLayout()));
   connect(actionToggleFullScreenMode_, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
