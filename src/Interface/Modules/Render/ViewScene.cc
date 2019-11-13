@@ -783,6 +783,7 @@ void ViewSceneDialog::frameFinished()
   if(mutex)
   {
     mutex->unlock();
+    usleep(1000);
     mutex->lock();
   }
 }
@@ -907,6 +908,7 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
     if(mutex)
     {
       mutex->unlock();
+      usleep(1000);
       mutex->lock();
     }
     Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y(), selName);
