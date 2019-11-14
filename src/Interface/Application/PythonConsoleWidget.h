@@ -49,6 +49,8 @@ public:
   explicit PythonConsoleWidget(class NetworkEditor* rootNetworkEditor, QWidget* parent = nullptr);
 	virtual ~PythonConsoleWidget();
 
+	void runWizardCommand(const QString& code);
+
 public Q_SLOTS:
   void showBanner();
 
