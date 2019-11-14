@@ -169,7 +169,14 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
   auto moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
   moduleEventProxy_->trackModule(module);
 
-  setupModuleWidget(moduleWidget);
+  auto proxy = setupModuleWidget(moduleWidget);
+
+  logCritical("module {} added at pos {},{} proxy pos {}, {} proxy scenePos {},{}",
+    name,
+    moduleWidget->pos().x(), moduleWidget->pos().y(),
+    proxy->pos().x(), proxy->pos().y(),
+    proxy->scenePos().x(), proxy->scenePos().y());
+
   if (!fileLoading_)
   {
     moduleWidget->postLoadAction();
@@ -1582,12 +1589,6 @@ void NetworkEditor::setBackground(const QBrush& brush)
 QBrush NetworkEditor::background() const
 {
   return scene_->backgroundBrush();
-}
-
-QPixmap NetworkEditor::sceneGrab()
-{
-  //TODO: this approach may not be able to show the hidden parts of the network.
-  return QPixmap::grabWidget(this);
 }
 
 void NetworkEditor::selectAll()

@@ -251,8 +251,6 @@ namespace Gui {
 
     int connectionPipelineType() const;
 
-    QPixmap sceneGrab();
-
     SharedPointer<Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortDisabler();
 
     int currentZoomPercentage() const;

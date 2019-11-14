@@ -405,16 +405,20 @@ void SCIRunMainWindow::setupProvenanceWindow()
 
 void SCIRunMainWindow::setupDevConsole()
 {
+  actionDevConsole_->setEnabled(false);
+  #if 0 // disable dev console for now
   devConsole_ = new DeveloperConsole(this);
   connect(actionDevConsole_, SIGNAL(toggled(bool)), devConsole_, SLOT(setVisible(bool)));
   connect(devConsole_, SIGNAL(visibilityChanged(bool)), actionDevConsole_, SLOT(setChecked(bool)));
+
   devConsole_->setVisible(false);
   devConsole_->setFloating(true);
   addDockWidget(Qt::TopDockWidgetArea, devConsole_);
+
   actionDevConsole_->setShortcut(QKeySequence("`"));
   connect(devConsole_, SIGNAL(executorChosen(int)), this, SLOT(setExecutor(int)));
   connect(devConsole_, SIGNAL(globalPortCachingChanged(bool)), this, SLOT(setGlobalPortCaching(bool)));
-  //NetworkEditor::setViewUpdateFunc([this](const QString& s) { devConsole_->updateNetworkViewLog(s); });
+  #endif
 }
 
 void SCIRunMainWindow::setupPreferencesWindow()
@@ -521,7 +525,8 @@ void SCIRunMainWindow::setupTagManagerWindow()
   tagManagerWindow_ = new TagManagerWindow(this);
   connect(actionTagManager_, SIGNAL(toggled(bool)), tagManagerWindow_, SLOT(setVisible(bool)));
   connect(tagManagerWindow_, SIGNAL(visibilityChanged(bool)), actionTagManager_, SLOT(setChecked(bool)));
-  tagManagerWindow_->hide();
+  tagManagerWindow_->setVisible(false);
+  addDockWidget(Qt::TopDockWidgetArea, tagManagerWindow_);
 }
 
 #ifdef QT5_BUILD

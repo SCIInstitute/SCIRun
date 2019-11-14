@@ -63,6 +63,10 @@ TagManagerWindow::TagManagerWindow(QWidget* parent /* = 0 */) : QDockWidget(pare
   tagColors_.resize(NumberOfTags);
 
   connect(helpPushButton_, SIGNAL(clicked()), this, SLOT(helpButtonClicked()));
+
+  logCritical("wtf before hide");
+
+  hide();
 }
 
 void TagManagerWindow::editTagColor()
