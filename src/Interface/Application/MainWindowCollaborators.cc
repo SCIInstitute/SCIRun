@@ -468,6 +468,19 @@ SCIRunGuiRunner::SCIRunGuiRunner(QApplication& app)
   mainWin->setController(Core::Application::Instance().controller());
   mainWin->initialize();
 
+  app.setStyleSheet("*{"
+                    "color:white;"
+                    "selection-background-color:blue;" // 336699 lighter blue
+                    "background-color:rgb(66,66,69);"
+                    "selection-color:yellow;}"
+                    "QCheckBox,QLabel,QRadioButton{background-color:transparent}"
+                    "QLineEdit{border:1px solid white}"
+                    "QToolBar{"
+                    "border:1px solid black;"
+                    "color:black;}"
+                    "QProgressBar{"
+                    "border:0px solid black;"
+                    "color:black;}");
   app.exec();
 }
 

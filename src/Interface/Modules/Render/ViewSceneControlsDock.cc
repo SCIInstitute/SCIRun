@@ -73,6 +73,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
 
   //----------- Developer Tab--------------//
   connect(toStringButton_, SIGNAL(clicked()), parent, SLOT(printToString()));
+  connect(bugReportButton_, SIGNAL(clicked()), parent, SLOT(sendBugReport()));
 
   //-----------Objects Tab-----------------//
   visibleItems_.reset(new VisibleItemManager(objectListWidget_));
@@ -181,6 +182,7 @@ ViewSceneControlsDock::ViewSceneControlsDock(const QString& name, ViewSceneDialo
   connect(listSortRadioButton_, SIGNAL(clicked(bool)), parent, SLOT(setTransparencySortTypeLists(bool)));
   connect(invertZoomCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(invertZoomClicked(bool)));
   connect(zoomSpeedHorizontalSlider_, SIGNAL(valueChanged(int)), parent, SLOT(adjustZoomSpeed(int)));
+  connect(selectionHackCheckBox_, SIGNAL(clicked(bool)), parent, SLOT(toggleSelectionHack(bool)));
 
   setSampleColor(Qt::black);
 

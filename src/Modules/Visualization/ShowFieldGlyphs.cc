@@ -84,7 +84,6 @@ namespace SCIRun {
           const Module* module);
 
         void renderVectors(
-          ShowFieldGlyphsPortHandler& portHandler,
           ModuleStateHandle state,
           Interruptible* interruptible,
           const RenderState& renState,
@@ -92,7 +91,6 @@ namespace SCIRun {
           const std::string& id);
 
         void renderScalars(
-          ShowFieldGlyphsPortHandler& portHandler,
           ModuleStateHandle state,
           Interruptible* interruptible,
           const RenderState& renState,
@@ -100,7 +98,6 @@ namespace SCIRun {
           const std::string& id);
 
         void renderTensors(
-          ShowFieldGlyphsPortHandler& portHandler,
           ModuleStateHandle state,
           Interruptible* interruptible,
           const RenderState& renState,
@@ -116,6 +113,9 @@ namespace SCIRun {
 
       private:
         std::string moduleId_;
+        ColorScheme getColoringType(const RenderState& renState, VField* fld);
+        void getPoints(VMesh* mesh, std::vector<int>& indices, std::vector<Point>& points);
+        std::unique_ptr<ShowFieldGlyphsPortHandler> portHandler_;
         RenderState::InputPort getInput(std::string&& port_name);
         void addGlyph(
           GlyphGeom& glyphs,
@@ -131,7 +131,6 @@ namespace SCIRun {
           bool render_base1,
           bool render_base2);
 
-        ColorScheme getColoringType(const RenderState& renState, VField* fld);
       };
     }
   }
@@ -141,6 +140,14 @@ enum SecondaryVectorParameterScalingTypeEnum
 {
   UNIFORM,
   USE_INPUT
+};
+
+enum FieldDataType
+{
+  node,
+  edge,
+  face,
+  cell
 };
 
 ColorScheme GlyphBuilder::getColoringType(const RenderState& renState, VField* fld)
@@ -417,11 +424,11 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
   }
 
   // Create port handler and check for errors
-  ShowFieldGlyphsPortHandler portHandler(module, state, renState, pfield, sfield, tfield,
-                                         pcolormap, scolormap, tcolormap);
+  portHandler_.reset(new ShowFieldGlyphsPortHandler(module, state, renState, pfield, sfield, tfield,
+                                                    pcolormap, scolormap, tcolormap));
   try
   {
-    portHandler.checkForErrors();
+    portHandler_->checkForErrors();
   } catch(const std::invalid_argument& e)
   {
     // If error is given, post it and return empty geom object
@@ -432,31 +439,89 @@ GeometryHandle GlyphBuilder::buildGeometryObject(
   // Render glyphs
   if (finfo.is_scalar() && showScalars)
   {
-    renderScalars(portHandler, state, interruptible, renState, geom, geom->uniqueID());
+    renderScalars(state, interruptible, renState, geom, geom->uniqueID());
   }
   else if (finfo.is_vector() && showVectors)
   {
-    renderVectors(portHandler, state, interruptible, renState, geom, geom->uniqueID());
+    renderVectors(state, interruptible, renState, geom, geom->uniqueID());
   }
   else if (finfo.is_tensor() && showTensors)
   {
-    renderTensors(portHandler, state, interruptible, renState, geom, geom->uniqueID(), module);
+    renderTensors(state, interruptible, renState, geom, geom->uniqueID(), module);
   }
 
   return geom;
 }
 
+void GlyphBuilder::getPoints(VMesh* mesh, std::vector<int>& indices, std::vector<Point>& points)
+{
+    // Collect indices and points from facades
+  FieldDataType fieldLocation;
+  FieldInformation pfinfo = portHandler_->getPrimaryFieldInfo();
+  if (pfinfo.is_point() || pfinfo.is_linear())
+    fieldLocation = FieldDataType::node;
+  else if (pfinfo.is_line())
+    fieldLocation = FieldDataType::edge;
+  else if (pfinfo.is_surface())
+    fieldLocation = FieldDataType::face;
+  else
+    fieldLocation = FieldDataType::cell;
+
+  switch(fieldLocation)
+  {
+    case FieldDataType::node:
+      std::cout << "node data\n";
+      for (const auto& node : portHandler_->getPrimaryFacade()->nodes())
+      {
+        indices.push_back(node.index());
+        Point p;
+        mesh->get_center(p, node.index());
+        points.push_back(p);
+      }
+      break;
+    case FieldDataType::edge:
+      std::cout << "edge data\n";
+      for (const auto& edge : portHandler_->getPrimaryFacade()->edges())
+      {
+        indices.push_back(edge.index());
+        Point p;
+        mesh->get_center(p, edge.index());
+        points.push_back(p);
+      }
+      break;
+    case FieldDataType::face:
+      std::cout << "face data\n";
+      for (const auto& face : portHandler_->getPrimaryFacade()->faces())
+      {
+        indices.push_back(face.index());
+        Point p;
+        mesh->get_center(p, face.index());
+        points.push_back(p);
+      }
+      break;
+    case FieldDataType::cell:
+      std::cout << "cell data\n";
+      for (const auto& cell : portHandler_->getPrimaryFacade()->cells())
+      {
+        indices.push_back(cell.index());
+        Point p;
+        mesh->get_center(p, cell.index());
+        points.push_back(p);
+      }
+      break;
+  }
+}
+
 void GlyphBuilder::renderVectors(
-  ShowFieldGlyphsPortHandler& portHandler,
   ModuleStateHandle state,
   Interruptible* interruptible,
   const RenderState& renState,
   GeometryHandle geom,
   const std::string& id)
 {
-  VMesh* mesh = portHandler.getMesh();
+  VMesh* mesh = portHandler_->getMesh();
   mesh->synchronize(Mesh::EDGES_E);
-  FieldInformation pfinfo = portHandler.getPrimaryFieldInfo();
+  FieldInformation pfinfo = portHandler_->getPrimaryFieldInfo();
 
   bool useLines = renState.mGlyphType == RenderState::GlyphType::LINE_GLYPH || renState.mGlyphType == RenderState::GlyphType::NEEDLE_GLYPH;
 
@@ -468,7 +533,7 @@ void GlyphBuilder::renderVectors(
   }
 
   // Gets user set data
-  ColorScheme colorScheme = portHandler.getColorScheme();
+  ColorScheme colorScheme = portHandler_->getColorScheme();
   double scale = state->getValue(ShowFieldGlyphs::VectorsScale).toDouble();
   double radiusWidthScale = state->getValue(ShowFieldGlyphs::SecondaryVectorParameterScale).toDouble();
   int resolution = state->getValue(ShowFieldGlyphs::VectorsResolution).toInt();
@@ -486,63 +551,18 @@ void GlyphBuilder::renderVectors(
   if(arrowHeadRatio < 0) arrowHeadRatio = 0;
   if(arrowHeadRatio > 1) arrowHeadRatio = 1;
 
- //sets field location for constant field data 1: node centered 2: edge centered 3: face centered 4: cell centered
-  int fieldLocation = pfinfo.is_point()*1 + pfinfo.is_line()*2 + pfinfo.is_surface()*3 + pfinfo.is_volume()*4;
-  //sets field location to 0 for linear data regardless of location
-  fieldLocation = fieldLocation * !pfinfo.is_linear();
+  auto indices = std::vector<int>();
+  auto points = std::vector<Point>();
+  getPoints(mesh, indices, points);
 
-  // Collect indices and points from facades
-  std::vector<int> indices;
-  std::vector<Point> points;
   GlyphGeom glyphs;
-  switch(fieldLocation)
-  {
-    case 0: //linear data falls through to node data handling routine
-    case 1: //node centered constant data
-      for (const auto& node : portHandler.getPrimaryFacade()->nodes())
-      {
-        indices.push_back(node.index());
-        Point p;
-        mesh->get_center(p, node.index());
-        points.push_back(p);
-      }
-      break;
-    case 2: //edge centered constant data
-      for (const auto& edge : portHandler.getPrimaryFacade()->edges())
-      {
-        indices.push_back(edge.index());
-        Point p;
-        mesh->get_center(p, edge.index());
-        points.push_back(p);
-      }
-      break;
-    case 3: //face centered constant data
-      for (const auto& face : portHandler.getPrimaryFacade()->faces())
-      {
-        indices.push_back(face.index());
-        Point p;
-        mesh->get_center(p, face.index());
-        points.push_back(p);
-      }
-      break;
-    case 4: //cell centered constant data
-      for (const auto& cell : portHandler.getPrimaryFacade()->cells())
-      {
-        indices.push_back(cell.index());
-        Point p;
-        mesh->get_center(p, cell.index());
-        points.push_back(p);
-      }
-      break;
-  }
-
   // Render every item from facade
   for(int i = 0; i < indices.size(); i++)
   {
     interruptible->checkForInterruption();
     Vector v, pinputVector; Point p2, p3; double radius;
 
-    pinputVector = portHandler.getPrimaryVector(indices[i]);
+    pinputVector = portHandler_->getPrimaryVector(indices[i]);
 
       // Normalize/Scale
     Vector dir = pinputVector;
@@ -560,9 +580,9 @@ void GlyphBuilder::renderVectors(
     // radius = scale * radiusWidthScale / 2.0;
     radius = radiusWidthScale / 2.0;
     if(state->getValue(ShowFieldGlyphs::SecondaryVectorParameterScalingType).toInt() == SecondaryVectorParameterScalingTypeEnum::USE_INPUT)
-      radius *= portHandler.getSecondaryVectorParameter(indices[i]);
+      radius *= portHandler_->getSecondaryVectorParameter(indices[i]);
 
-    ColorRGB node_color = portHandler.getNodeColor(indices[i]);
+    ColorRGB node_color = portHandler_->getNodeColor(indices[i]);
 
     if(renderGlphysBelowThreshold || pinputVector.length() >= threshold)
     {
@@ -587,22 +607,21 @@ void GlyphBuilder::renderVectors(
 
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENT_EDGES),
                      state->getValue(ShowFieldGlyphs::VectorsUniformTransparencyValue).toDouble(),
-                     colorScheme, renState, primIn, mesh->get_bounding_box(), true, portHandler.getTextureMap());
+                     colorScheme, renState, primIn, mesh->get_bounding_box(), true, portHandler_->getTextureMap());
 }
 
 void GlyphBuilder::renderScalars(
-  ShowFieldGlyphsPortHandler& portHandler,
   ModuleStateHandle state,
   Interruptible* interruptible,
   const RenderState& renState,
   GeometryHandle geom,
   const std::string& id)
 {
-  VMesh* mesh = portHandler.getMesh();
+  VMesh* mesh = portHandler_->getMesh();
   mesh->synchronize(Mesh::NODES_E);
 
   // Gets user set data
-  ColorScheme colorScheme = portHandler.getColorScheme();
+  ColorScheme colorScheme = portHandler_->getColorScheme();
   double scale = state->getValue(ShowFieldGlyphs::ScalarsScale).toDouble();
   int resolution = state->getValue(ShowFieldGlyphs::ScalarsResolution).toInt();
   if (scale < 0) scale = 1.0;
@@ -617,39 +636,18 @@ void GlyphBuilder::renderScalars(
     primIn = SpireIBO::PRIMITIVE::POINTS;
   }
 
-  // Collect indices and points from facades
-  bool done = false;
-  std::vector<int> indices;
-  std::vector<Point> points;
-  GlyphGeom glyphs;
-  if (!portHandler.getPrimaryFieldInfo().is_linear())
-  {
-    for (const auto& node : portHandler.getPrimaryFacade()->nodes())
-    {
-      indices.push_back(node.index());
-      Point p;
-      mesh->get_center(p, node.index());
-      points.push_back(p);
-    }
-  }
-  if (!done)
-  {
-    for (const auto& cell : portHandler.getPrimaryFacade()->cells())
-    {
-      indices.push_back(cell.index());
-      Point p;
-      mesh->get_center(p, cell.index());
-      points.push_back(p);
-    }
-  }
+  auto indices = std::vector<int>();
+  auto points = std::vector<Point>();
+  getPoints(mesh, indices, points);
 
+  GlyphGeom glyphs;
   // Render every item from facade
   for(int i = 0; i < indices.size(); i++)
   {
     interruptible->checkForInterruption();
 
-    double v = portHandler.getPrimaryScalar(indices[i]);
-    ColorRGB node_color = portHandler.getNodeColor(indices[i]);
+    double v = portHandler_->getPrimaryScalar(indices[i]);
+    ColorRGB node_color = portHandler_->getNodeColor(indices[i]);
     double radius = std::abs(v) * scale;
 
     switch (renState.mGlyphType)
@@ -673,7 +671,6 @@ void GlyphBuilder::renderScalars(
           glyphs.addSphere(points[i], radius, resolution, node_color);
         break;
     }
-    done = true;
   }
 
   std::stringstream ss;
@@ -684,7 +681,7 @@ void GlyphBuilder::renderScalars(
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENT_NODES),
                      state->getValue(ShowFieldGlyphs::ScalarsUniformTransparencyValue).toDouble(),
                      colorScheme, renState, primIn, mesh->get_bounding_box(), true,
-                     portHandler.getTextureMap());
+                     portHandler_->getTextureMap());
 }
 
 double map_emphasis(double old)
@@ -697,7 +694,6 @@ double map_emphasis(double old)
 }
 
 void GlyphBuilder::renderTensors(
-  ShowFieldGlyphsPortHandler& portHandler,
   ModuleStateHandle state,
   Interruptible* interruptible,
   const RenderState& renState,
@@ -705,13 +701,17 @@ void GlyphBuilder::renderTensors(
   const std::string& id,
   const Module* module_)
 {
-  FieldInformation pfinfo = portHandler.getPrimaryFieldInfo();
+  FieldInformation pfinfo = portHandler_->getPrimaryFieldInfo();
 
-  VMesh* mesh = portHandler.getMesh();
+  VMesh* mesh = portHandler_->getMesh();
   mesh->synchronize(Mesh::NODES_E);
 
+  auto indices = std::vector<int>();
+  auto points = std::vector<Point>();
+  getPoints(mesh, indices, points);
+
   // Gets user set data
-  ColorScheme colorScheme = portHandler.getColorScheme();
+  ColorScheme colorScheme = portHandler_->getColorScheme();
   double scale = state->getValue(ShowFieldGlyphs::TensorsScale).toDouble();
   int resolution = state->getValue(ShowFieldGlyphs::TensorsResolution).toInt();
   bool normalizeGlyphs = state->getValue(ShowFieldGlyphs::NormalizeTensors).toBool();
@@ -732,69 +732,19 @@ void GlyphBuilder::renderTensors(
   GlyphGeom tensor_line_glyphs;
   GlyphGeom point_glyphs;
 
-  //sets feild location for consant feild data 1: node centered 2: edge centered 3: face centered 4: cell centered
-  int fieldLocation = pfinfo.is_point() * 1 + pfinfo.is_line() * 2 +
-    pfinfo.is_surface() * 3 + pfinfo.is_volume() * 4;
-  //sets feild location to 0 for linear data regardless of location
-  fieldLocation *= !pfinfo.is_linear();
-
-  // Collect indices and points from facades
-  std::vector<int> indices;
-  std::vector<Point> points;
-  GlyphGeom glyphs;
-  switch(fieldLocation)
-  {
-    case 0: //linear data falls through to node data handling routine
-    case 1: //node centered constant data
-      for (const auto& node : portHandler.getPrimaryFacade()->nodes())
-      {
-        indices.push_back(node.index());
-        Point p;
-        mesh->get_center(p, node.index());
-        points.push_back(p);
-      }
-      break;
-    case 2: //edge centered constant data
-      for (const auto& edge : portHandler.getPrimaryFacade()->edges())
-      {
-        indices.push_back(edge.index());
-        Point p;
-        mesh->get_center(p, edge.index());
-        points.push_back(p);
-      }
-      break;
-    case 3: //face centered constant data
-      for (const auto& face : portHandler.getPrimaryFacade()->faces())
-      {
-        indices.push_back(face.index());
-        Point p;
-        mesh->get_center(p, face.index());
-        points.push_back(p);
-      }
-      break;
-    case 4: //cell centered constant data
-      for (const auto& cell : portHandler.getPrimaryFacade()->cells())
-      {
-        indices.push_back(cell.index());
-        Point p;
-        mesh->get_center(p, cell.index());
-        points.push_back(p);
-      }
-      break;
-  }
-
   int neg_eigval_count = 0;
   int tensorcount = 0;
   static const double vectorThreshold = 0.001;
   static const double pointThreshold = 0.01;
   static const double epsilon = pow(2, -52);
 
+  GlyphGeom glyphs;
   // Render every item from facade
   for(int i = 0; i < indices.size(); i++)
   {
     interruptible->checkForInterruption();
 
-    Tensor t = portHandler.getPrimaryTensor(indices[i]);
+    Tensor t = portHandler_->getPrimaryTensor(indices[i]);
 
     double eigen1, eigen2, eigen3;
     t.get_eigenvalues(eigen1, eigen2, eigen3);
@@ -817,7 +767,7 @@ void GlyphBuilder::renderTensors(
     bool order0Tensor = (point_eig_x_0 && point_eig_y_0 && point_eig_z_0);
     bool order1Tensor = (vector_eig_x_0 + vector_eig_y_0 + vector_eig_z_0) >= 2;
 
-    ColorRGB node_color = portHandler.getNodeColor(indices[i]);
+    ColorRGB node_color = portHandler_->getNodeColor(indices[i]);
 
     // Do not render tensors that are too small - because surfaces
     // are not renderd at least two of the scales must be non zero.
@@ -874,21 +824,21 @@ void GlyphBuilder::renderTensors(
   glyphs.buildObject(*geom, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY),
                      state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(),
                      colorScheme, renState, primIn, mesh->get_bounding_box(), true,
-                     portHandler.getTextureMap());
+                     portHandler_->getTextureMap());
 
   // Render lines(2 eigenvalues equalling 0)
   RenderState lineRenState = getVectorsRenderState(state);
   tensor_line_glyphs.buildObject(*geom, uniqueLineID, lineRenState.get(RenderState::USE_TRANSPARENT_EDGES),
                                  state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(),
                                  colorScheme, lineRenState, SpireIBO::PRIMITIVE::LINES, mesh->get_bounding_box(),
-                                 true, portHandler.getTextureMap());
+                                 true, portHandler_->getTextureMap());
 
   // Render scalars(3 eigenvalues equalling 0)
   RenderState pointRenState = getScalarsRenderState(state);
   point_glyphs.buildObject(*geom, uniquePointID, pointRenState.get(RenderState::USE_TRANSPARENT_NODES),
                            state->getValue(ShowFieldGlyphs::TensorsUniformTransparencyValue).toDouble(),
                            colorScheme, pointRenState, SpireIBO::PRIMITIVE::POINTS, mesh->get_bounding_box(),
-                           true, portHandler.getTextureMap());
+                           true, portHandler_->getTextureMap());
 }
 
 void ShowFieldGlyphs::setSuperquadricEmphasis(int emphasis)

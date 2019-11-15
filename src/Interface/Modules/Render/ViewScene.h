@@ -78,6 +78,7 @@ namespace SCIRun {
 
     protected Q_SLOTS:
       void printToString() const {std::cout << toString("");}
+      void sendBugReport();
 
       //---------------- New Geometry --------------------------------------------------------------
       void updateModifiedGeometries();
@@ -126,6 +127,7 @@ namespace SCIRun {
 
       //---------------- Widgets -------------------------------------------------------------------
       void updateMeshComponentSelection(const QString& moduleId, const QString& component, bool selected);
+      void toggleSelectionHack(bool b);
 
       //---------------- Clipping Planes -----------------------------------------------------------
       void setClippingPlaneIndex(int index);
