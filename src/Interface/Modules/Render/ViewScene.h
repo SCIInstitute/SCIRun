@@ -87,6 +87,7 @@ namespace SCIRun {
       void sendGeometryFeedbackToState(int x, int y, const std::string& selName);
       void frameFinished();
       void lockMutex();
+      void unblockExecution();
 
       //---------------- Input ---------------------------------------------------------------------
       void viewBarButtonClicked();
@@ -122,7 +123,6 @@ namespace SCIRun {
       void pullCameraRotation();
       void pullCameraLookAt();
       void pullCameraDistance();
-
 
       //---------------- Widgets -------------------------------------------------------------------
       void updateMeshComponentSelection(const QString& moduleId, const QString& component, bool selected);

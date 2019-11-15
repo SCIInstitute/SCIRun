@@ -687,7 +687,8 @@ void ViewSceneDialog::updateModifiedGeometries()
 void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
 {
   newGeometryValue(false);
-  if(mGLWidget->isValid()) mGLWidget->requestFrame();
+  if(mGLWidget->isVisible() && mGLWidget->isValid()) mGLWidget->requestFrame();
+  else                                               unblockExecution();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -775,17 +776,22 @@ void ViewSceneDialog::lockMutex()
   if(mutex) mutex->lock();
 }
 
-void ViewSceneDialog::frameFinished()
+void ViewSceneDialog::unblockExecution()
 {
-  sendScreenshotDownstreamForTesting();
   auto screenShotMutex = state_->getTransientValue(Parameters::VSMutex);
   auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
   if(mutex)
   {
     mutex->unlock();
-    usleep(1000);
+    std::this_thread::sleep_for(std::chrono::duration<double, std::milli>(1));
     mutex->lock();
   }
+}
+
+void ViewSceneDialog::frameFinished()
+{
+  sendScreenshotDownstreamForTesting();
+  unblockExecution();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -903,14 +909,7 @@ void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
     selected_ = false;
     auto selName = restoreObjColor();
     updateModifiedGeometries();
-    auto screenShotMutex = state_->getTransientValue(Parameters::VSMutex);
-    auto mutex = transient_value_cast<Mutex*>(screenShotMutex);
-    if(mutex)
-    {
-      mutex->unlock();
-      usleep(1000);
-      mutex->lock();
-    }
+    unblockExecution();
     Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y(), selName);
   }
 
