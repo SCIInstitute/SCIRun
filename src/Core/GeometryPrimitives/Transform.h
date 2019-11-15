@@ -78,6 +78,7 @@ namespace SCIRun {
 
         Transform();
         Transform(const Transform&);
+        Transform(double* pmat);
         Transform& operator=(const Transform&);
         Transform(const Point&, const Vector&, const Vector&, const Vector&);
 
@@ -135,6 +136,7 @@ namespace SCIRun {
         void post_rotate(double, const Vector& axis);
 
         void get(double*) const;
+        std::string get_string() const;
         void get_trans(double*) const;
         void set(double*);
         void set_trans(double*);
@@ -155,12 +157,17 @@ namespace SCIRun {
         Point get_translation_point() const;
       };
 
+      SCISHARE Transform transformFromString(const std::string& str);
+
       SCISHARE Point operator*(const Transform &t, const Point &d);
       SCISHARE Vector operator*(const Transform &t, const Vector &d);
+      SCISHARE Transform operator*(const Transform &t1, const Transform &t2);
 
      SCISHARE Tensor operator*(const Transform &t, const Tensor &d);
       SCISHARE Tensor operator*(const Tensor &d, const Transform &t);
 
+      SCISHARE std::istream& operator>>(std::istream& is, Transform& t);
+      SCISHARE std::ostream& operator<<(std::ostream& is, const Transform& t);
       SCISHARE bool operator==(const Transform& lhs, const Transform& rhs);
       SCISHARE bool operator!=(const Transform& lhs, const Transform& rhs);
 

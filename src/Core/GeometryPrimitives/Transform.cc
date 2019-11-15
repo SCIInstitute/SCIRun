@@ -29,6 +29,7 @@
 #include <cmath>
 #include <cstring>
 #include <iostream>
+#include <sstream>
 
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Plane.h>
@@ -57,6 +58,21 @@ Transform::Transform()
   inverse_valid = false;
 }
 
+std::istream& SCIRun::Core::Geometry::operator>>( std::istream& is, Transform& t)
+{
+  std::vector<Vector> vecs;
+  double x, y, z;
+  char st;
+  is >> st;
+  for(int i = 0; i < 4; i++)
+  {
+    is >> x >> st >> y >> st >> z >> st;
+    vecs.push_back(Vector(x,y,z));
+  }
+  t = Transform(Point(vecs[3]), vecs[0], vecs[1], vecs[2]);
+  return is;
+}
+
 Transform::Transform(const Transform& copy) //: Persistent(copy)
 {
   for(int i=0;i<4;i++)
@@ -68,6 +84,11 @@ Transform::Transform(const Transform& copy) //: Persistent(copy)
     }
   }
   inverse_valid=copy.inverse_valid;
+}
+
+Transform::Transform(double* pmat)
+{
+  set(pmat);
 }
 
 Transform::Transform(const Point& p, const Vector& i, 
@@ -619,6 +640,32 @@ Transform::get(double* gmat) const
   }
 }
 
+std::string
+Transform::get_string() const
+{
+  std::ostringstream oss;
+  oss << "[";
+  for(int i = 0; i < 4; i++)
+    oss << mat[i][0] << ", " << mat[i][1] << ", " << mat[i][2] << ";";
+  oss << "]";
+  return (oss.str());
+}
+
+std::ostream&
+SCIRun::Core::Geometry::operator<<( std::ostream& os, const Transform& t)
+{
+  os << '[';
+  for(int i = 0; i < 4; i++)
+  {
+    os << t.get_mat_val(i,0) << ' ' << t.get_mat_val(i,1) << ' '
+       << t.get_mat_val(i,2) << ' ' << t.get_mat_val(i,3);
+    if(i < 4)
+      os << "; ";
+  }
+  os << ']';
+  return os;
+}
+
 // GL stores its matrices column-major.  Need to take the transpose...
 void
 Transform::get_trans(double* gmat) const
@@ -929,6 +976,27 @@ SCIRun::Core::Geometry::operator*(const Transform &t, const Vector &d)
   return Vector(result[0], result[1], result[2]);
 }
 
+Transform
+SCIRun::Core::Geometry::operator*(const Transform &t1, const Transform &t2)
+{
+  double pmat[16];
+  int index = -1;
+  for(int i = 0; i < 3; i++)
+  {
+    for(int j = 0; j < 4; j++)
+      pmat[++index] = t1.get_mat_val(i,0)*t2.get_mat_val(0,j)
+                    + t1.get_mat_val(i,1)*t2.get_mat_val(1,j)
+                    + t1.get_mat_val(i,2)*t2.get_mat_val(2,j);
+
+    pmat[index] += t1.get_mat_val(i,3); // displacement value
+
+  }
+  for(int i = 0; i < 3; i++)
+    pmat[++index] = 0;
+  pmat[++index] = 1;
+  return Transform(pmat);
+}
+
 const int TRANSFORM_VERSION = 1;
 
 void 
@@ -1087,4 +1155,12 @@ bool SCIRun::Core::Geometry::operator==(const Transform& lhs, const Transform& r
 bool SCIRun::Core::Geometry::operator!=(const Transform& lhs, const Transform& rhs)
 {
   return !(lhs == rhs);
+}
+
+Transform SCIRun::Core::Geometry::transformFromString(const std::string& str)
+{
+  std::istringstream istr(str);
+  Transform t;
+  istr >> t;
+  return t;
 }

@@ -43,6 +43,9 @@ namespace SCIRun {
       public:
         BoxWidget(const Core::GeometryIDGenerator& idGenerator, double scale,
           const BoxPosition& pos, const Core::Geometry::Point& origin, const Core::Geometry::BBox& bbox);
+        BoxWidget(const Core::GeometryIDGenerator& idGenerator, double scale,
+                  const Core::Geometry::Point& origin, const std::vector<Core::Geometry::Point>& points,
+                  const Core::Geometry::BBox& bbox);
       };
     }
   }

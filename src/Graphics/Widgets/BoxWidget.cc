@@ -50,6 +50,48 @@ void BoxPosition::getPosition(Point& center, Point& right, Point& down, Point& i
   in = in_;
 }
 
+BoxWidget::BoxWidget(const Core::GeometryIDGenerator& idGenerator, double scale,
+                     const Point& origin, const std::vector<Point>& points, const BBox& bbox)
+  : WidgetBase(idGenerator, "Box", true, origin)
+{
+  auto colorScheme(ColorScheme::COLOR_UNIFORM);
+  const uint32_t point_indicies[] = {
+    0, 1, 0, 2, 0, 4,
+    7, 6, 7, 5, 3, 7,
+    4, 5, 4, 6, 1, 5,
+    3, 2, 3, 1, 2, 6
+  };
+  const auto num_strips = 50;
+  std::vector<Vector> tri_points;
+  std::vector<Vector> tri_normals;
+  std::vector<uint32_t> tri_indices;
+  std::vector<ColorRGB> colors;
+  GlyphGeom glyphs;
+
+  for (auto edge = 0; edge < 24; edge += 2)
+    glyphs.addCylinder(points[point_indicies[edge]], points[point_indicies[edge + 1]], scale, num_strips, ColorRGB(), ColorRGB());
+
+  for (const auto& a : points)
+    glyphs.addSphere(a, scale, num_strips, ColorRGB(1, 0, 0));
+
+  std::stringstream ss;
+  for (const auto& a : points) ss << a.x() << a.y() << a.z();
+
+  auto uniqueNodeID = "bounding_box_cylinders" + ss.str();
+
+  RenderState renState;
+  renState.defaultColor = ColorRGB(1, 1, 1);
+  renState.set(RenderState::IS_ON, true);
+  renState.set(RenderState::USE_TRANSPARENCY, false);
+  renState.set(RenderState::USE_DEFAULT_COLOR, true);
+  renState.set(RenderState::USE_NORMALS, true);
+  renState.set(RenderState::IS_WIDGET, true);
+
+  glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), scale,
+                     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
+}
+
+
 BoxWidget::BoxWidget(const Core::GeometryIDGenerator& idGenerator,
   double scale, const BoxPosition& pos, const Point& origin, const BBox& bbox)
   : WidgetBase(idGenerator, "Box", true, origin)
@@ -107,6 +149,6 @@ BoxWidget::BoxWidget(const Core::GeometryIDGenerator& idGenerator,
   renState.set(RenderState::USE_NORMALS, true);
   renState.set(RenderState::IS_WIDGET, true);
 
-  glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), 1.0,
+  glyphs.buildObject(*this, uniqueNodeID, renState.get(RenderState::USE_TRANSPARENCY), scale,
     colorScheme, renState, SpireIBO::PRIMITIVE::TRIANGLES, bbox);
 }

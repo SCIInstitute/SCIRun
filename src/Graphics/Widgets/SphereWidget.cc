@@ -58,6 +58,7 @@ SphereWidget::SphereWidget(const Core::GeometryIDGenerator& idGenerator,
 
   Graphics::GlyphGeom glyphs;
   ColorRGB node_color;
+  std::cout << "sphere wid pos " << point << "\n";
   glyphs.addSphere(point, radius, resolution, node_color);
 
   auto renState = getWidgetRenderState(defaultColor);

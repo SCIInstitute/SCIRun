@@ -51,9 +51,12 @@ namespace SCIRun {
         void execute() override;
         void setStateDefaults() override;
 
+        static const Core::Algorithms::AlgorithmParameterName TransformMatrix;
         static const Core::Algorithms::AlgorithmParameterName RefreshGeom;
         static const Core::Algorithms::AlgorithmParameterName ResetSize;
         static const Core::Algorithms::AlgorithmParameterName ResetCenter;
+        static const Core::Algorithms::AlgorithmParameterName DataSaved;
+        //Input Field Attributes
         //Input Field Attributes
         static const Core::Algorithms::AlgorithmParameterName InputCenterX;
         static const Core::Algorithms::AlgorithmParameterName InputCenterY;
@@ -95,14 +98,17 @@ namespace SCIRun {
         MODULE_TRAITS_AND_INFO(ModuleHasUI)
 
       private:
-        void applyScaling(Core::Geometry::Transform& trans);
-        void refreshGeometry(const FieldHandle field, Core::Geometry::Transform& trans);
+        void applyScaling();
+        void refreshGeometry(const FieldHandle field);
         void clear_vals();
         void computeWidgetBox(const Core::Geometry::BBox& box);
         void buildGeometryObject();
+        void updateState();
         void processWidgetFeedback(const Core::Datatypes::ModuleFeedback& var);
-        void adjustGeometryFromTransform(const Core::Geometry::Transform& transformMatrix);
+        void adjustGeometryFromTransform(const Core::Geometry::Transform& transform);
         void generateGeomsList();
+        void saveToParameters();
+        void loadFromParameters();
 
         Core::Geometry::Point pos_;
         std::vector<Core::Geometry::Vector> eigvecs_;
@@ -111,7 +117,9 @@ namespace SCIRun {
 
         boost::shared_ptr<EditMeshBoundingBoxImpl> impl_;
         std::vector<Graphics::Datatypes::GeometryHandle> geoms_;
+        Core::Geometry::Transform trans_;
         bool widgetMoved_;
+        bool firstRun_;
       };
     }
   }
