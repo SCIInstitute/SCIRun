@@ -202,8 +202,7 @@ void ModuleProxyWidget::adjustHeight(int delta)
   auto p = pos();
   module_->setFixedHeight(originalSize_.height() + delta);
   setMaximumHeight(originalSize_.height() + delta);
-  logCritical("{} module proxy {} SETPOS to {},{}", __LINE__, module_->getModuleId(),
-    p.x(), p.y());
+  //logCritical("{} module proxy {} SETPOS to {},{}", __LINE__, module_->getModuleId(), p.x(), p.y());
   setPos(p);
 }
 
@@ -212,8 +211,7 @@ void ModuleProxyWidget::adjustWidth(int delta)
   auto p = pos();
   module_->setFixedWidth(originalSize_.width() + delta);
   setMaximumWidth(originalSize_.width() + delta);
-  logCritical("{} module proxy {} SETPOS to {},{}", __LINE__, module_->getModuleId(),
-    p.x(), p.y());
+  //logCritical("{} module proxy {} SETPOS to {},{}", __LINE__, module_->getModuleId(), p.x(), p.y());
   setPos(p);
 }
 
@@ -389,8 +387,7 @@ void ModuleProxyWidget::highlightIfSelected()
     module_->setColorUnselected();
     isSelected_ = false;
   }
-  logCritical("{} module proxy {} when is pos set back to 0,0 {},{}", __LINE__, module_->getModuleId(),
-    pos().x(), pos().y());
+  //logCritical("{} module proxy {} when is pos set back to 0,0 {},{}", __LINE__, module_->getModuleId(), pos().x(), pos().y());
   createPortPositionProviders();
 }
 
@@ -401,8 +398,8 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
     if (pos() != QPointF(0,0))
     {
       cachedPosition_ = pos();
-      logCritical("module proxy {} caching position to {},{}", module_->getModuleId(),
-        cachedPosition_.x(), cachedPosition_.y());
+      // logCritical("module proxy {} caching position to {},{}", module_->getModuleId(),
+      //   cachedPosition_.x(), cachedPosition_.y());
     }
 
     module_->trackConnections();
@@ -413,8 +410,8 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
 
 void ModuleProxyWidget::createPortPositionProviders()
 {
-  logCritical("module proxy {} when is pos set back to 0,0 {},{}", module_->getModuleId(),
-    pos().x(), pos().y());
+  // logCritical("module proxy {} when is pos set back to 0,0 {},{}", module_->getModuleId(),
+  //   pos().x(), pos().y());
   const int firstPortXPos = 5;
   Q_FOREACH(PortWidget* p, module_->ports().getAllPorts())
   {
@@ -432,8 +429,8 @@ void ModuleProxyWidget::createPortPositionProviders()
   }
   if (pos() == QPointF(0, 0) && cachedPosition_ != pos())
   {
-    logCritical("module proxy {} setPos to cachedPosition_ {},{}", module_->getModuleId(),
-      cachedPosition_.x(), cachedPosition_.y());
+    // logCritical("module proxy {} setPos to cachedPosition_ {},{}", module_->getModuleId(),
+    //   cachedPosition_.x(), cachedPosition_.y());
     setPos(cachedPosition_);
   }
 }
@@ -470,16 +467,25 @@ void ModuleProxyWidget::setDefaultNoteSize(int size)
 
 void ModuleProxyWidget::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
-  logCritical("module {} hover at proxy pos {},{} scenePos {},{}",
-    module_->getModuleId(),
-    pos().x(), pos().y(), scenePos().x(), scenePos().y());
+  // logCritical("module {} hover at proxy pos {},{} scenePos {},{}",
+  //   module_->getModuleId(),
+  //   pos().x(), pos().y(), scenePos().x(), scenePos().y());
   if (doHighlight_)
   {
     module_->highlightPorts();
-    logCritical("{} module proxy {} when is pos set back to 0,0 {},{}", __LINE__, module_->getModuleId(),
-      pos().x(), pos().y());
+    // logCritical("{} module proxy {} when is pos set back to 0,0 {},{}", __LINE__, module_->getModuleId(),
+    //   pos().x(), pos().y());
     createPortPositionProviders();
   }
+
+  {
+    auto dropShadow = new QGraphicsDropShadowEffect;
+    dropShadow->setColor(Qt::darkGray);
+    dropShadow->setOffset(5, 5);
+    dropShadow->setBlurRadius(30);
+    setGraphicsEffect(dropShadow);
+  }
+
   QGraphicsProxyWidget::hoverEnterEvent(event);
 }
 
@@ -488,10 +494,13 @@ void ModuleProxyWidget::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
   if (doHighlight_)
   {
     module_->unhighlightPorts();
-    logCritical("{} module proxy {} when is pos set back to 0,0 {},{}", __LINE__, module_->getModuleId(),
-      pos().x(), pos().y());
+    // logCritical("{} module proxy {} when is pos set back to 0,0 {},{}", __LINE__, module_->getModuleId(),
+    //   pos().x(), pos().y());
     createPortPositionProviders();
   }
+
+  setGraphicsEffect(nullptr);
+
   QGraphicsProxyWidget::hoverLeaveEvent(event);
 }
 

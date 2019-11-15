@@ -613,11 +613,11 @@ void NetworkEditor::makeSubnetworkFromComponents(const QString& name, const std:
   moduleWidget->postLoadAction();
   //proxy->setScale(1.6);--problematic with port positions
 
-  auto colorize = new QGraphicsDropShadowEffect;
-  colorize->setColor(Qt::darkGray);
-  colorize->setOffset(5, 5);
-  colorize->setBlurRadius(2);
-  proxy->setGraphicsEffect(colorize);
+  auto dropShadow = new QGraphicsDropShadowEffect;
+  dropShadow->setColor(Qt::darkGray);
+  dropShadow->setOffset(5, 5);
+  dropShadow->setBlurRadius(2);
+  proxy->setGraphicsEffect(dropShadow);
 
   auto pic = grabSubnetPic(rect, items);
   auto tooltipPic = convertToTooltip(pic);

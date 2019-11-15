@@ -171,11 +171,11 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
 
   auto proxy = setupModuleWidget(moduleWidget);
 
-  logCritical("module {} added at pos {},{} proxy pos {}, {} proxy scenePos {},{}",
-    name,
-    moduleWidget->pos().x(), moduleWidget->pos().y(),
-    proxy->pos().x(), proxy->pos().y(),
-    proxy->scenePos().x(), proxy->scenePos().y());
+  // logCritical("module {} added at pos {},{} proxy pos {}, {} proxy scenePos {},{}",
+  //   name,
+  //   moduleWidget->pos().x(), moduleWidget->pos().y(),
+  //   proxy->pos().x(), proxy->pos().y(),
+  //   proxy->scenePos().x(), proxy->scenePos().y());
 
   if (!fileLoading_)
   {
