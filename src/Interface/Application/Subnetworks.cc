@@ -28,7 +28,6 @@
 #include <sstream>
 #include <QtGui>
 #include <Interface/Application/NetworkEditor.h>
-#include <Interface/Application/Node.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/ModuleProxyWidget.h>
@@ -689,7 +688,7 @@ QPixmap NetworkEditor::grabSubnetPic(const QRectF& rect, const QList<QGraphicsIt
     }
   }
 
-  auto pic = QPixmap::grabWidget(this, mapFromScene(rect).boundingRect());
+  auto pic = grab(mapFromScene(rect).boundingRect());
 
   Q_FOREACH(QGraphicsItem* item, toHide)
   {

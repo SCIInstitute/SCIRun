@@ -279,7 +279,7 @@ void SCIRunMainWindow::setupNetworkEditor()
 	auto preexecuteFunc = [this]() { preexecute(); };
   auto highResolutionExpandFactor = Core::Application::Instance().parameters()->developerParameters()->guiExpandFactor().get_value_or(1.0);
   {
-    auto screen = QApplication::desktop()->screenGeometry();
+    auto screen = QGuiApplication::screens()[0]->size();
     if (screen.height() * screen.width() > 4096000) // 2560x1600
       highResolutionExpandFactor = NetworkBoundaries::highDPIExpandFactorDefault;
   }
@@ -468,7 +468,7 @@ void SCIRunMainWindow::addFragmentsToMenu(const QMap<QString, QVariant>& names, 
     boost::tie(name, xml, key) = tup;
     subnet->setText(0, name.toString());
     subnet->setData(0, clipboardKey, xml.toString());
-		subnet->setTextColor(0, CLIPBOARD_COLOR);
+		subnet->setForeground(0, CLIPBOARD_COLOR);
 		savedSubnetworks->addChild(subnet);
 		setupSubnetItem(subnet, false, key);
   }

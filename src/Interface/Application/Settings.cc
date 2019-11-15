@@ -129,7 +129,7 @@ void SCIRunMainWindow::readSettings()
   //TODO: extract QSettings logic into "PreferencesIO" class
   //TODO: set up signal/slot for each prefs variable to make it easy to track changes from arbitrary widgets
 
-  latestNetworkDirectory_ = settings.value("networkDirectory").toString();
+  latestNetworkDirectory_.setPath(settings.value("networkDirectory").toString());
   guiLogDebug("Setting read: default network directory = {}", latestNetworkDirectory_.path().toStdString());
   recentFiles_ = settings.value("recentFiles").toStringList();
   updateRecentFileActions();

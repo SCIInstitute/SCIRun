@@ -1270,7 +1270,7 @@ void ModuleWidget::toggleOptionsDialog()
         {
           auto maxX = *std::max_element(positions_.begin(), positions_.end(), [](const QPoint& p1, const QPoint& p2) { return p1.x() < p2.x(); });
           auto maxY = *std::max_element(positions_.begin(), positions_.end(), [](const QPoint& p1, const QPoint& p2) { return p1.y() < p2.y(); });
-          static const QRect rec = QApplication::desktop()->screenGeometry();
+          static const auto rec = QGuiApplication::screens()[0]->size();
           dockable_->move((maxX.x() + 30) % rec.width(), (maxY.y() + 30) % rec.height());
         }
         positions_.append(dockable_->pos());

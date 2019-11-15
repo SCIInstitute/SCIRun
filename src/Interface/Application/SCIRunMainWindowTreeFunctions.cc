@@ -204,7 +204,7 @@ QTreeWidgetItem* SCIRunMainWindow::addFavoriteItem(QTreeWidgetItem* faves, QTree
   guiLogDebug("Adding item to favorites: {}", module->text(0).toStdString());
   auto copy = new QTreeWidgetItem(*module);
   copy->setData(0, Qt::CheckStateRole, QVariant());
-  if (copy->textColor(0) == CLIPBOARD_COLOR)
+  if (copy->foreground(0) == CLIPBOARD_COLOR)
   {
     copy->setFlags(copy->flags() | Qt::ItemIsEditable);
   }

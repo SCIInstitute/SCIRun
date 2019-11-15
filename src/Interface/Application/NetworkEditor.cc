@@ -31,7 +31,6 @@
 #include <QtConcurrent>
 #endif
 #include <Interface/Application/NetworkEditor.h>
-#include <Interface/Application/Node.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/ModuleProxyWidget.h>
@@ -169,7 +168,8 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
   auto moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
   moduleEventProxy_->trackModule(module);
 
-  auto proxy = setupModuleWidget(moduleWidget);
+  /*auto proxy = */
+  setupModuleWidget(moduleWidget);
 
   // logCritical("module {} added at pos {},{} proxy pos {}, {} proxy scenePos {},{}",
   //   name,
@@ -943,7 +943,7 @@ private:
     auto dialog = mod->getModuleWidget()->dialog();
     if (dialog && text.length() > 5)
     {
-      auto widgetMatches = dialog->findChildren<QWidget*>(QRegExp(".*" + text + ".*", Qt::CaseInsensitive));
+      auto widgetMatches = dialog->findChildren<QWidget*>(QRegularExpression(".*" + text + ".*", QRegularExpression::CaseInsensitiveOption));
       Q_FOREACH(auto widget, widgetMatches)
       {
         results.emplace_back("Module UI widget match",
@@ -2078,7 +2078,8 @@ void NetworkEditor::drawTagGroups()
       label->setBrush(pen.color());
       label->setData(TagTextKey, tagNum);
       static const QFontMetrics fm(labelFont);
-      auto textWidthInPixels = fm.width(label->text());
+
+      auto textWidthInPixels = fm.horizontalAdvance(label->text());
       label->setPos((rect->rect().topLeft() + rect->rect().topRight()) / 2 + QPointF(-textWidthInPixels / 2, -30));
     }
   }
