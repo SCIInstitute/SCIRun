@@ -40,7 +40,6 @@
 #include <Interface/Application/ProvenanceWindow.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/PreferencesWindow.h>
-#include <Interface/Application/TagManagerWindow.h>
 #include <Interface/Application/ShortcutsInterface.h>
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/MainWindowCollaborators.h>

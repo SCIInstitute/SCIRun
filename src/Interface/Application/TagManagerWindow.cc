@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -42,6 +42,7 @@ namespace
 
 TagManagerWindow::TagManagerWindow(QWidget* parent /* = 0 */) : QDockWidget(parent)
 {
+  setVisible(false);
   setupUi(this);
 
   tagButtons_ = { tagPushButton0_, tagPushButton1_, tagPushButton2_,
@@ -63,9 +64,6 @@ TagManagerWindow::TagManagerWindow(QWidget* parent /* = 0 */) : QDockWidget(pare
   tagColors_.resize(NumberOfTags);
 
   connect(helpPushButton_, SIGNAL(clicked()), this, SLOT(helpButtonClicked()));
-
-  logCritical("wtf before hide");
-
   hide();
 }
 
