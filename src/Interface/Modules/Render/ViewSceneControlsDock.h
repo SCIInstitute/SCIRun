@@ -43,38 +43,6 @@ namespace SCIRun {
   namespace Gui {
     class ViewSceneDialog;
 
-    class LightControlCircle : public QGraphicsView
-    {
-      Q_OBJECT
-    public:
-      explicit LightControlCircle(QGraphicsScene* scene, int index,
-        const boost::atomic<bool>& pulling, QRectF sceneRect,
-        QWidget* parent = nullptr);
-
-      void setMovable(bool canMove);
-      QPointF getLightPosition() const;
-      QColor getColor() const;
-
-    Q_SIGNALS:
-      void lightMoved(int index);
-      void colorChanged(int index);
-    protected:
-      virtual void mousePressEvent(QMouseEvent* event) override;
-      virtual void mouseMoveEvent(QMouseEvent* event) override;
-
-    private:
-      int index_;
-      int previousX_, previousY_;
-      QGraphicsItem* boundingCircle_;
-      QGraphicsItem* lightPosition_;
-      const boost::atomic<bool>& dialogPulling_;
-      QColor lightColor_;
-
-      void selectLightColor();
-      void setColor(const QColor& color);
-
-    };
-
     class VisibleItemManager : public QObject
     {
       Q_OBJECT
@@ -107,6 +75,7 @@ namespace SCIRun {
       ViewSceneControlsDock(const QString& name, ViewSceneDialog* parent);
       void setSampleColor(const QColor& color);
       void setFogColorLabel(const QColor& color);
+      void setLabelColor(QLabel* label, const QColor& color);
       void setMaterialTabValues(double ambient, double diffuse, double specular, double shine, double emission,
         bool fogVisible, bool objectsOnly, bool useBGColor, double fogStart, double fogEnd);
       void setScaleBarValues(bool visible, int fontSize, double length, double height, double multiplier,
@@ -116,18 +85,25 @@ namespace SCIRun {
       void updateZoomOptionVisibility();
       void updatePlaneSettingsDisplay(bool visible, bool showPlane, bool reverseNormal);
       void updatePlaneControlDisplay(double x, double y, double z, double d);
-      QPointF getLightPosition(int index) const;
       QColor getLightColor(int index) const;
 
       VisibleItemManager& visibleItems() { return *visibleItems_; }
 
     private:
       void setupObjectListWidget();
-      void setupLightControlCircle(QFrame* frame, int index, const boost::atomic<bool>& pulling, bool moveable);
+      QColor lightColors[4];
 
-      std::vector<LightControlCircle*> lightControls_;
       std::unique_ptr<VisibleItemManager> visibleItems_;
+
+    Q_SIGNALS:
+      void updateLightColor(const int index);
+
     private Q_SLOTS:
+      void selectLightColor(int index);
+      void selectLight0Color() {selectLightColor(0);}
+      void selectLight1Color() {selectLightColor(1);}
+      void selectLight2Color() {selectLightColor(2);}
+      void selectLight3Color() {selectLightColor(3);}
       void setSliderDefaultPos();
       void setSliderCenterPos();
 
