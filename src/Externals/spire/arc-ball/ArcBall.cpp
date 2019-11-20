@@ -6,9 +6,9 @@ namespace spire {
 //------------------------------------------------------------------------------
   ArcBall::ArcBall(const glm::vec3& center, glm::float_t radius, bool inverted, const glm::mat4& screenToTCS) :
     mScreenToTCS(screenToTCS),
-    invertHemisphere(inverted),
     mCenter(center),
-    mRadius(radius)
+    mRadius(radius),
+    invertHemisphere(inverted)
 {
   // glm uses the following format for quaternions: w,x,y,z.
   //        w,    x,    y,    z

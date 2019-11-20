@@ -251,6 +251,7 @@ void SCIRunMainWindow::fillTreeWidget(QTreeWidget* tree, const ModuleDescription
         moduleItem->setForeground(1, Qt::lightGray);
         moduleItem->setText(2, QString::fromStdString(module.second.moduleInfo_));
         moduleItem->setForeground(2, Qt::lightGray);
+        moduleItem->setData(0, Qt::UserRole, module.second.hasUI_);
         categoryItem->addChild(moduleItem);
         totalModules++;
       }
