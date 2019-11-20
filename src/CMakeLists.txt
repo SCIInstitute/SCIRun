@@ -558,6 +558,10 @@ IF(NOT BUILD_HEADLESS)
 
 ENDIF()
 
+IF(TRAVIS_BUILD)
+  ADD_DEFINITIONS(-DTRAVIS_BUILD)
+ENDIF()
+
 ########################################################################
 # Find and configure dl library
 
@@ -832,12 +836,14 @@ SET_PROPERTY(TARGET Graphics_Glyphs   PROPERTY FOLDER "Graphics")
 SET_PROPERTY(TARGET Graphics_Widgets   PROPERTY FOLDER "Graphics")
 SET_PROPERTY(TARGET Graphics_Datatypes   PROPERTY FOLDER "Graphics")
 
-SET_PROPERTY(TARGET gmock         PROPERTY FOLDER "Testing Support")
-SET_PROPERTY(TARGET gmock_main   PROPERTY FOLDER "Testing Support")
-SET_PROPERTY(TARGET gtest         PROPERTY FOLDER "Testing Support")
-SET_PROPERTY(TARGET gtest_main   PROPERTY FOLDER "Testing Support")
-SET_PROPERTY(TARGET Testing_Utils PROPERTY FOLDER "Testing Support")
-SET_PROPERTY(TARGET Testing_ModuleTestBase PROPERTY FOLDER "Testing Support")
+IF(BUILD_TESTING OR TRAVIS_BUILD)
+  SET_PROPERTY(TARGET gmock         PROPERTY FOLDER "Testing Support")
+  SET_PROPERTY(TARGET gmock_main   PROPERTY FOLDER "Testing Support")
+  SET_PROPERTY(TARGET gtest         PROPERTY FOLDER "Testing Support")
+  SET_PROPERTY(TARGET gtest_main   PROPERTY FOLDER "Testing Support")
+  SET_PROPERTY(TARGET Testing_Utils PROPERTY FOLDER "Testing Support")
+  SET_PROPERTY(TARGET Testing_ModuleTestBase PROPERTY FOLDER "Testing Support")
+ENDIF()
 
 IF(BUILD_TESTING)
 

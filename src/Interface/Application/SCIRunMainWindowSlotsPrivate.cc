@@ -167,6 +167,8 @@ void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
     searchType = HideItemsNotMatchingString::SearchType::WILDCARDS;
   else if(filterActionGroup_->checkedAction()->text().contains("fuzzy search"))
     searchType = HideItemsNotMatchingString::SearchType::FUZZY_SEARCH;
+  else if(filterActionGroup_->checkedAction()->text().contains("Filter UI only"))
+    searchType = HideItemsNotMatchingString::SearchType::HIDE_NON_UI;
 
   HideItemsNotMatchingString func(searchType, start);
 
@@ -892,18 +894,19 @@ void SCIRunMainWindow::openToolkitNetwork()
 
 void SCIRunMainWindow::launchNewInstance()
 {
-  #ifdef __APPLE__
-  //TODO: test with bundle/installer
+#ifdef __APPLE__
   auto appFilepath = Core::Application::Instance().executablePath();
-  qDebug() << Core::Application::Instance().applicationName().c_str();
-  qDebug() << appFilepath.string().c_str();
-  qDebug() << appFilepath.parent_path().parent_path().string().c_str();
-  auto command = "open -n " +
-    (appFilepath.parent_path().parent_path() / "SCIRun/SCIRun_test").string() + " &";
-  qDebug() << command.c_str();
-  system( command.c_str() );
 
-  #endif
+#ifdef BUILD_BUNDLE
+  auto execName = appFilepath / "SCIRun";
+#else
+  auto execName = appFilepath.parent_path().parent_path() / "SCIRun/SCIRun_test";
+#endif
+
+  auto command = "open -n " + execName.string() + " &";
+
+  system( command.c_str() );
+#endif
 }
 
 void SCIRunMainWindow::maxCoreValueChanged(int value)

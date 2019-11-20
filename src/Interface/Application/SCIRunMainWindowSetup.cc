@@ -334,25 +334,37 @@ void SCIRunMainWindow::setActionIcons()
 
 void SCIRunMainWindow::makeFilterButtonMenu()
 {
+  auto updateFilterStatus = [this]() { filterModuleNamesInTreeView(moduleFilterLineEdit_->text()); };
+
   auto filterMenu = new QMenu(filterButton_);
   filterActionGroup_ = new QActionGroup(filterMenu);
   auto startsWithAction = new QAction("Starts with", filterButton_);
+  connect(startsWithAction, &QAction::triggered, updateFilterStatus);
   startsWithAction->setCheckable(true);
   filterActionGroup_->addAction(startsWithAction);
   filterMenu->addAction(startsWithAction);
 
   auto wildcardAction = new QAction("Use wildcards", filterButton_);
+  connect(wildcardAction, &QAction::triggered, updateFilterStatus);
   wildcardAction->setCheckable(true);
   filterActionGroup_->addAction(wildcardAction);
   filterMenu->addAction(wildcardAction);
 
   auto fuzzySearchAction = new QAction("Use fuzzy search", filterButton_);
+  connect(fuzzySearchAction, &QAction::triggered, updateFilterStatus);
   fuzzySearchAction->setCheckable(true);
   filterActionGroup_->addAction(fuzzySearchAction);
   fuzzySearchAction->setChecked(true);
   filterMenu->addAction(fuzzySearchAction);
 
- filterButton_->setMenu(filterMenu);
+  auto filterUIAction = new QAction("Filter UI only", filterButton_);
+  connect(filterUIAction, &QAction::triggered, updateFilterStatus);
+  filterUIAction->setCheckable(true);
+  filterActionGroup_->addAction(filterUIAction);
+  filterUIAction->setChecked(false);
+  filterMenu->addAction(filterUIAction);
+
+  filterButton_->setMenu(filterMenu);
 }
 
 void SCIRunMainWindow::setupScriptedEventsWindow()
