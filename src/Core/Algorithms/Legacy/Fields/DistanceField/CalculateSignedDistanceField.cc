@@ -721,7 +721,7 @@ CalculateSignedDistanceFieldAlgo::run(FieldHandle input, FieldHandle object, Fie
   objmesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E|Mesh::EDGES_E);
   CalculateSignedDistanceFieldP palgo(imesh, objmesh, ofield, this);
   const int numThreads = Parallel::NumCores();
-  auto task_i = [&palgo,numThreads,this](int i) { palgo.parallel(i, numThreads); };
+  auto task_i = [&palgo,numThreads](int i) { palgo.parallel(i, numThreads); };
   Parallel::RunTasks(task_i, numThreads);
 
   return (true);
@@ -810,7 +810,7 @@ CalculateSignedDistanceFieldAlgo::run(FieldHandle input, FieldHandle object, Fie
 
   CalculateSignedDistanceFieldP palgo(imesh, objmesh, objfield, dfield, vfield, this);
 
-  auto task_i = [&palgo,this](int i) { palgo.parallel2(i, Parallel::NumCores()); };
+  auto task_i = [&palgo](int i) { palgo.parallel2(i, Parallel::NumCores()); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
 
   return (true);

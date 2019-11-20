@@ -405,7 +405,7 @@ CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, Field
   }
 
   detail::CalculateDistanceFieldP palgo(imesh,objmesh,ofield,this);
-  auto task_i = [&palgo,this](int i) { palgo.parallel(i, Parallel::NumCores()); };
+  auto task_i = [&palgo](int i) { palgo.parallel(i, Parallel::NumCores()); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
 
   return (true);
@@ -490,7 +490,7 @@ CalculateDistanceFieldAlgo::runImpl(FieldHandle input, FieldHandle object, Field
   }
 
   detail::CalculateDistanceFieldP palgo(imesh,objmesh,objfield,dfield,vfield,this);
-  auto task_i = [&palgo,this](int i) { palgo.parallel2(i, Parallel::NumCores()); };
+  auto task_i = [&palgo](int i) { palgo.parallel2(i, Parallel::NumCores()); };
   Parallel::RunTasks(task_i, Parallel::NumCores());
 
   return (true);
