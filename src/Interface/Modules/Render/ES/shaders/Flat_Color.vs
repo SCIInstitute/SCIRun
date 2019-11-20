@@ -27,7 +27,7 @@
 */
 
 // Uniforms
-uniform mat4    uModelViewProjection;
+uniform mat4    uProjection;
 uniform mat4    uModel;
 uniform mat4    uView;
 
@@ -43,8 +43,8 @@ varying vec4    vColor;
 void main( void )
 {
   vPosWorld = uModel * vec4(aPos, 1.0);
-  vPosView = uView * uModel * vPosWorld;
+  vPosView = uView * vPosWorld;
   vColor = aColor;
 
-  gl_Position = uModelViewProjection * vec4(aPos, 1.0);
+  gl_Position = uProjection * (vPosView + vec4(0.0, 0.0, 0.0001, 0.0));
 }
