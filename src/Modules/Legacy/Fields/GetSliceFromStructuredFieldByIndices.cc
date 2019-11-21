@@ -42,6 +42,7 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 /// @class GetSliceFromStructuredFieldByIndices
 /// @brief This module reduces the dimension of a topologically regular field by 1 dimension.
@@ -50,6 +51,7 @@ using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields::Parameters;
 using namespace SCIRun::Core::Geometry;
 
@@ -191,7 +193,7 @@ void GetSliceFromStructuredFieldByIndices::execute()
         state->getValue(Dim_k).toInt() != inputMatrix->get(2, 2))
       {
         std::ostringstream str;
-        str << "The dimensions of the matrix slicing do match the field. "
+        str << "The dimensions of the matrix slicing do not match the field. "
           << " Expected "
           << state->getValue(Dim_i).toInt() << " "
           << state->getValue(Dim_j).toInt() << " "
@@ -598,19 +600,42 @@ void GetSliceFromStructuredFieldByIndices::execute()
       VMesh* omesh = field_out_handle->vmesh();
       CopyProperties(*inputField, *field_out_handle);
 
+      auto indexCheck = [&state](const AlgorithmParameterName& name)
+      {
+        return [&state, &name](int index)
+        {
+          if (index < 0 || index >= state->getValue(name).toInt())
+          {
+            std::ostringstream str;
+            str << "The selected index slice (" << index << ") is out of range of the field dimensions (0.." << state->getValue(name).toInt() << ").";
+            return std::make_tuple(false, str.str());
+          }
+          else
+            return std::make_tuple(true, std::string());
+        };
+      };
       /// Get the index for the axis selected.
       index_type index;
       if (state->getValue(Axis_ijk).toInt() == 0)
       {
         index = state->getValue(Index_i).toInt();
+        auto check = indexCheck(Dim_i)(index);
+        if (!std::get<0>(check))
+          THROW_ALGORITHM_INPUT_ERROR(std::get<1>(check));
       }
       else if (state->getValue(Axis_ijk).toInt() == 1)
       {
         index = state->getValue(Index_j).toInt();
+        auto check = indexCheck(Dim_j)(index);
+        if (!std::get<0>(check))
+          THROW_ALGORITHM_INPUT_ERROR(std::get<1>(check));
       }
       else
       {
         index = state->getValue(Index_k).toInt();
+        auto check = indexCheck(Dim_k)(index);
+        if (!std::get<0>(check))
+          THROW_ALGORITHM_INPUT_ERROR(std::get<1>(check));
       }
 
       if (dim.size() == 3)
