@@ -240,14 +240,14 @@ void NetworkEditor::duplicateModule(const ModuleHandle& module)
   InEditingContext iec(this);
 
   auto widget = findById(scene_->items(), module->id());
-  lastModulePosition_ = widget->scenePos() + QPointF(100, 0);
+  modulePlacement_.lastModulePosition_ = widget->scenePos() + ModuleWidgetPlacementManager::incr1;
   //TODO: need better duplicate placement. hard code it for now.
   controller_->duplicateModule(module);
 }
 
-namespace
+QPointF ModuleWidgetPlacementManager::connectNewIncrement(bool isInput)
 {
-  QPointF moduleAddIncrement(20, 20);
+  return {0.0, isInput ? -110.0 : 50.0};
 }
 
 void NetworkEditor::connectNewModule(const ModuleHandle& moduleToConnectTo, const PortDescriptionInterface* portToConnect, const std::string& newModuleName)
@@ -262,9 +262,8 @@ void NetworkEditor::connectNewModuleImpl(const ModuleHandle& moduleToConnectTo, 
   if (widget)
   {
     InEditingContext iec(this);
-    QPointF increment(0, portToConnect->isInput() ? -110 : 50);
-    lastModulePosition_ = widget->scenePos() + increment;
-    moduleAddIncrement = { 20.0, portToConnect->isInput() ? -20.0 : 20.0 };
+
+    modulePlacement_.lastModulePosition_ = widget->scenePos() + ModuleWidgetPlacementManager::connectNewIncrement(portToConnect->isInput());
 
     PortWidget* newConnectionInputPort = nullptr;
     auto q = dynamic_cast<const PortWidget*>(portToConnect);
@@ -300,7 +299,7 @@ void NetworkEditor::replaceModuleWith(const ModuleHandle& moduleToReplace, const
   InEditingContext iec(this);
 
   auto oldModule = findById(scene_->items(), moduleToReplace->id());
-  lastModulePosition_ = oldModule->scenePos() - QPointF(15, 15);
+  modulePlacement_.lastModulePosition_ = oldModule->scenePos() + ModuleWidgetPlacementManager::replaceIncr;
   controller_->addModule(newModuleName);
 
   // connect up same ports
@@ -406,7 +405,7 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
 
   proxy->setZValue(zLevelManager_->get_max());
-  proxy->setPos(lastModulePosition_);
+  proxy->setPos(modulePlacement_.lastModulePosition_);
 
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
@@ -749,7 +748,7 @@ void NetworkEditor::addNewModuleAtPosition(const QPointF& position)
 {
   InEditingContext iec(this);
 
-  lastModulePosition_ = position;
+  modulePlacement_.lastModulePosition_ = position;
   controller_->addModule(moduleSelectionGetter_->text().toStdString());
   Q_EMIT modified();
 }
@@ -761,7 +760,7 @@ void NetworkEditor::addModuleViaDoubleClickedTreeItem()
 
   if (moduleSelectionGetter_->isModule())
   {
-    addNewModuleAtPosition(lastModulePosition_ + QPointF(0,100));
+    addNewModuleAtPosition(modulePlacement_.lastModulePosition_ + ModuleWidgetPlacementManager::incr2);
   }
   else if (moduleSelectionGetter_->isClipboardXML())
     pasteImpl(moduleSelectionGetter_->clipboardXML());

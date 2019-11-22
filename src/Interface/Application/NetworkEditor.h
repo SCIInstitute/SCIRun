@@ -162,6 +162,18 @@ namespace Gui {
     enum { INITIAL_Z = 1000 };
   };
 
+  class ModuleWidgetPlacementManager
+  {
+  public:
+    QPointF lastModulePosition_{ 30, 30 };
+    static constexpr QPointF incr1 {100, 0};
+    static constexpr QPointF incr2 {0, 100};
+    static constexpr QPointF replaceIncr {-15, -15};
+    static QPointF connectNewIncrement(bool isInput);
+  private:
+
+  };
+
   class ConnectionLine;
   class ModuleWidget;
   class NetworkEditorControllerGuiProxy;
@@ -418,7 +430,7 @@ namespace Gui {
     bool insertingNewModuleAlongConnection_{ false };
     bool showTagGroupsOnFileLoad_{ false };
     bool visibleItems_{ true };
-    QPointF lastModulePosition_{ 30, 30 };
+    ModuleWidgetPlacementManager modulePlacement_;
     std::string latestModuleId_;
     std::map<int, std::string> tagLabelOverrides_;
 
