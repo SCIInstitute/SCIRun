@@ -425,4 +425,12 @@ void PythonConsoleWidget::showBanner()
   PythonInterpreter::Instance().print_banner();
 }
 
+void PythonConsoleWidget::runWizardCommand(const QString& code)
+{
+  show();
+  activateWindow();
+  raise();
+  private_->console_edit_->replace_command_buffer(code);
+}
+
 #endif
