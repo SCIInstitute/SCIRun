@@ -245,6 +245,18 @@ void NetworkEditor::duplicateModule(const ModuleHandle& module)
   controller_->duplicateModule(module);
 }
 
+namespace
+{
+  static const QPointF incr1 {100, 0};
+  static const QPointF incr2 {0, 100};
+  static const QPointF replaceIncr {-15, -15};
+}
+
+QPointF ModuleWidgetPlacementManager::getLastForDoubleClickedItem() const
+{
+  return lastModulePosition_ + incr2;
+}
+
 QPointF ModuleWidgetPlacementManager::connectNewIncrement(bool isInput)
 {
   return {0.0, isInput ? -110.0 : 50.0};
@@ -252,7 +264,7 @@ QPointF ModuleWidgetPlacementManager::connectNewIncrement(bool isInput)
 
 void ModuleWidgetPlacementManager::updateLatestFromDuplicate(const QPointF& scenePos)
 {
-  lastModulePosition_ = scenePos + ModuleWidgetPlacementManager::incr1;
+  lastModulePosition_ = scenePos + incr1;
 }
 
 void ModuleWidgetPlacementManager::updateLatestFromConnectNew(const QPointF& scenePos, bool isInputPort)
