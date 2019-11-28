@@ -39,6 +39,7 @@
 
 #include "ui_ConnectionStyleWizardPage.h"
 #include "ui_OtherSettingsWizardPage.h"
+#include "ui_PythonWizardTestPage.h"
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
@@ -310,15 +311,16 @@ QWizardPage* NewUserWizard::createOtherSettingsPage()
   return new OtherSettingsWizardPage(this);
 }
 
-PythonWizard::PythonWizard(QWidget* parent) : QWizard(parent)
+PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget* parent) : displayPython_(display), QWizard(parent)
 {
   setWindowTitle("SCIRun Python Help");
   setOption(NoBackButtonOnStartPage);
 
-
+  resize(860,520);
   setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
 
   addPage(createIntroPage());
+  addPage(createTestPythonPage());
   addPage(createNetworkEditingPage());
   addPage(createModuleStateEditingPage());
   addPage(createModuleInputPage());
@@ -353,6 +355,26 @@ QWizardPage* PythonWizard::createIntroPage()
   page->setLayout(layout);
   return page;
 }
+
+class PythonWizardTestPage : public QWizardPage, public Ui::PythonWizardTestPage
+{
+public:
+  PythonWizardTestPage()
+  {
+    setupUi(this);
+    infoText->setText("This will create a \"CreateLatVol\" module");
+    codeEdit->setPlainText("lat = scirun_add_module(\"CreateLatVol\")");
+  }
+};
+
+QWizardPage* PythonWizard::createTestPythonPage()
+{
+  auto wiz = new PythonWizardTestPage;
+  connect(wiz->sendButton, &QPushButton::clicked, [this, wiz](){displayPython_(wiz->codeEdit->toPlainText());});
+  return wiz;
+}
+
+
 
 QWizardPage* PythonWizard::createNetworkEditingPage()
 {
@@ -471,6 +493,7 @@ void PythonWizard::setShowPrefs(int state)
 {
   showPrefs_ = state != 0;
 }
+
 
 void ToolkitInfo::setupAction(QAction* action, QObject* window) const
 {

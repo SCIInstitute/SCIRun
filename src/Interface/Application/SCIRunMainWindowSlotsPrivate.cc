@@ -566,7 +566,7 @@ void SCIRunMainWindow::launchNewUserWizard()
 
 void SCIRunMainWindow::launchPythonWizard()
 {
-  PythonWizard *wiz = new PythonWizard(this);
+  PythonWizard *wiz = new PythonWizard( [this](const  QString& code) {pythonConsole_->runWizardCommand(code); }, this);
   wiz->show();
 }
 

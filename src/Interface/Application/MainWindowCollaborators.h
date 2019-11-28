@@ -198,7 +198,7 @@ namespace Gui {
   {
     Q_OBJECT
   public:
-    explicit PythonWizard(QWidget* parent);
+    explicit PythonWizard(std:: function<void(const QString&)> display, QWidget* parent);
     ~PythonWizard();
   public Q_SLOTS:
     void setShowPrefs(int state);
@@ -207,6 +207,7 @@ namespace Gui {
     void showPrefs();
   private:
     QWizardPage* createIntroPage();
+    QWizardPage* createTestPythonPage();
     QWizardPage* createNetworkEditingPage();
     QWizardPage* createModuleStateEditingPage();
     QWizardPage* createModuleInputPage();
@@ -215,6 +216,7 @@ namespace Gui {
     QWizardPage* createRunningPythonScriptsPage();
     QLineEdit* pathWidget_;
     bool showPrefs_{ false };
+    std::function<void(const QString&)> displayPython_;
   };
 
   struct ToolkitInfo
