@@ -327,6 +327,7 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createAssignSphereEquationPage());
   addPage(createMeshBoxCalcDataConectionPage());
   addPage(createExtractIsosurfacePage());
+  addPage(createCalcDataIsoConnectionPage());
 
   addPage(createNetworkEditingPage());
   addPage(createModuleStateEditingPage());
@@ -462,6 +463,16 @@ QWizardPage* PythonWizard::createExtractIsosurfacePage()
   return page;
 }
 
+QWizardPage* PythonWizard::createCalcDataIsoConnectionPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->infoText->setText("Connect the Data to the Isosurface");
+
+  page->codeEdit->setPlainText("scirun_connect_modules(calc, 0, iso, 0)");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
 
 
 QWizardPage* PythonWizard::createNetworkEditingPage()
