@@ -328,6 +328,7 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createMeshBoxCalcDataConectionPage());
   addPage(createExtractIsosurfacePage());
   addPage(createCalcDataIsoConnectionPage());
+  addPage(createSetIsoValuesPage());
 
   addPage(createNetworkEditingPage());
   addPage(createModuleStateEditingPage());
@@ -469,6 +470,21 @@ QWizardPage* PythonWizard::createCalcDataIsoConnectionPage()
   page->infoText->setText("Connect the Data to the Isosurface");
 
   page->codeEdit->setPlainText("scirun_connect_modules(calc, 0, iso, 0)");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+QWizardPage* PythonWizard::createSetIsoValuesPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->infoText->setText("Change the Isosurface module to a list"
+    "\n"
+    "Set the values");
+
+  page->codeEdit->setPlainText("scirun_set_module_state(iso, \"IsovalueChoice\", \"List\")\n"
+    "\n"
+    "scirun_set_module_state(iso, \"ListOfIsovalues\", \"1,5,10,15,18\")");
 
   connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
   return page;

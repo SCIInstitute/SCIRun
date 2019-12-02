@@ -215,6 +215,7 @@ namespace Gui {
     QWizardPage* createMeshBoxCalcDataConectionPage();
     QWizardPage* createExtractIsosurfacePage();
     QWizardPage* createCalcDataIsoConnectionPage();
+    QWizardPage* createSetIsoValuesPage();
 
     QWizardPage* createNetworkEditingPage();
     QWizardPage* createModuleStateEditingPage();
