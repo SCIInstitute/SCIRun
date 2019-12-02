@@ -326,6 +326,7 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createCalculateFieldDataPage());
   addPage(createAssignSphereEquationPage());
   addPage(createMeshBoxCalcDataConectionPage());
+  addPage(createExtractIsosurfacePage());
 
   addPage(createNetworkEditingPage());
   addPage(createModuleStateEditingPage());
@@ -449,6 +450,18 @@ QWizardPage* PythonWizard::createMeshBoxCalcDataConectionPage()
   connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
   return page;
 }
+
+QWizardPage* PythonWizard::createExtractIsosurfacePage()
+{
+  auto page = new PythonWizardCodePage;
+  page->infoText->setText("Create ExtractSimpleIsosurface module to extract the isosurface from the LatVol");
+
+  page->codeEdit->setPlainText("iso = scirun_add_module(\"ExtractSimpleIsosurface\")");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
 
 
 QWizardPage* PythonWizard::createNetworkEditingPage()
