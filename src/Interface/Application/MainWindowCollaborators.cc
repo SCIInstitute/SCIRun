@@ -39,7 +39,7 @@
 
 #include "ui_ConnectionStyleWizardPage.h"
 #include "ui_OtherSettingsWizardPage.h"
-#include "ui_PythonWizardTestPage.h"
+#include "ui_PythonWizardCodePage.h"
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
@@ -316,11 +316,11 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   setWindowTitle("SCIRun Python Help");
   setOption(NoBackButtonOnStartPage);
 
-  resize(860,520);
+  resize(900,450);
   setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
 
   addPage(createIntroPage());
-  addPage(createTestPythonPage());
+  addPage(createLatVolPage());
   addPage(createNetworkEditingPage());
   addPage(createModuleStateEditingPage());
   addPage(createModuleInputPage());
@@ -356,20 +356,29 @@ QWizardPage* PythonWizard::createIntroPage()
   return page;
 }
 
-class PythonWizardTestPage : public QWizardPage, public Ui::PythonWizardTestPage
+class PythonWizardCodePage : public QWizardPage, public Ui::PythonWizardCodePage
 {
 public:
-  PythonWizardTestPage()
+  PythonWizardCodePage()
   {
     setupUi(this);
-    infoText->setText("This will create a \"CreateLatVol\" module");
-    codeEdit->setPlainText("lat = scirun_add_module(\"CreateLatVol\")");
   }
 };
 
-QWizardPage* PythonWizard::createTestPythonPage()
+QWizardPage* PythonWizard::createLatVolPage()
 {
-  auto wiz = new PythonWizardTestPage;
+  auto wiz = new PythonWizardCodePage;
+  wiz->infoText->setText("This will create a \"CreateLatVol\" module\n"
+  "\n"
+  "Then edit it's parameters");
+
+  wiz->codeEdit->setPlainText("lat = scirun_add_module(\"CreateLatVol\")\n"
+  "\n\n"
+  "scirun_set_module_state(lat, \"XSize\", 20)\n"
+  "scirun_set_module_state(lat, \"YSize\", 20)\n"
+  "scirun_set_module_state(lat, \"Size\", 20)\n"
+  "scirun_set_module_state(lat, \"ElementSizeNormalized\", 1)");
+
   connect(wiz->sendButton, &QPushButton::clicked, [this, wiz](){displayPython_(wiz->codeEdit->toPlainText());});
   return wiz;
 }

@@ -207,7 +207,7 @@ namespace Gui {
     void showPrefs();
   private:
     QWizardPage* createIntroPage();
-    QWizardPage* createTestPythonPage();
+    QWizardPage* createLatVolPage();
     QWizardPage* createNetworkEditingPage();
     QWizardPage* createModuleStateEditingPage();
     QWizardPage* createModuleInputPage();
