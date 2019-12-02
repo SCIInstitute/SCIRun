@@ -212,6 +212,7 @@ namespace Gui {
     QWizardPage* createLatVolMeshBoxConnectionPage();
     QWizardPage* createCalculateFieldDataPage();
     QWizardPage* createAssignSphereEquationPage();
+    QWizardPage* createMeshBoxCalcDataConectionPage();
 
     QWizardPage* createNetworkEditingPage();
     QWizardPage* createModuleStateEditingPage();

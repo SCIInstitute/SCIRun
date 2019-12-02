@@ -325,6 +325,7 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createLatVolMeshBoxConnectionPage());
   addPage(createCalculateFieldDataPage());
   addPage(createAssignSphereEquationPage());
+  addPage(createMeshBoxCalcDataConectionPage());
 
   addPage(createNetworkEditingPage());
   addPage(createModuleStateEditingPage());
@@ -437,6 +438,18 @@ QWizardPage* PythonWizard::createAssignSphereEquationPage()
   connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
   return page;
 }
+
+QWizardPage* PythonWizard::createMeshBoxCalcDataConectionPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->infoText->setText("Connect EditMeshBoundingBox and the CalculateFieldData modules");
+
+  page->codeEdit->setPlainText("scirun_connect_modules(edit_box, 0, calc, 0)");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
 
 QWizardPage* PythonWizard::createNetworkEditingPage()
 {
