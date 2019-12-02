@@ -316,11 +316,12 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   setWindowTitle("SCIRun Python Help");
   setOption(NoBackButtonOnStartPage);
 
-  resize(900,450);
+  resize(1000,450);
   setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
 
   addPage(createIntroPage());
   addPage(createLatVolPage());
+  addPage(createEditMeshBoundingBoxPage());
   addPage(createNetworkEditingPage());
   addPage(createModuleStateEditingPage());
   addPage(createModuleInputPage());
@@ -369,20 +370,36 @@ QWizardPage* PythonWizard::createLatVolPage()
 {
   auto wiz = new PythonWizardCodePage;
   wiz->infoText->setText("This will create a \"CreateLatVol\" module\n"
-  "\n"
-  "Then edit it's parameters");
+    "\n"
+    "Then edit it's parameters");
 
   wiz->codeEdit->setPlainText("lat = scirun_add_module(\"CreateLatVol\")\n"
-  "\n\n"
-  "scirun_set_module_state(lat, \"XSize\", 20)\n"
-  "scirun_set_module_state(lat, \"YSize\", 20)\n"
-  "scirun_set_module_state(lat, \"Size\", 20)\n"
-  "scirun_set_module_state(lat, \"ElementSizeNormalized\", 1)");
+    "\n\n"
+    "scirun_set_module_state(lat, \"XSize\", 20)\n"
+    "scirun_set_module_state(lat, \"YSize\", 20)\n"
+    "scirun_set_module_state(lat, \"ZSize\", 20)\n"
+    "scirun_set_module_state(lat, \"ElementSizeNormalized\", 1)");
 
   connect(wiz->sendButton, &QPushButton::clicked, [this, wiz](){displayPython_(wiz->codeEdit->toPlainText());});
   return wiz;
 }
 
+QWizardPage* PythonWizard::createEditMeshBoundingBoxPage()
+{
+  auto wiz = new PythonWizardCodePage;
+  wiz->infoText->setText("This will create a \"EditMeshBoundingBox\" module to move the LatVol"
+    "\n\n"
+    "Then edit it's parameters");
+
+  wiz->codeEdit->setPlainText("edit_box = scirun_add_module(\"EditMeshBoundingBox\")\n"
+    "\n\n"
+    "scirun_set_module_state(edit_box, \"OutputCenterX\", 0)\n"
+    "scirun_set_module_state(edit_box, \"OutputCenterY\", 0)\n"
+    "scirun_set_module_state(edit_box, \"OutputCenterZ\", 0)\n");
+
+  connect(wiz->sendButton, &QPushButton::clicked, [this, wiz](){displayPython_(wiz->codeEdit->toPlainText());});
+  return wiz;
+}
 
 
 QWizardPage* PythonWizard::createNetworkEditingPage()
