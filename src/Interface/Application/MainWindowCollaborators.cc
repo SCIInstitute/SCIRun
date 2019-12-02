@@ -323,6 +323,7 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createLatVolPage());
   addPage(createEditMeshBoundingBoxPage());
   addPage(createLatVolMeshBoxConnectionPage());
+  addPage(createCalculateFieldDataPage());
   addPage(createNetworkEditingPage());
   addPage(createModuleStateEditingPage());
   addPage(createModuleInputPage());
@@ -369,48 +370,59 @@ public:
 
 QWizardPage* PythonWizard::createLatVolPage()
 {
-  auto wiz = new PythonWizardCodePage;
-  wiz->infoText->setText("This will create a \"CreateLatVol\" module\n"
+  auto page = new PythonWizardCodePage;
+  page->infoText->setText("This will create a \"CreateLatVol\" module\n"
     "\n"
     "Then edit it's parameters");
 
-  wiz->codeEdit->setPlainText("lat = scirun_add_module(\"CreateLatVol\")\n"
+  page->codeEdit->setPlainText("lat = scirun_add_module(\"CreateLatVol\")\n"
     "\n\n"
     "scirun_set_module_state(lat, \"XSize\", 20)\n"
     "scirun_set_module_state(lat, \"YSize\", 20)\n"
     "scirun_set_module_state(lat, \"ZSize\", 20)\n"
     "scirun_set_module_state(lat, \"ElementSizeNormalized\", 1)");
 
-  connect(wiz->sendButton, &QPushButton::clicked, [this, wiz](){displayPython_(wiz->codeEdit->toPlainText());});
-  return wiz;
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
 }
 
 QWizardPage* PythonWizard::createEditMeshBoundingBoxPage()
 {
-  auto wiz = new PythonWizardCodePage;
-  wiz->infoText->setText("This will create a \"EditMeshBoundingBox\" module to move the LatVol"
+  auto page = new PythonWizardCodePage;
+  page->infoText->setText("This will create a \"EditMeshBoundingBox\" module to move the LatVol"
     "\n\n"
     "Then edit it's parameters");
 
-  wiz->codeEdit->setPlainText("edit_box = scirun_add_module(\"EditMeshBoundingBox\")\n"
-    "\n\n"
+  page->codeEdit->setPlainText("edit_box = scirun_add_module(\"EditMeshBoundingBox\")\n"
+    "\n\n\n"
     "scirun_set_module_state(edit_box, \"OutputCenterX\", 0)\n"
     "scirun_set_module_state(edit_box, \"OutputCenterY\", 0)\n"
     "scirun_set_module_state(edit_box, \"OutputCenterZ\", 0)\n");
 
-  connect(wiz->sendButton, &QPushButton::clicked, [this, wiz](){displayPython_(wiz->codeEdit->toPlainText());});
-  return wiz;
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
 }
 
 QWizardPage* PythonWizard::createLatVolMeshBoxConnectionPage()
 {
-  auto wiz = new PythonWizardCodePage;
-  wiz->infoText->setText("Connect the LatVol and the EditMeshBoundingBox");
+  auto page = new PythonWizardCodePage;
+  page->infoText->setText("Connect the LatVol and the EditMeshBoundingBox");
 
-  wiz->codeEdit->setPlainText("scirun_connect_modules(lat, 0, edit_box, 0)");
+  page->codeEdit->setPlainText("scirun_connect_modules(lat, 0, edit_box, 0)");
 
-  connect(wiz->sendButton, &QPushButton::clicked, [this, wiz](){displayPython_(wiz->codeEdit->toPlainText());});
-  return wiz;
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+QWizardPage* PythonWizard::createCalculateFieldDataPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->infoText->setText("Create a CalculateFieldData module to assign values to the LatVol");
+
+  page->codeEdit->setPlainText("calc = scirun_add_module(\"CalculateFieldData\")");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
 }
 
 
