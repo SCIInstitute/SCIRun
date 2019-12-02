@@ -324,6 +324,8 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createEditMeshBoundingBoxPage());
   addPage(createLatVolMeshBoxConnectionPage());
   addPage(createCalculateFieldDataPage());
+  addPage(createAssignSphereEquationPage());
+
   addPage(createNetworkEditingPage());
   addPage(createModuleStateEditingPage());
   addPage(createModuleInputPage());
@@ -425,6 +427,16 @@ QWizardPage* PythonWizard::createCalculateFieldDataPage()
   return page;
 }
 
+QWizardPage* PythonWizard::createAssignSphereEquationPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->infoText->setText("Assign the CalculateFieldData modue the equation of a sphere");
+
+  page->codeEdit->setPlainText("scirun_set_module_state(calc, \"FunctionString\", \"RESULT = sqrt((X * X) + (Y * Y) + (Z * Z))\")");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
 
 QWizardPage* PythonWizard::createNetworkEditingPage()
 {
