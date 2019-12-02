@@ -322,6 +322,7 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createIntroPage());
   addPage(createLatVolPage());
   addPage(createEditMeshBoundingBoxPage());
+  addPage(createLatVolMeshBoxConnectionPage());
   addPage(createNetworkEditingPage());
   addPage(createModuleStateEditingPage());
   addPage(createModuleInputPage());
@@ -396,6 +397,17 @@ QWizardPage* PythonWizard::createEditMeshBoundingBoxPage()
     "scirun_set_module_state(edit_box, \"OutputCenterX\", 0)\n"
     "scirun_set_module_state(edit_box, \"OutputCenterY\", 0)\n"
     "scirun_set_module_state(edit_box, \"OutputCenterZ\", 0)\n");
+
+  connect(wiz->sendButton, &QPushButton::clicked, [this, wiz](){displayPython_(wiz->codeEdit->toPlainText());});
+  return wiz;
+}
+
+QWizardPage* PythonWizard::createLatVolMeshBoxConnectionPage()
+{
+  auto wiz = new PythonWizardCodePage;
+  wiz->infoText->setText("Connect the LatVol and the EditMeshBoundingBox");
+
+  wiz->codeEdit->setPlainText("scirun_connect_modules(lat, 0, edit_box, 0)");
 
   connect(wiz->sendButton, &QPushButton::clicked, [this, wiz](){displayPython_(wiz->codeEdit->toPlainText());});
   return wiz;

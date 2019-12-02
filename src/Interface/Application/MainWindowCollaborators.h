@@ -209,6 +209,7 @@ namespace Gui {
     QWizardPage* createIntroPage();
     QWizardPage* createLatVolPage();
     QWizardPage* createEditMeshBoundingBoxPage();
+    QWizardPage* createLatVolMeshBoxConnectionPage();
     QWizardPage* createNetworkEditingPage();
     QWizardPage* createModuleStateEditingPage();
     QWizardPage* createModuleInputPage();
