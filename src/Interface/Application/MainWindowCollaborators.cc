@@ -336,14 +336,6 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createViewScenePage());
   addPage(createExecutePage());
 
-  addPage(createNetworkEditingPage());
-  addPage(createModuleStateEditingPage());
-  addPage(createModuleInputPage());
-  addPage(createSpecialSyntaxPage());
-  addPage(createTopLevelScriptPage());
-  addPage(createRunningPythonScriptsPage());
-
-
 }
 
 PythonWizard::~PythonWizard()
@@ -586,113 +578,6 @@ QWizardPage* PythonWizard::createExecutePage()
 }
 
 
-QWizardPage* PythonWizard::createNetworkEditingPage()
-{
-  auto page = new QWizardPage;
-  page->setTitle("Global Functions (Network Editing)");
-
-  page->setSubTitle(R"( scirun_module_ids()
-      Returns a list of all module ID strings in the current network, sorted by module creation time.)");
-  auto layout = new QVBoxLayout;
-  page->setLayout(layout);
-  return page;
-}
-
-QWizardPage* PythonWizard::createModuleStateEditingPage()
-{
-  auto page = new QWizardPage;
-  page->setTitle("Global Functions (Module State Editing)");
-
-  page->setSubTitle(R"( scirun_get_module_state("ModuleID", "StateVariableName")
-      Returns the value of the specified module state variable.
-
-  scirun_set_module_state("ModuleID", "StateVariableName", value)
-      Sets the specified module state variable's value
-
-  scirun_dump_module_state("ModuleID")
-      Returns a dictionary with the entire state of the specified module.
-
-  scirun_get_module_transient_state("ModuleID", "StateVariableName")
-      Returns the value of the specified module transient state variable.
-
-  scirun_set_module_transient_state("ModuleID", "StateVariableName", value)
-      Sets the specified module transient state variable's value. Used to pass data values (strings, matrices, fields) back to modules.)");
-  auto layout = new QVBoxLayout;
-  page->setLayout(layout);
-  return page;
-}
-
-QWizardPage* PythonWizard::createModuleInputPage()
-{
-  auto page = new QWizardPage;
-  page->setTitle("Global Functions (Module/DataType Input)");
-
-  page->setSubTitle(R"( scirun_get_module_input_type("ModuleID", portIndex)
-      Returns the type of the input data object on the specified port.
-
-  scirun_get_module_input_object("ModuleID", "PortName")
-      Returns a special PyDatatype wrapper object containing a copy of the data on the specified input port, by name.
-
-  scirun_get_module_input_value("ModuleID", "PortName")
-      Returns a Python object containing a copy of the data on the specified input port.
-
-  scirun_get_module_input_object_by_index("ModuleID", portIndex)
-      Returns a special Pydatatype wrapper object containing a copy of the data on the specified input port, by port index.
-
-  scirun_get_module_input_value_by_index("ModuleID", portIndex)
-      Returns a Python object containing a copy of the data on the specified input port, by index.)");
-  auto layout = new QVBoxLayout;
-  page->setLayout(layout);
-  return page;
-}
-
-QWizardPage* PythonWizard::createSpecialSyntaxPage()
-{
-  auto page = new QWizardPage;
-  page->setTitle("InterfaceWithPython (Special Syntax)");
-
-  page->setSubTitle(R"(This module lets you set input/output variable names in the module UI. Once this is done (or by using the defaults), one can use assignment syntaxt to read input data and send output data.
-
-  Examples:
-        pythonOutput = "hello"    will send a string to the output port associated with   pythonOutput
-        field = inputField1    will extract a field object from the input port associated with   inputField1
-        outputString1 = "string concat" + inputString1    Input/Output can be combined on the same line.)");
-  auto layout = new QVBoxLayout;
-  page->setLayout(layout);
-  return page;
-}
-
-QWizardPage* PythonWizard::createTopLevelScriptPage()
-{
-  auto page = new QWizardPage;
-  page->setTitle("InterfaceWithPython (Top-Level Script)");
-
-  page->setSubTitle(R"(In the InterfaceWithPython, there is a "Top-Level Script" tab which allows users to run matlab code in a broader scope on execution of the InterfaceWithPython Module.
-This is helpful if there are variables or modules that are costly to compute or load, yet are used in more than one InterfaceWithPython Module.
-The Matlab engine is one such example; to launch the matlab for this session, click the button below.)");
-  auto layout = new QVBoxLayout;
-  page->setLayout(layout);
-  return page;
-}
-
-QWizardPage* PythonWizard::createRunningPythonScriptsPage()
-{
-  auto page = new QWizardPage;
-  page->setTitle("Running Python Scripts");
-
-  page->setSubTitle(R"(Python scripts can be used for many things in SCIRun, from building networks to batch executing data.
-
-  To run a script saved to disk within SCIRun, there are a couple options:
-    There is a run script option (looks like a magic wand), which is part of the advanced tool bar. This option will clear any network when a script is run, so it is great for running scripts that build and execute networks.
-
-    Scripts can alsobe called as a command line input with the -s or -S flags. This option is similar to the run script tool, but it allows for passing script agruments after the script filename.
-      For example, in OS X:  /Applications/SCIRun.app/Contents/MacOS/SCIRun -s *script_filename.py* *argl* .
-
-    To run a script within SCIRun without clearing the network, open and exectute the script in the SCIRun python console:  exec(open('*path_to_script/filename.py*').read()) . This syntax can also be used in  SCIRun's interactive mode ( -i flag from the command line).)");
-  auto layout = new QVBoxLayout;
-  page->setLayout(layout);
-  return page;
-}
 
 void PythonWizard::updatePathLabel(const QString& dir)
 {

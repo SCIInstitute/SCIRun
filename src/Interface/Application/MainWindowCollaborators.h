@@ -222,13 +222,6 @@ namespace Gui {
     QWizardPage* createConnectModulesPage();
     QWizardPage* createViewScenePage();
     QWizardPage* createExecutePage();
-
-    QWizardPage* createNetworkEditingPage();
-    QWizardPage* createModuleStateEditingPage();
-    QWizardPage* createModuleInputPage();
-    QWizardPage* createSpecialSyntaxPage();
-    QWizardPage* createTopLevelScriptPage();
-    QWizardPage* createRunningPythonScriptsPage();
     QLineEdit* pathWidget_;
     bool showPrefs_{ false };
     std::function<void(const QString&)> displayPython_;
