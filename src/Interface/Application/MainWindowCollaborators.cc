@@ -330,6 +330,7 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createCalcDataIsoConnectionPage());
   addPage(createSetIsoValuesPage());
   addPage(createSaveNetworkPage());
+  addPage(createShowFieldPage());
 
   addPage(createNetworkEditingPage());
   addPage(createModuleStateEditingPage());
@@ -479,8 +480,8 @@ QWizardPage* PythonWizard::createCalcDataIsoConnectionPage()
 QWizardPage* PythonWizard::createSetIsoValuesPage()
 {
   auto page = new PythonWizardCodePage;
-  page->infoText->setText("Change the Isosurface module to a list"
-    "\n\n"
+  page->infoText->setText("Change the Isosurface module to a list\n"
+    "\n"
     "Set the values");
 
   page->codeEdit->setPlainText("scirun_set_module_state(iso, \"IsovalueChoice\", \"List\")\n"
@@ -497,6 +498,21 @@ QWizardPage* PythonWizard::createSaveNetworkPage()
   page->infoText->setText("Save the Network to desired path");
 
   page->codeEdit->setPlainText("scirun_save_network(\"/YOUR/FILENAME/PATH\")");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+QWizardPage* PythonWizard::createShowFieldPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->infoText->setText("Create ShowField module for the Isosurface\n"
+    "\n"
+    "Edit the ShowField module parameters");
+
+  page->codeEdit->setPlainText("iso_show_field = scirun_add_module(\"ShowField\")\n"
+    "\n"
+    "scirun_set_module_state(iso_show_field, \"ShowFaces\", 0)");
 
   connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
   return page;
