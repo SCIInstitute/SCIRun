@@ -334,6 +334,7 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createColorMapPage());
   addPage(createConnectModulesPage());
   addPage(createViewScenePage());
+  addPage(createExecutePage());
 
   addPage(createNetworkEditingPage());
   addPage(createModuleStateEditingPage());
@@ -560,6 +561,18 @@ QWizardPage* PythonWizard::createViewScenePage()
   page->codeEdit->setPlainText("view_scene = scirun_add_module(\"ViewScene\")\n"
     "\n\n"
     "scirun_connect_modules(iso_show_field, 0, view_scene, 0)");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+
+QWizardPage* PythonWizard::createExecutePage()
+{
+  auto page = new PythonWizardCodePage;
+  page->infoText->setText("Execute the network");
+
+  page->codeEdit->setPlainText("scirun_execute_all()");
 
   connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
   return page;
