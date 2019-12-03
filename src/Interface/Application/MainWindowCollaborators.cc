@@ -364,6 +364,13 @@ QWizardPage* PythonWizard::createIntroPage()
 
   page->setSubTitle("This wizard will help you implement Python in SCIRun for the first time.");
   auto layout = new QVBoxLayout;
+  auto docLabel = new QLabel(
+    "<p><a href = \"https://github.com/SCIInstitute/scirun.pages/blob/gh-pages/python.md\">Python Documentation</a>"
+  );
+  docLabel->setStyleSheet("QLabel { background-color : gray; color : blue; }");
+  docLabel->setAlignment(Qt::AlignLeft);
+  docLabel->setOpenExternalLinks(true);
+  layout->addWidget(docLabel);
   auto pic = new QLabel;
   pic->setPixmap(QPixmap(":/general/Resources/scirunWizard.png"));
   layout->addWidget(pic);
