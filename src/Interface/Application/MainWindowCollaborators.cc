@@ -382,6 +382,7 @@ public:
 QWizardPage* PythonWizard::createLatVolPage()
 {
   auto page = new PythonWizardCodePage;
+  page->setSubTitle("Working with the LatVol Module");
   page->infoText->setText("This will create a \"CreateLatVol\" module\n"
     "\n"
     "Then edit it's parameters");
@@ -400,6 +401,7 @@ QWizardPage* PythonWizard::createLatVolPage()
 QWizardPage* PythonWizard::createEditMeshBoundingBoxPage()
 {
   auto page = new PythonWizardCodePage;
+  page->setSubTitle("Working with the EditMeshBoundingBox Module");
   page->infoText->setText("This will create a \"EditMeshBoundingBox\" module to move the LatVol"
     "\n\n"
     "Then edit it's parameters");
@@ -417,6 +419,7 @@ QWizardPage* PythonWizard::createEditMeshBoundingBoxPage()
 QWizardPage* PythonWizard::createLatVolMeshBoxConnectionPage()
 {
   auto page = new PythonWizardCodePage;
+  page->setSubTitle("Connecting Modules");
   page->infoText->setText("Connect the LatVol and the EditMeshBoundingBox");
 
   page->codeEdit->setPlainText("scirun_connect_modules(lat, 0, edit_box, 0)");
@@ -428,6 +431,7 @@ QWizardPage* PythonWizard::createLatVolMeshBoxConnectionPage()
 QWizardPage* PythonWizard::createCalculateFieldDataPage()
 {
   auto page = new PythonWizardCodePage;
+  page->setSubTitle("Working with the CalculateFieldData Module");
   page->infoText->setText("Create a CalculateFieldData module to assign values to the LatVol");
 
   page->codeEdit->setPlainText("calc = scirun_add_module(\"CalculateFieldData\")");
@@ -439,6 +443,7 @@ QWizardPage* PythonWizard::createCalculateFieldDataPage()
 QWizardPage* PythonWizard::createAssignSphereEquationPage()
 {
   auto page = new PythonWizardCodePage;
+  page->setSubTitle("Assigning an Equation");
   page->infoText->setText("Assign the CalculateFieldData modue the equation of a sphere");
 
   page->codeEdit->setPlainText("scirun_set_module_state(calc, \"FunctionString\", \"RESULT = sqrt((X * X) + (Y * Y) + (Z * Z))\")");
@@ -450,6 +455,7 @@ QWizardPage* PythonWizard::createAssignSphereEquationPage()
 QWizardPage* PythonWizard::createMeshBoxCalcDataConectionPage()
 {
   auto page = new PythonWizardCodePage;
+  page->setSubTitle("Connecting Modules");
   page->infoText->setText("Connect EditMeshBoundingBox and the CalculateFieldData modules");
 
   page->codeEdit->setPlainText("scirun_connect_modules(edit_box, 0, calc, 0)");
@@ -461,6 +467,7 @@ QWizardPage* PythonWizard::createMeshBoxCalcDataConectionPage()
 QWizardPage* PythonWizard::createExtractIsosurfacePage()
 {
   auto page = new PythonWizardCodePage;
+  page->setSubTitle("Working with the ExtractSimpleIsosurface Module");
   page->infoText->setText("Create ExtractSimpleIsosurface module to extract the isosurface from the LatVol");
 
   page->codeEdit->setPlainText("iso = scirun_add_module(\"ExtractSimpleIsosurface\")");
@@ -472,6 +479,7 @@ QWizardPage* PythonWizard::createExtractIsosurfacePage()
 QWizardPage* PythonWizard::createCalcDataIsoConnectionPage()
 {
   auto page = new PythonWizardCodePage;
+  page->setSubTitle("Connecting Modules");
   page->infoText->setText("Connect the Data to the Isosurface");
 
   page->codeEdit->setPlainText("scirun_connect_modules(calc, 0, iso, 0)");
@@ -483,6 +491,7 @@ QWizardPage* PythonWizard::createCalcDataIsoConnectionPage()
 QWizardPage* PythonWizard::createSetIsoValuesPage()
 {
   auto page = new PythonWizardCodePage;
+  page->setSubTitle("Setting Isosurface Values");
   page->infoText->setText("Change the Isosurface module to a list\n"
     "\n"
     "Set the values");
@@ -498,6 +507,7 @@ QWizardPage* PythonWizard::createSetIsoValuesPage()
 QWizardPage* PythonWizard::createSaveNetworkPage()
 {
   auto page = new PythonWizardCodePage;
+  page->setSubTitle("Saving Network");
   page->infoText->setText("Save the Network to desired path");
 
   page->codeEdit->setPlainText("scirun_save_network(\"/YOUR/FILENAME/PATH\")");
@@ -509,6 +519,7 @@ QWizardPage* PythonWizard::createSaveNetworkPage()
 QWizardPage* PythonWizard::createShowFieldPage()
 {
   auto page = new PythonWizardCodePage;
+  page->setSubTitle("Working with ShowField Module");
   page->infoText->setText("Create ShowField module for the Isosurface\n"
     "\n"
     "Edit the ShowField module parameters");
@@ -524,6 +535,7 @@ QWizardPage* PythonWizard::createShowFieldPage()
 QWizardPage* PythonWizard::createColorMapPage()
 {
   auto page = new PythonWizardCodePage;
+  page->setSubTitle("Working with ColorMap Modules");
   page->infoText->setText("Create a ColorMap module\n"
     "\n"
     "Create RescaleColorMapModule");
@@ -539,6 +551,7 @@ QWizardPage* PythonWizard::createColorMapPage()
 QWizardPage* PythonWizard::createConnectModulesPage()
 {
   auto page = new PythonWizardCodePage;
+  page->setSubTitle("Connecting Modules");
   page->infoText->setText("Connect the modules");
 
   page->codeEdit->setPlainText("scirun_connect_modules(iso, 0, iso_show_field, 0)\n"
@@ -553,6 +566,7 @@ QWizardPage* PythonWizard::createConnectModulesPage()
 QWizardPage* PythonWizard::createViewScenePage()
 {
   auto page = new PythonWizardCodePage;
+  page->setSubTitle("Working with ViewScene Module");
   page->infoText->setText("Create a ViewScene module\n"
     "\n"
     "Connect the ViewScene and ShowField modules");
@@ -569,6 +583,7 @@ QWizardPage* PythonWizard::createViewScenePage()
 QWizardPage* PythonWizard::createExecutePage()
 {
   auto page = new PythonWizardCodePage;
+  page->setSubTitle("Executing the Network");
   page->infoText->setText("Execute the network");
 
   page->codeEdit->setPlainText("scirun_execute_all()");
