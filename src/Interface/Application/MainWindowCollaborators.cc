@@ -329,6 +329,7 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createExtractIsosurfacePage());
   addPage(createCalcDataIsoConnectionPage());
   addPage(createSetIsoValuesPage());
+  addPage(createSaveNetworkPage());
 
   addPage(createNetworkEditingPage());
   addPage(createModuleStateEditingPage());
@@ -479,12 +480,23 @@ QWizardPage* PythonWizard::createSetIsoValuesPage()
 {
   auto page = new PythonWizardCodePage;
   page->infoText->setText("Change the Isosurface module to a list"
-    "\n"
+    "\n\n"
     "Set the values");
 
   page->codeEdit->setPlainText("scirun_set_module_state(iso, \"IsovalueChoice\", \"List\")\n"
     "\n"
     "scirun_set_module_state(iso, \"ListOfIsovalues\", \"1,5,10,15,18\")");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+QWizardPage* PythonWizard::createSaveNetworkPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->infoText->setText("Save the Network to desired path");
+
+  page->codeEdit->setPlainText("scirun_save_network(\"/YOUR/FILENAME/PATH\")");
 
   connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
   return page;
