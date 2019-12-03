@@ -331,6 +331,7 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createSetIsoValuesPage());
   addPage(createSaveNetworkPage());
   addPage(createShowFieldPage());
+  addPage(createColorMapPage());
 
   addPage(createNetworkEditingPage());
   addPage(createModuleStateEditingPage());
@@ -517,6 +518,22 @@ QWizardPage* PythonWizard::createShowFieldPage()
   connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
   return page;
 }
+
+QWizardPage* PythonWizard::createColorMapPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->infoText->setText("Create a ColorMap module\n"
+    "\n"
+    "Create RescaleColorMapModule");
+
+  page->codeEdit->setPlainText("color_map = scirun_add_module(\"CreateStandardColorMap\")\n"
+    "\n\n"
+    "rescale_color_map = scirun_add_module(\"RescaleColorMap\")");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
 
 
 QWizardPage* PythonWizard::createNetworkEditingPage()

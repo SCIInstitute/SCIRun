@@ -218,6 +218,7 @@ namespace Gui {
     QWizardPage* createSetIsoValuesPage();
     QWizardPage* createSaveNetworkPage();
     QWizardPage* createShowFieldPage();
+    QWizardPage* createColorMapPage();
 
     QWizardPage* createNetworkEditingPage();
     QWizardPage* createModuleStateEditingPage();
