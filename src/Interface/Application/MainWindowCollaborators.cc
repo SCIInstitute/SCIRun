@@ -333,6 +333,7 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createShowFieldPage());
   addPage(createColorMapPage());
   addPage(createConnectModulesPage());
+  addPage(createViewScenePage());
 
   addPage(createNetworkEditingPage());
   addPage(createModuleStateEditingPage());
@@ -544,6 +545,21 @@ QWizardPage* PythonWizard::createConnectModulesPage()
     "scirun_connect_modules(color_map, 0, rescale_color_map, 0)\n"
     "scirun_connect_modules(calc, 0, rescale_color_map, 1)\n"
     "scirun_connect_modules(rescale_color_map, 0, iso_show_field, 1)");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+QWizardPage* PythonWizard::createViewScenePage()
+{
+  auto page = new PythonWizardCodePage;
+  page->infoText->setText("Create a ViewScene module\n"
+    "\n"
+    "Connect the ViewScene and ShowField modules");
+
+  page->codeEdit->setPlainText("view_scene = scirun_add_module(\"ViewScene\")\n"
+    "\n\n"
+    "scirun_connect_modules(iso_show_field, 0, view_scene, 0)");
 
   connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
   return page;

@@ -220,6 +220,7 @@ namespace Gui {
     QWizardPage* createShowFieldPage();
     QWizardPage* createColorMapPage();
     QWizardPage* createConnectModulesPage();
+    QWizardPage* createViewScenePage();
 
     QWizardPage* createNetworkEditingPage();
     QWizardPage* createModuleStateEditingPage();
