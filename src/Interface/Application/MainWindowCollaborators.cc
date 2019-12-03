@@ -332,6 +332,7 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createSaveNetworkPage());
   addPage(createShowFieldPage());
   addPage(createColorMapPage());
+  addPage(createConnectModulesPage());
 
   addPage(createNetworkEditingPage());
   addPage(createModuleStateEditingPage());
@@ -534,6 +535,19 @@ QWizardPage* PythonWizard::createColorMapPage()
   return page;
 }
 
+QWizardPage* PythonWizard::createConnectModulesPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->infoText->setText("Connect the modules");
+
+  page->codeEdit->setPlainText("scirun_connect_modules(iso, 0, iso_show_field, 0)\n"
+    "scirun_connect_modules(color_map, 0, rescale_color_map, 0)\n"
+    "scirun_connect_modules(calc, 0, rescale_color_map, 1)\n"
+    "scirun_connect_modules(rescale_color_map, 0, iso_show_field, 1)");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
 
 
 QWizardPage* PythonWizard::createNetworkEditingPage()
