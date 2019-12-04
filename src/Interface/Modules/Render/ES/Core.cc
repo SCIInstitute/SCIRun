@@ -39,8 +39,7 @@
 namespace SCIRun {
 namespace Render {
 
-ESCore::ESCore() : mCoreSequence(0), mCurrentTime(0.0f), mFPS(0.0f), mLastRealTime(0.0f),
-  r_(0.0f), g_(0.0f), b_(0.0f), a_(0.0f)
+ESCore::ESCore() : mCurrentTime(0.0f), r_(0.0f), g_(0.0f), b_(0.0f), a_(0.0f)
 {
   // Register common systems.
   gen::registerAll(*this);
@@ -120,23 +119,23 @@ bool ESCore::hasGeomPromise() const
   return false;
 }
 
+bool ESCore::hasShaderPromise() const
+{
+  for(auto& comp : mComponents)
+  {
+    if(comp.second->getNumComponents() > 0)
+    {
+      if(mComponentIDNameMap.find(comp.first) != mComponentIDNameMap.end() &&
+         mComponentIDNameMap.at(comp.first) == "ren:ShaderPromiseVF")
+        return true;
+    }
+  }
+  return false;
+}
+
 void ESCore::execute(double currentTime, double constantFrameTime)
 {
-  ++mCoreSequence;
-
-  const int fpsAvgLength = 60;
-  if (mCoreSequence % fpsAvgLength == 0)
-  {
-    mFPS /= fpsAvgLength;
-    //std::cout << toString("");
-    //std::cout << "FPS: " << mFPS << "\n";
-    mFPS = 0.0f;
-  }
-
-  // Add up FPS. Will average when we loop back around.
-  mFPS += 1.0f / (static_cast<float>(currentTime) - mLastRealTime);
-  mLastRealTime = static_cast<float>(currentTime);
-
+  mCurrentTime += constantFrameTime;
   // Update the current static time component before renormalization.
   {
     gen::StaticGlobalTime globalTime;
@@ -145,15 +144,8 @@ void ESCore::execute(double currentTime, double constantFrameTime)
 
     // Modify 'input'. If it doesn't already exist in the system, create it.
     gen::StaticGlobalTime* esGlobalTime = getStaticComponent<gen::StaticGlobalTime>();
-
-    if (esGlobalTime == nullptr)
-    {
-      addStaticComponent(globalTime);
-    }
-    else
-    {
-      *esGlobalTime = globalTime;
-    }
+    if (esGlobalTime == nullptr) addStaticComponent(globalTime);
+    else *esGlobalTime = globalTime;
   }
 
   // Ensure all systems are appropriately added and removed.
@@ -184,8 +176,6 @@ void ESCore::execute(double currentTime, double constantFrameTime)
   // Perform execution of systems.
   uint64_t timeInMS = static_cast<uint64_t>(mCurrentTime * 1000.0);
   mSystems->runSystems(*this, timeInMS);
-
-  mCurrentTime += constantFrameTime;
 }
 
 void ESCore::setBackgroundColor(float r, float g, float b, float a)
