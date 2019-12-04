@@ -28,7 +28,7 @@ SET_PROPERTY(DIRECTORY PROPERTY "EP_BASE" ${ep_base})
 
 # TODO: test on Windows
 ExternalProject_Add(Eigen_external
-  URL "https://bitbucket.org/eigen/eigen/get/3.3.7.tar.gz"
+  URL "https://github.com/eigenteam/eigen-git-mirror/archive/3.3.7.tar.gz"
   PATCH_COMMAND ""
   CONFIGURE_COMMAND ""
   BUILD_IN_SOURCE ON
