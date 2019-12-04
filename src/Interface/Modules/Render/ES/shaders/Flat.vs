@@ -44,5 +44,6 @@ void main( void )
   vPosWorld = uModel * vec4(aPos, 1.0);
   vPosView = uView * vPosWorld;
 
-  gl_Position = uProjection * (vPosView + vec4(0.0, 0.0, 0.0001, 0.0));
+  gl_Position = (uProjection * (vPosView));
+  gl_Position += vec4(0.0, 0.0, -0.00001, 0.0);
 }

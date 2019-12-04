@@ -46,5 +46,6 @@ void main( void )
   vPosView = uView * vPosWorld;
   vTexCoords = aTexCoords;
 
-  gl_Position = uProjection * (vPosView + vec4(0.0, 0.0, 0.0001, 0.0));
+  gl_Position = (uProjection * (vPosView));
+  gl_Position += vec4(0.0, 0.0, -0.00001, 0.0);
 }
