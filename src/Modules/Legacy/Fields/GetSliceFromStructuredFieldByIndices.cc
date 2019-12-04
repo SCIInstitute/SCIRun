@@ -620,22 +620,19 @@ void GetSliceFromStructuredFieldByIndices::execute()
       {
         index = state->getValue(Index_i).toInt();
         auto check = indexCheck(Dim_i)(index);
-        if (!std::get<0>(check))
-          THROW_ALGORITHM_INPUT_ERROR(std::get<1>(check));
+        IF_CHECK_FAILED_THROW_ALGORITHM_INPUT_ERROR(check);
       }
       else if (state->getValue(Axis_ijk).toInt() == 1)
       {
         index = state->getValue(Index_j).toInt();
         auto check = indexCheck(Dim_j)(index);
-        if (!std::get<0>(check))
-          THROW_ALGORITHM_INPUT_ERROR(std::get<1>(check));
+        IF_CHECK_FAILED_THROW_ALGORITHM_INPUT_ERROR(check);
       }
       else
       {
         index = state->getValue(Index_k).toInt();
         auto check = indexCheck(Dim_k)(index);
-        if (!std::get<0>(check))
-          THROW_ALGORITHM_INPUT_ERROR(std::get<1>(check));
+        IF_CHECK_FAILED_THROW_ALGORITHM_INPUT_ERROR(check);
       }
 
       if (dim.size() == 3)
