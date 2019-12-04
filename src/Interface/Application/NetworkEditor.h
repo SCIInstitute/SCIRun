@@ -6,7 +6,7 @@
    Copyright (c) 2015 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -375,7 +375,6 @@ namespace Gui {
     void moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
     void defaultNotePositionChanged(NotePosition position);
     void defaultNoteSizeChanged(int size);
-    void sceneChanged(const QList<QRectF>& region);
     void snapToModules();
     void highlightPorts(int state);
     void zoomLevelChanged(int zoom);
