@@ -207,19 +207,13 @@ namespace Gui {
     void showPrefs();
   private:
     QWizardPage* createIntroPage();
+    QWizardPage* createSaveNetworkPage();
     QWizardPage* createLatVolPage();
     QWizardPage* createEditMeshBoundingBoxPage();
     QWizardPage* createLatVolMeshBoxConnectionPage();
     QWizardPage* createCalculateFieldDataPage();
-    QWizardPage* createAssignSphereEquationPage();
-    QWizardPage* createMeshBoxCalcDataConectionPage();
     QWizardPage* createExtractIsosurfacePage();
-    QWizardPage* createCalcDataIsoConnectionPage();
-    QWizardPage* createSetIsoValuesPage();
-    QWizardPage* createSaveNetworkPage();
     QWizardPage* createShowFieldPage();
-    QWizardPage* createColorMapPage();
-    QWizardPage* createConnectModulesPage();
     QWizardPage* createViewScenePage();
     QWizardPage* createExecutePage();
     QLineEdit* pathWidget_;

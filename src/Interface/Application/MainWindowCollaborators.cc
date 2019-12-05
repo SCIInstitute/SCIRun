@@ -320,19 +320,13 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint);
 
   addPage(createIntroPage());
+  addPage(createSaveNetworkPage());
   addPage(createLatVolPage());
   addPage(createEditMeshBoundingBoxPage());
   addPage(createLatVolMeshBoxConnectionPage());
   addPage(createCalculateFieldDataPage());
-  addPage(createAssignSphereEquationPage());
-  addPage(createMeshBoxCalcDataConectionPage());
   addPage(createExtractIsosurfacePage());
-  addPage(createCalcDataIsoConnectionPage());
-  addPage(createSetIsoValuesPage());
-  addPage(createSaveNetworkPage());
   addPage(createShowFieldPage());
-  addPage(createColorMapPage());
-  addPage(createConnectModulesPage());
   addPage(createViewScenePage());
   addPage(createExecutePage());
 
@@ -379,19 +373,41 @@ public:
   }
 };
 
+QWizardPage* PythonWizard::createSaveNetworkPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->setSubTitle("Saving Network");
+  page->infoText->setText("     Start by saving a new network to your SCIRun default path. "
+  "To save to a different location, edit the parameter to the desired filename path."
+  "\n\n"
+  "     Click the \"Send to Python Console\"  to send and execute the code in the python console."
+  "\n\n"
+  "**The default path settings can be modified from Preferences > Paths**");
+
+  page->codeEdit->setPlainText("scirun_save_network(\"/YOUR/FILENAME/PATH\")");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+
 QWizardPage* PythonWizard::createLatVolPage()
 {
   auto page = new PythonWizardCodePage;
   page->setSubTitle("Working with the LatVol Module");
-  page->infoText->setText("This will create a \"CreateLatVol\" module\n"
-    "\n"
-    "Then edit it's parameters");
+  page->infoText->setText("    Create a CreateLatVol module by using the command `scirun_add_module()`."
+    "\n\n"
+    "     Then edit the module's parameters using \'scirun_set_module_state\'."
+    "**To view all module states of a module, toggle the Metadata Layer and hover over a module.**");
 
   page->codeEdit->setPlainText("lat = scirun_add_module(\"CreateLatVol\")\n"
     "\n\n"
     "scirun_set_module_state(lat, \"XSize\", 20)\n"
+    "\n"
     "scirun_set_module_state(lat, \"YSize\", 20)\n"
+    "\n"
     "scirun_set_module_state(lat, \"ZSize\", 20)\n"
+    "\n"
     "scirun_set_module_state(lat, \"ElementSizeNormalized\", 1)");
 
   connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
@@ -402,15 +418,24 @@ QWizardPage* PythonWizard::createEditMeshBoundingBoxPage()
 {
   auto page = new PythonWizardCodePage;
   page->setSubTitle("Working with the EditMeshBoundingBox Module");
-  page->infoText->setText("This will create a \"EditMeshBoundingBox\" module to move the LatVol"
+  page->infoText->setText("     Create EditMeshBoundingBox module, and edit its parameters using the same commands."
     "\n\n"
-    "Then edit it's parameters");
+    "**For more information about a module, click on the Question Mark icon on the module in the network, "
+    "or visit https://sciinstitute.github.io/scirun.pages/modules.html**");
 
   page->codeEdit->setPlainText("edit_box = scirun_add_module(\"EditMeshBoundingBox\")\n"
     "\n\n\n"
-    "scirun_set_module_state(edit_box, \"OutputCenterX\", 0)\n"
-    "scirun_set_module_state(edit_box, \"OutputCenterY\", 0)\n"
-    "scirun_set_module_state(edit_box, \"OutputCenterZ\", 0)\n");
+    "scirun_set_module_state(edit_box, \"OutputCenterX\", 10)\n"
+    "\n"
+    "scirun_set_module_state(edit_box, \"OutputCenterY\", 10)\n"
+    "\n"
+    "scirun_set_module_state(edit_box, \"OutputCenterZ\", 10)\n"
+    "\n"
+    "scirun_set_module_state(edit_box, \"OutputSizeX\", 20)\n"
+    "\n"
+    "scirun_set_module_state(edit_box, \"OutputSizeY\", 20)\n"
+    "\n"
+    "scirun_set_module_state(edit_box, \"OutputSizeZ\", 20)\n");
 
   connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
   return page;
@@ -420,7 +445,7 @@ QWizardPage* PythonWizard::createLatVolMeshBoxConnectionPage()
 {
   auto page = new PythonWizardCodePage;
   page->setSubTitle("Connecting Modules");
-  page->infoText->setText("Connect the LatVol and the EditMeshBoundingBox");
+  page->infoText->setText("     Use the 'scirun_connect_modules()' command to connect the CreateLatVol module to the EditMeshBoundingBox module.");
 
   page->codeEdit->setPlainText("scirun_connect_modules(lat, 0, edit_box, 0)");
 
@@ -432,33 +457,15 @@ QWizardPage* PythonWizard::createCalculateFieldDataPage()
 {
   auto page = new PythonWizardCodePage;
   page->setSubTitle("Working with the CalculateFieldData Module");
-  page->infoText->setText("Create a CalculateFieldData module to assign values to the LatVol");
+  page->infoText->setText("     Create a CalculateFieldData module, then  connect it to the EditMeshBoundingBox module."
+    "\n\n"
+    "     To make the LatVol spherical, assign the equation of a sphere to the CalculateFieldData module");
 
-  page->codeEdit->setPlainText("calc = scirun_add_module(\"CalculateFieldData\")");
-
-  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
-  return page;
-}
-
-QWizardPage* PythonWizard::createAssignSphereEquationPage()
-{
-  auto page = new PythonWizardCodePage;
-  page->setSubTitle("Assigning an Equation");
-  page->infoText->setText("Assign the CalculateFieldData modue the equation of a sphere");
-
-  page->codeEdit->setPlainText("scirun_set_module_state(calc, \"FunctionString\", \"RESULT = sqrt((X * X) + (Y * Y) + (Z * Z))\")");
-
-  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
-  return page;
-}
-
-QWizardPage* PythonWizard::createMeshBoxCalcDataConectionPage()
-{
-  auto page = new PythonWizardCodePage;
-  page->setSubTitle("Connecting Modules");
-  page->infoText->setText("Connect EditMeshBoundingBox and the CalculateFieldData modules");
-
-  page->codeEdit->setPlainText("scirun_connect_modules(edit_box, 0, calc, 0)");
+  page->codeEdit->setPlainText("calc = scirun_add_module(\"CalculateFieldData\")\n"
+    "\n"
+    "scirun_connect_modules(edit_box, 0, calc, 0)"
+    "\n"
+    "scirun_set_module_state(calc, \"FunctionString\", \"RESULT = sqrt((X * X) + (Y * Y) + (Z * Z))\")\n");
 
   connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
   return page;
@@ -468,49 +475,17 @@ QWizardPage* PythonWizard::createExtractIsosurfacePage()
 {
   auto page = new PythonWizardCodePage;
   page->setSubTitle("Working with the ExtractSimpleIsosurface Module");
-  page->infoText->setText("Create ExtractSimpleIsosurface module to extract the isosurface from the LatVol");
+  page->infoText->setText("     Create ExtractSimpleIsosurface module and connect it to the CalculateFieldData module."
+    "\n\n"
+    "     Change the module to a list and set the values.");
 
-  page->codeEdit->setPlainText("iso = scirun_add_module(\"ExtractSimpleIsosurface\")");
-
-  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
-  return page;
-}
-
-QWizardPage* PythonWizard::createCalcDataIsoConnectionPage()
-{
-  auto page = new PythonWizardCodePage;
-  page->setSubTitle("Connecting Modules");
-  page->infoText->setText("Connect the Data to the Isosurface");
-
-  page->codeEdit->setPlainText("scirun_connect_modules(calc, 0, iso, 0)");
-
-  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
-  return page;
-}
-
-QWizardPage* PythonWizard::createSetIsoValuesPage()
-{
-  auto page = new PythonWizardCodePage;
-  page->setSubTitle("Setting Isosurface Values");
-  page->infoText->setText("Change the Isosurface module to a list\n"
+  page->codeEdit->setPlainText("iso = scirun_add_module(\"ExtractSimpleIsosurface\")\n"
     "\n"
-    "Set the values");
-
-  page->codeEdit->setPlainText("scirun_set_module_state(iso, \"IsovalueChoice\", \"List\")\n"
+    "scirun_connect_modules(calc, 0, iso, 0)\n"
+    "\n"
+    "scirun_set_module_state(iso, \"IsovalueChoice\", \"List\")\n"
     "\n"
     "scirun_set_module_state(iso, \"ListOfIsovalues\", \"1,5,10,15,18\")");
-
-  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
-  return page;
-}
-
-QWizardPage* PythonWizard::createSaveNetworkPage()
-{
-  auto page = new PythonWizardCodePage;
-  page->setSubTitle("Saving Network");
-  page->infoText->setText("Save the Network to desired path");
-
-  page->codeEdit->setPlainText("scirun_save_network(\"/YOUR/FILENAME/PATH\")");
 
   connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
   return page;
@@ -520,56 +495,41 @@ QWizardPage* PythonWizard::createShowFieldPage()
 {
   auto page = new PythonWizardCodePage;
   page->setSubTitle("Working with ShowField Module");
-  page->infoText->setText("Create ShowField module for the Isosurface\n"
-    "\n"
-    "Edit the ShowField module parameters");
+  page->infoText->setText("Create a ShowField modules and turn off its ShowEdges parameter. "
+    "Connect it to the ExtractSimpleIsosurface module."
+    "\n\n"
+    "Create a ColorMap module and rescale it by connecting it to a new RescaleColorMap module, "
+    "then connecting the CalculateFieldData module to the RescaleColorMap module."
+    "\n\n"
+    "To show the color map, connect the RescaleColorMap module to the ShowField module.");
 
   page->codeEdit->setPlainText("iso_show_field = scirun_add_module(\"ShowField\")\n"
     "\n"
-    "scirun_set_module_state(iso_show_field, \"ShowFaces\", 0)");
-
-  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
-  return page;
-}
-
-QWizardPage* PythonWizard::createColorMapPage()
-{
-  auto page = new PythonWizardCodePage;
-  page->setSubTitle("Working with ColorMap Modules");
-  page->infoText->setText("Create a ColorMap module\n"
+    "scirun_set_module_state(iso_show_field, \"ShowEdges\", 0)\n"
     "\n"
-    "Create RescaleColorMapModule");
-
-  page->codeEdit->setPlainText("color_map = scirun_add_module(\"CreateStandardColorMap\")\n"
-    "\n\n"
-    "rescale_color_map = scirun_add_module(\"RescaleColorMap\")");
-
-  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
-  return page;
-}
-
-QWizardPage* PythonWizard::createConnectModulesPage()
-{
-  auto page = new PythonWizardCodePage;
-  page->setSubTitle("Connecting Modules");
-  page->infoText->setText("Connect the modules");
-
-  page->codeEdit->setPlainText("scirun_connect_modules(iso, 0, iso_show_field, 0)\n"
+    "scirun_connect_modules(iso, 0, iso_show_field, 0)\n"
+    "\n"
+    "color_map = scirun_add_module(\"CreateStandardColorMap\")\n"
+    "\n"
+    "rescale_color_map = scirun_add_module(\"RescaleColorMap\")\n"
+    "\n"
     "scirun_connect_modules(color_map, 0, rescale_color_map, 0)\n"
+    "\n"
     "scirun_connect_modules(calc, 0, rescale_color_map, 1)\n"
+    "\n"
     "scirun_connect_modules(rescale_color_map, 0, iso_show_field, 1)");
 
   connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
   return page;
 }
 
+
 QWizardPage* PythonWizard::createViewScenePage()
 {
   auto page = new PythonWizardCodePage;
   page->setSubTitle("Working with ViewScene Module");
-  page->infoText->setText("Create a ViewScene module\n"
-    "\n"
-    "Connect the ViewScene and ShowField modules");
+  page->infoText->setText("To be able to view the volume, "
+  "you will need to create a ViewScene module and connect it to the ShowField module.");
 
   page->codeEdit->setPlainText("view_scene = scirun_add_module(\"ViewScene\")\n"
     "\n\n"
@@ -584,7 +544,7 @@ QWizardPage* PythonWizard::createExecutePage()
 {
   auto page = new PythonWizardCodePage;
   page->setSubTitle("Executing the Network");
-  page->infoText->setText("Execute the network");
+  page->infoText->setText("Execute the network by running the command 'scirun_execute_all()'");
 
   page->codeEdit->setPlainText("scirun_execute_all()");
 
