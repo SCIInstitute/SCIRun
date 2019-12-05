@@ -107,7 +107,9 @@ NetworkEditor::NetworkEditor(const NetworkEditorParameters& params, QWidget* par
   verticalScrollBar()->setValue(0);
   horizontalScrollBar()->setValue(0);
 
-  //setViewUpdateFunc([](const QString& q) { qDebug() << q; });
+#ifdef MODULE_POSITION_LOGGING
+  setViewUpdateFunc([](const QString& q) { qDebug() << q; });
+#endif
 }
 
 void NetworkEditor::setHighResolutionExpandFactor(double factor)
@@ -168,27 +170,37 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
   auto moduleWidget = new ModuleWidget(this, QString::fromStdString(name), module, dialogErrorControl_);
   moduleEventProxy_->trackModule(module);
 
-  auto proxy = setupModuleWidget(moduleWidget);
+#ifdef MODULE_POSITION_LOGGING
+  auto proxy =
+#endif
+  setupModuleWidget(moduleWidget);
 
+#ifdef MODULE_POSITION_LOGGING
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
 
-  // logCritical("module {} added at pos {},{} proxy pos {}, {} proxy scenePos {},{}",
-  //   name,
-  //   moduleWidget->pos().x(), moduleWidget->pos().y(),
-  //   proxy->pos().x(), proxy->pos().y(),
-  //   proxy->scenePos().x(), proxy->scenePos().y());
+  logCritical("module {} added at pos {},{} proxy pos {}, {} proxy scenePos {},{}",
+    name,
+    moduleWidget->pos().x(), moduleWidget->pos().y(),
+    proxy->pos().x(), proxy->pos().y(),
+    proxy->scenePos().x(), proxy->scenePos().y());
+#endif
 
   if (!fileLoading_)
   {
     moduleWidget->postLoadAction();
   }
+#ifdef MODULE_POSITION_LOGGING
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
+#endif
+
   count.increment();
   Q_EMIT modified();
   Q_EMIT newModule(QString::fromStdString(module->id()), module->hasUI());
-  //qDebug() << __FUNCTION__ << __LINE__;
   alignViewport();
+
+#ifdef MODULE_POSITION_LOGGING
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
+#endif
 }
 
 void NetworkEditor::connectionAddedQueued(const ConnectionDescription& cd)
@@ -434,14 +446,28 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
 
+#ifdef MODULE_POSITION_LOGGING
   qDebug() << "__NW__" << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
+#endif
+
   proxy->setZValue(zLevelManager_->get_max());
+
+#ifdef MODULE_POSITION_LOGGING
   qDebug() << "__NW__" << __LINE__ << modulePlacement_.getLast();
+#endif
+
   proxy->setPos(modulePlacement_.getLast());
+
+#ifdef MODULE_POSITION_LOGGING
   qDebug() << "__NW__" << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
+#endif
 
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
+
+#ifdef MODULE_POSITION_LOGGING
   qDebug() << "__NW__" << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
+#endif
+
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
   connect(proxy, SIGNAL(selected()), this, SLOT(bringToFront()));
   connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(modified()));
@@ -455,21 +481,40 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(module, SIGNAL(displayChanged()), proxy, SLOT(createPortPositionProviders()));
   connect(proxy, SIGNAL(tagChanged(int)), this, SLOT(highlightTaggedItem(int)));
 
+#ifdef MODULE_POSITION_LOGGING
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
+#endif
 
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
+
+#ifdef MODULE_POSITION_LOGGING
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
+#endif
+
   proxy->setDefaultNoteSize(defaultNotePositionGetter_->size());
+
+#ifdef MODULE_POSITION_LOGGING
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
+#endif
+
   proxy->createPortPositionProviders();
+
+#ifdef MODULE_POSITION_LOGGING
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
+#endif
+
   proxy->highlightPorts(Preferences::Instance().highlightPorts ? 1 : 0);
 
+#ifdef MODULE_POSITION_LOGGING
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
+#endif
 
   if (highResolutionExpandFactor_ > 1)
   {
+#ifdef MODULE_POSITION_LOGGING
     qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
+#endif
+
     auto multiplier = std::min(highResolutionExpandFactor_, 1.2);
     module->setFixedHeight(proxy->size().height() * multiplier);
     proxy->setMaximumHeight(proxy->size().height() * multiplier);
@@ -477,12 +522,16 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
     proxy->setMaximumWidth(proxy->size().width() * std::max(multiplier*0.9, 1.0));
   }
 
+#ifdef MODULE_POSITION_LOGGING
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
+#endif
 
   scene_->addItem(proxy);
   ensureVisible(proxy);
 
+#ifdef MODULE_POSITION_LOGGING
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
+#endif
 
   proxy->createStartupNote();
 
@@ -491,7 +540,9 @@ ModuleProxyWidget* NetworkEditor::setupModuleWidget(ModuleWidget* module)
   bringToFront();
   proxy->setVisible(visibleItems_);
 
+#ifdef MODULE_POSITION_LOGGING
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
+#endif
 
   guiLogDebug("Module added: {}", module->getModuleId());
 
@@ -664,7 +715,6 @@ void NetworkEditor::deleteImpl(QList<QGraphicsItem*> items)
   }
   qDeleteAll(items);
 
-  //qDebug() << __FUNCTION__ << __LINE__;
   alignViewport();
 }
 
@@ -749,7 +799,6 @@ void NetworkEditor::pasteImpl(const QString& xml)
     QMessageBox::critical(this, "Paste error", "Invalid clipboard contents: " + xml);
   }
 
-  //qDebug() << __FUNCTION__ << __LINE__;
   alignViewport();
 }
 
@@ -793,7 +842,6 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   else if (moduleSelectionGetter_->isClipboardXML())
     pasteImpl(moduleSelectionGetter_->clipboardXML());
 
-  //qDebug() << __FUNCTION__ << __LINE__;
   alignViewport();
 }
 
@@ -802,9 +850,17 @@ void NetworkEditor::addNewModuleAtPosition(const QPointF& position)
   InEditingContext iec(this);
 
   modulePlacement_.setLastFromAddingNew(position);
+
+#ifdef MODULE_POSITION_LOGGING
   logCritical("{},{}", __FILE__, __LINE__);
+#endif
+
   controller_->addModule(moduleSelectionGetter_->text().toStdString());
+
+#ifdef MODULE_POSITION_LOGGING
   logCritical("{},{}", __FILE__, __LINE__);
+#endif
+
   Q_EMIT modified();
 }
 
@@ -884,16 +940,13 @@ void NetworkEditor::mouseReleaseEvent(QMouseEvent *event)
 
   logViewerDims("mouseReleaseEvent:");
 
-//qDebug() << __FUNCTION__ << __LINE__;
   alignViewport();
 }
 
 void NetworkEditor::alignViewport()
 {
   auto visibleRect = scene_->itemsBoundingRect();
-  //qDebug() << __FUNCTION__ << visibleRect;
   visibleRect.adjust(-20, -20, 20, 20);
-  //qDebug() << visibleRect;
   setSceneRect(visibleRect);
   miniview_->setSceneRect(visibleRect);
 }
@@ -1336,7 +1389,10 @@ QPointF NetworkEditor::getModulePositionAdjustment(const ModulePositions& module
 
 void NetworkEditor::updateModulePositions(const ModulePositions& modulePositions, bool selectAll)
 {
-  logCritical("!!! {},{}", __FILE__, __LINE__);
+#ifdef MODULE_POSITION_LOGGING
+  logCritical("updateModulePositions {},{}", __FILE__, __LINE__);
+#endif
+
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
@@ -1858,7 +1914,9 @@ void NetworkEditor::updateBackground(bool forceGrid)
 
 void NetworkEditor::adjustModuleWidth(int delta)
 {
+#ifdef MODULE_POSITION_LOGGING
   logCritical("{},{}", __FILE__, __LINE__);
+#endif
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     auto proxy = getModuleProxy(item);
@@ -1871,7 +1929,9 @@ void NetworkEditor::adjustModuleWidth(int delta)
 
 void NetworkEditor::adjustModuleHeight(int delta)
 {
+#ifdef MODULE_POSITION_LOGGING
   logCritical("{},{}", __FILE__, __LINE__);
+#endif
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     auto proxy = getModuleProxy(item);
