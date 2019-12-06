@@ -430,6 +430,7 @@ void PythonConsoleWidget::runWizardCommand(const QString& code)
   activateWindow();
   raise();
   private_->console_edit_->replace_command_buffer(code);
+  private_->console_edit_->issue_command();
 }
 
 #endif
