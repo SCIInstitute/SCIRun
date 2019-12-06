@@ -323,12 +323,15 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createSaveNetworkPage());
   addPage(createLatVolPage());
   addPage(createEditMeshBoundingBoxPage());
-  addPage(createLatVolMeshBoxConnectionPage());
+  addPage(createConnectionPage());
   addPage(createCalculateFieldDataPage());
   addPage(createExtractIsosurfacePage());
   addPage(createShowFieldPage());
   addPage(createViewScenePage());
   addPage(createExecutePage());
+
+  addPage(createLoadingNetworkIntroPage());
+  addPage(createLoadNetwork());
 
 }
 
@@ -376,7 +379,7 @@ public:
 QWizardPage* PythonWizard::createSaveNetworkPage()
 {
   auto page = new PythonWizardCodePage;
-  page->setSubTitle("Saving Network");
+  page->setTitle("Saving Network");
   page->infoText->setText("     Start by saving a new network to your SCIRun default path. "
   "To save to a different location, edit the parameter to the desired filename path."
   "\n\n"
@@ -394,7 +397,7 @@ QWizardPage* PythonWizard::createSaveNetworkPage()
 QWizardPage* PythonWizard::createLatVolPage()
 {
   auto page = new PythonWizardCodePage;
-  page->setSubTitle("Working with the LatVol Module");
+  page->setTitle("Working with the LatVol Module");
   page->infoText->setText("    Create a CreateLatVol module by using the command `scirun_add_module()`."
     "\n\n"
     "     Then edit the module's parameters using \'scirun_set_module_state\'."
@@ -417,7 +420,7 @@ QWizardPage* PythonWizard::createLatVolPage()
 QWizardPage* PythonWizard::createEditMeshBoundingBoxPage()
 {
   auto page = new PythonWizardCodePage;
-  page->setSubTitle("Working with the EditMeshBoundingBox Module");
+  page->setTitle("Working with the EditMeshBoundingBox Module");
   page->infoText->setText("     Create EditMeshBoundingBox module, and edit its parameters using the same commands."
     "\n\n"
     "**For more information about a module, click on the Question Mark icon on the module in the network, "
@@ -441,10 +444,10 @@ QWizardPage* PythonWizard::createEditMeshBoundingBoxPage()
   return page;
 }
 
-QWizardPage* PythonWizard::createLatVolMeshBoxConnectionPage()
+QWizardPage* PythonWizard::createConnectionPage()
 {
   auto page = new PythonWizardCodePage;
-  page->setSubTitle("Connecting Modules");
+  page->setTitle("Connecting Modules");
   page->infoText->setText("     Use the 'scirun_connect_modules()' command to connect the CreateLatVol module to the EditMeshBoundingBox module.");
 
   page->codeEdit->setPlainText("scirun_connect_modules(lat, 0, edit_box, 0)");
@@ -456,7 +459,7 @@ QWizardPage* PythonWizard::createLatVolMeshBoxConnectionPage()
 QWizardPage* PythonWizard::createCalculateFieldDataPage()
 {
   auto page = new PythonWizardCodePage;
-  page->setSubTitle("Working with the CalculateFieldData Module");
+  page->setTitle("Working with the CalculateFieldData Module");
   page->infoText->setText("     Create a CalculateFieldData module, then  connect it to the EditMeshBoundingBox module."
     "\n\n"
     "     To make the LatVol spherical, assign the equation of a sphere to the CalculateFieldData module");
@@ -474,7 +477,7 @@ QWizardPage* PythonWizard::createCalculateFieldDataPage()
 QWizardPage* PythonWizard::createExtractIsosurfacePage()
 {
   auto page = new PythonWizardCodePage;
-  page->setSubTitle("Working with the ExtractSimpleIsosurface Module");
+  page->setTitle("Working with the ExtractSimpleIsosurface Module");
   page->infoText->setText("     Create ExtractSimpleIsosurface module and connect it to the CalculateFieldData module."
     "\n\n"
     "     Change the module to a list and set the values.");
@@ -494,7 +497,7 @@ QWizardPage* PythonWizard::createExtractIsosurfacePage()
 QWizardPage* PythonWizard::createShowFieldPage()
 {
   auto page = new PythonWizardCodePage;
-  page->setSubTitle("Working with ShowField Module");
+  page->setTitle("Working with ShowField Module");
   page->infoText->setText("Create a ShowField modules and turn off its ShowEdges parameter. "
     "Connect it to the ExtractSimpleIsosurface module."
     "\n\n"
@@ -527,7 +530,7 @@ QWizardPage* PythonWizard::createShowFieldPage()
 QWizardPage* PythonWizard::createViewScenePage()
 {
   auto page = new PythonWizardCodePage;
-  page->setSubTitle("Working with ViewScene Module");
+  page->setTitle("Working with ViewScene Module");
   page->infoText->setText("To be able to view the volume, "
   "you will need to create a ViewScene module and connect it to the ShowField module.");
 
@@ -543,10 +546,37 @@ QWizardPage* PythonWizard::createViewScenePage()
 QWizardPage* PythonWizard::createExecutePage()
 {
   auto page = new PythonWizardCodePage;
-  page->setSubTitle("Executing the Network");
+  page->setTitle("Executing the Network");
   page->infoText->setText("Execute the network by running the command 'scirun_execute_all()'");
 
   page->codeEdit->setPlainText("scirun_execute_all()");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+QWizardPage* PythonWizard::createLoadingNetworkIntroPage()
+{
+  auto page = new QWizardPage;
+  page->setTitle("Loading a Network");
+  page->setSubTitle("This section of the wizard will demonstrate how to load then execute a network");
+  auto layout = new QVBoxLayout;
+  page -> setLayout(layout);
+  return page;
+}
+
+QWizardPage* PythonWizard::createLoadNetwork()
+{
+  auto page = new PythonWizardCodePage;
+  page->setTitle("Load and Execute a Network");
+  page->infoText->setText("Use the command `scirun_load_network()` to load a saved network from sample networks provided"
+    "\n\n"
+    "Execute network with `scirun_execute_all()` command");
+
+  page->codeEdit->setPlainText("scirun_load_network(\"/Users/nidhipatel/myclone/"
+    "SCIRun/src/ExampleNets/IBBM2015/Isosurfacing_Cube.srn5\")"
+    "\n\n\n"
+    "scirun_execute_all()");
 
   connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
   return page;

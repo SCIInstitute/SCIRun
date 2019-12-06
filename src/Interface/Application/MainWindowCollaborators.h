@@ -210,12 +210,15 @@ namespace Gui {
     QWizardPage* createSaveNetworkPage();
     QWizardPage* createLatVolPage();
     QWizardPage* createEditMeshBoundingBoxPage();
-    QWizardPage* createLatVolMeshBoxConnectionPage();
+    QWizardPage* createConnectionPage();
     QWizardPage* createCalculateFieldDataPage();
     QWizardPage* createExtractIsosurfacePage();
     QWizardPage* createShowFieldPage();
     QWizardPage* createViewScenePage();
     QWizardPage* createExecutePage();
+
+    QWizardPage* createLoadingNetworkIntroPage();
+    QWizardPage* createLoadNetwork();
     QLineEdit* pathWidget_;
     bool showPrefs_{ false };
     std::function<void(const QString&)> displayPython_;
