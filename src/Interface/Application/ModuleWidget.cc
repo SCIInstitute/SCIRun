@@ -56,6 +56,8 @@ using namespace Gui;
 using namespace Dataflow::Networks;
 using namespace Logging;
 
+//#define MODULE_POSITION_LOGGING
+
 namespace SCIRun {
 namespace Gui {
   class ModuleActionsMenu
@@ -1041,6 +1043,10 @@ ModuleWidget::~ModuleWidget()
 
     Q_EMIT removeModule(ModuleId(moduleId_));
   }
+#ifdef MODULE_POSITION_LOGGING
+  logCritical("Q_EMIT display Changed {},{}", LOG_FUNC, __LINE__);
+#endif
+
   Q_EMIT displayChanged();
 }
 
@@ -1453,6 +1459,11 @@ void ModuleWidget::movePortWidgets(int oldIndex, int newIndex)
   removeOutputPortsFromWidget(oldIndex);
   addInputPortsToWidget(newIndex);
   addOutputPortsToWidget(newIndex);
+
+  #ifdef MODULE_POSITION_LOGGING
+    logCritical("Q_EMIT display Changed {},{}", LOG_FUNC, __LINE__);
+  #endif
+
   Q_EMIT displayChanged();
 }
 
@@ -1480,6 +1491,11 @@ void ModuleWidget::highlightPorts()
 {
   ports_->setHighlightPorts(true);
   setPortSpacing(true);
+
+  #ifdef MODULE_POSITION_LOGGING
+    logCritical("Q_EMIT display Changed {},{}", LOG_FUNC, __LINE__);
+  #endif
+
   Q_EMIT displayChanged();
 }
 
@@ -1523,6 +1539,11 @@ void ModuleWidget::unhighlightPorts()
 {
   ports_->setHighlightPorts(false);
   setPortSpacing(false);
+
+  #ifdef MODULE_POSITION_LOGGING
+    logCritical("Q_EMIT display Changed {},{}", LOG_FUNC, __LINE__);
+  #endif
+
   Q_EMIT displayChanged();
 }
 
