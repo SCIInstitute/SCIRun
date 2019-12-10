@@ -158,6 +158,8 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 NetworkEditor::ViewUpdateFunc NetworkEditor::viewUpdateFunc_;
 QGraphicsView* NetworkEditor::miniview_ {nullptr};
 
+static const int macModulePositionWorkaroundTimerValue = 5;
+
 void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module, const ModuleCounter& count)
 {
   if (!fileLoading_ && inEditingContext_ != this)
@@ -171,9 +173,9 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
   moduleEventProxy_->trackModule(module);
 
 #ifdef MODULE_POSITION_LOGGING
-  auto proxy =
+
 #endif
-  setupModuleWidget(moduleWidget);
+  auto proxy = setupModuleWidget(moduleWidget);
 
 #ifdef MODULE_POSITION_LOGGING
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
@@ -201,6 +203,14 @@ void NetworkEditor::addModuleWidget(const std::string& name, ModuleHandle module
 #ifdef MODULE_POSITION_LOGGING
   qDebug() << __LINE__ << "mpw pos" << proxy->pos() << proxy->scenePos();
 #endif
+
+QTimer::singleShot(macModulePositionWorkaroundTimerValue, [proxy]()
+  {
+    proxy->setSelected(true);
+    proxy->setSelected(false);
+    proxy->setSelected(true);
+  }
+);
 }
 
 void NetworkEditor::connectionAddedQueued(const ConnectionDescription& cd)
@@ -1589,6 +1599,19 @@ void NetworkEditor::loadNetwork(const NetworkFileHandle& xml)
   }
 
   setSceneRect(QRectF());
+
+
+  QTimer::singleShot(macModulePositionWorkaroundTimerValue, [this]()
+    {
+      Q_FOREACH(QGraphicsItem* item, scene_->items())
+      {
+        if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+        {
+          w->setSelected(false);
+        }
+      }
+    }
+  );
 }
 
 void NetworkEditor::appendToNetwork(const NetworkFileHandle& xml)
