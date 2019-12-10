@@ -52,6 +52,7 @@ namespace Algorithms {
 #define THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE(type, message) THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE_AND_MESSAGE(type, message, message)
 #define THROW_ALGORITHM_INPUT_ERROR(message) THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE(SCIRun::Core::ErrorMessage, message)
 #define THROW_ALGORITHM_INPUT_ERROR_SIMPLE(message) BOOST_THROW_EXCEPTION(SCIRun::Core::Algorithms::AlgorithmInputException() << SCIRun::Core::ErrorMessage((message)));
+#define IF_CHECK_FAILED_THROW_ALGORITHM_INPUT_ERROR(flagMessage) if (!std::get<0>(flagMessage)) THROW_ALGORITHM_INPUT_ERROR(std::get<1>(flagMessage));
 
 #define THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE_AND_MESSAGE_WITH(algo, type, messageToPrint, messageForErrorObject) { algo->error(messageToPrint); BOOST_THROW_EXCEPTION(SCIRun::Core::Algorithms::AlgorithmInputException() << type((messageForErrorObject))); }
 #define THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE_WITH(algo, type, message) THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE_AND_MESSAGE_WITH(algo, type, message, message)
@@ -61,7 +62,7 @@ namespace Algorithms {
 #define THROW_ALGORITHM_PROCESSING_ERROR(message) THROW_ALGORITHM_PROCESSING_ERROR_WITH_TYPE(SCIRun::Core::ErrorMessage, message)
 
 #define ENSURE_ALGORITHM_INPUT_NOT_NULL(var, message)  if (!(var)) THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE(SCIRun::Core::NullObjectInfo, message) else (void)0
-  
+
 #define ENSURE_POSITIVE_DOUBLE(var, message)  if ((var) <= 0) \
   THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE_AND_MESSAGE(DoubleOutOfRangeInfo, message, \
     DoubleOutOfRangeInfo::value_type( \
