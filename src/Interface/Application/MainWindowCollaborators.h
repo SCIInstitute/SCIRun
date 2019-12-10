@@ -218,7 +218,10 @@ namespace Gui {
     QWizardPage* createExecutePage();
 
     QWizardPage* createLoadingNetworkIntroPage();
-    QWizardPage* createLoadNetwork();
+    QWizardPage* createLoadNetworkPage();
+
+    QWizardPage* createWandIntroPage();
+    QWizardPage* createWandPage();
     QLineEdit* pathWidget_;
     bool showPrefs_{ false };
     std::function<void(const QString&)> displayPython_;

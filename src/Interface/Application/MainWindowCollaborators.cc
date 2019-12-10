@@ -331,7 +331,10 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createExecutePage());
 
   addPage(createLoadingNetworkIntroPage());
-  addPage(createLoadNetwork());
+  addPage(createLoadNetworkPage());
+
+  addPage(createWandIntroPage());
+  addPage(createWandPage());
 
 }
 
@@ -565,7 +568,7 @@ QWizardPage* PythonWizard::createLoadingNetworkIntroPage()
   return page;
 }
 
-QWizardPage* PythonWizard::createLoadNetwork()
+QWizardPage* PythonWizard::createLoadNetworkPage()
 {
   auto page = new PythonWizardCodePage;
   page->setTitle("Load and Execute a Network");
@@ -579,6 +582,34 @@ QWizardPage* PythonWizard::createLoadNetwork()
     "scirun_execute_all()");
 
   connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+  return page;
+}
+
+QWizardPage* PythonWizard::createWandIntroPage()
+{
+  auto page = new QWizardPage;
+  page->setTitle("Using the Wand Tool");
+  page->setSubTitle("This section of the wizard will demonstrate how to use the wand tool to load a python script");
+  auto layout = new QVBoxLayout;
+  page -> setLayout(layout);
+  return page;
+}
+
+QWizardPage* PythonWizard::createWandPage()
+{
+  auto page = new QWizardPage;
+  page->setTitle("Using the Wand Tool");
+  page->setSubTitle("Download the sample python script below"
+    "\n\n"
+    "Click the yellow wand icon at the top of the screen to select the script downloaded"
+    "\n\n"
+    "** If there is no wand at the top of the screen, you may need to go to Windows > Toolbars > Advanced"
+    "to make the advanced toolbar appear**");
+  auto layout = new QVBoxLayout;
+  auto pic = new QLabel;
+  pic->setPixmap(QPixmap(":/general/Resources/new/general/wand.png"));
+  layout->addWidget(pic);
+  page -> setLayout(layout);
   return page;
 }
 
