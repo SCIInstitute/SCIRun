@@ -105,6 +105,11 @@ namespace SCIRun {
       glDeleteTextures(1, &mFontTexture);
     }
 
+    bool SRInterface::hasShaderPromise() const
+    {
+      return mCore.hasShaderPromise(); 
+    }
+
     //----------------------------------------------------------------------------------------------
     void SRInterface::setupCore()
     {
