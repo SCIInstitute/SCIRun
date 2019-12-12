@@ -40,6 +40,7 @@
 #include "ui_ConnectionStyleWizardPage.h"
 #include "ui_OtherSettingsWizardPage.h"
 #include "ui_PythonWizardCodePage.h"
+#include "ui_IntWithPythonPage.h"
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;
@@ -336,6 +337,11 @@ PythonWizard::PythonWizard(std:: function<void(const QString&)> display, QWidget
   addPage(createWandIntroPage());
   addPage(createWandPage());
 
+  addPage(createInterfaceIntroPage());
+  addPage(createBaseNetworkPage());
+  addPage(createAddIntPyPage());
+  addPage(createSetPythonPage());
+
 }
 
 PythonWizard::~PythonWizard()
@@ -612,6 +618,119 @@ QWizardPage* PythonWizard::createWandPage()
   page -> setLayout(layout);
   return page;
 }
+
+QWizardPage* PythonWizard::createInterfaceIntroPage()
+{
+  auto page = new QWizardPage;
+  page->setTitle("Implementing InterfaceWithPython");
+  page->setSubTitle("This section of the wizard will demonstrate how InterfaceWithPython can be used in a network");
+  auto layout = new QVBoxLayout;
+  page->setLayout(layout);
+  return page;
+}
+
+QWizardPage* PythonWizard::createBaseNetworkPage()
+{
+  auto page = new PythonWizardCodePage;
+  page->setTitle("Creating the base network");
+  page->infoText->setText("Run this code in the python console to create a base network."
+    "\n\n"
+    "This network will create a latvol, create field data with the equation of a sphere, and extract its isosurface ");
+
+  page->codeEdit->setPlainText("lat = scirun_add_module(\"CreateLatVol\");"
+    "\n\n"
+    "convert = scirun_add_module(\"ConvertHexVolToTetVol\")"
+    "\n\n"
+    "scirun_connect_modules(lat, 0, convert, 0)"
+    "\n\n"
+    "data = scirun_add_module(\"CreateFieldData\")"
+    "\n\n"
+    "scirun_set_module_state(data, \"FunctionString\", \"RESULT = X*X + Y*Y + Z*Z;\")"
+    "\n\n"
+    "scirun_connect_modules(convert, 0, data, 0)"
+    "\n\n"
+    "iso = scirun_add_module(\"ExtractIsosurface\")"
+    "\n\n"
+    "scirun_set_module_state(iso, \"SingleIsoValue\", 1)"
+    "\n\n"
+    "scirun_connect_modules(data, 0, iso, 0)"
+    "\n\n"
+    "show = scirun_add_module(\"ShowField\")"
+    "\n\n"
+    "scirun_connect_modules(iso, 0, show, 0)"
+    "\n\n"
+    "view = scirun_add_module(\"ViewScene\")"
+    "\n\n"
+    "scirun_connect_modules(show, 0, view, 0)"
+    "\n\n"
+    "scirun_execute_all();");
+
+  connect(page->sendButton, &QPushButton::clicked, [this, page](){displayPython_(page->codeEdit->toPlainText());});
+
+  return page;
+}
+
+QWizardPage* PythonWizard::createAddIntPyPage()
+{
+  auto page = new QWizardPage;
+  page->setTitle("Implementing InterfaceWithPython");
+  page->setSubTitle("Remove the connection pipe between the CreateFieldData module and the ExtractIsosurface module "
+    "and add an IntefaceWithPython module. Connect the output from the CreateFieldData module to the second input of InterfaceWithPython. "
+    "Connect the fourth output of InterfaceWithPython first input of the ExtractIsosurface module."
+    "The network should look like the image to the right.");
+  auto layout = new QVBoxLayout;
+  auto pic = new QLabel;
+  pic->setPixmap(QPixmap(":/general/Resources/Wizard/int_with_py_network.png"));
+  layout->addWidget(pic);
+  page->setLayout(layout);
+  return page;
+}
+
+class IntWithPythonPage : public QWizardPage, public Ui::IntWithPythonPage
+{
+public:
+  IntWithPythonPage()
+  {
+    setupUi(this);
+  }
+};
+
+QWizardPage* PythonWizard::createSetPythonPage()
+{
+  auto page = new IntWithPythonPage;
+  page->setTitle("Implementing InterfaceWithPython");
+  page->infoText->setText("Implement the python code provided to the InterfaceWithPython module"
+    "For every node, if it is less than zero, it will halve the value. If it is larger than zero, it will remain the same"
+    "It will then outout the new values of the nodes.");
+  page->codeEdit->setPlainText("Nodes = Field[\"node\"]"
+    "\n"
+    "new_nodes = []"
+    "\n\n"
+    "for n in Nodes:"
+    "\n"
+    "  nn = [[]]*3"
+    "  \n\n"
+    "  if n[0]>0:"
+    "  \n"
+    "    nn[0] = n[0]"
+    "    \n\n"
+    "  else:"
+    "  \n"
+    "    nn[0] = n[0]/2"
+    "  \n\n"
+    "  nn[1] = n[1]"
+    "  \n"
+    "  nn[2] = n[2]"
+    "  \n\n"
+    "  new_nodes.append(nn)"
+    "\n\n"
+    "Field[\"node\"] = new_nodes"
+    "\n\n"
+    "fieldOutput1 = Field");
+    return page;
+}
+
+
 
 
 

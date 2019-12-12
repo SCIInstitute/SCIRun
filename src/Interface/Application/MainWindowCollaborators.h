@@ -222,6 +222,12 @@ namespace Gui {
 
     QWizardPage* createWandIntroPage();
     QWizardPage* createWandPage();
+
+    QWizardPage* createInterfaceIntroPage();
+    QWizardPage* createBaseNetworkPage();
+    QWizardPage* createAddIntPyPage();
+    QWizardPage* createSetPythonPage();
+
     QLineEdit* pathWidget_;
     bool showPrefs_{ false };
     std::function<void(const QString&)> displayPython_;
