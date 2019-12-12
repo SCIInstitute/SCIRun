@@ -96,11 +96,67 @@ namespace detail
     virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
   };
 
+  class Lighthue : public ColorMapStrategy
+  {
+  public:
+    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
+  };
+
+  class Don : public ColorMapStrategy
+  {
+  public:
+    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
+  };
+
+  class RedTint : public ColorMapStrategy
+  {
+  public:
+    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
+  };
+
+  class OrangeTint : public ColorMapStrategy
+  {
+  public:
+    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
+  };
+
+  class YellowTint : public ColorMapStrategy
+  {
+  public:
+    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
+  };
+
+  class GreenTint : public ColorMapStrategy
+  {
+  public:
+    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
+  };
+
+  class CyanTint : public ColorMapStrategy
+  {
+  public:
+    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
+  };
+
+  class BlueTint : public ColorMapStrategy
+  {
+  public:
+    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
+  };
+
+  class PurpleTint : public ColorMapStrategy
+  {
+  public:
+    virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
+  };
+
   class BPSeismic : public ColorMapStrategy
   {
   public:
     virtual Core::Datatypes::ColorRGB getColorMapVal(double v) const override;
   };
+
+
 
   typedef boost::function<ColorMapStrategy*()> ColorMapMaker;
   static std::map<std::string, ColorMapMaker> colorMapFactoryMap =
@@ -111,6 +167,15 @@ namespace detail
     { "Grayscale", boost::factory<Grayscale*>() },
     { "Orange,Black,Lime", boost::factory<OrangeBlackLime*>() },
     { "Darkhue", boost::factory<Darkhue*>() },
+    { "Lighthue", boost::factory<Lighthue*>() },
+    { "Don", boost::factory<Don*>() },
+    { "Red Tint", boost::factory<RedTint*>() },
+    { "Orange Tint", boost::factory<OrangeTint*>() },
+    { "Yellow Tint", boost::factory<YellowTint*>() },
+    { "Green Tint", boost::factory<GreenTint*>() },
+    { "Cyan Tint", boost::factory<CyanTint*>() },
+    { "Blue Tint", boost::factory<BlueTint*>() },
+    { "Purple Tint", boost::factory<PurpleTint*>() },
     { "BP Seismic", boost::factory<BPSeismic*>() }
   };
 }
@@ -356,6 +421,105 @@ ColorRGB detail::Darkhue::getColorMapVal(double f) const
     col = ColorRGB(1., (f - 0.75) * 4., (f - 0.75) * 2.6666666);
   return col;
 }
+
+static double mix(double a, double b, double c)
+{
+  return a * ( 1.0 - c) + b * c;
+}
+
+static ColorRGB readColorFromArray(const std::vector<ColorRGB>& v, double f)
+{
+  int segments = v.size() - 1;
+  double m = f * segments;
+  int index = int(m);
+  ColorRGB c0 = v[index];
+  ColorRGB c1 = v[std::min(index + 1, segments)];
+  m = m - index;
+
+  return ColorRGB(mix(c0.r(), c1.r(), m), mix(c0.g(), c1.g(), m), mix(c0.b(), c1.b(), m));
+}
+
+ColorRGB detail::Lighthue::getColorMapVal(double f) const
+{
+  static std::vector<ColorRGB> v = {
+  {0.25098, 0.25098, 0.25098}, {0.25098, 0.313725, 0.329412}, {0.25098, 0.309804, 0.360784},
+  {0.25098, 0.282353, 0.435294}, {0.25098, 0.25098, 0.4}, {0.313725, 0.25098, 0.423529},
+  {0.313725, 0.25098, 0.423529}, {0.360784, 0.25098, 0.431373}, {0.462745, 0.25098, 0.47451},
+  {0.513725, 0.25098, 0.454902}, {0.521569, 0.25098, 0.392157}, {0.596078, 0.25098, 0.329412},
+  {0.682353, 0.270588, 0.270588} , {0.701961, 0.309804, 0.25098}, {0.741176, 0.392157, 0.25098},
+  {0.752941, 0.596078, 0.321569}, {0.752941, 0.701961, 0.384314}, {0.741176, 0.752941, 0.486275},
+  {0.721569, 0.74902, 0.592157}};
+
+  return readColorFromArray(v, f);
+}
+
+ColorRGB detail::Don::getColorMapVal(double f) const
+{
+  static std::vector<ColorRGB> v = {
+  {0, 0.352941, 1}, {0.2, 0.407843, 1}, {0.403922, 0.458824, 1}, {0.65098, 0.513725, 0.960784},
+  {0.709804, 0.509804, 0.847059}, {0.752941, 0.505882, 0.729412}, {0.772549, 0.501961, 0.67451},
+  {0.901961, 0.494118, 0.384314}, {0.941176, 0.494118, 0.192157}, {1, 0.521569, 0}};
+
+  return readColorFromArray(v, f);
+}
+
+ColorRGB detail::RedTint::getColorMapVal(double f) const
+{
+  static std::vector<ColorRGB> v = {
+    {0.0784314, 0, 0}, {1, 0.921569, 0.921569}};
+
+  return readColorFromArray(v, f);
+}
+
+ColorRGB detail::OrangeTint::getColorMapVal(double f) const
+{
+  static std::vector<ColorRGB> v = {
+    {0.0784314, 0.0392157, 0}, {1, 0.960784, 0.921569}};
+
+  return readColorFromArray(v, f);
+}
+
+ColorRGB detail::YellowTint::getColorMapVal(double f) const
+{
+  static std::vector<ColorRGB> v = {
+    {0.0784314, 0.0784314, 0}, {1, 1, 0.921569}};
+
+  return readColorFromArray(v, f);
+}
+
+//
+ColorRGB detail::GreenTint::getColorMapVal(double f) const
+{
+  static std::vector<ColorRGB> v = {
+    {0, 0.0784314, 0}, {0.921569, 1, 0.921569}};
+
+  return readColorFromArray(v, f);
+}
+
+ColorRGB detail::CyanTint::getColorMapVal(double f) const
+{
+  static std::vector<ColorRGB> v = {
+    {0, 0.0784314, 0.0784314}, {0.921569, 1, 1}};
+
+  return readColorFromArray(v, f);
+}
+
+ColorRGB detail::BlueTint::getColorMapVal(double f) const
+{
+  static std::vector<ColorRGB> v = {
+    {0, 0, 0.0784314}, {0.921569, 0.921569, 1}};
+
+  return readColorFromArray(v, f);
+}
+
+ColorRGB detail::PurpleTint::getColorMapVal(double f) const
+{
+  static std::vector<ColorRGB> v = {
+    {0.0392157, 0, 0.0784314}, {0.960784, 0.921569, 1}};
+
+  return readColorFromArray(v, f);
+}
+
 
 std::string ColorMap::getColorMapName() const { return nameInfo_; }
 size_t ColorMap::getColorMapResolution() const { return resolution_; }
