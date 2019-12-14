@@ -150,6 +150,8 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   connect(this, SIGNAL(lockMutexForwarder()), this, SLOT(lockMutex()));
   lockMutex();
 
+  connect(this, SIGNAL(signalDelayedGC()), this, SLOT(runDelayedGC()));
+
   std::string filesystemRoot = Application::Instance().executablePath().string();
   std::string sep;
   sep += boost::filesystem::path::preferred_separator;
@@ -677,6 +679,10 @@ void ViewSceneDialog::updateAllGeometries()
   //If a render parameter changes we must update all of the geometries by removing and readding them.
   //This must be foreced because the IDs will not have changed
   newGeometryValue(true);
+
+  auto spire = mSpire.lock();
+  if (!spire) return;
+  spire->runGCOnNextExecution();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -685,6 +691,10 @@ void ViewSceneDialog::updateModifiedGeometries()
   //if we are looking for a new geoetry the ID will have changed therefore we can find the
   //geometries that have changed and only remove those
   newGeometryValue(false);
+
+  auto spire = mSpire.lock();
+  if (!spire) return;
+  spire->runGCOnNextExecution();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -693,6 +703,10 @@ void ViewSceneDialog::updateModifiedGeometriesAndSendScreenShot()
   newGeometryValue(false);
   if(mGLWidget->isVisible() && mGLWidget->isValid()) mGLWidget->requestFrame();
   else                                               unblockExecution();
+
+  auto spire = mSpire.lock();
+  if (!spire) return;
+  spire->runGCOnNextExecution();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -808,6 +822,23 @@ void ViewSceneDialog::sendGeometryFeedbackToState(int x, int y, const std::strin
   vsf.transform = toSciTransform(trans);
   vsf.selectionName = selName;
   state_->setTransientValue(Parameters::GeometryFeedbackInfo, vsf);
+}
+
+void ViewSceneDialog::runDelayedGC()
+{
+  if(delayGC)
+  {
+    QTimer::singleShot(200, this, SLOT(runDelayedGC()));
+  }
+  else
+  {
+    auto spire = mSpire.lock();
+    if (!spire) return;
+    spire->runGCOnNextExecution();
+    std::cout << "ran gc\n";
+    delayedGCRequested = false;
+  }
+  delayGC = false;
 }
 
 
@@ -1465,7 +1496,13 @@ void ViewSceneDialog::updatClippingPlaneDisplay()
 
   //geometry
   buildGeomClippingPlanes();
-  updateModifiedGeometries();
+  newGeometryValue(false);
+  delayGC = true;
+  if(!delayedGCRequested)
+  {
+    delayedGCRequested = true;
+    runDelayedGC();
+  }
 }
 
 //--------------------------------------------------------------------------------------------------
