@@ -79,7 +79,7 @@ namespace SCIRun
       {
       public:
         BBox last_bounds_;
-        std::vector<SphereWidgetHandle> pointWidgets_;
+        std::vector<WidgetHandle> pointWidgets_;
         std::vector<Transform> previousTransforms_;
         double l2norm_;
 
@@ -127,7 +127,11 @@ void GeneratePointSamplesFromField::execute()
 {
   sendOutput(GeneratedPoints, GenerateOutputField());
 
-  auto geom = WidgetFactory::createComposite(*this, "multiple_spheres", impl_->pointWidgets_.begin(), impl_->pointWidgets_.end());
+  std::vector<GeometryHandle> geom_list;
+  for(auto w : impl_->pointWidgets_)
+    geom_list.push_back(w);
+
+  auto geom = createGeomComposite(*this, "multiple_spheres", geom_list.begin(), geom_list.end());
   sendOutput(GeneratedWidget, geom);
 }
 
@@ -234,14 +238,14 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
         if (i < positions.size())
           location = pointFromString(positions[i].toString());
 
-        auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this,
+        auto seed = WidgetFactory::createSphere(*this,
           widgetName(i),
           scale,
           "Color(0.5,0.5,0.5)",
           location,
           location,
           bbox,
-          10));
+          10);
         impl_->pointWidgets_.push_back(seed);
       }
     }
@@ -249,19 +253,19 @@ FieldHandle GeneratePointSamplesFromField::GenerateOutputField()
   }
   else
   {
-    std::vector<SphereWidgetHandle> newWidgets;
+    std::vector<WidgetHandle> newWidgets;
     int counter = 0;
     moveCount_++;
     for (const auto& oldWidget : impl_->pointWidgets_)
     {
-      auto seed = boost::dynamic_pointer_cast<SphereWidget>(WidgetFactory::createSphere(*this,
+      auto seed = WidgetFactory::createSphere(*this,
         widgetName(counter++) + std::string(moveCount_, ' '),
         scale,
         "Color(0.5,0.5,0.5)",
         oldWidget->position(),
         oldWidget->position(),
         bbox,
-        10));
+        10);
       newWidgets.push_back(seed);
     }
     impl_->pointWidgets_ = newWidgets;
