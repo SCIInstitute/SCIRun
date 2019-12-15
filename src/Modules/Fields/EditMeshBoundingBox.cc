@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include "Core/Datatypes/MatrixFwd.h"
 #include "Dataflow/Network/ModuleStateInterface.h"
 #include "Graphics/Widgets/BoundingBoxWidget.h"
 #include <Core/Datatypes/Color.h>
@@ -78,21 +79,36 @@ void EditMeshBoundingBox::processWidgetFeedback(const ModuleFeedback& var)
   }
 }
 
-void EditMeshBoundingBox::adjustGeometryFromTransform(const Transform& transform)
+void EditMeshBoundingBox::adjustGeometryFromTransform(const Transform& feedbackTrans)
 {
-  trans_ = transform * trans_;
-  outputField_->vmesh()->transform(transform);
+  fieldTrans_ = feedbackTrans * fieldTrans_;
+  trans_ = feedbackTrans * trans_;
+  trans_.orthogonalize();
+}
+
+void EditMeshBoundingBox::clear_vals() {
+  auto state = get_state();
+  const std::string cleared("---");
+  state->setValue(InputCenterX, cleared);
+  state->setValue(InputCenterY, cleared);
+  state->setValue(InputCenterZ, cleared);
+  state->setValue(InputSizeX, cleared);
+  state->setValue(InputSizeY, cleared);
+  state->setValue(InputSizeZ, cleared);
 }
 
 void EditMeshBoundingBox::setStateDefaults()
 {
+  clear_vals();
   auto state = get_state();
   state->setValue(TransformMatrix, VariableList());
+  state->setValue(FieldTransformMatrix, VariableList());
   state->setValue(DataSaved, false);
   state->setValue(Scale, 1.0);
   state->setValue(OldScale, 1.0);
   state->setValue(ScaleChanged, false);
   state->setValue(RefreshGeom, true);
+  state->setValue(SetOutputCenter, false);
   state->setValue(RestrictX, false);
   state->setValue(RestrictY, false);
   state->setValue(RestrictZ, false);
@@ -121,22 +137,29 @@ void EditMeshBoundingBox::execute()
   if (needToExecute() || widgetMoved_)
   {
     widgetMoved_ = false;
+    outputField_ = FieldHandle(field->deep_clone());
     auto state = get_state();
-    if(firstRun_ && state->getValue(DataSaved).toBool())
-    {
-      // loadFromParameters();
-      firstRun_ = false;
-    }
-    if(inputsChanged() || state->getValue(RefreshGeom).toBool())
-    {
-      trans_ = Transform();
-      refreshGeometry(field);
-      state->setValue(RefreshGeom, false);
-    }
-    applyScaling();
 
-    MatrixHandle mh(new DenseMatrix(trans_));
-    sendOutput(Transformation_Matrix, mh);
+    if (firstRun_ || inputsChanged() || state->getValue(RefreshGeom).toBool())
+      computeWidgetBox(field->vmesh()->get_bounding_box());
+    if (firstRun_ && state->getValue(DataSaved).toBool())
+    {
+      firstRun_ = false;
+      loadFromParameters();
+      updateInputFieldAttributes();
+    }
+    else if (inputsChanged() || state->getValue(RefreshGeom).toBool())
+    {
+      state->setValue(RefreshGeom, false);
+      fieldTrans_ = Transform(); // Identity matrix
+      trans_ = Transform(pos_, eigvecs_[0] * eigvals_[0], eigvecs_[1] * eigvals_[1], eigvecs_[2] * eigvals_[2]);
+      updateInputFieldAttributes();
+    }
+    // applyScaling();
+    updateState();
+
+    sendOutput(Transformation_Matrix, MatrixHandle(new DenseMatrix(trans_)));
+    outputField_->vmesh()->transform(fieldTrans_);
     sendOutput(OutputField, outputField_);
 
     generateGeomsList();
@@ -149,31 +172,40 @@ void EditMeshBoundingBox::execute()
 void EditMeshBoundingBox::updateState()
 {
   auto state = get_state();
-  auto pos = trans_.get_translation_point();
-  state->setValue(OutputCenterX, pos[0]);
-  state->setValue(OutputCenterY, pos[1]);
-  state->setValue(OutputCenterZ, pos[2]);
+  if(transient_value_cast<bool>(state->getTransientValue(SetOutputCenter)))
+  {
+    state->setTransientValue(SetOutputCenter, false);
+    fieldTrans_.set_mat_val(0, 3, state->getValue(OutputCenterX).toDouble());
+    fieldTrans_.set_mat_val(1, 3, state->getValue(OutputCenterY).toDouble());
+    fieldTrans_.set_mat_val(2, 3, state->getValue(OutputCenterZ).toDouble());
+    trans_.set_mat_val(0, 3, pos_[0] + state->getValue(OutputCenterX).toDouble());
+    trans_.set_mat_val(1, 3, pos_[1] + state->getValue(OutputCenterY).toDouble());
+    trans_.set_mat_val(2, 3, pos_[2] + state->getValue(OutputCenterZ).toDouble());
+  }
+  else if (transient_value_cast<bool>(state->getTransientValue(ResetCenter)))
+  {
+    state->setTransientValue(ResetCenter, false);
+    for(int i = 0; i < 3; ++i)
+    {
+      trans_.set_mat_val(i, 3, pos_[i]);
+      fieldTrans_.set_mat_val(i, 3, 0);
+    }
+  }
 }
 
 void EditMeshBoundingBox::refreshGeometry(const FieldHandle field)
 {
   auto state = get_state();
   computeWidgetBox(field->vmesh()->get_bounding_box());
-  outputField_ = field;
   trans_ = Transform(pos_, eigvecs_[0]*eigvals_[0], eigvecs_[1]*eigvals_[1], eigvecs_[2]*eigvals_[2]);
-  state->setValue(InputCenterX, pos_[0]);
-  state->setValue(InputCenterY, pos_[1]);
-  state->setValue(InputCenterZ, pos_[2]);
-  state->setValue(InputSizeX, eigvals_[0]);
-  state->setValue(InputSizeY, eigvals_[1]);
-  state->setValue(InputSizeZ, eigvals_[2]);
 }
 
 void EditMeshBoundingBox::applyScaling()
 {
   auto state = get_state();
 
-  if (state->getValue(ScaleChanged).toBool()) {
+  if (state->getValue(ScaleChanged).toBool())
+  {
     double scale = (state->getValue(Scale).toDouble());
     for (auto &eigval : eigvals_)
       eigval *= scale;
@@ -182,21 +214,21 @@ void EditMeshBoundingBox::applyScaling()
 
   // We have to undo previous scaling if there is no new geometry
   if (!state->getValue(RefreshGeom).toBool() &&
-       state->getValue(ScaleChanged).toBool()) {
+       state->getValue(ScaleChanged).toBool())
+  {
     double oldScale = state->getValue(OldScale).toDouble();
     for (auto &eigval : eigvals_)
       eigval /= oldScale;
     state->setValue(OldScale, state->getValue(Scale).toDouble());
     trans_.pre_scale(oldScale);
   }
+
+  state->setValue(DataSaved, false);
 }
 
-namespace
+std::string EditMeshBoundingBox::convertForLabel(double coord)
 {
-  std::string convertForLabel(double coord)
-  {
-    return str(boost::format("%8.4f") % coord);
-  }
+  return str(boost::format("%8.4f") % coord);
 }
 
 
@@ -261,21 +293,35 @@ void EditMeshBoundingBox::generateGeomsList()
   geoms_.clear();
   for (const auto& widget : bboxWidget->widgets_)
     geoms_.push_back(widget);
-  std::cout << "sending output\n";
 }
+
 void EditMeshBoundingBox::loadFromParameters()
 {
   trans_ = transformFromString(get_state()->getValue(TransformMatrix).toString());
+  fieldTrans_ = transformFromString(get_state()->getValue(FieldTransformMatrix).toString());
+}
+
+void EditMeshBoundingBox::updateInputFieldAttributes()
+{
+  auto state = get_state();
+  state->setValue(InputCenterX, convertForLabel(pos_[0]));
+  state->setValue(InputCenterY, convertForLabel(pos_[1]));
+  state->setValue(InputCenterZ, convertForLabel(pos_[2]));
+  state->setValue(InputSizeX, convertForLabel(eigvals_[0]));
+  state->setValue(InputSizeY, convertForLabel(eigvals_[1]));
+  state->setValue(InputSizeZ, convertForLabel(eigvals_[2]));
 }
 
 void EditMeshBoundingBox::saveToParameters()
 {
   auto state = get_state();
   state->setValue(TransformMatrix, trans_.get_string());
+  state->setValue(FieldTransformMatrix, fieldTrans_.get_string());
   state->setValue(DataSaved, true);
 }
 
 const AlgorithmParameterName EditMeshBoundingBox::TransformMatrix("TransformMatrix");
+const AlgorithmParameterName EditMeshBoundingBox::FieldTransformMatrix("FieldTransformMatrix");
 const AlgorithmParameterName EditMeshBoundingBox::RefreshGeom("RefreshGeom");
 const AlgorithmParameterName EditMeshBoundingBox::ResetCenter("ResetCenter");
 const AlgorithmParameterName EditMeshBoundingBox::ResetSize("ResetSize");

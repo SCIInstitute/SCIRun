@@ -43,23 +43,37 @@ namespace SCIRun
       // To use rotation and scaling, an origin point must be given.
       enum class WidgetMovement
       {
+        NONE,
         TRANSLATE,
         ROTATE,
-        SCALE
+        SCALE,
+        SCALE_AXIS,
+        SCALE_AXIS_HALF
       };
-      class SCISHARE WidgetBase : public GeometryObjectSpire
-      {
+      enum MouseButton {
+        NONE = 0,
+        LEFT,
+        MIDDLE,
+        RIGHT,
+        STATE_COUNT
+      };
+
+      class SCISHARE WidgetBase : public GeometryObjectSpire {
       public:
         WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable);
         WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& origin);
         WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Core::Geometry::Point& pos, const Core::Geometry::Point& origin);
         Core::Geometry::Point position() const;
         void setPosition(const Core::Geometry::Point& p);
-        void setToScale(const Core::Geometry::Vector& flipAxis);
-        void setToRotate();
-        void setToTranslate();
+        void setToScale(MouseButton btn, const Core::Geometry::Vector& flipAxis);
+        void setToScaleAxis(MouseButton btn, const Core::Geometry::Vector &scaleAxis, glm::mat4 scaleTrans, int scaleAxisIndex);
+        void setToScaleAxisHalf(MouseButton btn, const Core::Geometry::Vector &scaleAxis, glm::mat4 scaleTrans, int scaleAxisIndex);
+        void setToRotate(MouseButton btn);
+        void setToTranslate(MouseButton btn);
         glm::vec3 getFlipVector();
-        WidgetMovement getMovementType();
+        glm::mat4* getScaleTransform();
+        int getScaleAxisIndex();
+        std::vector<WidgetMovement> getMovementTypes();
 
         glm::vec3 origin_;
         std::vector<std::string> connectedIds_;
@@ -68,8 +82,10 @@ namespace SCIRun
       protected:
         Core::Geometry::Point position_;
       private:
-        WidgetMovement movementType_;
+        std::vector<WidgetMovement> movementType_;
         glm::vec3 flipAxis_;
+        int scaleAxisIndex_;
+        glm::mat4 scaleTrans_;
       };
 
         using WidgetHandle = SharedPointer<WidgetBase>;

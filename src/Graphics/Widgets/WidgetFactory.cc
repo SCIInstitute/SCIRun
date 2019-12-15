@@ -57,7 +57,7 @@ WidgetHandle WidgetFactory::createBox(const Core::GeometryIDGenerator& idGenerat
 {
   auto widget = boost::make_shared<BoxWidget>(idGenerator, scale, pos, origin, bbox);
   widget->addInitialId();
-  widget->setToTranslate();
+  widget->setToTranslate(MouseButton::LEFT);
   return widget;
 }
 
@@ -69,7 +69,7 @@ WidgetHandle WidgetFactory::createBox(const Core::GeometryIDGenerator& idGenerat
 {
   auto widget = boost::make_shared<BoxWidget>(idGenerator, scale, origin, points, bbox);
   widget->addInitialId();
-  widget->setToTranslate();
+  widget->setToTranslate(MouseButton::LEFT);
   return widget;
 }
 
@@ -101,7 +101,7 @@ WidgetHandle WidgetFactory::createSphere(const Core::GeometryIDGenerator& idGene
 {
   auto widget = boost::make_shared<SphereWidget>(idGenerator, name, radius, defaultColor, point, origin, bbox, resolution);
   widget->addInitialId();
-  widget->setToTranslate();
+  widget->setToTranslate(MouseButton::LEFT);
   return widget;
 }
 
@@ -117,7 +117,7 @@ WidgetHandle WidgetFactory::createCylinder(const Core::GeometryIDGenerator& idGe
 {
   auto widget = boost::make_shared<CylinderWidget>(idGenerator, name, radius, defaultColor, p1, p2, origin, bbox, resolution);
   widget->addInitialId();
-  widget->setToTranslate();
+  widget->setToTranslate(MouseButton::LEFT);
   return widget;
 }
 
@@ -134,7 +134,7 @@ WidgetHandle WidgetFactory::createCone(const Core::GeometryIDGenerator& idGenera
 {
   auto widget = boost::make_shared<ConeWidget>(idGenerator, name, radius, defaultColor, p1, p2, origin, bbox, renderBase, resolution);
   widget->addInitialId();
-  widget->setToTranslate();
+  widget->setToTranslate(MouseButton::LEFT);
   return widget;
 }
 
@@ -150,6 +150,6 @@ WidgetHandle WidgetFactory::createDisk(const Core::GeometryIDGenerator& idGenera
 {
   auto widget = boost::make_shared<DiskWidget>(idGenerator, name, radius, defaultColor, p1, p2, origin, bbox, resolution);
   widget->addInitialId();
-  widget->setToTranslate();
+  widget->setToTranslate(MouseButton::LEFT);
   return widget;
 }

@@ -102,7 +102,7 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                                 bmin,
                                 bbox,
                                 resolution));
-  widgets_[0]->setToTranslate();
+  widgets_[0]->setToTranslate(MouseButton::LEFT);
 
   if(show_as_vector)
   {
@@ -119,7 +119,7 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                                   bmin,
                                   bbox,
                                   resolution));
-    widgets_[1]->setToTranslate();
+    widgets_[1]->setToTranslate(MouseButton::LEFT);
 
     widgets_.push_back(WidgetFactory::createCone(
                                   idGenerator,
@@ -132,7 +132,7 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                                   bbox,
                                   true,
                                   resolution));
-    widgets_[2]->setToRotate();
+    widgets_[2]->setToRotate(MouseButton::LEFT);
 
     Point diskPos = bmin + dir * scale * diskDistFromCenter_;
     Point dp1 = diskPos - diskWidth_ * dir * scale;
@@ -148,7 +148,7 @@ ArrowWidget::ArrowWidget(const GeometryIDGenerator &idGenerator,
                                   bbox,
                                   resolution));
     Vector flipVec = dir.getArbitraryTangent().normal();
-    widgets_[3]->setToScale(flipVec);
+    widgets_[3]->setToScale(MouseButton::LEFT, flipVec);
   }
 
   std::vector<std::string> geom_ids;

@@ -40,6 +40,9 @@
 #include <Core/Application/Application.h>
 #include <ctime>
 
+using namespace SCIRun;
+using namespace Graphics::Datatypes;
+
 namespace SCIRun {
 namespace Gui {
 
@@ -70,7 +73,7 @@ GLWidget::~GLWidget()
 void GLWidget::initializeGL()
 {
 	spire::glPlatformInit();
-}	
+}
 
 void GLWidget::paintGL()
 {
@@ -79,15 +82,15 @@ void GLWidget::paintGL()
 }
 
 //------------------------------------------------------------------------------
-SCIRun::Render::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
+MouseButton GLWidget::getSpireButton(QMouseEvent* event)
 {
-  auto btn = SCIRun::Render::SRInterface::MOUSE_NONE;
+  auto btn = MouseButton::NONE;
   if (event->buttons() & Qt::LeftButton)
-    btn = Render::SRInterface::MOUSE_LEFT;
+    btn = MouseButton::LEFT;
   else if (event->buttons() & Qt::RightButton)
-    btn = Render::SRInterface::MOUSE_RIGHT;
+    btn = MouseButton::RIGHT;
   else if (event->buttons() & Qt::MidButton)
-    btn = Render::SRInterface::MOUSE_MIDDLE;
+    btn = MouseButton::MIDDLE;
 
   return btn;
 }
@@ -97,7 +100,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
   // Extract appropriate key.
   auto btn = getSpireButton(event);
-  mGraphics->inputMouseMove(glm::ivec2(event->x(), event->y()), btn);
+  mGraphics->inputMouseMove(btn, glm::ivec2(event->x(), event->y()));
   event->ignore();
 }
 
@@ -105,16 +108,6 @@ void GLWidget::mouseMoveEvent(QMouseEvent* event)
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
   makeCurrent();
-  auto btn = getSpireButton(event);
-  mGraphics->inputMouseDown(glm::ivec2(event->x(), event->y()), btn);
-  event->ignore();
-}
-
-//------------------------------------------------------------------------------
-void GLWidget::mouseReleaseEvent(QMouseEvent* event)
-{
-  auto btn = getSpireButton(event);
-  mGraphics->inputMouseUp(glm::ivec2(event->x(), event->y()), btn);
   event->ignore();
 }
 

@@ -30,7 +30,6 @@ DEALINGS IN THE SOFTWARE.
 #include <gl-platform/GLPlatform.hpp>
 
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
-#include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/GLWidget.h>
 #include <Core/Application/Application.h>
 #include <Core/Application/Preferences/Preferences.h>
@@ -854,19 +853,32 @@ void ViewSceneDialog::resizingDone()
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mousePressEvent(QMouseEvent* event)
 {
+  auto x_window = event->x() - mGLWidget->pos().x();
+  auto y_window = event->y() - mGLWidget->pos().y();
+
+  auto btn = mGLWidget->getSpireButton(event);
+  auto spire = mSpire.lock();
   if (shiftdown_)
   {
-    selectObject(event->x(), event->y());
+    auto objList = getObjList(x_window, y_window, btn);
+    spire->inputMouseDown(btn, glm::ivec2(x_window, y_window), objList);
     updateModifiedGeometries();
   }
+  else
+    spire->inputMouseDown(btn, glm::ivec2(x_window, y_window), std::vector<WidgetHandle>());
 }
 
 //--------------------------------------------------------------------------------------------------
 void ViewSceneDialog::mouseReleaseEvent(QMouseEvent* event)
 {
-  if (selected_)
+  auto x_window = event->x() - mGLWidget->pos().x();
+  auto y_window = event->y() - mGLWidget->pos().y();
+
+  auto spire = mSpire.lock();
+  bool selected = spire->isWidgetSelected();
+  spire->inputMouseUp(glm::ivec2(x_window, y_window));
+  if (selected)
   {
-    selected_ = false;
     auto selName = restoreObjColor();
     updateModifiedGeometries();
     Q_EMIT mousePressSignalForTestingGeometryObjectFeedback(event->x(), event->y(), selName);
@@ -1204,7 +1216,7 @@ static std::vector<WidgetHandle> filterGeomObjectsForWidgets(SCIRun::Modules::Re
 }
 
 //--------------------------------------------------------------------------------------------------
-void ViewSceneDialog::selectObject(const int x, const int y)
+std::vector<WidgetHandle> ViewSceneDialog::getObjList(const int x, const int y, MouseButton btn)
 {
   LOG_DEBUG("ViewSceneDialog::asyncExecute before locking");
   Guard lock(Modules::Render::ViewScene::mutex_.get());
@@ -1212,7 +1224,7 @@ void ViewSceneDialog::selectObject(const int x, const int y)
 
   auto spire = mSpire.lock();
   if (!spire)
-    return;
+    return std::vector<WidgetHandle>();
 
   spire->removeAllGeomObjects();
 
@@ -1224,37 +1236,14 @@ void ViewSceneDialog::selectObject(const int x, const int y)
     if (!geomData)
     {
       LOG_DEBUG("Logical error: ViewSceneDialog received an empty list.");
-      return;
+      return std::vector<WidgetHandle>();
     }
 
     //get widgets
     auto objList = filterGeomObjectsForWidgets(geomData, mConfigurationDock);
-
-    //select widget
-    spire->select(glm::ivec2(x - mGLWidget->pos().x(), y - mGLWidget->pos().y()), objList, 0);
-
-    std::string selName = spire->getSelection();
-    if (selName != "")
-    {
-      for (const auto &obj : objList)
-      {
-        if (obj->uniqueID() == selName)
-        {
-          selected_ = true;
-          for (auto& pass : obj->passes())
-          {
-            pass.addUniform("uAmbientColor",
-              glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
-            pass.addUniform("uDiffuseColor",
-              glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-            pass.addUniform("uSpecularColor",
-              glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
-          }
-          break;
-        }
-      }
-    }
+    return objList;
   }
+  return std::vector<WidgetHandle>();
 }
 
 //--------------------------------------------------------------------------------------------------

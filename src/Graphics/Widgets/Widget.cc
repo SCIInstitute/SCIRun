@@ -34,22 +34,22 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Graphics::Datatypes;
 
 WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable)
-  : GeometryObjectSpire(idGenerator, tag, isClippable)
-{
-}
-
-WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Point& origin)
   : GeometryObjectSpire(idGenerator, tag, isClippable),
-    origin_(glm::vec3(origin.x(), origin.y(), origin.z()))
-{
-}
+    movementType_(std::vector<WidgetMovement>(MouseButton::STATE_COUNT, WidgetMovement::NONE))
+{}
+
+WidgetBase::WidgetBase(const Core::GeometryIDGenerator &idGenerator, const std::string &tag, bool isClippable, const Point &origin)
+    : GeometryObjectSpire(idGenerator, tag, isClippable),
+      origin_(glm::vec3(origin.x(), origin.y(), origin.z())),
+      movementType_(std::vector<WidgetMovement>(MouseButton::STATE_COUNT, WidgetMovement::NONE))
+
+{}
 
 WidgetBase::WidgetBase(const Core::GeometryIDGenerator& idGenerator, const std::string& tag, bool isClippable, const Point& pos, const Point& origin)
   : GeometryObjectSpire(idGenerator, tag, isClippable),
-    origin_(glm::vec3(origin.x(), origin.y(), origin.z())),
-    position_(pos)
-{
-}
+    origin_(glm::vec3(origin.x(), origin.y(), origin.z())), position_(pos),
+    movementType_(std::vector<WidgetMovement>(MouseButton::STATE_COUNT, WidgetMovement::NONE))
+{}
 
 Point WidgetBase::position() const
 {
@@ -61,20 +61,41 @@ void WidgetBase::setPosition(const Point& p)
   position_ = p;
 }
 
-void WidgetBase::setToScale(const Vector& flipAxis)
+void WidgetBase::setToScaleAxis(MouseButton btn, const Vector& flipAxis, glm::mat4 scaleTrans, int scaleAxisIndex)
 {
-  movementType_ = WidgetMovement::SCALE;
+  if(btn == MouseButton::NONE) return;
+  movementType_[btn] = WidgetMovement::SCALE_AXIS;
+  flipAxis_ = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
+  scaleAxisIndex_ = scaleAxisIndex;
+  scaleTrans_ = scaleTrans;
+}
+
+void WidgetBase::setToScaleAxisHalf(MouseButton btn, const Vector &flipAxis,
+                                glm::mat4 scaleTrans, int scaleAxisIndex) {
+  if (btn == MouseButton::NONE)
+    return;
+  movementType_[btn] = WidgetMovement::SCALE_AXIS;
+  flipAxis_ = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
+  scaleAxisIndex_ = scaleAxisIndex;
+  scaleTrans_ = scaleTrans;
+}
+
+void WidgetBase::setToScale(MouseButton btn, const Vector &flipAxis) {
+  if (btn == MouseButton::NONE) return;
+  movementType_[btn] = WidgetMovement::SCALE;
   flipAxis_ = glm::vec3(flipAxis.x(), flipAxis.y(), flipAxis.z());
 }
 
-void WidgetBase::setToRotate()
+void WidgetBase::setToRotate(MouseButton btn)
 {
-  movementType_ = WidgetMovement::ROTATE;
+  if (btn == MouseButton::NONE) return;
+  movementType_[btn] = WidgetMovement::ROTATE;
 }
 
-void WidgetBase::setToTranslate()
+void WidgetBase::setToTranslate(MouseButton btn)
 {
-  movementType_ = WidgetMovement::TRANSLATE;
+  if (btn == MouseButton::NONE) return;
+  movementType_[btn] = WidgetMovement::TRANSLATE;
 }
 
 glm::vec3 WidgetBase::getFlipVector()
@@ -82,7 +103,17 @@ glm::vec3 WidgetBase::getFlipVector()
   return flipAxis_;
 }
 
-WidgetMovement WidgetBase::getMovementType()
+int WidgetBase::getScaleAxisIndex()
+{
+  return scaleAxisIndex_;
+}
+
+glm::mat4* WidgetBase::getScaleTransform()
+{
+  return &scaleTrans_;
+}
+
+std::vector<WidgetMovement> WidgetBase::getMovementTypes()
 {
   return movementType_;
 }

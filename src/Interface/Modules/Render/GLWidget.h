@@ -63,6 +63,8 @@ public:
   ~GLWidget();
 
   std::shared_ptr<Render::SRInterface> getSpire() const {return mGraphics;}
+  /// Retrieve mouse button from mouse event.
+  Graphics::Datatypes::MouseButton getSpireButton(QMouseEvent *event);
 
   /// Required function for single threaded interfaces that have multiple
   /// contexts running on the same thread.
@@ -81,7 +83,6 @@ public Q_SLOTS:
 protected:
   virtual void mousePressEvent(QMouseEvent* event);
   virtual void mouseMoveEvent(QMouseEvent* event);
-  virtual void mouseReleaseEvent(QMouseEvent* event);
   virtual void wheelEvent(QWheelEvent* event);
   virtual void keyPressEvent(QKeyEvent* event);
   virtual void keyReleaseEvent(QKeyEvent* event);
@@ -91,9 +92,6 @@ protected:
   void closeEvent(QCloseEvent *evt);
 
 private:
-  /// Retrieve SRInterface mouse button from mouse event.
-  Render::SRInterface::MouseButton getSpireButton(QMouseEvent* event);
-
   std::shared_ptr<Render::SRInterface>  mGraphics     {};  ///< Interface to spire.
   QTimer*                               mTimer        {};
   double                                mFrameTime    {0.0};

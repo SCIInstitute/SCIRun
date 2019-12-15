@@ -70,6 +70,7 @@ namespace SCIRun {
         void sub_rows(double m[4][4], int row1, int row2, double mul) const;
         void load_identity(double[4][4]);
         void load_zero(double[4][4]);
+        void gram_schmidt(bool normalize);
       public:
         double get_imat_val(int i, int j) const { return imat[i][j]; }
         void set_imat_val(int i, int j, double val) { imat[i][j] = val; }
@@ -89,6 +90,7 @@ namespace SCIRun {
         void load_frame(const Vector&, const Vector&, const Vector&);
 
         void change_basis(Transform&);
+        void change_basis(const Vector &, const Vector &, const Vector &);
         void post_trans(const Transform&);
         void pre_trans(const Transform&);
 
@@ -149,6 +151,9 @@ namespace SCIRun {
         void invert();
         bool inv_valid() { return inverse_valid; }
         void set_inv_valid(bool iv) { inverse_valid = iv; }
+
+        void orthogonalize();
+        void orthonormalize();
 
         /// Persistent I/O.
         static PersistentTypeID type_id;

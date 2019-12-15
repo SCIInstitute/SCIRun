@@ -33,6 +33,7 @@
 #include <QOpenGLWidget>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/vector_angle.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 #include <Interface/Modules/Render/ES/SRInterface.h>
 #include <Interface/Modules/Render/ES/SRCamera.h>
@@ -184,22 +185,26 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::inputMouseDown(const glm::ivec2& pos, MouseButton btn)
+    void SRInterface::inputMouseDown(MouseButton btn, const glm::ivec2 &pos, std::vector<WidgetHandle> objList)
     {
-      if (selectWidget_ && widgetExists_)
+      if(btn != MouseButton::NONE)
       {
-        if (btn == MouseButton::MOUSE_LEFT)
-        {
-          //todo make this select widget
-        }
+        select(pos, objList, 0);
+        if(widgetSelected_)
+          if(mWidgetMovementTypes[btn] != WidgetMovement::NONE)
+          {
+            initializeWidgetMovement(btn, pos);
+            setSelectedWidgetToRed(objList);
+            updateWidget(btn, pos);
+          }
       }
       autoRotateVector = glm::vec2(0.0, 0.0);
       tryAutoRotate = false;
-      mCamera->mouseDownEvent(pos, btn);
+      mCamera->mouseDownEvent(btn, pos);
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::inputMouseUp(const glm::ivec2& /*pos*/, MouseButton /*btn*/)
+    void SRInterface::inputMouseUp(const glm::ivec2& pos)
     {
       widgetSelected_ = false;
       widgetBall_.reset();
@@ -207,15 +212,14 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::inputMouseMove(const glm::ivec2& pos, MouseButton btn)
-    {
+    void SRInterface::inputMouseMove(MouseButton btn, const glm::ivec2 &pos) {
       if (widgetSelected_)
       {
-        updateWidget(pos);
+        updateWidget(btn, pos);
       }
       else
       {
-        mCamera->mouseMoveEvent(pos, btn);
+        mCamera->mouseMoveEvent(btn, pos);
         updateCamera();
       }
     }
@@ -356,6 +360,21 @@ namespace SCIRun {
     //----------------------------------------------------------------------------------------------
 
     //----------------------------------------------------------------------------------------------
+    void SRInterface::setSelectedWidgetToRed(std::vector<WidgetHandle> objList)
+    {
+      std::string selName = getSelection();
+      if (selName != "")
+        for (const auto &obj : objList)
+          if (obj->uniqueID() == selName)
+            for (auto &pass : obj->passes())
+            {
+              pass.addUniform("uAmbientColor", glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
+              pass.addUniform("uDiffuseColor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+              pass.addUniform("uSpecularColor", glm::vec4(0.1f, 0.0f, 0.0f, 1.0f));
+            }
+    }
+
+    //----------------------------------------------------------------------------------------------
     void SRInterface::select(const glm::ivec2& pos, WidgetList& objList, int port)
     {
       mSelected = "";
@@ -389,7 +408,6 @@ namespace SCIRun {
       //modify and add each object to draw
       for (auto& obj : objList)
       {
-        // auto& obj = objList[i];
         std::string objectName = obj->uniqueID();
         uint32_t selid = getSelectIDForName(objectName);
         selMap.insert(std::make_pair(selid, objectName));
@@ -559,9 +577,8 @@ namespace SCIRun {
       mCore.execute(0, 50);
 
       GLuint value;
-      GLfloat depth;
       if (fboMan->readFBO(mCore, fboName, pos.x, pos.y, 1, 1,
-                          (GLvoid*)&value, (GLvoid*)&depth))
+                          (GLvoid*)&value, (GLvoid*)&mDepth))
       {
         auto it = selMap.find(value);
         if (it != selMap.end())
@@ -572,10 +589,14 @@ namespace SCIRun {
           {
             if (obj->uniqueID() == it->second)
             {
+              widgetSelected_ = true;
+
               mOriginWorld = obj->origin_;
               mFlipAxisWorld = obj->getFlipVector();
-              mWidgetMovement = obj->getMovementType();
+              mScaleAxisIndex = obj->getScaleAxisIndex();
+              mWidgetMovementTypes = obj->getMovementTypes();
               mConnectedWidgets = obj->connectedIds_;
+              mScaleTrans = obj->getScaleTransform();
             }
           }
         }
@@ -583,47 +604,44 @@ namespace SCIRun {
       //release and restore fbo
       fboMan->unbindFBO();
 
-      //calculate position
-      if (mSelected != "")
+      for (auto &it : entityList)
+        mCore.removeEntity(it);
+    }
+
+    void SRInterface::initializeWidgetMovement(MouseButton btn, const glm::ivec2& pos)
+    {
+      if (mSelected == "") return;
+
+      //Calculate w value
+      float zFar = mCamera->getZFar();
+      float zNear = mCamera->getZNear();
+      float z = -1.0/(mDepth * (1.0/zFar - 1.0/zNear) + 1.0/zNear);
+      mSelectedW = -z;
+
+      mOriginView = glm::vec3(mCamera->getWorldToView() * glm::vec4(mOriginWorld, 1.0));
+
+      // Get w value in of origin if scaling
+      if(mWidgetMovementTypes[btn] == WidgetMovement::SCALE)
       {
-        widgetSelected_ = true;
-
-        //Calculate w value
-        float zFar = mCamera->getZFar();
-        float zNear = mCamera->getZNear();
-        float z = -1.0/(depth * (1.0/zFar - 1.0/zNear) + 1.0/zNear);
-        mSelectedW = -z;
-
-        mOriginView = glm::vec3(mCamera->getWorldToView() * glm::vec4(mOriginWorld, 1.0));
-
-        // Get w value in of origin if scaling
-        if(mWidgetMovement == WidgetMovement::SCALE)
-        {
-          glm::vec4 projectedOrigin = mCamera->getViewToProjection() * glm::vec4(mOriginView, 1.0);
-          mSelectedW = projectedOrigin.w;
-        }
-
-        glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
-                       -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
-        mSelectedPos = spos;
-        mSelectedDepth = depth * 2.0 - 1.0;
-
-        glm::vec3 sposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * mSelectedW, 0.0, 1.0));
-        sposView.z = -mSelectedW;
-        mOriginToSpos = sposView - mOriginView;
-        mSelectedRadius = glm::length(mOriginToSpos);
-
-        if(mWidgetMovement == WidgetMovement::ROTATE)
-        {
-          widgetBall_.reset(new spire::ArcBall(mOriginView, mSelectedRadius, (mOriginToSpos.z < 0.0)));
-          widgetBall_->beginDrag(glm::vec2(sposView));
-        }
-
-        updateWidget(pos);
+        glm::vec4 projectedOrigin = mCamera->getViewToProjection() * glm::vec4(mOriginView, 1.0);
+        mSelectedW = projectedOrigin.w;
       }
 
-      for (auto& it : entityList)
-        mCore.removeEntity(it);
+      glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
+                     -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
+      mSelectedPos = spos;
+      mSelectedDepth = mDepth * 2.0 - 1.0;
+
+      glm::vec3 sposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * mSelectedW, 0.0, 1.0));
+      sposView.z = -mSelectedW;
+      mOriginToSpos = sposView - mOriginView;
+      mSelectedRadius = glm::length(mOriginToSpos);
+
+      if(mWidgetMovementTypes[btn] == WidgetMovement::ROTATE)
+      {
+        widgetBall_.reset(new spire::ArcBall(mOriginView, mSelectedRadius, (mOriginToSpos.z < 0.0)));
+        widgetBall_->beginDrag(glm::vec2(sposView));
+      }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -647,6 +665,12 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
+    bool SRInterface::isWidgetSelected()
+    {
+      return widgetSelected_;
+    }
+
+    //----------------------------------------------------------------------------------------------
     glm::vec4 SRInterface::getVectorForID(const uint32_t id)
     {
       float a = ((id >> 24) & 0xff) / 255.0f;
@@ -667,10 +691,12 @@ namespace SCIRun {
     }
 
     //----------------------------------------------------------------------------------------------
-    void SRInterface::updateWidget(const glm::ivec2& pos)
+    void SRInterface::updateWidget(MouseButton btn, const glm::ivec2& pos)
     {
-      switch(mWidgetMovement)
+      switch(mWidgetMovementTypes[btn])
       {
+      case WidgetMovement::NONE:
+        break;
       case WidgetMovement::TRANSLATE:
         translateWidget(pos);
         break;
@@ -679,6 +705,9 @@ namespace SCIRun {
         break;
       case WidgetMovement::SCALE:
         scaleWidget(pos);
+        break;
+      case WidgetMovement::SCALE_AXIS:
+        scaleAxisWidget(pos);
         break;
       }
     }
@@ -691,7 +720,10 @@ namespace SCIRun {
       {
         auto component = contTrans->getComponent(mEntityIdMap[widgetId]);
         if (component.first != nullptr)
+        {
+          glm::mat4 temp = component.first->transform;
           contTrans->modifyIndex(mWidgetTransform, component.second, 0);
+        }
       }
     }
 
@@ -737,6 +769,44 @@ namespace SCIRun {
       glm::mat4 reverse_translation = glm::translate(mOriginWorld);
 
       mWidgetTransform.transform = scale * translation;
+
+      if(negativeScale)
+        mWidgetTransform.transform = flip * mWidgetTransform.transform;
+
+      mWidgetTransform.transform = reverse_translation * mWidgetTransform.transform;
+
+      modifyWidgets();
+    }
+
+    void SRInterface::scaleAxisWidget(const glm::ivec2& pos)
+    {
+      glm::vec2 spos(float(pos.x) / float(mScreenWidth) * 2.0 - 1.0,
+                    -(float(pos.y) / float(mScreenHeight) * 2.0 - 1.0));
+
+      glm::vec3 currentSposView = glm::vec3(glm::inverse(mCamera->getViewToProjection()) * glm::vec4(spos * mSelectedW, 0.0, 1.0));
+      currentSposView.z = -mSelectedW;
+      glm::vec3 originToCurrentSpos = currentSposView - glm::vec3(mOriginView.xy(), mOriginView.z);
+
+      float scaling_factor = glm::dot(glm::normalize(originToCurrentSpos), glm::normalize(mOriginToSpos))
+        * (glm::length(originToCurrentSpos) / glm::length(mOriginToSpos));
+      glm::vec3 scaleVec = glm::vec3(1.0);
+      scaleVec[mScaleAxisIndex] = scaling_factor;
+
+      // Flip if negative to avoid inverted normals
+      glm::mat4 flip;
+      bool negativeScale = scaling_factor < 0.0;
+      if(negativeScale)
+      {
+        flip = glm::rotate(glm::mat4(1.0f), 3.1415926f, mFlipAxisWorld);
+        scaling_factor = -scaling_factor;
+      }
+
+      mWidgetTransform = gen::Transform();
+      glm::mat4 translation = glm::translate(-mOriginWorld);
+      glm::mat4 scale = glm::scale(mWidgetTransform.transform, scaleVec);
+      glm::mat4 reverse_translation = glm::translate(mOriginWorld);
+
+      mWidgetTransform.transform = (*mScaleTrans) * scale * glm::transpose(*mScaleTrans) * translation;
 
       if(negativeScale)
         mWidgetTransform.transform = flip * mWidgetTransform.transform;

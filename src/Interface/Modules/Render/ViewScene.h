@@ -33,12 +33,14 @@ DEALINGS IN THE SOFTWARE.
 #define NOMINMAX
 
 #include "Interface/Modules/Render/ui_ViewScene.h"
+#include <Interface/Modules/Render/ES/SRInterface.h>
 
 #include <Modules/Visualization/TextBuilder.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/ViewSceneControlsDock.h>
-#include <Graphics/Datatypes/GeometryImpl.h>
 #include <Interface/Modules/Render/share.h>
+#include <Graphics/Datatypes/GeometryImpl.h>
+#include <Graphics/Widgets/Widget.h>
 
 //TODO: needs to inherit from ModuleWidget somehow
 class QToolBar;
@@ -235,7 +237,7 @@ namespace SCIRun {
       void pushCameraState();
 
       //---------------- Widgets -------------------------------------------------------------------
-      void selectObject(const int x, const int y);
+      std::vector<Graphics::Datatypes::WidgetHandle> getObjList(const int x, const int y, Graphics::Datatypes::MouseButton);
       std::string restoreObjColor();
 
       //---------------- Clipping Planes -----------------------------------------------------------

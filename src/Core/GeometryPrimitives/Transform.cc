@@ -30,6 +30,7 @@
 #include <cstring>
 #include <iostream>
 #include <sstream>
+#include <functional>
 
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Plane.h>
@@ -126,6 +127,18 @@ Transform::load_frame(const Vector& x,
   mat[3][0] = mat[3][1] = mat[3][2] = 0.0;
   imat[3][0] = imat[3][1] = imat[3][2] = 0.0;
 
+  change_basis(x, y, z);
+}
+
+void
+Transform::change_basis(Transform& T)
+{
+  T.compute_imat();
+  pre_mulmat(T.imat);
+}
+
+void Transform::change_basis(const Vector &x, const Vector &y, const Vector &z)
+{
   mat[0][0] = x.x();
   mat[1][0] = x.y();
   mat[2][0] = x.z();
@@ -153,15 +166,7 @@ Transform::load_frame(const Vector& x,
   inverse_valid = true;
 }
 
-void
-Transform::change_basis(Transform& T)
-{
-  T.compute_imat();
-  pre_mulmat(T.imat);
-}
-
-void
-Transform::post_trans(const Transform& T)
+void Transform::post_trans(const Transform &T)
 {
   post_mulmat(T.mat);
   inverse_valid = false;
@@ -646,7 +651,7 @@ Transform::get_string() const
   std::ostringstream oss;
   oss << "[";
   for(int i = 0; i < 4; i++)
-    oss << mat[i][0] << ", " << mat[i][1] << ", " << mat[i][2] << ";";
+    oss << mat[0][i] << ", " << mat[1][i] << ", " << mat[2][i] << ";";
   oss << "]";
   return (oss.str());
 }
@@ -657,8 +662,7 @@ SCIRun::Core::Geometry::operator<<( std::ostream& os, const Transform& t)
   os << '[';
   for(int i = 0; i < 4; i++)
   {
-    os << t.get_mat_val(i,0) << ' ' << t.get_mat_val(i,1) << ' '
-       << t.get_mat_val(i,2) << ' ' << t.get_mat_val(i,3);
+    os << t.get_mat_val(0,i) << ' ' << t.get_mat_val(1,i) << ' ' << t.get_mat_val(2,i);
     if(i < 4)
       os << "; ";
   }
@@ -756,9 +760,42 @@ Transform::invert()
     }
 }
 
-void
-Transform::compute_imat() const
+void Transform::orthogonalize()
 {
+  gram_schmidt(false);
+}
+
+void Transform::orthonormalize()
+{
+  gram_schmidt(true);
+}
+
+void Transform::gram_schmidt(bool normalize)
+{
+  auto vecs = get_rotation_vectors();
+  double vals[3];
+  // Get eigenvalues and normalize eigenvectors
+  for(int i = 0; i < 3; i++)
+  {
+    vals[i] = vecs[i].length();
+    vecs[i] /= vals[i];
+  }
+
+  // Gram-Schmidt process
+  auto proj_primary_secondary = Dot(vecs[1], vecs[0]) * vecs[0];
+  vecs[1] -= proj_primary_secondary;
+  vecs[1].normalize();
+  vecs[2] = Cross(vecs[0], vecs[1]);
+
+  // Multiply back in the eigenvalues if normalize not selected
+  if(!normalize)
+    for(int i = 0; i < 3; i++)
+      vecs[i] *= vals[i];
+
+  change_basis(vecs[0], vecs[1], vecs[2]);
+}
+
+    void Transform::compute_imat() const {
   double a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p;
   a=mat[0][0]; b=mat[0][1]; c=mat[0][2]; d=mat[0][3];
   e=mat[1][0]; f=mat[1][1]; g=mat[1][2]; h=mat[1][3];

@@ -65,11 +65,11 @@ EditMeshBoundingBoxDialog::EditMeshBoundingBoxDialog(const std::string& name, Mo
 
   setScaleButtonsEnabled(false);
 
-  connect(resetSizePushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
-  connect(resetCenterPushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
-  connect(setCenterPushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
-  connect(setSizePushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
-  connect(resetAllPushButton_, SIGNAL(clicked()), this, SLOT(userSetWidget()));
+  connect(setCenterPushButton_, SIGNAL(clicked()), this, SLOT(setOutputCenter()));
+  connect(resetCenterPushButton_, SIGNAL(clicked()), this, SLOT(setResetCenter()));
+  connect(setSizePushButton_, SIGNAL(clicked()), this, SLOT(setOutputSize()));
+  connect(resetSizePushButton_, SIGNAL(clicked()), this, SLOT(setResetSize()));
+  connect(resetAllPushButton_, SIGNAL(clicked()), this, SLOT(setResetAll()));
 
   connectButtonsToExecuteSignal({ upScaleToolButton_, doubleUpScaleToolButton_, downScaleToolButton_, doubleDownScaleToolButton_,
     setCenterPushButton_, setSizePushButton_, resetSizePushButton_, resetCenterPushButton_, resetAllPushButton_ });
@@ -103,28 +103,28 @@ void EditMeshBoundingBoxDialog::scaleDoubleUpPush(){ adjustScale(doubleUpScale_)
 void EditMeshBoundingBoxDialog::scaleDownPush(){ adjustScale(downScale_); }
 void EditMeshBoundingBoxDialog::scaleDoubleDownPush(){ adjustScale(doubleDownScale_); }
 
-void EditMeshBoundingBoxDialog::userSetWidget()
+void EditMeshBoundingBoxDialog::setOutputCenter()
 {
-  auto button = sender()->objectName();
-  if (button.startsWith("setCenter"))
-  {
-    state_->setTransientValue(EditMeshBoundingBoxModule::SetOutputCenter, true);
-  }
-  else if (button.startsWith("resetCenter"))
-  {
-    state_->setTransientValue(EditMeshBoundingBoxModule::ResetCenter, true);
-  }
-  else if (button.startsWith("setSize"))
-  {
-    state_->setTransientValue(EditMeshBoundingBoxModule::SetOutputSize, true);
-  }
-  else if (button.startsWith("resetSize"))
-  {
-    state_->setTransientValue(EditMeshBoundingBoxModule::ResetSize, true);
-  }
-  else if (button.startsWith("resetAll"))
-  {
-    state_->setTransientValue(EditMeshBoundingBoxModule::ResetSize, true);
-    state_->setTransientValue(EditMeshBoundingBoxModule::ResetCenter, true);
-  }
+  state_->setTransientValue(EditMeshBoundingBoxModule::SetOutputCenter, true);
+}
+
+void EditMeshBoundingBoxDialog::setResetCenter()
+{
+  state_->setTransientValue(EditMeshBoundingBoxModule::ResetCenter, true);
+}
+
+void EditMeshBoundingBoxDialog::setOutputSize()
+{
+  state_->setTransientValue(EditMeshBoundingBoxModule::SetOutputSize, true);
+}
+
+void EditMeshBoundingBoxDialog::setResetSize()
+{
+  state_->setTransientValue(EditMeshBoundingBoxModule::ResetSize, true);
+}
+
+void EditMeshBoundingBoxDialog::setResetAll()
+{
+  state_->setTransientValue(EditMeshBoundingBoxModule::ResetSize, true);
+  state_->setTransientValue(EditMeshBoundingBoxModule::ResetCenter, true);
 }
